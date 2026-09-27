@@ -553,112 +553,200 @@
         justify-content: center;
       }
     }
-  </style>
+  
+/* ═══════════════════════════════════════════════════════════
+   COGNICOPIA  —  LEFT-HAND SIDEBAR NAV  (shared)
+   ══════════════════════════════════════════════════════════= */
+:root {
+  --sb-w:      220px;
+  --sb-bg:     rgba(8,28,21,.96);
+  --sb-border: rgba(216,243,220,.15);
+  --sb-accent: #52b788;
+  --sb-hover:  rgba(82,183,136,.18);
+  --sb-txt:    #d8f3dc;
+  --sb-muted:  rgba(216,243,220,.55);
+  --sb-hdr-sz: 9.5pt;
+  --sb-lnk-sz: 10pt;
+}
+body { padding-left: var(--sb-w); }
+.cg-sidebar {
+  position: fixed; top: 0; left: 0;
+  width: var(--sb-w); height: 100vh; z-index: 900;
+  display: flex; flex-direction: column;
+  background: var(--sb-bg); border-right: 1px solid var(--sb-border);
+  backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+  overflow-y: auto; overflow-x: hidden;
+  scrollbar-width: thin; scrollbar-color: rgba(82,183,136,.3) transparent;
+}
+.cg-sidebar::-webkit-scrollbar { width: 4px; }
+.cg-sidebar::-webkit-scrollbar-thumb { background: rgba(82,183,136,.3); border-radius: 4px; }
+.cg-sidebar-brand {
+  display: flex; align-items: center; gap: 9px;
+  padding: 18px 16px 14px; border-bottom: 1px solid var(--sb-border);
+  text-decoration: none; color: #fff;
+  font-family: "Trebuchet MS","Segoe UI",sans-serif;
+  font-size: 15pt; font-weight: 700; flex-shrink: 0; letter-spacing: -.01em;
+}
+.cg-sidebar-brand:hover { color: var(--sb-accent); }
+.cg-sidebar-brand img { width: 32px; height: 26px; flex: none; object-fit: contain; border-radius: 3px; }
+.cg-sidebar-home {
+  display: flex; align-items: center; gap: 8px; padding: 11px 16px;
+  color: var(--sb-txt); font-size: var(--sb-lnk-sz);
+  font-family: "Trebuchet MS","Segoe UI",sans-serif;
+  text-decoration: none; border-bottom: 1px solid var(--sb-border);
+  transition: background .15s, color .15s; flex-shrink: 0;
+}
+.cg-sidebar-home:hover, .cg-sidebar-home.active { background: var(--sb-hover); color: #fff; }
+.cg-sidebar-home svg { flex: none; opacity: .7; }
+.cg-sidebar-nav { flex: 1; padding: 8px 0 24px; list-style: none; margin: 0; }
+.cg-sb-section {
+  padding: 16px 14px 4px; font-size: var(--sb-hdr-sz);
+  font-family: "Trebuchet MS","Segoe UI",sans-serif;
+  font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+  color: var(--sb-accent); display: flex; align-items: center;
+  gap: 6px; line-height: 1.3; user-select: none;
+}
+.cg-sb-section svg { flex: none; opacity: .85; }
+.cg-sidebar-nav a {
+  display: flex; align-items: flex-start; gap: 7px;
+  padding: 7px 14px 7px 20px;
+  color: var(--sb-txt); font-size: var(--sb-lnk-sz);
+  font-family: "Trebuchet MS","Segoe UI",sans-serif;
+  text-decoration: none; line-height: 1.35;
+  border-left: 2px solid transparent;
+  transition: background .15s, color .13s, border-color .13s;
+  word-break: break-word;
+}
+.cg-sidebar-nav a:hover { background: var(--sb-hover); color: #fff; border-left-color: var(--sb-accent); }
+.cg-sidebar-nav a.active { background: rgba(82,183,136,.22); color: #fff; border-left-color: var(--sb-accent); font-weight: 600; }
+.cg-sidebar-nav a .cg-bullet { flex: none; margin-top: 3px; color: var(--sb-muted); font-size: 10px; transition: color .13s; }
+.cg-sidebar-nav a:hover .cg-bullet, .cg-sidebar-nav a.active .cg-bullet { color: var(--sb-accent); }
+.cg-sb-divider { height: 1px; background: var(--sb-border); margin: 8px 14px; }
+.cg-sidebar-toggle {
+  display: none; position: fixed; top: 12px; left: 12px; z-index: 1100;
+  width: 40px; height: 40px; background: rgba(8,28,21,.92);
+  border: 1px solid var(--sb-border); border-radius: 8px; cursor: pointer;
+  align-items: center; justify-content: center; backdrop-filter: blur(10px);
+}
+.cg-sidebar-toggle svg { color: #d8f3dc; }
+.cg-topbar {
+  position: sticky; top: 0; left: 0; right: 0; z-index: 800;
+  height: 52px; display: flex; align-items: center;
+  justify-content: flex-end; gap: 16px; padding: 0 28px 0 16px;
+  background: rgba(8,28,21,.82); border-bottom: 1px solid var(--sb-border);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+}
+.cg-topbar a, .cg-topbar button.linklike {
+  color: #e8f5e9; font-size: 10pt;
+  font-family: "Trebuchet MS","Segoe UI",sans-serif; text-decoration: none;
+}
+.cg-topbar a:hover { color: #d8f3dc; }
+@media (max-width: 700px) {
+  body { padding-left: 0; }
+  .cg-sidebar { transform: translateX(-100%); transition: transform .22s ease; width: min(260px, 85vw); box-shadow: 6px 0 32px rgba(0,0,0,.45); }
+  .cg-sidebar.is-open { transform: translateX(0); }
+  .cg-sidebar-toggle { display: flex; }
+  .cg-sb-overlay { display: none; position: fixed; inset: 0; z-index: 850; background: rgba(0,0,0,.45); }
+  .cg-sb-overlay.is-open { display: block; }
+}
+.navbar { display: none !important; }
+</style>
 </head>
 <body>
+<!-- ══ COGNICOPIA LEFT SIDEBAR NAV ══ -->
+<button class="cg-sidebar-toggle" id="cgSbToggle" aria-label="Open navigation menu" aria-expanded="false">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+</button>
+<div class="cg-sb-overlay" id="cgSbOverlay" aria-hidden="true"></div>
+
+<aside class="cg-sidebar" id="cgSidebar" aria-label="Site navigation">
+  <a href="index.html" class="cg-sidebar-brand">
+    <img src="assets/cognicopia-logo.jpg" alt="Cognicopia Logo">
+    <span>Cognicopia</span>
+  </a>
+  <a href="index.html" class="cg-sidebar-home" id="cgHomeLink">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    Home (Tool)
+  </a>
+  <ul class="cg-sidebar-nav" role="navigation" aria-label="Resources">
+
+    <li>
+      <div class="cg-sb-section">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        Creative &amp; Cognitive Tools
+      </div>
+    </li>
+    <li><a href="resources.html"><span class="cg-bullet">&#x203A;</span><span>Master Resource Catalog</span></a></li>
+    <li><a href="zentangle-art.html"><span class="cg-bullet">&#x203A;</span><span>Zentangle Botanical Art</span></a></li>
+    <li><a href="therapy.html"><span class="cg-bullet">&#x203A;</span><span>Reminiscence Science</span></a></li>
+    <li><a href="features.html"><span class="cg-bullet">&#x203A;</span><span>Activity Feature Guide</span></a></li>
+
+    <li><div class="cg-sb-divider"></div></li>
+
+    <li>
+      <div class="cg-sb-section">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        Journals &amp; Organizers
+      </div>
+    </li>
+    <li><a href="cognitive-journals.html"><span class="cg-bullet">&#x203A;</span><span>Cognitive Life Journals</span></a></li>
+    <li><a href="life-planners.html"><span class="cg-bullet">&#x203A;</span><span>12-Month Life Planners</span></a></li>
+    <li><a href="about.html"><span class="cg-bullet">&#x203A;</span><span>Platform &amp; Mission Overview</span></a></li>
+
+    <li><div class="cg-sb-divider"></div></li>
+
+    <li>
+      <div class="cg-sb-section">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Institutional Standards
+      </div>
+    </li>
+    <li><a href="institutional-standards.html"><span class="cg-bullet">&#x203A;</span><span>Quality Standards Hub</span></a></li>
+    <li><a href="clinical-alignment.html"><span class="cg-bullet">&#x203A;</span><span>Clinical Alignment</span></a></li>
+    <li><a href="high-volume-facilities.html"><span class="cg-bullet">&#x203A;</span><span>High-Volume Facilities</span></a></li>
+    <li><a href="publishing-excellence.html"><span class="cg-bullet">&#x203A;</span><span>Publishing Excellence</span></a></li>
+
+    <li><div class="cg-sb-divider"></div></li>
+
+    <li>
+      <div class="cg-sb-section">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        Facility Support &amp; Direct
+      </div>
+    </li>
+    <li><a href="faq.html"><span class="cg-bullet">&#x203A;</span><span>Caregiver FAQ</span></a></li>
+    <li><a href="contact.html"><span class="cg-bullet">&#x203A;</span><span>Contact Kirk Barron</span></a></li>
+
+  </ul>
+</aside>
+
+<script>
+(function(){
+  var toggle=document.getElementById('cgSbToggle');
+  var sidebar=document.getElementById('cgSidebar');
+  var overlay=document.getElementById('cgSbOverlay');
+  if(!toggle||!sidebar||!overlay) return;
+  function openSb(){sidebar.classList.add('is-open');overlay.classList.add('is-open');toggle.setAttribute('aria-expanded','true');}
+  function closeSb(){sidebar.classList.remove('is-open');overlay.classList.remove('is-open');toggle.setAttribute('aria-expanded','false');}
+  toggle.addEventListener('click',function(){sidebar.classList.contains('is-open')?closeSb():openSb();});
+  overlay.addEventListener('click',closeSb);
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')closeSb();});
+  var page=location.pathname.split('/').pop()||'index.html';
+  sidebar.querySelectorAll('a[href]').forEach(function(a){
+    if(a.getAttribute('href')===page||(page===''&&a.getAttribute('href')==='index.html')){a.classList.add('active');}
+  });
+  var homeLink=document.getElementById('cgHomeLink');
+  if(homeLink&&(page===''||page==='index.html'))homeLink.classList.add('active');
+})();
+</script>
+<!-- ══ COGNICOPIA TOP BAR ══ -->
+<div class="cg-topbar" role="banner">
+  <a href="https://buy.stripe.com/9B614oaJV7lr0RX1ODew801" target="_blank" rel="noopener" style="background:#286E75;color:#fff;padding:6px 14px;border-radius:5px;font-weight:700;font-size:9.5pt;">Get Full Access &#x2192;</a>
+</div>
+
 
   <!-- Navigation Bar -->
-  <nav class="navbar" aria-label="Main Navigation">
-    <div class="nav-brand">
-      <a href="index.html" aria-label="Cognicopia Home"><img src="assets/cognicopia-logo.jpg" alt="Cognicopia Logo" class="nav-logo"><span>Cognicopia</span></a>
-    </div>
-    <ul class="nav-links" role="menubar">
-      <li role="none"><a href="index.html" role="menuitem">Home (Tool)</a></li>
-      <li class="dropdown" role="none">
-        <button type="button" class="dropbtn" id="resourcesDropdownBtn" aria-expanded="false" aria-haspopup="true" aria-controls="resources-dropdown-menu">Resources <span class="chevron" aria-hidden="true">▾</span></button>
-        <div class="dropdown-content" id="resources-dropdown-menu" role="menu" aria-labelledby="resourcesDropdownBtn">
-          <div class="dropdown-grid">
-            <!-- Category 1: Creative & Cognitive Tools -->
-            <div class="dropdown-group" role="group" aria-labelledby="cat-creative">
-              <div class="dropdown-header" id="cat-creative">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
-                <span>Creative &amp; Cognitive Tools</span>
-              </div>
-              <div class="dropdown-links-list">
-                <a href="resources.html" role="menuitem">
-                  <span class="dropdown-link-bullet" aria-hidden="true">›</span>
-                  <span>Master Resource Catalog</span>
-                </a>
-                <a href="zentangle-art.html" role="menuitem">
-                  <span class="dropdown-link-bullet" aria-hidden="true">›</span>
-                  <span>Zentangle Botanical Art</span>
-                </a>
-                <a href="therapy.html" role="menuitem">
-                  <span class="dropdown-link-bullet" aria-hidden="true">›</span>
-                  <span>Reminiscence Science</span>
-                </a>
-                <a href="features.html" role="menuitem">
-                  <span class="dropdown-link-bullet" aria-hidden="true">›</span>
-                  <span>Activity Feature Guide</span>
-                </a>
-              </div>
-            </div>
-
-            <!-- Category 2: Journals & Organizers -->
-            <div class="dropdown-group" role="group" aria-labelledby="cat-journals">
-              <div class="dropdown-header" id="cat-journals">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
-                <span>Journals &amp; Organizers</span>
-              </div>
-              <div class="dropdown-links-list">
-                <a href="cognitive-journals.html" role="menuitem">
-                  <span class="dropdown-link-bullet" aria-hidden="true">›</span>
-                  <span>Cognitive Life Journals</span>
-                </a>
-                <a href="life-planners.html" role="menuitem">
-                  <span class="dropdown-link-bullet" aria-hidden="true">›</span>
-                  <span>12-Month Life Planners</span>
-                </a>
-                <a href="about.html" role="menuitem">
-                  <span class="dropdown-link-bullet" aria-hidden="true">›</span>
-                  <span>Platform &amp; Mission Overview</span>
-                </a>
-              </div>
-            </div>
-
-            <!-- Category 3: Institutional Standards -->
-            <div class="dropdown-group" role="group" aria-labelledby="cat-standards">
-              <div class="dropdown-header" id="cat-standards">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-                <span>Institutional Standards</span>
-              </div>
-              <div class="dropdown-links-list">
-                <a href="institutional-standards.html" role="menuitem">
-                  <span class="dropdown-link-bullet" aria-hidden="true">›</span>
-                  <span>Quality Standards Hub</span>
-                </a>
-                <a href="clinical-alignment.html" role="menuitem">
-                  <span class="dropdown-link-bullet" aria-hidden="true">›</span>
-                  <span>Clinical Alignment</span>
-                </a>
-                <a href="high-volume-facilities.html" role="menuitem" style="font-weight:700; background:rgba(82,183,136,0.24);">
-                  <span class="dropdown-link-bullet" aria-hidden="true">›</span>
-                  <span>High-Volume Facilities</span>
-                </a>
-                <a href="publishing-excellence.html" role="menuitem">
-                  <span class="dropdown-link-bullet" aria-hidden="true">›</span>
-                  <span>Publishing Excellence</span>
-                </a>
-              </div>
-            </div>
-          </div>
-
-          <!-- Bottom Utility Row for Support & Inquiries -->
-          <div class="dropdown-footer" role="group" aria-label="Support and Quick Links">
-            <span class="dropdown-footer-label">Facility Support:</span>
-            <a href="faq.html" role="menuitem">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
-              <span>Caregiver FAQ</span>
-            </a>
-            <a href="contact.html" role="menuitem">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-              <span>Contact Kirk Barron</span>
-            </a>
-          </div>
-        </div>
-      </li>
-    </ul>
-  </nav>
+  
 
   <!-- Main Content Container -->
   <main class="container" id="main-content">
