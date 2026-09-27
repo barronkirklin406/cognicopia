@@ -404,9 +404,14 @@ input:focus,select:focus{border-color:var(--accent)}
 .lyr-title{margin:0;font-size:1.12em;line-height:1.15;color:#000}
 .lyr-year{margin:.03in 0 .26in;font-size:.45em;letter-spacing:.04em;color:#3f4a46}
 .lyr-line{margin:0 0 .12in;font-weight:700;line-height:1.22}
+.lyr-part{margin:.1in 0 .04in;font-size:.42em;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#3f4a46}
+.lyr-tag{display:inline-block;padding:.01in .1in;border:1.5pt solid #000;border-radius:.08in;color:#000;font-weight:700}
+.lyr-trivia{margin:.2in auto 0;max-width:6.4in;padding:.1in .18in;border:2pt solid #000;border-radius:.12in;font-size:13pt;line-height:1.35;text-align:left;color:#000}
 /* finish the song, singer match */
 .song-kind{display:inline-block;margin:0 .1in 0 0;vertical-align:.15em;font-size:.52em;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#56615d}
 .sm-pairs .r{font-style:italic}
+.sm-pairs .r.long{font-size:.82em}
+.lvl-advanced .sm-pairs{row-gap:.36in}
 /* Multisensory: orientation board (pure black, giant type) */
 .orient{text-align:center;color:#000}
 .orient p{margin:0}
@@ -1933,28 +1938,66 @@ const SEATED_RHYTHM = {
 };
 
 /* ---------- 7e. Music, Rhythm & Sound generators ----------
-   Copyright rule for this category: full lyrics and lyric lines come
-   only from songs in the U.S. public domain (published before 1931, or
-   traditional). Songs from the 1940s-1960s appear by TITLE and SINGER
-   only, which are facts, not lyrics. */
+   Copyright rule for this category: printed LYRICS come only from songs
+   in the U.S. public domain (published before 1931, or traditional).
+   Everything newer appears by TITLE and ARTIST only, which are facts,
+   not lyrics.
+   Content rule: titles about violence, alcohol or sex are left out of
+   the artist library, since these pages are for memory care. */
 
-/* Sing-along songs: public domain. `hymn` lets staff leave out sacred songs. */
+/* ---- Sing-along songs (public domain) ----
+   lines: "[Chorus]" / "[Verse 1]" markers become small section labels.
+   decade: origin tag printed on the sheet. hymn: lets staff leave out
+   sacred songs for mixed groups. trivia: one short, checked fact. */
 const PD_SONGS = [
-  { title:"Daisy Bell (A Bicycle Built for Two)", year:"1892", lines:["Daisy, Daisy, give me your answer, do","I'm half crazy, all for the love of you","It won't be a stylish marriage","I can't afford a carriage","But you'll look sweet upon the seat","Of a bicycle built for two"] },
-  { title:"Take Me Out to the Ball Game", year:"1908", lines:["Take me out to the ball game","Take me out with the crowd","Buy me some peanuts and Cracker Jack","I don't care if I never get back","Let me root, root, root for the home team","If they don't win, it's a shame","For it's one, two, three strikes, you're out","At the old ball game"] },
-  { title:"Let Me Call You Sweetheart", year:"1910", lines:["Let me call you sweetheart","I'm in love with you","Let me hear you whisper","That you love me too","Keep the love light glowing","In your eyes so true","Let me call you sweetheart","I'm in love with you"] },
-  { title:"Shine On, Harvest Moon", year:"1908", lines:["Shine on, shine on, harvest moon","Up in the sky","I ain't had no lovin'","Since January, February, June or July","Snow time ain't no time to stay","Outdoors and spoon","So shine on, shine on, harvest moon","For me and my gal"] },
-  { title:"Home on the Range", year:"1870s", lines:["Oh, give me a home where the buffalo roam","Where the deer and the antelope play","Where seldom is heard a discouraging word","And the skies are not cloudy all day","Home, home on the range","Where the deer and the antelope play","Where seldom is heard a discouraging word","And the skies are not cloudy all day"] },
-  { title:"In the Good Old Summertime", year:"1902", lines:["In the good old summertime","In the good old summertime","Strolling through the shady lanes","With your baby mine","You hold her hand and she holds yours","And that's a very good sign","That she's your tootsie-wootsie","In the good old summertime"] },
-  { title:"I've Been Working on the Railroad", year:"1894", lines:["I've been working on the railroad","All the live-long day","I've been working on the railroad","Just to pass the time away","Can't you hear the whistle blowing","Rise up so early in the morn","Can't you hear the captain shouting","Dinah, blow your horn"] },
-  { title:"Down by the Old Mill Stream", year:"1910", lines:["Down by the old mill stream","Where I first met you","With your eyes of blue","Dressed in gingham too","It was there I knew","That you loved me true","You were sixteen, my village queen","Down by the old mill stream"] },
-  { title:"When Irish Eyes Are Smiling", year:"1912", lines:["When Irish eyes are smiling","Sure, 'tis like the morn in spring","In the lilt of Irish laughter","You can hear the angels sing","When Irish hearts are happy","All the world seems bright and gay","And when Irish eyes are smiling","Sure, they steal your heart away"] },
-  { title:"My Bonnie Lies Over the Ocean", year:"Traditional", lines:["My Bonnie lies over the ocean","My Bonnie lies over the sea","My Bonnie lies over the ocean","Oh, bring back my Bonnie to me","Bring back, bring back","Oh, bring back my Bonnie to me, to me","Bring back, bring back","Oh, bring back my Bonnie to me"] },
-  { title:"You're a Grand Old Flag", year:"1906", lines:["You're a grand old flag","You're a high-flying flag","And forever in peace may you wave","You're the emblem of the land I love","The home of the free and the brave","Ev'ry heart beats true 'neath the Red, White and Blue","Where there's never a boast or brag","Should auld acquaintance be forgot","Keep your eye on the grand old flag"] },
-  { title:"Amazing Grace", year:"1779", hymn:true, lines:["Amazing grace, how sweet the sound","That saved a wretch like me","I once was lost, but now am found","Was blind, but now I see","'Twas grace that taught my heart to fear","And grace my fears relieved","How precious did that grace appear","The hour I first believed"] }
+  { title:"Daisy Bell (A Bicycle Built for Two)", decade:"1890s", year:"1892",
+    trivia:"In 1961 an IBM computer at Bell Labs sang this song, making it the first song ever sung by a computer.",
+    lines:["[Chorus]","Daisy, Daisy, give me your answer, do","I'm half crazy, all for the love of you","It won't be a stylish marriage","I can't afford a carriage","But you'll look sweet upon the seat","Of a bicycle built for two"] },
+  { title:"Take Me Out to the Ball Game", decade:"1900s", year:"1908",
+    trivia:"It is sung at the seventh-inning stretch of baseball games. Jack Norworth wrote the words before he had ever been to a game.",
+    lines:["[Chorus]","Take me out to the ball game","Take me out with the crowd","Buy me some peanuts and Cracker Jack","I don't care if I never get back","Let me root, root, root for the home team","If they don't win, it's a shame","For it's one, two, three strikes, you're out","At the old ball game"] },
+  { title:"Let Me Call You Sweetheart", decade:"1910s", year:"1910",
+    trivia:"Written by Beth Slater Whitson and Leo Friedman, it has been a favourite at weddings and anniversaries for over a hundred years.",
+    lines:["[Chorus]","Let me call you sweetheart","I'm in love with you","Let me hear you whisper","That you love me too","Keep the love light glowing","In your eyes so true","Let me call you sweetheart","I'm in love with you"] },
+  { title:"Shine On, Harvest Moon", decade:"1900s", year:"1908",
+    trivia:"Husband-and-wife team Nora Bayes and Jack Norworth introduced it in the Ziegfeld Follies of 1908.",
+    lines:["[Chorus]","Shine on, shine on, harvest moon","Up in the sky","I ain't had no lovin'","Since January, February, June or July","Snow time ain't no time to stay","Outdoors and spoon","So shine on, shine on, harvest moon","For me and my gal"] },
+  { title:"Home on the Range", decade:"1870s", year:"1870s",
+    trivia:"It began as a poem by Dr. Brewster Higley, a Kansas homesteader, and is now the state song of Kansas.",
+    lines:["[Verse]","Oh, give me a home where the buffalo roam","Where the deer and the antelope play","Where seldom is heard a discouraging word","And the skies are not cloudy all day","[Chorus]","Home, home on the range","Where the deer and the antelope play","Where seldom is heard a discouraging word","And the skies are not cloudy all day"] },
+  { title:"In the Good Old Summertime", decade:"1900s", year:"1902",
+    trivia:"A 1949 film named after the song starred Judy Garland and Van Johnson.",
+    lines:["[Chorus]","In the good old summertime","In the good old summertime","Strolling through the shady lanes","With your baby mine","You hold her hand and she holds yours","And that's a very good sign","That she's your tootsie-wootsie","In the good old summertime"] },
+  { title:"I've Been Working on the Railroad", decade:"1890s", year:"1894",
+    trivia:"The same tune is used for \"The Eyes of Texas,\" the school song of the University of Texas.",
+    lines:["I've been working on the railroad","All the live-long day","I've been working on the railroad","Just to pass the time away","Can't you hear the whistle blowing","Rise up so early in the morn","Can't you hear the captain shouting","Dinah, blow your horn"] },
+  { title:"Down by the Old Mill Stream", decade:"1910s", year:"1910",
+    trivia:"Tell Taylor is said to have written it about a mill stream near his hometown of Findlay, Ohio.",
+    lines:["[Chorus]","Down by the old mill stream","Where I first met you","With your eyes of blue","Dressed in gingham too","It was there I knew","That you loved me true","You were sixteen, my village queen","Down by the old mill stream"] },
+  { title:"When Irish Eyes Are Smiling", decade:"1910s", year:"1912",
+    trivia:"This much-loved Irish song was actually written in New York, for a stage show.",
+    lines:["[Chorus]","When Irish eyes are smiling","Sure, 'tis like the morn in spring","In the lilt of Irish laughter","You can hear the angels sing","When Irish hearts are happy","All the world seems bright and gay","And when Irish eyes are smiling","Sure, they steal your heart away"] },
+  { title:"My Bonnie Lies Over the Ocean", decade:"Traditional", year:"Traditional",
+    trivia:"An old Scottish folk song. In 1961 a young Beatles band backed Tony Sheridan on a rock-and-roll version.",
+    lines:["[Verse]","My Bonnie lies over the ocean","My Bonnie lies over the sea","My Bonnie lies over the ocean","Oh, bring back my Bonnie to me","[Chorus]","Bring back, bring back","Oh, bring back my Bonnie to me, to me","Bring back, bring back","Oh, bring back my Bonnie to me"] },
+  { title:"You're a Grand Old Flag", decade:"1900s", year:"1906",
+    trivia:"George M. Cohan wrote it for his 1906 musical George Washington, Jr.",
+    lines:["[Chorus]","You're a grand old flag","You're a high-flying flag","And forever in peace may you wave","You're the emblem of the land I love","The home of the free and the brave","Ev'ry heart beats true 'neath the Red, White and Blue","Where there's never a boast or brag","Should auld acquaintance be forgot","Keep your eye on the grand old flag"] },
+  { title:"America the Beautiful", decade:"1890s", year:"1895",
+    trivia:"Katharine Lee Bates wrote the words after seeing the view from the top of Pikes Peak in Colorado.",
+    lines:["[Verse 1]","O beautiful for spacious skies","For amber waves of grain","For purple mountain majesties","Above the fruited plain!","America! America!","God shed his grace on thee","And crown thy good with brotherhood","From sea to shining sea!"] },
+  { title:"She'll Be Coming 'Round the Mountain", decade:"Traditional", year:"Late 1800s",
+    trivia:"A folk song sung by railroad work gangs in the late 1800s, based on an older spiritual.",
+    lines:["[Verse 1]","She'll be coming 'round the mountain when she comes","She'll be coming 'round the mountain when she comes","She'll be coming 'round the mountain","She'll be coming 'round the mountain","She'll be coming 'round the mountain when she comes","[Verse 2]","She'll be driving six white horses when she comes","She'll be driving six white horses when she comes"] },
+  { title:"When the Saints Go Marching In", decade:"Traditional", year:"Traditional", hymn:true,
+    trivia:"A traditional spiritual. Louis Armstrong's 1938 recording made it a jazz standard.",
+    lines:["[Chorus]","Oh, when the saints go marching in","Oh, when the saints go marching in","Oh Lord, I want to be in that number","When the saints go marching in"] },
+  { title:"Amazing Grace", decade:"1770s", year:"1779", hymn:true,
+    trivia:"The words were written by John Newton, an English clergyman, and first published in 1779.",
+    lines:["[Verse 1]","Amazing grace, how sweet the sound","That saved a wretch like me","I once was lost, but now am found","Was blind, but now I see","[Verse 2]","'Twas grace that taught my heart to fear","And grace my fears relieved","How precious did that grace appear","The hour I first believed"] }
 ];
 
-/* Finish-the-line prompts from public-domain songs. */
+/* Finish-the-line prompts from public-domain songs. [start, end, sacred?] */
 const PD_LINES = [
   ["Oh, give me a home where the","buffalo roam"],["Take me out to the ball game, take me out with the","crowd"],
   ["Daisy, Daisy, give me your answer,","do"],["Let me call you sweetheart, I'm in love with","you"],
@@ -1964,108 +2007,332 @@ const PD_LINES = [
   ["Down by the old mill","stream"],["When Irish eyes are","smiling"],["You're a grand old","flag"],
   ["My wild Irish","rose"],["For he's a jolly good","fellow"],["Should auld acquaintance be","forgot"],
   ["It's a long way to","Tipperary"],["My Bonnie lies over the","ocean"],["I'm a Yankee Doodle","Dandy"],
-  ["Amazing grace, how sweet the","sound", true],["Swing low, sweet","chariot", true]
+  ["O beautiful for spacious skies, for amber waves of","grain"],
+  ["Amazing grace, how sweet the","sound", true],["Swing low, sweet","chariot", true],["Oh, when the saints go marching","in", true]
 ];
 
-/* Finish-the-title prompts: 1940s-1960s hits (titles only). */
-const HIT_TITLES = [
-  ["1940s","Chattanooga Choo","Choo"],["1940s","Sentimental","Journey"],["1940s","Don't Sit Under the Apple","Tree"],
-  ["1940s","Let It Snow! Let It Snow! Let It","Snow!"],["1940s","The Tennessee","Waltz"],["1940s","Boogie Woogie Bugle","Boy"],
-  ["1940s","White","Christmas"],["1940s","In the","Mood"],
-  ["1950s","Rock Around the","Clock"],["1950s","Blue Suede","Shoes"],["1950s","Shake, Rattle and","Roll"],
-  ["1950s","Great Balls of","Fire"],["1950s","Love Me","Tender"],["1950s","Jailhouse","Rock"],
-  ["1950s","Blueberry","Hill"],["1950s","Unchained","Melody"],["1950s","Earth","Angel"],["1950s","Mack the","Knife"],
-  ["1950s","Sixteen","Tons"],["1950s","Bye Bye","Love"],["1950s","Put Your Head on My","Shoulder"],["1950s","I Walk the","Line"],
-  ["1960s","Fly Me to the","Moon"],["1960s","Moon","River"],["1960s","Twist and","Shout"],["1960s","Stand by","Me"],
-  ["1960s","What a Wonderful","World"],["1960s","Stop! In the Name of","Love"],["1960s","Georgia on My","Mind"],
-  ["1960s","I Want to Hold Your","Hand"]
+/* ---- Master artist library, early 1900s to 1999 ----
+   era: e1900 (1900s-1920s), e1930 (1930s-1940s), e1950, e1960,
+        e1970 (1970s-1980s), e1990.
+   genres: jazzblues, pop (traditional pop & big band), rock, country,
+           soul (soul, R&B, gospel & Motown), folk, hiphop.
+   songs: best known first. Every title appears under one artist only,
+   so a match is never ambiguous. */
+const MUSIC_ERAS = { e1900:"Early 1900s to 1920s", e1930:"1930s and 1940s", e1950:"1950s", e1960:"1960s", e1970:"1970s and 1980s", e1990:"1990s" };
+const MUSIC_GENRES = { jazzblues:"Jazz and blues", rock:"Rock 'n' roll and rock", country:"Classic country", pop:"Traditional pop and big band", soul:"Soul, R&B and Motown", folk:"Folk", hiphop:"Hip-hop" };
+const MUSIC_ARTISTS = [
+  // Early 1900s - 1920s: ragtime, early jazz, vaudeville, blues
+  { name:"Scott Joplin", era:"e1900", genres:["jazzblues"], songs:["The Entertainer","Maple Leaf Rag"] },
+  { name:"Enrico Caruso", era:"e1900", genres:["pop"], songs:["O Sole Mio","La Donna è Mobile"] },
+  { name:"W.C. Handy", era:"e1900", genres:["jazzblues"], songs:["St. Louis Blues","Memphis Blues"] },
+  { name:"Original Dixieland Jass Band", era:"e1900", genres:["jazzblues"], songs:["Tiger Rag","Livery Stable Blues"] },
+  { name:"Al Jolson", era:"e1900", genres:["pop"], songs:["Swanee","Toot, Toot, Tootsie!"] },
+  { name:"Mamie Smith", era:"e1900", genres:["jazzblues"], songs:["Crazy Blues"] },
+  { name:"Bessie Smith", era:"e1900", genres:["jazzblues"], songs:["Downhearted Blues","Nobody Knows You When You're Down and Out"] },
+  { name:"Jimmie Rodgers", era:"e1900", genres:["country"], songs:["Blue Yodel No. 1 (T for Texas)","In the Jailhouse Now"] },
+  { name:"Blind Lemon Jefferson", era:"e1900", genres:["jazzblues"], songs:["Match Box Blues","See That My Grave Is Kept Clean"] },
+  { name:"Ma Rainey", era:"e1900", genres:["jazzblues"], songs:["See See Rider","Bo-Weavil Blues"] },
+  { name:"The Carter Family", era:"e1900", genres:["country","folk"], songs:["Keep On the Sunny Side","Can the Circle Be Unbroken"] },
+  // 1930s - 1940s: swing, big band, traditional pop, early country
+  { name:"Louis Armstrong", era:"e1930", genres:["jazzblues"], songs:["What a Wonderful World","When the Saints Go Marching In"] },
+  { name:"Duke Ellington", era:"e1930", genres:["jazzblues","pop"], songs:["Take the 'A' Train","It Don't Mean a Thing"] },
+  { name:"Fats Waller", era:"e1930", genres:["jazzblues"], songs:["Ain't Misbehavin'","Honeysuckle Rose"] },
+  { name:"Billie Holiday", era:"e1930", genres:["jazzblues"], songs:["God Bless the Child","Lover Man"] },
+  { name:"Benny Goodman", era:"e1930", genres:["pop","jazzblues"], songs:["Sing, Sing, Sing","Stompin' at the Savoy"] },
+  { name:"Robert Johnson", era:"e1930", genres:["jazzblues"], songs:["Sweet Home Chicago","Cross Road Blues"] },
+  { name:"Count Basie", era:"e1930", genres:["jazzblues","pop"], songs:["One O'Clock Jump","April in Paris"] },
+  { name:"Bing Crosby", era:"e1930", genres:["pop"], songs:["White Christmas","Pennies from Heaven"] },
+  { name:"Glenn Miller", era:"e1930", genres:["pop"], songs:["In the Mood","Moonlight Serenade"] },
+  { name:"Ella Fitzgerald", era:"e1930", genres:["jazzblues","pop"], songs:["A-Tisket, A-Tasket","Dream a Little Dream of Me"] },
+  { name:"Judy Garland", era:"e1930", genres:["pop"], songs:["Over the Rainbow","Get Happy"] },
+  { name:"Frank Sinatra", era:"e1930", genres:["pop"], songs:["Fly Me to the Moon","My Way","New York, New York"] },
+  { name:"Nat King Cole", era:"e1930", genres:["pop","jazzblues"], songs:["Unforgettable","Mona Lisa","L-O-V-E"] },
+  { name:"Woody Guthrie", era:"e1930", genres:["folk"], songs:["This Land Is Your Land"] },
+  { name:"The Andrews Sisters", era:"e1930", genres:["pop"], songs:["Boogie Woogie Bugle Boy","Don't Sit Under the Apple Tree"] },
+  { name:"Django Reinhardt", era:"e1930", genres:["jazzblues"], songs:["Minor Swing"] },
+  { name:"Roy Acuff", era:"e1930", genres:["country"], songs:["Wabash Cannonball"] },
+  { name:"Bill Monroe", era:"e1930", genres:["country"], songs:["Blue Moon of Kentucky"] },
+  { name:"Louis Jordan", era:"e1930", genres:["jazzblues","soul"], songs:["Choo Choo Ch'Boogie","Ain't Nobody Here But Us Chickens"] },
+  { name:"Dinah Washington", era:"e1930", genres:["jazzblues","soul"], songs:["What a Diff'rence a Day Makes"] },
+  { name:"Sarah Vaughan", era:"e1930", genres:["jazzblues","pop"], songs:["Misty","Lullaby of Birdland"] },
+  // 1950s: rock 'n' roll, classic country, R&B, doo-wop
+  { name:"Hank Williams", era:"e1950", genres:["country"], songs:["Hey, Good Lookin'","Jambalaya","I'm So Lonesome I Could Cry"] },
+  { name:"Muddy Waters", era:"e1950", genres:["jazzblues"], songs:["Hoochie Coochie Man","Got My Mojo Working"] },
+  { name:"Mahalia Jackson", era:"e1950", genres:["soul"], songs:["Move On Up a Little Higher"] },
+  { name:"Elvis Presley", era:"e1950", genres:["rock"], songs:["Hound Dog","Jailhouse Rock","Can't Help Falling in Love"] },
+  { name:"Chuck Berry", era:"e1950", genres:["rock"], songs:["Johnny B. Goode","Maybellene","Roll Over Beethoven"] },
+  { name:"Little Richard", era:"e1950", genres:["rock"], songs:["Tutti Frutti","Long Tall Sally"] },
+  { name:"Buddy Holly", era:"e1950", genres:["rock"], songs:["Peggy Sue","That'll Be the Day"] },
+  { name:"Ray Charles", era:"e1950", genres:["soul"], songs:["Georgia on My Mind","Hit the Road Jack","What'd I Say"] },
+  { name:"Fats Domino", era:"e1950", genres:["rock","soul"], songs:["Blueberry Hill","Ain't That a Shame"] },
+  { name:"B.B. King", era:"e1950", genres:["jazzblues"], songs:["The Thrill Is Gone"] },
+  { name:"Jerry Lee Lewis", era:"e1950", genres:["rock"], songs:["Great Balls of Fire","Whole Lotta Shakin' Goin' On"] },
+  { name:"Sam Cooke", era:"e1950", genres:["soul"], songs:["You Send Me","A Change Is Gonna Come","Twistin' the Night Away"] },
+  { name:"Thelonious Monk", era:"e1950", genres:["jazzblues"], songs:["'Round Midnight"] },
+  { name:"John Lee Hooker", era:"e1950", genres:["jazzblues"], songs:["Boom Boom"] },
+  { name:"T-Bone Walker", era:"e1950", genres:["jazzblues"], songs:["Call It Stormy Monday"] },
+  { name:"Wynonie Harris", era:"e1950", genres:["soul","rock"], songs:["Good Rocking Tonight"] },
+  { name:"The Everly Brothers", era:"e1950", genres:["rock"], songs:["Bye Bye Love","All I Have to Do Is Dream"] },
+  { name:"Little Walter", era:"e1950", genres:["jazzblues"], songs:["Juke"] },
+  { name:"Bo Diddley", era:"e1950", genres:["rock"], songs:["Bo Diddley","Who Do You Love?"] },
+  { name:"Howlin' Wolf", era:"e1950", genres:["jazzblues"], songs:["Smokestack Lightnin'"] },
+  { name:"Carl Perkins", era:"e1950", genres:["rock"], songs:["Blue Suede Shoes"] },
+  { name:"Ricky Nelson", era:"e1950", genres:["rock"], songs:["Hello Mary Lou","Travelin' Man"] },
+  { name:"Gene Vincent", era:"e1950", genres:["rock"], songs:["Be-Bop-A-Lula"] },
+  { name:"Eddie Cochran", era:"e1950", genres:["rock"], songs:["Summertime Blues"] },
+  { name:"The Platters", era:"e1950", genres:["soul"], songs:["Only You","The Great Pretender"] },
+  { name:"The Drifters", era:"e1950", genres:["soul"], songs:["Under the Boardwalk","Save the Last Dance for Me"] },
+  { name:"The Coasters", era:"e1950", genres:["soul","rock"], songs:["Yakety Yak","Charlie Brown"] },
+  { name:"Etta James", era:"e1950", genres:["soul"], songs:["At Last"] },
+  { name:"Jackie Wilson", era:"e1950", genres:["soul"], songs:["(Your Love Keeps Lifting Me) Higher and Higher"] },
+  { name:"Dion and the Belmonts", era:"e1950", genres:["rock"], songs:["A Teenager in Love","Runaround Sue"] },
+  { name:"Big Joe Turner", era:"e1950", genres:["rock","jazzblues"], songs:["Shake, Rattle and Roll"] },
+  { name:"Kitty Wells", era:"e1950", genres:["country"], songs:["It Wasn't God Who Made Honky Tonk Angels"] },
+  { name:"Lefty Frizzell", era:"e1950", genres:["country"], songs:["Long Black Veil"] },
+  { name:"Marty Robbins", era:"e1950", genres:["country"], songs:["El Paso"] },
+  // 1960s: British Invasion, Motown, folk, psychedelic, country gold
+  { name:"The Beatles", era:"e1960", genres:["rock"], songs:["Hey Jude","Let It Be","Yesterday","Twist and Shout"] },
+  { name:"The Rolling Stones", era:"e1960", genres:["rock"], songs:["(I Can't Get No) Satisfaction","Paint It Black"] },
+  { name:"Bob Dylan", era:"e1960", genres:["folk"], songs:["Blowin' in the Wind","Like a Rolling Stone"] },
+  { name:"Aretha Franklin", era:"e1960", genres:["soul"], songs:["Respect","(You Make Me Feel Like) A Natural Woman"] },
+  { name:"The Beach Boys", era:"e1960", genres:["rock"], songs:["Good Vibrations","Surfin' U.S.A.","Wouldn't It Be Nice"] },
+  { name:"Jimi Hendrix", era:"e1960", genres:["rock"], songs:["Purple Haze","All Along the Watchtower"] },
+  { name:"James Brown", era:"e1960", genres:["soul"], songs:["I Got You (I Feel Good)","Papa's Got a Brand New Bag"] },
+  { name:"The Supremes", era:"e1960", genres:["soul"], songs:["Stop! In the Name of Love","Where Did Our Love Go"] },
+  { name:"The Doors", era:"e1960", genres:["rock"], songs:["Light My Fire","Riders on the Storm"] },
+  { name:"The Who", era:"e1960", genres:["rock"], songs:["My Generation","Baba O'Riley"] },
+  { name:"Janis Joplin", era:"e1960", genres:["rock"], songs:["Piece of My Heart","Me and Bobby McGee"] },
+  { name:"Simon & Garfunkel", era:"e1960", genres:["folk"], songs:["The Sound of Silence","Bridge Over Troubled Water"] },
+  { name:"Marvin Gaye", era:"e1960", genres:["soul"], songs:["I Heard It Through the Grapevine","What's Going On"] },
+  { name:"Stevie Wonder", era:"e1960", genres:["soul"], songs:["You Are the Sunshine of My Life","Superstition"] },
+  { name:"Miles Davis", era:"e1960", genres:["jazzblues"], songs:["So What"] },
+  { name:"Johnny Cash", era:"e1960", genres:["country"], songs:["I Walk the Line","Ring of Fire","Folsom Prison Blues"] },
+  { name:"Patsy Cline", era:"e1960", genres:["country"], songs:["Crazy","I Fall to Pieces"] },
+  { name:"The Temptations", era:"e1960", genres:["soul"], songs:["My Girl","Papa Was a Rollin' Stone"] },
+  { name:"The Four Tops", era:"e1960", genres:["soul"], songs:["Reach Out I'll Be There","I Can't Help Myself"] },
+  { name:"Smokey Robinson & The Miracles", era:"e1960", genres:["soul"], songs:["The Tracks of My Tears","The Tears of a Clown"] },
+  { name:"The Byrds", era:"e1960", genres:["folk","rock"], songs:["Mr. Tambourine Man","Turn! Turn! Turn!"] },
+  { name:"The Kinks", era:"e1960", genres:["rock"], songs:["You Really Got Me","Lola"] },
+  { name:"The Animals", era:"e1960", genres:["rock"], songs:["The House of the Rising Sun"] },
+  { name:"The Yardbirds", era:"e1960", genres:["rock"], songs:["For Your Love"] },
+  { name:"Cream", era:"e1960", genres:["rock"], songs:["Sunshine of Your Love"] },
+  { name:"The Velvet Underground", era:"e1960", genres:["rock"], songs:["Sweet Jane"] },
+  { name:"Grateful Dead", era:"e1960", genres:["rock"], songs:["Touch of Grey","Ripple"] },
+  { name:"Jefferson Airplane", era:"e1960", genres:["rock"], songs:["Somebody to Love"] },
+  { name:"Sly and the Family Stone", era:"e1960", genres:["soul"], songs:["Everyday People","Dance to the Music"] },
+  { name:"Otis Redding", era:"e1960", genres:["soul"], songs:["(Sittin' On) The Dock of the Bay"] },
+  { name:"Wilson Pickett", era:"e1960", genres:["soul"], songs:["Mustang Sally","In the Midnight Hour"] },
+  { name:"Nina Simone", era:"e1960", genres:["jazzblues","soul"], songs:["Feeling Good","I Put a Spell on You"] },
+  { name:"The Ronettes", era:"e1960", genres:["pop","soul"], songs:["Be My Baby"] },
+  { name:"The Shirelles", era:"e1960", genres:["pop","soul"], songs:["Will You Love Me Tomorrow"] },
+  { name:"The Righteous Brothers", era:"e1960", genres:["pop","soul"], songs:["Unchained Melody","You've Lost That Lovin' Feelin'"] },
+  { name:"The Monkees", era:"e1960", genres:["pop","rock"], songs:["I'm a Believer","Daydream Believer"] },
+  { name:"The Mamas & the Papas", era:"e1960", genres:["folk","pop"], songs:["California Dreamin'"] },
+  { name:"Crosby, Stills & Nash", era:"e1960", genres:["folk"], songs:["Suite: Judy Blue Eyes"] },
+  { name:"Creedence Clearwater Revival", era:"e1960", genres:["rock"], songs:["Proud Mary","Bad Moon Rising"] },
+  { name:"The Band", era:"e1960", genres:["rock"], songs:["The Weight"] },
+  { name:"Steppenwolf", era:"e1960", genres:["rock"], songs:["Born to Be Wild"] },
+  { name:"Dusty Springfield", era:"e1960", genres:["pop","soul"], songs:["Son of a Preacher Man"] },
+  { name:"Loretta Lynn", era:"e1960", genres:["country"], songs:["Coal Miner's Daughter"] },
+  { name:"George Jones", era:"e1960", genres:["country"], songs:["He Stopped Loving Her Today"] },
+  { name:"Tammy Wynette", era:"e1960", genres:["country"], songs:["Stand by Your Man"] },
+  { name:"Merle Haggard", era:"e1960", genres:["country"], songs:["Mama Tried"] },
+  { name:"Willie Nelson", era:"e1960", genres:["country"], songs:["On the Road Again","Always on My Mind"] },
+  { name:"Dolly Parton", era:"e1960", genres:["country"], songs:["Jolene","9 to 5","I Will Always Love You"] },
+  { name:"Waylon Jennings", era:"e1960", genres:["country"], songs:["Good Ol' Boys"] },
+  { name:"Buck Owens", era:"e1960", genres:["country"], songs:["Act Naturally"] },
+  { name:"Charley Pride", era:"e1960", genres:["country"], songs:["Kiss an Angel Good Mornin'"] },
+  // 1970s - 1980s: rock, disco, pop, new wave, traditional country
+  { name:"Led Zeppelin", era:"e1970", genres:["rock"], songs:["Stairway to Heaven","Whole Lotta Love"] },
+  { name:"Pink Floyd", era:"e1970", genres:["rock"], songs:["Wish You Were Here","Another Brick in the Wall"] },
+  { name:"David Bowie", era:"e1970", genres:["rock"], songs:["Space Oddity","Heroes"] },
+  { name:"Queen", era:"e1970", genres:["rock"], songs:["Bohemian Rhapsody","We Will Rock You","Don't Stop Me Now"] },
+  { name:"Fleetwood Mac", era:"e1970", genres:["rock","pop"], songs:["Dreams","Go Your Own Way","Don't Stop"] },
+  { name:"Eagles", era:"e1970", genres:["rock"], songs:["Hotel California","Take It Easy"] },
+  { name:"Black Sabbath", era:"e1970", genres:["rock"], songs:["Paranoid","Iron Man"] },
+  { name:"ABBA", era:"e1970", genres:["pop"], songs:["Dancing Queen","Mamma Mia"] },
+  { name:"Bob Marley", era:"e1970", genres:["pop"], songs:["Three Little Birds","One Love"] },
+  { name:"Elton John", era:"e1970", genres:["pop","rock"], songs:["Your Song","Rocket Man","Tiny Dancer"] },
+  { name:"The Clash", era:"e1970", genres:["rock"], songs:["London Calling","Should I Stay or Should I Go"] },
+  { name:"Ramones", era:"e1970", genres:["rock"], songs:["Blitzkrieg Bop","I Wanna Be Sedated"] },
+  { name:"Bee Gees", era:"e1970", genres:["pop"], songs:["Stayin' Alive","How Deep Is Your Love"] },
+  { name:"Bruce Springsteen", era:"e1970", genres:["rock"], songs:["Born to Run","Dancing in the Dark"] },
+  { name:"Michael Jackson", era:"e1970", genres:["pop","soul"], songs:["Thriller","Billie Jean","Beat It"] },
+  { name:"Madonna", era:"e1970", genres:["pop"], songs:["Material Girl","Holiday"] },
+  { name:"Prince", era:"e1970", genres:["pop","soul"], songs:["Purple Rain","When Doves Cry"] },
+  { name:"U2", era:"e1970", genres:["rock"], songs:["With or Without You","Sunday Bloody Sunday"] },
+  { name:"Whitney Houston", era:"e1970", genres:["pop","soul"], songs:["I Wanna Dance with Somebody","Greatest Love of All"] },
+  { name:"The Cure", era:"e1970", genres:["rock"], songs:["Just Like Heaven","Boys Don't Cry"] },
+  { name:"Run-DMC", era:"e1970", genres:["hiphop"], songs:["Walk This Way","It's Tricky"] },
+  { name:"Metallica", era:"e1970", genres:["rock"], songs:["Enter Sandman"] },
+  { name:"Guns N' Roses", era:"e1970", genres:["rock"], songs:["Sweet Child O' Mine"] },
+  { name:"The Smiths", era:"e1970", genres:["rock"], songs:["There Is a Light That Never Goes Out"] },
+  { name:"Public Enemy", era:"e1970", genres:["hiphop"], songs:["Fight the Power"] },
+  { name:"George Michael", era:"e1970", genres:["pop"], songs:["Faith","Careless Whisper"] },
+  { name:"Bon Jovi", era:"e1970", genres:["rock"], songs:["Livin' on a Prayer"] },
+  { name:"AC/DC", era:"e1970", genres:["rock"], songs:["Back in Black","You Shook Me All Night Long"] },
+  { name:"Reba McEntire", era:"e1970", genres:["country"], songs:["Fancy"] },
+  { name:"George Strait", era:"e1970", genres:["country"], songs:["Amarillo by Morning"] },
+  { name:"Randy Travis", era:"e1970", genres:["country"], songs:["Forever and Ever, Amen"] },
+  // 1990s: grunge, pop, hip-hop, modern country
+  { name:"N.W.A", era:"e1990", genres:["hiphop"], songs:["Express Yourself"] },
+  { name:"Nirvana", era:"e1990", genres:["rock"], songs:["Smells Like Teen Spirit"] },
+  { name:"Pearl Jam", era:"e1990", genres:["rock"], songs:["Alive"] },
+  { name:"Tupac Shakur", era:"e1990", genres:["hiphop"], songs:["Dear Mama"] },
+  { name:"The Notorious B.I.G.", era:"e1990", genres:["hiphop"], songs:["Juicy"] },
+  { name:"Mariah Carey", era:"e1990", genres:["pop"], songs:["Hero","Vision of Love"] },
+  { name:"Radiohead", era:"e1990", genres:["rock"], songs:["Creep"] },
+  { name:"Oasis", era:"e1990", genres:["rock"], songs:["Wonderwall"] },
+  { name:"Spice Girls", era:"e1990", genres:["pop"], songs:["Wannabe"] },
+  { name:"Wu-Tang Clan", era:"e1990", genres:["hiphop"], songs:["C.R.E.A.M."] },
+  { name:"Dr. Dre", era:"e1990", genres:["hiphop"], songs:["Nuthin' but a 'G' Thang"] },
+  { name:"Snoop Dogg", era:"e1990", genres:["hiphop"], songs:["Who Am I? (What's My Name?)"] },
+  { name:"TLC", era:"e1990", genres:["pop","soul"], songs:["Waterfalls","No Scrubs"] },
+  { name:"Outkast", era:"e1990", genres:["hiphop"], songs:["Ms. Jackson"] },
+  { name:"Red Hot Chili Peppers", era:"e1990", genres:["rock"], songs:["Under the Bridge"] },
+  { name:"Britney Spears", era:"e1990", genres:["pop"], songs:["...Baby One More Time"] },
+  { name:"Garth Brooks", era:"e1990", genres:["country"], songs:["Friends in Low Places"] },
+  { name:"Alan Jackson", era:"e1990", genres:["country"], songs:["Chattahoochee"] },
+  { name:"Shania Twain", era:"e1990", genres:["country"], songs:["Man! I Feel Like a Woman!","Any Man of Mine"] }
 ];
 
-/* Singers and one well-known song each, by the decade of that song.
-   One song per singer, so a match can never be ambiguous. */
-const SINGER_SONGS = [
-  ["1940s","Bing Crosby","White Christmas"],["1940s","The Andrews Sisters","Boogie Woogie Bugle Boy"],
-  ["1940s","Glenn Miller","In the Mood"],["1940s","Judy Garland","Over the Rainbow"],
-  ["1940s","Ella Fitzgerald","A-Tisket, A-Tasket"],["1940s","Vera Lynn","We'll Meet Again"],["1940s","Kate Smith","God Bless America"],
-  ["1950s","Elvis Presley","Hound Dog"],["1950s","Nat King Cole","Unforgettable"],["1950s","Doris Day","Que Sera, Sera"],
-  ["1950s","Johnny Cash","I Walk the Line"],["1950s","Dean Martin","That's Amore"],["1950s","Chuck Berry","Johnny B. Goode"],
-  ["1950s","Perry Como","Catch a Falling Star"],["1950s","Hank Williams","Your Cheatin' Heart"],["1950s","Buddy Holly","Peggy Sue"],
-  ["1950s","Rosemary Clooney","Come On-a My House"],["1950s","Bobby Darin","Mack the Knife"],["1950s","Tennessee Ernie Ford","Sixteen Tons"],
-  ["1960s","Frank Sinatra","Fly Me to the Moon"],["1960s","Patsy Cline","Crazy"],["1960s","Louis Armstrong","What a Wonderful World"],
-  ["1960s","Tony Bennett","I Left My Heart in San Francisco"],["1960s","Ray Charles","Georgia on My Mind"],
-  ["1960s","Roy Orbison","Oh, Pretty Woman"],["1960s","The Beatles","I Want to Hold Your Hand"],["1960s","Etta James","At Last"],
-  ["1960s","The Supremes","Stop! In the Name of Love"]
+/* ---- Decade & genre filter (shared by Name That Tune and the match) ---- */
+const MUSIC_ERA_CHOICES = [
+  ["core","1930s to 1960s (suits most residents)"],["g2040","1920s to 1940s"],["g5060","1950s to 1960s"],["g7090","1970s to 1990s (younger residents)"],
+  ["e1900","Early 1900s to 1920s only"],["e1930","1930s and 1940s only"],["e1950","1950s only"],["e1960","1960s only"],["e1970","1970s and 1980s only"],["e1990","1990s only"],["all","Every era"]
 ];
-/* Decades the "1970s" theme maps to: its residents grew up on 1950s-60s music. */
-function musicEras(era){
-  if (era === "1940s" || era === "1950s" || era === "1960s") return [era];
-  if (era === "1970s") return ["1960s", "1950s"];
-  return ["1940s", "1950s", "1960s"];
+const MUSIC_ERA_GROUPS = { core:["e1930","e1950","e1960"], g2040:["e1900","e1930"], g5060:["e1950","e1960"], g7090:["e1970","e1990"], all:Object.keys(MUSIC_ERAS) };
+const MUSIC_GENRE_CHOICES = [["all","All genres"]].concat(Object.keys(MUSIC_GENRES).map(k => [k, MUSIC_GENRES[k]]));
+const MUSIC_FILTER_OPTIONS = [
+  { id:"era", type:"select", label:"Era", def:"core", choices:MUSIC_ERA_CHOICES,
+    hint:"Choose the years the residents were teenagers and young adults: that music is usually remembered best." },
+  { id:"genre", type:"select", label:"Genre", def:"all", choices:MUSIC_GENRE_CHOICES }
+];
+function musicEraList(cfg){ const e = optVal(cfg, "era", "core"); return MUSIC_ERA_GROUPS[e] || (MUSIC_ERAS[e] ? [e] : MUSIC_ERA_GROUPS.core); }
+/* Artists matching the filters. If too few match, widen the genre first,
+   then the era, and say so (the page prints a note for staff). */
+function musicArtists(cfg, need){
+  const eras = musicEraList(cfg), genre = optVal(cfg, "genre", "all");
+  const fits = a => eras.includes(a.era) && (genre === "all" || a.genres.includes(genre));
+  let list = MUSIC_ARTISTS.filter(fits), widened = "";
+  if (list.length < need && genre !== "all"){
+    list = list.concat(MUSIC_ARTISTS.filter(a => eras.includes(a.era) && !list.includes(a)));
+    widened = `Only a few ${MUSIC_GENRES[genre].toLowerCase()} artists match this era, so other genres from the same years were added.`;
+  }
+  if (list.length < need){
+    list = list.concat(MUSIC_ARTISTS.filter(a => !list.includes(a) && (genre === "all" || a.genres.includes(genre))));
+    widened = "Too few artists matched these filters, so artists from other years were added.";
+  }
+  return { list, widened };
+}
+function musicFilterNote(cfg, need){
+  const eras = musicEraList(cfg), genre = optVal(cfg, "genre", "all");
+  const n = MUSIC_ARTISTS.filter(a => eras.includes(a.era) && (genre === "all" || a.genres.includes(genre))).length;
+  return n >= need ? `${n} artists match these filters.` : `Only ${n} ${n === 1 ? "artist matches" : "artists match"} these filters; the page will add a few from nearby choices.`;
+}
+/* A song's title prepared for "finish the title": parentheticals removed,
+   then split before the last word. Returns null if it cannot be split cleanly. */
+function titleSplit(t){
+  const clean = t.replace(/\([^)]*\)/g, "").replace(/\s+/g, " ").trim();
+  const words = clean.split(" ");
+  if (words.length < 2) return null;
+  const end = words[words.length - 1];
+  if (/\d/.test(end) || end.replace(/[^A-Za-z]/g, "").length < 2) return null;
+  return { start:words.slice(0, -1).join(" "), end };
 }
 
+/* ---- 1. Sing-along lyric sheets ---- */
 const LYRIC_SHEET = {
   id: "lyric-sheet", name: "Sing-Along Lyric Sheets", themed: false,
-  desc: "One public-domain classic per page in very large, high-contrast type (24pt to 34pt), ready for a group sing-along.",
+  desc: "One public-domain classic per page in very large, high-contrast type (24pt to 36pt), with the decade it comes from and a short piece of trivia.",
   icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M9 17V5l10-2v12"/><circle cx="6.5" cy="17" r="2.5"/><circle cx="16.5" cy="15" r="2.5"/></svg>',
   options: [
-    { id:"hymns", type:"check", label:"Include hymns (Amazing Grace)", hint:"Turn off for groups where a sacred song may not suit everyone.", def:true }
+    { id:"hymns", type:"check", label:"Include hymns and spirituals", hint:"Turn off for groups where a sacred song may not suit everyone.", def:true },
+    { id:"trivia", type:"check", label:"Add a \"Did you know?\" fact", def:true }
   ],
-  // pt size of the lyrics; advanced prints the first verse only, larger
-  levels: { early:{ pt:24, maxLines:9 }, moderate:{ pt:28, maxLines:8 }, advanced:{ pt:34, maxLines:4 } },
+  // pt size of the lyrics; advanced prints the first 4 lines only, largest
+  levels: { early:{ pt:24, maxLines:9 }, moderate:{ pt:28, maxLines:6 }, advanced:{ pt:36, maxLines:4 } },
   pool(cfg){ return optVal(cfg, "hymns", true) ? PD_SONGS : PD_SONGS.filter(s => !s.hymn); },
   plan(cfg, rng, count){ return slicePlan(this.pool(cfg), 1, count, rng).map(s => s[0]); },
+  /* Largest size (from the stage's size down to 24pt) at which the chosen
+     lines, as they will wrap on a 7.2 in line, fit the page. */
+  fitPt(lines, basePt, trivia){
+    const budget = (trivia ? 6.6 : 7.7) * 72;            // usable body height, pt (with margin to spare)
+    for (let pt = basePt; pt > 24; pt -= 2){
+      const perLine = Math.floor(7.0 * 72 / (pt * .6));   // characters per printed line (bold type, conservative)
+      let h = pt * 1.12 * 1.2 + pt * .45 * 1.3 + 22;       // title + decade tag
+      lines.forEach(l => { h += /^\[.*\]$/.test(l) ? pt * .42 * 1.3 + 10 : Math.ceil(l.length / perLine) * pt * 1.22 + 9; });
+      if (h <= budget) return pt;
+    }
+    return 24;
+  },
   generate(cfg, rng, song){
     const L = this.levels[cfg.difficulty];
-    const lines = song.lines.slice(0, L.maxLines);
+    const trivia = optVal(cfg, "trivia", true);
+    const chosen = [];
+    for (let i = 0, n = 0; i < song.lines.length && n < L.maxLines; i++){ chosen.push(song.lines[i]); if (!/^\[.*\]$/.test(song.lines[i])) n++; }
+    const pt = this.fitPt(chosen, L.pt, trivia);
+    let sung = 0, body = "";
+    for (const line of song.lines){
+      if (sung >= L.maxLines) break;
+      if (/^\[.*\]$/.test(line)){ body += `<p class="lyr-part">${esc(line.slice(1, -1))}</p>`; continue; }
+      body += `<p class="lyr-line">${esc(line)}</p>`; sung++;
+    }
+    body = body.replace(/(<p class="lyr-part">[^<]*<\/p>)+$/, "");       // no label left dangling at the end
     return {
       title: "Sing-Along",
       instructions: "Sing along together. Follow the words, or just hum the tune.",
-      html: `<div class="lyr" style="font-size:${L.pt}pt">
-        <h2 class="lyr-title">${esc(song.title)}</h2><p class="lyr-year">${esc(song.year)}</p>
-        ${lines.map(l => `<p class="lyr-line">${esc(l)}</p>`).join("")}</div>`,
-      staffNote: "Sing at an easy pace and repeat favourite lines. Joining in on any word, humming or tapping along all count. All songs on these sheets are in the public domain.",
-      signature: song.title + "#" + L.maxLines
+      html: `<div class="lyr" style="font-size:${pt}pt">
+        <h2 class="lyr-title">${esc(song.title)}</h2>
+        <p class="lyr-year"><span class="lyr-tag">${esc(song.decade)}</span>${song.year !== song.decade ? " &middot; " + esc(song.year) : ""}</p>
+        ${body}</div>
+        ${trivia ? `<p class="lyr-trivia"><b>Did you know?</b> ${esc(song.trivia)}</p>` : ""}`,
+      staffNote: "Sing at an easy pace and repeat favourite lines. Joining in on any word, humming or tapping along all count. Every song on these sheets is in the public domain.",
+      signature: song.title + "#" + L.maxLines + "#" + pt
     };
   }
 };
 
+/* ---- 2. Lyric completion / Name That Tune ---- */
 const FINISH_SONG = {
-  id: "finish-song", name: "Lyric Completion / Name That Tune", themed: true,
-  desc: "Finish the line of an old favourite (\"Oh, give me a home where the...\") or the title of a 1940s-1960s hit. Hints and a choice of two at later stages.",
+  id: "finish-song", name: "Lyric Completion / Name That Tune", themed: false,
+  desc: "Finish the line of an old favourite (\"Oh, give me a home where the...\") or the title of a hit from the chosen era and genre. Artist clues and a choice of two at later stages.",
   icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 17V6l8-2v11"/><circle cx="3.5" cy="17" r="2"/><line x1="15" y1="19" x2="22" y2="19"/></svg>',
   options: [
     { id:"mode", type:"select", label:"What to finish", def:"mixed",
-      choices:[["mixed","A mix of both"],["lines","Song lines (old public-domain favourites)"],["titles","Song titles (1940s to 1960s hits)"]] },
-    { id:"hymns", type:"check", label:"Include hymns and spirituals", def:true }
-  ],
-  levels: { early:{ count:6 }, moderate:{ count:5 }, advanced:{ count:3 } },
-  pool(cfg){
-    const mode = optVal(cfg, "mode", "mixed"), hymns = optVal(cfg, "hymns", true), eras = musicEras(cfg.era);
-    const lines = PD_LINES.filter(x => hymns || !x[2]).map(x => ({ kind:"line", start:x[0], end:x[1] }));
-    const titles = HIT_TITLES.filter(x => eras.includes(x[0])).map(x => ({ kind:"title", start:x[1], end:x[2] }));
-    if (mode === "lines") return lines;
-    if (mode === "titles") return titles;
-    return lines.concat(titles);
+      choices:[["mixed","A mix of both"],["lines","Song lines (old public-domain favourites)"],["titles","Song titles from the chosen era and genre"]] }
+  ].concat(MUSIC_FILTER_OPTIONS).concat([{ id:"hymns", type:"check", label:"Include hymns and spirituals", def:true }]),
+  levels: { early:{ count:6, clue:false }, moderate:{ count:5, clue:true }, advanced:{ count:3, clue:true } },
+  optionsNote(cfg){ return optVal(cfg, "mode", "mixed") === "lines" ? "" : musicFilterNote(cfg, 6); },
+  titlePool(cfg){
+    const { list, widened } = musicArtists(cfg, 6);
+    const items = [];
+    list.forEach(a => a.songs.forEach(s => { const sp = titleSplit(s); if (sp) items.push({ kind:"title", start:sp.start, end:sp.end, artist:a.name }); }));
+    return { items, widened };
   },
-  plan(cfg, rng, count){ return slicePlan(this.pool(cfg), this.levels[cfg.difficulty].count, count, rng); },
+  pool(cfg){
+    const mode = optVal(cfg, "mode", "mixed"), hymns = optVal(cfg, "hymns", true);
+    const lines = PD_LINES.filter(x => hymns || !x[2]).map(x => ({ kind:"line", start:x[0], end:x[1] }));
+    if (mode === "lines") return { items:lines, widened:"" };
+    const t = this.titlePool(cfg);
+    return mode === "titles" ? t : { items:lines.concat(t.items), widened:t.widened };
+  },
+  plan(cfg, rng, count){ return slicePlan(this.pool(cfg).items, this.levels[cfg.difficulty].count, count, rng); },
   generate(cfg, rng, items){
-    const lvl = cfg.difficulty, pool = this.pool(cfg), sig = [];
+    const lvl = cfg.difficulty, L = this.levels[lvl], P = this.pool(cfg), sig = [];
     const html = items.map((it, i) => {
-      const label = it.kind === "title" ? '<span class="song-kind">Song title</span>' : '<span class="song-kind">Song line</span>';
+      const label = `<span class="song-kind">${it.kind === "title" ? "Song title" : "Song line"}</span>`;
       const start = it.kind === "title" ? `&ldquo;${esc(it.start)} &hellip;&rdquo;` : `${esc(it.start)} &hellip;`;
-      let tail;
+      const clue = it.kind === "title" && L.clue ? ` <span class="hintx">(${esc(it.artist)})</span>` : "";
       if (lvl === "advanced"){
-        const others = pool.filter(x => x.kind === it.kind && x.end.toLowerCase() !== it.end.toLowerCase());
+        const others = P.items.filter(x => x.kind === it.kind && x.end.toLowerCase() !== it.end.toLowerCase());
         const wrong = others.length ? rng.pick(others).end : "Home";
         const opts = rng.next() < .5 ? [it.end, wrong] : [wrong, it.end];
         sig.push(opts[0]);
-        tail = `<div class="choices"><span class="choice">${esc(opts[0])}</span><span class="choice">${esc(opts[1])}</span></div>`;
-      } else {
-        const hint = lvl === "moderate" ? ` <span class="hintx">(starts with &ldquo;${esc(it.end[0].toUpperCase())}&rdquo;)</span>` : "";
-        tail = `<div class="wline"></div>`;
-        return `<div class="item"><p class="q">${label}${i + 1}. ${start}${hint}</p>${tail}</div>`;
+        return `<div class="item"><p class="q">${label}${i + 1}. ${start}${clue}</p><div class="choices"><span class="choice">${esc(opts[0])}</span><span class="choice">${esc(opts[1])}</span></div></div>`;
       }
-      return `<div class="item"><p class="q">${label}${i + 1}. ${start}</p>${tail}</div>`;
+      const hint = lvl === "moderate" ? ` <span class="hintx">(starts with &ldquo;${esc(it.end[0].toUpperCase())}&rdquo;)</span>` : "";
+      return `<div class="item"><p class="q">${label}${i + 1}. ${start}${clue}${hint}</p><div class="wline"></div></div>`;
     }).join("");
     const titlesOnly = items.every(x => x.kind === "title");
     return {
@@ -2073,37 +2340,47 @@ const FINISH_SONG = {
       instructions: lvl === "advanced" ? "Sing or say the beginning out loud. Circle the words that finish it."
         : "Sing or say the beginning out loud, then write the words that finish it. Humming the tune can help.",
       html,
-      answers: items.map((it, i) => (i + 1) + ". " + it.end).join("   "),
+      answers: items.map((it, i) => (i + 1) + ". " + it.end + (it.artist ? " (" + it.artist + ")" : "")).join("   "),
+      staffNote: items.some(x => x.kind === "title") && P.widened ? P.widened : "",
       signature: items.map(x => x.start).join("|") + "#" + sig.join("")
     };
   }
 };
 
+/* ---- 3. Musical nostalgia match (artist to song) ---- */
 const SINGER_MATCH = {
-  id: "singer-match", name: "Musical Nostalgia Match", themed: true,
-  desc: "Match famous mid-century singers to their best-known songs. A new mix of singers, in a new order, every time.",
+  id: "singer-match", name: "Musical Nostalgia Match", themed: false,
+  desc: "Match artists to their best-known songs, from ragtime to the 1990s, narrowed by era and genre. A new mix of artists, in a new order, every time.",
   icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="2" width="6" height="11" rx="3"/><path d="M5 10a6 6 0 0 0 12 0"/><line x1="11" y1="16" x2="11" y2="21"/><line x1="7" y1="21" x2="15" y2="21"/></svg>',
-  levels: { early:{ count:6 }, moderate:{ count:5 }, advanced:{ count:3 } },
-  pool(cfg){
-    const eras = musicEras(cfg.era);
-    let p = SINGER_SONGS.filter(x => eras.includes(x[0]));
-    if (p.length < 8) p = p.concat(SINGER_SONGS.filter(x => !p.includes(x) && x[0] === "1950s"));
-    return p;
+  options: MUSIC_FILTER_OPTIONS,
+  // 4 to 6 artists a page; later stages use each artist's best-known, shortest title
+  levels: { early:{ count:6, pick:"any" }, moderate:{ count:5, pick:"first" }, advanced:{ count:4, pick:"short" } },
+  optionsNote(cfg){ return musicFilterNote(cfg, this.levels[cfg.difficulty].count); },
+  plan(cfg, rng, count){
+    const L = this.levels[cfg.difficulty];
+    return slicePlan(musicArtists(cfg, L.count).list, L.count, count, rng);
   },
-  plan(cfg, rng, count){ return slicePlan(this.pool(cfg), this.levels[cfg.difficulty].count, count, rng); },
-  generate(cfg, rng, pairs){
-    let right = rng.shuffle(pairs.map(p => p[2]));
-    // No song may sit straight across from its own singer.
-    for (let t = 0; t < 30 && right.some((s, i) => s === pairs[i][2]); t++) right = rng.shuffle(right);
+  generate(cfg, rng, artists){
+    const L = this.levels[cfg.difficulty];
+    const song = a => {
+      if (L.pick === "short") return a.songs.slice().sort((x, y) => x.length - y.length)[0];
+      if (L.pick === "first") return a.songs[0].length > 32 ? a.songs.slice().sort((x, y) => x.length - y.length)[0] : a.songs[0];
+      const ok = a.songs.filter(s => s.length <= 40);
+      return rng.pick(ok.length ? ok : a.songs);
+    };
+    const pairs = artists.map(a => [a.name, song(a)]);
+    let right = rng.shuffle(pairs.map(p => p[1]));
+    for (let t = 0; t < 30 && right.some((s, i) => s === pairs[i][1]); t++) right = rng.shuffle(right);   // never straight across
     const html = '<div class="pairs sm-pairs">' + pairs.map((p, i) =>
-      `<span class="l">${esc(p[1])}</span><span class="dot"></span><span></span><span class="dot"></span><span class="r">&ldquo;${esc(right[i])}&rdquo;</span>`
+      `<span class="l">${esc(p[0])}</span><span class="dot"></span><span></span><span class="dot"></span><span class="r${right[i].length > 28 ? " long" : ""}">&ldquo;${esc(right[i])}&rdquo;</span>`
     ).join("") + "</div>";
     return {
       title: "Who Sang It?",
-      instructions: "Draw a line from each singer to the song they made famous. Singing a line of it is a great hint!",
+      instructions: "Draw a line from each artist to the song they made famous. Singing a line of it is a great hint!",
       html,
-      answers: pairs.map(p => p[1] + ": " + p[2]).join("   "),
-      signature: pairs.map(p => p[1]).join("|") + "#" + right.join("|")
+      answers: pairs.map(p => p[0] + ": " + p[1]).join("   "),
+      staffNote: musicArtists(cfg, L.count).widened,
+      signature: pairs.map(p => p[0] + "=" + p[1]).join("|") + "#" + right.join("|")
     };
   }
 };
@@ -2982,6 +3259,7 @@ function openConfig(actId){
           <select id="cfgEra">${Object.keys(ERAS).map(k => `<option value="${k}" ${k === settings.era ? "selected" : ""}>${ERAS[k]}</option>`).join("")}</select>
           <p class="hint">Sets the words and prompts. Pick the decade the resident was a young adult.</p></div>` : ""}
         ${optionFields(act)}
+        ${act.optionsNote ? '<p class="hint" id="optNote" role="status" style="margin:-6px 0 16px"></p>' : ""}
         <div class="actions">
           <button class="btn btn-primary" type="submit">Add to Packet</button>
           <button class="btn btn-ghost" type="button" id="cfgShuffle">Show a different version</button>
@@ -3028,6 +3306,7 @@ function updatePreview(){
   const cfg = currentCfg();
   $("#preview").innerHTML = sheetHtml({ activityId:selectedAct.id, cfg, batchSeed:previewSeed, count:1, index:0 });
   $("#pvMeta").textContent = DIFFICULTIES[cfg.difficulty].label + (selectedAct.themed ? " · " + ERAS[cfg.era] : "");
+  if (selectedAct.optionsNote && $("#optNote")) $("#optNote").textContent = selectedAct.optionsNote(cfg);
 }
 
 function renderSettings(){
