@@ -313,6 +313,34 @@ input:focus,select:focus{border-color:var(--accent)}
 .dot{width:0;height:0;border:.08in solid #1b1f1e;border-radius:50%}
 .lvl-advanced .dot{border-width:.11in}
 .tagline{margin:0 0 .18in;font-style:italic;color:#3f4a46;font-size:.8em}
+/* Letter & Alphabet: letter scramble */
+.ls-item{margin:0 0 .24in}
+.ls-row{display:flex;align-items:center;gap:.14in}
+.ls-row .tiles{gap:.06in;flex-wrap:nowrap}
+.ls-arrow{color:#6a7470;font-size:.9em}
+.anchors{display:inline-flex;gap:.06in}
+.anchor{display:inline-grid;place-items:center;border:2pt solid #1b1f1e;border-radius:.05in;font-weight:700}
+.hintbox{display:inline-block;margin:.1in 0 0 .4in;padding:.05in .14in;border:1.5pt dashed #56625e;border-radius:.08in;font-size:.8em}
+/* missing letters */
+.bankbox{margin:0 0 .24in;padding:.08in .16in;border:2pt solid #1b1f1e;border-radius:.1in;font-size:.9em}
+.bank-l{display:inline-block;margin:0 .09in;font-weight:700}
+.ml-item{display:flex;align-items:center;flex-wrap:wrap;gap:.1in .22in;margin:0 0 .32in}
+.ml-word{display:inline-flex;gap:.09in}
+.ml-l{display:inline-block;min-width:.5em;text-align:center;font-weight:700;font-size:1.25em;line-height:1.15}
+.ml-blank{min-width:.7em;color:transparent;border-bottom:2.5pt solid #1b1f1e}
+.ml-choose{font-size:.8em}
+.choice.ml-choice{min-width:.75in;padding:.03in .2in;margin-left:.08in}
+/* alphabet sweep */
+.sweep{display:grid;column-gap:.4in}
+.sw-row{display:flex;align-items:flex-end;gap:.14in;height:.54in}
+.lvl-moderate .sw-row{height:.56in}
+.lvl-advanced .sw-row{height:1.05in}
+.sw-l{flex:none;width:.55in;font-weight:800;font-size:1.2em;line-height:1;color:#1b4332}
+.sw-line{flex:1;position:relative;height:.2in;border-bottom:1.5pt solid #8f9c97}
+.sw-bonus{position:absolute;right:0;bottom:.03in;font-size:.5em;font-style:italic;color:#8a948f}
+/* letter tracing */
+.trace-grid{display:grid;gap:.16in}
+.trace-row{display:block;width:100%;height:auto}
 
 /* ---------- 6. PRINT
    Only #printRoot prints. Every .sheet is exactly one US Letter page.
@@ -530,11 +558,13 @@ const ERAS = {
   "1960s": "The 1960s",
   "1970s": "The 1970s"
 };
-const DEFAULT_SETTINGS = { facility:"", residentName:"", difficulty:"early", era:"general", variations:2, pureBW:false };
+const DEFAULT_SETTINGS = { facility:"", residentName:"", difficulty:"early", era:"general", variations:2, pureBW:false, actOpts:{} };
 let settings = Object.assign({}, DEFAULT_SETTINGS, store.get("cgb_settings", {}));
 if (!DIFFICULTIES[settings.difficulty]) settings.difficulty = "early";
 if (!ERAS[settings.era]) settings.era = "general";
 settings.variations = clampInt(settings.variations, 1, 4, 2);
+// Last-used options per activity (e.g. { "letter-tracing": { case:"upper" } }). Own copy, never the default object.
+settings.actOpts = (settings.actOpts && typeof settings.actOpts === "object" && !Array.isArray(settings.actOpts)) ? Object.assign({}, settings.actOpts) : {};
 
 /* High Contrast Mode is ONLY this flag. It is read when printing, to put
    .pure-bw on #printRoot. It never touches the web interface. */
@@ -877,6 +907,269 @@ const MEMORY_LANE = {
   }
 };
 
+/* ---------- 7b. Letter & Alphabet generators ----------
+   Same contract as the Word & Language activities, plus `options`:
+   activity-specific fields that openConfig() renders in the panel and
+   that arrive in generate() as cfg.opts. */
+
+/* Read one activity option, falling back to its default. */
+function optVal(cfg, key, fallback){
+  const v = cfg.opts ? cfg.opts[key] : undefined;
+  return v === undefined ? fallback : v;
+}
+const ALPHA = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+const EASY_LETTERS = "ABCDEFGHIJKLMNOPRSTW".split("");   // letters most themes can fill
+const VOWELS = "AEIOU";
+
+/* 3- to 5-letter words, each with a plain-language clue. */
+const SHORT_WORDS = [
+  ["CAT","A pet that purrs"],["DOG","A pet that barks"],["SUN","Shines in the daytime sky"],["HAT","You wear it on your head"],
+  ["CUP","You drink coffee from it"],["BED","You sleep in it"],["PIE","A baked dessert with a crust"],["EGG","A hen lays it"],
+  ["OWL","A bird that hoots at night"],["KEY","It opens a lock"],["PEN","You write with it"],["JAM","Spread on toast"],
+  ["MAP","It shows you the way"],["COW","A farm animal that gives milk"],["BUS","A big vehicle with many seats"],["TEA","A hot drink made with leaves"],
+  ["CAKE","A birthday treat"],["BOAT","It floats on water"],["RAIN","Falls from the clouds"],["MILK","A cow gives it"],
+  ["BELL","It rings at church or school"],["SOAP","Used for washing"],["ROSE","A red flower with thorns"],["BOOK","You read it"],
+  ["DOOR","You open it to go inside"],["FISH","It swims in a lake"],["COAT","Keeps you warm outside"],["RING","Worn on a finger"],
+  ["SHOE","Worn on your foot"],["LAMP","Gives light in a room"],["SNOW","Cold and white, falls in winter"],["BIRD","It has wings and sings"],
+  ["APPLE","A red or green fruit"],["BREAD","Baked in a loaf"],["CHAIR","You sit on it"],["HORSE","An animal you can ride"],
+  ["PIANO","An instrument with black and white keys"],["RADIO","You listen to music on it"],["TRAIN","It runs on tracks"],["CLOCK","It tells the time"],
+  ["HOUSE","A place to live"],["SPOON","You eat soup with it"],["HONEY","Bees make it"],["GRAPE","Grows in bunches on a vine"],
+  ["BEACH","Sand by the ocean"],["TOAST","Browned bread"],["PLATE","You eat dinner from it"],["TABLE","You eat meals at it"]
+];
+
+const LETTER_SCRAMBLE = {
+  id: "letter-scramble", name: "Large-Format Letter Scramble", themed: false,
+  desc: "Short 3- to 5-letter words in big letter tiles, with a clue and a box for each letter of the answer.",
+  icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="7" width="6" height="7" rx="1"/><rect x="9" y="4" width="6" height="7" rx="1"/><rect x="16" y="9" width="6" height="7" rx="1"/><path d="M5 18h14" stroke-linecap="round"/></svg>',
+  options: [
+    { id:"hints", type:"check", label:"Show a clue for each word", hint:"A short description in a box under the letters.", def:true },
+    { id:"first", type:"select", label:"First letter of the answer", def:"auto",
+      choices:[["auto","Automatic for the stage"],["show","Always filled in"],["hide","Never filled in"]] }
+  ],
+  // tile/box sizes in inches; prefill = first answer letter printed in the answer boxes
+  levels: {
+    early:    { count:5, lens:[4,5], tile:.6,  box:.54, prefill:false },
+    moderate: { count:4, lens:[4],   tile:.72, box:.64, prefill:true  },
+    advanced: { count:3, lens:[3],   tile:1.0, box:.9,  prefill:true  }
+  },
+  plan(cfg, rng, count){
+    const L = this.levels[cfg.difficulty];
+    return slicePlan(SHORT_WORDS.filter(([w]) => L.lens.includes(w.length)), L.count, count, rng);
+  },
+  generate(cfg, rng, items){
+    const L = this.levels[cfg.difficulty];
+    const hints = optVal(cfg, "hints", true);
+    const firstMode = optVal(cfg, "first", "auto");
+    const prefill = firstMode === "show" || (firstMode === "auto" && L.prefill);
+    const sig = [];
+    const html = items.map(([w, clue], i) => {
+      let mixed = w;
+      for (let t = 0; t < 30 && mixed === w; t++) mixed = rng.shuffle(w.split("")).join("");
+      sig.push(mixed);
+      const tile = `style="width:${L.tile}in;height:${(L.tile * 1.08).toFixed(2)}in;font-size:${(L.tile * .56).toFixed(2)}in"`;
+      const box  = `style="width:${L.box}in;height:${L.box}in;font-size:${(L.box * .55).toFixed(2)}in"`;
+      const tiles = mixed.split("").map(ch => `<span class="tile" ${tile}>${ch}</span>`).join("");
+      const anchors = w.split("").map((ch, k) => `<span class="anchor${k === 0 && prefill ? " given" : ""}" ${box}>${k === 0 && prefill ? ch : ""}</span>`).join("");
+      return `<div class="item ls-item">
+        <div class="ls-row"><span class="num">${i + 1}.</span><span class="tiles">${tiles}</span>
+          <span class="ls-arrow" aria-hidden="true">&rarr;</span><span class="anchors">${anchors}</span></div>
+        ${hints ? `<div class="hintbox"><b>Clue:</b> ${esc(clue)}</div>` : ""}
+      </div>`;
+    }).join("");
+    return {
+      title: "Letter Scramble",
+      instructions: "The big letters are mixed up. Put them in order and write one letter in each empty box.",
+      html,
+      answers: items.map((it, i) => (i + 1) + ". " + it[0]).join("   "),
+      signature: sig.join("|") + (hints ? "+h" : "") + (prefill ? "+p" : "")
+    };
+  }
+};
+
+const MISSING_LETTERS = {
+  id: "missing-letters", name: "Missing Letter Fills", themed: true,
+  desc: "Familiar words with a few letters taken out, like S U N S H _ N E. Fewer blanks and shorter words at later stages.",
+  icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 17l3-10 3 10M4 14h4"/><line x1="11" y1="18" x2="15" y2="18"/><path d="M17 7h3a2 2 0 0 1 0 4h-3V7zm0 4h3.5a2 2 0 0 1 0 4H17v-4z"/></svg>',
+  options: [
+    { id:"remove", type:"select", label:"Letters to take out", def:"auto",
+      choices:[["auto","Automatic for the stage"],["vowels","Vowels only (A, E, I, O, U)"],["mixed","Vowels and consonants"]] },
+    { id:"bank", type:"check", label:"Show a letter bank", hint:"Lists the missing letters at the top of the page, mixed up.", def:true }
+  ],
+  levels: {
+    early:    { count:6, minLen:6, maxLen:10, blanks: w => w.length >= 8 ? 3 : 2, mode:"mixed" },
+    moderate: { count:5, minLen:5, maxLen:8,  blanks: w => w.length >= 7 ? 2 : 1, mode:"vowels" },
+    advanced: { count:4, minLen:4, maxLen:6,  blanks: () => 1,                   mode:"vowels" }
+  },
+  pool(cfg){
+    const L = this.levels[cfg.difficulty];
+    const ok = w => w.length >= L.minLen && w.length <= L.maxLen;
+    let pool = eraPool(cfg.era).filter(ok);
+    if (pool.length < L.count + 3) pool = pool.concat(ERA_WORDS.general.filter(w => ok(w) && !pool.includes(w)));
+    return pool;
+  },
+  plan(cfg, rng, count){ return slicePlan(this.pool(cfg), this.levels[cfg.difficulty].count, count, rng); },
+  generate(cfg, rng, words){
+    const lvl = cfg.difficulty, L = this.levels[lvl];
+    const pick = optVal(cfg, "remove", "auto");
+    const mode = pick === "auto" ? L.mode : pick;
+    const bankOn = optVal(cfg, "bank", true) && lvl !== "advanced";   // advanced uses a choice of two instead
+    const bank = [], sig = [];
+    const rows = words.map((w, i) => {
+      const n = L.blanks(w);
+      // Never blank the first letter: it anchors recognition.
+      const idx = Array.from({ length:w.length - 1 }, (_, k) => k + 1);
+      const vIdx = idx.filter(k => VOWELS.includes(w[k])), cIdx = idx.filter(k => !VOWELS.includes(w[k]));
+      let chosen;
+      if (mode === "vowels" && vIdx.length) chosen = rng.shuffle(vIdx).slice(0, n);
+      else if (n >= 2 && vIdx.length && cIdx.length) chosen = [rng.pick(vIdx), rng.pick(cIdx)].concat(rng.shuffle(idx).filter(k => k !== undefined)).filter((k, j, a) => a.indexOf(k) === j).slice(0, n);
+      else chosen = rng.shuffle(idx).slice(0, n);
+      const miss = new Set(chosen);
+      chosen.forEach(k => bank.push(w[k]));
+      sig.push(w + ":" + chosen.slice().sort((a, b) => a - b).join(","));
+      const letters = w.split("").map((ch, k) => miss.has(k) ? '<span class="ml-l ml-blank">_</span>' : `<span class="ml-l">${ch}</span>`).join("");
+      let tail = "";
+      if (lvl === "advanced"){
+        const right = w[chosen[0]];
+        const pool = VOWELS.includes(right) ? VOWELS.replace(right, "") : "BCDFGHLMNPRST".replace(right, "");
+        const wrong = pool[rng.int(pool.length)];
+        const opts = rng.next() < .5 ? [right, wrong] : [wrong, right];
+        sig.push(opts.join(""));
+        tail = `<span class="ml-choose">Circle one: <span class="choice ml-choice">${opts[0]}</span> <span class="choice ml-choice">${opts[1]}</span></span>`;
+      }
+      return `<div class="item ml-item"><span class="num">${i + 1}.</span><span class="ml-word">${letters}</span>${tail}</div>`;
+    });
+    const bankHtml = bankOn ? `<div class="bankbox"><b>Letter bank:</b> ${rng.shuffle(bank).map(ch => `<span class="bank-l">${ch}</span>`).join("")}</div>` : "";
+    return {
+      title: "Missing Letters",
+      instructions: lvl === "advanced"
+        ? "One letter is missing from each word. Circle the letter that fills the blank."
+        : "Some letters are missing. Write the missing letter on each blank to finish the word.",
+      html: bankHtml + rows.join(""),
+      answers: words.map((w, i) => (i + 1) + ". " + w).join("   "),
+      signature: sig.join("|") + (bankOn ? "+b" : "")
+    };
+  }
+};
+
+const SWEEP_THEMES = {
+  general: ["Things in a Kitchen","Foods","Animals","Names for Boys","Names for Girls","Towns, Cities or States","Things in a Garden","Things You Buy at a Store","Jobs People Do","Things in a House","Things That Make You Happy","Things on a Farm","Clothes","Things You Can Cook"],
+  "1940s": ["Things from the 1940s","Songs or Singers of the 1940s"],
+  "1950s": ["Things from the 1950s","Things at a 1950s Diner"],
+  "1960s": ["Things from the 1960s","Songs or Singers of the 1960s"],
+  "1970s": ["Things from the 1970s","Things in a 1970s Home"]
+};
+
+const ALPHA_SWEEP = {
+  id: "alphabet-sweep", name: "Alphabet Category Sweep", themed: true,
+  desc: "One theme, one answer per letter: Things in a Kitchen, A to Z. Later stages use fewer, easier letters.",
+  icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 10l2.5-7L8 10M3.8 7.8h3.4"/><path d="M3 14h5l-5 7h5"/><line x1="12" y1="6" x2="21" y2="6"/><line x1="12" y1="12" x2="21" y2="12"/><line x1="12" y1="18" x2="21" y2="18"/></svg>',
+  options: [
+    { id:"theme", type:"select", label:"Sweep theme", def:"surprise",
+      choices:[["surprise","Surprise me (a different theme each version)"]].concat(SWEEP_THEMES.general.map(t => [t, t])) },
+    { id:"custom", type:"text", label:"Or type your own theme", placeholder:"e.g. Things at the State Fair", max:50,
+      hint:"Leave blank to use the theme above." }
+  ],
+  levels: { early:{ n:26, cols:2 }, moderate:{ n:13, cols:1 }, advanced:{ n:6, cols:1 } },
+  plan(cfg, rng, count){
+    const L = this.levels[cfg.difficulty];
+    const custom = String(optVal(cfg, "custom", "")).trim().slice(0, 50);
+    const picked = optVal(cfg, "theme", "surprise");
+    const fixed = custom || (picked !== "surprise" ? picked : "");
+    const eraList = cfg.era === "general" ? SWEEP_THEMES.general : SWEEP_THEMES[cfg.era].concat(SWEEP_THEMES.general);
+    const themes = fixed ? Array(count).fill(fixed) : slicePlan(eraList, 1, count, rng).map(a => a[0]);
+    let letterSets;
+    if (L.n === 26){
+      // Full A-Z. With one fixed theme and several versions, split the
+      // alphabet across the versions so each page is different.
+      if (fixed && count > 1){
+        const size = Math.ceil(26 / count);
+        letterSets = Array.from({ length:count }, (_, i) => ALPHA.slice(i * size, (i + 1) * size));
+      } else letterSets = Array(count).fill(ALPHA);
+    } else {
+      letterSets = slicePlan(EASY_LETTERS, L.n, count, rng).map(s => s.slice().sort());
+    }
+    return themes.map((t, i) => ({ theme:t, letters:letterSets[i] }));
+  },
+  generate(cfg, rng, p){
+    const L = this.levels[cfg.difficulty];
+    const full = p.letters.length === 26;
+    const range = full ? "A to Z" : p.letters.length > 1 && p.letters.join("") === ALPHA.slice(ALPHA.indexOf(p.letters[0]), ALPHA.indexOf(p.letters[0]) + p.letters.length).join("")
+      ? p.letters[0] + " to " + p.letters[p.letters.length - 1] : "";
+    const bonus = cfg.difficulty === "early" ? "QXZ" : "";
+    const rows = p.letters.map(ch => `<div class="sw-row"><span class="sw-l">${ch}</span><span class="sw-line">${bonus.includes(ch) ? '<span class="sw-bonus">bonus</span>' : ""}</span></div>`).join("");
+    return {
+      title: p.theme + (range ? ", " + range : ""),
+      instructions: cfg.difficulty === "early"
+        ? "Think of one for each letter. Write it on the line or say it out loud. Skip any letter you like."
+        : "Think of one for each letter. Say it out loud, or write it on the line.",
+      html: `<div class="sweep" style="grid-template-columns:repeat(${L.cols},1fr)">${rows}</div>`,
+      signature: p.theme + "#" + p.letters.join("")
+    };
+  }
+};
+
+/* Approximate advance widths (em) for Arial/Helvetica, so traced
+   letters are spaced without overlapping. */
+const GLYPH_W = { M:.84, W:.95, m:.84, w:.73, I:.3, J:.5, i:.23, j:.23, l:.23, f:.3, t:.3, r:.35 };
+function glyphW(ch){ return GLYPH_W[ch] || (ch === ch.toUpperCase() ? .72 : .57); }
+
+const LETTER_TRACING = {
+  id: "letter-tracing", name: "Letter Tracing", themed: false,
+  desc: "Very large capital and small letters with dashed outlines to trace, on handwriting guide lines, with space to try alone.",
+  icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-dasharray="3 2.5" aria-hidden="true"><path d="M4 20L10 4l6 16M6.3 14h7.4"/><path d="M17 20V10" stroke-dasharray="none"/></svg>',
+  options: [
+    { id:"letters", type:"select", label:"Which letters", def:"mixed",
+      choices:[["mixed","Mixed alphabet (different letters each version)"],["name","Letters in the resident's name"],["custom","Letters I choose"]] },
+    { id:"custom", type:"text", label:"Letters to trace", placeholder:"e.g. M A R Y", max:26, showIf:["letters","custom"],
+      hint:"Type the letters. Spaces and repeats are ignored." },
+    { id:"case", type:"select", label:"Letter style", def:"both",
+      choices:[["both","Capital and small (A a)"],["upper","Capitals only (A)"],["lower","Small letters only (a)"]] }
+  ],
+  // fs = font size in SVG units (1 unit = 0.01 in); rows per page
+  levels: { early:{ rows:4, fs:150 }, moderate:{ rows:3, fs:200 }, advanced:{ rows:2, fs:290 } },
+  source(cfg){
+    const mode = optVal(cfg, "letters", "mixed");
+    const uniq = s => Array.from(new Set(String(s || "").toUpperCase().replace(/[^A-Z]/g, "").split(""))).filter(Boolean);
+    if (mode === "name"){ const u = uniq(cfg.residentName); if (u.length) return { letters:u, ordered:false }; }
+    if (mode === "custom"){ const u = uniq(optVal(cfg, "custom", "")); if (u.length) return { letters:u, ordered:false }; }
+    return { letters:ALPHA, ordered:true };
+  },
+  plan(cfg, rng, count){
+    const L = this.levels[cfg.difficulty], src = this.source(cfg);
+    if (src.ordered) return slicePlan(src.letters, L.rows, count, rng).map(s => s.slice().sort());
+    // Name or chosen letters keep their order; each version starts at a
+    // different letter so the pages differ even with a short name.
+    return Array.from({ length:count }, (_, i) => Array.from({ length:L.rows }, (_, k) => src.letters[(i + k) % src.letters.length]));
+  },
+  generate(cfg, rng, letters){
+    const L = this.levels[cfg.difficulty], fs = L.fs, style = optVal(cfg, "case", "both");
+    const W = 720, pad = 10, H = Math.round(.96 * fs + 18), base = Math.round(pad + .716 * fs + 2);
+    const cap = base - .716 * fs, mid = base - .523 * fs;
+    const svgRow = ch => {
+      const pattern = style === "upper" ? [ch, ch] : style === "lower" ? [ch.toLowerCase(), ch.toLowerCase()] : [ch, ch.toLowerCase()];
+      const glyphs = [];
+      let x = 16;
+      for (let k = 0; k < 6; k++){
+        const g = pattern[k % 2], w = glyphW(g) * fs;
+        if (x + w > W - .7 * fs) break;             // always leave room to practise
+        glyphs.push(`<text x="${x.toFixed(0)}" y="${base}" font-size="${fs}" font-family="Arial, Helvetica, 'Liberation Sans', sans-serif" fill="none" stroke="#7b8884" stroke-width="2.4" stroke-dasharray="7 6" stroke-linejoin="round">${g}</text>`);
+        x += w + .2 * fs;
+        if (glyphs.length >= (L.rows === 2 ? 2 : L.rows === 3 ? 3 : 4)) break;
+      }
+      const guides = `<line x1="0" y1="${cap.toFixed(1)}" x2="${W}" y2="${cap.toFixed(1)}" stroke="#a3aeaa" stroke-width="1.5"/>
+        <line x1="0" y1="${mid.toFixed(1)}" x2="${W}" y2="${mid.toFixed(1)}" stroke="#c3cbc8" stroke-width="1.3" stroke-dasharray="6 6"/>
+        <line x1="0" y1="${base}" x2="${W}" y2="${base}" stroke="#56625e" stroke-width="2.2"/>`;
+      return `<svg class="trace-row" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMinYMin meet" role="img" aria-label="Trace the letter ${ch}">${guides}${glyphs.join("")}</svg>`;
+    };
+    return {
+      title: "Letter Tracing",
+      instructions: "Trace over each dotted letter with your finger or a pencil. Then try writing it on your own in the open space.",
+      html: `<div class="trace-grid">${letters.map(svgRow).join("")}</div>`,
+      signature: letters.join("") + "#" + style
+    };
+  }
+};
+
 /* ---------- 8. Category registry ----------
    To add a category's activities later, give it an `activities` array of
    objects shaped like the Word & Language ones above. Everything else
@@ -895,8 +1188,8 @@ const CATEGORIES = [
     blurb:"Word searches, sayings, scrambles, naming and reminiscence prompts. Language is often one of the best-preserved skills, and familiar words invite conversation.",
     activities:[WORD_SEARCH, FINISH_SAYING, SCRAMBLE, NAME_THREE, GOES_TOGETHER, MEMORY_LANE] },
   { id:"letters", name:"Letter & Alphabet Activities", icon:ICONS.letter,
-    blurb:"Tracing, missing letters and alphabet games with large, clear letterforms.",
-    activities:[], planned:["Alphabet Tracing","Missing Letter","First Letter Match","A-to-Z Categories","Big Letter Coloring"] },
+    blurb:"Letter scrambles, missing-letter words, A-to-Z category sweeps and large-letter tracing. Big, clear letterforms support reading, recognition and fine motor practice.",
+    activities:[LETTER_SCRAMBLE, MISSING_LETTERS, ALPHA_SWEEP, LETTER_TRACING] },
   { id:"numbers", name:"Number & Math Activities", icon:ICONS.number,
     blurb:"Counting, coins, clocks and simple sums drawn from everyday life.",
     activities:[], planned:["Number Tracing","Coin Counting","Clock Reading","Simple Sums","Dot Counting"] },
@@ -952,6 +1245,7 @@ function router(){
   (routes[name] || renderHome)(arg);
   highlightNav(name, arg);
   closeSidebar();
+  if (drawerOpen) closeDrawer();      // e.g. Back button while the packet panel is open
   window.scrollTo(0, 0);
   const h = view.querySelector("h1");
   if (h) h.focus({ preventScroll:true });
@@ -1016,13 +1310,58 @@ function renderCategory(id){
   view.querySelectorAll("button.card[data-act]").forEach(btn => btn.addEventListener("click", () => openConfig(btn.dataset.act)));
 }
 
+/* ---- Activity-specific options (the `options` array on an activity) ---- */
+function optDefaults(act){ const o = {}; (act.options || []).forEach(f => { o[f.id] = f.def; }); return o; }
+function savedOpts(act){
+  const saved = settings.actOpts[act.id] || {}, o = optDefaults(act);
+  (act.options || []).forEach(f => { if (saved[f.id] !== undefined) o[f.id] = saved[f.id]; });
+  if (o.theme !== undefined && act.options.some(f => f.id === "theme" && f.choices && !f.choices.some(c => c[0] === o.theme))) o.theme = optDefaults(act).theme;
+  return o;
+}
+function optionFields(act){
+  if (!act.options || !act.options.length) return "";
+  const vals = savedOpts(act);
+  return act.options.map(f => {
+    const id = "opt_" + f.id, hidden = f.showIf && vals[f.showIf[0]] !== f.showIf[1];
+    let ctl;
+    if (f.type === "select"){
+      ctl = `<label for="${id}">${esc(f.label)}</label><select id="${id}" data-opt="${f.id}">${f.choices.map(([v, l]) => `<option value="${esc(v)}" ${v === vals[f.id] ? "selected" : ""}>${esc(l)}</option>`).join("")}</select>`;
+    } else if (f.type === "check"){
+      ctl = `<label class="switch" for="${id}"><input type="checkbox" id="${id}" data-opt="${f.id}" ${vals[f.id] ? "checked" : ""}><span><b>${esc(f.label)}</b>${f.hint ? `<small>${esc(f.hint)}</small>` : ""}</span></label>`;
+    } else {
+      ctl = `<label for="${id}">${esc(f.label)}</label><input type="text" id="${id}" data-opt="${f.id}" maxlength="${f.max || 50}" value="${esc(vals[f.id] || "")}" placeholder="${esc(f.placeholder || "")}" autocomplete="off">`;
+    }
+    const hint = f.hint && f.type !== "check" ? `<p class="hint">${esc(f.hint)}</p>` : "";
+    return `<div class="field" data-optwrap="${f.id}" ${hidden ? "hidden" : ""}>${ctl}${hint}</div>`;
+  }).join("");
+}
+function readOpts(act){
+  const o = savedOpts(act);
+  document.querySelectorAll("#cfgForm [data-opt]").forEach(el => {
+    o[el.dataset.opt] = el.type === "checkbox" ? el.checked : String(el.value).slice(0, 50);
+  });
+  return o;
+}
+function syncOptVisibility(act){
+  const vals = readOpts(act);
+  (act.options || []).forEach(f => {
+    if (!f.showIf) return;
+    const w = document.querySelector(`#cfgForm [data-optwrap="${f.id}"]`);
+    if (w) w.hidden = vals[f.showIf[0]] !== f.showIf[1];
+  });
+}
+
 function currentCfg(){
-  return {
+  const cfg = {
     residentName: ($("#cfgName") || {}).value ? $("#cfgName").value.trim().slice(0, 40) : "",
     date: ($("#cfgDate") || {}).value || todayISO(),
     difficulty: (document.querySelector('input[name="cfgDiff"]:checked') || {}).value || settings.difficulty,
     era: ($("#cfgEra") || {}).value || settings.era
   };
+  // Only activities with options carry cfg.opts, so older queued
+  // Word & Language pages keep rebuilding exactly as before.
+  if (selectedAct && selectedAct.options) cfg.opts = readOpts(selectedAct);
+  return cfg;
 }
 
 function openConfig(actId){
@@ -1058,6 +1397,7 @@ function openConfig(actId){
         ${act.themed ? `<div class="field"><label for="cfgEra">Theme</label>
           <select id="cfgEra">${Object.keys(ERAS).map(k => `<option value="${k}" ${k === settings.era ? "selected" : ""}>${ERAS[k]}</option>`).join("")}</select>
           <p class="hint">Sets the words and prompts. Pick the decade the resident was a young adult.</p></div>` : ""}
+        ${optionFields(act)}
         <div class="actions">
           <button class="btn btn-primary" type="submit">Add to Packet</button>
           <button class="btn btn-ghost" type="button" id="cfgShuffle">Show a different version</button>
@@ -1077,7 +1417,11 @@ function openConfig(actId){
   form.addEventListener("change", e => {
     if (e.target.name === "cfgDiff"){ settings.difficulty = e.target.value; saveSettings(); }
     if (e.target.id === "cfgEra"){ settings.era = e.target.value; saveSettings(); }
+    if (e.target.dataset && e.target.dataset.opt){ settings.actOpts[act.id] = readOpts(act); saveSettings(); syncOptVisibility(act); }
     updatePreview();
+  });
+  form.addEventListener("input", e => {
+    if (e.target.dataset && e.target.dataset.opt && e.target.type === "text"){ settings.actOpts[act.id] = readOpts(act); saveSettings(); updatePreview(); }
   });
   $("#cfgName").addEventListener("input", updatePreview);
   $("#cfgDate").addEventListener("input", updatePreview);
@@ -1158,7 +1502,7 @@ function renderSettings(){
   $("#setClear").addEventListener("click", () => {
     if (!confirm("Clear the saved facility name, resident name, defaults and packet queue from this computer?")) return;
     store.remove("cgb_settings"); store.remove("cgb_queue");
-    settings = Object.assign({}, DEFAULT_SETTINGS); isPureBlackAndWhitePDF = false; queue = [];
+    settings = Object.assign({}, DEFAULT_SETTINGS, { actOpts:{} }); isPureBlackAndWhitePDF = false; queue = [];
     saveSettings(); saveQueue(); renderSettings(); renderBwNote();
     toast("Saved data cleared from this computer.");
   });
@@ -1191,8 +1535,10 @@ function renderQueue(){
       const bits = [ "Version " + (q.index + 1) + " of " + q.count, DIFFICULTIES[q.cfg.difficulty].label ];
       if (act.themed) bits.push(ERAS[q.cfg.era]);
       if (q.cfg.residentName) bits.push("For " + q.cfg.residentName);
+      const title = buildBatch(act, q.cfg, q.batchSeed, q.count)[q.index].title;
+      if (title !== act.name) bits.unshift(act.name);
       return `<li class="q-item"><div class="thumb">${sheetHtml(q)}</div>
-        <div class="q-info"><b>${i + 1}. ${esc(act.name)}</b><small>${esc(bits.join(" · "))}</small>
+        <div class="q-info"><b>${i + 1}. ${esc(title)}</b><small>${esc(bits.join(" · "))}</small>
           <div class="q-btns">
             <button type="button" data-move="-1" data-i="${i}" ${i === 0 ? "disabled" : ""} aria-label="Move page ${i + 1} up">&uarr;</button>
             <button type="button" data-move="1" data-i="${i}" ${i === queue.length - 1 ? "disabled" : ""} aria-label="Move page ${i + 1} down">&darr;</button>
