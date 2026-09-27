@@ -399,6 +399,14 @@ input:focus,select:focus{border-color:var(--accent)}
 .rh-beat{display:inline-flex;flex-direction:column;align-items:center}
 .rh-beat small{font-size:9pt;color:#56615d}
 .rh-shape{display:block}
+/* Music: sing-along sheets (pure black text for maximum contrast) */
+.lyr{text-align:center;color:#000}
+.lyr-title{margin:0;font-size:1.12em;line-height:1.15;color:#000}
+.lyr-year{margin:.03in 0 .26in;font-size:.45em;letter-spacing:.04em;color:#3f4a46}
+.lyr-line{margin:0 0 .12in;font-weight:700;line-height:1.22}
+/* finish the song, singer match */
+.song-kind{display:inline-block;margin:0 .1in 0 0;vertical-align:.15em;font-size:.52em;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#56615d}
+.sm-pairs .r{font-style:italic}
 
 /* ---------- 6. PRINT
    Only #printRoot prints. Every .sheet is exactly one US Letter page.
@@ -1889,6 +1897,182 @@ const SEATED_RHYTHM = {
   }
 };
 
+/* ---------- 7e. Music, Rhythm & Sound generators ----------
+   Copyright rule for this category: full lyrics and lyric lines come
+   only from songs in the U.S. public domain (published before 1931, or
+   traditional). Songs from the 1940s-1960s appear by TITLE and SINGER
+   only, which are facts, not lyrics. */
+
+/* Sing-along songs: public domain. `hymn` lets staff leave out sacred songs. */
+const PD_SONGS = [
+  { title:"Daisy Bell (A Bicycle Built for Two)", year:"1892", lines:["Daisy, Daisy, give me your answer, do","I'm half crazy, all for the love of you","It won't be a stylish marriage","I can't afford a carriage","But you'll look sweet upon the seat","Of a bicycle built for two"] },
+  { title:"Take Me Out to the Ball Game", year:"1908", lines:["Take me out to the ball game","Take me out with the crowd","Buy me some peanuts and Cracker Jack","I don't care if I never get back","Let me root, root, root for the home team","If they don't win, it's a shame","For it's one, two, three strikes, you're out","At the old ball game"] },
+  { title:"Let Me Call You Sweetheart", year:"1910", lines:["Let me call you sweetheart","I'm in love with you","Let me hear you whisper","That you love me too","Keep the love light glowing","In your eyes so true","Let me call you sweetheart","I'm in love with you"] },
+  { title:"Shine On, Harvest Moon", year:"1908", lines:["Shine on, shine on, harvest moon","Up in the sky","I ain't had no lovin'","Since January, February, June or July","Snow time ain't no time to stay","Outdoors and spoon","So shine on, shine on, harvest moon","For me and my gal"] },
+  { title:"Home on the Range", year:"1870s", lines:["Oh, give me a home where the buffalo roam","Where the deer and the antelope play","Where seldom is heard a discouraging word","And the skies are not cloudy all day","Home, home on the range","Where the deer and the antelope play","Where seldom is heard a discouraging word","And the skies are not cloudy all day"] },
+  { title:"In the Good Old Summertime", year:"1902", lines:["In the good old summertime","In the good old summertime","Strolling through the shady lanes","With your baby mine","You hold her hand and she holds yours","And that's a very good sign","That she's your tootsie-wootsie","In the good old summertime"] },
+  { title:"I've Been Working on the Railroad", year:"1894", lines:["I've been working on the railroad","All the live-long day","I've been working on the railroad","Just to pass the time away","Can't you hear the whistle blowing","Rise up so early in the morn","Can't you hear the captain shouting","Dinah, blow your horn"] },
+  { title:"Down by the Old Mill Stream", year:"1910", lines:["Down by the old mill stream","Where I first met you","With your eyes of blue","Dressed in gingham too","It was there I knew","That you loved me true","You were sixteen, my village queen","Down by the old mill stream"] },
+  { title:"When Irish Eyes Are Smiling", year:"1912", lines:["When Irish eyes are smiling","Sure, 'tis like the morn in spring","In the lilt of Irish laughter","You can hear the angels sing","When Irish hearts are happy","All the world seems bright and gay","And when Irish eyes are smiling","Sure, they steal your heart away"] },
+  { title:"My Bonnie Lies Over the Ocean", year:"Traditional", lines:["My Bonnie lies over the ocean","My Bonnie lies over the sea","My Bonnie lies over the ocean","Oh, bring back my Bonnie to me","Bring back, bring back","Oh, bring back my Bonnie to me, to me","Bring back, bring back","Oh, bring back my Bonnie to me"] },
+  { title:"You're a Grand Old Flag", year:"1906", lines:["You're a grand old flag","You're a high-flying flag","And forever in peace may you wave","You're the emblem of the land I love","The home of the free and the brave","Ev'ry heart beats true 'neath the Red, White and Blue","Where there's never a boast or brag","Should auld acquaintance be forgot","Keep your eye on the grand old flag"] },
+  { title:"Amazing Grace", year:"1779", hymn:true, lines:["Amazing grace, how sweet the sound","That saved a wretch like me","I once was lost, but now am found","Was blind, but now I see","'Twas grace that taught my heart to fear","And grace my fears relieved","How precious did that grace appear","The hour I first believed"] }
+];
+
+/* Finish-the-line prompts from public-domain songs. */
+const PD_LINES = [
+  ["Oh, give me a home where the","buffalo roam"],["Take me out to the ball game, take me out with the","crowd"],
+  ["Daisy, Daisy, give me your answer,","do"],["Let me call you sweetheart, I'm in love with","you"],
+  ["Shine on, shine on, harvest","moon"],["In the good old","summertime"],
+  ["I've been working on the railroad, all the live-long","day"],["Row, row, row your boat, gently down the","stream"],
+  ["Oh! Susanna, oh don't you cry for","me"],["She'll be coming 'round the mountain when she","comes"],
+  ["Down by the old mill","stream"],["When Irish eyes are","smiling"],["You're a grand old","flag"],
+  ["My wild Irish","rose"],["For he's a jolly good","fellow"],["Should auld acquaintance be","forgot"],
+  ["It's a long way to","Tipperary"],["My Bonnie lies over the","ocean"],["I'm a Yankee Doodle","Dandy"],
+  ["Amazing grace, how sweet the","sound", true],["Swing low, sweet","chariot", true]
+];
+
+/* Finish-the-title prompts: 1940s-1960s hits (titles only). */
+const HIT_TITLES = [
+  ["1940s","Chattanooga Choo","Choo"],["1940s","Sentimental","Journey"],["1940s","Don't Sit Under the Apple","Tree"],
+  ["1940s","Let It Snow! Let It Snow! Let It","Snow!"],["1940s","The Tennessee","Waltz"],["1940s","Boogie Woogie Bugle","Boy"],
+  ["1940s","White","Christmas"],["1940s","In the","Mood"],
+  ["1950s","Rock Around the","Clock"],["1950s","Blue Suede","Shoes"],["1950s","Shake, Rattle and","Roll"],
+  ["1950s","Great Balls of","Fire"],["1950s","Love Me","Tender"],["1950s","Jailhouse","Rock"],
+  ["1950s","Blueberry","Hill"],["1950s","Unchained","Melody"],["1950s","Earth","Angel"],["1950s","Mack the","Knife"],
+  ["1950s","Sixteen","Tons"],["1950s","Bye Bye","Love"],["1950s","Put Your Head on My","Shoulder"],["1950s","I Walk the","Line"],
+  ["1960s","Fly Me to the","Moon"],["1960s","Moon","River"],["1960s","Twist and","Shout"],["1960s","Stand by","Me"],
+  ["1960s","What a Wonderful","World"],["1960s","Stop! In the Name of","Love"],["1960s","Georgia on My","Mind"],
+  ["1960s","I Want to Hold Your","Hand"]
+];
+
+/* Singers and one well-known song each, by the decade of that song.
+   One song per singer, so a match can never be ambiguous. */
+const SINGER_SONGS = [
+  ["1940s","Bing Crosby","White Christmas"],["1940s","The Andrews Sisters","Boogie Woogie Bugle Boy"],
+  ["1940s","Glenn Miller","In the Mood"],["1940s","Judy Garland","Over the Rainbow"],
+  ["1940s","Ella Fitzgerald","A-Tisket, A-Tasket"],["1940s","Vera Lynn","We'll Meet Again"],["1940s","Kate Smith","God Bless America"],
+  ["1950s","Elvis Presley","Hound Dog"],["1950s","Nat King Cole","Unforgettable"],["1950s","Doris Day","Que Sera, Sera"],
+  ["1950s","Johnny Cash","I Walk the Line"],["1950s","Dean Martin","That's Amore"],["1950s","Chuck Berry","Johnny B. Goode"],
+  ["1950s","Perry Como","Catch a Falling Star"],["1950s","Hank Williams","Your Cheatin' Heart"],["1950s","Buddy Holly","Peggy Sue"],
+  ["1950s","Rosemary Clooney","Come On-a My House"],["1950s","Bobby Darin","Mack the Knife"],["1950s","Tennessee Ernie Ford","Sixteen Tons"],
+  ["1960s","Frank Sinatra","Fly Me to the Moon"],["1960s","Patsy Cline","Crazy"],["1960s","Louis Armstrong","What a Wonderful World"],
+  ["1960s","Tony Bennett","I Left My Heart in San Francisco"],["1960s","Ray Charles","Georgia on My Mind"],
+  ["1960s","Roy Orbison","Oh, Pretty Woman"],["1960s","The Beatles","I Want to Hold Your Hand"],["1960s","Etta James","At Last"],
+  ["1960s","The Supremes","Stop! In the Name of Love"]
+];
+/* Decades the "1970s" theme maps to: its residents grew up on 1950s-60s music. */
+function musicEras(era){
+  if (era === "1940s" || era === "1950s" || era === "1960s") return [era];
+  if (era === "1970s") return ["1960s", "1950s"];
+  return ["1940s", "1950s", "1960s"];
+}
+
+const LYRIC_SHEET = {
+  id: "lyric-sheet", name: "Sing-Along Lyric Sheets", themed: false,
+  desc: "One public-domain classic per page in very large, high-contrast type (24pt to 34pt), ready for a group sing-along.",
+  icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M9 17V5l10-2v12"/><circle cx="6.5" cy="17" r="2.5"/><circle cx="16.5" cy="15" r="2.5"/></svg>',
+  options: [
+    { id:"hymns", type:"check", label:"Include hymns (Amazing Grace)", hint:"Turn off for groups where a sacred song may not suit everyone.", def:true }
+  ],
+  // pt size of the lyrics; advanced prints the first verse only, larger
+  levels: { early:{ pt:24, maxLines:9 }, moderate:{ pt:28, maxLines:8 }, advanced:{ pt:34, maxLines:4 } },
+  pool(cfg){ return optVal(cfg, "hymns", true) ? PD_SONGS : PD_SONGS.filter(s => !s.hymn); },
+  plan(cfg, rng, count){ return slicePlan(this.pool(cfg), 1, count, rng).map(s => s[0]); },
+  generate(cfg, rng, song){
+    const L = this.levels[cfg.difficulty];
+    const lines = song.lines.slice(0, L.maxLines);
+    return {
+      title: "Sing-Along",
+      instructions: "Sing along together. Follow the words, or just hum the tune.",
+      html: `<div class="lyr" style="font-size:${L.pt}pt">
+        <h2 class="lyr-title">${esc(song.title)}</h2><p class="lyr-year">${esc(song.year)}</p>
+        ${lines.map(l => `<p class="lyr-line">${esc(l)}</p>`).join("")}</div>`,
+      staffNote: "Sing at an easy pace and repeat favourite lines. Joining in on any word, humming or tapping along all count. All songs on these sheets are in the public domain.",
+      signature: song.title + "#" + L.maxLines
+    };
+  }
+};
+
+const FINISH_SONG = {
+  id: "finish-song", name: "Lyric Completion / Name That Tune", themed: true,
+  desc: "Finish the line of an old favourite (\"Oh, give me a home where the...\") or the title of a 1940s-1960s hit. Hints and a choice of two at later stages.",
+  icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 17V6l8-2v11"/><circle cx="3.5" cy="17" r="2"/><line x1="15" y1="19" x2="22" y2="19"/></svg>',
+  options: [
+    { id:"mode", type:"select", label:"What to finish", def:"mixed",
+      choices:[["mixed","A mix of both"],["lines","Song lines (old public-domain favourites)"],["titles","Song titles (1940s to 1960s hits)"]] },
+    { id:"hymns", type:"check", label:"Include hymns and spirituals", def:true }
+  ],
+  levels: { early:{ count:6 }, moderate:{ count:5 }, advanced:{ count:3 } },
+  pool(cfg){
+    const mode = optVal(cfg, "mode", "mixed"), hymns = optVal(cfg, "hymns", true), eras = musicEras(cfg.era);
+    const lines = PD_LINES.filter(x => hymns || !x[2]).map(x => ({ kind:"line", start:x[0], end:x[1] }));
+    const titles = HIT_TITLES.filter(x => eras.includes(x[0])).map(x => ({ kind:"title", start:x[1], end:x[2] }));
+    if (mode === "lines") return lines;
+    if (mode === "titles") return titles;
+    return lines.concat(titles);
+  },
+  plan(cfg, rng, count){ return slicePlan(this.pool(cfg), this.levels[cfg.difficulty].count, count, rng); },
+  generate(cfg, rng, items){
+    const lvl = cfg.difficulty, pool = this.pool(cfg), sig = [];
+    const html = items.map((it, i) => {
+      const label = it.kind === "title" ? '<span class="song-kind">Song title</span>' : '<span class="song-kind">Song line</span>';
+      const start = it.kind === "title" ? `&ldquo;${esc(it.start)} &hellip;&rdquo;` : `${esc(it.start)} &hellip;`;
+      let tail;
+      if (lvl === "advanced"){
+        const others = pool.filter(x => x.kind === it.kind && x.end.toLowerCase() !== it.end.toLowerCase());
+        const wrong = others.length ? rng.pick(others).end : "Home";
+        const opts = rng.next() < .5 ? [it.end, wrong] : [wrong, it.end];
+        sig.push(opts[0]);
+        tail = `<div class="choices"><span class="choice">${esc(opts[0])}</span><span class="choice">${esc(opts[1])}</span></div>`;
+      } else {
+        const hint = lvl === "moderate" ? ` <span class="hintx">(starts with &ldquo;${esc(it.end[0].toUpperCase())}&rdquo;)</span>` : "";
+        tail = `<div class="wline"></div>`;
+        return `<div class="item"><p class="q">${label}${i + 1}. ${start}${hint}</p>${tail}</div>`;
+      }
+      return `<div class="item"><p class="q">${label}${i + 1}. ${start}</p>${tail}</div>`;
+    }).join("");
+    const titlesOnly = items.every(x => x.kind === "title");
+    return {
+      title: titlesOnly ? "Name That Tune" : "Finish the Song",
+      instructions: lvl === "advanced" ? "Sing or say the beginning out loud. Circle the words that finish it."
+        : "Sing or say the beginning out loud, then write the words that finish it. Humming the tune can help.",
+      html,
+      answers: items.map((it, i) => (i + 1) + ". " + it.end).join("   "),
+      signature: items.map(x => x.start).join("|") + "#" + sig.join("")
+    };
+  }
+};
+
+const SINGER_MATCH = {
+  id: "singer-match", name: "Musical Nostalgia Match", themed: true,
+  desc: "Match famous mid-century singers to their best-known songs. A new mix of singers, in a new order, every time.",
+  icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="2" width="6" height="11" rx="3"/><path d="M5 10a6 6 0 0 0 12 0"/><line x1="11" y1="16" x2="11" y2="21"/><line x1="7" y1="21" x2="15" y2="21"/></svg>',
+  levels: { early:{ count:6 }, moderate:{ count:5 }, advanced:{ count:3 } },
+  pool(cfg){
+    const eras = musicEras(cfg.era);
+    let p = SINGER_SONGS.filter(x => eras.includes(x[0]));
+    if (p.length < 8) p = p.concat(SINGER_SONGS.filter(x => !p.includes(x) && x[0] === "1950s"));
+    return p;
+  },
+  plan(cfg, rng, count){ return slicePlan(this.pool(cfg), this.levels[cfg.difficulty].count, count, rng); },
+  generate(cfg, rng, pairs){
+    let right = rng.shuffle(pairs.map(p => p[2]));
+    // No song may sit straight across from its own singer.
+    for (let t = 0; t < 30 && right.some((s, i) => s === pairs[i][2]); t++) right = rng.shuffle(right);
+    const html = '<div class="pairs sm-pairs">' + pairs.map((p, i) =>
+      `<span class="l">${esc(p[1])}</span><span class="dot"></span><span></span><span class="dot"></span><span class="r">&ldquo;${esc(right[i])}&rdquo;</span>`
+    ).join("") + "</div>";
+    return {
+      title: "Who Sang It?",
+      instructions: "Draw a line from each singer to the song they made famous. Singing a line of it is a great hint!",
+      html,
+      answers: pairs.map(p => p[1] + ": " + p[2]).join("   "),
+      signature: pairs.map(p => p[1]).join("|") + "#" + right.join("|")
+    };
+  }
+};
+
 /* ---------- 8. Category registry ----------
    To add a category's activities later, give it an `activities` array of
    objects shaped like the Word & Language ones above. Everything else
@@ -1916,8 +2100,8 @@ const CATEGORIES = [
     blurb:"Seated chair yoga cards, fine-motor line tracing, tabletop beanbag targets and rhythm patterns. Everything is done sitting down, and each page carries a short safety note for staff.",
     activities:[CHAIR_YOGA, LINE_TRACING, BEANBAG_TARGET, SEATED_RHYTHM] },
   { id:"music", name:"Music, Rhythm & Sound Activities", icon:ICONS.music,
-    blurb:"Public-domain sing-alongs, rhythm patterns and music memory prompts.",
-    activities:[], planned:["Sing-Along Lyric Sheets","Rhythm Clapping Patterns","Name That Tune Prompts","Instrument Matching","Music Memory Journal"] },
+    blurb:"Large-print sing-along sheets, finish-the-song prompts and a singer-to-song match. Musical memory often outlasts other memories, which makes music one of the most reliable ways in. For rhythm patterns, see Seated Rhythm Sheets under Exercise & Movement.",
+    activities:[LYRIC_SHEET, FINISH_SONG, SINGER_MATCH] },
   { id:"multisensory", name:"Multisensory, Art & Group Activities", icon:ICONS.art,
     blurb:"Texture, scent, color and shape activities, plus guides for group sessions.",
     activities:[], planned:["Texture Matching Boards","Scent Memory Prompts","Color & Shape Sorting","Group Reminiscence Circle","Collage Templates"] }
