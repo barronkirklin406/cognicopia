@@ -365,6 +365,40 @@ input:focus,select:focus{border-color:var(--accent)}
 .sdk td{border:1pt solid #8f9c97;text-align:center;vertical-align:middle;font-weight:800;padding:0}
 .sdk td.br{border-right:3.5pt solid #1b1f1e}
 .sdk td.bb{border-bottom:3.5pt solid #1b1f1e}
+/* Movement: chair yoga cards */
+.yoga-wrap{display:grid;gap:.26in}
+.yoga-card{display:flex;gap:.22in;align-items:flex-start;padding:.16in .2in;border:2pt solid #1b1f1e;border-radius:.14in}
+.yoga-fig{flex:none;width:1.35in}
+.yoga-ic{display:block;width:100%;height:auto}
+.yoga-body{flex:1;min-width:0}
+.yoga-title{margin:0 0 .06in;font-size:1.12em;line-height:1.15;color:#1b4332}
+.yoga-steps{margin:0;padding-left:.34in;line-height:1.25}
+.yoga-steps li{margin:0 0 .04in}
+.yoga-rep{margin:.06in 0 0;font-weight:700}
+.yoga-tip{margin:.04in 0 0;font-style:italic;color:#3f4a46;font-size:.9em}
+.yoga-wrap.one .yoga-card{flex-direction:column;align-items:center;text-align:left}
+.yoga-wrap.one .yoga-fig{width:2.3in}
+.yoga-wrap.one .yoga-title{text-align:center}
+/* line tracing */
+.mt-grid{display:grid;gap:.14in}
+.mt-panel{display:block;width:100%;height:auto;border:1.5pt solid #c9d1ce;border-radius:.1in}
+/* beanbag targets */
+.tg-wrap{display:flex;justify-content:center;gap:.3in}
+.tg{display:block;flex:none}
+.tally{border-collapse:collapse;margin:.18in auto 0}
+.tally td,.tally th{border:2pt solid #1b1f1e;width:.92in;height:.58in;vertical-align:top;text-align:left;padding:.03in .06in}
+.tally th{width:auto;vertical-align:middle;font-size:.7em;white-space:nowrap}
+.tally small{font-size:9pt;color:#56615d}
+.tally .tot{border-width:3.5pt}
+.tally-ticks{margin:.18in 0 0;font-size:.8em;text-align:center}
+.tick{display:inline-block;width:.42in;height:.42in;margin-left:.1in;vertical-align:middle;border:2pt solid #1b1f1e;border-radius:.06in}
+/* rhythm */
+.rh-legend{display:flex;flex-wrap:wrap;gap:.1in .3in;margin:0 0 .24in;padding:.1in .16in;border:2pt solid #1b1f1e;border-radius:.1in;font-size:.8em}
+.rh-key{display:inline-flex;align-items:center;gap:.08in}
+.rh-row{display:flex;align-items:flex-start;gap:.14in;margin:0 0 .2in}
+.rh-beat{display:inline-flex;flex-direction:column;align-items:center}
+.rh-beat small{font-size:9pt;color:#56615d}
+.rh-shape{display:block}
 
 /* ---------- 6. PRINT
    Only #printRoot prints. Every .sheet is exactly one US Letter page.
@@ -390,6 +424,7 @@ input:focus,select:focus{border-color:var(--accent)}
   #printRoot.pure-bw svg *{stroke:#000000 !important}
   #printRoot.pure-bw svg [fill]:not([fill="none"]){fill:#000000 !important}
   #printRoot.pure-bw svg circle.coin-face[fill]{fill:#ffffff !important}
+  #printRoot.pure-bw svg [fill][data-bw="white"]:not([fill="none"]){fill:#ffffff !important}   /* tinted rings and shapes print white */
   #printRoot.pure-bw svg text:not([stroke]){stroke:none !important}   /* printed labels stay crisp; only tracing text is outlined */
   /* Tracing text, when later categories use it: hollow black outlines. */
   #printRoot.pure-bw .trace{color:#ffffff !important;-webkit-text-stroke:1pt #000000}
@@ -1516,6 +1551,344 @@ const NUMBER_TRACING = {
   }
 };
 
+/* ---------- 7d. Exercise, Movement & Physical Motor generators ----------
+   Everything here is seated. Pages that involve movement carry a staff
+   note (page.staffNote), printed small at the foot of the sheet. */
+
+const SAFETY_NOTE = "Stay seated in a sturdy chair without wheels. Move slowly and only as far as is comfortable; stop if anything hurts, and follow the resident's care plan or therapist's advice.";
+
+/* Outline shapes shared by the rhythm and target pages.
+   Returns SVG markup centred on (cx, cy); s = half-size. */
+function shapeSvg(kind, cx, cy, s, attrs){
+  const a = attrs || 'fill="none" stroke="#1b1f1e" stroke-width="4"';
+  if (kind === "circle") return `<circle cx="${cx}" cy="${cy}" r="${s}" ${a}/>`;
+  if (kind === "square") return `<rect x="${cx - s * .9}" y="${cy - s * .9}" width="${s * 1.8}" height="${s * 1.8}" rx="${s * .08}" ${a}/>`;
+  if (kind === "triangle") return `<polygon points="${cx},${cy - s} ${cx + s},${cy + s * .8} ${cx - s},${cy + s * .8}" ${a} stroke-linejoin="round"/>`;
+  if (kind === "diamond") return `<polygon points="${cx},${cy - s} ${cx + s},${cy} ${cx},${cy + s} ${cx - s},${cy}" ${a} stroke-linejoin="round"/>`;
+  if (kind === "star"){
+    const pts = [];
+    for (let i = 0; i < 10; i++){
+      const r = i % 2 ? s * .42 : s, t = -Math.PI / 2 + i * Math.PI / 5;
+      pts.push((cx + r * Math.cos(t)).toFixed(1) + "," + (cy + r * Math.sin(t)).toFixed(1));
+    }
+    return `<polygon points="${pts.join(" ")}" ${a} stroke-linejoin="round"/>`;
+  }
+  return "";
+}
+
+/* ---- 1. Seated chair yoga ---- */
+/* area: upper | lower | gentle.  pose: figure drawing.  focus: where the
+   highlight ring sits on the figure. Each has 4 core steps. */
+const STRETCHES = [
+  { name:"Shoulder Rolls", area:"upper gentle", pose:"rest", focus:"shoulder",
+    steps:["Sit tall with your feet flat on the floor.","Let your arms rest at your sides.","Lift your shoulders up toward your ears.","Roll them back and down, slowly."],
+    repeat:"Do 5 rolls back, then 5 rolls forward.", tip:"Keep breathing slowly the whole time." },
+  { name:"Gentle Neck Turns", area:"upper", pose:"rest", focus:"neck",
+    steps:["Sit tall with your shoulders relaxed.","Slowly turn your head to look over your right shoulder.","Come back to the middle.","Slowly turn to look over your left shoulder."],
+    repeat:"Do 3 turns to each side.", tip:"Turn only as far as feels easy. Never roll the head around." },
+  { name:"Overhead Reach", area:"upper", pose:"armsUp", focus:"hands_up",
+    steps:["Sit tall with your feet flat.","Breathe in and raise both arms in front of you.","Reach up as high as is comfortable.","Breathe out and lower your arms slowly."],
+    repeat:"Repeat 5 times.", tip:"One arm at a time is fine too." },
+  { name:"Shoulder Blade Squeeze", area:"upper", pose:"rest", focus:"back",
+    steps:["Sit tall, away from the back of the chair.","Let your arms hang loosely.","Gently squeeze your shoulder blades together.","Hold for 3 counts, then relax."],
+    repeat:"Repeat 5 times.", tip:"Keep your shoulders down, away from your ears." },
+  { name:"Gentle Seated Twist", area:"upper", pose:"rest", focus:"waist",
+    steps:["Sit tall with both feet flat.","Place your right hand on your left knee.","Turn your upper body a little to the left and hold for 3 breaths.","Come back to the middle, then switch sides."],
+    repeat:"Do 2 turns to each side.", tip:"Keep the turn small and easy." },
+  { name:"Wrist Circles", area:"gentle", pose:"armsForward", focus:"wrist",
+    steps:["Hold your hands out in front of you.","Make loose fists.","Circle your wrists slowly one way.","Now circle them the other way."],
+    repeat:"Do 5 circles each way.", tip:"Rest your elbows on the armrests if that is easier." },
+  { name:"Open and Close Hands", area:"gentle", pose:"armsForward", focus:"wrist",
+    steps:["Hold your hands in front of you.","Make a gentle fist.","Open your hands wide and spread your fingers.","Close them again, slowly."],
+    repeat:"Repeat 10 times, then shake your hands loosely.", tip:"Great before writing or painting." },
+  { name:"Belly Breathing", area:"gentle", pose:"rest", focus:"belly",
+    steps:["Sit comfortably with your hands on your belly.","Breathe in slowly through your nose as you count to 4.","Feel your belly rise under your hands.","Breathe out slowly through your mouth as you count to 4."],
+    repeat:"Repeat 5 times.", tip:"A calm way to start or end any activity." },
+  { name:"Finger Touches", area:"gentle", pose:"armsForward", focus:"wrist",
+    steps:["Hold one hand up in front of you.","Touch your thumb to your first finger.","Now touch it to each finger in turn, down to your little finger.","Switch to the other hand."],
+    repeat:"Do each hand 3 times.", tip:"Say the finger names out loud for extra fun." },
+  { name:"Palm Press", area:"gentle upper", pose:"armsForward", focus:"wrist",
+    steps:["Sit tall and bring your palms together in front of your chest.","Press them gently together.","Hold for 5 slow counts.","Relax your hands and let your shoulders drop."],
+    repeat:"Repeat 5 times.", tip:"Press only lightly; this is a gentle squeeze." },
+  { name:"Ankle Circles", area:"lower", pose:"legOut", focus:"ankle",
+    steps:["Sit tall and hold the sides of the chair.","Lift one foot a little off the floor.","Draw slow circles with your toes.","Put the foot down and switch feet."],
+    repeat:"Do 5 circles each way, on each foot.", tip:"Keep the other foot flat on the floor." },
+  { name:"Seated Marching", area:"lower", pose:"kneeUp", focus:"knee",
+    steps:["Sit tall and hold the sides of the chair.","Lift your right knee a little.","Put that foot down and lift your left knee.","Keep marching slowly, one leg at a time."],
+    repeat:"March 10 steps with each leg.", tip:"Lifting just a little is plenty." },
+  { name:"Heel and Toe Raises", area:"lower gentle", pose:"rest", focus:"foot",
+    steps:["Sit tall with your feet flat on the floor.","Lift your toes and keep your heels down.","Put your toes down.","Now lift your heels and keep your toes down."],
+    repeat:"Repeat 8 times.", tip:"Good for circulation after sitting a long time." },
+  { name:"Leg Straightening", area:"lower", pose:"legOut", focus:"knee_out",
+    steps:["Sit tall and hold the sides of the chair.","Slowly straighten your right leg out in front.","Hold it there for 2 breaths.","Lower it slowly and switch legs."],
+    repeat:"Do 5 with each leg.", tip:"A small lift is enough. Keep your back against the chair if needed." }
+];
+
+/* Seated figure placeholder icon: chair, figure, and a dashed ring on
+   the body part being worked. viewBox 0 0 120 120. */
+function yogaIcon(pose, focus){
+  const ink = 'stroke="#1b4332" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" fill="none"';
+  const chair = '<g stroke="#8f9c97" stroke-width="4" stroke-linecap="round" fill="none"><line x1="28" y1="28" x2="28" y2="80"/><line x1="28" y1="80" x2="82" y2="80"/><line x1="31" y1="80" x2="31" y2="114"/><line x1="79" y1="80" x2="79" y2="114"/></g>';
+  const arms = {
+    rest:        "M47 46 L60 60 L72 66",
+    armsUp:      "M47 46 L52 24 L56 6",
+    armsForward: "M47 46 L68 49 L90 49",
+    legOut:      "M47 46 L60 60 L72 66",
+    kneeUp:      "M47 46 L58 62 L62 72"
+  }[pose];
+  const legs = {
+    legOut: "M45 76 L80 76 L112 70",
+    kneeUp: "M45 76 L76 62 L80 98 L92 98"
+  }[pose] || "M45 76 L80 76 L82 110 L94 110";
+  const spot = { shoulder:[47,46], neck:[47,34], hands_up:[56,10], back:[42,54], waist:[46,66], wrist:[90,49],
+                 belly:[48,66], ankle:[110,70], knee:[76,62], foot:[88,110], knee_out:[80,76] }[focus] || [48,50];
+  return `<svg class="yoga-ic" viewBox="0 0 120 120" role="img" aria-label="Seated figure">
+    ${chair}
+    <circle cx="47" cy="22" r="10" ${ink}/>
+    <path d="M47 32 L45 76" ${ink}/>
+    <path d="${arms}" ${ink}/>
+    <path d="${legs}" ${ink}/>
+    <circle cx="${spot[0]}" cy="${spot[1]}" r="13" fill="none" stroke="#2d6a4f" stroke-width="3" stroke-dasharray="5 4"/>
+  </svg>`;
+}
+
+const CHAIR_YOGA = {
+  id: "chair-yoga", name: "Seated Chair Yoga Cards", themed: false,
+  desc: "Gentle seated stretches as large-print cards: a simple figure showing the body part, 4 to 6 short steps, and how many times to repeat.",
+  icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="4" r="2"/><path d="M11 6v7h6v7"/><path d="M11 9l5-3"/><path d="M6 4v14M6 13h11"/></svg>',
+  options: [
+    { id:"area", type:"select", label:"Focus", def:"all",
+      choices:[["all","Whole body mix"],["upper","Arms, shoulders and neck"],["lower","Legs, knees and feet"],["gentle","Very gentle: hands, wrists and breathing"]] }
+  ],
+  // cards per page, and how many lines each card shows
+  levels: { early:{ cards:2, tip:true }, moderate:{ cards:2, tip:false }, advanced:{ cards:1, tip:false } },
+  pool(cfg){
+    const area = optVal(cfg, "area", "all");
+    const p = area === "all" ? STRETCHES : STRETCHES.filter(s => s.area.split(" ").includes(area));
+    return p.length >= 2 ? p : STRETCHES;
+  },
+  plan(cfg, rng, count){ return slicePlan(this.pool(cfg), this.levels[cfg.difficulty].cards, count, rng); },
+  generate(cfg, rng, stretches){
+    const L = this.levels[cfg.difficulty];
+    const html = stretches.map(s => {
+      return `<div class="yoga-card">
+        <div class="yoga-fig">${yogaIcon(s.pose, s.focus)}</div>
+        <div class="yoga-body"><h2 class="yoga-title">${esc(s.name)}</h2>
+          <ol class="yoga-steps">${s.steps.map(t => `<li>${esc(t)}</li>`).join("")}</ol>
+          <p class="yoga-rep">${esc(s.repeat)}</p>${L.tip ? `<p class="yoga-tip">${esc(s.tip)}</p>` : ""}</div>
+      </div>`;
+    }).join("");
+    return {
+      title: "Chair Yoga",
+      instructions: "Follow along together. Read each step out loud, then do it slowly.",
+      html: `<div class="yoga-wrap${L.cards === 1 ? " one" : ""}">${html}</div>`,
+      staffNote: SAFETY_NOTE,
+      signature: stretches.map(s => s.name).join("|")
+    };
+  }
+};
+
+/* ---- 2. Fine-motor line tracing ----
+   Each panel is its own SVG, 720 units wide (1 unit = 0.01 in). The
+   dashed path stroke is 4pt, 5pt or 6pt depending on the stage. */
+const PT = 100 / 72;   // SVG units per point
+function tracePanelSvg(type, H, sw, rng, params){
+  const W = 720, x0 = 60, x1 = 660, paths = [];   // paths: arrays of [x,y]
+  const p = params;
+  if (type === "horizontal"){
+    for (let k = 0; k < p.lines; k++){ const y = H * (k + 1) / (p.lines + 1); paths.push([[x0, y], [x1, y]]); }
+  } else if (type === "vertical"){
+    for (let k = 0; k < p.lines; k++){ const x = x0 + (x1 - x0) * (k + .5) / p.lines; paths.push([[x, 22], [x, H - 22]]); }
+  } else if (type === "wavy"){
+    const pts = [], A = H * p.amp;
+    for (let i = 0; i <= 120; i++){ const t = i / 120; pts.push([x0 + (x1 - x0) * t, H / 2 + A * Math.sin(2 * Math.PI * p.waves * t + p.phase)]); }
+    paths.push(pts);
+  } else if (type === "zigzag"){
+    const pts = [], A = H * p.amp;
+    for (let i = 0; i <= p.teeth * 2; i++){ pts.push([x0 + (x1 - x0) * i / (p.teeth * 2), H / 2 + (i % 2 ? -A : A) * (p.flip ? -1 : 1)]); }
+    paths.push(pts);
+  } else if (type === "spiral"){
+    // Archimedean spiral r = b * theta, drawn from the outside in.
+    const R = H / 2 - 16 - sw, turns = p.turns, b = R / (turns * 2 * Math.PI), pts = [];
+    const cx = W / 2, cy = H / 2;
+    for (let i = 0; i <= 240; i++){
+      const th = turns * 2 * Math.PI * (1 - i / 240), r = b * th;
+      pts.push([cx + p.dir * r * Math.cos(th + p.rot), cy + r * Math.sin(th + p.rot)]);
+    }
+    paths.push(pts);
+  }
+  const d = pts => "M" + pts.map(q => q[0].toFixed(1) + " " + q[1].toFixed(1)).join(" L");
+  const dash = `${(sw * 2.2).toFixed(1)} ${(sw * 1.7).toFixed(1)}`;
+  const body = paths.map(pts => {
+    const s = pts[0], e = pts[pts.length - 1];
+    return `<path d="${d(pts)}" fill="none" stroke="#56625e" stroke-width="${sw.toFixed(1)}" stroke-dasharray="${dash}" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="${s[0].toFixed(1)}" cy="${s[1].toFixed(1)}" r="${(sw * 1.7).toFixed(1)}" fill="#2d6a4f"/>
+      <circle cx="${e[0].toFixed(1)}" cy="${e[1].toFixed(1)}" r="${(sw * 1.9).toFixed(1)}" fill="none" stroke="#2d6a4f" stroke-width="${(sw * .6).toFixed(1)}"/>`;
+  }).join("");
+  return `<svg class="mt-panel" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="${type} line to trace">${body}</svg>`;
+}
+const LINE_TRACING = {
+  id: "line-tracing", name: "Fine-Motor Line Tracing", themed: false,
+  desc: "Thick dashed straight, wavy, zigzag and spiral paths to trace from the filled dot to the open circle. Wider strokes and simpler paths at later stages.",
+  icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-dasharray="3 3" aria-hidden="true"><path d="M2 8c3-4 5 4 8 0s5 4 8 0 3-2 4-2"/><path d="M3 17h18"/></svg>',
+  options: [
+    { id:"paths", type:"select", label:"Kinds of lines", def:"mixed",
+      choices:[["mixed","A mix of all kinds"],["straight","Straight lines only (across and down)"],["curvy","Curves: waves and spirals"],["zigzag","Zigzags and straight lines"]] }
+  ],
+  // panels per page, panel height (units), stroke in points, complexity
+  levels: {
+    early:    { panels:4, H:165, pt:4, waves:[3,4], teeth:[6,8], turns:[2.5,3], lines:[3,3], vlines:[6,7], amp:.3 },
+    moderate: { panels:3, H:215, pt:5, waves:[2,3], teeth:[4,5], turns:[2,2.5], lines:[2,3], vlines:[5,5], amp:.32 },
+    advanced: { panels:2, H:300, pt:6, waves:[1,2], teeth:[2,3], turns:[1.5,1.5], lines:[2,2], vlines:[4,4], amp:.3 }
+  },
+  kinds: { mixed:["horizontal","vertical","wavy","zigzag","spiral"], straight:["horizontal","vertical"], curvy:["wavy","spiral"], zigzag:["zigzag","horizontal","vertical"] },
+  plan(cfg, rng, count){ return Array(count).fill(null); },
+  generate(cfg, rng){
+    const L = this.levels[cfg.difficulty], kinds = this.kinds[optVal(cfg, "paths", "mixed")] || this.kinds.mixed;
+    const between = ([a, b]) => a + rng.next() * (b - a);
+    const int = ([a, b]) => a + rng.int(b - a + 1);
+    // Different kinds on one page where possible, in a shuffled order.
+    let types = rng.shuffle(kinds);
+    while (types.length < L.panels) types = types.concat(rng.shuffle(kinds));
+    types = types.slice(0, L.panels);
+    const sig = [];
+    const panels = types.map(type => {
+      const params = { lines:int(L.lines), waves:int(L.waves), phase:rng.pick([0, Math.PI]), amp:L.amp,
+                       teeth:int(L.teeth), flip:rng.next() < .5, turns:Math.round(between(L.turns) * 2) / 2,
+                       dir:rng.pick([1, -1]), rot:rng.int(4) * Math.PI / 2 };
+      if (type === "vertical") params.lines = int(L.vlines);
+      sig.push(type + ":" + [params.lines, params.waves, params.phase ? 1 : 0, params.teeth, params.flip ? 1 : 0, params.turns, params.dir, params.rot.toFixed(2)].join(","));
+      return tracePanelSvg(type, L.H, L.pt * PT, rng, params);
+    });
+    return {
+      title: "Trace the Lines",
+      instructions: "Start at the filled dot. Follow the dashes all the way to the open circle. Go slowly; staying close is plenty.",
+      html: `<div class="mt-grid">${panels.join("")}</div>`,
+      signature: sig.join("|")
+    };
+  }
+};
+
+/* ---- 3. Beanbag target pages ---- */
+const TARGET_SCORES = {
+  early:    [[5,10,15,25],[10,20,30,50],[1,2,3,5],[2,4,6,10],[5,10,20,50],[10,25,50,100]],
+  moderate: [[1,2,3],[5,10,20],[10,20,30],[2,5,10],[1,3,5]],
+  advanced: [[1,2],[5,10],[10,20],[1,5]]
+};
+const TARGET_CENTERS = ["dot","star","square","diamond"];
+function targetSvg(scores, center, showPoints, sizeIn){
+  const n = scores.length, R = 48, c = 50, parts = [];
+  for (let k = 0; k < n; k++){
+    const r = R * (n - k) / n;
+    // Alternate rings lightly tinted on screen and in colour print; they
+    // print white in pure black and white (data-bw).
+    parts.push(`<circle cx="${c}" cy="${c}" r="${r.toFixed(2)}" fill="${k % 2 ? "#ffffff" : "#e4efe8"}" data-bw="white" stroke="#1b1f1e" stroke-width="1.1"/>`);
+  }
+  const inner = R / n;
+  if (showPoints){
+    for (let k = 0; k < n; k++){
+      const rOut = R * (n - k) / n, rIn = R * (n - k - 1) / n;
+      const y = k === n - 1 ? c + inner * .28 : c - (rOut + rIn) / 2 + 2.6;
+      const fs = Math.min(inner * (k === n - 1 ? .7 : .55), 8);
+      parts.push(`<text x="${c}" y="${y.toFixed(2)}" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-weight="700" font-size="${fs.toFixed(2)}" fill="#1b1f1e">${scores[k]}</text>`);
+    }
+  } else {
+    const s = inner * .55;
+    parts.push(center === "dot"
+      ? `<circle cx="${c}" cy="${c}" r="${(s * .7).toFixed(2)}" fill="#1b1f1e"/>`
+      : shapeSvg(center, c, c, +s.toFixed(2), 'fill="#1b1f1e" stroke="none"'));
+  }
+  return `<svg class="tg" viewBox="0 0 100 100" width="${sizeIn}in" height="${sizeIn}in" role="img" aria-label="Target with ${n} rings">${parts.join("")}</svg>`;
+}
+const BEANBAG_TARGET = {
+  id: "beanbag-target", name: "Tabletop Beanbag Targets", themed: false,
+  desc: "Large bullseye targets to lay flat on a table for seated beanbag tosses, with ring scores and a tally box for adding up points.",
+  icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>',
+  options: [
+    { id:"points", type:"check", label:"Show points in the rings", hint:"Adds scoring and a place to add up each toss.", def:true },
+    { id:"targets", type:"select", label:"Targets per page", def:"1",
+      choices:[["1","One large target"],["2","Two smaller targets (two players)"]] }
+  ],
+  levels: { early:{ tosses:5 }, moderate:{ tosses:3 }, advanced:{ tosses:0 } },
+  plan(cfg, rng, count){
+    const sets = slicePlan(TARGET_SCORES[cfg.difficulty], 1, count, rng).map(s => s[0]);
+    const centers = slicePlan(TARGET_CENTERS, 1, count, rng).map(s => s[0]);
+    return sets.map((s, i) => ({ scores:s, center:centers[i] }));
+  },
+  generate(cfg, rng, p){
+    const lvl = cfg.difficulty, L = this.levels[lvl];
+    const points = optVal(cfg, "points", true), two = optVal(cfg, "targets", "1") === "2";
+    const size = two ? 3.3 : lvl === "advanced" ? 6.4 : 6.1;
+    const t = targetSvg(p.scores, p.center, points, size);
+    const players = two ? ["Player 1", "Player 2"] : [""];
+    const tally = players.map(who => {
+      if (points && L.tosses){
+        const cells = Array.from({ length:L.tosses }, (_, i) => `<td><small>Toss ${i + 1}</small></td>`).join("");
+        return `<table class="tally" role="presentation"><tr>${who ? `<th>${who}</th>` : ""}${cells}<td class="tot"><small>Total</small></td></tr></table>`;
+      }
+      return `<div class="tally-ticks">${who ? `<b>${who}:</b> ` : ""}Tick a box for each toss that lands on the target: ${'<span class="tick"></span>'.repeat(5)}</div>`;
+    }).join("");
+    return {
+      title: "Beanbag Target",
+      instructions: points && L.tosses ? "Lay this page flat on a table. Toss a beanbag from your seat, then write the points for each toss and add them up."
+                                       : "Lay this page flat on a table. Toss a beanbag from your seat and see how close to the middle it lands.",
+      html: `<div class="tg-wrap${two ? " two" : ""}">${two ? t + t : t}</div>${tally}`,
+      staffNote: "Seat residents a comfortable distance from the table and hand the beanbags back to them, so no one has to stand or bend to pick them up.",
+      signature: p.scores.join(",") + "#" + (points ? "p" : p.center) + (two ? "2" : "1")
+    };
+  }
+};
+
+/* ---- 4. Seated rhythm sheets ---- */
+const RHYTHM_MOVES = [
+  { shape:"circle",   move:"Clap your hands" },
+  { shape:"square",   move:"Tap your feet" },
+  { shape:"triangle", move:"Pat your knees" },
+  { shape:"diamond",  move:"Wave your hands" }
+];
+const SEATED_RHYTHM = {
+  id: "seated-rhythm", name: "Seated Rhythm Sheets", themed: false,
+  desc: "Shape patterns to follow in time: each shape is a move (circle = clap, square = tap feet). Fewer moves and shorter rows at later stages.",
+  icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><circle cx="5" cy="12" r="3"/><rect x="10" y="9" width="6" height="6"/><polygon points="21,9 24,15 18,15"/></svg>',
+  options: [
+    { id:"moves", type:"select", label:"Moves to use", def:"auto",
+      choices:[["auto","Automatic for the stage"],["2","2 moves: clap and tap feet"],["3","3 moves: add pat knees"],["4","4 moves: add wave hands"]] }
+  ],
+  levels: {
+    early:    { moves:4, rows:5, beats:8, motifs:[2,3,4], size:.6 },
+    moderate: { moves:3, rows:4, beats:6, motifs:[2,3],   size:.8 },
+    advanced: { moves:2, rows:3, beats:4, motifs:[2,4],   size:1.15 }   // 4 = the whole row is one pattern
+  },
+  plan(cfg, rng, count){ return Array(count).fill(null); },
+  generate(cfg, rng){
+    const L = this.levels[cfg.difficulty];
+    const pick = optVal(cfg, "moves", "auto"), nMoves = pick === "auto" ? L.moves : +pick;
+    const moves = RHYTHM_MOVES.slice(0, nMoves);
+    const icon = (m, size) => `<svg class="rh-shape" viewBox="0 0 100 100" width="${size}in" height="${size}in" role="img" aria-label="${m.move}">${shapeSvg(m.shape, 50, 50, 42, 'fill="#e4efe8" data-bw="white" stroke="#1b1f1e" stroke-width="7"')}</svg>`;
+    const rows = [], sig = [];
+    for (let t = 0; rows.length < L.rows && t < 200; t++){
+      // A short motif, repeated to fill the row, keeps the rhythm learnable.
+      const len = rng.pick(L.motifs);
+      const motif = Array.from({ length:len }, () => rng.int(nMoves));
+      if (new Set(motif).size < 2) continue;
+      const row = Array.from({ length:L.beats }, (_, i) => motif[i % len]);
+      const key = row.join("");
+      if (sig.includes(key)) continue;
+      sig.push(key); rows.push(row);
+    }
+    const legend = `<div class="rh-legend">${moves.map(m => `<span class="rh-key">${icon(m, .5)}<b>${m.move}</b></span>`).join("")}</div>`;
+    const body = rows.map((row, i) => `<div class="rh-row"><span class="num">${i + 1}.</span>${row.map((m, b) =>
+      `<span class="rh-beat">${icon(moves[m], L.size)}<small>${b + 1}</small></span>`).join("")}</div>`).join("");
+    return {
+      title: "Rhythm Patterns",
+      instructions: "Each shape is a move. Follow a row from left to right, one move per beat, counting out loud. Do each row twice.",
+      html: legend + body,
+      staffNote: "Go slowly and keep a steady count. Humming or playing a familiar song underneath helps. Any movement, even a small one, counts.",
+      signature: sig.join("|") + "#" + nMoves
+    };
+  }
+};
+
 /* ---------- 8. Category registry ----------
    To add a category's activities later, give it an `activities` array of
    objects shaped like the Word & Language ones above. Everything else
@@ -1540,8 +1913,8 @@ const CATEGORIES = [
     blurb:"Counting ladders, coins with old-time prices, large-print sudoku and big-number tracing. Everyday numbers keep counting and sequencing skills in use.",
     activities:[SEQUENCE_LADDER, MONEY_COUNT, MINI_SUDOKU, NUMBER_TRACING] },
   { id:"movement", name:"Exercise, Movement & Physical Motor Activities", icon:ICONS.move,
-    blurb:"Seated exercise cards, hand and finger work and gentle group movement guides.",
-    activities:[], planned:["Seated Stretch Cards","Hand & Finger Exercises","Balloon Toss Guide","Chair Yoga Sequence","Walking Path Log"] },
+    blurb:"Seated chair yoga cards, fine-motor line tracing, tabletop beanbag targets and rhythm patterns. Everything is done sitting down, and each page carries a short safety note for staff.",
+    activities:[CHAIR_YOGA, LINE_TRACING, BEANBAG_TARGET, SEATED_RHYTHM] },
   { id:"music", name:"Music, Rhythm & Sound Activities", icon:ICONS.music,
     blurb:"Public-domain sing-alongs, rhythm patterns and music memory prompts.",
     activities:[], planned:["Sing-Along Lyric Sheets","Rhythm Clapping Patterns","Name That Tune Prompts","Instrument Matching","Music Memory Journal"] },
@@ -1564,6 +1937,7 @@ function sheetHtml(item){
     <p class="sh-inst">${esc(page.instructions)}</p>
     <div class="sh-body">${page.html}</div>
     ${page.answers ? `<p class="sh-ans">For staff &middot; answers: ${esc(page.answers)}</p>` : ""}
+    ${page.staffNote ? `<p class="sh-ans">For staff: ${esc(page.staffNote)}</p>` : ""}
     <footer class="sh-foot"><span>${esc(settings.facility)}</span><span>Cognicopia &middot; Version ${item.index + 1} of ${item.count}</span></footer>
   </section>`;
 }
