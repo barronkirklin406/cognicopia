@@ -429,10 +429,15 @@ input:focus,select:focus{border-color:var(--accent)}
 .or-menu-row{display:flex;align-items:flex-end;gap:.2in;min-height:.46in;font-size:18pt}
 .or-menu-row b{flex:none;width:1.45in}
 .or-line{flex:1;height:.3in;border-bottom:2pt solid #000}
-/* coloring pages: 3:4 art */
-.color-wrap{display:flex;flex-direction:column;align-items:center}
-.color-art{display:block;width:5.4in;height:7.2in}
-.color-talk{margin:.1in 0 0;font-size:13pt;font-style:italic;text-align:center}
+/* coloring pages: full-page art sheet. 0.5 in safety margin, 2 pt frame,
+   a 6 x 8 in (3:4) art box centred in the space between header and footer */
+.sheet.sheet-art{padding:.5in}
+.art-frame{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;border:2pt solid #000;padding:.14in .3in .1in}
+.art-head{margin:0 0 .06in;font-size:17pt;color:#000;text-align:center}
+.art-box{flex:1;min-height:0;width:100%;display:flex;align-items:center;justify-content:center}
+.art-svg{display:block;flex:none;width:6in;height:8in}
+.art-talk{margin:.04in 0;font-size:12pt;font-style:italic;color:#000;text-align:center}
+.art-foot{font-size:9pt;letter-spacing:.04em;color:#444}
 /* silhouettes */
 .sil{display:block}
 .sil-pairs{row-gap:.2in}
@@ -2228,174 +2233,456 @@ const ORIENTATION_BOARD = {
 };
 
 /* ---- 2. Therapeutic line art & coloring pages (3:4) ----
-   Drawings use a 300 x 400 viewBox printed at 5.4 x 7.2 in, so one unit
-   is about 1.3 pt. Line weight: 3 pt early, 4.5 pt moderate, 6 pt
-   advanced; detail: 2 = most small areas, 0 = only big simple areas. */
+   Clinical rules built into every template:
+     - pure black (#000) outlines, 3 pt to 6 pt, never thinner;
+     - no hatching, textures or busy backgrounds: one bold subject, a
+       ground or table line, and plain white space;
+     - adult, mid-century subjects, never cartoons.
+   Coordinates: a 300 x 400 viewBox (3:4) printed at 6 x 8 in, so one
+   unit = 1.44 pt. det = 1 "Standard" (more interior lines, for early
+   stage) or 0 "Simplified" (big open shapes, for middle to late stage).
+   Closed shapes are filled white (data-bw="white") so a shape drawn
+   later sits cleanly on top of one drawn earlier. */
+
+const ART_UNIT_PT = 72 * 6 / 300;   // 1.44 pt per viewBox unit
+
+/* Shared drawing helpers (st = { W, N, D, T } style strings). */
+const artH = {
+  // clock face: numerals (Roman or Arabic) and hands at h:m
+  clockFace(cx, cy, r, st, det, roman, h, m){
+    const R = ["XII","I","II","III","IV","V","VI","VII","VIII","IX","X","XI"];
+    let out = `<circle cx="${cx}" cy="${cy}" r="${r}" ${st.W}/>`;
+    const idx = det ? [0,1,2,3,4,5,6,7,8,9,10,11] : [0,3,6,9];
+    const fs = det ? r * .2 : r * .3;
+    idx.forEach(i => {
+      const a = i * Math.PI / 6 - Math.PI / 2, rr = r * (det ? .76 : .7);
+      const label = roman ? R[i] : String(i === 0 ? 12 : i);
+      out += `<text x="${(cx + Math.cos(a) * rr).toFixed(1)}" y="${(cy + Math.sin(a) * rr + fs * .36).toFixed(1)}" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-weight="700" font-size="${fs.toFixed(1)}" fill="#000">${label}</text>`;
+    });
+    const ha = ((h % 12) + m / 60) * Math.PI / 6 - Math.PI / 2, ma = m * Math.PI / 30 - Math.PI / 2;
+    out += `<path d="M${cx} ${cy} L${(cx + Math.cos(ha) * r * .45).toFixed(1)} ${(cy + Math.sin(ha) * r * .45).toFixed(1)}" ${st.T}/>`;
+    out += `<path d="M${cx} ${cy} L${(cx + Math.cos(ma) * r * .66).toFixed(1)} ${(cy + Math.sin(ma) * r * .66).toFixed(1)}" ${st.N}/>`;
+    return out + `<circle cx="${cx}" cy="${cy}" r="${(r * .07).toFixed(1)}" ${st.W}/>`;
+  },
+  wheel(x, y, r, st, det){
+    return `<circle cx="${x}" cy="${y}" r="${r}" ${st.W}/>` + (det ? `<circle cx="${x}" cy="${y}" r="${(r * .45).toFixed(1)}" ${st.D}/>` : "");
+  },
+  // rose seen from the side: a rounded bloom with cupped petals and a bud centre
+  rose(x, y, r, st, det){
+    const f = n => n.toFixed(1);
+    let o = `<path d="M${f(x - r)} ${f(y - r * .15)} Q${f(x - r * 1.05)} ${f(y + r * .8)} ${f(x)} ${f(y + r)} Q${f(x + r * 1.05)} ${f(y + r * .8)} ${f(x + r)} ${f(y - r * .15)} Q${f(x + r * .7)} ${f(y - r * .95)} ${f(x)} ${f(y - r * .8)} Q${f(x - r * .7)} ${f(y - r * .95)} ${f(x - r)} ${f(y - r * .15)} Z" ${st.W}/>`;
+    o += `<path d="M${f(x - r * .78)} ${f(y - r * .05)} Q${f(x)} ${f(y + r * .95)} ${f(x + r * .78)} ${f(y - r * .05)}" ${st.D}/>`;
+    if (det) o += `<path d="M${f(x - r * .5)} ${f(y - r * .3)} Q${f(x)} ${f(y + r * .4)} ${f(x + r * .5)} ${f(y - r * .3)}" ${st.D}/>`;
+    o += `<path d="M${f(x - r * .3)} ${f(y - r * .45)} Q${f(x)} ${f(y - r * .9)} ${f(x + r * .3)} ${f(y - r * .45)} Q${f(x)} ${f(y - r * .15)} ${f(x - r * .3)} ${f(y - r * .45)} Z" ${st.W}/>`;
+    return o;
+  },
+  daisy(x, y, r, st, n){
+    let out = "";
+    for (let i = 0; i < n; i++){
+      const a = i * 2 * Math.PI / n;
+      out += svgLeaf(x + Math.cos(a) * r * .3, y + Math.sin(a) * r * .3, x + Math.cos(a) * r, y + Math.sin(a) * r, r * .3, st.W);
+    }
+    return out + `<circle cx="${x}" cy="${y}" r="${(r * .32).toFixed(1)}" ${st.W}/>`;
+  },
+  flip(on, body){ return `<g${on ? ' transform="translate(300 0) scale(-1 1)"' : ""}>${body}</g>`; },
+  ground(y, st){ return `<path d="M20 ${y} L280 ${y}" ${st.N}/>`; }
+};
+const rint = (rng, a, b) => a + rng.int(b - a + 1);
+
 const COLOR_ART = {
-  tulips: { group:"flowers", title:"Tulips in a Vase", talk:"Did you ever grow flowers? Which were your favourites?",
+  /* ================= A. Heirloom & retro household ================= */
+  grandclock: { group:"household", title:"The Grandfather Clock", talk:"Did your family have a clock that chimed? Where did it stand?",
     draw(rng, det, st){
-      const n = det === 2 ? 5 : det === 1 ? 4 : 3, s = det === 2 ? 22 : det === 1 ? 26 : 30;
+      const h = rint(rng, 1, 12), m = rng.pick([0, 15, 30, 45]);
+      let o = `<path d="M88 72 L88 60 Q150 18 212 60 L212 72 Z" ${st.W}/>`;
+      if (det) o += `<circle cx="88" cy="52" r="7" ${st.W}/><circle cx="212" cy="52" r="7" ${st.W}/><circle cx="150" cy="30" r="7" ${st.W}/>`;
+      o += `<rect x="94" y="72" width="112" height="112" rx="6" ${st.W}/>`;
+      o += artH.clockFace(150, 128, 44, st, det, true, h, m);
+      o += `<rect x="108" y="184" width="84" height="150" ${st.W}/>`;
+      o += `<path d="M124 318 L124 226 Q150 194 176 226 L176 318 Z" ${st.W}/>`;
+      o += `<path d="M150 204 L150 278" ${st.N}/><circle cx="150" cy="290" r="15" ${st.W}/>`;
+      o += `<rect x="98" y="334" width="104" height="40" rx="3" ${st.W}/><rect x="90" y="372" width="120" height="12" rx="4" ${st.W}/>`;
+      if (det) o += `<rect x="114" y="342" width="72" height="24" rx="5" ${st.D}/><path d="M100 184 L108 184 M192 184 L200 184" ${st.D}/>`;
+      return { svg:o + artH.ground(386, st), sig:`gc${h}:${m}` };
+    } },
+  rotaryphone: { group:"household", title:"The Rotary Telephone", talk:"Do you remember an old telephone number? Who did you call most?",
+    draw(rng, det, st){
+      const flip = rng.next() < .5;
+      let o = `<path d="M74 334 C28 330 30 232 64 212" ${st.N}/>`;
+      o += `<rect x="58" y="330" width="184" height="16" rx="6" ${st.W}/>`;
+      o += `<path d="M72 332 L92 222 Q96 206 112 206 L188 206 Q204 206 208 222 L228 332 Z" ${st.W}/>`;
+      o += `<path d="M58 198 Q58 176 84 176 L216 176 Q242 176 242 198 L242 206 Q242 216 228 216 L212 216 Q200 216 196 204 L104 204 Q100 216 88 216 L72 216 Q58 216 58 206 Z" ${st.W}/>`;
+      if (det) o += `<circle cx="80" cy="196" r="9" ${st.D}/><circle cx="220" cy="196" r="9" ${st.D}/>`;
+      o += `<circle cx="150" cy="276" r="44" ${st.W}/>`;
+      if (det){
+        for (let i = 0; i < 10; i++){ const a = (-60 + i * 27) * Math.PI / 180; o += `<circle cx="${(150 + Math.cos(a) * 30).toFixed(1)}" cy="${(276 + Math.sin(a) * 30).toFixed(1)}" r="7" ${st.D}/>`; }
+      }
+      o += `<circle cx="150" cy="276" r="${det ? 15 : 20}" ${st.W}/>`;
+      return { svg:artH.flip(flip, o) + artH.ground(356, st), sig:"rp" + flip };
+    } },
+  wallclock: { group:"household", title:"The Schoolhouse Clock", talk:"Was there a clock like this in your school or kitchen?",
+    draw(rng, det, st){
+      const h = rint(rng, 1, 12), m = rng.pick([0, 5, 10, 15, 20, 30, 40, 45, 50]);
+      const pts = []; for (let i = 0; i < 8; i++){ const a = Math.PI / 8 + i * Math.PI / 4; pts.push((150 + Math.cos(a) * 94).toFixed(1) + "," + (142 + Math.sin(a) * 94).toFixed(1)); }
+      let o = `<circle cx="150" cy="40" r="5" ${st.W}/><path d="M104 222 L196 222 L186 332 L114 332 Z" ${st.W}/>`;
+      o += `<polygon points="${pts.join(" ")}" ${st.W}/>`;
+      o += artH.clockFace(150, 142, 70, st, det, false, h, m);
+      o += `<rect x="128" y="244" width="44" height="66" rx="8" ${st.W}/><path d="M150 244 L150 286" ${st.N}/><circle cx="150" cy="292" r="10" ${st.W}/>`;
+      o += `<rect x="138" y="332" width="24" height="12" rx="3" ${st.W}/>`;
+      if (det) o += `<path d="M114 322 L186 322" ${st.D}/>`;
+      return { svg:o, sig:`wc${h}:${m}` };
+    } },
+  sewing: { group:"household", title:"The Sewing Machine", talk:"Did you or someone in your family sew? What did you make?",
+    draw(rng, det, st){
+      const flip = rng.next() < .5;
+      let o = `<rect x="44" y="268" width="14" height="104" ${st.W}/><rect x="242" y="268" width="14" height="104" ${st.W}/>`;
+      if (det) o += `<rect x="58" y="340" width="184" height="10" ${st.W}/><rect x="110" y="352" width="80" height="12" rx="4" ${st.W}/>`;
+      o += `<rect x="28" y="250" width="244" height="18" rx="4" ${st.W}/>`;
+      if (det) o += `<rect x="186" y="268" width="56" height="26" rx="3" ${st.W}/><circle cx="214" cy="281" r="4" ${st.D}/>`;
+      o += `<rect x="58" y="232" width="184" height="18" rx="4" ${st.W}/>`;
+      o += `<path d="M230 232 L230 150 Q230 128 208 128 L90 128 Q70 128 70 148 L70 202 L104 202 L104 166 L192 166 L192 232 Z" ${st.W}/>`;
+      o += `<circle cx="240" cy="172" r="20" ${st.W}/>` + (det ? `<circle cx="240" cy="172" r="8" ${st.D}/>` : "");
+      o += `<path d="M86 202 L86 224" ${st.N}/><rect x="76" y="222" width="20" height="8" rx="2" ${st.W}/>`;
+      if (det) o += `<rect x="146" y="108" width="18" height="20" rx="3" ${st.W}/><path d="M155 108 Q120 96 90 128" ${st.D}/>`;
+      return { svg:artH.flip(flip, o) + artH.ground(374, st), sig:"sw" + flip };
+    } },
+  pocketwatch: { group:"household", title:"The Pocket Watch", talk:"Did anyone in your family carry a pocket watch? Who wound it?",
+    draw(rng, det, st){
+      const h = rint(rng, 1, 12), m = rng.pick([0, 10, 15, 25, 30, 45, 50]), side = rng.next() < .5 ? 1 : -1;
+      let o = "";
+      // fob chain: a smooth curve of oval links (Standard) or one bold cord (Simplified)
+      const P0 = [150, 84], C = [150 + side * 70, 18], P1 = [150 + side * 112, 96];
+      const at = t => [(1 - t) * (1 - t) * P0[0] + 2 * (1 - t) * t * C[0] + t * t * P1[0], (1 - t) * (1 - t) * P0[1] + 2 * (1 - t) * t * C[1] + t * t * P1[1]];
+      if (det){
+        for (let i = 1; i < 12; i++){
+          const t = i / 12, [x, y] = at(t), [x2, y2] = at(t + .01);
+          const ang = Math.atan2(y2 - y, x2 - x) * 180 / Math.PI + (i % 2 ? 0 : 90);
+          o += `<ellipse cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" rx="8" ry="4.5" transform="rotate(${ang.toFixed(0)} ${x.toFixed(1)} ${y.toFixed(1)})" ${st.W}/>`;
+        }
+      } else o += `<path d="M${P0[0]} ${P0[1]} Q${C[0]} ${C[1]} ${P1[0]} ${P1[1]}" ${st.T}/>`;
+      o += `<circle cx="${P1[0]}" cy="${P1[1]}" r="6" ${st.W}/><rect x="${P1[0] - 16}" y="${P1[1] + 5}" width="32" height="9" rx="4" ${st.W}/>`;
+      o += `<circle cx="150" cy="94" r="15" ${st.T}/>`;
+      o += `<rect x="141" y="112" width="18" height="18" rx="3" ${st.W}/><circle cx="150" cy="112" r="11" ${st.W}/>`;
+      o += `<circle cx="150" cy="236" r="104" ${st.W}/>`;
+      o += artH.clockFace(150, 236, 86, st, det, true, h, m);
+      if (det) o += `<circle cx="150" cy="284" r="15" ${st.D}/>`;
+      return { svg:o, sig:`pw${h}:${m}${side}` };
+    } },
+  radio: { group:"household", title:"The Family Radio", talk:"What did you like to listen to on the radio? Who listened with you?",
+    draw(rng, det, st){
+      const cathedral = rng.next() < .5;
+      let o = "";
+      if (cathedral){
+        o += `<rect x="52" y="300" width="196" height="16" rx="5" ${st.W}/><path d="M60 300 L60 200 Q60 120 150 120 Q240 120 240 200 L240 300 Z" ${st.W}/>`;
+        o += `<path d="M92 232 L92 202 Q92 152 150 152 Q208 152 208 202 L208 232 Z" ${st.W}/>`;
+        if (det) for (let x = 118; x <= 182; x += 32) o += `<path d="M${x} ${x === 150 ? 158 : 168} V228" ${st.D}/>`;
+        o += `<circle cx="150" cy="264" r="20" ${st.W}/><circle cx="100" cy="270" r="12" ${st.W}/><circle cx="200" cy="270" r="12" ${st.W}/>`;
+      } else {
+        o += `<path d="M100 172 Q150 120 200 172" ${st.T}/><rect x="40" y="170" width="220" height="146" rx="18" ${st.W}/><circle cx="106" cy="243" r="46" ${st.W}/>`;
+        if (det) o += `<circle cx="106" cy="243" r="26" ${st.D}/>`;
+        o += `<rect x="170" y="200" width="70" height="32" rx="6" ${st.W}/><circle cx="186" cy="274" r="12" ${st.W}/><circle cx="226" cy="274" r="12" ${st.W}/>`;
+        if (det) o += `<path d="M190 208 V224 M205 208 V224 M220 208 V224" ${st.D}/>`;
+      }
+      return { svg:o + artH.ground(330, st), sig:"rad" + (cathedral ? "c" : "b") };
+    } },
+  teapot: { group:"household", title:"Teatime", talk:"Do you take your tea or coffee with milk or sugar? Who did you share it with?",
+    draw(rng, det, st){
+      const flip = rng.next() < .5;
+      let o = `<path d="M184 312 Q222 300 232 256 L246 260 Q238 322 188 334 Z" ${st.W}/><path d="M56 280 C16 278 16 344 60 334" ${st.T}/>`;
+      o += `<ellipse cx="120" cy="304" rx="70" ry="54" ${st.W}/><path d="M86 254 Q120 222 154 254 Z" ${st.W}/><ellipse cx="120" cy="254" rx="38" ry="7" ${st.W}/><circle cx="120" cy="226" r="9" ${st.W}/>`;
+      if (det) o += `<path d="M56 290 Q120 306 184 290 M52 318 Q120 334 188 318" ${st.D}/>`;
+      o += `<path d="M270 324 C292 324 292 348 266 344" ${st.N}/><ellipse cx="238" cy="356" rx="44" ry="8" ${st.W}/><path d="M204 316 L272 316 Q268 352 238 352 Q208 352 204 316 Z" ${st.W}/>`;
+      return { svg:artH.flip(flip, o) + artH.ground(364, st), sig:"tea" + flip };
+    } },
+
+  /* ================= B. Classic vehicles & rural machinery ================= */
+  truck: { group:"vehicles", title:"The 1950s Pickup Truck", talk:"Did your family have a truck? What did you haul in it?",
+    draw(rng, det, st){
+      const flip = rng.next() < .5;
+      let t = `<path d="M26 282 L26 238 L148 238 L148 190 Q148 182 158 182 L206 182 Q216 182 222 192 L242 232 L266 236 Q278 238 278 254 L278 282 Z" ${st.W}/>`;
+      t += `<path d="M160 192 L204 192 Q210 192 214 200 L230 230 L160 230 Z" ${st.W}/><circle cx="268" cy="252" r="7" ${st.W}/><rect x="268" y="268" width="14" height="12" rx="3" ${st.W}/>`;
+      if (det) t += `<path d="M26 252 L148 252 M162 238 L162 276 M174 250 L186 250" ${st.D}/>`;
+      t += artH.wheel(78, 284, 28, st, det) + artH.wheel(226, 284, 28, st, det);
+      return { svg:artH.flip(flip, t) + artH.ground(312, st), sig:"trk" + flip };
+    } },
+  musclecar: { group:"vehicles", title:"The Muscle Car", talk:"What was the fastest car you ever rode in? Who was driving?",
+    draw(rng, det, st){
+      const flip = rng.next() < .5, scoop = rng.next() < .5;
+      let c = `<path d="M22 278 L22 252 Q24 240 42 238 L98 234 L138 202 Q144 197 156 197 L196 199 Q204 200 210 207 L236 234 L268 238 Q282 242 282 256 L282 278 Z" ${st.W}/>`;
+      c += `<path d="M146 207 L196 207 Q200 207 204 212 L220 232 L126 232 Z" ${st.W}/>`;
+      if (scoop) c += `<path d="M238 238 L262 238 L258 230 L242 230 Z" ${st.W}/>`;
+      if (det) c += `<path d="M174 207 L174 232 M40 256 L270 256" ${st.D}/>`;
+      c += `<rect x="272" y="262" width="14" height="10" rx="3" ${st.W}/><rect x="16" y="262" width="14" height="10" rx="3" ${st.W}/>`;
+      c += artH.wheel(80, 280, 29, st, det) + artH.wheel(228, 280, 29, st, det);
+      return { svg:artH.flip(flip, c) + artH.ground(310, st), sig:"mc" + flip + scoop };
+    } },
+  car: { group:"vehicles", title:"The 1950s Sedan", talk:"What was the first car you drove or rode in? Where did you go?",
+    draw(rng, det, st){
+      const flip = rng.next() < .5, fin = rng.next() < .6;
+      let c = `<path d="M40 280 L40 255 Q42 242 60 240 L95 238 L120 206 Q126 200 140 200 L190 200 Q200 200 208 208 L230 236 L255 240 Q268 244 268 258 L268 280 Z" ${st.W}/>`;
+      if (fin) c += `<path d="M40 254 L43 233 L98 241 L98 244 Z" ${st.W}/>`;
+      c += `<path d="M126 212 Q130 208 138 208 L160 208 L160 235 L110 235 Z" ${st.W}/><path d="M168 208 L192 208 Q198 208 204 216 L218 235 L168 235 Z" ${st.W}/>`;
+      c += `<rect x="258" y="266" width="18" height="12" rx="4" ${st.W}/><rect x="30" y="266" width="16" height="12" rx="4" ${st.W}/><circle cx="258" cy="254" r="6" ${st.W}/>`;
+      if (det) c += `<path d="M164 242 L164 276 M176 254 L188 254" ${st.D}/>`;
+      c += artH.wheel(85, 282, 26, st, det) + artH.wheel(220, 282, 26, st, det);
+      return { svg:artH.flip(flip, c) + artH.ground(310, st), sig:"car" + flip + fin };
+    } },
+  tractor: { group:"vehicles", title:"The Farm Tractor", talk:"Did you ever drive a tractor or visit a farm? What was grown there?",
+    draw(rng, det, st){
+      const flip = rng.next() < .5;
+      // a plain barn behind: big shapes only
+      let barn = `<path d="M150 214 L150 110 L172 80 L220 62 L268 80 L290 110 L290 214 Z" ${st.W}/>`;
+      barn += `<rect x="198" y="146" width="48" height="68" ${st.W}/>`;
+      if (det) barn += `<path d="M198 146 L246 214 M246 146 L198 214" ${st.D}/><rect x="210" y="94" width="24" height="24" ${st.W}/>`;
+      let t = `<rect x="84" y="200" width="9" height="40" ${st.W}/><rect x="80" y="194" width="17" height="7" rx="2" ${st.W}/>`;
+      t += `<rect x="44" y="236" width="122" height="40" rx="9" ${st.W}/>`;
+      if (det) t += `<path d="M56 244 L56 268 M66 244 L66 268 M76 244 L76 268" ${st.D}/>`;
+      t += `<path d="M168 236 L180 204" ${st.N}/><ellipse cx="181" cy="202" rx="13" ry="5" ${st.W}/>`;
+      t += `<path d="M144 276 Q148 212 200 210 Q252 212 258 276 L244 276 Q240 226 200 226 Q160 226 158 276 Z" ${st.W}/>`;
+      t += `<rect x="206" y="196" width="28" height="9" rx="3" ${st.W}/><rect x="228" y="174" width="9" height="26" rx="3" ${st.W}/>`;
+      t += artH.wheel(200, 284, 52, st, det) + artH.wheel(70, 308, 28, st, det);
+      return { svg:artH.flip(flip, barn + t) + artH.ground(336, st), sig:"tr" + flip };
+    } },
+  locomotive: { group:"vehicles", title:"The Steam Locomotive", talk:"Did you ever ride on a train? Where were you going?",
+    draw(rng, det, st){
+      const flip = rng.next() < .5;
+      let l = "";
+      if (det) l += svgCloud(104, 150, 14, st.W) + svgCloud(146, 116, 12, st.W);
+      l += `<path d="M66 218 L62 180 L98 180 L94 218 Z" ${st.W}/><rect x="58" y="172" width="44" height="10" rx="3" ${st.W}/>`;
+      l += `<path d="M122 218 Q122 196 136 196 Q150 196 150 218 Z" ${st.W}/>`;
+      l += `<path d="M58 218 L204 218 L204 272 L58 272 Q42 245 58 218 Z" ${st.W}/>`;
+      if (det) l += `<path d="M78 218 L78 272" ${st.D}/>`;
+      l += `<rect x="198" y="176" width="74" height="96" ${st.W}/><rect x="192" y="166" width="86" height="12" rx="4" ${st.W}/><rect x="212" y="190" width="44" height="36" rx="4" ${st.W}/>`;
+      l += `<rect x="40" y="272" width="238" height="12" ${st.W}/><polygon points="40,284 20,316 58,316 58,284" ${st.W}/>`;
+      [112, 162, 212].forEach(x => { l += artH.wheel(x, 300, 26, st, det); });
+      l += `<circle cx="62" cy="312" r="14" ${st.W}/>`;
+      if (det) l += `<path d="M112 306 L212 306" ${st.T}/>`;
+      return { svg:artH.flip(flip, l) + artH.ground(328, st), sig:"lo" + flip };
+    } },
+  wagon: { group:"vehicles", title:"The Station Wagon", talk:"Did your family take road trips? Who sat in the back seat?",
+    draw(rng, det, st){
+      const flip = rng.next() < .5, rack = rng.next() < .5;
+      let w = "";
+      if (det && rack) w += `<path d="M40 184 L196 184 M56 184 L56 192 M118 184 L118 192 M180 184 L180 192" ${st.D}/>`;
+      w += `<path d="M22 280 L22 206 Q22 194 36 194 L200 194 Q210 194 215 202 L234 234 L268 238 Q282 242 282 256 L282 280 Z" ${st.W}/>`;
+      w += `<rect x="34" y="204" width="48" height="28" rx="3" ${st.W}/><rect x="90" y="204" width="48" height="28" rx="3" ${st.W}/><rect x="146" y="204" width="52" height="28" rx="3" ${st.W}/><path d="M206 204 L212 204 L228 232 L206 232 Z" ${st.W}/>`;
+      if (det) w += `<rect x="34" y="242" width="172" height="26" rx="3" ${st.D}/><path d="M92 242 L92 268 M148 242 L148 268" ${st.D}/>`;
+      w += `<rect x="272" y="264" width="14" height="10" rx="3" ${st.W}/><rect x="16" y="264" width="14" height="10" rx="3" ${st.W}/><circle cx="272" cy="252" r="6" ${st.W}/>`;
+      w += artH.wheel(76, 282, 27, st, det) + artH.wheel(230, 282, 27, st, det);
+      return { svg:artH.flip(flip, w) + artH.ground(310, st), sig:"sw" + flip + rack };
+    } },
+
+  /* ================= C. Botanical & garden flora ================= */
+  tulips: { group:"botanical", title:"Tulips in a Vase", talk:"Did you ever grow flowers? Which were your favourites?",
+    draw(rng, det, st){
+      const n = det ? 5 : 3, s = det ? 24 : 30;
       const heads = Array.from({ length:n }, (_, i) => [85 + (130 * (i + .5) / n) + (rng.next() - .5) * 14, (i % 2 ? 150 : 100) + rng.int(30)]);
       const tall = rng.next() < .5;
-      let out = "";
-      heads.forEach(([x, y]) => { out += `<path d="M${x.toFixed(1)} ${(y + s * .4).toFixed(1)} Q${((x + 150) / 2 + (rng.next() - .5) * 20).toFixed(1)} ${((y + 272) / 2).toFixed(1)} ${(150 + (x - 150) * .12).toFixed(1)} 276" ${st.N}/>`; });
-      const lt = [88 - rng.int(10), 196], rt = [212 + rng.int(10), 206];
-      out += svgLeaf(150, 276, lt[0], lt[1], 16, st.W) + svgLeaf(150, 276, rt[0], rt[1], 16, st.W);
-      // centre vein of each leaf, running most of the way to its own tip
-      if (det) out += `<path d="M150 276 L${(150 + (lt[0] - 150) * .8).toFixed(1)} ${(276 + (lt[1] - 276) * .8).toFixed(1)} M150 276 L${(150 + (rt[0] - 150) * .8).toFixed(1)} ${(276 + (rt[1] - 276) * .8).toFixed(1)}" ${st.D}/>`;
+      let o = "";
+      heads.forEach(([x, y]) => { o += `<path d="M${x.toFixed(1)} ${(y + s * .4).toFixed(1)} Q${((x + 150) / 2).toFixed(1)} ${((y + 272) / 2).toFixed(1)} ${(150 + (x - 150) * .12).toFixed(1)} 276" ${st.N}/>`; });
+      const lt = [86, 198], rt = [214, 206];
+      o += svgLeaf(150, 276, lt[0], lt[1], 16, st.W) + svgLeaf(150, 276, rt[0], rt[1], 16, st.W);
+      if (det) o += `<path d="M150 276 L${150 + (lt[0] - 150) * .8} ${276 + (lt[1] - 276) * .8} M150 276 L${150 + (rt[0] - 150) * .8} ${276 + (rt[1] - 276) * .8}" ${st.D}/>`;
       heads.forEach(([x, y]) => {
-        out += `<path d="M${x - s} ${y} C${x - s} ${y - 1.2 * s} ${x - .4 * s} ${y - 1.5 * s} ${x - .35 * s} ${y - 1.1 * s} L${x} ${y - 1.55 * s} L${x + .35 * s} ${y - 1.1 * s} C${x + .4 * s} ${y - 1.5 * s} ${x + s} ${y - 1.2 * s} ${x + s} ${y} C${x + s} ${y + .75 * s} ${x - s} ${y + .75 * s} ${x - s} ${y} Z" ${st.W}/>`;
-        if (det) out += `<path d="M${x - .35 * s} ${y - 1.1 * s} Q${x} ${y - .1 * s} ${x + .35 * s} ${y - 1.1 * s}" ${st.D}/>`;
+        o += `<path d="M${x - s} ${y} C${x - s} ${y - 1.2 * s} ${x - .4 * s} ${y - 1.5 * s} ${x - .35 * s} ${y - 1.1 * s} L${x} ${y - 1.55 * s} L${x + .35 * s} ${y - 1.1 * s} C${x + .4 * s} ${y - 1.5 * s} ${x + s} ${y - 1.2 * s} ${x + s} ${y} C${x + s} ${y + .75 * s} ${x - s} ${y + .75 * s} ${x - s} ${y} Z" ${st.W}/>`;
+        if (det) o += `<path d="M${x - .35 * s} ${y - 1.1 * s} Q${x} ${y - .1 * s} ${x + .35 * s} ${y - 1.1 * s}" ${st.D}/>`;
       });
-      out += tall ? `<path d="M120 386 L112 292 L100 272 L200 272 L188 292 L180 386 Z" ${st.W}/>`
-                  : `<path d="M115 386 C80 352 85 302 120 286 L120 272 L180 272 L180 286 C215 302 220 352 185 386 Z" ${st.W}/>`;
-      if (det >= 1) out += tall ? `<path d="M110 330 L190 330" ${st.D}/>` : `<path d="M90 330 Q150 346 210 330" ${st.D}/>`;
-      if (det === 2) out += [128, 150, 172].map(x => `<circle cx="${x}" cy="358" r="6" ${st.W}/>`).join("");
-      return { svg:out, sig:"tul" + n + (tall ? "t" : "j") + heads.map(h => h.map(Math.round).join(",")).join(";") };
+      o += tall ? `<path d="M120 386 L112 292 L100 272 L200 272 L188 292 L180 386 Z" ${st.W}/>`
+                : `<path d="M115 386 C80 352 85 302 120 286 L120 272 L180 272 L180 286 C215 302 220 352 185 386 Z" ${st.W}/>`;
+      if (det) o += tall ? `<path d="M110 330 L190 330" ${st.D}/>` : `<path d="M90 330 Q150 346 210 330" ${st.D}/>`;
+      return { svg:o, sig:"tul" + (tall ? "t" : "j") + heads.map(h => h.map(Math.round).join(",")).join(";") };
     } },
-  sunflowers: { group:"flowers", title:"Sunflowers", talk:"Where have you seen sunflowers growing? Did you ever eat the seeds?",
+  sunflowers: { group:"botanical", title:"Sunflowers", talk:"Where have you seen sunflowers growing? Did you ever eat the seeds?",
     draw(rng, det, st){
-      const layouts = det === 0 ? [[[150, 150, 46]]] : det === 1 ? [[[108, 120, 34], [200, 190, 30]], [[190, 115, 34], [104, 196, 30]]]
-                    : [[[92, 110, 27], [206, 104, 27], [150, 206, 29]], [[100, 190, 28], [150, 96, 29], [214, 176, 26]]];
+      const layouts = det ? [[[108, 120, 34], [200, 196, 30]], [[190, 115, 34], [104, 200, 30]]] : [[[150, 150, 46]]];
       const heads = rng.pick(layouts);
       let stems = "", leaves = "", flowers = "";
       heads.forEach(([cx, cy, r]) => {
         const bx = cx + (rng.next() - .5) * 30;
-        stems += `<path d="M${cx} ${cy + r} Q${(cx + bx) / 2 + 12} ${(cy + 390) / 2} ${bx.toFixed(1)} 392" ${st.N}/>`;
+        stems += `<path d="M${cx} ${cy + r} Q${((cx + bx) / 2 + 12).toFixed(1)} ${(cy + 390) / 2} ${bx.toFixed(1)} 392" ${st.N}/>`;
         const ly = cy + r + 60 + rng.int(40), side = rng.next() < .5 ? -1 : 1;
         leaves += svgLeaf((cx + bx) / 2 + 6, ly, (cx + bx) / 2 + 6 + side * 52, ly - 34, 15, st.W);
-        const n = det === 0 ? 12 : 14 + rng.int(5), rot = rng.next() * Math.PI, L = r * 1.25;
+        const n = det ? 14 + rng.int(4) : 12, rot = rng.next() * Math.PI, L = r * 1.25;
         for (let i = 0; i < n; i++){
           const a = rot + i * 2 * Math.PI / n;
           flowers += svgLeaf(cx + Math.cos(a) * r * .8, cy + Math.sin(a) * r * .8, cx + Math.cos(a) * (r + L), cy + Math.sin(a) * (r + L), r * Math.sin(Math.PI / n) * 1.25, st.W);
         }
-        flowers += `<circle cx="${cx}" cy="${cy}" r="${r}" ${st.W}/>`;
-        if (det >= 1) flowers += `<circle cx="${cx}" cy="${cy}" r="${(r * .58).toFixed(1)}" ${st.D}/>`;
-        if (det === 2) for (let k = 0; k < 6; k++){ const a = k * Math.PI / 3; flowers += `<circle cx="${(cx + Math.cos(a) * r * .8).toFixed(1)}" cy="${(cy + Math.sin(a) * r * .8).toFixed(1)}" r="2.6" ${st.D}/>`; }
+        flowers += `<circle cx="${cx}" cy="${cy}" r="${r}" ${st.W}/>` + (det ? `<circle cx="${cx}" cy="${cy}" r="${(r * .55).toFixed(1)}" ${st.D}/>` : "");
       });
       return { svg:stems + leaves + flowers, sig:"sun" + JSON.stringify(heads) + stems.length };
     } },
-  car: { group:"vehicles", title:"A Classic Car", talk:"What was the first car you drove or rode in? Where did you go?",
+  geranium: { group:"botanical", title:"The Porch Geranium", talk:"What grew on your porch or windowsill? Who watered it?",
     draw(rng, det, st){
-      const flip = rng.next() < .5, fin = rng.next() < .6, sunX = 60 + rng.int(180);
-      let sky = "";
-      if (det >= 1) sky += svgCloud(sunX < 150 ? 215 : 85, 96, 16, st.W);
-      if (det === 2) sky += svgSun(sunX, 70, 20, st.W, st.D) + `<path d="M40 332 L80 332 M120 332 L160 332 M200 332 L240 332" ${st.D}/>`;
-      let car = `<path d="M40 270 L40 245 Q42 232 60 230 L95 228 L120 196 Q126 190 140 190 L190 190 Q200 190 208 198 L230 226 L255 230 Q268 234 268 248 L268 270 Z" ${st.W}/>`;
-      if (fin) car += `<path d="M40 244 L43 223 L98 231 L98 234 Z" ${st.W}/>`;   // a low, swept 1950s tail fin
-      car += `<path d="M126 202 Q130 198 138 198 L160 198 L160 225 L110 225 Z" ${st.W}/><path d="M168 198 L192 198 Q198 198 204 206 L218 225 L168 225 Z" ${st.W}/>`;
-      car += `<rect x="258" y="256" width="18" height="12" rx="4" ${st.W}/><rect x="30" y="256" width="16" height="12" rx="4" ${st.W}/><circle cx="258" cy="244" r="6" ${st.W}/>`;
-      if (det >= 1) car += `<path d="M164 232 L164 266" ${st.D}/><path d="M176 244 L188 244" ${st.D}/>`;
-      if (det === 2) car += `<path d="M60 252 L250 252" ${st.D}/>`;
-      [85, 220].forEach(x => {
-        car += `<circle cx="${x}" cy="272" r="26" ${st.W}/>`;
-        if (det >= 1) car += `<circle cx="${x}" cy="272" r="12" ${st.D}/>`;
-        if (det === 2) car += `<circle cx="${x}" cy="272" r="19" ${st.D}/>`;
+      const clusters = [[100 + rint(rng, -8, 8), 128 + rint(rng, -8, 8)], [172 + rint(rng, -8, 8), 106 + rint(rng, -8, 8)], [212 + rint(rng, -8, 8), 170 + rint(rng, -8, 8)]].slice(0, det ? 3 : 2);
+      let o = clusters.map(([x, y]) => `<path d="M${x} ${y + 16} Q${(x + 150) / 2} ${(y + 250) / 2} 150 258" ${st.N}/>`).join("");
+      const leaves = [[108, 242, 28], [192, 238, 30], [150, 222, 26], [124, 270, 24], [178, 272, 24]].slice(0, det ? 5 : 3);
+      leaves.forEach(([x, y, r]) => { o += `<circle cx="${x}" cy="${y}" r="${r}" ${st.W}/>`; if (det) o += `<circle cx="${x}" cy="${y}" r="${(r * .58).toFixed(1)}" ${st.D}/>`; });   // the dark "zone" ring of a zonal geranium leaf
+      clusters.forEach(([x, y]) => {
+        const pr = det ? 11 : 15;
+        for (let k = 0; k < 5; k++){ const a = k * 2 * Math.PI / 5 - Math.PI / 2; o += `<circle cx="${(x + Math.cos(a) * pr * 1.1).toFixed(1)}" cy="${(y + Math.sin(a) * pr * 1.1).toFixed(1)}" r="${pr}" ${st.W}/>`; }
+        o += `<circle cx="${x}" cy="${y}" r="${(pr * .8).toFixed(1)}" ${st.W}/>`;
       });
-      const road = `<path d="M14 300 L286 300" ${st.N}/>`;
-      return { svg: sky + `<g${flip ? ' transform="translate(300 0) scale(-1 1)"' : ""}>${car}</g>` + road,
-               sig:"car" + [flip, fin, sunX].join(",") };
+      o += `<path d="M100 300 L112 380 L188 380 L200 300 Z" ${st.W}/><rect x="88" y="284" width="124" height="22" rx="4" ${st.W}/>`;
+      return { svg:o + artH.ground(382, st), sig:"ger" + clusters.join(";") };
     } },
-  truck: { group:"vehicles", title:"An Old Pickup Truck", talk:"Did your family have a truck? What did you haul in it?",
+  wateringcan: { group:"botanical", title:"Roses and the Watering Can", talk:"Did you grow roses? What colour were they?",
     draw(rng, det, st){
-      const flip = rng.next() < .5, sunX = 60 + rng.int(180), hills = rng.pick(["M8 190 Q80 140 150 180 Q220 130 292 170", "M8 170 Q90 130 160 176 Q230 150 292 186"]);
-      let back = det >= 1 ? `<path d="${hills}" ${st.D}/>` + svgCloud(sunX < 150 ? 220 : 80, 92, 14, st.W) : "";
-      if (det === 2){
-        back += svgSun(sunX, 66, 18, st.W, st.D) + `<path d="M14 214 L286 214 M14 238 L286 238" ${st.D}/>`;
-        for (let x = 20; x < 286; x += 44) back += `<rect x="${x}" y="198" width="10" height="62" ${st.W}/>`;
-      }
-      let t = `<path d="M30 270 L30 228 L150 228 L150 182 Q150 176 158 176 L204 176 Q214 176 220 186 L238 224 L262 228 Q272 230 272 244 L272 270 Z" ${st.W}/>`;
-      t += `<path d="M160 186 L202 186 Q208 186 212 194 L226 222 L160 222 Z" ${st.W}/><circle cx="264" cy="242" r="6" ${st.W}/>`;
-      if (det >= 1) t += `<path d="M30 242 L150 242 M160 230 L160 266" ${st.D}/>`;
-      if (det === 2) t += `<path d="M262 252 L272 252 M262 260 L272 260" ${st.D}/>`;
-      [78, 226].forEach(x => { t += `<circle cx="${x}" cy="272" r="26" ${st.W}/>`; if (det >= 1) t += `<circle cx="${x}" cy="272" r="11" ${st.D}/>`; });
-      return { svg: back + `<g${flip ? ' transform="translate(300 0) scale(-1 1)"' : ""}>${t}</g><path d="M14 300 L286 300" ${st.N}/>`,
-               sig:"trk" + [flip, sunX, hills.length].join(",") };
+      const flip = rng.next() < .5;
+      const heads = [[96 + rint(rng, -8, 8), 170 + rint(rng, -10, 10)], [150 + rint(rng, -8, 8), 128 + rint(rng, -10, 10)], [204 + rint(rng, -8, 8), 168 + rint(rng, -10, 10)]].slice(0, det ? 3 : 2);
+      let o = heads.map(([x, y]) => `<path d="M${x} ${y + 20} Q${(x + 130) / 2} ${(y + 290) / 2} ${118 + (x - 150) * .2} 292" ${st.N}/>`).join("");
+      heads.forEach(([x, y], i) => { const lx = (x + 124) / 2, ly = (y + 290) / 2; o += svgLeaf(lx, ly, lx + (i % 2 ? 30 : -30), ly - 16, 10, st.W); });
+      heads.forEach(([x, y]) => { o += artH.rose(x, y, det ? 24 : 30, st, det); });
+      o += `<path d="M66 304 C22 298 24 362 64 364" ${st.T}/>`;
+      o += `<path d="M172 348 L244 286 L254 296 L184 362 Z" ${st.W}/><ellipse cx="252" cy="288" rx="14" ry="9" transform="rotate(-40 252 288)" ${st.W}/>`;
+      o += `<path d="M62 380 L72 290 L172 290 L182 380 Z" ${st.W}/><ellipse cx="122" cy="290" rx="50" ry="7" ${st.W}/>`;
+      if (det) o += `<path d="M68 322 L178 322" ${st.D}/>`;
+      return { svg:artH.flip(flip, o) + artH.ground(382, st), sig:"wcan" + flip + heads.join(";") };
     } },
-  teapot: { group:"home", title:"Teatime", talk:"Do you take your tea or coffee with milk or sugar? Who did you share it with?",
+  gardengate: { group:"botanical", title:"The Garden Gate", talk:"Tell me about a garden you loved. What grew along the fence?",
     draw(rng, det, st){
-      const wall = rng.pick(["window", "clock", "picture"]);
-      let out = "";
-      if (det >= 1){
-        if (wall === "window") out += `<rect x="40" y="44" width="110" height="120" rx="4" ${st.W}/><path d="M95 44 V164 M40 104 H150" ${st.D}/>`;
-        else if (wall === "clock") out += `<circle cx="210" cy="100" r="44" ${st.W}/><path d="M210 100 V70 M210 100 L230 112" ${st.D}/>`;
-        else out += `<rect x="150" y="50" width="110" height="84" rx="4" ${st.W}/><path d="M160 124 L190 88 L210 108 L226 94 L250 124 Z" ${st.D}/>`;
-      }
-      out += `<path d="M12 362 L288 362" ${st.N}/>`;
-      out += `<path d="M184 312 Q222 300 232 256 L246 260 Q238 322 188 334 Z" ${st.W}/>`;
-      out += `<path d="M56 280 C16 278 16 344 60 334" fill="none" stroke="#000" stroke-width="${(parseFloat(st.sw) * 2).toFixed(1)}" stroke-linecap="round"/>`;
-      out += `<ellipse cx="120" cy="304" rx="70" ry="54" ${st.W}/>`;
-      out += `<path d="M86 254 Q120 222 154 254 Z" ${st.W}/><ellipse cx="120" cy="254" rx="38" ry="7" ${st.W}/><circle cx="120" cy="226" r="9" ${st.W}/>`;
-      const flowers = [];
-      if (det === 2) for (let k = 0; k < 3; k++){
-        const fx = 80 + k * 38 + rng.int(10), fy = 290 + rng.int(28);
-        flowers.push(fx + "," + fy);
-        for (let p = 0; p < 5; p++){ const a = p * 2 * Math.PI / 5; out += `<circle cx="${(fx + Math.cos(a) * 8).toFixed(1)}" cy="${(fy + Math.sin(a) * 8).toFixed(1)}" r="5" ${st.D}/>`; }
-      } else if (det === 1) out += `<path d="M56 290 Q120 306 184 290 M52 318 Q120 334 188 318" ${st.D}/>`;
-      out += `<path d="M270 324 C292 324 292 348 266 344" fill="none" stroke="#000" stroke-width="${st.sw}" stroke-linecap="round"/>`;
-      out += `<ellipse cx="238" cy="356" rx="44" ry="8" ${st.W}/><path d="M204 316 L272 316 Q268 352 238 352 Q208 352 204 316 Z" ${st.W}/>`;
-      if (det >= 1) out += `<path d="M228 306 Q220 294 228 282 Q236 270 228 258 M248 306 Q240 294 248 282" ${st.D}/>`;
-      return { svg:out, sig:"tea" + wall + flowers.join(";") };
+      const pickets = det ? 6 : 5, arch = rng.next() < .6;
+      let o = "";
+      if (arch) o += `<path d="M52 132 Q150 34 248 132" ${st.T}/>`;
+      const w = 164 / pickets;
+      for (let i = 0; i < pickets; i++){ const x = 68 + i * w; o += `<polygon points="${(x + 2).toFixed(1)},362 ${(x + 2).toFixed(1)},206 ${(x + w / 2).toFixed(1)},190 ${(x + w - 2).toFixed(1)},206 ${(x + w - 2).toFixed(1)},362" ${st.W}/>`; }
+      o += `<rect x="68" y="232" width="164" height="14" ${st.W}/><rect x="68" y="322" width="164" height="14" ${st.W}/>`;
+      if (det) o += `<path d="M78 318 L222 250" ${st.D}/>`;
+      o += `<rect x="40" y="132" width="26" height="250" ${st.W}/><rect x="234" y="132" width="26" height="250" ${st.W}/><rect x="34" y="122" width="38" height="14" rx="3" ${st.W}/><rect x="228" y="122" width="38" height="14" rx="3" ${st.W}/>`;
+      if (det) o += `<circle cx="53" cy="112" r="10" ${st.W}/><circle cx="247" cy="112" r="10" ${st.W}/>`;
+      // climbing vine: one smooth stem up the left post and over, with leaves and a few blooms
+      const vine = arch ? "M36 380 C70 330 20 260 56 200 C80 160 90 110 150 86 C200 70 230 100 246 126" : "M36 380 C70 330 20 260 56 200 C72 170 60 140 54 124";
+      o += `<path d="${vine}" ${st.N}/>`;
+      const leafAt = arch ? [[48, 330], [40, 268], [60, 206], [86, 148], [128, 96], [182, 80], [226, 100]] : [[48, 330], [40, 268], [60, 206], [60, 150]];
+      leafAt.slice(0, det ? leafAt.length : 4).forEach(([x, y], i) => { o += svgLeaf(x, y, x + (i % 2 ? 26 : -22), y - 18, 9, st.W); });
+      (arch ? [[112, 112], [206, 84]] : [[70, 176]]).forEach(([x, y]) => { o += artH.rose(x, y, 14, st, 0); });
+      return { svg:o + artH.ground(384, st), sig:"gate" + pickets + arch };
     } },
-  radio: { group:"home", title:"The Family Radio", talk:"What did you like to listen to on the radio? Who listened with you?",
+  glassvase: { group:"botanical", title:"Flowers in a Glass Vase", talk:"Who gave you flowers, or who did you give them to?",
     draw(rng, det, st){
-      const cathedral = rng.next() < .5;
-      let out = `<path d="M14 330 L286 330" ${st.N}/>`;
-      const notes = [];
-      if (det >= 1) for (let k = 0; k < 3; k++){
-        const x = 50 + k * 80 + rng.int(30), y = 60 + rng.int(40); notes.push(x + "," + y);
-        out += `<ellipse cx="${x}" cy="${y}" rx="9" ry="7" ${st.W}/><path d="M${x + 8} ${y} V${y - 34} Q${x + 20} ${y - 28} ${x + 22} ${y - 18}" ${st.N}/>`;
+      const spots = rng.shuffle([[92, 150], [150, 108], [208, 150], [120, 212], [184, 214]]).slice(0, det ? 5 : 3);
+      let o = spots.map(([x, y]) => `<path d="M${x} ${y} Q${(x + 150) / 2} ${(y + 300) / 2} 150 ${det ? 360 : 300}" ${st.N}/>`).join("");
+      o += svgLeaf(150, 280, 92, 244, 14, st.W) + svgLeaf(150, 280, 210, 246, 14, st.W);
+      spots.forEach(([x, y], i) => { o += i % 2 ? artH.rose(x, y, det ? 24 : 30, st, det) : artH.daisy(x, y, det ? 36 : 42, st, det ? 10 : 8); });
+      // the glass bowl is left unfilled so the stems show through, as they would in water
+      o += `<path d="M112 282 L188 282 L188 296 Q232 322 214 360 Q200 386 150 386 Q100 386 86 360 Q68 322 112 296 Z" ${st.N}/>`;
+      if (det) o += `<path d="M84 330 Q150 342 216 330" ${st.D}/>`;
+      return { svg:o + artH.ground(390, st), sig:"gv" + spots.join(";") };
+    } },
+
+  /* ================= D. Cozy reminiscence & scenic moments ================= */
+  porchswing: { group:"cozy", title:"The Porch Swing", talk:"Did you have a porch or a swing at home? Who sat there with you?",
+    draw(rng, det, st){
+      const pillow = rng.next() < .5 ? 80 : 180;
+      let o = `<rect x="16" y="36" width="268" height="18" ${st.W}/>`;
+      o += `<path d="M58 54 L50 214 M242 54 L250 214" ${st.T}/>`;
+      o += `<rect x="44" y="200" width="212" height="62" rx="6" ${st.W}/>`;
+      if (det) for (let x = 74; x < 250; x += 30) o += `<path d="M${x} 206 L${x} 256" ${st.D}/>`;
+      if (det) o += `<rect x="${pillow}" y="228" width="50" height="36" rx="12" ${st.W}/>`;
+      o += `<path d="M38 262 L262 262 L272 290 L28 290 Z" ${st.W}/><rect x="28" y="236" width="14" height="40" rx="3" ${st.W}/><rect x="258" y="236" width="14" height="40" rx="3" ${st.W}/>`;
+      return { svg:o + artH.ground(360, st), sig:"ps" + pillow };
+    } },
+  rocker: { group:"cozy", title:"The Rocking Chair", talk:"Who rocked in a chair like this in your family? What did they do while they rocked?",
+    draw(rng, det, st){
+      const flip = rng.next() < .5, blanket = rng.next() < .5;
+      let o = `<path d="M92 262 L70 112 L84 110 L106 262 Z" ${st.W}/><rect x="60" y="96" width="36" height="16" rx="6" ${st.W}/>`;
+      if (det) o += `<path d="M80 128 L96 250" ${st.D}/>`;
+      o += `<rect x="94" y="276" width="12" height="80" ${st.W}/><rect x="204" y="276" width="12" height="84" ${st.W}/>`;
+      o += `<path d="M86 262 L222 262 L226 278 L82 278 Z" ${st.W}/>`;
+      if (det) o += `<rect x="98" y="248" width="112" height="16" rx="7" ${st.W}/>`;
+      o += `<rect x="206" y="214" width="10" height="50" ${st.W}/><path d="M100 202 L222 208 Q232 210 230 220 L226 224 L102 216 Z" ${st.W}/>`;
+      if (det && blanket) o += `<path d="M140 208 Q150 240 138 276 L172 276 Q182 240 170 210 Z" ${st.W}/>`;
+      o += `<path d="M36 350 Q150 386 264 346 L266 356 Q150 398 34 360 Z" ${st.W}/>`;
+      return { svg:artH.flip(flip, o), sig:"rk" + flip + blanket };
+    } },
+  fireplace: { group:"cozy", title:"The Stone Fireplace", talk:"Did you have a fireplace or wood stove growing up? What did you cook or warm by it?",
+    draw(rng, det, st){
+      const items = rng.next() < .5;
+      let o = `<rect x="62" y="30" width="176" height="96" ${st.W}/><rect x="40" y="138" width="220" height="236" ${st.W}/>`;
+      if (det){
+        // a few large stones around the opening: big, colourable shapes, not texture
+        [[46, 146, 30, 44], [46, 196, 30, 52], [46, 254, 30, 56], [46, 316, 30, 52], [224, 146, 30, 48], [224, 200, 30, 56], [224, 262, 30, 52], [224, 320, 30, 48], [84, 146, 56, 30], [160, 146, 56, 30]]
+          .forEach(([x, y, w, h]) => { o += `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="8" ${st.D}/>`; });
       }
-      if (cathedral){
-        out += `<rect x="52" y="300" width="196" height="16" rx="5" ${st.W}/><path d="M60 300 L60 200 Q60 120 150 120 Q240 120 240 200 L240 300 Z" ${st.W}/>`;
-        out += `<path d="M92 232 L92 202 Q92 152 150 152 Q208 152 208 202 L208 232 Z" ${st.W}/>`;
-        if (det >= 1) for (let x = 110; x <= 190; x += det === 2 ? 16 : 32) out += `<path d="M${x} ${x === 150 ? 158 : 168} V228" ${st.D}/>`;
-        out += `<circle cx="150" cy="264" r="20" ${st.W}/><circle cx="100" cy="270" r="12" ${st.W}/><circle cx="200" cy="270" r="12" ${st.W}/>`;
-        if (det === 2) out += `<path d="M150 264 L162 252" ${st.D}/>`;
+      o += `<rect x="24" y="120" width="252" height="20" rx="4" ${st.W}/>`;
+      if (items){
+        o += `<rect x="62" y="92" width="12" height="28" ${st.W}/>` + svgLeaf(68, 92, 68, 66, 7, st.W) + `<rect x="226" y="92" width="12" height="28" ${st.W}/>` + svgLeaf(232, 92, 232, 66, 7, st.W);
+        if (det) o += `<path d="M130 120 L130 96 Q150 70 170 96 L170 120 Z" ${st.W}/><circle cx="150" cy="100" r="9" ${st.D}/>`;
       } else {
-        out += `<path d="M100 172 Q150 120 200 172" fill="none" stroke="#000" stroke-width="${(parseFloat(st.sw) * 1.6).toFixed(1)}" stroke-linecap="round"/>`;
-        out += `<rect x="40" y="170" width="220" height="146" rx="18" ${st.W}/><circle cx="106" cy="243" r="46" ${st.W}/>`;
-        if (det >= 1) out += `<circle cx="106" cy="243" r="30" ${st.D}/>`;
-        if (det === 2) out += `<circle cx="106" cy="243" r="14" ${st.D}/>`;
-        out += `<rect x="170" y="200" width="70" height="32" rx="6" ${st.W}/><circle cx="186" cy="274" r="12" ${st.W}/><circle cx="226" cy="274" r="12" ${st.W}/>`;
-        if (det >= 1) out += `<path d="M182 208 V224 M196 208 V224 M210 208 V224 M224 208 V224" ${st.D}/>`;
+        o += `<path d="M132 120 L126 86 L174 86 L168 120 Z" ${st.W}/>` + svgLeaf(150, 86, 128, 50, 10, st.W) + svgLeaf(150, 86, 172, 52, 10, st.W) + svgLeaf(150, 86, 152, 42, 10, st.W);
       }
-      return { svg:out, sig:"rad" + (cathedral ? "c" : "b") + notes.join(";") };
+      o += `<path d="M84 374 L84 238 Q150 178 216 238 L216 374 Z" ${st.W}/>`;
+      o += svgLeaf(126, 342, 128, 276, 18, st.W) + svgLeaf(150, 344, 152, 254, 22, st.W) + svgLeaf(176, 342, 172, 284, 16, st.W);
+      if (det) o += svgLeaf(150, 340, 151, 296, 9, st.W);
+      o += `<rect x="100" y="340" width="100" height="18" rx="9" ${st.W}/><path d="M108 362 L192 348 L196 358 L112 372 Z" ${st.W}/>`;
+      if (det) o += `<circle cx="192" cy="349" r="6" ${st.D}/>`;
+      o += `<rect x="24" y="374" width="252" height="16" rx="3" ${st.W}/>`;
+      return { svg:o, sig:"fp" + items };
+    } },
+  kitchenwindow: { group:"cozy", title:"The Kitchen Window", talk:"What could you see from your kitchen window? What did you like to cook?",
+    draw(rng, det, st){
+      const pots = det ? 3 : 2, tie = rng.next() < .5;
+      let o = `<rect x="56" y="64" width="188" height="214" ${st.W}/><path d="M150 64 L150 278 M56 170 L244 170" ${st.T}/>`;
+      o += `<path d="M36 48 L112 48 Q${tie ? "98 150 122 236 Q86 232 74 286" : "108 170 110 286"} L36 286 Z" ${st.W}/>`;
+      o += `<path d="M264 48 L188 48 Q${tie ? "202 150 178 236 Q214 232 226 286" : "192 170 190 286"} L264 286 Z" ${st.W}/>`;
+      if (det && tie) o += `<rect x="92" y="226" width="30" height="12" rx="5" ${st.W}/><rect x="178" y="226" width="30" height="12" rx="5" ${st.W}/>`;
+      if (det){ let v = "M28 48"; for (let x = 28; x < 272; x += 30) v += ` Q${x + 15} 76 ${x + 30} 48`; o += `<path d="${v} L272 36 L28 36 Z" ${st.W}/>`; }
+      o += `<path d="M20 42 L280 42" ${st.T}/><circle cx="20" cy="42" r="6" ${st.W}/><circle cx="280" cy="42" r="6" ${st.W}/>`;
+      o += `<rect x="36" y="280" width="228" height="16" rx="3" ${st.W}/>`;
+      const xs = pots === 3 ? [88, 150, 212] : [110, 190];
+      xs.forEach((x, i) => {
+        for (let k = 0; k < 5; k++){ const a = -Math.PI / 2 + (k - 2) * .42; o += svgLeaf(x, 250, x + Math.cos(a) * 42, 250 + Math.sin(a) * 42, 9, st.W); }
+        o += `<path d="M${x - 20} 252 L${x - 16} 280 L${x + 16} 280 L${x + 20} 252 Z" ${st.W}/><rect x="${x - 24}" y="244" width="48" height="10" rx="3" ${st.W}/>`;
+      });
+      return { svg:o, sig:"kw" + pots + tie };
     } }
 };
 
+const COLORING_GROUPS = { household:"Heirloom and retro household items", vehicles:"Classic vehicles and farm machinery", botanical:"Flowers and gardens", cozy:"Cozy scenes: porch, fireside and kitchen" };
+
 const COLORING = {
   id: "coloring", name: "Therapeutic Line Art & Coloring", themed: false,
-  desc: "Adult coloring pages in a 3:4 frame: flowers, classic vehicles and retro household items in thick, high-contrast black lines, with a conversation prompt.",
+  desc: "Adult coloring pages in a 3:4 frame: 23 nostalgic subjects in pure black lines of 3 to 6 pt, with no busy backgrounds. Each version is a different subject.",
   icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="2" width="16" height="20" rx="2"/><circle cx="12" cy="10" r="3"/><path d="M12 13v6M9 16l3-2 3 2"/></svg>',
   options: [
     { id:"subject", type:"select", label:"Subject", def:"mixed",
-      choices:[["mixed","A mix of everything"],["flowers","Flowers and plants"],["vehicles","Classic cars and trucks"],["home","Retro home items (teapot, radio)"]] },
+      choices:[["mixed","A mix of everything"],["household","Heirloom and retro household items"],["vehicles","Classic vehicles and farm machinery"],["botanical","Flowers and gardens"],["cozy","Cozy scenes: porch, fireside and kitchen"]] },
+    { id:"weight", type:"select", label:"Line weight", def:"auto",
+      choices:[["auto","Automatic for the stage"],["bold","Bold (3 pt)"],["max","Maximum contrast (6 pt)"]] },
+    { id:"detail", type:"select", label:"Detail", def:"auto",
+      choices:[["auto","Automatic for the stage"],["standard","Standard: more lines inside (early stage)"],["simple","Simplified: big open shapes (middle to late stage)"]] },
     { id:"talk", type:"check", label:"Add a conversation prompt under the picture", def:true }
   ],
-  // stroke in points; detail 2 = most small areas to colour
-  levels: { early:{ pt:3, det:2 }, moderate:{ pt:4.5, det:1 }, advanced:{ pt:6, det:0 } },
+  levels: { early:{ pt:3, det:1 }, moderate:{ pt:4.5, det:0 }, advanced:{ pt:6, det:0 } },
   pool(cfg){
-    const sub = optVal(cfg, "subject", "mixed");
-    return Object.keys(COLOR_ART).filter(k => sub === "mixed" || COLOR_ART[k].group === sub);
+    // older saved choices from the first version of this activity
+    let sub = optVal(cfg, "subject", "mixed");
+    sub = { flowers:"botanical", home:"household" }[sub] || sub;
+    const keys = Object.keys(COLOR_ART).filter(k => sub === "mixed" || COLOR_ART[k].group === sub);
+    return keys.length ? keys : Object.keys(COLOR_ART);
   },
+  // Distinct subjects for every version in the batch (each group has at least 4).
   plan(cfg, rng, count){ return slicePlan(this.pool(cfg), 1, count, rng).map(s => s[0]); },
   generate(cfg, rng, key){
-    const L = this.levels[cfg.difficulty], art = COLOR_ART[key];
-    const unit = 72 * 5.4 / 300;                          // points per SVG unit
-    const sw = (L.pt / unit).toFixed(2), dsw = (Math.max(3, L.pt * .75) / unit).toFixed(2);
+    const L = this.levels[cfg.difficulty], art = COLOR_ART[key] || COLOR_ART.tulips;
+    const w = optVal(cfg, "weight", "auto"), dsel = optVal(cfg, "detail", "auto");
+    const pt = w === "bold" ? 3 : w === "max" ? 6 : L.pt;
+    const det = dsel === "standard" ? 1 : dsel === "simple" ? 0 : L.det;
+    const sw = (pt / ART_UNIT_PT).toFixed(2);
+    const dsw = (Math.max(3, pt * .8) / ART_UNIT_PT).toFixed(2);           // detail lines never under 3 pt
     const line = `stroke="#000" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round"`;
     const st = { sw, W:`fill="#ffffff" data-bw="white" ${line}`, N:`fill="none" ${line}`,
-                 D:`fill="none" stroke="#000" stroke-width="${dsw}" stroke-linecap="round" stroke-linejoin="round"` };
-    const drawn = art.draw(rng, L.det, st);
-    const frame = `<rect x="6" y="6" width="288" height="388" rx="12" ${st.N}/>`;
+                 D:`fill="none" stroke="#000" stroke-width="${dsw}" stroke-linecap="round" stroke-linejoin="round"`,
+                 // extra-weight lines (cords, handles, window bars), capped at 6 pt
+                 T:`fill="none" stroke="#000" stroke-width="${(Math.max(pt, Math.min(pt * 1.6, 6)) / ART_UNIT_PT).toFixed(2)}" stroke-linecap="round" stroke-linejoin="round"` };
+    const drawn = art.draw(rng, det, st);
     const talk = optVal(cfg, "talk", true);
     return {
+      layout: "art",                                   // full-page art sheet, see sheetHtml()
       title: art.title,
       instructions: "Color it any way you like. There is no right or wrong.",
-      html: `<div class="color-wrap"><svg class="color-art" viewBox="0 0 300 400" role="img" aria-label="${esc(art.title)} to color">${frame}${drawn.svg}</svg>
-        ${talk ? `<p class="color-talk">Talk about it: ${esc(art.talk)}</p>` : ""}</div>`,
-      signature: key + "#" + drawn.sig
+      html: `<svg class="art-svg" viewBox="0 0 300 400" role="img" aria-label="${esc(art.title)}, a picture to color">${drawn.svg}</svg>`,
+      talk: talk ? art.talk : "",
+      signature: key + "#" + drawn.sig + "#" + pt + det
     };
   }
 };
@@ -2494,6 +2781,19 @@ function sheetHtml(item){
   const act = ACT_INDEX[item.activityId];
   if (!act) return "";
   const page = buildBatch(act, item.cfg, item.batchSeed, item.count)[item.index];
+  if (page.layout === "art"){
+    // Coloring pages: the picture is the page. No instructions or answer
+    // lines, just a personal header, the 3:4 art and a quiet footer.
+    const name = item.cfg.residentName ? esc(item.cfg.residentName) : "";
+    return `<section class="sheet sheet-art">
+      <div class="art-frame">
+        <header class="art-head">Prepared especially for ${name ? `<b>${name}</b>` : "you"}</header>
+        <div class="art-box">${page.html}</div>
+        ${page.talk ? `<p class="art-talk">${esc(page.talk)}</p>` : ""}
+        <footer class="art-foot">Cognicopia &bull; Therapeutic Art</footer>
+      </div>
+    </section>`;
+  }
   const who = item.cfg.residentName ? "For " + esc(item.cfg.residentName) : "";
   const when = fmtDate(item.cfg.date);
   return `<section class="sheet lvl-${esc(item.cfg.difficulty)}">
@@ -2599,7 +2899,7 @@ function optDefaults(act){ const o = {}; (act.options || []).forEach(f => { o[f.
 function savedOpts(act){
   const saved = settings.actOpts[act.id] || {}, o = optDefaults(act);
   (act.options || []).forEach(f => { if (saved[f.id] !== undefined) o[f.id] = saved[f.id]; });
-  if (o.theme !== undefined && act.options.some(f => f.id === "theme" && f.choices && !f.choices.some(c => c[0] === o.theme))) o.theme = optDefaults(act).theme;
+  (act.options || []).forEach(f => { if (f.type === "select" && !f.choices.some(c => c[0] === o[f.id])) o[f.id] = f.def; });
   return o;
 }
 function optionFields(act){
