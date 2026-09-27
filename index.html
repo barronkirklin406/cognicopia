@@ -555,7 +555,6 @@ legend{padding:0;width:100%}
   font-family:var(--display);font-size:20px;font-weight:700;line-height:1;
   color:var(--garden-dark);text-align:center;
   background:#CDEDEC;box-shadow:0 0 0 1px #A7D8D8,0 2px 5px rgba(32,52,58,.12)}
-.high-contrast-mode .num{background:#fff;box-shadow:0 0 0 2px #000}
 
 .leg h2{font-family:var(--display);font-weight:600;
   font-size:25px;margin:0;letter-spacing:-.005em}
@@ -673,23 +672,8 @@ body.extra-large-print select{font-size:20px;padding:16px}
 body.extra-large-print button{font-size:21px}
 body.extra-large-print .accessibility-option span{font-size:17px}
 body.extra-large-print .accessibility-option b{font-size:18px}
-body.high-contrast-mode,body.high-contrast-mode .wrap{background:#fff;color:#000}
-body.high-contrast-mode{background-image:none}
-body.high-contrast-mode *{border-color:#000 !important;box-shadow:none !important}
-body.high-contrast-mode .sub,body.high-contrast-mode .hint,
-body.high-contrast-mode .note,body.high-contrast-mode .left,
-body.high-contrast-mode .tagline,body.high-contrast-mode .brand p:last-child{color:#000}
-body.high-contrast-mode .accessibility-panel,body.high-contrast-mode .pick,
-body.high-contrast-mode .level,body.high-contrast-mode input,
-body.high-contrast-mode select{background:#fff;color:#000}
-body.high-contrast-mode .licbadge,body.high-contrast-mode .licbadge.lic,
-body.high-contrast-mode .licbadge.out,body.high-contrast-mode .gate,
-body.high-contrast-mode .done,body.high-contrast-mode .buy,
-body.high-contrast-mode .buy.alt,body.high-contrast-mode .buy.ghost,
-body.high-contrast-mode .linklike{background:#fff !important;color:#000 !important}
-body.high-contrast-mode .err{color:#000}
-body.high-contrast-mode button{background:#000;color:#fff}
-body.high-contrast-mode .strip{background:#000}
+/* High Contrast Mode no longer restyles this page. It is a setting for the
+   printed packet only; see isPureBlackAndWhitePDF and applyPureBW(). */
 body.simplified-layout{background-image:none}
 body.simplified-layout .shots,body.simplified-layout .strip,
 body.simplified-layout .promise{display:none}
@@ -742,17 +726,6 @@ button,.addbtn,.tools button,.gate .buy{border-radius:12px}
 .pick:has(input:checked),.accessibility-option:has(input:checked){
   border-color:var(--garden);background:var(--tint)
 }
-.high-contrast-mode .pick input,.high-contrast-mode .accessibility-option input{
-  background:#fff;border-color:#000
-}
-.high-contrast-mode .pick input:checked,.high-contrast-mode .accessibility-option input:checked{
-  background:#000;border-color:#000
-}
-.high-contrast-mode .pick input::after,.high-contrast-mode .accessibility-option input::after{
-  background:#000;box-shadow:none
-}
-.high-contrast-mode .pick input:checked::after,
-.high-contrast-mode .accessibility-option input:checked::after{background:#fff}
 body{
   background-color:#1B4332;
   background-image:
@@ -1261,7 +1234,7 @@ body { padding-left: var(--sb-w); }
       <div class="accessibility-options">
         <label class="accessibility-option">
           <input type="checkbox" id="highContrastMode">
-          <span><b>High Contrast Mode</b>Pure black and white.</span>
+          <span><b>High Contrast Mode</b>Pure black and white on the printed packet. This page stays the same.</span>
         </label>
         <label class="accessibility-option">
           <input type="checkbox" id="extraLargePrint">
@@ -6227,6 +6200,7 @@ function buildPacket(r, mode){
   mode=mode||"full";
   const s=STAGE[r.stage], sel=r.acts;
   const D=new Doc();
+  if(isPureBlackAndWhitePDF) applyPureBW(D.d);   // High Contrast Mode: output pages only
 
   // The first chosen holiday sets the packet's overall look.
   const theme = r.holidays.length ? HOLIDAYS[r.holidays[0]].motif : "brain";
@@ -6643,10 +6617,97 @@ function exportPayload(){
   setTimeout(()=>URL.revokeObjectURL(link.href),0);
 }
 
+/* ---- High Contrast Mode: a PDF-only setting --------------------------
+   The switch sets this flag and nothing else. The web page keeps its
+   normal theme; the black-and-white treatment happens only inside the
+   jsPDF document, in applyPureBW(), when a packet is built. */
+let isPureBlackAndWhitePDF = false;
+
 function applyAccessibilityPreset(){
-  document.body.classList.toggle("high-contrast-mode",$("highContrastMode").checked);
+  isPureBlackAndWhitePDF = $("highContrastMode").checked;
+  document.body.classList.remove("high-contrast-mode");   // clear anything left by an older version
   document.body.classList.toggle("extra-large-print",$("extraLargePrint").checked);
   document.body.classList.toggle("simplified-layout",$("simplifiedLayout").checked);
+}
+
+/* Force one jsPDF document into pure black (#000000) on white (#ffffff).
+   Patches this document's own color methods, so every page builder that
+   draws into it is covered without editing each one. Rules:
+     - fills: light colors become white, everything else black
+     - lines: dark lines become solid black; light-grey lines (margin art,
+       guide lines, tracing strokes) become dotted black, so they stay
+       visibly lighter and still traceable
+     - text: dark text becomes solid black; light-grey tracing text becomes
+       hollow black outline letters, the standard pure-black tracing style
+   Pictures (logo, staff photos) are left as they are. */
+function applyPureBW(d){
+  const orig={
+    setTextColor:d.setTextColor.bind(d), setDrawColor:d.setDrawColor.bind(d),
+    setFillColor:d.setFillColor.bind(d), setLineDashPattern:d.setLineDashPattern.bind(d),
+    setLineWidth:d.setLineWidth.bind(d), text:d.text.bind(d)
+  };
+  const st={ traceText:false, autoDash:false, userDash:null, lineWidth:1 };
+
+  // Brightness 0 (black) .. 1 (white) of any jsPDF color argument form.
+  const lum=args=>{
+    const a=args[0];
+    if(typeof a==="string"){
+      const m=/^#?([0-9a-f]{6})$/i.exec(a.trim());
+      if(!m) return 0;
+      const n=parseInt(m[1],16);
+      return (0.2126*(n>>16&255)+0.7152*(n>>8&255)+0.0722*(n&255))/255;
+    }
+    if(args.length>=4) return (1-args[0])*(1-args[1])*(1-args[2])*(1-args[3]);   // CMYK 0..1
+    if(args.length>=3) return (0.2126*args[0]+0.7152*args[1]+0.0722*args[2])/255;
+    return (Number(a)||0)/255;                                                   // single grey value
+  };
+  const WHITE=0.97, LIGHT=0.55;
+
+  d.setFillColor=(...a)=>{ lum(a)>=LIGHT ? orig.setFillColor(255,255,255) : orig.setFillColor(0,0,0); return d; };
+
+  d.setTextColor=(...a)=>{
+    const L=lum(a);
+    if(L>=WHITE){ st.traceText=false; orig.setTextColor(255,255,255); }
+    else { st.traceText = L>LIGHT; orig.setTextColor(0,0,0); }
+    return d;
+  };
+
+  d.setDrawColor=(...a)=>{
+    const L=lum(a);
+    if(L>=WHITE){ orig.setDrawColor(255,255,255); return d; }
+    orig.setDrawColor(0,0,0);
+    if(L>LIGHT){ orig.setLineDashPattern([2,3],0); st.autoDash=true; }
+    else if(st.autoDash){                          // back to a dark line: undo our dotting
+      st.userDash ? orig.setLineDashPattern(st.userDash[0],st.userDash[1]) : orig.setLineDashPattern([],0);
+      st.autoDash=false;
+    }
+    return d;
+  };
+
+  d.setLineDashPattern=(pattern,phase)=>{
+    st.userDash = pattern && pattern.length ? [pattern,phase||0] : null;
+    st.autoDash=false;
+    orig.setLineDashPattern(pattern||[],phase||0);
+    return d;
+  };
+
+  d.setLineWidth=w=>{ st.lineWidth=w; orig.setLineWidth(w); return d; };
+
+  d.text=(txt,x,y,opts,...rest)=>{
+    if(!st.traceText) return orig.text(txt,x,y,opts,...rest);
+    // Outline letters: thin solid black stroke, no dash, then restore.
+    orig.setLineDashPattern([],0);
+    orig.setLineWidth(0.9);
+    const out=orig.text(txt,x,y,Object.assign({},opts||{},{renderingMode:"stroke"}),...rest);
+    orig.setLineWidth(st.lineWidth);
+    if(st.autoDash) orig.setLineDashPattern([2,3],0);
+    else if(st.userDash) orig.setLineDashPattern(st.userDash[0],st.userDash[1]);
+    return out;
+  };
+
+  // Start from a clean black-on-white state.
+  orig.setTextColor(0,0,0); orig.setDrawColor(0,0,0); orig.setFillColor(255,255,255);
+  return d;
 }
 
 ["highContrastMode","extraLargePrint","simplifiedLayout"].forEach(id=>{
@@ -8256,7 +8317,10 @@ function ailRenderKorsakoff(ctx, name) {
     d.setFont("helvetica", "bold"); d.setFontSize(26);
     d.text(title, W / 2, M + 44, { align: "center" });
     d.setFont("helvetica", "normal"); d.setFontSize(15); d.setTextColor(60, 60, 60);
-    d.text("Every answer is already here. Just trace over the light grey.", W / 2, M + 72, { align: "center" });
+    const how = (typeof isPureBlackAndWhitePDF !== "undefined" && isPureBlackAndWhitePDF)
+      ? "Every answer is already here. Just trace over the outlined letters."
+      : "Every answer is already here. Just trace over the light grey.";
+    d.text(how, W / 2, M + 72, { align: "center" });
     black();
     d.setLineWidth(2);
     d.line(M, M + 88, W - M, M + 88);
@@ -8389,6 +8453,7 @@ function generateAilmentPDF(ailmentType) {
   if (!window.jspdf || !window.jspdf.jsPDF) throw new Error("jsPDF is not loaded.");
 
   const doc = new window.jspdf.jsPDF({ unit: "pt", format: "letter" });
+  if (typeof isPureBlackAndWhitePDF !== "undefined" && isPureBlackAndWhitePDF) applyPureBW(doc);
   const ctx = {
     doc,
     pages: 0,
