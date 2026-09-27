@@ -972,6 +972,94 @@ body { padding-left: var(--sb-w); }
   .cg-sb-overlay.is-open { display: block; }
 }
 .navbar { display: none !important; }
+
+/* ═══════════════════════════════════════════════════════════
+   AILMENT-SPECIFIC ACTIVITIES — Sidebar Section Styles
+   ══════════════════════════════════════════════════════════ */
+.cg-ailment-card {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 2px 10px 2px 14px;
+  padding: 8px 10px;
+  border-radius: 7px;
+  cursor: pointer;
+  font-size: 9.5pt;
+  font-family: "Trebuchet MS","Segoe UI",sans-serif;
+  color: var(--sb-txt);
+  border: 1px solid transparent;
+  background: transparent;
+  text-align: left;
+  line-height: 1.3;
+  transition: background .15s, border-color .15s, color .13s;
+  position: relative;
+}
+.cg-ailment-card:hover {
+  background: var(--sb-hover);
+  color: #fff;
+  border-color: rgba(82,183,136,.3);
+}
+.cg-ailment-card.active-ailment {
+  background: rgba(82,183,136,.22);
+  color: #fff;
+  border-color: var(--sb-accent);
+  font-weight: 600;
+}
+.cg-ailment-card .ca-icon {
+  font-size: 14px;
+  flex: none;
+  line-height: 1;
+}
+.cg-ailment-card .ca-label { flex: 1; }
+.cg-ailment-card { width: calc(100% - 24px); }
+.cg-ailment-card:focus-visible { outline: 2px solid #d8f3dc; outline-offset: 2px; }
+/* Floating tooltip. Lives on <body> (the sidebar clips sideways overflow). */
+.cg-ail-tip {
+  position: fixed;
+  z-index: 10000;
+  max-width: 220px;
+  background: rgba(8,28,21,.97);
+  border: 1px solid rgba(82,183,136,.45);
+  color: #d8f3dc;
+  font: 400 9pt/1.45 "Trebuchet MS","Segoe UI",sans-serif;
+  padding: 8px 11px;
+  border-radius: 6px;
+  box-shadow: 0 4px 16px rgba(0,0,0,.5);
+  pointer-events: none;
+}
+.cg-ail-tip[hidden] { display: none; }
+/* Generate button below cards */
+#ailmentGenBtn {
+  display: none;
+  margin: 10px 12px 4px;
+  width: calc(100% - 24px);
+  padding: 9px 10px;
+  background: var(--sb-accent);
+  color: #0a1f14;
+  font-family: "Trebuchet MS","Segoe UI",sans-serif;
+  font-size: 9.5pt;
+  font-weight: 700;
+  border: none;
+  border-radius: 7px;
+  cursor: pointer;
+  text-align: center;
+  transition: background .15s, opacity .15s;
+  letter-spacing: .01em;
+}
+#ailmentGenBtn:hover { background: #6fcf97; }
+#ailmentGenBtn.is-visible { display: block; }
+#ailmentGenBtn:disabled { opacity: .6; cursor: wait; }
+#ailmentGenBtn:focus-visible { outline: 2px solid #d8f3dc; outline-offset: 2px; }
+#ailmentStatusMsg.is-visible { display: block; }
+#ailmentStatusMsg {
+  display: none;
+  margin: 4px 12px 8px;
+  font-size: 8pt;
+  font-family: "Trebuchet MS","Segoe UI",sans-serif;
+  color: var(--sb-accent);
+  text-align: center;
+  line-height: 1.4;
+}
 </style>
 </head>
 <body>
@@ -1011,7 +1099,61 @@ body { padding-left: var(--sb-w); }
     <li><div class="cg-sb-section"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Facility Support &amp; Direct</div></li>
     <li><a href="faq.html"><span class="cg-bullet">›</span><span>Caregiver FAQ</span></a></li>
     <li><a href="contact.html"><span class="cg-bullet">›</span><span>Contact Kirk Barron</span></a></li>
-  </ul>
+  
+    <li><div class="cg-sb-divider"></div></li>
+
+    <!-- AILMENT-SPECIFIC ACTIVITIES -->
+    <li>
+      <div class="cg-sb-section">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2v-4M9 21H5a2 2 0 0 1-2-2v-4m0 0h18"/></svg>
+        Ailment-Specific Activities
+      </div>
+    </li>
+    <li>
+      <button class="cg-ailment-card" id="caVascular"
+        data-ailment="vascular"
+        data-tip="Focuses on executive function. Generates single-step tasks and structured checklists.">
+        <span class="ca-icon">🧩</span>
+        <span class="ca-label">Vascular Dementia</span>
+      </button>
+    </li>
+    <li>
+      <button class="cg-ailment-card" id="caLewy"
+        data-ailment="lewy_body"
+        data-tip="High-contrast, low-precision layout. Avoids busy patterns to prevent hallucinations.">
+        <span class="ca-icon">👁</span>
+        <span class="ca-label">Lewy Body Dementia</span>
+      </button>
+    </li>
+    <li>
+      <button class="cg-ailment-card" id="caFtd"
+        data-ailment="ftd"
+        data-tip="Intellectually mature topics (for younger demographics) with high-focus, repetitive tasks.">
+        <span class="ca-icon">🗺</span>
+        <span class="ca-label">Frontotemporal (FTD)</span>
+      </button>
+    </li>
+    <li>
+      <button class="cg-ailment-card" id="caLateStage"
+        data-ailment="late_stage"
+        data-tip="Zero-text focus. Generates vintage reminiscence packs, lyrics, and sensory-matching templates.">
+        <span class="ca-icon">🎵</span>
+        <span class="ca-label">Late-Stage / Sensory</span>
+      </button>
+    </li>
+    <li>
+      <button class="cg-ailment-card" id="caKorsakoff"
+        data-ailment="korsakoff"
+        data-tip="Errorless learning design. Guided tasks with no wrong answers to reduce frustration.">
+        <span class="ca-icon">✏️</span>
+        <span class="ca-label">Korsakoff / Amnesia</span>
+      </button>
+    </li>
+    <li id="ailmentBtnWrap">
+      <button id="ailmentGenBtn" type="button">Generate Targeted Packet ↓</button>
+      <div id="ailmentStatusMsg"></div>
+    </li>
+</ul>
 </aside>
 
 <script>
@@ -7092,8 +7234,9 @@ if(soBtn) soBtn.addEventListener("click",()=>{
     err.textContent="Add a first name so the guide knows who it's for.";
     err.style.display="block"; $("first").focus(); return;
   }
-  if(!born||born<1900||born>1975){
-    err.textContent="Add a year of birth between 1900 and 1975.";
+  const maxBorn=new Date().getFullYear()-45;
+  if(!born||born<1900||born>maxBorn){
+    err.textContent="Add a year of birth between 1900 and "+maxBorn+".";
     err.style.display="block"; $("born").focus(); return;
   }
   const r2={
@@ -7112,13 +7255,14 @@ if(soBtn) soBtn.addEventListener("click",()=>{
     firstcar:$("firstcar").value.trim(), firstjob:$("firstjob").value.trim(),
     sibs:splitList($("sibs").value),
     crew:collectCrew(), acts:collectActs(), holidays:collectHolidays(),
+    targetPages:Math.max(2,Math.min(30,parseInt($("targetPages").value,10)||4)),
     fac:$("fac").value.trim(),
     month:$("month").value.trim()||monthNow()
   };
   try{
-    if(!unlocked() && runsUsed()>=FREE_RUNS){ openGate(); return; }
+    if(!unlocked() && runsUsed()>=FREE_RUNS && !WATERMARK_DEMOS){ openGate(); return; }
     const name=buildPacket(r2,"staffonly");
-    if(!unlocked()) lsSet("ff_runs", String(runsUsed()+1));
+    if(!unlocked()) bumpGen();
     showAllowance();
     $("doneName").textContent=name;
     done.style.display="block";
@@ -7130,70 +7274,1264 @@ if(soBtn) soBtn.addEventListener("click",()=>{
   }
 });
 
-$("f").addEventListener("submit", e=>{
-  e.preventDefault();
-  const err=$("err"), done=$("done");
-  err.style.display="none"; done.style.display="none";
+/* =================================================================
+   10. AILMENT-SPECIFIC PACKETS
+   -----------------------------------------------------------------
+   Five condition-tuned packets launched from the sidebar cards. Each
+   condition has its own page rules, taken from what is known about how
+   that condition changes perception, attention and memory:
 
-  const first=$("first").value.trim();
-  const born=parseInt($("born").value,10);
-  const acts=collectActs();
-  const holidays=collectHolidays();
+     vascular    one task per page, heavy structure, big checkboxes
+     lewy_body   plain white pages, 18pt+ bold, 3pt lines, no shading
+     ftd         adult topics, dense repetitive grids for focus
+     late_stage  24pt+ minimal text, songs, full-width shape templates
+     korsakoff   errorless learning: every answer pre-printed in grey
 
-  if(!first){
-    err.textContent="Add a first name so the packet knows who it's for.";
-    err.style.display="block"; $("first").focus(); return;
+   Every packet is: cover page -> condition pages -> Facilitator Guide
+   (staff-facing, with a participation log for activity records).
+
+   Content is shuffled on every run, so two packets for the same
+   condition come out with different items, order and puzzle layouts.
+
+   Self-contained: reads the optional resident name and facility from
+   the main form, uses the same free-packet allowance as the main
+   generator (unlocked / runsUsed / bumpGen / openGate), and needs no
+   network. Text is passed through pdfSafe() like the rest of the app
+   so accented names print correctly in jsPDF's built-in fonts.
+   ================================================================= */
+
+/* Which condition card is selected in the sidebar. null until a click. */
+let currentAilment = null;
+
+/* US Letter in points, the same page the main packet uses. */
+const AIL_PAGE = { W: 612, H: 792, M: 54 };
+
+/* Light grey used for tracing in errorless-learning mode. */
+const AIL_GREY = [200, 200, 200];
+
+/* Familiar sayings, shared by the Lewy body (write-in) and Korsakoff
+   (pre-printed, trace-over) pages. Nothing about alcohol, on purpose. */
+const AIL_SAYINGS = [
+  { start: "Early to bed, early to", end: "rise" },
+  { start: "An apple a day keeps the", end: "doctor away" },
+  { start: "A penny saved is a penny", end: "earned" },
+  { start: "Home sweet", end: "home" },
+  { start: "The early bird catches the", end: "worm" },
+  { start: "Better late than", end: "never" },
+  { start: "Every cloud has a silver", end: "lining" },
+  { start: "Actions speak louder than", end: "words" },
+  { start: "Two heads are better than", end: "one" },
+  { start: "Slow and steady wins the", end: "race" }
+];
+
+/* -----------------------------------------------------------------
+   DATA DICTIONARY
+   label / shortLabel  shown in the sidebar button and on the cover
+   packetTitle         cover title
+   fileTag             used in the saved file name
+   guide               the staff-facing Facilitator Guide page
+   ----------------------------------------------------------------- */
+const AILMENT_DATA = {
+
+  vascular: {
+    label: "Vascular Dementia",
+    shortLabel: "Vascular",
+    packetTitle: "Structured Task Packet",
+    fileTag: "Vascular",
+    tasks: [
+      { title: "Set the Table",        instruction: "Check each box as you place it on the table.",       items: ["Plate", "Fork", "Knife", "Spoon", "Napkin"] },
+      { title: "Morning Routine",      instruction: "Check each thing you have done this morning.",       items: ["Washed my face", "Brushed my teeth", "Combed my hair", "Had breakfast"] },
+      { title: "Pack a Picnic",        instruction: "Check each thing you would put in the basket.",      items: ["Sandwiches", "Lemonade", "Apples", "A blanket", "Napkins"] },
+      { title: "Plant a Seed",         instruction: "Check each thing a seed needs to grow.",             items: ["Soil", "Water", "Sunshine", "A flower pot"] },
+      { title: "Read the Grocery List", instruction: "Read each item out loud, then check its box.",      items: ["Milk", "Bread", "Eggs", "Butter", "Coffee"] },
+      { title: "Get Ready for a Walk", instruction: "Check each thing you need before going outside.",    items: ["Comfortable shoes", "A warm coat", "A hat", "A friend to walk with"] },
+      { title: "Write a Letter",       instruction: "Check each thing you need to send a letter.",        items: ["Paper", "A pen", "An envelope", "A stamp"] },
+      { title: "Fold the Laundry",     instruction: "Check each item as you fold it.",                    items: ["Towel", "Shirt", "Pillowcase", "Socks"] },
+      { title: "Feed the Birds",       instruction: "Check each thing you need to feed the birds.",       items: ["Bird seed", "A feeder", "A scoop", "A window to watch from"] }
+    ],
+    guide: {
+      why: "Vascular dementia often affects planning, attention and processing speed more than memory. Each page holds one task, with a clear title and a checklist so progress is visible.",
+      how: [
+        "Offer one page at a time and keep the rest of the packet out of sight.",
+        "Read the title and instruction aloud, then pause. Allow extra time, because processing may be slower.",
+        "Let the resident check each box themselves. A checked box is a small, visible success.",
+        "Finish with the large \"I finished this page\" box before moving on."
+      ],
+      avoid: [
+        "Giving several instructions at once.",
+        "Rushing, or completing items for the resident.",
+        "Background noise and side conversations during the task."
+      ],
+      evidence: "Single-step tasks with visible cues follow Montessori-based dementia programming: break the task down, make it visible, and let the person succeed independently."
+    }
+  },
+
+  lewy_body: {
+    label: "Lewy Body Dementia",
+    shortLabel: "Lewy Body",
+    packetTitle: "Clear-View Activity Packet",
+    fileTag: "LewyBody",
+    pairs: [
+      ["Salt", "Pepper"], ["Cup", "Saucer"], ["Bread", "Butter"], ["Shoes", "Socks"],
+      ["Knife", "Fork"], ["Needle", "Thread"], ["Table", "Chair"], ["Rain", "Umbrella"],
+      ["Pen", "Paper"], ["Bacon", "Eggs"]
+    ],
+    questions: [
+      "Do you like the smell of fresh bread?", "Have you ever seen the ocean?",
+      "Do you enjoy music?", "Do you like flowers?", "Do you like warm weather?",
+      "Have you ever ridden a horse?", "Do you like to dance?", "Do you enjoy a cup of tea?"
+    ],
+    guide: {
+      why: "Lewy body dementia commonly affects visual perception and can cause visual hallucinations. Plain white pages, heavy outlines and large bold type lower the chance of the page being misread.",
+      how: [
+        "Use good, even lighting with no glare on the paper.",
+        "Offer a thick marker or felt pen. The targets are large on purpose.",
+        "Go at the resident's pace; alertness can change from hour to hour. If now is not a good time, try again later.",
+        "If the resident reports seeing something on the page that is not there, stay calm, do not argue, and move to a fresh page."
+      ],
+      avoid: [
+        "Patterned tablecloths or busy surfaces under the page.",
+        "Photocopies that add grey speckle or shading. Print from the PDF instead.",
+        "Correcting or testing. Keep it relaxed."
+      ],
+      evidence: "Visual hallucinations and fluctuating attention are core clinical features of dementia with Lewy bodies (McKeith et al., 2017 consensus criteria)."
+    }
+  },
+
+  ftd: {
+    label: "Frontotemporal Dementia (FTD)",
+    shortLabel: "FTD",
+    packetTitle: "Focus & Discovery Packet",
+    fileTag: "FTD",
+    themes: [
+      {
+        title: "1960s Classic Cars", era: "The 1960s",
+        facts: [
+          "The Ford Mustang was unveiled at the New York World's Fair in April 1964.",
+          "The Chevrolet Impala was one of America's best-selling cars of the 1960s.",
+          "The Volkswagen Beetle, nicknamed \"the Bug,\" became a symbol of the decade.",
+          "The 1964 Pontiac GTO is often called the first true muscle car."
+        ],
+        discuss: [
+          "What was the first car you remember riding in or driving?",
+          "If you could own any car from the 1960s, which would it be and why?",
+          "What did a Sunday drive look like when you were younger?"
+        ],
+        trivia: [
+          { q: "Where was the Ford Mustang first unveiled in 1964?", options: ["The New York World's Fair", "The Detroit Auto Show", "Times Square"], answer: "The New York World's Fair" },
+          { q: "Which car was nicknamed \"the Bug\"?", options: ["Volkswagen Beetle", "Ford Falcon", "Chevrolet Corvair"], answer: "Volkswagen Beetle" },
+          { q: "Which company builds the Corvette?", options: ["Chevrolet", "Ford", "Dodge"], answer: "Chevrolet" },
+          { q: "The 1964 GTO was made by which company?", options: ["Pontiac", "Buick", "Plymouth"], answer: "Pontiac" }
+        ],
+        words: ["MUSTANG", "CORVETTE", "BEETLE", "IMPALA", "CHROME", "ENGINE", "CADILLAC", "TAILFIN", "GARAGE", "HIGHWAY"]
+      },
+      {
+        title: "Historic Landmarks", era: "Wonders built by people",
+        facts: [
+          "The Statue of Liberty was a gift from the people of France, dedicated in 1886.",
+          "The Golden Gate Bridge opened in 1937. Its color is called International Orange.",
+          "Mount Rushmore shows Washington, Jefferson, Theodore Roosevelt and Lincoln.",
+          "The Eiffel Tower was built for the 1889 World's Fair in Paris."
+        ],
+        discuss: [
+          "Which famous place have you visited, or always wanted to see?",
+          "What building or landmark was a point of pride in your hometown?",
+          "If you could build a monument to someone, who would it honor?"
+        ],
+        trivia: [
+          { q: "Which country gave the Statue of Liberty to the United States?", options: ["France", "England", "Spain"], answer: "France" },
+          { q: "In which city is the Golden Gate Bridge?", options: ["San Francisco", "Seattle", "New York"], answer: "San Francisco" },
+          { q: "How many presidents are carved into Mount Rushmore?", options: ["Four", "Three", "Five"], answer: "Four" },
+          { q: "The Eiffel Tower stands in which city?", options: ["Paris", "London", "Rome"], answer: "Paris" }
+        ],
+        words: ["LIBERTY", "RUSHMORE", "EIFFEL", "BRIDGE", "MONUMENT", "PYRAMID", "CANYON", "CAPITOL", "TOWER", "STATUE"]
+      },
+      {
+        title: "The Space Race", era: "1957 to 1969",
+        facts: [
+          "The Soviet Union launched Sputnik, the first artificial satellite, in 1957.",
+          "In 1962 John Glenn became the first American to orbit the Earth.",
+          "Apollo 11 landed on the Moon on July 20, 1969.",
+          "Neil Armstrong was the first person to walk on the Moon; Buzz Aldrin followed."
+        ],
+        discuss: [
+          "What do you know or remember about the Moon landing?",
+          "Would you have volunteered to be an astronaut? Why or why not?",
+          "What do you think it felt like to see the Earth from space?"
+        ],
+        trivia: [
+          { q: "What was the name of the first satellite in space?", options: ["Sputnik", "Telstar", "Explorer"], answer: "Sputnik" },
+          { q: "Who was the first person to walk on the Moon?", options: ["Neil Armstrong", "John Glenn", "Alan Shepard"], answer: "Neil Armstrong" },
+          { q: "In what year did Apollo 11 land on the Moon?", options: ["1969", "1965", "1972"], answer: "1969" },
+          { q: "Who was the first American to orbit the Earth?", options: ["John Glenn", "Buzz Aldrin", "Gus Grissom"], answer: "John Glenn" }
+        ],
+        words: ["APOLLO", "ROCKET", "ORBIT", "LUNAR", "SPUTNIK", "ASTRONAUT", "LAUNCH", "CAPSULE", "GEMINI", "MERCURY"]
+      },
+      {
+        title: "Jazz and the Big Bands", era: "1920s to 1960s",
+        facts: [
+          "Benny Goodman was known as \"the King of Swing.\"",
+          "Ella Fitzgerald was called \"the First Lady of Song.\"",
+          "Louis Armstrong played the trumpet and recorded \"What a Wonderful World\" in 1967.",
+          "\"Take the 'A' Train\" was the signature tune of Duke Ellington's orchestra."
+        ],
+        discuss: [
+          "What kind of music did your family play at home?",
+          "Did you ever go dancing? Where, and to what kind of music?",
+          "Which singer's voice do you find most relaxing?"
+        ],
+        trivia: [
+          { q: "Who was known as \"the King of Swing\"?", options: ["Benny Goodman", "Glenn Miller", "Count Basie"], answer: "Benny Goodman" },
+          { q: "Which singer was called \"the First Lady of Song\"?", options: ["Ella Fitzgerald", "Billie Holiday", "Patsy Cline"], answer: "Ella Fitzgerald" },
+          { q: "Louis Armstrong was famous for which instrument?", options: ["Trumpet", "Piano", "Violin"], answer: "Trumpet" },
+          { q: "\"Take the 'A' Train\" was whose signature tune?", options: ["Duke Ellington", "Tommy Dorsey", "Artie Shaw"], answer: "Duke Ellington" }
+        ],
+        words: ["TRUMPET", "SWING", "ELLINGTON", "BASIE", "SAXOPHONE", "BLUES", "RHYTHM", "PIANO", "BIGBAND", "MELODY"]
+      },
+      {
+        title: "Great Inventions", era: "Ideas that changed daily life",
+        facts: [
+          "Alexander Graham Bell received a patent for the telephone in 1876.",
+          "Thomas Edison's team developed a long-lasting light bulb in 1879.",
+          "The Wright brothers made the first powered airplane flight in 1903 at Kitty Hawk.",
+          "Jonas Salk's polio vaccine was announced as safe and effective in 1955."
+        ],
+        discuss: [
+          "Which invention do you think changed your family's life the most?",
+          "What was the first television or radio program you remember?",
+          "If you could invent something useful today, what would it be?"
+        ],
+        trivia: [
+          { q: "Who received the first patent for the telephone?", options: ["Alexander Graham Bell", "Thomas Edison", "Samuel Morse"], answer: "Alexander Graham Bell" },
+          { q: "Where did the Wright brothers first fly?", options: ["Kitty Hawk", "Dayton", "Chicago"], answer: "Kitty Hawk" },
+          { q: "Who developed the first widely used polio vaccine?", options: ["Jonas Salk", "Louis Pasteur", "Marie Curie"], answer: "Jonas Salk" },
+          { q: "In which year did the Wright brothers first fly?", options: ["1903", "1927", "1889"], answer: "1903" }
+        ],
+        words: ["TELEPHONE", "RADIO", "AIRPLANE", "VACCINE", "PATENT", "ENGINE", "CAMERA", "BULB", "TELEVISION", "INVENTOR"]
+      }
+    ],
+    guide: {
+      why: "Frontotemporal dementia often begins between ages 45 and 65. Adult topics respect the resident's age and interests, and steady, repetitive grid work can give restless or repetitive behavior a calm focus.",
+      how: [
+        "Introduce the topic as a conversation between adults, not a test.",
+        "Use the grid pages when the resident seems restless. Steady, repeated work can be settling.",
+        "Offer choice: let the resident pick which page to start with.",
+        "Keep sessions short and end on a finished page."
+      ],
+      avoid: [
+        "Childlike materials, pictures or language.",
+        "Arguing about facts. Accept the resident's version and move on.",
+        "Long waits with nothing to do."
+      ],
+      evidence: "Age-appropriate, interest-based activity is central to person-centered dementia care. FTD is one of the most common causes of young-onset dementia."
+    }
+  },
+
+  late_stage: {
+    label: "Late-Stage / Sensory",
+    shortLabel: "Late-Stage",
+    packetTitle: "Sing & Sense Packet",
+    fileTag: "LateStage",
+    /* Public-domain songs only (published before 1931), so the lyrics can
+       be printed in a commercial product without a license. */
+    songs: [
+      { title: "Daisy Bell", lines: ["Daisy, Daisy, give me your answer, do", "I'm half crazy, all for the love of you", "It won't be a stylish marriage", "I can't afford a carriage", "But you'll look sweet upon the seat", "Of a bicycle built for two"] },
+      { title: "Take Me Out to the Ball Game", lines: ["Take me out to the ball game", "Take me out with the crowd", "Buy me some peanuts and Cracker Jack", "I don't care if I never get back", "Let me root, root, root for the home team", "If they don't win, it's a shame", "For it's one, two, three strikes, you're out", "At the old ball game"] },
+      { title: "Let Me Call You Sweetheart", lines: ["Let me call you sweetheart", "I'm in love with you", "Let me hear you whisper", "That you love me too", "Keep the love light glowing", "In your eyes so true", "Let me call you sweetheart", "I'm in love with you"] },
+      { title: "Shine On, Harvest Moon", lines: ["Shine on, shine on, harvest moon", "Up in the sky", "I ain't had no lovin'", "Since January, February, June or July", "Snow time ain't no time to stay", "Outdoors and spoon", "So shine on, shine on, harvest moon", "For me and my gal"] },
+      { title: "Home on the Range", lines: ["Oh, give me a home where the buffalo roam", "Where the deer and the antelope play", "Where seldom is heard a discouraging word", "And the skies are not cloudy all day", "Home, home on the range", "Where the deer and the antelope play", "Where seldom is heard a discouraging word", "And the skies are not cloudy all day"] },
+      { title: "In the Good Old Summertime", lines: ["In the good old summertime", "In the good old summertime", "Strolling through the shady lanes", "With your baby mine", "You hold her hand and she holds yours", "And that's a very good sign", "That she's your tootsie-wootsie", "In the good old summertime"] },
+      { title: "I've Been Working on the Railroad", lines: ["I've been working on the railroad", "All the live-long day", "I've been working on the railroad", "Just to pass the time away", "Can't you hear the whistle blowing", "Rise up so early in the morn", "Can't you hear the captain shouting", "Dinah, blow your horn"] }
+    ],
+    icons: [
+      { kind: "sun", word: "Sunshine" }, { kind: "house", word: "Home" },
+      { kind: "flower", word: "Flower" }, { kind: "cup", word: "Coffee" }
+    ],
+    guide: {
+      why: "In late-stage dementia, musical memory and response to touch and shape often last longer than reading. These pages use almost no text: familiar songs, bold shapes and simple pictures.",
+      how: [
+        "Sing the songs aloud together. The page is your prompt; any words the resident joins in on are a bonus.",
+        "On the shape pages, place real objects or textured cut-outs on each outline (a felt circle, a wooden block).",
+        "Guide the hand gently if it is welcomed. Watch for eye contact, humming, tapping or smiling.",
+        "A few minutes of engagement is a success."
+      ],
+      avoid: [
+        "Questions that need a spoken answer.",
+        "Small objects that could be a choking hazard during shape matching.",
+        "Carrying on if the resident shows distress."
+      ],
+      evidence: "Musical memory is often relatively preserved in Alzheimer's disease (Jacobsen et al., 2015, Brain). Multisensory activity is a standard part of late-stage care."
+    }
+  },
+
+  korsakoff: {
+    label: "Korsakoff / Amnesia",
+    shortLabel: "Korsakoff",
+    packetTitle: "Guided Success Packet",
+    fileTag: "Korsakoff",
+    phrases: [
+      "Today is a good day", "I am among friends", "I did a good job",
+      "It is nice to see you", "Thank you for your help"
+    ],
+    words: ["GARDEN", "COFFEE", "PICNIC", "SUNSHINE", "BUTTER", "FAMILY", "WINDOW", "APPLE", "BASKET", "MUSIC", "FLOWER", "KITCHEN"],
+    days: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+    guide: {
+      why: "In Korsakoff syndrome and other amnesic conditions, a wrong guess can stick in memory as firmly as the right answer. Every answer here is already printed in light grey, so the resident traces success instead of guessing.",
+      how: [
+        "Tell the resident the answers are already on the page. They only need to go over the grey.",
+        "Never ask for a guess first. If they start to write something else, gently point back to the grey letters.",
+        "Praise the effort, not the result.",
+        "Repeating the same pages on different days is fine, and helpful."
+      ],
+      avoid: [
+        "Quizzing, \"try to remember\" prompts, or crossing anything out.",
+        "Topics involving alcohol, bars or drinking.",
+        "Correcting made-up stories. Redirect gently instead."
+      ],
+      evidence: "Errorless learning improves learning in people with severe memory impairment (Baddeley & Wilson, 1994, Neuropsychologia)."
+    }
   }
-  if(!born||born<1900||born>1975){
-    err.textContent="Add a year of birth between 1900 and 1975. It sets the era on the memories page.";
-    err.style.display="block"; $("born").focus(); return;
+};
+
+/* -----------------------------------------------------------------
+   SMALL HELPERS
+   ----------------------------------------------------------------- */
+
+/* Fisher-Yates shuffle on a copy; the source array is never changed. */
+function ailShuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    const t = a[i]; a[i] = a[j]; a[j] = t;
   }
-  if(!Object.keys(acts).length && !holidays.length){
-    err.textContent="Pick at least one page in section 5, or tick a holiday in section 6.";
-    err.style.display="block"; $("acts").scrollIntoView({block:"center"}); return;
+  return a;
+}
+
+/* n random items, no repeats. */
+function ailPick(arr, n) {
+  return ailShuffle(arr).slice(0, Math.min(n, arr.length));
+}
+
+/* Value of a form field, trimmed and made safe for jsPDF fonts. */
+function ailField(id) {
+  const el = document.getElementById(id);
+  const v = el && typeof el.value === "string" ? el.value.trim() : "";
+  return v ? pdfSafe(v) : "";
+}
+
+/* Preferred name first ("Goes by"), then first name. Optional. */
+function ailResidentName() {
+  return ailField("goes") || ailField("first");
+}
+
+/* Start a page. The first call uses the page jsPDF already made; every
+   later call adds one. Resets colors, line width and font every time
+   so no setting leaks from one page into the next. */
+function ailFreshPage(ctx) {
+  const d = ctx.doc;
+  if (ctx.pages > 0) d.addPage();
+  ctx.pages++;
+  d.setTextColor(0, 0, 0);
+  d.setDrawColor(0, 0, 0);
+  d.setFillColor(255, 255, 255);
+  d.setLineWidth(ctx.baseLine);
+  d.setLineCap("round");
+  d.setLineJoin("round");
+  d.setFont("helvetica", ctx.boldOnly ? "bold" : "normal");
+}
+
+/* Shrink the font until the text fits the width (never below minSize). */
+function ailFitText(d, text, maxWidth, size, minSize) {
+  d.setFontSize(size);
+  while (size > minSize && d.getTextWidth(text) > maxWidth) { size -= 1; d.setFontSize(size); }
+  return size;
+}
+
+/* Build a word search: words go across, down or diagonally (never
+   backwards, which is too hard for this audience). Returns the letter
+   grid and the words that actually fit. */
+function ailWordSearch(words, size) {
+  const grid = [];
+  for (let r = 0; r < size; r++) grid.push(new Array(size).fill(""));
+  const placed = [];
+  const dirs = [[0, 1], [1, 0], [1, 1]];
+  ailShuffle(words).forEach(w => {
+    if (w.length > size) return;
+    for (let tries = 0; tries < 200; tries++) {
+      const dir = dirs[Math.floor(Math.random() * dirs.length)];
+      const dr = dir[0], dc = dir[1];
+      const r0 = Math.floor(Math.random() * (size - (dr ? w.length - 1 : 0)));
+      const c0 = Math.floor(Math.random() * (size - (dc ? w.length - 1 : 0)));
+      let fits = true;
+      for (let k = 0; k < w.length; k++) {
+        const ch = grid[r0 + dr * k][c0 + dc * k];
+        if (ch && ch !== w[k]) { fits = false; break; }
+      }
+      if (!fits) continue;
+      for (let k = 0; k < w.length; k++) grid[r0 + dr * k][c0 + dc * k] = w[k];
+      placed.push(w);
+      break;
+    }
+  });
+  const fill = "ABCDEFGHIJKLMNOPRSTUVWY";
+  for (let r = 0; r < size; r++)
+    for (let c = 0; c < size; c++)
+      if (!grid[r][c]) grid[r][c] = fill[Math.floor(Math.random() * fill.length)];
+  return { grid, placed };
+}
+
+/* -----------------------------------------------------------------
+   COVER PAGE (all conditions)
+   ----------------------------------------------------------------- */
+function ailCover(ctx, key, cfg, name) {
+  const d = ctx.doc, W = AIL_PAGE.W, H = AIL_PAGE.H, M = AIL_PAGE.M;
+  const body = ctx.boldOnly ? "bold" : "normal";
+  ailFreshPage(ctx);
+
+  // Plain frame. No fill, so the Lewy body page stays pure white.
+  d.setLineWidth(Math.max(ctx.baseLine, 2));
+  d.rect(M - 18, M - 18, W - 2 * (M - 18), H - 2 * (M - 18), "S");
+
+  let y = 160;
+  // Logo on every cover except Lewy body (keep that page free of imagery).
+  if (key !== "lewy_body" && typeof LOGO_URI !== "undefined") {
+    try { d.addImage(LOGO_URI, "PNG", W / 2 - 60, 86, 120, 93); y = 240; } catch (e) { /* logo is optional */ }
   }
 
-  const r={
-    first, last:$("last").value.trim(),
-    goes:$("goes").value.trim()||first,
-    born, pronoun:$("pronoun").value,
-    stage:document.querySelector('input[name=stage]:checked').value,
-    town:$("town").value.trim(), state:$("state").value.trim(),
-    job:$("job").value.trim(), spouse:$("spouse").value.trim(),
-    kids:splitList($("kids").value), pets:splitList($("pets").value),
-    hobbies:splitList($("hobbies").value), favs:splitList($("favs").value),
-    mil:$("mil").value.trim(), faith:$("faith").value.trim(),
-    lang1:$("lang1").value, lang2:$("lang2").value,
-    avoid:splitList($("avoid").value),
-    mother:$("mother").value.trim(), school:$("school").value.trim(),
-    firstcar:$("firstcar").value.trim(), firstjob:$("firstjob").value.trim(),
-    sibs:splitList($("sibs").value),
-    crew:collectCrew(), acts, holidays,
-    fac:$("fac").value.trim(),
-    month:$("month").value.trim()||monthNow()
+  d.setFont("helvetica", "bold"); d.setFontSize(32);
+  const title = d.splitTextToSize(cfg.packetTitle, W - 2 * M - 20);
+  d.text(title, W / 2, y, { align: "center", lineHeightFactor: 1.2 });
+  y += title.length * 38 + 4;
+
+  d.setFont("helvetica", body); d.setFontSize(20);
+  if (!ctx.boldOnly) d.setTextColor(60, 60, 60);
+  d.text("Designed for " + cfg.label, W / 2, y, { align: "center" });
+  d.setTextColor(0, 0, 0);
+  y += 30;
+  d.setLineWidth(Math.max(ctx.baseLine, 2));
+  d.line(W / 2 - 150, y, W / 2 + 150, y);
+  y += 72;
+
+  if (name) {
+    d.setFont("helvetica", "bold"); d.setFontSize(20);
+    d.text("Prepared for", W / 2, y, { align: "center" });
+    y += 50;
+    ailFitText(d, name, W - 2 * M - 40, 40, 22);
+    d.text(name, W / 2, y, { align: "center" });
+    y += 56;
+  }
+
+  d.setFont("helvetica", body); d.setFontSize(18);
+  const month = pdfSafe(monthNow());
+  if (month) { d.text(month, W / 2, y, { align: "center" }); y += 30; }
+  const fac = ailField("fac");
+  if (fac) { ailFitText(d, fac, W - 2 * M - 40, 18, 12); d.text(fac, W / 2, y, { align: "center" }); }
+
+  d.setFont("helvetica", body); d.setFontSize(18);
+  d.text("Staff: the Facilitator Guide is on the last page.", W / 2, H - M - 30, { align: "center" });
+}
+
+/* -----------------------------------------------------------------
+   FACILITATOR GUIDE (all conditions, last page, staff-facing)
+   Smaller type is deliberate: this page is read by staff, not by the
+   resident, so it can hold the guidance and a participation log.
+   ----------------------------------------------------------------- */
+function ailGuide(ctx, key) {
+  const d = ctx.doc, W = AIL_PAGE.W, H = AIL_PAGE.H, M = AIL_PAGE.M;
+  const cfg = AILMENT_DATA[key], g = cfg.guide;
+  ailFreshPage(ctx);
+  let y = M + 16;
+
+  d.setFont("helvetica", "bold"); d.setFontSize(20);
+  d.text("Facilitator Guide", M, y);
+  d.setFont("helvetica", "normal"); d.setFontSize(11); d.setTextColor(70, 70, 70);
+  d.text("For staff  ·  " + cfg.label, W - M, y, { align: "right" });
+  d.setTextColor(0, 0, 0);
+  y += 12;
+  d.setLineWidth(Math.max(ctx.baseLine, 1.5)); d.line(M, y, W - M, y);
+  y += 26;
+
+  const heading = t => { d.setFont("helvetica", "bold"); d.setFontSize(14); d.text(t, M, y); y += 19; };
+  const para = (t, size, style) => {
+    d.setFont("helvetica", style || "normal"); d.setFontSize(size);
+    const lines = d.splitTextToSize(t, W - 2 * M);
+    d.text(lines, M, y, { lineHeightFactor: 1.3 });
+    y += lines.length * size * 1.3 + 12;
+  };
+  const bullets = items => {
+    d.setFont("helvetica", "normal"); d.setFontSize(12);
+    items.forEach(it => {
+      const lines = d.splitTextToSize(it, W - 2 * M - 18);
+      d.text("•", M + 2, y);
+      d.text(lines, M + 18, y, { lineHeightFactor: 1.3 });
+      y += lines.length * 12 * 1.3 + 5;
+    });
+    y += 8;
   };
 
-  try{
-    if(!unlocked() && runsUsed()>=FREE_RUNS){ openGate(); return; }
-    const name=buildPacket(r);
-    if(!unlocked()) lsSet("ff_runs", String(runsUsed()+1));
-    showAllowance();
-    $("doneName").textContent=name;
-    done.style.display="block";
-    done.scrollIntoView({behavior:"smooth",block:"center"});
-  }catch(ex){
-    err.textContent="Something went wrong making the packet. Try again, and if "
-      +"it keeps happening, remove any unusual characters from the fields.";
-    err.style.display="block";
-    console.error(ex);
+  heading("Why this layout");  para(g.why, 12);
+  heading("How to run it");    bullets(g.how);
+  heading("Please avoid");     bullets(g.avoid);
+  heading("Evidence basis");   para(g.evidence, 11, "italic");
+
+  // Participation log for activity records. Moves to its own page if the
+  // guidance above ran long, so the table is never cut off.
+  const rowH = 26, rows = 5;
+  if (y + 24 + rows * rowH > H - M - 30) { ailFreshPage(ctx); y = M + 20; }
+  heading("Participation log");
+  const cols = [M, M + 90, M + 190, M + 340, W - M];
+  d.setLineWidth(Math.max(ctx.baseLine, 1));
+  for (let r = 0; r <= rows; r++) d.line(M, y + r * rowH, W - M, y + r * rowH);
+  cols.forEach(x => d.line(x, y, x, y + rows * rowH));
+  d.setFont("helvetica", "bold"); d.setFontSize(11);
+  ["Date", "Staff", "Engagement", "Notes"].forEach((h, i) => d.text(h, cols[i] + 6, y + 17));
+  d.setFont("helvetica", "normal"); d.setFontSize(9); d.setTextColor(100, 100, 100);
+  for (let r = 1; r < rows; r++) d.text("Active / Passive / Declined", cols[2] + 6, y + r * rowH + 17);
+  d.setTextColor(0, 0, 0);
+
+  d.setFont("helvetica", "italic"); d.setFontSize(9); d.setTextColor(90, 90, 90);
+  const note = d.splitTextToSize("These pages support, and do not replace, the resident's care plan. Choose a packet by the person's needs and abilities, not by the diagnosis label alone.", W - 2 * M);
+  d.text(note, M, H - M + 4, { lineHeightFactor: 1.3 });
+  d.setTextColor(0, 0, 0);
+}
+
+/* -----------------------------------------------------------------
+   VASCULAR: one task per page, heavy structure, big checkboxes
+   ----------------------------------------------------------------- */
+function ailRenderVascular(ctx) {
+  const d = ctx.doc, W = AIL_PAGE.W, H = AIL_PAGE.H, M = AIL_PAGE.M;
+  const tasks = ailPick(AILMENT_DATA.vascular.tasks, 6);
+
+  tasks.forEach((t, i) => {
+    ailFreshPage(ctx);                              // always a new page: one task each
+
+    // Title band: heavy rule, title, heavy rule
+    d.setLineWidth(3);
+    d.line(M, 72, W - M, 72);
+    d.setFont("helvetica", "bold"); d.setFontSize(30);
+    d.text(t.title, W / 2, 112, { align: "center" });
+    d.line(M, 130, W - M, 130);
+
+    d.setFont("helvetica", "normal"); d.setFontSize(14); d.setTextColor(80, 80, 80);
+    d.text("Task " + (i + 1) + " of " + tasks.length + "   ·   One step at a time", W / 2, 154, { align: "center" });
+    d.setTextColor(0, 0, 0);
+
+    // The single instruction, boxed
+    d.setFont("helvetica", "bold"); d.setFontSize(22);
+    const instr = d.splitTextToSize(t.instruction, W - 2 * M - 48);
+    const boxY = 176, lh = 22 * 1.2, boxH = 28 + instr.length * lh;
+    d.setLineWidth(2);
+    d.rect(M, boxY, W - 2 * M, boxH, "S");
+    d.text(instr, W / 2, boxY + 14 + 17, { align: "center", lineHeightFactor: 1.2 });
+
+    // Checklist: a large bold box beside every item
+    let y = boxY + boxH + 58;
+    const box = 36;
+    d.setLineWidth(2.5);
+    d.setFont("helvetica", "normal"); d.setFontSize(22);
+    t.items.forEach(item => {
+      d.rect(M + 14, y - 28, box, box, "S");
+      d.text(item, M + 14 + box + 22, y);
+      y += 64;
+    });
+
+    // Completion row, fenced off from the task by a heavy rule
+    d.setLineWidth(3);
+    d.line(M, H - 150, W - M, H - 150);
+    d.rect(M + 14, H - 124, 46, 46, "S");
+    d.setFont("helvetica", "bold"); d.setFontSize(24);
+    d.text("I finished this page", M + 14 + 46 + 22, H - 92);
+  });
+}
+
+/* -----------------------------------------------------------------
+   LEWY BODY: pure white, 18pt+ bold everywhere, 3pt lines,
+   no shading, no patterns, nothing overlapping
+   ----------------------------------------------------------------- */
+function ailRenderLewy(ctx) {
+  const d = ctx.doc, W = AIL_PAGE.W, H = AIL_PAGE.H, M = AIL_PAGE.M;
+  const L = AILMENT_DATA.lewy_body;
+  const LW = 3;                                       // every line on these pages
+  const bold = size => { d.setFont("helvetica", "bold"); d.setFontSize(Math.max(18, size)); };
+
+  // Page heading with a single heavy rule under it. Returns the next y.
+  const pageHead = txt => {
+    bold(26);
+    const lines = d.splitTextToSize(txt, W - 2 * M);
+    d.text(lines, W / 2, 96, { align: "center", lineHeightFactor: 1.2 });
+    const ruleY = 96 + (lines.length - 1) * 31 + 22;
+    d.setLineWidth(LW);
+    d.line(M, ruleY, W - M, ruleY);
+    return ruleY + 56;
+  };
+
+  // Word pairs: large words, large dots to connect (low precision needed)
+  const matchPage = () => {
+    ailFreshPage(ctx);
+    const y = pageHead("Draw a line from each word to the word that goes with it.");
+    const pairs = ailPick(L.pairs, 4);
+    const right = ailShuffle(pairs.map(p => p[1]));
+    const rowH = Math.min(120, (H - M - 40 - y) / 4);
+    d.setFillColor(0, 0, 0);
+    pairs.forEach((p, i) => {
+      const cy = y + i * rowH + 20;
+      bold(24);
+      d.text(p[0], M + 10, cy + 8);
+      d.circle(M + 150, cy, 12, "F");               // dots ~2.8 in apart: easy to aim for
+      d.circle(W - M - 150, cy, 12, "F");
+      d.text(right[i], W - M - 10, cy + 8, { align: "right" });
+    });
+  };
+
+  // Finish the saying: wide write-in boxes
+  const sayingPage = () => {
+    ailFreshPage(ctx);
+    let y = pageHead("Finish the saying.");
+    ailPick(AIL_SAYINGS, 3).forEach(s => {
+      bold(22);
+      const lines = d.splitTextToSize(s.start + " . . .", W - 2 * M);
+      d.text(lines, M, y);
+      y += lines.length * 26 + 14;
+      d.setLineWidth(LW);
+      d.rect(M, y, W - 2 * M, 64, "S");
+      y += 64 + 48;
+    });
+  };
+
+  // Wide paths to follow: 64pt channels, far apart, no crossings
+  const pathPage = () => {
+    ailFreshPage(ctx);
+    const y = pageHead("Draw a line along the middle of each path.");
+    const chan = 64, x1 = M + 96, x2 = W - M - 64;
+    d.setLineWidth(LW);
+    d.setFillColor(0, 0, 0);
+    for (let i = 0; i < 3; i++) {
+      const top = y + i * 170;
+      bold(20);
+      d.text("START", M, top + chan / 2 + 7);
+      d.circle(x1 + 20, top + chan / 2, 9, "F");
+      d.line(x1, top, x2, top);
+      d.line(x1, top + chan, x2, top + chan);
+      d.rect(x2, top, 64, chan, "S");
+      bold(18);
+      d.text("END", x2 + 32, top + chan / 2 + 7, { align: "center" });
+    }
+  };
+
+  // Yes / No: no wrong answers
+  const yesNoPage = () => {
+    ailFreshPage(ctx);
+    let y = pageHead("Circle YES or NO. Any answer is fine.");
+    ailPick(L.questions, 3).forEach(q => {
+      bold(22);
+      const lines = d.splitTextToSize(q, W - 2 * M);
+      d.text(lines, M, y);
+      y += lines.length * 27 + 16;
+      const bw = 150, bh = 64;
+      d.setLineWidth(LW);
+      d.rect(M + 40, y, bw, bh, "S");
+      d.rect(W - M - 40 - bw, y, bw, bh, "S");
+      bold(28);
+      d.text("YES", M + 40 + bw / 2, y + bh / 2 + 10, { align: "center" });
+      d.text("NO", W - M - 40 - bw / 2, y + bh / 2 + 10, { align: "center" });
+      y += bh + 56;
+    });
+  };
+
+  // Counting: large plain circles on a fixed grid, so they never overlap
+  const countPage = () => {
+    ailFreshPage(ctx);
+    const y = pageHead("How many circles are on this page?");
+    const n = 3 + Math.floor(Math.random() * 4);           // 3 to 6
+    const slots = [];
+    for (let r = 0; r < 2; r++) for (let c = 0; c < 3; c++) slots.push([M + 84 + c * 168, y + 60 + r * 170]);
+    d.setLineWidth(LW);
+    ailShuffle(slots).slice(0, n).forEach(s => d.circle(s[0], s[1], 52, "S"));
+    const ay = y + 60 + 170 + 52 + 70;
+    bold(22);
+    d.text("Write the number here:", M, ay + 40);
+    d.rect(M + 290, ay, 120, 64, "S");
+  };
+
+  ailShuffle([matchPage, sayingPage, pathPage, yesNoPage, countPage]).forEach(fn => fn());
+}
+
+/* -----------------------------------------------------------------
+   FTD: adult themes, trivia, word search, dense focus grids
+   ----------------------------------------------------------------- */
+function ailRenderFTD(ctx) {
+  const d = ctx.doc, W = AIL_PAGE.W, H = AIL_PAGE.H, M = AIL_PAGE.M;
+  const themes = ailPick(AILMENT_DATA.ftd.themes, 2);
+
+  // Structured magazine-style header. Returns the next y.
+  const head = (kicker, title) => {
+    d.setFont("helvetica", "bold"); d.setFontSize(12); d.setTextColor(70, 70, 70);
+    d.text(kicker.toUpperCase(), M, M + 10, { charSpace: 1 });
+    d.setTextColor(0, 0, 0); d.setFontSize(26);
+    const lines = d.splitTextToSize(title, W - 2 * M);
+    d.text(lines, M, M + 42, { lineHeightFactor: 1.15 });
+    const ruleY = M + 42 + (lines.length - 1) * 30 + 14;
+    d.setLineWidth(2);
+    d.line(M, ruleY, W - M, ruleY);
+    return ruleY + 32;
+  };
+
+  const intro = (y, txt) => {
+    d.setFont("helvetica", "normal"); d.setFontSize(13); d.setTextColor(70, 70, 70);
+    const lines = d.splitTextToSize(txt, W - 2 * M);
+    d.text(lines, M, y, { lineHeightFactor: 1.3 });
+    d.setTextColor(0, 0, 0);
+    return y + lines.length * 17 + 18;
+  };
+
+  // Topic page: facts plus discussion prompts with writing lines
+  const topicPage = t => {
+    ailFreshPage(ctx);
+    let y = head("Topic  ·  " + t.era, t.title);
+    d.setFont("helvetica", "bold"); d.setFontSize(16);
+    d.text("Did you know?", M, y); y += 24;
+    d.setFont("helvetica", "normal"); d.setFontSize(14);
+    t.facts.forEach(f => {
+      const lines = d.splitTextToSize(f, W - 2 * M - 20);
+      d.text("•", M + 2, y);
+      d.text(lines, M + 20, y, { lineHeightFactor: 1.3 });
+      y += lines.length * 14 * 1.3 + 9;
+    });
+    y += 14;
+    d.setFont("helvetica", "bold"); d.setFontSize(16);
+    d.text("Let's talk about it", M, y); y += 24;
+    t.discuss.forEach(q => {
+      d.setFont("helvetica", "normal"); d.setFontSize(14);
+      const lines = d.splitTextToSize(q, W - 2 * M);
+      d.text(lines, M, y, { lineHeightFactor: 1.3 });
+      y += (lines.length - 1) * 18 + 10;
+      d.setLineWidth(1); d.setDrawColor(120, 120, 120);
+      d.line(M, y + 18, W - M, y + 18);
+      d.line(M, y + 46, W - M, y + 46);
+      d.setDrawColor(0, 0, 0);
+      y += 72;
+    });
+  };
+
+  // Trivia: options shuffled on every packet, key at the foot of the page
+  const triviaPage = t => {
+    ailFreshPage(ctx);
+    let y = head("Trivia  ·  " + t.title, "Just for fun");
+    y = intro(y, "Circle one answer for each question. No score is kept. The answers are at the bottom of the page.");
+    const key = [];
+    t.trivia.forEach((q, i) => {
+      const opts = ailShuffle(q.options);
+      key.push((i + 1) + " " + String.fromCharCode(65 + opts.indexOf(q.answer)));
+      d.setFont("helvetica", "bold"); d.setFontSize(16);
+      const lines = d.splitTextToSize((i + 1) + ".  " + q.q, W - 2 * M);
+      d.text(lines, M, y, { lineHeightFactor: 1.25 });
+      y += lines.length * 20 + 10;
+      d.setFont("helvetica", "normal"); d.setFontSize(15);
+      opts.forEach((o, k) => {
+        d.setLineWidth(1.5);
+        d.circle(M + 30, y - 5, 8, "S");
+        d.text(String.fromCharCode(65 + k) + ".  " + o, M + 48, y);
+        y += 24;
+      });
+      y += 14;
+    });
+    d.setFont("helvetica", "normal"); d.setFontSize(11); d.setTextColor(110, 110, 110);
+    d.text("Answers:   " + key.join("     "), M, H - M);
+    d.setTextColor(0, 0, 0);
+  };
+
+  // Word search built from the theme vocabulary
+  const wordSearchPage = t => {
+    ailFreshPage(ctx);
+    let y = head("Word search  ·  " + t.title, "Find the hidden words");
+    y = intro(y, "Words run across, down, or diagonally. Circle each one you find.");
+    const size = 12, cell = 30, gx = (W - size * cell) / 2;
+    const ws = ailWordSearch(ailPick(t.words, 8), size);
+    d.setLineWidth(1.5);
+    d.rect(gx, y, size * cell, size * cell, "S");
+    d.setFont("helvetica", "bold"); d.setFontSize(17);
+    for (let r = 0; r < size; r++)
+      for (let c = 0; c < size; c++)
+        d.text(ws.grid[r][c], gx + c * cell + cell / 2, y + r * cell + cell / 2 + 6, { align: "center" });
+    y += size * cell + 32;
+    d.setFont("helvetica", "bold"); d.setFontSize(14);
+    d.text("Words to find:", M, y); y += 22;
+    d.setFont("helvetica", "normal");
+    const colW = (W - 2 * M) / 4;
+    ws.placed.forEach((w, i) => d.text(w, M + (i % 4) * colW, y + Math.floor(i / 4) * 22));
+  };
+
+  // Dense grid 1: copy a pattern, then continue alternating line rows
+  const patternCopyPage = () => {
+    ailFreshPage(ctx);
+    let y = head("Focus  ·  Pattern work", "Copy the pattern");
+    y = intro(y, "Shade squares in the empty grid so it matches the grid on the left. Work one row at a time.");
+    const n = 8, cell = 28, gw = n * cell, lx = M, rx = W - M - gw;
+    const filled = new Set();
+    while (filled.size < 22) filled.add(Math.floor(Math.random() * n * n));
+    d.setFillColor(40, 40, 40);
+    d.setLineWidth(1);
+    for (let r = 0; r < n; r++)
+      for (let c = 0; c < n; c++) {
+        d.rect(lx + c * cell, y + r * cell, cell, cell, filled.has(r * n + c) ? "FD" : "S");
+        d.rect(rx + c * cell, y + r * cell, cell, cell, "S");
+      }
+    d.setLineWidth(2.5);
+    d.rect(lx, y, gw, gw, "S");
+    d.rect(rx, y, gw, gw, "S");
+    y += gw + 44;
+
+    d.setFont("helvetica", "bold"); d.setFontSize(16);
+    d.text("Keep the rhythm", M, y); y += 20;
+    d.setFont("helvetica", "normal"); d.setFontSize(13); d.setTextColor(70, 70, 70);
+    d.text("Trace the grey strokes, then continue each row's pattern to the end of the line.", M, y);
+    d.setTextColor(0, 0, 0);
+    y += 34;
+    const patterns = [["|", "/"], ["/", "\\"], ["|", "|", "/"], ["\\", "/", "|"]];
+    const slot = 28, slots = Math.floor((W - 2 * M) / slot), shown = 11, sh = 26;
+    patterns.forEach(p => {
+      for (let s = 0; s < slots; s++) {
+        const x = M + s * slot + slot / 2;
+        if (s < shown) {
+          d.setDrawColor(150, 150, 150); d.setLineWidth(2);
+          const g = p[s % p.length];
+          if (g === "|") d.line(x, y - sh, x, y);
+          else if (g === "/") d.line(x - 9, y, x + 9, y - sh);
+          else d.line(x - 9, y - sh, x + 9, y);
+        }
+      }
+      d.setDrawColor(0, 0, 0); d.setLineWidth(0.75);
+      d.line(M, y + 4, W - M, y + 4);
+      y += 50;
+    });
+  };
+
+  // Dense grid 2: a 16 x 16 checkerboard to shade, first row done
+  const checkerPage = () => {
+    ailFreshPage(ctx);
+    let y = head("Focus  ·  Steady hands", "Checkerboard grid");
+    y = intro(y, "Shade every other square to make a checkerboard. The first row is done for you. There is no time limit.");
+    const cols = 16, rows = 16, cell = 30, gx = (W - cols * cell) / 2;
+    d.setFillColor(40, 40, 40);
+    d.setLineWidth(1);
+    for (let r = 0; r < rows; r++)
+      for (let c = 0; c < cols; c++)
+        d.rect(gx + c * cell, y + r * cell, cell, cell, (r === 0 && c % 2 === 0) ? "FD" : "S");
+    d.setLineWidth(2.5);
+    d.rect(gx, y, cols * cell, rows * cell, "S");
+  };
+
+  topicPage(themes[0]); triviaPage(themes[0]); wordSearchPage(themes[0]);
+  patternCopyPage();
+  topicPage(themes[1]); triviaPage(themes[1]); wordSearchPage(themes[1]);
+  checkerPage();
+}
+
+/* -----------------------------------------------------------------
+   LATE STAGE: 24pt+ minimal text, songs, full-width shapes
+   ----------------------------------------------------------------- */
+function ailRenderLateStage(ctx) {
+  const d = ctx.doc, W = AIL_PAGE.W, H = AIL_PAGE.H, M = AIL_PAGE.M;
+  const LS = AILMENT_DATA.late_stage;
+
+  const oneWord = word => {                         // the only text on shape pages
+    d.setFont("helvetica", "bold"); d.setFontSize(30);
+    d.text(word, W / 2, M + 40, { align: "center" });
+  };
+
+  // Outline shapes, centered on (cx, cy), s = half the size
+  const shape = (kind, cx, cy, s) => {
+    if (kind === "circle") d.circle(cx, cy, s, "S");
+    else if (kind === "square") d.rect(cx - s, cy - s, 2 * s, 2 * s, "S");
+    else if (kind === "triangle") d.triangle(cx, cy - s, cx + s, cy + s * 0.85, cx - s, cy + s * 0.85, "S");
+    else if (kind === "diamond") d.lines([[s, s], [-s, s], [-s, -s], [s, -s]], cx, cy - s, [1, 1], "S", true);
+  };
+
+  // Simple line pictures for talking about, one word under each
+  const icon = (kind, cx, cy) => {
+    d.setLineWidth(5);
+    if (kind === "sun") {
+      d.circle(cx, cy, 60, "S");
+      for (let a = 0; a < 12; a++) {
+        const t = a * Math.PI / 6;
+        d.line(cx + Math.cos(t) * 80, cy + Math.sin(t) * 80, cx + Math.cos(t) * 108, cy + Math.sin(t) * 108);
+      }
+    } else if (kind === "house") {
+      d.rect(cx - 90, cy - 20, 180, 120, "S");
+      d.triangle(cx - 110, cy - 20, cx, cy - 108, cx + 110, cy - 20, "S");
+      d.rect(cx - 22, cy + 40, 44, 60, "S");
+    } else if (kind === "flower") {
+      for (let a = 0; a < 6; a++) {
+        const t = a * Math.PI / 3;
+        d.circle(cx + Math.cos(t) * 48, cy - 30 + Math.sin(t) * 48, 26, "S");
+      }
+      d.circle(cx, cy - 30, 22, "S");
+      d.line(cx, cy + 40, cx, cy + 105);
+    } else if (kind === "cup") {
+      d.rect(cx - 60, cy - 50, 110, 118, "S");
+      d.rect(cx + 50, cy - 22, 34, 54, "S");
+      d.line(cx - 95, cy + 68, cx + 115, cy + 68);
+    }
+  };
+
+  const songPage = s => {
+    ailFreshPage(ctx);
+    d.setFont("helvetica", "bold"); d.setFontSize(30);
+    const tl = d.splitTextToSize(s.title, W - 2 * M);
+    d.text(tl, W / 2, M + 60, { align: "center", lineHeightFactor: 1.15 });
+    let y = M + 60 + tl.length * 35 + 4;
+    d.setLineWidth(3);
+    d.line(W / 2 - 120, y, W / 2 + 120, y);
+    y += 58;
+    d.setFont("helvetica", "bold"); d.setFontSize(24);
+    s.lines.forEach(line => {
+      const l = d.splitTextToSize(line, W - 2 * M);
+      d.text(l, W / 2, y, { align: "center", lineHeightFactor: 1.2 });
+      y += l.length * 29 + 15;
+    });
+  };
+
+  // Same shapes left and right, the right column shuffled
+  const matchShapesPage = () => {
+    ailFreshPage(ctx);
+    oneWord("Match");
+    const kinds = ailPick(["circle", "square", "triangle", "diamond"], 3);
+    const right = ailShuffle(kinds);
+    d.setLineWidth(5);
+    kinds.forEach((k, i) => {
+      const cy = M + 140 + i * 205;
+      shape(k, M + 100, cy, 72);
+      shape(right[i], W - M - 100, cy, 72);
+    });
+  };
+
+  // 2 x 2 placement board for textured cut-outs or real objects
+  const sensoryBoardPage = () => {
+    ailFreshPage(ctx);
+    oneWord("Shapes");
+    const kinds = ailShuffle(["circle", "square", "triangle", "diamond"]);
+    const pos = [[W / 2 - 128, 300], [W / 2 + 128, 300], [W / 2 - 128, 560], [W / 2 + 128, 560]];
+    d.setLineWidth(5);
+    kinds.forEach((k, i) => shape(k, pos[i][0], pos[i][1], 105));
+  };
+
+  // One shape across nearly the whole page, for coloring or tracing
+  const bigShapePage = () => {
+    ailFreshPage(ctx);
+    oneWord("Color");
+    d.setLineWidth(6);
+    shape(Math.random() < 0.5 ? "circle" : "square", W / 2, H / 2 + 20, 228);
+  };
+
+  const pictureCardsPage = () => {
+    ailFreshPage(ctx);
+    const pics = ailPick(LS.icons, 2);
+    icon(pics[0].kind, W / 2, 230);
+    icon(pics[1].kind, W / 2, 545);
+    d.setFont("helvetica", "bold"); d.setFontSize(40);
+    d.text(pics[0].word, W / 2, 392, { align: "center" });
+    d.text(pics[1].word, W / 2, 712, { align: "center" });
+  };
+
+  const songs = ailPick(LS.songs, 3);
+  songPage(songs[0]); matchShapesPage();
+  songPage(songs[1]); pictureCardsPage();
+  songPage(songs[2]); sensoryBoardPage();
+  bigShapePage();
+}
+
+/* -----------------------------------------------------------------
+   KORSAKOFF: errorless learning. Nothing is left blank; every answer
+   is printed in light grey (200, 200, 200) to be traced over.
+   ----------------------------------------------------------------- */
+function ailRenderKorsakoff(ctx, name) {
+  const d = ctx.doc, W = AIL_PAGE.W, M = AIL_PAGE.M;
+  const K = AILMENT_DATA.korsakoff;
+  const grey = () => d.setTextColor(AIL_GREY[0], AIL_GREY[1], AIL_GREY[2]);
+  const black = () => d.setTextColor(0, 0, 0);
+  const guideLine = (x1, y, x2) => { d.setDrawColor(170, 170, 170); d.setLineWidth(1); d.line(x1, y, x2, y); d.setDrawColor(0, 0, 0); };
+
+  const head = title => {
+    black();
+    d.setFont("helvetica", "bold"); d.setFontSize(26);
+    d.text(title, W / 2, M + 44, { align: "center" });
+    d.setFont("helvetica", "normal"); d.setFontSize(15); d.setTextColor(60, 60, 60);
+    d.text("Every answer is already here. Just trace over the light grey.", W / 2, M + 72, { align: "center" });
+    black();
+    d.setLineWidth(2);
+    d.line(M, M + 88, W - M, M + 88);
+    return M + 140;
+  };
+
+  // Name and friendly sentences to trace
+  const phrasePage = () => {
+    ailFreshPage(ctx);
+    let y = head("Trace the words");
+    const rows = [];
+    if (name) rows.push({ lead: "My name is", trace: name });
+    ailPick(K.phrases, name ? 3 : 4).forEach(p => rows.push({ lead: "Trace this sentence:", trace: p }));
+    rows.forEach(r => {
+      black(); d.setFont("helvetica", "normal"); d.setFontSize(18);
+      d.text(r.lead, M, y);
+      y += 52;
+      grey(); d.setFont("helvetica", "bold");
+      ailFitText(d, r.trace, W - 2 * M, 48, 28);
+      d.text(r.trace, M, y);
+      guideLine(M, y + 8, W - M);
+      y += 58;
+    });
+    black();
+  };
+
+  // Numbers 1 to 10, then the days of the week, all in grey
+  const numbersPage = () => {
+    ailFreshPage(ctx);
+    let y = head("Trace the numbers");
+    const bw = 80, bh = 92, gap = 14, total = 5 * bw + 4 * gap, x0 = (W - total) / 2;
+    for (let i = 0; i < 10; i++) {
+      const col = i % 5, row = Math.floor(i / 5);
+      const x = x0 + col * (bw + gap), top = y + row * (bh + 20);
+      d.setLineWidth(1.5); d.rect(x, top, bw, bh, "S");
+      grey(); d.setFont("helvetica", "bold"); d.setFontSize(60);
+      d.text(String(i + 1), x + bw / 2, top + bh / 2 + 21, { align: "center" });
+    }
+    y += 2 * bh + 20 + 50;
+    black(); d.setFont("helvetica", "bold"); d.setFontSize(20);
+    d.text("Trace the days of the week", M, y);
+    y += 46;
+    grey(); d.setFont("helvetica", "bold"); d.setFontSize(30);
+    K.days.forEach((day, i) => {
+      const col = i < 4 ? 0 : 1, row = i < 4 ? i : i - 4;
+      const x = M + col * ((W - 2 * M) / 2), yy = y + row * 44;
+      d.text(day, x, yy);
+      guideLine(x, yy + 6, x + (W - 2 * M) / 2 - 24);
+    });
+    black();
+  };
+
+  // Words with some letters in black and the rest pre-printed in grey
+  const lettersPage = () => {
+    ailFreshPage(ctx);
+    let y = head("Complete the words");
+    const box = 44, gap = 6;
+    ailPick(K.words, 5).forEach(w => {
+      const total = w.length * (box + gap) - gap;
+      let x = (W - total) / 2;
+      // Keep the first letter black as an anchor; about 40% of the rest go grey.
+      const idx = ailShuffle(Array.from({ length: w.length - 1 }, (_, i) => i + 1));
+      const greyed = new Set(idx.slice(0, Math.max(1, Math.round(w.length * 0.4))));
+      for (let i = 0; i < w.length; i++) {
+        d.setLineWidth(1.5); d.setDrawColor(0, 0, 0);
+        d.rect(x, y, box, box + 8, "S");
+        d.setFont("helvetica", "bold"); d.setFontSize(32);
+        if (greyed.has(i)) grey(); else black();
+        d.text(w[i], x + box / 2, y + box / 2 + 16, { align: "center" });
+        x += box + gap;
+      }
+      y += box + 8 + 44;
+    });
+    black();
+  };
+
+  // Adding with the answer already in the box
+  const mathPage = () => {
+    ailFreshPage(ctx);
+    const y = head("Guided adding");
+    const probs = [], seen = new Set();
+    while (probs.length < 6) {
+      const a = 1 + Math.floor(Math.random() * 6), b = 1 + Math.floor(Math.random() * 5);
+      if (seen.has(a + "+" + b)) continue;
+      seen.add(a + "+" + b);
+      probs.push([a, b]);
+    }
+    probs.forEach((p, i) => {
+      const x = M + 20 + (i % 2) * 260, top = y + Math.floor(i / 2) * 150;
+      const eq = p[0] + " + " + p[1] + " =";
+      black(); d.setFont("helvetica", "bold"); d.setFontSize(40);
+      d.text(eq, x, top + 44);
+      const bx = x + d.getTextWidth(eq) + 14;
+      d.setLineWidth(2); d.rect(bx, top, 64, 60, "S");
+      grey();
+      d.text(String(p[0] + p[1]), bx + 32, top + 46, { align: "center" });
+    });
+    black();
+  };
+
+  // Familiar sayings with the ending already written in grey
+  const sayingPage = () => {
+    ailFreshPage(ctx);
+    let y = head("Finish the saying");
+    ailPick(AIL_SAYINGS, 4).forEach(s => {
+      black(); d.setFont("helvetica", "normal"); d.setFontSize(22);
+      const l = d.splitTextToSize(s.start + " . . .", W - 2 * M);
+      d.text(l, M, y);
+      y += l.length * 26 + 34;
+      grey(); d.setFont("helvetica", "bold"); d.setFontSize(38);
+      d.text(s.end, M + 40, y);
+      guideLine(M + 40, y + 8, W - M);
+      y += 62;
+    });
+    black();
+  };
+
+  phrasePage(); numbersPage(); lettersPage(); mathPage(); sayingPage();
+}
+
+/* -----------------------------------------------------------------
+   ENTRY POINT
+   Builds and saves the packet for one condition. Returns the file name.
+   Throws on an unknown type or if jsPDF is missing, so the caller can
+   show a friendly message.
+   ----------------------------------------------------------------- */
+function generateAilmentPDF(ailmentType) {
+  const cfg = AILMENT_DATA[ailmentType];
+  if (!cfg) throw new Error("Unknown ailment type: " + ailmentType);
+  if (!window.jspdf || !window.jspdf.jsPDF) throw new Error("jsPDF is not loaded.");
+
+  const doc = new window.jspdf.jsPDF({ unit: "pt", format: "letter" });
+  const ctx = {
+    doc,
+    pages: 0,
+    baseLine: ailmentType === "lewy_body" ? 3 : 1.5,  // Lewy body: thick lines everywhere
+    boldOnly: ailmentType === "lewy_body"             // Lewy body: bold type everywhere
+  };
+  const name = ailResidentName();
+
+  ailCover(ctx, ailmentType, cfg, name);
+  switch (ailmentType) {
+    case "vascular":   ailRenderVascular(ctx); break;
+    case "lewy_body":  ailRenderLewy(ctx); break;
+    case "ftd":        ailRenderFTD(ctx); break;
+    case "late_stage": ailRenderLateStage(ctx); break;
+    case "korsakoff":  ailRenderKorsakoff(ctx, name); break;
   }
-});
+  ailGuide(ctx, ailmentType);
+
+  doc.setProperties({
+    title: cfg.packetTitle + (name ? " for " + name : ""),
+    subject: cfg.label + " activity packet",
+    author: "Cognicopia",
+    creator: "Cognicopia"
+  });
+
+  const now = new Date();
+  const ymd = now.getFullYear() + "-" + String(now.getMonth() + 1).padStart(2, "0") + "-" + String(now.getDate()).padStart(2, "0");
+  const file = ("Cognicopia_" + cfg.fileTag + "_" + (name || "Packet") + "_" + ymd).replace(/[^A-Za-z0-9_-]+/g, "_") + ".pdf";
+  doc.save(file);
+  return file;
+}
+
+/* -----------------------------------------------------------------
+   SIDEBAR WIRING: card selection, tooltips, generate button
+   ----------------------------------------------------------------- */
+(function initAilmentSidebar() {
+  const cards = Array.prototype.slice.call(document.querySelectorAll(".cg-ailment-card[data-ailment]"));
+  const genBtn = document.getElementById("ailmentGenBtn");
+  const msg = document.getElementById("ailmentStatusMsg");
+  const sidebar = document.getElementById("cgSidebar");
+  if (!cards.length || !genBtn || !msg) return;
+
+  msg.setAttribute("role", "status");
+  msg.setAttribute("aria-live", "polite");
+  const showMsg = t => { msg.textContent = t; msg.classList.add("is-visible"); };
+
+  /* One floating tooltip on <body>. The sidebar clips anything that
+     overflows sideways, so a CSS ::after tooltip there is cut off. */
+  const tip = document.createElement("div");
+  tip.className = "cg-ail-tip";
+  tip.setAttribute("aria-hidden", "true");
+  tip.hidden = true;
+  document.body.appendChild(tip);
+
+  const showTip = btn => {
+    tip.textContent = btn.getAttribute("data-tip");
+    tip.hidden = false;
+    const r = btn.getBoundingClientRect();
+    const tw = tip.offsetWidth, th = tip.offsetHeight;
+    let left = r.right + 10, top = r.top + r.height / 2 - th / 2;
+    if (left + tw > window.innerWidth - 8) {          // no room on the right (phones): drop below
+      left = Math.max(8, Math.min(r.left, window.innerWidth - tw - 8));
+      top = r.bottom + 6;
+    }
+    top = Math.max(8, Math.min(top, window.innerHeight - th - 8));
+    tip.style.left = left + "px";
+    tip.style.top = top + "px";
+  };
+  const hideTip = () => { tip.hidden = true; };
+
+  function selectAilment(key) {
+    currentAilment = key;
+    cards.forEach(c => {
+      const on = c.getAttribute("data-ailment") === key;
+      c.classList.toggle("active-ailment", on);
+      c.setAttribute("aria-pressed", on ? "true" : "false");
+    });
+    genBtn.textContent = "Generate " + AILMENT_DATA[key].shortLabel + " packet";
+    genBtn.classList.add("is-visible");
+    showMsg(AILMENT_DATA[key].packetTitle + " selected. Type a first name in the main form to personalize it (optional).");
+  }
+
+  cards.forEach(btn => {
+    const key = btn.getAttribute("data-ailment");
+    if (!AILMENT_DATA[key]) return;
+    btn.type = "button";
+    btn.setAttribute("aria-pressed", "false");
+    // Screen readers get the tooltip text as the button's description.
+    const desc = document.createElement("span");
+    desc.id = "cgAilDesc-" + key;
+    desc.hidden = true;
+    desc.textContent = btn.getAttribute("data-tip") || "";
+    document.body.appendChild(desc);
+    btn.setAttribute("aria-describedby", desc.id);
+
+    btn.addEventListener("click", () => selectAilment(key));
+    btn.addEventListener("mouseenter", () => showTip(btn));
+    btn.addEventListener("mouseleave", hideTip);
+    btn.addEventListener("focus", () => showTip(btn));
+    btn.addEventListener("blur", hideTip);
+  });
+  if (sidebar) sidebar.addEventListener("scroll", hideTip, { passive: true });
+  window.addEventListener("scroll", hideTip, { passive: true });
+  window.addEventListener("resize", hideTip);
+
+  let ailBusy = false;
+  genBtn.addEventListener("click", () => {
+    if (ailBusy) return;
+    if (!currentAilment) { showMsg("Pick a condition above first."); return; }
+
+    // Same allowance as the main generator.
+    if (!unlocked() && runsUsed() >= FREE_RUNS && !WATERMARK_DEMOS) {
+      if (sidebar && sidebar.classList.contains("is-open")) {
+        const ov = document.getElementById("cgSbOverlay");
+        if (ov) ov.click();                           // close the mobile drawer so the gate is visible
+      }
+      openGate();
+      return;
+    }
+
+    ailBusy = true;
+    const label = genBtn.textContent;
+    genBtn.disabled = true;
+    genBtn.textContent = "Making the packet…";
+    // Two frames: one to paint the busy button, one to build under it.
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      try {
+        const file = generateAilmentPDF(currentAilment);
+        if (!unlocked()) bumpGen();
+        showAllowance();
+        showMsg("Saved: " + file);
+      } catch (ex) {
+        console.error(ex);
+        showMsg("Something went wrong making the packet. Please try again.");
+      } finally {
+        ailBusy = false;
+        genBtn.disabled = false;
+        genBtn.textContent = label;
+      }
+    }));
+  });
+})();
+
 </script>
 </body>
 </html>
-{
-  "name": "read_file",
-  "arguments": {
-    "filepath": "index.html"
-  }
-}
