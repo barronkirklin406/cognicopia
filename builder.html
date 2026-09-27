@@ -1,0 +1,1308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Packet Builder · Cognicopia</title>
+<meta name="description" content="Build a printable memory care activity packet, one activity at a time. Runs entirely in your browser.">
+<link rel="icon" href="assets/cognicopia-logo.jpg">
+<style>
+/* =====================================================================
+   COGNICOPIA PACKET BUILDER
+   Single file. No network. Routing, state and printing all run in the
+   browser. Printed output uses CSS @media print; nothing else prints.
+
+   CSS map
+     1. Theme tokens (web UI only)
+     2. Layout: sidebar + main column
+     3. UI components
+     4. Packet drawer, toast, gate
+     5. Output sheets (shared by preview and print)
+     6. @media print: strict page breaking + pure black & white
+   ===================================================================== */
+
+/* ---------- 1. Theme tokens: the web UI is always dark slate / emerald.
+   Nothing in this file changes these at runtime; High Contrast Mode
+   lives only in section 6. ---------- */
+:root{
+  --sb-w: 264px;
+  --bg: #0e1614;
+  --bg-2: #121d1a;
+  --panel: #16231f;
+  --panel-2: #1c2c27;
+  --line: rgba(216,243,220,.14);
+  --line-2: rgba(216,243,220,.24);
+  --text: #e8f3ed;
+  --muted: #a7bfb4;
+  --accent: #52b788;
+  --accent-hi: #74c69d;
+  --accent-deep: #2d6a4f;
+  --accent-ink: #062116;
+  --sb-bg: #08180f;
+  --warn: #f0b48c;
+  --radius: 14px;
+  --font: "Trebuchet MS","Segoe UI",system-ui,-apple-system,Arial,sans-serif;
+  color-scheme: dark;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; min-height:100vh;
+  background:var(--bg);
+  background-image:radial-gradient(1200px 600px at 80% -10%, rgba(82,183,136,.10), transparent 60%);
+  color:var(--text); font:16px/1.55 var(--font);
+}
+a{color:var(--accent-hi)}
+button,input,select{font:inherit}
+:focus-visible{outline:3px solid var(--accent-hi);outline-offset:2px}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+[hidden]{display:none !important}
+
+/* ---------- 2. Layout ---------- */
+.sidebar{
+  position:fixed; inset:0 auto 0 0; width:var(--sb-w); z-index:900;
+  display:flex; flex-direction:column;
+  background:var(--sb-bg); border-right:1px solid var(--line);
+  overflow-y:auto; overflow-x:hidden; overscroll-behavior:contain;
+  scrollbar-width:thin; scrollbar-color:rgba(82,183,136,.35) transparent;
+}
+.brand{
+  display:flex; align-items:center; gap:10px; padding:18px 18px 16px;
+  border-bottom:1px solid var(--line); color:#fff; text-decoration:none; flex:none;
+}
+.brand img{width:36px;height:30px;object-fit:contain;border-radius:4px;background:#fff}
+.brand b{display:block;font-size:17px;line-height:1.1}
+.brand small{display:block;color:var(--accent);font-size:12px;letter-spacing:.06em;text-transform:uppercase;font-weight:700}
+.sb-nav{padding:6px 0 28px;flex:1}
+.sb-section{
+  padding:18px 18px 6px; font-size:11.5px; font-weight:700; letter-spacing:.08em;
+  text-transform:uppercase; color:var(--accent);
+}
+.sb-list{list-style:none;margin:0;padding:0}
+.sb-link{
+  display:flex; align-items:flex-start; gap:10px; width:100%;
+  padding:10px 16px 10px 18px; margin:0;
+  color:var(--text); text-decoration:none; text-align:left;
+  background:none; border:0; border-left:3px solid transparent; cursor:pointer;
+  font-size:15px; line-height:1.35; white-space:normal; overflow-wrap:anywhere;
+  transition:background .15s,border-color .15s,color .15s;
+}
+.sb-link svg{flex:none;margin-top:1px;color:var(--muted);transition:color .15s}
+.sb-link:hover{background:rgba(82,183,136,.14);border-left-color:var(--accent);color:#fff}
+.sb-link:hover svg{color:var(--accent-hi)}
+.sb-link[aria-current="page"]{background:rgba(82,183,136,.22);border-left-color:var(--accent);color:#fff;font-weight:700}
+.sb-link[aria-current="page"] svg{color:var(--accent-hi)}
+.sb-link .tag{margin-left:auto;flex:none;font-size:11px;font-weight:700;padding:2px 7px;border-radius:999px;background:rgba(216,243,220,.08);color:var(--muted)}
+.sb-link .tag.live{background:rgba(82,183,136,.2);color:var(--accent-hi)}
+.sb-link .badge{margin-left:auto;flex:none;min-width:24px;text-align:center;font-size:12px;font-weight:700;padding:2px 7px;border-radius:999px;background:var(--accent);color:var(--accent-ink)}
+
+.app{margin-left:var(--sb-w);min-height:100vh;display:flex;flex-direction:column}
+.topbar{
+  position:sticky; top:0; z-index:700; min-height:60px;
+  display:flex; align-items:center; justify-content:space-between; gap:16px;
+  padding:10px clamp(16px,3vw,36px);
+  background:rgba(14,22,20,.86); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--line);
+}
+.facility{font-weight:700;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.facility b{color:var(--text)}
+.view{
+  width:100%; max-width:1120px; margin:0 auto;
+  padding:clamp(20px,4vw,44px) clamp(16px,3vw,36px) 80px; outline:none;
+}
+
+.sb-toggle{
+  display:none; position:fixed; top:10px; left:10px; z-index:1100;
+  width:42px; height:42px; align-items:center; justify-content:center;
+  background:var(--sb-bg); color:var(--text); border:1px solid var(--line-2); border-radius:10px; cursor:pointer;
+}
+.sb-overlay{display:none}
+@media (max-width:860px){
+  .app{margin-left:0}
+  .topbar{padding-left:64px}
+  .sidebar{transform:translateX(-100%);transition:transform .22s ease;width:min(300px,86vw);box-shadow:8px 0 40px rgba(0,0,0,.5)}
+  .sidebar.is-open{transform:none}
+  .sb-toggle{display:flex}
+  .sb-overlay.is-open{display:block;position:fixed;inset:0;z-index:850;background:rgba(0,0,0,.5)}
+}
+
+/* ---------- 3. UI components ---------- */
+.eyebrow{margin:0 0 6px;color:var(--accent);font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+h1.view-title{margin:0 0 10px;font-size:clamp(26px,3.4vw,36px);line-height:1.15;outline:none}
+.lede{margin:0 0 28px;color:var(--muted);max-width:68ch;font-size:17px}
+h2{font-size:21px;margin:0 0 8px}
+
+.btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  min-height:44px; padding:10px 18px; border-radius:10px; cursor:pointer;
+  border:1px solid var(--line-2); background:var(--panel-2); color:var(--text); font-weight:700;
+  transition:background .15s,border-color .15s,transform .05s;
+}
+.btn:hover{border-color:var(--accent);background:#223630}
+.btn:active{transform:translateY(1px)}
+.btn-primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn-primary:hover{background:var(--accent-hi);border-color:var(--accent-hi)}
+.btn-ghost{background:transparent}
+.btn-danger{background:transparent;border-color:rgba(240,180,140,.4);color:var(--warn)}
+.btn-danger:hover{background:rgba(240,180,140,.08);border-color:var(--warn)}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+.btn-sm{min-height:34px;padding:6px 10px;font-size:14px}
+
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}
+.card{
+  position:relative; display:flex; flex-direction:column; gap:8px; text-align:left;
+  padding:18px; border-radius:var(--radius); border:1px solid var(--line);
+  background:var(--panel); color:var(--text); text-decoration:none; cursor:pointer;
+  transition:border-color .15s,background .15s,transform .15s;
+}
+.card:hover{border-color:var(--accent);background:var(--panel-2);transform:translateY(-1px)}
+.card[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent);background:#1d332b}
+.card .ic{width:40px;height:40px;border-radius:10px;display:grid;place-items:center;background:rgba(82,183,136,.14);color:var(--accent-hi)}
+.card b{font-size:17px;line-height:1.25}
+.card span.desc{color:var(--muted);font-size:14.5px;line-height:1.45}
+.card .meta{margin-top:auto;display:flex;gap:6px;flex-wrap:wrap}
+.pill{font-size:12px;font-weight:700;padding:3px 8px;border-radius:999px;background:rgba(216,243,220,.08);color:var(--muted)}
+.pill.live{background:rgba(82,183,136,.18);color:var(--accent-hi)}
+.card.is-soon{cursor:default;opacity:.7}
+.card.is-soon:hover{transform:none;border-color:var(--line);background:var(--panel)}
+
+.callout{margin:22px 0 0;padding:16px 18px;border-radius:var(--radius);border:1px dashed var(--line-2);color:var(--muted);background:rgba(216,243,220,.03)}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:0 0 32px;padding:0;list-style:none;counter-reset:s}
+.steps li{padding:14px 16px;border-radius:var(--radius);background:var(--bg-2);border:1px solid var(--line);color:var(--muted);counter-increment:s}
+.steps li::before{content:counter(s);display:inline-grid;place-items:center;width:26px;height:26px;margin-right:8px;border-radius:50%;background:var(--accent);color:var(--accent-ink);font-weight:800}
+.steps b{color:var(--text)}
+
+/* Config panel */
+.config{margin-top:28px;padding:22px;border-radius:18px;border:1px solid var(--line-2);background:var(--panel);scroll-margin-top:80px}
+.config-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,420px);gap:28px;align-items:start}
+@media (max-width:1060px){.config-grid{grid-template-columns:1fr}}
+.field{margin:0 0 16px;border:0;padding:0}
+.field > label,.field > legend{display:block;margin:0 0 6px;font-weight:700;font-size:15px}
+.hint{margin:6px 0 0;color:var(--muted);font-size:13.5px}
+input[type=text],input[type=date],input[type=number],select{
+  width:100%; min-height:44px; padding:10px 12px; border-radius:10px;
+  border:1px solid var(--line-2); background:var(--bg-2); color:var(--text);
+}
+input:focus,select:focus{border-color:var(--accent)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:560px){.row2{grid-template-columns:1fr}}
+.stepper{display:flex;align-items:stretch;max-width:200px}
+.stepper button{width:46px;border:1px solid var(--line-2);background:var(--panel-2);color:var(--text);font-size:20px;font-weight:700;cursor:pointer}
+.stepper button:first-child{border-radius:10px 0 0 10px}
+.stepper button:last-child{border-radius:0 10px 10px 0}
+.stepper button:hover{border-color:var(--accent)}
+.stepper input{border-radius:0;text-align:center;font-weight:800;font-size:18px;border-left:0;border-right:0;-moz-appearance:textfield}
+.stepper input::-webkit-inner-spin-button,.stepper input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+.seg{display:flex;flex-wrap:wrap;gap:8px}
+.seg label{position:relative;cursor:pointer}
+.seg input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
+.seg span{display:block;padding:9px 14px;border-radius:10px;border:1px solid var(--line-2);background:var(--bg-2);font-weight:700;font-size:14.5px}
+.seg input:checked + span{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.seg input:focus-visible + span{outline:3px solid var(--accent-hi);outline-offset:2px}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}
+
+.switch{display:flex;gap:14px;align-items:flex-start;padding:14px;border-radius:12px;border:1px solid var(--line);background:var(--bg-2);cursor:pointer}
+.switch input{appearance:none;-webkit-appearance:none;flex:none;width:50px;height:28px;margin:0;border-radius:999px;background:#33443f;border:2px solid #4d615b;position:relative;cursor:pointer;transition:background .15s,border-color .15s}
+.switch input::after{content:"";position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform .15s}
+.switch input:checked{background:var(--accent);border-color:var(--accent)}
+.switch input:checked::after{transform:translateX(22px)}
+.switch b{display:block}
+.switch small{color:var(--muted)}
+
+/* Preview (a real output sheet, scaled) */
+.preview-col{position:sticky;top:84px}
+.preview-label{display:flex;justify-content:space-between;align-items:center;margin:0 0 8px;color:var(--muted);font-size:13.5px;font-weight:700}
+.thumb{
+  --s:.2; position:relative; overflow:hidden; flex:none;
+  width:calc(8.5in * var(--s)); height:calc(11in * var(--s));
+  border-radius:6px; background:#fff; box-shadow:0 6px 24px rgba(0,0,0,.45);
+}
+.thumb > .sheet{position:absolute;top:0;left:0;transform:scale(var(--s));transform-origin:top left;pointer-events:none}
+.thumb.big{--s:.48;margin:0 auto}
+@media (max-width:520px){.thumb.big{--s:.38}}
+
+/* ---------- 4. Packet drawer, toast, gate ---------- */
+.btn-packet{position:relative}
+.btn-packet .count{display:inline-grid;place-items:center;min-width:26px;height:26px;padding:0 6px;border-radius:999px;background:var(--accent-ink);color:var(--accent-hi);font-size:13px}
+.drawer{
+  position:fixed; top:0; right:0; bottom:0; z-index:1200; width:min(460px,100vw);
+  display:flex; flex-direction:column; background:var(--panel); border-left:1px solid var(--line-2);
+  box-shadow:-18px 0 50px rgba(0,0,0,.5);
+  transform:translateX(105%); transition:transform .24s ease; visibility:hidden;
+}
+.drawer.is-open{transform:none;visibility:visible}
+.drawer-scrim{position:fixed;inset:0;z-index:1150;background:rgba(0,0,0,.5);display:none}
+.drawer-scrim.is-open{display:block}
+.drawer-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:18px 20px;border-bottom:1px solid var(--line)}
+.drawer-head h2{margin:0}
+.drawer-body{flex:1;overflow-y:auto;padding:16px 20px}
+.drawer-foot{padding:16px 20px;border-top:1px solid var(--line);display:grid;gap:10px;background:var(--bg-2)}
+.drawer-foot .note{margin:0;color:var(--muted);font-size:13.5px}
+.q-empty{color:var(--muted);text-align:center;padding:40px 10px}
+.q-list{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.q-item{display:flex;gap:14px;align-items:flex-start;padding:12px;border-radius:12px;border:1px solid var(--line);background:var(--bg-2)}
+.q-item .thumb{--s:.12}
+.q-info{flex:1;min-width:0}
+.q-info b{display:block;line-height:1.3}
+.q-info small{display:block;color:var(--muted);line-height:1.4;margin-top:2px}
+.q-btns{display:flex;gap:6px;margin-top:8px}
+.q-btns button{min-width:34px;min-height:34px;border-radius:8px;border:1px solid var(--line-2);background:var(--panel-2);color:var(--text);cursor:pointer}
+.q-btns button:hover{border-color:var(--accent)}
+.q-btns button[disabled]{opacity:.35;cursor:default}
+.allowance{margin:0;font-size:13.5px;color:var(--muted)}
+
+.toast{
+  position:fixed; left:50%; bottom:22px; z-index:1300; transform:translate(-50%,140%);
+  display:flex; gap:14px; align-items:center; max-width:min(560px,92vw);
+  padding:12px 16px; border-radius:12px; background:#0a1512; border:1px solid var(--accent);
+  box-shadow:0 10px 40px rgba(0,0,0,.5); transition:transform .22s ease;
+}
+.toast.is-open{transform:translate(-50%,0)}
+.gate{position:fixed;inset:0;z-index:1400;display:grid;place-items:center;padding:16px;background:rgba(0,0,0,.6)}
+.gate-card{width:min(520px,100%);padding:26px;border-radius:18px;background:var(--panel);border:1px solid var(--line-2)}
+.gate-card p{color:var(--muted)}
+.gate-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.gate-row input{flex:1;min-width:180px}
+.msg-ok{color:var(--accent-hi)} .msg-bad{color:var(--warn)}
+
+/* ---------- 5. Output sheets: one 8.5 x 11 in page each.
+   Content never relies on background colors, only on text and borders,
+   so pages print correctly even with "Background graphics" turned off. */
+#printRoot{display:none}
+.sheet{
+  width:8.5in; height:11in; padding:.6in .65in .5in; overflow:hidden;
+  display:flex; flex-direction:column; background:#fff; color:#1b1f1e;
+  font-family:"Trebuchet MS","Segoe UI",Arial,sans-serif; line-height:1.3;
+  -webkit-print-color-adjust:exact; print-color-adjust:exact;
+}
+.sh-head{display:flex;justify-content:space-between;align-items:flex-end;gap:.3in;padding-bottom:.1in;margin-bottom:.16in;border-bottom:3pt solid #2d6a4f}
+.sh-head h1{margin:0;font-size:26pt;line-height:1.1;color:#1b4332}
+.sh-meta{text-align:right;font-size:12pt;color:#3f4a46;white-space:nowrap}
+.sh-inst{margin:0 0 .22in;font-size:14pt;color:#2f3634}
+.lvl-advanced .sh-inst{font-size:18pt}
+.sh-body{flex:1;min-height:0}
+.lvl-early .sh-body{font-size:17pt}
+.lvl-moderate .sh-body{font-size:20pt}
+.lvl-advanced .sh-body{font-size:26pt}
+.sh-ans{margin:.08in 0 0;font-size:8.5pt;color:#6a7470}
+.sh-foot{display:flex;justify-content:space-between;gap:.2in;margin-top:.1in;padding-top:.07in;border-top:1px solid #c9d1ce;font-size:9pt;color:#5d6763}
+.wline{border-bottom:1.5pt solid #8f9c97;height:.42in}
+.lvl-moderate .wline{height:.5in}
+.lvl-advanced .wline{height:.62in}
+.q{margin:0 0 .04in;font-weight:700}
+.item{margin:0 0 .26in;break-inside:avoid}
+.hintx{font-weight:400;color:#56615d;font-size:.75em}
+.choices{display:flex;gap:.45in;margin-top:.1in}
+.choice{display:inline-block;min-width:2in;padding:.08in .25in;border:2.5pt solid #1b1f1e;border-radius:.12in;text-align:center;font-weight:700}
+.num{display:inline-block;min-width:.4in;font-weight:700;color:#2d6a4f}
+/* word search */
+.ws{border-collapse:collapse;margin:0 auto;border:2pt solid #1b1f1e}
+.ws td{border:.75pt solid #b5bfbb;text-align:center;vertical-align:middle;font-weight:700;padding:0}
+.ws-list{display:grid;grid-template-columns:repeat(4,1fr);gap:.06in .2in;margin-top:.2in;font-size:.8em;font-weight:700}
+.lvl-advanced .ws-list{grid-template-columns:repeat(2,1fr)}
+/* scramble */
+.tiles{display:inline-flex;gap:.06in;flex-wrap:wrap;vertical-align:middle}
+.tile{display:inline-grid;place-items:center;width:.5in;height:.56in;border:1.5pt solid #1b1f1e;border-radius:.06in;font-weight:700}
+.lvl-moderate .tile{width:.58in;height:.64in}
+.lvl-advanced .tile{width:.72in;height:.8in}
+/* goes together */
+.pairs{display:grid;grid-template-columns:1fr auto 1.1fr auto 1fr;align-items:center;row-gap:.34in;column-gap:.14in}
+.lvl-advanced .pairs{row-gap:.7in}
+.pairs .l{font-weight:700}
+.pairs .r{font-weight:700;text-align:right}
+.dot{width:0;height:0;border:.08in solid #1b1f1e;border-radius:50%}
+.lvl-advanced .dot{border-width:.11in}
+.tagline{margin:0 0 .18in;font-style:italic;color:#3f4a46;font-size:.8em}
+
+/* ---------- 6. PRINT
+   Only #printRoot prints. Every .sheet is exactly one US Letter page.
+   High Contrast Mode (isPureBlackAndWhitePDF) adds .pure-bw to
+   #printRoot only, so it can never touch the web interface. ---------- */
+@media print{
+  @page{size:8.5in 11in;margin:0}
+  html,body{background:#fff !important;background-image:none !important;margin:0;padding:0}
+  body > *:not(#printRoot){display:none !important}
+  #printRoot{display:block}
+  .sheet{
+    page-break-after:always; break-after:page;
+    page-break-inside:avoid; break-inside:avoid;
+    box-shadow:none; margin:0;
+  }
+  .sheet:last-child{page-break-after:auto;break-after:auto}
+
+  #printRoot.pure-bw .sheet,
+  #printRoot.pure-bw .sheet *{
+    color:#000000 !important; background:#ffffff !important;
+    border-color:#000000 !important; box-shadow:none !important; text-shadow:none !important;
+  }
+  #printRoot.pure-bw svg *{stroke:#000000 !important}
+  #printRoot.pure-bw svg [fill]:not([fill="none"]){fill:#000000 !important}
+  /* Tracing text, when later categories use it: hollow black outlines. */
+  #printRoot.pure-bw .trace{color:#ffffff !important;-webkit-text-stroke:1pt #000000}
+}
+</style>
+</head>
+<body>
+
+<!-- ============ SIDEBAR ============ -->
+<button class="sb-toggle" id="sbToggle" type="button" aria-label="Open menu" aria-controls="sidebar" aria-expanded="false">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+</button>
+<div class="sb-overlay" id="sbOverlay"></div>
+
+<aside class="sidebar" id="sidebar" aria-label="Packet Builder navigation">
+  <a class="brand" href="#/">
+    <img src="assets/cognicopia-logo.jpg" alt="">
+    <span><b>Cognicopia</b><small>Packet Builder</small></span>
+  </a>
+  <nav class="sb-nav">
+    <div class="sb-section" id="catHead">Activity categories</div>
+    <ul class="sb-list" id="catNav" aria-labelledby="catHead"></ul>
+
+    <div class="sb-section" id="pktHead">Your packet</div>
+    <ul class="sb-list" aria-labelledby="pktHead">
+      <li><button class="sb-link" type="button" id="navPacket">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6"/></svg>
+        <span>Packet queue</span><span class="badge" id="navCount">0</span></button></li>
+      <li><a class="sb-link" href="#/settings" data-route="settings">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+        <span>Settings &amp; defaults</span></a></li>
+    </ul>
+
+    <div class="sb-section" id="siteHead">Cognicopia</div>
+    <ul class="sb-list" aria-labelledby="siteHead">
+      <li><a class="sb-link" href="index.html"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span>Personalized Packet Tool</span></a></li>
+      <li><a class="sb-link" href="faq.html"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12" y2="17"/></svg><span>Caregiver FAQ</span></a></li>
+      <li><a class="sb-link" href="contact.html"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Contact</span></a></li>
+    </ul>
+  </nav>
+</aside>
+
+<!-- ============ MAIN ============ -->
+<div class="app">
+  <header class="topbar">
+    <div class="facility" id="facilityLabel"></div>
+    <button class="btn btn-primary btn-packet" type="button" id="openPacket" aria-controls="drawer" aria-expanded="false">
+      Your packet <span class="count" id="topCount">0</span>
+    </button>
+  </header>
+  <main id="view" class="view" tabindex="-1"></main>
+</div>
+
+<!-- ============ PACKET STAGING DRAWER ============ -->
+<div class="drawer-scrim" id="drawerScrim"></div>
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="drawerTitle">
+  <div class="drawer-head">
+    <h2 id="drawerTitle">Your packet</h2>
+    <button class="btn btn-ghost btn-sm" type="button" id="closeDrawer">Close</button>
+  </div>
+  <div class="drawer-body" id="queueBody"></div>
+  <div class="drawer-foot">
+    <p class="note" id="bwNote" hidden>High Contrast Mode is on: pages print in pure black and white.</p>
+    <p class="allowance" id="allowance"></p>
+    <button class="btn btn-primary" type="button" id="generatePdf">Generate PDF</button>
+    <p class="note">In the print window, choose <b>Save as PDF</b> to keep a copy, or pick your printer.</p>
+    <button class="btn btn-danger btn-sm" type="button" id="clearQueue">Clear all pages</button>
+  </div>
+</aside>
+
+<div class="toast" id="toast" role="status" aria-live="polite"><span id="toastMsg"></span></div>
+
+<div class="gate" id="gate" hidden role="dialog" aria-modal="true" aria-labelledby="gateTitle">
+  <div class="gate-card">
+    <h2 id="gateTitle">You have used your free packets</h2>
+    <p id="gateText"></p>
+    <div class="gate-row">
+      <a class="btn btn-primary" id="gateBuy" target="_blank" rel="noopener">Get full access</a>
+      <button class="btn btn-ghost" type="button" id="gateClose">Not now</button>
+    </div>
+    <label class="field" for="gateCode" style="display:block;margin-top:18px"><b>Already paid? Enter your access code</b></label>
+    <div class="gate-row"><input type="text" id="gateCode" autocomplete="off" maxlength="40"><button class="btn" type="button" id="gateUnlock">Unlock</button></div>
+    <p id="gateMsg" role="status"></p>
+  </div>
+</div>
+
+<!-- Everything that prints goes here, and only here. -->
+<div id="printRoot" aria-hidden="true"></div>
+
+<script>
+"use strict";
+/* =====================================================================
+   JS map
+     1. Storage helpers
+     2. License + free allowance (shared with index.html)
+     3. Settings state (persisted)
+     4. Utilities: escaping, dates, seeded random
+     5. Content data
+     6. Variation engine (guarantees unique versions)
+     7. Word & Language generators
+     8. Category registry (5 placeholder categories)
+     9. Output sheet renderer
+    10. Packet queue (persisted)
+    11. Views + hash router
+    12. Drawer, toast, gate, printing
+    13. Boot
+   ===================================================================== */
+
+/* ---------- 1. Storage helpers: never throw, even in private mode ---------- */
+const store = {
+  get(key, fallback){
+    try { const v = localStorage.getItem(key); return v == null ? fallback : JSON.parse(v); }
+    catch(e){ return fallback; }
+  },
+  set(key, value){ try { localStorage.setItem(key, JSON.stringify(value)); } catch(e){} },
+  remove(key){ try { localStorage.removeItem(key); } catch(e){} }
+};
+function rawGet(k, d){ try { const v = localStorage.getItem(k); return v == null ? d : v; } catch(e){ return d; } }
+function rawSet(k, v){ try { localStorage.setItem(k, v); } catch(e){} }
+
+/* ---------- 2. License + free allowance ----------
+   Same keys and access-code hash as index.html, so a license activated
+   in either place unlocks both, and free packets are counted together. */
+const FREE_RUNS = 10;
+const PRICE = "$129.99 a year";
+const PAY_LINK = "https://buy.stripe.com/9B614oaJV7lr0RX1ODew801";
+const ACCESS_SHA = "97c0fcc2e7143e13c6b104d93ad47c1e57670a24576df965b1a9eb745d6217da";
+
+function sha256(ascii){
+  function rr(n,x){ return (x>>>n)|(x<<(32-n)); }
+  var K=[0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,
+    0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,
+    0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,
+    0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,
+    0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,
+    0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,
+    0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,
+    0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
+  var H=[0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19];
+  var bytes=[]; for(var i=0;i<ascii.length;i++){ var c=ascii.charCodeAt(i);
+    if(c<128) bytes.push(c);
+    else if(c<2048){ bytes.push(192|(c>>6),128|(c&63)); }
+    else { bytes.push(224|(c>>12),128|((c>>6)&63),128|(c&63)); } }
+  var bl=bytes.length*8;
+  bytes.push(0x80); while(bytes.length%64!=56) bytes.push(0);
+  for(var i2=7;i2>=0;i2--) bytes.push((bl/Math.pow(2,i2*8))&255);
+  var w=new Array(64);
+  for(var j=0;j<bytes.length;j+=64){
+    for(var t=0;t<16;t++) w[t]=(bytes[j+t*4]<<24)|(bytes[j+t*4+1]<<16)|(bytes[j+t*4+2]<<8)|(bytes[j+t*4+3]);
+    for(var t2=16;t2<64;t2++){
+      var s0=rr(7,w[t2-15])^rr(18,w[t2-15])^(w[t2-15]>>>3);
+      var s1=rr(17,w[t2-2])^rr(19,w[t2-2])^(w[t2-2]>>>10);
+      w[t2]=(w[t2-16]+s0+w[t2-7]+s1)|0;
+    }
+    var a=H[0],b=H[1],c2=H[2],d=H[3],e=H[4],f=H[5],g=H[6],h=H[7];
+    for(var t3=0;t3<64;t3++){
+      var S1=rr(6,e)^rr(11,e)^rr(25,e), ch=(e&f)^((~e)&g);
+      var T1=(h+S1+ch+K[t3]+w[t3])|0;
+      var S0=rr(2,a)^rr(13,a)^rr(22,a), maj=(a&b)^(a&c2)^(b&c2);
+      var T2=(S0+maj)|0;
+      h=g;g=f;f=e;e=(d+T1)|0;d=c2;c2=b;b=a;a=(T1+T2)|0;
+    }
+    H[0]=(H[0]+a)|0;H[1]=(H[1]+b)|0;H[2]=(H[2]+c2)|0;H[3]=(H[3]+d)|0;
+    H[4]=(H[4]+e)|0;H[5]=(H[5]+f)|0;H[6]=(H[6]+g)|0;H[7]=(H[7]+h)|0;
+  }
+  var out=""; for(var k=0;k<8;k++) out+=("00000000"+(H[k]>>>0).toString(16)).slice(-8);
+  return out;
+}
+function isLicensed(){ return sha256(rawGet("cognicopia_license","")) === ACCESS_SHA; }
+function genCount(){ return parseInt(rawGet("cognicopia_gen_count","0"),10) || 0; }
+function bumpGen(){ rawSet("cognicopia_gen_count", String(genCount()+1)); }
+function activateLicense(code){
+  code = String(code||"").trim();
+  if (sha256(code) !== ACCESS_SHA) return false;
+  rawSet("cognicopia_license", code);
+  rawSet("cognicopia_is_subscribed", "1");
+  return true;
+}
+
+/* ---------- 3. Settings state ----------
+   Everything the user types is saved as they type. The date is the one
+   exception: it always starts as today, so old dates never print. */
+const DIFFICULTIES = {
+  early:    { label: "Early stage" },
+  moderate: { label: "Moderate stage" },
+  advanced: { label: "Advanced stage" }
+};
+const ERAS = {
+  general: "Timeless / general",
+  "1940s": "The 1940s",
+  "1950s": "The 1950s",
+  "1960s": "The 1960s",
+  "1970s": "The 1970s"
+};
+const DEFAULT_SETTINGS = { facility:"", residentName:"", difficulty:"early", era:"general", variations:2, pureBW:false };
+let settings = Object.assign({}, DEFAULT_SETTINGS, store.get("cgb_settings", {}));
+if (!DIFFICULTIES[settings.difficulty]) settings.difficulty = "early";
+if (!ERAS[settings.era]) settings.era = "general";
+settings.variations = clampInt(settings.variations, 1, 4, 2);
+
+/* High Contrast Mode is ONLY this flag. It is read when printing, to put
+   .pure-bw on #printRoot. It never touches the web interface. */
+let isPureBlackAndWhitePDF = !!settings.pureBW;
+
+function saveSettings(){ store.set("cgb_settings", settings); renderFacility(); }
+
+/* ---------- 4. Utilities ---------- */
+const $ = sel => document.querySelector(sel);
+function esc(s){
+  return String(s == null ? "" : s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+function clampInt(v, lo, hi, fallback){
+  const n = parseInt(v, 10);
+  return Number.isFinite(n) ? Math.min(hi, Math.max(lo, n)) : fallback;
+}
+function todayISO(){
+  const d = new Date();
+  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+}
+function fmtDate(iso){
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso || "");
+  if (!m) return "";
+  const d = new Date(+m[1], +m[2]-1, +m[3]);
+  return d.toLocaleDateString("en-US", { month:"long", day:"numeric", year:"numeric" });
+}
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
+
+/* Seeded random (mulberry32). The same seed always gives the same page,
+   which is how a saved queue can be rebuilt exactly after a reload. */
+function mulberry32(a){
+  return function(){
+    a |= 0; a = a + 0x6D2B79F5 | 0;
+    let t = Math.imul(a ^ a >>> 15, 1 | a);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+function newSeed(){
+  try { return crypto.getRandomValues(new Uint32Array(1))[0]; }
+  catch(e){ return Math.floor(Math.random() * 4294967296); }
+}
+function makeRng(seed){
+  const next = mulberry32(seed >>> 0);
+  return {
+    next,
+    int(n){ return Math.floor(next() * n); },
+    pick(a){ return a[Math.floor(next() * a.length)]; },
+    shuffle(a){
+      const b = a.slice();
+      for (let i = b.length - 1; i > 0; i--){ const j = Math.floor(next() * (i + 1)); const t = b[i]; b[i] = b[j]; b[j] = t; }
+      return b;
+    }
+  };
+}
+
+/* ---------- 5. Content data ----------
+   Words are A-Z only, 10 letters or fewer, so they fit every grid. */
+const ERA_WORDS = {
+  general: ["GARDEN","SUNSHINE","KITCHEN","PICNIC","FAMILY","COFFEE","BUTTER","FLOWER","WINDOW","BASKET","APPLE","MUSIC","SUMMER","HARVEST","PORCH","QUILT","MEADOW","PIANO","BREAD","HONEY","TULIP","ORCHARD","BAKERY","ROSE"],
+  "1940s": ["RADIO","JITTERBUG","VICTORY","RATION","SWING","NYLONS","JEEP","BIGBAND","NEWSREEL","ICEBOX","TROLLEY","BONDS","CROONER","HATBOX","TELEGRAM","FOXTROT","CANTEEN","SINATRA"],
+  "1950s": ["JUKEBOX","HULAHOOP","DRIVEIN","SOCKHOP","ELVIS","POODLE","DINER","MALTSHOP","CADILLAC","TELEVISION","MILKSHAKE","BOBBYSOX","TAILFINS","DRAGNET","CARHOP","FRISBEE","SPUTNIK","LUCY"],
+  "1960s": ["BEATLES","MUSTANG","APOLLO","TWIST","GROOVY","MOTOWN","BEEHIVE","LAVALAMP","PEACE","WOODSTOCK","MINISKIRT","SURFING","TRANSISTOR","ASTRONAUT","BEACH","SUPREMES","CAMARO","RADIO"],
+  "1970s": ["DISCO","BELLBOTTOM","EIGHTTRACK","SKATES","PETROCK","SHAG","PINBALL","MOODRING","POLYESTER","CONVOY","GRANOLA","WATERBED","FONDUE","ATARI","SKYLAB","WALKMAN","MACRAME","VAN"]
+};
+
+/* start, correct ending, a plausible wrong ending (advanced stage choice) */
+const SAYINGS = [
+  ["Early to bed, early to","rise","sleep"], ["An apple a day keeps the","doctor away","rain away"],
+  ["A penny saved is a penny","earned","spent"], ["Home sweet","home","house"],
+  ["The early bird catches the","worm","train"], ["Better late than","never","early"],
+  ["Every cloud has a silver","lining","spoon"], ["Actions speak louder than","words","music"],
+  ["Two heads are better than","one","three"], ["Slow and steady wins the","race","prize"],
+  ["Don't count your chickens before they","hatch","sing"], ["A picture is worth a thousand","words","dollars"],
+  ["Where there's a will, there's a","way","wish"], ["Don't cry over spilled","milk","coffee"],
+  ["The grass is always greener on the other","side","hill"], ["All's well that ends","well","soon"],
+  ["Absence makes the heart grow","fonder","stronger"], ["Beauty is in the eye of the","beholder","painter"],
+  ["Laughter is the best","medicine","music"], ["There's no place like","home","Paris"],
+  ["Practice makes","perfect","progress"], ["When it rains, it","pours","shines"],
+  ["Look before you","leap","sleep"], ["An ounce of prevention is worth a pound of","cure","gold"]
+];
+
+const PAIRS = [
+  ["Salt","Pepper"],["Cup","Saucer"],["Bread","Butter"],["Shoes","Socks"],["Knife","Fork"],
+  ["Needle","Thread"],["Table","Chair"],["Rain","Umbrella"],["Pen","Paper"],["Bacon","Eggs"],
+  ["Lock","Key"],["Hammer","Nail"],["Bat","Ball"],["Soap","Water"],["Comb","Brush"],
+  ["Thunder","Lightning"],["Pots","Pans"],["Milk","Cookies"],["Horse","Saddle"],["Mop","Bucket"],
+  ["Pillow","Blanket"],["Bow","Arrow"],["Peanut butter","Jelly"],["Sun","Moon"]
+];
+
+const NAME_PROMPTS = {
+  general: ["things you find in a kitchen","kinds of flowers","things you take on a picnic","farm animals","things that are red","things you wear in winter","things in a toolbox","kinds of fruit","birds","things at the beach","sports","things in a sewing basket","vegetables in a garden","things you pack for a trip","desserts"],
+  "1940s": ["things that were rationed during the war","dances from the 1940s","things you heard on the radio","ways people got around town in the 1940s","big band songs or singers"],
+  "1950s": ["things on a diner menu","TV shows from the 1950s","things at a drive-in movie","car makers from the 1950s","games children played outside"],
+  "1960s": ["things at a 1960s beach party","singers or bands from the 1960s","hairstyles from the 1960s","things an astronaut needs","dances from the 1960s"],
+  "1970s": ["things at a roller rink","TV shows from the 1970s","disco songs or singers","things in a 1970s living room","popular colors from the 1970s"]
+};
+
+const MEMORY_PROMPTS = {
+  general: ["What was your favorite meal growing up?","Tell about a place you loved to visit.","Who taught you something important?","What did you like to do on a summer day?","Describe the house you grew up in.","What songs did you like to sing?","Tell about a pet you remember.","What was your first job?","What did a perfect Sunday look like?","What holiday tradition do you remember?"],
+  "1940s": ["What do you remember hearing on the radio?","Did your family grow a victory garden?","Where did people go dancing in your town?","How did your family get around town?"],
+  "1950s": ["What TV show do you remember watching first?","Did you ever go to a drive-in movie?","What did you order at the diner or soda fountain?","What cars did people drive in your neighborhood?"],
+  "1960s": ["What music was playing on the radio?","What do you remember about the Moon landing?","What clothes were in style?","Where did you like to go on weekends?"],
+  "1970s": ["Did you ever go roller skating?","What was in style for your home?","What shows did your family watch together?","What music did you enjoy?"]
+};
+
+/* ---------- 6. Variation engine ----------
+   A batch = one "Add to Packet" click: one activity, one settings set,
+   N versions. The batch seed drives a plan that hands each version a
+   different slice of the content pool; each version then gets its own
+   layout seed. Every version carries a signature (its exact content and
+   layout), and a version whose signature matches an earlier one in the
+   batch is regenerated, so versions 1 to 4 are always different. */
+const batchCache = new Map();
+
+function slicePlan(pool, per, count, rng){
+  const s = rng.shuffle(pool), out = [];
+  // Disjoint slices when the pool is big enough; otherwise evenly offset,
+  // overlapping slices that still differ from each other.
+  const step = s.length >= per * count ? per : Math.max(1, Math.floor((s.length - per) / Math.max(1, count - 1)));
+  for (let i = 0; i < count; i++){
+    const arr = [];
+    for (let k = 0; k < per; k++) arr.push(s[(i * step + k) % s.length]);
+    out.push(arr);
+  }
+  return out;
+}
+
+function buildBatch(act, cfg, batchSeed, count){
+  const key = act.id + "|" + JSON.stringify(cfg) + "|" + batchSeed + "|" + count;
+  if (batchCache.has(key)) return batchCache.get(key);
+  const master = makeRng(batchSeed);
+  const plan = act.plan(cfg, master, count);
+  const pages = [], seen = new Set();
+  for (let i = 0; i < count; i++){
+    let page, tries = 0;
+    do {
+      const seed = (batchSeed ^ Math.imul(i + 1, 0x9E3779B1) ^ Math.imul(tries + 1, 0x85EBCA6B)) >>> 0;
+      page = act.generate(cfg, makeRng(seed), plan[i], tries);
+      tries++;
+    } while (seen.has(page.signature) && tries < 30);
+    seen.add(page.signature);
+    pages.push(page);
+  }
+  if (batchCache.size > 200) batchCache.clear();
+  batchCache.set(key, pages);
+  return pages;
+}
+
+/* ---------- 7. Word & Language generators ----------
+   Each activity: plan(cfg, rng, count) -> one content slice per version;
+   generate(cfg, rng, slice, attempt) -> { title, instructions, html,
+   signature, answers? }. Sizes and counts are tuned per stage so every
+   page fits one sheet at that stage's type size. */
+function eraPool(era){ return ERA_WORDS[era] || ERA_WORDS.general; }
+function withGeneral(list, era, key){
+  const base = key[era] || [];
+  return era === "general" ? key.general.slice() : base.concat(key.general);
+}
+function writeLines(n){ let h = ""; for (let i = 0; i < n; i++) h += '<div class="wline"></div>'; return h; }
+
+const WORD_SEARCH = {
+  id: "word-search", name: "Word Search", themed: true,
+  desc: "Themed words hidden in a grid. The grid shrinks and words run in fewer directions as the stage advances.",
+  icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="10" cy="10" r="6"/><line x1="14.5" y1="14.5" x2="20" y2="20"/></svg>',
+  levels: {
+    early:    { size:12, count:8, maxLen:10, dirs:[[0,1],[1,0],[1,1]], cell:.5 },
+    moderate: { size:10, count:6, maxLen:9,  dirs:[[0,1],[1,0]],       cell:.6 },
+    advanced: { size:8,  count:4, maxLen:7,  dirs:[[0,1]],             cell:.72 }
+  },
+  plan(cfg, rng, count){
+    const L = this.levels[cfg.difficulty];
+    let pool = eraPool(cfg.era).filter(w => w.length <= L.maxLen);
+    if (pool.length < L.count + 2) pool = pool.concat(ERA_WORDS.general.filter(w => w.length <= L.maxLen && !pool.includes(w)));
+    return slicePlan(pool, L.count, count, rng);
+  },
+  generate(cfg, rng, words){
+    const L = this.levels[cfg.difficulty], n = L.size;
+    const g = Array.from({ length:n }, () => Array(n).fill(""));
+    const placed = [];
+    // Longest words first: they are the hardest to fit.
+    words.slice().sort((a,b) => b.length - a.length).forEach(w => {
+      for (let t = 0; t < 400; t++){
+        const [dr, dc] = rng.pick(L.dirs);
+        const r0 = rng.int(n - (dr ? w.length - 1 : 0));
+        const c0 = rng.int(n - (dc ? w.length - 1 : 0));
+        let ok = true;
+        for (let k = 0; k < w.length; k++){ const ch = g[r0+dr*k][c0+dc*k]; if (ch && ch !== w[k]) { ok = false; break; } }
+        if (!ok) continue;
+        for (let k = 0; k < w.length; k++) g[r0+dr*k][c0+dc*k] = w[k];
+        placed.push(w); break;
+      }
+    });
+    const fill = "ABCDEFGHIKLMNOPRSTUWY";
+    for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) if (!g[r][c]) g[r][c] = fill[rng.int(fill.length)];
+    const td = `style="width:${L.cell}in;height:${L.cell}in"`;
+    const rows = g.map(row => "<tr>" + row.map(ch => `<td ${td}>${ch}</td>`).join("") + "</tr>").join("");
+    const list = placed.slice().sort().map(w => `<span>${w}</span>`).join("");
+    const how = { early:"across, down, or diagonally", moderate:"across or down", advanced:"across, from left to right" }[cfg.difficulty];
+    return {
+      title: "Word Search",
+      instructions: `Find each word in the grid. Words go ${how}. Circle each one you find.`,
+      html: `<table class="ws" role="presentation">${rows}</table><div class="ws-list">${list}</div>`,
+      signature: g.map(r => r.join("")).join("/")
+    };
+  }
+};
+
+const FINISH_SAYING = {
+  id: "finish-saying", name: "Finish the Saying", themed: false,
+  desc: "Familiar sayings to complete. Later stages get a first-letter hint, then a choice of two.",
+  icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="8" y1="9" x2="16" y2="9"/><line x1="8" y1="13" x2="12" y2="13"/></svg>',
+  levels: { early:{ count:6 }, moderate:{ count:5 }, advanced:{ count:4 } },
+  plan(cfg, rng, count){ return slicePlan(SAYINGS, this.levels[cfg.difficulty].count, count, rng); },
+  generate(cfg, rng, items){
+    const lvl = cfg.difficulty, order = [];
+    const html = items.map(([start, end, wrong]) => {
+      let tail;
+      if (lvl === "advanced"){
+        const opts = rng.next() < .5 ? [end, wrong] : [wrong, end];
+        order.push(opts[0][0]);
+        tail = `<div class="choices"><span class="choice">${esc(opts[0])}</span><span class="choice">${esc(opts[1])}</span></div>`;
+      } else {
+        const hint = lvl === "moderate" ? ` <span class="hintx">(starts with &ldquo;${esc(end[0].toUpperCase())}&rdquo;)</span>` : "";
+        tail = `<div class="wline"></div>`;
+        return `<div class="item"><p class="q">${esc(start)} &hellip;${hint}</p>${tail}</div>`;
+      }
+      return `<div class="item"><p class="q">${esc(start)} &hellip;</p>${tail}</div>`;
+    }).join("");
+    return {
+      title: "Finish the Saying",
+      instructions: lvl === "advanced" ? "Read the saying out loud. Circle the ending that fits." : "Say each saying out loud, then write the ending on the line.",
+      html,
+      answers: items.map((it, i) => (i+1) + ". " + it[1]).join("   "),
+      signature: items.map(i => i[0]).join("|") + "#" + order.join("")
+    };
+  }
+};
+
+const SCRAMBLE = {
+  id: "scramble", name: "Word Scramble", themed: true,
+  desc: "Themed words with the letters mixed up. Later stages get shorter words, a first-letter hint, then a choice of two.",
+  icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>',
+  levels: { early:{ count:6, maxLen:8 }, moderate:{ count:4, maxLen:7 }, advanced:{ count:4, maxLen:6 } },
+  pool(cfg){
+    const L = this.levels[cfg.difficulty];
+    let pool = eraPool(cfg.era).filter(w => w.length >= 4 && w.length <= L.maxLen && new Set(w).size > 1);
+    if (pool.length < L.count + 2) pool = pool.concat(ERA_WORDS.general.filter(w => w.length >= 4 && w.length <= L.maxLen && !pool.includes(w)));
+    return pool;
+  },
+  plan(cfg, rng, count){ return slicePlan(this.pool(cfg), this.levels[cfg.difficulty].count, count, rng); },
+  generate(cfg, rng, words){
+    const lvl = cfg.difficulty, pool = this.pool(cfg), sig = [];
+    const html = words.map((w, i) => {
+      let mixed = w;
+      for (let t = 0; t < 20 && mixed === w; t++) mixed = rng.shuffle(w.split("")).join("");
+      sig.push(mixed);
+      const tiles = `<span class="tiles">${mixed.split("").map(ch => `<span class="tile">${ch}</span>`).join("")}</span>`;
+      let tail;
+      if (lvl === "advanced"){
+        const others = pool.filter(x => x !== w);
+        const wrong = others.length ? rng.pick(others) : "HOME";
+        const opts = rng.next() < .5 ? [w, wrong] : [wrong, w];
+        sig.push(opts[0]);
+        tail = `<div class="choices"><span class="choice">${opts[0]}</span><span class="choice">${opts[1]}</span></div>`;
+      } else {
+        const hint = lvl === "moderate" ? `<p class="hintx" style="margin:.06in 0 0">Starts with &ldquo;${w[0]}&rdquo; &middot; ${w.length} letters</p>` : "";
+        tail = hint + '<div class="wline"></div>';
+      }
+      return `<div class="item"><span class="num">${i+1}.</span>${tiles}${tail}</div>`;
+    }).join("");
+    return {
+      title: "Word Scramble",
+      instructions: lvl === "advanced" ? "The letters are mixed up. Circle the word they make." : "The letters are mixed up. Write the word they make on the line.",
+      html,
+      answers: words.map((w, i) => (i+1) + ". " + w).join("   "),
+      signature: sig.join("|")
+    };
+  }
+};
+
+const NAME_THREE = {
+  id: "name-three", name: "Name Three", themed: true,
+  desc: "Category naming prompts. The number of answers asked for drops from three to one as the stage advances.",
+  icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="9" y1="6" x2="20" y2="6"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="18" x2="20" y2="18"/><circle cx="4.5" cy="6" r="1"/><circle cx="4.5" cy="12" r="1"/><circle cx="4.5" cy="18" r="1"/></svg>',
+  levels: { early:{ count:4, answers:3, word:"three" }, moderate:{ count:4, answers:2, word:"two" }, advanced:{ count:3, answers:1, word:"one" } },
+  plan(cfg, rng, count){ return slicePlan(withGeneral([], cfg.era, NAME_PROMPTS), this.levels[cfg.difficulty].count, count, rng); },
+  generate(cfg, rng, prompts){
+    const L = this.levels[cfg.difficulty];
+    const html = prompts.map(p => {
+      let lines = "";
+      for (let k = 1; k <= L.answers; k++) lines += L.answers > 1 ? `<div class="wline" style="display:flex;align-items:flex-end"><span class="num" style="font-size:.8em">${k}.</span></div>` : '<div class="wline"></div>';
+      return `<div class="item"><p class="q">Name ${L.word} ${esc(p)}.</p>${lines}</div>`;
+    }).join("");
+    return {
+      title: "Name " + L.word.charAt(0).toUpperCase() + L.word.slice(1),
+      instructions: "Say your answers out loud or write them down. Every answer counts.",
+      html,
+      signature: prompts.join("|")
+    };
+  }
+};
+
+const GOES_TOGETHER = {
+  id: "goes-together", name: "Goes Together", themed: false,
+  desc: "Match everyday pairs like salt and pepper. Fewer, larger pairs at later stages.",
+  icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="5" cy="6" r="2"/><circle cx="19" cy="18" r="2"/><circle cx="5" cy="18" r="2"/><circle cx="19" cy="6" r="2"/><line x1="7" y1="6.5" x2="17" y2="17.5"/><line x1="7" y1="17.5" x2="17" y2="6.5"/></svg>',
+  levels: { early:{ count:6 }, moderate:{ count:5 }, advanced:{ count:3 } },
+  plan(cfg, rng, count){ return slicePlan(PAIRS, this.levels[cfg.difficulty].count, count, rng); },
+  generate(cfg, rng, pairs){
+    let right = rng.shuffle(pairs.map(p => p[1]));
+    // Never leave a pair lined up straight across: that gives the answer away.
+    for (let t = 0; t < 20 && right.some((r, i) => r === pairs[i][1]); t++) right = rng.shuffle(right);
+    const html = '<div class="pairs">' + pairs.map((p, i) =>
+      `<span class="l">${esc(p[0])}</span><span class="dot"></span><span></span><span class="dot"></span><span class="r">${esc(right[i])}</span>`
+    ).join("") + "</div>";
+    return {
+      title: "Goes Together",
+      instructions: "Draw a line from each word on the left to the word on the right that goes with it.",
+      html,
+      signature: pairs.map(p => p[0]).join("|") + "#" + right.join("|")
+    };
+  }
+};
+
+const MEMORY_LANE = {
+  id: "memory-lane", name: "Memory Lane", themed: true,
+  desc: "Reminiscence prompts to talk about or write about. No right or wrong answers.",
+  icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V2H6.5A2.5 2.5 0 0 0 4 4.5z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/></svg>',
+  levels: { early:{ count:3, lines:3 }, moderate:{ count:3, lines:2 }, advanced:{ count:2, lines:2 } },
+  plan(cfg, rng, count){ return slicePlan(withGeneral([], cfg.era, MEMORY_PROMPTS), this.levels[cfg.difficulty].count, count, rng); },
+  generate(cfg, rng, prompts){
+    const L = this.levels[cfg.difficulty];
+    return {
+      title: "Memory Lane",
+      instructions: "Talk about each question, or write a few words. Staff or family can write for you.",
+      html: '<p class="tagline">There are no wrong answers.</p>' + prompts.map(p => `<div class="item"><p class="q">${esc(p)}</p>${writeLines(L.lines)}</div>`).join(""),
+      signature: prompts.join("|")
+    };
+  }
+};
+
+/* ---------- 8. Category registry ----------
+   To add a category's activities later, give it an `activities` array of
+   objects shaped like the Word & Language ones above. Everything else
+   (sidebar, views, config panel, queue, print) picks them up. */
+const ICONS = {
+  word:  '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>',
+  letter:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 19 7.5 5 12 19"/><line x1="4.8" y1="14" x2="10.2" y2="14"/><path d="M15 12h4a2 2 0 0 1 0 4h-4V8h3a2 2 0 0 1 0 4"/></svg>',
+  number:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="9" x2="20" y2="9"/><line x1="4" y1="15" x2="20" y2="15"/><line x1="10" y1="3" x2="8" y2="21"/><line x1="16" y1="3" x2="14" y2="21"/></svg>',
+  move:  '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="13" cy="4" r="2"/><path d="M7 21l3-6 3 2v5"/><path d="M6 12l3-4 4 1 3 3"/><path d="M13 9l-1 5"/></svg>',
+  music: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>',
+  art:   '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22a10 10 0 1 1 10-10c0 3-2 4-4 4h-2a2 2 0 0 0-1 3.7A2 2 0 0 1 12 22z"/><circle cx="7.5" cy="10.5" r="1"/><circle cx="12" cy="7" r="1"/><circle cx="16.5" cy="10.5" r="1"/></svg>'
+};
+
+const CATEGORIES = [
+  { id:"word", name:"Word & Language Activities", icon:ICONS.word,
+    blurb:"Word searches, sayings, scrambles, naming and reminiscence prompts. Language is often one of the best-preserved skills, and familiar words invite conversation.",
+    activities:[WORD_SEARCH, FINISH_SAYING, SCRAMBLE, NAME_THREE, GOES_TOGETHER, MEMORY_LANE] },
+  { id:"letters", name:"Letter & Alphabet Activities", icon:ICONS.letter,
+    blurb:"Tracing, missing letters and alphabet games with large, clear letterforms.",
+    activities:[], planned:["Alphabet Tracing","Missing Letter","First Letter Match","A-to-Z Categories","Big Letter Coloring"] },
+  { id:"numbers", name:"Number & Math Activities", icon:ICONS.number,
+    blurb:"Counting, coins, clocks and simple sums drawn from everyday life.",
+    activities:[], planned:["Number Tracing","Coin Counting","Clock Reading","Simple Sums","Dot Counting"] },
+  { id:"movement", name:"Exercise, Movement & Physical Motor Activities", icon:ICONS.move,
+    blurb:"Seated exercise cards, hand and finger work and gentle group movement guides.",
+    activities:[], planned:["Seated Stretch Cards","Hand & Finger Exercises","Balloon Toss Guide","Chair Yoga Sequence","Walking Path Log"] },
+  { id:"music", name:"Music, Rhythm & Sound Activities", icon:ICONS.music,
+    blurb:"Public-domain sing-alongs, rhythm patterns and music memory prompts.",
+    activities:[], planned:["Sing-Along Lyric Sheets","Rhythm Clapping Patterns","Name That Tune Prompts","Instrument Matching","Music Memory Journal"] },
+  { id:"multisensory", name:"Multisensory, Art & Group Activities", icon:ICONS.art,
+    blurb:"Texture, scent, color and shape activities, plus guides for group sessions.",
+    activities:[], planned:["Texture Matching Boards","Scent Memory Prompts","Color & Shape Sorting","Group Reminiscence Circle","Collage Templates"] }
+];
+const CAT_INDEX = {}, ACT_INDEX = {};
+CATEGORIES.forEach(c => { CAT_INDEX[c.id] = c; c.activities.forEach(a => { ACT_INDEX[a.id] = a; a.categoryId = c.id; }); });
+
+/* ---------- 9. Output sheet renderer ---------- */
+function sheetHtml(item){
+  const act = ACT_INDEX[item.activityId];
+  if (!act) return "";
+  const page = buildBatch(act, item.cfg, item.batchSeed, item.count)[item.index];
+  const who = item.cfg.residentName ? "For " + esc(item.cfg.residentName) : "";
+  const when = fmtDate(item.cfg.date);
+  return `<section class="sheet lvl-${esc(item.cfg.difficulty)}">
+    <header class="sh-head"><h1>${esc(page.title)}</h1><div class="sh-meta">${who}${who && when ? "<br>" : ""}${esc(when)}</div></header>
+    <p class="sh-inst">${esc(page.instructions)}</p>
+    <div class="sh-body">${page.html}</div>
+    ${page.answers ? `<p class="sh-ans">For staff &middot; answers: ${esc(page.answers)}</p>` : ""}
+    <footer class="sh-foot"><span>${esc(settings.facility)}</span><span>Cognicopia &middot; Version ${item.index + 1} of ${item.count}</span></footer>
+  </section>`;
+}
+
+/* ---------- 10. Packet queue ----------
+   Stored as recipes (activity, settings, seed, index), not as HTML, so it
+   is small and rebuilds identically after a reload. */
+let queue = (store.get("cgb_queue", []) || []).filter(q => q && ACT_INDEX[q.activityId] && Number.isFinite(q.batchSeed) && q.index < q.count);
+function saveQueue(){ store.set("cgb_queue", queue); renderCounts(); if (drawerOpen) renderQueue(); }
+function addBatch(act, cfg, batchSeed, count){
+  for (let i = 0; i < count; i++) queue.push({ uid:uid(), activityId:act.id, cfg:Object.assign({}, cfg), batchSeed, count, index:i });
+  saveQueue();
+}
+
+/* ---------- 11. Views + router ---------- */
+const view = $("#view");
+const routes = { "": renderHome, "category": renderCategory, "settings": renderSettings };
+
+function parseHash(){
+  const parts = location.hash.replace(/^#\/?/, "").split("/");
+  return { name: parts[0] || "", arg: decodeURIComponent(parts[1] || "") };
+}
+function router(){
+  const { name, arg } = parseHash();
+  (routes[name] || renderHome)(arg);
+  highlightNav(name, arg);
+  closeSidebar();
+  window.scrollTo(0, 0);
+  const h = view.querySelector("h1");
+  if (h) h.focus({ preventScroll:true });
+}
+window.addEventListener("hashchange", router);
+
+function renderNav(){
+  $("#catNav").innerHTML = CATEGORIES.map(c => `<li><a class="sb-link" href="#/category/${c.id}" data-cat="${c.id}">
+    ${c.icon}<span>${esc(c.name)}</span>${c.activities.length ? `<span class="tag live">${c.activities.length}</span>` : '<span class="tag">Soon</span>'}</a></li>`).join("");
+}
+function highlightNav(name, arg){
+  document.querySelectorAll(".sb-link").forEach(a => a.removeAttribute("aria-current"));
+  const el = name === "category" ? document.querySelector(`.sb-link[data-cat="${CSS.escape(arg)}"]`)
+           : name === "settings" ? document.querySelector('.sb-link[data-route="settings"]') : null;
+  if (el) el.setAttribute("aria-current", "page");
+}
+function renderFacility(){
+  $("#facilityLabel").innerHTML = settings.facility ? `<b>${esc(settings.facility)}</b>` : 'Add your facility name in <a href="#/settings">Settings</a>';
+}
+function renderCounts(){
+  $("#navCount").textContent = queue.length;
+  $("#topCount").textContent = queue.length;
+}
+
+function renderHome(){
+  view.innerHTML = `
+    <p class="eyebrow">Packet Builder</p>
+    <h1 class="view-title" tabindex="-1">Build a packet, one activity at a time</h1>
+    <p class="lede">Pick a category, choose an activity, and add as many different versions as you need. Every version is freshly generated, so no two pages are the same. Nothing leaves this computer.</p>
+    <ol class="steps">
+      <li><b>Choose a category</b> from the left.</li>
+      <li><b>Pick an activity</b> and set the resident, stage and theme.</li>
+      <li><b>Add to Packet</b>, then open <b>Your packet</b> and print.</li>
+    </ol>
+    <h2>Categories</h2>
+    <div class="card-grid">${CATEGORIES.map(c => `
+      <a class="card" href="#/category/${c.id}">
+        <span class="ic">${c.icon}</span><b>${esc(c.name)}</b><span class="desc">${esc(c.blurb)}</span>
+        <span class="meta">${c.activities.length ? `<span class="pill live">${c.activities.length} activities</span>` : '<span class="pill">Coming soon</span>'}</span>
+      </a>`).join("")}
+    </div>`;
+}
+
+let selectedAct = null, previewSeed = newSeed();
+
+function renderCategory(id){
+  const cat = CAT_INDEX[id];
+  if (!cat){ location.replace("#/"); return; }
+  selectedAct = null;
+  const cards = cat.activities.length
+    ? cat.activities.map(a => `<button class="card" type="button" data-act="${a.id}" aria-pressed="false" aria-controls="config">
+        <span class="ic">${a.icon}</span><b>${esc(a.name)}</b><span class="desc">${esc(a.desc)}</span>
+        <span class="meta"><span class="pill live">Ready</span>${a.themed ? '<span class="pill">Era themes</span>' : ""}</span></button>`).join("")
+    : cat.planned.map(n => `<div class="card is-soon" aria-disabled="true"><b>${esc(n)}</b><span class="meta"><span class="pill">Coming soon</span></span></div>`).join("");
+  view.innerHTML = `
+    <p class="eyebrow">Category</p>
+    <h1 class="view-title" tabindex="-1">${esc(cat.name)}</h1>
+    <p class="lede">${esc(cat.blurb)}</p>
+    <section aria-label="Activities"><div class="card-grid">${cards}</div></section>
+    ${cat.activities.length ? "" : '<p class="callout">These activities are being built. Word &amp; Language Activities are ready to use now.</p>'}
+    <section class="config" id="config" hidden aria-live="polite"></section>`;
+  view.querySelectorAll("button.card[data-act]").forEach(btn => btn.addEventListener("click", () => openConfig(btn.dataset.act)));
+}
+
+function currentCfg(){
+  return {
+    residentName: ($("#cfgName") || {}).value ? $("#cfgName").value.trim().slice(0, 40) : "",
+    date: ($("#cfgDate") || {}).value || todayISO(),
+    difficulty: (document.querySelector('input[name="cfgDiff"]:checked') || {}).value || settings.difficulty,
+    era: ($("#cfgEra") || {}).value || settings.era
+  };
+}
+
+function openConfig(actId){
+  const act = ACT_INDEX[actId];
+  if (!act) return;
+  selectedAct = act;
+  previewSeed = newSeed();
+  view.querySelectorAll("button.card[data-act]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.act === actId)));
+  const box = $("#config");
+  box.hidden = false;
+  box.innerHTML = `
+    <div class="config-grid">
+      <form id="cfgForm" novalidate>
+        <h2>${esc(act.name)}</h2>
+        <p class="hint" style="margin:0 0 18px">${esc(act.desc)}</p>
+        <div class="field">
+          <label for="cfgVar">How many different versions?</label>
+          <div class="stepper">
+            <button type="button" data-step="-1" aria-label="Fewer versions">&minus;</button>
+            <input id="cfgVar" type="number" min="1" max="4" inputmode="numeric" value="${settings.variations}">
+            <button type="button" data-step="1" aria-label="More versions">+</button>
+          </div>
+          <p class="hint">1 to 4. Each version is generated separately, so no two pages match.</p>
+        </div>
+        <div class="row2">
+          <div class="field"><label for="cfgName">Resident name <span class="hint">(optional)</span></label>
+            <input id="cfgName" type="text" maxlength="40" autocomplete="off" value="${esc(settings.residentName)}"></div>
+          <div class="field"><label for="cfgDate">Date</label><input id="cfgDate" type="date" value="${todayISO()}"></div>
+        </div>
+        <fieldset class="field"><legend>Difficulty</legend>
+          <div class="seg">${Object.keys(DIFFICULTIES).map(k => `<label><input type="radio" name="cfgDiff" value="${k}" ${k === settings.difficulty ? "checked" : ""}><span>${DIFFICULTIES[k].label}</span></label>`).join("")}</div>
+        </fieldset>
+        ${act.themed ? `<div class="field"><label for="cfgEra">Theme</label>
+          <select id="cfgEra">${Object.keys(ERAS).map(k => `<option value="${k}" ${k === settings.era ? "selected" : ""}>${ERAS[k]}</option>`).join("")}</select>
+          <p class="hint">Sets the words and prompts. Pick the decade the resident was a young adult.</p></div>` : ""}
+        <div class="actions">
+          <button class="btn btn-primary" type="submit">Add to Packet</button>
+          <button class="btn btn-ghost" type="button" id="cfgShuffle">Show a different version</button>
+        </div>
+      </form>
+      <div class="preview-col">
+        <p class="preview-label"><span>Preview &middot; version 1</span><span id="pvMeta"></span></p>
+        <div class="thumb big" id="preview"></div>
+      </div>
+    </div>`;
+
+  const form = $("#cfgForm"), varInput = $("#cfgVar");
+  const syncVar = () => { varInput.value = clampInt(varInput.value, 1, 4, 1); settings.variations = +varInput.value; saveSettings(); };
+  box.querySelectorAll(".stepper button").forEach(b => b.addEventListener("click", () => { varInput.value = clampInt(+varInput.value + +b.dataset.step, 1, 4, 1); syncVar(); }));
+  varInput.addEventListener("change", syncVar);
+  $("#cfgName").addEventListener("input", e => { settings.residentName = e.target.value.slice(0, 40); saveSettings(); });
+  form.addEventListener("change", e => {
+    if (e.target.name === "cfgDiff"){ settings.difficulty = e.target.value; saveSettings(); }
+    if (e.target.id === "cfgEra"){ settings.era = e.target.value; saveSettings(); }
+    updatePreview();
+  });
+  $("#cfgName").addEventListener("input", updatePreview);
+  $("#cfgDate").addEventListener("input", updatePreview);
+  $("#cfgShuffle").addEventListener("click", () => { previewSeed = newSeed(); updatePreview(); });
+  form.addEventListener("submit", e => {
+    e.preventDefault();
+    syncVar();
+    const count = settings.variations, cfg = currentCfg();
+    addBatch(act, cfg, previewSeed, count);   // version 1 is exactly the page in the preview
+    previewSeed = newSeed();
+    updatePreview();
+    toast(`Added ${count} ${count === 1 ? "page" : "pages"} of ${act.name}. Your packet has ${queue.length}.`, "Review packet", openDrawer);
+  });
+  updatePreview();
+  box.scrollIntoView({ behavior:"smooth", block:"start" });
+}
+
+function updatePreview(){
+  if (!selectedAct || !$("#preview")) return;
+  const cfg = currentCfg();
+  $("#preview").innerHTML = sheetHtml({ activityId:selectedAct.id, cfg, batchSeed:previewSeed, count:1, index:0 });
+  $("#pvMeta").textContent = DIFFICULTIES[cfg.difficulty].label + (selectedAct.themed ? " · " + ERAS[cfg.era] : "");
+}
+
+function renderSettings(){
+  view.innerHTML = `
+    <p class="eyebrow">Settings</p>
+    <h1 class="view-title" tabindex="-1">Settings &amp; defaults</h1>
+    <p class="lede">Saved on this computer as you type. New activities start with these choices.</p>
+    <div class="config" style="margin-top:0">
+      <div class="field"><label for="setFacility">Facility name</label>
+        <input id="setFacility" type="text" maxlength="60" value="${esc(settings.facility)}" autocomplete="organization">
+        <p class="hint">Printed at the foot of every page and shown in the top bar.</p></div>
+      <div class="row2">
+        <div class="field"><label for="setName">Default resident name</label><input id="setName" type="text" maxlength="40" value="${esc(settings.residentName)}" autocomplete="off"></div>
+        <div class="field"><label for="setVar">Default number of versions</label><input id="setVar" type="number" min="1" max="4" value="${settings.variations}"></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label for="setDiff">Default difficulty</label><select id="setDiff">${Object.keys(DIFFICULTIES).map(k => `<option value="${k}" ${k === settings.difficulty ? "selected" : ""}>${DIFFICULTIES[k].label}</option>`).join("")}</select></div>
+        <div class="field"><label for="setEra">Default theme</label><select id="setEra">${Object.keys(ERAS).map(k => `<option value="${k}" ${k === settings.era ? "selected" : ""}>${ERAS[k]}</option>`).join("")}</select></div>
+      </div>
+      <label class="switch" for="setBW">
+        <input type="checkbox" id="setBW" ${isPureBlackAndWhitePDF ? "checked" : ""}>
+        <span><b>High Contrast Mode / Pure Black &amp; White</b><small>Printed pages only: pure black (#000000) on white (#ffffff). This screen stays exactly as it is.</small></span>
+      </label>
+    </div>
+    <div class="config">
+      <h2>License</h2>
+      <p class="hint" id="licStatus"></p>
+      <div class="gate-row"><input type="text" id="setCode" placeholder="Access code" autocomplete="off" maxlength="40" aria-label="Access code"><button class="btn" type="button" id="setUnlock">Unlock</button></div>
+      <p id="setMsg" role="status"></p>
+    </div>
+    <div class="config">
+      <h2>Shared computer?</h2>
+      <p class="hint">Removes the saved facility name, resident name, defaults and packet queue from this computer. Your license stays.</p>
+      <div class="actions"><button class="btn btn-danger" type="button" id="setClear">Clear saved data</button></div>
+    </div>`;
+  const bind = (id, fn) => $(id).addEventListener("input", e => { fn(e.target); saveSettings(); });
+  bind("#setFacility", t => settings.facility = t.value.slice(0, 60));
+  bind("#setName", t => settings.residentName = t.value.slice(0, 40));
+  $("#setVar").addEventListener("change", e => { settings.variations = clampInt(e.target.value, 1, 4, 2); e.target.value = settings.variations; saveSettings(); });
+  bind("#setDiff", t => settings.difficulty = t.value);
+  bind("#setEra", t => settings.era = t.value);
+  $("#setBW").addEventListener("change", e => {
+    isPureBlackAndWhitePDF = e.target.checked;     // flag only; no class on <body>, no style change
+    settings.pureBW = isPureBlackAndWhitePDF;
+    saveSettings();
+    renderBwNote();
+  });
+  const showLic = () => { $("#licStatus").textContent = isLicensed() ? "Licensed. Unlimited packets." : Math.max(0, FREE_RUNS - genCount()) + " of " + FREE_RUNS + " free packets left. Paid facilities enter the access code from their receipt."; };
+  showLic();
+  $("#setUnlock").addEventListener("click", () => {
+    const ok = activateLicense($("#setCode").value);
+    $("#setMsg").className = ok ? "msg-ok" : "msg-bad";
+    $("#setMsg").textContent = ok ? "Unlocked. Thank you!" : "That code didn't match. Check it against your receipt.";
+    showLic(); renderAllowance();
+  });
+  $("#setClear").addEventListener("click", () => {
+    if (!confirm("Clear the saved facility name, resident name, defaults and packet queue from this computer?")) return;
+    store.remove("cgb_settings"); store.remove("cgb_queue");
+    settings = Object.assign({}, DEFAULT_SETTINGS); isPureBlackAndWhitePDF = false; queue = [];
+    saveSettings(); saveQueue(); renderSettings(); renderBwNote();
+    toast("Saved data cleared from this computer.");
+  });
+}
+
+/* ---------- 12. Drawer, toast, gate, printing ---------- */
+let drawerOpen = false, lastFocus = null;
+function openDrawer(){
+  lastFocus = document.activeElement;
+  drawerOpen = true;
+  renderQueue(); renderAllowance(); renderBwNote();
+  $("#drawer").classList.add("is-open"); $("#drawerScrim").classList.add("is-open");
+  $("#openPacket").setAttribute("aria-expanded", "true");
+  $("#closeDrawer").focus();
+}
+function closeDrawer(){
+  drawerOpen = false;
+  $("#drawer").classList.remove("is-open"); $("#drawerScrim").classList.remove("is-open");
+  $("#openPacket").setAttribute("aria-expanded", "false");
+  if (lastFocus && lastFocus.focus) lastFocus.focus();
+}
+function renderQueue(){
+  const body = $("#queueBody");
+  $("#generatePdf").disabled = !queue.length;
+  $("#clearQueue").disabled = !queue.length;
+  if (!queue.length){ body.innerHTML = '<p class="q-empty">No pages yet.<br>Pick an activity and choose <b>Add to Packet</b>.</p>'; return; }
+  body.innerHTML = `<p class="hint" style="margin:0 0 12px">${queue.length} ${queue.length === 1 ? "page" : "pages"}, printed in this order. Each is one sheet of paper.</p><ol class="q-list">` +
+    queue.map((q, i) => {
+      const act = ACT_INDEX[q.activityId];
+      const bits = [ "Version " + (q.index + 1) + " of " + q.count, DIFFICULTIES[q.cfg.difficulty].label ];
+      if (act.themed) bits.push(ERAS[q.cfg.era]);
+      if (q.cfg.residentName) bits.push("For " + q.cfg.residentName);
+      return `<li class="q-item"><div class="thumb">${sheetHtml(q)}</div>
+        <div class="q-info"><b>${i + 1}. ${esc(act.name)}</b><small>${esc(bits.join(" · "))}</small>
+          <div class="q-btns">
+            <button type="button" data-move="-1" data-i="${i}" ${i === 0 ? "disabled" : ""} aria-label="Move page ${i + 1} up">&uarr;</button>
+            <button type="button" data-move="1" data-i="${i}" ${i === queue.length - 1 ? "disabled" : ""} aria-label="Move page ${i + 1} down">&darr;</button>
+            <button type="button" data-remove="${i}" aria-label="Remove page ${i + 1}">&times;</button>
+          </div></div></li>`;
+    }).join("") + "</ol>";
+}
+$("#queueBody").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  if (b.dataset.remove != null){ queue.splice(+b.dataset.remove, 1); saveQueue(); }
+  else if (b.dataset.move != null){
+    const i = +b.dataset.i, j = i + +b.dataset.move;
+    if (j < 0 || j >= queue.length) return;
+    const t = queue[i]; queue[i] = queue[j]; queue[j] = t; saveQueue();
+    const again = $("#queueBody").querySelector(`button[data-i="${j}"][data-move="${b.dataset.move}"]`) || $("#queueBody").querySelector(`button[data-i="${j}"]`);
+    if (again) again.focus();
+  }
+});
+function renderAllowance(){
+  $("#allowance").textContent = isLicensed() ? "Licensed: unlimited packets."
+    : Math.max(0, FREE_RUNS - genCount()) + " of " + FREE_RUNS + " free packets left (shared with the Personalized Packet Tool).";
+}
+function renderBwNote(){ $("#bwNote").hidden = !isPureBlackAndWhitePDF; }
+
+let toastTimer = null;
+function toast(msg, actionLabel, action){
+  const t = $("#toast");
+  t.innerHTML = `<span>${esc(msg)}</span>` + (actionLabel ? `<button class="btn btn-sm" type="button" id="toastAct">${esc(actionLabel)}</button>` : "");
+  if (actionLabel) $("#toastAct").addEventListener("click", () => { t.classList.remove("is-open"); action(); });
+  t.classList.add("is-open");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove("is-open"), 6000);
+}
+
+function openGate(){
+  $("#gateText").textContent = `Cognicopia is ${PRICE} for your building: as many packets as you need, for as many residents as you have. Pay by card and your access code arrives straight away.`;
+  $("#gateBuy").href = PAY_LINK;
+  $("#gateBuy").textContent = "Get full access · " + PRICE;
+  $("#gateMsg").textContent = "";
+  $("#gate").hidden = false;
+  $("#gateBuy").focus();
+}
+$("#gateClose").addEventListener("click", () => { $("#gate").hidden = true; });
+$("#gateUnlock").addEventListener("click", () => {
+  const ok = activateLicense($("#gateCode").value);
+  $("#gateMsg").className = ok ? "msg-ok" : "msg-bad";
+  $("#gateMsg").textContent = ok ? "Unlocked. Choose Generate PDF again." : "That code didn't match. Check it against your receipt.";
+  if (ok){ renderAllowance(); setTimeout(() => { $("#gate").hidden = true; }, 900); }
+});
+
+/* Generate PDF: fill #printRoot with one .sheet per queued page, mark it
+   .pure-bw if High Contrast Mode is on, and open the print window. The
+   browser's own "Save as PDF" makes the file, so this works offline. */
+let printTitle = null, printReady = false;
+function generatePdf(){
+  if (!queue.length) return;
+  if (!isLicensed() && genCount() >= FREE_RUNS){ closeDrawer(); openGate(); return; }
+  const root = $("#printRoot");
+  root.className = isPureBlackAndWhitePDF ? "pure-bw" : "";
+  root.innerHTML = queue.map(sheetHtml).join("");
+  printReady = true;
+  const who = (queue.find(q => q.cfg.residentName) || { cfg:{} }).cfg.residentName;
+  printTitle = document.title;
+  document.title = "Cognicopia Packet" + (who ? " - " + who : "") + " - " + todayISO();  // default PDF file name
+  window.print();
+  if (!isLicensed()) bumpGen();
+  renderAllowance();
+}
+$("#generatePdf").addEventListener("click", generatePdf);
+
+/* Ctrl+P without Generate PDF: print a short note instead of a blank page. */
+window.addEventListener("beforeprint", () => {
+  if (printReady) return;
+  const root = $("#printRoot");
+  root.className = "";
+  root.innerHTML = '<section class="sheet lvl-early"><header class="sh-head"><h1>Nothing to print yet</h1></header><p class="sh-inst">Open <b>Your packet</b> in the Packet Builder and choose <b>Generate PDF</b>. That prints your activity pages, one per sheet.</p></section>';
+});
+window.addEventListener("afterprint", () => {
+  $("#printRoot").innerHTML = "";
+  printReady = false;
+  if (printTitle){ document.title = printTitle; printTitle = null; }
+});
+
+/* ---------- 13. Boot ---------- */
+(function boot(){
+  // Sidebar (mobile)
+  const sb = $("#sidebar"), ov = $("#sbOverlay"), tg = $("#sbToggle");
+  window.closeSidebar = () => { sb.classList.remove("is-open"); ov.classList.remove("is-open"); tg.setAttribute("aria-expanded", "false"); };
+  tg.addEventListener("click", () => { const open = !sb.classList.contains("is-open"); sb.classList.toggle("is-open", open); ov.classList.toggle("is-open", open); tg.setAttribute("aria-expanded", String(open)); });
+  ov.addEventListener("click", closeSidebar);
+
+  $("#openPacket").addEventListener("click", openDrawer);
+  $("#navPacket").addEventListener("click", () => { closeSidebar(); openDrawer(); });
+  $("#closeDrawer").addEventListener("click", closeDrawer);
+  $("#drawerScrim").addEventListener("click", closeDrawer);
+  $("#clearQueue").addEventListener("click", () => {
+    if (!queue.length || !confirm("Remove all " + queue.length + " pages from this packet?")) return;
+    queue = []; saveQueue();
+  });
+  document.addEventListener("keydown", e => {
+    if (e.key !== "Escape") return;
+    if (!$("#gate").hidden){ $("#gate").hidden = true; return; }
+    if (drawerOpen){ closeDrawer(); return; }
+    closeSidebar();
+  });
+
+  document.body.classList.remove("high-contrast-mode", "pure-bw");   // never on the page itself
+  renderNav(); renderFacility(); renderCounts(); renderBwNote();
+  router();
+})();
+</script>
+</body>
+</html>
