@@ -105,6 +105,20 @@ button,input,select{font:inherit}
   border-bottom:1px solid var(--line);
 }
 .facility{font-weight:700;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.topbar-left{display:flex;align-items:center;gap:16px;min-width:0;flex:1}
+.btn-home{
+  display:inline-flex; align-items:center; gap:8px; flex:none;
+  min-height:42px; padding:8px 16px 8px 13px; border-radius:10px;
+  border:1px solid var(--line-2); background:var(--panel-2); color:var(--text);
+  font-weight:700; font-size:15px; text-decoration:none; letter-spacing:.01em;
+  transition:background .15s, border-color .15s, color .15s, transform .05s;
+}
+.btn-home svg{color:var(--accent-hi);transition:color .15s}
+.btn-home:hover{background:#223630;border-color:var(--accent);color:#fff}
+.btn-home:hover svg{color:#fff}
+.btn-home:active{transform:translateY(1px)}
+.btn-home:focus-visible{outline:3px solid var(--accent-hi);outline-offset:2px}
+@media (max-width:560px){ .btn-home{padding:8px 11px} .btn-home span{display:none} }   /* icon only on phones; the aria-label still says Home */
 .facility b{color:var(--text)}
 .view{
   width:100%; max-width:1120px; margin:0 auto;
@@ -537,7 +551,15 @@ input:focus,select:focus{border-color:var(--accent)}
 <!-- ============ MAIN ============ -->
 <div class="app">
   <header class="topbar">
-    <div class="facility" id="facilityLabel"></div>
+    <div class="topbar-left">
+      <!-- A real link, so Home works with a keyboard, a middle-click, and with
+           JavaScript off. Relative href: it also works on an offline copy. -->
+      <a class="btn-home" id="homeBtn" href="index.html" aria-label="Home: back to the Cognicopia main page">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h5v-6h4v6h5V9.5"/></svg>
+        <span>Home</span>
+      </a>
+      <div class="facility" id="facilityLabel"></div>
+    </div>
     <button class="btn btn-primary btn-packet" type="button" id="openPacket" aria-controls="drawer" aria-expanded="false">
       Your packet <span class="count" id="topCount">0</span>
     </button>
@@ -3761,6 +3783,19 @@ window.addEventListener("afterprint", () => {
   ov.addEventListener("click", closeSidebar);
 
   $("#openPacket").addEventListener("click", openDrawer);
+  // Home: the main landing page is a separate file (index.html), so this
+  // is a page change, not a view swap. Close any open panel and make sure
+  // the packet and settings are written to this computer first (they
+  // usually already are), then let the link navigate. Ctrl/Cmd/Shift and
+  // middle clicks are left alone so "open in new tab" still works.
+  $("#homeBtn").addEventListener("click", e => {
+    if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    if (drawerOpen) closeDrawer();
+    $("#gate").hidden = true;
+    closeSidebar();
+    store.set("cgb_settings", settings);
+    store.set("cgb_queue", queue);
+  });
   $("#navPacket").addEventListener("click", () => { closeSidebar(); openDrawer(); });
   $("#closeDrawer").addEventListener("click", closeDrawer);
   $("#drawerScrim").addEventListener("click", closeDrawer);
