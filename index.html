@@ -1066,6 +1066,59 @@ body { padding-left: var(--sb-w); }
 }
 @media print{.arb{display:none!important}}
 </style>
+<style>
+/* ═══ Data Backup & Restore (inside the Active Resident bar) ═══ */
+.arb-backup{margin:16px 0 0;border-top:1px solid rgba(216,243,220,.18);padding-top:12px}
+.arb-backup summary{display:flex;align-items:center;gap:10px;min-height:44px;cursor:pointer;list-style:none;font-weight:700;font-size:17px;color:#fff}
+.arb-backup summary::-webkit-details-marker{display:none}
+.arb-backup summary::before{content:"";width:10px;height:10px;border-right:3px solid #7ad3a4;border-bottom:3px solid #7ad3a4;transform:rotate(-45deg);transition:transform .15s;margin:0 4px 0 2px}
+.arb-backup[open] summary::before{transform:rotate(45deg)}
+.arb-backup summary:focus-visible{outline:3px solid #7ad3a4;outline-offset:3px;border-radius:8px}
+.arb-backup-count{font-weight:400;font-size:14.5px;color:#b3c9bf}
+.arb-backup-body{margin:8px 0 0;padding:14px;border-radius:14px;border:2px dashed rgba(216,243,220,.2);transition:border-color .15s,background .15s}
+.arb-backup-body.is-drag{border-color:#7ad3a4;background:rgba(82,183,136,.12)}
+.arb-privacy{display:inline-flex;gap:6px;align-items:center;margin:0 0 12px;padding:5px 12px;border-radius:999px;font-size:14px;font-weight:700;background:rgba(82,183,136,.14);color:#b7ebcc;border:1px solid rgba(122,211,164,.35)}
+.arb-backup-row{display:flex;flex-wrap:wrap;gap:10px;align-items:stretch}
+.arb-split{position:relative;display:inline-flex}
+.arb-split > .arb-btn:first-child{border-top-right-radius:0;border-bottom-right-radius:0}
+.arb-split-toggle{min-width:48px;padding:10px 12px;border-top-left-radius:0!important;border-bottom-left-radius:0!important;border-left:1px solid rgba(6,33,22,.35)!important;font-size:18px}
+.arb-menu{position:absolute;top:calc(100% + 6px);left:0;z-index:40;min-width:270px;padding:6px;border-radius:12px;background:#0e1614;border:1px solid rgba(216,243,220,.3);box-shadow:0 14px 34px rgba(0,0,0,.45)}
+.arb-menu[hidden]{display:none}
+.arb-menu button{display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;min-height:52px;padding:8px 12px;border:0;border-radius:8px;background:transparent;color:#fff;font:inherit;font-size:16px;text-align:left;cursor:pointer}
+.arb-menu button small{font-size:13.5px;color:#b3c9bf}
+.arb-menu button:hover,.arb-menu button:focus{background:rgba(82,183,136,.18);outline:none}
+.arb-drop-hint{margin:10px 0 0;font-size:14.5px;color:#b3c9bf}
+.arb-caution{margin:6px 0 0;font-size:14px;color:#b3c9bf}
+.arb-banner{margin:12px 0 0;padding:12px 14px;border-radius:12px;font-size:16px;line-height:1.45;background:rgba(82,183,136,.18);border:1px solid #52b788;color:#eef6f1}
+.arb-banner b{color:#b7ebcc}
+.arb-banner.is-error{background:rgba(255,180,162,.12);border-color:rgba(255,180,162,.6);color:#ffe3db}
+.arb-banner.is-error b{color:#ffcfc4}
+.arb-banner[hidden]{display:none}
+.arb-banner small{display:block;margin-top:4px;font-size:14.5px;color:#cfe2d8}
+
+/* conflict chooser */
+.arb-dialog{width:min(560px,calc(100vw - 32px));padding:0;border:2px solid #52b788;border-radius:18px;background:#101b18;color:#eef6f1;font-family:"Trebuchet MS","Segoe UI",sans-serif;box-shadow:0 24px 60px rgba(0,0,0,.55)}
+.arb-dialog::backdrop{background:rgba(3,10,8,.7)}
+.arb-dialog form{margin:0;padding:22px}
+.arb-dialog h3{margin:0 0 8px;font-size:21px;color:#fff}
+.arb-dialog-list{margin:0 0 14px;font-size:16px;color:#cfe2d8}
+.arb-dialog fieldset{margin:0;padding:0;border:0;display:grid;gap:10px}
+.arb-dialog legend{margin:0 0 8px;font-weight:700;font-size:16px}
+.arb-choice{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border-radius:12px;border:2px solid rgba(216,243,220,.25);background:#0b1412;cursor:pointer}
+.arb-choice:has(input:checked){border-color:#52b788;background:rgba(82,183,136,.16)}
+.arb-choice input{flex:none;width:22px;height:22px;margin:2px 0 0;accent-color:#52b788}
+.arb-choice b{display:block;font-size:16.5px;color:#fff}
+.arb-choice small{display:block;font-size:14.5px;color:#b3c9bf}
+.arb-dialog-note{margin:14px 0 0;font-size:14.5px;color:#b3c9bf}
+.arb-dialog-actions{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:10px;margin-top:18px}
+@media (max-width:700px){
+  .arb-split{flex:1 1 100%}
+  .arb-split > .arb-btn:first-child{flex:1}
+  #arbImport{flex:1 1 100%}
+  .arb-menu{left:auto;right:0;min-width:0;width:100%}
+}
+@media (prefers-reduced-motion:reduce){.arb-backup summary::before,.arb-backup-body{transition:none}}
+</style>
 </head>
 <body>
 <!-- ══ COGNICOPIA LEFT SIDEBAR NAV ══ -->
@@ -1251,7 +1304,51 @@ body { padding-left: var(--sb-w); }
     </div>
   </div>
   <p class="arb-msg" id="arbMsg">Choose a saved resident to fill in the packet below from their profile, or make a new profile. Profiles stay on this computer.</p>
+  <!-- ── Data Backup & Restore (inside the Active Resident bar) ── -->
+  <details class="arb-backup" id="arbBackup">
+    <summary><span>Data Backup &amp; Restore</span><span class="arb-backup-count" id="arbBackupCount"></span></summary>
+    <div class="arb-backup-body" id="arbDrop">
+      <p class="arb-privacy"><span aria-hidden="true">🔒</span> All exports/imports occur 100% locally on your machine.</p>
+      <div class="arb-backup-row">
+        <div class="arb-split">
+          <button type="button" class="arb-btn arb-btn-primary" id="arbExportJson"><span aria-hidden="true">📥</span> Export Profiles (Backup)</button>
+          <button type="button" class="arb-btn arb-btn-primary arb-split-toggle" id="arbExportMore" aria-haspopup="true" aria-expanded="false" aria-controls="arbExportMenu" aria-label="More export options">&#9662;</button>
+          <div class="arb-menu" id="arbExportMenu" role="menu" aria-label="Export options" hidden>
+            <button type="button" role="menuitem" data-export="json"><b>Full backup (.json)</b><small>Every answer, for restoring later</small></button>
+            <button type="button" role="menuitem" data-export="csv"><b>Summary spreadsheet (.csv)</b><small>Opens in Excel or Google Sheets</small></button>
+          </div>
+        </div>
+        <button type="button" class="arb-btn" id="arbImport"><span aria-hidden="true">📤</span> Import Profiles (Restore)</button>
+        <input type="file" id="arbImportFile" accept=".json,.csv,application/json,text/csv" hidden>
+      </div>
+      <p class="arb-drop-hint">Or drag a backup file (.json or .csv) onto this box.</p>
+      <p class="arb-caution">Backup files hold resident details. Keep them in a safe place on this computer or a facility drive, not in email or a shared folder.</p>
+      <div class="arb-banner" id="arbBackupMsg" role="status" aria-live="polite" hidden></div>
+    </div>
+  </details>
 </section>
+<!-- Import conflict chooser (used by the backup engine) -->
+<dialog class="arb-dialog" id="arbConflict" aria-labelledby="arbConflictH">
+  <form method="dialog">
+    <h3 id="arbConflictH">Some of these residents are already saved</h3>
+    <p class="arb-dialog-list" id="arbConflictList"></p>
+    <fieldset>
+      <legend>What should happen to them?</legend>
+      <label class="arb-choice"><input type="radio" name="arbConflictMode" value="overwrite" checked>
+        <span><b>Merge / Overwrite</b><small id="arbOverwriteNote">Update the saved profile with the one in the file.</small></span></label>
+      <label class="arb-choice"><input type="radio" name="arbConflictMode" value="copy">
+        <span><b>Keep Both (Create Copy)</b><small>Keep the saved profile and add the one in the file as a copy.</small></span></label>
+      <label class="arb-choice"><input type="radio" name="arbConflictMode" value="skip">
+        <span><b>Skip Duplicates</b><small>Leave the saved profile as it is and skip these.</small></span></label>
+    </fieldset>
+    <p class="arb-dialog-note" id="arbConflictNote">Residents who are not saved yet are imported either way.</p>
+    <div class="arb-dialog-actions">
+      <button type="submit" class="arb-btn" value="cancel">Cancel import</button>
+      <button type="submit" class="arb-btn arb-btn-primary" value="ok" id="arbConflictOk">Continue import</button>
+    </div>
+  </form>
+</dialog>
+
 
 <form id="f" novalidate>
 
@@ -8712,7 +8809,7 @@ function generateAilmentPDF(ailmentType) {
     sel.appendChild(new Option(list.length ? "Select Active Resident..." : "No saved residents yet", ""));
     list.forEach(function(p){
       var when = fmtDate(p.createdAt);
-      sel.appendChild(new Option(shortName(p) + (when ? " · created " + when : ""), p.id));
+      sel.appendChild(new Option(shortName(p) + (p.meta && p.meta.copyOf ? " (copy)" : "") + (when ? " · created " + when : ""), p.id));
     });
     sel.value = list.some(function(p){ return p.id === keep; }) ? keep : "";
     return list;
@@ -8951,6 +9048,555 @@ function generateAilmentPDF(ailmentType) {
   window.loadSavedProfilesList = loadSavedProfilesList;
   window.setActiveResident = setActiveResident;
   window.getActiveResidentContext = getActiveResidentContext;
+})();
+</script>
+<script>
+/* =====================================================================
+   RESIDENT PROFILE BACKUP & RESTORE (index.html)
+   ---------------------------------------------------------------------
+   Export every saved Resident Activity Profile as a full .json backup or
+   a .csv spreadsheet, and import either kind back. Uses only Blob,
+   URL.createObjectURL, FileReader and localStorage: no file ever leaves
+   this computer except as a download the user saves themselves.
+
+   Every imported record is rebuilt field by field against the profile
+   schema (a whitelist), so a damaged or hand-edited file can never put
+   unexpected data into localStorage.
+   ===================================================================== */
+(function(){
+  "use strict";
+  var PREFIX = "cognicopia_resident_", SCHEMA = "cognicopia.residentProfile";
+  var BACKUP_FORMAT = "cognicopia.residentBackup", BACKUP_VERSION = 1;
+  var MAX_FILE_BYTES = 5 * 1024 * 1024, MAX_RECORDS = 500;
+  var DIFF = ["Very easy", "Easy", "Moderate", "Somewhat challenging", "Challenging"];
+
+  /* Answer lists copied from the wizard (profile.html), code -> label.
+     Used to turn spreadsheet words back into the wizard's own answers. */
+  var BOOK = {"completedBy":[["activities-director","Activities Director"],["activity-staff","Activity or Life Enrichment staff"],["nurse","Nurse"],["caregiver","Caregiver or CNA"],["social-worker","Social Worker"],["family","Family member"],["friend","Friend or volunteer"],["resident","The resident, with help"],["other","Someone else"]],"hometown":[["rural","Rural or farm"],["small-town","Small town"],["city","City"],["suburb","Suburb"],["coastal","Coastal or lakeside"],["mountains","Mountains or forest"],["moved","Moved often (for example, a military family)"],["abroad","Grew up in another country"],["other","Somewhere else"]],"occupation":[["homemaker","Homemaker, raised a family"],["farmer","Farmer or rancher"],["mechanic","Mechanic"],["teacher","Teacher"],["nurse","Nurse"],["doctor","Doctor or other health care"],["office","Secretary or office work"],["bookkeeper","Bookkeeper, banker or accountant"],["factory","Factory or mill work"],["trades","Construction or building trades"],["carpenter","Carpenter or woodworker"],["electrician","Electrician or plumber"],["driver","Truck, bus or delivery driver"],["railroad","Railroad worker"],["postal","Postal worker"],["shop","Shopkeeper or sales"],["business","Business owner"],["engineer","Engineer or scientist"],["cook","Cook, baker or restaurant work"],["seamstress","Seamstress or tailor"],["police-fire","Police officer or firefighter"],["military","Military career"],["clergy","Clergy or church work"],["other","Other (type it in)"]],"militaryBranch":[["none","None"],["army","Army"],["navy","Navy"],["air-force","Air Force (or Army Air Forces)"],["marines","Marine Corps"],["coast-guard","Coast Guard"],["guard-reserve","National Guard or Reserves"],["merchant-marine","Merchant Marine"],["other-country","Another country's armed forces"],["unknown","Not sure, or prefer not to say"]],"militaryEra":[["ww2","World War II (1939 to 1945)"],["korea","Korean War (1950 to 1953)"],["cold-war","Peacetime or Cold War"],["vietnam","Vietnam era (1964 to 1975)"],["gulf","Gulf War (1990 to 1991)"],["other","Another time, or not sure"]],"militaryTopic":[["welcome","A welcome topic: they enjoy sharing it"],["gentle","Best handled gently: some hard memories"],["avoid","Best avoided: it can cause distress"]],"readingLevel":[["independent","Independent: reads sentences and short paragraphs"],["short","Short sentences: single words and short phrases"],["none","Cannot read independently: pictures and read-aloud"]],"vision":[["standard","Standard print"],["large","Large print"],["xl","Extra-large and high contrast"]],"motor":[["normal","Normal"],["mild","Mild limitation: stiff or slow"],["significant","Tremor or significant limitation"]],"genre":[["big-band","Big band and swing"],["crooners","Crooners and standards"],["country","Country and western"],["gospel","Gospel and hymns"],["rock-and-roll","Rock 'n' roll"],["motown","Doo-wop, Motown and soul"],["jazz-blues","Jazz and blues"],["folk","Folk"],["classical","Classical"],["broadway","Broadway and movie musicals"],["polka","Polka and old-time"],["latin","Latin"],["other","Something else"]],"relation":[["spouse","Husband or wife"],["partner","Partner"],["son","Son"],["daughter","Daughter"],["grandchild","Grandchild"],["great-grandchild","Great-grandchild"],["sibling","Brother or sister"],["parent","Mother or father"],["other-family","Other family"],["friend","Friend"],["neighbor","Neighbor"],["pet-dog","Pet dog"],["pet-cat","Pet cat"],["pet-other","Other pet"],["other","Someone else"]],"hobbies":[["gardening","Gardening"],["word-puzzles","Word puzzles"],["jigsaw","Jigsaw puzzles"],["cards","Card games"],["board-games","Board games and checkers"],["classic-cars","Classic cars"],["sewing","Sewing and quilting"],["knitting","Knitting and crochet"],["fishing","Fishing"],["outdoors","Hunting and the outdoors"],["woodworking","Woodworking"],["baking","Baking"],["cooking","Cooking"],["reading","Reading"],["singing","Music and singing"],["dancing","Dancing"],["art","Painting and drawing"],["birds","Bird watching"],["sports","Watching sports"],["golf-bowling","Golf or bowling"],["travel","Travel and road trips"],["animals","Pets and animals"],["collecting","Collecting (stamps, coins)"],["faith","Church and faith life"]],"skills":[["mechanical","Mechanical and repair"],["cooking","Cooking and baking"],["carpentry","Carpentry and woodworking"],["medical","Medical and caregiving"],["agriculture","Farming and animals"],["gardening","Gardening"],["sewing","Sewing and needlework"],["office","Typing and office work"],["numbers","Numbers and bookkeeping"],["teaching","Teaching and explaining"],["driving","Driving"],["electrical","Electrical and wiring"],["housekeeping","Housekeeping and organizing"],["music","Music or singing"],["crafts","Art and crafts"],["selling","Selling and customer service"]],"avoidTopics":[["war","War and combat"],["death","Death and loss"],["medical","Illness, hospitals and medical"],["religion","Religion"],["money","Money and finances"],["politics","Politics"],["driving","Driving and cars"],["home","\"Going home\" and their old house"],["family-conflict","Divorce or family conflict"],["children","Babies and children"],["water","Water, boats and the sea"],["storms","Storms, fire and disasters"]],"activityTypes":[["trivia","Trivia"],["word-search","Word search"],["fill-blank","Fill in the blank"],["matching","Matching"],["coloring","Coloring"],["reminiscence","Reminiscence prompts"],["mazes","Mazes and tracing"],["math","Math and numbers"]],"decades":[["1930s","1930s"],["1940s","1940s"],["1950s","1950s"],["1960s","1960s"],["1970s","1970s"],["1980s","1980s"]],"paper":[["letter","Letter"],["a4","A4"]],"ink":[["bw","Black and white"],["gray","Grayscale"]]};
+
+  var el = function(id){ return document.getElementById(id); };
+  if (!el("arbBackup")) return;
+
+  /* ---------------- small helpers ---------------- */
+  function pad(n){ return (n < 10 ? "0" : "") + n; }
+  function today(){ var d = new Date(); return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()); }
+  function newId(){ return "res-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 6); }
+  function isoOr(v, fallback){ var d = new Date(v); return typeof v === "string" && !isNaN(d) ? d.toISOString() : fallback; }
+  function str(v, max){
+    if (typeof v !== "string" && typeof v !== "number") return "";
+    return String(v).replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, "").replace(/[ \t]+/g, " ").trim().slice(0, max || 120);
+  }
+  function int(v, lo, hi){ var n = parseInt(v, 10); return isNaN(n) || n < lo || n > hi ? null : n; }
+  function slug(s){ return String(s).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 40) || "custom"; }
+  function plural(n, one, many){ return n + " " + (n === 1 ? one : many); }
+
+  /* A { code, label } choice. Known codes get the wizard's label; an
+     unknown one is kept as typed (e.g. an "Other" occupation). */
+  function choice(v, book, allowCustom){
+    if (!v || typeof v !== "object") return null;
+    var code = str(v.code, 60), label = str(v.label, 120);
+    var hit = book && book.filter(function(c){ return c[0] === code; })[0];
+    if (hit) return { code:hit[0], label:label || hit[1] };
+    if (!allowCustom || (!code && !label)) return null;
+    return { code:code || slug(label), label:label || code };
+  }
+  function choices(list, book, max, allowCustom){
+    if (!Array.isArray(list)) return [];
+    var seen = {}, out = [];
+    list.forEach(function(x){ var c = choice(x, book, allowCustom); if (c && !seen[c.code]){ seen[c.code] = 1; out.push(c); } });
+    return out.slice(0, max);
+  }
+  function strings(list, max, each){ return Array.isArray(list) ? list.map(function(s){ return str(s, each || 60); }).filter(Boolean).slice(0, max) : []; }
+
+  /* ---------------------------------------------------------------
+     normalizeProfile(raw)
+     Rebuilds a profile from anything that looks like one. Returns a
+     clean object, or null when there is no preferred name.
+     --------------------------------------------------------------- */
+  function normalizeProfile(raw){
+    if (!raw || typeof raw !== "object" || Array.isArray(raw)) return null;
+    var t1 = raw.tier1_core && typeof raw.tier1_core === "object" ? raw.tier1_core : {};
+    var t2 = raw.tier2_enrichment && typeof raw.tier2_enrichment === "object" ? raw.tier2_enrichment : {};
+    var t3 = raw.tier3_deep && typeof raw.tier3_deep === "object" ? raw.tier3_deep : {};
+    var name = str(t1.preferredName, 40);
+    if (!name) return null;
+    var now = new Date().toISOString();
+    var pn = t1.printNeeds || {}, av = t1.topicsToAvoid || {}, hm = t2.hometown || {}, sk = t2.skills || {};
+    var mil = t2.military || {}, mus = t2.music || {}, tv = t2.tvMoviesSports || {}, men = t3.mentionsInNotes || {};
+    var lvl = int(t1.difficulty && t1.difficulty.level, 1, 5) || 3;
+    var branch = choice(mil.branch, BOOK.militaryBranch, false);
+    var served = branch && ["none", "unknown"].indexOf(branch.code) === -1;
+    var meta = raw.meta && typeof raw.meta === "object" ? raw.meta : {};
+    var id = typeof raw.id === "string" && /^[A-Za-z0-9_-]{1,64}$/.test(raw.id) ? raw.id : null;
+    var out = {
+      schema: SCHEMA, version: 1, id: id,
+      meta: { completedBy: choice(meta.completedBy, BOOK.completedBy, false), source: str(meta.source, 120) || "Resident Activity Profile (profile.html)" },
+      tier1_core: {
+        preferredName: name,
+        occupation: choice(t1.occupation, BOOK.occupation, true),
+        topHobbies: choices(t1.topHobbies, BOOK.hobbies, 5, true),
+        printNeeds: {
+          vision: choice(pn.vision, BOOK.vision, false), readingLevel: choice(pn.readingLevel, BOOK.readingLevel, false),
+          motorSkills: choice(pn.motorSkills, BOOK.motor, false),
+          paper: choice(pn.paper, BOOK.paper, false) || { code:"letter", label:"Letter" },
+          ink: choice(pn.ink, BOOK.ink, false) || { code:"bw", label:"Black and white" }
+        },
+        topicsToAvoid: { topics: choices(av.topics, BOOK.avoidTopics, 20, false), other: str(av.other, 80) },
+        difficulty: { level: lvl, label: DIFF[lvl - 1], scale: "1 (very easy) to 5 (challenging)" }
+      },
+      tier2_enrichment: {
+        age: int(t2.age, 18, 120), birthYear: int(t2.birthYear, 1900, new Date().getFullYear()),
+        meaningfulDecades: strings(t2.meaningfulDecades, 10, 5).filter(function(d){ return /^19\d0s$/.test(d); }),
+        hometown: { environment: choice(hm.environment, BOOK.hometown, false), place: str(hm.place, 60) },
+        skills: { items: choices(sk.items, BOOK.skills, 20, true), other: str(sk.other, 80) },
+        military: {
+          branch: branch,
+          era: served ? choice(mil.era, BOOK.militaryEra, false) : null,
+          talkingAboutIt: served ? (choice(mil.talkingAboutIt, BOOK.militaryTopic, false) || { code:"", label:"Not sure yet" }) : null
+        },
+        music: { genres: choices(mus.genres, BOOK.genre, 2, false), artists: strings(mus.artists, 3, 60), favoriteSong: str(mus.favoriteSong, 80) },
+        tvMoviesSports: { tvShows: str(tv.tvShows, 80), movies: str(tv.movies, 80), sportsTeams: str(tv.sportsTeams, 80) },
+        activityPreferences: choices(t2.activityPreferences, BOOK.activityTypes, 8, false)
+      },
+      tier3_deep: {
+        notes: typeof t3.notes === "string" ? t3.notes.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, "").trim().slice(0, 1500) : "",
+        people: (Array.isArray(t3.people) ? t3.people : []).map(function(x){
+          if (!x || typeof x !== "object") return null;
+          var nm = str(x.name, 40); if (!nm) return null;
+          var rel = choice(x.relationship, BOOK.relation, false);
+          return { name:nm, relationship:rel, isPet: !!(rel && /^pet-/.test(rel.code)), passedAway: x.passedAway === true };
+        }).filter(Boolean).slice(0, 12),
+        mentionsInNotes: { artists: strings(men.artists, 20, 60), decades: strings(men.decades, 10, 5).filter(function(d){ return /^19\d0s$/.test(d); }) }
+      }
+    };
+    out.createdAt = isoOr(raw.createdAt, now);
+    out.updatedAt = isoOr(raw.updatedAt, out.createdAt);
+    if (typeof meta.copyOf === "string" && /^[A-Za-z0-9_-]{1,64}$/.test(meta.copyOf)) out.meta.copyOf = meta.copyOf;
+    if (meta.importedAt) out.meta.importedAt = isoOr(meta.importedAt, now);
+    return out;
+  }
+
+  /* ---------------- reading what is saved ---------------- */
+  function savedProfiles(){
+    var out = [];
+    try {
+      for (var i = 0; i < localStorage.length; i++){
+        var k = localStorage.key(i);
+        if (!k || k.indexOf(PREFIX) !== 0) continue;
+        try { var p = JSON.parse(localStorage.getItem(k)); if (p && p.schema === SCHEMA && p.tier1_core && p.tier1_core.preferredName) out.push(p); } catch (e){}
+      }
+    } catch (e){}
+    return out.sort(function(a, b){ return String(a.tier1_core.preferredName).localeCompare(String(b.tier1_core.preferredName)); });
+  }
+
+  /* ---------------- downloads ---------------- */
+  function download(text, filename, type){
+    var blob = new Blob([text], { type:type });
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function(){ URL.revokeObjectURL(a.href); }, 1500);
+  }
+
+  /* ---------------------------------------------------------------
+     exportProfilesJSON()
+     Every saved profile, all three tiers, in one wrapper with a format
+     name, version, export date and record count.
+     Downloads cognicopia_backup_YYYY-MM-DD.json.
+     --------------------------------------------------------------- */
+  function exportProfilesJSON(){
+    var profiles = savedProfiles().map(normalizeProfile).filter(Boolean);
+    if (!profiles.length){ banner("There are no saved resident profiles to export yet.", "", true); return 0; }
+    var backup = {
+      format: BACKUP_FORMAT,
+      version: BACKUP_VERSION,
+      app: "Cognicopia",
+      exportedAt: new Date().toISOString(),
+      recordCount: profiles.length,
+      profiles: profiles
+    };
+    download(JSON.stringify(backup, null, 2), "cognicopia_backup_" + today() + ".json", "application/json");
+    banner("Exported " + plural(profiles.length, "resident profile", "resident profiles") + " to your downloads.",
+      "Keep the file somewhere safe. To restore it, press Import Profiles (Restore) and choose it.");
+    return profiles.length;
+  }
+
+  /* ---------------- CSV ---------------- */
+  var LIST_SEP = "; ";
+  var CSV_COLUMNS = [
+    ["ID",                    function(p){ return p.id; }],
+    ["Preferred Name",        function(p){ return p.tier1_core.preferredName; }],
+    ["Age",                   function(p){ return p.tier2_enrichment.age; }],
+    ["Birth Year",            function(p){ return p.tier2_enrichment.birthYear; }],
+    ["Profile Completed By",  function(p){ return lab(p.meta.completedBy); }],
+    ["Occupation",            function(p){ return lab(p.tier1_core.occupation); }],
+    ["Meaningful Decades",    function(p){ return p.tier2_enrichment.meaningfulDecades.join(LIST_SEP); }],
+    ["Top Hobbies",           function(p){ return labs(p.tier1_core.topHobbies); }],
+    ["Vision",                function(p){ return lab(p.tier1_core.printNeeds.vision); }],
+    ["Reading Level",         function(p){ return lab(p.tier1_core.printNeeds.readingLevel); }],
+    ["Motor Skills",          function(p){ return lab(p.tier1_core.printNeeds.motorSkills); }],
+    ["Paper",                 function(p){ return lab(p.tier1_core.printNeeds.paper); }],
+    ["Ink",                   function(p){ return lab(p.tier1_core.printNeeds.ink); }],
+    ["Difficulty",            function(p){ return p.tier1_core.difficulty.level + " - " + p.tier1_core.difficulty.label; }],
+    ["Topics to Avoid",       function(p){ return labs(p.tier1_core.topicsToAvoid.topics); }],
+    ["Other Topics to Avoid", function(p){ return p.tier1_core.topicsToAvoid.other; }],
+    ["Hometown",              function(p){ return p.tier2_enrichment.hometown.place; }],
+    ["Hometown Type",         function(p){ return lab(p.tier2_enrichment.hometown.environment); }],
+    ["Skills",                function(p){ return labs(p.tier2_enrichment.skills.items); }],
+    ["Other Skills",          function(p){ return p.tier2_enrichment.skills.other; }],
+    ["Music Genres",          function(p){ return labs(p.tier2_enrichment.music.genres); }],
+    ["Favorite Artists",      function(p){ return p.tier2_enrichment.music.artists.join(LIST_SEP); }],
+    ["Favorite Song",         function(p){ return p.tier2_enrichment.music.favoriteSong; }],
+    ["TV Shows",              function(p){ return p.tier2_enrichment.tvMoviesSports.tvShows; }],
+    ["Movies",                function(p){ return p.tier2_enrichment.tvMoviesSports.movies; }],
+    ["Sports Teams",          function(p){ return p.tier2_enrichment.tvMoviesSports.sportsTeams; }],
+    ["Military Branch",       function(p){ return lab(p.tier2_enrichment.military.branch); }],
+    ["Military Era",          function(p){ return lab(p.tier2_enrichment.military.era); }],
+    ["Talking About Service", function(p){ var t = p.tier2_enrichment.military.talkingAboutIt; return t && t.code ? t.label : ""; }],
+    ["Preferred Activities",  function(p){ return labs(p.tier2_enrichment.activityPreferences); }],
+    ["People and Pets",       function(p){ return p.tier3_deep.people.map(function(x){
+                                var bits = [x.relationship ? x.relationship.label : "", x.passedAway ? "passed away" : ""].filter(Boolean);
+                                return x.name + (bits.length ? " (" + bits.join(", ") + ")" : ""); }).join(LIST_SEP); }],
+    ["Notes",                 function(p){ return p.tier3_deep.notes; }],
+    ["Created",               function(p){ return p.createdAt; }],
+    ["Last Updated",          function(p){ return p.updatedAt; }]
+  ];
+  function lab(c){ return c && c.label ? c.label : ""; }
+  function labs(list){ return (list || []).map(lab).filter(Boolean).join(LIST_SEP); }
+
+  /* Quote every cell and stop spreadsheet formula injection: a cell that
+     begins with = + - @ (or a tab/return) gets a leading apostrophe. */
+  function csvCell(v){
+    var s = v == null ? "" : String(v);
+    if (/^[=+\-@\t\r]/.test(s)) s = "'" + s;
+    return '"' + s.replace(/"/g, '""') + '"';
+  }
+
+  /* ---------------------------------------------------------------
+     exportProfilesCSV()
+     One row per resident with a quoted header row, lists joined with
+     "; ". UTF-8 with a byte-order mark so Excel keeps accents.
+     Downloads cognicopia_residents_YYYY-MM-DD.csv.
+     --------------------------------------------------------------- */
+  function exportProfilesCSV(){
+    var profiles = savedProfiles().map(normalizeProfile).filter(Boolean);
+    if (!profiles.length){ banner("There are no saved resident profiles to export yet.", "", true); return 0; }
+    var rows = [CSV_COLUMNS.map(function(c){ return csvCell(c[0]); }).join(",")];
+    profiles.forEach(function(p){ rows.push(CSV_COLUMNS.map(function(c){ return csvCell(c[1](p)); }).join(",")); });
+    download("﻿" + rows.join("\r\n") + "\r\n", "cognicopia_residents_" + today() + ".csv", "text/csv;charset=utf-8");
+    banner("Exported a spreadsheet of " + plural(profiles.length, "resident", "residents") + " to your downloads.",
+      "It opens in Excel or Google Sheets. It can also be imported back here.");
+    return profiles.length;
+  }
+
+  /* RFC 4180 parser: quoted cells, doubled quotes, commas and line breaks inside quotes. */
+  function parseCSV(text){
+    text = text.replace(/^﻿/, "");
+    var rows = [], row = [], cell = "", i = 0, q = false, c;
+    while (i < text.length){
+      c = text[i];
+      if (q){
+        if (c === '"'){ if (text[i + 1] === '"'){ cell += '"'; i += 2; continue; } q = false; i++; continue; }
+        cell += c; i++; continue;
+      }
+      if (c === '"' && cell === ""){ q = true; i++; continue; }
+      if (c === ","){ row.push(cell); cell = ""; i++; continue; }
+      if (c === "\r"){ i++; continue; }
+      if (c === "\n"){ row.push(cell); rows.push(row); row = []; cell = ""; i++; continue; }
+      cell += c; i++;
+    }
+    if (cell !== "" || row.length){ row.push(cell); rows.push(row); }
+    return rows.filter(function(r){ return r.some(function(x){ return x.trim() !== ""; }); });
+  }
+  function unguard(s){ return /^'[=+\-@\t\r]/.test(s) ? s.slice(1) : s; }
+  function key(h){ return String(h).toLowerCase().replace(/[^a-z0-9]/g, ""); }
+  var HEADER_ALIASES = { name:"preferredname", residentname:"preferredname", preferred:"preferredname", job:"occupation", work:"occupation",
+    hobbies:"tophobbies", decades:"meaningfuldecades", avoid:"topicstoavoid", avoidtopics:"topicstoavoid", artists:"favoriteartists",
+    people:"peopleandpets", visionneeds:"vision", yearofbirth:"birthyear", born:"birthyear" };
+
+  function fromLabel(text, book, allowCustom){
+    var t = str(text, 120); if (!t) return null;
+    var low = t.toLowerCase();
+    var hit = book.filter(function(c){ return c[1].toLowerCase() === low || c[0] === low; })[0]
+           || book.filter(function(c){ return c[1].toLowerCase().indexOf(low) === 0; })[0];
+    if (hit) return { code:hit[0], label:hit[1] };
+    return allowCustom ? { code:"other", label:t } : null;
+  }
+  function fromLabels(text, book, allowCustom){
+    return String(text || "").split(/\s*;\s*/).map(function(s){ return fromLabel(s, book, allowCustom); }).filter(Boolean)
+      .map(function(c){ return c.code === "other" ? { code:slug(c.label), label:c.label } : c; });
+  }
+  function list(text){ return String(text || "").split(/\s*;\s*/).map(function(s){ return str(s, 60); }).filter(Boolean); }
+
+  /* One spreadsheet row -> a raw profile (normalizeProfile cleans it after). */
+  function profileFromRow(get){
+    var people = list(get("peopleandpets")).map(function(entry){
+      var m = entry.match(/^(.*?)\s*\((.*)\)\s*$/), name = m ? m[1] : entry, bits = m ? m[2].split(/\s*,\s*/) : [];
+      var passed = bits.some(function(b){ return /^passed( away)?$/i.test(b); });
+      var relText = bits.filter(function(b){ return !/^passed( away)?$/i.test(b); }).join(", ");
+      return { name:name, relationship: relText ? fromLabel(relText, BOOK.relation, false) : null, passedAway: passed };
+    });
+    var diff = int(String(get("difficulty")).trim(), 1, 5);
+    if (!diff){ var dl = String(get("difficulty")).toLowerCase(); DIFF.forEach(function(d, i){ if (dl && d.toLowerCase() === dl) diff = i + 1; }); }
+    var occ = fromLabel(get("occupation"), BOOK.occupation, true);
+    return {
+      id: get("id"),
+      createdAt: get("created"), updatedAt: get("lastupdated"),
+      meta: { completedBy: fromLabel(get("profilecompletedby"), BOOK.completedBy, false) },
+      tier1_core: {
+        preferredName: get("preferredname"),
+        occupation: occ,
+        topHobbies: fromLabels(get("tophobbies"), BOOK.hobbies, true),
+        printNeeds: { vision: fromLabel(get("vision"), BOOK.vision), readingLevel: fromLabel(get("readinglevel"), BOOK.readingLevel),
+          motorSkills: fromLabel(get("motorskills"), BOOK.motor), paper: fromLabel(get("paper"), BOOK.paper), ink: fromLabel(get("ink"), BOOK.ink) },
+        topicsToAvoid: { topics: fromLabels(get("topicstoavoid"), BOOK.avoidTopics, false), other: get("othertopicstoavoid") },
+        difficulty: diff ? { level: diff } : {}
+      },
+      tier2_enrichment: {
+        age: get("age"), birthYear: get("birthyear"),
+        meaningfulDecades: list(get("meaningfuldecades")).map(function(d){ var m = d.match(/(?:19)?([2-9]0)'?s/i); return m ? "19" + m[1] + "s" : ""; }).filter(Boolean),
+        hometown: { environment: fromLabel(get("hometowntype"), BOOK.hometown), place: get("hometown") },
+        skills: { items: fromLabels(get("skills"), BOOK.skills, true), other: get("otherskills") },
+        military: { branch: fromLabel(get("militarybranch"), BOOK.militaryBranch), era: fromLabel(get("militaryera"), BOOK.militaryEra),
+          talkingAboutIt: fromLabel(get("talkingaboutservice"), BOOK.militaryTopic) },
+        music: { genres: fromLabels(get("musicgenres"), BOOK.genre, false), artists: list(get("favoriteartists")), favoriteSong: get("favoritesong") },
+        tvMoviesSports: { tvShows: get("tvshows"), movies: get("movies"), sportsTeams: get("sportsteams") },
+        activityPreferences: fromLabels(get("preferredactivities"), BOOK.activityTypes, false)
+      },
+      tier3_deep: { notes: get("notes"), people: people, mentionsInNotes: {} }
+    };
+  }
+  function recordsFromCSV(text){
+    var rows = parseCSV(text);
+    if (rows.length < 2) throw new Error("The spreadsheet has no resident rows.");
+    var head = rows[0].map(function(h){ var k = key(h); return HEADER_ALIASES[k] || k; });
+    if (head.indexOf("preferredname") === -1) throw new Error('The spreadsheet needs a "Preferred Name" column.');
+    return rows.slice(1).map(function(r){
+      var present = {};
+      head.forEach(function(h, i){ if (r[i] != null && String(r[i]).trim() !== "") present[h] = true; });
+      var get = function(h){ var i = head.indexOf(h); return i === -1 || r[i] == null ? "" : unguard(String(r[i]).trim()); };
+      return { raw:profileFromRow(get), present:present };
+    });
+  }
+  function recordsFromJSON(text){
+    var data;
+    try { data = JSON.parse(text); } catch (e){ throw new Error("This file is not valid JSON. Choose a backup made with Export Profiles."); }
+    if (data && typeof data === "object" && !Array.isArray(data) && data.fields && data.v)
+      throw new Error('This is a single-resident file from "Save this resident". Use "Open a saved resident" further down this page to open it.');
+    var list = Array.isArray(data) ? data
+      : data && Array.isArray(data.profiles) ? data.profiles
+      : data && data.tier1_core ? [data] : null;
+    if (!list) throw new Error("No resident profiles were found in this file.");
+    if (data && data.format && data.format !== BACKUP_FORMAT) throw new Error("This file was not made by Cognicopia's Export Profiles.");
+    return list.map(function(p){ return { raw:p, present:null }; });
+  }
+
+  /* Deep-merge for spreadsheet rows: filled-in cells win, empty cells keep what was saved. */
+  function mergeInto(base, add){
+    if (add == null) return base;
+    if (Array.isArray(add)) return add.length ? add : base;
+    if (typeof add !== "object") return add === "" || add === null ? base : add;
+    if (!base || typeof base !== "object" || Array.isArray(base)) base = {};
+    var out = JSON.parse(JSON.stringify(base));
+    Object.keys(add).forEach(function(k){
+      if (k === "__proto__" || k === "constructor" || k === "prototype") return;
+      out[k] = mergeInto(out[k], add[k]);
+    });
+    return out;
+  }
+  function sameResident(a, b){
+    var n = function(p){ return String(p.tier1_core.preferredName).toLowerCase().replace(/\s+/g, " ").trim(); };
+    return n(a) === n(b) && (a.tier2_enrichment.birthYear || null) === (b.tier2_enrichment.birthYear || null);
+  }
+
+  /* ---------------- conflict chooser ---------------- */
+  function askConflict(conflicts, isCSV){
+    return new Promise(function(resolve){
+      var dlg = el("arbConflict"), names = conflicts.map(function(c){ return c.existing.tier1_core.preferredName; });
+      var shown = names.slice(0, 8).join(", ") + (names.length > 8 ? " and " + (names.length - 8) + " more" : "");
+      el("arbConflictList").textContent = plural(names.length, "resident in this file is", "residents in this file are") + " already saved on this computer: " + shown + ".";
+      el("arbOverwriteNote").textContent = isCSV
+        ? "Update the saved profile. Filled-in cells replace what is saved; empty cells leave it as it is."
+        : "Replace the saved profile with the one in the file.";
+      dlg.querySelector('input[value="overwrite"]').checked = true;
+      var done = function(){
+        dlg.removeEventListener("close", done);
+        var ok = dlg.returnValue === "ok";
+        resolve(ok ? dlg.querySelector('input[name="arbConflictMode"]:checked').value : null);
+      };
+      dlg.returnValue = "";
+      dlg.addEventListener("close", done);
+      if (typeof dlg.showModal === "function") dlg.showModal();
+      else {                                   // very old browsers: fall back to simple questions
+        var mode = window.confirm(names.length + " already saved (" + shown + "). Press OK to update them from the file, or Cancel for more choices.") ? "overwrite"
+          : window.confirm("Keep both, adding the file's version as a copy? (Cancel skips them.)") ? "copy" : "skip";
+        dlg.returnValue = "ok"; dlg.querySelector('input[value="' + mode + '"]').checked = true; done();
+      }
+    });
+  }
+
+  /* ---------------------------------------------------------------
+     importProfilesFromFile(file)
+     Reads a .json backup or .csv spreadsheet with FileReader, checks
+     every record, asks once what to do about residents who are already
+     saved, writes the rest to localStorage and refreshes the resident
+     selector. Resolves to a summary { added, updated, copied, skipped,
+     invalid }, or null when the import was cancelled or failed.
+     --------------------------------------------------------------- */
+  function importProfilesFromFile(file){
+    return new Promise(function(resolve){
+      if (!file){ resolve(null); return; }
+      var isCSV = /\.csv$/i.test(file.name) || /csv/i.test(file.type || "");
+      var isJSON = /\.json$/i.test(file.name) || /json/i.test(file.type || "");
+      if (!isCSV && !isJSON){ banner("That file type can't be imported.", "Choose a .json backup or a .csv spreadsheet made by Cognicopia.", true); resolve(null); return; }
+      if (file.size > MAX_FILE_BYTES){ banner("That file is too large to be a Cognicopia backup.", "Backups are usually well under 1 MB.", true); resolve(null); return; }
+      var reader = new FileReader();
+      reader.onerror = function(){ banner("That file could not be read.", "", true); resolve(null); };
+      reader.onload = function(){
+        var records;
+        try { records = isCSV ? recordsFromCSV(String(reader.result)) : recordsFromJSON(String(reader.result)); }
+        catch (err){ banner("Nothing was imported.", err.message, true); resolve(null); return; }
+        if (records.length > MAX_RECORDS){ banner("Nothing was imported.", "The file has more than " + MAX_RECORDS + " residents.", true); resolve(null); return; }
+        applyImport(records, isCSV).then(resolve);
+      };
+      reader.readAsText(file);
+    });
+  }
+
+  function applyImport(records, isCSV){
+    var saved = savedProfiles().map(normalizeProfile).filter(Boolean);
+    var byId = {}; saved.forEach(function(p){ byId[p.id] = p; });
+    var invalid = 0, incoming = [], usedIds = {};
+    records.forEach(function(r){
+      var p = normalizeProfile(r.raw);
+      if (!p){ invalid++; return; }
+      var existing = (p.id && byId[p.id]) || saved.filter(function(s){ return sameResident(s, p); })[0] || null;
+      incoming.push({ profile:p, raw:r.raw, present:r.present, existing:existing });
+    });
+    var conflicts = incoming.filter(function(x){ return x.existing; });
+    var decide = conflicts.length ? askConflict(conflicts, isCSV) : Promise.resolve("none");
+    return decide.then(function(mode){
+      if (mode === null){ banner("Import cancelled. Nothing was changed.", ""); return null; }
+      var res = { added:0, updated:0, copied:0, skipped:0, invalid:invalid, failed:0 }, now = new Date().toISOString();
+      var activeId = window.activeResident && window.activeResident.id, activeTouched = false;
+      incoming.forEach(function(x){
+        var p = x.profile, target;
+        if (x.existing){
+          if (mode === "skip"){ res.skipped++; return; }
+          if (mode === "copy"){
+            p.id = newId(); p.createdAt = now; p.updatedAt = now;
+            p.meta.copyOf = x.existing.id; p.meta.importedAt = now; target = "copied";
+          } else {
+            // JSON restores the whole profile; a spreadsheet row updates only its filled-in cells.
+            if (isCSV) p = normalizeProfile(mergeInto(x.existing, pruneEmpty(x.raw)));
+            p.id = x.existing.id; p.createdAt = x.existing.createdAt || p.createdAt; p.updatedAt = now;
+            target = "updated";
+          }
+        } else {
+          if (!p.id || usedIds[p.id] || byId[p.id]) p.id = newId();
+          p.meta.importedAt = now; target = "added";
+        }
+        if (usedIds[p.id] && target !== "updated") p.id = newId();
+        usedIds[p.id] = true;
+        try { localStorage.setItem(PREFIX + p.id, JSON.stringify(p)); res[target]++; if (p.id === activeId) activeTouched = true; }
+        catch (e){ res.failed++; }
+      });
+      // refresh the selector (and the active resident if it just changed)
+      if (typeof window.loadSavedProfilesList === "function") window.loadSavedProfilesList();
+      if (activeTouched && typeof window.setActiveResident === "function") window.setActiveResident(activeId);
+      var arbMsg = el("arbMsg");
+      if (arbMsg && /No saved resident/.test(arbMsg.textContent)) arbMsg.textContent = "Choose a saved resident to fill in the packet below from their profile, or make a new profile.";
+      updateCount();
+      report(res);
+      return res;
+    });
+  }
+  // Drop empty strings and empty arrays so a spreadsheet's blank cells never erase saved answers.
+  function pruneEmpty(v){
+    if (Array.isArray(v)) return v.length ? v : undefined;
+    if (v && typeof v === "object"){
+      var o = {}; Object.keys(v).forEach(function(k){ var x = pruneEmpty(v[k]); if (x !== undefined && x !== "" && x !== null) o[k] = x; });
+      return Object.keys(o).length ? o : undefined;
+    }
+    return v === "" ? undefined : v;
+  }
+
+  /* ---------------- messages ---------------- */
+  function banner(main, detail, isError){
+    var b = el("arbBackupMsg");
+    b.innerHTML = "";
+    var strong = document.createElement("b"); strong.textContent = main; b.appendChild(strong);
+    if (detail){ var s = document.createElement("small"); s.textContent = detail; b.appendChild(s); }
+    b.classList.toggle("is-error", !!isError);
+    b.hidden = false;
+    el("arbBackup").open = true;            // a result is never hidden inside the closed panel
+  }
+  function report(r){
+    var restored = r.added + r.updated + r.copied;
+    var parts = [];
+    if (r.added) parts.push(r.added + " new");
+    if (r.updated) parts.push(r.updated + " updated");
+    if (r.copied) parts.push(plural(r.copied, "copy", "copies"));
+    var extra = [];
+    if (r.skipped) extra.push(plural(r.skipped, "duplicate was", "duplicates were") + " skipped");
+    if (r.invalid) extra.push(plural(r.invalid, "record was", "records were") + " left out because it had no preferred name");
+    if (r.failed) extra.push(plural(r.failed, "profile", "profiles") + " could not be saved because browser storage is full");
+    var detail = (parts.length ? parts.join(", ") + ". " : "") + (extra.length ? extra.join("; ") + "." : "");
+    if (restored) banner("Successfully restored " + plural(restored, "resident profile", "resident profiles") + "!", detail.trim(), r.failed > 0);
+    else banner("No profiles were imported.", detail.trim() || "The file had nothing new to add.", true);
+  }
+  function updateCount(){
+    var n = savedProfiles().length;
+    el("arbBackupCount").textContent = n ? "(" + plural(n, "profile", "profiles") + " saved)" : "(no profiles saved yet)";
+    el("arbExportJson").disabled = el("arbExportMore").disabled = n === 0;
+  }
+
+  /* ---------------- wiring: export split button + menu ---------------- */
+  var more = el("arbExportMore"), menu = el("arbExportMenu");
+  function items(){ return Array.prototype.slice.call(menu.querySelectorAll('[role="menuitem"]')); }
+  function openMenu(focusFirst){ menu.hidden = false; more.setAttribute("aria-expanded", "true"); if (focusFirst) items()[0].focus(); }
+  function closeMenu(focusToggle){ menu.hidden = true; more.setAttribute("aria-expanded", "false"); if (focusToggle) more.focus(); }
+  el("arbExportJson").addEventListener("click", exportProfilesJSON);
+  more.addEventListener("click", function(){ menu.hidden ? openMenu(true) : closeMenu(false); });
+  menu.addEventListener("click", function(e){
+    var b = e.target.closest("[data-export]"); if (!b) return;
+    closeMenu(true);
+    b.getAttribute("data-export") === "csv" ? exportProfilesCSV() : exportProfilesJSON();
+  });
+  menu.addEventListener("keydown", function(e){
+    var list = items(), i = list.indexOf(document.activeElement);
+    if (e.key === "ArrowDown"){ e.preventDefault(); list[(i + 1) % list.length].focus(); }
+    else if (e.key === "ArrowUp"){ e.preventDefault(); list[(i - 1 + list.length) % list.length].focus(); }
+    else if (e.key === "Escape"){ e.preventDefault(); closeMenu(true); }
+    else if (e.key === "Tab"){ closeMenu(false); }
+  });
+  more.addEventListener("keydown", function(e){ if (e.key === "ArrowDown"){ e.preventDefault(); openMenu(true); } });
+  document.addEventListener("click", function(e){ if (!menu.hidden && !e.target.closest(".arb-split")) closeMenu(false); });
+
+  /* ---------------- wiring: import button, file picker, drag and drop ---------------- */
+  var fileInput = el("arbImportFile"), drop = el("arbDrop");
+  el("arbImport").addEventListener("click", function(){ fileInput.click(); });
+  fileInput.addEventListener("change", function(){
+    var f = fileInput.files && fileInput.files[0];
+    fileInput.value = "";                    // so choosing the same file again still works
+    if (f) importProfilesFromFile(f);
+  });
+  ["dragenter", "dragover"].forEach(function(t){ drop.addEventListener(t, function(e){
+    if (e.dataTransfer && Array.prototype.indexOf.call(e.dataTransfer.types || [], "Files") !== -1){ e.preventDefault(); drop.classList.add("is-drag"); }
+  }); });
+  ["dragleave", "drop"].forEach(function(t){ drop.addEventListener(t, function(){ drop.classList.remove("is-drag"); }); });
+  drop.addEventListener("drop", function(e){
+    e.preventDefault();
+    var f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+    if (f) importProfilesFromFile(f);
+  });
+  window.addEventListener("storage", function(e){ if (e.key && e.key.indexOf(PREFIX) === 0) updateCount(); });
+
+  updateCount();
+  window.exportProfilesJSON = exportProfilesJSON;
+  window.exportProfilesCSV = exportProfilesCSV;
+  window.importProfilesFromFile = importProfilesFromFile;
 })();
 </script>
 </body>
