@@ -39,6 +39,7 @@ const pageRoutes = [
   'about',
   'features',
   'faq',
+  'profile',
   'therapy',
   'contact',
   'zentangle-art',
