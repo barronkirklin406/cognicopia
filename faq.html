@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Caregiver FAQ - Cognicopia</title>
-    <meta name="description" content="Answers for caregivers, clinicians, and memory care teams using Cognicopia activity packets.">
+    <meta name="description" content="25 answers for nurses, activity directors, caregivers and families: dementia stages, activity types, personalization, printing, privacy and licensing for Cognicopia memory care activity pages.">
     <style>
       *, *::before, *::after { box-sizing: border-box; }
         :root { --glass-bg: rgba(10, 38, 27, 0.7); --glass-panel: rgba(20, 61, 43, 0.72); --brand: #52b788; --line: rgba(216, 243, 220, 0.18); }
@@ -460,6 +460,288 @@ body { padding-left: var(--sb-w); }
 /* ── Hide old navbar if it was left in ── */
 
 </style>
+<style>
+/* ═══ Caregiver FAQ hub: dark slate / emerald, large-print friendly ═══ */
+.faqhub{
+  --fq-bg:#0e1614; --fq-card:#15221e; --fq-card2:#1b2b26; --fq-line:rgba(216,243,220,.14); --fq-line2:rgba(216,243,220,.26);
+  --fq-text:#eef6f1; --fq-muted:#b3c9bf; --fq-accent:#52b788; --fq-accent-hi:#7ad3a4; --fq-ink:#062116;
+  max-width:980px; margin:28px auto 40px; padding:0 clamp(14px,3vw,28px);
+  color:var(--fq-text); font:18px/1.7 "Trebuchet MS","Segoe UI",system-ui,sans-serif;
+}
+.faqhub a{color:var(--fq-accent-hi);text-underline-offset:3px}
+.faqhub a:hover{color:#fff}
+.faqhub :focus-visible{outline:3px solid var(--fq-accent-hi);outline-offset:3px;border-radius:6px}
+.fq-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.fq-hero{padding:30px clamp(18px,4vw,40px) 24px;border-radius:22px;background:linear-gradient(160deg,rgba(21,34,30,.97),rgba(14,22,20,.97));border:1px solid var(--fq-line2);box-shadow:0 18px 50px rgba(0,0,0,.35)}
+.fq-eyebrow{margin:0 0 6px;font-size:13px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--fq-accent)}
+.fq-hero h1{margin:0 0 10px;font-size:clamp(28px,4vw,40px);line-height:1.15;color:#fff}
+.fq-lede{margin:0 0 20px;max-width:62ch;color:var(--fq-muted)}
+.fq-tools{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.fq-search{position:relative;flex:1 1 320px;display:block}
+.fq-search svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--fq-accent-hi);pointer-events:none}
+.fq-search input{width:100%;min-height:52px;padding:12px 16px 12px 44px;border-radius:12px;border:1px solid var(--fq-line2);background:#0b1311;color:#fff;font:inherit;font-size:17px}
+.fq-search input::placeholder{color:#8aa598}
+.fq-search input:focus{border-color:var(--fq-accent);outline:none;box-shadow:0 0 0 3px rgba(82,183,136,.3)}
+.fq-btns{display:flex;gap:8px}
+.fq-btns button{min-height:52px;padding:10px 16px;border-radius:12px;border:1px solid var(--fq-line2);background:var(--fq-card2);color:var(--fq-text);font:inherit;font-size:15px;font-weight:700;cursor:pointer;transition:background .15s,border-color .15s}
+.fq-btns button:hover{background:#223630;border-color:var(--fq-accent)}
+.fq-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.fq-chip{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;background:rgba(82,183,136,.12);border:1px solid var(--fq-line);color:var(--fq-text)!important;text-decoration:none;font-size:15px;font-weight:700;transition:background .15s,border-color .15s}
+.fq-chip span{display:inline-grid;place-items:center;min-width:24px;height:24px;padding:0 6px;border-radius:999px;background:var(--fq-accent);color:var(--fq-ink);font-size:13px}
+.fq-chip:hover{background:rgba(82,183,136,.24);border-color:var(--fq-accent)}
+.fq-status{margin:12px 0 0;color:var(--fq-muted);font-size:15px;min-height:1.2em}
+.fq-cat{margin-top:34px;scroll-margin-top:70px}
+.fq-cat h2{display:flex;align-items:center;gap:12px;margin:0 0 14px;font-size:24px;line-height:1.25;color:#fff}
+.fq-cat-ic{display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:rgba(82,183,136,.16);color:var(--fq-accent-hi);flex:none}
+.fq-item{margin:0 0 10px;border-radius:16px;background:var(--fq-card);border:1px solid var(--fq-line);transition:border-color .15s,background .15s;scroll-margin-top:70px}
+.fq-item:hover{border-color:var(--fq-line2)}
+.fq-item[open]{background:var(--fq-card2);border-color:rgba(82,183,136,.55)}
+.fq-item summary{display:flex;align-items:flex-start;gap:14px;padding:18px 20px;cursor:pointer;list-style:none;border-radius:16px}
+.fq-item summary::-webkit-details-marker{display:none}
+.fq-num{flex:none;display:grid;place-items:center;width:32px;height:32px;margin-top:1px;border-radius:50%;background:rgba(82,183,136,.18);color:var(--fq-accent-hi);font-weight:800;font-size:15px}
+.fq-item[open] .fq-num{background:var(--fq-accent);color:var(--fq-ink)}
+.fq-q{flex:1;font-size:19px;font-weight:700;line-height:1.45;color:#fff}
+.fq-chev{flex:none;margin-top:6px;color:var(--fq-accent-hi);transition:transform .2s}
+.fq-item[open] .fq-chev{transform:rotate(180deg)}
+.fq-a{padding:0 22px 20px 66px;color:#dbe9e2}
+.fq-a p{margin:0 0 12px;max-width:70ch}
+.fq-a p:last-child{margin-bottom:0}
+.fq-a b{color:#fff}
+.fq-none{margin:30px 0 0;padding:18px 20px;border-radius:14px;border:1px dashed var(--fq-line2);background:var(--fq-card);color:var(--fq-muted)}
+.fq-support{display:flex;gap:20px;align-items:flex-start;margin-top:44px;padding:30px clamp(18px,4vw,36px);border-radius:22px;background:linear-gradient(150deg,#1d3d31,#122a21);border:1px solid rgba(82,183,136,.55);box-shadow:0 18px 50px rgba(0,0,0,.35);scroll-margin-top:70px}
+.fq-support-ic{flex:none;display:grid;place-items:center;width:58px;height:58px;border-radius:16px;background:var(--fq-accent);color:var(--fq-ink)}
+.fq-support h2{margin:0 0 8px;font-size:26px;line-height:1.2;color:#fff}
+.fq-support p{margin:0 0 18px;max-width:64ch;color:#dbe9e2}
+.fq-mail{display:inline-flex;align-items:center;gap:10px;min-height:52px;padding:12px 22px;border-radius:12px;background:var(--fq-accent);color:var(--fq-ink)!important;font-weight:800;font-size:17px;text-decoration:none;transition:background .15s,transform .05s;word-break:break-word}
+.fq-mail:hover{background:var(--fq-accent-hi)}
+.fq-mail:active{transform:translateY(1px)}
+@media (max-width:640px){
+  .faqhub{font-size:17px}
+  .fq-a{padding:0 18px 18px 18px}
+  .fq-item summary{padding:16px}
+  .fq-support{flex-direction:column}
+  .fq-btns{width:100%} .fq-btns button{flex:1}
+}
+@media (prefers-reduced-motion:reduce){ .fq-chev,.fq-item,.fq-chip,.fq-btns button,.fq-mail{transition:none} }
+/* Printing the FAQ: every answer open, black on white. */
+@media print{
+  .cg-sidebar,.cg-topbar,.cg-sidebar-toggle,.fq-tools,.fq-chips,.fq-status,.site-footer{display:none!important}
+  body{padding-left:0!important;background:#fff!important}
+  .faqhub{max-width:none;margin:0;color:#000;font-size:12pt}
+  .fq-hero,.fq-item,.fq-support{background:#fff!important;border:1px solid #999!important;box-shadow:none!important}
+  .fq-hero h1,.fq-cat h2,.fq-q,.fq-a,.fq-a b,.fq-support h2,.fq-support p{color:#000!important}
+  .fq-item{break-inside:avoid}
+  .fq-item .fq-a{display:block!important}
+}
+</style>
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@type": "FAQPage",
+ "mainEntity": [
+  {
+   "@type": "Question",
+   "name": "What makes Cognicopia different from standard activity or coloring books?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Most activity books are written for children or hobbyists. Cognicopia makes pages for adults living with memory loss: thick, high-contrast lines, plain uncluttered layouts, subjects and prompts from the decades a resident actually lived through (roughly the 1910s to the 1990s), and three difficulty stages so the same activity can meet each person where they are. The Personalized Packet Tool goes further and builds a whole workbook around one resident's own life: their hometown, work, family and favorite things."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "How does Cognicopia accommodate different stages of Alzheimer's and dementia?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Every activity offers three stages: Early, Moderate and Advanced. As the stage advances, pages use larger type, fewer items, shorter words and simpler choices. A word search, for example, is a 12 × 12 grid at Early, 10 × 10 at Moderate, and an 8 × 8 grid read left to right at Advanced; many puzzles move from a blank to write in, to a first-letter hint, to a choice of two. These are practical groupings, not a clinical scale. Choose the stage by what the resident can comfortably do today, which may not match the staging in their chart."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Why are the coloring pages designed without background patterns or fine shading?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Many people living with dementia have changes in visual perception: it can be hard to separate an object from its background, judge depth, or make sense of busy detail. In Lewy body dementia, a busy pattern can even be mistaken for something that isn't there. So every coloring page shows one bold, familiar subject in pure black lines 3 to 6 points thick, with plain white space around it and no hatching or textured backgrounds."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Can Cognicopia activities be used in one-on-one bedside care as well as group sessions?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Yes. For one-on-one time, Memory Lane prompts, an artist reminiscence sheet for a resident's favorite singer, coloring pages and large tracing pages work well at the bedside. For groups, try the Daily Orientation board, 24–36pt sing-along sheets, the Who Sang It? music match, beanbag targets and rhythm sheets. In the Packet Builder, add whichever pages you want to your packet, then print them together in one go."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "How do nostalgia-themed prompts help residents with memory loss?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Memories from earlier in life, especially the teens and twenties, often last longer than recent ones. Prompts about the songs, cars, kitchens and prices of those years give a person something they can still reach, which invites conversation, confidence and a lift in mood. This is the idea behind reminiscence therapy, and it is why Cognicopia lets you choose the era that fits each resident."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "What types of word and language activities can I generate?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "In the Packet Builder: decade-themed word searches, Finish the Saying (familiar proverbs), Word Scramble, Name Three (naming things in a category), Goes Together (pairs like salt and pepper) and Memory Lane reminiscence questions. The Personalized Packet Tool adds word puzzles built from the resident's own life, a life-story page and many more."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "How does the music activity generator work without playing audio?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "It prints pages you use alongside music you play from a record, CD or streaming service: sing-along sheets in 24–36pt type, Name That Tune song-title completion, Who Sang It? artist-to-song matching, and an Artist Spotlight that matches a singer's hits to the years they came out. Search for any of about 170 artists, from Scott Joplin to Garth Brooks, or choose a random mix of eras. Printed lyrics come only from public-domain songs; newer songs appear by title and artist only."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Are the math and number activities adaptable for residents who struggle with calculations?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Yes. They range from extra-large number tracing with dots to count, to coin counting with old-time prices, number ladders that count by 1s, 2s, 5s or 10s, and large-print 4 × 4 and 6 × 6 sudoku. At the Advanced stage, most become a simple choice of two."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "What physical or motor activities are included in the tool?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Seated chair yoga cards with a simple figure showing the body part and four large steps; fine-motor line tracing with dashed paths 4 to 6 points thick; tabletop beanbag targets; and rhythm sheets where each shape is a move (circle = clap, square = tap your feet). Everything is done sitting down, and each page carries a short safety note for staff."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "How do the letter and alphabet activities support cognitive retention?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "They keep reading, recognition and fine-motor skills in use: large-format letter scrambles with a clue, missing-letter words, A-to-Z category sweeps (\"Things in a Kitchen, A to Z\") and very large letter tracing, which can even use the letters of the resident's own name."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "What is included in the Multisensory & Art category?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Therapeutic coloring pages: 23 nostalgic subjects such as a grandfather clock, a 1950s pickup and a stone fireplace. Also shadow silhouette matching, and a giant-type Daily Orientation board showing the day, date, season, weather and today's menu."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Can I customize packets with a specific resident's name?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Yes. Type the resident's name in the setup panel and it prints at the top of each page (\"For Margaret\"; coloring pages read \"Prepared especially for Margaret\"). Letter Tracing can use the letters of their name, and Number Tracing can use a birth year or room number. There isn't a separate room-number line in the page header yet. If that would help your team, tell us."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Can our facility add its logo or name to the top of printed pages?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Your facility or unit name (for example, \"Oakridge Memory Care – South Wing\") can be set once under Settings & defaults in the Packet Builder, and it prints at the foot of every page. Uploading your own logo isn't available yet; let us know if you'd use it."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "How do I ensure no two activity packets are identical?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "You don't have to. Every page is generated fresh. In the Packet Builder you can ask for 1 to 4 versions of an activity, and each version is checked to be different from the others. Clicking again always makes new ones. The Personalized Packet Tool also remembers, on each computer, what it has already given each resident, so new packets avoid repeating recent content."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "How can staff track resident participation during activities?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Personalized packets can include an Engagement Notes page: date, staff, how the resident took part and responded, and what held their attention, built around what surveyors look for in activity records. Ailment-specific packets end with a participation log. A stand-alone group sign-in sheet isn't in the Packet Builder yet."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Does Cognicopia require an active internet connection to generate packets?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Not once the page has loaded. Every page is built right in your browser, not on a server, so it keeps working if the connection drops. You only need the internet to open the site on a computer the first time and to buy a license."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Why does the website stay dark while the printed pages come out white?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "The Packet Builder uses a dark screen that is easy on the eyes at a staff station. What prints is separate: white pages with near-black text and small green accents. Turn on High Contrast Mode (in the Packet Builder's Settings, or under \"How is their vision?\" in the Personalized Packet Tool) to print in pure black and white. That is sharper for low vision and uses no color ink. It only changes the printed pages, never the screen."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "What size paper do these activity packets print on?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Standard US Letter, 8.5\" × 11\", with at least half-inch margins so nothing is clipped on a typical office printer. Each activity fills exactly one sheet. If your printer uses A4 paper, choose Fit to page in the print window."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "How are coloring pages formatted?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Each drawing sits in a 6 × 8 inch box (a 3:4 shape), centered inside a half-inch margin with a thin frame, with the resident's name at the top. Lines are pure black and 3 to 6 points thick, with plenty of open space to color."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Is resident data saved or sent to external cloud servers?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "No. Names and details you type stay in this browser on this computer (in its local storage), and the Personalized Packet Tool can save a small resident file to your Downloads folder so you can reload it later. Nothing is sent to us or to any other server, and the site loads no tracking or analytics. On a shared computer, use Clear saved data in the Packet Builder's Settings when you've finished. Printed pages with a resident's name on them should be handled under your facility's privacy policy, like any other paper record."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Can multiple staff members at our facility use the same tool?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Yes. A license is $129.99 a year for your building, with unlimited packets for as many residents as you have. Enter the access code from your receipt once on each computer your staff use. Every computer also starts with 10 free packets, so anyone can try it first."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "What should I do if a resident needs larger text than the standard print size?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Choose the Advanced stage. It uses the largest type: about 26pt on most pages and up to 36pt on sing-along sheets, with giant type on the orientation board and tracing pages. High Contrast Mode also helps many people with low vision. There isn't a separate text-size dial yet. Tell us if a resident needs something larger."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Are answer keys included with puzzle packets?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Yes. Packet Builder puzzles print a small \"For staff · answers\" line at the foot of the page, easy to fold under or cover. The Personalized Packet Tool puts its answer keys on separate staff-only pages at the end, which you simply leave out of the resident's copy. There isn't an on/off switch for answer keys yet."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "How frequently are new artists, themes, and line art templates added?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "New activities, artists and drawings are added as we hear from the facilities using Cognicopia. Updates appear on the site automatically; just reload the page."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "What if I have a question, feature request, or specific activity idea not currently listed here?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "We'd love to hear it. Cognicopia is shaped by the activity directors, nurses and families who use it. Email us using the box at the bottom of this page."
+   }
+  }
+ ]
+}
+</script>
 </head>
 <body>
 <!-- ══ COGNICOPIA LEFT SIDEBAR NAV ══ -->
@@ -573,32 +855,157 @@ body { padding-left: var(--sb-w); }
   <!-- Navigation Bar -->
   
 
-  <!-- Page Content -->
-  <main class="container">
-    <h1>Frequently Asked Questions</h1>
-    <svg class="organic-vine-divider" viewBox="0 0 500 70" role="img" aria-label="Decorative flowing vine with leaves">
-      <path d="M28 39 C92 12 135 59 188 36 C225 20 249 19 271 34 C301 54 331 56 357 37 C393 11 431 21 472 39" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
-      <path d="M112 30 C94 18 80 21 71 34 C87 37 101 36 112 30 Z M147 45 C130 43 119 50 116 62 C130 59 141 53 147 45 Z M194 34 C181 19 167 17 157 25 C168 34 181 37 194 34 Z M305 45 C318 58 332 58 343 50 C332 43 318 41 305 45 Z M354 37 C369 22 382 21 392 30 C380 38 367 40 354 37 Z M407 30 C424 18 438 22 445 35 C431 36 418 34 407 30 Z" fill="currentColor"/>
-      <path d="M72 34 C81 29 91 28 101 29 M117 60 C124 53 132 49 141 48 M158 26 C168 26 178 29 187 34 M313 47 C323 48 332 51 340 55 M360 35 C370 31 379 29 389 30 M414 28 C423 29 432 32 440 36" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity=".72"/>
-    </svg>
-    <p class="vine-subtitle">Activities built from a resident's own life</p>
-    <p>Common questions from family caregivers, clinicians, and facility directors about using Cognicopia.</p>
+  <!-- Page Content: Caregiver FAQ hub (built by build_faq.py) -->
+  <main class="faqhub" id="faq-top">
+    <header class="fq-hero">
+      <p class="fq-eyebrow">Caregiver FAQ</p>
+      <h1>Answers for nurses, activity directors, caregivers and families</h1>
+      <p class="fq-lede">Everything about how Cognicopia's activity pages are designed, built, personalized and printed, in plain language.</p>
+      <div class="fq-tools">
+        <label class="fq-search">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><line x1="15.5" y1="15.5" x2="21" y2="21"/></svg>
+          <span class="fq-sr">Search the questions</span>
+          <input type="search" id="fqSearch" placeholder="Search the questions (e.g. printing, stages, music)" autocomplete="off">
+        </label>
+        <div class="fq-btns">
+          <button type="button" id="fqOpenAll">Expand all</button>
+          <button type="button" id="fqCloseAll">Collapse all</button>
+        </div>
+      </div>
+      <nav class="fq-chips" aria-label="FAQ categories">
+        <a class="fq-chip" href="#faq-clinical">Clinical Design &amp; Dementia Stages <span>5</span></a><a class="fq-chip" href="#faq-activities">Activity Categories &amp; Features <span>6</span></a><a class="fq-chip" href="#faq-personal">Personalization &amp; Facility Customization <span>4</span></a><a class="fq-chip" href="#faq-tech">Technical &amp; Printing <span>5</span></a><a class="fq-chip" href="#faq-license">Licensing, Support &amp; Requests <span>5</span></a>
+      </nav>
+      <p class="fq-status" id="fqStatus" role="status" aria-live="polite"></p>
+    </header>
 
-    <div class="faq-item">
-      <div class="faq-question">What makes Cognicopia different from standard coloring books?</div>
-      <p class="faq-answer">Standard coloring and activity books are frequently designed for children or casual hobbyists. Cognicopia creates adult-centric, evidence-based reminiscence workbooks utilizing high-contrast lines, clean white spaces, and era-specific historical prompts that honor a senior's life experience.</p>
-    </div>
+    <section class="fq-cat" id="faq-clinical" aria-labelledby="faq-clinical-h">
+      <h2 id="faq-clinical-h"><span class="fq-cat-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.6-7 10-7 10z"/></svg></span>Clinical Design &amp; Dementia Stages</h2>
+      <details class="fq-item" id="q1">
+        <summary><span class="fq-num" aria-hidden="true">1</span><span class="fq-q">What makes Cognicopia different from standard activity or coloring books?</span><svg class="fq-chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="fq-a"><p>Most activity books are written for children or hobbyists. Cognicopia makes pages for adults living with memory loss: thick, high-contrast lines, plain uncluttered layouts, subjects and prompts from the decades a resident actually lived through (roughly the 1910s to the 1990s), and three difficulty stages so the same activity can meet each person where they are.</p><p>The <b>Personalized Packet Tool</b> goes further and builds a whole workbook around one resident's own life: their hometown, work, family and favorite things.</p></div>
+      </details>
+      <details class="fq-item" id="q2">
+        <summary><span class="fq-num" aria-hidden="true">2</span><span class="fq-q">How does Cognicopia accommodate different stages of Alzheimer&#x27;s and dementia?</span><svg class="fq-chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="fq-a"><p>Every activity offers three stages: <b>Early</b>, <b>Moderate</b> and <b>Advanced</b>. As the stage advances, pages use larger type, fewer items, shorter words and simpler choices. A word search, for example, is a 12 &times; 12 grid at Early, 10 &times; 10 at Moderate, and an 8 &times; 8 grid read left to right at Advanced; many puzzles move from a blank to write in, to a first-letter hint, to a choice of two.</p><p>These are practical groupings, not a clinical scale. Choose the stage by what the resident can comfortably do today, which may not match the staging in their chart.</p></div>
+      </details>
+      <details class="fq-item" id="q3">
+        <summary><span class="fq-num" aria-hidden="true">3</span><span class="fq-q">Why are the coloring pages designed without background patterns or fine shading?</span><svg class="fq-chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="fq-a"><p>Many people living with dementia have changes in visual perception: it can be hard to separate an object from its background, judge depth, or make sense of busy detail. In Lewy body dementia, a busy pattern can even be mistaken for something that isn't there.</p><p>So every coloring page shows one bold, familiar subject in pure black lines 3 to 6 points thick, with plain white space around it and no hatching or textured backgrounds.</p></div>
+      </details>
+      <details class="fq-item" id="q4">
+        <summary><span class="fq-num" aria-hidden="true">4</span><span class="fq-q">Can Cognicopia activities be used in one-on-one bedside care as well as group sessions?</span><svg class="fq-chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="fq-a"><p>Yes. For one-on-one time, Memory Lane prompts, an artist reminiscence sheet for a resident's favorite singer, coloring pages and large tracing pages work well at the bedside. For groups, try the Daily Orientation board, 24&ndash;36pt sing-along sheets, the <i>Who Sang It?</i> music match, beanbag targets and rhythm sheets.</p><p>In the <a href="builder.html">Packet Builder</a>, add whichever pages you want to your packet, then print them together in one go.</p></div>
+      </details>
+      <details class="fq-item" id="q5">
+        <summary><span class="fq-num" aria-hidden="true">5</span><span class="fq-q">How do nostalgia-themed prompts help residents with memory loss?</span><svg class="fq-chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="fq-a"><p>Memories from earlier in life, especially the teens and twenties, often last longer than recent ones. Prompts about the songs, cars, kitchens and prices of those years give a person something they can still reach, which invites conversation, confidence and a lift in mood. This is the idea behind reminiscence therapy, and it is why Cognicopia lets you choose the era that fits each resident.</p></div>
+      </details>
+    </section>
+    <section class="fq-cat" id="faq-activities" aria-labelledby="faq-activities-h">
+      <h2 id="faq-activities-h"><span class="fq-cat-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></span>Activity Categories &amp; Features</h2>
+      <details class="fq-item" id="q6">
+        <summary><span class="fq-num" aria-hidden="true">6</span><span class="fq-q">What types of word and language activities can I generate?</span><svg class="fq-chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="fq-a"><p>In the Packet Builder: decade-themed <b>word searches</b>, <b>Finish the Saying</b> (familiar proverbs), <b>Word Scramble</b>, <b>Name Three</b> (naming things in a category), <b>Goes Together</b> (pairs like salt and pepper) and <b>Memory Lane</b> reminiscence questions.</p><p>The Personalized Packet Tool adds word puzzles built from the resident's own life, a life-story page and many more.</p></div>
+      </details>
+      <details class="fq-item" id="q7">
+        <summary><span class="fq-num" aria-hidden="true">7</span><span class="fq-q">How does the music activity generator work without playing audio?</span><svg class="fq-chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="fq-a"><p>It prints pages you use alongside music you play from a record, CD or streaming service: <b>sing-along sheets</b> in 24&ndash;36pt type, <b>Name That Tune</b> song-title completion, <b>Who Sang It?</b> artist-to-song matching, and an <b>Artist Spotlight</b> that matches a singer's hits to the years they came out.</p><p>Search for any of about 170 artists, from Scott Joplin to Garth Brooks, or choose a random mix of eras. Printed lyrics come only from public-domain songs; newer songs appear by title and artist only.</p></div>
+      </details>
+      <details class="fq-item" id="q8">
+        <summary><span class="fq-num" aria-hidden="true">8</span><span class="fq-q">Are the math and number activities adaptable for residents who struggle with calculations?</span><svg class="fq-chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="fq-a"><p>Yes. They range from extra-large <b>number tracing</b> with dots to count, to <b>coin counting</b> with old-time prices, <b>number ladders</b> that count by 1s, 2s, 5s or 10s, and large-print <b>4 &times; 4 and 6 &times; 6 sudoku</b>. At the Advanced stage, most become a simple choice of two.</p></div>
+      </details>
+      <details class="fq-item" id="q9">
+        <summary><span class="fq-num" aria-hidden="true">9</span><span class="fq-q">What physical or motor activities are included in the tool?</span><svg class="fq-chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="fq-a"><p><b>Seated chair yoga cards</b> with a simple figure showing the body part and four large steps; <b>fine-motor line tracing</b> with dashed paths 4 to 6 points thick; tabletop <b>beanbag targets</b>; and <b>rhythm sheets</b> where each shape is a move (circle = clap, square = tap your feet). Everything is done sitting down, and each page carries a short safety note for staff.</p></div>
+      </details>
+      <details class="fq-item" id="q10">
+        <summary><span class="fq-num" aria-hidden="true">10</span><span class="fq-q">How do the letter and alphabet activities support cognitive retention?</span><svg class="fq-chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="fq-a"><p>They keep reading, recognition and fine-motor skills in use: large-format <b>letter scrambles</b> with a clue, <b>missing-letter</b> words, <b>A-to-Z category sweeps</b> ("Things in a Kitchen, A to Z") and very large <b>letter tracing</b>, which can even use the letters of the resident's own name.</p></div>
+      </details>
+      <details class="fq-item" id="q11">
+        <summary><span class="fq-num" aria-hidden="true">11</span><span class="fq-q">What is included in the Multisensory &amp; Art category?</span><svg class="fq-chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="fq-a"><p><b>Therapeutic coloring pages</b>: 23 nostalgic subjects such as a grandfather clock, a 1950s pickup and a stone fireplace. Also <b>shadow silhouette matching</b>, and a giant-type <b>Daily Orientation board</b> showing the day, date, season, weather and today's menu.</p></div>
+      </details>
+    </section>
+    <section class="fq-cat" id="faq-personal" aria-labelledby="faq-personal-h">
+      <h2 id="faq-personal-h"><span class="fq-cat-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6"/></svg></span>Personalization &amp; Facility Customization</h2>
+      <details class="fq-item" id="q12">
+        <summary><span class="fq-num" aria-hidden="true">12</span><span class="fq-q">Can I customize packets with a specific resident&#x27;s name?</span><svg class="fq-chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="fq-a"><p>Yes. Type the resident's name in the setup panel and it prints at the top of each page ("For Margaret"; coloring pages read "Prepared especially for Margaret"). Letter Tracing can use the letters of their name, and Number Tracing can use a birth year or room number.</p><p>There isn't a separate room-number line in the page header yet. If that would help your team, <a href="#faq-support">tell us</a>.</p></div>
+      </details>
+      <details class="fq-item" id="q13">
+        <summary><span class="fq-num" aria-hidden="true">13</span><span class="fq-q">Can our facility add its logo or name to the top of printed pages?</span><svg class="fq-chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="fq-a"><p>Your facility or unit name (for example, "Oakridge Memory Care &ndash; South Wing") can be set once under <b>Settings &amp; defaults</b> in the Packet Builder, and it prints at the foot of every page. Uploading your own logo isn't available yet; <a href="#faq-support">let us know</a> if you'd use it.</p></div>
+      </details>
+      <details class="fq-item" id="q14">
+        <summary><span class="fq-num" aria-hidden="true">14</span><span class="fq-q">How do I ensure no two activity packets are identical?</span><svg class="fq-chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="fq-a"><p>You don't have to. Every page is generated fresh. In the Packet Builder you can ask for 1 to 4 versions of an activity, and each version is checked to be different from the others. Clicking again always makes new ones.</p><p>The Personalized Packet Tool also remembers, on each computer, what it has already given each resident, so new packets avoid repeating recent content.</p></div>
+      </details>
+      <details class="fq-item" id="q15">
+        <summary><span class="fq-num" aria-hidden="true">15</span><span class="fq-q">How can staff track resident participation during activities?</span><svg class="fq-chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="fq-a"><p>Personalized packets can include an <b>Engagement Notes</b> page: date, staff, how the resident took part and responded, and what held their attention, built around what surveyors look for in activity records. Ailment-specific packets end with a <b>participation log</b>.</p><p>A stand-alone group sign-in sheet isn't in the Packet Builder yet.</p></div>
+      </details>
+    </section>
+    <section class="fq-cat" id="faq-tech" aria-labelledby="faq-tech-h">
+      <h2 id="faq-tech-h"><span class="fq-cat-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M6 14h12v7H6z"/></svg></span>Technical &amp; Printing</h2>
+      <details class="fq-item" id="q16">
+        <summary><span class="fq-num" aria-hidden="true">16</span><span class="fq-q">Does Cognicopia require an active internet connection to generate packets?</span><svg class="fq-chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="fq-a"><p>Not once the page has loaded. Every page is built right in your browser, not on a server, so it keeps working if the connection drops. You only need the internet to open the site on a computer the first time and to buy a license.</p></div>
+      </details>
+      <details class="fq-item" id="q17">
+        <summary><span class="fq-num" aria-hidden="true">17</span><span class="fq-q">Why does the website stay dark while the printed pages come out white?</span><svg class="fq-chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="fq-a"><p>The Packet Builder uses a dark screen that is easy on the eyes at a staff station. What prints is separate: white pages with near-black text and small green accents.</p><p>Turn on <b>High Contrast Mode</b> (in the Packet Builder's Settings, or under "How is their vision?" in the Personalized Packet Tool) to print in pure black and white. That is sharper for low vision and uses no color ink. It only changes the printed pages, never the screen.</p></div>
+      </details>
+      <details class="fq-item" id="q18">
+        <summary><span class="fq-num" aria-hidden="true">18</span><span class="fq-q">What size paper do these activity packets print on?</span><svg class="fq-chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="fq-a"><p>Standard US Letter, 8.5" &times; 11", with at least half-inch margins so nothing is clipped on a typical office printer. Each activity fills exactly one sheet. If your printer uses A4 paper, choose <b>Fit to page</b> in the print window.</p></div>
+      </details>
+      <details class="fq-item" id="q19">
+        <summary><span class="fq-num" aria-hidden="true">19</span><span class="fq-q">How are coloring pages formatted?</span><svg class="fq-chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="fq-a"><p>Each drawing sits in a 6 &times; 8 inch box (a 3:4 shape), centered inside a half-inch margin with a thin frame, with the resident's name at the top. Lines are pure black and 3 to 6 points thick, with plenty of open space to color.</p></div>
+      </details>
+      <details class="fq-item" id="q20">
+        <summary><span class="fq-num" aria-hidden="true">20</span><span class="fq-q">Is resident data saved or sent to external cloud servers?</span><svg class="fq-chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="fq-a"><p>No. Names and details you type stay in this browser on this computer (in its local storage), and the Personalized Packet Tool can save a small resident file to your Downloads folder so you can reload it later. Nothing is sent to us or to any other server, and the site loads no tracking or analytics.</p><p>On a shared computer, use <b>Clear saved data</b> in the Packet Builder's Settings when you've finished. Printed pages with a resident's name on them should be handled under your facility's privacy policy, like any other paper record.</p></div>
+      </details>
+    </section>
+    <section class="fq-cat" id="faq-license" aria-labelledby="faq-license-h">
+      <h2 id="faq-license-h"><span class="fq-cat-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 7a4 4 0 1 1-3.9 5H8v3H5v-3H3v-3h8.1A4 4 0 0 1 15 7z"/></svg></span>Licensing, Support &amp; Requests</h2>
+      <details class="fq-item" id="q21">
+        <summary><span class="fq-num" aria-hidden="true">21</span><span class="fq-q">Can multiple staff members at our facility use the same tool?</span><svg class="fq-chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="fq-a"><p>Yes. A license is <b>$129.99 a year for your building</b>, with unlimited packets for as many residents as you have. Enter the access code from your receipt once on each computer your staff use. Every computer also starts with 10 free packets, so anyone can try it first.</p></div>
+      </details>
+      <details class="fq-item" id="q22">
+        <summary><span class="fq-num" aria-hidden="true">22</span><span class="fq-q">What should I do if a resident needs larger text than the standard print size?</span><svg class="fq-chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="fq-a"><p>Choose the <b>Advanced</b> stage. It uses the largest type: about 26pt on most pages and up to 36pt on sing-along sheets, with giant type on the orientation board and tracing pages. High Contrast Mode also helps many people with low vision.</p><p>There isn't a separate text-size dial yet. <a href="#faq-support">Tell us</a> if a resident needs something larger.</p></div>
+      </details>
+      <details class="fq-item" id="q23">
+        <summary><span class="fq-num" aria-hidden="true">23</span><span class="fq-q">Are answer keys included with puzzle packets?</span><svg class="fq-chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="fq-a"><p>Yes. Packet Builder puzzles print a small "For staff &middot; answers" line at the foot of the page, easy to fold under or cover. The Personalized Packet Tool puts its answer keys on separate staff-only pages at the end, which you simply leave out of the resident's copy.</p><p>There isn't an on/off switch for answer keys yet.</p></div>
+      </details>
+      <details class="fq-item" id="q24">
+        <summary><span class="fq-num" aria-hidden="true">24</span><span class="fq-q">How frequently are new artists, themes, and line art templates added?</span><svg class="fq-chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="fq-a"><p>New activities, artists and drawings are added as we hear from the facilities using Cognicopia. Updates appear on the site automatically; just reload the page.</p></div>
+      </details>
+      <details class="fq-item" id="q25">
+        <summary><span class="fq-num" aria-hidden="true">25</span><span class="fq-q">What if I have a question, feature request, or specific activity idea not currently listed here?</span><svg class="fq-chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="fq-a"><p>We'd love to hear it. Cognicopia is shaped by the activity directors, nurses and families who use it. Email us using the box at the bottom of this page.</p></div>
+      </details>
+    </section>
 
-    <div class="faq-item">
-      <div class="faq-question">How does Cognicopia help reduce caregiver stress?</div>
-      <p class="faq-answer">Planning daily activities for someone with cognitive decline can lead to burnout. Cognicopia removes the guesswork by instantly generating structured, ready-to-use worksheets and prompts that require zero preparation time.</p>
-    </div>
+    <p class="fq-none" id="fqNone" hidden>No questions match that search. Try a shorter word, or <a href="#faq-support">ask us directly</a>.</p>
 
-    <div class="faq-item">
-      <div class="faq-question">Can these workbooks be used in professional memory care facilities?</div>
-      <p class="faq-answer">Yes. The platform is built to support both individual family caregivers and professional memory care coordinators, speech therapists, and assisted living activity directors looking for standardized engagement tools.</p>
-    </div>
+    <section class="fq-support" id="faq-support" aria-labelledby="faq-support-h">
+      <div class="fq-support-ic" aria-hidden="true"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M8 9h8M8 13h5"/></svg></div>
+      <div>
+        <h2 id="faq-support-h">Have a Question or Feature Request?</h2>
+        <p>We continually update Cognicopia to better serve activity leads, nurses, and memory care residents. If you have a question that isn't answered here, or if you'd like to request a specific activity type, theme, or artist, let us know and we'll add it to the platform!</p>
+        <a class="fq-mail" href="mailto:cognicopia@outlook.com?subject=Cognicopia%20FAQ%20%26%20Feature%20Request"><span aria-hidden="true">&#9993;</span> Email Us at cognicopia@outlook.com</a>
+      </div>
+    </section>
   </main>
+
 
   <footer class="site-footer">Cognicopia is made by BarronCrafts. Everything happens inside your browser.</footer>
 
@@ -629,5 +1036,44 @@ body { padding-left: var(--sb-w); }
     }
   })();
   </script>
+<script>
+/* Caregiver FAQ: search, expand/collapse all, deep links, print. The
+   accordion itself is native <details>, so it works without JavaScript. */
+(function(){
+  var items = Array.prototype.slice.call(document.querySelectorAll(".fq-item"));
+  var cats = Array.prototype.slice.call(document.querySelectorAll(".fq-cat"));
+  var search = document.getElementById("fqSearch"), status = document.getElementById("fqStatus"), none = document.getElementById("fqNone");
+  if (!items.length) return;
+  function setAll(open){ items.forEach(function(d){ if (!d.hidden) d.open = open; }); }
+  document.getElementById("fqOpenAll").addEventListener("click", function(){ setAll(true); status.textContent = "All answers are open."; });
+  document.getElementById("fqCloseAll").addEventListener("click", function(){ setAll(false); status.textContent = "All answers are closed."; });
+  var timer = null;
+  function filter(){
+    var q = search.value.trim().toLowerCase(), shown = 0;
+    items.forEach(function(d){
+      var hit = !q || d.textContent.toLowerCase().indexOf(q) !== -1;
+      d.hidden = !hit;
+      if (hit) shown++;
+      if (q && hit) d.open = true;
+    });
+    cats.forEach(function(c){ c.hidden = !c.querySelector(".fq-item:not([hidden])"); });
+    none.hidden = shown !== 0;
+    status.textContent = q ? (shown ? shown + (shown === 1 ? " question matches." : " questions match.") : "") : "";
+  }
+  search.addEventListener("input", function(){ clearTimeout(timer); timer = setTimeout(filter, 120); });
+  search.addEventListener("keydown", function(e){ if (e.key === "Escape"){ search.value = ""; filter(); } });
+  // Open a question linked directly, e.g. faq.html#q16
+  function openFromHash(){
+    var el = location.hash && document.getElementById(location.hash.slice(1));
+    if (el && el.classList.contains("fq-item")){ el.open = true; el.scrollIntoView({ block:"start" }); }
+  }
+  window.addEventListener("hashchange", openFromHash);
+  openFromHash();
+  // Printing shows every answer, then restores what was open.
+  var wasOpen = [];
+  window.addEventListener("beforeprint", function(){ wasOpen = items.map(function(d){ return d.open; }); items.forEach(function(d){ d.hidden = false; d.open = true; }); cats.forEach(function(c){ c.hidden = false; }); });
+  window.addEventListener("afterprint", function(){ items.forEach(function(d, i){ d.open = wasOpen[i]; }); filter(); });
+})();
+</script>
 </body>
 </html>
