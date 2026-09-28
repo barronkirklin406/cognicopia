@@ -476,6 +476,15 @@ input:focus,select:focus{border-color:var(--accent)}
 .art-svg{display:block;flex:none;width:6in;height:8in}
 .art-talk{margin:.04in 0;font-size:12pt;font-style:italic;color:#000;text-align:center}
 .art-foot{font-size:9pt;letter-spacing:.04em;color:#444}
+.art-fac{margin:0 0 .02in;font-size:11pt;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#000;text-align:center;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* Cognicore Coloring: the always-on visual rules in the config panel */
+.opt-note{margin:0 0 16px}
+.style-head{margin:4px 0 8px;font-size:15px;font-weight:700}
+.style-lock{list-style:none;margin:0;padding:12px 14px;display:grid;grid-template-columns:1fr 1fr;gap:8px 16px;border:1px solid var(--line);border-radius:12px;background:var(--bg-2)}
+.style-lock li{display:flex;gap:8px;align-items:flex-start;font-size:14px;line-height:1.35}
+.style-lock li::before{content:"\2713";flex:none;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:700;background:rgba(82,183,136,.2);color:var(--accent-hi)}
+@media (max-width:560px){.style-lock{grid-template-columns:1fr}}
+.cat-badge{display:inline-flex;align-items:center;gap:6px;margin-left:10px;padding:3px 10px;border-radius:999px;font-size:13px;font-weight:700;vertical-align:middle;background:rgba(82,183,136,.18);color:var(--accent-hi)}
 /* silhouettes */
 .sil{display:block}
 .sil-pairs{row-gap:.2in}
@@ -3175,6 +3184,232 @@ const COLOR_ART = {
         o += `<path d="M${x - 20} 252 L${x - 16} 280 L${x + 16} 280 L${x + 20} 252 Z" ${st.W}/><rect x="${x - 24}" y="244" width="48" height="10" rx="3" ${st.W}/>`;
       });
       return { svg:o, sig:"kw" + pots + tie };
+    } },
+  /* ================= E. Animals (Cognicore Coloring) ================= */
+  cat: { group:"animals", title:"The Sitting Cat", talk:"Did you ever have a cat? What was its name, and where did it like to sleep?",
+    draw(rng, det, st){
+      const flip = rng.next() < .5;
+      let o = `<path d="M184 356 Q262 360 256 290 Q252 256 230 248 L222 264 Q240 272 240 294 Q242 342 184 340 Z" ${st.W}/>`;
+      o += `<path d="M150 186 C104 186 86 296 94 346 Q98 364 120 364 L180 364 Q202 364 206 346 C214 296 196 186 150 186 Z" ${st.W}/>`;
+      if (det) o += `<path d="M130 296 L128 350 M170 296 L172 350 M122 234 Q150 250 178 234" ${st.D}/>`;
+      o += `<ellipse cx="126" cy="358" rx="18" ry="10" ${st.W}/><ellipse cx="174" cy="358" rx="18" ry="10" ${st.W}/>`;
+      o += `<path d="M104 136 L106 66 L150 104 Z" ${st.W}/><path d="M196 136 L194 66 L150 104 Z" ${st.W}/>`;
+      o += `<circle cx="150" cy="146" r="54" ${st.W}/>`;
+      if (det) o += `<path d="M112 116 L112 84 L134 104 M188 116 L188 84 L166 104" ${st.D}/>`;
+      o += `<ellipse cx="128" cy="140" rx="9" ry="12" ${st.W}/><ellipse cx="172" cy="140" rx="9" ry="12" ${st.W}/>`;
+      o += `<path d="M142 164 L158 164 L150 173 Z" ${st.W}/><path d="M150 173 Q146 184 134 182 M150 173 Q154 184 166 182" ${st.D}/>`;
+      if (det) o += `<path d="M122 170 L78 162 M122 180 L80 190 M178 170 L222 162 M178 180 L220 190" ${st.D}/>`;
+      return { svg:artH.flip(flip, o) + artH.ground(372, st), sig:"cat" + flip };
+    } },
+  dog: { group:"animals", title:"The Faithful Dog", talk:"Did your family have a dog? What was it like, and what tricks could it do?",
+    draw(rng, det, st){
+      const flip = rng.next() < .5, tag = rng.next() < .5;
+      let o = `<path d="M196 350 Q250 346 256 300 L244 294 Q236 330 196 334 Z" ${st.W}/>`;
+      o += `<path d="M150 200 C98 200 82 300 90 348 Q94 366 118 366 L182 366 Q206 366 210 348 C218 300 202 200 150 200 Z" ${st.W}/>`;
+      if (det) o += `<path d="M128 290 L126 352 M172 290 L174 352" ${st.D}/>`;
+      o += `<ellipse cx="124" cy="360" rx="20" ry="10" ${st.W}/><ellipse cx="176" cy="360" rx="20" ry="10" ${st.W}/>`;
+      o += `<path d="M112 210 Q150 228 188 210 L190 226 Q150 244 110 226 Z" ${st.W}/>`;
+      if (tag || !det) o += `<circle cx="150" cy="248" r="11" ${st.W}/>`;
+      o += `<path d="M150 70 C100 70 92 120 98 162 C102 196 124 214 150 214 C176 214 198 196 202 162 C208 120 200 70 150 70 Z" ${st.W}/>`;
+      o += `<path d="M104 86 C72 88 60 150 76 196 Q92 204 104 184 Q112 140 116 96 Z" ${st.W}/>`;
+      o += `<path d="M196 86 C228 88 240 150 224 196 Q208 204 196 184 Q188 140 184 96 Z" ${st.W}/>`;
+      o += `<ellipse cx="150" cy="176" rx="34" ry="28" ${st.W}/>`;
+      o += `<ellipse cx="150" cy="160" rx="14" ry="10" ${st.W}/><path d="M150 170 L150 184 Q140 194 130 188 M150 184 Q160 194 170 188" ${st.D}/>`;
+      o += `<circle cx="128" cy="126" r="8" ${st.W}/><circle cx="172" cy="126" r="8" ${st.W}/>`;
+      if (det) o += `<path d="M118 110 Q128 104 138 110 M162 110 Q172 104 182 110" ${st.D}/>`;
+      return { svg:artH.flip(flip, o) + artH.ground(374, st), sig:"dog" + flip + tag };
+    } },
+  songbird: { group:"animals", title:"The Songbird on a Branch", talk:"Which birds came to your yard or feeder? Did anyone you knew keep birds?",
+    draw(rng, det, st){
+      const flip = rng.next() < .5, crest = rng.next() < .5;
+      let o = `<path d="M188 262 L252 302 L240 320 L174 288 Z" ${st.W}/>`;
+      o += `<path d="M18 334 Q150 312 284 288 L288 306 Q150 332 22 354 Z" ${st.W}/>`;
+      o += svgLeaf(230, 300, 262, 250, 14, st.W) + svgLeaf(58, 334, 34, 380, 14, st.W);
+      if (det) o += svgLeaf(262, 296, 290, 340, 12, st.W);
+      o += `<path d="M128 292 L124 318 M160 292 L160 314" ${st.N}/>`;
+      if (crest) o += `<path d="M84 142 L122 90 L128 140 Z" ${st.W}/>`;
+      o += `<path d="M70 204 C70 150 132 132 172 162 C202 186 216 224 208 258 C200 292 160 304 124 296 C88 288 70 252 70 204 Z" ${st.W}/>`;
+      o += `<circle cx="100" cy="172" r="40" ${st.W}/>`;
+      o += `<path d="M64 162 L30 178 L66 188 Z" ${st.W}/><circle cx="88" cy="164" r="6" ${st.W}/>`;
+      o += `<path d="M122 214 Q194 200 214 262 Q160 272 122 214 Z" ${st.W}/>`;
+      if (det) o += `<path d="M144 222 Q176 222 196 250 M84 238 Q96 266 124 276" ${st.D}/>`;
+      return { svg:artH.flip(flip, o), sig:"sb" + flip + crest };
+    } },
+  owl: { group:"animals", title:"The Wise Old Owl", talk:"Have you ever heard an owl at night? Where were you?",
+    draw(rng, det, st){
+      const tufts = rng.next() < .5, look = rng.pick([-5, 0, 5]);
+      let o = `<path d="M26 344 L274 336 L276 358 L24 366 Z" ${st.W}/>`;
+      if (det) o += svgLeaf(250, 340, 286, 304, 12, st.W);
+      if (tufts) o += `<path d="M98 136 L90 76 L134 116 Z" ${st.W}/><path d="M202 136 L210 76 L166 116 Z" ${st.W}/>`;
+      o += `<path d="M150 96 C88 96 72 196 82 280 Q92 346 150 348 Q208 346 218 280 C228 196 212 96 150 96 Z" ${st.W}/>`;
+      o += `<path d="M90 196 Q58 266 100 332 Q118 262 90 196 Z" ${st.W}/><path d="M210 196 Q242 266 200 332 Q182 262 210 196 Z" ${st.W}/>`;
+      if (det){
+        for (let r = 0; r < 3; r++) for (let c = 0; c < 3 - (r === 2 ? 1 : 0); c++){
+          const x = 124 + c * 26 + (r === 2 ? 13 : 0), y = 244 + r * 28;
+          o += `<path d="M${x - 9} ${y} Q${x} ${y + 12} ${x + 9} ${y}" ${st.D}/>`;
+        }
+      }
+      o += `<circle cx="122" cy="168" r="32" ${st.W}/><circle cx="178" cy="168" r="32" ${st.W}/>`;
+      o += `<circle cx="${122 + look}" cy="168" r="${det ? 12 : 15}" ${st.W}/><circle cx="${178 + look}" cy="168" r="${det ? 12 : 15}" ${st.W}/>`;
+      o += `<path d="M140 196 L160 196 L150 220 Z" ${st.W}/>`;
+      o += `<path d="M126 346 L122 358 M140 346 L140 360 M160 346 L160 360 M174 346 L178 358" ${st.N}/>`;
+      return { svg:o, sig:"owl" + tufts + look };
+    } },
+  duck: { group:"animals", title:"The Duck on the Pond", talk:"Did you ever feed the ducks at a pond or park? Who took you?",
+    draw(rng, det, st){
+      const flip = rng.next() < .5, pad = rng.next() < .5;
+      let o = `<path d="M20 304 Q45 294 70 304 T120 304 T170 304 T220 304 T270 304" ${st.N}/>`;
+      if (det) o += `<path d="M44 340 Q70 332 96 340 M190 344 Q216 336 242 344" ${st.D}/>`;
+      if (pad) o += `<ellipse cx="236" cy="366" rx="40" ry="12" ${st.W}/><path d="M236 366 L270 360" ${st.D}/>`;
+      o += `<path d="M84 204 L78 256 L124 256 L114 204 Z" ${st.W}/>`;
+      o += `<path d="M68 272 C66 240 110 236 150 240 L212 240 C240 240 258 228 266 212 C272 244 262 268 244 284 C224 304 190 314 150 314 C104 314 70 300 68 272 Z" ${st.W}/>`;
+      o += `<path d="M118 256 Q186 240 234 254 Q210 294 152 292 Q118 286 118 256 Z" ${st.W}/>`;
+      if (det) o += `<path d="M150 262 Q180 256 206 262 M146 276 Q176 272 200 276" ${st.D}/>`;
+      o += `<circle cx="98" cy="186" r="34" ${st.W}/>`;
+      o += `<path d="M68 180 Q38 184 34 198 Q48 210 72 200 Z" ${st.W}/><circle cx="96" cy="178" r="6" ${st.W}/>`;
+      if (det) o += `<path d="M80 216 Q100 224 116 214" ${st.D}/>`;
+      return { svg:artH.flip(flip, o), sig:"dk" + flip + pad };
+    } },
+  goldfish: { group:"animals", title:"The Goldfish Bowl", talk:"Did you ever keep a goldfish or visit an aquarium?",
+    draw(rng, det, st){
+      const flip = rng.next() < .5, y = rint(rng, 0, 2) * 14 + 250;
+      let o = `<rect x="76" y="352" width="148" height="18" rx="5" ${st.W}/>`;
+      o += `<path d="M104 146 L196 146 Q266 186 262 266 Q256 348 150 354 Q44 348 38 266 Q34 186 104 146 Z" ${st.W}/>`;
+      o += `<path d="M50 200 Q150 214 250 200" ${st.D}/>`;
+      if (det){
+        o += `<path d="M86 342 Q76 300 96 268 M106 346 Q112 310 102 284" ${st.D}/>`;
+        o += `<ellipse cx="150" cy="340" rx="16" ry="8" ${st.W}/><ellipse cx="184" cy="338" rx="12" ry="7" ${st.W}/><ellipse cx="214" cy="332" rx="10" ry="6" ${st.W}/>`;
+      }
+      let f = `<path d="M188 ${y} L230 ${y - 30} Q220 ${y} 230 ${y + 30} Z" ${st.W}/>`;
+      f += `<path d="M132 ${y - 22} Q150 ${y - 44} 170 ${y - 20} Z" ${st.W}/>`;
+      f += `<path d="M98 ${y} C118 ${y - 36} 170 ${y - 36} 192 ${y} C170 ${y + 36} 118 ${y + 36} 98 ${y} Z" ${st.W}/>`;
+      f += `<circle cx="118" cy="${y - 6}" r="6" ${st.W}/>`;
+      if (det) f += `<path d="M148 ${y - 22} Q140 ${y} 148 ${y + 22}" ${st.D}/>`;
+      o += artH.flip(flip, f);
+      o += `<ellipse cx="150" cy="146" rx="54" ry="10" ${st.W}/>`;
+      return { svg:o + artH.ground(372, st), sig:"gf" + flip + y };
+    } },
+
+  /* ================= F. Seasonal (Cognicore Coloring) =================
+     Each has a `season` so "Seasonal" can lead with the packet date's season. */
+  pumpkins: { group:"seasonal", season:"fall", title:"Autumn Pumpkins", talk:"Did you ever carve a pumpkin or bake a pie? What did autumn smell like at home?",
+    draw(rng, det, st){
+      const side = rng.next() < .5 ? 1 : -1, sx = 150 + side * 96;
+      const pumpkin = (cx, cy, rx, ry) => {
+        let p = `<path d="M${cx - 6} ${cy - ry + 8} L${cx - 8} ${cy - ry - 24} Q${cx} ${cy - ry - 32} ${cx + 8} ${cy - ry - 24} L${cx + 6} ${cy - ry + 8} Z" ${st.W}/>`;
+        p += `<ellipse cx="${cx - rx * .45}" cy="${cy}" rx="${rx * .6}" ry="${ry * .92}" ${st.W}/><ellipse cx="${cx + rx * .45}" cy="${cy}" rx="${rx * .6}" ry="${ry * .92}" ${st.W}/>`;
+        p += `<ellipse cx="${cx}" cy="${cy}" rx="${rx * .45}" ry="${ry}" ${st.W}/>`;
+        return p;
+      };
+      let o = "";
+      if (det) o += `<path d="M150 208 Q${150 - side * 60} 170 ${150 - side * 40} 140 Q${150 - side * 30} 124 ${150 - side * 46} 120" ${st.D}/>`;
+      o += svgLeaf(156, 214, 150 - side * 70, 196, 20, st.W);
+      o += pumpkin(150 - side * 26, 286, 96, 70);
+      o += pumpkin(sx, 318, 50, 38);
+      return { svg:o + artH.ground(360, st), sig:"pk" + side };
+    } },
+  applebasket: { group:"seasonal", season:"fall", title:"The Apple Harvest", talk:"Did you ever pick apples or put up preserves? What was your favourite apple dish?",
+    draw(rng, det, st){
+      const flip = rng.next() < .5;
+      const apple = (x, y, r) => `<path d="M${x} ${y - r * .7} C${x - r * .6} ${y - r * 1.2} ${x - r * 1.2} ${y - r * .6} ${x - r * 1.05} ${y + r * .2} C${x - r * .9} ${y + r} ${x - r * .3} ${y + r * 1.1} ${x} ${y + r * .85} C${x + r * .3} ${y + r * 1.1} ${x + r * .9} ${y + r} ${x + r * 1.05} ${y + r * .2} C${x + r * 1.2} ${y - r * .6} ${x + r * .6} ${y - r * 1.2} ${x} ${y - r * .7} Z" ${st.W}/><path d="M${x} ${y - r * .7} L${x + 4} ${y - r * 1.2}" ${st.N}/>`;
+      let o = `<path d="M74 236 Q150 60 226 236" ${st.T}/>`;
+      o += apple(106, 222, 32) + apple(194, 222, 32) + apple(150, 206, 34);
+      o += `<path d="M56 236 L244 236 L224 354 L76 354 Z" ${st.W}/><rect x="48" y="226" width="204" height="18" rx="6" ${st.W}/>`;
+      if (det) o += `<path d="M62 276 L238 276 M68 316 L232 316 M112 244 L118 354 M188 244 L182 354" ${st.D}/>`;
+      if (det) o += apple(262, 342, 18);
+      return { svg:artH.flip(flip, o) + artH.ground(362, st), sig:"ab" + flip };
+    } },
+  snowman: { group:"seasonal", season:"winter", title:"The Snowman", talk:"Did you build snowmen or go sledding as a child? What did you wear to stay warm?",
+    draw(rng, det, st){
+      const flip = rng.next() < .5;
+      let o = `<path d="M20 372 Q80 350 150 356 Q230 350 280 372 Z" ${st.W}/>`;
+      o += `<path d="M106 200 L52 160 M72 175 L64 148 M194 200 L248 166 M230 180 L244 154" ${st.T}/>`;
+      o += `<circle cx="150" cy="298" r="68" ${st.W}/><circle cx="150" cy="198" r="50" ${st.W}/><circle cx="150" cy="120" r="38" ${st.W}/>`;
+      o += `<rect x="106" y="80" width="88" height="12" rx="4" ${st.W}/><rect x="120" y="32" width="60" height="50" rx="3" ${st.W}/>`;
+      if (det) o += `<path d="M120 70 L180 70" ${st.D}/>`;
+      o += `<circle cx="136" cy="112" r="6" ${st.W}/><circle cx="164" cy="112" r="6" ${st.W}/>`;
+      o += `<path d="M150 124 L188 132 L150 138 Z" ${st.W}/>`;
+      if (det) o += `<path d="M132 142 Q150 152 168 142" ${st.D}/>`;
+      o += `<path d="M110 154 Q150 170 190 154 L192 172 Q150 188 108 172 Z" ${st.W}/><path d="M168 170 L178 226 L160 228 L154 176 Z" ${st.W}/>`;
+      o += `<circle cx="150" cy="204" r="7" ${st.W}/><circle cx="150" cy="232" r="7" ${st.W}/>`;
+      if (det) o += `<circle cx="150" cy="276" r="7" ${st.W}/><circle cx="150" cy="304" r="7" ${st.W}/>`;
+      return { svg:artH.flip(flip, o), sig:"sn" + flip };
+    } },
+  wreath: { group:"seasonal", season:"winter", title:"The Holiday Wreath", talk:"How did your family decorate the door or house in winter?",
+    draw(rng, det, st){
+      const n = det ? 14 : 9, turn = rng.next() * Math.PI / n;
+      let o = `<path d="M150 40 L150 84" ${st.N}/><circle cx="150" cy="36" r="7" ${st.W}/>`;
+      o += `<circle cx="150" cy="196" r="112" ${st.W}/><circle cx="150" cy="196" r="56" ${st.W}/>`;
+      for (let i = 0; i < n; i++){
+        const a = turn + i * 2 * Math.PI / n, b = a + (det ? .55 : .7), r = 86;
+        o += svgLeaf(150 + Math.cos(a) * r, 196 + Math.sin(a) * r, 150 + Math.cos(b) * r, 196 + Math.sin(b) * r, det ? 14 : 18, st.W);
+      }
+      [[-.6, 1], [1.9, 1], [3.4, det ? 1 : 0]].forEach(([a, on]) => {
+        if (!on) return;
+        const x = 150 + Math.cos(a + turn) * 86, y = 196 + Math.sin(a + turn) * 86;
+        o += `<circle cx="${(x - 9).toFixed(1)}" cy="${(y + 4).toFixed(1)}" r="9" ${st.W}/><circle cx="${(x + 9).toFixed(1)}" cy="${(y + 4).toFixed(1)}" r="9" ${st.W}/><circle cx="${x.toFixed(1)}" cy="${(y - 10).toFixed(1)}" r="9" ${st.W}/>`;
+      });
+      o += `<path d="M144 306 L116 376 L134 372 L150 312 Z" ${st.W}/><path d="M156 306 L184 376 L166 372 L150 312 Z" ${st.W}/>`;
+      o += `<path d="M150 300 Q96 266 94 302 Q96 336 150 306 Z" ${st.W}/><path d="M150 300 Q204 266 206 302 Q204 336 150 306 Z" ${st.W}/>`;
+      o += `<rect x="136" y="290" width="28" height="24" rx="7" ${st.W}/>`;
+      return { svg:o, sig:"wr" + turn.toFixed(2) };
+    } },
+  birdhouse: { group:"seasonal", season:"spring", title:"The Spring Birdhouse", talk:"What were the first signs of spring where you grew up?",
+    draw(rng, det, st){
+      const perch = rng.next() < .5;
+      const tulip = (x, y, h) => {
+        let t = `<path d="M${x} ${y} L${x} ${y - h}" ${st.N}/>` + svgLeaf(x, y - 6, x - 30, y - h * .55, 10, st.W) + svgLeaf(x, y - 6, x + 28, y - h * .45, 10, st.W);
+        const c = y - h;
+        return t + `<path d="M${x - 20} ${c} Q${x - 22} ${c - 30} ${x - 12} ${c - 38} L${x} ${c - 24} L${x + 12} ${c - 38} Q${x + 22} ${c - 30} ${x + 20} ${c} Q${x} ${c + 14} ${x - 20} ${c} Z" ${st.W}/>`;
+      };
+      let o = `<rect x="138" y="244" width="24" height="126" ${st.W}/>`;
+      o += tulip(62, 370, 90) + tulip(238, 370, det ? 110 : 90);
+      if (det) o += tulip(100, 370, 60);
+      o += `<rect x="90" y="148" width="120" height="100" ${st.W}/>`;
+      o += `<path d="M74 156 L150 82 L226 156 L212 166 L150 106 L88 166 Z" ${st.W}/>`;
+      o += `<circle cx="150" cy="188" r="18" ${st.W}/>`;
+      if (perch) o += `<path d="M150 220 L150 236" ${st.T}/>`;
+      if (det) o += `<path d="M90 230 L210 230" ${st.D}/>`;
+      return { svg:o + artH.ground(372, st), sig:"bh" + perch };
+    } },
+  rainboots: { group:"seasonal", season:"spring", title:"April Showers", talk:"Do you remember a rainy day from long ago? Where did you go in your boots?",
+    draw(rng, det, st){
+      const flip = rng.next() < .5;
+      let o = `<path d="M150 150 L150 290 Q150 312 132 312 Q116 312 116 296" ${st.T}/>`;
+      o += `<path d="M34 158 Q150 20 266 158 Q252 146 237 158 Q222 146 208 158 Q194 146 179 158 Q164 146 150 158 Q136 146 121 158 Q106 146 92 158 Q78 146 63 158 Q48 146 34 158 Z" ${st.W}/>`;
+      if (det) o += `<path d="M150 92 L92 156 M150 92 L208 156" ${st.D}/>`;
+      o += `<circle cx="150" cy="84" r="8" ${st.W}/>`;
+      if (det) o += `<ellipse cx="150" cy="370" rx="130" ry="12" ${st.W}/>`;
+      const boot = x => `<path d="M${x} 262 L${x + 42} 262 L${x + 42} 332 L${x + 62} 340 Q${x + 74} 344 ${x + 74} 358 L${x + 74} 366 L${x} 366 Z" ${st.W}/><rect x="${x - 4}" y="254" width="50" height="16" rx="4" ${st.W}/>` + (det ? `<path d="M${x} 352 L${x + 74} 352" ${st.D}/>` : "");
+      o += boot(26) + boot(190);
+      if (det) o += `<path d="M232 190 Q224 206 232 212 Q240 206 232 190 Z M262 220 Q254 236 262 242 Q270 236 262 220 Z" ${st.W}/>`;
+      return { svg:artH.flip(flip, o) + artH.ground(372, st), sig:"rb" + flip };
+    } },
+  lemonade: { group:"seasonal", season:"summer", title:"Lemonade on a Summer Day", talk:"What did you drink to cool off in summer? Where did you sit to enjoy it?",
+    draw(rng, det, st){
+      const flip = rng.next() < .5;
+      let o = `<g transform="translate(-38 0)"><path d="M178 170 Q246 172 240 234 Q234 290 188 296" ${st.T}/>`;
+      o += `<path d="M78 128 L98 142 L184 142 Q176 160 184 176 L194 330 Q194 350 176 350 L102 350 Q84 350 84 330 L94 176 Q98 150 78 128 Z" ${st.W}/>`;
+      o += `<path d="M92 196 Q140 206 190 196" ${st.D}/>`;
+      if (det) o += `<rect x="108" y="214" width="30" height="30" rx="5" ${st.D}/><rect x="146" y="236" width="28" height="28" rx="5" ${st.D}/>`;
+      o += `</g><path d="M214 252 L276 252 L268 352 L222 352 Z" ${st.W}/>`;
+      if (det) o += `<path d="M218 280 L272 280" ${st.D}/>`;
+      o += `<circle cx="266" cy="250" r="20" ${st.W}/>`;
+      if (det) o += `<circle cx="266" cy="250" r="11" ${st.D}/>`;
+      return { svg:artH.flip(flip, o) + artH.ground(360, st), sig:"lm" + flip };
+    } },
+  picnic: { group:"seasonal", season:"summer", title:"The Summer Picnic", talk:"Where did your family go for picnics? What food did you pack?",
+    draw(rng, det, st){
+      const flip = rng.next() < .5;
+      let b = `<path d="M84 216 Q84 150 130 150 Q176 150 176 216" ${st.T}/>`;
+      b += `<path d="M46 244 L214 244 L204 350 L56 350 Z" ${st.W}/>`;
+      if (det) b += `<path d="M50 282 L210 282 M54 316 L206 316" ${st.D}/>`;
+      b += `<rect x="34" y="212" width="192" height="34" rx="6" ${st.W}/>`;
+      if (det) b += `<path d="M100 246 L100 272 Q130 290 160 272 L160 246" ${st.W}/>`;
+      b += `<rect x="120" y="226" width="20" height="30" rx="4" ${st.W}/>`;
+      let w = `<path d="M246 270 L202 350 Q246 378 290 350 Z" ${st.W}/><path d="M210 340 Q246 364 282 340" ${st.D}/>`;
+      if (det) w += `<ellipse cx="238" cy="312" rx="4" ry="7" ${st.W}/><ellipse cx="256" cy="324" rx="4" ry="7" ${st.W}/><ellipse cx="232" cy="334" rx="4" ry="7" ${st.W}/>`;
+      return { svg:artH.flip(flip, b + w) + artH.ground(364, st), sig:"pc" + flip };
     } }
 };
 
@@ -3206,7 +3441,7 @@ const COLORING = {
   generate(cfg, rng, key){
     const L = this.levels[cfg.difficulty], art = COLOR_ART[key] || COLOR_ART.tulips;
     const w = optVal(cfg, "weight", "auto"), dsel = optVal(cfg, "detail", "auto");
-    const pt = w === "bold" ? 3 : w === "max" ? 6 : L.pt;
+    const pt = w === "bold" ? 3 : w === "heavy" ? 4.5 : w === "max" ? 6 : L.pt;
     const det = dsel === "standard" ? 1 : dsel === "simple" ? 0 : L.det;
     const sw = (pt / ART_UNIT_PT).toFixed(2);
     const dsw = (Math.max(3, pt * .8) / ART_UNIT_PT).toFixed(2);           // detail lines never under 3 pt
@@ -3225,6 +3460,88 @@ const COLORING = {
       talk: talk ? art.talk : "",
       signature: key + "#" + drawn.sig + "#" + pt + det
     };
+  }
+};
+
+/* ---- Cognicore Coloring ----
+   Its own Packet Builder category. Same drawing engine and clinical rules
+   as the coloring pages above (pure #000 lines of 3 to 6 pt, no background,
+   3:4 art on a full page), with six themes, a pick-one-picture list, a
+   facility header and a resident name. */
+const COGNICORE_THEMES = {
+  nostalgia: { label:"Nostalgia items: clocks, radios, telephones", keys:["rotaryphone","radio","sewing","pocketwatch","grandclock","wallclock"] },
+  vehicles:  { label:"Classic vehicles and farm machinery",        keys:["truck","car","wagon","musclecar","tractor","locomotive"] },
+  animals:   { label:"Animals: pets, birds and pond life",          keys:["cat","dog","songbird","owl","duck","goldfish"] },
+  floral:    { label:"Floral and nature",                           keys:["tulips","sunflowers","geranium","wateringcan","gardengate","glassvase"] },
+  household: { label:"Everyday household objects and cozy corners", keys:["teapot","rocker","porchswing","fireplace","kitchenwindow"] },
+  seasonal:  { label:"Seasonal: starts with the season of the packet date", keys:["pumpkins","applebasket","snowman","wreath","birdhouse","rainboots","lemonade","picnic"] }
+};
+const COGNICORE_THEME_SHORT = { nostalgia:"Nostalgia", vehicles:"Vehicles", animals:"Animals", floral:"Floral", household:"Household", seasonal:"Seasonal" };
+function cognicoreKeys(theme){
+  if (COGNICORE_THEMES[theme]) return COGNICORE_THEMES[theme].keys.slice();
+  return Object.keys(COGNICORE_THEMES).reduce((all, t) => all.concat(COGNICORE_THEMES[t].keys), []);
+}
+function cognicoreSeason(cfg){
+  const d = new Date((cfg.date || todayISO()) + "T12:00:00");
+  return seasonFor(isNaN(d) ? new Date() : d, optVal(cfg, "hemi", "north") === "south");
+}
+const COGNICORE = {
+  id: "cognicore-coloring", name: "Cognicore Coloring Page", themed: false, personalRow: true,
+  desc: "A full-page picture to color: bold pure-black lines of 3 to 6 pt, nothing in the background, a 3:4 frame and adult subjects. Pick a theme, or one exact picture.",
+  icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18.4 2.6a2 2 0 0 1 2.9 2.9L12 14.8 9.2 12z"/><path d="M9.2 12c-2 0-3.6 1.6-3.6 3.6 0 1.6-1 2.6-2.6 3.2 1.2 1.3 3 2.2 5 2.2 3 0 4.8-2.4 4-5.4"/></svg>',
+  options: [
+    { id:"theme", type:"select", label:"Subject / theme", def:"mixed",
+      choices:[["mixed","A mix of every theme"]].concat(Object.keys(COGNICORE_THEMES).map(k => [k, COGNICORE_THEMES[k].label])) },
+    { id:"picture", type:"select", label:"Picture", def:"any",
+      hint:"Pick one exact picture for version 1, or let each version be a different picture from the theme.",
+      choicesFn(vals){
+        const theme = vals.theme || "mixed";
+        return [["any","Surprise me: a different picture for each version"]].concat(cognicoreKeys(theme).map(k => {
+          const own = Object.keys(COGNICORE_THEMES).find(t => COGNICORE_THEMES[t].keys.includes(k));
+          return [k, (theme === "mixed" ? COGNICORE_THEME_SHORT[own] + ": " : "") + COLOR_ART[k].title];
+        }));
+      } },
+    { id:"hemi", type:"select", label:"Seasons", def:"north", showIf:["theme", "seasonal"],
+      choices:[["north","Northern hemisphere"],["south","Southern hemisphere"]] },
+    { id:"style", type:"note", html:`<p class="style-head">Visual style</p>
+      <ul class="style-lock" aria-label="Always on for every Cognicore page">
+        <li>Pure black lines, 3 to 6 pt</li><li>No background clutter or shading</li>
+        <li>3:4 picture on a full page</li><li>Adult, dignified subjects</li></ul>` },
+    { id:"weight", type:"select", label:"Line weight", def:"auto",
+      choices:[["auto","Automatic for the stage"],["bold","Bold (3 pt)"],["heavy","Heavy (4.5 pt)"],["max","Maximum contrast (6 pt)"]] },
+    { id:"detail", type:"select", label:"Detail", def:"auto",
+      choices:[["auto","Automatic for the stage"],["standard","Standard: more lines inside (early stage)"],["simple","Simplified: big open shapes (middle to late stage)"]] },
+    { id:"facility", type:"text", slot:"personal", label:"Facility header", max:60, def:"",
+      defFn(){ return settings.facility || ""; }, placeholder:"e.g., Oakridge Memory Care - South Wing" },
+    { id:"talk", type:"check", label:"Add a conversation prompt under the picture", def:true }
+  ],
+  levels: COLORING.levels,
+  plan(cfg, rng, count){
+    const theme = optVal(cfg, "theme", "mixed");
+    let pool = cognicoreKeys(theme).filter(k => COLOR_ART[k]);
+    const pic = optVal(cfg, "picture", "any");
+    if (theme === "seasonal"){
+      // this season's pictures first, then the others, each group shuffled
+      const now = cognicoreSeason(cfg);
+      pool = rng.shuffle(pool.filter(k => COLOR_ART[k].season === now)).concat(rng.shuffle(pool.filter(k => COLOR_ART[k].season !== now)));
+    } else pool = rng.shuffle(pool);
+    if (COLOR_ART[pic]) pool = [pic].concat(pool.filter(k => k !== pic));
+    const out = pool.slice(0, count);
+    while (out.length < count) out.push(pool[out.length % pool.length]);
+    return out;
+  },
+  generate(cfg, rng, key){
+    const page = COLORING.generate(cfg, rng, key);
+    page.facility = String(optVal(cfg, "facility", "")).trim().slice(0, 60);
+    return page;
+  },
+  optionsNote(cfg){
+    const theme = optVal(cfg, "theme", "mixed"), pic = optVal(cfg, "picture", "any");
+    const n = this.singlePage ? 1 : settings.variations;
+    let t = COLOR_ART[pic] ? `Version 1 is ${COLOR_ART[pic].title}.` : "";
+    if (theme === "seasonal") t += (t ? " " : "") + `${SEASON_NAMES[cognicoreSeason(cfg)]} pictures come first for ${fmtDate(cfg.date) || "the packet date"}.`;
+    if (n > 1) t += (t ? " " : "") + `Each of the ${n} versions is a different picture.`;
+    return t;
   }
 };
 
@@ -3291,6 +3608,7 @@ const ICONS = {
   number:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="9" x2="20" y2="9"/><line x1="4" y1="15" x2="20" y2="15"/><line x1="10" y1="3" x2="8" y2="21"/><line x1="16" y1="3" x2="14" y2="21"/></svg>',
   move:  '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="13" cy="4" r="2"/><path d="M7 21l3-6 3 2v5"/><path d="M6 12l3-4 4 1 3 3"/><path d="M13 9l-1 5"/></svg>',
   music: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>',
+  brush: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18.4 2.6a2 2 0 0 1 2.9 2.9L12 14.8 9.2 12z"/><path d="M9.2 12c-2 0-3.6 1.6-3.6 3.6 0 1.6-1 2.6-2.6 3.2 1.2 1.3 3 2.2 5 2.2 3 0 4.8-2.4 4-5.4"/></svg>',
   art:   '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22a10 10 0 1 1 10-10c0 3-2 4-4 4h-2a2 2 0 0 0-1 3.7A2 2 0 0 1 12 22z"/><circle cx="7.5" cy="10.5" r="1"/><circle cx="12" cy="7" r="1"/><circle cx="16.5" cy="10.5" r="1"/></svg>'
 };
 
@@ -3311,11 +3629,17 @@ const CATEGORIES = [
     blurb:"Large-print sing-along sheets, finish-the-song prompts and a singer-to-song match. Musical memory often outlasts other memories, which makes music one of the most reliable ways in. For rhythm patterns, see Seated Rhythm Sheets under Exercise & Movement.",
     activities:[LYRIC_SHEET, FINISH_SONG, SINGER_MATCH] },
   { id:"multisensory", name:"Multisensory, Art & Group Activities", icon:ICONS.art,
-    blurb:"A giant-type daily orientation board, adult coloring pages in thick black line art, and shadow matching. Good for group rooms, quiet one-to-one time and the start of each day.",
-    activities:[ORIENTATION_BOARD, COLORING, SILHOUETTE_MATCH] }
+    blurb:"A giant-type daily orientation board and shadow matching. Good for group rooms, quiet one-to-one time and the start of each day. Coloring pages now have their own category, Cognicore Coloring.",
+    activities:[ORIENTATION_BOARD, SILHOUETTE_MATCH] },
+  { id:"cognicore", name:"Cognicore Coloring", icon:ICONS.brush, badge:"\u{1F3A8} Coloring", direct:true,
+    blurb:"Full-page adult coloring in bold, pure-black line art. Choose nostalgia items, classic vehicles, animals, floral and nature, household objects or seasonal pictures, add the resident's name and your facility header, and each version prints as its own page.",
+    activities:[COGNICORE] }
 ];
 const CAT_INDEX = {}, ACT_INDEX = {};
 CATEGORIES.forEach(c => { CAT_INDEX[c.id] = c; c.activities.forEach(a => { ACT_INDEX[a.id] = a; a.categoryId = c.id; }); });
+// Retired from the menus but kept so coloring pages already sitting in a
+// saved packet still rebuild exactly. New coloring pages use Cognicore.
+[COLORING].forEach(a => { if (!ACT_INDEX[a.id]){ ACT_INDEX[a.id] = a; a.categoryId = "cognicore"; } });
 
 /* ---------- 9. Output sheet renderer ---------- */
 function sheetHtml(item){
@@ -3328,6 +3652,7 @@ function sheetHtml(item){
     const name = item.cfg.residentName ? esc(item.cfg.residentName) : "";
     return `<section class="sheet sheet-art">
       <div class="art-frame">
+        ${page.facility ? `<p class="art-fac">${esc(page.facility)}</p>` : ""}
         <header class="art-head">Prepared especially for ${name ? `<b>${name}</b>` : "you"}</header>
         <div class="art-box">${page.html}</div>
         ${page.talk ? `<p class="art-talk">${esc(page.talk)}</p>` : ""}
@@ -3409,7 +3734,7 @@ function renderHome(){
     <div class="card-grid">${CATEGORIES.map(c => `
       <a class="card" href="#/category/${c.id}">
         <span class="ic">${c.icon}</span><b>${esc(c.name)}</b><span class="desc">${esc(c.blurb)}</span>
-        <span class="meta">${c.activities.length ? `<span class="pill live">${c.activities.length} activities</span>` : '<span class="pill">Coming soon</span>'}</span>
+        <span class="meta">${c.activities.length ? `<span class="pill live">${c.activities.length} ${c.activities.length === 1 ? "tool" : "activities"}</span>` : '<span class="pill">Coming soon</span>'}</span>
       </a>`).join("")}
     </div>`;
 }
@@ -3420,6 +3745,17 @@ function renderCategory(id){
   const cat = CAT_INDEX[id];
   if (!cat){ location.replace("#/"); return; }
   selectedAct = null;
+  if (cat.direct && cat.activities.length === 1){
+    // A one-tool category (Cognicore Coloring): skip the activity cards
+    // and show its configuration panel straight away.
+    view.innerHTML = `
+      <p class="eyebrow">Category</p>
+      <h1 class="view-title" tabindex="-1">${esc(cat.name)}${cat.badge ? `<span class="cat-badge">${esc(cat.badge)}</span>` : ""}</h1>
+      <p class="lede">${esc(cat.blurb)}</p>
+      <section class="config" id="config" aria-live="polite"></section>`;
+    openConfig(cat.activities[0].id, false);
+    return;
+  }
   const cards = cat.activities.length
     ? cat.activities.map(a => `<button class="card" type="button" data-act="${a.id}" aria-pressed="false" aria-controls="config">
         <span class="ic">${a.icon}</span><b>${esc(a.name)}</b><span class="desc">${esc(a.desc)}</span>
@@ -3436,20 +3772,27 @@ function renderCategory(id){
 }
 
 /* ---- Activity-specific options (the `options` array on an activity) ---- */
-function optDefaults(act){ const o = {}; (act.options || []).forEach(f => { o[f.id] = f.def; }); return o; }
+function optDefaults(act){ const o = {}; (act.options || []).forEach(f => { if (f.type !== "note") o[f.id] = f.defFn ? f.defFn() : f.def; }); return o; }
+function optChoices(f, vals){ return f.choicesFn ? f.choicesFn(vals) : f.choices; }
 function savedOpts(act){
   const saved = settings.actOpts[act.id] || {}, o = optDefaults(act);
-  (act.options || []).forEach(f => { if (saved[f.id] !== undefined) o[f.id] = saved[f.id]; });
-  (act.options || []).forEach(f => { if (f.type === "select" && !f.choices.some(c => c[0] === o[f.id])) o[f.id] = f.def; });
+  (act.options || []).forEach(f => { if (f.type !== "note" && saved[f.id] !== undefined) o[f.id] = saved[f.id]; });
+  // in order, so a list that depends on an earlier choice is checked against it
+  (act.options || []).forEach(f => { if (f.type === "select" && !optChoices(f, o).some(c => c[0] === o[f.id])) o[f.id] = f.def; });
   return o;
+}
+function selectOptions(f, vals){
+  return optChoices(f, vals).map(([v, l]) => `<option value="${esc(v)}" ${v === vals[f.id] ? "selected" : ""}>${esc(l)}</option>`).join("");
 }
 function optionFields(act){
   if (!act.options || !act.options.length) return "";
   const vals = savedOpts(act);
-  return act.options.map(f => {
+  return act.options.filter(f => !f.slot).map(f => {
     const id = "opt_" + f.id, hidden = !optShown(f, vals);
     let ctl;
-    if (f.type === "artist"){
+    if (f.type === "note"){
+      return `<div class="opt-note" data-optwrap="${f.id}" ${hidden ? "hidden" : ""}>${f.html}</div>`;
+    } else if (f.type === "artist"){
       // Searchable artist picker: type to filter, or open the list to browse.
       ensureArtistDatalist();
       ctl = `<label for="${id}">${esc(f.label)}</label>
@@ -3461,7 +3804,7 @@ function optionFields(act){
         </div>
         <p class="hint">Type a name to search, or press Clear and click the box to browse every artist by decade and genre.</p>`;
     } else if (f.type === "select"){
-      ctl = `<label for="${id}">${esc(f.label)}</label><select id="${id}" data-opt="${f.id}">${f.choices.map(([v, l]) => `<option value="${esc(v)}" ${v === vals[f.id] ? "selected" : ""}>${esc(l)}</option>`).join("")}</select>`;
+      ctl = `<label for="${id}">${esc(f.label)}</label><select id="${id}" data-opt="${f.id}">${selectOptions(f, vals)}</select>`;
     } else if (f.type === "check"){
       ctl = `<label class="switch" for="${id}"><input type="checkbox" id="${id}" data-opt="${f.id}" ${vals[f.id] ? "checked" : ""}><span><b>${esc(f.label)}</b>${f.hint ? `<small>${esc(f.hint)}</small>` : ""}</span></label>`;
     } else {
@@ -3486,6 +3829,17 @@ function readOpts(act){
 }
 function syncOptVisibility(act){
   const vals = readOpts(act);
+  // Lists that depend on another choice (Cognicore's Picture list follows
+  // the theme): rebuild them, keeping the choice if it is still offered.
+  (act.options || []).forEach(f => {
+    if (!f.choicesFn) return;
+    const el = document.querySelector(`#cfgForm [data-opt="${f.id}"]`);
+    if (!el) return;
+    const list = f.choicesFn(vals);
+    if (!list.some(c => c[0] === vals[f.id])) vals[f.id] = f.def;
+    const html = selectOptions(f, vals);
+    if (el.innerHTML !== html){ el.innerHTML = html; el.value = vals[f.id]; }
+  });
   (act.options || []).forEach(f => {
     if (!f.showIf) return;
     const w = document.querySelector(`#cfgForm [data-optwrap="${f.id}"]`);
@@ -3506,7 +3860,7 @@ function currentCfg(){
   return cfg;
 }
 
-function openConfig(actId){
+function openConfig(actId, scroll){
   const act = ACT_INDEX[actId];
   if (!act) return;
   selectedAct = act;
@@ -3528,11 +3882,11 @@ function openConfig(actId){
           </div>
           <p class="hint">1 to 4. Each version is generated separately, so no two pages match.</p>
         </div>`}
-        <div class="row2">
+        ${act.personalRow ? personalRow(act) : `<div class="row2">
           <div class="field"><label for="cfgName">Resident name <span class="hint">(optional)</span></label>
             <input id="cfgName" type="text" maxlength="40" autocomplete="off" value="${esc(settings.residentName)}"></div>
           <div class="field"><label for="cfgDate">Date</label><input id="cfgDate" type="date" value="${todayISO()}"></div>
-        </div>
+        </div>`}
         <fieldset class="field"><legend>Difficulty</legend>
           <div class="seg">${Object.keys(DIFFICULTIES).map(k => `<label><input type="radio" name="cfgDiff" value="${k}" ${k === settings.difficulty ? "checked" : ""}><span>${DIFFICULTIES[k].label}</span></label>`).join("")}</div>
         </fieldset>
@@ -3555,7 +3909,7 @@ function openConfig(actId){
 
   const form = $("#cfgForm"), varInput = $("#cfgVar");
   const syncVar = () => { if (!varInput) return; varInput.value = clampInt(varInput.value, 1, 4, 1); settings.variations = +varInput.value; saveSettings(); };
-  box.querySelectorAll(".stepper button").forEach(b => b.addEventListener("click", () => { varInput.value = clampInt(+varInput.value + +b.dataset.step, 1, 4, 1); syncVar(); }));
+  box.querySelectorAll(".stepper button").forEach(b => b.addEventListener("click", () => { varInput.value = clampInt(+varInput.value + +b.dataset.step, 1, 4, 1); syncVar(); updatePreview(); }));
   if (varInput) varInput.addEventListener("change", syncVar);
   // Artist picker: Clear goes back to the random mix and reopens the list.
   box.querySelectorAll("[data-artist-clear]").forEach(b => b.addEventListener("click", () => {
@@ -3568,11 +3922,11 @@ function openConfig(actId){
   form.addEventListener("change", e => {
     if (e.target.name === "cfgDiff"){ settings.difficulty = e.target.value; saveSettings(); }
     if (e.target.id === "cfgEra"){ settings.era = e.target.value; saveSettings(); }
-    if (e.target.dataset && e.target.dataset.opt){ settings.actOpts[act.id] = readOpts(act); saveSettings(); syncOptVisibility(act); }
+    if (e.target.dataset && e.target.dataset.opt){ syncOptVisibility(act); settings.actOpts[act.id] = readOpts(act); saveSettings(); }
     updatePreview();
   });
   form.addEventListener("input", e => {
-    if (e.target.dataset && e.target.dataset.opt && e.target.type === "text"){ settings.actOpts[act.id] = readOpts(act); saveSettings(); syncOptVisibility(act); updatePreview(); }
+    if (e.target.dataset && e.target.dataset.opt && e.target.type === "text"){ syncOptVisibility(act); settings.actOpts[act.id] = readOpts(act); saveSettings(); updatePreview(); }
   });
   $("#cfgName").addEventListener("input", updatePreview);
   $("#cfgDate").addEventListener("input", updatePreview);
@@ -3587,7 +3941,26 @@ function openConfig(actId){
     toast(`Added ${count} ${count === 1 ? "page" : "pages"} of ${act.name}. Your packet has ${queue.length}.`, "Review packet", openDrawer);
   });
   updatePreview();
-  box.scrollIntoView({ behavior:"smooth", block:"start" });
+  if (scroll !== false) box.scrollIntoView({ behavior:"smooth", block:"start" });
+}
+
+/* Resident personalization row (Cognicore Coloring): resident name and
+   facility header side by side, then the packet date, which sets the season.
+   The facility box is an ordinary option (data-opt), so it is saved and
+   travels with each queued page like any other setting. */
+function personalRow(act){
+  const vals = savedOpts(act), f = act.options.find(o => o.slot === "personal");
+  return `<fieldset class="field"><legend>Resident personalization</legend>
+    <div class="row2">
+      <div class="field"><label for="cfgName">Resident name <span class="hint">(optional)</span></label>
+        <input id="cfgName" type="text" maxlength="40" autocomplete="off" value="${esc(settings.residentName)}" placeholder="e.g., Margaret">
+        <p class="hint">Prints as "Prepared especially for Margaret".</p></div>
+      <div class="field"><label for="opt_${f.id}">${esc(f.label)} <span class="hint">(optional)</span></label>
+        <input id="opt_${f.id}" type="text" data-opt="${f.id}" maxlength="${f.max}" autocomplete="off" value="${esc(vals[f.id] || "")}" placeholder="${esc(f.placeholder)}">
+        <p class="hint">Prints above the picture. Filled in from Settings; leave blank for none.</p></div>
+    </div></fieldset>
+    <div class="field"><label for="cfgDate">Packet date</label><input id="cfgDate" type="date" value="${todayISO()}">
+      <p class="hint">Used by the Seasonal theme to pick pictures for the time of year.</p></div>`;
 }
 
 function updatePreview(){
