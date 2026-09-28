@@ -187,6 +187,13 @@ input:focus,select:focus{border-color:var(--accent)}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 @media (max-width:560px){.row2{grid-template-columns:1fr}}
 .stepper{display:flex;align-items:stretch;max-width:200px}
+.artist-pick{position:relative;display:flex;align-items:center;gap:8px}
+.artist-pick input{flex:1;padding-left:40px;font-weight:700}
+.artist-pick input::placeholder{font-weight:400;color:#7f978d}
+.artist-pick input:hover{border-color:var(--accent)}
+.artist-ic{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--accent-hi);pointer-events:none}
+#optNote{padding:8px 12px;border-radius:10px;background:rgba(82,183,136,.1);border:1px solid var(--line);color:var(--text)}
+#optNote:empty{display:none}
 .stepper button{width:46px;border:1px solid var(--line-2);background:var(--panel-2);color:var(--text);font-size:20px;font-weight:700;cursor:pointer}
 .stepper button:first-child{border-radius:10px 0 0 10px}
 .stepper button:last-child{border-radius:0 10px 10px 0}
@@ -278,6 +285,7 @@ input:focus,select:focus{border-color:var(--accent)}
 .sh-head{display:flex;justify-content:space-between;align-items:flex-end;gap:.3in;padding-bottom:.1in;margin-bottom:.16in;border-bottom:3pt solid #2d6a4f}
 .sh-head h1{margin:0;font-size:26pt;line-height:1.1;color:#1b4332}
 .sh-meta{text-align:right;font-size:12pt;color:#3f4a46;white-space:nowrap}
+.sh-sub{margin:.05in 0 0;font-size:13pt;font-weight:700;line-height:1.2;color:#2d6a4f}
 .sh-inst{margin:0 0 .22in;font-size:14pt;color:#2f3634}
 .lvl-advanced .sh-inst{font-size:18pt}
 .sh-body{flex:1;min-height:0}
@@ -411,7 +419,18 @@ input:focus,select:focus{border-color:var(--accent)}
 .song-kind{display:inline-block;margin:0 .1in 0 0;vertical-align:.15em;font-size:.52em;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#56615d}
 .sm-pairs .r{font-style:italic}
 .sm-pairs .r.long{font-size:.82em}
-.lvl-advanced .sm-pairs{row-gap:.36in}
+.sm-pairs .r.yr{font-style:normal;font-weight:800;font-size:1.15em}
+/* artist spotlight and reminiscence pages */
+.spot-hits{margin:.05in 0 .15in;text-align:center;color:#000}
+.spot-hit{margin:0 0 .14in;font-weight:800;line-height:1.2}
+.spot-tags{margin:0 0 .1in;text-align:center;font-size:11pt}
+.spot-fact{margin:.22in auto .2in}
+.spot-talk{margin:.16in 0 .1in}
+.spot-bonus{margin:.3in 0 0;font-size:.8em}
+.yn-list{display:grid;gap:.18in}
+.yn-row{display:flex;align-items:center;gap:.12in}
+.yn-song{flex:1;font-weight:700;font-style:italic}
+.lvl-advanced .sm-pairs{row-gap:.36in;font-size:.88em}
 /* Multisensory: orientation board (pure black, giant type) */
 .orient{text-align:center;color:#000}
 .orient p{margin:0}
@@ -2196,39 +2215,214 @@ const MUSIC_ARTISTS = [
   { name:"Shania Twain", era:"e1990", genres:["country"], songs:["Man! I Feel Like a Woman!","Any Man of Mine"] }
 ];
 
-/* ---- Decade & genre filter (shared by Name That Tune and the match) ---- */
+/* ---- Featured artist database ----
+   The searchable artist picker is built from this list first, then from
+   the wider MUSIC_ARTISTS library above. To add an artist, paste one
+   more object in the same shape:
+     required  id, name, decade, genre, famousHits (song titles only)
+     optional  trivia    one short, checked fact
+               nickname  a well-known nickname (used for bonus questions)
+               hitYears  { "Song Title": release year } for the year match
+               era       e1900 | e1930 | e1950 | e1960 | e1970 | e1990
+               genres    filter tags: jazzblues, pop, rock, country, soul, folk, hiphop
+   Titles and facts only: this product never prints copyrighted lyrics. */
+const ARTIST_DATABASE = [
+  // 1910s-1930s
+  { id:"joplin", name:"Scott Joplin", decade:"1910s–1930s", genre:"Ragtime", era:"e1900", genres:["jazzblues"], nickname:"The King of Ragtime",
+    famousHits:["Maple Leaf Rag","The Entertainer"], hitYears:{ "Maple Leaf Rag":1899, "The Entertainer":1902 },
+    trivia:"Called the King of Ragtime. \"The Entertainer\" became famous all over again in the 1973 film The Sting." },
+  { id:"carterfamily", name:"The Carter Family", decade:"1910s–1930s", genre:"Early Country / Folk", era:"e1900", genres:["country","folk"],
+    famousHits:["Wildwood Flower","Keep On the Sunny Side","Can the Circle Be Unbroken"], hitYears:{ "Wildwood Flower":1928, "Keep On the Sunny Side":1928, "Can the Circle Be Unbroken":1935 },
+    trivia:"Known as the First Family of Country Music. June Carter, who later married Johnny Cash, was part of the family." },
+  { id:"crosby", name:"Bing Crosby", decade:"1910s–1930s", genre:"Crooner / Traditional Pop", era:"e1930", genres:["pop"],
+    famousHits:["White Christmas","Pennies from Heaven","Swinging on a Star"], hitYears:{ "Pennies from Heaven":1936, "White Christmas":1942, "Swinging on a Star":1944 },
+    trivia:"His recording of \"White Christmas\" is one of the best-selling records of all time." },
+  { id:"armstrong", name:"Louis Armstrong", decade:"1910s–1930s", genre:"Early Jazz", era:"e1930", genres:["jazzblues"], nickname:"Satchmo",
+    famousHits:["What a Wonderful World","Hello, Dolly!","When the Saints Go Marching In"], hitYears:{ "When the Saints Go Marching In":1938, "Hello, Dolly!":1964, "What a Wonderful World":1967 },
+    trivia:"A trumpet player and singer from New Orleans, nicknamed Satchmo. His gravelly voice is known all over the world." },
+  { id:"garland", name:"Judy Garland", decade:"1910s–1930s", genre:"Traditional Pop / Film", era:"e1930", genres:["pop"],
+    famousHits:["Over the Rainbow","The Trolley Song","Get Happy"], hitYears:{ "Over the Rainbow":1939, "The Trolley Song":1944, "Get Happy":1950 },
+    trivia:"She sang \"Over the Rainbow\" as Dorothy in The Wizard of Oz, when she was just 16." },
+  // 1940s-1950s
+  { id:"sinatra", name:"Frank Sinatra", decade:"1940s–1950s", genre:"Crooner / Traditional Pop", era:"e1930", genres:["pop"], nickname:"Ol' Blue Eyes",
+    famousHits:["Fly Me to the Moon","My Way","New York, New York","Strangers in the Night"], hitYears:{ "Fly Me to the Moon":1964, "Strangers in the Night":1966, "My Way":1969, "New York, New York":1980 },
+    trivia:"Known as Ol' Blue Eyes. He sang with the Harry James and Tommy Dorsey bands before becoming a solo star." },
+  { id:"natkingcole", name:"Nat King Cole", decade:"1940s–1950s", genre:"Crooner / Jazz", era:"e1930", genres:["pop","jazzblues"],
+    famousHits:["Unforgettable","Mona Lisa","The Christmas Song","L-O-V-E"], hitYears:{ "The Christmas Song":1946, "Mona Lisa":1950, "Unforgettable":1951, "L-O-V-E":1964 },
+    trivia:"He began as a jazz pianist, and in 1956 hosted his own television show." },
+  { id:"ella", name:"Ella Fitzgerald", decade:"1940s–1950s", genre:"Jazz / Traditional Pop", era:"e1930", genres:["jazzblues","pop"], nickname:"The First Lady of Song",
+    famousHits:["A-Tisket, A-Tasket","Dream a Little Dream of Me"], hitYears:{ "A-Tisket, A-Tasket":1938, "Dream a Little Dream of Me":1950 },
+    trivia:"Called the First Lady of Song, and famous for scat singing: making up playful sounds in place of words." },
+  { id:"hankwilliams", name:"Hank Williams", decade:"1940s–1950s", genre:"Classic Country", era:"e1950", genres:["country"],
+    famousHits:["Hey, Good Lookin'","Jambalaya","Your Cheatin' Heart"], hitYears:{ "Hey, Good Lookin'":1951, "Jambalaya":1952, "Your Cheatin' Heart":1953 },
+    trivia:"A star of the Grand Ole Opry who wrote most of his own songs." },
+  { id:"patsycline", name:"Patsy Cline", decade:"1940s–1950s", genre:"Classic Country", era:"e1960", genres:["country"],
+    famousHits:["Crazy","I Fall to Pieces","Walkin' After Midnight"], hitYears:{ "Walkin' After Midnight":1957, "I Fall to Pieces":1961, "Crazy":1961 },
+    trivia:"Her hit \"Crazy\" was written by a young songwriter named Willie Nelson." },
+  { id:"elvis", name:"Elvis Presley", decade:"1940s–1950s", genre:"Early Rock 'n' Roll", era:"e1950", genres:["rock"], nickname:"The King of Rock and Roll",
+    famousHits:["Hound Dog","Love Me Tender","Jailhouse Rock","Can't Help Falling in Love"], hitYears:{ "Hound Dog":1956, "Love Me Tender":1956, "Jailhouse Rock":1957, "Can't Help Falling in Love":1961 },
+    trivia:"Known as the King of Rock and Roll. His home in Memphis, Tennessee, is called Graceland." },
+  { id:"johnnycash", name:"Johnny Cash", decade:"1940s–1950s", genre:"Classic Country", era:"e1960", genres:["country"], nickname:"The Man in Black",
+    famousHits:["I Walk the Line","Ring of Fire","A Boy Named Sue"], hitYears:{ "I Walk the Line":1956, "Ring of Fire":1963, "A Boy Named Sue":1969 },
+    trivia:"Known as the Man in Black for the dark clothes he wore on stage." },
+  { id:"deanmartin", name:"Dean Martin", decade:"1940s–1950s", genre:"Crooner / Traditional Pop", era:"e1950", genres:["pop"],
+    famousHits:["That's Amore","Volare","Everybody Loves Somebody"], hitYears:{ "That's Amore":1953, "Volare":1958, "Everybody Loves Somebody":1964 },
+    trivia:"A member of the Rat Pack with Frank Sinatra. \"Everybody Loves Somebody\" became his theme song." },
+  { id:"raycharles", name:"Ray Charles", decade:"1940s–1950s", genre:"Soul / R&B", era:"e1950", genres:["soul"],
+    famousHits:["Georgia on My Mind","Hit the Road Jack","I Can't Stop Loving You"], hitYears:{ "Georgia on My Mind":1960, "Hit the Road Jack":1961, "I Can't Stop Loving You":1962 },
+    trivia:"Blind from the age of seven, he blended gospel, blues and jazz. \"Georgia on My Mind\" became Georgia's state song." },
+  // 1960s-1970s
+  { id:"aretha", name:"Aretha Franklin", decade:"1960s–1970s", genre:"Motown / Soul", era:"e1960", genres:["soul"], nickname:"The Queen of Soul",
+    famousHits:["Respect","(You Make Me Feel Like) A Natural Woman","Think"], hitYears:{ "Respect":1967, "(You Make Me Feel Like) A Natural Woman":1967, "Think":1968 },
+    trivia:"Called the Queen of Soul. She first sang in her father's church in Detroit." },
+  { id:"dolly", name:"Dolly Parton", decade:"1960s–1970s", genre:"Country Gold", era:"e1960", genres:["country"],
+    famousHits:["Jolene","9 to 5","Coat of Many Colors"], hitYears:{ "Coat of Many Colors":1971, "Jolene":1973, "9 to 5":1980 },
+    trivia:"One of twelve children, she grew up in the Smoky Mountains of Tennessee. \"Coat of Many Colors\" is about a coat her mother sewed." },
+  { id:"willie", name:"Willie Nelson", decade:"1960s–1970s", genre:"Country Gold", era:"e1960", genres:["country"],
+    famousHits:["On the Road Again","Blue Eyes Crying in the Rain","Angel Flying Too Close to the Ground"], hitYears:{ "Blue Eyes Crying in the Rain":1975, "On the Road Again":1980, "Angel Flying Too Close to the Ground":1981 },
+    trivia:"Before he was a star he wrote songs for others, including \"Crazy\" for Patsy Cline." },
+  { id:"beatles", name:"The Beatles", decade:"1960s–1970s", genre:"Pop / Rock", era:"e1960", genres:["rock"],
+    famousHits:["I Want to Hold Your Hand","Yesterday","Hey Jude","Here Comes the Sun","Let It Be"], hitYears:{ "I Want to Hold Your Hand":1963, "Yesterday":1965, "Hey Jude":1968, "Here Comes the Sun":1969, "Let It Be":1970 },
+    trivia:"Four young men from Liverpool, England: John, Paul, George and Ringo." },
+  { id:"neildiamond", name:"Neil Diamond", decade:"1960s–1970s", genre:"Pop / Soft Rock", era:"e1970", genres:["pop"],
+    famousHits:["Sweet Caroline","Cracklin' Rosie","Song Sung Blue"], hitYears:{ "Sweet Caroline":1969, "Cracklin' Rosie":1970, "Song Sung Blue":1972 },
+    trivia:"Born in Brooklyn, New York. Crowds sing \"Sweet Caroline\" at Boston Red Sox baseball games." },
+  { id:"andywilliams", name:"Andy Williams", decade:"1960s–1970s", genre:"Crooner / Traditional Pop", era:"e1960", genres:["pop"],
+    famousHits:["Moon River","Can't Get Used to Losing You","(Where Do I Begin?) Love Story"], hitYears:{ "Moon River":1962, "Can't Get Used to Losing You":1963, "(Where Do I Begin?) Love Story":1971 },
+    trivia:"\"Moon River\" became his signature song, and his TV Christmas specials were a family tradition for years." },
+  { id:"johndenver", name:"John Denver", decade:"1960s–1970s", genre:"Folk / Country", era:"e1970", genres:["folk","country"],
+    famousHits:["Take Me Home, Country Roads","Rocky Mountain High","Annie's Song"], hitYears:{ "Take Me Home, Country Roads":1971, "Rocky Mountain High":1972, "Annie's Song":1974 },
+    trivia:"\"Take Me Home, Country Roads\" is one of West Virginia's official state songs." },
+  { id:"carpenters", name:"The Carpenters", decade:"1960s–1970s", genre:"Soft Rock & Ballads", era:"e1970", genres:["pop"],
+    famousHits:["(They Long to Be) Close to You","We've Only Just Begun","Top of the World"], hitYears:{ "(They Long to Be) Close to You":1970, "We've Only Just Begun":1970, "Top of the World":1973 },
+    trivia:"Brother and sister Karen and Richard Carpenter. Karen was also the band's drummer." },
+  // 1980s-1990s
+  { id:"kennyrogers", name:"Kenny Rogers", decade:"1980s–1990s", genre:"Country / Adult Contemporary", era:"e1970", genres:["country","pop"],
+    famousHits:["The Gambler","Lady","Islands in the Stream"], hitYears:{ "The Gambler":1978, "Lady":1980, "Islands in the Stream":1983 },
+    trivia:"\"The Gambler\" was so popular it was made into a television movie starring Kenny himself." },
+  { id:"georgestrait", name:"George Strait", decade:"1980s–1990s", genre:"Classic Country", era:"e1970", genres:["country"], nickname:"The King of Country",
+    famousHits:["Amarillo by Morning","All My Ex's Live in Texas","Check Yes or No"], hitYears:{ "Amarillo by Morning":1983, "All My Ex's Live in Texas":1987, "Check Yes or No":1995 },
+    trivia:"A Texas rancher called the King of Country, with more number-one hits than almost any other artist." },
+  { id:"whitney", name:"Whitney Houston", decade:"1980s–1990s", genre:"Vocal Ballads / Pop", era:"e1970", genres:["pop","soul"],
+    famousHits:["I Wanna Dance with Somebody","Greatest Love of All","How Will I Know"], hitYears:{ "How Will I Know":1985, "Greatest Love of All":1986, "I Wanna Dance with Somebody":1987 },
+    trivia:"She first sang in her church choir in New Jersey. Her mother, Cissy Houston, was also a singer." },
+  { id:"reba", name:"Reba McEntire", decade:"1980s–1990s", genre:"Classic Country", era:"e1970", genres:["country"],
+    famousHits:["Fancy","Is There Life Out There","Does He Love You"], hitYears:{ "Fancy":1990, "Is There Life Out There":1992, "Does He Love You":1993 },
+    trivia:"She grew up on a cattle ranch in Oklahoma and competed in rodeo barrel racing." },
+  { id:"garth", name:"Garth Brooks", decade:"1980s–1990s", genre:"Classic Country", era:"e1990", genres:["country"],
+    famousHits:["Friends in Low Places","The Dance","Unanswered Prayers"], hitYears:{ "Friends in Low Places":1990, "The Dance":1990, "Unanswered Prayers":1991 },
+    trivia:"One of the best-selling solo artists in American history." },
+  { id:"celine", name:"Celine Dion", decade:"1980s–1990s", genre:"Vocal Ballads / Adult Contemporary", era:"e1990", genres:["pop"],
+    famousHits:["The Power of Love","Because You Loved Me","My Heart Will Go On"], hitYears:{ "The Power of Love":1993, "Because You Loved Me":1996, "My Heart Will Go On":1997 },
+    trivia:"The youngest of fourteen children, from Quebec, Canada. \"My Heart Will Go On\" is the love theme from Titanic." }
+];
+
+const RANDOM_ARTIST = "\u{1F3B2} Random / Mixed Era Selection";
+const ERA_ORDER = ["e1900","e1930","e1950","e1960","e1970","e1990"];
+const ERA_SHORT = { e1900:"1900s–1920s", e1930:"1930s–1940s", e1950:"1950s", e1960:"1960s", e1970:"1970s–1980s", e1990:"1990s" };
+
+/* One searchable index: featured artists (with trivia and years) plus
+   every other artist in the library. Sorted by era, then name. */
+const ARTIST_INDEX = (function(){
+  const byName = new Map();
+  ARTIST_DATABASE.forEach(a => byName.set(a.name.toLowerCase(), Object.assign({ hitYears:{}, trivia:"", genres:["pop"], era:"e1950" }, a, { songs:a.famousHits, featured:true })));
+  MUSIC_ARTISTS.forEach(m => {
+    const k = m.name.toLowerCase();
+    if (byName.has(k)) return;
+    byName.set(k, { id:k.replace(/[^a-z0-9]+/g, ""), name:m.name, decade:ERA_SHORT[m.era], genre:MUSIC_GENRES[m.genres[0]],
+                    famousHits:m.songs, songs:m.songs, trivia:"", hitYears:{}, era:m.era, genres:m.genres, featured:false });
+  });
+  return Array.from(byName.values()).sort((a, b) => ERA_ORDER.indexOf(a.era) - ERA_ORDER.indexOf(b.era) || a.name.localeCompare(b.name));
+})();
+function findArtist(v){
+  const k = String(v || "").trim().toLowerCase();
+  if (!k || k === RANDOM_ARTIST.toLowerCase()) return null;
+  return ARTIST_INDEX.find(a => a.name.toLowerCase() === k) || null;
+}
+function artistOf(cfg){ return findArtist(optVal(cfg, "artist", RANDOM_ARTIST)); }
+/* The <datalist> behind the search box: the random option first, then
+   every artist labelled with decade and genre so staff can browse. */
+function ensureArtistDatalist(){
+  if (document.getElementById("artist-datalist")) return;
+  const dl = document.createElement("datalist");
+  dl.id = "artist-datalist";
+  dl.innerHTML = `<option value="${esc(RANDOM_ARTIST)}" label="Four artists from different decades"></option>` +
+    ARTIST_INDEX.map(a => `<option value="${esc(a.name)}" label="${esc(a.decade + " · " + a.genre)}"></option>`).join("");
+  document.body.appendChild(dl);
+}
+/* Some songs were famous for more than one singer. A decoy is never a
+   song the chosen artist also recorded. */
+const ALSO_RECORDED_BY = {
+  "Georgia on My Mind":["Willie Nelson"], "Crazy":["Willie Nelson"], "Fly Me to the Moon":["Count Basie"],
+  "Unchained Melody":["Elvis Presley"], "Hey Jude":["Wilson Pickett"], "Bridge Over Troubled Water":["Aretha Franklin"],
+  "Yesterday":["Ray Charles"], "Jambalaya":["The Carpenters"], "Ring of Fire":["The Carter Family"], "Respect":["Otis Redding"],
+  "Islands in the Stream":["Dolly Parton"], "What a Wonderful World":[], "When the Saints Go Marching In":[]
+};
+function decoySongs(artist, n, rng){
+  const pool = [];
+  ARTIST_INDEX.forEach(a => {
+    if (a.name === artist.name || a.era === artist.era) return;          // other eras: fewer shared songs
+    a.songs.forEach(s => { if (!(ALSO_RECORDED_BY[s] || []).includes(artist.name)) pool.push(s); });
+  });
+  return rng.shuffle(pool).slice(0, n);
+}
+const TALK_PROMPTS = [
+  "Where were you when you first heard {a}?",
+  "Which {a} song would you dance to? Who would you dance with?",
+  "Did you ever see {a} on television, in a film or in person?",
+  "Which song by {a} reminds you of someone special?",
+  "Did you or your family own any {a} records?"
+];
+const talkFor = (a, rng, n) => rng.shuffle(TALK_PROMPTS).slice(0, n).map(t => t.replace("{a}", a.name));
+const featuring = a => "Musical Reminiscence: Featuring the Music of " + a.name;
+
+/* The artist field shared by all three music activities. */
+const ARTIST_OPTION = { id:"artist", type:"artist", label:"Artist", def:RANDOM_ARTIST, max:60 };
+const ifRandom = v => !findArtist(v.artist);
+
+/* ---- Decade & genre filter (random mode) ---- */
 const MUSIC_ERA_CHOICES = [
   ["core","1930s to 1960s (suits most residents)"],["g2040","1920s to 1940s"],["g5060","1950s to 1960s"],["g7090","1970s to 1990s (younger residents)"],
   ["e1900","Early 1900s to 1920s only"],["e1930","1930s and 1940s only"],["e1950","1950s only"],["e1960","1960s only"],["e1970","1970s and 1980s only"],["e1990","1990s only"],["all","Every era"]
 ];
-const MUSIC_ERA_GROUPS = { core:["e1930","e1950","e1960"], g2040:["e1900","e1930"], g5060:["e1950","e1960"], g7090:["e1970","e1990"], all:Object.keys(MUSIC_ERAS) };
+const MUSIC_ERA_GROUPS = { core:["e1930","e1950","e1960"], g2040:["e1900","e1930"], g5060:["e1950","e1960"], g7090:["e1970","e1990"], all:ERA_ORDER };
 const MUSIC_GENRE_CHOICES = [["all","All genres"]].concat(Object.keys(MUSIC_GENRES).map(k => [k, MUSIC_GENRES[k]]));
 const MUSIC_FILTER_OPTIONS = [
-  { id:"era", type:"select", label:"Era", def:"core", choices:MUSIC_ERA_CHOICES,
+  { id:"era", type:"select", label:"Era for the random mix", def:"core", choices:MUSIC_ERA_CHOICES, showIf:ifRandom,
     hint:"Choose the years the residents were teenagers and young adults: that music is usually remembered best." },
-  { id:"genre", type:"select", label:"Genre", def:"all", choices:MUSIC_GENRE_CHOICES }
+  { id:"genre", type:"select", label:"Genre for the random mix", def:"all", choices:MUSIC_GENRE_CHOICES, showIf:ifRandom }
 ];
 function musicEraList(cfg){ const e = optVal(cfg, "era", "core"); return MUSIC_ERA_GROUPS[e] || (MUSIC_ERAS[e] ? [e] : MUSIC_ERA_GROUPS.core); }
-/* Artists matching the filters. If too few match, widen the genre first,
-   then the era, and say so (the page prints a note for staff). */
 function musicArtists(cfg, need){
   const eras = musicEraList(cfg), genre = optVal(cfg, "genre", "all");
-  const fits = a => eras.includes(a.era) && (genre === "all" || a.genres.includes(genre));
-  let list = MUSIC_ARTISTS.filter(fits), widened = "";
+  let list = ARTIST_INDEX.filter(a => eras.includes(a.era) && (genre === "all" || a.genres.includes(genre))), widened = "";
   if (list.length < need && genre !== "all"){
-    list = list.concat(MUSIC_ARTISTS.filter(a => eras.includes(a.era) && !list.includes(a)));
+    list = list.concat(ARTIST_INDEX.filter(a => eras.includes(a.era) && !list.includes(a)));
     widened = `Only a few ${MUSIC_GENRES[genre].toLowerCase()} artists match this era, so other genres from the same years were added.`;
   }
   if (list.length < need){
-    list = list.concat(MUSIC_ARTISTS.filter(a => !list.includes(a) && (genre === "all" || a.genres.includes(genre))));
+    list = list.concat(ARTIST_INDEX.filter(a => !list.includes(a) && (genre === "all" || a.genres.includes(genre))));
     widened = "Too few artists matched these filters, so artists from other years were added.";
   }
   return { list, widened };
 }
-function musicFilterNote(cfg, need){
+/* Status line under the options: who is featured, or how many artists the filters leave. */
+function musicNote(cfg, need){
+  const typed = String(optVal(cfg, "artist", RANDOM_ARTIST)).trim(), a = findArtist(typed);
+  if (a) return `Featuring ${a.name} · ${a.decade} · ${a.genre} · ${a.songs.length} famous ${a.songs.length === 1 ? "hit" : "hits"}.`;
+  if (typed && typed !== RANDOM_ARTIST) return `No artist called “${typed}” in the list yet. Choose one from the list, or press Clear for a random mix.`;
   const eras = musicEraList(cfg), genre = optVal(cfg, "genre", "all");
-  const n = MUSIC_ARTISTS.filter(a => eras.includes(a.era) && (genre === "all" || a.genres.includes(genre))).length;
-  return n >= need ? `${n} artists match these filters.` : `Only ${n} ${n === 1 ? "artist matches" : "artists match"} these filters; the page will add a few from nearby choices.`;
+  const n = ARTIST_INDEX.filter(a => eras.includes(a.era) && (genre === "all" || a.genres.includes(genre))).length;
+  return n >= need ? `Random mix: ${n} artists match these filters.` : `Random mix: only ${n} ${n === 1 ? "artist matches" : "artists match"}, so the page will add a few from nearby choices.`;
+}
+/* Pick n artists, spreading them across as many eras as the pool allows. */
+function pickAcrossEras(pool, n, rng){
+  const groups = {};
+  rng.shuffle(pool).forEach(a => { (groups[a.era] = groups[a.era] || []).push(a); });
+  const eras = rng.shuffle(Object.keys(groups)), out = [];
+  for (let round = 0; out.length < n && round < 50; round++)
+    eras.forEach(e => { if (out.length < n && groups[e][round]) out.push(groups[e][round]); });
+  return out;
 }
 /* A song's title prepared for "finish the title": parentheticals removed,
    then split before the last word. Returns null if it cannot be split cleanly. */
@@ -2241,44 +2435,52 @@ function titleSplit(t){
   return { start:words.slice(0, -1).join(" "), end };
 }
 
-/* ---- 1. Sing-along lyric sheets ---- */
+/* ---- 1. Sing-along sheets (public domain) / artist reminiscence sheet ---- */
 const LYRIC_SHEET = {
-  id: "lyric-sheet", name: "Sing-Along Lyric Sheets", themed: false,
-  desc: "One public-domain classic per page in very large, high-contrast type (24pt to 36pt), with the decade it comes from and a short piece of trivia.",
+  id: "lyric-sheet", name: "Sing-Along Lyric Sheets", themed: false, singlePage: true,
+  desc: "A public-domain classic in very large type (24pt to 36pt) with its decade and a trivia fact. Choose an artist instead for a reminiscence sheet of their hit titles (titles only, no lyrics).",
   icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M9 17V5l10-2v12"/><circle cx="6.5" cy="17" r="2.5"/><circle cx="16.5" cy="15" r="2.5"/></svg>',
-  options: [
-    { id:"hymns", type:"check", label:"Include hymns and spirituals", hint:"Turn off for groups where a sacred song may not suit everyone.", def:true },
-    { id:"trivia", type:"check", label:"Add a \"Did you know?\" fact", def:true }
-  ],
-  // pt size of the lyrics; advanced prints the first 4 lines only, largest
-  levels: { early:{ pt:24, maxLines:9 }, moderate:{ pt:28, maxLines:6 }, advanced:{ pt:36, maxLines:4 } },
+  options: [ARTIST_OPTION,
+    { id:"hymns", type:"check", label:"Include hymns and spirituals", hint:"Turn off for groups where a sacred song may not suit everyone.", def:true, showIf:ifRandom },
+    { id:"trivia", type:"check", label:"Add a \"Did you know?\" fact", def:true }],
+  levels: { early:{ pt:24, maxLines:9, talk:2 }, moderate:{ pt:28, maxLines:6, talk:2 }, advanced:{ pt:36, maxLines:4, talk:0 } },
+  optionsNote(cfg){ return findArtist(optVal(cfg, "artist", "")) || String(optVal(cfg, "artist", "")).trim() !== RANDOM_ARTIST ? musicNote(cfg, 1) : "Random: one public-domain sing-along song, different each time."; },
   pool(cfg){ return optVal(cfg, "hymns", true) ? PD_SONGS : PD_SONGS.filter(s => !s.hymn); },
-  plan(cfg, rng, count){ return slicePlan(this.pool(cfg), 1, count, rng).map(s => s[0]); },
-  /* Largest size (from the stage's size down to 24pt) at which the chosen
-     lines, as they will wrap on a 7.2 in line, fit the page. */
+  plan(cfg, rng, count){ return artistOf(cfg) ? Array(count).fill(null) : slicePlan(this.pool(cfg), 1, count, rng).map(s => s[0]); },
   fitPt(lines, basePt, trivia){
-    const budget = (trivia ? 6.6 : 7.7) * 72;            // usable body height, pt (with margin to spare)
+    const budget = (trivia ? 6.6 : 7.7) * 72;
     for (let pt = basePt; pt > 24; pt -= 2){
-      const perLine = Math.floor(7.0 * 72 / (pt * .6));   // characters per printed line (bold type, conservative)
-      let h = pt * 1.12 * 1.2 + pt * .45 * 1.3 + 22;       // title + decade tag
+      const perLine = Math.floor(7.0 * 72 / (pt * .6));
+      let h = pt * 1.12 * 1.2 + pt * .45 * 1.3 + 22;
       lines.forEach(l => { h += /^\[.*\]$/.test(l) ? pt * .42 * 1.3 + 10 : Math.ceil(l.length / perLine) * pt * 1.22 + 9; });
       if (h <= budget) return pt;
     }
     return 24;
   },
   generate(cfg, rng, song){
-    const L = this.levels[cfg.difficulty];
-    const trivia = optVal(cfg, "trivia", true);
+    const L = this.levels[cfg.difficulty], trivia = optVal(cfg, "trivia", true), a = artistOf(cfg);
+    if (a){
+      // Artist reminiscence sheet: hit TITLES only, plus a fact and prompts.
+      const hits = rng.shuffle(a.songs).slice(0, cfg.difficulty === "advanced" ? 3 : 4);
+      const pt = Math.min(L.pt, 30);
+      const talk = talkFor(a, rng, L.talk);
+      return {
+        title: "Sing-Along & Reminiscence", subtitle: featuring(a),
+        instructions: "Play a recording of these songs and sing along with any words you remember. Humming counts too.",
+        html: `<div class="spot-hits" style="font-size:${pt}pt">${hits.map(h => `<p class="spot-hit">&#9834; ${esc(h)}</p>`).join("")}</div>
+          <p class="spot-tags"><span class="lyr-tag">${esc(a.decade)}</span> <span class="lyr-tag">${esc(a.genre)}</span></p>
+          ${trivia && a.trivia ? `<p class="lyr-trivia"><b>Did you know?</b> ${esc(a.trivia)}</p>` : ""}
+          ${talk.map(t => `<div class="item spot-talk"><p class="q">${esc(t)}</p>${writeLines(1)}</div>`).join("")}`,
+        staffNote: "Song titles only: lyrics are not printed, for copyright reasons. Play the songs from a record, CD or streaming service and sing along from memory.",
+        signature: a.name + "#" + hits.join("|") + "#" + talk.join("|")
+      };
+    }
     const chosen = [];
     for (let i = 0, n = 0; i < song.lines.length && n < L.maxLines; i++){ chosen.push(song.lines[i]); if (!/^\[.*\]$/.test(song.lines[i])) n++; }
     const pt = this.fitPt(chosen, L.pt, trivia);
-    let sung = 0, body = "";
-    for (const line of song.lines){
-      if (sung >= L.maxLines) break;
-      if (/^\[.*\]$/.test(line)){ body += `<p class="lyr-part">${esc(line.slice(1, -1))}</p>`; continue; }
-      body += `<p class="lyr-line">${esc(line)}</p>`; sung++;
-    }
-    body = body.replace(/(<p class="lyr-part">[^<]*<\/p>)+$/, "");       // no label left dangling at the end
+    let body = "";
+    chosen.forEach(line => { body += /^\[.*\]$/.test(line) ? `<p class="lyr-part">${esc(line.slice(1, -1))}</p>` : `<p class="lyr-line">${esc(line)}</p>`; });
+    body = body.replace(/(<p class="lyr-part">[^<]*<\/p>)+$/, "");
     return {
       title: "Sing-Along",
       instructions: "Sing along together. Follow the words, or just hum the tune.",
@@ -2293,39 +2495,45 @@ const LYRIC_SHEET = {
   }
 };
 
-/* ---- 2. Lyric completion / Name That Tune ---- */
+/* ---- 2. Song title completion / Name That Tune ---- */
 const FINISH_SONG = {
-  id: "finish-song", name: "Lyric Completion / Name That Tune", themed: false,
-  desc: "Finish the line of an old favourite (\"Oh, give me a home where the...\") or the title of a hit from the chosen era and genre. Artist clues and a choice of two at later stages.",
+  id: "finish-song", name: "Song Title Completion / Name That Tune", themed: false, singlePage: true,
+  desc: "Fill in the last word of famous song titles (\"Fly Me to the ____\"). Choose an artist for a page of their hits, or leave it random for a mix of eras.",
   icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 17V6l8-2v11"/><circle cx="3.5" cy="17" r="2"/><line x1="15" y1="19" x2="22" y2="19"/></svg>',
-  options: [
-    { id:"mode", type:"select", label:"What to finish", def:"mixed",
-      choices:[["mixed","A mix of both"],["lines","Song lines (old public-domain favourites)"],["titles","Song titles from the chosen era and genre"]] }
-  ].concat(MUSIC_FILTER_OPTIONS).concat([{ id:"hymns", type:"check", label:"Include hymns and spirituals", def:true }]),
-  levels: { early:{ count:6, clue:false }, moderate:{ count:5, clue:true }, advanced:{ count:3, clue:true } },
-  optionsNote(cfg){ return optVal(cfg, "mode", "mixed") === "lines" ? "" : musicFilterNote(cfg, 6); },
+  options: [ARTIST_OPTION,
+    { id:"mode", type:"select", label:"What to finish", def:"titles", showIf:ifRandom,
+      choices:[["titles","Song titles from the chosen era and genre"],["mixed","Song titles and old public-domain song lines"],["lines","Old public-domain song lines only"]] }
+  ].concat(MUSIC_FILTER_OPTIONS).concat([{ id:"hymns", type:"check", label:"Include hymns and spirituals", def:true, showIf:ifRandom }]),
+  levels: { early:{ count:6, clue:false, talk:2 }, moderate:{ count:5, clue:true, talk:1 }, advanced:{ count:3, clue:true, talk:0 } },
+  optionsNote(cfg){ return musicNote(cfg, 6); },
   titlePool(cfg){
-    const { list, widened } = musicArtists(cfg, 6);
-    const items = [];
+    const { list, widened } = musicArtists(cfg, 6), items = [];
     list.forEach(a => a.songs.forEach(s => { const sp = titleSplit(s); if (sp) items.push({ kind:"title", start:sp.start, end:sp.end, artist:a.name }); }));
     return { items, widened };
   },
   pool(cfg){
-    const mode = optVal(cfg, "mode", "mixed"), hymns = optVal(cfg, "hymns", true);
+    const mode = optVal(cfg, "mode", "titles"), hymns = optVal(cfg, "hymns", true);
     const lines = PD_LINES.filter(x => hymns || !x[2]).map(x => ({ kind:"line", start:x[0], end:x[1] }));
     if (mode === "lines") return { items:lines, widened:"" };
     const t = this.titlePool(cfg);
     return mode === "titles" ? t : { items:lines.concat(t.items), widened:t.widened };
   },
-  plan(cfg, rng, count){ return slicePlan(this.pool(cfg).items, this.levels[cfg.difficulty].count, count, rng); },
-  generate(cfg, rng, items){
-    const lvl = cfg.difficulty, L = this.levels[lvl], P = this.pool(cfg), sig = [];
-    const html = items.map((it, i) => {
+  plan(cfg, rng, count){ return artistOf(cfg) ? Array(count).fill(null) : slicePlan(this.pool(cfg).items, this.levels[cfg.difficulty].count, count, rng); },
+  generate(cfg, rng, planItems){
+    const lvl = cfg.difficulty, L = this.levels[lvl], a = artistOf(cfg), sig = [];
+    let items, wrongPool, widened = "";
+    if (a){
+      items = rng.shuffle(a.songs.map(s => titleSplit(s)).filter(Boolean).map(sp => ({ kind:"title", start:sp.start, end:sp.end, artist:a.name }))).slice(0, L.count);
+      wrongPool = decoySongs(a, 40, rng).map(titleSplit).filter(Boolean).map(sp => ({ kind:"title", end:sp.end }));
+    } else {
+      const P = this.pool(cfg); items = planItems; wrongPool = P.items; widened = P.widened;
+    }
+    const rows = items.map((it, i) => {
       const label = `<span class="song-kind">${it.kind === "title" ? "Song title" : "Song line"}</span>`;
       const start = it.kind === "title" ? `&ldquo;${esc(it.start)} &hellip;&rdquo;` : `${esc(it.start)} &hellip;`;
-      const clue = it.kind === "title" && L.clue ? ` <span class="hintx">(${esc(it.artist)})</span>` : "";
+      const clue = it.kind === "title" && L.clue && !a ? ` <span class="hintx">(${esc(it.artist)})</span>` : "";
       if (lvl === "advanced"){
-        const others = P.items.filter(x => x.kind === it.kind && x.end.toLowerCase() !== it.end.toLowerCase());
+        const others = wrongPool.filter(x => x.kind === it.kind && x.end.toLowerCase() !== it.end.toLowerCase());
         const wrong = others.length ? rng.pick(others).end : "Home";
         const opts = rng.next() < .5 ? [it.end, wrong] : [wrong, it.end];
         sig.push(opts[0]);
@@ -2334,53 +2542,87 @@ const FINISH_SONG = {
       const hint = lvl === "moderate" ? ` <span class="hintx">(starts with &ldquo;${esc(it.end[0].toUpperCase())}&rdquo;)</span>` : "";
       return `<div class="item"><p class="q">${label}${i + 1}. ${start}${clue}${hint}</p><div class="wline"></div></div>`;
     }).join("");
+    let extra = "";
+    if (a){
+      // Fill the rest of the page with the artist's story and a question or two.
+      if (a.trivia) extra += `<p class="lyr-trivia spot-fact"><b>Did you know?</b> ${esc(a.trivia)}</p>`;
+      const talk = talkFor(a, rng, items.length < 3 ? Math.max(L.talk, 1) : L.talk);
+      extra += talk.map(t => `<div class="item spot-talk"><p class="q">${esc(t)}</p>${writeLines(1)}</div>`).join("");
+      sig.push(talk.join("|"));
+    }
     const titlesOnly = items.every(x => x.kind === "title");
     return {
-      title: titlesOnly ? "Name That Tune" : "Finish the Song",
-      instructions: lvl === "advanced" ? "Sing or say the beginning out loud. Circle the words that finish it."
-        : "Sing or say the beginning out loud, then write the words that finish it. Humming the tune can help.",
-      html,
-      answers: items.map((it, i) => (i + 1) + ". " + it.end + (it.artist ? " (" + it.artist + ")" : "")).join("   "),
-      staffNote: items.some(x => x.kind === "title") && P.widened ? P.widened : "",
-      signature: items.map(x => x.start).join("|") + "#" + sig.join("")
+      title: a ? "Song Title Completion" : titlesOnly ? "Name That Tune" : "Finish the Song",
+      subtitle: a ? featuring(a) : "",
+      instructions: lvl === "advanced" ? "Say the beginning out loud. Circle the word that finishes the song title."
+        : "Say or sing the beginning out loud, then write the word that finishes it. Humming the tune can help.",
+      html: rows + extra,
+      answers: items.map((it, i) => (i + 1) + ". " + it.end + (it.artist && !a ? " (" + it.artist + ")" : "")).join("   "),
+      staffNote: widened && items.some(x => x.kind === "title") ? widened : "",
+      signature: (a ? a.name + "#" : "") + items.map(x => x.start).join("|") + "#" + sig.join("")
     };
   }
 };
 
-/* ---- 3. Musical nostalgia match (artist to song) ---- */
+/* ---- 3. Artist spotlight (song to year) / mixed-era artist match ---- */
 const SINGER_MATCH = {
-  id: "singer-match", name: "Musical Nostalgia Match", themed: false,
-  desc: "Match artists to their best-known songs, from ragtime to the 1990s, narrowed by era and genre. A new mix of artists, in a new order, every time.",
+  id: "singer-match", name: "Artist Spotlight & Song Match", themed: false, singlePage: true,
+  desc: "With an artist chosen: match their famous songs to the years they came out. Left random: match four artists from different decades to their best-known songs.",
   icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="2" width="6" height="11" rx="3"/><path d="M5 10a6 6 0 0 0 12 0"/><line x1="11" y1="16" x2="11" y2="21"/><line x1="7" y1="21" x2="15" y2="21"/></svg>',
-  options: MUSIC_FILTER_OPTIONS,
-  // 4 to 6 artists a page; later stages use each artist's best-known, shortest title
-  levels: { early:{ count:6, pick:"any" }, moderate:{ count:5, pick:"first" }, advanced:{ count:4, pick:"short" } },
-  optionsNote(cfg){ return musicFilterNote(cfg, this.levels[cfg.difficulty].count); },
+  options: [ARTIST_OPTION].concat(MUSIC_FILTER_OPTIONS),
+  levels: { early:{ max:4 }, moderate:{ max:4 }, advanced:{ max:3 } },
+  optionsNote(cfg){ return musicNote(cfg, 4); },
   plan(cfg, rng, count){
-    const L = this.levels[cfg.difficulty];
-    return slicePlan(musicArtists(cfg, L.count).list, L.count, count, rng);
+    if (artistOf(cfg)) return Array(count).fill(null);
+    const pool = musicArtists(cfg, 4).list;
+    return Array.from({ length:count }, (_, i) => pickAcrossEras(pool, 4, makeRng(rng.int(2147483647) + i)));
   },
-  generate(cfg, rng, artists){
-    const L = this.levels[cfg.difficulty];
-    const song = a => {
-      if (L.pick === "short") return a.songs.slice().sort((x, y) => x.length - y.length)[0];
-      if (L.pick === "first") return a.songs[0].length > 32 ? a.songs.slice().sort((x, y) => x.length - y.length)[0] : a.songs[0];
-      const ok = a.songs.filter(s => s.length <= 40);
-      return rng.pick(ok.length ? ok : a.songs);
-    };
-    const pairs = artists.map(a => [a.name, song(a)]);
-    let right = rng.shuffle(pairs.map(p => p[1]));
-    for (let t = 0; t < 30 && right.some((s, i) => s === pairs[i][1]); t++) right = rng.shuffle(right);   // never straight across
-    const html = '<div class="pairs sm-pairs">' + pairs.map((p, i) =>
-      `<span class="l">${esc(p[0])}</span><span class="dot"></span><span></span><span class="dot"></span><span class="r${right[i].length > 28 ? " long" : ""}">&ldquo;${esc(right[i])}&rdquo;</span>`
-    ).join("") + "</div>";
+  generate(cfg, rng, planArtists){
+    const L = this.levels[cfg.difficulty], a = artistOf(cfg);
+    const pairsHtml = (left, right, rightCls) => '<div class="pairs sm-pairs">' + left.map((l, i) =>
+      `<span class="l">${esc(l)}</span><span class="dot"></span><span></span><span class="dot"></span><span class="r${rightCls ? " " + rightCls : ""}${String(right[i]).length > 28 ? " long" : ""}">${rightCls === "yr" ? esc(right[i]) : "&ldquo;" + esc(right[i]) + "&rdquo;"}</span>`).join("") + "</div>";
+    const derange = (xs, rightOf) => { let r = rng.shuffle(xs.map(rightOf)); for (let t = 0; t < 30 && r.some((v, i) => v === rightOf(xs[i])); t++) r = rng.shuffle(r); return r; };
+    if (a){
+      // Songs with different release years, so every match has one answer.
+      const seenYear = new Set(), dated = [];
+      rng.shuffle(a.songs.filter(s => a.hitYears[s])).forEach(s => { if (!seenYear.has(a.hitYears[s])){ seenYear.add(a.hitYears[s]); dated.push(s); } });
+      const fact = a.trivia ? `<p class="lyr-trivia spot-fact"><b>Did you know?</b> ${esc(a.trivia)}</p>` : "";
+      if (dated.length >= 2){
+        const songs = dated.slice(0, L.max), right = derange(songs, s => a.hitYears[s]);
+        return {
+          title: "Artist Spotlight", subtitle: featuring(a),
+          instructions: "Draw a line from each song to the year it came out. A good guess is fine. Where were you in that year?",
+          html: pairsHtml(songs.map(s => "“" + s + "”"), right, "yr") + fact,
+          answers: songs.map(s => s + ": " + a.hitYears[s]).join("   "),
+          signature: a.name + "#" + songs.join("|") + "#" + right.join("|")
+        };
+      }
+      // No release years on file: circle the songs this artist sang.
+      const mine = rng.shuffle(a.songs).slice(0, Math.min(3, a.songs.length)), decoys = decoySongs(a, mine.length, rng);
+      const all = rng.shuffle(mine.concat(decoys));
+      return {
+        title: "Artist Spotlight", subtitle: featuring(a),
+        instructions: `Circle YES for each song ${a.name} sang, and NO for the others.`,
+        html: `<div class="yn-list">${all.map(s => `<div class="yn-row"><span class="yn-song">&ldquo;${esc(s)}&rdquo;</span><span class="yn">Yes</span><span class="yn">No</span></div>`).join("")}</div>` + fact,
+        // quoted, because some titles contain commas ("Hey, Good Lookin'")
+        answers: "Yes: " + mine.map(s => "\u201C" + s + "\u201D").join(" ") + "   No: " + decoys.map(s => "\u201C" + s + "\u201D").join(" "),
+        staffNote: "Many songs were recorded by more than one singer. If a resident remembers another version, that memory counts.",
+        signature: a.name + "#" + all.join("|")
+      };
+    }
+    // Random: four artists spread across decades, each with a well-known title.
+    const artists = planArtists;
+    const song = x => x.songs.filter(s => s.length <= 32)[0] || x.songs.slice().sort((p, q) => p.length - q.length)[0];
+    const right = derange(artists, song);
+    const nick = rng.shuffle(artists.filter(x => x.nickname))[0];
+    const bonus = nick ? `<p class="spot-bonus"><b>Bonus:</b> Which of these artists was known as &ldquo;${esc(nick.nickname)}&rdquo;? <span class="money-blank" style="width:2.2in"></span></p>` : "";
     return {
-      title: "Who Sang It?",
+      title: "Who Sang It?", subtitle: "Musical Reminiscence: Four Artists, Four Eras",
       instructions: "Draw a line from each artist to the song they made famous. Singing a line of it is a great hint!",
-      html,
-      answers: pairs.map(p => p[0] + ": " + p[1]).join("   "),
-      staffNote: musicArtists(cfg, L.count).widened,
-      signature: pairs.map(p => p[0] + "=" + p[1]).join("|") + "#" + right.join("|")
+      html: pairsHtml(artists.map(x => x.name), right, "") + bonus,
+      answers: artists.map(x => x.name + ": " + song(x)).join("   ") + (nick ? "   Bonus: " + nick.name : ""),
+      staffNote: musicArtists(cfg, 4).widened,
+      signature: artists.map(x => x.name).join("|") + "#" + right.join("|")
     };
   }
 };
@@ -3074,7 +3316,7 @@ function sheetHtml(item){
   const who = item.cfg.residentName ? "For " + esc(item.cfg.residentName) : "";
   const when = fmtDate(item.cfg.date);
   return `<section class="sheet lvl-${esc(item.cfg.difficulty)}">
-    <header class="sh-head"><h1>${esc(page.title)}</h1><div class="sh-meta">${who}${who && when ? "<br>" : ""}${esc(when)}</div></header>
+    <header class="sh-head"><div><h1>${esc(page.title)}</h1>${page.subtitle ? `<p class="sh-sub">${esc(page.subtitle)}</p>` : ""}</div><div class="sh-meta">${who}${who && when ? "<br>" : ""}${esc(when)}</div></header>
     <p class="sh-inst">${esc(page.instructions)}</p>
     <div class="sh-body">${page.html}</div>
     ${page.answers ? `<p class="sh-ans">For staff &middot; answers: ${esc(page.answers)}</p>` : ""}
@@ -3183,9 +3425,20 @@ function optionFields(act){
   if (!act.options || !act.options.length) return "";
   const vals = savedOpts(act);
   return act.options.map(f => {
-    const id = "opt_" + f.id, hidden = f.showIf && vals[f.showIf[0]] !== f.showIf[1];
+    const id = "opt_" + f.id, hidden = !optShown(f, vals);
     let ctl;
-    if (f.type === "select"){
+    if (f.type === "artist"){
+      // Searchable artist picker: type to filter, or open the list to browse.
+      ensureArtistDatalist();
+      ctl = `<label for="${id}">${esc(f.label)}</label>
+        <div class="artist-pick">
+          <svg class="artist-ic" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><line x1="15.5" y1="15.5" x2="21" y2="21"/></svg>
+          <input type="text" id="${id}" data-opt="${f.id}" list="artist-datalist" maxlength="${f.max || 60}" value="${esc(vals[f.id] || "")}"
+            placeholder="Search or select an artist (e.g., Frank Sinatra, Patsy Cline)..." autocomplete="off" spellcheck="false" aria-describedby="optNote">
+          <button type="button" class="btn btn-ghost btn-sm" data-artist-clear aria-label="Clear the artist and use a random mix">Clear</button>
+        </div>
+        <p class="hint">Type a name to search, or press Clear and click the box to browse every artist by decade and genre.</p>`;
+    } else if (f.type === "select"){
       ctl = `<label for="${id}">${esc(f.label)}</label><select id="${id}" data-opt="${f.id}">${f.choices.map(([v, l]) => `<option value="${esc(v)}" ${v === vals[f.id] ? "selected" : ""}>${esc(l)}</option>`).join("")}</select>`;
     } else if (f.type === "check"){
       ctl = `<label class="switch" for="${id}"><input type="checkbox" id="${id}" data-opt="${f.id}" ${vals[f.id] ? "checked" : ""}><span><b>${esc(f.label)}</b>${f.hint ? `<small>${esc(f.hint)}</small>` : ""}</span></label>`;
@@ -3196,10 +3449,16 @@ function optionFields(act){
     return `<div class="field" data-optwrap="${f.id}" ${hidden ? "hidden" : ""}>${ctl}${hint}</div>`;
   }).join("");
 }
+/* An option shows unless its showIf says otherwise: showIf is either
+   [otherOptionId, requiredValue] or a function of all option values. */
+function optShown(f, vals){
+  if (!f.showIf) return true;
+  return typeof f.showIf === "function" ? !!f.showIf(vals) : vals[f.showIf[0]] === f.showIf[1];
+}
 function readOpts(act){
   const o = savedOpts(act);
   document.querySelectorAll("#cfgForm [data-opt]").forEach(el => {
-    o[el.dataset.opt] = el.type === "checkbox" ? el.checked : String(el.value).slice(0, 50);
+    o[el.dataset.opt] = el.type === "checkbox" ? el.checked : String(el.value).slice(0, 60);
   });
   return o;
 }
@@ -3208,7 +3467,7 @@ function syncOptVisibility(act){
   (act.options || []).forEach(f => {
     if (!f.showIf) return;
     const w = document.querySelector(`#cfgForm [data-optwrap="${f.id}"]`);
-    if (w) w.hidden = vals[f.showIf[0]] !== f.showIf[1];
+    if (w) w.hidden = !optShown(f, vals);
   });
 }
 
@@ -3238,7 +3497,7 @@ function openConfig(actId){
       <form id="cfgForm" novalidate>
         <h2>${esc(act.name)}</h2>
         <p class="hint" style="margin:0 0 18px">${esc(act.desc)}</p>
-        <div class="field">
+        ${act.singlePage ? "" : `<div class="field">
           <label for="cfgVar">How many different versions?</label>
           <div class="stepper">
             <button type="button" data-step="-1" aria-label="Fewer versions">&minus;</button>
@@ -3246,7 +3505,7 @@ function openConfig(actId){
             <button type="button" data-step="1" aria-label="More versions">+</button>
           </div>
           <p class="hint">1 to 4. Each version is generated separately, so no two pages match.</p>
-        </div>
+        </div>`}
         <div class="row2">
           <div class="field"><label for="cfgName">Resident name <span class="hint">(optional)</span></label>
             <input id="cfgName" type="text" maxlength="40" autocomplete="off" value="${esc(settings.residentName)}"></div>
@@ -3264,6 +3523,7 @@ function openConfig(actId){
           <button class="btn btn-primary" type="submit">Add to Packet</button>
           <button class="btn btn-ghost" type="button" id="cfgShuffle">Show a different version</button>
         </div>
+        ${act.singlePage ? '<p class="hint" style="margin-top:10px">Each click adds one page. Change the artist and click again to add another.</p>' : ""}
       </form>
       <div class="preview-col">
         <p class="preview-label"><span>Preview &middot; version 1</span><span id="pvMeta"></span></p>
@@ -3272,9 +3532,16 @@ function openConfig(actId){
     </div>`;
 
   const form = $("#cfgForm"), varInput = $("#cfgVar");
-  const syncVar = () => { varInput.value = clampInt(varInput.value, 1, 4, 1); settings.variations = +varInput.value; saveSettings(); };
+  const syncVar = () => { if (!varInput) return; varInput.value = clampInt(varInput.value, 1, 4, 1); settings.variations = +varInput.value; saveSettings(); };
   box.querySelectorAll(".stepper button").forEach(b => b.addEventListener("click", () => { varInput.value = clampInt(+varInput.value + +b.dataset.step, 1, 4, 1); syncVar(); }));
-  varInput.addEventListener("change", syncVar);
+  if (varInput) varInput.addEventListener("change", syncVar);
+  // Artist picker: Clear goes back to the random mix and reopens the list.
+  box.querySelectorAll("[data-artist-clear]").forEach(b => b.addEventListener("click", () => {
+    const inp = b.parentNode.querySelector("input");
+    inp.value = RANDOM_ARTIST;
+    inp.dispatchEvent(new Event("input", { bubbles:true }));
+    inp.focus(); inp.select();
+  }));
   $("#cfgName").addEventListener("input", e => { settings.residentName = e.target.value.slice(0, 40); saveSettings(); });
   form.addEventListener("change", e => {
     if (e.target.name === "cfgDiff"){ settings.difficulty = e.target.value; saveSettings(); }
@@ -3283,7 +3550,7 @@ function openConfig(actId){
     updatePreview();
   });
   form.addEventListener("input", e => {
-    if (e.target.dataset && e.target.dataset.opt && e.target.type === "text"){ settings.actOpts[act.id] = readOpts(act); saveSettings(); updatePreview(); }
+    if (e.target.dataset && e.target.dataset.opt && e.target.type === "text"){ settings.actOpts[act.id] = readOpts(act); saveSettings(); syncOptVisibility(act); updatePreview(); }
   });
   $("#cfgName").addEventListener("input", updatePreview);
   $("#cfgDate").addEventListener("input", updatePreview);
@@ -3291,7 +3558,7 @@ function openConfig(actId){
   form.addEventListener("submit", e => {
     e.preventDefault();
     syncVar();
-    const count = settings.variations, cfg = currentCfg();
+    const count = act.singlePage ? 1 : settings.variations, cfg = currentCfg();
     addBatch(act, cfg, previewSeed, count);   // version 1 is exactly the page in the preview
     previewSeed = newSeed();
     updatePreview();
