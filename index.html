@@ -1096,6 +1096,37 @@ body { padding-left: var(--sb-w); }
 .arb-banner[hidden]{display:none}
 .arb-banner small{display:block;margin-top:4px;font-size:14.5px;color:#cfe2d8}
 
+/* monthly bundle */
+.arb-bundle{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;margin:14px 0 0;padding:12px 14px;border-radius:14px;background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.45)}
+.arb-btn-bundle{background:#fbbf24;border-color:#fbbf24;color:#231a02}
+.arb-btn-bundle:hover{background:#fcd34d;border-color:#fcd34d;color:#231a02}
+.arb-bundle-badge{flex:1 1 260px;font-size:14.5px;font-weight:700;color:#fde68a;line-height:1.4}
+.mb-dialog{width:min(660px,calc(100vw - 32px));max-height:calc(100vh - 32px)}
+.mb-dialog form{max-height:calc(100vh - 40px);overflow:auto;margin:0!important}
+.mb-grid{display:grid;grid-template-columns:1fr 1fr 1.4fr;gap:10px;margin:0 0 14px}
+.mb-grid label{display:grid;gap:5px;font-weight:700;font-size:15px;color:#fff}
+.mb-grid .mb-wide{grid-column:1/-1}
+.mb-grid select,.mb-grid input{min-height:46px;width:100%;box-sizing:border-box;padding:8px 10px;border-radius:10px;border:2px solid rgba(216,243,220,.3);background:#0b1412;color:#eef6f1;font:inherit;font-size:16px;font-weight:400}
+.mb-grid select:focus-visible,.mb-grid input:focus-visible,.mb-res-tools button:focus-visible{outline:3px solid #7ad3a4;outline-offset:2px}
+.mb-dialog .mb-res{margin-top:14px}
+.mb-res-tools{display:flex;gap:8px;margin:0 0 8px}
+.mb-res-tools button{min-height:38px;padding:4px 14px;border-radius:8px;border:1px solid rgba(216,243,220,.35);background:transparent;color:#cfe2d8;font:inherit;font-size:14.5px;cursor:pointer}
+.mb-res-list{max-height:230px;overflow:auto;display:grid;gap:6px;padding:2px}
+.mb-res-item{display:flex;gap:10px;align-items:center;min-height:46px;padding:6px 12px;border-radius:10px;border:1px solid rgba(216,243,220,.2);background:#0b1412;cursor:pointer;font-size:16px}
+.mb-res-item:has(input:checked){border-color:#52b788}
+.mb-res-item input{flex:none;width:20px;height:20px;margin:0;accent-color:#52b788}
+.mb-res-item small{margin-left:auto;font-size:13.5px;color:#b3c9bf;text-align:right}
+.mb-empty{margin:0;font-size:15px;color:#b3c9bf}
+.mb-warn{margin:10px 0 0;padding:10px 12px;border-radius:10px;background:#ffedd5;color:#7c2d12;font-weight:700;font-size:15px;line-height:1.4}
+.mb-warn[hidden]{display:none}
+.mb-bar{height:22px;margin:16px 0 10px;border-radius:999px;background:#0b1412;border:2px solid rgba(216,243,220,.3);overflow:hidden}
+.mb-bar span{display:block;height:100%;width:0;background:linear-gradient(90deg,#52b788,#fbbf24);transition:width .2s}
+.mb-status{margin:0;font-size:17px;font-weight:700;min-height:1.5em;color:#fff;overflow-wrap:anywhere}
+.mb-toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:2147482000;width:max-content;max-width:calc(100vw - 32px);box-sizing:border-box;padding:14px 22px;border-radius:14px;border:2px solid #10b981;background:#064e3b;color:#fff;font:700 17px/1.4 "Trebuchet MS","Segoe UI",sans-serif;box-shadow:0 14px 40px rgba(0,0,0,.4)}
+.mb-toast[hidden]{display:none}
+@media (max-width:560px){.mb-grid{grid-template-columns:1fr 1fr}.mb-grid label:nth-child(3){grid-column:1/-1}.arb-btn-bundle{flex:1 1 100%;white-space:normal}}
+@media (prefers-reduced-motion:reduce){.mb-bar span{transition:none}}
+@media print{.mb-toast,.mb-dialog{display:none!important}}
 /* conflict chooser */
 .arb-dialog{width:min(560px,calc(100vw - 32px));padding:0;border:2px solid #52b788;border-radius:18px;background:#101b18;color:#eef6f1;font-family:"Trebuchet MS","Segoe UI",sans-serif;box-shadow:0 24px 60px rgba(0,0,0,.55)}
 .arb-dialog::backdrop{background:rgba(3,10,8,.7)}
@@ -1560,6 +1591,50 @@ html.tb-open,html.tb-open body{overflow:hidden !important;overscroll-behavior:no
     </div>
   </div>
   <p class="arb-msg" id="arbMsg">Choose a saved resident to fill in the packet below from their profile, or make a new profile. Profiles stay on this computer.</p>
+  <!-- ── Monthly Bundle: every resident in one PDF ── -->
+  <div class="arb-bundle">
+    <button type="button" class="arb-btn arb-btn-bundle" id="mbOpen" aria-describedby="mbBadge" aria-haspopup="dialog"><span aria-hidden="true">📅</span> Download Month (All Residents)</button>
+    <span class="arb-bundle-badge" id="mbBadge"><span aria-hidden="true">⚡</span> Enterprise Feature: Plan your entire facility's monthly activities in 1 click.</span>
+  </div>
+  <dialog class="arb-dialog mb-dialog" id="monthly-bundle-modal" aria-labelledby="mbTitle">
+    <form method="dialog" onsubmit="return false">
+      <div id="mbSetup">
+        <h3 id="mbTitle"><span aria-hidden="true">📅</span> Monthly Activity Bundle</h3>
+        <p class="arb-dialog-list">One PDF with a personalized packet for every resident you choose. Made entirely on this computer; nothing is sent anywhere.</p>
+        <div class="mb-grid">
+          <label>Month<select id="mbMonth"></select></label>
+          <label>Year<select id="mbYear"></select></label>
+          <label>Paper<select id="mbPaper"><option value="letter">Letter (8.5 × 11 in)</option><option value="a4">A4</option></select></label>
+          <label class="mb-wide">Facility name (optional)<input type="text" id="mbFac" maxlength="80" autocomplete="off"></label>
+        </div>
+        <fieldset>
+          <legend>What to include</legend>
+          <label class="arb-choice"><input type="checkbox" id="mbWeekly" checked><span><b>Weekly Packets</b><small>4 activity pages per resident: word search, conversation cards, finish the thought, matching pairs</small></span></label>
+          <label class="arb-choice"><input type="checkbox" id="mbCovers" checked><span><b>Resident Divider &amp; Cover Sheets</b><small>&ldquo;October Activity Packet for &hellip;&rdquo; before each resident</small></span></label>
+          <label class="arb-choice"><input type="checkbox" id="mbIndex" checked><span><b>Facility Master Index</b><small>Page 1 for staff: every resident, their favorite things and page numbers</small></span></label>
+        </fieldset>
+        <fieldset class="mb-res">
+          <legend>Residents <span id="mbCount"></span></legend>
+          <div class="mb-res-tools"><button type="button" id="mbAll">Select all</button><button type="button" id="mbNone">Clear all</button></div>
+          <div class="mb-res-list" id="mbList"></div>
+        </fieldset>
+        <p class="arb-dialog-note" id="mbSummary"></p>
+        <p class="mb-warn" id="mbWarn" role="alert" hidden></p>
+        <div class="arb-dialog-actions">
+          <button type="button" class="arb-btn" id="mbClose">Close</button>
+          <button type="button" class="arb-btn arb-btn-primary" id="mbGo"><span aria-hidden="true">📥</span> Generate Bundle PDF</button>
+        </div>
+      </div>
+      <div id="mbRun" hidden>
+        <h3>Building your monthly bundle&hellip;</h3>
+        <div class="mb-bar" id="mbBar" role="progressbar" aria-label="Bundle progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="mbFill"></span></div>
+        <p class="mb-status" id="mbStatus" aria-live="polite"></p>
+        <p class="arb-dialog-note">Keep this tab open. You can cancel at any time; nothing is saved until it finishes.</p>
+        <div class="arb-dialog-actions"><button type="button" class="arb-btn arb-btn-danger" id="mbCancel">Cancel</button></div>
+      </div>
+    </form>
+  </dialog>
+  <div class="mb-toast" id="mbToast" role="status" aria-live="polite" hidden></div>
   <!-- ── Data Backup & Restore (inside the Active Resident bar) ── -->
   <details class="arb-backup" id="arbBackup">
     <summary><span>Data Backup &amp; Restore</span><span class="arb-backup-count" id="arbBackupCount"></span></summary>
@@ -11304,7 +11379,7 @@ function generateAilmentPDF(ailmentType) {
     var add = function(lines, size, style, gapAfter){ parts.push({ lines:lines, size:size, style:style, gap:gapAfter }); };
     var inner = w - 0.8 * IN;
     if (pg.fac) add(k.wrap(pg.fac.toUpperCase(), 16, "bold", inner), 16, "bold", 0.3 * IN);
-    add(k.wrap("Prepared for:", Math.max(28, 28 * qps * f), "normal", inner), Math.max(28, 28 * qps * f), "normal", 4);
+    add(k.wrap(pg.lead || "Prepared for:", Math.max(28, 28 * qps * f), "normal", inner), Math.max(28, 28 * qps * f), "normal", 4);
     var nSize = Math.max(48, 56 * qps * f);
     k.font(nSize, "bold");
     while (nSize > 30 && k.d.getTextWidth(safe(pg.name || "You")) > inner) { nSize -= 2; k.font(nSize, "bold"); }
@@ -11578,6 +11653,9 @@ function generateAilmentPDF(ailmentType) {
     return { filename:name, pages:pages.length, layout:layout, doc:doc };
   }
   window.exportPacketToPDF = exportPacketToPDF;
+  /* Drawing kit shared with the Monthly Bundle engine (same pages, same rules). */
+  window.qpPdf = { PAPER:PAPER, M:M, IN:IN, SLACK:SLACK, safe:safe, Kit:Kit, header:header, instructions:instructions, staffLine:staffLine,
+    fitAndPaint:fitAndPaint, pagesFrom:pagesFrom, painters:{ cover:paintCover, wordsearch:paintWordSearch, cards:paintCards, trivia:paintTrivia } };
 
   btn.addEventListener("click", function(){
     if (btn.disabled) return;
@@ -11596,6 +11674,456 @@ function generateAilmentPDF(ailmentType) {
       } else pill.hidden = true;
       setTimeout(function(){ if (!btn.disabled) pill.hidden = true; }, 5000);
     }); });
+  });
+})();
+</script>
+<script>
+/* =====================================================================
+   MONTHLY BUNDLE: "Download Month (All Residents)"
+   ---------------------------------------------------------------------
+   One master PDF for the whole facility: an index page, then for every
+   chosen resident a cover sheet and four weekly activity pages
+   (word search, conversation cards, finish the thought, matching pairs).
+   Built with the same vector drawing kit as "Download PDF Packet"
+   (window.qpPdf, jsPDF embedded in this file). No network, no canvas
+   screenshots, so a 100-resident, 500-page bundle stays a few MB.
+   ===================================================================== */
+(function(){
+  "use strict";
+  var openBtn = document.getElementById("mbOpen"), dlg = document.getElementById("monthly-bundle-modal");
+  if (!openBtn || !dlg) return;
+  var $m = function(id){ return document.getElementById(id); };
+  var MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+  var PAGES_WEEKLY = 4;
+
+  /* ---------------- 1. roster scan ---------------- */
+  function scanRoster(){
+    var list = [];
+    for (var i = 0; i < localStorage.length; i++){
+      var key = localStorage.key(i);
+      if (!key || key.indexOf("cognicopia_resident_") !== 0) continue;
+      try {
+        var p = JSON.parse(localStorage.getItem(key));
+        if (p && p.tier1_core && String(p.tier1_core.preferredName || "").trim()) list.push(p);
+      } catch (e){ /* a damaged record is skipped, never fatal */ }
+    }
+    list.sort(function(a, b){ return a.tier1_core.preferredName.localeCompare(b.tier1_core.preferredName) || String(a.id).localeCompare(String(b.id)); });
+    return list;
+  }
+  function ctxOf(p){ return typeof window.getActiveResidentContext === "function" ? window.getActiveResidentContext(p) : { name:p.tier1_core.preferredName, stage:"middle", print:{} }; }
+  var STAGE = { early:"Early stage", middle:"Middle stage", late:"Late stage" };
+  var VISION = { standard:"Standard print", large:"Large print", xl:"Extra-large print" };
+  function favorites(p, ctx){
+    // interests that fall under the resident's Topics to Avoid are left off the printed index too
+    var t1 = p.tier1_core, out = [], avoid = (ctx && ctx.avoid && ctx.avoid.topics) || [];
+    var ok = function(x){ return x && x.label && !(LIST_TOPIC[x.code] && avoid.indexOf(LIST_TOPIC[x.code]) !== -1); };
+    if (ok(t1.occupation)) out.push(t1.occupation.label);
+    (t1.topHobbies || []).filter(ok).slice(0, 3).forEach(function(h){ out.push(h.label); });
+    return out.join(", ") || "Not filled in yet";
+  }
+
+  /* ---------------- 2. matching pairs (week 4) ----------------
+     Montessori-style "things that go together": concrete, familiar
+     objects, no right-or-wrong pressure. Mazes are left out on purpose:
+     they lean on planning and visual scanning, which decline early in
+     dementia and tend to frustrate rather than engage. */
+  var PAIRS_GENERAL = [["Cup","Saucer"],["Salt","Pepper"],["Bread","Butter"],["Needle","Thread"],["Hammer","Nail"],["Pen","Paper"],
+    ["Shoe","Sock"],["Lock","Key"],["Knife","Fork"],["Pillow","Blanket"],["Stamp","Envelope"],["Milk","Cookies"],["Table","Chair"],
+    ["Toothbrush","Toothpaste"],["Bacon","Eggs"],["Hat","Coat"],["Soap","Towel"],["Broom","Dustpan"],["Candle","Match"],["Bat","Ball"]];
+  var PAIRS_BY = {
+    gardening:[["Seeds","Soil"],["Watering can","Flowers"],["Rake","Leaves"]], sewing:[["Needle","Thread"],["Button","Buttonhole"],["Thimble","Finger"]],
+    seamstress:[["Needle","Thread"],["Button","Buttonhole"],["Tape measure","Pattern"]], knitting:[["Yarn","Knitting needles"],["Scarf","Mittens"]],
+    fishing:[["Rod","Reel"],["Hook","Worm"]], woodworking:[["Saw","Wood"],["Screw","Screwdriver"],["Sandpaper","Board"]],
+    carpenter:[["Saw","Wood"],["Hammer","Nail"],["Level","Shelf"]], trades:[["Wrench","Bolt"],["Screw","Screwdriver"]],
+    baking:[["Flour","Sugar"],["Rolling pin","Dough"],["Cake","Frosting"]], cooking:[["Apron","Oven mitt"],["Salt","Pepper"],["Bacon","Eggs"]],
+    cook:[["Apron","Oven mitt"],["Salt","Pepper"],["Pancakes","Syrup"]], homemaker:[["Iron","Ironing board"],["Mop","Bucket"],["Apron","Oven mitt"]],
+    reading:[["Book","Bookmark"],["Reading glasses","Newspaper"]], singing:[["Record","Record player"],["Piano","Bench"]],
+    dancing:[["Dance shoes","Dance floor"],["Record","Record player"]], art:[["Paint","Paintbrush"],["Canvas","Easel"]],
+    birds:[["Bird","Nest"],["Birdseed","Feeder"]], sports:[["Bat","Ball"],["Basketball","Hoop"],["Football","Helmet"]],
+    "golf-bowling":[["Golf club","Golf ball"],["Bowling ball","Pins"]], travel:[["Suitcase","Ticket"],["Map","Compass"]],
+    animals:[["Dog","Bone"],["Horse","Saddle"]], collecting:[["Coins","Piggy bank"],["Stamps","Album"]],
+    "board-games":[["Checkers","Checkerboard"],["Dice","Game board"]], cards:[["Deck of cards","Card table"]],
+    farmer:[["Tractor","Plow"],["Hay","Barn"],["Cow","Milk pail"],["Hen","Eggs"]], teacher:[["Chalk","Blackboard"],["Pencil","Eraser"],["Apple","Teacher"]],
+    office:[["Stapler","Staples"],["Pencil","Sharpener"],["Typewriter","Ribbon"]], bookkeeper:[["Pencil","Eraser"],["Ledger","Adding machine"]],
+    business:[["Desk","Chair"],["Telephone","Receiver"]], mechanic:[["Wrench","Bolt"],["Tire","Jack"]], electrician:[["Light bulb","Lamp"],["Plug","Outlet"]],
+    railroad:[["Train","Tracks"],["Conductor","Ticket"]], postal:[["Letter","Mailbox"],["Stamp","Envelope"]],
+    shop:[["Cash register","Receipt"],["Shopping cart","Groceries"]], engineer:[["Blueprint","Ruler"],["Hard hat","Toolbox"]],
+    factory:[["Lunch pail","Thermos"],["Time card","Time clock"]], "police-fire":[["Fire truck","Ladder"],["Fire hose","Hydrant"]],
+    driver:[["Car","Keys"],["Gas","Pump"]], "classic-cars":[["Car","Keys"],["Tire","Jack"]]
+  };
+  var LIST_TOPIC = { fishing:"water", "classic-cars":"driving", driver:"driving", mechanic:"driving", faith:"religion", clergy:"religion",
+    military:"war", nurse:"medical", doctor:"medical" };
+  function matchingPairs(src, rng){
+    var n = src.stage === "late" ? 4 : src.stage === "early" ? 6 : 5;
+    var used = {}, out = [];
+    var tokens = function(pair){ return (pair[0] + " " + pair[1]).toLowerCase().split(/\s+/); };
+    var tryAdd = function(pair){
+      if (out.length >= n) return;
+      if (src.blocked.text(pair[0]) || src.blocked.text(pair[1]) || src.blocked.word(pair[0].replace(/\s/g, "")) || src.blocked.word(pair[1].replace(/\s/g, ""))) return;
+      var t = tokens(pair);
+      for (var i = 0; i < t.length; i++) if (used[t[i]]) return;      // no shared word = never two right answers
+      t.forEach(function(w){ used[w] = 1; });
+      out.push(pair);
+    };
+    var codes = [];
+    if (src.occupation && src.occupation.code) codes.push(src.occupation.code);
+    codes = codes.concat(src.hobbies || []);
+    // at most one pair per interest: two baking pairs (Flour-Sugar, Cake-Frosting) could be matched either way
+    var personal = [];
+    codes.forEach(function(c){
+      if (LIST_TOPIC[c] && src.blocked.topics.indexOf(LIST_TOPIC[c]) !== -1) return;
+      if (PAIRS_BY[c]) personal.push(rng.shuffle(PAIRS_BY[c].slice()));
+    });
+    rng.shuffle(personal).forEach(function(options){
+      if (out.length >= Math.ceil(n / 2)) return;
+      for (var i = 0, before = out.length; i < options.length && out.length === before; i++) tryAdd(options[i]);
+    });
+    rng.shuffle(PAIRS_GENERAL.slice()).forEach(tryAdd);
+    var right = out.map(function(p){ return p[1]; });
+    // shuffle the right column so no answer sits beside its partner
+    for (var tries = 0; tries < 60; tries++){
+      right = rng.shuffle(right.slice());
+      if (right.every(function(w, i){ return w !== out[i][1]; })) break;
+    }
+    if (!right.every(function(w, i){ return w !== out[i][1]; })) right = out.map(function(p, i){ return out[(i + 1) % out.length][1]; });
+    return { pairs:out, left:out.map(function(p){ return p[0]; }), right:right };
+  }
+  function paintMatching(k, pg, f, draw){
+    var P = window.qpPdf, IN = P.IN, M = P.M, qps = pg.qps, s = pg.sheet;
+    var y = P.header(k, s, f, qps, draw);
+    y = P.instructions(k, s.instructions, y, f, qps, draw);
+    var staff = "For staff · pairs: " + pg.m.pairs.map(function(p){ return p[0] + " – " + p[1]; }).join("   ");
+    var bottom = P.staffLine(k, staff, draw) - P.SLACK;
+    var size = Math.max(24, 28 * qps * f), lane = 1.3 * IN, colW = (k.width - lane) / 2, pad = 0.16 * IN, inner = colW - 2 * pad;
+    k.font(size, "bold");
+    var tooWide = false;
+    var cell = function(word){
+      var lines = k.wrap(word, size, "bold", inner);
+      String(word).split(/\s+/).forEach(function(w){ if (k.d.getTextWidth(P.safe(w)) > inner) tooWide = true; });
+      return lines;
+    };
+    var rows = pg.m.left.map(function(w, i){
+      var L = cell(w), R = cell(pg.m.right[i]);
+      return { L:L, R:R, h: Math.max(L.length, R.length) * size * 1.15 + 2 * pad };
+    });
+    var used = rows.reduce(function(a, r){ return a + r.h; }, 0), minGap = 0.22 * IN;
+    var fits = !tooWide && used + minGap * rows.length <= bottom - y - 0.1 * IN;
+    if (!draw) return fits;
+    var gap = (bottom - y - 0.1 * IN - used) / rows.length, top = y + 0.1 * IN + gap / 2;
+    var xL = M, xR = k.right - colW;
+    rows.forEach(function(r){
+      [[xL, r.L], [xR, r.R]].forEach(function(side){
+        k.d.setLineWidth(3); k.stroke(68);
+        if (k.ink === "gray"){ k.d.setFillColor(242); k.d.roundedRect(side[0], top, colW, r.h, 10, 10, "FD"); }
+        else k.d.roundedRect(side[0], top, colW, r.h, 10, 10, "S");
+        var ty = top + (r.h - side[1].length * size * 1.15) / 2;
+        k.textLines(side[1], side[0] + colW / 2, ty, size, "bold", "center", 1.15);
+      });
+      k.d.setFillColor(0);
+      k.d.circle(xL + colW + 0.18 * IN, top + r.h / 2, 5, "F");
+      k.d.circle(xR - 0.18 * IN, top + r.h / 2, 5, "F");
+      top += r.h + gap;
+    });
+    return true;
+  }
+
+  /* ---------------- 3. facility index (staff page) ---------------- */
+  function indexLayout(k, rows, draw, meta){
+    var P = window.qpPdf, M = P.M, IN = P.IN, pages = [[]];
+    var widths = [0.34, 1.55, 2.95, 1.35, 1.05].map(function(w){ return w * IN * k.width / (7.24 * IN); });
+    var xs = [M]; for (var i = 1; i < widths.length; i++) xs.push(xs[i - 1] + widths[i - 1]);
+    var bottom = k.footTop - 12, size = 13;
+    var headTop = function(first){
+      var y = M;
+      if (first){
+        y += 34; y += 22;                       // title + subtitle
+        y += 12 + 18;                           // rule + summary
+        if (meta.weekly) y += 18 + 4 * 17 + 12; // week plan
+      } else y += 30;
+      return y + 12 + 26;                       // table header
+    };
+    var y = headTop(true), pageRows = pages[0];
+    var measured = rows.map(function(r){
+      var fav = k.wrap(r.fav, size, "normal", widths[2] - 8), name = k.wrap(r.name, size, "bold", widths[1] - 8), pr = k.wrap(r.print, 11.5, "normal", widths[3] - 8);
+      return { r:r, fav:fav, name:name, pr:pr, h: Math.max(fav.length, name.length, pr.length) * size * 1.3 + 10 };
+    });
+    measured.forEach(function(m){
+      if (y + m.h > bottom && pageRows.length){ pages.push([]); pageRows = pages[pages.length - 1]; y = headTop(false); }
+      pageRows.push(m); y += m.h;
+    });
+    if (!draw) return pages.length;
+    pages.forEach(function(list, pi){
+      if (pi) { draw.newPage(); }
+      var d = k.d, yy = M;
+      d.setTextColor(0);
+      if (pi === 0){
+        k.font(28, "bold"); d.text(P.safe("Monthly Activity Bundle"), M, yy + 24); yy += 34;
+        k.font(15, "normal"); d.text(P.safe(meta.monthLabel + (meta.fac ? "  ·  " + meta.fac : "")), M, yy + 13); yy += 22;
+        d.setLineWidth(3); k.stroke(68); d.line(M, yy + 4, k.right, yy + 4); yy += 12;
+        k.font(12, "normal");
+        d.text(P.safe(meta.count + (meta.count === 1 ? " resident" : " residents") + "  ·  " + meta.total + " pages  ·  made on this computer " + meta.made), M, yy + 12); yy += 18;
+        if (meta.weekly){
+          k.font(12, "bold"); d.text("Suggested weekly plan", M, yy + 14); yy += 18;
+          k.font(12, "normal");
+          ["Week 1: Word search from their own life", "Week 2: Conversation cards (talk together, no wrong answers)",
+           "Week 3: Finish the thought", "Week 4: Matching pairs (things that go together)"].forEach(function(t){ d.text(P.safe(t), M + 10, yy + 12); yy += 17; });
+          yy += 12;
+        }
+      } else { k.font(18, "bold"); d.text(P.safe("Monthly Activity Bundle (continued)"), M, yy + 18); yy += 30; }
+      yy += 12;
+      // table header
+      if (k.ink === "gray"){ d.setFillColor(230); d.rect(M, yy, k.width, 26, "F"); }
+      k.font(12, "bold");
+      ["#", "Resident", "Favorite things", "Print", "Pages"].forEach(function(t, i){ d.text(t, xs[i] + 4, yy + 17); });
+      d.setLineWidth(2); k.stroke(); d.line(M, yy + 26, k.right, yy + 26);
+      yy += 26;
+      list.forEach(function(m){
+        k.textLines([String(m.r.n)], xs[0] + 4, yy + 5, size, "normal");
+        k.textLines(m.name, xs[1] + 4, yy + 5, size, "bold");
+        k.textLines(m.fav, xs[2] + 4, yy + 5, size, "normal");
+        k.textLines(m.pr, xs[3] + 4, yy + 6, 11.5, "normal");
+        k.textLines([m.r.pages], xs[4] + 4, yy + 5, size, "bold");
+        yy += m.h;
+        d.setLineWidth(0.75); k.stroke(); d.line(M, yy, k.right, yy);
+      });
+      draw.footer("Facility index");
+    });
+    return pages.length;
+  }
+
+  /* ---------------- 4. the engine ---------------- */
+  var running = null;
+
+  /**
+   * generateMonthlyFacilityBundle(opts)
+   * opts: { month:0-11, year, paper:"letter"|"a4", fac, weekly, covers, index, ids:[resident ids] (default: all),
+   *         onProgress(i, n, name), save (default true) }
+   * Returns a Promise of { filename, pages, residents, doc } or null when cancelled.
+   * The work runs one resident per step so the screen stays responsive and Cancel works.
+   */
+  function generateMonthlyFacilityBundle(opts){
+    opts = opts || {};
+    var P = window.qpPdf;
+    if (!P || !window.jspdf || !window.jspdf.jsPDF || !window.buildProfilePacket) return Promise.reject(new Error("The built-in PDF tools did not load."));
+    if (running) return Promise.reject(new Error("A bundle is already being made."));
+    var now = new Date();
+    var month = opts.month != null ? +opts.month : now.getMonth(), year = opts.year != null ? +opts.year : now.getFullYear();
+    var monthLabel = MONTHS[month] + " " + year;
+    var weekly = opts.weekly !== false, covers = opts.covers !== false, withIndex = opts.index !== false;
+    if (!weekly && !covers) return Promise.reject(new Error("Choose weekly packets or cover sheets."));
+    var all = scanRoster(), ids = opts.ids ? opts.ids.map(String) : null;
+    var roster = ids ? all.filter(function(p){ return ids.indexOf(String(p.id)) !== -1; }) : all;
+    if (!roster.length) return Promise.reject(new Error("There are no saved resident profiles to include."));
+    var paperKey = opts.paper === "a4" ? "a4" : "letter", paper = P.PAPER[paperKey];
+    var fac = opts.fac != null ? String(opts.fac).trim() : ((document.getElementById("fac") || {}).value || "").trim();
+
+    var perRes = (covers ? 1 : 0) + (weekly ? PAGES_WEEKLY : 0);
+    var doc = new window.jspdf.jsPDF({ unit:"pt", format:paperKey, orientation:"portrait", compress:true });
+    doc.setProperties({ title:"Cognicopia monthly activity bundle", subject:monthLabel, creator:"Cognicopia (offline)" });
+    var pageNo = 0, total = 0, first = true;
+    var newPage = function(){ if (!first) doc.addPage(paperKey, "portrait"); first = false; pageNo++; doc.setFillColor(255); doc.rect(0, 0, paper.w, paper.h, "F"); };
+    var running_header = function(k){
+      k.font(9, "normal"); doc.setTextColor(0);
+      doc.text(P.safe("Cognicopia Monthly Memory Care Bundle | " + monthLabel), P.M, 24);
+    };
+    var footer = function(k, who){
+      doc.setLineWidth(1); k.stroke(); doc.line(P.M, k.footTop, k.right, k.footTop);
+      k.font(11, "normal"); doc.setTextColor(0);
+      doc.text(P.safe(who + " | Page " + pageNo + " of " + total), P.M, k.footTop + 14);
+      doc.text("Cognicopia", k.right, k.footTop + 14, { align:"right" });
+    };
+
+    // index rows (page ranges are fixed per resident, so they are known before drawing)
+    var rows = roster.map(function(p, i){
+      var c = ctxOf(p);
+      return { n:i + 1, id:p.id, name:p.tier1_core.preferredName, fav:favorites(p, c),
+               print:(STAGE[c.stage] || "Middle stage") + " · " + (VISION[c.print && c.print.vision] || "Large print"), pages:"" };
+    });
+    var kIdx = new P.Kit(doc, paper, "bw");
+    var indexPages = withIndex ? indexLayout(kIdx, rows, false, {}) : 0;
+    total = indexPages + perRes * roster.length;
+    rows.forEach(function(r, i){ var a = indexPages + i * perRes + 1; r.pages = a === a + perRes - 1 ? String(a) : a + "–" + (a + perRes - 1); });
+    if (withIndex){
+      var made = now.toLocaleDateString("en-US", { month:"short", day:"numeric", year:"numeric" });
+      newPage(); running_header(kIdx);
+      indexLayout(kIdx, rows, { newPage:function(){ newPage(); running_header(kIdx); }, footer:function(who){ footer(kIdx, who); } },
+        { monthLabel:monthLabel, fac:fac, count:roster.length, total:total, made:made, weekly:weekly });
+    }
+
+    var state = { cancelled:false };
+    running = state;
+    var built = 0, problems = [];
+
+    function residentPages(p, pk){
+      var src = pk.src, name = src.name || p.tier1_core.preferredName, base = P.pagesFrom(pk), out = [];
+      var get = function(kind){ return base.filter(function(x){ return x.kind === kind; })[0]; };
+      var clone = function(o, extra){ var c = {}, key; for (key in o) c[key] = o[key]; for (key in extra) c[key] = extra[key]; return c; };
+      var week = function(n, sheet, sub){ return clone(sheet, { subtitle:"Week " + n + " · " + (sub || sheet.subtitle || "") }); };
+      if (covers) out.push({ kind:"cover", name:name, fac:fac, month:monthLabel, qps:src.scale, lead:MONTHS[month] + " Activity Packet for",
+        inside: weekly ? ["Week 1 · Word search", "Week 2 · Conversation cards", "Week 3 · Finish the thought", "Week 4 · Matching pairs"] : [] });
+      if (weekly){
+        var ws = get("wordsearch"), cd = get("cards"), tv = get("trivia");
+        ws.sheet = week(1, ws.sheet); out.push(ws);
+        cd.sheet = week(2, cd.sheet, "Two conversation cards"); out.push(cd);
+        tv.sheet = week(3, tv.sheet); out.push(tv);
+        var m = matchingPairs(src, window.qpEngine.makeRng(window.qpEngine.newSeed()));
+        out.push({ kind:"matching", m:m, qps:src.scale, sheet:{ title:"Things That Go Together", subtitle:"Week 4 · Matching pairs for " + name,
+          instructions: src.stage === "late" ? "Point to two things that go together, or draw a line between them. Talk about each one."
+                                             : "Draw a line from each word on the left to the word that goes with it on the right." } });
+      }
+      return { name:name, pages:out, ink:src.ink };
+    }
+
+    var painters = { cover:P.painters.cover, wordsearch:P.painters.wordsearch, cards:P.painters.cards, trivia:P.painters.trivia, matching:paintMatching };
+
+    function step(i, resolve, reject){
+      try { stepBody(i, resolve, reject); } catch (e){ running = null; doc = null; reject(e); }
+    }
+    function stepBody(i, resolve, reject){
+      if (state.cancelled){ running = null; doc = null; resolve(null); return; }
+      if (i >= roster.length){
+        running = null;
+        var fname = "Cognicopia_Monthly_Bundle_" + MONTHS[month] + "_" + year + "_" + (roster.length === all.length ? "All_Residents" : roster.length + "_Residents") + ".pdf";
+        if (opts.save !== false) doc.save(fname);
+        resolve({ filename:fname, pages:pageNo, residents:roster.length, problems:problems, doc:doc });
+        return;
+      }
+      var p = roster[i];
+      if (opts.onProgress) opts.onProgress(i + 1, roster.length, p.tier1_core.preferredName);
+      try {
+        var prev = window.activeResident, pk;
+        try { window.activeResident = p; pk = window.buildProfilePacket({ cover:false, wordsearch:true, cards:true, trivia:true }); }
+        finally { window.activeResident = prev; }
+        var res = residentPages(p, pk), k = new P.Kit(doc, paper, res.ink);
+        res.pages.forEach(function(pg){
+          newPage(); running_header(k);
+          var r = P.fitAndPaint(k, painters[pg.kind], pg);
+          if (!r.fits) problems.push(res.name + ": " + pg.kind);
+          footer(k, "Resident: " + res.name);
+        });
+        built++;
+      } catch (e){
+        // keep the numbering in the index right: fill this resident's pages with a short note
+        problems.push(p.tier1_core.preferredName + ": " + e.message);
+        var kk = new P.Kit(doc, paper, "bw");
+        for (var j = pageNo - indexPages - i * perRes; j < perRes; j++){
+          newPage(); running_header(kk);
+          kk.textLines(kk.wrap("This page could not be made for " + p.tier1_core.preferredName + ". Open their profile, check it, and make their packet from the Packet Builder.", 18, "normal", kk.width), P.M, P.M + 40, 18, "normal");
+          footer(kk, "Resident: " + p.tier1_core.preferredName);
+        }
+      }
+      // yield so the progress bar paints and Cancel can be pressed
+      setTimeout(function(){ step(i + 1, resolve, reject); }, 0);
+    }
+    return new Promise(function(resolve, reject){ setTimeout(function(){ step(0, resolve, reject); }, 0); });
+  }
+  function cancelMonthlyBundle(){ if (running) running.cancelled = true; }
+  window.generateMonthlyFacilityBundle = generateMonthlyFacilityBundle;
+  window.exportMonthlyBundleToPDF = function(opts){ return generateMonthlyFacilityBundle(opts); };
+  window.cancelMonthlyBundle = cancelMonthlyBundle;
+
+  /* ---------------- 5. the modal ---------------- */
+  var setup = $m("mbSetup"), run = $m("mbRun"), list = $m("mbList"), warn = $m("mbWarn"), summary = $m("mbSummary"), go = $m("mbGo");
+  var toast = $m("mbToast"), toastTimer = null;
+  function showToast(text){
+    toast.textContent = text; toast.hidden = false;
+    clearTimeout(toastTimer); toastTimer = setTimeout(function(){ toast.hidden = true; }, 7000);
+  }
+  function fillPickers(){
+    var now = new Date(), m = now.getMonth(), y = now.getFullYear();
+    if (now.getDate() >= 20){ m++; if (m > 11){ m = 0; y++; } }   // late in the month, plan the next one
+    $m("mbMonth").innerHTML = MONTHS.map(function(n, i){ return '<option value="' + i + '"' + (i === m ? " selected" : "") + ">" + n + "</option>"; }).join("");
+    var ys = []; for (var yy = now.getFullYear() - 1; yy <= now.getFullYear() + 2; yy++) ys.push('<option value="' + yy + '"' + (yy === y ? " selected" : "") + ">" + yy + "</option>");
+    $m("mbYear").innerHTML = ys.join("");
+  }
+  function esc(s){ return String(s).replace(/[&<>"']/g, function(c){ return { "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]; }); }
+  function fillList(){
+    var roster = scanRoster(), papers = { letter:0, a4:0 };
+    list.innerHTML = roster.map(function(p){
+      var c = ctxOf(p); papers[(c.print && c.print.paper) === "a4" ? "a4" : "letter"]++;
+      return '<label class="mb-res-item"><input type="checkbox" value="' + esc(p.id) + '" checked><span>' + esc(p.tier1_core.preferredName) +
+        '</span><small>' + esc((STAGE[c.stage] || "Middle stage") + " · " + (VISION[c.print && c.print.vision] || "Large print")) + "</small></label>";
+    }).join("") || '<p class="mb-empty">No saved resident profiles yet. Click ➕ New Profile to add one.</p>';
+    $m("mbPaper").value = papers.a4 > papers.letter ? "a4" : "letter";
+    return roster.length;
+  }
+  function chosenIds(){ return Array.prototype.map.call(list.querySelectorAll("input:checked"), function(c){ return c.value; }); }
+  function freeLeft(){
+    if (typeof unlocked === "function" && unlocked()) return Infinity;
+    if (typeof WATERMARK_DEMOS !== "undefined" && WATERMARK_DEMOS) return Infinity;
+    return Math.max(0, (typeof FREE_RUNS !== "undefined" ? FREE_RUNS : 10) - (typeof runsUsed === "function" ? runsUsed() : 0));
+  }
+  function refresh(){
+    var n = chosenIds().length, weekly = $m("mbWeekly").checked, covers = $m("mbCovers").checked, idx = $m("mbIndex").checked;
+    var per = (covers ? 1 : 0) + (weekly ? PAGES_WEEKLY : 0);
+    $m("mbCount").textContent = "(" + n + " of " + list.querySelectorAll("input").length + ")";
+    summary.textContent = n ? n + (n === 1 ? " resident" : " residents") + " × " + per + " pages" + (idx ? " + index" : "") + ". One PDF, made on this computer." : "";
+    var msg = "", blocked = false, needCode = false;
+    if (!weekly && !covers){ msg = "Tick Weekly Packets or Cover Sheets."; blocked = true; }
+    else if (!n){ msg = "Tick at least one resident."; blocked = true; }
+    else if (n > freeLeft()){
+      needCode = true;
+      msg = "This bundle uses " + n + " packets (one per resident). You have " + freeLeft() + " free packet" + (freeLeft() === 1 ? "" : "s") + " left. Enter your access code for unlimited bundles.";
+    }
+    warn.textContent = msg; warn.hidden = !msg;
+    go.disabled = blocked;
+    // over the free allowance the main button takes them to the access-code screen instead
+    go.innerHTML = needCode ? '<span aria-hidden="true">🔑</span> Enter Access Code' : '<span aria-hidden="true">📥</span> Generate Bundle PDF';
+  }
+  function openModal(){
+    fillPickers();
+    fillList();
+    $m("mbFac").value = ((document.getElementById("fac") || {}).value || "").trim();
+    ["mbWeekly", "mbCovers", "mbIndex"].forEach(function(id){ $m(id).checked = true; });   // every bundle starts complete
+    setup.hidden = false; run.hidden = true;
+    refresh();
+    if (typeof dlg.showModal === "function") dlg.showModal(); else dlg.setAttribute("open", "");
+  }
+  function closeModal(){ if (running) return; if (dlg.close) dlg.close(); else dlg.removeAttribute("open"); }
+
+  openBtn.addEventListener("click", openModal);
+  $m("mbClose").addEventListener("click", closeModal);
+  dlg.addEventListener("cancel", function(e){ if (running){ e.preventDefault(); cancelMonthlyBundle(); } });
+  dlg.addEventListener("change", refresh);
+  $m("mbAll").addEventListener("click", function(){ list.querySelectorAll("input").forEach(function(c){ c.checked = true; }); refresh(); });
+  $m("mbNone").addEventListener("click", function(){ list.querySelectorAll("input").forEach(function(c){ c.checked = false; }); refresh(); });
+  $m("mbCancel").addEventListener("click", function(){ cancelMonthlyBundle(); $m("mbStatus").textContent = "Stopping…"; });
+
+  go.addEventListener("click", function(){
+    var ids = chosenIds();
+    if (ids.length > freeLeft()){
+      closeModal();
+      if (typeof openGate === "function") openGate();
+      var g = document.getElementById("gate"); if (g) g.scrollIntoView({ behavior:"smooth", block:"center" });
+      return;
+    }
+    setup.hidden = true; run.hidden = false;
+    var bar = $m("mbBar"), fill = $m("mbFill"), st = $m("mbStatus");
+    var setPct = function(pct){ fill.style.width = pct + "%"; bar.setAttribute("aria-valuenow", String(pct)); };
+    setPct(0); st.textContent = "Getting ready…";
+    $m("mbCancel").focus();
+    generateMonthlyFacilityBundle({
+      month:+$m("mbMonth").value, year:+$m("mbYear").value, paper:$m("mbPaper").value, fac:$m("mbFac").value,
+      weekly:$m("mbWeekly").checked, covers:$m("mbCovers").checked, index:$m("mbIndex").checked, ids:ids,
+      onProgress:function(i, n, name){
+        var pct = Math.round((i - 1) / n * 100);
+        setPct(pct); st.textContent = "Processing Resident " + i + " of " + n + ": " + name + "... [" + pct + "%]";
+      }
+    }).then(function(res){
+      if (!res){ setup.hidden = false; run.hidden = true; warn.textContent = "Cancelled. Nothing was saved, and no packets were used."; warn.hidden = false; return; }
+      setPct(100);
+      if (!(typeof unlocked === "function" && unlocked()) && typeof bumpGen === "function"){
+        for (var i = 0; i < res.residents; i++) bumpGen();
+        if (typeof showAllowance === "function") showAllowance();
+      }
+      closeModal();
+      showToast("🎉 Facility Monthly Bundle generated successfully for " + res.residents + (res.residents === 1 ? " resident!" : " residents!"));
+      var s = document.getElementById("arbMsg");
+      if (s) s.textContent = "Saved " + res.filename + " (" + res.pages + " pages) to your Downloads folder.";
+    }, function(err){
+      setup.hidden = false; run.hidden = true;
+      warn.textContent = "The bundle could not be made: " + err.message; warn.hidden = false;
+    });
   });
 })();
 </script>
