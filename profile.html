@@ -1226,6 +1226,7 @@ body { padding-left: var(--sb-w); }
 
         <div class="rap-done" id="rapDone" hidden>
           <p class="rap-done-msg" id="rapDoneMsg"></p>
+          <a class="rap-btn rap-btn-primary rap-btn-sm" id="rapMakePacket" href="index.html">Make a packet</a>
           <button type="button" class="rap-btn rap-btn-ghost rap-btn-sm" id="rapNewResident">Start a new resident profile</button>
         </div>
       </section>
@@ -1608,6 +1609,7 @@ body { padding-left: var(--sb-w); }
   var RESIDENT_PREFIX = "cognicopia_resident_";
   var SCHEMA = "cognicopia.residentProfile", SCHEMA_VERSION = 1;
   var residentId = null, savedSig = null;
+  var ACTIVE_KEY = "cognicopia_active_resident";      // the dashboard's active resident (index.html)
 
   /* ---- small readers, all by element ID ---- */
   function text(id){ var el = $(id); return el ? String(el.value).replace(/\s+/g, " ").trim() : ""; }
@@ -1811,6 +1813,7 @@ body { padding-left: var(--sb-w); }
 
     savedSig = JSON.stringify(collect());
     writeDraft();                                          // the draft now remembers which resident it is
+    try { localStorage.setItem(ACTIVE_KEY, residentId); } catch (e){}   // ready on the dashboard
     renderResidents();
     renderDone(profile, isNew);
     toast("Profile saved locally.");
@@ -1833,6 +1836,9 @@ body { padding-left: var(--sb-w); }
   function fmtTime(iso){ var d = new Date(iso); return d.toLocaleDateString([], { month:"short", day:"numeric" }) + " at " + d.toLocaleTimeString([], { hour:"numeric", minute:"2-digit" }); }
   function renderDone(profile, isNew){
     $("rapDone").hidden = false;
+    var mk = $("rapMakePacket");
+    mk.href = "index.html?resident=" + encodeURIComponent(profile.id);
+    mk.textContent = "Make a packet for " + profile.tier1_core.preferredName + " \u2192";
     $("rapDoneMsg").innerHTML = "<b>" + (isNew ? "Saved" : "Updated") + ".</b> " + escAttr(profile.tier1_core.preferredName) +
       "'s profile is stored on this computer (" + fmtTime(profile.updatedAt) + "). Pressing Save again updates the same profile.";
   }
@@ -1880,14 +1886,8 @@ body { padding-left: var(--sb-w); }
     if (open){
       var p = readResident(open.getAttribute("data-open"));
       if (!p) { renderResidents(); return; }
-      var hasOther = text("rapName") && residentId !== p.id && JSON.stringify(collect()) !== savedSig;
-      if (hasOther && !window.confirm("Open " + p.tier1_core.preferredName + "'s profile? What is in the form now will be replaced.")) return;
-      resetForm();
-      fill(profileToForm(p));
-      residentId = p.id; savedSig = JSON.stringify(collect());
-      furthest = TOTAL; syncConditional(); syncSuggest(); syncNotesCount();
-      renderResidents(); renderDone(p, false);
-      show(1, true);
+      if (hasUnsaved() && residentId !== p.id && !window.confirm("Open " + p.tier1_core.preferredName + "'s profile? What is in the form now will be replaced.")) return;
+      populateWizardFromProfile(p);
       toast("Opened " + p.tier1_core.preferredName + "'s profile.");
     }
     if (del){
@@ -1895,6 +1895,7 @@ body { padding-left: var(--sb-w); }
       if (!window.confirm("Delete " + who + "'s profile from this computer? This cannot be undone.")) return;
       try { localStorage.removeItem(RESIDENT_PREFIX + id); } catch (err){}
       if (id === residentId){ residentId = null; savedSig = null; $("rapDone").hidden = true; writeDraft(); }
+      try { if (localStorage.getItem(ACTIVE_KEY) === id) localStorage.removeItem(ACTIVE_KEY); } catch (err){}
       renderResidents();
       toast(who + "'s profile was deleted from this computer.");
       $("rapResH").focus();
@@ -1907,6 +1908,29 @@ body { padding-left: var(--sb-w); }
     savedEl.textContent = "Ready for a new resident.";
     show(1, true); clearTimeout(saveTimer);
   });
+
+  /**
+   * populateWizardFromProfile(profileData)
+   * Maps a saved tiered profile (tier1_core, tier2_enrichment, tier3_deep)
+   * back into every wizard field, including the people and pets rows, the
+   * slider and the radio cards, so staff can edit it. Pressing Save
+   * afterwards updates the same resident (same id and key).
+   * Returns true when the profile was loaded.
+   */
+  function populateWizardFromProfile(profileData){
+    if (!profileData || profileData.schema !== SCHEMA || !profileData.tier1_core) return false;
+    resetForm();
+    fill(profileToForm(profileData));
+    residentId = profileData.id;
+    savedSig = JSON.stringify(collect());
+    furthest = TOTAL;
+    syncConditional(); syncSuggest(); syncNotesCount();
+    renderResidents(); renderDone(profileData, false);
+    show(1, true);
+    return true;
+  }
+  window.populateWizardFromProfile = populateWizardFromProfile;
+  function hasUnsaved(){ return !!text("rapName") && JSON.stringify(collect()) !== savedSig; }
 
   /* ---------- clear the form (saved residents are not touched) ---------- */
   function resetForm(){
@@ -1956,6 +1980,30 @@ body { padding-left: var(--sb-w); }
   if (residentId){ renderDone(readResident(residentId), false); syncDirty(); }
   show(current, false);
   clearTimeout(saveTimer);               // nothing changed yet
+
+  /* ---------- links from the dashboard: profile.html?edit=<id> or ?new=1 ---------- */
+  (function(){
+    var qs = location.search;
+    var editId = (qs.match(/[?&]edit=([^&]+)/) || [])[1];
+    if (editId){
+      var ep = readResident(decodeURIComponent(editId));
+      if (!ep) toast("That profile could not be found on this computer. It may have been deleted.", true);
+      else if (ep.id === residentId && hasUnsaved()){ toast("Continuing your unsaved changes to " + ep.tier1_core.preferredName + "'s profile."); }
+      else if (!hasUnsaved() || residentId === ep.id || window.confirm("Open " + ep.tier1_core.preferredName + "'s profile? The unsaved profile in the form now will be replaced.")){
+        populateWizardFromProfile(ep); $("rapRestored").hidden = true;
+        toast("Editing " + ep.tier1_core.preferredName + "'s profile.");
+      }
+    } else if (/[?&]new=1\b/.test(qs)){
+      var who = text("rapName");
+      if (!hasUnsaved() || window.confirm("Start a new profile? The one in progress" + (who ? " for " + who : "") + " has not been saved and will be cleared.")){
+        resetForm();
+        try { localStorage.removeItem(KEY); } catch (e){}
+        renderResidents(); show(1, true); clearTimeout(saveTimer);
+        savedEl.textContent = "Ready for a new resident.";
+      }
+    }
+    if ((editId || /[?&]new=1/.test(qs)) && history.replaceState) history.replaceState(null, "", location.pathname + location.hash);
+  })();
 })();
 </script>
 </body>
