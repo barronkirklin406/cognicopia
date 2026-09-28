@@ -543,6 +543,51 @@ body { padding-left: var(--sb-w); }
 .rap-suggest{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;margin:0 0 14px}
 .rap-suggest .rap-hint{margin:0}
 
+/* Step 3: hobby and activity tiles */
+.rap-tiles,.rap-tiles-4{grid-template-columns:repeat(auto-fill,minmax(225px,1fr))}
+.rap-check > span:last-child{min-width:0;overflow-wrap:break-word}
+.rap-tile{gap:10px}
+.rap-ic{flex:none;width:26px;font-size:22px;line-height:1;text-align:center}
+.rap-check:has(input:disabled){opacity:.45;cursor:not-allowed}
+.rap-check input:disabled{cursor:not-allowed}
+.rap-count{display:inline-block;margin-left:6px;padding:2px 10px;border-radius:999px;font-size:14px;font-weight:700;background:rgba(82,183,136,.18);color:var(--rp-accent-hi)}
+.rap-count.is-full{background:var(--rp-accent);color:var(--rp-ink)}
+.rap-row-3{grid-template-columns:repeat(3,1fr)}
+.rap-hint-under{margin:-6px 0 14px}
+
+/* Step 3: people and pets rows */
+.rap-people{display:grid;gap:10px;margin:0 0 12px}
+.rap-person{display:grid;grid-template-columns:1.3fr 1.2fr auto auto;gap:10px;align-items:end;padding:12px;border:1px solid var(--rp-line2);border-radius:12px;background:var(--rp-field)}
+.rap-person .rap-mini{display:block;margin:0 0 4px;font-size:14px;font-weight:700;color:var(--rp-muted)}
+.rap-person input[type=text],.rap-person select{min-height:50px;font-size:17px;background:#0b1412}
+.rap-passed{display:flex;align-items:center;gap:8px;min-height:50px;padding:0 6px;font-size:15px;white-space:nowrap;cursor:pointer}
+.rap-passed input{width:22px;height:22px;margin:0;accent-color:var(--rp-accent)}
+.rap-remove{min-height:50px;min-width:50px;padding:0 14px;border-radius:12px;border:2px solid rgba(255,180,162,.4);background:transparent;color:#ffcfc4;font:inherit;font-size:15px;font-weight:700;cursor:pointer}
+.rap-remove:hover{border-color:#ffb4a2;color:#fff}
+.rap-people-empty{margin:0 0 12px;color:var(--rp-muted);font-size:15px;font-style:italic}
+.rap-people-empty[hidden]{display:none}
+.rap-auto-note{margin:0 0 12px;padding:8px 12px;border-radius:10px;background:rgba(82,183,136,.12);color:var(--rp-text)}
+.rap-auto-note[hidden]{display:none}
+
+/* Step 5: difficulty slider */
+.rap-range-wrap{padding-bottom:16px}
+.rap-range-label{display:block;margin:0 0 14px;font-weight:700;font-size:18px;color:#fff}
+.rap-range-label output{margin-left:6px;padding:2px 12px;border-radius:999px;background:var(--rp-accent);color:var(--rp-ink);font-size:16px}
+.rap input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:44px;margin:0;background:transparent;cursor:pointer}
+.rap input[type=range]::-webkit-slider-runnable-track{height:12px;border-radius:999px;background:linear-gradient(90deg,var(--rp-accent) var(--fill,50%),rgba(216,243,220,.16) var(--fill,50%))}
+.rap input[type=range]::-moz-range-track{height:12px;border-radius:999px;background:rgba(216,243,220,.16)}
+.rap input[type=range]::-moz-range-progress{height:12px;border-radius:999px;background:var(--rp-accent)}
+.rap input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:34px;height:34px;margin-top:-11px;border-radius:50%;background:#fff;border:4px solid var(--rp-accent);box-shadow:0 2px 8px rgba(0,0,0,.4)}
+.rap input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;background:#fff;border:4px solid var(--rp-accent)}
+.rap input[type=range]:focus-visible{outline:3px solid var(--rp-accent-hi);outline-offset:4px;border-radius:12px}
+.rap-range-ends{display:flex;justify-content:space-between;margin:4px 2px 0;font-size:15px;font-weight:700;color:var(--rp-muted)}
+
+/* Step 5: radio cards */
+.rap-sublabel{margin:0 0 8px;font-weight:700;font-size:16px;color:var(--rp-text)}
+.rap-radios{display:grid;gap:10px;margin:0 0 14px}
+.rap-radio span b{display:block;color:#fff}
+.rap-radio span{font-size:15px;color:var(--rp-muted)}
+
 /* placeholders */
 .rap-soon-note{margin:0 0 20px;padding:22px;border:2px dashed var(--rp-line2);border-radius:14px;color:var(--rp-muted)}
 
@@ -564,18 +609,27 @@ body { padding-left: var(--sb-w); }
 
 @media (max-width:820px){
   .rap-steps{grid-template-columns:repeat(3,1fr)}
+  .rap-row-3{grid-template-columns:1fr 1fr}
+  .rap-person{grid-template-columns:1fr 1fr}
+  .rap-passed{grid-column:1}
+  .rap-remove{grid-column:2;justify-self:end}
 }
 @media (max-width:560px){
   .rap{font-size:17px}
   .rap-row{grid-template-columns:1fr;gap:0}
   .rap-steps{display:none}
   .rap-checks{grid-template-columns:1fr}
-  .rap-checks-6{grid-template-columns:1fr 1fr}
+  .rap-checks-6,.rap-tiles,.rap-tiles-4{grid-template-columns:1fr 1fr}
+  .rap-tile{padding:10px;font-size:16px}
+  .rap-row-3{grid-template-columns:1fr}
+  .rap-person{grid-template-columns:1fr}
+  .rap-remove{grid-column:1;justify-self:stretch}
   .rap-nav{flex-wrap:wrap;padding:12px 14px}
   .rap-saved{order:3;width:100%;text-align:center}
   .rap-btn{padding:12px 18px}
   .rap-hint-row{margin-top:4px}
 }
+@media (max-width:440px){.rap-tiles,.rap-tiles-4{grid-template-columns:minmax(0,1fr)}}
 @media (prefers-reduced-motion:reduce){.rap-bar span{transition:none}}
 </style>
 </head>
@@ -909,22 +963,212 @@ body { padding-left: var(--sb-w); }
         </fieldset>
       </section>
 
-      <!-- ── STEPS 3 to 6: placeholders for the next phases ── -->
-      <section class="rap-step rap-soon" data-step="3" aria-labelledby="rapH3" hidden>
-        <h2 id="rapH3" tabindex="-1">Family and relationships</h2>
-        <p class="rap-soon-note">Coming in the next update: spouse, children and grandchildren, close friends and pets, with the names they like to hear.</p>
+      <!-- ── STEP 3 ── -->
+      <section class="rap-step" data-step="3" aria-labelledby="rapH3" hidden>
+        <h2 id="rapH3" tabindex="-1">Favorites, hobbies and music</h2>
+        <p class="rap-why"><b>Why we ask:</b> Activities built around things a person already loves feel like leisure, not a test. Music and the names of loved ones are among the strongest memory cues of all.</p>
+
+        <fieldset class="rap-field rap-group">
+          <legend>Top 5 hobbies</legend>
+          <p class="rap-hint rap-hint-top">Choose up to five things they enjoyed most. <span class="rap-count" id="rapHobbyCount" role="status">0 of 5 chosen</span></p>
+          <div class="rap-checks rap-tiles" id="rapHobbies">
+            <label class="rap-check rap-tile"><input type="checkbox" name="hobbies" value="gardening"><span class="rap-ic" aria-hidden="true">🌷</span><span>Gardening</span></label>
+            <label class="rap-check rap-tile"><input type="checkbox" name="hobbies" value="word-puzzles"><span class="rap-ic" aria-hidden="true">✏️</span><span>Word puzzles</span></label>
+            <label class="rap-check rap-tile"><input type="checkbox" name="hobbies" value="jigsaw"><span class="rap-ic" aria-hidden="true">🧩</span><span>Jigsaw puzzles</span></label>
+            <label class="rap-check rap-tile"><input type="checkbox" name="hobbies" value="cards"><span class="rap-ic" aria-hidden="true">🃏</span><span>Card games</span></label>
+            <label class="rap-check rap-tile"><input type="checkbox" name="hobbies" value="board-games"><span class="rap-ic" aria-hidden="true">♟️</span><span>Board games and checkers</span></label>
+            <label class="rap-check rap-tile"><input type="checkbox" name="hobbies" value="classic-cars"><span class="rap-ic" aria-hidden="true">🚗</span><span>Classic cars</span></label>
+            <label class="rap-check rap-tile"><input type="checkbox" name="hobbies" value="sewing"><span class="rap-ic" aria-hidden="true">🧵</span><span>Sewing and quilting</span></label>
+            <label class="rap-check rap-tile"><input type="checkbox" name="hobbies" value="knitting"><span class="rap-ic" aria-hidden="true">🧶</span><span>Knitting and crochet</span></label>
+            <label class="rap-check rap-tile"><input type="checkbox" name="hobbies" value="fishing"><span class="rap-ic" aria-hidden="true">🎣</span><span>Fishing</span></label>
+            <label class="rap-check rap-tile"><input type="checkbox" name="hobbies" value="outdoors"><span class="rap-ic" aria-hidden="true">🌲</span><span>Hunting and the outdoors</span></label>
+            <label class="rap-check rap-tile"><input type="checkbox" name="hobbies" value="woodworking"><span class="rap-ic" aria-hidden="true">🔨</span><span>Woodworking</span></label>
+            <label class="rap-check rap-tile"><input type="checkbox" name="hobbies" value="baking"><span class="rap-ic" aria-hidden="true">🥧</span><span>Baking</span></label>
+            <label class="rap-check rap-tile"><input type="checkbox" name="hobbies" value="cooking"><span class="rap-ic" aria-hidden="true">🍲</span><span>Cooking</span></label>
+            <label class="rap-check rap-tile"><input type="checkbox" name="hobbies" value="reading"><span class="rap-ic" aria-hidden="true">📚</span><span>Reading</span></label>
+            <label class="rap-check rap-tile"><input type="checkbox" name="hobbies" value="singing"><span class="rap-ic" aria-hidden="true">🎵</span><span>Music and singing</span></label>
+            <label class="rap-check rap-tile"><input type="checkbox" name="hobbies" value="dancing"><span class="rap-ic" aria-hidden="true">💃</span><span>Dancing</span></label>
+            <label class="rap-check rap-tile"><input type="checkbox" name="hobbies" value="art"><span class="rap-ic" aria-hidden="true">🎨</span><span>Painting and drawing</span></label>
+            <label class="rap-check rap-tile"><input type="checkbox" name="hobbies" value="birds"><span class="rap-ic" aria-hidden="true">🐦</span><span>Bird watching</span></label>
+            <label class="rap-check rap-tile"><input type="checkbox" name="hobbies" value="sports"><span class="rap-ic" aria-hidden="true">🏈</span><span>Watching sports</span></label>
+            <label class="rap-check rap-tile"><input type="checkbox" name="hobbies" value="golf-bowling"><span class="rap-ic" aria-hidden="true">🎳</span><span>Golf or bowling</span></label>
+            <label class="rap-check rap-tile"><input type="checkbox" name="hobbies" value="travel"><span class="rap-ic" aria-hidden="true">🧳</span><span>Travel and road trips</span></label>
+            <label class="rap-check rap-tile"><input type="checkbox" name="hobbies" value="animals"><span class="rap-ic" aria-hidden="true">🐕</span><span>Pets and animals</span></label>
+            <label class="rap-check rap-tile"><input type="checkbox" name="hobbies" value="collecting"><span class="rap-ic" aria-hidden="true">📮</span><span>Collecting (stamps, coins)</span></label>
+            <label class="rap-check rap-tile"><input type="checkbox" name="hobbies" value="faith"><span class="rap-ic" aria-hidden="true">⛪</span><span>Church and faith life</span></label>
+          </div>
+        </fieldset>
+
+        <fieldset class="rap-field rap-group">
+          <legend>Favorite music</legend>
+          <div class="rap-row">
+            <div class="rap-field rap-field-tight">
+              <label for="rapGenre1">Favorite kind of music</label>
+              <select id="rapGenre1" name="genre1" data-genres></select>
+            </div>
+            <div class="rap-field rap-field-tight">
+              <label for="rapGenre2">Second favorite <span class="rap-opt">(optional)</span></label>
+              <select id="rapGenre2" name="genre2" data-genres></select>
+            </div>
+          </div>
+          <div class="rap-row rap-row-3">
+            <div class="rap-field rap-field-tight"><label for="rapArtist1">Favorite singer or band</label>
+              <input id="rapArtist1" name="artist1" type="text" maxlength="60" list="rapArtistList" placeholder="e.g., Patsy Cline"></div>
+            <div class="rap-field rap-field-tight"><label for="rapArtist2">Another <span class="rap-opt">(optional)</span></label>
+              <input id="rapArtist2" name="artist2" type="text" maxlength="60" list="rapArtistList" placeholder="e.g., Glenn Miller"></div>
+            <div class="rap-field rap-field-tight"><label for="rapArtist3">Another <span class="rap-opt">(optional)</span></label>
+              <input id="rapArtist3" name="artist3" type="text" maxlength="60" list="rapArtistList" placeholder="e.g., Johnny Cash"></div>
+          </div>
+          <p class="rap-hint rap-hint-under">Start typing to pick from Cognicopia's artist library, or type any name.</p>
+          <div class="rap-field rap-field-tight">
+            <label for="rapSong">A song that means a lot to them <span class="rap-opt">(optional)</span></label>
+            <input id="rapSong" name="favoriteSong" type="text" maxlength="80" placeholder="e.g., the song from their wedding">
+          </div>
+          <datalist id="rapArtistList">
+            <option value="Scott Joplin"><option value="The Carter Family"><option value="Bing Crosby"><option value="Louis Armstrong"><option value="Glenn Miller"><option value="Benny Goodman"><option value="The Andrews Sisters"><option value="Judy Garland"><option value="Frank Sinatra"><option value="Nat King Cole"><option value="Ella Fitzgerald"><option value="Mahalia Jackson"><option value="Hank Williams"><option value="Patsy Cline"><option value="Elvis Presley"><option value="Johnny Cash"><option value="Dean Martin"><option value="Ray Charles"><option value="Buddy Holly"><option value="Chuck Berry"><option value="The Everly Brothers"><option value="Loretta Lynn"><option value="Tammy Wynette"><option value="The Supremes"><option value="Aretha Franklin"><option value="Dolly Parton"><option value="Willie Nelson"><option value="The Beatles"><option value="Neil Diamond"><option value="Andy Williams"><option value="John Denver"><option value="The Carpenters"><option value="Kenny Rogers"><option value="George Strait"><option value="Reba McEntire"><option value="Whitney Houston"><option value="Garth Brooks"><option value="Celine Dion">
+          </datalist>
+        </fieldset>
+
+        <fieldset class="rap-field rap-group">
+          <legend>TV, movies and sports</legend>
+          <div class="rap-field rap-field-tight">
+            <label for="rapTv">Favorite TV or radio shows</label>
+            <input id="rapTv" name="tvShows" type="text" maxlength="80" placeholder="e.g., I Love Lucy, Gunsmoke, The Lawrence Welk Show">
+          </div>
+          <div class="rap-field rap-field-tight">
+            <label for="rapMovies">Favorite movies or movie stars</label>
+            <input id="rapMovies" name="movies" type="text" maxlength="80" placeholder="e.g., The Sound of Music, John Wayne">
+          </div>
+          <div class="rap-field rap-field-tight">
+            <label for="rapTeams">Sports teams they follow</label>
+            <input id="rapTeams" name="sportsTeams" type="text" maxlength="80" placeholder="e.g., Minnesota Twins, Green Bay Packers">
+          </div>
+        </fieldset>
+
+        <fieldset class="rap-field rap-group">
+          <legend>Important people and pets</legend>
+          <p class="rap-hint rap-hint-top">Family, friends and pets they talk about, with the names they use. Mark anyone who has passed away so activities never speak of them as if they were still here.</p>
+          <div class="rap-people" id="rapPeople" aria-live="polite"></div>
+          <p class="rap-people-empty" id="rapPeopleEmpty">No one added yet.</p>
+          <button type="button" class="rap-btn rap-btn-ghost rap-btn-sm" id="rapAddPerson"><span aria-hidden="true">+</span> Add a Person/Pet</button>
+          <p class="rap-hint" id="rapPeopleNote" role="status"></p>
+        </fieldset>
       </section>
-      <section class="rap-step rap-soon" data-step="4" aria-labelledby="rapH4" hidden>
-        <h2 id="rapH4" tabindex="-1">Interests, faith and music</h2>
-        <p class="rap-soon-note">Coming in the next update: hobbies, favorite singers and songs, sports teams, faith traditions and holidays.</p>
+
+      <!-- ── STEP 4 ── -->
+      <section class="rap-step" data-step="4" aria-labelledby="rapH4" hidden>
+        <h2 id="rapH4" tabindex="-1">Clinical profile and abilities</h2>
+        <p class="rap-why"><b>Why we ask:</b> The right print size, amount of reading and line thickness let a person succeed on their own. Avoiding painful topics protects their comfort and dignity.</p>
+
+        <div class="rap-field">
+          <label for="rapRead">Reading level</label>
+          <select id="rapRead" name="readingLevel">
+            <option value="">Choose one</option>
+            <option value="independent">Independent: reads sentences and short paragraphs</option>
+            <option value="short">Short sentences: single words and short phrases</option>
+            <option value="none">Cannot read independently: pictures and read-aloud</option>
+          </select>
+        </div>
+        <div class="rap-row">
+          <div class="rap-field">
+            <label for="rapVision">Vision</label>
+            <select id="rapVision" name="vision">
+              <option value="">Choose one</option>
+              <option value="standard">Standard print</option>
+              <option value="large">Large print</option>
+              <option value="xl">Extra-large and high contrast</option>
+            </select>
+          </div>
+          <div class="rap-field">
+            <label for="rapMotor">Motor skills (hands)</label>
+            <select id="rapMotor" name="motor">
+              <option value="">Choose one</option>
+              <option value="normal">Normal</option>
+              <option value="mild">Mild limitation: stiff or slow</option>
+              <option value="significant">Tremor or significant limitation</option>
+            </select>
+          </div>
+        </div>
+
+        <fieldset class="rap-field rap-group">
+          <legend>Topics to avoid</legend>
+          <p class="rap-hint rap-hint-top">Anything that could upset them. These are left out of prompts, trivia and pictures.</p>
+          <div class="rap-checks" id="rapAvoid">
+            <label class="rap-check"><input type="checkbox" name="avoidTopics" value="war"><span>War and combat</span></label>
+            <label class="rap-check"><input type="checkbox" name="avoidTopics" value="death"><span>Death and loss</span></label>
+            <label class="rap-check"><input type="checkbox" name="avoidTopics" value="medical"><span>Illness, hospitals and medical</span></label>
+            <label class="rap-check"><input type="checkbox" name="avoidTopics" value="religion"><span>Religion</span></label>
+            <label class="rap-check"><input type="checkbox" name="avoidTopics" value="money"><span>Money and finances</span></label>
+            <label class="rap-check"><input type="checkbox" name="avoidTopics" value="politics"><span>Politics</span></label>
+            <label class="rap-check"><input type="checkbox" name="avoidTopics" value="driving"><span>Driving and cars</span></label>
+            <label class="rap-check"><input type="checkbox" name="avoidTopics" value="home"><span>"Going home" and their old house</span></label>
+            <label class="rap-check"><input type="checkbox" name="avoidTopics" value="family-conflict"><span>Divorce or family conflict</span></label>
+            <label class="rap-check"><input type="checkbox" name="avoidTopics" value="children"><span>Babies and children</span></label>
+            <label class="rap-check"><input type="checkbox" name="avoidTopics" value="water"><span>Water, boats and the sea</span></label>
+            <label class="rap-check"><input type="checkbox" name="avoidTopics" value="storms"><span>Storms, fire and disasters</span></label>
+          </div>
+          <p class="rap-hint rap-auto-note" id="rapWarNote" hidden>War and combat was checked because Step 2 says talking about their service is best avoided.</p>
+          <div class="rap-field rap-field-tight">
+            <label for="rapAvoidOther">Other topics to avoid <span class="rap-opt">(optional)</span></label>
+            <input id="rapAvoidOther" name="avoidOther" type="text" maxlength="80" placeholder="e.g., a late son named Tom, the farm fire">
+          </div>
+        </fieldset>
       </section>
-      <section class="rap-step rap-soon" data-step="5" aria-labelledby="rapH5" hidden>
-        <h2 id="rapH5" tabindex="-1">Abilities and senses</h2>
-        <p class="rap-soon-note">Coming in the next update: stage of memory loss, vision, hearing, hand strength and reading level, so pages come out the right size and difficulty.</p>
+
+      <!-- ── STEP 5 ── -->
+      <section class="rap-step" data-step="5" aria-labelledby="rapH5" hidden>
+        <h2 id="rapH5" tabindex="-1">Packet settings</h2>
+        <p class="rap-why"><b>Why we ask:</b> These become the resident's default settings, so every new packet starts with the activities, difficulty and printing that suit them.</p>
+
+        <fieldset class="rap-field rap-group">
+          <legend>Preferred activity types</legend>
+          <p class="rap-hint rap-hint-top">Check the kinds of pages they enjoy. Leave all unchecked for a mix.</p>
+          <div class="rap-checks rap-tiles rap-tiles-4">
+            <label class="rap-check rap-tile"><input type="checkbox" name="activityTypes" value="trivia"><span class="rap-ic" aria-hidden="true">💡</span><span>Trivia</span></label>
+            <label class="rap-check rap-tile"><input type="checkbox" name="activityTypes" value="word-search"><span class="rap-ic" aria-hidden="true">🔎</span><span>Word search</span></label>
+            <label class="rap-check rap-tile"><input type="checkbox" name="activityTypes" value="fill-blank"><span class="rap-ic" aria-hidden="true">📝</span><span>Fill in the blank</span></label>
+            <label class="rap-check rap-tile"><input type="checkbox" name="activityTypes" value="matching"><span class="rap-ic" aria-hidden="true">🔗</span><span>Matching</span></label>
+            <label class="rap-check rap-tile"><input type="checkbox" name="activityTypes" value="coloring"><span class="rap-ic" aria-hidden="true">🖍️</span><span>Coloring</span></label>
+            <label class="rap-check rap-tile"><input type="checkbox" name="activityTypes" value="reminiscence"><span class="rap-ic" aria-hidden="true">💬</span><span>Reminiscence prompts</span></label>
+            <label class="rap-check rap-tile"><input type="checkbox" name="activityTypes" value="mazes"><span class="rap-ic" aria-hidden="true">🌀</span><span>Mazes and tracing</span></label>
+            <label class="rap-check rap-tile"><input type="checkbox" name="activityTypes" value="math"><span class="rap-ic" aria-hidden="true">🔢</span><span>Math and numbers</span></label>
+          </div>
+        </fieldset>
+
+        <div class="rap-field rap-group rap-range-wrap">
+          <label for="rapDiff" class="rap-range-label">Desired difficulty: <output id="rapDiffOut" for="rapDiff">Moderate</output></label>
+          <input id="rapDiff" name="difficulty" type="range" min="1" max="5" step="1" value="3" list="rapDiffMarks" aria-describedby="rapDiffHint">
+          <datalist id="rapDiffMarks"><option value="1"><option value="2"><option value="3"><option value="4"><option value="5"></datalist>
+          <div class="rap-range-ends" aria-hidden="true"><span>Very easy</span><span>Challenging</span></div>
+          <p class="rap-hint" id="rapDiffHint">Aim for "just right": easy enough to finish, with a little stretch. You can change it for any packet.</p>
+        </div>
+
+        <fieldset class="rap-field rap-group">
+          <legend>Print layout</legend>
+          <div class="rap-row">
+            <div>
+              <p class="rap-sublabel" id="rapPaperLbl">Paper size</p>
+              <div class="rap-radios" role="radiogroup" aria-labelledby="rapPaperLbl">
+                <label class="rap-check rap-radio"><input type="radio" name="paper" value="letter" checked><span><b>Letter</b> 8.5 × 11 in</span></label>
+                <label class="rap-check rap-radio"><input type="radio" name="paper" value="a4"><span><b>A4</b> 210 × 297 mm</span></label>
+              </div>
+            </div>
+            <div>
+              <p class="rap-sublabel" id="rapInkLbl">Ink</p>
+              <div class="rap-radios" role="radiogroup" aria-labelledby="rapInkLbl">
+                <label class="rap-check rap-radio"><input type="radio" name="ink" value="bw" checked><span><b>Black and white</b> sharpest contrast, least ink</span></label>
+                <label class="rap-check rap-radio"><input type="radio" name="ink" value="gray"><span><b>Grayscale</b> soft gray shading</span></label>
+              </div>
+            </div>
+          </div>
+          <p class="rap-hint rap-auto-note" id="rapInkNote" hidden>Step 4 says this resident needs extra-large, high-contrast print. Black and white is recommended.</p>
+        </fieldset>
       </section>
+
+      <!-- ── STEP 6: placeholder for the next phase ── -->
       <section class="rap-step rap-soon" data-step="6" aria-labelledby="rapH6" hidden>
-        <h2 id="rapH6" tabindex="-1">Comfort and review</h2>
-        <p class="rap-soon-note">Coming in the next update: topics to avoid, what calms them, and a summary to review before creating their first packet.</p>
+        <h2 id="rapH6" tabindex="-1">Review and finish</h2>
+        <p class="rap-soon-note">Coming in the next update: a one-page summary of the profile to check, then one click to create this resident's first packet.</p>
       </section>
 
       <!-- Navigation -->
@@ -953,10 +1197,10 @@ body { padding-left: var(--sb-w); }
   var STEPS = [
     { title:"Resident basics" },
     { title:"Life story & work" },
-    { title:"Family & relationships", soon:true },
-    { title:"Interests & music", soon:true },
-    { title:"Abilities & senses", soon:true },
-    { title:"Comfort & review", soon:true }
+    { title:"Favorites & music" },
+    { title:"Clinical & abilities" },
+    { title:"Packet settings" },
+    { title:"Review & finish", soon:true }
   ];
   var TOTAL = STEPS.length, THIS_YEAR = new Date().getFullYear();
 
@@ -990,10 +1234,13 @@ body { padding-left: var(--sb-w); }
       if (el.type === "checkbox"){
         if (!data[el.name]) data[el.name] = [];
         if (el.checked) data[el.name].push(el.value);
+      } else if (el.type === "radio"){
+        if (el.checked) data[el.name] = el.value;
       } else {
         data[el.name] = String(el.value).slice(0, 80);
       }
     });
+    data.people = readPeople();
     return data;
   }
   function fill(data){
@@ -1001,10 +1248,129 @@ body { padding-left: var(--sb-w); }
       if (!el.name || !(el.name in data)) return;
       var v = data[el.name];
       if (el.type === "checkbox") el.checked = Array.isArray(v) && v.indexOf(el.value) !== -1;
+      else if (el.type === "radio") el.checked = el.value === v;
       else if (el.tagName === "SELECT"){ if (Array.prototype.some.call(el.options, function(o){ return o.value === v; })) el.value = v; }
       else el.value = typeof v === "string" ? v : "";
     });
+    renderPeople(Array.isArray(data.people) ? data.people : []);
+    syncHobbies(); syncRange(); syncNotes();
   }
+
+  /* ---------- Step 3: music genres (one list, two dropdowns) ---------- */
+  var GENRES = [["","Choose one"],["big-band","Big band and swing"],["crooners","Crooners and standards"],["country","Country and western"],
+    ["gospel","Gospel and hymns"],["rock-and-roll","Rock 'n' roll"],["motown","Doo-wop, Motown and soul"],["jazz-blues","Jazz and blues"],
+    ["folk","Folk"],["classical","Classical"],["broadway","Broadway and movie musicals"],["polka","Polka and old-time"],["latin","Latin"],["other","Something else"]];
+  Array.prototype.forEach.call(form.querySelectorAll("select[data-genres]"), function(sel){
+    sel.innerHTML = GENRES.map(function(g){ return '<option value="' + g[0] + '">' + g[1] + "</option>"; }).join("");
+  });
+
+  /* ---------- Step 3: top 5 hobbies ---------- */
+  var HOBBY_MAX = 5;
+  function syncHobbies(){
+    var boxes = Array.prototype.slice.call(form.querySelectorAll('input[name="hobbies"]'));
+    var n = boxes.filter(function(b){ return b.checked; }).length;
+    boxes.forEach(function(b){ b.disabled = !b.checked && n >= HOBBY_MAX; });
+    var c = $("rapHobbyCount");
+    c.textContent = n + " of " + HOBBY_MAX + " chosen" + (n >= HOBBY_MAX ? ". Uncheck one to choose another." : "");
+    c.classList.toggle("is-full", n >= HOBBY_MAX);
+  }
+
+  /* ---------- Step 3: important people and pets (dynamic rows) ----------
+     Row fields carry data-person instead of a name, so the generic
+     collect() skips them and readPeople() stores them as one list. */
+  var RELATIONS = [["","Choose one"],["spouse","Husband or wife"],["partner","Partner"],["son","Son"],["daughter","Daughter"],["grandchild","Grandchild"],
+    ["great-grandchild","Great-grandchild"],["sibling","Brother or sister"],["parent","Mother or father"],["other-family","Other family"],
+    ["friend","Friend"],["neighbor","Neighbor"],["pet-dog","Pet dog"],["pet-cat","Pet cat"],["pet-other","Other pet"],["other","Someone else"]];
+  var PEOPLE_MAX = 12, peopleBox = $("rapPeople"), addBtn = $("rapAddPerson"), rowSeq = 0;
+  function escAttr(v){ return String(v).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;"); }
+  function personRow(p){
+    var id = "rapP" + (++rowSeq);
+    var row = document.createElement("div");
+    row.className = "rap-person"; row.setAttribute("role", "group");
+    row.innerHTML =
+      '<div><label class="rap-mini" for="' + id + 'n">Name</label>' +
+      '<input id="' + id + 'n" type="text" maxlength="40" data-person="name" autocomplete="off" placeholder="e.g., Harold, Buster" value="' + escAttr(p.name || "") + '"></div>' +
+      '<div><label class="rap-mini" for="' + id + 'r">Relationship</label>' +
+      '<select id="' + id + 'r" data-person="rel">' + RELATIONS.map(function(r){ return '<option value="' + r[0] + '"' + (r[0] === p.rel ? " selected" : "") + ">" + r[1] + "</option>"; }).join("") + "</select></div>" +
+      '<label class="rap-passed"><input type="checkbox" data-person="passed"' + (p.passed ? " checked" : "") + "> Has passed away</label>" +
+      '<button type="button" class="rap-remove" data-remove>Remove</button>';
+    return row;
+  }
+  function peopleRows(){ return Array.prototype.slice.call(peopleBox.querySelectorAll(".rap-person")); }
+  function labelRows(){
+    var rows = peopleRows();
+    rows.forEach(function(row, i){
+      var who = row.querySelector('[data-person="name"]').value.trim();
+      row.setAttribute("aria-label", "Person or pet " + (i + 1));
+      row.querySelector("[data-remove]").setAttribute("aria-label", "Remove " + (who || "person or pet " + (i + 1)));
+    });
+    $("rapPeopleEmpty").hidden = rows.length > 0;
+    addBtn.disabled = rows.length >= PEOPLE_MAX;
+    addBtn.lastChild.textContent = rows.length ? " Add another Person/Pet" : " Add a Person/Pet";
+  }
+  function readPeople(){
+    return peopleRows().map(function(row){
+      return { name:row.querySelector('[data-person="name"]').value.trim().slice(0, 40),
+               rel:row.querySelector('[data-person="rel"]').value,
+               passed:row.querySelector('[data-person="passed"]').checked };
+    }).filter(function(p){ return p.name || p.rel; });
+  }
+  function renderPeople(list){
+    peopleBox.innerHTML = "";
+    list.slice(0, PEOPLE_MAX).forEach(function(p){ peopleBox.appendChild(personRow(p)); });
+    labelRows();
+  }
+  addBtn.addEventListener("click", function(){
+    if (peopleRows().length >= PEOPLE_MAX) return;
+    var row = personRow({});
+    peopleBox.appendChild(row); labelRows();
+    row.querySelector("input").focus();
+    $("rapPeopleNote").textContent = peopleRows().length >= PEOPLE_MAX ? "That is the most one profile can hold (" + PEOPLE_MAX + ")." : "";
+  });
+  peopleBox.addEventListener("click", function(e){
+    var btn = e.target.closest("[data-remove]");
+    if (!btn) return;
+    var rows = peopleRows(), row = btn.closest(".rap-person"), i = rows.indexOf(row);
+    var who = row.querySelector('[data-person="name"]').value.trim();
+    row.parentNode.removeChild(row); labelRows();
+    // keep keyboard users in place: the row that moved up, the one above, or the Add button
+    var left = peopleRows(), next = left[i] || left[i - 1];
+    (next ? next.querySelector("[data-remove]") : addBtn).focus();
+    $("rapPeopleNote").textContent = (who || "The row") + " was removed.";
+    queueSave();
+  });
+  peopleBox.addEventListener("input", function(e){ if (e.target.getAttribute("data-person") === "name") labelRows(); });
+  peopleBox.addEventListener("keydown", function(e){
+    // Enter in a name box moves to its relationship instead of changing step
+    if (e.key === "Enter" && e.target.getAttribute("data-person") === "name"){
+      e.preventDefault();
+      e.target.closest(".rap-person").querySelector('[data-person="rel"]').focus();
+    }
+  });
+
+  /* ---------- Step 5: difficulty slider ---------- */
+  var DIFF = ["Very easy", "Easy", "Moderate", "Somewhat challenging", "Challenging"];
+  function syncRange(){
+    var r = $("rapDiff"), v = Math.max(1, Math.min(5, parseInt(r.value, 10) || 3));
+    $("rapDiffOut").textContent = DIFF[v - 1];
+    r.setAttribute("aria-valuetext", DIFF[v - 1]);
+    r.style.setProperty("--fill", ((v - 1) / 4 * 100) + "%");
+  }
+
+  /* ---------- cross-step notes: military "avoid" and high-contrast vision ---------- */
+  var warTouched = false, warBox = form.querySelector('input[name="avoidTopics"][value="war"]');
+  function syncNotes(){
+    var ink = form.querySelector('input[name="ink"]:checked');
+    $("rapWarNote").hidden = !($("rapMilTopic").value === "avoid" && warBox.checked);
+    $("rapInkNote").hidden = !($("rapVision").value === "xl" && ink && ink.value === "gray");
+  }
+  $("rapMilTopic").addEventListener("change", function(){
+    // Step 2 said "best avoided": pre-check War in Step 4 unless staff already chose for themselves
+    if (this.value === "avoid" && !warTouched) warBox.checked = true;
+    syncNotes();
+  });
+  warBox.addEventListener("change", function(){ warTouched = true; });
+
 
   /* ---------- fields that appear only for certain answers ---------- */
   function syncConditional(){
@@ -1136,9 +1502,13 @@ body { padding-left: var(--sb-w); }
   }
   form.addEventListener("input", function(e){
     if (e.target.id === "rapName" && e.target.getAttribute("aria-invalid") && e.target.value.trim()) setError(e.target, "rapNameErr", "");
+    if (e.target.name === "difficulty") syncRange();
     syncConditional(); queueSave();
   });
-  form.addEventListener("change", function(){ syncConditional(); queueSave(); });
+  form.addEventListener("change", function(e){
+    if (e.target.name === "hobbies") syncHobbies();
+    syncNotes(); syncConditional(); queueSave();
+  });
 
   /* ---------- clear ---------- */
   $("rapClear").addEventListener("click", function(){
@@ -1146,6 +1516,8 @@ body { padding-left: var(--sb-w); }
     clearTimeout(saveTimer);
     try { localStorage.removeItem(KEY); } catch (e){}
     form.reset();
+    renderPeople([]); warTouched = false; $("rapPeopleNote").textContent = "";
+    syncHobbies(); syncRange(); syncNotes();
     Array.prototype.forEach.call(form.querySelectorAll("[aria-invalid]"), function(el){ el.removeAttribute("aria-invalid"); });
     Array.prototype.forEach.call(form.querySelectorAll(".rap-err"), function(el){ el.hidden = true; });
     $("rapRestored").hidden = true;
@@ -1168,6 +1540,7 @@ body { padding-left: var(--sb-w); }
     r.textContent = "Welcome back. We reopened the profile you started" + (who ? " for " + who : "") + ", right where you left off.";
     r.hidden = false;
   }
+  if (!draft) { renderPeople([]); syncHobbies(); syncRange(); syncNotes(); }
   syncConditional(); syncSuggest();
   show(current, false);
   clearTimeout(saveTimer);               // nothing changed yet
