@@ -588,6 +588,44 @@ body { padding-left: var(--sb-w); }
 .rap-radio span b{display:block;color:#fff}
 .rap-radio span{font-size:15px;color:var(--rp-muted)}
 
+/* Step 6: notes, summary, saved state */
+.rap-notes-label{font-size:21px!important}
+.rap textarea{width:100%;min-height:210px;padding:14px 16px;border-radius:12px;border:2px solid var(--rp-line2);background:var(--rp-field);color:#fff;font:inherit;font-size:19px;line-height:1.55;resize:vertical}
+.rap textarea::placeholder{color:#7f978d;opacity:1}
+.rap textarea:hover{border-color:rgba(122,211,164,.6)}
+.rap textarea:focus{border-color:var(--rp-accent-hi);outline:none;box-shadow:0 0 0 3px rgba(122,211,164,.35)}
+.rap-notes-count{text-align:right}
+.rap-glance{margin:0 0 20px;padding:16px 18px;border:1px solid var(--rp-line);border-radius:16px;background:rgba(216,243,220,.03)}
+.rap-glance h3{margin:0 0 10px;font-size:18px;color:#fff}
+.rap-glance-list{margin:0;display:grid;gap:6px}
+.rap-glance-list div{display:grid;grid-template-columns:150px 1fr;gap:12px;padding:6px 0;border-bottom:1px solid var(--rp-line)}
+.rap-glance-list div:last-child{border-bottom:0}
+.rap-glance-list dt{font-weight:700;color:var(--rp-muted);font-size:15.5px}
+.rap-glance-list dd{margin:0;font-size:16.5px;overflow-wrap:anywhere}
+.rap-glance-list dd.is-empty{color:#7f978d;font-style:italic}
+.rap-done{display:flex;flex-wrap:wrap;align-items:center;gap:12px 18px;margin:0 0 20px;padding:16px 18px;border-radius:14px;border:2px solid var(--rp-accent);background:rgba(82,183,136,.14)}
+.rap-done[hidden]{display:none}
+.rap-done-msg{margin:0;flex:1 1 320px;font-size:16.5px}
+.rap-done-msg b{color:var(--rp-accent-hi)}
+#rapNext.is-save{padding:14px 30px;font-size:19px;box-shadow:0 0 0 4px rgba(82,183,136,.25)}
+
+/* saved residents + toast */
+.rap-residents{margin:28px 0 0;padding:22px clamp(18px,4vw,30px);border-radius:18px;border:1px solid var(--rp-line2);background:rgba(14,22,20,.92)}
+.rap-residents h2{margin:0 0 4px;font-size:22px;color:#fff}
+.rap-residents h2:focus{outline:none}
+.rap-res-list{list-style:none;margin:14px 0 0;padding:0;display:grid;gap:10px}
+.rap-res{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 16px;padding:12px 16px;border-radius:12px;border:1px solid var(--rp-line2);background:var(--rp-field)}
+.rap-res b{font-size:18px;color:#fff}
+.rap-res-when{display:block;font-size:14.5px;color:var(--rp-muted)}
+.rap-res-here{margin-left:8px;padding:1px 8px;border-radius:999px;font-size:12.5px;font-weight:700;background:rgba(82,183,136,.2);color:var(--rp-accent-hi)}
+.rap-res-actions{display:flex;gap:10px}
+.rap-res-empty{margin:12px 0 0;color:var(--rp-muted);font-size:15.5px}
+.rap-res-empty[hidden]{display:none}
+.rap-toast{position:fixed;left:50%;top:76px;z-index:60;transform:translateX(-50%);max-width:min(560px,calc(100vw - 32px));padding:14px 22px;border-radius:14px;background:#d8f3dc;color:#062116;font:700 17px/1.4 "Trebuchet MS","Segoe UI",sans-serif;box-shadow:0 12px 34px rgba(0,0,0,.45)}
+.rap-toast.is-error{background:#ffe3db;color:#5a1a0c}
+.rap-toast[hidden]{display:none}
+@media (min-width:701px){.rap-toast{left:calc(50% + 110px)}}
+
 /* placeholders */
 .rap-soon-note{margin:0 0 20px;padding:22px;border:2px dashed var(--rp-line2);border-radius:14px;color:var(--rp-muted)}
 
@@ -601,7 +639,7 @@ body { padding-left: var(--sb-w); }
 .rap-btn-sm{min-height:44px;padding:8px 16px;font-size:16px}
 .rap-btn-danger{background:transparent;color:#ffcfc4;border-color:rgba(255,180,162,.45)}
 .rap-btn-danger:hover{border-color:#ffb4a2;color:#fff}
-.rap-nav{position:sticky;bottom:0;z-index:2;display:flex;align-items:center;gap:14px;padding:16px clamp(18px,4vw,34px);border-top:1px solid var(--rp-line);border-radius:0 0 22px 22px;background:rgba(14,22,20,.97)}
+.rap-nav{position:sticky;bottom:0;z-index:2;display:flex;align-items:center;gap:14px;padding:16px clamp(18px,4vw,34px);border-top:1px solid var(--rp-line);border-radius:0 0 22px 22px;background:#0e1614}
 .rap-nav #rapNext{margin-left:auto}
 .rap-nav #rapBack[hidden]{display:none}
 .rap-saved{font-size:14.5px;color:var(--rp-muted)}
@@ -623,6 +661,9 @@ body { padding-left: var(--sb-w); }
   .rap-tile{padding:10px;font-size:16px}
   .rap-row-3{grid-template-columns:1fr}
   .rap-person{grid-template-columns:1fr}
+  .rap-glance-list div{grid-template-columns:1fr;gap:0}
+  .rap-res-actions{width:100%}
+  .rap-res-actions .rap-btn{flex:1}
   .rap-remove{grid-column:1;justify-self:stretch}
   .rap-nav{flex-wrap:wrap;padding:12px 14px}
   .rap-saved{order:3;width:100%;text-align:center}
@@ -754,7 +795,7 @@ body { padding-left: var(--sb-w); }
 
     <section class="rap-privacy" role="note" aria-label="Privacy">
       <p class="rap-privacy-main"><span aria-hidden="true">🔒</span> <b>Privacy First:</b> All resident information entered here is saved safely and strictly on your local computer. No data is ever extracted, collected, or sent to external servers. We ask these specific questions to generate activities that honor the resident's unique identity.</p>
-      <p class="rap-privacy-sub">The profile is kept only in this web browser on this computer. On a shared computer, press <b>Clear this profile</b> when you are finished.</p>
+      <p class="rap-privacy-sub">Profiles are kept only in this web browser on this computer. On a shared computer, delete a profile under <b>Saved residents</b> when it is no longer needed.</p>
     </section>
 
     <p class="rap-restored" id="rapRestored" role="status" hidden></p>
@@ -1165,10 +1206,28 @@ body { padding-left: var(--sb-w); }
         </fieldset>
       </section>
 
-      <!-- ── STEP 6: placeholder for the next phase ── -->
-      <section class="rap-step rap-soon" data-step="6" aria-labelledby="rapH6" hidden>
-        <h2 id="rapH6" tabindex="-1">Review and finish</h2>
-        <p class="rap-soon-note">Coming in the next update: a one-page summary of the profile to check, then one click to create this resident's first packet.</p>
+      <!-- ── STEP 6 ── -->
+      <section class="rap-step" data-step="6" aria-labelledby="rapH6" hidden>
+        <h2 id="rapH6" tabindex="-1">Anything else, then save</h2>
+        <p class="rap-why"><b>Why we ask:</b> The small, specific details (a job they were proud of, a pet's name, what frustrates them) are what make an activity feel personal instead of generic.</p>
+
+        <div class="rap-field">
+          <label for="rapNotes" class="rap-notes-label">Tell Us Anything Else About This Resident</label>
+          <p class="rap-hint rap-hint-top" id="rapNotesHint">What would help us create activities that feel like they were made specifically for this person? (e.g., "Betty was a hairdresser for 45 years, loves 1960s styles, Elvis, and her poodle Princess, but gets frustrated with math.")</p>
+          <textarea id="rapNotes" name="notes" rows="8" maxlength="1500" aria-describedby="rapNotesHint rapNotesCount" placeholder="Write as much or as little as you like."></textarea>
+          <p class="rap-hint rap-notes-count" id="rapNotesCount" aria-live="polite">0 of 1,500 characters</p>
+        </div>
+
+        <section class="rap-glance" aria-labelledby="rapGlanceH">
+          <h3 id="rapGlanceH">At a glance</h3>
+          <dl class="rap-glance-list" id="rapGlance"></dl>
+          <p class="rap-hint">Something wrong? Click any step above to change it.</p>
+        </section>
+
+        <div class="rap-done" id="rapDone" hidden>
+          <p class="rap-done-msg" id="rapDoneMsg"></p>
+          <button type="button" class="rap-btn rap-btn-ghost rap-btn-sm" id="rapNewResident">Start a new resident profile</button>
+        </div>
       </section>
 
       <!-- Navigation -->
@@ -1180,8 +1239,17 @@ body { padding-left: var(--sb-w); }
     </form>
 
     <div class="rap-footer-tools">
-      <button type="button" class="rap-btn rap-btn-danger rap-btn-sm" id="rapClear">Clear this profile</button>
+      <button type="button" class="rap-btn rap-btn-danger rap-btn-sm" id="rapClear">Clear this form</button>
     </div>
+
+    <section class="rap-residents" aria-labelledby="rapResH">
+      <h2 id="rapResH" tabindex="-1">Saved residents on this computer</h2>
+      <p class="rap-hint">Stored only in this web browser. Open a profile to update it, or delete it when it is no longer needed.</p>
+      <ul class="rap-res-list" id="rapResList"></ul>
+      <p class="rap-res-empty" id="rapResEmpty">No saved profiles yet. Finish the steps above and press <b>Save Resident Profile</b>.</p>
+    </section>
+
+    <div class="rap-toast" id="rapToast" role="status" aria-live="polite" hidden></div>
   </main>
 
 
@@ -1200,7 +1268,7 @@ body { padding-left: var(--sb-w); }
     { title:"Favorites & music" },
     { title:"Clinical & abilities" },
     { title:"Packet settings" },
-    { title:"Review & finish", soon:true }
+    { title:"Anything else & save" }
   ];
   var TOTAL = STEPS.length, THIS_YEAR = new Date().getFullYear();
 
@@ -1217,7 +1285,8 @@ body { padding-left: var(--sb-w); }
     catch (e){ return null; }
   }
   function writeDraft(){
-    var d = { v:VERSION, step:current, furthest:furthest, updated:new Date().toISOString(), data:collect() };
+    var d = { v:VERSION, step:current, furthest:furthest, updated:new Date().toISOString(), data:collect(),
+              residentId:residentId, savedSig:savedSig };      // which saved resident this form is editing
     try { localStorage.setItem(KEY, JSON.stringify(d)); return true; }
     catch (e){ return false; }
   }
@@ -1237,7 +1306,7 @@ body { padding-left: var(--sb-w); }
       } else if (el.type === "radio"){
         if (el.checked) data[el.name] = el.value;
       } else {
-        data[el.name] = String(el.value).slice(0, 80);
+        data[el.name] = String(el.value).slice(0, el.maxLength > 0 ? el.maxLength : 80);
       }
     });
     data.people = readPeople();
@@ -1465,8 +1534,9 @@ body { padding-left: var(--sb-w); }
     });
     backBtn.hidden = current === 1;
     var last = current === TOTAL;
-    nextBtn.disabled = last;
-    nextBtn.innerHTML = last ? "Finish (coming soon)" : "Next &rarr;";
+    nextBtn.innerHTML = last ? "Save Resident Profile" : "Next &rarr;";
+    nextBtn.classList.toggle("is-save", last);
+    if (last){ renderGlance(); syncNotesCount(); }
     if (focusHeading){
       var h = form.querySelector('.rap-step[data-step="' + current + '"] h2');
       if (form.getBoundingClientRect().top < 0) window.scrollTo(0, form.getBoundingClientRect().top + window.pageYOffset - 16);
@@ -1480,7 +1550,11 @@ body { padding-left: var(--sb-w); }
     show(step, true);
   }
 
-  form.addEventListener("submit", function(e){ e.preventDefault(); if (current < TOTAL) go(current + 1); });
+  form.addEventListener("submit", function(e){
+    e.preventDefault();
+    if (current < TOTAL) go(current + 1);
+    else saveResidentProfile();                   // the last step's button saves
+  });
   backBtn.addEventListener("click", function(){ go(current - 1); });
   stepList.addEventListener("click", function(e){
     var btn = e.target.closest("button[data-go]");
@@ -1503,27 +1577,361 @@ body { padding-left: var(--sb-w); }
   form.addEventListener("input", function(e){
     if (e.target.id === "rapName" && e.target.getAttribute("aria-invalid") && e.target.value.trim()) setError(e.target, "rapNameErr", "");
     if (e.target.name === "difficulty") syncRange();
-    syncConditional(); queueSave();
+    if (e.target.id === "rapNotes") syncNotesCount();
+    syncConditional(); queueSave(); syncDirty();
   });
   form.addEventListener("change", function(e){
     if (e.target.name === "hobbies") syncHobbies();
-    syncNotes(); syncConditional(); queueSave();
+    syncNotes(); syncConditional(); queueSave(); syncDirty();
+    if (current === TOTAL) renderGlance();
   });
 
-  /* ---------- clear ---------- */
-  $("rapClear").addEventListener("click", function(){
-    if (!window.confirm("Clear this profile from this computer? This cannot be undone.")) return;
-    clearTimeout(saveTimer);
+
+  /* =====================================================================
+     RESIDENT PROFILE ENGINE
+     ---------------------------------------------------------------------
+     saveResidentProfile() reads every answer from Steps 1 to 6 by its
+     element ID, arranges it in three priority tiers for the offline
+     packet generator, and stores it in this browser's localStorage under
+     "cognicopia_resident_<id>". Nothing is sent anywhere.
+
+       tier1_core        Builds the packet template: who it is for, what
+                         prints, what must never appear, how hard it is.
+       tier2_enrichment  Fills trivia, matching and word searches: the
+                         decades, places, work, music and screen favorites.
+       tier3_deep        Targets reminiscence prompts: the free-text notes
+                         and the named people and pets.
+
+     Every choice is stored as { code, label }. The code is stable (for
+     the generator); the label is the wording staff saw (for printing).
+     ===================================================================== */
+  var RESIDENT_PREFIX = "cognicopia_resident_";
+  var SCHEMA = "cognicopia.residentProfile", SCHEMA_VERSION = 1;
+  var residentId = null, savedSig = null;
+
+  /* ---- small readers, all by element ID ---- */
+  function text(id){ var el = $(id); return el ? String(el.value).replace(/\s+/g, " ").trim() : ""; }
+  function longText(id){ var el = $(id); return el ? String(el.value).replace(/\r\n?/g, "\n").replace(/[ \t]+/g, " ").replace(/\n{3,}/g, "\n\n").trim() : ""; }
+  function number(id){ var n = parseInt(text(id), 10); return isNaN(n) ? null : n; }
+  function choice(id){                       // a <select>: { code, label } or null when unanswered
+    var el = $(id);
+    if (!el || !el.value) return null;
+    return { code:el.value, label:el.options[el.selectedIndex].text };
+  }
+  function tickLabel(input){                 // the words on a tick-box or radio card, without its icon
+    var spans = input.closest("label").querySelectorAll("span");
+    var s = spans[spans.length - 1];
+    return (s ? s.textContent : input.value).replace(/\s+/g, " ").trim();
+  }
+  function ticks(groupName){                 // every ticked box in a group, in on-screen order
+    return Array.prototype.map.call(form.querySelectorAll('input[name="' + groupName + '"]:checked'), function(i){
+      return { code:i.value, label:tickLabel(i) };
+    });
+  }
+  function radio(groupName){
+    var i = form.querySelector('input[name="' + groupName + '"]:checked');
+    if (!i) return null;
+    var b = i.closest("label").querySelector("b");
+    return { code:i.value, label:(b ? b.textContent : i.value).trim() };
+  }
+
+  /* ---- names the notes mention, found by plain text matching (no AI) ---- */
+  var ARTIST_ALIASES = { "elvis":"Elvis Presley", "sinatra":"Frank Sinatra", "patsy":"Patsy Cline", "satchmo":"Louis Armstrong",
+    "dolly":"Dolly Parton", "beatles":"The Beatles", "carpenters":"The Carpenters", "supremes":"The Supremes", "reba":"Reba McEntire",
+    "garth":"Garth Brooks", "aretha":"Aretha Franklin", "glenn miller":"Glenn Miller", "bing":"Bing Crosby", "johnny cash":"Johnny Cash" };
+  var DECADE_WORDS = { twenties:"1920s", thirties:"1930s", forties:"1940s", fifties:"1950s", sixties:"1960s", seventies:"1970s", eighties:"1980s", nineties:"1990s" };
+  function escRe(s){ return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }
+  function findMentions(notes){
+    var low = " " + notes.toLowerCase() + " ", artists = [], decades = [];
+    var add = function(list, v){ if (list.indexOf(v) === -1) list.push(v); };
+    Array.prototype.forEach.call(document.querySelectorAll("#rapArtistList option"), function(o){
+      if (new RegExp("[^a-z]" + escRe(o.value.toLowerCase()) + "[^a-z]").test(low)) add(artists, o.value);
+    });
+    Object.keys(ARTIST_ALIASES).forEach(function(k){ if (new RegExp("[^a-z]" + escRe(k) + "[^a-z]").test(low)) add(artists, ARTIST_ALIASES[k]); });
+    (notes.match(/\b(?:19)?[2-9]0'?s\b|'[2-9]0s\b/gi) || []).forEach(function(m){
+      var d = m.replace(/'/g, "").slice(-3, -1); add(decades, "19" + d + "s");
+    });
+    Object.keys(DECADE_WORDS).forEach(function(w){ if (new RegExp("\\b" + w + "\\b").test(low)) add(decades, DECADE_WORDS[w]); });
+    return { artists:artists, decades:decades.sort() };
+  }
+
+  /* ---- build the tiered profile object from the form ---- */
+  function buildResidentProfile(){
+    var occupation = choice("rapJob");
+    if (occupation && occupation.code === "other") occupation.label = text("rapJobOther") || "Other";
+    var diffLevel = number("rapDiff") || 3;
+    var genres = [choice("rapGenre1"), choice("rapGenre2")].filter(Boolean)
+      .filter(function(g, i, all){ return all.findIndex(function(x){ return x.code === g.code; }) === i; });
+    var branch = choice("rapBranch"), served = branch && ["none", "unknown"].indexOf(branch.code) === -1;
+    var notes = longText("rapNotes");
+
+    return {
+      schema: SCHEMA,
+      version: SCHEMA_VERSION,
+      id: residentId,                                   // filled in by saveResidentProfile()
+      meta: {
+        completedBy: choice("rapBy"),
+        source: "Resident Activity Profile (profile.html)"
+      },
+
+      /* Tier 1: builds the primary packet template */
+      tier1_core: {
+        preferredName: text("rapName"),
+        occupation: occupation,
+        topHobbies: ticks("hobbies"),
+        printNeeds: {
+          vision: choice("rapVision"),
+          readingLevel: choice("rapRead"),
+          motorSkills: choice("rapMotor"),
+          paper: radio("paper"),
+          ink: radio("ink")
+        },
+        topicsToAvoid: {
+          topics: ticks("avoidTopics"),
+          other: text("rapAvoidOther")
+        },
+        difficulty: { level: diffLevel, label: DIFF[diffLevel - 1], scale: "1 (very easy) to 5 (challenging)" }
+      },
+
+      /* Tier 2: fills trivia, matching games and word searches */
+      tier2_enrichment: {
+        age: number("rapAge"),
+        birthYear: number("rapBorn"),
+        meaningfulDecades: ticks("decades").map(function(d){ return d.code; }),
+        hometown: { environment: choice("rapHome"), place: text("rapTown") },
+        skills: { items: ticks("skills"), other: text("rapSkillOther") },
+        military: {
+          branch: branch,
+          era: served ? choice("rapEra") : null,
+          talkingAboutIt: served ? (choice("rapMilTopic") || { code:"", label:"Not sure yet" }) : null
+        },
+        music: {
+          genres: genres,
+          artists: [text("rapArtist1"), text("rapArtist2"), text("rapArtist3")].filter(Boolean),
+          favoriteSong: text("rapSong")
+        },
+        tvMoviesSports: { tvShows: text("rapTv"), movies: text("rapMovies"), sportsTeams: text("rapTeams") },
+        activityPreferences: ticks("activityTypes")
+      },
+
+      /* Tier 3: targeted reminiscence prompts */
+      tier3_deep: {
+        notes: notes,
+        people: readPeople().filter(function(p){ return p.name; }).map(function(p){
+          var rel = RELATIONS.filter(function(r){ return r[0] === p.rel; })[0];
+          return {
+            name: p.name,
+            relationship: p.rel ? { code:p.rel, label:rel ? rel[1] : p.rel } : null,
+            isPet: /^pet-/.test(p.rel),
+            passedAway: !!p.passed
+          };
+        }),
+        mentionsInNotes: findMentions(notes)            // artists and decades spotted in the notes
+      }
+    };
+  }
+
+  /* ---- the reverse: put a saved profile back into the form for editing ---- */
+  function profileToForm(p){
+    var t1 = p.tier1_core || {}, t2 = p.tier2_enrichment || {}, t3 = p.tier3_deep || {};
+    var code = function(c){ return c && c.code ? c.code : ""; };
+    var codes = function(list){ return (list || []).map(function(x){ return x.code; }); };
+    var pn = t1.printNeeds || {}, mil = t2.military || {}, mus = t2.music || {}, tv = t2.tvMoviesSports || {};
+    var occ = t1.occupation;
+    return {
+      preferredName: t1.preferredName || "",
+      age: t2.age == null ? "" : String(t2.age), birthYear: t2.birthYear == null ? "" : String(t2.birthYear),
+      completedBy: code((p.meta || {}).completedBy), decades: t2.meaningfulDecades || [],
+      hometown: code((t2.hometown || {}).environment), hometownName: (t2.hometown || {}).place || "",
+      occupation: code(occ), occupationOther: occ && occ.code === "other" && occ.label !== "Other" ? occ.label : "",
+      skills: codes((t2.skills || {}).items), skillsOther: (t2.skills || {}).other || "",
+      militaryBranch: code(mil.branch), militaryEra: code(mil.era), militaryTopic: code(mil.talkingAboutIt),
+      hobbies: codes(t1.topHobbies),
+      genre1: code((mus.genres || [])[0]), genre2: code((mus.genres || [])[1]),
+      artist1: (mus.artists || [])[0] || "", artist2: (mus.artists || [])[1] || "", artist3: (mus.artists || [])[2] || "",
+      favoriteSong: mus.favoriteSong || "",
+      tvShows: tv.tvShows || "", movies: tv.movies || "", sportsTeams: tv.sportsTeams || "",
+      readingLevel: code(pn.readingLevel), vision: code(pn.vision), motor: code(pn.motorSkills),
+      avoidTopics: codes((t1.topicsToAvoid || {}).topics), avoidOther: (t1.topicsToAvoid || {}).other || "",
+      activityTypes: codes(t2.activityPreferences),
+      difficulty: String((t1.difficulty || {}).level || 3),
+      paper: code(pn.paper) || "letter", ink: code(pn.ink) || "bw",
+      notes: t3.notes || "",
+      people: (t3.people || []).map(function(x){ return { name:x.name, rel:code(x.relationship), passed:!!x.passedAway }; })
+    };
+  }
+
+  /* ---- localStorage access for saved residents ---- */
+  function newResidentId(){
+    return "res-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 6);
+  }
+  function readResident(id){
+    try { var p = JSON.parse(localStorage.getItem(RESIDENT_PREFIX + id)); return p && p.schema === SCHEMA ? p : null; }
+    catch (e){ return null; }
+  }
+  function listResidents(){
+    var out = [];
+    try {
+      for (var i = 0; i < localStorage.length; i++){
+        var k = localStorage.key(i);
+        if (k && k.indexOf(RESIDENT_PREFIX) === 0){ var p = readResident(k.slice(RESIDENT_PREFIX.length)); if (p) out.push(p); }
+      }
+    } catch (e){}
+    return out.sort(function(a, b){ return String(b.updatedAt).localeCompare(String(a.updatedAt)); });
+  }
+
+  /**
+   * saveResidentProfile()
+   * Harvests Steps 1 to 6, builds the tiered JSON and writes it to
+   * window.localStorage as "cognicopia_resident_<id>". Saving again
+   * updates the same resident instead of making a copy.
+   * Returns the saved profile object, or null if it could not be saved.
+   */
+  function saveResidentProfile(){
+    // The name is the one required answer; send staff back to it if it is missing.
+    if (!validate(1)){ show(1, true); validate(1); return null; }
+
+    var isNew = !residentId || !readResident(residentId);
+    if (isNew) residentId = newResidentId();
+    var previous = isNew ? null : readResident(residentId);
+    var now = new Date().toISOString();
+
+    var profile = buildResidentProfile();
+    profile.id = residentId;
+    profile.createdAt = previous && previous.createdAt ? previous.createdAt : now;
+    profile.updatedAt = now;
+
+    try {
+      window.localStorage.setItem(RESIDENT_PREFIX + residentId, JSON.stringify(profile));
+    } catch (e){
+      if (isNew) residentId = null;
+      toast("This profile could not be saved. This browser is not allowing storage, or it is full.", true);
+      return null;
+    }
+
+    savedSig = JSON.stringify(collect());
+    writeDraft();                                          // the draft now remembers which resident it is
+    renderResidents();
+    renderDone(profile, isNew);
+    toast("Profile saved locally.");
+    return profile;
+  }
+  window.saveResidentProfile = saveResidentProfile;       // callable from other Cognicopia pages or the console
+
+  /* ---- toast ---- */
+  var toastTimer = null;
+  function toast(msg, isError){
+    var t = $("rapToast");
+    t.textContent = msg;
+    t.classList.toggle("is-error", !!isError);
+    t.hidden = false;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ t.hidden = true; }, isError ? 7000 : 3500);
+  }
+
+  /* ---- Step 6: "saved" panel, unsaved-changes note and summary ---- */
+  function fmtTime(iso){ var d = new Date(iso); return d.toLocaleDateString([], { month:"short", day:"numeric" }) + " at " + d.toLocaleTimeString([], { hour:"numeric", minute:"2-digit" }); }
+  function renderDone(profile, isNew){
+    $("rapDone").hidden = false;
+    $("rapDoneMsg").innerHTML = "<b>" + (isNew ? "Saved" : "Updated") + ".</b> " + escAttr(profile.tier1_core.preferredName) +
+      "'s profile is stored on this computer (" + fmtTime(profile.updatedAt) + "). Pressing Save again updates the same profile.";
+  }
+  function syncDirty(){
+    if (!residentId) return;
+    var dirty = savedSig !== null && JSON.stringify(collect()) !== savedSig;
+    if (dirty){ $("rapDone").hidden = false; $("rapDoneMsg").innerHTML = "<b>You have changes that are not saved yet.</b> Press Save Resident Profile to update this profile."; }
+  }
+  function renderGlance(){
+    var p = buildResidentProfile(), t1 = p.tier1_core, t2 = p.tier2_enrichment, t3 = p.tier3_deep;
+    var labels = function(list){ return list.map(function(x){ return x.label; }).join(", "); };
+    var rows = [
+      ["Name", t1.preferredName],
+      ["Work", t1.occupation ? t1.occupation.label : ""],
+      ["Top hobbies", labels(t1.topHobbies)],
+      ["Decades", t2.meaningfulDecades.join(", ")],
+      ["Print", [t1.printNeeds.vision && t1.printNeeds.vision.label, t1.printNeeds.paper && t1.printNeeds.paper.label, t1.printNeeds.ink && t1.printNeeds.ink.label].filter(Boolean).join(" · ")],
+      ["Difficulty", t1.difficulty.label],
+      ["Avoid", [labels(t1.topicsToAvoid.topics), t1.topicsToAvoid.other].filter(Boolean).join(", ")],
+      ["People and pets", t3.people.map(function(x){ return x.name + (x.passedAway ? " (passed away)" : ""); }).join(", ")]
+    ];
+    $("rapGlance").innerHTML = rows.map(function(r){
+      return "<div><dt>" + r[0] + "</dt><dd" + (r[1] ? "" : ' class="is-empty"') + ">" + escAttr(r[1] || "Not filled in") + "</dd></div>";
+    }).join("");
+  }
+  function syncNotesCount(){
+    var n = $("rapNotes").value.length;
+    $("rapNotesCount").textContent = n.toLocaleString() + " of 1,500 characters";
+  }
+
+  /* ---- saved residents list: open to edit, or delete ---- */
+  function renderResidents(){
+    var list = listResidents(), box = $("rapResList");
+    $("rapResEmpty").hidden = list.length > 0;
+    box.innerHTML = list.map(function(p){
+      var name = escAttr(p.tier1_core.preferredName || "Unnamed");
+      var here = p.id === residentId ? ' <span class="rap-res-here">Open now</span>' : "";
+      return '<li class="rap-res"><div><b>' + name + "</b>" + here + '<span class="rap-res-when">Last saved ' + escAttr(fmtTime(p.updatedAt)) + "</span></div>" +
+        '<div class="rap-res-actions"><button type="button" class="rap-btn rap-btn-ghost rap-btn-sm" data-open="' + escAttr(p.id) + '" aria-label="Open ' + name + '">Open</button>' +
+        '<button type="button" class="rap-btn rap-btn-danger rap-btn-sm" data-delete="' + escAttr(p.id) + '" aria-label="Delete ' + name + '">Delete</button></div></li>';
+    }).join("");
+  }
+  $("rapResList").addEventListener("click", function(e){
+    var open = e.target.closest("[data-open]"), del = e.target.closest("[data-delete]");
+    if (open){
+      var p = readResident(open.getAttribute("data-open"));
+      if (!p) { renderResidents(); return; }
+      var hasOther = text("rapName") && residentId !== p.id && JSON.stringify(collect()) !== savedSig;
+      if (hasOther && !window.confirm("Open " + p.tier1_core.preferredName + "'s profile? What is in the form now will be replaced.")) return;
+      resetForm();
+      fill(profileToForm(p));
+      residentId = p.id; savedSig = JSON.stringify(collect());
+      furthest = TOTAL; syncConditional(); syncSuggest(); syncNotesCount();
+      renderResidents(); renderDone(p, false);
+      show(1, true);
+      toast("Opened " + p.tier1_core.preferredName + "'s profile.");
+    }
+    if (del){
+      var id = del.getAttribute("data-delete"), q = readResident(id), who = q ? q.tier1_core.preferredName : "this resident";
+      if (!window.confirm("Delete " + who + "'s profile from this computer? This cannot be undone.")) return;
+      try { localStorage.removeItem(RESIDENT_PREFIX + id); } catch (err){}
+      if (id === residentId){ residentId = null; savedSig = null; $("rapDone").hidden = true; writeDraft(); }
+      renderResidents();
+      toast(who + "'s profile was deleted from this computer.");
+      $("rapResH").focus();
+    }
+  });
+  $("rapNewResident").addEventListener("click", function(){
+    resetForm();
     try { localStorage.removeItem(KEY); } catch (e){}
+    renderResidents();
+    savedEl.textContent = "Ready for a new resident.";
+    show(1, true); clearTimeout(saveTimer);
+  });
+
+  /* ---------- clear the form (saved residents are not touched) ---------- */
+  function resetForm(){
+    clearTimeout(saveTimer);
     form.reset();
     renderPeople([]); warTouched = false; $("rapPeopleNote").textContent = "";
     syncHobbies(); syncRange(); syncNotes();
     Array.prototype.forEach.call(form.querySelectorAll("[aria-invalid]"), function(el){ el.removeAttribute("aria-invalid"); });
     Array.prototype.forEach.call(form.querySelectorAll(".rap-err"), function(el){ el.hidden = true; });
-    $("rapRestored").hidden = true;
-    furthest = 1; savedEl.textContent = "Profile cleared.";
-    syncConditional(); syncSuggest();
-    current = 1; show(1, true);
+    $("rapRestored").hidden = true; $("rapDone").hidden = true;
+    residentId = null; savedSig = null;
+    furthest = 1; current = 1;
+    syncConditional(); syncSuggest(); syncNotesCount();
+  }
+  $("rapClear").addEventListener("click", function(){
+    var name = text("rapName");
+    var msg = residentId && readResident(residentId)
+      ? "Clear the form? " + (name || "This resident") + "'s saved profile stays saved."
+      : "Clear the form? What you have typed has not been saved as a profile and will be lost.";
+    if (!window.confirm(msg)) return;
+    resetForm();
+    try { localStorage.removeItem(KEY); } catch (e){}
+    renderResidents();
+    savedEl.textContent = "Form cleared.";
+    show(1, true);
     clearTimeout(saveTimer);             // show() queues a save; a blank draft is not needed
   });
 
@@ -1535,13 +1943,17 @@ body { padding-left: var(--sb-w); }
     fill(draft.data);
     furthest = Math.max(1, Math.min(TOTAL, draft.furthest || 1));
     current = Math.max(1, Math.min(furthest, draft.step || 1));
+    residentId = draft.residentId && readResident(draft.residentId) ? draft.residentId : null;
+    savedSig = residentId ? draft.savedSig || null : null;
     var who = (draft.data.preferredName || "").trim();
     var r = $("rapRestored");
     r.textContent = "Welcome back. We reopened the profile you started" + (who ? " for " + who : "") + ", right where you left off.";
     r.hidden = false;
   }
   if (!draft) { renderPeople([]); syncHobbies(); syncRange(); syncNotes(); }
-  syncConditional(); syncSuggest();
+  syncConditional(); syncSuggest(); syncNotesCount();
+  renderResidents();
+  if (residentId){ renderDone(readResident(residentId), false); syncDirty(); }
   show(current, false);
   clearTimeout(saveTimer);               // nothing changed yet
 })();
