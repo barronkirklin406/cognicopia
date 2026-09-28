@@ -1119,6 +1119,109 @@ body { padding-left: var(--sb-w); }
 }
 @media (prefers-reduced-motion:reduce){.arb-backup summary::before,.arb-backup-body{transition:none}}
 </style>
+<style>
+/* ═══ Profile Packet Builder: panel (screen) ═══ */
+.qpb{margin:0 0 28px;padding:20px 22px;border-radius:18px;background:linear-gradient(160deg,#16231f,#0e1614);border:2px solid rgba(216,243,220,.3);color:#eef6f1;font-family:"Trebuchet MS","Segoe UI",sans-serif;box-shadow:0 12px 32px rgba(0,0,0,.28)}
+.qpb-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 14px;margin:0 0 6px}
+.qpb-head h2{margin:0;font-size:21px;color:#fff;font-family:inherit}
+.qpb-for{padding:5px 14px;border-radius:999px;font-size:15px;font-weight:700;background:rgba(216,243,220,.1);color:#b3c9bf;border:1px solid rgba(216,243,220,.25)}
+.qpb-for.is-on{background:#52b788;color:#062116;border-color:#52b788}
+.qpb-lede{margin:0 0 14px;font-size:15.5px;line-height:1.5;color:#b3c9bf}
+.qpb-picks{margin:0 0 14px;padding:0;border:0;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.qpb-picks legend{margin:0 0 8px;padding:0;font-weight:700;font-size:16px;color:#fff}
+.qpb-pick{display:flex;gap:12px;align-items:flex-start;min-height:56px;padding:10px 14px;border-radius:12px;border:2px solid rgba(216,243,220,.25);background:#0b1412;cursor:pointer}
+.qpb-pick:has(input:checked){border-color:#52b788;background:rgba(82,183,136,.14)}
+.qpb-pick:has(input:focus-visible){outline:3px solid #7ad3a4;outline-offset:2px}
+.qpb-pick input{flex:none;width:22px;height:22px;margin:2px 0 0;accent-color:#52b788}
+.qpb-pick b{display:block;font-size:16px;color:#fff}
+.qpb-pick small{display:block;font-size:13.5px;color:#b3c9bf;line-height:1.35}
+.qpb-actions{display:flex;flex-wrap:wrap;gap:10px}
+.qpb-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:52px;padding:10px 20px;border-radius:12px;border:2px solid rgba(216,243,220,.3);background:transparent;color:#eef6f1;font:inherit;font-size:17px;font-weight:700;cursor:pointer}
+.qpb-btn:hover:not(:disabled){border-color:#7ad3a4;color:#fff}
+.qpb-btn:focus-visible{outline:3px solid #7ad3a4;outline-offset:3px}
+.qpb-btn:disabled{opacity:.45;cursor:not-allowed}
+.qpb-btn-primary{background:#52b788;border-color:#52b788;color:#062116}
+.qpb-btn-primary:hover:not(:disabled){background:#7ad3a4;border-color:#7ad3a4;color:#062116}
+.qpb-note{margin:10px 0 0;font-size:14px;color:#b3c9bf}
+.qpb-note b{color:#eef6f1}
+.qpb-status{margin:10px 0 0;font-size:15.5px;color:#d8f3dc;min-height:1em}
+.qpb-preview{display:grid;gap:18px;margin:16px 0 0;padding:16px;border-radius:14px;background:#2a3431}
+.qpb-preview[hidden]{display:none}
+.qpb-frame{position:relative;width:100%;overflow:hidden}
+.qpb-frame > .qp-sheet{position:absolute;top:0;left:0;transform-origin:0 0;box-shadow:0 6px 20px rgba(0,0,0,.35)}
+@media (max-width:700px){.qpb{padding:16px}.qpb-picks{grid-template-columns:1fr}.qpb-btn{flex:1 1 100%}.qpb-preview{padding:8px}}
+#qpPrintRoot{display:none}
+
+/* ═══ Printable pages (identical on screen preview and paper) ═══
+   Pure black on white. Sizes use pt so they print at the stated size.
+   --qps: vision scale (1, 1.15, 1.3). --fit: small shrink only when a
+   page would overflow; max() keeps every size at or above the minimum. */
+.qp-sheet{--fit:1;font-size:14pt;box-sizing:border-box;width:var(--pw,8.5in);height:var(--ph,11in);padding:.5in;display:flex;flex-direction:column;overflow:hidden;
+  background:#fff;color:#000;font-family:"Trebuchet MS",Verdana,Arial,sans-serif;line-height:1.3;text-align:left}
+.qp-sheet *{box-sizing:border-box;letter-spacing:normal;text-transform:none;text-shadow:none}
+.qp-sheet h2,.qp-sheet p,.qp-sheet ul,.qp-sheet ol,.qp-sheet li{font-family:inherit;max-width:none}
+.qp-head{margin:0 0 .08in;padding:0 0 .08in;border-bottom:3pt solid #000}
+.qp-sheet .qp-title{margin:0;font-size:max(26pt,calc(30pt * var(--qps,1) * var(--fit)));line-height:1.1;font-weight:700;color:#000;font-family:inherit}
+.qp-sheet .qp-sub{margin:.04in 0 0;font-size:max(16pt,calc(16pt * var(--qps,1) * var(--fit)));color:#000}
+.qp-sheet .qp-inst{margin:.1in 0 .14in;font-size:max(18pt,calc(18pt * var(--qps,1) * var(--fit)));line-height:1.3;color:#000}
+.qp-body{flex:1;min-height:0;display:flex;flex-direction:column}
+.qp-sheet .qp-staff{margin:.08in 0 0;font-size:12pt;color:#000;border-top:1pt dashed #000;padding-top:.05in}
+.qp-sheet .qp-foot{display:flex;justify-content:space-between;gap:.2in;margin-top:.08in;padding-top:.05in;border-top:1pt solid #000;font-size:11pt;color:#000}
+
+/* word search */
+.qp-grid{--c:max(0.36in,calc(var(--cell) * var(--fit)));display:grid;grid-template-columns:repeat(var(--n),var(--c));grid-auto-rows:var(--c);margin:0 auto;border:3pt solid #000}
+.qp-grid span{display:flex;align-items:center;justify-content:center;font-family:Verdana,"Trebuchet MS",Arial,sans-serif;font-weight:700;font-size:max(24pt,calc(var(--gfs) * var(--fit)));line-height:1;color:#000}
+.qp-sheet .qp-words{list-style:none;margin:.16in 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(2.35in,1fr));gap:.04in .2in}
+.qp-sheet .qp-words li{display:flex;align-items:center;gap:.1in;min-width:0;white-space:nowrap;overflow:hidden;font-size:max(18pt,calc(19pt * var(--qps,1) * var(--fit)));font-weight:700;letter-spacing:.02em;color:#000}
+.qp-box{flex:none;width:.24in;height:.24in;border:2pt solid #000}
+
+/* conversation cards: two per page with a cut line */
+.qp-cards{flex:1;min-height:0;display:flex;flex-direction:column}
+.qp-card{flex:1 1 0;min-height:0;display:flex;flex-direction:column;justify-content:center;padding:.25in .3in;border:3pt solid #000;border-radius:.18in}
+.qp-sheet .qp-card-lead{margin:0 0 .1in;font-size:max(18pt,calc(18pt * var(--qps,1) * var(--fit)));font-style:italic;color:#000}
+.qp-sheet .qp-card-q{margin:0;font-size:max(24pt,calc(28pt * var(--qps,1) * var(--fit)));font-weight:700;line-height:1.25;color:#000}
+.qp-sheet .qp-card-f{margin:.16in 0 0;font-size:max(18pt,calc(18pt * var(--qps,1) * var(--fit)));color:#000}
+.qp-cut{position:relative;height:.34in;display:flex;align-items:center;justify-content:center}
+.qp-cut::before{content:"";position:absolute;left:0;right:0;top:50%;border-top:1.5pt dashed #000}
+.qp-cut span{position:relative;padding:0 .1in;background:#fff;font-size:10pt;color:#000}
+
+/* finish the thought */
+.qp-sheet .qp-fill{margin:0;padding:0 0 0 .5in;display:flex;flex-direction:column;justify-content:space-around;flex:1}
+.qp-sheet .qp-fill li{font-size:max(20pt,calc(23pt * var(--qps,1) * var(--fit)));font-weight:700;color:#000;padding-left:.06in}
+.qp-sheet .qp-fill li p{margin:0;line-height:1.35}
+.qp-blank{display:inline-block;width:1.6in;border-bottom:2.5pt solid #000;height:1em;vertical-align:baseline;margin:0 .06in}
+.qp-opts{display:flex;gap:.5in;margin:.08in 0 0 !important}
+.qp-opt{display:inline-flex;align-items:center;gap:.12in;font-weight:400}
+.qp-ring{width:.3in;height:.3in;border:2.5pt solid #000;border-radius:50%}
+
+/* cover */
+.qp-cover{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;border:4pt double #000;padding:.4in}
+.qp-sheet .qp-cover-fac{margin:0 0 .3in;font-size:16pt;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#000}
+.qp-sheet .qp-cover-for{margin:0;font-size:max(28pt,calc(28pt * var(--qps,1) * var(--fit)));color:#000}
+.qp-sheet .qp-cover-name{margin:.05in 0 .2in;font-size:max(48pt,calc(56pt * var(--qps,1) * var(--fit)));font-weight:700;line-height:1.05;color:#000;overflow-wrap:anywhere}
+.qp-sheet .qp-cover-line{margin:0 0 .3in;font-size:max(20pt,calc(20pt * var(--qps,1) * var(--fit)));font-style:italic;color:#000}
+.qp-cover-art{width:2.6in;height:auto;margin:0 0 .25in}
+.qp-sheet .qp-cover-month{margin:0 0 .3in;font-size:max(22pt,calc(22pt * var(--qps,1) * var(--fit)));font-weight:700;color:#000}
+.qp-cover-inside{border-top:2pt solid #000;padding-top:.15in}
+.qp-sheet .qp-cover-inside p{margin:0 0 .06in;font-size:18pt;font-weight:700;color:#000}
+.qp-sheet .qp-cover-inside ul{margin:0;padding:0;list-style:none;font-size:max(18pt,calc(18pt * var(--qps,1) * var(--fit)));line-height:1.45;color:#000}
+
+/* grayscale ink: soft gray fills; black-and-white ink keeps pure #000/#fff */
+.ink-gray .qp-head{background:#e6e6e6;padding:.08in .12in;border-bottom-color:#444}
+.ink-gray .qp-card{background:#f2f2f2;border-color:#444}
+.ink-gray .qp-grid{border-color:#444}
+
+/* ═══ Print: only the packet, true size, one activity per page ═══ */
+@media print{
+  html.qp-printing,html.qp-printing body{background:#fff !important;margin:0 !important;padding:0 !important;color:#000 !important}
+  html.qp-printing body > *:not(#qpPrintRoot){display:none !important}
+  html.qp-printing #qpPrintRoot{display:block !important;margin:0 !important;padding:0 !important;background:#fff !important}
+  #qpPrintRoot .qp-sheet{transform:none !important;box-shadow:none !important;margin:0 !important;break-after:page;page-break-after:always;break-inside:avoid;page-break-inside:avoid}
+  #qpPrintRoot .qp-sheet:last-child{break-after:auto;page-break-after:auto}
+  #qpPrintRoot,#qpPrintRoot *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .qpb{display:none !important}
+}
+</style>
 </head>
 <body>
 <!-- ══ COGNICOPIA LEFT SIDEBAR NAV ══ -->
@@ -1349,6 +1452,29 @@ body { padding-left: var(--sb-w); }
   </form>
 </dialog>
 
+
+<!-- ══ PROFILE PACKET BUILDER: printable pages built from the active resident ══ -->
+<section class="qpb" id="profilePacket" aria-labelledby="qpbTitle">
+  <div class="qpb-head">
+    <h2 id="qpbTitle">Profile Packet Builder</h2>
+    <span class="qpb-for" id="qpbFor">No resident selected</span>
+  </div>
+  <p class="qpb-lede">Quick printable pages made from the active resident's profile: their work, hobbies, people and favorite years, in large high-contrast print. Topics to avoid are always left out.</p>
+  <fieldset class="qpb-picks">
+    <legend>Pages to include</legend>
+    <label class="qpb-pick"><input type="checkbox" data-page="wordsearch" checked><span><b>Personalized Word Search</b><small>Words from their work, hobbies and decades</small></span></label>
+    <label class="qpb-pick"><input type="checkbox" data-page="cards" checked><span><b>Reminiscence Cards</b><small>Large conversation cards, two to a page</small></span></label>
+    <label class="qpb-pick"><input type="checkbox" data-page="trivia" checked><span><b>Tailored Trivia / Completion</b><small>Finish the thought, with no wrong answers</small></span></label>
+    <label class="qpb-pick"><input type="checkbox" data-page="cover" checked><span><b>Custom Cover Sheet</b><small>&ldquo;Prepared for&rdquo; with their name</small></span></label>
+  </fieldset>
+  <div class="qpb-actions">
+    <button type="button" class="qpb-btn qpb-btn-primary" id="qpbGenerate"><span aria-hidden="true">⚡</span> Generate Custom Packet</button>
+    <button type="button" class="qpb-btn" id="qpbPrint" disabled><span aria-hidden="true">🖨️</span> Print / Save to PDF</button>
+  </div>
+  <p class="qpb-note">To save a PDF, choose <b>Save as PDF</b> as the printer. Keep the scale at 100% (Default), not "Fit to page".</p>
+  <p class="qpb-status" id="qpbStatus" role="status" aria-live="polite"></p>
+  <div class="qpb-preview" id="qpbPreview" aria-label="Packet preview" hidden></div>
+</section>
 
 <form id="f" novalidate>
 
@@ -9597,6 +9723,740 @@ function generateAilmentPDF(ailmentType) {
   window.exportProfilesJSON = exportProfilesJSON;
   window.exportProfilesCSV = exportProfilesCSV;
   window.importProfilesFromFile = importProfilesFromFile;
+})();
+</script>
+<script>
+/* =====================================================================
+   PROFILE PACKET BUILDER (index.html)
+   ---------------------------------------------------------------------
+   Turns the active resident profile into printable pages: a word
+   search, conversation cards, a finish-the-thought page and a cover.
+   Reads getActiveResidentContext(); prints with window.print() and a
+   print-only copy of the pages. Nothing touches the network.
+   ===================================================================== */
+(function(){
+  "use strict";
+  /* ===================== CONTENT BANKS =====================
+     Plain, adult, everyday vocabulary. Words are letters only so they
+     fit a grid. Every word, prompt and fill-in item passes through the
+     resident's Topics to Avoid before it can reach a page. */
+
+  // Word search vocabulary by occupation code (from the profile wizard)
+  var OCC_WORDS = {
+    homemaker:["KITCHEN","APRON","LAUNDRY","RECIPE","PANTRY","IRONING","BROOM","OVEN","CANNING","TABLECLOTH","CASSEROLE"],
+    farmer:["TRACTOR","BARN","WHEAT","PLOW","HAY","SILO","CORN","CATTLE","FENCE","HARVEST","PASTURE"],
+    mechanic:["WRENCH","PISTON","ENGINE","GARAGE","SPARKPLUG","BOLT","TIRE","HOOD","JACK","BRAKE","CARBURETOR","GASKET"],
+    teacher:["CHALK","DESK","LESSON","PENCIL","RECESS","APPLE","BELL","SPELLING","RULER","GLOBE","BLACKBOARD","NOTEBOOK"],
+    nurse:["UNIFORM","CAP","SHIFT","CHART","BANDAGE","PATIENT","CARING","CLIPBOARD","WARD","THERMOMETER"],
+    doctor:["STETHOSCOPE","CLINIC","PATIENT","CHART","HOUSECALL","BANDAGE","OFFICE","SPLINT"],
+    office:["TYPEWRITER","MEMO","FILING","STAPLER","DESK","CARBON","LETTER","DICTATION","SHORTHAND","PAPERCLIP"],
+    bookkeeper:["LEDGER","PENCIL","ADDING","ACCOUNTS","BALANCE","RECEIPT","DESK","INVOICE","NUMBERS"],
+    factory:["ASSEMBLY","SHIFT","WHISTLE","LUNCHPAIL","CONVEYOR","TIMECLOCK","FOREMAN","OVERALLS","MACHINE"],
+    trades:["HAMMER","LADDER","CONCRETE","BRICK","LUMBER","BLUEPRINT","SCAFFOLD","TOOLBELT","LEVEL"],
+    carpenter:["SAW","HAMMER","NAILS","LUMBER","SAWDUST","CHISEL","PLANE","WORKBENCH","TOOLBOX","MALLET"],
+    electrician:["WIRE","SWITCH","OUTLET","FUSE","VOLTAGE","BREAKER","CONDUIT","PLIERS","LADDER","BULB"],
+    driver:["TRUCK","HIGHWAY","DIESEL","ROUTE","MILEAGE","CAB","TRAILER","MAP","LOADING","HAULING"],
+    railroad:["TRAIN","CABOOSE","DEPOT","RAILS","WHISTLE","CONDUCTOR","TICKET","STATION","BOXCAR","LANTERN"],
+    postal:["MAILBAG","LETTER","STAMP","ROUTE","PARCEL","ENVELOPE","POSTCARD","MAILBOX","SORTING"],
+    shop:["COUNTER","SHELVES","CUSTOMER","RECEIPT","AISLE","STOCK","WINDOW","BAGS","DISPLAY"],
+    business:["OFFICE","MEETING","CUSTOMER","SIGN","SHOP","PARTNER","OPENING","DESK","PLANS"],
+    engineer:["BLUEPRINT","BRIDGE","SLIDERULE","DESIGN","MEASURE","DRAFTING","COMPASS","MACHINE","GEARS"],
+    cook:["KITCHEN","SKILLET","APRON","RECIPE","GRIDDLE","ORDER","MENU","SOUP","SPATULA","OVEN"],
+    seamstress:["THREAD","NEEDLE","THIMBLE","PATTERN","FABRIC","BUTTON","HEM","SCISSORS","BOBBIN","ZIPPER"],
+    "police-fire":["BADGE","UNIFORM","PATROL","HELMET","LADDER","STATION","RADIO","BEAT","WHISTLE"],
+    military:["UNIFORM","SALUTE","BARRACKS","BOOTS","BUGLE","RANK","MEDAL","PARADE","DUTY"],
+    clergy:["CHURCH","SERMON","CHOIR","HYMNAL","PARISH","BELL","PULPIT","BLESSING"]
+  };
+  // Skills reuse the closest occupation or hobby list
+  var SKILL_SOURCE = { mechanical:"mechanic", cooking:"cooking", carpentry:"carpenter", medical:"nurse", agriculture:"farmer",
+    gardening:"gardening", sewing:"sewing", office:"office", numbers:"bookkeeper", teaching:"teacher", driving:"driver",
+    electrical:"electrician", housekeeping:"homemaker", music:"singing", crafts:"art", selling:"shop" };
+
+  // Whole subjects that belong to a Topic to Avoid: their word lists are skipped entirely.
+  var LIST_TOPIC = { faith:"religion", clergy:"religion", fishing:"water", "classic-cars":"driving", military:"war",
+    nurse:"medical", doctor:"medical", driver:"driving", mechanic:"driving" };
+  var HOBBY_WORDS = {
+    gardening:["GARDEN","TOMATO","SEEDS","HOE","TROWEL","ROSES","TULIP","SOIL","WEEDS","SPROUT"],
+    "word-puzzles":["CROSSWORD","PUZZLE","PENCIL","CLUE","ERASER","LETTERS","SPELLING","RIDDLE"],
+    jigsaw:["PUZZLE","PIECES","EDGE","CORNER","PICTURE","TABLE","BOX"],
+    cards:["DECK","HEARTS","SPADES","CLUBS","DIAMONDS","RUMMY","SHUFFLE","ACE","CANASTA","EUCHRE"],
+    "board-games":["CHECKERS","DICE","CHESS","BOARD","KING","SCRABBLE","DOMINOES","SPINNER"],
+    "classic-cars":["CHROME","CONVERTIBLE","FENDER","HUBCAP","CRUISE","ENGINE","MUSTANG","WHITEWALLS"],
+    sewing:["NEEDLE","THREAD","THIMBLE","QUILT","PATTERN","FABRIC","BUTTON","SPOOL","BOBBIN"],
+    knitting:["YARN","NEEDLES","SCARF","MITTENS","SWEATER","STITCH","PURL","AFGHAN","SKEIN"],
+    fishing:["ROD","REEL","BAIT","HOOK","TACKLE","BOBBER","TROUT","BASS","LAKE"],
+    outdoors:["TENT","TRAIL","PINE","DEER","CANOE","COMPASS","LANTERN","CABIN","ACORN"],
+    woodworking:["SAW","SANDPAPER","CHISEL","LATHE","VARNISH","SAWDUST","CLAMP","OAK","WALNUT","WORKBENCH"],
+    baking:["FLOUR","OVEN","BREAD","PIE","COOKIES","ROLLINGPIN","SUGAR","BUTTER","DOUGH","CAKE"],
+    cooking:["SKILLET","STEW","RECIPE","GRAVY","POTROAST","SOUP","APRON","SPATULA","CASSEROLE"],
+    reading:["BOOK","LIBRARY","NOVEL","CHAPTER","BOOKMARK","STORY","PAGES","AUTHOR","POEM"],
+    singing:["SONG","MELODY","CHORUS","HARMONY","TUNE","RECORD","PIANO","ALTO","TENOR"],
+    dancing:["WALTZ","POLKA","JITTERBUG","BALLROOM","TWIST","PARTNER","FOXTROT","SWING"],
+    art:["PAINT","BRUSH","EASEL","CANVAS","SKETCH","PALETTE","COLORS","CRAYON","DRAWING"],
+    birds:["CARDINAL","ROBIN","BLUEJAY","FEEDER","NEST","SPARROW","WREN","FINCH","BINOCULARS"],
+    sports:["BASEBALL","BAT","GLOVE","TOUCHDOWN","HOMERUN","UMPIRE","STADIUM","PENNANT","TEAM"],
+    "golf-bowling":["STRIKE","SPARE","PINS","LANE","GOLF","PUTT","TEE","CADDY","FAIRWAY"],
+    travel:["SUITCASE","POSTCARD","MAP","MOTEL","CAMERA","SOUVENIR","TRAIN","JOURNEY","PASSPORT"],
+    animals:["PUPPY","KITTEN","LEASH","COLLAR","BONE","WHISKERS","PAWS","HORSE","BARN"],
+    collecting:["STAMPS","ALBUM","MARBLES","BUTTONS","POSTCARDS","SPOONS","DOLLS","BOTTLES"],
+    faith:["CHURCH","HYMN","CHOIR","BIBLE","PRAYER","STEEPLE","SUNDAY","BLESSING"]
+  };
+  var DECADE_WORDS = {
+    "1930s":["RADIO","SWING","DANCEHALL","FEDORA","ICEBOX","TELEGRAM","JITTERBUG","TROLLEY"],
+    "1940s":["BIGBAND","NYLONS","JUKEBOX","SWING","FEDORA","NEWSREEL","SODAPOP","ZOOTSUIT"],
+    "1950s":["JUKEBOX","DINER","HULAHOOP","MILKSHAKE","SOCKHOP","DRIVEIN","POODLE","TELEVISION"],
+    "1960s":["BEATLES","ASTRONAUT","BEEHIVE","TWIST","MUSTANG","TRANSISTOR","SURFING","GROOVY"],
+    "1970s":["DISCO","LAVALAMP","EIGHTTRACK","POLYESTER","MOODRING","SHAGCARPET","BELLBOTTOM"],
+    "1980s":["ARCADE","WALKMAN","VIDEOTAPE","RUBIKSCUBE","LEGWARMERS","MICROWAVE","AEROBICS","MALL"]
+  };
+  var PLACE_WORDS = {
+    rural:["BARN","CREEK","PASTURE","GRAVEL","FARMHOUSE","ORCHARD","SILO"],
+    "small-town":["MAINSTREET","DINER","PARADE","SQUARE","POSTOFFICE","NEIGHBORS"],
+    city:["SUBWAY","SKYLINE","TROLLEY","DOWNTOWN","APARTMENT","TAXI","THEATER"],
+    suburb:["LAWN","FENCE","DRIVEWAY","BACKYARD","PATIO","SIDEWALK"],
+    coastal:["BEACH","LIGHTHOUSE","HARBOR","SEASHELL","DOCK","PIER","SAND"],
+    mountains:["PINE","CABIN","TRAIL","SUMMIT","VALLEY","MEADOW","CANYON"],
+    moved:["SUITCASE","MAP","JOURNEY","POSTCARD","TRAIN"],
+    abroad:["PASSPORT","JOURNEY","POSTCARD","LANGUAGE","SUITCASE"]
+  };
+  var GENERIC_WORDS = ["GARDEN","KITCHEN","SUNSHINE","APPLE","TEAPOT","FLOWER","PICNIC","SPRING","AUTUMN","RADIO","QUILT","ROSES","PORCH","COOKIE","MEADOW","BLUEBIRD","PUPPY","BUTTER"];
+
+  // Words that belong to each Topic to Avoid (applied to every page)
+  var TOPIC_WORDS = {
+    war:["ARMY","NAVY","SOLDIER","RIFLE","TANK","BATTLE","MEDAL","SALUTE","BARRACKS","BUGLE","RANK","DUTY","RATION","JEEP","RIVETER","VICTORY","WAR","COMBAT","BOMB","MILITARY","SERVED","STATIONED"],
+    death:["FUNERAL","GRAVE","WIDOW","CEMETERY","DEATH","DIED","HEAVEN","PASSED"],
+    medical:["HOSPITAL","BANDAGE","PATIENT","WARD","NURSE","DOCTOR","MEDICINE","PILLS","STETHOSCOPE","CLINIC","THERMOMETER","SPLINT","HOUSECALL","SURGERY","ILLNESS","SICK"],
+    religion:["CHURCH","HYMN","HYMNAL","PRAYER","BIBLE","CHOIR","PASTOR","STEEPLE","CHAPEL","SERMON","PULPIT","PARISH","BLESSING","ANGEL","CHRISTMAS","EASTER","GRACE","FAITH"],
+    money:["MONEY","DOLLAR","BANK","CASH","COINS","LEDGER","TAXES","BILLS","PENNY","NICKEL","PAYROLL","INVOICE","BALANCE","ACCOUNTS","PRICE"],
+    politics:["ELECTION","VOTE","PRESIDENT","CONGRESS","SENATOR","CAMPAIGN"],
+    driving:["CAR","CARS","TRUCK","DRIVE","DRIVEIN","DRIVEWAY","ROAD","HIGHWAY","KEYS","TIRE","ENGINE","GARAGE","BRAKE","PISTON","CARBURETOR","SPARKPLUG","GASKET","HOOD","MUSTANG","CONVERTIBLE","HUBCAP","CHROME","FENDER","WHITEWALLS","CRUISE","DIESEL","MILEAGE","CAB","TRAILER","TAXI","JACK","HAULING","DROVE","DRIVING","MODEL"],
+    home:["HOME","HOUSE","FARMHOUSE","HOMETOWN"],
+    "family-conflict":["DIVORCE","ARGUMENT"],
+    children:["BABY","BABIES","CRADLE","CRIB","DIAPER","STROLLER","TODDLER","NURSERY","CHILDREN","KIDS"],
+    water:["BOAT","OCEAN","LAKE","RIVER","SWIM","SWIMMING","FISH","FISHING","HOOK","TACKLE","BAIT","CANOE","SAIL","DOCK","PIER","WAVE","BEACH","TROUT","BASS","BOBBER","SHORE","CREEK","POND","HARBOR","LIGHTHOUSE","SEASHELL","SURFING","REEL","ROD","SHIP","SEA","WATER"],
+    storms:["STORM","TORNADO","FIRE","FLOOD","HURRICANE","LIGHTNING","THUNDER","BLIZZARD","SIREN","CAMPFIRE","HOSE"]
+  };
+
+  // Fill-in items: [sentence with ____, answer, clearly-wrong choice, topic tags]
+  var HOBBY_FILL = {
+    gardening:[["Tomatoes grow best in full ____.","sun","shade"],["Pull the ____ so they don't crowd the flowers.","weeds","roses"]],
+    "word-puzzles":[["A crossword has words going across and ____.","down","up"],["The Sunday paper often had a big ____ puzzle.","crossword","jigsaw"]],
+    jigsaw:[["Many people start a jigsaw puzzle with the ____ pieces.","edge","middle"],["A finished puzzle can be glued and hung in a ____.","frame","drawer"]],
+    cards:[["A deck of cards has ____ suits: hearts, diamonds, clubs and spades.","four","six"],["In gin rummy, you try to make sets and ____.","runs","rows"]],
+    "board-games":[["In checkers, a piece that reaches the far side becomes a ____.","king","queen"],["You roll two ____ to see how far to move.","dice","coins"]],
+    "classic-cars":[["The Ford Model ____ was nicknamed the Tin Lizzie.","T","Z",["driving"]],["A car whose top folds down is called a ____.","convertible","pickup",["driving"]]],
+    sewing:[["You push the needle through with a ____ on your finger.","thimble","button"],["A quilt is made by sewing ____ of fabric together.","patches","buttons"]],
+    knitting:[["Knitting uses two ____ and a ball of yarn.","needles","spoons"],["The two basic stitches are knit and ____.","purl","loop"]],
+    fishing:[["A fisherman puts a worm on the ____.","hook","boat",["water"]],["The fish that got ____ is always the biggest one!","away","home",["water"]]],
+    outdoors:[["Hikers follow a ____ through the woods.","trail","river"],["You roast marshmallows over the ____.","campfire","mailbox",["storms"]]],
+    woodworking:[["You smooth rough wood with ____ paper.","sand","wax"],["Measure twice, cut ____.","once","twice"]],
+    baking:[["Bread dough needs time to ____ before baking.","rise","freeze"],["Apple pie is often served with a scoop of ____ ice cream.","vanilla","mint"]],
+    cooking:[["You crack an egg into a hot frying ____.","pan","cup"],["Pancakes are often served with maple ____.","syrup","salt"]],
+    reading:[["You keep your place in a book with a ____.","bookmark","hammer"],["You can borrow books for free at the ____.","library","bakery"]],
+    singing:[["Do, re, mi, fa, so, la, ti, ____.","do","me"],["The part of a song that repeats is the ____.","chorus","title"]],
+    dancing:[["The waltz is danced in three-quarter ____.","time","tone"],["Couples danced close, cheek to ____.","cheek","toe"]],
+    art:[["Mixing blue and yellow paint makes ____.","green","purple"],["A painter rests the canvas on an ____.","easel","anvil"]],
+    birds:[["The bright red bird at the feeder is a ____.","cardinal","crow"],["Robins are one of the first signs of ____.","spring","winter"]],
+    sports:[["In baseball, three strikes and you're ____!","out","in"],["A touchdown in football is worth ____ points.","six","ten"]],
+    "golf-bowling":[["Knocking down all ten pins with one ball is a ____.","strike","spare"],["In golf, sinking the ball with one swing is a hole in ____.","one","two"]],
+    travel:[["Travelers pack their clothes in a ____.","suitcase","mailbox"],["You send a ____ home to say 'Wish you were here!'","postcard","package"]],
+    animals:[["A dog wags its ____ when it is happy.","tail","ears"],["A cat likes to ____ when it is content.","purr","bark"]],
+    collecting:[["A stamp collector keeps stamps in an ____.","album","oven"],["Children once traded shooter ____ in the schoolyard.","marbles","buttons"]],
+    faith:[["Amazing Grace, how sweet the ____.","sound","song",["religion"]],["Many churches ring a ____ on Sunday morning.","bell","horn",["religion"]]]
+  };
+  var DECADE_FILL = {
+    "1930s":[["The movie 'The Wizard of Oz' starred Judy ____.","Garland","Moore"],["Families gathered around the ____ to hear their favorite shows.","radio","stove"],["Shirley ____ was the curly-haired child movie star.","Temple","Bell"]],
+    "1940s":[["Glenn Miller's band played 'In the ____'.","Mood","Air"],["Bing Crosby sang 'White ____'.","Christmas","Sands"],["Rosie the ____ worked in the factory.","Riveter","Baker",["war"]]],
+    "1950s":[["Lucille Ball starred in 'I Love ____'.","Lucy","Lulu"],["Elvis Presley sang 'Hound ____'.","Dog","Cat"],["Kids spun a hula ____ around their waists.","hoop","rope"],["Teenagers danced at the sock ____.","hop","shop"]],
+    "1960s":[["The Beatles sang 'I Want to Hold Your ____'.","Hand","Hat"],["In 1969, astronauts walked on the ____.","moon","sun"],["Andy Griffith played the sheriff of ____.","Mayberry","Dodge City"]],
+    "1970s":[["John Denver sang 'Take Me Home, Country ____'.","Roads","Lanes"],["Dancers moved under a spinning disco ____.","ball","fan"],["'The Brady ____' was a TV family with six children.","Bunch","Crew"]],
+    "1980s":[["Pac-____ was a popular arcade game.","Man","Boy"],["Michael Jackson sang 'Billie ____'.","Jean","Joe"],["Rubik's ____ was a colorful twisting puzzle.","Cube","Ball"]]
+  };
+  var GENERAL_FILL = [
+    ["April showers bring May ____.","flowers","rain"],["The early bird catches the ____.","worm","bus"],
+    ["Every cloud has a silver ____.","lining","spoon"],["Don't count your chickens before they ____.","hatch","grow"],
+    ["A watched pot never ____.","boils","spills"],["Rise and ____!","shine","run"],
+    ["Salt and ____ go on the table together.","pepper","paint"],["Early to bed and early to ____.","rise","run"],
+    ["An apple a day keeps the ____ away.","doctor","farmer",["medical"]],["There's no place like ____.","home","work",["home"]],
+    ["A penny saved is a penny ____.","earned","spent",["money"]],["Birds of a feather flock ____.","together","apart"]
+  ];
+
+  /* Conversation prompts: open, story-inviting, never a test.
+     Each: [category, needs(ctx,src) -> value or false, text(value), follow-up, tags] */
+  var JOB_NOUN = { homemaker:"homemaker", farmer:"farmer", mechanic:"mechanic", teacher:"teacher", nurse:"nurse", doctor:"doctor",
+    office:"secretary", bookkeeper:"bookkeeper", factory:"factory worker", trades:"builder", carpenter:"carpenter",
+    electrician:"electrician", driver:"driver", railroad:"railroad worker", postal:"mail carrier", shop:"shopkeeper",
+    business:"business owner", engineer:"engineer", cook:"cook", seamstress:"seamstress", "police-fire":"police officer or firefighter",
+    military:"service member", clergy:"minister" };
+  var JOB_EXTRA = {
+    farmer:["What did the farm smell like at harvest time?","Which animals or crops were you proudest of?"],
+    mechanic:["What was the trickiest engine you ever got running again?","Which tool could you never do without?", ["driving"]],
+    teacher:["Tell me about your classroom. What did it look like on the first day of school?","What made a student light up?"],
+    homemaker:["What meal did your family ask for most often?","How did you keep the house running so smoothly?"],
+    nurse:["What made someone a really good nurse?","Tell me about a coworker you enjoyed.", ["medical"]],
+    cook:["What was the dish everyone ordered?","What was the kitchen like on a busy day?"],
+    carpenter:["What is something you built that you are proud of?","What kind of wood did you like working with best?"],
+    seamstress:["What is the nicest thing you ever sewed?","Who did you make clothes for?"],
+    railroad:["What was it like to hear the train whistle every day?","Where did the trains go on your line?"],
+    postal:["Tell me about your route. What was the friendliest house on it?","What was the heaviest time of year for mail?"],
+    office:["What was your office like? Where did your desk sit?","How fast could you type?"],
+    driver:["Where was the farthest you ever drove?","What was the best stop on the road?", ["driving"]]
+  };
+  var PLACE_PROMPT = {
+    rural:["What was your favorite thing about living in the country?","What chores did you do before breakfast?"],
+    "small-town":["What was your town's main street like?","Where did people gather on a Saturday?"],
+    city:["What was your neighborhood like in the city?","Where did you like to go on a day out?"],
+    suburb:["Tell me about your street and the neighbors.","What did the neighborhood kids play outside?"],
+    coastal:["What did the water sound like where you lived?","What did you like to do on a summer day by the water?", ["water"]],
+    mountains:["What was it like living near the mountains?","Where was your favorite place to walk?"],
+    moved:["Of all the places you lived, which felt most like yours?","What did you always pack first when you moved?"],
+    abroad:["Tell me about the place where you grew up.","What food from there do you still love?"]
+  };
+  var HOBBY_PROMPT = {
+    gardening:"What did you love to grow in your garden?", "word-puzzles":"Where did you like to sit and do your puzzles?",
+    jigsaw:"What is the best puzzle you ever put together?", cards:"Who did you like to play cards with? What was your game?",
+    "board-games":"What game did your family play most? Who usually won?", "classic-cars":["What was the best car you ever owned?", ["driving"]],
+    sewing:"What is the nicest thing you ever sewed?", knitting:"What did you like to knit, and who did you make it for?",
+    fishing:["Tell me about the best fishing trip you ever had.", ["water"]], outdoors:"What was your favorite place to be outdoors?",
+    woodworking:"What is something you made from wood that you are proud of?", baking:"What was your best recipe? Who taught you to make it?",
+    cooking:"What dish were you known for?", reading:"What kind of stories did you love to read?",
+    singing:"What song do you love to sing?", dancing:"Where did you go dancing? What was your favorite dance?",
+    art:"What did you like to paint or draw?", birds:"Which birds came to your yard? Which was your favorite?",
+    sports:"Tell me about the best game you ever saw.", "golf-bowling":"Who did you play with? What was your best day on the lanes or the course?",
+    travel:"Tell me about a favorite trip you took.", animals:"Tell me about an animal you loved.",
+    collecting:"What did you collect? Which piece was your favorite?", faith:["Tell me about a place of worship that meant a lot to you.", ["religion"]]
+  };
+  var DECADE_PROMPT = {
+    "1930s":"What did your family listen to on the radio in the 1930s?", "1940s":"What did you do for fun on a Saturday night in the 1940s?",
+    "1950s":"Tell me about listening to 1950s music. Who did you like to hear?", "1960s":"What was a typical Saturday like for you in the 1960s?",
+    "1970s":"What was your home like in the 1970s? What did the kitchen look like?", "1980s":"What was a favorite family outing in the 1980s?"
+  };
+  var GENERIC_PROMPTS = [
+    "What is your favorite season, and why?", "Tell me about a favorite meal from when you were young.",
+    "What did you like to do on a sunny afternoon?", "Tell me about a good friend you had growing up.",
+    "What is a smell that makes you happy?", "What is something you were very good at?",
+    "Tell me about a place you loved to visit.", "What games did you play when you were young?"
+  ];
+
+  /* ===================== SHARED HELPERS ===================== */
+  function esc(s){ return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
+  function makeRng(seed){
+    var a = seed >>> 0;
+    var next = function(){ a = (a + 0x6D2B79F5) >>> 0; var t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+    return {
+      next: next,
+      int: function(n){ return Math.floor(next() * n); },
+      pick: function(list){ return list[Math.floor(next() * list.length)]; },
+      shuffle: function(list){ var a2 = list.slice(); for (var i = a2.length - 1; i > 0; i--){ var j = Math.floor(next() * (i + 1)); var t = a2[i]; a2[i] = a2[j]; a2[j] = t; } return a2; }
+    };
+  }
+  function newSeed(){ return (Date.now() ^ Math.floor(Math.random() * 4294967296)) >>> 0; }
+  function lettersOnly(s){ return String(s || "").normalize ? String(s).normalize("NFD").replace(/[̀-ͯ]/g, "").toUpperCase().replace(/[^A-Z]/g, "") : String(s || "").toUpperCase().replace(/[^A-Z]/g, ""); }
+  function article(noun){ return /^[aeiou]/i.test(noun) ? "an " + noun : "a " + noun; }
+  function uniq(list){ var seen = {}; return list.filter(function(x){ if (seen[x]) return false; seen[x] = 1; return true; }); }
+
+  /* ---------------------------------------------------------------
+     packetSource()
+     Everything the generators need, read once from the active resident
+     (getActiveResidentContext + the saved profile's answer codes).
+     With no resident selected it uses the generic adult settings.
+     --------------------------------------------------------------- */
+  function packetSource(){
+    var ctx = typeof window.getActiveResidentContext === "function" ? window.getActiveResidentContext() : null;
+    if (!ctx) ctx = { isGeneric:true, name:"", stage:"middle", difficulty:{ level:3, label:"Moderate" },
+      print:{ vision:"large", readingLevel:"short", motorSkills:"", paper:"letter", ink:"bw", highContrast:true },
+      avoid:{ topics:["war","death","medical"], words:[] }, decades:["1940s","1950s","1960s"], hobbies:[], people:[], music:{ artists:[], genres:[], favoriteSong:"" }, screen:[], military:{ okToMention:false } };
+    var p = !ctx.isGeneric && window.activeResident && window.activeResident.tier1_core ? window.activeResident : null;
+    var t1 = p ? p.tier1_core : {}, t2 = p ? (p.tier2_enrichment || {}) : {};
+    var codes = function(list){ return (list || []).map(function(x){ return x && x.code; }).filter(Boolean); };
+    var occ = t1.occupation || null;
+    var src = {
+      ctx: ctx,
+      generic: !!ctx.isGeneric,
+      name: ctx.name || "",
+      stage: ctx.stage || "middle",
+      vision: (ctx.print && ctx.print.vision) || "large",
+      motor: (ctx.print && ctx.print.motorSkills) || "",
+      paper: (ctx.print && ctx.print.paper) === "a4" ? "a4" : "letter",
+      ink: (ctx.print && ctx.print.ink) === "gray" ? "gray" : "bw",
+      occupation: occ ? { code:occ.code, label:occ.label } : null,
+      hobbies: codes(t1.topHobbies),
+      skills: codes(t2.skills && t2.skills.items),
+      place: t2.hometown ? { env:t2.hometown.environment ? t2.hometown.environment.code : "", name:t2.hometown.place || "" } : { env:"", name:"" },
+      decades: (ctx.decades || []).slice(),
+      people: (ctx.people || []).slice(),
+      music: ctx.music || { artists:[], genres:[], favoriteSong:"" },
+      tv: p && t2.tvMoviesSports ? t2.tvMoviesSports : { tvShows:"", movies:"", sportsTeams:"" },
+      military: ctx.military || { okToMention:false }
+    };
+    if (src.generic && !src.decades.length) src.decades = ["1940s", "1950s", "1960s"];
+    src.blocked = buildBlocker(ctx);
+    // Larger type for low vision; motor limits favour bigger targets too
+    src.scale = { standard:1, large:1.15, xl:1.3 }[src.vision] || 1.15;
+    return src;
+  }
+
+  /* Topics to Avoid -> one blocker used by every page.
+     Words: exact match, or containing a blocked word of 4+ letters
+     (CAMPFIRE is out when "fire" is). Text: whole-word match. */
+  function buildBlocker(ctx){
+    var topics = (ctx.avoid && ctx.avoid.topics) || [];
+    var terms = [];
+    topics.forEach(function(t){ (TOPIC_WORDS[t] || []).forEach(function(w){ terms.push(w.toLowerCase()); }); });
+    ((ctx.avoid && ctx.avoid.words) || []).forEach(function(w){ w = String(w).toLowerCase().trim(); if (w) terms.push(w); });
+    terms = uniq(terms);
+    var res = terms.map(function(t){ return new RegExp("(^|[^a-z])" + t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/\s+/g, "\\s+") + "([^a-z]|$)", "i"); });
+    var compact = terms.map(function(t){ return t.replace(/[^a-z]/g, "").toUpperCase(); }).filter(Boolean);
+    return {
+      topics: topics,
+      terms: terms,
+      text: function(s){ s = String(s || ""); for (var i = 0; i < res.length; i++) if (res[i].test(s)) return true; return false; },
+      word: function(w){
+        w = String(w || "").toUpperCase();
+        for (var i = 0; i < compact.length; i++){
+          var b = compact[i];
+          if (w === b || (b.length >= 4 && w.indexOf(b) !== -1)) return true;
+        }
+        return false;
+      },
+      tags: function(tags){ return (tags || []).some(function(t){ return topics.indexOf(t) !== -1; }); }
+    };
+  }
+
+  /* ===================== 1. WORD SEARCH ===================== */
+  var WS_LEVELS = {
+    early:  { size:15, count:12, dirs:[[0,1],[1,0],[1,1]], cell:0.42, font:24 },
+    middle: { size:12, count:10, dirs:[[0,1],[1,0]],       cell:0.5,  font:29 },
+    late:   { size:12, count:10, dirs:[[0,1],[1,0]],       cell:0.5,  font:30 }
+  };
+  var FILL_LETTERS = "AAABCDEEEEFGHIIIKLLMNNOOOPRRSSSTTTUWY";
+
+  function wordPool(src, rng, maxLen){
+    var groups = [];
+    var avoidList = function(code){ return LIST_TOPIC[code] && src.blocked.topics.indexOf(LIST_TOPIC[code]) !== -1; };
+    var occCode = src.occupation && src.occupation.code;
+    if (avoidList(occCode)) occCode = "";
+    if (occCode && OCC_WORDS[occCode]) groups.push({ n:5, words:rng.shuffle(OCC_WORDS[occCode]) });
+    else if (src.occupation && src.occupation.label) groups.push({ n:1, words:[lettersOnly(src.occupation.label)] });
+    var hob = [];
+    src.hobbies.forEach(function(h){ if (HOBBY_WORDS[h] && !avoidList(h)) hob = hob.concat(rng.shuffle(HOBBY_WORDS[h]).slice(0, 3)); });
+    groups.push({ n:5, words:rng.shuffle(hob) });
+    // personal words: living people and pets, and the hometown
+    var names = src.people.map(function(x){ return lettersOnly(x.name); }).filter(function(w){ return w.length >= 3 && w.length <= 10; });
+    var town = lettersOnly((src.place.name || "").split(",")[0]);
+    groups.push({ n:3, words:rng.shuffle(names).concat(town.length >= 3 && town.length <= 10 ? [town] : []) });
+    var dec = [];
+    src.decades.forEach(function(d){ if (DECADE_WORDS[d]) dec = dec.concat(rng.shuffle(DECADE_WORDS[d]).slice(0, 3)); });
+    groups.push({ n:3, words:rng.shuffle(dec) });
+    if (PLACE_WORDS[src.place.env]) groups.push({ n:2, words:rng.shuffle(PLACE_WORDS[src.place.env]) });
+    var sk = [];
+    src.skills.forEach(function(s){ var from = SKILL_SOURCE[s]; var list = OCC_WORDS[from] || HOBBY_WORDS[from]; if (list && !avoidList(from)) sk = sk.concat(rng.shuffle(list).slice(0, 2)); });
+    groups.push({ n:2, words:rng.shuffle(sk) });
+    var ok = function(w){ return w && w.length >= 3 && w.length <= maxLen && !src.blocked.word(w); };
+    var first = [], rest = [];
+    groups.forEach(function(g){
+      var good = uniq(g.words.filter(ok));
+      first = first.concat(good.slice(0, g.n)); rest = rest.concat(good.slice(g.n));
+    });
+    var fallback = rng.shuffle(GENERIC_WORDS).filter(ok);
+    return uniq(first.concat(rng.shuffle(rest), fallback));
+  }
+
+  function placeWords(words, size, dirs, rng){
+    var grid = [], placed = [];
+    for (var r = 0; r < size; r++){ grid.push([]); for (var c = 0; c < size; c++) grid[r].push(""); }
+    words.slice().sort(function(a, b){ return b.length - a.length; }).forEach(function(w){
+      for (var t = 0; t < 400; t++){
+        var d = rng.pick(dirs), r0 = rng.int(size), c0 = rng.int(size);
+        var r1 = r0 + d[0] * (w.length - 1), c1 = c0 + d[1] * (w.length - 1);
+        if (r1 >= size || c1 >= size) continue;
+        var fits = true;
+        for (var i = 0; i < w.length; i++){ var ch = grid[r0 + d[0] * i][c0 + d[1] * i]; if (ch && ch !== w[i]){ fits = false; break; } }
+        if (!fits) continue;
+        for (var k = 0; k < w.length; k++) grid[r0 + d[0] * k][c0 + d[1] * k] = w[k];
+        placed.push({ word:w, r:r0, c:c0, dr:d[0], dc:d[1] });
+        return;
+      }
+    });
+    return { grid:grid, placed:placed };
+  }
+
+  /**
+   * generateWordSearch(src, rng)
+   * 10-12 words from the resident's work, hobbies, people, hometown and
+   * decades, placed in a 12x12 or 15x15 grid. Early stage adds a
+   * diagonal direction; middle and late stage use only across and down.
+   * Large or extra-large vision and hand limits use the bigger 12x12 grid.
+   */
+  function generateWordSearch(src, rng){
+    src = src || packetSource(); rng = rng || makeRng(newSeed());
+    var L = Object.assign({}, WS_LEVELS[src.stage] || WS_LEVELS.middle);
+    if (L.size === 15 && (src.vision === "xl" || src.motor === "significant")) L = Object.assign({}, WS_LEVELS.middle, { count:10 });
+    if (src.vision === "xl") L.font = Math.max(L.font, 31);
+    var pool = wordPool(src, rng, L.size), want = L.count;
+    var chosen = pool.slice(0, want), spare = pool.slice(want), res;
+    for (var tries = 0; tries < 6; tries++){
+      res = placeWords(chosen, L.size, L.dirs, rng);
+      if (res.placed.length >= want || !spare.length) break;
+      var got = res.placed.map(function(x){ return x.word; });
+      chosen = got.concat(spare.splice(0, want - got.length));
+    }
+    for (var r = 0; r < L.size; r++) for (var c = 0; c < L.size; c++) if (!res.grid[r][c]) res.grid[r][c] = FILL_LETTERS[rng.int(FILL_LETTERS.length)];
+    var list = res.placed.map(function(x){ return x.word; }).sort();
+    var cellIn = L.cell;
+    var gridHtml = '<div class="qp-grid" style="--n:' + L.size + ';--cell:' + cellIn + 'in;--gfs:' + L.font + 'pt" role="img" aria-label="Letter grid, ' + L.size + ' by ' + L.size + '">' +
+      res.grid.map(function(row){ return row.map(function(ch){ return "<span>" + ch + "</span>"; }).join(""); }).join("") + "</div>";
+    var cols = list.length > 10 ? 4 : 3;
+    var listHtml = '<ul class="qp-words" style="--cols:' + cols + '">' + list.map(function(w){ return '<li><span class="qp-box" aria-hidden="true"></span>' + w + "</li>"; }).join("") + "</ul>";
+    var dirText = L.dirs.length === 3 ? "Words go across, down, and diagonally down." : "Words go across (left to right) and down (top to bottom).";
+    return {
+      kind:"wordsearch", size:L.size, words:list, grid:res.grid, placed:res.placed,
+      sheets:[{
+        kind:"wordsearch",
+        title: src.name ? "Word Search for " + src.name : "Word Search",
+        subtitle: src.generic ? "Everyday words from home and garden" : "Words from " + (src.name || "your") + "'s life, work and favorite things",
+        instructions: "Find each word in the grid and circle it. " + dirText + " Tick the box when you find it.",
+        body: gridHtml + listHtml
+      }]
+    };
+  }
+
+  /* ===================== 2. REMINISCENCE CARDS ===================== */
+  function promptCandidates(src, rng){
+    var out = [], add = function(cat, text, follow, tags){ out.push({ cat:cat, text:text, follow:follow || "", tags:tags || [] }); };
+    var occ = src.occupation;
+    if (occ){
+      var noun = occ.code === "other" || !JOB_NOUN[occ.code] ? String(occ.label).toLowerCase() : JOB_NOUN[occ.code];
+      add("work", "Tell me about your work as " + article(noun) + ". What did a good day look like?", "What were you proudest of?", occ.code === "military" ? ["war"] : occ.code === "nurse" || occ.code === "doctor" ? ["medical"] : []);
+      var ex = JOB_EXTRA[occ.code];
+      if (ex) add("work", ex[0], ex[1], ex[2] || []);
+    }
+    var pl = PLACE_PROMPT[src.place.env];
+    var town = (src.place.name || "").trim();
+    if (town) add("place", "Tell me about growing up in " + town + ". What was your street like?", "Who were your neighbors?", ["home"]);
+    if (pl) add("place", pl[0], pl[1], pl[2] || []);
+    src.people.forEach(function(x){
+      var rel = x.relationshipCode || "";
+      if (x.isPet) add("people", "Tell me about " + x.name + ". What funny habits did " + x.name + " have?", "Where did " + x.name + " like to nap?", []);
+      else if (rel === "spouse" || rel === "partner") add("people", "How did you and " + x.name + " meet?", "What did you do on your first date?", []);
+      else if (rel === "son" || rel === "daughter") add("people", "Tell me about " + x.name + ". What makes " + x.name + " special?", "What do the two of you enjoy doing together?", []);
+      else if (rel === "grandchild" || rel === "great-grandchild") add("people", "What do you enjoy doing with " + x.name + "?", "What would you like " + x.name + " to know about you?", []);
+      else if (x.name) add("people", "Tell me about " + x.name + ". How did you two get to know each other?", "What do you like most about " + x.name + "?", []);
+    });
+    src.hobbies.forEach(function(h){
+      var v = HOBBY_PROMPT[h]; if (!v) return;
+      if (Array.isArray(v)) add("hobby", v[0], "", v[1]); else add("hobby", v, "", []);
+    });
+    (src.music.artists || []).forEach(function(a){ add("music", "You love " + a + ". Which song of theirs is your favorite?", "Where were you when you first heard it?", []); });
+    if (src.music.favoriteSong) add("music", "Tell me about the song “" + src.music.favoriteSong + "”. What does it remind you of?", "Shall we hum a little of it together?", []);
+    src.decades.forEach(function(d){ if (DECADE_PROMPT[d]) add("decade", DECADE_PROMPT[d], "What was popular then that you loved?", []); });
+    var team = String(src.tv.sportsTeams || "").split(",")[0].trim();
+    if (team) add("screen", "Tell me about the " + team.replace(/^the\s+/i, "") + ". What was the best game you ever saw?", "Who did you watch the games with?", []);
+    var show = String(src.tv.tvShows || "").split(",")[0].trim();
+    if (show) add("screen", "Tell me about watching " + show + ". Who watched it with you?", "Which character did you like best?", []);
+    var mil = src.military;
+    if (mil && mil.okToMention && mil.branch) add("service", "You served in the " + mil.branch + ". Tell me about the friends you made.", "Where did your service take you?", ["war"]);
+    rng.shuffle(GENERIC_PROMPTS).forEach(function(g){ add("general", g, "", /visit/.test(g) ? [] : []); });
+    return out;
+  }
+  /**
+   * generateReminiscenceCards(src, rng)
+   * 4-6 large conversation cards, two to a page, drawn from the
+   * resident's work, hometown, people and pets, hobbies, music, decades
+   * and (only if it is welcome) service. Open, story-inviting wording;
+   * nothing is phrased as a test. Anything touching a Topic to Avoid is
+   * dropped, and people who have passed away are not used.
+   */
+  function generateReminiscenceCards(src, rng){
+    src = src || packetSource(); rng = rng || makeRng(newSeed());
+    var want = src.stage === "late" ? 4 : 6;
+    var cands = promptCandidates(src, rng).filter(function(p){ return !src.blocked.tags(p.tags) && !src.blocked.text(p.text) && !src.blocked.text(p.follow); });
+    // one per category first (in a varied order), then fill from the rest
+    var order = rng.shuffle(["work", "place", "people", "hobby", "music", "decade", "screen", "service"]);
+    var byCat = {}; cands.forEach(function(c){ (byCat[c.cat] = byCat[c.cat] || []).push(c); });
+    Object.keys(byCat).forEach(function(k){ if (k !== "general") byCat[k] = rng.shuffle(byCat[k]); });
+    var picked = [];
+    for (var round = 0; round < 3 && picked.length < want; round++){
+      order.forEach(function(cat){ if (picked.length < want && byCat[cat] && byCat[cat][round]) picked.push(byCat[cat][round]); });
+    }
+    (byCat.general || []).forEach(function(g){ if (picked.length < want) picked.push(g); });
+    picked = picked.slice(0, want);
+    var sheets = [];
+    for (var i = 0; i < picked.length; i += 2){
+      var pair = picked.slice(i, i + 2);
+      sheets.push({
+        kind:"cards",
+        title: src.name ? "Let's Talk, " + src.name : "Let's Talk",
+        subtitle: "Conversation cards " + (i + 1) + (pair.length > 1 ? " and " + (i + 2) : "") + " of " + picked.length,
+        instructions: "Read a card aloud together. There are no right or wrong answers. Enjoy the stories.",
+        body: '<div class="qp-cards">' + pair.map(function(c){
+          return '<div class="qp-card"><p class="qp-card-lead">Let’s talk about…</p><p class="qp-card-q">' + esc(c.text) + "</p>" +
+            (c.follow && src.stage !== "late" ? '<p class="qp-card-f">You might also ask: ' + esc(c.follow) + "</p>" : "") + "</div>";
+        }).join('<div class="qp-cut" aria-hidden="true"><span>cut here</span></div>') + "</div>"
+      });
+    }
+    return { kind:"cards", prompts:picked, sheets:sheets };
+  }
+
+  /* ===================== 3. FILL-IN / TRIVIA ===================== */
+  /**
+   * generatePersonalizedTrivia(src, rng)
+   * 6-8 gentle "finish the thought" items from the resident's top
+   * hobbies and meaningful decades, topped up with familiar sayings.
+   * Early stage writes the word in; middle and late stage (or a hand
+   * limitation) circle one of two words, so there is always a way to
+   * succeed. Topics to Avoid remove any item that touches them.
+   */
+  function generatePersonalizedTrivia(src, rng){
+    src = src || packetSource(); rng = rng || makeRng(newSeed());
+    var want = src.stage === "early" ? 8 : 6;
+    var choose = src.stage !== "early" || src.motor === "significant" || src.motor === "mild";
+    var ok = function(it){ return !src.blocked.tags(it[3]) && !src.blocked.text(it[0] + " " + it[1] + " " + it[2]); };
+    var hob = [], dec = [];
+    src.hobbies.forEach(function(h){ (HOBBY_FILL[h] || []).forEach(function(it){ if (ok(it)) hob.push(it); }); });
+    src.decades.forEach(function(d){ (DECADE_FILL[d] || []).forEach(function(it){ if (ok(it)) dec.push(it); }); });
+    hob = rng.shuffle(hob); dec = rng.shuffle(dec);
+    var picked = [];
+    // alternate hobby and decade items, then top up with sayings
+    while (picked.length < want && (hob.length || dec.length)){
+      if (hob.length) picked.push(hob.shift());
+      if (picked.length < want && dec.length) picked.push(dec.shift());
+    }
+    rng.shuffle(GENERAL_FILL.filter(ok)).forEach(function(it){ if (picked.length < want && picked.indexOf(it) === -1) picked.push(it); });
+    var items = picked.map(function(it){
+      var opts = rng.next() < .5 ? [it[1], it[2]] : [it[2], it[1]];
+      return { text:it[0], answer:it[1], options:opts };
+    });
+    var body = '<ol class="qp-fill' + (choose ? " is-choice" : "") + '">' + items.map(function(it){
+      var parts = esc(it.text).split("____");
+      var blank = '<span class="qp-blank" aria-label="blank"></span>';
+      return '<li data-a="' + esc(it.answer) + '"><p>' + parts.join(blank) + "</p>" +
+        (choose ? '<p class="qp-opts">' + it.options.map(function(o){ return '<span class="qp-opt"><span class="qp-ring" aria-hidden="true"></span>' + esc(o) + "</span>"; }).join("") + "</p>" : "") + "</li>";
+    }).join("") + "</ol>";
+    return {
+      kind:"trivia", items:items,
+      sheets:[{
+        kind:"trivia",
+        title: "Finish the Thought",
+        subtitle: src.generic ? "Familiar sayings and favorite times" : "Chosen for " + src.name + ": favorite pastimes and years",
+        instructions: choose ? "Read each line aloud. Circle the word that finishes it. Talking it over together is just as good."
+                             : "Read each line aloud and fill in the word that comes to mind. There are no wrong answers.",
+        body: body,
+        staff: "For staff · answers: " + items.map(function(it, i){ return (i + 1) + ". " + it.answer; }).join("   ")
+      }]
+    };
+  }
+
+  /* ===================== 4. COVER ===================== */
+  function generateCover(src, included){
+    var fac = (document.getElementById("fac") || {}).value || "";
+    var month = (document.getElementById("month") || {}).value || new Date().toLocaleString("en-US", { month:"long", year:"numeric" });
+    return { kind:"cover", sheets:[{ kind:"cover", title:"", body:
+      '<div class="qp-cover">' +
+        (fac.trim() ? '<p class="qp-cover-fac">' + esc(fac.trim()) + "</p>" : "") +
+        '<p class="qp-cover-for">Prepared for:</p>' +
+        '<p class="qp-cover-name">' + esc(src.name || "You") + "</p>" +
+        '<p class="qp-cover-line">Made especially for you, with the things you love.</p>' +
+        '<svg class="qp-cover-art" viewBox="0 0 200 120" aria-hidden="true"><path d="M20 100 Q100 20 180 100" fill="none" stroke="#000" stroke-width="5" stroke-linecap="round"/><circle cx="100" cy="42" r="16" fill="#fff" stroke="#000" stroke-width="5"/><path d="M60 100 L60 84 M100 100 L100 76 M140 100 L140 84" stroke="#000" stroke-width="5" stroke-linecap="round"/></svg>' +
+        '<p class="qp-cover-month">' + esc(month.trim()) + "</p>" +
+        (included.length ? '<div class="qp-cover-inside"><p>Inside this packet</p><ul>' + included.map(function(t){ return "<li>" + esc(t) + "</li>"; }).join("") + "</ul></div>" : "") +
+      "</div>" }] };
+  }
+
+  /* ===================== ASSEMBLY LINE ===================== */
+  var PAGE = { letter:{ w:"8.5in", h:"11in", css:"letter" }, a4:{ w:"210mm", h:"297mm", css:"A4" } };
+  var current = null;          // { src, sheets:[html], paper, counted, residentId }
+
+  function sheetHtml(s, src, n, total){
+    var head = s.kind === "cover" ? "" :
+      '<header class="qp-head"><h2 class="qp-title">' + esc(s.title) + "</h2>" + (s.subtitle ? '<p class="qp-sub">' + esc(s.subtitle) + "</p>" : "") + "</header>" +
+      (s.instructions ? '<p class="qp-inst">' + esc(s.instructions) + "</p>" : "");
+    return '<section class="qp-sheet qp-' + s.kind + '" data-kind="' + s.kind + '" aria-label="Page ' + n + " of " + total + '">' +
+      head + '<div class="qp-body">' + s.body + "</div>" +
+      (s.staff ? '<p class="qp-staff">' + esc(s.staff) + "</p>" : "") +
+      '<footer class="qp-foot"><span>' + (src.name ? "Prepared for " + esc(src.name) : "Cognicopia activity packet") + "</span><span>Cognicopia · Page " + n + " of " + total + "</span></footer></section>";
+  }
+
+  /**
+   * buildProfilePacket(options)
+   * Runs the chosen generators for the active resident and returns the
+   * packet: { src, sheets, parts }. options = { cover, wordsearch, cards,
+   * trivia } (all true by default) and an optional numeric seed.
+   */
+  function buildProfilePacket(opts){
+    opts = opts || {};
+    var pick = function(k){ return opts[k] !== false; };
+    var src = packetSource(), rng = makeRng(opts.seed != null ? opts.seed : newSeed());
+    var parts = [], included = [];
+    if (pick("wordsearch")){ parts.push(generateWordSearch(src, rng)); included.push("A word search from your own life"); }
+    if (pick("cards")){ parts.push(generateReminiscenceCards(src, rng)); included.push("Conversation cards to share"); }
+    if (pick("trivia")){ parts.push(generatePersonalizedTrivia(src, rng)); included.push("Finish the thought"); }
+    if (pick("cover")) parts.unshift(generateCover(src, included));
+    var list = [];
+    parts.forEach(function(p){ list = list.concat(p.sheets); });
+    return { src:src, parts:parts, sheets:list.map(function(s, i){ return sheetHtml(s, src, i + 1, list.length); }) };
+  }
+
+  /* ---------------- UI ---------------- */
+  var el = function(id){ return document.getElementById(id); };
+  var panel = el("profilePacket");
+  if (!panel) return;
+  var preview = el("qpbPreview"), status = el("qpbStatus"), genBtn = el("qpbGenerate"), printBtn = el("qpbPrint");
+
+  function opts(){
+    var o = {};
+    Array.prototype.forEach.call(panel.querySelectorAll("input[data-page]"), function(c){ o[c.getAttribute("data-page")] = c.checked; });
+    return o;
+  }
+  function forLabel(){
+    var ctx = typeof window.getActiveResidentContext === "function" ? window.getActiveResidentContext() : null;
+    el("qpbFor").textContent = ctx && !ctx.isGeneric ? "For: " + ctx.name : "No resident selected";
+    el("qpbFor").classList.toggle("is-on", !!(ctx && !ctx.isGeneric));
+  }
+
+  // Scale each full-size page down to fit the column; the page itself keeps its real size.
+  function fitPreview(){
+    var frames = preview.querySelectorAll(".qpb-frame");
+    Array.prototype.forEach.call(frames, function(f){
+      var s = f.firstElementChild; if (!s) return;
+      var k = Math.min(1, f.clientWidth / s.offsetWidth);
+      s.style.transform = "scale(" + k + ")";
+      f.style.height = Math.ceil(s.offsetHeight * k) + "px";
+    });
+  }
+  // Shrink type a little (never below the minimums in the CSS) until each page fits.
+  // If a finish-the-thought page still does not fit at the smallest size, drop items from the end (never below 6).
+  function fitSheets(box){
+    Array.prototype.forEach.call((box || preview).querySelectorAll(".qp-sheet"), function(s){
+      // Overflowing anywhere counts: the page, its body (content running into the
+      // footer) or a single card (text running past its border).
+      // SLACK: print lays text out a few pixels taller than the screen, so every
+      // page must fit with room to spare, not just barely.
+      var SLACK = 24;
+      var over = function(){
+        if (s.scrollHeight > s.clientHeight + 1) return true;
+        var b = s.querySelector(".qp-body"); if (b && b.scrollHeight > b.clientHeight + 1) return true;
+        var tight = b && b.querySelectorAll(".qp-words, .qp-fill > li:last-child");
+        if (tight && tight.length){
+          // Finish-the-thought items are spread down the page; measure them stacked at the top.
+          var fill = b.querySelector(".qp-fill"); if (fill) fill.style.justifyContent = "flex-start";
+          var last = b.getBoundingClientRect().bottom, used = -Infinity;
+          Array.prototype.forEach.call(tight, function(e){ used = Math.max(used, e.getBoundingClientRect().bottom); });
+          if (fill) fill.style.justifyContent = "";
+          if (used > last - SLACK) return true;     // cards and the cover stretch to fill, so they are checked below
+        }
+        if (Array.prototype.some.call(s.querySelectorAll(".qp-words li"), function(li){ return li.scrollWidth > li.clientWidth + 1; })) return true;
+        return Array.prototype.some.call(s.querySelectorAll(".qp-card"), function(c){
+          var inner = c.getBoundingClientRect().bottom - parseFloat(getComputedStyle(c).paddingBottom) - SLACK / 2;
+          return c.scrollHeight > c.clientHeight + 1 || Array.prototype.some.call(c.children, function(k){ return k.getBoundingClientRect().bottom > inner + 1; });
+        });
+      };
+      var shrink = function(){ var f = 1; s.style.setProperty("--fit", "1"); while (over() && f > .72){ f -= .04; s.style.setProperty("--fit", f.toFixed(2)); } };
+      shrink();
+      var items = s.querySelectorAll(".qp-fill > li");
+      if (over() && items.length > 6){
+        while (over() && s.querySelectorAll(".qp-fill > li").length > 6){
+          var all = s.querySelectorAll(".qp-fill > li"); all[all.length - 1].remove(); shrink();
+        }
+        var staff = s.querySelector(".qp-staff");
+        if (staff) staff.textContent = "For staff \u00B7 answers: " + Array.prototype.map.call(s.querySelectorAll(".qp-fill > li"), function(li, i){ return (i + 1) + ". " + li.getAttribute("data-a"); }).join("   ");
+      }
+      // Last resort for very large print: drop the small "You might also ask" lines.
+      if (over() && s.querySelector(".qp-card-f")){
+        Array.prototype.forEach.call(s.querySelectorAll(".qp-card-f"), function(x){ x.remove(); }); shrink();
+      }
+      s.classList.toggle("qp-overflow", over());
+    });
+  }
+
+  function generate(){
+    var o = opts();
+    if (!o.cover && !o.wordsearch && !o.cards && !o.trivia){ status.textContent = "Tick at least one page to include."; return null; }
+    var pk = buildProfilePacket(o);
+    var pg = PAGE[pk.src.paper];
+    preview.style.setProperty("--pw", pg.w); preview.style.setProperty("--ph", pg.h);
+    preview.style.setProperty("--qps", pk.src.scale);
+    preview.className = "qpb-preview ink-" + pk.src.ink + " stage-" + pk.src.stage;
+    var host = document.createElement("div");
+    host.className = "ink-" + pk.src.ink + " stage-" + pk.src.stage;
+    host.setAttribute("style", preview.getAttribute("style") + ";position:absolute;left:-20000px;top:0");
+    host.setAttribute("aria-hidden", "true");
+    document.body.appendChild(host);
+    host.innerHTML = pk.sheets.join("");
+    fitSheets(host);
+    preview.innerHTML = "";
+    Array.prototype.slice.call(host.children).forEach(function(sheet){
+      var f = document.createElement("div"); f.className = "qpb-frame"; f.appendChild(sheet); preview.appendChild(f);
+    });
+    host.remove();
+    preview.hidden = false;
+    fitPreview();
+    current = { pk:pk, counted:false, residentId: window.activeResident ? window.activeResident.id : null };
+    printBtn.disabled = false;
+    var who = pk.src.generic ? "general adult themes (no resident selected)" : pk.src.name + "'s profile";
+    status.textContent = "Built " + pk.sheets.length + " page" + (pk.sheets.length === 1 ? "" : "s") + " from " + who +
+      ". Press Generate again for a fresh version, or Print when it looks right.";
+    return pk;
+  }
+
+  function printPacket(){
+    if (!current) return false;
+    var licensed = typeof unlocked === "function" && unlocked();
+    if (!licensed && !current.counted && typeof runsUsed === "function" && runsUsed() >= FREE_RUNS && !(typeof WATERMARK_DEMOS !== "undefined" && WATERMARK_DEMOS)){
+      if (typeof openGate === "function") openGate();
+      var g = el("gate"); if (g) g.scrollIntoView({ behavior:"smooth", block:"center" });
+      status.textContent = "You have used your free packets. Enter an access code below to keep printing.";
+      return false;
+    }
+    // A clean copy of the pages at full size, outside the app, is what prints.
+    var root = el("qpPrintRoot");
+    if (!root){ root = document.createElement("div"); root.id = "qpPrintRoot"; document.body.appendChild(root); }
+    root.className = preview.className.replace(/\bqpb-preview\b/, "").trim();
+    root.setAttribute("style", preview.getAttribute("style") || "");
+    root.innerHTML = Array.prototype.map.call(preview.querySelectorAll(".qp-sheet"), function(s){
+      var c = s.cloneNode(true); c.style.transform = ""; return c.outerHTML;
+    }).join("");
+    var pageCss = el("qpPageCss");
+    if (!pageCss){ pageCss = document.createElement("style"); pageCss.id = "qpPageCss"; document.head.appendChild(pageCss); }
+    pageCss.textContent = "@page{size:" + PAGE[current.pk.src.paper].css + ";margin:0}";
+    document.documentElement.classList.add("qp-printing");
+    if (!licensed && !current.counted && typeof bumpGen === "function"){ bumpGen(); current.counted = true; if (typeof showAllowance === "function") showAllowance(); }
+    printingPacket = true;
+    window.print();
+    return true;
+  }
+  /* Print mode only lasts for this print. If someone later presses Ctrl+P
+     on the form itself, the page prints normally again. */
+  var printingPacket = false;
+  function endPrint(){
+    printingPacket = false;
+    document.documentElement.classList.remove("qp-printing");
+    var pc = el("qpPageCss"); if (pc) pc.textContent = "";
+  }
+  window.addEventListener("beforeprint", function(){ if (!printingPacket) endPrint(); });
+  window.addEventListener("afterprint", endPrint);
+
+  genBtn.addEventListener("click", function(){ generate(); if (current) preview.firstElementChild.scrollIntoView({ behavior:"smooth", block:"start" }); });
+  printBtn.addEventListener("click", printPacket);
+  window.addEventListener("resize", function(){ if (current) fitPreview(); });
+  // A different resident makes the preview out of date; never print one resident's page for another.
+  document.addEventListener("cognicopia:activeresident", function(){
+    forLabel();
+    var id = window.activeResident ? window.activeResident.id : null;
+    if (current && current.residentId !== id){
+      current = null; preview.hidden = true; preview.innerHTML = ""; printBtn.disabled = true;
+      status.textContent = "The active resident changed. Press Generate Custom Packet to build pages for them.";
+    }
+  });
+  forLabel();
+
+  window.generateWordSearch = function(){ return generateWordSearch(packetSource(), makeRng(newSeed())); };
+  window.generateReminiscenceCards = function(){ return generateReminiscenceCards(packetSource(), makeRng(newSeed())); };
+  window.generatePersonalizedTrivia = function(){ return generatePersonalizedTrivia(packetSource(), makeRng(newSeed())); };
+  window.buildProfilePacket = buildProfilePacket;
+  window.fitProfilePacketPages = fitSheets;      // used by the preview; exposed for testing
+  window.generateProfilePacket = generate;
+  window.printProfilePacket = printPacket;
 })();
 </script>
 </body>
