@@ -614,6 +614,7 @@ input:focus,select:focus,button:focus-visible{
 .tools button:hover{border-color:var(--garden);background:transparent}
 
 .go{border-top:1px solid var(--rule);padding-top:36px}
+.go-allowance{margin:20px 0 0}
 button{font:inherit;font-weight:600;font-size:18px;padding:17px 38px;
   background:var(--garden);color:#fff;border:0;border-radius:4px;cursor:pointer;
   transition:background .12s,transform .08s}
@@ -641,7 +642,7 @@ footer{border-top:1px solid var(--rule-soft);margin-top:80px;padding-top:24px;
   body{background:#fff;color:#000;font-size:11pt}
   .wrap{max-width:100%;padding:0;box-shadow:none;background:#fff}
   .logo{width:120px}
-  .shots,.saveload,.tools,.gate,.go button,.strip,#ioMsg,#left,.statusbar{display:none !important}
+  .shots,.saveload,.tools,.gate,.go button,.strip,#ioMsg,.go-allowance,.statusbar{display:none !important}
   fieldset{break-inside:avoid;page-break-inside:avoid;border-top:1px solid #999}
   .pick,.level{break-inside:avoid;page-break-inside:avoid;border-color:#999}
   input[type=text],input[type=number],select{border:1px solid #999}
@@ -681,7 +682,7 @@ body.simplified-layout .wrap{background:#fff;box-shadow:none}
 body.simplified-layout fieldset{margin-bottom:30px}
 @media (max-width:700px){.accessibility-options{grid-template-columns:1fr}}
 
-/* ---- Licence status bar (the header strip) ---- */
+/* ---- Licence status: the header strip, and the free-packet badge under the Make the packet button ---- */
 .statusbar{display:flex;justify-content:space-between;align-items:center;gap:12px;
   flex-wrap:wrap;padding:14px 0 0;font-size:14px}
 .licbadge{display:inline-block;padding:5px 12px;border-radius:999px;
@@ -689,6 +690,7 @@ body.simplified-layout fieldset{margin-bottom:30px}
 .licbadge.lic{background:var(--garden);color:#fff;border-color:var(--garden)}
 .licbadge.out{background:#FBEEE9;color:var(--warn);border-color:#E7C9BE}
 .hdrlic{display:inline-flex;align-items:center;gap:8px;flex-wrap:wrap}
+.hdrlic[hidden]{display:none}
 .linklike{background:none;border:none;color:var(--garden-dark);cursor:pointer;
   font:inherit;text-decoration:underline;padding:4px}
 .hdrlicform{display:inline-flex;gap:6px}
@@ -932,6 +934,9 @@ body { padding-left: var(--sb-w); }
   font-family: "Trebuchet MS","Segoe UI",sans-serif; text-decoration: none;
 }
 .cg-topbar a:hover { color: #d8f3dc; }
+.cg-topbar .hdrlicmsg { color: #f4c7b8; }
+.cg-topbar .hdrlicmsg:empty { display: none; }
+.cg-topbar .hdrlicmsg.ok { color: #b7e4c7; }
 
 @media (max-width: 700px) {
   body { padding-left: 0; }
@@ -1552,16 +1557,15 @@ html.tb-open,html.tb-open body{overflow:hidden !important;overscroll-behavior:no
 </script>
 <!-- ══ COGNICOPIA TOP BAR (index) ══ -->
 <div class="cg-topbar">
-  <span class="licbadge" id="licBadge"></span>
-  <span class="hdrlic" id="hdrlic" style="display:flex;align-items:center;gap:8px;">
+  <span class="hdrlic" id="hdrlic">
     <button type="button" class="linklike" id="hdrlicToggle">Activate license</button>
     <a href="https://buy.stripe.com/9B614oaJV7lr0RX1ODew801" target="_blank" class="stripe-btn">Get Full Access Now</a>
     <span class="hdrlicform" id="hdrlicForm" hidden>
       <input type="text" id="licHdr" placeholder="Access code" autocomplete="off" maxlength="40">
       <button type="button" id="licHdrGo">Unlock</button>
     </span>
-    <span class="hdrlicmsg" id="hdrlicMsg"></span>
   </span>
+  <span class="hdrlicmsg" id="hdrlicMsg" role="status"></span>
 </div>
 
 <div class="wrap">
@@ -1986,10 +1990,10 @@ html.tb-open,html.tb-open body{overflow:hidden !important;overscroll-behavior:no
   <div class="go">
     <button type="submit" id="go">Make the packet</button>
       <button type="button" id="staffOnlyBtn" style="background:#4a6fa5;margin-left:8px;">Print staff guide only</button>
+    <p class="go-allowance" role="status"><span class="licbadge" id="licBadge"></span></p>
     <p class="note">Your printer must be set to 100% or Actual size.
     "Fit to page" shrinks the large print.</p>
     <p class="left" id="pageEst"></p>
-    <p class="left" id="left"></p>
     <p class="left" id="stageMsg"></p>
     <p class="err" id="err"></p>
 
@@ -7691,17 +7695,14 @@ document.addEventListener("change", e=>{
 function showAllowance(){
   const sub=unlocked();
   const left=Math.max(0, FREE_RUNS-runsUsed());
-  const el=$("left");
-  if(el) el.textContent = sub ? "Licensed. Unlimited packets."
-        : left ? left+" free packet"+(left===1?"":"s")+" remaining." : "";
-  const badge=$("licBadge");
+  const badge=$("licBadge");   // under the Make the packet button
   if(badge){
     badge.className="licbadge"+(sub?" lic":left?"":" out");
     badge.textContent = sub ? "\u2713 Licensed \u2014 unlimited"
         : left ? left+" of "+FREE_RUNS+" free packets left"
         : "Free packets used";
   }
-  const hl=$("hdrlic"); if(hl) hl.hidden = sub;   // hide activate link once licensed
+  const hl=$("hdrlic"); if(hl) hl.hidden = sub;   // licensed: no Activate license or Get Full Access Now
 }
 
 function openGate(){
