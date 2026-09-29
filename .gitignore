@@ -1,1 +1,4 @@
 /output_pdfs
+# resident data must never be committed
+payloads/
+*.cognicopia

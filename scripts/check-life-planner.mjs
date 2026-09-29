@@ -9,7 +9,8 @@
      - the resident / caregiver audience split and the three print scopes
      - two-page spread parity (left = visual, right = writing lines)
      - print standards: 0.75 in inner gutter, 14 pt text and 16 pt bold
-       heading floors, writing lines at least 0.4 in apart
+       heading floors, writing lines 0.5 in apart at 2 pt, and every page
+       set in the embedded Atkinson Hyperlegible (no network font)
      - season colors readable at WCAG AAA (7:1)
      - user text is escaped
    Node built-ins only. The real browser and PDF measurements were made
@@ -44,6 +45,7 @@ function ok(v, what){ if (!v) throw new Error(what || "expected true"); }
 
 const EX = LP.EXAMPLE_PROFILE;
 const OPTS = { year: 2027, startMonth: 0 };
+const T1 = Object.assign({ tier: 1 }, OPTS);      // Tier 1 prints every invitation, sense cue and blurb
 const text = pages => pages.map(p => LP.textRuns(p.body).join(" ")).join("\n");
 const SCOPES = ["memory", "companion", "binder"];
 
@@ -70,9 +72,9 @@ check("the built-in content library passes the dignity-first audit", () => {
   const bad = LP.libraryStrings().filter(s => audit(s, "resident").length);
   eq(bad.length, 0, "library strings breaking a rule: " + bad.join(" | "));
 });
-for (const [pname, prof] of Object.entries(PROFILES)) for (const copies of [1, 4]) {
-  check(`every printed line passes the audit (${pname} profile, ${copies} log set${copies > 1 ? "s" : ""})`, () => {
-    const v = LP.auditPages(LP.build(prof, Object.assign({ copies }, OPTS), "binder").pages);
+for (const [pname, prof] of Object.entries(PROFILES)) for (const copies of [1, 4]) for (const tier of [1, 2, 3]) {
+  check(`every printed line passes the audit (${pname} profile, ${copies} log set${copies > 1 ? "s" : ""}, tier ${tier})`, () => {
+    const v = LP.auditPages(LP.build(prof, Object.assign({ copies, tier }, OPTS), "binder").pages);
     eq(v.length, 0, "violations " + JSON.stringify(v.slice(0, 3)));
   });
 }
@@ -121,7 +123,7 @@ check("AI copy: failing lines are dropped, clean lines are kept", () => {
 });
 check("AI copy that passed the audit reaches the month page, and only there", () => {
   const ai = LP.acceptAiCopy({ months: [{ index: 0, blurb: "Frosted windows, warm soup and old friends.", prompts: ["Tell me about sledding on your street."] }] }).copy;
-  const res = LP.build(EX, Object.assign({ aiCopy: ai }, OPTS), "memory"), jan = res.pages.filter(p => p.title === "January");
+  const res = LP.build(EX, Object.assign({ aiCopy: ai }, T1), "memory"), jan = res.pages.filter(p => p.title === "January");
   ok(text(jan).indexOf("Frosted windows, warm soup and old friends.") >= 0, "AI blurb printed");
   ok(text(jan).indexOf("Tell me about sledding on your street.") >= 0, "AI prompt printed");
 });
@@ -138,7 +140,7 @@ check("the wording check advises on typed text without blocking the build", () =
 });
 
 /* ---------- 2. Personalization ---------- */
-const mem = LP.build(EX, OPTS, "memory"), memText = text(mem.pages);
+const mem = LP.build(EX, T1, "memory"), memText = text(mem.pages);
 check("the resident's details are woven into the memory book", () => {
   ["Margaret’s Life Planner", "Margaret Ellen Hansen", "Duluth, Minnesota", "Elementary school teacher", "1938", "“Moon River”",
     "Began teaching second grade at Lincoln School", "Tell me about your daughter, Anna.", "Anna’s birthday (turns 63)", "Wedding anniversary (66th)",
@@ -149,20 +151,23 @@ check("all twelve monthly modules are present, January Winter Warmth to December
   eq(themes[0], "Winter Warmth"); eq(themes[11], "Holiday Glow"); eq(new Set(themes).size, 12, "distinct themes");
   themes.forEach(t => ok(memText.indexOf(t) >= 0, "missing theme " + t));
 });
-check("people who have passed away are never prompted or listed as current in the memory book", () => {
-  ok(!/Tell me about [^.]*Walter/.test(memText), "Walter prompted");
-  ok(!/Tell me about your spouse/.test(memText), "a passed spouse was prompted");
-  const story = mem.pages.filter(p => p.spreadId === "story" && p.role === "visual")[0];
-  const people = (/<ul class="lp-people">([\s\S]*?)<\/ul>/.exec(story.body) || [])[1] || "";
-  ok(people.indexOf("Anna") >= 0, "living people listed");
-  ok(people.indexOf("Walter") < 0, "a person who has passed away is listed among current people");
+check("people who have passed away are never prompted or listed as current in the memory book, at any tier", () => {
+  [1, 2, 3].forEach(tier => {
+    const book = LP.build(EX, Object.assign({ tier }, OPTS), "memory"), all = text(book.pages);
+    ok(!/Tell me about [^.]*Walter/.test(all), "Walter prompted at tier " + tier);
+    ok(!/Tell me about your spouse/.test(all), "a passed spouse was prompted at tier " + tier);
+    const story = book.pages.filter(p => p.spreadId === "story" && p.role === "visual")[0];
+    const people = (/<ul class="lp-people">([\s\S]*?)<\/ul>/.exec(story.body) || [])[1] || "";
+    ok(people.indexOf("Anna") >= 0, "living people listed at tier " + tier);
+    ok(people.indexOf("Walter") < 0, "a person who has passed away is listed among current people at tier " + tier);
+  });
 });
-check("care-team-only dates never print in the memory book", () => {
-  ok(memText.indexOf("memorial") < 0, "memorial date leaked into the memory book");
+check("care-team-only dates never print in the memory book, at any tier", () => {
+  [1, 2, 3].forEach(tier => ok(text(LP.build(EX, Object.assign({ tier }, OPTS), "memory").pages).indexOf("memorial") < 0, "memorial date leaked at tier " + tier));
   ok(text(LP.build(EX, OPTS, "companion").pages).indexOf("Walter’s memorial day") >= 0, "memorial date missing from the companion");
 });
 check("topics to avoid remove their prompts", () => {
-  const o = Object.assign({ promptCount: 4 }, OPTS), topics = ["swim or cool off", "thunderstorm", "hymn"];
+  const o = Object.assign({ promptCount: 4 }, T1), topics = ["swim or cool off", "thunderstorm", "hymn"];
   const book = avoid => text(LP.build({ name: "Ruth", avoid }, o, "memory").pages);
   const all = book([]), some = book(["water", "storms", "religion"]);
   topics.forEach(s => ok(all.indexOf(s) >= 0, "control prompt missing: " + s));
@@ -235,6 +240,54 @@ check("the inner gutter is 0.75 in and mirrors correctly", () => {
   ok(/\.lp-sheet\{[^}]*width:8\.5in; height:11in/.test(css), "US Letter sheet");
 });
 
+check("every printed page is set in the embedded Atkinson Hyperlegible", () => {
+  eq(LP.STANDARDS.PRINT_FONT, "Atkinson Hyperlegible");
+  const face = block("style", "print-font");
+  const faces = [...face.matchAll(/@font-face\{font-family:"Atkinson Hyperlegible";font-style:(normal|italic);font-weight:(400|700);[^}]*src:url\(data:font\/woff2;base64,[A-Za-z0-9+/=]{2000,}\)/g)];
+  eq(faces.map(m => m[1] + " " + m[2]).sort().join(), "italic 400,italic 700,normal 400,normal 700", "four embedded faces");
+  ok(!/url\((?!data:)/.test(face), "no font file is fetched from anywhere");
+  ok(html.indexOf('<style id="print-font">') < html.indexOf('<style id="lp-css">'), "the faces load before the page styles");
+  ok(/\.lp-sheet\{[^}]*font:14pt\/1\.3 "Atkinson Hyperlegible",/.test(css), ".lp-sheet uses it first");
+  ok(!/Georgia/.test(css), "no other face overrides it on a page");
+  ok(fs.existsSync(path.join(ROOT, "fonts", "OFL.txt")), "the font's license ships with it");
+});
+
+/* ---------- 4b. Support tiers ---------- */
+check("support tiers: each resident page carries its tier, staff pages never do, and line weight follows visual needs", () => {
+  eq(LP.build(EX, OPTS, "memory").tier, 2, "Tier 2 is the default");
+  for (const tier of [1, 2, 3]){
+    const b = LP.build(EX, Object.assign({ tier, lineW: tier + 1 }, OPTS), "binder");
+    b.pages.forEach(p => ok(p.audience === "caregiver" ? !/\blp-t\d\b/.test(p.html) : new RegExp("\\blp-t" + tier + "\\b").test(p.html), `page ${p.no} tier class`));
+    ok(b.pages.filter(p => p.audience !== "caregiver").every(p => (tier + 1 > 2) === /\blp-lw\d\b/.test(p.html)), "line weight class at tier " + tier);
+  }
+  eq(LP.build(EX, Object.assign({ tier: 9 }, OPTS), "memory").tier, 2, "an unknown tier falls back to Tier 2");
+});
+check("support tiers: Tier 1 plans in steps, Tier 2 offers starters and choices, Tier 3 anchors and orients", () => {
+  const book = tier => LP.build(EX, Object.assign({ tier }, OPTS), "memory").pages;
+  const jan = (pages, side) => pages.filter(p => p.title === "January" && p.role === (side === "left" ? "visual" : "lines"))[0].body;
+  const now = (pages, side) => pages.filter(p => p.spreadId === "now" && p.role === (side === "left" ? "visual" : "lines"))[0].body;
+  const t1 = book(1), t2 = book(2), t3 = book(3);
+  ok(/lp-plansteps/.test(jan(t1, "right")) && /lp-plansteps/.test(now(t1, "right")), "Tier 1 multi-step planners");
+  ok(/class="lp-asks"/.test(jan(t1, "left")) && /class="lp-prompt"/.test(jan(t1, "right")), "Tier 1 open prompts");
+  ok(/class="lp-choices"/.test(jan(t2, "left")) && (jan(t2, "right").match(/class="lp-starter"/g) || []).length === 3, "Tier 2 choice grid and three starters");
+  ok(t2.some(p => p.tab === 2 && /“Moon River”/.test(p.body)), "Tier 2 choices lead with the resident's own favorites");
+  ok(/class="lp-anchor/.test(jan(t3, "left")) && /lp-starter-xl/.test(jan(t3, "right")), "Tier 3 anchor and one large starter");
+  ok(/class="lp-orient"/.test(now(t3, "left")), "Tier 3 large orientation boxes");
+  ok(!/Milestones/.test(t3.filter(p => p.spreadId === "story" && p.role === "visual")[0].body), "Tier 3 story page keeps to the facts and people");
+});
+check("support tiers: type and line art at the sizes each tier promises, held against the fit pass", () => {
+  const tierCss = css.split("/* ---------- 12-Month Life Planner screen")[0];
+  const size = sel => { const m = new RegExp(sel.replace(/[.*]/g, "\\$&") + "[^{}]*\\{[^}]*?font-size:([\\d.]+)pt").exec(tierCss); return m ? +m[1] : NaN; };
+  eq(size(".lp-t1.lp-sheet .lp-h1"), 22); eq(size(".lp-t2.lp-sheet .lp-h1"), 28); eq(size(".lp-t3.lp-sheet .lp-h1"), 34);
+  const b1 = size(".lp-t1 .lp-prompt"), b2 = size(".lp-t2 .lp-prompt"), b3 = size(".lp-t3 .lp-prompt");
+  ok(b1 >= 14 && b1 <= 16, "Tier 1 body " + b1); ok(b2 >= 18 && b2 <= 20, "Tier 2 body " + b2); ok(b3 >= 24, "Tier 3 body " + b3);
+  ok(/\.lp-t3 \.lp-sub,[^{]*\{font-size:24pt;font-weight:700\}/.test(tierCss), "Tier 3 body is bold");
+  const art = t => +((new RegExp("\\.lp-t" + t + " \\.lp-art \\*[^{]*\\{[^}]*stroke-width:([\\d.]+)pt").exec(tierCss) || [])[1]);
+  ok(art(2) >= 3 && art(2) <= 5, "Tier 2 line art " + art(2)); ok(art(3) >= 5, "Tier 3 line art " + art(3));
+  ok(tierCss.indexOf(".lp-t2.lp-sheet .lp-h1") > tierCss.indexOf(".lp-fit2 .lp-opt"), "tier sizes come after the fit rules");
+  ok(/\.lp-lw3 \.lp-rule[^{]*\{border-bottom-width:4px\}/.test(tierCss) && /\.lp-lw4 \.lp-rule[^{]*\{border-bottom-width:6px\}/.test(tierCss), "heavier writing lines: 3 pt (4px) and 4.5 pt (6px)");
+});
+
 /* ---------- 5. Type floors, line pitch, color ---------- */
 const printCss = css.split("/* ---------- 12-Month Life Planner screen")[0];
 check("no printed text is set below 14 pt", () => {
@@ -250,10 +303,18 @@ check("headings are 16 pt or larger, and bold", () => {
   });
   ok(/\.lp-h1\{[^}]*font-weight:700/.test(printCss) && /\.lp-h2\{[^}]*font-weight:700/.test(printCss) && /\.lp-h3\{[^}]*font-weight:700/.test(printCss), "bold headings");
 });
-check("writing lines are at least 0.4 in apart, table rows at least 0.4 in tall", () => {
-  const rule = /\.lp-rule\{height:([\d.]+)in/.exec(printCss);
+check("writing lines are 0.5 in apart with a 2 pt stroke, table rows at least 0.5 in tall", () => {
+  eq(LP.STANDARDS.MIN_RULE_IN, 0.5); eq(LP.STANDARDS.RULE_PT, 2);
+  // Borders print in whole CSS pixels (1px = 0.75pt, rounded down), so every width is judged as it prints.
+  const printedPt = (n, unit) => unit === "px" ? Math.floor(+n) * .75 : Math.floor(+n / .75) * .75;
+  const rule = /\.lp-rule\{height:([\d.]+)in;border-bottom:([\d.]+)(px|pt)/.exec(printCss);
   ok(rule && +rule[1] >= LP.STANDARDS.MIN_RULE_IN, "ruled line pitch " + (rule && rule[1]));
-  [...printCss.matchAll(/\.lp-tbl[^{]*\b(?:td|th)[^{]*\{[^}]*height:([\d.]+)in/g)].forEach(m => ok(+m[1] >= .4, "table row " + m[1] + "in"));
+  ok(rule && printedPt(rule[2], rule[3]) >= LP.STANDARDS.RULE_PT, "ruled line stroke prints at " + (rule && printedPt(rule[2], rule[3])) + "pt");
+  // no rule elsewhere shrinks a writing line below the standard
+  [...printCss.matchAll(/\.lp-rule[^{]*\{[^}]*height:([\d.]+)in/g)].forEach(m => ok(+m[1] >= LP.STANDARDS.MIN_RULE_IN, "a writing line at " + m[1] + "in"));
+  [...printCss.matchAll(/\.lp-(?:fill|val-blank|step-line)\{[^}]*border-bottom:([\d.]+)(px|pt)/g)].forEach(m => ok(printedPt(m[1], m[2]) >= LP.STANDARDS.RULE_PT, "a write-in line prints at " + printedPt(m[1], m[2]) + "pt"));
+  [...printCss.matchAll(/\.lp-tbl[^{]*\b(?:td|th)[^{]*\{[^}]*height:([\d.]+)in/g)].forEach(m => ok(+m[1] >= LP.STANDARDS.MIN_RULE_IN, "table row " + m[1] + "in"));
+  [...printCss.matchAll(/\.lp-tbl (?:td|th)\{[^}]*border:([\d.]+)(px|pt)/g)].forEach(m => ok(printedPt(m[1], m[2]) >= LP.STANDARDS.RULE_PT, "table rule prints at " + printedPt(m[1], m[2]) + "pt"));
   const wheelMin = /\.lp-wheel-box\{[^}]*min-height:([\d.]+)in/.exec(printCss);
   const svgSizes = [...LP.build(MAX, OPTS, "memory").pages[1].html.matchAll(/font-size="([\d.]+)"/g)].map(m => +m[1]);
   ok(wheelMin && Math.min(...svgSizes) / 560 * +wheelMin[1] * 72 >= 14, "year wheel labels stay at 14 pt or more at the smallest wheel size");
