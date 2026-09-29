@@ -14,7 +14,8 @@
      - two-page spreads: left pages hold the story prompts and a photo or
        drawing frame, right pages hold writing lines
      - print standards: 0.75 in inner gutter, 14 pt text and 16 pt bold
-       heading floors, writing lines at least 0.4 in apart
+       heading floors, writing lines 0.5 in apart at 2 pt, Atkinson
+       Hyperlegible on every page
      - section colors readable at WCAG AAA (7:1)
      - user text is escaped, and the screen is wired into the builder
    Node built-ins only. The real browser and PDF measurements were made
@@ -49,8 +50,11 @@ function eq(a, b, what){ if (a !== b) throw new Error(`${what || "value"}: expec
 function ok(v, what){ if (!v) throw new Error(what || "expected true"); }
 
 const EX = LJ.EXAMPLE_PROFILE;
+/* Tier 1 prints every invitation and fact; the content checks read it. The tier checks build all three. */
+const build = (prof, o, scope) => LJ.build(prof, Object.assign({ tier: 1 }, o), scope);
+const TIERS = [1, 2, 3];
 const text = pages => pages.map(p => LJ.textRuns(p.body).join(" ")).join("\n");
-const SCOPES = ["story", "reflection", "complete"];
+const SCOPES = ["story", "reflection", "complete", "resident"];
 const SERVICE = Object.assign({}, EX, { militaryBranch: "navy", militaryRank: "Petty Officer Second Class", militaryYears: "1956 to 1960",
   militaryPlaces: "San Diego and Yokosuka, Japan", militaryTalk: "welcome", avoid: [] });
 
@@ -83,9 +87,9 @@ check("the built-in content library passes the dignity-first audit", () => {
   ok(lib.length > 150, "library strings found: " + lib.length);
   eq(bad.length, 0, "library strings breaking a rule: " + bad.map(x => x.text).join(" | "));
 });
-for (const [pname, prof] of Object.entries(PROFILES)) for (const joyWeeks of [1, 12]) {
-  check(`every printed line passes the audit (${pname} profile, ${joyWeeks} week${joyWeeks > 1 ? "s" : ""} of joy logs)`, () => {
-    const v = LJ.auditPages(LJ.build(prof, { joyWeeks, noteSpreads: 4 }, "complete").pages);
+for (const [pname, prof] of Object.entries(PROFILES)) for (const joyWeeks of [1, 12]) for (const tier of TIERS) {
+  check(`every printed line passes the audit (${pname} profile, ${joyWeeks} week${joyWeeks > 1 ? "s" : ""} of joy logs, tier ${tier})`, () => {
+    const v = LJ.auditPages(LJ.build(prof, { joyWeeks, noteSpreads: 4, tier }, "complete").pages);
     eq(v.length, 0, "violations " + JSON.stringify(v.slice(0, 3)));
   });
 }
@@ -115,14 +119,14 @@ check("AI copy: failing lines are dropped, unknown pages ignored, clean lines ke
 });
 check("AI copy that passed the audit reaches its own page, and only that page", () => {
   const ai = LJ.acceptAiCopy({ pages: [{ id: "home", prompts: ["Tell me about the porch on a summer evening."] }] }).copy;
-  const res = LJ.build(EX, { aiCopy: ai }, "story"), on = res.pages.filter(p => text([p]).indexOf("the porch on a summer evening") >= 0);
+  const res = build(EX, { aiCopy: ai }, "story"), on = res.pages.filter(p => text([p]).indexOf("the porch on a summer evening") >= 0);
   eq(on.map(p => p.spreadId).join(), "home", "pages carrying the AI line");
 });
 check("AI copy keeps a place even when the resident's own details fill the page", () => {
   const ai = LJ.acceptAiCopy({ pages: [{ id: "music", prompts: ["Tell me about the first record you bought."] }] }).copy;
   const music = pages => LJ.textRuns(pages.filter(p => p.spreadId === "music" && p.side === "left")[0].body);
   for (const promptCount of [2, 3, 4]){
-    const withAi = music(LJ.build(EX, { aiCopy: ai, promptCount }, "story").pages), own = music(LJ.build(EX, { promptCount }, "story").pages);
+    const withAi = music(build(EX, { aiCopy: ai, promptCount }, "story").pages), own = music(build(EX, { promptCount }, "story").pages);
     ok(withAi.indexOf("Tell me about the first record you bought.") >= 0, promptCount + " prompts: AI line missing");
     eq(withAi.indexOf("Where were you the first time you heard “Moon River”?"), own.indexOf("Where were you the first time you heard “Moon River”?"), "personal prompts still lead");
   }
@@ -147,11 +151,11 @@ check("the AI request respects the family's limits on service, religion and the 
 check("the wording check advises on typed text without blocking the build", () => {
   const p = Object.assign({}, EX, { songs: ["Sweetie Pie song time"], skills: ["Circle time games"] });
   ok(LJ.checkProfile(p).length >= 2, "advice given");
-  eq(LJ.build(p, {}, "story").count, LJ.countPages(p, {}).story, "still builds");
+  eq(build(p, {}, "story").count, LJ.countPages(p, {}).story, "still builds");
 });
 
 /* ---------- 2. Four sections and personalization ---------- */
-const all = LJ.build(EX, {}, "complete"), allText = text(all.pages);
+const all = build(EX, {}, "complete"), allText = text(all.pages);
 check("the four sections are the ones the journal promises, in order", () => {
   eq(LJ.DATA.SECTIONS.map(s => s.roman + " " + s.title).join(" | "),
     "I Early Roots & Identity | II Lifelong Work, Roles & Pride | III Sensory & Emotional Anchors | IV Daily Grounding & Reflection");
@@ -175,27 +179,27 @@ check("Section IV: words of comfort, wisdom and a comfort and joy log", () => {
     "You taught hundreds of children to read.", "Measure twice, cut once.", "— Margaret", "Comfort & Joy", "This Week’s Small Joys"].forEach(s => ok(allText.indexOf(s) >= 0, "missing: " + s));
   const aff = LJ.textRuns(all.pages.filter(p => p.spreadId === "affirm" && p.side === "left")[0].body);
   ok(aff.indexOf("You are safe here at Maple Grove Community.") < aff.indexOf("You are Margaret, and your story matters."), "reassurance comes first");
-  ok(text(LJ.build({}, {}, "reflection").pages).indexOf("Your work as") < 0, "an affirmation that needs a missing detail is left out");
+  ok(text(build({}, {}, "reflection").pages).indexOf("Your work as") < 0, "an affirmation that needs a missing detail is left out");
   eq(LJ.affirmationText({}, "story"), "Your life story matters.", "the unnamed version");
 });
 check("military service: rank and places when welcome, gently when not, and never when avoided", () => {
-  const svc = text(LJ.build(SERVICE, {}, "story").pages);
+  const svc = text(build(SERVICE, {}, "story").pages);
   ["In Service", "Petty Officer Second Class", "Tell me about your time in San Diego and Yokosuka, Japan.", "What did your time in the Navy teach you?"].forEach(s => ok(svc.indexOf(s) >= 0, "missing: " + s));
-  const gentle = text(LJ.build(Object.assign({}, SERVICE, { militaryTalk: "gentle" }), {}, "story").pages);
+  const gentle = text(build(Object.assign({}, SERVICE, { militaryTalk: "gentle" }), {}, "story").pages);
   ok(gentle.indexOf("In Service") >= 0 && gentle.indexOf("San Diego") < 0 && gentle.indexOf("letters from home") < 0, "gentle service shows no deployments");
   for (const p of [Object.assign({}, SERVICE, { militaryTalk: "avoid" }), Object.assign({}, SERVICE, { avoid: ["war"] })]){
-    const r = LJ.build(p, {}, "story");
+    const r = build(p, {}, "story");
     ok(text(r.pages).indexOf("In Service") < 0, "service page printed although avoided");
     eq(r.count, LJ.countPages(SERVICE, {}).story - 2, "the service spread is left out");
   }
 });
 check("topics to avoid remove their pages and prompts", () => {
   const hymns = Object.assign({}, EX, { avoid: ["religion"] });
-  ok(text(LJ.build(hymns, {}, "complete").pages).indexOf("How Great Thou Art") < 0, "hymns printed although religion is avoided");
-  const home = LJ.build(Object.assign({}, EX, { avoid: ["home"] }), {}, "story");
+  ok(text(build(hymns, {}, "complete").pages).indexOf("How Great Thou Art") < 0, "hymns printed although religion is avoided");
+  const home = build(Object.assign({}, EX, { avoid: ["home"] }), {}, "story");
   ok(!home.spreads.some(s => s.id === "home"), "childhood home spread printed although “going home” is avoided");
   eq(home.count, LJ.countPages(EX, {}).story - 2, "home spread counted");
-  const book = avoid => text(LJ.build({ name: "Ruth", avoid }, { promptCount: 4 }, "story").pages);
+  const book = avoid => text(build({ name: "Ruth", avoid }, { promptCount: 4 }, "story").pages);
   ok(book([]).indexOf("first paycheck") >= 0 && book(["money"]).indexOf("first paycheck") < 0, "money prompt printed although money is avoided");
 });
 check("family is spoken of in the past tense of memory", () => {
@@ -204,7 +208,7 @@ check("family is spoken of in the past tense of memory", () => {
   ok(!/\b(?:is|are) your\b|\bDo you remember\b/.test(allText), "a present-tense or quizzing prompt about the past");
 });
 check("an empty profile still builds complete, respectful pages", () => {
-  const r = LJ.build({}, {}, "complete"), t = text(r.pages);
+  const r = build({}, {}, "complete"), t = text(r.pages);
   eq(r.count, LJ.countPages({}, {}).complete, "count");
   ok(t.indexOf("A Life Story") >= 0, "generic title");
   ok(!/undefined|null|NaN|\[object/.test(r.pages.map(p => p.html).join("")), "no blanks leaked");
@@ -216,25 +220,25 @@ check("typed apostrophes, places and song titles print in the book's own style",
   ok(allText.indexOf("“Moon River,” “Tennessee Waltz,” “Blue Moon”") >= 0, "commas inside the quotes");
 });
 check("the pets drawing follows the pets", () => {
-  const art = pets => (/<svg[^>]*aria-label="([^"]*)"/.exec(LJ.build({ pets }, {}, "story").pages.filter(p => p.spreadId === "pets" && p.side === "left")[0].body) || [])[1];
+  const art = pets => (/<svg[^>]*aria-label="([^"]*)"/.exec(build({ pets }, {}, "story").pages.filter(p => p.spreadId === "pets" && p.side === "left")[0].body) || [])[1];
   eq(art([{ name: "Skipper", kind: "collie" }]), "A dog sitting on a rug beside a bowl", "collie");
   eq(art([{ name: "Tom", kind: "Tabby cat" }, { name: "Rex", kind: "dog" }]), "A cat on a rug beside a bowl", "tabby first");
   eq(art([]), "A dog sitting on a rug beside a bowl", "no pets");
 });
 check("user text is escaped, never injected as markup", () => {
   const evil = "<img src=x onerror=alert(1)><script>alert(1)</script>";
-  const r = LJ.build({ name: evil, fullName: evil, birthSurname: evil, hometown: evil, childhoodHome: evil, songs: [evil], wisdom: [evil], customAffirmations: [evil],
+  const r = build({ name: evil, fullName: evil, birthSurname: evil, hometown: evil, childhoodHome: evil, songs: [evil], wisdom: [evil], customAffirmations: [evil],
     parents: [{ name: evil, role: "mother" }], siblings: [{ name: evil, rel: "sister" }], pets: [{ name: evil, kind: evil }], militaryBranch: "navy", militaryRank: evil,
     militaryTalk: "welcome", militaryPlaces: evil, facility: evil }, {}, "complete");
   r.pages.forEach(p => ok(p.html.indexOf("<img") < 0 && p.html.indexOf("<script") < 0, "unescaped markup on page " + p.no));
 });
-check("builds are deterministic", () => eq(LJ.build(MAX, {}, "complete").pages.map(p => p.html).join(""), LJ.build(MAX, {}, "complete").pages.map(p => p.html).join("")));
+check("builds are deterministic", () => eq(build(MAX, {}, "complete").pages.map(p => p.html).join(""), build(MAX, {}, "complete").pages.map(p => p.html).join("")));
 
 /* ---------- 3. Audience split and print scopes ---------- */
 for (const joyWeeks of [1, 4, 12]) for (const noteSpreads of [1, 2, 4]) check(`print scopes split the audiences cleanly (${joyWeeks} joy, ${noteSpreads} note spreads)`, () => {
   const o = { joyWeeks, noteSpreads };
   for (const prof of [EX, SERVICE]){
-    const c = LJ.countPages(prof, o), st = LJ.build(prof, o, "story"), rf = LJ.build(prof, o, "reflection"), cp = LJ.build(prof, o, "complete");
+    const c = LJ.countPages(prof, o), st = build(prof, o, "story"), rf = build(prof, o, "reflection"), cp = build(prof, o, "complete");
     eq(st.count, c.story, "story count"); eq(rf.count, c.reflection, "reflection count"); eq(cp.count, c.complete, "complete count");
     eq(cp.count, st.count + rf.count, "complete = story + reflection");
     ok(st.pages.every(p => p.audience === "resident" && p.tab <= 3), "the life story holds only Sections I to III, for the resident");
@@ -246,8 +250,17 @@ for (const joyWeeks of [1, 4, 12]) for (const noteSpreads of [1, 2, 4]) check(`p
     cp.pages.filter(p => p.audience === "resident").forEach(p => ok(!/For family and care team|Family &amp; Care Team Notes/.test(p.html), `resident page ${p.no} carries notes furniture`));
   }
 });
-check("resident pages, Section IV included, have no clinical language", () => {
-  for (const prof of Object.values(PROFILES)) LJ.build(prof, {}, "complete").pages.filter(p => p.audience === "resident").forEach(p =>
+check("the resident-facing book holds every resident page and no family or care team notes, at any tier", () => {
+  for (const prof of [EX, SERVICE, {}]) for (const tier of TIERS){
+    const o = { tier, joyWeeks: 4, noteSpreads: 2 }, rb = LJ.build(prof, o, "resident"), cp = LJ.build(prof, o, "complete");
+    eq(rb.count, LJ.countPages(prof, o).resident, "resident count");
+    ok(rb.pages.every(p => p.audience === "resident"), "only resident pages");
+    eq(rb.count, cp.pages.filter(p => p.audience === "resident").length, "every resident page of the complete journal");
+    ok(rb.pages.every(p => !/For family and care team|Family &amp; Care Team Notes/.test(p.html)), "no notes furniture");
+  }
+});
+check("resident pages, Section IV included, have no clinical language, at any tier", () => {
+  for (const prof of Object.values(PROFILES)) for (const tier of TIERS) LJ.build(prof, { tier }, "complete").pages.filter(p => p.audience === "resident").forEach(p =>
     LJ.textRuns(p.body).forEach(t => eq(audit(t, "resident").filter(h => h.rule === "clinical-leak").length, 0, `page ${p.no}: "${t}"`)));
 });
 check("the notes part tells visitors to add updates there and leave the story as it is", () => {
@@ -258,9 +271,9 @@ check("the notes part tells visitors to add updates there and leave the story as
 });
 
 /* ---------- 4. Two-page spreads and gutters ---------- */
-for (const scope of SCOPES) for (const binding of ["book", "binder"]) for (const pname of ["max", "service", "empty"]) {
-  check(`spreads: left pages even with prompts and a frame, right pages odd with writing lines (${scope}, ${binding}, ${pname})`, () => {
-    const r = LJ.build(PROFILES[pname], { binding, joyWeeks: 12, noteSpreads: 4 }, scope);
+for (const scope of SCOPES) for (const binding of ["book", "binder"]) for (const pname of ["max", "service", "empty"]) for (const tier of TIERS) {
+  check(`spreads: left pages even with something to look at, right pages odd with writing lines (${scope}, ${binding}, ${pname}, tier ${tier})`, () => {
+    const r = LJ.build(PROFILES[pname], { binding, joyWeeks: 12, noteSpreads: 4, tier }, scope);
     eq(r.pages.filter(p => p.filler).length, 0, "filler pages");
     r.pages.forEach((p, i) => eq(p.no, i + 1, "page numbering"));
     r.spreads.forEach(sp => {
@@ -270,8 +283,10 @@ for (const scope of SCOPES) for (const binding of ["book", "binder"]) for (const
       eq(L.role, "visual", sp.id + " left role"); eq(R.role, "lines", sp.id + " right role");
       ok(/class="lp-rule\b|lp-tbl-tall/.test(R.html), sp.id + " right page has writing lines");
       if (L.audience === "resident"){
-        ok(/class="lj-frame/.test(L.html), sp.id + " left page has a photo or drawing frame");
-        if (L.tab <= 3) ok(/class="lj-asks"/.test(L.html), sp.id + " left page has story prompts");
+        ok(/class="lj-frame|class="lp-anchor|class="lp-choices/.test(L.html), sp.id + " left page has a picture or something to point to");
+        // what the storybook's left pages offer, by tier: invitations (1), things to circle (2), one word and one picture (3)
+        if (L.tab <= 3) ok(new RegExp(['class="lj-asks"', 'class="lp-choices"', 'class="lp-anchor'][tier - 1]).test(L.html), sp.id + " left page fits tier " + tier);
+        ok(new RegExp("\\blp-t" + tier + "\\b").test(L.html) && new RegExp("\\blp-t" + tier + "\\b").test(R.html), sp.id + " pages carry their tier");
       }
     });
     r.pages.forEach(p => {
@@ -281,7 +296,7 @@ for (const scope of SCOPES) for (const binding of ["book", "binder"]) for (const
   });
 }
 check("photo mode swaps every drawing for an empty photo frame", () => {
-  const r = LJ.build(EX, { art: "photo" }, "complete");
+  const r = build(EX, { art: "photo" }, "complete");
   ok(r.pages.every(p => !/lj-frame-art/.test(p.html)), "no drawings");
   ok(r.pages.filter(p => /lj-frame-photo/.test(p.html)).length >= 15, "photo frames");
 });
@@ -307,12 +322,24 @@ check("journal headings are 16 pt or larger, and bold", () => {
   ok(/\.lj-band\{[^}]*font-weight:700/.test(printCss), "section band is bold");
   ok(all.pages.every(p => (p.body.match(/<h[1-3][^>]*>/g) || []).every(h => /class="(?:lp-h[123]|lp-cover-h)\b/.test(h))), "every heading uses a checked heading style");
 });
-check("writing lines are at least 0.4 in apart", () => {
-  const rule = /\.lp-rule\{height:([\d.]+)in/.exec(lpCss);
-  ok(rule && +rule[1] >= LJ.STANDARDS.MIN_RULE_IN, "ruled line pitch " + (rule && rule[1]));
-  ok(!/\.lp-rule\{[^}]*height:\.[0-3]\d*in/.test(printCss), "the journal never tightens the lines");
+check("writing lines are 0.5 in apart with a 2 pt stroke", () => {
+  eq(LJ.STANDARDS.MIN_RULE_IN, 0.5);
+  const printedPt = (n, unit) => unit === "px" ? Math.floor(+n) * .75 : Math.floor(+n / .75) * .75;   // borders print in whole CSS pixels
+  const rule = /\.lp-rule\{height:([\d.]+)in;border-bottom:([\d.]+)(px|pt)/.exec(lpCss);
+  ok(rule && +rule[1] >= LJ.STANDARDS.MIN_RULE_IN && printedPt(rule[2], rule[3]) >= LJ.STANDARDS.RULE_PT, "ruled line " + (rule && rule[1] + "in " + printedPt(rule[2], rule[3]) + "pt"));
+  ok(!/\.lp-rule\{[^}]*height:\.[0-4]\d*in/.test(printCss), "the journal never tightens the lines");
+  // the journal's own write-in blanks meet the same standard
+  [...printCss.matchAll(/\.lj-[\w.-]* (?:[\w.-]+ )?[\w]*\.lj-blank\{([^}]*)\}/g)].forEach(m => {
+    const h = /height:([\d.]+)in/.exec(m[1]); ok(!h || +h[1] >= LJ.STANDARDS.MIN_RULE_IN, "a write-in blank at " + (h && h[1]) + "in");
+    const b = /border-bottom:([\d.]+)(px|pt)/.exec(m[1]); ok(!b || printedPt(b[1], b[2]) >= LJ.STANDARDS.RULE_PT, "a write-in blank prints at " + (b && printedPt(b[1], b[2])) + "pt");
+  });
   const tall = /\.lp-tbl-tall td\{height:([\d.]+)in/.exec(lpCss);
-  ok(tall && +tall[1] >= .4, "table rows " + (tall && tall[1]));
+  ok(tall && +tall[1] >= LJ.STANDARDS.MIN_RULE_IN, "table rows " + (tall && tall[1]));
+});
+check("the journal prints in the embedded Atkinson Hyperlegible, with no serif override", () => {
+  eq(LJ.STANDARDS.PRINT_FONT, "Atkinson Hyperlegible");
+  ok(!/font-family/.test(printCss), "no journal rule changes the face");
+  ok(/\.lp-sheet\{[^}]*font:14pt\/1\.3 "Atkinson Hyperlegible",/.test(lpCss), "the shared sheet sets it");
 });
 check("section colors are fixed and readable at WCAG AAA (7:1)", () => {
   const lum = h => { const c = [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16) / 255).map(v => v <= .03928 ? v / 12.92 : Math.pow((v + .055) / 1.055, 2.4)); return .2126 * c[0] + .7152 * c[1] + .0722 * c[2]; };

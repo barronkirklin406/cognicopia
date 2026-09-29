@@ -841,6 +841,12 @@ body { padding-left: var(--sb-w); }
           <p class="rap-err" id="rapNameErr" hidden></p>
         </div>
 
+        <div class="rap-field">
+          <label for="rapUnit">Room or unit <span class="rap-opt">(optional)</span></label>
+          <input id="rapUnit" name="unitNumber" type="text" maxlength="16" autocomplete="off" aria-describedby="rapUnitHint" placeholder="e.g., 214B or Maple 12">
+          <p class="rap-hint" id="rapUnitHint">Helps staff find the right person in the resident roster. It never prints on the resident's own pages.</p>
+        </div>
+
         <div class="rap-row">
           <div class="rap-field">
             <label for="rapAge">Age</label>
@@ -1152,6 +1158,41 @@ body { padding-left: var(--sb-w); }
         </div>
 
         <fieldset class="rap-field rap-group">
+          <legend>Support tier for printed books</legend>
+          <p class="rap-hint rap-hint-top">How much each page of the Life Planner and Life Journal asks, and how large it prints. Choose the tier that lets them finish a page on their own.</p>
+          <div class="rap-radios">
+            <label class="rap-check rap-radio"><input type="radio" name="tier" value="1"><span><b>Tier 1 · Full detail</b> multi-step planning and open questions, 14 to 16 pt text</span></label>
+            <label class="rap-check rap-radio"><input type="radio" name="tier" value="2" checked><span><b>Tier 2 · Guided</b> sentence starters and choices to circle, 18 to 20 pt text</span></label>
+            <label class="rap-check rap-radio"><input type="radio" name="tier" value="3"><span><b>Tier 3 · Simplified</b> one word or picture at a time, large boxes, 24 pt and larger</span></label>
+          </div>
+          <p class="rap-hint rap-auto-note" id="rapTierNote">Suggested from the reading level and the difficulty in Step 5. Choose another tier if it fits better.</p>
+        </fieldset>
+
+        <fieldset class="rap-field rap-group">
+          <legend>Visual needs</legend>
+          <div class="rap-row">
+            <div>
+              <p class="rap-sublabel" id="rapContrastLbl">Contrast</p>
+              <div class="rap-radios" role="radiogroup" aria-labelledby="rapContrastLbl">
+                <label class="rap-check rap-radio"><input type="radio" name="contrast" value="standard" checked><span><b>Standard</b> season and section colors, each with its name</span></label>
+                <label class="rap-check rap-radio"><input type="radio" name="contrast" value="high_contrast"><span><b>High contrast</b> pure black on white, no color or gray</span></label>
+              </div>
+            </div>
+            <div class="rap-field">
+              <label for="rapLine">Line thickness</label>
+              <select id="rapLine" name="lineThickness" aria-describedby="rapLineHint">
+                <option value="2">2 pt: standard</option>
+                <option value="3">3 pt: bolder</option>
+                <option value="4">4 pt: boldest</option>
+              </select>
+              <p class="rap-hint" id="rapLineHint">Writing lines, borders and drawings. Text size follows Vision above.</p>
+            </div>
+          </div>
+          <p class="rap-hint rap-auto-note" id="rapNeedsNote">Suggested from vision and motor skills until you change them.</p>
+          <input type="hidden" name="needsAuto" id="rapNeedsAuto" value="tier,contrast,line">
+        </fieldset>
+
+        <fieldset class="rap-field rap-group">
           <legend>Topics to avoid</legend>
           <p class="rap-hint rap-hint-top">Anything that could upset them. These are left out of prompts, trivia and pictures.</p>
           <div class="rap-checks" id="rapAvoid">
@@ -1344,7 +1385,7 @@ body { padding-left: var(--sb-w); }
       else el.value = typeof v === "string" ? v : "";
     });
     renderPeople(Array.isArray(data.people) ? data.people : []);
-    syncHobbies(); syncRange(); syncNotes();
+    syncHobbies(); syncRange(); syncNotes(); syncNeeds();
   }
 
   /* ---------- Step 3: music genres (one list, two dropdowns) ---------- */
@@ -1447,6 +1488,54 @@ body { padding-left: var(--sb-w); }
     r.setAttribute("aria-valuetext", DIFF[v - 1]);
     r.style.setProperty("--fill", ((v - 1) / 4 * 100) + "%");
   }
+
+  /* Resident profile schema v2: the room or unit, the cognitive support tier
+     (1 full detail, 2 guided, 3 simplified) and visual needs. A profile saved
+     before v2 has none of these, so they are worked out from what it already
+     says, the same way everywhere: profile.html, the packet tool and the
+     Packet Builder each carry this exact function. */
+  function residentNeeds(p){
+    var t1 = (p && p.tier1_core) || {}, pn = t1.printNeeds || {}, vn = t1.visualNeeds || {};
+    var code = function(c){ return c && typeof c === "object" ? String(c.code || "") : String(c || ""); };
+    var vision = code(pn.vision), reading = code(pn.readingLevel), motor = code(pn.motorSkills);
+    var lvl = Number((t1.difficulty || {}).level) || 3;
+    var tier = Number(t1.cognitiveTier);
+    if ([1, 2, 3].indexOf(tier) === -1) tier = reading === "none" || lvl <= 1 ? 3 : lvl <= 3 ? 2 : 1;
+    var scale = Number(vn.fontSizeScale);
+    if ([1, 1.15, 1.3].indexOf(scale) === -1) scale = vision === "xl" ? 1.3 : vision === "standard" ? 1 : 1.15;   // unknown: large print
+    var contrast = vn.contrastMode === "high_contrast" || vn.contrastMode === "standard" ? vn.contrastMode
+      : vision === "xl" ? "high_contrast" : "standard";
+    var line = Number(vn.lineThicknessPt);
+    if ([2, 3, 4].indexOf(line) === -1) line = vision === "xl" || motor === "significant" ? 3 : 2;
+    return {
+      unitNumber: String(t1.unitNumber == null ? "" : t1.unitNumber).replace(/[\u0000-\u001F\u007F]/g, "").trim().slice(0, 16),
+      cognitiveTier: tier,
+      visualNeeds: { contrastMode: contrast, fontSizeScale: scale, lineThicknessPt: line }
+    };
+  }
+  var TIER_NAMES = { 1: "Full detail", 2: "Guided", 3: "Simplified" };
+
+  /* ---------- Step 4: support tier and visual needs ----------
+     Until staff choose them, they follow the answers they depend on
+     (reading level and difficulty; vision and motor skills). The hidden
+     needsAuto field remembers which ones staff have not chosen yet, so a
+     restored draft keeps following too. */
+  function needsAuto(){ return String($("rapNeedsAuto").value || "").split(",").filter(Boolean); }
+  function syncNeeds(){
+    var auto = needsAuto();
+    var d = residentNeeds({ tier1_core: { printNeeds: { vision: $("rapVision").value, readingLevel: $("rapRead").value, motorSkills: $("rapMotor").value },
+      difficulty: { level: number("rapDiff") || 3 } } });
+    var pick = function(name, v){ var i = form.querySelector('input[name="' + name + '"][value="' + v + '"]'); if (i) i.checked = true; };
+    if (auto.indexOf("tier") !== -1) pick("tier", d.cognitiveTier);
+    if (auto.indexOf("contrast") !== -1) pick("contrast", d.visualNeeds.contrastMode);
+    if (auto.indexOf("line") !== -1) $("rapLine").value = String(d.visualNeeds.lineThicknessPt);
+    $("rapTierNote").hidden = auto.indexOf("tier") === -1;
+    $("rapNeedsNote").hidden = auto.indexOf("contrast") === -1 && auto.indexOf("line") === -1;
+  }
+  form.addEventListener("change", function(e){      // capture: runs before the form's own change handler
+    var k = e.target.name === "tier" ? "tier" : e.target.name === "contrast" ? "contrast" : e.target.id === "rapLine" ? "line" : "";
+    if (k) $("rapNeedsAuto").value = needsAuto().filter(function(x){ return x !== k; }).join(",");
+  }, true);
 
   /* ---------- cross-step notes: military "avoid" and high-contrast vision ---------- */
   var warTouched = false, warBox = form.querySelector('input[name="avoidTopics"][value="war"]');
@@ -1598,13 +1687,13 @@ body { padding-left: var(--sb-w); }
   }
   form.addEventListener("input", function(e){
     if (e.target.id === "rapName" && e.target.getAttribute("aria-invalid") && e.target.value.trim()) setError(e.target, "rapNameErr", "");
-    if (e.target.name === "difficulty") syncRange();
+    if (e.target.name === "difficulty"){ syncRange(); syncNeeds(); }
     if (e.target.id === "rapNotes") syncNotesCount();
     syncConditional(); queueSave(); syncDirty();
   });
   form.addEventListener("change", function(e){
     if (e.target.name === "hobbies") syncHobbies();
-    syncNotes(); syncConditional(); queueSave(); syncDirty();
+    syncNotes(); syncNeeds(); syncConditional(); queueSave(); syncDirty();
     if (current === TOTAL) renderGlance();
   });
 
@@ -1628,7 +1717,7 @@ body { padding-left: var(--sb-w); }
      the generator); the label is the wording staff saw (for printing).
      ===================================================================== */
   var RESIDENT_PREFIX = "cognicopia_resident_";
-  var SCHEMA = "cognicopia.residentProfile", SCHEMA_VERSION = 1;
+  var SCHEMA = "cognicopia.residentProfile", SCHEMA_VERSION = 2;
   var residentId = null, savedSig = null;
   var ACTIVE_KEY = "cognicopia_active_resident";      // the dashboard's active resident (index.html)
 
@@ -1687,6 +1776,10 @@ body { padding-left: var(--sb-w); }
       .filter(function(g, i, all){ return all.findIndex(function(x){ return x.code === g.code; }) === i; });
     var branch = choice("rapBranch"), served = branch && ["none", "unknown"].indexOf(branch.code) === -1;
     var notes = longText("rapNotes");
+    var tierPick = radio("tier"), contrastPick = radio("contrast");
+    var needs = residentNeeds({ tier1_core: { printNeeds: { vision: $("rapVision").value, readingLevel: $("rapRead").value, motorSkills: $("rapMotor").value },
+      difficulty: { level: diffLevel }, unitNumber: text("rapUnit"), cognitiveTier: tierPick ? Number(tierPick.code) : null,
+      visualNeeds: { contrastMode: contrastPick ? contrastPick.code : "", lineThicknessPt: number("rapLine") } } });
 
     return {
       schema: SCHEMA,
@@ -1700,6 +1793,9 @@ body { padding-left: var(--sb-w); }
       /* Tier 1: builds the primary packet template */
       tier1_core: {
         preferredName: text("rapName"),
+        unitNumber: needs.unitNumber,                   // v2: shown in the roster and on staff pages only
+        cognitiveTier: needs.cognitiveTier,             // v2: 1 full detail, 2 guided, 3 simplified
+        visualNeeds: needs.visualNeeds,                 // v2: contrastMode, fontSizeScale (from vision), lineThicknessPt
         occupation: occupation,
         topHobbies: ticks("hobbies"),
         printNeeds: {
@@ -1761,8 +1857,17 @@ body { padding-left: var(--sb-w); }
     var codes = function(list){ return (list || []).map(function(x){ return x.code; }); };
     var pn = t1.printNeeds || {}, mil = t2.military || {}, mus = t2.music || {}, tv = t2.tvMoviesSports || {};
     var occ = t1.occupation;
+    // v2 needs (worked out for older profiles). A saved value that matches what the
+    // other answers suggest keeps following them; one staff picked stays put.
+    var needs = residentNeeds(p), vn = needs.visualNeeds;
+    var sug = residentNeeds({ tier1_core: { printNeeds: pn, difficulty: t1.difficulty } }), auto = [];
+    if (needs.cognitiveTier === sug.cognitiveTier) auto.push("tier");
+    if (vn.contrastMode === sug.visualNeeds.contrastMode) auto.push("contrast");
+    if (vn.lineThicknessPt === sug.visualNeeds.lineThicknessPt) auto.push("line");
     return {
       preferredName: t1.preferredName || "",
+      unitNumber: needs.unitNumber, tier: String(needs.cognitiveTier), contrast: vn.contrastMode,
+      lineThickness: String(vn.lineThicknessPt), needsAuto: auto.join(","),
       age: t2.age == null ? "" : String(t2.age), birthYear: t2.birthYear == null ? "" : String(t2.birthYear),
       completedBy: code((p.meta || {}).completedBy), decades: t2.meaningfulDecades || [],
       hometown: code((t2.hometown || {}).environment), hometownName: (t2.hometown || {}).place || "",
@@ -1873,6 +1978,10 @@ body { padding-left: var(--sb-w); }
     var labels = function(list){ return list.map(function(x){ return x.label; }).join(", "); };
     var rows = [
       ["Name", t1.preferredName],
+      ["Room or unit", t1.unitNumber],
+      ["Support tier", "Tier " + t1.cognitiveTier + " · " + TIER_NAMES[t1.cognitiveTier]],
+      ["Visual needs", [t1.visualNeeds.contrastMode === "high_contrast" ? "High contrast" : "Standard contrast",
+        "text " + t1.visualNeeds.fontSizeScale + "×", t1.visualNeeds.lineThicknessPt + " pt lines"].join(" · ")],
       ["Work", t1.occupation ? t1.occupation.label : ""],
       ["Top hobbies", labels(t1.topHobbies)],
       ["Decades", t2.meaningfulDecades.join(", ")],
