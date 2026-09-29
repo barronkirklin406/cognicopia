@@ -1192,6 +1192,12 @@ body { padding-left: var(--sb-w); }
 .qp-sheet *{box-sizing:border-box;letter-spacing:normal;text-transform:none;text-shadow:none}
 .qp-sheet h2,.qp-sheet p,.qp-sheet ul,.qp-sheet ol,.qp-sheet li{font-family:inherit;max-width:none}
 .qp-head{margin:0 0 .08in;padding:0 0 .08in;border-bottom:3pt solid #000}
+/* Resident name banner: the first thing on every activity page. Same size on screen and paper
+   (the preview is measured to fit exactly as it prints); emerald accent on screen, black on paper. */
+.resident-hero-name{display:block;margin:0 0 12px;padding:0 0 4px;border-bottom:3px solid #10b981;font-size:32pt;font-weight:800;line-height:1.1;letter-spacing:-.5px;color:#0f172a;overflow-wrap:anywhere}
+.qp-sheet .qp-banner{flex:none;margin:0 0 .1in;padding:0 0 .05in;border-bottom-width:3pt;font-size:32pt;color:#000}
+.qp-sheet .qp-banner .rhn-label{font-size:13pt;font-weight:800;letter-spacing:.06em;text-transform:uppercase;vertical-align:.35em;margin-right:.3em}
+.qp-sheet .qp-cover-name.resident-hero-name{border:0;padding:0;margin:.05in 0 .2in;letter-spacing:0}
 .qp-sheet .qp-title{margin:0;font-size:max(26pt,calc(30pt * var(--qps,1) * var(--fit)));line-height:1.1;font-weight:700;color:#000;font-family:inherit}
 .qp-sheet .qp-sub{margin:.04in 0 0;font-size:max(16pt,calc(16pt * var(--qps,1) * var(--fit)));color:#000}
 .qp-sheet .qp-inst{margin:.1in 0 .14in;font-size:max(18pt,calc(18pt * var(--qps,1) * var(--fit)));line-height:1.3;color:#000}
@@ -1202,7 +1208,8 @@ body { padding-left: var(--sb-w); }
 /* word search */
 .qp-grid{--c:max(0.36in,calc(var(--cell) * var(--fit)));display:grid;grid-template-columns:repeat(var(--n),var(--c));grid-auto-rows:var(--c);margin:0 auto;border:3pt solid #000}
 .qp-grid span{display:flex;align-items:center;justify-content:center;font-family:Verdana,"Trebuchet MS",Arial,sans-serif;font-weight:700;font-size:max(24pt,calc(var(--gfs) * var(--fit)));line-height:1;color:#000}
-.qp-sheet .qp-words{list-style:none;margin:.16in 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(2.35in,1fr));gap:.04in .2in}
+/* as many columns as the longest word allows: fewer rows leave a bigger grid */
+.qp-sheet .qp-words{list-style:none;margin:.16in 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(calc(var(--wlen,10) * max(18pt,calc(19pt * var(--qps,1) * var(--fit))) * .68 + .42in),1fr));gap:.04in .2in}
 .qp-sheet .qp-words li{display:flex;align-items:center;gap:.1in;min-width:0;white-space:nowrap;overflow:hidden;font-size:max(18pt,calc(19pt * var(--qps,1) * var(--fit)));font-weight:700;letter-spacing:.02em;color:#000}
 .qp-box{flex:none;width:.24in;height:.24in;border:2pt solid #000}
 
@@ -1239,6 +1246,15 @@ body { padding-left: var(--sb-w); }
 
 /* grayscale ink: soft gray fills; black-and-white ink keeps pure #000/#fff */
 .ink-gray .qp-head{background:#e6e6e6;padding:.08in .12in;border-bottom-color:#444}
+.ink-gray .qp-banner{border-bottom-color:#444}
+/* spacing-only fallback when a page is still too full at the smallest type */
+.qp-sheet.qp-tight .qp-banner{line-height:1;margin-bottom:.05in;padding-bottom:.02in}
+.qp-sheet.qp-tight .qp-head{margin-bottom:.04in;padding-bottom:.05in}
+.qp-sheet.qp-tight .qp-inst{margin:.06in 0 .08in;line-height:1.2}
+.qp-sheet.qp-tight .qp-words{margin-top:.08in}
+.qp-sheet.qp-tight .qp-fill li p{line-height:1.2}
+.qp-sheet.qp-tight .qp-opts{margin-top:.03in !important}
+.qp-sheet .qp-banner + .qp-head .qp-title{font-size:max(24pt,calc(26pt * var(--qps,1) * var(--fit)))}
 .ink-gray .qp-card{background:#f2f2f2;border-color:#444}
 .ink-gray .qp-grid{border-color:#444}
 
@@ -1249,6 +1265,9 @@ body { padding-left: var(--sb-w); }
   html.qp-printing #qpPrintRoot{display:block !important;margin:0 !important;padding:0 !important;background:#fff !important}
   #qpPrintRoot .qp-sheet{transform:none !important;box-shadow:none !important;margin:0 !important;break-after:page;page-break-after:always;break-inside:avoid;page-break-inside:avoid}
   #qpPrintRoot .qp-sheet:last-child{break-after:auto;page-break-after:auto}
+  /* on paper the name rule is black (dark gray for grayscale ink): no emerald on a black-and-white printer */
+  .resident-hero-name{color:#000 !important;border-bottom-color:#000 !important}
+  .ink-gray .qp-banner{border-bottom-color:#444 !important}
   #qpPrintRoot,#qpPrintRoot *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
   .qpb{display:none !important}
 }
@@ -1280,7 +1299,8 @@ html.tb-open,html.tb-open body{overflow:hidden !important;overscroll-behavior:no
 .tb button{font:inherit;color:inherit;-webkit-appearance:none;appearance:none}
 .tb :focus-visible{outline:4px solid #1d4ed8;outline-offset:3px}
 .tb-top{flex:none;display:flex;align-items:center;gap:14px;padding:12px 16px;border-bottom:3px solid var(--tb-line);background:#fff}
-.tb-hello{flex:1 1 auto;min-width:0;margin:0;font-size:clamp(22px,2.6vw,30px);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tb-hello{flex:1 1 auto;min-width:0;margin:0;font-size:32px;font-weight:700;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#0f172a}
+.tb-name{font-weight:800;border-bottom:4px solid var(--tb-em);padding-bottom:1px}
 .tb-tabs{display:flex;gap:10px;flex:none}
 .tb-tab{min-height:64px;padding:8px 22px;border:3px solid var(--tb-line);border-radius:16px;background:#fff;font-size:clamp(19px,2.1vw,24px) !important;font-weight:700;cursor:pointer}
 .tb-tab[aria-selected="true"]{background:var(--tb-em-dk);border-color:var(--tb-em-dk);color:#fff}
@@ -1330,7 +1350,7 @@ html.tb-open,html.tb-open body{overflow:hidden !important;overscroll-behavior:no
 .tb-q-text{margin:0;font-size:clamp(32px,4.4vw,54px);font-weight:700;line-height:1.3;text-align:center}
 .tb-blank{display:inline-block;min-width:3.2em;border-bottom:5px solid var(--tb-ink);margin:0 .15em}
 .tb-blank.is-filled{min-width:0;border-bottom-color:var(--tb-em-dk);color:var(--tb-em-dk);padding:0 .15em}
-.tb-opts{display:grid;grid-template-columns:1fr 1fr;gap:clamp(14px,2vw,28px)}
+.tb-opts{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(14px,2vw,28px)}
 .tb-opt{min-height:clamp(110px,16vh,170px);border:4px solid var(--tb-line);border-radius:22px;background:#fff;font-size:clamp(30px,4vw,48px) !important;font-weight:700;cursor:pointer}
 .tb-opt.is-picked{background:var(--tb-em);border-color:var(--tb-em-dk)}
 .tb-opt.is-answer{box-shadow:0 0 0 6px var(--tb-em-dk) inset}
@@ -1385,10 +1405,10 @@ html.tb-open,html.tb-open body{overflow:hidden !important;overscroll-behavior:no
 }
 @media (max-width:600px){
   .tb-stage{padding:10px}
-  .tb-hello{font-size:20px}
+  .tb-hello{font-size:32px}
   .tb-tab{min-height:56px;font-size:17px !important}
   .tb-q-text,.tb-card-q{font-size:26px}
-  .tb-opt{min-height:72px;font-size:26px !important}
+  .tb-opt{min-height:72px;padding:6px 8px;font-size:clamp(20px,6.4vw,26px) !important;overflow-wrap:anywhere}
   .tb-q{gap:12px}
   .tb-q-text{line-height:1.22}
   .tb-btn{min-height:56px;padding:8px 14px;font-size:18px !important}
@@ -4219,6 +4239,56 @@ function frame(d, name){
 }
 
 /* =================================================================
+   RESIDENT NAME BANNER
+   The same header at the top of every activity page in every PDF
+   engine: "PREPARED ESPECIALLY FOR:" and the preferred name, large and
+   bold, over a heavy rule. Seeing their own name is one of the most
+   lasting recognitions in dementia, so it tells the resident at a
+   glance that the page is theirs. Staff-only pages never get it.
+   o = { size (32), min (24), labelSize (13), rule (3), ruleGap (9),
+         gray (rule shade 0-255), measure (true: no drawing) }
+   Returns the y just below the rule.
+   ================================================================= */
+function drawResidentBanner(d, name, x, top, w, o){
+  o = o || {};
+  const size = o.size || 32, min = o.min || 24, ls = o.labelSize || 13;
+  const rule = o.rule || 3, gap = o.ruleGap || 9, draw = !o.measure;
+  const label = "PREPARED ESPECIALLY FOR:";
+  name = String(name || "").trim();
+  d.setFont("helvetica", "bold");
+  d.setFontSize(ls);
+  const lw = d.getTextWidth(label) + 12;
+  let s = size; d.setFontSize(s);
+  while(s > min && d.getTextWidth(name) > w - lw){ s--; d.setFontSize(s); }
+  let base;
+  if(d.getTextWidth(name) <= w - lw){
+    // one line: small label, then the name on the same baseline
+    base = top + s * 0.76;
+    if(draw){
+      d.setTextColor(0);
+      d.setFontSize(ls); d.text(label, x, base);
+      d.setFontSize(s);  d.text(name, x + lw, base);
+    }
+  } else {
+    // a long name gets the full width on its own line under the label
+    const lb = top + ls * 0.8;
+    base = lb + 6 + size * 0.76;
+    if(draw){ d.setTextColor(0); d.setFontSize(ls); d.text(label, x, lb); }
+    const t = fitText(d, name, w, size, min);        // shrinks, and only truncates past `min`
+    if(draw) d.text(t, x, base);
+  }
+  const ry = base + gap;
+  if(draw){
+    d.setDrawColor(o.gray != null ? o.gray : 0); d.setLineWidth(rule);
+    d.line(x, ry, x + w, ry);
+    d.setDrawColor(0);
+  }
+  return ry + rule / 2;
+}
+/* Pages for staff, not the resident: no name banner. */
+const STAFF_PAGE = /\bStaff\b|Engagement Notes|About Your Mother or Father/;
+
+/* =================================================================
    5. PDF PAGE ENGINE
    ================================================================= */
 
@@ -4237,6 +4307,9 @@ class Doc{
   }
   heading(t){
     this.title=t;
+    // Every resident page (and every continuation sheet) opens with their name.
+    if(this.who && !STAFF_PAGE.test(t))
+      this.y=drawResidentBanner(this.d,this.who,MARGIN,this.y-16,PW-2*MARGIN)+30;
     this.d.setFont("helvetica","bold"); this.d.setFontSize(24);
     this.d.text(t,MARGIN,this.y); this.y+=14;
     this.d.setLineWidth(2); this.d.line(MARGIN,this.y,PW-MARGIN,this.y);
@@ -4366,20 +4439,23 @@ function fitText(d, text, maxW, start, min){
 
 function coverPage(D,r,theme){
   D.start(theme);
-  D.y=210;
-  D.d.setFont("helvetica","bold"); D.d.setFontSize(34);
-  D.d.text("Activities for",MARGIN,D.y); D.y+=52;
-  // Shrink the name to fit rather than letting it run off the paper.
-  // A hyphenated double-barrelled name is the realistic case; a pasted
-  // paragraph is the hostile one, and both are handled the same way.
-  D.d.text(fitText(D.d, r.goes || "your packet", PW-2*MARGIN, 42, 20),
-           MARGIN, D.y);
-  D.y+=40;
-  D.d.setLineWidth(3); D.d.line(MARGIN,D.y,PW-MARGIN,D.y); D.y+=48;
-  D.d.setFont("helvetica","normal"); D.d.setFontSize(19);
-  D.d.text("Made just for you",MARGIN,D.y); D.y+=34;
-  if(r.fac){D.d.text(fitText(D.d, r.fac, PW-2*MARGIN, 19, 12), MARGIN, D.y); D.y+=30;}
-  D.d.text(r.month,MARGIN,D.y);
+  const cx=PW/2, C={align:"center"};
+  D.y=196;
+  D.d.setFont("helvetica","bold"); D.d.setFontSize(16);
+  D.d.text("PREPARED ESPECIALLY FOR",cx,D.y,C); D.y+=58;
+  // The name is the hero of the cover. Shrink it to fit rather than
+  // letting it run off the paper: a hyphenated double-barrelled name is
+  // the realistic case, a pasted paragraph the hostile one.
+  D.d.setFontSize(48);
+  D.d.text(fitText(D.d, pdfSafe(r.goes || r.first || "") || "You", PW-2*MARGIN, 48, 24), cx, D.y, C);
+  D.y+=24;
+  D.d.setLineWidth(3); D.d.line(MARGIN+60,D.y,PW-MARGIN-60,D.y); D.y+=38;
+  D.d.setFont("helvetica","normal"); D.d.setFontSize(20);
+  D.d.text("Your Personalized Activity Packet",cx,D.y,C); D.y+=34;
+  D.d.setFontSize(19);
+  if(r.fac){D.d.text(fitText(D.d, r.fac, PW-2*MARGIN, 19, 12), cx, D.y, C); D.y+=30;}
+  D.d.setFontSize(19);
+  D.d.text(r.month,cx,D.y,C);
   if(theme && theme!=="brain") motif(D.d, theme, PW/2, 560, 46, 1.1);
   else logoMark(D.d, PW/2, 572, 300, 175, 130);
   D.d.setFontSize(9);
@@ -6532,7 +6608,9 @@ function clockPage(D,r,s,theme){
   const PW=612, MARGIN=54;
   /* Lay out in a 2-column grid */
   const cols=2, cw=(PW-2*MARGIN)/cols;
-  const cR=54, rowH=140;
+  // A row must hold the clock, its label and the writing line, or the
+  // line runs into the 12 of the clock below it.
+  const cR=54, rowH=2*cR+10+38+30;
   chosen.forEach((t,i)=>{
     const col=i%cols, row=Math.floor(i/cols);
     const cx=MARGIN+col*cw+cw/2, cy=D.y+row*rowH+cR+10;
@@ -6709,6 +6787,7 @@ function buildPacket(r, mode){
   mode=mode||"full";
   const s=STAGE[r.stage], sel=r.acts;
   const D=new Doc();
+  D.who=pdfSafe(r.goes||r.first||"");              // the name banner on every activity page
   if(isPureBlackAndWhitePDF) applyPureBW(D.d);   // High Contrast Mode: output pages only
 
   // The first chosen holiday sets the packet's overall look.
@@ -8197,17 +8276,27 @@ function ailResidentName() {
 /* Start a page. The first call uses the page jsPDF already made; every
    later call adds one. Resets colors, line width and font every time
    so no setting leaks from one page into the next. */
-function ailFreshPage(ctx) {
+function ailFreshPage(ctx, opts) {
   const d = ctx.doc;
   if (ctx.pages > 0) d.addPage();
   ctx.pages++;
-  d.setTextColor(0, 0, 0);
-  d.setDrawColor(0, 0, 0);
-  d.setFillColor(255, 255, 255);
-  d.setLineWidth(ctx.baseLine);
-  d.setLineCap("round");
-  d.setLineJoin("round");
-  d.setFont("helvetica", ctx.boldOnly ? "bold" : "normal");
+  const reset = () => {
+    d.setTextColor(0, 0, 0);
+    d.setDrawColor(0, 0, 0);
+    d.setFillColor(255, 255, 255);
+    d.setLineWidth(ctx.baseLine);
+    d.setLineCap("round");
+    d.setLineJoin("round");
+    d.setFont("helvetica", ctx.boldOnly ? "bold" : "normal");
+  };
+  reset();
+  // The resident's name across the top margin of every activity page
+  // (not the cover, which already leads with it, or the staff guide).
+  if (ctx.who && !(opts && opts.staff)) {
+    drawResidentBanner(d, ctx.who, AIL_PAGE.M, 22, AIL_PAGE.W - 2 * AIL_PAGE.M,
+      { size: 28, min: 20, labelSize: 12, rule: Math.max(2, ctx.baseLine), ruleGap: 8 });
+    reset();
+  }
 }
 
 /* Shrink the font until the text fits the width (never below minSize). */
@@ -8256,7 +8345,7 @@ function ailWordSearch(words, size) {
 function ailCover(ctx, key, cfg, name) {
   const d = ctx.doc, W = AIL_PAGE.W, H = AIL_PAGE.H, M = AIL_PAGE.M;
   const body = ctx.boldOnly ? "bold" : "normal";
-  ailFreshPage(ctx);
+  ailFreshPage(ctx, { staff: true });              // the cover leads with the name itself
 
   // Plain frame. No fill, so the Lewy body page stays pure white.
   d.setLineWidth(Math.max(ctx.baseLine, 2));
@@ -8309,7 +8398,7 @@ function ailCover(ctx, key, cfg, name) {
 function ailGuide(ctx, key) {
   const d = ctx.doc, W = AIL_PAGE.W, H = AIL_PAGE.H, M = AIL_PAGE.M;
   const cfg = AILMENT_DATA[key], g = cfg.guide;
-  ailFreshPage(ctx);
+  ailFreshPage(ctx, { staff: true });
   let y = M + 16;
 
   d.setFont("helvetica", "bold"); d.setFontSize(20);
@@ -8347,7 +8436,7 @@ function ailGuide(ctx, key) {
   // Participation log for activity records. Moves to its own page if the
   // guidance above ran long, so the table is never cut off.
   const rowH = 26, rows = 5;
-  if (y + 24 + rows * rowH > H - M - 30) { ailFreshPage(ctx); y = M + 20; }
+  if (y + 24 + rows * rowH > H - M - 30) { ailFreshPage(ctx, { staff: true }); y = M + 20; }
   heading("Participation log");
   const cols = [M, M + 90, M + 190, M + 340, W - M];
   d.setLineWidth(Math.max(ctx.baseLine, 1));
@@ -8375,21 +8464,22 @@ function ailRenderVascular(ctx) {
   tasks.forEach((t, i) => {
     ailFreshPage(ctx);                              // always a new page: one task each
 
-    // Title band: heavy rule, title, heavy rule
+    // Title band: heavy rule, title, heavy rule (below the name banner)
+    const o = ctx.who ? 14 : 0;
     d.setLineWidth(3);
-    d.line(M, 72, W - M, 72);
+    d.line(M, 72 + o, W - M, 72 + o);
     d.setFont("helvetica", "bold"); d.setFontSize(30);
-    d.text(t.title, W / 2, 112, { align: "center" });
-    d.line(M, 130, W - M, 130);
+    d.text(t.title, W / 2, 112 + o, { align: "center" });
+    d.line(M, 130 + o, W - M, 130 + o);
 
     d.setFont("helvetica", "normal"); d.setFontSize(14); d.setTextColor(80, 80, 80);
-    d.text("Task " + (i + 1) + " of " + tasks.length + "   ·   One step at a time", W / 2, 154, { align: "center" });
+    d.text("Task " + (i + 1) + " of " + tasks.length + "   ·   One step at a time", W / 2, 154 + o, { align: "center" });
     d.setTextColor(0, 0, 0);
 
     // The single instruction, boxed
     d.setFont("helvetica", "bold"); d.setFontSize(22);
     const instr = d.splitTextToSize(t.instruction, W - 2 * M - 48);
-    const boxY = 176, lh = 22 * 1.2, boxH = 28 + instr.length * lh;
+    const boxY = 176 + o, lh = 22 * 1.2, boxH = 28 + instr.length * lh;
     d.setLineWidth(2);
     d.rect(M, boxY, W - 2 * M, boxH, "S");
     d.text(instr, W / 2, boxY + 14 + 17, { align: "center", lineHeightFactor: 1.2 });
@@ -8535,12 +8625,13 @@ function ailRenderFTD(ctx) {
 
   // Structured magazine-style header. Returns the next y.
   const head = (kicker, title) => {
+    const o = ctx.who ? 18 : 0;                       // room for the name banner
     d.setFont("helvetica", "bold"); d.setFontSize(12); d.setTextColor(70, 70, 70);
-    d.text(kicker.toUpperCase(), M, M + 10, { charSpace: 1 });
+    d.text(kicker.toUpperCase(), M, M + 10 + o, { charSpace: 1 });
     d.setTextColor(0, 0, 0); d.setFontSize(26);
     const lines = d.splitTextToSize(title, W - 2 * M);
-    d.text(lines, M, M + 42, { lineHeightFactor: 1.15 });
-    const ruleY = M + 42 + (lines.length - 1) * 30 + 14;
+    d.text(lines, M, M + 42 + o, { lineHeightFactor: 1.15 });
+    const ruleY = M + 42 + o + (lines.length - 1) * 30 + 14;
     d.setLineWidth(2);
     d.line(M, ruleY, W - M, ruleY);
     return ruleY + 32;
@@ -8970,6 +9061,7 @@ function generateAilmentPDF(ailmentType) {
     boldOnly: ailmentType === "lewy_body"             // Lewy body: bold type everywhere
   };
   const name = ailResidentName();
+  ctx.who = name;                                   // name banner on every activity page
 
   ailCover(ctx, ailmentType, cfg, name);
   switch (ailmentType) {
@@ -10339,15 +10431,16 @@ function generateAilmentPDF(ailmentType) {
     var gridHtml = '<div class="qp-grid" style="--n:' + L.size + ';--cell:' + cellIn + 'in;--gfs:' + L.font + 'pt" role="img" aria-label="Letter grid, ' + L.size + ' by ' + L.size + '">' +
       res.grid.map(function(row){ return row.map(function(ch){ return "<span>" + ch + "</span>"; }).join(""); }).join("") + "</div>";
     var cols = list.length > 10 ? 4 : 3;
-    var listHtml = '<ul class="qp-words" style="--cols:' + cols + '">' + list.map(function(w){ return '<li><span class="qp-box" aria-hidden="true"></span>' + w + "</li>"; }).join("") + "</ul>";
-    var dirText = L.dirs.length === 3 ? "Words go across, down, and diagonally down." : "Words go across (left to right) and down (top to bottom).";
+    var wlen = Math.max.apply(null, list.map(function(w){ return w.length; }).concat([4]));
+    var listHtml = '<ul class="qp-words" style="--cols:' + cols + ';--wlen:' + wlen + '">' + list.map(function(w){ return '<li><span class="qp-box" aria-hidden="true"></span>' + w + "</li>"; }).join("") + "</ul>";
+    var dirText = L.dirs.length === 3 ? "Words go across, down and diagonally." : "Words go across and down.";
     return {
       kind:"wordsearch", size:L.size, words:list, grid:res.grid, placed:res.placed,
       sheets:[{
         kind:"wordsearch",
-        title: src.name ? "Word Search for " + src.name : "Word Search",
-        subtitle: src.generic ? "Everyday words from home and garden" : "Words from " + (src.name || "your") + "'s life, work and favorite things",
-        instructions: "Find each word in the grid and circle it. " + dirText + " Tick the box when you find it.",
+        title: "Word Search",                      // the name is in the banner right above
+        subtitle: src.generic ? "Everyday words from home and garden" : "Topics inspired by your life & passions",
+        instructions: "Circle each word you find. " + dirText + " Tick its box when you find it.",
         body: gridHtml + listHtml
       }]
     };
@@ -10399,6 +10492,11 @@ function generateAilmentPDF(ailmentType) {
    * nothing is phrased as a test. Anything touching a Topic to Avoid is
    * dropped, and people who have passed away are not used.
    */
+  var ADDRESS_START = /^(Tell|What|Who|Whom|Where|When|Which|How|Did|Do|Does|Was|Were|Is|Are|Can|Could|Would|You|Shall|If|Have|Had)\b/;
+  function addressed(name, text){
+    if (!name || !ADDRESS_START.test(text)) return text;
+    return name + ", " + text.charAt(0).toLowerCase() + text.slice(1);
+  }
   function generateReminiscenceCards(src, rng){
     src = src || packetSource(); rng = rng || makeRng(newSeed());
     var want = src.stage === "late" ? 4 : 6;
@@ -10412,13 +10510,18 @@ function generateAilmentPDF(ailmentType) {
       order.forEach(function(cat){ if (picked.length < want && byCat[cat] && byCat[cat][round]) picked.push(byCat[cat][round]); });
     }
     (byCat.general || []).forEach(function(g){ if (picked.length < want) picked.push(g); });
-    picked = picked.slice(0, want);
+    // Say their name, the way a good conversation starts: "Harold, tell me about..."
+    picked = picked.slice(0, want).map(function(p){
+      var c = {}; for (var k in p) c[k] = p[k];
+      c.text = addressed(src.generic ? "" : src.name, p.text);
+      return c;
+    });
     var sheets = [];
     for (var i = 0; i < picked.length; i += 2){
       var pair = picked.slice(i, i + 2);
       sheets.push({
         kind:"cards",
-        title: src.name ? "Let's Talk, " + src.name : "Let's Talk",
+        title: "Let's Talk",
         subtitle: "Conversation cards " + (i + 1) + (pair.length > 1 ? " and " + (i + 2) : "") + " of " + picked.length,
         instructions: "Read a card aloud together. There are no right or wrong answers. Enjoy the stories.",
         body: '<div class="qp-cards">' + pair.map(function(c){
@@ -10470,9 +10573,9 @@ function generateAilmentPDF(ailmentType) {
       sheets:[{
         kind:"trivia",
         title: "Finish the Thought",
-        subtitle: src.generic ? "Familiar sayings and favorite times" : "Chosen for " + src.name + ": favorite pastimes and years",
-        instructions: choose ? "Read each line aloud. Circle the word that finishes it. Talking it over together is just as good."
-                             : "Read each line aloud and fill in the word that comes to mind. There are no wrong answers.",
+        subtitle: src.generic ? "Familiar sayings and favorite times" : "Chosen for you: favorite pastimes and years",
+        instructions: choose ? "Circle the word that finishes each line. Saying it out loud counts too."
+                             : "Fill in the word that comes to mind. There are no wrong answers.",
         body: body,
         staff: "For staff · answers: " + items.map(function(it, i){ return (i + 1) + ". " + it.answer; }).join("   ")
       }]
@@ -10486,9 +10589,9 @@ function generateAilmentPDF(ailmentType) {
     return { kind:"cover", sheets:[{ kind:"cover", title:"", body:
       '<div class="qp-cover">' +
         (fac.trim() ? '<p class="qp-cover-fac">' + esc(fac.trim()) + "</p>" : "") +
-        '<p class="qp-cover-for">Prepared for:</p>' +
-        '<p class="qp-cover-name">' + esc(src.name || "You") + "</p>" +
-        '<p class="qp-cover-line">Made especially for you, with the things you love.</p>' +
+        '<p class="qp-cover-for">Prepared especially for:</p>' +
+        '<p class="qp-cover-name resident-hero-name">' + esc(src.name || "You") + "</p>" +
+        '<p class="qp-cover-line">Your Personalized Activity Packet</p>' +
         '<svg class="qp-cover-art" viewBox="0 0 200 120" aria-hidden="true"><path d="M20 100 Q100 20 180 100" fill="none" stroke="#000" stroke-width="5" stroke-linecap="round"/><circle cx="100" cy="42" r="16" fill="#fff" stroke="#000" stroke-width="5"/><path d="M60 100 L60 84 M100 100 L100 76 M140 100 L140 84" stroke="#000" stroke-width="5" stroke-linecap="round"/></svg>' +
         '<p class="qp-cover-month">' + esc(month.trim()) + "</p>" +
         (included.length ? '<div class="qp-cover-inside"><p>Inside this packet</p><ul>' + included.map(function(t){ return "<li>" + esc(t) + "</li>"; }).join("") + "</ul></div>" : "") +
@@ -10500,7 +10603,10 @@ function generateAilmentPDF(ailmentType) {
   var current = null;          // { src, sheets:[html], paper, counted, residentId }
 
   function sheetHtml(s, src, n, total){
-    var head = s.kind === "cover" ? "" :
+    // every activity page opens with the resident's name (the cover leads with it anyway)
+    var banner = s.kind === "cover" || src.generic || !src.name ? "" :
+      '<p class="resident-hero-name qp-banner"><span class="rhn-label">Prepared especially for:</span> <span class="rhn-name">' + esc(src.name) + "</span></p>";
+    var head = s.kind === "cover" ? "" : banner +
       '<header class="qp-head"><h2 class="qp-title">' + esc(s.title) + "</h2>" + (s.subtitle ? '<p class="qp-sub">' + esc(s.subtitle) + "</p>" : "") + "</header>" +
       (s.instructions ? '<p class="qp-inst">' + esc(s.instructions) + "</p>" : "");
     return '<section class="qp-sheet qp-' + s.kind + '" data-kind="' + s.kind + '" aria-label="Page ' + n + " of " + total + '">' +
@@ -10597,6 +10703,9 @@ function generateAilmentPDF(ailmentType) {
       if (over() && s.querySelector(".qp-card-f")){
         Array.prototype.forEach.call(s.querySelectorAll(".qp-card-f"), function(x){ x.remove(); }); shrink();
       }
+      // Still too full (extra-large print under the name banner): close up the spacing,
+      // never the type sizes.
+      if (over()){ s.classList.add("qp-tight"); shrink(); }
       s.classList.toggle("qp-overflow", over());
     });
   }
@@ -11049,7 +11158,7 @@ function generateAilmentPDF(ailmentType) {
     var sayBtn = function(which){ return canSpeak ? '<button type="button" class="tb-btn tb-say" data-say="' + which + '">🔊 Read to Me</button>' : ""; };
     root.innerHTML =
       '<div class="tb-top">' +
-        '<p class="tb-hello">' + esc(S.src.name ? "Hello, " + S.src.name + "!" : "Welcome!") + "</p>" +
+        '<p class="tb-hello"' + (S.src.name ? ' title="' + esc(S.src.name) + '"' : "") + ">" + (S.src.name ? 'Hello, <b class="tb-name">' + esc(S.src.name) + "</b>!" : "Welcome!") + "</p>" +
         '<div class="tb-tabs" role="tablist" aria-label="Activities">' +
           '<button type="button" class="tb-tab" role="tab" data-tab="ws" id="tbTabWs" aria-controls="tbPanelWs">Word Search</button>' +
           '<button type="button" class="tb-tab" role="tab" data-tab="trivia" id="tbTabTrivia" aria-controls="tbPanelTrivia">Finish the Thought</button>' +
@@ -11333,19 +11442,28 @@ function generateAilmentPDF(ailmentType) {
   };
 
   /* header: title, subtitle, 3pt rule (grayscale adds a soft band) */
+  /* The resident's name banner (see drawResidentBanner). It never shrinks
+     with the page fit: always 32pt, the same as the printed preview. */
+  function banner(k, qps, draw){
+    if (!k.who || typeof window.drawResidentBanner !== "function") return M;
+    return window.drawResidentBanner(k.d, safe(k.who), M, M, k.width,
+      { size: 32, min: 24, labelSize: 13, rule: 3, gray: k.ink === "gray" ? 68 : 0, measure: !draw }) + 10;
+  }
   function header(k, s, f, qps, draw){
-    var tSize = Math.max(26, 30 * qps * f), sSize = Math.max(16, 16 * qps * f);
+    var top = banner(k, qps, draw);
+    // under the name banner the activity title steps down a little: the name is the hero now
+    var tSize = Math.max(k.who ? 24 : 26, (k.who ? 26 : 30) * qps * f), sSize = Math.max(16, 16 * qps * f);
     var tl = k.wrap(s.title, tSize, "bold", k.width - 12), sl = s.subtitle ? k.wrap(s.subtitle, sSize, "normal", k.width - 12) : [];
     var h = tl.length * tSize * 1.1 + (sl.length ? 4 + sl.length * sSize * 1.25 : 0) + 8;
     if (draw){
-      var y = M;
-      if (k.ink === "gray"){ k.d.setFillColor(230); k.d.rect(M, M, k.width, h, "F"); }
+      var y = top;
+      if (k.ink === "gray"){ k.d.setFillColor(230); k.d.rect(M, y, k.width, h, "F"); }
       var x = k.ink === "gray" ? M + 9 : M;
       k.textLines(tl, x, y + (k.ink === "gray" ? 5 : 0), tSize, "bold", null, 1.1);
       if (sl.length) k.textLines(sl, x, y + (k.ink === "gray" ? 5 : 0) + tl.length * tSize * 1.1 + 4, sSize, "normal", null, 1.25);
       k.d.setLineWidth(3); k.stroke(68); k.d.line(M, y + h, k.right, y + h);
     }
-    return M + h + 3;
+    return top + h + 3;
   }
   function instructions(k, text, y, f, qps, draw){
     if (!text) return y;
@@ -11379,12 +11497,12 @@ function generateAilmentPDF(ailmentType) {
     var add = function(lines, size, style, gapAfter){ parts.push({ lines:lines, size:size, style:style, gap:gapAfter }); };
     var inner = w - 0.8 * IN;
     if (pg.fac) add(k.wrap(pg.fac.toUpperCase(), 16, "bold", inner), 16, "bold", 0.3 * IN);
-    add(k.wrap(pg.lead || "Prepared for:", Math.max(28, 28 * qps * f), "normal", inner), Math.max(28, 28 * qps * f), "normal", 4);
+    add(k.wrap(pg.lead || "Prepared especially for:", Math.max(28, 28 * qps * f), "normal", inner), Math.max(28, 28 * qps * f), "normal", 4);
     var nSize = Math.max(48, 56 * qps * f);
     k.font(nSize, "bold");
     while (nSize > 30 && k.d.getTextWidth(safe(pg.name || "You")) > inner) { nSize -= 2; k.font(nSize, "bold"); }
     add(k.wrap(pg.name || "You", nSize, "bold", inner), nSize, "bold", 0.2 * IN);
-    add(k.wrap("Made especially for you, with the things you love.", Math.max(20, 20 * qps * f), "italic", inner), Math.max(20, 20 * qps * f), "italic", 0.3 * IN);
+    add(k.wrap("Your Personalized Activity Packet", Math.max(20, 20 * qps * f), "italic", inner), Math.max(20, 20 * qps * f), "italic", 0.3 * IN);
     parts.push({ art:true, h:2.6 * IN * 120 / 200, gap:0.25 * IN });
     add(k.wrap(pg.month, Math.max(22, 22 * qps * f), "bold", inner), Math.max(22, 22 * qps * f), "bold", 0.3 * IN);
     if (pg.inside.length){
@@ -11640,6 +11758,7 @@ function generateAilmentPDF(ailmentType) {
     var doc = new window.jspdf.jsPDF({ unit:"pt", format:src.paper === "a4" ? "a4" : "letter", orientation:"portrait", compress:true });
     doc.setProperties({ title:"Cognicopia activity packet", subject:"Personalized activity packet", creator:"Cognicopia (offline)" });
     var k = new Kit(doc, paper, src.ink);
+    k.who = src.generic ? "" : src.name;           // name banner on every activity page
     var pages = pagesFrom(pk), painters = { cover:paintCover, wordsearch:paintWordSearch, cards:paintCards, trivia:paintTrivia };
     var layout = pages.map(function(pg, i){
       if (i) doc.addPage(src.paper === "a4" ? "a4" : "letter", "portrait");
@@ -11924,7 +12043,7 @@ function generateAilmentPDF(ailmentType) {
     var newPage = function(){ if (!first) doc.addPage(paperKey, "portrait"); first = false; pageNo++; doc.setFillColor(255); doc.rect(0, 0, paper.w, paper.h, "F"); };
     var running_header = function(k){
       k.font(9, "normal"); doc.setTextColor(0);
-      doc.text(P.safe("Cognicopia Monthly Memory Care Bundle | " + monthLabel), P.M, 24);
+      doc.text(P.safe("Cognicopia Monthly Memory Care Bundle | " + monthLabel), P.M, 27);
     };
     var footer = function(k, who){
       doc.setLineWidth(1); k.stroke(); doc.line(P.M, k.footTop, k.right, k.footTop);
@@ -11967,7 +12086,7 @@ function generateAilmentPDF(ailmentType) {
         cd.sheet = week(2, cd.sheet, "Two conversation cards"); out.push(cd);
         tv.sheet = week(3, tv.sheet); out.push(tv);
         var m = matchingPairs(src, window.qpEngine.makeRng(window.qpEngine.newSeed()));
-        out.push({ kind:"matching", m:m, qps:src.scale, sheet:{ title:"Things That Go Together", subtitle:"Week 4 · Matching pairs for " + name,
+        out.push({ kind:"matching", m:m, qps:src.scale, sheet:{ title:"Things That Go Together", subtitle:"Week 4 · Matching pairs",
           instructions: src.stage === "late" ? "Point to two things that go together, or draw a line between them. Talk about each one."
                                              : "Draw a line from each word on the left to the word that goes with it on the right." } });
       }
@@ -11995,6 +12114,7 @@ function generateAilmentPDF(ailmentType) {
         try { window.activeResident = p; pk = window.buildProfilePacket({ cover:false, wordsearch:true, cards:true, trivia:true }); }
         finally { window.activeResident = prev; }
         var res = residentPages(p, pk), k = new P.Kit(doc, paper, res.ink);
+        k.who = res.name;                          // a fresh kit per resident: no name ever carries over
         res.pages.forEach(function(pg){
           newPage(); running_header(k);
           var r = P.fitAndPaint(k, painters[pg.kind], pg);
