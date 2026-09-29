@@ -11,8 +11,10 @@
    COGNICOPIA PACKET BUILDER
    Single file. No network. Routing, state and printing all run in the
    browser. Printed output uses CSS @media print; nothing else prints.
-   The 12-Month Life Planner (#/planner) keeps its own styles and code in
-   the lp-css, lp-engine and lp-ui blocks below.
+   The 12-Month Life Planner (#/planner) and the Cognitive Life Journal
+   (#/journal) keep their own styles and code in the blocks below: lp-css,
+   lj-css, lp-engine (with the shared print kit), lj-engine, kit-ui, lp-ui
+   and lj-ui.
 
    CSS map
      1. Theme tokens (web UI only)
@@ -922,6 +924,7 @@ textarea:focus{border-color:var(--accent)}
 .lp-pv{--lps:.36;position:sticky;top:84px;min-width:0}
 @media (max-width:1060px){.lp-pv{position:static}}
 .lp-pv-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 10px}
+.lp-pv-bar .btn{flex:none;white-space:nowrap}
 .lp-pv-title{margin:0;min-width:0;text-align:center}
 .lp-pv-title b{display:block;line-height:1.25}
 .lp-pv-title span{font-size:13.5px;color:var(--muted)}
@@ -959,6 +962,148 @@ textarea:focus{border-color:var(--accent)}
 .lp-printbox .seg span{font-size:14px}
 .lp-stack .lp-fig-empty{display:none}
 </style>
+<style id="lj-css">
+/* =====================================================================
+   COGNITIVE LIFE JOURNAL: PRINTED PAGES  (.lj-*)
+   Built on the shared .lp-* page system (lp-css): the US Letter sheet, the
+   0.75 in inner gutter, the 14 pt text and 16 pt bold heading floors, the
+   0.46 in writing lines, the fit pass and pure black and white.
+   Each section has one color, always printed with its name:
+   I brown, II navy, III plum, IV green. The family and care team part
+   is plain charcoal with the boxed running head, so it never reads as
+   part of the memoir.
+   ===================================================================== */
+.lj-sec-1{--ink:#5A3714;--tint:#F6ECDC}
+.lj-sec-2{--ink:#173A63;--tint:#E2EBF6}
+.lj-sec-3{--ink:#5B1F4E;--tint:#F5E5EF}
+.lj-sec-4{--ink:#1B4A2C;--tint:#E3EFE4}
+.lj-notes{--ink:#222;--tint:#EFEFEF}
+
+/* the storybook voice: serif headings; the notes stay in the plain sans */
+.lj .lj-h1,.lj .lp-cover-h,.lj .lp-h2,.lj-roman{font-family:Georgia,"Times New Roman","DejaVu Serif",serif}
+.lj-notes .lp-h1,.lj-notes .lp-h2{font-family:inherit}
+.lj .lj-h1{margin:0 0 .04in;font-size:32pt;line-height:1.1;color:#111}
+.lj-band{display:flex;align-items:center;gap:.12in;margin:0 0 .08in;padding:.04in .14in;border-left:8pt solid var(--ink);border-radius:0 .06in .06in 0;background:var(--tint);
+  font-size:16pt;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--ink)}
+.lj-roman{font-size:18pt;letter-spacing:0}
+.lj-sub{margin:0 0 .06in;font-size:18pt;line-height:1.25;color:#222}
+
+/* the resident's facts; a missing one leaves a line to write it in */
+.lj-facts{display:grid;grid-template-columns:minmax(0,1fr);margin:.02in 0 .06in}
+.lj-facts > div{display:flex;align-items:baseline;gap:.14in;min-width:0;padding:.04in 0 .03in;border-bottom:1.5pt solid #999}
+.lj-facts dt{flex:none;width:1.95in;margin:0;font-size:14pt;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--ink)}
+.lj-facts dd{flex:1;min-width:0;margin:0;font-size:19pt;font-weight:700;line-height:1.15;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.lj-facts dd.lj-blank{height:.36in}
+
+/* a frame for a photograph or a drawing; it takes the room that is left */
+.lj-frame{flex:1 1 2.6in;min-height:1.7in;max-height:5.6in;display:flex;flex-direction:column;align-items:center;justify-content:center;margin:.08in 0;
+  padding:.08in .12in;border:2pt solid var(--ink);border-radius:.12in;background:#fff}
+.lj-frame-art{flex:1;min-height:0;width:100%;display:flex;align-items:center;justify-content:center;color:var(--ink)}
+.lj-art{width:100%;height:100%;max-height:2.7in}
+.lj-cap{flex:none;margin:.02in 0 0;font-size:14pt;font-style:italic;color:#333;text-align:center}
+.lj-frame-photo{border:3pt dashed var(--ink)}
+.lj-frame-sm{min-height:1.2in}
+
+/* invitations to share a story */
+.lj-ask-h{margin-top:.04in}
+.lj-asks{margin:0;padding-left:.34in;font-size:18pt;line-height:1.25}
+.lj-asks li{margin:0 0 .05in;padding-left:.04in}
+
+/* family tree: parents, then the resident among brothers and sisters */
+.lj-tree{margin:.04in 0 .02in}
+.lj-gen{display:flex;flex-wrap:wrap;justify-content:center;gap:.1in}
+.lj-join{width:0;height:.24in;margin:0 auto;border-left:2.5pt solid var(--ink)}
+.lj-gen2{width:max-content;max-width:100%;margin:0 auto;padding-top:.16in;border-top:2.5pt solid var(--ink)}
+.lj-person{position:relative;min-width:1.15in;max-width:2.2in;padding:.05in .12in;border:2pt solid var(--ink);border-radius:.08in;background:#fff;text-align:center}
+.lj-gen2 .lj-person::before{content:"";position:absolute;left:50%;top:-.17in;height:.15in;border-left:2.5pt solid var(--ink)}
+.lj-person span{display:block;font-size:14pt;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--ink)}
+.lj-person b{display:block;font-size:18pt;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lj-person i.lj-blank{display:block;height:.34in;border-bottom:1.5pt solid #333}
+.lj-me{border-width:4pt;background:var(--tint)}
+
+/* lists: pets, skills and groups, proudest moments, colors */
+.lj-pets{list-style:none;margin:.04in 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:.06in .18in}
+.lj-pets li{display:flex;flex-direction:column;min-width:0;padding:.03in .12in;border-left:5pt solid var(--ink)}
+.lj-pets b{font-size:20pt;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lj-pets span{font-size:14pt;color:#333}
+.lj-skills{list-style:none;margin:.04in 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:.04in .22in}
+.lj-skills li{position:relative;min-width:0;padding:.04in 0 .04in .32in;border-bottom:1.5pt solid #bbb;font-size:18pt;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lj-skills li::before{content:"";position:absolute;left:0;top:.12in;width:.13in;height:.13in;border:2.5pt solid var(--ink);border-radius:50%}
+.lj-pride{list-style:none;margin:.04in 0;padding:0;display:grid;gap:.06in}
+.lj-pride li{padding:.05in .16in;border:2pt solid var(--ink);border-radius:.1in;background:var(--tint);font-size:18pt;font-weight:700;line-height:1.22}
+.lj-chips{list-style:none;margin:.02in 0 .06in;padding:0;display:flex;flex-wrap:wrap;gap:.08in .24in}
+.lj-chips li{display:flex;align-items:center;gap:.1in;font-size:18pt;font-weight:700}
+.lj-chips i{flex:none;width:.42in;height:.42in;border:2pt solid #111;border-radius:.08in;background:#fff}
+
+/* a recipe card and short, fixed runs of writing lines */
+.lj-rfield{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:end;gap:.14in}
+.lj-rfield .lp-lab{padding-bottom:.06in}
+.lj-lines{flex:none}
+.lj-rgap{margin-top:.12in}
+
+/* covers and the Section IV opener */
+.lj-cover .lp-cover-name small{font-size:16pt;color:#333}
+.lj-cover-born{margin:0;font-size:18pt;color:#222}
+.lj-toc-mini{list-style:none;margin:.06in 0;padding:0;display:grid;gap:.06in;text-align:left}
+.lj-toc-mini li{display:flex;align-items:center;gap:.16in;padding:.05in .18in;border-left:8pt solid var(--ink);background:var(--tint);font-size:18pt;font-weight:700;color:#111}
+.lj-toc-mini b{min-width:.45in;font-family:Georgia,"DejaVu Serif",serif;color:var(--ink)}
+.lj-opener{flex:1;display:flex;flex-direction:column;gap:.06in}
+.lj-contents{margin:.02in 0;padding-left:.34in;font-size:20pt;line-height:1.4}
+.lj-notes-li{font-style:italic;color:#333}
+.lj-note-res{margin:auto 0 0;padding:.1in .16in;border:2pt solid var(--ink);border-radius:.1in;background:var(--tint);font-size:16pt;line-height:1.3}
+
+/* Section IV: comfort, wisdom and small joys */
+.lj-affirm{list-style:none;margin:.06in 0;padding:0;display:grid;gap:.08in}
+.lj-affirm li{padding:.07in .18in;border-left:8pt solid var(--ink);border-radius:0 .1in .1in 0;background:var(--tint);font-family:Georgia,"DejaVu Serif",serif;font-size:21pt;line-height:1.25}
+.lj-quotes{list-style:none;margin:.06in 0;padding:0;display:grid;gap:.1in}
+.lj-quotes li{padding:.08in .2in;border:2pt solid var(--ink);border-radius:.12in}
+.lj-quotes q{display:block;font-family:Georgia,"DejaVu Serif",serif;font-size:22pt;font-style:italic;line-height:1.25}
+.lj-quotes span{display:block;margin-top:.02in;font-size:16pt;font-weight:700;text-align:right;color:var(--ink)}
+.lj-cues{display:grid;gap:.02in;margin-top:.04in}
+.lj-cue .lp-lab{display:block;margin-top:.08in}
+
+/* the family and care team notes */
+.lj-divider{flex:1;display:flex;flex-direction:column;min-height:0}
+.lj-entries{display:grid;gap:.12in;margin-top:.04in}
+.lj-eh{display:flex;align-items:flex-end}
+.lj-eh b{padding-bottom:.05in;font-size:14pt}
+.lj-eh b + b{margin-left:3.1in}
+
+/* the fit pass (fitSheets), for journal parts; floors stay at 14 pt and 16 pt */
+.lp-fit1 .lj-h1{font-size:26pt}
+.lp-fit1 .lj-asks,.lp-fit1 .lj-sub{font-size:16pt}
+.lp-fit1 .lj-facts dd{font-size:17pt}
+.lp-fit1 .lj-affirm li{font-size:18pt}
+.lp-fit1 .lj-quotes q{font-size:19pt}
+.lp-fit1 .lj-skills li,.lp-fit1 .lj-pride li,.lp-fit1 .lj-person b,.lp-fit1 .lj-chips li,.lp-fit1 .lj-contents{font-size:16pt}
+.lp-fit1 .lj-frame{min-height:1.4in}
+.lp-fit1 .lj-frame-sm{min-height:1.1in}
+.lp-fit2 .lj-h1{font-size:22pt}
+.lp-fit2 .lj-asks,.lp-fit2 .lj-sub,.lp-fit2 .lj-facts dd,.lp-fit2 .lj-affirm li,.lp-fit2 .lj-quotes q,.lp-fit2 .lj-skills li,.lp-fit2 .lj-pride li,
+.lp-fit2 .lj-person b,.lp-fit2 .lj-chips li,.lp-fit2 .lj-contents,.lp-fit2 .lj-pets b{font-size:14pt}
+.lp-fit2 .lj-frame{min-height:1.1in}
+
+/* ---------- Cognitive Life Journal screen (web UI). It reuses the Life
+   Planner's screen parts (.lp-*); these are the few it adds. Each section tab
+   carries a dot in its printed color, lightened for the dark theme. ---------- */
+.lj-step-h{margin:0 0 14px;font-size:22px}
+.lj-lab{display:block;margin:0 0 8px;font-weight:700;font-size:15px}
+.lj-gap{margin-top:18px}
+.lj-hint-top{margin:-6px 0 14px}
+.lj-date{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,.8fr) minmax(0,1fr);gap:8px}
+.lp-row.lj-r2{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) 42px}
+.lj-aff-ui{display:grid;gap:8px;margin:0 0 18px}
+.lj-aff{display:flex;align-items:flex-start;padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg-2)}
+.lj-aff input{margin-top:1px}
+.lj-aff small{color:var(--muted)}
+.lj-aff-off{cursor:default;color:var(--muted)}
+.lj-tab-1{--sec:#d9a066}
+.lj-tab-2{--sec:#8db8ec}
+.lj-tab-3{--sec:#d99cc8}
+.lj-tab-4{--sec:#74c69d}
+.lj-screen .lp-tab-n{display:flex;align-items:center;gap:7px}
+.lj-screen .lp-tab-n::before{content:"";flex:none;width:10px;height:10px;border-radius:3px;background:var(--sec)}
+</style>
 </head>
 <body>
 
@@ -978,8 +1123,11 @@ textarea:focus{border-color:var(--accent)}
     <div class="sb-section" id="catHead">Activity categories</div>
     <ul class="sb-list" id="catNav" aria-labelledby="catHead"></ul>
 
-    <div class="sb-section" id="plnHead">Planners &amp; organizers</div>
+    <div class="sb-section" id="plnHead">Journals &amp; planners</div>
     <ul class="sb-list" aria-labelledby="plnHead">
+      <li><a class="sb-link" href="#/journal" data-route="journal">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2z"/><path d="M22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z"/></svg>
+        <span>Cognitive Life Journal</span></a></li>
       <li><a class="sb-link" href="#/planner" data-route="planner">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/><path d="M8 13h3M13 13h3M8 17h3"/></svg>
         <span>12-Month Life Planner</span></a></li>
@@ -1159,38 +1307,42 @@ const seasonOfMonth = m => (m === 11 || m <= 1) ? "winter" : m <= 4 ? "spring" :
    The planner itself makes no AI call: the site promises that nothing
    about a resident leaves the browser. This is the standard any future
    provider must meet. */
-const SYSTEM_PROMPT = [
-"You write the printed words for Cognicopia's 12-Month Life Planner: a memory book for an adult living with age-related memory loss, dementia or Alzheimer's, and a companion binder for the family and professional caregivers who support them.",
-"",
-"THE ONE RULE: DIGNITY FIRST.",
-"The reader is a capable adult with a full life behind them: work, family, places, skills and hard-won experience. Write the way you would write to a respected colleague or a favorite teacher: warm, calm, plain-spoken and sincere. Treat every memory they hold as knowledge worth hearing.",
-"",
-"ALWAYS",
-"- Use the preferred name supplied, or \"you\" if none is supplied. Never invent a pet name.",
-"- Honor their life. Refer to their career, family, hometown and interests as accomplishments and as part of who they are.",
-"- Invite; never test. Use \"Tell me about...\", \"I would love to hear...\", \"What was ... like?\". Offer choices rather than commands.",
-"- Use short, concrete, sensory sentences at an adult reading level, in the present tense, framed positively.",
-"- Use ONLY facts that appear in the input. If a detail is missing, write a general open invitation instead. Never invent names, dates, places, jobs or relatives.",
-"- Keep resident-facing pages free of clinical language: no diagnoses, medications, behaviors, care plans or staff jargon.",
-"- On caregiver pages be professional, person-first and non-judgmental (\"[Name] is often restless around 4 pm\", never \"[Name] is a wanderer\").",
-"- Respect every topic the family or staff asked to avoid.",
-"",
-"NEVER (any of these is a failure; rewrite the line)",
-"1. Infantilizing or toddler-style language: baby talk, diminutives, sing-song rhythm (\"tummy\", \"yummy\", \"potty\", \"night-night\", \"bye-bye\", \"oopsie\", \"boo-boo\").",
-"2. Pet names or endearments used as address: \"sweetie\", \"honey\", \"dear\", \"darling\", \"sweetheart\", \"young lady\", \"young man\", \"buddy\", \"kiddo\", \"grandma\", \"grandpa\".",
-"3. The patronizing \"we\": \"How are we feeling?\", \"Are we ready for our nap?\", \"Let's get you cleaned up.\"",
-"4. Praise for ordinary adult actions or reward framing: \"Good job!\", \"Good girl\", \"Good boy\", \"gold star\", \"You did it!\", \"I'm so proud of you\".",
-"5. Preschool or classroom vocabulary: \"circle time\", \"story time\", \"snack time\", \"nap time\", \"playtime\", \"arts and crafts\", \"homework\", \"behave\", \"be good\". Say \"quiet hours\", \"creative studio\", \"conversation\".",
-"6. Quizzing or correcting memory: \"Do you remember...?\", \"Try to remember\", \"You already told me\", \"No, that's wrong\". There are no right or wrong answers.",
-"7. Deficit labels and euphemisms: \"senile\", \"demented\", \"suffers from\", \"victim\", \"sundowner\", \"wanderer\", \"the elderly\", \"old folks\", \"golden years\", \"young at heart\", \"little old lady\".",
-"8. Cartoon energy: emoji, \"Yay!\", \"Woo-hoo!\", \"Hooray!\", and more than one exclamation mark in a piece of writing.",
-"9. Death, loss, war, illness or money as a subject, unless the input explicitly allows it.",
-"10. Medical promises: never claim that an activity treats, slows, prevents or cures a condition.",
-"",
-"SELF-CHECK before you answer: read every line as if the resident and their adult child were reading over your shoulder. If any line would make either of them wince, rewrite it in plain, respectful adult language.",
-"",
-"Return only the JSON that was requested, in the schema provided. No preamble and no commentary."
-].join("\n");
+/* The shared dignity-first standard. Every Cognicopia book opens the prompt
+   with its own line (what is being written, and for whom) and may add a few
+   ALWAYS lines of its own; the rest is common to all of them. */
+const DIGNITY = {
+  rule: "The reader is a capable adult with a full life behind them: work, family, places, skills and hard-won experience. Write the way you would write to a respected colleague or a favorite teacher: warm, calm, plain-spoken and sincere. Treat every memory they hold as knowledge worth hearing.",
+  always: [
+    "- Use the preferred name supplied, or \"you\" if none is supplied. Never invent a pet name.",
+    "- Honor their life. Refer to their career, family, hometown and interests as accomplishments and as part of who they are.",
+    "- Invite; never test. Use \"Tell me about...\", \"I would love to hear...\", \"What was ... like?\". Offer choices rather than commands.",
+    "- Use short, concrete, sensory sentences at an adult reading level, framed positively.",
+    "- Use ONLY facts that appear in the input. If a detail is missing, write a general open invitation instead. Never invent names, dates, places, jobs or relatives.",
+    "- Keep resident-facing pages free of clinical language: no diagnoses, medications, behaviors, care plans or staff jargon.",
+    "- On caregiver pages be professional, person-first and non-judgmental (\"[Name] is often restless around 4 pm\", never \"[Name] is a wanderer\").",
+    "- Respect every topic the family or staff asked to avoid."
+  ],
+  never: [
+    "1. Infantilizing or toddler-style language: baby talk, diminutives, sing-song rhythm (\"tummy\", \"yummy\", \"potty\", \"night-night\", \"bye-bye\", \"oopsie\", \"boo-boo\").",
+    "2. Pet names or endearments used as address: \"sweetie\", \"honey\", \"dear\", \"darling\", \"sweetheart\", \"young lady\", \"young man\", \"buddy\", \"kiddo\", \"grandma\", \"grandpa\".",
+    "3. The patronizing \"we\": \"How are we feeling?\", \"Are we ready for our nap?\", \"Let's get you cleaned up.\"",
+    "4. Praise for ordinary adult actions or reward framing: \"Good job!\", \"Good girl\", \"Good boy\", \"gold star\", \"You did it!\", \"I'm so proud of you\".",
+    "5. Preschool or classroom vocabulary: \"circle time\", \"story time\", \"snack time\", \"nap time\", \"playtime\", \"arts and crafts\", \"homework\", \"behave\", \"be good\". Say \"quiet hours\", \"creative studio\", \"conversation\".",
+    "6. Quizzing or correcting memory: \"Do you remember...?\", \"Try to remember\", \"You already told me\", \"No, that's wrong\". There are no right or wrong answers.",
+    "7. Deficit labels and euphemisms: \"senile\", \"demented\", \"suffers from\", \"victim\", \"sundowner\", \"wanderer\", \"the elderly\", \"old folks\", \"golden years\", \"young at heart\", \"little old lady\".",
+    "8. Cartoon energy: emoji, \"Yay!\", \"Woo-hoo!\", \"Hooray!\", and more than one exclamation mark in a piece of writing.",
+    "9. Death, loss, war, illness or money as a subject, unless the input explicitly allows it.",
+    "10. Medical promises: never claim that an activity treats, slows, prevents or cures a condition."
+  ],
+  selfCheck: "SELF-CHECK before you answer: read every line as if the resident and their adult child were reading over your shoulder. If any line would make either of them wince, rewrite it in plain, respectful adult language.",
+  output: "Return only the JSON that was requested, in the schema provided. No preamble and no commentary."
+};
+function dignityPrompt(intro, extraAlways){
+  return [intro, "", "THE ONE RULE: DIGNITY FIRST.", DIGNITY.rule, "", "ALWAYS"].concat(DIGNITY.always, extraAlways || [],
+    ["", "NEVER (any of these is a failure; rewrite the line)"], DIGNITY.never, ["", DIGNITY.selfCheck, "", DIGNITY.output]).join("\n");
+}
+const SYSTEM_PROMPT = dignityPrompt("You write the printed words for Cognicopia's 12-Month Life Planner: a memory book for an adult living with age-related memory loss, dementia or Alzheimer's, and a companion binder for the family and professional caregivers who support them.",
+  ["- Write about today, the season and the daily routine in the present tense."]);
 
 const BAD = (id, label, why, fix, re, only) => ({ id, label, why, fix, re, only });
 const RULES = [
@@ -2202,24 +2354,29 @@ function pageCompanionCover(ctx){
    the gutter on the left and left-hand (even) pages on the right; in a
    single-sided ring binder every sheet has it on the left. The logical
    side (left or right of the spread) never changes with the binding. */
-function sheet(pg, binding){
+/* labels name each audience in the running head and footer; each book passes
+   its own (the planner's are the default). pg.cls adds classes of its own. */
+const PLANNER_LABELS = { res: "Memory Book", cg: "Caregiver Companion", cgFoot: " · Confidential" };
+function sheet(pg, binding, labels){
+  const L = labels || PLANNER_LABELS;
   const visual = binding === "binder" ? "recto" : (pg.side === "right" ? "recto" : "verso");
   const aud = pg.audience === "caregiver" ? "cg" : "res";
-  const tag = aud === "cg" ? "Caregiver Companion" : "Memory Book";
-  const top = pg.noTop ? "" : `<header class="lp-top"><span class="lp-tag">${esc(pg.label || "")}</span><span class="lp-aud">${tag}</span></header>`;
-  const foot = pg.noFoot ? "" : `<footer class="lp-foot"><span>${esc((pg.title || "") + (aud === "cg" ? " · Confidential" : ""))}</span><b class="lp-no">${pg.no}</b></footer>`;
-  return `<section class="lp-sheet lp-${visual} lp-${aud}${pg.season ? " lp-s-" + pg.season : ""}" data-page="${pg.no}" data-side="${pg.side}" data-tab="${pg.tab}" data-role="${pg.role}" data-spread="${esc(pg.spreadId || "")}">${top}<div class="lp-body lp-role-${pg.role}">${pg.body}</div>${foot}</section>`;
+  const tag = aud === "cg" ? L.cg : L.res;
+  const top = pg.noTop ? "" : `<header class="lp-top"><span class="lp-tag">${esc(pg.label || "")}</span><span class="lp-aud">${esc(tag)}</span></header>`;
+  const foot = pg.noFoot ? "" : `<footer class="lp-foot"><span>${esc((pg.title || "") + (aud === "cg" ? L.cgFoot : (L.resFoot || "")))}</span><b class="lp-no">${pg.no}</b></footer>`;
+  return `<section class="lp-sheet lp-${visual} lp-${aud}${pg.season ? " lp-s-" + pg.season : ""}${pg.cls ? " " + pg.cls : ""}" data-page="${pg.no}" data-side="${pg.side}" data-tab="${pg.tab}" data-role="${pg.role}" data-spread="${esc(pg.spreadId || "")}">${top}<div class="lp-body lp-role-${pg.role}">${pg.body}</div>${foot}</section>`;
 }
 
-function fillerPage(side){
+function plannerFiller(){
   return { tab:2, audience:"resident", role:"lines", filler:true, label:"Notes", title:"Notes", body: `<h2 class="lp-h2">Notes</h2><p class="lp-prompt">Anything worth keeping.</p><div class="lp-rules">${rules(22)}</div>` };
 }
 /* Places every item so a spread's LEFT page always lands on an even page
    number and its RIGHT page on the next odd one. A filler page is inserted
    only when an item would otherwise land on the wrong side (never in the
    built-in scopes: the memory book is always an even number of pages). */
-function paginate(items){
+function paginate(items, filler){
   const pages = []; let no = 1;
+  const fillerPage = filler || plannerFiller;
   const put = (pg, side, it) => { pages.push(Object.assign({}, pg, { no, side, spreadId: it.id, base: it.base || it.id })); no++; };
   items.forEach(it => {
     if (it.kind === "spread"){
@@ -2381,6 +2538,17 @@ const EXAMPLE_PROFILE = {
   avoid: ["war", "medical"], facility: "Maple Grove Community"
 };
 
+/* The shared print kit: everything a Cognicopia book needs that is not its
+   own content. The Cognitive Life Journal (lj-engine) is built on it. */
+root.CognicopiaKit = {
+  esc, tidy, clip, toInt, toList, ordinal, withArticle, cap1, lc, andList, quoteSong, MONTHS, MON3, daysIn,
+  dignityPrompt, audit, assertClean, sanitizeAiCopy, RULES: TONE.RULES,
+  sheet, paginate, fitSheets, textRuns, auditPages, rules, blankLine, listHtml,
+  f1, W, leafP, petals5, heartAt, flake, icon, ICON_ATTR,
+  AVOID_TOPICS, RELATIONS, REL_WORD, isPet, topicOk, fill,
+  STANDARDS: { PAGE_W_IN: 8.5, PAGE_H_IN: 11, GUTTER_IN, OUTER_IN, RULE_IN, MIN_TEXT_PT, MIN_HEAD_PT, MIN_RULE_IN }
+};
+
 root.LifePlanner = {
   version: VERSION,
   TONE, build, countPages, fitSheets, checkProfile, auditPages, textRuns, buildAiRequest, acceptAiCopy, libraryStrings,
@@ -2393,6 +2561,902 @@ root.LifePlanner = {
   STANDARDS: { PAGE_W_IN: 8.5, PAGE_H_IN: 11, GUTTER_IN, OUTER_IN, RULE_IN, MIN_TEXT_PT, MIN_HEAD_PT, MIN_RULE_IN }
 };
 })(typeof window !== "undefined" ? window : this);
+</script>
+<script id="lj-engine">
+/* =====================================================================
+   COGNICOPIA COGNITIVE LIFE JOURNAL: ENGINE
+   ---------------------------------------------------------------------
+   A life story in four sections, for an adult living with memory loss:
+     I    Early Roots & Identity
+     II   Lifelong Work, Roles & Pride
+     III  Sensory & Emotional Anchors        (I to III: the storybook)
+     IV   Daily Grounding & Reflection, then a separate part where family
+          and care staff add their notes, so updates never crowd the memoir.
+
+   Built on window.CognicopiaKit (the lp-engine block), which supplies the
+   sheet and paginator, the fit pass, the print standards (0.75 in inner
+   gutter, 14 pt text and 16 pt bold heading floors, writing lines 0.46 in
+   apart) and the dignity-first tone guardrails. This file adds only the
+   journal's own words and pages. No DOM, no network, no storage.
+
+   Map
+     1. Kit, sections and the journal's system prompt
+     2. Personalization: profile and option normalizing
+     3. Affirmations, colors and small sentence helpers
+     4. Line art
+     5. Page builders: storybook (I to III)
+     6. Page builders: reflection (IV) and family & care team notes
+     7. Books, scopes and the public API
+   ===================================================================== */
+(function (root) {
+"use strict";
+
+/* ---------- 1. Kit, sections and the system prompt ---------- */
+const K = root.CognicopiaKit;
+if (!K) throw new Error("The Life Journal engine needs CognicopiaKit: load the lp-engine block first.");
+const { esc, tidy, clip, toInt, toList, withArticle, cap1, lc, andList, quoteSong, MONTHS, daysIn,
+  audit, sanitizeAiCopy, sheet, paginate, fitSheets, textRuns, auditPages, rules, blankLine, f1, W, leafP, topicOk, fill, AVOID_TOPICS } = K;
+
+const VERSION = 1;
+/* One color per section, always with its name, so it still reads in black and
+   white. Inks are checked at WCAG AAA (7:1) on their tint and on white. */
+const SECTIONS = [
+  { n:1, key:"roots",   roman:"I",   title:"Early Roots & Identity",        ink:"#5A3714", tint:"#F6ECDC" },
+  { n:2, key:"work",    roman:"II",  title:"Lifelong Work, Roles & Pride",  ink:"#173A63", tint:"#E2EBF6" },
+  { n:3, key:"senses",  roman:"III", title:"Sensory & Emotional Anchors",   ink:"#5B1F4E", tint:"#F5E5EF" },
+  { n:4, key:"reflect", roman:"IV",  title:"Daily Grounding & Reflection",  ink:"#1B4A2C", tint:"#E3EFE4" }
+];
+const LABELS = { res: "Life Story", cg: "Family & Care Team Notes", cgFoot: " · For family and care team" };
+
+const SYSTEM_PROMPT = K.dignityPrompt(
+  "You write the printed words for Cognicopia's Cognitive Life Journal: the life story of an adult living with age-related memory loss, dementia or Alzheimer's, told in their honor and in their own words, with a separate part where family and care staff add notes.",
+  [
+    "- Write memoir prompts as warm invitations in the second person (\"Tell me about your first job.\") and the resident's own pages in the first person (\"In my own words\").",
+    "- Speak of childhood, family and working life in the past tense of memory. Never assume that a person from the past is still living, and never ask the resident to confirm a name or a date.",
+    "- Affirmations must be true for any adult: calm, specific, and free of promises no one can keep."
+  ]);
+const TONE = { SYSTEM_PROMPT, RULES: K.RULES, audit, sanitizeAiCopy };
+
+/* ---------- 2. Personalization ----------
+   Everything typed goes through normProfile(): trimmed, de-duplicated and
+   length-limited, so no entry can push text out of its box on the page. */
+const BRANCHES = [
+  ["", "Did not serve"], ["army", "Army"], ["navy", "Navy"], ["air-force", "Air Force"], ["marines", "Marine Corps"],
+  ["coast-guard", "Coast Guard"], ["guard-reserve", "National Guard or Reserves"], ["merchant-marine", "Merchant Marine"],
+  ["other-country", "Another country's armed forces"]
+];
+const BRANCH_THE = { army:"the Army", navy:"the Navy", "air-force":"the Air Force", marines:"the Marine Corps", "coast-guard":"the Coast Guard",
+  "guard-reserve":"the National Guard or Reserves", "merchant-marine":"the Merchant Marine", "other-country":"the armed forces" };
+const SERVICE_TALK = [["welcome", "A welcome topic: they enjoy sharing it"], ["gentle", "Best handled gently: friends and skills, not deployments"], ["avoid", "Best avoided: leave the service page out"]];
+const PARENT_ROLES = [["mother", "Mother"], ["father", "Father"], ["parent", "Parent"], ["stepmother", "Stepmother"], ["stepfather", "Stepfather"], ["grandmother", "Grandmother"],
+  ["grandfather", "Grandfather"], ["aunt", "Aunt"], ["uncle", "Uncle"], ["guardian", "Guardian"], ["other", "Someone else who raised them"]];
+const SIBLING_RELS = [["brother", "Brother"], ["sister", "Sister"], ["sibling", "Sibling"]];
+const HER = ["mother", "stepmother", "grandmother", "aunt", "sister"], HIM = ["father", "stepfather", "grandfather", "uncle", "brother"];
+const pronoun = role => HER.indexOf(role) >= 0 ? "her" : HIM.indexOf(role) >= 0 ? "him" : "them";
+const codeOf = (list, v, dflt) => list.some(x => x[0] === v) ? v : dflt;
+const labelOf = (list, v) => (list.filter(x => x[0] === v)[0] || ["", ""])[1];
+
+function normProfile(p){
+  p = p || {};
+  // Typed apostrophes print as the book's own: Miller's becomes Miller’s.
+  const smart = s => s.replace(/(\p{L})'(?=\p{L})/gu, "$1’");
+  const one = (v, n) => smart(tidy(v).slice(0, n)), list = (v, max, n) => toList(v, max, n).map(smart);
+  const rows = (v, max, fn) => (Array.isArray(v) ? v : []).map(fn).filter(Boolean).slice(0, max);
+  const year = toInt(p.birthYear, 1890, 2010, null), month = toInt(p.birthMonth, 1, 12, null);
+  let day = toInt(p.birthDay, 1, 31, null);
+  if (day && (!month || day > daysIn(year || 2000, month - 1))) day = null;
+  const branch = codeOf(BRANCHES, p.militaryBranch, "");
+  const career = one(p.career, 50), avoid = (Array.isArray(p.avoid) ? p.avoid : []).filter(c => AVOID_TOPICS.some(t => t[0] === c));
+  const talk = codeOf(SERVICE_TALK, p.militaryTalk, "gentle");
+  const out = {
+    // essentials
+    name: one(p.name, 30), fullName: one(p.fullName, 50), birthSurname: one(p.birthSurname, 30),
+    birthYear: year, birthMonth: month, birthDay: day, birthplace: one(p.birthplace, 40), hometown: one(p.hometown, 40),
+    career, careerA: /^\w+ing\b/i.test(career) ? "" : withArticle(career), careerGerund: /^\w+ing\b/i.test(career) ? lc(career) : "",
+    militaryBranch: branch,
+    // Section I
+    origins: one(p.origins, 60), childhoodHome: one(p.childhoodHome, 70),
+    parents: rows(p.parents, 4, x => x && tidy(x.name) ? { name: one(x.name, 30), role: codeOf(PARENT_ROLES, x.role, "other") } : null),
+    siblings: rows(p.siblings, 8, x => x && tidy(x.name) ? { name: one(x.name, 30), rel: codeOf(SIBLING_RELS, x.rel, "sibling") } : null),
+    friends: list(p.friends, 6, 30), schools: list(p.schools, 4, 45), teacher: one(p.teacher, 40), subject: one(p.subject, 40),
+    pets: rows(p.pets, 6, x => x && tidy(x.name) ? { name: one(x.name, 24), kind: one(x.kind, 24) } : null),
+    // Section II
+    firstJob: one(p.firstJob, 60), workplace: one(p.workplace, 45), careerYears: one(p.careerYears, 24), skills: list(p.skills, 8, 40),
+    militaryRank: one(p.militaryRank, 40), militaryYears: one(p.militaryYears, 24), militaryPlaces: one(p.militaryPlaces, 60), militaryTalk: talk,
+    organizations: list(p.organizations, 8, 45), proudMoments: list(p.proudMoments, 6, 70),
+    // Section III
+    songs: list(p.songs, 10, 60), genres: list(p.genres, 6, 40), hymns: list(p.hymns, 6, 50),
+    scents: list(p.scents, 6, 45), tastes: list(p.tastes, 6, 45), comfortFoods: list(p.comfortFoods, 6, 50),
+    textures: list(p.textures, 6, 45), colors: list(p.colors, 6, 30), landscapes: list(p.landscapes, 6, 50),
+    // Section IV
+    affirmations: Array.isArray(p.affirmations) ? p.affirmations.filter(id => AFFIRM_IDS.indexOf(id) >= 0) : DEFAULT_AFFIRM.slice(),
+    customAffirmations: list(p.customAffirmations, 6, 90), wisdom: list(p.wisdom, 6, 110),
+    avoid, facility: one(p.facility, 60)
+  };
+  // Service appears only when there was service, the family welcomes it, and war is not a topic to avoid.
+  out.served = !!branch && talk !== "avoid" && avoid.indexOf("war") < 0;
+  out.showHymns = avoid.indexOf("religion") < 0;
+  // "Going home" and the old house: the childhood home spread is left out.
+  out.showHome = avoid.indexOf("home") < 0;
+  return out;
+}
+function normOpts(o){
+  o = o || {};
+  return {
+    binding: o.binding === "binder" ? "binder" : "book",
+    art: o.art === "photo" ? "photo" : "line",
+    promptCount: toInt(o.promptCount, 2, 4, 3),
+    joyWeeks: [1, 4, 12].indexOf(parseInt(o.joyWeeks, 10)) >= 0 ? parseInt(o.joyWeeks, 10) : 4,
+    noteSpreads: [1, 2, 4].indexOf(parseInt(o.noteSpreads, 10)) >= 0 ? parseInt(o.noteSpreads, 10) : 2,
+    aiCopy: o.aiCopy && typeof o.aiCopy === "object" ? o.aiCopy : null
+  };
+}
+
+/* ---------- 3. Affirmations, colors and sentence helpers ---------- */
+/* Reassurance first, then words about the person. Each is true for any
+   adult, and the personal ones appear only when the detail is known. */
+const AFFIRMATIONS = [
+  { id:"safe",    group:"reassure", t:"You are safe here{atFacility}." },
+  { id:"among",   group:"reassure", t:"You are among people who know you and care about you." },
+  { id:"time",    group:"reassure", t:"There is no need to hurry. There is time." },
+  { id:"rest",    group:"reassure", t:"It is all right to rest. Someone is always close by." },
+  { id:"ask",     group:"reassure", t:"If something is unclear, you can ask, and someone will help." },
+  { id:"story",   group:"person",   t:"You are {name}, and your story matters.", alt:"Your life story matters." },
+  { id:"work",    group:"person",   t:"Your work as {careerA} made a difference to many people.", needs:"careerA" },
+  { id:"roots",   group:"person",   t:"The lessons you learned growing up in {hometown} are still yours.", needs:"hometown" },
+  { id:"hands",   group:"person",   t:"Your skill at {skill} is still in your hands.", needs:"skill" },
+  { id:"service", group:"person",   t:"You served your country in {branchThe}.", needs:"branchThe" },
+  { id:"people",  group:"person",   t:"The people you love are part of your story." },
+  { id:"kind",    group:"person",   t:"Your kindness has touched many lives." }
+];
+const AFFIRM_IDS = AFFIRMATIONS.map(a => a.id);
+const DEFAULT_AFFIRM = ["safe", "among", "time", "story", "work", "roots", "people"];
+
+/* Named colors for the swatches on the "Colors, Textures & Places" page.
+   The name always prints beside the swatch, so the page reads in black and white. */
+const COLOR_WORDS = [
+  ["cornflower", "#6495ED"], ["periwinkle", "#8C9EDB"], ["navy", "#1F3A68"], ["sky", "#8EC5EA"], ["turquoise", "#3FB8AF"], ["teal", "#2C7A7B"],
+  ["forest", "#2E5E3A"], ["mint", "#A8DDBF"], ["olive", "#7A7A3A"], ["sage", "#9CB59A"], ["emerald", "#2E8B57"],
+  ["butter", "#F3DE8A"], ["gold", "#D4A017"], ["mustard", "#C9A227"], ["peach", "#F6B98D"], ["coral", "#F08070"], ["apricot", "#F4B183"],
+  ["maroon", "#7A1F2B"], ["burgundy", "#7C2239"], ["crimson", "#B3263C"], ["cherry", "#B22234"], ["rose", "#E07A93"], ["lavender", "#B9A6D6"],
+  ["lilac", "#C3A3D6"], ["violet", "#7F5AA2"], ["plum", "#6E3B63"], ["cream", "#F4EBD0"], ["ivory", "#F6F1E1"], ["tan", "#C9A878"],
+  ["chocolate", "#5E3A22"], ["silver", "#B8BDC2"], ["charcoal", "#3B3F44"],
+  ["blue", "#3F6FB5"], ["green", "#3E8E4F"], ["yellow", "#EACD48"], ["orange", "#E98A2E"], ["red", "#C0392B"], ["pink", "#E79AB6"],
+  ["purple", "#7B4FA0"], ["brown", "#7A5230"], ["white", "#FFFFFF"], ["black", "#1B1B1B"], ["gray", "#8A8F94"], ["grey", "#8A8F94"]
+];
+function colorHex(name){
+  const low = String(name || "").toLowerCase();
+  for (let i = 0; i < COLOR_WORDS.length; i++) if (new RegExp("\\b" + COLOR_WORDS[i][0]).test(low)) return COLOR_WORDS[i][1];
+  return null;
+}
+
+/* Ready for the middle of a sentence. The kit's lc() lowers a first capital
+   only when every later word is lower case; a life story is full of names, so
+   this also lowers a first word that is plainly not one ("Raising Anna and
+   Tom", "Named Teacher of the Year"). */
+const KEEP_CAP = /^(?:I|Mom|Mother|Dad|Father|Grandma|Grandpa|God|Christmas|Easter|Thanksgiving|Hanukkah|Passover|Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|January|February|March|April|May|June|July|August|September|October|November|December)$/;
+function lcFirst(s){
+  const t = lc(s);
+  if (t !== s) return t;
+  const m = /^([A-Z][a-z]+)(\b[\s\S]*)$/.exec(s);
+  if (!m || KEEP_CAP.test(m[1])) return s;
+  return /(?:ing|ed)$/.test(m[1]) || /^(?:A|An|The|My|Our|His|Her|Their|Being|Two|Three|Four|Five|Six|Seven|Eight|Nine|Ten)$/.test(m[1]) ? m[1].toLowerCase() + m[2] : s;
+}
+/* A place or thing, ready for the middle of a sentence: "yellow house on
+   Jefferson Street" becomes "the yellow house on Jefferson Street", while a
+   proper name ("Lake Superior") or a possessive ("Grandpa's farm") is kept. */
+function theOf(s){
+  const t = lcFirst(tidy(s)), words = t.split(/\s+/);
+  if (/^(?:the|a|an|our|my|his|her|their)\b/i.test(t)) return t.replace(/^The\b/, "the");
+  if (/['\u2019]s$/i.test(words[0])) return t;
+  if (words.every(w => /^[A-Z0-9]/.test(w) || /^(?:of|on|in|and|at|by|de|la)$/.test(w))) return t;
+  return "the " + t;
+}
+function birthText(p){
+  if (p.birthMonth && p.birthDay && p.birthYear) return MONTHS[p.birthMonth - 1] + " " + p.birthDay + ", " + p.birthYear;
+  if (p.birthMonth && p.birthYear) return MONTHS[p.birthMonth - 1] + " " + p.birthYear;
+  if (p.birthMonth && p.birthDay) return MONTHS[p.birthMonth - 1] + " " + p.birthDay;
+  return p.birthYear ? String(p.birthYear) : "";
+}
+/* A place in mid-sentence keeps its closing comma: "in Duluth, Minnesota, are". */
+const midPlace = s => /,/.test(s) && !/,$/.test(s) ? s + "," : s;
+function affirmVars(p){
+  return { name: p.name, atFacility: p.facility ? " at " + p.facility : "", careerA: p.careerA, hometown: midPlace(p.hometown),
+    skill: p.skills[0] ? lc(p.skills[0]) : "", branchThe: p.served ? BRANCH_THE[p.militaryBranch] : "" };
+}
+/* One affirmation as it will print for this person, or null when it needs a
+   detail that is not known (the work one needs a career, and so on). */
+function affirmText(id, vars){
+  const a = AFFIRMATIONS.filter(x => x.id === id)[0];
+  if (!a || (a.needs && !vars[a.needs])) return null;
+  return a.t.indexOf("{atFacility}") >= 0 ? a.t.replace("{atFacility}", vars.atFacility) : fill(a.t, vars) || a.alt || null;
+}
+function affirmationsFor(p){
+  const vars = affirmVars(p), out = [];
+  p.affirmations.forEach(id => {
+    const s = affirmText(id, vars);
+    if (s && out.indexOf(s) < 0) out.push(s);
+  });
+  p.customAffirmations.forEach(s => { if (out.indexOf(s) < 0) out.push(s); });
+  return out;
+}
+
+/* ---------- 4. Line art ----------
+   One clean line weight, adult subjects, never cartoons. Strokes use
+   currentColor (the section ink, or black in High Contrast Mode); closed
+   shapes are white-filled (data-bw="white") so they layer cleanly.
+   viewBox 0 0 300 200 unless noted. */
+const ellipse = (cx, cy, rx, ry, extra) => `<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" ${extra || W}/>`;
+const rect = (x, y, w, h, r, extra) => `<rect x="${x}" y="${y}" width="${w}" height="${h}"${r ? ` rx="${r}"` : ""} ${extra || W}/>`;
+function pane(x, y, w, h){ return rect(x, y, w, h, 2) + `<path d="M${x + w / 2} ${y}V${y + h}M${x} ${y + h / 2}H${x + w}"/>`; }
+function pine(x, base, h){
+  const w = h * .42;
+  return `<path d="M${x} ${base - h}L${f1(x - w * .55)} ${f1(base - h * .55)}H${f1(x - w * .3)}L${f1(x - w)} ${f1(base - h * .12)}H${f1(x + w)}L${f1(x + w * .3)} ${f1(base - h * .55)}H${f1(x + w * .55)}Z" ${W}/><path d="M${x} ${f1(base - h * .12)}V${base}"/>`;
+}
+/* One arm of a laurel wreath: a stem along a circle, leaves in pairs.
+   dir 1 is the left arm; -1 mirrors it. */
+function laurelArm(dir){
+  const X = x => dir === 1 ? x : 300 - x, R0 = 66, cx = 150, cy = 100;
+  let s = "", d = "";
+  for (let k = 0; k <= 8; k++){
+    const t = (100 + k * 16) * Math.PI / 180, px = cx + Math.cos(t) * R0, py = cy + Math.sin(t) * R0;
+    const nx = Math.cos(t), ny = Math.sin(t), tx = -Math.sin(t), ty = Math.cos(t);
+    d += (k ? "L" : "M") + f1(X(px)) + " " + f1(py);
+    if (k < 8){
+      s += leafP(X(px), py, X(px + (nx * .75 + tx * .66) * 22), py + (ny * .75 + ty * .66) * 22, 6);
+      s += leafP(X(px), py, X(px + (-nx * .7 + tx * .7) * 20), py + (-ny * .7 + ty * .7) * 20, 5.5);
+    }
+  }
+  return `<path d="${d}"/>` + s;
+}
+const LJ_ART = {
+  portrait: () => `<path d="M150 18L112 52M150 18L188 52"/><circle cx="150" cy="16" r="4"/>` +
+    ellipse(150, 110, 58, 74) + ellipse(150, 110, 46, 61) + `<path d="M126 186Q150 196 174 186"/>` + leafP(118, 184, 100, 176, 5) + leafP(182, 184, 200, 176, 5),
+  house: () => `<path d="M24 178H276"/>` + rect(86, 88, 128, 90) + `<path d="M74 92L150 40L226 92Z" ${W}/>` + rect(186, 44, 16, 30, 0) +
+    `<path d="M86 124H214"/><path d="M98 124V178M202 124V178"/>` + rect(138, 136, 24, 42, 2) + pane(104, 96, 26, 22) + pane(170, 96, 26, 22) + pane(108, 144, 22, 22) + pane(172, 144, 22, 22) +
+    `<path d="M246 178V132"/><circle cx="246" cy="118" r="22" ${W}/><path d="M232 112Q246 100 260 112"/>`,
+  school: () => `<path d="M20 178H280"/>` + rect(76, 96, 148, 82) + `<path d="M64 100L150 56L236 100Z" ${W}/>` + rect(134, 34, 32, 30, 0) +
+    `<path d="M128 36L150 16L172 36Z" ${W}/><path d="M144 50Q150 40 156 50Z"/><path d="M150 50V54"/>` + rect(138, 136, 24, 42, 2) +
+    pane(88, 112, 26, 24) + pane(186, 112, 26, 24) + pane(88, 146, 26, 22) + pane(186, 146, 26, 22) +
+    `<circle cx="150" cy="80" r="9" ${W}/><path d="M150 80V74M150 80L155 83"/><path d="M42 178V140"/><circle cx="42" cy="128" r="16" ${W}/>`,
+  cat: () => ellipse(150, 178, 118, 14) +
+    `<path d="M92 176C84 150 88 122 104 110C96 100 94 84 104 74L104 58L114 70C120 67 126 67 132 70L142 58L142 74C152 84 150 100 142 110C158 122 162 150 154 176Z" ${W}/>` +
+    `<path d="M154 176C176 178 184 160 172 150"/><path d="M104 118C112 124 134 124 142 118"/>` +
+    `<path d="M196 176L204 150H250L258 176Z" ${W}/><path d="M204 150Q227 142 250 150"/>`,
+  dog: () => ellipse(150, 178, 118, 14) +
+    `<path d="M190 90L171 93C165 102 161 110 159 122C157 140 158 160 160 176H145C143 166 139 158 131 156C119 154 109 160 105 172L104 176H86C84 150 92 118 110 94C115 86 118 72 123 62C129 52 142 48 154 52C164 55 170 62 174 70L191 76C198 78 199 88 190 90Z" ${W}/>` +
+    `<path d="M141 55C130 58 125 72 129 86C132 91 139 89 141 81C143 71 146 61 141 55Z" ${W}/>` +
+    `<circle cx="163" cy="66" r="2.6" fill="currentColor" stroke="none"/><circle cx="194" cy="82" r="3.4" fill="currentColor" stroke="none"/>` +
+    `<path d="M161 103Q140 112 116 93"/><path d="M104 172C100 152 110 138 128 139"/><path d="M89 164C70 162 62 146 70 133"/>` +
+    `<path d="M208 176L216 154H254L262 176Z" ${W}/><path d="M216 154Q235 146 254 154"/>`,
+  lunchpail: () => `<path d="M30 178H270"/><path d="M70 176V116C70 88 170 88 170 116V176Z" ${W}/><path d="M70 120H170"/><path d="M96 98C96 64 144 64 144 98"/>` +
+    rect(112, 126, 16, 10, 2) + rect(192, 84, 44, 92, 10) + rect(198, 66, 32, 22, 6) + `<path d="M192 110H236M192 150H236"/>`,
+  ledger: () => `<path d="M40 150L150 132L260 150L260 64L150 46L40 64Z" ${W}/><path d="M150 46V132"/>` +
+    [0, 1, 2, 3, 4].map(k => `<path d="M58 ${78 + k * 13}L136 ${66 + k * 13}M164 ${66 + k * 13}L242 ${78 + k * 13}"/>`).join("") +
+    `<path d="M186 176L262 112L270 120L194 184Z" ${W}/><path d="M186 176L180 190L194 184"/>`,
+  toolbox: () => `<path d="M26 180H274"/><path d="M60 180V112H200V180Z" ${W}/><path d="M60 128H200"/><path d="M104 112V96H156V112"/>` +
+    `<path d="M100 112L124 52"/><path d="M110.9 35.9L144.3 49.1L139.1 62.1L105.7 48.9Z" ${W}/>` +
+    `<path d="M160 112L170 84"/><path d="M168 88L180 56" stroke-width="9"/><path d="M180 56L184 46"/>` +
+    `<path d="M228 150L252 110M240 154L268 122"/><circle cx="252" cy="110" r="3" ${W}/><circle cx="268" cy="122" r="3" ${W}/>` +
+    `<circle cx="238" cy="162" r="22" ${W}/><path d="M220 152Q238 162 256 152M218 164Q238 174 258 164M226 144Q240 152 254 146"/>`,
+  compass: () => `<circle cx="150" cy="100" r="78" ${W}/><circle cx="150" cy="100" r="66"/>` +
+    `<path d="M150 30L162 100L150 170L138 100Z" ${W}/><path d="M80 100L150 88L220 100L150 112Z" ${W}/><path d="M150 30V100"/>` +
+    `<circle cx="150" cy="100" r="8" ${W}/>` + [45, 135, 225, 315].map(d => { const a = d * Math.PI / 180; return `<path d="M${f1(150 + Math.cos(a) * 20)} ${f1(100 + Math.sin(a) * 20)}L${f1(150 + Math.cos(a) * 50)} ${f1(100 + Math.sin(a) * 50)}"/>`; }).join(""),
+  townhall: () => `<path d="M20 182H280"/>` + rect(56, 166, 188, 16, 0) + rect(66, 154, 168, 12, 0) + `<path d="M62 78L150 30L238 78Z" ${W}/>` + rect(62, 78, 176, 10, 0) +
+    [84, 118, 152, 186, 216].map(x => rect(x - 6, 88, 12, 66, 0)).join("") + `<circle cx="150" cy="60" r="12" ${W}/><path d="M150 60V52M150 60L156 63"/>`,
+  laurel: () => laurelArm(1) + laurelArm(-1) + `<path d="M150 170L134 192M150 170L166 192"/><path d="M150 170C138 158 126 170 138 176C144 178 148 174 150 170C152 174 156 178 162 176C174 170 162 158 150 170Z" ${W}/>`,
+  phonograph: () => `<path d="M40 182H260"/>` + rect(70, 136, 120, 44, 4) + ellipse(130, 132, 52, 8) + `<path d="M130 132V124"/>` +
+    `<path d="M172 128L182 100"/><path d="M182 100Q214 66 258.9 19.2L213.1 84.8Q200 92 182 100Z" ${W}/>` +
+    `<ellipse cx="236" cy="52" rx="18" ry="40" transform="rotate(35 236 52)" ${W}/><ellipse cx="236" cy="52" rx="6" ry="14" transform="rotate(35 236 52)"/>` +
+    `<circle cx="96" cy="160" r="5" ${W}/><circle cx="164" cy="160" r="5" ${W}/>`,
+  pie: () => `<path d="M24 182H276"/><path d="M60 146H220L206 172H74Z" ${W}/><path d="M60 146C80 118 200 118 220 146" ${W}/>` +
+    `<path d="M104 134Q112 128 120 134M142 128Q150 122 158 128M180 134Q188 128 196 134"/><path d="M66 146Q90 150 110 146Q130 150 150 146Q170 150 190 146Q210 150 214 146"/>` +
+    `<path d="M112 108C104 98 118 92 110 80M142 104C134 92 150 86 142 72M172 108C164 98 178 92 170 80"/>` +
+    `<path d="M230 176L268 150" stroke-width="8"/><path d="M226 179L233 173M265 153L272 147"/>`,
+  lake: () => `<path d="M20 120Q80 70 130 104Q170 76 210 98Q250 80 280 104" ${W}/><path d="M20 120H280"/>` +
+    `<path d="M196 70A26 26 0 0 1 248 70" ${W}/>` + [134, 150, 166].map((y, k) => `<path d="M${40 + k * 16} ${y}H${150 - k * 6}M${170 + k * 4} ${y}H${260 - k * 18}"/>`).join(""),
+  pines: () => `<path d="M20 182H280"/>` + pine(70, 182, 110) + pine(128, 182, 150) + pine(186, 182, 118) + pine(236, 182, 90) +
+    `<path d="M244 46A18 18 0 1 1 262 64A14 14 0 1 0 244 46Z" ${W}/>`,
+  fields: () => `<path d="M20 120H280"/><path d="M150 120L40 190M150 120L100 190M150 120L200 190M150 120L260 190"/>` +
+    `<path d="M200 120V88L222 70L244 88V120Z" ${W}/><path d="M200 88H244"/>` + rect(214, 100, 16, 20, 0) +
+    `<circle cx="70" cy="64" r="14" ${W}/>` + [0, 1, 2, 3, 4, 5, 6, 7].map(k => { const a = k * Math.PI / 4; return `<path d="M${f1(70 + Math.cos(a) * 20)} ${f1(64 + Math.sin(a) * 20)}L${f1(70 + Math.cos(a) * 27)} ${f1(64 + Math.sin(a) * 27)}"/>`; }).join(""),
+  mountains: () => `<path d="M20 182H280"/><path d="M20 182L96 64L150 136L196 84L280 182Z" ${W}/><path d="M78 92L96 64L114 90L104 84L96 94L88 86Z"/><path d="M182 100L196 84L212 102L202 96L196 104L190 98Z"/>` +
+    `<path d="M40 44Q60 34 80 44Q100 34 116 44"/>`,
+  hills: () => `<path d="M120 182C160 136 230 118 280 140V182Z" ${W} stroke="none"/><path d="M120 182C160 136 230 118 280 140"/>` +
+    `<path d="M230 126V100M230 112L220 102M230 106L238 98"/>` + ellipse(230, 82, 20, 21) +
+    `<path d="M20 182C56 150 112 140 176 182Z" ${W} stroke="none"/><path d="M20 182C56 150 112 140 176 182"/><path d="M20 182H280"/>` +
+    `<circle cx="76" cy="62" r="16"/><path d="M126 58Q138 50 150 58Q162 50 174 58"/>`,
+  book: () => `<path d="M30 160Q90 140 150 160Q210 140 270 160V60Q210 40 150 60Q90 40 30 60Z" ${W}/><path d="M150 60V160"/>` +
+    [0, 1, 2, 3].map(k => `<path d="M48 ${78 + k * 16}Q90 ${66 + k * 16} 132 ${78 + k * 16}M168 ${78 + k * 16}Q210 ${66 + k * 16} 252 ${78 + k * 16}"/>`).join("") +
+    `<path d="M196 50V100L206 90L216 100V46" ${W}/>`
+};
+const LJ_ART_LABEL = { portrait:"An oval portrait frame", house:"A family house with a front porch", school:"A schoolhouse with a bell tower", cat:"A cat on a rug beside a bowl", dog:"A dog sitting on a rug beside a bowl",
+  lunchpail:"A lunch pail and thermos", ledger:"An open ledger and a pen", toolbox:"A toolbox beside a ball of yarn and needles", compass:"A compass rose",
+  townhall:"A town hall with columns", laurel:"A laurel wreath", phonograph:"A gramophone", pie:"A pie beside a rolling pin", lake:"A lake between hills",
+  pines:"Pine trees under a crescent moon", fields:"Fields and a barn", mountains:"Mountain peaks", hills:"Rolling hills, a tree and the sun", book:"An open book with a ribbon" };
+function ljArt(key, cls){
+  const draw = LJ_ART[key] || LJ_ART.hills;
+  return `<svg class="${cls || "lj-art"}" viewBox="0 0 300 200" role="img" aria-label="${esc(LJ_ART_LABEL[key] || "")}" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">${draw()}</svg>`;
+}
+/* A flowing branch for covers and section openers (viewBox 0 0 500 70). */
+function branch(cls){
+  return `<svg class="${cls || "lj-branch"}" viewBox="0 0 500 70" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round">` +
+    `<path d="M28 39C92 12 135 59 188 36C225 20 249 19 271 34C301 54 331 56 357 37C393 11 431 21 472 39"/>` +
+    `<path d="M112 30C94 18 80 21 71 34C87 37 101 36 112 30ZM147 45C130 43 119 50 116 62C130 59 141 53 147 45ZM194 34C181 19 167 17 157 25C168 34 181 37 194 34ZM305 45C318 58 332 58 343 50C332 43 318 41 305 45ZM354 37C369 22 382 21 392 30C380 38 367 40 354 37ZM407 30C424 18 438 22 445 35C431 36 418 34 407 30Z" fill="currentColor" stroke="none"/></svg>`;
+}
+/* The landscape drawing follows the resident's own favorite place. */
+function landscapeArt(p){
+  const t = (p.landscapes[0] || "").toLowerCase(), water = p.avoid.indexOf("water") < 0;
+  if (water && /\b(?:lake|river|sea|ocean|shore|beach|bay|pond|harbor|water|coast)/.test(t)) return "lake";
+  if (/\b(?:pine|forest|wood|tree|birch|oak|maple)/.test(t)) return "pines";
+  if (/\b(?:farm|field|prairie|wheat|corn|meadow|barn|plain|ranch)/.test(t)) return "fields";
+  if (/\b(?:mountain|peak|rock|canyon|valley)/.test(t)) return "mountains";
+  return "hills";
+}
+
+/* ---------- 5. Page builders: the storybook (Sections I to III) ----------
+   Every spread: LEFT = the section band, the resident's own facts, a frame
+   for a photograph or a line drawing, and invitations to share a story;
+   RIGHT = wide writing lines, in the first person. */
+function makeCtx(profileIn, optsIn){
+  const p = normProfile(profileIn), o = normOpts(optsIn);
+  return { p, o, poss: p.name ? p.name + "’s" : "Your", possWho: p.name ? p.name + "’s" : "the resident’s", who: p.name || "the resident" };
+}
+const SEC = n => SECTIONS[n - 1];
+const band = n => `<p class="lj-band"><span class="lj-roman">${SEC(n).roman}</span>${esc(SEC(n).title)}</p>`;
+
+/* A typed list as one phrase: "Lingonberry jam, strong coffee with cream". */
+const joinList = (a, sep) => a.map((x, i) => i ? lcFirst(x) : cap1(x)).join(sep || ", ");
+/* Facts, label and value. A missing value prints a line to write it in. */
+function facts(rows){
+  return `<dl class="lj-facts">${rows.map(([lab, val]) => `<div><dt>${esc(lab)}</dt>${val ? `<dd>${esc(val)}</dd>` : '<dd class="lj-blank"></dd>'}</div>`).join("")}</dl>`;
+}
+function frame(ctx, art, caption, small){
+  const photo = ctx.o.art === "photo";   // a small frame is only room for a photograph: no drawing
+  return `<div class="lj-frame${photo ? " lj-frame-photo" : ""}${small ? " lj-frame-sm" : ""}">${photo || small ? "" : `<div class="lj-frame-art">${ljArt(art)}</div>`}<p class="lj-cap">${esc(caption || (photo ? "Place a photograph here" : "Or place a photograph here"))}</p></div>`;
+}
+/* Personal invitations lead; the page's general invitations fill the rest.
+   AI copy that passed the dignity audit comes before the general ones and
+   always keeps at least one place. Topics to avoid drop a prompt. */
+function asks(ctx, id, personal, base){
+  const ai = aiPrompts(ctx, id) || [], n = ctx.o.promptCount, out = [];
+  const add = s => { if (s && out.indexOf(s) < 0 && out.length < n) out.push(s); };
+  personal.filter(Boolean).slice(0, ai.length ? n - 1 : n).forEach(add);
+  ai.map(t => ({ t })).concat(base).forEach(b => { if (topicOk(b.tags, ctx.p.avoid)) add(b.t); });
+  return out;
+}
+function aiPrompts(ctx, id){
+  const raw = ctx.o.aiCopy && ctx.o.aiCopy.pages && ctx.o.aiCopy.pages[id];
+  return raw ? sanitizeAiCopy(raw, { audience: "resident" }).value : null;
+}
+function askList(list){ return `<h2 class="lp-h2 lj-ask-h">Stories to share</h2><ol class="lj-asks">${list.map(t => `<li>${esc(t)}</li>`).join("")}</ol>`; }
+function storySpread(ctx, n, id, title, left, rightTitle, rightPrompt, rightBody){
+  const cls = "lj lj-sec-" + n;
+  return { id, tab: n, title,
+    left: { tab: n, audience: "resident", role: "visual", label: "Section " + SEC(n).roman + " · " + title, title, cls, body: band(n) + `<h1 class="lp-h1 lj-h1">${esc(title)}</h1>` + left },
+    right: { tab: n, audience: "resident", role: "lines", label: rightTitle, title, cls, body: rightBody ||
+      `<h2 class="lp-h2">${esc(rightTitle)}</h2><p class="lp-prompt">${esc(rightPrompt)}</p><div class="lp-rules">${rules(22)}</div>` } };
+}
+
+/* ----- Section I: Early Roots & Identity ----- */
+function spIdentity(ctx){
+  const p = ctx.p, born = birthText(p);
+  const bornLine = born ? born + (p.birthplace ? ", in " + p.birthplace : "") : (p.birthplace ? "In " + p.birthplace : "");
+  const personal = [
+    p.birthSurname ? "You were born into the " + p.birthSurname + " family. Tell me about them." : null,
+    p.origins ? "Tell me about the traditions your family carried with them." : null,
+    p.birthplace && p.birthplace !== p.hometown ? "Tell me what you know about " + p.birthplace + ", where you were born." : null
+  ];
+  const base = [{ t:"Who were you named after, and what does your name mean to you?" }, { t:"Tell me about the traditions your family kept." },
+    { t:"What would you like the people you meet today to know about you?" }];
+  const nameLine = p.fullName ? `<p class="lj-sub">${esc(p.fullName)}${p.name && p.fullName.indexOf(p.name) < 0 ? " · known as " + esc(p.name) : ""}</p>` : "";
+  return storySpread(ctx, 1, "identity", "Who I Am",
+    nameLine + facts([["Born", bornLine], ["Grew up in", p.hometown], ["Born into", p.birthSurname ? "the " + p.birthSurname + " family" : ""], ["Family roots", p.origins]]) +
+      frame(ctx, "portrait", "A portrait: place a favorite photograph here") + askList(asks(ctx, "identity", personal, base)),
+    "In my own words", "What would you like the people you meet today to know about you?");
+}
+function spHome(ctx){
+  const p = ctx.p;
+  const personal = [p.childhoodHome ? "Tell me about " + theOf(p.childhoodHome) + "." : null,
+    p.hometown ? "What did your street in " + midPlace(p.hometown) + " look and sound like?" : null];
+  const base = [{ t:"What could you see from the kitchen window?" }, { t:"What sounds filled the house on a Saturday morning?" },
+    { t:"Which room did everyone gather in?" }, { t:"Who lived next door?" }];
+  return storySpread(ctx, 1, "home", "The Home I Grew Up In",
+    facts([["Hometown", p.hometown], ["The house", p.childhoodHome]]) + frame(ctx, "house") + askList(asks(ctx, "home", personal, base)),
+    "My childhood home", "The rooms, the yard and the neighbors, as I recall them.");
+}
+function spFamily(ctx){
+  const p = ctx.p, parents = p.parents.slice(0, 4), sibs = p.siblings.slice(0, 6);
+  const box = (role, name, me) => `<div class="lj-person${me ? " lj-me" : ""}"><span>${esc(role)}</span>${name ? `<b>${esc(name)}</b>` : '<i class="lj-blank"></i>'}</div>`;
+  const gen1 = parents.length ? parents.map(x => box(labelOf(PARENT_ROLES, x.role), x.name)).join("") : box("Parent", "") + box("Parent", "");
+  const half = Math.ceil(sibs.length / 2), sibBox = x => box(labelOf(SIBLING_RELS, x.rel), x.name);
+  const gen2 = sibs.slice(0, half).map(sibBox).join("") + box("Me", p.name, true) + sibs.slice(half).map(sibBox).join("");
+  const more = p.siblings.length > sibs.length ? `<p class="lp-more">and ${p.siblings.length - sibs.length} more brothers and sisters</p>` : "";
+  // A parent, then a brother or sister, then the other parent, so both generations are asked about.
+  const ofParent = x => x && x.role !== "other" ? "Tell me about your " + x.role + ", " + x.name + ". What did you learn from " + pronoun(x.role) + "?" : null;
+  const ofSib = x => x ? "Tell me about growing up with your " + x.rel + ", " + x.name + "." : null;
+  const personal = [ofParent(parents[0]), ofSib(sibs[0]), ofParent(parents[1]), ofSib(sibs[1])];
+  const base = [{ t:"Tell me about the people who raised you." }, { t:"What did your family do together on Sundays?" },
+    { t:"Who in your family could always make you laugh?" }];
+  return storySpread(ctx, 1, "family", "My Family Tree",
+    `<div class="lj-tree"><div class="lj-gen">${gen1}</div><div class="lj-join" aria-hidden="true"></div><div class="lj-gen lj-gen2">${gen2}</div></div>${more}` +
+      frame(ctx, "portrait", "A family photograph") + askList(asks(ctx, "family", personal, base)),
+    "Stories from my family", "The people I grew up with, and what I learned from them.");
+}
+function spSchool(ctx){
+  const p = ctx.p, friends = p.friends.slice(0, 4);
+  const personal = [p.schools[0] ? "Tell me about your days at " + p.schools[0] + "." : null,
+    p.teacher ? "What made " + p.teacher + " a teacher you have never forgotten?" : null,
+    friends[0] ? "What did you and " + friends[0] + " do after school?" : null,
+    p.subject ? "What did you enjoy about " + lcFirst(p.subject) + "?" : null];
+  const base = [{ t:"How did you get to school each morning?" }, { t:"What games did you play at recess?" }, { t:"Who was your best friend growing up?" }];
+  return storySpread(ctx, 1, "school", "School Days & Childhood Friends",
+    facts([["School", joinList(p.schools, "; ")], ["A favorite teacher", p.teacher], ["A favorite subject", p.subject], ["Best friends", andList(friends)]]) +
+      frame(ctx, "school") + askList(asks(ctx, "school", personal, base)),
+    "My school days", "The classrooms, the teachers and the friends I made.");
+}
+/* The drawing follows the first pet whose kind is known: a cat, or else a dog. */
+const CAT_WORDS = /\b(?:cats?|kittens?|kitty|tabby|siamese|persian|calico|tomcat|mouser)\b/i;
+const DOG_WORDS = /\b(?:dogs?|pup|puppy|collie|beagle|terrier|spaniel|retriever|shepherd|poodle|lab|labrador|hound|dachshund|boxer|setter|pointer|bulldog|corgi|husky|mutt|sheepdog|schnauzer|chihuahua|pug|heeler|dalmatian|sheltie|greyhound|mastiff|pomeranian|yorkie)\b/i;
+function petArt(pets){
+  for (const x of pets){ if (CAT_WORDS.test(x.kind)) return "cat"; if (DOG_WORDS.test(x.kind)) return "dog"; }
+  return "dog";
+}
+/* Song titles in a sentence, American style: commas inside the quotes. */
+const songList = list => list.map(quoteSong).map((q, i, a) => i < a.length - 1 ? q.replace(/”$/, ",”") : q).join(" ");
+function spPets(ctx){
+  const p = ctx.p, pets = p.pets.slice(0, 4);
+  const personal = pets.slice(0, 2).map(x => "Tell me about " + x.name + (x.kind ? ", your " + lcFirst(x.kind) : "") + ".");
+  if (pets[0]) personal.push("How did " + pets[0].name + " come into your life?");
+  const base = [{ t:"Tell me about an animal you loved." }, { t:"Which animals lived on your street or farm when you were young?" }];
+  return storySpread(ctx, 1, "pets", "Pets I Have Loved",
+    (pets.length ? `<ul class="lj-pets">${pets.map(x => `<li><b>${esc(x.name)}</b>${x.kind ? `<span>${esc(cap1(x.kind))}</span>` : ""}</li>`).join("")}</ul>` : facts([["A pet I loved", ""]])) +
+      frame(ctx, petArt(pets)) + askList(asks(ctx, "pets", personal, base)),
+    "Animals I have loved", "The pets and animals that were part of my life.");
+}
+
+/* ----- Section II: Lifelong Work, Roles & Pride ----- */
+function spFirstJob(ctx){
+  const p = ctx.p;
+  const base = [{ t:"How did you get your first job, and how old were you?" }, { t:"What did you do with your first paycheck?", tags:["money"] },
+    { t:"Who taught you the ropes?" }, { t:"What did your first job teach you that you used all your life?" }];
+  return storySpread(ctx, 2, "firstjob", "My First Job",
+    facts([["My first job", p.firstJob]]) + frame(ctx, "lunchpail") + askList(asks(ctx, "firstjob", [], base)),
+    "My first job", "The work, the pay and the people I worked beside.");
+}
+function spCareer(ctx){
+  const p = ctx.p;
+  const good = p.careerA ? "As " + p.careerA + ", what did a good day at work look like?" : p.careerGerund ? "In your years of " + p.careerGerund + ", what did a good day look like?" : null;
+  const personal = [good, p.workplace ? "What were you known for at " + p.workplace + "?" : null];
+  const base = [{ t:"What were you proudest of in your work?" }, { t:"Who did you learn the most from at work?" },
+    { t:"What would people be surprised to learn about your job?" }];
+  return storySpread(ctx, 2, "career", "My Life’s Work",
+    facts([["My work", p.career ? cap1(p.career) : ""], ["Where", p.workplace], ["Years", p.careerYears]]) + frame(ctx, "ledger") + askList(asks(ctx, "career", personal, base)),
+    "My working life", "What I did, how I did it and what it meant to me.");
+}
+function spSkills(ctx){
+  const p = ctx.p, skills = p.skills.slice(0, 8);
+  const personal = [skills[0] ? "Who taught you " + lcFirst(skills[0]) + "?" : null, skills[1] ? "What do people get wrong about " + lcFirst(skills[1]) + "?" : null];
+  const base = [{ t:"What did you make with your own hands that you are proudest of?" }, { t:"Which tool or utensil felt like part of your hand?" },
+    { t:"What skill would you most like to pass on?" }];
+  const list = skills.length ? `<ul class="lj-skills">${skills.map(s => `<li>${esc(cap1(s))}</li>`).join("")}</ul>` : facts([["A skill I mastered", ""], ["Another skill", ""]]);
+  return storySpread(ctx, 2, "skills", "Skills of My Hands", list + frame(ctx, "toolbox") + askList(asks(ctx, "skills", personal, base)),
+    "How it is done", "The know-how I would pass on, in my own words.");
+}
+function spService(ctx){
+  const p = ctx.p, branchThe = BRANCH_THE[p.militaryBranch], welcome = p.militaryTalk === "welcome";
+  const personal = ["What did your time in " + branchThe + " teach you?", welcome && p.militaryPlaces ? "Tell me about your time in " + p.militaryPlaces + "." : null];
+  const base = [{ t:"Tell me about the friends you served with." }, { t:"What skills did your service give you?" },
+    { t:"Which letters from home meant the most?", welcomeOnly: true }, { t:"What places did your service take you to?", welcomeOnly: true }].filter(b => welcome || !b.welcomeOnly);
+  return storySpread(ctx, 2, "service", "In Service",
+    facts([["Branch", labelOf(BRANCHES, p.militaryBranch)], ["Rank", p.militaryRank], ["Years", p.militaryYears]].concat(welcome ? [["Where I served", p.militaryPlaces]] : [])) +
+      frame(ctx, "compass") + askList(asks(ctx, "service", personal, base)),
+    "My years of service", "The people, places and skills from my time in service.");
+}
+function spCommunity(ctx){
+  const p = ctx.p, orgs = p.organizations.slice(0, 6);
+  const personal = [orgs[0] ? "Tell me about your years with " + theOf(orgs[0]) + "." : null, orgs[1] ? "Who did you meet through " + theOf(orgs[1]) + "?" : null];
+  const base = [{ t:"Tell me about a club, team or group you belonged to." }, { t:"What did your group do for your town?" },
+    { t:"Who could you always count on at the meetings?" }];
+  const list = orgs.length ? `<ul class="lj-skills">${orgs.map(s => `<li>${esc(s)}</li>`).join("")}</ul>` : facts([["A group I belonged to", ""], ["Another group", ""]]);
+  return storySpread(ctx, 2, "community", "Community & Belonging", list + frame(ctx, "townhall") + askList(asks(ctx, "community", personal, base)),
+    "The groups I belonged to", "Friends, neighbors and what we did together for our town.");
+}
+function spPride(ctx){
+  const p = ctx.p, moments = p.proudMoments.slice(0, 5);
+  const personal = moments.slice(0, 2).map((m, i) => i === 0 ? "Tell me about " + lcFirst(m).replace(/[.!]+$/, "") + ". How did it feel?" : "Who was there to share " + lcFirst(m).replace(/[.!]+$/, "") + " with you?");
+  const base = [{ t:"What are you proud of that few people know about?" }, { t:"What would you tell a young person about working hard?" },
+    { t:"Which moment in your life would you most like to live again?" }];
+  const list = moments.length ? `<ul class="lj-pride">${moments.map(m => `<li>${esc(m)}</li>`).join("")}</ul>` : facts([["A proud moment", ""], ["Another", ""]]);
+  return storySpread(ctx, 2, "pride", "Proudest Moments", list + frame(ctx, "laurel", "A photograph of a proud day") + askList(asks(ctx, "pride", personal, base)),
+    "A moment I will always be proud of", "What happened, who was there and how it felt.");
+}
+
+/* ----- Section III: Sensory & Emotional Anchors ----- */
+function spMusic(ctx){
+  const p = ctx.p, hymns = p.showHymns ? p.hymns.slice(0, 3) : [];
+  const personal = [p.songs[0] ? "Where were you the first time you heard " + quoteSong(p.songs[0]) + "?" : null,
+    p.genres[0] ? "Who did you dance with to " + lcFirst(p.genres[0]) + "?" : null,
+    hymns[0] ? "Where did you sing " + quoteSong(hymns[0]) + "?" : null];
+  const base = [{ t:"Which song takes you straight back to being young?" }, { t:"Who in your family played an instrument?" },
+    { t:"Tell me about a dance, a concert or a radio show you loved." }];
+  return storySpread(ctx, 3, "music", "The Music of My Life",
+    facts([["Favorite songs", songList(p.songs.slice(0, 4))], ["Music I love", joinList(p.genres.slice(0, 3))]].concat(p.showHymns ? [["Hymns from my youth", songList(hymns)]] : [])) +
+      frame(ctx, "phonograph") + askList(asks(ctx, "music", personal, base)),
+    "Words I still know by heart", "The lyrics, the melody, and where I was when I sang them.");
+}
+function spTastes(ctx){
+  const p = ctx.p;
+  const personal = [p.comfortFoods[0] ? "Who made " + lcFirst(p.comfortFoods[0]) + " best, and how?" : null,
+    p.scents[0] ? "What does the smell of " + lcFirst(p.scents[0]) + " bring back?" : null,
+    p.tastes[0] ? "When did you first taste " + lcFirst(p.tastes[0]) + "?" : null];
+  const base = [{ t:"What was on the table for a Sunday dinner?" }, { t:"Which dish did you bring to every gathering?" }, { t:"What did your kitchen smell like on a holiday?" }];
+  const recipe = `<h2 class="lp-h2">A Recipe to Remember</h2><p class="lp-prompt">A favorite dish, in my own words.</p>
+    <div class="lj-rfield"><span class="lp-lab">Recipe</span><div class="lp-rule"></div></div>
+    <div class="lj-rfield"><span class="lp-lab">From the kitchen of</span><div class="lp-rule"></div></div>
+    <p class="lp-lab lj-rgap">What goes in it</p><div class="lj-lines">${rules(5)}</div>
+    <p class="lp-lab lj-rgap">How it is made</p><div class="lp-rules">${rules(14)}</div>`;
+  return storySpread(ctx, 3, "tastes", "Tastes & Aromas of Home",
+    facts([["Comfort foods", joinList(p.comfortFoods.slice(0, 3))], ["Favorite tastes", joinList(p.tastes.slice(0, 3))], ["Scents I love", joinList(p.scents.slice(0, 3))]]) +
+      frame(ctx, "pie") + askList(asks(ctx, "tastes", personal, base)),
+    "A Recipe to Remember", "", recipe);
+}
+function spPlaces(ctx){
+  const p = ctx.p, colors = p.colors.slice(0, 4);
+  const personal = [p.landscapes[0] ? "Tell me about " + theOf(p.landscapes[0]) + ". What did it look like early in the morning?" : null,
+    colors[0] ? "What does " + lcFirst(colors[0]) + " remind you of?" : null,
+    p.textures[0] ? "Tell me about " + lcFirst(p.textures[0]) + " and what it reminds you of." : null];
+  const base = [{ t:"Where did you go to find peace and quiet?" }, { t:"Which season did you love best, and why?" }, { t:"What did you love to see from a window?" }];
+  const chips = colors.length ? `<ul class="lj-chips">${colors.map(c => { const hx = colorHex(c); return `<li><i${hx ? ` style="background:${hx}"` : ""}></i>${esc(cap1(c))}</li>`; }).join("")}</ul>` : "";
+  return storySpread(ctx, 3, "places", "Colors, Textures & Places I Love",
+    chips + facts([["Places I love", joinList(p.landscapes.slice(0, 3), "; ")], ["Textures I love", joinList(p.textures.slice(0, 3))]].concat(colors.length ? [] : [["Favorite colors", ""]])) +
+      frame(ctx, landscapeArt(p)) + askList(asks(ctx, "places", personal, base)),
+    "Places that bring me peace", "Where I feel most at home, and what I see there.");
+}
+
+/* ----- Cover and closing page of the storybook ----- */
+function pageCover(ctx){
+  const p = ctx.p, born = birthText(p);
+  const title = p.name ? p.name + "’s Life Story" : "A Life Story", long = title.length > 22 ? " lp-long2" : title.length > 15 ? " lp-long" : "";
+  return { tab: 1, audience: "resident", role: "cover", label: "", title, noTop: true, noFoot: true, cls: "lj lj-sec-1", body: `
+    <div class="lp-cover lj-cover">
+      <p class="lp-lab lp-fac">${p.facility ? esc(p.facility) : "&nbsp;"}</p>
+      ${branch("lp-vine")}
+      <h1 class="lp-cover-h lj-h1${long}">${esc(title)}</h1>
+      ${p.fullName ? `<p class="lp-cover-name">${esc(p.fullName)}${p.birthSurname && p.fullName.indexOf(p.birthSurname) < 0 ? `<br><small>born ${esc(p.birthSurname)}</small>` : ""}</p>` : ""}
+      ${born || p.birthplace ? `<p class="lj-cover-born">${esc([born ? "Born " + born : "", p.birthplace].filter(Boolean).join(" · "))}</p>` : ""}
+      <ol class="lj-toc-mini">${SECTIONS.slice(0, 3).map(s => `<li class="lj-sec-${s.n}"><b>${s.roman}</b>${esc(s.title)}</li>`).join("")}</ol>
+      <p class="lp-cover-tag lp-opt">A life told in its own words, for the people who share it.</p>
+      ${branch("lp-vine lp-vine-flip")}
+    </div>` };
+}
+function pageClosing(ctx){
+  return { tab: 3, audience: "resident", role: "closing", label: "The story continues", title: "The Story Continues", cls: "lj lj-sec-3", body: `
+    <h1 class="lp-h1 lj-h1">The Story Continues</h1>
+    <p class="lp-sub">Every day adds to ${esc(ctx.p.name ? ctx.p.name + "’s" : "this")} story.</p>
+    ${frame(Object.assign({}, ctx, { o: Object.assign({}, ctx.o, { art: "photo" }) }), "book", "A recent photograph")}
+    <p class="lp-lab lj-rgap">The people who helped tell this story</p>
+    <div class="lj-lines">${rules(6)}</div>` };
+}
+
+/* ---------- 6. Section IV: Daily Grounding & Reflection ----------
+   The resident's own pages first (comfort, wisdom, small joys), in the
+   resident's voice. Then, behind a divider, Family & Care Team Notes: a part
+   of the journal where visitors and staff add updates, so the memoir itself
+   is never written over. */
+const IV = "lj lj-sec-4";
+function pageReflectOpener(ctx){
+  const p = ctx.p;
+  return { tab: 4, audience: "resident", role: "cover", label: "Section IV · Daily Grounding & Reflection", title: "Daily Grounding & Reflection", cls: IV, body: `
+    <div class="lj-opener">
+      ${band(4)}
+      <h1 class="lp-h1 lj-h1">Daily Grounding &amp; Reflection</h1>
+      <p class="lp-sub">Words of comfort, small joys and the wisdom of ${esc(p.name || "a lifetime")}.</p>
+      ${branch("lp-vine")}
+      <h2 class="lp-h2">In this part</h2>
+      <ol class="lj-contents"><li>Words of Comfort</li><li>Wisdom I Live By</li><li>Comfort &amp; Joy, week by week</li><li class="lj-notes-li">Notes from visitors, at the back</li></ol>
+      ${frame(ctx, "hills", "A photograph of a place or a person that brings comfort")}
+      <p class="lj-note-res">These pages are ${esc(p.name ? p.name + "’s" : "yours")}. The people who visit and help each day add their notes in the part at the back, so this story stays in ${esc(p.name ? p.name + "’s" : "your")} own words.</p>
+    </div>` };
+}
+function spAffirm(ctx){
+  const list = affirmationsFor(ctx.p).slice(0, 8);
+  const shown = list.length ? `<ul class="lj-affirm">${list.map(t => `<li>${esc(t)}</li>`).join("")}</ul>` : `<div class="lj-lines">${rules(6)}</div>`;
+  return { id: "affirm", tab: 4, title: "Words of Comfort",
+    left: { tab: 4, audience: "resident", role: "visual", label: "Section IV · Words of Comfort", title: "Words of Comfort", cls: IV,
+      body: band(4) + `<h1 class="lp-h1 lj-h1">Words of Comfort</h1><p class="lp-sub">Read these aloud together, any time of day.</p>` + shown +
+        frame(ctx, "hills", "A photograph that brings calm", true) },
+    right: { tab: 4, audience: "resident", role: "lines", label: "Words that help me", title: "Words of Comfort", cls: IV,
+      body: `<h2 class="lp-h2">Words That Help Me</h2><p class="lp-prompt">Words and sayings that bring me comfort. Anyone can write them down for me.</p><div class="lp-rules">${rules(22)}</div>` } };
+}
+function spWisdom(ctx){
+  const p = ctx.p, sayings = p.wisdom.slice(0, 4), by = p.name ? "— " + p.name : "";
+  const quotes = sayings.length
+    ? `<ul class="lj-quotes">${sayings.map(q => `<li><q>${esc(q.replace(/^["“]|["”]$/g, ""))}</q>${by ? `<span>${esc(by)}</span>` : ""}</li>`).join("")}</ul>`
+    : `<ul class="lj-quotes lj-quotes-blank"><li><div class="lj-lines">${rules(2)}</div></li><li><div class="lj-lines">${rules(2)}</div></li></ul>`;
+  const prompts = asks(ctx, "wisdom", [], [{ t:"What advice would you give a young person starting out?" }, { t:"What is the best thing anyone ever told you?" },
+    { t:"What has a long life taught you about people?" }]).slice(0, 2);
+  return { id: "wisdom", tab: 4, title: "Wisdom I Live By",
+    left: { tab: 4, audience: "resident", role: "visual", label: "Section IV · Wisdom I Live By", title: "Wisdom I Live By", cls: IV,
+      body: band(4) + `<h1 class="lp-h1 lj-h1">Wisdom I Live By</h1>` + quotes + frame(ctx, "book", "A photograph to go with these words") + askList(prompts) },
+    right: { tab: 4, audience: "resident", role: "lines", label: "More of my sayings", title: "Wisdom I Live By", cls: IV,
+      body: `<h2 class="lp-h2">More of My Sayings</h2><p class="lp-prompt">Advice, family sayings and lessons worth passing on.</p><div class="lp-rules">${rules(22)}</div>` } };
+}
+const WEEK = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+function spJoy(ctx, k){
+  const cues = ["A song I enjoyed", "A taste or a scent that comforted me", "Someone who visited or called", "Something that made me smile", "A story I told"];
+  const days = WEEK.map(d => `<div class="lp-wrow"><div class="lp-rule lp-wl"><b>${d.slice(0, 3)}</b></div><div class="lp-rule lp-wl2"></div></div>`).join("");
+  const n = ctx.o.joyWeeks > 1 ? " · Week " + (k + 1) : "";
+  return { id: "joy" + (k ? "-" + (k + 1) : ""), base: "joy", tab: 4, title: "Comfort & Joy",
+    left: { tab: 4, audience: "resident", role: "visual", label: "Section IV · Comfort & Joy" + n, title: "Comfort & Joy", cls: IV,
+      body: band(4) + `<h1 class="lp-h1 lj-h1">Comfort &amp; Joy</h1><p class="lp-meta">Week of ${blankLine(2.6)}</p>
+        <p class="lp-sub">Small good things are worth writing down. Anyone can help fill these in.</p>
+        <div class="lj-cues">${cues.map(c => `<div class="lj-cue"><span class="lp-lab">${esc(c)}</span><div class="lp-rule"></div></div>`).join("")}</div>
+        ${frame(ctx, "phonograph", "A photograph from this week")}` },
+    right: { tab: 4, audience: "resident", role: "lines", label: "This week’s small joys", title: "Comfort & Joy", cls: IV,
+      body: `<h2 class="lp-h2">This Week’s Small Joys</h2><p class="lp-prompt">One good moment from each day.</p><div class="lp-wlog">${days}</div>` } };
+}
+
+/* ----- Family & Care Team Notes: separate from the story, clearly marked ----- */
+const NOTES = "lj lj-notes";
+function spNotesDivider(ctx){
+  const p = ctx.p, poss = ctx.possWho;
+  const cell = (lab, items) => `<section class="lp-quad-c"><div><span class="lp-lab">${lab}</span>${items.length ? K.listHtml(items.slice(0, 3)) : '<div class="lp-rule lp-rule-s"></div>'}</div></section>`;
+  const avoid = p.avoid.map(c => lc(AVOID_TOPICS.filter(t => t[0] === c)[0][1]));
+  const service = p.militaryBranch && !p.served ? "Military service: best left out of conversation." :
+    p.served && p.militaryTalk === "gentle" ? "Military service: speak of friends and skills, not deployments." : "";
+  const rows = new Array(10).join("<tr><td></td><td></td><td></td></tr>");
+  return { id: "divider", tab: 4, title: "Family & Care Team Notes",
+    left: { tab: 4, audience: "caregiver", role: "visual", label: "For family and care team", title: "Family & Care Team Notes", cls: NOTES, body: `
+    <div class="lj-divider">
+      <h1 class="lp-h1">Family &amp; Care Team Notes</h1>
+      <p class="lp-sub">For the family, friends and care team who share ${esc(poss)} days.</p>
+      <div class="lp-secure"><p><b>Please add updates here</b>, and leave ${esc(poss)} story pages as they are. The story is in ${esc(p.name ? p.name + "’s" : "the resident’s")} own words.</p></div>
+      <h2 class="lp-h2">What brings comfort</h2>
+      <div class="lp-quad">${cell("Music", p.songs.map(quoteSong).concat(p.genres))}${cell("Scents", p.scents)}${cell("Touch", p.textures)}${cell("Tastes", p.comfortFoods.concat(p.tastes))}</div>
+      ${avoid.length || service ? `<div class="lp-avoid">${avoid.length ? `<p><b>Topics to steer around:</b> ${esc(avoid.join("; "))}.</p>` : ""}${service ? `<p>${esc(service)}</p>` : ""}</div>` : ""}
+      <h2 class="lp-h2">Adding a note</h2>
+      <ol class="lp-steps"><li>The date and your name.</li><li>What you did together.</li><li>What brought comfort or joy.</li><li>A story that was shared, in ${esc(p.name ? p.name + "’s" : "their")} words where you can.</li><li>Something to try next time.</li></ol>
+      <p class="lp-lab lp-gap">Good to know</p><div class="lp-rules lp-rules-2">${rules(8)}</div>
+    </div>` },
+    right: { tab: 4, audience: "caregiver", role: "lines", label: "Who’s who", title: "Family & Care Team Notes", cls: NOTES, body: `
+      <h2 class="lp-h2">Who’s Who: Visitors and Care Team</h2>
+      <p class="lp-prompt">The people who visit, call and care for ${esc(p.name || "the resident")}.</p>
+      <table class="lp-tbl lp-tbl-tall"><colgroup><col style="width:2.1in"><col style="width:2.4in"><col></colgroup>
+        <thead><tr><th>Name</th><th>Who they are to ${esc(p.name || "the resident")}</th><th>Good times to visit</th></tr></thead><tbody>${rows}</tbody></table>` } };
+}
+function spNotes(ctx, k){
+  const did = ["Looked at photographs", "Listened to music", "Read from the life story", "Went outside", "Shared a treat", "Talked about work or family"];
+  const entry = `<div class="lj-entry"><div class="lp-rule lj-eh"><b>Date</b><b>From</b></div>${rules(3)}</div>`;
+  return { id: "notes" + (k ? "-" + (k + 1) : ""), base: "notes", tab: 4, title: "Family & Care Team Notes",
+    left: { tab: 4, audience: "caregiver", role: "visual", label: "Visit and update notes", title: "Family & Care Team Notes", cls: NOTES,
+      body: `<h1 class="lp-h1">Visit &amp; Update Notes</h1><p class="lp-meta">Date ${blankLine(1.8)} &nbsp; From ${blankLine(2.2)}</p>
+        <h2 class="lp-h2">What we did together</h2><ul class="lp-checks lp-checks-2">${did.map(t => `<li><i class="lp-box"></i>${t}</li>`).join("")}</ul>
+        <p class="lp-lab lp-gap">Something to try next time</p><div class="lj-lines">${rules(2)}</div>
+        <h2 class="lp-h2">A story that was shared</h2><div class="lp-rules">${rules(18)}</div>` },
+    right: { tab: 4, audience: "caregiver", role: "lines", label: "Notes log", title: "Family & Care Team Notes", cls: NOTES,
+      body: `<h2 class="lp-h2">Notes Log</h2><p class="lp-prompt">A few lines after each visit or shift.</p><div class="lj-entries">${entry + entry + entry + entry}</div>` } };
+}
+
+/* ---------- 7. Books, scopes and the public API ---------- */
+const asSpread = s => Object.assign({ kind: "spread" }, s);
+function storyItems(ctx){
+  const a = [{ kind: "page", side: "right", id: "cover", page: pageCover(ctx) }];
+  [spIdentity, ctx.p.showHome ? spHome : null, spFamily, spSchool, spPets, spFirstJob, spCareer, spSkills].forEach(fn => { if (fn) a.push(asSpread(fn(ctx))); });
+  if (ctx.p.served) a.push(asSpread(spService(ctx)));
+  [spCommunity, spPride, spMusic, spTastes, spPlaces].forEach(fn => a.push(asSpread(fn(ctx))));
+  a.push({ kind: "page", side: "left", id: "closing", page: pageClosing(ctx) });
+  return a;
+}
+function reflectItems(ctx){
+  const a = [{ kind: "page", side: "right", id: "opener", page: pageReflectOpener(ctx) }, asSpread(spAffirm(ctx)), asSpread(spWisdom(ctx))];
+  for (let k = 0; k < ctx.o.joyWeeks; k++) a.push(asSpread(spJoy(ctx, k)));
+  a.push(asSpread(spNotesDivider(ctx)));
+  for (let k = 0; k < ctx.o.noteSpreads; k++) a.push(asSpread(spNotes(ctx, k)));
+  return a;
+}
+function jFiller(){
+  return { tab: 4, audience: "resident", role: "lines", filler: true, label: "Notes", title: "Notes", cls: "lj",
+    body: `<h2 class="lp-h2">Notes</h2><p class="lp-prompt">Anything worth keeping.</p><div class="lp-rules">${rules(22)}</div>` };
+}
+const SCOPES = ["story", "reflection", "complete"];
+function build(profileIn, optsIn, scope){
+  const ctx = makeCtx(profileIn, optsIn);
+  scope = SCOPES.indexOf(scope) >= 0 ? scope : "complete";
+  const items = (scope !== "reflection" ? storyItems(ctx) : []).concat(scope !== "story" ? reflectItems(ctx) : []);
+  const pages = paginate(items, jFiller);
+  pages.forEach(pg => { pg.html = sheet(pg, ctx.o.binding, LABELS); });
+  const spreads = [];
+  pages.forEach((pg, i) => {
+    let s = spreads[spreads.length - 1];
+    if (!s || s.id !== pg.spreadId){ s = { id: pg.spreadId, base: pg.base, tab: pg.tab, title: pg.title, left: null, right: null }; spreads.push(s); }
+    s[pg.side === "left" ? "left" : "right"] = i;
+  });
+  return { scope, binding: ctx.o.binding, count: pages.length, pages, spreads };
+}
+/* Page counts for all three scopes. The service and childhood home spreads count only when they print. */
+function countPages(profileIn, optsIn){
+  const p = normProfile(profileIn), o = normOpts(optsIn);
+  const story = 1 + 2 * (12 + (p.showHome ? 1 : 0) + (p.served ? 1 : 0)) + 1, reflection = 1 + 2 * (2 + o.joyWeeks) + 2 + 2 * o.noteSpreads;
+  return { story, reflection, complete: story + reflection };
+}
+/* Advisory check of typed text (names are never checked). */
+function checkProfile(profileIn){
+  const p = normProfile(profileIn), out = [];
+  const chk = (field, text, audience) => audit(text, { audience }).forEach(h => out.push({ field, text, rule: h.rule, label: h.label, match: h.match, fix: h.fix }));
+  [["Birthplace", "birthplace"], ["Hometown", "hometown"], ["Family origins", "origins"], ["Childhood home", "childhoodHome"], ["Favorite teacher", "teacher"],
+    ["Favorite subject", "subject"], ["First job", "firstJob"], ["Career", "career"], ["Workplace", "workplace"], ["Where served", "militaryPlaces"]]
+    .forEach(([f, k]) => chk(f, p[k], "resident"));
+  [["Schools", "schools"], ["Skills", "skills"], ["Organizations", "organizations"], ["Proudest moments", "proudMoments"], ["Favorite songs", "songs"],
+    ["Music styles", "genres"], ["Hymns", "hymns"], ["Scents", "scents"], ["Tastes", "tastes"], ["Comfort foods", "comfortFoods"], ["Textures", "textures"],
+    ["Colors", "colors"], ["Places", "landscapes"], ["Affirmations", "customAffirmations"], ["Sayings", "wisdom"]]
+    .forEach(([f, k]) => p[k].forEach(t => chk(f, t, "resident")));
+  return out;
+}
+/* The AI request: the journal's system prompt plus the facts, never a name.
+   Family, friends and pets are left out, and every name on file is taken out
+   of the typed details: the resident's become "the resident", the others
+   "a loved one" or "a pet" (whole names first, then each part). */
+const AI_PAGE_IDS = ["identity", "home", "family", "school", "pets", "firstjob", "career", "skills", "service", "community", "pride", "music", "tastes", "places", "wisdom"];
+const NAME_PARTICLES = ["de", "da", "di", "du", "la", "le", "van", "von", "der", "den", "del", "st", "st.", "jr", "jr.", "sr", "sr.", "ii", "iii", "the", "and"];
+function nameScrubber(p){
+  const swaps = [];
+  const add = (list, to) => list.forEach(n => {
+    n = tidy(n);
+    [n].concat(n.split(/\s+/)).forEach(w => { if (w.length >= 2 && NAME_PARTICLES.indexOf(w.toLowerCase()) < 0) swaps.push([w, to]); });
+  });
+  add([p.fullName, p.name, p.birthSurname], "the resident");
+  add(p.parents.concat(p.siblings).map(x => x.name).concat(p.friends), "a loved one");
+  add(p.pets.map(x => x.name), "a pet");
+  swaps.sort((a, b) => b[0].length - a[0].length);
+  const res = swaps.map(([w, to]) => [new RegExp("(^|[^\\p{L}\\p{N}])" + w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "(?![\\p{L}\\p{N}])", "giu"), "$1" + to]);
+  return s => res.reduce((t, [re, to]) => t.replace(re, to), s);
+}
+function buildAiRequest(profileIn){
+  const p = normProfile(profileIn), scrub = nameScrubber(p);
+  const facts = {
+    birthYear: p.birthYear, hometown: p.hometown || null, childhoodHome: p.showHome && p.childhoodHome ? scrub(p.childhoodHome) : null, formerCareer: p.career ? scrub(p.career) : null,
+    firstJob: p.firstJob ? scrub(p.firstJob) : null, skills: p.skills.map(scrub), communityGroups: p.organizations.map(scrub), proudMoments: p.proudMoments.map(scrub),
+    militaryService: p.served ? { branch: labelOf(BRANCHES, p.militaryBranch), talkAboutDeployments: p.militaryTalk === "welcome" } : null,
+    favoriteSongs: p.songs.map(scrub), music: p.genres.map(scrub), hymns: p.showHymns ? p.hymns.map(scrub) : [], scents: p.scents.map(scrub),
+    tastes: p.tastes.map(scrub), comfortFoods: p.comfortFoods.map(scrub), textures: p.textures.map(scrub), colors: p.colors.map(scrub),
+    favoritePlaces: p.landscapes.map(scrub), topicsToAvoid: p.avoid
+  };
+  return {
+    system: SYSTEM_PROMPT, audience: "resident",
+    user: "Write three warm conversation invitations for each page of this resident's life-story journal, using ONLY these facts. If a fact is null or empty, write a general open invitation instead. Pages: " + AI_PAGE_IDS.join(", ") + ".\n" + JSON.stringify(facts),
+    schema: { pages: [{ id: "one of the page names above", prompts: ["three invitations, each starting with Tell me about, What was, Who, Where or How"] }] }
+  };
+}
+function acceptAiCopy(raw){
+  const src = raw && typeof raw === "object" ? raw : {}, pages = {};
+  (Array.isArray(src.pages) ? src.pages : []).forEach(pg => {
+    if (pg && AI_PAGE_IDS.indexOf(pg.id) >= 0 && Array.isArray(pg.prompts)) pages[pg.id] = pg.prompts.slice(0, 6);
+  });
+  const res = sanitizeAiCopy({ pages }, { audience: "resident" });
+  return { copy: res.value, rejected: res.rejected };
+}
+/* Every built-in line, with the audience of the page it prints on. */
+function libraryStrings(){
+  const ctx = makeCtx({}, {}), out = [];
+  storyItems(ctx).concat(reflectItems(ctx)).forEach(it => [it.page, it.left, it.right].forEach(pg => {
+    if (pg) textRuns(pg.body).forEach(t => out.push({ text: t, audience: pg.audience }));
+  }));
+  AFFIRMATIONS.forEach(a => [a.t.replace(/\{\w+\}/g, "X"), a.alt].forEach(t => { if (t) out.push({ text: t, audience: "resident" }); }));
+  return out;
+}
+
+const EXAMPLE_PROFILE = {
+  name: "Margaret", fullName: "Margaret Ellen Hansen", birthSurname: "Olson", birthMonth: 3, birthDay: 14, birthYear: 1938,
+  birthplace: "Two Harbors, Minnesota", hometown: "Duluth, Minnesota", origins: "Norwegian and Swedish farm families",
+  childhoodHome: "The yellow house on Jefferson Street, with a big front porch",
+  parents: [{ name: "Ingrid", role: "mother" }, { name: "Karl", role: "father" }], siblings: [{ name: "Arne", rel: "brother" }, { name: "Ruth", rel: "sister" }],
+  friends: ["Dorothy Lind", "Helen Berg"], schools: ["Lincoln Elementary", "Central High School"], teacher: "Mrs. Lund", subject: "Reading and spelling",
+  pets: [{ name: "Skipper", kind: "collie" }, { name: "Biscuit", kind: "beagle" }],
+  firstJob: "Soda fountain clerk at Miller's Drugstore", career: "Elementary school teacher", workplace: "Lincoln School", careerYears: "1960 to 2001",
+  skills: ["Knitting", "Canning vegetables", "Bread baking"], militaryBranch: "",
+  organizations: ["Duluth Garden Club", "First Lutheran Church choir", "Lincoln School PTA"],
+  proudMoments: ["Teaching forty-one years of second graders to read", "Raising Anna and Tom", "Named Teacher of the Year in 1985"],
+  songs: ["Moon River", "Tennessee Waltz", "Blue Moon"], genres: ["Big band and swing"], hymns: ["How Great Thou Art"],
+  scents: ["Lavender", "Fresh-baked bread"], tastes: ["Lingonberry jam", "Strong coffee with cream"], comfortFoods: ["Her mother's apple pie", "Swedish meatballs"],
+  textures: ["A soft wool shawl", "A worn cotton quilt"], colors: ["Cornflower blue", "Butter yellow"], landscapes: ["The Lake Superior shoreline", "Birch woods in autumn"],
+  affirmations: DEFAULT_AFFIRM.slice(), customAffirmations: ["You taught hundreds of children to read."],
+  wisdom: ["Measure twice, cut once.", "Always leave a place better than you found it.", "A good book is a friend who never leaves."],
+  avoid: ["war", "medical"], facility: "Maple Grove Community"
+};
+
+root.LifeJournal = {
+  version: VERSION, TONE, build, countPages, fitSheets, checkProfile, auditPages, textRuns, buildAiRequest, acceptAiCopy, libraryStrings,
+  normProfile, normOpts, EXAMPLE_PROFILE,
+  DATA: {
+    SECTIONS: SECTIONS.map(s => Object.assign({}, s)), BRANCHES, SERVICE_TALK, PARENT_ROLES, SIBLING_RELS, AVOID_TOPICS, MONTHS,
+    AFFIRMATIONS: AFFIRMATIONS.map(a => ({ id: a.id, group: a.group, text: a.t, needs: a.needs || null })), DEFAULT_AFFIRM: DEFAULT_AFFIRM.slice(), LABELS
+  },
+  STANDARDS: K.STANDARDS,
+  affirmationsFor: profile => affirmationsFor(normProfile(profile)),
+  affirmationText: (profile, id) => { const p = normProfile(profile); return affirmText(id, affirmVars(p)); }
+};
+})(typeof window !== "undefined" ? window : this);
+</script>
+<script id="kit-ui">
+/* =====================================================================
+   PRINTED BOOKS: SHARED SCREEN HELPERS  (BookUI)
+   Used by the 12-Month Life Planner and the Cognitive Life Journal screens:
+   putting pages into #printRoot, the free-packet gate, the two-page spread
+   preview, and reading saved Resident Activity Profiles (profile.html).
+   It uses the Packet Builder's own helpers and print flags, which are all
+   ready by the time any route renders.
+   ===================================================================== */
+const BookUI = (function(){
+  "use strict";
+  // Saved-profile occupation codes (profile.html) to the plain noun a sentence needs.
+  const JOB_WORDS = { homemaker:"homemaker", farmer:"farmer", mechanic:"mechanic", teacher:"schoolteacher", nurse:"nurse", doctor:"doctor",
+    office:"secretary", bookkeeper:"bookkeeper", factory:"factory worker", trades:"builder", carpenter:"carpenter", electrician:"electrician",
+    driver:"truck driver", railroad:"railroad worker", postal:"mail carrier", shop:"shopkeeper", business:"business owner", engineer:"engineer",
+    cook:"cook", seamstress:"seamstress", "police-fire":"police officer", military:"soldier", clergy:"minister" };
+
+  /* Put pages into #printRoot, sized and checked, ready for the print window.
+     Returns the page numbers that could not be fitted (always empty so far). */
+  function stage(pages, fileTitle){
+    const rootEl = $("#printRoot");
+    rootEl.className = (isPureBlackAndWhitePDF ? "pure-bw " : "") + "lp-print";
+    rootEl.innerHTML = pages.map(p => p.html).join("");
+    rootEl.style.cssText = "display:block;position:absolute;left:-10000px;top:0";   // measured off screen
+    const over = window.CognicopiaKit.fitSheets(rootEl);
+    rootEl.style.cssText = "";
+    printReady = true;                    // the builder's flag: this is a real print, not Ctrl+P
+    if (printTitle == null) printTitle = document.title;
+    document.title = fileTitle;           // the browser's default PDF file name
+    return over;
+  }
+  /* Print, after the free-packet check. Each print uses one free packet. */
+  function print(pages, fileTitle, after){
+    if (!pages.length) return false;
+    if (!isLicensed() && genCount() >= FREE_RUNS){ openGate(); return false; }
+    stage(pages, fileTitle);
+    window.print();
+    if (!isLicensed()) bumpGen();
+    if (after) after();
+    return true;
+  }
+  function allowanceText(){
+    return isLicensed() ? "Licensed: unlimited printing." : Math.max(0, FREE_RUNS - genCount()) + " of " + FREE_RUNS + " free packets left. Each print uses one.";
+  }
+
+  /* The spread preview: two page thumbnails, side by side (stacked on phones). */
+  function scale(box){
+    if (!box) return;
+    const w = box.clientWidth, stack = w < 470;
+    const s = stack ? Math.min(.62, (w - 4) / 816) : Math.min(.46, Math.max(.2, (w - 14) / 2 / 816));
+    box.style.setProperty("--lps", s.toFixed(3));
+    box.classList.toggle("lp-stack", stack);
+  }
+  function figure(page, side, emptyLabel, captions){
+    if (!page) return `<figure class="lp-fig lp-fig-empty"><div class="lp-thumb"><span>${emptyLabel}</span></div><figcaption>${emptyLabel}</figcaption></figure>`;
+    const role = page.role === "cover" ? "Cover" : page.role === "closing" ? "Closing page" : side === "left" ? captions.left : captions.right;
+    return `<figure class="lp-fig"><div class="lp-thumb lp-thumb-${side}" aria-hidden="true">${page.html}</div><figcaption>Page ${page.no} &middot; ${role}</figcaption></figure>`;
+  }
+
+  /* Saved Resident Activity Profiles (profile.html), sorted by name. */
+  function savedProfiles(){
+    const out = [];
+    try {
+      for (let i = 0; i < localStorage.length; i++){
+        const k = localStorage.key(i);
+        if (!k || k.indexOf("cognicopia_resident_") !== 0) continue;
+        const p = JSON.parse(localStorage.getItem(k));
+        if (p && p.schema === "cognicopia.residentProfile" && p.tier1_core) out.push(p);
+      }
+    } catch (e){}
+    return out.sort((a, b) => String(a.tier1_core.preferredName || "").localeCompare(String(b.tier1_core.preferredName || "")));
+  }
+  function savedProfileOptions(){
+    const list = savedProfiles();
+    return `<option value="">${list.length ? "Fill in from a saved profile…" : "No saved resident profiles"}</option>` +
+      list.map(p => `<option value="${esc(p.id)}">${esc(p.tier1_core.preferredName || "Unnamed resident")}</option>`).join("");
+  }
+  return { JOB_WORDS, stage, print, allowanceText, scale, figure, savedProfiles, savedProfileOptions };
+})();
 </script>
 <script id="lp-ui">
 /* =====================================================================
@@ -2422,11 +3486,7 @@ const LifePlannerUI = (function(){
     companion: { label:"Caregiver Companion",  tabs:"Tabs 3 and 4", desc:"Routines, logs and care notes, every page marked confidential." },
     binder:    { label:"Complete Binder",      tabs:"All four tabs", desc:"The memory book, then the care companion, in one file." }
   };
-  // Saved-profile occupation codes (profile.html) to the plain noun a sentence needs.
-  const JOB_WORDS = { homemaker:"homemaker", farmer:"farmer", mechanic:"mechanic", teacher:"schoolteacher", nurse:"nurse", doctor:"doctor",
-    office:"secretary", bookkeeper:"bookkeeper", factory:"factory worker", trades:"builder", carpenter:"carpenter", electrician:"electrician",
-    driver:"truck driver", railroad:"railroad worker", postal:"mail carrier", shop:"shopkeeper", business:"business owner", engineer:"engineer",
-    cook:"cook", seamstress:"seamstress", "police-fire":"police officer", military:"soldier", clergy:"minister" };
+  const JOB_WORDS = BookUI.JOB_WORDS;
   const LIST_FIELDS = ["songs", "genres", "hobbies", "scents", "textures", "foods", "meals"];
 
   let S = null, view0 = null, host = null, saveTimer = 0, pvTimer = 0, ro = null;
@@ -2491,7 +3551,7 @@ const LifePlannerUI = (function(){
     view0 = viewEl;
     if (ro){ ro.disconnect(); ro = null; }
     viewEl.innerHTML = `<div class="lp-screen" id="lpScreen">
-      <p class="eyebrow">Planners &amp; organizers</p>
+      <p class="eyebrow">Journals &amp; planners</p>
       <h1 class="view-title" tabindex="-1">12-Month Life Planner</h1>
       <p class="lede">A year-long memory book for the resident, and a separate care companion for staff and family. Every page is personalized from the details below, and nothing leaves this computer.</p>
       ${onboardingHtml()}
@@ -2782,22 +3842,10 @@ const LifePlannerUI = (function(){
     LP.fitSheets(box);
   }
   function fig(page, side, sp){
-    const cap = side === "left" ? "Left page: pictures and prompts" : "Right page: writing and logging";
-    if (!page){
-      const what = side === "left" ? (sp.id === "title" || (sp.id === "cover" && previewScope() !== "binder") ? "Inside cover" : "End of the memory book") : "Inside back cover";
-      return `<figure class="lp-fig lp-fig-empty"><div class="lp-thumb"><span>${what}</span></div><figcaption>${what}</figcaption></figure>`;
-    }
-    const role = page.role === "cover" ? "Cover" : page.role === "closing" ? "Closing page" : cap;
-    return `<figure class="lp-fig"><div class="lp-thumb lp-thumb-${side}" aria-hidden="true">${page.html}</div><figcaption>Page ${page.no} &middot; ${role}</figcaption></figure>`;
+    const what = side === "left" ? (sp.id === "title" || (sp.id === "cover" && previewScope() !== "binder") ? "Inside cover" : "End of the memory book") : "Inside back cover";
+    return BookUI.figure(page, side, what, { left: "Left page: pictures and prompts", right: "Right page: writing and logging" });
   }
-  function scaleThumbs(){
-    const box = document.getElementById("lpPv");
-    if (!box) return;
-    const w = box.clientWidth, stack = w < 470;
-    const s = stack ? Math.min(.62, (w - 4) / 816) : Math.min(.46, Math.max(.2, (w - 14) / 2 / 816));
-    box.style.setProperty("--lps", s.toFixed(3));
-    box.classList.toggle("lp-stack", stack);
-  }
+  function scaleThumbs(){ BookUI.scale(document.getElementById("lpPv")); }
   function watchSize(){
     if (ro || typeof ResizeObserver === "undefined") return;
     ro = new ResizeObserver(() => scaleThumbs());
@@ -2839,30 +3887,11 @@ const LifePlannerUI = (function(){
       ? "High Contrast Mode is on: pages print in pure black and white. Season names and icons still mark each season. <a href=\"#/settings\">Change in Settings</a>."
       : "Pages print in color: Spring green, Summer yellow, Autumn orange, Winter blue. For pure black and white, turn on High Contrast Mode in <a href=\"#/settings\">Settings</a>.";
     const al = document.getElementById("lpAllow");
-    if (al) al.textContent = isLicensed() ? "Licensed: unlimited printing." : Math.max(0, FREE_RUNS - genCount()) + " of " + FREE_RUNS + " free packets left. Each print uses one.";
+    if (al) al.textContent = BookUI.allowanceText();
   }
 
-  /* Put pages into #printRoot, sized and checked, ready for the print window.
-     Returns the page numbers that could not be fitted (always empty so far). */
-  function stage(pages, fileTitle){
-    const rootEl = $("#printRoot");
-    rootEl.className = (isPureBlackAndWhitePDF ? "pure-bw " : "") + "lp-print";
-    rootEl.innerHTML = pages.map(p => p.html).join("");
-    rootEl.style.cssText = "display:block;position:absolute;left:-10000px;top:0";   // measured off screen
-    const over = LP.fitSheets(rootEl);
-    rootEl.style.cssText = "";
-    printReady = true;                    // the builder's flag: this is a real print, not Ctrl+P
-    if (printTitle == null) printTitle = document.title;
-    document.title = fileTitle;           // the browser's default PDF file name
-    return over;
-  }
   function runPrint(pages, what){
-    if (!pages.length) return;
-    if (!isLicensed() && genCount() >= FREE_RUNS){ openGate(); return; }
-    stage(pages, ["Life Planner", who(), what, todayISO()].filter(Boolean).join(" - "));
-    window.print();
-    if (!isLicensed()) bumpGen();
-    syncPrint();
+    BookUI.print(pages, ["Life Planner", who(), what, todayISO()].filter(Boolean).join(" - "), syncPrint);
   }
   function printScope(){
     const res = LP.build(engineProfile(), engineOpts(), S.scope);
@@ -2875,23 +3904,7 @@ const LifePlannerUI = (function(){
   }
 
   /* ---------- saved profiles (profile.html) ---------- */
-  function savedProfiles(){
-    const out = [];
-    try {
-      for (let i = 0; i < localStorage.length; i++){
-        const k = localStorage.key(i);
-        if (!k || k.indexOf("cognicopia_resident_") !== 0) continue;
-        const p = JSON.parse(localStorage.getItem(k));
-        if (p && p.schema === "cognicopia.residentProfile" && p.tier1_core) out.push(p);
-      }
-    } catch (e){}
-    return out.sort((a, b) => String(a.tier1_core.preferredName || "").localeCompare(String(b.tier1_core.preferredName || "")));
-  }
-  function savedProfileOptions(){
-    const list = savedProfiles();
-    return `<option value="">${list.length ? "Fill in from a saved profile…" : "No saved resident profiles"}</option>` +
-      list.map(p => `<option value="${esc(p.id)}">${esc(p.tier1_core.preferredName || "Unnamed resident")}</option>`).join("");
-  }
+  const savedProfiles = BookUI.savedProfiles, savedProfileOptions = BookUI.savedProfileOptions;
   function fromSaved(p){
     const t1 = p.tier1_core || {}, t2 = p.tier2_enrichment || {}, t3 = p.tier3_deep || {}, mus = t2.music || {};
     const lab = x => (x && x.label) || "", occ = t1.occupation;
@@ -3056,7 +4069,578 @@ const LifePlannerUI = (function(){
 
   function clearSaved(){ S = null; store.remove(KEY); }
 
-  return { render, clearSaved, stage: scope => stage(LP.build(engineProfile(), engineOpts(), scope || S.scope).pages, "Life Planner"), state: () => state(), refresh: () => refresh() };
+  return { render, clearSaved, stage: scope => BookUI.stage(LP.build(engineProfile(), engineOpts(), scope || S.scope).pages, "Life Planner"), state: () => state(), refresh: () => refresh() };
+})();
+</script>
+<script id="lj-ui">
+/* =====================================================================
+   COGNITIVE LIFE JOURNAL: SCREEN  (#/journal)
+   Step 1 gathers the essentials (the facts that make every page this
+   person's own); Step 2 is the four sections of the journal, each with its
+   own questions and a live two-page preview; Step 3 prints. Page-building
+   is the engine's job (window.LifeJournal); printing and the preview use
+   BookUI, shared with the Life Planner.
+   ===================================================================== */
+const LifeJournalUI = (function(){
+  "use strict";
+  const LJ = window.LifeJournal, D = LJ.DATA, KEY = "cgb_journal";
+  const TABS = D.SECTIONS.map(s => ({ n: s.n, roman: s.roman, title: s.title, aud: s.n < 4 ? "res" : "cg" }));
+  const AUD = { res: "Life Story Book", cg: "Reflection & Family Notes" };
+  const SCOPES = {
+    story:      { label: "Life Story Book",           tabs: "Sections I to III", desc: "The memoir: large type, photographs and the resident’s own words." },
+    reflection: { label: "Reflection & Family Notes", tabs: "Section IV",        desc: "Comfort, wisdom and small joys, then a separate part for family and care team notes." },
+    complete:   { label: "Complete Journal",          tabs: "All four sections", desc: "The life story, then the reflection pages and notes, in one file." }
+  };
+  const LIST_FIELDS = ["friends", "schools", "skills", "organizations", "proudMoments", "songs", "genres", "hymns", "scents", "tastes", "comfortFoods",
+    "textures", "colors", "landscapes", "customAffirmations", "wisdom"];
+  const ROW_KINDS = { parents: { max: 4, make: () => ({ name: "", role: "mother" }) }, siblings: { max: 8, make: () => ({ name: "", rel: "brother" }) },
+    pets: { max: 6, make: () => ({ name: "", kind: "" }) } };
+  // Step 1 details that change what a section's form shows (Section II's service fields, Section IV's words of comfort).
+  const DEPENDS = { 2: ["militaryBranch", "career"], 4: ["name", "career", "hometown", "militaryBranch"] }, AVOID_DEPENDS = { 1: ["home"], 2: ["war"], 3: ["religion"], 4: ["war"] };
+
+  let S = null, view0 = null, host = null, saveTimer = 0, pvTimer = 0, ro = null;
+
+  /* ---------- state ---------- */
+  function blankProfile(){
+    return { name: "", fullName: "", birthSurname: "", birthMonth: "", birthDay: "", birthYear: "", birthplace: "", hometown: "", career: "", militaryBranch: "",
+      origins: "", childhoodHome: "", parents: [], siblings: [], friends: "", schools: "", teacher: "", subject: "", pets: [],
+      firstJob: "", workplace: "", careerYears: "", skills: "", militaryRank: "", militaryYears: "", militaryPlaces: "", militaryTalk: "gentle",
+      organizations: "", proudMoments: "", songs: "", genres: "", hymns: "", scents: "", tastes: "", comfortFoods: "", textures: "", colors: "", landscapes: "",
+      affirmations: D.DEFAULT_AFFIRM.slice(), customAffirmations: "", wisdom: "", avoid: [] };
+  }
+  function defaults(){
+    return { v: 1, profile: blankProfile(), source: "", scope: "story", tab: 1, pos: { 1: 0, 2: 0, 3: 0, 4: 0 }, obOpen: true,
+      opts: { binding: "book", art: "line", promptCount: 3, joyWeeks: 4, noteSpreads: 2, aiCopy: null } };
+  }
+  const isObj = v => v && typeof v === "object" && !Array.isArray(v);
+  function load(){
+    const d = defaults(), saved = store.get(KEY, null);
+    if (!isObj(saved) || saved.v !== 1) return d;
+    if (SCOPES[saved.scope]) d.scope = saved.scope;
+    if ([1, 2, 3, 4].indexOf(saved.tab) >= 0) d.tab = saved.tab;
+    if (isObj(saved.pos)) [1, 2, 3, 4].forEach(n => { if (saved.pos[n] >= 0) d.pos[n] = saved.pos[n] | 0; });
+    d.obOpen = saved.obOpen !== false;
+    d.source = typeof saved.source === "string" ? saved.source.slice(0, 60) : "";
+    if (isObj(saved.profile)) Object.keys(d.profile).forEach(k => {
+      const v = saved.profile[k];
+      if (Array.isArray(d.profile[k])){
+        if (!Array.isArray(v)) return;
+        d.profile[k] = ROW_KINDS[k] ? v.filter(isObj).slice(0, ROW_KINDS[k].max) : v.filter(x => typeof x === "string");
+      } else if (typeof v === "string" || typeof v === "number") d.profile[k] = String(v).slice(0, 2000);
+    });
+    if (isObj(saved.opts)) Object.keys(d.opts).forEach(k => { if (saved.opts[k] !== undefined && saved.opts[k] !== null) d.opts[k] = saved.opts[k]; });
+    return d;
+  }
+  function save(){ clearTimeout(saveTimer); saveTimer = setTimeout(() => store.set(KEY, S), 250); }
+  function state(){ if (!S) S = load(); return S; }
+  const engineProfile = () => Object.assign({}, S.profile, { facility: settings.facility });
+  const who = () => String(S.profile.name || "").replace(/\s+/g, " ").trim();
+
+  /* ---------- small builders ---------- */
+  const seg = (name, list, val) => `<div class="seg">${list.map(([v, l]) => `<label><input type="radio" name="${name}" value="${esc(v)}" ${String(v) === String(val) ? "checked" : ""}><span>${esc(l)}</span></label>`).join("")}</div>`;
+  const opts = (list, val) => list.map(([v, l]) => `<option value="${esc(v)}" ${String(v) === String(val) ? "selected" : ""}>${esc(l)}</option>`).join("");
+  const tx = (key, label, max, ph, hint) => `<div class="field"><label for="lj-${key}">${label}</label><input id="lj-${key}" type="text" data-p="${key}" maxlength="${max}" value="${esc(S.profile[key])}" placeholder="${esc(ph || "")}" autocomplete="off">${hint ? `<p class="hint">${hint}</p>` : ""}</div>`;
+  const ta = (key, label, ph, hint) => `<div class="field"><label for="lj-${key}">${label}</label><textarea id="lj-${key}" data-p="${key}" rows="3" maxlength="900" placeholder="${esc(ph || "One per line")}">${esc(S.profile[key])}</textarea>${hint ? `<p class="hint">${hint}</p>` : ""}</div>`;
+
+  /* ---------- the screen ---------- */
+  function render(viewEl){
+    state();
+    view0 = viewEl;
+    if (ro){ ro.disconnect(); ro = null; }
+    viewEl.innerHTML = `<div class="lp-screen lj-screen" id="ljScreen">
+      <p class="eyebrow">Journals &amp; planners</p>
+      <h1 class="view-title" tabindex="-1">Cognitive Life Journal</h1>
+      <p class="lede">A life story in four sections, in the resident’s own words, with a separate part where family and care staff add their notes. Every page is personalized from the details you enter, and nothing leaves this computer.</p>
+      ${essentialsHtml()}
+      <section class="lp-work" aria-labelledby="ljTabsTitle">
+        <p class="eyebrow">Step 2 &middot; The four sections</p>
+        <h2 id="ljTabsTitle" class="lj-step-h">Tell the story, one section at a time</h2>
+        <div class="lp-tablist" role="tablist" aria-label="Journal sections">${TABS.map(tabButton).join("")}</div>
+        <div class="lp-panel" id="ljPanel" role="tabpanel" tabindex="-1"></div>
+      </section>
+      ${printHtml()}</div>`;
+    host = document.getElementById("ljScreen");
+    bind();
+    renderTab();
+    syncPrint();
+    checkTone();
+    renderChip();
+  }
+
+  function essentialsHtml(){
+    const p = S.profile;
+    return `<section class="config lp-ob" id="ljOnboard" aria-labelledby="ljObTitle">
+      <div class="lp-ob-head">
+        <div class="lp-ob-intro">
+          <p class="eyebrow">Step 1 &middot; The essentials</p>
+          <h2 id="ljObTitle">About the resident <span class="lp-chip" id="ljWho"></span></h2>
+          <p class="hint">The exact details make the journal this person’s own: the name they go by, the family name they were born with, the town they grew up in, the work they did. Only the preferred name is needed to begin.</p>
+        </div>
+        <div class="lp-ob-tools">
+          <label class="sr-only" for="ljLoad">Fill in from a saved resident profile or the Life Planner</label>
+          <select id="ljLoad">${loadOptions()}</select>
+          <button class="btn btn-sm" type="button" id="ljExample">Try an example</button>
+          <button class="btn btn-sm btn-ghost" type="button" id="ljReset">Start over</button>
+          <button class="btn btn-sm btn-ghost" type="button" id="ljObToggle" aria-expanded="${S.obOpen}" aria-controls="ljObBody">${S.obOpen ? "Hide details" : "Show details"}</button>
+        </div>
+      </div>
+      <div id="ljObBody" ${S.obOpen ? "" : "hidden"}>
+        <p class="lp-src" ${S.source ? "" : "hidden"}>${S.source ? "Filled in from " + esc(S.source) + ". Changes here stay with the journal." : ""}</p>
+        <div class="lp-ob-grid">
+          <fieldset class="lp-fs"><legend>Name</legend>
+            ${tx("name", "Preferred name", 30, "e.g. Margaret", "The name they like to be called. It titles the journal: “Margaret’s Life Story”.")}
+            ${tx("fullName", "Full name <small>(cover)</small>", 50, "e.g. Margaret Ellen Hansen")}
+            ${tx("birthSurname", "Maiden name or family name at birth", 30, "e.g. Olson")}
+          </fieldset>
+          <fieldset class="lp-fs"><legend>Birth and home</legend>
+            <div class="field"><span class="lj-lab" id="ljBornLab">Birth date</span>
+              <div class="lj-date" role="group" aria-labelledby="ljBornLab">
+                <select data-p="birthMonth" aria-label="Month of birth"><option value="">Month</option>${D.MONTHS.map((m, i) => `<option value="${i + 1}" ${+p.birthMonth === i + 1 ? "selected" : ""}>${m}</option>`).join("")}</select>
+                <input type="number" inputmode="numeric" min="1" max="31" data-p="birthDay" value="${esc(p.birthDay)}" placeholder="Day" aria-label="Day of birth">
+                <input type="number" inputmode="numeric" min="1890" max="2010" data-p="birthYear" value="${esc(p.birthYear)}" placeholder="Year" aria-label="Year of birth">
+              </div><p class="hint">Any part you know. A year alone is fine.</p></div>
+            ${tx("birthplace", "Birthplace", 40, "e.g. Two Harbors, Minnesota")}
+            ${tx("hometown", "Hometown, where they grew up", 40, "e.g. Duluth, Minnesota")}
+          </fieldset>
+          <fieldset class="lp-fs"><legend>Work and service</legend>
+            ${tx("career", "Career or life’s work, exactly as they would say it", 50, "e.g. Registered nurse; Dairy farmer; Homemaker")}
+            <div class="field"><label for="lj-militaryBranch">Military service</label><select id="lj-militaryBranch" data-p="militaryBranch">${opts(D.BRANCHES, p.militaryBranch)}</select>
+              <p class="hint">Rank, years and how to talk about it are in Section II.</p></div>
+          </fieldset>
+          <fieldset class="lp-fs lp-fs-wide"><legend>Topics to steer around</legend>
+            <div class="lp-avoid-ui">${D.AVOID_TOPICS.map(([c, l]) => `<label class="lp-tick"><input type="checkbox" data-avoid="${c}" ${p.avoid.indexOf(c) >= 0 ? "checked" : ""}><span>${esc(l)}</span></label>`).join("")}</div>
+            <p class="hint">Prompts on these topics are left out. “War and combat” also leaves out the service pages, “Religion” the hymns, and “Going home” the childhood home pages.</p>
+          </fieldset>
+        </div>
+      </div>
+      <div class="lp-tone" id="ljTone" role="status" aria-live="polite"></div>
+    </section>`;
+  }
+
+  /* ---------- the four section tabs ---------- */
+  function tabButton(t){
+    const on = S.tab === t.n;
+    return `<button class="lp-tab lp-tab-${t.aud} lj-tab-${t.n}" type="button" role="tab" id="ljTab-${t.n}" aria-controls="ljPanel" aria-selected="${on}" tabindex="${on ? 0 : -1}" data-tab="${t.n}">
+      <span class="lp-tab-n">Section ${t.roman}</span><b>${esc(t.title)}</b><span class="lp-aud-chip lp-aud-${t.aud}">${AUD[t.aud]}</span></button>`;
+  }
+  function selectTab(n, focusTab){
+    S.tab = n; save();
+    document.querySelectorAll("#ljScreen .lp-tab").forEach(b => { const on = +b.dataset.tab === n; b.setAttribute("aria-selected", on); b.tabIndex = on ? 0 : -1; });
+    if (focusTab) document.getElementById("ljTab-" + n).focus();
+    renderTab();
+  }
+  function renderTab(){
+    const panel = document.getElementById("ljPanel"), t = TABS[S.tab - 1];
+    panel.setAttribute("aria-labelledby", "ljTab-" + t.n);
+    panel.className = "lp-panel lp-panel-" + t.aud + " lj-panel-" + t.n;
+    panel.innerHTML = `
+      <p class="lp-panel-aud">${t.aud === "res" ? "The life story: large type, photographs and the resident’s own words." : "The resident’s reflection pages, then a separate part for family and care team notes."}</p>
+      <div class="lp-grid">
+        <form class="lp-opts" id="ljTabForm" novalidate onsubmit="return false">${[sec1Html, sec2Html, sec3Html, sec4Html][t.n - 1]()}</form>
+        <div class="lp-pv" id="ljPv"></div>
+      </div>`;
+    ["parents", "siblings", "pets"].forEach(renderRows);
+    renderPreview();
+    watchSize();
+  }
+
+  function sec1Html(){
+    const noHome = S.profile.avoid.indexOf("home") >= 0;
+    return `<h3 class="lp-oh">Roots</h3>
+      ${tx("origins", "Family origins or heritage", 60, "e.g. Norwegian and Swedish farm families")}
+      ${tx("childhoodHome", "The home they grew up in", 70, "e.g. The yellow house on Jefferson Street", noHome ? "The childhood home pages are left out while “Going home” is a topic to steer around." : "")}
+      <h3 class="lp-oh">Family tree</h3>
+      <p class="lj-lab">Parents and the people who raised them</p><div id="ljRows-parents"></div>
+      <button class="btn btn-sm" type="button" data-add="parents">Add a parent</button>
+      <p class="lj-lab lj-gap">Brothers and sisters</p><div id="ljRows-siblings"></div>
+      <button class="btn btn-sm" type="button" data-add="siblings">Add a brother or sister</button>
+      <p class="hint lj-gap">Family is spoken of in the past tense of memory, so it reads well whether or not someone is still living.</p>
+      ${ta("friends", "Childhood best friends", "One per line, e.g. Dorothy Lind")}
+      <h3 class="lp-oh">School days and pets</h3>
+      ${ta("schools", "Schools", "One per line, e.g. Lincoln Elementary")}
+      <div class="row2">${tx("teacher", "A favorite teacher", 40, "e.g. Mrs. Lund")}${tx("subject", "A favorite subject", 40, "e.g. Reading")}</div>
+      <p class="lj-lab">Pets they have loved</p><div id="ljRows-pets"></div>
+      <button class="btn btn-sm" type="button" data-add="pets">Add a pet</button>`;
+  }
+  function sec2Html(){
+    const p = S.profile, served = !!p.militaryBranch, noWar = p.avoid.indexOf("war") >= 0;
+    return `<h3 class="lp-oh">Work</h3>
+      ${tx("firstJob", "First job", 60, "e.g. Soda fountain clerk at Miller’s Drugstore")}
+      <div class="row2">${tx("workplace", "Where they worked", 45, "e.g. Lincoln School")}${tx("careerYears", "Years", 24, "e.g. 1960 to 2001")}</div>
+      <p class="hint lj-hint-top">The career itself is in Step 1: ${p.career ? "“" + esc(p.career) + "”" : "not entered yet"}.</p>
+      ${ta("skills", "Trade and craft skills they mastered", "One per line, e.g. Carpentry, Canning, Knitting")}
+      <h3 class="lp-oh">Military service</h3>
+      ${served ? `<div class="row2">${tx("militaryRank", "Rank", 40, "e.g. Petty Officer Second Class")}${tx("militaryYears", "Years", 24, "e.g. 1956 to 1960")}</div>
+      ${tx("militaryPlaces", "Where they served", 60, "e.g. San Diego and Yokosuka, Japan")}
+      <div class="field"><label for="lj-militaryTalk">Talking about service</label><select id="lj-militaryTalk" data-p="militaryTalk">${opts(D.SERVICE_TALK, p.militaryTalk)}</select>
+        <p class="hint">${noWar ? "The service page is left out, because “War and combat” is a topic to steer around." : "Deployment memories are asked about only when service is a welcome topic."}</p></div>` :
+        `<p class="hint">No military service is entered. To add it, choose a branch in Step 1.</p>`}
+      <h3 class="lp-oh">Roles and pride</h3>
+      ${ta("organizations", "Community groups, clubs and memberships", "One per line, e.g. Lions Club")}
+      ${ta("proudMoments", "Proudest moments and personal triumphs", "One per line, e.g. Building our house on Elm Street")}`;
+  }
+  function sec3Html(){
+    const o = S.opts, noHymns = S.profile.avoid.indexOf("religion") >= 0;
+    return `<h3 class="lp-oh">Music</h3>
+      ${ta("songs", "Favorite songs", "One per line, e.g. Moon River")}
+      ${ta("genres", "Music they love: styles or artists", "One per line, e.g. Big band and swing")}
+      ${noHymns ? `<p class="hint">Hymns are left out, because religion is a topic to steer around.</p>` : ta("hymns", "Hymns from their youth", "One per line, e.g. How Great Thou Art")}
+      <h3 class="lp-oh">Scents and tastes</h3>
+      ${ta("scents", "Comforting scents", "One per line, e.g. Lavender")}
+      ${ta("tastes", "Favorite tastes", "One per line, e.g. Lingonberry jam")}
+      ${ta("comfortFoods", "Comfort foods", "One per line, e.g. Her mother’s apple pie")}
+      <h3 class="lp-oh">Textures, colors and places</h3>
+      ${ta("textures", "Textures they love to touch", "One per line, e.g. A soft wool shawl")}
+      ${ta("colors", "Favorite colors", "One per line, e.g. Cornflower blue")}
+      ${ta("landscapes", "Places and landscapes they cherish", "One per line, e.g. The Lake Superior shoreline")}
+      <h3 class="lp-oh">Pages in every section</h3>
+      <fieldset class="field"><legend>Pictures on the left-hand pages</legend>${seg("ljArt", [["line", "Line drawing, room for a photo"], ["photo", "Empty photo frame"]], o.art)}</fieldset>
+      <fieldset class="field"><legend>Questions on each page</legend>${seg("ljPrompts", [[2, "2"], [3, "3"], [4, "4"]], o.promptCount)}</fieldset>
+      ${aiHtml()}`;
+  }
+  function sec4Html(){
+    const p = S.profile, o = S.opts, prof = engineProfile();
+    const rows = D.AFFIRMATIONS.map(a => {
+      const text = LJ.affirmationText(prof, a.id), on = p.affirmations.indexOf(a.id) >= 0;
+      return `<label class="lp-tick lj-aff${text ? "" : " lj-aff-off"}"><input type="checkbox" data-affirm="${a.id}" ${on ? "checked" : ""} ${text ? "" : "disabled"}>
+        <span>${esc(text || a.text.replace(/\{\w+\}\.?/g, "…"))}${text ? "" : ` <small>(${esc(needsLabel(a.needs))})</small>`}</span></label>`;
+    }).join("");
+    return `<h3 class="lp-oh">Words of comfort</h3>
+      <p class="hint lj-hint-top">Reassurance first, then words about the person. Tick the ones that are right for them.</p>
+      <div class="lj-aff-ui">${rows}</div>
+      ${ta("customAffirmations", "Words of your own", "One per line, e.g. You taught hundreds of children to read.")}
+      <h3 class="lp-oh">Wisdom I live by</h3>
+      ${ta("wisdom", "Sayings and life wisdom they share", "One per line, e.g. Measure twice, cut once.")}
+      <h3 class="lp-oh">Logs and notes</h3>
+      <fieldset class="field"><legend>Comfort &amp; Joy weekly pages</legend>${seg("ljJoy", [[1, "1 week"], [4, "4 weeks"], [12, "12 weeks"]], o.joyWeeks)}</fieldset>
+      <fieldset class="field"><legend>Family &amp; care team note spreads</legend>${seg("ljNotes", [[1, "1"], [2, "2"], [4, "4"]], o.noteSpreads)}
+        <p class="hint">These come after a divider at the back, so visitors and staff add updates without writing over the life story.</p></fieldset>`;
+  }
+  function needsLabel(k){
+    if (k === "branchThe" && S.profile.militaryBranch) return "left out while service is a topic to avoid";
+    return "needs " + ({ careerA: "a career in Step 1", hometown: "a hometown in Step 1", skill: "a skill in Section II", branchThe: "military service in Step 1" }[k] || "more detail");
+  }
+
+  /* ---------- repeating rows ---------- */
+  function renderRows(kind){
+    const box = document.getElementById("ljRows-" + kind);
+    if (!box) return;
+    const rows = S.profile[kind];
+    if (!rows.length){ box.innerHTML = `<p class="lp-none">None yet.</p>`; return; }
+    const rm = (i, what) => `<button class="lp-x" type="button" data-rm="${kind}" data-i="${i}" aria-label="Remove ${esc(what)}">&times;</button>`;
+    const nm = (r, i, what) => `<input type="text" maxlength="30" data-row="${kind}" data-i="${i}" data-f="name" value="${esc(r.name)}" aria-label="${what} ${i + 1}: name" placeholder="Name">`;
+    box.innerHTML = rows.map((r, i) => kind === "parents"
+      ? `<div class="lp-row lj-r2">${nm(r, i, "Parent")}<select data-row="parents" data-i="${i}" data-f="role" aria-label="Parent ${i + 1}: who they were">${opts(D.PARENT_ROLES, r.role)}</select>${rm(i, r.name || "this parent")}</div>`
+      : kind === "siblings"
+      ? `<div class="lp-row lj-r2">${nm(r, i, "Brother or sister")}<select data-row="siblings" data-i="${i}" data-f="rel" aria-label="Brother or sister ${i + 1}">${opts(D.SIBLING_RELS, r.rel)}</select>${rm(i, r.name || "this person")}</div>`
+      : `<div class="lp-row lj-r2">${nm(r, i, "Pet")}<input type="text" maxlength="24" data-row="pets" data-i="${i}" data-f="kind" value="${esc(r.kind)}" aria-label="Pet ${i + 1}: what kind" placeholder="e.g. collie">${rm(i, r.name || "this pet")}</div>`).join("");
+  }
+
+  /* ---------- optional AI drafting, behind the dignity-first guardrails ---------- */
+  function aiHtml(){
+    const has = S.opts.aiCopy && S.opts.aiCopy.pages && Object.keys(S.opts.aiCopy.pages).length;
+    return `<details class="lp-ai"${has ? " open" : ""}>
+      <summary>Optional: draft questions with an approved AI assistant</summary>
+      <p class="hint">The journal writes every page itself, on this computer. If your organization has an AI assistant approved for resident information, it can draft fresh questions for each page. Every line that comes back is checked against the dignity-first standard, and any line that fails is left out.</p>
+      <ol class="lp-ai-steps">
+        <li><button class="btn btn-sm" type="button" id="ljAiCopy">Copy the request</button> <span class="hint">The standing instructions below and the details above. The resident’s name and the family, friends and pets you listed are taken out; read it over for any other names before you send it.</span></li>
+        <li><label for="ljAiIn">Paste the assistant’s reply</label><textarea id="ljAiIn" rows="4" placeholder='{"pages":[{"id":"home","prompts":["..."]}]}'></textarea></li>
+        <li class="actions"><button class="btn btn-sm btn-primary" type="button" id="ljAiApply">Check and use</button><button class="btn btn-sm btn-ghost" type="button" id="ljAiClear" ${has ? "" : "disabled"}>Remove AI wording</button></li>
+      </ol>
+      <div class="lp-ai-msg" id="ljAiMsg" role="status">${has ? "AI-drafted questions are in use on " + Object.keys(S.opts.aiCopy.pages).length + " pages." : ""}</div>
+      <textarea class="lp-ai-out" id="ljAiOut" readonly hidden aria-label="The request to copy"></textarea>
+      <details class="lp-sys"><summary>Read the dignity-first system prompt</summary><pre>${esc(LJ.TONE.SYSTEM_PROMPT)}</pre></details>
+    </details>`;
+  }
+  function copyAiRequest(){
+    const r = LJ.buildAiRequest(engineProfile());
+    const text = "SYSTEM INSTRUCTIONS\n" + r.system + "\n\nREQUEST\n" + r.user + "\n\nReply with JSON in this shape:\n" + JSON.stringify(r.schema, null, 2);
+    const out = document.getElementById("ljAiOut"), msg = document.getElementById("ljAiMsg");
+    const manual = () => { out.hidden = false; out.value = text; out.focus(); out.select(); msg.textContent = "Copy the selected text (Ctrl+C or Cmd+C), then paste it into the assistant."; };
+    if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(() => { out.hidden = true; msg.textContent = "Copied. Paste it into your approved assistant, then paste its reply below."; }, manual);
+    else manual();
+  }
+  function applyAi(){
+    const raw = document.getElementById("ljAiIn").value, msg = document.getElementById("ljAiMsg");
+    const a = raw.indexOf("{"), b = raw.lastIndexOf("}");
+    let data = null;
+    try { data = JSON.parse(raw.slice(a, b + 1)); } catch (e){ data = null; }
+    if (a < 0 || !data){ msg.textContent = "That reply is not in the expected format. Paste the assistant’s JSON reply exactly as it came back."; return; }
+    const res = LJ.acceptAiCopy(data), pages = Object.keys((res.copy && res.copy.pages) || {});
+    if (!pages.length){ msg.textContent = "Nothing usable came back" + (res.rejected.length ? ": every line failed the dignity-first check." : "."); return; }
+    S.opts.aiCopy = res.copy; save(); refresh();
+    const rej = res.rejected.slice(0, 4).map(r => "“" + r.text.slice(0, 60) + "” (" + r.rules.map(ruleLabel).join(", ") + ")");
+    msg.innerHTML = `Using AI-drafted questions on ${pages.length} ${pages.length === 1 ? "page" : "pages"}.` +
+      (res.rejected.length ? ` <b>${res.rejected.length} ${res.rejected.length === 1 ? "line was" : "lines were"} left out</b> for failing the dignity-first check: ${esc(rej.join("; "))}${res.rejected.length > 4 ? "…" : ""}` : " Every line passed the dignity-first check.");
+    const clr = document.getElementById("ljAiClear"); if (clr) clr.disabled = false;
+  }
+  function ruleLabel(id){ const r = LJ.TONE.RULES.filter(x => x.id === id)[0]; return r ? r.label.toLowerCase() : id; }
+
+  /* ---------- the spread preview ---------- */
+  function previewScope(){ return S.tab <= 3 ? "story" : (S.scope === "complete" ? "complete" : "reflection"); }
+  function tabSpreads(){
+    const res = LJ.build(engineProfile(), S.opts, previewScope());
+    return { res, list: res.spreads.filter(sp => sp.tab === S.tab) };
+  }
+  function renderPreview(){
+    const box = document.getElementById("ljPv");
+    if (!box) return;
+    const { res, list } = tabSpreads();
+    if (!list.length){ box.innerHTML = ""; return; }
+    const i = Math.min(Math.max(S.pos[S.tab] | 0, 0), list.length - 1);
+    S.pos[S.tab] = i;
+    const sp = list[i], L = sp.left != null ? res.pages[sp.left] : null, R = sp.right != null ? res.pages[sp.right] : null;
+    const nums = [L, R].filter(Boolean).map(p => p.no);
+    const inScope = S.tab <= 3 ? S.scope !== "reflection" : S.scope !== "story";
+    const empty = side => side === "right" ? "Inside back cover" : sp.id === "opener" && previewScope() === "complete" ? "End of the life story" : "Inside cover";
+    const caps = S.tab < 4 ? { left: "Left page: story prompts and a photograph", right: "Right page: writing lines" }
+      : { left: "Left page: words, prompts and notes", right: "Right page: writing and logging" };
+    box.innerHTML = `
+      <div class="lp-pv-bar">
+        <button class="btn btn-sm btn-ghost" type="button" data-pv="-1" ${i === 0 ? "disabled" : ""} aria-label="Previous spread">&lsaquo; Prev</button>
+        <p class="lp-pv-title"><b>${esc(sp.title)}</b><span>Spread ${i + 1} of ${list.length} &middot; ${nums.length > 1 ? "pages " + nums.join(" and ") : "page " + nums[0]}</span></p>
+        <button class="btn btn-sm btn-ghost" type="button" data-pv="1" ${i === list.length - 1 ? "disabled" : ""} aria-label="Next spread">Next &rsaquo;</button>
+      </div>
+      <div class="lp-spread">${BookUI.figure(L, "left", empty("left"), caps)}${BookUI.figure(R, "right", empty("right"), caps)}</div>
+      <div class="lp-pv-foot">
+        <p class="hint">${inScope ? "" : `Not in the ${SCOPES[S.scope].label}. Choose ${S.tab <= 3 ? "the Life Story Book" : "Reflection &amp; Family Notes"} or the Complete Journal below to print it. `}Left pages carry the story prompts and a photograph; right pages carry writing lines 0.46 in apart. The shaded edge is the 0.75 in binding gutter.</p>
+        <button class="btn btn-sm" type="button" id="ljPrintSpread">Print this spread</button>
+      </div>`;
+    BookUI.scale(box);
+    window.CognicopiaKit.fitSheets(box);
+  }
+  function watchSize(){
+    if (ro || typeof ResizeObserver === "undefined") return;
+    ro = new ResizeObserver(() => BookUI.scale(document.getElementById("ljPv")));
+    const box = document.getElementById("ljPv"); if (box) ro.observe(box.parentNode);
+  }
+
+  /* ---------- print panel ---------- */
+  function printHtml(){
+    return `<section class="config lp-printbox" id="ljPrint" aria-labelledby="ljPrintTitle">
+      <p class="eyebrow">Step 3 &middot; Print</p>
+      <h2 id="ljPrintTitle">Print or save as PDF</h2>
+      <fieldset class="field"><legend>What to print</legend>
+        <div class="lp-scopes">${Object.keys(SCOPES).map(k => `<label class="lp-scope lp-scope-${k === "reflection" ? "companion" : k}"><input type="radio" name="ljScope" value="${k}" ${S.scope === k ? "checked" : ""}>
+          <span><b>${SCOPES[k].label}</b><small>${SCOPES[k].tabs} &middot; <span data-ljcount="${k}"></span> pages</small><em>${SCOPES[k].desc}</em></span></label>`).join("")}</div>
+      </fieldset>
+      <fieldset class="field"><legend>Binding</legend>${seg("ljBind", [["book", "Both sides: book or spiral"], ["binder", "One side: ring binder"]], S.opts.binding)}
+        <p class="hint" id="ljBindHint"></p></fieldset>
+      <p class="hint" id="ljBw"></p>
+      <div class="actions"><button class="btn btn-primary" type="button" id="ljPrintBtn"></button></div>
+      <p class="hint">In the print window, choose <b>Save as PDF</b> or your printer. Keep <b>Scale</b> at 100% and <b>Margins</b> at Default: the gutters are built into every page.</p>
+      <p class="allowance" id="ljAllow"></p>
+    </section>`;
+  }
+  function syncPrint(){
+    const c = LJ.countPages(engineProfile(), S.opts);
+    document.querySelectorAll("[data-ljcount]").forEach(el => { el.textContent = c[el.dataset.ljcount]; });
+    const btn = document.getElementById("ljPrintBtn");
+    if (btn) btn.textContent = "Print " + SCOPES[S.scope].label + " (" + c[S.scope] + " pages)";
+    const bh = document.getElementById("ljBindHint");
+    if (bh) bh.textContent = S.opts.binding === "binder"
+      ? "Print on one side only. The 0.75 in gutter is on the left edge of every sheet."
+      : "Print on both sides, flipping on the long edge. The 0.75 in gutter alternates to the inner edge.";
+    const bw = document.getElementById("ljBw");
+    if (bw) bw.innerHTML = isPureBlackAndWhitePDF
+      ? "High Contrast Mode is on: pages print in pure black and white. Every section still prints its number and name. <a href=\"#/settings\">Change in Settings</a>."
+      : "Pages print in color, one color for each section, always with its name. For pure black and white, turn on High Contrast Mode in <a href=\"#/settings\">Settings</a>.";
+    const al = document.getElementById("ljAllow");
+    if (al) al.textContent = BookUI.allowanceText();
+  }
+  function fileTitle(what){ return ["Life Journal", who(), what, todayISO()].filter(Boolean).join(" - "); }
+  function printScope(){ BookUI.print(LJ.build(engineProfile(), S.opts, S.scope).pages, fileTitle(SCOPES[S.scope].label), syncPrint); }
+  function printSpread(){
+    const { res, list } = tabSpreads(), sp = list[S.pos[S.tab]];
+    if (sp) BookUI.print([sp.left, sp.right].filter(x => x != null).map(k => res.pages[k]), fileTitle(sp.title), syncPrint);
+  }
+
+  /* ---------- filling in from elsewhere ---------- */
+  function loadOptions(){
+    const list = BookUI.savedProfiles(), planner = store.get("cgb_planner", null);
+    const pName = planner && planner.profile && String(planner.profile.name || "").trim();
+    return `<option value="">${list.length || pName ? "Fill in from…" : "No saved profiles yet"}</option>` +
+      (pName ? `<option value="planner">The Life Planner (${esc(pName)})</option>` : "") +
+      list.map(p => `<option value="${esc(p.id)}">Saved profile: ${esc(p.tier1_core.preferredName || "Unnamed resident")}</option>`).join("");
+  }
+  /* A saved Resident Activity Profile (profile.html). */
+  function fromSaved(p){
+    const t1 = p.tier1_core || {}, t2 = p.tier2_enrichment || {}, t3 = p.tier3_deep || {}, mus = t2.music || {}, mil = t2.military || {};
+    const lab = x => (x && x.label) || "", occ = t1.occupation, out = blankProfile();
+    out.name = String(t1.preferredName || "").slice(0, 30);
+    out.birthYear = t2.birthYear ? String(t2.birthYear) : "";
+    out.hometown = String((t2.hometown && t2.hometown.place) || "").slice(0, 40);
+    out.career = occ ? (occ.code === "other" ? lab(occ) : (BookUI.JOB_WORDS[occ.code] || lab(occ))) : "";
+    const branch = mil.branch && mil.branch.code;
+    out.militaryBranch = D.BRANCHES.some(b => b[0] === branch) ? branch : "";
+    out.militaryTalk = mil.talkingAboutIt && ["welcome", "gentle", "avoid"].indexOf(mil.talkingAboutIt.code) >= 0 ? mil.talkingAboutIt.code : "gentle";
+    out.skills = ((t2.skills || {}).items || []).map(lab).concat((t2.skills || {}).other ? [(t2.skills || {}).other] : []).filter(Boolean).join("\n");
+    out.songs = mus.favoriteSong || "";
+    out.genres = (mus.genres || []).map(lab).concat(mus.artists || []).filter(Boolean).join("\n");
+    fillFamily(out, (t3.people || []).map(x => ({ name: x && x.name, rel: x && x.relationship && x.relationship.code })));
+    out.avoid = ((t1.topicsToAvoid || {}).topics || []).map(x => x && x.code).filter(Boolean);
+    return out;
+  }
+  /* The Life Planner's form on this computer. */
+  function fromPlanner(pl){
+    const p = pl.profile || {}, out = blankProfile(), s = v => typeof v === "string" ? v : "";
+    ["name", "fullName", "hometown"].forEach(k => { out[k] = s(p[k]); });
+    out.birthYear = s(String(p.birthYear || "")); out.career = s(p.profession);
+    ["songs", "genres", "scents", "textures"].forEach(k => { out[k] = s(p[k]); });
+    out.comfortFoods = s(p.foods);
+    fillFamily(out, (Array.isArray(p.family) ? p.family : []).map(x => ({ name: x && x.name, rel: x && x.rel })));
+    out.avoid = (Array.isArray(p.avoid) ? p.avoid : []).filter(c => typeof c === "string");
+    return out;
+  }
+  function fillFamily(out, people){
+    people.forEach(x => {
+      const name = String(x.name || "").trim().slice(0, 30);
+      if (!name) return;
+      if (x.rel === "parent" && out.parents.length < 4) out.parents.push({ name, role: "parent" });
+      else if (x.rel === "sibling" && out.siblings.length < 8) out.siblings.push({ name, rel: "sibling" });
+      else if (/^pet-/.test(x.rel || "") && out.pets.length < 6) out.pets.push({ name: name.slice(0, 24), kind: { "pet-dog": "dog", "pet-cat": "cat" }[x.rel] || "" });
+    });
+  }
+  function exampleProfile(){
+    const e = LJ.EXAMPLE_PROFILE, p = blankProfile();
+    Object.keys(p).forEach(k => {
+      if (LIST_FIELDS.indexOf(k) >= 0) p[k] = (e[k] || []).join("\n");
+      else if (ROW_KINDS[k]) p[k] = (e[k] || []).map(x => Object.assign({}, x));
+      else if (k === "affirmations" || k === "avoid") p[k] = (e[k] || []).slice();
+      else if (e[k] != null) p[k] = String(e[k]);
+    });
+    return p;
+  }
+  function hasData(){ const p = S.profile; return !!(p.name || p.hometown || p.career || p.songs || p.parents.length || p.siblings.length || p.proudMoments); }
+  function replaceProfile(profile, source){
+    S.profile = profile; S.source = source || ""; S.opts.aiCopy = null;
+    save(); render(view0);
+    const f = document.getElementById("lj-name"); if (f) f.focus();
+  }
+
+  /* ---------- wording check (advice; never blocks) ---------- */
+  function checkTone(){
+    const box = document.getElementById("ljTone");
+    if (!box) return;
+    const hits = LJ.checkProfile(engineProfile());
+    if (!hits.length){ box.innerHTML = ""; return; }
+    box.innerHTML = `<b>Dignity-first wording check</b><ul>${hits.slice(0, 6).map(h => `<li><span>${esc(h.field)}:</span> “${esc(h.match)}”. ${esc(h.label)}. ${esc(h.fix)}</li>`).join("")}</ul>
+      <p class="hint">Advice only: the pages print as written. The journal’s own wording already meets this standard.</p>`;
+  }
+  function renderChip(){ const c = document.getElementById("ljWho"); if (c){ c.textContent = who() ? "Journal for " + who() : ""; c.hidden = !who(); } }
+  function refresh(){
+    clearTimeout(pvTimer);
+    pvTimer = setTimeout(() => { renderPreview(); syncPrint(); checkTone(); renderChip(); }, 120);
+  }
+
+  /* The preview follows the form: working on a detail shows the spread it prints on. */
+  const FIELD_SPREAD = { fullName: "identity", birthSurname: "identity", birthMonth: "identity", birthDay: "identity", birthYear: "identity", birthplace: "identity",
+    origins: "identity", hometown: "home", childhoodHome: "home", parents: "family", siblings: "family", friends: "school", schools: "school", teacher: "school",
+    subject: "school", pets: "pets", firstJob: "firstjob", career: "career", workplace: "career", careerYears: "career", skills: "skills", militaryBranch: "service",
+    militaryRank: "service", militaryYears: "service", militaryPlaces: "service", militaryTalk: "service", organizations: "community", proudMoments: "pride",
+    songs: "music", genres: "music", hymns: "music", scents: "tastes", tastes: "tastes", comfortFoods: "tastes", textures: "places", colors: "places",
+    landscapes: "places", affirmations: "affirm", customAffirmations: "affirm", wisdom: "wisdom", ljJoy: "joy", ljNotes: "notes" };
+  function onFocus(e){
+    const t = e.target, ds = t.dataset || {};
+    const id = FIELD_SPREAD[ds.p || ds.row || (ds.affirm ? "affirmations" : "") || t.name];
+    if (!id) return;
+    const i = tabSpreads().list.findIndex(sp => sp.id === id || sp.base === id);
+    if (i >= 0 && i !== S.pos[S.tab]){ S.pos[S.tab] = i; save(); renderPreview(); }
+  }
+
+  /* ---------- events (delegated) ---------- */
+  function onField(e){
+    const t = e.target, ds = t.dataset || {};
+    if (ds.p){
+      S.profile[ds.p] = t.value;
+      if (ds.p === "name") renderChip();
+      if (e.type === "change" && (DEPENDS[S.tab] || []).indexOf(ds.p) >= 0){ save(); renderTab(); }
+    }
+    else if (ds.row){ const r = S.profile[ds.row][+ds.i]; if (!r) return; r[ds.f] = t.value; }
+    else if (ds.avoid){ const a = S.profile.avoid, k = a.indexOf(ds.avoid); if (t.checked && k < 0) a.push(ds.avoid); if (!t.checked && k >= 0) a.splice(k, 1); if ((AVOID_DEPENDS[S.tab] || []).indexOf(ds.avoid) >= 0){ save(); renderTab(); } }
+    else if (ds.affirm){ const a = S.profile.affirmations, k = a.indexOf(ds.affirm); if (t.checked && k < 0) a.push(ds.affirm); if (!t.checked && k >= 0) a.splice(k, 1); }
+    else if (t.name === "ljScope") S.scope = t.value;
+    else if (t.name === "ljBind") S.opts.binding = t.value;
+    else if (t.name === "ljArt") S.opts.art = t.value;
+    else if (t.name === "ljPrompts") S.opts.promptCount = +t.value;
+    else if (t.name === "ljJoy") S.opts.joyWeeks = +t.value;
+    else if (t.name === "ljNotes") S.opts.noteSpreads = +t.value;
+    else return;
+    save(); refresh();
+  }
+  function onClick(e){
+    const b = e.target.closest("button");
+    if (!b || !host.contains(b)) return;
+    if (b.dataset.tab){ selectTab(+b.dataset.tab); return; }
+    if (b.dataset.add){
+      const k = b.dataset.add, list = S.profile[k];
+      if (list.length >= ROW_KINDS[k].max){ toast("That list is full."); return; }
+      list.push(ROW_KINDS[k].make()); renderRows(k); save(); refresh();
+      const rows = document.querySelectorAll(`#ljRows-${k} .lp-row`), last = rows[rows.length - 1];
+      if (last) last.querySelector("input").focus();
+      return;
+    }
+    if (b.dataset.rm){ S.profile[b.dataset.rm].splice(+b.dataset.i, 1); renderRows(b.dataset.rm); save(); refresh(); return; }
+    if (b.dataset.pv){
+      const { list } = tabSpreads();
+      S.pos[S.tab] = Math.min(Math.max((S.pos[S.tab] | 0) + +b.dataset.pv, 0), list.length - 1);
+      save(); renderPreview();
+      const again = host.querySelector(`[data-pv="${b.dataset.pv}"]:not([disabled])`) || host.querySelector("[data-pv]:not([disabled])");
+      if (again) again.focus();
+      return;
+    }
+    switch (b.id){
+      case "ljExample":
+        if (hasData() && !confirm("Replace the details in the journal with the example resident, Margaret?")) return;
+        replaceProfile(exampleProfile(), "the example resident"); toast("Example resident added. Edit anything, or press Start over."); return;
+      case "ljReset":
+        if (hasData() && !confirm("Clear every detail from the journal form?")) return;
+        replaceProfile(blankProfile(), ""); return;
+      case "ljObToggle":
+        S.obOpen = !S.obOpen; save();
+        document.getElementById("ljObBody").hidden = !S.obOpen; b.setAttribute("aria-expanded", S.obOpen); b.textContent = S.obOpen ? "Hide details" : "Show details";
+        return;
+      case "ljAiCopy": copyAiRequest(); return;
+      case "ljAiApply": applyAi(); return;
+      case "ljAiClear": S.opts.aiCopy = null; save(); refresh(); document.getElementById("ljAiMsg").textContent = "AI wording removed. The journal’s own questions are back."; b.disabled = true; return;
+      case "ljPrintBtn": printScope(); return;
+      case "ljPrintSpread": printSpread(); return;
+    }
+  }
+  function onKey(e){
+    const t = e.target;
+    if (!t.classList || !t.classList.contains("lp-tab")) return;
+    const n = +t.dataset.tab, next = { ArrowRight: n % 4 + 1, ArrowLeft: (n + 2) % 4 + 1, Home: 1, End: 4 }[e.key];
+    if (next){ e.preventDefault(); selectTab(next, true); }
+  }
+  function onLoad(e){
+    const id = e.target.value;
+    if (!id) return;
+    e.target.value = "";
+    let prof = null, label = "";
+    if (id === "planner"){
+      const pl = store.get("cgb_planner", null);
+      if (pl && pl.profile){ prof = fromPlanner(pl); label = "the Life Planner (" + (pl.profile.name || "resident") + ")"; }
+    } else {
+      const p = BookUI.savedProfiles().filter(x => x.id === id)[0];
+      if (p){ prof = fromSaved(p); label = (p.tier1_core.preferredName || "this resident") + "’s saved profile"; }
+    }
+    if (!prof) return;
+    if (hasData() && !confirm("Replace the details in the journal with " + label + "?")) return;
+    replaceProfile(prof, label);
+    toast("Filled in from " + label + ". Add their roots, work and favorite things to complete the story.");
+  }
+  function bind(){
+    host.addEventListener("input", onField);
+    host.addEventListener("change", onField);
+    host.addEventListener("click", onClick);
+    host.addEventListener("keydown", onKey);
+    host.addEventListener("focusin", onFocus);
+    document.getElementById("ljLoad").addEventListener("change", onLoad);
+  }
+  function clearSaved(){ S = null; store.remove(KEY); }
+
+  return { render, clearSaved, stage: scope => BookUI.stage(LJ.build(engineProfile(), S.opts, scope || S.scope).pages, "Life Journal"), state: () => state() };
 })();
 </script>
 <script>
@@ -3073,7 +4657,8 @@ const LifePlannerUI = (function(){
      8. Category registry (5 placeholder categories)
      9. Output sheet renderer
     10. Packet queue (persisted)
-    11. Views + hash router (#/planner hands over to LifePlannerUI)
+    11. Views + hash router (#/planner and #/journal hand over to
+        LifePlannerUI and LifeJournalUI)
     12. Drawer, toast, gate, printing
     13. Boot
    ===================================================================== */
@@ -6057,7 +7642,8 @@ const ICONS = {
   music: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>',
   brush: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18.4 2.6a2 2 0 0 1 2.9 2.9L12 14.8 9.2 12z"/><path d="M9.2 12c-2 0-3.6 1.6-3.6 3.6 0 1.6-1 2.6-2.6 3.2 1.2 1.3 3 2.2 5 2.2 3 0 4.8-2.4 4-5.4"/></svg>',
   art:   '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22a10 10 0 1 1 10-10c0 3-2 4-4 4h-2a2 2 0 0 0-1 3.7A2 2 0 0 1 12 22z"/><circle cx="7.5" cy="10.5" r="1"/><circle cx="12" cy="7" r="1"/><circle cx="16.5" cy="10.5" r="1"/></svg>',
-  planner:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/><path d="M8 13h3M13 13h3M8 17h3"/></svg>'
+  planner:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/><path d="M8 13h3M13 13h3M8 17h3"/></svg>',
+  journal:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2z"/><path d="M22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z"/></svg>'
 };
 
 const CATEGORIES = [
@@ -6132,8 +7718,9 @@ function addBatch(act, cfg, batchSeed, count){
 
 /* ---------- 11. Views + router ---------- */
 const view = $("#view");
-const routes = { "": renderHome, "category": renderCategory, "settings": renderSettings, "planner": renderPlanner };
+const routes = { "": renderHome, "category": renderCategory, "settings": renderSettings, "planner": renderPlanner, "journal": renderJournal };
 function renderPlanner(){ LifePlannerUI.render(view); }
+function renderJournal(){ LifeJournalUI.render(view); }
 
 function parseHash(){
   const parts = location.hash.replace(/^#\/?/, "").split("/");
@@ -6159,7 +7746,7 @@ function highlightNav(name, arg){
   document.querySelectorAll(".sb-link").forEach(a => a.removeAttribute("aria-current"));
   const el = name === "category" ? document.querySelector(`.sb-link[data-cat="${CSS.escape(arg)}"]`)
            : name === "settings" ? document.querySelector('.sb-link[data-route="settings"]')
-           : name === "planner" ? document.querySelector('.sb-link[data-route="planner"]') : null;
+           : name === "planner" || name === "journal" ? document.querySelector(`.sb-link[data-route="${name}"]`) : null;
   if (el) el.setAttribute("aria-current", "page");
 }
 function renderFacility(){
@@ -6187,8 +7774,13 @@ function renderHome(){
         <span class="meta">${c.activities.length ? `<span class="pill live">${c.activities.length} ${c.activities.length === 1 ? "tool" : "activities"}</span>` : '<span class="pill">Coming soon</span>'}</span>
       </a>`).join("")}
     </div>
-    <h2 style="margin-top:32px">Planners &amp; organizers</h2>
+    <h2 style="margin-top:32px">Journals &amp; planners</h2>
     <div class="card-grid">
+      <a class="card" href="#/journal">
+        <span class="ic">${ICONS.journal}</span><b>Cognitive Life Journal</b>
+        <span class="desc">A life story in four sections, from early roots to daily comfort, personalized from the resident’s own details. Family and care team notes stay in a separate part at the back.</span>
+        <span class="meta"><span class="pill live">4 sections</span><span class="pill">Life story + family notes</span></span>
+      </a>
       <a class="card" href="#/planner">
         <span class="ic">${ICONS.planner}</span><b>12-Month Life Planner</b>
         <span class="desc">A personalized year-long memory book for the resident, with a separate, confidential care companion for staff and family. Print-ready for binders and bound books.</span>
@@ -6459,7 +8051,7 @@ function renderSettings(){
     </div>
     <div class="config">
       <h2>Shared computer?</h2>
-      <p class="hint">Removes the saved facility name, resident name, defaults, packet queue and Life Planner details from this computer. Your license stays.</p>
+      <p class="hint">Removes the saved facility name, resident name, defaults, packet queue, Life Planner and Life Journal details from this computer. Your license stays.</p>
       <div class="actions"><button class="btn btn-danger" type="button" id="setClear">Clear saved data</button></div>
     </div>`;
   const bind = (id, fn) => $(id).addEventListener("input", e => { fn(e.target); saveSettings(); });
@@ -6483,8 +8075,8 @@ function renderSettings(){
     showLic(); renderAllowance();
   });
   $("#setClear").addEventListener("click", () => {
-    if (!confirm("Clear the saved facility name, resident name, defaults, packet queue and Life Planner details from this computer?")) return;
-    store.remove("cgb_settings"); store.remove("cgb_queue"); LifePlannerUI.clearSaved();
+    if (!confirm("Clear the saved facility name, resident name, defaults, packet queue, Life Planner and Life Journal details from this computer?")) return;
+    store.remove("cgb_settings"); store.remove("cgb_queue"); LifePlannerUI.clearSaved(); LifeJournalUI.clearSaved();
     settings = Object.assign({}, DEFAULT_SETTINGS, { actOpts:{} }); isPureBlackAndWhitePDF = false; queue = [];
     saveSettings(); saveQueue(); renderSettings(); renderBwNote();
     toast("Saved data cleared from this computer.");
