@@ -10,29 +10,12 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const HOST = '0.0.0.0';
 
-app.use(express.json({ limit: '10mb' }));
-
 // Health check endpoint
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', app: 'Cognicopia' });
 });
 
-// Optional payload saving endpoint
-app.post('/api/payloads', (req, res) => {
-  try {
-    const payloadDir = path.join(__dirname, 'payloads');
-    if (!fs.existsSync(payloadDir)) {
-      fs.mkdirSync(payloadDir, { recursive: true });
-    }
-    const timestamp = new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d{3}Z$/, 'Z');
-    const filename = `cognicopia_payload_${timestamp}.json`;
-    const filePath = path.join(payloadDir, filename);
-    fs.writeFileSync(filePath, JSON.stringify(req.body, null, 2), 'utf-8');
-    res.json({ success: true, filename });
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to save payload', details: err.message });
-  }
-});
+// No endpoint accepts resident data: everything stays in the browser.
 
 // Clean URLs for resource pages
 const pageRoutes = [

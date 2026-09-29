@@ -3,6 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#081c15">
+<link rel="apple-touch-icon" href="assets/icon-192.png">
 <title>Cognicopia — Personalized Activity Packets</title>
 <meta name="description" content="Create personalized, print-ready reminiscence activity packets for meaningful memory care conversations.">
 <!-- No webfont link. A stylesheet from fonts.googleapis.com is render
@@ -486,6 +489,9 @@ h1{font-family:var(--display);font-weight:600;
   border-left:4px solid var(--garden);
   padding:17px 20px;margin:0;font-size:16px;max-width:58ch;border-radius:0 4px 4px 0}
 .promise strong{font-weight:600}
+.draft-note{background:var(--field);border:1px solid var(--rule);border-left:4px solid var(--garden);
+  padding:12px 18px;margin:0 0 24px;font-size:16px;color:var(--ink);border-radius:20px}
+.draft-note[hidden]{display:none}
 
 .shots{margin:38px 0 0;font-size:0}
 .shots:empty{display:none;margin:0}
@@ -562,11 +568,11 @@ legend{padding:0;width:100%}
 .field{margin:0 0 26px}
 label{display:block;font-weight:600;margin:0 0 7px;font-size:16px}
 .sub{display:block;font-weight:400;color:var(--ink-soft);font-size:15px;margin-top:2px}
-input[type=text],input[type=number],select{
+input[type=text],input[type=password],input[type=number],select{
   width:100%;font:inherit;font-size:17px;padding:13px 14px;
   background:var(--field);border:1px solid var(--rule);
   border-radius:4px;color:var(--ink);transition:border-color .12s}
-input[type=text]:hover,input[type=number]:hover,select:hover{border-color:#CFC7B7}
+input[type=text]:hover,input[type=password]:hover,input[type=number]:hover,select:hover{border-color:#CFC7B7}
 input:focus,select:focus,button:focus-visible{
   outline:2px solid var(--garden);outline-offset:2px;border-color:var(--garden)}
 .row{display:flex;gap:18px;flex-wrap:wrap}
@@ -645,7 +651,7 @@ footer{border-top:1px solid var(--rule-soft);margin-top:80px;padding-top:24px;
   .shots,.saveload,.tools,.gate,.go button,.strip,#ioMsg,.go-allowance,.statusbar{display:none !important}
   fieldset{break-inside:avoid;page-break-inside:avoid;border-top:1px solid #999}
   .pick,.level{break-inside:avoid;page-break-inside:avoid;border-color:#999}
-  input[type=text],input[type=number],select{border:1px solid #999}
+  input[type=text],input[type=password],input[type=number],select{border:1px solid #999}
   a{text-decoration:none;color:#000}
   .promise{border-left:3px solid #000;background:#fff}
 }
@@ -668,7 +674,7 @@ body.extra-large-print{font-size:20px}
 body.extra-large-print label,.extra-large-print .hint{font-size:19px}
 body.extra-large-print .sub,.extra-large-print .pick span,
 body.extra-large-print .level span{font-size:17px}
-body.extra-large-print input[type=text],body.extra-large-print input[type=number],
+body.extra-large-print input[type=text],body.extra-large-print input[type=password],body.extra-large-print input[type=number],
 body.extra-large-print select{font-size:20px;padding:16px}
 body.extra-large-print button{font-size:21px}
 body.extra-large-print .accessibility-option span{font-size:17px}
@@ -704,7 +710,7 @@ body.simplified-layout fieldset{margin-bottom:30px}
 .wrap{border-radius:0 0 28px 28px}
 .promise,.gate,.done,.accessibility-panel{border-radius:20px}
 .level,.pick,.accessibility-option{border-radius:16px}
-input[type=text],input[type=number],select,.unlock input{border-radius:12px}
+input[type=text],input[type=password],input[type=number],select,.unlock input{border-radius:12px}
 button,.addbtn,.tools button,.gate .buy{border-radius:12px}
 .pick input,.accessibility-option input{
   appearance:none;width:48px;height:28px;flex:none;margin:2px 0 0;
@@ -1092,6 +1098,9 @@ body { padding-left: var(--sb-w); }
 .arb-menu button{display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;min-height:52px;padding:8px 12px;border:0;border-radius:8px;background:transparent;color:#fff;font:inherit;font-size:16px;text-align:left;cursor:pointer}
 .arb-menu button small{font-size:13.5px;color:#b3c9bf}
 .arb-menu button:hover,.arb-menu button:focus{background:rgba(82,183,136,.18);outline:none}
+.arb-pass{display:flex;flex-direction:column;gap:6px;margin:0 0 14px;font-size:15px;font-weight:700;color:#e8f5e9}
+.arb-pass input[type=password]{max-width:420px;padding:10px 12px}
+.arb-pass small{font-weight:400;font-size:14px;line-height:1.4;color:#b3c9bf}
 .arb-drop-hint{margin:10px 0 0;font-size:14.5px;color:#b3c9bf}
 .arb-caution{margin:6px 0 0;font-size:14px;color:#b3c9bf}
 .arb-banner{margin:12px 0 0;padding:12px 14px;border-radius:12px;font-size:16px;line-height:1.45;background:rgba(82,183,136,.18);border:1px solid #52b788;color:#eef6f1}
@@ -1679,19 +1688,22 @@ html.tb-open,html.tb-open body{overflow:hidden !important;overscroll-behavior:no
     <summary><span>Data Backup &amp; Restore</span><span class="arb-backup-count" id="arbBackupCount"></span></summary>
     <div class="arb-backup-body" id="arbDrop">
       <p class="arb-privacy"><span aria-hidden="true">🔒</span> All exports/imports occur 100% locally on your machine.</p>
+      <div class="arb-pass"><label for="arbPass">Backup passphrase</label>
+        <input type="password" id="arbPass" maxlength="200" autocomplete="new-password" placeholder="At least 8 characters">
+        <small>Full backups are locked with this passphrase (AES-256 encryption); restoring one needs the same passphrase. A forgotten passphrase cannot be recovered.</small></div>
       <div class="arb-backup-row">
         <div class="arb-split">
           <button type="button" class="arb-btn arb-btn-primary" id="arbExportJson"><span aria-hidden="true">📥</span> Export Profiles (Backup)</button>
           <button type="button" class="arb-btn arb-btn-primary arb-split-toggle" id="arbExportMore" aria-haspopup="true" aria-expanded="false" aria-controls="arbExportMenu" aria-label="More export options">&#9662;</button>
           <div class="arb-menu" id="arbExportMenu" role="menu" aria-label="Export options" hidden>
-            <button type="button" role="menuitem" data-export="json"><b>Full backup (.json)</b><small>Every answer, for restoring later</small></button>
-            <button type="button" role="menuitem" data-export="csv"><b>Summary spreadsheet (.csv)</b><small>Opens in Excel or Google Sheets</small></button>
+            <button type="button" role="menuitem" data-export="json"><b>Full backup (.cognicopia)</b><small>Every answer, locked with the passphrase</small></button>
+            <button type="button" role="menuitem" data-export="csv"><b>Summary spreadsheet (.csv)</b><small>Opens in Excel or Google Sheets; not locked</small></button>
           </div>
         </div>
         <button type="button" class="arb-btn" id="arbImport"><span aria-hidden="true">📤</span> Import Profiles (Restore)</button>
-        <input type="file" id="arbImportFile" accept=".json,.csv,application/json,text/csv" hidden>
+        <input type="file" id="arbImportFile" accept=".cognicopia,.json,.csv,application/json,text/csv" hidden>
       </div>
-      <p class="arb-drop-hint">Or drag a backup file (.json or .csv) onto this box.</p>
+      <p class="arb-drop-hint">Or drag a backup file (.cognicopia, .json or .csv) onto this box.</p>
       <p class="arb-caution">Backup files hold resident details. Keep them in a safe place on this computer or a facility drive, not in email or a shared folder.</p>
       <div class="arb-banner" id="arbBackupMsg" role="status" aria-live="polite" hidden></div>
     </div>
@@ -1747,6 +1759,7 @@ html.tb-open,html.tb-open body{overflow:hidden !important;overscroll-behavior:no
 </section>
 
 <form id="f" novalidate>
+  <p class="draft-note" id="draftNote" role="status" hidden></p>
 
   <fieldset>
     <legend><div class="leg"><span class="num" aria-hidden="true">1</span><h2>Who is this for?</h2></div></legend>
@@ -1955,12 +1968,16 @@ html.tb-open,html.tb-open body{overflow:hidden !important;overscroll-behavior:no
     <p class="hint" style="margin:0 0 12px">Save this resident to your own
     computer so you do not have to type it all again next month. The file
     stays on your machine &mdash; it is never sent anywhere.</p>
+    <div class="field io-pass"><label for="ioPass">Passphrase to lock the file</label>
+      <input type="password" id="ioPass" maxlength="200" autocomplete="new-password" placeholder="At least 8 characters">
+      <p class="hint">The saved file is locked with this passphrase (AES-256 encryption), so only someone who knows it can open the file. Keep it somewhere safe: a forgotten passphrase cannot be recovered. Opening a locked file needs the same passphrase here.</p></div>
     <div class="tools">
       <button type="button" id="saveProfile">Save this resident</button>
       <button type="button" id="loadProfile">Open a saved resident</button>
       <button type="button" id="blankForm">Print a family form</button>
+      <button type="button" id="clearForm">Clear the form</button>
     </div>
-    <input type="file" id="loadFile" accept=".json,application/json" hidden>
+    <input type="file" id="loadFile" accept=".cognicopia,.json,application/json" hidden>
     <p class="left" id="ioMsg"></p>
     <div class="preset-manager" aria-labelledby="presetTitle">
       <h3 id="presetTitle">Facility Presets</h3>
@@ -3402,7 +3419,7 @@ function sensoryPrompts(r){
   const out=[], t=tradeOf(r.job);
   const SMELL=["What did {} smell like?",
                "Is there a smell that takes you straight back to {}?"];
-  const SOUND=["What sounds do you remember around {}?",
+  const SOUND=["What sounds filled the air around {}?",
                "What was the first thing you heard in the morning at {}?"];
   if(t){
     for(const sn of t.sensory){ out.push(fill(SMELL[0],sn)); }
@@ -3525,7 +3542,7 @@ const HOLIDAYS = {
     prompts:["Did you wear green?","What does luck mean to you?"]},
   mothers:{label:"Mother's Day", tier:"minor", motif:"flower",
     words:["MOTHER","FLOWERS","SUNDAY","KITCHEN","CARDS"],
-    prompts:["What do you remember about your mother's hands?",
+    prompts:["Tell me about your mother's hands.",
              "What did she always say?"]},
   fathers:{label:"Father's Day", tier:"minor", motif:"cup",
     words:["FATHER","WORK","FISHING","LESSON","HANDS"],
@@ -4684,12 +4701,12 @@ function talkPage(D,r,s,theme){
   const eraQ    = keepAllowed(r, shuffle([
     ...eraBits(r.born,"talk"),
     ...birthCohortBits(r.born),
-    ...historicalBits(r.born,"culture").map(x=>"Do you remember "+x+"?"),
+    ...historicalBits(r.born,"culture").map(x=>"What comes to mind when you hear \u201c"+x+"\u201d?"),
     ...historicalBits(r.born,"venues").map(x=>"Did you ever spend time at a "+x+"?"),
     ...historicalBits(r.born,"slang").map(x=>"Did people around you say "+x+"?"),
     ...historicalBits(r.born,"cities").map(x=>"Have you ever visited or heard stories about "+x+"?"),
     ...historicalBits(r.born,"celebrations").map(x=>"What did "+x+" feel like?"),
-    ...historicalBits(r.born,"happy").map(x=>"Do you remember hearing that "+x+"?")
+    ...historicalBits(r.born,"happy").map(x=>"What did people around you say when "+x+"?")
   ]));
   const place   = keepAllowed(r, shuffle(regionBits(r,"talk")));
   const generic = shuffle(["What did Sunday look like at your house?",
@@ -5455,7 +5472,7 @@ function popPage(D,r,s,theme){
   block("At the picture show and on television:", screen.slice(0,s.pop), 18);
   block("Places, objects, and everyday life:", life.slice(0,s.pop), 18);
 
-  const asks=["Which of these names do you remember?",
+  const asks=["Which of these names bring back a story?",
               "What song could you always sing along to?",
               "Who did you go to the pictures with?"];
   D.gap(6);
@@ -7110,7 +7127,7 @@ crewBox.addEventListener("click", e=>{
   if(e.target.classList.contains("addphoto")) row.querySelector(".cphoto").click();
   if(e.target.classList.contains("delphoto")){
     const th=row.querySelector(".cthumb");
-    th.removeAttribute("src"); th.hidden=true; delete row.dataset.photo;
+    th.removeAttribute("src"); th.hidden=true; delete row.dataset.photo; queueDraft();
     row.querySelector(".delphoto").hidden=true;
     row.querySelector(".addphoto").textContent="Choose";
   }
@@ -7120,6 +7137,7 @@ crewBox.addEventListener("change", e=>{
   const row=e.target.closest(".crewrow");
   squarePhoto(e.target.files[0], uri=>{
     row.dataset.photo=uri;
+    queueDraft();
     const th=row.querySelector(".cthumb");
     th.src=uri; th.hidden=false;
     row.querySelector(".delphoto").hidden=false;
@@ -7187,41 +7205,6 @@ function collectProfile(){
     simplifiedLayout:$("simplifiedLayout").checked
   };
   return out;
-}
-
-function exportPayload(){
-  const selectedActivities=[...document.querySelectorAll(".workbook-activity:checked")]
-    .map(input=>input.value);
-  const requestedPages=Math.max(2,Math.min(30,parseInt($("targetPages").value,10)||4));
-  const accessibility={
-    highContrast:$("highContrastMode").checked,
-    extraLargePrint:$("extraLargePrint").checked,
-    simplifiedLayout:$("simplifiedLayout").checked
-  };
-  const institutional={
-    partnerUniversity:$("institutionalPartner").value.trim(),
-    researchGroupFacilitySponsor:$("researchSponsor").value.trim()
-  };
-  const payload={
-    exportedAt:new Date().toISOString(),
-    profile:collectProfile(),
-    accessibility,
-    institutional,
-    packetPreferences:{
-      targetPages:requestedPages,
-      selectedActivities
-    }
-  };
-  const json=JSON.stringify(payload,null,2);
-  const blob=new Blob([json],{type:"application/json"});
-  const timestamp=new Date().toISOString().replace(/[-:]/g,"").replace(/\.\d{3}Z$/, "Z");
-  const link=document.createElement("a");
-  link.href=URL.createObjectURL(blob);
-  link.download="cognicopia_payload_"+timestamp+".json";
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-  setTimeout(()=>URL.revokeObjectURL(link.href),0);
 }
 
 /* ---- High Contrast Mode: a PDF-only setting --------------------------
@@ -7418,6 +7401,7 @@ $("loadPreset").addEventListener("click",()=>{
   if(!preset){ presetMessage("Choose a saved preset to load."); return; }
   applyProfile(preset);
   estimatePages();
+  queueDraft();
   $("presetName").value=name;
   presetMessage("Loaded "+name+".");
 });
@@ -7435,38 +7419,153 @@ $("deletePreset").addEventListener("click",()=>{
 });
 refreshFacilityPresetList();
 
-$("saveProfile").addEventListener("click", ()=>{
-  const p=collectProfile();
-  const who=(p.fields.first||"resident").replace(/[^A-Za-z0-9]/g,"") || "resident";
-  const blob=new Blob([JSON.stringify(p,null,2)],{type:"application/json"});
+/* ---- Locked files (.cognicopia) ----
+   A saved resident is locked with a passphrase: AES-256-GCM, with the key
+   drawn from the passphrase by PBKDF2 (SHA-256, 600,000 rounds, a random
+   salt for every file). It all happens here, in the browser's own Web
+   Crypto; nothing is sent anywhere, and no one can open the file without
+   the passphrase. The same format is used by profile.html's backups. */
+const LOCKED_FORMAT="cognicopia-locked", LOCK_ROUNDS=600000;
+function toB64(buf){ const a=new Uint8Array(buf); let s=""; for(let i=0;i<a.length;i+=0x8000) s+=String.fromCharCode.apply(null, a.subarray(i, i+0x8000)); return btoa(s); }
+function fromB64(str){ const s=atob(str), a=new Uint8Array(s.length); for(let i=0;i<s.length;i++) a[i]=s.charCodeAt(i); return a; }
+function canLock(){ return !!(window.crypto && crypto.subtle && window.TextEncoder); }
+async function lockKey(pass, salt, rounds){
+  const base=await crypto.subtle.importKey("raw", new TextEncoder().encode(pass), "PBKDF2", false, ["deriveKey"]);
+  return crypto.subtle.deriveKey({name:"PBKDF2", hash:"SHA-256", salt, iterations:rounds}, base, {name:"AES-GCM", length:256}, false, ["encrypt","decrypt"]);
+}
+async function lockData(obj, pass, kind){
+  const salt=crypto.getRandomValues(new Uint8Array(16)), iv=crypto.getRandomValues(new Uint8Array(12));
+  const key=await lockKey(pass, salt, LOCK_ROUNDS);
+  const data=await crypto.subtle.encrypt({name:"AES-GCM", iv}, key, new TextEncoder().encode(JSON.stringify(obj)));
+  return {format:LOCKED_FORMAT, v:1, kind, kdf:{name:"PBKDF2", hash:"SHA-256", iterations:LOCK_ROUNDS, salt:toB64(salt)},
+          cipher:{name:"AES-GCM", length:256, iv:toB64(iv)}, data:toB64(data)};
+}
+function isLocked(o){ return !!o && o.format===LOCKED_FORMAT; }
+/* Throws "passphrase" when the passphrase does not open the file. */
+async function unlockData(env, pass){
+  const k=env.kdf||{}, c=env.cipher||{}, rounds=Number(k.iterations);
+  if(env.v!==1 || k.name!=="PBKDF2" || k.hash!=="SHA-256" || c.name!=="AES-GCM" || !(rounds>=100000 && rounds<=5000000) || typeof env.data!=="string")
+    throw new Error("format");
+  const key=await lockKey(pass, fromB64(k.salt), rounds);
+  let plain;
+  try{ plain=await crypto.subtle.decrypt({name:"AES-GCM", iv:fromB64(c.iv)}, key, fromB64(env.data)); }
+  catch(e){ throw new Error("passphrase"); }
+  return JSON.parse(new TextDecoder().decode(plain));
+}
+function downloadBlob(blob, name){
   const a=document.createElement("a");
-  a.href=URL.createObjectURL(blob);
-  a.download="Cognicopia_"+who+".json";
+  a.href=URL.createObjectURL(blob); a.download=name;
   document.body.appendChild(a); a.click(); a.remove();
   setTimeout(()=>URL.revokeObjectURL(a.href), 1000);
-  $("ioMsg").textContent="Saved to your downloads. Keep it somewhere you "
-    +"will find it next month.";
+}
+
+$("saveProfile").addEventListener("click", async ()=>{
+  const p=collectProfile(), pass=$("ioPass").value, msg=$("ioMsg");
+  const who=(p.fields.first||"resident").replace(/[^A-Za-z0-9]/g,"") || "resident";
+  if(!pass){
+    if(!confirm("Save without a passphrase? Anyone who opens the file can read this resident's details.\n\nTo lock it, press Cancel and type a passphrase first.")){ $("ioPass").focus(); return; }
+    downloadBlob(new Blob([JSON.stringify(p,null,2)],{type:"application/json"}), "Cognicopia_"+who+".json");
+    msg.textContent="Saved to your downloads, not locked. Keep it somewhere private.";
+    return;
+  }
+  if(pass.length<8){ msg.textContent="Use a passphrase of at least 8 characters."; $("ioPass").focus(); return; }
+  if(!canLock()){ msg.textContent="This browser cannot lock files. Open Cognicopia from https://cognicopia.org to save a locked file."; return; }
+  const btn=$("saveProfile"); btn.disabled=true; msg.textContent="Locking the file…";
+  try{
+    const env=await lockData(p, pass, "resident");
+    downloadBlob(new Blob([JSON.stringify(env)],{type:"application/octet-stream"}), "Cognicopia_"+who+".cognicopia");
+    msg.textContent="Saved to your downloads, locked with your passphrase. Keep the passphrase somewhere safe: the file cannot be opened without it.";
+  }catch(e){ msg.textContent="The file could not be locked. Try again."; }
+  finally{ btn.disabled=false; }
 });
 
 $("loadProfile").addEventListener("click", ()=>$("loadFile").click());
 $("loadFile").addEventListener("change", e=>{
-  const f=e.target.files && e.target.files[0];
+  const f=e.target.files && e.target.files[0], msg=$("ioMsg");
   if(!f) return;
-  const rd=new FileReader();
-  rd.onload=()=>{
-    try{
-      applyProfile(JSON.parse(rd.result));
-      $("ioMsg").textContent="Opened. Check it over, then make the packet.";
-      $("first").scrollIntoView({behavior:"smooth",block:"center"});
-    }catch(err){
-      $("ioMsg").textContent="That file could not be read. It should be one "
-        +"saved by this page.";
-    }
+  const opened=()=>{
+    saveDraft();
+    msg.textContent="Opened. Check it over, then make the packet.";
+    $("first").scrollIntoView({behavior:"smooth",block:"center"});
   };
-  rd.onerror=()=>{ $("ioMsg").textContent="That file could not be read."; };
+  const rd=new FileReader();
+  rd.onload=async ()=>{
+    let data;
+    try{ data=JSON.parse(rd.result); }
+    catch(err){ msg.textContent="That file could not be read. It should be one saved by this page."; return; }
+    const toBackup="This is a backup of resident profiles. Restore it with Data Backup & Restore at the top of the page.";
+    if(isLocked(data) && data.kind==="residents"){ msg.textContent=toBackup; return; }
+    if(data && (data.format==="cognicopia.residentBackup" || Array.isArray(data.profiles))){ msg.textContent=toBackup; return; }
+    if(isLocked(data)){
+      const pass=$("ioPass").value;
+      if(!pass){ msg.textContent="This file is locked. Type its passphrase in the box above, then open it again."; $("ioPass").focus(); return; }
+      if(!canLock()){ msg.textContent="This browser cannot open locked files. Open Cognicopia from https://cognicopia.org."; return; }
+      msg.textContent="Unlocking…";
+      try{ applyProfile(await unlockData(data, pass)); opened(); }
+      catch(err){ msg.textContent=err.message==="passphrase" ? "That passphrase does not open this file. Check it and try again."
+                                                             : "That file could not be read. It should be one saved by this page."; }
+      return;
+    }
+    try{ applyProfile(data); opened(); }
+    catch(err){ msg.textContent="That file could not be read. It should be one saved by this page."; }
+  };
+  rd.onerror=()=>{ msg.textContent="That file could not be read."; };
   rd.readAsText(f);
   e.target.value="";
 });
+
+/* ---- Draft autosave ----
+   Whatever is typed into the form is kept in this browser half a second
+   after the last change, so a reload, a closed tab or a crash loses
+   nothing. It stays on this computer; Clear the form removes it. */
+const DRAFT_KEY="cognicopia_packet_draft";
+let draftTimer=0;
+function saveDraft(){
+  clearTimeout(draftTimer); draftTimer=0;
+  const p=collectProfile(); p.savedAt=new Date().toISOString();
+  if(lsSet(DRAFT_KEY, JSON.stringify(p))) return;
+  // family photos can fill the browser's storage: keep everything else
+  p.crew=p.crew.map(c=>Object.assign({}, c, {photo:""}));
+  lsSet(DRAFT_KEY, JSON.stringify(p));
+}
+function queueDraft(){ clearTimeout(draftTimer); draftTimer=setTimeout(saveDraft, 500); }
+$("f").addEventListener("input", queueDraft);
+$("f").addEventListener("change", queueDraft);
+window.addEventListener("pagehide", ()=>{ if(draftTimer) saveDraft(); });   // a save still waiting when the tab closes
+// Worth restoring only when something about the person was typed (not just the facility or the month).
+function draftHasContent(d){
+  if(!d || typeof d!=="object" || !d.fields || typeof d.fields!=="object") return false;
+  const typed=Object.keys(d.fields).some(k=>!["pronoun","fac","month","state"].includes(k) && String(d.fields[k]||"").trim());
+  return typed || (Array.isArray(d.crew) && d.crew.some(c=>c && String(c.name||"").trim()));
+}
+function clearForm(){
+  if(draftHasContent(collectProfile()) &&
+     !confirm("Clear everything typed for this resident? Save it first if you will need it again.")) return;
+  clearTimeout(draftTimer); draftTimer=0;
+  try{ localStorage.removeItem(DRAFT_KEY); localStorage.removeItem("cognicopia_active_resident"); }catch(e){}
+  if("scrollRestoration" in history) history.scrollRestoration="manual";
+  location.reload();
+}
+$("clearForm").addEventListener("click", clearForm);
+(function restoreDraft(){
+  let d=null;
+  try{ d=JSON.parse(lsGet(DRAFT_KEY,"null")); }catch(e){ d=null; }
+  if(!draftHasContent(d)) return;
+  try{ applyProfile(d); }catch(e){ return; }
+  estimatePages();
+  window.cognicopiaDraftRestored=true;   // the Active resident bar keeps it (see its start-up)
+  const when=d.savedAt ? new Date(d.savedAt) : null, today=new Date();
+  const stamp=when && !isNaN(when) ? (when.toDateString()===today.toDateString()
+    ? "today at "+when.toLocaleTimeString([], {hour:"numeric", minute:"2-digit"})
+    : "on "+when.toLocaleDateString([], {weekday:"long", month:"long", day:"numeric"})) : "last time";
+  const note=$("draftNote"), who=String(d.fields.first||"").trim();
+  note.textContent="Your work "+(who ? "on "+who+"\u2019s packet " : "")+"from "+stamp+" is back, just as you left it. ";
+  const b=document.createElement("button");
+  b.type="button"; b.className="linklike"; b.textContent="Clear the form";
+  b.addEventListener("click", clearForm);
+  note.appendChild(b);
+  note.hidden=false;
+})();
 
 /* ---- Family form ----
    Practitioners are consistent that families hold information no
@@ -7867,7 +7966,9 @@ $("f").addEventListener("submit", e=>{
     requestAnimationFrame(()=>requestAnimationFrame(()=>{
       try{
         const name=buildPacket(r);
-        exportPayload();
+        // The resident's details are no longer written to a file on every
+        // packet: that left unencrypted copies in Downloads on shared computers.
+        // Saving is deliberate now (Save this resident), with a passphrase.
         if(!unlocked()) bumpGen();
         showAllowance();
         $("doneName").textContent=name;
@@ -8078,7 +8179,7 @@ const AILMENT_DATA = {
           "The 1964 Pontiac GTO is often called the first true muscle car."
         ],
         discuss: [
-          "What was the first car you remember riding in or driving?",
+          "Tell me about the first car you rode in or drove.",
           "If you could own any car from the 1960s, which would it be and why?",
           "What did a Sunday drive look like when you were younger?"
         ],
@@ -8163,7 +8264,7 @@ const AILMENT_DATA = {
         ],
         discuss: [
           "Which invention do you think changed your family's life the most?",
-          "What was the first television or radio program you remember?",
+          "What was the first television or radio program you loved?",
           "If you could invent something useful today, what would it be?"
         ],
         trivia: [
@@ -9475,6 +9576,8 @@ function generateAilmentPDF(ailmentType) {
     }
     setActiveResident(id);
     fillPacketForm(p);
+    var draftNote = el("draftNote"); if (draftNote) draftNote.hidden = true;   // the form now holds this profile
+    if ((!fromLoad || fromUrl) && typeof saveDraft === "function") saveDraft();
     msg.innerHTML = "";
     var b = document.createElement("b"); b.textContent = shortName(p) + "'s profile";
     msg.appendChild(b);
@@ -9501,11 +9604,14 @@ function generateAilmentPDF(ailmentType) {
     }
   });
 
-  /* ---- start: ?resident=<id> (from profile.html) wins, then the last active one ---- */
+  /* ---- start: ?resident=<id> (from profile.html) wins, then unsaved work
+     restored into the form (never overwritten), then the last active one ---- */
   var list = loadSavedProfilesList();
   var fromUrl = (location.search.match(/[?&]resident=([^&]+)/) || [])[1];
   var startId = fromUrl ? decodeURIComponent(fromUrl) : lsGetSafe(ACTIVE_KEY);
-  if (startId && readProfile(startId)) choose(startId, true);
+  var startP = startId ? readProfile(startId) : null;
+  if (startP && !fromUrl && window.cognicopiaDraftRestored) setActiveResident(formHasOtherResident(startP) ? null : startId);
+  else if (startP) choose(startId, true);
   else setActiveResident(null);
   if (fromUrl && history.replaceState) history.replaceState(null, "", location.pathname + location.hash);
   if (!list.length) msg.innerHTML = "No saved resident profiles yet. Press <b>New Profile</b> to make one; it takes about five minutes and is saved only on this computer.";
@@ -9667,8 +9773,9 @@ function generateAilmentPDF(ailmentType) {
   /* ---------------------------------------------------------------
      exportProfilesJSON()
      Every saved profile, all three tiers, in one wrapper with a format
-     name, version, export date and record count.
-     Downloads cognicopia_backup_YYYY-MM-DD.json.
+     name, version, export date and record count, locked with the
+     Backup passphrase: downloads cognicopia_backup_YYYY-MM-DD.cognicopia.
+     Without a passphrase, and only after a warning, a plain .json.
      --------------------------------------------------------------- */
   function exportProfilesJSON(){
     var profiles = savedProfiles().map(normalizeProfile).filter(Boolean);
@@ -9681,9 +9788,22 @@ function generateAilmentPDF(ailmentType) {
       recordCount: profiles.length,
       profiles: profiles
     };
-    download(JSON.stringify(backup, null, 2), "cognicopia_backup_" + today() + ".json", "application/json");
-    banner("Exported " + plural(profiles.length, "resident profile", "resident profiles") + " to your downloads.",
-      "Keep the file somewhere safe. To restore it, press Import Profiles (Restore) and choose it.");
+    var pass = el("arbPass").value;
+    if (!pass){
+      if (!window.confirm("Export without a passphrase? The backup would not be locked: anyone who opens the file can read every resident's details.\n\nTo lock it, press Cancel and type a backup passphrase first.")){ el("arbPass").focus(); return 0; }
+      download(JSON.stringify(backup, null, 2), "cognicopia_backup_" + today() + ".json", "application/json");
+      banner("Exported " + plural(profiles.length, "resident profile", "resident profiles") + " to your downloads, not locked.",
+        "Keep the file somewhere private. To restore it, press Import Profiles (Restore) and choose it.");
+      return profiles.length;
+    }
+    if (pass.length < 8){ banner("Use a backup passphrase of at least 8 characters.", "", true); el("arbPass").focus(); return 0; }
+    if (typeof lockData !== "function" || !canLock()){ banner("This browser cannot lock files.", "Open Cognicopia from https://cognicopia.org to make a locked backup.", true); return 0; }
+    banner("Locking the backup\u2026", "");
+    lockData(backup, pass, "residents").then(function(env){
+      download(JSON.stringify(env), "cognicopia_backup_" + today() + ".cognicopia", "application/octet-stream");
+      banner("Exported " + plural(profiles.length, "resident profile", "resident profiles") + " to your downloads, locked with your passphrase.",
+        "Keep the passphrase somewhere safe: the backup cannot be opened without it. To restore it, press Import Profiles (Restore) and choose it.");
+    }, function(){ banner("The backup could not be locked. Try again.", "", true); });
     return profiles.length;
   }
 
@@ -9747,6 +9867,7 @@ function generateAilmentPDF(ailmentType) {
   function exportProfilesCSV(){
     var profiles = savedProfiles().map(normalizeProfile).filter(Boolean);
     if (!profiles.length){ banner("There are no saved resident profiles to export yet.", "", true); return 0; }
+    if (!window.confirm("A spreadsheet cannot be locked: anyone who opens it can read these residents' details. Export it anyway?")) return 0;
     var rows = [CSV_COLUMNS.map(function(c){ return csvCell(c[0]); }).join(",")];
     profiles.forEach(function(p){ rows.push(CSV_COLUMNS.map(function(c){ return csvCell(c[1](p)); }).join(",")); });
     download("﻿" + rows.join("\r\n") + "\r\n", "cognicopia_residents_" + today() + ".csv", "text/csv;charset=utf-8");
@@ -9913,17 +10034,35 @@ function generateAilmentPDF(ailmentType) {
     return new Promise(function(resolve){
       if (!file){ resolve(null); return; }
       var isCSV = /\.csv$/i.test(file.name) || /csv/i.test(file.type || "");
-      var isJSON = /\.json$/i.test(file.name) || /json/i.test(file.type || "");
-      if (!isCSV && !isJSON){ banner("That file type can't be imported.", "Choose a .json backup or a .csv spreadsheet made by Cognicopia.", true); resolve(null); return; }
+      var isLockedName = /\.cognicopia$/i.test(file.name);
+      var isJSON = /\.json$/i.test(file.name) || /json/i.test(file.type || "") || isLockedName;
+      if (!isCSV && !isJSON){ banner("That file type can't be imported.", "Choose a .cognicopia or .json backup, or a .csv spreadsheet made by Cognicopia.", true); resolve(null); return; }
       if (file.size > MAX_FILE_BYTES){ banner("That file is too large to be a Cognicopia backup.", "Backups are usually well under 1 MB.", true); resolve(null); return; }
       var reader = new FileReader();
       reader.onerror = function(){ banner("That file could not be read.", "", true); resolve(null); };
-      reader.onload = function(){
+      function finish(text){
         var records;
-        try { records = isCSV ? recordsFromCSV(String(reader.result)) : recordsFromJSON(String(reader.result)); }
+        try { records = isCSV ? recordsFromCSV(text) : recordsFromJSON(text); }
         catch (err){ banner("Nothing was imported.", err.message, true); resolve(null); return; }
         if (records.length > MAX_RECORDS){ banner("Nothing was imported.", "The file has more than " + MAX_RECORDS + " residents.", true); resolve(null); return; }
         applyImport(records, isCSV).then(resolve);
+      }
+      reader.onload = function(){
+        var text = String(reader.result), env = null;
+        if (!isCSV){ try { env = JSON.parse(text); } catch (e){ env = null; } }
+        if (!(typeof isLocked === "function" && isLocked(env))){
+          if (isLockedName){ banner("Nothing was imported.", "That file is damaged or was not made by Cognicopia.", true); resolve(null); return; }
+          finish(text); return;
+        }
+        if (env.kind === "resident"){ banner("Nothing was imported.", 'This is a single-resident file from "Save this resident". Use "Open a saved resident" further down this page to open it.', true); resolve(null); return; }
+        var pass = el("arbPass").value;
+        if (!pass){ banner("This backup is locked.", "Type its passphrase in Backup passphrase, then import it again.", true); el("arbPass").focus(); resolve(null); return; }
+        if (!canLock()){ banner("This browser cannot open locked files.", "Open Cognicopia from https://cognicopia.org to restore it.", true); resolve(null); return; }
+        unlockData(env, pass).then(function(data){ finish(JSON.stringify(data)); }, function(err){
+          if (err.message === "passphrase") banner("That passphrase does not open this backup.", "Check it and try again. Nothing was changed.", true);
+          else banner("Nothing was imported.", "That file is damaged or was not made by Cognicopia.", true);
+          resolve(null);
+        });
       };
       reader.readAsText(file);
     });
@@ -10059,6 +10198,7 @@ function generateAilmentPDF(ailmentType) {
   window.addEventListener("storage", function(e){ if (e.key && e.key.indexOf(PREFIX) === 0) updateCount(); });
 
   updateCount();
+  if (location.hash === "#arbBackup") el("arbBackup").open = true;      // the link on profile.html
   window.exportProfilesJSON = exportProfilesJSON;
   window.exportProfilesCSV = exportProfilesCSV;
   window.importProfilesFromFile = importProfilesFromFile;
@@ -12262,6 +12402,12 @@ function generateAilmentPDF(ailmentType) {
     });
   });
 })();
+</script>
+<script>
+/* Offline support (sw.js): keeps copies of Cognicopia's own pages so the tools open without
+   an internet connection. It stores no resident details and sends nothing anywhere. */
+if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol))
+  window.addEventListener("load", function(){ navigator.serviceWorker.register("sw.js").catch(function(){}); });
 </script>
 </body>
 </html>

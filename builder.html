@@ -3,6 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#081c15">
+<link rel="apple-touch-icon" href="assets/icon-192.png">
 <title>Packet Builder · Cognicopia</title>
 <meta name="description" content="Build a printable memory care activity packet, one activity at a time. Runs entirely in your browser.">
 <link rel="icon" href="assets/cognicopia-logo.jpg">
@@ -4855,10 +4858,10 @@ const NAME_PROMPTS = {
 };
 
 const MEMORY_PROMPTS = {
-  general: ["What was your favorite meal growing up?","Tell about a place you loved to visit.","Who taught you something important?","What did you like to do on a summer day?","Describe the house you grew up in.","What songs did you like to sing?","Tell about a pet you remember.","What was your first job?","What did a perfect Sunday look like?","What holiday tradition do you remember?"],
-  "1940s": ["What do you remember hearing on the radio?","Did your family grow a victory garden?","Where did people go dancing in your town?","How did your family get around town?"],
-  "1950s": ["What TV show do you remember watching first?","Did you ever go to a drive-in movie?","What did you order at the diner or soda fountain?","What cars did people drive in your neighborhood?"],
-  "1960s": ["What music was playing on the radio?","What do you remember about the Moon landing?","What clothes were in style?","Where did you like to go on weekends?"],
+  general: ["What was your favorite meal growing up?","Tell about a place you loved to visit.","Who taught you something important?","What did you like to do on a summer day?","Describe the house you grew up in.","What songs did you like to sing?","Tell about a pet you loved.","What was your first job?","What did a perfect Sunday look like?","Which holiday tradition meant the most to you?"],
+  "1940s": ["What did you like to listen to on the radio?","Did your family grow a victory garden?","Where did people go dancing in your town?","How did your family get around town?"],
+  "1950s": ["What was the first TV show you liked to watch?","Did you ever go to a drive-in movie?","What did you order at the diner or soda fountain?","What cars did people drive in your neighborhood?"],
+  "1960s": ["What music was playing on the radio?","What was the Moon landing like for you?","What clothes were in style?","Where did you like to go on weekends?"],
   "1970s": ["Did you ever go roller skating?","What was in style for your home?","What shows did your family watch together?","What music did you enjoy?"]
 };
 
@@ -6529,7 +6532,7 @@ const LYRIC_SHEET = {
       const talk = talkFor(a, rng, L.talk);
       return {
         title: "Sing-Along & Reminiscence", subtitle: featuring(a),
-        instructions: "Play a recording of these songs and sing along with any words you remember. Humming counts too.",
+        instructions: "Play a recording of these songs and sing along with any words that come to you. Humming counts too.",
         html: `<div class="spot-hits" style="font-size:${pt}pt">${hits.map(h => `<p class="spot-hit">&#9834; ${esc(h)}</p>`).join("")}</div>
           <p class="spot-tags"><span class="lyr-tag">${esc(a.decade)}</span> <span class="lyr-tag">${esc(a.genre)}</span></p>
           ${trivia && a.trivia ? `<p class="lyr-trivia"><b>Did you know?</b> ${esc(a.trivia)}</p>` : ""}
@@ -6887,7 +6890,7 @@ const COLOR_ART = {
       if (det) o += `<rect x="114" y="342" width="72" height="24" rx="5" ${st.D}/><path d="M100 184 L108 184 M192 184 L200 184" ${st.D}/>`;
       return { svg:o + artH.ground(386, st), sig:`gc${h}:${m}` };
     } },
-  rotaryphone: { group:"household", title:"The Rotary Telephone", talk:"Do you remember an old telephone number? Who did you call most?",
+  rotaryphone: { group:"household", title:"The Rotary Telephone", talk:"Tell me about the telephone in your house. Who did you call most?",
     draw(rng, det, st){
       const flip = rng.next() < .5;
       let o = `<path d="M74 334 C28 330 30 232 64 212" ${st.N}/>`;
@@ -7404,7 +7407,7 @@ const COLOR_ART = {
       if (det) o += `<path d="M90 230 L210 230" ${st.D}/>`;
       return { svg:o + artH.ground(372, st), sig:"bh" + perch };
     } },
-  rainboots: { group:"seasonal", season:"spring", title:"April Showers", talk:"Do you remember a rainy day from long ago? Where did you go in your boots?",
+  rainboots: { group:"seasonal", season:"spring", title:"April Showers", talk:"Tell me about a rainy day from long ago. Where did you go in your boots?",
     draw(rng, det, st){
       const flip = rng.next() < .5;
       let o = `<path d="M150 150 L150 290 Q150 312 132 312 Q116 312 116 296" ${st.T}/>`;
@@ -8237,6 +8240,12 @@ window.addEventListener("afterprint", () => {
   renderNav(); renderFacility(); renderCounts(); renderBwNote();
   router();
 })();
+</script>
+<script>
+/* Offline support (sw.js): keeps copies of Cognicopia's own pages so the tools open without
+   an internet connection. It stores no resident details and sends nothing anywhere. */
+if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol))
+  window.addEventListener("load", function(){ navigator.serviceWorker.register("sw.js").catch(function(){}); });
 </script>
 </body>
 </html>

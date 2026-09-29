@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="manifest" href="manifest.webmanifest">
+    <meta name="theme-color" content="#081c15">
+    <link rel="apple-touch-icon" href="assets/icon-192.png">
     <title>Resident Activity Profile - Cognicopia</title>
     <meta name="description" content="A step-by-step Resident Activity Profile for memory care: preferred name, meaningful decades, hometown, career, skills and military service. Saved only on your own computer.">
     <meta name="robots" content="noindex">
@@ -621,6 +624,8 @@ body { padding-left: var(--sb-w); }
 .rap-res-actions{display:flex;gap:10px}
 .rap-res-empty{margin:12px 0 0;color:var(--rp-muted);font-size:15.5px}
 .rap-res-empty[hidden]{display:none}
+.rap-backup-link{margin-top:16px}
+.rap-backup-link a{color:var(--rp-accent-hi)}
 .rap-toast{position:fixed;left:50%;top:76px;z-index:60;transform:translateX(-50%);max-width:min(560px,calc(100vw - 32px));padding:14px 22px;border-radius:14px;background:#d8f3dc;color:#062116;font:700 17px/1.4 "Trebuchet MS","Segoe UI",sans-serif;box-shadow:0 12px 34px rgba(0,0,0,.45)}
 .rap-toast.is-error{background:#ffe3db;color:#5a1a0c}
 .rap-toast[hidden]{display:none}
@@ -1263,6 +1268,7 @@ body { padding-left: var(--sb-w); }
       <p class="rap-hint">Stored only in this web browser. Open a profile to update it, or delete it when it is no longer needed.</p>
       <ul class="rap-res-list" id="rapResList"></ul>
       <p class="rap-res-empty" id="rapResEmpty">No saved profiles yet. Finish the steps above and press <b>Save Resident Profile</b>.</p>
+      <p class="rap-hint rap-backup-link">To back up these profiles or move them to another computer, use <a href="index.html#arbBackup">Data Backup &amp; Restore</a> on the packet tool page. Backups are locked with a passphrase you choose.</p>
     </section>
 
     <div class="rap-toast" id="rapToast" role="status" aria-live="polite" hidden></div>
@@ -2020,6 +2026,12 @@ body { padding-left: var(--sb-w); }
     if ((editId || /[?&]new=1/.test(qs)) && history.replaceState) history.replaceState(null, "", location.pathname + location.hash);
   })();
 })();
+</script>
+<script>
+/* Offline support (sw.js): keeps copies of Cognicopia's own pages so the tools open without
+   an internet connection. It stores no resident details and sends nothing anywhere. */
+if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol))
+  window.addEventListener("load", function(){ navigator.serviceWorker.register("sw.js").catch(function(){}); });
 </script>
 </body>
 </html>
