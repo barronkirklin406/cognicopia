@@ -692,6 +692,35 @@ body { padding-left: var(--sb-w); }
   .cg-sidebar{padding-top:58px}
 }
 </style>
+<style id="cg-fit-fixes">
+/* ===== Text containment fixes (planner + journal pages) ===== */
+/* Grids: a column may never be wider than the space it sits in (was a fixed 240-260px minimum,
+   which pushed cards off the right edge on 320px phones). */
+.feature-grid{grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr))}
+.module-grid,.era-grid{grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr))}
+/* Every text block wraps inside its own box instead of stretching it. */
+.card-panel,.feature-box,.module-card,.era-card,.highlight-banner,.specs-table th,.specs-table td{
+  min-width:0;overflow-wrap:anywhere;word-break:normal;hyphens:auto}
+.card-panel h2,.card-panel h3,.feature-box h3,.module-card h3,.era-card h3{line-height:1.25;text-wrap:balance}
+.card-panel p,.feature-box p,.module-card p,.era-card p,.highlight-banner{line-height:1.55;text-wrap:pretty}
+/* Specs table: fixed layout so long values wrap in their cell, never widen the table. */
+.specs-table{table-layout:fixed}
+/* Sample artwork: keep the preview inside its frame at every width. */
+.planner-sample-box,.journal-sample-box{max-width:100%;box-sizing:border-box;overflow:hidden}
+.planner-caption,.journal-caption{line-height:1.4;overflow-wrap:anywhere}
+@media (max-width:480px){
+  /* small phones: slimmer panel padding so text has room */
+  .card-panel{padding:20px 16px}
+  .feature-box,.module-card,.era-card{padding:16px}
+  .highlight-banner{padding:18px 16px}
+  .planner-sample-box,.journal-sample-box{padding:12px}
+  .planner-caption,.journal-caption{font-size:13px;letter-spacing:.02em}
+  /* the specs table stacks: label above value */
+  .specs-table,.specs-table tbody,.specs-table tr,.specs-table th,.specs-table td{display:block;width:auto}
+  .specs-table th{border-bottom:none;padding-bottom:4px}
+  .specs-table td{padding-top:4px}
+}
+</style>
 </head>
 <body>
 <!-- ══ COGNICOPIA LEFT SIDEBAR NAV ══ -->
@@ -824,32 +853,32 @@ body { padding-left: var(--sb-w); }
         <rect width="340" height="220" rx="8" fill="#fdfcf7" stroke="#1b4332" stroke-width="3"/>
         <!-- Header Banner -->
         <rect x="14" y="14" width="312" height="28" rx="4" fill="#2d6a4f"/>
-        <text x="170" y="32" fill="#ffffff" font-size="12" font-family="Georgia, serif" font-weight="bold" text-anchor="middle">LIFE REMINISCENCE &bull; 1940s &amp; 1950s MEMORY CUES</text>
+        <text x="170" y="32" fill="#ffffff" font-size="12" font-family="Arial, Helvetica, sans-serif" font-weight="bold" text-anchor="middle" data-fit="292">LIFE REMINISCENCE &bull; 1940s &amp; 1950s MEMORY CUES</text>
         
         <!-- Prompt 1 -->
         <circle cx="28" cy="62" r="8" fill="#1b4332"/>
         <text x="28" y="66" fill="#ffffff" font-size="10" font-family="sans-serif" font-weight="bold" text-anchor="middle">1</text>
-        <text x="44" y="65" fill="#1b4332" font-size="12" font-family="sans-serif" font-weight="bold">First automobile you or your parents ever drove:</text>
-        <line x1="44" y1="84" x2="310" y2="84" stroke="#52b788" stroke-width="2"/>
-        <text x="46" y="80" fill="#2d6a4f" font-size="10.5" font-family="Georgia, serif" font-style="italic">e.g., 1954 Chevrolet Bel Air, Navy Blue with White Top</text>
+        <text x="44" y="65" fill="#1b4332" font-size="12" font-family="Arial, Helvetica, sans-serif" font-weight="bold" data-fit="272">First automobile you or your parents ever drove:</text>
+        <line x1="44" y1="86" x2="310" y2="86" stroke="#52b788" stroke-width="2"/>
+        <text x="46" y="80" fill="#2d6a4f" font-size="10.5" font-family="Georgia, serif" font-style="italic" data-fit="262">e.g., 1954 Chevrolet Bel Air, Navy Blue with White Top</text>
         
         <!-- Prompt 2 -->
         <circle cx="28" cy="110" r="8" fill="#1b4332"/>
         <text x="28" y="114" fill="#ffffff" font-size="10" font-family="sans-serif" font-weight="bold" text-anchor="middle">2</text>
-        <text x="44" y="113" fill="#1b4332" font-size="12" font-family="sans-serif" font-weight="bold">A radio program or tune that always made you dance:</text>
-        <line x1="44" y1="132" x2="310" y2="132" stroke="#52b788" stroke-width="2"/>
-        <text x="46" y="128" fill="#2d6a4f" font-size="10.5" font-family="Georgia, serif" font-style="italic">e.g., Glenn Miller, &ldquo;In the Mood&rdquo; on Saturday nights</text>
+        <text x="44" y="113" fill="#1b4332" font-size="12" font-family="Arial, Helvetica, sans-serif" font-weight="bold" data-fit="272">A song or radio show that made you dance:</text>
+        <line x1="44" y1="134" x2="310" y2="134" stroke="#52b788" stroke-width="2"/>
+        <text x="46" y="128" fill="#2d6a4f" font-size="10.5" font-family="Georgia, serif" font-style="italic" data-fit="262">e.g., Glenn Miller, &ldquo;In the Mood&rdquo; on Saturday nights</text>
 
         <!-- Prompt 3 -->
         <circle cx="28" cy="158" r="8" fill="#1b4332"/>
         <text x="28" y="162" fill="#ffffff" font-size="10" font-family="sans-serif" font-weight="bold" text-anchor="middle">3</text>
-        <text x="44" y="161" fill="#1b4332" font-size="12" font-family="sans-serif" font-weight="bold">Sunday dinner traditions around the kitchen table:</text>
-        <line x1="44" y1="180" x2="310" y2="180" stroke="#52b788" stroke-width="2"/>
-        <text x="46" y="176" fill="#2d6a4f" font-size="10.5" font-family="Georgia, serif" font-style="italic">e.g., Roast pot roast with carrots, homemade cloverleaf rolls</text>
+        <text x="44" y="161" fill="#1b4332" font-size="12" font-family="Arial, Helvetica, sans-serif" font-weight="bold" data-fit="272">Sunday dinner traditions around the kitchen table:</text>
+        <line x1="44" y1="182" x2="310" y2="182" stroke="#52b788" stroke-width="2"/>
+        <text x="46" y="176" fill="#2d6a4f" font-size="10.5" font-family="Georgia, serif" font-style="italic" data-fit="262">e.g., Pot roast with carrots and cloverleaf rolls</text>
 
         <!-- Footer Guidance -->
-        <rect x="14" y="194" width="312" height="16" fill="#e8f5e9"/>
-        <text x="170" y="206" fill="#1b4332" font-size="9.5" font-family="sans-serif" font-weight="bold" text-anchor="middle">Large 22pt Writing Guides &bull; Fosters Spontaneous Speech &bull; CMS Tag F679</text>
+        <rect x="14" y="193" width="312" height="18" rx="3" fill="#e8f5e9"/>
+        <text x="170" y="205.5" fill="#1b4332" font-size="9.5" font-family="Arial, Helvetica, sans-serif" font-weight="bold" text-anchor="middle" data-fit="296">Large 22pt Writing Guides &bull; Fosters Spontaneous Speech &bull; CMS Tag F679</text>
       </svg>
       <div class="journal-caption">Senior-Accessible 22pt Question Architecture &bull; Open Writing Leads</div>
     </div>
@@ -997,5 +1026,22 @@ body { padding-left: var(--sb-w); }
     }
   })();
   </script>
+<script>
+/* Sample artwork auto-fit: every <text data-fit="W"> is shrunk (never below 70% of its
+   size) until it is no wider than W viewBox units, so labels stay inside their boxes
+   whatever fonts the visitor's computer has. */
+(function(){
+  function fit(){
+    document.querySelectorAll('svg text[data-fit]').forEach(function(t){
+      var max = parseFloat(t.getAttribute('data-fit')), base = parseFloat(t.getAttribute('data-size') || t.getAttribute('font-size'));
+      t.setAttribute('data-size', base);
+      var s = base; t.setAttribute('font-size', s);
+      try { while (t.getComputedTextLength() > max && s > base * 0.7){ s -= 0.25; t.setAttribute('font-size', s); } } catch (e) {}
+    });
+  }
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fit); else fit();
+})();
+</script>
 </body>
 </html>

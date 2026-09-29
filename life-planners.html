@@ -692,6 +692,35 @@ body { padding-left: var(--sb-w); }
   .cg-sidebar{padding-top:58px}
 }
 </style>
+<style id="cg-fit-fixes">
+/* ===== Text containment fixes (planner + journal pages) ===== */
+/* Grids: a column may never be wider than the space it sits in (was a fixed 240-260px minimum,
+   which pushed cards off the right edge on 320px phones). */
+.feature-grid{grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr))}
+.module-grid,.era-grid{grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr))}
+/* Every text block wraps inside its own box instead of stretching it. */
+.card-panel,.feature-box,.module-card,.era-card,.highlight-banner,.specs-table th,.specs-table td{
+  min-width:0;overflow-wrap:anywhere;word-break:normal;hyphens:auto}
+.card-panel h2,.card-panel h3,.feature-box h3,.module-card h3,.era-card h3{line-height:1.25;text-wrap:balance}
+.card-panel p,.feature-box p,.module-card p,.era-card p,.highlight-banner{line-height:1.55;text-wrap:pretty}
+/* Specs table: fixed layout so long values wrap in their cell, never widen the table. */
+.specs-table{table-layout:fixed}
+/* Sample artwork: keep the preview inside its frame at every width. */
+.planner-sample-box,.journal-sample-box{max-width:100%;box-sizing:border-box;overflow:hidden}
+.planner-caption,.journal-caption{line-height:1.4;overflow-wrap:anywhere}
+@media (max-width:480px){
+  /* small phones: slimmer panel padding so text has room */
+  .card-panel{padding:20px 16px}
+  .feature-box,.module-card,.era-card{padding:16px}
+  .highlight-banner{padding:18px 16px}
+  .planner-sample-box,.journal-sample-box{padding:12px}
+  .planner-caption,.journal-caption{font-size:13px;letter-spacing:.02em}
+  /* the specs table stacks: label above value */
+  .specs-table,.specs-table tbody,.specs-table tr,.specs-table th,.specs-table td{display:block;width:auto}
+  .specs-table th{border-bottom:none;padding-bottom:4px}
+  .specs-table td{padding-top:4px}
+}
+</style>
 </head>
 <body>
 <!-- ══ COGNICOPIA LEFT SIDEBAR NAV ══ -->
@@ -824,34 +853,34 @@ body { padding-left: var(--sb-w); }
         <rect width="340" height="220" rx="8" fill="#fdfcf7" stroke="#1b4332" stroke-width="3"/>
         <!-- Top Orientation Header -->
         <rect x="14" y="14" width="312" height="32" rx="4" fill="#1b4332"/>
-        <text x="24" y="35" fill="#ffffff" font-size="13" font-family="sans-serif" font-weight="bold">TODAY IS WEDNESDAY</text>
-        <text x="314" y="35" fill="#d8f3dc" font-size="12" font-family="sans-serif" font-weight="bold" text-anchor="end">OCTOBER 14 &bull; AUTUMN</text>
+        <text x="24" y="35" fill="#ffffff" font-size="13" font-family="Arial, Helvetica, sans-serif" font-weight="bold" data-fit="148">TODAY IS WEDNESDAY</text>
+        <text x="314" y="35" fill="#d8f3dc" font-size="12" font-family="Arial, Helvetica, sans-serif" font-weight="bold" text-anchor="end" data-fit="134">OCTOBER 14 &bull; AUTUMN</text>
         
         <!-- Weather & Menu Sub-Blocks -->
         <rect x="14" y="52" width="150" height="38" rx="4" fill="#e8f5e9" stroke="#52b788" stroke-width="1.4"/>
         <circle cx="36" cy="71" r="11" fill="#e9c46a"/>
-        <text x="56" y="68" fill="#1b4332" font-size="11" font-family="sans-serif" font-weight="bold">Clear &amp; Sunny</text>
-        <text x="56" y="81" fill="#2d6a4f" font-size="9.5" font-family="sans-serif">Crisp Fall Breeze &bull; 62&deg;</text>
+        <text x="56" y="68" fill="#1b4332" font-size="11" font-family="Arial, Helvetica, sans-serif" font-weight="bold" data-fit="100">Clear &amp; Sunny</text>
+        <text x="56" y="82" fill="#2d6a4f" font-size="9.5" font-family="Arial, Helvetica, sans-serif" data-fit="100">Crisp Fall Breeze &bull; 62&deg;</text>
 
         <rect x="176" y="52" width="150" height="38" rx="4" fill="#e8f5e9" stroke="#52b788" stroke-width="1.4"/>
-        <text x="188" y="68" fill="#1b4332" font-size="11" font-family="sans-serif" font-weight="bold">Daily Menu Highlight</text>
-        <text x="188" y="81" fill="#2d6a4f" font-size="9.5" font-family="sans-serif">Roast Turkey &amp; Warm Apple Cider</text>
+        <text x="186" y="68" fill="#1b4332" font-size="11" font-family="Arial, Helvetica, sans-serif" font-weight="bold" data-fit="130">Daily Menu Highlight</text>
+        <text x="186" y="82" fill="#2d6a4f" font-size="9.5" font-family="Arial, Helvetica, sans-serif" data-fit="130">Roast Turkey &amp; Apple Cider</text>
 
         <!-- Scheduled Milestones -->
         <rect x="14" y="96" width="312" height="27" rx="3" fill="#ffffff" stroke="#2d6a4f" stroke-width="1.5"/>
         <rect x="18" y="100" width="50" height="19" rx="2" fill="#2d6a4f"/>
-        <text x="43" y="113" fill="#ffffff" font-size="9.5" font-family="sans-serif" font-weight="bold" text-anchor="middle">10:00 AM</text>
-        <text x="76" y="113" fill="#1b4332" font-size="11" font-family="sans-serif" font-weight="bold">Gentle Seated Chair Yoga &amp; Big Band Tunes</text>
+        <text x="43" y="113" fill="#ffffff" font-size="9.5" font-family="Arial, Helvetica, sans-serif" font-weight="bold" text-anchor="middle" data-fit="44">10:00 AM</text>
+        <text x="76" y="113" fill="#1b4332" font-size="11" font-family="Arial, Helvetica, sans-serif" font-weight="bold" data-fit="240">Gentle Seated Chair Yoga &amp; Big Band Tunes</text>
 
         <rect x="14" y="128" width="312" height="27" rx="3" fill="#ffffff" stroke="#2d6a4f" stroke-width="1.5"/>
         <rect x="18" y="132" width="50" height="19" rx="2" fill="#2d6a4f"/>
-        <text x="43" y="145" fill="#ffffff" font-size="9.5" font-family="sans-serif" font-weight="bold" text-anchor="middle">2:00 PM</text>
-        <text x="76" y="145" fill="#1b4332" font-size="11" font-family="sans-serif" font-weight="bold">Reminiscence Circle &amp; Cider Doughnut Social</text>
+        <text x="43" y="145" fill="#ffffff" font-size="9.5" font-family="Arial, Helvetica, sans-serif" font-weight="bold" text-anchor="middle" data-fit="44">2:00 PM</text>
+        <text x="76" y="145" fill="#1b4332" font-size="11" font-family="Arial, Helvetica, sans-serif" font-weight="bold" data-fit="240">Reminiscence Circle &amp; Cider Doughnut Social</text>
 
         <!-- Confidence Affirmation Bar -->
         <rect x="14" y="162" width="312" height="44" rx="4" fill="#1b4332"/>
-        <text x="170" y="179" fill="#d8f3dc" font-size="10.5" font-family="Georgia, serif" font-style="italic" text-anchor="middle">&ldquo;Every day brings familiar faces, warm music, and joyful moments.&rdquo;</text>
-        <text x="170" y="196" fill="#74c69d" font-size="9.5" font-family="sans-serif" font-weight="bold" text-anchor="middle">Orientation Anchor &bull; Predictable Daily Structure &bull; CMS Tag F679</text>
+        <text x="170" y="179" fill="#d8f3dc" font-size="10.5" font-family="Georgia, serif" font-style="italic" text-anchor="middle" data-fit="292">&ldquo;Every day brings familiar faces, warm music, and joyful moments.&rdquo;</text>
+        <text x="170" y="197" fill="#74c69d" font-size="9.5" font-family="Arial, Helvetica, sans-serif" font-weight="bold" text-anchor="middle" data-fit="292">Orientation Anchor &bull; Predictable Daily Structure &bull; CMS Tag F679</text>
       </svg>
       <div class="planner-caption">Temporal Grounding Architecture &bull; Bold Date, Weather &amp; Milestone Blocks</div>
     </div>
@@ -1003,5 +1032,22 @@ body { padding-left: var(--sb-w); }
     }
   })();
   </script>
+<script>
+/* Sample artwork auto-fit: every <text data-fit="W"> is shrunk (never below 70% of its
+   size) until it is no wider than W viewBox units, so labels stay inside their boxes
+   whatever fonts the visitor's computer has. */
+(function(){
+  function fit(){
+    document.querySelectorAll('svg text[data-fit]').forEach(function(t){
+      var max = parseFloat(t.getAttribute('data-fit')), base = parseFloat(t.getAttribute('data-size') || t.getAttribute('font-size'));
+      t.setAttribute('data-size', base);
+      var s = base; t.setAttribute('font-size', s);
+      try { while (t.getComputedTextLength() > max && s > base * 0.7){ s -= 0.25; t.setAttribute('font-size', s); } } catch (e) {}
+    });
+  }
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fit); else fit();
+})();
+</script>
 </body>
 </html>
