@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Information &amp; Resources - Cognicopia</title>
+<meta name="description" content="Cognicopia's reference and educational library in one place: clinical and quality standards, reminiscence science, facility and publishing information, feature guides, the resource catalog and the caregiver FAQ.">
+<style>
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; line-height: 1.6; font-family: "Trebuchet MS", "Segoe UI", sans-serif; color: #e8f3ed; background-color: #1b4332; background-image: repeating-linear-gradient(45deg, rgba(216,243,220,.13) 0 1px, transparent 1px 72px), repeating-linear-gradient(-45deg, rgba(216,243,220,.13) 0 1px, transparent 1px 72px), repeating-linear-gradient(45deg, rgba(82,183,136,.09) 0 1px, transparent 1px 18px), repeating-linear-gradient(-45deg, rgba(82,183,136,.09) 0 1px, transparent 1px 18px), linear-gradient(135deg,#163d2d 0%,#1b4332 48%,#102b20 100%); }
+.skip-link { position: absolute; left: -9999px; top: 8px; z-index: 2000; padding: 10px 14px; border-radius: 8px; background: #fff; color: #0b1f18; font-weight: 700; }
+.skip-link:focus { left: calc(var(--sb-w, 220px) + 12px); }
+
+/* ── The hub: a dark panel so every line reads at high contrast ── */
+.hub { width: min(980px, calc(100% - 28px)); margin: 32px auto 48px; padding: 32px 36px 40px; background: rgba(10,38,27,.9); border: 1px solid rgba(216,243,220,.2); border-radius: 18px; box-shadow: 0 24px 70px rgba(0,0,0,.3); }
+.hub-eyebrow { margin: 0; color: #95d5b2; font-size: 10.5pt; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.hub h1 { margin: 4px 0 10px; color: #fff; font-size: 26pt; line-height: 1.15; }
+.hub-lede { margin: 0 0 18px; max-width: 64ch; color: #d8f3dc; font-size: 12.5pt; }
+.hub-lede a { color: #95d5b2; }
+.hub-jump ul { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 8px; padding: 0; list-style: none; }
+.hub-jump a { display: inline-block; padding: 7px 14px; border-radius: 999px; border: 1px solid rgba(216,243,220,.28); color: #e8f3ed; font-size: 10.5pt; font-weight: 700; text-decoration: none; transition: background .15s, border-color .15s; }
+.hub-jump a:hover { background: rgba(82,183,136,.2); border-color: #52b788; }
+.hub-group { margin-top: 26px; scroll-margin-top: 70px; }
+.hub-group h2 { margin: 0; color: #b7e4c7; font-size: 15pt; }
+.hub-blurb { margin: 2px 0 12px; color: rgba(216,243,220,.8); font-size: 11pt; }
+.hub-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; margin: 0; padding: 0; list-style: none; }
+.hub-card { position: relative; display: flex; align-items: flex-start; gap: 14px; height: 100%; padding: 18px 40px 18px 18px; border-radius: 14px; border: 1px solid rgba(216,243,220,.18); background: rgba(20,61,43,.85); color: #e8f3ed; text-decoration: none; transition: transform .15s, border-color .15s, background .15s, box-shadow .15s; }
+.hub-card:hover { transform: translateY(-2px); border-color: #52b788; background: rgba(28,79,56,.95); box-shadow: 0 10px 28px rgba(0,0,0,.28); }
+.hub-card:focus-visible { outline: 3px solid #95d5b2; outline-offset: 3px; }
+.hub-ico { flex: none; display: grid; place-items: center; width: 46px; height: 46px; border-radius: 12px; background: rgba(82,183,136,.2); color: #95d5b2; }
+.hub-text { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.hub-text b { color: #fff; font-size: 12.5pt; line-height: 1.25; }
+.hub-text span { color: rgba(232,243,237,.86); font-size: 10.5pt; line-height: 1.45; }
+.hub-go { position: absolute; right: 14px; top: 50%; margin-top: -10px; color: rgba(216,243,220,.55); transition: transform .15s, color .15s; }
+.hub-card:hover .hub-go { transform: translateX(3px); color: #95d5b2; }
+.hub-back { margin: 30px 0 0; padding-top: 16px; border-top: 1px solid rgba(216,243,220,.15); }
+.hub-back a { color: #95d5b2; font-weight: 700; }
+@media (prefers-reduced-motion: reduce) { .hub-card, .hub-go { transition: none; } .hub-card:hover { transform: none; } .hub-card:hover .hub-go { transform: none; } }
+@media (max-width: 700px) { .hub { margin: 18px auto 32px; padding: 22px 18px 28px; } .hub h1 { font-size: 21pt; } .hub-cards { grid-template-columns: 1fr; } }
+
+/* ═══════════════════════════════════════════════════════════
+   COGNICOPIA  —  LEFT-HAND SIDEBAR NAV  (shared)
+   ══════════════════════════════════════════════════════════= */
+:root {
+  --sb-w:      220px;          /* sidebar width */
+  --sb-bg:     rgba(8,28,21,.96);
+  --sb-border: rgba(216,243,220,.15);
+  --sb-accent: #52b788;
+  --sb-hover:  rgba(82,183,136,.18);
+  --sb-txt:    #d8f3dc;
+  --sb-muted:  rgba(216,243,220,.55);
+  --sb-hdr-sz: 9.5pt;
+  --sb-lnk-sz: 10pt;
+}
+
+/* Push body content right to make room */
+body { padding-left: var(--sb-w); }
+
+/* ── Sidebar shell ── */
+.cg-sidebar {
+  position: fixed;
+  top: 0; left: 0;
+  width: var(--sb-w);
+  height: 100vh;
+  z-index: 900;
+  display: flex;
+  flex-direction: column;
+  background: var(--sb-bg);
+  border-right: 1px solid var(--sb-border);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(82,183,136,.3) transparent;
+}
+.cg-sidebar::-webkit-scrollbar { width: 4px; }
+.cg-sidebar::-webkit-scrollbar-thumb { background: rgba(82,183,136,.3); border-radius: 4px; }
+
+/* ── Logo / brand at top ── */
+.cg-sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 18px 16px 14px;
+  border-bottom: 1px solid var(--sb-border);
+  text-decoration: none;
+  color: #fff;
+  font-family: "Trebuchet MS","Segoe UI",sans-serif;
+  font-size: 15pt;
+  font-weight: 700;
+  flex-shrink: 0;
+  letter-spacing: -.01em;
+}
+.cg-sidebar-brand:hover { color: var(--sb-accent); }
+.cg-sidebar-brand img {
+  width: 32px; height: 26px;
+  flex: none; object-fit: contain;
+  border-radius: 3px;
+}
+
+/* ── "Home (Tool)" link ── */
+.cg-sidebar-home {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 16px;
+  color: var(--sb-txt);
+  font-size: var(--sb-lnk-sz);
+  font-family: "Trebuchet MS","Segoe UI",sans-serif;
+  text-decoration: none;
+  border-bottom: 1px solid var(--sb-border);
+  transition: background .15s, color .15s;
+  flex-shrink: 0;
+}
+.cg-sidebar-home:hover,
+.cg-sidebar-home.active {
+  background: var(--sb-hover);
+  color: #fff;
+}
+.cg-sidebar-home svg { flex: none; opacity: .7; }
+
+/* ── Nav sections ── */
+.cg-sidebar-nav {
+  flex: 1;
+  padding: 8px 0 24px;
+  list-style: none;
+  margin: 0;
+}
+
+/* Section header labels */
+.cg-sb-section {
+  padding: 16px 14px 4px;
+  font-size: var(--sb-hdr-sz);
+  font-family: "Trebuchet MS","Segoe UI",sans-serif;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--sb-accent);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  line-height: 1.3;
+  user-select: none;
+}
+.cg-sb-section svg { flex: none; opacity: .85; }
+
+/* Sidebar links */
+.cg-sidebar-nav a {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  padding: 7px 14px 7px 20px;
+  color: var(--sb-txt);
+  font-size: var(--sb-lnk-sz);
+  font-family: "Trebuchet MS","Segoe UI",sans-serif;
+  text-decoration: none;
+  line-height: 1.35;
+  border-left: 2px solid transparent;
+  transition: background .15s, color .13s, border-color .13s;
+  word-break: break-word;
+}
+.cg-sidebar-nav a:hover {
+  background: var(--sb-hover);
+  color: #fff;
+  border-left-color: var(--sb-accent);
+}
+.cg-sidebar-nav a.active {
+  background: rgba(82,183,136,.22);
+  color: #fff;
+  border-left-color: var(--sb-accent);
+  font-weight: 600;
+}
+.cg-sidebar-nav a .cg-bullet {
+  flex: none;
+  margin-top: 3px;
+  color: var(--sb-muted);
+  font-size: 10px;
+  transition: color .13s;
+}
+.cg-sidebar-nav a:hover .cg-bullet,
+.cg-sidebar-nav a.active .cg-bullet { color: var(--sb-accent); }
+
+/* Thin divider between sections */
+.cg-sb-divider {
+  height: 1px;
+  background: var(--sb-border);
+  margin: 8px 14px;
+}
+
+/* ── Hamburger toggle (mobile) ── */
+.cg-sidebar-toggle {
+  display: none;
+  position: fixed;
+  top: 12px; left: 12px;
+  z-index: 1100;
+  width: 40px; height: 40px;
+  background: rgba(8,28,21,.92);
+  border: 1px solid var(--sb-border);
+  border-radius: 8px;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(10px);
+}
+.cg-sidebar-toggle svg { color: #d8f3dc; }
+
+/* ── Narrow top bar: replaces old .navbar ── */
+.cg-topbar {
+  position: sticky;
+  top: 0; left: 0; right: 0;
+  z-index: 800;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 16px;
+  padding: 0 28px 0 16px;
+  background: rgba(8,28,21,.82);
+  border-bottom: 1px solid var(--sb-border);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+.cg-topbar a, .cg-topbar button.linklike {
+  color: #e8f5e9;
+  font-size: 10pt;
+  font-family: "Trebuchet MS","Segoe UI",sans-serif;
+  text-decoration: none;
+}
+.cg-topbar a:hover { color: #d8f3dc; }
+
+/* ── Responsive: collapse sidebar on small screens ── */
+@media (max-width: 700px) {
+  body { padding-left: 0; }
+  .cg-sidebar {
+    transform: translateX(-100%);
+    transition: transform .22s ease;
+    width: min(260px, 85vw);
+    box-shadow: 6px 0 32px rgba(0,0,0,.45);
+  }
+  .cg-sidebar.is-open { transform: translateX(0); }
+  .cg-sidebar-toggle { display: flex; }
+  .cg-sb-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    z-index: 850;
+    background: rgba(0,0,0,.45);
+  }
+  .cg-sb-overlay.is-open { display: block; }
+}
+
+/* ── Hide old navbar if it was left in ── */
+</style>
+<style id="cg-categories-toggle">
+/* Mobile menu button: hamburger icon + "Categories" label */
+.cg-sidebar-toggle{top:10px;left:12px;width:auto;height:40px;padding:8px 12px;gap:8px;max-width:calc(100vw - 24px);
+  align-items:center;justify-content:center;background:#000;color:#fff;border:1px solid rgba(255,255,255,.28);border-radius:6px;
+  font:600 14px/1 "Segoe UI",system-ui,-apple-system,Arial,sans-serif;white-space:nowrap;backdrop-filter:none}
+.cg-sidebar-toggle svg{color:#fff;flex:none}
+.cg-sidebar-toggle:focus-visible{outline:3px solid #7ad3a4;outline-offset:3px}
+@media (max-width:700px){
+  /* keep the top bar's own buttons clear of the Categories button */
+  .cg-topbar{padding-left:164px;height:auto;min-height:60px;flex-wrap:wrap;row-gap:6px;padding-top:9px;padding-bottom:9px}
+  /* the open menu starts below the button, so its heading isn't hidden */
+  .cg-sidebar{padding-top:58px}
+}
+</style>
+<style id="cg-nav-css">
+/* Site navigation: tools first, one Information & Resources section, breadcrumbs.
+   Generated by scripts/site-nav.mjs; the sidebar's base styles stay in each page.
+   Several pages set "color: #fff !important" and "p, li { font-size }" on every
+   element, so the parts added here pin their own colors and sizes to look the
+   same on every page. */
+.cg-sb-nav{flex:1 0 auto;display:flex;flex-direction:column}
+.cg-sb-nav .cg-sidebar-nav{flex:1}
+.cg-sidebar-nav a .cg-sb-ico{flex:none;margin-top:1px;color:var(--sb-muted);transition:color .13s}
+.cg-sidebar-nav a:hover .cg-sb-ico,.cg-sidebar-nav a.active .cg-sb-ico{color:var(--sb-accent)}
+.cg-sb-acc > summary{list-style:none;cursor:pointer;margin:4px 6px 0;padding:10px 8px 8px;border-radius:6px;transition:background .15s}
+.cg-sb-acc > summary::-webkit-details-marker{display:none}
+.cg-sb-acc > summary:hover{background:var(--sb-hover)}
+.cg-sb-acc > summary:focus-visible{outline:2px solid var(--sb-accent);outline-offset:1px}
+.cg-sb-acc-title{flex:1;min-width:0}
+.cg-sb-count{flex:none;min-width:18px;padding:1px 6px;border-radius:9px;background:rgba(82,183,136,.2);color:var(--sb-txt)!important;font-size:8pt;letter-spacing:0;text-align:center}
+.cg-sb-chev{flex:none;transition:transform .15s}
+.cg-sb-acc[open] > summary .cg-sb-chev{transform:rotate(90deg)}
+.cg-sb-sub,.cg-sb-sub ul{list-style:none;margin:0;padding:0}
+.cg-sb-sub a[data-hub]{font-weight:600}
+.cg-sb-glabel{display:block;padding:10px 14px 3px 20px;font:700 8pt "Trebuchet MS","Segoe UI",sans-serif;letter-spacing:.05em;text-transform:uppercase;color:var(--sb-muted)!important}
+.cg-crumbs{padding:8px 28px;border-bottom:1px solid var(--sb-border,rgba(216,243,220,.15));background:rgba(8,28,21,.6);font:10pt/20px "Trebuchet MS","Segoe UI",sans-serif}
+.cg-crumbs ol{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;margin:0;padding:0;list-style:none}
+.cg-crumbs li,.cg-crumbs a,.cg-crumbs span{font-size:inherit;line-height:inherit}
+.cg-crumbs li{display:flex;align-items:center;gap:8px;margin:0;color:#d8f3dc!important}
+.cg-crumbs li + li::before{content:"\203A";color:rgba(216,243,220,.55)}
+.cg-crumbs a{display:inline-flex;align-items:center;gap:6px;text-decoration:underline;text-underline-offset:3px;color:#95d5b2!important}
+.cg-crumbs a:hover{color:#fff!important}
+.cg-crumbs a:focus-visible{outline:2px solid #52b788;outline-offset:2px}
+.cg-crumbs [aria-current]{color:#fff!important;font-weight:700}
+@media (max-width:768px){.cg-crumbs{padding:8px 16px}}
+</style>
+</head>
+<body>
+<a href="#main-content" class="skip-link">Skip to main content</a>
+<!-- cg-nav:start: generated by scripts/site-nav.mjs. Edit that file and run npm run nav; changes made here are overwritten. -->
+<button type="button" class="cg-sidebar-toggle" id="cgSbToggle" aria-label="Open Categories Menu" aria-controls="cgSidebar" aria-expanded="false">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  <span class="cg-sidebar-toggle-text">Categories</span>
+</button>
+<div class="cg-sb-overlay" id="cgSbOverlay" aria-hidden="true"></div>
+<aside class="cg-sidebar" id="cgSidebar" aria-label="Site navigation">
+  <a href="../index.html" class="cg-sidebar-brand">
+    <img src="../assets/cognicopia-logo.jpg" alt="Cognicopia Logo">
+    <span>Cognicopia</span>
+  </a>
+  <a href="../index.html" id="cgHomeLink" class="cg-sidebar-home">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    Home (Tool)
+  </a>
+  <a href="../builder.html" class="cg-sidebar-home" id="cgBuilderLink">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6"/><line x1="9" y1="13" x2="16" y2="13"/><line x1="9" y1="17" x2="14" y2="17"/></svg>
+    Packet Builder
+  </a>
+  <nav class="cg-sb-nav" aria-label="Tools and resources">
+  <ul class="cg-sidebar-nav">
+    <li><div class="cg-sb-section"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.8-3.8a6 6 0 0 1-7.9 7.9l-6.9 6.9a2.1 2.1 0 0 1-3-3l6.9-6.9a6 6 0 0 1 7.9-7.9z"/></svg>Tools &amp; Planners</div></li>
+    <li><a href="../profile.html"><span class="cg-bullet" aria-hidden="true">&#x203A;</span><span>Resident Profiles</span></a></li>
+    <li><a href="../builder.html#/roster"><span class="cg-bullet" aria-hidden="true">&#x203A;</span><span>Resident Roster</span></a></li>
+    <li><a href="../cognitive-journals.html"><span class="cg-bullet" aria-hidden="true">&#x203A;</span><span>Cognitive Life Journals</span></a></li>
+    <li><a href="../life-planners.html"><span class="cg-bullet" aria-hidden="true">&#x203A;</span><span>12-Month Life Planners</span></a></li>
+
+    <li><div class="cg-sb-divider"></div></li>
+    <li>
+      <details class="cg-sb-acc" id="cgInfoNav" open data-here>
+        <summary class="cg-sb-section cg-sb-acc-head"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg><span class="cg-sb-acc-title">Information &amp; Resources</span><span class="cg-sb-count" aria-label="9 modules">9</span><svg class="cg-sb-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="9 6 15 12 9 18"/></svg></summary>
+        <ul class="cg-sb-sub">
+          <li><a data-hub href="../resources/" class="active" aria-current="page"><svg class="cg-sb-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span>Browse all resources</span></a></li>
+          <li class="cg-sb-grp"><span class="cg-sb-glabel" id="cgGrp-clinical">Clinical &amp; quality</span>
+            <ul aria-labelledby="cgGrp-clinical">
+          <li><a href="../resources/quality-standards/"><svg class="cg-sb-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg><span>Quality Standards Hub</span></a></li>
+          <li><a href="../resources/clinical-alignment/"><svg class="cg-sb-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 3H4a1 1 0 0 0-1 1v5a5 5 0 0 0 10 0V4a1 1 0 0 0-1-1h-1"/><path d="M8 14v1a6 6 0 0 0 12 0v-3"/><circle cx="20" cy="10" r="2"/></svg><span>Clinical Alignment</span></a></li>
+          <li><a href="../resources/reminiscence-science/"><svg class="cg-sb-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M9 3h6"/><path d="M10 3v6.5L4.6 18.9A2 2 0 0 0 6.3 22h11.4a2 2 0 0 0 1.7-3.1L14 9.5V3"/><path d="M7.5 15h9"/></svg><span>Reminiscence Science</span></a></li>
+            </ul></li>
+          <li class="cg-sb-grp"><span class="cg-sb-glabel" id="cgGrp-facilities">Facilities &amp; publishing</span>
+            <ul aria-labelledby="cgGrp-facilities">
+          <li><a href="../resources/high-volume-facilities/"><svg class="cg-sb-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01M12 6h.01M16 6h.01M8 10h.01M12 10h.01M16 10h.01M8 14h.01M12 14h.01M16 14h.01"/></svg><span>High-Volume Facilities</span></a></li>
+          <li><a href="../resources/publishing-excellence/"><svg class="cg-sb-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="8" r="6"/><path d="M15.5 13.5L17 22l-5-3-5 3 1.5-8.5"/></svg><span>Publishing Excellence</span></a></li>
+          <li><a href="../resources/platform-overview/"><svg class="cg-sb-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10"/><polygon points="16.2 7.8 14.1 14.1 7.8 16.2 9.9 9.9 16.2 7.8"/></svg><span>Platform &amp; Mission Overview</span></a></li>
+            </ul></li>
+          <li class="cg-sb-grp"><span class="cg-sb-glabel" id="cgGrp-guides">Guides &amp; help</span>
+            <ul aria-labelledby="cgGrp-guides">
+          <li><a href="../resources/activity-feature-guide/"><svg class="cg-sb-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg><span>Activity Feature Guide</span></a></li>
+          <li><a href="../resources/resource-catalog/"><svg class="cg-sb-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><path d="M8 7h8M8 11h6"/></svg><span>Master Resource Catalog</span></a></li>
+          <li><a href="../resources/caregiver-faq/"><svg class="cg-sb-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg><span>Caregiver FAQ</span></a></li>
+            </ul></li>
+        </ul>
+      </details>
+    </li>
+    <li><div class="cg-sb-divider"></div></li>
+    <li><div class="cg-sb-section"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Support</div></li>
+    <li><a href="../contact.html"><span class="cg-bullet" aria-hidden="true">&#x203A;</span><span>Contact Kirk Barron</span></a></li>
+  </ul>
+  </nav>
+</aside>
+<script id="cg-nav-js">
+(function(){
+  "use strict";
+  var toggle = document.getElementById("cgSbToggle"), sidebar = document.getElementById("cgSidebar"), overlay = document.getElementById("cgSbOverlay");
+  if (toggle && sidebar && overlay){
+    var open = function(){ sidebar.classList.add("is-open"); overlay.classList.add("is-open"); toggle.setAttribute("aria-expanded", "true"); toggle.setAttribute("aria-label", "Close Categories Menu"); };
+    var close = function(){ sidebar.classList.remove("is-open"); overlay.classList.remove("is-open"); toggle.setAttribute("aria-expanded", "false"); toggle.setAttribute("aria-label", "Open Categories Menu"); };
+    toggle.addEventListener("click", function(){ sidebar.classList.contains("is-open") ? close() : open(); });
+    overlay.addEventListener("click", close);
+    document.addEventListener("keydown", function(e){ if (e.key === "Escape" && sidebar.classList.contains("is-open")){ close(); toggle.focus(); } });
+  }
+  /* Information & Resources is always open on its own pages; elsewhere it
+     opens the way this browser last left it (a convenience, nothing more). */
+  var acc = document.getElementById("cgInfoNav"), KEY = "cg_nav_info_open";
+  if (acc && !acc.hasAttribute("data-here")){
+    try { if (localStorage.getItem(KEY) === "1") acc.open = true; } catch (e){}
+    acc.addEventListener("toggle", function(){ try { localStorage.setItem(KEY, acc.open ? "1" : "0"); } catch (e){} });
+  }
+})();
+</script>
+<!-- cg-nav:end -->
+<div class="cg-topbar" role="banner">
+  <a href="https://buy.stripe.com/9B614oaJV7lr0RX1ODew801" target="_blank" rel="noopener" style="background:#286E75;color:#fff;padding:6px 14px;border-radius:5px;font-weight:700;font-size:9.5pt;">Get Full Access →</a>
+</div>
+<!-- cg-crumbs:start: generated by scripts/site-nav.mjs -->
+<nav class="cg-crumbs" aria-label="Breadcrumb"><ol><li><a href="../index.html"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Dashboard</a></li><li><span aria-current="page">Information &amp; Resources</span></li></ol></nav>
+<!-- cg-crumbs:end -->
+<main class="hub" id="main-content">
+  <p class="hub-eyebrow">Resource &amp; Clinical Hub</p>
+  <h1>Information &amp; Resources</h1>
+  <p class="hub-lede">The reading behind Cognicopia: clinical and quality standards, the science of reminiscence, how the pages work for your community, and answers to common questions. The tools themselves stay in the sidebar under <b>Tools &amp; Planners</b>, one click from any page.</p>
+  <!-- cg-hub:start: generated by scripts/site-nav.mjs -->
+  <nav class="hub-jump" aria-label="Jump to a group"><ul><li><a href="#clinical">Clinical &amp; quality</a></li><li><a href="#facilities">Facilities &amp; publishing</a></li><li><a href="#guides">Guides &amp; help</a></li></ul></nav>
+  <section class="hub-group" id="clinical" aria-labelledby="hubH-clinical">
+    <h2 id="hubH-clinical">Clinical &amp; quality</h2>
+    <p class="hub-blurb">The evidence, standards and clinical thinking behind every page.</p>
+    <ul class="hub-cards">
+      <li><a class="hub-card" href="quality-standards/"><span class="hub-ico"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg></span><span class="hub-text"><b>Quality Standards Hub</b><span>Institutional standards in one place: clinical validation, copier-tested printing and publishing governance.</span></span><svg class="hub-go" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="9 6 15 12 9 18"/></svg></a></li>
+      <li><a class="hub-card" href="clinical-alignment/"><span class="hub-ico"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 3H4a1 1 0 0 0-1 1v5a5 5 0 0 0 10 0V4a1 1 0 0 0-1-1h-1"/><path d="M8 14v1a6 6 0 0 0 12 0v-3"/><circle cx="20" cy="10" r="2"/></svg></span><span class="hub-text"><b>Clinical Alignment</b><span>Evidence-informed engagement formats for memory care: cognitive retention, fine motor skills and dignified reminiscence.</span></span><svg class="hub-go" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="9 6 15 12 9 18"/></svg></a></li>
+      <li><a class="hub-card" href="reminiscence-science/"><span class="hub-ico"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M9 3h6"/><path d="M10 3v6.5L4.6 18.9A2 2 0 0 0 6.3 22h11.4a2 2 0 0 0 1.7-3.1L14 9.5V3"/><path d="M7.5 15h9"/></svg></span><span class="hub-text"><b>Reminiscence Science</b><span>The principles of reminiscence therapy, and how a person’s own history becomes a meaningful activity.</span></span><svg class="hub-go" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="9 6 15 12 9 18"/></svg></a></li>
+    </ul>
+  </section>
+  <section class="hub-group" id="facilities" aria-labelledby="hubH-facilities">
+    <h2 id="hubH-facilities">Facilities &amp; publishing</h2>
+    <p class="hub-blurb">How Cognicopia works for busy communities, and who stands behind it.</p>
+    <ul class="hub-cards">
+      <li><a class="hub-card" href="high-volume-facilities/"><span class="hub-ico"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01M12 6h.01M16 6h.01M8 10h.01M12 10h.01M16 10h.01M8 14h.01M12 14h.01M16 14h.01"/></svg></span><span class="hub-text"><b>High-Volume Facilities</b><span>Copier-tested, 8.5 × 11 in print-ready pages built for busy memory care and assisted living communities.</span></span><svg class="hub-go" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="9 6 15 12 9 18"/></svg></a></li>
+      <li><a class="hub-card" href="publishing-excellence/"><span class="hub-ico"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="8" r="6"/><path d="M15.5 13.5L17 22l-5-3-5 3 1.5-8.5"/></svg></span><span class="hub-text"><b>Publishing Excellence</b><span>Editorial standards, quality control and independent geriatric publishing.</span></span><svg class="hub-go" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="9 6 15 12 9 18"/></svg></a></li>
+      <li><a class="hub-card" href="platform-overview/"><span class="hub-ico"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10"/><polygon points="16.2 7.8 14.1 14.1 7.8 16.2 9.9 9.9 16.2 7.8"/></svg></span><span class="hub-text"><b>Platform &amp; Mission Overview</b><span>Why Cognicopia exists and how it supports dignified, meaningful memory care connections.</span></span><svg class="hub-go" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="9 6 15 12 9 18"/></svg></a></li>
+    </ul>
+  </section>
+  <section class="hub-group" id="guides" aria-labelledby="hubH-guides">
+    <h2 id="hubH-guides">Guides &amp; help</h2>
+    <p class="hub-blurb">What the tools do, what they make, and answers to common questions.</p>
+    <ul class="hub-cards">
+      <li><a class="hub-card" href="activity-feature-guide/"><span class="hub-ico"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></span><span class="hub-text"><b>Activity Feature Guide</b><span>A tour of the personalized activity generation and print-ready export features.</span></span><svg class="hub-go" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="9 6 15 12 9 18"/></svg></a></li>
+      <li><a class="hub-card" href="resource-catalog/"><span class="hub-ico"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><path d="M8 7h8M8 11h6"/></svg></span><span class="hub-text"><b>Master Resource Catalog</b><span>Every clinical and creative resource: botanical art, reminiscence journals and 12-month life planners.</span></span><svg class="hub-go" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="9 6 15 12 9 18"/></svg></a></li>
+      <li><a class="hub-card" href="caregiver-faq/"><span class="hub-ico"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg></span><span class="hub-text"><b>Caregiver FAQ</b><span>Answers for nurses, activity directors, caregivers and families: stages, activities, printing, privacy and licensing.</span></span><svg class="hub-go" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="9 6 15 12 9 18"/></svg></a></li>
+    </ul>
+  </section>
+  <!-- cg-hub:end -->
+  <p class="hub-back"><a href="../index.html">&#x2190; Back to the dashboard</a></p>
+</main>
+</body>
+</html>

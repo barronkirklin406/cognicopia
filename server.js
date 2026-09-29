@@ -2,6 +2,7 @@ import express from 'express';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
+import { MODULES, moduleHref } from './scripts/site-nav.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -17,22 +18,25 @@ app.get('/api/health', (req, res) => {
 
 // No endpoint accepts resident data: everything stays in the browser.
 
-// Clean URLs for resource pages
+// The reference pages live under /resources/<slug>/ (Information & Resources).
+// Their old addresses answer with a permanent redirect, keeping any ?query;
+// the browser keeps the #section. /resources itself is the hub.
+for (const m of MODULES) {
+  const base = m.legacy.replace(/\.html$/, '');
+  const paths = base === 'resources' ? [`/${m.legacy}`] : [`/${base}`, `/${m.legacy}`];
+  app.get(paths, (req, res) => {
+    const q = req.originalUrl.indexOf('?');
+    res.redirect(301, '/' + moduleHref(m) + (q < 0 ? '' : req.originalUrl.slice(q)));
+  });
+}
+
+// Clean URLs for the other pages
 const pageRoutes = [
-  'about',
-  'features',
-  'faq',
   'profile',
-  'therapy',
   'contact',
   'zentangle-art',
   'cognitive-journals',
-  'life-planners',
-  'clinical-alignment',
-  'high-volume-facilities',
-  'publishing-excellence',
-  'institutional-standards',
-  'resources'
+  'life-planners'
 ];
 pageRoutes.forEach(route => {
   app.get(`/${route}`, (req, res) => {

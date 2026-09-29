@@ -12,7 +12,10 @@
         and its license ships with it;
      4. every file the offline service worker pre-caches exists, and so
         does every icon in the web manifest;
-     5. the server file parses, and the planner and journal checks pass.
+     5. the server file parses, and the planner and journal checks pass;
+     6. the site navigation matches scripts/site-nav.mjs (npm run nav), and
+        every relative link and asset on every page points at a file that
+        exists (a folder means its index.html).
    Node built-ins only. Exits non-zero on any failure.
    ===================================================================== */
 import fs from "fs";
@@ -34,7 +37,10 @@ const must = (cond, msg) => { if (!cond) throw new Error(msg); };
 console.log("Cognicopia build check");
 
 /* 1. inline scripts parse */
-const pages = fs.readdirSync(ROOT).filter(f => f.endsWith(".html")).sort();
+const SKIP = new Set([".git", "node_modules"]);
+const htmlIn = dir => fs.readdirSync(path.join(ROOT, dir), { withFileTypes: true }).flatMap(e =>
+  SKIP.has(e.name) ? [] : e.isDirectory() ? htmlIn(path.posix.join(dir, e.name)) : e.name.endsWith(".html") ? [path.posix.join(dir, e.name)] : []);
+const pages = htmlIn("").sort();
 step(`inline scripts parse on all ${pages.length} pages`, () => {
   let n = 0;
   for (const f of pages){
@@ -105,6 +111,29 @@ step("server.js parses", () => { execFileSync(process.execPath, ["--check", path
 for (const s of ["check-life-planner.mjs", "check-life-journal.mjs"]) step(s, () => {
   const out = execFileSync(process.execPath, [path.join(ROOT, "scripts", s)], { encoding: "utf8" }).trim().split("\n")[0];
   return out;
+});
+
+/* 6. navigation and links */
+step("the navigation is current on every page", () => {
+  try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "site-nav.mjs"), "--check"], { encoding: "utf8" }).trim(); }
+  catch (e){ throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message); }
+});
+step(`every relative link resolves on all ${pages.length} pages`, () => {
+  let n = 0; const broken = new Set();
+  for (const f of pages){
+    const dir = path.posix.dirname(f), h = read(f).replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, "").replace(/<!--[\s\S]*?-->/g, "");
+    for (const m of h.matchAll(/\s(?:href|src|action|poster)\s*=\s*(["'])([^"']*)\1/gi)){
+      const v = m[2].trim();
+      if (!v || /^(#|[a-z][a-z0-9+.-]*:|\/\/)/i.test(v)) continue;
+      let t = decodeURIComponent(v.replace(/[?#].*$/, ""));
+      if (!t) continue;
+      t = t.startsWith("/") ? t.slice(1) : path.posix.join(dir, t);
+      const full = path.join(ROOT, t), ok = fs.existsSync(full) && (!fs.statSync(full).isDirectory() || fs.existsSync(path.join(full, "index.html")));
+      n++; if (!ok) broken.add(`${f}: ${v}`);
+    }
+  }
+  must(!broken.size, broken.size + " broken:\n      " + [...broken].slice(0, 20).join("\n      "));
+  return n + " links";
 });
 
 if (fails.length){ console.log(`\nBuild check FAILED (${fails.length}):\n  - ` + fails.join("\n  - ")); process.exit(1); }

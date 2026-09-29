@@ -56,10 +56,12 @@ async function freshFirst(event, req){
     if (res) return res;
   } catch (e) {}
   if (saved) return saved;
-  // Offline and never copied: open the packet tool rather than an error page.
-  if (req.mode === "navigate"){
-    const home = await cache.match("index.html");
-    if (home) return home;
+  // Offline and never copied: open the packet tool rather than an error page,
+  // at its own address, so its links and images work from any folder (the
+  // reference pages live under resources/).
+  if (req.mode === "navigate" && await cache.match("index.html")){
+    const home = new URL("index.html", self.location.href).href;
+    return req.url.split(/[?#]/)[0] === home ? cache.match("index.html") : Response.redirect(home, 302);
   }
   return Response.error();
 }
