@@ -1080,11 +1080,26 @@ body { padding-left: var(--sb-w); }
 }
 .navbar { display: none !important; }
 </style>
+<style id="cg-categories-toggle">
+/* Mobile menu button: hamburger icon + "Categories" label */
+.cg-sidebar-toggle{top:10px;left:12px;width:auto;height:40px;padding:8px 12px;gap:8px;max-width:calc(100vw - 24px);
+  align-items:center;justify-content:center;background:#000;color:#fff;border:1px solid rgba(255,255,255,.28);border-radius:6px;
+  font:600 14px/1 "Segoe UI",system-ui,-apple-system,Arial,sans-serif;white-space:nowrap;backdrop-filter:none}
+.cg-sidebar-toggle svg{color:#fff;flex:none}
+.cg-sidebar-toggle:focus-visible{outline:3px solid #7ad3a4;outline-offset:3px}
+@media (max-width:700px){
+  /* keep the top bar's own buttons clear of the Categories button */
+  .cg-topbar{padding-left:164px;height:auto;min-height:60px;flex-wrap:wrap;row-gap:6px;padding-top:9px;padding-bottom:9px}
+  /* the open menu starts below the button, so its heading isn't hidden */
+  .cg-sidebar{padding-top:58px}
+}
+</style>
 </head>
 <body>
 <!-- ══ COGNICOPIA LEFT SIDEBAR NAV ══ -->
-<button class="cg-sidebar-toggle" id="cgSbToggle" aria-label="Open navigation menu" aria-expanded="false">
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+<button type="button" class="cg-sidebar-toggle" id="cgSbToggle" aria-label="Open Categories Menu" aria-controls="cgSidebar" aria-expanded="false">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true" focusable="false"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  <span class="cg-sidebar-toggle-text">Categories</span>
 </button>
 <div class="cg-sb-overlay" id="cgSbOverlay" aria-hidden="true"></div>
 
