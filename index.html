@@ -690,6 +690,7 @@ body.simplified-layout fieldset{margin-bottom:30px}
 .licbadge.lic{background:var(--garden);color:#fff;border-color:var(--garden)}
 .licbadge.out{background:#FBEEE9;color:var(--warn);border-color:#E7C9BE}
 .hdrlic{display:inline-flex;align-items:center;gap:8px;flex-wrap:wrap}
+.hdrlic[hidden]{display:none}
 .linklike{background:none;border:none;color:var(--garden-dark);cursor:pointer;
   font:inherit;text-decoration:underline;padding:4px}
 .hdrlicform{display:inline-flex;gap:6px}
@@ -933,6 +934,9 @@ body { padding-left: var(--sb-w); }
   font-family: "Trebuchet MS","Segoe UI",sans-serif; text-decoration: none;
 }
 .cg-topbar a:hover { color: #d8f3dc; }
+.cg-topbar .hdrlicmsg { color: #f4c7b8; }
+.cg-topbar .hdrlicmsg:empty { display: none; }
+.cg-topbar .hdrlicmsg.ok { color: #b7e4c7; }
 
 @media (max-width: 700px) {
   body { padding-left: 0; }
@@ -1553,15 +1557,15 @@ html.tb-open,html.tb-open body{overflow:hidden !important;overscroll-behavior:no
 </script>
 <!-- ══ COGNICOPIA TOP BAR (index) ══ -->
 <div class="cg-topbar">
-  <span class="hdrlic" id="hdrlic" style="display:flex;align-items:center;gap:8px;">
+  <span class="hdrlic" id="hdrlic">
     <button type="button" class="linklike" id="hdrlicToggle">Activate license</button>
     <a href="https://buy.stripe.com/9B614oaJV7lr0RX1ODew801" target="_blank" class="stripe-btn">Get Full Access Now</a>
     <span class="hdrlicform" id="hdrlicForm" hidden>
       <input type="text" id="licHdr" placeholder="Access code" autocomplete="off" maxlength="40">
       <button type="button" id="licHdrGo">Unlock</button>
     </span>
-    <span class="hdrlicmsg" id="hdrlicMsg"></span>
   </span>
+  <span class="hdrlicmsg" id="hdrlicMsg" role="status"></span>
 </div>
 
 <div class="wrap">
@@ -7698,7 +7702,7 @@ function showAllowance(){
         : left ? left+" of "+FREE_RUNS+" free packets left"
         : "Free packets used";
   }
-  const hl=$("hdrlic"); if(hl) hl.hidden = sub;   // hide activate link once licensed
+  const hl=$("hdrlic"); if(hl) hl.hidden = sub;   // licensed: no Activate license or Get Full Access Now
 }
 
 function openGate(){
