@@ -12,7 +12,9 @@
         and its license ships with it;
      4. every file the offline service worker pre-caches exists, and so
         does every icon in the web manifest;
-     5. the server file parses, and the planner and journal checks pass;
+     5. the server file parses, and the planner, journal, TypeScript
+        services and CogniCore coloring checks pass (the coloring check
+        also proves the library, catalog and browser bundle are current);
      6. the site navigation matches scripts/site-nav.mjs (npm run nav), and
         every relative link and asset on every page points at a file that
         exists (a folder means its index.html).
@@ -108,7 +110,7 @@ step("every web manifest icon exists", () => {
 
 /* 5. server and the automated checks */
 step("server.js parses", () => { execFileSync(process.execPath, ["--check", path.join(ROOT, "server.js")]); });
-for (const s of ["check-life-planner.mjs", "check-life-journal.mjs"]) step(s, () => {
+for (const s of ["check-life-planner.mjs", "check-life-journal.mjs", "check-services.mjs", "check-coloring.mjs"]) step(s, () => {
   const out = execFileSync(process.execPath, [path.join(ROOT, "scripts", s)], { encoding: "utf8" }).trim().split("\n")[0];
   return out;
 });
