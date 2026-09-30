@@ -109,11 +109,12 @@ C.define({ id:"pocket-watch", title:"The Pocket Watch", cat:"nostalgic-heritage"
   if (g.lvl >= 2){
     var P0 = [300, 170], Cc = [430, 40], P1 = [520, 190];
     var at = function(t){ return [(1 - t) * (1 - t) * P0[0] + 2 * (1 - t) * t * Cc[0] + t * t * P1[0], (1 - t) * (1 - t) * P0[1] + 2 * (1 - t) * t * Cc[1] + t * t * P1[1]]; };
-    var n = g.at(11, 7, 0);
+    var n = g.at(11, 0, 0);                                        // the chain's links from Tier 1 only
     for (var i = 1; i <= n; i++){ var p = at(i / (n + 1)), p2 = at(i / (n + 1) + .01), a = Math.atan2(p2[1] - p[1], p2[0] - p[0]) * 180 / Math.PI; g.S(h.ellipse(p[0], p[1], 20, 11, a + (i % 2 ? 0 : 90))); }
-    g.S(h.circle(520, 190, 12)); g.S(h.rrect(490, 200, 60, 18, 8));
+    if (g.lvl >= 3){ g.S(h.circle(520, 190, 12)); g.S(h.rrect(490, 200, 60, 18, 8)); }
+    else g.L(h.path(P0).Q(Cc, P1).open());                           // Tier 2: the chain as one bold line
   }
-  g.S(h.circle(300, 190, 30)); g.S(h.circle(300, 190, 14), 2);
+  g.S(h.circle(300, 190, 30)); g.S(h.circle(300, 190, 14), 3);
   g.S(h.rrect(280, 214, 40, 36, 8));
   g.S(h.circle(300, 470, 220));
   g.D(h.circle(300, 470, 200), 3);
@@ -217,7 +218,7 @@ C.define({ id:"typewriter", title:"The Typewriter", cat:"nostalgic-heritage", er
   g.S(h.path([230, 180]).L([370, 180]).L([380, 330]).L([220, 330]).Z());
   if (g.lvl >= 3) [215, 245, 275].forEach(function(y){ g.D(h.line([242, y], [358, y])); });
   g.S(h.rrect(96, 316, 408, 48, 20));
-  g.S(h.circle(84, 340, 26)); g.S(h.circle(516, 340, 26));
+  [84, 516].forEach(function(x){ if (g.is(2)) g.S(h.circle(x, 340, 26)); else g.K(h.circle(x, 340, 26)); });
   g.S(h.path([116, 360]).L([484, 360]).L([540, 620]).L([60, 620]).Z());
   g.S(h.rrect(40, 610, 520, 60, 18));
   if (g.lvl >= 2){

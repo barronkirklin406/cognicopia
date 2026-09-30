@@ -111,5 +111,46 @@ try {
   ok(recs.every(r => r.ingest.checks.some(c => c.result === "human")), "every picture still needs a person's review");
 } finally { fs.rmSync(tmp, { recursive:true, force:true }); }
 
+/* 6. the Packet Builder's coloring library: page layout and queue pages,
+   run from the builder's own script with the same engine files */
+{
+  const vm = await import("vm");
+  const html = fs.readFileSync(path.join(ROOT, "builder.html"), "utf8");
+  const ui = (/<script id="cc-ui">([\s\S]*?)<\/script>/.exec(html) || [])[1];
+  ok(!!ui, "builder.html has the coloring library script");
+  ok(html.includes('<script src="assets/cognicore/cognicore.js"></script>') && html.includes('<script src="assets/services/vectorEngine.js"></script>'), "builder.html loads the library and the vector engine");
+  const sb = { console, settings:{}, store:{ set(){} }, esc:t => String(t).replace(/[&<>"']/g, c => "&#" + c.charCodeAt(0) + ";"), todayISO:() => "2026-01-01", performance:{ now:() => Date.now() }, addEventListener(){} };
+  sb.window = sb; sb.globalThis = sb; vm.createContext(sb);
+  for (const f of ["assets/cognicore/cognicore.js", "assets/services/vectorEngine.js"]) vm.runInContext(fs.readFileSync(path.join(ROOT, f), "utf8"), sb);
+  vm.runInContext(ui + "\nglobalThis.CogniLibrary = CogniLibrary;", sb);
+  const L = sb.CogniLibrary, V = sb.CogniVectorEngine;
+  const bools = [false, true];
+  for (const tier of [1, 2, 3]) for (const header of bools) for (const title of bools) for (const caption of bools) for (const largePrint of bools)
+    for (const legend of ["off", "anxiety-reduction", "high-contrast"]) for (const pageNumber of [1, 2]){
+      const o = { design:"sunflower", tier, weight:"auto", header, title, caption, largePrint, legend, duplex:true, pageNumber };
+      const lay = L.layout(o), b = lay.blocks, F = lay.F, tag = JSON.stringify(o);
+      ok(Math.abs(b.art.w / b.art.h - .75) < 1e-9, "art is 3:4 " + tag);
+      const inside = r => r.x >= F.content.x - 1e-9 && r.y >= F.content.y - 1e-9 && r.x + r.w <= F.content.x + F.content.w + 1e-9 && r.y + r.h <= F.content.y + F.content.h + 1e-9;
+      Object.keys(b).forEach(k => ok(inside(b[k]), `${k} inside the margins ${tag}`));
+      ok(b.art.w >= C.pageLayout(C.smallestLayout(tier)).artW - 1e-9, "art never smaller than the size the tier rules are measured at " + tag);
+      ok(F.gutterSide === (pageNumber === 2 ? "right" : "left") && F.margins[F.gutterSide] === .75, "gutter on the bound edge " + tag);
+      if (b.legend) ok(b.legend.x >= b.art.x + b.art.w || b.legend.x + b.legend.w <= b.art.x, "color guide beside the picture, not over it " + tag);
+      const stack = ["header", "title", "art", "caption", "foot"].filter(k => b[k]).map(k => b[k]);
+      for (let i = 1; i < stack.length; i++) ok(stack[i].y >= stack[i - 1].y + stack[i - 1].h - 1e-9, "blocks do not overlap " + tag);
+    }
+  const pg = L.sheet({ design:"farm-tractor", tier:3, weight:"auto", header:true, title:true, caption:true, largePrint:true, legend:"high-contrast", pageNumber:1, pageCount:1, name:"Ruth", facility:"Oak Ridge" });
+  const lay = L.layout({ design:"farm-tractor", tier:3, header:true, title:true, caption:true, largePrint:true, legend:"high-contrast" });
+  const sw = +/<g [^>]*stroke-width="([0-9.]+)"/.exec(pg.html)[1], ppu = lay.blocks.art.w * 96 / 600;
+  ok(Math.abs(sw * ppu - 10.5) < .02, `Tier 3 page lines print at 10.5 px (got ${(sw * ppu).toFixed(3)})`);
+  ok(/Prepared especially for <b>Ruth<\/b>/.test(pg.html) && /Oak Ridge/.test(pg.html) && /data-legend="high-contrast"/.test(pg.html) && pg.perf < 150, "sheet carries the name, facility and color guide");
+  const act = L.LIBRARY_ACTIVITY, cfg = { residentName:"Ruth", opts:{ pages:["sunflower", "red-barn"], tier:2, header:true, title:true, caption:true, legend:"off" } };
+  const plan = act.plan(cfg, null, 2), page = act.generate(cfg, null, plan[1]);
+  ok(plan.join() === "sunflower,red-barn" && page.layout === "cc" && /data-design="red-barn"/.test(page.sheet) && /data-tier="2"/.test(page.sheet), "queued library pages rebuild from their recipe");
+  // the same pages through the PDF writer, with a recording stand-in for jsPDF
+  class Rec { constructor(){ this.calls = []; return new Proxy(this, { get:(t, k) => k in t ? t[k] : (...a) => { t.calls.push(k); return k === "getTextWidth" ? 50 : k === "splitTextToSize" ? [String(a[0])] : t; } }); } }
+  const out = L.buildPdf(Rec, [0, 1].map(i => Object.assign(L.pageOpts(i, ["sunflower", "red-barn"]), { tier:1 })));
+  ok(out.times.length === 2 && out.times.every(t => t < 150), `PDF pages drawn in ${out.times.map(t => t.toFixed(1)).join(", ")} ms (limit 150)`);
+}
+
 if (fails.length){ console.log(`coloring check FAILED: ${fails.length} problem(s), ${pass} passed\n  - ` + fails.slice(0, 30).join("\n  - ")); process.exit(1); }
 console.log(`coloring check passed: ${pass} checks (${designs.length} designs, ${designs.length * 3} pages, ${packs.length} packs, ${jobs.length} prompt jobs)`);

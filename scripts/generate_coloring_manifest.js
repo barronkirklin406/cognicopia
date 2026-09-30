@@ -75,7 +75,7 @@ for (const d of C.designs()){
   if (!cat){ problems.push(`${d.id}: unknown category ${d.cat}`); continue; }
   for (const t of [1, 2, 3]){
     const T = C.TIERS[t], wt = C.weightFor(t);
-    const L = C.pageLayout({ tier:t, header:true, title:true, caption:true });      // the smallest the picture ever prints
+    const L = C.pageLayout(C.smallestLayout(t));                                    // the smallest the picture ever prints
     const r = C.render(d.id, t);
     const svg = C.toSVG(r, { widthIn:L.artW, standalone:true }) + "\n";
     const id = C.assetId(d, t), rel = `${SVG_DIR}/${d.cat}/${id}.svg`;
@@ -136,7 +136,7 @@ const catalog = {
       min_region_sq_in:T.minArea, max_tiny_regions:T.maxTiny, stage:T.stage, about:T.about }; }),
     line_weights:Object.values(C.WEIGHTS).map(w => ({ id:w.id, label:w.label, stroke_pt:w.pt, detail_stroke_pt:w.detailPt, stroke_px_equivalent:w.px })),
     complexity_bands:BANDS,
-    measured_at:{ dpi:MEASURE_DPI, layout:"the smallest printed size: resident header, title and caption all on", noise_floor_sq_in:NOISE_SQ_IN }
+    measured_at:{ dpi:MEASURE_DPI, layout:"the smallest printed size: resident header, title and caption all on, in large print", noise_floor_sq_in:NOISE_SQ_IN }
   },
   categories:C.CATEGORIES.map(c => ({ id:c.id, label:c.label, blurb:c.blurb, design_count:byCat[c.id] })),
   packs:C.packs().map(p => ({ id:p.id, title:p.title, theme:p.theme, about:p.about, recommended_tier:p.tier || null, designs:p.designs.slice(), page_count:p.designs.length })),

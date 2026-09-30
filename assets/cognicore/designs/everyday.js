@@ -195,7 +195,8 @@ C.define({ id:"sunday-paper", title:"The Sunday Paper", cat:"home-everyday",
   g.S(h.path([96, 360]).L([250, 348]).L([258, 440]).L([104, 452]).Z(), 2);
   g.group({ x:460, y:560, s:g.at(1, 1.1, 1.3) }, function(g){
     g.S(h.path([-70, -60]).L([70, -60]).L([60, 70]).Q([0, 84], [-60, 70]).Z());
-    g.S(h.path([66, -30]).C([120, -30], [120, 40], [62, 40]).L([62, 20]).C([96, 20], [96, -10], [66, -10]).Z());
+    var mugHandle = h.path([66, -30]).C([120, -30], [120, 40], [62, 40]).L([62, 20]).C([96, 20], [96, -10], [66, -10]).Z();
+    if (g.is(2)) g.S(mugHandle); else g.K(mugHandle);
     g.S(h.ellipse(0, -60, 70, 14));
   });
   if (g.lvl >= 2){ g.S(h.circle(170, 720, 44)); g.S(h.circle(290, 720, 44)); g.L(h.path([214, 716]).Q([230, 700], [246, 716]).open()); }

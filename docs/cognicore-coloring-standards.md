@@ -82,7 +82,7 @@ Conversation prompts invite rather than test: "Tell me about…", "What would yo
 
 ## 4. Measured, not eyeballed
 
-Every page is printed to a 1-bit bitmap at its *smallest* printed size and measured by `scripts/lib/raster.mjs`. The smallest size is the one with the resident header, title and caption all on, measured at 100 dpi. The catalog records these for each page:
+Every page is printed to a 1-bit bitmap at its *smallest* printed size and measured by `scripts/lib/raster.mjs`. The smallest size is the one with the resident header, title and caption all on, in large print (titles +8 pt, captions +4 pt), measured at 100 dpi. The color guide never shrinks a picture: it sits in a column beside the art, in width the 3:4 box leaves free. The catalog records these for each page:
 
 | Metric | What it means |
 |---|---|
@@ -212,9 +212,10 @@ Approved pictures join the catalog and the Packet Builder on the next `npm run c
 
   It also returns a report: base line, multiplier, widths, points before and after, details dropped, and milliseconds. Every library page transforms in under 10 ms; the budget is 150 ms.
 - `pageFrame({ pageNumber, duplex, unit })` and `fitArt(...)`: the Letter page, the 0.75 in gutter on the bound edge, the 0.5 in margins, the holes, and the largest 3:4 box.
-- `legendSvg` / `drawLegendPdf`: optional color guides at the page foot, outside the picture.
+- `legendColumnSvg` / `drawLegendColumnPdf` (a 1.25 in column on the page's outer side, as the Packet Builder prints it) and `legendSvg` / `drawLegendPdf` (a strip at the page foot): optional color guides, always outside the picture. Pure black-and-white printing leaves them out.
   - **Anxiety Reduction Mode:** calming blues and greens.
   - **High-Contrast Mode:** yellow and navy.
+- `drawSvgPdf(doc, svg, x, y, widthPt)`: any SVG into a jsPDF page as vector paths, in black and white only, with even-odd rings kept as rings.
 
 ## 8. Commands
 

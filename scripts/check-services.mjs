@@ -108,6 +108,35 @@ group("vectorEngine", () => {
     const h = V.drawLegendPdf(doc, mode, 54, 700, 504);
     ok(h === 54 && calls.filter(c => c[0] === "roundedRect").length === V.LEGENDS[mode].swatches.length + 1, mode + " legend PDF");
   }
+  // the side-column legend: fits its column, draws every swatch, never runs off the page
+  ok(V.legendColumnSvg("off") === "" && V.legendColumnHeightIn("off") === 0, "legend column off");
+  ok(JSON.stringify(V.wrapText("Anxiety Reduction Mode", 13)) === '["Anxiety","Reduction","Mode"]' && V.wrapText("", 10).length === 0, "wrapText");
+  for (const mode of ["anxiety-reduction", "high-contrast"]){
+    const s = V.legendColumnSvg(mode), root = V.parseSvg(s), h = V.legendColumnHeightIn(mode);
+    ok(root.name === "svg" && V.LEGENDS[mode].swatches.every(sw => s.includes(sw.hex)) && root.attrs.width === "1.25in", mode + " legend column SVG");
+    ok(h > 2 && h < 6, `${mode} legend column is ${h} in tall`);
+    const calls = []; const doc = new Proxy({}, { get:(o, k) => (...a) => { calls.push([k, ...a]); } });
+    const hp = V.drawLegendColumnPdf(doc, mode, 500, 200);
+    ok(Math.abs(hp - h * 72) < 1e-9 && calls.filter(c => c[0] === "roundedRect").length === V.LEGENDS[mode].swatches.length + 1, mode + " legend column PDF");
+    const texts = calls.filter(c => c[0] === "text");
+    ok(texts.every(c => c[2] >= 500 && c[2] <= 500 + 90 && c[3] >= 200 && c[3] <= 200 + hp), mode + " legend column text stays inside its box");
+    ok(V.LEGENDS[mode].swatches.every(sw => texts.some(c => c[1] === sw.name)), mode + " legend column names every color");
+  }
+
+  // any SVG into a PDF as vectors: transforms, inherited paint, even-odd rings, black and white only
+  const rec = () => { const calls = []; return { calls, doc:new Proxy({}, { get:(o, k) => k === "then" ? undefined : (...a) => { calls.push([k, ...a]); } }) }; };
+  const A = rec(), sv = V.drawSvgPdf(A.doc, '<svg viewBox="0 0 100 200"><g transform="translate(10 20)" stroke="#123" stroke-width="2" fill="#eee"><rect x="0" y="0" width="10" height="10"/><path d="M0 50 L20 50" fill="none"/></g><circle cx="50" cy="100" r="5" fill="none" stroke="none"/><path fill="#000" fill-rule="evenodd" d="M0 0 H10 V10 H0 Z M2 2 H8 V8 H2 Z"/></svg>', 72, 72, 144);
+  ok(sv.paths === 3, "drawSvgPdf paths: " + sv.paths);
+  const mv = A.calls.find(c => c[0] === "moveTo");
+  ok(mv && Math.abs(mv[1] - (72 + 10 * 1.44)) < 1e-9 && Math.abs(mv[2] - (72 + 20 * 1.44)) < 1e-9, "drawSvgPdf applies the viewBox scale and group transform: " + mv);
+  ok(A.calls.some(c => c[0] === "setLineWidth" && Math.abs(c[1] - 2.88) < 1e-9), "drawSvgPdf scales line widths");
+  ok(A.calls.filter(c => c[0] === "setFillColor" || c[0] === "setDrawColor").every(c => (c[1] === 0 || c[1] === 255) && c[1] === c[2] && c[2] === c[3]), "drawSvgPdf paints only black and white");
+  ok(A.calls.filter(c => c[0] === "fillStroke").length === 1 && A.calls.filter(c => c[0] === "stroke").length === 1 && A.calls.filter(c => c[0] === "fillEvenOdd").length === 1, "drawSvgPdf fill, stroke and even-odd operators");
+  const lib1 = files.find(f => /-t3\.svg$/.test(f)), B = rec(), big = V.drawSvgPdf(B.doc, fs.readFileSync(lib1, "utf8"), 54, 108, 504);
+  ok(big.paths > 5 && big.ms < 150, `drawSvgPdf on ${path.basename(lib1)}: ${big.paths} paths in ${big.ms} ms`);
+  const xs = B.calls.filter(c => c[0] === "moveTo" || c[0] === "lineTo").map(c => c[1]);
+  ok(Math.min(...xs) >= 54 - 1e-6 && Math.max(...xs) <= 54 + 504 + 1e-6, "drawSvgPdf keeps a library page inside its box");
+
   ok(V.LEGENDS["anxiety-reduction"].swatches.every(s => /blue|sea|sage|fern/i.test(s.name)), "calming legend is blues and greens");
   ok(V.LEGENDS["high-contrast"].swatches.some(s => /yellow/i.test(s.name)) && V.LEGENDS["high-contrast"].swatches.some(s => /navy/i.test(s.name)), "high-contrast legend has yellow and navy");
   sandbox.__dveWorst = worst;

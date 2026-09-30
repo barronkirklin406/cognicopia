@@ -82,7 +82,7 @@ function pageLayout(o){
   var tier = TIERS[o.tier] ? o.tier : 2;
   var contentW = PAGE.w - PAGE.gutter - PAGE.outer, contentH = PAGE.h - PAGE.top - PAGE.bottom;
   var gap = 0.1, foot = 0.22;
-  var titlePt = [0, 24, 28, 32][tier], captionPt = [0, 16, 18, 20][tier];
+  var titlePt = [0, 24, 28, 32][tier] + (o.largePrint ? 8 : 0), captionPt = [0, 16, 18, 20][tier] + (o.largePrint ? 4 : 0);   // large print: +8 pt titles, +4 pt captions
   var titleH = o.title ? +(titlePt / 72 * 1.3 + 0.02).toFixed(3) : 0;
   var captionH = o.caption ? +(captionPt / 72 * 1.3 * 2 + 0.04).toFixed(3) : 0;
   var headerH = o.header ? 0.4 : 0;
@@ -92,6 +92,11 @@ function pageLayout(o){
   return { page:PAGE, contentW:contentW, contentH:contentH, artW:+artW.toFixed(3), artH:+artH.toFixed(3),
            titlePt:titlePt, captionPt:captionPt, titleH:titleH, captionH:captionH, headerH:headerH, footH:foot, gap:gap };
 }
+
+/* The smallest a picture ever prints: every heading on, in large print.
+   The tier rules are measured at this size (a color guide sits beside the
+   picture, in width the 3:4 box leaves free, so it never shrinks it). */
+function SMALLEST(tier){ return { tier:tier, header:true, title:true, caption:true, largePrint:true }; }
 
 /* ---------- 2. Geometry helpers (all return absolute M/L/C/Z paths) ---------- */
 function fmt(n){ var r = Math.round(n * 10) / 10; return String(r === 0 ? 0 : r); }
@@ -436,7 +441,7 @@ function render(id, tier, variant){
   /* The tier's smallest area rule: a white shape too small to color at this
      tier (at the smallest printed size, with every heading on) is left out.
      Lines and black accents are kept. */
-  var inch = pageLayout({ tier:tier, header:true, title:true, caption:true }).artW / W * s, minA = TIERS[tier].minArea * .6;
+  var inch = pageLayout(SMALLEST(tier)).artW / W * s, minA = TIERS[tier].minArea * .6;
   var items = g.items.filter(function(it){ return it.fill !== 1 || shapeArea(it.d) * inch * inch >= minA; });
   return { id:id, tier:tier, design:d, items:items, bbox:bb, s:s, tx:tx, ty:ty, dropped:g.items.length - items.length };
 }
@@ -497,7 +502,7 @@ function stats(){
 }
 
 root.CogniCore = {
-  version:ENGINE_VERSION, W:W, H:H, TIERS:TIERS, WEIGHTS:WEIGHTS, CATEGORIES:CATEGORIES, CAT:CAT, PAGE:PAGE,
+  version:ENGINE_VERSION, W:W, H:H, TIERS:TIERS, WEIGHTS:WEIGHTS, CATEGORIES:CATEGORIES, CAT:CAT, PAGE:PAGE, smallestLayout:SMALLEST,
   define:define, definePack:definePack, render:render, toSVG:toSVG, toPDF:toPDF, pageLayout:pageLayout,
   weightFor:weightFor, tagsFor:tagsFor, assetId:assetId, parsePath:parsePath, samplePath:samplePath, bboxOf:bboxOf,
   designs:function(){ return DESIGNS.slice(); }, design:function(id){ return BY_ID[id] || null; },

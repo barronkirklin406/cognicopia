@@ -18,6 +18,7 @@
      facility networks routinely block outside script hosts, and a
      blocked CDN would mean the button silently does nothing. This
      way the page also works with no internet at all once loaded. -->
+<script src="assets/cognicore/cognicore.js"></script>
 <script id="pdflib">/** @license
  *
  * jsPDF - PDF Document creation from JavaScript
@@ -4927,16 +4928,52 @@ function oddPage(D,r,s,theme){
   return sets;
 }
 
+/* ---- Coloring page: a picture from the CogniCore library ----
+   (assets/cognicore/cognicore.js, the same line art as the Packet
+   Builder's coloring library). Chosen for this resident: drawn at their
+   stage's cognitive tier and line weight, never anything their avoid list
+   names, and a subject from their working life when one fits. The art is
+   vector, 3:4, pure black on white, and as large as the page allows. */
+const LIFE_TAGS = [
+  [/farm|ranch|dairy|agricultur/, ["farms", "tractors", "barns", "harvest", "country"]],
+  [/mechanic|garage|auto|truck|driver|chauffeur/, ["cars", "trucks", "vehicles", "tractors"]],
+  [/rail|train|conductor|engineer/, ["trains", "railroads", "streetcars"]],
+  [/teach|school|professor|librar/, ["school", "letters", "writing", "clocks"]],
+  [/sew|seamstress|tailor|dressmak|textile/, ["sewing", "handwork", "quilts"]],
+  [/cook|chef|bak|kitchen|caterer|waitress|diner/, ["baking", "kitchen", "cooking", "tea"]],
+  [/sail|navy|fisher|boat|dock|harbor|coast guard/, ["boats", "fishing", "lighthouses"]],
+  [/office|secretar|clerk|bookkeep|typist|account/, ["typewriters", "letters", "writing", "telephones"]],
+  [/garden|landscap|florist|nursery/, ["gardening", "flowers", "garden"]],
+  [/homemak|housewife|mother|home/, ["laundry", "baking", "kitchen", "home", "sewing"]],
+  [/pilot|aviat|air force/, ["airplanes", "flight"]],
+  [/fire/, ["fire-engines"]], [/postal|mail/, ["mail", "letters"]], [/music|pianist|singer/, ["music", "radios", "phonographs"]]
+];
 function colorPage(D,r,theme){
-  const entry=COLORING_LIBRARY[contentIndex(r,COLORING_LIBRARY.length,17)];
+  const C=window.CogniCore;
+  const tier={early:1,middle:2,late:3}[r.stage]||2;
   D.start(theme);
-  D.heading(entry.name+" to Color");
-  D.body("A familiar picture from "+entry.cue+". However you like, there is no right way.",{size:17});
-
-  const cx=PW/2, cy=470;
-  D.d.setLineWidth(4.2); D.d.setDrawColor(...BOLD_ART);
-  motif(D.d, entry.motif, cx, cy, 142, 4.2);
-  D.d.setLineWidth(1); D.d.setDrawColor(0);
+  if(!C){                                    // the library file did not load: say so plainly rather than print a blank page
+    D.heading("A Picture to Color");
+    D.body("The coloring pictures could not be loaded on this computer. Reload the page to try again.",{size:17});
+    return;
+  }
+  const text=d=>[d.title,d.tags.join(" "),d.sensitive.join(" "),d.talk,C.CAT[d.cat].label].join(" ");
+  let pool=C.designs().filter(d=>allowed(r,text(d)));
+  if(!pool.length) pool=C.designs().filter(d=>d.cat==="bold-easy-patterns");
+  const job=String(r.job||"").toLowerCase(), want=[];
+  for(const [re,tags] of LIFE_TAGS) if(re.test(job)) want.push(...tags);
+  const mine=pool.filter(d=>d.tags.some(t=>want.indexOf(t)>=0));
+  // Half the time (by resident, so a packet is repeatable) a picture from their own work.
+  if(mine.length && contentIndex(r,2,23)===0) pool=mine;
+  const d=pool[contentIndex(r,pool.length,17)];
+  D.heading(d.title);
+  D.body(d.talk+" Color it any way you like.",{size:17});
+  D.gap(6);
+  const room=D.room()-6, w=Math.min(PW-2*MARGIN, room*0.75), h=w/0.75;
+  const x=(PW-w)/2, y=D.y+(room-h)/2;
+  C.toPDF(D.d, C.render(d.id,tier), x, y, w);
+  D.d.setLineWidth(1); D.d.setDrawColor(0); D.d.setFillColor(255,255,255);
+  D.y+=room;
 }
 
 function holidayPage(D,r,key){
@@ -5237,33 +5274,6 @@ function mazePage(D,r,s,theme){
   D.y=y0+rows*cell+34;
   D.finish();
 }
-
-const COLORING_LIBRARY = [
-  {name:"1950s cruiser", motif:"car", category:"transport", cue:"a Sunday drive in a 1950s cruiser"},
-  {name:"classic pickup truck", motif:"truck", category:"transport", cue:"a truck used for work or errands"},
-  {name:"steam locomotive", motif:"train", category:"transport", cue:"a train ride or the station"},
-  {name:"old-fashioned bicycle", motif:"bicycle", category:"transport", cue:"a bicycle from childhood"},
-  {name:"rotary telephone", motif:"telephone", category:"home", cue:"calling family from the kitchen"},
-  {name:"table radio", motif:"radio", category:"home", cue:"the family radio after supper"},
-  {name:"kitchen mixer", motif:"mixer", category:"home", cue:"baking in a family kitchen"},
-  {name:"oil lamp", motif:"lamp", category:"home", cue:"a quiet evening at home"},
-  {name:"teapot", motif:"teapot", category:"home", cue:"tea with family or friends"},
-  {name:"garden rose", motif:"flower", category:"nature", cue:"a garden in full bloom"},
-  {name:"sunflower", motif:"sun", category:"nature", cue:"summer gardens and bright afternoons"},
-  {name:"songbird", motif:"bird", category:"nature", cue:"birds in a yard or garden"},
-  {name:"butterfly", motif:"butterfly", category:"nature", cue:"a warm day outdoors"},
-  {name:"farm dog", motif:"dog", category:"nature", cue:"a dog from home or the farm"},
-  {name:"house cat", motif:"cat", category:"nature", cue:"a cat that kept someone company"},
-  {name:"spring blossoms", motif:"flower", category:"seasonal", cue:"the first flowers of spring"},
-  {name:"autumn harvest", motif:"wheat", category:"seasonal", cue:"harvest time and county fairs"},
-  {name:"winter snowflake", motif:"snowflake", category:"seasonal", cue:"the first snow of winter"},
-  {name:"holiday star", motif:"star", category:"seasonal", cue:"holiday lights and celebrations"},
-  {name:"sailing boat", motif:"sailboat", category:"travel", cue:"a lake, river, or seaside trip"},
-  {name:"simple flower pattern", motif:"flower", category:"pattern", cue:"a calm repetitive garden pattern"},
-  {name:"sun and rays", motif:"sun", category:"pattern", cue:"a sunny morning"},
-  {name:"heart pattern", motif:"heart", category:"pattern", cue:"people and places held dear"},
-  {name:"star pattern", motif:"star", category:"pattern", cue:"night skies and wishes"}
-];
 
 const DOT_LIBRARY = [
   {name:"classic car", template:"car", dots:28, cue:"a Sunday drive"},
@@ -7021,7 +7031,7 @@ function buildPacket(r, mode){
   for(const k of r.holidays) holidayPage(D,r,k);
 
   if(sel.games) gamesPage(D,r,theme);
-  if(sel.color) colorPage(D,theme);
+  if(sel.color) colorPage(D,r,theme);
   if(sel.mandala) mandalaPage(D,r,s,theme);
 
   /* New world-class activity modules */

@@ -124,7 +124,10 @@ C.define({ id:"compass-rose", title:"The Compass Rose", cat:"bold-easy-patterns"
   var cx = 300, cy = 400;
   g.S(h.circle(cx, cy, 250));
   if (g.lvl >= 2) g.S(h.circle(cx, cy, 214));
-  var pts = function(n, r1, r2, rot){ for (var i = 0; i < n; i++){ var a = rot + i * 360 / n; g.S(h.poly([[cx, cy], h.onCircle(cx, cy, r2, a - 180 / n), h.onCircle(cx, cy, r1, a)])); g.S(h.poly([[cx, cy], h.onCircle(cx, cy, r1, a), h.onCircle(cx, cy, r2, a + 180 / n)])); } };
+  var pts = function(n, r1, r2, rot){ for (var i = 0; i < n; i++){ var a = rot + i * 360 / n;
+    if (g.is(2)){ g.S(h.poly([[cx, cy], h.onCircle(cx, cy, r2, a - 180 / n), h.onCircle(cx, cy, r1, a)])); g.S(h.poly([[cx, cy], h.onCircle(cx, cy, r1, a), h.onCircle(cx, cy, r2, a + 180 / n)])); }
+    else g.S(h.poly([[cx, cy], h.onCircle(cx, cy, r2, a - 180 / n), h.onCircle(cx, cy, r1, a), h.onCircle(cx, cy, r2, a + 180 / n)]));   // Tier 3: whole points, not halves
+  } };
   if (g.lvl >= 3) pts(8, 180, 110, -67.5);
   pts(4, g.at(200, 210, 230), g.at(60, 70, 80), -45);
   pts(4, g.at(240, 246, 250), g.at(60, 70, 80), -90);
@@ -161,10 +164,10 @@ C.define({ id:"snowflake-medallion", title:"The Snowflake", cat:"bold-easy-patte
   for (var i = 0; i < 6; i++){
     var a = i * 60 - 90;
     g.group({ x:cx, y:cy, rot:a + 90 }, function(g){
-      var aw = g.at(18, 18, 23), bw = g.at(1, 1, 1.45);                  // broader arms and branches at Tier 3
+      var aw = g.at(18, 21, 23), bw = g.at(1, 1.3, 1.45);                // broader arms and branches at Tiers 2 and 3
       g.S(h.poly([[-aw, 0], [-aw, -200], [0, -250], [aw, -200], [aw, 0]]));
       [-1, 1].forEach(function(s){ g.S(h.poly([[0, -150], [80 * s, -220], [(80 + 16 * bw) * s, -220 + 20 * bw], [14 * bw * s, -150 + 22 * bw]])); });
-      if (g.lvl >= 2){ g.S(h.poly([[0, -100], [-40, -136], [-52, -122], [-12, -86]])); g.S(h.poly([[0, -100], [40, -136], [52, -122], [12, -86]])); }
+      if (g.lvl >= 3){ g.S(h.poly([[0, -100], [-40, -136], [-52, -122], [-12, -86]])); g.S(h.poly([[0, -100], [40, -136], [52, -122], [12, -86]])); }   // inner branches: Tier 1
       if (g.lvl >= 3) g.S(h.poly([[0, -250], [-20, -270], [0, -290], [20, -270]]));
     });
   }

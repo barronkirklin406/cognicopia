@@ -1338,5 +1338,148 @@ function drawLegendPdf(doc, mode, x, y, w, font = "helvetica") {
     doc.setFillColor(255, 255, 255);
     return G.h;
 }
-root.CogniVectorEngine = Object.freeze({ VERSION, PX_PER_IN, PT_PER_PX, BASE_LINE_PX, STROKE_POLICY, isTier, tierLines, SvgParseError, parseSvg, serializeSvg, parseStyle, presentation, setPresentation, IDENTITY, multiply, applyMatrix, matrixScale, parseTransform, flattenPath, shapeSubpaths, polygonArea, netArea, pathLength, rdp, subpathsToD, parsePaint, viewBoxOf, transformSvg, PAGE, pageFrame, fitArt, LEGENDS, LEGEND_MODES, legendHeightIn, legendSvg, drawLegendPdf });
+const LEGEND_COLUMN_WIDTH_IN = 1.25;
+function wrapText(text, maxChars) {
+    const out = [];
+    let line = "";
+    for (const w of String(text).split(/\s+/).filter(Boolean)){
+        if (line && (line + " " + w).length > maxChars) {
+            out.push(line);
+            line = w;
+        } else line = line ? line + " " + w : w;
+    }
+    if (line) out.push(line);
+    return out;
+}
+function columnLayout(mode, widthIn) {
+    const L = LEGENDS[mode], w = widthIn * 72, titleLines = wrapText(L.title, 13), noteLines = wrapText(L.note, 17), rowH = 38;
+    const top = 12 + titleLines.length * 15 + 6;
+    return {
+        w,
+        titleLines,
+        noteLines,
+        rowH,
+        top,
+        h: top + L.swatches.length * rowH + 4 + noteLines.length * 12 + 12
+    };
+}
+const legendColumnHeightIn = (mode, widthIn = LEGEND_COLUMN_WIDTH_IN)=>mode === "off" ? 0 : columnLayout(mode, widthIn).h / 72;
+function legendColumnSvg(mode, widthIn = LEGEND_COLUMN_WIDTH_IN) {
+    if (mode === "off") return "";
+    const L = LEGENDS[mode], G = columnLayout(mode, widthIn), W = Math.round(G.w), H = Math.round(G.h);
+    const font = 'font-family="Atkinson Hyperlegible, Arial, sans-serif" fill="#000"';
+    const title = G.titleLines.map((t, k)=>`<text x="${W / 2}" y="${24 + k * 15}" font-size="12.5" font-weight="700" text-anchor="middle" ${font}>${escText(t)}</text>`).join("");
+    const rows = L.swatches.map((sw, k)=>{
+        const y = G.top + k * G.rowH;
+        return `<rect x="${fmt(W / 2 - 12)}" y="${fmt(y)}" width="24" height="20" rx="4" fill="${sw.hex}" stroke="#000" stroke-width="1.5"/>` + `<text x="${W / 2}" y="${fmt(y + 32)}" font-size="10.5" text-anchor="middle" ${font}>${escText(sw.name)}</text>`;
+    }).join("");
+    const ny = G.top + L.swatches.length * G.rowH + 12;
+    const note = G.noteLines.map((t, k)=>`<text x="${W / 2}" y="${fmt(ny + k * 12)}" font-size="9" text-anchor="middle" ${font}>${escText(t)}</text>`).join("");
+    return `<svg xmlns="http://www.w3.org/2000/svg" class="dve-legend" data-legend="${mode}" viewBox="0 0 ${W} ${H}" width="${fmt(widthIn)}in" height="${fmt(H / 72)}in" role="img" aria-label="${escText(L.title)}: ${escText(L.swatches.map((sw)=>sw.name).join(", "))}">` + `<rect x=".75" y=".75" width="${W - 1.5}" height="${H - 1.5}" rx="6" fill="#fff" stroke="#000" stroke-width="1.5"/>` + title + rows + note + "</svg>";
+}
+function drawLegendColumnPdf(doc, mode, x, y, widthIn = LEGEND_COLUMN_WIDTH_IN, font = "helvetica") {
+    if (mode === "off") return 0;
+    const L = LEGENDS[mode], G = columnLayout(mode, widthIn), cx = x + G.w / 2;
+    doc.setDrawColor(0, 0, 0);
+    doc.setLineWidth(1.5);
+    doc.setFillColor(255, 255, 255);
+    doc.roundedRect(x + .75, y + .75, G.w - 1.5, G.h - 1.5, 6, 6, "FD");
+    if (doc.setTextColor) doc.setTextColor(0, 0, 0);
+    if (doc.setFont) doc.setFont(font, "bold");
+    doc.setFontSize(12.5);
+    G.titleLines.forEach((t, k)=>doc.text(t, cx, y + 24 + k * 15, {
+            align: "center"
+        }));
+    if (doc.setFont) doc.setFont(font, "normal");
+    L.swatches.forEach((sw, k)=>{
+        const ry = y + G.top + k * G.rowH, c = hexRgb(sw.hex);
+        doc.setFillColor(c[0], c[1], c[2]);
+        doc.setLineWidth(1.5);
+        doc.roundedRect(cx - 12, ry, 24, 20, 4, 4, "FD");
+        doc.setFontSize(10.5);
+        doc.text(sw.name, cx, ry + 32, {
+            align: "center"
+        });
+    });
+    const ny = y + G.top + L.swatches.length * G.rowH + 12;
+    doc.setFontSize(9);
+    G.noteLines.forEach((t, k)=>doc.text(t, cx, ny + k * 12, {
+            align: "center"
+        }));
+    doc.setFillColor(255, 255, 255);
+    return G.h;
+}
+function drawSvgPdf(doc, source, x, y, widthPt) {
+    const t0 = now();
+    const root = typeof source === "string" ? parseSvg(source) : source, vb = viewBoxOf(root);
+    const k = widthPt / vb[2], base = [
+        k,
+        0,
+        0,
+        k,
+        x - vb[0] * k,
+        y - vb[1] * k
+    ];
+    if (doc.setLineCap) doc.setLineCap("round");
+    if (doc.setLineJoin) doc.setLineJoin("round");
+    let paths = 0;
+    const walk = (el, m, stroke, sw, fill, rule)=>{
+        for (const n of el.children){
+            if (n.type !== "element" || SKIP.has(n.name)) continue;
+            if (presentation(n, "display") === "none" || presentation(n, "visibility") === "hidden") continue;
+            const nm = n.attrs.transform ? multiply(m, parseTransform(n.attrs.transform)) : m;
+            const s = parsePaint(presentation(n, "stroke")) ?? stroke, f = parsePaint(presentation(n, "fill")) ?? fill;
+            const swv = presentation(n, "stroke-width"), w = swv != null && swv !== "" && Number.isFinite(parseFloat(swv)) ? parseFloat(swv) : sw;
+            const r = presentation(n, "fill-rule") || rule;
+            if (!DRAWABLE.has(n.name)) {
+                walk(n, nm, s, w, f, r);
+                continue;
+            }
+            const subs = shapeSubpaths(n);
+            if (!subs || !subs.length) continue;
+            const doFill = Array.isArray(f), doStroke = Array.isArray(s) && w > 0;
+            if (!doFill && !doStroke) continue;
+            for (const sp of subs){
+                const p0 = applyMatrix(nm, sp.points[0]);
+                doc.moveTo(p0[0], p0[1]);
+                for(let q = 1; q < sp.points.length; q++){
+                    const p = applyMatrix(nm, sp.points[q]);
+                    doc.lineTo(p[0], p[1]);
+                }
+                if (sp.closed) doc.close();
+            }
+            const ink = (c)=>lightness(c) < 128 ? 0 : 255;
+            if (doFill) {
+                const v = ink(f);
+                doc.setFillColor(v, v, v);
+            }
+            if (doStroke) {
+                const v = ink(s);
+                doc.setDrawColor(v, v, v);
+                doc.setLineWidth(w * matrixScale(nm));
+            }
+            const evenOdd = r === "evenodd" && !!doc.fillEvenOdd && !!doc.fillStrokeEvenOdd;
+            if (doFill && doStroke) {
+                if (evenOdd) doc.fillStrokeEvenOdd();
+                else doc.fillStroke();
+            } else if (doFill) {
+                if (evenOdd) doc.fillEvenOdd();
+                else doc.fill();
+            } else doc.stroke();
+            paths++;
+        }
+    };
+    walk(root, base, "none", 1, [
+        0,
+        0,
+        0
+    ], presentation(root, "fill-rule") || "nonzero");
+    doc.setFillColor(255, 255, 255);
+    doc.setDrawColor(0, 0, 0);
+    return {
+        paths,
+        ms: round3(now() - t0)
+    };
+}
+root.CogniVectorEngine = Object.freeze({ VERSION, PX_PER_IN, PT_PER_PX, BASE_LINE_PX, STROKE_POLICY, isTier, tierLines, SvgParseError, parseSvg, serializeSvg, parseStyle, presentation, setPresentation, IDENTITY, multiply, applyMatrix, matrixScale, parseTransform, flattenPath, shapeSubpaths, polygonArea, netArea, pathLength, rdp, subpathsToD, parsePaint, viewBoxOf, transformSvg, PAGE, pageFrame, fitArt, LEGENDS, LEGEND_MODES, legendHeightIn, legendSvg, drawLegendPdf, LEGEND_COLUMN_WIDTH_IN, wrapText, legendColumnHeightIn, legendColumnSvg, drawLegendColumnPdf, drawSvgPdf });
 })(typeof globalThis !== "undefined" ? globalThis : this);

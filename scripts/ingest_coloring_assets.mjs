@@ -172,7 +172,7 @@ function placeGray(src, box, w, h, margin, thr){
   }
   return out;
 }
-const refWidth = t => C.pageLayout({ tier:t, header:true, title:true, caption:true }).artW;   // the smallest the page prints
+const refWidth = t => C.pageLayout(C.smallestLayout(t)).artW;                               // the smallest the page prints
 /* Printed line weight at the page's reference width, from the 300 DPI canvas. */
 const printedPt = (bmp, t) => +(strokeStats(bmp, DPI).stroke_pt_median * refWidth(t) / CANVAS_W).toFixed(2);
 function measureAt(bmp, t){
