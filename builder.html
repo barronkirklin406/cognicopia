@@ -541,6 +541,21 @@ input:focus,select:focus{border-color:var(--accent)}
   .topbar{padding-left:164px}
   .sidebar{padding-top:60px}
 }
+/* Phones: the bar keeps one row beside the Categories button. Home keeps
+   its room, the Facility view switch gives way to the sidebar's Facility
+   Portal link, and "Your packet" shortens (its full name stays for screen
+   readers). */
+.pk-short{display:none}
+@media (max-width:560px){ .topbar .fp-toggle{display:none} }
+@media (max-width:420px){
+  .topbar{gap:10px}
+  .topbar-left{min-width:42px}
+  .topbar .facility{display:none}
+  .pk-long{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
+  .pk-short{display:inline}
+  .btn-packet{padding-left:14px;padding-right:14px}
+}
+@media (max-width:340px){ .pk-short{display:none} .btn-packet{padding-left:12px;padding-right:12px} }
 </style>
 <style id="print-font">
 /* Atkinson Hyperlegible (Braille Institute of America), SIL Open Font License 1.1:
@@ -1502,6 +1517,384 @@ textarea:focus{border-color:var(--accent)}
 .hl-fold{border-left:1px dashed #36c;width:0 !important}
 .sheet.hl-sheet{padding:0;display:block;position:relative}
 </style>
+<style id="fp-style">
+/* =====================================================================
+   FACILITY PORTAL (#/facility): an Activity Director's view of the
+   whole community. Its own palette, scoped to .fp: deep green cards
+   (#23382b) with tan borders (#b5a48b), dark green dividers (#2e4a38,
+   decorative only), white text, and a pale turquoise header bar
+   (#e6f4f1) with dark ink. Contrast: white on a card 12.6:1, the
+   secondary text 10.1:1, tan on a card 5.2:1, ink on the header
+   14.3:1, ink on a tan button 6.6:1. The six pillar colors mark the
+   pillars on their chips (#172a1f, each at least 3:1) and always sit
+   beside the pillar's icon and name, so color is never the only cue.
+   Transitions are short and switch off with prefers-reduced-motion.
+   ===================================================================== */
+.view.view-wide{max-width:1480px}
+.fp{
+  --fp-card:#23382b; --fp-chip:#172a1f; --fp-tan:#b5a48b; --fp-tan-hi:#c8b89f; --fp-div:#2e4a38;
+  --fp-text:#ffffff; --fp-text-2:#dfe9e4; --fp-muted:#c9d6cf;
+  --fp-head:#e6f4f1; --fp-ink:#10251c; --fp-ink-2:#6b5a3e; --fp-warn:#f0b48c;
+  --p-coloring:#3987e5; --p-numbers:#d95926; --p-words:#199e70; --p-letters:#c98500; --p-movement:#d55181; --p-music:#008300;
+  color:var(--fp-text); min-width:0; overflow-wrap:anywhere;
+}
+.fp .p-coloring{--pc:var(--p-coloring)} .fp .p-numbers{--pc:var(--p-numbers)} .fp .p-words{--pc:var(--p-words)}
+.fp .p-letters{--pc:var(--p-letters)} .fp .p-movement{--pc:var(--p-movement)} .fp .p-music{--pc:var(--p-music)}
+.fp *{min-width:0}
+.fp h2,.fp h3,.fp h4{color:var(--fp-text);overflow-wrap:anywhere}
+.fp a{color:var(--fp-head)}
+.fp :focus-visible{outline:3px solid var(--fp-head);outline-offset:2px}
+.fp .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+
+/* the header bar: pale turquoise, dark ink */
+.fp-bar{position:relative;margin:0 0 18px;padding:18px 20px 0;border:2px solid var(--fp-tan);border-radius:18px;background:var(--fp-head);color:var(--fp-ink);overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.28)}
+.fp-bar :focus-visible{outline:3px solid var(--fp-ink);outline-offset:2px}
+.fp-bar-top{display:flex;flex-wrap:wrap;gap:14px 28px;align-items:flex-start;justify-content:space-between}
+.fp-id{display:flex;gap:14px;align-items:center;flex:1 1 300px}
+.fp-logo{flex:none;display:grid;place-items:center;width:50px;height:50px;border-radius:12px;background:var(--fp-card);color:var(--fp-head)}
+.fp-eyebrow{margin:0;font-size:12.5px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--fp-ink-2)}
+.fp-title{margin:2px 0 0;font-size:clamp(22px,2.6vw,30px);line-height:1.15;color:var(--fp-ink) !important;outline:none;overflow-wrap:anywhere}
+.fp-bar .fp-title:focus,.fp-bar .fp-title:focus-visible{outline:none}
+.fp-who{flex:0 1 360px}
+.fp-who label{display:block;margin:0 0 4px;font-size:13px;font-weight:800;color:var(--fp-ink)}
+.fp-bar select{width:100%;min-height:44px;padding:9px 12px;border-radius:10px;border:2px solid var(--fp-ink);background:#ffffff;color:var(--fp-ink);font-weight:700;color-scheme:light}
+.fp-who-note{margin:6px 0 0;font-size:13px;line-height:1.4;color:var(--fp-ink)}
+.fp-tablist{position:relative;display:flex;gap:2px;margin:16px -20px 0;padding:0 14px;border-top:1px solid rgba(16,37,28,.18);overflow-x:auto;scrollbar-width:thin;scroll-snap-type:x proximity}
+.fp-tab{flex:none;display:inline-flex;align-items:center;gap:8px;max-width:min(280px,72vw);padding:12px 14px 10px;border:0;border-bottom:4px solid transparent;background:none;color:var(--fp-ink);font:inherit;font-weight:700;font-size:15px;cursor:pointer;scroll-snap-align:start;transition:background .15s,border-color .15s}
+.fp-tab-l{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fp-tab:hover{background:rgba(16,37,28,.07)}
+.fp-tab[aria-selected="true"]{border-bottom-color:var(--fp-card)}
+.fp-tab:focus-visible{outline-offset:-3px}
+.fp-tab-n{flex:none;display:inline-grid;place-items:center;min-width:22px;height:22px;padding:0 6px;border-radius:999px;background:var(--fp-card);color:var(--fp-head);font-size:12px}
+
+/* layout pieces */
+.fp-anim{animation:fp-in .2s ease-out}
+@keyframes fp-in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.fp-sec-head{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:flex-end;justify-content:space-between;margin:0 0 14px}
+.fp-sec-head h2{margin:0;font-size:clamp(21px,2.2vw,26px);line-height:1.2}
+.fp-sub{margin:4px 0 0;color:var(--fp-text-2);font-size:14.5px;line-height:1.45}
+.fp-note{margin:0 0 12px;padding:8px 12px;border-radius:10px;border:1px dashed var(--fp-tan);color:var(--fp-text-2);font-size:14px}
+.fp-card{padding:18px;border:2px solid var(--fp-tan);border-radius:16px;background:var(--fp-card)}
+.fp-card > h3:first-child,.fp-card > .fp-card-head:first-child h3{margin-top:0}
+.fp-card h3{margin:0 0 6px;font-size:18px}
+.fp-card-head{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;justify-content:space-between;margin:0 0 8px}
+.fp-card-head h3{margin:0}
+.fp-hint{margin:6px 0 0;color:var(--fp-text-2);font-size:13.5px;line-height:1.45}
+.fp-muted{color:var(--fp-muted)}
+.fp-empty{margin:0;color:var(--fp-muted);font-size:14px}
+.fp-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.fp-banner{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;justify-content:space-between;margin:0 0 16px;padding:14px 16px;border:2px dashed var(--fp-tan);border-radius:14px;background:var(--fp-card)}
+.fp-banner p{margin:0;flex:1 1 320px;color:var(--fp-text-2)}
+.fp-banner b{color:var(--fp-text)}
+
+/* buttons and fields */
+.fp-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;max-width:100%;padding:9px 16px;border:2px solid var(--fp-tan);border-radius:10px;background:transparent;color:var(--fp-text);font:inherit;font-weight:700;font-size:15px;line-height:1.25;text-align:center;text-decoration:none;cursor:pointer;transition:background .15s,border-color .15s,color .15s,transform .05s}
+.fp-btn:hover{background:var(--fp-div)}
+.fp-btn:active{transform:translateY(1px)}
+.fp-btn-primary{background:var(--fp-tan);border-color:var(--fp-tan);color:var(--fp-ink)}
+.fp-btn-primary:hover{background:var(--fp-tan-hi);border-color:var(--fp-tan-hi)}
+.fp-btn-danger{border-color:var(--fp-warn);color:var(--fp-warn)}
+.fp-btn-danger:hover{background:rgba(240,180,140,.1)}
+.fp-btn-sm{min-height:36px;padding:5px 11px;font-size:14px}
+.fp-btn[disabled]{opacity:.5;cursor:not-allowed;transform:none}
+.fp-btn svg{flex:none}
+.fp-field{margin:0 0 14px;padding:0;border:0}
+.fp-field > label,.fp-field > legend,.fp-tool > label,.fp-tool-l{display:block;margin:0 0 6px;padding:0;font-weight:700;font-size:14.5px;color:var(--fp-text)}
+.fp-opt{font-weight:400;color:var(--fp-muted)}
+.fp-body input[type=text],.fp-body input[type=number],.fp-body input[type=date],.fp-body input[type=time],.fp-body select,
+.fp-dialog input[type=text],.fp-dialog input[type=date],.fp-dialog input[type=time],.fp-dialog select{
+  width:100%;min-height:44px;padding:9px 12px;border:2px solid var(--fp-tan);border-radius:10px;background:var(--fp-chip);color:var(--fp-text);font:inherit;font-size:15px;color-scheme:dark}
+.fp-body input:focus,.fp-body select:focus,.fp-dialog input:focus,.fp-dialog select:focus{border-color:var(--fp-head)}
+.fp-row2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr));gap:0 12px}
+.fp-inline{display:flex;flex-wrap:wrap;gap:8px}
+.fp-inline input{flex:1 1 180px}
+.fp-check{display:flex;flex-wrap:wrap;align-items:center;gap:8px;min-height:40px;padding:6px 0;font-size:15px;cursor:pointer}
+.fp-check input{width:20px;height:20px;margin:0;accent-color:var(--fp-tan);flex:none}
+.fp-check-text{flex-wrap:nowrap;align-items:flex-start}
+.fp-check-text input{margin-top:2px}
+.fp-check-text > span{flex:1 1 auto}
+.fp-checks{display:grid;gap:2px}
+.fp-seg{display:flex;flex-wrap:wrap;gap:6px}
+.fp-seg label{position:relative;cursor:pointer}
+.fp-seg input{position:absolute;inset:0;margin:0;opacity:0;cursor:pointer}
+.fp-seg span{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:7px 14px;border:2px solid var(--fp-tan);border-radius:10px;background:var(--fp-chip);color:var(--fp-text);font-weight:700;font-size:14.5px;transition:background .15s,color .15s}
+.fp-seg input:checked + span{background:var(--fp-tan);color:var(--fp-ink)}
+.fp-seg input:focus-visible + span{outline:3px solid var(--fp-head);outline-offset:2px}
+.fp-seg input:disabled + span{opacity:.5;cursor:not-allowed}
+
+/* tiers and tags */
+.fp-tier{display:inline-flex;align-items:center;gap:6px;max-width:100%;padding:2px 10px 2px 3px;border:1.5px solid var(--fp-tan);border-radius:999px;background:var(--fp-chip);color:var(--fp-text);font-size:13px;font-weight:700;line-height:1.3;vertical-align:middle}
+.fp-tier b{flex:none;display:inline-grid;place-items:center;min-width:22px;height:22px;padding:0 5px;border-radius:999px;background:var(--fp-tan);color:var(--fp-ink);font-size:12.5px}
+.fp-tier span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fp-tags{display:inline-flex;flex-wrap:wrap;gap:4px}
+.fp-tag{display:inline-block;padding:1px 8px;border:1px solid var(--fp-tan);border-radius:999px;color:var(--fp-text-2);font-size:12px;font-weight:700;line-height:1.5;white-space:nowrap}
+.fp-tag-best{background:var(--fp-tan);color:var(--fp-ink)}
+.fp-pic{flex:none;display:inline-grid;place-items:center;width:24px;height:24px;border-radius:7px;background:var(--fp-chip);color:var(--pc)}
+.fp-pic svg{width:15px;height:15px}
+
+/* overview */
+.fp-kpis{list-style:none;margin:0 0 16px;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr));gap:12px}
+.fp-kpi{padding:14px 16px;border:2px solid var(--fp-tan);border-radius:14px;background:var(--fp-card)}
+.fp-kpi-v{display:block;font-size:32px;font-weight:800;line-height:1.1;font-variant-numeric:proportional-nums;color:var(--fp-text)}
+.fp-kpi-l{display:block;margin-top:2px;font-size:14px;font-weight:700;color:var(--fp-text-2)}
+.fp-kpi-s{display:block;margin-top:4px;font-size:13px;color:var(--fp-muted)}
+.fp-meter{display:block;height:8px;margin-top:8px;border-radius:999px;background:var(--fp-chip);overflow:hidden}
+.fp-meter > span{display:block;height:100%;border-radius:999px;background:var(--fp-tan);transition:width .35s ease}
+.fp-grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:14px;margin:0 0 14px}
+.fp-wings{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,330px),1fr));gap:14px;margin:0 0 14px}
+.fp-wing{display:flex;flex-direction:column;gap:10px;transition:transform .15s,box-shadow .15s}
+.fp-wing:hover{transform:translateY(-1px);box-shadow:0 10px 24px rgba(0,0,0,.25)}
+.fp-wing h3{margin:0;font-size:19px}
+.fp-glist-mini{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.fp-glist-mini li{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center;justify-content:space-between;padding:6px 0;border-top:1px solid var(--fp-div)}
+.fp-glist-mini li:first-child{border-top:0}
+.fp-gn{font-weight:700;overflow-wrap:anywhere}
+.fp-wing .fp-actions{margin-top:auto}
+.fp-add-wing{display:flex;flex-direction:column;justify-content:center;border-style:dashed}
+.fp-mini{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;align-items:end;height:78px;margin:6px 0 0}
+.fp-mini > span{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:3px;height:100%}
+.fp-mini .b{width:100%;max-width:28px;min-height:2px;border-radius:4px 4px 0 0;background:var(--fp-tan);transition:height .35s ease}
+.fp-mini .n{font-size:12px;font-weight:700;color:var(--fp-text-2);font-variant-numeric:tabular-nums}
+.fp-mini .fp-pic{width:22px;height:22px}
+.fp-table-wrap{position:relative;overflow-x:auto;margin:8px 0 0}
+.fp-table{width:100%;border-collapse:collapse;font-size:14px}
+.fp-table th,.fp-table td{padding:7px 8px;border-bottom:1px solid var(--fp-div);text-align:left;vertical-align:top;overflow-wrap:anywhere}
+.fp-table thead th{font-size:12.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--fp-text-2);border-bottom:2px solid var(--fp-tan)}
+.fp-table td.n,.fp-table th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.fp-table tfoot td,.fp-table tfoot th{font-weight:800;border-bottom:0;border-top:2px solid var(--fp-tan)}
+.fp-hbar{display:block;height:10px;margin-top:5px;border-radius:0 4px 4px 0;background:var(--fp-tan)}
+.fp-audit-list{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.fp-audit-list li{padding:8px 0;border-top:1px solid var(--fp-div);font-size:14px;color:var(--fp-text-2)}
+.fp-audit-list li:first-child{border-top:0}
+.fp-audit-list b{color:var(--fp-text)}
+
+/* month navigation */
+.fp-monthnav{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.fp-month-label{min-width:9.5em;padding:0 6px;font-size:17px;font-weight:800;text-align:center}
+.fp-icon{width:44px;padding:0}
+
+/* wing sub-tabs */
+.fp-subtabs{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 14px;padding:0}
+.fp-subtab{min-height:42px;padding:8px 14px;border:2px solid var(--fp-tan);border-radius:10px;background:transparent;color:var(--fp-text);font:inherit;font-weight:700;font-size:14.5px;cursor:pointer;transition:background .15s,color .15s}
+.fp-subtab:hover{background:var(--fp-div)}
+.fp-subtab[aria-selected="true"]{background:var(--fp-tan);color:var(--fp-ink)}
+
+/* the calendar toolbar, status and balance */
+.fp-toolbar{display:flex;flex-wrap:wrap;gap:12px 16px;align-items:flex-end;margin:0 0 10px}
+.fp-tool{flex:0 1 auto}
+.fp-tool select{min-width:210px}
+.fp-tool-actions{display:flex;flex-wrap:wrap;gap:8px;margin-left:auto}
+.fp-status{margin:0 0 10px;color:var(--fp-text-2);font-size:14.5px}
+.fp-status b{color:var(--fp-text)}
+.fp-issues{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;margin:0 0 12px;padding:10px 14px;border:2px solid var(--fp-warn);border-radius:12px;background:var(--fp-card)}
+.fp-issues p{margin:0;flex:1 1 280px}
+.fp-issues .fp-alert{color:var(--fp-warn);width:18px;height:18px}
+.fp-bal{margin:0 0 12px;padding:12px 14px;border:2px solid var(--fp-tan);border-radius:14px;background:var(--fp-card);container-type:inline-size}
+.fp-bal-head{display:flex;flex-wrap:wrap;gap:4px 14px;align-items:baseline;justify-content:space-between;margin:0 0 8px}
+.fp-bal-head h3{margin:0;font-size:16px}
+.fp-bal-head p{margin:0;color:var(--fp-text-2);font-size:13.5px}
+.fp-bal-list{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 16px}
+@container (min-width:480px){.fp-bal-list{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@container (min-width:900px){.fp-bal-list{grid-template-columns:repeat(6,minmax(0,1fr))}}
+.fp-bal-list li{position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"name n" "bar bar";gap:5px 8px;align-items:center;padding:4px 6px 6px;border-radius:8px;outline-offset:1px}
+.fp-bal-list .fp-bal-name{grid-area:name} .fp-bal-list .fp-bal-bar{grid-area:bar} .fp-bal-list .fp-bal-n{grid-area:n}
+.fp-bal-name{display:flex;align-items:center;gap:6px;font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fp-bal-bar{display:block;height:12px;border-radius:0 4px 4px 0;background:rgba(0,0,0,.2)}
+.fp-bal-bar > span{display:block;height:100%;border-radius:0 4px 4px 0;background:var(--fp-tan);transition:width .35s ease}
+.fp-bal-n{font-weight:800;font-variant-numeric:tabular-nums;min-width:2ch;text-align:right}
+.fp-bal-list li:hover,.fp-bal-list li:focus{background:var(--fp-div)}
+.fp-tip{position:absolute;left:0;right:0;bottom:calc(100% + 6px);z-index:20;padding:7px 10px;border:1px solid var(--fp-tan);border-radius:8px;background:#0c1a12;color:var(--fp-text);font-size:13px;font-weight:600;line-height:1.35;box-shadow:0 8px 20px rgba(0,0,0,.4);opacity:0;visibility:hidden;transform:translateY(3px);transition:opacity .12s,transform .12s,visibility .12s;pointer-events:none}
+.fp-bal-list li:hover .fp-tip,.fp-bal-list li:focus .fp-tip{opacity:1;visibility:visible;transform:none}
+.fp-bal details{margin-top:8px}
+.fp-bal summary,.fp-other summary{cursor:pointer;font-weight:700;font-size:14px;color:var(--fp-text-2);padding:4px 0}
+.fp-help{margin:0 0 10px;color:var(--fp-text-2);font-size:13.5px}
+
+/* the month grid */
+.fp-calwrap{position:relative}
+.fp-cal{width:100%;table-layout:fixed;border-collapse:separate;border-spacing:0;border:2px solid var(--fp-tan);border-radius:14px;background:var(--fp-card);overflow:hidden}
+.fp-cal th{padding:8px 8px 7px;border-bottom:2px solid var(--fp-tan);color:var(--fp-text-2);font-size:12.5px;font-weight:800;letter-spacing:.06em;text-align:left;text-transform:uppercase}
+.fp-cal abbr{text-decoration:none}
+.fp-cal td{height:118px;padding:5px;border-right:1px solid var(--fp-div);border-bottom:1px solid var(--fp-div);vertical-align:top;transition:background .15s,box-shadow .15s}
+.fp-cal td:last-child{border-right:0}
+.fp-cal tbody tr:last-child td{border-bottom:0}
+.fp-day.is-out{background:rgba(0,0,0,.2)}
+.fp-day.is-weekend:not(.is-out){background:rgba(0,0,0,.08)}
+.fp-day-head{display:flex;align-items:center;justify-content:space-between;gap:4px;min-height:26px;margin:0 0 4px}
+.fp-dnum{display:inline-block;min-width:24px;padding:1px 6px;border-radius:999px;font-size:14px;font-weight:800;text-align:center;font-variant-numeric:tabular-nums}
+.fp-day.is-today .fp-dnum{background:var(--fp-head);color:var(--fp-ink)}
+.fp-add{flex:none;display:inline-grid;place-items:center;width:26px;height:26px;padding:0;border:1.5px solid var(--fp-tan);border-radius:7px;background:transparent;color:var(--fp-text);font:inherit;font-size:17px;font-weight:700;line-height:1;cursor:pointer;opacity:.75;transition:opacity .15s,background .15s}
+.fp-add:hover,.fp-add:focus-visible,.fp-day:hover .fp-add{opacity:1}
+.fp-add:hover{background:var(--fp-div)}
+.fp-day.is-drop{background:var(--fp-div);box-shadow:inset 0 0 0 2px var(--fp-tan)}
+.fp-day.is-cursor{box-shadow:inset 0 0 0 3px var(--fp-head)}
+.fp-chips{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.fp-chip{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;column-gap:5px;width:100%;min-height:30px;padding:3px 5px 3px 4px;border:1px solid var(--fp-tan);border-left:4px solid var(--pc);border-radius:7px;background:var(--fp-chip);color:var(--fp-text);font:inherit;font-size:12.5px;line-height:1.2;text-align:left;cursor:pointer;transition:background .15s,box-shadow .15s,transform .12s,opacity .15s}
+.fp-chip:hover{background:#21382a}
+.fp-chip:focus-visible{outline:3px solid var(--fp-head);outline-offset:1px}
+.fp-chip-ic{display:grid;place-items:center;color:var(--pc)}
+.fp-chip-ic svg{width:14px;height:14px}
+.fp-chip-main{display:flex;flex-direction:column}
+.fp-chip-t{overflow:hidden;color:var(--fp-text-2);font-size:11.5px;text-overflow:ellipsis;white-space:nowrap}
+.fp-chip-n{overflow:hidden;font-weight:700;text-overflow:ellipsis;white-space:nowrap}
+.fp-chip-flags{display:inline-flex;gap:2px;align-items:center}
+.fp-chip .fp-lock{color:var(--fp-tan)}
+.fp-chip .fp-alert{color:var(--fp-warn)}
+.fp-chip.has-issue{border-color:var(--fp-warn)}
+.fp-chip[draggable="true"]{cursor:grab}
+.fp-chip.is-dragging{opacity:.4}
+.fp-chip.is-moving{box-shadow:0 0 0 3px var(--fp-head);transform:scale(1.03)}
+.fp-chip.is-flash{animation:fp-flash 1.1s ease-out}
+@keyframes fp-flash{0%{box-shadow:0 0 0 4px var(--fp-head)}100%{box-shadow:0 0 0 0 rgba(230,244,241,0)}}
+.fp-filled .fp-chips li{animation:fp-pop .32s ease-out both;animation-delay:calc(var(--wk,0) * 45ms)}
+@keyframes fp-pop{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:none}}
+.fp-more{display:block;width:100%;margin-top:4px;padding:3px 6px;border:1px dashed var(--fp-tan);border-radius:7px;background:transparent;color:var(--fp-text);font:inherit;font-size:12.5px;font-weight:700;text-align:left;cursor:pointer}
+.fp-more:hover{background:var(--fp-div)}
+
+/* the agenda (list) */
+.fp-agenda{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.fp-ag-day{padding:10px 12px;border:2px solid var(--fp-tan);border-radius:12px;background:var(--fp-card);transition:background .15s,box-shadow .15s}
+.fp-ag-day.is-today{box-shadow:inset 4px 0 0 var(--fp-head)}
+.fp-ag-day.is-drop{background:var(--fp-div)}
+.fp-ag-day.is-cursor{box-shadow:inset 0 0 0 3px var(--fp-head)}
+.fp-ag-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 6px}
+.fp-ag-head h3{margin:0;font-size:15.5px}
+.fp-ag-day .fp-chips{grid-template-columns:repeat(auto-fill,minmax(min(100%,230px),1fr))}
+.fp-ag-day .fp-chip{min-height:40px;font-size:13.5px}
+.fp-ag-day .fp-chip-t{font-size:12.5px}
+
+/* groups and acuity */
+.fp-glayout{display:grid;grid-template-columns:minmax(0,300px) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:1000px){.fp-glayout{grid-template-columns:minmax(0,1fr)}}
+.fp-gcards{list-style:none;margin:0 0 12px;padding:0;display:grid;gap:8px}
+.fp-gcard{display:flex;flex-direction:column;align-items:flex-start;gap:6px;width:100%;padding:12px 14px;border:2px solid var(--fp-tan);border-radius:12px;background:var(--fp-card);color:var(--fp-text);font:inherit;text-align:left;cursor:pointer;transition:background .15s,box-shadow .15s}
+.fp-gcard:hover{background:var(--fp-div)}
+.fp-gcard.is-on{box-shadow:inset 5px 0 0 var(--fp-head);background:var(--fp-div)}
+.fp-gcard-n{font-weight:800;font-size:15.5px;overflow-wrap:anywhere}
+.fp-gcard-m{font-size:13px;color:var(--fp-text-2)}
+.fp-gdetail{display:grid;gap:14px}
+.fp-tiers{margin:4px 0 0;padding:0;border:0}
+.fp-tiers legend{margin:0 0 8px;padding:0;font-weight:800;font-size:15px}
+.fp-cq{container-type:inline-size}
+.fp-tier-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:10px}
+@container (min-width:380px){.fp-tier-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@container (min-width:820px){.fp-tier-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.fp-tier-opt{position:relative;display:block;cursor:pointer}
+.fp-tier-opt input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer}
+.fp-tier-opt > span{display:flex;flex-direction:column;gap:3px;height:100%;padding:12px 14px;border:2px solid var(--fp-tan);border-radius:12px;background:var(--fp-chip);color:var(--fp-text);transition:background .18s,color .18s,box-shadow .18s}
+.fp-tier-opt small{color:var(--fp-text-2);font-size:13px;line-height:1.4}
+.fp-tier-k{font-size:12.5px;letter-spacing:.06em;text-transform:uppercase}
+.fp-tier-name{font-size:16px}
+.fp-tier-opt:hover > span{background:var(--fp-div)}
+.fp-tier-opt input:checked + span{background:var(--fp-tan);color:var(--fp-ink);box-shadow:0 0 0 2px var(--fp-head)}
+.fp-tier-opt input:checked + span small{color:var(--fp-ink)}
+.fp-tier-opt input:focus-visible + span{outline:3px solid var(--fp-head);outline-offset:3px}
+.fp-tiers[disabled] .fp-tier-opt{cursor:default}
+.fp-tiers[disabled] .fp-tier-opt:hover > span{background:var(--fp-chip)}
+.fp-tiers[disabled] .fp-tier-opt input:checked + span{background:var(--fp-tan)}
+.fp-recs{transition:opacity .2s}
+.fp-recs.is-updating{animation:fp-in .24s ease-out}
+.fp-recs-head{margin:0 0 10px}
+.fp-recs-head h3{margin:0;font-size:18px}
+.fp-rec-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,290px),1fr));gap:12px}
+.fp-pillar{display:flex;flex-direction:column;gap:6px;padding:14px}
+.fp-pillar h4{display:flex;align-items:center;gap:8px;margin:0;font-size:16px}
+.fp-count{margin-left:auto;display:inline-grid;place-items:center;min-width:24px;height:24px;padding:0 7px;border-radius:999px;background:var(--fp-chip);border:1px solid var(--fp-tan);font-size:12.5px}
+.fp-rec-list{list-style:none;margin:0;padding:0}
+.fp-rec{padding:10px 0;border-top:1px solid var(--fp-div)}
+.fp-rec-top{display:flex;flex-wrap:wrap;gap:4px 8px;align-items:center}
+.fp-rec-top b{overflow-wrap:anywhere}
+.fp-rec p{margin:4px 0 8px;color:var(--fp-text-2);font-size:13.5px;line-height:1.45}
+.fp-rec-actions{display:flex;flex-wrap:wrap;gap:6px}
+.fp-other{margin-top:auto;padding-top:6px;border-top:1px solid var(--fp-div)}
+.fp-other ul{margin:4px 0 0;padding-left:18px;color:var(--fp-text-2);font-size:13.5px}
+.fp-off{margin:12px 0 0;padding:10px 12px;border:2px solid var(--fp-warn);border-radius:12px}
+.fp-off p{margin:0 0 8px}
+.fp-people{position:relative;max-height:240px;overflow:auto;padding-right:4px}
+
+/* print & export, team */
+.fp-print{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:14px;align-items:start}
+@media (max-width:1000px){.fp-print{grid-template-columns:minmax(0,1fr)}}
+.fp-side{display:grid;gap:14px}
+.fp-thumb{--s:.26;position:relative;width:calc(8.5in * var(--s));height:calc(11in * var(--s));max-width:100%;margin:8px auto 0;overflow:hidden;border-radius:6px;background:#fff;box-shadow:0 6px 24px rgba(0,0,0,.45)}
+.fp-thumb > .sheet{position:absolute;top:0;left:0;transform:scale(var(--s));transform-origin:top left;pointer-events:none}
+@media (max-width:420px){.fp-thumb{--s:.2}}
+.fp-team{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:14px;align-items:start}
+.fp-members{container-type:inline-size}
+.fp-member{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"name name" "role del" "hint hint" "wings wings";gap:8px 10px;align-items:end;padding:10px 0;border-top:1px solid var(--fp-div)}
+.fp-member:first-child{border-top:0}
+@container (min-width:560px){.fp-member{grid-template-columns:minmax(0,1fr) minmax(0,13em) auto;grid-template-areas:"name role del" "hint hint hint" "wings wings wings"}}
+.fp-member .fp-field{margin:0}
+.fp-m-name{grid-area:name} .fp-m-role{grid-area:role} .fp-m-del{grid-area:del} .fp-m-hint{grid-area:hint;margin:0}
+.fp-member-wings{grid-area:wings;display:flex;flex-wrap:wrap;gap:0 14px}
+.fp-times{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,130px),1fr));gap:8px}
+.fp-span{grid-column:1 / -1}
+
+/* dialogs */
+.fp-dialog{width:min(580px,calc(100vw - 24px));max-height:calc(100vh - 24px);padding:0;border:2px solid var(--fp-tan);border-radius:16px;background:var(--fp-card);color:var(--fp-text);box-shadow:0 24px 70px rgba(0,0,0,.6);overflow:hidden}
+.fp-dialog[open]{animation:fp-in .18s ease-out}
+.fp-dialog::backdrop{background:rgba(3,10,7,.62)}
+.fp-dlg-body{position:relative;max-height:calc(100vh - 28px);padding:20px;overflow:auto}
+.fp-dlg-body h2{margin:0 0 4px;font-size:21px;overflow-wrap:anywhere}
+.fp-dlg-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.fp-err{margin:8px 0 0;color:var(--fp-warn);font-weight:700}
+.fp-err:empty{display:none}
+.fp-day-list{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:6px}
+
+/* the Packet Builder's top-bar switch into the portal (builder palette) */
+.fp-toggle{display:inline-flex;align-items:center;gap:10px;flex:none;min-height:42px;padding:6px 12px;border:1px solid var(--line-2);border-radius:10px;background:var(--panel-2);color:var(--text);font:inherit;font-weight:700;font-size:15px;cursor:pointer;transition:background .15s,border-color .15s}
+.fp-toggle:hover{border-color:#b5a48b}
+.fp-toggle-track{position:relative;flex:none;width:40px;height:22px;border:2px solid #4d615b;border-radius:999px;background:#33443f;transition:background .18s,border-color .18s}
+.fp-toggle-thumb{position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:#fff;transition:transform .18s,background .18s}
+.fp-toggle[aria-checked="true"]{border-color:#b5a48b}
+.fp-toggle[aria-checked="true"] .fp-toggle-track{background:#b5a48b;border-color:#b5a48b}
+.fp-toggle[aria-checked="true"] .fp-toggle-thumb{transform:translateX(18px);background:#10251c}
+@media (max-width:700px){.fp-toggle-label{display:none}.fp-toggle{padding:6px 9px}}
+
+/* the generator, opened from the portal for a group */
+.fp-ctx{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;margin:0 0 18px;padding:12px 16px;border:2px solid #b5a48b;border-radius:14px;background:#23382b;color:#ffffff}
+.fp-ctx p{margin:0;flex:1 1 320px;color:#dfe9e4}
+.fp-ctx b{color:#ffffff}
+.fp-ctx a{color:#e6f4f1;font-weight:700}
+.fp-ctx button{min-height:40px;padding:6px 12px;border:2px solid #b5a48b;border-radius:10px;background:transparent;color:#ffffff;font:inherit;font-weight:700;cursor:pointer}
+.card .pill.fp-pill-rec{background:#b5a48b;color:#10251c}
+.card.fp-dim{opacity:.72}
+
+@media (prefers-reduced-motion:reduce){
+  .fp *,.fp *::before,.fp *::after,.fp-toggle *{animation:none !important;transition:none !important}
+  .fp-anim,.fp-dialog[open]{animation:none !important}
+}
+
+/* ---------- printed pages: a group's weekly packet cover and a month calendar ---------- */
+.sheet.fp-sheet{gap:.1in;color:#000}
+.fp-ph{flex:none;display:flex;justify-content:space-between;align-items:flex-start;gap:.25in;padding-bottom:.08in;border-bottom:3pt solid #000}
+.fp-ph > div:first-child{min-width:0;flex:1 1 auto}
+.fp-ph-eyebrow{margin:0;font-size:11pt;font-weight:700;letter-spacing:.04em;text-transform:uppercase;overflow-wrap:anywhere}
+.fp-ph h1{margin:.02in 0 0;font-size:24pt;line-height:1.1;overflow-wrap:anywhere}
+.fp-ph-sub{margin:.03in 0 0;font-size:13pt}
+.fp-ph-tier{flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:1.45in;max-width:1.9in;padding:.06in .1in;border:2.5pt solid #000;border-radius:.1in;text-align:center}
+.fp-ph-tier b{font-size:20pt;line-height:1.05}
+.fp-ph-tier span{font-size:11pt;font-weight:700;line-height:1.2}
+.fp-ph-approach{flex:none;margin:0;font-size:11.5pt;line-height:1.35}
+.fp-ptable{flex:none;width:100%;border-collapse:collapse;table-layout:fixed;font-size:11pt;line-height:1.25}
+.fp-ptable th,.fp-ptable td{padding:.035in .06in;border:1pt solid #000;text-align:left;vertical-align:top;overflow-wrap:anywhere}
+.fp-ptable th{background:#ececec;font-size:9.5pt;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap;overflow:hidden}
+.fp-ptable td.n{text-align:center}
+.fp-ptable small{display:block;margin-top:.02in;font-size:9.5pt;line-height:1.25;color:#1a1a1a}
+.fp-pnotes{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;overflow:hidden}
+.fp-pnotes h2{margin:.04in 0 .02in;font-size:13pt}
+.fp-plines{flex:1 1 auto;min-height:0;overflow:hidden}
+.fp-pline{height:.5in;border-bottom:2pt solid #000}
+.fp-pcont{flex:none;margin:0;font-size:11pt;font-weight:700}
+.fp-pfoot{flex:none;margin-top:auto;display:flex;justify-content:space-between;gap:.2in;padding-top:.04in;border-top:1pt solid #000;font-size:9pt}
+.fp-pfoot span{min-width:0;overflow-wrap:anywhere}
+.fp-mgrid{flex:1 1 auto;min-height:0;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));border-top:1pt solid #000;border-left:1pt solid #000}
+.fp-mh{padding:.03in;border-right:1pt solid #000;border-bottom:1pt solid #000;background:#ececec;font-size:9.5pt;font-weight:700;letter-spacing:.04em;text-align:center;text-transform:uppercase}
+.fp-mc{min-height:0;overflow:hidden;padding:.03in .04in;border-right:1pt solid #000;border-bottom:1pt solid #000;font-size:8.5pt;line-height:1.15}
+.fp-mc.out{background:#f1f1f1}
+.fp-mc .d{display:block;margin-bottom:.02in;font-size:10pt;font-weight:700}
+.fp-mc .s{display:block;margin-bottom:.02in;overflow-wrap:anywhere}
+.fp-mkey{flex:none;margin:0;font-size:9.5pt;line-height:1.35}
+</style>
 </head>
 <body>
 
@@ -1543,6 +1936,13 @@ textarea:focus{border-color:var(--accent)}
         <span>12-Month Life Planner</span></a></li>
     </ul>
 
+    <div class="sb-section" id="facHead">Facility</div>
+    <ul class="sb-list" aria-labelledby="facHead">
+      <li><a class="sb-link" href="#/facility" data-route="facility">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18"/><path d="M5 21V6l7-3v18"/><path d="M19 21V10l-7-3"/><path d="M8 9h1M8 13h1M8 17h1M15 13h1M15 17h1"/></svg>
+        <span>Facility Portal</span></a></li>
+    </ul>
+
     <div class="sb-section" id="pktHead">Your packet</div>
     <ul class="sb-list" aria-labelledby="pktHead">
       <li><button class="sb-link" type="button" id="navPacket">
@@ -1574,8 +1974,11 @@ textarea:focus{border-color:var(--accent)}
       </a>
       <div class="facility" id="facilityLabel"></div>
     </div>
+    <button class="fp-toggle" type="button" id="fpToggle" role="switch" aria-checked="false" aria-label="Facility view" title="Facility view: wings, resident groups and the month's schedule">
+      <span class="fp-toggle-track" aria-hidden="true"><span class="fp-toggle-thumb"></span></span><span class="fp-toggle-label" aria-hidden="true">Facility view</span>
+    </button>
     <button class="btn btn-primary btn-packet" type="button" id="openPacket" aria-controls="drawer" aria-expanded="false">
-      Your packet <span class="count" id="topCount">0</span>
+      <span class="pk-long">Your packet</span><span class="pk-short" aria-hidden="true">Packet</span> <span class="count" id="topCount">0</span>
     </button>
   </header>
   <main id="view" class="view" tabindex="-1"></main>
@@ -6658,6 +7061,1160 @@ const HeirloomUI = (function(){
   return { render, readKeeper, digestPlan, bookPlan, coverPlan };
 })();
 </script>
+<script src="assets/services/facilityPlanner.js"></script>
+<script id="facility-ui">
+/* =====================================================================
+   FACILITY PORTAL  (#/facility)
+   An Activity Director's view of the whole community, wing by wing:
+     - Overview: stat tiles, each wing's month at a glance, the acuity mix.
+     - A wing: its month calendar (drag a session to another day, or move
+       it with the keyboard; one click fills the month, balanced across
+       the six pillars), its resident groups and their acuity tiers with
+       the activity generator's recommendations for each tier, printing
+       (a week of packets for every group in one click, the month's
+       calendar) and CSV or iCalendar downloads.
+     - Team & audit, for the director: who can do what, and every change.
+   Roles are views on this computer, not logins, and the screen says so.
+   CogniFacility (src/services/facilityPlanner.ts) holds the model and
+   does the scheduling; this screen draws it and saves it, sealed in the
+   encrypted store under "cognicopia_facility" and one record per wing
+   and month. Packets, calendars and files carry group names only, never
+   a resident's name. Helpers from the Packet Builder's main script
+   (esc, toast, settings, sheetHtml...) are used only once it has run.
+   ===================================================================== */
+const FacilityUI = (function(){
+  "use strict";
+  const F = window.CogniFacility;
+  const MAX_PAGES = 600, CONFIRM_PAGES = 120;
+  const S = { tab:"overview", sub:"calendar", month:"", group:"", cal:"auto", sel:"", week:"", copies:"master", pick:null,
+    moving:null, spaceUp:false, undo:null, ctx:null, filled:false, editing:null };      // month is set on first render (todayISO is defined in a later script)
+  let fac = null, root = null, ro = null, wideNow = null, dragId = "", opener = null, raf = 0;
+
+  const svg = (w, body, cls) => `<svg${cls ? ` class="${cls}"` : ""} width="${w}" height="${w}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${body}</svg>`;
+  const IC = {
+    building: svg(26, '<path d="M3 21h18"/><path d="M5 21V6l7-3v18"/><path d="M19 21V10l-7-3"/><path d="M8 9h1M8 13h1M8 17h1M15 13h1M15 17h1"/>'),
+    lock: svg(12, '<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>', "fp-lock"),
+    alert: svg(13, '<path d="M12 3 2 21h20z"/><path d="M12 10v5M12 18h.01"/>', "fp-alert"),
+    grid: svg(16, '<rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 10h18M9 4v17M15 4v17"/>'),
+    list: svg(16, '<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>'),
+    wand: svg(16, '<path d="M15 4V2M15 16v-2M8 9h2M20 9h2M17.8 11.8 19 13M17.8 6.2 19 5M3 21l9-9M12.2 6.2 11 5"/>'),
+    print: svg(16, '<path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/>'),
+    download: svg(16, '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5M12 15V3"/>')
+  };
+  const PIC = { coloring:"brush", numbers:"number", words:"word", letters:"letter", movement:"move", music:"music" };
+  const pIcon = id => (typeof ICONS !== "undefined" && ICONS[PIC[id]]) || "";
+
+  /* ---------- saved data (sealed: see SEALED_PREFIXES in secureStore.ts) ---------- */
+  function readFacility(){
+    let raw = null;
+    try { raw = JSON.parse(CG_LS.getItem(F.STORE_KEY) || "null"); } catch (e){ raw = null; }
+    return raw && typeof raw === "object" ? F.normalizeFacility(raw) : null;
+  }
+  function writeFacility(next, action, detail){
+    const f = F.normalizeFacility(next), out = action ? F.withAudit(f, action, detail) : f;
+    try { CG_LS.setItem(F.STORE_KEY, JSON.stringify(out)); fac = out; return true; }
+    catch (e){ toast("The portal could not be saved: " + e.message); return false; }
+  }
+  const audit = (action, detail) => writeFacility(fac, action, detail);
+  function readPlan(w, month){
+    let raw = null;
+    try { raw = JSON.parse(CG_LS.getItem(F.planKey(w.id, month)) || "null"); } catch (e){ raw = null; }
+    return F.normalizePlan(raw, w.id, month, w.groups.map(g => g.id));
+  }
+  function writePlan(plan){
+    try {
+      if (plan.slots.length) CG_LS.setItem(F.planKey(plan.wing, plan.month), JSON.stringify(plan));
+      else CG_LS.removeItem(F.planKey(plan.wing, plan.month));
+      return true;
+    } catch (e){ toast("The schedule could not be saved: " + e.message); return false; }
+  }
+  function planKeysOf(wingId){
+    const p = F.planKey(wingId, ""), out = [];
+    try { for (let i = 0; i < CG_LS.length; i++){ const k = CG_LS.key(i); if (k && k.indexOf(p) === 0 && F.isMonth(k.slice(p.length))) out.push(k); } } catch (e){}
+    return out;
+  }
+  function saveWing(id, fn, action, detail){
+    return writeFacility(Object.assign({}, fac, { wings:fac.wings.map(w => w.id === id ? fn(w) : w) }), action, detail);
+  }
+
+  /* ---------- small helpers ---------- */
+  const me = () => F.activeMember(fac);
+  const can = (action, wingId) => F.can(me(), action, wingId);
+  const wings = () => F.visibleWings(fac, me());
+  const wing = () => wings().filter(w => w.id === S.tab)[0] || null;
+  const groupOf = (w, id) => (w ? w.groups.filter(g => g.id === id)[0] : null) || null;
+  const act = id => (typeof ACT_INDEX !== "undefined" && ACT_INDEX[id]) || null;
+  const have = () => F.CATALOG.map(a => a.id).filter(id => !!act(id));
+  const actTitle = fit => { const a = act(fit.id); return a ? a.name : fit.name; };
+  const pname = id => (F.pillarOf(id) || { name:id }).name;
+  const level = t => (typeof DIFFICULTIES !== "undefined" && DIFFICULTIES[t.difficulty] ? DIFFICULTIES[t.difficulty].label : t.difficulty).toLowerCase();
+  const dateObj = d => { const p = d.split("-").map(Number); return new Date(p[0], p[1] - 1, p[2] || 1); };
+  const monthLabel = m => dateObj(m + "-01").toLocaleDateString("en-US", { month:"long", year:"numeric" });
+  const monthName = m => dateObj(m + "-01").toLocaleDateString("en-US", { month:"long" });
+  const dayLong = d => dateObj(d).toLocaleDateString("en-US", { weekday:"long", month:"long", day:"numeric" });
+  const dayShort = d => dateObj(d).toLocaleDateString("en-US", { weekday:"short", month:"short", day:"numeric" });
+  const shortTime = t => { const p = t.split(":").map(Number); return (p[0] % 12 || 12) + (p[1] ? ":" + String(p[1]).padStart(2, "0") : "") + (p[0] < 12 ? "a" : "p"); };
+  const chipTime = t => shortTime(t) + "m";                                                        // 10am, 2:30pm
+  const weekLabel = ws => { const w = F.weekOf(ws); return dateObj(w.start).toLocaleDateString("en-US", { month:"short", day:"numeric" }) + " to " + dateObj(w.end).toLocaleDateString("en-US", { month:"short", day:"numeric", year:"numeric" }); };
+  const tierChip = t => `<span class="fp-tier"><b>${t}</b><span>${esc(F.acuityOf(t).name)}</span></span>`;
+  const plural = (n, one, many) => n + " " + (n === 1 ? one : many);
+  const perDay = (w, d) => F.isWeekend(d) ? w.cadence.weekend.length : w.cadence.weekday.length;
+  const expected = (w, month, n) => F.monthDays(month).reduce((k, d) => k + perDay(w, d), 0) * (n == null ? w.groups.length : n);
+  const groupIds = w => S.group && groupOf(w, S.group) ? [S.group] : w.groups.map(g => g.id);
+  const reduced = () => { try { return matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e){ return false; } };
+  const slug = s => String(s).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 40) || "wing";
+  function seedOf(s){ let h = 2166136261; for (let i = 0; i < s.length; i++){ h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
+  function announce(t){ const l = root && root.querySelector("#fpLive"); if (!l) return; l.textContent = ""; requestAnimationFrame(() => { l.textContent = t; }); }
+  function cadenceText(w){
+    const list = ts => ts.map(F.fmtTime).join(", ").replace(/, ([^,]*)$/, " and $1");
+    return `Weekdays: ${w.cadence.weekday.length ? list(w.cadence.weekday) : "no sessions"} · Weekends: ${w.cadence.weekend.length ? list(w.cadence.weekend) : "no sessions"} · ${w.minutes}-minute sessions`;
+  }
+  /* After a part of the screen is drawn again, focus goes back to the same control. */
+  function focusKey(el){
+    if (!el || !root || !root.contains(el) || el === document.body) return "";
+    if (el.id) return "#" + CSS.escape(el.id);
+    for (const a of ["data-slot", "data-tab", "data-sub", "data-month", "data-sel", "data-act", "data-go", "data-fill", "data-add", "data-day", "data-rec-add", "data-rec-open"])
+      if (el.hasAttribute(a)) return `[${a}="${CSS.escape(el.getAttribute(a))}"]`;
+    return "";
+  }
+  function keepFocus(fn){
+    const k = focusKey(document.activeElement);
+    fn();
+    if (k){ const el = root.querySelector(k); if (el && !el.disabled) el.focus({ preventScroll:true }); }
+  }
+  function animate(el){ if (!el || reduced()) return; el.classList.remove("fp-anim"); void el.offsetWidth; el.classList.add("fp-anim"); }
+  function download(name, text, type){
+    const url = URL.createObjectURL(new Blob([text], { type }));
+    const a = document.createElement("a"); a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+  }
+
+  /* ---------- the screen ---------- */
+  function render(view, arg){
+    if (!F){
+      view.innerHTML = `<p class="eyebrow">Facility Portal</p><h1 class="view-title" tabindex="-1">Facility Portal</h1>
+        <p class="callout">The Facility Portal could not load. Check that assets/services/facilityPlanner.js is on this site, then reload.</p>`;
+      return;
+    }
+    if (!S.month) S.month = todayISO().slice(0, 7);
+    S.ctx = null; S.moving = null;                                 // back in the portal: the generator stops following a group
+    fac = readFacility();
+    if (!fac){ fac = F.demoFacility(); writeFacility(fac, "Opened the portal", "Started from the example community"); }
+    if (arg) S.tab = arg;
+    fixTab();
+    if (ro){ ro.disconnect(); ro = null; }
+    view.innerHTML = `<div class="fp" id="fpRoot">
+        <header class="fp-bar" id="fpBar"></header>
+        <div id="fpBody" class="fp-body" role="tabpanel" tabindex="-1"></div>
+        <div class="sr-only" aria-live="polite" id="fpLive"></div>
+        <dialog class="fp-dialog" id="fpDialog" aria-labelledby="fpDlgTitle"></dialog>
+      </div>`;
+    root = view.querySelector("#fpRoot");
+    bind();
+    renderBar();
+    renderBody(true);
+    if (window.ResizeObserver){ ro = new ResizeObserver(() => { cancelAnimationFrame(raf); raf = requestAnimationFrame(onResize); }); ro.observe(root); }
+  }
+  function fixTab(){
+    const m = me();
+    if (!(S.tab === "overview" || (S.tab === "team" && m.role === "director") || wings().some(w => w.id === S.tab))) S.tab = "overview";
+  }
+  function syncHash(){
+    const h = "#/facility" + (S.tab !== "overview" ? "/" + encodeURIComponent(S.tab) : "");
+    if (location.hash !== h) try { history.replaceState(null, "", h); } catch (e){}
+  }
+  function renderBar(){
+    const m = me(), ws = wings();
+    const tabs = [["overview", "Overview", ""]].concat(ws.map(w => [w.id, w.name, String(w.groups.length)]));
+    if (m.role === "director") tabs.push(["team", "Team & audit", ""]);
+    root.querySelector("#fpBar").innerHTML = `<div class="fp-bar-top">
+        <div class="fp-id"><span class="fp-logo" aria-hidden="true">${IC.building}</span>
+          <div><p class="fp-eyebrow">Facility Portal</p><h1 class="fp-title" tabindex="-1">${esc(settings.facility || "Your community")}</h1></div></div>
+        <div class="fp-who">
+          <label for="fpRole">Viewing as</label>
+          <select id="fpRole">${fac.team.map(t => `<option value="${esc(t.id)}" ${t.id === m.id ? "selected" : ""}>${esc(t.name)}${t.name === F.ROLES[t.role].label ? "" : " · " + esc(F.ROLES[t.role].label)}</option>`).join("")}</select>
+          <p class="fp-who-note">${esc(F.ROLES[m.role].summary)} A view on this computer, not a login.</p>
+        </div>
+      </div>
+      <div class="fp-tablist" role="tablist" aria-label="Portal sections">${tabs.map(([id, label, n]) => `<button type="button" role="tab" class="fp-tab" id="fpTab-${esc(id)}" data-tab="${esc(id)}" aria-controls="fpBody" aria-selected="${id === S.tab}" tabindex="${id === S.tab ? 0 : -1}" title="${esc(label)}"><span class="fp-tab-l">${esc(label)}</span>${n ? `<span class="fp-tab-n">${n}<span class="sr-only"> ${n === "1" ? "group" : "groups"}</span></span>` : ""}</button>`).join("")}</div>`;
+  }
+  function renderBody(anim){
+    const body = root.querySelector("#fpBody");
+    body.setAttribute("aria-labelledby", "fpTab-" + S.tab);
+    const w = wing();
+    if (S.tab === "team") body.innerHTML = teamHtml();
+    else if (w) body.innerHTML = wingHtml(w);
+    else body.innerHTML = overviewHtml();
+    if (w) renderSub(false);
+    if (anim !== false) animate(body);
+    syncHash();
+  }
+  function selectTab(id){
+    if (id === S.tab) return;
+    S.tab = id; S.group = ""; S.moving = null; fixTab();
+    root.querySelectorAll(".fp-tab").forEach(t => { const on = t.dataset.tab === S.tab; t.setAttribute("aria-selected", on); t.tabIndex = on ? 0 : -1; });
+    renderBody(true);
+  }
+  const monthNav = () => {
+    const now = S.month === todayISO().slice(0, 7);
+    return `<div class="fp-monthnav" role="group" aria-label="Month">
+      <button type="button" class="fp-btn fp-icon" data-month="-1" aria-label="Previous month">&#8249;</button>
+      <span class="fp-month-label" aria-live="polite">${esc(monthLabel(S.month))}</span>
+      <button type="button" class="fp-btn fp-icon" data-month="1" aria-label="Next month">&#8250;</button>
+      <button type="button" class="fp-btn fp-btn-sm" data-month="0" aria-disabled="${now}"${now ? ' title="Already showing this month"' : ""}>This month</button>
+    </div>`;
+  };
+  function setMonth(n){
+    const next = n === 0 ? todayISO().slice(0, 7) : F.shiftMonth(S.month, n);
+    if (next === S.month) return;
+    S.month = next; S.week = ""; S.moving = null;
+    keepFocus(() => renderBody(false));
+    announce(monthLabel(S.month));
+  }
+
+  /* ---------- overview ---------- */
+  const kpi = (v, label, sub, meter) => `<li class="fp-kpi"><span class="fp-kpi-v">${esc(String(v))}</span><span class="fp-kpi-l">${esc(label)}</span>${sub ? `<span class="fp-kpi-s">${esc(sub)}</span>` : ""}${meter != null ? `<span class="fp-meter" aria-hidden="true"><span style="width:${meter}%"></span></span>` : ""}</li>`;
+  function overviewHtml(){
+    const ws = wings(), m = S.month, dir = me().role === "director";
+    const rows = ws.map(w => {
+      const plan = readPlan(w, m), b = F.balance(plan);
+      return { w, b, exp:expected(w, m), even:w.groups.every(g => F.balance(plan, [g.id]).spread <= 1), issues:F.planIssues(plan, w).length };
+    });
+    const nGroups = ws.reduce((n, w) => n + w.groups.length, 0), nPeople = ws.reduce((n, w) => n + w.groups.reduce((k, g) => k + g.size, 0), 0);
+    const sched = rows.reduce((n, r) => n + r.b.total, 0), exp = rows.reduce((n, r) => n + r.exp, 0), pct = exp ? Math.min(100, Math.round(sched / exp * 100)) : 0;
+    const started = rows.filter(r => r.b.total), even = started.filter(r => r.even).length, issues = rows.reduce((n, r) => n + r.issues, 0);
+    const tiers = F.ACUITY.map(a => { const gs = ws.reduce((l, w) => l.concat(w.groups.filter(g => g.acuity === a.tier)), []); return { a, groups:gs.length, people:gs.reduce((k, g) => k + g.size, 0) }; });
+    const maxP = Math.max(1, ...tiers.map(t => t.people));
+    return `${fac.example ? `<div class="fp-banner" role="status"><p><b>An example community to start from.</b> Memory Care West and Assisted Living East, with four resident groups, are here so every tool can be tried. Rename, change or remove anything${dir ? "" : " (the Activity Director can)"}.</p>
+        ${dir ? `<div class="fp-actions" style="margin:0"><button type="button" class="fp-btn" data-act="keep-example">Keep it</button><button type="button" class="fp-btn" data-act="start-empty">Start empty</button></div>` : ""}</div>` : ""}
+      <section aria-labelledby="fpOvH">
+        <div class="fp-sec-head"><div><h2 id="fpOvH">Overview</h2><p class="fp-sub">${dir ? "Every wing" : "Your wings"} at a glance for ${esc(monthLabel(m))}.</p></div>${monthNav()}</div>
+        <ul class="fp-kpis" aria-label="${esc(monthLabel(m))} at a glance">
+          ${kpi(ws.length, ws.length === 1 ? "Wing" : "Wings", plural(nGroups, "resident group", "resident groups"))}
+          ${kpi(nPeople, "Residents in groups", "across " + plural(nGroups, "group", "groups"))}
+          ${kpi(sched, "Sessions in " + monthName(m), exp ? `of ${exp} planned (${pct}%)` : "No session times set", exp ? pct : null)}
+          ${kpi(started.length ? even + " of " + started.length : "None yet", "Wings in balance", started.length ? "each pillar within one session in every group" : "nothing scheduled yet")}
+          ${kpi(issues, "Sessions to review", issues ? "an activity off-tier, or a pillar twice in a day" : "nothing to review")}
+        </ul>
+        ${ws.length ? `<div class="fp-wings">${rows.map(wingCard).join("")}${can("manageWings") && fac.wings.length < F.LIMITS.wings ? addWingForm("fpNewWing", true) : ""}</div>`
+          : `<div class="fp-card" style="margin:0 0 14px"><h3>No wings yet</h3><p class="fp-hint">${dir ? "Add the first wing or floor: groups, tiers and a calendar come next." : "The Activity Director adds wings and gives you yours."}</p>${dir ? addWingForm("fpNewWing", false) : ""}</div>`}
+        <div class="fp-grid2">
+          <section class="fp-card" aria-labelledby="fpMixH"><h3 id="fpMixH">Acuity mix</h3>
+            <p class="fp-hint">Resident groups by tier${dir ? " across the community" : " in your wings"}.</p>
+            <div class="fp-table-wrap"><table class="fp-table"><caption class="sr-only">Groups and residents by acuity tier</caption>
+              <thead><tr><th scope="col">Tier</th><th scope="col" class="n">Groups</th><th scope="col" class="n">Residents</th></tr></thead>
+              <tbody>${tiers.map(t => `<tr><th scope="row">${tierChip(t.a.tier)}<span class="fp-hbar" style="width:${Math.round(t.people / maxP * 100)}%" aria-hidden="true"></span></th><td class="n">${t.groups}</td><td class="n">${t.people}</td></tr>`).join("")}</tbody>
+              <tfoot><tr><th scope="row">All tiers</th><td class="n">${nGroups}</td><td class="n">${nPeople}</td></tr></tfoot></table></div>
+          </section>
+          ${dir ? `<section class="fp-card" aria-labelledby="fpRecentH"><div class="fp-card-head"><h3 id="fpRecentH">Recent changes</h3><button type="button" class="fp-btn fp-btn-sm" data-go="team">Team &amp; audit</button></div>${auditList(5)}</section>`
+            : `<section class="fp-card" aria-labelledby="fpAboutH"><h3 id="fpAboutH">About this view</h3><p class="fp-hint">You are viewing as ${esc(me().name)} (${esc(F.ROLES[me().role].label)}). ${esc(F.ROLES[me().role].summary)} Roles are views on this computer, not logins; the Activity Director sets who sees which wings.</p></section>`}
+        </div>
+      </section>`;
+  }
+  function wingCard(r){
+    const w = r.w, people = w.groups.reduce((k, g) => k + g.size, 0), max = Math.max(1, ...F.PILLARS.map(p => r.b.counts[p.id]));
+    return `<article class="fp-card fp-wing" aria-labelledby="fpWc-${w.id}">
+      <div class="fp-card-head"><h3 id="fpWc-${w.id}">${esc(w.name)}</h3><span class="fp-tag">${plural(w.groups.length, "group", "groups")} · ${plural(people, "resident", "residents")}</span></div>
+      ${w.groups.length ? `<ul class="fp-glist-mini">${w.groups.map(g => `<li><span class="fp-gn">${esc(g.name)}</span>${tierChip(g.acuity)}</li>`).join("")}</ul>` : `<p class="fp-empty">No resident groups yet.</p>`}
+      <div>
+        <p class="fp-sub"><b>${r.b.total}</b> of ${r.exp} sessions scheduled for ${esc(monthName(S.month))}${r.b.total ? (r.even ? " · balanced" : " · uneven") : ""}${r.issues ? ` · ${r.issues} to review` : ""}</p>
+        <span class="fp-meter" aria-hidden="true"><span style="width:${r.exp ? Math.min(100, Math.round(r.b.total / r.exp * 100)) : 0}%"></span></span>
+        ${r.b.total ? `<div class="fp-mini" role="img" aria-label="${esc("Sessions by pillar: " + F.PILLARS.map(p => p.name + " " + r.b.counts[p.id]).join(", "))}">${F.PILLARS.map(p => `<span class="p-${p.id}" title="${esc(p.name + ": " + r.b.counts[p.id])}"><span class="n">${r.b.counts[p.id]}</span><span class="b" style="height:${Math.round(r.b.counts[p.id] / max * 30) + 2}px"></span><span class="fp-pic">${pIcon(p.id)}</span></span>`).join("")}</div>` : ""}
+      </div>
+      <div class="fp-actions">
+        <button type="button" class="fp-btn" data-go="${w.id}">Open<span class="sr-only"> ${esc(w.name)}</span></button>
+        ${can("editSchedule", w.id) && w.groups.length && r.b.total < r.exp ? `<button type="button" class="fp-btn fp-btn-primary" data-fill="${w.id}">${IC.wand}Auto-populate ${esc(monthName(S.month))}<span class="sr-only"> for ${esc(w.name)}</span></button>` : ""}
+      </div>
+    </article>`;
+  }
+  const addWingForm = (id, card) => `<form class="${card ? "fp-card fp-add-wing" : ""}" data-form="wing-add">
+      ${card ? "<h3>Add a wing</h3>" : ""}
+      <div class="fp-field"><label for="${id}">Wing or floor name</label><input id="${id}" type="text" maxlength="60" placeholder="e.g., Memory Care North" required autocomplete="off"></div>
+      <button class="fp-btn fp-btn-primary" type="submit">Add wing</button>
+    </form>`;
+  function auditList(n){
+    const list = fac.audit.slice(-n).reverse();
+    if (!list.length) return `<p class="fp-empty">No changes yet.</p>`;
+    return `<ul class="fp-audit-list">${list.map(e => `<li><b>${esc(e.who)}</b> · ${esc(e.action)}${e.detail ? ": " + esc(e.detail) : ""}<br><small>${esc(new Date(e.t).toLocaleString("en-US", { month:"short", day:"numeric", hour:"numeric", minute:"2-digit" }))}</small></li>`).join("")}</ul>`;
+  }
+
+  /* ---------- a wing ---------- */
+  function wingHtml(w){
+    const subs = [["calendar", "Calendar"], ["groups", "Groups & acuity"], ["print", "Print & export"]];
+    if (can("editSchedule", w.id)) subs.push(["settings", "Wing settings"]);
+    if (!subs.some(s => s[0] === S.sub)) S.sub = "calendar";
+    return `<section aria-labelledby="fpWingH">
+      <div class="fp-sec-head"><div><h2 id="fpWingH">${esc(w.name)}</h2><p class="fp-sub">${esc(cadenceText(w))}</p></div>${monthNav()}</div>
+      ${can("editSchedule", w.id) ? "" : `<p class="fp-note">Viewing as ${esc(me().name)}: the calendar, recommendations and printing are open to you. Changes are for the wing's coordinator or the Activity Director.</p>`}
+      <div class="fp-subtabs" role="tablist" aria-label="${esc(w.name)}">${subs.map(([k, l]) => `<button type="button" role="tab" class="fp-subtab" id="fpSub-${k}" data-sub="${k}" aria-controls="fpSub" aria-selected="${k === S.sub}" tabindex="${k === S.sub ? 0 : -1}">${esc(l)}</button>`).join("")}</div>
+      <div id="fpSub" class="fp-subpanel" role="tabpanel" aria-labelledby="fpSub-${S.sub}"></div>
+    </section>`;
+  }
+  function renderSub(anim){
+    const sub = root.querySelector("#fpSub"); if (!sub) return;
+    sub.setAttribute("aria-labelledby", "fpSub-" + S.sub);
+    if (S.sub === "groups") renderGroups();
+    else if (S.sub === "print") renderPrint();
+    else if (S.sub === "settings") renderSettings();
+    else renderCalendar();
+    if (anim) animate(sub);
+  }
+  function selectSub(k){
+    if (k === S.sub) return;
+    S.sub = k; S.moving = null;
+    root.querySelectorAll(".fp-subtab").forEach(t => { const on = t.dataset.sub === k; t.setAttribute("aria-selected", on); t.tabIndex = on ? 0 : -1; });
+    renderSub(true);
+  }
+
+  /* ---------- the calendar ---------- */
+  function calWide(){ const w = root ? root.clientWidth : 1000; if (w < 600) return false; if (S.cal === "grid") return true; if (S.cal === "list") return false; return w >= 760; }
+  function onResize(){
+    if (!root || !root.isConnected) return;
+    if (wing() && S.sub === "calendar" && !S.moving && !dragId && calWide() !== wideNow) keepFocus(renderCalendar);
+  }
+  function renderCalendar(){
+    const w = wing(), sub = root.querySelector("#fpSub"); if (!w || !sub) return;
+    if (S.group && !groupOf(w, S.group)) S.group = "";
+    const plan = readPlan(w, S.month), edit = can("editSchedule", w.id), ids = groupIds(w), g = groupOf(w, S.group);
+    const slots = plan.slots.filter(s => ids.indexOf(s.group) >= 0), exp = expected(w, S.month, ids.length), locked = slots.filter(s => s.locked).length;
+    const issues = F.planIssues(plan, w).filter(i => slots.some(s => s.id === i.slot)), tierN = issues.filter(i => i.kind === "tier").length;
+    const tierFree = issues.filter(i => i.kind === "tier" && slots.some(s => s.id === i.slot && !s.locked)).length;
+    const wide = calWide(), narrow = root.clientWidth < 600, who = g ? g.name : "all groups";
+    wideNow = wide;
+    sub.innerHTML = `<div class="fp-toolbar">
+        <div class="fp-tool"><label for="fpGroup">Group</label><select id="fpGroup"><option value="">All groups (${w.groups.length})</option>${w.groups.map(x => `<option value="${esc(x.id)}" ${x.id === S.group ? "selected" : ""}>${esc(x.name)} · Tier ${x.acuity}</option>`).join("")}</select></div>
+        <fieldset class="fp-tool" style="border:0;margin:0;padding:0"><legend class="fp-tool-l">Layout</legend><div class="fp-seg">
+          <label><input type="radio" name="fpLayout" value="grid" ${wide ? "checked" : ""} ${narrow ? "disabled" : ""}><span>${IC.grid}Month grid</span></label>
+          <label><input type="radio" name="fpLayout" value="list" ${wide ? "" : "checked"}><span>${IC.list}List</span></label></div></fieldset>
+        ${edit && w.groups.length ? `<div class="fp-tool-actions">
+          <button type="button" class="fp-btn fp-btn-primary" data-act="fill">${IC.wand}Auto-populate ${esc(monthName(S.month))}</button>
+          <button type="button" class="fp-btn" data-act="clear" ${slots.some(s => !s.locked) ? "" : "disabled"}>Clear unlocked</button></div>` : ""}
+      </div>
+      <p class="fp-status">${!w.groups.length ? "This wing has no resident groups yet. Add one under <b>Groups &amp; acuity</b>."
+        : !slots.length ? `Nothing is scheduled for ${esc(who)} in ${esc(monthLabel(S.month))} yet.${edit ? " <b>Auto-populate</b> fills every day for every group, balanced across the six pillars and calibrated to each group's tier." : ""}`
+        : `<b>${slots.length}</b> of ${exp} sessions scheduled for ${esc(who)} in ${esc(monthName(S.month))}${locked ? ` · ${locked} locked` : ""}.`}</p>
+      ${issues.length ? `<div class="fp-issues" role="status">${IC.alert}<p><b>${plural(issues.length, "session needs", "sessions need")} a look</b>: ${[tierN ? `${tierN} ${tierN === 1 ? "has an activity" : "have activities"} not calibrated for the group's tier` : "", issues.length - tierN ? `${issues.length - tierN} ${issues.length - tierN === 1 ? "repeats a pillar" : "repeat a pillar"} on the same day` : ""].filter(Boolean).join("; ")}. They are marked on the calendar${tierN > tierFree ? "; locked ones change only when opened" : ""}.</p>${edit && tierFree ? `<button type="button" class="fp-btn fp-btn-sm" data-act="recal">Recalibrate ${plural(tierFree, "session", "sessions")} for the tiers</button>` : ""}</div>` : ""}
+      ${w.groups.length ? balanceHtml(w, plan, ids) : ""}
+      ${w.groups.length ? `<p class="fp-help" id="fpCalHelp">${edit ? "Drag a session to another day to move it; dropped on its group's session at the same time, the two trade places. With a keyboard: focus a session, press Space, choose a day with the arrow keys, then press Space or Enter. Moved sessions are locked so filling the month again keeps them." : "Select a session to see its activity, notes and tier."}</p>
+      <div class="fp-calwrap${S.filled ? " fp-filled" : ""}">${wide ? gridHtml(w, plan, slots, edit, issues) : agendaHtml(w, plan, slots, edit, issues)}</div>` : ""}`;
+    S.filled = false;
+  }
+  function chipHtml(s, w, edit, all, issue){
+    const f = F.fitOf(s.activity), g = groupOf(w, s.group), name = f ? f.name : s.activity;
+    const label = `${F.fmtTime(s.time)}, ${g ? g.name + ", " : ""}${pname(s.pillar)}: ${name}${s.locked ? ", locked" : ""}${s.note ? ", with a note" : ""}${issue ? ". Needs a look: " + issue : ""}`;
+    return `<button type="button" class="fp-chip p-${s.pillar}${s.locked ? " is-locked" : ""}${issue ? " has-issue" : ""}" data-slot="${esc(s.id)}"${edit ? ' draggable="true"' : ""} aria-label="${esc(label)}" title="${esc(label)}">
+      <span class="fp-chip-ic">${pIcon(s.pillar)}</span>
+      <span class="fp-chip-main"><span class="fp-chip-t">${esc(chipTime(s.time))}${all && g ? " · " + esc(g.name) : ""}</span><span class="fp-chip-n">${esc(name)}</span></span>
+      <span class="fp-chip-flags">${issue ? IC.alert : ""}${s.locked ? IC.lock : ""}</span></button>`;
+  }
+  function byDate(slots){ const m = new Map(); slots.forEach(s => { if (!m.has(s.date)) m.set(s.date, []); m.get(s.date).push(s); }); return m; }
+  function gridHtml(w, plan, slots, edit, issues){
+    const map = byDate(slots), iss = new Map(issues.map(i => [i.slot, i.text])), today = todayISO(), all = !S.group, cap = all ? 4 : 6;
+    const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+    return `<table class="fp-cal">
+      <caption class="sr-only">${esc(monthLabel(S.month))}, ${esc(w.name)}, ${all ? "all groups" : esc(groupOf(w, S.group).name)}</caption>
+      <thead><tr>${DAYS.map(d => `<th scope="col"><abbr title="${d}">${d.slice(0, 3)}</abbr></th>`).join("")}</tr></thead>
+      <tbody>${F.monthGrid(S.month).map((wk, wi) => `<tr style="--wk:${wi}">${wk.map(c => {
+        if (!c.inMonth) return `<td class="fp-day is-out"></td>`;
+        const list = map.get(c.date) || [], shown = list.length > cap ? list.slice(0, cap - 1) : list, more = list.length - shown.length;
+        return `<td class="fp-day${c.date === today ? " is-today" : ""}${F.isWeekend(c.date) ? " is-weekend" : ""}" data-date="${c.date}">
+          <div class="fp-day-head"><span class="fp-dnum">${+c.date.slice(8)}<span class="sr-only"> ${esc(dayLong(c.date))}${list.length ? ", " + plural(list.length, "session", "sessions") : ""}</span></span>${edit ? `<button type="button" class="fp-add" data-add="${c.date}" aria-label="Add a session on ${esc(dayLong(c.date))}">+</button>` : ""}</div>
+          ${shown.length ? `<ul class="fp-chips">${shown.map(s => `<li>${chipHtml(s, w, edit, all, iss.get(s.id))}</li>`).join("")}</ul>` : ""}
+          ${more > 0 ? `<button type="button" class="fp-more" data-day="${c.date}">+${more} more<span class="sr-only"> on ${esc(dayLong(c.date))}</span></button>` : ""}
+        </td>`; }).join("")}</tr>`).join("")}</tbody></table>`;
+  }
+  function agendaHtml(w, plan, slots, edit, issues){
+    const map = byDate(slots), iss = new Map(issues.map(i => [i.slot, i.text])), today = todayISO(), all = !S.group;
+    return `<ol class="fp-agenda" aria-label="${esc(monthLabel(S.month))}, day by day">${F.monthDays(S.month).map(d => { const list = map.get(d) || [];
+      return `<li class="fp-ag-day${d === today ? " is-today" : ""}" data-date="${d}">
+        <div class="fp-ag-head"><h3>${esc(dayLong(d))}${d === today ? " · today" : ""}</h3>${edit ? `<button type="button" class="fp-add" data-add="${d}" aria-label="Add a session on ${esc(dayLong(d))}">+</button>` : ""}</div>
+        ${list.length ? `<ul class="fp-chips">${list.map(s => `<li>${chipHtml(s, w, edit, all, iss.get(s.id))}</li>`).join("")}</ul>` : `<p class="fp-empty">No sessions.</p>`}
+      </li>`; }).join("")}</ol>`;
+  }
+  function balanceHtml(w, plan, ids){
+    const b = F.balance(plan, ids), max = Math.max(1, ...F.PILLARS.map(p => b.counts[p.id]));
+    const per = w.groups.filter(g => ids.indexOf(g.id) >= 0).map(g => ({ g, b:F.balance(plan, [g.id]) }));
+    const off = per.filter(x => x.b.total && x.b.spread > 1);
+    const verdict = !b.total ? "Nothing scheduled yet." : !off.length ? (per.length > 1 ? "Balanced: in every group, each pillar is within one session of the others." : "Balanced: each pillar is within one session of the others.")
+      : "Uneven for " + off.map(x => x.g.name).join(", ") + ": one pillar is two or more sessions ahead. Auto-populate evens it out.";
+    return `<section class="fp-bal" aria-labelledby="fpBalH">
+      <div class="fp-bal-head"><h3 id="fpBalH">Pillar balance, ${esc(monthName(S.month))}</h3><p>${esc(verdict)}</p></div>
+      <ul class="fp-bal-list">${F.PILLARS.map(p => { const n = b.counts[p.id], pct = b.total ? Math.round(n / b.total * 100) : 0;
+        const tip = `${p.name}: ${plural(n, "session", "sessions")} of ${b.total} (${pct}%). An even share is ${b.target.toFixed(1)}.`;
+        return `<li class="p-${p.id}" tabindex="0" aria-label="${esc(tip)}"><span class="fp-bal-name" aria-hidden="true"><span class="fp-pic">${pIcon(p.id)}</span>${esc(p.name)}</span><span class="fp-bal-bar" aria-hidden="true"><span style="width:${(n / max * 100).toFixed(1)}%"></span></span><span class="fp-bal-n" aria-hidden="true">${n}</span><span class="fp-tip" aria-hidden="true">${esc(tip)}</span></li>`; }).join("")}</ul>
+      ${per.length > 1 ? `<details><summary>Balance by group (table)</summary><div class="fp-table-wrap"><table class="fp-table"><caption class="sr-only">Sessions by pillar for each group, ${esc(monthLabel(S.month))}</caption>
+        <thead><tr><th scope="col">Group</th>${F.PILLARS.map(p => `<th scope="col" class="n">${esc(p.name)}</th>`).join("")}<th scope="col" class="n">Total</th><th scope="col" class="n">Spread</th></tr></thead>
+        <tbody>${per.map(x => `<tr><th scope="row">${esc(x.g.name)}</th>${F.PILLARS.map(p => `<td class="n">${x.b.counts[p.id]}</td>`).join("")}<td class="n">${x.b.total}</td><td class="n">${x.b.total ? x.b.spread : "–"}</td></tr>`).join("")}</tbody></table></div></details>` : ""}
+    </section>`;
+  }
+
+  /* one click: the month, balanced */
+  function fill(wingId){
+    const w = wings().filter(x => x.id === wingId)[0];
+    if (!w || !can("editSchedule", w.id) || !w.groups.length) return;
+    const before = readPlan(w, S.month), only = S.tab === w.id && S.group && groupOf(w, S.group) ? [S.group] : undefined;
+    const plan = F.autoPopulate(before, w, { seed:String(newSeed()), groups:only, available:have() });
+    if (!writePlan(plan)) return;
+    const ids = only || w.groups.map(g => g.id), made = plan.slots.filter(s => !s.locked && ids.indexOf(s.group) >= 0).length, kept = plan.slots.filter(s => s.locked && ids.indexOf(s.group) >= 0).length;
+    const who = only ? groupOf(w, only[0]).name : w.name;
+    S.undo = { plan:before, label:`the ${monthName(S.month)} fill for ${who}` };
+    audit("Filled a month", `${who}, ${monthLabel(S.month)}: ${made} sessions${kept ? ", " + kept + " locked kept" : ""}`);
+    S.filled = true;
+    if (S.tab === w.id) keepFocus(renderCalendar);
+    else { renderBody(false); const b = root.querySelector(`[data-go="${CSS.escape(w.id)}"]`); if (b) b.focus(); }
+    const msg = `${monthLabel(S.month)} filled for ${who}: ${plural(made, "session", "sessions")}, balanced across the six pillars${kept ? ", with " + kept + " locked kept" : ""}.`;
+    toast(msg, "Undo", undo); announce(msg);
+  }
+  function undo(){
+    const u = S.undo; if (!u) return;
+    S.undo = null;
+    writePlan(u.plan);
+    audit("Undid a change", u.label);
+    if (root && root.isConnected){ if (wing() && S.sub === "calendar") keepFocus(renderCalendar); else keepFocus(() => renderBody(false)); }
+    toast("Undone: " + u.label + ".");
+  }
+  function clearMonth(){
+    const w = wing(); if (!w || !can("editSchedule", w.id)) return;
+    const before = readPlan(w, S.month), ids = groupIds(w), next = F.clearUnlocked(before, ids), n = before.slots.length - next.slots.length;
+    if (!n) return;
+    writePlan(next);
+    S.undo = { plan:before, label:"clearing " + monthName(S.month) };
+    audit("Cleared unlocked sessions", `${w.name}, ${monthLabel(S.month)}: ${n} removed`);
+    keepFocus(renderCalendar);
+    toast(`${plural(n, "unlocked session", "unlocked sessions")} removed from ${monthName(S.month)}. Locked sessions stay.`, "Undo", undo);
+  }
+  function recal(groups){
+    const w = wing(); if (!w || !can("editSchedule", w.id)) return;
+    const before = readPlan(w, S.month), r = F.recalibrate(before, w, groups, have());
+    if (!r.changed){ toast("Nothing to change: the sessions that are off-tier are locked. Open them to choose another activity."); return; }
+    writePlan(r.plan);
+    S.undo = { plan:before, label:"the recalibration" };
+    audit("Recalibrated sessions", `${w.name}, ${monthLabel(S.month)}: ${r.changed} activities swapped to fit their tiers`);
+    if (S.sub === "calendar") keepFocus(renderCalendar); else keepFocus(renderGroups);
+    toast(`${plural(r.changed, "session", "sessions")} now use activities calibrated for their group's tier; days, times and pillars stay the same.`, "Undo", undo);
+  }
+
+  /* moving sessions: drag and drop, or the keyboard */
+  function doMove(id, date){
+    const w = wing(); if (!w || !can("editSchedule", w.id)) return;
+    const before = readPlan(w, S.month), r = F.moveSlot(before, id, date, undefined, true);
+    if (!r.moved){ keepFocus(renderCalendar); return; }
+    writePlan(r.plan);
+    const f = F.fitOf(r.moved.activity), o = r.swapped ? F.fitOf(r.swapped.activity) : null;
+    S.undo = { plan:before, label:"moving " + f.name };
+    audit("Moved a session", `${f.name} to ${dayShort(date)}${o ? ", trading places with " + o.name : ""}`);
+    renderCalendar();
+    const chip = root.querySelector(`.fp-chip[data-slot="${CSS.escape(id)}"]`) || root.querySelector(`[data-day="${date}"]`);
+    if (chip){ chip.focus({ preventScroll:false }); if (!reduced() && chip.classList.contains("fp-chip")){ chip.classList.add("is-flash"); setTimeout(() => chip.classList.remove("is-flash"), 1200); } }
+    const msg = o ? `${f.name} moved to ${dayLong(date)}, trading places with ${o.name}. Both are locked.` : `${f.name} moved to ${dayLong(date)} and locked, so filling the month again keeps it there.`;
+    toast(msg, "Undo", undo); announce(msg);
+  }
+  function startMove(chip){
+    const s = readPlan(wing(), S.month).slots.filter(x => x.id === chip.dataset.slot)[0]; if (!s) return;
+    S.moving = { id:s.id, from:s.date, date:s.date };
+    chip.classList.add("is-moving");
+    markCursor();
+    announce(`Moving ${F.fitOf(s.activity).name}, ${dayLong(s.date)}. Arrow keys choose a day; Space or Enter drops it; Escape cancels.`);
+  }
+  function markCursor(){
+    root.querySelectorAll(".is-cursor").forEach(el => el.classList.remove("is-cursor"));
+    const c = S.moving && root.querySelector(`[data-date="${S.moving.date}"]`);
+    if (c){ c.classList.add("is-cursor"); c.scrollIntoView({ block:"nearest", inline:"nearest" }); }
+  }
+  function moveCursor(step){
+    const days = F.monthDays(S.month), i = days.indexOf(S.moving.date), j = Math.max(0, Math.min(days.length - 1, i + step));
+    S.moving.date = days[j];
+    markCursor();
+    const n = readPlan(wing(), S.month).slots.filter(s => s.date === days[j] && groupIds(wing()).indexOf(s.group) >= 0).length;
+    announce(dayLong(days[j]) + (n ? ", " + plural(n, "session", "sessions") : ", no sessions"));
+  }
+  function endMove(drop){
+    const m = S.moving; if (!m) return;
+    S.moving = null;
+    root.querySelectorAll(".is-cursor,.is-moving").forEach(el => el.classList.remove("is-cursor", "is-moving"));
+    if (drop && m.date !== m.from) doMove(m.id, m.date);
+    else announce(drop ? "Not moved: that is the same day." : "Move cancelled.");
+  }
+
+  /* the session editor, the day list, and the read-only view */
+  function dialog(){ return root.querySelector("#fpDialog"); }
+  function showDialog(html, focusSel){
+    const d = dialog();
+    if (!d.open) opener = document.activeElement;
+    d.innerHTML = html;
+    if (!d.open){ try { d.showModal(); } catch (e){ d.setAttribute("open", ""); } }
+    const f = focusSel && d.querySelector(focusSel); if (f) f.focus();
+  }
+  function closeDialog(){
+    const d = dialog(); if (!d) return;
+    if (d.open){ try { d.close(); } catch (e){ d.removeAttribute("open"); } }
+    S.editing = null;
+  }
+  function restoreFocus(slotId){
+    const el = (slotId && root.querySelector(`.fp-chip[data-slot="${CSS.escape(slotId)}"]`)) || (opener && opener.isConnected ? opener : null);
+    opener = null;
+    if (el) el.focus();
+  }
+  function activityOptions(tier, cur){
+    return F.recommend(tier, have()).map(r => `<optgroup label="${esc(r.pillar.name)}">${r.recommended.map(a => `<option value="${a.id}" ${a.id === cur ? "selected" : ""}>${esc(a.name)}</option>`).join("")}${r.other.map(a => `<option value="${a.id}" ${a.id === cur ? "selected" : ""}>${esc(a.name)} (not calibrated for Tier ${tier})</option>`).join("")}</optgroup>`).join("");
+  }
+  function whyText(id, tier){
+    const f = F.fitOf(id); if (!f) return "";
+    return `${pname(f.pillar)} · about ${f.minutes} minutes. ${f.why}${F.fitsTier(id, tier) ? "" : ` Not calibrated for Tier ${tier}: it suits Tier ${f.tiers.join(", ")}.`}`;
+  }
+  function newDraft(plan, w, g, date){
+    const mine = plan.slots.filter(s => s.group === g.id), today = mine.filter(s => s.date === date);
+    const cad = F.isWeekend(date) ? w.cadence.weekend : w.cadence.weekday;
+    let time = cad.filter(t => !today.some(s => s.time === t))[0];
+    if (!time){ const last = today.map(s => s.time).sort().pop() || "09:00", h = Math.min(21, +last.slice(0, 2) + 1); time = String(h).padStart(2, "0") + ":00"; }
+    const counts = F.balance(plan, [g.id]).counts, used = today.map(s => s.pillar);
+    const pillar = F.PILLARS.map(p => p.id).filter(p => used.indexOf(p) < 0).sort((a, b) => counts[a] - counts[b])[0] || "music";
+    const rec = F.recommend(g.acuity, have()).filter(r => r.pillar.id === pillar)[0];
+    return { id:F.newId("s-"), date, time, group:g.id, pillar, activity:(rec && rec.recommended[0] ? rec.recommended[0].id : "lyric-sheet"), locked:true, note:"" };
+  }
+  function openEditor(slotId, date){
+    const w = wing(); if (!w) return;
+    const plan = readPlan(w, S.month), edit = can("editSchedule", w.id), s = slotId ? plan.slots.filter(x => x.id === slotId)[0] : null;
+    if ((slotId && !s) || (!s && !edit)) return;
+    const g = s ? groupOf(w, s.group) : (groupOf(w, S.group) || w.groups[0]);
+    if (!g){ toast("Add a resident group first, under Groups & acuity."); return; }
+    const d = s ? Object.assign({}, s) : newDraft(plan, w, g, date), days = F.monthDays(S.month), isNew = !s;
+    S.editing = { id:d.id, isNew, group:g.id };
+    dialog().dataset.slot = s ? s.id : "";
+    if (!edit){
+      const f = F.fitOf(d.activity);
+      showDialog(`<div class="fp-dlg-body">
+        <h2 id="fpDlgTitle">${esc(f ? actTitle(f) : d.activity)}</h2>
+        <p class="fp-sub">${esc(dayLong(d.date))} · ${esc(F.fmtTime(d.time))} · ${esc(pname(d.pillar))}</p>
+        <p class="fp-sub"><b>${esc(g.name)}</b> ${tierChip(g.acuity)}</p>
+        <p>${esc(whyText(d.activity, g.acuity))}</p>
+        ${d.note ? `<p><b>Note:</b> ${esc(d.note)}</p>` : ""}${d.locked ? `<p class="fp-hint">Locked: filling the month again keeps it.</p>` : ""}
+        <div class="fp-dlg-actions">${can("print", w.id) ? `<button type="button" class="fp-btn" data-act="slot-packet">Add its page to the packet</button>` : ""}<button type="button" class="fp-btn fp-btn-primary" data-act="dlg-close">Close</button></div>
+      </div>`, "[data-act=dlg-close]");
+      return;
+    }
+    showDialog(`<form class="fp-dlg-body" data-form="slot" novalidate>
+        <h2 id="fpDlgTitle">${isNew ? "Add a session" : "Edit session"}</h2>
+        <p class="fp-sub">${esc(w.name)}${isNew ? "" : " · " + esc(dayLong(d.date))}</p>
+        ${isNew && w.groups.length > 1 ? `<div class="fp-field"><label for="fpSlGroup">Group</label><select id="fpSlGroup">${w.groups.map(x => `<option value="${esc(x.id)}" ${x.id === g.id ? "selected" : ""}>${esc(x.name)} · Tier ${x.acuity}</option>`).join("")}</select></div>`
+          : `<p class="fp-sub"><b>${esc(g.name)}</b> ${tierChip(g.acuity)}</p><input type="hidden" id="fpSlGroup" value="${esc(g.id)}">`}
+        <div class="fp-row2">
+          <div class="fp-field"><label for="fpSlDate">Day</label><input id="fpSlDate" type="date" min="${days[0]}" max="${days[days.length - 1]}" value="${d.date}" required></div>
+          <div class="fp-field"><label for="fpSlTime">Time</label><input id="fpSlTime" type="time" min="06:00" max="21:00" step="300" value="${d.time}" required></div>
+        </div>
+        <div class="fp-field"><label for="fpSlAct">Activity</label><select id="fpSlAct">${activityOptions(g.acuity, d.activity)}</select><p class="fp-hint" id="fpSlWhy">${esc(whyText(d.activity, g.acuity))}</p></div>
+        <div class="fp-field"><label for="fpSlNote">Note for the facilitator <span class="fp-opt">(optional)</span></label><input id="fpSlNote" type="text" maxlength="140" value="${esc(d.note)}" placeholder="e.g., Bring the rhythm sticks" autocomplete="off"></div>
+        <label class="fp-check fp-check-text"><input type="checkbox" id="fpSlLock" ${d.locked ? "checked" : ""}><span>Lock: keep this session when the month is filled again</span></label>
+        <p class="fp-err" id="fpSlErr" role="alert"></p>
+        <div class="fp-dlg-actions">
+          <button type="submit" class="fp-btn fp-btn-primary">${isNew ? "Add session" : "Save"}</button>
+          ${isNew ? "" : `<button type="button" class="fp-btn" data-act="slot-packet">Add its page to the packet</button><button type="button" class="fp-btn fp-btn-danger" data-act="slot-delete">Remove</button>`}
+          <button type="button" class="fp-btn" data-act="dlg-close">Cancel</button>
+        </div>
+      </form>`, "#fpSlAct");
+  }
+  function saveSlot(form){
+    const w = wing(), ed = S.editing; if (!w || !ed) return;
+    const err = t => { form.querySelector("#fpSlErr").textContent = t; };
+    const plan = readPlan(w, S.month), g = groupOf(w, form.querySelector("#fpSlGroup").value);
+    const prev = plan.slots.filter(x => x.id === ed.id)[0];
+    const slot = { id:ed.id, group:g ? g.id : "", date:form.querySelector("#fpSlDate").value, time:form.querySelector("#fpSlTime").value,
+      activity:form.querySelector("#fpSlAct").value, note:form.querySelector("#fpSlNote").value, locked:form.querySelector("#fpSlLock").checked, pillar:"words" };
+    if (!g){ err("Choose a group."); return; }
+    if (F.monthDays(S.month).indexOf(slot.date) < 0){ err(`Choose a day in ${monthLabel(S.month)}.`); form.querySelector("#fpSlDate").focus(); return; }
+    if (!F.isTime(slot.time) || slot.time < "06:00" || slot.time > "21:00"){ err("Choose a time between 6:00 AM and 9:00 PM."); form.querySelector("#fpSlTime").focus(); return; }
+    const clash = F.clashOf(plan, slot);
+    if (clash){ err(`${g.name} already has ${F.fitOf(clash.activity).name} at ${F.fmtTime(clash.time)} on ${dayLong(clash.date)}. Choose another time, or drag this session onto that one to swap them.`); form.querySelector("#fpSlTime").focus(); return; }
+    const next = F.updateSlot(plan, slot);
+    if (next === plan){ err("That session could not be saved. Check the day, time and activity."); return; }
+    writePlan(next);
+    const f = F.fitOf(slot.activity);
+    S.undo = { plan, label:(prev ? "the change to " : "adding ") + f.name };
+    audit(prev ? "Changed a session" : "Added a session", `${g.name}: ${f.name}, ${dayShort(slot.date)} ${F.fmtTime(slot.time)}`);
+    closeDialog();
+    renderCalendar(); restoreFocus(slot.id);
+    toast(prev ? `Saved: ${f.name}, ${dayLong(slot.date)} at ${F.fmtTime(slot.time)}.` : `Added ${f.name} on ${dayLong(slot.date)} at ${F.fmtTime(slot.time)}.`, "Undo", undo);
+  }
+  function deleteSlot(){
+    const w = wing(), ed = S.editing; if (!w || !ed) return;
+    const plan = readPlan(w, S.month), s = plan.slots.filter(x => x.id === ed.id)[0]; if (!s) return;
+    writePlan(F.removeSlot(plan, s.id));
+    const f = F.fitOf(s.activity);
+    S.undo = { plan, label:"removing " + f.name };
+    audit("Removed a session", `${f.name}, ${dayShort(s.date)} ${F.fmtTime(s.time)}`);
+    closeDialog(); opener = null;
+    renderCalendar();
+    const cell = root.querySelector(`[data-add="${s.date}"]`) || root.querySelector("#fpGroup"); if (cell) cell.focus();
+    toast(`Removed ${f.name} from ${dayLong(s.date)}.`, "Undo", undo);
+  }
+  function openDay(date){
+    const w = wing(), plan = readPlan(w, S.month), ids = groupIds(w), edit = can("editSchedule", w.id);
+    const iss = new Map(F.planIssues(plan, w).map(i => [i.slot, i.text])), list = plan.slots.filter(s => s.date === date && ids.indexOf(s.group) >= 0);
+    dialog().dataset.slot = "";
+    showDialog(`<div class="fp-dlg-body"><h2 id="fpDlgTitle">${esc(dayLong(date))}</h2><p class="fp-sub">${plural(list.length, "session", "sessions")} · ${esc(w.name)}</p>
+      <ul class="fp-day-list">${list.map(s => `<li>${chipHtml(s, w, false, true, iss.get(s.id))}</li>`).join("")}</ul>
+      <div class="fp-dlg-actions">${edit ? `<button type="button" class="fp-btn" data-add="${date}">Add a session</button>` : ""}<button type="button" class="fp-btn fp-btn-primary" data-act="dlg-close">Close</button></div></div>`, ".fp-day-list .fp-chip");
+  }
+
+  /* ---------- groups & acuity ---------- */
+  function renderGroups(){
+    const w = wing(), sub = root.querySelector("#fpSub"); if (!w || !sub) return;
+    const edit = can("editGroups", w.id);
+    if (!groupOf(w, S.sel)) S.sel = w.groups.length ? w.groups[0].id : "";
+    const g = groupOf(w, S.sel);
+    sub.innerHTML = `<div class="fp-glayout">
+      <div>
+        <h3 style="margin:0 0 10px;font-size:17px">Resident groups</h3>
+        ${w.groups.length ? `<ul class="fp-gcards">${w.groups.map(x => `<li><button type="button" class="fp-gcard${x.id === S.sel ? " is-on" : ""}" data-sel="${esc(x.id)}" aria-pressed="${x.id === S.sel}"><span class="fp-gcard-n">${esc(x.name)}</span>${tierChip(x.acuity)}<span class="fp-gcard-m">${plural(x.size, "resident", "residents")}</span></button></li>`).join("")}</ul>` : `<p class="fp-empty" style="margin-bottom:12px">No groups yet.</p>`}
+        ${edit && w.groups.length < F.LIMITS.groups ? `<form data-form="group-add"><div class="fp-field"><label for="fpNewGroup">Add a group</label><div class="fp-inline"><input id="fpNewGroup" type="text" maxlength="60" placeholder="e.g., Garden Room" required autocomplete="off"><button class="fp-btn" type="submit">Add</button></div></div></form>` : ""}
+      </div>
+      <div class="fp-gdetail">${g ? groupDetailHtml(w, g, edit) : `<div class="fp-card"><h3>Groups and their tiers</h3><p class="fp-hint">A group is the residents who do an activity together. Give each an acuity tier and the activity generator recommends what suits it.</p></div>`}</div>
+    </div>`;
+  }
+  function offTier(w, g){
+    const plan = readPlan(w, S.month), off = new Set(F.planIssues(plan, w).filter(i => i.kind === "tier").map(i => i.slot));
+    const mine = plan.slots.filter(s => s.group === g.id && off.has(s.id));
+    return { n:mine.length, unlocked:mine.filter(s => !s.locked).length };
+  }
+  function offHtml(w, g, edit){
+    const o = offTier(w, g), locked = o.n - o.unlocked;
+    if (!o.n) return "";
+    return `<div class="fp-off" role="status"><p>${IC.alert} ${plural(o.n, "session", "sessions")} in ${esc(monthName(S.month))} ${o.n === 1 ? "has an activity" : "have activities"} not calibrated for Tier ${g.acuity}${locked ? `; ${locked} ${locked === 1 ? "is" : "are"} locked, so open ${locked === 1 ? "it" : "them"} on the calendar to choose another activity` : ""}.</p>${o.unlocked && edit && can("editSchedule", w.id) ? `<button type="button" class="fp-btn fp-btn-sm" data-act="recal-group">Recalibrate ${plural(o.unlocked, "session", "sessions")} for Tier ${g.acuity}</button>` : ""}</div>`;
+  }
+  function groupDetailHtml(w, g, edit){
+    const t = F.acuityOf(g.acuity), people = typeof BookUI !== "undefined" ? BookUI.savedProfiles() : [];
+    const linked = people.filter(p => g.residents.indexOf(p.id) >= 0), tiers = linked.map(p => BookUI.needsFor(p).tier);
+    const tierCount = [1, 2, 3].map(k => [k, tiers.filter(x => x === k).length]).filter(x => x[1]);
+    return `<div class="fp-card">
+        <div class="fp-card-head"><h3 id="fpGH">${esc(g.name)}</h3>${edit ? `<button type="button" class="fp-btn fp-btn-sm fp-btn-danger" data-act="group-del">Remove group</button>` : ""}</div>
+        ${edit ? `<div class="fp-row2">
+            <div class="fp-field"><label for="fpGName">Group name</label><input id="fpGName" type="text" maxlength="60" value="${esc(g.name)}" autocomplete="off"></div>
+            <div class="fp-field"><label for="fpGSize">Residents in the group</label><input id="fpGSize" type="number" min="1" max="60" inputmode="numeric" value="${g.size}"></div></div>
+          <div class="fp-field"><label for="fpGNotes">Notes for staff <span class="fp-opt">(optional, printed on the week's cover)</span></label><input id="fpGNotes" type="text" maxlength="300" value="${esc(g.notes)}" autocomplete="off"></div>`
+          : `<p class="fp-sub">${plural(g.size, "resident", "residents")}${g.notes ? " · " + esc(g.notes) : ""}</p>`}
+        <fieldset class="fp-tiers"${edit ? "" : " disabled"}>
+          <legend>Acuity profile</legend>
+          <div class="fp-cq"><div class="fp-tier-grid">${F.ACUITY.map(a => `<label class="fp-tier-opt"><input type="radio" name="fpTier" value="${a.tier}" ${a.tier === g.acuity ? "checked" : ""}><span><b class="fp-tier-k">Tier ${a.tier}</b><b class="fp-tier-name">${esc(a.name)}</b><small>${esc(a.who)}</small></span></label>`).join("")}</div></div>
+          <p class="fp-hint" id="fpTierHint">${esc(t.approach)} Pages print at the ${esc(level(t))} level.</p>
+        </fieldset>
+        <div id="fpOff">${offHtml(w, g, edit)}</div>
+        ${people.length ? `<details style="margin-top:12px"><summary style="cursor:pointer;font-weight:700">Link saved residents <span class="fp-opt">(optional)</span>${linked.length ? ` · ${linked.length} linked` : ""}</summary>
+          <p class="fp-hint">Their profiles' tiers help set the group's${tierCount.length ? `: ${esc(tierCount.map(x => plural(x[1], "resident", "residents") + " at Tier " + x[0]).join(", "))}` : ""}. Names stay on this screen: packets and files carry the group's name only.</p>
+          <div class="fp-people fp-checks">${people.map(p => `<label class="fp-check fp-check-text"><input type="checkbox" data-person="${esc(p.id)}" ${g.residents.indexOf(p.id) >= 0 ? "checked" : ""} ${edit ? "" : "disabled"}><span>${esc(cgScreenName(p))} <span class="fp-muted">· profile Tier ${BookUI.needsFor(p).tier}</span></span></label>`).join("")}</div></details>` : ""}
+      </div>
+      <section class="fp-recs" id="fpRecs" aria-labelledby="fpRecH" aria-live="polite">${recsHtml(w, g)}</section>`;
+  }
+  function recsHtml(w, g){
+    const t = F.acuityOf(g.acuity), print = can("print", w.id);
+    return `<div class="fp-recs-head"><h3 id="fpRecH">Activity generator: calibrated for ${esc(t.label)}</h3>
+        <p class="fp-sub">Each pillar's activities that suit ${esc(g.name)}, best fits first${t.tier === 4 ? ", group programs ahead" : t.tier === 3 ? ", sensory ones ahead" : ""}. They print at the ${esc(level(t))} level; the rest are set aside under each pillar.</p></div>
+      <div class="fp-rec-grid">${F.recommend(t.tier, have()).map(r => `<article class="fp-card fp-pillar p-${r.pillar.id}" aria-labelledby="fpP-${r.pillar.id}">
+        <h4 id="fpP-${r.pillar.id}"><span class="fp-pic">${pIcon(r.pillar.id)}</span>${esc(r.pillar.name)}<span class="fp-count">${r.recommended.length}<span class="sr-only"> recommended</span></span></h4>
+        <ol class="fp-rec-list">${r.recommended.map(a => `<li class="fp-rec">
+          <div class="fp-rec-top"><b>${esc(actTitle(a))}</b><span class="fp-tags">${a.best.indexOf(t.tier) >= 0 ? `<span class="fp-tag fp-tag-best">Best fit</span>` : ""}${a.group ? `<span class="fp-tag">Group</span>` : ""}${a.sensory ? `<span class="fp-tag">Sensory</span>` : ""}<span class="fp-tag">${a.minutes} min</span></span></div>
+          <p>${esc(a.why)}</p>
+          ${print ? `<div class="fp-rec-actions"><button type="button" class="fp-btn fp-btn-sm" data-rec-add="${a.id}">Add to packet<span class="sr-only">: ${esc(actTitle(a))}</span></button><button type="button" class="fp-btn fp-btn-sm" data-rec-open="${a.id}">Open in generator<span class="sr-only">: ${esc(actTitle(a))}</span></button></div>` : ""}
+        </li>`).join("")}</ol>
+        ${r.other.length ? `<details class="fp-other"><summary>Not calibrated for Tier ${t.tier} (${r.other.length})</summary><ul>${r.other.map(a => `<li>${esc(actTitle(a))} <span class="fp-muted">· suits Tier ${a.tiers.join(", ")}</span></li>`).join("")}</ul></details>` : ""}
+      </article>`).join("")}</div>`;
+  }
+  function updateGroup(fn, action, detail, full){
+    const w = wing(), g = groupOf(w, S.sel); if (!w || !g || !can("editGroups", w.id)) return false;
+    const ok = saveWing(w.id, x => Object.assign({}, x, { groups:x.groups.map(y => y.id === g.id ? fn(Object.assign({}, y)) : y) }), action, typeof detail === "function" ? detail(g) : detail);
+    if (ok && full) keepFocus(renderGroups);
+    return ok;
+  }
+  function setTier(t){
+    const w = wing(), g = groupOf(w, S.sel); if (!g || g.acuity === t) return;
+    const before = g.acuity;
+    if (!updateGroup(x => Object.assign(x, { acuity:t }), "Changed a group's tier", `${g.name}: Tier ${before} to Tier ${t}`)) return;
+    const w2 = wing(), g2 = groupOf(w2, S.sel), a = F.acuityOf(t);
+    // redraw only what depends on the tier, so focus stays on the tier just chosen
+    const card = root.querySelector(`.fp-gcard[data-sel="${CSS.escape(g2.id)}"] .fp-tier`); if (card) card.outerHTML = tierChip(t);
+    const hint = root.querySelector("#fpTierHint"); if (hint) hint.textContent = `${a.approach} Pages print at the ${level(a)} level.`;
+    const off = root.querySelector("#fpOff"); if (off) off.innerHTML = offHtml(w2, g2, true);
+    const recs = root.querySelector("#fpRecs");
+    if (recs){ recs.innerHTML = recsHtml(w2, g2); if (!reduced()){ recs.classList.remove("is-updating"); void recs.offsetWidth; recs.classList.add("is-updating"); } }
+    const tab = root.querySelector(`.fp-tab[data-tab="${CSS.escape(w2.id)}"]`); if (tab) tab.title = w2.name;
+    announce(`${g2.name} is now ${a.label}. The recommendations show what suits it.`);
+  }
+
+  /* ---------- print & export ---------- */
+  function weeksOf(month){ return F.monthGrid(month).map(wk => wk[0].date); }
+  function weekSlots(w, start){
+    const days = F.weekOf(start).days, months = Array.from(new Set(days.map(d => d.slice(0, 7))));
+    return months.reduce((l, m) => l.concat(readPlan(w, m).slots.filter(s => days.indexOf(s.date) >= 0)), []);
+  }
+  function printGroups(w){
+    const ids = w.groups.map(g => g.id);
+    return S.pick && S.pick.wing === w.id ? S.pick.ids.filter(id => ids.indexOf(id) >= 0) : ids;
+  }
+  /* A group's week: its cover (and more cover pages if the week is long), then each session's pages. */
+  function packetPages(w, p){
+    const covers = coverPages(w, p), out = covers.map(html => ({ html }));
+    p.sessions.forEach(x => { const html = sessionSheet(x, p); if (html) for (let i = 0; i < x.copies; i++) out.push({ html }); });
+    return { pages:out, covers:covers.length };
+  }
+  function sessionSheet(x, p){
+    const a = act(x.fit.id); if (!a) return "";
+    const cfg = { residentName:"", date:x.slot.date, difficulty:p.tier.difficulty, era:settings.era };
+    if (a.options) cfg.opts = savedOpts(a);
+    return sheetHtml({ activityId:a.id, cfg, batchSeed:seedOf(x.slot.id + "|" + p.tier.tier), count:1, index:0 });
+  }
+  function coverPages(w, p){
+    const wk = F.weekOf(S.week), eyebrow = [settings.facility, w.name].filter(Boolean).join(" · ");
+    const approach = `<b>This group:</b> ${esc(p.tier.who)} <b>Approach:</b> ${esc(p.tier.approach)} Pages are at the ${esc(level(p.tier))} level.${p.group.notes ? ` <b>Notes:</b> ${esc(p.group.notes)}` : ""}`;
+    const approachLen = (p.tier.who + p.tier.approach + p.group.notes).length + 60;
+    // heights in inches, estimated on the safe side: 11 pt rows, a 3.15 in activity column
+    const lines = (s, per) => Math.max(1, Math.ceil(String(s).length / per));
+    const rowH = (x, why) => .3 + .19 * (lines(actTitle(x.fit), 30) - 1) + (x.slot.note ? .19 * lines("Note: " + x.slot.note, 40) : 0) + (why ? .19 * lines(x.fit.why, 40) : 0);
+    const headH = .95 + .37 * (lines(p.group.name, 24) - 1) + .19 * (lines(eyebrow, 58) - 1) + .21 * Math.ceil(approachLen / 88) + .12;
+    const FIRST = 9.9 - headH - .34 - .45, NEXT = 9.9 - .5 - .34 - .45;
+    const showWhy = p.sessions.reduce((n, x) => n + rowH(x, true), 0) <= FIRST - 1.3;
+    const pages = []; let cur = [], room = FIRST;
+    p.sessions.forEach(x => { const h = rowH(x, showWhy); if (h > room && cur.length){ pages.push(cur); cur = []; room = NEXT; } cur.push(x); room -= h; });
+    pages.push(cur);
+    const notes = Math.floor((room - .4) / .5);
+    const start = dateObj(wk.start).toLocaleDateString("en-US", { weekday:"long", month:"long", day:"numeric" }), end = dateObj(wk.end).toLocaleDateString("en-US", { weekday:"long", month:"long", day:"numeric", year:"numeric" });
+    const table = rows => `<table class="fp-ptable"><colgroup><col style="width:1.15in"><col style="width:.85in"><col style="width:.95in"><col><col style="width:.5in"><col style="width:.75in"></colgroup>
+      <thead><tr><th scope="col">Day</th><th scope="col">Time</th><th scope="col">Pillar</th><th scope="col">Activity</th><th scope="col">Min</th><th scope="col">Copies</th></tr></thead>
+      <tbody>${rows.map(x => `<tr><td>${esc(dayShort(x.slot.date))}</td><td>${esc(F.fmtTime(x.slot.time))}</td><td>${esc(pname(x.slot.pillar))}</td><td><b>${esc(actTitle(x.fit))}</b>${showWhy ? `<small>${esc(x.fit.why)}</small>` : ""}${x.slot.note ? `<small>Note: ${esc(x.slot.note)}</small>` : ""}</td><td class="n">${x.fit.minutes}</td><td class="n">${x.copies}</td></tr>`).join("")}</tbody></table>`;
+    return pages.map((rows, k) => `<section class="sheet fp-sheet">
+      ${k === 0 ? `<header class="fp-ph"><div><p class="fp-ph-eyebrow">${esc(eyebrow || "Facility Portal")}</p><h1>${esc(p.group.name)}</h1><p class="fp-ph-sub">Week of ${esc(start)} to ${esc(end)}</p></div>
+        <div class="fp-ph-tier"><b>Tier ${p.tier.tier}</b><span>${esc(p.tier.name)}</span></div></header>
+        <p class="fp-ph-approach">${approach}</p>` : `<p class="fp-pcont">${esc(p.group.name)} · week of ${esc(start)} (continued)</p>`}
+      ${table(rows)}
+      ${k === pages.length - 1 && notes >= 2 ? `<div class="fp-pnotes"><h2>Facilitator notes</h2><div class="fp-plines">${'<div class="fp-pline"></div>'.repeat(notes - 1)}</div></div>` : ""}
+      <footer class="fp-pfoot"><span>${esc(settings.facility || "")}</span><span>Cognicopia · Facility Portal · ${esc(p.group.name)}${pages.length > 1 ? ` · cover ${k + 1} of ${pages.length}` : ""}</span></footer>
+    </section>`);
+  }
+  function monthSheets(w, g){
+    const weeks = F.monthGrid(S.month), plan = readPlan(w, S.month), mine = plan.slots.filter(s => s.group === g.id), map = byDate(mine);
+    const eyebrow = [settings.facility, w.name].filter(Boolean).join(" · ");
+    const line = s => `${shortTime(s.time)} ${F.fitOf(s.activity).name}${s.note ? " *" : ""}`;
+    // inches, on the safe side: a day's box holds lines of about 13 characters at 8.5 pt
+    const need = wk => .26 + Math.max(0, ...wk.map(c => (map.get(c.date) || []).reduce((h, s) => h + .135 * Math.ceil(line(s).length / 13) + .03, 0)));
+    const headH = .9 + .2 * (Math.ceil(eyebrow.length / 46) - 1) + .24 * (Math.ceil(g.name.length / 40) - 1);
+    const AVAIL = 9.9 - headH - .32 - .5 - .4 - .3;              // the day names, the key, the footer, the gaps
+    let per = weeks.length;
+    while (per > 1 && Math.max(...weeks.map(need)) > AVAIL / per) per--;
+    const chunks = []; for (let i = 0; i < weeks.length; i += per) chunks.push(weeks.slice(i, i + per));
+    const b = F.balance(plan, [g.id]), noted = mine.some(s => s.note);
+    return chunks.map((ch, k) => `<section class="sheet fp-sheet fp-msheet">
+      <header class="fp-ph"><div><p class="fp-ph-eyebrow">${esc(eyebrow || "Facility Portal")}</p><h1>${esc(monthLabel(S.month))}${chunks.length > 1 ? ` <span style="font-size:14pt;font-weight:400">(${k + 1} of ${chunks.length})</span>` : ""}</h1><p class="fp-ph-sub">${esc(g.name)}</p></div>
+        <div class="fp-ph-tier"><b>Tier ${g.acuity}</b><span>${esc(F.acuityOf(g.acuity).name)}</span></div></header>
+      <div class="fp-mgrid" style="grid-template-rows:auto repeat(${ch.length},minmax(0,1fr))">${["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map(d => `<div class="fp-mh">${d}</div>`).join("")}${ch.map(wk => wk.map(c => c.inMonth
+        ? `<div class="fp-mc"><span class="d">${+c.date.slice(8)}</span>${(map.get(c.date) || []).map(s => `<span class="s"><b>${esc(shortTime(s.time))}</b> ${esc(F.fitOf(s.activity).name)}${s.note ? " *" : ""}</span>`).join("")}</div>`
+        : `<div class="fp-mc out"></div>`).join("")).join("")}</div>
+      <p class="fp-mkey"><b>This month:</b> ${F.PILLARS.map(p => `${esc(p.name)} ${b.counts[p.id]}`).join(" · ")}.${noted ? " * A note for the facilitator: see the week's packet." : ""}</p>
+      <footer class="fp-pfoot"><span>${esc(settings.facility || "")}</span><span>Cognicopia · Facility Portal · ${esc(w.name)}</span></footer>
+    </section>`);
+  }
+  function weekSummary(w){
+    const ids = printGroups(w), packets = F.weekPackets(w, weekSlots(w, S.week), S.week, S.copies, ids);
+    const rows = packets.map(p => { const covers = coverPages(w, p).length; return { p, covers, pages:covers + p.sessions.reduce((n, x) => n + x.copies, 0) }; });
+    return { ids, rows, total:rows.reduce((n, r) => n + r.pages, 0) };
+  }
+  function renderPrint(){
+    const w = wing(), sub = root.querySelector("#fpSub"); if (!w || !sub) return;
+    const weeks = weeksOf(S.month);
+    if (weeks.indexOf(S.week) < 0){ const t = F.weekOf(todayISO()).start; S.week = weeks.indexOf(t) >= 0 ? t : weeks[0]; }
+    const sum = weekSummary(w), ok = can("print", w.id), first = sum.rows[0];
+    const monthIds = sum.ids.filter(id => readPlan(w, S.month).slots.some(s => s.group === id));
+    sub.innerHTML = `<div class="fp-print">
+      <section class="fp-card" aria-labelledby="fpWkH">
+        <h3 id="fpWkH">A week of packets, in one click</h3>
+        <p class="fp-hint">For each group: a cover with its tier, approach and the week's sessions, then every activity page, printed at the group's tier.</p>
+        <div class="fp-row2" style="margin-top:12px">
+          <div class="fp-field"><label for="fpWeek">Week</label><select id="fpWeek">${weeks.map(ws => `<option value="${ws}" ${ws === S.week ? "selected" : ""}>${esc(weekLabel(ws))}</option>`).join("")}</select></div>
+          <fieldset class="fp-field"><legend>Copies</legend><div class="fp-seg">
+            <label><input type="radio" name="fpCopies" value="master" ${S.copies === "master" ? "checked" : ""}><span>One master each</span></label>
+            <label><input type="radio" name="fpCopies" value="each" ${S.copies === "each" ? "checked" : ""}><span>One per resident</span></label></div></fieldset>
+        </div>
+        <fieldset class="fp-field"><legend>Groups</legend><div class="fp-checks">${w.groups.map(g => `<label class="fp-check"><input type="checkbox" data-pg="${esc(g.id)}" ${sum.ids.indexOf(g.id) >= 0 ? "checked" : ""}> ${esc(g.name)} ${tierChip(g.acuity)}</label>`).join("") || `<p class="fp-empty">No groups yet.</p>`}</div></fieldset>
+        ${sum.rows.length ? `<div class="fp-table-wrap"><table class="fp-table"><caption class="sr-only">Pages to print, by group</caption>
+          <thead><tr><th scope="col">Group</th><th scope="col">Tier</th><th scope="col" class="n">Sessions</th><th scope="col" class="n">Pages</th></tr></thead>
+          <tbody>${sum.rows.map(r => `<tr><th scope="row">${esc(r.p.group.name)}</th><td>${esc(r.p.tier.label)}</td><td class="n">${r.p.sessions.length}</td><td class="n">${r.pages}</td></tr>`).join("")}</tbody>
+          <tfoot><tr><th scope="row" colspan="3">All pages</th><td class="n">${sum.total}</td></tr></tfoot></table></div>`
+          : `<p class="fp-empty">Nothing is scheduled for ${sum.ids.length ? "these groups" : "any group"} that week. Fill the month on the Calendar first.</p>`}
+        ${ok ? `<div class="fp-actions"><button type="button" class="fp-btn fp-btn-primary" data-act="print-week" ${sum.total ? "" : "disabled"}>${IC.print}Print ${sum.total ? plural(sum.total, "page", "pages") : "the week"}</button></div>
+          <p class="fp-hint">${esc(BookUI.allowanceText())}${sum.total > CONFIRM_PAGES ? " That is a lot of paper: one master each prints fewer." : ""}</p>` : ""}
+      </section>
+      <div class="fp-side">
+        <section class="fp-card" aria-labelledby="fpMoH">
+          <h3 id="fpMoH">${esc(monthLabel(S.month))}</h3>
+          <p class="fp-hint">A calendar page for each group ticked on the left, and the whole month as a spreadsheet or a calendar file.</p>
+          <div class="fp-actions">
+            ${ok ? `<button type="button" class="fp-btn" data-act="print-month" ${monthIds.length ? "" : "disabled"}>${IC.print}Print ${plural(monthIds.length, "calendar", "calendars")}</button>` : ""}
+            <button type="button" class="fp-btn" data-act="csv">${IC.download}Spreadsheet (CSV)</button>
+            <button type="button" class="fp-btn" data-act="ics">${IC.download}Calendar (.ics)</button>
+          </div>
+          <p class="fp-hint">Files hold group names, times and activities only, never a resident's name. A calendar file opens in Outlook, Google Calendar or Apple Calendar.</p>
+        </section>
+        ${first ? `<section class="fp-card" aria-labelledby="fpPvH"><h3 id="fpPvH">Cover preview</h3><p class="fp-hint">${esc(first.p.group.name)}, ${esc(weekLabel(S.week))}</p><div class="fp-thumb" aria-hidden="true">${coverPages(w, first.p)[0]}</div></section>` : ""}
+      </div>
+    </div>`;
+  }
+  function printWeek(){
+    const w = wing(); if (!w || !can("print", w.id)) return;
+    const sum = weekSummary(w);
+    if (!sum.total){ toast("Nothing is scheduled for those groups that week."); return; }
+    if (sum.total > MAX_PAGES){ toast(`That is ${sum.total} pages, more than one print can hold (${MAX_PAGES}). Print one master each, or fewer groups at a time.`); return; }
+    if (sum.total > CONFIRM_PAGES && !confirm(`Print ${sum.total} pages for ${plural(sum.rows.length, "group", "groups")}?`)) return;
+    const pages = sum.rows.reduce((l, r) => l.concat(packetPages(w, r.p).pages), []);
+    const done = BookUI.print(pages, `Week packets - ${w.name} - ${S.week}`, () => { if (root && root.isConnected && S.sub === "print") keepFocus(renderPrint); }, null);
+    if (done) audit("Printed week packets", `${w.name}, week of ${dayShort(S.week)}: ${sum.total} pages for ${sum.rows.map(r => r.p.group.name).join(", ")}`);
+  }
+  function printMonth(){
+    const w = wing(); if (!w || !can("print", w.id)) return;
+    const plan = readPlan(w, S.month), gs = printGroups(w).map(id => groupOf(w, id)).filter(g => g && plan.slots.some(s => s.group === g.id));
+    if (!gs.length){ toast(`Nothing is scheduled in ${monthLabel(S.month)} for those groups.`); return; }
+    const pages = gs.reduce((l, g) => l.concat(monthSheets(w, g).map(html => ({ html }))), []);
+    if (BookUI.print(pages, `Calendar - ${w.name} - ${S.month}`, null, null)) audit("Printed month calendars", `${w.name}, ${monthLabel(S.month)}: ${gs.map(g => g.name).join(", ")}`);
+  }
+  function monthRows(w){
+    const plan = readPlan(w, S.month), ids = printGroups(w);
+    return plan.slots.filter(s => ids.indexOf(s.group) >= 0).map(s => ({ s, g:groupOf(w, s.group), f:F.fitOf(s.activity) })).filter(x => x.g && x.f);
+  }
+  function exportCsv(){
+    const w = wing(); if (!w) return;
+    const rows = monthRows(w);
+    if (!rows.length){ toast(`Nothing is scheduled in ${monthLabel(S.month)} for those groups.`); return; }
+    const csv = F.toCSV([["Date", "Day", "Time", "Wing", "Group", "Tier", "Pillar", "Activity", "Minutes", "Locked", "Note"]].concat(rows.map(x =>
+      [x.s.date, dateObj(x.s.date).toLocaleDateString("en-US", { weekday:"long" }), F.fmtTime(x.s.time), w.name, x.g.name, F.acuityOf(x.g.acuity).label, pname(x.s.pillar), actTitle(x.f), w.minutes, x.s.locked ? "Yes" : "No", x.s.note])));
+    download(`cognicopia-${slug(w.name)}-${S.month}.csv`, "﻿" + csv, "text/csv;charset=utf-8");
+    audit("Downloaded a spreadsheet", `${w.name}, ${monthLabel(S.month)}: ${rows.length} sessions`);
+  }
+  function exportIcs(){
+    const w = wing(); if (!w) return;
+    const rows = monthRows(w);
+    if (!rows.length){ toast(`Nothing is scheduled in ${monthLabel(S.month)} for those groups.`); return; }
+    const ics = F.toICS(rows.map(x => ({ uid:x.s.id, date:x.s.date, time:x.s.time, minutes:w.minutes, category:pname(x.s.pillar),
+      summary:`${x.f.name} · ${x.g.name}`, description:`${pname(x.s.pillar)} · ${F.acuityOf(x.g.acuity).label}. ${x.f.why}${x.s.note ? " Note: " + x.s.note : ""}` })),
+      [settings.facility, w.name, monthLabel(S.month)].filter(Boolean).join(" · "));
+    download(`cognicopia-${slug(w.name)}-${S.month}.ics`, ics, "text/calendar;charset=utf-8");
+    audit("Downloaded a calendar file", `${w.name}, ${monthLabel(S.month)}: ${rows.length} sessions`);
+  }
+
+  /* ---------- wing settings ---------- */
+  function renderSettings(){
+    const w = wing(), sub = root.querySelector("#fpSub"); if (!w || !sub) return;
+    const times = (kind, list) => Array.from({ length:F.LIMITS.sessions }, (_, i) => `<div><label class="sr-only" for="fpCad-${kind}-${i}">${kind === "weekday" ? "Weekday" : "Weekend"} session ${i + 1}</label><input id="fpCad-${kind}-${i}" type="time" min="06:00" max="21:00" step="300" data-cad="${kind}" value="${list[i] || ""}"></div>`).join("");
+    sub.innerHTML = `<div class="fp-grid2">
+      <section class="fp-card" aria-labelledby="fpWsH">
+        <h3 id="fpWsH">Wing settings</h3>
+        ${can("manageWings") ? `<div class="fp-field"><label for="fpWName">Wing name</label><input id="fpWName" type="text" maxlength="60" value="${esc(w.name)}" autocomplete="off"></div>` : ""}
+        <fieldset class="fp-field"><legend>Session times on weekdays</legend><div class="fp-times">${times("weekday", w.cadence.weekday)}</div></fieldset>
+        <fieldset class="fp-field"><legend>Session times on weekends</legend><div class="fp-times">${times("weekend", w.cadence.weekend)}</div></fieldset>
+        <div class="fp-field"><label for="fpWMin">Session length</label><select id="fpWMin">${[15, 20, 30, 45, 60, 75, 90, 120].map(m => `<option value="${m}" ${m === w.minutes ? "selected" : ""}>${m} minutes</option>`).join("")}</select></div>
+        <p class="fp-hint">Up to ${F.LIMITS.sessions} sessions a day, between 6:00 AM and 9:00 PM; leave a box empty for fewer. New times apply the next time the month is filled; sessions already on the calendar keep theirs.</p>
+      </section>
+      ${can("manageWings") ? `<section class="fp-card" aria-labelledby="fpWdH"><h3 id="fpWdH">Remove this wing</h3><p class="fp-hint">Removes ${esc(w.name)}, its groups and every month of its calendar from this computer. It cannot be undone.</p><div class="fp-actions"><button type="button" class="fp-btn fp-btn-danger" data-act="wing-del">Remove ${esc(w.name)}</button></div></section>` : ""}
+    </div>`;
+  }
+  function saveCadence(){
+    const w = wing(); if (!w || !can("editSchedule", w.id)) return;
+    const read = kind => Array.from(root.querySelectorAll(`[data-cad="${kind}"]`)).map(i => i.value).filter(Boolean);
+    const next = F.normalizeWing(Object.assign({}, w, { cadence:{ weekday:read("weekday"), weekend:read("weekend") } }));
+    saveWing(w.id, () => next, "Changed session times", `${w.name}: ${cadenceText(next)}`);
+    const sub = root.querySelector("#fpWingH + .fp-sub"); if (sub) sub.textContent = cadenceText(next);
+    const bad = read("weekday").concat(read("weekend")).filter(t => t < "06:00" || t > "21:00");
+    keepFocus(renderSettings);
+    toast(bad.length ? "Saved. Times before 6:00 AM or after 9:00 PM were left out." : "Session times saved. They apply the next time the month is filled.");
+  }
+
+  /* ---------- team & audit (the director) ---------- */
+  function teamHtml(){
+    const dirs = fac.team.filter(m => m.role === "director").length;
+    return `<section aria-labelledby="fpTeamH">
+      <div class="fp-sec-head"><div><h2 id="fpTeamH">Team &amp; audit</h2><p class="fp-sub">Who can do what, and every change. Roles are views on this computer, not logins: anyone who can open Cognicopia here can switch between them, so keep the computer itself signed in only for staff.</p></div></div>
+      <div class="fp-team">
+        <section class="fp-card" aria-labelledby="fpCommH">
+          <h3 id="fpCommH">Community</h3>
+          <div class="fp-field"><label for="fpFacName">Community name</label><input id="fpFacName" type="text" maxlength="60" value="${esc(settings.facility)}" placeholder="e.g., Maple Grove Senior Living" autocomplete="organization">
+            <p class="fp-hint">Shown at the top of the portal and printed at the foot of every page (the same as Settings › Facility name).</p></div>
+          <h4 style="margin:14px 0 6px">Wings</h4>
+          ${fac.wings.length ? `<ul class="fp-glist-mini">${fac.wings.map(w => `<li><span class="fp-gn">${esc(w.name)}</span><span class="fp-tag">${plural(w.groups.length, "group", "groups")}</span></li>`).join("")}</ul>` : `<p class="fp-empty">No wings yet.</p>`}
+          ${fac.wings.length < F.LIMITS.wings ? `<div style="margin-top:12px">${addWingForm("fpNewWing2", false)}</div>` : ""}
+        </section>
+        <section class="fp-card" aria-labelledby="fpMemH">
+          <h3 id="fpMemH">Team</h3>
+          <p class="fp-hint">${Object.keys(F.ROLES).map(k => `<b>${esc(F.ROLES[k].label)}:</b> ${esc(F.ROLES[k].summary)}`).join(" ")}</p>
+          <div class="fp-members">${fac.team.map(m => memberHtml(m, dirs)).join("")}</div>
+          ${fac.team.length < F.LIMITS.team ? `<form data-form="member-add" style="margin-top:12px"><div class="fp-row2">
+              <div class="fp-field"><label for="fpNewMember">Add a team member</label><input id="fpNewMember" type="text" maxlength="60" placeholder="Name or role, e.g., Evening activity aide" required autocomplete="off"></div>
+              <div class="fp-field"><label for="fpNewRole">Role</label><select id="fpNewRole">${Object.keys(F.ROLES).map(k => `<option value="${k}" ${k === "staff" ? "selected" : ""}>${esc(F.ROLES[k].label)}</option>`).join("")}</select></div></div>
+            <button class="fp-btn" type="submit">Add to the team</button></form>` : ""}
+        </section>
+        <section class="fp-card fp-span" aria-labelledby="fpAudH">
+          <div class="fp-card-head"><h3 id="fpAudH">Audit trail</h3><button type="button" class="fp-btn fp-btn-sm" data-act="audit-csv">${IC.download}Download (CSV)</button></div>
+          <p class="fp-hint">The last ${F.LIMITS.audit} changes, newest first, with who made them. Kept sealed on this computer.</p>
+          ${fac.audit.length ? `<div class="fp-table-wrap"><table class="fp-table"><caption class="sr-only">Changes, newest first</caption><thead><tr><th scope="col">When</th><th scope="col">Who</th><th scope="col">What</th><th scope="col">Detail</th></tr></thead>
+            <tbody>${fac.audit.slice(-50).reverse().map(e => `<tr><td>${esc(new Date(e.t).toLocaleString("en-US", { month:"short", day:"numeric", hour:"numeric", minute:"2-digit" }))}</td><td>${esc(e.who)}<br><small class="fp-muted">${esc(F.ROLES[e.role].label)}</small></td><td>${esc(e.action)}</td><td>${esc(e.detail)}</td></tr>`).join("")}</tbody></table></div>
+            ${fac.audit.length > 50 ? `<p class="fp-hint">Showing the latest 50 of ${fac.audit.length}; the download has them all.</p>` : ""}` : `<p class="fp-empty">No changes yet.</p>`}
+        </section>
+        <section class="fp-card" aria-labelledby="fpPrivH">
+          <h3 id="fpPrivH">On this computer</h3>
+          <p class="fp-hint">The portal is saved in this browser's encrypted store, like resident profiles (Settings › Privacy &amp; encryption), and never leaves this computer. Packets, calendars and downloads carry group names and activities, never a resident's name.</p>
+          <div class="fp-actions"><button type="button" class="fp-btn fp-btn-danger" data-act="wipe">Remove the portal from this computer</button></div>
+        </section>
+      </div>
+    </section>`;
+  }
+  function memberHtml(m, dirs){
+    const lastDir = m.role === "director" && dirs <= 1, self = m.id === fac.active;
+    return `<div class="fp-member">
+      <div class="fp-field fp-m-name"><label for="fpMn-${m.id}">Name</label><input id="fpMn-${m.id}" type="text" maxlength="60" data-mname="${esc(m.id)}" value="${esc(m.name)}" autocomplete="off"></div>
+      <div class="fp-field fp-m-role"><label for="fpMr-${m.id}">Role</label><select id="fpMr-${m.id}" data-mrole="${esc(m.id)}" ${lastDir ? 'disabled aria-describedby="fpLastDir"' : ""}>${Object.keys(F.ROLES).map(k => `<option value="${k}" ${k === m.role ? "selected" : ""}>${esc(F.ROLES[k].label)}</option>`).join("")}</select></div>
+      <button type="button" class="fp-btn fp-btn-sm fp-btn-danger fp-m-del" data-act="member-del" data-id="${esc(m.id)}" ${self || lastDir ? "disabled" : ""}>Remove<span class="sr-only"> ${esc(m.name)}</span></button>
+      ${lastDir ? `<p class="fp-hint fp-m-hint" id="fpLastDir">The only Activity Director: add another before changing this role.</p>` : ""}
+      ${m.role !== "director" ? `<div class="fp-member-wings" role="group" aria-label="Wings for ${esc(m.name)}">${fac.wings.map(w => `<label class="fp-check"><input type="checkbox" data-mwing="${esc(m.id)}" value="${esc(w.id)}" ${m.wings.indexOf(w.id) >= 0 ? "checked" : ""}> ${esc(w.name)}</label>`).join("") || `<span class="fp-empty">No wings yet.</span>`}</div>` : ""}
+    </div>`;
+  }
+  function updateMember(id, fn, action, detail){
+    return writeFacility(Object.assign({}, fac, { team:fac.team.map(m => m.id === id ? fn(Object.assign({}, m)) : m) }), action, detail);
+  }
+
+  /* ---------- the generator, for a group ---------- */
+  function addToPacket(id, tierN, date){
+    const a = act(id); if (!a) return;
+    const t = F.acuityOf(tierN), cfg = { residentName:"", date:date || todayISO(), difficulty:t.difficulty, era:settings.era };
+    if (a.options) cfg.opts = savedOpts(a);
+    const count = a.singlePage ? 1 : settings.variations;
+    addBatch(a, cfg, newSeed(), count);
+    toast(`Added ${plural(count, "page", "pages")} of ${a.name} at the ${level(t)} level (Tier ${t.tier}). Your packet has ${queue.length}.`, "Review packet", openDrawer);
+  }
+  function openInGenerator(id){
+    const w = wing(), g = groupOf(w, S.sel), a = act(id); if (!w || !g || !a) return;
+    const t = F.acuityOf(g.acuity), rec = F.recommend(t.tier, have());
+    S.ctx = { wing:w.name, wingId:w.id, group:g.name, tier:t.tier, label:t.label, difficulty:t.difficulty, open:id,
+      recommended:rec.reduce((l, r) => l.concat(r.recommended.map(x => x.id)), []) };
+    if (a.categoryId === "cognicore"){ try { CogniLibrary.state().tier = t.supportTier; } catch (e){} location.hash = "#/coloring"; return; }
+    location.hash = "#/category/" + a.categoryId;
+  }
+  const context = () => S.ctx;
+  function clearContext(){ S.ctx = null; }
+
+  /* ---------- events ---------- */
+  function bind(){
+    root.addEventListener("click", onClick);
+    root.addEventListener("change", onChange);
+    root.addEventListener("submit", onSubmit);
+    root.addEventListener("keydown", onKey);
+    root.addEventListener("keyup", e => { if (e.key === " " && S.spaceUp){ S.spaceUp = false; e.preventDefault(); } });
+    root.addEventListener("focusout", e => { if (S.moving && e.target.classList && e.target.classList.contains("is-moving") && !(e.relatedTarget && e.relatedTarget.classList && e.relatedTarget.classList.contains("is-moving"))) setTimeout(() => { if (S.moving && document.activeElement !== root.querySelector(".is-moving")) endMove(false); }, 0); });
+    root.addEventListener("dragstart", e => {
+      const c = e.target.closest && e.target.closest('.fp-chip[draggable="true"]'); if (!c) return;
+      dragId = c.dataset.slot; e.dataTransfer.effectAllowed = "move";
+      try { e.dataTransfer.setData("text/plain", dragId); } catch (err){}
+      c.classList.add("is-dragging");
+    });
+    root.addEventListener("dragend", () => { dragId = ""; root.querySelectorAll(".is-dragging,.is-drop").forEach(el => el.classList.remove("is-dragging", "is-drop")); });
+    root.addEventListener("dragover", e => {
+      if (!dragId) return;
+      const cell = e.target.closest && e.target.closest("[data-date]"); if (!cell) return;
+      e.preventDefault(); e.dataTransfer.dropEffect = "move";
+      if (!cell.classList.contains("is-drop")){ root.querySelectorAll(".is-drop").forEach(el => el.classList.remove("is-drop")); cell.classList.add("is-drop"); }
+    });
+    root.addEventListener("dragleave", e => { const cell = e.target.closest && e.target.closest("[data-date]"); if (cell && !cell.contains(e.relatedTarget)) cell.classList.remove("is-drop"); });
+    root.addEventListener("drop", e => {
+      if (!dragId) return;
+      const cell = e.target.closest && e.target.closest("[data-date]"); if (!cell) return;
+      e.preventDefault();
+      const id = dragId; dragId = "";
+      doMove(id, cell.dataset.date);
+    });
+    const d = dialog();
+    d.addEventListener("click", e => { if (e.target === d) closeDialog(); });          // a click on the backdrop
+    d.addEventListener("close", () => { S.editing = null; const id = d.dataset.slot; d.dataset.slot = ""; restoreFocus(id); });
+  }
+  function onClick(e){
+    const t = e.target.closest("button, [data-go]"); if (!t || !root.contains(t) || t.disabled) return;
+    const ds = t.dataset;
+    if (ds.tab) return selectTab(ds.tab);
+    if (ds.sub) return selectSub(ds.sub);
+    if (ds.month != null){ if (t.getAttribute("aria-disabled") !== "true") setMonth(+ds.month); return; }
+    if (ds.go){ selectTab(ds.go); const b = root.querySelector(`.fp-tab[data-tab="${CSS.escape(ds.go)}"]`); if (b) b.focus(); return; }
+    if (ds.fill) return fill(ds.fill);
+    if (ds.slot){ if (S.moving) return; return openEditor(ds.slot); }
+    if (ds.add) return openEditor("", ds.add);
+    if (ds.day) return openDay(ds.day);
+    if (ds.sel){ S.sel = ds.sel; keepFocus(renderGroups); const hd = root.querySelector("#fpGH"); if (hd) announce(hd.textContent + " selected"); return; }
+    if (ds.recAdd){ const g = groupOf(wing(), S.sel); if (g) addToPacket(ds.recAdd, g.acuity); return; }
+    if (ds.recOpen) return openInGenerator(ds.recOpen);
+    switch (ds.act){
+      case "fill": return fill(S.tab);
+      case "clear": return clearMonth();
+      case "recal": return recal(groupIds(wing()));
+      case "recal-group": return recal([S.sel]);
+      case "dlg-close": return closeDialog();
+      case "slot-delete": return deleteSlot();
+      case "slot-packet": {
+        const w = wing(), s = S.editing && readPlan(w, S.month).slots.filter(x => x.id === S.editing.id)[0], g = s && groupOf(w, s.group);
+        if (s && g) addToPacket(s.activity, g.acuity, s.date);
+        return;
+      }
+      case "print-week": return printWeek();
+      case "print-month": return printMonth();
+      case "csv": return exportCsv();
+      case "ics": return exportIcs();
+      case "keep-example": writeFacility(Object.assign({}, fac, { example:false }), "Kept the example community", ""); return keepFocus(() => renderBody(false));
+      case "start-empty": {
+        if (!confirm("Start with an empty community? The example wings, groups and calendars are removed.")) return;
+        fac.wings.forEach(w => planKeysOf(w.id).forEach(k => { try { CG_LS.removeItem(k); } catch (err){} }));
+        writeFacility(Object.assign({}, fac, { wings:[], example:false, team:fac.team.map(m => Object.assign({}, m, { wings:[] })) }), "Started empty", "Removed the example community");
+        S.tab = "overview"; renderBar(); renderBody(true);
+        const inp = root.querySelector("#fpNewWing"); if (inp) inp.focus();
+        return;
+      }
+      case "group-del": {
+        const w = wing(), g = groupOf(w, S.sel); if (!g || !confirm(`Remove ${g.name}? Its sessions come off the calendar.`)) return;
+        saveWing(w.id, x => Object.assign({}, x, { groups:x.groups.filter(y => y.id !== g.id) }), "Removed a group", `${g.name} from ${w.name}`);
+        const plan = readPlan(w, S.month); writePlan(Object.assign({}, plan, { slots:plan.slots.filter(s => s.group !== g.id) }));
+        S.sel = ""; renderBar(); renderGroups();
+        const f = root.querySelector("#fpNewGroup") || root.querySelector(".fp-gcard"); if (f) f.focus();
+        toast(`${g.name} removed.`);
+        return;
+      }
+      case "wing-del": {
+        const w = wing(); if (!w || !confirm(`Remove ${w.name}, its groups and every month of its calendar from this computer?`)) return;
+        planKeysOf(w.id).forEach(k => { try { CG_LS.removeItem(k); } catch (err){} });
+        writeFacility(Object.assign({}, fac, { wings:fac.wings.filter(x => x.id !== w.id) }), "Removed a wing", w.name);
+        S.tab = "overview"; renderBar(); renderBody(true);
+        const b = root.querySelector('.fp-tab[data-tab="overview"]'); if (b) b.focus();
+        toast(`${w.name} removed.`);
+        return;
+      }
+      case "member-del": {
+        const m = fac.team.filter(x => x.id === ds.id)[0]; if (!m || m.id === fac.active) return;
+        writeFacility(Object.assign({}, fac, { team:fac.team.filter(x => x.id !== m.id) }), "Removed a team member", m.name);
+        renderBar(); keepFocus(() => renderBody(false));
+        const h = root.querySelector("#fpMemH"); if (h){ h.tabIndex = -1; h.focus(); }
+        return;
+      }
+      case "audit-csv": {
+        const csv = F.toCSV([["When", "Who", "Role", "What", "Detail"]].concat(fac.audit.slice().reverse().map(x => [x.t, x.who, F.ROLES[x.role].label, x.action, x.detail])));
+        download(`cognicopia-portal-audit-${todayISO()}.csv`, "﻿" + csv, "text/csv;charset=utf-8");
+        return;
+      }
+      case "wipe": {
+        if (!confirm("Remove the Facility Portal from this computer? Wings, groups, team, calendars and the audit trail are all removed. Resident profiles are not touched.")) return;
+        fac.wings.forEach(w => planKeysOf(w.id).forEach(k => { try { CG_LS.removeItem(k); } catch (err){} }));
+        try { CG_LS.removeItem(F.STORE_KEY); } catch (err){}
+        S.tab = "overview"; S.undo = null;
+        location.hash = "#/";
+        toast("The Facility Portal was removed from this computer.");
+        return;
+      }
+    }
+  }
+  function onChange(e){
+    const t = e.target, w = wing();
+    if (t.id === "fpRole"){
+      if (!fac.team.some(m => m.id === t.value)) return;
+      writeFacility(Object.assign({}, fac, { active:t.value }));
+      fixTab(); renderBar(); renderBody(true);
+      const sel = root.querySelector("#fpRole"); if (sel) sel.focus();
+      announce(`Now viewing as ${me().name}, ${F.ROLES[me().role].label}.`);
+      return;
+    }
+    if (t.id === "fpGroup"){ S.group = t.value; return keepFocus(renderCalendar); }
+    if (t.name === "fpLayout"){ S.cal = t.value; return keepFocus(renderCalendar); }
+    if (t.name === "fpTier") return setTier(+t.value);
+    if (t.id === "fpGName"){ const v = t.value.trim(); if (!v){ t.value = groupOf(w, S.sel).name; return; } updateGroup(x => Object.assign(x, { name:v.slice(0, 60) }), "Renamed a group", g => `${g.name} to ${v}`, true); return; }
+    if (t.id === "fpGSize"){ const n = Math.max(1, Math.min(60, Math.round(+t.value) || 1)); t.value = n; updateGroup(x => Object.assign(x, { size:n }), "Changed a group's size", g => `${g.name}: ${n} residents`, true); return; }
+    if (t.id === "fpGNotes"){ updateGroup(x => Object.assign(x, { notes:t.value }), "Changed a group's notes", g => g.name); return; }
+    if (t.dataset.person){
+      const id = t.dataset.person, on = t.checked;
+      updateGroup(x => Object.assign(x, { residents:on ? x.residents.concat([id]) : x.residents.filter(r => r !== id) }), on ? "Linked a resident to a group" : "Unlinked a resident from a group", g => g.name, true);
+      return;
+    }
+    if (t.id === "fpWeek"){ S.week = t.value; return keepFocus(renderPrint); }
+    if (t.name === "fpCopies"){ S.copies = t.value === "each" ? "each" : "master"; return keepFocus(renderPrint); }
+    if (t.dataset.pg){
+      const ids = Array.from(root.querySelectorAll("[data-pg]")).filter(i => i.checked).map(i => i.dataset.pg);
+      S.pick = { wing:w.id, ids }; return keepFocus(renderPrint);
+    }
+    if (t.dataset.cad) return saveCadence();
+    if (t.id === "fpWMin"){ const n = +t.value; saveWing(w.id, x => Object.assign({}, x, { minutes:n }), "Changed the session length", `${w.name}: ${n} minutes`); const sub = root.querySelector("#fpWingH + .fp-sub"); if (sub) sub.textContent = cadenceText(wing()); return; }
+    if (t.id === "fpWName"){
+      const v = t.value.trim().slice(0, 60); if (!v){ t.value = w.name; return; }
+      saveWing(w.id, x => Object.assign({}, x, { name:v }), "Renamed a wing", `${w.name} to ${v}`);
+      renderBar(); const h = root.querySelector("#fpWingH"); if (h) h.textContent = v;
+      return;
+    }
+    if (t.id === "fpFacName"){ settings.facility = t.value.trim().slice(0, 60); saveSettings(); audit("Renamed the community", settings.facility || "(no name)"); const h = root.querySelector(".fp-title"); if (h) h.textContent = settings.facility || "Your community"; return; }
+    if (t.dataset.mname){ const v = t.value.trim().slice(0, 60); const m = fac.team.filter(x => x.id === t.dataset.mname)[0]; if (!m) return; if (!v){ t.value = m.name; return; } updateMember(m.id, x => Object.assign(x, { name:v }), "Renamed a team member", `${m.name} to ${v}`); renderBar(); return; }
+    if (t.dataset.mrole){
+      const m = fac.team.filter(x => x.id === t.dataset.mrole)[0]; if (!m) return;
+      updateMember(m.id, x => Object.assign(x, { role:t.value }), "Changed a role", `${m.name}: ${F.ROLES[t.value].label}`);
+      fixTab(); renderBar(); keepFocus(() => renderBody(false));
+      return;
+    }
+    if (t.dataset.mwing){
+      const m = fac.team.filter(x => x.id === t.dataset.mwing)[0]; if (!m) return;
+      const on = t.checked, wid = t.value, wn = (fac.wings.filter(x => x.id === wid)[0] || { name:wid }).name;
+      updateMember(m.id, x => Object.assign(x, { wings:on ? x.wings.concat([wid]) : x.wings.filter(y => y !== wid) }), on ? "Gave a wing" : "Took away a wing", `${m.name}: ${wn}`);
+      return;
+    }
+    if (t.id === "fpSlAct"){ const why = root.querySelector("#fpSlWhy"), g = groupOf(w, root.querySelector("#fpSlGroup").value); if (why && g) why.textContent = whyText(t.value, g.acuity); return; }
+    if (t.id === "fpSlGroup"){ const g = groupOf(w, t.value), sel = root.querySelector("#fpSlAct"); if (g && sel){ const cur = sel.value; sel.innerHTML = activityOptions(g.acuity, cur); root.querySelector("#fpSlWhy").textContent = whyText(sel.value, g.acuity); } return; }
+  }
+  function onSubmit(e){
+    const f = e.target.closest("form[data-form]"); if (!f) return;
+    e.preventDefault();
+    const kind = f.dataset.form;
+    if (kind === "slot") return saveSlot(f);
+    if (kind === "wing-add"){
+      const inp = f.querySelector("input"), v = inp.value.trim().slice(0, 60); if (!v){ inp.focus(); return; }
+      if (fac.wings.length >= F.LIMITS.wings){ toast(`A community can have up to ${F.LIMITS.wings} wings here.`); return; }
+      const w = F.normalizeWing({ id:F.newId("w-"), name:v, groups:[] });
+      writeFacility(Object.assign({}, fac, { wings:fac.wings.concat([w]), example:false }), "Added a wing", v);
+      S.tab = w.id; S.sub = "groups"; renderBar(); renderBody(true);
+      const g = root.querySelector("#fpNewGroup"); if (g) g.focus();
+      toast(`${v} added. Next, add its resident groups and their tiers.`);
+      return;
+    }
+    if (kind === "group-add"){
+      const w = wing(), inp = f.querySelector("input"), v = inp.value.trim().slice(0, 60); if (!w || !v){ inp.focus(); return; }
+      const g = F.normalizeGroup({ id:F.newId("g-"), name:v, acuity:2, size:8 });
+      saveWing(w.id, x => Object.assign({}, x, { groups:x.groups.concat([g]) }), "Added a group", `${v} in ${w.name}`);
+      S.sel = g.id; renderBar(); renderGroups();
+      const tier = root.querySelector('input[name="fpTier"]:checked'); if (tier) tier.focus();
+      toast(`${v} added at Tier 2. Choose its tier to see what suits it.`);
+      return;
+    }
+    if (kind === "member-add"){
+      const v = f.querySelector("#fpNewMember").value.trim().slice(0, 60), role = f.querySelector("#fpNewRole").value; if (!v) return;
+      const m = F.normalizeMember({ id:F.newId("m-"), name:v, role, wings:[] });
+      writeFacility(Object.assign({}, fac, { team:fac.team.concat([m]) }), "Added a team member", `${v}, ${F.ROLES[m.role].label}`);
+      renderBar(); renderBody(false);
+      const inp = root.querySelector(`[data-mname="${CSS.escape(m.id)}"]`); if (inp) inp.focus();
+      return;
+    }
+  }
+  function onKey(e){
+    const t = e.target;
+    if (S.moving){
+      const k = e.key;
+      if (k === "Escape"){ e.preventDefault(); e.stopPropagation(); endMove(false); return; }
+      if (k === "Enter" || k === " "){ e.preventDefault(); if (k === " ") S.spaceUp = true; endMove(true); return; }
+      const step = { ArrowLeft:-1, ArrowRight:1, ArrowUp:wideNow ? -7 : -1, ArrowDown:wideNow ? 7 : 1, Home:-40, End:40 }[k];
+      if (step){ e.preventDefault(); moveCursor(step); }
+      return;
+    }
+    if (t.getAttribute && t.getAttribute("role") === "tab" && ["ArrowLeft", "ArrowRight", "Home", "End"].indexOf(e.key) >= 0){
+      const tabs = Array.from(t.parentNode.querySelectorAll('[role="tab"]')), i = tabs.indexOf(t);
+      const j = e.key === "Home" ? 0 : e.key === "End" ? tabs.length - 1 : (i + (e.key === "ArrowRight" ? 1 : -1) + tabs.length) % tabs.length;
+      e.preventDefault(); tabs.forEach((b, k) => { b.tabIndex = k === j ? 0 : -1; }); tabs[j].focus();
+      return;
+    }
+    if (e.key === " " && t.classList && t.classList.contains("fp-chip") && t.getAttribute("draggable") === "true"){ e.preventDefault(); S.spaceUp = true; startMove(t); }
+  }
+
+  return { render, context, clearContext, readFacility };
+})();
+</script>
 <script>
 "use strict";
 /* =====================================================================
@@ -9665,6 +11222,7 @@ const ICONS = {
   art:   '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22a10 10 0 1 1 10-10c0 3-2 4-4 4h-2a2 2 0 0 0-1 3.7A2 2 0 0 1 12 22z"/><circle cx="7.5" cy="10.5" r="1"/><circle cx="12" cy="7" r="1"/><circle cx="16.5" cy="10.5" r="1"/></svg>',
   planner:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/><path d="M8 13h3M13 13h3M8 17h3"/></svg>',
   journal:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2z"/><path d="M22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z"/></svg>',
+  facility:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18"/><path d="M5 21V6l7-3v18"/><path d="M19 21V10l-7-3"/><path d="M8 9h1M8 13h1M8 17h1M15 13h1M15 17h1"/></svg>',
   roster:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.6 3.3-5.5 6.5-5.5s5.7 1.9 6.5 5.5"/><path d="M16 5.5a3 3 0 0 1 0 6M18.5 14.8c1.7.8 2.7 2.5 3 5.2"/></svg>'
 };
 
@@ -9744,7 +11302,8 @@ function addBatch(act, cfg, batchSeed, count){
 
 /* ---------- 11. Views + router ---------- */
 const view = $("#view");
-const routes = { "": renderHome, "category": renderCategory, "settings": renderSettings, "planner": renderPlanner, "journal": renderJournal, "roster": renderRoster, "coloring": renderColoring, "reminiscence": renderReminiscence, "clinical": renderClinical, "heirloom": renderHeirloom };
+const routes = { "": renderHome, "category": renderCategory, "settings": renderSettings, "planner": renderPlanner, "journal": renderJournal, "roster": renderRoster, "coloring": renderColoring, "reminiscence": renderReminiscence, "clinical": renderClinical, "heirloom": renderHeirloom, "facility": renderFacilityPortal };
+function renderFacilityPortal(arg){ FacilityUI.render(view, arg); }
 function renderHeirloom(){ HeirloomUI.render(view); }
 function renderClinical(){ ClinicalUI.render(view); }
 function renderReminiscence(){ ReminiscenceUI.render(view); }
@@ -9758,9 +11317,13 @@ function parseHash(){
   return { name: parts[0] || "", arg: decodeURIComponent(parts[1] || "") };
 }
 let storeOpen = false;          // nothing about a resident shows until the encrypted store has opened
+let lastBuilderHash = "#/";     // where the Facility view switch returns to
 function router(){
   if (!storeOpen) return;
   const { name, arg } = parseHash();
+  view.classList.toggle("view-wide", name === "facility");        // the portal's calendar uses the width
+  $("#fpToggle").setAttribute("aria-checked", String(name === "facility"));
+  if (name !== "facility") lastBuilderHash = location.hash || "#/";
   (routes[name] || renderHome)(arg);
   highlightNav(name, arg);
   closeSidebar();
@@ -9783,7 +11346,7 @@ function highlightNav(name, arg){
   if (name === "coloring") arg = "cognicore", name = "category";
   const el = name === "category" ? document.querySelector(`.sb-link[data-cat="${CSS.escape(arg)}"]`)
            : name === "settings" ? document.querySelector('.sb-link[data-route="settings"]')
-           : name === "planner" || name === "journal" || name === "roster" || name === "reminiscence" || name === "clinical" || name === "heirloom" ? document.querySelector(`.sb-link[data-route="${name}"]`) : null;
+           : name === "planner" || name === "journal" || name === "roster" || name === "reminiscence" || name === "clinical" || name === "heirloom" || name === "facility" ? document.querySelector(`.sb-link[data-route="${name}"]`) : null;
   if (el) el.setAttribute("aria-current", "page");
 }
 function renderFacility(){
@@ -9819,6 +11382,7 @@ function renderHome(){
       ${tool("#/reminiscence", ICONS.journal, "Reminiscence Cards", "Cards about a resident’s own work, hometown region and best-remembered years, each with three conversation starters, a song from their era and something to hold.", ["Era × region × vocation", "Caregiver cues"])}
       ${tool("#/heirloom", ICONS.journal, "Memory Digest & Book", "Keep a resident’s words, stories and finished coloring pages as they happen; send the family a monthly digest, and gather a year into a print-on-demand hardcover.", ["Monthly digest", "Hardcover PDF"])}
       ${tool("#/clinical", ICONS.journal, "Session Notes (SLP)", "GDS and FAST staging mapped to support tiers, a session log, and SOAP notes built only from what you record, for the Full Administrative Binder.", ["Staff-recorded SOAP", "Code checks"])}
+      ${tool("#/facility", ICONS.facility, "Facility Portal", "For activity directors: wings and resident groups by acuity tier, recommendations for each tier across the six pillars, a balanced month of sessions in one click, and a week of group packets printed at once.", ["4 acuity tiers", "Month scheduler", "Week packets"])}
       ${tool("#/roster", ICONS.roster, "Resident roster", "Every saved resident in one list. Choose a resident, choose a book, and print it at their own support tier, line weight and contrast.", ["3 clicks to print", "Search by name or unit"])}
     </div>
     <h2 style="margin-top:32px">Activity categories</h2>
@@ -9852,19 +11416,29 @@ function renderCategory(id){
     openConfig(cat.activities[0].id, false);
     return;
   }
+  // Opened from the Facility Portal for a group: what suits its tier comes first, marked.
+  const fx = typeof FacilityUI !== "undefined" ? FacilityUI.context() : null;
+  const fxRank = a => { const i = fx ? fx.recommended.indexOf(a.id) : -1; return i < 0 ? 1e3 : i; };
+  const acts = fx ? cat.activities.slice().sort((x, y) => fxRank(x) - fxRank(y)) : cat.activities;
   const cards = cat.activities.length
-    ? cat.activities.map(a => `<button class="card" type="button" data-act="${a.id}" aria-pressed="false" aria-controls="config">
+    ? acts.map(a => { const rec = fx && fxRank(a) < 1e3;
+        return `<button class="card${fx && !rec ? " fp-dim" : ""}" type="button" data-act="${a.id}" aria-pressed="false" aria-controls="config">
         <span class="ic">${a.icon}</span><b>${esc(a.name)}</b><span class="desc">${esc(a.desc)}</span>
-        <span class="meta"><span class="pill live">Ready</span>${a.themed ? '<span class="pill">Era themes</span>' : ""}</span></button>`).join("")
+        <span class="meta">${fx ? (rec ? `<span class="pill fp-pill-rec">Recommended for Tier ${fx.tier}</span>` : `<span class="pill">Not calibrated for Tier ${fx.tier}</span>`) : '<span class="pill live">Ready</span>'}${a.themed ? '<span class="pill">Era themes</span>' : ""}</span></button>`; }).join("")
     : cat.planned.map(n => `<div class="card is-soon" aria-disabled="true"><b>${esc(n)}</b><span class="meta"><span class="pill">Coming soon</span></span></div>`).join("");
   view.innerHTML = `
     <p class="eyebrow">Category</p>
     <h1 class="view-title" tabindex="-1">${esc(cat.name)}</h1>
     <p class="lede">${esc(cat.blurb)}</p>
+    ${fx ? `<div class="fp-ctx" role="status"><p>For <b>${esc(fx.group)}</b> in ${esc(fx.wing)}: <b>${esc(fx.label)}</b>. Activities calibrated for the tier come first and print at the ${esc(DIFFICULTIES[fx.difficulty].label.toLowerCase())} level.</p><a href="#/facility/${encodeURIComponent(fx.wingId)}">Back to the portal</a><button type="button" id="fxClear">Show everything</button></div>` : ""}
     <section aria-label="Activities"><div class="card-grid">${cards}</div></section>
     ${cat.activities.length ? "" : '<p class="callout">These activities are being built. Word &amp; Language Activities are ready to use now.</p>'}
     <section class="config" id="config" hidden aria-live="polite"></section>`;
   view.querySelectorAll("button.card[data-act]").forEach(btn => btn.addEventListener("click", () => openConfig(btn.dataset.act)));
+  if (fx){
+    $("#fxClear").addEventListener("click", () => { FacilityUI.clearContext(); renderCategory(id); const h = view.querySelector("h1"); if (h) h.focus(); });
+    if (fx.open && ACT_INDEX[fx.open] && ACT_INDEX[fx.open].categoryId === id){ const open = fx.open; fx.open = ""; openConfig(open); }
+  }
 }
 
 /* ---- Activity-specific options (the `options` array on an activity) ---- */
@@ -9963,6 +11537,7 @@ function openConfig(actId, scroll){
   previewSeed = newSeed();
   view.querySelectorAll("button.card[data-act]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.act === actId)));
   const box = $("#config");
+  const fxc = typeof FacilityUI !== "undefined" ? FacilityUI.context() : null, diffDefault = fxc ? fxc.difficulty : settings.difficulty;
   box.hidden = false;
   box.innerHTML = `
     <div class="config-grid">
@@ -9984,7 +11559,8 @@ function openConfig(actId, scroll){
           <div class="field"><label for="cfgDate">Date</label><input id="cfgDate" type="date" value="${todayISO()}"></div>
         </div>`}
         <fieldset class="field"><legend>Difficulty</legend>
-          <div class="seg">${Object.keys(DIFFICULTIES).map(k => `<label><input type="radio" name="cfgDiff" value="${k}" ${k === settings.difficulty ? "checked" : ""}><span>${DIFFICULTIES[k].label}</span></label>`).join("")}</div>
+          <div class="seg">${Object.keys(DIFFICULTIES).map(k => `<label><input type="radio" name="cfgDiff" value="${k}" ${k === diffDefault ? "checked" : ""}><span>${DIFFICULTIES[k].label}</span></label>`).join("")}</div>
+          ${fxc ? `<p class="hint">Set for ${esc(fxc.group)}: ${esc(fxc.label)}.</p>` : ""}
         </fieldset>
         ${act.themed ? `<div class="field"><label for="cfgEra">Theme</label>
           <select id="cfgEra">${Object.keys(ERAS).map(k => `<option value="${k}" ${k === settings.era ? "selected" : ""}>${ERAS[k]}</option>`).join("")}</select>
@@ -10335,6 +11911,7 @@ window.addEventListener("afterprint", () => {
   ov.addEventListener("click", closeSidebar);
 
   $("#openPacket").addEventListener("click", openDrawer);
+  $("#fpToggle").addEventListener("click", () => { location.hash = parseHash().name === "facility" ? lastBuilderHash : "#/facility"; });
   // Home: the main landing page is a separate file (index.html), so this
   // is a page change, not a view swap. Close any open panel and make sure
   // the packet and settings are written to this computer first (they
@@ -10381,6 +11958,8 @@ window.addEventListener("afterprint", () => {
     if (e.key === "cgb_queue"){ queue = readQueue(); renderCounts(); if (drawerOpen) renderQueue(); }
     else if (e.key.indexOf("cognicopia_resident_") === 0 && /^(roster|coloring)$/.test(parseHash().name)
              && !document.querySelector("#view :is(input, select, textarea, details[open]):focus-within")) router();   // not while someone is typing here
+    else if (e.key.indexOf("cognicopia_facility") === 0 && parseHash().name === "facility"
+             && !document.querySelector("#view :is(input, select, textarea, details[open]):focus-within, #view dialog[open]")) router();
   });
 })();
 </script>

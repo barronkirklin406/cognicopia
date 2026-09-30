@@ -110,6 +110,8 @@ export const GENERATORS = [
     desc: "A personalized year-long memory book, with a separate care companion for staff and family.", meta: ["Memory book", "Care companion"] },
   { key: "journals", label: "Life Story Journals",     href: "cognitive-journals.html", icon: "journal",
     desc: "The Cognitive Life Journal: a life story in four sections, from early roots to daily comfort.", meta: ["4 sections", "Family notes"] },
+  { key: "facility", label: "Facility Portal",         href: "builder.html#/facility", icon: "building",
+    desc: "For activity directors: wings and resident groups by acuity tier, a balanced month of six-pillar sessions in one click, and a week of group packets printed at once.", meta: ["4 acuity tiers", "Month scheduler", "Week packets"] },
   { key: "roster",   label: "Resident Roster",         href: "builder.html#/roster",   icon: "roster",
     desc: "Every saved resident in one list: choose a resident, choose a book, and print at their tier.", meta: ["3 clicks to print"] },
   { key: "profile",  label: "Resident Profiles",       href: "profile.html",           icon: "profile",

@@ -60,7 +60,8 @@ export const SEALED_PREFIXES: readonly string[] = [
   "cgb_settings",               // Packet Builder settings (they include a default resident name)
   "cognicopia_clinical_",       // SLP session notes (slpClinicalService)
   "cognicopia_heirloom_",       // monthly memory digest entries
-  "cognicopia_remin_"           // reminiscence responses
+  "cognicopia_remin_",          // reminiscence responses
+  "cognicopia_facility"         // the Facility Portal: wings, groups, team, audit trail and each wing's month schedules
 ];
 export const isSealed = (name: string): boolean => SEALED_PREFIXES.some(p => name.startsWith(p));
 

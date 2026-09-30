@@ -529,5 +529,145 @@ group("heirloomService", () => {
   ok(H.coverSpec({ width:999, height:-1, spine:9, wrap:9 }).width === 40, "cover numbers are bounded");
 });
 
+/* 8. Facility planner: acuity tiers, recommendations, the month scheduler, moves, packets and exports. */
+group("facilityPlanner", () => {
+  const F = sandbox.CogniFacility;
+  ok(F && typeof F.autoPopulate === "function", "CogniFacility is not loaded");
+  const J = x => JSON.stringify(x);
+  // acuity tiers and what each prints at
+  ok(J(F.ACUITY.map(a => a.difficulty)) === '["early","moderate","advanced","moderate"]' && J(F.ACUITY.map(a => a.name)) === '["Mild Support","Moderate Engagement","Advanced Sensory","Universal Group"]', "the four tiers and their print levels");
+  ok(F.acuityOf(0).tier === 2 && F.acuityOf(9).tier === 2 && F.acuityOf(NaN).tier === 2 && F.acuityOf(3).tier === 3 && F.acuityOf("4").tier === 4, "a value that is not a tier reads as Tier 2");
+  ok(J(F.PILLARS.map(p => p.name)) === '["Coloring","Numbers","Words","Letters","Movement","Music"]', "the six pillars in their fixed order");
+  // recommendations: something calibrated in every pillar at every tier, best fits first
+  for (const t of [1, 2, 3, 4]){
+    const rec = F.recommend(t);
+    ok(rec.length === 6 && rec.every(r => r.recommended.length >= 1), `tier ${t}: a recommendation in every pillar`);
+    ok(rec.every(r => r.recommended.every(a => a.tiers.includes(t)) && r.other.every(a => !a.tiers.includes(t))), `tier ${t}: recommended are calibrated for the tier, the rest are not`);
+    ok(rec.every(r => r.recommended.length + r.other.length === F.CATALOG.filter(a => a.pillar === r.pillar.id).length), `tier ${t}: nothing lost`);
+    if (t === 3) ok(rec.every(r => r.recommended[0].sensory), "tier 3 leads with sensory activities: " + rec.map(r => r.recommended[0].id));
+    if (t === 4) ok(rec.every(r => r.recommended[0].group), "tier 4 leads with group activities: " + rec.map(r => r.recommended[0].id));
+    ok(rec.every(r => !r.recommended.some((a, i) => i && r.recommended[0].best.indexOf(t) < 0 && a.best.indexOf(t) >= 0)), `tier ${t}: best fits first`);
+  }
+  const only = F.recommend(2, ["lyric-sheet", "word-search"]);
+  ok(only.filter(r => r.recommended.length).map(r => r.pillar.id).join() === "words,music", "only activities this build has are offered");
+  // normalizing: bounds, a director always there, times cleaned
+  const big = F.normalizeFacility({ wings:Array.from({ length:30 }, (_, i) => ({ id:"w" + i, name:"  Wing\u0007 " + i + "x".repeat(90), cadence:{ weekday:["25:00", "05:00", "10:00", "10:00", "09:00", "11:00", "13:00", "15:00", "16:00"], weekend:"no" },
+    groups:Array.from({ length:20 }, (_, k) => ({ id:k % 2 ? "same" : "g" + k, name:"Group " + k, acuity:k % 6, size:k * 10 })) })), team:[{ id:"m1", name:"Pat", role:"coordinator", wings:["w1", "nope"] }], active:"ghost" });
+  ok(big.wings.length === 24 && big.wings[0].name.length === 60 && !/[\u0000-\u001f]/.test(big.wings[0].name), "wings bounded, names cleaned");
+  ok(J(big.wings[0].cadence.weekday) === '["09:00","10:00","11:00","13:00"]' && J(big.wings[0].cadence.weekend) === '["10:30"]', "session times checked, at most 4 a day: " + J(big.wings[0].cadence));
+  const g0 = big.wings[0].groups;
+  ok(g0.length === 12 && new Set(g0.map(g => g.id)).size === 12 && g0.every(g => [1, 2, 3, 4].includes(g.acuity) && g.size >= 1 && g.size <= 60), "groups bounded, ids unique, tiers and sizes valid");
+  ok(big.team[0].role === "director" && big.active === big.team[0].id && J(big.team[1].wings) === '["w1"]', "a director is always there; team wings must exist");
+  // permissions
+  const demo = F.demoFacility(), dir = demo.team[0], coord = demo.team[1], staff = demo.team[2];
+  ok(F.can(dir, "manageTeam") && F.can(coord, "editSchedule", "w-mcw") && !F.can(coord, "editSchedule", "w-ale") && !F.can(coord, "manageWings")
+    && F.can(staff, "print", "w-ale") && !F.can(staff, "editSchedule", "w-ale") && !F.can(staff, "view", "w-mcw"), "roles: director everything, coordinators their wings, staff view and print");
+  ok(F.visibleWings(demo, coord).map(w => w.id).join() === "w-mcw" && F.visibleWings(demo, dir).length === 2, "each role sees its wings");
+  const au = F.withAudit(demo, "Changed tier", "Sensory Room to Tier 2", new Date("2026-11-02T10:00:00Z"));
+  ok(au.audit.length === 1 && au.audit[0].who === "Activity Director" && demo.audit.length === 0, "changes are written to the audit trail");
+  // dates
+  ok(F.monthDays("2026-11").length === 30 && F.monthDays("2028-02").length === 29 && F.monthDays("2026-13").length === 0, "month days");
+  ok(F.weekOf("2026-11-01").start === "2026-10-26" && F.weekOf("2026-11-02").start === "2026-11-02" && F.shiftMonth("2026-12", 1) === "2027-01", "weeks start on Monday");
+  for (const m of ["2026-02", "2026-11", "2027-02", "2026-08"]){
+    const grid = F.monthGrid(m), flat = grid.flat();
+    ok(grid.length >= 4 && grid.length <= 6 && grid.every(w => w.length === 7 && F.weekday(w[0].date) === 1) && flat.filter(d => d.inMonth).length === F.monthDays(m).length, m + ": the grid is whole weeks from Monday");
+  }
+  ok(F.fmtTime("14:30") === "2:30 PM" && F.fmtTime("00:05") === "12:05 AM", "times read as clock times");
+  // the month, filled in one click
+  const wing = demo.wings[0], month = "2026-11", days = F.monthDays(month);
+  const t0 = Date.now(), plan = F.autoPopulate({ v:1, wing:wing.id, month, slots:[] }, wing, { seed:"a" }), fillMs = Date.now() - t0;
+  const perDay = d => F.isWeekend(d) ? wing.cadence.weekend.length : wing.cadence.weekday.length;
+  const expect = days.reduce((n, d) => n + perDay(d), 0);
+  const tierOf = new Map(wing.groups.map(g => [g.id, g.acuity]));
+  const checkPlan = (p, tag, fresh) => {
+    for (const g of wing.groups){
+      const mine = p.slots.filter(s => s.group === g.id), b = F.balance(p, [g.id]);
+      ok(mine.length === expect, `${tag} ${g.name}: ${mine.length} sessions, expected ${expect}`);
+      ok(b.spread <= 1 && b.covered === days.length, `${tag} ${g.name}: pillars within one session of each other (${J(b.counts)}), every day covered`);
+      ok(days.every(d => { const ps = mine.filter(s => s.date === d).map(s => s.pillar); return new Set(ps).size === ps.length; }), `${tag} ${g.name}: never the same pillar twice in a day`);
+      ok(mine.every(s => F.fitsTier(s.activity, tierOf.get(s.group))), `${tag} ${g.name}: every activity calibrated for the group's tier`);
+      for (const r of F.recommend(g.acuity)){
+        if (!fresh || r.recommended.length < 2) continue;       // a locked session can pin the same activity next to one
+        const seq = mine.filter(s => s.pillar === r.pillar.id).map(s => s.activity);
+        ok(seq.every((a, i) => !i || a !== seq[i - 1]), `${tag} ${g.name} ${r.pillar.id}: an activity is not repeated back to back when another fits`);
+      }
+    }
+  };
+  checkPlan(plan, "fill", true);
+  ok(J(F.autoPopulate({ v:1, wing:wing.id, month, slots:[] }, wing, { seed:"a" })) === J(plan) && J(F.autoPopulate({ v:1, wing:wing.id, month, slots:[] }, wing, { seed:"b" }).slots.map(s => s.activity)) !== J(plan.slots.map(s => s.activity)), "the same seed fills the same month; another seed, another month");
+  ok(F.planIssues(plan, wing).length === 0, "a filled month has nothing to flag");
+  // calming pillars late in the day
+  const late = F.normalizeWing({ id:"w-late", name:"Late", groups:[{ id:"g1", acuity:2 }, { id:"g2", acuity:4 }], cadence:{ weekday:["09:30", "16:30"], weekend:["09:30", "16:30"] } });
+  const lp = F.autoPopulate({ v:1, wing:"w-late", month, slots:[] }, late, { seed:"x" }), lateS = lp.slots.filter(s => s.time === "16:30");
+  const calm = lateS.filter(s => ["music", "coloring", "words"].includes(s.pillar)).length;
+  ok(calm > lateS.length - calm, `late sessions lean calming: ${calm} of ${lateS.length}`);
+  // three a day: the day's pillars are balanced first, then the calming ones go last
+  const three = F.normalizeWing({ id:"w-3", name:"Three", groups:[{ id:"g1", acuity:2 }, { id:"g2", acuity:1 }], cadence:{ weekday:["10:00", "14:30", "16:15"], weekend:[] } });
+  const tp = F.autoPopulate({ v:1, wing:"w-3", month, slots:[] }, three, { seed:"t" }), last = tp.slots.filter(s => s.time === "16:15");
+  const calm3 = last.filter(s => ["music", "coloring", "words"].includes(s.pillar)).length, first3 = tp.slots.filter(s => s.time === "10:00"), energy = first3.filter(s => ["movement", "numbers", "letters"].includes(s.pillar)).length;
+  ok(calm3 >= last.length * 0.8 && energy >= first3.length * 0.6 && three.groups.every(g => F.balance(tp, [g.id]).spread <= 1), `three a day: ${calm3} of ${last.length} late sessions calming, ${energy} of ${first3.length} morning ones energizing, still balanced`);
+  // locked sessions stay; other groups untouched
+  const locked = plan.slots.filter((s, i) => i % 9 === 0).map(s => Object.assign({}, s, { locked:true }));
+  const withLocks = Object.assign({}, plan, { slots:plan.slots.map(s => locked.find(l => l.id === s.id) || s) });
+  const refill = F.autoPopulate(withLocks, wing, { seed:"c" });
+  ok(locked.every(l => refill.slots.some(s => J(s) === J(l))), "every locked session is kept exactly");
+  checkPlan(refill, "refill");
+  const one = F.autoPopulate(withLocks, wing, { seed:"d", groups:["g-sensory"] });
+  ok(J(one.slots.filter(s => s.group === "g-garden")) === J(withLocks.slots.filter(s => s.group === "g-garden")), "filling one group leaves the others as they were");
+  ok(F.clearUnlocked(withLocks).slots.length === locked.length && F.clearUnlocked(withLocks, ["g-sensory"]).slots.every(s => s.locked || s.group === "g-garden"), "clearing keeps locked sessions");
+  // moves and swaps
+  const a = plan.slots.find(s => s.group === "g-sensory" && s.date === "2026-11-02" && s.time === "10:00"), b2 = plan.slots.find(s => s.group === "g-sensory" && s.date === "2026-11-04" && s.time === "10:00");
+  const mv = F.moveSlot(plan, a.id, "2026-11-04", undefined, true);
+  const a2 = mv.plan.slots.find(s => s.id === a.id), b3 = mv.plan.slots.find(s => s.id === b2.id);
+  ok(mv.swapped && mv.swapped.id === b2.id && a2.date === "2026-11-04" && b3.date === "2026-11-02" && a2.locked && b3.locked && mv.plan.slots.length === plan.slots.length, "moving onto a group's session swaps the two, and locks both");
+  ok(F.moveSlot(plan, a.id, "2026-12-01").plan === plan && F.moveSlot(plan, a.id, a.date).plan === plan && F.moveSlot(plan, "nope", "2026-11-03").plan === plan, "moves outside the month, onto itself or of nothing change nothing");
+  const mt = F.moveSlot(plan, a.id, "2026-11-03", "11:15");
+  ok(!mt.swapped && mt.plan.slots.find(s => s.id === a.id).time === "11:15" && !mt.plan.slots.find(s => s.id === a.id).locked, "a move to a free time just moves");
+  // editing a session
+  const clash = Object.assign({}, a, { date:b2.date });
+  ok(F.updateSlot(plan, clash) === plan && F.clashOf(plan, clash).id === b2.id, "an edit onto the group's other session is refused");
+  ok(F.updateSlot(plan, Object.assign({}, a, { activity:"not-real" })) === plan && F.updateSlot(plan, Object.assign({}, a, { date:"2026-11-31" })) === plan, "bad activities and days are refused");
+  const added = F.updateSlot(plan, { id:"s-new1", date:"2026-11-02", time:"19:00", group:"g-sensory", pillar:"numbers", activity:"lyric-sheet", locked:true, note:"Bring the song cards. ".repeat(20) });
+  const ns = added.slots.find(s => s.id === "s-new1");
+  ok(added.slots.length === plan.slots.length + 1 && ns.pillar === "music" && ns.note.length === 140 && ns.locked, "adding a session: its pillar follows its activity, notes are bounded");
+  ok(F.removeSlot(added, "s-new1").slots.length === plan.slots.length, "removing a session");
+  // a changed tier shows up as sessions to look at again
+  const moved = F.normalizeWing(Object.assign({}, wing, { groups:wing.groups.map(g => g.id === "g-sensory" ? Object.assign({}, g, { acuity:1 }) : g) }));
+  const issues = F.planIssues(plan, moved);
+  ok(issues.length > 0 && issues.every(i => i.kind === "tier" && plan.slots.find(s => s.id === i.slot).group === "g-sensory"), "after a tier change the sessions that no longer fit are flagged");
+  const lockOne = Object.assign({}, plan, { slots:plan.slots.map(s => s.id === issues[0].slot ? Object.assign({}, s, { locked:true }) : s) });
+  const rc = F.recalibrate(lockOne, moved);
+  ok(rc.changed === issues.length - 1 && F.planIssues(rc.plan, moved).map(i => i.slot).join() === issues[0].slot, "recalibrating swaps every unlocked session that no longer fits, and leaves the locked one: " + rc.changed + " of " + issues.length);
+  ok(rc.plan.slots.every((s, i) => { const o = lockOne.slots.find(x => x.id === s.id); return o && o.date === s.date && o.time === s.time && o.pillar === s.pillar && o.group === s.group; }) && J(F.balance(rc.plan).counts) === J(F.balance(plan).counts), "recalibrating keeps every day, time and pillar, so the balance too");
+  ok(F.demoFacility().example === true && F.normalizeFacility({}).example === false && F.normalizeFacility({ example:"yes" }).example === false, "the example community is marked as such");
+  const dup = F.updateSlot(plan, { id:"s-dup", date:a.date, time:"19:00", group:a.group, pillar:a.pillar, activity:a.activity, locked:false, note:"" });
+  ok(F.planIssues(dup, wing).some(i => i.kind === "repeat" && i.slot === "s-dup"), "a pillar twice in a day is flagged");
+  // plans read back from storage are checked
+  const np = F.normalizePlan({ slots:plan.slots.concat([Object.assign({}, a, { id:"s-x1" }), Object.assign({}, a, { id:"s-x2", date:"2026-10-31" }), Object.assign({}, a, { id:"s-x3", activity:"zzz", time:"08:00" }), Object.assign({}, a, { id:"s-x4", group:"g-gone", time:"08:00" })]) }, wing.id, month, wing.groups.map(g => g.id));
+  ok(np.slots.length === plan.slots.length, "stored plans drop duplicates, other months, unknown activities and removed groups: " + np.slots.length);
+  // a week's packets
+  const wk = F.weekOf("2026-11-09"), master = F.weekPackets(wing, plan.slots, wk.start, "master"), each = F.weekPackets(wing, plan.slots, wk.start, "each");
+  const weekSessions = wk.days.reduce((n, d) => n + perDay(d), 0);
+  ok(master.length === 2 && master.every(p => p.sessions.length === weekSessions && p.pages === 1 + weekSessions), "a week's master packets: a cover and a page per session, per group");
+  ok(each.every(p => p.pages === 1 + weekSessions * p.group.size && p.tier.tier === p.group.acuity), "copies for every participant");
+  ok(F.weekPackets(wing, plan.slots, "2026-12-14", "master").length === 0, "a week with nothing scheduled prints nothing");
+  // exports
+  ok(F.toCSV([["=SUM(A1)", "a,b", 'say "hi"', -5, "+1", "line\nbreak"]]) === `'=SUM(A1),"a,b","say ""hi""",-5,'+1,"line\nbreak"\r\n`, "CSV: quoted, and formulas neutralized: " + J(F.toCSV([["=SUM(A1)", "a,b", 'say "hi"', -5, "+1", "line\nbreak"]])));
+  const longName = "Sing-along; Café classics, with \\ everyone \u2615 ".repeat(4);
+  const ics = F.toICS([{ uid:"s-1", date:"2026-11-02", time:"23:50", minutes:30, summary:longName, description:"Line one\nLine two", category:"Music" }], "Memory Care West, November", new Date("2026-11-01T08:00:00Z"));
+  const phys = ics.split("\r\n");
+  ok(ics.endsWith("\r\n") && phys[0] === "BEGIN:VCALENDAR" && phys.includes("END:VCALENDAR") && phys.every(l => new TextEncoder().encode(l).length <= 75), "iCalendar: CRLF lines of at most 75 octets");
+  const unfolded = ics.replace(/\r\n /g, "");
+  ok(unfolded.includes("DTSTART:20261102T235000") && unfolded.includes("DTEND:20261103T002000") && unfolded.includes("DTSTAMP:20261101T080000Z") && unfolded.includes("UID:s-1@cognicopia.local"), "iCalendar: times, a session that ends after midnight, the stamp and uid");
+  const BS = String.fromCharCode(92), icsText = t => t.split(BS).join(BS + BS).split(";").join(BS + ";").split(",").join(BS + ",");
+  ok(unfolded.includes("SUMMARY:" + icsText(longName)) && unfolded.includes("DESCRIPTION:Line one" + BS + "nLine two") && unfolded.includes("X-WR-CALNAME:Memory Care West" + BS + ", November"), "iCalendar: text escaped and folded without losing a character");
+  // a big community fills quickly
+  const huge = F.normalizeWing({ id:"w-big", name:"Big", groups:Array.from({ length:12 }, (_, k) => ({ id:"g" + k, name:"Group " + k, acuity:1 + k % 4, size:20 })), cadence:{ weekday:["09:00", "11:00", "14:00", "16:00"], weekend:["09:00", "11:00", "14:00", "16:00"] } });
+  const t1 = Date.now(), hp = F.autoPopulate({ v:1, wing:"w-big", month:"2026-12", slots:[] }, huge, { seed:"z" }), bigMs = Date.now() - t1;
+  ok(hp.slots.length === 12 * 31 * 4 && hp.slots.length <= F.LIMITS.slots && huge.groups.every(g => F.balance(hp, [g.id]).spread <= 1), "12 groups, 4 sessions a day, 31 days: " + hp.slots.length + " sessions, balanced");
+  ok(bigMs < 1000, "filling 1,488 sessions took " + bigMs + " ms");
+  sandbox.__facStats = `a month for 2 groups in ${fillMs} ms, 1,488 sessions in ${bigMs} ms`;
+});
+
 if (fails.length){ console.log(`services check FAILED: ${fails.length} problem(s), ${pass} passed\n  - ` + fails.slice(0, 30).join("\n  - ")); process.exit(1); }
-console.log(`services check passed: ${pass} checks (${tscNote}; slowest page ${sandbox.__dveWorst} ms; 300 sealed residents open in ${sandbox.__storeMs} ms; ${sandbox.__remStats})`);
+console.log(`services check passed: ${pass} checks (${tscNote}; slowest page ${sandbox.__dveWorst} ms; 300 sealed residents open in ${sandbox.__storeMs} ms; ${sandbox.__remStats}; ${sandbox.__facStats})`);

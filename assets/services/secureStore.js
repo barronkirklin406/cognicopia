@@ -16,7 +16,8 @@ const SEALED_PREFIXES = [
     "cgb_settings",
     "cognicopia_clinical_",
     "cognicopia_heirloom_",
-    "cognicopia_remin_"
+    "cognicopia_remin_",
+    "cognicopia_facility"
 ];
 const isSealed = (name)=>SEALED_PREFIXES.some((p)=>name.startsWith(p));
 const PBKDF2_ROUNDS = 600000;
