@@ -12,7 +12,9 @@
         and its license ships with it;
      4. every file the offline service worker pre-caches exists, and so
         does every icon in the web manifest;
-     5. the server file parses, and the planner and journal checks pass;
+     5. the server file parses, and the planner, journal, TypeScript
+        services and CogniCore coloring checks pass (the coloring check
+        also proves the library, catalog and browser bundle are current);
      6. the site navigation matches scripts/site-nav.mjs (npm run nav), and
         every relative link and asset on every page points at a file that
         exists (a folder means its index.html).
@@ -88,6 +90,12 @@ step("the packet PDFs embed Atkinson Hyperlegible", () => {
   must(h.indexOf('<script id="pdflib">') < h.indexOf('<script id="pdffont">'), "pdffont must follow the PDF library");
   ["normal", "bold", "italic", "bolditalic"].forEach(s => must(new RegExp(s + ':"[A-Za-z0-9+/=]{20000,}"').test(js), "missing " + s));
 });
+step("the shared PDF library matches the packet tool's", () => {
+  // assets/vendor/*.js are the packet tool's jsPDF and PDF font, shared with the Packet Builder
+  const h = read("index.html"), inline = id => (new RegExp('<script id="' + id + '">([\\s\\S]*?)</script>').exec(h) || [])[1];
+  must(inline("pdflib") === read("assets/vendor/jspdf.umd.min.js"), "assets/vendor/jspdf.umd.min.js differs from index.html's pdflib");
+  must(inline("pdffont") === read("assets/vendor/jspdf-atkinson.js"), "assets/vendor/jspdf-atkinson.js differs from index.html's pdffont");
+});
 step("the font license ships with the fonts", () => { must(exists("fonts/OFL.txt"), "fonts/OFL.txt missing"); must(/SIL OPEN FONT LICENSE/i.test(read("fonts/OFL.txt")), "not the OFL"); });
 
 /* 4. offline files */
@@ -108,7 +116,7 @@ step("every web manifest icon exists", () => {
 
 /* 5. server and the automated checks */
 step("server.js parses", () => { execFileSync(process.execPath, ["--check", path.join(ROOT, "server.js")]); });
-for (const s of ["check-life-planner.mjs", "check-life-journal.mjs"]) step(s, () => {
+for (const s of ["check-life-planner.mjs", "check-life-journal.mjs", "check-services.mjs", "check-coloring.mjs"]) step(s, () => {
   const out = execFileSync(process.execPath, [path.join(ROOT, "scripts", s)], { encoding: "utf8" }).trim().split("\n")[0];
   return out;
 });

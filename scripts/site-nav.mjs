@@ -8,9 +8,10 @@
                                  build runs this)
 
    The sidebar keeps the interactive tools first. All reference and
-   educational reading lives in one "Information & Resources" section: a
-   collapsible group in the sidebar and a hub page at resources/, with each
-   module at its own nested route, resources/<slug>/. The packet tool's
+   educational reading lives in one "Resource & Clinical Hub" section: a
+   collapsible group in the sidebar and a tabbed hub page at resources/
+   (interactive tools on one tab, the reference library on the other), with
+   each module at its own nested route, resources/<slug>/. The packet tool's
    Ailment-Specific Activities stay in its sidebar, under the tools: that
    part of the block is left as the page has it.
 
@@ -47,7 +48,14 @@ const ICON = {
   compass: '<circle cx="12" cy="12" r="10"/><polygon points="16.2 7.8 14.1 14.1 7.8 16.2 9.9 9.9 16.2 7.8"/>',
   layout: '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/>',
   books: '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><path d="M8 7h8M8 11h6"/>',
-  help: '<circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><path d="M12 17h.01"/>'
+  help: '<circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><path d="M12 17h.01"/>',
+  // the interactive tools
+  palette: '<path d="M12 22a10 10 0 1 1 10-10c0 2.8-2.2 4-4 4h-2a2 2 0 0 0-1.4 3.4A1.9 1.9 0 0 1 12 22z"/><circle cx="7.5" cy="10.5" r="1.3"/><circle cx="11.5" cy="6.5" r="1.3"/><circle cx="16.5" cy="9.5" r="1.3"/>',
+  calendar: '<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>',
+  journal: '<path d="M2 4h7a3 3 0 0 1 3 3v14a2 2 0 0 0-2-2H2z"/><path d="M22 4h-7a3 3 0 0 0-3 3v14a2 2 0 0 1 2-2h8z"/>',
+  roster: '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/>',
+  profile: '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+  academy: '<path d="M22 9 12 4 2 9l10 5 10-5z"/><path d="M6 11.2V16c0 1.7 2.7 3 6 3s6-1.3 6-3v-4.8"/><path d="M22 9v6"/>'
 };
 
 /* The interactive tools: always first. */
@@ -60,7 +68,7 @@ export const TOOLS = [
 
 /* The informational hub: nine reference modules in three groups. `legacy` is
    the page's old address, which now forwards to its route. */
-export const HUB = { href: "resources/", title: "Information & Resources" };
+export const HUB = { href: "resources/", title: "Resource & Clinical Hub" };
 export const GROUPS = [
   { id: "clinical",   label: "Clinical & quality",        blurb: "The evidence, standards and clinical thinking behind every page." },
   { id: "facilities", label: "Facilities & publishing",   blurb: "How Cognicopia works for busy communities, and who stands behind it." },
@@ -87,6 +95,33 @@ export const MODULES = [
     desc: "Answers for nurses, activity directors, caregivers and families: stages, activities, printing, privacy and licensing." }
 ];
 export const moduleHref = m => HUB.href + m.slug + "/";
+
+/* The interactive generators, shown on the hub's first tab, apart from the
+   reading. `href` is from the site root. */
+export const GENERATORS = [
+  { key: "coloring", label: "CogniCore Coloring",      href: "builder.html#/coloring", icon: "palette",
+    desc: "Dignified, adult line art at three support tiers, printed with a binding gutter and optional color guides.", meta: ["118 pictures", "3 tiers", "Vector PDF"] },
+  { key: "reminiscence", label: "Reminiscence Cards", href: "builder.html#/reminiscence", icon: "journal",
+    desc: "Cards about a resident's own work, hometown region and best-remembered years, each with conversation starters, a song and something to hold.", meta: ["Era × region × vocation", "Caregiver cues"] },
+  { key: "heirloom", label: "Memory Digest & Book", href: "builder.html#/heirloom", icon: "books",
+    desc: "A resident's words, stories and finished coloring pages, kept as they happen: a monthly digest for the family and a print-on-demand hardcover.", meta: ["Monthly digest", "Hardcover PDF"] },
+  { key: "clinical", label: "Session Notes (SLP)", href: "builder.html#/clinical", icon: "stethoscope",
+    desc: "GDS and FAST staging mapped to support tiers, a session log, and SOAP notes built only from what staff record.", meta: ["Staff-recorded SOAP", "Code checks"] },
+  { key: "planners", label: "12-Month Life Planners",  href: "life-planners.html",     icon: "calendar",
+    desc: "A personalized year-long memory book, with a separate care companion for staff and family.", meta: ["Memory book", "Care companion"] },
+  { key: "journals", label: "Life Story Journals",     href: "cognitive-journals.html", icon: "journal",
+    desc: "The Cognitive Life Journal: a life story in four sections, from early roots to daily comfort.", meta: ["4 sections", "Family notes"] },
+  { key: "facility", label: "Facility Portal",         href: "builder.html#/facility", icon: "building",
+    desc: "For activity directors: wings and resident groups by acuity tier, a balanced month of six-pillar sessions in one click, and a week of group packets printed at once.", meta: ["4 acuity tiers", "Month scheduler", "Week packets"] },
+  { key: "academy",  label: "Caregiver & Professional Academy", href: "builder.html#/academy", icon: "academy",
+    desc: "Narrated masterclasses for care teams with transcripts, companion guides, knowledge checks and in-service certificates, plus short guides and toolkits for family caregivers.", meta: ["6 masterclasses", "Family track", "Training records"] },
+  { key: "roster",   label: "Resident Roster",         href: "builder.html#/roster",   icon: "roster",
+    desc: "Every saved resident in one list: choose a resident, choose a book, and print at their tier.", meta: ["3 clicks to print"] },
+  { key: "profile",  label: "Resident Profiles",       href: "profile.html",           icon: "profile",
+    desc: "The details that personalize every page, kept on this computer only.", meta: ["Stays on this device"] },
+  { key: "builder",  label: "Packet Builder",          href: "builder.html",           icon: "builder",
+    desc: "Word, number, music and art activities, added one version at a time into a printable packet.", meta: ["Activity library"] }
+];
 
 /* Every page that carries the shared sidebar, with what it marks as current. */
 export const PAGES = [
@@ -167,7 +202,7 @@ ${link("contact.html", "Contact Kirk Barron", "contact")}
     overlay.addEventListener("click", close);
     document.addEventListener("keydown", function(e){ if (e.key === "Escape" && sidebar.classList.contains("is-open")){ close(); toggle.focus(); } });
   }
-  /* Information & Resources is always open on its own pages; elsewhere it
+  /* The Resource & Clinical Hub is always open on its own pages; elsewhere it
      opens the way this browser last left it (a convenience, nothing more). */
   var acc = document.getElementById("cgInfoNav"), KEY = "cg_nav_info_open";
   if (acc && !acc.hasAttribute("data-here")){
@@ -190,25 +225,77 @@ export function crumbs(page){
 ${CRUMB_END}`;
 }
 
-/* The hub page's cards: every module, by group, from the same list as the sidebar. */
+/* The hub page's two tabs: the interactive tools, and every reference
+   module by group, from the same lists as the sidebar. Without scripts both
+   panels simply show, one after the other. */
 const HUB_START = "<!-- cg-hub:start: generated by scripts/site-nav.mjs -->", HUB_END = "<!-- cg-hub:end -->";
+const hubCard = (href, label, desc, icon, meta) => `      <li><a class="hub-card" href="${href}"><span class="hub-ico">${svg(ICON[icon], 26)}</span><span class="hub-text"><b>${esc(label)}</b><span>${esc(desc)}</span>${meta && meta.length ? `<span class="hub-meta">${meta.map(t => `<i>${esc(t)}</i>`).join("")}</span>` : ""}</span>${svg(ICON.chevron, 20, "hub-go")}</a></li>`;
 export function hubCards(){
+  const tabs = [{ id: "reference", label: "Reference library", n: MODULES.length }, { id: "tools", label: "Interactive tools", n: GENERATORS.length }];
+  const tablist = `<div class="hub-tabs" role="tablist" aria-label="Hub sections" hidden>${tabs.map((t, k) => `<button type="button" role="tab" id="hubTab-${t.id}" aria-controls="hubPanel-${t.id}" aria-selected="${k === 0}" tabindex="${k === 0 ? 0 : -1}">${esc(t.label)}<span class="hub-n">${t.n}</span></button>`).join("")}</div>`;
   const jump = `<nav class="hub-jump" aria-label="Jump to a group"><ul>${GROUPS.map(g => `<li><a href="#${g.id}">${esc(g.label)}</a></li>`).join("")}</ul></nav>`;
   const sections = GROUPS.map(g => `<section class="hub-group" id="${g.id}" aria-labelledby="hubH-${g.id}">
-    <h2 id="hubH-${g.id}">${esc(g.label)}</h2>
+    <h3 id="hubH-${g.id}">${esc(g.label)}</h3>
     <p class="hub-blurb">${esc(g.blurb)}</p>
     <ul class="hub-cards">
-${MODULES.filter(m => m.group === g.id).map(m => `      <li><a class="hub-card" href="${m.slug}/"><span class="hub-ico">${svg(ICON[m.icon], 26)}</span><span class="hub-text"><b>${esc(m.label)}</b><span>${esc(m.desc)}</span></span>${svg(ICON.chevron, 20, "hub-go")}</a></li>`).join("\n")}
+${MODULES.filter(m => m.group === g.id).map(m => hubCard(m.slug + "/", m.label, m.desc, m.icon)).join("\n")}
     </ul>
   </section>`).join("\n  ");
+  const tools = `<ul class="hub-cards">
+${GENERATORS.map(t => hubCard("../" + t.href, t.label, t.desc, t.icon, t.meta)).join("\n")}
+    </ul>`;
   return `${HUB_START}
+  ${tablist}
+  <section class="hub-panel" id="hubPanel-reference" role="tabpanel" aria-labelledby="hubTab-reference hubH-reference">
+  <h2 class="hub-ph" id="hubH-reference">Reference library</h2>
+  <p class="hub-blurb">Static reading: the evidence, standards and guides behind the tools.</p>
   ${jump}
   ${sections}
+  </section>
+  <section class="hub-panel" id="hubPanel-tools" role="tabpanel" aria-labelledby="hubTab-tools hubH-tools">
+  <h2 class="hub-ph" id="hubH-tools">Interactive tools</h2>
+  <p class="hub-blurb">The generators that make printed pages for a resident. Everything they make stays on this computer.</p>
+    ${tools}
+  </section>
+<script id="cg-hub-js">
+(function(){
+  "use strict";
+  var list = document.querySelector(".hub-tabs"); if (!list) return;
+  var tabs = [].slice.call(list.querySelectorAll("[role=tab]"));
+  function show(tab, focus, remember){
+    tabs.forEach(function(t){
+      var on = t === tab, panel = document.getElementById(t.getAttribute("aria-controls"));
+      t.setAttribute("aria-selected", on ? "true" : "false"); t.tabIndex = on ? 0 : -1;
+      if (panel) panel.hidden = !on;
+    });
+    if (focus) tab.focus();
+    if (remember && history.replaceState) history.replaceState(null, "", "#" + tab.id.replace("hubTab-", ""));
+  }
+  tabs.forEach(function(t, k){
+    t.addEventListener("click", function(){ show(t, false, true); });
+    t.addEventListener("keydown", function(e){
+      var j = e.key === "ArrowRight" ? k + 1 : e.key === "ArrowLeft" ? k - 1 : e.key === "Home" ? 0 : e.key === "End" ? tabs.length - 1 : -1;
+      if (j < 0 && e.key !== "ArrowLeft") return;
+      e.preventDefault(); show(tabs[(j + tabs.length) % tabs.length], true, true);
+    });
+  });
+  /* the address picks the tab: #tools, or a reference group such as #clinical */
+  function fromHash(){
+    var id = location.hash.slice(1), panel = id && document.getElementById(id);
+    var tab = id === "tools" ? tabs[1] : panel && panel.closest && panel.closest("#hubPanel-tools") ? tabs[1] : tabs[0];
+    show(tab);
+    if (panel && id !== "tools" && id !== "reference") panel.scrollIntoView();
+  }
+  list.hidden = false;
+  document.querySelectorAll(".hub-ph").forEach(function(h){ h.classList.add("hub-sr"); });
+  fromHash(); window.addEventListener("hashchange", fromHash);
+})();
+</script>
   ${HUB_END}`;
 }
 
 export const CSS = `<style id="cg-nav-css">
-/* Site navigation: tools first, one Information & Resources section, breadcrumbs.
+/* Site navigation: tools first, one Resource & Clinical Hub section, breadcrumbs.
    Generated by scripts/site-nav.mjs; the sidebar's base styles stay in each page.
    Several pages set "color: #fff !important" and "p, li { font-size }" on every
    element, so the parts added here pin their own colors and sizes to look the

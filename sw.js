@@ -4,7 +4,7 @@
    keeps copies of the site's own files so the tools open without an
    internet connection. It never contacts another site, never sends
    anything anywhere, and never stores what anyone types: resident details
-   live in the pages' own browser storage, not here.
+   live in the pages' own encrypted browser storage, not here.
 
    Fresh first: when the network answers, the page comes from the site
    and the copy is refreshed. When it does not (offline, or a stalled
@@ -12,10 +12,12 @@
    used. Change VERSION only to clear old copies; updates to the pages
    themselves arrive on their own.
    ===================================================================== */
-const VERSION = "cognicopia-v1";
+const VERSION = "cognicopia-v8";
 const CORE = [
   "./", "index.html", "builder.html", "profile.html", "manifest.webmanifest",
-  "assets/cognicopia-logo.jpg", "assets/icon-192.png", "assets/icon-512.png", "assets/icon-maskable-512.png"
+  "assets/cognicopia-logo.jpg", "assets/icon-192.png", "assets/icon-512.png", "assets/icon-maskable-512.png",
+  "assets/cognicore/cognicore.js", "assets/services/vectorEngine.js", "assets/services/secureStore.js", "assets/services/reminiscenceEngine.js", "assets/services/slpClinicalService.js", "assets/services/heirloomService.js", "assets/services/facilityPlanner.js", "assets/services/academy.js",
+  "assets/vendor/jspdf.umd.min.js", "assets/vendor/jspdf-atkinson.js"
 ];
 const PAGE_WAIT_MS = 4000;
 

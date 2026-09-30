@@ -18,7 +18,7 @@ app.get('/api/health', (req, res) => {
 
 // No endpoint accepts resident data: everything stays in the browser.
 
-// The reference pages live under /resources/<slug>/ (Information & Resources).
+// The reference pages live under /resources/<slug>/ (the Resource & Clinical Hub).
 // Their old addresses answer with a permanent redirect, keeping any ?query;
 // the browser keeps the #section. /resources itself is the hub.
 for (const m of MODULES) {
