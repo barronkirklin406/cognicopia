@@ -54,7 +54,8 @@ const ICON = {
   calendar: '<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>',
   journal: '<path d="M2 4h7a3 3 0 0 1 3 3v14a2 2 0 0 0-2-2H2z"/><path d="M22 4h-7a3 3 0 0 0-3 3v14a2 2 0 0 1 2-2h8z"/>',
   roster: '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/>',
-  profile: '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>'
+  profile: '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+  academy: '<path d="M22 9 12 4 2 9l10 5 10-5z"/><path d="M6 11.2V16c0 1.7 2.7 3 6 3s6-1.3 6-3v-4.8"/><path d="M22 9v6"/>'
 };
 
 /* The interactive tools: always first. */
@@ -112,6 +113,8 @@ export const GENERATORS = [
     desc: "The Cognitive Life Journal: a life story in four sections, from early roots to daily comfort.", meta: ["4 sections", "Family notes"] },
   { key: "facility", label: "Facility Portal",         href: "builder.html#/facility", icon: "building",
     desc: "For activity directors: wings and resident groups by acuity tier, a balanced month of six-pillar sessions in one click, and a week of group packets printed at once.", meta: ["4 acuity tiers", "Month scheduler", "Week packets"] },
+  { key: "academy",  label: "Caregiver & Professional Academy", href: "builder.html#/academy", icon: "academy",
+    desc: "Narrated masterclasses for care teams with transcripts, companion guides, knowledge checks and in-service certificates, plus short guides and toolkits for family caregivers.", meta: ["6 masterclasses", "Family track", "Training records"] },
   { key: "roster",   label: "Resident Roster",         href: "builder.html#/roster",   icon: "roster",
     desc: "Every saved resident in one list: choose a resident, choose a book, and print at their tier.", meta: ["3 clicks to print"] },
   { key: "profile",  label: "Resident Profiles",       href: "profile.html",           icon: "profile",

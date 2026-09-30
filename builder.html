@@ -1895,6 +1895,278 @@ textarea:focus{border-color:var(--accent)}
 .fp-mc .s{display:block;margin-bottom:.02in;overflow-wrap:anywhere}
 .fp-mkey{flex:none;margin:0;font-size:9.5pt;line-height:1.35}
 </style>
+<style id="ac-style">
+/* =====================================================================
+   CAREGIVER & PROFESSIONAL ACADEMY (#/academy)
+   High contrast: white text on #1a2e22 (14.4:1), cards #223a2c (12.3:1),
+   secondary text #dfe9e4 (9.9:1 on a card), tan #b5a48b for borders,
+   chips and primary buttons (5.1:1 on a card; dark ink on tan 6.6:1),
+   amber #e9b872 for the family track (6.8:1), green #7ad3a4 for
+   completion (6.8:1), and a pale turquoise focus ring. Completion never
+   relies on color alone: a check mark and words go with it. Layout
+   adapts to the space the Academy has (container queries), so tablets
+   and desktops each get their own arrangement. Motion is short and
+   switches off with prefers-reduced-motion.
+   ===================================================================== */
+.view.view-wide .ac{margin:0}
+.ac{
+  --ac-bg:#1a2e22; --ac-surface:#223a2c; --ac-surface-2:#2a4636; --ac-sunk:#142419; --ac-stage:#0f1c14;
+  --ac-line:#b5a48b; --ac-div:rgba(223,233,228,.2); --ac-text:#ffffff; --ac-text-2:#dfe9e4; --ac-muted:#c9d6cf;
+  --ac-accent:#b5a48b; --ac-accent-hi:#c8b89f; --ac-ink:#10251c; --ac-focus:#e6f4f1; --ac-family:#e9b872; --ac-good:#7ad3a4; --ac-warn:#f0b48c;
+  container:academy / inline-size;
+  position:relative; min-width:0; padding:clamp(16px,3vw,32px); border:1px solid rgba(181,164,139,.45); border-radius:20px;
+  background:var(--ac-bg); color:var(--ac-text); overflow-wrap:anywhere; box-shadow:0 18px 50px rgba(0,0,0,.3);
+}
+.ac *{min-width:0}
+.ac :focus-visible{outline:3px solid var(--ac-focus);outline-offset:2px}
+.ac h1,.ac h2,.ac h3,.ac h4{color:var(--ac-text)}
+.ac a{color:var(--ac-focus)}
+.ac .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.ac-anim{animation:ac-in .22s ease-out}
+@keyframes ac-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* header, learner, tabs */
+.ac-head{display:flex;flex-wrap:wrap;gap:16px 28px;align-items:flex-end;justify-content:space-between;margin:0 0 20px}
+.ac-eyebrow{margin:0 0 6px;color:var(--ac-accent);font-size:12.5px;font-weight:800;letter-spacing:.09em;text-transform:uppercase}
+.ac-title{margin:0;font-size:clamp(26px,3.2vw,38px);line-height:1.12;outline:none}
+.ac .ac-title:focus-visible,.ac #acTrackH:focus-visible{outline:none}   /* focus lands on these headings so a screen reader announces them; they are not controls */
+.ac-lede{margin:8px 0 0;max-width:64ch;color:var(--ac-text-2);font-size:16.5px;line-height:1.5}
+.ac-learner{flex:0 1 380px;padding:14px 16px;border:1.5px solid var(--ac-line);border-radius:14px;background:var(--ac-surface)}
+.ac-learner label,.ac-field > label,.ac-field > legend{display:block;margin:0 0 6px;padding:0;font-weight:700;font-size:14.5px;color:var(--ac-text)}
+.ac-inline{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.ac-inline > select,.ac-inline > input{flex:1 1 180px}
+.ac-hint{margin:6px 0 0;color:var(--ac-text-2);font-size:13.5px;line-height:1.45}
+.ac-form{display:grid;gap:10px;margin-top:12px;padding-top:12px;border-top:1px solid var(--ac-div)}
+.ac-tabs{display:flex;flex-wrap:wrap;gap:4px;margin:0 0 18px;border-bottom:1px solid var(--ac-div)}
+.ac-tab{display:inline-flex;align-items:center;gap:8px;min-height:46px;padding:10px 16px;border:0;border-bottom:3px solid transparent;background:none;color:var(--ac-text-2);font:inherit;font-weight:700;font-size:15.5px;cursor:pointer;transition:color .15s,border-color .15s,background .15s}
+.ac-tab:hover{color:var(--ac-text);background:rgba(255,255,255,.04)}
+.ac-tab[aria-selected="true"]{color:var(--ac-text);border-bottom-color:var(--ac-accent)}
+.ac-tab[data-tab="family"][aria-selected="true"]{border-bottom-color:var(--ac-family)}
+.ac-tab .ac-n{display:inline-grid;place-items:center;min-width:24px;height:22px;padding:0 7px;border-radius:999px;background:var(--ac-surface-2);color:var(--ac-text);font-size:12px}
+
+/* fields and buttons */
+.ac input[type=text],.ac input[type=search],.ac select,.ac textarea{
+  width:100%;min-height:44px;padding:9px 12px;border:2px solid var(--ac-line);border-radius:10px;background:var(--ac-sunk);color:var(--ac-text);font:inherit;font-size:15px;color-scheme:dark}
+.ac textarea{min-height:88px;resize:vertical}
+.ac ::placeholder{color:#9fb0a7;opacity:1}
+.ac input:focus,.ac select:focus,.ac textarea:focus{border-color:var(--ac-focus)}
+.ac-field{margin:0;padding:0;border:0}
+.ac-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;max-width:100%;padding:9px 16px;border:2px solid var(--ac-line);border-radius:10px;background:transparent;color:var(--ac-text);font:inherit;font-weight:700;font-size:15px;line-height:1.25;text-align:center;text-decoration:none;cursor:pointer;transition:background .15s,border-color .15s,color .15s,transform .05s}
+.ac-btn:hover{background:var(--ac-surface-2)}
+.ac-btn:active{transform:translateY(1px)}
+.ac-btn-primary{background:var(--ac-accent);border-color:var(--ac-accent);color:var(--ac-ink)}
+.ac-btn-primary:hover{background:var(--ac-accent-hi);border-color:var(--ac-accent-hi)}
+.ac-btn-family{background:var(--ac-family);border-color:var(--ac-family);color:var(--ac-ink)}
+.ac-btn-family:hover{background:#f0c88c;border-color:#f0c88c}
+.ac-btn-danger{border-color:var(--ac-warn);color:var(--ac-warn)}
+.ac-btn-sm{min-height:36px;padding:5px 11px;font-size:14px}
+.ac-btn[aria-disabled="true"],.ac-btn[aria-disabled="true"]:hover{background:transparent;border-style:dashed;border-color:var(--ac-line);color:var(--ac-text-2);cursor:not-allowed}
+.ac-btn svg{flex:none}
+.ac-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+
+/* filters and the card grid */
+.ac-filters{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;margin:0 0 12px}
+@container academy (min-width:760px){.ac-filters{grid-template-columns:minmax(0,1.2fr) minmax(0,2fr) minmax(0,1fr);align-items:end}}
+.ac-chips{display:flex;flex-wrap:wrap;gap:6px}
+.ac-chips label{position:relative;cursor:pointer}
+.ac-chips input{position:absolute;inset:0;margin:0;opacity:0;cursor:pointer}
+.ac-chips span{display:inline-flex;align-items:center;min-height:36px;padding:5px 12px;border:1.5px solid var(--ac-line);border-radius:999px;background:var(--ac-sunk);color:var(--ac-text-2);font-size:13.5px;font-weight:700;transition:background .15s,color .15s}
+.ac-chips input:checked + span{background:var(--ac-accent);color:var(--ac-ink)}
+.ac-chips input:focus-visible + span{outline:3px solid var(--ac-focus);outline-offset:2px}
+.ac-count{margin:0 0 12px;color:var(--ac-text-2);font-size:14px}
+.ac-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
+@container academy (min-width:620px){.ac-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@container academy (min-width:980px){.ac-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.ac-card{position:relative;display:flex;flex-direction:column;overflow:hidden;border:1.5px solid var(--ac-line);border-radius:16px;background:var(--ac-surface);transition:transform .16s,box-shadow .16s}
+.ac-card.is-family{border-color:var(--ac-family)}
+.ac-card:hover{transform:translateY(-2px);box-shadow:0 14px 30px rgba(0,0,0,.35)}
+.ac-card:focus-within{box-shadow:0 0 0 3px var(--ac-focus)}
+.ac-card:focus-within .ac-card-a{outline:none}
+.ac-thumb{position:relative;aspect-ratio:16/9;background:var(--ac-stage)}
+.ac-thumb > svg{display:block;width:100%;height:100%}
+.ac-play{position:absolute;left:50%;top:50%;display:grid;place-items:center;width:56px;height:56px;border:2px solid #fff;border-radius:50%;background:rgba(10,18,13,.78);color:#fff;transform:translate(-50%,-50%);transition:transform .16s}
+.ac-card:hover .ac-play{transform:translate(-50%,-50%) scale(1.08)}
+.ac-dur{position:absolute;right:10px;bottom:10px;padding:3px 8px;border-radius:6px;background:rgba(8,14,10,.9);color:#fff;font-size:12.5px;font-weight:800;font-variant-numeric:tabular-nums}
+.ac-flag{position:absolute;left:10px;top:10px;display:inline-flex;align-items:center;gap:5px;padding:3px 9px 3px 6px;border-radius:999px;background:var(--ac-good);color:var(--ac-ink);font-size:12.5px;font-weight:800}
+.ac-card-body{display:flex;flex:1;flex-direction:column;gap:10px;padding:14px 16px 16px}
+.ac-card h3{margin:0;font-size:17.5px;line-height:1.25}
+.ac-card-a{color:var(--ac-text) !important;text-decoration:none}
+.ac-card-a::after{content:"";position:absolute;inset:0;z-index:1;border-radius:inherit}
+.ac-card-sub{margin:0;color:var(--ac-text-2);font-size:14px;line-height:1.45}
+.ac-instructor{display:flex;align-items:center;gap:10px}
+.ac-avatar{flex:none;display:grid;place-items:center;width:36px;height:36px;border-radius:50%;background:var(--ac-accent);color:var(--ac-ink);font-size:12px;font-weight:800;letter-spacing:.02em}
+.is-family .ac-avatar,.ac-mod.is-family .ac-avatar{background:var(--ac-family)}
+.ac-instructor b{display:block;font-size:13.5px;line-height:1.25}
+.ac-instructor small{display:block;color:var(--ac-muted);font-size:12.5px;line-height:1.3}
+.ac-tags{display:flex;flex-wrap:wrap;gap:6px}
+.ac-tag{display:inline-flex;align-items:center;gap:4px;padding:2px 9px;border:1px solid var(--ac-line);border-radius:999px;color:var(--ac-text-2);font-size:12px;font-weight:700;line-height:1.5}
+.ac-card-foot{margin-top:auto;display:grid;gap:8px}
+.ac-prog{display:flex;align-items:center;gap:10px;color:var(--ac-text-2);font-size:12.5px;font-weight:700}
+.ac-bar{flex:1;display:block;height:7px;border-radius:999px;background:var(--ac-sunk);overflow:hidden}
+.ac-bar > span{display:block;height:100%;border-radius:999px;background:var(--ac-accent);transition:width .3s ease}
+.is-family .ac-bar > span{background:var(--ac-family)}
+.ac-empty{padding:28px;border:1.5px dashed var(--ac-line);border-radius:16px;color:var(--ac-text-2);text-align:center}
+
+/* family track */
+.ac-family-intro{display:grid;gap:6px;margin:0 0 18px;padding:18px;border:1.5px solid var(--ac-family);border-radius:16px;background:linear-gradient(135deg,rgba(233,184,114,.13),rgba(233,184,114,.02))}
+.ac-family-intro h2{margin:0;font-size:22px}
+.ac-family-intro p{margin:0;color:var(--ac-text-2);max-width:70ch;line-height:1.55}
+.ac-h2{margin:22px 0 12px;font-size:19px}
+.ac-kits{display:grid;grid-template-columns:minmax(0,1fr);gap:14px}
+@container academy (min-width:620px){.ac-kits{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@container academy (min-width:1100px){.ac-kits{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.ac-kit{display:flex;flex-direction:column;gap:8px;padding:16px;border:1.5px solid var(--ac-family);border-radius:16px;background:var(--ac-surface)}
+.ac-kit-ic{display:grid;place-items:center;width:44px;height:44px;border-radius:12px;background:rgba(233,184,114,.16);color:var(--ac-family)}
+.ac-kit h3{margin:0;font-size:17px}
+.ac-kit p{margin:0;color:var(--ac-text-2);font-size:14px;line-height:1.45}
+.ac-kit .ac-actions{margin-top:auto}
+.ac-kit details{font-size:14px;color:var(--ac-text-2)}
+.ac-kit summary{cursor:pointer;font-weight:700;color:var(--ac-text)}
+
+/* the module view */
+.ac-crumbs{margin:0 0 14px}
+.ac-back{display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:6px 12px 6px 8px;border:1.5px solid var(--ac-line);border-radius:10px;color:var(--ac-text) !important;font-weight:700;text-decoration:none}
+.ac-back:hover{background:var(--ac-surface-2)}
+.ac-mod{display:grid;grid-template-columns:minmax(0,1fr);grid-template-areas:"head" "player" "side" "panes";gap:18px}
+@container academy (min-width:960px){.ac-mod{grid-template-columns:minmax(0,1fr) minmax(290px,330px);grid-template-areas:"head head" "player side" "panes side";align-items:start}}
+.ac-mod-head{grid-area:head}
+.ac-mod-meta{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;margin-top:12px}
+.ac-player{grid-area:player;position:relative;overflow:hidden;border:1.5px solid var(--ac-line);border-radius:16px;background:var(--ac-stage)}
+.ac-side{grid-area:side;display:grid;gap:14px;align-content:start}
+@container academy (min-width:960px){.ac-side{position:sticky;top:84px}}
+.ac-panes{grid-area:panes}
+.ac-stage{position:relative;aspect-ratio:16/9;overflow:hidden;background:var(--ac-stage);cursor:pointer;container-type:inline-size;outline-offset:-3px}
+.ac-stage-art{position:absolute;inset:0;opacity:.42}
+.ac-stage-art svg{display:block;width:100%;height:100%}
+.ac-slide{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;padding:6cqi calc(14cqi + clamp(56px,11cqi,92px)) 16cqi 7cqi;background:linear-gradient(90deg,rgba(15,28,20,.94) 0%,rgba(15,28,20,.8) 55%,rgba(15,28,20,.4) 100%)}
+.ac-slide.is-new{animation:ac-slide .45s ease-out}
+@keyframes ac-slide{from{opacity:0;transform:translateX(10px)}to{opacity:1;transform:none}}
+.ac-slide-k{margin:0;color:var(--ac-accent);font-size:clamp(11px,1.9cqi,16px);font-weight:800;letter-spacing:.1em;text-transform:uppercase}
+.ac-mod.is-family .ac-slide-k{color:var(--ac-family)}
+.ac-slide-t{margin:.3em 0 .4em;color:#fff;font-size:clamp(20px,5.2cqi,46px);line-height:1.1}
+.ac-slide-s{margin:0;max-width:30ch;color:var(--ac-text-2);font-size:clamp(14px,2.8cqi,25px);line-height:1.35}
+@container (max-width:520px){.ac-slide-s{display:none}.ac-slide{padding-bottom:12cqi}.ac-stage.has-cc .ac-slide{visibility:hidden}.ac-cc{max-width:94%}}
+.ac-cc{position:absolute;left:50%;bottom:4cqi;max-width:90%;margin:0;padding:.35em .75em;border-radius:8px;background:rgba(6,11,8,.92);color:#fff;font-size:clamp(13px,2.5cqi,22px);line-height:1.35;text-align:center;transform:translateX(-50%)}
+.ac-cc:empty,.ac-cc[hidden]{display:none}
+.ac-kind{position:absolute;right:12px;top:12px;padding:3px 9px;border:1px solid rgba(255,255,255,.5);border-radius:999px;background:rgba(6,11,8,.7);color:#fff;font-size:12px;font-weight:700}
+.ac-bigplay{position:absolute;right:7cqi;top:50%;display:grid;place-items:center;width:clamp(56px,11cqi,92px);height:clamp(56px,11cqi,92px);border:3px solid #fff;border-radius:50%;background:rgba(10,18,13,.82);color:#fff;cursor:pointer;transform:translateY(-50%);transition:transform .15s,opacity .2s}
+.ac-bigplay svg{width:45%;height:45%}
+.ac-bigplay:hover{transform:translateY(-50%) scale(1.06)}
+.ac-player.is-playing .ac-bigplay{opacity:0;pointer-events:none}
+.ac-controls{display:flex;flex-wrap:wrap;align-items:center;gap:8px 8px;padding:10px 12px;border-top:1px solid var(--ac-div);background:var(--ac-sunk)}
+.ac-cbtn{flex:none;display:grid;place-items:center;width:42px;height:42px;padding:0;border:1.5px solid rgba(181,164,139,.75);border-radius:10px;background:transparent;color:#fff;cursor:pointer;transition:background .15s}
+.ac-cbtn:hover{background:var(--ac-surface-2)}
+.ac-cbtn[aria-pressed="true"]{background:var(--ac-accent);border-color:var(--ac-accent);color:var(--ac-ink)}
+.ac-cbtn[hidden]{display:none}
+.ac-time{flex:none;min-width:8.5ch;color:var(--ac-text-2);font-size:13.5px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.ac-seek{flex:1 1 180px;height:30px;margin:0;accent-color:var(--ac-accent);cursor:pointer}
+.ac-controls select{flex:none;width:auto;min-height:42px;padding:6px 8px;font-size:14px}
+.ac-chapbar{display:flex;gap:4px;padding:0 12px 12px;background:var(--ac-sunk)}
+.ac-chap{flex:1 1 0;display:flex;align-items:center;min-height:26px;padding:0;border:0;background:none;cursor:pointer}
+.ac-chap > span{display:block;width:100%;height:8px;border-radius:999px;background:rgba(223,233,228,.2);overflow:hidden}
+.ac-chap > span > span{display:block;height:100%;background:var(--ac-accent);transition:width .3s ease}
+.ac-chap.is-now > span{outline:2px solid var(--ac-focus);outline-offset:2px}
+.ac-video{display:block;width:100%;aspect-ratio:16/9;background:#000}
+.ac-player:fullscreen{display:flex;flex-direction:column;justify-content:center;border:0;border-radius:0;background:#000}
+.ac-player:fullscreen .ac-stage{flex:1;aspect-ratio:auto}
+.ac-subtabs{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 12px}
+.ac-subtab{min-height:42px;padding:8px 14px;border:2px solid var(--ac-line);border-radius:10px;background:transparent;color:var(--ac-text);font:inherit;font-weight:700;font-size:14.5px;cursor:pointer;transition:background .15s,color .15s}
+.ac-subtab:hover{background:var(--ac-surface-2)}
+.ac-subtab[aria-selected="true"]{background:var(--ac-accent);color:var(--ac-ink)}
+.ac-pane{padding:18px;border:1.5px solid var(--ac-line);border-radius:16px;background:var(--ac-surface)}
+.ac-panel{padding:16px;border:1.5px solid var(--ac-line);border-radius:16px;background:var(--ac-surface)}
+.ac-panel h2{margin:0 0 6px;font-size:18px}
+
+/* transcript */
+.ac-script{position:relative;max-height:min(560px,70vh);overflow:auto;padding:4px 6px 4px 2px;scroll-behavior:smooth}
+.ac-script section{margin:0 0 14px}
+.ac-script h3{margin:10px 0 6px;font-size:16px}
+.ac-script h3 button{padding:2px 4px;border:0;border-radius:6px;background:none;color:var(--ac-text);font:inherit;font-weight:800;text-align:left;cursor:pointer}
+.ac-script h3 button:hover{background:var(--ac-surface-2)}
+.ac-script p{margin:0;color:var(--ac-text-2);font-size:15.5px;line-height:1.65}
+.ac-line{padding:1px 2px;border-radius:4px;cursor:pointer;transition:background .15s,color .15s}
+.ac-line:hover{background:rgba(181,164,139,.2)}
+.ac-line.is-played{color:var(--ac-text)}
+.ac-line.is-now{background:var(--ac-accent);color:var(--ac-ink)}
+.ac-script-tools{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between;margin:0 0 10px}
+.ac-check{display:flex;align-items:center;gap:8px;min-height:40px;font-size:14.5px;cursor:pointer}
+.ac-check input{width:20px;height:20px;margin:0;accent-color:var(--ac-accent);flex:none}
+.ac-readdone{margin:14px 0 0;padding-top:12px;border-top:1px solid var(--ac-div)}
+
+/* guide preview */
+.ac-guide h3{margin:16px 0 6px;font-size:16px}
+.ac-guide ul,.ac-guide ol{margin:0;padding-left:22px;color:var(--ac-text-2);line-height:1.55}
+.ac-guide li{margin:3px 0}
+.ac-guide .ac-src{color:var(--ac-muted);font-size:13.5px}
+.ac-guide-top{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between}
+.ac-guide-top p{margin:0;color:var(--ac-text-2)}
+
+/* knowledge check */
+.ac-q{margin:0 0 14px;padding:12px 14px;border:1.5px solid var(--ac-div);border-radius:12px}
+.ac-q legend{padding:0 4px;font-weight:800;font-size:15.5px;line-height:1.4}
+.ac-opt{display:flex;flex-wrap:wrap;align-items:flex-start;gap:4px 10px;margin:4px 0;padding:8px 10px;border-radius:10px;cursor:pointer;transition:background .15s}
+.ac-opt > span:not(.ac-mark){flex:1 1 10em}
+.ac-opt:hover{background:var(--ac-surface-2)}
+.ac-opt input{flex:none;width:20px;height:20px;margin:2px 0 0;accent-color:var(--ac-accent)}
+.ac-opt.is-right{background:rgba(122,211,164,.14);outline:2px solid var(--ac-good)}
+.ac-opt.is-wrong{background:rgba(240,180,140,.12);outline:2px solid var(--ac-warn)}
+.ac-mark{flex:none;margin-left:auto;display:inline-flex;align-items:center;gap:4px;padding-left:8px;font-size:13px;font-weight:800;white-space:nowrap}
+.ac-opt.is-right .ac-mark{color:var(--ac-good)} .ac-opt.is-wrong .ac-mark{color:var(--ac-warn)}
+.ac-why{margin:8px 0 0;color:var(--ac-text-2);font-size:14px;line-height:1.5}
+.ac-result{margin:0 0 14px;padding:12px 14px;border:2px solid var(--ac-line);border-radius:12px}
+.ac-result.is-pass{border-color:var(--ac-good)}
+.ac-result b{display:block;font-size:17px}
+
+/* progress tracker */
+.ac-steps{list-style:none;margin:12px 0;padding:0;display:grid;gap:12px}
+.ac-steps li{display:grid;grid-template-columns:34px minmax(0,1fr);gap:10px;align-items:start}
+.ac-stepn{display:grid;place-items:center;width:34px;height:34px;border:2px solid var(--ac-line);border-radius:50%;font-weight:800;transition:background .2s,border-color .2s}
+.ac-steps li.is-done .ac-stepn{background:var(--ac-good);border-color:var(--ac-good);color:var(--ac-ink)}
+.ac-steps li.is-now .ac-stepn{border-color:var(--ac-focus);box-shadow:0 0 0 3px rgba(230,244,241,.25)}
+.ac-steps b{display:block;font-size:15px}
+.ac-steps small{display:block;margin-top:3px;color:var(--ac-text-2);font-size:13px}
+.ac-steps .ac-bar{margin-top:6px}
+.ac-needs{margin:8px 0 0;padding-left:18px;color:var(--ac-text-2);font-size:13.5px;line-height:1.5}
+.ac-needs.is-loud{color:var(--ac-warn)}
+.ac-done{display:flex;gap:10px;align-items:flex-start;margin:4px 0 0;padding:10px 12px;border:2px solid var(--ac-good);border-radius:12px}
+.ac-done svg{flex:none;color:var(--ac-good);margin-top:1px}
+.ac-done p{margin:0}
+.ac-done.is-new{animation:ac-pop .5s ease-out}
+@keyframes ac-pop{0%{transform:scale(.96);opacity:0}60%{transform:scale(1.02);opacity:1}100%{transform:none}}
+.ac-next{display:grid;gap:10px}
+.ac-next a{display:grid;grid-template-columns:96px minmax(0,1fr);gap:10px;align-items:center;padding:6px;border-radius:12px;color:var(--ac-text) !important;text-decoration:none}
+.ac-next a:hover{background:var(--ac-surface-2)}
+.ac-next .ac-mini{aspect-ratio:16/9;overflow:hidden;border-radius:8px;background:var(--ac-stage)}
+.ac-next .ac-mini svg{display:block;width:100%;height:100%}
+.ac-next b{font-size:14.5px;line-height:1.3}
+.ac-next small{display:block;color:var(--ac-muted);font-size:12.5px}
+
+/* records */
+.ac-kpis{list-style:none;margin:0 0 16px;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr));gap:12px}
+.ac-kpi{padding:14px 16px;border:1.5px solid var(--ac-line);border-radius:14px;background:var(--ac-surface)}
+.ac-kpi-v{display:block;font-size:30px;font-weight:800;line-height:1.1;font-variant-numeric:proportional-nums}
+.ac-kpi-l{display:block;margin-top:2px;color:var(--ac-text-2);font-size:14px;font-weight:700}
+.ac-table-wrap{position:relative;overflow-x:auto;border:1.5px solid var(--ac-line);border-radius:14px;background:var(--ac-surface)}
+.ac-table{width:100%;border-collapse:collapse;font-size:14px}
+.ac-table th,.ac-table td{padding:10px 12px;border-bottom:1px solid var(--ac-div);text-align:left;vertical-align:top}
+.ac-table thead th{color:var(--ac-text-2);font-size:12.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap}
+.ac-table tbody tr:last-child td,.ac-table tbody tr:last-child th{border-bottom:0}
+.ac-table td.n,.ac-table th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.ac-meter{display:grid;gap:4px;min-width:150px}
+.ac-meter small{color:var(--ac-text-2);font-size:12.5px}
+.ac-certs{margin:6px 0 0;padding:0;list-style:none;display:grid;gap:6px}
+.ac-certs li{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center;justify-content:space-between}
+.ac-rec-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;margin-top:16px;align-items:start}
+@container academy (min-width:900px){.ac-rec-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.ac-note{margin:16px 0 0;padding:12px 14px;border:1px dashed var(--ac-line);border-radius:12px;color:var(--ac-text-2);font-size:14px;line-height:1.55}
+.ac-found{margin:10px 0 0;padding:10px 12px;border-radius:10px;border:2px solid var(--ac-line)}
+.ac-found.is-ok{border-color:var(--ac-good)}
+.ac-found.is-bad{border-color:var(--ac-warn)}
+
+@media (prefers-reduced-motion:reduce){
+  .ac *,.ac *::before,.ac *::after,.ac{animation:none !important;transition:none !important;scroll-behavior:auto !important}
+}
+</style>
 </head>
 <body>
 
@@ -1941,6 +2213,13 @@ textarea:focus{border-color:var(--accent)}
       <li><a class="sb-link" href="#/facility" data-route="facility">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18"/><path d="M5 21V6l7-3v18"/><path d="M19 21V10l-7-3"/><path d="M8 9h1M8 13h1M8 17h1M15 13h1M15 17h1"/></svg>
         <span>Facility Portal</span></a></li>
+    </ul>
+
+    <div class="sb-section" id="learnHead">Learn</div>
+    <ul class="sb-list" aria-labelledby="learnHead">
+      <li><a class="sb-link" href="#/academy" data-route="academy">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 9 12 4 2 9l10 5 10-5z"/><path d="M6 11.2V16c0 1.7 2.7 3 6 3s6-1.3 6-3v-4.8"/><path d="M22 9v6"/></svg>
+        <span>Caregiver &amp; Pro Academy</span></a></li>
     </ul>
 
     <div class="sb-section" id="pktHead">Your packet</div>
@@ -8215,6 +8494,860 @@ const FacilityUI = (function(){
   return { render, context, clearContext, readFacility };
 })();
 </script>
+<script src="assets/services/academy.js"></script>
+<script id="academy-ui">
+/* =====================================================================
+   CAREGIVER & PROFESSIONAL ACADEMY  (#/academy)
+   Masterclasses for care staff and short guides for family caregivers,
+   with a training record for each learner:
+     #/academy              the masterclass grid (search, topic, audience)
+     #/academy/family       the family track: guides and printable toolkits
+     #/academy/records      training records, certificates, checking an ID
+     #/academy/<module id>  one module: the lesson player, its transcript,
+                            companion guide and knowledge check, and the
+                            progress tracker with Mark as complete
+   A lesson plays as a narrated slide lesson with captions. Its script is
+   read aloud by this computer's own voices (never a voice service online),
+   or shown line by line at a steady pace when there is no voice. A
+   recorded video, added to the catalog as a local file, plays instead.
+   CogniAcademy (src/services/academy.ts) holds the content and the rules;
+   this screen draws them and saves each learner's progress, sealed in the
+   encrypted store under "cognicopia_academy". Guides, toolkits and
+   certificates are made as PDFs on this computer. Helpers from the Packet
+   Builder's main script (esc, toast, CogniLibrary...) are used only once
+   it has run.
+   ===================================================================== */
+const AcademyUI = (function(){
+  "use strict";
+  const A = window.CogniAcademy;
+  const S = { tab:"pro", q:"", topic:"", aud:"", pane:"transcript", back:"pro", lastCard:"", edit:"", pendingCert:"", year:0, quiz:null,
+    rate:1, cc:true, voice:true, follow:true, found:null, justDone:"" };
+  let acad = null, root = null, P = null, artN = 0;
+
+  /* ---------- icons and pictures ---------- */
+  const ic = (body, w) => `<svg width="${w || 20}" height="${w || 20}" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${body}</svg>`;
+  const I = {
+    play: ic('<path d="M8 5v14l11-7z" fill="currentColor"/>'),
+    pause: ic('<path d="M7 5h4v14H7zM13 5h4v14h-4z" fill="currentColor"/>'),
+    replay: ic('<path d="M12 5V2L7 6l5 4V7a6 6 0 1 1-6 6H4a8 8 0 1 0 8-8z" fill="currentColor"/>'),
+    back: ic('<path d="M11.5 12 19 6.5v11zM4 12l7.5-5.5v11z" fill="currentColor"/>'),
+    prev: ic('<path d="M6 5h2v14H6zM20 5v14L9 12z" fill="currentColor"/>'),
+    next: ic('<path d="M16 5h2v14h-2zM4 5v14l11-7z" fill="currentColor"/>'),
+    cc: ic('<rect x="3" y="5" width="18" height="14" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M10.5 10.2a2.2 2.2 0 1 0 0 3.6M17 10.2a2.2 2.2 0 1 0 0 3.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>'),
+    voice: ic('<path d="M4 9v6h4l5 4V5L8 9z" fill="currentColor"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>'),
+    full: ic('<path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>'),
+    check: ic('<path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>', 16),
+    download: ic('<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>', 18),
+    arrow: ic('<path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>', 18),
+    award: ic('<circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 13.5 7 22l5-3 5 3-1.5-8.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>', 18),
+    kit: {
+      visit: ic('<path d="M6 21V4h12v17M3 21h18M14.5 12.5h.01" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M12 9.5c-1.3-1-2-1.7-2-2.4a1 1 0 0 1 2-.3 1 1 0 0 1 2 .3c0 .7-.7 1.4-2 2.4z" fill="currentColor"/>', 24),
+      afternoon: ic('<path d="M4 9h12v4a6 6 0 0 1-6 6 6 6 0 0 1-6-6zM16 10h2a2.5 2.5 0 0 1 0 5h-2.5M8 2.5c0 1.5 1.5 1.5 1.5 3M12 2.5c0 1.5 1.5 1.5 1.5 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>', 24),
+      rhythm: ic('<circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3.5 2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>', 24),
+      checkin: ic('<path d="M12 20s-7.5-4.6-7.5-10A4.3 4.3 0 0 1 12 7.3 4.3 4.3 0 0 1 19.5 10c0 5.4-7.5 10-7.5 10z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9 12l2 2 4-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>', 24)
+    }
+  };
+  /* Thumbnails: a small scene for each lesson, drawn in the Academy's palette (320 x 180). */
+  function art(key){
+    const k = "ac" + (++artN);
+    const bg = (a, b) => `<defs><linearGradient id="${k}g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient><radialGradient id="${k}r" cx=".22" cy=".18" r=".7"><stop offset="0" stop-color="#fff3d6" stop-opacity=".3"/><stop offset="1" stop-color="#fff3d6" stop-opacity="0"/></radialGradient>` +
+      `<linearGradient id="${k}s" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5c4a73"/><stop offset=".55" stop-color="#d9826a"/><stop offset="1" stop-color="#f3c47e"/></linearGradient><radialGradient id="${k}l"><stop offset="0" stop-color="#ffe2a8" stop-opacity=".55"/><stop offset="1" stop-color="#ffe2a8" stop-opacity="0"/></radialGradient></defs>` +
+      `<rect width="320" height="180" fill="url(#${k}g)"/><rect width="320" height="180" fill="url(#${k}r)"/>`;
+    const person = (x, y, s, skin, shirt) => `<path d="M${x - 18 * s} ${y + 30 * s}q${18 * s} ${-26 * s} ${36 * s} 0z" fill="${shirt}"/><circle cx="${x}" cy="${y}" r="${10 * s}" fill="${skin}"/>`;
+    const heart = (x, y, s, fill) => `<path d="M${x} ${y + 11 * s}c${-9 * s} ${-6 * s} ${-13 * s} ${-10 * s} ${-13 * s} ${-15 * s}a${6 * s} ${6 * s} 0 0 1 ${13 * s} ${-2 * s}a${6 * s} ${6 * s} 0 0 1 ${13 * s} ${2 * s}c0 ${5 * s} ${-4 * s} ${9 * s} ${-13 * s} ${15 * s}z" fill="${fill}"/>`;
+    const sunWindow = (x, y, w, h) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="6" fill="#b5a48b"/><rect x="${x + 7}" y="${y + 7}" width="${w - 14}" height="${h - 14}" fill="url(#${k}s)"/>` +
+      `<circle cx="${x + w * .48}" cy="${y + h - 16}" r="${Math.min(w, h) * .18}" fill="#ffe1a1"/><path d="M${x + 7} ${y + h - 20}q${w * .2} ${-10} ${w * .42} ${-3}t${w * .5} ${-4}v${27}h${-(w - 14)}z" fill="#2f5a45"/>` +
+      `<rect x="${x + w / 2 - 3}" y="${y + 7}" width="6" height="${h - 14}" fill="#b5a48b"/><rect x="${x + 7}" y="${y + h * .45}" width="${w - 14}" height="6" fill="#b5a48b"/>`;
+    const SC = {
+      circle: () => bg("#2f5a45", "#132219") + `<ellipse cx="160" cy="136" rx="120" ry="26" fill="#0d1811" opacity=".5"/>` +
+        person(104, 60, 1, "#e9c39b", "#8fb8d8") + person(160, 52, 1, "#c98b62", "#e9b872") + person(216, 60, 1, "#f1d3b3", "#9fd3c7") +
+        `<ellipse cx="160" cy="113" rx="72" ry="22" fill="#9c8a6e"/><ellipse cx="160" cy="108" rx="72" ry="22" fill="#d8c7a8"/>` +
+        `<g transform="rotate(-8 160 104)"><rect x="135" y="95" width="24" height="17" rx="2" fill="#f3ead9"/><rect x="161" y="95" width="24" height="17" rx="2" fill="#fbf6ec"/><rect x="139" y="98" width="16" height="11" fill="#8fb8d8"/><rect x="165" y="98" width="16" height="11" fill="#d98c5f"/></g>` +
+        person(76, 128, 1.2, "#d9a88a", "#d9a3a0") + person(244, 128, 1.2, "#e8c6a3", "#b5a48b") +
+        `<g transform="translate(238 18)"><rect width="46" height="32" rx="10" fill="#e6f4f1"/><path d="M11 32l-4 10 13-10z" fill="#e6f4f1"/>${heart(23, 10, .75, "#d98c5f")}</g>`,
+      sundown: () => bg("#1f3a2c", "#12211a") + sunWindow(30, 22, 156, 118) + `<rect x="22" y="138" width="172" height="9" rx="3" fill="#9c8a6e"/>` +
+        `<circle cx="252" cy="80" r="70" fill="url(#${k}l)"/><path d="M229 56h46l13 32h-72z" fill="#e9b872"/><rect x="249" y="88" width="6" height="46" fill="#b5a48b"/><rect x="232" y="134" width="40" height="8" rx="4" fill="#9c8a6e"/><rect x="212" y="142" width="80" height="8" rx="3" fill="#6b5a3e"/><rect x="218" y="150" width="6" height="30" fill="#6b5a3e"/><rect x="280" y="150" width="6" height="30" fill="#6b5a3e"/>`,
+      chair: () => bg("#1f4a4f", "#12211a") + `<rect y="160" width="320" height="20" fill="#0d1811" opacity=".45"/>` +
+        `<path d="M98 42a44 44 0 0 1 22-24M206 38a44 44 0 0 0-22-22" stroke="#b5a48b" stroke-width="3" fill="none" stroke-linecap="round" stroke-dasharray="2 7"/>` +
+        `<circle cx="146" cy="128" r="32" stroke="#e6f4f1" stroke-width="5" fill="none"/><path d="M146 96v64M114 128h64M123 105l46 46M169 105l-46 46" stroke="#e6f4f1" stroke-width="1.5" opacity=".6"/><circle cx="146" cy="128" r="4" fill="#e6f4f1"/>` +
+        `<circle cx="214" cy="152" r="7" stroke="#e6f4f1" stroke-width="4" fill="none"/><path d="M122 62 128 110h76l10 36M122 62l-12-4" stroke="#b5a48b" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>` +
+        `<path d="M151 66 156 104" stroke="#8fb8d8" stroke-width="18" stroke-linecap="round"/><path d="M158 104 198 106" stroke="#5f86ad" stroke-width="14" stroke-linecap="round"/><path d="M198 106 206 142" stroke="#5f86ad" stroke-width="12" stroke-linecap="round"/><path d="M206 144h12" stroke="#3b5670" stroke-width="8" stroke-linecap="round"/>` +
+        `<path d="M150 72 126 38M153 72l26-36" stroke="#e9c39b" stroke-width="8" stroke-linecap="round"/><circle cx="125" cy="36" r="5.5" fill="#e9c39b"/><circle cx="180" cy="34" r="5.5" fill="#e9c39b"/><circle cx="151" cy="50" r="12" fill="#e9c39b"/><path d="M139 48a12 12 0 0 1 24 0c-4-5-20-5-24 0z" fill="#d8d2c8"/>`,
+      talk: () => bg("#27434f", "#132219") + `<path d="M64 86h192" stroke="#b5a48b" stroke-width="2" stroke-dasharray="4 7"/>` +
+        `<path d="M52 158q38-54 76 0z" fill="#d9a3a0"/><circle cx="90" cy="86" r="24" fill="#d9a88a"/><path d="M66 82a24 24 0 0 1 48 0c-10-9-38-9-48 0z" fill="#d8d2c8"/>` +
+        `<path d="M192 158q38-54 76 0z" fill="#9fd3c7"/><circle cx="230" cy="86" r="24" fill="#e8c6a3"/><path d="M206 80a24 24 0 0 1 48 0c-12-12-36-12-48 0z" fill="#6b4a3a"/>` +
+        `<rect x="126" y="22" width="68" height="44" rx="12" fill="#e6f4f1"/><path d="M146 66l-6 13 17-13z" fill="#e6f4f1"/>${heart(160, 34, .9, "#d98c5f")}`,
+      tiers: () => bg("#2f5a45", "#132219") + `<rect x="50" y="120" width="72" height="46" rx="6" fill="#9fd3c7"/><rect x="124" y="94" width="72" height="72" rx="6" fill="#d8c7a8"/><rect x="198" y="68" width="72" height="98" rx="6" fill="#e9b872"/>` +
+        `<g font-family="inherit" font-weight="800" font-size="20" fill="#10251c" text-anchor="middle"><text x="86" y="152">1</text><text x="160" y="152">2</text><text x="234" y="152">3</text></g>` +
+        `<path d="M74 92h9a4.5 4.5 0 1 1 9 0h9v9a4.5 4.5 0 1 1 0 9v9H74z" fill="#e6f4f1"/>` +
+        `<circle cx="154" cy="80" r="7" fill="#e6f4f1"/><rect x="158" y="54" width="3.5" height="26" fill="#e6f4f1"/><path d="M161 54q12 4 9 15" stroke="#e6f4f1" stroke-width="3.5" fill="none" stroke-linecap="round"/>` +
+        `<path d="M234 60c-18-5-20-22-5-30 9 11 13 22 5 30z" fill="#7ad3a4"/><path d="M234 60c1-10-2-18-6-25" stroke="#2f5a45" stroke-width="2" fill="none"/>`,
+      music: () => bg("#2b4658", "#132219") + `<path d="M10 118q75-46 150 0t150 0M10 128q75-46 150 0t150 0" stroke="#b5a48b" stroke-width="2" fill="none" opacity=".6"/>` +
+        `<path d="M84 150 158 138V86L84 98z" fill="#f3ead9"/><path d="M158 138l74 12V98l-74-12z" fill="#fbf6ec"/><path d="M158 86v52" stroke="#c9b99a" stroke-width="2"/>` +
+        `<path d="M96 110l50-8M96 120l50-8M96 130l50-8M170 102l50 8M170 112l50 8M170 122l50 8" stroke="#c9b99a" stroke-width="2"/>` +
+        `<circle cx="100" cy="58" r="8" fill="#e9b872"/><rect x="104" y="30" width="3.5" height="28" fill="#e9b872"/><path d="M107.5 30q12 5 9 17" stroke="#e9b872" stroke-width="3.5" fill="none" stroke-linecap="round"/>` +
+        `<circle cx="206" cy="46" r="7.5" fill="#9fd3c7"/><circle cx="232" cy="40" r="7.5" fill="#9fd3c7"/><path d="M210 46V20l26-6v26" stroke="#9fd3c7" stroke-width="3.5" fill="none"/><path d="M210 22l26-6" stroke="#9fd3c7" stroke-width="7"/>` +
+        `<circle cx="266" cy="84" r="6.5" fill="#e6f4f1"/><rect x="269.5" y="60" width="3" height="24" fill="#e6f4f1"/>`,
+      hands: () => bg("#5b4636", "#1c2a21") + `<path d="M98 160q38-56 76 0z" fill="#9fd3c7"/><circle cx="136" cy="84" r="23" fill="#e8c6a3"/><path d="M113 80a23 23 0 0 1 46 0c-9-11-37-11-46 0z" fill="#e6e1d8"/>` +
+        `<path d="M150 162q37-52 74 0z" fill="#e9b872"/><circle cx="187" cy="90" r="21" fill="#c98b62"/><path d="M166 86a21 21 0 0 1 42 0c-8-12-34-12-42 0z" fill="#3b2a20"/>` + heart(161, 26, 1.3, "#d98c5f") +
+        `<circle cx="60" cy="40" r="3" fill="#fff3d6" opacity=".6"/><circle cx="262" cy="52" r="2.5" fill="#fff3d6" opacity=".6"/><circle cx="240" cy="30" r="2" fill="#fff3d6" opacity=".5"/>`,
+      tea: () => bg("#3f3a55", "#18261d") + sunWindow(196, 20, 100, 76) +
+        `<ellipse cx="118" cy="148" rx="62" ry="11" fill="#d8c7a8"/><path d="M76 98h84v8c0 30-18 42-42 42s-42-12-42-42z" fill="#f3ead9"/><path d="M160 108c20 0 20 28-2 28" stroke="#f3ead9" stroke-width="7" fill="none"/>` +
+        `<ellipse cx="118" cy="99" rx="42" ry="6" fill="#b07a4f"/><path d="M100 86c-8-10 8-16 0-26M118 84c-8-10 8-16 0-26M136 86c-8-10 8-16 0-26" stroke="#e6f4f1" stroke-width="3" fill="none" stroke-linecap="round" opacity=".7"/>`,
+      bubbles: () => bg("#2f4f5a", "#132219") + `<rect x="44" y="34" width="112" height="72" rx="16" fill="#9fd3c7"/><path d="M70 106l-8 18 22-18z" fill="#9fd3c7"/>` +
+        `<text x="100" y="84" font-family="inherit" font-size="40" font-weight="800" fill="#10251c" text-anchor="middle">?</text>` +
+        `<rect x="164" y="66" width="112" height="72" rx="16" fill="#e9b872"/><path d="M250 138l8 18-22-18z" fill="#e9b872"/>` + heart(220, 86, 1.35, "#fbf6ec"),
+      sun: () => bg("#274b5a", "#132219") + `<path d="M40 150Q160 12 280 150" stroke="#b5a48b" stroke-width="3" stroke-dasharray="3 9" fill="none"/>` +
+        `<circle cx="70" cy="104" r="17" fill="#e9b872"/><path d="M70 78v-7M70 137v-7M44 104h-7M103 104h-7M52 86l-5-5M88 86l5-5M52 122l-5 5M88 122l5 5" stroke="#e9b872" stroke-width="3" stroke-linecap="round"/>` +
+        `<circle cx="160" cy="62" r="22" fill="#f3ead9" stroke="#b5a48b" stroke-width="3"/><path d="M160 62V48M160 62l10 6" stroke="#10251c" stroke-width="3" stroke-linecap="round"/>` +
+        `<path d="M258 88a18 18 0 1 0 0 32 14 14 0 1 1 0-32z" fill="#e6f4f1"/><path d="M140 166v-24l20-16 20 16v24z" fill="#2f5a45"/><rect x="154" y="148" width="12" height="12" fill="#e9b872"/>`,
+      plant: () => bg("#2f5a45", "#132219") + `<path d="M170 152l6-36h46l6 36z" fill="#d98c5f"/><rect x="166" y="110" width="66" height="10" rx="3" fill="#c07a50"/>` +
+        `<path d="M199 110c0-22 2-32 0-48" stroke="#7ad3a4" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M199 88c-18-2-25-14-21-23 13 2 21 11 21 23z" fill="#7ad3a4"/>` + heart(212, 66, .9, "#d9a3a0") +
+        `<path d="M58 94h58v34a8 8 0 0 1-8 8H66a8 8 0 0 1-8-8z" fill="#b5a48b"/><path d="M116 102l42-24 4 7-42 26z" fill="#b5a48b"/><path d="M68 94c0-26 38-26 38 0" stroke="#b5a48b" stroke-width="6" fill="none"/>` +
+        `<ellipse cx="170" cy="86" rx="2.5" ry="4" fill="#9fd3c7"/><ellipse cx="178" cy="96" rx="2.5" ry="4" fill="#9fd3c7"/><ellipse cx="170" cy="104" rx="2.5" ry="4" fill="#9fd3c7"/>`
+    };
+    return `<svg viewBox="0 0 320 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">${(SC[key] || SC.circle)()}</svg>`;
+  }
+
+  /* ---------- saved data (sealed: see SEALED_PREFIXES in secureStore.ts) ---------- */
+  function readAcademy(){
+    let raw = null;
+    try { raw = JSON.parse(CG_LS.getItem(A.STORE_KEY) || "null"); } catch (e){ raw = null; }
+    return A.normalizeAcademy(raw);
+  }
+  function writeAcademy(next){
+    acad = next;
+    try { CG_LS.setItem(A.STORE_KEY, JSON.stringify(acad)); return true; }
+    catch (e){ toast("Your progress could not be saved: " + e.message); return false; }
+  }
+  const me = () => A.activeLearner(acad);
+  const prog = mid => A.progressOf(acad, me().id, mid);
+  const pct = x => Math.round(x * 100);
+  const nameOf = l => l.name || "You (no name yet)";
+  const fmtDay = iso => new Date(iso).toLocaleDateString("en-US", { month:"long", day:"numeric", year:"numeric" });
+  const plural = (n, one, many) => n + " " + (n === 1 ? one : many);
+  const reduced = () => { try { return matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e){ return false; } };
+  function announce(t){ const l = root && root.querySelector("#acLive"); if (!l) return; l.textContent = ""; requestAnimationFrame(() => { l.textContent = t; }); }
+  function download(name, text, type){
+    const url = URL.createObjectURL(new Blob([text], { type }));
+    const a = document.createElement("a"); a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+  }
+  function status(m){
+    const p = prog(m.id);
+    if (p.completedAt) return { text:"Completed", share:1, done:true };
+    const c = A.coverage(m, p);
+    return c > 0 || p.quizAttempts ? { text:"In progress · " + pct(c) + "%", share:c, done:false } : { text:"Not started", share:0, done:false };
+  }
+
+  /* ---------- the screen ---------- */
+  function render(view, arg){
+    stopPlayer();
+    if (!A){
+      view.innerHTML = `<p class="eyebrow">Academy</p><h1 class="view-title" tabindex="-1">Caregiver &amp; Professional Academy</h1>
+        <p class="callout">The Academy could not load. Check that assets/services/academy.js is on this site, then reload.</p>`;
+      return;
+    }
+    acad = readAcademy();
+    const m = arg ? A.moduleOf(arg) : null;
+    if (m) return renderModule(view, m);
+    S.tab = arg === "family" ? "family" : arg === "records" ? "records" : "pro";
+    if (arg && S.tab === "pro") try { history.replaceState(null, "", "#/academy"); } catch (e){}     // a lesson that isn't in the catalog
+    view.innerHTML = `<div class="ac ac-anim" id="acRoot">
+        <header class="ac-head">
+          <div><p class="ac-eyebrow">Cognicopia Academy</p><h1 class="ac-title" tabindex="-1">Caregiver &amp; Professional Academy</h1>
+            <p class="ac-lede">Short masterclasses for care teams, gentle guides for families, and a training record with certificates for everyone who learns here. Each lesson has a transcript, a printable guide and, for staff, a knowledge check.</p></div>
+          <div class="ac-learner" id="acLearner"></div>
+        </header>
+        <div class="ac-tabs" role="tablist" aria-label="Academy sections">
+          ${[["pro", "Professional masterclasses", A.MODULES.filter(x => x.track === "pro").length], ["family", "Family caregivers", A.MODULES.filter(x => x.track === "family").length], ["records", "Training records", ""]].map(([id, l, n]) =>
+            `<button type="button" role="tab" class="ac-tab" id="acTab-${id}" data-tab="${id}" aria-controls="acPanel" aria-selected="${id === S.tab}" tabindex="${id === S.tab ? 0 : -1}">${l}${n !== "" ? `<span class="ac-n">${n}<span class="sr-only"> lessons</span></span>` : ""}</button>`).join("")}
+        </div>
+        <div id="acPanel" role="tabpanel" aria-labelledby="acTab-${S.tab}"></div>
+        <div class="sr-only" aria-live="polite" id="acLive"></div>
+      </div>`;
+    root = view.querySelector("#acRoot");
+    bind();
+    renderLearner(); renderPanel();
+    if (S.lastCard){
+      const card = S.lastCard; S.lastCard = "";
+      setTimeout(() => { const a = root && root.querySelector(`[data-card="${CSS.escape(card)}"] .ac-card-a`); if (a) a.focus(); }, 0);   // back from a lesson: to its card
+    }
+  }
+  function syncHash(){
+    const h = "#/academy" + (S.tab === "pro" ? "" : "/" + S.tab);
+    if (location.hash !== h) try { history.replaceState(null, "", h); } catch (e){}
+  }
+  function selectTab(id){
+    if (id === S.tab) return;
+    S.tab = id;
+    root.querySelectorAll(".ac-tab").forEach(t => { const on = t.dataset.tab === id; t.setAttribute("aria-selected", on); t.tabIndex = on ? 0 : -1; });
+    renderPanel(true); syncHash();
+  }
+  function renderPanel(anim){
+    const panel = root.querySelector("#acPanel");
+    panel.setAttribute("aria-labelledby", "acTab-" + S.tab);
+    panel.innerHTML = S.tab === "family" ? familyHtml() : S.tab === "records" ? recordsHtml() : proHtml();
+    if (S.tab === "pro") renderGrid();
+    if (anim && !reduced()){ panel.classList.remove("ac-anim"); void panel.offsetWidth; panel.classList.add("ac-anim"); }
+  }
+
+  /* the learner: who is learning on this computer */
+  function renderLearner(){
+    const box = root && root.querySelector("#acLearner"); if (!box) return;
+    const l = me(), y = new Date().getFullYear(), rec = A.yearRecord(acad, l.id, y);
+    const editing = S.edit === "add" || S.edit === l.id;
+    box.innerHTML = `<label for="acWho">Learning as</label>
+      <div class="ac-inline"><select id="acWho">${acad.learners.map(x => `<option value="${x.id}" ${x.id === l.id ? "selected" : ""}>${esc(nameOf(x))}</option>`).join("")}<option value="__add">Add a learner…</option></select>
+        <button type="button" class="ac-btn ac-btn-sm" data-act="edit-learner" aria-expanded="${editing}">Edit</button></div>
+      <p class="ac-hint">${esc(A.ROLES[l.role])} · ${plural(rec.completed.length, "lesson", "lessons")} completed in ${y} · ${esc(A.hoursText(rec.minutes))} of training</p>
+      ${editing ? learnerForm(S.edit === "add" ? null : l) : ""}`;
+  }
+  function learnerForm(l){
+    const why = S.pendingCert ? `<p class="ac-hint">Add your name as it should appear on your certificate.</p>` : "";
+    return `<form class="ac-form" data-form="learner">${why}
+      <div class="ac-field"><label for="acLName">${l ? "Name" : "New learner's name"}</label><input id="acLName" type="text" maxlength="${A.LIMITS.name}" value="${esc(l ? l.name : "")}" autocomplete="name" placeholder="As it should appear on certificates"></div>
+      <div class="ac-field"><label for="acLRole">Role</label><select id="acLRole">${Object.keys(A.ROLES).map(r => `<option value="${r}" ${(l ? l.role : "cna") === r ? "selected" : ""}>${esc(A.ROLES[r])}</option>`).join("")}</select></div>
+      <div class="ac-actions" style="margin:0"><button type="submit" class="ac-btn ac-btn-primary ac-btn-sm">${l ? "Save" : "Add learner"}</button><button type="button" class="ac-btn ac-btn-sm" data-act="cancel-learner">Cancel</button>
+        ${l && acad.learners.length > 1 ? `<button type="button" class="ac-btn ac-btn-sm ac-btn-danger" data-act="remove-learner">Remove learner</button>` : ""}</div>
+      <p class="ac-hint">Learners are names on this computer, not logins. Progress is saved here, sealed like resident profiles.</p>
+    </form>`;
+  }
+
+  /* ---------- the masterclass grid ---------- */
+  function proHtml(){
+    const pro = A.MODULES.filter(m => m.track === "pro"), topics = Array.from(new Set(pro.reduce((l, m) => l.concat(m.topics), [])));
+    return `<div class="ac-filters">
+        <div class="ac-field"><label for="acQ">Search</label><input id="acQ" type="search" value="${esc(S.q)}" placeholder="Title, topic or skill" autocomplete="off"></div>
+        <fieldset class="ac-field"><legend>Topic</legend><div class="ac-chips">${[["", "All"]].concat(topics.map(t => [t, A.TOPICS[t]])).map(([v, l]) => `<label><input type="radio" name="acTopic" value="${v}" ${S.topic === v ? "checked" : ""}><span>${esc(l)}</span></label>`).join("")}</div></fieldset>
+        <div class="ac-field"><label for="acAud">For</label><select id="acAud"><option value="">Everyone on the team</option>${["activities", "nursing", "therapy"].map(a => `<option value="${a}" ${S.aud === a ? "selected" : ""}>${esc(A.AUDIENCES[a])}</option>`).join("")}</select></div>
+      </div>
+      <p class="ac-count" id="acCount" aria-live="polite"></p>
+      <div class="ac-grid" id="acGrid"></div>`;
+  }
+  function matches(m){
+    if (S.topic && m.topics.indexOf(S.topic) < 0) return false;
+    if (S.aud && m.audience.indexOf(S.aud) < 0) return false;
+    const q = S.q.trim().toLowerCase();
+    if (!q) return true;
+    const hay = [m.title, m.subtitle, m.blurb, m.instructor.focus].concat(m.topics.map(t => A.TOPICS[t]), m.chapters.map(c => c.title)).join(" ").toLowerCase();
+    return q.split(/\s+/).every(w => hay.indexOf(w) >= 0);
+  }
+  function renderGrid(){
+    const list = A.MODULES.filter(m => m.track === "pro" && matches(m)), grid = root.querySelector("#acGrid");
+    root.querySelector("#acCount").textContent = list.length ? plural(list.length, "masterclass", "masterclasses") + (S.q || S.topic || S.aud ? " match" : "") : "";
+    grid.innerHTML = list.length ? list.map(cardHtml).join("") : `<div class="ac-empty" style="grid-column:1/-1">No masterclass matches that yet. <button type="button" class="ac-btn ac-btn-sm" data-act="clear-filters">Show all</button></div>`;
+  }
+  function cardHtml(m){
+    const st = status(m), t = A.minutes(m), fam = m.track === "family";
+    return `<article class="ac-card${fam ? " is-family" : ""}" data-card="${m.id}">
+      <div class="ac-thumb">${art(m.art)}<span class="ac-play" aria-hidden="true">${I.play}</span><span class="ac-dur"><span class="sr-only">Lesson length </span>${A.clock(A.lessonSeconds(m))}</span>
+        ${st.done ? `<span class="ac-flag">${I.check}Completed</span>` : ""}</div>
+      <div class="ac-card-body">
+        <h3><a class="ac-card-a" href="#/academy/${m.id}">${esc(m.title)}</a></h3>
+        <p class="ac-card-sub">${esc(m.subtitle)}</p>
+        <div class="ac-instructor"><span class="ac-avatar" aria-hidden="true">${esc(m.instructor.initials)}</span><span><b>${esc(m.instructor.name)}</b><small>${esc(m.instructor.focus)}</small></span></div>
+        <div class="ac-card-foot">
+          <div class="ac-tags">${fam ? `<span class="ac-tag">${t.total} min</span>` : `<span class="ac-tag">${t.total} min training</span><span class="ac-tag">Knowledge check</span>`}${m.audience.filter(a => a !== "family").slice(0, 2).map(a => `<span class="ac-tag">${esc(A.AUDIENCES[a])}</span>`).join("")}</div>
+          <div class="ac-prog"><span class="ac-bar" aria-hidden="true"><span style="width:${pct(st.share)}%"></span></span><span>${esc(st.text)}</span></div>
+        </div>
+      </div>
+    </article>`;
+  }
+
+  /* ---------- the family track ---------- */
+  function familyHtml(){
+    const fam = A.MODULES.filter(m => m.track === "family");
+    return `<div class="ac-family-intro"><h2>For family caregivers</h2>
+        <p>Short, gentle guides for the people caring at home or visiting: a minute or two each, with a transcript to read at your own pace. The toolkits print on one or two pages, for the fridge, the visit bag or the person who helps next.</p></div>
+      <h2 class="ac-h2">Guides</h2>
+      <div class="ac-grid">${fam.map(cardHtml).join("")}</div>
+      <h2 class="ac-h2">Quick-start toolkits</h2>
+      <div class="ac-kits">${A.TOOLKITS.map(kitHtml).join("")}</div>`;
+  }
+  function kitHtml(t){
+    return `<article class="ac-kit" aria-labelledby="acKit-${t.id}">
+      <span class="ac-kit-ic">${I.kit[t.icon] || ""}</span>
+      <h3 id="acKit-${t.id}">${esc(t.title)}</h3>
+      <p>${esc(t.blurb)}</p>
+      <details><summary>What's inside</summary><ul>${t.sections.map(s => `<li>${esc(s.heading)}</li>`).join("")}</ul></details>
+      <div class="ac-actions"><button type="button" class="ac-btn ac-btn-family ac-btn-sm" data-kit="${t.id}">${I.download}Download PDF</button></div>
+    </article>`;
+  }
+
+  /* ---------- training records ---------- */
+  function recordsHtml(){
+    const ys = A.years(acad);
+    if (ys.indexOf(S.year) < 0) S.year = ys[0];
+    const recs = acad.learners.map(l => A.yearRecord(acad, l.id, S.year));
+    const done = recs.reduce((n, r) => n + r.completed.length, 0), mins = recs.reduce((n, r) => n + r.minutes, 0);
+    const certs = recs.reduce((n, r) => n + r.completed.filter(d => d.progress.cert).length, 0), goal = A.IN_SERVICE_HOURS * 60;
+    const f = S.found;
+    return `<div class="ac-guide-top" style="margin:0 0 14px"><h2 style="margin:0;font-size:22px">Training records</h2>
+        <div class="ac-field" style="min-width:140px"><label for="acYear" class="sr-only">Year</label><select id="acYear">${ys.map(y => `<option value="${y}" ${y === S.year ? "selected" : ""}>${y}</option>`).join("")}</select></div></div>
+      <ul class="ac-kpis" aria-label="${S.year} at a glance">
+        <li class="ac-kpi"><span class="ac-kpi-v">${acad.learners.length}</span><span class="ac-kpi-l">${acad.learners.length === 1 ? "Learner" : "Learners"} on this computer</span></li>
+        <li class="ac-kpi"><span class="ac-kpi-v">${done}</span><span class="ac-kpi-l">Lessons completed in ${S.year}</span></li>
+        <li class="ac-kpi"><span class="ac-kpi-v">${esc(A.hoursText(mins))}</span><span class="ac-kpi-l">Training time in ${S.year}</span></li>
+        <li class="ac-kpi"><span class="ac-kpi-v">${certs}</span><span class="ac-kpi-l">Certificates issued</span></li>
+      </ul>
+      <div class="ac-table-wrap"><table class="ac-table"><caption class="sr-only">Training by learner, ${S.year}</caption>
+        <thead><tr><th scope="col">Learner</th><th scope="col">Role</th><th scope="col" class="n">Completed</th><th scope="col">Training time</th><th scope="col">Certificates</th></tr></thead>
+        <tbody>${recs.map(r => `<tr><th scope="row">${esc(nameOf(r.learner))}${r.learner.id === me().id ? ` <span class="ac-tag">learning now</span>` : ""}</th><td>${esc(A.ROLES[r.learner.role])}</td><td class="n">${r.completed.length}${r.inProgress ? `<br><small>${r.inProgress} in progress</small>` : ""}</td>
+          <td>${r.learner.role === "cna" ? `<div class="ac-meter"><span class="ac-bar" aria-hidden="true"><span style="width:${Math.min(100, pct(r.minutes / goal))}%"></span></span><small>${esc(A.hoursText(r.minutes))} of the ${A.IN_SERVICE_HOURS}-hour yearly in-service minimum</small></div>` : esc(A.hoursText(r.minutes))}</td>
+          <td>${r.completed.filter(d => d.progress.cert).length ? `<ul class="ac-certs">${r.completed.filter(d => d.progress.cert).map(d => `<li><span>${esc(d.module.title)}<br><small>${esc(d.progress.cert)} · ${esc(fmtDay(d.progress.completedAt))}</small></span><button type="button" class="ac-btn ac-btn-sm" data-cert="${d.module.id}" data-learner="${r.learner.id}">${I.download}PDF</button></li>`).join("")}</ul>` : `<small>None in ${S.year}</small>`}</td></tr>`).join("")}</tbody></table></div>
+      <div class="ac-actions"><button type="button" class="ac-btn" data-act="csv">${I.download}Download ${S.year} records (CSV)</button></div>
+      <div class="ac-rec-grid">
+        <section class="ac-panel" aria-labelledby="acCheckH"><h2 id="acCheckH">Check a certificate</h2>
+          <form data-form="check" class="ac-inline" style="margin-top:8px"><label for="acCertId" class="sr-only">Certificate ID</label><input id="acCertId" type="text" placeholder="CA-XXXX-XXXX" maxlength="12" autocomplete="off" value="${esc(f ? f.id : "")}"><button type="submit" class="ac-btn">Check</button></form>
+          ${f ? (f.hit ? `<p class="ac-found is-ok" role="status">${I.check} Found on this computer: <b>${esc(nameOf(f.hit.learner))}</b> completed <b>${esc(f.hit.module.title)}</b> on ${esc(fmtDay(f.hit.progress.completedAt))}.</p>`
+            : `<p class="ac-found is-bad" role="status">No certificate with that ID is recorded on this computer.</p>`) : `<p class="ac-hint">Certificates are recorded on the computer where the lesson was completed.</p>`}
+        </section>
+        <section class="ac-panel" aria-labelledby="acApprH"><h2 id="acApprH">Certificate statement</h2>
+          <p class="ac-hint">Leave this empty unless an accrediting body has approved this training for continuing education credit. Then enter the approval statement exactly as your approval letter gives it, and it prints on every certificate instead of the in-service statement.</p>
+          <div class="ac-field" style="margin-top:8px"><label for="acApproval">Approval statement</label><textarea id="acApproval" maxlength="${A.LIMITS.approval}">${esc(acad.approval)}</textarea></div>
+          <p class="ac-hint">Without one, certificates say: “${esc(A.NOT_ACCREDITED)}”</p>
+        </section>
+      </div>
+      <p class="ac-note">Federal rules for nursing homes call for at least ${A.IN_SERVICE_HOURS} hours of in-service training a year for nurse aides, including dementia management and abuse prevention (42 CFR 483.95(g)). Your facility decides what counts toward its in-service program. These records and certificates document completion on this computer; they are not accredited continuing education unless your facility has entered an approval statement above.</p>
+      <section class="ac-panel" style="margin-top:16px" aria-labelledby="acWipeH"><h2 id="acWipeH">Shared computer?</h2>
+        <p class="ac-hint">Download the records first if you need them. Removing them deletes every learner, their progress and their certificate records from this computer, and cannot be undone.</p>
+        <div class="ac-actions"><button type="button" class="ac-btn ac-btn-danger" data-act="wipe">Remove the Academy's records from this computer</button></div></section>`;
+  }
+
+  /* ---------- one module ---------- */
+  function renderModule(view, m){
+    const pro = m.track === "pro", t = A.minutes(m);
+    S.back = pro ? "pro" : "family"; S.lastCard = m.id;
+    if (!S.quiz || S.quiz.mid !== m.id){ S.quiz = { mid:m.id, answers:m.quiz.map(() => null), graded:null }; S.pane = "transcript"; }   // another lesson opens on its transcript
+    if (!pro && S.pane === "quiz") S.pane = "transcript";
+    view.innerHTML = `<div class="ac ac-anim" id="acRoot">
+        <nav class="ac-crumbs" aria-label="Academy"><a class="ac-back" href="#/academy${pro ? "" : "/family"}">${I.arrow}${pro ? "All masterclasses" : "Family caregivers"}</a></nav>
+        <div class="ac-mod${pro ? "" : " is-family"}">
+          <header class="ac-mod-head">
+            <p class="ac-eyebrow">${pro ? "Masterclass" : "Family guide"} · ${esc(m.topics.map(x => A.TOPICS[x]).join(" · "))}</p>
+            <h1 class="ac-title" tabindex="-1">${esc(m.title)}</h1>
+            <p class="ac-lede">${esc(m.blurb)}</p>
+            <div class="ac-mod-meta">
+              <div class="ac-instructor"><span class="ac-avatar" aria-hidden="true">${esc(m.instructor.initials)}</span><span><b>${esc(m.instructor.name)}</b><small>${esc(m.instructor.focus)}</small></span></div>
+              <div class="ac-tags"><span class="ac-tag">${A.clock(A.lessonSeconds(m))} lesson</span>${pro ? `<span class="ac-tag">${t.total} min training</span><span class="ac-tag">${m.quiz.length}-question check</span>` : ""}${m.audience.filter(a => a !== "family").map(a => `<span class="ac-tag">${esc(A.AUDIENCES[a])}</span>`).join("")}</div>
+            </div>
+          </header>
+          ${playerHtml(m)}
+          <aside class="ac-side" aria-label="Your progress and what's next">
+            <section class="ac-panel" id="acTrack" aria-labelledby="acTrackH"></section>
+            <section class="ac-panel" id="acNext" aria-labelledby="acNextH"></section>
+          </aside>
+          <div class="ac-panes">
+            <div class="ac-subtabs" role="tablist" aria-label="Lesson materials">${[["transcript", "Transcript"], ["guide", pro ? "Companion guide" : "Guide and toolkits"]].concat(pro ? [["quiz", "Knowledge check"]] : []).map(([k, l]) =>
+              `<button type="button" role="tab" class="ac-subtab" id="acSub-${k}" data-pane="${k}" aria-controls="acPane" aria-selected="${k === S.pane}" tabindex="${k === S.pane ? 0 : -1}">${l}</button>`).join("")}</div>
+            <div class="ac-pane" id="acPane" role="tabpanel" aria-labelledby="acSub-${S.pane}"></div>
+          </div>
+        </div>
+        <div class="sr-only" aria-live="polite" id="acLive"></div>
+      </div>`;
+    root = view.querySelector("#acRoot");
+    bind();
+    mountPlayer(m);
+    renderTrack(); renderNext(); renderPane();
+  }
+  const current = () => P ? P.m : null;
+
+  /* the lesson player */
+  function voices(){
+    try { return (window.speechSynthesis ? speechSynthesis.getVoices() : []).filter(v => v.localService && /^en(-|_|$)/i.test(v.lang)); } catch (e){ return []; }
+  }
+  function playerHtml(m){
+    if (m.video && m.video.src){
+      return `<div class="ac-player" id="acPlayer"><video class="ac-video" id="acVideo" controls preload="metadata" playsinline aria-label="${esc(m.title)}">
+        <source src="${esc(m.video.src)}">${m.video.captions ? `<track kind="captions" srclang="en" label="English" src="${esc(m.video.captions)}" default>` : ""}</video></div>`;
+    }
+    const cues = A.cues(m), total = cues.reduce((s, q) => s + q.dur, 0);
+    const chapDur = m.chapters.map((c, ci) => cues.filter(q => q.chapter === ci).reduce((s, q) => s + q.dur, 0));
+    return `<div class="ac-player" id="acPlayer">
+      <div class="ac-stage" id="acStage" tabindex="0" role="group" aria-roledescription="lesson player" aria-label="${esc(m.title)}, narrated lesson. Space plays or pauses; the arrow keys move a line at a time; C turns captions on or off.">
+        <div class="ac-stage-art" aria-hidden="true">${art(m.art)}</div>
+        <div class="ac-slide" id="acSlide" aria-hidden="true"></div>
+        <p class="ac-cc" id="acCC" aria-hidden="true"></p>
+        <span class="ac-kind" aria-hidden="true">Narrated lesson</span>
+        <button type="button" class="ac-bigplay" id="acBig" aria-label="Play the lesson">${I.play}</button>
+      </div>
+      <div class="ac-controls">
+        <button type="button" class="ac-cbtn" data-pl="toggle" id="acToggle" aria-label="Play the lesson">${I.play}</button>
+        <button type="button" class="ac-cbtn" data-pl="back" aria-label="Back ten seconds">${I.back}</button>
+        <button type="button" class="ac-cbtn" data-pl="prev" aria-label="Previous chapter">${I.prev}</button>
+        <button type="button" class="ac-cbtn" data-pl="next" aria-label="Next chapter">${I.next}</button>
+        <span class="ac-time" id="acTime" aria-hidden="true">0:00 / ${A.clock(total)}</span>
+        <input class="ac-seek" id="acSeek" type="range" min="0" max="${total.toFixed(1)}" step="0.1" value="0" aria-label="Position in the lesson">
+        <label class="sr-only" for="acRate">Speed</label><select id="acRate">${[0.75, 1, 1.25, 1.5].map(r => `<option value="${r}" ${r === S.rate ? "selected" : ""}>${r}×</option>`).join("")}</select>
+        <button type="button" class="ac-cbtn" data-pl="cc" aria-pressed="${S.cc}" aria-label="Captions">${I.cc}</button>
+        <button type="button" class="ac-cbtn" data-pl="voice" id="acVoiceBtn" aria-pressed="false" aria-label="Read aloud with this computer's voice" hidden>${I.voice}</button>
+        <button type="button" class="ac-cbtn" data-pl="full" aria-label="Full screen">${I.full}</button>
+      </div>
+      <div class="ac-chapbar" id="acChaps">${m.chapters.map((c, i) => `<button type="button" class="ac-chap" data-chap="${i}" style="flex-grow:${chapDur[i].toFixed(1)}" aria-label="Chapter ${i + 1}: ${esc(c.title)}" title="${i + 1}. ${esc(c.title)}"><span><span style="width:0%"></span></span></button>`).join("")}</div>
+    </div>`;
+  }
+  function mountPlayer(m){
+    const p = prog(m.id);
+    if (m.video && m.video.src){ mountVideo(m, p); return; }
+    const cues = A.cues(m), total = cues.reduce((s, q) => s + q.dur, 0);
+    const firstUnplayed = cues.filter(q => p.played.indexOf(q.i) < 0)[0];
+    P = { m, cues, total, t:0, from:0, playing:false, played:new Set(p.played), raf:0, last:0, cue:-1, drawn:-1, chapter:-1, token:0, cueStart:0, voice:false, dirty:false, lastSave:0, sec:-1, scrubbing:false, seekTimer:0 };
+    if (firstUnplayed && p.played.length) P.t = P.from = firstUnplayed.start;
+    const vs = voices(), btn = root.querySelector("#acVoiceBtn");
+    const useVoices = list => { if (!btn || !P || P.m !== m) return; btn.hidden = !list.length; P.voice = !!list.length && S.voice; btn.setAttribute("aria-pressed", String(P.voice)); };
+    useVoices(vs);
+    if (!vs.length && window.speechSynthesis && speechSynthesis.addEventListener){ const once = () => { speechSynthesis.removeEventListener("voiceschanged", once); useVoices(voices()); }; speechSynthesis.addEventListener("voiceschanged", once); }
+    const seek = root.querySelector("#acSeek");
+    seek.addEventListener("pointerdown", () => { P.scrubbing = true; });
+    seek.addEventListener("pointerup", () => { P.scrubbing = false; });
+    seek.addEventListener("input", () => seekTo(+seek.value));
+    seek.addEventListener("change", () => { P.scrubbing = false; seekTo(+seek.value); });
+    root.querySelector("#acRate").addEventListener("change", e => { S.rate = +e.target.value; if (P.playing && P.voice) speakCue(P.cue); });
+    const stage = root.querySelector("#acStage");
+    stage.addEventListener("click", e => { if (!e.target.closest("button")) toggle(); });
+    stage.addEventListener("keydown", stageKey);
+    update(true);
+  }
+  function mountVideo(m, p){
+    const v = root.querySelector("#acVideo");
+    P = { m, video:v, playing:false, watched:p.video * 1, lastT:0, dirty:false, lastSave:0 };
+    v.addEventListener("play", () => { P.playing = true; P.lastT = v.currentTime; });
+    v.addEventListener("pause", () => { P.playing = false; saveProgress(); });
+    v.addEventListener("timeupdate", () => {
+      const t = v.currentTime, d = t - P.lastT;
+      if (!v.seeking && d > 0 && d < 1.5 && v.duration) { P.watched = Math.min(1, P.watched + d / v.duration); P.dirty = true; }
+      P.lastT = t;
+      if (P.dirty && performance.now() - P.lastSave > 4000) saveProgress();
+    });
+    v.addEventListener("ended", () => { saveProgress(); renderTrack(); });
+    v.addEventListener("error", () => { v.insertAdjacentHTML("afterend", `<p class="ac-hint" style="padding:10px 12px">The recording could not be played on this computer. The transcript has every word of the lesson.</p>`); });
+  }
+  function cueAt(t){ const c = P.cues; let lo = 0, hi = c.length - 1; while (lo < hi){ const mid = (lo + hi + 1) >> 1; if (c[mid].start <= t + 1e-6) lo = mid; else hi = mid - 1; } return lo; }
+  function play(){
+    if (!P || !P.cues || P.playing) return;
+    if (P.t >= P.total - 0.05){ P.t = 0; P.from = 0; }
+    P.playing = true; P.last = performance.now();
+    root.querySelector("#acPlayer").classList.add("is-playing");
+    if (P.voice) speakCue(cueAt(P.t)); else P.raf = requestAnimationFrame(tick);
+    update(true);
+  }
+  function pause(){
+    if (!P || !P.playing) return;
+    P.playing = false; P.token++; cancelAnimationFrame(P.raf);
+    try { if (window.speechSynthesis) speechSynthesis.cancel(); } catch (e){}
+    const pl = root && root.querySelector("#acPlayer"); if (pl) pl.classList.remove("is-playing");
+    saveProgress(); update(true);
+  }
+  const toggle = () => { if (P && P.video){ if (P.video.paused) P.video.play(); else P.video.pause(); return; } if (P && P.playing) pause(); else play(); };
+  function tick(now){
+    if (!P || !P.playing) return;
+    const dt = Math.min(0.25, (now - P.last) / 1000); P.last = now;
+    if (P.voice){
+      const c = P.cues[P.cue];
+      if (c) P.t = Math.min(c.start + (now - P.cueStart) / 1000 * S.rate, c.start + c.dur - 0.05);
+    } else {
+      const t0 = P.t, t1 = Math.min(P.total, t0 + dt * S.rate);
+      for (let i = cueAt(t0); i < P.cues.length && P.cues[i].start + P.cues[i].dur <= t1 + 1e-6; i++) if (P.cues[i].start >= P.from - 0.3) markCue(i);
+      P.t = t1;
+      if (t1 >= P.total - 1e-6){ finish(); return; }
+    }
+    if (P.dirty && now - P.lastSave > 4000) saveProgress();
+    update(false);
+    P.raf = requestAnimationFrame(tick);
+  }
+  function speakCue(i){
+    const c = P.cues[i]; if (!c) return finish();
+    const pl = P, token = ++pl.token, live = () => P === pl && token === pl.token && pl.playing;   // a later line, a pause or another lesson ends this one
+    clearTimeout(pl.seekTimer);
+    try { speechSynthesis.cancel(); } catch (e){}
+    pl.cue = i; pl.t = c.start; pl.cueStart = performance.now();
+    const u = new SpeechSynthesisUtterance(c.text), v = voices()[0];
+    if (v){ u.voice = v; u.lang = v.lang; }
+    u.rate = S.rate;
+    u.onend = () => { if (!live()) return; if (c.start >= pl.from - 0.3) markCue(i); if (i + 1 < pl.cues.length) speakCue(i + 1); else finish(); };
+    u.onerror = e => { if (!live() || e.error === "interrupted" || e.error === "canceled") return;
+      pl.voice = false; const b = root.querySelector("#acVoiceBtn"); if (b) b.setAttribute("aria-pressed", "false"); pl.last = performance.now(); pl.raf = requestAnimationFrame(tick); };
+    speechSynthesis.speak(u);
+    cancelAnimationFrame(pl.raf); pl.raf = requestAnimationFrame(tick);
+    update(false);
+  }
+  function markCue(i){ if (!P.played.has(i)){ P.played.add(i); P.dirty = true; } }
+  function finish(){
+    P.t = P.total; P.playing = false; P.token++; cancelAnimationFrame(P.raf);
+    const pl = root.querySelector("#acPlayer"); if (pl) pl.classList.remove("is-playing");
+    saveProgress(); update(true);
+    announce("The lesson has finished." + (A.readiness(P.m, prog(P.m.id)).watched ? " It counts as watched." : ""));
+  }
+  /* While reading aloud, a seek stops the voice at once and speaks from the new line
+     when the slider settles (dragging would otherwise restart it at every step). */
+  function seekTo(t){
+    if (!P || !P.cues) return;
+    P.t = Math.max(0, Math.min(P.total, t)); P.from = P.t;
+    if (P.playing && P.voice){
+      const pl = P;
+      pl.token++; try { speechSynthesis.cancel(); } catch (e){}
+      pl.cue = cueAt(pl.t); pl.cueStart = performance.now();
+      clearTimeout(pl.seekTimer);
+      pl.seekTimer = setTimeout(() => { if (P === pl && pl.playing && pl.voice) speakCue(cueAt(pl.t)); }, 220);
+    }
+    update(true);
+  }
+  const seekCue = i => { const c = P.cues[Math.max(0, Math.min(P.cues.length - 1, i))]; seekTo(c.start); };
+  function stageKey(e){
+    const k = e.key.toLowerCase(), onBtn = e.target !== e.currentTarget && !!e.target.closest("button");
+    if (k === " " || k === "enter" || k === "k"){ if (onBtn && k !== "k") return; e.preventDefault(); toggle(); }   // the play button answers its own Space and Enter
+    else if (k === "arrowright"){ e.preventDefault(); seekCue(cueAt(P.t) + 1); }
+    else if (k === "arrowleft"){ e.preventDefault(); const i = cueAt(P.t); seekCue(P.t - P.cues[i].start > 1.5 ? i : i - 1); }
+    else if (k === "home"){ e.preventDefault(); seekTo(0); }
+    else if (k === "end"){ e.preventDefault(); seekTo(P.total - 0.1); }
+    else if (k === "c"){ e.preventDefault(); setCC(!S.cc); }
+    else if (k === "f"){ e.preventDefault(); fullscreen(); }
+  }
+  function setCC(on){ S.cc = on; const b = root.querySelector('[data-pl="cc"]'); if (b) b.setAttribute("aria-pressed", String(on)); update(true); announce(on ? "Captions on" : "Captions off"); }
+  function fullscreen(){ const el = root.querySelector("#acPlayer"); try { if (document.fullscreenElement) document.exitFullscreen(); else if (el.requestFullscreen) el.requestFullscreen(); } catch (e){} }
+  /* Draw the player: per frame only the clock and the bar; the slide, the caption and the transcript when the line changes. */
+  function update(full){
+    if (!P || !P.cues || !root) return;
+    const i = cueAt(P.t), c = P.cues[i], sec = Math.floor(P.t);
+    const seek = root.querySelector("#acSeek");
+    if (seek && !P.scrubbing) seek.value = P.t.toFixed(1);             // the slider moves smoothly; its spoken value once a second
+    if (sec !== P.sec || full){
+      P.sec = sec;
+      const time = root.querySelector("#acTime"); if (time) time.textContent = A.clock(P.t) + " / " + A.clock(P.total);
+      if (seek) seek.setAttribute("aria-valuetext", A.spoken(P.t) + " of " + A.spoken(P.total));
+    }
+    if (i !== P.drawn || full){                        // P.cue is the line being read aloud; P.drawn the line on screen
+      P.drawn = i;
+      if (!P.voice || !P.playing) P.cue = i;
+      const cc = root.querySelector("#acCC"), showCC = S.cc && (P.playing || P.t > 0);
+      if (cc){ cc.hidden = !S.cc; cc.textContent = showCC ? c.text : ""; }
+      const stage = root.querySelector("#acStage"); if (stage) stage.classList.toggle("has-cc", showCC);   // a small picture gives the caption the room
+      if (c.chapter !== P.chapter || full){
+        const ch = P.m.chapters[c.chapter], slide = root.querySelector("#acSlide");
+        if (slide){ slide.innerHTML = `<p class="ac-slide-k">Chapter ${c.chapter + 1} of ${P.m.chapters.length}</p><h2 class="ac-slide-t">${esc(ch.title)}</h2><p class="ac-slide-s">${esc(ch.slide)}</p>`;
+          if (c.chapter !== P.chapter && P.chapter !== -1 && !reduced()){ slide.classList.remove("is-new"); void slide.offsetWidth; slide.classList.add("is-new"); } }
+        P.chapter = c.chapter;
+        root.querySelectorAll(".ac-chap").forEach(b => b.classList.toggle("is-now", +b.dataset.chap === c.chapter));
+      }
+      const script = root.querySelector("#acScript");
+      if (script){
+        script.querySelectorAll(".is-now").forEach(el => el.classList.remove("is-now"));
+        const el = script.querySelector(`[data-cue="${i}"]`);
+        if (el && (P.playing || P.t > 0)){ el.classList.add("is-now"); if (S.follow && P.playing){ const top = el.offsetTop - script.clientHeight / 3; script.scrollTop = Math.max(0, top); } }
+      }
+    }
+    const btn = root.querySelector("#acToggle"), big = root.querySelector("#acBig");
+    const label = P.playing ? "Pause the lesson" : P.t >= P.total - 0.05 ? "Replay the lesson" : P.t > 0 ? "Resume the lesson" : "Play the lesson";
+    if (btn && btn.getAttribute("aria-label") !== label){ btn.setAttribute("aria-label", label); btn.innerHTML = P.playing ? I.pause : P.t >= P.total - 0.05 ? I.replay : I.play; }
+    if (big && big.getAttribute("aria-label") !== label){ big.setAttribute("aria-label", label); big.innerHTML = P.t >= P.total - 0.05 ? I.replay : I.play; }
+    if (full || P.dirty) chapterFills();
+  }
+  function chapterFills(){
+    if (!P || !P.cues) return;
+    P.m.chapters.forEach((ch, ci) => {
+      const own = P.cues.filter(q => q.chapter === ci), total = own.reduce((s, q) => s + q.dur, 0), got = own.filter(q => P.played.has(q.i)).reduce((s, q) => s + q.dur, 0);
+      const bar = root.querySelector(`.ac-chap[data-chap="${ci}"] > span > span`); if (bar) bar.style.width = (total ? Math.round(got / total * 100) : 0) + "%";
+      const b = root.querySelector(`.ac-chap[data-chap="${ci}"]`); if (b) b.setAttribute("aria-label", `Chapter ${ci + 1}: ${ch.title}, ${total ? Math.round(got / total * 100) : 0}% played`);
+    });
+    root.querySelectorAll("#acScript [data-cue]").forEach(el => el.classList.toggle("is-played", P.played.has(+el.dataset.cue)));
+  }
+  function saveProgress(){
+    if (!P) return;
+    P.lastSave = performance.now();
+    if (!P.dirty) return;
+    P.dirty = false;
+    const before = A.readiness(P.m, prog(P.m.id)).watched;
+    if (P.video) writeAcademy(A.markVideo(acad, me().id, P.m.id, P.watched));
+    else writeAcademy(A.markPlayed(acad, me().id, P.m.id, Array.from(P.played)));
+    renderTrack();
+    if (!before && A.readiness(P.m, prog(P.m.id)).watched) announce("The lesson now counts as watched.");
+  }
+  function stopPlayer(){
+    if (!P) return;
+    if (P.video){ try { P.video.pause(); } catch (e){} }
+    else if (P.playing){ P.playing = false; P.token++; cancelAnimationFrame(P.raf); try { if (window.speechSynthesis) speechSynthesis.cancel(); } catch (e){} }
+    saveProgress();
+    P = null;
+  }
+
+  /* the tracker, what's next, and the panes */
+  function renderTrack(){
+    const box = root && root.querySelector("#acTrack"), m = current(); if (!box || !m) return;
+    const p = prog(m.id), r = A.readiness(m, p), cov = A.coverage(m, p), pro = m.track === "pro", t = A.minutes(m), l = me();
+    const step = (n, done, now, title, detail, bar) => `<li class="${done ? "is-done" : now ? "is-now" : ""}"><span class="ac-stepn">${done ? I.check + '<span class="sr-only">Done: </span>' : n}</span><div><b>${title}</b>${bar != null ? `<span class="ac-bar" aria-hidden="true"><span style="width:${bar}%"></span></span>` : ""}<small>${detail}</small></div></li>`;
+    const quizText = !pro ? "" : p.quizPassedAt ? `Passed · best score ${pct(p.quizBest)}%` : p.quizAttempts ? `Best score so far ${pct(p.quizBest)}% · ${pct(A.PASS)}% passes` : `Not taken yet · ${pct(A.PASS)}% passes`;
+    const certNeedsName = S.pendingCert === m.id && !l.name;
+    box.innerHTML = `<h2 id="acTrackH">Your progress</h2>
+      <p class="ac-hint" style="margin:0">Learning as <b>${esc(nameOf(l))}</b></p>
+      <ol class="ac-steps">
+        ${step(1, r.watched, !r.watched, "Watch or read the lesson", p.read ? "Read in full" : pct(cov) + "% played · " + pct(A.WATCHED) + "% counts", pct(cov))}
+        ${pro ? step(2, r.quiz, r.watched && !r.quiz, "Pass the knowledge check", quizText) : ""}
+        ${step(pro ? 3 : 2, !!p.completedAt, r.ready && !p.completedAt, "Mark as complete", p.completedAt ? "Completed " + esc(fmtDay(p.completedAt)) : pro ? t.total + " minutes of training once complete" : "Takes a moment")}
+      </ol>
+      ${p.completedAt ? `<div class="ac-done${S.justDone === m.id ? " is-new" : ""}" role="status">${I.check}<p><b>Completed</b> on ${esc(fmtDay(p.completedAt))}${pro ? ` · ${p.minutes} minutes of training` : ""}.</p></div>
+          ${pro ? `<div class="ac-actions"><button type="button" class="ac-btn ac-btn-primary" data-cert="${m.id}" data-learner="${l.id}">${I.award}Download certificate (PDF)</button></div><p class="ac-hint">Certificate ${esc(p.cert)}. It records in-service training${acad.approval ? " with your facility's approval statement" : ", not accredited continuing education"}.</p>` : ""}`
+        : `<button type="button" class="ac-btn ${pro ? "ac-btn-primary" : "ac-btn-family"}" data-act="complete" aria-disabled="${!r.ready}" aria-describedby="acNeeds" style="width:100%">${I.check}Mark as complete</button>
+          <ul class="ac-needs" id="acNeeds">${r.missing.map(x => `<li>${esc(x)}</li>`).join("") || "<li>Ready: mark it complete to add it to your record.</li>"}</ul>`}
+      ${certNeedsName ? `<form class="ac-form" data-form="certname"><div class="ac-field"><label for="acCertName">Your name, as it should appear on the certificate</label>
+          <input id="acCertName" type="text" maxlength="${A.LIMITS.name}" autocomplete="name"></div>
+          <div class="ac-actions" style="margin:0"><button type="submit" class="ac-btn ac-btn-primary ac-btn-sm">Save and download</button><button type="button" class="ac-btn ac-btn-sm" data-act="cancel-certname">Cancel</button></div></form>` : ""}`;
+    S.justDone = "";
+  }
+  function renderNext(){
+    const box = root && root.querySelector("#acNext"), m = current(); if (!box || !m) return;
+    if (m.track === "family"){
+      box.innerHTML = `<h2 id="acNextH">Toolkits for this guide</h2><div class="ac-next">${m.toolkits.map(id => A.toolkitOf(id)).map(t => `<div class="ac-kit" style="padding:12px"><span class="ac-kit-ic">${I.kit[t.icon] || ""}</span><h3 style="font-size:15.5px">${esc(t.title)}</h3><p>${esc(t.blurb)}</p>
+        <div class="ac-actions" style="margin-top:4px"><button type="button" class="ac-btn ac-btn-family ac-btn-sm" data-kit="${t.id}">${I.download}Download PDF</button></div></div>`).join("")}</div>`;
+      return;
+    }
+    const pros = A.MODULES.filter(x => x.track === "pro"), i = pros.indexOf(m);
+    const next = pros.slice(i + 1).concat(pros.slice(0, i)).filter(x => !prog(x.id).completedAt).slice(0, 2);
+    box.innerHTML = `<h2 id="acNextH">Up next</h2>${next.length ? `<div class="ac-next">${next.map(x => `<a href="#/academy/${x.id}"><span class="ac-mini" aria-hidden="true">${art(x.art)}</span><span><b>${esc(x.title)}</b><small>${A.clock(A.lessonSeconds(x))} lesson · ${A.minutes(x).total} min training</small></span></a>`).join("")}</div>`
+      : `<p class="ac-hint">You've completed every other masterclass. Thank you.</p>`}`;
+  }
+  function renderPane(anim){
+    const pane = root && root.querySelector("#acPane"), m = current(); if (!pane || !m) return;
+    pane.setAttribute("aria-labelledby", "acSub-" + S.pane);
+    root.querySelectorAll(".ac-subtab").forEach(b => { const on = b.dataset.pane === S.pane; b.setAttribute("aria-selected", on); b.tabIndex = on ? 0 : -1; });
+    pane.innerHTML = S.pane === "guide" ? guideHtml(m) : S.pane === "quiz" ? quizHtml(m) : transcriptHtml(m);
+    if (S.pane === "transcript" && P && P.cues){ chapterFills(); update(true); }
+    if (anim && !reduced()){ pane.classList.remove("ac-anim"); void pane.offsetWidth; pane.classList.add("ac-anim"); }
+  }
+  function transcriptHtml(m){
+    const cues = A.cues(m), p = prog(m.id);
+    return `<div class="ac-script-tools"><h2 style="margin:0;font-size:18px">Transcript</h2>
+        ${P && P.cues ? `<label class="ac-check"><input type="checkbox" id="acFollow" ${S.follow ? "checked" : ""}> Follow along as it plays</label>` : ""}</div>
+      <div class="ac-script" id="acScript" tabindex="0" aria-label="Transcript of ${esc(m.title)}">${m.chapters.map((c, ci) => {
+        const own = cues.filter(q => q.chapter === ci), head = own[0];
+        return `<section><h3><button type="button" data-seek="${head.i}" aria-label="Play from chapter ${ci + 1}: ${esc(c.title)}">${ci + 1}. ${esc(c.title)}</button></h3><p>${own.slice(1).map(q => `<span class="ac-line" data-cue="${q.i}">${esc(q.text)}</span>`).join(" ")}</p></section>`; }).join("")}</div>
+      <div class="ac-readdone">${p.read ? `<p class="ac-hint">${I.check} You've read the whole lesson; it counts as watched.</p>`
+        : `<button type="button" class="ac-btn" data-act="read">${I.check}I've read the whole lesson</button><p class="ac-hint">Reading the transcript counts the same as watching.</p>`}</div>`;
+  }
+  function guideHtml(m){
+    const blocks = A.guideBlocks(m).slice(3), pro = m.track === "pro";
+    let html = "", list = "", tag = "ul";
+    const flush = () => { if (list){ html += `<${tag}>${list}</${tag}>`; list = ""; } };
+    blocks.forEach(b => {
+      const item = b.k === "li" || b.k === "num" || b.k === "check" || b.k === "small", want = b.k === "num" ? "ol" : "ul";
+      if (item && list && want !== tag) flush();       // the outline is numbered; everything else is bulleted
+      if (item) tag = want;
+      if (b.k === "h"){ flush(); html += `<h3>${esc(b.text)}</h3>`; }
+      else if (b.k === "li" || b.k === "num" || b.k === "check") list += `<li>${esc(b.text)}</li>`;
+      else if (b.k === "small"){ list += `<li class="ac-src">${esc(b.text)}</li>`; }
+      else if (b.k === "p"){ flush(); html += `<p class="ac-hint">${esc(b.text)}</p>`; }
+    });
+    flush();
+    return `<div class="ac-guide"><div class="ac-guide-top"><p>${pro ? "The lesson's key points, practice steps and sources, on Letter paper to keep or share." : "The guide's key points on one page, and its printable toolkits."}</p>
+        <button type="button" class="ac-btn ac-btn-primary" data-guide="${m.id}">${I.download}Download ${pro ? "companion guide" : "guide"} (PDF)</button></div>${html}</div>`;
+  }
+  function quizHtml(m){
+    const q = S.quiz, g = q.graded, p = prog(m.id);
+    return `<form data-form="quiz" class="ac-quiz" novalidate>
+      <div class="ac-guide-top" style="margin:0 0 12px"><h2 style="margin:0;font-size:18px">Knowledge check</h2><p>${m.quiz.length} questions · ${pct(A.PASS)}% passes · take it as often as you like${p.quizAttempts ? ` · best so far ${pct(p.quizBest)}%` : ""}</p></div>
+      ${g ? `<div class="ac-result${g.passed ? " is-pass" : ""}" role="status" tabindex="-1" id="acResult"><b>${g.passed ? "Passed" : "Not yet"}: ${g.right} of ${g.total} right (${pct(g.score)}%).</b>${g.passed ? "Mark the lesson complete when you've watched or read it." : "Look over the explanations below, then try again."}</div>` : ""}
+      ${m.quiz.map((x, i) => `<fieldset class="ac-q"><legend>${i + 1}. ${esc(x.q)}</legend>${x.options.map((o, k) => {
+        const chosen = q.answers[i] === k, right = g && k === x.answer, wrong = g && chosen && k !== x.answer;
+        return `<label class="ac-opt${right ? " is-right" : wrong ? " is-wrong" : ""}"><input type="radio" name="acQ${i}" value="${k}" ${chosen ? "checked" : ""} ${g ? "disabled" : ""}><span>${esc(o)}</span>${right ? `<span class="ac-mark">${I.check}Right answer</span>` : wrong ? `<span class="ac-mark">Your answer</span>` : ""}</label>`; }).join("")}
+        ${g ? `<p class="ac-why">${g.correct[i] ? "Right. " : "The right answer is the one marked. "}${esc(x.why)}</p>` : ""}</fieldset>`).join("")}
+      <div class="ac-actions">${g ? `<button type="button" class="ac-btn ac-btn-primary" data-act="retake">Take it again</button>` : `<button type="submit" class="ac-btn ac-btn-primary">Check my answers</button>`}</div>
+      <p class="ac-hint" id="acQuizMsg" role="alert"></p>
+    </form>`;
+  }
+
+  /* ---------- actions ---------- */
+  function completeModule(){
+    const m = current(); if (!m) return;
+    const res = A.complete(acad, me().id, m.id);
+    if (!res.ok){
+      const n = root.querySelector("#acNeeds"); if (n){ n.classList.add("is-loud"); }
+      announce("Not yet: " + res.missing.join(" "));
+      return;
+    }
+    writeAcademy(res.academy);
+    S.justDone = m.id;
+    renderTrack(); renderNext(); renderLearner();
+    const p = prog(m.id);
+    announce(m.track === "pro" ? `Completed. ${p.minutes} minutes added to your training record, and your certificate is ready.` : "Completed.");
+    toast(m.track === "pro" ? `${m.title}: complete. ${p.minutes} minutes are on your training record.` : `${m.title}: complete.`);
+    const b = root.querySelector("[data-cert]") || root.querySelector("#acTrackH"); if (b){ if (b.id) b.tabIndex = -1; b.focus(); }
+  }
+  /* A file name every computer accepts: "Music That Reaches: Sing-Alongs" saves as "Music That Reaches - Sing-Alongs". */
+  const fileName = s => s.replace(/\s*:\s*/g, " - ").replace(/[\\/*?"<>|]+/g, "").replace(/\s+/g, " ").trim();
+  async function makePdf(name, build){
+    const JsPDF = await CogniLibrary.loadPdfKit();
+    let doc = null;
+    const split = (text, width, size, bold) => { doc.setFont("helvetica", bold ? "bold" : "normal"); doc.setFontSize(size); return doc.splitTextToSize(String(text), width); };
+    doc = new JsPDF({ unit:"pt", format:"letter", orientation:"portrait", compress:true });
+    const pages = build(split);
+    const first = pages[0];
+    if (first.w > first.h){ doc = new JsPDF({ unit:"pt", format:[first.w, first.h], orientation:"landscape", compress:true }); const again = build(split); pages.splice(0, pages.length, ...again); }
+    pages.forEach((pg, i) => { if (i) doc.addPage([pg.w, pg.h], pg.w > pg.h ? "landscape" : "portrait"); A.draw(doc, pg); });
+    doc.save(fileName(name));
+    return pages.length;
+  }
+  /* The button (when there is one) says it is working, and ignores a second press meanwhile. */
+  async function pdfAction(btn, work){
+    if (btn && btn.getAttribute("aria-busy") === "true") return;
+    const label = btn ? btn.innerHTML : "";
+    if (btn){ btn.setAttribute("aria-busy", "true"); btn.textContent = "Making the PDF…"; }
+    try { await work(); } catch (e){ toast("The PDF could not be made: " + e.message); }
+    finally { if (btn){ btn.removeAttribute("aria-busy"); btn.innerHTML = label; } }
+  }
+  function guidePdf(btn, m){
+    return pdfAction(btn, async () => { const n = await makePdf(`${m.track === "pro" ? "Companion guide" : "Family guide"} - ${m.title}.pdf`, split => A.layout(A.guideBlocks(m), split, m.title)); toast(`Guide ready: ${plural(n, "page", "pages")}.`); });
+  }
+  function kitPdf(btn, t){
+    return pdfAction(btn, async () => { const n = await makePdf(`${t.title} - Cognicopia Academy.pdf`, split => A.layout(A.toolkitBlocks(t), split, t.title)); toast(`${t.title} ready: ${plural(n, "page", "pages")}.`); });
+  }
+  function certPdf(btn, learnerId, moduleId){
+    const l = A.learnerOf(acad, learnerId), m = A.moduleOf(moduleId); if (!l || !m) return;
+    if (!l.name){                                   // a certificate needs a name: ask for it where the learner is
+      S.pendingCert = moduleId;
+      if (current()) renderTrack();
+      else {
+        if (l.id !== me().id) writeAcademy(A.setActive(acad, l.id));
+        S.edit = l.id; renderLearner(); refresh();
+      }
+      const n = root.querySelector(current() ? "#acCertName" : "#acLName"); if (n) n.focus();
+      announce("A certificate needs a name. Add it, and the certificate downloads.");
+      return;
+    }
+    const c = A.certificateFor(acad, learnerId, moduleId, settings.facility || ""); if (!c) return;
+    return pdfAction(btn, async () => { await makePdf(`Certificate - ${m.title} - ${l.name}.pdf`, split => [A.certificatePage(c, split)]); toast("Certificate ready: " + c.id + "."); });
+  }
+
+  /* ---------- events ---------- */
+  function bind(){
+    root.addEventListener("click", onClick);
+    root.addEventListener("change", onChange);
+    root.addEventListener("input", onInput);
+    root.addEventListener("submit", onSubmit);
+    root.addEventListener("keydown", onKey);
+  }
+  function onClick(e){
+    const t = e.target.closest("button, [data-seek], .ac-line"); if (!t || !root.contains(t)) return;
+    const d = t.dataset;
+    if (d.tab) return selectTab(d.tab);
+    if (d.pane){ if (d.pane !== S.pane){ S.pane = d.pane; renderPane(true); } return; }
+    if (d.pl){
+      if (d.pl === "toggle") return toggle();
+      if (d.pl === "back") return seekTo(P.t - 10);
+      if (d.pl === "prev"){ const ci = P.cues[cueAt(P.t)].chapter, head = P.cues.filter(q => q.chapter === ci)[0]; return seekTo(P.t - head.start > 2 || ci === 0 ? head.start : P.cues.filter(q => q.chapter === ci - 1)[0].start); }
+      if (d.pl === "next"){ const ci = P.cues[cueAt(P.t)].chapter, nx = P.cues.filter(q => q.chapter === ci + 1)[0]; return nx ? seekTo(nx.start) : seekTo(P.total - 0.1); }
+      if (d.pl === "cc") return setCC(!S.cc);
+      if (d.pl === "voice"){ S.voice = !P.voice; const was = P.playing; if (was) pause(); P.voice = S.voice; t.setAttribute("aria-pressed", String(P.voice)); if (was) play(); announce(P.voice ? "Reading aloud" : "Captions only"); return; }
+      if (d.pl === "full") return fullscreen();
+    }
+    if (t.id === "acBig") return toggle();
+    if (d.chap != null && P && P.cues){ const head = P.cues.filter(q => q.chapter === +d.chap)[0]; if (head) seekTo(head.start); return; }
+    if (d.seek != null && P && P.cues){ seekTo(P.cues[+d.seek].start); if (!P.playing) play(); return; }
+    if (t.classList.contains("ac-line") && P && P.cues){ seekTo(P.cues[+d.cue].start); if (!P.playing) play(); return; }
+    if (d.kit){ const kit = A.toolkitOf(d.kit); if (kit) kitPdf(t, kit); return; }
+    if (d.guide){ const m = A.moduleOf(d.guide); if (m) guidePdf(t, m); return; }
+    if (d.cert){ certPdf(t, d.learner || me().id, d.cert); return; }
+    switch (d.act){
+      case "complete": return completeModule();
+      case "read": { const m = current(); writeAcademy(A.markRead(acad, me().id, m.id)); renderPane(); renderTrack(); announce("Marked as read. It counts as watched."); const s = root.querySelector("#acScript"); if (s) s.focus(); return; }
+      case "cancel-certname": { S.pendingCert = ""; renderTrack(); const b = root.querySelector("[data-cert]"); if (b) b.focus(); return; }
+      case "retake": S.quiz = { mid:current().id, answers:current().quiz.map(() => null), graded:null }; renderPane(); { const f = root.querySelector('input[name="acQ0"]'); if (f) f.focus(); } return;
+      case "edit-learner": S.edit = S.edit ? "" : me().id; renderLearner(); { const n = root.querySelector("#acLName"); if (n) n.focus(); } return;
+      case "cancel-learner": S.edit = ""; S.pendingCert = ""; renderLearner(); { const w = root.querySelector("#acWho"); if (w) w.focus(); } return;
+      case "remove-learner": {
+        const l = me(); if (!confirm(`Remove ${nameOf(l)} and their training record from this computer?`)) return;
+        writeAcademy(A.removeLearner(acad, l.id)); S.edit = ""; renderLearner(); refresh(); { const w = root.querySelector("#acWho"); if (w) w.focus(); } toast("Learner removed."); return;
+      }
+      case "clear-filters": S.q = ""; S.topic = ""; S.aud = ""; renderPanel(); { const q = root.querySelector("#acQ"); if (q) q.focus(); } return;
+      case "wipe": {
+        if (!confirm("Remove every learner, their progress and their certificate records from this computer? This cannot be undone.")) return;
+        try { CG_LS.removeItem(A.STORE_KEY); } catch (e){ toast("The records could not be removed: " + e.message); return; }
+        acad = readAcademy(); S.edit = ""; S.pendingCert = ""; S.found = null; S.quiz = null;
+        renderLearner(); renderPanel(); { const w = root.querySelector("#acWho"); if (w) w.focus(); }
+        toast("The Academy's records were removed from this computer."); return;
+      }
+      case "csv": {
+        const rows = A.recordRows(acad, S.year);
+        if (rows.length < 2){ toast(`No lessons were completed in ${S.year}.`); return; }
+        download(`cognicopia-academy-records-${S.year}.csv`, "﻿" + A.toCSV(rows), "text/csv;charset=utf-8"); return;
+      }
+    }
+  }
+  function refresh(){ if (current()) { renderTrack(); renderNext(); } else renderPanel(); }
+  function onChange(e){
+    const t = e.target;
+    if (t.id === "acWho"){
+      if (t.value === "__add"){ S.edit = "add"; renderLearner(); const n = root.querySelector("#acLName"); if (n) n.focus(); return; }
+      const m = current(); if (m) stopPlayer();
+      writeAcademy(A.setActive(acad, t.value)); S.edit = "";
+      if (m) return router();                       // redraw the lesson for this learner
+      renderLearner(); refresh(); const w = root.querySelector("#acWho"); if (w) w.focus();
+      announce("Learning as " + nameOf(me())); return;
+    }
+    if (t.name === "acTopic"){ S.topic = t.value; renderGrid(); return; }
+    if (t.id === "acAud"){ S.aud = t.value; renderGrid(); return; }
+    if (t.id === "acFollow"){ S.follow = t.checked; return; }
+    if (t.id === "acYear"){ S.year = +t.value; renderPanel(); const y = root.querySelector("#acYear"); if (y) y.focus(); return; }
+    if (t.id === "acApproval"){ writeAcademy(A.setApproval(acad, t.value)); toast(acad.approval ? "Approval statement saved: it prints on certificates." : "Approval statement cleared: certificates show the in-service statement."); return; }
+    if (/^acQ\d+$/.test(t.name) && S.quiz){ S.quiz.answers[+t.name.slice(3)] = +t.value; return; }
+  }
+  function onInput(e){ if (e.target.id === "acQ"){ S.q = e.target.value; renderGrid(); } }
+  function onSubmit(e){
+    const f = e.target.closest("form[data-form]"); if (!f) return;
+    e.preventDefault();
+    if (f.dataset.form === "learner"){
+      const name = f.querySelector("#acLName").value.trim(), role = f.querySelector("#acLRole").value;
+      if (S.edit === "add"){ if (!name){ f.querySelector("#acLName").focus(); return; } const r = A.addLearner(acad, name, role); if (!r.id){ toast("This computer already has " + A.LIMITS.learners + " learners."); return; } writeAcademy(r.academy); announce("Added " + name + ". Learning as " + name + "."); }
+      else writeAcademy(A.updateLearner(acad, me().id, name, role));
+      S.edit = ""; renderLearner(); refresh();
+      const w = root.querySelector("#acWho"); if (w) w.focus();
+      if (S.pendingCert && me().name){                // the certificate that asked for the name
+        const id = S.pendingCert; S.pendingCert = "";
+        certPdf(root.querySelector(`[data-cert="${CSS.escape(id)}"][data-learner="${CSS.escape(me().id)}"]`), me().id, id);
+      }
+      return;
+    }
+    if (f.dataset.form === "certname"){
+      const inp = f.querySelector("#acCertName"), name = inp.value.trim(), id = S.pendingCert;
+      if (!name){ inp.focus(); return; }
+      writeAcademy(A.updateLearner(acad, me().id, name, me().role));
+      S.pendingCert = ""; renderTrack();
+      const b = root.querySelector(`[data-cert="${CSS.escape(id)}"]`); if (b) b.focus();
+      certPdf(b, me().id, id);
+      return;
+    }
+    if (f.dataset.form === "quiz"){
+      const m = current(), q = S.quiz;
+      if (q.answers.some(a => a == null)){ const miss = q.answers.indexOf(null); f.querySelector("#acQuizMsg").textContent = `Choose an answer for question ${miss + 1}.`; const r = f.querySelector(`input[name="acQ${miss}"]`); if (r) r.focus(); return; }
+      q.graded = A.grade(m, q.answers);
+      writeAcademy(A.recordQuiz(acad, me().id, m.id, q.graded));
+      renderPane(); renderTrack();
+      const res = root.querySelector("#acResult"); if (res) res.focus();
+      return;
+    }
+    if (f.dataset.form === "check"){
+      const id = f.querySelector("#acCertId").value.trim();
+      S.found = id ? { id, hit:A.findCertificate(acad, id) } : null;
+      renderPanel(); const i = root.querySelector("#acCertId"); if (i) i.focus();
+      return;
+    }
+  }
+  function onKey(e){
+    const t = e.target;
+    if (t.getAttribute && t.getAttribute("role") === "tab" && ["ArrowLeft", "ArrowRight", "Home", "End"].indexOf(e.key) >= 0){
+      const tabs = Array.from(t.parentNode.querySelectorAll('[role="tab"]')), i = tabs.indexOf(t);
+      const j = e.key === "Home" ? 0 : e.key === "End" ? tabs.length - 1 : (i + (e.key === "ArrowRight" ? 1 : -1) + tabs.length) % tabs.length;
+      e.preventDefault(); tabs.forEach((b, k) => { b.tabIndex = k === j ? 0 : -1; }); tabs[j].focus();
+    }
+  }
+  /* Leaving the Academy (or hiding the page) stops the lesson and saves where it got to. */
+  window.addEventListener("hashchange", () => { if (P && location.hash.indexOf("#/academy/" + P.m.id) !== 0) stopPlayer(); });
+  document.addEventListener("visibilitychange", () => { if (document.hidden && P && P.playing) pause(); });
+  window.addEventListener("pagehide", () => { if (P) saveProgress(); });
+
+  const busy = () => !!(P && P.playing) || !!(root && root.isConnected && root.querySelector("input:focus, textarea:focus, select:focus"));
+  return { render, busy, art };
+})();
+</script>
 <script>
 "use strict";
 /* =====================================================================
@@ -11223,6 +12356,7 @@ const ICONS = {
   planner:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/><path d="M8 13h3M13 13h3M8 17h3"/></svg>',
   journal:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2z"/><path d="M22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z"/></svg>',
   facility:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18"/><path d="M5 21V6l7-3v18"/><path d="M19 21V10l-7-3"/><path d="M8 9h1M8 13h1M8 17h1M15 13h1M15 17h1"/></svg>',
+  academy:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 9 12 4 2 9l10 5 10-5z"/><path d="M6 11.2V16c0 1.7 2.7 3 6 3s6-1.3 6-3v-4.8"/><path d="M22 9v6"/></svg>',
   roster:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.6 3.3-5.5 6.5-5.5s5.7 1.9 6.5 5.5"/><path d="M16 5.5a3 3 0 0 1 0 6M18.5 14.8c1.7.8 2.7 2.5 3 5.2"/></svg>'
 };
 
@@ -11302,8 +12436,9 @@ function addBatch(act, cfg, batchSeed, count){
 
 /* ---------- 11. Views + router ---------- */
 const view = $("#view");
-const routes = { "": renderHome, "category": renderCategory, "settings": renderSettings, "planner": renderPlanner, "journal": renderJournal, "roster": renderRoster, "coloring": renderColoring, "reminiscence": renderReminiscence, "clinical": renderClinical, "heirloom": renderHeirloom, "facility": renderFacilityPortal };
+const routes = { "": renderHome, "category": renderCategory, "settings": renderSettings, "planner": renderPlanner, "journal": renderJournal, "roster": renderRoster, "coloring": renderColoring, "reminiscence": renderReminiscence, "clinical": renderClinical, "heirloom": renderHeirloom, "facility": renderFacilityPortal, "academy": renderAcademy };
 function renderFacilityPortal(arg){ FacilityUI.render(view, arg); }
+function renderAcademy(arg){ AcademyUI.render(view, arg); }
 function renderHeirloom(){ HeirloomUI.render(view); }
 function renderClinical(){ ClinicalUI.render(view); }
 function renderReminiscence(){ ReminiscenceUI.render(view); }
@@ -11321,7 +12456,7 @@ let lastBuilderHash = "#/";     // where the Facility view switch returns to
 function router(){
   if (!storeOpen) return;
   const { name, arg } = parseHash();
-  view.classList.toggle("view-wide", name === "facility");        // the portal's calendar uses the width
+  view.classList.toggle("view-wide", name === "facility" || name === "academy");   // the portal's calendar and the Academy's grid use the width
   $("#fpToggle").setAttribute("aria-checked", String(name === "facility"));
   if (name !== "facility") lastBuilderHash = location.hash || "#/";
   (routes[name] || renderHome)(arg);
@@ -11346,7 +12481,7 @@ function highlightNav(name, arg){
   if (name === "coloring") arg = "cognicore", name = "category";
   const el = name === "category" ? document.querySelector(`.sb-link[data-cat="${CSS.escape(arg)}"]`)
            : name === "settings" ? document.querySelector('.sb-link[data-route="settings"]')
-           : name === "planner" || name === "journal" || name === "roster" || name === "reminiscence" || name === "clinical" || name === "heirloom" || name === "facility" ? document.querySelector(`.sb-link[data-route="${name}"]`) : null;
+           : name === "planner" || name === "journal" || name === "roster" || name === "reminiscence" || name === "clinical" || name === "heirloom" || name === "facility" || name === "academy" ? document.querySelector(`.sb-link[data-route="${name}"]`) : null;
   if (el) el.setAttribute("aria-current", "page");
 }
 function renderFacility(){
@@ -11392,10 +12527,17 @@ function renderHome(){
         <span class="meta">${c.activities.length ? `<span class="pill live">${c.activities.length} ${c.activities.length === 1 ? "tool" : "activities"}</span>` : '<span class="pill">Coming soon</span>'}</span>
       </a>`).join("")}
     </div>
-    <h2 style="margin-top:32px">Reference</h2>
+    <h2 style="margin-top:32px">Learning &amp; reference</h2>
     <div class="card-grid">
+      ${tool("#/academy", ICONS.academy, "Caregiver & Professional Academy", "Narrated masterclasses for care teams, with transcripts, companion guides, knowledge checks and in-service certificates, and short guides with printable toolkits for family caregivers.", academyPills())}
       ${tool("resources/", ICONS.journal, "Resource & Clinical Hub", "The reading behind the tools, kept apart from them: quality standards, clinical alignment, reminiscence science, facility and publishing information, the feature guide, the resource catalog and the caregiver FAQ.", ["9 modules", "Clinical & quality", "Guides & help"])}
     </div>`;
+}
+
+/* The Academy card's counts come from its catalog. */
+function academyPills(){
+  const A = window.CogniAcademy, n = t => A ? A.MODULES.filter(m => m.track === t).length : 0;
+  return A ? [n("pro") + " masterclasses", n("family") + " family guides", "Training records"] : ["Masterclasses", "Family guides"];
 }
 
 let selectedAct = null, previewSeed = newSeed();
@@ -11960,6 +13102,7 @@ window.addEventListener("afterprint", () => {
              && !document.querySelector("#view :is(input, select, textarea, details[open]):focus-within")) router();   // not while someone is typing here
     else if (e.key.indexOf("cognicopia_facility") === 0 && parseHash().name === "facility"
              && !document.querySelector("#view :is(input, select, textarea, details[open]):focus-within, #view dialog[open]")) router();
+    else if (e.key === "cognicopia_academy" && parseHash().name === "academy" && !AcademyUI.busy()) router();
   });
 })();
 </script>

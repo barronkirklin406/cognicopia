@@ -1,0 +1,1214 @@
+/* =====================================================================
+   COGNICOPIA ACADEMY
+   The content and the logic behind the Caregiver & Professional Academy
+   (the Packet Builder's #/academy): masterclasses for care staff, short
+   guides and printable toolkits for family caregivers, and a training
+   record for each learner.
+
+     - Every lesson is written once, as a script of short chapters. That
+       script is the narrated lesson's timeline and captions, the
+       transcript, the companion guide and the basis of the knowledge
+       check. A recorded video can be added to a module later (video.src
+       and its own captions file); everything else stays the same.
+     - Progress: which parts of the lesson were played through (or the
+       learner read the whole transcript), knowledge-check scores, and
+       completion. A masterclass is complete once at least 90% of the
+       lesson was played or the transcript read, and the knowledge check
+       was passed (80%).
+     - Certificates of completion with a checkable ID. They record
+       in-service training. They are not accredited continuing education
+       unless a facility enters the approval statement its accrediting
+       body gave it; the certificate says which.
+     - Training records by year, and the companion guides, toolkits and
+       certificates laid out as PDF pages (drawn with jsPDF by the page).
+
+   Learners and their progress are stored sealed in the encrypted store
+   (secureStore.ts) under "cognicopia_academy". This service stores
+   nothing itself and makes no network requests.
+
+   Built into assets/services/academy.js (globalThis.CogniAcademy) by
+   scripts/build-services.mjs.
+   @global CogniAcademy
+   ===================================================================== */
+
+export const VERSION = "1.0.0";
+export const STORE_KEY = "cognicopia_academy";
+export const WPM = 140;             // narration pace, words a minute
+export const READ_WPM = 200;        // reading pace for a companion guide
+export const PASS = 0.8;            // knowledge check pass mark
+export const WATCHED = 0.9;         // share of a lesson that counts as watched
+export const IN_SERVICE_HOURS = 12; // nurse aides' yearly in-service minimum (42 CFR 483.95(g))
+
+/* ---------- 1. The shape of the catalog ---------- */
+export type Track = "pro" | "family";
+export type Audience = "activities" | "nursing" | "therapy" | "family";
+export const AUDIENCES: Readonly<Record<Audience, string>> = {
+  activities: "Activity staff", nursing: "Nursing and CNAs", therapy: "Therapy staff", family: "Family caregivers"
+};
+export type Topic = "reminiscence" | "behavior" | "movement" | "communication" | "activities" | "music" | "family-life" | "self-care";
+export const TOPICS: Readonly<Record<Topic, string>> = {
+  reminiscence: "Reminiscence", behavior: "Distress and behavior", movement: "Movement", communication: "Communication",
+  activities: "Activity planning", music: "Music", "family-life": "Everyday life", "self-care": "Caring for yourself"
+};
+export interface Instructor { name: string; focus: string; initials: string; }
+export interface Chapter { id: string; title: string; slide: string; say: string[]; points: string[]; }
+export interface Question { q: string; options: string[]; answer: number; why: string; }
+export interface Video { src: string; captions?: string; }
+export interface Module {
+  id: string; track: Track; title: string; subtitle: string; blurb: string; art: string;
+  audience: Audience[]; topics: Topic[]; instructor: Instructor; video: Video | null;
+  chapters: Chapter[]; tryThis: string[]; avoid: string[]; reflect: string[]; sources: string[];
+  quiz: Question[]; toolkits: string[];
+}
+export interface ToolkitSection { heading: string; text?: string; items?: string[]; checks?: string[]; lines?: number; }
+export interface Toolkit { id: string; title: string; blurb: string; icon: string; sections: ToolkitSection[]; }
+
+const ACADEMY: Instructor = { name: "Cognicopia Academy", focus: "", initials: "" };
+const by = (focus: string, initials: string): Instructor => ({ name: ACADEMY.name, focus, initials });
+
+/* ---------- 2. Masterclasses for care staff ---------- */
+const PRO: Module[] = [
+  { id: "reminiscence-circles", track: "pro", art: "circle",
+    title: "Running Structured Reminiscence Circles",
+    subtitle: "Plan, lead and close a small-group session that brings out stories without testing memory",
+    blurb: "Set up a small group, choose a theme, invite stories rather than answers, include quieter voices and respond with care when a memory hurts.",
+    audience: ["activities", "nursing", "therapy"], topics: ["reminiscence", "communication"], instructor: by("Recreation therapy", "RT"), video: null,
+    chapters: [
+      { id: "why", title: "Why stories matter",
+        slide: "Long-held memories are often the easiest to reach, and sharing them builds connection.",
+        say: [
+          "Welcome. In this masterclass we'll plan and lead a reminiscence circle: a small group that gathers to share stories from earlier in life.",
+          "For many people living with dementia, memories from young adulthood stay clearer than what happened this morning.",
+          "A reminiscence circle builds on that strength. It invites people to be the experts on their own lives.",
+          "Research reviews find modest but real benefits for mood, communication and quality of life, especially when sessions are regular and personal.",
+          "Just as important, a good circle feels like a conversation among neighbors, never a test.",
+          "By the end of this lesson you'll be able to set up a circle, lead a session from welcome to goodbye, include every voice, and respond with care when a memory is painful."
+        ],
+        points: ["Earlier-life memories are often better preserved than recent ones.", "Residents are the experts on their own stories.", "Benefits are modest and real when sessions are regular and personal.", "A circle should feel like conversation, never a test."] },
+      { id: "setup", title: "Setting up the circle",
+        slide: "Five to eight people, the same time each week, and a quiet room where everyone can see each face.",
+        say: [
+          "Keep the group small. Five to eight residents is a comfortable size for most circles.",
+          "Meet at the same time and place each week. A predictable rhythm helps people settle in.",
+          "Choose a quiet room with good, even light. Turn off the television, and close the door if the hallway is busy.",
+          "Seat everyone in a circle or around a table so they can see each other's faces.",
+          "Check that glasses are on and hearing aids are in and working, that everyone has had the chance to use the restroom, and that each person has a drink nearby.",
+          "Large-print name cards help everyone, including you, use each person's preferred name.",
+          "If several members need more support, ask a second staff member or a volunteer to co-facilitate."
+        ],
+        points: ["Five to eight residents.", "Same time and place each week.", "Quiet room, even light, everyone able to see each face.", "Glasses, hearing aids, restroom and drinks checked first.", "Large-print name cards; a co-facilitator when needed."] },
+      { id: "shape", title: "The shape of a session",
+        slide: "A welcome, one theme, a prop to pass, open invitations, and the same warm close.",
+        say: [
+          "A session of thirty to forty-five minutes has a simple shape.",
+          "Open with a ritual. Greet each person by name, and begin with the same song or greeting each week.",
+          "Introduce one theme, such as first jobs, wash day, dances or favorite meals.",
+          "Pass a prop connected to the theme: an old tool, a hat, a recipe card, the scent of lavender or fresh bread. Objects invite the senses and give quieter members a way in.",
+          "Ask open invitations, such as 'Tell me about your first job,' or 'What was wash day like in your house?'",
+          "Steer clear of questions that test memory, such as asking for a date or a name. There are no wrong answers in a life story.",
+          "Reflect back what you hear: 'So you started at the bakery at fourteen, before the sun came up.'",
+          "Close the same way each time. Thank each person, recall one story from the day, and sing or say your goodbye."
+        ],
+        points: ["Thirty to forty-five minutes.", "Opening ritual: names and the same song or greeting.", "One theme, with a prop that engages the senses.", "Open invitations such as 'Tell me about...'; no questions that test memory.", "Reflect back what you hear.", "Close with thanks, one story recalled, and the same goodbye."] },
+      { id: "voices", title: "Including every voice",
+        slide: "Invite each person, accept a pass, and let objects and gestures count as answers.",
+        say: [
+          "Go around the circle gently, and always accept a pass.",
+          "For members with fewer words, offer simple choices: 'Did you like dancing, or watching the dancers?' A nod, a smile or a touch of the prop is a real answer.",
+          "Draw quieter members in with a warm, direct invitation that uses their name.",
+          "If one person talks for a long time, thank them sincerely and open the floor: 'Thank you, Walter. Ruth, what was it like where you grew up?'",
+          "Sit close to members with hearing loss, face them, and speak clearly at a natural pace.",
+          "Watch the group's energy. It's fine to end early if people are tired."
+        ],
+        points: ["Always accept a pass.", "Offer choices to members with fewer words; gestures count.", "Invite quieter members warmly by name.", "Thank a long talker, then invite another voice.", "Face members with hearing loss; end early if the group tires."] },
+      { id: "painful", title: "When memories hurt",
+        slide: "Acknowledge the feeling, offer comfort, and never press for details.",
+        say: [
+          "Some themes can bring up grief, war, hardship or loss, sometimes when you least expect it.",
+          "Know your members' histories. Many residents' profiles list topics to avoid, so check them when you plan themes.",
+          "If someone becomes sad, slow down and acknowledge the feeling: 'That sounds like a very hard time.'",
+          "Don't rush to cheer them up or change the subject abruptly. Staying with the feeling for a moment shows respect.",
+          "Offer comfort and a choice: to keep sharing, to rest, or to step out with a staff member.",
+          "Never press for the details of a painful memory.",
+          "If distress continues after the session, tell the nurse or social worker so the team can follow up."
+        ],
+        points: ["Check profiles for topics to avoid when planning.", "Acknowledge the feeling before anything else.", "Don't rush past sadness or press for details.", "Offer comfort and a choice.", "Tell the nurse or social worker if distress continues."] },
+      { id: "next", title: "Recording and next steps",
+        slide: "Note what sparked joy, share stories with family when welcome, and plan the next theme.",
+        say: [
+          "After each session, take two minutes to record who attended, how each person took part, and what sparked a response.",
+          "These notes help you plan themes, and they show the team how each resident is doing.",
+          "With the resident's and family's agreement, stories can be kept and shared, for example in a monthly memory digest.",
+          "Use what you learned to plan the next theme. If a scent or a song brought the room alive, build on it.",
+          "Cognicopia's Reminiscence Cards can suggest prompts matched to each resident's region, work and era.",
+          "Thank you for leading these circles. Your curiosity tells residents that their lives matter."
+        ],
+        points: ["Record attendance, participation and what sparked a response.", "Share stories with family only with agreement.", "Build the next theme on what worked."] }
+    ],
+    tryThis: ["Choose one theme and gather two or three props for it.", "Write five open invitations that begin 'Tell me about' or 'What was it like'.", "Make a large-print name card for each member.", "Settle your opening and closing rituals and keep them the same each week."],
+    avoid: ["Questions with one right answer: dates, names, 'which year'.", "Correcting the details of a story.", "Pressing for more when someone is upset.", "Groups of more than eight."],
+    reflect: ["Which member surprised you, and what helped them join in?", "Which prop or invitation worked best, and why?"],
+    sources: ["Woods B, O'Philbin L, Farrell EM, Spector AE, Orrell M. Reminiscence therapy for dementia. Cochrane Database of Systematic Reviews 2018, Issue 3 (CD001120).", "Alzheimer's Association (alz.org): activity and communication guidance for caregivers."],
+    quiz: [
+      { q: "Which opening best fits a reminiscence circle?", options: ["Asking each person what year they married", "\"Tell me about a dance you loved.\"", "Asking each person, in turn, to name the town they grew up in"], answer: 1,
+        why: "Open invitations let people share what they can. A question with one right answer turns the circle into a test." },
+      { q: "What group size works best for most circles?", options: ["Two or three", "Five to eight", "Fifteen or more"], answer: 1,
+        why: "Five to eight residents lets everyone be seen and heard without long waits." },
+      { q: "A member becomes tearful talking about a brother lost in the war. What is the best first response?", options: ["Change the subject right away", "Acknowledge the feeling and offer comfort", "Ask what happened to him"], answer: 1,
+        why: "Acknowledging the feeling respects it. Pressing for details, or rushing past it, can deepen distress." },
+      { q: "One member keeps talking and others can't join in. What do you do?", options: ["Thank them warmly and invite another member by name", "End the session early", "Let it continue: it's their circle too"], answer: 0,
+        why: "A sincere thank-you followed by a named invitation keeps everyone's dignity and shares the floor." },
+      { q: "Why pass a prop around the circle?", options: ["It keeps hands busy so people stay seated", "It engages the senses and gives quieter members a way to join", "Props are required for the session to count"], answer: 1,
+        why: "Objects spark memories through touch, smell and sight, and a nod or a touch can be a full answer." }
+    ], toolkits: [] },
+
+  { id: "sundowning", track: "pro", art: "sundown",
+    title: "Managing Sundowning Agitation",
+    subtitle: "Understand late-day distress, prevent it, and respond calmly when it happens",
+    blurb: "What sundowning is, the needs behind it, how to shape the afternoon so it happens less, what to say in the moment, and when to call the nurse.",
+    audience: ["nursing", "activities"], topics: ["behavior", "communication"], instructor: by("Nursing", "RN"), video: null,
+    chapters: [
+      { id: "what", title: "What sundowning is",
+        slide: "Late-day restlessness and distress are common in dementia, and they are not deliberate.",
+        say: [
+          "Welcome. This masterclass is about the late afternoon and evening, when many people living with dementia become more restless, anxious or confused.",
+          "You might see pacing, repeated questions, calling out, attempts to leave, or a person who seems frightened or suspicious.",
+          "This pattern is often called sundowning. It is common, and it is not deliberate.",
+          "Several things can build up as the day goes on: tiredness, changing light and shadows, a body clock that has shifted, hunger or thirst, pain, a full bladder, and the bustle of a shift change.",
+          "Our job is to look for the need behind the behavior, shape the day so it happens less often, and respond calmly when it does."
+        ],
+        points: ["Restlessness, worry or confusion that grows late in the day.", "Common in dementia, and not deliberate.", "Tiredness, light, body clock, hunger, pain, toileting and noise all play a part."] },
+      { id: "need", title: "Look for the need",
+        slide: "Behavior is communication. Check the body, the surroundings and the feelings.",
+        say: [
+          "Think of behavior as communication. The person may not have the words to tell you what's wrong.",
+          "Start with the body. Could they be in pain, hungry, thirsty, too hot or too cold, or need the restroom?",
+          "Then the surroundings. Is it too noisy, too dark or too busy? Are there reflections or shadows that could look like strangers?",
+          "Then feelings. Are they bored, lonely or tired, or worried about something from long ago, like children coming home from school?",
+          "A sudden change is different. If someone is much more confused or agitated than usual, especially over hours or a day, tell the nurse right away.",
+          "A sudden change can be a sign of delirium from an infection, dehydration, constipation, pain or a medicine change, and it needs medical attention."
+        ],
+        points: ["Behavior communicates a need or a feeling.", "Check the body: pain, hunger, thirst, temperature, restroom.", "Check the surroundings: noise, darkness, shadows, crowds.", "A sudden change needs the nurse right away: it can signal delirium."] },
+      { id: "shape", title: "Shape the afternoon",
+        slide: "Daylight and activity early; calm, light and quiet as the day ends.",
+        say: [
+          "Much of sundowning care happens before it starts.",
+          "Encourage daylight and activity in the morning and early afternoon, and keep daytime naps short.",
+          "Plan energizing activities earlier in the day and calmer ones late in the afternoon: music, folding, looking at photos, or a quiet walk.",
+          "If you plan with Cognicopia's Facility Portal, it already places calmer activities late in the day.",
+          "Turn lights on before dusk, and close curtains as it gets dark to reduce reflections and shadows.",
+          "Keep noise down, especially at shift change, and turn off the television if no one is watching it.",
+          "Offer a snack and a drink in the afternoon, and a restroom visit before evening.",
+          "Consistent staff and a predictable routine help people feel safe."
+        ],
+        points: ["Daylight, activity and short naps earlier in the day.", "Energizing activities early, calm ones late.", "Lights on before dusk; curtains closed as it gets dark.", "Quiet at shift change; snack, drink and restroom mid-afternoon."] },
+      { id: "moment", title: "In the moment",
+        slide: "Slow down, name the feeling, respond to it, and offer something calming.",
+        say: [
+          "When distress starts, slow everything down. Lower your voice, and relax your face and shoulders.",
+          "Approach from the front, at eye level, and say the person's name and your own.",
+          "Name the feeling you see: 'You look worried.'",
+          "Respond to the feeling rather than the facts. If someone says they need to go home to their children, arguing or correcting usually increases distress.",
+          "Try: 'You're thinking about your children. Tell me about them.'",
+          "Then offer something calming and simple: a favorite song, a warm drink, a walk together, or a familiar task like folding towels.",
+          "Postpone care tasks that can wait. A bath can happen tomorrow morning.",
+          "Keep to one voice at a time. Several staff talking at once can feel overwhelming."
+        ],
+        points: ["Lower your voice; approach from the front, at eye level.", "Name the feeling and respond to it, not to the facts.", "Offer something calming and simple.", "Postpone care that can wait; one voice at a time."] },
+      { id: "safety", title: "Safety and getting help",
+        slide: "Stay close, keep everyone safe, and bring in the nurse when risk rises.",
+        say: [
+          "If a person is determined to leave, walk with them rather than blocking the way. Often a short walk and a gentle turn back works.",
+          "Give space if they seem to feel crowded, while keeping them in sight.",
+          "If there's a risk of harm to the person or to others, call the nurse and keep others at a safe distance.",
+          "Physical restraint is not the answer. The nurse and the resident's doctor decide about medicines, and non-drug approaches come first.",
+          "Afterwards, write down what happened: the time, what came before, what you tried, and what helped.",
+          "Over a few days, these notes reveal patterns the whole team can plan around."
+        ],
+        points: ["Walk with someone who wants to leave; don't block the way.", "Call the nurse when there is risk of harm.", "No physical restraint; non-drug approaches first.", "Record time, trigger, what you tried and what helped."] },
+      { id: "you", title: "Caring for yourself",
+        slide: "Your calm is contagious. Step back, swap and breathe when you need to.",
+        say: [
+          "Late-day distress can be hard on staff, too.",
+          "If you feel your own frustration rising, it's fine to step back and ask a colleague to take over for a few minutes.",
+          "A slow breath before you walk into the room changes your voice and your face, and the person will notice.",
+          "Talk with your team about what works for each resident, and share the evenings that go well.",
+          "Thank you. Your calm presence is one of the most effective tools there is."
+        ],
+        points: ["Step back and swap when frustration rises.", "A slow breath changes your voice and face.", "Share with the team what works for each resident."] }
+    ],
+    tryThis: ["Walk your unit at 3 pm: turn on lights and lower the noise before dusk.", "Choose one resident and list three calming things they enjoy.", "Practice a reply to 'I need to go home' that names the feeling.", "Keep a one-week log of when distress starts and what helps."],
+    avoid: ["Arguing about facts or correcting the person.", "Several staff talking at once.", "Bathing or other demanding care at the hardest time of day, when it can wait.", "Assuming a sudden change is 'just sundowning'."],
+    reflect: ["What time of day is hardest on your unit, and what happens just before?", "Which resident settles best with music, and which with a walk?"],
+    sources: ["National Institute on Aging (nia.nih.gov): tips for coping with sundowning.", "Alzheimer's Association (alz.org): sleep issues and sundowning."],
+    quiz: [
+      { q: "A resident who is usually calm has been much more confused and agitated since this morning. What should you do first?", options: ["Treat it as sundowning and wait for the evening to pass", "Tell the nurse right away", "Encourage a long nap"], answer: 1,
+        why: "A sudden change can be a sign of delirium from an infection, dehydration, pain or a medicine change. It needs a nurse's assessment." },
+      { q: "Which late-afternoon change helps prevent distress?", options: ["Turning lights on before dusk and lowering noise", "Scheduling showers for 5 pm", "Leaving the television on loud for company"], answer: 0,
+        why: "Even light and a calm, quiet space reduce shadows, reflections and overstimulation." },
+      { q: "A resident says, \"I need to go home to my children.\" Which reply is best?", options: ["\"Your children are grown up now.\"", "\"This is your home now.\"", "\"You're thinking about your children. Tell me about them.\""], answer: 2,
+        why: "Responding to the feeling respects it. Correcting the facts usually increases distress." },
+      { q: "What is the most useful way to think about agitated behavior?", options: ["As attention-seeking", "As communication of a need or a feeling", "As a sign that someone is being difficult"], answer: 1,
+        why: "Behavior often tells us about pain, fear, discomfort or an unmet need the person can't put into words." },
+      { q: "Why write down what happened after an episode?", options: ["So the team can spot patterns and plan care", "To keep a record against the resident", "It isn't needed once it's over"], answer: 0,
+        why: "Notes about timing, triggers and what helped reveal patterns the whole team can use." }
+    ], toolkits: [] },
+
+  { id: "wheelchair-movement", track: "pro", art: "chair",
+    title: "Safe Movement Therapy in Wheelchairs",
+    subtitle: "Lead seated movement that brings comfort and joy, with safety checks at every step",
+    blurb: "Safety checks before you start, how to lead a seated session, the warning signs that mean stop, and ways to adapt each movement for every ability.",
+    audience: ["activities", "therapy", "nursing"], topics: ["movement"], instructor: by("Physical therapy", "PT"), video: null,
+    chapters: [
+      { id: "why", title: "Why seated movement matters",
+        slide: "Gentle, guided movement eases stiffness, lifts mood and brings people together.",
+        say: [
+          "Welcome. This masterclass covers seated movement sessions for residents who use wheelchairs or sit for most of the day.",
+          "Gentle, regular movement can ease stiffness, support circulation and comfort, lift mood, and bring people together.",
+          "These sessions are about comfort and joy, not fitness targets.",
+          "Before you plan, check each resident's care plan and any precautions from physical or occupational therapy. Some people have limits after a fracture, surgery or a shoulder injury.",
+          "When in doubt, ask the therapist or the nurse which movements are safe for that person.",
+          "This lesson does not cover transfers or lifting. Those are separate skills that need their own training."
+        ],
+        points: ["Comfort and joy, not fitness targets.", "Check care plans and therapy precautions first.", "Ask the therapist or nurse when unsure.", "Transfers and lifting need separate training."] },
+      { id: "before", title: "Before you begin",
+        slide: "Brakes on, feet supported, sitting well back, and a quick comfort check.",
+        say: [
+          "Safety starts before the first movement.",
+          "Lock both wheelchair brakes, and check that feet rest flat on the floor or on the footrests.",
+          "Help each person sit upright and well back in the seat, if their plan allows it.",
+          "Clear the space around each chair so arms can move freely without hitting a wall, a table or a neighbor.",
+          "Check that oxygen tubing, catheter bags and blankets are secure and out of the way, and handle them discreetly.",
+          "Ask about comfort: 'How are your shoulders today? Any pain?' Watch faces as well as listening to words.",
+          "Have water nearby, and make sure glasses and hearing aids are in."
+        ],
+        points: ["Both brakes locked; feet flat and supported.", "Sitting upright and well back, if the plan allows.", "Space cleared around each chair.", "Oxygen tubing, catheter bags and blankets secured, discreetly.", "Ask about pain; water, glasses and hearing aids ready."] },
+      { id: "lead", title: "Leading the session",
+        slide: "Face the group, move slowly, count out loud, and never force a movement.",
+        say: [
+          "Sit or stand where everyone can see you, and demonstrate slowly. Many leaders mirror the group, using their left arm when they ask for the right, so it looks the same from where the residents sit.",
+          "Start with a warm-up: shoulder rolls, gentle neck turns, ankle circles, and hands slowly opening and closing.",
+          "Then the main set: arm raises to a comfortable height, seated marching, gentle side reaches, and passing a soft ball or a scarf.",
+          "Count out loud, slowly, and aim for five to eight repetitions of each movement.",
+          "Remind everyone to breathe normally and never to hold their breath.",
+          "Every movement stays within a comfortable range. Never push or pull a limb further than the person can move it themselves.",
+          "Finish with a cool-down of slow stretches and a few calm, deep breaths.",
+          "Music with a steady, moderate beat helps the group move together."
+        ],
+        points: ["Face the group; demonstrate slowly and mirror.", "Warm-up, main set, cool-down.", "Five to eight slow repetitions, counted out loud.", "Breathe normally; never hold the breath.", "Comfortable range only: never push or pull a limb."] },
+      { id: "stop", title: "Warning signs: stop",
+        slide: "Stop and tell the nurse about chest pain, breathlessness, dizziness, sudden weakness or new pain.",
+        say: [
+          "Know when to stop.",
+          "Stop the activity for that person and tell the nurse right away if they report or show chest pain or pressure, unusual shortness of breath, dizziness or faintness, sudden weakness, new or sharp pain, or skin that turns pale, gray or clammy.",
+          "Watch for quieter signs, too: someone who suddenly stops joining in, looks confused, or grimaces.",
+          "Tiredness is normal, but it's a signal to slow down. Offer rest and a drink, and invite them back when they're ready.",
+          "Never encourage someone to push through pain."
+        ],
+        points: ["Stop and tell the nurse: chest pain or pressure, unusual breathlessness, dizziness, sudden weakness, new pain, pale or clammy skin.", "Watch for quiet signs: stopping, confusion, grimacing.", "Tiredness means slow down and rest.", "Never push through pain."] },
+      { id: "adapt", title: "Adapting for every ability",
+        slide: "Offer a fuller version, a guided version and a sensory version of each movement.",
+        say: [
+          "Plan each movement at more than one level.",
+          "For residents with more ability, add coordination, such as opposite arm and knee, or tapping a rhythm.",
+          "For those who need guidance, break the movement into one step at a time, and show it before you say it.",
+          "For residents living with advanced dementia, try sensory movement: a soft scarf to wave, a textured ball to squeeze, or hand-under-hand guidance, where your hand rests under theirs and they stay in control.",
+          "Always ask before touching, and watch the response.",
+          "For someone with weakness on one side, follow the therapist's guidance, and invite movement on the side that is comfortable.",
+          "Thank people for joining in, rather than comparing one person with another."
+        ],
+        points: ["Fuller version: add coordination and rhythm.", "Guided version: one step at a time, shown before said.", "Sensory version: scarves, textured balls, hand-under-hand guidance.", "Ask before touching.", "Follow therapy guidance for weakness on one side."] },
+      { id: "close", title: "Closing and notes",
+        slide: "Cool down together, thank everyone, and note anything the team should know.",
+        say: [
+          "End with a calm cool-down and a thank-you to each person by name.",
+          "Unlock the brakes only when you're ready to move each chair, and help residents to where they want to be.",
+          "Note who took part, how they did, and anything unusual, such as pain, breathlessness or a change in ability.",
+          "Share those observations with the nurse and therapy staff. They help keep each care plan current.",
+          "Thank you. A good seated session can be the brightest part of someone's day."
+        ],
+        points: ["Thank each person by name.", "Unlock brakes only when moving each chair.", "Record participation and anything unusual.", "Share observations with nursing and therapy."] }
+    ],
+    tryThis: ["Before your next session, check three residents' care plans for movement precautions.", "Practice a five-minute warm-up out loud, counting slowly.", "Prepare one movement at three levels: fuller, guided and sensory.", "Keep the stop signs on a card where you lead the session."],
+    avoid: ["Forcing or pulling a limb past where the person can move it.", "Holding the breath during effort.", "Unlocked brakes or unsupported feet.", "Transfers or lifting without training."],
+    reflect: ["Which resident's face lights up during movement, and with which movement?", "What would you change to include someone who didn't join in?"],
+    sources: ["National Institute on Aging (nia.nih.gov): exercise and physical activity for older adults.", "Your facility's care plans and physical or occupational therapy precautions."],
+    quiz: [
+      { q: "What comes first, before any movement?", options: ["Brakes locked and feet supported", "Removing the footrests", "A fast warm-up to raise the energy"], answer: 0,
+        why: "Locked brakes and supported feet keep the chair, and the person, stable." },
+      { q: "A resident says her chest feels tight during arm raises. What do you do?", options: ["Encourage her to finish the set", "Stop, keep her comfortable and tell the nurse right away", "Offer water and carry on"], answer: 1,
+        why: "Chest tightness is a warning sign that needs a nurse's assessment." },
+      { q: "How should residents breathe during movement?", options: ["Hold their breath on the effort", "Breathe normally throughout", "Breathe as fast as they can"], answer: 1,
+        why: "Holding the breath raises blood pressure. Steady breathing keeps movement safe." },
+      { q: "A resident had a hip replaced last month. What do you do?", options: ["Follow the therapy precautions in the care plan", "Include him in every movement like everyone else", "Leave him out of the group"], answer: 0,
+        why: "Precautions after joint surgery are specific. Follow the plan, and ask the therapist when unsure." },
+      { q: "What is hand-under-hand guidance?", options: ["Holding the person's wrist to move the arm", "Resting your hand under theirs so they stay in control", "Moving the person's arm for them without asking"], answer: 1,
+        why: "With your hand underneath, you offer support while the person leads the movement." }
+    ], toolkits: [] },
+
+  { id: "person-centered-communication", track: "pro", art: "talk",
+    title: "Person-Centered Communication in Dementia",
+    subtitle: "Approach, speak and listen in ways that protect dignity and ease distress",
+    blurb: "How communication changes, how to approach and speak, how to listen for the feeling behind the words, and the words that respect an adult with a lifetime of experience.",
+    audience: ["nursing", "activities", "therapy"], topics: ["communication"], instructor: by("Speech-language pathology", "SLP"), video: null,
+    chapters: [
+      { id: "changes", title: "How communication changes",
+        slide: "Words get harder; feelings and tone are understood for much longer.",
+        say: [
+          "Welcome. Every care task begins with communication, and dementia changes how people send and receive it.",
+          "Finding the right word can become hard. Long sentences, fast speech and several questions at once become difficult to follow.",
+          "People often need more time to take in what was said, and to answer.",
+          "What lasts much longer is the ability to read feelings: your tone of voice, your face and your body language.",
+          "So how we say something often matters as much as what we say."
+        ],
+        points: ["Word-finding and long sentences become hard.", "Processing takes longer.", "Tone, face and body language are understood for much longer."] },
+      { id: "approach", title: "The approach",
+        slide: "From the front, at eye level, with their name and yours.",
+        say: [
+          "Approach from the front, so the person sees you coming. A sudden voice from behind can startle.",
+          "Get to eye level. Sit or crouch rather than standing over someone.",
+          "Say their preferred name and your own: 'Good morning, Mrs. Alvarez. I'm Dana.'",
+          "Wait for eye contact before you go on, and smile.",
+          "Offer your hand. Many people welcome a gentle touch on the hand or arm, but watch for signs that they don't."
+        ],
+        points: ["Approach from the front.", "At eye level.", "Their preferred name, then yours.", "Wait for eye contact; smile.", "Offer touch, and watch the response."] },
+      { id: "speak", title: "Speaking so it lands",
+        slide: "Short sentences, one idea at a time, and time to answer.",
+        say: [
+          "Use short, simple sentences with one idea at a time.",
+          "Ask one question at a time. When open questions are hard, offer two choices: 'Would you like tea or coffee?'",
+          "After you speak, wait. Count slowly to ten in your head before you repeat yourself.",
+          "If you need to repeat, use the same words, so the person doesn't have to work out a new sentence.",
+          "Show as you tell. Hold up the sweater, point to the chair, or demonstrate the first step.",
+          "Keep your voice calm and at a natural pitch. Speaking louder only helps if the person has hearing loss."
+        ],
+        points: ["Short sentences, one idea at a time.", "One question at a time; offer two choices.", "Wait: count to ten before repeating.", "Repeat with the same words.", "Show as you tell.", "Calm, natural voice."] },
+      { id: "listen", title: "Listening for feelings",
+        slide: "Listen for the feeling behind the words, and respond to that.",
+        say: [
+          "When words are mixed up, listen for the feeling underneath: worry, boredom, pride or loneliness.",
+          "Reflect it back: 'It sounds like you're worried about the house.'",
+          "Don't correct details or test memory. Asking someone whether they know who you are can cause embarrassment and distress.",
+          "If what they say isn't accurate, you don't need to argue. Join the feeling, and gently move the conversation forward.",
+          "Laugh with people, never at them, and let them finish, even when it takes time."
+        ],
+        points: ["Listen for the feeling underneath the words.", "Reflect the feeling back.", "Don't correct details or test memory.", "Join the feeling instead of arguing.", "Let people finish."] },
+      { id: "respect", title: "Words that respect",
+        slide: "Adult words, preferred names, and never talking about someone in front of them.",
+        say: [
+          "Use the name the person prefers. Endearments from staff can feel belittling, however kindly they are meant.",
+          "Avoid elderspeak: the sing-song voice, exaggerated praise, and speaking as 'we' when you mean the resident.",
+          "Studies in care homes found that elderspeak made residents more likely to resist care.",
+          "Speak to adults as adults, with the respect their life experience deserves.",
+          "Never talk about someone in front of them as if they weren't there. Include them in the conversation, even when they may not follow every word."
+        ],
+        points: ["Use the preferred name, not endearments.", "No elderspeak: sing-song voice, exaggerated praise, 'we'.", "Elderspeak made resistance to care more likely.", "Include the person; never talk about them in front of them."] },
+      { id: "beyond", title: "When words aren't enough",
+        slide: "Music, touch, objects and pictures reach people when words don't.",
+        say: [
+          "As words become harder, other channels matter more.",
+          "Music, a photo, a familiar object or a shared task can carry a conversation with few words.",
+          "Watch body language closely. A grimace, a clenched hand or a turned-away face can signal pain or fear.",
+          "Tell the nurse about new signs of pain or distress.",
+          "Stay present. Sitting quietly together, or holding a hand, is communication too.",
+          "Thank you. The way you speak can help each person feel safe, capable and known."
+        ],
+        points: ["Use music, photos, objects and shared tasks.", "Read body language for pain or fear.", "Tell the nurse about new signs of pain or distress.", "Quiet presence is communication too."] }
+    ],
+    tryThis: ["For one shift, approach every resident from the front and at eye level.", "Count to ten silently after each question before repeating it.", "Turn one open question into a two-choice question.", "Notice when you use an endearment and replace it with the person's preferred name."],
+    avoid: ["Testing memory, including asking someone whether they know who you are.", "Arguing about facts.", "Elderspeak: a sing-song voice, endearments, 'we'.", "Talking about someone in front of them."],
+    reflect: ["Which resident needs the longest pause, and how did waiting change the conversation?", "When did body language tell you something words didn't?"],
+    sources: ["Williams KN, Herman R, Gajewski B, Wilson K. Elderspeak communication: impact on dementia care. American Journal of Alzheimer's Disease & Other Dementias. 2009;24(1):11-20.", "Alzheimer's Association (alz.org): communication and Alzheimer's."],
+    quiz: [
+      { q: "How should you approach a resident?", options: ["From behind, quietly, so you don't disturb them", "From the front, at eye level, with their name and yours", "Standing, so they can see you're ready to help"], answer: 1,
+        why: "Seeing you come, at eye level, with names, helps the person feel safe and oriented." },
+      { q: "A resident isn't answering your question. What do you do first?", options: ["Ask again right away, in different words", "Wait, counting slowly to ten, then repeat the same words", "Answer for them"], answer: 1,
+        why: "Processing takes longer. Repeating the same words avoids adding a new sentence to work out." },
+      { q: "Which question is easiest to answer?", options: ["\"Would you like tea or coffee?\"", "\"What would you like to drink?\"", "\"What would you like for breakfast, and do you want juice?\""], answer: 0,
+        why: "Two clear choices are easier than an open question, and far easier than two questions at once." },
+      { q: "What did studies in care homes find about elderspeak?", options: ["It comforted residents", "It had no effect", "It made residents more likely to resist care"], answer: 2,
+        why: "Plain, respectful adult speech works better than a sing-song voice, endearments and 'we'." },
+      { q: "A resident's words are mixed up, but she looks anxious. What is the best response?", options: ["Correct her words so she can be understood", "Reflect the feeling: \"It sounds like something is worrying you.\"", "Change the subject to lunch"], answer: 1,
+        why: "Responding to the feeling shows you are listening, even when the words are unclear." }
+    ], toolkits: [] },
+
+  { id: "matching-activities", track: "pro", art: "tiers",
+    title: "Matching Activities to Cognitive Stage",
+    subtitle: "Find the just-right challenge for every resident, and adapt on the spot",
+    blurb: "Why matching matters, how to read a resident's current abilities, what suits each support tier, how to adapt in the moment, and how to plan a balanced week.",
+    audience: ["activities", "therapy"], topics: ["activities"], instructor: by("Recreation therapy", "RT"), video: null,
+    chapters: [
+      { id: "fit", title: "The just-right challenge",
+        slide: "Too hard brings frustration, too easy feels insulting, and just right brings success.",
+        say: [
+          "Welcome. This masterclass is about fitting each activity to the person.",
+          "When an activity is too hard, people feel frustrated or embarrassed, and they may withdraw.",
+          "When it's too easy, or looks childish, it can feel insulting.",
+          "The goal is the just-right challenge: enough to engage, with success within reach.",
+          "Abilities change over time, and even across a day, so matching is something we keep doing, not something we set once."
+        ],
+        points: ["Too hard: frustration and withdrawal.", "Too easy or childish: feels insulting.", "Just right: engaging, with success within reach.", "Revisit the match as abilities change."] },
+      { id: "read", title: "Reading abilities",
+        slide: "Use the care team's staging, the resident's profile, and what you observe.",
+        say: [
+          "Start with what the care team knows. Clinicians may record a stage using tools such as the Global Deterioration Scale or FAST. Your role is to use that information, not to score it yourself.",
+          "Add the resident's profile: their history, interests, reading, vision, hearing and hand strength.",
+          "Then observe. How long do they stay with a task? Can they read the instructions? Do they follow one step, or several?",
+          "Notice the best and hardest times of day, too. Someone may manage more in the morning."
+        ],
+        points: ["Clinicians record the stage; activity staff use it.", "Add the profile: history, interests, senses, hands.", "Observe attention, reading and steps followed.", "Note the best time of day."] },
+      { id: "tiers", title: "What suits each tier",
+        slide: "Full detail, guided steps, sensory focus, and group programs everyone can join.",
+        say: [
+          "Cognicopia groups activities into support tiers.",
+          "Tier one, mild support: full-detail pages such as word searches, sudoku and open discussion questions, with light cues.",
+          "Tier two, moderate engagement: fewer and larger elements, one step at a time, with a guide nearby.",
+          "Tier three, advanced sensory: music, movement, touch, tracing and single-focus pictures, with comments and choices instead of questions.",
+          "Tier four, the universal group: programs a whole mixed group can join at their own level, such as sing-alongs, seated movement and call-and-response sayings.",
+          "The same theme can work across tiers. A gardening theme might be a word search for one person, seed sorting for another, and the scent of fresh herbs for a third."
+        ],
+        points: ["Tier 1: full detail, light cues.", "Tier 2: fewer, larger elements, one step at a time.", "Tier 3: sensory first, comments and choices.", "Tier 4: group programs everyone can join.", "One theme can run across every tier."] },
+      { id: "adapt", title: "Adapting on the spot",
+        slide: "Watch for the signs, then step down or step up, without taking over.",
+        say: [
+          "Watch for signs that the level isn't right: repeated errors, sighing, pushing the page away, leaving, or falling asleep.",
+          "Step down gently: fewer items, bigger print, one step at a time, or a hands-on version.",
+          "If someone breezes through, step up with a harder page, or a role such as helping a neighbor.",
+          "Offer help without taking over. Point to where to start rather than doing it for them.",
+          "Design for success. Activities with no wrong answers let everyone finish feeling capable."
+        ],
+        points: ["Signs of a poor fit: errors, sighing, pushing away, leaving, sleeping.", "Step down: fewer items, bigger print, one step, hands-on.", "Step up: harder page or a helping role.", "Help without taking over.", "Prefer activities with no wrong answers."] },
+      { id: "dignity", title: "Dignity in every activity",
+        slide: "Adult themes, real choices and roles with purpose.",
+        say: [
+          "Materials should look and feel adult. Avoid children's worksheets, cartoon art and nursery themes.",
+          "Use adult names for activities: an art studio, a discussion group, a music hour.",
+          "Offer real choices, and respect a no.",
+          "Build in roles with purpose: folding linens, sorting hardware, setting tables, watering plants. Being useful matters to people at every stage."
+        ],
+        points: ["Adult materials: no children's worksheets or cartoon art.", "Adult names for activities.", "Real choices; respect a no.", "Roles with purpose at every stage."] },
+      { id: "week", title: "Planning a balanced week",
+        slide: "Mix the pillars, energize early, calm late, and plan for groups and individuals.",
+        say: [
+          "Balance the week across different kinds of activity: coloring and art, numbers, words, letters, movement and music.",
+          "Place energizing activities earlier in the day and calmer ones late in the afternoon.",
+          "Plan group programs and one-to-one time for residents who don't enjoy groups.",
+          "Cognicopia's Facility Portal can fill a month this way for each group's tier, and print each group's weekly packet at the right level.",
+          "Review the plan with the team each month as abilities change. Thank you for making every activity fit the person."
+        ],
+        points: ["Balance the six pillars across the week.", "Energizing early, calming late.", "Groups and one-to-one time.", "Review monthly as abilities change."] }
+    ],
+    tryThis: ["Choose one theme and plan it at three tiers.", "Watch one resident for signs of a poor fit, and adjust once.", "Rename one activity on your calendar with an adult name.", "Find a role with purpose for a resident who avoids groups."],
+    avoid: ["Children's materials or cartoon art.", "Marking 'wrong' answers on activities meant to have none.", "Doing the task for the person.", "Setting a level once and never revisiting it."],
+    reflect: ["Which resident's level has changed recently, and what did you notice first?", "Which theme could you run across all four tiers?"],
+    sources: ["Reisberg B, Ferris SH, de Leon MJ, Crook T. The Global Deterioration Scale for assessment of primary degenerative dementia. American Journal of Psychiatry. 1982;139(9):1136-1139.", "Reisberg B. Functional Assessment Staging (FAST). Psychopharmacology Bulletin. 1988;24(4):653-659."],
+    quiz: [
+      { q: "A resident keeps pushing a word search away and sighing. What do you try?", options: ["Encourage her to finish it", "Step down: fewer items, larger print or a hands-on version", "Take the page and complete it for her"], answer: 1,
+        why: "Those are signs the level is too hard. Stepping down keeps success within reach." },
+      { q: "Who records a resident's clinical stage, such as GDS or FAST?", options: ["Activity staff, based on how activities go", "Clinicians, in the care record", "The family"], answer: 1,
+        why: "Clinicians stage. Activity staff use that stage along with the profile and their own observations." },
+      { q: "Which activity suits Tier 3, advanced sensory?", options: ["A 6-by-6 sudoku", "Waving a soft scarf to music", "A multi-step word puzzle"], answer: 1,
+        why: "Tier 3 is sensory first: music, movement, touch and single-focus pictures." },
+      { q: "Which is the best name for an adult coloring group?", options: ["Art studio", "Crafts for little hands", "Color and play"], answer: 0,
+        why: "Adult names protect dignity and set adult expectations." },
+      { q: "Why plan calmer activities late in the afternoon?", options: ["They take less staff time", "Late-day restlessness is common, and calm activities help", "Residents are always asleep by then"], answer: 1,
+        why: "Energizing activities suit the morning; calm ones help as the day ends." }
+    ], toolkits: [] },
+
+  { id: "music-that-reaches", track: "pro", art: "music",
+    title: "Music That Reaches: Sing-Alongs and Playlists",
+    subtitle: "Choose the right songs, lead a sing-along, and use personal music for comfort",
+    blurb: "Why music reaches people living with dementia, how to choose songs, how to lead a group sing-along, and how to use personal playlists safely.",
+    audience: ["activities", "nursing"], topics: ["music"], instructor: by("Recreation therapy", "RT"), video: null,
+    chapters: [
+      { id: "why", title: "Why music reaches",
+        slide: "Musical memories often last, and familiar songs can lift mood and spark connection.",
+        say: [
+          "Welcome. Music is one of the most reliable ways to reach people living with dementia.",
+          "Memories for familiar music often last longer than many other memories, and a well-loved song can bring back words, movement and smiles.",
+          "Songs from a person's teens and early twenties tend to carry the strongest memories and feelings.",
+          "Music can lift mood, ease tension, and give a group a shared moment.",
+          "Like any activity, it works best when it's personal."
+        ],
+        points: ["Musical memories often outlast other memories.", "Songs from the teens and early twenties carry the most.", "Music can lift mood and ease tension.", "It works best when personal."] },
+      { id: "choose", title: "Choosing songs",
+        slide: "Ask about favorites, match the era, and check for painful associations.",
+        say: [
+          "Ask residents and families about favorite songs, artists, hymns and dances. A resident's profile may already list them.",
+          "Think about when the person was a young adult, and choose music from those years.",
+          "Include a range: popular songs, folk songs, hymns for those who welcome them, and music from each person's culture and language.",
+          "Some songs carry painful memories, such as a song played at a funeral. Ask families, and watch reactions.",
+          "Large-print lyric sheets help people who read to join in."
+        ],
+        points: ["Ask residents and families; check profiles.", "Match the years of young adulthood.", "Include each person's culture, language and faith.", "Watch for painful associations.", "Large-print lyric sheets."] },
+      { id: "lead", title: "Leading a sing-along",
+        slide: "Start with a well-known chorus, sing at a comfortable pitch, and leave room for stories.",
+        say: [
+          "Seat the group so everyone can see you and hear clearly.",
+          "Warm up with humming, or a simple call and response.",
+          "Start with a chorus nearly everyone knows. Success at the start builds confidence.",
+          "Sing a little slower and lower than the recording. Many older voices are more comfortable in a lower key.",
+          "Invite clapping, tapping or swaying for those who don't sing.",
+          "Pause between songs to let stories come: 'Where did you dance to this one?'",
+          "End with something calm, and thank everyone."
+        ],
+        points: ["Everyone can see and hear you.", "Warm up with humming or call and response.", "Open with a well-known chorus.", "Slower and lower than the recording.", "Clapping, tapping and swaying count.", "Pause for stories; end calmly."] },
+      { id: "playlists", title: "Personal playlists",
+        slide: "Personal music for one person, at a safe volume, with someone watching.",
+        say: [
+          "A personal playlist of favorite songs can comfort someone during a hard time of day or a lonely moment.",
+          "Build it with the resident and family, and keep it to songs that bring good feelings.",
+          "If you use headphones, check the volume and make sure they're comfortable.",
+          "Stay nearby or check back often. Never leave headphones on someone who can't take them off if they become uncomfortable or upset.",
+          "Watch the response. If music brings distress rather than comfort, stop, and offer something else."
+        ],
+        points: ["Build playlists with the resident and family.", "Safe volume; comfortable headphones.", "Stay near: never leave headphones on someone who can't remove them.", "Stop if music brings distress."] },
+      { id: "calm", title: "Music for calm moments",
+        slide: "Slower songs late in the day, and humming during care.",
+        say: [
+          "Music can soften the hard moments of the day.",
+          "In the late afternoon, choose slower, familiar songs to help people settle.",
+          "During care such as bathing or dressing, humming or singing a favorite song together can ease tension.",
+          "Keep background music purposeful. The same radio playing all day stops being meaningful and adds to the noise."
+        ],
+        points: ["Slower, familiar songs late in the day.", "Humming or singing during care.", "Purposeful music, not constant background noise."] },
+      { id: "share", title: "Watching and sharing",
+        slide: "Notice what lights people up, and share it with the team and family.",
+        say: [
+          "Notice who sings, who taps, who smiles, and who seems unsettled.",
+          "Record which songs worked for each person, and add them to their profile.",
+          "Share discoveries with the care team, so evening staff can use a song that calms.",
+          "Tell families, too. A favorite song can make their visits easier.",
+          "Thank you. A song at the right moment can give someone back a piece of themselves."
+        ],
+        points: ["Notice responses.", "Record songs that worked in the profile.", "Share with evening staff and families."] }
+    ],
+    tryThis: ["Ask two residents or their families for three favorite songs each.", "Plan a sing-along that opens with a well-known chorus.", "Make one large-print lyric sheet.", "Choose three calming songs for the late afternoon."],
+    avoid: ["Leaving headphones on someone who can't remove them.", "Loud, constant background music.", "Songs with known painful associations.", "Opening with unfamiliar songs."],
+    reflect: ["Which song reached someone you didn't expect it to?", "How could evening staff use what you learned?"],
+    sources: ["Alzheimer's Association (alz.org): art and music.", "National Institute on Aging (nia.nih.gov): caregiving tips on activities and music."],
+    quiz: [
+      { q: "Music from which period of life usually carries the strongest memories?", options: ["Early childhood", "The teens and early twenties", "The past few years"], answer: 1,
+        why: "Songs from the teens and early twenties tend to carry the strongest memories and feelings." },
+      { q: "How should you pitch a sing-along?", options: ["Higher and faster to keep the energy up", "A little slower and lower than the recording", "Exactly like the original recording"], answer: 1,
+        why: "Many older voices are more comfortable a little lower and slower." },
+      { q: "A resident listening on headphones starts to look upset. What should happen?", options: ["Someone nearby notices, stops the music and offers comfort", "Turn the volume up", "Leave it: the music will settle her"], answer: 0,
+        why: "Personal music needs someone nearby, and it stops when it brings distress." },
+      { q: "Which is a good late-afternoon choice?", options: ["Slower, familiar songs", "Fast, new songs", "The radio left on all day"], answer: 0,
+        why: "Slower, familiar music helps people settle as the day ends." },
+      { q: "Why record which songs worked?", options: ["So other staff and family can use them", "To grade the resident's singing", "It isn't useful"], answer: 0,
+        why: "Shared discoveries let evening staff and families use the songs that help." }
+    ], toolkits: [] }
+];
+
+/* ---------- 3. Guides for family caregivers ---------- */
+const FAMILY: Module[] = [
+  { id: "family-your-name", track: "family", art: "hands",
+    title: "When They Don't Remember Your Name",
+    subtitle: "Keeping connection when recognition fades",
+    blurb: "What it means, what to say, and how to care for your own heart when someone you love doesn't know your name.",
+    audience: ["family"], topics: ["family-life", "communication"], instructor: by("Family caregiving", "FC"), video: null,
+    chapters: [
+      { id: "means", title: "What it means",
+        slide: "The bond remains, even when the name doesn't.",
+        say: [
+          "Few moments hurt like the first time someone you love doesn't know your name.",
+          "It's a change in the brain, not a change in how much you matter.",
+          "Many people still feel warmth, safety and trust with the people they love, even when they can't name them.",
+          "Your presence still counts."
+        ],
+        points: ["It's a change in the brain, not in how much you matter.", "Warmth and trust often remain.", "Your presence still counts."] },
+      { id: "say", title: "What to say",
+        slide: "Introduce yourself kindly, and don't test.",
+        say: [
+          "Greet them with your name and your connection: 'Hi Mom, it's Sarah, your daughter.' It saves them the worry of searching.",
+          "Try not to quiz, even gently. Being asked who you are can cause embarrassment and fear.",
+          "If they call you by someone else's name, you don't need to correct them. Ask about that person instead.",
+          "Share something together: a photo, a song, a snack or a walk. Doing is often easier than talking."
+        ],
+        points: ["Say your name and your connection.", "Don't quiz.", "If they call you by another name, ask about that person.", "Do something together."] },
+      { id: "heart", title: "Caring for your heart",
+        slide: "Grief is normal. Let others help you carry it.",
+        say: [
+          "It's normal to grieve someone who is still here. Some call it ambiguous loss.",
+          "Talk with someone you trust, a support group, or the facility's social worker.",
+          "Keep visiting in whatever way you can. Short, calm visits count.",
+          "You are still their family, and that still matters."
+        ],
+        points: ["Grieving someone still here is normal.", "Talk with someone: a friend, a group, a social worker.", "Short, calm visits count."] }
+    ],
+    tryThis: ["Plan your greeting: your name and your connection.", "Bring one photo or song to share next visit."], avoid: ["Asking 'Do you know who I am?'", "Correcting the name they call you."], reflect: ["What still brings a smile when you're together?"], sources: ["Alzheimer's Association (alz.org): caregiver support."],
+    quiz: [], toolkits: ["visit"] },
+
+  { id: "family-late-day", track: "family", art: "tea",
+    title: "Late-Day Restlessness at Home",
+    subtitle: "Calmer afternoons and evenings",
+    blurb: "Why late afternoons are hard, how to shape the day so evenings go more gently, and what to do in the moment.",
+    audience: ["family"], topics: ["family-life", "behavior"], instructor: by("Family caregiving", "FC"), video: null,
+    chapters: [
+      { id: "why", title: "Why late days are hard",
+        slide: "Tiredness, fading light and a busy house can build up by evening.",
+        say: [
+          "Many families notice more confusion, worry or pacing as the day ends. It's often called sundowning.",
+          "Tiredness, fading light, hunger, pain, or a busy and noisy house can all add up.",
+          "It isn't something they're doing on purpose, and it isn't your fault."
+        ],
+        points: ["More worry or pacing late in the day is common.", "Tiredness, light, hunger, pain and noise add up.", "It's no one's fault."] },
+      { id: "shape", title: "Shape the afternoon",
+        slide: "Lights on early, a snack, quiet, and something calm to do.",
+        say: [
+          "Keep mornings active and bright, and keep naps short.",
+          "Turn on lights before it gets dark, and close curtains to cut shadows.",
+          "Offer a snack, a drink and a restroom visit in the middle of the afternoon.",
+          "Plan calm things for late in the day: favorite music, folding laundry, or looking at photos.",
+          "Keep evenings quiet: the television off, and visitors earlier in the day."
+        ],
+        points: ["Bright, active mornings; short naps.", "Lights on before dark; curtains closed.", "Snack, drink and restroom mid-afternoon.", "Calm activities late; quiet evenings."] },
+      { id: "moment", title: "In the moment",
+        slide: "Stay calm, respond to the feeling, and check for anything new.",
+        say: [
+          "Speak slowly and softly, and respond to the feeling: 'You seem worried. I'm here.'",
+          "Don't argue about facts. Offer comfort and a simple, calming activity.",
+          "If the change is sudden, or much worse than usual, call their doctor. It can be a sign of an infection, pain or a medicine problem.",
+          "And take a break when you can. You matter too."
+        ],
+        points: ["Speak softly; respond to the feeling.", "Comfort instead of argument.", "A sudden change: call the doctor.", "Take breaks."] }
+    ],
+    tryThis: ["Set a 3 pm reminder: lights on, snack, quiet.", "Pick two calm activities to keep ready."], avoid: ["Arguing about facts.", "Busy, noisy evenings."], reflect: ["What time does the day start to get harder?"], sources: ["National Institute on Aging (nia.nih.gov): tips for coping with sundowning."],
+    quiz: [], toolkits: ["afternoon"] },
+
+  { id: "family-their-world", track: "family", art: "bubbles",
+    title: "Joining Their World",
+    subtitle: "Responding to the feeling, not the facts",
+    blurb: "What to do when the facts don't match, how to respond to the feeling underneath, and how to find your own balance between honesty and comfort.",
+    audience: ["family"], topics: ["family-life", "communication"], instructor: by("Family caregiving", "FC"), video: null,
+    chapters: [
+      { id: "facts", title: "When the facts don't match",
+        slide: "You don't have to correct every detail.",
+        say: [
+          "Your loved one may talk about going to work, or ask for a parent who died long ago.",
+          "Correcting them often brings fresh grief, or an argument no one can win.",
+          "You don't have to correct every detail. Their feelings are real, even when the facts have shifted."
+        ],
+        points: ["Correcting often brings fresh grief.", "Feelings are real even when facts shift."] },
+      { id: "feeling", title: "Respond to the feeling",
+        slide: "Name the feeling, ask about it, and gently move on together.",
+        say: [
+          "Look for the feeling behind the words. Someone asking for their mother may be feeling lonely or unsafe.",
+          "Name it, and ask about it: 'You're thinking about your mother. What was she like?'",
+          "Then gently move on together: a cup of tea, a song, a look around the garden.",
+          "You haven't said anything untrue. You've chosen to follow the feeling instead of the facts."
+        ],
+        points: ["Find the feeling behind the words.", "Name it and ask about it.", "Move on together to something comforting."] },
+      { id: "unsure", title: "When you're unsure",
+        slide: "Kindness first, and ask the care team for ideas.",
+        say: [
+          "Every family finds its own balance between honesty and comfort.",
+          "The care team and the facility's social worker can share what works for your loved one.",
+          "When in doubt, choose the response that leaves them feeling safe and loved."
+        ],
+        points: ["Find your own balance.", "Ask the care team what works.", "Choose what leaves them feeling safe and loved."] }
+    ],
+    tryThis: ["Think of one question they ask often, and plan a reply that names the feeling."], avoid: ["Arguing about what year it is.", "Repeating hard news again and again."], reflect: ["What feeling sits behind the question they ask most?"], sources: ["Alzheimer's Association (alz.org): communication and Alzheimer's."],
+    quiz: [], toolkits: ["visit"] },
+
+  { id: "family-daily-rhythm", track: "family", art: "sun",
+    title: "A Day With a Rhythm",
+    subtitle: "Routines that ease worry",
+    blurb: "Why a predictable day helps, how to build one around their best times, and how to stay flexible when a day doesn't go to plan.",
+    audience: ["family"], topics: ["family-life"], instructor: by("Family caregiving", "FC"), video: null,
+    chapters: [
+      { id: "why", title: "Why routine helps",
+        slide: "A predictable day means fewer surprises and less worry.",
+        say: [
+          "When memory is unreliable, a predictable day is reassuring.",
+          "Doing the same things in the same order helps people sense what comes next, even when they can't say it."
+        ],
+        points: ["Predictable days reassure.", "The same order helps people sense what comes next."] },
+      { id: "build", title: "Building the day",
+        slide: "Care, something meaningful, rest, and a calm evening.",
+        say: [
+          "Anchor the day with regular times for waking, meals and bed.",
+          "Include something meaningful each day: a chore they enjoy, a walk, music, or a call with family.",
+          "Keep demanding tasks, like bathing, for their best time of day, which is often the morning.",
+          "Build in rest, and end the day with the same calm wind-down."
+        ],
+        points: ["Regular times for waking, meals and bed.", "Something meaningful every day.", "Demanding tasks at their best time.", "Rest, and the same calm wind-down."] },
+      { id: "flex", title: "Staying flexible",
+        slide: "Follow the rhythm, not the clock.",
+        say: [
+          "Some days won't go to plan, and that's okay.",
+          "If something isn't working, try again later rather than pushing through.",
+          "Write your routine down so others who help can follow it too. The daily rhythm planner can help."
+        ],
+        points: ["Some days won't go to plan.", "Try again later rather than pushing.", "Write the routine down for helpers."] }
+    ],
+    tryThis: ["Write down the three anchors of your day: waking, meals, bed.", "Move one hard task to their best time of day."], avoid: ["Packing the day too full.", "Pushing through when something isn't working."], reflect: ["When in the day are they at their best?"], sources: ["National Institute on Aging (nia.nih.gov): Alzheimer's caregiving tips."],
+    quiz: [], toolkits: ["rhythm"] },
+
+  { id: "family-caring-for-you", track: "family", art: "plant",
+    title: "Caring for You, Too",
+    subtitle: "Rest, help and support for the caregiver",
+    blurb: "The signs that caregiving is wearing you down, how to ask for and accept help, and small daily ways to look after yourself.",
+    audience: ["family"], topics: ["self-care"], instructor: by("Family caregiving", "FC"), video: null,
+    chapters: [
+      { id: "real", title: "Caregiver stress is real",
+        slide: "Tiredness, frustration and sadness are common, and they deserve care.",
+        say: [
+          "Caring for someone living with dementia is love and hard work at the same time.",
+          "Many caregivers feel tired, frustrated, sad or alone, sometimes all in one day.",
+          "Warning signs include poor sleep, getting sick more often, losing interest in things you enjoyed, and feeling you can't go on."
+        ],
+        points: ["Love and hard work at once.", "Tiredness, frustration and sadness are common.", "Watch for poor sleep, illness, lost interest, feeling unable to go on."] },
+      { id: "help", title: "Asking for help",
+        slide: "Share the load: family, friends, respite and support groups.",
+        say: [
+          "Make a list of things others could do: a meal, a sitting visit, a ride, a phone call.",
+          "Look into respite care, adult day programs and support groups near you.",
+          "The Alzheimer's Association runs a free helpline, day and night, at 800-272-3900."
+        ],
+        points: ["List what others could do.", "Respite, adult day programs, support groups.", "Alzheimer's Association 24/7 Helpline: 800-272-3900."] },
+      { id: "daily", title: "Small daily care",
+        slide: "A walk, a friend, a moment of quiet: small things count.",
+        say: [
+          "Protect a little time each day for yourself: a walk, a call with a friend, or a few quiet minutes.",
+          "Keep your own doctor's appointments.",
+          "If you ever feel unable to cope, or think about harming yourself, call or text 988 to reach the 988 Suicide and Crisis Lifeline.",
+          "Taking care of yourself is part of taking care of them."
+        ],
+        points: ["A little time each day for yourself.", "Keep your own appointments.", "In crisis: call or text 988.", "Caring for yourself is part of caring for them."] }
+    ],
+    tryThis: ["Write down three things someone else could do this week.", "Put one small thing for yourself in tomorrow's plan."], avoid: ["Waiting until you're exhausted to ask for help."], reflect: ["Who could you call this week?"], sources: ["Alzheimer's Association 24/7 Helpline: 800-272-3900.", "988 Suicide & Crisis Lifeline: call or text 988."],
+    quiz: [], toolkits: ["checkin"] }
+];
+
+/* ---------- 4. Printable toolkits for families ---------- */
+export const TOOLKITS: readonly Toolkit[] = [
+  { id: "visit", title: "Visit Toolkit", icon: "visit",
+    blurb: "Plan a calm, connected visit: what to bring, what to say, and how to say goodbye.",
+    sections: [
+      { heading: "Before you go", items: ["Visit at their best time of day, often late morning.", "Bring something to share: photos, a favorite song, a familiar object, or a snack if allowed.", "Ask staff how the day has gone so far.", "Keep visits short and calm if long ones tire them."] },
+      { heading: "A 20-minute visit", items: ["Hello: face them, smile, and say your name and your connection.", "Do something together: photos, folding laundry, a walk or music.", "Share a memory: 'Tell me about...', and let them lead.", "Goodbye: keep it simple and warm, and leave with a friendly word from staff."] },
+      { heading: "Conversation starters", items: ["Tell me about the house you grew up in.", "What was your favorite meal when you were young?", "What songs did you like to dance to?", "Tell me about your first job.", "What did you like to do on a summer day?", "Who taught you to cook, sew or fix things?"] },
+      { heading: "If they're upset", items: ["Stay calm and speak softly.", "Name the feeling: 'You seem worried. I'm here.'", "Don't argue about facts.", "Try a change of scene or a favorite song.", "Ask staff for help if it continues."] },
+      { heading: "Notes for next time", lines: 3 }
+    ] },
+  { id: "afternoon", title: "Calm Afternoon Toolkit", icon: "afternoon",
+    blurb: "A checklist and ideas for gentler late afternoons and evenings at home.",
+    sections: [
+      { heading: "At 3 o'clock", checks: ["Lights on before dusk; curtains closed as it gets dark.", "Television and radio off, unless someone is enjoying them.", "A snack and a drink offered.", "A restroom visit.", "Something calm to do is ready."] },
+      { heading: "Calm things to do", items: ["Favorite music, softly.", "Folding towels or sorting socks.", "Looking through a photo album.", "A short walk, indoors or out.", "Hand lotion and a gentle hand massage.", "A warm drink without caffeine."] },
+      { heading: "Words that help", items: ["\"You seem worried. I'm here with you.\"", "\"Tell me about...\"", "\"Let's have a cup of tea together.\"", "\"You're safe. I'll stay with you.\""] },
+      { heading: "Words to avoid", items: ["\"You already asked me that.\"", "\"That's not true.\"", "Long explanations, or several questions at once."] },
+      { heading: "Call the doctor if", items: ["Confusion or agitation is sudden, or much worse than usual.", "There are signs of pain, fever, or trouble passing urine.", "There's a fall, or new trouble walking or eating."] }
+    ] },
+  { id: "rhythm", title: "Daily Rhythm Planner", icon: "rhythm",
+    blurb: "Write down the day that works, so everyone who helps can follow it.",
+    sections: [
+      { heading: "Morning", text: "Waking, washing and dressing, breakfast, a morning activity.", lines: 3 },
+      { heading: "Midday", text: "Lunch, something meaningful, rest.", lines: 3 },
+      { heading: "Afternoon", text: "A calm activity, a snack and a drink, lights on before dusk.", lines: 3 },
+      { heading: "Evening", text: "Supper, the wind-down routine, bedtime.", lines: 3 },
+      { heading: "What helps on a hard day", lines: 3 },
+      { heading: "Favorite things", text: "Music, foods, places, people and pastimes that bring comfort.", lines: 2 }
+    ] },
+  { id: "checkin", title: "Caregiver Check-In", icon: "checkin",
+    blurb: "A few minutes each week to check on the person doing the caring: you.",
+    sections: [
+      { heading: "This week", checks: ["I slept reasonably well most nights.", "I ate regular meals.", "I did one thing just for me.", "I talked with someone who understands.", "I asked for, or accepted, help at least once."] },
+      { heading: "Who can help", text: "Names and numbers: family, friends, neighbors, a faith community, respite services.", lines: 4 },
+      { heading: "Warning signs to act on", items: ["Feeling exhausted most of the time.", "Getting sick more often.", "Losing interest in things you enjoyed.", "Feeling angry, hopeless, or unable to go on."] },
+      { heading: "Support lines (United States)", items: ["Alzheimer's Association 24/7 Helpline: 800-272-3900.", "Eldercare Locator, for local services: 800-677-1116.", "988 Suicide & Crisis Lifeline: call or text 988."] }
+    ] }
+];
+
+export const MODULES: readonly Module[] = PRO.concat(FAMILY);
+export const moduleOf = (id: string): Module | null => MODULES.filter(m => m.id === id)[0] || null;
+export const toolkitOf = (id: string): Toolkit | null => TOOLKITS.filter(t => t.id === id)[0] || null;
+
+/* ---------- 5. Lesson timing ---------- */
+export const words = (s: string): number => (String(s).match(/[A-Za-z0-9'’-]+/g) || []).length;
+export interface Cue { i: number; chapter: number; title: boolean; text: string; start: number; dur: number; }
+/* The narrated lesson's timeline: each chapter's title, then its sentences, at
+   WPM words a minute (never under two seconds a line). */
+export function cues(m: Module): Cue[] {
+  const out: Cue[] = []; let t = 0;
+  m.chapters.forEach((c, ci) => {
+    [c.title + "."].concat(c.say).forEach((text, k) => {
+      const dur = Math.max(2, Math.round(words(text) * 60 / WPM * 10) / 10) + (k === 0 ? 0.6 : 0.3);
+      out.push({ i: out.length, chapter: ci, title: k === 0, text: k === 0 ? c.title : text, start: Math.round(t * 10) / 10, dur });
+      t += dur;
+    });
+  });
+  return out;
+}
+export const lessonSeconds = (m: Module): number => { const c = cues(m); return c.length ? Math.round((c[c.length - 1].start + c[c.length - 1].dur) * 10) / 10 : 0; };
+/* The companion guide's reading: its chapter summaries, key points and lists (counted from the content, not the laid-out guide). */
+export const guideWords = (m: Module): number => words([m.title, m.subtitle].concat(...m.chapters.map(c => [c.title, c.slide].concat(c.points)), m.tryThis, m.avoid, m.reflect, m.sources).join(" "));
+/* Training time: the lesson, reading the companion guide, and one minute a
+   question, rounded up to five minutes for a masterclass, to a minute for a guide. */
+export function minutes(m: Module): { lesson: number; guide: number; quiz: number; total: number } {
+  const lesson = lessonSeconds(m) / 60, guide = m.track === "pro" ? guideWords(m) / READ_WPM : 0, quiz = m.quiz.length;
+  const raw = lesson + guide + quiz;
+  return { lesson: Math.ceil(lesson), guide: Math.ceil(guide), quiz, total: m.track === "pro" ? Math.ceil(raw / 5) * 5 : Math.max(1, Math.ceil(raw)) };
+}
+export function clock(sec: number): string { const s = Math.max(0, Math.floor(sec)); return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); }
+export function spoken(sec: number): string {
+  const s = Math.max(0, Math.round(sec)), m = Math.floor(s / 60), r = s % 60;
+  return (m ? m + (m === 1 ? " minute" : " minutes") : "") + (m && r ? " " : "") + (r || !m ? r + (r === 1 ? " second" : " seconds") : "");
+}
+export const hoursText = (min: number): string => { const h = Math.floor(min / 60), m = Math.round(min % 60); return (h ? h + " h" : "") + (h && m ? " " : "") + (m || !h ? m + " min" : ""); };
+
+/* ---------- 6. Learners and progress ---------- */
+export type Role = "cna" | "nurse" | "activities" | "therapy" | "other-staff" | "family";
+export const ROLES: Readonly<Record<Role, string>> = {
+  cna: "Certified nursing assistant (CNA)", nurse: "Nurse (RN or LPN)", activities: "Activity professional",
+  therapy: "Therapy (PT, OT or SLP)", "other-staff": "Other staff", family: "Family caregiver"
+};
+export interface Learner { id: string; name: string; role: Role; }
+export interface Progress { played: number[]; read: boolean; video: number; quizBest: number; quizAttempts: number; quizPassedAt: string; completedAt: string; minutes: number; cert: string; }
+export interface Academy { v: 1; learners: Learner[]; active: string; progress: Record<string, Record<string, Progress>>; approval: string; }
+export const LIMITS = { learners: 200, name: 60, approval: 300 } as const;
+const ID = /^[A-Za-z0-9_-]{1,40}$/;
+const line = (v: unknown, max: number): string => String(v == null ? "" : v).replace(/[\u0000-\u001F\u007F]/g, " ").replace(/\s+/g, " ").trim().slice(0, max);
+export const newId = (prefix: string): string => prefix + Math.random().toString(36).slice(2, 10) + Math.random().toString(36).slice(2, 6);
+const isRole = (r: unknown): r is Role => typeof r === "string" && Object.prototype.hasOwnProperty.call(ROLES, r);
+const isDate = (s: unknown): s is string => typeof s === "string" && /^\d{4}-\d{2}-\d{2}/.test(s) && !isNaN(Date.parse(s));
+export const emptyProgress = (): Progress => ({ played: [], read: false, video: 0, quizBest: 0, quizAttempts: 0, quizPassedAt: "", completedAt: "", minutes: 0, cert: "" });
+function normalizeProgress(raw: unknown, m: Module): Progress {
+  const o = (raw && typeof raw === "object" ? raw : {}) as Record<string, unknown>, n = cues(m).length;
+  const played = Array.from(new Set((Array.isArray(o.played) ? o.played : []).map(Number).filter(i => Number.isInteger(i) && i >= 0 && i < n))).sort((a, b) => a - b);
+  const num = (v: unknown, lo: number, hi: number): number => { const x = Number(v); return Number.isFinite(x) ? Math.max(lo, Math.min(hi, x)) : lo; };
+  return { played, read: o.read === true, video: num(o.video, 0, 1), quizBest: num(o.quizBest, 0, 1), quizAttempts: Math.round(num(o.quizAttempts, 0, 9999)),
+    quizPassedAt: isDate(o.quizPassedAt) ? o.quizPassedAt : "", completedAt: isDate(o.completedAt) ? o.completedAt : "",
+    minutes: Math.round(num(o.minutes, 0, 600)), cert: typeof o.cert === "string" && /^CA-[0-9A-Z]{4}-[0-9A-Z]{4}$/.test(o.cert) ? o.cert : "" };
+}
+export function normalizeAcademy(raw: unknown): Academy {
+  const o = (raw && typeof raw === "object" ? raw : {}) as Record<string, unknown>;
+  const seen = new Set<string>();
+  const learners = (Array.isArray(o.learners) ? o.learners : []).slice(0, LIMITS.learners).map(x => {
+    const l = (x && typeof x === "object" ? x : {}) as Record<string, unknown>;
+    let id = typeof l.id === "string" && ID.test(l.id) ? l.id : newId("l-");
+    while (seen.has(id)) id = newId("l-");
+    seen.add(id);
+    return { id, name: line(l.name, LIMITS.name), role: isRole(l.role) ? l.role : "other-staff" } as Learner;
+  });
+  if (!learners.length) learners.push({ id: "l-me", name: "", role: "other-staff" });
+  const src = (o.progress && typeof o.progress === "object" ? o.progress : {}) as Record<string, unknown>;
+  const progress: Record<string, Record<string, Progress>> = {};
+  learners.forEach(l => {
+    const per = (src[l.id] && typeof src[l.id] === "object" ? src[l.id] : {}) as Record<string, unknown>, mine: Record<string, Progress> = {};
+    Object.keys(per).forEach(mid => { const m = moduleOf(mid); if (m) mine[mid] = normalizeProgress(per[mid], m); });
+    progress[l.id] = mine;
+  });
+  const active = typeof o.active === "string" && learners.some(l => l.id === o.active) ? o.active : learners[0].id;
+  return { v: 1, learners, active, progress, approval: line(o.approval, LIMITS.approval) };
+}
+export const learnerOf = (a: Academy, id: string): Learner | null => a.learners.filter(l => l.id === id)[0] || null;
+export const activeLearner = (a: Academy): Learner => learnerOf(a, a.active) || a.learners[0];
+export function progressOf(a: Academy, learnerId: string, moduleId: string): Progress {
+  const p = (a.progress[learnerId] || {})[moduleId];
+  return p ? Object.assign({}, p, { played: p.played.slice() }) : emptyProgress();
+}
+function withProgress(a: Academy, learnerId: string, moduleId: string, fn: (p: Progress) => Progress): Academy {
+  if (!learnerOf(a, learnerId) || !moduleOf(moduleId)) return a;
+  const mine = Object.assign({}, a.progress[learnerId] || {});
+  mine[moduleId] = fn(progressOf(a, learnerId, moduleId));
+  return Object.assign({}, a, { progress: Object.assign({}, a.progress, { [learnerId]: mine }) });
+}
+export function addLearner(a: Academy, name: string, role: Role): { academy: Academy; id: string } {
+  if (a.learners.length >= LIMITS.learners) return { academy: a, id: "" };
+  const id = newId("l-");
+  return { academy: Object.assign({}, a, { learners: a.learners.concat([{ id, name: line(name, LIMITS.name), role: isRole(role) ? role : "other-staff" }]), active: id,
+    progress: Object.assign({}, a.progress, { [id]: {} }) }), id };
+}
+export function updateLearner(a: Academy, id: string, name: string, role: Role): Academy {
+  return Object.assign({}, a, { learners: a.learners.map(l => l.id === id ? { id, name: line(name, LIMITS.name), role: isRole(role) ? role : l.role } : l) });
+}
+/* The last learner stays: there is always someone to learn as. */
+export function removeLearner(a: Academy, id: string): Academy {
+  if (a.learners.length <= 1 || !learnerOf(a, id)) return a;
+  const learners = a.learners.filter(l => l.id !== id), progress = Object.assign({}, a.progress); delete progress[id];
+  return Object.assign({}, a, { learners, progress, active: a.active === id ? learners[0].id : a.active });
+}
+export const setActive = (a: Academy, id: string): Academy => learnerOf(a, id) ? Object.assign({}, a, { active: id }) : a;
+export const setApproval = (a: Academy, text: string): Academy => Object.assign({}, a, { approval: line(text, LIMITS.approval) });
+
+/* Lesson coverage: the share of the narrated lesson played through (seeking
+   past a line does not count it), or all of it once the learner has read the
+   whole transcript; for a recorded video, the share watched. */
+export function markPlayed(a: Academy, learnerId: string, moduleId: string, played: readonly number[]): Academy {
+  const m = moduleOf(moduleId); if (!m) return a;
+  const n = cues(m).length;
+  return withProgress(a, learnerId, moduleId, p => Object.assign(p, { played: Array.from(new Set(p.played.concat(played.filter(i => Number.isInteger(i) && i >= 0 && i < n)))).sort((x, y) => x - y) }));
+}
+export const markRead = (a: Academy, learnerId: string, moduleId: string): Academy => withProgress(a, learnerId, moduleId, p => Object.assign(p, { read: true }));
+export const markVideo = (a: Academy, learnerId: string, moduleId: string, share: number): Academy =>
+  withProgress(a, learnerId, moduleId, p => Object.assign(p, { video: Math.max(p.video, Math.max(0, Math.min(1, Number(share) || 0))) }));
+export function coverage(m: Module, p: Progress): number {
+  if (p.read) return 1;
+  if (m.video && m.video.src) return p.video;
+  const c = cues(m), total = c.reduce((s, q) => s + q.dur, 0);
+  const got = p.played.reduce((s, i) => s + (c[i] ? c[i].dur : 0), 0);
+  return total ? Math.min(1, got / total) : 0;
+}
+
+/* The knowledge check. */
+export interface Graded { correct: boolean[]; right: number; total: number; score: number; passed: boolean; }
+export function grade(m: Module, answers: readonly (number | null)[]): Graded {
+  const correct = m.quiz.map((q, i) => answers[i] === q.answer), right = correct.filter(Boolean).length, total = m.quiz.length;
+  const score = total ? right / total : 1;
+  return { correct, right, total, score, passed: score >= PASS - 1e-9 };
+}
+export function recordQuiz(a: Academy, learnerId: string, moduleId: string, g: Graded, now: Date = new Date()): Academy {
+  return withProgress(a, learnerId, moduleId, p => Object.assign(p, { quizBest: Math.max(p.quizBest, g.score), quizAttempts: p.quizAttempts + 1,
+    quizPassedAt: p.quizPassedAt || (g.passed ? now.toISOString() : "") }));
+}
+export interface Readiness { watched: boolean; quiz: boolean; ready: boolean; missing: string[]; }
+export function readiness(m: Module, p: Progress): Readiness {
+  const watched = coverage(m, p) >= WATCHED - 1e-9, quiz = !m.quiz.length || !!p.quizPassedAt;
+  const missing: string[] = [];
+  if (!watched) missing.push(m.track === "pro" ? "Watch at least 90% of the lesson, or read the whole transcript." : "Watch the guide, or read it through.");
+  if (!quiz) missing.push("Pass the knowledge check (" + Math.round(PASS * 100) + "%).");
+  return { watched, quiz, ready: watched && quiz, missing };
+}
+/* Complete a module: the first completion date stays; a certificate for a masterclass. */
+export function complete(a: Academy, learnerId: string, moduleId: string, now: Date = new Date()): { academy: Academy; ok: boolean; missing: string[] } {
+  const m = moduleOf(moduleId), l = learnerOf(a, learnerId);
+  if (!m || !l) return { academy: a, ok: false, missing: ["Unknown module or learner."] };
+  const p = progressOf(a, learnerId, moduleId), r = readiness(m, p);
+  if (!r.ready) return { academy: a, ok: false, missing: r.missing };
+  if (p.completedAt) return { academy: a, ok: true, missing: [] };
+  const at = now.toISOString();
+  return { academy: withProgress(a, learnerId, moduleId, x => Object.assign(x, { completedAt: at, minutes: minutes(m).total, cert: m.track === "pro" ? certificateId(learnerId, moduleId, at) : "" })), ok: true, missing: [] };
+}
+
+/* ---------- 7. Certificates ---------- */
+function hash(s: string): number { let h = 2166136261; for (let i = 0; i < s.length; i++){ h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
+const B32 = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";          // Crockford: no I, L, O or U
+export function certificateId(learnerId: string, moduleId: string, completedAt: string): string {
+  let a = hash(learnerId + "|" + moduleId + "|" + completedAt), b = hash(completedAt + "|" + moduleId + "|" + learnerId + "#"), s = "";
+  for (let i = 0; i < 8; i++){ const v = i < 4 ? a : b; s += B32[v & 31]; if (i < 4) a = a >>> 5; else b = b >>> 5; }
+  return "CA-" + s.slice(0, 4) + "-" + s.slice(4);
+}
+export interface Certificate { id: string; learner: string; role: string; module: string; completed: string; minutes: number; score: number; facility: string; approval: string; }
+export function certificateFor(a: Academy, learnerId: string, moduleId: string, facility: string): Certificate | null {
+  const m = moduleOf(moduleId), l = learnerOf(a, learnerId), p = progressOf(a, learnerId, moduleId);
+  if (!m || !l || m.track !== "pro" || !p.completedAt || !p.cert) return null;
+  return { id: p.cert, learner: l.name, role: ROLES[l.role], module: m.title, completed: p.completedAt, minutes: p.minutes, score: p.quizBest, facility: line(facility, 80), approval: a.approval };
+}
+/* Checks a typed certificate ID against the records on this computer. */
+export function findCertificate(a: Academy, id: string): { learner: Learner; module: Module; progress: Progress } | null {
+  const want = String(id).trim().toUpperCase();
+  for (const l of a.learners) for (const mid of Object.keys(a.progress[l.id] || {})){
+    const p = a.progress[l.id][mid], m = moduleOf(mid);
+    if (m && p.cert === want) return { learner: l, module: m, progress: p };
+  }
+  return null;
+}
+export const NOT_ACCREDITED = "In-service training record. This is not accredited continuing education: it counts toward a license or certification only where your facility's education program or an approving body accepts it.";
+
+/* ---------- 8. Training records ---------- */
+export interface YearRecord { learner: Learner; minutes: number; completed: { module: Module; progress: Progress }[]; inProgress: number; }
+export function yearRecord(a: Academy, learnerId: string, year: number): YearRecord | null {
+  const l = learnerOf(a, learnerId); if (!l) return null;
+  const mine = a.progress[l.id] || {}, done: { module: Module; progress: Progress }[] = [];
+  let inProgress = 0;
+  Object.keys(mine).forEach(mid => {
+    const m = moduleOf(mid), p = mine[mid]; if (!m) return;
+    if (p.completedAt && new Date(p.completedAt).getFullYear() === year) done.push({ module: m, progress: p });
+    else if (!p.completedAt && (p.played.length || p.read || p.video || p.quizAttempts)) inProgress++;
+  });
+  done.sort((x, y) => x.progress.completedAt < y.progress.completedAt ? -1 : 1);
+  return { learner: l, minutes: done.reduce((n, d) => n + d.progress.minutes, 0), completed: done, inProgress };
+}
+export function years(a: Academy, now: Date = new Date()): number[] {
+  const ys = new Set<number>([now.getFullYear()]);
+  a.learners.forEach(l => Object.keys(a.progress[l.id] || {}).forEach(mid => { const p = a.progress[l.id][mid]; if (p.completedAt) ys.add(new Date(p.completedAt).getFullYear()); }));
+  return Array.from(ys).sort((x, y) => y - x);
+}
+export function recordRows(a: Academy, year: number): (string | number)[][] {
+  const rows: (string | number)[][] = [["Learner", "Role", "Module", "Track", "Completed", "Training minutes", "Knowledge check", "Certificate"]];
+  a.learners.forEach(l => { const r = yearRecord(a, l.id, year); if (r) r.completed.forEach(d => rows.push([l.name || "(no name)", ROLES[l.role], d.module.title,
+    d.module.track === "pro" ? "Masterclass" : "Family guide", d.progress.completedAt.slice(0, 10), d.progress.minutes,
+    d.module.quiz.length ? Math.round(d.progress.quizBest * 100) + "%" : "", d.progress.cert])); });
+  return rows;
+}
+/* CSV (RFC 4180, CRLF). A text cell that a spreadsheet would read as a formula is prefixed with an apostrophe. */
+export function toCSV(rows: readonly (readonly (string | number)[])[]): string {
+  const cell = (v: string | number): string => {
+    let s = String(v == null ? "" : v);
+    if (typeof v === "string" && /^[=+\-@\t\r]/.test(s)) s = "'" + s;
+    return /[",\r\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+  };
+  return rows.map(r => r.map(cell).join(",")).join("\r\n") + "\r\n";
+}
+
+/* ---------- 9. Printed pages: companion guides, toolkits, certificates ----------
+   Pages are planned as drawing operations in points, then drawn by draw()
+   with jsPDF (the page's Atkinson Hyperlegible). split() is the page's line
+   breaker, so the plan uses the real font's widths. */
+export type BlockKind = "title" | "subtitle" | "meta" | "h" | "p" | "li" | "num" | "check" | "lines" | "small" | "gap";
+export interface Block { k: BlockKind; text?: string; n?: number; }
+export function guideBlocks(m: Module): Block[] {
+  const t = m.track === "pro" ? minutes(m) : null, out: Block[] = [
+    { k: "title", text: m.title }, { k: "subtitle", text: m.subtitle },
+    { k: "meta", text: (m.track === "pro" ? "Companion guide · " : "Family guide · ") + m.instructor.name + (m.instructor.focus ? " · " + m.instructor.focus : "") +
+      (t ? " · about " + t.total + " minutes of training" : "") }
+  ];
+  out.push({ k: "h", text: "In this lesson" });
+  m.chapters.forEach((c, i) => out.push({ k: "num", n: i + 1, text: c.title + ": " + c.slide }));
+  m.chapters.forEach(c => { out.push({ k: "h", text: c.title }); c.points.forEach(p => out.push({ k: "li", text: p })); });
+  if (m.tryThis.length){ out.push({ k: "h", text: "Try this" }); m.tryThis.forEach(x => out.push({ k: "check", text: x })); }
+  if (m.avoid.length){ out.push({ k: "h", text: "Avoid" }); m.avoid.forEach(x => out.push({ k: "li", text: x })); }
+  if (m.reflect.length){ out.push({ k: "h", text: "Reflect" }); m.reflect.forEach(x => { out.push({ k: "p", text: x }); out.push({ k: "lines", n: 2 }); }); }
+  if (m.sources.length){ out.push({ k: "h", text: "Sources and further reading" }); m.sources.forEach(x => out.push({ k: "small", text: x })); }
+  return out;
+}
+export function toolkitBlocks(t: Toolkit): Block[] {
+  const out: Block[] = [{ k: "title", text: t.title }, { k: "subtitle", text: t.blurb }, { k: "meta", text: "Quick-start toolkit · Cognicopia Academy" }];
+  t.sections.forEach(s => {
+    out.push({ k: "h", text: s.heading });
+    if (s.text) out.push({ k: "p", text: s.text });
+    (s.items || []).forEach(x => out.push({ k: "li", text: x }));
+    (s.checks || []).forEach(x => out.push({ k: "check", text: x }));
+    if (s.lines) out.push({ k: "lines", n: s.lines });
+  });
+  return out;
+}
+export interface Op { t: "text" | "rule" | "box"; x: number; y: number; x2?: number; y2?: number; w?: number; h?: number; text?: string; size?: number; bold?: boolean; italic?: boolean; gray?: number; lw?: number; align?: "left" | "center" | "right"; }
+export interface PdfPage { w: number; h: number; ops: Op[]; }
+export type Split = (text: string, width: number, size: number, bold: boolean) => string[];
+export const LETTER = { w: 612, h: 792, m: 54 } as const;
+const STYLE: Record<BlockKind, { size: number; bold?: boolean; italic?: boolean; gray?: number; lead: number; before: number; after: number; indent?: number }> = {
+  title: { size: 24, bold: true, lead: 1.22, before: 0, after: 6 },
+  subtitle: { size: 13, lead: 1.3, before: 0, after: 4 },
+  meta: { size: 10, gray: 0.3, lead: 1.3, before: 0, after: 10 },
+  h: { size: 14, bold: true, lead: 1.2, before: 12, after: 4 },
+  p: { size: 11.5, lead: 1.35, before: 2, after: 2 },
+  li: { size: 11.5, lead: 1.35, before: 1, after: 1, indent: 16 },
+  num: { size: 11.5, lead: 1.35, before: 1, after: 1, indent: 18 },
+  check: { size: 11.5, lead: 1.35, before: 2, after: 2, indent: 20 },
+  lines: { size: 11.5, lead: 1, before: 0, after: 4 },
+  small: { size: 9.5, gray: 0.25, lead: 1.3, before: 1, after: 1 },
+  gap: { size: 11.5, lead: 1, before: 0, after: 8 }
+};
+/* Flow blocks onto Letter pages, writing lines 0.5 in apart, every page with the
+   footer and its page number. What belongs together starts on the same page:
+   a prompt and its writing lines, and a heading with the start of what follows
+   (the whole of it when that is a prompt with lines, or writing lines). */
+export function layout(blocks: readonly Block[], split: Split, footer: string): PdfPage[] {
+  const { w, h, m } = LETTER, W = w - m * 2, bottom = h - m - 24;
+  const pages: PdfPage[] = []; let ops: Op[] = [], y = m;
+  const newPage = (): void => { pages.push({ w, h, ops }); ops = []; y = m; };
+  const heightOf = (b: Block): number => {
+    const st = STYLE[b.k];
+    if (b.k === "lines") return (b.n || 1) * 36 + st.after;
+    if (b.k === "gap") return st.after;
+    const lines = split(b.text || "", W - (st.indent || 0), st.size, !!st.bold);
+    return st.before + lines.length * st.size * st.lead + st.after;
+  };
+  const withLines = (bi: number): boolean => { const b = blocks[bi], n = blocks[bi + 1]; return !!b && (b.k === "lines" || (b.k !== "gap" && !!n && n.k === "lines")); };
+  const keep = (bi: number): number => {             // the height that has to start on this block's page
+    const b = blocks[bi], next = blocks[bi + 1], own = heightOf(b);
+    if (!next || b.k === "lines" || b.k === "gap") return own;
+    if (next.k === "lines") return own + heightOf(next);
+    if (b.k === "h") return own + (withLines(bi + 1) ? keep(bi + 1) : Math.min(keep(bi + 1), 60));
+    return own;
+  };
+  blocks.forEach((b, bi) => {
+    const st = STYLE[b.k];
+    const need = Math.min(keep(bi), bottom - m);       // longer than a page: it flows on from the top of one
+    if (y + need > bottom && y > m) newPage();
+    if (b.k === "gap"){ y += st.after; return; }
+    if (b.k === "lines"){
+      for (let i = 0; i < (b.n || 1); i++){ y += 36; if (y > bottom){ newPage(); y += 36; } ops.push({ t: "rule", x: m, y, x2: w - m, y2: y, lw: 1 }); }
+      y += st.after; return;
+    }
+    y += st.before;
+    const x = m + (st.indent || 0), lines = split(b.text || "", W - (st.indent || 0), st.size, !!st.bold);
+    lines.forEach((ln, k) => {
+      if (y + st.size * st.lead > bottom){ newPage(); }
+      y += st.size * st.lead;
+      if (k === 0 && b.k === "li") ops.push({ t: "text", x: m + 3, y, text: "•", size: st.size, bold: true });
+      if (k === 0 && b.k === "num") ops.push({ t: "text", x: m + 1, y, text: (b.n || 1) + ".", size: st.size, bold: true });
+      if (k === 0 && b.k === "check") ops.push({ t: "box", x: m + 1, y: y - st.size * 0.78, w: st.size * 0.85, h: st.size * 0.85, lw: 1 });
+      ops.push({ t: "text", x, y, text: ln, size: st.size, bold: st.bold, italic: st.italic, gray: st.gray });
+    });
+    y += st.after;
+  });
+  pages.push({ w, h, ops });
+  const n = pages.length;
+  pages.forEach((p, i) => {
+    p.ops.push({ t: "rule", x: m, y: h - m + 2, x2: w - m, y2: h - m + 2, lw: 0.5, gray: 0.5 });
+    p.ops.push({ t: "text", x: m, y: h - m + 16, text: "Cognicopia Academy · " + footer, size: 8.5, gray: 0.35 });
+    p.ops.push({ t: "text", x: w - m, y: h - m + 16, text: "Page " + (i + 1) + " of " + n, size: 8.5, gray: 0.35, align: "right" });
+  });
+  return pages;
+}
+/* One landscape Letter page. The statement at the foot is the facility's
+   approval statement when it has one, or the not-accredited statement. The
+   foot (statement, signature lines, the date, time and ID) is anchored to the
+   bottom; the name and the title above it step down in size until they fit. */
+export function certificatePage(c: Certificate, split: Split): PdfPage {
+  const w = 792, h = 612, cx = w / 2;
+  const note = c.approval || NOT_ACCREDITED, noteLines = split(note, 640, 8.5, false);
+  const noteTop = h - 56 - (noteLines.length - 1) * 10.5, sy = noteTop - 30, colY = sy - 56;
+  const d = new Date(c.completed), when = d.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
+  let ops: Op[] = [];
+  for (const k of [1, 0.86, 0.74, 0.64]){
+    ops = [{ t: "box", x: 28, y: 28, w: w - 56, h: h - 56, lw: 3 }, { t: "box", x: 38, y: 38, w: w - 76, h: h - 76, lw: 0.75 }];
+    const centered = (text: string, y: number, size: number, bold = false, gray = 0, maxW = 640): number => {
+      const lines = split(text, maxW, size, bold);
+      lines.forEach((ln, i) => ops.push({ t: "text", x: cx, y: y + i * size * 1.25, text: ln, size, bold, gray, align: "center" }));
+      return y + (lines.length - 1) * size * 1.25;
+    };
+    centered("COGNICOPIA ACADEMY", 88, 12, true, 0.3);
+    centered("Certificate of Completion", 130, 34, true);
+    centered("This certifies that", 176, 13, false, 0.25);
+    let y = centered(c.learner || "(name)", 176 + 40 * k, 28 * k, true);
+    y = centered(c.role, y + 24 * k, 12, false, 0.3);
+    y = centered("completed the masterclass", y + 30 * k, 13, false, 0.25);
+    y = centered(c.module, y + 30 * k, 20 * k, true);
+    y = centered("including its knowledge check (best score " + Math.round(c.score * 100) + "%)" + (c.facility ? ", at " + c.facility : "") + ".", y + 24 * k, 12, false, 0.25);
+    if (y <= colY - 30) break;
+  }
+  [["Completed", when], ["Training time", c.minutes + " minutes (" + (c.minutes / 60).toFixed(2) + " hours)"], ["Certificate", c.id]].forEach((col, i) => {
+    const x = 150 + i * 246;
+    ops.push({ t: "text", x, y: colY, text: col[0].toUpperCase(), size: 9, bold: true, gray: 0.35, align: "center" }, { t: "text", x, y: colY + 16, text: col[1], size: 12, align: "center" });
+  });
+  ops.push({ t: "rule", x: 110, y: sy, x2: 350, y2: sy, lw: 0.75 }, { t: "rule", x: 442, y: sy, x2: 682, y2: sy, lw: 0.75 });
+  ops.push({ t: "text", x: 230, y: sy + 13, text: "Staff development coordinator", size: 9, gray: 0.35, align: "center" }, { t: "text", x: 562, y: sy + 13, text: "Date", size: 9, gray: 0.35, align: "center" });
+  noteLines.forEach((ln, i) => ops.push({ t: "text", x: cx, y: noteTop + i * 10.5, text: ln, size: 8.5, gray: 0.3, align: "center" }));
+  return { w, h, ops };
+}
+/* Draw a planned page with jsPDF (doc: a jsPDF document, already on the page). */
+export function draw(doc: { setFont: Function; setFontSize: Function; setTextColor: Function; setDrawColor: Function; setLineWidth: Function; text: Function; line: Function; rect: Function }, page: PdfPage): void {
+  for (const o of page.ops){
+    const g = Math.round(255 * (o.gray || 0));
+    if (o.t === "text"){
+      doc.setFont("helvetica", o.bold && o.italic ? "bolditalic" : o.bold ? "bold" : o.italic ? "italic" : "normal");
+      doc.setFontSize(o.size || 11); doc.setTextColor(g, g, g);
+      doc.text(String(o.text || ""), o.x, o.y, { align: o.align || "left" });
+    } else if (o.t === "rule"){ doc.setDrawColor(g, g, g); doc.setLineWidth(o.lw || 1); doc.line(o.x, o.y, o.x2 || o.x, o.y2 || o.y); }
+    else if (o.t === "box"){ doc.setDrawColor(g, g, g); doc.setLineWidth(o.lw || 1); doc.rect(o.x, o.y, o.w || 0, o.h || 0, "S"); }
+  }
+}
+
+/* ---------- 10. Language checks (used by the tests) ----------
+   Care-staff lessons may name conditions and behaviors; they never label a
+   person by a condition, never promise a medical effect, and never use baby
+   talk. Examples of what to avoid are written as descriptions, not quotes. */
+export const LANGUAGE: readonly { id: string; re: RegExp }[] = [
+  { id: "labels", re: /\b(?:senile|senility|demented|dementia patients?|alzheimer'?s patients?|patients?|sufferers?|suffers? from|suffering from|afflicted|victims? of|the elderly|old folks|elderly people)\b/i },
+  { id: "medical-claim", re: /\b(?:cures?|reverses?|prevents?|halts?|slows?) (?:the |your |their )?(?:dementia|alzheimer'?s|memory loss|cognitive decline|decline|disease)\b|\bclinically proven\b|\bguaranteed? to\b/i },
+  { id: "baby-talk", re: /\b(?:tummy|yummy|potty|beddy[- ]?bye|night[- ]night|boo[- ]boo|owie|jammies|diapers?)\b/i },
+  { id: "preschool", re: /\b(?:circle[- ]time|snack[- ]?time|nap[- ]?time|play[- ]?time|arts and crafts)\b/i }
+];
+export function allText(): string[] {
+  const out: string[] = [];
+  MODULES.forEach(m => { out.push(m.title, m.subtitle, m.blurb); m.chapters.forEach(c => { out.push(c.title, c.slide); out.push(...c.say, ...c.points); });
+    out.push(...m.tryThis, ...m.avoid, ...m.reflect); m.quiz.forEach(q => { out.push(q.q, q.why, ...q.options); }); });
+  TOOLKITS.forEach(t => { out.push(t.title, t.blurb); t.sections.forEach(s => { out.push(s.heading); if (s.text) out.push(s.text); out.push(...(s.items || []), ...(s.checks || [])); }); });
+  return out;
+}

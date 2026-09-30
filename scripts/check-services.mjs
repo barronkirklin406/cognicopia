@@ -669,5 +669,127 @@ group("facilityPlanner", () => {
   sandbox.__facStats = `a month for 2 groups in ${fillMs} ms, 1,488 sessions in ${bigMs} ms`;
 });
 
+/* 9. Academy: the catalog, lesson timing, progress, the knowledge check, certificates, records and printed pages. */
+group("academy", () => {
+  const A = sandbox.CogniAcademy;
+  ok(A && typeof A.complete === "function", "CogniAcademy is not loaded");
+  const J = x => JSON.stringify(x), pro = A.MODULES.filter(m => m.track === "pro"), fam = A.MODULES.filter(m => m.track === "family");
+  // the catalog
+  ok(pro.length >= 6 && fam.length >= 5 && new Set(A.MODULES.map(m => m.id)).size === A.MODULES.length, `catalog: ${pro.length} masterclasses, ${fam.length} family guides, unique ids`);
+  ok(["Running Structured Reminiscence Circles", "Managing Sundowning Agitation", "Safe Movement Therapy in Wheelchairs"].every(t => pro.some(m => m.title === t)), "the three requested masterclasses are there");
+  for (const m of A.MODULES){
+    ok(m.chapters.length >= 3 && m.chapters.every(c => c.title && c.slide && c.say.length >= 2 && c.points.length >= 1 && c.slide.length <= 110), `${m.id}: chapters with titles, slides, narration and key points`);
+    ok(m.instructor.name && m.instructor.focus && /^[A-Z]{2,3}$/.test(m.instructor.initials) && m.art && m.audience.every(a => A.AUDIENCES[a]) && m.topics.every(t => A.TOPICS[t]), `${m.id}: instructor badge, art, audiences and topics`);
+    ok(m.video === null || (m.video && typeof m.video.src === "string"), `${m.id}: video is null or a local file`);
+  }
+  for (const m of pro){
+    ok(m.quiz.length >= 5 && m.quiz.every(q => q.q && q.why && q.options.length >= 3 && Number.isInteger(q.answer) && q.answer >= 0 && q.answer < q.options.length && new Set(q.options).size === q.options.length), `${m.id}: a knowledge check of ${m.quiz.length} questions, each with one right answer and an explanation`);
+    ok(new Set(m.quiz.map(q => q.answer)).size >= 2, `${m.id}: the right answers are not always in the same place`);
+    ok(m.tryThis.length && m.avoid.length && m.reflect.length && m.sources.length, `${m.id}: try this, avoid, reflect and sources for the companion guide`);
+  }
+  ok(fam.every(m => !m.quiz.length && m.toolkits.length && m.toolkits.every(id => A.toolkitOf(id))), "family guides have no quiz and link to toolkits that exist");
+  ok(A.TOOLKITS.length >= 4 && A.TOOLKITS.every(t => t.sections.length >= 3 && t.sections.every(s => s.heading && (s.items || s.checks || s.lines || s.text))), "toolkits have sections to print");
+  const bad = []; A.allText().forEach(t => A.LANGUAGE.forEach(r => { const hit = t.match(r.re); if (hit) bad.push(r.id + ": " + hit[0]); }));
+  ok(bad.length === 0, "dignity-first language throughout: " + bad.slice(0, 5).join(", "));
+  // lesson timing
+  for (const m of A.MODULES){
+    const c = A.cues(m), secs = A.lessonSeconds(m), t = A.minutes(m);
+    ok(c.every((q, i) => !i || Math.abs(q.start - (c[i - 1].start + c[i - 1].dur)) < 0.11) && c.filter(q => q.title).length === m.chapters.length && Math.abs(secs - (c[c.length - 1].start + c[c.length - 1].dur)) < 0.11, `${m.id}: a continuous timeline with one title card a chapter`);
+    ok(m.track === "pro" ? t.total % 5 === 0 && t.total >= secs / 60 + m.quiz.length : t.total <= 5 && secs <= 180, `${m.id}: training time ${t.total} min (lesson ${A.clock(secs)})`);
+  }
+  ok(A.clock(125) === "2:05" && A.spoken(65) === "1 minute 5 seconds" && A.spoken(0) === "0 seconds" && A.hoursText(75) === "1 h 15 min" && A.hoursText(720) === "12 h", "time formats");
+  // learners
+  let a = A.normalizeAcademy(null);
+  ok(a.learners.length === 1 && a.active === a.learners[0].id, "there is always someone to learn as");
+  let r = A.addLearner(a, "  Maria\u0007  Lopez ", "cna"); a = r.academy;
+  const maria = r.id;
+  ok(a.active === maria && A.learnerOf(a, maria).name === "Maria Lopez" && A.learnerOf(a, maria).role === "cna", "a learner is added, cleaned and made active");
+  a = A.updateLearner(a, maria, "Maria López", "nurse"); ok(A.learnerOf(a, maria).role === "nurse" && A.learnerOf(a, maria).name === "Maria López", "a learner is renamed and given a role");
+  a = A.updateLearner(a, maria, "Maria López", "cna");
+  ok(A.removeLearner(A.normalizeAcademy(null), "l-me").learners.length === 1, "the last learner cannot be removed");
+  // coverage, the knowledge check, completion
+  const m = A.moduleOf("reminiscence-circles"), c = A.cues(m);
+  ok(A.readiness(m, A.progressOf(a, maria, m.id)).missing.length === 2, "nothing done: both steps missing");
+  ok(!A.complete(a, maria, m.id).ok, "completion is refused before the lesson and the check");
+  const most = c.map(q => q.i).filter(i => i < c.length - 6);
+  a = A.markPlayed(a, maria, m.id, most);
+  const cov = A.coverage(m, A.progressOf(a, maria, m.id));
+  ok(cov < A.WATCHED && cov > 0.5, `played through all but the last six lines: ${Math.round(cov * 100)}% is not yet watched`);
+  a = A.markPlayed(a, maria, m.id, c.map(q => q.i).concat([999, -1, 2.5]));
+  ok(A.coverage(m, A.progressOf(a, maria, m.id)) === 1 && A.progressOf(a, maria, m.id).played.length === c.length, "played through: 100%, and impossible lines are ignored");
+  const right = m.quiz.map(q => q.answer), g5 = A.grade(m, right), g4 = A.grade(m, right.map((x, i) => i ? x : (x + 1) % 3)), g3 = A.grade(m, right.map((x, i) => i < 2 ? (x + 1) % 3 : x)), gNone = A.grade(m, []);
+  ok(g5.passed && g5.score === 1 && g4.passed && Math.abs(g4.score - 0.8) < 1e-9 && !g3.passed && !gNone.passed && gNone.right === 0, "the knowledge check: 5/5 and 4/5 pass, 3/5 does not, unanswered is wrong");
+  a = A.recordQuiz(a, maria, m.id, g3, new Date("2026-09-01T10:00:00Z"));
+  ok(!A.readiness(m, A.progressOf(a, maria, m.id)).ready && A.progressOf(a, maria, m.id).quizAttempts === 1, "a failed attempt is counted and does not unlock completion");
+  a = A.recordQuiz(a, maria, m.id, g4, new Date("2026-09-02T10:00:00Z"));
+  a = A.recordQuiz(a, maria, m.id, g3, new Date("2026-09-03T10:00:00Z"));
+  const pq = A.progressOf(a, maria, m.id);
+  ok(pq.quizAttempts === 3 && Math.abs(pq.quizBest - 0.8) < 1e-9 && pq.quizPassedAt.startsWith("2026-09-02"), "best score and the first pass are kept");
+  let done = A.complete(a, maria, m.id, new Date("2026-09-04T15:30:00Z")); a = done.academy;
+  const pd = A.progressOf(a, maria, m.id);
+  ok(done.ok && pd.completedAt.startsWith("2026-09-04") && pd.minutes === A.minutes(m).total && /^CA-[0-9A-HJKMNP-TV-Z]{4}-[0-9A-HJKMNP-TV-Z]{4}$/.test(pd.cert), "completed, with training minutes and a certificate ID: " + pd.cert);
+  ok(A.complete(a, maria, m.id, new Date("2026-12-01T00:00:00Z")).academy === a, "completing again changes nothing");
+  // a family guide: watching is enough, and there is no certificate
+  const f = A.moduleOf("family-late-day");
+  a = A.markRead(a, maria, f.id); done = A.complete(a, maria, f.id, new Date("2026-09-05T09:00:00Z")); a = done.academy;
+  ok(done.ok && A.progressOf(a, maria, f.id).cert === "" && A.certificateFor(a, maria, f.id, "") === null, "a family guide completes once read, without a certificate");
+  // certificates
+  const ids = new Set([A.certificateId("l-a", "m1", "2026-01-01T00:00:00Z"), A.certificateId("l-b", "m1", "2026-01-01T00:00:00Z"), A.certificateId("l-a", "m2", "2026-01-01T00:00:00Z"), A.certificateId("l-a", "m1", "2026-01-02T00:00:00Z")]);
+  ok(ids.size === 4 && A.certificateId("l-a", "m1", "2026-01-01T00:00:00Z") === A.certificateId("l-a", "m1", "2026-01-01T00:00:00Z"), "certificate IDs are stable and differ by learner, module and date");
+  const cert = A.certificateFor(a, maria, m.id, "Maple Grove Senior Living");
+  ok(cert && cert.learner === "Maria López" && cert.module === m.title && cert.minutes === pd.minutes && cert.approval === "", "a certificate carries the learner, the module and the time");
+  const found = A.findCertificate(a, pd.cert.toLowerCase());
+  ok(found && found.learner.id === maria && found.module.id === m.id && A.findCertificate(a, "CA-0000-0000") === null, "a certificate ID is found on this computer, and a wrong one is not");
+  const withApproval = A.setApproval(a, "Approved for 0.25 contact hours by Example State Board, approval no. 12345 (example only)");
+  ok(A.certificateFor(withApproval, maria, m.id, "").approval.startsWith("Approved for") && /not accredited/.test(A.NOT_ACCREDITED), "the certificate uses the facility's approval statement when there is one");
+  // records
+  const rec = A.yearRecord(a, maria, 2026);
+  ok(rec.minutes === pd.minutes + A.progressOf(a, maria, f.id).minutes && rec.completed.length === 2 && A.yearRecord(a, maria, 2025).completed.length === 0, "a year's record adds up the training minutes");
+  ok(A.years(a, new Date("2027-03-01T00:00:00Z")).join() === "2027,2026", "years with records, newest first");
+  let b = A.addLearner(a, "=HYPERLINK(\"x\")", "cna").academy;
+  const rows = A.recordRows(b, 2026);
+  ok(rows.length === 3 && rows[0][0] === "Learner" && A.toCSV([["=cmd", "a,b", -5]]) === `'=cmd,"a,b",-5\r\n`, "records as rows; CSV neutralizes formulas");
+  // stored records are checked
+  const n = A.normalizeAcademy({ learners:[{ id:"x", name:"A" }, { id:"x", name:"B", role:"wizard" }], active:"nobody", progress:{ x:{ "reminiscence-circles":{ played:[0, 1, 1, 9999, "2"], quizBest:7, cert:"FAKE", completedAt:"soon" }, "no-such-module":{} } }, approval:"y".repeat(900) });
+  const np = n.progress.x["reminiscence-circles"];
+  ok(n.learners.length === 2 && n.learners[0].id !== n.learners[1].id && n.learners[1].role === "other-staff" && n.active === "x" && J(np.played) === "[0,1,2]" && np.quizBest === 1 && np.cert === "" && np.completedAt === "" && !n.progress.x["no-such-module"] && n.approval.length === 300,
+    "stored records are cleaned: ids, roles, lines played, scores, certificate IDs, dates, unknown modules, the approval statement");
+  // printed pages, with an approximate line breaker (the page uses the real font's widths)
+  const approx = (text, width, size, bold) => { const cw = size * (bold ? 0.56 : 0.52), max = Math.max(1, Math.floor(width / cw)), out = []; let cur = "";
+    String(text).split(/\s+/).filter(Boolean).forEach(wd => { while (wd.length > max){ if (cur){ out.push(cur); cur = ""; } out.push(wd.slice(0, max)); wd = wd.slice(max); } if ((cur ? cur + " " + wd : wd).length > max){ out.push(cur); cur = wd; } else cur = cur ? cur + " " + wd : wd; });
+    if (cur || !out.length) out.push(cur); return out; };
+  const width = o => String(o.text).length * (o.size || 11) * (o.bold ? 0.56 : 0.52);
+  const inBounds = (pg, L) => pg.ops.every(o => o.t !== "text" || (o.align === "right" ? o.x - width(o) >= L - 1 : o.align === "center" ? o.x - width(o) / 2 >= L - 1 && o.x + width(o) / 2 <= pg.w - L + 1 : o.x >= L - 1 && o.x + width(o) <= pg.w - L + 1));
+  let guidePages = 0;
+  for (const mm of A.MODULES){
+    const pages = A.layout(A.guideBlocks(mm), approx, mm.title);
+    guidePages += pages.length;
+    ok(pages.every(pg => inBounds(pg, 54) && pg.ops.every(o => o.y >= 54 && o.y <= 792 - 20)), `${mm.id}: guide text inside the margins on all ${pages.length} pages`);
+    ok(pages.every((pg, i) => pg.ops.some(o => o.t === "text" && o.text === `Page ${i + 1} of ${pages.length}`)), `${mm.id}: every page numbered`);
+    ok(pages.every(pg => { const body = pg.ops.filter(o => o.t === "text" && o.y < 792 - 54); const last = body[body.length - 1]; return !last || !(last.size === 14 && last.bold); }), `${mm.id}: no page ends with a heading`);
+  }
+  for (const t of A.TOOLKITS){ const pages = A.layout(A.toolkitBlocks(t), approx, t.title); ok(pages.length <= 2 && pages.every(pg => inBounds(pg, 54)), `${t.id}: toolkit on ${pages.length} page(s), inside the margins`); }
+  // A heading never ends a page, and writing lines never start one without their heading, whatever the
+  // font's widths: every guide and toolkit laid out with narrower and wider line breakers.
+  const endsWithHeading = pg => { const body = pg.ops.filter(o => o.y < 792 - 54), last = body[body.length - 1]; return !!last && last.t === "text" && last.size === 14 && !!last.bold; };
+  const startsWithLines = (pg, i) => i > 0 && (pg.ops[0] || {}).t === "rule" && pg.ops[0].y < 792 - 54;
+  const scaled = f => (text, width, size, bold) => approx(text, width * f, size, bold);
+  for (const f of [0.8, 0.9, 1, 1.1, 1.2]) for (const [id, blocks, title] of A.MODULES.map(mm => [mm.id, A.guideBlocks(mm), mm.title]).concat(A.TOOLKITS.map(t => [t.id, A.toolkitBlocks(t), t.title]))){
+    const pages = A.layout(blocks, scaled(f), title);
+    ok(!pages.some(endsWithHeading) && !pages.some(startsWithLines), `${id} (widths × ${f}): no heading ends a page, no page starts with writing lines`);
+  }
+  const overlaps = pg => { const t = pg.ops.filter(o => o.t === "text").map(o => ({ top:o.y - o.size * 0.8, bottom:o.y + o.size * 0.25, left:o.align === "center" ? o.x - width(o) / 2 : o.align === "right" ? o.x - width(o) : o.x, right:(o.align === "center" ? o.x - width(o) / 2 : o.align === "right" ? o.x - width(o) : o.x) + width(o) }));
+    for (let i = 0; i < t.length; i++) for (let j = i + 1; j < t.length; j++){ const p = t[i], q = t[j]; if (p.left < q.right && q.left < p.right && p.top < q.bottom && q.top < p.bottom) return true; } return false; };
+  const longest = pro.slice().sort((x, y) => y.title.length - x.title.length)[0];
+  for (const [name, approval] of [["Maria López", ""], ["Bartholomew Alexander Montgomery-Fitzgerald the Third of Springfield", ""], ["Bartholomew Alexander Montgomery-Fitzgerald the Third of Springfield", "z".repeat(40) + " " + "Approved by an example board ".repeat(9)]]){
+    const pg = A.certificatePage({ id:"CA-7K2M-9QXP", learner:name, role:A.ROLES.cna, module:longest.title, completed:"2026-09-04T15:30:00Z", minutes:15, score:0.8, facility:"The Very Long Named Senior Living Community of Springfield", approval }, approx);
+    ok(pg.w === 792 && pg.h === 612 && inBounds(pg, 40) && pg.ops.every(o => o.t !== "text" || (o.y > 40 && o.y < 572)) && !overlaps(pg), `certificate (${name.length}-character name${approval ? ", long approval" : ""}): inside the frame, nothing overlapping`);
+  }
+  const calls = []; const doc = new Proxy({}, { get:(o, k) => (...args) => { calls.push(k); } });
+  A.draw(doc, A.layout(A.guideBlocks(m), approx, m.title)[0]);
+  ok(calls.includes("text") && calls.includes("setFont") && calls.includes("line"), "pages draw as text and lines");
+  sandbox.__acadStats = `${pro.length} masterclasses, ${fam.length} family guides, ${guidePages} guide pages`;
+});
+
 if (fails.length){ console.log(`services check FAILED: ${fails.length} problem(s), ${pass} passed\n  - ` + fails.slice(0, 30).join("\n  - ")); process.exit(1); }
-console.log(`services check passed: ${pass} checks (${tscNote}; slowest page ${sandbox.__dveWorst} ms; 300 sealed residents open in ${sandbox.__storeMs} ms; ${sandbox.__remStats}; ${sandbox.__facStats})`);
+console.log(`services check passed: ${pass} checks (${tscNote}; slowest page ${sandbox.__dveWorst} ms; 300 sealed residents open in ${sandbox.__storeMs} ms; ${sandbox.__remStats}; ${sandbox.__facStats}; ${sandbox.__acadStats})`);
