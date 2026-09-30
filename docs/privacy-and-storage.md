@@ -11,6 +11,7 @@ Cognicopia has no server, account or cloud copy. Everything staff type stays in 
 | The packet form in progress | `cognicopia_packet_draft` | Encrypted |
 | The Packet Builder's queue, planner and journal forms, and settings (which can hold a default resident name) | `cgb_queue`, `cgb_planner`, `cgb_journal`, `cgb_settings` | Encrypted |
 | Session notes, digest entries, reminiscence responses | `cognicopia_clinical_*`, `cognicopia_heirloom_*`, `cognicopia_remin_*` | Encrypted |
+| Photos of finished pages (Memory Digest & Book) | `cognicopia_heirloom_photo_*` | Encrypted, in a separate photo store that is read only when a page needs a photo. A browser that cannot encrypt refuses photos rather than keeping them in plain storage. |
 | License, free-packet count, layout choices, "no two sheets alike" counters | other names | Plain `localStorage`: nothing about a resident |
 
 The sheet counters used to be stored under names built from a resident's name, birth year and hometown. They are now stored under a hash of those details, and the old names are moved the next time the packet tool opens.

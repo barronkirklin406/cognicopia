@@ -102,6 +102,8 @@ export const GENERATORS = [
     desc: "Dignified, adult line art at three support tiers, printed with a binding gutter and optional color guides.", meta: ["118 pictures", "3 tiers", "Vector PDF"] },
   { key: "reminiscence", label: "Reminiscence Cards", href: "builder.html#/reminiscence", icon: "journal",
     desc: "Cards about a resident's own work, hometown region and best-remembered years, each with conversation starters, a song and something to hold.", meta: ["Era × region × vocation", "Caregiver cues"] },
+  { key: "heirloom", label: "Memory Digest & Book", href: "builder.html#/heirloom", icon: "books",
+    desc: "A resident's words, stories and finished coloring pages, kept as they happen: a monthly digest for the family and a print-on-demand hardcover.", meta: ["Monthly digest", "Hardcover PDF"] },
   { key: "clinical", label: "Session Notes (SLP)", href: "builder.html#/clinical", icon: "stethoscope",
     desc: "GDS and FAST staging mapped to support tiers, a session log, and SOAP notes built only from what staff record.", meta: ["Staff-recorded SOAP", "Code checks"] },
   { key: "planners", label: "12-Month Life Planners",  href: "life-planners.html",     icon: "calendar",

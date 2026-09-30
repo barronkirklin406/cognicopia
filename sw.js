@@ -12,11 +12,11 @@
    used. Change VERSION only to clear old copies; updates to the pages
    themselves arrive on their own.
    ===================================================================== */
-const VERSION = "cognicopia-v5";
+const VERSION = "cognicopia-v6";
 const CORE = [
   "./", "index.html", "builder.html", "profile.html", "manifest.webmanifest",
   "assets/cognicopia-logo.jpg", "assets/icon-192.png", "assets/icon-512.png", "assets/icon-maskable-512.png",
-  "assets/cognicore/cognicore.js", "assets/services/vectorEngine.js", "assets/services/secureStore.js", "assets/services/reminiscenceEngine.js", "assets/services/slpClinicalService.js",
+  "assets/cognicore/cognicore.js", "assets/services/vectorEngine.js", "assets/services/secureStore.js", "assets/services/reminiscenceEngine.js", "assets/services/slpClinicalService.js", "assets/services/heirloomService.js",
   "assets/vendor/jspdf.umd.min.js", "assets/vendor/jspdf-atkinson.js"
 ];
 const PAGE_WAIT_MS = 4000;

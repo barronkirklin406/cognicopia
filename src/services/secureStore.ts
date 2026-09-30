@@ -46,8 +46,8 @@
 
 export const VERSION = "1.0.0";
 export const DB_NAME = "cognicopia-secure";
-const DB_VERSION = 1;
-const RINGS = "keyring", RECORDS = "records";
+const DB_VERSION = 2;                                   // 2: the "blobs" store for photos
+const RINGS = "keyring", RECORDS = "records", BLOBS = "blobs";
 
 /* The storage names that hold resident details. */
 export const SEALED_PREFIXES: readonly string[] = [
@@ -123,10 +123,17 @@ function openDb(idb: IDBFactory): Promise<IDBDatabase> {
       const d = r.result;
       if (!d.objectStoreNames.contains(RINGS)) d.createObjectStore(RINGS);
       if (!d.objectStoreNames.contains(RECORDS)) d.createObjectStore(RECORDS);
+      if (!d.objectStoreNames.contains(BLOBS)) d.createObjectStore(BLOBS);
     };
-    r.onsuccess = () => resolve(r.result);
-    r.onerror = () => reject(r.error || new Error("IndexedDB would not open"));
-    r.onblocked = () => reject(new Error("IndexedDB is blocked by another tab"));
+    // An older tab holding the database open delays an upgrade; give it a few seconds to let go.
+    const late = setTimeout(() => reject(new Error("IndexedDB is held open by another tab")), 8000);
+    r.onsuccess = () => {
+      clearTimeout(late);
+      const d = r.result;
+      d.onversionchange = () => { d.close(); };                    // let a newer Cognicopia in another tab upgrade it
+      resolve(d);
+    };
+    r.onerror = () => { clearTimeout(late); reject(r.error || new Error("IndexedDB would not open")); };
   });
 }
 /* Runs fn inside one transaction; resolves when it has committed. */
@@ -415,13 +422,20 @@ export function passphraseProblem(pass: string): string {
   if (/^(.)\1+$/.test(pass)) return "Use a passphrase that is not one character repeated.";
   return "";
 }
-/* Write every record again under a new key, in one transaction. */
+/* Write every record (and every photo) again under a new key, in one transaction. */
 async function resealAll(key: CryptoKey, ring: Ring, session: SessionKey | null): Promise<void> {
-  const d = S.db!;
+  const d = S.db!, old = S.key!;
   await flush();
   const rows = await Promise.all(Array.from(S.mirror.entries()).map(async ([n, v]) => [n, await seal(key, n, v)] as [string, SealedRecord]));
-  await tx(d, [RINGS, RECORDS], "readwrite", t => {
+  let bn: IDBValidKey[] = [], bv: SealedRecord[] = [];
+  await tx(d, [BLOBS], "readonly", t => { const st = t.objectStore(BLOBS); req(st.getAllKeys()).then(v => { bn = v; }); req(st.getAll()).then(v => { bv = v as SealedRecord[]; }); });
+  const blobs = (await Promise.all(bv.map(async (r, i) => {
+    const n = String(bn[i]);
+    try { return [n, await seal(key, n, await unseal(old, n, r))] as [string, SealedRecord]; } catch { return null; }   // a damaged photo is dropped
+  }))).filter((x): x is [string, SealedRecord] => !!x);
+  await tx(d, [RINGS, RECORDS, BLOBS], "readwrite", t => {
     const st = t.objectStore(RECORDS); st.clear(); rows.forEach(([n, r]) => st.put(r, n));
+    const bs = t.objectStore(BLOBS); bs.clear(); blobs.forEach(([n, r]) => bs.put(r, n));
     const rg = t.objectStore(RINGS); rg.put(ring, "ring");
     if (session) rg.put(session, "session"); else rg.delete("session");
   });
@@ -482,11 +496,44 @@ export async function wipe(): Promise<void> {
   if (ls){ const gone: string[] = []; try { for (let i = 0; i < ls.length; i++){ const k = ls.key(i); if (k && isSealed(k)) gone.push(k); } gone.forEach(k => ls.removeItem(k)); } catch { /* blocked */ } }
   if (S.db){
     const key = await newDeviceKey();
-    await tx(S.db, [RINGS, RECORDS], "readwrite", t => { t.objectStore(RECORDS).clear(); const rg = t.objectStore(RINGS); rg.put({ mode: "device", key, created: new Date().toISOString() } as DeviceRing, "ring"); rg.delete("session"); });
+    await tx(S.db, [RINGS, RECORDS, BLOBS], "readwrite", t => { t.objectStore(RECORDS).clear(); t.objectStore(BLOBS).clear(); const rg = t.objectStore(RINGS); rg.put({ mode: "device", key, created: new Date().toISOString() } as DeviceRing, "ring"); rg.delete("session"); });
     S.ring = { mode: "device", key, created: new Date().toISOString() }; S.key = key; S.state = "open"; S.unlockedUntil = null;
     announceRing();
   }
   S.mirror.clear(); S.keysCache = null;
+}
+
+/* ---------- 9b. Photos and other large items ----------
+   Sealed like every record, but kept in their own store and read only
+   when asked for, so opening a page never decrypts them all. Names must
+   start with a sealed prefix (for example "cognicopia_heirloom_photo_").
+   They need the encrypted store: without it, they are refused. */
+function needBlobs(name: string): void {
+  if (!isSealed(name)) throw new Error("Not a sealed name: " + name);
+  if (S.state === "locked") throw new LockedError();
+  if (S.state !== "open" || !S.db || !S.key) throw new Error("Photos need a browser that can encrypt them (a current Chrome, Edge, Firefox or Safari).");
+}
+export async function putBlob(name: string, value: string): Promise<void> {
+  needBlobs(name);
+  const r = await seal(S.key!, name, String(value)), d = S.db!;
+  await tx(d, [BLOBS], "readwrite", t => { t.objectStore(BLOBS).put(r, name); });
+}
+export async function getBlob(name: string): Promise<string | null> {
+  needBlobs(name);
+  let r: SealedRecord | undefined;
+  await tx(S.db!, [BLOBS], "readonly", t => { req(t.objectStore(BLOBS).get(name)).then(v => { r = v as SealedRecord | undefined; }); });
+  if (!r) return null;
+  try { return await unseal(S.key!, name, r); } catch { return null; }
+}
+export async function deleteBlob(name: string): Promise<void> {
+  needBlobs(name);
+  await tx(S.db!, [BLOBS], "readwrite", t => { t.objectStore(BLOBS).delete(name); });
+}
+export async function blobNames(prefix: string): Promise<string[]> {
+  if (S.state !== "open" || !S.db) return [];
+  let keys: IDBValidKey[] = [];
+  await tx(S.db, [BLOBS], "readonly", t => { req(t.objectStore(BLOBS).getAllKeys()).then(v => { keys = v; }); });
+  return keys.map(String).filter(k => k.startsWith(prefix)).sort();
 }
 
 /* ---------- 10. Aliases ---------- */

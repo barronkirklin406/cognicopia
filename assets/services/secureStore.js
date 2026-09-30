@@ -4,8 +4,8 @@
 "use strict";
 const VERSION = "1.0.0";
 const DB_NAME = "cognicopia-secure";
-const DB_VERSION = 1;
-const RINGS = "keyring", RECORDS = "records";
+const DB_VERSION = 2;
+const RINGS = "keyring", RECORDS = "records", BLOBS = "blobs";
 const SEALED_PREFIXES = [
     "cognicopia_resident_",
     "cognicopia_profile_draft",
@@ -93,10 +93,21 @@ function openDb(idb) {
             const d = r.result;
             if (!d.objectStoreNames.contains(RINGS)) d.createObjectStore(RINGS);
             if (!d.objectStoreNames.contains(RECORDS)) d.createObjectStore(RECORDS);
+            if (!d.objectStoreNames.contains(BLOBS)) d.createObjectStore(BLOBS);
         };
-        r.onsuccess = ()=>resolve(r.result);
-        r.onerror = ()=>reject(r.error || new Error("IndexedDB would not open"));
-        r.onblocked = ()=>reject(new Error("IndexedDB is blocked by another tab"));
+        const late = setTimeout(()=>reject(new Error("IndexedDB is held open by another tab")), 8000);
+        r.onsuccess = ()=>{
+            clearTimeout(late);
+            const d = r.result;
+            d.onversionchange = ()=>{
+                d.close();
+            };
+            resolve(d);
+        };
+        r.onerror = ()=>{
+            clearTimeout(late);
+            reject(r.error || new Error("IndexedDB would not open"));
+        };
     });
 }
 function tx(d, stores, mode, fn) {
@@ -643,19 +654,46 @@ function passphraseProblem(pass) {
     return "";
 }
 async function resealAll(key, ring, session) {
-    const d = S.db;
+    const d = S.db, old = S.key;
     await flush();
     const rows = await Promise.all(Array.from(S.mirror.entries()).map(async ([n, v])=>[
             n,
             await seal(key, n, v)
         ]));
+    let bn = [], bv = [];
+    await tx(d, [
+        BLOBS
+    ], "readonly", (t)=>{
+        const st = t.objectStore(BLOBS);
+        req(st.getAllKeys()).then((v)=>{
+            bn = v;
+        });
+        req(st.getAll()).then((v)=>{
+            bv = v;
+        });
+    });
+    const blobs = (await Promise.all(bv.map(async (r, i)=>{
+        const n = String(bn[i]);
+        try {
+            return [
+                n,
+                await seal(key, n, await unseal(old, n, r))
+            ];
+        } catch  {
+            return null;
+        }
+    }))).filter((x)=>!!x);
     await tx(d, [
         RINGS,
-        RECORDS
+        RECORDS,
+        BLOBS
     ], "readwrite", (t)=>{
         const st = t.objectStore(RECORDS);
         st.clear();
         rows.forEach(([n, r])=>st.put(r, n));
+        const bs = t.objectStore(BLOBS);
+        bs.clear();
+        blobs.forEach(([n, r])=>bs.put(r, n));
         const rg = t.objectStore(RINGS);
         rg.put(ring, "ring");
         if (session) rg.put(session, "session");
@@ -763,9 +801,11 @@ async function wipe() {
         const key = await newDeviceKey();
         await tx(S.db, [
             RINGS,
-            RECORDS
+            RECORDS,
+            BLOBS
         ], "readwrite", (t)=>{
             t.objectStore(RECORDS).clear();
+            t.objectStore(BLOBS).clear();
             const rg = t.objectStore(RINGS);
             rg.put({
                 mode: "device",
@@ -786,6 +826,57 @@ async function wipe() {
     }
     S.mirror.clear();
     S.keysCache = null;
+}
+function needBlobs(name) {
+    if (!isSealed(name)) throw new Error("Not a sealed name: " + name);
+    if (S.state === "locked") throw new LockedError();
+    if (S.state !== "open" || !S.db || !S.key) throw new Error("Photos need a browser that can encrypt them (a current Chrome, Edge, Firefox or Safari).");
+}
+async function putBlob(name, value) {
+    needBlobs(name);
+    const r = await seal(S.key, name, String(value)), d = S.db;
+    await tx(d, [
+        BLOBS
+    ], "readwrite", (t)=>{
+        t.objectStore(BLOBS).put(r, name);
+    });
+}
+async function getBlob(name) {
+    needBlobs(name);
+    let r;
+    await tx(S.db, [
+        BLOBS
+    ], "readonly", (t)=>{
+        req(t.objectStore(BLOBS).get(name)).then((v)=>{
+            r = v;
+        });
+    });
+    if (!r) return null;
+    try {
+        return await unseal(S.key, name, r);
+    } catch  {
+        return null;
+    }
+}
+async function deleteBlob(name) {
+    needBlobs(name);
+    await tx(S.db, [
+        BLOBS
+    ], "readwrite", (t)=>{
+        t.objectStore(BLOBS).delete(name);
+    });
+}
+async function blobNames(prefix) {
+    if (S.state !== "open" || !S.db) return [];
+    let keys = [];
+    await tx(S.db, [
+        BLOBS
+    ], "readonly", (t)=>{
+        req(t.objectStore(BLOBS).getAllKeys()).then((v)=>{
+            keys = v;
+        });
+    });
+    return keys.map(String).filter((k)=>k.startsWith(prefix)).sort();
 }
 const clean = (v, max)=>String(v == null ? "" : v).replace(/[\u0000-\u001F\u007F<>]/g, "").replace(/\s+/g, " ").trim().slice(0, max);
 const CODE_CHARS = "23456789ABCDEFGHJKMNPQRSTUVWXYZ";
@@ -1026,5 +1117,5 @@ async function openForPage() {
     if (S.state === "locked") await promptUnlock();
     return status();
 }
-root.CogniSecureStore = Object.freeze({ VERSION, DB_NAME, SEALED_PREFIXES, isSealed, PBKDF2_ROUNDS, KEEP_CHOICES, DEFAULT_KEEP_MINUTES, toB64, fromB64, status, onChange, ready, flush, LockedError, storage, entries, passphraseProblem, setPassphrase, removePassphrase, unlock, lock, wipe, shortCode, aliasFor, displayName, LOCKED_FORMAT, BACKUP_FORMAT, PROFILE_SCHEMA, sealFile, isLockedFile, openFile, isProfile, rosterFile, exportRoster, readRoster, mergeRoster, promptUnlock, openForPage });
+root.CogniSecureStore = Object.freeze({ VERSION, DB_NAME, SEALED_PREFIXES, isSealed, PBKDF2_ROUNDS, KEEP_CHOICES, DEFAULT_KEEP_MINUTES, toB64, fromB64, status, onChange, ready, flush, LockedError, storage, entries, passphraseProblem, setPassphrase, removePassphrase, unlock, lock, wipe, putBlob, getBlob, deleteBlob, blobNames, shortCode, aliasFor, displayName, LOCKED_FORMAT, BACKUP_FORMAT, PROFILE_SCHEMA, sealFile, isLockedFile, openFile, isProfile, rosterFile, exportRoster, readRoster, mergeRoster, promptUnlock, openForPage });
 })(typeof globalThis !== "undefined" ? globalThis : this);

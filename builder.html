@@ -1465,6 +1465,43 @@ textarea:focus{border-color:var(--accent)}
 .slp-table{width:100%;border-collapse:collapse;font-size:10pt;margin-top:.06in}
 .slp-table th,.slp-table td{border:.75pt solid #000;padding:2pt 4pt;text-align:left;vertical-align:top}
 </style>
+<style id="hl-style">
+/* =====================================================================
+   MEMORY DIGEST & BOOK (#/heirloom): the screen, the page previews and
+   the printed digest. Pages are plans of boxes in inches from
+   CogniHeirloom, drawn here as HTML and in the PDF as vectors.
+   ===================================================================== */
+.hl-panel{margin-top:4px}
+.hl-entries{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:8px}
+.hl-entries li{display:flex;gap:12px;align-items:flex-start;justify-content:space-between;padding:10px 12px;border-radius:10px;border:1px solid var(--line-2);background:var(--bg-2)}
+.hl-entries p{margin:4px 0 0;color:var(--muted);font-size:14px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.hl-entries img{width:64px;height:64px;object-fit:cover;border-radius:8px;flex:none}
+.hl-private{padding:2px 8px;border-radius:999px;font-size:12px;font-weight:800;background:rgba(216,243,220,.08);color:var(--muted)}
+.hl-photo-pv{max-width:220px;max-height:220px;border-radius:8px;display:block;margin-top:8px}
+.hl-pvs{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px;margin-top:14px}
+.hl-pv{position:relative;overflow:hidden;background:#fff;border-radius:6px;box-shadow:0 8px 24px rgba(0,0,0,.35)}
+.hl-pv > .hl-page{position:absolute;top:0;left:0;transform-origin:top left}
+.hl-pv figcaption{position:absolute;left:0;right:0;bottom:0;padding:3px 6px;background:rgba(0,0,0,.55);color:#fff;font-size:12px}
+.hl-specs{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px;margin:12px 0}
+.hl-specs div{padding:10px 12px;border-radius:10px;border:1px solid var(--line-2);background:var(--bg-2)}
+.hl-specs b{display:block;font-size:18px}
+.hl-specs span{color:var(--muted);font-size:13px}
+.hl-cover-pv{position:relative;overflow:hidden;background:#fff;border-radius:6px;margin-top:10px;box-shadow:0 8px 24px rgba(0,0,0,.35)}
+.hl-cover-pv > .hl-page{position:absolute;top:0;left:0;transform-origin:top left}
+/* the page itself (screen and print) */
+.hl-page{position:relative;background:#fff;color:#000;overflow:hidden;font-family:"Atkinson Hyperlegible","Trebuchet MS","Segoe UI",Arial,sans-serif}
+.hl-page > div{position:absolute;margin:0}
+.hl-t{white-space:pre;overflow:visible}
+.hl-art svg{display:block;width:100%;height:100%}
+.hl-photo img{display:block;width:100%;height:100%;object-fit:contain}
+.hl-rule{height:0;border-top:1.5pt solid #000}
+.hl-write{border-top:.75pt solid #777}
+.hl-band{background:#e8f0eb}
+.hl-guide{border:1px dashed #d33;pointer-events:none}
+.hl-spine{display:flex;align-items:center;justify-content:center;writing-mode:vertical-rl;font-weight:700;font-size:14pt}
+.hl-fold{border-left:1px dashed #36c;width:0 !important}
+.sheet.hl-sheet{padding:0;display:block;position:relative}
+</style>
 </head>
 <body>
 
@@ -1492,6 +1529,9 @@ textarea:focus{border-color:var(--accent)}
       <li><a class="sb-link" href="#/reminiscence" data-route="reminiscence">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M7 21h10M9 9h6M8 13h8"/></svg>
         <span>Reminiscence cards</span></a></li>
+      <li><a class="sb-link" href="#/heirloom" data-route="heirloom">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"/><path d="M12 7.5c1-1.4 3.5-1 3.5 1 0 1.7-3.5 3.5-3.5 3.5S8.5 10.2 8.5 8.5c0-2 2.5-2.4 3.5-1z"/></svg>
+        <span>Memory digest &amp; book</span></a></li>
       <li><a class="sb-link" href="#/clinical" data-route="clinical">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3h6v4H9z"/><path d="M6 5H5a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1h-1"/><path d="M8 12h8M8 16h5"/></svg>
         <span>Session notes (SLP)</span></a></li>
@@ -6024,6 +6064,7 @@ const ReminiscenceUI = (function(){
         <aside aria-label="Card preview">
           <div class="rm-pv" id="rmPv"></div>
           <div class="rm-nav"><button class="btn" type="button" id="rmPrev" aria-label="Previous card">&larr;</button><span id="rmPvLabel" role="status"></span><button class="btn" type="button" id="rmNext" aria-label="Next card">&rarr;</button></div>
+          <div class="actions"><button class="btn" type="button" id="rmKeep" ${s.resident ? "" : "hidden"}>Keep what they shared</button></div>
         </aside>
       </div>`;
     root = document.getElementById("rmRoot");
@@ -6046,7 +6087,7 @@ const ReminiscenceUI = (function(){
   }
   function onChange(e){
     const s = state(), t = e.target, m = s.manual;
-    if (t.id === "rmWho"){ s.resident = t.value; document.getElementById("rmManual").hidden = !!t.value; }
+    if (t.id === "rmWho"){ s.resident = t.value; document.getElementById("rmManual").hidden = !!t.value; document.getElementById("rmKeep").hidden = !t.value; }
     else if (t.id === "rmBy") m.by = clampInt(t.value, 1915, 1975, 1945);
     else if (t.id === "rmRegion") m.region = t.value;
     else if (t.id === "rmSetting") m.setting = t.value;
@@ -6064,6 +6105,11 @@ const ReminiscenceUI = (function(){
     else if (b.id === "rmNew"){ state().seed++; focus = 0; refresh(); toast("A fresh set of starters, songs and references."); }
     else if (b.id === "rmPrint") printNow();
     else if (b.id === "rmAdd") addToPacket();
+    else if (b.id === "rmKeep"){                  // straight to the memory keeper, with this card filled in
+      const { d } = pages(), c = d.cards[focus];
+      window.cgKeepPreset = { resident:state().resident, entry:{ kind:"reminiscence", card:c ? c.title : "", date:todayISO() } };
+      location.hash = "#/heirloom";
+    }
   }
   function fileTitle(){ const s = state(), p = s.resident ? people().filter(x => x.id === s.resident)[0] : null; return ["Reminiscence Cards", p ? cgFileName(p) : "", todayISO()].filter(Boolean).join(" - "); }
   function printNow(){ const { list } = pages(); BookUI.print(list, fileTitle(), refresh); }
@@ -6301,6 +6347,315 @@ const ClinicalUI = (function(){
     }
   }
   return { render, binderPages, readLog };
+})();
+</script>
+<script src="assets/services/heirloomService.js"></script>
+<script id="heirloom-ui">
+/* =====================================================================
+   MEMORY DIGEST & BOOK  (#/heirloom)
+   Keep a resident's memories as they happen (their words, stories from
+   reminiscence cards, the pages they colored with a photo, moments),
+   then send families a monthly digest, and gather a run of months into
+   a print-on-demand hardcover: an interior PDF at the printer's trim,
+   bleed and gutter, and a cover spread sized from the printer's own
+   template. Entries and photos are sealed in the encrypted store;
+   photos are read only when a page needs them. Nothing is sent anywhere.
+   ===================================================================== */
+const HeirloomUI = (function(){
+  "use strict";
+  const H = window.CogniHeirloom, C = window.CogniCore, V = window.CogniVectorEngine, SS = window.CogniSecureStore, R = window.CogniReminiscence;
+  const S = { resident:"", tab:"keep", month:"", editing:null, bookOpts:null };   // month is set on first render (todayISO is defined in a later script)
+  const photos = new Map();                    // photo id -> data URL, for this page only
+  let root = null;
+  const key = id => H.STORE_PREFIX + id;
+  const find = () => S.resident ? BookUI.savedProfiles().filter(p => p.id === S.resident)[0] || null : null;
+  const nameOf = p => String(p && p.tier1_core && p.tier1_core.preferredName || "").trim();
+  function readKeeper(id){ let raw = null; try { raw = JSON.parse(CG_LS.getItem(key(id)) || "null"); } catch (e){ raw = null; } return H.normalizeKeeper(raw, id); }
+  function writeKeeper(k){ try { CG_LS.setItem(key(k.residentId), JSON.stringify(k)); return true; } catch (e){ toast("The memories could not be saved: " + e.message); return false; } }
+  async function loadPhotos(entries){
+    for (const e of entries) if (e.photo && !photos.has(e.photo)){ try { const d = await SS.getBlob(H.PHOTO_PREFIX + e.photo); if (d) photos.set(e.photo, d); } catch (err){ /* locked or missing: drawn as an empty frame */ } }
+  }
+  const artSvg = (d, t, w) => C.design(d) ? V.transformSvg(C.toSVG(C.render(d, t), { widthIn:w }), { tier:t, printWidthIn:w }).svg : "";
+  const htmlDeps = { art:artSvg, photoUrl:id => photos.get(id) || "" };
+  const pdfDeps = { art:(doc, d, t, x, y, w) => { if (C.design(d)) C.toPDF(doc, C.render(d, t), x, y, w, {}); }, photoData:id => photos.get(id) || null, font:"helvetica" };
+  const aspectDeps = { photoAspect:() => 0.75 };
+  const kindLabel = k => (H.KINDS.filter(x => x.code === k)[0] || { label:k }).label;
+  const tierOf = p => BookUI.needsFor(p).tier;
+  const designs = () => C.designs().slice().sort((a, b) => a.title.localeCompare(b.title));
+  /* A photo from a file: turned upright by the browser, at most 1600 px, as a JPEG. */
+  async function photoFromFile(file){
+    const url = URL.createObjectURL(file);
+    try {
+      const img = await new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => no(new Error("That file is not a picture this browser can open.")); i.src = url; });
+      const k = Math.min(1, 1600 / Math.max(img.naturalWidth, img.naturalHeight)), w = Math.max(1, Math.round(img.naturalWidth * k)), h = Math.max(1, Math.round(img.naturalHeight * k));
+      const c = document.createElement("canvas"); c.width = w; c.height = h;
+      const g = c.getContext("2d"); g.fillStyle = "#fff"; g.fillRect(0, 0, w, h); g.drawImage(img, 0, 0, w, h);
+      return { data:c.toDataURL("image/jpeg", 0.85), w, h };
+    } finally { URL.revokeObjectURL(url); }
+  }
+  /* ---------- the screen ---------- */
+  function render(view){
+    const list = BookUI.savedProfiles(), pre = window.cgKeepPreset; window.cgKeepPreset = null;
+    if (!S.month) S.month = todayISO().slice(0, 7);
+    if (pre && pre.resident) S.resident = pre.resident;
+    if (S.resident && !find()) S.resident = "";
+    view.innerHTML = `<p class="eyebrow">Interactive generator</p>
+      <h1 class="view-title" tabindex="-1">Memory Digest &amp; Book</h1>
+      <p class="lede">Keep a resident&rsquo;s memories as they happen: their own words, the stories reminiscence cards bring out, the pages they color. Send the family a digest each month, and gather a year into a hardcover book. Everything is kept, encrypted, on this computer.</p>
+      <div class="config" style="margin-top:0" id="hlRoot">
+        <div class="field"><label for="hlWho">Resident</label>
+          <select id="hlWho"><option value="">${list.length ? "Choose a resident" : "No saved residents yet"}</option>${list.map(p => `<option value="${esc(p.id)}" ${p.id === S.resident ? "selected" : ""}>${esc(cgScreenName(p))}</option>`).join("")}</select></div>
+        ${list.length ? "" : `<p class="hint"><a href="profile.html">Add a resident profile</a> first.</p>`}
+        <div class="cc-tabs" role="tablist" aria-label="Memory tools">${[["keep", "Keep a memory"], ["digest", "Monthly digest"], ["book", "Hardcover book"]].map(([k, l]) => `<button type="button" role="tab" id="hlTab-${k}" aria-selected="${S.tab === k}" aria-controls="hlPanel" data-tab="${k}" ${S.tab === k ? "" : 'tabindex="-1"'}>${l}</button>`).join("")}</div>
+        <div id="hlPanel" class="hl-panel" role="tabpanel" aria-labelledby="hlTab-${S.tab}"></div>
+      </div>`;
+    root = document.getElementById("hlRoot");
+    root.addEventListener("click", onClick); root.addEventListener("change", onChange); root.addEventListener("input", onInput);
+    if (pre && find()){ S.tab = "keep"; S.editing = Object.assign(blank(), pre.entry || {}); }
+    renderPanel();
+  }
+  function renderPanel(){
+    const panel = document.getElementById("hlPanel"), p = find();
+    root.querySelectorAll("[data-tab]").forEach(b => { const on = b.dataset.tab === S.tab; b.setAttribute("aria-selected", on); b.tabIndex = on ? 0 : -1; });
+    panel.setAttribute("aria-labelledby", "hlTab-" + S.tab);
+    if (!p){ panel.innerHTML = `<p class="hint">Choose a resident to begin.</p>`; return; }
+    if (S.tab === "keep") renderKeep(panel, p); else if (S.tab === "digest") renderDigest(panel, p); else renderBook(panel, p);
+  }
+  /* ---------- keep a memory ---------- */
+  const blank = () => ({ id:"", date:todayISO(), kind:"journal", title:"", text:"", by:settings.keeperName || "", share:true, card:"", design:"", tier:2, photo:"", photoW:0, photoH:0 });
+  function renderKeep(panel, p){
+    const k = readKeeper(p.id), month = k.entries.filter(e => H.monthOf(e.date) === S.month);
+    panel.innerHTML = `<div class="row2"><div class="field"><label for="hlMonth">Month</label><input id="hlMonth" type="month" value="${S.month}"></div>
+        <div class="field" style="align-self:end"><button class="btn btn-primary" type="button" id="hlAdd">Keep a memory</button></div></div>
+      <ul class="hl-entries" id="hlList">${month.slice().reverse().map(e => `<li>${e.photo ? `<img alt="" data-photo="${esc(e.photo)}">` : ""}<div style="flex:1;min-width:0"><b>${esc(e.title || kindLabel(e.kind))}</b> <small class="hint">${esc(H.dayLabel(e.date))} · ${esc(kindLabel(e.kind))}</small> ${e.share ? "" : '<span class="hl-private">Kept private</span>'}<p>${esc(e.text || (e.design ? (C.design(e.design) || { title:"" }).title : ""))}</p></div>
+        <span class="actions" style="margin:0"><button class="btn" type="button" data-edit="${esc(e.id)}">Open</button></span></li>`).join("") || `<li><span class="hint">Nothing kept for ${esc(H.monthLabel(S.month))} yet.</span></li>`}</ul>
+      <div id="hlForm"></div>`;
+    loadPhotos(month).then(() => panel.querySelectorAll("img[data-photo]").forEach(img => { const d = photos.get(img.dataset.photo); if (d) img.src = d; }));
+    if (S.editing) renderForm(p);
+  }
+  function renderForm(p){
+    const f = S.editing, box = document.getElementById("hlForm"); if (!box) return;
+    const textLabel = { journal:"Their words, exactly as they said or wrote them", reminiscence:"What they shared, in their words", coloring:"A note about it (optional)", moment:"What happened" }[f.kind];
+    box.innerHTML = `<section class="config" aria-labelledby="hlFormH"><h2 id="hlFormH">${f.id ? "A kept memory" : "Keep a memory"}</h2>
+      <div class="row2">
+        <div class="field"><label for="hlKind">What is it?</label><select id="hlKind" data-f="kind">${H.KINDS.map(x => `<option value="${x.code}" ${x.code === f.kind ? "selected" : ""}>${esc(x.label)}</option>`).join("")}</select></div>
+        <div class="field"><label for="hlDate">Date</label><input id="hlDate" data-f="date" type="date" value="${esc(f.date)}"></div></div>
+      <div class="field"><label for="hlTitle">Title <span class="hint">(optional)</span></label><input id="hlTitle" data-f="title" type="text" maxlength="80" value="${esc(f.title)}" placeholder="e.g., Sunday dinners on the farm"></div>
+      ${f.kind === "reminiscence" ? `<div class="field"><label for="hlCard">From the reminiscence card</label><input id="hlCard" data-f="card" type="text" maxlength="80" list="hlCards" value="${esc(f.card)}"><datalist id="hlCards">${R.TOPICS.map(t => `<option value="${esc(t.title)}">`).join("")}</datalist></div>` : ""}
+      ${f.kind === "coloring" ? `<div class="row2"><div class="field"><label for="hlDesign">The page they colored</label><select id="hlDesign" data-f="design"><option value="">Not a CogniCore page</option>${designs().map(d => `<option value="${d.id}" ${d.id === f.design ? "selected" : ""}>${esc(d.title)}</option>`).join("")}</select></div>
+        <div class="field"><label for="hlTier">Tier it was printed at</label><select id="hlTier" data-f="tier">${[1, 2, 3].map(t => `<option value="${t}" ${t === f.tier ? "selected" : ""}>Tier ${t}</option>`).join("")}</select></div></div>
+        <div class="field"><label for="hlPhoto">A photo of the finished page <span class="hint">(optional; kept encrypted on this computer)</span></label><input id="hlPhoto" type="file" accept="image/*">
+          ${f.photo ? `<img class="hl-photo-pv" id="hlPhotoPv" alt="The photo kept with this memory"><button class="btn" type="button" id="hlPhotoDrop">Remove the photo</button>` : ""}</div>` : ""}
+      <div class="field"><label for="hlText">${esc(textLabel)}</label><textarea id="hlText" data-f="text" rows="4" maxlength="2000">${esc(f.text)}</textarea>
+        <p class="hint">Write it the way they said it. It prints exactly as typed.</p></div>
+      <div class="row2"><div class="field"><label for="hlBy">Recorded by</label><input id="hlBy" data-f="by" type="text" maxlength="60" value="${esc(f.by)}"></div>
+        <label class="switch" for="hlShare" style="align-self:end"><input type="checkbox" id="hlShare" data-f="share" ${f.share ? "checked" : ""}><span><b>Share with family</b><small>In the monthly digest and the book. Turn off to keep it for the care team only.</small></span></label></div>
+      <div class="actions"><button class="btn btn-primary" type="button" id="hlSave">Save</button>${f.id ? `<button class="btn btn-danger" type="button" id="hlDelete">Delete</button>` : ""}<button class="btn" type="button" id="hlCancel">Close</button></div>
+    </section>`;
+    if (f.photo){ loadPhotos([f]).then(() => { const i = document.getElementById("hlPhotoPv"); if (i && photos.get(f.photo)) i.src = photos.get(f.photo); }); }
+  }
+  async function saveEntry(){
+    const p = find(); if (!p || !S.editing) return;
+    const k = readKeeper(p.id), e = H.normalizeEntry(S.editing);
+    if (!e.date){ toast("Add the date first."); return; }
+    if (!e.text && !e.title && !e.photo && !e.design){ toast("There is nothing to keep yet."); return; }
+    const i = k.entries.findIndex(x => x.id === e.id);
+    const old = i >= 0 ? k.entries[i] : null;
+    if (i >= 0) k.entries[i] = e; else k.entries.push(e);
+    if (old && old.photo && old.photo !== e.photo){ try { await SS.deleteBlob(H.PHOTO_PREFIX + old.photo); } catch (err){} photos.delete(old.photo); }
+    settings.keeperName = e.by; saveSettings();
+    if (writeKeeper(H.normalizeKeeper(k, p.id))){ S.editing = null; S.month = H.monthOf(e.date); renderPanel(); toast("Kept."); }
+  }
+  /* ---------- the monthly digest ---------- */
+  function digestPlan(p){
+    const k = readKeeper(p.id), m = H.digestFor(k, S.month);
+    const cover = (m.sections.flatMap(s => s.entries).filter(e => e.design)[0] || {}).design || "garden-rose";
+    return { k, m, plan:H.planDigest({ residentName:nameOf(p), facility:settings.facility || "", month:m, coverDesign:cover, coverTier:tierOf(p) }, aspectDeps) };
+  }
+  const scaled = (html, s) => html.replace('class="hl-page" style="', `class="hl-page" style="transform:scale(${s.toFixed(4)});`);
+  function previews(el, pages, geo, captions){
+    const w = 210, s = w / (geo.pageW * 96);
+    el.innerHTML = pages.map((pg, i) => `<figure class="hl-pv" style="width:${w}px;height:${Math.round(geo.pageH * 96 * s)}px;margin:0">${scaled(H.pageHtml(pg, geo, htmlDeps), s)}<figcaption>${esc(captions(pg, i))}</figcaption></figure>`).join("");
+  }
+  function renderDigest(panel, p){
+    const { m, plan } = digestPlan(p);
+    panel.innerHTML = `<div class="row2"><div class="field"><label for="hlMonth">Month</label><input id="hlMonth" type="month" value="${S.month}"></div>
+      <div class="field" style="align-self:end"><p class="hint" role="status">${m.count ? `${m.count} shared ${m.count === 1 ? "memory" : "memories"} · ${plan.length} pages` : "Nothing shared this month yet."}</p></div></div>
+      <div class="actions"><button class="btn btn-primary" type="button" id="hlDigestPdf" ${m.count ? "" : "disabled"}>Download the digest (PDF)</button><button class="btn" type="button" id="hlDigestPrint" ${m.count ? "" : "disabled"}>Print it</button></div>
+      <p class="hint">Letter paper with the punch gutter, set in Atkinson Hyperlegible. Only memories marked &ldquo;Share with family&rdquo; are included.</p>
+      <div class="hl-pvs" id="hlPvs"></div>`;
+    loadPhotos(m.sections.flatMap(s => s.entries)).then(() => previews(document.getElementById("hlPvs"), plan, H.letterGeometry(), (pg, i) => `Page ${i + 1}`));
+  }
+  async function digestPdf(){
+    const p = find(); if (!p) return;
+    if (!isLicensed() && genCount() >= FREE_RUNS){ openGate(); return; }
+    const { m, plan } = digestPlan(p), btn = document.getElementById("hlDigestPdf");
+    btn.disabled = true; btn.textContent = "Making the PDF…";
+    try {
+      await loadPhotos(m.sections.flatMap(s => s.entries));
+      const JsPDF = await CogniLibrary.loadPdfKit(), doc = new JsPDF({ unit:"pt", format:[612, 792], orientation:"portrait", compress:true }), times = [];
+      plan.forEach((pg, i) => { const t0 = performance.now(); if (i) doc.addPage([612, 792], "portrait"); H.drawPage(doc, pg, pdfDeps); times.push(performance.now() - t0); });
+      doc.save(["Memory digest", cgFileName(p), m.label].join(" - ") + ".pdf");
+      if (!isLicensed()) bumpGen();
+      toast(`Digest ready: ${plan.length} pages, each drawn in ${Math.max(1, Math.round(Math.max.apply(null, times)))} ms or less.`);
+    } catch (e){ toast("The PDF could not be made: " + e.message); }
+    finally { btn.disabled = false; btn.textContent = "Download the digest (PDF)"; if (typeof renderAllowance === "function") renderAllowance(); }
+  }
+  function digestPrint(){
+    const p = find(); if (!p) return;
+    const { m, plan } = digestPlan(p), geo = H.letterGeometry();
+    loadPhotos(m.sections.flatMap(s => s.entries)).then(() => BookUI.print(plan.map(pg => ({ html:`<div class="sheet hl-sheet">${H.pageHtml(pg, geo, htmlDeps)}</div>` })), ["Memory digest", cgFileName(p), m.label].join(" - "), null));
+  }
+  /* ---------- the hardcover book ---------- */
+  function bookOpts(p, k){
+    if (!S.bookOpts || S.bookOpts.resident !== p.id){
+      const months = k.entries.filter(e => e.share).map(e => H.monthOf(e.date)), to = months.length ? months[months.length - 1] : S.month;
+      const [y, mo] = to.split("-").map(Number), fromD = new Date(Date.UTC(y, mo - 12, 1)), from = months.length ? (fromD.toISOString().slice(0, 7) > months[0] ? fromD.toISOString().slice(0, 7) : months[0]) : to;
+      S.bookOpts = { resident:p.id, from, to, printer:"lulu", trim:"8.5x8.5", title:(nameOf(p) ? nameOf(p) + "’s Year" : "A Year of Memories"), subtitle:"", cover:{ spine:0, width:0, height:0, wrap:0.75 } };
+    }
+    return S.bookOpts;
+  }
+  function bookPlan(p){
+    const k = readKeeper(p.id), o = bookOpts(p, k), printer = H.PRINTERS.filter(x => x.code === o.printer)[0], trim = H.TRIMS.filter(t => t.code === o.trim)[0] || H.TRIMS[0];
+    const months = H.bookFor(k, o.from, o.to);
+    const cover = (months.flatMap(m => m.sections.flatMap(s => s.entries)).filter(e => e.design)[0] || {}).design || "garden-rose";
+    const input = { residentName:nameOf(p), facility:settings.facility || "", months, dedication:k.dedication, title:o.title, subtitle:o.subtitle || (H.monthLabel(o.from) + (o.to !== o.from ? " to " + H.monthLabel(o.to) : "")), coverDesign:cover, coverTier:tierOf(p) };
+    return { k, o, printer, trim, months, input, book:H.planBook(input, trim, printer, aspectDeps) };
+  }
+  function renderBook(panel, p){
+    const { k, o, printer, trim, months, book } = bookPlan(p), g = book.geometry, est = H.coverEstimate(trim, book.padded);
+    if (!o.cover.width){ o.cover = { spine:est.spine, width:est.width, height:est.height, wrap:est.wrap, estimated:true }; }
+    const trims = H.TRIMS.filter(t => t.printers.indexOf(o.printer) >= 0);
+    panel.innerHTML = `<div class="row2"><div class="field"><label for="hlFrom">From</label><input id="hlFrom" type="month" value="${o.from}"></div><div class="field"><label for="hlTo">To</label><input id="hlTo" type="month" value="${o.to}"></div></div>
+      <div class="row2"><div class="field"><label for="hlPrinter">Printer</label><select id="hlPrinter">${H.PRINTERS.map(x => `<option value="${x.code}" ${x.code === o.printer ? "selected" : ""}>${esc(x.label)}</option>`).join("")}</select></div>
+        <div class="field"><label for="hlTrim">Trim size</label><select id="hlTrim">${trims.map(t => `<option value="${t.code}" ${t.code === trim.code ? "selected" : ""}>${esc(t.label)}</option>`).join("")}</select></div></div>
+      <div class="row2"><div class="field"><label for="hlBookTitle">Title</label><input id="hlBookTitle" type="text" maxlength="60" value="${esc(o.title)}"></div><div class="field"><label for="hlBookSub">Subtitle</label><input id="hlBookSub" type="text" maxlength="80" value="${esc(o.subtitle)}" placeholder="${esc(H.monthLabel(o.from) + " to " + H.monthLabel(o.to))}"></div></div>
+      <div class="field"><label for="hlDedication">Dedication <span class="hint">(optional; printed on its own page and on the back cover)</span></label><textarea id="hlDedication" rows="2" maxlength="600">${esc(k.dedication)}</textarea></div>
+      <div class="hl-specs">
+        <div><b>${book.padded} pages</b><span>${months.length} month${months.length === 1 ? "" : "s"}, ${book.pages.filter(x => x.kind === "notes").length} notes pages added to reach ${book.padded < printer.minPages + 2 ? "the printer's minimum and " : ""}an even count</span></div>
+        <div><b>${g.pageW.toFixed(3)} × ${g.pageH.toFixed(3)} in</b><span>Each PDF page: the ${esc(trim.label)} trim plus 0.125 in bleed ${printer.bleed === "outside" ? "on the outside edge, top and bottom" : "on all four sides"}</span></div>
+        <div><b>${book.gutter} in gutter</b><span>Inside margin on the bound edge; 0.5 in on the other edges</span></div>
+      </div>
+      <p class="hint">${esc(printer.note)}</p>
+      <div class="actions"><button class="btn btn-primary" type="button" id="hlInterior" ${months.length ? "" : "disabled"}>Download the interior (PDF)</button></div>
+      <h3 style="margin:18px 0 6px">Cover</h3>
+      <p class="hint">Enter the numbers from your printer&rsquo;s cover template for ${book.padded} pages. ${o.cover.estimated ? "The ones shown are only a starting estimate." : ""}</p>
+      <div class="cl-stage">
+        <div class="field"><label for="hlCw">Full width (in)</label><input id="hlCw" type="number" step="0.001" min="4" max="40" value="${o.cover.width}"></div>
+        <div class="field"><label for="hlCh">Full height (in)</label><input id="hlCh" type="number" step="0.001" min="4" max="20" value="${o.cover.height}"></div>
+        <div class="field"><label for="hlCs">Spine width (in)</label><input id="hlCs" type="number" step="0.001" min="0" max="4" value="${o.cover.spine}"></div>
+        <div class="field"><label for="hlCwrap">Wrap and bleed (in)</label><input id="hlCwrap" type="number" step="0.001" min="0" max="2" value="${o.cover.wrap}"></div>
+      </div>
+      <div class="actions"><button class="btn" type="button" id="hlCover" ${months.length ? "" : "disabled"}>Download the cover (PDF)</button><button class="btn" type="button" id="hlEstimate">Use the estimate again</button></div>
+      <div id="hlCoverPv"></div>
+      <h3 style="margin:18px 0 6px">The first pages</h3>
+      <div class="hl-pvs" id="hlPvs"></div>`;
+    const shown = book.pages.map((pg, i) => [pg, i]).filter(([pg, i]) => i < 6 || pg.kind === "colophon" || (pg.kind === "notes" && i === book.pages.findIndex(x => x.kind === "notes")));
+    loadPhotos(months.flatMap(m => m.sections.flatMap(s => s.entries))).then(() => {
+      const el = document.getElementById("hlPvs"); if (!el) return;
+      previews(el, shown.map(x => x[0]), g, (pg, j) => `Page ${shown[j][1] + 1} · ${{ title:"title", dedication:"dedication", chapter:"a month begins", notes:"notes and memories", colophon:"closing", body:"", cover:"" }[pg.kind] || ""}`);
+      renderCoverPreview(p);
+    });
+  }
+  function coverPlan(p){ const { o, input } = bookPlan(p); const spec = H.coverSpec(o.cover); return { spec, plan:H.planCover(input, spec) }; }
+  function renderCoverPreview(p){
+    const el = document.getElementById("hlCoverPv"); if (!el) return;
+    const { spec, plan } = coverPlan(p), w = Math.min(el.clientWidth || 700, 760), s = w / (spec.width * 96);
+    const geo = { pageW:spec.width, pageH:spec.height, trim:null, content:() => ({ x:0, y:0, w:spec.width, h:spec.height }), label:"cover" };
+    const extra = `<div class="hl-spine" style="left:${spec.spineBox.x}in;top:0;width:${spec.spineBox.w}in;height:${spec.height}in">${esc(plan.spineText)}</div>
+      <div class="hl-fold" style="left:${spec.spineBox.x}in;top:0;height:${spec.height}in"></div><div class="hl-fold" style="left:${spec.front.x}in;top:0;height:${spec.height}in"></div>
+      <div class="hl-guide" style="left:${spec.wrap}in;top:${spec.wrap}in;width:${spec.width - 2 * spec.wrap}in;height:${spec.height - 2 * spec.wrap}in"></div>`;
+    el.innerHTML = `<div class="hl-cover-pv" style="width:${w}px;height:${Math.round(spec.height * 96 * s)}px">${scaled(H.pageHtml({ items:plan.items, kind:"cover" }, geo, htmlDeps), s).replace(/<\/div>$/, extra + "</div>")}</div>
+      <p class="hint">Blue dashes: the spine folds. Red dashes: where the wrap and bleed begin (outside them is wrapped around the boards). The PDF has no guides.</p>`;
+  }
+  async function makeBookPdf(which){
+    const p = find(); if (!p) return;
+    if (!isLicensed() && genCount() >= FREE_RUNS){ openGate(); return; }
+    const btn = document.getElementById(which === "cover" ? "hlCover" : "hlInterior"), label = btn.textContent;
+    btn.disabled = true; btn.textContent = "Making the PDF…";
+    try {
+      const { o, months, book, trim } = bookPlan(p), JsPDF = await CogniLibrary.loadPdfKit();
+      await loadPhotos(months.flatMap(m => m.sections.flatMap(s => s.entries)));
+      let doc, n = 0; const times = [];
+      if (which === "cover"){
+        const { spec, plan } = coverPlan(p), W = spec.width * 72, Hh = spec.height * 72;
+        doc = new JsPDF({ unit:"pt", format:[W, Hh], orientation:W > Hh ? "landscape" : "portrait", compress:true });
+        H.drawPage(doc, { items:plan.items, kind:"cover" }, pdfDeps);
+        if (plan.spineText){ const size = Math.max(8, Math.min(18, spec.spine * 72 * 0.5)); doc.setFont("helvetica", "bold"); doc.setFontSize(size);
+          const tw = doc.getTextWidth(plan.spineText), cx = (spec.spineBox.x + spec.spineBox.w / 2) * 72;
+          doc.text(plan.spineText, cx - size * 0.35, (Hh - tw) / 2, { angle:-90 }); }
+        n = 1;
+      } else {
+        const W = book.geometry.pageW * 72, Hh = book.geometry.pageH * 72;
+        doc = new JsPDF({ unit:"pt", format:[W, Hh], orientation:W > Hh ? "landscape" : "portrait", compress:true });
+        book.pages.forEach((pg, i) => { const t0 = performance.now(); if (i) doc.addPage([W, Hh], W > Hh ? "landscape" : "portrait"); H.drawPage(doc, pg, pdfDeps); times.push(performance.now() - t0); });
+        n = book.pages.length;
+      }
+      doc.save([which === "cover" ? "Book cover" : "Book interior", cgFileName(p), trim.code + " in", H.monthLabel(o.from) + " to " + H.monthLabel(o.to)].join(" - ") + ".pdf");
+      if (!isLicensed()) bumpGen();
+      toast(which === "cover" ? "Cover ready. Check it against your printer's template before ordering." : `Interior ready: ${n} pages, each drawn in ${Math.max(1, Math.round(Math.max.apply(null, times)))} ms or less.`);
+    } catch (e){ toast("The PDF could not be made: " + e.message); }
+    finally { btn.disabled = false; btn.textContent = label; if (typeof renderAllowance === "function") renderAllowance(); }
+  }
+  /* ---------- events ---------- */
+  function onChange(e){
+    const t = e.target, p = find();
+    if (t.id === "hlWho"){ S.resident = t.value; S.editing = null; S.bookOpts = null; renderPanel(); return; }
+    if (t.id === "hlMonth"){ S.month = t.value || S.month; renderPanel(); return; }
+    if (t.id === "hlPhoto" && t.files && t.files[0]){
+      const f = t.files[0];
+      photoFromFile(f).then(async ph => { const id = "p" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+        await SS.putBlob(H.PHOTO_PREFIX + id, ph.data); photos.set(id, ph.data);
+        S.editing.photo = id; S.editing.photoW = ph.w; S.editing.photoH = ph.h; renderForm(p); toast("Photo kept, encrypted on this computer."); },
+        err => toast(err.message || "The photo could not be kept."));
+      return;
+    }
+    if (t.dataset.f === "kind"){ S.editing.kind = t.value; renderForm(p); return; }
+    if (t.dataset.f === "share"){ S.editing.share = t.checked; return; }
+    if (t.dataset.f === "tier" || t.dataset.f === "design"){ S.editing[t.dataset.f] = t.dataset.f === "tier" ? +t.value : t.value; return; }
+    const o = p ? S.bookOpts : null;
+    if (o && ["hlFrom", "hlTo", "hlPrinter", "hlTrim"].indexOf(t.id) >= 0){
+      if (t.id === "hlFrom") o.from = t.value || o.from; else if (t.id === "hlTo") o.to = t.value || o.to;
+      else if (t.id === "hlPrinter"){ o.printer = t.value; if (!H.TRIMS.some(x => x.code === o.trim && x.printers.indexOf(o.printer) >= 0)) o.trim = H.TRIMS.filter(x => x.printers.indexOf(o.printer) >= 0)[0].code; }
+      else o.trim = t.value;
+      if (o.from > o.to){ const x = o.from; o.from = o.to; o.to = x; }
+      if (o.cover.estimated) o.cover = { spine:0, width:0, height:0, wrap:0.75 };
+      renderPanel(); return;
+    }
+    if (o && t.id === "hlDedication"){ const k = readKeeper(p.id); k.dedication = t.value; writeKeeper(H.normalizeKeeper(k, p.id)); renderPanel(); }
+  }
+  function onInput(e){
+    const t = e.target, o = S.bookOpts;
+    if (S.editing && t.dataset.f && ["title", "text", "by", "card", "date"].indexOf(t.dataset.f) >= 0){ S.editing[t.dataset.f] = t.value; return; }
+    if (o && (t.id === "hlBookTitle" || t.id === "hlBookSub")){ o[t.id === "hlBookTitle" ? "title" : "subtitle"] = t.value; return; }
+    if (o && ["hlCw", "hlCh", "hlCs", "hlCwrap"].indexOf(t.id) >= 0){
+      const kk = { hlCw:"width", hlCh:"height", hlCs:"spine", hlCwrap:"wrap" }[t.id]; o.cover[kk] = +t.value; o.cover.estimated = false; renderCoverPreview(find());
+    }
+  }
+  function onClick(e){
+    const b = e.target.closest("button"); if (!b || !root.contains(b)) return;
+    const p = find();
+    if (b.dataset.tab){ S.tab = b.dataset.tab; renderPanel(); document.getElementById("hlTab-" + S.tab).focus(); return; }
+    if (!p) return;
+    if (b.id === "hlAdd"){ S.editing = blank(); if (S.month !== todayISO().slice(0, 7)) S.editing.date = S.month + "-01"; renderForm(p); document.getElementById("hlFormH").scrollIntoView({ block:"start" }); }
+    else if (b.dataset.edit){ const en = readKeeper(p.id).entries.filter(x => x.id === b.dataset.edit)[0]; if (en){ S.editing = JSON.parse(JSON.stringify(en)); renderForm(p); document.getElementById("hlFormH").scrollIntoView({ block:"start" }); } }
+    else if (b.id === "hlSave") saveEntry();
+    else if (b.id === "hlCancel"){ S.editing = null; renderPanel(); }
+    else if (b.id === "hlPhotoDrop"){ S.editing.photo = ""; S.editing.photoW = S.editing.photoH = 0; renderForm(p); }
+    else if (b.id === "hlDelete"){
+      if (!confirm("Delete this memory from this computer? This cannot be undone.")) return;
+      const k = readKeeper(p.id), gone = k.entries.filter(x => x.id === S.editing.id)[0];
+      k.entries = k.entries.filter(x => x.id !== S.editing.id);
+      if (gone && gone.photo) SS.deleteBlob(H.PHOTO_PREFIX + gone.photo).catch(() => {});
+      if (writeKeeper(k)){ S.editing = null; renderPanel(); toast("Deleted."); }
+    }
+    else if (b.id === "hlDigestPdf") digestPdf();
+    else if (b.id === "hlDigestPrint") digestPrint();
+    else if (b.id === "hlInterior") makeBookPdf("interior");
+    else if (b.id === "hlCover") makeBookPdf("cover");
+    else if (b.id === "hlEstimate"){ S.bookOpts.cover = { spine:0, width:0, height:0, wrap:0.75 }; renderPanel(); }
+  }
+  return { render, readKeeper, digestPlan, bookPlan, coverPlan };
 })();
 </script>
 <script>
@@ -9389,7 +9744,8 @@ function addBatch(act, cfg, batchSeed, count){
 
 /* ---------- 11. Views + router ---------- */
 const view = $("#view");
-const routes = { "": renderHome, "category": renderCategory, "settings": renderSettings, "planner": renderPlanner, "journal": renderJournal, "roster": renderRoster, "coloring": renderColoring, "reminiscence": renderReminiscence, "clinical": renderClinical };
+const routes = { "": renderHome, "category": renderCategory, "settings": renderSettings, "planner": renderPlanner, "journal": renderJournal, "roster": renderRoster, "coloring": renderColoring, "reminiscence": renderReminiscence, "clinical": renderClinical, "heirloom": renderHeirloom };
+function renderHeirloom(){ HeirloomUI.render(view); }
 function renderClinical(){ ClinicalUI.render(view); }
 function renderReminiscence(){ ReminiscenceUI.render(view); }
 function renderColoring(arg){ CogniLibrary.render(view, arg); }
@@ -9427,7 +9783,7 @@ function highlightNav(name, arg){
   if (name === "coloring") arg = "cognicore", name = "category";
   const el = name === "category" ? document.querySelector(`.sb-link[data-cat="${CSS.escape(arg)}"]`)
            : name === "settings" ? document.querySelector('.sb-link[data-route="settings"]')
-           : name === "planner" || name === "journal" || name === "roster" || name === "reminiscence" || name === "clinical" ? document.querySelector(`.sb-link[data-route="${name}"]`) : null;
+           : name === "planner" || name === "journal" || name === "roster" || name === "reminiscence" || name === "clinical" || name === "heirloom" ? document.querySelector(`.sb-link[data-route="${name}"]`) : null;
   if (el) el.setAttribute("aria-current", "page");
 }
 function renderFacility(){
@@ -9461,6 +9817,7 @@ function renderHome(){
       ${tool("#/planner", ICONS.planner, "12-Month Life Planner", "A personalized year-long memory book for the resident, with a separate, confidential care companion for staff and family. Print-ready for binders and bound books.", ["4 tabs", "Memory book + care companion"])}
       ${tool("#/journal", ICONS.journal, "Life Story Journal", "The Cognitive Life Journal: a life story in four sections, from early roots to daily comfort, personalized from the resident’s own details. Family and care team notes stay in a separate part at the back.", ["4 sections", "Life story + family notes"])}
       ${tool("#/reminiscence", ICONS.journal, "Reminiscence Cards", "Cards about a resident’s own work, hometown region and best-remembered years, each with three conversation starters, a song from their era and something to hold.", ["Era × region × vocation", "Caregiver cues"])}
+      ${tool("#/heirloom", ICONS.journal, "Memory Digest & Book", "Keep a resident’s words, stories and finished coloring pages as they happen; send the family a monthly digest, and gather a year into a print-on-demand hardcover.", ["Monthly digest", "Hardcover PDF"])}
       ${tool("#/clinical", ICONS.journal, "Session Notes (SLP)", "GDS and FAST staging mapped to support tiers, a session log, and SOAP notes built only from what you record, for the Full Administrative Binder.", ["Staff-recorded SOAP", "Code checks"])}
       ${tool("#/roster", ICONS.roster, "Resident roster", "Every saved resident in one list. Choose a resident, choose a book, and print it at their own support tier, line weight and contrast.", ["3 clicks to print", "Search by name or unit"])}
     </div>

@@ -264,13 +264,30 @@ async function secureStoreChecks(){
   ok(await F.unlock("not the passphrase") === false && F.status().state === "locked", "the wrong passphrase does not open");
   ok(await F.unlock(P, 0) === true && JSON.parse(F.storage.getItem("cognicopia_resident_r1")).tier1_core.preferredName === "Margaret Ellison", "the right passphrase opens");
   const G = page(shared); ok((await G.ready()).state === "locked", "\"this page only\" leaves other pages locked");
+  // photos: sealed in their own store, read only when asked for, resealed with the key, cleared on wipe
+  const photo = "data:image/jpeg;base64," + "QUJD".repeat(5000);
+  await F.putBlob("cognicopia_heirloom_photo_p1", photo);
+  const blobs = idb.dbs.get("cognicopia-secure").stores.get("blobs");
+  ok(blobs.size === 1 && !Buffer.from(blobs.get("cognicopia_heirloom_photo_p1").data).toString("latin1").includes("QUJDQUJD"), "photos are ciphertext at rest");
+  const Fp = page(shared); await Fp.ready().catch(() => null); if (Fp.status().state === "locked") await Fp.unlock(P, 0);
+  ok(await Fp.getBlob("cognicopia_heirloom_photo_p1") === photo && !Fp.storage.getItem("cognicopia_heirloom_photo_p1") && Fp.status().records === F.status().records, "photos open on request and are not loaded with the records");
+  ok(JSON.stringify(await F.blobNames("cognicopia_heirloom_photo_")) === '["cognicopia_heirloom_photo_p1"]', "photo names by prefix");
+  let notSealed = ""; try { await F.putBlob("cc_photo", "x"); } catch (e){ notSealed = e.message; } ok(/Not a sealed name/.test(notSealed), "photos need a sealed name");
   await F.removePassphrase(P);
   const H = page(shared), hs = await H.ready();
+  ok(await H.getBlob("cognicopia_heirloom_photo_p1") === photo, "photos survive a change of key");
   ok(hs.state === "open" && !hs.passphrase && H.storage.getItem("cognicopia_resident_r2") !== null, "passphrase removed: back to the device key, nothing lost");
+  const Lk = page(shared); await Lk.ready(); await Lk.setPassphrase("another quiet morning here", 0);
+  const Lk2 = page(shared); await Lk2.ready();
+  let lockedBlob = ""; try { await Lk2.getBlob("cognicopia_heirloom_photo_p1"); } catch (e){ lockedBlob = e.name; } ok(lockedBlob === "LockedError", "locked: photos are refused");
+  ok(await Lk2.unlock("another quiet morning here", 0) && await Lk2.getBlob("cognicopia_heirloom_photo_p1") === photo, "unlocked: the photo opens under the new key");
+  await Lk2.wipe();
+  ok(blobs.size === 0 && (await Lk2.blobNames("")).length === 0, "wipe clears photos too");
   // no IndexedDB or Web Crypto: plain localStorage, and it says so
   const U = page({ idb:undefined, ls:fakeLocalStorage() }), us = await U.ready();
   U.storage.setItem("cognicopia_resident_x", "{}");
   ok(us.state === "unavailable" && !us.encrypted && U.storage.getItem("cognicopia_resident_x") === "{}", "falls back to localStorage when it cannot encrypt");
+  let noPhotos = ""; try { await U.putBlob("cognicopia_heirloom_photo_x", "x"); } catch (e){ noPhotos = e.message; } ok(/Photos need/.test(noPhotos), "without encryption, photos are refused rather than kept in plain storage");
   // locked files: the packet tool's own lock and unlock open these, and the reverse
   const idx = fs.readFileSync(path.join(ROOT, "index.html"), "utf8"), a = idx.indexOf('const LOCKED_FORMAT="cognicopia-locked"'), b = idx.indexOf("function downloadBlob", a);
   const pt = { crypto:globalThis.crypto, TextEncoder, TextDecoder, btoa, atob, window:{ crypto:globalThis.crypto, TextEncoder } }; pt.globalThis = pt; vm.createContext(pt);
@@ -455,6 +472,61 @@ group("slpClinicalService", () => {
   ok(log.staging.length === 2 && K.latestStaging(log).gds === "5" && log.sessions[0].date === "2026-07-01", "logs: staging kept, sorted by date");
   const sum = K.summaryPage(log, { residentName:"Ruth", unit:"4", facility:"", staging:K.latestStaging(log), profileTier:2 }, "2026-09-01", "2026-09-30");
   ok(/2 sessions, 75 minutes recorded/.test(sum) && /Tier 2/.test(sum), "summary counts the period");
+});
+
+/* 7. Heirloom: entries kept as recorded, the monthly digest, and the hardcover interior and cover. */
+group("heirloomService", () => {
+  const H = sandbox.CogniHeirloom;
+  ok(H && typeof H.planBook === "function", "CogniHeirloom is not loaded");
+  const e = H.normalizeEntry({ date:"2026-09-03", kind:"journal", text:"I  liked\tthe barn.\n\nIt was red.", title:"x".repeat(300), photo:"bad id!", tier:7, share:false });
+  ok(e.text === "I liked the barn.\n\nIt was red." && e.title.length === 80 && !e.photo && e.tier === 2 && e.share === false, "entries are cleaned, never reworded: " + JSON.stringify(e.text));
+  ok(H.normalizeEntry({ kind:"weird" }).kind === "moment" && H.normalizeEntry({ kind:"coloring", design:"red-barn" }).design === "red-barn" && H.normalizeEntry({ kind:"journal", design:"red-barn" }).design === "", "kinds and designs");
+  ok(H.monthsBetween("2025-11", "2026-02").join() === "2025-11,2025-12,2026-01,2026-02" && H.monthLabel("2026-09") === "September 2026", "months");
+  ok(JSON.stringify([10, 150, 151, 300, 301, 500, 700, 701].map(H.gutterFor)) === "[0.75,0.75,0.75,0.75,0.75,0.75,0.75,0.875]", "the gutter: 0.75 in, more past 700 pages");
+  const kdp = H.PRINTERS.find(p => p.code === "kdp"), lulu = H.PRINTERS.find(p => p.code === "lulu");
+  ok(H.padTo(10, lulu) === 24 && H.padTo(33, lulu) === 34 && H.padTo(10, kdp) === 76, "pages padded to the printer's minimum and an even count");
+  const t6 = H.TRIMS.find(t => t.code === "6x9"), gk = H.bookGeometry(t6, kdp, 100), gl = H.bookGeometry(t6, lulu, 100);
+  ok(gk.pageW === 6.125 && gk.pageH === 9.25 && gl.pageW === 6.25 && gl.pageH === 9.25, "KDP bleeds the outside edge only; Lulu all four sides");
+  ok(gk.content(1).x === 0.75 && Math.abs(gk.content(2).x - 0.625) < 1e-9 && gk.content(2).x + gk.content(2).w === 6.125 - 0.75 && gl.content(1).x === 0.875, "the gutter is on the bound side of each page");
+  // a year of entries
+  const words = n => Array.from({ length:n }, (_, i) => ["We", "grew", "tomatoes", "by", "the", "porch", "and", "my", "mother", "canned", "every", "one"][i % 12]).join(" ");
+  const raw = [];
+  for (let m = 1; m <= 12; m++) for (let k = 0; k < 6; k++){
+    const kind = ["journal", "reminiscence", "coloring", "moment"][k % 4];
+    raw.push({ id:"e" + m + "x" + k, date:`2026-${String(m).padStart(2, "0")}-${String(3 + k * 4).padStart(2, "0")}`, kind, title:k % 2 ? "Sunday dinners" : "", text:words(10 + (k * 17 + m * 5) % 140), by:"Maria",
+      card:kind === "reminiscence" ? "The Farm Year" : "", design:kind === "coloring" ? "red-barn" : "", photo:kind === "coloring" && k % 3 === 0 ? "p" + m + "x" + k : "", photoW:1200, photoH:1600, share:k !== 5 });
+  }
+  const K = H.normalizeKeeper({ entries:raw, dedication:"For Margaret." }, "r1");
+  const sep = H.digestFor(K, "2026-09");
+  ok(K.entries.length === 72 && sep.count === 5 && sep.sections[0].heading === "In Their Own Words", "a month's digest holds only shared entries, their words first");
+  const deps = { photoAspect:() => 0.75 };
+  const inside = (it, box) => it.t === "band" || (it.x >= box.x - 1e-6 && it.x + it.w <= box.x + box.w + 1e-6 && it.y >= box.y - 1e-6 && it.y + it.h <= box.y + box.h + 1e-6);
+  const dg = H.planDigest({ residentName:"Margaret", facility:"Maple Grove", month:sep, coverDesign:"red-barn", coverTier:2 }, deps);
+  ok(dg.length >= 2 && dg[0].kind === "cover" && dg.every((p, i) => p.items.every(it => inside(it, H.letterGeometry().content(i + 1)))), "the digest stays inside its margins");
+  // every recorded word is there, as recorded
+  const flat = dg.flatMap(p => p.items.filter(i => i.t === "text").map(i => i.lines.join(" "))).join(" ").replace(/\s+/g, " ");
+  ok(sep.sections.flatMap(s => s.entries).every(en => flat.includes(en.text.replace(/\s+/g, " "))), "every shared entry's words appear exactly");
+  ok(!flat.includes(K.entries.find(x => !x.share && x.date.startsWith("2026-09")).text), "an entry kept private stays out");
+  for (const pr of H.PRINTERS) for (const tr of H.TRIMS.filter(t => t.printers.includes(pr.code))){
+    const bk = H.planBook({ residentName:"Margaret", facility:"Maple Grove", months:H.bookFor(K, "2026-01", "2026-12"), dedication:"For Margaret.", title:"Margaret's Year", subtitle:"2026", coverDesign:"red-barn", coverTier:2 }, tr, pr, deps);
+    const g = bk.geometry, tag = pr.code + " " + tr.code;
+    ok(bk.pages.length === bk.padded && bk.pages.length % 2 === 0 && bk.pages.length >= pr.minPages, tag + ": page count " + bk.pages.length);
+    ok(bk.pages.every((p, i) => p.items.every(it => inside(it, g.content(i + 1)))), tag + ": everything inside the safe area");
+    ok(bk.pages.every((p, i) => p.kind !== "chapter" || i % 2 === 0), tag + ": chapters open on right-hand pages");
+    ok(bk.pages[bk.pages.length - 1].kind === "colophon" && bk.pages[0].kind === "title", tag + ": title page first, closing page last");
+  }
+  // drawing
+  const calls = []; const doc = new Proxy({}, { get:(o, k) => (...a) => { calls.push([k, ...a]); } });
+  const drawn = dg.reduce((n, p) => n + H.drawPage(doc, p, { art:(d, id, t, x, y, w) => { calls.push(["art", id, t, x, y, w]); }, photoData:id => id === "p9x0" ? "data:image/jpeg;base64,AAAA" : null, font:"helvetica" }), 0);
+  ok(drawn > 10 && calls.some(c => c[0] === "text") && calls.some(c => c[0] === "art" && c[1] === "red-barn") && calls.every(c => c[0] !== "addImage" || c[1].startsWith("data:image/jpeg")), "pages draw as text, vector art and JPEG photos");
+  const html = H.pageHtml({ kind:"body", items:[{ t:"text", x:1, y:1, w:5, h:1, lines:['<img src=x onerror=alert(1)>'], size:12, lead:.2 }] }, H.letterGeometry(), { art:() => "", photoUrl:() => "" });
+  ok(!/<img src=x/.test(html) && /&lt;img/.test(html), "entries are escaped on the page");
+  // cover
+  const est = H.coverEstimate(t6, 120), spec = H.coverSpec(est);
+  ok(Math.abs(spec.back.w + spec.spineBox.w + spec.front.w - spec.width) < 1e-9 && spec.front.x === spec.back.w + spec.spine, "cover: back, spine and front fill the width");
+  const cp = H.planCover({ residentName:"Margaret", facility:"Maple Grove", months:[], dedication:"For Margaret, who taught us all to garden.", title:"Margaret's Year", subtitle:"2026", coverDesign:"red-barn", coverTier:2 }, spec);
+  ok(cp.items.every(it => it.x >= spec.safe - 1e-9 && it.y >= spec.safe - 1e-9 && it.x + it.w <= spec.width - spec.safe + 1e-9 && it.y + it.h <= spec.height - spec.safe + 1e-9 && !(it.x < spec.front.x && it.x + it.w > spec.back.w)), "cover text and art stay in the safe area, off the spine");
+  ok(H.coverSpec({ width:999, height:-1, spine:9, wrap:9 }).width === 40, "cover numbers are bounded");
 });
 
 if (fails.length){ console.log(`services check FAILED: ${fails.length} problem(s), ${pass} passed\n  - ` + fails.slice(0, 30).join("\n  - ")); process.exit(1); }
