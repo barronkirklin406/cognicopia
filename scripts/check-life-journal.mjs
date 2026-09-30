@@ -361,7 +361,7 @@ check("High Contrast Mode reaches journal pages", () => {
 check("the sidebar, route, home card and Settings reach the journal", () => {
   ok(/<a class="sb-link" href="#\/journal" data-route="journal">[\s\S]*?Cognitive Life Journal/.test(html), "sidebar link");
   ok(/"journal": renderJournal/.test(html) && /function renderJournal\(\)\{ LifeJournalUI\.render\(view\); \}/.test(html), "route");
-  ok(/<a class="card" href="#\/journal">/.test(html), "home card");
+  ok(/<a class="card" href="#\/journal">|tool\("#\/journal"/.test(html), "home card");
   ok(/LifeJournalUI\.clearSaved\(\)/.test(html), "Clear saved data includes the journal");
   const at = id => html.indexOf(`<script id="${id}">`), main = html.indexOf('<script>\n"use strict";');
   ok(at("lp-engine") < at("lj-engine") && at("lj-engine") < at("kit-ui") && at("kit-ui") < at("lp-ui") && at("lp-ui") < at("lj-ui") && at("lj-ui") < main, "script order");
