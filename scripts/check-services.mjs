@@ -395,5 +395,67 @@ group("reminiscenceEngine", () => {
 
 
 
+/* 6. SLP clinical service: staging to tiers, code checks, and notes made only of what staff recorded. */
+group("slpClinicalService", () => {
+  const K = sandbox.CogniClinical;
+  ok(K && typeof K.soapPages === "function", "CogniClinical is not loaded");
+  ok(K.GDS_STAGES.map(x => x.code).join() === "1,2,3,4,5,6,7", "GDS stages 1-7");
+  ok(K.FAST_STAGES.map(x => x.code).join() === "1,2,3,4,5,6a,6b,6c,6d,6e,7a,7b,7c,7d,7e,7f", "FAST stages 1 to 7f");
+  for (const t of K.TIER_STAGES){
+    t.gds.forEach(g => ok(K.tierForStage({ gds:g }).tier === t.tier, `GDS ${g} -> Tier ${t.tier}`));
+    t.fast.forEach(f => ok(K.tierForStage({ fast:f }).tier === t.tier, `FAST ${f} -> Tier ${t.tier}`));
+  }
+  const tiers = [["1", 1], ["2", 1], ["3", 1], ["4", 1], ["5", 2], ["6", 3], ["7", 3]];
+  tiers.forEach(([g, t]) => ok(K.tierForStage({ gds:g }).tier === t, "GDS " + g));
+  ["7a", "7c", "7f"].forEach(f => { const m = K.tierForStage({ fast:f }); ok(m.tier === 3 && m.beyond && /sensory/.test(m.note), "FAST " + f + " is past printed pages"); });
+  const dis = K.tierForStage({ gds:"4", fast:"6b" });
+  ok(dis.tier === 3 && !dis.agree && /Review/.test(dis.note), "GDS and FAST disagree: more support, flagged");
+  ok(K.tierForStage({}).tier === null && K.tierForStage({ gds:"9", fast:"8z" }).tier === null, "no stage, or not a stage: no tier");
+  // the code reference
+  const c97124 = K.codeRef("97124"), c97130 = K.codeRef("97130");
+  ok(c97124 && !c97124.cognitive && /massage/i.test(c97124.summary) && /97129/.test(c97124.note), "97124 is flagged as massage, pointing to 97129/97130");
+  ok(c97130.addOnTo === "97129" && K.codeRef("92507").timed === false && K.codeRef("96125").minutes === 60, "code facts");
+  // checks
+  const S = o => K.normalizeSession(Object.assign({ date:"2026-09-29", minutes:30, clinician:"Dana Ruiz", subjective:"Alert.", format:"individual" }, o));
+  const has = (s, re, level) => K.checkSession(s).some(c => re.test(c.text) && (!level || c.level === level));
+  ok(has(S({ codes:[{ code:"97124", units:1 }] }), /massage/, "stop"), "97124 stops");
+  ok(has(S({ codes:[{ code:"97130", units:1 }] }), /add-on/, "stop"), "97130 alone stops");
+  ok(!has(S({ codes:[{ code:"97129", units:1 }, { code:"97130", units:1 }] }), /add-on/), "97129 + 97130 is fine");
+  ok(has(S({ codes:[{ code:"92508" }] }), /group/, "warn") && has(S({ format:"group", codes:[{ code:"92507" }] }), /92508/, "warn"), "individual vs group codes");
+  ok(has(S({ format:"group", codes:[{ code:"97129" }] }), /one-on-one/), "97129 in a group");
+  ok(has(S({ codes:[{ code:"96125", units:1 }] }), /instrument/) && !has(S({ codes:[{ code:"96125", units:1 }], measures:[{ task:"MoCA", trials:30, correct:21 }] }), /instrument/), "96125 asks for the instrument");
+  ok(has(S({ codes:[{ code:"92507", units:3 }] }), /untimed/), "untimed code with units");
+  ok(has(S({ minutes:20, codes:[{ code:"97129", units:1 }, { code:"97130", units:2 }] }), /units against the time/) && !has(S({ minutes:38, codes:[{ code:"97129", units:1 }, { code:"97130", units:1 }] }), /units against/), "units against minutes");
+  ok(has(S({ date:"" }), /date/, "stop") && has(S({ minutes:"", codes:[{ code:"97129" }] }), /minutes/, "stop"), "date and minutes");
+  ok(has(S({ subjective:"" }), /Nothing is recorded/), "an empty note is flagged");
+  // cleaning, never adding
+  const n = K.normalizeSession({ date:"2026-13-45", minutes:9999, subjective:"a\u0000b\r\nc", measures:[{ task:"x", trials:5, correct:9, cue:"super" }], codes:[{ code:"bad code!" }, { code:"97129", units:99 }], goals:"one\n\ntwo" });
+  ok(n.date === "" && n.minutes === 480 && n.subjective === "ab\nc" && n.measures[0].correct === 5 && n.measures[0].cue === "" && n.codes.length === 1 && n.codes[0].units === 16 && n.goals.join("|") === "one|two", "sessions are cleaned and bounded: " + JSON.stringify(n).slice(0, 200));
+  const empty = K.soapBlocks(S({ subjective:"", date:"2026-09-29" }), { residentName:"Ruth", unit:"", facility:"", staging:null, profileTier:2 });
+  ok(["S", "O", "A", "P"].every(k => { const b = empty.find(x => x.key === k); return !b.recorded && b.paragraphs.join() === "Not recorded."; }), "empty sections say Not recorded, nothing else");
+  const typed = { subjective:"Said she liked the barn.\nSmiled at the song.", assessment:"Engaged; benefits from visual cues.", plan:"Continue twice weekly.",
+    measures:[{ task:"Naming", trials:8, correct:6, cue:"minimal", note:"after a model" }] };
+  const blocks = K.soapBlocks(S(typed), { residentName:"Ruth", unit:"4", facility:"", staging:{ date:"2026-09-01", gds:"5", fast:"5", recordedBy:"Dr. Lee", note:"" }, profileTier:2 });
+  const byKey = k => blocks.find(b => b.key === k).paragraphs;
+  ok(byKey("S").join("\n") === typed.subjective && byKey("A").join("\n") === typed.assessment && byKey("P").join("\n") === typed.plan, "S, A and P are exactly what was typed");
+  ok(byKey("O")[0] === "Naming: 6 of 8 trials (75%), minimal cues, after a model.", "O is the recorded numbers and their arithmetic: " + byKey("O")[0]);
+  ok(/GDS 5 · FAST 5/.test(byKey("staging").join(" ")) && /Tier 2/.test(byKey("staging").join(" ")), "staging on file");
+  // pages
+  const one = K.soapPages(S(typed), { residentName:"Ruth", unit:"4", facility:"Maple Grove", staging:null, profileTier:2 });
+  ok(one.length >= 1 && one.every((h, i) => h.includes(`Page ${i + 1} of ${one.length}`)) && one[one.length - 1].includes("slp-sign") && one.slice(0, -1).every(h => !h.includes("slp-sign")), "page numbers; signature lines on the last page only");
+  const long = K.soapPages(S(Object.assign({}, typed, { subjective:"An observation sentence of ordinary length. ".repeat(160), assessment:"Interpretation. ".repeat(300) })), { residentName:"Ruth", unit:"", facility:"", staging:null, profileTier:null });
+  ok(long.length >= 3 && long.some(h => /\(continued\)/.test(h)), "a long note continues on following pages: " + long.length);
+  const pieces = K.paginate(K.soapBlocks(S(Object.assign({}, typed, { subjective:"word ".repeat(3000) })), { residentName:"", unit:"", facility:"", staging:null, profileTier:null }), 0.8);
+  const L = K.LAYOUT;
+  ok(pieces.every(pg => pg.reduce((h, p) => h + L.HEAD_IN + L.GAP_IN + p.text.length * L.LINE_IN, 0) <= L.PAGE_BODY_IN + 1e-9), "every page's estimated height fits");
+  ok(K.soapPages(S(typed), { residentName:"Ruth", unit:"4", facility:"", staging:{ date:"2026-09-01", gds:"5", fast:"5", recordedBy:"Dr. Lee", note:"" }, profileTier:2 }).length === 1, "a typical note is one page");
+  const xss = K.soapPages(S({ subjective:'<img src=x onerror="alert(1)">', clinician:"<b>x</b>" }), { residentName:"<script>", unit:"", facility:"", staging:null, profileTier:null }).join("");
+  ok(!/<img|<script>|<b>x/.test(xss) && /&lt;img/.test(xss), "everything typed is escaped");
+  const log = K.normalizeLog({ staging:[{ date:"2026-08-01", gds:"4" }, { date:"2026-09-01", gds:"5", fast:"5" }, { gds:"x" }], sessions:[S({ date:"2026-09-20", minutes:30 }), S({ date:"2026-09-02", minutes:45 }), S({ date:"2026-07-01", minutes:60 })] }, "r1");
+  ok(log.staging.length === 2 && K.latestStaging(log).gds === "5" && log.sessions[0].date === "2026-07-01", "logs: staging kept, sorted by date");
+  const sum = K.summaryPage(log, { residentName:"Ruth", unit:"4", facility:"", staging:K.latestStaging(log), profileTier:2 }, "2026-09-01", "2026-09-30");
+  ok(/2 sessions, 75 minutes recorded/.test(sum) && /Tier 2/.test(sum), "summary counts the period");
+});
+
 if (fails.length){ console.log(`services check FAILED: ${fails.length} problem(s), ${pass} passed\n  - ` + fails.slice(0, 30).join("\n  - ")); process.exit(1); }
 console.log(`services check passed: ${pass} checks (${tscNote}; slowest page ${sandbox.__dveWorst} ms; 300 sealed residents open in ${sandbox.__storeMs} ms; ${sandbox.__remStats})`);

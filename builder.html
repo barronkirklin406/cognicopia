@@ -1415,6 +1415,56 @@ textarea:focus{border-color:var(--accent)}
 .rm-t1 .rm-title{font-size:30pt}.rm-t2 .rm-title{font-size:34pt}.rm-t3 .rm-title{font-size:40pt}
 .rm-t1 .rm-invite{font-size:20pt}.rm-t2 .rm-invite{font-size:24pt}.rm-t3 .rm-invite{font-size:28pt}
 </style>
+<style id="clin-style">
+/* =====================================================================
+   SESSION NOTES (#/clinical): the screen and the printed SOAP pages
+   (.slp-sheet, laid out by CogniClinical.soapPages). Every word on a
+   note is what staff recorded; empty sections print as a ruled box to
+   write in by hand.
+   ===================================================================== */
+.cl-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(280px,380px);gap:22px;align-items:start}
+@media (max-width:1100px){.cl-grid{grid-template-columns:1fr}}
+.cl-stage{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
+.cl-map{margin:10px 0 0;padding:12px 14px;border-radius:12px;border:1px dashed var(--line-2);background:var(--bg-2)}
+.cl-map b{display:block;font-size:16px}
+.cl-map p{margin:4px 0 0;color:var(--muted)}
+.cl-sessions{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:8px}
+.cl-sessions li{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;padding:10px 12px;border-radius:10px;border:1px solid var(--line-2);background:var(--bg-2)}
+.cl-sessions small{color:var(--muted)}
+.cl-flag{padding:2px 8px;border-radius:999px;font-size:12px;font-weight:800;background:rgba(240,180,140,.18);color:var(--warn)}
+.cl-rows{display:grid;gap:8px}
+.cl-row{display:grid;grid-template-columns:2fr .7fr .7fr 1.2fr 1.4fr auto;gap:6px;align-items:end}
+.cl-row.cl-code{grid-template-columns:1.2fr 1fr .6fr auto}
+@media (max-width:760px){.cl-row,.cl-row.cl-code{grid-template-columns:1fr 1fr}}
+.cl-row label{font-size:12.5px;color:var(--muted);display:block}
+.cl-row input,.cl-row select{width:100%}
+.cl-checks{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:6px}
+.cl-checks li{padding:8px 10px;border-radius:8px;border:1px solid var(--line-2);font-size:14px}
+.cl-checks li.stop{border-color:#e07a5f;background:rgba(224,122,95,.12)}
+.cl-checks li.warn{border-color:var(--warn)}
+.cl-ref{margin:0;padding:0;list-style:none;display:grid;gap:8px;font-size:14px}
+.cl-ref b{display:block}
+.cl-ref .no{color:var(--warn)}
+/* the printed note */
+.sheet.slp-sheet{gap:.1in;color:#000}
+.slp-head{display:flex;justify-content:space-between;align-items:flex-end;gap:.2in;border-bottom:2pt solid #000;padding-bottom:.06in}
+.slp-head > div{display:flex;flex-direction:column;gap:1pt}
+.slp-head b{font-size:14pt}
+.slp-head span{font-size:9.5pt}
+.slp-who{text-align:right}
+.slp-body{flex:1 1 auto;overflow:hidden;display:flex;flex-direction:column;gap:.12in}
+.slp-block h3{margin:0 0 .03in;font-size:10.5pt;letter-spacing:.06em;text-transform:uppercase}
+.slp-block p{margin:0;font-size:11.5pt;line-height:.2in}
+.slp-empty p{color:#444;font-style:italic;border:1pt dashed #777;border-radius:4pt;padding:2pt 5pt;min-height:.45in}
+.slp-checks{border:1.5pt solid #000;border-radius:6pt;padding:.06in .1in}
+.slp-checks p{font-size:10.5pt}
+.slp-small{font-size:9.5pt !important;color:#333}
+.slp-sign{margin-top:auto;display:grid;grid-template-columns:2fr 1fr 2fr;gap:.25in;padding-top:.35in}
+.slp-sign span{border-top:1pt solid #000;padding-top:2pt;font-size:9.5pt}
+.slp-foot{display:flex;justify-content:space-between;gap:.2in;font-size:8.5pt;color:#333;border-top:1px solid #999;padding-top:2pt}
+.slp-table{width:100%;border-collapse:collapse;font-size:10pt;margin-top:.06in}
+.slp-table th,.slp-table td{border:.75pt solid #000;padding:2pt 4pt;text-align:left;vertical-align:top}
+</style>
 </head>
 <body>
 
@@ -1442,6 +1492,9 @@ textarea:focus{border-color:var(--accent)}
       <li><a class="sb-link" href="#/reminiscence" data-route="reminiscence">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M7 21h10M9 9h6M8 13h8"/></svg>
         <span>Reminiscence cards</span></a></li>
+      <li><a class="sb-link" href="#/clinical" data-route="clinical">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3h6v4H9z"/><path d="M6 5H5a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1h-1"/><path d="M8 12h8M8 16h5"/></svg>
+        <span>Session notes (SLP)</span></a></li>
       <li><a class="sb-link" href="#/journal" data-route="journal">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2z"/><path d="M22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z"/></svg>
         <span>Cognitive Life Journal</span></a></li>
@@ -5284,7 +5337,7 @@ const RosterUI = (function(){
   };
   const AUDIENCES = {
     resident: { label: "Resident-Facing Book Only", desc: "Only the pages written for the resident. No staff or family notes." },
-    admin:    { label: "Full Administrative Binder", desc: "The resident’s pages, then the confidential care and family notes at the back." }
+    admin:    { label: "Full Administrative Binder", desc: "The resident’s pages, then the confidential care and family notes, and any session notes from the last 30 days, at the back." }
   };
   let S = null, host = null;
 
@@ -5301,7 +5354,12 @@ const RosterUI = (function(){
   const sortKey = p => { const u = BookUI.needsFor(p).unit; return (u ? "0" + u.toLowerCase().replace(/\d+/g, d => d.padStart(6, "0")) : "1") + " " + nameOf(p).toLowerCase(); };
 
   /* ---------- building the chosen book ---------- */
+  /* The Full Administrative Binder ends with the clinical section (Session Notes), when there is one. */
   function build(p, template, audience){
+    const pages = buildBook(p, template, audience);
+    return audience === "admin" && typeof ClinicalUI !== "undefined" ? pages.concat(ClinicalUI.binderPages(p)) : pages;
+  }
+  function buildBook(p, template, audience){
     const nd = BookUI.needsFor(p), o = { tier: nd.tier, lineW: nd.lineW };
     if (template === "journal"){
       const prof = Object.assign(LifeJournalUI.fromSaved(p), { facility: settings.facility });
@@ -6032,6 +6090,217 @@ const ReminiscenceUI = (function(){
     }
   };
   return { render, pages, cardHtml, state, REMINISCENCE_ACTIVITY };
+})();
+</script>
+<script src="assets/services/slpClinicalService.js"></script>
+<script id="clinical-ui">
+/* =====================================================================
+   SESSION NOTES  (#/clinical)
+   For SLPs and therapy staff: record a resident's GDS/FAST stage (and
+   see the Cognicopia tier it suggests), keep a log of skilled sessions,
+   and print SOAP notes. Everything is typed by staff; CogniClinical
+   (src/services/slpClinicalService.ts) arranges it, checks what was
+   recorded (dates, minutes, procedure codes) and lays out the pages. It
+   never writes a finding. The log is sealed in the encrypted store under
+   "cognicopia_clinical_<resident id>", and the Full Administrative
+   Binder (Resident roster) carries the summary and the last 30 days of
+   notes at the back.
+   ===================================================================== */
+const ClinicalUI = (function(){
+  "use strict";
+  const K = window.CogniClinical;
+  let S = { resident:"", editing:null }, root = null;
+  const key = id => K.STORE_PREFIX + id;
+  const find = id => BookUI.savedProfiles().filter(p => p.id === id)[0] || null;
+  function readLog(id){ let raw = null; try { raw = JSON.parse(CG_LS.getItem(key(id)) || "null"); } catch (e){ raw = null; } return K.normalizeLog(raw, id); }
+  function writeLog(log){ try { CG_LS.setItem(key(log.residentId), JSON.stringify(log)); return true; } catch (e){ toast("The notes could not be saved: " + e.message); return false; } }
+  const ctxFor = (p, log) => ({ residentName:String(p.tier1_core.preferredName || "").trim(), unit:BookUI.needsFor(p).unit, facility:settings.facility || "",
+    staging:K.latestStaging(log), profileTier:BookUI.needsFor(p).tier });
+  /* The binder's clinical section: the summary and the notes of the last 30 days. */
+  function binderPages(p){
+    const log = readLog(p.id);
+    if (!log.sessions.length && !log.staging.length) return [];
+    const to = todayISO(), d = new Date(to + "T00:00:00Z"); d.setUTCDate(d.getUTCDate() - 30);
+    const from = d.toISOString().slice(0, 10), ctx = ctxFor(p, log);
+    const out = [{ html:K.summaryPage(log, ctx, from, to) }];
+    log.sessions.filter(s => s.date >= from && s.date <= to).forEach(s => K.soapPages(s, ctx).forEach(h => out.push({ html:h })));
+    return out;
+  }
+  /* ---------- the screen ---------- */
+  function render(view){
+    const list = BookUI.savedProfiles();
+    if (S.resident && !find(S.resident)) S.resident = "";
+    view.innerHTML = `<p class="eyebrow">Clinical tools</p>
+      <h1 class="view-title" tabindex="-1">Session Notes</h1>
+      <p class="lede">For speech-language pathologists and therapy staff: record a resident&rsquo;s GDS and FAST stage, keep a log of skilled sessions with Cognicopia materials, and print SOAP notes for the Full Administrative Binder. Every word on a note is yours; Cognicopia arranges it, checks the dates, minutes and codes, and never writes a finding.</p>
+      <div class="cl-grid" id="clRoot">
+        <div>
+          <div class="config" style="margin-top:0">
+            <div class="field"><label for="clWho">Resident</label>
+              <select id="clWho"><option value="">${list.length ? "Choose a resident" : "No saved residents yet"}</option>${list.map(p => `<option value="${esc(p.id)}" ${p.id === S.resident ? "selected" : ""}>${esc(cgScreenName(p))}</option>`).join("")}</select></div>
+            ${list.length ? "" : `<p class="hint"><a href="profile.html">Add a resident profile</a> first.</p>`}
+          </div>
+          <div id="clBody"></div>
+        </div>
+        <aside class="config" style="margin-top:0" aria-labelledby="clRefH">
+          <h2 id="clRefH">Procedure codes: a reference</h2>
+          <p class="hint">Plain-language summaries, not the CPT descriptors. The treating clinician chooses codes under current CPT and payer rules; this is not billing advice.</p>
+          <ul class="cl-ref">${K.CODES.map(c => `<li><b class="${c.cognitive ? "" : "no"}">${esc(c.code)}${c.cognitive ? "" : " · not a cognitive code"}</b>${esc(c.summary)} <span class="hint">${esc(c.note)}</span></li>`).join("")}</ul>
+          <h2 style="margin-top:18px">Stages and tiers</h2>
+          <ul class="cl-ref">${K.TIER_STAGES.map(t => `<li><b>${esc(t.label)}</b>GDS ${esc(t.gds.join("-"))} · FAST ${esc(t.fast.length > 1 ? t.fast[0] + " to " + t.fast[t.fast.length - 1] : t.fast[0])}. <span class="hint">${esc(t.approach)}</span></li>`).join("")}
+            <li><b>GDS 7 · FAST 7</b><span class="hint">Past what printed pages serve well: one-to-one sensory, music and touch-based engagement.</span></li></ul>
+          <p class="hint">Stages from Reisberg&rsquo;s Global Deterioration Scale and Functional Assessment Staging, recorded by a clinician. Cognicopia never infers a stage from activity results.</p>
+        </aside>
+      </div>`;
+    root = document.getElementById("clRoot");
+    root.addEventListener("change", onChange);
+    root.addEventListener("click", onClick);
+    root.addEventListener("input", onInput);
+    renderBody();
+  }
+  function renderBody(){
+    const body = document.getElementById("clBody"), p = S.resident ? find(S.resident) : null;
+    if (!p){ body.innerHTML = ""; return; }
+    const log = readLog(p.id), st = K.latestStaging(log), map = st ? K.tierForStage(st) : null, nd = BookUI.needsFor(p);
+    const stageOpts = (list, cur) => `<option value="">Not recorded</option>` + list.map(x => `<option value="${x.code}" ${x.code === cur ? "selected" : ""}>${esc(x.label)}: ${esc(x.summary)}</option>`).join("");
+    body.innerHTML = `<section class="config" aria-labelledby="clStageH">
+        <h2 id="clStageH">Staging</h2>
+        <div class="cl-map" role="status">${st && map ? `<b>${esc(map.basis)} · ${map.tier ? "suggests Tier " + map.tier : "no tier"}</b>
+          <p>Recorded ${esc(st.date || "(no date)")}${st.recordedBy ? " by " + esc(st.recordedBy) : ""}. ${esc(map.note)}</p>
+          <p>The profile uses Tier ${nd.tier}.${map.tier && map.tier !== nd.tier ? ` <button class="btn" type="button" id="clUseTier">Set the profile to Tier ${map.tier}</button>` : ""}</p>` : `<b>No stage recorded yet</b><p>Record the GDS and FAST stage from the clinical record to see the tier it suggests.</p>`}</div>
+        <div class="cl-stage" style="margin-top:12px">
+          <div class="field"><label for="clGds">GDS</label><select id="clGds">${stageOpts(K.GDS_STAGES, "")}</select></div>
+          <div class="field"><label for="clFast">FAST</label><select id="clFast">${stageOpts(K.FAST_STAGES, "")}</select></div>
+          <div class="field"><label for="clStDate">Date staged</label><input id="clStDate" type="date" value="${todayISO()}"></div>
+          <div class="field"><label for="clStBy">Staged by</label><input id="clStBy" type="text" maxlength="80" placeholder="Name, credentials"></div>
+        </div>
+        <div class="actions"><button class="btn" type="button" id="clStSave">Record this stage</button></div>
+      </section>
+      <section class="config" aria-labelledby="clLogH">
+        <h2 id="clLogH">Sessions</h2>
+        <ul class="cl-sessions">${log.sessions.slice().reverse().map(s => { const n = K.checkSession(s).filter(c => c.level === "stop").length;
+          return `<li><span><b>${esc(s.date || "No date")}</b> · ${s.minutes != null ? s.minutes + " min" : "minutes not recorded"} · ${esc(s.discipline)}${s.codes.length ? " · " + esc(s.codes.map(c => c.code).join(", ")) : ""} ${n ? `<span class="cl-flag">${n} to fix</span>` : ""}<br><small>${esc(s.clinician || "")}</small></span>
+            <span class="actions" style="margin:0"><button class="btn" type="button" data-edit="${esc(s.id)}">Open</button><button class="btn" type="button" data-print="${esc(s.id)}">Print note</button></span></li>`; }).join("") || `<li><span class="hint">No sessions recorded yet.</span></li>`}</ul>
+        <div class="actions"><button class="btn btn-primary" type="button" id="clNew">Record a session</button>${log.sessions.length ? `<button class="btn" type="button" id="clSummary">Print the 30-day summary</button>` : ""}</div>
+      </section>
+      <div id="clForm"></div>`;
+    if (S.editing) renderForm();
+  }
+  /* ---------- the session form ---------- */
+  const blank = () => ({ id:"", date:todayISO(), minutes:null, format:"individual", discipline:"SLP", clinician:settings.clinician || "", credentials:settings.credentials || "",
+    goals:[], activities:[], subjective:"", measures:[{ task:"", trials:null, correct:null, cue:"", note:"" }], assessment:"", plan:"", codes:[], cosign:"" });
+  function renderForm(){
+    const f = S.editing, box = document.getElementById("clForm");
+    const cueOpts = cur => `<option value="">Cues</option>` + K.CUES.map(c => `<option value="${c.code}" ${c.code === cur ? "selected" : ""}>${esc(c.label)}</option>`).join("");
+    const codeOpts = cur => `<option value="">Choose</option>` + K.CODES.map(c => `<option value="${c.code}" ${c.code === cur ? "selected" : ""}>${c.code}${c.cognitive ? "" : " (massage)"}</option>`).join("") + `<option value="other" ${cur && !K.codeRef(cur) ? "selected" : ""}>Another code</option>`;
+    box.innerHTML = `<section class="config" aria-labelledby="clFormH">
+      <h2 id="clFormH">${f.id ? "Session of " + esc(f.date) : "New session"}</h2>
+      <div class="cl-stage">
+        <div class="field"><label for="clDate">Date</label><input id="clDate" data-f="date" type="date" value="${esc(f.date)}"></div>
+        <div class="field"><label for="clMin">Minutes</label><input id="clMin" data-f="minutes" type="number" min="0" max="480" value="${f.minutes != null ? f.minutes : ""}"></div>
+        <div class="field"><label for="clFmt">Format</label><select id="clFmt" data-f="format"><option value="individual" ${f.format === "individual" ? "selected" : ""}>Individual</option><option value="group" ${f.format === "group" ? "selected" : ""}>Group</option></select></div>
+        <div class="field"><label for="clDisc">Discipline</label><select id="clDisc" data-f="discipline">${K.DISCIPLINES.map(d => `<option ${d === f.discipline ? "selected" : ""}>${d}</option>`).join("")}</select></div>
+        <div class="field"><label for="clBy">Provided by</label><input id="clBy" data-f="clinician" type="text" maxlength="60" value="${esc(f.clinician)}"></div>
+        <div class="field"><label for="clCred">Credentials</label><input id="clCred" data-f="credentials" type="text" maxlength="40" value="${esc(f.credentials)}" placeholder="e.g., MS, CCC-SLP"></div>
+      </div>
+      <div class="field"><label for="clGoals">Goals addressed <span class="hint">(one per line)</span></label><textarea id="clGoals" data-f="goals" rows="3">${esc(f.goals.join("\n"))}</textarea></div>
+      <div class="field"><label for="clMat">Cognicopia materials used <span class="hint">(one per line)</span></label><textarea id="clMat" data-f="activities" rows="2" placeholder="e.g., Reminiscence Cards: The Farm Year">${esc(f.activities.join("\n"))}</textarea></div>
+      <div class="field"><label for="clS">S · Subjective</label><textarea id="clS" data-f="subjective" rows="3" placeholder="What the resident said and how they presented, in your words.">${esc(f.subjective)}</textarea></div>
+      <fieldset class="field"><legend>O · Objective: what you measured</legend>
+        <div class="cl-rows">${f.measures.map((m, i) => `<div class="cl-row">
+          <div><label for="clT${i}">Task</label><input id="clT${i}" data-m="${i}" data-k="task" type="text" maxlength="120" value="${esc(m.task)}"></div>
+          <div><label for="clTr${i}">Trials</label><input id="clTr${i}" data-m="${i}" data-k="trials" type="number" min="0" max="500" value="${m.trials != null ? m.trials : ""}"></div>
+          <div><label for="clC${i}">Correct</label><input id="clC${i}" data-m="${i}" data-k="correct" type="number" min="0" max="500" value="${m.correct != null ? m.correct : ""}"></div>
+          <div><label for="clCu${i}">Cue level</label><select id="clCu${i}" data-m="${i}" data-k="cue">${cueOpts(m.cue)}</select></div>
+          <div><label for="clN${i}">Note</label><input id="clN${i}" data-m="${i}" data-k="note" type="text" maxlength="200" value="${esc(m.note)}"></div>
+          <button class="btn" type="button" data-drop-m="${i}" aria-label="Remove measure ${i + 1}">&times;</button></div>`).join("")}</div>
+        <div class="actions"><button class="btn" type="button" id="clAddM">Add a measure</button></div></fieldset>
+      <div class="field"><label for="clA">A · Assessment</label><textarea id="clA" data-f="assessment" rows="3" placeholder="Your clinical interpretation.">${esc(f.assessment)}</textarea></div>
+      <div class="field"><label for="clP">P · Plan</label><textarea id="clP" data-f="plan" rows="2">${esc(f.plan)}</textarea></div>
+      <fieldset class="field"><legend>Procedure codes</legend>
+        <div class="cl-rows">${f.codes.map((c, i) => `<div class="cl-row cl-code">
+          <div><label for="clCd${i}">Code</label><select id="clCd${i}" data-c="${i}" data-k="pick">${codeOpts(c.code)}</select></div>
+          <div><label for="clCo${i}">Other code</label><input id="clCo${i}" data-c="${i}" data-k="code" type="text" maxlength="6" value="${K.codeRef(c.code) ? "" : esc(c.code)}" ${K.codeRef(c.code) || !c.code ? "disabled" : ""}></div>
+          <div><label for="clU${i}">Units</label><input id="clU${i}" data-c="${i}" data-k="units" type="number" min="0" max="16" value="${c.units != null ? c.units : ""}"></div>
+          <button class="btn" type="button" data-drop-c="${i}" aria-label="Remove code ${i + 1}">&times;</button></div>`).join("")}</div>
+        <div class="actions"><button class="btn" type="button" id="clAddC">Add a code</button></div></fieldset>
+      <div class="field"><label for="clCo">Co-signature <span class="hint">(if required)</span></label><input id="clCo" data-f="cosign" type="text" maxlength="80" value="${esc(f.cosign)}"></div>
+      <h3>Checks</h3>
+      <ul class="cl-checks" id="clChecks" role="status" aria-live="polite"></ul>
+      <div class="actions"><button class="btn btn-primary" type="button" id="clSave">Save session</button><button class="btn" type="button" id="clPrintThis">Save and print</button>
+        ${f.id ? `<button class="btn btn-danger" type="button" id="clDelete">Delete</button>` : ""}<button class="btn" type="button" id="clCancel">Close</button></div>
+    </section>`;
+    renderChecks();
+  }
+  function renderChecks(){
+    const el = document.getElementById("clChecks"); if (!el) return;
+    const c = K.checkSession(K.normalizeSession(S.editing));
+    el.innerHTML = c.length ? c.map(x => `<li class="${x.level}">${esc(x.text)}</li>`).join("") : `<li>Nothing to fix. Read it over, then save.</li>`;
+  }
+  function onInput(e){
+    const t = e.target, f = S.editing; if (!f) return;
+    if (t.dataset.f){
+      const k = t.dataset.f;
+      f[k] = k === "minutes" ? (t.value === "" ? null : +t.value) : k === "goals" || k === "activities" ? t.value.split("\n") : t.value;
+    } else if (t.dataset.m){ const m = f.measures[+t.dataset.m]; m[t.dataset.k] = t.dataset.k === "trials" || t.dataset.k === "correct" ? (t.value === "" ? null : +t.value) : t.value; }
+    else if (t.dataset.c){ const c = f.codes[+t.dataset.c]; if (t.dataset.k === "units") c.units = t.value === "" ? null : +t.value; else if (t.dataset.k === "code") c.code = t.value.toUpperCase(); }
+    else return;
+    renderChecks();
+  }
+  function onChange(e){
+    const t = e.target;
+    if (t.id === "clWho"){ S.resident = t.value; S.editing = null; renderBody(); return; }
+    if (t.dataset.c && t.dataset.k === "pick"){ const c = S.editing.codes[+t.dataset.c]; c.code = t.value === "other" ? "" : t.value; renderForm(); return; }
+    onInput(e);
+  }
+  function save(){
+    const p = find(S.resident); if (!p || !S.editing) return null;
+    const log = readLog(p.id), sess = K.normalizeSession(S.editing);
+    if (!sess.date){ toast("Add the session date first."); return null; }
+    const i = log.sessions.findIndex(x => x.id === sess.id);
+    if (i >= 0) log.sessions[i] = sess; else log.sessions.push(sess);
+    settings.clinician = sess.clinician; settings.credentials = sess.credentials; saveSettings();   // the next note starts with them
+    if (!writeLog(K.normalizeLog(log, p.id))) return null;
+    S.editing = null; renderBody(); toast("Session saved.");
+    return sess;
+  }
+  function printNote(sess){
+    const p = find(S.resident), log = readLog(p.id), ctx = ctxFor(p, log);
+    BookUI.print(K.soapPages(sess, ctx).map(h => ({ html:h })), ["Session note", cgFileName(p), sess.date].filter(Boolean).join(" - "), null);
+  }
+  function onClick(e){
+    const b = e.target.closest("button"); if (!b || !root.contains(b)) return;
+    const p = S.resident ? find(S.resident) : null; if (!p) return;
+    const log = readLog(p.id);
+    if (b.id === "clStSave"){
+      const rec = { date:document.getElementById("clStDate").value, gds:document.getElementById("clGds").value, fast:document.getElementById("clFast").value, recordedBy:document.getElementById("clStBy").value, note:"" };
+      if (!rec.gds && !rec.fast){ toast("Choose a GDS or FAST stage first."); return; }
+      log.staging.push(rec); if (writeLog(K.normalizeLog(log, p.id))){ renderBody(); toast("Stage recorded."); }
+    } else if (b.id === "clUseTier"){
+      const m = K.tierForStage(K.latestStaging(log));
+      if (!m.tier || !confirm(`Set ${cgScreenName(p)}'s profile to Tier ${m.tier}? Their pages will print at that tier from now on.`)) return;
+      p.tier1_core.cognitiveTier = m.tier; p.updatedAt = new Date().toISOString();
+      try { CG_LS.setItem("cognicopia_resident_" + p.id, JSON.stringify(p)); renderBody(); toast(`Profile set to Tier ${m.tier}.`); } catch (err){ toast("The profile could not be saved: " + err.message); }
+    } else if (b.id === "clNew"){ S.editing = blank(); renderForm(); document.getElementById("clFormH").scrollIntoView({ block:"start" }); }
+    else if (b.dataset.edit){ const s0 = log.sessions.filter(x => x.id === b.dataset.edit)[0]; if (s0){ S.editing = JSON.parse(JSON.stringify(s0)); if (!S.editing.measures.length) S.editing.measures.push({ task:"", trials:null, correct:null, cue:"", note:"" }); renderForm(); document.getElementById("clFormH").scrollIntoView({ block:"start" }); } }
+    else if (b.dataset.print){ const s0 = log.sessions.filter(x => x.id === b.dataset.print)[0]; if (s0) printNote(s0); }
+    else if (b.id === "clSummary"){
+      const to = todayISO(), d = new Date(to + "T00:00:00Z"); d.setUTCDate(d.getUTCDate() - 30);
+      BookUI.print([{ html:K.summaryPage(log, ctxFor(p, log), d.toISOString().slice(0, 10), to) }], ["Clinical summary", cgFileName(p), to].join(" - "), null);
+    }
+    else if (b.id === "clAddM"){ S.editing.measures.push({ task:"", trials:null, correct:null, cue:"", note:"" }); renderForm(); }
+    else if (b.dataset.dropM){ S.editing.measures.splice(+b.dataset.dropM, 1); renderForm(); }
+    else if (b.id === "clAddC"){ S.editing.codes.push({ code:"", units:null }); renderForm(); }
+    else if (b.dataset.dropC){ S.editing.codes.splice(+b.dataset.dropC, 1); renderForm(); }
+    else if (b.id === "clSave") save();
+    else if (b.id === "clPrintThis"){ const sess = save(); if (sess) printNote(sess); }
+    else if (b.id === "clCancel"){ S.editing = null; renderBody(); }
+    else if (b.id === "clDelete"){
+      if (!confirm("Delete this session note from this computer? This cannot be undone.")) return;
+      log.sessions = log.sessions.filter(x => x.id !== S.editing.id); if (writeLog(log)){ S.editing = null; renderBody(); toast("Session deleted."); }
+    }
+  }
+  return { render, binderPages, readLog };
 })();
 </script>
 <script>
@@ -9120,7 +9389,8 @@ function addBatch(act, cfg, batchSeed, count){
 
 /* ---------- 11. Views + router ---------- */
 const view = $("#view");
-const routes = { "": renderHome, "category": renderCategory, "settings": renderSettings, "planner": renderPlanner, "journal": renderJournal, "roster": renderRoster, "coloring": renderColoring, "reminiscence": renderReminiscence };
+const routes = { "": renderHome, "category": renderCategory, "settings": renderSettings, "planner": renderPlanner, "journal": renderJournal, "roster": renderRoster, "coloring": renderColoring, "reminiscence": renderReminiscence, "clinical": renderClinical };
+function renderClinical(){ ClinicalUI.render(view); }
 function renderReminiscence(){ ReminiscenceUI.render(view); }
 function renderColoring(arg){ CogniLibrary.render(view, arg); }
 function renderRoster(){ RosterUI.render(view); }
@@ -9157,7 +9427,7 @@ function highlightNav(name, arg){
   if (name === "coloring") arg = "cognicore", name = "category";
   const el = name === "category" ? document.querySelector(`.sb-link[data-cat="${CSS.escape(arg)}"]`)
            : name === "settings" ? document.querySelector('.sb-link[data-route="settings"]')
-           : name === "planner" || name === "journal" || name === "roster" || name === "reminiscence" ? document.querySelector(`.sb-link[data-route="${name}"]`) : null;
+           : name === "planner" || name === "journal" || name === "roster" || name === "reminiscence" || name === "clinical" ? document.querySelector(`.sb-link[data-route="${name}"]`) : null;
   if (el) el.setAttribute("aria-current", "page");
 }
 function renderFacility(){
@@ -9191,6 +9461,7 @@ function renderHome(){
       ${tool("#/planner", ICONS.planner, "12-Month Life Planner", "A personalized year-long memory book for the resident, with a separate, confidential care companion for staff and family. Print-ready for binders and bound books.", ["4 tabs", "Memory book + care companion"])}
       ${tool("#/journal", ICONS.journal, "Life Story Journal", "The Cognitive Life Journal: a life story in four sections, from early roots to daily comfort, personalized from the resident’s own details. Family and care team notes stay in a separate part at the back.", ["4 sections", "Life story + family notes"])}
       ${tool("#/reminiscence", ICONS.journal, "Reminiscence Cards", "Cards about a resident’s own work, hometown region and best-remembered years, each with three conversation starters, a song from their era and something to hold.", ["Era × region × vocation", "Caregiver cues"])}
+      ${tool("#/clinical", ICONS.journal, "Session Notes (SLP)", "GDS and FAST staging mapped to support tiers, a session log, and SOAP notes built only from what you record, for the Full Administrative Binder.", ["Staff-recorded SOAP", "Code checks"])}
       ${tool("#/roster", ICONS.roster, "Resident roster", "Every saved resident in one list. Choose a resident, choose a book, and print it at their own support tier, line weight and contrast.", ["3 clicks to print", "Search by name or unit"])}
     </div>
     <h2 style="margin-top:32px">Activity categories</h2>
