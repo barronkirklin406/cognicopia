@@ -1098,6 +1098,16 @@ textarea:focus{border-color:var(--accent)}
 .rs-tier-3{background:rgba(240,180,140,.18);color:var(--warn)}
 .rs-flag{background:rgba(216,243,220,.08);color:var(--muted)}
 .rs-add{margin-top:12px}
+.rs-handoff{margin-top:16px;padding:12px 14px;border-radius:12px;border:1px solid var(--line-2);background:var(--bg-2)}
+.rs-handoff summary{cursor:pointer;font-weight:800;min-height:28px}
+.rs-handoff h3{margin:16px 0 4px;font-size:16px}
+.rs-handoff .field{margin-top:10px}
+.rs-handoff input[type=file]{max-width:100%}
+.enc-state{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:12px;background:var(--bg-2);border:1px solid var(--line-2)}
+.enc-state b{display:block}
+.enc-dot{flex:none;width:12px;height:12px;margin-top:6px;border-radius:50%;background:var(--accent)}
+.enc-dot.warn{background:var(--warn)}
+.enc-grid{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));margin-top:12px}
 .rs-who{padding:14px 16px;border-radius:14px;border:1px dashed var(--line-2);background:var(--bg-2)}
 .rs-who .eyebrow{margin:0}
 .rs-pick{margin:0;color:var(--muted)}
@@ -1470,6 +1480,24 @@ textarea:focus{border-color:var(--accent)}
 <!-- Everything that prints goes here, and only here. -->
 <div id="printRoot" aria-hidden="true"></div>
 
+<script src="assets/services/secureStore.js"></script>
+<script>
+/* Resident details are sealed in this browser's encrypted store
+   (assets/services/secureStore.js). CG_LS stands in for localStorage:
+   names that hold resident details (profiles, the packet queue, the
+   planner and journal forms, settings with a default resident name) are
+   encrypted; the rest pass through. CG_STORE_READY settles once the store
+   has opened, after the unlock prompt when a passphrase is set; the
+   Packet Builder waits for it before it shows anything about a resident. */
+var CG_LS = window.CogniSecureStore ? window.CogniSecureStore.storage : (function(){ try { return window.localStorage; } catch (e){ return null; } })();
+var CG_STORE_READY = window.CogniSecureStore ? window.CogniSecureStore.openForPage().catch(function(){ return null; }) : Promise.resolve(null);
+/* How a resident is named where others may see it. With aliases on
+   (Settings, Privacy), lists and pickers show "Resident 302-B", and file
+   names and print titles use it too. A resident's own pages keep their name. */
+function cgAlias(p){ return window.CogniSecureStore ? window.CogniSecureStore.aliasFor(p) : "Resident"; }
+function cgScreenName(p){ var n = String(p && p.tier1_core && p.tier1_core.preferredName || "").trim(); return (typeof settings !== "undefined" && settings.aliasScreen) || !n ? cgAlias(p) : n; }
+function cgFileName(p){ var n = String(p && p.tier1_core && p.tier1_core.preferredName || "").trim(); return (typeof settings !== "undefined" && settings.aliasFiles) || !n ? cgAlias(p) : n; }
+</script>
 <script id="lp-engine">
 /* =====================================================================
    COGNICOPIA 12-MONTH LIFE PLANNER: ENGINE
@@ -3941,10 +3969,10 @@ const BookUI = (function(){
   function savedProfiles(){
     const out = [];
     try {
-      for (let i = 0; i < localStorage.length; i++){
-        const k = localStorage.key(i);
+      for (let i = 0; i < CG_LS.length; i++){
+        const k = CG_LS.key(i);
         if (!k || k.indexOf("cognicopia_resident_") !== 0) continue;
-        const p = JSON.parse(localStorage.getItem(k));
+        const p = JSON.parse(CG_LS.getItem(k));
         if (p && p.schema === "cognicopia.residentProfile" && p.tier1_core) out.push(p);
       }
     } catch (e){}
@@ -3953,7 +3981,7 @@ const BookUI = (function(){
   function savedProfileOptions(){
     const list = savedProfiles();
     return `<option value="">${list.length ? "Fill in from a saved profile…" : "No saved resident profiles"}</option>` +
-      list.map(p => `<option value="${esc(p.id)}">${esc(p.tier1_core.preferredName || "Unnamed resident")}</option>`).join("");
+      list.map(p => `<option value="${esc(p.id)}">${esc(cgScreenName(p))}</option>`).join("");
   }
   return { JOB_WORDS, stage, print, allowanceText, scale, figure, savedProfiles, savedProfileOptions, fontsLoaded, loadFonts,
     residentNeeds, needsFor, TIER_NAMES };
@@ -4999,7 +5027,7 @@ const LifeJournalUI = (function(){
     const pName = planner && planner.profile && String(planner.profile.name || "").trim();
     return `<option value="">${list.length || pName ? "Fill in from…" : "No saved profiles yet"}</option>` +
       (pName ? `<option value="planner">The Life Planner (${esc(pName)})</option>` : "") +
-      list.map(p => `<option value="${esc(p.id)}">Saved profile: ${esc(p.tier1_core.preferredName || "Unnamed resident")}</option>`).join("");
+      list.map(p => `<option value="${esc(p.id)}">Saved profile: ${esc(cgScreenName(p))}</option>`).join("");
   }
   /* A saved Resident Activity Profile (profile.html). */
   function fromSaved(p){
@@ -5224,7 +5252,7 @@ const RosterUI = (function(){
     return S;
   }
   const save = () => store.set(KEY, { template: S.template, audience: S.audience });   // the resident is never remembered here
-  const nameOf = p => String(p.tier1_core.preferredName || "Unnamed resident");
+  const nameOf = p => cgScreenName(p);
   const find = id => BookUI.savedProfiles().filter(p => p.id === id)[0] || null;
   const sortKey = p => { const u = BookUI.needsFor(p).unit; return (u ? "0" + u.toLowerCase().replace(/\d+/g, d => d.padStart(6, "0")) : "1") + " " + nameOf(p).toLowerCase(); };
 
@@ -5265,6 +5293,18 @@ const RosterUI = (function(){
           <p class="rs-count" id="rsCount" role="status" aria-live="polite"></p>
           <ul class="rs-list" id="rsList" aria-label="Residents"></ul>
           <p class="hint rs-add">${list.length ? "" : "No saved residents yet. "}<a href="profile.html">Add a resident profile</a>, then come back here to print.</p>
+          <details class="rs-handoff" id="rsHandoff">
+            <summary>Hand off to another station</summary>
+            <p class="hint">Move residents between computers in one locked file (.cognicopia). It opens only with the passphrase chosen here: tell it to the other station in person or by phone, never in the same message as the file.</p>
+            <div class="field"><label for="rsHoFrom">From (station or unit, optional)</label><input id="rsHoFrom" type="text" maxlength="60" autocomplete="off" placeholder="e.g., Maple Unit, evening shift"></div>
+            <div class="field"><label for="rsHoPass">Passphrase for this file</label><input id="rsHoPass" type="password" autocomplete="new-password" minlength="10"></div>
+            <div class="actions"><button class="btn" type="button" id="rsHoOut" ${list.length ? "" : "disabled"}>Download handoff file (${list.length} ${list.length === 1 ? "resident" : "residents"})</button></div>
+            <h3>Receive a handoff</h3>
+            <div class="field"><label for="rsHoFile">Handoff file</label><input id="rsHoFile" type="file" accept=".cognicopia,.json,application/json"></div>
+            <div class="field"><label for="rsHoInPass">Its passphrase</label><input id="rsHoInPass" type="password" autocomplete="off"></div>
+            <div class="actions"><button class="btn" type="button" id="rsHoIn">Open and add residents</button></div>
+            <p class="hint" id="rsHoMsg" role="status" aria-live="polite"></p>
+          </details>
         </section>
         <section class="rs-pane rs-work" aria-labelledby="rsTplH">
           <div class="rs-who" id="rsWho" aria-live="polite"></div>
@@ -5293,7 +5333,7 @@ const RosterUI = (function(){
     const q = S.q.trim().toLowerCase();
     const shown = all.filter(p => {
       const nd = BookUI.needsFor(p);
-      return (!S.tier || nd.tier === S.tier) && (!q || nameOf(p).toLowerCase().indexOf(q) >= 0 || nd.unit.toLowerCase().indexOf(q) >= 0);
+      return (!S.tier || nd.tier === S.tier) && (!q || nameOf(p).toLowerCase().indexOf(q) >= 0 || nd.unit.toLowerCase().indexOf(q) >= 0 || cgAlias(p).toLowerCase().indexOf(q) >= 0);
     });
     document.getElementById("rsList").innerHTML = shown.map(p => {
       const nd = BookUI.needsFor(p), on = p.id === S.id;
@@ -5337,6 +5377,43 @@ const RosterUI = (function(){
     if (b.dataset.id){ S.id = b.dataset.id; renderList(); renderWork(); const f = host.querySelector(`.rs-res[data-id="${CSS.escape(S.id)}"]`); if (f) f.focus(); return; }
     if (b.dataset.tier !== undefined){ S.tier = +b.dataset.tier; host.querySelectorAll(".rs-chip").forEach(c => c.setAttribute("aria-pressed", String(+c.dataset.tier === S.tier))); renderList(); return; }
     if (b.id === "rsPrint") printNow();
+    if (b.id === "rsHoOut") handOff();
+    if (b.id === "rsHoIn") receive();
+  }
+  /* ---------- station handoff: a locked roster file ---------- */
+  const hoMsg = (t, bad) => { const m = document.getElementById("rsHoMsg"); m.textContent = t; m.className = "hint" + (bad ? " msg-bad" : " msg-ok"); };
+  function handOff(){
+    const SS = window.CogniSecureStore, pass = document.getElementById("rsHoPass").value, from = document.getElementById("rsHoFrom").value.trim();
+    if (!SS){ hoMsg("This browser cannot lock files.", true); return; }
+    const problem = SS.passphraseProblem(pass); if (problem){ hoMsg(problem, true); document.getElementById("rsHoPass").focus(); return; }
+    const list = BookUI.savedProfiles(), btn = document.getElementById("rsHoOut");
+    btn.disabled = true; hoMsg("Locking the file…");
+    SS.exportRoster(list, pass, from).then(env => {
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(new Blob([JSON.stringify(env)], { type:"application/octet-stream" }));
+      a.download = ["Cognicopia handoff", from.replace(/[\\/:*?"<>|]+/g, "") || "roster", todayISO()].join(" - ") + ".cognicopia";
+      document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 1500);
+      hoMsg(`Downloaded, locked: ${list.length} ${list.length === 1 ? "resident" : "residents"}. Give the other station the passphrase separately.`);
+      document.getElementById("rsHoPass").value = "";
+    }, e => hoMsg(e.message, true)).then(() => { btn.disabled = false; });
+  }
+  function receive(){
+    const SS = window.CogniSecureStore, f = document.getElementById("rsHoFile").files[0], pass = document.getElementById("rsHoInPass").value;
+    if (!SS){ hoMsg("This browser cannot open locked files.", true); return; }
+    if (!f){ hoMsg("Choose the handoff file first.", true); return; }
+    const btn = document.getElementById("rsHoIn"); btn.disabled = true; hoMsg("Opening…");
+    f.text().then(text => SS.readRoster(text, pass)).then(got => {
+      const m = SS.mergeRoster(BookUI.savedProfiles(), got.profiles, "newer");
+      m.write.forEach(p => CG_LS.setItem("cognicopia_resident_" + p.id, JSON.stringify(p)));
+      return SS.flush().then(() => {
+        const from = got.handoff && got.handoff.station ? ` from ${got.handoff.station}` : "";
+        hoMsg(`Handoff${from} opened: ${m.added} added, ${m.updated} updated` + (m.kept ? `, ${m.kept} kept as they were (this computer’s copy was as new or newer)` : "") + (got.skipped ? `; ${got.skipped} damaged entr${got.skipped === 1 ? "y" : "ies"} skipped` : "") + ".");
+        document.getElementById("rsHoInPass").value = ""; renderList();
+      });
+    }, e => {
+      const why = { passphrase:"That passphrase does not open this file.", format:"This is not a Cognicopia roster file.", kind:"This file holds one resident, not a roster: open it in the packet tool (Home) instead." }[e.message];
+      hoMsg(why || e.message, true);
+    }).then(() => { btn.disabled = false; });
   }
   function onInput(e){ if (e.target.id === "rsSearch"){ S.q = e.target.value.slice(0, 60); renderList(); } }
   function onChange(e){
@@ -5348,7 +5425,7 @@ const RosterUI = (function(){
     const p = S.id ? find(S.id) : null;
     if (!p) return false;
     const nd = BookUI.needsFor(p), pages = build(p, S.template, S.audience);
-    const title = [TEMPLATES[S.template].label, nameOf(p), S.audience === "admin" ? "Administrative Binder" : "", todayISO()].filter(Boolean).join(" - ");
+    const title = [TEMPLATES[S.template].label, cgFileName(p), S.audience === "admin" ? "Administrative Binder" : "", todayISO()].filter(Boolean).join(" - ");
     return BookUI.print(pages, title, renderWork, { pureBW: nd.highContrast });
   }
   return { render, build, TEMPLATES, AUDIENCES, state: () => state() };
@@ -5521,7 +5598,7 @@ const CogniLibrary = (function(){
     return { doc:doc, times:times };
   }
   function pdfName(){
-    const s = state(), who = residentName(), pk = s.pack ? C.pack(s.pack) : null;
+    const s = state(), who = resident() ? cgFileName(resident()) : "", pk = s.pack ? C.pack(s.pack) : null;
     const what = pk && s.picks.join() === pk.designs.join() ? pk.title : s.picks.length === 1 ? C.design(s.picks[0]).title : s.picks.length + " coloring pages";
     return ["Cognicopia", what, who, "Tier " + s.tier, todayISO()].filter(Boolean).join(" - ").replace(/[\\/:*?"<>|]+/g, "") + ".pdf";
   }
@@ -5544,7 +5621,7 @@ const CogniLibrary = (function(){
       <p class="lede">${st.designs} adult, dignity-first pictures, each drawn at three cognitive tiers (${st.assets} pages), in bold pure-black lines on white, plus ${st.packs} themed packs. Every page prints on US Letter with a 0.75 in binding gutter for three-ring binders.</p>
       <div class="cc-for">
         <div class="field"><label for="ccWho">Resident</label>
-          <select id="ccWho"><option value="">${people.length ? "No resident: choose pages by hand" : "No saved resident profiles"}</option>${people.map(p => `<option value="${esc(p.id)}" ${p.id === s.resident ? "selected" : ""}>${esc(p.tier1_core.preferredName || "Unnamed resident")}${p.tier1_core.unitNumber ? " · " + esc(p.tier1_core.unitNumber) : ""}</option>`).join("")}</select></div>
+          <select id="ccWho"><option value="">${people.length ? "No resident: choose pages by hand" : "No saved resident profiles"}</option>${people.map(p => `<option value="${esc(p.id)}" ${p.id === s.resident ? "selected" : ""}>${esc(cgScreenName(p))}${p.tier1_core.unitNumber && !settings.aliasScreen ? " · " + esc(p.tier1_core.unitNumber) : ""}</option>`).join("")}</select></div>
         <p id="ccWhoNote">${whoNote()}</p>
       </div>
       <div class="cc-tabs" role="tablist" aria-label="Library">
@@ -5764,16 +5841,16 @@ const CogniLibrary = (function(){
    ===================================================================== */
 
 /* ---------- 1. Storage helpers: never throw, even in private mode ---------- */
-const store = {
+const store = {             // CG_LS: the encrypted store for resident details, localStorage for the rest
   get(key, fallback){
-    try { const v = localStorage.getItem(key); return v == null ? fallback : JSON.parse(v); }
+    try { const v = CG_LS.getItem(key); return v == null ? fallback : JSON.parse(v); }
     catch(e){ return fallback; }
   },
-  set(key, value){ try { localStorage.setItem(key, JSON.stringify(value)); } catch(e){} },
-  remove(key){ try { localStorage.removeItem(key); } catch(e){} }
+  set(key, value){ try { CG_LS.setItem(key, JSON.stringify(value)); } catch(e){} },
+  remove(key){ try { CG_LS.removeItem(key); } catch(e){} }
 };
-function rawGet(k, d){ try { const v = localStorage.getItem(k); return v == null ? d : v; } catch(e){ return d; } }
-function rawSet(k, v){ try { localStorage.setItem(k, v); } catch(e){} }
+function rawGet(k, d){ try { const v = CG_LS.getItem(k); return v == null ? d : v; } catch(e){ return d; } }
+function rawSet(k, v){ try { CG_LS.setItem(k, v); } catch(e){} }
 
 /* ---------- 2. License + free allowance ----------
    Same keys and access-code hash as index.html, so a license activated
@@ -5849,13 +5926,19 @@ const ERAS = {
   "1960s": "The 1960s",
   "1970s": "The 1970s"
 };
-const DEFAULT_SETTINGS = { facility:"", residentName:"", difficulty:"early", era:"general", variations:2, pureBW:false, actOpts:{} };
-let settings = Object.assign({}, DEFAULT_SETTINGS, store.get("cgb_settings", {}));
-if (!DIFFICULTIES[settings.difficulty]) settings.difficulty = "early";
-if (!ERAS[settings.era]) settings.era = "general";
-settings.variations = clampInt(settings.variations, 1, 4, 2);
-// Last-used options per activity (e.g. { "letter-tracing": { case:"upper" } }). Own copy, never the default object.
-settings.actOpts = (settings.actOpts && typeof settings.actOpts === "object" && !Array.isArray(settings.actOpts)) ? Object.assign({}, settings.actOpts) : {};
+const DEFAULT_SETTINGS = { facility:"", residentName:"", difficulty:"early", era:"general", variations:2, pureBW:false, actOpts:{}, aliasScreen:false, aliasFiles:false };
+/* Read again once the encrypted store has opened (see Boot). */
+function readSettings(){
+  const s = Object.assign({}, DEFAULT_SETTINGS, store.get("cgb_settings", {}));
+  if (!DIFFICULTIES[s.difficulty]) s.difficulty = "early";
+  if (!ERAS[s.era]) s.era = "general";
+  s.variations = clampInt(s.variations, 1, 4, 2);
+  // Last-used options per activity (e.g. { "letter-tracing": { case:"upper" } }). Own copy, never the default object.
+  s.actOpts = (s.actOpts && typeof s.actOpts === "object" && !Array.isArray(s.actOpts)) ? Object.assign({}, s.actOpts) : {};
+  s.aliasScreen = !!s.aliasScreen; s.aliasFiles = !!s.aliasFiles;
+  return s;
+}
+let settings = readSettings();
 
 /* High Contrast Mode is ONLY this flag. It is read when printing, to put
    .pure-bw on #printRoot. It never touches the web interface. */
@@ -8812,7 +8895,8 @@ function sheetHtml(item){
 /* ---------- 10. Packet queue ----------
    Stored as recipes (activity, settings, seed, index), not as HTML, so it
    is small and rebuilds identically after a reload. */
-let queue = (store.get("cgb_queue", []) || []).filter(q => q && ACT_INDEX[q.activityId] && Number.isFinite(q.batchSeed) && q.index < q.count);
+const readQueue = () => (store.get("cgb_queue", []) || []).filter(q => q && ACT_INDEX[q.activityId] && Number.isFinite(q.batchSeed) && q.index < q.count);
+let queue = readQueue();
 function saveQueue(){ store.set("cgb_queue", queue); renderCounts(); if (drawerOpen) renderQueue(); }
 function addBatch(act, cfg, batchSeed, count){
   for (let i = 0; i < count; i++) queue.push({ uid:uid(), activityId:act.id, cfg:Object.assign({}, cfg), batchSeed, count, index:i });
@@ -8831,7 +8915,9 @@ function parseHash(){
   const parts = location.hash.replace(/^#\/?/, "").split("/");
   return { name: parts[0] || "", arg: decodeURIComponent(parts[1] || "") };
 }
+let storeOpen = false;          // nothing about a resident shows until the encrypted store has opened
 function router(){
+  if (!storeOpen) return;
   const { name, arg } = parseHash();
   (routes[name] || renderHome)(arg);
   highlightNav(name, arg);
@@ -9164,6 +9250,21 @@ function renderSettings(){
       <div class="gate-row"><input type="text" id="setCode" placeholder="Access code" autocomplete="off" maxlength="40" aria-label="Access code"><button class="btn" type="button" id="setUnlock">Unlock</button></div>
       <p id="setMsg" role="status"></p>
     </div>
+    <div class="config" id="setPrivacy">
+      <h2>Privacy &amp; encryption</h2>
+      <div class="enc-state" id="encState" role="status"></div>
+      <div id="encControls"></div>
+      <h3 style="margin:22px 0 8px">Aliases</h3>
+      <label class="switch" for="setAliasScreen">
+        <input type="checkbox" id="setAliasScreen" ${settings.aliasScreen ? "checked" : ""}>
+        <span><b>Show aliases in resident lists</b><small>The roster and every resident picker show an alias such as &ldquo;Resident 302-B&rdquo; instead of the name, for screens others can see. A resident&rsquo;s own pages keep their name.</small></span>
+      </label>
+      <label class="switch" for="setAliasFiles" style="margin-top:10px">
+        <input type="checkbox" id="setAliasFiles" ${settings.aliasFiles ? "checked" : ""}>
+        <span><b>Use aliases in file names and print titles</b><small>Downloaded PDFs and the print window&rsquo;s title use the alias, so no name lands in a shared downloads folder or print queue.</small></span>
+      </label>
+      <p class="hint">An alias is the one set on the resident&rsquo;s profile, or &ldquo;Resident&rdquo; and their room or unit, or a short code.</p>
+    </div>
     <div class="config">
       <h2>Shared computer?</h2>
       <p class="hint">Removes the saved facility name, resident name, defaults, packet queue, Life Planner and Life Journal details from this computer. Your license stays.</p>
@@ -9189,12 +9290,79 @@ function renderSettings(){
     $("#setMsg").textContent = ok ? "Unlocked. Thank you!" : "That code didn't match. Check it against your receipt.";
     showLic(); renderAllowance();
   });
+  $("#setAliasScreen").addEventListener("change", e => { settings.aliasScreen = e.target.checked; saveSettings(); });
+  $("#setAliasFiles").addEventListener("change", e => { settings.aliasFiles = e.target.checked; saveSettings(); });
+  renderEncryption();
   $("#setClear").addEventListener("click", () => {
     if (!confirm("Clear the saved facility name, resident name, defaults, packet queue, Life Planner and Life Journal details from this computer?")) return;
     store.remove("cgb_settings"); store.remove("cgb_queue"); LifePlannerUI.clearSaved(); LifeJournalUI.clearSaved(); store.remove("cgb_roster");
     settings = Object.assign({}, DEFAULT_SETTINGS, { actOpts:{} }); isPureBlackAndWhitePDF = false; queue = [];
     saveSettings(); saveQueue(); renderSettings(); renderBwNote();
     toast("Saved data cleared from this computer.");
+  });
+}
+
+/* The encryption panel in Settings: what protects resident details on this
+   computer now, and the passphrase controls (CogniSecureStore). */
+function renderEncryption(){
+  const SS = window.CogniSecureStore, box = $("#encState"), ctl = $("#encControls");
+  if (!box || !ctl) return;
+  const st = SS ? SS.status() : { state:"unavailable", reason:"not loaded" };
+  const keep = sel => `<div class="field"><label for="${sel}">Keep unlocked on this computer for</label><select id="${sel}">${(SS ? SS.KEEP_CHOICES : []).map(c => `<option value="${c.minutes}" ${c.minutes === (SS && SS.DEFAULT_KEEP_MINUTES) ? "selected" : ""}>${esc(c.label)}</option>`).join("")}</select></div>`;
+  const until = st.unlockedUntil ? new Date(st.unlockedUntil).toLocaleTimeString([], { hour:"numeric", minute:"2-digit" }) : "";
+  if (st.state === "unavailable"){
+    box.innerHTML = `<span class="enc-dot warn" aria-hidden="true"></span><span><b>Not encrypted in this browser</b>This browser cannot encrypt saved details, so they are kept in its ordinary storage on this computer. Open Cognicopia in a current Chrome, Edge, Firefox or Safari to encrypt them.</span>`;
+    ctl.innerHTML = ""; return;
+  }
+  if (!st.passphrase){
+    box.innerHTML = `<span class="enc-dot" aria-hidden="true"></span><span><b>Encrypted on this computer</b>Resident profiles, drafts, the packet queue and notes are sealed with AES-256-GCM in this browser&rsquo;s storage and never leave this computer. The key is held by this browser, so anyone who can open it here can open them. Add a passphrase so they open only for staff who know it.</span>`;
+    ctl.innerHTML = `<div class="enc-grid">
+        <div class="field"><label for="encNew">New passphrase</label><input id="encNew" type="password" autocomplete="new-password" minlength="10"></div>
+        <div class="field"><label for="encNew2">Type it again</label><input id="encNew2" type="password" autocomplete="new-password"></div>
+        ${keep("encKeep")}</div>
+      <p class="hint">At least 10 characters; a short sentence works well. <b>If it is forgotten, the saved details cannot be opened</b>, by anyone. Keep it where staff keep other passwords, and keep a locked handoff file of the roster.</p>
+      <div class="actions"><button class="btn btn-primary" type="button" id="encSet">Add passphrase</button></div>
+      <p id="encMsg" role="status"></p>`;
+  } else {
+    box.innerHTML = `<span class="enc-dot" aria-hidden="true"></span><span><b>Encrypted and locked with a passphrase</b>Saved details open only with the passphrase. ${until ? `This computer stays unlocked until ${esc(until)}, or until someone presses Lock now.` : "Unlocked for this page only."}</span>`;
+    ctl.innerHTML = `<div class="actions"><button class="btn btn-primary" type="button" id="encLock">Lock now</button></div>
+      <details style="margin-top:14px"><summary><b>Change or remove the passphrase</b></summary>
+        <div class="enc-grid">
+          <div class="field"><label for="encCur">Current passphrase</label><input id="encCur" type="password" autocomplete="current-password"></div>
+          <div class="field"><label for="encNew">New passphrase</label><input id="encNew" type="password" autocomplete="new-password" minlength="10"></div>
+          <div class="field"><label for="encNew2">Type it again</label><input id="encNew2" type="password" autocomplete="new-password"></div>
+        </div>
+        <div class="actions"><button class="btn" type="button" id="encChange">Change passphrase</button><button class="btn btn-danger" type="button" id="encRemove">Remove passphrase</button></div>
+      </details>
+      <p id="encMsg" role="status"></p>`;
+  }
+  const msg = (t, ok) => { const m = $("#encMsg"); m.className = ok ? "msg-ok" : "msg-bad"; m.textContent = t; };
+  const newPass = () => {
+    const a = $("#encNew").value, b = $("#encNew2").value, problem = SS.passphraseProblem(a);
+    if (problem){ msg(problem); $("#encNew").focus(); return null; }
+    if (a !== b){ msg("The two passphrases are not the same."); $("#encNew2").focus(); return null; }
+    return a;
+  };
+  const busy = (btn, on, label) => { btn.disabled = on; if (label) btn.textContent = label; };
+  const set = $("#encSet"), lockB = $("#encLock"), change = $("#encChange"), remove = $("#encRemove");
+  if (set) set.addEventListener("click", () => {
+    const p = newPass(); if (!p) return;
+    busy(set, true, "Sealing…");
+    SS.setPassphrase(p, +$("#encKeep").value).then(() => { renderEncryption(); toast("Passphrase added. Saved details now open only with it."); },
+      e => { busy(set, false, "Add passphrase"); msg(e.message); });
+  });
+  if (lockB) lockB.addEventListener("click", () => { SS.lock().then(() => location.reload()); });
+  if (change) change.addEventListener("click", () => {
+    const p = newPass(); if (!p) return;
+    busy(change, true, "Changing…");
+    SS.setPassphrase(p, Math.max(15, Math.round(((st.unlockedUntil || 0) - Date.now()) / 60000)) || SS.DEFAULT_KEEP_MINUTES, $("#encCur").value)
+      .then(() => { renderEncryption(); toast("Passphrase changed."); }, e => { busy(change, false, "Change passphrase"); msg(e.message); });
+  });
+  if (remove) remove.addEventListener("click", () => {
+    if (!confirm("Remove the passphrase? Saved details will open for anyone who can open this browser on this computer.")) return;
+    busy(remove, true, "Removing…");
+    SS.removePassphrase($("#encCur").value).then(() => { renderEncryption(); toast("Passphrase removed. Details stay encrypted with this browser's key."); },
+      e => { busy(remove, false, "Remove passphrase"); msg(e.message); });
   });
 }
 
@@ -9334,6 +9502,11 @@ window.addEventListener("afterprint", () => {
     closeSidebar();
     store.set("cgb_settings", settings);
     store.set("cgb_queue", queue);
+    if (window.CogniSecureStore){                  // sealing is asynchronous: finish writing, then go
+      e.preventDefault();
+      const href = e.currentTarget.href;
+      CogniSecureStore.flush().then(() => { location.href = href; });
+    }
   });
   $("#navPacket").addEventListener("click", () => { closeSidebar(); openDrawer(); });
   $("#closeDrawer").addEventListener("click", closeDrawer);
@@ -9351,7 +9524,19 @@ window.addEventListener("afterprint", () => {
 
   document.body.classList.remove("high-contrast-mode", "pure-bw");   // never on the page itself
   renderNav(); renderFacility(); renderCounts(); renderBwNote();
-  router();
+  CG_STORE_READY.then(() => {
+    settings = readSettings(); isPureBlackAndWhitePDF = !!settings.pureBW; queue = readQueue();
+    storeOpen = true;
+    renderFacility(); renderCounts(); renderBwNote();
+    router();
+  });
+  // Another tab changed a saved resident or the queue: show it here too.
+  window.addEventListener("storage", e => {
+    if (!storeOpen || !e.key) return;
+    if (e.key === "cgb_queue"){ queue = readQueue(); renderCounts(); if (drawerOpen) renderQueue(); }
+    else if (e.key.indexOf("cognicopia_resident_") === 0 && /^(roster|coloring)$/.test(parseHash().name)
+             && !document.querySelector("#view :is(input, select, textarea, details[open]):focus-within")) router();   // not while someone is typing here
+  });
 })();
 </script>
 <script>

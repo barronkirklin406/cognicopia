@@ -23,7 +23,7 @@ let tscNote = "tsc not installed: type check skipped";
 try { execFileSync("tsc", ["-v"], { stdio:"pipe" }); try { execFileSync("tsc", ["-p", path.join(ROOT, "tsconfig.json")], { stdio:"pipe" }); pass++; tscNote = "types check"; } catch (e){ fails.push("tsc: " + String(e.stdout || e.message).trim()); } } catch (e){ /* no tsc */ }
 
 /* 2. load every built service into one sandbox, as the browser does */
-const sandbox = { console }; sandbox.globalThis = sandbox; vm.createContext(sandbox);
+const sandbox = { console, TextEncoder, TextDecoder }; sandbox.globalThis = sandbox; vm.createContext(sandbox);
 const OUT = path.join(ROOT, "assets", "services");
 fs.readdirSync(OUT).filter(f => f.endsWith(".js")).sort().forEach(f => vm.runInContext(fs.readFileSync(path.join(OUT, f), "utf8"), sandbox, { filename:"assets/services/" + f }));
 const V = sandbox.CogniVectorEngine;
@@ -142,5 +142,172 @@ group("vectorEngine", () => {
   sandbox.__dveWorst = worst;
 });
 
+/* 4. Secure store: sealing, migration, passphrase, locked files, aliases.
+   Each "page" is a fresh copy of the built script in its own context,
+   sharing one IndexedDB and one localStorage, as tabs of a browser do. */
+function fakeIndexedDB(){
+  const dbs = new Map(), later = fn => setTimeout(fn, 0);
+  const request = () => ({ onsuccess:null, onerror:null, result:undefined, error:null });
+  function database(rec){
+    return {
+      objectStoreNames:{ contains:n => rec.stores.has(n) },
+      createObjectStore(n){ rec.stores.set(n, new Map()); },
+      transaction(names, mode){
+        names = [].concat(names);
+        names.forEach(n => { if (!rec.stores.has(n)) throw new Error("no store " + n); });
+        const snapshot = new Map(names.map(n => [n, new Map(rec.stores.get(n))])), queue = [];
+        const t = { oncomplete:null, onerror:null, onabort:null, error:null, done:false,
+          abort(){ if (t.done) return; t.done = true; snapshot.forEach((m, n) => rec.stores.set(n, m)); later(() => t.onabort && t.onabort({})); },
+          objectStore(n){
+            if (!names.includes(n)) throw new Error("store not in transaction");
+            const op = fn => { if (t.done) throw new Error("transaction finished"); const r = request(); queue.push([r, fn]); return r; };
+            const m = () => rec.stores.get(n), ro = () => { if (mode !== "readwrite") throw new Error("read-only transaction"); };
+            return {
+              get:k => op(() => m().get(k)),
+              getAll:() => op(() => Array.from(m().values())),
+              getAllKeys:() => op(() => Array.from(m().keys())),
+              put:(v, k) => { ro(); return op(() => { m().set(k, v); return k; }); },
+              delete:k => { ro(); return op(() => { m().delete(k); }); },
+              clear:() => { ro(); return op(() => { m().clear(); }); }
+            };
+          } };
+        const run = () => later(() => {
+          if (t.done) return;
+          const next = queue.shift();
+          if (!next){ t.done = true; t.oncomplete && t.oncomplete({}); return; }
+          const [r, fn] = next;
+          try { r.result = fn(); r.onsuccess && r.onsuccess({}); } catch (e){ r.error = e; r.onerror && r.onerror({}); t.error = e; t.abort(); return; }
+          run();
+        });
+        run();
+        return t;
+      }
+    };
+  }
+  return { dbs, open(name, version){
+    const r = request(); r.onupgradeneeded = null; r.onblocked = null;
+    later(() => {
+      let rec = dbs.get(name); const upgrade = !rec || rec.version < version;
+      if (!rec){ rec = { version, stores:new Map() }; dbs.set(name, rec); }
+      r.result = database(rec);
+      if (upgrade){ rec.version = version; r.onupgradeneeded && r.onupgradeneeded({}); }
+      r.onsuccess && r.onsuccess({});
+    });
+    return r;
+  } };
+}
+function fakeLocalStorage(){
+  const m = new Map();
+  return { m, getItem:k => m.has(k) ? m.get(k) : null, setItem:(k, v) => { m.set(String(k), String(v)); }, removeItem:k => { m.delete(k); },
+    key:i => Array.from(m.keys())[i] ?? null, get length(){ return m.size; } };
+}
+const SECURE_JS = fs.readFileSync(path.join(OUT, "secureStore.js"), "utf8");
+function page(shared){
+  const ctx = { console, TextEncoder, TextDecoder, setTimeout, clearTimeout, performance, btoa, atob, crypto:shared.crypto === undefined ? globalThis.crypto : shared.crypto,
+    indexedDB:shared.idb, localStorage:shared.ls };
+  ctx.globalThis = ctx; vm.createContext(ctx);
+  vm.runInContext(SECURE_JS, ctx, { filename:"assets/services/secureStore.js" });
+  return ctx.CogniSecureStore;
+}
+async function secureStoreChecks(){
+  const idb = fakeIndexedDB(), ls = fakeLocalStorage(), shared = { idb, ls };
+  const profile = (id, name, unit, updatedAt) => ({ schema:"cognicopia.residentProfile", version:2, id, updatedAt, tier1_core:{ preferredName:name, unitNumber:unit }, tier2_enrichment:{}, tier3_deep:{ notes:"Loves the rose garden" } });
+  // plain copies from before the store existed
+  ls.setItem("cognicopia_resident_r1", JSON.stringify(profile("r1", "Margaret Ellison", "302-b", "2026-09-01T00:00:00Z")));
+  ls.setItem("cognicopia_profile_draft", JSON.stringify({ v:1, data:{ preferredName:"Walter" } }));
+  ls.setItem("cognicopia_license", "abc");
+  const A = page(shared), st = await A.ready();
+  ok(st.state === "open" && st.encrypted && !st.passphrase && st.migrated === 2 && st.records === 2, "first open seals the plain copies: " + JSON.stringify(st));
+  ok(ls.getItem("cognicopia_resident_r1") === null && ls.getItem("cognicopia_profile_draft") === null && ls.getItem("cognicopia_license") === "abc", "plain copies removed, other names left alone");
+  ok(JSON.parse(A.storage.getItem("cognicopia_resident_r1")).tier1_core.preferredName === "Margaret Ellison", "sealed profile reads back");
+  const recs = idb.dbs.get("cognicopia-secure").stores.get("records");
+  const raw = Array.from(recs.values()).map(r => Buffer.from(r.data).toString("latin1")).join("");
+  ok(recs.size === 2 && !/Margaret|Walter|rose garden/.test(raw), "records are ciphertext at rest");
+  const ring = idb.dbs.get("cognicopia-secure").stores.get("keyring").get("ring");
+  ok(ring.mode === "device" && ring.key.extractable === false && ring.key.algorithm.name === "AES-GCM" && ring.key.algorithm.length === 256, "device key: non-extractable AES-256-GCM");
+  // the localStorage stand-in
+  A.storage.setItem("cognicopia_license", "xyz"); A.storage.setItem("cognicopia_resident_r2", JSON.stringify(profile("r2", "Ruth Adams", "", "2026-09-02T00:00:00Z")));
+  ok(ls.getItem("cognicopia_license") === "xyz" && ls.getItem("cognicopia_resident_r2") === null, "only unsealed names reach localStorage");
+  const names = []; for (let i = 0; i < A.storage.length; i++) names.push(A.storage.key(i));
+  ok(names.includes("cognicopia_license") && names.includes("cognicopia_resident_r2") && names.includes("cognicopia_resident_r1") && names.length === 4, "key(i) and length cover both: " + names);
+  A.storage.removeItem("cognicopia_profile_draft");
+  await A.flush();
+  ok(recs.size === 2 && recs.has("cognicopia_resident_r2") && !recs.has("cognicopia_profile_draft"), "writes and removals persist on flush");
+  ok(A.entries("cognicopia_resident_").map(e => e[0]).join() === "cognicopia_resident_r1,cognicopia_resident_r2", "entries by prefix");
+  // a second page sees the same records
+  const B = page(shared); await B.ready();
+  ok(JSON.parse(B.storage.getItem("cognicopia_resident_r2")).tier1_core.preferredName === "Ruth Adams" && B.status().migrated === 0, "another page opens the sealed records");
+  // tampering and swapping are refused
+  const r1 = recs.get("cognicopia_resident_r1"), saved = new Uint8Array(r1.data.slice(0));
+  new Uint8Array(r1.data)[5] ^= 1;
+  const C = page(shared), cs = await C.ready();
+  ok(cs.unreadable === 1 && C.storage.getItem("cognicopia_resident_r1") === null, "a changed record does not open");
+  new Uint8Array(r1.data).set(saved);
+  recs.set("cognicopia_resident_r9", recs.get("cognicopia_resident_r2"));
+  const D = page(shared), ds = await D.ready();
+  ok(ds.unreadable === 1 && D.storage.getItem("cognicopia_resident_r9") === null && D.storage.getItem("cognicopia_resident_r1") !== null, "a record moved to another name does not open");
+  recs.delete("cognicopia_resident_r9");
+  // passphrase: set, lock, wrong, right, remove
+  let threw = ""; try { await D.setPassphrase("short"); } catch (e){ threw = e.message; }
+  ok(/at least 10/.test(threw), "short passphrases refused");
+  const P = "a quiet morning by the lake";
+  await D.setPassphrase(P, 60);
+  const pr = idb.dbs.get("cognicopia-secure").stores.get("keyring").get("ring");
+  ok(pr.mode === "passphrase" && pr.rounds === 600000 && !pr.key && pr.wrapped.byteLength === 48, "passphrase ring keeps only the wrapped key");
+  const E = page(shared), es = await E.ready();
+  ok(es.state === "open" && es.passphrase && es.unlockedUntil > Date.now() && E.storage.getItem("cognicopia_resident_r1") !== null, "unlocked for the chosen time on this computer");
+  await E.lock();
+  const F = page(shared), fs0 = await F.ready();
+  ok(fs0.state === "locked" && F.storage.getItem("cognicopia_resident_r1") === null && F.storage.getItem("cognicopia_license") === "xyz", "locked: sealed names read as empty, others still work");
+  let lockedErr = ""; try { F.storage.setItem("cognicopia_resident_r3", "{}"); } catch (e){ lockedErr = e.name; }
+  ok(lockedErr === "LockedError", "locked: writes are refused, not lost silently");
+  ok(await F.unlock("not the passphrase") === false && F.status().state === "locked", "the wrong passphrase does not open");
+  ok(await F.unlock(P, 0) === true && JSON.parse(F.storage.getItem("cognicopia_resident_r1")).tier1_core.preferredName === "Margaret Ellison", "the right passphrase opens");
+  const G = page(shared); ok((await G.ready()).state === "locked", "\"this page only\" leaves other pages locked");
+  await F.removePassphrase(P);
+  const H = page(shared), hs = await H.ready();
+  ok(hs.state === "open" && !hs.passphrase && H.storage.getItem("cognicopia_resident_r2") !== null, "passphrase removed: back to the device key, nothing lost");
+  // no IndexedDB or Web Crypto: plain localStorage, and it says so
+  const U = page({ idb:undefined, ls:fakeLocalStorage() }), us = await U.ready();
+  U.storage.setItem("cognicopia_resident_x", "{}");
+  ok(us.state === "unavailable" && !us.encrypted && U.storage.getItem("cognicopia_resident_x") === "{}", "falls back to localStorage when it cannot encrypt");
+  // locked files: the packet tool's own lock and unlock open these, and the reverse
+  const idx = fs.readFileSync(path.join(ROOT, "index.html"), "utf8"), a = idx.indexOf('const LOCKED_FORMAT="cognicopia-locked"'), b = idx.indexOf("function downloadBlob", a);
+  const pt = { crypto:globalThis.crypto, TextEncoder, TextDecoder, btoa, atob, window:{ crypto:globalThis.crypto, TextEncoder } }; pt.globalThis = pt; vm.createContext(pt);
+  vm.runInContext(idx.slice(a, b).replace(/^const /gm, "var ") + "\nthis.lockData = lockData; this.unlockData = unlockData;", pt);
+  const env1 = await H.sealFile({ hello:"world" }, P, "resident");
+  ok(JSON.stringify(await pt.unlockData(env1, P)) === '{"hello":"world"}', "the packet tool opens this store's locked files");
+  const env2 = await pt.lockData({ n:1 }, P, "residents");
+  ok(JSON.stringify(await H.openFile(env2, P)) === '{"n":1}', "this store opens the packet tool's locked files");
+  let bad = ""; try { await H.openFile(env2, "nope nope nope"); } catch (e){ bad = e.message; } ok(bad === "passphrase", "wrong passphrase reported");
+  // station handoff
+  const here = [profile("r1", "Margaret Ellison", "302-B", "2026-09-01T00:00:00Z"), profile("r2", "Ruth Adams", "", "2026-09-05T00:00:00Z")];
+  const there = [profile("r1", "Margaret Ellison", "302-B", "2026-09-03T00:00:00Z"), profile("r2", "Ruth A.", "", "2026-09-04T00:00:00Z"), profile("r4", "Joe Park", "12", "2026-09-04T00:00:00Z"), { schema:"x" }];
+  const file = await H.exportRoster(there, P, "Maple Unit station", "Evening shift");
+  ok(file.kind === "residents" && file.format === "cognicopia-locked" && !/Margaret|Joe/.test(JSON.stringify(file)), "roster file is locked");
+  const got = await H.readRoster(JSON.stringify(file), P);
+  ok(got.profiles.length === 3 && got.handoff.station === "Maple Unit station", "roster reads back its valid profiles");
+  const plain = await H.readRoster(JSON.stringify({ format:"cognicopia.residentBackup", version:1, profiles:[...there] }), "");
+  ok(plain.profiles.length === 3 && plain.skipped === 1, "plain backups read, invalid entries skipped");
+  const m = H.mergeRoster(here, got.profiles, "newer");
+  ok(m.added === 1 && m.updated === 1 && m.kept === 1 && m.write.map(p => p.id).join() === "r1,r4", "newer copy wins: " + JSON.stringify({ a:m.added, u:m.updated, k:m.kept }));
+  ok(H.mergeRoster(here, got.profiles, "skip").write.length === 1 && H.mergeRoster(here, got.profiles, "replace").write.length === 3, "skip and replace");
+  let kindErr = ""; try { await H.readRoster(JSON.stringify(env1), P); } catch (e){ kindErr = e.message; } ok(kindErr === "kind", "a single-resident file is not taken for a roster");
+  // aliases
+  ok(H.aliasFor(profile("r1", "Margaret", "302-b")) === "Resident 302-B", "alias from the unit");
+  ok(H.aliasFor({ id:"r1", tier1_core:{ preferredName:"Margaret", alias:"Rose Room 4" } }) === "Rose Room 4", "staff's own alias");
+  const code = H.aliasFor({ id:"abc123", tier1_core:{ preferredName:"Margaret" } });
+  ok(/^Resident [2-9A-HJ-NP-Z]{4}$/.test(code) && code === H.aliasFor({ id:"abc123", tier1_core:{} }) && code !== H.aliasFor({ id:"abc124", tier1_core:{} }), "stable code alias: " + code);
+  ok(H.displayName(profile("r1", "Margaret", "7"), false) === "Margaret" && H.displayName(profile("r1", "Margaret", "7"), true) === "Resident 7", "displayName");
+  // speed: 300 residents open well inside the page budget
+  const big = { idb:fakeIndexedDB(), ls:fakeLocalStorage() }, filler = "x".repeat(3000);
+  for (let i = 0; i < 300; i++) big.ls.setItem("cognicopia_resident_p" + i, JSON.stringify(Object.assign(profile("p" + i, "Resident " + i, String(i)), { filler })));
+  await page(big).ready();
+  const T = page(big), ts = await T.ready();
+  ok(ts.records === 300 && ts.ms < 150, `300 sealed residents open in ${ts.ms} ms`);
+  sandbox.__storeMs = ts.ms;
+}
+try { await secureStoreChecks(); } catch (e){ fails.push("secureStore: threw " + (e.stack || e)); }
+
 if (fails.length){ console.log(`services check FAILED: ${fails.length} problem(s), ${pass} passed\n  - ` + fails.slice(0, 30).join("\n  - ")); process.exit(1); }
-console.log(`services check passed: ${pass} checks (${tscNote}; slowest page ${sandbox.__dveWorst} ms)`);
+console.log(`services check passed: ${pass} checks (${tscNote}; slowest page ${sandbox.__dveWorst} ms; 300 sealed residents open in ${sandbox.__storeMs} ms)`);

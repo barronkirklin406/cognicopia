@@ -858,6 +858,12 @@ body { padding-left: var(--sb-w); }
           <p class="rap-hint" id="rapUnitHint">Helps staff find the right person in the resident roster. It never prints on the resident's own pages.</p>
         </div>
 
+        <div class="rap-field">
+          <label for="rapAlias">Alias for shared screens <span class="rap-opt">(optional)</span></label>
+          <input id="rapAlias" name="alias" type="text" maxlength="32" autocomplete="off" aria-describedby="rapAliasHint" placeholder="e.g., Resident 302-B">
+          <p class="rap-hint" id="rapAliasHint">Shown instead of the name when staff turn on aliases, on screens others can see and on staff pages. Leave it blank to use &ldquo;Resident&rdquo; and the room or unit. Never use the resident's name here.</p>
+        </div>
+
         <div class="rap-row">
           <div class="rap-field">
             <label for="rapAge">Age</label>
@@ -1329,12 +1335,16 @@ body { padding-left: var(--sb-w); }
 
   <footer class="site-footer">Cognicopia is made by BarronCrafts. Everything happens inside your browser.</footer>
 
+<script src="assets/services/secureStore.js"></script>
 <script>
 /* Resident Activity Profile wizard (phase 1).
-   Plain ES2017, no libraries, no network. The draft lives only in this
-   browser's localStorage under one key and is wiped by "Clear this profile". */
+   Plain ES2017, no libraries, no network. The draft and every saved
+   resident are sealed in this browser's encrypted store (CogniSecureStore,
+   assets/services/secureStore.js); the draft is wiped by "Clear this profile". */
 (function(){
   "use strict";
+  var SS = window.CogniSecureStore;
+  var LS = SS ? SS.storage : (function(){ try { return window.localStorage; } catch (e){ return null; } })();
   var KEY = "cognicopia_profile_draft", VERSION = 1;
   var STEPS = [
     { title:"Resident basics" },
@@ -1355,17 +1365,17 @@ body { padding-left: var(--sb-w); }
 
   /* ---------- storage (every call guarded: private windows can throw) ---------- */
   function readDraft(){
-    try { var raw = localStorage.getItem(KEY); if (!raw) return null; var d = JSON.parse(raw); return d && d.v === VERSION ? d : null; }
+    try { var raw = LS.getItem(KEY); if (!raw) return null; var d = JSON.parse(raw); return d && d.v === VERSION ? d : null; }
     catch (e){ return null; }
   }
   function writeDraft(){
     var d = { v:VERSION, step:current, furthest:furthest, updated:new Date().toISOString(), data:collect(),
               residentId:residentId, savedSig:savedSig };      // which saved resident this form is editing
-    try { localStorage.setItem(KEY, JSON.stringify(d)); return true; }
+    try { LS.setItem(KEY, JSON.stringify(d)); return true; }
     catch (e){ return false; }
   }
   function storageWorks(){
-    try { localStorage.setItem(KEY + "_test", "1"); localStorage.removeItem(KEY + "_test"); return true; }
+    try { LS.setItem(KEY + "_test", "1"); LS.removeItem(KEY + "_test"); return true; }
     catch (e){ return false; }
   }
 
@@ -1714,8 +1724,8 @@ body { padding-left: var(--sb-w); }
      ---------------------------------------------------------------------
      saveResidentProfile() reads every answer from Steps 1 to 6 by its
      element ID, arranges it in three priority tiers for the offline
-     packet generator, and stores it in this browser's localStorage under
-     "cognicopia_resident_<id>". Nothing is sent anywhere.
+     packet generator, and stores it in this browser under
+     "cognicopia_resident_<id>", sealed by the encrypted store. Nothing is sent anywhere.
 
        tier1_core        Builds the packet template: who it is for, what
                          prints, what must never appear, how hard it is.
@@ -1805,6 +1815,7 @@ body { padding-left: var(--sb-w); }
       tier1_core: {
         preferredName: text("rapName"),
         unitNumber: needs.unitNumber,                   // v2: shown in the roster and on staff pages only
+        alias: text("rapAlias"),                        // optional: shown instead of the name when aliases are on
         cognitiveTier: needs.cognitiveTier,             // v2: 1 full detail, 2 guided, 3 simplified
         visualNeeds: needs.visualNeeds,                 // v2: contrastMode, fontSizeScale (from vision), lineThicknessPt
         occupation: occupation,
@@ -1877,7 +1888,7 @@ body { padding-left: var(--sb-w); }
     if (vn.lineThicknessPt === sug.visualNeeds.lineThicknessPt) auto.push("line");
     return {
       preferredName: t1.preferredName || "",
-      unitNumber: needs.unitNumber, tier: String(needs.cognitiveTier), contrast: vn.contrastMode,
+      unitNumber: needs.unitNumber, alias: t1.alias || "", tier: String(needs.cognitiveTier), contrast: vn.contrastMode,
       lineThickness: String(vn.lineThicknessPt), needsAuto: auto.join(","),
       age: t2.age == null ? "" : String(t2.age), birthYear: t2.birthYear == null ? "" : String(t2.birthYear),
       completedBy: code((p.meta || {}).completedBy), decades: t2.meaningfulDecades || [],
@@ -1900,19 +1911,19 @@ body { padding-left: var(--sb-w); }
     };
   }
 
-  /* ---- localStorage access for saved residents ---- */
+  /* ---- saved residents, through the encrypted store (LS) ---- */
   function newResidentId(){
     return "res-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 6);
   }
   function readResident(id){
-    try { var p = JSON.parse(localStorage.getItem(RESIDENT_PREFIX + id)); return p && p.schema === SCHEMA ? p : null; }
+    try { var p = JSON.parse(LS.getItem(RESIDENT_PREFIX + id)); return p && p.schema === SCHEMA ? p : null; }
     catch (e){ return null; }
   }
   function listResidents(){
     var out = [];
     try {
-      for (var i = 0; i < localStorage.length; i++){
-        var k = localStorage.key(i);
+      for (var i = 0; i < LS.length; i++){
+        var k = LS.key(i);
         if (k && k.indexOf(RESIDENT_PREFIX) === 0){ var p = readResident(k.slice(RESIDENT_PREFIX.length)); if (p) out.push(p); }
       }
     } catch (e){}
@@ -1922,7 +1933,7 @@ body { padding-left: var(--sb-w); }
   /**
    * saveResidentProfile()
    * Harvests Steps 1 to 6, builds the tiered JSON and writes it to
-   * window.localStorage as "cognicopia_resident_<id>". Saving again
+   * the encrypted store as "cognicopia_resident_<id>". Saving again
    * updates the same resident instead of making a copy.
    * Returns the saved profile object, or null if it could not be saved.
    */
@@ -1941,7 +1952,7 @@ body { padding-left: var(--sb-w); }
     profile.updatedAt = now;
 
     try {
-      window.localStorage.setItem(RESIDENT_PREFIX + residentId, JSON.stringify(profile));
+      LS.setItem(RESIDENT_PREFIX + residentId, JSON.stringify(profile));
     } catch (e){
       if (isNew) residentId = null;
       toast("This profile could not be saved. This browser is not allowing storage, or it is full.", true);
@@ -1950,7 +1961,7 @@ body { padding-left: var(--sb-w); }
 
     savedSig = JSON.stringify(collect());
     writeDraft();                                          // the draft now remembers which resident it is
-    try { localStorage.setItem(ACTIVE_KEY, residentId); } catch (e){}   // ready on the dashboard
+    try { LS.setItem(ACTIVE_KEY, residentId); } catch (e){}   // ready on the dashboard
     renderResidents();
     renderDone(profile, isNew);
     toast("Profile saved locally.");
@@ -1990,6 +2001,7 @@ body { padding-left: var(--sb-w); }
     var rows = [
       ["Name", t1.preferredName],
       ["Room or unit", t1.unitNumber],
+      ["Alias", window.CogniSecureStore ? window.CogniSecureStore.aliasFor(p) : t1.alias],
       ["Support tier", "Tier " + t1.cognitiveTier + " · " + TIER_NAMES[t1.cognitiveTier]],
       ["Visual needs", [t1.visualNeeds.contrastMode === "high_contrast" ? "High contrast" : "Standard contrast",
         "text " + t1.visualNeeds.fontSizeScale + "×", t1.visualNeeds.lineThicknessPt + " pt lines"].join(" · ")],
@@ -2034,9 +2046,9 @@ body { padding-left: var(--sb-w); }
     if (del){
       var id = del.getAttribute("data-delete"), q = readResident(id), who = q ? q.tier1_core.preferredName : "this resident";
       if (!window.confirm("Delete " + who + "'s profile from this computer? This cannot be undone.")) return;
-      try { localStorage.removeItem(RESIDENT_PREFIX + id); } catch (err){}
+      try { LS.removeItem(RESIDENT_PREFIX + id); } catch (err){}
       if (id === residentId){ residentId = null; savedSig = null; $("rapDone").hidden = true; writeDraft(); }
-      try { if (localStorage.getItem(ACTIVE_KEY) === id) localStorage.removeItem(ACTIVE_KEY); } catch (err){}
+      try { if (LS.getItem(ACTIVE_KEY) === id) LS.removeItem(ACTIVE_KEY); } catch (err){}
       renderResidents();
       toast(who + "'s profile was deleted from this computer.");
       $("rapResH").focus();
@@ -2044,7 +2056,7 @@ body { padding-left: var(--sb-w); }
   });
   $("rapNewResident").addEventListener("click", function(){
     resetForm();
-    try { localStorage.removeItem(KEY); } catch (e){}
+    try { LS.removeItem(KEY); } catch (e){}
     renderResidents();
     savedEl.textContent = "Ready for a new resident.";
     show(1, true); clearTimeout(saveTimer);
@@ -2093,14 +2105,15 @@ body { padding-left: var(--sb-w); }
       : "Clear the form? What you have typed has not been saved as a profile and will be lost.";
     if (!window.confirm(msg)) return;
     resetForm();
-    try { localStorage.removeItem(KEY); } catch (e){}
+    try { LS.removeItem(KEY); } catch (e){}
     renderResidents();
     savedEl.textContent = "Form cleared.";
     show(1, true);
     clearTimeout(saveTimer);             // show() queues a save; a blank draft is not needed
   });
 
-  /* ---------- start ---------- */
+  /* ---------- start: after the encrypted store has opened ---------- */
+  function start(){
   storageOk = storageWorks();
   if (!storageOk) $("rapNoStore").hidden = false;
   var draft = storageOk ? readDraft() : null;
@@ -2138,13 +2151,15 @@ body { padding-left: var(--sb-w); }
       var who = text("rapName");
       if (!hasUnsaved() || window.confirm("Start a new profile? The one in progress" + (who ? " for " + who : "") + " has not been saved and will be cleared.")){
         resetForm();
-        try { localStorage.removeItem(KEY); } catch (e){}
+        try { LS.removeItem(KEY); } catch (e){}
         renderResidents(); show(1, true); clearTimeout(saveTimer);
         savedEl.textContent = "Ready for a new resident.";
       }
     }
     if ((editId || /[?&]new=1/.test(qs)) && history.replaceState) history.replaceState(null, "", location.pathname + location.hash);
   })();
+  }
+  if (SS) SS.openForPage().then(start, start); else start();
 })();
 </script>
 <script>
