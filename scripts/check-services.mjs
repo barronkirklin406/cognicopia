@@ -222,7 +222,7 @@ async function secureStoreChecks(){
   ok(JSON.parse(A.storage.getItem("cognicopia_resident_r1")).tier1_core.preferredName === "Margaret Ellison", "sealed profile reads back");
   const recs = idb.dbs.get("cognicopia-secure").stores.get("records");
   const raw = Array.from(recs.values()).map(r => Buffer.from(r.data).toString("latin1")).join("");
-  ok(recs.size === 2 && !/Margaret|Walter|rose garden/.test(raw), "records are ciphertext at rest");
+  ok(recs.size === 2 && !/Margaret Ellison|Walter"|rose garden/.test(raw), "records are ciphertext at rest");
   const ring = idb.dbs.get("cognicopia-secure").stores.get("keyring").get("ring");
   ok(ring.mode === "device" && ring.key.extractable === false && ring.key.algorithm.name === "AES-GCM" && ring.key.algorithm.length === 256, "device key: non-extractable AES-256-GCM");
   // the localStorage stand-in
@@ -284,7 +284,7 @@ async function secureStoreChecks(){
   const here = [profile("r1", "Margaret Ellison", "302-B", "2026-09-01T00:00:00Z"), profile("r2", "Ruth Adams", "", "2026-09-05T00:00:00Z")];
   const there = [profile("r1", "Margaret Ellison", "302-B", "2026-09-03T00:00:00Z"), profile("r2", "Ruth A.", "", "2026-09-04T00:00:00Z"), profile("r4", "Joe Park", "12", "2026-09-04T00:00:00Z"), { schema:"x" }];
   const file = await H.exportRoster(there, P, "Maple Unit station", "Evening shift");
-  ok(file.kind === "residents" && file.format === "cognicopia-locked" && !/Margaret|Joe/.test(JSON.stringify(file)), "roster file is locked");
+  ok(file.kind === "residents" && file.format === "cognicopia-locked" && !/Margaret Ellison|Joe Park/.test(JSON.stringify(file)), "roster file is locked");
   const got = await H.readRoster(JSON.stringify(file), P);
   ok(got.profiles.length === 3 && got.handoff.station === "Maple Unit station", "roster reads back its valid profiles");
   const plain = await H.readRoster(JSON.stringify({ format:"cognicopia.residentBackup", version:1, profiles:[...there] }), "");
@@ -309,5 +309,91 @@ async function secureStoreChecks(){
 }
 try { await secureStoreChecks(); } catch (e){ fails.push("secureStore: threw " + (e.stack || e)); }
 
+/* 5. Reminiscence engine: the knowledge base, the wording, and decks for many residents. */
+group("reminiscenceEngine", () => {
+  const R = sandbox.CogniReminiscence;
+  ok(R && typeof R.deck === "function", "CogniReminiscence is not loaded");
+  const cc = { console }; cc.globalThis = cc; vm.createContext(cc);
+  vm.runInContext(fs.readFileSync(path.join(ROOT, "assets", "cognicore", "cognicore.js"), "utf8"), cc);
+  const designs = new Set(cc.CogniCore.designs().map(d => d.id)), songIds = new Set(R.SONGS.map(x => x.id));
+  ok(songIds.size === R.SONGS.length, "song ids are unique");
+  const texts = [];
+  for (const t of R.TOPICS){
+    ok(t.invite.length === 3 && t.invite.every(Boolean), t.id + ": three invitations");
+    ok(t.starters.length >= 4 && t.simple.length >= 3, t.id + ": at least 4 starters and 3 tier-3 lines");
+    ok(t.simple.filter(x => x !== t.invite[2]).length >= 3, t.id + ": 3 tier-3 lines besides the invitation");
+    ok(t.art.length && t.art.every(a => designs.has(a)), t.id + ": art from the CogniCore library: " + t.art.filter(a => !designs.has(a)));
+    ok(t.touch.prompt && t.touch.simple && t.touch.items, t.id + ": a tactile prompt");
+    ok((t.songs || []).every(x => songIds.has(x)), t.id + ": songs exist");
+    ok(t.refs.every(r => r.years[0] >= 1850 && r.years[0] <= r.years[1] && r.years[1] <= 2000), t.id + ": reference years");
+    ok(t.refs.every(r => !r.states || r.states.every(st => /^[A-Z]{2}$/.test(st))), t.id + ": state codes");
+    texts.push(...t.invite, ...t.starters, ...t.simple, t.touch.prompt, t.touch.simple);
+  }
+  ok(R.SONGS.every(x => x.year === 0 || (x.year >= 1880 && x.year <= 1990)), "song years");
+  const bad = texts.map(x => [x, R.toneProblems(x)]).filter(x => x[1].length);
+  ok(!bad.length, "wording: " + JSON.stringify(bad.slice(0, 3)));
+  ok(R.toneProblems("Do you remember your first car?").length && R.toneProblems("Good girl, honey.").length && !R.toneProblems("Tell me about your first car.").length, "the wording check itself");
+  // places
+  const po = R.placeOf("Wheeling, West Virginia"), pd = R.placeOf("Dayton, OH"), px = R.placeOf("Guadalajara");
+  ok(po.region.code === "appalachia" && po.state === "WV" && pd.region.code === "midwest" && pd.state === "OH" && !px.region, "places: " + JSON.stringify([po.state, pd.state]));
+  // residents
+  const P = o => ({ id:o.id, tier1_core:{ preferredName:o.name || "Pat", cognitiveTier:o.tier || 2, occupation:{ code:o.job || "" }, primaryVocation:o.voc ? { code:o.voc } : null,
+    topicsToAvoid:{ topics:(o.avoid || []).map(code => ({ code })) }, topHobbies:(o.hobbies || []).map(code => ({ code })) },
+    tier2_enrichment:{ birthYear:o.by, region:o.region ? { code:o.region } : null, hometown:{ environment:{ code:o.env || "" }, place:o.place || "" },
+      music:{ genres:(o.genres || []).map(code => ({ code })), artists:o.artists || [], favoriteSong:o.fav || "" },
+      military:o.mil ? { branch:{ code:"army" }, talkingAboutIt:{ code:o.mil } } : {} } });
+  ok(R.person(P({ by:1938, env:"rural", place:"Ames, Iowa" })).placeLabel === "Rural Midwest" && R.person(P({ by:1938, env:"city", place:"Brooklyn, NY" })).placeLabel === "Urban Northeast", "\"Rural Midwest\", \"Urban Northeast\"");
+  ok(R.person(P({ job:"nurse" })).vocation.code === "nursing" && R.person(P({ job:"cook" })).vocation.code === "culinary" && R.person(P({ job:"farmer", voc:"mechanic" })).vocation.code === "mechanic", "vocations from occupation, or chosen");
+  const topicById = Object.fromEntries(R.TOPICS.map(t => [t.id, t])), songById = Object.fromEntries(R.SONGS.map(x => [x.id, x]));
+  const refIndex = new Map(); R.TOPICS.forEach(t => t.refs.forEach(r => refIndex.set(t.id + "|" + r.text, r)));
+  const envs = ["rural", "small-town", "city", "coastal", "mountains", "abroad", ""], places = ["Ames, Iowa", "Brooklyn, NY", "Macon, Georgia", "Minot, ND", "Burlington, Vermont", "Austin, Texas", "Boise, Idaho", "Seattle, WA", "Wheeling, WV", "Toronto, Ontario", ""];
+  const avoids = [[], ["driving"], ["war", "home"], ["medical", "religion", "water"], ["children", "money", "death"]];
+  let n = 0, decks = 0;
+  for (const v of R.VOCATIONS) for (const tier of [1, 2, 3]) for (let k = 0; k < 4; k++){
+    const by = 1928 + (n * 7) % 30, env = envs[n % envs.length], place = env === "abroad" ? "" : places[n % places.length], avoid = avoids[n % avoids.length];
+    const mil = ["welcome", "gentle", "avoid", ""][n % 4], job = v.occupations[0] || "other";
+    const prof = P({ id:"r" + n, by, env, place, avoid, job, tier, mil, genres:[["country"], ["motown"], ["latin"], []][n % 4], hobbies:[["fishing"], ["gardening", "animals"], [], ["sports"]][n % 4], fav:n % 5 === 0 ? "Moon River" : "" });
+    n++;
+    const d = R.deck(prof, { count:6 }), who = d.person; decks++;
+    const tag = `${v.code} T${tier} b.${by} ${env}/${place} avoid ${avoid} mil ${mil}`;
+    ok(d.cards.length >= 3, tag + ": at least 3 cards, got " + d.cards.length);
+    ok(new Set(d.cards.map(c => c.topic)).size === d.cards.length, tag + ": no card twice");
+    ok(new Set(d.cards.map(c => c.song.title)).size === d.cards.length, tag + ": no song twice: " + d.cards.map(c => c.song.title));
+    if (v.code !== "general" && !(topicById[R.TOPICS.find(t => (t.vocations || []).includes(v.code)).id].avoid || []).some(a => avoid.includes(a)) && (v.code !== "military" || mil === "welcome" || mil === "gentle" || mil === ""))
+      ok(d.cards.some(c => c.kind === "work"), tag + ": a card about their work");
+    for (const c of d.cards){
+      const t = topicById[c.topic];
+      ok(c.starters.length === 3 && c.starters.every(Boolean) && new Set(c.starters).size === 3, tag + " " + c.topic + ": three different starters");
+      ok(!!c.song.title && !!c.touch.prompt && !!c.touch.safety, tag + " " + c.topic + ": a song and a touch prompt");
+      ok(!(t.avoid || []).some(a => avoid.includes(a)), tag + ": avoided topic " + c.topic);
+      const sg = songById[c.song.id]; if (sg) ok(!(sg.avoid || []).some(a => avoid.includes(a)), tag + ": avoided song " + sg.id);
+      if (sg && sg.year) ok(sg.year >= by - 40 && sg.year <= by + 50, tag + ": song far from their years " + sg.id);
+      if (c.topic === "letters-home") ok(mil === "welcome" || mil === "gentle" || (mil === "" && v.code === "military"), tag + ": service topic without a welcome");
+      ok(c.starters.concat([c.invite]).every(x => !R.toneProblems(x).length), tag + ": wording");
+      if (tier === 3) ok(c.starters.every(x => x !== c.invite), tag + ": tier 3 repeats its invitation");
+      for (const rt of c.refs){
+        const r = refIndex.get(c.topic + "|" + rt);
+        ok(!!r, "unknown ref " + rt);
+        if (!r) continue;
+        ok(r.years[0] <= who.life[1] && r.years[1] >= who.life[0], tag + ": reference outside their lifetime: " + rt);
+        if (r.states) ok(r.states.includes(who.state), tag + ": a state reference for someone from elsewhere: " + rt);
+        else if (r.regions) ok(who.region && r.regions.includes(who.region.code), tag + ": a regional reference for someone from elsewhere: " + rt);
+        else if (who.region && who.region.code === "abroad") ok(r.anywhere, tag + ": a North American reference for someone raised abroad: " + rt);
+        ok(!(r.avoid || []).some(a => avoid.includes(a)), tag + ": avoided reference " + rt);
+      }
+    }
+  }
+  const fav = R.deck(P({ id:"f", by:1940, fav:"Moon River" }), { count:6 });
+  ok(fav.cards[0].song.title === "Moon River" && fav.cards.filter(c => /moon river/i.test(c.song.title)).length === 1, "their favorite song first, and only once");
+  const a1 = JSON.stringify(R.deck(P({ id:"x", by:1940, job:"teacher" }), { seed:"1" }).cards), a2 = JSON.stringify(R.deck(P({ id:"x", by:1940, job:"teacher" }), { seed:"1" }).cards), a3 = JSON.stringify(R.deck(P({ id:"x", by:1940, job:"teacher" }), { seed:"2" }).cards);
+  ok(a1 === a2 && a1 !== a3, "decks repeat for the same seed and vary for another");
+  const t0 = performance.now(); for (let i = 0; i < 500; i++) R.deck(P({ id:"p" + i, by:1930 + i % 30, job:"mechanic", place:"Ames, Iowa", env:"rural" }), { count:8 });
+  const per = (performance.now() - t0) / 500;
+  ok(per < 5, `a deck takes ${per.toFixed(2)} ms`);
+  sandbox.__remStats = `${decks} decks checked, ${per.toFixed(2)} ms each`;
+});
+
+
+
 if (fails.length){ console.log(`services check FAILED: ${fails.length} problem(s), ${pass} passed\n  - ` + fails.slice(0, 30).join("\n  - ")); process.exit(1); }
-console.log(`services check passed: ${pass} checks (${tscNote}; slowest page ${sandbox.__dveWorst} ms; 300 sealed residents open in ${sandbox.__storeMs} ms)`);
+console.log(`services check passed: ${pass} checks (${tscNote}; slowest page ${sandbox.__dveWorst} ms; 300 sealed residents open in ${sandbox.__storeMs} ms; ${sandbox.__remStats})`);

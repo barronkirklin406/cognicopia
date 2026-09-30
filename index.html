@@ -9862,6 +9862,13 @@ function generateAilmentPDF(ailmentType) {
 
   /* A { code, label } choice. Known codes get the wizard's label; an
      unknown one is kept as typed (e.g. an "Other" occupation). */
+  /* Reminiscence fields (profile.html; assets/services/reminiscenceEngine.js). */
+  var VOCATION_BOOK = [["mechanic","Mechanic"],["teacher","Teacher"],["military","Military"],["culinary","Culinary"],["nursing","Nursing and health care"],
+    ["farming","Farming and ranching"],["homemaking","Homemaking"],["office","Office and bookkeeping"],["trades","Building trades"],["factory","Factory and mill work"],
+    ["railroad","Railroad"],["driving","Driving for a living"],["postal","Postal service"],["commerce","Shopkeeping and business"],["sewing","Sewing and tailoring"],
+    ["public-safety","Police and fire service"],["engineering","Engineering and science"],["ministry","Ministry and church work"]];
+  var REGION_BOOK = [["midwest","Midwest"],["plains","Great Plains"],["northeast","Northeast"],["new-england","New England"],["south","South"],["appalachia","Appalachia"],
+    ["southwest","Texas and the Southwest"],["mountain-west","Mountain West"],["pacific","Pacific Coast"],["canada","Canada"],["abroad","Another country"]];
   function choice(v, book, allowCustom){
     if (!v || typeof v !== "object") return null;
     var code = str(v.code, 60), label = str(v.label, 120);
@@ -9910,6 +9917,7 @@ function generateAilmentPDF(ailmentType) {
         cognitiveTier: needs.cognitiveTier,
         visualNeeds: needs.visualNeeds,
         occupation: choice(t1.occupation, BOOK.occupation, true),
+        primaryVocation: (function(v){ var c = choice(v, VOCATION_BOOK, false); if (c && v.auto) c.auto = true; return c; })(t1.primaryVocation),
         topHobbies: choices(t1.topHobbies, BOOK.hobbies, 5, true),
         printNeeds: {
           vision: choice(pn.vision, BOOK.vision, false), readingLevel: choice(pn.readingLevel, BOOK.readingLevel, false),
@@ -9924,6 +9932,7 @@ function generateAilmentPDF(ailmentType) {
         age: int(t2.age, 18, 120), birthYear: int(t2.birthYear, 1900, new Date().getFullYear()),
         meaningfulDecades: strings(t2.meaningfulDecades, 10, 5).filter(function(d){ return /^19\d0s$/.test(d); }),
         hometown: { environment: choice(hm.environment, BOOK.hometown, false), place: str(hm.place, 60) },
+        region: choice(t2.region, REGION_BOOK, false),
         skills: { items: choices(sk.items, BOOK.skills, 20, true), other: str(sk.other, 80) },
         military: {
           branch: branch,

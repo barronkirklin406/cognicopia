@@ -940,6 +940,25 @@ body { padding-left: var(--sb-w); }
         </div>
 
         <div class="rap-field">
+          <label for="rapRegion">Region where they grew up <span class="rap-opt">(optional)</span></label>
+          <select id="rapRegion" name="region" aria-describedby="rapRegionHint">
+            <option value="">Work it out from the town</option>
+            <option value="midwest">Midwest (for example, Ohio, Iowa, Minnesota)</option>
+            <option value="plains">Great Plains (the Dakotas, Nebraska, Kansas, Oklahoma)</option>
+            <option value="northeast">Northeast (New York, New Jersey, Pennsylvania)</option>
+            <option value="new-england">New England</option>
+            <option value="south">South (for example, Georgia, Tennessee, Alabama)</option>
+            <option value="appalachia">Appalachia (West Virginia, Kentucky)</option>
+            <option value="southwest">Texas and the Southwest</option>
+            <option value="mountain-west">Mountain West (for example, Colorado, Montana)</option>
+            <option value="pacific">Pacific Coast</option>
+            <option value="canada">Canada</option>
+            <option value="abroad">Another country</option>
+          </select>
+          <p class="rap-hint" id="rapRegionHint">Reminiscence cards use it, with the hometown above, for the brands, radio and places of their own years, such as &ldquo;Rural Midwest&rdquo; or &ldquo;Urban Northeast&rdquo;.</p>
+        </div>
+
+        <div class="rap-field">
           <label for="rapJob">Primary occupation</label>
           <select id="rapJob" name="occupation" aria-describedby="rapJobHint">
             <option value="">Choose one</option>
@@ -973,6 +992,31 @@ body { padding-left: var(--sb-w); }
         <div class="rap-field" data-when='{"f":"occupation","in":["other"]}' hidden>
           <label for="rapJobOther">Type the occupation</label>
           <input id="rapJobOther" name="occupationOther" type="text" maxlength="60" placeholder="e.g., Telephone operator, Beekeeper">
+        </div>
+        <div class="rap-field">
+          <label for="rapVocation">Primary vocation, for reminiscence <span class="rap-opt">(optional)</span></label>
+          <select id="rapVocation" name="primaryVocation" aria-describedby="rapVocationHint">
+            <option value="">Follow their occupation</option>
+            <option value="mechanic">Mechanic</option>
+            <option value="teacher">Teacher</option>
+            <option value="military">Military</option>
+            <option value="culinary">Culinary</option>
+            <option value="nursing">Nursing and health care</option>
+            <option value="farming">Farming and ranching</option>
+            <option value="homemaking">Homemaking</option>
+            <option value="office">Office and bookkeeping</option>
+            <option value="trades">Building trades</option>
+            <option value="factory">Factory and mill work</option>
+            <option value="railroad">Railroad</option>
+            <option value="driving">Driving for a living</option>
+            <option value="postal">Postal service</option>
+            <option value="commerce">Shopkeeping and business</option>
+            <option value="sewing">Sewing and tailoring</option>
+            <option value="public-safety">Police and fire service</option>
+            <option value="engineering">Engineering and science</option>
+            <option value="ministry">Ministry and church work</option>
+          </select>
+          <p class="rap-hint" id="rapVocationHint">The work their reminiscence cards talk about. Usually their occupation; choose another when a different role meant more, like a homemaker who ran the church kitchen (Culinary).</p>
         </div>
 
         <fieldset class="rap-field rap-group">
@@ -1336,6 +1380,7 @@ body { padding-left: var(--sb-w); }
   <footer class="site-footer">Cognicopia is made by BarronCrafts. Everything happens inside your browser.</footer>
 
 <script src="assets/services/secureStore.js"></script>
+<script src="assets/services/reminiscenceEngine.js"></script>
 <script>
 /* Resident Activity Profile wizard (phase 1).
    Plain ES2017, no libraries, no network. The draft and every saved
@@ -1791,6 +1836,12 @@ body { padding-left: var(--sb-w); }
   /* ---- build the tiered profile object from the form ---- */
   function buildResidentProfile(){
     var occupation = choice("rapJob");
+    function primaryVocation(occ){
+      var pick = choice("rapVocation");
+      if (pick) return pick;
+      var R = window.CogniReminiscence, v = R && occ ? R.vocationFor(occ.code) : null;
+      return v && v.code !== "general" ? { code: v.code, label: v.label, auto: true } : null;
+    }
     if (occupation && occupation.code === "other") occupation.label = text("rapJobOther") || "Other";
     var diffLevel = number("rapDiff") || 3;
     var genres = [choice("rapGenre1"), choice("rapGenre2")].filter(Boolean)
@@ -1819,6 +1870,7 @@ body { padding-left: var(--sb-w); }
         cognitiveTier: needs.cognitiveTier,             // v2: 1 full detail, 2 guided, 3 simplified
         visualNeeds: needs.visualNeeds,                 // v2: contrastMode, fontSizeScale (from vision), lineThicknessPt
         occupation: occupation,
+        primaryVocation: primaryVocation(occupation),   // for reminiscence: staff's choice, or worked out from the occupation (auto)
         topHobbies: ticks("hobbies"),
         printNeeds: {
           vision: choice("rapVision"),
@@ -1840,6 +1892,7 @@ body { padding-left: var(--sb-w); }
         birthYear: number("rapBorn"),
         meaningfulDecades: ticks("decades").map(function(d){ return d.code; }),
         hometown: { environment: choice("rapHome"), place: text("rapTown") },
+        region: choice("rapRegion"),                    // optional; reminiscence works it out from the town when empty
         skills: { items: ticks("skills"), other: text("rapSkillOther") },
         military: {
           branch: branch,
@@ -1892,7 +1945,8 @@ body { padding-left: var(--sb-w); }
       lineThickness: String(vn.lineThicknessPt), needsAuto: auto.join(","),
       age: t2.age == null ? "" : String(t2.age), birthYear: t2.birthYear == null ? "" : String(t2.birthYear),
       completedBy: code((p.meta || {}).completedBy), decades: t2.meaningfulDecades || [],
-      hometown: code((t2.hometown || {}).environment), hometownName: (t2.hometown || {}).place || "",
+      hometown: code((t2.hometown || {}).environment), hometownName: (t2.hometown || {}).place || "", region: code(t2.region),
+      primaryVocation: t1.primaryVocation && !t1.primaryVocation.auto ? code(t1.primaryVocation) : "",
       occupation: code(occ), occupationOther: occ && occ.code === "other" && occ.label !== "Other" ? occ.label : "",
       skills: codes((t2.skills || {}).items), skillsOther: (t2.skills || {}).other || "",
       militaryBranch: code(mil.branch), militaryEra: code(mil.era), militaryTopic: code(mil.talkingAboutIt),
@@ -2006,6 +2060,11 @@ body { padding-left: var(--sb-w); }
       ["Visual needs", [t1.visualNeeds.contrastMode === "high_contrast" ? "High contrast" : "Standard contrast",
         "text " + t1.visualNeeds.fontSizeScale + "×", t1.visualNeeds.lineThicknessPt + " pt lines"].join(" · ")],
       ["Work", t1.occupation ? t1.occupation.label : ""],
+      ["Reminiscence", (function(){
+        var R = window.CogniReminiscence; if (!R) return "";
+        var who = R.person(p);
+        return [who.placeLabel, who.vocation.code !== "general" ? who.vocation.label : "", who.birthYearKnown ? "their years " + who.bump[0] + " to " + who.bump[1] : ""].filter(Boolean).join(" · ");
+      })()],
       ["Top hobbies", labels(t1.topHobbies)],
       ["Decades", t2.meaningfulDecades.join(", ")],
       ["Print", [t1.printNeeds.vision && t1.printNeeds.vision.label, t1.printNeeds.paper && t1.printNeeds.paper.label, t1.printNeeds.ink && t1.printNeeds.ink.label].filter(Boolean).join(" · ")],
