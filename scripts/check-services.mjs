@@ -791,5 +791,103 @@ group("academy", () => {
   sandbox.__acadStats = `${pro.length} masterclasses, ${fam.length} family guides, ${guidePages} guide pages`;
 });
 
+/* ---------- 10. Clinical Science & Research Center (researchCenter.ts) ---------- */
+group("researchCenter", () => {
+  const R = sandbox.CogniResearch;
+  ok(R && typeof R.boardPages === "function", "CogniResearch is not loaded");
+  // content integrity: every citation resolves, every reference is used, every document is complete
+  const bad = R.problems();
+  ok(bad.length === 0, "content problems: " + bad.slice(0, 5).join("; "));
+  ok(R.DOCS.length >= 10 && R.REFS.length >= 30, `library: ${R.DOCS.length} documents, ${R.REFS.length} references`);
+  ["research", "whitepaper", "case", "regulation"].forEach(t => ok(R.DOCS.some(d => d.type === t), "a document of type " + t));
+  R.LEVEL_ORDER.forEach(l => ok(R.DOCS.some(d => d.level === l), "a document rated " + l));
+  // the two subjects the request named
+  const eeg = R.docOf("pattern-drawing-eeg"), lv = R.docOf("low-vision-print");
+  ok(eeg && R.refsOf(eeg).indexOf("usman2024") >= 0 && R.refsOf(eeg).indexOf("lin2026") >= 0, "the Zentangle EEG summary cites both EEG studies");
+  ok(lv && ["wcag22", "aph_lp", "rubin1989", "owsley2007"].every(k => R.refsOf(lv).indexOf(k) >= 0), "the low-vision whitepaper cites WCAG, APH, Rubin & Legge and Owsley");
+  // honesty: composites labeled, sources on every figure, limits on every document, no hype
+  R.DOCS.forEach(d => {
+    ok(d.takeaways.length >= 3 && d.takeaways.length <= 6 && d.limits.length >= 2 && d.practice.length >= 2, `${d.slug}: takeaways, practice and limits`);
+    ok(d.type !== "case" || (d.level === "illustrative" && /composite/.test(d.scenario || "") && /no outcome data/.test(d.scenario || "")), `${d.slug}: a case scenario says it is a composite with no outcome data`);
+    d.figures.forEach(f => ok(R.citeKeys(f.cite).length > 0, `${d.slug}: the figure "${f.value}" has a source`));
+    const all = R.docTexts(d).join(" \n ");
+    ok(!/\b(clinically proven|guaranteed?|miracle|breakthrough|cures?)\b/i.test(all), `${d.slug}: no hype words`);
+    const proven = [...all.matchAll(/\bproven\b/gi)].every(m => /\b(no|not|never)\b[^.]{0,40}$/i.test(all.slice(Math.max(0, m.index - 48), m.index)));
+    ok(proven, `${d.slug}: "proven" appears only in a negation`);
+    ok(/[“"]rewires the brain[”"]/.test(all) || !/rewires the brain/i.test(all), `${d.slug}: "rewires the brain" only as a quoted example of what not to say`);
+  });
+  // citations: AMA style, short forms, order of first citation
+  ok(R.formatRef(R.refOf("usman2024")) === "Usman M, Jung TP, Hsin DY, Lin CL. The effect of Zentangle on cognitive focus, emotional well-being, and stress levels: a neural perspective. Brain and Behavior. 2024;14(8):e3628. doi:10.1002/brb3.3628", "AMA format: " + R.formatRef(R.refOf("usman2024")));
+  ok(R.formatRef(R.refOf("spector2003")).indexOf("Spector A, Thorgrimsen L, Woods B, et al. ") === 0, "seven authors print as three and et al");
+  ok(R.formatRef(R.refOf("zhuo2025")).indexOf("Zhuo X, Yan Y, Lin R, et al. ") === 0, "a partial author list prints et al");
+  ok(R.shortRef(R.refOf("usman2024")) === "Usman et al., 2024" && R.shortRef(R.refOf("chan2024")) === "Chan & Lo, 2024" && R.shortRef(R.refOf("strang2024")) === "Strang, 2024" && R.shortRef(R.refOf("owsley2007")) === "Owsley et al., 2007" && R.shortRef(R.refOf("nice2018")) === "NICE, 2018",
+    "short citations");
+  R.REFS.forEach(r => ok((!r.doi || /^10\.\d{4,9}\/\S+$/.test(r.doi)) && (!r.url || /^https:\/\//.test(r.url)) && r.title && (r.year || r.url), `${r.id}: a well-formed reference`));
+  ok(JSON.stringify(R.citeKeys("a [@x; @y] b [@z]")) === '["x","y","z"]' && R.plain("Read [[low-vision-print|this]] now. [@x]") === "Read this now.", "citation and link markup");
+  const first = R.refsOf(eeg);
+  ok(first[0] === "usman2024" && first[1] === "lin2026", "references are numbered in the order they are first cited");
+  // the board packet: the license price as the site states it, and only the facility's own figures otherwise
+  const idx = fs.readFileSync(path.join(ROOT, "index.html"), "utf8"), price = /const PRICE\s*=\s*"\$([\d.]+) a year"/.exec(idx);
+  ok(price && Number(price[1]) === R.PRICE_PER_BUILDING, "the packet's price matches the site's: " + (price && price[1]));
+  const w = R.worksheet(R.normalizeBoard({ buildings: 2, residents: "120", hoursNow: "10", hoursWith: "4", hourlyCost: "$24.50" }));
+  ok(w.annualCost === 259.98 && w.perResidentMonth === 0.18 && w.hoursFreedWeek === 6 && w.hoursFreedYear === 312 && w.valueYear === 7644 && w.net === 7384.02, "worksheet: " + JSON.stringify(w));
+  const blank = R.worksheet(R.normalizeBoard({}));
+  ok(blank.annualCost === 129.99 && blank.perResidentMonth === null && blank.hoursFreedYear === null && blank.valueYear === null && blank.net === null, "a blank worksheet invents nothing");
+  ok(R.worksheet(R.normalizeBoard({ hoursNow: 3, hoursWith: 5 })).hoursFreedWeek === 0, "more hours with the tool never reads as negative time");
+  const n = R.normalizeBoard({ facility: "x".repeat(300), buildings: 0, residents: 999999, hourlyCost: -4, meeting: "2026-13-45", hoursNow: "abc" });
+  ok(n.facility.length === 80 && n.buildings === 1 && n.residents === 5000 && n.hourlyCost === null && n.meeting === "" && n.hoursNow === null, "board input is cleaned: " + JSON.stringify(n).slice(0, 120));
+  ok(R.boardFileName(R.normalizeBoard({ facility: "Oak: North/South" })) === "Cognicopia board packet - Oak - NorthSouth.pdf", "a file name every computer accepts");
+  // the packet's layout, with an approximate line breaker (the page uses the real font's widths)
+  const approx = (text, width, size, bold) => { const cw = size * (bold ? 0.56 : 0.52), max = Math.max(1, Math.floor(width / cw)), out = []; let cur = "";
+    String(text).split(/\s+/).filter(Boolean).forEach(wd => { while (wd.length > max){ if (cur){ out.push(cur); cur = ""; } out.push(wd.slice(0, max)); wd = wd.slice(max); } if ((cur ? cur + " " + wd : wd).length > max){ out.push(cur); cur = wd; } else cur = cur ? cur + " " + wd : wd; });
+    if (cur || !out.length) out.push(cur); return out; };
+  const width = o => String(o.text).length * (o.size || 10.5) * (o.bold ? 0.56 : 0.52);
+  const SAFE = /^[\x20-\x7E -ÿ–—‘’“”•…−×÷≈≤≥§]*$/;   // what the embedded Atkinson Hyperlegible draws
+  let packetPages = 0;
+  for (const scale of [0.85, 1, 1.15]){
+    for (const input of [R.normalizeBoard({}), R.normalizeBoard({ facility: "The Very Long Named Senior Living Community of Springfield Heights", preparedBy: "Bartholomew Alexander Montgomery-Fitzgerald", role: "Director of Life Enrichment and Resident Engagement", meeting: "2026-11-12", buildings: 3, residents: 420, hoursNow: 18, hoursWith: 6.5, hourlyCost: 31.75 })]){
+      const pages = R.boardPages(input, (t, wd, sz, b) => approx(t, wd * scale, sz, b));
+      packetPages = Math.max(packetPages, pages.length);
+      ok(pages.length >= 7 && pages.length <= 12, `packet (widths × ${scale}): ${pages.length} pages`);
+      const texts = pages.reduce((a, p) => a.concat(p.ops.filter(o => o.t === "text")), []);
+      ok(texts.every(o => SAFE.test(o.text)), `packet (widths × ${scale}): every character is one the font draws: ` + texts.filter(o => !SAFE.test(o.text)).map(o => o.text).slice(0, 2).join(" | "));
+      if (scale <= 1){   // a breaker that claims more room than the font has (× 1.15) overflows by design; it tests page breaks only
+        ok(pages.every(p => p.ops.every(o => o.t !== "text" || (o.y > 0 && o.y <= p.h - 30 && (o.align === "right" ? o.x - width(o) >= 50 : o.x >= 50 && o.x + width(o) <= p.w - 50)))), `packet (widths × ${scale}): text inside the margins`);
+        const boxes = p => p.ops.filter(o => o.t === "text").map(o => { const l = o.align === "right" ? o.x - width(o) : o.align === "center" ? o.x - width(o) / 2 : o.x; return { l, r: l + width(o), t: o.y - o.size * 0.8, b: o.y + o.size * 0.22, text: o.text }; });
+        const clash = pages.map(boxes).map(bx => { for (let i = 0; i < bx.length; i++) for (let j = i + 1; j < bx.length; j++){ const a = bx[i], c = bx[j]; if (a.l < c.r - 0.5 && c.l < a.r - 0.5 && a.t < c.b - 0.5 && c.t < a.b - 0.5) return a.text + " / " + c.text; } return ""; }).filter(Boolean);
+        ok(!clash.length, `packet (widths × ${scale}): no text overlaps other text: ` + clash.slice(0, 2).join(" | "));
+      }
+      ok(pages.every(p => p.ops.every(o => o.t === "text" || (o.y >= 0 && o.y <= p.h))), `packet (widths × ${scale}): rules and fills on the page`);
+      ok(!pages[0].ops.some(o => o.t === "text" && /^Page \d+ of/.test(o.text)) && pages.slice(1).every((p, k) => p.ops.some(o => o.t === "text" && o.text === `Page ${k + 2} of ${pages.length}`)), `packet (widths × ${scale}): the cover has no footer, every other page is numbered`);
+      ok(pages.every(p => { const body = p.ops.filter(o => o.t === "text" && o.y < p.h - 60), last = body[body.length - 1]; return !last || !(last.bold && last.size >= 12.5); }), `packet (widths × ${scale}): no page ends with a heading`);
+      const all = texts.map(o => o.text).join(" ");
+      ok(/Disclosure/.test(all) && /vendor of the tools/.test(all) && /\$129\.99/.test(all), `packet (widths × ${scale}): the price and the vendor's disclosure are printed`);
+    }
+  }
+  const longFoot = R.boardFooter("The Very Long Named Senior Living Community of Springfield Heights", approx);
+  ok(approx(longFoot, 612 - 108 - 84, 8.5, false).length === 1 && /Springfield…|Community…|Heights…|of…|Living…|Named…|Senior…|Very…/.test(longFoot) && /Evidence reviewed September 2026$/.test(longFoot), "a long facility name is shortened in the footer: " + longFoot);
+  ok(R.boardFooter("", approx) === "Cognicopia board packet · Evidence reviewed September 2026" && R.boardFooter("Maple Grove", approx) === "Cognicopia board packet · Maple Grove · Evidence reviewed September 2026", "a short facility name prints in full in the footer");
+  const { refs } = R.boardBlocks(R.normalizeBoard({}));
+  ok(refs.length >= 10 && refs.every(k => R.refOf(k)), `the packet cites ${refs.length} references, all real`);
+  const calls = []; const docp = new Proxy({}, { get: (o, k) => (...args) => { calls.push(k); } });
+  R.draw(docp, R.boardPages(R.normalizeBoard({}), approx)[1]);
+  ok(["text", "line", "rect", "setFillColor", "setFont"].every(k => calls.includes(k)), "pages draw as text, lines and fills");
+  // the generated pages: one h1, unique ids, and every in-page link and label points at something
+  const pagesDir = path.join(ROOT, "resources", "research"), files = ["index.html"].concat(R.DOCS.map(d => d.slug + "/index.html"));
+  files.forEach(f => {
+    const h = fs.readFileSync(path.join(pagesDir, f), "utf8"), ids = [...h.matchAll(/\sid="([^"]+)"/g)].map(m => m[1]), idSet = new Set(ids);
+    ok(ids.length === idSet.size, `${f}: unique ids (${ids.filter((x, i) => ids.indexOf(x) !== i).slice(0, 3).join(", ")})`);
+    ok((h.match(/<h1[\s>]/g) || []).length === 1, `${f}: one h1`);
+    const targets = [...h.matchAll(/\shref="#([^"]+)"/g)].map(m => m[1]).concat([...h.matchAll(/\saria-(?:labelledby|controls|describedby)="([^"]+)"/g)].reduce((a, m) => a.concat(m[1].split(/\s+/)), []));
+    ok(targets.every(t => idSet.has(t) || t === "rcTip"), `${f}: every in-page link and label has a target (${targets.filter(t => !idSet.has(t) && t !== "rcTip").slice(0, 3).join(", ")})`);
+    ok([...h.matchAll(/<a [^>]*target="_blank"[^>]*>/g)].every(m => /rel="noopener( noreferrer)?"/.test(m[0])), `${f}: links that open a new tab use rel=noopener`);
+  });
+  R.DOCS.forEach(d => {
+    const h = fs.readFileSync(path.join(pagesDir, d.slug, "index.html"), "utf8");
+    ok((h.match(/<li id="ref-\d+">/g) || []).length === R.refsOf(d).length && (h.match(/<section class="rc-sec"/g) || []).length === d.sections.length, `${d.slug}: the page has every reference and section`);
+  });
+  sandbox.__rcStats = `${R.DOCS.length} research documents, ${R.REFS.length} references, a ${packetPages}-page board packet`;
+});
+
 if (fails.length){ console.log(`services check FAILED: ${fails.length} problem(s), ${pass} passed\n  - ` + fails.slice(0, 30).join("\n  - ")); process.exit(1); }
-console.log(`services check passed: ${pass} checks (${tscNote}; slowest page ${sandbox.__dveWorst} ms; 300 sealed residents open in ${sandbox.__storeMs} ms; ${sandbox.__remStats}; ${sandbox.__facStats}; ${sandbox.__acadStats})`);
+console.log(`services check passed: ${pass} checks (${tscNote}; slowest page ${sandbox.__dveWorst} ms; 300 sealed residents open in ${sandbox.__storeMs} ms; ${sandbox.__remStats}; ${sandbox.__facStats}; ${sandbox.__acadStats}; ${sandbox.__rcStats})`);

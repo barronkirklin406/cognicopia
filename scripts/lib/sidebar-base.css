@@ -1,0 +1,229 @@
+/* The shared sidebar and top bar base styles, as every Resource & Clinical Hub page
+   carries them (scripts/site-nav.mjs writes the sidebar itself). Used by
+   scripts/research-pages.mjs for the Research Center's pages. */
+/* ═══════════════════════════════════════════════════════════
+   COGNICOPIA  —  LEFT-HAND SIDEBAR NAV  (shared)
+   ══════════════════════════════════════════════════════════= */
+:root {
+  --sb-w:      220px;          /* sidebar width */
+  --sb-bg:     rgba(8,28,21,.96);
+  --sb-border: rgba(216,243,220,.15);
+  --sb-accent: #52b788;
+  --sb-hover:  rgba(82,183,136,.18);
+  --sb-txt:    #d8f3dc;
+  --sb-muted:  rgba(216,243,220,.55);
+  --sb-hdr-sz: 9.5pt;
+  --sb-lnk-sz: 10pt;
+}
+
+/* Push body content right to make room */
+body { padding-left: var(--sb-w); }
+
+/* ── Sidebar shell ── */
+.cg-sidebar {
+  position: fixed;
+  top: 0; left: 0;
+  width: var(--sb-w);
+  height: 100vh;
+  z-index: 900;
+  display: flex;
+  flex-direction: column;
+  background: var(--sb-bg);
+  border-right: 1px solid var(--sb-border);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(82,183,136,.3) transparent;
+}
+.cg-sidebar::-webkit-scrollbar { width: 4px; }
+.cg-sidebar::-webkit-scrollbar-thumb { background: rgba(82,183,136,.3); border-radius: 4px; }
+
+/* ── Logo / brand at top ── */
+.cg-sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 18px 16px 14px;
+  border-bottom: 1px solid var(--sb-border);
+  text-decoration: none;
+  color: #fff;
+  font-family: "Trebuchet MS","Segoe UI",sans-serif;
+  font-size: 15pt;
+  font-weight: 700;
+  flex-shrink: 0;
+  letter-spacing: -.01em;
+}
+.cg-sidebar-brand:hover { color: var(--sb-accent); }
+.cg-sidebar-brand img {
+  width: 32px; height: 26px;
+  flex: none; object-fit: contain;
+  border-radius: 3px;
+}
+
+/* ── "Home (Tool)" link ── */
+.cg-sidebar-home {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 16px;
+  color: var(--sb-txt);
+  font-size: var(--sb-lnk-sz);
+  font-family: "Trebuchet MS","Segoe UI",sans-serif;
+  text-decoration: none;
+  border-bottom: 1px solid var(--sb-border);
+  transition: background .15s, color .15s;
+  flex-shrink: 0;
+}
+.cg-sidebar-home:hover,
+.cg-sidebar-home.active {
+  background: var(--sb-hover);
+  color: #fff;
+}
+.cg-sidebar-home svg { flex: none; opacity: .7; }
+
+/* ── Nav sections ── */
+.cg-sidebar-nav {
+  flex: 1;
+  padding: 8px 0 24px;
+  list-style: none;
+  margin: 0;
+}
+
+/* Section header labels */
+.cg-sb-section {
+  padding: 16px 14px 4px;
+  font-size: var(--sb-hdr-sz);
+  font-family: "Trebuchet MS","Segoe UI",sans-serif;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--sb-accent);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  line-height: 1.3;
+  user-select: none;
+}
+.cg-sb-section svg { flex: none; opacity: .85; }
+
+/* Sidebar links */
+.cg-sidebar-nav a {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  padding: 7px 14px 7px 20px;
+  color: var(--sb-txt);
+  font-size: var(--sb-lnk-sz);
+  font-family: "Trebuchet MS","Segoe UI",sans-serif;
+  text-decoration: none;
+  line-height: 1.35;
+  border-left: 2px solid transparent;
+  transition: background .15s, color .13s, border-color .13s;
+  word-break: break-word;
+}
+.cg-sidebar-nav a:hover {
+  background: var(--sb-hover);
+  color: #fff;
+  border-left-color: var(--sb-accent);
+}
+.cg-sidebar-nav a.active {
+  background: rgba(82,183,136,.22);
+  color: #fff;
+  border-left-color: var(--sb-accent);
+  font-weight: 600;
+}
+.cg-sidebar-nav a .cg-bullet {
+  flex: none;
+  margin-top: 3px;
+  color: var(--sb-muted);
+  font-size: 10px;
+  transition: color .13s;
+}
+.cg-sidebar-nav a:hover .cg-bullet,
+.cg-sidebar-nav a.active .cg-bullet { color: var(--sb-accent); }
+
+/* Thin divider between sections */
+.cg-sb-divider {
+  height: 1px;
+  background: var(--sb-border);
+  margin: 8px 14px;
+}
+
+/* ── Hamburger toggle (mobile) ── */
+.cg-sidebar-toggle {
+  display: none;
+  position: fixed;
+  top: 12px; left: 12px;
+  z-index: 1100;
+  width: 40px; height: 40px;
+  background: rgba(8,28,21,.92);
+  border: 1px solid var(--sb-border);
+  border-radius: 8px;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(10px);
+}
+.cg-sidebar-toggle svg { color: #d8f3dc; }
+
+/* ── Narrow top bar: replaces old .navbar ── */
+.cg-topbar {
+  position: sticky;
+  top: 0; left: 0; right: 0;
+  z-index: 800;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 16px;
+  padding: 0 28px 0 16px;
+  background: rgba(8,28,21,.82);
+  border-bottom: 1px solid var(--sb-border);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+.cg-topbar a, .cg-topbar button.linklike {
+  color: #e8f5e9;
+  font-size: 10pt;
+  font-family: "Trebuchet MS","Segoe UI",sans-serif;
+  text-decoration: none;
+}
+.cg-topbar a:hover { color: #d8f3dc; }
+
+/* ── Responsive: collapse sidebar on small screens ── */
+@media (max-width: 700px) {
+  body { padding-left: 0; }
+  .cg-sidebar {
+    transform: translateX(-100%);
+    transition: transform .22s ease;
+    width: min(260px, 85vw);
+    box-shadow: 6px 0 32px rgba(0,0,0,.45);
+  }
+  .cg-sidebar.is-open { transform: translateX(0); }
+  .cg-sidebar-toggle { display: flex; }
+  .cg-sb-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    z-index: 850;
+    background: rgba(0,0,0,.45);
+  }
+  .cg-sb-overlay.is-open { display: block; }
+}
+
+
+/* mobile menu button */
+
+/* Mobile menu button: hamburger icon + "Categories" label */
+.cg-sidebar-toggle{top:10px;left:12px;width:auto;height:40px;padding:8px 12px;gap:8px;max-width:calc(100vw - 24px);
+  align-items:center;justify-content:center;background:#000;color:#fff;border:1px solid rgba(255,255,255,.28);border-radius:6px;
+  font:600 14px/1 "Segoe UI",system-ui,-apple-system,Arial,sans-serif;white-space:nowrap;backdrop-filter:none}
+.cg-sidebar-toggle svg{color:#fff;flex:none}
+.cg-sidebar-toggle:focus-visible{outline:3px solid #7ad3a4;outline-offset:3px}
+@media (max-width:700px){
+  /* keep the top bar's own buttons clear of the Categories button */
+  .cg-topbar{padding-left:164px;height:auto;min-height:60px;flex-wrap:wrap;row-gap:6px;padding-top:9px;padding-bottom:9px}
+  /* the open menu starts below the button, so its heading isn't hidden */
+  .cg-sidebar{padding-top:58px}
+}

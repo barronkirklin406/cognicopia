@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Regulatory Crosswalk: CMS Requirements for Activities, Dementia Care and Staff Training - Cognicopia</title>
+  <meta name="description" content="A plain-language crosswalk of the CMS requirements that shape activity programs (F550, F583, F656, F675, F679, F680, F744 and F947) and where Cognicopia’s tools can support them. It supports compliance work; it does not guarantee compliance.">
+  <link rel="canonical" href="https://cognicopia.org/resources/research/regulatory-crosswalk/">
+  <script>(function(){try{var s=JSON.parse(localStorage.getItem("cg_rc_reader")||"{}"),d=document.documentElement,o={size:["large","largest"],lead:["wide"],theme:["dark","max"]};for(var k in o)if(o[k].indexOf(s[k])>=0)d.setAttribute("data-rc-"+k,s[k]);}catch(e){}})();</script>
+  <style id="rc-style">
+@font-face{font-family:"Atkinson Hyperlegible";src:url("../../../fonts/AtkinsonHyperlegible-Regular.ttf") format("truetype");font-style:normal;font-weight:400;font-display:swap}
+@font-face{font-family:"Atkinson Hyperlegible";src:url("../../../fonts/AtkinsonHyperlegible-Bold.ttf") format("truetype");font-style:normal;font-weight:700;font-display:swap}
+@font-face{font-family:"Atkinson Hyperlegible";src:url("../../../fonts/AtkinsonHyperlegible-Italic.ttf") format("truetype");font-style:italic;font-weight:400;font-display:swap}
+@font-face{font-family:"Atkinson Hyperlegible";src:url("../../../fonts/AtkinsonHyperlegible-BoldItalic.ttf") format("truetype");font-style:italic;font-weight:700;font-display:swap}
+/* The shared sidebar and top bar base styles, as every Resource & Clinical Hub page
+   carries them (scripts/site-nav.mjs writes the sidebar itself). Used by
+   scripts/research-pages.mjs for the Research Center's pages. */
+/* ═══════════════════════════════════════════════════════════
+   COGNICOPIA  —  LEFT-HAND SIDEBAR NAV  (shared)
+   ══════════════════════════════════════════════════════════= */
+:root {
+  --sb-w:      220px;          /* sidebar width */
+  --sb-bg:     rgba(8,28,21,.96);
+  --sb-border: rgba(216,243,220,.15);
+  --sb-accent: #52b788;
+  --sb-hover:  rgba(82,183,136,.18);
+  --sb-txt:    #d8f3dc;
+  --sb-muted:  rgba(216,243,220,.55);
+  --sb-hdr-sz: 9.5pt;
+  --sb-lnk-sz: 10pt;
+}
+
+/* Push body content right to make room */
+body { padding-left: var(--sb-w); }
+
+/* ── Sidebar shell ── */
+.cg-sidebar {
+  position: fixed;
+  top: 0; left: 0;
+  width: var(--sb-w);
+  height: 100vh;
+  z-index: 900;
+  display: flex;
+  flex-direction: column;
+  background: var(--sb-bg);
+  border-right: 1px solid var(--sb-border);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(82,183,136,.3) transparent;
+}
+.cg-sidebar::-webkit-scrollbar { width: 4px; }
+.cg-sidebar::-webkit-scrollbar-thumb { background: rgba(82,183,136,.3); border-radius: 4px; }
+
+/* ── Logo / brand at top ── */
+.cg-sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 18px 16px 14px;
+  border-bottom: 1px solid var(--sb-border);
+  text-decoration: none;
+  color: #fff;
+  font-family: "Trebuchet MS","Segoe UI",sans-serif;
+  font-size: 15pt;
+  font-weight: 700;
+  flex-shrink: 0;
+  letter-spacing: -.01em;
+}
+.cg-sidebar-brand:hover { color: var(--sb-accent); }
+.cg-sidebar-brand img {
+  width: 32px; height: 26px;
+  flex: none; object-fit: contain;
+  border-radius: 3px;
+}
+
+/* ── "Home (Tool)" link ── */
+.cg-sidebar-home {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 16px;
+  color: var(--sb-txt);
+  font-size: var(--sb-lnk-sz);
+  font-family: "Trebuchet MS","Segoe UI",sans-serif;
+  text-decoration: none;
+  border-bottom: 1px solid var(--sb-border);
+  transition: background .15s, color .15s;
+  flex-shrink: 0;
+}
+.cg-sidebar-home:hover,
+.cg-sidebar-home.active {
+  background: var(--sb-hover);
+  color: #fff;
+}
+.cg-sidebar-home svg { flex: none; opacity: .7; }
+
+/* ── Nav sections ── */
+.cg-sidebar-nav {
+  flex: 1;
+  padding: 8px 0 24px;
+  list-style: none;
+  margin: 0;
+}
+
+/* Section header labels */
+.cg-sb-section {
+  padding: 16px 14px 4px;
+  font-size: var(--sb-hdr-sz);
+  font-family: "Trebuchet MS","Segoe UI",sans-serif;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--sb-accent);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  line-height: 1.3;
+  user-select: none;
+}
+.cg-sb-section svg { flex: none; opacity: .85; }
+
+/* Sidebar links */
+.cg-sidebar-nav a {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  padding: 7px 14px 7px 20px;
+  color: var(--sb-txt);
+  font-size: var(--sb-lnk-sz);
+  font-family: "Trebuchet MS","Segoe UI",sans-serif;
+  text-decoration: none;
+  line-height: 1.35;
+  border-left: 2px solid transparent;
+  transition: background .15s, color .13s, border-color .13s;
+  word-break: break-word;
+}
+.cg-sidebar-nav a:hover {
+  background: var(--sb-hover);
+  color: #fff;
+  border-left-color: var(--sb-accent);
+}
+.cg-sidebar-nav a.active {
+  background: rgba(82,183,136,.22);
+  color: #fff;
+  border-left-color: var(--sb-accent);
+  font-weight: 600;
+}
+.cg-sidebar-nav a .cg-bullet {
+  flex: none;
+  margin-top: 3px;
+  color: var(--sb-muted);
+  font-size: 10px;
+  transition: color .13s;
+}
+.cg-sidebar-nav a:hover .cg-bullet,
+.cg-sidebar-nav a.active .cg-bullet { color: var(--sb-accent); }
+
+/* Thin divider between sections */
+.cg-sb-divider {
+  height: 1px;
+  background: var(--sb-border);
+  margin: 8px 14px;
+}
+
+/* ── Hamburger toggle (mobile) ── */
+.cg-sidebar-toggle {
+  display: none;
+  position: fixed;
+  top: 12px; left: 12px;
+  z-index: 1100;
+  width: 40px; height: 40px;
+  background: rgba(8,28,21,.92);
+  border: 1px solid var(--sb-border);
+  border-radius: 8px;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(10px);
+}
+.cg-sidebar-toggle svg { color: #d8f3dc; }
+
+/* ── Narrow top bar: replaces old .navbar ── */
+.cg-topbar {
+  position: sticky;
+  top: 0; left: 0; right: 0;
+  z-index: 800;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 16px;
+  padding: 0 28px 0 16px;
+  background: rgba(8,28,21,.82);
+  border-bottom: 1px solid var(--sb-border);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+.cg-topbar a, .cg-topbar button.linklike {
+  color: #e8f5e9;
+  font-size: 10pt;
+  font-family: "Trebuchet MS","Segoe UI",sans-serif;
+  text-decoration: none;
+}
+.cg-topbar a:hover { color: #d8f3dc; }
+
+/* ── Responsive: collapse sidebar on small screens ── */
+@media (max-width: 700px) {
+  body { padding-left: 0; }
+  .cg-sidebar {
+    transform: translateX(-100%);
+    transition: transform .22s ease;
+    width: min(260px, 85vw);
+    box-shadow: 6px 0 32px rgba(0,0,0,.45);
+  }
+  .cg-sidebar.is-open { transform: translateX(0); }
+  .cg-sidebar-toggle { display: flex; }
+  .cg-sb-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    z-index: 850;
+    background: rgba(0,0,0,.45);
+  }
+  .cg-sb-overlay.is-open { display: block; }
+}
+
+
+/* mobile menu button */
+
+/* Mobile menu button: hamburger icon + "Categories" label */
+.cg-sidebar-toggle{top:10px;left:12px;width:auto;height:40px;padding:8px 12px;gap:8px;max-width:calc(100vw - 24px);
+  align-items:center;justify-content:center;background:#000;color:#fff;border:1px solid rgba(255,255,255,.28);border-radius:6px;
+  font:600 14px/1 "Segoe UI",system-ui,-apple-system,Arial,sans-serif;white-space:nowrap;backdrop-filter:none}
+.cg-sidebar-toggle svg{color:#fff;flex:none}
+.cg-sidebar-toggle:focus-visible{outline:3px solid #7ad3a4;outline-offset:3px}
+@media (max-width:700px){
+  /* keep the top bar's own buttons clear of the Categories button */
+  .cg-topbar{padding-left:164px;height:auto;min-height:60px;flex-wrap:wrap;row-gap:6px;padding-top:9px;padding-bottom:9px}
+  /* the open menu starts below the button, so its heading isn't hidden */
+  .cg-sidebar{padding-top:58px}
+}
+
+/* ── Clinical Science & Research Center ──
+   Reading surfaces are tuned for reviewing clinical material: 19 px Atkinson
+   Hyperlegible at 1.65 line height, lines of about 72 characters (33em,
+   measured; WCAG 1.4.8 asks for no more than 80), and text
+   contrast of at least 7:1 (WCAG AAA) in every color setting: paper
+   (16:1 body text), dark (15.7:1) and maximum contrast (21:1). */
+:root{
+  --rc-bg:#102219; --rc-paper:#fbfaf5; --rc-card:#ffffff; --rc-ink:#15201a; --rc-ink-2:#34433b; --rc-accent:#14532d; --rc-link:#0b4f2e;
+  --rc-rule:#cfd9d2; --rc-tint:#ebf4ee; --rc-caution:#fdf3e7; --rc-caution-ink:#7a3a0c; --rc-focus:#0b57d0; --rc-fs:19px; --rc-lh:1.65;
+}
+html[data-rc-size="large"]{--rc-fs:21px}
+html[data-rc-size="largest"]{--rc-fs:24px}
+html[data-rc-lead="wide"]{--rc-lh:1.9}
+html[data-rc-theme="dark"]{--rc-paper:#131d18;--rc-card:#18241e;--rc-ink:#f1f5f2;--rc-ink-2:#c6d3cc;--rc-accent:#93dbb4;--rc-link:#a5e6c2;--rc-rule:#34473d;--rc-tint:#1d2c24;--rc-caution:#2b2219;--rc-caution-ink:#f2c29a;--rc-focus:#9ecbff}
+html[data-rc-theme="max"]{--rc-paper:#ffffff;--rc-card:#ffffff;--rc-ink:#000000;--rc-ink-2:#000000;--rc-accent:#000000;--rc-link:#002f8f;--rc-rule:#000000;--rc-tint:#ffffff;--rc-caution:#ffffff;--rc-caution-ink:#000000;--rc-focus:#002f8f}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--rc-bg);color:#fff;font-family:"Atkinson Hyperlegible","Trebuchet MS","Segoe UI",sans-serif;line-height:1.6}
+.rc-sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.rc-skip{position:absolute;left:12px;top:-60px;z-index:2000;padding:10px 16px;border-radius:8px;background:#fff;color:#0b2a1c;font-weight:700;text-decoration:none}
+.rc-skip:focus{top:12px;outline:3px solid #7ad3a4}
+.rc-main{max-width:1060px;margin:0 auto;padding:28px 28px 48px}
+.site-footer{max-width:900px;margin:0 auto 32px;padding:0 20px;color:#fff;text-align:center;font-size:.9rem}
+.rc-paper{background:var(--rc-paper);color:var(--rc-ink);border-radius:18px;box-shadow:0 14px 40px rgba(0,0,0,.28);padding:clamp(20px,4.5vw,56px);font-size:var(--rc-fs);line-height:var(--rc-lh);overflow-wrap:break-word}
+html[data-rc-theme="max"] .rc-paper{border:2px solid #000;box-shadow:none}
+.rc-paper :focus-visible{outline:3px solid var(--rc-focus);outline-offset:2px}
+.rc-paper a{color:var(--rc-link);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
+.rc-paper a:hover{text-decoration-thickness:2px}
+.rc-paper h1,.rc-paper h2,.rc-paper h3{color:var(--rc-ink);line-height:1.22;margin:0}
+.rc-paper h1{font-size:1.85em;letter-spacing:-.01em;outline:none}
+.rc-paper h2{font-size:1.3em}
+.rc-paper h3{font-size:1.06em}
+.rc-paper p,.rc-paper li,.rc-paper dd{max-width:33em}
+.rc-paper p{margin:.75em 0}
+.rc-list{margin:.6em 0;padding-left:1.3em}
+.rc-list li{margin:.45em 0;padding-left:.15em}
+.rc-list li::marker{color:var(--rc-accent);font-weight:700}
+.rc-chip{display:inline-flex;align-items:center;min-height:1.9em;padding:.12em .75em;border-radius:999px;font-size:.74em;font-weight:700;letter-spacing:.02em;line-height:1.3}
+.rc-type{border:1.5px solid var(--rc-accent);color:var(--rc-accent)}
+.rc-lv{color:#fff;border:1.5px solid transparent}
+.lv-strong{background:#14532d}.lv-moderate{background:#1e3a8a}.lv-emerging{background:#7a3a0c}.lv-standard{background:#334155}.lv-regulation{background:#4c1d95}.lv-illustrative{background:#6b2143}
+html[data-rc-theme="dark"] .rc-lv{border-color:rgba(255,255,255,.45)}
+html[data-rc-theme="max"] .rc-lv{background:#fff;color:#000;border:2px solid #000}
+.rc-chips,.rc-card-top{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 .8em}
+.rc-sub{font-size:1.12em;color:var(--rc-ink-2);margin:.5em 0 .7em}
+.rc-meta{display:flex;flex-wrap:wrap;gap:4px 18px;margin:.4em 0;color:var(--rc-ink-2);font-size:.86em}
+.rc-meta span+span::before{content:"·";margin-right:18px;margin-left:-10px;color:var(--rc-ink-2)}
+.rc-for{margin:.3em 0 1em;color:var(--rc-ink-2);font-size:.86em}
+.rc-tools{display:flex;flex-wrap:wrap;align-items:flex-start;gap:10px;margin:1em 0 .4em;font-size:.86em}
+.rc-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:.45em 1em;border:2px solid var(--rc-accent);border-radius:10px;background:transparent;color:var(--rc-accent);font:inherit;font-weight:700;line-height:1.25;text-decoration:none!important;cursor:pointer}
+.rc-btn:hover{background:var(--rc-tint)}
+.rc-btn svg{flex:none}
+.rc-btn[hidden],[data-rc-js][hidden],.rc-card[hidden]{display:none}
+.rc-btn[aria-pressed="true"]{background:var(--rc-accent);color:var(--rc-paper)}
+.rc-link-btn{padding:0;border:0;background:none;color:var(--rc-link);font:inherit;text-decoration:underline;cursor:pointer}
+.rc-settings{position:relative}
+.rc-settings>summary{list-style:none}
+.rc-settings>summary::-webkit-details-marker{display:none}
+.rc-settings[open]>summary{background:var(--rc-accent);color:var(--rc-paper)}
+.rc-settings-panel{position:absolute;z-index:30;top:calc(100% + 8px);left:0;width:min(340px,calc(100vw - 48px));padding:14px 16px;border:2px solid var(--rc-accent);border-radius:12px;background:var(--rc-card);color:var(--rc-ink);box-shadow:0 14px 34px rgba(0,0,0,.22)}
+.rc-settings-panel fieldset{margin:0 0 10px;padding:0;border:0}
+.rc-settings-panel legend{padding:0;margin:0 0 4px;font-weight:700}
+.rc-opt{display:inline-flex;align-items:center;gap:6px;min-height:40px;margin:0 12px 0 0;cursor:pointer}
+.rc-opt input{width:20px;height:20px;margin:0;accent-color:var(--rc-accent);flex:none}
+.rc-hint{display:block;margin:.3em 0 0;color:var(--rc-ink-2);font-size:.86em}
+.rc-box{margin:1.6em 0;padding:1em 1.3em;border-radius:14px}
+.rc-box h2{font-size:1.12em;margin-bottom:.2em}
+.rc-takeaways{background:var(--rc-tint);border-left:6px solid var(--rc-accent)}
+.rc-practice{background:var(--rc-tint);border:1.5px solid var(--rc-rule)}
+.rc-limits{background:var(--rc-caution);border:1.5px solid var(--rc-caution-ink)}
+.rc-limits h2{color:var(--rc-caution-ink)}
+html[data-rc-theme="max"] .rc-box{border:2px solid #000}
+.rc-scenario{margin:1.2em 0;padding:.9em 1.2em;border:2px dashed var(--rc-caution-ink);border-radius:12px;background:var(--rc-caution)}
+.rc-note-t{margin:0 0 .2em!important;font-weight:700;color:var(--rc-ink)}
+.rc-scenario .rc-note-t{color:var(--rc-caution-ink)}
+.rc-glance{margin:1.6em 0}
+.rc-glance h2{font-size:1.12em;margin-bottom:.6em}
+.rc-figs{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:14px}
+.rc-fig{margin:1.1em 0;padding:1em 1.1em;border:1.5px solid var(--rc-rule);border-radius:14px;background:var(--rc-card)}
+.rc-figs .rc-fig{margin:0}
+.rc-fig-v{margin:0 0 .25em!important;font-size:1.5em;font-weight:800;line-height:1.15;color:var(--rc-accent)}
+.rc-fig figcaption{font-size:.92em}
+.rc-src{display:block;margin-top:.5em;color:var(--rc-ink-2);font-size:.88em}
+.rc-toc{margin:1.6em 0;padding:1em 1.3em;border:1.5px solid var(--rc-rule);border-radius:14px}
+.rc-toc h2{font-size:1.02em;text-transform:uppercase;letter-spacing:.06em;color:var(--rc-ink-2)}
+.rc-toc ol{margin:.5em 0 0;padding-left:1.4em}
+.rc-toc li{margin:.25em 0}
+.rc-toc-min,.rc-sec-min{color:var(--rc-ink-2);font-size:.8em;font-weight:400;white-space:nowrap}
+.rc-secs{margin:1.2em 0}
+.rc-sec{border-top:1.5px solid var(--rc-rule);padding:.7em 0 .5em;scroll-margin-top:70px}
+.rc-sec:last-child{border-bottom:1.5px solid var(--rc-rule)}
+.rc-sec-h{display:flex;align-items:baseline;gap:12px;margin:.2em 0}
+.rc-sec-t{flex:1;min-width:0}
+.rc-acc{display:flex;align-items:baseline;gap:12px;width:100%;padding:.25em .3em;border:0;border-radius:8px;background:none;color:inherit;font:inherit;text-align:left;cursor:pointer}
+.rc-acc:hover{background:var(--rc-tint)}
+.rc-chev{flex:none;align-self:center;transition:transform .15s}
+.rc-acc[aria-expanded="true"] .rc-chev{transform:rotate(180deg)}
+.rc-brief{margin:.2em 0 .4em!important;color:var(--rc-ink-2)}
+.rc-brief b{color:var(--rc-ink)}
+.rc-sec-b{padding:.2em 0 .6em}
+.rc-sec-b[hidden]{padding:0}
+.rc-cites{font-size:.72em;line-height:0;margin-left:1px;white-space:nowrap}
+.rc-cites a{padding:0 2px;border-radius:3px;font-weight:700;text-decoration:none!important}
+.rc-cites a:hover,.rc-cites a:focus-visible{background:var(--rc-tint);text-decoration:underline!important}
+.rc-study{margin:1.3em 0;padding:1em 1.2em 1.1em;border:1.5px solid var(--rc-rule);border-left:6px solid var(--rc-accent);border-radius:14px;background:var(--rc-card)}
+.rc-study-k{margin:0!important;color:var(--rc-ink-2);font-size:.78em;font-weight:700;letter-spacing:.07em;text-transform:uppercase}
+.rc-study-t{margin:.15em 0 .5em!important}
+.rc-study-dl{display:grid;grid-template-columns:minmax(0,1fr);gap:.55em;margin:0;font-size:.94em}
+.rc-study-dl div{display:grid;grid-template-columns:8.5em minmax(0,1fr);gap:1em}
+.rc-study-dl dt{font-weight:700;color:var(--rc-ink)}
+.rc-study-dl dd{margin:0}
+.rc-note{margin:1.1em 0;padding:.85em 1.1em;border-radius:12px;border:1.5px solid var(--rc-rule);background:var(--rc-tint)}
+.rc-note p{margin:.2em 0}
+.rc-note.is-caution{background:var(--rc-caution);border-color:var(--rc-caution-ink)}
+.rc-note.is-caution .rc-note-t{color:var(--rc-caution-ink)}
+.rc-table-wrap{position:relative;overflow-x:auto;margin:1.2em 0 .4em;border:1.5px solid var(--rc-rule);border-radius:12px;background:var(--rc-card)}
+.rc-table-wrap table{width:100%;border-collapse:collapse;font-size:.88em;line-height:1.5}
+.rc-table-wrap caption{padding:.7em .9em;text-align:left;font-weight:700;caption-side:top}
+.rc-table-wrap th,.rc-table-wrap td{padding:.6em .9em;border-top:1px solid var(--rc-rule);text-align:left;vertical-align:top;min-width:8em}
+.rc-table-wrap thead th{background:var(--rc-tint);white-space:nowrap}
+.rc-table-wrap tbody th{font-weight:700}
+.rc-table-note{margin:.2em 0 1.2em!important;color:var(--rc-ink-2);font-size:.86em}
+.rc-refs{margin:.6em 0;padding-left:1.8em;font-size:.88em;line-height:1.55}
+.rc-refs li{margin:.55em 0;scroll-margin-top:80px}
+.rc-refs li:target{background:var(--rc-tint);outline:2px solid var(--rc-accent);outline-offset:4px;border-radius:4px}
+.rc-ref-text{overflow-wrap:anywhere}
+.rc-ref-link{display:inline-flex;align-items:center;gap:4px;margin-left:4px;white-space:nowrap;font-weight:700}
+.rc-refs-sec,.rc-cite-sec,.rc-related{margin:2em 0 0}
+.rc-cite-text{padding:.8em 1em;border-radius:10px;background:var(--rc-tint);font-size:.9em;overflow-wrap:anywhere}
+.rc-cards{list-style:none;margin:.8em 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:16px}
+.rc-card{position:relative;display:flex;flex-direction:column;padding:1.05em 1.15em;border:1.5px solid var(--rc-rule);border-radius:16px;background:var(--rc-card)}
+.rc-card h3{font-size:1.02em}
+.rc-card h3 a{color:var(--rc-ink);text-decoration:none}
+.rc-card h3 a::after{content:"";position:absolute;inset:0;border-radius:inherit}
+.rc-card:hover{border-color:var(--rc-accent)}
+.rc-card:focus-within{outline:3px solid var(--rc-focus);outline-offset:2px}
+.rc-card h3 a:focus-visible{outline:none}
+.rc-card-top{margin-bottom:.6em}
+.rc-card-s{margin:.5em 0!important;font-size:.9em;color:var(--rc-ink-2)}
+.rc-card-m{margin:auto 0 0!important;padding-top:.4em;font-size:.8em;color:var(--rc-ink-2)}
+.rc-disclaimer{margin:2.2em 0 0!important;padding-top:1em;border-top:1.5px solid var(--rc-rule);color:var(--rc-ink-2);font-size:.86em}
+.rc-tip{position:absolute;z-index:1500;max-width:min(440px,calc(100vw - 24px));padding:.7em .9em;border-radius:10px;background:#0b1510;color:#fff;font:15px/1.45 "Atkinson Hyperlegible","Trebuchet MS",sans-serif;box-shadow:0 10px 28px rgba(0,0,0,.35);pointer-events:none}
+.rc-tip[hidden]{display:none}
+.rc-exit{position:fixed;top:12px;right:12px;z-index:1200;display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:8px 14px;border:2px solid #fff;border-radius:10px;background:#0b1510;color:#fff;font:700 15px "Atkinson Hyperlegible","Trebuchet MS",sans-serif;cursor:pointer}
+.rc-exit[hidden]{display:none}
+.rc-exit:focus-visible{outline:3px solid #7ad3a4;outline-offset:2px}
+html.rc-focus body{padding-left:0}
+html.rc-focus .cg-sidebar,html.rc-focus .cg-sidebar-toggle,html.rc-focus .cg-sb-overlay,html.rc-focus .cg-topbar,html.rc-focus .cg-crumbs,html.rc-focus .site-footer{display:none!important}
+html.rc-focus .rc-main{max-width:940px;padding-top:64px}
+/* the library */
+.rc-hero{padding:8px 4px 26px;color:#fff}
+.rc-eyebrow{margin:0 0 8px;color:#9fe0bd;font-size:13px;font-weight:700;letter-spacing:.09em;text-transform:uppercase}
+.rc-hero h1{margin:0;font-size:clamp(30px,4vw,44px);line-height:1.12;outline:none}
+.rc-lede{max-width:33em;margin:12px 0 0;color:#cfe3d7;font-size:19px;line-height:1.6}
+.rc-quick{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+.rc-quick a{display:inline-flex;align-items:center;min-height:44px;padding:8px 16px;border:1.5px solid rgba(207,227,215,.55);border-radius:999px;color:#fff;font-weight:700;text-decoration:none}
+.rc-quick a:hover{background:rgba(159,224,189,.14);border-color:#9fe0bd}
+.rc-quick a:focus-visible{outline:3px solid #9fe0bd;outline-offset:2px}
+.rc-lib-head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px 20px}
+.rc-library>section{scroll-margin-top:70px}
+.rc-library>section+section{margin-top:2.4em}
+.rc-filters{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;margin:1em 0 .6em;padding:1em 1.1em;border:1.5px solid var(--rc-rule);border-radius:14px;font-size:.9em}
+.rc-types{margin:0;padding:0;border:0}
+.rc-types legend,.rc-field label{display:block;margin:0 0 4px;padding:0;font-weight:700}
+.rc-field input,.rc-field select{width:100%;min-height:46px;padding:8px 12px;border:2px solid var(--rc-ink-2);border-radius:10px;background:var(--rc-card);color:var(--rc-ink);font:inherit}
+@media (min-width:980px){.rc-filters{grid-template-columns:minmax(0,1.6fr) minmax(0,1fr) minmax(0,1fr)}.rc-types{grid-column:1/-1}}
+.rc-count{margin:.5em 0;color:var(--rc-ink-2);font-size:.86em}
+.rc-empty{padding:1em;border:1.5px dashed var(--rc-rule);border-radius:12px;text-align:center}
+.rc-band{padding:clamp(18px,3.5vw,36px);border-radius:18px;background:#173a2a;color:#fff}
+.rc-band h2,.rc-band h3{color:#fff}
+.rc-band .rc-eyebrow{color:#9fe0bd}
+.rc-band a{color:#bff0d4}
+.rc-band-lede{color:#e6f1ea}
+.rc-band-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:22px;margin-top:1em}
+@media (min-width:900px){.rc-band-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
+.rc-band-list li::marker{color:#9fe0bd}
+.rc-band-card{padding:1.1em;border:1.5px solid rgba(207,227,215,.5);border-radius:14px;background:rgba(255,255,255,.05)}
+.rc-btn-hero{width:100%;min-height:56px;border-color:#fff;background:#fff;color:#0f3322;font-size:1.02em}
+.rc-btn-hero:hover{background:#dff3e7}
+.rc-btn-light{border-color:#fff;background:#fff;color:#0f3322}
+.rc-btn-light:hover{background:#dff3e7}
+.rc-band .rc-btn:focus-visible{outline:3px solid #9fe0bd;outline-offset:3px}
+.rc-board-msg{min-height:1.5em;margin:.6em 0!important;color:#e6f1ea;font-size:.9em}
+.rc-board-more{margin-top:.6em}
+.rc-board-more>summary{display:inline-flex;align-items:center;min-height:44px;cursor:pointer;font-weight:700;color:#fff}
+.rc-board-more>summary:focus-visible{outline:3px solid #9fe0bd;outline-offset:2px}
+.rc-board-form{display:grid;gap:12px;margin-top:.6em;font-size:.9em}
+.rc-board-form label{color:#fff}
+.rc-board-form input{border-color:#cfe3d7;background:#fff;color:#15201a}
+.rc-board-form .rc-hint{color:#d6e8dd}
+.rc-band .rc-link-btn{color:#bff0d4;font-weight:700}
+.rc-band .rc-link-btn:focus-visible{outline:3px solid #9fe0bd;outline-offset:2px}
+html[data-rc-theme="max"] .rc-band{background:#fff;color:#000;border:2px solid #000}
+html[data-rc-theme="max"] .rc-band h2,html[data-rc-theme="max"] .rc-band h3,html[data-rc-theme="max"] .rc-band-lede,html[data-rc-theme="max"] .rc-band .rc-eyebrow,html[data-rc-theme="max"] .rc-board-msg,html[data-rc-theme="max"] .rc-board-more>summary,html[data-rc-theme="max"] .rc-board-form label,html[data-rc-theme="max"] .rc-board-form .rc-hint{color:#000}
+html[data-rc-theme="max"] .rc-btn-hero,html[data-rc-theme="max"] .rc-btn-light{border-color:#000;background:#000;color:#fff}
+html[data-rc-theme="max"] .rc-band .rc-link-btn{color:#002f8f}
+@media (max-width:700px){
+  .rc-main{padding:18px 12px 32px}
+  .rc-paper{border-radius:14px}
+  .rc-study-dl div{grid-template-columns:minmax(0,1fr);gap:.1em}
+  .rc-meta span+span::before{display:none}
+  .rc-settings-panel{position:static;width:auto;margin-top:8px}
+  .rc-tools{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .rc-tools .rc-btn{width:100%;padding-left:.6em;padding-right:.6em;text-align:center}
+  .rc-settings[open]{grid-column:1/-1}
+}
+@media (prefers-reduced-motion:reduce){.rc-chev{transition:none}}
+@media print{
+  @page{margin:.6in}
+  body{padding:0!important;background:#fff!important;color:#000}
+  .cg-sidebar,.cg-sidebar-toggle,.cg-sb-overlay,.cg-topbar,.cg-crumbs,.site-footer,.rc-tools,.rc-exit,.rc-skip,.rc-tip,[data-rc-js],.rc-toc,.rc-related,.rc-hero .rc-quick{display:none!important}
+  .rc-main{max-width:none;padding:0}
+  .rc-paper{box-shadow:none;border:0;border-radius:0;padding:0;background:#fff;color:#000;font-size:11.5pt;line-height:1.5}
+  .rc-paper a{color:#000}
+  .rc-sec-b{display:block!important;content-visibility:visible!important;padding:.2em 0 .6em!important}
+  .rc-sec,.rc-study,.rc-fig,.rc-note,.rc-box,.rc-table-wrap{break-inside:avoid}
+  .rc-sec-h,.rc-paper h2{break-after:avoid}
+  .rc-band{background:#fff;color:#000;border:1px solid #000}
+  .rc-band h2,.rc-band h3,.rc-band-lede{color:#000}
+}
+  </style>
+<style id="cg-nav-css">
+/* Site navigation: tools first, one Resource & Clinical Hub section, breadcrumbs.
+   Generated by scripts/site-nav.mjs; the sidebar's base styles stay in each page.
+   Several pages set "color: #fff !important" and "p, li { font-size }" on every
+   element, so the parts added here pin their own colors and sizes to look the
+   same on every page. */
+.cg-sb-nav{flex:1 0 auto;display:flex;flex-direction:column}
+.cg-sb-nav .cg-sidebar-nav{flex:1}
+.cg-sidebar-nav a .cg-sb-ico{flex:none;margin-top:1px;color:var(--sb-muted);transition:color .13s}
+.cg-sidebar-nav a:hover .cg-sb-ico,.cg-sidebar-nav a.active .cg-sb-ico{color:var(--sb-accent)}
+.cg-sb-acc > summary{list-style:none;cursor:pointer;margin:4px 6px 0;padding:10px 8px 8px;border-radius:6px;transition:background .15s}
+.cg-sb-acc > summary::-webkit-details-marker{display:none}
+.cg-sb-acc > summary:hover{background:var(--sb-hover)}
+.cg-sb-acc > summary:focus-visible{outline:2px solid var(--sb-accent);outline-offset:1px}
+.cg-sb-acc-title{flex:1;min-width:0}
+.cg-sb-count{flex:none;min-width:18px;padding:1px 6px;border-radius:9px;background:rgba(82,183,136,.2);color:var(--sb-txt)!important;font-size:8pt;letter-spacing:0;text-align:center}
+.cg-sb-chev{flex:none;transition:transform .15s}
+.cg-sb-acc[open] > summary .cg-sb-chev{transform:rotate(90deg)}
+.cg-sb-sub,.cg-sb-sub ul{list-style:none;margin:0;padding:0}
+.cg-sb-sub a[data-hub]{font-weight:600}
+.cg-sb-glabel{display:block;padding:10px 14px 3px 20px;font:700 8pt "Trebuchet MS","Segoe UI",sans-serif;letter-spacing:.05em;text-transform:uppercase;color:var(--sb-muted)!important}
+.cg-crumbs{padding:8px 28px;border-bottom:1px solid var(--sb-border,rgba(216,243,220,.15));background:rgba(8,28,21,.6);font:10pt/20px "Trebuchet MS","Segoe UI",sans-serif}
+.cg-crumbs ol{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;margin:0;padding:0;list-style:none}
+.cg-crumbs li,.cg-crumbs a,.cg-crumbs span{font-size:inherit;line-height:inherit}
+.cg-crumbs li{display:flex;align-items:center;gap:8px;margin:0;color:#d8f3dc!important}
+.cg-crumbs li + li::before{content:"\203A";color:rgba(216,243,220,.55)}
+.cg-crumbs a{display:inline-flex;align-items:center;gap:6px;text-decoration:underline;text-underline-offset:3px;color:#95d5b2!important}
+.cg-crumbs a:hover{color:#fff!important}
+.cg-crumbs a:focus-visible{outline:2px solid #52b788;outline-offset:2px}
+.cg-crumbs [aria-current]{color:#fff!important;font-weight:700}
+@media (max-width:768px){.cg-crumbs{padding:8px 16px}}
+</style>
+</head>
+<body data-root="../../../">
+<a class="rc-skip" href="#main">Skip to the content</a>
+<!-- cg-nav:start: generated by scripts/site-nav.mjs. Edit that file and run npm run nav; changes made here are overwritten. -->
+<button type="button" class="cg-sidebar-toggle" id="cgSbToggle" aria-label="Open Categories Menu" aria-controls="cgSidebar" aria-expanded="false">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  <span class="cg-sidebar-toggle-text">Categories</span>
+</button>
+<div class="cg-sb-overlay" id="cgSbOverlay" aria-hidden="true"></div>
+<aside class="cg-sidebar" id="cgSidebar" aria-label="Site navigation">
+  <a href="../../../index.html" class="cg-sidebar-brand">
+    <img src="../../../assets/cognicopia-logo.jpg" alt="Cognicopia Logo">
+    <span>Cognicopia</span>
+  </a>
+  <a href="../../../index.html" id="cgHomeLink" class="cg-sidebar-home">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    Home (Tool)
+  </a>
+  <a href="../../../builder.html" class="cg-sidebar-home" id="cgBuilderLink">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6"/><line x1="9" y1="13" x2="16" y2="13"/><line x1="9" y1="17" x2="14" y2="17"/></svg>
+    Packet Builder
+  </a>
+  <nav class="cg-sb-nav" aria-label="Tools and resources">
+  <ul class="cg-sidebar-nav">
+    <li><div class="cg-sb-section"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.8-3.8a6 6 0 0 1-7.9 7.9l-6.9 6.9a2.1 2.1 0 0 1-3-3l6.9-6.9a6 6 0 0 1 7.9-7.9z"/></svg>Tools &amp; Planners</div></li>
+    <li><a href="../../../profile.html"><span class="cg-bullet" aria-hidden="true">&#x203A;</span><span>Resident Profiles</span></a></li>
+    <li><a href="../../../builder.html#/roster"><span class="cg-bullet" aria-hidden="true">&#x203A;</span><span>Resident Roster</span></a></li>
+    <li><a href="../../../cognitive-journals.html"><span class="cg-bullet" aria-hidden="true">&#x203A;</span><span>Cognitive Life Journals</span></a></li>
+    <li><a href="../../../life-planners.html"><span class="cg-bullet" aria-hidden="true">&#x203A;</span><span>12-Month Life Planners</span></a></li>
+
+    <li><div class="cg-sb-divider"></div></li>
+    <li>
+      <details class="cg-sb-acc" id="cgInfoNav" open data-here>
+        <summary class="cg-sb-section cg-sb-acc-head"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg><span class="cg-sb-acc-title">Resource &amp; Clinical Hub</span><span class="cg-sb-count" aria-label="10 modules">10</span><svg class="cg-sb-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="9 6 15 12 9 18"/></svg></summary>
+        <ul class="cg-sb-sub">
+          <li><a data-hub href="../../../resources/"><svg class="cg-sb-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span>Browse all resources</span></a></li>
+          <li class="cg-sb-grp"><span class="cg-sb-glabel" id="cgGrp-clinical">Clinical &amp; quality</span>
+            <ul aria-labelledby="cgGrp-clinical">
+          <li><a href="../../../resources/research/" class="active" aria-current="page"><svg class="cg-sb-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 18h8"/><path d="M3 22h18"/><path d="M14 22a7 7 0 1 0 0-14h-1"/><path d="M9 14h2"/><path d="M9 12a2 2 0 0 1-2-2V6h6v4a2 2 0 0 1-2 2Z"/><path d="M12 6V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v3"/></svg><span>Clinical Science &amp; Research Center</span></a></li>
+          <li><a href="../../../resources/quality-standards/"><svg class="cg-sb-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg><span>Quality Standards Hub</span></a></li>
+          <li><a href="../../../resources/clinical-alignment/"><svg class="cg-sb-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 3H4a1 1 0 0 0-1 1v5a5 5 0 0 0 10 0V4a1 1 0 0 0-1-1h-1"/><path d="M8 14v1a6 6 0 0 0 12 0v-3"/><circle cx="20" cy="10" r="2"/></svg><span>Clinical Alignment</span></a></li>
+          <li><a href="../../../resources/reminiscence-science/"><svg class="cg-sb-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M9 3h6"/><path d="M10 3v6.5L4.6 18.9A2 2 0 0 0 6.3 22h11.4a2 2 0 0 0 1.7-3.1L14 9.5V3"/><path d="M7.5 15h9"/></svg><span>Reminiscence Science</span></a></li>
+            </ul></li>
+          <li class="cg-sb-grp"><span class="cg-sb-glabel" id="cgGrp-facilities">Facilities &amp; publishing</span>
+            <ul aria-labelledby="cgGrp-facilities">
+          <li><a href="../../../resources/high-volume-facilities/"><svg class="cg-sb-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01M12 6h.01M16 6h.01M8 10h.01M12 10h.01M16 10h.01M8 14h.01M12 14h.01M16 14h.01"/></svg><span>High-Volume Facilities</span></a></li>
+          <li><a href="../../../resources/publishing-excellence/"><svg class="cg-sb-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="8" r="6"/><path d="M15.5 13.5L17 22l-5-3-5 3 1.5-8.5"/></svg><span>Publishing Excellence</span></a></li>
+          <li><a href="../../../resources/platform-overview/"><svg class="cg-sb-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10"/><polygon points="16.2 7.8 14.1 14.1 7.8 16.2 9.9 9.9 16.2 7.8"/></svg><span>Platform &amp; Mission Overview</span></a></li>
+            </ul></li>
+          <li class="cg-sb-grp"><span class="cg-sb-glabel" id="cgGrp-guides">Guides &amp; help</span>
+            <ul aria-labelledby="cgGrp-guides">
+          <li><a href="../../../resources/activity-feature-guide/"><svg class="cg-sb-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg><span>Activity Feature Guide</span></a></li>
+          <li><a href="../../../resources/resource-catalog/"><svg class="cg-sb-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><path d="M8 7h8M8 11h6"/></svg><span>Master Resource Catalog</span></a></li>
+          <li><a href="../../../resources/caregiver-faq/"><svg class="cg-sb-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg><span>Caregiver FAQ</span></a></li>
+            </ul></li>
+        </ul>
+      </details>
+    </li>
+    <li><div class="cg-sb-divider"></div></li>
+    <li><div class="cg-sb-section"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Support</div></li>
+    <li><a href="../../../contact.html"><span class="cg-bullet" aria-hidden="true">&#x203A;</span><span>Contact Kirk Barron</span></a></li>
+  </ul>
+  </nav>
+</aside>
+<script id="cg-nav-js">
+(function(){
+  "use strict";
+  var toggle = document.getElementById("cgSbToggle"), sidebar = document.getElementById("cgSidebar"), overlay = document.getElementById("cgSbOverlay");
+  if (toggle && sidebar && overlay){
+    var open = function(){ sidebar.classList.add("is-open"); overlay.classList.add("is-open"); toggle.setAttribute("aria-expanded", "true"); toggle.setAttribute("aria-label", "Close Categories Menu"); };
+    var close = function(){ sidebar.classList.remove("is-open"); overlay.classList.remove("is-open"); toggle.setAttribute("aria-expanded", "false"); toggle.setAttribute("aria-label", "Open Categories Menu"); };
+    toggle.addEventListener("click", function(){ sidebar.classList.contains("is-open") ? close() : open(); });
+    overlay.addEventListener("click", close);
+    document.addEventListener("keydown", function(e){ if (e.key === "Escape" && sidebar.classList.contains("is-open")){ close(); toggle.focus(); } });
+  }
+  /* The Resource & Clinical Hub is always open on its own pages; elsewhere it
+     opens the way this browser last left it (a convenience, nothing more). */
+  var acc = document.getElementById("cgInfoNav"), KEY = "cg_nav_info_open";
+  if (acc && !acc.hasAttribute("data-here")){
+    try { if (localStorage.getItem(KEY) === "1") acc.open = true; } catch (e){}
+    acc.addEventListener("toggle", function(){ try { localStorage.setItem(KEY, acc.open ? "1" : "0"); } catch (e){} });
+  }
+})();
+</script>
+<!-- cg-nav:end -->
+<!-- ══ COGNICOPIA TOP BAR ══ -->
+<div class="cg-topbar" role="banner">
+  <a href="https://buy.stripe.com/9B614oaJV7lr0RX1ODew801" target="_blank" rel="noopener" style="background:#286E75;color:#fff;padding:6px 14px;border-radius:5px;font-weight:700;font-size:9.5pt;">Get Full Access →</a>
+</div>
+<!-- cg-crumbs:start: generated by scripts/site-nav.mjs -->
+<nav class="cg-crumbs" aria-label="Breadcrumb"><ol><li><a href="../../../index.html"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Dashboard</a></li><li><a href="../../../resources/">Resource &amp; Clinical Hub</a></li><li><a href="../../../resources/research/">Clinical Science &amp; Research Center</a></li><li><span aria-current="page">Regulatory crosswalk</span></li></ol></nav>
+<!-- cg-crumbs:end -->
+<button type="button" class="rc-exit" id="rcExit" hidden><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>Leave focus mode</button>
+<main id="main" class="rc-main">
+  <article class="rc-paper rc-reader" data-doc="regulatory-crosswalk">
+    <header class="rc-head">
+      <p class="rc-chips"><span class="rc-chip rc-type">Regulatory brief</span><span class="rc-chip rc-lv lv-regulation">Federal regulation</span></p>
+      <h1 tabindex="-1">Regulatory Crosswalk: CMS Requirements for Activities, Dementia Care and Staff Training</h1>
+      <p class="rc-sub">The federal rules behind activity programs in nursing homes, and where Cognicopia can help deliver and document them</p>
+      <p class="rc-meta"><span>4 min read</span><span>7 sources</span><span>Reviewed September 30, 2026</span></p>
+      <p class="rc-for"><b>Written for:</b> Compliance officers, Administrators and boards, Activity directors</p>
+      <div class="rc-tools">
+      <details class="rc-settings">
+        <summary class="rc-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>Reading settings</summary>
+        <div class="rc-settings-panel">
+          <fieldset><legend>Text size</legend><label class="rc-opt"><input type="radio" name="rc-size" value="standard" checked><span>Standard</span></label><label class="rc-opt"><input type="radio" name="rc-size" value="large"><span>Large</span></label><label class="rc-opt"><input type="radio" name="rc-size" value="largest"><span>Largest</span></label></fieldset>
+          <fieldset><legend>Line spacing</legend><label class="rc-opt"><input type="radio" name="rc-lead" value="comfortable" checked><span>Comfortable</span></label><label class="rc-opt"><input type="radio" name="rc-lead" value="wide"><span>Wide</span></label></fieldset>
+          <fieldset><legend>Colors</legend><label class="rc-opt"><input type="radio" name="rc-theme" value="paper" checked><span>Paper</span></label><label class="rc-opt"><input type="radio" name="rc-theme" value="dark"><span>Dark</span></label><label class="rc-opt"><input type="radio" name="rc-theme" value="max"><span>Maximum contrast</span></label></fieldset>
+          <p class="rc-hint">Settings are kept in this browser, for every Research Center page. <button type="button" class="rc-link-btn" data-rc="reset" data-rc-js hidden>Reset</button></p>
+        </div>
+      </details>
+      <button type="button" class="rc-btn" data-rc="focus" aria-pressed="false" data-rc-js hidden><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>Focus mode</button>
+      <button type="button" class="rc-btn" data-rc="expand" data-rc-js hidden><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M7 9l5-5 5 5M7 15l5 5 5-5"/></svg><span>Expand all sections</span></button>
+      <button type="button" class="rc-btn" data-rc="print" data-rc-js hidden><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 9V3h12v6"/><rect x="4" y="9" width="16" height="8" rx="2"/><path d="M7 14h10v7H7z"/></svg>Print or save as PDF</button>
+      <a class="rc-btn" href="#cite"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M7 7h4v4H9a2 2 0 0 0-2 2v2M15 7h4v4h-2a2 2 0 0 0-2 2v2"/></svg>Cite this page</a>
+    </div>
+    </header>
+    <section class="rc-box rc-takeaways" aria-labelledby="takeawaysH">
+      <h2 id="takeawaysH">Key takeaways</h2>
+      <ul class="rc-list"><li>F679 (§483.24(c)): an ongoing program of activities based on each resident’s comprehensive assessment, care plan and preferences.<sup class="rc-cites"><a class="rc-cite" href="#ref-1" aria-label="Reference 1: 42 CFR § 483.24">1</a></sup></li><li>F744 (§483.40(b)(3)): a resident living with dementia receives the treatment and services needed for their highest practicable physical, mental and psychosocial well-being.<sup class="rc-cites"><a class="rc-cite" href="#ref-2" aria-label="Reference 2: 42 CFR § 483.40">2</a></sup></li><li>F947 (§483.95(g)): at least 12 hours of in-service training a year for nurse aides, including dementia management and abuse prevention.<sup class="rc-cites"><a class="rc-cite" href="#ref-3" aria-label="Reference 3: 42 CFR § 483.95">3</a></sup></li><li>Surveyors interpret these rules with CMS’s State Operations Manual, Appendix PP.<sup class="rc-cites"><a class="rc-cite" href="#ref-4" aria-label="Reference 4: CMS, 2025">4</a></sup></li><li>Tools can support delivery and documentation. Compliance rests on the facility’s own assessment, care planning, staffing and oversight.</li></ul>
+    </section>
+    <section class="rc-glance" aria-labelledby="glanceH">
+      <h2 id="glanceH">At a glance</h2>
+      <div class="rc-figs"><figure class="rc-fig"><p class="rc-fig-v">46%</p><figcaption>of nursing home residents live with Alzheimer’s or another dementia, and 58% of long-stay residents <span class="rc-src">Source: Alzheimer’s Association, 2026<sup class="rc-cites"><a class="rc-cite" href="#ref-5" aria-label="Reference 5: Alzheimer’s Association, 2026">5</a></sup></span></figcaption></figure><figure class="rc-fig"><p class="rc-fig-v">12 hours</p><figcaption>is the yearly minimum of in-service training for nurse aides, including dementia management <span class="rc-src">Source: 42 CFR § 483.95<sup class="rc-cites"><a class="rc-cite" href="#ref-3" aria-label="Reference 3: 42 CFR § 483.95">3</a></sup></span></figcaption></figure></div>
+    </section>
+    <nav class="rc-toc" aria-labelledby="tocH">
+      <h2 id="tocH">In this document</h2>
+      <ol><li><a href="#s-why">Why a crosswalk</a> <span class="rc-toc-min">1 min</span></li><li><a href="#s-text">What the regulations say</a> <span class="rc-toc-min">1 min</span></li><li><a href="#s-crosswalk">The crosswalk</a> <span class="rc-toc-min">1 min</span></li><li><a href="#s-not">What Cognicopia does not do</a> <span class="rc-toc-min">1 min</span></li><li><a href="#practice">What this means for your community</a></li><li><a href="#limits">What this evidence does not show</a></li><li><a href="#references">References</a></li></ol>
+    </nav>
+    <div class="rc-secs">
+    <section class="rc-sec" id="s-why" aria-labelledby="h-why">
+      <h2 class="rc-sec-h" id="h-why"><span class="rc-sec-t">Why a crosswalk</span><span class="rc-sec-min">1 min</span></h2>
+      <p class="rc-brief"><b>In brief:</b> About half of nursing home residents live with dementia, and several requirements govern what they do each day.</p>
+      <div class="rc-sec-b" id="b-why">
+        <p>About 46% of nursing home residents live with Alzheimer’s or another dementia, rising to 58% among long-stay residents.<sup class="rc-cites"><a class="rc-cite" href="#ref-5" aria-label="Reference 5: Alzheimer’s Association, 2026">5</a></sup> Their days are shaped by several federal requirements at once: activities, dementia services, care planning, dignity, privacy and staff training. This brief sets them side by side, with where Cognicopia can help.</p>
+      </div>
+    </section>
+    <section class="rc-sec" id="s-text" aria-labelledby="h-text">
+      <h2 class="rc-sec-h" id="h-text"><span class="rc-sec-t">What the regulations say</span><span class="rc-sec-min">1 min</span></h2>
+      <p class="rc-brief"><b>In brief:</b> The rule text for activities, dementia services and nurse aide training.</p>
+      <div class="rc-sec-b" id="b-text">
+        <div class="rc-note is-info" role="note"><p class="rc-note-t">§483.24(c) Activities (F679)</p><p>“The facility must provide, based on the comprehensive assessment and care plan and the preferences of each resident, an ongoing program to support residents in their choice of activities, both facility-sponsored group and individual activities and independent activities, designed to meet the interests of and support the physical, mental, and psychosocial well-being of each resident, encouraging both independence and interaction in the community.”<sup class="rc-cites"><a class="rc-cite" href="#ref-1" aria-label="Reference 1: 42 CFR § 483.24">1</a></sup></p></div>
+        <div class="rc-note is-info" role="note"><p class="rc-note-t">§483.40(b)(3) Dementia treatment and services (F744)</p><p>“A resident who displays or is diagnosed with dementia, receives the appropriate treatment and services to attain or maintain his or her highest practicable physical, mental, and psychosocial well-being.”<sup class="rc-cites"><a class="rc-cite" href="#ref-2" aria-label="Reference 2: 42 CFR § 483.40">2</a></sup></p></div>
+        <div class="rc-note is-info" role="note"><p class="rc-note-t">§483.95(g) Nurse aide in-service training (F947)</p><p>In-service training must be sufficient to ensure the continuing competence of nurse aides, and no less than 12 hours per year; include dementia management training and resident abuse prevention training; and address areas of weakness found in performance reviews and the facility assessment.<sup class="rc-cites"><a class="rc-cite" href="#ref-3" aria-label="Reference 3: 42 CFR § 483.95">3</a></sup></p></div>
+        <div class="rc-note is-info" role="note"><p class="rc-note-t">§483.10(a)(1) Resident rights and dignity (F550)</p><p>“A facility must treat each resident with respect and dignity and care for each resident in a manner and in an environment that promotes maintenance or enhancement of his or her quality of life, recognizing each resident’s individuality.”<sup class="rc-cites"><a class="rc-cite" href="#ref-6" aria-label="Reference 6: 42 CFR § 483.10">6</a></sup></p></div>
+      </div>
+    </section>
+    <section class="rc-sec" id="s-crosswalk" aria-labelledby="h-crosswalk">
+      <h2 class="rc-sec-h" id="h-crosswalk"><span class="rc-sec-t">The crosswalk</span><span class="rc-sec-min">1 min</span></h2>
+      <p class="rc-brief"><b>In brief:</b> Each requirement, what it asks, and where Cognicopia can help.</p>
+      <div class="rc-sec-b" id="b-crosswalk">
+        <div class="rc-table-wrap" role="region" aria-labelledby="tbl-1" tabindex="0"><table>
+          <caption id="tbl-1">CMS requirements and Cognicopia</caption>
+          <thead><tr><th scope="col">F-tag</th><th scope="col">Regulation</th><th scope="col">What it asks</th><th scope="col">Where Cognicopia can help</th></tr></thead>
+          <tbody><tr><th scope="row">F550</th><td>§483.10(a)(1)</td><td>Respect and dignity, recognizing each resident’s individuality</td><td>Adult, person-centered materials built from each resident’s own history</td></tr>
+          <tr><th scope="row">F583</th><td>§483.10(h)</td><td>Personal privacy and confidentiality of records</td><td>Resident details stay on the facility’s computers, encrypted; portal files carry group names only</td></tr>
+          <tr><th scope="row">F656</th><td>§483.21(b)</td><td>A comprehensive, person-centered care plan<sup class="rc-cites"><a class="rc-cite" href="#ref-7" aria-label="Reference 7: 42 CFR § 483.21">7</a></sup></td><td>Resident profiles record preferences, support tier and visual needs; session notes support documentation</td></tr>
+          <tr><th scope="row">F675</th><td>§483.24</td><td>Quality of life</td><td>Meaningful, enjoyable activities matched to each person</td></tr>
+          <tr><th scope="row">F679</th><td>§483.24(c)</td><td>An ongoing activity program based on assessment, care plan and preferences</td><td>Personalized pages at each resident’s tier; group and individual formats; monthly calendars</td></tr>
+          <tr><th scope="row">F680</th><td>§483.24(c)(2)</td><td>A qualified professional directs the activity program</td><td>A facility requirement Cognicopia cannot meet; the Academy supports staff learning</td></tr>
+          <tr><th scope="row">F744</th><td>§483.40(b)(3)</td><td>Appropriate dementia treatment and services</td><td>Stage-matched activities, late-day planning and staff training</td></tr>
+          <tr><th scope="row">F947</th><td>§483.95(g)</td><td>12 hours a year of nurse aide in-service training, including dementia management and abuse prevention</td><td>Academy training records and certificates (in-service records, not accredited continuing education)</td></tr></tbody>
+        </table></div>
+        <p class="rc-table-note">Regulation text: the Electronic Code of Federal Regulations. Surveyor guidance: CMS State Operations Manual, Appendix PP.<sup class="rc-cites"><a class="rc-cite" href="#ref-4" aria-label="Reference 4: CMS, 2025">4</a></sup></p>
+      </div>
+    </section>
+    <section class="rc-sec" id="s-not" aria-labelledby="h-not">
+      <h2 class="rc-sec-h" id="h-not"><span class="rc-sec-t">What Cognicopia does not do</span><span class="rc-sec-min">1 min</span></h2>
+      <p class="rc-brief"><b>In brief:</b> It supports the facility’s program; it does not replace assessment, qualified staff or legal advice.</p>
+      <div class="rc-sec-b" id="b-not">
+        <ul class="rc-list"><li>It does not replace the comprehensive assessment, the care plan or clinical judgment.</li><li>It does not qualify anyone as an activity professional (F680).</li><li>Its Academy certificates are in-service training records, not accredited continuing education, unless a facility enters its own approval statement.</li><li>It supports a facility’s privacy practices, but it does not by itself make a facility HIPAA compliant.</li><li>This brief is not legal advice. Check the current regulations and Appendix PP, and your state’s own requirements.</li></ul>
+      </div>
+    </section>
+    </div>
+    <section class="rc-box rc-practice" id="practice" aria-labelledby="practiceH">
+      <h2 id="practiceH">What this means for your community</h2>
+      <ul class="rc-list"><li>Keep activity assessments, preferences and visual needs current in each resident’s care plan.</li><li>Plan both group and individual activities, and document participation.</li><li>Track nurse aide in-service hours through the year, including dementia management and abuse prevention.</li><li>Read the current Appendix PP guidance for each tag your program touches.</li></ul>
+    </section>
+    <section class="rc-box rc-limits" id="limits" aria-labelledby="limitsH">
+      <h2 id="limitsH">What this evidence does not show</h2>
+      <ul class="rc-list"><li>Regulations and surveyor guidance change. This brief reflects them as checked on September 30, 2026.</li><li>State requirements may add to the federal rules.</li><li>A crosswalk shows where tools can help; it is not a compliance determination.</li></ul>
+    </section>
+    <section class="rc-refs-sec" id="references" aria-labelledby="refsH">
+      <h2 id="refsH">References</h2>
+      <ol class="rc-refs">
+        <li id="ref-1"><span class="rc-ref-text">42 CFR § 483.24: Quality of life. Electronic Code of Federal Regulations. Accessed September 30, 2026. https://www.ecfr.gov/current/title-42/chapter-IV/subchapter-G/part-483/subpart-B/section-483.24</span> <a class="rc-ref-link" href="https://www.ecfr.gov/current/title-42/chapter-IV/subchapter-G/part-483/subpart-B/section-483.24" target="_blank" rel="noopener noreferrer"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M14 4h6v6M10 14 20 4M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>View source<span class="rc-sr"> (opens in a new tab)</span></a></li>
+        <li id="ref-2"><span class="rc-ref-text">42 CFR § 483.40: Behavioral health services. Electronic Code of Federal Regulations. Accessed September 30, 2026. https://www.ecfr.gov/current/title-42/chapter-IV/subchapter-G/part-483/subpart-B/section-483.40</span> <a class="rc-ref-link" href="https://www.ecfr.gov/current/title-42/chapter-IV/subchapter-G/part-483/subpart-B/section-483.40" target="_blank" rel="noopener noreferrer"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M14 4h6v6M10 14 20 4M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>View source<span class="rc-sr"> (opens in a new tab)</span></a></li>
+        <li id="ref-3"><span class="rc-ref-text">42 CFR § 483.95: Training requirements. Electronic Code of Federal Regulations. Accessed September 30, 2026. https://www.ecfr.gov/current/title-42/chapter-IV/subchapter-G/part-483/subpart-B/section-483.95</span> <a class="rc-ref-link" href="https://www.ecfr.gov/current/title-42/chapter-IV/subchapter-G/part-483/subpart-B/section-483.95" target="_blank" rel="noopener noreferrer"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M14 4h6v6M10 14 20 4M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>View source<span class="rc-sr"> (opens in a new tab)</span></a></li>
+        <li id="ref-4"><span class="rc-ref-text">Centers for Medicare &amp; Medicaid Services. State Operations Manual, Appendix PP: Guidance to surveyors for long term care facilities. CMS; 2025. Accessed September 30, 2026. https://www.cms.gov/Regulations-and-Guidance/Guidance/Manuals/downloads/som107ap_pp_guidelines_ltcf.pdf</span> <a class="rc-ref-link" href="https://www.cms.gov/Regulations-and-Guidance/Guidance/Manuals/downloads/som107ap_pp_guidelines_ltcf.pdf" target="_blank" rel="noopener noreferrer"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M14 4h6v6M10 14 20 4M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>View source<span class="rc-sr"> (opens in a new tab)</span></a></li>
+        <li id="ref-5"><span class="rc-ref-text">Alzheimer’s Association. 2026 Alzheimer’s disease facts and figures. Alzheimer’s &amp; Dementia. 2026. doi:10.1002/alz.71345</span> <a class="rc-ref-link" href="https://doi.org/10.1002/alz.71345" target="_blank" rel="noopener noreferrer"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M14 4h6v6M10 14 20 4M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>View source<span class="rc-sr"> (opens in a new tab)</span></a></li>
+        <li id="ref-6"><span class="rc-ref-text">42 CFR § 483.10: Resident rights. Electronic Code of Federal Regulations. Accessed September 30, 2026. https://www.ecfr.gov/current/title-42/chapter-IV/subchapter-G/part-483/subpart-B/section-483.10</span> <a class="rc-ref-link" href="https://www.ecfr.gov/current/title-42/chapter-IV/subchapter-G/part-483/subpart-B/section-483.10" target="_blank" rel="noopener noreferrer"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M14 4h6v6M10 14 20 4M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>View source<span class="rc-sr"> (opens in a new tab)</span></a></li>
+        <li id="ref-7"><span class="rc-ref-text">42 CFR § 483.21: Comprehensive person-centered care planning. Electronic Code of Federal Regulations. Accessed September 30, 2026. https://www.ecfr.gov/current/title-42/chapter-IV/subchapter-G/part-483/subpart-B/section-483.21</span> <a class="rc-ref-link" href="https://www.ecfr.gov/current/title-42/chapter-IV/subchapter-G/part-483/subpart-B/section-483.21" target="_blank" rel="noopener noreferrer"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M14 4h6v6M10 14 20 4M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>View source<span class="rc-sr"> (opens in a new tab)</span></a></li>
+      </ol>
+    </section>
+    <section class="rc-cite-sec" id="cite" aria-labelledby="citeH">
+      <h2 id="citeH">How to cite this page</h2>
+      <p class="rc-cite-text" id="rcCiteText">Cognicopia. Regulatory Crosswalk: CMS Requirements for Activities, Dementia Care and Staff Training. Cognicopia Clinical Science &amp; Research Center. Updated September 30, 2026. Accessed <span id="rcAccessed">[date]</span>. https://cognicopia.org/resources/research/regulatory-crosswalk/</p>
+      <button type="button" class="rc-btn" data-copy="#rcCiteText" data-rc-js hidden><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M7 7h4v4H9a2 2 0 0 0-2 2v2M15 7h4v4h-2a2 2 0 0 0-2 2v2"/></svg>Copy the citation</button>
+    </section>
+    <aside class="rc-related" aria-labelledby="relH">
+      <h2 id="relH">Related reading</h2>
+      <ul class="rc-cards">
+        <li class="rc-card"><p class="rc-card-top"><span class="rc-chip rc-type">Whitepaper</span><span class="rc-chip rc-lv lv-moderate">Moderate evidence</span></p><h3><a href="../dignity-first-design/">Dignity-First Activity Design: Adult Materials and Respectful Communication</a></h3><p class="rc-card-s">Speaking to people with dementia in “elderspeak” makes resistance to care more likely, and training staff to stop reduces it. The same respect belongs in printed materials: adult subjects, adult language, no childish design.</p><p class="rc-card-m">3 min read</p></li>
+        <li class="rc-card"><p class="rc-card-top"><span class="rc-chip rc-type">Whitepaper</span><span class="rc-chip rc-lv lv-standard">Published standard</span></p><h3><a href="../low-vision-print/">Print for Macular Degeneration and Low Vision: The Evidence Behind Cognicopia’s Print Standard</a></h3><p class="rc-card-s">More than half of nursing home residents in one study had impaired vision, and macular degeneration takes central vision first. This whitepaper sets out the research and published standards behind Cognicopia’s type sizes, contrast and typeface.</p><p class="rc-card-m">5 min read</p></li>
+        <li class="rc-card"><p class="rc-card-top"><span class="rc-chip rc-type">Case scenario</span><span class="rc-chip rc-lv lv-illustrative">Illustrative scenario</span></p><h3><a href="../case-macular-degeneration/">Case Scenario: Adapting Activities for a Resident Living With Macular Degeneration</a></h3><p class="rc-card-s">An illustrative scenario showing how a team can recognize vision loss behind withdrawal from activities, and adapt print, lighting and approach.</p><p class="rc-card-m">3 min read</p></li>
+      </ul>
+      <p><a href="../">All research summaries, whitepapers and case scenarios</a></p>
+    </aside>
+    <p class="rc-disclaimer">An educational summary for professionals, not medical advice. It reports each source’s findings as the source states them, and was reviewed against its sources on September 30, 2026. Cognicopia makes the tools this page mentions. Found an error? <a href="../../../contact.html?subject=Research+Center+correction">Tell us</a>.</p>
+  </article>
+</main>
+<div class="rc-sr" aria-live="polite" id="rcLive"></div>
+<footer class="site-footer">Cognicopia is made by BarronCrafts. Everything happens inside your browser.</footer>
+<script src="../../../assets/research-center.js" defer></script>
+</body>
+</html>

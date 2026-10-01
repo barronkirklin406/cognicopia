@@ -21,7 +21,7 @@ app.get('/api/health', (req, res) => {
 // The reference pages live under /resources/<slug>/ (the Resource & Clinical Hub).
 // Their old addresses answer with a permanent redirect, keeping any ?query;
 // the browser keeps the #section. /resources itself is the hub.
-for (const m of MODULES) {
+for (const m of MODULES.filter(x => x.legacy)) {       // the Research Center is new: no old address
   const base = m.legacy.replace(/\.html$/, '');
   const paths = base === 'resources' ? [`/${m.legacy}`] : [`/${base}`, `/${m.legacy}`];
   app.get(paths, (req, res) => {
