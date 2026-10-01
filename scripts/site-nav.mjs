@@ -24,6 +24,7 @@
    ===================================================================== */
 import fs from "fs";
 import path from "path";
+import vm from "vm";
 import { fileURLToPath } from "url";
 
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -39,7 +40,7 @@ const ICON = {
   chevron: '<polyline points="9 6 15 12 9 18"/>',
   grid: '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>',
   support: '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
-  // the nine modules
+  // the hub's modules: the Research Center and the nine reference modules
   shield: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/>',
   stethoscope: '<path d="M5 3H4a1 1 0 0 0-1 1v5a5 5 0 0 0 10 0V4a1 1 0 0 0-1-1h-1"/><path d="M8 14v1a6 6 0 0 0 12 0v-3"/><circle cx="20" cy="10" r="2"/>',
   flask: '<path d="M9 3h6"/><path d="M10 3v6.5L4.6 18.9A2 2 0 0 0 6.3 22h11.4a2 2 0 0 0 1.7-3.1L14 9.5V3"/><path d="M7.5 15h9"/>',
@@ -55,7 +56,8 @@ const ICON = {
   journal: '<path d="M2 4h7a3 3 0 0 1 3 3v14a2 2 0 0 0-2-2H2z"/><path d="M22 4h-7a3 3 0 0 0-3 3v14a2 2 0 0 1 2-2h8z"/>',
   roster: '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/>',
   profile: '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
-  academy: '<path d="M22 9 12 4 2 9l10 5 10-5z"/><path d="M6 11.2V16c0 1.7 2.7 3 6 3s6-1.3 6-3v-4.8"/><path d="M22 9v6"/>'
+  academy: '<path d="M22 9 12 4 2 9l10 5 10-5z"/><path d="M6 11.2V16c0 1.7 2.7 3 6 3s6-1.3 6-3v-4.8"/><path d="M22 9v6"/>',
+  microscope: '<path d="M6 18h8"/><path d="M3 22h18"/><path d="M14 22a7 7 0 1 0 0-14h-1"/><path d="M9 14h2"/><path d="M9 12a2 2 0 0 1-2-2V6h6v4a2 2 0 0 1-2 2Z"/><path d="M12 6V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v3"/>'
 };
 
 /* The interactive tools: always first. */
@@ -66,8 +68,9 @@ export const TOOLS = [
   { key: "planners", label: "12-Month Life Planners",  href: "life-planners.html" }
 ];
 
-/* The informational hub: nine reference modules in three groups. `legacy` is
-   the page's old address, which now forwards to its route. */
+/* The informational hub: the reference modules in three groups. `legacy` is
+   the page's old address, which now forwards to its route (the Research
+   Center is new, so it has none). */
 export const HUB = { href: "resources/", title: "Resource & Clinical Hub" };
 export const GROUPS = [
   { id: "clinical",   label: "Clinical & quality",        blurb: "The evidence, standards and clinical thinking behind every page." },
@@ -75,6 +78,8 @@ export const GROUPS = [
   { id: "guides",     label: "Guides & help",             blurb: "What the tools do, what they make, and answers to common questions." }
 ];
 export const MODULES = [
+  { slug: "research",               label: "Clinical Science & Research Center", group: "clinical", icon: "microscope",
+    desc: "Evidence summaries, whitepapers and case scenarios with sources and limits, and a one-click board packet for facility boards." },
   { slug: "quality-standards",      label: "Quality Standards Hub",      legacy: "institutional-standards.html", group: "clinical",   icon: "shield",
     desc: "Institutional standards in one place: clinical validation, copier-tested printing and publishing governance." },
   { slug: "clinical-alignment",     label: "Clinical Alignment",         legacy: "clinical-alignment.html",      group: "clinical",   icon: "stethoscope",
@@ -123,6 +128,17 @@ export const GENERATORS = [
     desc: "Word, number, music and art activities, added one version at a time into a printable packet.", meta: ["Activity library"] }
 ];
 
+/* The Research Center's reader pages, one per document, from its built content
+   (assets/services/researchCenter.js, the same source the pages are made from). */
+export function researchDocs(){
+  const f = path.join(ROOT, "assets/services/researchCenter.js");
+  if (!fs.existsSync(f)) return [];
+  const box = {}; box.globalThis = box; vm.createContext(box);
+  vm.runInContext(fs.readFileSync(f, "utf8"), box);
+  return box.CogniResearch.DOCS.map(d => ({ slug: d.slug, crumb: d.crumb }));
+}
+const RESEARCH = MODULES.find(m => m.slug === "research");
+
 /* Every page that carries the shared sidebar, with what it marks as current. */
 export const PAGES = [
   { file: "index.html",              current: "home" },
@@ -132,7 +148,8 @@ export const PAGES = [
   { file: "contact.html",            current: "contact" },
   { file: "zentangle-art.html",      current: null },
   { file: HUB.href + "index.html",   current: "hub", crumbs: [] },
-  ...MODULES.map(m => ({ file: moduleHref(m) + "index.html", current: m.slug, crumbs: [m] }))
+  ...MODULES.map(m => ({ file: moduleHref(m) + "index.html", current: m.slug, crumbs: [m] })),
+  ...researchDocs().map(d => ({ file: moduleHref(RESEARCH) + d.slug + "/index.html", current: RESEARCH.slug, crumbs: [RESEARCH, { label: d.crumb }] }))
 ];
 
 /* ---------- 2. The generated blocks ---------- */
@@ -216,10 +233,11 @@ ${END}`;
 
 export function crumbs(page){
   if (!page.crumbs) return "";
-  const P = prefixOf(page.file), m = page.crumbs[0];
+  const P = prefixOf(page.file), m = page.crumbs[0], doc = page.crumbs[1];   // a module, and a page inside it (the Research Center's documents)
   const items = [`<li><a href="${P}index.html">${svg(ICON.home, 13)}Dashboard</a></li>`,
     m ? `<li><a href="${P}${HUB.href}">${esc(HUB.title)}</a></li>` : `<li><span aria-current="page">${esc(HUB.title)}</span></li>`]
-    .concat(m ? [`<li><span aria-current="page">${esc(m.label)}</span></li>`] : []);
+    .concat(m && doc ? [`<li><a href="${P}${moduleHref(m)}">${esc(m.label)}</a></li>`, `<li><span aria-current="page">${esc(doc.label)}</span></li>`]
+      : m ? [`<li><span aria-current="page">${esc(m.label)}</span></li>`] : []);
   return `${CRUMB_START}
 <nav class="cg-crumbs" aria-label="Breadcrumb"><ol>${items.join("")}</ol></nav>
 ${CRUMB_END}`;

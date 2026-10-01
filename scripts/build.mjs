@@ -15,7 +15,8 @@
      5. the server file parses, and the planner, journal, TypeScript
         services and CogniCore coloring checks pass (the coloring check
         also proves the library, catalog and browser bundle are current);
-     6. the site navigation matches scripts/site-nav.mjs (npm run nav), and
+     6. the site navigation matches scripts/site-nav.mjs (npm run nav), the
+        Research Center's pages match their content (npm run research), and
         every relative link and asset on every page points at a file that
         exists (a folder means its index.html).
    Node built-ins only. Exits non-zero on any failure.
@@ -126,6 +127,11 @@ step("the navigation is current on every page", () => {
   try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "site-nav.mjs"), "--check"], { encoding: "utf8" }).trim(); }
   catch (e){ throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message); }
 });
+step("the Research Center pages are current", () => {
+  try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "research-pages.mjs"), "--check"], { encoding: "utf8" }).trim(); }
+  catch (e){ throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message); }
+});
+step("the Research Center's page script parses", () => { execFileSync(process.execPath, ["--check", path.join(ROOT, "assets", "research-center.js")]); });
 step(`every relative link resolves on all ${pages.length} pages`, () => {
   let n = 0; const broken = new Set();
   for (const f of pages){
