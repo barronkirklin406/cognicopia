@@ -80,6 +80,19 @@ const MAX = {
 };
 const PROFILES = { example: EX, empty: {}, max: MAX, service: SERVICE };
 
+/* Sensory cross-reference: an explicit era or a birth-year suggestion is
+   paired with the active life-story topic, and staff instructions retain it. */
+check("sensory cues cross-reference selected eras and topics", () => {
+  const cue = LJ.sensoryCue({ birthYear:1938, sensoryEra:"auto" }, "tastes");
+  eq(cue.era, "1950s", "suggested youth-era");
+  ok(cue.eraText.indexOf("ground coffee") >= 0 && cue.eraText.indexOf("big band radio") >= 0, "era scent and music cues");
+  ok(cue.topicText.indexOf("cinnamon or vanilla") >= 0 && cue.topicText.indexOf("wooden spoon") >= 0, "topic-specific kitchen cues");
+  const result = LJ.build({ birthYear:1938 }, { tier:1 }, "story");
+  const page = result.pages.find(p => p.spreadId === "tastes" && p.side === "left");
+  ok(page && page.staffMeta && page.staffMeta.sensoryTrigger.summary.indexOf("1950s") >= 0, "cue retained in page staff metadata");
+  ok(page.html.indexOf("For staff · Sensory pairing:") >= 0 && page.html.indexOf("avoid allergens") >= 0, "safe sensory cue printed on staff prompt");
+});
+
 /* ---------- 1. Tone guardrails ---------- */
 const audit = (s, audience) => LJ.TONE.audit(s, { audience });
 check("the built-in content library passes the dignity-first audit", () => {

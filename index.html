@@ -4537,9 +4537,20 @@ class Doc{
   }
   bottom(){ return PH-MARGIN-24; }
   room(){ return this.bottom()-this.y; }
+  coachingFooter(){
+    const page=this.d.internal.getNumberOfPages();
+    if(this.footerPage===page) return;
+    this.footerPage=page;
+    this.d.setFont("helvetica","normal"); this.d.setFontSize(8.5);
+    this.d.setTextColor(92,99,95);
+    this.d.text("Do not ask questions or test memory. Sit beside them, place the marker in their hand, and model slow, calm breathing.",
+      PW/2,PH-MARGIN-6,{align:"center",maxWidth:PW-2*MARGIN});
+    this.d.setTextColor(0,0,0);
+  }
   /* Close a page off with a small piece of art if it would otherwise
      trail away into blank paper. A page should look finished. */
   finish(){
+    this.coachingFooter();
     if(this.simplifiedLayout) return;
     const r=this.room();
     if(r<=56) return;

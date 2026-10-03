@@ -41,7 +41,9 @@ group("emergencyPrint", () => {
   ok(/requested[\s\S]*?allowed\.includes\(requested\)[\s\S]*?:\s*"line-tracing"/.test(builderHtml), "unknown or missing activity falls back to line tracing");
   ok(/difficulty = \["", "early", "moderate", "advanced"\]\[tier\]/.test(builderHtml), "support tiers map to matching activity load");
   ok(/const item = \{ activityId:activity\.id,[\s\S]*?count:1[\s\S]*?generatePdf\(\[item\]/.test(builderHtml), "emergency print contains exactly one page");
-  ok(/function generatePdf\(items, printOptions\)[\s\S]*?items = Array\.isArray\(items\) \? items : queue;[\s\S]*?root\.innerHTML = items\.map\(sheetHtml\)/.test(builderHtml), "emergency pages print separately without changing the saved queue");
+  ok(/function generatePdf\(items, printOptions\)[\s\S]*?items = Array\.isArray\(items\) \? items : queue;[\s\S]*?root\.innerHTML = items\.map\(item => sheetHtml\(item, calmMode\)\)/.test(builderHtml), "emergency pages print separately without changing the saved queue");
+  ok(/printEmergencyActivity[\s\S]*?generatePdf\(\[item\], \{ emergency:true, calmMode:false/.test(builderHtml) &&
+     /printPanicPacket\(\)[\s\S]*?calmMode:false/.test(builderHtml), "resident-specific and fixed emergency packets bypass the queued-page calm override");
   ok(/CG_STORE_READY\.then\(\(\) => \{[\s\S]*?router\(\);[\s\S]*?printEmergencyActivity\(emergencyResidentId\)/.test(builderHtml), "emergency action waits for secure storage before loading the resident");
 });
 
@@ -55,6 +57,17 @@ group("panicPacket", () => {
   ok(/cinnamon or vanilla extract[\s\S]*?Check allergies, scent sensitivities and facility guidance first/.test(builderHtml), "baking-themed pairing includes a scent prompt and safety check");
   ok(/item\.cfg\.difficulty === "advanced" \? tactilePairingFor/.test(builderHtml) && /For staff · Sensory Prompt:/.test(builderHtml), "only late-tier sheets append the labeled sensory prompt");
   ok(/PANIC_PACKET\.map\(page => \(\{[\s\S]*?batchSeed:newSeed\(\)[\s\S]*?count:1/.test(builderHtml), "panic print creates fresh, one-copy recipes without queue writes");
+});
+
+group("sundowningCalmAndCoachingFooter", () => {
+  const builderHtml = fs.readFileSync(path.join(ROOT, "builder.html"), "utf8");
+  const indexHtml = fs.readFileSync(path.join(ROOT, "index.html"), "utf8");
+  const coaching = "Do not ask questions or test memory. Sit beside them, place the marker in their hand, and model slow, calm breathing.";
+  ok(/id="calmModeToggle"[^>]*aria-pressed="false"[\s\S]*?Late-Stage \/ Sundowning Calm/.test(builderHtml), "calm mode has a high-visibility, accessible Packet Builder toggle");
+  ok(/if \(calmMode == null \? sundowningCalmActive : calmMode\) return `<section class="sheet sheet-calm"[\s\S]*?stroke-width="6pt"[\s\S]*?stroke-dasharray/.test(builderHtml), "calm mode replaces activity content with one maximum-weight dashed path");
+  ok(/function sheetHtml\(item\)[\s\S]*?activitySheetHtml\(item\)[\s\S]*?care-coaching-footer/.test(builderHtml), "the shared queued-print wrapper adds the coaching footer");
+  ok(builderHtml.includes(coaching) && indexHtml.includes(coaching), "the exact coaching reminder is included in both activity print pipelines");
+  ok(/function coachingFooter\(\)[\s\S]*?this\.d\.text\("Do not ask questions or test memory\./.test(indexHtml), "main PDF pages draw the coaching footer from the shared document engine");
 });
 
 /* 3. Dynamic Vector Engine */

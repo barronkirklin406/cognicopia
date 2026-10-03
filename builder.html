@@ -173,8 +173,24 @@ h2{font-size:21px;margin:0 0 8px}
 .panic-button:active{transform:translateY(1px)}
 .panic-button svg{flex:none}
 .panic-button small{display:block;color:#ffe3dc;font-size:12px;font-weight:600;line-height:1.25}
+.calm-mode-toggle{
+  display:flex;align-items:center;gap:9px;flex:none;min-height:46px;padding:7px 13px;
+  border:2px solid #8bb7a2;border-radius:11px;background:#18372e;color:#fff;
+  font:inherit;font-weight:800;text-align:left;cursor:pointer;
+}
+.calm-mode-toggle:hover{background:#20483b;border-color:#b6dec9}
+.calm-mode-toggle[aria-pressed="true"]{background:#f2c66d;border-color:#ffe0a0;color:#241b0b}
+.calm-mode-toggle small{display:block;color:#d6e6dc;font-size:11px;font-weight:600;line-height:1.25}
+.calm-mode-toggle[aria-pressed="true"] small{color:#3f3115}
+.calm-mode-toggle:focus-visible,.panic-button:focus-visible{outline:3px solid #ffe08a;outline-offset:3px}
 .sh-sensory{margin:.08in 0 0;padding:.08in .12in;border:1.5pt solid #68746f;border-radius:.06in;font-size:10pt;line-height:1.25;color:#2f3634}
 .art-sensory{margin:.08in auto 0;max-width:6.4in;padding:.08in .12in;border:1.5pt solid #68746f;border-radius:.06in;font-size:11pt;line-height:1.25;color:#2f3634}
+.care-coaching-footer{flex:none;margin:.08in 0 0;padding:.05in 0 0;border-top:1px solid #c9d1ce;color:#56615d;font-size:8pt;line-height:1.2;text-align:center}
+.sheet-calm{align-items:center;justify-content:center;gap:.12in}
+.sheet-calm svg{display:block;flex:1;min-height:0;width:min(100%,6.4in);max-height:8.5in}
+.sheet-calm .care-coaching-footer{width:100%;margin-top:auto}
+.cc-sheet .care-coaching-footer{position:absolute;left:.75in;right:.5in;bottom:.06in;margin:0;padding-top:.035in;background:#fff;font-size:7pt}
+.cc-sheet .cc-foot{transform:translateY(-.2in)}
 .btn-danger{background:transparent;border-color:rgba(240,180,140,.4);color:var(--warn)}
 .btn-danger:hover{background:rgba(240,180,140,.08);border-color:var(--warn)}
 .btn[disabled]{opacity:.5;cursor:not-allowed}
@@ -550,12 +566,12 @@ input:focus,select:focus{border-color:var(--accent)}
 .sb-toggle:focus-visible{outline:3px solid #7ad3a4;outline-offset:3px}
 @media (max-width:860px){
   .topbar{padding-left:164px;flex-wrap:wrap}
-  .panic-button{flex:1 1 100%}
+  .panic-button,.calm-mode-toggle{flex:1 1 100%}
   .sidebar{padding-top:60px}
 }
 @media (max-width:560px){
   .topbar{padding:60px 16px 10px}
-  .panic-button{flex:1 1 100%;justify-content:center}
+  .panic-button,.calm-mode-toggle{flex:1 1 100%;justify-content:center}
 }
 /* Phones: the bar keeps one row beside the Categories button. Home keeps
    its room, the Facility view switch gives way to the sidebar's Facility
@@ -1068,6 +1084,12 @@ textarea:focus{border-color:var(--accent)}
 .lp-pv-title{margin:0;min-width:0;text-align:center}
 .lp-pv-title b{display:block;line-height:1.25}
 .lp-pv-title span{font-size:13.5px;color:var(--muted)}
+.lj-sensory-trigger{margin:0 0 10px;padding:10px 12px;border:1px solid #9b8250;border-left:4px solid #d8b36b;border-radius:10px;background:#1b201b;color:var(--text);font-size:13.5px;line-height:1.4}
+.lj-sensory-trigger b{display:block;margin-bottom:3px;color:#f1d89e}
+.lj-sensory-trigger p{margin:2px 0}
+.lj-sensory-trigger small{display:block;margin-top:5px;color:var(--muted)}
+.lj-sensory-staff{flex:none;margin:.04in 0 0;padding:.04in .08in;border-top:1px solid #9b8250;color:#384139;font-size:8pt;line-height:1.2}
+.lj-sensory-staff span{display:block;margin-top:2pt;font-size:7pt;color:#626b64}
 .lp-spread{display:flex;justify-content:center;padding:12px;border-radius:12px;background:#0a120f;border:1px solid var(--line)}
 .lp-stack .lp-spread{flex-direction:column;align-items:center;gap:12px}
 .lp-fig{margin:0;display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0}
@@ -2266,6 +2288,9 @@ textarea:focus{border-color:var(--accent)}
     <button class="panic-button" type="button" id="panicButton" aria-label="Print the two-page sundowning and rapid de-escalation packet">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 22 21H2L12 3Z"/><path d="M12 9v5"/><circle cx="12" cy="17.5" r=".7" fill="currentColor"/></svg>
       <span>Sundowning / Rapid De-escalation<small>Print the ready-to-use 2-page soothing packet</small></span>
+    </button>
+    <button class="calm-mode-toggle" type="button" id="calmModeToggle" aria-pressed="false" aria-describedby="calmModeHelp">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12h8"/></svg><span>Late-Stage / Sundowning Calm<small id="calmModeHelp">Off · simplifies queued activity pages; emergency buttons stay fixed</small></span>
     </button>
     <div class="topbar-left">
       <!-- A real link, so Home works with a keyboard, a middle-click, and with
@@ -3597,7 +3622,9 @@ function sheet(pg, binding, labels){
   const tag = aud === "cg" ? L.cg : L.res;
   const top = pg.noTop ? "" : `<header class="lp-top"><span class="lp-tag">${esc(pg.label || "")}</span><span class="lp-aud">${esc(tag)}</span></header>`;
   const foot = pg.noFoot ? "" : `<footer class="lp-foot"><span>${esc((pg.title || "") + (aud === "cg" ? L.cgFoot : (L.resFoot || "")))}</span><b class="lp-no">${pg.no}</b></footer>`;
-  return `<section class="lp-sheet lp-${visual} lp-${aud}${pg.season ? " lp-s-" + pg.season : ""}${pg.cls ? " " + pg.cls : ""}" data-page="${pg.no}" data-side="${pg.side}" data-tab="${pg.tab}" data-role="${pg.role}" data-spread="${esc(pg.spreadId || "")}">${top}<div class="lp-body lp-role-${pg.role}">${pg.body}</div>${foot}</section>`;
+  const sensory = pg.staffMeta && pg.staffMeta.sensoryTrigger;
+  const staffCue = sensory ? `<aside class="lj-sensory-staff"><b>For staff · Sensory pairing:</b> ${esc(sensory.summary)}<span>${esc(sensory.safety)}</span></aside>` : "";
+  return `<section class="lp-sheet lp-${visual} lp-${aud}${pg.season ? " lp-s-" + pg.season : ""}${pg.cls ? " " + pg.cls : ""}" data-page="${pg.no}" data-side="${pg.side}" data-tab="${pg.tab}" data-role="${pg.role}" data-spread="${esc(pg.spreadId || "")}">${top}<div class="lp-body lp-role-${pg.role}">${pg.body}</div>${staffCue}${foot}</section>`;
 }
 
 function plannerFiller(){
@@ -3887,13 +3914,14 @@ function normProfile(p){
   const year = toInt(p.birthYear, 1890, 2010, null), month = toInt(p.birthMonth, 1, 12, null);
   let day = toInt(p.birthDay, 1, 31, null);
   if (day && (!month || day > daysIn(year || 2000, month - 1))) day = null;
+  const sensoryEra = SENSORY_ERA_CHOICES.some(x => x[0] === p.sensoryEra) ? p.sensoryEra : "auto";
   const branch = codeOf(BRANCHES, p.militaryBranch, "");
   const career = one(p.career, 50), avoid = (Array.isArray(p.avoid) ? p.avoid : []).filter(c => AVOID_TOPICS.some(t => t[0] === c));
   const talk = codeOf(SERVICE_TALK, p.militaryTalk, "gentle");
   const out = {
     // essentials
     name: one(p.name, 30), fullName: one(p.fullName, 50), birthSurname: one(p.birthSurname, 30),
-    birthYear: year, birthMonth: month, birthDay: day, birthplace: one(p.birthplace, 40), hometown: one(p.hometown, 40),
+    birthYear: year, birthMonth: month, birthDay: day, birthplace: one(p.birthplace, 40), hometown: one(p.hometown, 40), sensoryEra,
     career, careerA: /^\w+ing\b/i.test(career) ? "" : withArticle(career), careerGerund: /^\w+ing\b/i.test(career) ? lc(career) : "",
     militaryBranch: branch,
     // Section I
@@ -4211,6 +4239,57 @@ const TIER_TOPICS = {
                starters:["The best advice I got was", "I always say", "A young person should know"] },
   closing:   { starters:["Today, my story includes"] }
 };
+const SENSORY_ERA_CHOICES = [
+  ["auto", "Use birth year to suggest an era"], ["1920s", "1920s"], ["1930s", "1930s"], ["1940s", "1940s"],
+  ["1950s", "1950s"], ["1960s", "1960s"], ["1970s", "1970s"], ["1980s", "1980s"], ["1990s", "1990s"]
+];
+const SENSORY_ERA_CUES = {
+  "1920s": { scent:"rose soap or lavender", texture:"cotton or smooth wood", music:"jazz and parlor music" },
+  "1930s": { scent:"ground coffee or fresh-baked bread", texture:"cotton quilt or smooth wood", music:"swing and early big band" },
+  "1940s": { scent:"lavender or ground coffee", texture:"wool or a cotton quilt", music:"1940s big band radio" },
+  "1950s": { scent:"lavender or ground coffee", texture:"heavy wool or a cotton quilt", music:"1950s big band radio" },
+  "1960s": { scent:"vanilla or fresh-baked bread", texture:"soft cotton or corduroy", music:"1960s folk, Motown or familiar radio" },
+  "1970s": { scent:"cinnamon or coffee", texture:"denim or soft cotton", music:"1970s country or soft rock" },
+  "1980s": { scent:"vanilla or cinnamon", texture:"soft cotton or fleece", music:"1980s country or familiar radio" },
+  "1990s": { scent:"fresh-baked bread or coffee", texture:"soft cotton or fleece", music:"1990s familiar favorites" }
+};
+const SENSORY_TOPIC_CUES = {
+  identity: { label:"Identity", scent:"a familiar soap or personal-care scent", texture:"a well-known soft fabric", music:"a personally familiar song" },
+  home: { label:"Home", scent:"ground coffee or clean laundry", texture:"a cotton quilt or smooth wood", music:"Saturday-morning radio" },
+  family: { label:"Family", scent:"a familiar home-baking aroma", texture:"a soft quilt or familiar fabric", music:"a family-favorite song" },
+  school: { label:"School days", scent:"pencil shavings or clean paper (visual cue only)", texture:"a smooth book cover", music:"a familiar school-era song" },
+  pets: { label:"Pets", scent:"a familiar outdoor or home scent", texture:"a soft, clean fabric", music:"a gentle, familiar song" },
+  firstjob: { label:"First work", scent:"a safe, familiar work-related aroma", texture:"a familiar tool handle or soft fabric", music:"radio music from working years" },
+  career: { label:"Career", scent:"a safe, familiar work-related aroma", texture:"a familiar material from the work", music:"a favorite song from working years" },
+  skills: { label:"Hands-on skills", scent:"vanilla or cinnamon, if familiar", texture:"soft yarn or a smooth wooden object", music:"a familiar work or home song" },
+  service: { label:"Service", scent:"a familiar, non-triggering scent", texture:"a soft, familiar fabric", music:"a personally welcomed familiar song" },
+  community: { label:"Community", scent:"a familiar garden or baking aroma", texture:"a soft fabric or smooth object", music:"a familiar group or community song" },
+  pride: { label:"Pride", scent:"a familiar home scent", texture:"a favorite soft fabric", music:"a song associated with a happy memory" },
+  music: { label:"Music", scent:"a personally welcomed scent", texture:"a soft fabric to hold", music:"a favorite song or genre" },
+  tastes: { label:"Tastes & aromas", scent:"cinnamon or vanilla aroma", texture:"a linen towel or smooth wooden spoon", music:"a familiar kitchen song" },
+  places: { label:"Places & textures", scent:"a familiar garden or coffee aroma", texture:"a soft wool shawl or cotton quilt", music:"a song associated with a favorite place" },
+  affirm: { label:"Comfort", scent:"a resident-approved calming scent", texture:"a favorite soft fabric", music:"a familiar, calming song" },
+  wisdom: { label:"Wisdom", scent:"a familiar home scent", texture:"a well-known soft fabric", music:"a welcomed favorite song" }
+};
+function sensoryCueFor(profileIn, topicId){
+  const p = profileIn && profileIn.p ? profileIn.p : normProfile(profileIn);
+  const topic = SENSORY_TOPIC_CUES[topicId];
+  if (!topic) return null;
+  const era = p.sensoryEra !== "auto" ? p.sensoryEra
+    : p.birthYear ? Math.min(1990, Math.max(1920, Math.floor((p.birthYear + 15) / 10) * 10)) + "s" : "";
+  const eraCue = SENSORY_ERA_CUES[era] || null;
+  const personal = {
+    scent: p.scents[0] || (eraCue && eraCue.scent) || topic.scent,
+    texture: p.textures[0] || (eraCue && eraCue.texture) || topic.texture,
+    music: p.genres[0] || p.songs[0] || (eraCue && eraCue.music) || topic.music
+  };
+  const eraText = eraCue ? `${personal.scent} scent | ${personal.texture} texture | ${personal.music}` : "";
+  const topicText = `${topic.scent} | ${topic.texture} | ${topic.music}`;
+  const eraLabel = eraCue ? era : "";
+  const summary = [eraLabel ? `Era Cue (${eraLabel}): ${eraText}` : "", `Topic Cue (${topic.label}): ${topicText}`].filter(Boolean).join(" · ");
+  return { era:eraLabel, eraText, topicId, topicLabel:topic.label, topicText, summary,
+    safety:"Offer only if the cue is known to be safe and welcomed; avoid allergens and stop if there is any sign of discomfort." };
+}
 function topicFor(ctx, id){
   const t = TIER_TOPICS[id], pet = ctx.p.pets[0];
   return Object.assign({}, t, { anchor: String(t.anchor || "").replace("{name}", ctx.p.name || "Me").replace("{pet}", pet ? pet.name : "Pets") });
@@ -4582,6 +4661,10 @@ function build(profileIn, optsIn, scope){
     : (scope !== "reflection" ? storyItems(ctx) : []).concat(scope !== "story" ? reflectItems(ctx) : []);
   const pages = paginate(items, jFiller);
   pages.forEach(pg => {
+    if (pg.audience === "resident" && pg.side === "left" && pg.tab < 4){
+      const cue = sensoryCueFor(ctx.p, pg.spreadId);
+      if (cue) pg.staffMeta = { sensoryTrigger:cue };
+    }
     if (pg.audience !== "caregiver") pg.cls = [pg.cls, tierCls(ctx.o)].filter(Boolean).join(" ");   // the reader's tier: resident pages only
     pg.html = sheet(pg, ctx.o.binding, LABELS);
   });
@@ -4670,7 +4753,7 @@ function libraryStrings(){
 }
 
 const EXAMPLE_PROFILE = {
-  name: "Margaret", fullName: "Margaret Ellen Hansen", birthSurname: "Olson", birthMonth: 3, birthDay: 14, birthYear: 1938,
+  name: "Margaret", fullName: "Margaret Ellen Hansen", birthSurname: "Olson", birthMonth: 3, birthDay: 14, birthYear: 1938, sensoryEra:"1950s",
   birthplace: "Two Harbors, Minnesota", hometown: "Duluth, Minnesota", origins: "Norwegian and Swedish farm families",
   childhoodHome: "The yellow house on Jefferson Street, with a big front porch",
   parents: [{ name: "Ingrid", role: "mother" }, { name: "Karl", role: "father" }], siblings: [{ name: "Arne", rel: "brother" }, { name: "Ruth", rel: "sister" }],
@@ -4694,8 +4777,11 @@ root.LifeJournal = {
   DATA: {
     SECTIONS: SECTIONS.map(s => Object.assign({}, s)), BRANCHES, SERVICE_TALK, PARENT_ROLES, SIBLING_RELS, AVOID_TOPICS, MONTHS,
     AFFIRMATIONS: AFFIRMATIONS.map(a => ({ id: a.id, group: a.group, text: a.t, needs: a.needs || null })), DEFAULT_AFFIRM: DEFAULT_AFFIRM.slice(), LABELS,
-    TIER_NAMES, TIER_TOPICS: JSON.parse(JSON.stringify(TIER_TOPICS)), SCOPES: SCOPES.slice()
+    TIER_NAMES, TIER_TOPICS: JSON.parse(JSON.stringify(TIER_TOPICS)), SCOPES: SCOPES.slice(),
+    SENSORY_ERAS: JSON.parse(JSON.stringify(SENSORY_ERA_CUES)), SENSORY_TOPICS: JSON.parse(JSON.stringify(SENSORY_TOPIC_CUES)),
+    SENSORY_ERA_CHOICES: SENSORY_ERA_CHOICES.map(x => x.slice())
   },
+  sensoryCue: sensoryCueFor,
   STANDARDS: K.STANDARDS,
   affirmationsFor: profile => affirmationsFor(normProfile(profile)),
   affirmationText: (profile, id) => { const p = normProfile(profile); return affirmText(id, affirmVars(p)); }
@@ -5503,7 +5589,7 @@ const LifeJournalUI = (function(){
       origins: "", childhoodHome: "", parents: [], siblings: [], friends: "", schools: "", teacher: "", subject: "", pets: [],
       firstJob: "", workplace: "", careerYears: "", skills: "", militaryRank: "", militaryYears: "", militaryPlaces: "", militaryTalk: "gentle",
       organizations: "", proudMoments: "", songs: "", genres: "", hymns: "", scents: "", tastes: "", comfortFoods: "", textures: "", colors: "", landscapes: "",
-      affirmations: D.DEFAULT_AFFIRM.slice(), customAffirmations: "", wisdom: "", avoid: [] };
+      sensoryEra: "auto", affirmations: D.DEFAULT_AFFIRM.slice(), customAffirmations: "", wisdom: "", avoid: [] };
   }
   function defaults(){
     return { v: 1, profile: blankProfile(), source: "", scope: "story", tab: 1, pos: { 1: 0, 2: 0, 3: 0, 4: 0 }, obOpen: true,
@@ -5596,6 +5682,9 @@ const LifeJournalUI = (function(){
                 <input type="number" inputmode="numeric" min="1" max="31" data-p="birthDay" value="${esc(p.birthDay)}" placeholder="Day" aria-label="Day of birth">
                 <input type="number" inputmode="numeric" min="1890" max="2010" data-p="birthYear" value="${esc(p.birthYear)}" placeholder="Year" aria-label="Year of birth">
               </div><p class="hint">Any part you know. A year alone is fine.</p></div>
+            <div class="field"><label for="lj-sensoryEra">Life era for sensory cues</label>
+              <select id="lj-sensoryEra" data-p="sensoryEra">${D.SENSORY_ERA_CHOICES.map(([v, label]) => `<option value="${esc(v)}" ${p.sensoryEra === v ? "selected" : ""}>${esc(label)}</option>`).join("")}</select>
+              <p class="hint">Automatic uses the decade when they were about 15. Choose another era if it better fits their memories.</p></div>
             ${tx("birthplace", "Birthplace", 40, "e.g. Two Harbors, Minnesota")}
             ${tx("hometown", "Hometown, where they grew up", 40, "e.g. Duluth, Minnesota")}
           </fieldset>
@@ -5792,12 +5881,20 @@ const LifeJournalUI = (function(){
     const empty = side => side === "right" ? "Inside back cover" : sp.id === "opener" && previewScope() === "complete" ? "End of the life story" : "Inside cover";
     const caps = S.tab < 4 ? { left: "Left page: story prompts and a photograph", right: "Right page: writing lines" }
       : { left: "Left page: words, prompts and notes", right: "Right page: writing and logging" };
+    const sensory = LJ.sensoryCue(engineProfile(), sp.id);
+    const sensoryHtml = sensory ? `<aside class="lj-sensory-trigger" aria-label="Suggested sensory triggers for this life-story topic">
+        <b>Sensory Trigger · ${esc(sensory.topicLabel)}${sensory.era ? " · " + esc(sensory.era) : ""}</b>
+        ${sensory.eraText ? `<p><strong>Era Cue:</strong> ${esc(sensory.eraText)}</p>` : ""}
+        <p><strong>Topic Cue:</strong> ${esc(sensory.topicText)}</p>
+        <small>For staff: offer only cues known to be safe and welcomed; avoid allergens and stop if there is any sign of discomfort.</small>
+      </aside>` : "";
     box.innerHTML = `
       <div class="lp-pv-bar">
         <button class="btn btn-sm btn-ghost" type="button" data-pv="-1" ${i === 0 ? "disabled" : ""} aria-label="Previous spread">&lsaquo; Prev</button>
         <p class="lp-pv-title"><b>${esc(sp.title)}</b><span>Spread ${i + 1} of ${list.length} &middot; ${nums.length > 1 ? "pages " + nums.join(" and ") : "page " + nums[0]}</span></p>
         <button class="btn btn-sm btn-ghost" type="button" data-pv="1" ${i === list.length - 1 ? "disabled" : ""} aria-label="Next spread">Next &rsaquo;</button>
       </div>
+      ${sensoryHtml}
       <div class="lp-spread">${BookUI.figure(L, "left", empty("left"), caps)}${BookUI.figure(R, "right", empty("right"), caps)}</div>
       <div class="lp-pv-foot">
         <p class="hint">${inScope ? "" : `Not in the ${SCOPES[S.scope].label}. Choose ${S.tab <= 3 ? "the Life Story Book" : "Reflection &amp; Family Notes"} or the Complete Journal below to print it. `}Left pages carry the story prompts and a photograph; right pages carry writing lines 0.5 in apart. The shaded edge is the 0.75 in binding gutter.</p>
@@ -6387,6 +6484,7 @@ const CogniLibrary = (function(){
       ${b.legend ? `<div class="cc-legend" style="${box(b.legend)}">${V.legendColumnSvg(o.legend)}</div>` : ""}
       ${b.caption ? `<div class="cc-cap" style="${box(b.caption, `font-size:${b.caption.pt}pt`)}">${esc(d.talk)}</div>` : ""}
       <div class="cc-foot" style="${box(b.foot)}"><span>${esc(ft[0])}</span><span>${esc(ft[1])}</span></div>
+      <footer class="care-coaching-footer">Do not ask questions or test memory. Sit beside them, place the marker in their hand, and model slow, calm breathing.</footer>
     </section>` };
   }
   /* What the page options are right now, for the page at index i of the picks. */
@@ -6438,6 +6536,8 @@ const CogniLibrary = (function(){
       doc.setDrawColor(153, 153, 153); doc.setLineWidth(.75); doc.line(P(b.foot.x), P(b.foot.y), P(b.foot.x + b.foot.w), P(b.foot.y));
       doc.setFont("helvetica", "normal"); doc.setFontSize(9); doc.setTextColor(51, 51, 51);
       doc.text(ft[0], P(b.foot.x), P(b.foot.y + b.foot.h) - 2); doc.text(ft[1], P(b.foot.x + b.foot.w), P(b.foot.y + b.foot.h) - 2, { align:"right" });
+      doc.setFontSize(8); doc.setTextColor(86, 97, 93);
+      doc.text("Do not ask questions or test memory. Sit beside them, place the marker in their hand, and model slow, calm breathing.", 306, 776, { align:"center", maxWidth:540 });
       doc.setTextColor(0, 0, 0); doc.setDrawColor(0, 0, 0);
       times.push(performance.now() - t0);
     });
@@ -12458,9 +12558,23 @@ function tactilePairingFor(activity, page, cfg){
   return "Offer a familiar, soft-textured fabric to touch while looking at the page, only if welcomed; stop if the resident seems uncomfortable.";
 }
 
-function sheetHtml(item){
+const CAREGIVER_COACHING_NOTE = "Do not ask questions or test memory. Sit beside them, place the marker in their hand, and model slow, calm breathing.";
+function sheetHtml(item, calmMode){
+  const html = activitySheetHtml(item, calmMode);
+  if (!html || html.indexOf("care-coaching-footer") >= 0) return html;
+  const close = html.lastIndexOf("</section>");
+  if (close < 0) return html;
+  const footer = `<footer class="care-coaching-footer">${esc(CAREGIVER_COACHING_NOTE)}</footer>`;
+  return html.slice(0, close) + footer + html.slice(close);
+}
+function activitySheetHtml(item, calmMode){
   const act = ACT_INDEX[item.activityId];
   if (!act) return "";
+  if (calmMode == null ? sundowningCalmActive : calmMode) return `<section class="sheet sheet-calm" aria-label="Late-stage calm activity page">
+    <svg viewBox="0 0 300 400" role="img" aria-label="One broad dashed line to trace slowly">
+      <path d="M48 200 C82 108 123 108 150 200 S218 292 252 200" fill="none" stroke="#000" stroke-width="6pt" vector-effect="non-scaling-stroke" stroke-dasharray="14 12" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </section>`;
   const page = buildBatch(act, item.cfg, item.batchSeed, item.count)[item.index];
   const sensoryPairing = item.cfg.difficulty === "advanced" ? tactilePairingFor(act, page, item.cfg) : "";
   const sensoryHtml = sensoryPairing ? `<p class="sh-sensory"><b>For staff · Sensory Prompt:</b> ${esc(sensoryPairing)}</p>` : "";
@@ -12610,7 +12724,17 @@ function academyPills(){
   return A ? [n("pro") + " masterclasses", n("family") + " family guides", "Training records"] : ["Masterclasses", "Family guides"];
 }
 
-let selectedAct = null, previewSeed = newSeed();
+let selectedAct = null, previewSeed = newSeed(), sundowningCalmActive = false;
+function syncCalmModeToggle(){
+  const button = $("#calmModeToggle"), help = $("#calmModeHelp");
+  if (!button || !help) return;
+  button.setAttribute("aria-pressed", String(sundowningCalmActive));
+  help.textContent = sundowningCalmActive
+    ? "On · queued activity text and choices suppressed; emergency buttons stay fixed"
+    : "Off · simplifies queued activity pages; emergency buttons stay fixed";
+  if (selectedAct) renderPreview();
+  renderQueue();
+}
 
 function renderCategory(id){
   const cat = CAT_INDEX[id];
@@ -12853,7 +12977,9 @@ function updatePreview(){
   if (!selectedAct || !$("#preview")) return;
   const cfg = currentCfg();
   $("#preview").innerHTML = sheetHtml({ activityId:selectedAct.id, cfg, batchSeed:previewSeed, count:1, index:0 });
-  $("#pvMeta").textContent = DIFFICULTIES[cfg.difficulty].label + (selectedAct.themed ? " · " + ERAS[cfg.era] : "");
+  $("#pvMeta").textContent = sundowningCalmActive
+    ? "Late-Stage / Sundowning Calm · single 6 pt tracing path"
+    : DIFFICULTIES[cfg.difficulty].label + (selectedAct.themed ? " · " + ERAS[cfg.era] : "");
   if (selectedAct.optionsNote && $("#optNote")) $("#optNote").textContent = selectedAct.optionsNote(cfg);
 }
 
@@ -13025,11 +13151,11 @@ function renderQueue(){
   body.innerHTML = `<p class="hint" style="margin:0 0 12px">${queue.length} ${queue.length === 1 ? "page" : "pages"}, printed in this order. Each is one sheet of paper.</p><ol class="q-list">` +
     queue.map((q, i) => {
       const act = ACT_INDEX[q.activityId];
-      const bits = [ "Version " + (q.index + 1) + " of " + q.count, DIFFICULTIES[q.cfg.difficulty].label ];
-      if (act.themed) bits.push(ERAS[q.cfg.era]);
-      if (q.cfg.residentName) bits.push("For " + q.cfg.residentName);
-      const title = buildBatch(act, q.cfg, q.batchSeed, q.count)[q.index].title;
-      if (title !== act.name) bits.unshift(act.name);
+      const bits = sundowningCalmActive ? ["Standard activity text and choices suppressed"] : [ "Version " + (q.index + 1) + " of " + q.count, DIFFICULTIES[q.cfg.difficulty].label ];
+      if (!sundowningCalmActive && act.themed) bits.push(ERAS[q.cfg.era]);
+      if (!sundowningCalmActive && q.cfg.residentName) bits.push("For " + q.cfg.residentName);
+      const title = sundowningCalmActive ? "Calm tracing page" : buildBatch(act, q.cfg, q.batchSeed, q.count)[q.index].title;
+      if (!sundowningCalmActive && title !== act.name) bits.unshift(act.name);
       return `<li class="q-item"><div class="thumb">${sheetHtml(q)}</div>
         <div class="q-info"><b>${i + 1}. ${esc(title)}</b><small>${esc(bits.join(" · "))}</small>
           <div class="q-btns">
@@ -13106,7 +13232,8 @@ function generatePdf(items, printOptions){
   }   // print in the embedded face, never a fallback
   const root = $("#printRoot");
   root.className = isPureBlackAndWhitePDF ? "pure-bw" : "";
-  root.innerHTML = items.map(sheetHtml).join("");
+  const calmMode = printOptions && typeof printOptions.calmMode === "boolean" ? printOptions.calmMode : sundowningCalmActive;
+  root.innerHTML = items.map(item => sheetHtml(item, calmMode)).join("");
   printReady = true;
   const who = (items.find(q => q.cfg.residentName) || { cfg:{} }).cfg.residentName;
   printTitle = document.title;
@@ -13133,7 +13260,7 @@ function printEmergencyActivity(residentId){
     if (activityId === "letter-tracing"){ cfg.opts.letters = "name"; cfg.opts.case = "both"; }
   }
   const item = { activityId:activity.id, cfg:cfg, batchSeed:newSeed(), count:1, index:0 };
-  generatePdf([item], { emergency:true, title:"Cognicopia Instant Soothe" });
+  generatePdf([item], { emergency:true, calmMode:false, title:"Cognicopia Instant Soothe" });
 }
 
 const PANIC_PACKET = [
@@ -13154,7 +13281,7 @@ function buildPanicPacket(){
   }));
 }
 function printPanicPacket(){
-  generatePdf(buildPanicPacket(), { emergency:true, title:"Cognicopia Rapid De-escalation" });
+  generatePdf(buildPanicPacket(), { emergency:true, calmMode:false, title:"Cognicopia Rapid De-escalation" });
 }
 
 /* Ctrl+P without Generate PDF: print a short note instead of a blank page. */
@@ -13180,6 +13307,13 @@ window.addEventListener("afterprint", () => {
 
   $("#openPacket").addEventListener("click", openDrawer);
   $("#panicButton").addEventListener("click", printPanicPacket);
+  $("#calmModeToggle").addEventListener("click", () => {
+    sundowningCalmActive = !sundowningCalmActive;
+    syncCalmModeToggle();
+    toast(sundowningCalmActive
+      ? "Calm mode is on for queued pages. Emergency print buttons keep their dedicated payload."
+      : "Calm mode is off. Standard activity instructions and graphics are restored.");
+  });
   $("#fpToggle").addEventListener("click", () => { location.hash = parseHash().name === "facility" ? lastBuilderHash : "#/facility"; });
   // Home: the main landing page is a separate file (index.html), so this
   // is a page change, not a view swap. Close any open panel and make sure
