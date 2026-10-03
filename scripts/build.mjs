@@ -13,7 +13,7 @@
      4. every file the offline service worker pre-caches exists, and so
         does every icon in the web manifest;
      5. the server file parses, and the planner, journal, TypeScript
-        services and CogniCore coloring checks pass (the coloring check
+        services and Cognicopia Coloring checks pass (the coloring check
         also proves the library, catalog and browser bundle are current);
      6. the site navigation matches scripts/site-nav.mjs (npm run nav), the
         Research Center's pages match their content (npm run research), and

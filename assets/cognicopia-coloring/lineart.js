@@ -1,12 +1,12 @@
 /* =====================================================================
-   COGNICORE LINE-ART ENGINE
-   One source for every CogniCore coloring page. The Packet Builder draws
+   COGNICOPIA_COLORING LINE-ART ENGINE
+   One source for every Cognicopia Coloring page. The Packet Builder draws
    the pages live, the packet tool draws them into its PDFs, and
    scripts/generate_coloring_manifest.js writes them out as SVG files and
-   the catalog (src/data/cognicore_coloring_catalog.json).
+   the catalog (src/data/cognicopia_coloring_catalog.json).
 
    The clinical print standard is built in, not left to each drawing
-   (docs/cognicore-coloring-standards.md):
+   (docs/cognicopia-coloring-standards.md):
      - pure black (#000) lines on pure white (#fff): no gray, no shading,
        no gradients, no textures, no text inside the picture;
      - line weight is set by the tier, never by the drawing, and matches
@@ -388,7 +388,7 @@ var kit = {
 var DESIGNS = [], BY_ID = {}, PACKS = [], PACK_BY_ID = {};
 var REQUIRED = ["id", "title", "cat", "talk"];
 function define(meta, draw){
-  REQUIRED.forEach(function(k){ if (!meta[k]) throw new Error("CogniCore design needs " + k + ": " + JSON.stringify(meta)); });
+  REQUIRED.forEach(function(k){ if (!meta[k]) throw new Error("Cognicopia Coloring design needs " + k + ": " + JSON.stringify(meta)); });
   if (!CAT[meta.cat]) throw new Error("Unknown category " + meta.cat + " for " + meta.id);
   if (BY_ID[meta.id]) throw new Error("Duplicate design id " + meta.id);
   var d = {
@@ -427,7 +427,7 @@ function weightFor(tier, override){ return WEIGHTS[override] || WEIGHTS[TIERS[ti
 /* Draw one design at one tier. Returns the shapes and how to fit them. */
 function render(id, tier, variant){
   var d = BY_ID[id];
-  if (!d) throw new Error("No CogniCore design " + id);
+  if (!d) throw new Error("No Cognicopia Coloring design " + id);
   tier = TIERS[tier] ? +tier : 2;
   var g = new Ctx(tier, variant);
   d.draw(g, h);
@@ -501,7 +501,7 @@ function stats(){
   return { designs:DESIGNS.length, assets:DESIGNS.length * 3, packs:PACKS.length, byCategory:byCat };
 }
 
-root.CogniCore = {
+root.CognicopiaColoring = {
   version:ENGINE_VERSION, W:W, H:H, TIERS:TIERS, WEIGHTS:WEIGHTS, CATEGORIES:CATEGORIES, CAT:CAT, PAGE:PAGE, smallestLayout:SMALLEST,
   define:define, definePack:definePack, render:render, toSVG:toSVG, toPDF:toPDF, pageLayout:pageLayout,
   weightFor:weightFor, tagsFor:tagsFor, assetId:assetId, parsePath:parsePath, samplePath:samplePath, bboxOf:bboxOf,

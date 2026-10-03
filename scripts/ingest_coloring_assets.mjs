@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /* =====================================================================
-   CogniCore coloring ingest: brings new line art (from an image generator,
-   a scanner or an illustrator) up to the CogniCore print standard and holds
+   Cognicopia Coloring ingest: brings new line art (from an image generator,
+   a scanner or an illustrator) up to the Cognicopia Coloring print standard and holds
    it for a person to review before any resident sees it.
 
    Put PNG or SVG files in assets/coloring/_inbox/ (not published: the
@@ -46,7 +46,7 @@
 import fs from "fs";
 import path from "path";
 import crypto from "crypto";
-import { loadCogniCore, ROOT, complexityOf } from "./lib/cognicore.mjs";
+import { loadCognicopiaColoring, ROOT, complexityOf } from "./lib/cognicopia-coloring.mjs";
 import { decodePNG, encodeBitPNG } from "./lib/png.mjs";
 import { createBitmap, paint, measure, strokeStats, dilate, despeckle } from "./lib/raster.mjs";
 import { parseSVG, fitShapes, shapesToSVG } from "./lib/svg-raster.mjs";
@@ -57,7 +57,7 @@ const opt = (name, def) => { const i = args.indexOf("--" + name); return i < 0 ?
 const INBOX = opt("inbox", "assets/coloring/_inbox");
 const OUT_DIR = "assets/coloring/ingested";
 const STORE = opt("store", "src/data/coloring_ingested.json");
-const SCHEMA = "src/data/cognicore_coloring_catalog.schema.json";
+const SCHEMA = "src/data/cognicopia_coloring_catalog.schema.json";
 const DRY = args.includes("--dry-run"), JSON_OUT = args.includes("--json");      // --json: print the records (with --dry-run, for checks)
 const DPI = 300, CANVAS_W = 6, CANVAS_H = 8;             // the stored picture: 6 x 8 in (3:4) at 300 DPI
 const abs = f => path.isAbsolute(f) ? f : path.join(ROOT, f);
@@ -66,10 +66,10 @@ const sha256 = b => crypto.createHash("sha256").update(b).digest("hex");
 const today = () => new Date().toISOString().slice(0, 10);
 const SITE = "https://" + (fs.existsSync(abs("CNAME")) ? fs.readFileSync(abs("CNAME"), "utf8").trim() : "cognicopia.org");
 
-const { C, P } = loadCogniCore();
+const { C, P } = loadCognicopiaColoring();
 const schema = JSON.parse(fs.readFileSync(abs(SCHEMA), "utf8"));
 const loadStore = () => fs.existsSync(abs(STORE)) ? JSON.parse(fs.readFileSync(abs(STORE), "utf8"))
-  : { $schema:"./cognicore_coloring_catalog.schema.json", name:"CogniCore Ingested Coloring Pages", schema_version:"1.0.0",
+  : { $schema:"./cognicopia_coloring_catalog.schema.json", name:"Cognicopia Coloring Ingested Pages", schema_version:"1.0.0",
       about:"Pictures brought in by scripts/ingest_coloring_assets.mjs. Each waits as needs-review until a person approves it; approved pictures join the catalog on the next npm run coloring.", assets:[] };
 const saveStore = s => { if (!DRY) fs.writeFileSync(abs(STORE), JSON.stringify(s, null, 1) + "\n"); };
 

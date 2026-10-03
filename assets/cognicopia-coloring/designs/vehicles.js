@@ -1,8 +1,8 @@
-/* CogniCore designs: Classic Vehicles. Side-on views, facing right, with
+/* Cognicopia Coloring designs: Classic Vehicles. Side-on views, facing right, with
    big wheels and plain panels; chrome, trim and seams only at Tiers 1-2.
    Each sits in a scene (lineart.js, kit.scene) so the tall page is filled
    with big areas to color, not empty paper.
-   See assets/cognicore/lineart.js for g (the tier's shapes) and h (geometry). */
+   See assets/cognicopia-coloring/lineart.js for g (the tier's shapes) and h (geometry). */
 (function(C){
 "use strict";
 var h = C.helpers, kit = C.kit;
@@ -296,4 +296,4 @@ function fireEngine(g){
 inScene({ id:"fire-engine", title:"The Fire Engine", cat:"classic-vehicles", era:"1940s",
   tags:["fire-engines", "trucks", "community", "helpers"], sensitive:["driving", "storms"], talk:"Who are the helpers you admire in a community?" },
   { road:[610, 700], trees:[[90, 60]] }, { span:[16, 586], anchorY:498, y:690, width:540 }, fireEngine);
-})(globalThis.CogniCore);
+})(globalThis.CognicopiaColoring);

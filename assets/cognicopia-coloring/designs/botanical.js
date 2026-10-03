@@ -1,4 +1,4 @@
-/* CogniCore designs: Botanical & Garden. Flowers big and upright, leaves
+/* Cognicopia Coloring designs: Botanical & Garden. Flowers big and upright, leaves
    with their veins only at Tiers 1-2, and nothing behind them. */
 (function(C){
 "use strict";
@@ -421,4 +421,4 @@ C.define({ id:"dahlia", title:"The Dahlia", cat:"botanical-garden", season:"summ
   if (g.lvl >= 2) bloom(g, 300, 300, R * .4, { n:8, shape:"pointed", w:1.35, center:false });
   g.S(h.circle(300, 300, R * g.at(.15, .16, .24)));
 });
-})(globalThis.CogniCore);
+})(globalThis.CognicopiaColoring);

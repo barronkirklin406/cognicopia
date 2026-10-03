@@ -1,18 +1,18 @@
-/* CogniCore coloring: the line-art engine, every design, the packs, the
+/* Cognicopia Coloring: the line-art engine, every design, the packs, the
    prompt engine and the measured catalog, in one file for the Packet
    Builder and the packet tool. Built by scripts/generate_coloring_manifest.js
-   from assets/cognicore/*.js: edit those, then run npm run coloring. */
+   from assets/cognicopia-coloring/*.js: edit those, then run npm run coloring. */
 
 /* ---------- lineart.js ---------- */
 /* =====================================================================
-   COGNICORE LINE-ART ENGINE
-   One source for every CogniCore coloring page. The Packet Builder draws
+   COGNICOPIA_COLORING LINE-ART ENGINE
+   One source for every Cognicopia Coloring page. The Packet Builder draws
    the pages live, the packet tool draws them into its PDFs, and
    scripts/generate_coloring_manifest.js writes them out as SVG files and
-   the catalog (src/data/cognicore_coloring_catalog.json).
+   the catalog (src/data/cognicopia_coloring_catalog.json).
 
    The clinical print standard is built in, not left to each drawing
-   (docs/cognicore-coloring-standards.md):
+   (docs/cognicopia-coloring-standards.md):
      - pure black (#000) lines on pure white (#fff): no gray, no shading,
        no gradients, no textures, no text inside the picture;
      - line weight is set by the tier, never by the drawing, and matches
@@ -394,7 +394,7 @@ var kit = {
 var DESIGNS = [], BY_ID = {}, PACKS = [], PACK_BY_ID = {};
 var REQUIRED = ["id", "title", "cat", "talk"];
 function define(meta, draw){
-  REQUIRED.forEach(function(k){ if (!meta[k]) throw new Error("CogniCore design needs " + k + ": " + JSON.stringify(meta)); });
+  REQUIRED.forEach(function(k){ if (!meta[k]) throw new Error("Cognicopia Coloring design needs " + k + ": " + JSON.stringify(meta)); });
   if (!CAT[meta.cat]) throw new Error("Unknown category " + meta.cat + " for " + meta.id);
   if (BY_ID[meta.id]) throw new Error("Duplicate design id " + meta.id);
   var d = {
@@ -433,7 +433,7 @@ function weightFor(tier, override){ return WEIGHTS[override] || WEIGHTS[TIERS[ti
 /* Draw one design at one tier. Returns the shapes and how to fit them. */
 function render(id, tier, variant){
   var d = BY_ID[id];
-  if (!d) throw new Error("No CogniCore design " + id);
+  if (!d) throw new Error("No Cognicopia Coloring design " + id);
   tier = TIERS[tier] ? +tier : 2;
   var g = new Ctx(tier, variant);
   d.draw(g, h);
@@ -507,7 +507,7 @@ function stats(){
   return { designs:DESIGNS.length, assets:DESIGNS.length * 3, packs:PACKS.length, byCategory:byCat };
 }
 
-root.CogniCore = {
+root.CognicopiaColoring = {
   version:ENGINE_VERSION, W:W, H:H, TIERS:TIERS, WEIGHTS:WEIGHTS, CATEGORIES:CATEGORIES, CAT:CAT, PAGE:PAGE, smallestLayout:SMALLEST,
   define:define, definePack:definePack, render:render, toSVG:toSVG, toPDF:toPDF, pageLayout:pageLayout,
   weightFor:weightFor, tagsFor:tagsFor, assetId:assetId, parsePath:parsePath, samplePath:samplePath, bboxOf:bboxOf,
@@ -518,7 +518,7 @@ root.CogniCore = {
 })(typeof globalThis !== "undefined" ? globalThis : this);
 
 /* ---------- designs/botanical.js ---------- */
-/* CogniCore designs: Botanical & Garden. Flowers big and upright, leaves
+/* Cognicopia Coloring designs: Botanical & Garden. Flowers big and upright, leaves
    with their veins only at Tiers 1-2, and nothing behind them. */
 (function(C){
 "use strict";
@@ -941,10 +941,10 @@ C.define({ id:"dahlia", title:"The Dahlia", cat:"botanical-garden", season:"summ
   if (g.lvl >= 2) bloom(g, 300, 300, R * .4, { n:8, shape:"pointed", w:1.35, center:false });
   g.S(h.circle(300, 300, R * g.at(.15, .16, .24)));
 });
-})(globalThis.CogniCore);
+})(globalThis.CognicopiaColoring);
 
 /* ---------- designs/everyday.js ---------- */
-/* CogniCore designs: Home & Everyday Tasks. Familiar jobs and small
+/* Cognicopia Coloring designs: Home & Everyday Tasks. Familiar jobs and small
    pleasures drawn as the things themselves (a laid table, a knitting
    basket, a letter), so a page can open a conversation about a role the
    person held: host, baker, gardener, letter writer. */
@@ -1181,10 +1181,10 @@ C.define({ id:"cards-and-dominoes", title:"Cards and Dominoes", cat:"home-everyd
   domino(200, 600, 3, 5, 80);
   if (g.lvl >= 2) domino(420, 620, 2, 4, 100);
 });
-})(globalThis.CogniCore);
+})(globalThis.CognicopiaColoring);
 
 /* ---------- designs/heritage.js ---------- */
-/* CogniCore designs: Nostalgic Heritage. Heirloom kitchenware, clocks,
+/* Cognicopia Coloring designs: Nostalgic Heritage. Heirloom kitchenware, clocks,
    radios and telephones, the sewing room, and farm landmarks. Clock faces
    carry tick marks, never numerals: the picture stays free of text. */
 (function(C){
@@ -1579,13 +1579,13 @@ C.define({ id:"porch-swing", title:"The Porch Swing", cat:"nostalgic-heritage",
   g.S(h.path([76, 524]).L([524, 524]).L([544, 580]).L([56, 580]).Z());
   [56, 516].forEach(function(x){ if (g.is(2)) g.S(h.rrect(x, 472, 28, 80, 8)); else g.K(h.rrect(x, 472, 28, 80, 8)); });
 });
-})(globalThis.CogniCore);
+})(globalThis.CognicopiaColoring);
 
 /* ---------- designs/patterns.js ---------- */
-/* CogniCore designs: Bold & Easy Patterns. Traditional quilt blocks and
+/* Cognicopia Coloring designs: Bold & Easy Patterns. Traditional quilt blocks and
    calm radial patterns: structured shapes with clear, closed edges (the
    kind of coloring that lowered anxiety in the mandala and plaid studies,
-   docs/cognicore-coloring-standards.md). Tiers change how many blocks or
+   docs/cognicopia-coloring-standards.md). Tiers change how many blocks or
    rings there are, so Tier 3 always has a few large pieces. */
 (function(C){
 "use strict";
@@ -1863,14 +1863,14 @@ C.define({ id:"kaleidoscope", title:"The Kaleidoscope", cat:"bold-easy-patterns"
   }
   g.S(h.circle(cx, cy, g.at(34, 40, 50)));
 });
-})(globalThis.CogniCore);
+})(globalThis.CognicopiaColoring);
 
 /* ---------- designs/vehicles.js ---------- */
-/* CogniCore designs: Classic Vehicles. Side-on views, facing right, with
+/* Cognicopia Coloring designs: Classic Vehicles. Side-on views, facing right, with
    big wheels and plain panels; chrome, trim and seams only at Tiers 1-2.
    Each sits in a scene (lineart.js, kit.scene) so the tall page is filled
    with big areas to color, not empty paper.
-   See assets/cognicore/lineart.js for g (the tier's shapes) and h (geometry). */
+   See assets/cognicopia-coloring/lineart.js for g (the tier's shapes) and h (geometry). */
 (function(C){
 "use strict";
 var h = C.helpers, kit = C.kit;
@@ -2164,10 +2164,10 @@ function fireEngine(g){
 inScene({ id:"fire-engine", title:"The Fire Engine", cat:"classic-vehicles", era:"1940s",
   tags:["fire-engines", "trucks", "community", "helpers"], sensitive:["driving", "storms"], talk:"Who are the helpers you admire in a community?" },
   { road:[610, 700], trees:[[90, 60]] }, { span:[16, 586], anchorY:498, y:690, width:540 }, fireEngine);
-})(globalThis.CogniCore);
+})(globalThis.CognicopiaColoring);
 
 /* ---------- designs/wildlife.js ---------- */
-/* CogniCore designs: Wildlife & Nature. Birds, butterflies, pond and shore
+/* Cognicopia Coloring designs: Wildlife & Nature. Birds, butterflies, pond and shore
    life and gentle animals, drawn with natural proportions: small solid
    eyes, no smiles, no cartoon faces. */
 (function(C){
@@ -2544,10 +2544,10 @@ C.define({ id:"mountain-lake", title:"The Mountain Lake", cat:"wildlife-nature",
   var pine = function(x, y, s){ g.group({ x:x, y:y, s:s }, function(g){ g.S(h.rect(-10, -20, 20, 40)); g.S(h.poly([[0, -200], [70, -20], [-70, -20]])); if (g.lvl >= 2){ g.L(h.line([-40, -90], [40, -90])); } }); };
   pine(110, 700, g.at(1, 1.1, 1.2)); if (g.lvl >= 2) pine(480, 700, .9); if (g.lvl >= 3) pine(190, 720, .7);
 });
-})(globalThis.CogniCore);
+})(globalThis.CognicopiaColoring);
 
 /* ---------- packs.js ---------- */
-/* CogniCore coloring packs: themed bundles of designs that print together
+/* Cognicopia Coloring packs: themed bundles of designs that print together
    at one tier (a resident's own, or the pack's recommendation). A design
    can sit in several packs. Add a pack by listing design ids; the checks
    (scripts/check-coloring.mjs) confirm every id exists. */
@@ -2684,14 +2684,14 @@ pack("fine-motor-practice", "Fine-Motor Practice", "focus", "Pages with more, sm
   ["quilt-ohio-star", "daisy-jar", "art-deco-fans", "steam-locomotive", "typewriter", "hydrangea"], 1);
 pack("guided-focus-mix", "Guided Focus Mix", "focus", "A balanced set of subjects with a few guiding lines, one from each theme.",
   ["tulips-vase", "farm-pickup", "cathedral-radio", "barn-owl", "quilt-pinwheel", "knitting-basket"], 2);
-})(globalThis.CogniCore);
+})(globalThis.CognicopiaColoring);
 
 /* ---------- prompts.js ---------- */
 /* =====================================================================
-   COGNICORE PROMPT ENGINE AND DIGNITY FILTER
+   COGNICOPIA_COLORING PROMPT ENGINE AND DIGNITY FILTER
    Builds strict line-art prompts for image generators (Midjourney, Stable
    Diffusion, DALL-E 3) so new artwork arrives already close to the
-   CogniCore print standard, and checks any title, tag, caption or prompt
+   Cognicopia Coloring print standard, and checks any title, tag, caption or prompt
    for childish, quizzing or talking-down language.
 
    Nothing here calls a generator or any other service: it only writes
@@ -2934,7 +2934,7 @@ function job(o){
   };
 }
 
-root.CogniCorePrompts = {
+root.CognicopiaColoringPrompts = {
   POSITIVE:POSITIVE, NEGATIVE:NEGATIVE, TIER_WORDS:TIER_WORDS, GENERATORS:GENERATORS, IDEAS:IDEAS,
   build:build, buildAll:buildAll, format:format, dignityCheck:dignityCheck, subjectFor:subjectFor, job:job, slug:slug,
   JUVENILE:JUVENILE, QUIZ:QUIZ, ELDERSPEAK:ELDERSPEAK
@@ -2947,4 +2947,4 @@ root.CogniCorePrompts = {
 "use strict";
 if (!C) return;
 C.catalog = {"schema_version":"1.0.0","content_hash":"edb9864a429a6acf65ae34862480061c678b1849d2ebb31814d43781fc8aa9af","bands":[{"id":"simple","label":"Simple: up to 12 areas to color","max_regions":12},{"id":"moderate","label":"Moderate: 13 to 40 areas","max_regions":40},{"id":"detailed","label":"Detailed: more than 40 areas","max_regions":null}],"metrics":{"cc-tulips-vase-t1":[17,0.071,0.556,0,"moderate"],"cc-tulips-vase-t2":[11,0.089,0.537,0,"simple"],"cc-tulips-vase-t3":[9,0.221,1.05,0,"simple"],"cc-sunflower-t1":[43,0.094,0.246,0,"detailed"],"cc-sunflower-t2":[22,0.193,0.286,0,"moderate"],"cc-sunflower-t3":[18,0.137,0.337,0,"moderate"],"cc-garden-rose-t1":[19,0.317,0.563,0,"moderate"],"cc-garden-rose-t2":[19,0.294,0.492,0,"moderate"],"cc-garden-rose-t3":[13,0.433,0.596,0,"moderate"],"cc-poppies-t1":[16,0.096,0.489,0,"moderate"],"cc-poppies-t2":[10,0.145,0.634,0,"simple"],"cc-poppies-t3":[5,0.431,1.588,0,"simple"],"cc-daffodils-t1":[27,0.067,0.197,0,"moderate"],"cc-daffodils-t2":[19,0.095,0.285,0,"moderate"],"cc-daffodils-t3":[9,0.511,0.624,0,"simple"],"cc-calla-lilies-t1":[15,0.029,0.465,0,"moderate"],"cc-calla-lilies-t2":[9,0.106,0.775,0,"simple"],"cc-calla-lilies-t3":[6,0.052,0.759,1,"simple"],"cc-daisy-jar-t1":[98,0.021,0.065,0,"detailed"],"cc-daisy-jar-t2":[49,0.01,0.097,3,"detailed"],"cc-daisy-jar-t3":[23,0.082,0.253,1,"moderate"],"cc-water-lily-t1":[15,0.045,0.34,0,"moderate"],"cc-water-lily-t2":[11,0.028,0.439,1,"simple"],"cc-water-lily-t3":[9,0.014,0.406,1,"simple"],"cc-magnolia-branch-t1":[23,0.078,0.302,0,"moderate"],"cc-magnolia-branch-t2":[16,0.101,0.519,0,"moderate"],"cc-magnolia-branch-t3":[5,0.598,1.775,0,"simple"],"cc-hydrangea-t1":[32,0.004,0.706,5,"moderate"],"cc-hydrangea-t2":[14,0.026,1.133,1,"moderate"],"cc-hydrangea-t3":[11,0.004,2.561,1,"simple"],"cc-porch-geranium-t1":[51,0.004,0.118,2,"detailed"],"cc-porch-geranium-t2":[29,0.032,0.213,1,"moderate"],"cc-porch-geranium-t3":[10,0.189,2.369,0,"simple"],"cc-watering-can-t1":[15,0.018,0.209,1,"moderate"],"cc-watering-can-t2":[14,0.011,0.331,2,"moderate"],"cc-watering-can-t3":[8,0.029,0.408,1,"simple"],"cc-garden-gate-t1":[51,0.004,0.238,2,"detailed"],"cc-garden-gate-t2":[28,0.088,0.399,0,"moderate"],"cc-garden-gate-t3":[16,0.316,0.547,0,"moderate"],"cc-garden-wheelbarrow-t1":[34,0.003,0.118,3,"moderate"],"cc-garden-wheelbarrow-t2":[27,0.016,0.107,1,"moderate"],"cc-garden-wheelbarrow-t3":[9,0.127,0.265,0,"simple"],"cc-windowsill-herbs-t1":[49,0.003,0.159,9,"detailed"],"cc-windowsill-herbs-t2":[26,0.016,0.213,2,"moderate"],"cc-windowsill-herbs-t3":[17,0.11,0.218,1,"moderate"],"cc-autumn-maple-t1":[14,0.008,0.147,4,"moderate"],"cc-autumn-maple-t2":[8,0.003,0.767,1,"simple"],"cc-autumn-maple-t3":[3,1.206,1.208,0,"simple"],"cc-oak-acorns-t1":[9,0.029,0.607,0,"simple"],"cc-oak-acorns-t2":[9,0.013,0.667,2,"simple"],"cc-oak-acorns-t3":[4,0.039,1.452,1,"simple"],"cc-apple-branch-t1":[10,0.118,0.557,0,"simple"],"cc-apple-branch-t2":[8,0.219,0.609,0,"simple"],"cc-apple-branch-t3":[6,0.242,1.036,0,"simple"],"cc-fruit-bowl-t1":[12,0.013,0.131,3,"simple"],"cc-fruit-bowl-t2":[5,0.859,1.417,0,"simple"],"cc-fruit-bowl-t3":[4,0.716,3.065,0,"simple"],"cc-strawberries-t1":[31,0.003,0.122,7,"moderate"],"cc-strawberries-t2":[20,0.003,0.173,2,"moderate"],"cc-strawberries-t3":[12,0.125,0.143,0,"simple"],"cc-pumpkin-patch-t1":[8,0.013,0.85,1,"simple"],"cc-pumpkin-patch-t2":[7,0.095,0.85,0,"simple"],"cc-pumpkin-patch-t3":[3,0.098,7.263,1,"simple"],"cc-harvest-basket-t1":[44,0.023,0.385,0,"detailed"],"cc-harvest-basket-t2":[20,0.015,0.28,2,"moderate"],"cc-harvest-basket-t3":[8,0.054,0.442,1,"simple"],"cc-dahlia-t1":[55,0.089,0.197,0,"detailed"],"cc-dahlia-t2":[49,0.078,0.205,0,"detailed"],"cc-dahlia-t3":[21,0.269,0.313,0,"moderate"],"cc-clothesline-t1":[29,0.007,0.123,4,"moderate"],"cc-clothesline-t2":[15,0.022,0.494,1,"moderate"],"cc-clothesline-t3":[5,0.008,0.574,1,"simple"],"cc-table-setting-t1":[86,0.008,0.196,4,"detailed"],"cc-table-setting-t2":[14,0.004,0.288,2,"moderate"],"cc-table-setting-t3":[2,4.581,4.617,0,"simple"],"cc-tea-for-two-t1":[18,0.013,0.269,2,"moderate"],"cc-tea-for-two-t2":[13,0.006,0.212,3,"moderate"],"cc-tea-for-two-t3":[5,0.084,1.325,1,"simple"],"cc-baking-day-t1":[44,0.044,0.112,0,"detailed"],"cc-baking-day-t2":[23,0.049,0.207,2,"moderate"],"cc-baking-day-t3":[14,0.136,0.335,0,"moderate"],"cc-knitting-basket-t1":[36,0.049,0.393,0,"moderate"],"cc-knitting-basket-t2":[15,0.035,0.474,2,"moderate"],"cc-knitting-basket-t3":[5,0.124,1.349,0,"simple"],"cc-sewing-basket-t1":[28,0.014,0.327,2,"moderate"],"cc-sewing-basket-t2":[24,0.012,0.372,4,"moderate"],"cc-sewing-basket-t3":[7,0.183,0.782,0,"simple"],"cc-potting-bench-t1":[25,0.111,0.394,0,"moderate"],"cc-potting-bench-t2":[22,0.146,0.398,0,"moderate"],"cc-potting-bench-t3":[11,0.209,0.321,0,"simple"],"cc-letter-writing-t1":[9,0.067,0.422,0,"simple"],"cc-letter-writing-t2":[9,0.126,0.455,0,"simple"],"cc-letter-writing-t3":[4,0.724,6.053,0,"simple"],"cc-picnic-basket-t1":[38,0.074,0.317,0,"moderate"],"cc-picnic-basket-t2":[32,0.048,0.274,1,"moderate"],"cc-picnic-basket-t3":[5,0.174,2.006,0,"simple"],"cc-gone-fishing-t1":[26,0.055,0.293,0,"moderate"],"cc-gone-fishing-t2":[12,0.061,0.65,0,"simple"],"cc-gone-fishing-t3":[10,0.048,0.845,1,"simple"],"cc-sunday-paper-t1":[9,0.043,0.585,0,"simple"],"cc-sunday-paper-t2":[9,0.036,0.498,1,"simple"],"cc-sunday-paper-t3":[6,0.058,2.357,1,"simple"],"cc-ironing-day-t1":[10,0.026,0.906,0,"simple"],"cc-ironing-day-t2":[10,0.004,0.825,1,"simple"],"cc-ironing-day-t3":[5,0.239,1.208,0,"simple"],"cc-cards-and-dominoes-t1":[15,0.019,0.23,1,"moderate"],"cc-cards-and-dominoes-t2":[9,0.041,2.234,1,"simple"],"cc-cards-and-dominoes-t3":[6,0.431,1.212,0,"simple"],"cc-teapot-and-cup-t1":[13,0.026,0.337,0,"moderate"],"cc-teapot-and-cup-t2":[11,0.019,0.374,2,"simple"],"cc-teapot-and-cup-t3":[6,0.005,0.559,1,"simple"],"cc-rotary-telephone-t1":[18,0.046,0.071,0,"moderate"],"cc-rotary-telephone-t2":[17,0.069,0.07,0,"moderate"],"cc-rotary-telephone-t3":[5,0.621,1.84,0,"simple"],"cc-cathedral-radio-t1":[7,0.081,0.627,0,"simple"],"cc-cathedral-radio-t2":[6,0.221,1.783,0,"simple"],"cc-cathedral-radio-t3":[7,0.175,1.445,0,"simple"],"cc-sewing-machine-t1":[15,0.015,0.564,1,"moderate"],"cc-sewing-machine-t2":[15,0.039,0.478,1,"moderate"],"cc-sewing-machine-t3":[6,0.338,0.94,0,"simple"],"cc-grandfather-clock-t1":[9,0.238,1.174,0,"simple"],"cc-grandfather-clock-t2":[8,0.203,1.383,0,"simple"],"cc-grandfather-clock-t3":[8,0.179,1.229,0,"simple"],"cc-schoolhouse-clock-t1":[8,0.03,1.569,0,"simple"],"cc-schoolhouse-clock-t2":[7,0.02,1.029,1,"simple"],"cc-schoolhouse-clock-t3":[4,0.991,4.021,0,"simple"],"cc-pocket-watch-t1":[20,0.039,0.058,0,"moderate"],"cc-pocket-watch-t2":[4,0.134,6.296,0,"simple"],"cc-pocket-watch-t3":[4,0.098,4.801,1,"simple"],"cc-coffee-percolator-t1":[13,0.028,0.704,0,"moderate"],"cc-coffee-percolator-t2":[12,0.018,0.625,1,"simple"],"cc-coffee-percolator-t3":[8,0.097,0.689,1,"simple"],"cc-stand-mixer-t1":[6,0.011,4.905,1,"simple"],"cc-stand-mixer-t2":[7,0.004,4.447,1,"simple"],"cc-stand-mixer-t3":[4,2.027,5.527,0,"simple"],"cc-chrome-toaster-t1":[10,0.135,0.673,0,"simple"],"cc-chrome-toaster-t2":[8,0.11,0.454,0,"simple"],"cc-chrome-toaster-t3":[4,0.35,1.825,0,"simple"],"cc-canning-jars-t1":[24,0.029,0.332,0,"moderate"],"cc-canning-jars-t2":[11,0.617,0.703,0,"simple"],"cc-canning-jars-t3":[6,0.825,1.596,0,"simple"],"cc-milk-bottles-t1":[18,0.196,0.896,0,"moderate"],"cc-milk-bottles-t2":[14,0.159,1.721,0,"moderate"],"cc-milk-bottles-t3":[4,0.396,3.93,0,"simple"],"cc-oil-lamp-t1":[6,0.288,1.008,0,"simple"],"cc-oil-lamp-t2":[6,0.24,0.908,0,"simple"],"cc-oil-lamp-t3":[5,0.181,0.78,0,"simple"],"cc-typewriter-t1":[33,0.058,0.059,0,"moderate"],"cc-typewriter-t2":[20,0.066,0.076,0,"moderate"],"cc-typewriter-t3":[5,1.092,1.545,0,"simple"],"cc-box-camera-t1":[9,0.431,1.851,0,"simple"],"cc-box-camera-t2":[8,0.375,1.782,0,"simple"],"cc-box-camera-t3":[5,0.309,2.445,0,"simple"],"cc-phonograph-t1":[11,0.031,0.505,0,"simple"],"cc-phonograph-t2":[9,0.051,0.697,0,"simple"],"cc-phonograph-t3":[5,0.636,1.192,0,"simple"],"cc-rural-mailbox-t1":[13,0.029,0.219,0,"moderate"],"cc-rural-mailbox-t2":[11,0.023,0.182,3,"simple"],"cc-rural-mailbox-t3":[6,0.106,1.01,1,"simple"],"cc-lighthouse-t1":[18,0.02,0.464,0,"moderate"],"cc-lighthouse-t2":[13,0.141,0.616,0,"moderate"],"cc-lighthouse-t3":[8,0.117,0.851,1,"simple"],"cc-red-barn-t1":[42,0.017,0.141,1,"detailed"],"cc-red-barn-t2":[14,0.172,0.616,0,"moderate"],"cc-red-barn-t3":[8,0.249,0.325,0,"simple"],"cc-farm-windmill-t1":[39,0.011,0.201,4,"moderate"],"cc-farm-windmill-t2":[22,0.135,0.156,0,"moderate"],"cc-farm-windmill-t3":[11,0.201,0.235,0,"simple"],"cc-covered-bridge-t1":[14,0.025,0.85,0,"moderate"],"cc-covered-bridge-t2":[11,0.074,1.354,0,"simple"],"cc-covered-bridge-t3":[8,0.566,2.476,0,"simple"],"cc-rocking-chair-t1":[17,0.072,0.591,0,"moderate"],"cc-rocking-chair-t2":[17,0.05,0.47,0,"moderate"],"cc-rocking-chair-t3":[8,0.167,0.417,0,"simple"],"cc-wood-cookstove-t1":[16,0.084,0.647,0,"moderate"],"cc-wood-cookstove-t2":[15,0.086,0.564,0,"moderate"],"cc-wood-cookstove-t3":[7,0.141,1.545,0,"simple"],"cc-butter-churn-t1":[7,0.176,0.855,0,"simple"],"cc-butter-churn-t2":[9,0.135,0.407,0,"simple"],"cc-butter-churn-t3":[3,0.15,0.165,0,"simple"],"cc-porch-swing-t1":[7,0.166,1.584,0,"simple"],"cc-porch-swing-t2":[7,0.136,1.347,0,"simple"],"cc-porch-swing-t3":[4,1.065,3.949,0,"simple"],"cc-quilt-ohio-star-t1":[128,0.112,0.116,0,"detailed"],"cc-quilt-ohio-star-t2":[85,0.096,0.099,0,"detailed"],"cc-quilt-ohio-star-t3":[22,0.391,0.403,0,"moderate"],"cc-quilt-sawtooth-star-t1":[104,0.128,0.27,0,"detailed"],"cc-quilt-sawtooth-star-t2":[69,0.113,0.255,0,"detailed"],"cc-quilt-sawtooth-star-t3":[18,0.456,1.03,0,"moderate"],"cc-quilt-pinwheel-t1":[50,0.567,0.578,0,"detailed"],"cc-quilt-pinwheel-t2":[33,0.556,0.567,0,"moderate"],"cc-quilt-pinwheel-t3":[9,2.195,2.216,0,"simple"],"cc-quilt-nine-patch-t1":[56,0.518,0.518,0,"detailed"],"cc-quilt-nine-patch-t2":[37,0.504,0.511,0,"moderate"],"cc-quilt-nine-patch-t3":[10,2.002,2.016,0,"simple"],"cc-quilt-churn-dash-t1":[104,0.241,0.245,0,"detailed"],"cc-quilt-churn-dash-t2":[69,0.221,0.23,0,"detailed"],"cc-quilt-churn-dash-t3":[18,0.904,0.916,0,"moderate"],"cc-quilt-friendship-star-t1":[80,0.241,0.248,0,"detailed"],"cc-quilt-friendship-star-t2":[53,0.221,0.228,0,"detailed"],"cc-quilt-friendship-star-t3":[14,0.891,0.904,0,"moderate"],"cc-quilt-log-cabin-t1":[104,0.08,0.251,0,"detailed"],"cc-quilt-log-cabin-t2":[69,0.068,0.228,0,"detailed"],"cc-quilt-log-cabin-t3":[18,0.283,0.924,0,"moderate"],"cc-quilt-flying-geese-t1":[74,0.265,0.276,0,"detailed"],"cc-quilt-flying-geese-t2":[49,0.245,0.255,0,"detailed"],"cc-quilt-flying-geese-t3":[13,1,1.02,0,"moderate"],"cc-quilt-rail-fence-t1":[74,0.371,0.374,0,"detailed"],"cc-quilt-rail-fence-t2":[49,0.352,0.363,0,"detailed"],"cc-quilt-rail-fence-t3":[13,1.417,1.423,0,"moderate"],"cc-quilt-grandmothers-garden-t1":[39,0.378,0.379,0,"moderate"],"cc-quilt-grandmothers-garden-t2":[20,0.522,0.526,0,"moderate"],"cc-quilt-grandmothers-garden-t3":[8,1.429,1.437,0,"simple"],"cc-quilt-dresden-plate-t1":[27,0.017,0.641,2,"moderate"],"cc-quilt-dresden-plate-t2":[18,0.714,0.721,0,"moderate"],"cc-quilt-dresden-plate-t3":[12,1.02,1.025,0,"simple"],"cc-garden-rosette-t1":[53,0.128,0.261,0,"detailed"],"cc-garden-rosette-t2":[37,0.187,0.345,0,"moderate"],"cc-garden-rosette-t3":[24,0.386,0.488,0,"moderate"],"cc-compass-rose-t1":[39,0.087,0.161,0,"moderate"],"cc-compass-rose-t2":[30,0.14,0.378,0,"moderate"],"cc-compass-rose-t3":[14,0.207,0.853,0,"moderate"],"cc-sunburst-medallion-t1":[38,0.087,0.157,0,"moderate"],"cc-sunburst-medallion-t2":[20,0.107,0.197,0,"moderate"],"cc-sunburst-medallion-t3":[12,0.265,0.266,0,"simple"],"cc-lotus-medallion-t1":[43,0.102,0.306,0,"detailed"],"cc-lotus-medallion-t2":[27,0.179,0.408,0,"moderate"],"cc-lotus-medallion-t3":[16,0.313,0.657,0,"moderate"],"cc-snowflake-medallion-t1":[51,0.056,0.083,0,"detailed"],"cc-snowflake-medallion-t2":[27,0.179,0.236,0,"moderate"],"cc-snowflake-medallion-t3":[30,0.148,0.205,0,"moderate"],"cc-art-deco-fans-t1":[117,0.082,0.24,0,"detailed"],"cc-art-deco-fans-t2":[31,0.307,0.957,0,"moderate"],"cc-art-deco-fans-t3":[13,0.638,2.018,0,"moderate"],"cc-stained-glass-window-t1":[33,0.209,0.298,0,"moderate"],"cc-stained-glass-window-t2":[17,0.258,1.133,0,"moderate"],"cc-stained-glass-window-t3":[14,0.207,0.743,0,"moderate"],"cc-fish-scale-tiles-t1":[128,0.027,0.168,0,"detailed"],"cc-fish-scale-tiles-t2":[44,0.112,0.97,0,"detailed"],"cc-fish-scale-tiles-t3":[24,0.188,1.629,0,"moderate"],"cc-honeycomb-t1":[90,0.082,0.46,0,"detailed"],"cc-honeycomb-t2":[49,0.021,0.872,1,"detailed"],"cc-honeycomb-t3":[24,0.281,1.464,0,"moderate"],"cc-quatrefoil-lattice-t1":[143,0.051,0.172,0,"detailed"],"cc-quatrefoil-lattice-t2":[33,0.189,0.926,0,"moderate"],"cc-quatrefoil-lattice-t3":[19,0.316,0.74,0,"moderate"],"cc-kaleidoscope-t1":[74,0.033,0.319,0,"detailed"],"cc-kaleidoscope-t2":[34,0.368,0.391,0,"moderate"],"cc-kaleidoscope-t3":[26,0.345,0.373,0,"moderate"],"cc-sunday-sedan-t1":[31,0.011,0.262,6,"moderate"],"cc-sunday-sedan-t2":[13,0.138,0.648,0,"moderate"],"cc-sunday-sedan-t3":[10,0.214,1.421,0,"simple"],"cc-farm-pickup-t1":[28,0.016,0.271,3,"moderate"],"cc-farm-pickup-t2":[15,0.12,0.682,0,"moderate"],"cc-farm-pickup-t3":[11,0.269,1.179,0,"simple"],"cc-farm-tractor-t1":[36,0.016,0.11,4,"moderate"],"cc-farm-tractor-t2":[14,0.02,0.522,3,"moderate"],"cc-farm-tractor-t3":[9,0.116,1.099,1,"simple"],"cc-steam-locomotive-t1":[62,0.008,0.11,9,"detailed"],"cc-steam-locomotive-t2":[30,0.009,0.276,3,"moderate"],"cc-steam-locomotive-t3":[17,0.075,0.549,1,"moderate"],"cc-lake-sailboat-t1":[11,0.027,0.575,0,"simple"],"cc-lake-sailboat-t2":[8,0.021,2.622,2,"simple"],"cc-lake-sailboat-t3":[5,2.152,3.172,0,"simple"],"cc-woody-wagon-t1":[39,0.009,0.212,7,"moderate"],"cc-woody-wagon-t2":[14,0.133,0.292,0,"moderate"],"cc-woody-wagon-t3":[12,0.098,0.366,1,"simple"],"cc-convertible-t1":[25,0.015,0.223,3,"moderate"],"cc-convertible-t2":[12,0.135,0.648,0,"simple"],"cc-convertible-t3":[9,0.004,1.423,1,"simple"],"cc-bread-truck-t1":[23,0.004,0.267,3,"moderate"],"cc-bread-truck-t2":[14,0.119,0.648,0,"moderate"],"cc-bread-truck-t3":[11,0.083,0.522,1,"simple"],"cc-streetcar-t1":[31,0.012,0.392,3,"moderate"],"cc-streetcar-t2":[24,0.024,0.588,1,"moderate"],"cc-streetcar-t3":[16,0.267,0.842,0,"moderate"],"cc-vintage-bicycle-t1":[52,0.011,0.188,3,"detailed"],"cc-vintage-bicycle-t2":[17,0.01,0.209,4,"moderate"],"cc-vintage-bicycle-t3":[6,0.309,2.699,0,"simple"],"cc-motor-scooter-t1":[28,0.004,0.442,2,"moderate"],"cc-motor-scooter-t2":[19,0.153,0.383,0,"moderate"],"cc-motor-scooter-t3":[15,0.066,0.698,1,"moderate"],"cc-tugboat-t1":[19,0.018,0.207,1,"moderate"],"cc-tugboat-t2":[16,0.008,0.173,3,"moderate"],"cc-tugboat-t3":[7,0.233,1.104,0,"simple"],"cc-biplane-t1":[15,0.073,0.298,0,"moderate"],"cc-biplane-t2":[15,0.044,0.222,1,"moderate"],"cc-biplane-t3":[7,0.155,1.047,0,"simple"],"cc-hot-air-balloon-t1":[21,0.173,0.467,0,"moderate"],"cc-hot-air-balloon-t2":[17,0.137,0.489,0,"moderate"],"cc-hot-air-balloon-t3":[7,0.084,2.195,1,"simple"],"cc-fire-engine-t1":[39,0.003,0.123,5,"moderate"],"cc-fire-engine-t2":[15,0.132,0.354,0,"moderate"],"cc-fire-engine-t3":[12,0.199,0.391,0,"simple"],"cc-cardinal-branch-t1":[14,0.007,0.183,1,"moderate"],"cc-cardinal-branch-t2":[11,0.004,0.121,1,"simple"],"cc-cardinal-branch-t3":[6,0.027,0.424,1,"simple"],"cc-robin-fence-t1":[14,0.073,0.683,0,"moderate"],"cc-robin-fence-t2":[11,0.225,0.981,0,"simple"],"cc-robin-fence-t3":[6,0.381,1.175,0,"simple"],"cc-chickadee-pine-t1":[15,0.003,0.097,4,"moderate"],"cc-chickadee-pine-t2":[8,0.005,0.273,1,"simple"],"cc-chickadee-pine-t3":[7,0.158,0.379,0,"simple"],"cc-bluebird-house-t1":[13,0.026,0.43,0,"moderate"],"cc-bluebird-house-t2":[12,0.065,0.384,0,"simple"],"cc-bluebird-house-t3":[8,0.136,0.534,0,"simple"],"cc-hummingbird-t1":[15,0.139,0.289,0,"moderate"],"cc-hummingbird-t2":[11,0.102,0.268,0,"simple"],"cc-hummingbird-t3":[7,0.269,0.425,0,"simple"],"cc-barn-owl-t1":[11,0.014,0.447,1,"simple"],"cc-barn-owl-t2":[9,0.041,0.866,1,"simple"],"cc-barn-owl-t3":[4,0.596,2.832,0,"simple"],"cc-swan-lake-t1":[13,0.008,0.715,1,"moderate"],"cc-swan-lake-t2":[8,0.011,1.296,2,"simple"],"cc-swan-lake-t3":[5,0.389,2.264,0,"simple"],"cc-mallard-duck-t1":[18,0.11,0.705,0,"moderate"],"cc-mallard-duck-t2":[14,0.082,0.648,0,"moderate"],"cc-mallard-duck-t3":[7,0.047,1.18,1,"simple"],"cc-monarch-butterfly-t1":[20,0.013,0.035,2,"moderate"],"cc-monarch-butterfly-t2":[9,0.042,0.474,1,"simple"],"cc-monarch-butterfly-t3":[6,0.045,2.208,1,"simple"],"cc-dragonfly-reeds-t1":[28,0.006,0.086,8,"moderate"],"cc-dragonfly-reeds-t2":[13,0.151,0.343,0,"moderate"],"cc-dragonfly-reeds-t3":[9,0.153,0.32,0,"simple"],"cc-koi-pond-t1":[23,0.01,0.161,2,"moderate"],"cc-koi-pond-t2":[12,0.128,0.659,0,"simple"],"cc-koi-pond-t3":[8,0.162,0.527,0,"simple"],"cc-sea-turtle-t1":[8,0.1,0.465,0,"simple"],"cc-sea-turtle-t2":[8,0.073,0.392,0,"simple"],"cc-sea-turtle-t3":[8,0.044,0.3,1,"simple"],"cc-seashells-t1":[20,0.018,0.232,1,"moderate"],"cc-seashells-t2":[15,0.019,0.351,1,"moderate"],"cc-seashells-t3":[6,0.419,1.198,0,"simple"],"cc-nautilus-shell-t1":[15,0.274,0.773,0,"moderate"],"cc-nautilus-shell-t2":[11,0.358,1.029,0,"simple"],"cc-nautilus-shell-t3":[7,0.589,1.499,0,"simple"],"cc-garden-rabbit-t1":[20,0.014,0.08,3,"moderate"],"cc-garden-rabbit-t2":[15,0.061,0.07,0,"moderate"],"cc-garden-rabbit-t3":[6,0.362,0.766,0,"simple"],"cc-sleeping-cat-t1":[12,0.007,0.15,2,"simple"],"cc-sleeping-cat-t2":[10,0.065,0.123,0,"simple"],"cc-sleeping-cat-t3":[6,0.235,1.199,0,"simple"],"cc-faithful-dog-t1":[12,0.034,0.4,0,"simple"],"cc-faithful-dog-t2":[11,0.022,0.235,3,"simple"],"cc-faithful-dog-t3":[4,0.109,0.354,1,"simple"],"cc-proud-rooster-t1":[14,0.024,0.18,0,"moderate"],"cc-proud-rooster-t2":[13,0.018,0.143,3,"moderate"],"cc-proud-rooster-t3":[7,0.181,0.432,0,"simple"],"cc-pine-cones-t1":[21,0.021,0.284,0,"moderate"],"cc-pine-cones-t2":[16,0.017,0.343,2,"moderate"],"cc-pine-cones-t3":[5,0.298,1.131,0,"simple"],"cc-mountain-lake-t1":[18,0.024,0.51,0,"moderate"],"cc-mountain-lake-t2":[13,0.031,0.453,2,"moderate"],"cc-mountain-lake-t3":[8,0.036,2.762,1,"simple"]},"ingested":[]};
-})(globalThis.CogniCore);
+})(globalThis.CognicopiaColoring);

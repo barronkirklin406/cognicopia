@@ -1,7 +1,7 @@
-/* CogniCore designs: Bold & Easy Patterns. Traditional quilt blocks and
+/* Cognicopia Coloring designs: Bold & Easy Patterns. Traditional quilt blocks and
    calm radial patterns: structured shapes with clear, closed edges (the
    kind of coloring that lowered anxiety in the mandala and plaid studies,
-   docs/cognicore-coloring-standards.md). Tiers change how many blocks or
+   docs/cognicopia-coloring-standards.md). Tiers change how many blocks or
    rings there are, so Tier 3 always has a few large pieces. */
 (function(C){
 "use strict";
@@ -279,4 +279,4 @@ C.define({ id:"kaleidoscope", title:"The Kaleidoscope", cat:"bold-easy-patterns"
   }
   g.S(h.circle(cx, cy, g.at(34, 40, 50)));
 });
-})(globalThis.CogniCore);
+})(globalThis.CognicopiaColoring);

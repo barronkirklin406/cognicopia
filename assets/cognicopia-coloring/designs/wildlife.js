@@ -1,4 +1,4 @@
-/* CogniCore designs: Wildlife & Nature. Birds, butterflies, pond and shore
+/* Cognicopia Coloring designs: Wildlife & Nature. Birds, butterflies, pond and shore
    life and gentle animals, drawn with natural proportions: small solid
    eyes, no smiles, no cartoon faces. */
 (function(C){
@@ -375,4 +375,4 @@ C.define({ id:"mountain-lake", title:"The Mountain Lake", cat:"wildlife-nature",
   var pine = function(x, y, s){ g.group({ x:x, y:y, s:s }, function(g){ g.S(h.rect(-10, -20, 20, 40)); g.S(h.poly([[0, -200], [70, -20], [-70, -20]])); if (g.lvl >= 2){ g.L(h.line([-40, -90], [40, -90])); } }); };
   pine(110, 700, g.at(1, 1.1, 1.2)); if (g.lvl >= 2) pine(480, 700, .9); if (g.lvl >= 3) pine(190, 720, .7);
 });
-})(globalThis.CogniCore);
+})(globalThis.CognicopiaColoring);

@@ -67,7 +67,7 @@ export type Pillar = "coloring" | "numbers" | "words" | "letters" | "movement" |
 export interface PillarDef { id: Pillar; name: string; category: string; blurb: string; }
 /* Fixed order: it is also the order of the pillar colors (never cycled). */
 export const PILLARS: readonly PillarDef[] = [
-  { id: "coloring", name: "Coloring", category: "cognicore", blurb: "Coloring and visual art" },
+  { id: "coloring", name: "Coloring", category: "cognicopia-coloring", blurb: "Coloring and visual art" },
   { id: "numbers", name: "Numbers", category: "numbers", blurb: "Counting, coins and number puzzles" },
   { id: "words", name: "Words", category: "word", blurb: "Words, sayings and conversation" },
   { id: "letters", name: "Letters", category: "letters", blurb: "Letters, spelling and tracing" },
@@ -78,7 +78,7 @@ export const pillarOf = (id: string): PillarDef | null => PILLARS.filter(p => p.
 export interface ActivityFit { id: string; name: string; pillar: Pillar; tiers: readonly Acuity[]; best: readonly Acuity[]; group: boolean; sensory: boolean; minutes: number; why: string; }
 /* The Packet Builder's activities (with a short name for calendars), and the tiers each is calibrated for. */
 export const CATALOG: readonly ActivityFit[] = [
-  { id: "cognicore-coloring", name: "Coloring page", pillar: "coloring", tiers: [1, 2, 3, 4], best: [3, 4], group: true, sensory: true, minutes: 30, why: "Bold adult line art; the picture's detail follows the tier." },
+  { id: "cognicopia-coloring", name: "Coloring page", pillar: "coloring", tiers: [1, 2, 3, 4], best: [3, 4], group: true, sensory: true, minutes: 30, why: "Bold adult line art; the picture's detail follows the tier." },
   { id: "silhouette-match", name: "Shadow matching", pillar: "coloring", tiers: [2, 3], best: [3], group: false, sensory: true, minutes: 15, why: "Bold pictures matched to their shadows: visual, calm, no reading." },
   { id: "number-ladder", name: "Number ladders", pillar: "numbers", tiers: [1, 2], best: [1], group: false, sensory: false, minutes: 15, why: "Counting on by 1s, 2s, 5s and 10s." },
   { id: "money-count", name: "Money counting", pillar: "numbers", tiers: [1, 2, 4], best: [4], group: true, sensory: false, minutes: 20, why: "Coins at true size with old-time prices: a ready group conversation." },

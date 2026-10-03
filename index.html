@@ -18,7 +18,7 @@
      facility networks routinely block outside script hosts, and a
      blocked CDN would mean the button silently does nothing. This
      way the page also works with no internet at all once loaded. -->
-<script src="assets/cognicore/cognicore.js"></script>
+<script src="assets/cognicopia-coloring/cognicopia-coloring.js"></script>
 <script src="assets/services/secureStore.js"></script>
 <script>
 /* Resident details are sealed in this browser's encrypted store
@@ -4968,8 +4968,8 @@ function oddPage(D,r,s,theme){
   return sets;
 }
 
-/* ---- Coloring page: a picture from the CogniCore library ----
-   (assets/cognicore/cognicore.js, the same line art as the Packet
+/* ---- Coloring page: a picture from the Cognicopia Coloring library ----
+   (assets/cognicopia-coloring/cognicopia-coloring.js, the same line art as the Packet
    Builder's coloring library). Chosen for this resident: drawn at their
    stage's cognitive tier and line weight, never anything their avoid list
    names, and a subject from their working life when one fits. The art is
@@ -4989,7 +4989,7 @@ const LIFE_TAGS = [
   [/fire/, ["fire-engines"]], [/postal|mail/, ["mail", "letters"]], [/music|pianist|singer/, ["music", "radios", "phonographs"]]
 ];
 function colorPage(D,r,theme){
-  const C=window.CogniCore;
+  const C=window.CognicopiaColoring;
   const tier={early:1,middle:2,late:3}[r.stage]||2;
   D.start(theme);
   if(!C){                                    // the library file did not load: say so plainly rather than print a blank page

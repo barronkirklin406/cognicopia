@@ -1,25 +1,25 @@
 #!/usr/bin/env node
 /* =====================================================================
-   CogniCore coloring library: writes the printed library from the
-   line-art engine (assets/cognicore/*.js):
+   Cognicopia Coloring library: writes the printed library from the
+   line-art engine (assets/cognicopia-coloring/*.js):
      - one SVG per design and tier:
          assets/coloring/<category>/cc-<design>-t<tier>.svg
      - the catalog, checked against its schema:
-         src/data/cognicore_coloring_catalog.json
-         src/data/cognicore_coloring_catalog.schema.json
+         src/data/cognicopia_coloring_catalog.json
+         src/data/cognicopia_coloring_catalog.schema.json
      - the browser bundle the Packet Builder and packet tool load:
-         assets/cognicore/cognicore.js (engine, designs, packs, prompt
+         assets/cognicopia-coloring/cognicopia-coloring.js (engine, designs, packs, prompt
          engine and the measured catalog numbers, in one file)
      - prompt jobs for AI vector pipelines, one per library page and per
        new-subject idea, with the strict positive and negative prompts:
-         src/data/cognicore_prompt_jobs.jsonl
+         src/data/cognicopia_coloring_prompt_jobs.jsonl
 
    Every page is also printed to a bitmap at its smallest printed size and
    measured: the areas there are to color, the smallest of them, line
    thickness, ink. Those numbers go into the catalog (visual complexity for
    the filters), and a page that breaks its tier's rule stops the run:
    pure black on white, strokes of the tier's weight, and no more small
-   areas than the tier allows (docs/cognicore-coloring-standards.md).
+   areas than the tier allows (docs/cognicopia-coloring-standards.md).
 
    Approved pictures from the ingest pipeline (src/data/coloring_ingested.json,
    scripts/ingest_coloring_assets.mjs) are added to the catalog as they are.
@@ -34,18 +34,18 @@
 import fs from "fs";
 import path from "path";
 import crypto from "crypto";
-import { loadCogniCore, sourceFiles, ROOT, SRC_DIR, BANDS, complexityOf, svgProblems } from "./lib/cognicore.mjs";
+import { loadCognicopiaColoring, sourceFiles, ROOT, SRC_DIR, BANDS, complexityOf, svgProblems } from "./lib/cognicopia-coloring.mjs";
 import { createBitmap, paint, shapesFromRender, measure } from "./lib/raster.mjs";
 import { validate } from "./lib/json-schema.mjs";
 
 const CHECK = process.argv.includes("--check");
 const QUIET = process.argv.includes("--quiet");
 const SVG_DIR = "assets/coloring";
-const CATALOG = "src/data/cognicore_coloring_catalog.json";
-const SCHEMA = "src/data/cognicore_coloring_catalog.schema.json";
+const CATALOG = "src/data/cognicopia_coloring_catalog.json";
+const SCHEMA = "src/data/cognicopia_coloring_catalog.schema.json";
 const INGESTED = "src/data/coloring_ingested.json";
-const BUNDLE = "assets/cognicore/cognicore.js";
-const PROMPT_JOBS = "src/data/cognicore_prompt_jobs.jsonl";
+const BUNDLE = "assets/cognicopia-coloring/cognicopia-coloring.js";
+const PROMPT_JOBS = "src/data/cognicopia_coloring_prompt_jobs.jsonl";
 const SCHEMA_VERSION = "1.0.0";
 const MEASURE_DPI = 100, NOISE_SQ_IN = .003;
 
@@ -61,7 +61,7 @@ if (process.argv.includes("--import") && !CHECK){
 }
 
 /* ---------- 1. every page, drawn, written and measured ---------- */
-const { C, P } = loadCogniCore();
+const { C, P } = loadCognicopiaColoring();
 const problems = [];
 const packsOf = {};
 C.packs().forEach(p => p.designs.forEach(id => { (packsOf[id] = packsOf[id] || []).push(p.id); }));
@@ -96,7 +96,7 @@ for (const d of C.designs()){
       print_width_in:L.artW, print_height_in:L.artH, format:"svg",
       svg_path:rel, asset_url:`${SITE}/${rel}`, sha256:sha256(svg), bytes:Buffer.byteLength(svg),
       era:d.era || "", season:d.season || "", sensitive_topics:d.sensitive.slice(), conversation_prompt:d.talk,
-      source:"cognicore-engine", review_status:"approved", packs:(packsOf[d.id] || []).slice(),
+      source:"cognicopia-coloring-engine", review_status:"approved", packs:(packsOf[d.id] || []).slice(),
       visual_complexity:complexityOf(m.regions), metrics:m
     });
   }
@@ -119,8 +119,8 @@ if (ingestText){
 const byCat = {}; C.CATEGORIES.forEach(c => { byCat[c.id] = 0; }); C.designs().forEach(d => { byCat[d.cat]++; });
 const allAssets = assets.concat(ingested);
 const catalog = {
-  $schema:"./cognicore_coloring_catalog.schema.json",
-  name:"CogniCore Coloring Catalog",
+  $schema:"./cognicopia_coloring_catalog.schema.json",
+  name:"Cognicopia Coloring Catalog",
   schema_version:SCHEMA_VERSION,
   engine_version:C.version,
   generated_by:"scripts/generate_coloring_manifest.js",
@@ -151,16 +151,16 @@ const metricsById = {};
 allAssets.forEach(a => { metricsById[a.id] = [a.metrics.regions, a.metrics.smallest_region_sq_in, a.metrics.median_region_sq_in, a.metrics.tiny_regions, a.visual_complexity]; });
 const ingestedForBrowser = ingested.map(a => ({ id:a.id, design_id:a.design_id, title:a.title, category_id:a.category_id, tier:a.tier, tags:a.tags,
   season:a.season, sensitive_topics:a.sensitive_topics, conversation_prompt:a.conversation_prompt, format:a.format, path:a.png_path || a.svg_path }));
-const bundle = "/* CogniCore coloring: the line-art engine, every design, the packs, the\n" +
+const bundle = "/* Cognicopia Coloring: the line-art engine, every design, the packs, the\n" +
   "   prompt engine and the measured catalog, in one file for the Packet\n" +
   "   Builder and the packet tool. Built by scripts/generate_coloring_manifest.js\n" +
-  "   from assets/cognicore/*.js: edit those, then run npm run coloring. */\n" +
+  "   from assets/cognicopia-coloring/*.js: edit those, then run npm run coloring. */\n" +
   sourceFiles().map(f => `\n/* ---------- ${f} ---------- */\n` + fs.readFileSync(path.join(SRC_DIR, f), "utf8").trim() + "\n").join("") +
   "\n/* ---------- measured catalog (generated) ----------\n" +
   "   metrics: asset id -> [areas to color, smallest area sq in, median area sq in, areas under the tier minimum, visual complexity] */\n" +
   "(function(C){\n\"use strict\";\nif (!C) return;\nC.catalog = " + JSON.stringify({
     schema_version:SCHEMA_VERSION, content_hash:catalog.content_hash, bands:BANDS, metrics:metricsById, ingested:ingestedForBrowser
-  }) + ";\n})(globalThis.CogniCore);\n";
+  }) + ";\n})(globalThis.CognicopiaColoring);\n";
 
 /* ---------- 5. prompt jobs for AI vector pipelines ----------
    One job per library page (new art for our own subjects) and one per
@@ -178,7 +178,7 @@ const promptText = jobs.map(([j, a]) => jobLine(j, a)).join("\n") + "\n";
 
 /* ---------- 6. write, or check ---------- */
 if (problems.length){
-  console.error(`CogniCore coloring library has ${problems.length} problem(s):\n  - ` + problems.slice(0, 40).join("\n  - "));
+  console.error(`Cognicopia Coloring library has ${problems.length} problem(s):\n  - ` + problems.slice(0, 40).join("\n  - "));
   process.exit(1);
 }
 const expected = new Map(svgFiles);
@@ -194,12 +194,12 @@ const summary = `${C.designs().length} designs, ${allAssets.length} pages (${ing
 if (CHECK){
   const differ = [...expected].filter(([f, text]) => read(f) !== text).map(([f]) => f);
   if (differ.length || stale.length){
-    console.error("The CogniCore coloring files are out of date. Run: npm run coloring\n" +
+    console.error("The Cognicopia Coloring files are out of date. Run: npm run coloring\n" +
       differ.slice(0, 12).map(f => "  changed: " + f).join("\n") + (differ.length > 12 ? `\n  ... and ${differ.length - 12} more` : "") +
       (stale.length ? "\n" + stale.map(f => "  not in the library: " + f).join("\n") : ""));
     process.exit(1);
   }
-  console.log(`CogniCore coloring library is current: ${summary}.`);
+  console.log(`Cognicopia Coloring library is current: ${summary}.`);
 } else {
   let wrote = 0;
   for (const [f, text] of expected){

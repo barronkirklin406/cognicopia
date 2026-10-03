@@ -1,8 +1,8 @@
-# CogniCore coloring standards
+# Cognicopia Coloring standards
 
-What every CogniCore coloring page must be, why, how the library proves it, and how new artwork (hand-drawn or AI-generated) gets in. The rules here are enforced by code, not by review alone:
+What every Cognicopia Coloring page must be, why, how the library proves it, and how new artwork (hand-drawn or AI-generated) gets in. The rules here are enforced by code, not by review alone:
 
-- `assets/cognicore/lineart.js` draws every page to these rules.
+- `assets/cognicopia-coloring/lineart.js` draws every page to these rules.
 - `src/services/vectorEngine.ts` applies the same line weights to any other drawing.
 - `scripts/generate_coloring_manifest.js` measures every printed page and stops if one breaks a rule.
 - `npm test` checks the whole library, the prompts and the ingest pipeline.
@@ -35,7 +35,7 @@ Sources are listed in section 10. Links point to the published abstracts and rec
 
 ### Generated artwork and vector cleanup
 
-`assets/cognicore/prompts.js` supplies provider-independent positive and negative constraints, with additional construction guidance for vehicles, botanicals, nature, heritage objects, architecture, household objects and repeating patterns. Tier wording is explicit: Early favors accurate detail and 30–60 enclosed regions; Middle reduces detail and background noise to 12–30 larger regions; Late uses one iconic subject and 4–12 very large regions.
+`assets/cognicopia-coloring/prompts.js` supplies provider-independent positive and negative constraints, with additional construction guidance for vehicles, botanicals, nature, heritage objects, architecture, household objects and repeating patterns. Tier wording is explicit: Early favors accurate detail and 30–60 enclosed regions; Middle reduces detail and background noise to 12–30 larger regions; Late uses one iconic subject and 4–12 very large regions.
 
 These are prompt instructions, not guarantees of mechanical, botanical or geometric accuracy. Image generation occurs outside the application. Every generated image remains in the human-review queue before use. The ingest pipeline normalizes raster art to pure black and white and 300-DPI 1-bit PNG; eligible SVGs are rewritten as clean black/white paths with round caps and joins. SVG ingest drops degenerate paths and paths wholly outside the declared viewBox, but deliberately retains small in-bounds details rather than risk deleting meaningful subject geometry.
 
@@ -78,7 +78,7 @@ This is a guide for choosing a tier, not a diagnosis. Staging is the clinician's
 
 Animals are drawn with natural proportions: small solid eyes, no smiles, no cartoon faces.
 
-The dignity filter is `CogniCorePrompts.dignityCheck`. It flags three kinds of wording. It never checks the negative prompt, which names these things on purpose to keep them out.
+The dignity filter is `CognicopiaColoringPrompts.dignityCheck`. It flags three kinds of wording. It never checks the negative prompt, which names these things on purpose to keep them out.
 
 - **Juvenile words:** cute, cartoon, kawaii, baby, kids, teddy, silly, doodle, and more.
 - **Memory-test openings:** "do you remember", "can you name", "what year was".
@@ -110,8 +110,8 @@ The library has 118 designs, each drawn at three tiers: **354 printable pages**.
 
 | What | Where |
 |---|---|
-| Designs | `assets/cognicore/designs/*.js` |
-| Packs | `assets/cognicore/packs.js` |
+| Designs | `assets/cognicopia-coloring/designs/*.js` |
+| Packs | `assets/cognicopia-coloring/packs.js` |
 | Written out by | `npm run coloring` |
 
 That command writes:
@@ -119,9 +119,9 @@ That command writes:
 | File | Contents |
 |---|---|
 | `assets/coloring/<category>/cc-<design>-t<tier>.svg` | One standalone SVG per page, sized in inches so it prints at the right weight at 100% |
-| `src/data/cognicore_coloring_catalog.json` | The catalog, checked against `src/data/cognicore_coloring_catalog.schema.json` |
-| `src/data/cognicore_prompt_jobs.jsonl` | One AI prompt job per page and per new-subject idea |
-| `assets/cognicore/cognicore.js` | The engine, designs, packs, prompts and measured numbers in one file, for the Packet Builder |
+| `src/data/cognicopia_coloring_catalog.json` | The catalog, checked against `src/data/cognicopia_coloring_catalog.schema.json` |
+| `src/data/cognicopia_coloring_prompt_jobs.jsonl` | One AI prompt job per page and per new-subject idea |
+| `assets/cognicopia-coloring/cognicopia-coloring.js` | The engine, designs, packs, prompts and measured numbers in one file, for the Packet Builder |
 
 ### Catalog asset fields
 
@@ -236,7 +236,7 @@ Approved pictures join the catalog and the Packet Builder on the next `npm run c
 
 ## 9. Changing a number
 
-Change a tier rule in `TIERS` / `WEIGHTS` (`assets/cognicore/lineart.js`) and in `STROKE_POLICY` (`src/services/vectorEngine.ts`) together. `npm test` fails if they disagree. Then run `npm run coloring`: the generator re-measures all 354 pages and names any that no longer pass.
+Change a tier rule in `TIERS` / `WEIGHTS` (`assets/cognicopia-coloring/lineart.js`) and in `STROKE_POLICY` (`src/services/vectorEngine.ts`) together. `npm test` fails if they disagree. Then run `npm run coloring`: the generator re-measures all 354 pages and names any that no longer pass.
 
 ## 10. Sources
 

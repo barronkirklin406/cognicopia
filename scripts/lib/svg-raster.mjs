@@ -4,7 +4,7 @@
    polyline, polygon, nested <g> with transforms and inherited fill and
    stroke, style="" declarations) and flattens them into polylines in the
    SVG's own units, so a picture from any vector tool can be measured with
-   the same rasterizer as the CogniCore engine and re-written as clean,
+   the same rasterizer as the Cognicopia Coloring engine and re-written as clean,
    pure black-and-white paths.
 
    Anything a coloring page must not rely on (<use>, <image>, <text>,

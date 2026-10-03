@@ -110,7 +110,7 @@ export interface Topic {
   hobbies?: readonly string[];              // or residents with these hobbies
   everyone?: boolean;                       // fits anyone
   avoid?: readonly Avoid[];
-  art: readonly string[];                   // CogniCore design ids, first that is allowed wins
+  art: readonly string[];                   // Cognicopia Coloring design ids, first that is allowed wins
   invite: readonly [string, string, string];   // the line printed for the resident, by tier
   starters: readonly string[];              // tiers 1-2
   simple: readonly string[];                // tier 3: comments and either/or choices

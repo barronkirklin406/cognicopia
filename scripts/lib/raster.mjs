@@ -1,5 +1,5 @@
 /* =====================================================================
-   Line-art rasterizer and meter for CogniCore coloring pages.
+   Line-art rasterizer and meter for Cognicopia Coloring pages.
    Turns a drawing into a 1-bit bitmap (the way it prints), then measures
    what a person coloring it meets: the enclosed areas to color, the
    smallest of them in square inches, ink coverage, how much of the box the
@@ -72,7 +72,7 @@ export function paint(bmp, shapes){
   return bmp;
 }
 
-/* ---------- CogniCore drawings into shapes ---------- */
+/* ---------- Cognicopia Coloring drawings into shapes ---------- */
 function flattenOwn(C, d, map, steps){
   const subs = []; let cur = null;
   C.parsePath(d).forEach(s => {
@@ -86,7 +86,7 @@ function flattenOwn(C, d, map, steps){
   });
   return subs;
 }
-/* r: CogniCore.render(...) result; the picture printed widthIn wide at dpi. */
+/* r: CognicopiaColoring.render(...) result; the picture printed widthIn wide at dpi. */
 export function shapesFromRender(C, r, { widthIn, dpi, weight }){
   const W = C.W, k = widthIn * dpi / W, wt = C.weightFor(r.tier, weight);
   const map = p => [(r.tx + p[0] * r.s) * k, (r.ty + p[1] * r.s) * k];

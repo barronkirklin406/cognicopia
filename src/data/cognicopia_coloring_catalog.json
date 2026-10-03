@@ -1,6 +1,6 @@
 {
- "$schema": "./cognicore_coloring_catalog.schema.json",
- "name": "CogniCore Coloring Catalog",
+ "$schema": "./cognicopia_coloring_catalog.schema.json",
+ "name": "Cognicopia Coloring Catalog",
  "schema_version": "1.0.0",
  "engine_version": "1.0.0",
  "generated_by": "scripts/generate_coloring_manifest.js",
@@ -1031,7 +1031,7 @@
    "season": "spring",
    "sensitive_topics": [],
    "conversation_prompt": "Which flowers would you choose for your table?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "spring-garden",
@@ -1087,7 +1087,7 @@
    "season": "spring",
    "sensitive_topics": [],
    "conversation_prompt": "Which flowers would you choose for your table?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "spring-garden",
@@ -1144,7 +1144,7 @@
    "season": "spring",
    "sensitive_topics": [],
    "conversation_prompt": "Which flowers would you choose for your table?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "spring-garden",
@@ -1200,7 +1200,7 @@
    "season": "summer",
    "sensitive_topics": [],
    "conversation_prompt": "What does a sunny summer afternoon feel like?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "summer-blooms",
@@ -1256,7 +1256,7 @@
    "season": "summer",
    "sensitive_topics": [],
    "conversation_prompt": "What does a sunny summer afternoon feel like?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "summer-blooms",
@@ -1313,7 +1313,7 @@
    "season": "summer",
    "sensitive_topics": [],
    "conversation_prompt": "What does a sunny summer afternoon feel like?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "summer-blooms",
@@ -1369,7 +1369,7 @@
    "season": "summer",
    "sensitive_topics": [],
    "conversation_prompt": "Who in your family loved roses?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "rose-garden",
@@ -1423,7 +1423,7 @@
    "season": "summer",
    "sensitive_topics": [],
    "conversation_prompt": "Who in your family loved roses?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "rose-garden",
@@ -1478,7 +1478,7 @@
    "season": "summer",
    "sensitive_topics": [],
    "conversation_prompt": "Who in your family loved roses?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "rose-garden",
@@ -1533,7 +1533,7 @@
    "season": "summer",
    "sensitive_topics": [],
    "conversation_prompt": "Where have you seen wildflowers growing?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "summer-blooms",
@@ -1588,7 +1588,7 @@
    "season": "summer",
    "sensitive_topics": [],
    "conversation_prompt": "Where have you seen wildflowers growing?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "summer-blooms",
@@ -1644,7 +1644,7 @@
    "season": "summer",
    "sensitive_topics": [],
    "conversation_prompt": "Where have you seen wildflowers growing?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "summer-blooms",
@@ -1698,7 +1698,7 @@
    "season": "spring",
    "sensitive_topics": [],
    "conversation_prompt": "What are the first flowers of spring where you have lived?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "spring-garden",
@@ -1752,7 +1752,7 @@
    "season": "spring",
    "sensitive_topics": [],
    "conversation_prompt": "What are the first flowers of spring where you have lived?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "spring-garden",
@@ -1807,7 +1807,7 @@
    "season": "spring",
    "sensitive_topics": [],
    "conversation_prompt": "What are the first flowers of spring where you have lived?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "spring-garden",
@@ -1861,7 +1861,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What flowers would you give to someone special?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "flowers-for-the-table"
@@ -1914,7 +1914,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What flowers would you give to someone special?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "flowers-for-the-table"
@@ -1968,7 +1968,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What flowers would you give to someone special?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "flowers-for-the-table"
@@ -2022,7 +2022,7 @@
    "season": "summer",
    "sensitive_topics": [],
    "conversation_prompt": "Where did daisies grow near a home you remember fondly?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "summer-blooms",
@@ -2078,7 +2078,7 @@
    "season": "summer",
    "sensitive_topics": [],
    "conversation_prompt": "Where did daisies grow near a home you remember fondly?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "summer-blooms",
@@ -2135,7 +2135,7 @@
    "season": "summer",
    "sensitive_topics": [],
    "conversation_prompt": "Where did daisies grow near a home you remember fondly?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "summer-blooms",
@@ -2193,7 +2193,7 @@
     "water"
    ],
    "conversation_prompt": "Where is a peaceful place you like to sit and look at the water?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "water-garden",
@@ -2250,7 +2250,7 @@
     "water"
    ],
    "conversation_prompt": "Where is a peaceful place you like to sit and look at the water?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "water-garden",
@@ -2308,7 +2308,7 @@
     "water"
    ],
    "conversation_prompt": "Where is a peaceful place you like to sit and look at the water?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "water-garden",
@@ -2363,7 +2363,7 @@
    "season": "spring",
    "sensitive_topics": [],
    "conversation_prompt": "Which trees bloomed in spring on a street you know well?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "spring-garden",
@@ -2418,7 +2418,7 @@
    "season": "spring",
    "sensitive_topics": [],
    "conversation_prompt": "Which trees bloomed in spring on a street you know well?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "spring-garden",
@@ -2474,7 +2474,7 @@
    "season": "spring",
    "sensitive_topics": [],
    "conversation_prompt": "Which trees bloomed in spring on a street you know well?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "spring-garden",
@@ -2528,7 +2528,7 @@
    "season": "summer",
    "sensitive_topics": [],
    "conversation_prompt": "What grew by the front door of a house you liked?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "summer-blooms",
@@ -2582,7 +2582,7 @@
    "season": "summer",
    "sensitive_topics": [],
    "conversation_prompt": "What grew by the front door of a house you liked?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "summer-blooms",
@@ -2637,7 +2637,7 @@
    "season": "summer",
    "sensitive_topics": [],
    "conversation_prompt": "What grew by the front door of a house you liked?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "summer-blooms",
@@ -2692,7 +2692,7 @@
    "season": "summer",
    "sensitive_topics": [],
    "conversation_prompt": "What did you like to grow on a porch or windowsill?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "rose-garden",
@@ -2747,7 +2747,7 @@
    "season": "summer",
    "sensitive_topics": [],
    "conversation_prompt": "What did you like to grow on a porch or windowsill?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "rose-garden",
@@ -2803,7 +2803,7 @@
    "season": "summer",
    "sensitive_topics": [],
    "conversation_prompt": "What did you like to grow on a porch or windowsill?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "rose-garden",
@@ -2857,7 +2857,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What is the best time of day to water a garden?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "rose-garden",
@@ -2911,7 +2911,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What is the best time of day to water a garden?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "rose-garden",
@@ -2966,7 +2966,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What is the best time of day to water a garden?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "rose-garden",
@@ -3023,7 +3023,7 @@
     "home"
    ],
    "conversation_prompt": "Tell me about a garden you loved. What grew along the fence?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "rose-garden",
@@ -3080,7 +3080,7 @@
     "home"
    ],
    "conversation_prompt": "Tell me about a garden you loved. What grew along the fence?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "rose-garden",
@@ -3138,7 +3138,7 @@
     "home"
    ],
    "conversation_prompt": "Tell me about a garden you loved. What grew along the fence?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "rose-garden",
@@ -3192,7 +3192,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What would you plant first in a new garden?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "kitchen-garden",
@@ -3246,7 +3246,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What would you plant first in a new garden?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "kitchen-garden",
@@ -3301,7 +3301,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What would you plant first in a new garden?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "kitchen-garden",
@@ -3356,7 +3356,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "Which herbs make a kitchen smell good?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "kitchen-garden"
@@ -3410,7 +3410,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "Which herbs make a kitchen smell good?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "kitchen-garden"
@@ -3465,7 +3465,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "Which herbs make a kitchen smell good?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "kitchen-garden"
@@ -3519,7 +3519,7 @@
    "season": "fall",
    "sensitive_topics": [],
    "conversation_prompt": "What is your favorite thing about autumn?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "autumn-leaves",
@@ -3574,7 +3574,7 @@
    "season": "fall",
    "sensitive_topics": [],
    "conversation_prompt": "What is your favorite thing about autumn?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "autumn-leaves",
@@ -3630,7 +3630,7 @@
    "season": "fall",
    "sensitive_topics": [],
    "conversation_prompt": "What is your favorite thing about autumn?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "autumn-leaves",
@@ -3686,7 +3686,7 @@
    "season": "fall",
    "sensitive_topics": [],
    "conversation_prompt": "What trees grew near a place you lived?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "autumn-leaves",
@@ -3743,7 +3743,7 @@
    "season": "fall",
    "sensitive_topics": [],
    "conversation_prompt": "What trees grew near a place you lived?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "autumn-leaves",
@@ -3801,7 +3801,7 @@
    "season": "fall",
    "sensitive_topics": [],
    "conversation_prompt": "What trees grew near a place you lived?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "autumn-leaves",
@@ -3858,7 +3858,7 @@
    "season": "fall",
    "sensitive_topics": [],
    "conversation_prompt": "What would you bake with a basket of apples?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "autumn-leaves",
@@ -3916,7 +3916,7 @@
    "season": "fall",
    "sensitive_topics": [],
    "conversation_prompt": "What would you bake with a basket of apples?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "autumn-leaves",
@@ -3975,7 +3975,7 @@
    "season": "fall",
    "sensitive_topics": [],
    "conversation_prompt": "What would you bake with a basket of apples?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "autumn-leaves",
@@ -4031,7 +4031,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What fruit do you enjoy most in its season?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "orchard-harvest"
@@ -4084,7 +4084,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What fruit do you enjoy most in its season?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "orchard-harvest"
@@ -4138,7 +4138,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What fruit do you enjoy most in its season?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "orchard-harvest"
@@ -4192,7 +4192,7 @@
    "season": "summer",
    "sensitive_topics": [],
    "conversation_prompt": "What is the best way to eat fresh strawberries?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "orchard-harvest",
@@ -4247,7 +4247,7 @@
    "season": "summer",
    "sensitive_topics": [],
    "conversation_prompt": "What is the best way to eat fresh strawberries?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "orchard-harvest",
@@ -4303,7 +4303,7 @@
    "season": "summer",
    "sensitive_topics": [],
    "conversation_prompt": "What is the best way to eat fresh strawberries?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "orchard-harvest",
@@ -4358,7 +4358,7 @@
    "season": "fall",
    "sensitive_topics": [],
    "conversation_prompt": "What does autumn smell like to you?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "autumn-leaves",
@@ -4413,7 +4413,7 @@
    "season": "fall",
    "sensitive_topics": [],
    "conversation_prompt": "What does autumn smell like to you?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "autumn-leaves",
@@ -4469,7 +4469,7 @@
    "season": "fall",
    "sensitive_topics": [],
    "conversation_prompt": "What does autumn smell like to you?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "autumn-leaves",
@@ -4525,7 +4525,7 @@
    "season": "fall",
    "sensitive_topics": [],
    "conversation_prompt": "What grew in the best vegetable garden you have seen?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "orchard-harvest",
@@ -4582,7 +4582,7 @@
    "season": "fall",
    "sensitive_topics": [],
    "conversation_prompt": "What grew in the best vegetable garden you have seen?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "orchard-harvest",
@@ -4640,7 +4640,7 @@
    "season": "fall",
    "sensitive_topics": [],
    "conversation_prompt": "What grew in the best vegetable garden you have seen?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "orchard-harvest",
@@ -4695,7 +4695,7 @@
    "season": "summer",
    "sensitive_topics": [],
    "conversation_prompt": "What colors would you choose for this flower?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "summer-blooms",
@@ -4749,7 +4749,7 @@
    "season": "summer",
    "sensitive_topics": [],
    "conversation_prompt": "What colors would you choose for this flower?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "summer-blooms",
@@ -4804,7 +4804,7 @@
    "season": "summer",
    "sensitive_topics": [],
    "conversation_prompt": "What colors would you choose for this flower?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "summer-blooms",
@@ -4859,7 +4859,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What is your favorite smell of clean laundry drying?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "wash-day",
@@ -4914,7 +4914,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What is your favorite smell of clean laundry drying?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "wash-day",
@@ -4970,7 +4970,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What is your favorite smell of clean laundry drying?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "wash-day",
@@ -5025,7 +5025,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "Who would you invite to a special dinner?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "flowers-for-the-table",
@@ -5082,7 +5082,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "Who would you invite to a special dinner?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "flowers-for-the-table",
@@ -5140,7 +5140,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "Who would you invite to a special dinner?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "flowers-for-the-table",
@@ -5197,7 +5197,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "Who would you like to share a cup of tea with?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "tea-time",
@@ -5252,7 +5252,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "Who would you like to share a cup of tea with?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "tea-time",
@@ -5308,7 +5308,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "Who would you like to share a cup of tea with?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "tea-time",
@@ -5363,7 +5363,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What is a recipe you would love to smell baking right now?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "tea-time",
@@ -5419,7 +5419,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What is a recipe you would love to smell baking right now?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "tea-time",
@@ -5476,7 +5476,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What is a recipe you would love to smell baking right now?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "tea-time",
@@ -5532,7 +5532,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What would you knit or make for someone you care about?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "sewing-room",
@@ -5589,7 +5589,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What would you knit or make for someone you care about?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "sewing-room",
@@ -5647,7 +5647,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What would you knit or make for someone you care about?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "sewing-room",
@@ -5704,7 +5704,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What is something you would love to mend or make?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "sewing-room",
@@ -5760,7 +5760,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What is something you would love to mend or make?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "sewing-room",
@@ -5817,7 +5817,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What is something you would love to mend or make?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "sewing-room",
@@ -5873,7 +5873,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What would you plant in these pots?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "kitchen-garden",
@@ -5928,7 +5928,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What would you plant in these pots?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "kitchen-garden",
@@ -5984,7 +5984,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What would you plant in these pots?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "kitchen-garden",
@@ -6039,7 +6039,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "Who would you most like to write a letter to?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "keeping-in-touch",
@@ -6095,7 +6095,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "Who would you most like to write a letter to?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "keeping-in-touch",
@@ -6152,7 +6152,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "Who would you most like to write a letter to?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "keeping-in-touch",
@@ -6208,7 +6208,7 @@
    "season": "summer",
    "sensitive_topics": [],
    "conversation_prompt": "Where is a lovely spot for a picnic, and what would you pack?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "picnic-in-the-park",
@@ -6263,7 +6263,7 @@
    "season": "summer",
    "sensitive_topics": [],
    "conversation_prompt": "Where is a lovely spot for a picnic, and what would you pack?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "picnic-in-the-park",
@@ -6319,7 +6319,7 @@
    "season": "summer",
    "sensitive_topics": [],
    "conversation_prompt": "Where is a lovely spot for a picnic, and what would you pack?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "picnic-in-the-park",
@@ -6376,7 +6376,7 @@
     "water"
    ],
    "conversation_prompt": "What is the best part of a quiet day outdoors?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "gone-fishing"
@@ -6432,7 +6432,7 @@
     "water"
    ],
    "conversation_prompt": "What is the best part of a quiet day outdoors?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "gone-fishing"
@@ -6489,7 +6489,7 @@
     "water"
    ],
    "conversation_prompt": "What is the best part of a quiet day outdoors?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "gone-fishing"
@@ -6543,7 +6543,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What part of the paper would you read first?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "good-morning"
@@ -6597,7 +6597,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What part of the paper would you read first?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "good-morning"
@@ -6652,7 +6652,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What part of the paper would you read first?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "good-morning"
@@ -6706,7 +6706,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What is a chore you actually enjoy?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "wash-day",
@@ -6761,7 +6761,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What is a chore you actually enjoy?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "wash-day",
@@ -6817,7 +6817,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What is a chore you actually enjoy?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "wash-day",
@@ -6872,7 +6872,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What game would you like to play with friends?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "game-night"
@@ -6926,7 +6926,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What game would you like to play with friends?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "game-night"
@@ -6981,7 +6981,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What game would you like to play with friends?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "game-night"
@@ -7035,7 +7035,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "How do you like your tea or coffee, and who would you share it with?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "grandmothers-kitchen",
@@ -7091,7 +7091,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "How do you like your tea or coffee, and who would you share it with?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "grandmothers-kitchen",
@@ -7148,7 +7148,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "How do you like your tea or coffee, and who would you share it with?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "grandmothers-kitchen",
@@ -7203,7 +7203,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "Who would you most like to ring up for a chat?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "keeping-in-touch",
@@ -7259,7 +7259,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "Who would you most like to ring up for a chat?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "keeping-in-touch",
@@ -7316,7 +7316,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "Who would you most like to ring up for a chat?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "keeping-in-touch",
@@ -7373,7 +7373,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What would you like to hear on the radio this evening?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "the-parlor",
@@ -7430,7 +7430,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What would you like to hear on the radio this evening?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "the-parlor",
@@ -7488,7 +7488,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What would you like to hear on the radio this evening?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "the-parlor",
@@ -7546,7 +7546,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What is something special that was sewn or mended by hand?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "sewing-room",
@@ -7602,7 +7602,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What is something special that was sewn or mended by hand?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "sewing-room",
@@ -7659,7 +7659,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What is something special that was sewn or mended by hand?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "sewing-room",
@@ -7713,7 +7713,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "Where would you put a tall clock like this?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "the-parlor",
@@ -7767,7 +7767,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "Where would you put a tall clock like this?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "the-parlor",
@@ -7822,7 +7822,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "Where would you put a tall clock like this?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "the-parlor",
@@ -7878,7 +7878,7 @@
     "children"
    ],
    "conversation_prompt": "What did a clock like this tick away the hours for?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "timepieces"
@@ -7933,7 +7933,7 @@
     "children"
    ],
    "conversation_prompt": "What did a clock like this tick away the hours for?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "timepieces"
@@ -7989,7 +7989,7 @@
     "children"
    ],
    "conversation_prompt": "What did a clock like this tick away the hours for?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "timepieces"
@@ -8042,7 +8042,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "Who in your life was never late?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "timepieces"
@@ -8095,7 +8095,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "Who in your life was never late?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "timepieces"
@@ -8149,7 +8149,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "Who in your life was never late?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "timepieces"
@@ -8203,7 +8203,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What is the best part of a slow morning?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "grandmothers-kitchen",
@@ -8258,7 +8258,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What is the best part of a slow morning?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "grandmothers-kitchen",
@@ -8314,7 +8314,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What is the best part of a slow morning?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "grandmothers-kitchen",
@@ -8369,7 +8369,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What would you bake for a special occasion?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "grandmothers-kitchen",
@@ -8425,7 +8425,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What would you bake for a special occasion?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "grandmothers-kitchen",
@@ -8482,7 +8482,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What would you bake for a special occasion?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "grandmothers-kitchen",
@@ -8538,7 +8538,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What do you like on your toast?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "grandmothers-kitchen",
@@ -8594,7 +8594,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What do you like on your toast?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "grandmothers-kitchen",
@@ -8651,7 +8651,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What do you like on your toast?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "grandmothers-kitchen",
@@ -8708,7 +8708,7 @@
    "season": "fall",
    "sensitive_topics": [],
    "conversation_prompt": "What would you put up in jars for the winter?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "orchard-harvest",
@@ -8766,7 +8766,7 @@
    "season": "fall",
    "sensitive_topics": [],
    "conversation_prompt": "What would you put up in jars for the winter?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "orchard-harvest",
@@ -8825,7 +8825,7 @@
    "season": "fall",
    "sensitive_topics": [],
    "conversation_prompt": "What would you put up in jars for the winter?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "orchard-harvest",
@@ -8883,7 +8883,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What came to the door in the morning where you grew up?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "down-on-the-farm",
@@ -8940,7 +8940,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What came to the door in the morning where you grew up?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "down-on-the-farm",
@@ -8998,7 +8998,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What came to the door in the morning where you grew up?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "down-on-the-farm",
@@ -9053,7 +9053,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What makes a room feel cozy in the evening?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "the-parlor"
@@ -9106,7 +9106,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What makes a room feel cozy in the evening?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "the-parlor"
@@ -9160,7 +9160,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What makes a room feel cozy in the evening?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "the-parlor"
@@ -9215,7 +9215,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What would you like to put in a letter to someone?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "keeping-in-touch",
@@ -9273,7 +9273,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What would you like to put in a letter to someone?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "keeping-in-touch",
@@ -9332,7 +9332,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What would you like to put in a letter to someone?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "keeping-in-touch",
@@ -9389,7 +9389,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "If you could take a picture of anything today, what would it be?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "keeping-in-touch"
@@ -9443,7 +9443,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "If you could take a picture of anything today, what would it be?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "keeping-in-touch"
@@ -9498,7 +9498,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "If you could take a picture of anything today, what would it be?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "keeping-in-touch"
@@ -9552,7 +9552,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What song makes you want to tap your feet?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "the-parlor",
@@ -9607,7 +9607,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What song makes you want to tap your feet?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "the-parlor",
@@ -9663,7 +9663,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What song makes you want to tap your feet?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "the-parlor",
@@ -9717,7 +9717,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What is the nicest thing that could arrive in the mail?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "keeping-in-touch",
@@ -9771,7 +9771,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What is the nicest thing that could arrive in the mail?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "keeping-in-touch",
@@ -9826,7 +9826,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What is the nicest thing that could arrive in the mail?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "keeping-in-touch",
@@ -9882,7 +9882,7 @@
     "water"
    ],
    "conversation_prompt": "What is the most beautiful place you have seen by the sea or a lake?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "on-the-water",
@@ -9939,7 +9939,7 @@
     "water"
    ],
    "conversation_prompt": "What is the most beautiful place you have seen by the sea or a lake?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "on-the-water",
@@ -9997,7 +9997,7 @@
     "water"
    ],
    "conversation_prompt": "What is the most beautiful place you have seen by the sea or a lake?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "on-the-water",
@@ -10054,7 +10054,7 @@
     "home"
    ],
    "conversation_prompt": "What animals or crops would a barn like this hold?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "down-on-the-farm",
@@ -10112,7 +10112,7 @@
     "home"
    ],
    "conversation_prompt": "What animals or crops would a barn like this hold?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "down-on-the-farm",
@@ -10171,7 +10171,7 @@
     "home"
    ],
    "conversation_prompt": "What animals or crops would a barn like this hold?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "down-on-the-farm",
@@ -10228,7 +10228,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What sounds would you hear on a windy day in the country?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "up-in-the-sky",
@@ -10284,7 +10284,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What sounds would you hear on a windy day in the country?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "up-in-the-sky",
@@ -10341,7 +10341,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What sounds would you hear on a windy day in the country?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "up-in-the-sky",
@@ -10399,7 +10399,7 @@
     "water"
    ],
    "conversation_prompt": "Where does this road over the bridge lead?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "landmarks"
@@ -10455,7 +10455,7 @@
     "water"
    ],
    "conversation_prompt": "Where does this road over the bridge lead?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "landmarks"
@@ -10512,7 +10512,7 @@
     "water"
    ],
    "conversation_prompt": "Where does this road over the bridge lead?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "landmarks"
@@ -10565,7 +10565,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "Where is the most comfortable chair you have ever sat in?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "the-parlor",
@@ -10619,7 +10619,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "Where is the most comfortable chair you have ever sat in?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "the-parlor",
@@ -10674,7 +10674,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "Where is the most comfortable chair you have ever sat in?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "the-parlor",
@@ -10730,7 +10730,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What was cooking on the stove on a cold day?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "grandmothers-kitchen",
@@ -10787,7 +10787,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What was cooking on the stove on a cold day?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "grandmothers-kitchen",
@@ -10845,7 +10845,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What was cooking on the stove on a cold day?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "grandmothers-kitchen",
@@ -10902,7 +10902,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What tastes best with fresh butter?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "down-on-the-farm",
@@ -10958,7 +10958,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What tastes best with fresh butter?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "down-on-the-farm",
@@ -11015,7 +11015,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What tastes best with fresh butter?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "down-on-the-farm",
@@ -11071,7 +11071,7 @@
     "home"
    ],
    "conversation_prompt": "Who would you like to sit beside on a porch swing?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "front-porch",
@@ -11127,7 +11127,7 @@
     "home"
    ],
    "conversation_prompt": "Who would you like to sit beside on a porch swing?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "front-porch",
@@ -11184,7 +11184,7 @@
     "home"
    ],
    "conversation_prompt": "Who would you like to sit beside on a porch swing?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "front-porch",
@@ -11240,7 +11240,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "Who in your family made quilts, or slept under one you remember fondly?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "quilting-bee-stars",
@@ -11297,7 +11297,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "Who in your family made quilts, or slept under one you remember fondly?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "quilting-bee-stars",
@@ -11355,7 +11355,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "Who in your family made quilts, or slept under one you remember fondly?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "quilting-bee-stars",
@@ -11412,7 +11412,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What would you name a quilt pattern of your own?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "quilting-bee-stars"
@@ -11467,7 +11467,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What would you name a quilt pattern of your own?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "quilting-bee-stars"
@@ -11523,7 +11523,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What would you name a quilt pattern of your own?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "quilting-bee-stars"
@@ -11578,7 +11578,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What colors would you choose for a quilt on your bed?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "quilting-bee-classics",
@@ -11634,7 +11634,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What colors would you choose for a quilt on your bed?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "quilting-bee-classics",
@@ -11691,7 +11691,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What colors would you choose for a quilt on your bed?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "quilting-bee-classics",
@@ -11747,7 +11747,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What fabric would you save for a patchwork quilt?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "sewing-room",
@@ -11804,7 +11804,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What fabric would you save for a patchwork quilt?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "sewing-room",
@@ -11862,7 +11862,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What fabric would you save for a patchwork quilt?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "sewing-room",
@@ -11919,7 +11919,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What handmade things have been passed down in a family you know?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "quilting-bee-stars"
@@ -11974,7 +11974,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What handmade things have been passed down in a family you know?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "quilting-bee-stars"
@@ -12030,7 +12030,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What handmade things have been passed down in a family you know?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "quilting-bee-stars"
@@ -12086,7 +12086,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "Who is a friend you would make a quilt for?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "quilting-bee-stars"
@@ -12142,7 +12142,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "Who is a friend you would make a quilt for?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "quilting-bee-stars"
@@ -12199,7 +12199,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "Who is a friend you would make a quilt for?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "quilting-bee-stars"
@@ -12254,7 +12254,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What would make a cabin in the woods feel like home?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "quilting-bee-classics",
@@ -12311,7 +12311,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What would make a cabin in the woods feel like home?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "quilting-bee-classics",
@@ -12369,7 +12369,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What would make a cabin in the woods feel like home?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "quilting-bee-classics",
@@ -12427,7 +12427,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "Where do you think the geese are flying to?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "quilting-bee-classics"
@@ -12483,7 +12483,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "Where do you think the geese are flying to?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "quilting-bee-classics"
@@ -12540,7 +12540,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "Where do you think the geese are flying to?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "quilting-bee-classics"
@@ -12596,7 +12596,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What is your favorite kind of fabric to touch?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "quilting-bee-classics"
@@ -12652,7 +12652,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What is your favorite kind of fabric to touch?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "quilting-bee-classics"
@@ -12709,7 +12709,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What is your favorite kind of fabric to touch?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "quilting-bee-classics"
@@ -12763,7 +12763,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What flowers would you plant in a garden of your own?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "heirloom-quilts",
@@ -12818,7 +12818,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What flowers would you plant in a garden of your own?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "heirloom-quilts",
@@ -12874,7 +12874,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What flowers would you plant in a garden of your own?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "heirloom-quilts",
@@ -12929,7 +12929,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What would you serve on your best plates?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "heirloom-quilts",
@@ -12984,7 +12984,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What would you serve on your best plates?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "heirloom-quilts",
@@ -13040,7 +13040,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What would you serve on your best plates?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "heirloom-quilts",
@@ -13095,7 +13095,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What colors feel calm and peaceful to you?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "calm-circles",
@@ -13151,7 +13151,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What colors feel calm and peaceful to you?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "calm-circles",
@@ -13208,7 +13208,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What colors feel calm and peaceful to you?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "calm-circles",
@@ -13264,7 +13264,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "Which direction would you travel if you could go anywhere?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "calm-circles",
@@ -13319,7 +13319,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "Which direction would you travel if you could go anywhere?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "calm-circles",
@@ -13375,7 +13375,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "Which direction would you travel if you could go anywhere?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "calm-circles",
@@ -13430,7 +13430,7 @@
    "season": "summer",
    "sensitive_topics": [],
    "conversation_prompt": "What is your favorite thing to do on a sunny day?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "calm-circles",
@@ -13486,7 +13486,7 @@
    "season": "summer",
    "sensitive_topics": [],
    "conversation_prompt": "What is your favorite thing to do on a sunny day?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "calm-circles",
@@ -13543,7 +13543,7 @@
    "season": "summer",
    "sensitive_topics": [],
    "conversation_prompt": "What is your favorite thing to do on a sunny day?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "calm-circles",
@@ -13599,7 +13599,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "Where do you feel most at peace?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "calm-circles",
@@ -13654,7 +13654,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "Where do you feel most at peace?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "calm-circles",
@@ -13710,7 +13710,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "Where do you feel most at peace?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "calm-circles",
@@ -13764,7 +13764,7 @@
    "season": "winter",
    "sensitive_topics": [],
    "conversation_prompt": "What do you enjoy about a snowy day indoors?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "season-winter"
@@ -13817,7 +13817,7 @@
    "season": "winter",
    "sensitive_topics": [],
    "conversation_prompt": "What do you enjoy about a snowy day indoors?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "season-winter"
@@ -13871,7 +13871,7 @@
    "season": "winter",
    "sensitive_topics": [],
    "conversation_prompt": "What do you enjoy about a snowy day indoors?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "season-winter"
@@ -13925,7 +13925,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What was the most elegant place you ever went to dance or dine?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "glass-and-tile",
@@ -13980,7 +13980,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What was the most elegant place you ever went to dance or dine?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "glass-and-tile",
@@ -14036,7 +14036,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What was the most elegant place you ever went to dance or dine?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "glass-and-tile",
@@ -14091,7 +14091,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What colors do you like to see when the sun shines through a window?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "glass-and-tile"
@@ -14145,7 +14145,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What colors do you like to see when the sun shines through a window?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "glass-and-tile"
@@ -14200,7 +14200,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What colors do you like to see when the sun shines through a window?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "glass-and-tile"
@@ -14254,7 +14254,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What pattern would you choose for a kitchen floor?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "glass-and-tile",
@@ -14309,7 +14309,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What pattern would you choose for a kitchen floor?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "glass-and-tile",
@@ -14365,7 +14365,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What pattern would you choose for a kitchen floor?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "glass-and-tile",
@@ -14419,7 +14419,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What is your favorite thing to sweeten with honey?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "glass-and-tile",
@@ -14474,7 +14474,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What is your favorite thing to sweeten with honey?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "glass-and-tile",
@@ -14530,7 +14530,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What is your favorite thing to sweeten with honey?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "glass-and-tile",
@@ -14586,7 +14586,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What would you grow up a garden trellis?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "glass-and-tile"
@@ -14640,7 +14640,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What would you grow up a garden trellis?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "glass-and-tile"
@@ -14695,7 +14695,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What would you grow up a garden trellis?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "glass-and-tile"
@@ -14748,7 +14748,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What game did you enjoy playing with friends?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "calm-circles"
@@ -14801,7 +14801,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What game did you enjoy playing with friends?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "calm-circles"
@@ -14855,7 +14855,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What game did you enjoy playing with friends?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "calm-circles"
@@ -14912,7 +14912,7 @@
     "driving"
    ],
    "conversation_prompt": "Where would a Sunday drive take you today?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "sunday-drive",
@@ -14971,7 +14971,7 @@
     "driving"
    ],
    "conversation_prompt": "Where would a Sunday drive take you today?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "sunday-drive",
@@ -15031,7 +15031,7 @@
     "driving"
    ],
    "conversation_prompt": "Where would a Sunday drive take you today?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "sunday-drive",
@@ -15089,7 +15089,7 @@
     "driving"
    ],
    "conversation_prompt": "What would you haul in the back of this truck?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "working-wheels",
@@ -15146,7 +15146,7 @@
     "driving"
    ],
    "conversation_prompt": "What would you haul in the back of this truck?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "working-wheels",
@@ -15204,7 +15204,7 @@
     "driving"
    ],
    "conversation_prompt": "What would you haul in the back of this truck?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "working-wheels",
@@ -15259,7 +15259,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What grows best in a good field?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "working-wheels",
@@ -15315,7 +15315,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What grows best in a good field?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "working-wheels",
@@ -15372,7 +15372,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What grows best in a good field?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "working-wheels",
@@ -15428,7 +15428,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "Where would you ride this train today?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "rails-and-roads",
@@ -15484,7 +15484,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "Where would you ride this train today?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "rails-and-roads",
@@ -15541,7 +15541,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "Where would you ride this train today?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "rails-and-roads",
@@ -15599,7 +15599,7 @@
     "water"
    ],
    "conversation_prompt": "What is the nicest weather for a day on the water?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "on-the-water",
@@ -15659,7 +15659,7 @@
     "water"
    ],
    "conversation_prompt": "What is the nicest weather for a day on the water?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "on-the-water",
@@ -15720,7 +15720,7 @@
     "water"
    ],
    "conversation_prompt": "What is the nicest weather for a day on the water?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "on-the-water",
@@ -15781,7 +15781,7 @@
     "driving"
    ],
    "conversation_prompt": "Where would a family road trip take you?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "sunday-drive",
@@ -15839,7 +15839,7 @@
     "driving"
    ],
    "conversation_prompt": "Where would a family road trip take you?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "sunday-drive",
@@ -15898,7 +15898,7 @@
     "driving"
    ],
    "conversation_prompt": "Where would a family road trip take you?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "sunday-drive",
@@ -15956,7 +15956,7 @@
     "driving"
    ],
    "conversation_prompt": "What would you enjoy most about a drive with the top down?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "sunday-drive",
@@ -16014,7 +16014,7 @@
     "driving"
    ],
    "conversation_prompt": "What would you enjoy most about a drive with the top down?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "sunday-drive",
@@ -16073,7 +16073,7 @@
     "driving"
    ],
    "conversation_prompt": "What would you enjoy most about a drive with the top down?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "sunday-drive",
@@ -16131,7 +16131,7 @@
     "driving"
    ],
    "conversation_prompt": "What would you like delivered fresh to the door?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "working-wheels",
@@ -16190,7 +16190,7 @@
     "driving"
    ],
    "conversation_prompt": "What would you like delivered fresh to the door?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "working-wheels",
@@ -16250,7 +16250,7 @@
     "driving"
    ],
    "conversation_prompt": "What would you like delivered fresh to the door?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "working-wheels",
@@ -16307,7 +16307,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "Where in town would you ride the streetcar to?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "rails-and-roads",
@@ -16363,7 +16363,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "Where in town would you ride the streetcar to?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "rails-and-roads",
@@ -16420,7 +16420,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "Where in town would you ride the streetcar to?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "rails-and-roads",
@@ -16476,7 +16476,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "Where would you ride a bicycle on a sunny afternoon?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "rails-and-roads",
@@ -16532,7 +16532,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "Where would you ride a bicycle on a sunny afternoon?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "rails-and-roads",
@@ -16589,7 +16589,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "Where would you ride a bicycle on a sunny afternoon?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "rails-and-roads",
@@ -16647,7 +16647,7 @@
     "driving"
    ],
    "conversation_prompt": "Where would you ride on a warm evening?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "sunday-drive",
@@ -16705,7 +16705,7 @@
     "driving"
    ],
    "conversation_prompt": "Where would you ride on a warm evening?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "sunday-drive",
@@ -16764,7 +16764,7 @@
     "driving"
    ],
    "conversation_prompt": "Where would you ride on a warm evening?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "sunday-drive",
@@ -16821,7 +16821,7 @@
     "water"
    ],
    "conversation_prompt": "What kind of work would you enjoy watching at a harbor?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "on-the-water",
@@ -16879,7 +16879,7 @@
     "water"
    ],
    "conversation_prompt": "What kind of work would you enjoy watching at a harbor?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "on-the-water",
@@ -16938,7 +16938,7 @@
     "water"
    ],
    "conversation_prompt": "What kind of work would you enjoy watching at a harbor?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "on-the-water",
@@ -16995,7 +16995,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "Where would you fly if you could go anywhere?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "up-in-the-sky",
@@ -17051,7 +17051,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "Where would you fly if you could go anywhere?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "up-in-the-sky",
@@ -17108,7 +17108,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "Where would you fly if you could go anywhere?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "up-in-the-sky",
@@ -17163,7 +17163,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What would you like to see from high above?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "up-in-the-sky"
@@ -17217,7 +17217,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What would you like to see from high above?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "up-in-the-sky"
@@ -17272,7 +17272,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What would you like to see from high above?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "up-in-the-sky"
@@ -17330,7 +17330,7 @@
     "storms"
    ],
    "conversation_prompt": "Who are the helpers you admire in a community?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "working-wheels"
@@ -17388,7 +17388,7 @@
     "storms"
    ],
    "conversation_prompt": "Who are the helpers you admire in a community?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "working-wheels"
@@ -17447,7 +17447,7 @@
     "storms"
    ],
    "conversation_prompt": "Who are the helpers you admire in a community?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "working-wheels"
@@ -17500,7 +17500,7 @@
    "season": "winter",
    "sensitive_topics": [],
    "conversation_prompt": "Which birds visit a window you like to look out of?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "backyard-birds",
@@ -17554,7 +17554,7 @@
    "season": "winter",
    "sensitive_topics": [],
    "conversation_prompt": "Which birds visit a window you like to look out of?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "backyard-birds",
@@ -17609,7 +17609,7 @@
    "season": "winter",
    "sensitive_topics": [],
    "conversation_prompt": "Which birds visit a window you like to look out of?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "backyard-birds",
@@ -17663,7 +17663,7 @@
    "season": "spring",
    "sensitive_topics": [],
    "conversation_prompt": "What are the first signs of spring you notice?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "spring-garden",
@@ -17718,7 +17718,7 @@
    "season": "spring",
    "sensitive_topics": [],
    "conversation_prompt": "What are the first signs of spring you notice?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "spring-garden",
@@ -17774,7 +17774,7 @@
    "season": "spring",
    "sensitive_topics": [],
    "conversation_prompt": "What are the first signs of spring you notice?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "spring-garden",
@@ -17829,7 +17829,7 @@
    "season": "winter",
    "sensitive_topics": [],
    "conversation_prompt": "What does the woods sound like on a quiet winter morning?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "backyard-birds",
@@ -17884,7 +17884,7 @@
    "season": "winter",
    "sensitive_topics": [],
    "conversation_prompt": "What does the woods sound like on a quiet winter morning?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "backyard-birds",
@@ -17940,7 +17940,7 @@
    "season": "winter",
    "sensitive_topics": [],
    "conversation_prompt": "What does the woods sound like on a quiet winter morning?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "backyard-birds",
@@ -17997,7 +17997,7 @@
     "home"
    ],
    "conversation_prompt": "What would you plant around a birdhouse?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "spring-garden",
@@ -18054,7 +18054,7 @@
     "home"
    ],
    "conversation_prompt": "What would you plant around a birdhouse?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "spring-garden",
@@ -18112,7 +18112,7 @@
     "home"
    ],
    "conversation_prompt": "What would you plant around a birdhouse?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "spring-garden",
@@ -18167,7 +18167,7 @@
    "season": "summer",
    "sensitive_topics": [],
    "conversation_prompt": "What flowers would you plant to bring birds to a garden?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "backyard-birds",
@@ -18221,7 +18221,7 @@
    "season": "summer",
    "sensitive_topics": [],
    "conversation_prompt": "What flowers would you plant to bring birds to a garden?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "backyard-birds",
@@ -18276,7 +18276,7 @@
    "season": "summer",
    "sensitive_topics": [],
    "conversation_prompt": "What flowers would you plant to bring birds to a garden?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "backyard-birds",
@@ -18330,7 +18330,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What sounds do you like to hear at night?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "woodland-walk",
@@ -18384,7 +18384,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What sounds do you like to hear at night?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "woodland-walk",
@@ -18439,7 +18439,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What sounds do you like to hear at night?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "woodland-walk",
@@ -18495,7 +18495,7 @@
     "water"
    ],
    "conversation_prompt": "Where is a calm place you like to walk by the water?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "on-the-water",
@@ -18552,7 +18552,7 @@
     "water"
    ],
    "conversation_prompt": "Where is a calm place you like to walk by the water?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "on-the-water",
@@ -18610,7 +18610,7 @@
     "water"
    ],
    "conversation_prompt": "Where is a calm place you like to walk by the water?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "on-the-water",
@@ -18666,7 +18666,7 @@
     "water"
    ],
    "conversation_prompt": "What would you bring to share with the ducks at a pond?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "pond-life"
@@ -18720,7 +18720,7 @@
     "water"
    ],
    "conversation_prompt": "What would you bring to share with the ducks at a pond?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "pond-life"
@@ -18775,7 +18775,7 @@
     "water"
    ],
    "conversation_prompt": "What would you bring to share with the ducks at a pond?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "pond-life"
@@ -18828,7 +18828,7 @@
    "season": "summer",
    "sensitive_topics": [],
    "conversation_prompt": "Where have you watched butterflies on a warm day?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "up-in-the-sky",
@@ -18884,7 +18884,7 @@
    "season": "summer",
    "sensitive_topics": [],
    "conversation_prompt": "Where have you watched butterflies on a warm day?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "up-in-the-sky",
@@ -18941,7 +18941,7 @@
    "season": "summer",
    "sensitive_topics": [],
    "conversation_prompt": "Where have you watched butterflies on a warm day?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "up-in-the-sky",
@@ -18999,7 +18999,7 @@
     "water"
    ],
    "conversation_prompt": "What do you enjoy about a summer afternoon outdoors?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "water-garden",
@@ -19056,7 +19056,7 @@
     "water"
    ],
    "conversation_prompt": "What do you enjoy about a summer afternoon outdoors?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "water-garden",
@@ -19114,7 +19114,7 @@
     "water"
    ],
    "conversation_prompt": "What do you enjoy about a summer afternoon outdoors?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "water-garden",
@@ -19171,7 +19171,7 @@
     "water"
    ],
    "conversation_prompt": "What is a peaceful sound you enjoy?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "water-garden",
@@ -19227,7 +19227,7 @@
     "water"
    ],
    "conversation_prompt": "What is a peaceful sound you enjoy?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "water-garden",
@@ -19284,7 +19284,7 @@
     "water"
    ],
    "conversation_prompt": "What is a peaceful sound you enjoy?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "water-garden",
@@ -19339,7 +19339,7 @@
     "water"
    ],
    "conversation_prompt": "What is your favorite thing about the seaside?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "seashore"
@@ -19393,7 +19393,7 @@
     "water"
    ],
    "conversation_prompt": "What is your favorite thing about the seaside?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "seashore"
@@ -19448,7 +19448,7 @@
     "water"
    ],
    "conversation_prompt": "What is your favorite thing about the seaside?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "seashore"
@@ -19503,7 +19503,7 @@
     "water"
    ],
    "conversation_prompt": "What would you collect on a walk along the shore?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "seashore"
@@ -19558,7 +19558,7 @@
     "water"
    ],
    "conversation_prompt": "What would you collect on a walk along the shore?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "seashore"
@@ -19614,7 +19614,7 @@
     "water"
    ],
    "conversation_prompt": "What would you collect on a walk along the shore?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "seashore"
@@ -19669,7 +19669,7 @@
     "water"
    ],
    "conversation_prompt": "What treasures would you keep on a windowsill?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "seashore"
@@ -19724,7 +19724,7 @@
     "water"
    ],
    "conversation_prompt": "What treasures would you keep on a windowsill?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "seashore"
@@ -19780,7 +19780,7 @@
     "water"
    ],
    "conversation_prompt": "What treasures would you keep on a windowsill?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "seashore"
@@ -19833,7 +19833,7 @@
    "season": "spring",
    "sensitive_topics": [],
    "conversation_prompt": "What animals have you seen visiting a garden?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "faithful-companions",
@@ -19888,7 +19888,7 @@
    "season": "spring",
    "sensitive_topics": [],
    "conversation_prompt": "What animals have you seen visiting a garden?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "faithful-companions",
@@ -19944,7 +19944,7 @@
    "season": "spring",
    "sensitive_topics": [],
    "conversation_prompt": "What animals have you seen visiting a garden?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "faithful-companions",
@@ -19999,7 +19999,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "Where is the coziest spot in a house for a nap?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "front-porch",
@@ -20053,7 +20053,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "Where is the coziest spot in a house for a nap?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "front-porch",
@@ -20108,7 +20108,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "Where is the coziest spot in a house for a nap?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "front-porch",
@@ -20162,7 +20162,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What makes a dog a good companion?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "front-porch",
@@ -20218,7 +20218,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What makes a dog a good companion?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "front-porch",
@@ -20275,7 +20275,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What makes a dog a good companion?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "front-porch",
@@ -20330,7 +20330,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What time do you like to get up in the morning?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "down-on-the-farm",
@@ -20383,7 +20383,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What time do you like to get up in the morning?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "down-on-the-farm",
@@ -20437,7 +20437,7 @@
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What time do you like to get up in the morning?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "down-on-the-farm",
@@ -20491,7 +20491,7 @@
    "season": "winter",
    "sensitive_topics": [],
    "conversation_prompt": "What does a pine forest smell like to you?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "woodland-walk",
@@ -20545,7 +20545,7 @@
    "season": "winter",
    "sensitive_topics": [],
    "conversation_prompt": "What does a pine forest smell like to you?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "woodland-walk",
@@ -20600,7 +20600,7 @@
    "season": "winter",
    "sensitive_topics": [],
    "conversation_prompt": "What does a pine forest smell like to you?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "woodland-walk",
@@ -20656,7 +20656,7 @@
     "water"
    ],
    "conversation_prompt": "Where is a place you would like to visit again?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "landmarks",
@@ -20713,7 +20713,7 @@
     "water"
    ],
    "conversation_prompt": "Where is a place you would like to visit again?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "landmarks",
@@ -20771,7 +20771,7 @@
     "water"
    ],
    "conversation_prompt": "Where is a place you would like to visit again?",
-   "source": "cognicore-engine",
+   "source": "cognicopia-coloring-engine",
    "review_status": "approved",
    "packs": [
     "landmarks",

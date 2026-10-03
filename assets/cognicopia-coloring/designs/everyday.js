@@ -1,4 +1,4 @@
-/* CogniCore designs: Home & Everyday Tasks. Familiar jobs and small
+/* Cognicopia Coloring designs: Home & Everyday Tasks. Familiar jobs and small
    pleasures drawn as the things themselves (a laid table, a knitting
    basket, a letter), so a page can open a conversation about a role the
    person held: host, baker, gardener, letter writer. */
@@ -235,4 +235,4 @@ C.define({ id:"cards-and-dominoes", title:"Cards and Dominoes", cat:"home-everyd
   domino(200, 600, 3, 5, 80);
   if (g.lvl >= 2) domino(420, 620, 2, 4, 100);
 });
-})(globalThis.CogniCore);
+})(globalThis.CognicopiaColoring);

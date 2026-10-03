@@ -52,7 +52,7 @@ const PILLARS = [
     {
         id: "coloring",
         name: "Coloring",
-        category: "cognicore",
+        category: "cognicopia-coloring",
         blurb: "Coloring and visual art"
     },
     {
@@ -89,7 +89,7 @@ const PILLARS = [
 const pillarOf = (id)=>PILLARS.filter((p)=>p.id === id)[0] || null;
 const CATALOG = [
     {
-        id: "cognicore-coloring",
+        id: "cognicopia-coloring",
         name: "Coloring page",
         pillar: "coloring",
         tiers: [

@@ -1,8 +1,8 @@
 /* =====================================================================
-   COGNICORE PROMPT ENGINE AND DIGNITY FILTER
+   COGNICOPIA_COLORING PROMPT ENGINE AND DIGNITY FILTER
    Builds strict line-art prompts for image generators (Midjourney, Stable
    Diffusion, DALL-E 3) so new artwork arrives already close to the
-   CogniCore print standard, and checks any title, tag, caption or prompt
+   Cognicopia Coloring print standard, and checks any title, tag, caption or prompt
    for childish, quizzing or talking-down language.
 
    Nothing here calls a generator or any other service: it only writes
@@ -245,7 +245,7 @@ function job(o){
   };
 }
 
-root.CogniCorePrompts = {
+root.CognicopiaColoringPrompts = {
   POSITIVE:POSITIVE, NEGATIVE:NEGATIVE, TIER_WORDS:TIER_WORDS, GENERATORS:GENERATORS, IDEAS:IDEAS,
   build:build, buildAll:buildAll, format:format, dignityCheck:dignityCheck, subjectFor:subjectFor, job:job, slug:slug,
   JUVENILE:JUVENILE, QUIZ:QUIZ, ELDERSPEAK:ELDERSPEAK

@@ -22,7 +22,7 @@
        Tier 3   3.5x to 4.0x            9 to 12 px   (10.5 px)
    The base line is the drawing's own main line, brought into Tier 1's
    range; the tier multiplies it, and the result always lands inside the
-   tier's range. The CogniCore line-art engine (assets/cognicore/lineart.js)
+   tier's range. The Cognicopia Coloring line-art engine (assets/cognicopia-coloring/lineart.js)
    prints with the same numbers, so library pages and imported drawings
    match line for line.
 

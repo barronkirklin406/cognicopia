@@ -1,4 +1,4 @@
-/* CogniCore coloring packs: themed bundles of designs that print together
+/* Cognicopia Coloring packs: themed bundles of designs that print together
    at one tier (a resident's own, or the pack's recommendation). A design
    can sit in several packs. Add a pack by listing design ids; the checks
    (scripts/check-coloring.mjs) confirm every id exists. */
@@ -135,4 +135,4 @@ pack("fine-motor-practice", "Fine-Motor Practice", "focus", "Pages with more, sm
   ["quilt-ohio-star", "daisy-jar", "art-deco-fans", "steam-locomotive", "typewriter", "hydrangea"], 1);
 pack("guided-focus-mix", "Guided Focus Mix", "focus", "A balanced set of subjects with a few guiding lines, one from each theme.",
   ["tulips-vase", "farm-pickup", "cathedral-radio", "barn-owl", "quilt-pinwheel", "knitting-basket"], 2);
-})(globalThis.CogniCore);
+})(globalThis.CognicopiaColoring);

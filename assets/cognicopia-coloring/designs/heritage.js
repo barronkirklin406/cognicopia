@@ -1,4 +1,4 @@
-/* CogniCore designs: Nostalgic Heritage. Heirloom kitchenware, clocks,
+/* Cognicopia Coloring designs: Nostalgic Heritage. Heirloom kitchenware, clocks,
    radios and telephones, the sewing room, and farm landmarks. Clock faces
    carry tick marks, never numerals: the picture stays free of text. */
 (function(C){
@@ -393,4 +393,4 @@ C.define({ id:"porch-swing", title:"The Porch Swing", cat:"nostalgic-heritage",
   g.S(h.path([76, 524]).L([524, 524]).L([544, 580]).L([56, 580]).Z());
   [56, 516].forEach(function(x){ if (g.is(2)) g.S(h.rrect(x, 472, 28, 80, 8)); else g.K(h.rrect(x, 472, 28, 80, 8)); });
 });
-})(globalThis.CogniCore);
+})(globalThis.CognicopiaColoring);

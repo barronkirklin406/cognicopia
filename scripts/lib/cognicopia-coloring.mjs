@@ -1,6 +1,6 @@
 /* =====================================================================
-   CogniCore for Node: loads the browser line-art engine, its designs, the
-   packs and the prompt engine (assets/cognicore/*) into a sandbox, the
+   Cognicopia Coloring for Node: loads the browser line-art engine, its designs, the
+   packs and the prompt engine (assets/cognicopia-coloring/*) into a sandbox, the
    same files the Packet Builder runs, so every script checks and writes
    exactly what prints. Node built-ins only.
    ===================================================================== */
@@ -10,7 +10,7 @@ import vm from "vm";
 import { fileURLToPath } from "url";
 
 export const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
-export const SRC_DIR = path.join(ROOT, "assets", "cognicore");
+export const SRC_DIR = path.join(ROOT, "assets", "cognicopia-coloring");
 
 /* The engine source files, in load order. The browser bundle is these
    files joined in this order (scripts/generate_coloring_manifest.js). */
@@ -20,13 +20,13 @@ export function sourceFiles(){
 }
 
 let cached = null;
-export function loadCogniCore(){
+export function loadCognicopiaColoring(){
   if (cached) return cached;
   const sandbox = { console };
   sandbox.globalThis = sandbox;
   vm.createContext(sandbox);
-  for (const f of sourceFiles()) vm.runInContext(fs.readFileSync(path.join(SRC_DIR, f), "utf8"), sandbox, { filename: "assets/cognicore/" + f });
-  cached = { C: sandbox.CogniCore, P: sandbox.CogniCorePrompts };
+  for (const f of sourceFiles()) vm.runInContext(fs.readFileSync(path.join(SRC_DIR, f), "utf8"), sandbox, { filename: "assets/cognicopia-coloring/" + f });
+  cached = { C: sandbox.CognicopiaColoring, P: sandbox.CognicopiaColoringPrompts };
   return cached;
 }
 

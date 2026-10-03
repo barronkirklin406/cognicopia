@@ -88,11 +88,11 @@ group("vectorEngine", () => {
   });
   ok(V.STROKE_POLICY[1].px.min === 2 && V.STROKE_POLICY[1].px.max === 3 && V.STROKE_POLICY[2].px.min === 5 && V.STROKE_POLICY[2].px.max === 7 && V.STROKE_POLICY[3].px.min === 9 && V.STROKE_POLICY[3].px.max === 12, "tier px ranges");
 
-  // the CogniCore engine prints with the same numbers
+  // the Cognicopia Coloring engine prints with the same numbers
   const cc = { console }; cc.globalThis = cc; vm.createContext(cc);
-  vm.runInContext(fs.readFileSync(path.join(ROOT, "assets", "cognicore", "lineart.js"), "utf8"), cc);
-  [1, 2, 3].forEach(k => { const w = cc.CogniCore.WEIGHTS[cc.CogniCore.TIERS[k].weight], L = V.tierLines(k, 3);
-    ok(w.px === L.linePx && Math.abs(w.pt - L.linePt) < 1e-9 && Math.abs(w.detailPt - L.detailPt) < 1e-9, `CogniCore tier ${k} weights ${w.px} px / ${w.detailPt} pt differ from the DVE ${L.linePx} px / ${L.detailPt} pt`); });
+  vm.runInContext(fs.readFileSync(path.join(ROOT, "assets", "cognicopia-coloring", "lineart.js"), "utf8"), cc);
+  [1, 2, 3].forEach(k => { const w = cc.CognicopiaColoring.WEIGHTS[cc.CognicopiaColoring.TIERS[k].weight], L = V.tierLines(k, 3);
+    ok(w.px === L.linePx && Math.abs(w.pt - L.linePt) < 1e-9 && Math.abs(w.detailPt - L.detailPt) < 1e-9, `Cognicopia Coloring tier ${k} weights ${w.px} px / ${w.detailPt} pt differ from the DVE ${L.linePx} px / ${L.detailPt} pt`); });
 
   // parser: round trip, errors
   const lib = path.join(ROOT, "assets", "coloring");
@@ -374,15 +374,15 @@ group("reminiscenceEngine", () => {
   const R = sandbox.CogniReminiscence;
   ok(R && typeof R.deck === "function", "CogniReminiscence is not loaded");
   const cc = { console }; cc.globalThis = cc; vm.createContext(cc);
-  vm.runInContext(fs.readFileSync(path.join(ROOT, "assets", "cognicore", "cognicore.js"), "utf8"), cc);
-  const designs = new Set(cc.CogniCore.designs().map(d => d.id)), songIds = new Set(R.SONGS.map(x => x.id));
+  vm.runInContext(fs.readFileSync(path.join(ROOT, "assets", "cognicopia-coloring", "cognicopia-coloring.js"), "utf8"), cc);
+  const designs = new Set(cc.CognicopiaColoring.designs().map(d => d.id)), songIds = new Set(R.SONGS.map(x => x.id));
   ok(songIds.size === R.SONGS.length, "song ids are unique");
   const texts = [];
   for (const t of R.TOPICS){
     ok(t.invite.length === 3 && t.invite.every(Boolean), t.id + ": three invitations");
     ok(t.starters.length >= 4 && t.simple.length >= 3, t.id + ": at least 4 starters and 3 tier-3 lines");
     ok(t.simple.filter(x => x !== t.invite[2]).length >= 3, t.id + ": 3 tier-3 lines besides the invitation");
-    ok(t.art.length && t.art.every(a => designs.has(a)), t.id + ": art from the CogniCore library: " + t.art.filter(a => !designs.has(a)));
+    ok(t.art.length && t.art.every(a => designs.has(a)), t.id + ": art from the Cognicopia Coloring library: " + t.art.filter(a => !designs.has(a)));
     ok(t.touch.prompt && t.touch.simple && t.touch.items, t.id + ": a tactile prompt");
     ok((t.songs || []).every(x => songIds.has(x)), t.id + ": songs exist");
     ok(t.refs.every(r => r.years[0] >= 1850 && r.years[0] <= r.years[1] && r.years[1] <= 2000), t.id + ": reference years");

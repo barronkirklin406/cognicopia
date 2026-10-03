@@ -514,7 +514,7 @@ input:focus,select:focus{border-color:var(--accent)}
 .art-talk{margin:.04in 0;font-size:12pt;font-style:italic;color:#000;text-align:center}
 .art-foot{font-size:9pt;letter-spacing:.04em;color:#444}
 .art-fac{margin:0 0 .02in;font-size:11pt;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#000;text-align:center;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-/* Cognicore Coloring: the always-on visual rules in the config panel */
+/* Cognicopia Coloring: the always-on visual rules in the config panel */
 .opt-note{margin:0 0 16px}
 .style-head{margin:4px 0 8px;font-size:15px;font-weight:700}
 .style-lock{list-style:none;margin:0;padding:12px 14px;display:grid;grid-template-columns:1fr 1fr;gap:8px 16px;border:1px solid var(--line);border-radius:12px;background:var(--bg-2)}
@@ -1346,7 +1346,7 @@ textarea:focus{border-color:var(--accent)}
 </style>
 <style id="cc-style">
 /* =====================================================================
-   COGNICORE COLORING LIBRARY: screen styles (the view at #/coloring) and
+   COGNICOPIA COLORING LIBRARY: screen styles (the view at #/coloring) and
    the printed sheet (.cc-sheet). Every printed block is placed in inches
    from one layout (CogniLibrary.layout), shared with the PDF writer, so
    the preview, the printout and the PDF match exactly.
@@ -1430,7 +1430,7 @@ textarea:focus{border-color:var(--accent)}
 <style id="rm-style">
 /* =====================================================================
    REMINISCENCE CARDS (#/reminiscence): the screen and the printed card.
-   One card per Letter page: the topic, a CogniCore picture at the
+   One card per Letter page: the topic, a Cognicopia Coloring picture at the
    resident's tier, one invitation in large type, and, below a rule, the
    caregiver's panel (three conversation starters, one era-accurate song,
    one tactile prompt with its safety note, and references from their own
@@ -6375,12 +6375,12 @@ const RosterUI = (function(){
   return { render, build, TEMPLATES, AUDIENCES, state: () => state() };
 })();
 </script>
-<script src="assets/cognicore/cognicore.js"></script>
+<script src="assets/cognicopia-coloring/cognicopia-coloring.js"></script>
 <script src="assets/services/vectorEngine.js"></script>
 <script id="cc-ui">
 /* =====================================================================
-   COGNICORE COLORING LIBRARY  (the view at #/coloring)
-   Browse the CogniCore line-art library (assets/cognicore/cognicore.js),
+   COGNICOPIA COLORING LIBRARY  (the view at #/coloring)
+   Browse the Cognicopia Coloring line-art library (assets/cognicopia-coloring/cognicopia-coloring.js),
    choose pages or a whole pack, see each page exactly as it prints, then
    add them to the packet, print them, or download a vector PDF.
 
@@ -6393,7 +6393,7 @@ const RosterUI = (function(){
    ===================================================================== */
 const CogniLibrary = (function(){
   "use strict";
-  const C = window.CogniCore, V = window.CogniVectorEngine;
+  const C = window.CognicopiaColoring, V = window.CogniVectorEngine;
   const TIER_SHORT = { 1:"Tier 1 · High Detail", 2:"Tier 2 · Guided Focus", 3:"Tier 3 · Single Focal" };
   const WEIGHTS = [["auto", "Automatic for the tier"], ["thick", "Thick (3 px)"], ["ultra-bold", "Ultra-bold (6 px)"], ["extra-bold-sensory", "Extra-bold sensory (10.5 px)"]];
   const STROKE_TIER = { "thick":1, "ultra-bold":2, "extra-bold-sensory":3 };
@@ -6472,7 +6472,7 @@ const CogniLibrary = (function(){
     return { svg:out.svg.replace("<svg ", '<svg role="img" aria-label="' + esc(r.design.title + ", a picture to color") + '" '), report:out.report, r:r };
   }
   const box = (b, extra) => `left:${b.x.toFixed(4)}in;top:${b.y.toFixed(4)}in;width:${b.w.toFixed(4)}in;height:${b.h.toFixed(4)}in;${extra || ""}`;
-  function footText(o, lay){ return [`Cognicopia · CogniCore Coloring`, `${C.TIERS[lay.tier].label}${o.pageCount > 1 ? ` · page ${o.pageNumber} of ${o.pageCount}` : ""}`]; }
+  function footText(o, lay){ return [`Cognicopia · Cognicopia Coloring`, `${C.TIERS[lay.tier].label}${o.pageCount > 1 ? ` · page ${o.pageNumber} of ${o.pageCount}` : ""}`]; }
   /* The printed sheet for one page. */
   function sheet(o){
     const lay = layout(o), b = lay.blocks, d = C.design(o.design), art = artFor(o, lay), name = String(o.name || "").trim(), fac = String(o.facility || "").trim();
@@ -6541,7 +6541,7 @@ const CogniLibrary = (function(){
       doc.setTextColor(0, 0, 0); doc.setDrawColor(0, 0, 0);
       times.push(performance.now() - t0);
     });
-    doc.setProperties({ title:"CogniCore coloring pages", creator:"Cognicopia", subject:"Coloring pages" });
+    doc.setProperties({ title:"Cognicopia Coloring pages", creator:"Cognicopia", subject:"Cognicopia Coloring" });
     return { doc:doc, times:times };
   }
   function pdfName(){
@@ -6555,15 +6555,15 @@ const CogniLibrary = (function(){
   function render(viewEl, arg){
     root = viewEl;
     if (!ready()){
-      viewEl.innerHTML = `<p class="eyebrow">CogniCore Coloring</p><h1 class="view-title" tabindex="-1">The coloring library</h1>
-        <p class="callout">The coloring library could not load. Check that assets/cognicore/cognicore.js and assets/services/vectorEngine.js are on this site, then reload.</p>`;
+      viewEl.innerHTML = `<p class="eyebrow">Cognicopia Coloring</p><h1 class="view-title" tabindex="-1">The coloring library</h1>
+        <p class="callout">The coloring library could not load. Check that assets/cognicopia-coloring/cognicopia-coloring.js and assets/services/vectorEngine.js are on this site, then reload.</p>`;
       return;
     }
     const s = state();
     if (arg && C.design(arg)){ if (s.picks.indexOf(arg) < 0) s.picks.push(arg); s.focus = s.picks.indexOf(arg); s.tab = "pictures"; }
     const st = C.stats(), people = residents();
     viewEl.innerHTML = `
-      <p class="eyebrow">CogniCore Coloring</p>
+      <p class="eyebrow">Cognicopia Coloring</p>
       <h1 class="view-title" tabindex="-1">The coloring library</h1>
       <p class="lede">${st.designs} adult, dignity-first pictures, each drawn at three cognitive tiers (${st.assets} pages), in bold pure-black lines on white, plus ${st.packs} themed packs. Every page prints on US Letter with a 0.75 in binding gutter for three-ring binders.</p>
       <div class="cc-for">
@@ -6753,8 +6753,8 @@ const CogniLibrary = (function(){
      Pages added from the library are queued as recipes (the design ids and
      options), like every other activity, and rebuild exactly when printed. */
   const LIBRARY_ACTIVITY = {
-    id:"cognicore-library", name:"CogniCore Coloring Page", themed:false, hidden:true,
-    desc:"A page from the CogniCore coloring library.",
+    id:"cognicopia-coloring-library", name:"Cognicopia Coloring Page", themed:false, hidden:true,
+    desc:"A page from the Cognicopia Coloring library.",
     icon:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="2" width="16" height="20" rx="2"/><circle cx="12" cy="10" r="3"/><path d="M12 13v6M9 16l3-2 3 2"/></svg>',
     plan(cfg, rng, count){ const p = ((cfg.opts || {}).pages || []).filter(id => C.design(id)); const out = []; for (let i = 0; i < count; i++) out.push(p[i % Math.max(1, p.length)] || "tulips-vase"); return out; },
     generate(cfg, rng, id){
@@ -6775,14 +6775,14 @@ const CogniLibrary = (function(){
    profile (or a few details typed here): their work, the region and
    setting they grew up in, and the years of their "reminiscence bump".
    The content comes from CogniReminiscence (src/services/
-   reminiscenceEngine.ts); pictures from the CogniCore library at the
+   reminiscenceEngine.ts); pictures from the Cognicopia Coloring library at the
    resident's tier, lines set by the Dynamic Vector Engine. Every card
    carries three caregiver conversation starters, one era-accurate song and
    one tactile prompt. Nothing is sent anywhere.
    ===================================================================== */
 const ReminiscenceUI = (function(){
   "use strict";
-  const R = window.CogniReminiscence, C = window.CogniCore, V = window.CogniVectorEngine;
+  const R = window.CogniReminiscence, C = window.CognicopiaColoring, V = window.CogniVectorEngine;
   let S = null, root = null, focus = 0;
   const state = () => {
     if (!S){
@@ -7168,7 +7168,7 @@ const ClinicalUI = (function(){
    ===================================================================== */
 const HeirloomUI = (function(){
   "use strict";
-  const H = window.CogniHeirloom, C = window.CogniCore, V = window.CogniVectorEngine, SS = window.CogniSecureStore, R = window.CogniReminiscence;
+  const H = window.CogniHeirloom, C = window.CognicopiaColoring, V = window.CogniVectorEngine, SS = window.CogniSecureStore, R = window.CogniReminiscence;
   const S = { resident:"", tab:"keep", month:"", editing:null, bookOpts:null };   // month is set on first render (todayISO is defined in a later script)
   const photos = new Map();                    // photo id -> data URL, for this page only
   let root = null;
@@ -7247,7 +7247,7 @@ const HeirloomUI = (function(){
         <div class="field"><label for="hlDate">Date</label><input id="hlDate" data-f="date" type="date" value="${esc(f.date)}"></div></div>
       <div class="field"><label for="hlTitle">Title <span class="hint">(optional)</span></label><input id="hlTitle" data-f="title" type="text" maxlength="80" value="${esc(f.title)}" placeholder="e.g., Sunday dinners on the farm"></div>
       ${f.kind === "reminiscence" ? `<div class="field"><label for="hlCard">From the reminiscence card</label><input id="hlCard" data-f="card" type="text" maxlength="80" list="hlCards" value="${esc(f.card)}"><datalist id="hlCards">${R.TOPICS.map(t => `<option value="${esc(t.title)}">`).join("")}</datalist></div>` : ""}
-      ${f.kind === "coloring" ? `<div class="row2"><div class="field"><label for="hlDesign">The page they colored</label><select id="hlDesign" data-f="design"><option value="">Not a CogniCore page</option>${designs().map(d => `<option value="${d.id}" ${d.id === f.design ? "selected" : ""}>${esc(d.title)}</option>`).join("")}</select></div>
+      ${f.kind === "coloring" ? `<div class="row2"><div class="field"><label for="hlDesign">The page they colored</label><select id="hlDesign" data-f="design"><option value="">Not a Cognicopia Coloring page</option>${designs().map(d => `<option value="${d.id}" ${d.id === f.design ? "selected" : ""}>${esc(d.title)}</option>`).join("")}</select></div>
         <div class="field"><label for="hlTier">Tier it was printed at</label><select id="hlTier" data-f="tier">${[1, 2, 3].map(t => `<option value="${t}" ${t === f.tier ? "selected" : ""}>Tier ${t}</option>`).join("")}</select></div></div>
         <div class="field"><label for="hlPhoto">A photo of the finished page <span class="hint">(optional; kept encrypted on this computer)</span></label><input id="hlPhoto" type="file" accept="image/*">
           ${f.photo ? `<img class="hl-photo-pv" id="hlPhotoPv" alt="The photo kept with this memory"><button class="btn" type="button" id="hlPhotoDrop">Remove the photo</button>` : ""}</div>` : ""}
@@ -8398,7 +8398,7 @@ const FacilityUI = (function(){
     const t = F.acuityOf(g.acuity), rec = F.recommend(t.tier, have(), S.pacing);
     S.ctx = { wing:w.name, wingId:w.id, group:g.name, tier:t.tier, label:t.label, difficulty:t.difficulty, pacing:S.pacing, open:id,
       recommended:rec.reduce((l, r) => l.concat(r.recommended.map(x => x.id)), []) };
-    if (a.categoryId === "cognicore"){ try { CogniLibrary.state().tier = t.supportTier; } catch (e){} location.hash = "#/coloring"; return; }
+    if (a.categoryId === "cognicopia-coloring"){ try { CogniLibrary.state().tier = t.supportTier; } catch (e){} location.hash = "#/coloring"; return; }
     location.hash = "#/category/" + a.categoryId;
   }
   const context = () => S.ctx;
@@ -12073,7 +12073,7 @@ const COLOR_ART = {
       });
       return { svg:o, sig:"kw" + pots + tie };
     } },
-  /* ================= E. Animals (Cognicore Coloring) ================= */
+  /* ================= E. Animals (Cognicopia Coloring) ================= */
   cat: { group:"animals", title:"The Sitting Cat", talk:"Did you ever have a cat? What was its name, and where did it like to sleep?",
     draw(rng, det, st){
       const flip = rng.next() < .5;
@@ -12178,7 +12178,7 @@ const COLOR_ART = {
       return { svg:o + artH.ground(372, st), sig:"gf" + flip + y };
     } },
 
-  /* ================= F. Seasonal (Cognicore Coloring) =================
+  /* ================= F. Seasonal (Cognicopia Coloring) =================
      Each has a `season` so "Seasonal" can lead with the packet date's season. */
   pumpkins: { group:"seasonal", season:"fall", title:"Autumn Pumpkins", talk:"Did you ever carve a pumpkin or bake a pie? What did autumn smell like at home?",
     draw(rng, det, st){
@@ -12351,12 +12351,12 @@ const COLORING = {
   }
 };
 
-/* ---- Cognicore Coloring ----
+/* ---- Cognicopia Coloring ----
    Its own Packet Builder category. Same drawing engine and clinical rules
    as the coloring pages above (pure #000 lines of 3 to 6 pt, no background,
    3:4 art on a full page), with six themes, a pick-one-picture list, a
    facility header and a resident name. */
-const COGNICORE_THEMES = {
+const COGNICOPIA_COLORING_THEMES = {
   nostalgia: { label:"Nostalgia items: clocks, radios, telephones", keys:["rotaryphone","radio","sewing","pocketwatch","grandclock","wallclock"] },
   vehicles:  { label:"Classic vehicles and farm machinery",        keys:["truck","car","wagon","musclecar","tractor","locomotive"] },
   animals:   { label:"Animals: pets, birds and pond life",          keys:["cat","dog","songbird","owl","duck","goldfish"] },
@@ -12364,35 +12364,35 @@ const COGNICORE_THEMES = {
   household: { label:"Everyday household objects and cozy corners", keys:["teapot","rocker","porchswing","fireplace","kitchenwindow"] },
   seasonal:  { label:"Seasonal: starts with the season of the packet date", keys:["pumpkins","applebasket","snowman","wreath","birdhouse","rainboots","lemonade","picnic"] }
 };
-const COGNICORE_THEME_SHORT = { nostalgia:"Nostalgia", vehicles:"Vehicles", animals:"Animals", floral:"Floral", household:"Household", seasonal:"Seasonal" };
-function cognicoreKeys(theme){
-  if (COGNICORE_THEMES[theme]) return COGNICORE_THEMES[theme].keys.slice();
-  return Object.keys(COGNICORE_THEMES).reduce((all, t) => all.concat(COGNICORE_THEMES[t].keys), []);
+const COGNICOPIA_COLORING_THEME_SHORT = { nostalgia:"Nostalgia", vehicles:"Vehicles", animals:"Animals", floral:"Floral", household:"Household", seasonal:"Seasonal" };
+function cognicopiaColoringKeys(theme){
+  if (COGNICOPIA_COLORING_THEMES[theme]) return COGNICOPIA_COLORING_THEMES[theme].keys.slice();
+  return Object.keys(COGNICOPIA_COLORING_THEMES).reduce((all, t) => all.concat(COGNICOPIA_COLORING_THEMES[t].keys), []);
 }
-function cognicoreSeason(cfg){
+function cognicopiaColoringSeason(cfg){
   const d = new Date((cfg.date || todayISO()) + "T12:00:00");
   return seasonFor(isNaN(d) ? new Date() : d, optVal(cfg, "hemi", "north") === "south");
 }
-const COGNICORE = {
-  id: "cognicore-coloring", name: "Cognicore Coloring Page", themed: false, personalRow: true,
+const COGNICOPIA_COLORING = {
+  id: "cognicopia-coloring", name: "Cognicopia Coloring Page", themed: false, personalRow: true,
   desc: "A full-page picture to color: bold pure-black lines of 3 to 6 pt, nothing in the background, a 3:4 frame and adult subjects. Pick a theme, or one exact picture.",
   icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18.4 2.6a2 2 0 0 1 2.9 2.9L12 14.8 9.2 12z"/><path d="M9.2 12c-2 0-3.6 1.6-3.6 3.6 0 1.6-1 2.6-2.6 3.2 1.2 1.3 3 2.2 5 2.2 3 0 4.8-2.4 4-5.4"/></svg>',
   options: [
     { id:"theme", type:"select", label:"Subject / theme", def:"mixed",
-      choices:[["mixed","A mix of every theme"]].concat(Object.keys(COGNICORE_THEMES).map(k => [k, COGNICORE_THEMES[k].label])) },
+      choices:[["mixed","A mix of every theme"]].concat(Object.keys(COGNICOPIA_COLORING_THEMES).map(k => [k, COGNICOPIA_COLORING_THEMES[k].label])) },
     { id:"picture", type:"select", label:"Picture", def:"any",
       hint:"Pick one exact picture for version 1, or let each version be a different picture from the theme.",
       choicesFn(vals){
         const theme = vals.theme || "mixed";
-        return [["any","Surprise me: a different picture for each version"]].concat(cognicoreKeys(theme).map(k => {
-          const own = Object.keys(COGNICORE_THEMES).find(t => COGNICORE_THEMES[t].keys.includes(k));
-          return [k, (theme === "mixed" ? COGNICORE_THEME_SHORT[own] + ": " : "") + COLOR_ART[k].title];
+        return [["any","Surprise me: a different picture for each version"]].concat(cognicopiaColoringKeys(theme).map(k => {
+          const own = Object.keys(COGNICOPIA_COLORING_THEMES).find(t => COGNICOPIA_COLORING_THEMES[t].keys.includes(k));
+          return [k, (theme === "mixed" ? COGNICOPIA_COLORING_THEME_SHORT[own] + ": " : "") + COLOR_ART[k].title];
         }));
       } },
     { id:"hemi", type:"select", label:"Seasons", def:"north", showIf:["theme", "seasonal"],
       choices:[["north","Northern hemisphere"],["south","Southern hemisphere"]] },
     { id:"style", type:"note", html:`<p class="style-head">Visual style</p>
-      <ul class="style-lock" aria-label="Always on for every Cognicore page">
+      <ul class="style-lock" aria-label="Always on for every Cognicopia Coloring page">
         <li>Pure black lines, 3 to 6 pt</li><li>No background clutter or shading</li>
         <li>3:4 picture on a full page</li><li>Adult, dignified subjects</li></ul>` },
     { id:"weight", type:"select", label:"Line weight", def:"auto",
@@ -12406,11 +12406,11 @@ const COGNICORE = {
   levels: COLORING.levels,
   plan(cfg, rng, count){
     const theme = optVal(cfg, "theme", "mixed");
-    let pool = cognicoreKeys(theme).filter(k => COLOR_ART[k]);
+    let pool = cognicopiaColoringKeys(theme).filter(k => COLOR_ART[k]);
     const pic = optVal(cfg, "picture", "any");
     if (theme === "seasonal"){
       // this season's pictures first, then the others, each group shuffled
-      const now = cognicoreSeason(cfg);
+      const now = cognicopiaColoringSeason(cfg);
       pool = rng.shuffle(pool.filter(k => COLOR_ART[k].season === now)).concat(rng.shuffle(pool.filter(k => COLOR_ART[k].season !== now)));
     } else pool = rng.shuffle(pool);
     if (COLOR_ART[pic]) pool = [pic].concat(pool.filter(k => k !== pic));
@@ -12427,7 +12427,7 @@ const COGNICORE = {
     const theme = optVal(cfg, "theme", "mixed"), pic = optVal(cfg, "picture", "any");
     const n = this.singlePage ? 1 : settings.variations;
     let t = COLOR_ART[pic] ? `Version 1 is ${COLOR_ART[pic].title}.` : "";
-    if (theme === "seasonal") t += (t ? " " : "") + `${SEASON_NAMES[cognicoreSeason(cfg)]} pictures come first for ${fmtDate(cfg.date) || "the packet date"}.`;
+    if (theme === "seasonal") t += (t ? " " : "") + `${SEASON_NAMES[cognicopiaColoringSeason(cfg)]} pictures come first for ${fmtDate(cfg.date) || "the packet date"}.`;
     if (n > 1) t += (t ? " " : "") + `Each of the ${n} versions is a different picture.`;
     return t;
   }
@@ -12524,18 +12524,18 @@ const CATEGORIES = [
     blurb:"Large-print sing-along sheets, finish-the-song prompts and a singer-to-song match. Musical memory often outlasts other memories, which makes music one of the most reliable ways in. For rhythm patterns, see Seated Rhythm Sheets under Exercise & Movement.",
     activities:[LYRIC_SHEET, FINISH_SONG, SINGER_MATCH] },
   { id:"multisensory", name:"Multisensory, Art & Group Activities", icon:ICONS.art,
-    blurb:"A giant-type daily orientation board and shadow matching. Good for group rooms, quiet one-to-one time and the start of each day. Coloring pages now have their own category, Cognicore Coloring.",
+    blurb:"A giant-type daily orientation board and shadow matching. Good for group rooms, quiet one-to-one time and the start of each day. Coloring pages now have their own category, Cognicopia Coloring.",
     activities:[ORIENTATION_BOARD, SILHOUETTE_MATCH] },
-  { id:"cognicore", name:"Cognicore Coloring", icon:ICONS.brush, badge:"\u{1F3A8} Coloring", direct:true, route:"coloring",
-    blurb:"The CogniCore coloring library: adult, dignity-first pictures in bold pure-black line art, each drawn at three cognitive tiers, plus themed packs. Filter by tier, theme, line thickness and detail, preview every page with its binding gutter, and print or download a PDF.",
-    activities:[COGNICORE] }
+  { id:"cognicopia-coloring", name:"Cognicopia Coloring", icon:ICONS.brush, badge:"\u{1F3A8} Coloring", direct:true, route:"coloring",
+    blurb:"The Cognicopia Coloring library: adult, dignity-first pictures in bold pure-black line art, each drawn at three cognitive tiers, plus themed packs. Filter by tier, theme, line thickness and detail, preview every page with its binding gutter, and print or download a PDF.",
+    activities:[COGNICOPIA_COLORING] }
 ];
 const CAT_INDEX = {}, ACT_INDEX = {};
 CATEGORIES.forEach(c => { CAT_INDEX[c.id] = c; c.activities.forEach(a => { ACT_INDEX[a.id] = a; a.categoryId = c.id; }); });
 // Retired from the menus but kept so coloring pages already sitting in a
-// saved packet still rebuild exactly. New coloring pages use Cognicore.
+// saved packet still rebuild exactly. New coloring pages use Cognicopia Coloring.
 // The coloring library queues its pages through its own activity.
-[COLORING, CogniLibrary.LIBRARY_ACTIVITY].forEach(a => { if (!ACT_INDEX[a.id]){ ACT_INDEX[a.id] = a; a.categoryId = "cognicore"; } });
+[COLORING, CogniLibrary.LIBRARY_ACTIVITY].forEach(a => { if (!ACT_INDEX[a.id]){ ACT_INDEX[a.id] = a; a.categoryId = "cognicopia-coloring"; } });
 if (!ACT_INDEX[ReminiscenceUI.REMINISCENCE_ACTIVITY.id]){ ACT_INDEX[ReminiscenceUI.REMINISCENCE_ACTIVITY.id] = ReminiscenceUI.REMINISCENCE_ACTIVITY; ReminiscenceUI.REMINISCENCE_ACTIVITY.categoryId = "word"; }
 
 /* ---------- 9. Output sheet renderer ---------- */
@@ -12590,7 +12590,7 @@ function activitySheetHtml(item, calmMode){
         <div class="art-box">${page.html}</div>
         ${page.talk ? `<p class="art-talk">${esc(page.talk)}</p>` : ""}
         ${sensoryPairing ? `<p class="art-sensory"><b>For staff · Sensory Prompt:</b> ${esc(sensoryPairing)}</p>` : ""}
-        <footer class="art-foot">Cognicopia &bull; Therapeutic Art</footer>
+        <footer class="art-foot">Cognicopia &bull; Cognicopia Coloring</footer>
       </div>
     </section>`;
   }
@@ -12610,7 +12610,11 @@ function activitySheetHtml(item, calmMode){
 /* ---------- 10. Packet queue ----------
    Stored as recipes (activity, settings, seed, index), not as HTML, so it
    is small and rebuilds identically after a reload. */
-const readQueue = () => (store.get("cgb_queue", []) || []).filter(q => q && ACT_INDEX[q.activityId] && Number.isFinite(q.batchSeed) && q.index < q.count);
+const readQueue = () => (store.get("cgb_queue", []) || []).map(q => {
+  if (!q) return q;
+  const legacyIds = { "cognicore-coloring":"cognicopia-coloring", "cognicore-library":"cognicopia-coloring-library" };
+  return legacyIds[q.activityId] ? Object.assign({}, q, { activityId:legacyIds[q.activityId] }) : q;
+}).filter(q => q && ACT_INDEX[q.activityId] && Number.isFinite(q.batchSeed) && q.index < q.count);
 let queue = readQueue();
 function saveQueue(){ store.set("cgb_queue", queue); renderCounts(); if (drawerOpen) renderQueue(); }
 function addBatch(act, cfg, batchSeed, count){
@@ -12657,12 +12661,12 @@ function renderNav(){
   $("#catNav").innerHTML = CATEGORIES.map(c => `<li><a class="sb-link" href="${catHref(c)}" data-cat="${c.id}">
     ${c.icon}<span>${esc(c.name)}</span>${c.route ? `<span class="tag live">${catCount(c)}</span>` : c.activities.length ? `<span class="tag live">${c.activities.length}</span>` : '<span class="tag">Soon</span>'}</a></li>`).join("");
 }
-/* A category with its own screen (Cognicore Coloring: the library) links there. */
+/* A category with its own screen (Cognicopia Coloring: the library) links there. */
 function catHref(c){ return c.route ? "#/" + c.route : "#/category/" + c.id; }
-function catCount(c){ return c.route === "coloring" && window.CogniCore ? CogniCore.stats().designs : c.activities.length; }
+function catCount(c){ return c.route === "coloring" && window.CognicopiaColoring ? CognicopiaColoring.stats().designs : c.activities.length; }
 function highlightNav(name, arg){
   document.querySelectorAll(".sb-link").forEach(a => a.removeAttribute("aria-current"));
-  if (name === "coloring") arg = "cognicore", name = "category";
+  if (name === "coloring") arg = "cognicopia-coloring", name = "category";
   const el = name === "category" ? document.querySelector(`.sb-link[data-cat="${CSS.escape(arg)}"]`)
            : name === "settings" ? document.querySelector('.sb-link[data-route="settings"]')
            : name === "planner" || name === "journal" || name === "roster" || name === "reminiscence" || name === "clinical" || name === "heirloom" || name === "facility" || name === "academy" ? document.querySelector(`.sb-link[data-route="${name}"]`) : null;
@@ -12679,7 +12683,7 @@ function renderCounts(){
 function renderHome(){
   // Interactive generators first, then the activity library, then the
   // reading: the reference modules live in the Resource & Clinical Hub.
-  const cc = CAT_INDEX.cognicore, tool = (href, icon, name, desc, pills) => `
+  const cc = CAT_INDEX.cognicopia-coloring, tool = (href, icon, name, desc, pills) => `
       <a class="card" href="${href}">
         <span class="ic">${icon}</span><b>${esc(name)}</b><span class="desc">${esc(desc)}</span>
         <span class="meta">${pills.map((p, k) => `<span class="pill${k ? "" : " live"}">${esc(p)}</span>`).join("")}</span>
@@ -12695,7 +12699,7 @@ function renderHome(){
     </ol>
     <h2>Interactive generators</h2>
     <div class="card-grid">
-      ${tool(catHref(cc), cc.icon, "CogniCore Coloring", "Adult, dignity-first line art in bold pure black, each picture drawn at three support tiers. Filter, preview with the binding gutter, and print or download a vector PDF.", [`${catCount(cc)} pictures`, "3 tiers", "Bundle packs"])}
+      ${tool(catHref(cc), cc.icon, "Cognicopia Coloring", "Adult, dignity-first line art in bold pure black, each picture drawn at three support tiers. Filter, preview with the binding gutter, and print or download a vector PDF.", [`${catCount(cc)} pictures`, "3 tiers", "Bundle packs"])}
       ${tool("#/planner", ICONS.planner, "12-Month Life Planner", "A personalized year-long memory book for the resident, with a separate, confidential care companion for staff and family. Print-ready for binders and bound books.", ["4 tabs", "Memory book + care companion"])}
       ${tool("#/journal", ICONS.journal, "Life Story Journal", "The Cognitive Life Journal: a life story in four sections, from early roots to daily comfort, personalized from the resident’s own details. Family and care team notes stay in a separate part at the back.", ["4 sections", "Life story + family notes"])}
       ${tool("#/reminiscence", ICONS.journal, "Reminiscence Cards", "Cards about a resident’s own work, hometown region and best-remembered years, each with three conversation starters, a song from their era and something to hold.", ["Era × region × vocation", "Caregiver cues"])}
@@ -12739,10 +12743,10 @@ function syncCalmModeToggle(){
 function renderCategory(id){
   const cat = CAT_INDEX[id];
   if (!cat){ location.replace("#/"); return; }
-  if (cat.route){ location.replace("#/" + cat.route); return; }      // Cognicore Coloring has its own screen
+  if (cat.route){ location.replace("#/" + cat.route); return; }      // Cognicopia Coloring has its own screen
   selectedAct = null;
   if (cat.direct && cat.activities.length === 1){
-    // A one-tool category (Cognicore Coloring): skip the activity cards
+    // A one-tool category (Cognicopia Coloring): skip the activity cards
     // and show its configuration panel straight away.
     view.innerHTML = `
       <p class="eyebrow">Category</p>
@@ -12837,7 +12841,7 @@ function readOpts(act){
 }
 function syncOptVisibility(act){
   const vals = readOpts(act);
-  // Lists that depend on another choice (Cognicore's Picture list follows
+  // Lists that depend on another choice (Cognicopia Coloring's Picture list follows
   // the theme): rebuild them, keeping the choice if it is still offered.
   (act.options || []).forEach(f => {
     if (!f.choicesFn) return;
@@ -12954,7 +12958,7 @@ function openConfig(actId, scroll){
   if (scroll !== false) box.scrollIntoView({ behavior:"smooth", block:"start" });
 }
 
-/* Resident personalization row (Cognicore Coloring): resident name and
+/* Resident personalization row (Cognicopia Coloring): resident name and
    facility header side by side, then the packet date, which sets the season.
    The facility box is an ordinary option (data-opt), so it is saved and
    travels with each queued page like any other setting. */
