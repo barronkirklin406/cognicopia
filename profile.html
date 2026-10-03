@@ -493,6 +493,10 @@ body { padding-left: var(--sb-w); }
 .rap-wizard{border-radius:22px;background:linear-gradient(160deg,rgba(21,34,30,.98),rgba(14,22,20,.98));border:1px solid var(--rp-line2);box-shadow:0 18px 50px rgba(0,0,0,.35)}
 .rap-progress{padding:22px clamp(18px,4vw,34px) 18px;border-bottom:1px solid var(--rp-line)}
 .rap-progress-label{margin:0 0 10px;font-weight:700;font-size:17px}
+.rap-accordion-toggle{margin-top:14px;padding:9px 14px;border:1px solid var(--rp-line2);border-radius:10px;background:rgba(82,183,136,.12);color:var(--rp-text);font:inherit;font-weight:700;cursor:pointer}
+.rap-step-accordion{margin-top:18px;border:1px solid var(--rp-line);border-radius:14px;padding:0 16px 16px}
+.rap-step-accordion>summary{padding:14px 2px;font-weight:700;cursor:pointer}
+.rap-step-accordion[open]>summary{margin-bottom:4px;color:var(--rp-accent-hi)}
 .rap-bar{height:12px;border-radius:999px;background:rgba(216,243,220,.12);overflow:hidden}
 .rap-bar span{display:block;height:100%;width:16.7%;border-radius:999px;background:linear-gradient(90deg,var(--rp-accent),var(--rp-accent-hi));transition:width .25s ease}
 .rap-steps{list-style:none;margin:14px 0 0;padding:0;display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
@@ -839,6 +843,7 @@ body { padding-left: var(--sb-w); }
         <p class="rap-progress-label" id="rapProgressLabel" aria-live="polite">Step 1 of 6: Resident basics</p>
         <div class="rap-bar" role="progressbar" aria-labelledby="rapProgressLabel" aria-valuemin="1" aria-valuemax="6" aria-valuenow="1"><span id="rapBarFill"></span></div>
         <ol class="rap-steps" id="rapSteps" aria-label="Profile steps"></ol>
+        <button type="button" class="rap-accordion-toggle" id="rapAccordionToggle" aria-expanded="false">Expand All Sections</button>
       </div>
 
       <!-- ── STEP 1 ── -->
@@ -1419,6 +1424,37 @@ body { padding-left: var(--sb-w); }
   var sections = Array.prototype.slice.call(form.querySelectorAll(".rap-step"));
   var backBtn = $("rapBack"), nextBtn = $("rapNext"), savedEl = $("rapSaved");
   var current = 1, furthest = 1, saveTimer = null, storageOk = true;
+  var accordions = sections.map(function(section, index){
+    var title = STEPS[index].title;
+    var heading = section.querySelector("h2");
+    var intro = heading && heading.nextElementSibling && heading.nextElementSibling.classList.contains("rap-why") ? heading.nextElementSibling : null;
+    var details = document.createElement("details");
+    details.className = "rap-step-accordion";
+    details.setAttribute("data-profile-section", String(index + 1));
+    var summary = document.createElement("summary");
+    summary.textContent = title;
+    details.appendChild(summary);
+    var content = document.createElement("div");
+    content.className = "rap-step-content";
+    while (intro && intro.nextElementSibling){
+      content.appendChild(intro.nextElementSibling);
+    }
+    details.appendChild(content);
+    section.appendChild(details);
+    return details;
+  });
+  var accordionToggle = $("rapAccordionToggle");
+  function syncAccordionToggle(){
+    var allOpen = accordions.every(function(details){ return details.open; });
+    accordionToggle.textContent = allOpen ? "Collapse All Sections" : "Expand All Sections";
+    accordionToggle.setAttribute("aria-expanded", String(allOpen));
+  }
+  accordionToggle.addEventListener("click", function(){
+    var expand = !accordions.every(function(details){ return details.open; });
+    accordions.forEach(function(details){ details.open = expand; });
+    syncAccordionToggle();
+  });
+  accordions.forEach(function(details){ details.addEventListener("toggle", syncAccordionToggle); });
 
   /* ---------- storage (every call guarded: private windows can throw) ---------- */
   function readDraft(){
@@ -1712,6 +1748,8 @@ body { padding-left: var(--sb-w); }
     current = Math.max(1, Math.min(TOTAL, step));
     furthest = Math.max(furthest, current);
     sections.forEach(function(sec){ sec.hidden = +sec.getAttribute("data-step") !== current; });
+    accordions[current - 1].open = true;
+    syncAccordionToggle();
     $("rapProgressLabel").textContent = "Step " + current + " of " + TOTAL + ": " + STEPS[current - 1].title + (STEPS[current - 1].soon ? " (coming soon)" : "");
     $("rapBarFill").style.width = (current / TOTAL * 100).toFixed(1) + "%";
     form.querySelector('[role="progressbar"]').setAttribute("aria-valuenow", String(current));

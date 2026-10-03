@@ -1123,6 +1123,13 @@ body { padding-left: var(--sb-w); }
 .arb-btn-danger:hover{border-color:#ffb4a2;color:#fff}
 .arb-btn-emergency{background:#ffcc66;border-color:#ffcc66;color:#241500;font-size:18px;font-weight:800}
 .arb-btn-emergency:hover{background:#ffe0a3;border-color:#ffe0a3;color:#241500}
+.arb-btn-guest{background:#d9f0e2;border-color:#4f9b75;color:#143d2b;font-weight:800}
+.arb-guest-presets{display:flex;flex-wrap:wrap;gap:8px;padding:14px;margin:10px 0;border:1px solid rgba(216,243,220,.25);border-radius:12px;background:rgba(8,28,21,.45)}
+.arb-guest-presets button{padding:8px 12px;border:1px solid rgba(216,243,220,.25);border-radius:8px;background:#18372a;color:#f2fff5;font:inherit;cursor:pointer}
+.arb-guest-presets p{flex-basis:100%;margin:0;color:#d8f3dc;font-size:14px}
+.arb-guest-presets[hidden]{display:none}
+.pick.is-tier-disabled{opacity:.42;cursor:not-allowed}
+.arb-sticky-crisis{display:none}
 .arb-tier-toggle{background:#332312;border-color:#d6a64b;color:#ffedcc}
 .arb-tier-toggle[aria-pressed="true"]{background:#765018;border-color:#ffd477;color:#fff1cf}
 .arb-btn[aria-disabled="true"],.arb-btn:disabled{opacity:.45;cursor:not-allowed;pointer-events:none}
@@ -1133,6 +1140,9 @@ body { padding-left: var(--sb-w); }
   .arb{padding:16px}
   .arb-actions{width:100%}
   .arb-btn{flex:1 1 140px}
+}
+@media (max-width:700px){
+  .arb-sticky-crisis{display:block;position:fixed;top:62px;right:10px;z-index:1500;padding:9px 12px;font-size:14px;box-shadow:0 4px 18px rgba(0,0,0,.45)}
 }
 @media print{.arb{display:none!important}}
 </style>
@@ -1171,8 +1181,8 @@ body { padding-left: var(--sb-w); }
 
 /* monthly bundle */
 .arb-bundle{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;margin:14px 0 0;padding:12px 14px;border-radius:14px;background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.45)}
-.arb-btn-bundle{background:#fbbf24;border-color:#fbbf24;color:#231a02}
-.arb-btn-bundle:hover{background:#fcd34d;border-color:#fcd34d;color:#231a02}
+.arb-btn-bundle{background:transparent;border:2px solid #fbbf24;color:#fde68a}
+.arb-btn-bundle:hover{background:rgba(251,191,36,.18);border-color:#fcd34d;color:#fff}
 .arb-bundle-badge{flex:1 1 260px;font-size:14.5px;font-weight:700;color:#fde68a;line-height:1.4}
 .mb-dialog{width:min(660px,calc(100vw - 32px));max-height:calc(100vh - 32px)}
 .mb-dialog form{max-height:calc(100vh - 40px);overflow:auto;margin:0!important}
@@ -1762,6 +1772,18 @@ html.tb-open,html.tb-open body{overflow:hidden !important;overscroll-behavior:no
 
 <!-- ══ ACTIVE RESIDENT BAR: picks a saved Resident Activity Profile to build this packet from ══ -->
 <section class="arb" id="activeResidentBar" aria-labelledby="arbTitle">
+  <div class="arb-guest-tools">
+    <button type="button" class="arb-btn arb-btn-guest" id="guestPresetToggle" aria-expanded="false" aria-controls="guestPresetMenu">⚡ Quick-Print Guest Profile</button>
+    <div class="arb-guest-presets" id="guestPresetMenu" hidden>
+      <p>Choose a general archetype for a temporary packet. No profile is saved and no resident name is used.</p>
+      <button type="button" data-guest-preset="homemaker">Mid-Century Homemaker</button>
+      <button type="button" data-guest-preset="farmer">Midwest Farmer/Worker</button>
+      <button type="button" data-guest-preset="veteran">Post-War Veteran</button>
+      <button type="button" data-guest-preset="educator">Classic Educator</button>
+      <button type="button" data-guest-preset="classic">General 1930s-1950s Classic Era</button>
+      <p id="guestPresetStatus" role="status" aria-live="polite"></p>
+    </div>
+  </div>
   <div class="arb-head">
     <h2 id="arbTitle">Active resident</h2>
     <span class="arb-pill" id="arbPill" role="status" aria-live="polite">No resident selected</span>
@@ -1782,7 +1804,7 @@ html.tb-open,html.tb-open body{overflow:hidden !important;overscroll-behavior:no
   <p class="arb-msg" id="arbMsg">Choose a saved resident to fill in the packet below from their profile, or make a new profile. Profiles stay on this computer.</p>
   <!-- ── Monthly Bundle: every resident in one PDF ── -->
   <div class="arb-bundle">
-    <button type="button" class="arb-btn arb-btn-bundle" id="mbOpen" aria-describedby="mbBadge" aria-haspopup="dialog"><span aria-hidden="true">📅</span> Download Month (All Residents)</button>
+    <button type="button" class="arb-btn arb-btn-bundle" id="mbOpen" aria-describedby="mbBadge" aria-haspopup="dialog"><span aria-hidden="true">👥</span> Download Month (All Residents)</button>
     <span class="arb-bundle-badge" id="mbBadge"><span aria-hidden="true">⚡</span> Enterprise Feature: Plan your entire facility's monthly activities in 1 click.</span>
   </div>
   <dialog class="arb-dialog mb-dialog" id="monthly-bundle-modal" aria-labelledby="mbTitle">
@@ -1850,6 +1872,7 @@ html.tb-open,html.tb-open body{overflow:hidden !important;overscroll-behavior:no
     </div>
   </details>
 </section>
+<button type="button" class="arb-btn arb-btn-emergency arb-sticky-crisis" id="arbSootheSticky" disabled aria-label="Instant Soothe and Print for the active resident">🟡 Instant Soothe / Print</button>
 <!-- Import conflict chooser (used by the backup engine) -->
 <dialog class="arb-dialog" id="arbConflict" aria-labelledby="arbConflictH">
   <form method="dialog">
@@ -7799,11 +7822,52 @@ for(const a of ACTIVITIES){
     '><span><b>'+a.label+'</b><span>'+a.note+'</span></span>';
   actsBox.appendChild(l);
 }
+const advancedLateIds = ["crossword","scramble","odd","maze","clocks","coins"];
+const lateActivityHint = document.createElement("p");
+lateActivityHint.id = "lateActivityHint";
+lateActivityHint.className = "hint";
+lateActivityHint.textContent = "Disabled to prevent cognitive overload for Late-Stage profiles.";
+lateActivityHint.hidden = true;
+actsBox.insertAdjacentElement("afterend", lateActivityHint);
+function filterAdvancedLateActivities(){
+  const ctx = typeof window.getActiveResidentContext === "function" ? window.getActiveResidentContext() : null;
+  const late = !!(ctx && !ctx.isGeneric && ctx.stage === "late");
+  let disabledCount = 0;
+  document.querySelectorAll(".act").forEach(function(input){
+    if (advancedLateIds.indexOf(input.value) === -1) return;
+    const label = input.closest("label");
+    if (late){
+      if (input.dataset.tierDisabled !== "true") input.dataset.tierSelection = String(input.checked);
+      input.checked = false;
+      input.disabled = true;
+      input.dataset.tierDisabled = "true";
+      input.title = "Disabled to prevent cognitive overload for Late-Stage profiles.";
+      input.setAttribute("aria-describedby", "lateActivityHint");
+      if (label){ label.classList.add("is-tier-disabled"); label.title = input.title; }
+      disabledCount++;
+    } else if (input.dataset.tierDisabled === "true"){
+      input.disabled = false;
+      input.checked = input.dataset.tierSelection === "true";
+      delete input.dataset.tierDisabled;
+      delete input.dataset.tierSelection;
+      input.removeAttribute("title");
+      input.removeAttribute("aria-describedby");
+      if (label){ label.classList.remove("is-tier-disabled"); label.removeAttribute("title"); }
+    }
+  });
+  lateActivityHint.hidden = !late || !disabledCount;
+}
+document.addEventListener("cognicopia:activeresident", filterAdvancedLateActivities);
+document.addEventListener("cognicopia:tieroverride", filterAdvancedLateActivities);
+filterAdvancedLateActivities();
 $("allAct").addEventListener("click",()=>{
   document.querySelectorAll(".act").forEach(c=>c.checked=true);
+  filterAdvancedLateActivities();
 });
 $("noneAct").addEventListener("click",()=>{
   document.querySelectorAll(".act").forEach(c=>c.checked=false);
+  document.querySelectorAll(".act[data-tier-disabled='true']").forEach(c=>c.dataset.tierSelection="false");
+  filterAdvancedLateActivities();
 });
 
 // holiday checkboxes
@@ -9660,10 +9724,16 @@ function generateAilmentPDF(ailmentType) {
     if (p) editBtn.removeAttribute("tabindex"); else editBtn.setAttribute("tabindex", "-1");
     delBtn.disabled = !p;
     sootheBtn.disabled = !p;
+    var stickySoothe = document.getElementById("arbSootheSticky");
+    if (stickySoothe) stickySoothe.disabled = !p;
     syncTierOverrideButtons();
     document.dispatchEvent(new CustomEvent("cognicopia:activeresident", { detail:getActiveResidentContext() }));
     return p;
   }
+  var stickySootheBtn = document.getElementById("arbSootheSticky");
+  if (stickySootheBtn) stickySootheBtn.addEventListener("click", function(){
+    if (!stickySootheBtn.disabled) sootheBtn.click();
+  });
 
   /* -------------------------------------------------------------------
      Fill the packet form below from a profile. Only resident-specific
@@ -9725,6 +9795,7 @@ function generateAilmentPDF(ailmentType) {
       ["lyric", "match"].forEach(function(v){ var c = document.querySelector('.act[value="' + v + '"]'); if (c) c.checked = false; });
     }
     if (typeof estimatePages === "function") estimatePages();
+    if (typeof filterAdvancedLateActivities === "function") filterAdvancedLateActivities();
   }
 
   /* -------------------------------------------------------------------
@@ -11757,6 +11828,7 @@ function generateAilmentPDF(ailmentType) {
             '<button type="button" class="tb-mood-choice" data-mood-stage="after" data-mood="neutral" aria-pressed="false" disabled>😐<span>Neutral</span></button>' +
             '<button type="button" class="tb-mood-choice" data-mood-stage="after" data-mood="settled" aria-pressed="false" disabled>🙂<span>Settled</span></button></div>' +
           '<p class="tb-mood-status" id="tbMoodStatus" role="status" aria-live="polite">Choose Mood Before now; record Mood After when the activity ends.</p></section>' +
+        '<button type="button" class="tb-btn" id="tbMoodExport">📊 Export Engagement Audit (PDF)</button>' +
         '<details class="tb-kiosk"><summary>Keep the activity on screen: Guided Access / App Pinning</summary>' +
           '<h3>iPad — Guided Access</h3><ol><li>Open Settings → Accessibility → Guided Access and turn it on; set a passcode.</li>' +
             '<li>Open Cognicopia, then triple-click the top or Home button and tap Start.</li>' +
@@ -11805,15 +11877,63 @@ function generateAilmentPDF(ailmentType) {
       });
     });
   }
+  var MOOD_SCORE = { upset:1, neutral:2, settled:3 };
   function saveMoodRecord(){
     var key = "cognicopia_engagement_" + (S.residentId || "unassigned");
     var rows = JSON.parse(CG_LS.getItem(key) || "[]");
     if (!Array.isArray(rows)) throw new Error("Saved engagement notes have an invalid format.");
-    var entry = { sessionId:S.mood.sessionId, started:S.mood.started, updated:new Date().toISOString(),
-      moodBefore:S.mood.before, moodAfter:S.mood.after, activity:"Tablet Interactive Mode" };
+    var entry = { sessionId:S.mood.sessionId, residentId:S.residentId || null, started:S.mood.started, updated:new Date().toISOString(),
+      activity:"Tablet Interactive Mode", moodScaleVersion:1, moodBefore:S.mood.before,
+      moodBeforeScore:S.mood.before ? MOOD_SCORE[S.mood.before] : null, moodAfter:S.mood.after,
+      moodAfterScore:S.mood.after ? MOOD_SCORE[S.mood.after] : null };
     var index = rows.findIndex(function(row){ return row && row.sessionId === S.mood.sessionId; });
     if (index < 0) rows.push(entry); else rows[index] = entry;
     CG_LS.setItem(key, JSON.stringify(rows.slice(-100)));
+  }
+  function exportMoodAudit(){
+    if (!window.jspdf || !window.jspdf.jsPDF) throw new Error("The built-in PDF library did not load.");
+    var key = "cognicopia_engagement_" + (S.residentId || "unassigned");
+    var rows = JSON.parse(CG_LS.getItem(key) || "[]");
+    if (!Array.isArray(rows)) throw new Error("Saved engagement notes have an invalid format.");
+    rows.forEach(function(row){
+      if (!row || (row.moodBefore && !Object.prototype.hasOwnProperty.call(MOOD_SCORE, row.moodBefore)) ||
+          (row.moodAfter && !Object.prototype.hasOwnProperty.call(MOOD_SCORE, row.moodAfter)))
+        throw new Error("Saved engagement notes contain an invalid mood value.");
+    });
+    rows = rows.filter(function(row){ return row && row.moodBefore && row.moodAfter; });
+    if (!rows.length) throw new Error("There are no completed before-and-after mood records to export yet.");
+    var doc = new window.jspdf.jsPDF({ unit:"pt", format:"letter", orientation:"portrait" });
+    doc.setProperties({ title:"Staff Engagement Audit", subject:"Observed mood ratings before and after activities", creator:"Cognicopia (offline)" });
+    var y = 54, name = S.src.name || "Guest";
+    doc.setFontSize(17); doc.text("Staff Engagement Audit", 42, y); y += 24;
+    doc.setFontSize(11);
+    doc.text("Resident: " + name, 42, y); y += 16;
+    doc.text("Completed sessions: " + rows.length + "   Scale: Upset 1 · Neutral 2 · Settled 3", 42, y); y += 16;
+    var changes = rows.map(function(row){ return MOOD_SCORE[row.moodAfter] - MOOD_SCORE[row.moodBefore]; });
+    var avg = changes.reduce(function(total, n){ return total + n; }, 0) / changes.length;
+    doc.text("Mean observed mood change: " + (avg > 0 ? "+" : "") + avg.toFixed(2) + " points (descriptive; not a causal measure)", 42, y); y += 24;
+    doc.setFont("helvetica", "bold");
+    doc.text("Date / time", 42, y); doc.text("Activity", 155, y); doc.text("Before", 330, y); doc.text("After", 400, y); doc.text("Change", 465, y);
+    y += 8; doc.setLineWidth(.7); doc.line(42, y, 550, y); y += 16;
+    doc.setFont("helvetica", "normal");
+    rows.forEach(function(row){
+      if (y > 740){ doc.addPage(); y = 54; }
+      var date = new Date(row.updated || row.started);
+      var stamp = isNaN(date.getTime()) ? "Unknown date" : date.toLocaleString();
+      var delta = MOOD_SCORE[row.moodAfter] - MOOD_SCORE[row.moodBefore];
+      doc.text(stamp.slice(0, 20), 42, y);
+      doc.text(String(row.activity || "Activity").slice(0, 28), 155, y);
+      doc.text(String(row.moodBefore), 330, y);
+      doc.text(String(row.moodAfter), 400, y);
+      doc.text((delta > 0 ? "+" : "") + delta, 465, y);
+      y += 17;
+    });
+    doc.setFontSize(9);
+    doc.text("Observed ratings only. This report does not establish treatment or medication effects.", 42, 760);
+    var safe = name.replace(/[^A-Za-z0-9]+/g, "_").replace(/^_|_$/g, "") || "Guest";
+    var filename = "Cognicopia_Engagement_Audit_" + safe + ".pdf";
+    doc.save(filename);
+    return { filename:filename, sessions:rows.length };
   }
   function recordMood(stage, mood){
     S.mood[stage] = mood;
@@ -11912,6 +12032,14 @@ function generateAilmentPDF(ailmentType) {
     el("tbBack").addEventListener("click", closeCare);
     root.querySelectorAll("[data-mood-stage]").forEach(function(button){
       button.addEventListener("click", function(){ recordMood(button.getAttribute("data-mood-stage"), button.getAttribute("data-mood")); });
+    });
+    el("tbMoodExport").addEventListener("click", function(){
+      try {
+        var result = exportMoodAudit();
+        el("tbMoodStatus").textContent = "Saved " + result.filename + " (" + result.sessions + " completed sessions).";
+      } catch (error){
+        el("tbMoodStatus").textContent = String(error && error.message || error);
+      }
     });
     el("tbRestart").addEventListener("click", restart);
     el("tbNewWs").addEventListener("click", function(){ closeCare(); newWordSearch(); showTab("ws"); });
@@ -12384,6 +12512,77 @@ function generateAilmentPDF(ailmentType) {
     return { filename:name, pages:pages.length, layout:layout, doc:doc };
   }
   window.exportPacketToPDF = exportPacketToPDF;
+  var guestToggle = document.getElementById("guestPresetToggle");
+  var guestMenu = document.getElementById("guestPresetMenu");
+  var guestStatus = document.getElementById("guestPresetStatus");
+  var guestPresets = {
+    homemaker:{ occupation:"Homemaker", hobbies:["baking", "sewing", "gardening"], decades:["1940s", "1950s"], genres:["Big Band", "Traditional Pop"], artists:["Perry Como"] },
+    farmer:{ occupation:"Farm worker", hobbies:["gardening", "cooking", "animals"], decades:["1930s", "1940s", "1950s"], genres:["Country", "Big Band"], artists:["Hank Williams"] },
+    veteran:{ occupation:"Veteran", hobbies:["gardening", "woodworking", "music"], decades:["1940s", "1950s"], genres:["Big Band", "Traditional Pop"], artists:["Bing Crosby"] },
+    educator:{ occupation:"Teacher", hobbies:["reading", "gardening", "music"], decades:["1940s", "1950s", "1960s"], genres:["Traditional Pop", "Big Band"], artists:["Frank Sinatra"] },
+    classic:{ occupation:"Community member", hobbies:["gardening", "cooking", "music"], decades:["1930s", "1940s", "1950s"], genres:["Big Band", "Traditional Pop"], artists:["Ella Fitzgerald"] }
+  };
+  function guestProfile(key){
+    var preset = guestPresets[key];
+    if (!preset) throw new Error("That guest profile preset is unavailable.");
+    var labels = function(values){ return values.map(function(label){ return { code:label.toLowerCase().replace(/[^a-z0-9]+/g, "-"), label:label }; }); };
+    return {
+      id:"guest-" + key + "-" + Date.now(),
+      tier1_core:{
+        preferredName:"Guest", cognitiveTier:3, unitNumber:"",
+        difficulty:{ level:1, label:"Low support" },
+        occupation:{ code:"other", label:preset.occupation },
+        topHobbies:labels(preset.hobbies),
+        printNeeds:{ readingLevel:{ code:"none", label:"Pictures and read-aloud" }, vision:{ code:"xl", label:"Extra-large" },
+          motorSkills:{ code:"significant", label:"Significant limitation" }, paper:{ code:"letter", label:"Letter" }, ink:{ code:"bw", label:"Black and white" } },
+        topicsToAvoid:{ topics:labels(["war", "death", "medical"]), other:"" }
+      },
+      tier2_enrichment:{
+        birthYear:1945, meaningfulDecades:labels(preset.decades),
+        hometown:{ place:"", environment:{ code:"unknown", label:"" } },
+        skills:{ items:[], other:"" }, activityPreferences:labels(["reminiscence"]),
+        music:{ genres:labels(preset.genres), artists:preset.artists.slice(), favoriteSong:"" },
+        tvMoviesSports:{ tvShows:"", movies:"", sportsTeams:"" },
+        military:{ branch:"", era:{ code:"", label:"" }, talkingAboutIt:{ code:"avoid", label:"Avoid service details" } }
+      },
+      tier3_deep:{ people:[], notes:"Temporary general archetype profile for quick-print use; not saved.", mentionsInNotes:{ artists:[], decades:[] } },
+      meta:{ temporaryGuestPreset:key }
+    };
+  }
+  if (guestToggle && guestMenu){
+    guestToggle.addEventListener("click", function(){
+      guestMenu.hidden = !guestMenu.hidden;
+      guestToggle.setAttribute("aria-expanded", String(!guestMenu.hidden));
+    });
+    guestMenu.querySelectorAll("[data-guest-preset]").forEach(function(button){
+      button.addEventListener("click", function(){
+        var oldProfile = window.activeResident || null;
+        button.disabled = true;
+        guestStatus.textContent = "Building a temporary guest packet…";
+        try {
+          window.activeResident = guestProfile(button.getAttribute("data-guest-preset"));
+          var checks = document.querySelectorAll("#profilePacket input[data-page]");
+          checks.forEach(function(check){
+            var kind = check.getAttribute("data-page");
+            check.checked = kind === "cover" || kind === "cards";
+          });
+          var packet = window.generateProfilePacket();
+          if (!packet) throw new Error("The guest packet could not be generated.");
+          var result = exportPacketToPDF();
+          if (!result) throw new Error("The PDF was not created. Check the packet allowance and try again.");
+          guestStatus.textContent = "Saved " + result.filename + ". This temporary archetype was not saved; the selected resident profile is unchanged.";
+          guestMenu.hidden = true;
+          guestToggle.setAttribute("aria-expanded", "false");
+        } catch (error){
+          guestStatus.textContent = String(error && error.message || error);
+        } finally {
+          window.activeResident = oldProfile;
+          document.dispatchEvent(new CustomEvent("cognicopia:activeresident", { detail:window.getActiveResidentContext() }));
+          button.disabled = false;
+        }
+      });
+    });
+  }
   /* Drawing kit shared with the Monthly Bundle engine (same pages, same rules). */
   window.qpPdf = { PAPER:PAPER, M:M, IN:IN, SLACK:SLACK, safe:safe, Kit:Kit, header:header, instructions:instructions, staffLine:staffLine,
     fitAndPaint:fitAndPaint, pagesFrom:pagesFrom, painters:{ cover:paintCover, wordsearch:paintWordSearch, cards:paintCards, trivia:paintTrivia } };
@@ -12829,6 +13028,9 @@ function generateAilmentPDF(ailmentType) {
       var g = document.getElementById("gate"); if (g) g.scrollIntoView({ behavior:"smooth", block:"center" });
       return;
     }
+    var totalResidents = list.querySelectorAll("input").length;
+    if (totalResidents > 0 && ids.length === totalResidents &&
+        !window.confirm("You are about to export data for ALL residents. Proceed?")) return;
     setup.hidden = true; run.hidden = false;
     var bar = $m("mbBar"), fill = $m("mbFill"), st = $m("mbStatus");
     var setPct = function(pct){ fill.style.width = pct + "%"; bar.setAttribute("aria-valuenow", String(pct)); };
