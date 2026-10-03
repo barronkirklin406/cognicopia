@@ -15,6 +15,7 @@ import { loadCogniCore, ROOT, svgProblems } from "./lib/cognicore.mjs";
 import { validate } from "./lib/json-schema.mjs";
 import { createBitmap, paint, shapesFromRender } from "./lib/raster.mjs";
 import { encodeRGBPNG } from "./lib/png.mjs";
+import { parseSVG, shapesToSVG } from "./lib/svg-raster.mjs";
 
 let pass = 0; const fails = [];
 const ok = (cond, msg) => { if (cond) pass++; else fails.push(msg); };
@@ -49,11 +50,21 @@ ok(P.dignityCheck("Good job, sweetie").some(h => h.kind === "elderspeak"), "the 
 ok(!P.dignityCheck("Tell me about a garden you loved.").length, "an open invitation passes");
 
 /* 3. the prompt engine: the strict templates */
-["ultra-bold black line art", "senior coloring book", "3:4", "vector", "white background", "no shading"].forEach(w => ok(P.POSITIVE.toLowerCase().includes(w), "positive template has: " + w));
-["shading", "grayscale", "childish", "noise", "thin lines", "cartoon faces", "cluttered background"].forEach(w => ok(P.NEGATIVE.includes(w), "negative template has: " + w));
+["professional print-ready", "crisp continuous paths", "mechanically and anatomically coherent proportions", "enclosing every colorable region", "pure black ink on pure white", "0% grayscale shading", "3:4"].forEach(w => ok(P.POSITIVE.toLowerCase().includes(w), "positive template has: " + w));
+["shading", "grayscale", "childish", "noise", "thin or broken lines", "cartoon faces", "cluttered background", "sketchy lines", "stray strokes", "bleeding lines", "open or unclosed contours", "floating line artifacts", "distorted geometry", "overlapping messy strokes", "complex hatch shading"].forEach(w => ok(P.NEGATIVE.includes(w), "negative template has: " + w));
 const j = P.job({ subject:"a 1950s percolator on a stove", category:"nostalgic-heritage", tier:3 });
 ok(/^ai-nostalgic-heritage-[a-z0-9-]+-t3$/.test(j.job_id) && j.prompts.midjourney.includes("--ar 3:4 --no ") && j.prompts["stable-diffusion"].includes("Negative prompt:") && j.prompts["dall-e-3"].includes("Avoid:"), "a job carries every generator's prompt");
+ok(j.positive.includes("recognizable era-appropriate object proportions") && j.expect.minimum_dpi === 300 && j.expect.color_mode === "1-bit black and white", "generation job carries category guidance and print expectations");
+const carPrompt = P.job({ subject:"a vintage sedan", category:"classic-vehicles", tier:1 });
+const plantPrompt = P.job({ subject:"an iris", category:"botanical-garden", tier:1 });
+const latePrompt = P.job({ subject:"a flower", category:"botanical-garden", tier:3 });
+const middlePrompt = P.job({ subject:"a percolator", category:"nostalgic-heritage", tier:2 });
+ok(carPrompt.positive.includes("clean hubs") && plantPrompt.positive.includes("continuous unbroken leaf veins"), "vehicle and botanical prompts add category-specific fidelity guidance");
+ok(carPrompt.positive.includes("Early Tier") && middlePrompt.positive.includes("Middle Tier") && middlePrompt.positive.includes("clear figure-ground separation") && latePrompt.positive.includes("Late Tier") && latePrompt.positive.includes("one iconic focal subject only"), "tier-specific clinical prompt constraints remain explicit");
 ok(!/\b(cute|kids|cartoon)\b/.test(j.positive), "positive prompts never ask for childish art");
+const noisySvg = parseSVG('<svg viewBox="0 0 100 100"><rect x="10" y="10" width="80" height="80"/><path d="M 20 20 L 20 20"/><line x1="500" y1="500" x2="510" y2="510"/></svg>');
+ok(noisySvg.shapes.length === 1 && noisySvg.notes.some(n => n.includes("removed 2")), "SVG ingest removes degenerate and wholly off-canvas paths");
+ok(shapesToSVG([], { w:600, h:800 }).includes('stroke-linejoin="round"'), "SVG writer retains round stroke joins");
 const jobs = fs.readFileSync(path.join(ROOT, "src", "data", "cognicore_prompt_jobs.jsonl"), "utf8").trim().split("\n").map(l => JSON.parse(l));
 ok(jobs.length === designs.length * 3 + P.IDEAS.reduce((n, i) => n + i[3].length, 0), `${jobs.length} prompt jobs`);
 ok(new Set(jobs.map(x => x.job_id)).size === jobs.length, "prompt job ids are unique");

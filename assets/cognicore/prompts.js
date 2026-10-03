@@ -15,13 +15,29 @@
 (function(root){
 "use strict";
 
-var POSITIVE = "Ultra-bold black line art coloring page for adults, {SUBJECT}, thick high-contrast clean black outlines, white background, no shading, no gradients, clean vector art style, simple focal point, 3:4 aspect ratio, dignity-first senior coloring book";
-var NEGATIVE = ["shading", "grayscale", "color", "realistic photo", "thin lines", "cluttered background", "extra limbs", "childish", "cartoon faces", "tiny details", "noise", "texture", "blur"];
+var POSITIVE = "Professional print-ready black-and-white vector line-art coloring page for adults, {SUBJECT}, crisp continuous paths, mechanically and anatomically coherent proportions, clean black contours enclosing every colorable region, intentional interior dividers that meet contours cleanly, consistent line weight, pure black ink on pure white, 0% grayscale shading, no pencil texture, no cross-hatching, no stray or overlapping strokes, no lines bleeding beyond boundaries, uncluttered 3:4 portrait composition, dignity-first adult coloring page";
+var NEGATIVE = [
+  "shading", "grayscale", "color", "gray fills", "gradients", "transparency", "realistic photo",
+  "thin or broken lines", "sketchy lines", "pencil texture", "cross-hatching", "complex hatch shading",
+  "stray strokes", "bleeding lines", "open or unclosed contours", "floating line artifacts",
+  "distorted geometry", "overlapping messy strokes", "lines extending beyond shape boundaries",
+  "cluttered background", "extra limbs", "childish", "cartoon faces", "tiny details", "noise", "blur",
+  "text", "letters", "watermark", "frame"
+];
+var CATEGORY_WORDS = {
+  "classic-vehicles":"mechanically plausible vehicle proportions, aligned wheels with clean hubs, coherent body panels, trim that follows the body without stray overlaps",
+  "botanical-garden":"botanically coherent plant structure, natural leaf attachment, smooth enclosed leaf silhouettes, continuous unbroken leaf veins",
+  "wildlife-nature":"recognizable natural anatomy and balanced proportions, clean enclosed body and wing shapes, no duplicated or disconnected parts",
+  "nostalgic-heritage":"recognizable era-appropriate object proportions and construction, clean joined contours, consistent perspective",
+  "architecture":"structurally coherent architectural perspective, aligned doors and windows, straight continuous roof and wall contours",
+  "home-everyday":"recognizable everyday-object proportions, coherent construction and handles, clean enclosed silhouettes",
+  "bold-easy-patterns":"regular repeating geometry, aligned pattern edges, evenly spaced enclosed regions"
+};
 /* What each tier asks of the picture, in words a generator follows. */
 var TIER_WORDS = {
-  1: { add:"moderate detail, 30 to 60 clearly closed areas to color, uniform bold lines", neg:[] },
-  2: { add:"one clear subject with a few guiding interior lines, 12 to 30 large closed areas, extra-bold uniform lines", neg:["busy background"] },
-  3: { add:"a single large subject filling the page, only 4 to 12 very large closed areas, extra-thick outlines, nothing in the background", neg:["background scenery", "small parts", "fine interior lines", "text"] }
+  1: { add:"Early Tier: high visual interest with accurate structural detail, crisp medium-bold outer contours, defined colorable internal zones, 30 to 60 clearly enclosed colorable areas", neg:[] },
+  2: { add:"Middle Tier: one clear subject, bold outer contours, simplified interior detail, zero background clutter, clear figure-ground separation, balanced negative space, 12 to 30 large enclosed colorable areas", neg:["busy background"] },
+  3: { add:"Late Tier: one iconic focal subject only, ultra-thick high-contrast outlines, ultra-simplified bold geometry, maximum-size coloring targets, only 4 to 12 very large enclosed colorable areas, nothing in the background", neg:["background scenery", "small parts", "fine interior lines", "text"] }
 };
 var GENERATORS = {
   "midjourney":       { label:"Midjourney",             note:"Paste into /imagine. --ar sets the 3:4 page; --no lists what to leave out." },
@@ -30,12 +46,13 @@ var GENERATORS = {
 };
 
 /* Build the prompt for one subject at one tier. */
-function build(subject, tier, generator){
+function build(subject, tier, generator, category){
   tier = TIER_WORDS[tier] ? tier : 2;
   var subj = String(subject || "").replace(/\s+/g, " ").trim().replace(/[.]+$/, "");
-  var positive = POSITIVE.replace("{SUBJECT}", subj) + ", " + TIER_WORDS[tier].add;
+  var categoryRule = CATEGORY_WORDS[category] || "";
+  var positive = POSITIVE.replace("{SUBJECT}", subj) + (categoryRule ? ", " + categoryRule : "") + ", " + TIER_WORDS[tier].add;
   var negative = NEGATIVE.concat(TIER_WORDS[tier].neg);
-  var out = { subject:subj, tier:tier, positive:positive, negative:negative };
+  var out = { subject:subj, category:category || null, tier:tier, positive:positive, negative:negative };
   out.text = format(out, generator || "midjourney");
   return out;
 }
@@ -45,8 +62,8 @@ function format(p, generator){
   return p.positive + " --ar 3:4 --no " + p.negative.join(", ");
 }
 /* All three generators at once, for a design or a free subject. */
-function buildAll(subject, tier){
-  var base = build(subject, tier), out = { subject:base.subject, tier:base.tier, positive:base.positive, negative:base.negative, prompts:{} };
+function buildAll(subject, tier, category){
+  var base = build(subject, tier, null, category), out = { subject:base.subject, category:base.category, tier:base.tier, positive:base.positive, negative:base.negative, prompts:{} };
   Object.keys(GENERATORS).forEach(function(k){ out.prompts[k] = format(base, k); });
   return out;
 }
@@ -216,14 +233,14 @@ function slug(s){
 }
 /* A generation job: one subject, one tier, every generator's prompt. */
 function job(o){
-  var p = buildAll(o.subject, o.tier);
+  var p = buildAll(o.subject, o.tier, o.category);
   return {
     job_id: "ai-" + o.category + "-" + slug(String(o.title || o.subject).replace(/^(the|a|an)\s+/i, "")) + "-t" + p.tier,
     title: o.title || (o.subject.charAt(0).toUpperCase() + o.subject.slice(1)),
     subject: p.subject, category: o.category, tier: p.tier, tags: (o.tags || []).slice(),
     source: o.source || "idea", design_id: o.design_id || null,
     positive: p.positive, negative: p.negative, prompts: p.prompts,
-    expect: { aspect_ratio:"3:4", line_weight:["", "thick", "ultra-bold", "extra-bold-sensory"][p.tier], review:"required before use" },
+    expect: { aspect_ratio:"3:4", minimum_dpi:300, color_mode:"1-bit black and white", line_weight:["", "thick", "ultra-bold", "extra-bold-sensory"][p.tier], review:"required before use" },
     dignity: dignityCheck(o.subject + " " + (o.title || "") + " " + (o.tags || []).join(" "))
   };
 }

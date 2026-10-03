@@ -171,7 +171,50 @@ export function parseSVG(text){
     }
     if (!self) stack.push(node);                 // popped by its closing tag
   }
-  return { viewBox:vb, shapes, notes:[...notes] };
+  const cleaned = sanitizeShapes(shapes, vb);
+  if (cleaned.removed) notes.add(`removed ${cleaned.removed} degenerate or wholly off-canvas vector path(s)`);
+  return { viewBox:vb, shapes:cleaned.shapes, notes:[...notes] };
+}
+
+/* Drop only invalid geometry and shapes that cannot appear on the declared
+   canvas. Small in-bounds details are retained for human quality review. */
+function sanitizeShapes(shapes, viewBox){
+  const [x, y, width, height] = viewBox;
+  const margin = Math.max(width, height) * .02;
+  const bounds = [x - margin, y - margin, x + width + margin, y + height + margin];
+  let removed = 0;
+  const cleaned = [];
+  for (const shape of shapes){
+    const subpaths = shape.subpaths.filter(sp => {
+      if (sp.pts.length < (sp.closed ? 3 : 2) || sp.pts.some(p => !Number.isFinite(p[0]) || !Number.isFinite(p[1]))){
+        removed++;
+        return false;
+      }
+      const distinct = new Set(sp.pts.map(p => `${p[0]},${p[1]}`));
+      if (distinct.size < (sp.closed ? 3 : 2)){
+        removed++;
+        return false;
+      }
+      return true;
+    });
+    if (!subpaths.length){
+      if (!shape.subpaths.length) removed++;
+      continue;
+    }
+    let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+    for (const sp of subpaths) for (const [px, py] of sp.pts){
+      x0 = Math.min(x0, px); y0 = Math.min(y0, py);
+      x1 = Math.max(x1, px); y1 = Math.max(y1, py);
+    }
+    const strokeRadius = shape.stroke && Number.isFinite(shape.strokeWidth) ? Math.max(0, shape.strokeWidth) / 2 : 0;
+    x0 -= strokeRadius; y0 -= strokeRadius; x1 += strokeRadius; y1 += strokeRadius;
+    if (x1 < bounds[0] || y1 < bounds[1] || x0 > bounds[2] || y0 > bounds[3]){
+      removed++;
+      continue;
+    }
+    cleaned.push({ ...shape, subpaths, strokeWidth:Number.isFinite(shape.strokeWidth) ? Math.max(0, shape.strokeWidth) : 0 });
+  }
+  return { shapes:cleaned, removed };
 }
 
 /* The bounding box of parsed shapes (viewBox units), strokes included. */

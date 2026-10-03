@@ -33,6 +33,12 @@ Sources are listed in section 10. Links point to the published abstracts and rec
 | Line caps and joins | Round, so heavy lines never spike at corners |
 | Text in the picture | None. Titles, captions and legends sit outside the art box. |
 
+### Generated artwork and vector cleanup
+
+`assets/cognicore/prompts.js` supplies provider-independent positive and negative constraints, with additional construction guidance for vehicles, botanicals, nature, heritage objects, architecture, household objects and repeating patterns. Tier wording is explicit: Early favors accurate detail and 30–60 enclosed regions; Middle reduces detail and background noise to 12–30 larger regions; Late uses one iconic subject and 4–12 very large regions.
+
+These are prompt instructions, not guarantees of mechanical, botanical or geometric accuracy. Image generation occurs outside the application. Every generated image remains in the human-review queue before use. The ingest pipeline normalizes raster art to pure black and white and 300-DPI 1-bit PNG; eligible SVGs are rewritten as clean black/white paths with round caps and joins. SVG ingest drops degenerate paths and paths wholly outside the declared viewBox, but deliberately retains small in-bounds details rather than risk deleting meaningful subject geometry.
+
 ### Tiers and line weights
 
 Line weight follows the Dynamic Vector Engine's tier table. The unit is the CSS pixel at the printed size: 96 px = 1 in and 1 px = 0.75 pt.
