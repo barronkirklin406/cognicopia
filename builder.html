@@ -112,7 +112,11 @@ button,input,select{font:inherit}
   border-bottom:1px solid var(--line);
 }
 .facility{font-weight:700;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
-.topbar-left{display:flex;align-items:center;gap:16px;min-width:0;flex:1}
+.topbar-left{display:flex;align-items:center;gap:12px;min-width:0;flex:1}
+.topbar-brand{display:flex;align-items:center;gap:9px;min-width:0;flex:none;color:var(--text);font-weight:800;white-space:nowrap}
+.topbar-brand img{width:32px;height:28px;object-fit:contain;border-radius:4px;background:#fff;flex:none}
+.topbar-brand span{overflow:hidden;text-overflow:ellipsis}
+.topbar-actions{display:flex;align-items:center;justify-content:flex-end;gap:10px;min-width:0}
 .btn-home{
   display:inline-flex; align-items:center; gap:8px; flex:none;
   min-height:42px; padding:8px 16px 8px 13px; border-radius:10px;
@@ -127,6 +131,12 @@ button,input,select{font:inherit}
 .btn-home:focus-visible{outline:3px solid var(--accent-hi);outline-offset:2px}
 @media (max-width:560px){ .btn-home{padding:8px 11px} .btn-home span{display:none} }   /* icon only on phones; the aria-label still says Home */
 .facility b{color:var(--text)}
+@media (max-width:1800px){
+  .topbar{flex-wrap:wrap}
+  .topbar-left{flex:1 1 auto}
+  .topbar-actions{flex:1 1 100%;flex-wrap:wrap}
+  .topbar-actions .panic-button,.topbar-actions .calm-mode-toggle{flex:1 1 320px}
+}
 .view{
   width:100%; max-width:1120px; margin:0 auto;
   padding:clamp(20px,4vw,44px) clamp(16px,3vw,36px) 80px; outline:none;
@@ -565,13 +575,15 @@ input:focus,select:focus{border-color:var(--accent)}
 .sb-toggle svg{color:#fff;flex:none}
 .sb-toggle:focus-visible{outline:3px solid #7ad3a4;outline-offset:3px}
 @media (max-width:860px){
-  .topbar{padding-left:164px;flex-wrap:wrap}
+  .topbar{padding-left:164px}
+  .topbar-actions{width:100%}
   .panic-button,.calm-mode-toggle{flex:1 1 100%}
   .sidebar{padding-top:60px}
 }
 @media (max-width:560px){
   .topbar{padding:60px 16px 10px}
   .panic-button,.calm-mode-toggle{flex:1 1 100%;justify-content:center}
+  .topbar-brand{font-size:14px}
 }
 /* Phones: the bar keeps one row beside the Categories button. Home keeps
    its room, the Facility view switch gives way to the sidebar's Facility
@@ -2285,14 +2297,11 @@ textarea:focus{border-color:var(--accent)}
 <!-- ============ MAIN ============ -->
 <div class="app">
   <header class="topbar">
-    <button class="panic-button" type="button" id="panicButton" aria-label="Print the two-page sundowning and rapid de-escalation packet">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 22 21H2L12 3Z"/><path d="M12 9v5"/><circle cx="12" cy="17.5" r=".7" fill="currentColor"/></svg>
-      <span>Sundowning / Rapid De-escalation<small>Print the ready-to-use 2-page soothing packet</small></span>
-    </button>
-    <button class="calm-mode-toggle" type="button" id="calmModeToggle" aria-pressed="false" aria-describedby="calmModeHelp">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12h8"/></svg><span>Late-Stage / Sundowning Calm<small id="calmModeHelp">Off · simplifies queued activity pages; emergency buttons stay fixed</small></span>
-    </button>
     <div class="topbar-left">
+      <div class="topbar-brand" aria-label="Cognicopia Packet Builder">
+        <img src="assets/cognicopia-logo.jpg" alt="" aria-hidden="true">
+        <span>Cognicopia Packet Builder</span>
+      </div>
       <!-- A real link, so Home works with a keyboard, a middle-click, and with
            JavaScript off. Relative href: it also works on an offline copy. -->
       <a class="btn-home" id="homeBtn" href="index.html" aria-label="Home: back to the Cognicopia main page">
@@ -2301,12 +2310,21 @@ textarea:focus{border-color:var(--accent)}
       </a>
       <div class="facility" id="facilityLabel"></div>
     </div>
-    <button class="fp-toggle" type="button" id="fpToggle" role="switch" aria-checked="false" aria-label="Facility view" title="Facility view: wings, resident groups and the month's schedule">
-      <span class="fp-toggle-track" aria-hidden="true"><span class="fp-toggle-thumb"></span></span><span class="fp-toggle-label" aria-hidden="true">Facility view</span>
-    </button>
-    <button class="btn btn-primary btn-packet" type="button" id="openPacket" aria-controls="drawer" aria-expanded="false">
-      <span class="pk-long">Your packet</span><span class="pk-short" aria-hidden="true">Packet</span> <span class="count" id="topCount">0</span>
-    </button>
+    <div class="topbar-actions">
+      <button class="panic-button" type="button" id="panicButton" aria-label="Print the two-page sundowning and rapid de-escalation packet">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 22 21H2L12 3Z"/><path d="M12 9v5"/><circle cx="12" cy="17.5" r=".7" fill="currentColor"/></svg>
+        <span>Sundowning / Rapid De-escalation<small>Print the ready-to-use 2-page soothing packet</small></span>
+      </button>
+      <button class="calm-mode-toggle" type="button" id="calmModeToggle" aria-pressed="false" aria-describedby="calmModeHelp">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12h8"/></svg><span>Late-Stage / Sundowning Calm<small id="calmModeHelp">Off · simplifies queued activity pages; emergency buttons stay fixed</small></span>
+      </button>
+      <button class="fp-toggle" type="button" id="fpToggle" role="switch" aria-checked="false" aria-label="Facility view" title="Facility view: wings, resident groups and the month's schedule">
+        <span class="fp-toggle-track" aria-hidden="true"><span class="fp-toggle-thumb"></span></span><span class="fp-toggle-label" aria-hidden="true">Facility view</span>
+      </button>
+      <button class="btn btn-primary btn-packet" type="button" id="openPacket" aria-controls="drawer" aria-expanded="false">
+        <span class="pk-long">Your packet</span><span class="pk-short" aria-hidden="true">Packet</span> <span class="count" id="topCount">0</span>
+      </button>
+    </div>
   </header>
   <main id="view" class="view" tabindex="-1"></main>
 </div>
