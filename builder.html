@@ -7368,7 +7368,7 @@ const FacilityUI = (function(){
   "use strict";
   const F = window.CogniFacility;
   const MAX_PAGES = 600, CONFIRM_PAGES = 120;
-  const S = { tab:"overview", sub:"calendar", month:"", group:"", cal:"auto", sel:"", week:"", copies:"master", pick:null,
+  const S = { tab:"overview", sub:"calendar", month:"", group:"", cal:"auto", sel:"", pacing:"any", week:"", copies:"master", pick:null,
     moving:null, spaceUp:false, undo:null, ctx:null, filled:false, editing:null };      // month is set on first render (todayISO is defined in a later script)
   let fac = null, root = null, ro = null, wideNow = null, dragId = "", opener = null, raf = 0;
 
@@ -7987,10 +7987,17 @@ const FacilityUI = (function(){
       <section class="fp-recs" id="fpRecs" aria-labelledby="fpRecH" aria-live="polite">${recsHtml(w, g)}</section>`;
   }
   function recsHtml(w, g){
-    const t = F.acuityOf(g.acuity), print = can("print", w.id);
+    const t = F.acuityOf(g.acuity), print = can("print", w.id), recs = F.recommend(t.tier, have(), S.pacing);
+    const pacingLabel = S.pacing === "morning" ? "10:00 AM · Higher engagement"
+      : S.pacing === "late" ? "5:00 PM · Gentle & soothing" : "All times";
     return `<div class="fp-recs-head"><h3 id="fpRecH">Activity generator: calibrated for ${esc(t.label)}</h3>
-        <p class="fp-sub">Each pillar's activities that suit ${esc(g.name)}, best fits first${t.tier === 4 ? ", group programs ahead" : t.tier === 3 ? ", sensory ones ahead" : ""}. They print at the ${esc(level(t))} level; the rest are set aside under each pillar.</p></div>
-      <div class="fp-rec-grid">${F.recommend(t.tier, have()).map(r => `<article class="fp-card fp-pillar p-${r.pillar.id}" aria-labelledby="fpP-${r.pillar.id}">
+        <p class="fp-sub">Each pillar's activities that suit ${esc(g.name)}, best fits first${t.tier === 4 ? ", group programs ahead" : t.tier === 3 ? ", sensory ones ahead" : ""}. They print at the ${esc(level(t))} level; the rest are set aside under each pillar.</p>
+        <div class="fp-field"><label for="fpPacing">Time of day pacing</label><select id="fpPacing">
+          <option value="any" ${S.pacing === "any" ? "selected" : ""}>All times · Tier fit first</option>
+          <option value="morning" ${S.pacing === "morning" ? "selected" : ""}>10:00 AM · Higher engagement</option>
+          <option value="late" ${S.pacing === "late" ? "selected" : ""}>5:00 PM · Gentle &amp; soothing</option>
+        </select><p class="fp-hint">${esc(pacingLabel)} pacing reorders activity suggestions while keeping acuity calibration.</p></div></div>
+      <div class="fp-rec-grid">${recs.map(r => `<article class="fp-card fp-pillar p-${r.pillar.id}" aria-labelledby="fpP-${r.pillar.id}">
         <h4 id="fpP-${r.pillar.id}"><span class="fp-pic">${pIcon(r.pillar.id)}</span>${esc(r.pillar.name)}<span class="fp-count">${r.recommended.length}<span class="sr-only"> recommended</span></span></h4>
         <ol class="fp-rec-list">${r.recommended.map(a => `<li class="fp-rec">
           <div class="fp-rec-top"><b>${esc(actTitle(a))}</b><span class="fp-tags">${a.best.indexOf(t.tier) >= 0 ? `<span class="fp-tag fp-tag-best">Best fit</span>` : ""}${a.group ? `<span class="fp-tag">Group</span>` : ""}${a.sensory ? `<span class="fp-tag">Sensory</span>` : ""}<span class="fp-tag">${a.minutes} min</span></span></div>
@@ -8268,8 +8275,8 @@ const FacilityUI = (function(){
   }
   function openInGenerator(id){
     const w = wing(), g = groupOf(w, S.sel), a = act(id); if (!w || !g || !a) return;
-    const t = F.acuityOf(g.acuity), rec = F.recommend(t.tier, have());
-    S.ctx = { wing:w.name, wingId:w.id, group:g.name, tier:t.tier, label:t.label, difficulty:t.difficulty, open:id,
+    const t = F.acuityOf(g.acuity), rec = F.recommend(t.tier, have(), S.pacing);
+    S.ctx = { wing:w.name, wingId:w.id, group:g.name, tier:t.tier, label:t.label, difficulty:t.difficulty, pacing:S.pacing, open:id,
       recommended:rec.reduce((l, r) => l.concat(r.recommended.map(x => x.id)), []) };
     if (a.categoryId === "cognicore"){ try { CogniLibrary.state().tier = t.supportTier; } catch (e){} location.hash = "#/coloring"; return; }
     location.hash = "#/category/" + a.categoryId;
@@ -8403,6 +8410,14 @@ const FacilityUI = (function(){
     if (t.id === "fpGroup"){ S.group = t.value; return keepFocus(renderCalendar); }
     if (t.name === "fpLayout"){ S.cal = t.value; return keepFocus(renderCalendar); }
     if (t.name === "fpTier") return setTier(+t.value);
+    if (t.id === "fpPacing"){
+      if (!["any", "morning", "late"].includes(t.value)) return;
+      S.pacing = t.value;
+      const recs = root.querySelector("#fpRecs"), g = groupOf(w, S.sel);
+      if (recs && g) keepFocus(() => { recs.innerHTML = recsHtml(w, g); });
+      announce(`Activity suggestions updated for ${t.value === "morning" ? "10 AM higher engagement" : t.value === "late" ? "5 PM gentle pacing" : "all times"}.`);
+      return;
+    }
     if (t.id === "fpGName"){ const v = t.value.trim(); if (!v){ t.value = groupOf(w, S.sel).name; return; } updateGroup(x => Object.assign(x, { name:v.slice(0, 60) }), "Renamed a group", g => `${g.name} to ${v}`, true); return; }
     if (t.id === "fpGSize"){ const n = Math.max(1, Math.min(60, Math.round(+t.value) || 1)); t.value = n; updateGroup(x => Object.assign(x, { size:n }), "Changed a group's size", g => `${g.name}: ${n} residents`, true); return; }
     if (t.id === "fpGNotes"){ updateGroup(x => Object.assign(x, { notes:t.value }), "Changed a group's notes", g => g.name); return; }
@@ -12563,6 +12578,8 @@ function renderCategory(id){
   }
   // Opened from the Facility Portal for a group: what suits its tier comes first, marked.
   const fx = typeof FacilityUI !== "undefined" ? FacilityUI.context() : null;
+  const fxPacing = fx && fx.pacing === "morning" ? "10:00 AM higher-engagement pacing"
+    : fx && fx.pacing === "late" ? "5:00 PM gentle pacing" : "all-times pacing";
   const fxRank = a => { const i = fx ? fx.recommended.indexOf(a.id) : -1; return i < 0 ? 1e3 : i; };
   const acts = fx ? cat.activities.slice().sort((x, y) => fxRank(x) - fxRank(y)) : cat.activities;
   const cards = cat.activities.length
@@ -12575,7 +12592,7 @@ function renderCategory(id){
     <p class="eyebrow">Category</p>
     <h1 class="view-title" tabindex="-1">${esc(cat.name)}</h1>
     <p class="lede">${esc(cat.blurb)}</p>
-    ${fx ? `<div class="fp-ctx" role="status"><p>For <b>${esc(fx.group)}</b> in ${esc(fx.wing)}: <b>${esc(fx.label)}</b>. Activities calibrated for the tier come first and print at the ${esc(DIFFICULTIES[fx.difficulty].label.toLowerCase())} level.</p><a href="#/facility/${encodeURIComponent(fx.wingId)}">Back to the portal</a><button type="button" id="fxClear">Show everything</button></div>` : ""}
+    ${fx ? `<div class="fp-ctx" role="status"><p>For <b>${esc(fx.group)}</b> in ${esc(fx.wing)}: <b>${esc(fx.label)}</b>, with ${esc(fxPacing)}. Calibrated activities come first and print at the ${esc(DIFFICULTIES[fx.difficulty].label.toLowerCase())} level.</p><a href="#/facility/${encodeURIComponent(fx.wingId)}">Back to the portal</a><button type="button" id="fxClear">Show everything</button></div>` : ""}
     <section aria-label="Activities"><div class="card-grid">${cards}</div></section>
     ${cat.activities.length ? "" : '<p class="callout">These activities are being built. Word &amp; Language Activities are ready to use now.</p>'}
     <section class="config" id="config" hidden aria-live="polite"></section>`;

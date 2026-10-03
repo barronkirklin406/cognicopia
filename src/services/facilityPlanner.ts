@@ -109,14 +109,22 @@ export const fitsTier = (id: string, tier: number): boolean => { const f = fitOf
    first, then (Tier 4) group activities or (Tier 3) sensory ones. The
    rest are listed as "not calibrated for this tier", with the tiers
    they suit. Only activities this build has are offered. */
+export type Pacing = "any" | "morning" | "late";
 export interface Recommendation { pillar: PillarDef; recommended: ActivityFit[]; other: ActivityFit[]; }
-export function recommend(tier: Acuity, available?: readonly string[]): Recommendation[] {
+export function recommend(tier: Acuity, available?: readonly string[], pacing: Pacing = "any"): Recommendation[] {
   const have = (a: ActivityFit): boolean => !available || available.indexOf(a.id) >= 0;
-  const score = (a: ActivityFit): number => (a.best.indexOf(tier) >= 0 ? 0 : 10) + (tier === 4 && !a.group ? 5 : 0) + (tier === 3 && !a.sensory ? 5 : 0);
-  return PILLARS.map(p => {
+  const score = (a: ActivityFit): number => {
+    const tierFit = (a.best.indexOf(tier) >= 0 ? 0 : 10) + (tier === 4 && !a.group ? 5 : 0) + (tier === 3 && !a.sensory ? 5 : 0);
+    const loadFit = pacing === "morning"
+      ? (a.sensory ? 6 : 0) + (a.minutes < 15 ? 2 : 0)
+      : pacing === "late" ? (a.sensory ? 0 : 6) + (a.minutes > 20 ? 3 : 0) : 0;
+    return tierFit * 10 + loadFit;
+  };
+  const result = PILLARS.map(p => {
     const all = CATALOG.filter(a => a.pillar === p.id && have(a));
     return { pillar: p, recommended: all.filter(a => a.tiers.indexOf(tier) >= 0).sort((x, y) => score(x) - score(y)), other: all.filter(a => a.tiers.indexOf(tier) < 0) };
   });
+  return pacing === "any" ? result : result.sort((a, b) => PREFER[a.pillar.id][pacing] - PREFER[b.pillar.id][pacing]);
 }
 
 /* ---------- 3. Wings, groups, team ---------- */

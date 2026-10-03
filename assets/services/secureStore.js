@@ -15,6 +15,7 @@ const SEALED_PREFIXES = [
     "cgb_journal",
     "cgb_settings",
     "cognicopia_clinical_",
+    "cognicopia_engagement_",
     "cognicopia_heirloom_",
     "cognicopia_remin_",
     "cognicopia_facility",

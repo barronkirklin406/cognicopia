@@ -1464,6 +1464,21 @@ html.tb-open,html.tb-open body{overflow:hidden !important;overscroll-behavior:no
 .tb-stat small{display:block;margin-top:4px;font-size:15px;color:var(--tb-soft)}
 .tb-care-actions{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .tb-care-actions .tb-btn{font-size:20px !important;min-height:64px;padding:8px 14px}
+.tb-mood{margin:0 0 18px;padding:16px;border:3px solid #d6d3d1;border-radius:16px}
+.tb-mood h3{margin:0 0 6px;font-size:22px}
+.tb-mood > p{margin:0 0 12px;font-size:16px;color:var(--tb-soft)}
+.tb-mood-row{display:grid;grid-template-columns:110px repeat(3,minmax(0,1fr));gap:8px;align-items:center;margin-top:8px}
+.tb-mood-label{font-size:16px;font-weight:700}
+.tb-mood-choice{min-height:64px;padding:6px 8px;border:2px solid #78716c;border-radius:12px;background:#fff;font-size:16px !important;font-weight:700;cursor:pointer}
+.tb-mood-choice span{display:block;font-size:13px}
+.tb-mood-choice[aria-pressed="true"]{border-color:var(--tb-em-dk);background:#d1fae5;box-shadow:inset 0 0 0 2px var(--tb-em-dk)}
+.tb-mood-choice:disabled{opacity:.45;cursor:not-allowed}
+.tb-mood-status{margin:10px 0 0 !important;font-size:15px !important}
+.tb-kiosk{margin:0 0 18px;padding:12px 16px;border:2px solid #a8a29e;border-radius:14px}
+.tb-kiosk summary{font-size:18px;font-weight:700;cursor:pointer}
+.tb-kiosk h3{margin:14px 0 4px;font-size:17px}
+.tb-kiosk ol{margin:4px 0 8px;padding-left:24px;font-size:15px;line-height:1.4}
+.tb-kiosk p{margin:8px 0 0;font-size:14px;color:var(--tb-soft)}
 .tb-btn-exit{background:#7f1d1d;border-color:#7f1d1d;color:#fff !important}
 .tb-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 
@@ -6078,6 +6093,10 @@ function notesPage(D,r,theme){
        ["Took part","Watched","Declined","Restless"]);
   pick("Response (circle one):",
        ["Pleased","Calm","Neutral","Frustrated"]);
+  pick("Mood Before (circle one):",
+       ["Upset","Neutral","Settled"]);
+  pick("Mood After (circle one):",
+       ["Upset","Neutral","Settled"]);
   D.gap(6);
 
   const field=(label,lines)=>{
@@ -11578,6 +11597,25 @@ function generateAilmentPDF(ailmentType) {
         '<div class="tb-stats"><div class="tb-stat"><b id="tbStatWs"></b><span>words found</span><small id="tbTotWs"></small></div>' +
         '<div class="tb-stat"><b id="tbStatTr"></b><span>thoughts finished</span><small id="tbTotTr"></small></div>' +
         '<div class="tb-stat"><b id="tbStatCd"></b><span>prompts explored</span><small id="tbTotCd"></small></div></div>' +
+        '<section class="tb-mood" aria-labelledby="tbMoodH"><h3 id="tbMoodH">Staff engagement notes: mood before and after</h3>' +
+          '<p>Tap one face before the activity and one face after to note the resident’s response.</p>' +
+          '<div class="tb-mood-row" role="group" aria-label="Mood before the activity"><span class="tb-mood-label">Mood Before</span>' +
+            '<button type="button" class="tb-mood-choice" data-mood-stage="before" data-mood="upset" aria-pressed="false">😟<span>Upset</span></button>' +
+            '<button type="button" class="tb-mood-choice" data-mood-stage="before" data-mood="neutral" aria-pressed="false">😐<span>Neutral</span></button>' +
+            '<button type="button" class="tb-mood-choice" data-mood-stage="before" data-mood="settled" aria-pressed="false">🙂<span>Settled</span></button></div>' +
+          '<div class="tb-mood-row" role="group" aria-label="Mood after the activity"><span class="tb-mood-label">Mood After</span>' +
+            '<button type="button" class="tb-mood-choice" data-mood-stage="after" data-mood="upset" aria-pressed="false" disabled>😟<span>Upset</span></button>' +
+            '<button type="button" class="tb-mood-choice" data-mood-stage="after" data-mood="neutral" aria-pressed="false" disabled>😐<span>Neutral</span></button>' +
+            '<button type="button" class="tb-mood-choice" data-mood-stage="after" data-mood="settled" aria-pressed="false" disabled>🙂<span>Settled</span></button></div>' +
+          '<p class="tb-mood-status" id="tbMoodStatus" role="status" aria-live="polite">Choose Mood Before now; record Mood After when the activity ends.</p></section>' +
+        '<details class="tb-kiosk"><summary>Keep the activity on screen: Guided Access / App Pinning</summary>' +
+          '<h3>iPad — Guided Access</h3><ol><li>Open Settings → Accessibility → Guided Access and turn it on; set a passcode.</li>' +
+            '<li>Open Cognicopia, then triple-click the top or Home button and tap Start.</li>' +
+            '<li>To leave, triple-click the button again, authenticate, then tap End.</li></ol>' +
+          '<h3>Android — App Pinning</h3><ol><li>In Settings, search for “App pinning” and turn it on. Enable the option to require a PIN before unpinning.</li>' +
+            '<li>Open Cognicopia, open Recent apps, tap the app icon, then choose Pin.</li>' +
+            '<li>To leave, use the device’s unpin gesture and enter the screen-lock PIN if asked.</li></ol>' +
+          '<p>Menu names and gestures vary by device and Android version. Guided Access and pinning are device settings; Cognicopia cannot turn them on itself.</p></details>' +
         '<div class="tb-care-actions">' +
           '<button type="button" class="tb-btn" id="tbRestart">↺ Restart Activity</button>' +
           '<button type="button" class="tb-btn" id="tbNewWs">New word search</button>' +
@@ -11610,8 +11648,38 @@ function generateAilmentPDF(ailmentType) {
     el("tbTotTr").textContent = S.totals.thoughts + " this session";
     el("tbTotCd").textContent = Object.keys(S.totals.seen).length + " this session";
   }
+  function updateMoodUi(){
+    ["before", "after"].forEach(function(stage){
+      root.querySelectorAll('[data-mood-stage="' + stage + '"]').forEach(function(button){
+        button.setAttribute("aria-pressed", String(S.mood[stage] === button.getAttribute("data-mood")));
+        button.disabled = stage === "after" && !S.mood.before;
+      });
+    });
+  }
+  function saveMoodRecord(){
+    var key = "cognicopia_engagement_" + (S.residentId || "unassigned");
+    var rows = JSON.parse(CG_LS.getItem(key) || "[]");
+    if (!Array.isArray(rows)) throw new Error("Saved engagement notes have an invalid format.");
+    var entry = { sessionId:S.mood.sessionId, started:S.mood.started, updated:new Date().toISOString(),
+      moodBefore:S.mood.before, moodAfter:S.mood.after, activity:"Tablet Interactive Mode" };
+    var index = rows.findIndex(function(row){ return row && row.sessionId === S.mood.sessionId; });
+    if (index < 0) rows.push(entry); else rows[index] = entry;
+    CG_LS.setItem(key, JSON.stringify(rows.slice(-100)));
+  }
+  function recordMood(stage, mood){
+    S.mood[stage] = mood;
+    updateMoodUi();
+    try {
+      saveMoodRecord();
+      el("tbMoodStatus").textContent = S.mood.after
+        ? "Mood before and after saved on this device."
+        : "Mood before saved on this device. Tap Mood After when the activity ends.";
+    } catch (error){
+      el("tbMoodStatus").textContent = "Mood choice kept for this session but could not be saved on this device: " + String(error && error.message || error);
+    }
+  }
   function openCare(){
-    stopSpeaking(); updateStats();
+    stopSpeaking(); updateStats(); updateMoodUi();
     el("tbCare").hidden = false;
     S.root.querySelector(".tb-top").inert = true; S.stage.inert = true;
     el("tbBack").focus();
@@ -11693,6 +11761,9 @@ function generateAilmentPDF(ailmentType) {
     });
     // caregiver panel
     el("tbBack").addEventListener("click", closeCare);
+    root.querySelectorAll("[data-mood-stage]").forEach(function(button){
+      button.addEventListener("click", function(){ recordMood(button.getAttribute("data-mood-stage"), button.getAttribute("data-mood")); });
+    });
     el("tbRestart").addEventListener("click", restart);
     el("tbNewWs").addEventListener("click", function(){ closeCare(); newWordSearch(); showTab("ws"); });
     el("tbSound").addEventListener("click", function(){
@@ -11727,6 +11798,8 @@ function generateAilmentPDF(ailmentType) {
     var triviaPart = part("trivia") || window.qpEngine.generatePersonalizedTrivia(src, rng);
     S = {
       src: src, tab: "ws", started: Date.now(),
+      residentId: id,
+      mood: { sessionId:Date.now().toString(36) + "-" + Math.random().toString(36).slice(2), started:new Date().toISOString(), before:null, after:null },
       totals: { words:0, thoughts:0, seen:{} },          // whole-session counts; restarts never erase them
       trivia: { items: triviaPart.items, idx: 0, picks: {} },
       cards: { prompts: cardsPart.prompts, idx: 0, explored: {} },
@@ -11764,9 +11837,9 @@ function generateAilmentPDF(ailmentType) {
     S.root.remove();
     document.documentElement.classList.remove("tb-open");
     var st = document.getElementById("qpbStatus"); if (st) st.textContent = summary;
-    window.lastTabletSession = { summary: summary, residentId: window.activeResident ? window.activeResident.id : null, ended: new Date().toISOString(),
+    window.lastTabletSession = { summary: summary, residentId: S.residentId, ended: new Date().toISOString(),
       wordsFound: S.totals.words, thoughtsFinished: S.totals.thoughts, promptsExplored: Object.keys(S.totals.seen).length, prompts: S.cards.prompts.length,
-      minutes: Math.round((Date.now() - S.started) / 60000) };
+      minutes: Math.round((Date.now() - S.started) / 60000), moodBefore:S.mood.before, moodAfter:S.mood.after };
     S = null;
     launchBtn.focus();
   }

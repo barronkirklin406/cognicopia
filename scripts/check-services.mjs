@@ -218,6 +218,7 @@ async function secureStoreChecks(){
   ls.setItem("cognicopia_license", "abc");
   const A = page(shared), st = await A.ready();
   ok(st.state === "open" && st.encrypted && !st.passphrase && st.migrated === 2 && st.records === 2, "first open seals the plain copies: " + JSON.stringify(st));
+  ok(A.isSealed("cognicopia_engagement_r1"), "tablet engagement notes are classified as sealed records");
   ok(ls.getItem("cognicopia_resident_r1") === null && ls.getItem("cognicopia_profile_draft") === null && ls.getItem("cognicopia_license") === "abc", "plain copies removed, other names left alone");
   ok(JSON.parse(A.storage.getItem("cognicopia_resident_r1")).tier1_core.preferredName === "Margaret Ellison", "sealed profile reads back");
   const recs = idb.dbs.get("cognicopia-secure").stores.get("records");
@@ -550,6 +551,11 @@ group("facilityPlanner", () => {
   }
   const only = F.recommend(2, ["lyric-sheet", "word-search"]);
   ok(only.filter(r => r.recommended.length).map(r => r.pillar.id).join() === "words,music", "only activities this build has are offered");
+  const morning = F.recommend(2, undefined, "morning"), late = F.recommend(2, undefined, "late");
+  ok(morning.slice(0, 3).map(r => r.pillar.id).join() === "numbers,letters,movement", "10 AM pacing leads with higher-engagement pillars");
+  ok(late.slice(0, 3).map(r => r.pillar.id).join() === "coloring,music,words", "5 PM pacing leads with calming pillars");
+  const numberLoad = pacing => F.recommend(2, undefined, pacing).filter(r => r.pillar.id === "numbers")[0].recommended[0].id;
+  ok(numberLoad("morning") === "number-ladder" && numberLoad("late") === "number-tracing", "pacing reorders activities within a pillar toward the selected cognitive load");
   // normalizing: bounds, a director always there, times cleaned
   const big = F.normalizeFacility({ wings:Array.from({ length:30 }, (_, i) => ({ id:"w" + i, name:"  Wing\u0007 " + i + "x".repeat(90), cadence:{ weekday:["25:00", "05:00", "10:00", "10:00", "09:00", "11:00", "13:00", "15:00", "16:00"], weekend:"no" },
     groups:Array.from({ length:20 }, (_, k) => ({ id:k % 2 ? "same" : "g" + k, name:"Group " + k, acuity:k % 6, size:k * 10 })) })), team:[{ id:"m1", name:"Pat", role:"coordinator", wings:["w1", "nope"] }], active:"ghost" });

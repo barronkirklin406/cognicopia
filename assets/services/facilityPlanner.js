@@ -507,10 +507,14 @@ const fitsTier = (id, tier)=>{
     const f = fitOf(id);
     return !!f && f.tiers.indexOf(tier) >= 0;
 };
-function recommend(tier, available) {
+function recommend(tier, available, pacing = "any") {
     const have = (a)=>!available || available.indexOf(a.id) >= 0;
-    const score = (a)=>(a.best.indexOf(tier) >= 0 ? 0 : 10) + (tier === 4 && !a.group ? 5 : 0) + (tier === 3 && !a.sensory ? 5 : 0);
-    return PILLARS.map((p)=>{
+    const score = (a)=>{
+        const tierFit = (a.best.indexOf(tier) >= 0 ? 0 : 10) + (tier === 4 && !a.group ? 5 : 0) + (tier === 3 && !a.sensory ? 5 : 0);
+        const loadFit = pacing === "morning" ? (a.sensory ? 6 : 0) + (a.minutes < 15 ? 2 : 0) : pacing === "late" ? (a.sensory ? 0 : 6) + (a.minutes > 20 ? 3 : 0) : 0;
+        return tierFit * 10 + loadFit;
+    };
+    const result = PILLARS.map((p)=>{
         const all = CATALOG.filter((a)=>a.pillar === p.id && have(a));
         return {
             pillar: p,
@@ -518,6 +522,7 @@ function recommend(tier, available) {
             other: all.filter((a)=>a.tiers.indexOf(tier) < 0)
         };
     });
+    return pacing === "any" ? result : result.sort((a, b)=>PREFER[a.pillar.id][pacing] - PREFER[b.pillar.id][pacing]);
 }
 const ROLES = {
     director: {

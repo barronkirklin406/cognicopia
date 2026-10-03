@@ -70,6 +70,7 @@ The rest are set aside under **Not calibrated for Tier N**. Every tier has at le
 
 - **Add to packet** adds the activity to the packet queue at the tier's level.
 - **Open in generator** opens the activity's category. There, a banner names the group and tier, and calibrated activities come first, marked **Recommended for Tier N**. The activity opens with the tier's level already chosen. Coloring opens the CogniCore library at the group's support tier. **Show everything** returns the usual order.
+- **Time of day pacing** reorders the suggestions without changing the group's acuity calibration: choose **10:00 AM · Higher engagement** to lead with movement, numbers and letters, or **5:00 PM · Gentle & soothing** to lead with coloring, music and words. Within each pillar, the activity order also favors less sensory/longer tasks in the morning and more sensory/shorter tasks later. **All times** keeps the usual tier-first order.
 
 ## The month calendar
 
