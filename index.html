@@ -1127,6 +1127,8 @@ body { padding-left: var(--sb-w); }
 .arb-btn-primary:hover{background:#7ad3a4;border-color:#7ad3a4;color:#062116}
 .arb-btn-danger{color:#ffcfc4;border-color:rgba(255,180,162,.45)}
 .arb-btn-danger:hover{border-color:#ffb4a2;color:#fff}
+.arb-btn-emergency{background:#ffcc66;border-color:#ffcc66;color:#241500;font-size:18px;font-weight:800}
+.arb-btn-emergency:hover{background:#ffe0a3;border-color:#ffe0a3;color:#241500}
 .arb-btn[aria-disabled="true"],.arb-btn:disabled{opacity:.45;cursor:not-allowed;pointer-events:none}
 .arb-msg{margin:12px 0 0;font-size:15.5px;line-height:1.5;color:#b3c9bf}
 .arb-msg b{color:#fff}
@@ -1773,6 +1775,7 @@ html.tb-open,html.tb-open body{overflow:hidden !important;overscroll-behavior:no
     <div class="arb-actions">
       <a class="arb-btn arb-btn-primary" id="arbNew" href="profile.html?new=1"><span aria-hidden="true">➕</span> New Profile</a>
       <a class="arb-btn" id="arbEdit" href="profile.html" aria-disabled="true"><span aria-hidden="true">✏️</span> Edit Active Profile</a>
+      <button type="button" class="arb-btn arb-btn-emergency" id="arbSoothe" disabled><span aria-hidden="true">🟡</span> Instant Soothe / Print</button>
       <button type="button" class="arb-btn arb-btn-danger" id="arbDelete" disabled><span aria-hidden="true">🗑️</span> Delete Profile</button>
     </div>
   </div>
@@ -9513,7 +9516,7 @@ function generateAilmentPDF(ailmentType) {
   var SCHEMA = "cognicopia.residentProfile";
   var el = function(id){ return document.getElementById(id); };
   var sel = el("arbSelect"), pill = el("arbPill"), msg = el("arbMsg");
-  var editBtn = el("arbEdit"), delBtn = el("arbDelete");
+  var editBtn = el("arbEdit"), delBtn = el("arbDelete"), sootheBtn = el("arbSoothe");
   if (!sel) return;
 
   /** The profile currently driving the packet, or null. */
@@ -9578,6 +9581,7 @@ function generateAilmentPDF(ailmentType) {
     editBtn.setAttribute("aria-disabled", p ? "false" : "true");
     if (p) editBtn.removeAttribute("tabindex"); else editBtn.setAttribute("tabindex", "-1");
     delBtn.disabled = !p;
+    sootheBtn.disabled = !p;
     document.dispatchEvent(new CustomEvent("cognicopia:activeresident", { detail:getActiveResidentContext() }));
     return p;
   }
@@ -9798,6 +9802,10 @@ function generateAilmentPDF(ailmentType) {
   }
   sel.addEventListener("change", function(){ choose(sel.value, false); });
   editBtn.addEventListener("click", function(e){ if (!window.activeResident) e.preventDefault(); });
+  sootheBtn.addEventListener("click", function(){
+    if (!window.activeResident) return;
+    location.href = "builder.html?emergency=" + encodeURIComponent(window.activeResident.id);
+  });
   delBtn.addEventListener("click", function(){
     var p = window.activeResident;
     if (!p) return;

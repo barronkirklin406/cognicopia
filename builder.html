@@ -13026,30 +13026,63 @@ $("#gateClose").addEventListener("click", () => { $("#gate").hidden = true; });
 $("#gateUnlock").addEventListener("click", () => {
   const ok = activateLicense($("#gateCode").value);
   $("#gateMsg").className = ok ? "msg-ok" : "msg-bad";
-  $("#gateMsg").textContent = ok ? "Unlocked. Choose Generate PDF again." : "That code didn't match. Check it against your receipt.";
-  if (ok){ renderAllowance(); setTimeout(() => { $("#gate").hidden = true; }, 900); }
+  $("#gateMsg").textContent = ok ? (pendingEmergencyPrint ? "Unlocked. Printing the emergency activity." : "Unlocked. Choose Generate PDF again.") : "That code didn't match. Check it against your receipt.";
+  if (ok){
+    renderAllowance();
+    if (pendingEmergencyPrint){
+      const pending = pendingEmergencyPrint; pendingEmergencyPrint = null;
+      $("#gate").hidden = true;
+      generatePdf(pending.items, pending.options);
+    } else setTimeout(() => { $("#gate").hidden = true; }, 900);
+  }
 });
 
 /* Generate PDF: fill #printRoot with one .sheet per queued page, mark it
    .pure-bw if High Contrast Mode is on, and open the print window. The
    browser's own "Save as PDF" makes the file, so this works offline. */
-let printTitle = null, printReady = false;
-function generatePdf(){
-  if (!queue.length) return;
-  if (!isLicensed() && genCount() >= FREE_RUNS){ closeDrawer(); openGate(); return; }
-  if (!BookUI.fontsLoaded()){ BookUI.loadFonts().then(generatePdf); return; }   // print in the embedded face, never a fallback
+let printTitle = null, printReady = false, pendingEmergencyPrint = null;
+function generatePdf(items, printOptions){
+  items = Array.isArray(items) ? items : queue;
+  if (!items.length) return;
+  if (!isLicensed() && genCount() >= FREE_RUNS){
+    if (printOptions && printOptions.emergency) pendingEmergencyPrint = { items:items, options:printOptions };
+    closeDrawer(); openGate(); return;
+  }
+  if (!BookUI.fontsLoaded()){
+    BookUI.loadFonts().then(() => generatePdf(items, printOptions)).catch(e => toast("The emergency activity could not be printed because the print font did not load: " + e.message));
+    return;
+  }   // print in the embedded face, never a fallback
   const root = $("#printRoot");
   root.className = isPureBlackAndWhitePDF ? "pure-bw" : "";
-  root.innerHTML = queue.map(sheetHtml).join("");
+  root.innerHTML = items.map(sheetHtml).join("");
   printReady = true;
-  const who = (queue.find(q => q.cfg.residentName) || { cfg:{} }).cfg.residentName;
+  const who = (items.find(q => q.cfg.residentName) || { cfg:{} }).cfg.residentName;
   printTitle = document.title;
-  document.title = "Cognicopia Packet" + (who ? " - " + who : "") + " - " + todayISO();  // default PDF file name
+  document.title = (printOptions && printOptions.title ? printOptions.title : "Cognicopia Packet") + (who ? " - " + who : "") + " - " + todayISO();  // default PDF file name
   window.print();
   if (!isLicensed()) bumpGen();
   renderAllowance();
 }
 $("#generatePdf").addEventListener("click", generatePdf);
+
+function printEmergencyActivity(residentId){
+  const profile = BookUI.savedProfiles().find(p => p.id === residentId);
+  if (!profile){ toast("This resident profile could not be found. Return to the roster and select a saved resident."); return; }
+  const allowed = ["line-tracing", "silhouette-match", "letter-tracing"];
+  const requested = profile.preselectedDeescalationActivity;
+  const activityId = allowed.includes(requested) && ACT_INDEX[requested] ? requested : "line-tracing";
+  const activity = ACT_INDEX[activityId] || LINE_TRACING;
+  const tier = BookUI.needsFor(profile).tier;
+  const difficulty = ["", "advanced", "moderate", "early"][tier] || "moderate";
+  const name = settings.aliasFiles ? cgFileName(profile) : String(profile.tier1_core.preferredName || "").trim();
+  const cfg = { residentName:name, date:todayISO(), difficulty:difficulty, era:settings.era };
+  if (activity.options){
+    cfg.opts = optDefaults(activity);
+    if (activityId === "letter-tracing"){ cfg.opts.letters = "name"; cfg.opts.case = "both"; }
+  }
+  const item = { activityId:activity.id, cfg:cfg, batchSeed:newSeed(), count:1, index:0 };
+  generatePdf([item], { emergency:true, title:"Cognicopia Instant Soothe" });
+}
 
 /* Ctrl+P without Generate PDF: print a short note instead of a blank page. */
 window.addEventListener("beforeprint", () => {
@@ -13112,7 +13145,10 @@ window.addEventListener("afterprint", () => {
     settings = readSettings(); isPureBlackAndWhitePDF = !!settings.pureBW; queue = readQueue();
     storeOpen = true;
     renderFacility(); renderCounts(); renderBwNote();
+    const emergencyResidentId = new URLSearchParams(location.search).get("emergency");
+    if (emergencyResidentId) history.replaceState(null, "", location.pathname + location.hash);
     router();
+    if (emergencyResidentId) printEmergencyActivity(emergencyResidentId);
   });
   // Another tab changed a saved resident or the queue: show it here too.
   window.addEventListener("storage", e => {

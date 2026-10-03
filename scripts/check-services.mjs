@@ -28,6 +28,23 @@ const OUT = path.join(ROOT, "assets", "services");
 fs.readdirSync(OUT).filter(f => f.endsWith(".js")).sort().forEach(f => vm.runInContext(fs.readFileSync(path.join(OUT, f), "utf8"), sandbox, { filename:"assets/services/" + f }));
 const V = sandbox.CogniVectorEngine;
 
+/* Emergency print: profile choice, direct resident action, and isolated page */
+group("emergencyPrint", () => {
+  const profileHtml = fs.readFileSync(path.join(ROOT, "profile.html"), "utf8");
+  const indexHtml = fs.readFileSync(path.join(ROOT, "index.html"), "utf8");
+  const builderHtml = fs.readFileSync(path.join(ROOT, "builder.html"), "utf8");
+  ok(/name="preselectedDeescalationActivity"/.test(profileHtml), "profile form exposes the emergency activity choice");
+  ok(/preselectedDeescalationActivity:\s*text\("rapSootheActivity"\)/.test(profileHtml) &&
+     /preselectedDeescalationActivity:\s*p\.preselectedDeescalationActivity/.test(profileHtml), "profile choice is saved and restored");
+  ok(/id="arbSoothe"[^>]*>[\s\S]*?Instant Soothe \/ Print/.test(indexHtml) &&
+     /builder\.html\?emergency=/.test(indexHtml), "active resident card links directly to emergency print");
+  ok(/requested[\s\S]*?allowed\.includes\(requested\)[\s\S]*?:\s*"line-tracing"/.test(builderHtml), "unknown or missing activity falls back to line tracing");
+  ok(/difficulty = \["", "advanced", "moderate", "early"\]\[tier\]/.test(builderHtml), "support tiers map to matching activity load");
+  ok(/const item = \{ activityId:activity\.id,[\s\S]*?count:1[\s\S]*?generatePdf\(\[item\]/.test(builderHtml), "emergency print contains exactly one page");
+  ok(/function generatePdf\(items, printOptions\)[\s\S]*?items = Array\.isArray\(items\) \? items : queue;[\s\S]*?root\.innerHTML = items\.map\(sheetHtml\)/.test(builderHtml), "emergency pages print separately without changing the saved queue");
+  ok(/CG_STORE_READY\.then\(\(\) => \{[\s\S]*?router\(\);[\s\S]*?printEmergencyActivity\(emergencyResidentId\)/.test(builderHtml), "emergency action waits for secure storage before loading the resident");
+});
+
 /* 3. Dynamic Vector Engine */
 group("vectorEngine", () => {
   ok(V && typeof V.transformSvg === "function", "CogniVectorEngine is not loaded");

@@ -1334,6 +1334,17 @@ body { padding-left: var(--sb-w); }
         <h2 id="rapH6" tabindex="-1">Anything else, then save</h2>
         <p class="rap-why"><b>Why we ask:</b> The small, specific details (a job they were proud of, a pet's name, what frustrates them) are what make an activity feel personal instead of generic.</p>
 
+        <div class="rap-field rap-field-tight">
+          <label for="rapSootheActivity">Activity Director: one-click emergency activity</label>
+          <select id="rapSootheActivity" name="preselectedDeescalationActivity" aria-describedby="rapSootheHint">
+            <option value="">No custom choice — use fine-motor line tracing</option>
+            <option value="line-tracing">Fine-motor line tracing</option>
+            <option value="silhouette-match">Soothing shadow matching</option>
+            <option value="letter-tracing">Trace letters in their name</option>
+          </select>
+          <p class="rap-hint" id="rapSootheHint">The Instant Soothe / Print button uses this activity without asking staff to search or choose. When unset or unavailable, it prints fine-motor line tracing.</p>
+        </div>
+
         <div class="rap-field">
           <label for="rapNotes" class="rap-notes-label">Tell Us Anything Else About This Resident</label>
           <p class="rap-hint rap-hint-top" id="rapNotesHint">What would help us create activities that feel like they were made specifically for this person? (e.g., "Betty was a hairdresser for 45 years, loves 1960s styles, Elvis, and her poodle Princess, but gets frustrated with math.")</p>
@@ -1858,6 +1869,7 @@ body { padding-left: var(--sb-w); }
       schema: SCHEMA,
       version: SCHEMA_VERSION,
       id: residentId,                                   // filled in by saveResidentProfile()
+      preselectedDeescalationActivity: text("rapSootheActivity") || null,
       meta: {
         completedBy: choice("rapBy"),
         source: "Resident Activity Profile (profile.html)"
@@ -1962,6 +1974,7 @@ body { padding-left: var(--sb-w); }
       difficulty: String((t1.difficulty || {}).level || 3),
       paper: code(pn.paper) || "letter", ink: code(pn.ink) || "bw",
       notes: t3.notes || "",
+      preselectedDeescalationActivity: p.preselectedDeescalationActivity || "",
       people: (t3.people || []).map(function(x){ return { name:x.name, rel:code(x.relationship), passed:!!x.passedAway }; })
     };
   }
@@ -2070,6 +2083,10 @@ body { padding-left: var(--sb-w); }
       ["Decades", t2.meaningfulDecades.join(", ")],
       ["Print", [t1.printNeeds.vision && t1.printNeeds.vision.label, t1.printNeeds.paper && t1.printNeeds.paper.label, t1.printNeeds.ink && t1.printNeeds.ink.label].filter(Boolean).join(" · ")],
       ["Difficulty", t1.difficulty.label],
+      ["One-click emergency activity", (function(){
+        var id = p.preselectedDeescalationActivity;
+        return id === "silhouette-match" ? "Soothing shadow matching" : id === "letter-tracing" ? "Trace letters in their name" : id === "line-tracing" ? "Fine-motor line tracing" : "Default: fine-motor line tracing";
+      })()],
       ["Avoid", [labels(t1.topicsToAvoid.topics), t1.topicsToAvoid.other].filter(Boolean).join(", ")],
       ["People and pets", t3.people.map(function(x){ return x.name + (x.passedAway ? " (passed away)" : ""); }).join(", ")]
     ];

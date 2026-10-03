@@ -6,7 +6,7 @@ Cognicopia has no server, account or cloud copy. Everything staff type stays in 
 
 | Kept | Storage name | How |
 |---|---|---|
-| Resident profiles | `cognicopia_resident_<id>` | Encrypted |
+| Resident profiles (including the optional one-click emergency activity choice) | `cognicopia_resident_<id>` | Encrypted |
 | The profile form in progress | `cognicopia_profile_draft` | Encrypted |
 | The packet form in progress | `cognicopia_packet_draft` | Encrypted |
 | The Packet Builder's queue, planner and journal forms, and settings (which can hold a default resident name) | `cgb_queue`, `cgb_planner`, `cgb_journal`, `cgb_settings` | Encrypted |
@@ -43,6 +43,10 @@ With aliases on (Settings › Privacy & encryption), residents appear as "Reside
 3. a short code made from the resident's ID.
 
 A resident's own pages keep their name.
+
+## One-click emergency activity
+
+Staff editing a resident profile can choose a prepared activity for the **Instant Soothe / Print** button on the active-resident card. The choice is stored with that resident's encrypted profile. The button opens the Packet Builder directly for that resident and prints one page through the normal print dialog without adding to or replacing the saved packet queue. If the choice is empty, no longer available, or invalid, it uses fine-motor line tracing. Printing still follows the Packet Builder's normal access and browser-print rules.
 
 ## Station handoffs (`.cognicopia`)
 
