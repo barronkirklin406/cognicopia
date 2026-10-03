@@ -1129,6 +1129,8 @@ body { padding-left: var(--sb-w); }
 .arb-btn-danger:hover{border-color:#ffb4a2;color:#fff}
 .arb-btn-emergency{background:#ffcc66;border-color:#ffcc66;color:#241500;font-size:18px;font-weight:800}
 .arb-btn-emergency:hover{background:#ffe0a3;border-color:#ffe0a3;color:#241500}
+.arb-tier-toggle{background:#332312;border-color:#d6a64b;color:#ffedcc}
+.arb-tier-toggle[aria-pressed="true"]{background:#765018;border-color:#ffd477;color:#fff1cf}
 .arb-btn[aria-disabled="true"],.arb-btn:disabled{opacity:.45;cursor:not-allowed;pointer-events:none}
 .arb-msg{margin:12px 0 0;font-size:15.5px;line-height:1.5;color:#b3c9bf}
 .arb-msg b{color:#fff}
@@ -1234,6 +1236,9 @@ body { padding-left: var(--sb-w); }
 .qpb-head h2{margin:0;font-size:21px;color:#fff;font-family:inherit}
 .qpb-for{padding:5px 14px;border-radius:999px;font-size:15px;font-weight:700;background:rgba(216,243,220,.1);color:#b3c9bf;border:1px solid rgba(216,243,220,.25)}
 .qpb-for.is-on{background:#52b788;color:#062116;border-color:#52b788}
+.qpb-head [data-tier-override]{flex:0 1 auto}
+.qpb-head [data-tier-override]{background:#332312;border-color:#d6a64b;color:#ffedcc}
+.qpb-head [data-tier-override][aria-pressed="true"]{background:#765018;border-color:#ffd477;color:#fff1cf}
 .qpb-lede{margin:0 0 14px;font-size:15.5px;line-height:1.5;color:#b3c9bf}
 .qpb-picks{margin:0 0 14px;padding:0;border:0;display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .qpb-picks legend{margin:0 0 8px;padding:0;font-weight:700;font-size:16px;color:#fff}
@@ -1766,6 +1771,7 @@ html.tb-open,html.tb-open body{overflow:hidden !important;overscroll-behavior:no
   <div class="arb-head">
     <h2 id="arbTitle">Active resident</h2>
     <span class="arb-pill" id="arbPill" role="status" aria-live="polite">No resident selected</span>
+    <button type="button" class="arb-btn arb-tier-toggle" data-tier-override aria-pressed="false" disabled>☀ Good Day · Usual tier</button>
   </div>
   <div class="arb-row">
     <label class="arb-sr" for="arbSelect">Select active resident</label>
@@ -1878,6 +1884,7 @@ html.tb-open,html.tb-open body{overflow:hidden !important;overscroll-behavior:no
   <div class="qpb-head">
     <h2 id="qpbTitle">Profile Packet Builder</h2>
     <span class="qpb-for" id="qpbFor">No resident selected</span>
+    <button type="button" class="qpb-btn arb-tier-toggle" data-tier-override aria-pressed="false" disabled>☀ Good Day · Usual tier</button>
   </div>
   <p class="qpb-lede">Quick printable pages made from the active resident's profile: their work, hobbies, people and favorite years, in large high-contrast print. Topics to avoid are always left out.</p>
   <fieldset class="qpb-picks">
@@ -8119,11 +8126,13 @@ $("f").addEventListener("submit", e=>{
   }
 
   try{
+  const selectedStage=document.querySelector('input[name=stage]:checked');
+  const stage=selectedStage?selectedStage.value:"early";
   const r={
     first, last:$("last").value.trim(),
     goes:$("goes").value.trim()||first,
     born, pronoun:$("pronoun").value,
-    stage:document.querySelector('input[name=stage]:checked').value,
+    stage:window.getTemporaryActivityStage?window.getTemporaryActivityStage(stage):stage,
     town:$("town").value.trim(), state:$("state").value.trim(),
     job:$("job").value.trim(), spouse:$("spouse").value.trim(),
     kids:splitList($("kids").value), pets:splitList($("pets").value),
@@ -9517,6 +9526,7 @@ function generateAilmentPDF(ailmentType) {
   var el = function(id){ return document.getElementById(id); };
   var sel = el("arbSelect"), pill = el("arbPill"), msg = el("arbMsg");
   var editBtn = el("arbEdit"), delBtn = el("arbDelete"), sootheBtn = el("arbSoothe");
+  var tierOverrideResidentId = null, tierOverrideEnabled = false;
   if (!sel) return;
 
   /** The profile currently driving the packet, or null. */
@@ -9533,6 +9543,43 @@ function generateAilmentPDF(ailmentType) {
     return isNaN(d) ? "" : d.toLocaleDateString([], { month:"short", day:"numeric", year:"numeric" });
   }
   function shortName(p){ return (p && p.tier1_core && p.tier1_core.preferredName) || "Unnamed resident"; }
+  function syncTierOverrideButtons(){
+    var residentId = window.activeResident ? String(window.activeResident.id) : null;
+    var enabled = !!(residentId && tierOverrideEnabled && tierOverrideResidentId === residentId);
+    Array.prototype.forEach.call(document.querySelectorAll("[data-tier-override]"), function(button){
+      button.disabled = !residentId;
+      button.setAttribute("aria-pressed", String(enabled));
+      button.textContent = enabled ? "🌧 Bad Day · One step easier" : "☀ Good Day · Usual tier";
+      button.title = enabled
+        ? "Temporary easier activities are active; click to restore the resident's usual tier"
+        : "Use the resident's usual tier, or click for a temporary one-tier step-down";
+    });
+  }
+  function setTemporaryTierOverride(enabled){
+    var residentId = window.activeResident ? String(window.activeResident.id) : null;
+    if (!residentId) return false;
+    tierOverrideResidentId = residentId;
+    tierOverrideEnabled = !!enabled;
+    syncTierOverrideButtons();
+    document.dispatchEvent(new CustomEvent("cognicopia:tieroverride", {
+      detail:{ residentId:residentId, enabled:tierOverrideEnabled }
+    }));
+    return true;
+  }
+  document.addEventListener("click", function(event){
+    if (event.target.closest && event.target.closest("[data-tier-override]")){
+      setTemporaryTierOverride(!tierOverrideEnabled || tierOverrideResidentId !== String(window.activeResident && window.activeResident.id));
+    }
+  });
+  window.setTemporaryTierOverride = setTemporaryTierOverride;
+  window.getTemporaryTierOverride = function(){
+    return !!(window.activeResident && tierOverrideEnabled &&
+      tierOverrideResidentId === String(window.activeResident.id));
+  };
+  window.getTemporaryActivityStage = function(stage){
+    if (!window.getTemporaryTierOverride()) return stage;
+    return stage === "early" ? "middle" : "late";
+  };
 
   /* -------------------------------------------------------------------
      loadSavedProfilesList()
@@ -9572,6 +9619,11 @@ function generateAilmentPDF(ailmentType) {
      ------------------------------------------------------------------- */
   function setActiveResident(profileId){
     var p = profileId ? readProfile(profileId) : null;
+    var nextId = p ? String(p.id) : null;
+    if (nextId !== (window.activeResident ? String(window.activeResident.id) : null)){
+      tierOverrideResidentId = null;
+      tierOverrideEnabled = false;
+    }
     window.activeResident = p;
     lsSetSafe(ACTIVE_KEY, p ? p.id : null);
     sel.value = p ? p.id : "";
@@ -9582,6 +9634,7 @@ function generateAilmentPDF(ailmentType) {
     if (p) editBtn.removeAttribute("tabindex"); else editBtn.setAttribute("tabindex", "-1");
     delBtn.disabled = !p;
     sootheBtn.disabled = !p;
+    syncTierOverrideButtons();
     document.dispatchEvent(new CustomEvent("cognicopia:activeresident", { detail:getActiveResidentContext() }));
     return p;
   }
@@ -9715,7 +9768,14 @@ function generateAilmentPDF(ailmentType) {
     // without one gets it from the difficulty (1-2 late, 3 middle, 4-5 early), or
     // late when they cannot read independently.
     var needs = residentNeeds(p);
-    var stage = needs.cognitiveTier === 3 ? "late" : needs.cognitiveTier === 2 ? "middle" : "early";
+    var tier = needs.cognitiveTier;
+    var useTemporaryStepDown = !profile && p === window.activeResident &&
+      tierOverrideEnabled && tierOverrideResidentId === String(p.id);
+    if (useTemporaryStepDown) tier = Math.min(3, tier + 1);
+    var stage = tier === 3 ? "late" : tier === 2 ? "middle" : "early";
+    if (useTemporaryStepDown) lvl = Math.max(1, lvl - 1);
+    var difficultyLabel = (t1.difficulty && t1.difficulty.label) || "Moderate";
+    if (useTemporaryStepDown) difficultyLabel = "Step-down from " + difficultyLabel;
     var vision = pn.vision ? pn.vision.code : "", ink = pn.ink ? pn.ink.code : "bw";
     var mil = t2.military || {}, milBranch = mil.branch && ["none", "unknown"].indexOf(mil.branch.code) === -1 ? mil.branch.label : "";
     var avoidTopics = codes((t1.topicsToAvoid || {}).topics);
@@ -9733,10 +9793,10 @@ function generateAilmentPDF(ailmentType) {
       // Tier 1: packet template
       name: t1.preferredName || "",
       unitNumber: needs.unitNumber,
-      tier: needs.cognitiveTier,
+      tier: tier,
       visualNeeds: needs.visualNeeds,
       stage: stage,
-      difficulty: { level: lvl, label: (t1.difficulty && t1.difficulty.label) || "Moderate" },
+      difficulty: { level: lvl, label: difficultyLabel },
       print: { vision: vision, readingLevel: reading, motorSkills: pn.motorSkills ? pn.motorSkills.code : "",
                paper: pn.paper ? pn.paper.code : "letter", ink: ink,
                highContrast: ink !== "gray" || vision === "xl" || needs.visualNeeds.contrastMode === "high_contrast" },
@@ -11059,7 +11119,10 @@ function generateAilmentPDF(ailmentType) {
   }
   function forLabel(){
     var ctx = typeof window.getActiveResidentContext === "function" ? window.getActiveResidentContext() : null;
-    el("qpbFor").textContent = ctx && !ctx.isGeneric ? "For: " + ctx.name : "No resident selected";
+    var temporary = typeof window.getTemporaryTierOverride === "function" && window.getTemporaryTierOverride();
+    el("qpbFor").textContent = ctx && !ctx.isGeneric
+      ? "For: " + ctx.name + (temporary ? " · Bad Day: " + ctx.stage + " (temporary)" : "")
+      : "No resident selected";
     el("qpbFor").classList.toggle("is-on", !!(ctx && !ctx.isGeneric));
   }
 
@@ -11212,6 +11275,13 @@ function generateAilmentPDF(ailmentType) {
       status.textContent = "The active resident changed. Press Generate Custom Packet to build pages for them.";
     }
   });
+  document.addEventListener("cognicopia:tieroverride", function(){
+    forLabel();
+    if (current){
+      current = null; preview.hidden = true; preview.innerHTML = ""; printBtn.disabled = true;
+      status.textContent = "The temporary tier changed. Press Generate Custom Packet to rebuild pages with the updated activity level.";
+    }
+  });
   forLabel();
 
   window.generateWordSearch = function(){ return generateWordSearch(packetSource(), makeRng(newSeed())); };
@@ -11267,11 +11337,55 @@ function generateAilmentPDF(ailmentType) {
 
   var S = null;              // the running session
   var fallbackSessions = {};
-  var audioCtx = null, soundOn = true, wakeLock = null;
+  var audioCtx = null, soundOn = true, wakeLock = null, wakeLockRequest = null;
 
   function el(id){ return document.getElementById(id); }
   function esc(s){ return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
   function reducedMotion(){ return window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches; }
+  function announceWakeLock(message){
+    var live = el("tbLive");
+    if (live) live.textContent = message;
+  }
+  function releaseWakeLock(){
+    var lock = wakeLock;
+    wakeLock = null;
+    if (lock && !lock.released) lock.release().catch(function(){});
+  }
+  function requestWakeLock(){
+    if (!S || document.visibilityState !== "visible") return;
+    if (!navigator.wakeLock || typeof navigator.wakeLock.request !== "function"){
+      announceWakeLock("Screen wake lock is unavailable. Keep the tablet powered during this activity.");
+      return;
+    }
+    if ((wakeLock && !wakeLock.released) || wakeLockRequest) return;
+    var request;
+    try { request = navigator.wakeLock.request("screen"); }
+    catch (e){
+      announceWakeLock("The screen could not be kept awake. Keep the tablet powered during this activity.");
+      return;
+    }
+    wakeLockRequest = request;
+    request.then(function(lock){
+      if (wakeLockRequest === request) wakeLockRequest = null;
+      if (!S || document.visibilityState !== "visible"){
+        lock.release().catch(function(){});
+        return;
+      }
+      wakeLock = lock;
+      lock.addEventListener("release", function(){
+        if (wakeLock === lock) wakeLock = null;
+      }, { once:true });
+    }).catch(function(){
+      if (wakeLockRequest === request) wakeLockRequest = null;
+      if (S) announceWakeLock("The screen could not be kept awake. Keep the tablet powered during this activity.");
+    });
+  }
+  function onVisibilityChange(){
+    if (!S) return;
+    if (document.visibilityState === "visible") requestWakeLock();
+    else releaseWakeLock();
+  }
+  function onPageHide(){ releaseWakeLock(); }
 
   /* ---------------- sound: a soft two-note chime (Web Audio, offline) ---------------- */
   function audioUnlock(){
@@ -11572,6 +11686,7 @@ function generateAilmentPDF(ailmentType) {
     root.innerHTML =
       '<div class="tb-top">' +
         '<p class="tb-hello"' + (S.src.name ? ' title="' + esc(S.src.name) + '"' : "") + ">" + (S.src.name ? 'Hello, <b class="tb-name">' + esc(S.src.name) + "</b>!" : "Welcome!") + "</p>" +
+        '<button type="button" class="cg-night-shift-toggle tb-night-toggle" aria-label="Toggle warm-amber Night Shift theme">🌙 Night Shift: Off</button>' +
         '<div class="tb-tabs" role="tablist" aria-label="Activities">' +
           '<button type="button" class="tb-tab" role="tab" data-tab="ws" id="tbTabWs" aria-controls="tbPanelWs">Word Search</button>' +
           '<button type="button" class="tb-tab" role="tab" data-tab="trivia" id="tbTabTrivia" aria-controls="tbPanelTrivia">Finish the Thought</button>' +
@@ -11782,6 +11897,8 @@ function generateAilmentPDF(ailmentType) {
     el("tbCare").addEventListener("keydown", function(e){ if (e.key === "Escape") closeCare(); });
     window.addEventListener("resize", layoutGrid);
     document.addEventListener("fullscreenchange", layoutGrid);
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    window.addEventListener("pagehide", onPageHide);
   }
 
   /* ---------------- launch and exit ---------------- */
@@ -11818,6 +11935,7 @@ function generateAilmentPDF(ailmentType) {
     S.inerted = Array.prototype.filter.call(document.body.children, function(n){ return !n.inert && n.tagName !== "SCRIPT"; });
     S.inerted.forEach(function(n){ n.inert = true; });
     document.body.appendChild(S.root);
+    if (window.cognicopiaNightShiftSync) window.cognicopiaNightShiftSync();
     document.documentElement.classList.add("tb-open");
     S.stage = el("tbStage");
     wire();
@@ -11825,7 +11943,7 @@ function generateAilmentPDF(ailmentType) {
     showTab("ws");
     el("tbTabWs").focus();
     try { var fs = S.root.requestFullscreen || S.root.webkitRequestFullscreen; if (fs) { var r = fs.call(S.root); if (r && r.catch) r.catch(function(){}); } } catch (e){}
-    try { if (navigator.wakeLock) navigator.wakeLock.request("screen").then(function(w){ wakeLock = w; }).catch(function(){}); } catch (e){}
+    requestWakeLock();
     setTimeout(layoutGrid, 60);
   }
 
@@ -11837,8 +11955,9 @@ function generateAilmentPDF(ailmentType) {
       S.totals.thoughts + " thought" + (S.totals.thoughts === 1 ? "" : "s") + " finished, " +
       Object.keys(S.totals.seen).length + " of " + S.cards.prompts.length + " conversation prompts explored.";
     try { if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(function(){}); } catch (e){}
-    try { if (wakeLock) wakeLock.release(); } catch (e){}
-    wakeLock = null;
+    document.removeEventListener("visibilitychange", onVisibilityChange);
+    window.removeEventListener("pagehide", onPageHide);
+    releaseWakeLock();
     window.removeEventListener("resize", layoutGrid);
     document.removeEventListener("fullscreenchange", layoutGrid);
     S.inerted.forEach(function(n){ n.inert = false; });
@@ -12720,5 +12839,6 @@ function generateAilmentPDF(ailmentType) {
 if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol))
   window.addEventListener("load", function(){ navigator.serviceWorker.register("sw.js").catch(function(){}); });
 </script>
+<script src="assets/services/nightShift.js"></script>
 </body>
 </html>
