@@ -39,10 +39,22 @@ group("emergencyPrint", () => {
   ok(/id="arbSoothe"[^>]*>[\s\S]*?Instant Soothe \/ Print/.test(indexHtml) &&
      /builder\.html\?emergency=/.test(indexHtml), "active resident card links directly to emergency print");
   ok(/requested[\s\S]*?allowed\.includes\(requested\)[\s\S]*?:\s*"line-tracing"/.test(builderHtml), "unknown or missing activity falls back to line tracing");
-  ok(/difficulty = \["", "advanced", "moderate", "early"\]\[tier\]/.test(builderHtml), "support tiers map to matching activity load");
+  ok(/difficulty = \["", "early", "moderate", "advanced"\]\[tier\]/.test(builderHtml), "support tiers map to matching activity load");
   ok(/const item = \{ activityId:activity\.id,[\s\S]*?count:1[\s\S]*?generatePdf\(\[item\]/.test(builderHtml), "emergency print contains exactly one page");
   ok(/function generatePdf\(items, printOptions\)[\s\S]*?items = Array\.isArray\(items\) \? items : queue;[\s\S]*?root\.innerHTML = items\.map\(sheetHtml\)/.test(builderHtml), "emergency pages print separately without changing the saved queue");
   ok(/CG_STORE_READY\.then\(\(\) => \{[\s\S]*?router\(\);[\s\S]*?printEmergencyActivity\(emergencyResidentId\)/.test(builderHtml), "emergency action waits for secure storage before loading the resident");
+});
+
+group("panicPacket", () => {
+  const builderHtml = fs.readFileSync(path.join(ROOT, "builder.html"), "utf8");
+  ok(/id="panicButton"[^>]*>[\s\S]*?Sundowning \/ Rapid De-escalation/.test(builderHtml), "panic button is prominent in the Packet Builder top bar");
+  ok(/const PANIC_PACKET = \[[\s\S]*?activityId:"line-tracing", cfg:\{ difficulty:"advanced"[\s\S]*?activityId:"lyric-sheet"[\s\S]*?difficulty:"advanced"[\s\S]*?emergencySongTitle:"Take Me Out to the Ball Game"/.test(builderHtml), "panic payload is fixed to late-tier tracing and a known public-domain sing-along");
+  ok(/function printPanicPacket\(\)\s*\{\s*generatePdf\(buildPanicPacket\(\), \{ emergency:true/.test(builderHtml), "panic print goes straight to the isolated PDF pipeline");
+  ok(/emergencySongTitle[\s\S]*?this\.pool\(cfg\)\.find\(s => s\.title === cfg\.emergencySongTitle\)/.test(builderHtml), "panic lyric page deterministically uses the selected public-domain song");
+  ok(/function tactilePairingFor\(activity, page, cfg\)[\s\S]*?page\.sensoryPairing[\s\S]*?activity\.sensoryPairing/.test(builderHtml), "activity and generated-page models accept explicit sensory pairings");
+  ok(/cinnamon or vanilla extract[\s\S]*?Check allergies, scent sensitivities and facility guidance first/.test(builderHtml), "baking-themed pairing includes a scent prompt and safety check");
+  ok(/item\.cfg\.difficulty === "advanced" \? tactilePairingFor/.test(builderHtml) && /For staff · Sensory Prompt:/.test(builderHtml), "only late-tier sheets append the labeled sensory prompt");
+  ok(/PANIC_PACKET\.map\(page => \(\{[\s\S]*?batchSeed:newSeed\(\)[\s\S]*?count:1/.test(builderHtml), "panic print creates fresh, one-copy recipes without queue writes");
 });
 
 /* 3. Dynamic Vector Engine */
