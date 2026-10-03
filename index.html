@@ -998,12 +998,37 @@ body { padding-left: var(--sb-w); }
 .cg-topbar .hdrlicmsg { color: #f4c7b8; }
 .cg-topbar .hdrlicmsg:empty { display: none; }
 .cg-topbar .hdrlicmsg.ok { color: #b7e4c7; }
+.cg-topbar{height:auto;min-height:60px;flex-wrap:wrap;justify-content:flex-end;gap:8px;padding:8px 16px}
+.cg-topbar .hdrlic{display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-width:0}
+.cg-topbar .stripe-btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;margin-left:0;padding:8px 14px;white-space:normal;text-align:center}
+.cg-topbar .linklike{min-height:44px;padding:8px 10px}
+.cg-topbar .arb-sticky-crisis{display:inline-flex;align-items:center;justify-content:center;position:static;z-index:auto;min-height:44px;max-width:100%;padding:8px 12px;font-size:15px;white-space:normal;box-shadow:none}
+.cg-topbar .cg-night-shift-toggle{min-height:44px;max-width:100%;padding:8px 12px}
+@media (min-width:701px){
+  .cg-topbar{flex-wrap:nowrap}
+  .cg-topbar .hdrlic{flex:0 1 auto}
+  .cg-topbar .arb-sticky-crisis,.cg-topbar .cg-night-shift-toggle{flex:0 1 auto;min-width:0}
+}
+@media (min-width:701px) and (max-width:900px){
+  .cg-topbar{flex-wrap:wrap}
+  .cg-topbar .hdrlic{display:contents}
+  .cg-topbar #hdrlicToggle{order:4}
+  .cg-topbar .stripe-btn{order:1;font-size:13px;padding:6px 10px}
+  .cg-topbar .arb-sticky-crisis{order:2;font-size:14px;padding:7px 10px}
+  .cg-topbar .cg-night-shift-toggle{order:3;font-size:13px;padding:6px 9px}
+}
 
 @media (max-width: 700px) {
   body { padding-left: 0; }
   .cg-sidebar {
     transform: translateX(-100%); transition: transform .22s ease;
     width: min(260px, 85vw); box-shadow: 6px 0 32px rgba(0,0,0,.45);
+  }
+  @media (max-width:700px){
+    .cg-topbar{justify-content:flex-start;align-items:center;gap:8px;padding:58px 12px 10px;min-height:0}
+    .cg-topbar .hdrlic{flex:1 1 100%;width:100%;gap:8px}
+    .cg-topbar .stripe-btn{flex:0 1 auto;max-width:100%}
+    .cg-topbar .cg-night-shift-toggle,.cg-topbar .arb-sticky-crisis{flex:0 1 auto}
   }
   .cg-sidebar.is-open { transform: translateX(0); }
   .cg-sidebar-toggle { display: flex; }
@@ -1537,8 +1562,11 @@ html.tb-open,html.tb-open body{overflow:hidden !important;overscroll-behavior:no
 .cg-sidebar-toggle svg{color:#fff;flex:none}
 .cg-sidebar-toggle:focus-visible{outline:3px solid #7ad3a4;outline-offset:3px}
 @media (max-width:700px){
-  /* keep the top bar's own buttons clear of the Categories button */
-  .cg-topbar{padding-left:164px;height:auto;min-height:60px;flex-wrap:wrap;row-gap:6px;padding-top:9px;padding-bottom:9px}
+  /* Keep the toolbar controls in flow and below the fixed Categories control. */
+  .cg-topbar{justify-content:flex-start;align-items:center;gap:8px;padding:58px 12px 10px;height:auto;min-height:0;flex-wrap:wrap;row-gap:8px}
+  .cg-topbar .hdrlic{flex:1 1 100%;width:100%}
+  .cg-topbar .stripe-btn{flex:0 1 auto;max-width:100%}
+  .cg-topbar .cg-night-shift-toggle,.cg-topbar .arb-sticky-crisis{flex:0 1 auto}
   /* the open menu starts below the button, so its heading isn't hidden */
   .cg-sidebar{padding-top:58px}
 }
@@ -1723,6 +1751,7 @@ html.tb-open,html.tb-open body{overflow:hidden !important;overscroll-behavior:no
       <button type="button" id="licHdrGo">Unlock</button>
     </span>
   </span>
+  <button type="button" class="arb-btn arb-btn-emergency arb-sticky-crisis" id="arbSootheSticky" disabled aria-label="Instant Soothe and Print for the active resident">🟡 Instant Soothe / Print</button>
   <span class="hdrlicmsg" id="hdrlicMsg" role="status"></span>
 </div>
 
@@ -1872,7 +1901,6 @@ html.tb-open,html.tb-open body{overflow:hidden !important;overscroll-behavior:no
     </div>
   </details>
 </section>
-<button type="button" class="arb-btn arb-btn-emergency arb-sticky-crisis" id="arbSootheSticky" disabled aria-label="Instant Soothe and Print for the active resident">🟡 Instant Soothe / Print</button>
 <!-- Import conflict chooser (used by the backup engine) -->
 <dialog class="arb-dialog" id="arbConflict" aria-labelledby="arbConflictH">
   <form method="dialog">
