@@ -740,13 +740,7 @@ body.extra-large-print select{font-size:20px;padding:16px}
 body.extra-large-print button{font-size:21px}
 body.extra-large-print .accessibility-option span{font-size:17px}
 body.extra-large-print .accessibility-option b{font-size:18px}
-/* High Contrast Mode no longer restyles this page. It is a setting for the
-   printed packet only; see isPureBlackAndWhitePDF and applyPureBW(). */
-body.simplified-layout{background-image:none}
-body.simplified-layout .shots,body.simplified-layout .strip,
-body.simplified-layout .promise{display:none}
-body.simplified-layout .wrap{background:#fff;box-shadow:none}
-body.simplified-layout fieldset{margin-bottom:30px}
+/* High Contrast and Simplified Layout affect generated PDFs only. */
 @media (max-width:700px){.accessibility-options{grid-template-columns:1fr}}
 
 /* ---- Licence status: the header strip, and the free-packet badge under the Make the packet button ---- */
@@ -4489,7 +4483,7 @@ class Doc{
     this.started=true;
     this.y=MARGIN+10;
     this.theme=theme;
-    frame(this.d, theme);
+    if(!this.simplifiedLayout) frame(this.d, theme);
   }
   heading(t){
     this.title=t;
@@ -4546,6 +4540,7 @@ class Doc{
   /* Close a page off with a small piece of art if it would otherwise
      trail away into blank paper. A page should look finished. */
   finish(){
+    if(this.simplifiedLayout) return;
     const r=this.room();
     if(r<=56) return;
     /* A holiday packet keeps its seasonal drawing -- a pumpkin in
@@ -4646,8 +4641,10 @@ function coverPage(D,r,theme){
   if(r.fac){D.d.text(fitText(D.d, r.fac, PW-2*MARGIN, 19, 12), cx, D.y, C); D.y+=30;}
   D.d.setFontSize(19);
   D.d.text(r.month,cx,D.y,C);
-  if(theme && theme!=="brain") motif(D.d, theme, PW/2, 560, 46, 1.1);
-  else logoMark(D.d, PW/2, 572, 300, 175, 130);
+  if(!D.simplifiedLayout){
+    if(theme && theme!=="brain") motif(D.d, theme, PW/2, 560, 46, 1.1);
+    else logoMark(D.d, PW/2, 572, 300, 175, 130);
+  }
   D.d.setFontSize(9);
   D.d.text("Cognicopia",MARGIN+38,PH-58);   // clear of the corner mark
   D.d.setFontSize(8);
@@ -7013,6 +7010,7 @@ function buildPacket(r, mode){
   const s=STAGE[r.stage], sel=r.acts;
   const D=new Doc();
   D.who=pdfSafe(r.goes||r.first||"");              // the name banner on every activity page
+  D.simplifiedLayout=!!(r.accessibility && r.accessibility.simplifiedLayout);
   if(isPureBlackAndWhitePDF) applyPureBW(D.d);   // High Contrast Mode: output pages only
 
   // The first chosen holiday sets the packet's overall look.
@@ -7391,7 +7389,7 @@ function collectProfile(){
   out.accessibility={
     highContrast:$("highContrastMode").checked,
     extraLargePrint:$("extraLargePrint").checked,
-    simplifiedLayout:$("simplifiedLayout").checked
+    simplifiedLayout:pdfSettings.simplifiedLayout
   };
   return out;
 }
@@ -7401,12 +7399,18 @@ function collectProfile(){
    normal theme; the black-and-white treatment happens only inside the
    jsPDF document, in applyPureBW(), when a packet is built. */
 let isPureBlackAndWhitePDF = false;
+const pdfSettings = { simplifiedLayout:false };
+window.pdfSettings = pdfSettings;
+
+function updateSimplifiedLayoutPDFSetting(){
+  pdfSettings.simplifiedLayout = $("simplifiedLayout").checked;
+}
 
 function applyAccessibilityPreset(){
   isPureBlackAndWhitePDF = $("highContrastMode").checked;
   document.body.classList.remove("high-contrast-mode");   // clear anything left by an older version
   document.body.classList.toggle("extra-large-print",$("extraLargePrint").checked);
-  document.body.classList.toggle("simplified-layout",$("simplifiedLayout").checked);
+  updateSimplifiedLayoutPDFSetting();
 }
 
 /* Force one jsPDF document into pure black (#000000) on white (#ffffff).
@@ -7489,8 +7493,18 @@ function applyPureBW(d){
   return d;
 }
 
-["highContrastMode","extraLargePrint","simplifiedLayout"].forEach(id=>{
+["highContrastMode","extraLargePrint"].forEach(id=>{
   $(id).addEventListener("change",applyAccessibilityPreset);
+});
+const simplifiedLayoutControl=$("simplifiedLayout");
+simplifiedLayoutControl.addEventListener("change",updateSimplifiedLayoutPDFSetting);
+simplifiedLayoutControl.addEventListener("click",e=>{
+  const next=simplifiedLayoutControl.checked;
+  e.preventDefault();
+  setTimeout(()=>{
+    simplifiedLayoutControl.checked=next;
+    simplifiedLayoutControl.dispatchEvent(new Event("change",{bubbles:true}));
+  },0);
 });
 
 function applyProfile(p){
@@ -8133,6 +8147,11 @@ $("f").addEventListener("submit", e=>{
     goes:$("goes").value.trim()||first,
     born, pronoun:$("pronoun").value,
     stage:window.getTemporaryActivityStage?window.getTemporaryActivityStage(stage):stage,
+    accessibility:{
+      highContrast:$("highContrastMode").checked,
+      extraLargePrint:$("extraLargePrint").checked,
+      simplifiedLayout:pdfSettings.simplifiedLayout
+    },
     town:$("town").value.trim(), state:$("state").value.trim(),
     job:$("job").value.trim(), spouse:$("spouse").value.trim(),
     kids:splitList($("kids").value), pets:splitList($("pets").value),
