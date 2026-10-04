@@ -256,7 +256,7 @@ input:focus,select:focus{border-color:var(--accent)}
 .stepper button:first-child{border-radius:10px 0 0 10px}
 .stepper button:last-child{border-radius:0 10px 10px 0}
 .stepper button:hover{border-color:var(--accent)}
-.stepper input{border-radius:0;text-align:center;font-weight:800;font-size:18px;border-left:0;border-right:0;-moz-appearance:textfield}
+.stepper input{border-radius:0;text-align:center;font-weight:800;font-size:18px;border-left:0;border-right:0;-moz-appearance:textfield;appearance:none}
 .stepper input::-webkit-inner-spin-button,.stepper input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
 .seg{display:flex;flex-wrap:wrap;gap:8px}
 .seg label{position:relative;cursor:pointer}
@@ -742,13 +742,13 @@ input:focus,select:focus{border-color:var(--accent)}
 .lp-facts{display:grid;grid-template-columns:minmax(0,1fr);gap:.06in;margin:.04in 0}
 .lp-fact{display:flex;align-items:baseline;gap:.16in;min-width:0;padding:.06in 0;border-bottom:1.5pt solid #aaa}
 .lp-fact .lp-lab{flex:none;width:1.45in}
-.lp-val{flex:1;min-width:0;font-size:24pt;font-weight:700;line-height:1.15;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.lp-val{flex:1;min-width:0;font-size:24pt;font-weight:700;line-height:1.15;display:-webkit-box;-webkit-line-clamp:2;line-clamp: 2;-webkit-box-orient:vertical;overflow:hidden}
 .lp-val-blank{flex:1;height:.5in;border-bottom:3px solid #333}
 .lp-timeline{list-style:none;margin:.04in 0 0 .1in;padding:0 0 0 .05in;border-left:3pt solid #444}
 .lp-timeline li{position:relative;display:flex;gap:.14in;align-items:baseline;padding:.05in 0 .05in .22in;font-size:20pt;line-height:1.2}
 .lp-timeline li::before{content:"";position:absolute;left:-.16in;top:.15in;width:.18in;height:.18in;border-radius:50%;background:#fff;border:3pt solid #444}
 .lp-timeline b{flex:none;min-width:.8in;font-size:22pt}
-.lp-timeline span{min-width:0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.lp-timeline span{min-width:0;display:-webkit-box;-webkit-line-clamp:2;line-clamp: 2;-webkit-box-orient:vertical;overflow:hidden}
 .lp-people{list-style:none;margin:.04in 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:.05in .2in}
 .lp-people li{display:flex;flex-direction:column;padding:.03in .1in;border-left:4pt solid #444;font-size:22pt;line-height:1.1;min-width:0}
 .lp-people b{font-weight:700;line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}   /* 1.2: room for the taller Atkinson descenders */
@@ -767,7 +767,7 @@ input:focus,select:focus{border-color:var(--accent)}
 .lp-art-blank{display:grid;place-items:center;width:calc(100% - .2in);height:calc(100% - .2in);border:2pt dashed #777;border-radius:.06in;font-size:16pt;color:#333}
 .lp-sense{list-style:none;margin:0;padding:0}
 .lp-sense li{display:flex;gap:.12in;align-items:center;padding:.04in 0;border-bottom:1pt solid #bbb;min-height:.6in}
-.lp-sense p{margin:0;font-size:16pt;line-height:1.2;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.lp-sense p{margin:0;font-size:16pt;line-height:1.2;display:-webkit-box;-webkit-line-clamp:2;line-clamp: 2;-webkit-box-orient:vertical;overflow:hidden}
 .lp-sense .lp-ico-row{color:var(--ink)}
 .lp-asks{margin:0;padding-left:.32in;font-size:18pt;line-height:1.25}
 .lp-asks li{margin:0 0 .05in;padding-left:.04in}
@@ -1218,7 +1218,7 @@ textarea:focus{border-color:var(--accent)}
 .lj-facts{display:grid;grid-template-columns:minmax(0,1fr);margin:.02in 0 .06in}
 .lj-facts > div{display:flex;align-items:baseline;gap:.14in;min-width:0;padding:.04in 0 .03in;border-bottom:3px solid #555}
 .lj-facts dt{flex:none;width:1.95in;margin:0;font-size:14pt;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--ink)}
-.lj-facts dd{flex:1;min-width:0;margin:0;font-size:19pt;font-weight:700;line-height:1.15;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.lj-facts dd{flex:1;min-width:0;margin:0;font-size:19pt;font-weight:700;line-height:1.15;display:-webkit-box;-webkit-line-clamp:2;line-clamp: 2;-webkit-box-orient:vertical;overflow:hidden}
 .lj-facts dd.lj-blank{height:.5in}
 
 /* a frame for a photograph or a drawing; it takes the room that is left */
@@ -1539,7 +1539,7 @@ textarea:focus{border-color:var(--accent)}
 .hl-panel{margin-top:4px}
 .hl-entries{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:8px}
 .hl-entries li{display:flex;gap:12px;align-items:flex-start;justify-content:space-between;padding:10px 12px;border-radius:10px;border:1px solid var(--line-2);background:var(--bg-2)}
-.hl-entries p{margin:4px 0 0;color:var(--muted);font-size:14px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.hl-entries p{margin:4px 0 0;color:var(--muted);font-size:14px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;line-clamp: 2;-webkit-box-orient:vertical}
 .hl-entries img{width:64px;height:64px;object-fit:cover;border-radius:8px;flex:none}
 .hl-private{padding:2px 8px;border-radius:999px;font-size:12px;font-weight:800;background:rgba(216,243,220,.08);color:var(--muted)}
 .hl-photo-pv{max-width:220px;max-height:220px;border-radius:8px;display:block;margin-top:8px}
