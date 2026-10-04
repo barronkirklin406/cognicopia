@@ -2,3 +2,5 @@
 # resident data must never be committed
 payloads/
 *.cognicopia
+.continue/
+new-config.yaml
