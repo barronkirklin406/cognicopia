@@ -124,6 +124,28 @@ The portal is sealed in the encrypted store like resident profiles (see [Privacy
 
 **Team & audit › Remove the portal from this computer** removes all of it. Resident profiles are not touched.
 
+### Backing up or moving the portal
+
+**Team & audit › Back up or move the portal** (Activity Directors only):
+
+- **Download a locked backup** writes the whole portal into one `.cognicopia` file:
+  - the community (wings, groups, team, audit trail);
+  - every month of every wing's calendar.
+
+  The file is sealed with AES-GCM and a key derived from a passphrase chosen for it (PBKDF2, `CogniSecureStore.sealFile`, kind `facility`). The passphrase must be at least 10 characters.
+- **Restore the portal from the backup** opens such a file with its passphrase, asks before replacing anything, and then:
+  - replaces the community;
+  - writes back each calendar month it carries;
+  - adds "Restored the portal from a backup" to the audit trail.
+
+  A wrong passphrase, a damaged file or a different kind of locked file (a roster handoff) is refused with a plain message. Nothing is changed in those cases.
+
+The backup has two uses:
+- if this browser's data is ever cleared, it is the only way back;
+- it starts a sister community from the same wings, groups, times and calendars.
+
+Say the passphrase in person or by phone, never in the same message as the file.
+
 ## Design
 
 The portal has its own palette:

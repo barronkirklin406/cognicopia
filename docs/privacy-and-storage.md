@@ -46,7 +46,7 @@ A resident's own pages keep their name.
 
 ## One-click emergency activity
 
-Staff editing a resident profile can choose a prepared activity for the **Instant Soothe / Print** button on the active-resident card. The choice is stored with that resident's encrypted profile. The button opens the Packet Builder directly for that resident and prints one page through the normal print dialog without adding to or replacing the saved packet queue. If the choice is empty, no longer available, or invalid, it uses fine-motor line tracing. Printing still follows the Packet Builder's normal access and browser-print rules.
+With no resident chosen, **Instant Soothe / Print** prints a general two-page calming packet (a slow tracing path and a familiar song) that needs no profile. It is the same packet as the Packet Builder's rapid de-escalation button. Staff editing a resident profile can choose a prepared activity for the **Instant Soothe / Print** button on the active-resident card. The choice is stored with that resident's encrypted profile. The button opens the Packet Builder directly for that resident and prints one page through the normal print dialog without adding to or replacing the saved packet queue. If the choice is empty, no longer available, or invalid, it uses fine-motor line tracing. Printing still follows the Packet Builder's normal access and browser-print rules.
 
 ## Station handoffs (`.cognicopia`)
 
@@ -55,6 +55,18 @@ The Resident roster's **Hand off to another station** writes every saved residen
 On the receiving computer, **Receive a handoff** adds new residents. For a resident both computers already have, it keeps whichever copy was updated most recently.
 
 Say the passphrase in person or by phone. Never send it in the same message as the file.
+
+The Facility Portal's **Back up or move the portal** writes the portal (wings, groups, team, audit trail and calendars) into a file of the same locked kind. See [the portal's notes](facility-portal.md#backing-up-or-moving-the-portal).
+
+## Importing a census spreadsheet
+
+**Import Profiles (Restore)** on the packet tool also reads a census spreadsheet exported from an EHR. It needs one column for the name: Preferred Name, First Name, Resident Name or Full Name.
+- **Names:** a name written "Smith, Margaret A." becomes "Margaret".
+- **Birth dates:** a Date of Birth or DOB column gives the birth year. These forms are read: 03/14/1938, 1938-03-14, 14 Mar 1938 and 3/14/38 (two-digit years are read as the 1900s).
+- **Rooms:** Room, Room/Bed or Bed fills the unit.
+- **Other columns** are ignored.
+
+Every row is rebuilt field by field against the profile schema and sealed in the encrypted store. The spreadsheet itself is never copied anywhere.
 
 ## What this is not
 

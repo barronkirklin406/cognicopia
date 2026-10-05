@@ -261,7 +261,7 @@ input:focus,select:focus{border-color:var(--accent)}
 .seg{display:flex;flex-wrap:wrap;gap:8px}
 .seg label{position:relative;cursor:pointer}
 .seg input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
-.seg span{display:block;padding:9px 14px;border-radius:10px;border:1px solid var(--line-2);background:var(--bg-2);font-weight:700;font-size:14.5px}
+.seg span{display:flex;align-items:center;min-height:44px;padding:9px 14px;border-radius:10px;border:1px solid var(--line-2);background:var(--bg-2);font-weight:700;font-size:14.5px}
 .seg input:checked + span{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
 .seg input:focus-visible + span{outline:3px solid var(--accent-hi);outline-offset:2px}
 .actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}
@@ -1400,6 +1400,13 @@ textarea:focus{border-color:var(--accent)}
 .cc-gen-go{display:flex;align-items:flex-end}
 .cc-gen-go .btn{width:100%}
 .cc-gen-find{display:flex;gap:8px}
+/* Touch targets: every control at least 44 x 44 px (WCAG 2.2 target size,
+   enhanced), for staff working on tablets and wall touchscreens */
+.sb-link,.fp-toggle,.btn-home,.rs-chip,.fp-btn-sm,.cc-chip span{min-height:44px}
+.sb-toggle{height:44px}
+.btn-home,.rs-chip{min-width:44px}
+.rs-handoff summary{min-height:44px;display:flex;align-items:center}
+.rs-handoff input[type="password"],.rs-handoff input[type="file"],.rs-handoff input[type="text"]{min-height:44px}
 .cc-gen-who{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px 12px}
 .cc-gen-who .field{margin:0}
 .cc-gen-find input{flex:1;min-width:0;text-transform:uppercase}
@@ -1663,8 +1670,11 @@ textarea:focus{border-color:var(--accent)}
 .fp-btn-primary{background:var(--fp-tan);border-color:var(--fp-tan);color:var(--fp-ink)}
 .fp-btn-primary:hover{background:var(--fp-tan-hi);border-color:var(--fp-tan-hi)}
 .fp-btn-danger{border-color:var(--fp-warn);color:var(--fp-warn)}
+.fp-hint.fp-bad{color:var(--fp-warn);font-weight:700}
+.fp-bk-go{display:flex;align-items:flex-end}
+.fp-bk-go .fp-btn{width:100%;justify-content:center}
 .fp-btn-danger:hover{background:rgba(240,180,140,.1)}
-.fp-btn-sm{min-height:36px;padding:5px 11px;font-size:14px}
+.fp-btn-sm{min-height:44px;padding:5px 11px;font-size:14px}
 .fp-btn[disabled]{opacity:.5;cursor:not-allowed;transform:none}
 .fp-btn svg{flex:none}
 .fp-field{margin:0 0 14px;padding:0;border:0}
@@ -7822,6 +7832,56 @@ const FacilityUI = (function(){
     setTimeout(() => URL.revokeObjectURL(url), 2000);
   }
 
+  /* ---------- a locked backup of the whole portal ----------
+     The facility (wings, groups, team, audit trail) and every month of every
+     wing's calendar, sealed with a passphrase (AES-GCM, CogniSecureStore). A
+     backup in case this browser's data is cleared, and the way to start a
+     sister community from the same setup. Directors only. */
+  const BACKUP_FORMAT = "cognicopia.facilityBackup";
+  const bkMsg = (t, bad) => { const m = root.querySelector("#fpBkMsg"); if (m){ m.textContent = t; m.classList.toggle("fp-bad", !!bad); } };
+  function backupPortal(){
+    const SS = window.CogniSecureStore, inp = root.querySelector("#fpBkPass"), pass = inp ? inp.value : "";
+    if (!can("manageTeam")) return;
+    if (!SS){ bkMsg("This browser cannot lock files.", true); return; }
+    const problem = SS.passphraseProblem(pass); if (problem){ bkMsg(problem, true); inp.focus(); return; }
+    const plans = {};
+    fac.wings.forEach(w => planKeysOf(w.id).forEach(k => { try { const v = JSON.parse(CG_LS.getItem(k) || "null"); if (v) plans[k.slice(k.length - 7)] = Object.assign(plans[k.slice(k.length - 7)] || {}, { [w.id]:v }); } catch (err){} }));
+    const months = Object.keys(plans).reduce((n, m) => n + Object.keys(plans[m]).length, 0);
+    bkMsg("Locking the file…");
+    SS.sealFile({ format:BACKUP_FORMAT, version:1, exportedAt:new Date().toISOString(), facility:fac, plans }, pass, "facility").then(env => {
+      download(["Cognicopia portal backup", slug((typeof settings !== "undefined" && settings.facility) || "facility"), todayISO()].join(" - ") + ".cognicopia", JSON.stringify(env), "application/octet-stream");
+      inp.value = "";
+      audit("Downloaded a locked backup", `${plural(fac.wings.length, "wing", "wings")}, ${plural(months, "wing-month", "wing-months")} of calendars`);
+      bkMsg(`Downloaded, locked: ${plural(fac.wings.length, "wing", "wings")} and ${plural(months, "month", "months")} of calendars. Keep the passphrase apart from the file.`);
+    }, err => bkMsg(err.message, true));
+  }
+  function restorePortal(){
+    const SS = window.CogniSecureStore, file = (root.querySelector("#fpRsFile").files || [])[0], passEl = root.querySelector("#fpRsPass");
+    if (!can("manageTeam")) return;
+    if (!SS){ bkMsg("This browser cannot open locked files.", true); return; }
+    if (!file){ bkMsg("Choose the backup file first.", true); return; }
+    bkMsg("Opening…");
+    file.text().then(t => { let env; try { env = JSON.parse(t); } catch (err){ throw new Error("format"); } return SS.openFile(env, passEl.value); }).then(obj => {
+      if (!obj || obj.format !== BACKUP_FORMAT || !obj.facility || typeof obj.facility !== "object") throw new Error("kind");
+      const next = F.normalizeFacility(obj.facility), plans = obj.plans && typeof obj.plans === "object" ? obj.plans : {};
+      if (!confirm(`Replace the portal on this computer with the backup from ${String(obj.exportedAt || "").slice(0, 10) || "the file"} (${plural(next.wings.length, "wing", "wings")})? Its calendars replace the same months here. Resident profiles are not touched.`)){ bkMsg("Nothing was changed."); return; }
+      let n = 0;
+      Object.keys(plans).forEach(month => {
+        if (!F.isMonth(month) || !plans[month] || typeof plans[month] !== "object") return;
+        next.wings.forEach(w => { const raw = plans[month][w.id]; if (!raw) return;
+          const plan = F.normalizePlan(raw, w.id, month, w.groups.map(g => g.id));
+          if (plan.slots.length){ try { CG_LS.setItem(F.planKey(w.id, month), JSON.stringify(plan)); n++; } catch (err){} } });
+      });
+      writeFacility(next, "Restored the portal from a backup", `${plural(next.wings.length, "wing", "wings")}, ${plural(n, "wing-month", "wing-months")} of calendars`);
+      passEl.value = "";
+      S.tab = "overview"; S.undo = null; renderBar(); renderBody(true);
+      toast(`The portal was restored: ${plural(next.wings.length, "wing", "wings")} and ${plural(n, "month", "months")} of calendars.`);
+    }).catch(err => {
+      const why = { passphrase:"That passphrase does not open this file.", format:"This is not a locked Cognicopia file.", kind:"This locked file is not a portal backup (a roster handoff opens under Roster)." }[err.message];
+      bkMsg(why || err.message, true);
+    });
+  }
+
   /* ---------- the screen ---------- */
   function render(view, arg){
     if (!F){
@@ -8596,6 +8656,20 @@ const FacilityUI = (function(){
         <section class="fp-card" aria-labelledby="fpPrivH">
           <h3 id="fpPrivH">On this computer</h3>
           <p class="fp-hint">The portal is saved in this browser's encrypted store, like resident profiles (Settings › Privacy &amp; encryption), and never leaves this computer. Packets, calendars and downloads carry group names and activities, never a resident's name.</p>
+          ${can("manageTeam") ? `<h4 style="margin:14px 0 6px">Back up or move the portal</h4>
+          <p class="fp-hint">One locked file (.cognicopia) holds the wings, groups, team, calendars and audit trail. Keep it on a facility drive in case this browser's data is ever cleared, or open it on another computer or at a sister community to start from the same setup. It opens only with the passphrase chosen here: share that in person or by phone, never with the file.</p>
+          <form data-form="fac-backup" class="fp-row2" autocomplete="off" novalidate>
+            <div class="fp-field"><label for="fpBkPass">Passphrase for the file</label><input id="fpBkPass" type="password" autocomplete="new-password" aria-describedby="fpBkMsg"></div>
+            <div class="fp-field fp-bk-go"><button class="fp-btn" type="submit">${IC.download}Download a locked backup</button></div>
+          </form>
+          <form data-form="fac-restore" autocomplete="off" novalidate>
+            <div class="fp-row2">
+              <div class="fp-field"><label for="fpRsFile">Backup file</label><input id="fpRsFile" type="file" accept=".cognicopia,.json,application/json"></div>
+              <div class="fp-field"><label for="fpRsPass">Its passphrase</label><input id="fpRsPass" type="password" autocomplete="off"></div>
+            </div>
+            <button class="fp-btn" type="submit">Restore the portal from the backup</button>
+          </form>
+          <p class="fp-hint" id="fpBkMsg" role="status" aria-live="polite"></p>` : ""}
           <div class="fp-actions"><button type="button" class="fp-btn fp-btn-danger" data-act="wipe">Remove the portal from this computer</button></div>
         </section>
       </div>
@@ -8813,6 +8887,8 @@ const FacilityUI = (function(){
     e.preventDefault();
     const kind = f.dataset.form;
     if (kind === "slot") return saveSlot(f);
+    if (kind === "fac-backup") return backupPortal();
+    if (kind === "fac-restore") return restorePortal();
     if (kind === "wing-add"){
       const inp = f.querySelector("input"), v = inp.value.trim().slice(0, 60); if (!v){ inp.focus(); return; }
       if (fac.wings.length >= F.LIMITS.wings){ toast(`A community can have up to ${F.LIMITS.wings} wings here.`); return; }
@@ -13037,7 +13113,8 @@ window.addEventListener("afterprint", () => {
     const emergencyResidentId = new URLSearchParams(location.search).get("emergency");
     if (emergencyResidentId) history.replaceState(null, "", location.pathname + location.hash);
     router();
-    if (emergencyResidentId) printEmergencyActivity(emergencyResidentId);
+    if (emergencyResidentId === "general") printPanicPacket();               // Instant Soothe with no resident chosen
+    else if (emergencyResidentId) printEmergencyActivity(emergencyResidentId);
   });
   // Another tab changed a saved resident or the queue: show it here too.
   window.addEventListener("storage", e => {
