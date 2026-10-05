@@ -1,6 +1,8 @@
 # Infinite coloring pages: the generator
 
-Cognicopia's page generator makes new, print-ready coloring pages on demand: as many as a facility needs, each one different, and each one held to the same clinical print standard as the curated library ([cognicopia-coloring-standards.md](cognicopia-coloring-standards.md)). Staff use it in the Packet Builder (**Coloring → New pages**). Activity directors and developers can also run it from the command line to produce a batch of SVG, 300 DPI PNG and PDF files.
+> **Retired from the Packet Builder.** The coloring library's **New pages** tab now makes pages with the hybrid coloring engine ([hybrid-coloring-engine.md](hybrid-coloring-engine.md)): a finished subject drawing with a procedural border made for the resident's stage, instead of a subject drawn in code. Page codes from this generator are still found and printed there, and the command line below still works.
+
+Cognicopia's page generator makes new, print-ready coloring pages on demand: as many as a facility needs, each one different, and each one held to the same clinical print standard as the curated library ([cognicopia-coloring-standards.md](cognicopia-coloring-standards.md)). Staff used it in the Packet Builder (**Coloring → New pages**) until the hybrid engine replaced it there. Activity directors and developers can also run it from the command line to produce a batch of SVG, 300 DPI PNG and PDF files.
 
 Everything here runs on the user's own computer. The browser tool sends nothing anywhere. The command line reaches the network only when someone asks it to fetch pictures from an image generator (`--backend http`, section 7).
 

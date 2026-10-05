@@ -1400,6 +1400,8 @@ textarea:focus{border-color:var(--accent)}
 .cc-gen-go{display:flex;align-items:flex-end}
 .cc-gen-go .btn{width:100%}
 .cc-gen-find{display:flex;gap:8px}
+.cc-gen-who{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px 12px}
+.cc-gen-who .field{margin:0}
 .cc-gen-find input{flex:1;min-width:0;text-transform:uppercase}
 .cc-gen-all{margin:0 0 12px}
 .cc-warn{display:block;color:var(--warn);font-weight:700}
@@ -1443,6 +1445,8 @@ textarea:focus{border-color:var(--accent)}
 
 /* the printed sheet: every block placed in inches by CogniLibrary.layout */
 .sheet.cc-sheet{position:relative;display:block;padding:0;color:#000}
+.cc-sheet > div.hy-page{left:0;top:0;width:8.5in;height:11in}
+.hy-page svg{display:block;width:100%;height:100%}
 .cc-sheet > div{position:absolute;margin:0}
 .cc-head{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;line-height:1.1}
 .cc-fac{font-size:10pt;font-weight:700;letter-spacing:.06em;text-transform:uppercase;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -6409,6 +6413,9 @@ const RosterUI = (function(){
 })();
 </script>
 <script src="assets/cognicopia-coloring/cognicopia-coloring.js"></script>
+<script src="assets/coloring/subjects.bundle.js"></script>
+<script src="src/services/ColoringManifest.js"></script>
+<script src="src/engine/ColoringEngine.js"></script>
 <script src="assets/services/vectorEngine.js"></script>
 <script id="cc-ui">
 /* =====================================================================
@@ -6438,19 +6445,37 @@ const CogniLibrary = (function(){
   let S = null;
   const state = () => {
     if (!S){ const saved = (typeof settings !== "undefined" && settings.ccLib) || {}; S = Object.assign({}, DEFAULTS, saved); S.picks = (S.picks || []).filter(id => C && valid(id));
-      S.gen = Object.assign({ themes:[], count:12, codes:[] }, saved.gen || {}); S.gen.codes = (S.gen.codes || []).filter(c => valid(GEN + c)).slice(0, 24);
+      S.gen = Object.assign({ themes:[], count:8, codes:[] }, saved.gen || {}); S.gen.codes = (S.gen.codes || []).filter(c => valid(HY + c)).slice(0, 24);
+      S.gen.themes = (S.gen.themes || []).filter(t => HYBRID_GROUPS.some(g => g[0] === t)); if ([4, 8, 12, 16].indexOf(S.gen.count) < 0) S.gen.count = 8;
+      S.gen.who = Object.assign({ born:"", work:"", hobbies:"", avoid:"" }, S.gen.who || {});
       if (["pictures", "packs", "new"].indexOf(S.tab) < 0) S.tab = "pictures"; }
     return S;
   };
   const save = () => { try { settings.ccLib = Object.assign({}, S); store.set("cgb_settings", settings); } catch (e){} };
   const ready = () => !!(C && V && C.designs && V.transformSvg);
 
-  /* ---------- a picture from the library or from the page generator ----------
-     A pick is a library design id, or "gen:" and a page code from the
-     infinite page generator (CognicopiaColoring.infinite, assets/cognicopia-coloring/infinite.js).
-     A generated page asked for at another tier is drawn again at that tier
-     from the same seed, and checked again before it prints. */
-  const GEN = "gen:";
+  /* ---------- a picture from the library, a new page, or an older generated page ----------
+     A pick is a library design id; "hy:" and a page code from the hybrid
+     coloring engine (src/engine/ColoringEngine.js), which makes the New
+     pages; or "gen:" and a page code from the retired infinite page
+     generator (CognicopiaColoring.infinite, assets/cognicopia-coloring/infinite.js), still printed
+     for pages chosen before. A page asked for at another tier is drawn
+     again at that tier (for a hybrid page, the matching stage) from the
+     same seed, and checked again before it prints. */
+  const GEN = "gen:", HY = "hy:";
+  const isHy = id => typeof id === "string" && id.indexOf(HY) === 0;
+  const TIER_STAGE = { 1:"early", 2:"middle", 3:"late" }, STAGE_TIER = { early:1, middle:2, late:3 };
+  const STAGE_LOOK = { early:"a patterned border and an open prompt", middle:"a bold border and a completion line with the word shown", late:"no border, extra-thick lines and a large title" };
+  const hyOk = () => typeof hyReady === "function" && hyReady();
+  function hySpec(id, tier){
+    if (!hyOk()) return null;
+    const E = hyEngine(), c = E.parseCode(id.slice(HY.length)), a = c && hyList().get(c.id);
+    if (!a) return null;
+    const stage = TIER_STAGE[tier] || c.stage;
+    return { asset:a, stage:stage, seed:c.seed, code:E.code(stage, a.id, c.seed) };
+  }
+  /* a hybrid page laid out on the whole sheet: { page, html } */
+  function hyPage(id, tier, name, frameOpts){ const sp = hySpec(id, tier); return sp ? hybridSheet(sp.asset, sp.stage, sp.seed, name, frameOpts) : null; }
   const isGen = id => typeof id === "string" && id.indexOf(GEN) === 0;
   function genSpec(id, tier){
     const I = C && C.infinite, sp = I ? I.parse(id.slice(GEN.length)) : null;
@@ -6458,6 +6483,7 @@ const CogniLibrary = (function(){
     return tier && +tier !== sp.tier ? I.spec({ seed:sp.seed, tier:+tier, theme:sp.theme }) : sp;
   }
   function info(id, tier){
+    if (isHy(id)){ const sp = hySpec(id, tier); return sp ? { id:id, title:sp.asset.title, talk:sp.asset.prompt, code:sp.code, theme:sp.asset.category, sensitive:[] } : null; }
     if (isGen(id)){ const sp = genSpec(id, tier); return sp ? { id:id, title:sp.title, talk:sp.talk, code:sp.code, theme:sp.theme, sensitive:sp.sensitive } : null; }
     const d = C && C.design(id); return d ? { id:id, title:d.title, talk:d.talk, code:"", sensitive:d.sensitive } : null;
   }
@@ -6466,6 +6492,7 @@ const CogniLibrary = (function(){
   const genOk = new Map();
   /* a generated page drawn at a tier other than its own: does it still pass? */
   function genPasses(id, tier){
+    if (isHy(id)){ const out = hyPage(id, tier, ""); return !!out && !hyEngine().validate(out.page).length; }
     if (!isGen(id)) return true;
     const sp = genSpec(id, tier), k = sp.code;
     if (!genOk.has(k)){ try { genOk.set(k, C.infinite.check(sp, C.infinite.render(sp), { strokes:false, avoid:state().avoid ? avoidList(resident()) : [] }).ok); } catch (e){ genOk.set(k, false); } }
@@ -6495,6 +6522,7 @@ const CogniLibrary = (function(){
   const svgCache = new Map();
   function thumbSvg(id, tier){
     const k = id + "|" + tier;
+    if (!svgCache.has(k) && isHy(id)){ const out = hyPage(id, tier, ""); svgCache.set(k, out ? hyEngine().toSVG(out.page, { width:"100%", height:"100%" }) : ""); }
     if (!svgCache.has(k)){
       if (svgCache.size > 600) svgCache.clear();
       const r = drawItem(id, tier);
@@ -6538,6 +6566,11 @@ const CogniLibrary = (function(){
     return [code ? `Cognicopia · Cognicopia Coloring · page code ${code}` : `Cognicopia · Cognicopia Coloring`, `${C.TIERS[lay.tier].label}${o.pageCount > 1 ? ` · page ${o.pageNumber} of ${o.pageCount}` : ""}`]; }
   /* The printed sheet for one page. */
   function sheet(o){
+    if (isHy(o.design)){
+      // a hybrid page lays itself out: its own title, border and words, inside the binding gutter
+      const t0 = performance.now(), out = hyPage(o.design, o.tier, o.header !== false ? o.name : "", { pageNumber:o.pageNumber || 1, duplex:!!o.duplex });
+      return { perf:performance.now() - t0, html:out ? out.html : "" };
+    }
     const lay = layout(o), b = lay.blocks, d = info(o.design, lay.tier), art = artFor(o, lay), name = String(o.name || "").trim(), fac = String(o.facility || "").trim();
     const ft = footText(o, lay);
     return { perf:art.report.ms, html:`<section class="sheet cc-sheet" data-tier="${lay.tier}" data-design="${esc(o.design)}">
@@ -6572,6 +6605,15 @@ const CogniLibrary = (function(){
     list.forEach((o, i) => {
       const t0 = performance.now();
       if (i) doc.addPage("letter", "portrait");
+      if (isHy(o.design)){
+        const out = hyPage(o.design, o.tier, o.header !== false ? o.name : "", { pageNumber:o.pageNumber || 1, duplex:!!o.duplex });
+        if (out) hyEngine().toPDF(out.page, doc);
+        doc.setFont("helvetica", "normal"); doc.setFontSize(8); doc.setTextColor(86, 97, 93);
+        doc.text("Do not ask questions or test memory. Sit beside them, place the marker in their hand, and model slow, calm breathing.", 306, 776, { align:"center", maxWidth:540 });
+        doc.setTextColor(0, 0, 0); doc.setDrawColor(0, 0, 0); doc.setLineWidth(1);
+        times.push(performance.now() - t0);
+        return;
+      }
       const lay = layout(o), b = lay.blocks, d = info(o.design, lay.tier), P = v => v * 72;
       doc.setTextColor(0, 0, 0); doc.setDrawColor(0, 0, 0); doc.setFillColor(255, 255, 255);
       if (b.header){
@@ -6628,7 +6670,7 @@ const CogniLibrary = (function(){
     viewEl.innerHTML = `
       <p class="eyebrow">Cognicopia Coloring</p>
       <h1 class="view-title" tabindex="-1">The coloring library</h1>
-      <p class="lede">${st.designs} adult, dignity-first pictures, each drawn at three cognitive tiers (${st.assets} pages), in bold pure-black lines on white, plus ${st.packs} themed packs, and <b>New pages</b>: fresh pictures drawn on demand, never the same twice. Every page prints on US Letter with a 0.75 in binding gutter for three-ring binders.</p>
+      <p class="lede">${st.designs} adult, dignity-first pictures, each drawn at three cognitive tiers (${st.assets} pages), in bold pure-black lines on white, plus ${st.packs} themed packs, and <b>New pages</b>: one clean, bold picture chosen for the resident, with a border and words made for their stage, never the same twice. Every page prints on US Letter with a 0.75 in binding gutter for three-ring binders.</p>
       <div class="cc-for">
         <div class="field"><label for="ccWho">Resident</label>
           <select id="ccWho"><option value="">${people.length ? "No resident: choose pages by hand" : "No saved resident profiles"}</option>${people.map(p => `<option value="${esc(p.id)}" ${p.id === s.resident ? "selected" : ""}>${esc(cgScreenName(p))}${p.tier1_core.unitNumber && !settings.aliasScreen ? " · " + esc(p.tier1_core.unitNumber) : ""}</option>`).join("")}</select></div>
@@ -6637,7 +6679,7 @@ const CogniLibrary = (function(){
       <div class="cc-tabs" role="tablist" aria-label="Library">
         <button type="button" role="tab" id="ccTabPics" aria-controls="ccPanel" aria-selected="${s.tab === "pictures"}">Pictures</button>
         <button type="button" role="tab" id="ccTabPacks" aria-controls="ccPanel" aria-selected="${s.tab === "packs"}">Packs (${st.packs})</button>
-        ${C.infinite ? `<button type="button" role="tab" id="ccTabNew" aria-controls="ccPanel" aria-selected="${s.tab === "new"}">New pages</button>` : ""}
+        ${hyOk() ? `<button type="button" role="tab" id="ccTabNew" aria-controls="ccPanel" aria-selected="${s.tab === "new"}">New pages</button>` : ""}
       </div>
       <div class="cc-layout">
         <div id="ccPanel" role="tabpanel" aria-labelledby="${s.tab === "packs" ? "ccTabPacks" : s.tab === "new" ? "ccTabNew" : "ccTabPics"}"></div>
@@ -6651,7 +6693,7 @@ const CogniLibrary = (function(){
     viewEl.querySelector("#ccTabPics").addEventListener("click", () => { s.tab = "pictures"; save(); render(root); });
     viewEl.querySelector("#ccTabPacks").addEventListener("click", () => { s.tab = "packs"; save(); render(root); });
     const tNew = viewEl.querySelector("#ccTabNew"); if (tNew) tNew.addEventListener("click", () => { s.tab = "new"; save(); render(root); });
-    const TABS = C.infinite ? ["pictures", "packs", "new"] : ["pictures", "packs"], TAB_ID = { pictures:"#ccTabPics", packs:"#ccTabPacks", new:"#ccTabNew" };
+    const TABS = hyOk() ? ["pictures", "packs", "new"] : ["pictures", "packs"], TAB_ID = { pictures:"#ccTabPics", packs:"#ccTabPacks", new:"#ccTabNew" };
     viewEl.querySelectorAll(".cc-tabs [role=tab]").forEach(t => { if (t.getAttribute("aria-selected") !== "true") t.setAttribute("tabindex", "-1"); });
     viewEl.querySelector(".cc-tabs").addEventListener("keydown", e => {
       if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
@@ -6724,23 +6766,36 @@ const CogniLibrary = (function(){
       const pv = root.querySelector("#ccPvH"); if (pv) pv.scrollIntoView({ behavior:"smooth", block:"start" });
     }));
   }
-  /* ---------- New pages: the infinite page generator ----------
-     Draws a fresh set on this computer from the themes chosen, checks
-     every page against the tier's print rules before showing it, and
-     keeps only the page codes, so a set can be printed again. */
+  /* ---------- New pages: the hybrid coloring engine ----------
+     Fresh pages made on this computer: one clean subject from
+     assets/coloring/, chosen for the resident when one is chosen above (their
+     years, work and hobbies, never their topics to avoid) and from the
+     groups ticked here, with a border and words made for the tier's stage.
+     Every page is checked before it shows, and keeps a page code, so a set
+     can be printed again. Page codes from the retired page generator are
+     still found and printed. */
   let genBusy = false, genNote = "";
   function renderGen(el){
-    const s = state(), I = C.infinite, g = s.gen;
-    if (!I){ el.innerHTML = `<p class="callout">The page generator could not load. Reload the page to try again.</p>`; return; }
+    const s = state(), g = s.gen;
+    if (!hyOk()){ el.innerHTML = `<p class="callout">The coloring pictures could not load. Reload the page to try again.</p>`; return; }
+    const p = resident(), stage = TIER_STAGE[s.tier], who = residentName();
     el.innerHTML = `
-      <p class="cc-count">Brand-new pictures, drawn on this computer from the themes you choose, never the same twice. Before a page shows here it passes every check for <b>${esc(TIER_SHORT[s.tier])}</b>: closed outlines, lines at least ${I.MIN_PT} pt thick, areas big enough to color, open white space around the subject, and words that are adult, kind and clear of the resident&rsquo;s topics to avoid.</p>
+      <p class="cc-count">Fresh pages, never the same twice: one clean, bold picture ${p ? `chosen for <b>${esc(who || "this resident")}</b> from their profile` : "chosen from the details below, or from the groups you choose"}, with a setting made for <b>${esc(TIER_SHORT[s.tier])}</b>: ${esc(STAGE_LOOK[stage])}. Every page is checked before it shows: pure black on white, lines at least ${stage === "late" ? 5 : 3} px thick, everything inside the printable area${p && s.avoid ? ", and nothing on their list of topics to avoid" : ""}.</p>
       <form class="cc-filters cc-gen" id="ccGenForm" onsubmit="return false" aria-label="Make new pages">
-        <fieldset class="field cc-gen-themes"><legend>Themes</legend>
-          <div class="cc-chips">${I.THEMES.map(t => `<label class="cc-chip" title="${esc(t.blurb)}"><input type="checkbox" value="${esc(t.id)}" ${g.themes.indexOf(t.id) >= 0 ? "checked" : ""}><span>${esc(t.label)}</span></label>`).join("")}</div>
-          <p class="hint">Leave them all clear for a mix of every theme.</p></fieldset>
-        <div class="field"><label for="ccGenCount">How many pages</label><select id="ccGenCount">${[6, 12, 18, 24].map(n => `<option value="${n}" ${n === g.count ? "selected" : ""}>${n}</option>`).join("")}</select></div>
-        <div class="field cc-gen-go"><button type="button" class="btn btn-primary" id="ccGenGo" ${genBusy ? "disabled" : ""}>${genBusy ? "Drawing and checking&hellip;" : g.codes.length ? "Make a fresh set" : "Make new pages"}</button></div>
-        <div class="field"><label for="ccGenCode">Print a page again by its code</label><div class="cc-gen-find"><input type="text" id="ccGenCode" placeholder="e.g., 2HB-QIBJMT" autocomplete="off" spellcheck="false" maxlength="12"><button type="button" class="btn" id="ccGenFind">Find</button></div></div>
+        <fieldset class="field cc-gen-themes"><legend>Picture groups</legend>
+          <div class="cc-chips">${HYBRID_GROUPS.map(t => `<label class="cc-chip"><input type="checkbox" value="${esc(t[0])}" ${g.themes.indexOf(t[0]) >= 0 ? "checked" : ""}><span>${esc(t[1])}</span></label>`).join("")}</div>
+          <p class="hint">${p ? "Leave them all clear to choose from every picture that suits them." : "Leave them all clear for a mix of every group."}</p></fieldset>
+        ${p ? "" : `<fieldset class="field cc-gen-themes"><legend>A few details instead of a saved profile (optional)</legend>
+          <div class="cc-gen-who">
+            <div class="field"><label for="ccGenBorn">Year born</label><input type="text" id="ccGenBorn" data-who="born" inputmode="numeric" maxlength="4" value="${esc(g.who.born)}" placeholder="e.g., 1944" autocomplete="off"></div>
+            <div class="field"><label for="ccGenWork">Their working life</label><input type="text" id="ccGenWork" data-who="work" maxlength="60" value="${esc(g.who.work)}" placeholder="e.g., farmer, secretary" autocomplete="off"></div>
+            <div class="field"><label for="ccGenHobbies">Hobbies and interests</label><input type="text" id="ccGenHobbies" data-who="hobbies" maxlength="80" value="${esc(g.who.hobbies)}" placeholder="e.g., gardening, fishing" autocomplete="off"></div>
+            <div class="field"><label for="ccGenAvoid">Leave out</label><input type="text" id="ccGenAvoid" data-who="avoid" maxlength="80" value="${esc(g.who.avoid)}" placeholder="e.g., boats, cars" autocomplete="off"></div>
+          </div>
+          <p class="hint">The pictures lean toward the years they were young, their work and their hobbies, and never touch a word to leave out. Kept only in this browser's encrypted storage.</p></fieldset>`}
+        <div class="field"><label for="ccGenCount">How many pages</label><select id="ccGenCount">${[4, 8, 12, 16].map(n => `<option value="${n}" ${n === g.count ? "selected" : ""}>${n}</option>`).join("")}</select></div>
+        <div class="field cc-gen-go"><button type="button" class="btn btn-primary" id="ccGenGo" ${genBusy ? "disabled" : ""}>${genBusy ? "Making and checking&hellip;" : g.codes.length ? "Make a fresh set" : "Make new pages"}</button></div>
+        <div class="field"><label for="ccGenCode">Print a page again by its code</label><div class="cc-gen-find"><input type="text" id="ccGenCode" placeholder="e.g., HM-teapot-1A2B3C" autocomplete="off" spellcheck="false" maxlength="40"><button type="button" class="btn" id="ccGenFind">Find</button></div></div>
         <fieldset class="field cc-tierseg"><legend>Cognitive tier</legend><div class="seg" role="radiogroup">${[1, 2, 3].map(t => `<label><input type="radio" name="ccGenTier" value="${t}" ${s.tier === t ? "checked" : ""}><span>${esc(TIER_SHORT[t])}</span></label>`).join("")}</div>
           <p class="hint">${esc(C.TIERS[s.tier].about)}</p></fieldset>
       </form>
@@ -6749,53 +6804,82 @@ const CogniLibrary = (function(){
       <div class="cc-grid" id="ccGenGrid"></div>`;
     const f = el.querySelector("#ccGenForm");
     f.querySelectorAll(".cc-chip input").forEach(c => c.addEventListener("change", () => { g.themes = Array.from(f.querySelectorAll(".cc-chip input:checked")).map(x => x.value); save(); }));
-    f.querySelector("#ccGenCount").addEventListener("change", e => { g.count = +e.target.value || 12; save(); });
+    f.querySelector("#ccGenCount").addEventListener("change", e => { g.count = +e.target.value || 8; save(); });
+    f.querySelectorAll("[data-who]").forEach(i => i.addEventListener("input", () => { g.who[i.dataset.who] = i.value.slice(0, 80); save(); }));
     f.querySelectorAll('input[name="ccGenTier"]').forEach(r => r.addEventListener("change", e => { s.tier = +e.target.value; genNote = ""; save(); renderGen(el); renderPreview(); renderSelection(); }));
     f.querySelector("#ccGenGo").addEventListener("click", () => makePages(el));
     const find = () => {
-      const raw = f.querySelector("#ccGenCode").value.trim().toUpperCase(), sp = raw ? I.parse(raw) : null;
-      if (!sp){ genNote = raw ? `No page has the code ${raw}. Codes look like 2HB-QIBJMT: the tier, two letters for the theme, and the page number.` : "Type a page code first."; renderGen(el); return; }
-      const id = GEN + sp.code;
-      g.codes = [sp.code].concat(g.codes.filter(c => c !== sp.code)).slice(0, 24);
-      if (s.picks.indexOf(id) < 0){ s.picks.push(id); s.focus = s.picks.length - 1; }
-      if (sp.tier !== s.tier) s.tier = sp.tier;
-      genNote = `Found ${sp.title} (${sp.code}) and added it to your pages.`; save(); renderGen(el); renderSelection(); renderPreview();
+      const raw = f.querySelector("#ccGenCode").value.trim(), E = hyEngine(), c = raw ? E.parseCode(raw) : null, a = c && hyList().get(c.id);
+      if (a){
+        const code = E.code(c.stage, a.id, c.seed), id = HY + code;
+        g.codes = [code].concat(g.codes.filter(x => x !== code)).slice(0, 24);
+        if (s.picks.indexOf(id) < 0){ s.picks.push(id); s.focus = s.picks.length - 1; }
+        s.tier = STAGE_TIER[c.stage];
+        genNote = `Found ${a.title} (${code}) and added it to your pages.`; save(); renderGen(el); renderSelection(); renderPreview(); return;
+      }
+      const old = raw && C.infinite ? C.infinite.parse(raw.toUpperCase()) : null;       // a page code from the retired page generator
+      if (old){
+        const id = GEN + old.code;
+        if (s.picks.indexOf(id) < 0){ s.picks.push(id); s.focus = s.picks.length - 1; }
+        if (old.tier !== s.tier) s.tier = old.tier;
+        genNote = `Found ${old.title} (${old.code}), an earlier generated page, and added it to your pages.`; save(); renderGen(el); renderSelection(); renderPreview(); return;
+      }
+      genNote = raw ? `No page has the code ${raw}. Codes look like HM-teapot-1A2B3C: the stage, the picture and the page number.` : "Type a page code first.";
+      renderGen(el);
     };
     f.querySelector("#ccGenFind").addEventListener("click", find);
     f.querySelector("#ccGenCode").addEventListener("keydown", e => { if (e.key === "Enter"){ e.preventDefault(); find(); } });
     const all = el.querySelector("#ccGenAll");
     if (all) all.addEventListener("click", () => {
-      let n = 0; g.codes.forEach(c => { if (s.picks.indexOf(GEN + c) < 0){ s.picks.push(GEN + c); n++; } });
+      let n = 0; g.codes.forEach(c => { if (s.picks.indexOf(HY + c) < 0){ s.picks.push(HY + c); n++; } });
       s.pack = ""; save(); renderGenGrid(); renderSelection(); renderPreview(); toast(n ? `Added ${n} new page${n === 1 ? "" : "s"} to your pages.` : "These pages are already in your pages.");
     });
     renderGenGrid();
   }
   function makePages(el){
-    const s = state(), I = C.infinite, g = s.gen;
+    const s = state(), g = s.gen;
     if (genBusy) return;
     genBusy = true; renderGen(el);
     setTimeout(() => {
       try {
-        const seed = "web-" + Date.now().toString(36) + "-" + Math.floor(Math.random() * 1e9).toString(36), t0 = performance.now();
-        const out = I.batch({ seed:seed, count:g.count, tier:s.tier, themes:g.themes, avoid:s.avoid ? avoidList(resident()) : [], strokes:false, skip:g.codes });
-        g.codes = out.pages.map(p => p.spec.code);
+        const E = hyEngine(), M = hyList(), t0 = performance.now(), stage = TIER_STAGE[s.tier], p = resident();
+        const seed = ((Date.now() % 2147483647) ^ Math.floor(Math.random() * 2147483647)) >>> 0, rnd = M.rng(seed);
+        const keep = a => !g.themes.length || g.themes.indexOf(a.category) >= 0, last = g.codes.map(c => (E.parseCode(c) || {}).id).filter(Boolean);
+        const w = g.who, list = v => String(v || "").split(/[,;]+/).map(x => x.trim()).filter(Boolean);
+        const typed = !p && (w.born || w.work || w.hobbies || w.avoid) ? { born:w.born, former_profession:w.work, hobbies:list(w.hobbies), avoid:list(w.avoid) } : null;
+        let ids;
+        if (p || typed){
+          const prof = p ? hybridProfileOf(p) : typed; if (p && !s.avoid) delete prof.avoid;
+          ids = M.selectMany(prof, g.count, { stage, filter:keep, exclude:last, seed }).map(x => x.asset.id);
+        } else {
+          // a fresh shuffle, last set's pictures at the back
+          ids = M.assets().filter(a => keep(a) && a.dementiaStageCompatibility.indexOf(stage) >= 0)
+            .map(a => ({ id:a.id, k:rnd() + (last.indexOf(a.id) >= 0 ? 1 : 0) })).sort((x, y) => x.k - y.k).map(x => x.id).slice(0, g.count);
+        }
+        ids = ids.filter((id, i) => ids.indexOf(id) === i);
+        const codes = []; let rejected = 0;
+        ids.forEach((id, i) => {
+          const code = E.code(stage, id, ((seed + i * 7919) >>> 0) || 1), out = hyPage(HY + code, s.tier, "");
+          if (out && !E.validate(out.page).length) codes.push(code); else rejected++;
+        });
+        g.codes = codes;
         const ms = Math.round(performance.now() - t0);
-        genNote = out.pages.length ? `${out.pages.length} new page${out.pages.length === 1 ? "" : "s"}, drawn and checked in ${ms < 1000 ? ms + " ms" : (ms / 1000).toFixed(1) + " seconds"}` +
-          (out.rejected.length ? `. ${out.rejected.length} draft${out.rejected.length === 1 ? " was" : "s were"} drawn again because a check failed.` : ".") + " Choose any to add them to your pages."
-          : "No pages could be made with these choices. Try more themes.";
+        genNote = codes.length ? `${codes.length} new page${codes.length === 1 ? "" : "s"}, made and checked in ${ms < 1000 ? ms + " ms" : (ms / 1000).toFixed(1) + " seconds"}` +
+          (codes.length < g.count ? ` (every picture that suits ${p ? "them" : "these groups"})` : "") + (rejected ? `; ${rejected} left out because a check failed` : "") + ". Choose any to add them to your pages."
+          : "No pages could be made with these choices. Tick more groups.";
       } catch (e){ genNote = "The pages could not be made on this computer: " + e.message; }
       genBusy = false; save();
       if (root && root.isConnected && state().tab === "new") renderGen(el);
     }, 30);
   }
   function renderGenGrid(){
-    const s = state(), I = C.infinite, grid = root.querySelector("#ccGenGrid");
+    const s = state(), grid = root.querySelector("#ccGenGrid");
     if (!grid) return;
-    grid.innerHTML = s.gen.codes.map(code => { const id = GEN + code, it = info(id, s.tier); if (!it) return "";
-      const on = s.picks.indexOf(id) >= 0, th = I.THEME[it.theme];
-      return `<button type="button" class="cc-card" data-id="${esc(id)}" aria-pressed="${on}" aria-label="${esc(it.title)}, ${esc(th ? th.label : "")}, page code ${esc(it.code)}${on ? ", chosen" : ""}">
+    grid.innerHTML = s.gen.codes.map(code => { const id = HY + code, it = info(id, s.tier); if (!it) return "";
+      const on = s.picks.indexOf(id) >= 0, grp = HYBRID_GROUPS.filter(x => x[0] === it.theme)[0];
+      return `<button type="button" class="cc-card" data-id="${esc(id)}" aria-pressed="${on}" aria-label="${esc(it.title)}, page code ${esc(it.code)}${on ? ", chosen" : ""}">
         <span class="cc-thumb" aria-hidden="true">${thumbSvg(id, s.tier)}</span><span class="cc-check" aria-hidden="true">${on ? "&#10003;" : "+"}</span>
-        <b>${esc(it.title)}</b><small>${esc(th ? th.label : "")} · ${esc(it.code)}</small></button>`; }).join("");
+        <b>${esc(it.title)}</b><small>${esc(grp ? grp[1] : "")} · ${esc(it.code)}</small></button>`; }).join("");
     grid.querySelectorAll(".cc-card").forEach(b => b.addEventListener("click", () => toggle(b.dataset.id)));
   }
   function renderSelection(){
@@ -6831,11 +6915,15 @@ const CogniLibrary = (function(){
       <div class="cc-pv-nav"><button type="button" class="btn btn-ghost btn-sm" id="ccPrev" ${s.focus ? "" : "disabled"} aria-label="Previous page">&larr;</button>
         <span>Page ${s.focus + 1} of ${s.picks.length}${s.duplex ? ` · gutter on the ${F.gutterSide}` : ""}</span>
         <button type="button" class="btn btn-ghost btn-sm" id="ccNext" ${s.focus < s.picks.length - 1 ? "" : "disabled"} aria-label="Next page">&rarr;</button></div>
-      <p class="cc-perf">Lines ${esc(String(V.tierLines(lay.strokeTier, 3).linePx))} px (${esc(String(V.tierLines(lay.strokeTier, 3).linePt))} pt) at ${lay.blocks.art.w.toFixed(2)} in wide · prepared in ${pg.perf.toFixed(1)} ms</p>` + optionsHtml();
+      <p class="cc-perf">${isHy(o.design) ? hyLineNote(lay.tier) : `Lines ${esc(String(V.tierLines(lay.strokeTier, 3).linePx))} px (${esc(String(V.tierLines(lay.strokeTier, 3).linePt))} pt) at ${lay.blocks.art.w.toFixed(2)} in wide`} · prepared in ${pg.perf.toFixed(1)} ms</p>` + optionsHtml();
     scalePreview();
     el.querySelector("#ccPrev").addEventListener("click", () => { s.focus--; save(); renderSelection(); renderPreview(); });
     el.querySelector("#ccNext").addEventListener("click", () => { s.focus++; save(); renderSelection(); renderPreview(); });
     bindOptions(el);
+  }
+  function hyLineNote(tier){
+    const S = hyEngine().STAGES[TIER_STAGE[tier]], px = v => Math.round(v * 96 / 72 * 10) / 10;
+    return `${TIER_STAGE[tier][0].toUpperCase() + TIER_STAGE[tier].slice(1)} stage: picture lines ${px(S.line)} px (${S.line} pt), ${STAGE_LOOK[TIER_STAGE[tier]]}`;
   }
   function overlay(F){
     const g = F.gutterSide === "left", pct = (v, of) => (v / of * 100).toFixed(3) + "%";
@@ -11813,685 +11901,97 @@ const ORIENTATION_BOARD = {
   }
 };
 
-/* ---- 2. Therapeutic line art & coloring pages (3:4) ----
-   Clinical rules built into every template:
-     - pure black (#000) outlines, 3 pt to 6 pt, never thinner;
-     - no hatching, textures or busy backgrounds: one bold subject, a
-       ground or table line, and plain white space;
-     - adult, mid-century subjects, never cartoons.
-   Coordinates: a 300 x 400 viewBox (3:4) printed at 6 x 8 in, so one
-   unit = 1.44 pt. det = 1 "Standard" (more interior lines, for early
-   stage) or 0 "Simplified" (big open shapes, for middle to late stage).
-   Closed shapes are filled white (data-bw="white") so a shape drawn
-   later sits cleanly on top of one drawn earlier. */
+/* ---- 2. Coloring pages made for the resident (the hybrid coloring engine) ----
+   One clean subject chosen for the resident, from the finished drawings in
+   assets/coloring/<folder>/ (listed by src/services/ColoringManifest.js and
+   carried in assets/coloring/subjects.bundle.js, so nothing is fetched),
+   drawn by src/engine/ColoringEngine.js with a setting made for their stage:
+     Early     a patterned border, the title and an open prompt underneath;
+     Moderate  a bold border and a completion line, with the word to write
+               shown beside it, so there is no wrong answer;
+     Advanced  no border, very thick lines, fine detail left out and a
+               large title banner.
+   Pure black on white, lines never under 3 px (5 px at the late stage),
+   on US Letter with the 0.75 in binding gutter of the library's pages.
+   The library screen's New pages tab (CogniLibrary) makes them: the subject
+   is chosen from the resident (their saved profile, or a few details
+   typed there: the year they were born, their working life, their
+   hobbies), through broader subjects when there is no exact one, and
+   never anything on their avoid list. Every page gets its own border, and
+   a page code that prints the same page again.
 
-const ART_UNIT_PT = 72 * 6 / 300;   // 1.44 pt per viewBox unit
-
-/* Shared drawing helpers (st = { W, N, D, T } style strings). */
-const artH = {
-  // clock face: numerals (Roman or Arabic) and hands at h:m
-  clockFace(cx, cy, r, st, det, roman, h, m){
-    const R = ["XII","I","II","III","IV","V","VI","VII","VIII","IX","X","XI"];
-    let out = `<circle cx="${cx}" cy="${cy}" r="${r}" ${st.W}/>`;
-    const idx = det ? [0,1,2,3,4,5,6,7,8,9,10,11] : [0,3,6,9];
-    const fs = det ? r * .2 : r * .3;
-    idx.forEach(i => {
-      const a = i * Math.PI / 6 - Math.PI / 2, rr = r * (det ? .76 : .7);
-      const label = roman ? R[i] : String(i === 0 ? 12 : i);
-      out += `<text x="${(cx + Math.cos(a) * rr).toFixed(1)}" y="${(cy + Math.sin(a) * rr + fs * .36).toFixed(1)}" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-weight="700" font-size="${fs.toFixed(1)}" fill="#000">${label}</text>`;
-    });
-    const ha = ((h % 12) + m / 60) * Math.PI / 6 - Math.PI / 2, ma = m * Math.PI / 30 - Math.PI / 2;
-    out += `<path d="M${cx} ${cy} L${(cx + Math.cos(ha) * r * .45).toFixed(1)} ${(cy + Math.sin(ha) * r * .45).toFixed(1)}" ${st.T}/>`;
-    out += `<path d="M${cx} ${cy} L${(cx + Math.cos(ma) * r * .66).toFixed(1)} ${(cy + Math.sin(ma) * r * .66).toFixed(1)}" ${st.N}/>`;
-    return out + `<circle cx="${cx}" cy="${cy}" r="${(r * .07).toFixed(1)}" ${st.W}/>`;
-  },
-  wheel(x, y, r, st, det){
-    return `<circle cx="${x}" cy="${y}" r="${r}" ${st.W}/>` + (det ? `<circle cx="${x}" cy="${y}" r="${(r * .45).toFixed(1)}" ${st.D}/>` : "");
-  },
-  // rose seen from the side: a rounded bloom with cupped petals and a bud centre
-  rose(x, y, r, st, det){
-    const f = n => n.toFixed(1);
-    let o = `<path d="M${f(x - r)} ${f(y - r * .15)} Q${f(x - r * 1.05)} ${f(y + r * .8)} ${f(x)} ${f(y + r)} Q${f(x + r * 1.05)} ${f(y + r * .8)} ${f(x + r)} ${f(y - r * .15)} Q${f(x + r * .7)} ${f(y - r * .95)} ${f(x)} ${f(y - r * .8)} Q${f(x - r * .7)} ${f(y - r * .95)} ${f(x - r)} ${f(y - r * .15)} Z" ${st.W}/>`;
-    o += `<path d="M${f(x - r * .78)} ${f(y - r * .05)} Q${f(x)} ${f(y + r * .95)} ${f(x + r * .78)} ${f(y - r * .05)}" ${st.D}/>`;
-    if (det) o += `<path d="M${f(x - r * .5)} ${f(y - r * .3)} Q${f(x)} ${f(y + r * .4)} ${f(x + r * .5)} ${f(y - r * .3)}" ${st.D}/>`;
-    o += `<path d="M${f(x - r * .3)} ${f(y - r * .45)} Q${f(x)} ${f(y - r * .9)} ${f(x + r * .3)} ${f(y - r * .45)} Q${f(x)} ${f(y - r * .15)} ${f(x - r * .3)} ${f(y - r * .45)} Z" ${st.W}/>`;
-    return o;
-  },
-  daisy(x, y, r, st, n){
-    let out = "";
-    for (let i = 0; i < n; i++){
-      const a = i * 2 * Math.PI / n;
-      out += svgLeaf(x + Math.cos(a) * r * .3, y + Math.sin(a) * r * .3, x + Math.cos(a) * r, y + Math.sin(a) * r, r * .3, st.W);
-    }
-    return out + `<circle cx="${x}" cy="${y}" r="${(r * .32).toFixed(1)}" ${st.W}/>`;
-  },
-  flip(on, body){ return `<g${on ? ' transform="translate(300 0) scale(-1 1)"' : ""}>${body}</g>`; },
-  ground(y, st){ return `<path d="M20 ${y} L280 ${y}" ${st.N}/>`; }
+   The Packet Builder's first coloring pages were clip art drawn line by
+   line in this file. Those drawings are retired: a page from them still
+   queued in a saved packet now prints as the hybrid page of the same
+   subject (HYBRID_LEGACY), so no saved packet breaks. */
+const HYBRID_STAGE = { early:"early", moderate:"middle", advanced:"late" };
+const HYBRID_GROUPS = [["vehicles", "Classic vehicles and farm machinery"], ["nature", "Flowers, trees and the harvest"], ["animals", "Birds, pets and farm animals"],
+  ["objects", "Teatime, the porch and the garden shed"], ["nostalgia", "Clocks, radios, telephones and typewriters"]];
+/* the retired clip art's pictures in their original order (a saved packet plans the same ones), and what each prints as now */
+const HYBRID_LEGACY_KEYS = {
+  household:["grandclock", "rotaryphone", "wallclock", "sewing", "pocketwatch", "radio", "teapot"],
+  vehicles:["truck", "musclecar", "car", "tractor", "locomotive", "wagon"],
+  botanical:["tulips", "sunflowers", "geranium", "wateringcan", "gardengate", "glassvase"],
+  cozy:["porchswing", "rocker", "fireplace", "kitchenwindow"],
+  animals:["cat", "dog", "songbird", "owl", "duck", "goldfish"],
+  seasonal:["pumpkins", "applebasket", "snowman", "wreath", "birdhouse", "rainboots", "lemonade", "picnic"]
 };
-const rint = (rng, a, b) => a + rng.int(b - a + 1);
-
-const COLOR_ART = {
-  /* ================= A. Heirloom & retro household ================= */
-  grandclock: { group:"household", title:"The Grandfather Clock", talk:"Did your family have a clock that chimed? Where did it stand?",
-    draw(rng, det, st){
-      const h = rint(rng, 1, 12), m = rng.pick([0, 15, 30, 45]);
-      let o = `<path d="M88 72 L88 60 Q150 18 212 60 L212 72 Z" ${st.W}/>`;
-      if (det) o += `<circle cx="88" cy="52" r="7" ${st.W}/><circle cx="212" cy="52" r="7" ${st.W}/><circle cx="150" cy="30" r="7" ${st.W}/>`;
-      o += `<rect x="94" y="72" width="112" height="112" rx="6" ${st.W}/>`;
-      o += artH.clockFace(150, 128, 44, st, det, true, h, m);
-      o += `<rect x="108" y="184" width="84" height="150" ${st.W}/>`;
-      o += `<path d="M124 318 L124 226 Q150 194 176 226 L176 318 Z" ${st.W}/>`;
-      o += `<path d="M150 204 L150 278" ${st.N}/><circle cx="150" cy="290" r="15" ${st.W}/>`;
-      o += `<rect x="98" y="334" width="104" height="40" rx="3" ${st.W}/><rect x="90" y="372" width="120" height="12" rx="4" ${st.W}/>`;
-      if (det) o += `<rect x="114" y="342" width="72" height="24" rx="5" ${st.D}/><path d="M100 184 L108 184 M192 184 L200 184" ${st.D}/>`;
-      return { svg:o + artH.ground(386, st), sig:`gc${h}:${m}` };
-    } },
-  rotaryphone: { group:"household", title:"The Rotary Telephone", talk:"Tell me about the telephone in your house. Who did you call most?",
-    draw(rng, det, st){
-      const flip = rng.next() < .5;
-      let o = `<path d="M74 334 C28 330 30 232 64 212" ${st.N}/>`;
-      o += `<rect x="58" y="330" width="184" height="16" rx="6" ${st.W}/>`;
-      o += `<path d="M72 332 L92 222 Q96 206 112 206 L188 206 Q204 206 208 222 L228 332 Z" ${st.W}/>`;
-      o += `<path d="M58 198 Q58 176 84 176 L216 176 Q242 176 242 198 L242 206 Q242 216 228 216 L212 216 Q200 216 196 204 L104 204 Q100 216 88 216 L72 216 Q58 216 58 206 Z" ${st.W}/>`;
-      if (det) o += `<circle cx="80" cy="196" r="9" ${st.D}/><circle cx="220" cy="196" r="9" ${st.D}/>`;
-      o += `<circle cx="150" cy="276" r="44" ${st.W}/>`;
-      if (det){
-        for (let i = 0; i < 10; i++){ const a = (-60 + i * 27) * Math.PI / 180; o += `<circle cx="${(150 + Math.cos(a) * 30).toFixed(1)}" cy="${(276 + Math.sin(a) * 30).toFixed(1)}" r="7" ${st.D}/>`; }
-      }
-      o += `<circle cx="150" cy="276" r="${det ? 15 : 20}" ${st.W}/>`;
-      return { svg:artH.flip(flip, o) + artH.ground(356, st), sig:"rp" + flip };
-    } },
-  wallclock: { group:"household", title:"The Schoolhouse Clock", talk:"Was there a clock like this in your school or kitchen?",
-    draw(rng, det, st){
-      const h = rint(rng, 1, 12), m = rng.pick([0, 5, 10, 15, 20, 30, 40, 45, 50]);
-      const pts = []; for (let i = 0; i < 8; i++){ const a = Math.PI / 8 + i * Math.PI / 4; pts.push((150 + Math.cos(a) * 94).toFixed(1) + "," + (142 + Math.sin(a) * 94).toFixed(1)); }
-      let o = `<circle cx="150" cy="40" r="5" ${st.W}/><path d="M104 222 L196 222 L186 332 L114 332 Z" ${st.W}/>`;
-      o += `<polygon points="${pts.join(" ")}" ${st.W}/>`;
-      o += artH.clockFace(150, 142, 70, st, det, false, h, m);
-      o += `<rect x="128" y="244" width="44" height="66" rx="8" ${st.W}/><path d="M150 244 L150 286" ${st.N}/><circle cx="150" cy="292" r="10" ${st.W}/>`;
-      o += `<rect x="138" y="332" width="24" height="12" rx="3" ${st.W}/>`;
-      if (det) o += `<path d="M114 322 L186 322" ${st.D}/>`;
-      return { svg:o, sig:`wc${h}:${m}` };
-    } },
-  sewing: { group:"household", title:"The Sewing Machine", talk:"Did you or someone in your family sew? What did you make?",
-    draw(rng, det, st){
-      const flip = rng.next() < .5;
-      let o = `<rect x="44" y="268" width="14" height="104" ${st.W}/><rect x="242" y="268" width="14" height="104" ${st.W}/>`;
-      if (det) o += `<rect x="58" y="340" width="184" height="10" ${st.W}/><rect x="110" y="352" width="80" height="12" rx="4" ${st.W}/>`;
-      o += `<rect x="28" y="250" width="244" height="18" rx="4" ${st.W}/>`;
-      if (det) o += `<rect x="186" y="268" width="56" height="26" rx="3" ${st.W}/><circle cx="214" cy="281" r="4" ${st.D}/>`;
-      o += `<rect x="58" y="232" width="184" height="18" rx="4" ${st.W}/>`;
-      o += `<path d="M230 232 L230 150 Q230 128 208 128 L90 128 Q70 128 70 148 L70 202 L104 202 L104 166 L192 166 L192 232 Z" ${st.W}/>`;
-      o += `<circle cx="240" cy="172" r="20" ${st.W}/>` + (det ? `<circle cx="240" cy="172" r="8" ${st.D}/>` : "");
-      o += `<path d="M86 202 L86 224" ${st.N}/><rect x="76" y="222" width="20" height="8" rx="2" ${st.W}/>`;
-      if (det) o += `<rect x="146" y="108" width="18" height="20" rx="3" ${st.W}/><path d="M155 108 Q120 96 90 128" ${st.D}/>`;
-      return { svg:artH.flip(flip, o) + artH.ground(374, st), sig:"sw" + flip };
-    } },
-  pocketwatch: { group:"household", title:"The Pocket Watch", talk:"Did anyone in your family carry a pocket watch? Who wound it?",
-    draw(rng, det, st){
-      const h = rint(rng, 1, 12), m = rng.pick([0, 10, 15, 25, 30, 45, 50]), side = rng.next() < .5 ? 1 : -1;
-      let o = "";
-      // fob chain: a smooth curve of oval links (Standard) or one bold cord (Simplified)
-      const P0 = [150, 84], C = [150 + side * 70, 18], P1 = [150 + side * 112, 96];
-      const at = t => [(1 - t) * (1 - t) * P0[0] + 2 * (1 - t) * t * C[0] + t * t * P1[0], (1 - t) * (1 - t) * P0[1] + 2 * (1 - t) * t * C[1] + t * t * P1[1]];
-      if (det){
-        for (let i = 1; i < 12; i++){
-          const t = i / 12, [x, y] = at(t), [x2, y2] = at(t + .01);
-          const ang = Math.atan2(y2 - y, x2 - x) * 180 / Math.PI + (i % 2 ? 0 : 90);
-          o += `<ellipse cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" rx="8" ry="4.5" transform="rotate(${ang.toFixed(0)} ${x.toFixed(1)} ${y.toFixed(1)})" ${st.W}/>`;
-        }
-      } else o += `<path d="M${P0[0]} ${P0[1]} Q${C[0]} ${C[1]} ${P1[0]} ${P1[1]}" ${st.T}/>`;
-      o += `<circle cx="${P1[0]}" cy="${P1[1]}" r="6" ${st.W}/><rect x="${P1[0] - 16}" y="${P1[1] + 5}" width="32" height="9" rx="4" ${st.W}/>`;
-      o += `<circle cx="150" cy="94" r="15" ${st.T}/>`;
-      o += `<rect x="141" y="112" width="18" height="18" rx="3" ${st.W}/><circle cx="150" cy="112" r="11" ${st.W}/>`;
-      o += `<circle cx="150" cy="236" r="104" ${st.W}/>`;
-      o += artH.clockFace(150, 236, 86, st, det, true, h, m);
-      if (det) o += `<circle cx="150" cy="284" r="15" ${st.D}/>`;
-      return { svg:o, sig:`pw${h}:${m}${side}` };
-    } },
-  radio: { group:"household", title:"The Family Radio", talk:"What did you like to listen to on the radio? Who listened with you?",
-    draw(rng, det, st){
-      const cathedral = rng.next() < .5;
-      let o = "";
-      if (cathedral){
-        o += `<rect x="52" y="300" width="196" height="16" rx="5" ${st.W}/><path d="M60 300 L60 200 Q60 120 150 120 Q240 120 240 200 L240 300 Z" ${st.W}/>`;
-        o += `<path d="M92 232 L92 202 Q92 152 150 152 Q208 152 208 202 L208 232 Z" ${st.W}/>`;
-        if (det) for (let x = 118; x <= 182; x += 32) o += `<path d="M${x} ${x === 150 ? 158 : 168} V228" ${st.D}/>`;
-        o += `<circle cx="150" cy="264" r="20" ${st.W}/><circle cx="100" cy="270" r="12" ${st.W}/><circle cx="200" cy="270" r="12" ${st.W}/>`;
-      } else {
-        o += `<path d="M100 172 Q150 120 200 172" ${st.T}/><rect x="40" y="170" width="220" height="146" rx="18" ${st.W}/><circle cx="106" cy="243" r="46" ${st.W}/>`;
-        if (det) o += `<circle cx="106" cy="243" r="26" ${st.D}/>`;
-        o += `<rect x="170" y="200" width="70" height="32" rx="6" ${st.W}/><circle cx="186" cy="274" r="12" ${st.W}/><circle cx="226" cy="274" r="12" ${st.W}/>`;
-        if (det) o += `<path d="M190 208 V224 M205 208 V224 M220 208 V224" ${st.D}/>`;
-      }
-      return { svg:o + artH.ground(330, st), sig:"rad" + (cathedral ? "c" : "b") };
-    } },
-  teapot: { group:"household", title:"Teatime", talk:"Do you take your tea or coffee with milk or sugar? Who did you share it with?",
-    draw(rng, det, st){
-      const flip = rng.next() < .5;
-      let o = `<path d="M184 312 Q222 300 232 256 L246 260 Q238 322 188 334 Z" ${st.W}/><path d="M56 280 C16 278 16 344 60 334" ${st.T}/>`;
-      o += `<ellipse cx="120" cy="304" rx="70" ry="54" ${st.W}/><path d="M86 254 Q120 222 154 254 Z" ${st.W}/><ellipse cx="120" cy="254" rx="38" ry="7" ${st.W}/><circle cx="120" cy="226" r="9" ${st.W}/>`;
-      if (det) o += `<path d="M56 290 Q120 306 184 290 M52 318 Q120 334 188 318" ${st.D}/>`;
-      o += `<path d="M270 324 C292 324 292 348 266 344" ${st.N}/><ellipse cx="238" cy="356" rx="44" ry="8" ${st.W}/><path d="M204 316 L272 316 Q268 352 238 352 Q208 352 204 316 Z" ${st.W}/>`;
-      return { svg:artH.flip(flip, o) + artH.ground(364, st), sig:"tea" + flip };
-    } },
-
-  /* ================= B. Classic vehicles & rural machinery ================= */
-  truck: { group:"vehicles", title:"The 1950s Pickup Truck", talk:"Did your family have a truck? What did you haul in it?",
-    draw(rng, det, st){
-      const flip = rng.next() < .5;
-      let t = `<path d="M26 282 L26 238 L148 238 L148 190 Q148 182 158 182 L206 182 Q216 182 222 192 L242 232 L266 236 Q278 238 278 254 L278 282 Z" ${st.W}/>`;
-      t += `<path d="M160 192 L204 192 Q210 192 214 200 L230 230 L160 230 Z" ${st.W}/><circle cx="268" cy="252" r="7" ${st.W}/><rect x="268" y="268" width="14" height="12" rx="3" ${st.W}/>`;
-      if (det) t += `<path d="M26 252 L148 252 M162 238 L162 276 M174 250 L186 250" ${st.D}/>`;
-      t += artH.wheel(78, 284, 28, st, det) + artH.wheel(226, 284, 28, st, det);
-      return { svg:artH.flip(flip, t) + artH.ground(312, st), sig:"trk" + flip };
-    } },
-  musclecar: { group:"vehicles", title:"The Muscle Car", talk:"What was the fastest car you ever rode in? Who was driving?",
-    draw(rng, det, st){
-      const flip = rng.next() < .5, scoop = rng.next() < .5;
-      let c = `<path d="M22 278 L22 252 Q24 240 42 238 L98 234 L138 202 Q144 197 156 197 L196 199 Q204 200 210 207 L236 234 L268 238 Q282 242 282 256 L282 278 Z" ${st.W}/>`;
-      c += `<path d="M146 207 L196 207 Q200 207 204 212 L220 232 L126 232 Z" ${st.W}/>`;
-      if (scoop) c += `<path d="M238 238 L262 238 L258 230 L242 230 Z" ${st.W}/>`;
-      if (det) c += `<path d="M174 207 L174 232 M40 256 L270 256" ${st.D}/>`;
-      c += `<rect x="272" y="262" width="14" height="10" rx="3" ${st.W}/><rect x="16" y="262" width="14" height="10" rx="3" ${st.W}/>`;
-      c += artH.wheel(80, 280, 29, st, det) + artH.wheel(228, 280, 29, st, det);
-      return { svg:artH.flip(flip, c) + artH.ground(310, st), sig:"mc" + flip + scoop };
-    } },
-  car: { group:"vehicles", title:"The 1950s Sedan", talk:"What was the first car you drove or rode in? Where did you go?",
-    draw(rng, det, st){
-      const flip = rng.next() < .5, fin = rng.next() < .6;
-      let c = `<path d="M40 280 L40 255 Q42 242 60 240 L95 238 L120 206 Q126 200 140 200 L190 200 Q200 200 208 208 L230 236 L255 240 Q268 244 268 258 L268 280 Z" ${st.W}/>`;
-      if (fin) c += `<path d="M40 254 L43 233 L98 241 L98 244 Z" ${st.W}/>`;
-      c += `<path d="M126 212 Q130 208 138 208 L160 208 L160 235 L110 235 Z" ${st.W}/><path d="M168 208 L192 208 Q198 208 204 216 L218 235 L168 235 Z" ${st.W}/>`;
-      c += `<rect x="258" y="266" width="18" height="12" rx="4" ${st.W}/><rect x="30" y="266" width="16" height="12" rx="4" ${st.W}/><circle cx="258" cy="254" r="6" ${st.W}/>`;
-      if (det) c += `<path d="M164 242 L164 276 M176 254 L188 254" ${st.D}/>`;
-      c += artH.wheel(85, 282, 26, st, det) + artH.wheel(220, 282, 26, st, det);
-      return { svg:artH.flip(flip, c) + artH.ground(310, st), sig:"car" + flip + fin };
-    } },
-  tractor: { group:"vehicles", title:"The Farm Tractor", talk:"Did you ever drive a tractor or visit a farm? What was grown there?",
-    draw(rng, det, st){
-      const flip = rng.next() < .5;
-      // a plain barn behind: big shapes only
-      let barn = `<path d="M150 214 L150 110 L172 80 L220 62 L268 80 L290 110 L290 214 Z" ${st.W}/>`;
-      barn += `<rect x="198" y="146" width="48" height="68" ${st.W}/>`;
-      if (det) barn += `<path d="M198 146 L246 214 M246 146 L198 214" ${st.D}/><rect x="210" y="94" width="24" height="24" ${st.W}/>`;
-      let t = `<rect x="84" y="200" width="9" height="40" ${st.W}/><rect x="80" y="194" width="17" height="7" rx="2" ${st.W}/>`;
-      t += `<rect x="44" y="236" width="122" height="40" rx="9" ${st.W}/>`;
-      if (det) t += `<path d="M56 244 L56 268 M66 244 L66 268 M76 244 L76 268" ${st.D}/>`;
-      t += `<path d="M168 236 L180 204" ${st.N}/><ellipse cx="181" cy="202" rx="13" ry="5" ${st.W}/>`;
-      t += `<path d="M144 276 Q148 212 200 210 Q252 212 258 276 L244 276 Q240 226 200 226 Q160 226 158 276 Z" ${st.W}/>`;
-      t += `<rect x="206" y="196" width="28" height="9" rx="3" ${st.W}/><rect x="228" y="174" width="9" height="26" rx="3" ${st.W}/>`;
-      t += artH.wheel(200, 284, 52, st, det) + artH.wheel(70, 308, 28, st, det);
-      return { svg:artH.flip(flip, barn + t) + artH.ground(336, st), sig:"tr" + flip };
-    } },
-  locomotive: { group:"vehicles", title:"The Steam Locomotive", talk:"Did you ever ride on a train? Where were you going?",
-    draw(rng, det, st){
-      const flip = rng.next() < .5;
-      let l = "";
-      if (det) l += svgCloud(104, 150, 14, st.W) + svgCloud(146, 116, 12, st.W);
-      l += `<path d="M66 218 L62 180 L98 180 L94 218 Z" ${st.W}/><rect x="58" y="172" width="44" height="10" rx="3" ${st.W}/>`;
-      l += `<path d="M122 218 Q122 196 136 196 Q150 196 150 218 Z" ${st.W}/>`;
-      l += `<path d="M58 218 L204 218 L204 272 L58 272 Q42 245 58 218 Z" ${st.W}/>`;
-      if (det) l += `<path d="M78 218 L78 272" ${st.D}/>`;
-      l += `<rect x="198" y="176" width="74" height="96" ${st.W}/><rect x="192" y="166" width="86" height="12" rx="4" ${st.W}/><rect x="212" y="190" width="44" height="36" rx="4" ${st.W}/>`;
-      l += `<rect x="40" y="272" width="238" height="12" ${st.W}/><polygon points="40,284 20,316 58,316 58,284" ${st.W}/>`;
-      [112, 162, 212].forEach(x => { l += artH.wheel(x, 300, 26, st, det); });
-      l += `<circle cx="62" cy="312" r="14" ${st.W}/>`;
-      if (det) l += `<path d="M112 306 L212 306" ${st.T}/>`;
-      return { svg:artH.flip(flip, l) + artH.ground(328, st), sig:"lo" + flip };
-    } },
-  wagon: { group:"vehicles", title:"The Station Wagon", talk:"Did your family take road trips? Who sat in the back seat?",
-    draw(rng, det, st){
-      const flip = rng.next() < .5, rack = rng.next() < .5;
-      let w = "";
-      if (det && rack) w += `<path d="M40 184 L196 184 M56 184 L56 192 M118 184 L118 192 M180 184 L180 192" ${st.D}/>`;
-      w += `<path d="M22 280 L22 206 Q22 194 36 194 L200 194 Q210 194 215 202 L234 234 L268 238 Q282 242 282 256 L282 280 Z" ${st.W}/>`;
-      w += `<rect x="34" y="204" width="48" height="28" rx="3" ${st.W}/><rect x="90" y="204" width="48" height="28" rx="3" ${st.W}/><rect x="146" y="204" width="52" height="28" rx="3" ${st.W}/><path d="M206 204 L212 204 L228 232 L206 232 Z" ${st.W}/>`;
-      if (det) w += `<rect x="34" y="242" width="172" height="26" rx="3" ${st.D}/><path d="M92 242 L92 268 M148 242 L148 268" ${st.D}/>`;
-      w += `<rect x="272" y="264" width="14" height="10" rx="3" ${st.W}/><rect x="16" y="264" width="14" height="10" rx="3" ${st.W}/><circle cx="272" cy="252" r="6" ${st.W}/>`;
-      w += artH.wheel(76, 282, 27, st, det) + artH.wheel(230, 282, 27, st, det);
-      return { svg:artH.flip(flip, w) + artH.ground(310, st), sig:"sw" + flip + rack };
-    } },
-
-  /* ================= C. Botanical & garden flora ================= */
-  tulips: { group:"botanical", title:"Tulips in a Vase", talk:"Did you ever grow flowers? Which were your favourites?",
-    draw(rng, det, st){
-      const n = det ? 5 : 3, s = det ? 24 : 30;
-      const heads = Array.from({ length:n }, (_, i) => [85 + (130 * (i + .5) / n) + (rng.next() - .5) * 14, (i % 2 ? 150 : 100) + rng.int(30)]);
-      const tall = rng.next() < .5;
-      let o = "";
-      heads.forEach(([x, y]) => { o += `<path d="M${x.toFixed(1)} ${(y + s * .4).toFixed(1)} Q${((x + 150) / 2).toFixed(1)} ${((y + 272) / 2).toFixed(1)} ${(150 + (x - 150) * .12).toFixed(1)} 276" ${st.N}/>`; });
-      const lt = [86, 198], rt = [214, 206];
-      o += svgLeaf(150, 276, lt[0], lt[1], 16, st.W) + svgLeaf(150, 276, rt[0], rt[1], 16, st.W);
-      if (det) o += `<path d="M150 276 L${150 + (lt[0] - 150) * .8} ${276 + (lt[1] - 276) * .8} M150 276 L${150 + (rt[0] - 150) * .8} ${276 + (rt[1] - 276) * .8}" ${st.D}/>`;
-      heads.forEach(([x, y]) => {
-        o += `<path d="M${x - s} ${y} C${x - s} ${y - 1.2 * s} ${x - .4 * s} ${y - 1.5 * s} ${x - .35 * s} ${y - 1.1 * s} L${x} ${y - 1.55 * s} L${x + .35 * s} ${y - 1.1 * s} C${x + .4 * s} ${y - 1.5 * s} ${x + s} ${y - 1.2 * s} ${x + s} ${y} C${x + s} ${y + .75 * s} ${x - s} ${y + .75 * s} ${x - s} ${y} Z" ${st.W}/>`;
-        if (det) o += `<path d="M${x - .35 * s} ${y - 1.1 * s} Q${x} ${y - .1 * s} ${x + .35 * s} ${y - 1.1 * s}" ${st.D}/>`;
-      });
-      o += tall ? `<path d="M120 386 L112 292 L100 272 L200 272 L188 292 L180 386 Z" ${st.W}/>`
-                : `<path d="M115 386 C80 352 85 302 120 286 L120 272 L180 272 L180 286 C215 302 220 352 185 386 Z" ${st.W}/>`;
-      if (det) o += tall ? `<path d="M110 330 L190 330" ${st.D}/>` : `<path d="M90 330 Q150 346 210 330" ${st.D}/>`;
-      return { svg:o, sig:"tul" + (tall ? "t" : "j") + heads.map(h => h.map(Math.round).join(",")).join(";") };
-    } },
-  sunflowers: { group:"botanical", title:"Sunflowers", talk:"Where have you seen sunflowers growing? Did you ever eat the seeds?",
-    draw(rng, det, st){
-      const layouts = det ? [[[108, 120, 34], [200, 196, 30]], [[190, 115, 34], [104, 200, 30]]] : [[[150, 150, 46]]];
-      const heads = rng.pick(layouts);
-      let stems = "", leaves = "", flowers = "";
-      heads.forEach(([cx, cy, r]) => {
-        const bx = cx + (rng.next() - .5) * 30;
-        stems += `<path d="M${cx} ${cy + r} Q${((cx + bx) / 2 + 12).toFixed(1)} ${(cy + 390) / 2} ${bx.toFixed(1)} 392" ${st.N}/>`;
-        const ly = cy + r + 60 + rng.int(40), side = rng.next() < .5 ? -1 : 1;
-        leaves += svgLeaf((cx + bx) / 2 + 6, ly, (cx + bx) / 2 + 6 + side * 52, ly - 34, 15, st.W);
-        const n = det ? 14 + rng.int(4) : 12, rot = rng.next() * Math.PI, L = r * 1.25;
-        for (let i = 0; i < n; i++){
-          const a = rot + i * 2 * Math.PI / n;
-          flowers += svgLeaf(cx + Math.cos(a) * r * .8, cy + Math.sin(a) * r * .8, cx + Math.cos(a) * (r + L), cy + Math.sin(a) * (r + L), r * Math.sin(Math.PI / n) * 1.25, st.W);
-        }
-        flowers += `<circle cx="${cx}" cy="${cy}" r="${r}" ${st.W}/>` + (det ? `<circle cx="${cx}" cy="${cy}" r="${(r * .55).toFixed(1)}" ${st.D}/>` : "");
-      });
-      return { svg:stems + leaves + flowers, sig:"sun" + JSON.stringify(heads) + stems.length };
-    } },
-  geranium: { group:"botanical", title:"The Porch Geranium", talk:"What grew on your porch or windowsill? Who watered it?",
-    draw(rng, det, st){
-      const clusters = [[100 + rint(rng, -8, 8), 128 + rint(rng, -8, 8)], [172 + rint(rng, -8, 8), 106 + rint(rng, -8, 8)], [212 + rint(rng, -8, 8), 170 + rint(rng, -8, 8)]].slice(0, det ? 3 : 2);
-      let o = clusters.map(([x, y]) => `<path d="M${x} ${y + 16} Q${(x + 150) / 2} ${(y + 250) / 2} 150 258" ${st.N}/>`).join("");
-      const leaves = [[108, 242, 28], [192, 238, 30], [150, 222, 26], [124, 270, 24], [178, 272, 24]].slice(0, det ? 5 : 3);
-      leaves.forEach(([x, y, r]) => { o += `<circle cx="${x}" cy="${y}" r="${r}" ${st.W}/>`; if (det) o += `<circle cx="${x}" cy="${y}" r="${(r * .58).toFixed(1)}" ${st.D}/>`; });   // the dark "zone" ring of a zonal geranium leaf
-      clusters.forEach(([x, y]) => {
-        const pr = det ? 11 : 15;
-        for (let k = 0; k < 5; k++){ const a = k * 2 * Math.PI / 5 - Math.PI / 2; o += `<circle cx="${(x + Math.cos(a) * pr * 1.1).toFixed(1)}" cy="${(y + Math.sin(a) * pr * 1.1).toFixed(1)}" r="${pr}" ${st.W}/>`; }
-        o += `<circle cx="${x}" cy="${y}" r="${(pr * .8).toFixed(1)}" ${st.W}/>`;
-      });
-      o += `<path d="M100 300 L112 380 L188 380 L200 300 Z" ${st.W}/><rect x="88" y="284" width="124" height="22" rx="4" ${st.W}/>`;
-      return { svg:o + artH.ground(382, st), sig:"ger" + clusters.join(";") };
-    } },
-  wateringcan: { group:"botanical", title:"Roses and the Watering Can", talk:"Did you grow roses? What colour were they?",
-    draw(rng, det, st){
-      const flip = rng.next() < .5;
-      const heads = [[96 + rint(rng, -8, 8), 170 + rint(rng, -10, 10)], [150 + rint(rng, -8, 8), 128 + rint(rng, -10, 10)], [204 + rint(rng, -8, 8), 168 + rint(rng, -10, 10)]].slice(0, det ? 3 : 2);
-      let o = heads.map(([x, y]) => `<path d="M${x} ${y + 20} Q${(x + 130) / 2} ${(y + 290) / 2} ${118 + (x - 150) * .2} 292" ${st.N}/>`).join("");
-      heads.forEach(([x, y], i) => { const lx = (x + 124) / 2, ly = (y + 290) / 2; o += svgLeaf(lx, ly, lx + (i % 2 ? 30 : -30), ly - 16, 10, st.W); });
-      heads.forEach(([x, y]) => { o += artH.rose(x, y, det ? 24 : 30, st, det); });
-      o += `<path d="M66 304 C22 298 24 362 64 364" ${st.T}/>`;
-      o += `<path d="M172 348 L244 286 L254 296 L184 362 Z" ${st.W}/><ellipse cx="252" cy="288" rx="14" ry="9" transform="rotate(-40 252 288)" ${st.W}/>`;
-      o += `<path d="M62 380 L72 290 L172 290 L182 380 Z" ${st.W}/><ellipse cx="122" cy="290" rx="50" ry="7" ${st.W}/>`;
-      if (det) o += `<path d="M68 322 L178 322" ${st.D}/>`;
-      return { svg:artH.flip(flip, o) + artH.ground(382, st), sig:"wcan" + flip + heads.join(";") };
-    } },
-  gardengate: { group:"botanical", title:"The Garden Gate", talk:"Tell me about a garden you loved. What grew along the fence?",
-    draw(rng, det, st){
-      const pickets = det ? 6 : 5, arch = rng.next() < .6;
-      let o = "";
-      if (arch) o += `<path d="M52 132 Q150 34 248 132" ${st.T}/>`;
-      const w = 164 / pickets;
-      for (let i = 0; i < pickets; i++){ const x = 68 + i * w; o += `<polygon points="${(x + 2).toFixed(1)},362 ${(x + 2).toFixed(1)},206 ${(x + w / 2).toFixed(1)},190 ${(x + w - 2).toFixed(1)},206 ${(x + w - 2).toFixed(1)},362" ${st.W}/>`; }
-      o += `<rect x="68" y="232" width="164" height="14" ${st.W}/><rect x="68" y="322" width="164" height="14" ${st.W}/>`;
-      if (det) o += `<path d="M78 318 L222 250" ${st.D}/>`;
-      o += `<rect x="40" y="132" width="26" height="250" ${st.W}/><rect x="234" y="132" width="26" height="250" ${st.W}/><rect x="34" y="122" width="38" height="14" rx="3" ${st.W}/><rect x="228" y="122" width="38" height="14" rx="3" ${st.W}/>`;
-      if (det) o += `<circle cx="53" cy="112" r="10" ${st.W}/><circle cx="247" cy="112" r="10" ${st.W}/>`;
-      // climbing vine: one smooth stem up the left post and over, with leaves and a few blooms
-      const vine = arch ? "M36 380 C70 330 20 260 56 200 C80 160 90 110 150 86 C200 70 230 100 246 126" : "M36 380 C70 330 20 260 56 200 C72 170 60 140 54 124";
-      o += `<path d="${vine}" ${st.N}/>`;
-      const leafAt = arch ? [[48, 330], [40, 268], [60, 206], [86, 148], [128, 96], [182, 80], [226, 100]] : [[48, 330], [40, 268], [60, 206], [60, 150]];
-      leafAt.slice(0, det ? leafAt.length : 4).forEach(([x, y], i) => { o += svgLeaf(x, y, x + (i % 2 ? 26 : -22), y - 18, 9, st.W); });
-      (arch ? [[112, 112], [206, 84]] : [[70, 176]]).forEach(([x, y]) => { o += artH.rose(x, y, 14, st, 0); });
-      return { svg:o + artH.ground(384, st), sig:"gate" + pickets + arch };
-    } },
-  glassvase: { group:"botanical", title:"Flowers in a Glass Vase", talk:"Who gave you flowers, or who did you give them to?",
-    draw(rng, det, st){
-      const spots = rng.shuffle([[92, 150], [150, 108], [208, 150], [120, 212], [184, 214]]).slice(0, det ? 5 : 3);
-      let o = spots.map(([x, y]) => `<path d="M${x} ${y} Q${(x + 150) / 2} ${(y + 300) / 2} 150 ${det ? 360 : 300}" ${st.N}/>`).join("");
-      o += svgLeaf(150, 280, 92, 244, 14, st.W) + svgLeaf(150, 280, 210, 246, 14, st.W);
-      spots.forEach(([x, y], i) => { o += i % 2 ? artH.rose(x, y, det ? 24 : 30, st, det) : artH.daisy(x, y, det ? 36 : 42, st, det ? 10 : 8); });
-      // the glass bowl is left unfilled so the stems show through, as they would in water
-      o += `<path d="M112 282 L188 282 L188 296 Q232 322 214 360 Q200 386 150 386 Q100 386 86 360 Q68 322 112 296 Z" ${st.N}/>`;
-      if (det) o += `<path d="M84 330 Q150 342 216 330" ${st.D}/>`;
-      return { svg:o + artH.ground(390, st), sig:"gv" + spots.join(";") };
-    } },
-
-  /* ================= D. Cozy reminiscence & scenic moments ================= */
-  porchswing: { group:"cozy", title:"The Porch Swing", talk:"Did you have a porch or a swing at home? Who sat there with you?",
-    draw(rng, det, st){
-      const pillow = rng.next() < .5 ? 80 : 180;
-      let o = `<rect x="16" y="36" width="268" height="18" ${st.W}/>`;
-      o += `<path d="M58 54 L50 214 M242 54 L250 214" ${st.T}/>`;
-      o += `<rect x="44" y="200" width="212" height="62" rx="6" ${st.W}/>`;
-      if (det) for (let x = 74; x < 250; x += 30) o += `<path d="M${x} 206 L${x} 256" ${st.D}/>`;
-      if (det) o += `<rect x="${pillow}" y="228" width="50" height="36" rx="12" ${st.W}/>`;
-      o += `<path d="M38 262 L262 262 L272 290 L28 290 Z" ${st.W}/><rect x="28" y="236" width="14" height="40" rx="3" ${st.W}/><rect x="258" y="236" width="14" height="40" rx="3" ${st.W}/>`;
-      return { svg:o + artH.ground(360, st), sig:"ps" + pillow };
-    } },
-  rocker: { group:"cozy", title:"The Rocking Chair", talk:"Who rocked in a chair like this in your family? What did they do while they rocked?",
-    draw(rng, det, st){
-      const flip = rng.next() < .5, blanket = rng.next() < .5;
-      let o = `<path d="M92 262 L70 112 L84 110 L106 262 Z" ${st.W}/><rect x="60" y="96" width="36" height="16" rx="6" ${st.W}/>`;
-      if (det) o += `<path d="M80 128 L96 250" ${st.D}/>`;
-      o += `<rect x="94" y="276" width="12" height="80" ${st.W}/><rect x="204" y="276" width="12" height="84" ${st.W}/>`;
-      o += `<path d="M86 262 L222 262 L226 278 L82 278 Z" ${st.W}/>`;
-      if (det) o += `<rect x="98" y="248" width="112" height="16" rx="7" ${st.W}/>`;
-      o += `<rect x="206" y="214" width="10" height="50" ${st.W}/><path d="M100 202 L222 208 Q232 210 230 220 L226 224 L102 216 Z" ${st.W}/>`;
-      if (det && blanket) o += `<path d="M140 208 Q150 240 138 276 L172 276 Q182 240 170 210 Z" ${st.W}/>`;
-      o += `<path d="M36 350 Q150 386 264 346 L266 356 Q150 398 34 360 Z" ${st.W}/>`;
-      return { svg:artH.flip(flip, o), sig:"rk" + flip + blanket };
-    } },
-  fireplace: { group:"cozy", title:"The Stone Fireplace", talk:"Did you have a fireplace or wood stove growing up? What did you cook or warm by it?",
-    draw(rng, det, st){
-      const items = rng.next() < .5;
-      let o = `<rect x="62" y="30" width="176" height="96" ${st.W}/><rect x="40" y="138" width="220" height="236" ${st.W}/>`;
-      if (det){
-        // a few large stones around the opening: big, colourable shapes, not texture
-        [[46, 146, 30, 44], [46, 196, 30, 52], [46, 254, 30, 56], [46, 316, 30, 52], [224, 146, 30, 48], [224, 200, 30, 56], [224, 262, 30, 52], [224, 320, 30, 48], [84, 146, 56, 30], [160, 146, 56, 30]]
-          .forEach(([x, y, w, h]) => { o += `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="8" ${st.D}/>`; });
-      }
-      o += `<rect x="24" y="120" width="252" height="20" rx="4" ${st.W}/>`;
-      if (items){
-        o += `<rect x="62" y="92" width="12" height="28" ${st.W}/>` + svgLeaf(68, 92, 68, 66, 7, st.W) + `<rect x="226" y="92" width="12" height="28" ${st.W}/>` + svgLeaf(232, 92, 232, 66, 7, st.W);
-        if (det) o += `<path d="M130 120 L130 96 Q150 70 170 96 L170 120 Z" ${st.W}/><circle cx="150" cy="100" r="9" ${st.D}/>`;
-      } else {
-        o += `<path d="M132 120 L126 86 L174 86 L168 120 Z" ${st.W}/>` + svgLeaf(150, 86, 128, 50, 10, st.W) + svgLeaf(150, 86, 172, 52, 10, st.W) + svgLeaf(150, 86, 152, 42, 10, st.W);
-      }
-      o += `<path d="M84 374 L84 238 Q150 178 216 238 L216 374 Z" ${st.W}/>`;
-      o += svgLeaf(126, 342, 128, 276, 18, st.W) + svgLeaf(150, 344, 152, 254, 22, st.W) + svgLeaf(176, 342, 172, 284, 16, st.W);
-      if (det) o += svgLeaf(150, 340, 151, 296, 9, st.W);
-      o += `<rect x="100" y="340" width="100" height="18" rx="9" ${st.W}/><path d="M108 362 L192 348 L196 358 L112 372 Z" ${st.W}/>`;
-      if (det) o += `<circle cx="192" cy="349" r="6" ${st.D}/>`;
-      o += `<rect x="24" y="374" width="252" height="16" rx="3" ${st.W}/>`;
-      return { svg:o, sig:"fp" + items };
-    } },
-  kitchenwindow: { group:"cozy", title:"The Kitchen Window", talk:"What could you see from your kitchen window? What did you like to cook?",
-    draw(rng, det, st){
-      const pots = det ? 3 : 2, tie = rng.next() < .5;
-      let o = `<rect x="56" y="64" width="188" height="214" ${st.W}/><path d="M150 64 L150 278 M56 170 L244 170" ${st.T}/>`;
-      o += `<path d="M36 48 L112 48 Q${tie ? "98 150 122 236 Q86 232 74 286" : "108 170 110 286"} L36 286 Z" ${st.W}/>`;
-      o += `<path d="M264 48 L188 48 Q${tie ? "202 150 178 236 Q214 232 226 286" : "192 170 190 286"} L264 286 Z" ${st.W}/>`;
-      if (det && tie) o += `<rect x="92" y="226" width="30" height="12" rx="5" ${st.W}/><rect x="178" y="226" width="30" height="12" rx="5" ${st.W}/>`;
-      if (det){ let v = "M28 48"; for (let x = 28; x < 272; x += 30) v += ` Q${x + 15} 76 ${x + 30} 48`; o += `<path d="${v} L272 36 L28 36 Z" ${st.W}/>`; }
-      o += `<path d="M20 42 L280 42" ${st.T}/><circle cx="20" cy="42" r="6" ${st.W}/><circle cx="280" cy="42" r="6" ${st.W}/>`;
-      o += `<rect x="36" y="280" width="228" height="16" rx="3" ${st.W}/>`;
-      const xs = pots === 3 ? [88, 150, 212] : [110, 190];
-      xs.forEach((x, i) => {
-        for (let k = 0; k < 5; k++){ const a = -Math.PI / 2 + (k - 2) * .42; o += svgLeaf(x, 250, x + Math.cos(a) * 42, 250 + Math.sin(a) * 42, 9, st.W); }
-        o += `<path d="M${x - 20} 252 L${x - 16} 280 L${x + 16} 280 L${x + 20} 252 Z" ${st.W}/><rect x="${x - 24}" y="244" width="48" height="10" rx="3" ${st.W}/>`;
-      });
-      return { svg:o, sig:"kw" + pots + tie };
-    } },
-  /* ================= E. Animals (Cognicopia Coloring) ================= */
-  cat: { group:"animals", title:"The Sitting Cat", talk:"Did you ever have a cat? What was its name, and where did it like to sleep?",
-    draw(rng, det, st){
-      const flip = rng.next() < .5;
-      let o = `<path d="M184 356 Q262 360 256 290 Q252 256 230 248 L222 264 Q240 272 240 294 Q242 342 184 340 Z" ${st.W}/>`;
-      o += `<path d="M150 186 C104 186 86 296 94 346 Q98 364 120 364 L180 364 Q202 364 206 346 C214 296 196 186 150 186 Z" ${st.W}/>`;
-      if (det) o += `<path d="M130 296 L128 350 M170 296 L172 350 M122 234 Q150 250 178 234" ${st.D}/>`;
-      o += `<ellipse cx="126" cy="358" rx="18" ry="10" ${st.W}/><ellipse cx="174" cy="358" rx="18" ry="10" ${st.W}/>`;
-      o += `<path d="M104 136 L106 66 L150 104 Z" ${st.W}/><path d="M196 136 L194 66 L150 104 Z" ${st.W}/>`;
-      o += `<circle cx="150" cy="146" r="54" ${st.W}/>`;
-      if (det) o += `<path d="M112 116 L112 84 L134 104 M188 116 L188 84 L166 104" ${st.D}/>`;
-      o += `<ellipse cx="128" cy="140" rx="9" ry="12" ${st.W}/><ellipse cx="172" cy="140" rx="9" ry="12" ${st.W}/>`;
-      o += `<path d="M142 164 L158 164 L150 173 Z" ${st.W}/><path d="M150 173 Q146 184 134 182 M150 173 Q154 184 166 182" ${st.D}/>`;
-      if (det) o += `<path d="M122 170 L78 162 M122 180 L80 190 M178 170 L222 162 M178 180 L220 190" ${st.D}/>`;
-      return { svg:artH.flip(flip, o) + artH.ground(372, st), sig:"cat" + flip };
-    } },
-  dog: { group:"animals", title:"The Faithful Dog", talk:"Did your family have a dog? What was it like, and what tricks could it do?",
-    draw(rng, det, st){
-      const flip = rng.next() < .5, tag = rng.next() < .5;
-      let o = `<path d="M196 350 Q250 346 256 300 L244 294 Q236 330 196 334 Z" ${st.W}/>`;
-      o += `<path d="M150 200 C98 200 82 300 90 348 Q94 366 118 366 L182 366 Q206 366 210 348 C218 300 202 200 150 200 Z" ${st.W}/>`;
-      if (det) o += `<path d="M128 290 L126 352 M172 290 L174 352" ${st.D}/>`;
-      o += `<ellipse cx="124" cy="360" rx="20" ry="10" ${st.W}/><ellipse cx="176" cy="360" rx="20" ry="10" ${st.W}/>`;
-      o += `<path d="M112 210 Q150 228 188 210 L190 226 Q150 244 110 226 Z" ${st.W}/>`;
-      if (tag || !det) o += `<circle cx="150" cy="248" r="11" ${st.W}/>`;
-      o += `<path d="M150 70 C100 70 92 120 98 162 C102 196 124 214 150 214 C176 214 198 196 202 162 C208 120 200 70 150 70 Z" ${st.W}/>`;
-      o += `<path d="M104 86 C72 88 60 150 76 196 Q92 204 104 184 Q112 140 116 96 Z" ${st.W}/>`;
-      o += `<path d="M196 86 C228 88 240 150 224 196 Q208 204 196 184 Q188 140 184 96 Z" ${st.W}/>`;
-      o += `<ellipse cx="150" cy="176" rx="34" ry="28" ${st.W}/>`;
-      o += `<ellipse cx="150" cy="160" rx="14" ry="10" ${st.W}/><path d="M150 170 L150 184 Q140 194 130 188 M150 184 Q160 194 170 188" ${st.D}/>`;
-      o += `<circle cx="128" cy="126" r="8" ${st.W}/><circle cx="172" cy="126" r="8" ${st.W}/>`;
-      if (det) o += `<path d="M118 110 Q128 104 138 110 M162 110 Q172 104 182 110" ${st.D}/>`;
-      return { svg:artH.flip(flip, o) + artH.ground(374, st), sig:"dog" + flip + tag };
-    } },
-  songbird: { group:"animals", title:"The Songbird on a Branch", talk:"Which birds came to your yard or feeder? Did anyone you knew keep birds?",
-    draw(rng, det, st){
-      const flip = rng.next() < .5, crest = rng.next() < .5;
-      let o = `<path d="M188 262 L252 302 L240 320 L174 288 Z" ${st.W}/>`;
-      o += `<path d="M18 334 Q150 312 284 288 L288 306 Q150 332 22 354 Z" ${st.W}/>`;
-      o += svgLeaf(230, 300, 262, 250, 14, st.W) + svgLeaf(58, 334, 34, 380, 14, st.W);
-      if (det) o += svgLeaf(262, 296, 290, 340, 12, st.W);
-      o += `<path d="M128 292 L124 318 M160 292 L160 314" ${st.N}/>`;
-      if (crest) o += `<path d="M84 142 L122 90 L128 140 Z" ${st.W}/>`;
-      o += `<path d="M70 204 C70 150 132 132 172 162 C202 186 216 224 208 258 C200 292 160 304 124 296 C88 288 70 252 70 204 Z" ${st.W}/>`;
-      o += `<circle cx="100" cy="172" r="40" ${st.W}/>`;
-      o += `<path d="M64 162 L30 178 L66 188 Z" ${st.W}/><circle cx="88" cy="164" r="6" ${st.W}/>`;
-      o += `<path d="M122 214 Q194 200 214 262 Q160 272 122 214 Z" ${st.W}/>`;
-      if (det) o += `<path d="M144 222 Q176 222 196 250 M84 238 Q96 266 124 276" ${st.D}/>`;
-      return { svg:artH.flip(flip, o), sig:"sb" + flip + crest };
-    } },
-  owl: { group:"animals", title:"The Wise Old Owl", talk:"Have you ever heard an owl at night? Where were you?",
-    draw(rng, det, st){
-      const tufts = rng.next() < .5, look = rng.pick([-5, 0, 5]);
-      let o = `<path d="M26 344 L274 336 L276 358 L24 366 Z" ${st.W}/>`;
-      if (det) o += svgLeaf(250, 340, 286, 304, 12, st.W);
-      if (tufts) o += `<path d="M98 136 L90 76 L134 116 Z" ${st.W}/><path d="M202 136 L210 76 L166 116 Z" ${st.W}/>`;
-      o += `<path d="M150 96 C88 96 72 196 82 280 Q92 346 150 348 Q208 346 218 280 C228 196 212 96 150 96 Z" ${st.W}/>`;
-      o += `<path d="M90 196 Q58 266 100 332 Q118 262 90 196 Z" ${st.W}/><path d="M210 196 Q242 266 200 332 Q182 262 210 196 Z" ${st.W}/>`;
-      if (det){
-        for (let r = 0; r < 3; r++) for (let c = 0; c < 3 - (r === 2 ? 1 : 0); c++){
-          const x = 124 + c * 26 + (r === 2 ? 13 : 0), y = 244 + r * 28;
-          o += `<path d="M${x - 9} ${y} Q${x} ${y + 12} ${x + 9} ${y}" ${st.D}/>`;
-        }
-      }
-      o += `<circle cx="122" cy="168" r="32" ${st.W}/><circle cx="178" cy="168" r="32" ${st.W}/>`;
-      o += `<circle cx="${122 + look}" cy="168" r="${det ? 12 : 15}" ${st.W}/><circle cx="${178 + look}" cy="168" r="${det ? 12 : 15}" ${st.W}/>`;
-      o += `<path d="M140 196 L160 196 L150 220 Z" ${st.W}/>`;
-      o += `<path d="M126 346 L122 358 M140 346 L140 360 M160 346 L160 360 M174 346 L178 358" ${st.N}/>`;
-      return { svg:o, sig:"owl" + tufts + look };
-    } },
-  duck: { group:"animals", title:"The Duck on the Pond", talk:"Did you ever feed the ducks at a pond or park? Who took you?",
-    draw(rng, det, st){
-      const flip = rng.next() < .5, pad = rng.next() < .5;
-      let o = `<path d="M20 304 Q45 294 70 304 T120 304 T170 304 T220 304 T270 304" ${st.N}/>`;
-      if (det) o += `<path d="M44 340 Q70 332 96 340 M190 344 Q216 336 242 344" ${st.D}/>`;
-      if (pad) o += `<ellipse cx="236" cy="366" rx="40" ry="12" ${st.W}/><path d="M236 366 L270 360" ${st.D}/>`;
-      o += `<path d="M84 204 L78 256 L124 256 L114 204 Z" ${st.W}/>`;
-      o += `<path d="M68 272 C66 240 110 236 150 240 L212 240 C240 240 258 228 266 212 C272 244 262 268 244 284 C224 304 190 314 150 314 C104 314 70 300 68 272 Z" ${st.W}/>`;
-      o += `<path d="M118 256 Q186 240 234 254 Q210 294 152 292 Q118 286 118 256 Z" ${st.W}/>`;
-      if (det) o += `<path d="M150 262 Q180 256 206 262 M146 276 Q176 272 200 276" ${st.D}/>`;
-      o += `<circle cx="98" cy="186" r="34" ${st.W}/>`;
-      o += `<path d="M68 180 Q38 184 34 198 Q48 210 72 200 Z" ${st.W}/><circle cx="96" cy="178" r="6" ${st.W}/>`;
-      if (det) o += `<path d="M80 216 Q100 224 116 214" ${st.D}/>`;
-      return { svg:artH.flip(flip, o), sig:"dk" + flip + pad };
-    } },
-  goldfish: { group:"animals", title:"The Goldfish Bowl", talk:"Did you ever keep a goldfish or visit an aquarium?",
-    draw(rng, det, st){
-      const flip = rng.next() < .5, y = rint(rng, 0, 2) * 14 + 250;
-      let o = `<rect x="76" y="352" width="148" height="18" rx="5" ${st.W}/>`;
-      o += `<path d="M104 146 L196 146 Q266 186 262 266 Q256 348 150 354 Q44 348 38 266 Q34 186 104 146 Z" ${st.W}/>`;
-      o += `<path d="M50 200 Q150 214 250 200" ${st.D}/>`;
-      if (det){
-        o += `<path d="M86 342 Q76 300 96 268 M106 346 Q112 310 102 284" ${st.D}/>`;
-        o += `<ellipse cx="150" cy="340" rx="16" ry="8" ${st.W}/><ellipse cx="184" cy="338" rx="12" ry="7" ${st.W}/><ellipse cx="214" cy="332" rx="10" ry="6" ${st.W}/>`;
-      }
-      let f = `<path d="M188 ${y} L230 ${y - 30} Q220 ${y} 230 ${y + 30} Z" ${st.W}/>`;
-      f += `<path d="M132 ${y - 22} Q150 ${y - 44} 170 ${y - 20} Z" ${st.W}/>`;
-      f += `<path d="M98 ${y} C118 ${y - 36} 170 ${y - 36} 192 ${y} C170 ${y + 36} 118 ${y + 36} 98 ${y} Z" ${st.W}/>`;
-      f += `<circle cx="118" cy="${y - 6}" r="6" ${st.W}/>`;
-      if (det) f += `<path d="M148 ${y - 22} Q140 ${y} 148 ${y + 22}" ${st.D}/>`;
-      o += artH.flip(flip, f);
-      o += `<ellipse cx="150" cy="146" rx="54" ry="10" ${st.W}/>`;
-      return { svg:o + artH.ground(372, st), sig:"gf" + flip + y };
-    } },
-
-  /* ================= F. Seasonal (Cognicopia Coloring) =================
-     Each has a `season` so "Seasonal" can lead with the packet date's season. */
-  pumpkins: { group:"seasonal", season:"fall", title:"Autumn Pumpkins", talk:"Did you ever carve a pumpkin or bake a pie? What did autumn smell like at home?",
-    draw(rng, det, st){
-      const side = rng.next() < .5 ? 1 : -1, sx = 150 + side * 96;
-      const pumpkin = (cx, cy, rx, ry) => {
-        let p = `<path d="M${cx - 6} ${cy - ry + 8} L${cx - 8} ${cy - ry - 24} Q${cx} ${cy - ry - 32} ${cx + 8} ${cy - ry - 24} L${cx + 6} ${cy - ry + 8} Z" ${st.W}/>`;
-        p += `<ellipse cx="${cx - rx * .45}" cy="${cy}" rx="${rx * .6}" ry="${ry * .92}" ${st.W}/><ellipse cx="${cx + rx * .45}" cy="${cy}" rx="${rx * .6}" ry="${ry * .92}" ${st.W}/>`;
-        p += `<ellipse cx="${cx}" cy="${cy}" rx="${rx * .45}" ry="${ry}" ${st.W}/>`;
-        return p;
-      };
-      let o = "";
-      if (det) o += `<path d="M150 208 Q${150 - side * 60} 170 ${150 - side * 40} 140 Q${150 - side * 30} 124 ${150 - side * 46} 120" ${st.D}/>`;
-      o += svgLeaf(156, 214, 150 - side * 70, 196, 20, st.W);
-      o += pumpkin(150 - side * 26, 286, 96, 70);
-      o += pumpkin(sx, 318, 50, 38);
-      return { svg:o + artH.ground(360, st), sig:"pk" + side };
-    } },
-  applebasket: { group:"seasonal", season:"fall", title:"The Apple Harvest", talk:"Did you ever pick apples or put up preserves? What was your favourite apple dish?",
-    draw(rng, det, st){
-      const flip = rng.next() < .5;
-      const apple = (x, y, r) => `<path d="M${x} ${y - r * .7} C${x - r * .6} ${y - r * 1.2} ${x - r * 1.2} ${y - r * .6} ${x - r * 1.05} ${y + r * .2} C${x - r * .9} ${y + r} ${x - r * .3} ${y + r * 1.1} ${x} ${y + r * .85} C${x + r * .3} ${y + r * 1.1} ${x + r * .9} ${y + r} ${x + r * 1.05} ${y + r * .2} C${x + r * 1.2} ${y - r * .6} ${x + r * .6} ${y - r * 1.2} ${x} ${y - r * .7} Z" ${st.W}/><path d="M${x} ${y - r * .7} L${x + 4} ${y - r * 1.2}" ${st.N}/>`;
-      let o = `<path d="M74 236 Q150 60 226 236" ${st.T}/>`;
-      o += apple(106, 222, 32) + apple(194, 222, 32) + apple(150, 206, 34);
-      o += `<path d="M56 236 L244 236 L224 354 L76 354 Z" ${st.W}/><rect x="48" y="226" width="204" height="18" rx="6" ${st.W}/>`;
-      if (det) o += `<path d="M62 276 L238 276 M68 316 L232 316 M112 244 L118 354 M188 244 L182 354" ${st.D}/>`;
-      if (det) o += apple(262, 342, 18);
-      return { svg:artH.flip(flip, o) + artH.ground(362, st), sig:"ab" + flip };
-    } },
-  snowman: { group:"seasonal", season:"winter", title:"The Snowman", talk:"Did you build snowmen or go sledding as a child? What did you wear to stay warm?",
-    draw(rng, det, st){
-      const flip = rng.next() < .5;
-      let o = `<path d="M20 372 Q80 350 150 356 Q230 350 280 372 Z" ${st.W}/>`;
-      o += `<path d="M106 200 L52 160 M72 175 L64 148 M194 200 L248 166 M230 180 L244 154" ${st.T}/>`;
-      o += `<circle cx="150" cy="298" r="68" ${st.W}/><circle cx="150" cy="198" r="50" ${st.W}/><circle cx="150" cy="120" r="38" ${st.W}/>`;
-      o += `<rect x="106" y="80" width="88" height="12" rx="4" ${st.W}/><rect x="120" y="32" width="60" height="50" rx="3" ${st.W}/>`;
-      if (det) o += `<path d="M120 70 L180 70" ${st.D}/>`;
-      o += `<circle cx="136" cy="112" r="6" ${st.W}/><circle cx="164" cy="112" r="6" ${st.W}/>`;
-      o += `<path d="M150 124 L188 132 L150 138 Z" ${st.W}/>`;
-      if (det) o += `<path d="M132 142 Q150 152 168 142" ${st.D}/>`;
-      o += `<path d="M110 154 Q150 170 190 154 L192 172 Q150 188 108 172 Z" ${st.W}/><path d="M168 170 L178 226 L160 228 L154 176 Z" ${st.W}/>`;
-      o += `<circle cx="150" cy="204" r="7" ${st.W}/><circle cx="150" cy="232" r="7" ${st.W}/>`;
-      if (det) o += `<circle cx="150" cy="276" r="7" ${st.W}/><circle cx="150" cy="304" r="7" ${st.W}/>`;
-      return { svg:artH.flip(flip, o), sig:"sn" + flip };
-    } },
-  wreath: { group:"seasonal", season:"winter", title:"The Holiday Wreath", talk:"How did your family decorate the door or house in winter?",
-    draw(rng, det, st){
-      const n = det ? 14 : 9, turn = rng.next() * Math.PI / n;
-      let o = `<path d="M150 40 L150 84" ${st.N}/><circle cx="150" cy="36" r="7" ${st.W}/>`;
-      o += `<circle cx="150" cy="196" r="112" ${st.W}/><circle cx="150" cy="196" r="56" ${st.W}/>`;
-      for (let i = 0; i < n; i++){
-        const a = turn + i * 2 * Math.PI / n, b = a + (det ? .55 : .7), r = 86;
-        o += svgLeaf(150 + Math.cos(a) * r, 196 + Math.sin(a) * r, 150 + Math.cos(b) * r, 196 + Math.sin(b) * r, det ? 14 : 18, st.W);
-      }
-      [[-.6, 1], [1.9, 1], [3.4, det ? 1 : 0]].forEach(([a, on]) => {
-        if (!on) return;
-        const x = 150 + Math.cos(a + turn) * 86, y = 196 + Math.sin(a + turn) * 86;
-        o += `<circle cx="${(x - 9).toFixed(1)}" cy="${(y + 4).toFixed(1)}" r="9" ${st.W}/><circle cx="${(x + 9).toFixed(1)}" cy="${(y + 4).toFixed(1)}" r="9" ${st.W}/><circle cx="${x.toFixed(1)}" cy="${(y - 10).toFixed(1)}" r="9" ${st.W}/>`;
-      });
-      o += `<path d="M144 306 L116 376 L134 372 L150 312 Z" ${st.W}/><path d="M156 306 L184 376 L166 372 L150 312 Z" ${st.W}/>`;
-      o += `<path d="M150 300 Q96 266 94 302 Q96 336 150 306 Z" ${st.W}/><path d="M150 300 Q204 266 206 302 Q204 336 150 306 Z" ${st.W}/>`;
-      o += `<rect x="136" y="290" width="28" height="24" rx="7" ${st.W}/>`;
-      return { svg:o, sig:"wr" + turn.toFixed(2) };
-    } },
-  birdhouse: { group:"seasonal", season:"spring", title:"The Spring Birdhouse", talk:"What were the first signs of spring where you grew up?",
-    draw(rng, det, st){
-      const perch = rng.next() < .5;
-      const tulip = (x, y, h) => {
-        let t = `<path d="M${x} ${y} L${x} ${y - h}" ${st.N}/>` + svgLeaf(x, y - 6, x - 30, y - h * .55, 10, st.W) + svgLeaf(x, y - 6, x + 28, y - h * .45, 10, st.W);
-        const c = y - h;
-        return t + `<path d="M${x - 20} ${c} Q${x - 22} ${c - 30} ${x - 12} ${c - 38} L${x} ${c - 24} L${x + 12} ${c - 38} Q${x + 22} ${c - 30} ${x + 20} ${c} Q${x} ${c + 14} ${x - 20} ${c} Z" ${st.W}/>`;
-      };
-      let o = `<rect x="138" y="244" width="24" height="126" ${st.W}/>`;
-      o += tulip(62, 370, 90) + tulip(238, 370, det ? 110 : 90);
-      if (det) o += tulip(100, 370, 60);
-      o += `<rect x="90" y="148" width="120" height="100" ${st.W}/>`;
-      o += `<path d="M74 156 L150 82 L226 156 L212 166 L150 106 L88 166 Z" ${st.W}/>`;
-      o += `<circle cx="150" cy="188" r="18" ${st.W}/>`;
-      if (perch) o += `<path d="M150 220 L150 236" ${st.T}/>`;
-      if (det) o += `<path d="M90 230 L210 230" ${st.D}/>`;
-      return { svg:o + artH.ground(372, st), sig:"bh" + perch };
-    } },
-  rainboots: { group:"seasonal", season:"spring", title:"April Showers", talk:"Tell me about a rainy day from long ago. Where did you go in your boots?",
-    draw(rng, det, st){
-      const flip = rng.next() < .5;
-      let o = `<path d="M150 150 L150 290 Q150 312 132 312 Q116 312 116 296" ${st.T}/>`;
-      o += `<path d="M34 158 Q150 20 266 158 Q252 146 237 158 Q222 146 208 158 Q194 146 179 158 Q164 146 150 158 Q136 146 121 158 Q106 146 92 158 Q78 146 63 158 Q48 146 34 158 Z" ${st.W}/>`;
-      if (det) o += `<path d="M150 92 L92 156 M150 92 L208 156" ${st.D}/>`;
-      o += `<circle cx="150" cy="84" r="8" ${st.W}/>`;
-      if (det) o += `<ellipse cx="150" cy="370" rx="130" ry="12" ${st.W}/>`;
-      const boot = x => `<path d="M${x} 262 L${x + 42} 262 L${x + 42} 332 L${x + 62} 340 Q${x + 74} 344 ${x + 74} 358 L${x + 74} 366 L${x} 366 Z" ${st.W}/><rect x="${x - 4}" y="254" width="50" height="16" rx="4" ${st.W}/>` + (det ? `<path d="M${x} 352 L${x + 74} 352" ${st.D}/>` : "");
-      o += boot(26) + boot(190);
-      if (det) o += `<path d="M232 190 Q224 206 232 212 Q240 206 232 190 Z M262 220 Q254 236 262 242 Q270 236 262 220 Z" ${st.W}/>`;
-      return { svg:artH.flip(flip, o) + artH.ground(372, st), sig:"rb" + flip };
-    } },
-  lemonade: { group:"seasonal", season:"summer", title:"Lemonade on a Summer Day", talk:"What did you drink to cool off in summer? Where did you sit to enjoy it?",
-    draw(rng, det, st){
-      const flip = rng.next() < .5;
-      let o = `<g transform="translate(-38 0)"><path d="M178 170 Q246 172 240 234 Q234 290 188 296" ${st.T}/>`;
-      o += `<path d="M78 128 L98 142 L184 142 Q176 160 184 176 L194 330 Q194 350 176 350 L102 350 Q84 350 84 330 L94 176 Q98 150 78 128 Z" ${st.W}/>`;
-      o += `<path d="M92 196 Q140 206 190 196" ${st.D}/>`;
-      if (det) o += `<rect x="108" y="214" width="30" height="30" rx="5" ${st.D}/><rect x="146" y="236" width="28" height="28" rx="5" ${st.D}/>`;
-      o += `</g><path d="M214 252 L276 252 L268 352 L222 352 Z" ${st.W}/>`;
-      if (det) o += `<path d="M218 280 L272 280" ${st.D}/>`;
-      o += `<circle cx="266" cy="250" r="20" ${st.W}/>`;
-      if (det) o += `<circle cx="266" cy="250" r="11" ${st.D}/>`;
-      return { svg:artH.flip(flip, o) + artH.ground(360, st), sig:"lm" + flip };
-    } },
-  picnic: { group:"seasonal", season:"summer", title:"The Summer Picnic", talk:"Where did your family go for picnics? What food did you pack?",
-    draw(rng, det, st){
-      const flip = rng.next() < .5;
-      let b = `<path d="M84 216 Q84 150 130 150 Q176 150 176 216" ${st.T}/>`;
-      b += `<path d="M46 244 L214 244 L204 350 L56 350 Z" ${st.W}/>`;
-      if (det) b += `<path d="M50 282 L210 282 M54 316 L206 316" ${st.D}/>`;
-      b += `<rect x="34" y="212" width="192" height="34" rx="6" ${st.W}/>`;
-      if (det) b += `<path d="M100 246 L100 272 Q130 290 160 272 L160 246" ${st.W}/>`;
-      b += `<rect x="120" y="226" width="20" height="30" rx="4" ${st.W}/>`;
-      let w = `<path d="M246 270 L202 350 Q246 378 290 350 Z" ${st.W}/><path d="M210 340 Q246 364 282 340" ${st.D}/>`;
-      if (det) w += `<ellipse cx="238" cy="312" rx="4" ry="7" ${st.W}/><ellipse cx="256" cy="324" rx="4" ry="7" ${st.W}/><ellipse cx="232" cy="334" rx="4" ry="7" ${st.W}/>`;
-      return { svg:artH.flip(flip, b + w) + artH.ground(364, st), sig:"pc" + flip };
-    } }
+const HYBRID_LEGACY = {
+  grandclock:"grandfather_clock", rotaryphone:"rotary_telephone", wallclock:"grandfather_clock", sewing:"sewing_machine", pocketwatch:"grandfather_clock",
+  radio:"cathedral_radio", teapot:"teapot", truck:"1950s_pickup_truck", musclecar:"1967_muscle_car", car:"1957_family_sedan", tractor:"farm_tractor",
+  locomotive:"steam_locomotive", wagon:"1957_family_sedan", tulips:"tulip", sunflowers:"sunflower", geranium:"daisy", wateringcan:"watering_can",
+  gardengate:"garden_rose", glassvase:"daisy", porchswing:"rocking_chair", rocker:"rocking_chair", fireplace:"oil_lantern", kitchenwindow:"teacup",
+  cat:"sitting_cat", dog:"sitting_dog", songbird:"cardinal", owl:"owl", duck:"hummingbird", goldfish:"butterfly", pumpkins:"pumpkin",
+  applebasket:"pumpkin", snowman:"cardinal", wreath:"cardinal", birdhouse:"birdhouse", rainboots:"tulip", lemonade:"sunflower", picnic:"oak_tree"
 };
-
-const COLORING_GROUPS = { household:"Heirloom and retro household items", vehicles:"Classic vehicles and farm machinery", botanical:"Flowers and gardens", cozy:"Cozy scenes: porch, fireside and kitchen" };
-
+const hyEngine = () => window.CognicopiaColoringEngine || null, hyList = () => window.CognicopiaColoringManifest || null;
+const hyReady = () => { const E = hyEngine(), M = hyList(); return !!(E && M && M.loadSync()); };
+/* A saved Resident Activity Profile (profile.html), as the subject search reads a resident.
+   The library screen's New pages tab makes hybrid pages for them. */
+function hybridProfileOf(p){
+  if (!p || !p.tier1_core) return {};
+  const t1 = p.tier1_core, t2 = p.tier2_enrichment || {}, occ = t1.occupation, avoid = t1.topicsToAvoid || {};
+  return { name:String(t1.preferredName || "").trim(), born:t2.birthYear || "",
+    former_profession:occ ? String(occ.label || occ.code || "") : "",
+    hobbies:(t1.topHobbies || []).map(h => h && (h.label || h.code)).filter(Boolean),
+    avoid:(avoid.topics || []).map(x => x && x.code).filter(Boolean).concat(String(avoid.other || "").split(/[,;]+/).map(w => w.trim()).filter(Boolean)) };
+}
+/* One printed page: the whole Letter sheet, the picture laid out inside the binding gutter. */
+function hybridSheet(a, stage, seed, name, frameOpts){
+  const E = hyEngine(), V = window.CogniVectorEngine;
+  const F = V && V.pageFrame ? V.pageFrame(Object.assign({ unit:"pt" }, frameOpts || {})).content : { x:54, y:36, w:522, h:720 };
+  const page = E.compose({ asset:a, paths:E.subjectPathsSync(a.id), stage, seed, name, frame:{ x:F.x, y:F.y, w:F.w, h:F.h } });
+  return { page, html:`<section class="sheet cc-sheet hy-sheet" data-stage="${esc(stage)}" data-subject="${esc(a.id)}">
+      <div class="hy-page">${E.toSVG(page, { width:"100%", height:"100%" })}</div>
+      <footer class="care-coaching-footer">Do not ask questions or test memory. Sit beside them, place the marker in their hand, and model slow, calm breathing.</footer>
+    </section>` };
+}
+function hybridPage(cfg, rng, id){
+  const M = hyList(), a = hyReady() ? M.get(id) || M.get("teapot") : null;
+  if (!a) return { title:"A Picture to Color", instructions:"The coloring pictures could not be loaded on this computer. Reload the page to try again.", html:"", signature:"none" };
+  const stage = HYBRID_STAGE[cfg.difficulty] || "middle", seed = rng.int(2147483646) + 1, out = hybridSheet(a, stage, seed, cfg.residentName);
+  return { layout:"cc", sheet:out.html, title:a.title, instructions:"", html:"", code:out.page.meta.code, signature:a.id + "#" + stage + "#" + seed };
+}
+/* ---- The retired clip-art activity: its saved pages print as hybrid pages ---- */
 const COLORING = {
-  id: "coloring", name: "Therapeutic Line Art & Coloring", themed: false,
-  desc: "Adult coloring pages in a 3:4 frame: 23 nostalgic subjects in pure black lines of 3 to 6 pt, with no busy backgrounds. Each version is a different subject.",
+  id: "coloring", name: "Coloring Page", themed: false,
+  desc: "Coloring pages from saved packets made before the coloring engine. Each prints as the same subject, drawn by the hybrid coloring engine.",
   icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="2" width="16" height="20" rx="2"/><circle cx="12" cy="10" r="3"/><path d="M12 13v6M9 16l3-2 3 2"/></svg>',
   options: [
     { id:"subject", type:"select", label:"Subject", def:"mixed",
-      choices:[["mixed","A mix of everything"],["household","Heirloom and retro household items"],["vehicles","Classic vehicles and farm machinery"],["botanical","Flowers and gardens"],["cozy","Cozy scenes: porch, fireside and kitchen"]] },
-    { id:"weight", type:"select", label:"Line weight", def:"auto",
-      choices:[["auto","Automatic for the stage"],["bold","Bold (3 pt)"],["max","Maximum contrast (6 pt)"]] },
-    { id:"detail", type:"select", label:"Detail", def:"auto",
-      choices:[["auto","Automatic for the stage"],["standard","Standard: more lines inside (early stage)"],["simple","Simplified: big open shapes (middle to late stage)"]] },
-    { id:"talk", type:"check", label:"Add a conversation prompt under the picture", def:true }
+      choices:[["mixed","A mix of everything"],["household","Heirloom and retro household items"],["vehicles","Classic vehicles and farm machinery"],["botanical","Flowers and gardens"],["cozy","Cozy scenes: porch, fireside and kitchen"]] }
   ],
-  levels: { early:{ pt:3, det:1 }, moderate:{ pt:4.5, det:0 }, advanced:{ pt:6, det:0 } },
+  levels: { early:{ pt:3 }, moderate:{ pt:4.5 }, advanced:{ pt:6 } },
   pool(cfg){
     // older saved choices from the first version of this activity
     let sub = optVal(cfg, "subject", "mixed");
     sub = { flowers:"botanical", home:"household" }[sub] || sub;
-    const keys = Object.keys(COLOR_ART).filter(k => sub === "mixed" || COLOR_ART[k].group === sub);
-    return keys.length ? keys : Object.keys(COLOR_ART);
+    const all = Object.keys(HYBRID_LEGACY_KEYS).reduce((o, g) => o.concat(HYBRID_LEGACY_KEYS[g]), []);
+    return HYBRID_LEGACY_KEYS[sub] || all;
   },
-  // Distinct subjects for every version in the batch (each group has at least 4).
+  // Distinct subjects for every version in the batch, picked as they always were.
   plan(cfg, rng, count){ return slicePlan(this.pool(cfg), 1, count, rng).map(s => s[0]); },
-  generate(cfg, rng, key){
-    const L = this.levels[cfg.difficulty], art = COLOR_ART[key] || COLOR_ART.tulips;
-    const w = optVal(cfg, "weight", "auto"), dsel = optVal(cfg, "detail", "auto");
-    const pt = w === "bold" ? 3 : w === "heavy" ? 4.5 : w === "max" ? 6 : L.pt;
-    const det = dsel === "standard" ? 1 : dsel === "simple" ? 0 : L.det;
-    const sw = (pt / ART_UNIT_PT).toFixed(2);
-    const dsw = (Math.max(3, pt * .8) / ART_UNIT_PT).toFixed(2);           // detail lines never under 3 pt
-    const line = `stroke="#000" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round"`;
-    const st = { sw, W:`fill="#ffffff" data-bw="white" ${line}`, N:`fill="none" ${line}`,
-                 D:`fill="none" stroke="#000" stroke-width="${dsw}" stroke-linecap="round" stroke-linejoin="round"`,
-                 // extra-weight lines (cords, handles, window bars), capped at 6 pt
-                 T:`fill="none" stroke="#000" stroke-width="${(Math.max(pt, Math.min(pt * 1.6, 6)) / ART_UNIT_PT).toFixed(2)}" stroke-linecap="round" stroke-linejoin="round"` };
-    const drawn = art.draw(rng, det, st);
-    const talk = optVal(cfg, "talk", true);
-    return {
-      layout: "art",                                   // full-page art sheet, see sheetHtml()
-      title: art.title,
-      instructions: "Color it any way you like. There is no right or wrong.",
-      html: `<svg class="art-svg" viewBox="0 0 300 400" role="img" aria-label="${esc(art.title)}, a picture to color">${drawn.svg}</svg>`,
-      talk: talk ? art.talk : "",
-      signature: key + "#" + drawn.sig + "#" + pt + det
-    };
-  }
+  generate(cfg, rng, key){ return hybridPage(cfg, rng, HYBRID_LEGACY[key] || "teapot"); }
 };
 
 /* ---- Cognicopia Coloring ----
@@ -12577,7 +12077,7 @@ const COGNICOPIA_COLORING = {
     const theme = optVal(cfg, "theme", "mixed");
     let pool = cognicopiaColoringKeys(theme);
     if (!pool.length) pool = cognicopiaColoringKeys("mixed");
-    if (!pool.length) return COLORING.plan(cfg, rng, count);              // the library did not load
+    if (!pool.length) return COLORING.plan(cfg, rng, count);              // the library did not load: hybrid pages of the same subjects
     if (theme === "seasonal"){
       // this season's pictures first, then the others, each group shuffled
       const now = cognicopiaColoringSeason(cfg), season = id => ccDesign(id).season;
@@ -12591,7 +12091,7 @@ const COGNICOPIA_COLORING = {
   },
   generate(cfg, rng, key){
     const id = COGNICOPIA_COLORING_LEGACY[key] || key;
-    if (!ccDesign(id)) return COLORING.generate(cfg, rng, COLOR_ART[key] ? key : "tulips");   // the library did not load
+    if (!ccDesign(id)) return hybridPage(cfg, rng, HYBRID_LEGACY[key] || (hyReady() && hyList().get(key) ? key : "tulip"));   // the library did not load
     // difficulty sets the support tier, as everywhere else: early 1, moderate 2, advanced 3
     const base = { early:1, moderate:2, advanced:3 }[cfg.difficulty] || 2, detail = optVal(cfg, "detail", "auto");
     const tier = detail === "standard" ? 1 : detail === "simple" ? Math.max(2, base) : base;
@@ -12704,7 +12204,7 @@ const CATEGORIES = [
     blurb:"A giant-type daily orientation board and shadow matching. Good for group rooms, quiet one-to-one time and the start of each day. Coloring pages now have their own category, Cognicopia Coloring.",
     activities:[ORIENTATION_BOARD, SILHOUETTE_MATCH] },
   { id:"cognicopia-coloring", name:"Cognicopia Coloring", icon:ICONS.brush, badge:"\u{1F3A8} Coloring", direct:true, route:"coloring",
-    blurb:"The Cognicopia Coloring library: adult, dignity-first pictures in bold pure-black line art, each drawn at three cognitive tiers, plus themed packs. Filter by tier, theme, line thickness and detail, preview every page with its binding gutter, and print or download a PDF.",
+    blurb:"Coloring pages made for each resident (New pages): one clean, bold picture chosen from their years, work and hobbies, with a border and words made for their stage. And the Cognicopia Coloring library: adult, dignity-first pictures in bold pure-black line art, each drawn at three cognitive tiers, plus themed packs. Filter by tier, theme, line thickness and detail, preview every page with its binding gutter, and print or download a PDF.",
     activities:[COGNICOPIA_COLORING] }
 ];
 const CAT_INDEX = {}, ACT_INDEX = {};

@@ -19,6 +19,9 @@
      blocked CDN would mean the button silently does nothing. This
      way the page also works with no internet at all once loaded. -->
 <script src="assets/cognicopia-coloring/cognicopia-coloring.js"></script>
+<script src="assets/coloring/subjects.bundle.js"></script>
+<script src="src/services/ColoringManifest.js"></script>
+<script src="src/engine/ColoringEngine.js"></script>
 <script src="assets/services/secureStore.js"></script>
 <script>
 /* Resident details are sealed in this browser's encrypted store
@@ -5061,57 +5064,51 @@ function oddPage(D,r,s,theme){
   return sets;
 }
 
-/* ---- Coloring page: a picture from the Cognicopia Coloring library ----
-   (assets/cognicopia-coloring/cognicopia-coloring.js, the same line art as the Packet
-   Builder's coloring library). Chosen for this resident: drawn at their
-   stage's cognitive tier and line weight, never anything their avoid list
-   names, and a subject from their working life when one fits. The art is
-   vector, 3:4, pure black on white, and as large as the page allows.
-   Patterns and mandalas are left to "Color the pattern", so the two pages
-   never print the same picture. */
-const PATTERN_CATS = ["bold-easy-patterns", "zentangle-mandalas"];
-const LIFE_TAGS = [
-  [/farm|ranch|dairy|agricultur/, ["farms", "tractors", "barns", "harvest", "country"]],
-  [/mechanic|garage|auto|truck|driver|chauffeur/, ["cars", "trucks", "vehicles", "tractors"]],
-  [/rail|train|conductor|engineer/, ["trains", "railroads", "streetcars"]],
-  [/teach|school|professor|librar/, ["school", "letters", "writing", "clocks"]],
-  [/sew|seamstress|tailor|dressmak|textile/, ["sewing", "handwork", "quilts"]],
-  [/cook|chef|bak|kitchen|caterer|waitress|diner/, ["baking", "kitchen", "cooking", "tea"]],
-  [/sail|navy|fisher|boat|dock|harbor|coast guard/, ["boats", "fishing", "lighthouses"]],
-  [/office|secretar|clerk|bookkeep|typist|account/, ["typewriters", "letters", "writing", "telephones"]],
-  [/garden|landscap|florist|nursery/, ["gardening", "flowers", "garden"]],
-  [/homemak|housewife|mother|home/, ["laundry", "baking", "kitchen", "home", "sewing"]],
-  [/pilot|aviat|air force/, ["airplanes", "flight"]],
-  [/fire/, ["fire-engines"]], [/postal|mail/, ["mail", "letters"]], [/music|pianist|singer/, ["music", "radios", "phonographs"]]
-];
+/* ---- Coloring page: the hybrid coloring engine ----
+   One clean picture chosen for this resident, in two layers
+   (src/engine/ColoringEngine.js): the subject is a finished vector drawing
+   from assets/coloring/<folder>/ (listed by src/services/ColoringManifest.js
+   and carried in assets/coloring/subjects.bundle.js, so nothing is fetched),
+   and the page around it is made for their stage. Early: a patterned
+   border and an open prompt underneath. Middle: a bold border and a
+   completion line with the word to write shown beside it, so there is no
+   wrong answer. Late: no border, very thick lines, fine detail left out and
+   a large title. Their working life, their hobbies and the years they were
+   young steer the choice, through broader subjects when there is no exact
+   one ("Ford truck" finds the pickup truck); nothing their avoid list names
+   is ever used (when it rules out every picture, the packet has no
+   coloring page), and the holiday pages' own pictures are passed over.
+   Chosen by resident and month, so a packet rebuilds the same way and next
+   month's is new. */
+const HOLIDAY_SUBJECTS = { "grandfather-clock":"grandfather_clock", "jack-o-lantern":"pumpkin", "pumpkin-patch":"pumpkin",
+  "harvest-basket":"pumpkin", "cornucopia":"pumpkin", "tulips-vase":"tulip", "gone-fishing":"sailboat" };
+function subjectWords(a){
+  const tags=(a.tags||[]).map(t=>t.replace(/_/g," "));
+  return [a.title,a.prompt,a.completion,a.banner,...tags,...tags.map(t=>t+"s")].join(" ");   // "cars" on the avoid list also catches "car"
+}
 function colorPage(D,r,theme){
-  const C=window.CognicopiaColoring;
-  const tier={early:1,middle:2,late:3}[r.stage]||2;
+  const E=window.CognicopiaColoringEngine, M=window.CognicopiaColoringManifest, ready=!!(E && M && M.loadSync());
+  const sel = ready ? M.select(
+    { name:r.first, born:r.born, former_profession:r.job, hobbies:r.hobbies, stage:r.stage },
+    { seed:M.hashSeed([r.first,r.born,r.job,r.month,"color"].join("|")), stage:E.stageOf(r.stage),
+      exclude:(r.holidays||[]).map(k=>HOLIDAY_SUBJECTS[HOLIDAY_ART[k]]).filter(Boolean),
+      filter:a=>allowed(r,subjectWords(a)) }) : null;
+  const paths = sel ? E.subjectPathsSync(sel.asset.id) : null;
+  if(ready && !paths) return;                // the avoid list rules out every picture: the packet simply has no coloring page
   D.start(theme);
-  if(!C){                                    // the library file did not load: say so plainly rather than print a blank page
+  if(!paths){                                // the pictures did not load: say so plainly rather than print a blank page
     D.heading("A Picture to Color");
     D.body("The coloring pictures could not be loaded on this computer. Reload the page to try again.",{size:17});
     return;
   }
-  const text=d=>[d.title,d.tags.join(" "),d.sensitive.join(" "),d.talk,C.CAT[d.cat].label].join(" ");
-  const taken=(r.holidays||[]).map(k=>HOLIDAY_ART[k]);
-  let pool=C.designs().filter(d=>PATTERN_CATS.indexOf(d.cat)<0 && taken.indexOf(d.id)<0 && allowed(r,text(d)));
-  if(!pool.length) pool=C.designs().filter(d=>d.cat==="bold-easy-patterns");
-  const job=String(r.job||"").toLowerCase(), want=[];
-  for(const [re,tags] of LIFE_TAGS) if(re.test(job)) want.push(...tags);
-  const mine=pool.filter(d=>d.tags.some(t=>want.indexOf(t)>=0));
-  /* Half the time a picture from their own work. Chosen by resident and
-     month, so a packet rebuilds the same way and next month's is new. */
-  if(mine.length && contentIndex(r,2,"23"+(r.month||""))===0) pool=mine;
-  const d=pool[contentIndex(r,pool.length,"17"+(r.month||""))];
-  D.heading(d.title);
-  D.body(d.talk+" Color it any way you like.",{size:17});
-  D.gap(6);
-  const room=D.room()-6, w=Math.min(PW-2*MARGIN, room*0.75), h=w/0.75;
-  const x=(PW-w)/2, y=D.y+(room-h)/2;
-  C.toPDF(D.d, C.render(d.id,tier), x, y, w);
+  const late=E.stageOf(r.stage)==="late";
+  D.heading(late ? "A Picture to Color" : sel.asset.title);    // late stage: the picture's name is the large banner
+  D.gap(-8);
+  const frame={x:MARGIN, y:D.y, w:PW-2*MARGIN, h:D.room()};
+  const page=E.compose({ asset:sel.asset, paths, stage:r.stage, seed:M.hashSeed(r.first+"|"+r.month+"|"+sel.asset.id), frame, header:false, footer:false });
+  E.toPDF(page, D.d);
   D.d.setLineWidth(1); D.d.setDrawColor(0); D.d.setFillColor(255,255,255);
-  D.y+=room;
+  D.y+=frame.h;
 }
 
 function holidayPage(D,r,key){

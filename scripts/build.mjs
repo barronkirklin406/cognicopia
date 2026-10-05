@@ -14,7 +14,9 @@
         does every icon in the web manifest;
      5. the server file parses, and the planner, journal, TypeScript
         services and Cognicopia Coloring checks pass (the coloring check
-        also proves the library, catalog and browser bundle are current);
+        also proves the library, catalog and browser bundle are current;
+        the hybrid check proves the coloring subjects, their manifest and
+        bundle are current, and draws every subject at every stage);
      6. the site navigation matches scripts/site-nav.mjs (npm run nav), the
         Research Center's pages match their content (npm run research), and
         every relative link and asset on every page points at a file that
@@ -117,7 +119,7 @@ step("every web manifest icon exists", () => {
 
 /* 5. server and the automated checks */
 step("server.js parses", () => { execFileSync(process.execPath, ["--check", path.join(ROOT, "server.js")]); });
-for (const s of ["check-life-planner.mjs", "check-life-journal.mjs", "check-services.mjs", "check-coloring.mjs", "check-infinite.mjs"]) step(s, () => {
+for (const s of ["check-life-planner.mjs", "check-life-journal.mjs", "check-services.mjs", "check-coloring.mjs", "check-infinite.mjs", "check-hybrid.mjs"]) step(s, () => {
   const out = execFileSync(process.execPath, [path.join(ROOT, "scripts", s)], { encoding: "utf8" }).trim().split("\n")[0];
   return out;
 });

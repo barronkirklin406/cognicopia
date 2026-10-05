@@ -97,7 +97,9 @@ group("vectorEngine", () => {
 
   // parser: round trip, errors
   const lib = path.join(ROOT, "assets", "coloring");
-  const files = fs.readdirSync(lib).filter(d => !d.startsWith("_") && d !== "ingested").flatMap(d => fs.readdirSync(path.join(lib, d)).filter(f => f.endsWith(".svg")).map(f => path.join(lib, d, f)));
+  // every folder of drawings: the library's and the hybrid engine's subjects (manifest.json and the bundle sit beside them)
+  const files = fs.readdirSync(lib, { withFileTypes:true }).filter(d => d.isDirectory() && !d.name.startsWith("_") && d.name !== "ingested")
+    .flatMap(d => fs.readdirSync(path.join(lib, d.name)).filter(f => f.endsWith(".svg")).map(f => path.join(lib, d.name, f)));
   ok(files.length >= 300, "library SVGs found: " + files.length);
   let worst = 0, worstName = "";
   for (const f of files){
