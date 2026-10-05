@@ -654,7 +654,10 @@ body { padding-left: var(--sb-w); }
   .cg-sb-overlay.is-open { display: block; }
 }
 .navbar { display: none !important; }
-</style>
+
+    /* the narrowest phones: one column, so a 260 px card never runs off the screen */
+    @media (max-width: 360px) { .feature-grid { grid-template-columns: minmax(0, 1fr); } }
+  </style>
 <style id="cg-categories-toggle">
 /* Mobile menu button: hamburger icon + "Categories" label */
 .cg-sidebar-toggle{top:10px;left:12px;width:auto;height:40px;padding:8px 12px;gap:8px;max-width:calc(100vw - 24px);
@@ -949,32 +952,5 @@ body { padding-left: var(--sb-w); }
     Cognicopia is published by Kirk Barron in Minot, North Dakota. Everything runs securely inside your browser with zero cloud tracking.
   </footer>
 
-  <script>
-  (function() {
-    const dropBtn = document.getElementById("resourcesDropdownBtn");
-    const dropdown = dropBtn ? dropBtn.closest(".dropdown") : null;
-    if (dropBtn && dropdown) {
-      function toggleDropdown(open) {
-        const shouldOpen = typeof open === "boolean" ? open : !dropdown.classList.contains("is-open");
-        dropdown.classList.toggle("is-open", shouldOpen);
-        dropBtn.setAttribute("aria-expanded", String(shouldOpen));
-      }
-      dropBtn.addEventListener("click", function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        toggleDropdown();
-      });
-      document.addEventListener("click", function(e) {
-        if (!dropdown.contains(e.target)) toggleDropdown(false);
-      });
-      document.addEventListener("keydown", function(e) {
-        if (e.key === "Escape" && dropdown.classList.contains("is-open")) {
-          toggleDropdown(false);
-          dropBtn.focus();
-        }
-      });
-    }
-  })();
-  </script>
 </body>
 </html>
