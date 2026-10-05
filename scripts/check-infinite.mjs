@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /* =====================================================================
-   Checks for the infinite page generator (assets/cognicore/infinite.js,
-   assets/cognicore/generators/*.js, scripts/generate_infinite_pages.mjs):
+   Checks for the infinite page generator (assets/cognicopia-coloring/infinite.js,
+   assets/cognicopia-coloring/generators/*.js, scripts/generate_infinite_pages.mjs):
      - pages are deterministic: a seed or a page code always makes the
        same page; codes round-trip;
      - every template and every page's words pass the dignity filter and
@@ -21,13 +21,13 @@ import os from "os";
 import path from "path";
 import http from "http";
 import { execFileSync, spawn } from "child_process";
-import { loadCogniCore, ROOT, svgProblems } from "./lib/cognicore.mjs";
+import { loadCognicopiaColoring, ROOT, svgProblems } from "./lib/cognicopia-coloring.mjs";
 import { createBitmap, paint, shapesFromRender } from "./lib/raster.mjs";
 import { encodeBitPNG, decodePNG } from "./lib/png.mjs";
 
 let checks = 0, fails = 0;
 const ok = (cond, msg) => { checks++; if (!cond){ fails++; console.error("FAIL " + msg); } };
-const { C, P } = loadCogniCore();
+const { C, P } = loadCognicopiaColoring();
 const I = C.infinite;
 ok(I && I.version, "the generator loads");
 

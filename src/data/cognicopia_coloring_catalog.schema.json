@@ -1,0 +1,223 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cognicopia.org/src/data/cognicopia_coloring_catalog.schema.json",
+  "title": "Cognicopia Coloring catalog",
+  "description": "Every Cognicopia Coloring page: one asset per design and cognitive tier, with its print standard, tags, file and measured visual complexity. Written by scripts/generate_coloring_manifest.js; do not edit by hand. The ingest file (src/data/coloring_ingested.json) uses the same asset shape.",
+  "type": "object",
+  "required": ["name", "schema_version", "engine_version", "generated_by", "content_hash", "counts", "standards", "categories", "packs", "assets"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "name": { "const": "Cognicopia Coloring Catalog" },
+    "schema_version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "engine_version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "generated_by": { "type": "string" },
+    "content_hash": { "$ref": "#/$defs/sha256" },
+    "counts": {
+      "type": "object",
+      "required": ["designs", "assets", "packs", "ingested"],
+      "additionalProperties": false,
+      "properties": {
+        "designs": { "type": "integer", "minimum": 50 },
+        "assets": { "type": "integer", "minimum": 150 },
+        "packs": { "type": "integer", "minimum": 50 },
+        "ingested": { "type": "integer", "minimum": 0 },
+        "by_category": { "type": "object", "additionalProperties": { "type": "integer", "minimum": 0 } }
+      }
+    },
+    "standards": { "$ref": "#/$defs/standards" },
+    "categories": { "type": "array", "minItems": 5, "items": { "$ref": "#/$defs/category" } },
+    "packs": { "type": "array", "minItems": 50, "items": { "$ref": "#/$defs/pack" } },
+    "assets": { "type": "array", "minItems": 150, "items": { "$ref": "#/$defs/asset" } }
+  },
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "slug": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
+    "tier": { "type": "integer", "minimum": 1, "maximum": 3 },
+    "tierLabel": { "enum": ["Tier 1 - High Detail", "Tier 2 - Guided Focus", "Tier 3 - Single Focal / Sensory"] },
+    "lineWeight": { "enum": ["thick", "ultra-bold", "extra-bold-sensory"] },
+    "categoryLabel": { "enum": ["Classic Vehicles", "Botanical & Garden", "Nostalgic Heritage", "Wildlife & Nature", "Bold & Easy Patterns", "Home & Everyday Tasks", "Zentangle & Mandalas", "Vintage Americana", "Seasons & Holidays"] },
+    "complexity": { "enum": ["simple", "moderate", "detailed"] },
+    "standards": {
+      "type": "object",
+      "required": ["colors", "art_aspect_ratio", "page", "tiers", "line_weights", "complexity_bands", "measured_at"],
+      "additionalProperties": false,
+      "properties": {
+        "colors": {
+          "type": "object",
+          "required": ["line", "background", "grayscale", "shading"],
+          "additionalProperties": false,
+          "properties": {
+            "line": { "const": "#000000" },
+            "background": { "const": "#FFFFFF" },
+            "grayscale": { "const": false },
+            "shading": { "const": false }
+          }
+        },
+        "art_aspect_ratio": { "const": "3:4" },
+        "page": {
+          "type": "object",
+          "required": ["size", "width_in", "height_in", "binding_gutter_in", "margin_in", "three_hole_punch"],
+          "additionalProperties": false,
+          "properties": {
+            "size": { "const": "8.5x11" },
+            "width_in": { "const": 8.5 },
+            "height_in": { "const": 11 },
+            "binding_gutter_in": { "type": "number", "minimum": 0.75 },
+            "margin_in": { "type": "number", "minimum": 0.5 },
+            "three_hole_punch": {
+              "type": "object",
+              "required": ["diameter_in", "from_edge_in", "centers_in"],
+              "additionalProperties": false,
+              "properties": {
+                "diameter_in": { "type": "number" },
+                "from_edge_in": { "type": "number" },
+                "centers_in": { "type": "array", "minItems": 3, "maxItems": 3, "items": { "type": "number" } }
+              }
+            }
+          }
+        },
+        "tiers": {
+          "type": "array", "minItems": 3, "maxItems": 3,
+          "items": {
+            "type": "object",
+            "required": ["tier", "label", "line_weight", "stroke_pt", "detail_stroke_pt", "stroke_px_equivalent", "min_region_sq_in", "max_tiny_regions", "stage", "about"],
+            "additionalProperties": false,
+            "properties": {
+              "tier": { "$ref": "#/$defs/tier" },
+              "label": { "$ref": "#/$defs/tierLabel" },
+              "line_weight": { "$ref": "#/$defs/lineWeight" },
+              "stroke_pt": { "type": "number", "minimum": 1.5, "maximum": 9 },
+              "detail_stroke_pt": { "type": "number", "minimum": 1.5, "maximum": 9 },
+              "stroke_px_equivalent": { "type": "number", "minimum": 2, "maximum": 12 },
+              "min_region_sq_in": { "type": "number", "exclusiveMinimum": 0 },
+              "max_tiny_regions": { "type": "integer", "minimum": 0 },
+              "stage": { "enum": ["early", "moderate", "advanced"] },
+              "about": { "type": "string", "minLength": 10 }
+            }
+          }
+        },
+        "line_weights": {
+          "type": "array", "minItems": 3,
+          "items": {
+            "type": "object",
+            "required": ["id", "label", "stroke_pt", "detail_stroke_pt", "stroke_px_equivalent"],
+            "additionalProperties": false,
+            "properties": {
+              "id": { "$ref": "#/$defs/lineWeight" },
+              "label": { "type": "string" },
+              "stroke_pt": { "type": "number", "minimum": 1.5, "maximum": 9 },
+              "detail_stroke_pt": { "type": "number", "minimum": 1.5, "maximum": 9 },
+              "stroke_px_equivalent": { "type": "number", "minimum": 2, "maximum": 12 }
+            }
+          }
+        },
+        "complexity_bands": {
+          "type": "array", "minItems": 3,
+          "items": {
+            "type": "object",
+            "required": ["id", "label", "max_regions"],
+            "additionalProperties": false,
+            "properties": {
+              "id": { "$ref": "#/$defs/complexity" },
+              "label": { "type": "string" },
+              "max_regions": { "type": ["integer", "null"] }
+            }
+          }
+        },
+        "measured_at": {
+          "type": "object",
+          "required": ["dpi", "layout", "noise_floor_sq_in"],
+          "additionalProperties": false,
+          "properties": {
+            "dpi": { "type": "integer", "minimum": 72 },
+            "layout": { "type": "string" },
+            "noise_floor_sq_in": { "type": "number" }
+          }
+        }
+      }
+    },
+    "category": {
+      "type": "object",
+      "required": ["id", "label", "blurb", "design_count"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "#/$defs/slug" },
+        "label": { "$ref": "#/$defs/categoryLabel" },
+        "blurb": { "type": "string", "minLength": 10 },
+        "design_count": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "pack": {
+      "type": "object",
+      "required": ["id", "title", "theme", "about", "recommended_tier", "designs", "page_count"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "#/$defs/slug" },
+        "title": { "type": "string", "minLength": 3 },
+        "theme": { "type": "string" },
+        "about": { "type": "string" },
+        "recommended_tier": { "type": ["integer", "null"], "minimum": 1, "maximum": 3 },
+        "designs": { "type": "array", "minItems": 3, "uniqueItems": true, "items": { "$ref": "#/$defs/slug" } },
+        "page_count": { "type": "integer", "minimum": 3 }
+      }
+    },
+    "metrics": {
+      "type": "object",
+      "required": ["regions", "smallest_region_sq_in", "median_region_sq_in", "largest_region_sq_in", "tiny_regions", "ink_coverage", "subject_fill", "stroke_pt_median", "stroke_pt_p10"],
+      "additionalProperties": false,
+      "properties": {
+        "regions": { "type": "integer", "minimum": 0 },
+        "smallest_region_sq_in": { "type": "number", "minimum": 0 },
+        "median_region_sq_in": { "type": "number", "minimum": 0 },
+        "largest_region_sq_in": { "type": "number", "minimum": 0 },
+        "tiny_regions": { "type": "integer", "minimum": 0 },
+        "ink_coverage": { "type": "number", "minimum": 0, "maximum": 1 },
+        "subject_fill": { "type": "number", "minimum": 0, "maximum": 1 },
+        "stroke_pt_median": { "type": "number", "minimum": 0 },
+        "stroke_pt_p10": { "type": "number", "minimum": 0 }
+      }
+    },
+    "asset": {
+      "type": "object",
+      "required": ["id", "design_id", "title", "category", "category_id", "cognitive_tier", "tier", "tags", "line_weight", "stroke_pt", "stroke_px",
+                   "aspect_ratio", "page_size", "print_width_in", "print_height_in", "format", "svg_path", "asset_url", "sha256", "bytes",
+                   "era", "season", "sensitive_topics", "conversation_prompt", "source", "review_status", "packs", "visual_complexity", "metrics"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "pattern": "^(cc|ai)-[a-z0-9-]+-t[123]$" },
+        "design_id": { "$ref": "#/$defs/slug" },
+        "title": { "type": "string", "minLength": 3 },
+        "category": { "$ref": "#/$defs/categoryLabel" },
+        "category_id": { "$ref": "#/$defs/slug" },
+        "cognitive_tier": { "$ref": "#/$defs/tierLabel" },
+        "tier": { "$ref": "#/$defs/tier" },
+        "tags": { "type": "array", "minItems": 3, "uniqueItems": true, "items": { "type": "string", "pattern": "^[a-z0-9]+(?:[-'][a-z0-9]+)*$" } },
+        "line_weight": { "$ref": "#/$defs/lineWeight" },
+        "stroke_pt": { "type": "number", "minimum": 1.5, "maximum": 9 },
+        "stroke_px": { "type": "number", "minimum": 2, "maximum": 12, "description": "Outline width at the printed size in CSS pixels (1/96 in): the Dynamic Vector Engine's tier unit." },
+        "aspect_ratio": { "const": "3:4" },
+        "page_size": { "const": "8.5x11" },
+        "print_width_in": { "type": "number", "minimum": 4 },
+        "print_height_in": { "type": "number", "minimum": 5 },
+        "format": { "enum": ["svg", "png"] },
+        "svg_path": { "type": ["string", "null"], "pattern": "^assets/coloring/[a-z0-9/-]+\\.svg$" },
+        "png_path": { "type": ["string", "null"], "pattern": "^assets/coloring/[a-z0-9/-]+\\.png$" },
+        "png_dpi": { "type": "integer", "minimum": 300 },
+        "asset_url": { "type": "string", "pattern": "^https://[a-z0-9.-]+/assets/coloring/[a-z0-9/-]+\\.(svg|png)$" },
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "bytes": { "type": "integer", "minimum": 100 },
+        "era": { "type": "string" },
+        "season": { "enum": ["", "spring", "summer", "fall", "winter"] },
+        "sensitive_topics": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/slug" } },
+        "conversation_prompt": { "type": "string", "minLength": 10 },
+        "source": { "enum": ["cognicopia-coloring-engine", "ingested"] },
+        "review_status": { "enum": ["approved", "needs-review", "rejected"] },
+        "packs": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/slug" } },
+        "visual_complexity": { "$ref": "#/$defs/complexity" },
+        "metrics": { "$ref": "#/$defs/metrics" },
+        "ingest": { "type": "object" }
+      }
+    }
+  }
+}

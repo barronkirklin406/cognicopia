@@ -2,7 +2,7 @@
    A small vector PDF writer for Node scripts (no dependencies): US Letter
    pages, filled and stroked paths, and centred text in the standard
    Helvetica faces. It offers the subset of the jsPDF drawing interface
-   that CogniCore.toPDF() uses (setDrawColor, setFillColor, setLineWidth,
+   that CognicopiaColoring.toPDF() uses (setDrawColor, setFillColor, setLineWidth,
    setLineCap, setLineJoin, moveTo, lineTo, curveTo, close, fill, stroke,
    fillStroke), with the same top-left origin in points, so a page drawn
    for the browser's PDF draws the same way here.

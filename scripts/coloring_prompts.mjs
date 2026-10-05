@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* =====================================================================
-   CogniCore prompt batches: writes image-generator prompts for new coloring
+   Cognicopia Coloring prompt batches: writes image-generator prompts for new coloring
    pages, strict enough that what comes back is already close to the print
    standard (ultra-bold black lines, white background, no shading, 3:4,
    adult and dignified). Every job carries the same prompt written three
@@ -25,11 +25,11 @@
    ===================================================================== */
 import fs from "fs";
 import path from "path";
-import { loadCogniCore, ROOT } from "./lib/cognicore.mjs";
+import { loadCognicopiaColoring, ROOT } from "./lib/cognicopia-coloring.mjs";
 
 const args = process.argv.slice(2);
 const opt = (name, def) => { const i = args.indexOf("--" + name); return i < 0 ? def : (args[i + 1] && !args[i + 1].startsWith("--") ? args[i + 1] : true); };
-const { C, P } = loadCogniCore();
+const { C, P } = loadCognicopiaColoring();
 
 if (args.includes("--list")){
   C.CATEGORIES.forEach(c => console.log(`${c.id.padEnd(20)} ${String(P.IDEAS.filter(i => i[0] === c.id).length).padStart(3)} ideas   ${c.label}`));

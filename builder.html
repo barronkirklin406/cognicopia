@@ -112,7 +112,11 @@ button,input,select{font:inherit}
   border-bottom:1px solid var(--line);
 }
 .facility{font-weight:700;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
-.topbar-left{display:flex;align-items:center;gap:16px;min-width:0;flex:1}
+.topbar-left{display:flex;align-items:center;gap:12px;min-width:0;flex:1}
+.topbar-brand{display:flex;align-items:center;gap:9px;min-width:0;flex:none;color:var(--text);font-weight:800;white-space:nowrap}
+.topbar-brand img{width:32px;height:28px;object-fit:contain;border-radius:4px;background:#fff;flex:none}
+.topbar-brand span{overflow:hidden;text-overflow:ellipsis}
+.topbar-actions{display:flex;align-items:center;justify-content:flex-end;gap:10px;min-width:0}
 .btn-home{
   display:inline-flex; align-items:center; gap:8px; flex:none;
   min-height:42px; padding:8px 16px 8px 13px; border-radius:10px;
@@ -127,6 +131,12 @@ button,input,select{font:inherit}
 .btn-home:focus-visible{outline:3px solid var(--accent-hi);outline-offset:2px}
 @media (max-width:560px){ .btn-home{padding:8px 11px} .btn-home span{display:none} }   /* icon only on phones; the aria-label still says Home */
 .facility b{color:var(--text)}
+@media (max-width:1800px){
+  .topbar{flex-wrap:wrap}
+  .topbar-left{flex:1 1 auto}
+  .topbar-actions{flex:1 1 100%;flex-wrap:wrap}
+  .topbar-actions .panic-button,.topbar-actions .calm-mode-toggle{flex:1 1 320px}
+}
 .view{
   width:100%; max-width:1120px; margin:0 auto;
   padding:clamp(20px,4vw,44px) clamp(16px,3vw,36px) 80px; outline:none;
@@ -164,6 +174,33 @@ h2{font-size:21px;margin:0 0 8px}
 .btn-primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
 .btn-primary:hover{background:var(--accent-hi);border-color:var(--accent-hi)}
 .btn-ghost{background:transparent}
+.panic-button{
+  display:flex;align-items:center;gap:10px;flex:none;min-height:46px;padding:7px 14px;
+  border:2px solid #ff8a65;border-radius:11px;background:#7f1d1d;color:#fff;
+  font:inherit;font-weight:800;text-align:left;cursor:pointer;
+}
+.panic-button:hover{background:#9f2d24;border-color:#ffb199}
+.panic-button:active{transform:translateY(1px)}
+.panic-button svg{flex:none}
+.panic-button small{display:block;color:#ffe3dc;font-size:12px;font-weight:600;line-height:1.25}
+.calm-mode-toggle{
+  display:flex;align-items:center;gap:9px;flex:none;min-height:46px;padding:7px 13px;
+  border:2px solid #8bb7a2;border-radius:11px;background:#18372e;color:#fff;
+  font:inherit;font-weight:800;text-align:left;cursor:pointer;
+}
+.calm-mode-toggle:hover{background:#20483b;border-color:#b6dec9}
+.calm-mode-toggle[aria-pressed="true"]{background:#f2c66d;border-color:#ffe0a0;color:#241b0b}
+.calm-mode-toggle small{display:block;color:#d6e6dc;font-size:11px;font-weight:600;line-height:1.25}
+.calm-mode-toggle[aria-pressed="true"] small{color:#3f3115}
+.calm-mode-toggle:focus-visible,.panic-button:focus-visible{outline:3px solid #ffe08a;outline-offset:3px}
+.sh-sensory{margin:.08in 0 0;padding:.08in .12in;border:1.5pt solid #68746f;border-radius:.06in;font-size:10pt;line-height:1.25;color:#2f3634}
+.art-sensory{margin:.08in auto 0;max-width:6.4in;padding:.08in .12in;border:1.5pt solid #68746f;border-radius:.06in;font-size:11pt;line-height:1.25;color:#2f3634}
+.care-coaching-footer{flex:none;margin:.08in 0 0;padding:.05in 0 0;border-top:1px solid #c9d1ce;color:#56615d;font-size:8pt;line-height:1.2;text-align:center}
+.sheet-calm{align-items:center;justify-content:center;gap:.12in}
+.sheet-calm svg{display:block;flex:1;min-height:0;width:min(100%,6.4in);max-height:8.5in}
+.sheet-calm .care-coaching-footer{width:100%;margin-top:auto}
+.cc-sheet .care-coaching-footer{position:absolute;left:.75in;right:.5in;bottom:.06in;margin:0;padding-top:.035in;background:#fff;font-size:7pt}
+.cc-sheet .cc-foot{transform:translateY(-.2in)}
 .btn-danger{background:transparent;border-color:rgba(240,180,140,.4);color:var(--warn)}
 .btn-danger:hover{background:rgba(240,180,140,.08);border-color:var(--warn)}
 .btn[disabled]{opacity:.5;cursor:not-allowed}
@@ -219,7 +256,7 @@ input:focus,select:focus{border-color:var(--accent)}
 .stepper button:first-child{border-radius:10px 0 0 10px}
 .stepper button:last-child{border-radius:0 10px 10px 0}
 .stepper button:hover{border-color:var(--accent)}
-.stepper input{border-radius:0;text-align:center;font-weight:800;font-size:18px;border-left:0;border-right:0;-moz-appearance:textfield}
+.stepper input{border-radius:0;text-align:center;font-weight:800;font-size:18px;border-left:0;border-right:0;-moz-appearance:textfield;appearance:none}
 .stepper input::-webkit-inner-spin-button,.stepper input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
 .seg{display:flex;flex-wrap:wrap;gap:8px}
 .seg label{position:relative;cursor:pointer}
@@ -487,7 +524,7 @@ input:focus,select:focus{border-color:var(--accent)}
 .art-talk{margin:.04in 0;font-size:12pt;font-style:italic;color:#000;text-align:center}
 .art-foot{font-size:9pt;letter-spacing:.04em;color:#444}
 .art-fac{margin:0 0 .02in;font-size:11pt;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#000;text-align:center;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-/* Cognicore Coloring: the always-on visual rules in the config panel */
+/* Cognicopia Coloring: the always-on visual rules in the config panel */
 .opt-note{margin:0 0 16px}
 .style-head{margin:4px 0 8px;font-size:15px;font-weight:700}
 .style-lock{list-style:none;margin:0;padding:12px 14px;display:grid;grid-template-columns:1fr 1fr;gap:8px 16px;border:1px solid var(--line);border-radius:12px;background:var(--bg-2)}
@@ -539,7 +576,14 @@ input:focus,select:focus{border-color:var(--accent)}
 .sb-toggle:focus-visible{outline:3px solid #7ad3a4;outline-offset:3px}
 @media (max-width:860px){
   .topbar{padding-left:164px}
+  .topbar-actions{width:100%}
+  .panic-button,.calm-mode-toggle{flex:1 1 100%}
   .sidebar{padding-top:60px}
+}
+@media (max-width:560px){
+  .topbar{padding:60px 16px 10px}
+  .panic-button,.calm-mode-toggle{flex:1 1 100%;justify-content:center}
+  .topbar-brand{font-size:14px}
 }
 /* Phones: the bar keeps one row beside the Categories button. Home keeps
    its room, the Facility view switch gives way to the sidebar's Facility
@@ -698,13 +742,13 @@ input:focus,select:focus{border-color:var(--accent)}
 .lp-facts{display:grid;grid-template-columns:minmax(0,1fr);gap:.06in;margin:.04in 0}
 .lp-fact{display:flex;align-items:baseline;gap:.16in;min-width:0;padding:.06in 0;border-bottom:1.5pt solid #aaa}
 .lp-fact .lp-lab{flex:none;width:1.45in}
-.lp-val{flex:1;min-width:0;font-size:24pt;font-weight:700;line-height:1.15;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.lp-val{flex:1;min-width:0;font-size:24pt;font-weight:700;line-height:1.15;display:-webkit-box;-webkit-line-clamp:2;line-clamp: 2;-webkit-box-orient:vertical;overflow:hidden}
 .lp-val-blank{flex:1;height:.5in;border-bottom:3px solid #333}
 .lp-timeline{list-style:none;margin:.04in 0 0 .1in;padding:0 0 0 .05in;border-left:3pt solid #444}
 .lp-timeline li{position:relative;display:flex;gap:.14in;align-items:baseline;padding:.05in 0 .05in .22in;font-size:20pt;line-height:1.2}
 .lp-timeline li::before{content:"";position:absolute;left:-.16in;top:.15in;width:.18in;height:.18in;border-radius:50%;background:#fff;border:3pt solid #444}
 .lp-timeline b{flex:none;min-width:.8in;font-size:22pt}
-.lp-timeline span{min-width:0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.lp-timeline span{min-width:0;display:-webkit-box;-webkit-line-clamp:2;line-clamp: 2;-webkit-box-orient:vertical;overflow:hidden}
 .lp-people{list-style:none;margin:.04in 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:.05in .2in}
 .lp-people li{display:flex;flex-direction:column;padding:.03in .1in;border-left:4pt solid #444;font-size:22pt;line-height:1.1;min-width:0}
 .lp-people b{font-weight:700;line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}   /* 1.2: room for the taller Atkinson descenders */
@@ -723,7 +767,7 @@ input:focus,select:focus{border-color:var(--accent)}
 .lp-art-blank{display:grid;place-items:center;width:calc(100% - .2in);height:calc(100% - .2in);border:2pt dashed #777;border-radius:.06in;font-size:16pt;color:#333}
 .lp-sense{list-style:none;margin:0;padding:0}
 .lp-sense li{display:flex;gap:.12in;align-items:center;padding:.04in 0;border-bottom:1pt solid #bbb;min-height:.6in}
-.lp-sense p{margin:0;font-size:16pt;line-height:1.2;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.lp-sense p{margin:0;font-size:16pt;line-height:1.2;display:-webkit-box;-webkit-line-clamp:2;line-clamp: 2;-webkit-box-orient:vertical;overflow:hidden}
 .lp-sense .lp-ico-row{color:var(--ink)}
 .lp-asks{margin:0;padding-left:.32in;font-size:18pt;line-height:1.25}
 .lp-asks li{margin:0 0 .05in;padding-left:.04in}
@@ -1052,6 +1096,12 @@ textarea:focus{border-color:var(--accent)}
 .lp-pv-title{margin:0;min-width:0;text-align:center}
 .lp-pv-title b{display:block;line-height:1.25}
 .lp-pv-title span{font-size:13.5px;color:var(--muted)}
+.lj-sensory-trigger{margin:0 0 10px;padding:10px 12px;border:1px solid #9b8250;border-left:4px solid #d8b36b;border-radius:10px;background:#1b201b;color:var(--text);font-size:13.5px;line-height:1.4}
+.lj-sensory-trigger b{display:block;margin-bottom:3px;color:#f1d89e}
+.lj-sensory-trigger p{margin:2px 0}
+.lj-sensory-trigger small{display:block;margin-top:5px;color:var(--muted)}
+.lj-sensory-staff{flex:none;margin:.04in 0 0;padding:.04in .08in;border-top:1px solid #9b8250;color:#384139;font-size:8pt;line-height:1.2}
+.lj-sensory-staff span{display:block;margin-top:2pt;font-size:7pt;color:#626b64}
 .lp-spread{display:flex;justify-content:center;padding:12px;border-radius:12px;background:#0a120f;border:1px solid var(--line)}
 .lp-stack .lp-spread{flex-direction:column;align-items:center;gap:12px}
 .lp-fig{margin:0;display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0}
@@ -1168,7 +1218,7 @@ textarea:focus{border-color:var(--accent)}
 .lj-facts{display:grid;grid-template-columns:minmax(0,1fr);margin:.02in 0 .06in}
 .lj-facts > div{display:flex;align-items:baseline;gap:.14in;min-width:0;padding:.04in 0 .03in;border-bottom:3px solid #555}
 .lj-facts dt{flex:none;width:1.95in;margin:0;font-size:14pt;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--ink)}
-.lj-facts dd{flex:1;min-width:0;margin:0;font-size:19pt;font-weight:700;line-height:1.15;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.lj-facts dd{flex:1;min-width:0;margin:0;font-size:19pt;font-weight:700;line-height:1.15;display:-webkit-box;-webkit-line-clamp:2;line-clamp: 2;-webkit-box-orient:vertical;overflow:hidden}
 .lj-facts dd.lj-blank{height:.5in}
 
 /* a frame for a photograph or a drawing; it takes the room that is left */
@@ -1308,7 +1358,7 @@ textarea:focus{border-color:var(--accent)}
 </style>
 <style id="cc-style">
 /* =====================================================================
-   COGNICORE COLORING LIBRARY: screen styles (the view at #/coloring) and
+   COGNICOPIA COLORING LIBRARY: screen styles (the view at #/coloring) and
    the printed sheet (.cc-sheet). Every printed block is placed in inches
    from one layout (CogniLibrary.layout), shared with the PDF writer, so
    the preview, the printout and the PDF match exactly.
@@ -1407,7 +1457,7 @@ textarea:focus{border-color:var(--accent)}
 <style id="rm-style">
 /* =====================================================================
    REMINISCENCE CARDS (#/reminiscence): the screen and the printed card.
-   One card per Letter page: the topic, a CogniCore picture at the
+   One card per Letter page: the topic, a Cognicopia Coloring picture at the
    resident's tier, one invitation in large type, and, below a rule, the
    caregiver's panel (three conversation starters, one era-accurate song,
    one tactile prompt with its safety note, and references from their own
@@ -1504,7 +1554,7 @@ textarea:focus{border-color:var(--accent)}
 .hl-panel{margin-top:4px}
 .hl-entries{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:8px}
 .hl-entries li{display:flex;gap:12px;align-items:flex-start;justify-content:space-between;padding:10px 12px;border-radius:10px;border:1px solid var(--line-2);background:var(--bg-2)}
-.hl-entries p{margin:4px 0 0;color:var(--muted);font-size:14px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.hl-entries p{margin:4px 0 0;color:var(--muted);font-size:14px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;line-clamp: 2;-webkit-box-orient:vertical}
 .hl-entries img{width:64px;height:64px;object-fit:cover;border-radius:8px;flex:none}
 .hl-private{padding:2px 8px;border-radius:999px;font-size:12px;font-weight:800;background:rgba(216,243,220,.08);color:var(--muted)}
 .hl-photo-pv{max-width:220px;max-height:220px;border-radius:8px;display:block;margin-top:8px}
@@ -2263,6 +2313,10 @@ textarea:focus{border-color:var(--accent)}
 <div class="app">
   <header class="topbar">
     <div class="topbar-left">
+      <div class="topbar-brand" aria-label="Cognicopia Packet Builder">
+        <img src="assets/cognicopia-logo.jpg" alt="" aria-hidden="true">
+        <span>Cognicopia Packet Builder</span>
+      </div>
       <!-- A real link, so Home works with a keyboard, a middle-click, and with
            JavaScript off. Relative href: it also works on an offline copy. -->
       <a class="btn-home" id="homeBtn" href="index.html" aria-label="Home: back to the Cognicopia main page">
@@ -2271,12 +2325,21 @@ textarea:focus{border-color:var(--accent)}
       </a>
       <div class="facility" id="facilityLabel"></div>
     </div>
-    <button class="fp-toggle" type="button" id="fpToggle" role="switch" aria-checked="false" aria-label="Facility view" title="Facility view: wings, resident groups and the month's schedule">
-      <span class="fp-toggle-track" aria-hidden="true"><span class="fp-toggle-thumb"></span></span><span class="fp-toggle-label" aria-hidden="true">Facility view</span>
-    </button>
-    <button class="btn btn-primary btn-packet" type="button" id="openPacket" aria-controls="drawer" aria-expanded="false">
-      <span class="pk-long">Your packet</span><span class="pk-short" aria-hidden="true">Packet</span> <span class="count" id="topCount">0</span>
-    </button>
+    <div class="topbar-actions">
+      <button class="panic-button" type="button" id="panicButton" aria-label="Print the two-page sundowning and rapid de-escalation packet">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 22 21H2L12 3Z"/><path d="M12 9v5"/><circle cx="12" cy="17.5" r=".7" fill="currentColor"/></svg>
+        <span>Sundowning / Rapid De-escalation<small>Print the ready-to-use 2-page soothing packet</small></span>
+      </button>
+      <button class="calm-mode-toggle" type="button" id="calmModeToggle" aria-pressed="false" aria-describedby="calmModeHelp">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12h8"/></svg><span>Late-Stage / Sundowning Calm<small id="calmModeHelp">Off · simplifies queued activity pages; emergency buttons stay fixed</small></span>
+      </button>
+      <button class="fp-toggle" type="button" id="fpToggle" role="switch" aria-checked="false" aria-label="Facility view" title="Facility view: wings, resident groups and the month's schedule">
+        <span class="fp-toggle-track" aria-hidden="true"><span class="fp-toggle-thumb"></span></span><span class="fp-toggle-label" aria-hidden="true">Facility view</span>
+      </button>
+      <button class="btn btn-primary btn-packet" type="button" id="openPacket" aria-controls="drawer" aria-expanded="false">
+        <span class="pk-long">Your packet</span><span class="pk-short" aria-hidden="true">Packet</span> <span class="count" id="topCount">0</span>
+      </button>
+    </div>
   </header>
   <main id="view" class="view" tabindex="-1"></main>
 </div>
@@ -3592,7 +3655,9 @@ function sheet(pg, binding, labels){
   const tag = aud === "cg" ? L.cg : L.res;
   const top = pg.noTop ? "" : `<header class="lp-top"><span class="lp-tag">${esc(pg.label || "")}</span><span class="lp-aud">${esc(tag)}</span></header>`;
   const foot = pg.noFoot ? "" : `<footer class="lp-foot"><span>${esc((pg.title || "") + (aud === "cg" ? L.cgFoot : (L.resFoot || "")))}</span><b class="lp-no">${pg.no}</b></footer>`;
-  return `<section class="lp-sheet lp-${visual} lp-${aud}${pg.season ? " lp-s-" + pg.season : ""}${pg.cls ? " " + pg.cls : ""}" data-page="${pg.no}" data-side="${pg.side}" data-tab="${pg.tab}" data-role="${pg.role}" data-spread="${esc(pg.spreadId || "")}">${top}<div class="lp-body lp-role-${pg.role}">${pg.body}</div>${foot}</section>`;
+  const sensory = pg.staffMeta && pg.staffMeta.sensoryTrigger;
+  const staffCue = sensory ? `<aside class="lj-sensory-staff"><b>For staff · Sensory pairing:</b> ${esc(sensory.summary)}<span>${esc(sensory.safety)}</span></aside>` : "";
+  return `<section class="lp-sheet lp-${visual} lp-${aud}${pg.season ? " lp-s-" + pg.season : ""}${pg.cls ? " " + pg.cls : ""}" data-page="${pg.no}" data-side="${pg.side}" data-tab="${pg.tab}" data-role="${pg.role}" data-spread="${esc(pg.spreadId || "")}">${top}<div class="lp-body lp-role-${pg.role}">${pg.body}</div>${staffCue}${foot}</section>`;
 }
 
 function plannerFiller(){
@@ -3882,13 +3947,14 @@ function normProfile(p){
   const year = toInt(p.birthYear, 1890, 2010, null), month = toInt(p.birthMonth, 1, 12, null);
   let day = toInt(p.birthDay, 1, 31, null);
   if (day && (!month || day > daysIn(year || 2000, month - 1))) day = null;
+  const sensoryEra = SENSORY_ERA_CHOICES.some(x => x[0] === p.sensoryEra) ? p.sensoryEra : "auto";
   const branch = codeOf(BRANCHES, p.militaryBranch, "");
   const career = one(p.career, 50), avoid = (Array.isArray(p.avoid) ? p.avoid : []).filter(c => AVOID_TOPICS.some(t => t[0] === c));
   const talk = codeOf(SERVICE_TALK, p.militaryTalk, "gentle");
   const out = {
     // essentials
     name: one(p.name, 30), fullName: one(p.fullName, 50), birthSurname: one(p.birthSurname, 30),
-    birthYear: year, birthMonth: month, birthDay: day, birthplace: one(p.birthplace, 40), hometown: one(p.hometown, 40),
+    birthYear: year, birthMonth: month, birthDay: day, birthplace: one(p.birthplace, 40), hometown: one(p.hometown, 40), sensoryEra,
     career, careerA: /^\w+ing\b/i.test(career) ? "" : withArticle(career), careerGerund: /^\w+ing\b/i.test(career) ? lc(career) : "",
     militaryBranch: branch,
     // Section I
@@ -4206,6 +4272,57 @@ const TIER_TOPICS = {
                starters:["The best advice I got was", "I always say", "A young person should know"] },
   closing:   { starters:["Today, my story includes"] }
 };
+const SENSORY_ERA_CHOICES = [
+  ["auto", "Use birth year to suggest an era"], ["1920s", "1920s"], ["1930s", "1930s"], ["1940s", "1940s"],
+  ["1950s", "1950s"], ["1960s", "1960s"], ["1970s", "1970s"], ["1980s", "1980s"], ["1990s", "1990s"]
+];
+const SENSORY_ERA_CUES = {
+  "1920s": { scent:"rose soap or lavender", texture:"cotton or smooth wood", music:"jazz and parlor music" },
+  "1930s": { scent:"ground coffee or fresh-baked bread", texture:"cotton quilt or smooth wood", music:"swing and early big band" },
+  "1940s": { scent:"lavender or ground coffee", texture:"wool or a cotton quilt", music:"1940s big band radio" },
+  "1950s": { scent:"lavender or ground coffee", texture:"heavy wool or a cotton quilt", music:"1950s big band radio" },
+  "1960s": { scent:"vanilla or fresh-baked bread", texture:"soft cotton or corduroy", music:"1960s folk, Motown or familiar radio" },
+  "1970s": { scent:"cinnamon or coffee", texture:"denim or soft cotton", music:"1970s country or soft rock" },
+  "1980s": { scent:"vanilla or cinnamon", texture:"soft cotton or fleece", music:"1980s country or familiar radio" },
+  "1990s": { scent:"fresh-baked bread or coffee", texture:"soft cotton or fleece", music:"1990s familiar favorites" }
+};
+const SENSORY_TOPIC_CUES = {
+  identity: { label:"Identity", scent:"a familiar soap or personal-care scent", texture:"a well-known soft fabric", music:"a personally familiar song" },
+  home: { label:"Home", scent:"ground coffee or clean laundry", texture:"a cotton quilt or smooth wood", music:"Saturday-morning radio" },
+  family: { label:"Family", scent:"a familiar home-baking aroma", texture:"a soft quilt or familiar fabric", music:"a family-favorite song" },
+  school: { label:"School days", scent:"pencil shavings or clean paper (visual cue only)", texture:"a smooth book cover", music:"a familiar school-era song" },
+  pets: { label:"Pets", scent:"a familiar outdoor or home scent", texture:"a soft, clean fabric", music:"a gentle, familiar song" },
+  firstjob: { label:"First work", scent:"a safe, familiar work-related aroma", texture:"a familiar tool handle or soft fabric", music:"radio music from working years" },
+  career: { label:"Career", scent:"a safe, familiar work-related aroma", texture:"a familiar material from the work", music:"a favorite song from working years" },
+  skills: { label:"Hands-on skills", scent:"vanilla or cinnamon, if familiar", texture:"soft yarn or a smooth wooden object", music:"a familiar work or home song" },
+  service: { label:"Service", scent:"a familiar, non-triggering scent", texture:"a soft, familiar fabric", music:"a personally welcomed familiar song" },
+  community: { label:"Community", scent:"a familiar garden or baking aroma", texture:"a soft fabric or smooth object", music:"a familiar group or community song" },
+  pride: { label:"Pride", scent:"a familiar home scent", texture:"a favorite soft fabric", music:"a song associated with a happy memory" },
+  music: { label:"Music", scent:"a personally welcomed scent", texture:"a soft fabric to hold", music:"a favorite song or genre" },
+  tastes: { label:"Tastes & aromas", scent:"cinnamon or vanilla aroma", texture:"a linen towel or smooth wooden spoon", music:"a familiar kitchen song" },
+  places: { label:"Places & textures", scent:"a familiar garden or coffee aroma", texture:"a soft wool shawl or cotton quilt", music:"a song associated with a favorite place" },
+  affirm: { label:"Comfort", scent:"a resident-approved calming scent", texture:"a favorite soft fabric", music:"a familiar, calming song" },
+  wisdom: { label:"Wisdom", scent:"a familiar home scent", texture:"a well-known soft fabric", music:"a welcomed favorite song" }
+};
+function sensoryCueFor(profileIn, topicId){
+  const p = profileIn && profileIn.p ? profileIn.p : normProfile(profileIn);
+  const topic = SENSORY_TOPIC_CUES[topicId];
+  if (!topic) return null;
+  const era = p.sensoryEra !== "auto" ? p.sensoryEra
+    : p.birthYear ? Math.min(1990, Math.max(1920, Math.floor((p.birthYear + 15) / 10) * 10)) + "s" : "";
+  const eraCue = SENSORY_ERA_CUES[era] || null;
+  const personal = {
+    scent: p.scents[0] || (eraCue && eraCue.scent) || topic.scent,
+    texture: p.textures[0] || (eraCue && eraCue.texture) || topic.texture,
+    music: p.genres[0] || p.songs[0] || (eraCue && eraCue.music) || topic.music
+  };
+  const eraText = eraCue ? `${personal.scent} scent | ${personal.texture} texture | ${personal.music}` : "";
+  const topicText = `${topic.scent} | ${topic.texture} | ${topic.music}`;
+  const eraLabel = eraCue ? era : "";
+  const summary = [eraLabel ? `Era Cue (${eraLabel}): ${eraText}` : "", `Topic Cue (${topic.label}): ${topicText}`].filter(Boolean).join(" · ");
+  return { era:eraLabel, eraText, topicId, topicLabel:topic.label, topicText, summary,
+    safety:"Offer only if the cue is known to be safe and welcomed; avoid allergens and stop if there is any sign of discomfort." };
+}
 function topicFor(ctx, id){
   const t = TIER_TOPICS[id], pet = ctx.p.pets[0];
   return Object.assign({}, t, { anchor: String(t.anchor || "").replace("{name}", ctx.p.name || "Me").replace("{pet}", pet ? pet.name : "Pets") });
@@ -4577,6 +4694,10 @@ function build(profileIn, optsIn, scope){
     : (scope !== "reflection" ? storyItems(ctx) : []).concat(scope !== "story" ? reflectItems(ctx) : []);
   const pages = paginate(items, jFiller);
   pages.forEach(pg => {
+    if (pg.audience === "resident" && pg.side === "left" && pg.tab < 4){
+      const cue = sensoryCueFor(ctx.p, pg.spreadId);
+      if (cue) pg.staffMeta = { sensoryTrigger:cue };
+    }
     if (pg.audience !== "caregiver") pg.cls = [pg.cls, tierCls(ctx.o)].filter(Boolean).join(" ");   // the reader's tier: resident pages only
     pg.html = sheet(pg, ctx.o.binding, LABELS);
   });
@@ -4665,7 +4786,7 @@ function libraryStrings(){
 }
 
 const EXAMPLE_PROFILE = {
-  name: "Margaret", fullName: "Margaret Ellen Hansen", birthSurname: "Olson", birthMonth: 3, birthDay: 14, birthYear: 1938,
+  name: "Margaret", fullName: "Margaret Ellen Hansen", birthSurname: "Olson", birthMonth: 3, birthDay: 14, birthYear: 1938, sensoryEra:"1950s",
   birthplace: "Two Harbors, Minnesota", hometown: "Duluth, Minnesota", origins: "Norwegian and Swedish farm families",
   childhoodHome: "The yellow house on Jefferson Street, with a big front porch",
   parents: [{ name: "Ingrid", role: "mother" }, { name: "Karl", role: "father" }], siblings: [{ name: "Arne", rel: "brother" }, { name: "Ruth", rel: "sister" }],
@@ -4689,8 +4810,11 @@ root.LifeJournal = {
   DATA: {
     SECTIONS: SECTIONS.map(s => Object.assign({}, s)), BRANCHES, SERVICE_TALK, PARENT_ROLES, SIBLING_RELS, AVOID_TOPICS, MONTHS,
     AFFIRMATIONS: AFFIRMATIONS.map(a => ({ id: a.id, group: a.group, text: a.t, needs: a.needs || null })), DEFAULT_AFFIRM: DEFAULT_AFFIRM.slice(), LABELS,
-    TIER_NAMES, TIER_TOPICS: JSON.parse(JSON.stringify(TIER_TOPICS)), SCOPES: SCOPES.slice()
+    TIER_NAMES, TIER_TOPICS: JSON.parse(JSON.stringify(TIER_TOPICS)), SCOPES: SCOPES.slice(),
+    SENSORY_ERAS: JSON.parse(JSON.stringify(SENSORY_ERA_CUES)), SENSORY_TOPICS: JSON.parse(JSON.stringify(SENSORY_TOPIC_CUES)),
+    SENSORY_ERA_CHOICES: SENSORY_ERA_CHOICES.map(x => x.slice())
   },
+  sensoryCue: sensoryCueFor,
   STANDARDS: K.STANDARDS,
   affirmationsFor: profile => affirmationsFor(normProfile(profile)),
   affirmationText: (profile, id) => { const p = normProfile(profile); return affirmText(id, affirmVars(p)); }
@@ -5498,7 +5622,7 @@ const LifeJournalUI = (function(){
       origins: "", childhoodHome: "", parents: [], siblings: [], friends: "", schools: "", teacher: "", subject: "", pets: [],
       firstJob: "", workplace: "", careerYears: "", skills: "", militaryRank: "", militaryYears: "", militaryPlaces: "", militaryTalk: "gentle",
       organizations: "", proudMoments: "", songs: "", genres: "", hymns: "", scents: "", tastes: "", comfortFoods: "", textures: "", colors: "", landscapes: "",
-      affirmations: D.DEFAULT_AFFIRM.slice(), customAffirmations: "", wisdom: "", avoid: [] };
+      sensoryEra: "auto", affirmations: D.DEFAULT_AFFIRM.slice(), customAffirmations: "", wisdom: "", avoid: [] };
   }
   function defaults(){
     return { v: 1, profile: blankProfile(), source: "", scope: "story", tab: 1, pos: { 1: 0, 2: 0, 3: 0, 4: 0 }, obOpen: true,
@@ -5591,6 +5715,9 @@ const LifeJournalUI = (function(){
                 <input type="number" inputmode="numeric" min="1" max="31" data-p="birthDay" value="${esc(p.birthDay)}" placeholder="Day" aria-label="Day of birth">
                 <input type="number" inputmode="numeric" min="1890" max="2010" data-p="birthYear" value="${esc(p.birthYear)}" placeholder="Year" aria-label="Year of birth">
               </div><p class="hint">Any part you know. A year alone is fine.</p></div>
+            <div class="field"><label for="lj-sensoryEra">Life era for sensory cues</label>
+              <select id="lj-sensoryEra" data-p="sensoryEra">${D.SENSORY_ERA_CHOICES.map(([v, label]) => `<option value="${esc(v)}" ${p.sensoryEra === v ? "selected" : ""}>${esc(label)}</option>`).join("")}</select>
+              <p class="hint">Automatic uses the decade when they were about 15. Choose another era if it better fits their memories.</p></div>
             ${tx("birthplace", "Birthplace", 40, "e.g. Two Harbors, Minnesota")}
             ${tx("hometown", "Hometown, where they grew up", 40, "e.g. Duluth, Minnesota")}
           </fieldset>
@@ -5787,12 +5914,20 @@ const LifeJournalUI = (function(){
     const empty = side => side === "right" ? "Inside back cover" : sp.id === "opener" && previewScope() === "complete" ? "End of the life story" : "Inside cover";
     const caps = S.tab < 4 ? { left: "Left page: story prompts and a photograph", right: "Right page: writing lines" }
       : { left: "Left page: words, prompts and notes", right: "Right page: writing and logging" };
+    const sensory = LJ.sensoryCue(engineProfile(), sp.id);
+    const sensoryHtml = sensory ? `<aside class="lj-sensory-trigger" aria-label="Suggested sensory triggers for this life-story topic">
+        <b>Sensory Trigger · ${esc(sensory.topicLabel)}${sensory.era ? " · " + esc(sensory.era) : ""}</b>
+        ${sensory.eraText ? `<p><strong>Era Cue:</strong> ${esc(sensory.eraText)}</p>` : ""}
+        <p><strong>Topic Cue:</strong> ${esc(sensory.topicText)}</p>
+        <small>For staff: offer only cues known to be safe and welcomed; avoid allergens and stop if there is any sign of discomfort.</small>
+      </aside>` : "";
     box.innerHTML = `
       <div class="lp-pv-bar">
         <button class="btn btn-sm btn-ghost" type="button" data-pv="-1" ${i === 0 ? "disabled" : ""} aria-label="Previous spread">&lsaquo; Prev</button>
         <p class="lp-pv-title"><b>${esc(sp.title)}</b><span>Spread ${i + 1} of ${list.length} &middot; ${nums.length > 1 ? "pages " + nums.join(" and ") : "page " + nums[0]}</span></p>
         <button class="btn btn-sm btn-ghost" type="button" data-pv="1" ${i === list.length - 1 ? "disabled" : ""} aria-label="Next spread">Next &rsaquo;</button>
       </div>
+      ${sensoryHtml}
       <div class="lp-spread">${BookUI.figure(L, "left", empty("left"), caps)}${BookUI.figure(R, "right", empty("right"), caps)}</div>
       <div class="lp-pv-foot">
         <p class="hint">${inScope ? "" : `Not in the ${SCOPES[S.scope].label}. Choose ${S.tab <= 3 ? "the Life Story Book" : "Reflection &amp; Family Notes"} or the Complete Journal below to print it. `}Left pages carry the story prompts and a photograph; right pages carry writing lines 0.5 in apart. The shaded edge is the 0.75 in binding gutter.</p>
@@ -6273,12 +6408,12 @@ const RosterUI = (function(){
   return { render, build, TEMPLATES, AUDIENCES, state: () => state() };
 })();
 </script>
-<script src="assets/cognicore/cognicore.js"></script>
+<script src="assets/cognicopia-coloring/cognicopia-coloring.js"></script>
 <script src="assets/services/vectorEngine.js"></script>
 <script id="cc-ui">
 /* =====================================================================
-   COGNICORE COLORING LIBRARY  (the view at #/coloring)
-   Browse the CogniCore line-art library (assets/cognicore/cognicore.js),
+   COGNICOPIA COLORING LIBRARY  (the view at #/coloring)
+   Browse the Cognicopia Coloring line-art library (assets/cognicopia-coloring/cognicopia-coloring.js),
    choose pages or a whole pack, see each page exactly as it prints, then
    add them to the packet, print them, or download a vector PDF.
 
@@ -6291,7 +6426,7 @@ const RosterUI = (function(){
    ===================================================================== */
 const CogniLibrary = (function(){
   "use strict";
-  const C = window.CogniCore, V = window.CogniVectorEngine;
+  const C = window.CognicopiaColoring, V = window.CogniVectorEngine;
   const TIER_SHORT = { 1:"Tier 1 · High Detail", 2:"Tier 2 · Guided Focus", 3:"Tier 3 · Single Focal" };
   const WEIGHTS = [["auto", "Automatic for the tier"], ["thick", "Thick (3 px)"], ["ultra-bold", "Ultra-bold (6 px)"], ["extra-bold-sensory", "Extra-bold sensory (10.5 px)"]];
   const STROKE_TIER = { "thick":1, "ultra-bold":2, "extra-bold-sensory":3 };
@@ -6312,7 +6447,7 @@ const CogniLibrary = (function(){
 
   /* ---------- a picture from the library or from the page generator ----------
      A pick is a library design id, or "gen:" and a page code from the
-     infinite page generator (CogniCore.infinite, assets/cognicore/infinite.js).
+     infinite page generator (CognicopiaColoring.infinite, assets/cognicopia-coloring/infinite.js).
      A generated page asked for at another tier is drawn again at that tier
      from the same seed, and checked again before it prints. */
   const GEN = "gen:";
@@ -6400,7 +6535,7 @@ const CogniLibrary = (function(){
   }
   const box = (b, extra) => `left:${b.x.toFixed(4)}in;top:${b.y.toFixed(4)}in;width:${b.w.toFixed(4)}in;height:${b.h.toFixed(4)}in;${extra || ""}`;
   function footText(o, lay){ const it = info(o.design, lay.tier), code = it && it.code;
-    return [code ? `Cognicopia · New pages · page code ${code}` : `Cognicopia · Coloring Library`, `${C.TIERS[lay.tier].label}${o.pageCount > 1 ? ` · page ${o.pageNumber} of ${o.pageCount}` : ""}`]; }
+    return [code ? `Cognicopia · Cognicopia Coloring · page code ${code}` : `Cognicopia · Cognicopia Coloring`, `${C.TIERS[lay.tier].label}${o.pageCount > 1 ? ` · page ${o.pageNumber} of ${o.pageCount}` : ""}`]; }
   /* The printed sheet for one page. */
   function sheet(o){
     const lay = layout(o), b = lay.blocks, d = info(o.design, lay.tier), art = artFor(o, lay), name = String(o.name || "").trim(), fac = String(o.facility || "").trim();
@@ -6412,6 +6547,7 @@ const CogniLibrary = (function(){
       ${b.legend ? `<div class="cc-legend" style="${box(b.legend)}">${V.legendColumnSvg(o.legend)}</div>` : ""}
       ${b.caption ? `<div class="cc-cap" style="${box(b.caption, `font-size:${b.caption.pt}pt`)}">${esc(d.talk)}</div>` : ""}
       <div class="cc-foot" style="${box(b.foot)}"><span>${esc(ft[0])}</span><span>${esc(ft[1])}</span></div>
+      <footer class="care-coaching-footer">Do not ask questions or test memory. Sit beside them, place the marker in their hand, and model slow, calm breathing.</footer>
     </section>` };
   }
   /* What the page options are right now, for the page at index i of the picks. */
@@ -6463,10 +6599,12 @@ const CogniLibrary = (function(){
       doc.setDrawColor(153, 153, 153); doc.setLineWidth(.75); doc.line(P(b.foot.x), P(b.foot.y), P(b.foot.x + b.foot.w), P(b.foot.y));
       doc.setFont("helvetica", "normal"); doc.setFontSize(9); doc.setTextColor(51, 51, 51);
       doc.text(ft[0], P(b.foot.x), P(b.foot.y + b.foot.h) - 2); doc.text(ft[1], P(b.foot.x + b.foot.w), P(b.foot.y + b.foot.h) - 2, { align:"right" });
+      doc.setFontSize(8); doc.setTextColor(86, 97, 93);
+      doc.text("Do not ask questions or test memory. Sit beside them, place the marker in their hand, and model slow, calm breathing.", 306, 776, { align:"center", maxWidth:540 });
       doc.setTextColor(0, 0, 0); doc.setDrawColor(0, 0, 0);
       times.push(performance.now() - t0);
     });
-    doc.setProperties({ title:"Cognicopia coloring pages", creator:"Cognicopia", subject:"Coloring pages" });
+    doc.setProperties({ title:"Cognicopia Coloring pages", creator:"Cognicopia", subject:"Cognicopia Coloring" });
     return { doc:doc, times:times };
   }
   function pdfName(){
@@ -6481,7 +6619,7 @@ const CogniLibrary = (function(){
     root = viewEl;
     if (!ready()){
       viewEl.innerHTML = `<p class="eyebrow">Cognicopia Coloring</p><h1 class="view-title" tabindex="-1">The coloring library</h1>
-        <p class="callout">The coloring library could not load. Check that assets/cognicore/cognicore.js and assets/services/vectorEngine.js are on this site, then reload.</p>`;
+        <p class="callout">The coloring library could not load. Check that assets/cognicopia-coloring/cognicopia-coloring.js and assets/services/vectorEngine.js are on this site, then reload.</p>`;
       return;
     }
     const s = state();
@@ -6758,8 +6896,8 @@ const CogniLibrary = (function(){
      Pages added from the library are queued as recipes (the design ids and
      options), like every other activity, and rebuild exactly when printed. */
   const LIBRARY_ACTIVITY = {
-    id:"cognicore-library", name:"Coloring Page", themed:false, hidden:true,
-    desc:"A page from the Cognicopia coloring library or its page generator.",
+    id:"cognicopia-coloring-library", name:"Cognicopia Coloring Page", themed:false, hidden:true,
+    desc:"A page from the Cognicopia Coloring library or its page generator.",
     icon:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="2" width="16" height="20" rx="2"/><circle cx="12" cy="10" r="3"/><path d="M12 13v6M9 16l3-2 3 2"/></svg>',
     plan(cfg, rng, count){ const p = ((cfg.opts || {}).pages || []).filter(valid); const out = []; for (let i = 0; i < count; i++) out.push(p[i % Math.max(1, p.length)] || "tulips-vase"); return out; },
     generate(cfg, rng, id){
@@ -6780,14 +6918,14 @@ const CogniLibrary = (function(){
    profile (or a few details typed here): their work, the region and
    setting they grew up in, and the years of their "reminiscence bump".
    The content comes from CogniReminiscence (src/services/
-   reminiscenceEngine.ts); pictures from the CogniCore library at the
+   reminiscenceEngine.ts); pictures from the Cognicopia Coloring library at the
    resident's tier, lines set by the Dynamic Vector Engine. Every card
    carries three caregiver conversation starters, one era-accurate song and
    one tactile prompt. Nothing is sent anywhere.
    ===================================================================== */
 const ReminiscenceUI = (function(){
   "use strict";
-  const R = window.CogniReminiscence, C = window.CogniCore, V = window.CogniVectorEngine;
+  const R = window.CogniReminiscence, C = window.CognicopiaColoring, V = window.CogniVectorEngine;
   let S = null, root = null, focus = 0;
   const state = () => {
     if (!S){
@@ -7173,7 +7311,7 @@ const ClinicalUI = (function(){
    ===================================================================== */
 const HeirloomUI = (function(){
   "use strict";
-  const H = window.CogniHeirloom, C = window.CogniCore, V = window.CogniVectorEngine, SS = window.CogniSecureStore, R = window.CogniReminiscence;
+  const H = window.CogniHeirloom, C = window.CognicopiaColoring, V = window.CogniVectorEngine, SS = window.CogniSecureStore, R = window.CogniReminiscence;
   const S = { resident:"", tab:"keep", month:"", editing:null, bookOpts:null };   // month is set on first render (todayISO is defined in a later script)
   const photos = new Map();                    // photo id -> data URL, for this page only
   let root = null;
@@ -7252,7 +7390,7 @@ const HeirloomUI = (function(){
         <div class="field"><label for="hlDate">Date</label><input id="hlDate" data-f="date" type="date" value="${esc(f.date)}"></div></div>
       <div class="field"><label for="hlTitle">Title <span class="hint">(optional)</span></label><input id="hlTitle" data-f="title" type="text" maxlength="80" value="${esc(f.title)}" placeholder="e.g., Sunday dinners on the farm"></div>
       ${f.kind === "reminiscence" ? `<div class="field"><label for="hlCard">From the reminiscence card</label><input id="hlCard" data-f="card" type="text" maxlength="80" list="hlCards" value="${esc(f.card)}"><datalist id="hlCards">${R.TOPICS.map(t => `<option value="${esc(t.title)}">`).join("")}</datalist></div>` : ""}
-      ${f.kind === "coloring" ? `<div class="row2"><div class="field"><label for="hlDesign">The page they colored</label><select id="hlDesign" data-f="design"><option value="">Not a CogniCore page</option>${designs().map(d => `<option value="${d.id}" ${d.id === f.design ? "selected" : ""}>${esc(d.title)}</option>`).join("")}</select></div>
+      ${f.kind === "coloring" ? `<div class="row2"><div class="field"><label for="hlDesign">The page they colored</label><select id="hlDesign" data-f="design"><option value="">Not a Cognicopia Coloring page</option>${designs().map(d => `<option value="${d.id}" ${d.id === f.design ? "selected" : ""}>${esc(d.title)}</option>`).join("")}</select></div>
         <div class="field"><label for="hlTier">Tier it was printed at</label><select id="hlTier" data-f="tier">${[1, 2, 3].map(t => `<option value="${t}" ${t === f.tier ? "selected" : ""}>Tier ${t}</option>`).join("")}</select></div></div>
         <div class="field"><label for="hlPhoto">A photo of the finished page <span class="hint">(optional; kept encrypted on this computer)</span></label><input id="hlPhoto" type="file" accept="image/*">
           ${f.photo ? `<img class="hl-photo-pv" id="hlPhotoPv" alt="The photo kept with this memory"><button class="btn" type="button" id="hlPhotoDrop">Remove the photo</button>` : ""}</div>` : ""}
@@ -7493,7 +7631,7 @@ const FacilityUI = (function(){
   "use strict";
   const F = window.CogniFacility;
   const MAX_PAGES = 600, CONFIRM_PAGES = 120;
-  const S = { tab:"overview", sub:"calendar", month:"", group:"", cal:"auto", sel:"", week:"", copies:"master", pick:null,
+  const S = { tab:"overview", sub:"calendar", month:"", group:"", cal:"auto", sel:"", pacing:"any", week:"", copies:"master", pick:null,
     moving:null, spaceUp:false, undo:null, ctx:null, filled:false, editing:null };      // month is set on first render (todayISO is defined in a later script)
   let fac = null, root = null, ro = null, wideNow = null, dragId = "", opener = null, raf = 0;
 
@@ -8112,10 +8250,17 @@ const FacilityUI = (function(){
       <section class="fp-recs" id="fpRecs" aria-labelledby="fpRecH" aria-live="polite">${recsHtml(w, g)}</section>`;
   }
   function recsHtml(w, g){
-    const t = F.acuityOf(g.acuity), print = can("print", w.id);
+    const t = F.acuityOf(g.acuity), print = can("print", w.id), recs = F.recommend(t.tier, have(), S.pacing);
+    const pacingLabel = S.pacing === "morning" ? "10:00 AM · Higher engagement"
+      : S.pacing === "late" ? "5:00 PM · Gentle & soothing" : "All times";
     return `<div class="fp-recs-head"><h3 id="fpRecH">Activity generator: calibrated for ${esc(t.label)}</h3>
-        <p class="fp-sub">Each pillar's activities that suit ${esc(g.name)}, best fits first${t.tier === 4 ? ", group programs ahead" : t.tier === 3 ? ", sensory ones ahead" : ""}. They print at the ${esc(level(t))} level; the rest are set aside under each pillar.</p></div>
-      <div class="fp-rec-grid">${F.recommend(t.tier, have()).map(r => `<article class="fp-card fp-pillar p-${r.pillar.id}" aria-labelledby="fpP-${r.pillar.id}">
+        <p class="fp-sub">Each pillar's activities that suit ${esc(g.name)}, best fits first${t.tier === 4 ? ", group programs ahead" : t.tier === 3 ? ", sensory ones ahead" : ""}. They print at the ${esc(level(t))} level; the rest are set aside under each pillar.</p>
+        <div class="fp-field"><label for="fpPacing">Time of day pacing</label><select id="fpPacing">
+          <option value="any" ${S.pacing === "any" ? "selected" : ""}>All times · Tier fit first</option>
+          <option value="morning" ${S.pacing === "morning" ? "selected" : ""}>10:00 AM · Higher engagement</option>
+          <option value="late" ${S.pacing === "late" ? "selected" : ""}>5:00 PM · Gentle &amp; soothing</option>
+        </select><p class="fp-hint">${esc(pacingLabel)} pacing reorders activity suggestions while keeping acuity calibration.</p></div></div>
+      <div class="fp-rec-grid">${recs.map(r => `<article class="fp-card fp-pillar p-${r.pillar.id}" aria-labelledby="fpP-${r.pillar.id}">
         <h4 id="fpP-${r.pillar.id}"><span class="fp-pic">${pIcon(r.pillar.id)}</span>${esc(r.pillar.name)}<span class="fp-count">${r.recommended.length}<span class="sr-only"> recommended</span></span></h4>
         <ol class="fp-rec-list">${r.recommended.map(a => `<li class="fp-rec">
           <div class="fp-rec-top"><b>${esc(actTitle(a))}</b><span class="fp-tags">${a.best.indexOf(t.tier) >= 0 ? `<span class="fp-tag fp-tag-best">Best fit</span>` : ""}${a.group ? `<span class="fp-tag">Group</span>` : ""}${a.sensory ? `<span class="fp-tag">Sensory</span>` : ""}<span class="fp-tag">${a.minutes} min</span></span></div>
@@ -8393,10 +8538,10 @@ const FacilityUI = (function(){
   }
   function openInGenerator(id){
     const w = wing(), g = groupOf(w, S.sel), a = act(id); if (!w || !g || !a) return;
-    const t = F.acuityOf(g.acuity), rec = F.recommend(t.tier, have());
-    S.ctx = { wing:w.name, wingId:w.id, group:g.name, tier:t.tier, label:t.label, difficulty:t.difficulty, open:id,
+    const t = F.acuityOf(g.acuity), rec = F.recommend(t.tier, have(), S.pacing);
+    S.ctx = { wing:w.name, wingId:w.id, group:g.name, tier:t.tier, label:t.label, difficulty:t.difficulty, pacing:S.pacing, open:id,
       recommended:rec.reduce((l, r) => l.concat(r.recommended.map(x => x.id)), []) };
-    if (a.categoryId === "cognicore"){ try { CogniLibrary.state().tier = t.supportTier; } catch (e){} location.hash = "#/coloring"; return; }
+    if (a.categoryId === "cognicopia-coloring"){ try { CogniLibrary.state().tier = t.supportTier; } catch (e){} location.hash = "#/coloring"; return; }
     location.hash = "#/category/" + a.categoryId;
   }
   const context = () => S.ctx;
@@ -8528,6 +8673,14 @@ const FacilityUI = (function(){
     if (t.id === "fpGroup"){ S.group = t.value; return keepFocus(renderCalendar); }
     if (t.name === "fpLayout"){ S.cal = t.value; return keepFocus(renderCalendar); }
     if (t.name === "fpTier") return setTier(+t.value);
+    if (t.id === "fpPacing"){
+      if (!["any", "morning", "late"].includes(t.value)) return;
+      S.pacing = t.value;
+      const recs = root.querySelector("#fpRecs"), g = groupOf(w, S.sel);
+      if (recs && g) keepFocus(() => { recs.innerHTML = recsHtml(w, g); });
+      announce(`Activity suggestions updated for ${t.value === "morning" ? "10 AM higher engagement" : t.value === "late" ? "5 PM gentle pacing" : "all times"}.`);
+      return;
+    }
     if (t.id === "fpGName"){ const v = t.value.trim(); if (!v){ t.value = groupOf(w, S.sel).name; return; } updateGroup(x => Object.assign(x, { name:v.slice(0, 60) }), "Renamed a group", g => `${g.name} to ${v}`, true); return; }
     if (t.id === "fpGSize"){ const n = Math.max(1, Math.min(60, Math.round(+t.value) || 1)); t.value = n; updateGroup(x => Object.assign(x, { size:n }), "Changed a group's size", g => `${g.name}: ${n} residents`, true); return; }
     if (t.id === "fpGNotes"){ updateGroup(x => Object.assign(x, { notes:t.value }), "Changed a group's notes", g => g.name); return; }
@@ -11348,7 +11501,14 @@ const LYRIC_SHEET = {
   levels: { early:{ pt:24, maxLines:9, talk:2 }, moderate:{ pt:28, maxLines:6, talk:2 }, advanced:{ pt:36, maxLines:4, talk:0 } },
   optionsNote(cfg){ return findArtist(optVal(cfg, "artist", "")) || String(optVal(cfg, "artist", "")).trim() !== RANDOM_ARTIST ? musicNote(cfg, 1) : "Random: one public-domain sing-along song, different each time."; },
   pool(cfg){ return optVal(cfg, "hymns", true) ? PD_SONGS : PD_SONGS.filter(s => !s.hymn); },
-  plan(cfg, rng, count){ return artistOf(cfg) ? Array(count).fill(null) : slicePlan(this.pool(cfg), 1, count, rng).map(s => s[0]); },
+  plan(cfg, rng, count){
+    if (cfg.emergencySongTitle){
+      const song = this.pool(cfg).find(s => s.title === cfg.emergencySongTitle);
+      if (!song) throw new Error("The configured emergency song is unavailable in the public-domain library.");
+      return Array(count).fill(song);
+    }
+    return artistOf(cfg) ? Array(count).fill(null) : slicePlan(this.pool(cfg), 1, count, rng).map(s => s[0]);
+  },
   fitPt(lines, basePt, trivia){
     const budget = (trivia ? 6.6 : 7.7) * 72;
     for (let pt = basePt; pt > 24; pt -= 2){
@@ -12056,7 +12216,7 @@ const COLOR_ART = {
       });
       return { svg:o, sig:"kw" + pots + tie };
     } },
-  /* ================= E. Animals (Cognicore Coloring) ================= */
+  /* ================= E. Animals (Cognicopia Coloring) ================= */
   cat: { group:"animals", title:"The Sitting Cat", talk:"Did you ever have a cat? What was its name, and where did it like to sleep?",
     draw(rng, det, st){
       const flip = rng.next() < .5;
@@ -12161,7 +12321,7 @@ const COLOR_ART = {
       return { svg:o + artH.ground(372, st), sig:"gf" + flip + y };
     } },
 
-  /* ================= F. Seasonal (Cognicore Coloring) =================
+  /* ================= F. Seasonal (Cognicopia Coloring) =================
      Each has a `season` so "Seasonal" can lead with the packet date's season. */
   pumpkins: { group:"seasonal", season:"fall", title:"Autumn Pumpkins", talk:"Did you ever carve a pumpkin or bake a pie? What did autumn smell like at home?",
     draw(rng, det, st){
@@ -12334,12 +12494,12 @@ const COLORING = {
   }
 };
 
-/* ---- Cognicore Coloring ----
+/* ---- Cognicopia Coloring ----
    Its own Packet Builder category. Same drawing engine and clinical rules
    as the coloring pages above (pure #000 lines of 3 to 6 pt, no background,
    3:4 art on a full page), with six themes, a pick-one-picture list, a
    facility header and a resident name. */
-const COGNICORE_THEMES = {
+const COGNICOPIA_COLORING_THEMES = {
   nostalgia: { label:"Nostalgia items: clocks, radios, telephones", keys:["rotaryphone","radio","sewing","pocketwatch","grandclock","wallclock"] },
   vehicles:  { label:"Classic vehicles and farm machinery",        keys:["truck","car","wagon","musclecar","tractor","locomotive"] },
   animals:   { label:"Animals: pets, birds and pond life",          keys:["cat","dog","songbird","owl","duck","goldfish"] },
@@ -12347,35 +12507,35 @@ const COGNICORE_THEMES = {
   household: { label:"Everyday household objects and cozy corners", keys:["teapot","rocker","porchswing","fireplace","kitchenwindow"] },
   seasonal:  { label:"Seasonal: starts with the season of the packet date", keys:["pumpkins","applebasket","snowman","wreath","birdhouse","rainboots","lemonade","picnic"] }
 };
-const COGNICORE_THEME_SHORT = { nostalgia:"Nostalgia", vehicles:"Vehicles", animals:"Animals", floral:"Floral", household:"Household", seasonal:"Seasonal" };
-function cognicoreKeys(theme){
-  if (COGNICORE_THEMES[theme]) return COGNICORE_THEMES[theme].keys.slice();
-  return Object.keys(COGNICORE_THEMES).reduce((all, t) => all.concat(COGNICORE_THEMES[t].keys), []);
+const COGNICOPIA_COLORING_THEME_SHORT = { nostalgia:"Nostalgia", vehicles:"Vehicles", animals:"Animals", floral:"Floral", household:"Household", seasonal:"Seasonal" };
+function cognicopiaColoringKeys(theme){
+  if (COGNICOPIA_COLORING_THEMES[theme]) return COGNICOPIA_COLORING_THEMES[theme].keys.slice();
+  return Object.keys(COGNICOPIA_COLORING_THEMES).reduce((all, t) => all.concat(COGNICOPIA_COLORING_THEMES[t].keys), []);
 }
-function cognicoreSeason(cfg){
+function cognicopiaColoringSeason(cfg){
   const d = new Date((cfg.date || todayISO()) + "T12:00:00");
   return seasonFor(isNaN(d) ? new Date() : d, optVal(cfg, "hemi", "north") === "south");
 }
-const COGNICORE = {
-  id: "cognicore-coloring", name: "Cognicore Coloring Page", themed: false, personalRow: true,
+const COGNICOPIA_COLORING = {
+  id: "cognicopia-coloring", name: "Cognicopia Coloring Page", themed: false, personalRow: true,
   desc: "A full-page picture to color: bold pure-black lines of 3 to 6 pt, nothing in the background, a 3:4 frame and adult subjects. Pick a theme, or one exact picture.",
   icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18.4 2.6a2 2 0 0 1 2.9 2.9L12 14.8 9.2 12z"/><path d="M9.2 12c-2 0-3.6 1.6-3.6 3.6 0 1.6-1 2.6-2.6 3.2 1.2 1.3 3 2.2 5 2.2 3 0 4.8-2.4 4-5.4"/></svg>',
   options: [
     { id:"theme", type:"select", label:"Subject / theme", def:"mixed",
-      choices:[["mixed","A mix of every theme"]].concat(Object.keys(COGNICORE_THEMES).map(k => [k, COGNICORE_THEMES[k].label])) },
+      choices:[["mixed","A mix of every theme"]].concat(Object.keys(COGNICOPIA_COLORING_THEMES).map(k => [k, COGNICOPIA_COLORING_THEMES[k].label])) },
     { id:"picture", type:"select", label:"Picture", def:"any",
       hint:"Pick one exact picture for version 1, or let each version be a different picture from the theme.",
       choicesFn(vals){
         const theme = vals.theme || "mixed";
-        return [["any","Surprise me: a different picture for each version"]].concat(cognicoreKeys(theme).map(k => {
-          const own = Object.keys(COGNICORE_THEMES).find(t => COGNICORE_THEMES[t].keys.includes(k));
-          return [k, (theme === "mixed" ? COGNICORE_THEME_SHORT[own] + ": " : "") + COLOR_ART[k].title];
+        return [["any","Surprise me: a different picture for each version"]].concat(cognicopiaColoringKeys(theme).map(k => {
+          const own = Object.keys(COGNICOPIA_COLORING_THEMES).find(t => COGNICOPIA_COLORING_THEMES[t].keys.includes(k));
+          return [k, (theme === "mixed" ? COGNICOPIA_COLORING_THEME_SHORT[own] + ": " : "") + COLOR_ART[k].title];
         }));
       } },
     { id:"hemi", type:"select", label:"Seasons", def:"north", showIf:["theme", "seasonal"],
       choices:[["north","Northern hemisphere"],["south","Southern hemisphere"]] },
     { id:"style", type:"note", html:`<p class="style-head">Visual style</p>
-      <ul class="style-lock" aria-label="Always on for every Cognicore page">
+      <ul class="style-lock" aria-label="Always on for every Cognicopia Coloring page">
         <li>Pure black lines, 3 to 6 pt</li><li>No background clutter or shading</li>
         <li>3:4 picture on a full page</li><li>Adult, dignified subjects</li></ul>` },
     { id:"weight", type:"select", label:"Line weight", def:"auto",
@@ -12389,11 +12549,11 @@ const COGNICORE = {
   levels: COLORING.levels,
   plan(cfg, rng, count){
     const theme = optVal(cfg, "theme", "mixed");
-    let pool = cognicoreKeys(theme).filter(k => COLOR_ART[k]);
+    let pool = cognicopiaColoringKeys(theme).filter(k => COLOR_ART[k]);
     const pic = optVal(cfg, "picture", "any");
     if (theme === "seasonal"){
       // this season's pictures first, then the others, each group shuffled
-      const now = cognicoreSeason(cfg);
+      const now = cognicopiaColoringSeason(cfg);
       pool = rng.shuffle(pool.filter(k => COLOR_ART[k].season === now)).concat(rng.shuffle(pool.filter(k => COLOR_ART[k].season !== now)));
     } else pool = rng.shuffle(pool);
     if (COLOR_ART[pic]) pool = [pic].concat(pool.filter(k => k !== pic));
@@ -12410,7 +12570,7 @@ const COGNICORE = {
     const theme = optVal(cfg, "theme", "mixed"), pic = optVal(cfg, "picture", "any");
     const n = this.singlePage ? 1 : settings.variations;
     let t = COLOR_ART[pic] ? `Version 1 is ${COLOR_ART[pic].title}.` : "";
-    if (theme === "seasonal") t += (t ? " " : "") + `${SEASON_NAMES[cognicoreSeason(cfg)]} pictures come first for ${fmtDate(cfg.date) || "the packet date"}.`;
+    if (theme === "seasonal") t += (t ? " " : "") + `${SEASON_NAMES[cognicopiaColoringSeason(cfg)]} pictures come first for ${fmtDate(cfg.date) || "the packet date"}.`;
     if (n > 1) t += (t ? " " : "") + `Each of the ${n} versions is a different picture.`;
     return t;
   }
@@ -12470,9 +12630,11 @@ const SILHOUETTE_MATCH = {
 };
 
 /* ---------- 8. Category registry ----------
-   To add a category's activities later, give it an `activities` array of
-   objects shaped like the Word & Language ones above. Everything else
-   (sidebar, views, config panel, queue, print) picks them up. */
+   To add activities, give a category an `activities` array. Activity
+   definitions may provide `sensoryPairing` as a string or as a function
+   receiving { activity, page, cfg }. A generated page may also return its
+   own `sensoryPairing` string. Advanced-stage (late-tier) sheets use either before the
+   theme-based fallback. */
 const ICONS = {
   word:  '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>',
   letter:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 19 7.5 5 12 19"/><line x1="4.8" y1="14" x2="10.2" y2="14"/><path d="M15 12h4a2 2 0 0 1 0 4h-4V8h3a2 2 0 0 1 0 4"/></svg>',
@@ -12505,25 +12667,60 @@ const CATEGORIES = [
     blurb:"Large-print sing-along sheets, finish-the-song prompts and a singer-to-song match. Musical memory often outlasts other memories, which makes music one of the most reliable ways in. For rhythm patterns, see Seated Rhythm Sheets under Exercise & Movement.",
     activities:[LYRIC_SHEET, FINISH_SONG, SINGER_MATCH] },
   { id:"multisensory", name:"Multisensory, Art & Group Activities", icon:ICONS.art,
-    blurb:"A giant-type daily orientation board and shadow matching. Good for group rooms, quiet one-to-one time and the start of each day. Coloring pages now have their own category, Cognicore Coloring.",
+    blurb:"A giant-type daily orientation board and shadow matching. Good for group rooms, quiet one-to-one time and the start of each day. Coloring pages now have their own category, Cognicopia Coloring.",
     activities:[ORIENTATION_BOARD, SILHOUETTE_MATCH] },
-  { id:"cognicore", name:"Cognicore Coloring", icon:ICONS.brush, badge:"\u{1F3A8} Coloring", direct:true, route:"coloring",
-    blurb:"The CogniCore coloring library: adult, dignity-first pictures in bold pure-black line art, each drawn at three cognitive tiers, plus themed packs. Filter by tier, theme, line thickness and detail, preview every page with its binding gutter, and print or download a PDF.",
-    activities:[COGNICORE] }
+  { id:"cognicopia-coloring", name:"Cognicopia Coloring", icon:ICONS.brush, badge:"\u{1F3A8} Coloring", direct:true, route:"coloring",
+    blurb:"The Cognicopia Coloring library: adult, dignity-first pictures in bold pure-black line art, each drawn at three cognitive tiers, plus themed packs. Filter by tier, theme, line thickness and detail, preview every page with its binding gutter, and print or download a PDF.",
+    activities:[COGNICOPIA_COLORING] }
 ];
 const CAT_INDEX = {}, ACT_INDEX = {};
 CATEGORIES.forEach(c => { CAT_INDEX[c.id] = c; c.activities.forEach(a => { ACT_INDEX[a.id] = a; a.categoryId = c.id; }); });
 // Retired from the menus but kept so coloring pages already sitting in a
-// saved packet still rebuild exactly. New coloring pages use Cognicore.
+// saved packet still rebuild exactly. New coloring pages use Cognicopia Coloring.
 // The coloring library queues its pages through its own activity.
-[COLORING, CogniLibrary.LIBRARY_ACTIVITY].forEach(a => { if (!ACT_INDEX[a.id]){ ACT_INDEX[a.id] = a; a.categoryId = "cognicore"; } });
+[COLORING, CogniLibrary.LIBRARY_ACTIVITY].forEach(a => { if (!ACT_INDEX[a.id]){ ACT_INDEX[a.id] = a; a.categoryId = "cognicopia-coloring"; } });
 if (!ACT_INDEX[ReminiscenceUI.REMINISCENCE_ACTIVITY.id]){ ACT_INDEX[ReminiscenceUI.REMINISCENCE_ACTIVITY.id] = ReminiscenceUI.REMINISCENCE_ACTIVITY; ReminiscenceUI.REMINISCENCE_ACTIVITY.categoryId = "word"; }
 
 /* ---------- 9. Output sheet renderer ---------- */
-function sheetHtml(item){
+function tactilePairingFor(activity, page, cfg){
+  const explicit = page.sensoryPairing !== undefined ? page.sensoryPairing : activity.sensoryPairing;
+  if (typeof explicit === "function"){
+    const prompt = explicit({ activity:activity, page:page, cfg:cfg });
+    if (typeof prompt === "string" && prompt.trim()) return prompt.trim();
+  } else if (typeof explicit === "string" && explicit.trim()) return explicit.trim();
+
+  const theme = [activity.id, activity.name, page.title, page.subtitle || ""].join(" ").toLowerCase();
+  if (/baking|bake|recipe|kitchen|cookie|bread|pastr/.test(theme))
+    return "Bring a small cup of cinnamon or vanilla extract for the resident to smell while looking at this page. Check allergies, scent sensitivities and facility guidance first; offer it from a distance and do not offer it to taste.";
+  if (/music|song|sing-along|lyric|rhythm/.test(theme))
+    return "If welcomed, offer a familiar soft fabric to touch while quietly humming or listening together; stop if the resident turns away or seems uncomfortable.";
+  if (/garden|flower|plant|nature/.test(theme))
+    return "Offer a soft fabric leaf or smooth, clean nature object to touch while looking at the page, if the resident welcomes it.";
+  if (/trace|line/.test(theme))
+    return "Offer a soft textured cloth beside the page; invite the resident to touch it or follow one dashed line with a finger, without pressure.";
+  return "Offer a familiar, soft-textured fabric to touch while looking at the page, only if welcomed; stop if the resident seems uncomfortable.";
+}
+
+const CAREGIVER_COACHING_NOTE = "Do not ask questions or test memory. Sit beside them, place the marker in their hand, and model slow, calm breathing.";
+function sheetHtml(item, calmMode){
+  const html = activitySheetHtml(item, calmMode);
+  if (!html || html.indexOf("care-coaching-footer") >= 0) return html;
+  const close = html.lastIndexOf("</section>");
+  if (close < 0) return html;
+  const footer = `<footer class="care-coaching-footer">${esc(CAREGIVER_COACHING_NOTE)}</footer>`;
+  return html.slice(0, close) + footer + html.slice(close);
+}
+function activitySheetHtml(item, calmMode){
   const act = ACT_INDEX[item.activityId];
   if (!act) return "";
+  if (calmMode == null ? sundowningCalmActive : calmMode) return `<section class="sheet sheet-calm" aria-label="Late-stage calm activity page">
+    <svg viewBox="0 0 300 400" role="img" aria-label="One broad dashed line to trace slowly">
+      <path d="M48 200 C82 108 123 108 150 200 S218 292 252 200" fill="none" stroke="#000" stroke-width="6pt" vector-effect="non-scaling-stroke" stroke-dasharray="14 12" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </section>`;
   const page = buildBatch(act, item.cfg, item.batchSeed, item.count)[item.index];
+  const sensoryPairing = item.cfg.difficulty === "advanced" ? tactilePairingFor(act, page, item.cfg) : "";
+  const sensoryHtml = sensoryPairing ? `<p class="sh-sensory"><b>For staff · Sensory Prompt:</b> ${esc(sensoryPairing)}</p>` : "";
   if (page.layout === "cc") return page.sheet;                          // coloring library pages lay themselves out
   if (page.layout === "art"){
     // Coloring pages: the picture is the page. No instructions or answer
@@ -12535,7 +12732,8 @@ function sheetHtml(item){
         <header class="art-head">Prepared especially for ${name ? `<b>${name}</b>` : "you"}</header>
         <div class="art-box">${page.html}</div>
         ${page.talk ? `<p class="art-talk">${esc(page.talk)}</p>` : ""}
-        <footer class="art-foot">Cognicopia &bull; Therapeutic Art</footer>
+        ${sensoryPairing ? `<p class="art-sensory"><b>For staff · Sensory Prompt:</b> ${esc(sensoryPairing)}</p>` : ""}
+        <footer class="art-foot">Cognicopia &bull; Cognicopia Coloring</footer>
       </div>
     </section>`;
   }
@@ -12547,6 +12745,7 @@ function sheetHtml(item){
     <div class="sh-body">${page.html}</div>
     ${page.answers ? `<p class="sh-ans">For staff &middot; answers: ${esc(page.answers)}</p>` : ""}
     ${page.staffNote ? `<p class="sh-ans">For staff: ${esc(page.staffNote)}</p>` : ""}
+    ${sensoryHtml}
     <footer class="sh-foot"><span>${esc(settings.facility)}</span><span>Cognicopia &middot; Version ${item.index + 1} of ${item.count}</span></footer>
   </section>`;
 }
@@ -12554,7 +12753,11 @@ function sheetHtml(item){
 /* ---------- 10. Packet queue ----------
    Stored as recipes (activity, settings, seed, index), not as HTML, so it
    is small and rebuilds identically after a reload. */
-const readQueue = () => (store.get("cgb_queue", []) || []).filter(q => q && ACT_INDEX[q.activityId] && Number.isFinite(q.batchSeed) && q.index < q.count);
+const readQueue = () => (store.get("cgb_queue", []) || []).map(q => {
+  if (!q) return q;
+  const legacyIds = { "cognicore-coloring":"cognicopia-coloring", "cognicore-library":"cognicopia-coloring-library" };
+  return legacyIds[q.activityId] ? Object.assign({}, q, { activityId:legacyIds[q.activityId] }) : q;
+}).filter(q => q && ACT_INDEX[q.activityId] && Number.isFinite(q.batchSeed) && q.index < q.count);
 let queue = readQueue();
 function saveQueue(){ store.set("cgb_queue", queue); renderCounts(); if (drawerOpen) renderQueue(); }
 function addBatch(act, cfg, batchSeed, count){
@@ -12601,12 +12804,12 @@ function renderNav(){
   $("#catNav").innerHTML = CATEGORIES.map(c => `<li><a class="sb-link" href="${catHref(c)}" data-cat="${c.id}">
     ${c.icon}<span>${esc(c.name)}</span>${c.route ? `<span class="tag live">${catCount(c)}</span>` : c.activities.length ? `<span class="tag live">${c.activities.length}</span>` : '<span class="tag">Soon</span>'}</a></li>`).join("");
 }
-/* A category with its own screen (Cognicore Coloring: the library) links there. */
+/* A category with its own screen (Cognicopia Coloring: the library) links there. */
 function catHref(c){ return c.route ? "#/" + c.route : "#/category/" + c.id; }
-function catCount(c){ return c.route === "coloring" && window.CogniCore ? CogniCore.stats().designs : c.activities.length; }
+function catCount(c){ return c.route === "coloring" && window.CognicopiaColoring ? CognicopiaColoring.stats().designs : c.activities.length; }
 function highlightNav(name, arg){
   document.querySelectorAll(".sb-link").forEach(a => a.removeAttribute("aria-current"));
-  if (name === "coloring") arg = "cognicore", name = "category";
+  if (name === "coloring") arg = "cognicopia-coloring", name = "category";
   const el = name === "category" ? document.querySelector(`.sb-link[data-cat="${CSS.escape(arg)}"]`)
            : name === "settings" ? document.querySelector('.sb-link[data-route="settings"]')
            : name === "planner" || name === "journal" || name === "roster" || name === "reminiscence" || name === "clinical" || name === "heirloom" || name === "facility" || name === "academy" ? document.querySelector(`.sb-link[data-route="${name}"]`) : null;
@@ -12623,7 +12826,7 @@ function renderCounts(){
 function renderHome(){
   // Interactive generators first, then the activity library, then the
   // reading: the reference modules live in the Resource & Clinical Hub.
-  const cc = CAT_INDEX.cognicore, tool = (href, icon, name, desc, pills) => `
+  const cc = CAT_INDEX["cognicopia-coloring"], tool = (href, icon, name, desc, pills) => `
       <a class="card" href="${href}">
         <span class="ic">${icon}</span><b>${esc(name)}</b><span class="desc">${esc(desc)}</span>
         <span class="meta">${pills.map((p, k) => `<span class="pill${k ? "" : " live"}">${esc(p)}</span>`).join("")}</span>
@@ -12639,7 +12842,7 @@ function renderHome(){
     </ol>
     <h2>Interactive generators</h2>
     <div class="card-grid">
-      ${tool(catHref(cc), cc.icon, "CogniCore Coloring", "Adult, dignity-first line art in bold pure black, each picture drawn at three support tiers. Filter, preview with the binding gutter, and print or download a vector PDF.", [`${catCount(cc)} pictures`, "3 tiers", "Bundle packs"])}
+      ${tool(catHref(cc), cc.icon, "Cognicopia Coloring", "Adult, dignity-first line art in bold pure black, each picture drawn at three support tiers. Filter, preview with the binding gutter, and print or download a vector PDF.", [`${catCount(cc)} pictures`, "3 tiers", "Bundle packs"])}
       ${tool("#/planner", ICONS.planner, "12-Month Life Planner", "A personalized year-long memory book for the resident, with a separate, confidential care companion for staff and family. Print-ready for binders and bound books.", ["4 tabs", "Memory book + care companion"])}
       ${tool("#/journal", ICONS.journal, "Life Story Journal", "The Cognitive Life Journal: a life story in four sections, from early roots to daily comfort, personalized from the resident’s own details. Family and care team notes stay in a separate part at the back.", ["4 sections", "Life story + family notes"])}
       ${tool("#/reminiscence", ICONS.journal, "Reminiscence Cards", "Cards about a resident’s own work, hometown region and best-remembered years, each with three conversation starters, a song from their era and something to hold.", ["Era × region × vocation", "Caregiver cues"])}
@@ -12668,15 +12871,25 @@ function academyPills(){
   return A ? [n("pro") + " masterclasses", n("family") + " family guides", "Training records"] : ["Masterclasses", "Family guides"];
 }
 
-let selectedAct = null, previewSeed = newSeed();
+let selectedAct = null, previewSeed = newSeed(), sundowningCalmActive = false;
+function syncCalmModeToggle(){
+  const button = $("#calmModeToggle"), help = $("#calmModeHelp");
+  if (!button || !help) return;
+  button.setAttribute("aria-pressed", String(sundowningCalmActive));
+  help.textContent = sundowningCalmActive
+    ? "On · queued activity text and choices suppressed; emergency buttons stay fixed"
+    : "Off · simplifies queued activity pages; emergency buttons stay fixed";
+  if (selectedAct) renderPreview();
+  renderQueue();
+}
 
 function renderCategory(id){
   const cat = CAT_INDEX[id];
   if (!cat){ location.replace("#/"); return; }
-  if (cat.route){ location.replace("#/" + cat.route); return; }      // Cognicore Coloring has its own screen
+  if (cat.route){ location.replace("#/" + cat.route); return; }      // Cognicopia Coloring has its own screen
   selectedAct = null;
   if (cat.direct && cat.activities.length === 1){
-    // A one-tool category (Cognicore Coloring): skip the activity cards
+    // A one-tool category (Cognicopia Coloring): skip the activity cards
     // and show its configuration panel straight away.
     view.innerHTML = `
       <p class="eyebrow">Category</p>
@@ -12688,6 +12901,8 @@ function renderCategory(id){
   }
   // Opened from the Facility Portal for a group: what suits its tier comes first, marked.
   const fx = typeof FacilityUI !== "undefined" ? FacilityUI.context() : null;
+  const fxPacing = fx && fx.pacing === "morning" ? "10:00 AM higher-engagement pacing"
+    : fx && fx.pacing === "late" ? "5:00 PM gentle pacing" : "all-times pacing";
   const fxRank = a => { const i = fx ? fx.recommended.indexOf(a.id) : -1; return i < 0 ? 1e3 : i; };
   const acts = fx ? cat.activities.slice().sort((x, y) => fxRank(x) - fxRank(y)) : cat.activities;
   const cards = cat.activities.length
@@ -12700,7 +12915,7 @@ function renderCategory(id){
     <p class="eyebrow">Category</p>
     <h1 class="view-title" tabindex="-1">${esc(cat.name)}</h1>
     <p class="lede">${esc(cat.blurb)}</p>
-    ${fx ? `<div class="fp-ctx" role="status"><p>For <b>${esc(fx.group)}</b> in ${esc(fx.wing)}: <b>${esc(fx.label)}</b>. Activities calibrated for the tier come first and print at the ${esc(DIFFICULTIES[fx.difficulty].label.toLowerCase())} level.</p><a href="#/facility/${encodeURIComponent(fx.wingId)}">Back to the portal</a><button type="button" id="fxClear">Show everything</button></div>` : ""}
+    ${fx ? `<div class="fp-ctx" role="status"><p>For <b>${esc(fx.group)}</b> in ${esc(fx.wing)}: <b>${esc(fx.label)}</b>, with ${esc(fxPacing)}. Calibrated activities come first and print at the ${esc(DIFFICULTIES[fx.difficulty].label.toLowerCase())} level.</p><a href="#/facility/${encodeURIComponent(fx.wingId)}">Back to the portal</a><button type="button" id="fxClear">Show everything</button></div>` : ""}
     <section aria-label="Activities"><div class="card-grid">${cards}</div></section>
     ${cat.activities.length ? "" : '<p class="callout">These activities are being built. Word &amp; Language Activities are ready to use now.</p>'}
     <section class="config" id="config" hidden aria-live="polite"></section>`;
@@ -12769,7 +12984,7 @@ function readOpts(act){
 }
 function syncOptVisibility(act){
   const vals = readOpts(act);
-  // Lists that depend on another choice (Cognicore's Picture list follows
+  // Lists that depend on another choice (Cognicopia Coloring's Picture list follows
   // the theme): rebuild them, keeping the choice if it is still offered.
   (act.options || []).forEach(f => {
     if (!f.choicesFn) return;
@@ -12886,7 +13101,7 @@ function openConfig(actId, scroll){
   if (scroll !== false) box.scrollIntoView({ behavior:"smooth", block:"start" });
 }
 
-/* Resident personalization row (Cognicore Coloring): resident name and
+/* Resident personalization row (Cognicopia Coloring): resident name and
    facility header side by side, then the packet date, which sets the season.
    The facility box is an ordinary option (data-opt), so it is saved and
    travels with each queued page like any other setting. */
@@ -12909,7 +13124,9 @@ function updatePreview(){
   if (!selectedAct || !$("#preview")) return;
   const cfg = currentCfg();
   $("#preview").innerHTML = sheetHtml({ activityId:selectedAct.id, cfg, batchSeed:previewSeed, count:1, index:0 });
-  $("#pvMeta").textContent = DIFFICULTIES[cfg.difficulty].label + (selectedAct.themed ? " · " + ERAS[cfg.era] : "");
+  $("#pvMeta").textContent = sundowningCalmActive
+    ? "Late-Stage / Sundowning Calm · single 6 pt tracing path"
+    : DIFFICULTIES[cfg.difficulty].label + (selectedAct.themed ? " · " + ERAS[cfg.era] : "");
   if (selectedAct.optionsNote && $("#optNote")) $("#optNote").textContent = selectedAct.optionsNote(cfg);
 }
 
@@ -13081,11 +13298,11 @@ function renderQueue(){
   body.innerHTML = `<p class="hint" style="margin:0 0 12px">${queue.length} ${queue.length === 1 ? "page" : "pages"}, printed in this order. Each is one sheet of paper.</p><ol class="q-list">` +
     queue.map((q, i) => {
       const act = ACT_INDEX[q.activityId];
-      const bits = [ "Version " + (q.index + 1) + " of " + q.count, DIFFICULTIES[q.cfg.difficulty].label ];
-      if (act.themed) bits.push(ERAS[q.cfg.era]);
-      if (q.cfg.residentName) bits.push("For " + q.cfg.residentName);
-      const title = buildBatch(act, q.cfg, q.batchSeed, q.count)[q.index].title;
-      if (title !== act.name) bits.unshift(act.name);
+      const bits = sundowningCalmActive ? ["Standard activity text and choices suppressed"] : [ "Version " + (q.index + 1) + " of " + q.count, DIFFICULTIES[q.cfg.difficulty].label ];
+      if (!sundowningCalmActive && act.themed) bits.push(ERAS[q.cfg.era]);
+      if (!sundowningCalmActive && q.cfg.residentName) bits.push("For " + q.cfg.residentName);
+      const title = sundowningCalmActive ? "Calm tracing page" : buildBatch(act, q.cfg, q.batchSeed, q.count)[q.index].title;
+      if (!sundowningCalmActive && title !== act.name) bits.unshift(act.name);
       return `<li class="q-item"><div class="thumb">${sheetHtml(q)}</div>
         <div class="q-info"><b>${i + 1}. ${esc(title)}</b><small>${esc(bits.join(" · "))}</small>
           <div class="q-btns">
@@ -13134,30 +13351,85 @@ $("#gateClose").addEventListener("click", () => { $("#gate").hidden = true; });
 $("#gateUnlock").addEventListener("click", () => {
   const ok = activateLicense($("#gateCode").value);
   $("#gateMsg").className = ok ? "msg-ok" : "msg-bad";
-  $("#gateMsg").textContent = ok ? "Unlocked. Choose Generate PDF again." : "That code didn't match. Check it against your receipt.";
-  if (ok){ renderAllowance(); setTimeout(() => { $("#gate").hidden = true; }, 900); }
+  $("#gateMsg").textContent = ok ? (pendingEmergencyPrint ? "Unlocked. Printing the emergency activity." : "Unlocked. Choose Generate PDF again.") : "That code didn't match. Check it against your receipt.";
+  if (ok){
+    renderAllowance();
+    if (pendingEmergencyPrint){
+      const pending = pendingEmergencyPrint; pendingEmergencyPrint = null;
+      $("#gate").hidden = true;
+      generatePdf(pending.items, pending.options);
+    } else setTimeout(() => { $("#gate").hidden = true; }, 900);
+  }
 });
 
 /* Generate PDF: fill #printRoot with one .sheet per queued page, mark it
    .pure-bw if High Contrast Mode is on, and open the print window. The
    browser's own "Save as PDF" makes the file, so this works offline. */
-let printTitle = null, printReady = false;
-function generatePdf(){
-  if (!queue.length) return;
-  if (!isLicensed() && genCount() >= FREE_RUNS){ closeDrawer(); openGate(); return; }
-  if (!BookUI.fontsLoaded()){ BookUI.loadFonts().then(generatePdf); return; }   // print in the embedded face, never a fallback
+let printTitle = null, printReady = false, pendingEmergencyPrint = null;
+function generatePdf(items, printOptions){
+  items = Array.isArray(items) ? items : queue;
+  if (!items.length) return;
+  if (!isLicensed() && genCount() >= FREE_RUNS){
+    if (printOptions && printOptions.emergency) pendingEmergencyPrint = { items:items, options:printOptions };
+    closeDrawer(); openGate(); return;
+  }
+  if (!BookUI.fontsLoaded()){
+    BookUI.loadFonts().then(() => generatePdf(items, printOptions)).catch(e => toast("The emergency activity could not be printed because the print font did not load: " + e.message));
+    return;
+  }   // print in the embedded face, never a fallback
   const root = $("#printRoot");
   root.className = isPureBlackAndWhitePDF ? "pure-bw" : "";
-  root.innerHTML = queue.map(sheetHtml).join("");
+  const calmMode = printOptions && typeof printOptions.calmMode === "boolean" ? printOptions.calmMode : sundowningCalmActive;
+  root.innerHTML = items.map(item => sheetHtml(item, calmMode)).join("");
   printReady = true;
-  const who = (queue.find(q => q.cfg.residentName) || { cfg:{} }).cfg.residentName;
+  const who = (items.find(q => q.cfg.residentName) || { cfg:{} }).cfg.residentName;
   printTitle = document.title;
-  document.title = "Cognicopia Packet" + (who ? " - " + who : "") + " - " + todayISO();  // default PDF file name
+  document.title = (printOptions && printOptions.title ? printOptions.title : "Cognicopia Packet") + (who ? " - " + who : "") + " - " + todayISO();  // default PDF file name
   window.print();
   if (!isLicensed()) bumpGen();
   renderAllowance();
 }
 $("#generatePdf").addEventListener("click", generatePdf);
+
+function printEmergencyActivity(residentId){
+  const profile = BookUI.savedProfiles().find(p => p.id === residentId);
+  if (!profile){ toast("This resident profile could not be found. Return to the roster and select a saved resident."); return; }
+  const allowed = ["line-tracing", "silhouette-match", "letter-tracing"];
+  const requested = profile.preselectedDeescalationActivity;
+  const activityId = allowed.includes(requested) && ACT_INDEX[requested] ? requested : "line-tracing";
+  const activity = ACT_INDEX[activityId] || LINE_TRACING;
+  const tier = BookUI.needsFor(profile).tier;
+  const difficulty = ["", "early", "moderate", "advanced"][tier] || "moderate";
+  const name = settings.aliasFiles ? cgFileName(profile) : String(profile.tier1_core.preferredName || "").trim();
+  const cfg = { residentName:name, date:todayISO(), difficulty:difficulty, era:settings.era };
+  if (activity.options){
+    cfg.opts = optDefaults(activity);
+    if (activityId === "letter-tracing"){ cfg.opts.letters = "name"; cfg.opts.case = "both"; }
+  }
+  const item = { activityId:activity.id, cfg:cfg, batchSeed:newSeed(), count:1, index:0 };
+  generatePdf([item], { emergency:true, calmMode:false, title:"Cognicopia Instant Soothe" });
+}
+
+const PANIC_PACKET = [
+  { activityId:"line-tracing", cfg:{ difficulty:"advanced", era:"general", opts:{ paths:"straight" } } },
+  { activityId:"lyric-sheet", cfg:{
+    difficulty:"advanced", era:"general", emergencySongTitle:"Take Me Out to the Ball Game",
+    opts:{ artist:RANDOM_ARTIST, hymns:false, trivia:false }
+  } }
+];
+function buildPanicPacket(){
+  const date = todayISO();
+  return PANIC_PACKET.map(page => ({
+    activityId:page.activityId,
+    cfg:Object.assign({ residentName:"", date:date }, page.cfg),
+    batchSeed:newSeed(),
+    count:1,
+    index:0
+  }));
+}
+function printPanicPacket(){
+  generatePdf(buildPanicPacket(), { emergency:true, calmMode:false, title:"Cognicopia Rapid De-escalation" });
+}
 
 /* Ctrl+P without Generate PDF: print a short note instead of a blank page. */
 window.addEventListener("beforeprint", () => {
@@ -13181,6 +13453,14 @@ window.addEventListener("afterprint", () => {
   ov.addEventListener("click", closeSidebar);
 
   $("#openPacket").addEventListener("click", openDrawer);
+  $("#panicButton").addEventListener("click", printPanicPacket);
+  $("#calmModeToggle").addEventListener("click", () => {
+    sundowningCalmActive = !sundowningCalmActive;
+    syncCalmModeToggle();
+    toast(sundowningCalmActive
+      ? "Calm mode is on for queued pages. Emergency print buttons keep their dedicated payload."
+      : "Calm mode is off. Standard activity instructions and graphics are restored.");
+  });
   $("#fpToggle").addEventListener("click", () => { location.hash = parseHash().name === "facility" ? lastBuilderHash : "#/facility"; });
   // Home: the main landing page is a separate file (index.html), so this
   // is a page change, not a view swap. Close any open panel and make sure
@@ -13220,7 +13500,10 @@ window.addEventListener("afterprint", () => {
     settings = readSettings(); isPureBlackAndWhitePDF = !!settings.pureBW; queue = readQueue();
     storeOpen = true;
     renderFacility(); renderCounts(); renderBwNote();
+    const emergencyResidentId = new URLSearchParams(location.search).get("emergency");
+    if (emergencyResidentId) history.replaceState(null, "", location.pathname + location.hash);
     router();
+    if (emergencyResidentId) printEmergencyActivity(emergencyResidentId);
   });
   // Another tab changed a saved resident or the queue: show it here too.
   window.addEventListener("storage", e => {
@@ -13240,5 +13523,6 @@ window.addEventListener("afterprint", () => {
 if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol))
   window.addEventListener("load", function(){ navigator.serviceWorker.register("sw.js").catch(function(){}); });
 </script>
+<script src="assets/services/nightShift.js"></script>
 </body>
 </html>

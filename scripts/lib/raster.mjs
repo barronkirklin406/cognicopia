@@ -1,6 +1,6 @@
 /* =====================================================================
    Line-art rasterizer and meter for coloring pages, for Node scripts.
-   The drawing and measuring code lives in assets/cognicore/quality.js, so
+   The drawing and measuring code lives in assets/cognicopia-coloring/quality.js, so
    the browser (Packet Builder, page generator) and these scripts measure
    with the same file: it turns a drawing into a 1-bit bitmap (the way it
    prints), then measures what a person coloring it meets: the enclosed
@@ -14,15 +14,15 @@
    fill 0 paints white (hides what is behind), 1 paints black, null none.
    Node built-ins only.
    ===================================================================== */
-import { loadCogniCore } from "./cognicore.mjs";
+import { loadCognicopiaColoring } from "./cognicopia-coloring.mjs";
 
-const Q = loadCogniCore().C.quality;
+const Q = loadCognicopiaColoring().C.quality;
 export const createBitmap = Q.createBitmap;
 export const paint = Q.paint;
 export const measure = Q.measure;
 export const strokeStats = Q.strokeStats;
 export const measureRender = Q.measureRender;
-/* r: CogniCore.render(...) result; the picture printed widthIn wide at dpi. */
+/* r: CognicopiaColoring.render(...) result; the picture printed widthIn wide at dpi. */
 export function shapesFromRender(C, r, o){ return Q.shapesFromRender(r, o); }
 
 /* ---------- helpers for the ingest pipeline ---------- */

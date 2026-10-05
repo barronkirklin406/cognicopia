@@ -5,159 +5,178 @@ Copy everything below the line into a new Claude Code session on the
 
 ---
 
-You are continuing work on **Cognicopia** (cognicopia.org), a static
-memory-care activity site. It is deployed to GitHub Pages from `main`, with
-the CNAME cognicopia.org. Act as a senior full-stack engineer and an
-accessibility and clinical memory-care UX expert.
+You are continuing work on **Cognicopia** (cognicopia.org), a static,
+offline-first memory-care activity site. It deploys to GitHub Pages from
+`main` (CNAME cognicopia.org). Act as a senior full-stack engineer and an
+accessibility and clinical memory-care UX expert. Finish the remaining
+items below, verify each one, and publish to cognicopia.org.
+
+## Start here
+
+1. Run `git fetch origin main`. The owner also commits to `main` directly, and `main` was force-pushed once. Merge `origin/main` into your branch before you change anything, and resolve conflicts by keeping both sides' intent.
+2. Run `npm test` and `npm run build`. Both must pass before you start, and again before you ship.
+3. Start the preview server: `python3 -m http.server 8765 --bind 127.0.0.1`.
 
 ## Where things stand
 
-**Already live on `main`:**
-- Facility Portal.
-- Caregiver & Professional Academy.
-- Clinical Science & Research Center.
-- Infinite coloring page generator (commit 14f5c1a, "Coloring: infinite page generator, 3 pt line floor and three new categories"). It includes:
-  - `assets/cognicore/infinite.js`: the seeded theme matrix, page codes, the 10 prompt templates and the guardrails.
-  - `assets/cognicore/generators/*.js`: 8 subject families (cars, garden, flowers, birds, butterflies, tea, mid-century, homestead, harvest).
-  - `assets/cognicore/quality.js`: the bitmap meter.
-  - `scripts/generate_infinite_pages.mjs`: the CLI (`npm run pages`). It writes SVG, 300 DPI 1-bit PNG, a PDF packet, prompts.jsonl/csv and manifest.json, and has an optional `--backend http` image endpoint.
-  - `scripts/lib/pdf-lite.mjs`.
-  - `scripts/check-infinite.mjs`: 749 checks, wired into `npm test` and `npm run build`.
-  - A Packet Builder "New pages" tab in `builder.html`.
-  - Tier 1 lines raised to 3 pt.
-  - Three new library categories: zentangle-mandalas, vintage-americana and seasons-holidays (150 designs, 450 pages, 63 packs).
-  - A fix for the builder coloring layout overflowing on phones.
-  - `docs/infinite-coloring-engine.md`: the architecture blueprint.
-- index.html (the main packet tool):
-  - The coloring page and "Color the pattern" now draw from the Cognicopia vector library (`C.render` + `C.toPDF`, at the tier for the resident's stage, chosen per resident and month, honoring the avoid list).
-  - Holidays add a second, full-page holiday coloring picture (`HOLIDAY_ART`).
-  - The old procedural mandala code and the unused `mRings/mSeg/mWeight` were removed.
+[barronkirklin406/cognicopia#7](https://github.com/barronkirklin406/cognicopia/pull/7) merged all of the following into `main`.
 
-All tests passed at hand-off:
-- check-life-planner: 74
-- check-life-journal: 138
-- check-services: about 54,332
-- check-coloring: 10,067
-- check-infinite: 749
+**Infinite coloring page generator.** Docs: `docs/infinite-coloring-engine.md`.
+- `assets/cognicopia-coloring/infinite.js`:
+  - seeded theme × subject × setting × composition matrix;
+  - reprintable page codes such as `2HB-QIBJMT`;
+  - 10 `{subject}/{setting}/{composition_style}` prompt templates;
+  - guardrails: dignity and avoid-list screening, closed outlines, no loose line ends, and per-tier limits on open space, ink and region size.
+- `assets/cognicopia-coloring/generators/*.js`: 9 subject families (cars, garden, flowers, birds, butterflies, tea, mid-century, homestead, harvest).
+- `assets/cognicopia-coloring/quality.js`: the bitmap meter, shared by the browser and Node.
+- `scripts/generate_infinite_pages.mjs` (`npm run pages`):
+  - writes SVG, 300 DPI 1-bit PNG, a PDF packet (`scripts/lib/pdf-lite.mjs`), prompts.jsonl/csv and manifest.json;
+  - `--codes` reprints pages by code;
+  - optional `--backend http` sends prompts to an image endpoint and runs the results through the ingest checks.
+- `scripts/check-infinite.mjs`: 749 checks, part of `npm test` and `npm run build`.
+- Packet Builder (`builder.html`, `#/coloring`): a **New pages** tab (theme chips, count, find by code, add all). The PDF footer shows the page code.
 
-`npm run build` passed.
+**Coloring library.**
+- Tier 1 lines raised to 3 pt (the clinical floor).
+- Three new categories: zentangle-mandalas, vintage-americana and seasons-holidays. The library is now 150 designs, 450 pages and 63 packs.
+
+**index.html (main packet tool).**
+- "Coloring page" and "Color the pattern" draw from the vector library at the resident's tier, chosen per resident and month, and honor the avoid list.
+- Each ticked holiday adds a full-page holiday coloring picture (`HOLIDAY_ART`).
+- The old procedural mandala code is gone.
+
+**Fixes made while merging the owner's commits on `main`:**
+- `builder.html`: the rename had turned `CAT_INDEX.cognicore` into `CAT_INDEX.cognicopia-coloring`, which JavaScript reads as a subtraction, so the Packet Builder home page crashed. It now reads `CAT_INDEX["cognicopia-coloring"]`.
+- `scripts/check-services.mjs`:
+  - a duplicate `const late` became `lateWing`;
+  - the Node sandbox now loads only services built from `src/services/*.ts`, so the browser-only `assets/services/nightShift.js` is skipped;
+  - two coaching-footer regexes were updated to match the current code.
+- `src/services/facilityPlanner.ts`: `PREFER.words.morning` changed from 0 to 5, so 10 AM pacing leads with numbers, letters and movement.
+- The builder's coloring PDF footer and metadata use "Cognicopia Coloring".
+
+**Verified at hand-off:**
+- `npm test`:
+  - life-planner: 74
+  - life-journal: 139
+  - services: 54,358
+  - coloring: 10,082
+  - infinite: 749
+- `npm run build` passed.
+- Browser sweep at 390 px and 1366 px of every builder route and category, index.html, profile.html and the resources hub: 48 page loads with no console errors, no horizontal overflow and no external requests.
+- index.html still produces the main packet, staff guide, family form and five condition packets. The coloring, holiday and pattern pages print as vector art.
+
+## Names after the owner's rename (use these)
+
+| What | Name |
+|---|---|
+| Engine global | `window.CognicopiaColoring` |
+| Prompt engine global | `CognicopiaColoringPrompts` |
+| Node loader | `scripts/lib/cognicopia-coloring.mjs` → `loadCognicopiaColoring()` |
+| Engine sources | `assets/cognicopia-coloring/` (bundle: `assets/cognicopia-coloring/cognicopia-coloring.js`, generated by `npm run coloring`, never hand-edited) |
+| Catalog | `src/data/cognicopia_coloring_catalog.json` |
+| Prompt jobs | `src/data/cognicopia_coloring_prompt_jobs.jsonl` |
+| Builder category id | `"cognicopia-coloring"` (always use `CAT_INDEX["cognicopia-coloring"]`, never dot access) |
+| Builder activity ids | `"cognicopia-coloring"`, `"cognicopia-coloring-library"` |
+
+`builder.html` maps the old ids `cognicore-coloring` and `cognicore-library` to the new ones (`legacyIds`) so saved packets still open. Keep that mapping.
 
 ## Hard rules (do not break)
 
-- **Branch:** work on `claude/memory-care-life-planner-1gphkr`. Push with `git push -u origin claude/memory-care-life-planner-1gphkr`. On a network error, retry up to 4 times with backoff of 2, 4, 8 and 16 s.
-- **Going live:** when everything is finished, run `npm run build`, commit, push, open a PR to `main`, merge it, then confirm that the GitHub Pages workflow run for the merge succeeded. The user wants every change live on cognicopia.org.
-- **Commit trailers, exactly:**
-  `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`
-  `Claude-Session: <this session's URL>`
-  (or whatever attribution the new session's system prompt specifies). Put no model names anywhere else.
-- **Privacy:** index.html, builder.html and profile.html must make no network requests, and resident data never leaves the browser. Make no blanket "HIPAA compliant" claims.
+- **Branch:** work on `claude/memory-care-life-planner-1gphkr`, or whatever branch the new session's system prompt names. Push with `git push -u origin <branch>`, retrying network errors up to 4 times with backoff of 2, 4, 8 and 16 s.
+- **Going live:** when finished, run `npm run build`, commit, push, open a PR to `main`, subscribe to its activity, and merge it once it is green and mergeable. Then unsubscribe and confirm the GitHub Pages workflow run for the merge commit succeeded. The owner wants every change live on cognicopia.org.
+- **Attribution:** use the commit trailers and PR footer that the new session's system prompt specifies. Put no model names anywhere else.
+- **Privacy:** index.html, builder.html and profile.html make no network requests, and resident data never leaves the browser. Make no blanket "HIPAA compliant" claims.
 - **Tone:** dignity-first. No "Do you remember…", no childish words, no elderspeak, no infantilizing art.
 - **Coloring art:** pure black on white, 3:4 (600×800 viewBox), closed outlines, lines of at least 3 pt.
-- **Names:** keep the internal identifiers unchanged: `window.CogniCore`, the `assets/cognicore/` paths, the category id `"cognicore"`, the activity ids `"cognicore-coloring"` and `"cognicore-library"`, and the `COGNICORE*` variable names. Saved packets depend on them. Only user-visible text changes to "Cognicopia".
+- **Tests:** never skip or weaken a test to get green. Fix the cause.
 
 ## Useful commands
 
 ```
 npm test            # all five check suites
-npm run build       # checks + nav sync + research pages + link check
-npm run coloring    # rebuild assets/cognicore/cognicore.js (run after editing any assets/cognicore/*.js)
-npm run nav         # regenerate the sidebar/nav on every page from scripts/site-nav.mjs
+npm run build       # checks + nav sync + research pages + link check (37 pages)
+npm run coloring    # rebuild the coloring bundle and catalog after editing assets/cognicopia-coloring/*.js
+npm run nav         # regenerate the sidebar on every page from scripts/site-nav.mjs
 npm run services    # rebuild assets/services/*.js from src/services/*.ts
 npm run research    # regenerate resources/research/* pages
-npm run pages -- --count 12 --tier 2   # print infinite coloring pages
-python3 -m http.server 8765 --bind 127.0.0.1   # local preview
+npm run pages -- --count 12 --tier 2   # print infinite coloring pages to out/
 ```
 
-- **Playwright:** load it with `createRequire('/opt/node22/lib/node_modules/')`. Chromium is at `/opt/pw-browsers`; do not run `playwright install`.
-- **PDF checks:** PyMuPDF (`fitz`) is available.
+- **Playwright:** load it with `createRequire('/opt/node22/lib/node_modules/')`. Chromium is preinstalled at `/opt/pw-browsers`; never run `playwright install`.
+- **PDF checks:** use PyMuPDF (`import pymupdf`).
+- **Generating a packet in a test:**
+  1. Fill `#first` and `#born`.
+  2. Set the `.act` and `.hol` checkboxes.
+  3. Click `#go`.
+  4. Wait until `.done` is visible.
+  5. Capture the download.
+- **Deploy check:** cognicopia.org and github.io are blocked by the sandbox proxy, so verify a deploy through the GitHub Actions run, not by fetching the site.
 
 ## Unfinished work, in order
 
-### 1. Branding: user-facing "Cognicore" → "Cognicopia" (started, nothing changed yet)
+### 1. index.html: remove dead code (counts measured at hand-off)
 
-Change only visible text, aria labels and comments. Keep all identifiers.
+**Workbook block.** There are 22 references to `targetPages`, `.workbook-activity`, `packetPreferences` and `PREF_TO_WORKBOOK`. `estimatePages` still prints "Workbook: N pages when you print it." (about line 8086). Main's commit 56ba7d6 removed only the explanatory text.
+- Remove the block.
+- Old saved preferences must still load without errors; ignore the dead keys.
 
-**builder.html**
-- About line 7255: `<option value="">Not a CogniCore page</option>` → "Not a Cognicopia coloring page".
-- About line 12360: `name: "Cognicore Coloring Page"` → "Cognicopia Coloring Page".
-- About line 12378: `aria-label="Always on for every Cognicore page"` → "...every Cognicopia coloring page".
-- About line 12508: the multisensory blurb, "...their own category, Cognicore Coloring." → "Cognicopia Coloring".
-- About lines 12510–12511: category `name:"Cognicore Coloring"` and blurb "The CogniCore coloring library" → Cognicopia.
-- About line 12642: tool card title "CogniCore Coloring" → "Cognicopia Coloring".
-- Comments at about lines 490, 1311, 1410, 6280, 6783, 12059, 12164, 12337, 12517, 12604, 12676, 12679, 12772 and 12889: rename to Cognicopia Coloring.
+**Cover fields.** There are 5 references to `#institutionalPartner` and `#researchSponsor`.
+- Remove the inputs.
+- Still accept the keys silently when loading old `.cognicopia` files or drafts.
 
-**Other files**
-- `scripts/site-nav.mjs`: the sidebar label "Cognicore Coloring" → "Cognicopia Coloring", then run `npm run nav`.
-- `resources/caregiver-faq/index.html`: lines about 627, 643, 957 and 968, in both the JSON-LD and the visible FAQ.
-- `resources/index.html`: one mention.
-- `src/services/researchCenter.ts`: mentions in dementia-visual-perception and case-late-afternoon. Then run `npm run services && npm run research`. This regenerates `assets/services/researchCenter.js` and `resources/research/*/index.html`.
-- `src/services/reminiscenceEngine.ts`, `src/services/heirloomService.ts` and `docs/*.md`: user-visible strings only, then `npm run services`.
-- `scripts/generate_coloring_manifest.js`, `ingest_coloring_assets.mjs`, `coloring_prompts.mjs` and `generate_infinite_pages.mjs`: printed or user-facing strings only, then `npm run coloring`.
+**Validation messages.** Make the section numbers they quote match the form: pages are section 6 and holidays are section 7.
 
-**Finding the mentions**
+**Dead CSS.** These selectors have CSS rules but no markup:
 
-```
-grep -rn -i "cognicor" --include=*.html --include=*.ts --include=*.mjs --include=*.js --include=*.md . | grep -v node_modules | grep -v "window.CogniCore\|assets/cognicore"
-```
+| Selector | CSS rules |
+|---|---|
+| `.navbar` | 3 |
+| `.nav-*` | 7 |
+| `.dropdown*` | 8 |
+| `.dropbtn` | 1 |
+| `.resources-dropdown` | 2 |
+| `.statusbar` | 3 |
+| `.shots figcaption` | 1 |
 
-Leave `assets/cognicore/cognicore.js` alone; it is generated. Tests in check-services and check-coloring may assert on strings, so update their expectations if needed.
+Check that no JavaScript adds these classes, then delete the rules.
 
-### 2. Retire the old COLOR_ART clip-art in the builder's legacy activity
+**`#staffOnlyBtn`** (about line 2202) has `style="background:#4a6fa5;margin-left:8px;"`. Move it into a class that fits the design system.
 
-`COGNICORE` (id `cognicore-coloring`, builder.html at about 12337–12420) still draws from the old `COLOR_ART` set through `COLORING.generate`.
+**Dead `resourcesDropdownBtn` scripts.** One each in `cognitive-journals.html`, `life-planners.html`, `contact.html` and `zentangle-art.html`; the button no longer exists. Remove them, and keep `npm run nav --check` and the link check green.
 
-**How it is reached today:** the "cognicore" category is `direct:true, route:"coloring"`, so the menu opens the vector library (`CogniLibrary`).
+**Retire the legacy `COGNICOPIA_COLORING` activity.** It sits in `builder.html` at about lines 12380–12460 and still draws the old `COLOR_ART` clip-art through `COLORING.generate`. The category routes straight to the vector library (`direct:true, route:"coloring"`).
+- Grep for other entry points: roster plans, Life Planner recommendations, search, and the `legacyIds` path.
+- Then either point its `plan()` and `generate()` at library designs (`C.designs()` filtered by theme, `C.render(id, tier)` and `C.toSVG`), or keep it only for rebuilding saved packets, as `COLORING` already is.
 
-**Still to check:** whether `cognicore-coloring` is reachable anywhere else, for example roster plans, Life Planner recommendations, saved packets or search. Grep for `cognicore-coloring` and `COGNICORE`.
+### 2. index.html: design-system alignment and pillar grouping
 
-**Options:**
-- Point its `plan()` and `generate()` at library designs (`C.designs()` filtered by theme, rendered with `C.render(id, tier)` → `C.toSVG`).
-- Or keep it only for rebuilding saved packets, as `COLORING` already is.
-
-Saved packets that reference the old keys must still rebuild.
-
-### 3. index.html audit and dead-code removal
-
-- **Workbook block:** remove `#targetPages`, `.workbook-activity`, the "Workbook: N pages" text in `estimatePages`, the save and load of `packetPreferences`, and `PREF_TO_WORKBOOK`. Keep load compatibility: old saved preferences must not throw.
-- **Cover fields:** remove the dead `#institutionalPartner` and `#researchSponsor` fields. Still accept them silently when loading old files.
-- **Validation messages:** fix the section numbers they quote. Pages are section 6 and holidays are section 7.
-- **Dead CSS:** remove `.navbar`, `.nav-*`, `.dropdown*`, `.dropbtn`, `.resources-dropdown`, `.statusbar` and `.shots figcaption`. Grep the markup and JS first to confirm each is unused.
-- **`#staffOnlyBtn`:** replace its inline background with a class.
-- **Dead `resourcesDropdownBtn` scripts:** remove them from `cognitive-journals.html`, `life-planners.html`, `contact.html` and `zentangle-art.html`. Check whether these are redirect stubs or real pages under `/resources/`.
-- **builder.html:** verify the references to `lpName`, `lj-name` and `fpNewWing` all resolve to existing elements.
-- **Responsive test:** use Playwright at 320, 375, 390, 768, 1024, 1366 and 1920 px on index.html, builder.html (every route) and resources pages. Check that `document.documentElement.scrollWidth <= innerWidth`, with no clipping and no console errors.
-- **Interaction stress test:** exercise every toggle, dropdown, tab, hover bridge, the Generate button and PDF download. Look for console errors and confirm there are no external network requests.
-
-### 4. index.html design-system alignment and the pillar grouping
-
-**Design tokens:**
+**Design tokens.** None of the requested colors appear in index.html yet. Apply them:
 - top bar `#e6f4f1` with `#1a2e22` text;
-- containers `#1a2e22` with `#b5a48b` borders and `#ffffff` text;
+- content containers `#1a2e22` with `#b5a48b` borders and `#ffffff` text;
 - an on-brand Stripe/upgrade button.
 
-Check WCAG AA contrast for every pair.
+Define them as CSS custom properties. Check WCAG AA contrast for every text and background pair, including focus rings and disabled states. Keep print output pure black and white.
 
-**Pillar grouping:** the 34 flat activity toggles go into the 6 pillars as collapsible groups (`<details>`/`<summary>` or ARIA disclosure), each with a count of selected items. The six pillars:
-1. Coloring & Art
-2. Word & Language
-3. Memory & Reminiscence
-4. Numbers & Logic
-5. Movement
-6. Music & Holidays
+**Pillar grouping.** Group the 33 flat activity toggles (`ACTIVITIES`, about line 3908, rendered into `#acts` at about line 7858) into the site's six pillars as collapsible groups (`<details>`/`<summary>`), each showing how many are selected.
+- Confirm the pillar names against the site copy and the Facility Portal's pillar ids: coloring, words, letters, numbers, movement, music.
+- Keep the activity ids, `DEFAULT_ON`, the late-stage filter (`filterAdvancedLateActivities`) and the saved-preference keys working.
+- The "select all" (`#allAct`) and "none" (`#noneAct`) buttons must still work.
 
-Confirm the exact pillar list against the site copy. Keep the activity ids and the saved-preference keys unchanged.
+### 3. Responsive and interaction stress pass
 
-Then run `npm run nav`, `npm run research` and `npm run build`.
+- Run Playwright at 320, 375, 768, 1024 and 1920 px; 390 and 1366 were done at hand-off. Cover index.html, every builder route (`#/`, `#/coloring`, `#/category/<id>`, `#/academy`, `#/clinical`, `#/facility`, `#/heirloom`, `#/journal`, `#/planner`, `#/reminiscence`, `#/roster`, `#/settings`), profile.html and the resources pages.
+- Require all of these: `document.documentElement.scrollWidth <= innerWidth`, no clipped controls, no console errors and no external requests.
+- Exercise every toggle, dropdown, tab set, hover menu, the sundowning toolbar, quick-print archetypes, Generate, and each PDF download.
 
-### 5. Ship
+### 4. Ship
 
-1. Commit, push, open a PR to `main`, subscribe to PR activity, and merge when green.
-2. Unsubscribe from the PR.
-3. Confirm that the Pages workflow run on `main` succeeded.
-4. Tell the user what went live.
+1. Merge `origin/main` again.
+2. Run `npm test` and `npm run build`.
+3. Commit, push, open a PR to `main`, subscribe, merge when green, and unsubscribe.
+4. Confirm the Pages workflow run on the merge commit succeeded.
+5. Tell the owner what went live.
 
-## Known limits to mention honestly
+## Known limits to state honestly
 
-- The infinite generator draws subjects procedurally (vector code, no AI images). The `--backend http` image path is optional and untested against a real provider; it was tested only against a local stand-in server.
-- About 2% of first drafts fail the guardrails and are re-rolled automatically.
-- cognicopia.org and github.io are blocked by the sandbox proxy, so verify a deploy through the GitHub Actions run status, not by fetching the site.
+- The infinite generator draws subjects procedurally in vector code; it does not use AI images. The `--backend http` image path is optional and was tested only against a local stand-in server, never a real provider.
+- About 2% of first drafts fail the guardrails; batches re-roll them automatically.

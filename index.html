@@ -18,7 +18,7 @@
      facility networks routinely block outside script hosts, and a
      blocked CDN would mean the button silently does nothing. This
      way the page also works with no internet at all once loaded. -->
-<script src="assets/cognicore/cognicore.js"></script>
+<script src="assets/cognicopia-coloring/cognicopia-coloring.js"></script>
 <script src="assets/services/secureStore.js"></script>
 <script>
 /* Resident details are sealed in this browser's encrypted store
@@ -532,12 +532,16 @@ header{padding:56px 0 0}
   letter-spacing:-.02em;color:var(--ink);margin:0 0 8px;line-height:1}
 /* Subordinate to the name, not competing with it: smaller, lighter,
    and in the muted ink rather than the brand green. */
-.tagline{font-size:13px;letter-spacing:.16em;text-transform:uppercase;
-  color:var(--garden);font-weight:600;margin:0 0 6px}
+.tagline{font-size:18px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--garden);font-weight:600;margin:0 0 8px;line-height:1.3}
 /* Scoped to the byline only. ".brand p" outranks ".wordmark" on
    specificity, so it was silently flattening the name to 15px. */
 .brand p:last-child{margin:0;font-size:15px;color:var(--ink-soft)}
-@media (max-width:460px){ .brand{margin-bottom:22px} .logo{width:260px} }
+@media (max-width:460px){
+  .brand{margin-bottom:22px}
+  .logo{width:260px}
+  .tagline{font-size:15px;letter-spacing:.07em;margin-top:2px}
+}
 h1{font-family:var(--display);font-weight:600;
   font-size:clamp(30px,5vw,41px);line-height:1.16;
   margin:0 0 20px;max-width:17ch;letter-spacing:-.01em}
@@ -740,13 +744,7 @@ body.extra-large-print select{font-size:20px;padding:16px}
 body.extra-large-print button{font-size:21px}
 body.extra-large-print .accessibility-option span{font-size:17px}
 body.extra-large-print .accessibility-option b{font-size:18px}
-/* High Contrast Mode no longer restyles this page. It is a setting for the
-   printed packet only; see isPureBlackAndWhitePDF and applyPureBW(). */
-body.simplified-layout{background-image:none}
-body.simplified-layout .shots,body.simplified-layout .strip,
-body.simplified-layout .promise{display:none}
-body.simplified-layout .wrap{background:#fff;box-shadow:none}
-body.simplified-layout fieldset{margin-bottom:30px}
+/* High Contrast and Simplified Layout affect generated PDFs only. */
 @media (max-width:700px){.accessibility-options{grid-template-columns:1fr}}
 
 /* ---- Licence status: the header strip, and the free-packet badge under the Make the packet button ---- */
@@ -1004,12 +1002,37 @@ body { padding-left: var(--sb-w); }
 .cg-topbar .hdrlicmsg { color: #f4c7b8; }
 .cg-topbar .hdrlicmsg:empty { display: none; }
 .cg-topbar .hdrlicmsg.ok { color: #b7e4c7; }
+.cg-topbar{height:auto;min-height:60px;flex-wrap:wrap;justify-content:flex-end;gap:8px;padding:8px 16px}
+.cg-topbar .hdrlic{display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-width:0}
+.cg-topbar .stripe-btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;margin-left:0;padding:8px 14px;white-space:normal;text-align:center}
+.cg-topbar .linklike{min-height:44px;padding:8px 10px}
+.cg-topbar .arb-sticky-crisis{display:inline-flex;align-items:center;justify-content:center;position:static;z-index:auto;min-height:44px;max-width:100%;padding:8px 12px;font-size:15px;white-space:normal;box-shadow:none}
+.cg-topbar .cg-night-shift-toggle{min-height:44px;max-width:100%;padding:8px 12px}
+@media (min-width:701px){
+  .cg-topbar{flex-wrap:nowrap}
+  .cg-topbar .hdrlic{flex:0 1 auto}
+  .cg-topbar .arb-sticky-crisis,.cg-topbar .cg-night-shift-toggle{flex:0 1 auto;min-width:0}
+}
+@media (min-width:701px) and (max-width:900px){
+  .cg-topbar{flex-wrap:wrap}
+  .cg-topbar .hdrlic{display:contents}
+  .cg-topbar #hdrlicToggle{order:4}
+  .cg-topbar .stripe-btn{order:1;font-size:13px;padding:6px 10px}
+  .cg-topbar .arb-sticky-crisis{order:2;font-size:14px;padding:7px 10px}
+  .cg-topbar .cg-night-shift-toggle{order:3;font-size:13px;padding:6px 9px}
+}
 
 @media (max-width: 700px) {
   body { padding-left: 0; }
   .cg-sidebar {
     transform: translateX(-100%); transition: transform .22s ease;
     width: min(260px, 85vw); box-shadow: 6px 0 32px rgba(0,0,0,.45);
+  }
+  @media (max-width:700px){
+    .cg-topbar{justify-content:flex-start;align-items:center;gap:8px;padding:58px 12px 10px;min-height:0}
+    .cg-topbar .hdrlic{flex:1 1 100%;width:100%;gap:8px}
+    .cg-topbar .stripe-btn{flex:0 1 auto;max-width:100%}
+    .cg-topbar .cg-night-shift-toggle,.cg-topbar .arb-sticky-crisis{flex:0 1 auto}
   }
   .cg-sidebar.is-open { transform: translateX(0); }
   .cg-sidebar-toggle { display: flex; }
@@ -1127,6 +1150,17 @@ body { padding-left: var(--sb-w); }
 .arb-btn-primary:hover{background:#7ad3a4;border-color:#7ad3a4;color:#062116}
 .arb-btn-danger{color:#ffcfc4;border-color:rgba(255,180,162,.45)}
 .arb-btn-danger:hover{border-color:#ffb4a2;color:#fff}
+.arb-btn-emergency{background:#ffcc66;border-color:#ffcc66;color:#241500;font-size:18px;font-weight:800}
+.arb-btn-emergency:hover{background:#ffe0a3;border-color:#ffe0a3;color:#241500}
+.arb-btn-guest{background:#d9f0e2;border-color:#4f9b75;color:#143d2b;font-weight:800}
+.arb-guest-presets{display:flex;flex-wrap:wrap;gap:8px;padding:14px;margin:10px 0;border:1px solid rgba(216,243,220,.25);border-radius:12px;background:rgba(8,28,21,.45)}
+.arb-guest-presets button{padding:8px 12px;border:1px solid rgba(216,243,220,.25);border-radius:8px;background:#18372a;color:#f2fff5;font:inherit;cursor:pointer}
+.arb-guest-presets p{flex-basis:100%;margin:0;color:#d8f3dc;font-size:14px}
+.arb-guest-presets[hidden]{display:none}
+.pick.is-tier-disabled{opacity:.42;cursor:not-allowed}
+.arb-sticky-crisis{display:none}
+.arb-tier-toggle{background:#332312;border-color:#d6a64b;color:#ffedcc}
+.arb-tier-toggle[aria-pressed="true"]{background:#765018;border-color:#ffd477;color:#fff1cf}
 .arb-btn[aria-disabled="true"],.arb-btn:disabled{opacity:.45;cursor:not-allowed;pointer-events:none}
 .arb-msg{margin:12px 0 0;font-size:15.5px;line-height:1.5;color:#b3c9bf}
 .arb-msg b{color:#fff}
@@ -1135,6 +1169,9 @@ body { padding-left: var(--sb-w); }
   .arb{padding:16px}
   .arb-actions{width:100%}
   .arb-btn{flex:1 1 140px}
+}
+@media (max-width:700px){
+  .arb-sticky-crisis{display:block;position:fixed;top:62px;right:10px;z-index:1500;padding:9px 12px;font-size:14px;box-shadow:0 4px 18px rgba(0,0,0,.45)}
 }
 @media print{.arb{display:none!important}}
 </style>
@@ -1173,8 +1210,8 @@ body { padding-left: var(--sb-w); }
 
 /* monthly bundle */
 .arb-bundle{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;margin:14px 0 0;padding:12px 14px;border-radius:14px;background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.45)}
-.arb-btn-bundle{background:#fbbf24;border-color:#fbbf24;color:#231a02}
-.arb-btn-bundle:hover{background:#fcd34d;border-color:#fcd34d;color:#231a02}
+.arb-btn-bundle{background:transparent;border:2px solid #fbbf24;color:#fde68a}
+.arb-btn-bundle:hover{background:rgba(251,191,36,.18);border-color:#fcd34d;color:#fff}
 .arb-bundle-badge{flex:1 1 260px;font-size:14.5px;font-weight:700;color:#fde68a;line-height:1.4}
 .mb-dialog{width:min(660px,calc(100vw - 32px));max-height:calc(100vh - 32px)}
 .mb-dialog form{max-height:calc(100vh - 40px);overflow:auto;margin:0!important}
@@ -1232,6 +1269,9 @@ body { padding-left: var(--sb-w); }
 .qpb-head h2{margin:0;font-size:21px;color:#fff;font-family:inherit}
 .qpb-for{padding:5px 14px;border-radius:999px;font-size:15px;font-weight:700;background:rgba(216,243,220,.1);color:#b3c9bf;border:1px solid rgba(216,243,220,.25)}
 .qpb-for.is-on{background:#52b788;color:#062116;border-color:#52b788}
+.qpb-head [data-tier-override]{flex:0 1 auto}
+.qpb-head [data-tier-override]{background:#332312;border-color:#d6a64b;color:#ffedcc}
+.qpb-head [data-tier-override][aria-pressed="true"]{background:#765018;border-color:#ffd477;color:#fff1cf}
 .qpb-lede{margin:0 0 14px;font-size:15.5px;line-height:1.5;color:#b3c9bf}
 .qpb-picks{margin:0 0 14px;padding:0;border:0;display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .qpb-picks legend{margin:0 0 8px;padding:0;font-weight:700;font-size:16px;color:#fff}
@@ -1464,6 +1504,21 @@ html.tb-open,html.tb-open body{overflow:hidden !important;overscroll-behavior:no
 .tb-stat small{display:block;margin-top:4px;font-size:15px;color:var(--tb-soft)}
 .tb-care-actions{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .tb-care-actions .tb-btn{font-size:20px !important;min-height:64px;padding:8px 14px}
+.tb-mood{margin:0 0 18px;padding:16px;border:3px solid #d6d3d1;border-radius:16px}
+.tb-mood h3{margin:0 0 6px;font-size:22px}
+.tb-mood > p{margin:0 0 12px;font-size:16px;color:var(--tb-soft)}
+.tb-mood-row{display:grid;grid-template-columns:110px repeat(3,minmax(0,1fr));gap:8px;align-items:center;margin-top:8px}
+.tb-mood-label{font-size:16px;font-weight:700}
+.tb-mood-choice{min-height:64px;padding:6px 8px;border:2px solid #78716c;border-radius:12px;background:#fff;font-size:16px !important;font-weight:700;cursor:pointer}
+.tb-mood-choice span{display:block;font-size:13px}
+.tb-mood-choice[aria-pressed="true"]{border-color:var(--tb-em-dk);background:#d1fae5;box-shadow:inset 0 0 0 2px var(--tb-em-dk)}
+.tb-mood-choice:disabled{opacity:.45;cursor:not-allowed}
+.tb-mood-status{margin:10px 0 0 !important;font-size:15px !important}
+.tb-kiosk{margin:0 0 18px;padding:12px 16px;border:2px solid #a8a29e;border-radius:14px}
+.tb-kiosk summary{font-size:18px;font-weight:700;cursor:pointer}
+.tb-kiosk h3{margin:14px 0 4px;font-size:17px}
+.tb-kiosk ol{margin:4px 0 8px;padding-left:24px;font-size:15px;line-height:1.4}
+.tb-kiosk p{margin:8px 0 0;font-size:14px;color:var(--tb-soft)}
 .tb-btn-exit{background:#7f1d1d;border-color:#7f1d1d;color:#fff !important}
 .tb-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 
@@ -1511,8 +1566,11 @@ html.tb-open,html.tb-open body{overflow:hidden !important;overscroll-behavior:no
 .cg-sidebar-toggle svg{color:#fff;flex:none}
 .cg-sidebar-toggle:focus-visible{outline:3px solid #7ad3a4;outline-offset:3px}
 @media (max-width:700px){
-  /* keep the top bar's own buttons clear of the Categories button */
-  .cg-topbar{padding-left:164px;height:auto;min-height:60px;flex-wrap:wrap;row-gap:6px;padding-top:9px;padding-bottom:9px}
+  /* Keep the toolbar controls in flow and below the fixed Categories control. */
+  .cg-topbar{justify-content:flex-start;align-items:center;gap:8px;padding:58px 12px 10px;height:auto;min-height:0;flex-wrap:wrap;row-gap:8px}
+  .cg-topbar .hdrlic{flex:1 1 100%;width:100%}
+  .cg-topbar .stripe-btn{flex:0 1 auto;max-width:100%}
+  .cg-topbar .cg-night-shift-toggle,.cg-topbar .arb-sticky-crisis{flex:0 1 auto}
   /* the open menu starts below the button, so its heading isn't hidden */
   .cg-sidebar{padding-top:58px}
 }
@@ -1697,6 +1755,7 @@ html.tb-open,html.tb-open body{overflow:hidden !important;overscroll-behavior:no
       <button type="button" id="licHdrGo">Unlock</button>
     </span>
   </span>
+  <button type="button" class="arb-btn arb-btn-emergency arb-sticky-crisis" id="arbSootheSticky" disabled aria-label="Instant Soothe and Print for the active resident">🟡 Instant Soothe / Print</button>
   <span class="hdrlicmsg" id="hdrlicMsg" role="status"></span>
 </div>
 
@@ -1746,9 +1805,22 @@ html.tb-open,html.tb-open body{overflow:hidden !important;overscroll-behavior:no
 
 <!-- ══ ACTIVE RESIDENT BAR: picks a saved Resident Activity Profile to build this packet from ══ -->
 <section class="arb" id="activeResidentBar" aria-labelledby="arbTitle">
+  <div class="arb-guest-tools">
+    <button type="button" class="arb-btn arb-btn-guest" id="guestPresetToggle" aria-expanded="false" aria-controls="guestPresetMenu">⚡ Quick-Print Guest Profile</button>
+    <div class="arb-guest-presets" id="guestPresetMenu" hidden>
+      <p>Choose a general archetype for a temporary packet. No profile is saved and no resident name is used.</p>
+      <button type="button" data-guest-preset="homemaker">Mid-Century Homemaker</button>
+      <button type="button" data-guest-preset="farmer">Midwest Farmer/Worker</button>
+      <button type="button" data-guest-preset="veteran">Post-War Veteran</button>
+      <button type="button" data-guest-preset="educator">Classic Educator</button>
+      <button type="button" data-guest-preset="classic">General 1930s-1950s Classic Era</button>
+      <p id="guestPresetStatus" role="status" aria-live="polite"></p>
+    </div>
+  </div>
   <div class="arb-head">
     <h2 id="arbTitle">Active resident</h2>
     <span class="arb-pill" id="arbPill" role="status" aria-live="polite">No resident selected</span>
+    <button type="button" class="arb-btn arb-tier-toggle" data-tier-override aria-pressed="false" disabled>☀ Good Day · Usual tier</button>
   </div>
   <div class="arb-row">
     <label class="arb-sr" for="arbSelect">Select active resident</label>
@@ -1758,13 +1830,14 @@ html.tb-open,html.tb-open body{overflow:hidden !important;overscroll-behavior:no
     <div class="arb-actions">
       <a class="arb-btn arb-btn-primary" id="arbNew" href="profile.html?new=1"><span aria-hidden="true">➕</span> New Profile</a>
       <a class="arb-btn" id="arbEdit" href="profile.html" aria-disabled="true"><span aria-hidden="true">✏️</span> Edit Active Profile</a>
+      <button type="button" class="arb-btn arb-btn-emergency" id="arbSoothe" disabled><span aria-hidden="true">🟡</span> Instant Soothe / Print</button>
       <button type="button" class="arb-btn arb-btn-danger" id="arbDelete" disabled><span aria-hidden="true">🗑️</span> Delete Profile</button>
     </div>
   </div>
   <p class="arb-msg" id="arbMsg">Choose a saved resident to fill in the packet below from their profile, or make a new profile. Profiles stay on this computer.</p>
   <!-- ── Monthly Bundle: every resident in one PDF ── -->
   <div class="arb-bundle">
-    <button type="button" class="arb-btn arb-btn-bundle" id="mbOpen" aria-describedby="mbBadge" aria-haspopup="dialog"><span aria-hidden="true">📅</span> Download Month (All Residents)</button>
+    <button type="button" class="arb-btn arb-btn-bundle" id="mbOpen" aria-describedby="mbBadge" aria-haspopup="dialog"><span aria-hidden="true">👥</span> Download Month (All Residents)</button>
     <span class="arb-bundle-badge" id="mbBadge"><span aria-hidden="true">⚡</span> Enterprise Feature: Plan your entire facility's monthly activities in 1 click.</span>
   </div>
   <dialog class="arb-dialog mb-dialog" id="monthly-bundle-modal" aria-labelledby="mbTitle">
@@ -1860,6 +1933,7 @@ html.tb-open,html.tb-open body{overflow:hidden !important;overscroll-behavior:no
   <div class="qpb-head">
     <h2 id="qpbTitle">Profile Packet Builder</h2>
     <span class="qpb-for" id="qpbFor">No resident selected</span>
+    <button type="button" class="qpb-btn arb-tier-toggle" data-tier-override aria-pressed="false" disabled>☀ Good Day · Usual tier</button>
   </div>
   <p class="qpb-lede">Quick printable pages made from the active resident's profile: their work, hobbies, people and favorite years, in large high-contrast print. Topics to avoid are always left out.</p>
   <fieldset class="qpb-picks">
@@ -2040,11 +2114,7 @@ html.tb-open,html.tb-open body{overflow:hidden !important;overscroll-behavior:no
     <div class="field" style="max-width:280px;margin-top:20px">
       <label for="targetPages">Target workbook pages
         <span class="sub">Includes the cover page</span></label>
-      <input type="number" id="targetPages" min="2" max="30" value="4"
-             aria-describedby="targetPagesHint">
-      <p class="hint" id="targetPagesHint">This sets the core modules and sections.
-        Each one expands into the full printable layout; for example, 4 can produce
-        a comprehensive workbook of about 26 printed pages.</p>
+      <input type="number" id="targetPages" min="2" max="30" value="4">
     </div>
     <p class="subhead">Workbook export activities</p>
     <div class="picks" id="workbookActivities">
@@ -4464,7 +4534,7 @@ class Doc{
     this.started=true;
     this.y=MARGIN+10;
     this.theme=theme;
-    frame(this.d, theme);
+    if(!this.simplifiedLayout) frame(this.d, theme);
   }
   heading(t){
     this.title=t;
@@ -4518,9 +4588,21 @@ class Doc{
   }
   bottom(){ return PH-MARGIN-24; }
   room(){ return this.bottom()-this.y; }
+  coachingFooter(){
+    const page=this.d.internal.getNumberOfPages();
+    if(this.footerPage===page) return;
+    this.footerPage=page;
+    this.d.setFont("helvetica","normal"); this.d.setFontSize(8.5);
+    this.d.setTextColor(92,99,95);
+    this.d.text("Do not ask questions or test memory. Sit beside them, place the marker in their hand, and model slow, calm breathing.",
+      PW/2,PH-MARGIN-6,{align:"center",maxWidth:PW-2*MARGIN});
+    this.d.setTextColor(0,0,0);
+  }
   /* Close a page off with a small piece of art if it would otherwise
      trail away into blank paper. A page should look finished. */
   finish(){
+    this.coachingFooter();
+    if(this.simplifiedLayout) return;
     const r=this.room();
     if(r<=56) return;
     /* A holiday packet keeps its seasonal drawing -- a pumpkin in
@@ -4621,8 +4703,10 @@ function coverPage(D,r,theme){
   if(r.fac){D.d.text(fitText(D.d, r.fac, PW-2*MARGIN, 19, 12), cx, D.y, C); D.y+=30;}
   D.d.setFontSize(19);
   D.d.text(r.month,cx,D.y,C);
-  if(theme && theme!=="brain") motif(D.d, theme, PW/2, 560, 46, 1.1);
-  else logoMark(D.d, PW/2, 572, 300, 175, 130);
+  if(!D.simplifiedLayout){
+    if(theme && theme!=="brain") motif(D.d, theme, PW/2, 560, 46, 1.1);
+    else logoMark(D.d, PW/2, 572, 300, 175, 130);
+  }
   D.d.setFontSize(9);
   D.d.text("Cognicopia",MARGIN+38,PH-58);   // clear of the corner mark
   D.d.setFontSize(8);
@@ -4939,8 +5023,8 @@ function oddPage(D,r,s,theme){
   return sets;
 }
 
-/* ---- Coloring page: a picture from the Cognicopia coloring library ----
-   (assets/cognicore/cognicore.js, the same line art as the Packet
+/* ---- Coloring page: a picture from the Cognicopia Coloring library ----
+   (assets/cognicopia-coloring/cognicopia-coloring.js, the same line art as the Packet
    Builder's coloring library). Chosen for this resident: drawn at their
    stage's cognitive tier and line weight, never anything their avoid list
    names, and a subject from their working life when one fits. The art is
@@ -4963,7 +5047,7 @@ const LIFE_TAGS = [
   [/fire/, ["fire-engines"]], [/postal|mail/, ["mail", "letters"]], [/music|pianist|singer/, ["music", "radios", "phonographs"]]
 ];
 function colorPage(D,r,theme){
-  const C=window.CogniCore;
+  const C=window.CognicopiaColoring;
   const tier={early:1,middle:2,late:3}[r.stage]||2;
   D.start(theme);
   if(!C){                                    // the library file did not load: say so plainly rather than print a blank page
@@ -5018,7 +5102,7 @@ function holidayPage(D,r,key){
   /* Then a whole page to color: the holiday's own subject from the
      coloring library, drawn at the resident's tier in bold black outlines
      with clean white areas, as large as the page allows. */
-  const C=window.CogniCore, tier={early:1,middle:2,late:3}[r.stage]||2;
+  const C=window.CognicopiaColoring, tier={early:1,middle:2,late:3}[r.stage]||2;
   D.start(h.motif);
   D.heading(h.label);
   D.body(pic.title+". "+pic.talk+" Color it any way you like.",{size:17});
@@ -5031,7 +5115,7 @@ function holidayPage(D,r,key){
 /* The holiday's picture, unless the coloring library did not load or the
    resident's avoid list rules it out. */
 function holidayArt(r,key){
-  const C=window.CogniCore, d=C && HOLIDAY_ART[key] ? C.design(HOLIDAY_ART[key]) : null;
+  const C=window.CognicopiaColoring, d=C && HOLIDAY_ART[key] ? C.design(HOLIDAY_ART[key]) : null;
   return d && allowed(r,[d.title,d.tags.join(" "),d.sensitive.join(" "),d.talk].join(" ")) ? d : null;
 }
 /* The coloring-library picture for each holiday page. */
@@ -5885,7 +5969,7 @@ function langPage(D,r,s,theme){
 const PATTERN_PICKS = ["mandala-heirloom", "zen-looping-petals", "mandala-star", "zen-crescent-moon", "mandala-sunflower", "zen-woven-ribbons",
   "mandala-doily", "zen-spiral-garden", "mandala-hearts", "zen-rolling-waves", "garden-rosette", "zen-river-pebbles", "lotus-medallion", "zen-tangle-sampler"];
 function mandalaPage(D,r,s,theme){
-  const C=window.CogniCore;
+  const C=window.CognicopiaColoring;
   D.start(theme);
   D.heading("Color the Pattern");
   if(!C){
@@ -6087,6 +6171,10 @@ function notesPage(D,r,theme){
        ["Took part","Watched","Declined","Restless"]);
   pick("Response (circle one):",
        ["Pleased","Calm","Neutral","Frustrated"]);
+  pick("Mood Before (circle one):",
+       ["Upset","Neutral","Settled"]);
+  pick("Mood After (circle one):",
+       ["Upset","Neutral","Settled"]);
   D.gap(6);
 
   const field=(label,lines)=>{
@@ -6993,6 +7081,7 @@ function buildPacket(r, mode){
   const s=STAGE[r.stage], sel=r.acts;
   const D=new Doc();
   D.who=pdfSafe(r.goes||r.first||"");              // the name banner on every activity page
+  D.simplifiedLayout=!!(r.accessibility && r.accessibility.simplifiedLayout);
   if(isPureBlackAndWhitePDF) applyPureBW(D.d);   // High Contrast Mode: output pages only
 
   // The first chosen holiday sets the packet's overall look.
@@ -7371,7 +7460,7 @@ function collectProfile(){
   out.accessibility={
     highContrast:$("highContrastMode").checked,
     extraLargePrint:$("extraLargePrint").checked,
-    simplifiedLayout:$("simplifiedLayout").checked
+    simplifiedLayout:pdfSettings.simplifiedLayout
   };
   return out;
 }
@@ -7381,12 +7470,18 @@ function collectProfile(){
    normal theme; the black-and-white treatment happens only inside the
    jsPDF document, in applyPureBW(), when a packet is built. */
 let isPureBlackAndWhitePDF = false;
+const pdfSettings = { simplifiedLayout:false };
+window.pdfSettings = pdfSettings;
+
+function updateSimplifiedLayoutPDFSetting(){
+  pdfSettings.simplifiedLayout = $("simplifiedLayout").checked;
+}
 
 function applyAccessibilityPreset(){
   isPureBlackAndWhitePDF = $("highContrastMode").checked;
   document.body.classList.remove("high-contrast-mode");   // clear anything left by an older version
   document.body.classList.toggle("extra-large-print",$("extraLargePrint").checked);
-  document.body.classList.toggle("simplified-layout",$("simplifiedLayout").checked);
+  updateSimplifiedLayoutPDFSetting();
 }
 
 /* Force one jsPDF document into pure black (#000000) on white (#ffffff).
@@ -7469,8 +7564,18 @@ function applyPureBW(d){
   return d;
 }
 
-["highContrastMode","extraLargePrint","simplifiedLayout"].forEach(id=>{
+["highContrastMode","extraLargePrint"].forEach(id=>{
   $(id).addEventListener("change",applyAccessibilityPreset);
+});
+const simplifiedLayoutControl=$("simplifiedLayout");
+simplifiedLayoutControl.addEventListener("change",updateSimplifiedLayoutPDFSetting);
+simplifiedLayoutControl.addEventListener("click",e=>{
+  const next=simplifiedLayoutControl.checked;
+  e.preventDefault();
+  setTimeout(()=>{
+    simplifiedLayoutControl.checked=next;
+    simplifiedLayoutControl.dispatchEvent(new Event("change",{bubbles:true}));
+  },0);
 });
 
 function applyProfile(p){
@@ -7758,11 +7863,52 @@ for(const a of ACTIVITIES){
     '><span><b>'+a.label+'</b><span>'+a.note+'</span></span>';
   actsBox.appendChild(l);
 }
+const advancedLateIds = ["crossword","scramble","odd","maze","clocks","coins"];
+const lateActivityHint = document.createElement("p");
+lateActivityHint.id = "lateActivityHint";
+lateActivityHint.className = "hint";
+lateActivityHint.textContent = "Disabled to prevent cognitive overload for Late-Stage profiles.";
+lateActivityHint.hidden = true;
+actsBox.insertAdjacentElement("afterend", lateActivityHint);
+function filterAdvancedLateActivities(){
+  const ctx = typeof window.getActiveResidentContext === "function" ? window.getActiveResidentContext() : null;
+  const late = !!(ctx && !ctx.isGeneric && ctx.stage === "late");
+  let disabledCount = 0;
+  document.querySelectorAll(".act").forEach(function(input){
+    if (advancedLateIds.indexOf(input.value) === -1) return;
+    const label = input.closest("label");
+    if (late){
+      if (input.dataset.tierDisabled !== "true") input.dataset.tierSelection = String(input.checked);
+      input.checked = false;
+      input.disabled = true;
+      input.dataset.tierDisabled = "true";
+      input.title = "Disabled to prevent cognitive overload for Late-Stage profiles.";
+      input.setAttribute("aria-describedby", "lateActivityHint");
+      if (label){ label.classList.add("is-tier-disabled"); label.title = input.title; }
+      disabledCount++;
+    } else if (input.dataset.tierDisabled === "true"){
+      input.disabled = false;
+      input.checked = input.dataset.tierSelection === "true";
+      delete input.dataset.tierDisabled;
+      delete input.dataset.tierSelection;
+      input.removeAttribute("title");
+      input.removeAttribute("aria-describedby");
+      if (label){ label.classList.remove("is-tier-disabled"); label.removeAttribute("title"); }
+    }
+  });
+  lateActivityHint.hidden = !late || !disabledCount;
+}
+document.addEventListener("cognicopia:activeresident", filterAdvancedLateActivities);
+document.addEventListener("cognicopia:tieroverride", filterAdvancedLateActivities);
+filterAdvancedLateActivities();
 $("allAct").addEventListener("click",()=>{
   document.querySelectorAll(".act").forEach(c=>c.checked=true);
+  filterAdvancedLateActivities();
 });
 $("noneAct").addEventListener("click",()=>{
   document.querySelectorAll(".act").forEach(c=>c.checked=false);
+  document.querySelectorAll(".act[data-tier-disabled='true']").forEach(c=>c.dataset.tierSelection="false");
+  filterAdvancedLateActivities();
 });
 
 // holiday checkboxes
@@ -8106,11 +8252,18 @@ $("f").addEventListener("submit", e=>{
   }
 
   try{
+  const selectedStage=document.querySelector('input[name=stage]:checked');
+  const stage=selectedStage?selectedStage.value:"early";
   const r={
     first, last:$("last").value.trim(),
     goes:$("goes").value.trim()||first,
     born, pronoun:$("pronoun").value,
-    stage:document.querySelector('input[name=stage]:checked').value,
+    stage:window.getTemporaryActivityStage?window.getTemporaryActivityStage(stage):stage,
+    accessibility:{
+      highContrast:$("highContrastMode").checked,
+      extraLargePrint:$("extraLargePrint").checked,
+      simplifiedLayout:pdfSettings.simplifiedLayout
+    },
     town:$("town").value.trim(), state:$("state").value.trim(),
     job:$("job").value.trim(), spouse:$("spouse").value.trim(),
     kids:splitList($("kids").value), pets:splitList($("pets").value),
@@ -9503,7 +9656,8 @@ function generateAilmentPDF(ailmentType) {
   var SCHEMA = "cognicopia.residentProfile";
   var el = function(id){ return document.getElementById(id); };
   var sel = el("arbSelect"), pill = el("arbPill"), msg = el("arbMsg");
-  var editBtn = el("arbEdit"), delBtn = el("arbDelete");
+  var editBtn = el("arbEdit"), delBtn = el("arbDelete"), sootheBtn = el("arbSoothe");
+  var tierOverrideResidentId = null, tierOverrideEnabled = false;
   if (!sel) return;
 
   /** The profile currently driving the packet, or null. */
@@ -9520,6 +9674,43 @@ function generateAilmentPDF(ailmentType) {
     return isNaN(d) ? "" : d.toLocaleDateString([], { month:"short", day:"numeric", year:"numeric" });
   }
   function shortName(p){ return (p && p.tier1_core && p.tier1_core.preferredName) || "Unnamed resident"; }
+  function syncTierOverrideButtons(){
+    var residentId = window.activeResident ? String(window.activeResident.id) : null;
+    var enabled = !!(residentId && tierOverrideEnabled && tierOverrideResidentId === residentId);
+    Array.prototype.forEach.call(document.querySelectorAll("[data-tier-override]"), function(button){
+      button.disabled = !residentId;
+      button.setAttribute("aria-pressed", String(enabled));
+      button.textContent = enabled ? "🌧 Bad Day · One step easier" : "☀ Good Day · Usual tier";
+      button.title = enabled
+        ? "Temporary easier activities are active; click to restore the resident's usual tier"
+        : "Use the resident's usual tier, or click for a temporary one-tier step-down";
+    });
+  }
+  function setTemporaryTierOverride(enabled){
+    var residentId = window.activeResident ? String(window.activeResident.id) : null;
+    if (!residentId) return false;
+    tierOverrideResidentId = residentId;
+    tierOverrideEnabled = !!enabled;
+    syncTierOverrideButtons();
+    document.dispatchEvent(new CustomEvent("cognicopia:tieroverride", {
+      detail:{ residentId:residentId, enabled:tierOverrideEnabled }
+    }));
+    return true;
+  }
+  document.addEventListener("click", function(event){
+    if (event.target.closest && event.target.closest("[data-tier-override]")){
+      setTemporaryTierOverride(!tierOverrideEnabled || tierOverrideResidentId !== String(window.activeResident && window.activeResident.id));
+    }
+  });
+  window.setTemporaryTierOverride = setTemporaryTierOverride;
+  window.getTemporaryTierOverride = function(){
+    return !!(window.activeResident && tierOverrideEnabled &&
+      tierOverrideResidentId === String(window.activeResident.id));
+  };
+  window.getTemporaryActivityStage = function(stage){
+    if (!window.getTemporaryTierOverride()) return stage;
+    return stage === "early" ? "middle" : "late";
+  };
 
   /* -------------------------------------------------------------------
      loadSavedProfilesList()
@@ -9559,6 +9750,11 @@ function generateAilmentPDF(ailmentType) {
      ------------------------------------------------------------------- */
   function setActiveResident(profileId){
     var p = profileId ? readProfile(profileId) : null;
+    var nextId = p ? String(p.id) : null;
+    if (nextId !== (window.activeResident ? String(window.activeResident.id) : null)){
+      tierOverrideResidentId = null;
+      tierOverrideEnabled = false;
+    }
     window.activeResident = p;
     lsSetSafe(ACTIVE_KEY, p ? p.id : null);
     sel.value = p ? p.id : "";
@@ -9568,9 +9764,17 @@ function generateAilmentPDF(ailmentType) {
     editBtn.setAttribute("aria-disabled", p ? "false" : "true");
     if (p) editBtn.removeAttribute("tabindex"); else editBtn.setAttribute("tabindex", "-1");
     delBtn.disabled = !p;
+    sootheBtn.disabled = !p;
+    var stickySoothe = document.getElementById("arbSootheSticky");
+    if (stickySoothe) stickySoothe.disabled = !p;
+    syncTierOverrideButtons();
     document.dispatchEvent(new CustomEvent("cognicopia:activeresident", { detail:getActiveResidentContext() }));
     return p;
   }
+  var stickySootheBtn = document.getElementById("arbSootheSticky");
+  if (stickySootheBtn) stickySootheBtn.addEventListener("click", function(){
+    if (!stickySootheBtn.disabled) sootheBtn.click();
+  });
 
   /* -------------------------------------------------------------------
      Fill the packet form below from a profile. Only resident-specific
@@ -9632,6 +9836,7 @@ function generateAilmentPDF(ailmentType) {
       ["lyric", "match"].forEach(function(v){ var c = document.querySelector('.act[value="' + v + '"]'); if (c) c.checked = false; });
     }
     if (typeof estimatePages === "function") estimatePages();
+    if (typeof filterAdvancedLateActivities === "function") filterAdvancedLateActivities();
   }
 
   /* -------------------------------------------------------------------
@@ -9701,7 +9906,14 @@ function generateAilmentPDF(ailmentType) {
     // without one gets it from the difficulty (1-2 late, 3 middle, 4-5 early), or
     // late when they cannot read independently.
     var needs = residentNeeds(p);
-    var stage = needs.cognitiveTier === 3 ? "late" : needs.cognitiveTier === 2 ? "middle" : "early";
+    var tier = needs.cognitiveTier;
+    var useTemporaryStepDown = !profile && p === window.activeResident &&
+      tierOverrideEnabled && tierOverrideResidentId === String(p.id);
+    if (useTemporaryStepDown) tier = Math.min(3, tier + 1);
+    var stage = tier === 3 ? "late" : tier === 2 ? "middle" : "early";
+    if (useTemporaryStepDown) lvl = Math.max(1, lvl - 1);
+    var difficultyLabel = (t1.difficulty && t1.difficulty.label) || "Moderate";
+    if (useTemporaryStepDown) difficultyLabel = "Step-down from " + difficultyLabel;
     var vision = pn.vision ? pn.vision.code : "", ink = pn.ink ? pn.ink.code : "bw";
     var mil = t2.military || {}, milBranch = mil.branch && ["none", "unknown"].indexOf(mil.branch.code) === -1 ? mil.branch.label : "";
     var avoidTopics = codes((t1.topicsToAvoid || {}).topics);
@@ -9719,10 +9931,10 @@ function generateAilmentPDF(ailmentType) {
       // Tier 1: packet template
       name: t1.preferredName || "",
       unitNumber: needs.unitNumber,
-      tier: needs.cognitiveTier,
+      tier: tier,
       visualNeeds: needs.visualNeeds,
       stage: stage,
-      difficulty: { level: lvl, label: (t1.difficulty && t1.difficulty.label) || "Moderate" },
+      difficulty: { level: lvl, label: difficultyLabel },
       print: { vision: vision, readingLevel: reading, motorSkills: pn.motorSkills ? pn.motorSkills.code : "",
                paper: pn.paper ? pn.paper.code : "letter", ink: ink,
                highContrast: ink !== "gray" || vision === "xl" || needs.visualNeeds.contrastMode === "high_contrast" },
@@ -9788,6 +10000,10 @@ function generateAilmentPDF(ailmentType) {
   }
   sel.addEventListener("change", function(){ choose(sel.value, false); });
   editBtn.addEventListener("click", function(e){ if (!window.activeResident) e.preventDefault(); });
+  sootheBtn.addEventListener("click", function(){
+    if (!window.activeResident) return;
+    location.href = "builder.html?emergency=" + encodeURIComponent(window.activeResident.id);
+  });
   delBtn.addEventListener("click", function(){
     var p = window.activeResident;
     if (!p) return;
@@ -11041,7 +11257,10 @@ function generateAilmentPDF(ailmentType) {
   }
   function forLabel(){
     var ctx = typeof window.getActiveResidentContext === "function" ? window.getActiveResidentContext() : null;
-    el("qpbFor").textContent = ctx && !ctx.isGeneric ? "For: " + ctx.name : "No resident selected";
+    var temporary = typeof window.getTemporaryTierOverride === "function" && window.getTemporaryTierOverride();
+    el("qpbFor").textContent = ctx && !ctx.isGeneric
+      ? "For: " + ctx.name + (temporary ? " · Bad Day: " + ctx.stage + " (temporary)" : "")
+      : "No resident selected";
     el("qpbFor").classList.toggle("is-on", !!(ctx && !ctx.isGeneric));
   }
 
@@ -11194,6 +11413,13 @@ function generateAilmentPDF(ailmentType) {
       status.textContent = "The active resident changed. Press Generate Custom Packet to build pages for them.";
     }
   });
+  document.addEventListener("cognicopia:tieroverride", function(){
+    forLabel();
+    if (current){
+      current = null; preview.hidden = true; preview.innerHTML = ""; printBtn.disabled = true;
+      status.textContent = "The temporary tier changed. Press Generate Custom Packet to rebuild pages with the updated activity level.";
+    }
+  });
   forLabel();
 
   window.generateWordSearch = function(){ return generateWordSearch(packetSource(), makeRng(newSeed())); };
@@ -11249,11 +11475,55 @@ function generateAilmentPDF(ailmentType) {
 
   var S = null;              // the running session
   var fallbackSessions = {};
-  var audioCtx = null, soundOn = true, wakeLock = null;
+  var audioCtx = null, soundOn = true, wakeLock = null, wakeLockRequest = null;
 
   function el(id){ return document.getElementById(id); }
   function esc(s){ return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
   function reducedMotion(){ return window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches; }
+  function announceWakeLock(message){
+    var live = el("tbLive");
+    if (live) live.textContent = message;
+  }
+  function releaseWakeLock(){
+    var lock = wakeLock;
+    wakeLock = null;
+    if (lock && !lock.released) lock.release().catch(function(){});
+  }
+  function requestWakeLock(){
+    if (!S || document.visibilityState !== "visible") return;
+    if (!navigator.wakeLock || typeof navigator.wakeLock.request !== "function"){
+      announceWakeLock("Screen wake lock is unavailable. Keep the tablet powered during this activity.");
+      return;
+    }
+    if ((wakeLock && !wakeLock.released) || wakeLockRequest) return;
+    var request;
+    try { request = navigator.wakeLock.request("screen"); }
+    catch (e){
+      announceWakeLock("The screen could not be kept awake. Keep the tablet powered during this activity.");
+      return;
+    }
+    wakeLockRequest = request;
+    request.then(function(lock){
+      if (wakeLockRequest === request) wakeLockRequest = null;
+      if (!S || document.visibilityState !== "visible"){
+        lock.release().catch(function(){});
+        return;
+      }
+      wakeLock = lock;
+      lock.addEventListener("release", function(){
+        if (wakeLock === lock) wakeLock = null;
+      }, { once:true });
+    }).catch(function(){
+      if (wakeLockRequest === request) wakeLockRequest = null;
+      if (S) announceWakeLock("The screen could not be kept awake. Keep the tablet powered during this activity.");
+    });
+  }
+  function onVisibilityChange(){
+    if (!S) return;
+    if (document.visibilityState === "visible") requestWakeLock();
+    else releaseWakeLock();
+  }
+  function onPageHide(){ releaseWakeLock(); }
 
   /* ---------------- sound: a soft two-note chime (Web Audio, offline) ---------------- */
   function audioUnlock(){
@@ -11554,6 +11824,7 @@ function generateAilmentPDF(ailmentType) {
     root.innerHTML =
       '<div class="tb-top">' +
         '<p class="tb-hello"' + (S.src.name ? ' title="' + esc(S.src.name) + '"' : "") + ">" + (S.src.name ? 'Hello, <b class="tb-name">' + esc(S.src.name) + "</b>!" : "Welcome!") + "</p>" +
+        '<button type="button" class="cg-night-shift-toggle tb-night-toggle" aria-label="Toggle warm-amber Night Shift theme">🌙 Night Shift: Off</button>' +
         '<div class="tb-tabs" role="tablist" aria-label="Activities">' +
           '<button type="button" class="tb-tab" role="tab" data-tab="ws" id="tbTabWs" aria-controls="tbPanelWs">Word Search</button>' +
           '<button type="button" class="tb-tab" role="tab" data-tab="trivia" id="tbTabTrivia" aria-controls="tbPanelTrivia">Finish the Thought</button>' +
@@ -11587,6 +11858,26 @@ function generateAilmentPDF(ailmentType) {
         '<div class="tb-stats"><div class="tb-stat"><b id="tbStatWs"></b><span>words found</span><small id="tbTotWs"></small></div>' +
         '<div class="tb-stat"><b id="tbStatTr"></b><span>thoughts finished</span><small id="tbTotTr"></small></div>' +
         '<div class="tb-stat"><b id="tbStatCd"></b><span>prompts explored</span><small id="tbTotCd"></small></div></div>' +
+        '<section class="tb-mood" aria-labelledby="tbMoodH"><h3 id="tbMoodH">Staff engagement notes: mood before and after</h3>' +
+          '<p>Tap one face before the activity and one face after to note the resident’s response.</p>' +
+          '<div class="tb-mood-row" role="group" aria-label="Mood before the activity"><span class="tb-mood-label">Mood Before</span>' +
+            '<button type="button" class="tb-mood-choice" data-mood-stage="before" data-mood="upset" aria-pressed="false">😟<span>Upset</span></button>' +
+            '<button type="button" class="tb-mood-choice" data-mood-stage="before" data-mood="neutral" aria-pressed="false">😐<span>Neutral</span></button>' +
+            '<button type="button" class="tb-mood-choice" data-mood-stage="before" data-mood="settled" aria-pressed="false">🙂<span>Settled</span></button></div>' +
+          '<div class="tb-mood-row" role="group" aria-label="Mood after the activity"><span class="tb-mood-label">Mood After</span>' +
+            '<button type="button" class="tb-mood-choice" data-mood-stage="after" data-mood="upset" aria-pressed="false" disabled>😟<span>Upset</span></button>' +
+            '<button type="button" class="tb-mood-choice" data-mood-stage="after" data-mood="neutral" aria-pressed="false" disabled>😐<span>Neutral</span></button>' +
+            '<button type="button" class="tb-mood-choice" data-mood-stage="after" data-mood="settled" aria-pressed="false" disabled>🙂<span>Settled</span></button></div>' +
+          '<p class="tb-mood-status" id="tbMoodStatus" role="status" aria-live="polite">Choose Mood Before now; record Mood After when the activity ends.</p></section>' +
+        '<button type="button" class="tb-btn" id="tbMoodExport">📊 Export Engagement Audit (PDF)</button>' +
+        '<details class="tb-kiosk"><summary>Keep the activity on screen: Guided Access / App Pinning</summary>' +
+          '<h3>iPad — Guided Access</h3><ol><li>Open Settings → Accessibility → Guided Access and turn it on; set a passcode.</li>' +
+            '<li>Open Cognicopia, then triple-click the top or Home button and tap Start.</li>' +
+            '<li>To leave, triple-click the button again, authenticate, then tap End.</li></ol>' +
+          '<h3>Android — App Pinning</h3><ol><li>In Settings, search for “App pinning” and turn it on. Enable the option to require a PIN before unpinning.</li>' +
+            '<li>Open Cognicopia, open Recent apps, tap the app icon, then choose Pin.</li>' +
+            '<li>To leave, use the device’s unpin gesture and enter the screen-lock PIN if asked.</li></ol>' +
+          '<p>Menu names and gestures vary by device and Android version. Guided Access and pinning are device settings; Cognicopia cannot turn them on itself.</p></details>' +
         '<div class="tb-care-actions">' +
           '<button type="button" class="tb-btn" id="tbRestart">↺ Restart Activity</button>' +
           '<button type="button" class="tb-btn" id="tbNewWs">New word search</button>' +
@@ -11619,8 +11910,86 @@ function generateAilmentPDF(ailmentType) {
     el("tbTotTr").textContent = S.totals.thoughts + " this session";
     el("tbTotCd").textContent = Object.keys(S.totals.seen).length + " this session";
   }
+  function updateMoodUi(){
+    ["before", "after"].forEach(function(stage){
+      root.querySelectorAll('[data-mood-stage="' + stage + '"]').forEach(function(button){
+        button.setAttribute("aria-pressed", String(S.mood[stage] === button.getAttribute("data-mood")));
+        button.disabled = stage === "after" && !S.mood.before;
+      });
+    });
+  }
+  var MOOD_SCORE = { upset:1, neutral:2, settled:3 };
+  function saveMoodRecord(){
+    var key = "cognicopia_engagement_" + (S.residentId || "unassigned");
+    var rows = JSON.parse(CG_LS.getItem(key) || "[]");
+    if (!Array.isArray(rows)) throw new Error("Saved engagement notes have an invalid format.");
+    var entry = { sessionId:S.mood.sessionId, residentId:S.residentId || null, started:S.mood.started, updated:new Date().toISOString(),
+      activity:"Tablet Interactive Mode", moodScaleVersion:1, moodBefore:S.mood.before,
+      moodBeforeScore:S.mood.before ? MOOD_SCORE[S.mood.before] : null, moodAfter:S.mood.after,
+      moodAfterScore:S.mood.after ? MOOD_SCORE[S.mood.after] : null };
+    var index = rows.findIndex(function(row){ return row && row.sessionId === S.mood.sessionId; });
+    if (index < 0) rows.push(entry); else rows[index] = entry;
+    CG_LS.setItem(key, JSON.stringify(rows.slice(-100)));
+  }
+  function exportMoodAudit(){
+    if (!window.jspdf || !window.jspdf.jsPDF) throw new Error("The built-in PDF library did not load.");
+    var key = "cognicopia_engagement_" + (S.residentId || "unassigned");
+    var rows = JSON.parse(CG_LS.getItem(key) || "[]");
+    if (!Array.isArray(rows)) throw new Error("Saved engagement notes have an invalid format.");
+    rows.forEach(function(row){
+      if (!row || (row.moodBefore && !Object.prototype.hasOwnProperty.call(MOOD_SCORE, row.moodBefore)) ||
+          (row.moodAfter && !Object.prototype.hasOwnProperty.call(MOOD_SCORE, row.moodAfter)))
+        throw new Error("Saved engagement notes contain an invalid mood value.");
+    });
+    rows = rows.filter(function(row){ return row && row.moodBefore && row.moodAfter; });
+    if (!rows.length) throw new Error("There are no completed before-and-after mood records to export yet.");
+    var doc = new window.jspdf.jsPDF({ unit:"pt", format:"letter", orientation:"portrait" });
+    doc.setProperties({ title:"Staff Engagement Audit", subject:"Observed mood ratings before and after activities", creator:"Cognicopia (offline)" });
+    var y = 54, name = S.src.name || "Guest";
+    doc.setFontSize(17); doc.text("Staff Engagement Audit", 42, y); y += 24;
+    doc.setFontSize(11);
+    doc.text("Resident: " + name, 42, y); y += 16;
+    doc.text("Completed sessions: " + rows.length + "   Scale: Upset 1 · Neutral 2 · Settled 3", 42, y); y += 16;
+    var changes = rows.map(function(row){ return MOOD_SCORE[row.moodAfter] - MOOD_SCORE[row.moodBefore]; });
+    var avg = changes.reduce(function(total, n){ return total + n; }, 0) / changes.length;
+    doc.text("Mean observed mood change: " + (avg > 0 ? "+" : "") + avg.toFixed(2) + " points (descriptive; not a causal measure)", 42, y); y += 24;
+    doc.setFont("helvetica", "bold");
+    doc.text("Date / time", 42, y); doc.text("Activity", 155, y); doc.text("Before", 330, y); doc.text("After", 400, y); doc.text("Change", 465, y);
+    y += 8; doc.setLineWidth(.7); doc.line(42, y, 550, y); y += 16;
+    doc.setFont("helvetica", "normal");
+    rows.forEach(function(row){
+      if (y > 740){ doc.addPage(); y = 54; }
+      var date = new Date(row.updated || row.started);
+      var stamp = isNaN(date.getTime()) ? "Unknown date" : date.toLocaleString();
+      var delta = MOOD_SCORE[row.moodAfter] - MOOD_SCORE[row.moodBefore];
+      doc.text(stamp.slice(0, 20), 42, y);
+      doc.text(String(row.activity || "Activity").slice(0, 28), 155, y);
+      doc.text(String(row.moodBefore), 330, y);
+      doc.text(String(row.moodAfter), 400, y);
+      doc.text((delta > 0 ? "+" : "") + delta, 465, y);
+      y += 17;
+    });
+    doc.setFontSize(9);
+    doc.text("Observed ratings only. This report does not establish treatment or medication effects.", 42, 760);
+    var safe = name.replace(/[^A-Za-z0-9]+/g, "_").replace(/^_|_$/g, "") || "Guest";
+    var filename = "Cognicopia_Engagement_Audit_" + safe + ".pdf";
+    doc.save(filename);
+    return { filename:filename, sessions:rows.length };
+  }
+  function recordMood(stage, mood){
+    S.mood[stage] = mood;
+    updateMoodUi();
+    try {
+      saveMoodRecord();
+      el("tbMoodStatus").textContent = S.mood.after
+        ? "Mood before and after saved on this device."
+        : "Mood before saved on this device. Tap Mood After when the activity ends.";
+    } catch (error){
+      el("tbMoodStatus").textContent = "Mood choice kept for this session but could not be saved on this device: " + String(error && error.message || error);
+    }
+  }
   function openCare(){
-    stopSpeaking(); updateStats();
+    stopSpeaking(); updateStats(); updateMoodUi();
     el("tbCare").hidden = false;
     S.root.querySelector(".tb-top").inert = true; S.stage.inert = true;
     el("tbBack").focus();
@@ -11702,6 +12071,17 @@ function generateAilmentPDF(ailmentType) {
     });
     // caregiver panel
     el("tbBack").addEventListener("click", closeCare);
+    root.querySelectorAll("[data-mood-stage]").forEach(function(button){
+      button.addEventListener("click", function(){ recordMood(button.getAttribute("data-mood-stage"), button.getAttribute("data-mood")); });
+    });
+    el("tbMoodExport").addEventListener("click", function(){
+      try {
+        var result = exportMoodAudit();
+        el("tbMoodStatus").textContent = "Saved " + result.filename + " (" + result.sessions + " completed sessions).";
+      } catch (error){
+        el("tbMoodStatus").textContent = String(error && error.message || error);
+      }
+    });
     el("tbRestart").addEventListener("click", restart);
     el("tbNewWs").addEventListener("click", function(){ closeCare(); newWordSearch(); showTab("ws"); });
     el("tbSound").addEventListener("click", function(){
@@ -11712,6 +12092,8 @@ function generateAilmentPDF(ailmentType) {
     el("tbCare").addEventListener("keydown", function(e){ if (e.key === "Escape") closeCare(); });
     window.addEventListener("resize", layoutGrid);
     document.addEventListener("fullscreenchange", layoutGrid);
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    window.addEventListener("pagehide", onPageHide);
   }
 
   /* ---------------- launch and exit ---------------- */
@@ -11736,6 +12118,8 @@ function generateAilmentPDF(ailmentType) {
     var triviaPart = part("trivia") || window.qpEngine.generatePersonalizedTrivia(src, rng);
     S = {
       src: src, tab: "ws", started: Date.now(),
+      residentId: id,
+      mood: { sessionId:Date.now().toString(36) + "-" + Math.random().toString(36).slice(2), started:new Date().toISOString(), before:null, after:null },
       totals: { words:0, thoughts:0, seen:{} },          // whole-session counts; restarts never erase them
       trivia: { items: triviaPart.items, idx: 0, picks: {} },
       cards: { prompts: cardsPart.prompts, idx: 0, explored: {} },
@@ -11746,6 +12130,7 @@ function generateAilmentPDF(ailmentType) {
     S.inerted = Array.prototype.filter.call(document.body.children, function(n){ return !n.inert && n.tagName !== "SCRIPT"; });
     S.inerted.forEach(function(n){ n.inert = true; });
     document.body.appendChild(S.root);
+    if (window.cognicopiaNightShiftSync) window.cognicopiaNightShiftSync();
     document.documentElement.classList.add("tb-open");
     S.stage = el("tbStage");
     wire();
@@ -11753,7 +12138,7 @@ function generateAilmentPDF(ailmentType) {
     showTab("ws");
     el("tbTabWs").focus();
     try { var fs = S.root.requestFullscreen || S.root.webkitRequestFullscreen; if (fs) { var r = fs.call(S.root); if (r && r.catch) r.catch(function(){}); } } catch (e){}
-    try { if (navigator.wakeLock) navigator.wakeLock.request("screen").then(function(w){ wakeLock = w; }).catch(function(){}); } catch (e){}
+    requestWakeLock();
     setTimeout(layoutGrid, 60);
   }
 
@@ -11765,17 +12150,18 @@ function generateAilmentPDF(ailmentType) {
       S.totals.thoughts + " thought" + (S.totals.thoughts === 1 ? "" : "s") + " finished, " +
       Object.keys(S.totals.seen).length + " of " + S.cards.prompts.length + " conversation prompts explored.";
     try { if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(function(){}); } catch (e){}
-    try { if (wakeLock) wakeLock.release(); } catch (e){}
-    wakeLock = null;
+    document.removeEventListener("visibilitychange", onVisibilityChange);
+    window.removeEventListener("pagehide", onPageHide);
+    releaseWakeLock();
     window.removeEventListener("resize", layoutGrid);
     document.removeEventListener("fullscreenchange", layoutGrid);
     S.inerted.forEach(function(n){ n.inert = false; });
     S.root.remove();
     document.documentElement.classList.remove("tb-open");
     var st = document.getElementById("qpbStatus"); if (st) st.textContent = summary;
-    window.lastTabletSession = { summary: summary, residentId: window.activeResident ? window.activeResident.id : null, ended: new Date().toISOString(),
+    window.lastTabletSession = { summary: summary, residentId: S.residentId, ended: new Date().toISOString(),
       wordsFound: S.totals.words, thoughtsFinished: S.totals.thoughts, promptsExplored: Object.keys(S.totals.seen).length, prompts: S.cards.prompts.length,
-      minutes: Math.round((Date.now() - S.started) / 60000) };
+      minutes: Math.round((Date.now() - S.started) / 60000), moodBefore:S.mood.before, moodAfter:S.mood.after };
     S = null;
     launchBtn.focus();
   }
@@ -12167,6 +12553,77 @@ function generateAilmentPDF(ailmentType) {
     return { filename:name, pages:pages.length, layout:layout, doc:doc };
   }
   window.exportPacketToPDF = exportPacketToPDF;
+  var guestToggle = document.getElementById("guestPresetToggle");
+  var guestMenu = document.getElementById("guestPresetMenu");
+  var guestStatus = document.getElementById("guestPresetStatus");
+  var guestPresets = {
+    homemaker:{ occupation:"Homemaker", hobbies:["baking", "sewing", "gardening"], decades:["1940s", "1950s"], genres:["Big Band", "Traditional Pop"], artists:["Perry Como"] },
+    farmer:{ occupation:"Farm worker", hobbies:["gardening", "cooking", "animals"], decades:["1930s", "1940s", "1950s"], genres:["Country", "Big Band"], artists:["Hank Williams"] },
+    veteran:{ occupation:"Veteran", hobbies:["gardening", "woodworking", "music"], decades:["1940s", "1950s"], genres:["Big Band", "Traditional Pop"], artists:["Bing Crosby"] },
+    educator:{ occupation:"Teacher", hobbies:["reading", "gardening", "music"], decades:["1940s", "1950s", "1960s"], genres:["Traditional Pop", "Big Band"], artists:["Frank Sinatra"] },
+    classic:{ occupation:"Community member", hobbies:["gardening", "cooking", "music"], decades:["1930s", "1940s", "1950s"], genres:["Big Band", "Traditional Pop"], artists:["Ella Fitzgerald"] }
+  };
+  function guestProfile(key){
+    var preset = guestPresets[key];
+    if (!preset) throw new Error("That guest profile preset is unavailable.");
+    var labels = function(values){ return values.map(function(label){ return { code:label.toLowerCase().replace(/[^a-z0-9]+/g, "-"), label:label }; }); };
+    return {
+      id:"guest-" + key + "-" + Date.now(),
+      tier1_core:{
+        preferredName:"Guest", cognitiveTier:3, unitNumber:"",
+        difficulty:{ level:1, label:"Low support" },
+        occupation:{ code:"other", label:preset.occupation },
+        topHobbies:labels(preset.hobbies),
+        printNeeds:{ readingLevel:{ code:"none", label:"Pictures and read-aloud" }, vision:{ code:"xl", label:"Extra-large" },
+          motorSkills:{ code:"significant", label:"Significant limitation" }, paper:{ code:"letter", label:"Letter" }, ink:{ code:"bw", label:"Black and white" } },
+        topicsToAvoid:{ topics:labels(["war", "death", "medical"]), other:"" }
+      },
+      tier2_enrichment:{
+        birthYear:1945, meaningfulDecades:labels(preset.decades),
+        hometown:{ place:"", environment:{ code:"unknown", label:"" } },
+        skills:{ items:[], other:"" }, activityPreferences:labels(["reminiscence"]),
+        music:{ genres:labels(preset.genres), artists:preset.artists.slice(), favoriteSong:"" },
+        tvMoviesSports:{ tvShows:"", movies:"", sportsTeams:"" },
+        military:{ branch:"", era:{ code:"", label:"" }, talkingAboutIt:{ code:"avoid", label:"Avoid service details" } }
+      },
+      tier3_deep:{ people:[], notes:"Temporary general archetype profile for quick-print use; not saved.", mentionsInNotes:{ artists:[], decades:[] } },
+      meta:{ temporaryGuestPreset:key }
+    };
+  }
+  if (guestToggle && guestMenu){
+    guestToggle.addEventListener("click", function(){
+      guestMenu.hidden = !guestMenu.hidden;
+      guestToggle.setAttribute("aria-expanded", String(!guestMenu.hidden));
+    });
+    guestMenu.querySelectorAll("[data-guest-preset]").forEach(function(button){
+      button.addEventListener("click", function(){
+        var oldProfile = window.activeResident || null;
+        button.disabled = true;
+        guestStatus.textContent = "Building a temporary guest packet…";
+        try {
+          window.activeResident = guestProfile(button.getAttribute("data-guest-preset"));
+          var checks = document.querySelectorAll("#profilePacket input[data-page]");
+          checks.forEach(function(check){
+            var kind = check.getAttribute("data-page");
+            check.checked = kind === "cover" || kind === "cards";
+          });
+          var packet = window.generateProfilePacket();
+          if (!packet) throw new Error("The guest packet could not be generated.");
+          var result = exportPacketToPDF();
+          if (!result) throw new Error("The PDF was not created. Check the packet allowance and try again.");
+          guestStatus.textContent = "Saved " + result.filename + ". This temporary archetype was not saved; the selected resident profile is unchanged.";
+          guestMenu.hidden = true;
+          guestToggle.setAttribute("aria-expanded", "false");
+        } catch (error){
+          guestStatus.textContent = String(error && error.message || error);
+        } finally {
+          window.activeResident = oldProfile;
+          document.dispatchEvent(new CustomEvent("cognicopia:activeresident", { detail:window.getActiveResidentContext() }));
+          button.disabled = false;
+        }
+      });
+    });
+  }
   /* Drawing kit shared with the Monthly Bundle engine (same pages, same rules). */
   window.qpPdf = { PAPER:PAPER, M:M, IN:IN, SLACK:SLACK, safe:safe, Kit:Kit, header:header, instructions:instructions, staffLine:staffLine,
     fitAndPaint:fitAndPaint, pagesFrom:pagesFrom, painters:{ cover:paintCover, wordsearch:paintWordSearch, cards:paintCards, trivia:paintTrivia } };
@@ -12612,6 +13069,9 @@ function generateAilmentPDF(ailmentType) {
       var g = document.getElementById("gate"); if (g) g.scrollIntoView({ behavior:"smooth", block:"center" });
       return;
     }
+    var totalResidents = list.querySelectorAll("input").length;
+    if (totalResidents > 0 && ids.length === totalResidents &&
+        !window.confirm("You are about to export data for ALL residents. Proceed?")) return;
     setup.hidden = true; run.hidden = false;
     var bar = $m("mbBar"), fill = $m("mbFill"), st = $m("mbStatus");
     var setPct = function(pct){ fill.style.width = pct + "%"; bar.setAttribute("aria-valuenow", String(pct)); };
@@ -12648,5 +13108,6 @@ function generateAilmentPDF(ailmentType) {
 if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol))
   window.addEventListener("load", function(){ navigator.serviceWorker.register("sw.js").catch(function(){}); });
 </script>
+<script src="assets/services/nightShift.js"></script>
 </body>
 </html>

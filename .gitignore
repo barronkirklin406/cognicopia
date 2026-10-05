@@ -4,3 +4,5 @@ payloads/
 *.cognicopia
 # pages written by scripts/generate_infinite_pages.mjs (default output folder)
 /out/
+.continue/
+new-config.yaml

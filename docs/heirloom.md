@@ -8,7 +8,7 @@ Staff record a memory as it happens. There are four kinds:
 
 - **In their own words**: what the resident wrote or said (their journal).
 - **A story they shared**: often from a reminiscence card. **Keep what they shared** on a card opens this form with the card already filled in.
-- **Something they colored**: which CogniCore page it was, the tier, and a photo of the finished page.
+- **Something they colored**: which Cognicopia Coloring page it was, the tier, and a photo of the finished page.
 - **A moment to remember.**
 
 Every entry prints exactly as typed. Each can be marked **Share with family** (on by default) or kept for the care team only.
@@ -25,7 +25,7 @@ Every entry prints exactly as typed. Each can be marked **Share with family** (o
 
 One month's shared memories go on Letter paper with the punch gutter:
 
-- a cover, with the resident's name, the month and a CogniCore picture;
+- a cover, with the resident's name, the month and a Cognicopia Coloring picture;
 - the memories by kind, their own words first.
 
 Staff can print it or download a PDF for the family. In the PDF, the text is Atkinson Hyperlegible and the line art is vector paths; photos are JPEG. Each page draws in a few milliseconds, well under the 150 ms budget.

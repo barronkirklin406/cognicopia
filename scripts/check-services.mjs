@@ -25,8 +25,51 @@ try { execFileSync("tsc", ["-v"], { stdio:"pipe" }); try { execFileSync("tsc", [
 /* 2. load every built service into one sandbox, as the browser does */
 const sandbox = { console, TextEncoder, TextDecoder }; sandbox.globalThis = sandbox; vm.createContext(sandbox);
 const OUT = path.join(ROOT, "assets", "services");
-fs.readdirSync(OUT).filter(f => f.endsWith(".js")).sort().forEach(f => vm.runInContext(fs.readFileSync(path.join(OUT, f), "utf8"), sandbox, { filename:"assets/services/" + f }));
+/* only services built from src/services/*.ts; browser-only scripts (nightShift.js) touch the page */
+fs.readdirSync(OUT).filter(f => f.endsWith(".js") && fs.existsSync(path.join(ROOT, "src", "services", f.replace(/\.js$/, ".ts")))).sort().forEach(f => vm.runInContext(fs.readFileSync(path.join(OUT, f), "utf8"), sandbox, { filename:"assets/services/" + f }));
 const V = sandbox.CogniVectorEngine;
+
+/* Emergency print: profile choice, direct resident action, and isolated page */
+group("emergencyPrint", () => {
+  const profileHtml = fs.readFileSync(path.join(ROOT, "profile.html"), "utf8");
+  const indexHtml = fs.readFileSync(path.join(ROOT, "index.html"), "utf8");
+  const builderHtml = fs.readFileSync(path.join(ROOT, "builder.html"), "utf8");
+  ok(/name="preselectedDeescalationActivity"/.test(profileHtml), "profile form exposes the emergency activity choice");
+  ok(/preselectedDeescalationActivity:\s*text\("rapSootheActivity"\)/.test(profileHtml) &&
+     /preselectedDeescalationActivity:\s*p\.preselectedDeescalationActivity/.test(profileHtml), "profile choice is saved and restored");
+  ok(/id="arbSoothe"[^>]*>[\s\S]*?Instant Soothe \/ Print/.test(indexHtml) &&
+     /builder\.html\?emergency=/.test(indexHtml), "active resident card links directly to emergency print");
+  ok(/requested[\s\S]*?allowed\.includes\(requested\)[\s\S]*?:\s*"line-tracing"/.test(builderHtml), "unknown or missing activity falls back to line tracing");
+  ok(/difficulty = \["", "early", "moderate", "advanced"\]\[tier\]/.test(builderHtml), "support tiers map to matching activity load");
+  ok(/const item = \{ activityId:activity\.id,[\s\S]*?count:1[\s\S]*?generatePdf\(\[item\]/.test(builderHtml), "emergency print contains exactly one page");
+  ok(/function generatePdf\(items, printOptions\)[\s\S]*?items = Array\.isArray\(items\) \? items : queue;[\s\S]*?root\.innerHTML = items\.map\(item => sheetHtml\(item, calmMode\)\)/.test(builderHtml), "emergency pages print separately without changing the saved queue");
+  ok(/printEmergencyActivity[\s\S]*?generatePdf\(\[item\], \{ emergency:true, calmMode:false/.test(builderHtml) &&
+     /printPanicPacket\(\)[\s\S]*?calmMode:false/.test(builderHtml), "resident-specific and fixed emergency packets bypass the queued-page calm override");
+  ok(/CG_STORE_READY\.then\(\(\) => \{[\s\S]*?router\(\);[\s\S]*?printEmergencyActivity\(emergencyResidentId\)/.test(builderHtml), "emergency action waits for secure storage before loading the resident");
+});
+
+group("panicPacket", () => {
+  const builderHtml = fs.readFileSync(path.join(ROOT, "builder.html"), "utf8");
+  ok(/id="panicButton"[^>]*>[\s\S]*?Sundowning \/ Rapid De-escalation/.test(builderHtml), "panic button is prominent in the Packet Builder top bar");
+  ok(/const PANIC_PACKET = \[[\s\S]*?activityId:"line-tracing", cfg:\{ difficulty:"advanced"[\s\S]*?activityId:"lyric-sheet"[\s\S]*?difficulty:"advanced"[\s\S]*?emergencySongTitle:"Take Me Out to the Ball Game"/.test(builderHtml), "panic payload is fixed to late-tier tracing and a known public-domain sing-along");
+  ok(/function printPanicPacket\(\)\s*\{\s*generatePdf\(buildPanicPacket\(\), \{ emergency:true/.test(builderHtml), "panic print goes straight to the isolated PDF pipeline");
+  ok(/emergencySongTitle[\s\S]*?this\.pool\(cfg\)\.find\(s => s\.title === cfg\.emergencySongTitle\)/.test(builderHtml), "panic lyric page deterministically uses the selected public-domain song");
+  ok(/function tactilePairingFor\(activity, page, cfg\)[\s\S]*?page\.sensoryPairing[\s\S]*?activity\.sensoryPairing/.test(builderHtml), "activity and generated-page models accept explicit sensory pairings");
+  ok(/cinnamon or vanilla extract[\s\S]*?Check allergies, scent sensitivities and facility guidance first/.test(builderHtml), "baking-themed pairing includes a scent prompt and safety check");
+  ok(/item\.cfg\.difficulty === "advanced" \? tactilePairingFor/.test(builderHtml) && /For staff · Sensory Prompt:/.test(builderHtml), "only late-tier sheets append the labeled sensory prompt");
+  ok(/PANIC_PACKET\.map\(page => \(\{[\s\S]*?batchSeed:newSeed\(\)[\s\S]*?count:1/.test(builderHtml), "panic print creates fresh, one-copy recipes without queue writes");
+});
+
+group("sundowningCalmAndCoachingFooter", () => {
+  const builderHtml = fs.readFileSync(path.join(ROOT, "builder.html"), "utf8");
+  const indexHtml = fs.readFileSync(path.join(ROOT, "index.html"), "utf8");
+  const coaching = "Do not ask questions or test memory. Sit beside them, place the marker in their hand, and model slow, calm breathing.";
+  ok(/id="calmModeToggle"[^>]*aria-pressed="false"[\s\S]*?Late-Stage \/ Sundowning Calm/.test(builderHtml), "calm mode has a high-visibility, accessible Packet Builder toggle");
+  ok(/if \(calmMode == null \? sundowningCalmActive : calmMode\) return `<section class="sheet sheet-calm"[\s\S]*?stroke-width="6pt"[\s\S]*?stroke-dasharray/.test(builderHtml), "calm mode replaces activity content with one maximum-weight dashed path");
+  ok(/function sheetHtml\(item[^)]*\)[\s\S]*?activitySheetHtml\(item[^)]*\)[\s\S]*?care-coaching-footer/.test(builderHtml), "the shared queued-print wrapper adds the coaching footer");
+  ok(builderHtml.includes(coaching) && indexHtml.includes(coaching), "the exact coaching reminder is included in both activity print pipelines");
+  ok(/coachingFooter\(\)\s*\{[\s\S]*?this\.d\.text\("Do not ask questions or test memory\./.test(indexHtml), "main PDF pages draw the coaching footer from the shared document engine");
+});
 
 /* 3. Dynamic Vector Engine */
 group("vectorEngine", () => {
@@ -46,11 +89,11 @@ group("vectorEngine", () => {
   });
   ok(V.STROKE_POLICY[1].px.min === 4 && V.STROKE_POLICY[1].px.max === 4.5 && V.STROKE_POLICY[2].px.min === 5 && V.STROKE_POLICY[2].px.max === 7 && V.STROKE_POLICY[3].px.min === 9 && V.STROKE_POLICY[3].px.max === 12, "tier px ranges");
 
-  // the CogniCore engine prints with the same numbers
+  // the Cognicopia Coloring engine prints with the same numbers
   const cc = { console }; cc.globalThis = cc; vm.createContext(cc);
-  vm.runInContext(fs.readFileSync(path.join(ROOT, "assets", "cognicore", "lineart.js"), "utf8"), cc);
-  [1, 2, 3].forEach(k => { const w = cc.CogniCore.WEIGHTS[cc.CogniCore.TIERS[k].weight], L = V.tierLines(k, 3);
-    ok(w.px === L.linePx && Math.abs(w.pt - L.linePt) < 1e-9 && Math.abs(w.detailPt - L.detailPt) < 1e-9, `CogniCore tier ${k} weights ${w.px} px / ${w.detailPt} pt differ from the DVE ${L.linePx} px / ${L.detailPt} pt`); });
+  vm.runInContext(fs.readFileSync(path.join(ROOT, "assets", "cognicopia-coloring", "lineart.js"), "utf8"), cc);
+  [1, 2, 3].forEach(k => { const w = cc.CognicopiaColoring.WEIGHTS[cc.CognicopiaColoring.TIERS[k].weight], L = V.tierLines(k, 3);
+    ok(w.px === L.linePx && Math.abs(w.pt - L.linePt) < 1e-9 && Math.abs(w.detailPt - L.detailPt) < 1e-9, `Cognicopia Coloring tier ${k} weights ${w.px} px / ${w.detailPt} pt differ from the DVE ${L.linePx} px / ${L.detailPt} pt`); });
 
   // parser: round trip, errors
   const lib = path.join(ROOT, "assets", "coloring");
@@ -218,6 +261,7 @@ async function secureStoreChecks(){
   ls.setItem("cognicopia_license", "abc");
   const A = page(shared), st = await A.ready();
   ok(st.state === "open" && st.encrypted && !st.passphrase && st.migrated === 2 && st.records === 2, "first open seals the plain copies: " + JSON.stringify(st));
+  ok(A.isSealed("cognicopia_engagement_r1"), "tablet engagement notes are classified as sealed records");
   ok(ls.getItem("cognicopia_resident_r1") === null && ls.getItem("cognicopia_profile_draft") === null && ls.getItem("cognicopia_license") === "abc", "plain copies removed, other names left alone");
   ok(JSON.parse(A.storage.getItem("cognicopia_resident_r1")).tier1_core.preferredName === "Margaret Ellison", "sealed profile reads back");
   const recs = idb.dbs.get("cognicopia-secure").stores.get("records");
@@ -331,15 +375,15 @@ group("reminiscenceEngine", () => {
   const R = sandbox.CogniReminiscence;
   ok(R && typeof R.deck === "function", "CogniReminiscence is not loaded");
   const cc = { console }; cc.globalThis = cc; vm.createContext(cc);
-  vm.runInContext(fs.readFileSync(path.join(ROOT, "assets", "cognicore", "cognicore.js"), "utf8"), cc);
-  const designs = new Set(cc.CogniCore.designs().map(d => d.id)), songIds = new Set(R.SONGS.map(x => x.id));
+  vm.runInContext(fs.readFileSync(path.join(ROOT, "assets", "cognicopia-coloring", "cognicopia-coloring.js"), "utf8"), cc);
+  const designs = new Set(cc.CognicopiaColoring.designs().map(d => d.id)), songIds = new Set(R.SONGS.map(x => x.id));
   ok(songIds.size === R.SONGS.length, "song ids are unique");
   const texts = [];
   for (const t of R.TOPICS){
     ok(t.invite.length === 3 && t.invite.every(Boolean), t.id + ": three invitations");
     ok(t.starters.length >= 4 && t.simple.length >= 3, t.id + ": at least 4 starters and 3 tier-3 lines");
     ok(t.simple.filter(x => x !== t.invite[2]).length >= 3, t.id + ": 3 tier-3 lines besides the invitation");
-    ok(t.art.length && t.art.every(a => designs.has(a)), t.id + ": art from the CogniCore library: " + t.art.filter(a => !designs.has(a)));
+    ok(t.art.length && t.art.every(a => designs.has(a)), t.id + ": art from the Cognicopia Coloring library: " + t.art.filter(a => !designs.has(a)));
     ok(t.touch.prompt && t.touch.simple && t.touch.items, t.id + ": a tactile prompt");
     ok((t.songs || []).every(x => songIds.has(x)), t.id + ": songs exist");
     ok(t.refs.every(r => r.years[0] >= 1850 && r.years[0] <= r.years[1] && r.years[1] <= 2000), t.id + ": reference years");
@@ -550,6 +594,11 @@ group("facilityPlanner", () => {
   }
   const only = F.recommend(2, ["lyric-sheet", "word-search"]);
   ok(only.filter(r => r.recommended.length).map(r => r.pillar.id).join() === "words,music", "only activities this build has are offered");
+  const morning = F.recommend(2, undefined, "morning"), late = F.recommend(2, undefined, "late");
+  ok(morning.slice(0, 3).map(r => r.pillar.id).join() === "numbers,letters,movement", "10 AM pacing leads with higher-engagement pillars");
+  ok(late.slice(0, 3).map(r => r.pillar.id).join() === "coloring,music,words", "5 PM pacing leads with calming pillars");
+  const numberLoad = pacing => F.recommend(2, undefined, pacing).filter(r => r.pillar.id === "numbers")[0].recommended[0].id;
+  ok(numberLoad("morning") === "number-ladder" && numberLoad("late") === "number-tracing", "pacing reorders activities within a pillar toward the selected cognitive load");
   // normalizing: bounds, a director always there, times cleaned
   const big = F.normalizeFacility({ wings:Array.from({ length:30 }, (_, i) => ({ id:"w" + i, name:"  Wing\u0007 " + i + "x".repeat(90), cadence:{ weekday:["25:00", "05:00", "10:00", "10:00", "09:00", "11:00", "13:00", "15:00", "16:00"], weekend:"no" },
     groups:Array.from({ length:20 }, (_, k) => ({ id:k % 2 ? "same" : "g" + k, name:"Group " + k, acuity:k % 6, size:k * 10 })) })), team:[{ id:"m1", name:"Pat", role:"coordinator", wings:["w1", "nope"] }], active:"ghost" });
@@ -597,8 +646,8 @@ group("facilityPlanner", () => {
   ok(J(F.autoPopulate({ v:1, wing:wing.id, month, slots:[] }, wing, { seed:"a" })) === J(plan) && J(F.autoPopulate({ v:1, wing:wing.id, month, slots:[] }, wing, { seed:"b" }).slots.map(s => s.activity)) !== J(plan.slots.map(s => s.activity)), "the same seed fills the same month; another seed, another month");
   ok(F.planIssues(plan, wing).length === 0, "a filled month has nothing to flag");
   // calming pillars late in the day
-  const late = F.normalizeWing({ id:"w-late", name:"Late", groups:[{ id:"g1", acuity:2 }, { id:"g2", acuity:4 }], cadence:{ weekday:["09:30", "16:30"], weekend:["09:30", "16:30"] } });
-  const lp = F.autoPopulate({ v:1, wing:"w-late", month, slots:[] }, late, { seed:"x" }), lateS = lp.slots.filter(s => s.time === "16:30");
+  const lateWing = F.normalizeWing({ id:"w-late", name:"Late", groups:[{ id:"g1", acuity:2 }, { id:"g2", acuity:4 }], cadence:{ weekday:["09:30", "16:30"], weekend:["09:30", "16:30"] } });
+  const lp = F.autoPopulate({ v:1, wing:"w-late", month, slots:[] }, lateWing, { seed:"x" }), lateS = lp.slots.filter(s => s.time === "16:30");
   const calm = lateS.filter(s => ["music", "coloring", "words"].includes(s.pillar)).length;
   ok(calm > lateS.length - calm, `late sessions lean calming: ${calm} of ${lateS.length}`);
   // three a day: the day's pillars are balanced first, then the calming ones go last

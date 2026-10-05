@@ -1,14 +1,14 @@
 # Infinite coloring pages: the generator
 
-Cognicopia's page generator makes new, print-ready coloring pages on demand: as many as a facility needs, each one different, and each one held to the same clinical print standard as the curated library ([cognicore-coloring-standards.md](cognicore-coloring-standards.md)). Staff use it in the Packet Builder (**Coloring → New pages**). Activity directors and developers can also run it from the command line to produce a batch of SVG, 300 DPI PNG and PDF files.
+Cognicopia's page generator makes new, print-ready coloring pages on demand: as many as a facility needs, each one different, and each one held to the same clinical print standard as the curated library ([cognicopia-coloring-standards.md](cognicopia-coloring-standards.md)). Staff use it in the Packet Builder (**Coloring → New pages**). Activity directors and developers can also run it from the command line to produce a batch of SVG, 300 DPI PNG and PDF files.
 
 Everything here runs on the user's own computer. The browser tool sends nothing anywhere. The command line reaches the network only when someone asks it to fetch pictures from an image generator (`--backend http`, section 7).
 
 | | |
 |---|---|
-| Engine | `assets/cognicore/infinite.js` (seeds, theme matrix, settings, compositions, prompt templates, guardrails, batches) |
-| Subject families | `assets/cognicore/generators/*.js` (nine families, below) |
-| Quality meter | `assets/cognicore/quality.js` (prints a page to a bitmap and measures it; shared by the browser and Node) |
+| Engine | `assets/cognicopia-coloring/infinite.js` (seeds, theme matrix, settings, compositions, prompt templates, guardrails, batches) |
+| Subject families | `assets/cognicopia-coloring/generators/*.js` (nine families, below) |
+| Quality meter | `assets/cognicopia-coloring/quality.js` (prints a page to a bitmap and measures it; shared by the browser and Node) |
 | Command line | `scripts/generate_infinite_pages.mjs` (`npm run pages`) |
 | PDF writer | `scripts/lib/pdf-lite.mjs` |
 | Tests | `scripts/check-infinite.mjs` (part of `npm test`) |
@@ -69,7 +69,7 @@ A theme can narrow a family's choices. Nostalgia, for example, keeps cars to the
 
 ### 2.3 Subject families
 
-Each family is one file in `assets/cognicore/generators/`. It declares its choices (`params`), the words for its subject, title and conversation prompt, its sensitive topics, the settings and compositions that suit it, and a drawing that uses only closed shapes.
+Each family is one file in `assets/cognicopia-coloring/generators/`. It declares its choices (`params`), the words for its subject, title and conversation prompt, its sensitive topics, the settings and compositions that suit it, and a drawing that uses only closed shapes.
 
 | Family | Draws | Its own variations |
 |---|---|---|
@@ -294,7 +294,7 @@ The test suite runs this whole path against a stand-in endpoint on the test mach
 
 ## 8. Adding a family
 
-1. Add `assets/cognicore/generators/<name>.js` and call `C.infinite.family({...})` with:
+1. Add `assets/cognicopia-coloring/generators/<name>.js` and call `C.infinite.family({...})` with:
    - `id`, `label`, `template`;
    - `params(R, tier, opts)`, built only from `R.pick`, `R.int`, `R.range` and `R.chance`, so pages stay deterministic;
    - `key(p)`, `subject(p)`, `title(p)`, `talk(p, R)`, `tags(p)`;

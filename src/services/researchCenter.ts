@@ -585,7 +585,7 @@ export const DOCS: readonly Doc[] = [
         ] },
       { id: "cognicopia", title: "How Cognicopia pages apply it", brief: "Three detail tiers, pure black-and-white line art, and line weights that can be raised for any resident.",
         blocks: [
-          { p: "Every CogniCore picture is drawn at three support tiers, from detailed to a single focal subject, in pure black lines on white with no gray, gradients or textures. Line weight rises with the tier, and staff can raise the line weight for a resident with low vision without changing the detail. See [[low-vision-print]] for the print standard." }
+          { p: "Every Cognicopia Coloring picture is drawn at three support tiers, from detailed to a single focal subject, in pure black lines on white with no gray, gradients or textures. Line weight rises with the tier, and staff can raise the line weight for a resident with low vision without changing the detail. See [[low-vision-print]] for the print standard." }
         ] }
     ],
     practice: [
@@ -702,7 +702,7 @@ export const DOCS: readonly Doc[] = [
               ["1:30 p.m.", "Seated movement", "More active sessions earlier in the day", "Exercise & Movement pages; the Facility Portal’s time-of-day ordering"],
               ["2:30 p.m.", "Themed group session, twice a week", "Cognitive stimulation evidence [@woods2023]", "Word, number and letter pages at each member’s tier"],
               ["3:30 p.m.", "Music with personal favorites", "Mood and behavior evidence [@vandersteen2025]", "Songs from each resident’s era on Reminiscence Cards"],
-              ["4:15 p.m.", "Quiet pattern coloring, or one-to-one reminiscence", "Calm, structured and personal [@mccord2025; @woods2018]", "CogniCore pages at each resident’s tier; Reminiscence Cards"]
+              ["4:15 p.m.", "Quiet pattern coloring, or one-to-one reminiscence", "Calm, structured and personal [@mccord2025; @woods2018]", "Cognicopia Coloring pages at each resident’s tier; Reminiscence Cards"]
             ] } },
           { p: "Every shift completes the Academy masterclass Managing Sundowning Agitation, and the Facility Portal prints each week’s group packets in one step." }
         ] },

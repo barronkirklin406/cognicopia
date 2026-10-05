@@ -45,7 +45,7 @@ export const KINDS: readonly { code: Kind; label: string; section: string; }[] =
 export interface Entry {
   id: string; date: string; kind: Kind; title: string; text: string; by: string; share: boolean;
   card: string;                 // reminiscence: the card's title
-  design: string;               // coloring: the CogniCore design it was
+  design: string;               // coloring: the Cognicopia Coloring design it was
   tier: 1 | 2 | 3;
   photo: string;                // photo id ("" for none), its width and height in pixels
   photoW: number; photoH: number;

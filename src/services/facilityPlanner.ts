@@ -67,7 +67,7 @@ export type Pillar = "coloring" | "numbers" | "words" | "letters" | "movement" |
 export interface PillarDef { id: Pillar; name: string; category: string; blurb: string; }
 /* Fixed order: it is also the order of the pillar colors (never cycled). */
 export const PILLARS: readonly PillarDef[] = [
-  { id: "coloring", name: "Coloring", category: "cognicore", blurb: "Coloring and visual art" },
+  { id: "coloring", name: "Coloring", category: "cognicopia-coloring", blurb: "Coloring and visual art" },
   { id: "numbers", name: "Numbers", category: "numbers", blurb: "Counting, coins and number puzzles" },
   { id: "words", name: "Words", category: "word", blurb: "Words, sayings and conversation" },
   { id: "letters", name: "Letters", category: "letters", blurb: "Letters, spelling and tracing" },
@@ -78,7 +78,7 @@ export const pillarOf = (id: string): PillarDef | null => PILLARS.filter(p => p.
 export interface ActivityFit { id: string; name: string; pillar: Pillar; tiers: readonly Acuity[]; best: readonly Acuity[]; group: boolean; sensory: boolean; minutes: number; why: string; }
 /* The Packet Builder's activities (with a short name for calendars), and the tiers each is calibrated for. */
 export const CATALOG: readonly ActivityFit[] = [
-  { id: "cognicore-coloring", name: "Coloring page", pillar: "coloring", tiers: [1, 2, 3, 4], best: [3, 4], group: true, sensory: true, minutes: 30, why: "Bold adult line art; the picture's detail follows the tier." },
+  { id: "cognicopia-coloring", name: "Coloring page", pillar: "coloring", tiers: [1, 2, 3, 4], best: [3, 4], group: true, sensory: true, minutes: 30, why: "Bold adult line art; the picture's detail follows the tier." },
   { id: "silhouette-match", name: "Shadow matching", pillar: "coloring", tiers: [2, 3], best: [3], group: false, sensory: true, minutes: 15, why: "Bold pictures matched to their shadows: visual, calm, no reading." },
   { id: "number-ladder", name: "Number ladders", pillar: "numbers", tiers: [1, 2], best: [1], group: false, sensory: false, minutes: 15, why: "Counting on by 1s, 2s, 5s and 10s." },
   { id: "money-count", name: "Money counting", pillar: "numbers", tiers: [1, 2, 4], best: [4], group: true, sensory: false, minutes: 20, why: "Coins at true size with old-time prices: a ready group conversation." },
@@ -109,14 +109,22 @@ export const fitsTier = (id: string, tier: number): boolean => { const f = fitOf
    first, then (Tier 4) group activities or (Tier 3) sensory ones. The
    rest are listed as "not calibrated for this tier", with the tiers
    they suit. Only activities this build has are offered. */
+export type Pacing = "any" | "morning" | "late";
 export interface Recommendation { pillar: PillarDef; recommended: ActivityFit[]; other: ActivityFit[]; }
-export function recommend(tier: Acuity, available?: readonly string[]): Recommendation[] {
+export function recommend(tier: Acuity, available?: readonly string[], pacing: Pacing = "any"): Recommendation[] {
   const have = (a: ActivityFit): boolean => !available || available.indexOf(a.id) >= 0;
-  const score = (a: ActivityFit): number => (a.best.indexOf(tier) >= 0 ? 0 : 10) + (tier === 4 && !a.group ? 5 : 0) + (tier === 3 && !a.sensory ? 5 : 0);
-  return PILLARS.map(p => {
+  const score = (a: ActivityFit): number => {
+    const tierFit = (a.best.indexOf(tier) >= 0 ? 0 : 10) + (tier === 4 && !a.group ? 5 : 0) + (tier === 3 && !a.sensory ? 5 : 0);
+    const loadFit = pacing === "morning"
+      ? (a.sensory ? 6 : 0) + (a.minutes < 15 ? 2 : 0)
+      : pacing === "late" ? (a.sensory ? 0 : 6) + (a.minutes > 20 ? 3 : 0) : 0;
+    return tierFit * 10 + loadFit;
+  };
+  const result = PILLARS.map(p => {
     const all = CATALOG.filter(a => a.pillar === p.id && have(a));
     return { pillar: p, recommended: all.filter(a => a.tiers.indexOf(tier) >= 0).sort((x, y) => score(x) - score(y)), other: all.filter(a => a.tiers.indexOf(tier) < 0) };
   });
+  return pacing === "any" ? result : result.sort((a, b) => PREFER[a.pillar.id][pacing] - PREFER[b.pillar.id][pacing]);
 }
 
 /* ---------- 3. Wings, groups, team ---------- */
@@ -272,7 +280,7 @@ function rng(seed: string): () => number {
    gentle hand against sundowning); balance always comes first. */
 const PREFER: Readonly<Record<Pillar, Record<"morning" | "afternoon" | "late", number>>> = {
   movement: { morning: 0, afternoon: 10, late: 25 }, numbers: { morning: 0, afternoon: 10, late: 25 },
-  words: { morning: 0, afternoon: 0, late: 10 }, letters: { morning: 0, afternoon: 10, late: 25 },
+  words: { morning: 5, afternoon: 0, late: 10 }, letters: { morning: 0, afternoon: 10, late: 25 },
   music: { morning: 10, afternoon: 0, late: 0 }, coloring: { morning: 10, afternoon: 0, late: 0 }
 };
 export interface FillOptions { groups?: string[]; seed?: string; available?: readonly string[]; }

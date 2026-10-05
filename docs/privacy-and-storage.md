@@ -6,11 +6,12 @@ Cognicopia has no server, account or cloud copy. Everything staff type stays in 
 
 | Kept | Storage name | How |
 |---|---|---|
-| Resident profiles | `cognicopia_resident_<id>` | Encrypted |
+| Resident profiles (including the optional one-click emergency activity choice) | `cognicopia_resident_<id>` | Encrypted |
 | The profile form in progress | `cognicopia_profile_draft` | Encrypted |
 | The packet form in progress | `cognicopia_packet_draft` | Encrypted |
 | The Packet Builder's queue, planner and journal forms, and settings (which can hold a default resident name) | `cgb_queue`, `cgb_planner`, `cgb_journal`, `cgb_settings` | Encrypted |
 | Session notes, digest entries, reminiscence responses | `cognicopia_clinical_*`, `cognicopia_heirloom_*`, `cognicopia_remin_*` | Encrypted |
+| Tablet staff mood-before/mood-after notes | `cognicopia_engagement_<resident-id>` | Encrypted; up to 100 recent session records per resident |
 | Photos of finished pages (Memory Digest & Book) | `cognicopia_heirloom_photo_*` | Encrypted, in a separate photo store that is read only when a page needs a photo. A browser that cannot encrypt refuses photos rather than keeping them in plain storage. |
 | The Facility Portal: wings, groups (and any residents linked to them), the team, the audit trail, and each wing's month calendar | `cognicopia_facility`, `cognicopia_facility_sched_<wing>_<month>` | Encrypted. Packets, calendars and files from the portal carry group names only. |
 | The Academy: learners (staff names and roles), their lesson progress, knowledge-check scores, completions and certificate IDs, and the certificate approval statement | `cognicopia_academy` | Encrypted. Guides, toolkits and certificates are made as PDFs on this computer. |
@@ -42,6 +43,10 @@ With aliases on (Settings › Privacy & encryption), residents appear as "Reside
 3. a short code made from the resident's ID.
 
 A resident's own pages keep their name.
+
+## One-click emergency activity
+
+Staff editing a resident profile can choose a prepared activity for the **Instant Soothe / Print** button on the active-resident card. The choice is stored with that resident's encrypted profile. The button opens the Packet Builder directly for that resident and prints one page through the normal print dialog without adding to or replacing the saved packet queue. If the choice is empty, no longer available, or invalid, it uses fine-motor line tracing. Printing still follows the Packet Builder's normal access and browser-print rules.
 
 ## Station handoffs (`.cognicopia`)
 

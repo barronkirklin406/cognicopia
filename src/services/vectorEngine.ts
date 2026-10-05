@@ -22,7 +22,7 @@
        Tier 3   3.5x to 4.0x            9 to 12 px   (10.5 px)
    The base line is the drawing's own main line (2 to 3 px); the tier
    multiplies it, and the result always lands inside the tier's range, so
-   no line prints thinner than 4 px (3 pt), the clinical floor. The CogniCore line-art engine (assets/cognicore/lineart.js)
+   no line prints thinner than 4 px (3 pt), the clinical floor. The Cognicopia Coloring line-art engine (assets/cognicopia-coloring/lineart.js)
    prints with the same numbers, so library pages and imported drawings
    match line for line.
 

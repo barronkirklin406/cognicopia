@@ -1401,7 +1401,7 @@ const DOCS = [
                 brief: "Three detail tiers, pure black-and-white line art, and line weights that can be raised for any resident.",
                 blocks: [
                     {
-                        p: "Every CogniCore picture is drawn at three support tiers, from detailed to a single focal subject, in pure black lines on white with no gray, gradients or textures. Line weight rises with the tier, and staff can raise the line weight for a resident with low vision without changing the detail. See [[low-vision-print]] for the print standard."
+                        p: "Every Cognicopia Coloring picture is drawn at three support tiers, from detailed to a single focal subject, in pure black lines on white with no gray, gradients or textures. Line weight rises with the tier, and staff can raise the line weight for a resident with low vision without changing the detail. See [[low-vision-print]] for the print standard."
                     }
                 ]
             }
@@ -1641,7 +1641,7 @@ const DOCS = [
                                     "4:15 p.m.",
                                     "Quiet pattern coloring, or one-to-one reminiscence",
                                     "Calm, structured and personal [@mccord2025; @woods2018]",
-                                    "CogniCore pages at each resident’s tier; Reminiscence Cards"
+                                    "Cognicopia Coloring pages at each resident’s tier; Reminiscence Cards"
                                 ]
                             ]
                         }

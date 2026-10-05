@@ -7,7 +7,7 @@
 For the resident:
 
 - a topic;
-- a CogniCore picture at their tier;
+- a Cognicopia Coloring picture at their tier;
 - one invitation in large type (tier 3: a short comment that needs no recall).
 
 For the caregiver:
@@ -42,7 +42,7 @@ Starters invite: "Tell me about…", "What was … like?", "Who taught you…?".
 
 ## Checks (`npm test`, `scripts/check-services.mjs`)
 
-- **Knowledge base:** pictures exist in the CogniCore library, years and state codes are valid, and each topic has enough starters and tier-3 lines.
+- **Knowledge base:** pictures exist in the Cognicopia Coloring library, years and state codes are valid, and each topic has enough starters and tier-3 lines.
 - **Decks (228, across every vocation, tier, setting and avoid list):**
   - three different starters on every card;
   - no card or song twice;

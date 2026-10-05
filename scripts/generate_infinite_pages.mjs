@@ -9,7 +9,7 @@
      2. screens the words (dignity filter, banned subjects, the resident's
         avoid list) before anything is drawn;
      3. draws it, by default with the built-in vector families
-        (assets/cognicore/generators), or fetches it from an image
+        (assets/cognicopia-coloring/generators), or fetches it from an image
         generator you name (--backend http, see below);
      4. checks it: closed shapes, no loose line ends, inside its box,
         black and white only, lines at least 3 pt, and printed at its
@@ -52,7 +52,7 @@ import fs from "fs";
 import path from "path";
 import crypto from "crypto";
 import { execFileSync } from "child_process";
-import { loadCogniCore, ROOT, svgProblems } from "./lib/cognicore.mjs";
+import { loadCognicopiaColoring, ROOT, svgProblems } from "./lib/cognicopia-coloring.mjs";
 import { createBitmap, paint, shapesFromRender, measure } from "./lib/raster.mjs";
 import { encodeBitPNG } from "./lib/png.mjs";
 import { PdfDoc } from "./lib/pdf-lite.mjs";
@@ -61,7 +61,7 @@ const args = process.argv.slice(2);
 const opt = (name, def) => { const i = args.indexOf("--" + name); return i < 0 ? def : (args[i + 1] && !args[i + 1].startsWith("--") ? args[i + 1] : true); };
 const has = name => args.includes("--" + name);
 const list = v => (v && v !== true ? String(v) : "").split(",").map(s => s.trim()).filter(Boolean);
-const { C, P } = loadCogniCore();
+const { C, P } = loadCognicopiaColoring();
 const I = C.infinite;
 const PNG_DPI = 300, CHECK_DPI = 100;
 
