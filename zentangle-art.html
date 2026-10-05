@@ -654,7 +654,10 @@ body { padding-left: var(--sb-w); }
   .cg-sb-overlay.is-open { display: block; }
 }
 .navbar { display: none !important; }
-</style>
+
+    /* the narrowest phones: one column, so a 260 px card never runs off the screen */
+    @media (max-width: 360px) { .feature-grid { grid-template-columns: minmax(0, 1fr); } }
+  </style>
 <style id="cg-categories-toggle">
 /* Mobile menu button: hamburger icon + "Categories" label */
 .cg-sidebar-toggle{top:10px;left:12px;width:auto;height:40px;padding:8px 12px;gap:8px;max-width:calc(100vw - 24px);

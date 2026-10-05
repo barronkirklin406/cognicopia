@@ -745,6 +745,7 @@
       line-height: 1.4;
     }
     .standards-guarantee-content {
+      min-width: 0;
       box-sizing: border-box;
       width: 100%;
     }
@@ -1079,7 +1080,8 @@ body { padding-left: var(--sb-w); }
   .cg-sb-overlay.is-open { display: block; }
 }
 .navbar { display: none !important; }
-</style>
+    .standards-cta-actions a span { overflow-wrap: anywhere; }
+  </style>
 <style id="cg-categories-toggle">
 /* Mobile menu button: hamburger icon + "Categories" label */
 .cg-sidebar-toggle{top:10px;left:12px;width:auto;height:40px;padding:8px 12px;gap:8px;max-width:calc(100vw - 24px);

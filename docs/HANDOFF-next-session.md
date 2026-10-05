@@ -112,69 +112,18 @@ npm run pages -- --count 12 --tier 2   # print infinite coloring pages to out/
   5. Capture the download.
 - **Deploy check:** cognicopia.org and github.io are blocked by the sandbox proxy, so verify a deploy through the GitHub Actions run, not by fetching the site.
 
-## Unfinished work, in order
+## Status of the earlier hand-off list
 
-### 1. index.html: remove dead code (counts measured at hand-off)
+Everything in the previous list was finished and shipped:
+- the workbook block and dead cover fields;
+- the page estimate, which is back and checked against real builds;
+- validation section numbers, dead CSS, the staff-guide button and the dropdown scripts;
+- the legacy clip-art coloring activity, which now draws from the vector library;
+- the design-system colors (0 contrast failures by day and in Night Shift);
+- the six pillar groups;
+- the responsive and interaction stress pass at 320–1920 px.
 
-**Workbook block.** There are 22 references to `targetPages`, `.workbook-activity`, `packetPreferences` and `PREF_TO_WORKBOOK`. `estimatePages` still prints "Workbook: N pages when you print it." (about line 8086). Main's commit 56ba7d6 removed only the explanatory text.
-- Remove the block.
-- Old saved preferences must still load without errors; ignore the dead keys.
-
-**Cover fields.** There are 5 references to `#institutionalPartner` and `#researchSponsor`.
-- Remove the inputs.
-- Still accept the keys silently when loading old `.cognicopia` files or drafts.
-
-**Validation messages.** Make the section numbers they quote match the form: pages are section 6 and holidays are section 7.
-
-**Dead CSS.** These selectors have CSS rules but no markup:
-
-| Selector | CSS rules |
-|---|---|
-| `.navbar` | 3 |
-| `.nav-*` | 7 |
-| `.dropdown*` | 8 |
-| `.dropbtn` | 1 |
-| `.resources-dropdown` | 2 |
-| `.statusbar` | 3 |
-| `.shots figcaption` | 1 |
-
-Check that no JavaScript adds these classes, then delete the rules.
-
-**`#staffOnlyBtn`** (about line 2202) has `style="background:#4a6fa5;margin-left:8px;"`. Move it into a class that fits the design system.
-
-**Dead `resourcesDropdownBtn` scripts.** One each in `cognitive-journals.html`, `life-planners.html`, `contact.html` and `zentangle-art.html`; the button no longer exists. Remove them, and keep `node scripts/site-nav.mjs --check` and the link check in `npm run build` green.
-
-**Retire the legacy `COGNICOPIA_COLORING` activity.** It sits in `builder.html` at about lines 12497–12580 and still draws the old `COLOR_ART` clip-art through `COLORING.generate`. The category routes straight to the vector library (`direct:true, route:"coloring"`).
-- Grep for other entry points: roster plans, Life Planner recommendations, search, and the `legacyIds` path.
-- Then either point its `plan()` and `generate()` at library designs (`C.designs()` filtered by theme, `C.render(id, tier)` and `C.toSVG`), or keep it only for rebuilding saved packets, as `COLORING` already is.
-
-### 2. index.html: design-system alignment and pillar grouping
-
-**Design tokens.** None of the requested colors appear in index.html yet. Apply them:
-- top bar `#e6f4f1` with `#1a2e22` text;
-- content containers `#1a2e22` with `#b5a48b` borders and `#ffffff` text;
-- an on-brand Stripe/upgrade button.
-
-Define them as CSS custom properties. Check WCAG AA contrast for every text and background pair, including focus rings and disabled states. Keep print output pure black and white.
-
-**Pillar grouping.** Group the 33 flat activity toggles (`ACTIVITIES`, about line 3908, rendered into `#acts` at about line 7858) into the site's six pillars as collapsible groups (`<details>`/`<summary>`), each showing how many are selected.
-- Confirm the pillar names against the site copy and the Facility Portal's pillar ids: coloring, words, letters, numbers, movement, music.
-- Keep the activity ids, `DEFAULT_ON`, the late-stage filter (`filterAdvancedLateActivities`) and the saved-preference keys working.
-- The "select all" (`#allAct`) and "none" (`#noneAct`) buttons must still work.
-
-### 3. Responsive and interaction stress pass
-
-- Run Playwright at 320, 375, 768, 1024 and 1920 px; 390 and 1366 were done at hand-off. Cover index.html, every builder route (`#/`, `#/coloring`, `#/category/<id>`, `#/academy`, `#/clinical`, `#/facility`, `#/heirloom`, `#/journal`, `#/planner`, `#/reminiscence`, `#/roster`, `#/settings`), profile.html and the resources pages.
-- Require all of these: `document.documentElement.scrollWidth <= innerWidth`, no clipped controls, no console errors and no external requests.
-- Exercise every toggle, dropdown, tab set, hover menu, the sundowning toolbar, quick-print archetypes, Generate, and each PDF download.
-
-### 4. Ship
-
-1. Merge `origin/main` again.
-2. Run `npm test` and `npm run build`.
-3. Commit, push, open a PR to `main`, subscribe, merge when green, and unsubscribe.
-4. Confirm the Pages workflow run on the merge commit succeeded.
-5. Tell the owner what went live.
+The next piece of work is the hybrid coloring engine: library subject art plus procedural, stage-based borders. Check `docs/` for its notes before starting anything new.
 
 ## Known limits to state honestly
 
