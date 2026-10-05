@@ -131,7 +131,13 @@ The hybrid coloring engine shipped next (`docs/hybrid-coloring-engine.md`):
 - The Packet Builder's coloring library **New pages** tab makes hybrid pages; codes from the old infinite generator still print.
 - The builder's old clip-art drawers (`COLOR_ART`) are gone; their saved pages print as hybrid pages (`HYBRID_LEGACY`).
 
-The next piece of work: compare the pasted "Cognicopia Master Architect" plan with the live site and build only what is actually missing, inside the existing files. That plan covers a PWA, IndexedDB, a PDF worker, Instant Soothe, CSV roster import and CMS/MDS logs.
+The pasted "Cognicopia Master Architect" plan was then checked item by item against the site (`docs/master-plan-gap-review.md`). Most of it already existed. Four gaps were built:
+1. Instant Soothe works with no resident chosen: it prints the general calming packet through `builder.html?emergency=general`.
+2. The packet tool's profile import reads EHR census spreadsheets: first name or "Last, First", date of birth, room or bed.
+3. The Facility Portal has a locked backup and restore (`.cognicopia`, kind `facility`).
+4. Every control on the three tools is at least 44 px tall.
+
+Not built, with reasons, in that file: the four-tab rewrite of index.html, a PDF web worker, and "MDS compliant" logs. A facility logo upload is the one optional candidate left.
 
 ## Known limits to state honestly
 
