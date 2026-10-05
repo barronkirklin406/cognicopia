@@ -17,12 +17,12 @@
 
    Stroke policy, in CSS pixels at the printed size (96 px = 1 in,
    1 px = 0.75 pt):
-       Tier 1   1.0x the base line      2 to 3 px    (prints at 3 px)
+       Tier 1   1.33x to 2.0x           4 to 4.5 px  (prints at 4 px = 3 pt)
        Tier 2   2.0x to 2.5x            5 to 7 px    (6 px)
        Tier 3   3.5x to 4.0x            9 to 12 px   (10.5 px)
-   The base line is the drawing's own main line, brought into Tier 1's
-   range; the tier multiplies it, and the result always lands inside the
-   tier's range. The CogniCore line-art engine (assets/cognicore/lineart.js)
+   The base line is the drawing's own main line (2 to 3 px); the tier
+   multiplies it, and the result always lands inside the tier's range, so
+   no line prints thinner than 4 px (3 pt), the clinical floor. The CogniCore line-art engine (assets/cognicore/lineart.js)
    prints with the same numbers, so library pages and imported drawings
    match line for line.
 
@@ -50,7 +50,7 @@ export const PX_PER_IN = 96;
 export const PT_PER_PX = 0.75;
 export const BASE_LINE_PX: Range = { min: 2, max: 3 };
 export const STROKE_POLICY: Readonly<Record<Tier, StrokePolicy>> = {
-  1: { tier: 1, label: "Tier 1 - High Detail", multiplier: { min: 1, max: 1 }, px: { min: 2, max: 3, target: 3 }, detailPx: 3, simplifyPx: .35, dropDetailsSqIn: 0 },
+  1: { tier: 1, label: "Tier 1 - High Detail", multiplier: { min: 1, max: 2 }, px: { min: 4, max: 4.5, target: 4 }, detailPx: 4, simplifyPx: .35, dropDetailsSqIn: 0 },
   2: { tier: 2, label: "Tier 2 - Guided Focus", multiplier: { min: 2, max: 2.5 }, px: { min: 5, max: 7, target: 6 }, detailPx: 5, simplifyPx: .6, dropDetailsSqIn: 0 },
   3: { tier: 3, label: "Tier 3 - Single Focal / Sensory", multiplier: { min: 3.5, max: 4 }, px: { min: 9, max: 12, target: 10.5 }, detailPx: 9, simplifyPx: 1, dropDetailsSqIn: .05 }
 };

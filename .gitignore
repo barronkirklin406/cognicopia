@@ -2,3 +2,5 @@
 # resident data must never be committed
 payloads/
 *.cognicopia
+# pages written by scripts/generate_infinite_pages.mjs (default output folder)
+/out/

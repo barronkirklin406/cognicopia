@@ -33,8 +33,8 @@ group("vectorEngine", () => {
   ok(V && typeof V.transformSvg === "function", "CogniVectorEngine is not loaded");
   // the stroke policy, exactly as specified
   const t = [1, 2, 3].map(k => V.tierLines(k, 3));
-  ok(JSON.stringify(t.map(x => x.linePx)) === "[3,6,10.5]", "tier lines from a 3 px base: " + t.map(x => x.linePx));
-  ok(JSON.stringify(t.map(x => x.multiplier)) === "[1,2,3.5]", "tier multipliers: " + t.map(x => x.multiplier));
+  ok(JSON.stringify(t.map(x => x.linePx)) === "[4,6,10.5]", "tier lines from a 3 px base: " + t.map(x => x.linePx));
+  ok(JSON.stringify(t.map(x => x.multiplier)) === "[1.333,2,3.5]", "tier multipliers (from a 3 px base, Tier 1 rises to the 4 px = 3 pt floor): " + t.map(x => x.multiplier));
   [1, 2, 3].forEach(k => {
     const P = V.STROKE_POLICY[k];
     for (const base of [0.5, 1, 2, 2.4, 3, 5, 20]){
@@ -44,7 +44,7 @@ group("vectorEngine", () => {
       ok(L.detailPx <= L.linePx && L.detailPx >= Math.min(P.detailPx, L.linePx), `tier ${k} detail ${L.detailPx}`);
     }
   });
-  ok(V.STROKE_POLICY[1].px.min === 2 && V.STROKE_POLICY[1].px.max === 3 && V.STROKE_POLICY[2].px.min === 5 && V.STROKE_POLICY[2].px.max === 7 && V.STROKE_POLICY[3].px.min === 9 && V.STROKE_POLICY[3].px.max === 12, "tier px ranges");
+  ok(V.STROKE_POLICY[1].px.min === 4 && V.STROKE_POLICY[1].px.max === 4.5 && V.STROKE_POLICY[2].px.min === 5 && V.STROKE_POLICY[2].px.max === 7 && V.STROKE_POLICY[3].px.min === 9 && V.STROKE_POLICY[3].px.max === 12, "tier px ranges");
 
   // the CogniCore engine prints with the same numbers
   const cc = { console }; cc.globalThis = cc; vm.createContext(cc);

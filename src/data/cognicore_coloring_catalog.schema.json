@@ -36,7 +36,7 @@
     "tier": { "type": "integer", "minimum": 1, "maximum": 3 },
     "tierLabel": { "enum": ["Tier 1 - High Detail", "Tier 2 - Guided Focus", "Tier 3 - Single Focal / Sensory"] },
     "lineWeight": { "enum": ["thick", "ultra-bold", "extra-bold-sensory"] },
-    "categoryLabel": { "enum": ["Classic Vehicles", "Botanical & Garden", "Nostalgic Heritage", "Wildlife & Nature", "Bold & Easy Patterns", "Home & Everyday Tasks"] },
+    "categoryLabel": { "enum": ["Classic Vehicles", "Botanical & Garden", "Nostalgic Heritage", "Wildlife & Nature", "Bold & Easy Patterns", "Home & Everyday Tasks", "Zentangle & Mandalas", "Vintage Americana", "Seasons & Holidays"] },
     "complexity": { "enum": ["simple", "moderate", "detailed"] },
     "standards": {
       "type": "object",

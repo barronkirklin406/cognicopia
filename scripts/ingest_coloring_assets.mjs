@@ -216,7 +216,9 @@ function words(s){ return String(s || "").toLowerCase().replace(/[^a-z0-9' -]+/g
 const DEFAULT_TALK = {
   "classic-vehicles":"Where would you like to go in this?", "botanical-garden":"What colors would you choose for these?",
   "nostalgic-heritage":"Where have you seen one like this?", "wildlife-nature":"Where might you see this outdoors?",
-  "bold-easy-patterns":"Which colors feel calm to you today?", "home-everyday":"Who did this job in your home?"
+  "bold-easy-patterns":"Which colors feel calm to you today?", "home-everyday":"Who did this job in your home?",
+  "zentangle-mandalas":"Which colors would you like to start with today?", "vintage-americana":"What does this picture bring to mind for you?",
+  "seasons-holidays":"Which season or holiday do you enjoy most, and why?"
 };
 
 /* ---------- ingest the inbox ---------- */

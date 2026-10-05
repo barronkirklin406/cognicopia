@@ -151,10 +151,12 @@ const metricsById = {};
 allAssets.forEach(a => { metricsById[a.id] = [a.metrics.regions, a.metrics.smallest_region_sq_in, a.metrics.median_region_sq_in, a.metrics.tiny_regions, a.visual_complexity]; });
 const ingestedForBrowser = ingested.map(a => ({ id:a.id, design_id:a.design_id, title:a.title, category_id:a.category_id, tier:a.tier, tags:a.tags,
   season:a.season, sensitive_topics:a.sensitive_topics, conversation_prompt:a.conversation_prompt, format:a.format, path:a.png_path || a.svg_path }));
-const bundle = "/* CogniCore coloring: the line-art engine, every design, the packs, the\n" +
-  "   prompt engine and the measured catalog, in one file for the Packet\n" +
-  "   Builder and the packet tool. Built by scripts/generate_coloring_manifest.js\n" +
-  "   from assets/cognicore/*.js: edit those, then run npm run coloring. */\n" +
+const bundle = "/* Cognicopia coloring: the line-art engine, the quality meter, every\n" +
+  "   design, the packs, the prompt engine, the infinite page generator with\n" +
+  "   its subject families, and the measured catalog, in one file for the\n" +
+  "   Packet Builder and the packet tool. Built by\n" +
+  "   scripts/generate_coloring_manifest.js from assets/cognicore/*.js and\n" +
+  "   assets/cognicore/generators/*.js: edit those, then run npm run coloring. */\n" +
   sourceFiles().map(f => `\n/* ---------- ${f} ---------- */\n` + fs.readFileSync(path.join(SRC_DIR, f), "utf8").trim() + "\n").join("") +
   "\n/* ---------- measured catalog (generated) ----------\n" +
   "   metrics: asset id -> [areas to color, smallest area sq in, median area sq in, areas under the tier minimum, visual complexity] */\n" +

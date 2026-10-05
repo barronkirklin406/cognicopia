@@ -2059,9 +2059,9 @@ html.tb-open,html.tb-open body{overflow:hidden !important;overscroll-behavior:no
 
   <fieldset>
     <legend><div class="leg"><span class="num" aria-hidden="true">7</span><h2>Any holidays coming up?</h2></div></legend>
-    <p class="hint">Each holiday you tick adds its own page — memories to talk
-    about, words of the season, and a matching illustration. Leave them all
-    blank for an everyday packet.</p>
+    <p class="hint">Each holiday you tick adds two pages: memories to talk
+    about with the words of the season, then a holiday picture to color.
+    Leave them all blank for an everyday packet.</p>
     <p class="subhead">Major holidays</p>
     <div class="picks" id="holMajor"></div>
     <p class="subhead">Smaller occasions</p>
@@ -2205,19 +2205,19 @@ const STAGE = {
            sayings:6, prompts:6, name:4, odd:5,
            lyrics:6, life:5, career:8, scram:6, match:5, assoc:8, trivia:6,
            scramLen:6, hint:false,
-           mazeC:8, mazeR:10, bingo:5, dots:18, cbn:4, pop:6, rather:7, crossSize:13, crossN:9, mRings:5, mSeg:12, mWeight:3.0,
+           mazeC:8, mazeR:10, bingo:5, dots:18, cbn:4, pop:6, rather:7, crossSize:13, crossN:9,
            clocks:4, coins:4, provHint:"letter", tracing:2, facCards:4},
   middle: {grid:9,  words:7,  cell:26, dirs:[[1,0],[0,1]], maxWord:8,
            sayings:5, prompts:5, name:3, odd:4,
            lyrics:5, life:4, career:6, scram:5, match:4, assoc:6, trivia:5,
            scramLen:5, hint:true,
-           mazeC:6, mazeR:8, bingo:4, dots:14, cbn:4, pop:5, rather:6, crossSize:11, crossN:7, mRings:4, mSeg:8, mWeight:3.4,
+           mazeC:6, mazeR:8, bingo:4, dots:14, cbn:4, pop:5, rather:6, crossSize:11, crossN:7,
            clocks:3, coins:3, provHint:"blank", tracing:2, facCards:3},
   late:   {grid:7,  words:5,  cell:32, dirs:[[1,0],[0,1]], maxWord:6,
            sayings:3, prompts:4, name:2, odd:3,
            lyrics:3, life:3, career:4, scram:4, match:3, assoc:4, trivia:4,
            scramLen:4, hint:true,
-           mazeC:5, mazeR:6, bingo:3, dots:10, cbn:3, pop:4, rather:5, crossSize:9, crossN:5, mRings:3, mSeg:6, mWeight:4.0,
+           mazeC:5, mazeR:6, bingo:3, dots:10, cbn:3, pop:4, rather:5, crossSize:9, crossN:5,
            clocks:2, coins:2, provHint:"blank", tracing:1, facCards:3}
 };
 
@@ -3887,9 +3887,9 @@ const ACTIVITIES = [
   {id:"odd", label:"Which one doesn't belong",
    note:"Four words, one that stands out."},
   {id:"color", label:"Coloring page",
-   note:"Large simple line art, nothing fussy."},
+   note:"A bold picture in clean black outlines, from their own life and era."},
   {id:"mandala", label:"Color the pattern",
-   note:"A symmetric pattern, sized to the difficulty level."},
+   note:"A Zentangle-style tangle or a mandala, sized to the difficulty level."},
   {id:"notes", label:"Staff engagement notes",
    note:"A page for your resident documentation."},
   {id:"clocks", label:"What time is it?",
@@ -4939,12 +4939,15 @@ function oddPage(D,r,s,theme){
   return sets;
 }
 
-/* ---- Coloring page: a picture from the CogniCore library ----
+/* ---- Coloring page: a picture from the Cognicopia coloring library ----
    (assets/cognicore/cognicore.js, the same line art as the Packet
    Builder's coloring library). Chosen for this resident: drawn at their
    stage's cognitive tier and line weight, never anything their avoid list
    names, and a subject from their working life when one fits. The art is
-   vector, 3:4, pure black on white, and as large as the page allows. */
+   vector, 3:4, pure black on white, and as large as the page allows.
+   Patterns and mandalas are left to "Color the pattern", so the two pages
+   never print the same picture. */
+const PATTERN_CATS = ["bold-easy-patterns", "zentangle-mandalas"];
 const LIFE_TAGS = [
   [/farm|ranch|dairy|agricultur/, ["farms", "tractors", "barns", "harvest", "country"]],
   [/mechanic|garage|auto|truck|driver|chauffeur/, ["cars", "trucks", "vehicles", "tractors"]],
@@ -4969,14 +4972,16 @@ function colorPage(D,r,theme){
     return;
   }
   const text=d=>[d.title,d.tags.join(" "),d.sensitive.join(" "),d.talk,C.CAT[d.cat].label].join(" ");
-  let pool=C.designs().filter(d=>allowed(r,text(d)));
+  const taken=(r.holidays||[]).map(k=>HOLIDAY_ART[k]);
+  let pool=C.designs().filter(d=>PATTERN_CATS.indexOf(d.cat)<0 && taken.indexOf(d.id)<0 && allowed(r,text(d)));
   if(!pool.length) pool=C.designs().filter(d=>d.cat==="bold-easy-patterns");
   const job=String(r.job||"").toLowerCase(), want=[];
   for(const [re,tags] of LIFE_TAGS) if(re.test(job)) want.push(...tags);
   const mine=pool.filter(d=>d.tags.some(t=>want.indexOf(t)>=0));
-  // Half the time (by resident, so a packet is repeatable) a picture from their own work.
-  if(mine.length && contentIndex(r,2,23)===0) pool=mine;
-  const d=pool[contentIndex(r,pool.length,17)];
+  /* Half the time a picture from their own work. Chosen by resident and
+     month, so a packet rebuilds the same way and next month's is new. */
+  if(mine.length && contentIndex(r,2,"23"+(r.month||""))===0) pool=mine;
+  const d=pool[contentIndex(r,pool.length,"17"+(r.month||""))];
   D.heading(d.title);
   D.body(d.talk+" Color it any way you like.",{size:17});
   D.gap(6);
@@ -4988,7 +4993,7 @@ function colorPage(D,r,theme){
 }
 
 function holidayPage(D,r,key){
-  const h=HOLIDAYS[key];
+  const h=HOLIDAYS[key], pic=holidayArt(r,key);
   D.start(h.motif);
   D.heading(h.label);
   D.body("Talk about these, or write on the lines.",{size:17});
@@ -5004,10 +5009,38 @@ function holidayPage(D,r,key){
   D.body("Words of the season:",{size:17,bold:true});
   D.gap(12);
   D.body(h.words.join("     "),{size:19,gap:1.5});
-  // Sit the seasonal motif in whatever space is left, scaled to fit.
-  const m=Math.min(52, D.room()*0.5);
-  if(m>=26) motif(D.d, h.motif, PW/2, D.y+D.room()/2, m, 1.2);
+  if(!pic){
+    // no picture page follows: sit the seasonal motif in the space that is left
+    const m=Math.min(52, D.room()*0.5);
+    if(m>=26) motif(D.d, h.motif, PW/2, D.y+D.room()/2, m, 1.2);
+    return;
+  }
+  /* Then a whole page to color: the holiday's own subject from the
+     coloring library, drawn at the resident's tier in bold black outlines
+     with clean white areas, as large as the page allows. */
+  const C=window.CogniCore, tier={early:1,middle:2,late:3}[r.stage]||2;
+  D.start(h.motif);
+  D.heading(h.label);
+  D.body(pic.title+". "+pic.talk+" Color it any way you like.",{size:17});
+  D.gap(6);
+  const room=D.room()-6, w=Math.min(PW-2*MARGIN, room*0.75), hh=w/0.75;
+  C.toPDF(D.d, C.render(pic.id,tier), (PW-w)/2, D.y+(room-hh)/2, w);
+  D.d.setLineWidth(1); D.d.setDrawColor(0); D.d.setFillColor(255,255,255);
+  D.y+=room;
 }
+/* The holiday's picture, unless the coloring library did not load or the
+   resident's avoid list rules it out. */
+function holidayArt(r,key){
+  const C=window.CogniCore, d=C && HOLIDAY_ART[key] ? C.design(HOLIDAY_ART[key]) : null;
+  return d && allowed(r,[d.title,d.tags.join(" "),d.sensitive.join(" "),d.talk].join(" ")) ? d : null;
+}
+/* The coloring-library picture for each holiday page. */
+const HOLIDAY_ART = {
+  newyear:"grandfather-clock", valentine:"valentine-heart", easter:"easter-basket", july4:"porch-bunting",
+  halloween:"jack-o-lantern", thanksgiving:"cornucopia", christmas:"holiday-wreath", stpatrick:"shamrock-pot",
+  mothers:"tulips-vase", fathers:"gone-fishing", memorial:"porch-bunting", veterans:"liberty-bell",
+  spring:"spring-wreath", harvest:"harvest-basket", winter:"snowman"
+};
 
 
 /* ---- Finish the Line (public domain hymns and old songs) ---- */
@@ -5835,64 +5868,40 @@ function langPage(D,r,s,theme){
 
 
 /* ---- Color the Pattern ----
-   Radial symmetric rather than free-form on purpose. A randomised trial
-   in community-dwelling older adults found reduced anxiety only in the
-   mandala group and not in the comparison coloring condition, and a 2026
-   meta-analysis of nine trials in adults over 55 found mandala-based art
-   associated with lower anxiety -- though at very low certainty, so this
-   is promising rather than proven.
+   A Zentangle-style tangle or a symmetrical mandala from the Cognicopia
+   coloring library: repeating, structured shapes with bold closed edges.
+   A randomised trial in community-dwelling older adults found reduced
+   anxiety only in the mandala group and not in the comparison coloring
+   condition, and a 2026 meta-analysis of nine trials in adults over 55
+   found mandala-based art associated with lower anxiety -- though at very
+   low certainty, so this is promising rather than proven.
 
-   Complexity scales with stage: five rings and twelve segments at early,
-   three rings and six segments at late, with heavier line weight as the
-   regions get larger. Bounded regions matter more than detail; an
-   ambiguous edge is what makes somebody put the pencil down. */
+   The stage sets the tier: more, smaller pieces at early, a few large
+   pieces in the heaviest lines at late. Bounded regions matter more than
+   detail; an ambiguous edge is what makes somebody put the pencil down.
+   The pattern is chosen by resident and month, so the same packet
+   rebuilds the same way and next month's is new, and it is never one
+   their avoid list names. */
+const PATTERN_PICKS = ["mandala-heirloom", "zen-looping-petals", "mandala-star", "zen-crescent-moon", "mandala-sunflower", "zen-woven-ribbons",
+  "mandala-doily", "zen-spiral-garden", "mandala-hearts", "zen-rolling-waves", "garden-rosette", "zen-river-pebbles", "lotus-medallion", "zen-tangle-sampler"];
 function mandalaPage(D,r,s,theme){
+  const C=window.CogniCore;
   D.start(theme);
   D.heading("Color the Pattern");
-  D.body("Any colors you like, in any order. There is no right way to do "
-        +"this one.",{size:17});
-  D.gap(20);
-
-  const cx=PW/2, cy=D.y+192, R=Math.min(186, (D.bottom()-D.y)/2 - 14);
-  const rings=s.mRings, seg=s.mSeg;
-  D.d.setLineWidth(s.mWeight); D.d.setDrawColor(...BOLD_ART);
-
-  for(let i=1;i<=rings;i++) D.d.circle(cx, cy, R*i/rings);
-
-  // Every ring is divided into cells by spokes. Enclosed regions are the
-  // point of a coloring page -- a shape floating in open space gives the
-  // pencil nowhere to stop. Rings are offset from each other so the cells
-  // stagger like brickwork instead of lining up into long spokes.
-  for(let i=1;i<rings;i++){
-    const inner=R*i/rings, outer=R*(i+1)/rings;
-    const off=(i%2)? Math.PI/seg : 0;
-    for(let k=0;k<seg;k++){
-      const a=off + k*2*Math.PI/seg;
-      D.d.line(cx+Math.cos(a)*inner, cy+Math.sin(a)*inner,
-               cx+Math.cos(a)*outer, cy+Math.sin(a)*outer);
-    }
+  if(!C){
+    D.body("The patterns could not be loaded on this computer. Reload the page to try again.",{size:17});
+    return;
   }
-
-  // a petal in every other cell of each ring, filling the cell rather
-  // than sitting small inside it
-  for(let i=1;i<rings;i++){
-    const inner=R*i/rings, outer=R*(i+1)/rings;
-    const mid=(inner+outer)/2, len=(outer-inner)*0.40;
-    const off=(i%2)? Math.PI/seg : 0;
-    for(let k=0;k<seg;k+=2){
-      const a=off + (k+0.5)*2*Math.PI/seg;
-      petal(D.d, cx+Math.cos(a)*mid, cy+Math.sin(a)*mid, len, a);
-    }
-  }
-
-  // the middle stays a clean disc with the mark in it
-  /* The centre of a mandala is small and round; a wide landscape mark
-     does not belong in it and would not resolve at this size anyway.
-     A seasonal motif if there is one, a flower otherwise. */
-  motif(D.d, (theme && theme!=="brain") ? theme : "flower",
-        cx, cy, R/rings*0.70, 3.2);
-  D.d.setLineWidth(1); D.d.setDrawColor(0);
-  D.y=cy+R+18;
+  const tier={early:1,middle:2,late:3}[r.stage]||2;
+  let pool=PATTERN_PICKS.map(id=>C.design(id)).filter(d=>d && allowed(r,[d.title,d.tags.join(" "),d.talk].join(" ")));
+  if(!pool.length) pool=[C.design("garden-rosette")];
+  const d=pool[contentIndex(r,pool.length,"29"+(r.month||""))];
+  D.body(d.title+". Any colors you like, in any order. There is no right way to do this one.",{size:17});
+  D.gap(6);
+  const room=D.room()-6, w=Math.min(PW-2*MARGIN, room*0.75), h=w/0.75;
+  C.toPDF(D.d, C.render(d.id,tier), (PW-w)/2, D.y+(room-h)/2, w);
+  D.d.setLineWidth(1); D.d.setDrawColor(0); D.d.setFillColor(255,255,255);
+  D.y+=room;
 }
 
 /* ---- Something to Do ----
