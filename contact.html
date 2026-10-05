@@ -646,50 +646,12 @@ body { padding-left: var(--sb-w); }
       <p>We welcome your questions, feedback, pilot program inquiries, and purchase order requests. Please feel free to reach out directly via email, and we will get back to you promptly.</p>
 
       <p style="margin-top: 24px;">
-        <a href="mailto:cognicopia@outlook.com" class="email-btn-wrap" style="text-decoration: none; display: inline-block;">
-          <button type="button" class="email-action-btn" id="sendEmailBtn" onclick="window.location.href='mailto:cognicopia@outlook.com';">
-            ✉ Send an Email
-          </button>
-        </a>
+        <a href="mailto:cognicopia@outlook.com" class="email-action-btn" id="sendEmailBtn"><span aria-hidden="true">✉</span> Send an Email</a>
       </p>
     </div>
   </main>
 
   <footer class="site-footer">Cognicopia is made by BarronCrafts. Everything happens inside your browser.</footer>
 
-  <script>
-    const sendBtn = document.getElementById('sendEmailBtn');
-    if (sendBtn) {
-      sendBtn.addEventListener('click', function(e) {
-        window.location.href = 'mailto:cognicopia@outlook.com';
-      });
-    }
-
-    (function() {
-      const dropBtn = document.getElementById("resourcesDropdownBtn");
-      const dropdown = dropBtn ? dropBtn.closest(".dropdown") : null;
-      if (dropBtn && dropdown) {
-        function toggleDropdown(open) {
-          const shouldOpen = typeof open === "boolean" ? open : !dropdown.classList.contains("is-open");
-          dropdown.classList.toggle("is-open", shouldOpen);
-          dropBtn.setAttribute("aria-expanded", String(shouldOpen));
-        }
-        dropBtn.addEventListener("click", function(e) {
-          e.preventDefault();
-          e.stopPropagation();
-          toggleDropdown();
-        });
-        document.addEventListener("click", function(e) {
-          if (!dropdown.contains(e.target)) toggleDropdown(false);
-        });
-        document.addEventListener("keydown", function(e) {
-          if (e.key === "Escape" && dropdown.classList.contains("is-open")) {
-            toggleDropdown(false);
-            dropBtn.focus();
-          }
-        });
-      }
-    })();
-  </script>
 </body>
 </html>

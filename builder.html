@@ -12495,22 +12495,48 @@ const COLORING = {
 };
 
 /* ---- Cognicopia Coloring ----
-   Its own Packet Builder category. Same drawing engine and clinical rules
-   as the coloring pages above (pure #000 lines of 3 to 6 pt, no background,
-   3:4 art on a full page), with six themes, a pick-one-picture list, a
-   facility header and a resident name. */
+   The activity behind the coloring category's pages wherever they are
+   printed as a recipe: the Facility Portal's weekly session packets, and
+   packets saved before the library had its own screen. Every page comes
+   from the Cognicopia Coloring library (assets/cognicopia-coloring), drawn
+   at the support tier for the difficulty in pure black closed outlines of
+   3 pt or more on a 3:4 page, the same page the library screen prints.
+   Pick a theme, or one exact picture; seasonal pictures can lead with the
+   season of the packet date. */
 const COGNICOPIA_COLORING_THEMES = {
-  nostalgia: { label:"Nostalgia items: clocks, radios, telephones", keys:["rotaryphone","radio","sewing","pocketwatch","grandclock","wallclock"] },
-  vehicles:  { label:"Classic vehicles and farm machinery",        keys:["truck","car","wagon","musclecar","tractor","locomotive"] },
-  animals:   { label:"Animals: pets, birds and pond life",          keys:["cat","dog","songbird","owl","duck","goldfish"] },
-  floral:    { label:"Floral and nature",                           keys:["tulips","sunflowers","geranium","wateringcan","gardengate","glassvase"] },
-  household: { label:"Everyday household objects and cozy corners", keys:["teapot","rocker","porchswing","fireplace","kitchenwindow"] },
-  seasonal:  { label:"Seasonal: starts with the season of the packet date", keys:["pumpkins","applebasket","snowman","wreath","birdhouse","rainboots","lemonade","picnic"] }
+  nostalgia: { label:"Nostalgia items: clocks, radios, telephones",        cats:["nostalgic-heritage"] },
+  vehicles:  { label:"Classic vehicles and farm machinery",               cats:["classic-vehicles"] },
+  animals:   { label:"Animals: pets, birds and pond life",                 cats:["wildlife-nature"] },
+  floral:    { label:"Floral and nature",                                  cats:["botanical-garden"] },
+  household: { label:"Everyday household objects and cozy corners",        cats:["home-everyday"] },
+  americana: { label:"Vintage Americana: fairs, ballgames, soda fountains", cats:["vintage-americana"] },
+  patterns:  { label:"Patterns: quilt blocks, Zentangle and mandalas",     cats:["bold-easy-patterns", "zentangle-mandalas"] },
+  seasonal:  { label:"Seasonal: starts with the season of the packet date", seasonal:true }
 };
-const COGNICOPIA_COLORING_THEME_SHORT = { nostalgia:"Nostalgia", vehicles:"Vehicles", animals:"Animals", floral:"Floral", household:"Household", seasonal:"Seasonal" };
+const COGNICOPIA_COLORING_THEME_SHORT = { nostalgia:"Nostalgia", vehicles:"Vehicles", animals:"Animals", floral:"Floral", household:"Household",
+  americana:"Americana", patterns:"Patterns", seasonal:"Seasonal" };
+/* Pictures picked before the library existed, and the library picture of
+   the same subject that now prints in their place. */
+const COGNICOPIA_COLORING_LEGACY = {
+  rotaryphone:"rotary-telephone", radio:"cathedral-radio", sewing:"sewing-machine", pocketwatch:"pocket-watch", grandclock:"grandfather-clock",
+  wallclock:"schoolhouse-clock", truck:"farm-pickup", car:"sunday-sedan", wagon:"woody-wagon", musclecar:"convertible", tractor:"farm-tractor",
+  locomotive:"steam-locomotive", cat:"sleeping-cat", dog:"faithful-dog", songbird:"cardinal-branch", owl:"barn-owl", duck:"mallard-duck",
+  goldfish:"koi-pond", tulips:"tulips-vase", sunflowers:"sunflower", geranium:"porch-geranium", wateringcan:"watering-can", gardengate:"garden-gate",
+  glassvase:"daisy-jar", teapot:"teapot-and-cup", rocker:"rocking-chair", porchswing:"porch-swing", fireplace:"wood-cookstove",
+  kitchenwindow:"windowsill-herbs", pumpkins:"pumpkin-patch", applebasket:"harvest-basket", snowman:"snowman", wreath:"holiday-wreath",
+  birdhouse:"bluebird-house", rainboots:"robin-fence", lemonade:"lemonade", picnic:"picnic-basket"
+};
+const ccLib = () => window.CognicopiaColoring || null;
+const ccDesign = id => { const C = ccLib(); return C && id ? C.design(id) : null; };
 function cognicopiaColoringKeys(theme){
-  if (COGNICOPIA_COLORING_THEMES[theme]) return COGNICOPIA_COLORING_THEMES[theme].keys.slice();
-  return Object.keys(COGNICOPIA_COLORING_THEMES).reduce((all, t) => all.concat(COGNICOPIA_COLORING_THEMES[t].keys), []);
+  const C = ccLib(); if (!C) return [];
+  const th = COGNICOPIA_COLORING_THEMES[theme];
+  return C.designs().filter(d => !th ? true : th.seasonal ? !!d.season : th.cats.indexOf(d.cat) >= 0).map(d => d.id);
+}
+function cognicopiaColoringPicture(cfg){
+  const pic = optVal(cfg, "picture", "any");
+  const id = COGNICOPIA_COLORING_LEGACY[pic] || pic;
+  return ccDesign(id) ? id : "";
 }
 function cognicopiaColoringSeason(cfg){
   const d = new Date((cfg.date || todayISO()) + "T12:00:00");
@@ -12518,7 +12544,7 @@ function cognicopiaColoringSeason(cfg){
 }
 const COGNICOPIA_COLORING = {
   id: "cognicopia-coloring", name: "Cognicopia Coloring Page", themed: false, personalRow: true,
-  desc: "A full-page picture to color: bold pure-black lines of 3 to 6 pt, nothing in the background, a 3:4 frame and adult subjects. Pick a theme, or one exact picture.",
+  desc: "A full-page picture to color from the Cognicopia Coloring library: bold pure-black outlines of 3 pt or more, nothing in the background, a 3:4 frame and adult subjects. Pick a theme, or one exact picture.",
   icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18.4 2.6a2 2 0 0 1 2.9 2.9L12 14.8 9.2 12z"/><path d="M9.2 12c-2 0-3.6 1.6-3.6 3.6 0 1.6-1 2.6-2.6 3.2 1.2 1.3 3 2.2 5 2.2 3 0 4.8-2.4 4-5.4"/></svg>',
   options: [
     { id:"theme", type:"select", label:"Subject / theme", def:"mixed",
@@ -12526,20 +12552,20 @@ const COGNICOPIA_COLORING = {
     { id:"picture", type:"select", label:"Picture", def:"any",
       hint:"Pick one exact picture for version 1, or let each version be a different picture from the theme.",
       choicesFn(vals){
-        const theme = vals.theme || "mixed";
-        return [["any","Surprise me: a different picture for each version"]].concat(cognicopiaColoringKeys(theme).map(k => {
-          const own = Object.keys(COGNICOPIA_COLORING_THEMES).find(t => COGNICOPIA_COLORING_THEMES[t].keys.includes(k));
-          return [k, (theme === "mixed" ? COGNICOPIA_COLORING_THEME_SHORT[own] + ": " : "") + COLOR_ART[k].title];
+        const theme = vals.theme || "mixed", C = ccLib(), cats = C ? C.CAT : {};
+        return [["any","Surprise me: a different picture for each version"]].concat(cognicopiaColoringKeys(theme).map(id => {
+          const d = ccDesign(id);
+          return [id, (theme === "mixed" && cats[d.cat] ? cats[d.cat].label + ": " : "") + d.title];
         }));
       } },
     { id:"hemi", type:"select", label:"Seasons", def:"north", showIf:["theme", "seasonal"],
       choices:[["north","Northern hemisphere"],["south","Southern hemisphere"]] },
     { id:"style", type:"note", html:`<p class="style-head">Visual style</p>
       <ul class="style-lock" aria-label="Always on for every Cognicopia Coloring page">
-        <li>Pure black lines, 3 to 6 pt</li><li>No background clutter or shading</li>
+        <li>Pure black outlines, 3 pt or more</li><li>No background clutter or shading</li>
         <li>3:4 picture on a full page</li><li>Adult, dignified subjects</li></ul>` },
     { id:"weight", type:"select", label:"Line weight", def:"auto",
-      choices:[["auto","Automatic for the stage"],["bold","Bold (3 pt)"],["heavy","Heavy (4.5 pt)"],["max","Maximum contrast (6 pt)"]] },
+      choices:[["auto","Automatic for the stage"],["bold","Thick (3 pt)"],["heavy","Ultra-bold (4.5 pt)"],["max","Extra-bold sensory (7.9 pt)"]] },
     { id:"detail", type:"select", label:"Detail", def:"auto",
       choices:[["auto","Automatic for the stage"],["standard","Standard: more lines inside (early stage)"],["simple","Simplified: big open shapes (middle to late stage)"]] },
     { id:"facility", type:"text", slot:"personal", label:"Facility header", max:60, def:"",
@@ -12549,27 +12575,35 @@ const COGNICOPIA_COLORING = {
   levels: COLORING.levels,
   plan(cfg, rng, count){
     const theme = optVal(cfg, "theme", "mixed");
-    let pool = cognicopiaColoringKeys(theme).filter(k => COLOR_ART[k]);
-    const pic = optVal(cfg, "picture", "any");
+    let pool = cognicopiaColoringKeys(theme);
+    if (!pool.length) pool = cognicopiaColoringKeys("mixed");
+    if (!pool.length) return COLORING.plan(cfg, rng, count);              // the library did not load
     if (theme === "seasonal"){
       // this season's pictures first, then the others, each group shuffled
-      const now = cognicopiaColoringSeason(cfg);
-      pool = rng.shuffle(pool.filter(k => COLOR_ART[k].season === now)).concat(rng.shuffle(pool.filter(k => COLOR_ART[k].season !== now)));
+      const now = cognicopiaColoringSeason(cfg), season = id => ccDesign(id).season;
+      pool = rng.shuffle(pool.filter(id => season(id) === now)).concat(rng.shuffle(pool.filter(id => season(id) !== now)));
     } else pool = rng.shuffle(pool);
-    if (COLOR_ART[pic]) pool = [pic].concat(pool.filter(k => k !== pic));
+    const pic = cognicopiaColoringPicture(cfg);
+    if (pic) pool = [pic].concat(pool.filter(id => id !== pic));
     const out = pool.slice(0, count);
     while (out.length < count) out.push(pool[out.length % pool.length]);
     return out;
   },
   generate(cfg, rng, key){
-    const page = COLORING.generate(cfg, rng, key);
-    page.facility = String(optVal(cfg, "facility", "")).trim().slice(0, 60);
-    return page;
+    const id = COGNICOPIA_COLORING_LEGACY[key] || key;
+    if (!ccDesign(id)) return COLORING.generate(cfg, rng, COLOR_ART[key] ? key : "tulips");   // the library did not load
+    // difficulty sets the support tier, as everywhere else: early 1, moderate 2, advanced 3
+    const base = { early:1, moderate:2, advanced:3 }[cfg.difficulty] || 2, detail = optVal(cfg, "detail", "auto");
+    const tier = detail === "standard" ? 1 : detail === "simple" ? Math.max(2, base) : base;
+    const weight = { bold:"thick", heavy:"ultra-bold", max:"extra-bold-sensory" }[optVal(cfg, "weight", "auto")] || "auto";
+    const facility = String(optVal(cfg, "facility", "")).trim().slice(0, 60);
+    return CogniLibrary.LIBRARY_ACTIVITY.generate({ residentName:cfg.residentName,
+      opts:{ pages:[id], tier, weight, header:true, title:true, caption:optVal(cfg, "talk", true) !== false, facility } }, rng, id);
   },
   optionsNote(cfg){
-    const theme = optVal(cfg, "theme", "mixed"), pic = optVal(cfg, "picture", "any");
+    const theme = optVal(cfg, "theme", "mixed"), pic = cognicopiaColoringPicture(cfg);
     const n = this.singlePage ? 1 : settings.variations;
-    let t = COLOR_ART[pic] ? `Version 1 is ${COLOR_ART[pic].title}.` : "";
+    let t = pic ? `Version 1 is ${ccDesign(pic).title}.` : "";
     if (theme === "seasonal") t += (t ? " " : "") + `${SEASON_NAMES[cognicopiaColoringSeason(cfg)]} pictures come first for ${fmtDate(cfg.date) || "the packet date"}.`;
     if (n > 1) t += (t ? " " : "") + `Each of the ${n} versions is a different picture.`;
     return t;

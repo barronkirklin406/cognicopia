@@ -564,7 +564,6 @@ h1{font-family:var(--display);font-weight:600;
   margin:0 2% 0 0;border-radius:4px;overflow:hidden}
 .shots figure:last-child{margin-right:0}
 .shots img{width:100%;height:auto;display:block}
-.shots figcaption{display:none}
 @media (max-width:460px){
   .shots figure{width:100%;margin:0 0 12px 0}
 }
@@ -686,6 +685,11 @@ input:focus,select:focus,button:focus-visible{
 
 .go{border-top:1px solid var(--rule);padding-top:36px}
 .go-allowance{margin:20px 0 0}
+/* "Make the packet" and, beside it, the staff-guide-only button: outlined
+   so the main action stays the obvious one. They wrap on a narrow screen. */
+.go-actions{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.go .btn-secondary{background:transparent;color:#fff;border:2px solid #b5a48b;padding:15px 30px}
+.go .btn-secondary:hover{background:rgba(181,164,139,.2)}
 button{font:inherit;font-weight:600;font-size:18px;padding:17px 38px;
   background:var(--garden);color:#fff;border:0;border-radius:4px;cursor:pointer;
   transition:background .12s,transform .08s}
@@ -713,7 +717,7 @@ footer{border-top:1px solid var(--rule-soft);margin-top:80px;padding-top:24px;
   body{background:#fff;color:#000;font-size:11pt}
   .wrap{max-width:100%;padding:0;box-shadow:none;background:#fff}
   .logo{width:120px}
-  .shots,.saveload,.tools,.gate,.go button,.strip,#ioMsg,.go-allowance,.statusbar{display:none !important}
+  .shots,.saveload,.tools,.gate,.go button,.strip,#ioMsg,.go-allowance{display:none !important}
   fieldset{break-inside:avoid;page-break-inside:avoid;border-top:1px solid #999}
   .pick,.level{break-inside:avoid;page-break-inside:avoid;border-color:#999}
   input[type=text],input[type=password],input[type=number],select{border:1px solid #999}
@@ -748,8 +752,6 @@ body.extra-large-print .accessibility-option b{font-size:18px}
 @media (max-width:700px){.accessibility-options{grid-template-columns:1fr}}
 
 /* ---- Licence status: the header strip, and the free-packet badge under the Make the packet button ---- */
-.statusbar{display:flex;justify-content:space-between;align-items:center;gap:12px;
-  flex-wrap:wrap;padding:14px 0 0;font-size:14px}
 .licbadge{display:inline-block;padding:5px 12px;border-radius:999px;
   background:var(--tint);color:var(--garden-dark);border:1px solid var(--rule);font-weight:600}
 .licbadge.lic{background:var(--garden);color:#fff;border-color:var(--garden)}
@@ -803,33 +805,6 @@ body{
     linear-gradient(135deg,#163d2d 0%,#1b4332 48%,#102b20 100%);
   color:var(--ink);font-family:"Trebuchet MS","Segoe UI",sans-serif;
 }
-.navbar{
-  position:sticky;top:0;z-index:1000;display:flex;justify-content:space-between;align-items:center;
-  background:rgba(8,28,21,.82);
-  border-bottom:1px solid rgba(216,243,220,.18);padding:14px 40px;
-  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
-}
-.nav-brand a,.nav-links > li > a{font-family:"Trebuchet MS","Segoe UI",sans-serif}
-.nav-brand a{display:flex;align-items:center;gap:8px;color:#fff;font-size:18pt;font-weight:700;text-decoration:none}
-.nav-logo{display:block;width:38px;height:30px;flex:none;object-fit:contain}
-.nav-links{display:flex;gap:30px;align-items:center;list-style:none;margin:0;padding:0}
-.nav-links > li > a{color:#e8f5e9;font-size:10.5pt;text-decoration:none}
-.nav-links > li > a:hover{color:#d8f3dc}
-.dropdown{position:relative}
-.dropbtn{display:flex;align-items:center;gap:4px}
-.dropdown-content{
-  position:absolute;top:calc(100% + 10px);left:0;z-index:100;display:none;min-width:210px;padding:6px;
-  background:rgba(20,61,43,.96);
-  border:1px solid rgba(216,243,220,.2);box-shadow:0 18px 36px rgba(0,0,0,.32);
-  border-radius:8px;
-  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
-}
-.dropdown:hover .dropdown-content{display:block}
-.dropdown-content::before{
-  content:"";position:absolute;left:0;right:0;top:-12px;height:12px;
-}
-.dropdown-content a{display:block;padding:10px 14px;color:#e8f5e9;font-size:10pt;text-decoration:none;border-radius:6px}
-.dropdown-content a:hover{background:rgba(82,183,136,.2);color:#d8f3dc}
 .wrap{
   background:#92785E;border:1px solid rgba(216,243,220,.24);
   box-shadow:0 24px 70px rgba(0,0,0,.3);color:var(--ink);
@@ -846,7 +821,7 @@ h1,h2,h3,.wordmark{color:#FFF4E5}
   color:#1F1B17;
 }
 .lede,.tagline,.brandtext > p,.hint,.sub,.level span,.pick span,
-.subhead,.note,.legal,.left,.unlock label,.crewrow label,.statusbar{
+.subhead,.note,.legal,.left,.unlock label,.crewrow label{
   color:#ffffff;font-weight:600;line-height:1.45;
 }
 .level b,.level span,.pick b,.pick span,.subhead,
@@ -885,23 +860,8 @@ h1,h2,h3,.wordmark{color:#FFF4E5}
   background:#7f3028;color:#ffffff;border-color:#ffd6d0;
 }
 .preset-actions .delete-preset:hover{background:#a94338;color:#ffffff;border-color:#ffffff}
-@media (max-width:600px){
-  .navbar{flex-wrap:wrap;gap:8px;padding:12px 20px}.nav-links{width:100%;justify-content:flex-end;gap:14px}.nav-links > li > a{font-size:9.5pt}
-}
 .stripe-btn { background-color: #635bff; color: #ffffff; padding: 8px 16px; border-radius: 4px; text-decoration: none; font-weight: 600; display: inline-block; margin-left: 10px; font-family: inherit; font-size: 14px; }
 .stripe-btn:hover { opacity: 0.9; }
-/* --- FIX: Resources Dropdown Alignment & Pure White Text --- */
-.dropdown-menu, .dropdown-content, .resources-dropdown {
-    left: 0 !important;
-    right: auto !important;
-    transform: none !important;
-    color: #ffffff !important;
-}
-
-.dropdown-menu a, .dropdown-content a, .resources-dropdown a {
-    color: #ffffff !important;
-}
-
 /* ═══════════════════════════════════════════════════════════
    COGNICOPIA  —  LEFT-HAND SIDEBAR NAV  (shared)
    ══════════════════════════════════════════════════════════= */
@@ -1039,7 +999,6 @@ body { padding-left: var(--sb-w); }
   .cg-sb-overlay { display: none; position: fixed; inset: 0; z-index: 850; background: rgba(0,0,0,.45); }
   .cg-sb-overlay.is-open { display: block; }
 }
-.navbar { display: none !important; }
 
 /* ═══════════════════════════════════════════════════════════
    AILMENT-SPECIFIC ACTIVITIES — Sidebar Section Styles
@@ -2111,20 +2070,6 @@ html.tb-open,html.tb-open body{overflow:hidden !important;overscroll-behavior:no
       <button type="button" id="noneAct">Clear all</button>
     </div>
     <div class="picks" id="acts"></div>
-    <div class="field" style="max-width:280px;margin-top:20px">
-      <label for="targetPages">Target workbook pages
-        <span class="sub">Includes the cover page</span></label>
-      <input type="number" id="targetPages" min="2" max="30" value="4">
-    </div>
-    <p class="subhead">Workbook export activities</p>
-    <div class="picks" id="workbookActivities">
-      <label class="pick"><input type="checkbox" class="workbook-activity"
-        value="word_search" checked><span><b>Word Search</b><span>Names, places, and favorite words.</span></span></label>
-      <label class="pick"><input type="checkbox" class="workbook-activity"
-        value="number_match" checked><span><b>Number Match</b><span>Simple number and quantity matching.</span></span></label>
-      <label class="pick"><input type="checkbox" class="workbook-activity"
-        value="reminiscence_prompts" checked><span><b>Reminiscence Prompts</b><span>Conversation prompts drawn from their life.</span></span></label>
-    </div>
   </fieldset>
 
   <fieldset>
@@ -2146,14 +2091,6 @@ html.tb-open,html.tb-open body{overflow:hidden !important;overscroll-behavior:no
       <div class="field"><label for="month">Month
         <span class="sub">Leave blank for this month</span></label>
         <input type="text" id="month" maxlength="40" autocomplete="off" placeholder="October 2026"></div>
-    </div>
-    <div class="row">
-      <div class="field"><label for="institutionalPartner">Institutional Partner / University Name</label>
-        <input type="text" id="institutionalPartner" maxlength="120" autocomplete="organization"
-               placeholder="State University"></div>
-      <div class="field"><label for="researchSponsor">Research Group / Facility Sponsor</label>
-        <input type="text" id="researchSponsor" maxlength="120" autocomplete="organization"
-               placeholder="Memory Care Research Group"></div>
     </div>
   </fieldset>
 
@@ -2198,8 +2135,10 @@ html.tb-open,html.tb-open body{overflow:hidden !important;overscroll-behavior:no
   </div>
 
   <div class="go">
-    <button type="submit" id="go">Make the packet</button>
-      <button type="button" id="staffOnlyBtn" style="background:#4a6fa5;margin-left:8px;">Print staff guide only</button>
+    <div class="go-actions">
+      <button type="submit" id="go">Make the packet</button>
+      <button type="button" id="staffOnlyBtn" class="btn-secondary">Print staff guide only</button>
+    </div>
     <p class="go-allowance" role="status"><span class="licbadge" id="licBadge"></span></p>
     <p class="note">Your printer must be set to 100% or Actual size.
     "Fit to page" shrinks the large print.</p>
@@ -7439,8 +7378,11 @@ addCrewRow(); addCrewRow(); addCrewRow();
    unchanged: the profile never leaves the machine it was typed on. */
 const IO_FIELDS=["first","last","goes","born","pronoun","town","state",
   "job","spouse","kids","pets","hobbies","favs","mil","faith","lang1","lang2",
-  "mother","school","firstcar","firstjob","sibs","avoid","fac","month",
-  "institutionalPartner","researchSponsor"];
+  "mother","school","firstcar","firstjob","sibs","avoid","fac","month"];
+/* Older saved files may also carry institutionalPartner, researchSponsor
+   and packetPreferences (a workbook page target) from fields that never
+   reached the printed packet. applyProfile skips names it does not know,
+   so those files still open. */
 
 function collectProfile(){
   const out={v:1, fields:{}, acts:{}, holidays:[], crew:[]};
@@ -7452,11 +7394,6 @@ function collectProfile(){
   const st=document.querySelector('input[name="stage"]:checked');
   out.stage = st ? st.value : "early";
   out.crew=collectCrew();
-  out.packetPreferences={
-    targetPages:Math.max(2,Math.min(30,parseInt($("targetPages").value,10)||4)),
-    selectedActivities:[...document.querySelectorAll(".workbook-activity:checked")]
-      .map(input=>input.value)
-  };
   out.accessibility={
     highContrast:$("highContrastMode").checked,
     extraLargePrint:$("extraLargePrint").checked,
@@ -7593,15 +7530,6 @@ function applyProfile(p){
   if(want){
     const rb=document.querySelector('input[name="stage"][value="'+want+'"]');
     if(rb) rb.checked=true;
-  }
-  const packetPreferences=p.packetPreferences&&typeof p.packetPreferences==="object"
-    ? p.packetPreferences : {};
-  if(packetPreferences.targetPages!=null) $("targetPages").value=
-    Math.max(2,Math.min(30,parseInt(packetPreferences.targetPages,10)||4));
-  if(Array.isArray(packetPreferences.selectedActivities)){
-    document.querySelectorAll(".workbook-activity").forEach(input=>{
-      input.checked=packetPreferences.selectedActivities.includes(input.value);
-    });
   }
   const accessibility=p.accessibility&&typeof p.accessibility==="object"
     ? p.accessibility : {};
@@ -7897,13 +7825,14 @@ function filterAdvancedLateActivities(){
     }
   });
   lateActivityHint.hidden = !late || !disabledCount;
+  estimatePages();
 }
 document.addEventListener("cognicopia:activeresident", filterAdvancedLateActivities);
 document.addEventListener("cognicopia:tieroverride", filterAdvancedLateActivities);
 filterAdvancedLateActivities();
 $("allAct").addEventListener("click",()=>{
   document.querySelectorAll(".act").forEach(c=>c.checked=true);
-  filterAdvancedLateActivities();
+  filterAdvancedLateActivities();   // also refreshes the page estimate
 });
 $("noneAct").addEventListener("click",()=>{
   document.querySelectorAll(".act").forEach(c=>c.checked=false);
@@ -8080,10 +8009,39 @@ function activateLicense(code){
 function unlocked(){ return isSubscribed(); }
 function runsUsed(){ return genCount(); }
 
+/* ---- How long the packet will be ----
+   Counted the way buildPacket() prints, and checked against real builds:
+   the cover and the two-page staff guide, each page chosen (a few run to
+   two pages at earlier stages), a page for each language picked, two
+   pages per holiday (memories, then a picture to color) and the answer
+   key, about a page for every three or four activities that have answers
+   (five at late stage, where the answers are shorter). Shown as "about"
+   because long names and lists can add a page. The tables live inside
+   the function because the late-stage filter calls it while the page is
+   still loading. */
 function estimatePages(){
   const el=$("pageEst"); if(!el) return;
-  const targetPages=Math.max(2,Math.min(30,parseInt($("targetPages").value,10)||4));
-  el.textContent="Workbook: "+targetPages+" pages when you print it.";
+  const TWO_PAGE_ACTS={
+    early:["lifestory","name","talk","task","popculture","facsupport","provhint"],
+    middle:["talk","task","popculture","facsupport"],
+    late:["popculture","facsupport"]
+  };
+  const ANSWER_KEY_ACTS=["wordsearch","erasearch","crossword","bingo","lyric","sayings",
+    "career","scramble","match","assoc","trivia","odd","provhint"];
+  const acts=[...document.querySelectorAll(".act:checked")].map(c=>c.value);
+  const hols=document.querySelectorAll(".hol:checked").length;
+  if(!acts.length && !hols){ el.textContent=""; return; }
+  const st=document.querySelector('input[name="stage"]:checked');
+  const stage=st?st.value:"early", two=TWO_PAGE_ACTS[stage]||[];
+  let n=3;
+  for(const a of acts){
+    if(a==="language") n+=["lang1","lang2"].filter(id=>$(id)&&$(id).value).length;
+    else n+=two.includes(a)?2:1;
+  }
+  n+=hols*(window.CognicopiaColoring?2:1);
+  const keyed=acts.filter(a=>ANSWER_KEY_ACTS.includes(a)).length;
+  if(keyed) n+=Math.ceil(keyed/(stage==="late"?5:3.5));   // shorter answers at late stage
+  el.textContent="About "+n+" pages when you print it.";
 }
 /* Late stage: the crossword and the halves-matching page are where the
    evidence is thinnest and comprehension most likely to fail, so they
@@ -8104,7 +8062,8 @@ document.addEventListener("change", e=>{
 document.addEventListener("change", e=>{
   if(e.target && (e.target.classList.contains("act") ||
                   e.target.classList.contains("hol") ||
-                  e.target.name==="stage")) estimatePages();
+                  e.target.name==="stage" ||
+                  e.target.id==="lang1" || e.target.id==="lang2")) estimatePages();
 });
 
 function showAllowance(){
@@ -8231,7 +8190,6 @@ $("f").addEventListener("submit", e=>{
   const born=parseInt($("born").value,10);
   const acts=collectActs();
   const holidays=collectHolidays();
-  const workbookActivities=document.querySelectorAll(".workbook-activity:checked");
 
   if(!first){
     err.textContent="Add a first name so the packet knows who it's for.";
@@ -8246,8 +8204,8 @@ $("f").addEventListener("submit", e=>{
     err.textContent="Add a year of birth between 1900 and "+maxBorn+". It sets the era on the memories page.";
     err.style.display="block"; $("born").focus(); return;
   }
-  if(!Object.keys(acts).length && !holidays.length && !workbookActivities.length){
-    err.textContent="Pick at least one page in section 5, or tick a holiday in section 6.";
+  if(!Object.keys(acts).length && !holidays.length){
+    err.textContent="Pick at least one page in section 6, or tick a holiday in section 7.";
     err.style.display="block"; $("acts").scrollIntoView({block:"center"}); return;
   }
 
@@ -8275,7 +8233,6 @@ $("f").addEventListener("submit", e=>{
     firstcar:$("firstcar").value.trim(), firstjob:$("firstjob").value.trim(),
     sibs:splitList($("sibs").value),
     crew:collectCrew(), acts, holidays,
-    targetPages:Math.max(2,Math.min(30,parseInt($("targetPages").value,10)||4)),
     fac:$("fac").value.trim(),
     month:$("month").value.trim()||monthNow()
   };
@@ -8344,7 +8301,6 @@ if(soBtn) soBtn.addEventListener("click",()=>{
     firstcar:$("firstcar").value.trim(), firstjob:$("firstjob").value.trim(),
     sibs:splitList($("sibs").value),
     crew:collectCrew(), acts:collectActs(), holidays:collectHolidays(),
-    targetPages:Math.max(2,Math.min(30,parseInt($("targetPages").value,10)||4)),
     fac:$("fac").value.trim(),
     month:$("month").value.trim()||monthNow()
   };
@@ -9794,7 +9750,6 @@ function generateAilmentPDF(ailmentType) {
   var PREF_TO_PAGES = { trivia:["trivia", "popculture"], "word-search":["wordsearch", "erasearch"], "fill-blank":["sayings", "provhint", "lyric"],
     matching:["match", "assoc", "coins"], coloring:["color", "colornum", "mandala"], reminiscence:["talk", "lifestory"],
     mazes:["maze", "dots", "tracing"], math:["coins", "clocks"] };
-  var PREF_TO_WORKBOOK = { "word-search":"word_search", math:"number_match", reminiscence:"reminiscence_prompts" };
 
   function names(people, test){ return people.filter(test).map(function(x){ return x.name; }).join(", "); }
   function setVal(id, v){ var f = el(id); if (f) f.value = v == null ? "" : String(v); }
@@ -9829,8 +9784,6 @@ function generateAilmentPDF(ailmentType) {
     // Preferred activity types switch their pages on; topics to avoid switch hymn pages off.
     ctx.activityPreferences.forEach(function(code){
       (PREF_TO_PAGES[code] || []).forEach(function(v){ var c = document.querySelector('.act[value="' + v + '"]'); if (c) c.checked = true; });
-      var w = PREF_TO_WORKBOOK[code] && document.querySelector('.workbook-activity[value="' + PREF_TO_WORKBOOK[code] + '"]');
-      if (w) w.checked = true;
     });
     if (ctx.avoid.topics.indexOf("religion") !== -1){
       ["lyric", "match"].forEach(function(v){ var c = document.querySelector('.act[value="' + v + '"]'); if (c) c.checked = false; });
