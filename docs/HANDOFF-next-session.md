@@ -142,9 +142,9 @@ Check that no JavaScript adds these classes, then delete the rules.
 
 **`#staffOnlyBtn`** (about line 2202) has `style="background:#4a6fa5;margin-left:8px;"`. Move it into a class that fits the design system.
 
-**Dead `resourcesDropdownBtn` scripts.** One each in `cognitive-journals.html`, `life-planners.html`, `contact.html` and `zentangle-art.html`; the button no longer exists. Remove them, and keep `npm run nav --check` and the link check green.
+**Dead `resourcesDropdownBtn` scripts.** One each in `cognitive-journals.html`, `life-planners.html`, `contact.html` and `zentangle-art.html`; the button no longer exists. Remove them, and keep `node scripts/site-nav.mjs --check` and the link check in `npm run build` green.
 
-**Retire the legacy `COGNICOPIA_COLORING` activity.** It sits in `builder.html` at about lines 12380–12460 and still draws the old `COLOR_ART` clip-art through `COLORING.generate`. The category routes straight to the vector library (`direct:true, route:"coloring"`).
+**Retire the legacy `COGNICOPIA_COLORING` activity.** It sits in `builder.html` at about lines 12497–12580 and still draws the old `COLOR_ART` clip-art through `COLORING.generate`. The category routes straight to the vector library (`direct:true, route:"coloring"`).
 - Grep for other entry points: roster plans, Life Planner recommendations, search, and the `legacyIds` path.
 - Then either point its `plan()` and `generate()` at library designs (`C.designs()` filtered by theme, `C.render(id, tier)` and `C.toSVG`), or keep it only for rebuilding saved packets, as `COLORING` already is.
 
