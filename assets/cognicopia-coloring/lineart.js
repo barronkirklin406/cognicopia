@@ -11,9 +11,9 @@
        no gradients, no textures, no text inside the picture;
      - line weight is set by the tier, never by the drawing, and matches
        the Dynamic Vector Engine's tier table (src/services/vectorEngine.ts):
-       3 px (Tier 1, 1.0x), 6 px (Tier 2, 2.0x), 10.5 px (Tier 3, 3.5x) at
-       the printed size, where 1 px is 1/96 in (0.75 pt); no line thinner
-       than 3 px;
+       4 px = 3 pt (Tier 1), 6 px = 4.5 pt (Tier 2), 10.5 px = 7.9 pt
+       (Tier 3) at the printed size, where 1 px is 1/96 in (0.75 pt); no
+       line, outline or detail, prints thinner than 3 pt;
      - a 3:4 picture, scaled to fill its box, so every subject is big;
      - the tier decides how much detail is drawn: Tier 1 everything,
        Tier 2 the guiding lines, Tier 3 the main shapes only.
@@ -47,10 +47,11 @@ var TIERS = {
 /* px: outline width at the printed size in CSS pixels (96 per inch), the
    unit of the Dynamic Vector Engine's tier table; pt: the same in print
    points (px x 0.75); detailPt: interior lines, which never drop below the
-   tier's minimum (3, 5 and 9 px). */
-var MIN_LINE_PT = 2.25;
+   tier's minimum (4, 5 and 9 px). MIN_LINE_PT is the clinical floor: no
+   line on any page prints thinner than 3 pt. */
+var MIN_LINE_PT = 3;
 var WEIGHTS = {
-  "thick":              { id:"thick",              label:"Thick (3 px, 2.25 pt)",                pt:2.25,  detailPt:2.25, px:3 },
+  "thick":              { id:"thick",              label:"Thick (4 px, 3 pt)",                   pt:3,     detailPt:3,    px:4 },
   "ultra-bold":         { id:"ultra-bold",         label:"Ultra-bold (6 px, 4.5 pt)",            pt:4.5,   detailPt:3.75, px:6 },
   "extra-bold-sensory": { id:"extra-bold-sensory", label:"Extra-bold sensory (10.5 px, 7.9 pt)", pt:7.875, detailPt:6.75, px:10.5 }
 };
@@ -66,7 +67,13 @@ var CATEGORIES = [
   { id:"bold-easy-patterns", label:"Bold & Easy Patterns",
     blurb:"Quilt blocks, rosettes, stained glass and tiles: calm, structured patterns with clear edges." },
   { id:"home-everyday",      label:"Home & Everyday Tasks",
-    blurb:"Familiar jobs and small pleasures: laundry day, baking, tea, letters, knitting and fishing." }
+    blurb:"Familiar jobs and small pleasures: laundry day, baking, tea, letters, knitting and fishing." },
+  { id:"zentangle-mandalas", label:"Zentangle & Mandalas",
+    blurb:"Zentangle-style loops, ribbons, spirals and pebbles, and symmetrical mandalas: repeating shapes with bold, closed edges." },
+  { id:"vintage-americana",  label:"Vintage Americana",
+    blurb:"Barn quilts, the Liberty Bell, porch bunting, the jukebox, the gas pump, the county fair and a slice of apple pie." },
+  { id:"seasons-holidays",   label:"Seasons & Holidays",
+    blurb:"A picture for every season and the holidays residents grew up with: wreaths, baskets, pumpkins, ornaments and more." }
 ];
 var CAT = {}; CATEGORIES.forEach(function(c){ CAT[c.id] = c; });
 
@@ -411,7 +418,9 @@ function definePack(p){
 var CAT_TAGS = {
   "classic-vehicles":["reminiscence", "vehicles", "transport"], "botanical-garden":["nature", "garden", "flowers"],
   "nostalgic-heritage":["reminiscence", "heritage", "home"], "wildlife-nature":["nature", "animals"],
-  "bold-easy-patterns":["patterns", "calming", "structured"], "home-everyday":["reminiscence", "daily-life", "familiar-tasks"]
+  "bold-easy-patterns":["patterns", "calming", "structured"], "home-everyday":["reminiscence", "daily-life", "familiar-tasks"],
+  "zentangle-mandalas":["patterns", "zentangle", "mandalas", "calming", "structured"], "vintage-americana":["reminiscence", "americana", "heritage"],
+  "seasons-holidays":["seasons", "holidays", "celebrations"]
 };
 var TIER_TAGS = { 1:["fine-motor", "high-detail"], 2:["guided-focus", "motor-skills"], 3:["sensory", "single-focal", "large-areas"] };
 function tagsFor(d, tier){
@@ -428,13 +437,27 @@ function weightFor(tier, override){ return WEIGHTS[override] || WEIGHTS[TIERS[ti
 function render(id, tier, variant){
   var d = BY_ID[id];
   if (!d) throw new Error("No Cognicopia Coloring design " + id);
+  return renderWith(d, d.draw, tier, variant);
+}
+/* The shapes a drawing makes at one tier, before fitting: { items, bbox }.
+   Used to measure part of a picture (a subject) before placing it. */
+function sketch(tier, draw, variant){
+  var g = new Ctx(TIERS[tier] ? +tier : 2, variant);
+  draw(g, h);
+  return { items:g.items, bbox:g.items.length ? bboxOf(g.items) : null };
+}
+/* Draw any picture the way render() draws a library design: meta is
+   { id, title, fit, pad, ... } and draw(g, h) its drawing. The page
+   generator (infinite.js) draws its pages through here. */
+function renderWith(d, draw, tier, variant){
+  var id = d.id;
   tier = TIERS[tier] ? +tier : 2;
   var g = new Ctx(tier, variant);
-  d.draw(g, h);
+  draw(g, h);
   if (!g.items.length) throw new Error(id + " drew nothing at tier " + tier);
   var bb = bboxOf(g.items), s = 1, tx = 0, ty = 0;
   if (d.fit === "subject"){
-    var pad = W * d.pad, bw = Math.max(1, bb.x1 - bb.x0), bh = Math.max(1, bb.y1 - bb.y0);
+    var pad = W * (d.pad == null ? .05 : d.pad), bw = Math.max(1, bb.x1 - bb.x0), bh = Math.max(1, bb.y1 - bb.y0);
     s = Math.min((W - 2 * pad) / bw, (H - 2 * pad) / bh);
     tx = (W - bw * s) / 2 - bb.x0 * s; ty = (H - bh * s) / 2 - bb.y0 * s;
   }
@@ -503,7 +526,7 @@ function stats(){
 
 root.CognicopiaColoring = {
   version:ENGINE_VERSION, W:W, H:H, TIERS:TIERS, WEIGHTS:WEIGHTS, CATEGORIES:CATEGORIES, CAT:CAT, PAGE:PAGE, smallestLayout:SMALLEST,
-  define:define, definePack:definePack, render:render, toSVG:toSVG, toPDF:toPDF, pageLayout:pageLayout,
+  define:define, definePack:definePack, render:render, renderWith:renderWith, sketch:sketch, toSVG:toSVG, toPDF:toPDF, pageLayout:pageLayout, MIN_LINE_PT:MIN_LINE_PT,
   weightFor:weightFor, tagsFor:tagsFor, assetId:assetId, parsePath:parsePath, samplePath:samplePath, bboxOf:bboxOf,
   designs:function(){ return DESIGNS.slice(); }, design:function(id){ return BY_ID[id] || null; },
   packs:function(){ return PACKS.slice(); }, pack:function(id){ return PACK_BY_ID[id] || null; },

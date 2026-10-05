@@ -88,6 +88,26 @@ pack("glass-and-tile", "Glass and Tile", "bold-easy-patterns", "Stained glass, s
 pack("easy-bold-starter", "Easy Bold Starter", "bold-easy-patterns", "Big, clear patterns with only a few areas each, for a first session or a tired day.",
   ["sunburst-medallion", "quilt-nine-patch", "honeycomb", "garden-rosette", "compass-rose"], 3);
 
+/* Zentangle and mandalas */
+pack("zentangle-patterns", "Zentangle Patterns", "zentangle-mandalas", "Zentangle-style tangles: woven ribbons, crescent moons, spirals, pebbles, waves, looping petals and a sampler tile.",
+  ["zen-woven-ribbons", "zen-crescent-moon", "zen-spiral-garden", "zen-river-pebbles", "zen-rolling-waves", "zen-looping-petals", "zen-tangle-sampler"]);
+pack("mandala-collection", "The Mandala Collection", "zentangle-mandalas", "Symmetrical mandalas: an heirloom rosette, a star, a lace doily, hearts and a sunflower.",
+  ["mandala-heirloom", "mandala-star", "mandala-doily", "mandala-hearts", "mandala-sunflower"]);
+pack("gentle-tangles", "Gentle Tangles", "zentangle-mandalas", "The calmest tangles and mandalas, in a few big pieces for a tired day.",
+  ["zen-rolling-waves", "zen-spiral-garden", "zen-river-pebbles", "zen-looping-petals", "mandala-sunflower"], 3);
+
+/* Vintage Americana */
+pack("main-street", "Main Street", "vintage-americana", "The jukebox, the soda fountain, the filling station and the ballgame.",
+  ["jukebox", "ice-cream-soda", "gas-pump", "ballgame", "liberty-bell"]);
+pack("county-fair", "The County Fair", "vintage-americana", "The Ferris wheel, a blue ribbon, apple pie and a barn quilt on the way home.",
+  ["ferris-wheel", "blue-ribbon", "apple-pie", "barn-quilt", "porch-bunting"]);
+
+/* Holidays through the year */
+pack("holidays-first-half", "Holidays: Winter to Summer", "seasons-holidays", "Valentine's Day, St. Patrick's Day, Easter, the first day of spring and the Fourth of July.",
+  ["valentine-heart", "shamrock-pot", "easter-basket", "spring-wreath", "porch-bunting"]);
+pack("holidays-second-half", "Holidays: Fall and Winter", "seasons-holidays", "Halloween, Thanksgiving, Christmas and the first snow.",
+  ["jack-o-lantern", "cornucopia", "holiday-wreath", "ornaments", "snowman"]);
+
 /* Home and everyday tasks */
 pack("tea-time", "Tea Time", "home-everyday", "Cups, pots, a laid table and something baked.",
   ["tea-for-two", "teapot-and-cup", "table-setting", "baking-day"]);
@@ -110,23 +130,23 @@ pack("keeping-house", "Keeping House", "home-everyday", "The work of a home, don
 
 /* The four seasons */
 pack("season-spring", "Spring", "seasons", "Tulips, daffodils, blossoms, robins and a rabbit in the garden.",
-  ["tulips-vase", "daffodils", "magnolia-branch", "robin-fence", "bluebird-house", "garden-rabbit"]);
+  ["tulips-vase", "daffodils", "magnolia-branch", "robin-fence", "bluebird-house", "garden-rabbit", "spring-wreath"]);
 pack("season-summer", "Summer", "seasons", "Sunflowers, poppies, butterflies, picnics and sailing.",
-  ["sunflower", "poppies", "monarch-butterfly", "picnic-basket", "lake-sailboat", "convertible"]);
+  ["sunflower", "poppies", "monarch-butterfly", "picnic-basket", "lake-sailboat", "convertible", "lemonade"]);
 pack("season-autumn", "Autumn", "seasons", "Maple leaves, pumpkins, apples, acorns and the harvest.",
-  ["autumn-maple", "pumpkin-patch", "apple-branch", "oak-acorns", "harvest-basket", "canning-jars"]);
+  ["autumn-maple", "pumpkin-patch", "apple-branch", "oak-acorns", "harvest-basket", "canning-jars", "cornucopia"]);
 pack("season-winter", "Winter", "seasons", "Cardinals, chickadees, snowflakes, pine cones and a warm stove.",
-  ["cardinal-branch", "chickadee-pine", "snowflake-medallion", "pine-cones", "wood-cookstove", "quilt-log-cabin"]);
+  ["cardinal-branch", "chickadee-pine", "snowflake-medallion", "pine-cones", "wood-cookstove", "quilt-log-cabin", "snowman"]);
 
 /* Decades */
 pack("decade-1930s-1940s", "The 1930s and 1940s", "decades", "Steam trains, cathedral radios, biplanes, streetcars and typewriters.",
   ["steam-locomotive", "cathedral-radio", "biplane", "streetcar", "farm-tractor", "typewriter", "woody-wagon"]);
 pack("decade-1950s", "The 1950s", "decades", "Tail fins, rotary telephones, chrome toasters and the milkman.",
-  ["sunday-sedan", "rotary-telephone", "chrome-toaster", "stand-mixer", "milk-bottles", "motor-scooter"]);
+  ["sunday-sedan", "rotary-telephone", "chrome-toaster", "stand-mixer", "milk-bottles", "motor-scooter", "jukebox"]);
 
 /* Therapeutic focus */
 pack("calming-patterns", "Calming Patterns", "focus", "Structured, repeating patterns for a calm, settled session.",
-  ["garden-rosette", "lotus-medallion", "fish-scale-tiles", "honeycomb", "quilt-grandmothers-garden"]);
+  ["garden-rosette", "lotus-medallion", "fish-scale-tiles", "honeycomb", "quilt-grandmothers-garden", "mandala-heirloom", "zen-rolling-waves"]);
 pack("conversation-starters", "Conversation Starters", "focus", "Familiar objects that invite a story: the telephone, the car, the table, the letter, the dog and the barn.",
   ["rotary-telephone", "sunday-sedan", "table-setting", "letter-writing", "faithful-dog", "red-barn"]);
 pack("big-and-bold", "Big and Bold", "focus", "One big shape per page in the heaviest lines, for residents who need the simplest, clearest pages.",

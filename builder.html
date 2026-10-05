@@ -1371,7 +1371,8 @@ textarea:focus{border-color:var(--accent)}
 .cc-for .field{margin:0;flex:1 1 240px}
 .cc-for p{margin:0;flex:2 1 280px;color:var(--muted);font-size:14px}
 .cc-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(320px,410px);gap:24px;align-items:start}
-@media (max-width:1180px){.cc-layout{grid-template-columns:1fr}}
+@media (max-width:1180px){.cc-layout{grid-template-columns:minmax(0,1fr)}}
+.cc-layout > *{min-width:0}
 .cc-filters{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px 14px;padding:16px;border:1px solid var(--line);border-radius:14px;background:var(--panel);margin:0 0 12px}
 .cc-filters .field{margin:0}
 .cc-filters .cc-tierseg{grid-column:1/-1}
@@ -1388,6 +1389,20 @@ textarea:focus{border-color:var(--accent)}
 .cc-card small{color:var(--muted);font-size:12px;line-height:1.35}
 .cc-check{position:absolute;top:12px;right:12px;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:rgba(14,22,20,.72);border:2px solid #fff;color:#fff;font-weight:800;font-size:15px}
 .cc-card[aria-pressed="true"] .cc-check{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.cc-gen .cc-gen-themes{grid-column:1/-1;border:0;padding:0;margin:0}
+.cc-gen legend{font-weight:700;margin:0 0 8px}
+.cc-chips{display:flex;flex-wrap:wrap;gap:8px}
+.cc-chip{position:relative;display:inline-flex}
+.cc-chip input{position:absolute;opacity:0;width:1px;height:1px}
+.cc-chip span{display:inline-flex;align-items:center;min-height:40px;padding:6px 14px;border:1px solid var(--line);border-radius:999px;background:var(--bg-2);color:var(--text);font-size:14px;cursor:pointer}
+.cc-chip input:checked + span{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:700}
+.cc-chip input:focus-visible + span{outline:3px solid var(--accent-hi);outline-offset:2px}
+.cc-gen-go{display:flex;align-items:flex-end}
+.cc-gen-go .btn{width:100%}
+.cc-gen-find{display:flex;gap:8px}
+.cc-gen-find input{flex:1;min-width:0;text-transform:uppercase}
+.cc-gen-all{margin:0 0 12px}
+.cc-warn{display:block;color:var(--warn);font-weight:700}
 .cc-packs{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
 .cc-pack{display:flex;flex-direction:column;gap:10px;padding:14px;border-radius:14px;border:1px solid var(--line);background:var(--panel)}
 .cc-pack-thumbs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
@@ -6422,11 +6437,40 @@ const CogniLibrary = (function(){
     picks:[], focus:0, header:true, title:true, caption:true, largePrint:false, legend:"off", duplex:false, overlays:true, pack:"" };
   let S = null;
   const state = () => {
-    if (!S){ const saved = (typeof settings !== "undefined" && settings.ccLib) || {}; S = Object.assign({}, DEFAULTS, saved); S.picks = (S.picks || []).filter(id => C && C.design(id)); }
+    if (!S){ const saved = (typeof settings !== "undefined" && settings.ccLib) || {}; S = Object.assign({}, DEFAULTS, saved); S.picks = (S.picks || []).filter(id => C && valid(id));
+      S.gen = Object.assign({ themes:[], count:12, codes:[] }, saved.gen || {}); S.gen.codes = (S.gen.codes || []).filter(c => valid(GEN + c)).slice(0, 24);
+      if (["pictures", "packs", "new"].indexOf(S.tab) < 0) S.tab = "pictures"; }
     return S;
   };
   const save = () => { try { settings.ccLib = Object.assign({}, S); store.set("cgb_settings", settings); } catch (e){} };
   const ready = () => !!(C && V && C.designs && V.transformSvg);
+
+  /* ---------- a picture from the library or from the page generator ----------
+     A pick is a library design id, or "gen:" and a page code from the
+     infinite page generator (CognicopiaColoring.infinite, assets/cognicopia-coloring/infinite.js).
+     A generated page asked for at another tier is drawn again at that tier
+     from the same seed, and checked again before it prints. */
+  const GEN = "gen:";
+  const isGen = id => typeof id === "string" && id.indexOf(GEN) === 0;
+  function genSpec(id, tier){
+    const I = C && C.infinite, sp = I ? I.parse(id.slice(GEN.length)) : null;
+    if (!sp) return null;
+    return tier && +tier !== sp.tier ? I.spec({ seed:sp.seed, tier:+tier, theme:sp.theme }) : sp;
+  }
+  function info(id, tier){
+    if (isGen(id)){ const sp = genSpec(id, tier); return sp ? { id:id, title:sp.title, talk:sp.talk, code:sp.code, theme:sp.theme, sensitive:sp.sensitive } : null; }
+    const d = C && C.design(id); return d ? { id:id, title:d.title, talk:d.talk, code:"", sensitive:d.sensitive } : null;
+  }
+  function valid(id){ try { return !!info(id); } catch (e){ return false; } }
+  function drawItem(id, tier){ return isGen(id) ? C.infinite.render(genSpec(id, tier)) : C.render(id, tier); }
+  const genOk = new Map();
+  /* a generated page drawn at a tier other than its own: does it still pass? */
+  function genPasses(id, tier){
+    if (!isGen(id)) return true;
+    const sp = genSpec(id, tier), k = sp.code;
+    if (!genOk.has(k)){ try { genOk.set(k, C.infinite.check(sp, C.infinite.render(sp), { strokes:false, avoid:state().avoid ? avoidList(resident()) : [] }).ok); } catch (e){ genOk.set(k, false); } }
+    return genOk.get(k);
+  }
 
   /* ---------- residents (saved profiles on this computer) ---------- */
   function residents(){ return (typeof BookUI !== "undefined" ? BookUI.savedProfiles() : []); }
@@ -6453,7 +6497,7 @@ const CogniLibrary = (function(){
     const k = id + "|" + tier;
     if (!svgCache.has(k)){
       if (svgCache.size > 600) svgCache.clear();
-      const r = C.render(id, tier);
+      const r = drawItem(id, tier);
       svgCache.set(k, C.toSVG(r, { widthIn:C.pageLayout({ tier:tier, header:true, title:true, caption:true }).artW, label:r.design.title }));
     }
     return svgCache.get(k);
@@ -6485,17 +6529,18 @@ const CogniLibrary = (function(){
   /* The picture for a page: engine drawing, then the Dynamic Vector Engine
      sets its lines for the stroke tier at the exact printed width. */
   function artFor(o, lay){
-    const r = C.render(o.design, lay.tier), w = lay.blocks.art.w;
+    const r = drawItem(o.design, lay.tier), w = lay.blocks.art.w;
     const out = V.transformSvg(C.toSVG(r, { widthIn:w }), { tier:lay.tier, strokeTier:lay.strokeTier, printWidthIn:w });
     return { svg:out.svg.replace("<svg ", '<svg role="img" aria-label="' + esc(r.design.title + ", a picture to color") + '" '), report:out.report, r:r };
   }
   const box = (b, extra) => `left:${b.x.toFixed(4)}in;top:${b.y.toFixed(4)}in;width:${b.w.toFixed(4)}in;height:${b.h.toFixed(4)}in;${extra || ""}`;
-  function footText(o, lay){ return [`Cognicopia · Cognicopia Coloring`, `${C.TIERS[lay.tier].label}${o.pageCount > 1 ? ` · page ${o.pageNumber} of ${o.pageCount}` : ""}`]; }
+  function footText(o, lay){ const it = info(o.design, lay.tier), code = it && it.code;
+    return [code ? `Cognicopia · Cognicopia Coloring · page code ${code}` : `Cognicopia · Cognicopia Coloring`, `${C.TIERS[lay.tier].label}${o.pageCount > 1 ? ` · page ${o.pageNumber} of ${o.pageCount}` : ""}`]; }
   /* The printed sheet for one page. */
   function sheet(o){
-    const lay = layout(o), b = lay.blocks, d = C.design(o.design), art = artFor(o, lay), name = String(o.name || "").trim(), fac = String(o.facility || "").trim();
+    const lay = layout(o), b = lay.blocks, d = info(o.design, lay.tier), art = artFor(o, lay), name = String(o.name || "").trim(), fac = String(o.facility || "").trim();
     const ft = footText(o, lay);
-    return { perf:art.report.ms, html:`<section class="sheet cc-sheet" data-tier="${lay.tier}" data-design="${esc(d.id)}">
+    return { perf:art.report.ms, html:`<section class="sheet cc-sheet" data-tier="${lay.tier}" data-design="${esc(o.design)}">
       ${b.header ? `<div class="cc-head" style="${box(b.header)}">${fac ? `<span class="cc-fac">${esc(fac)}</span>` : ""}<span class="cc-for-line">Prepared especially for ${name ? `<b>${esc(name)}</b>` : "you"}</span></div>` : ""}
       ${b.title ? `<div class="cc-title" style="${box(b.title, `font-size:${b.title.pt}pt`)}">${esc(d.title)}</div>` : ""}
       <div class="cc-art" style="${box(b.art)}">${art.svg}</div>
@@ -6527,7 +6572,7 @@ const CogniLibrary = (function(){
     list.forEach((o, i) => {
       const t0 = performance.now();
       if (i) doc.addPage("letter", "portrait");
-      const lay = layout(o), b = lay.blocks, d = C.design(o.design), P = v => v * 72;
+      const lay = layout(o), b = lay.blocks, d = info(o.design, lay.tier), P = v => v * 72;
       doc.setTextColor(0, 0, 0); doc.setDrawColor(0, 0, 0); doc.setFillColor(255, 255, 255);
       if (b.header){
         const name = String(o.name || "").trim(), fac = String(o.facility || "").trim(), cx = P(b.header.x + b.header.w / 2);
@@ -6541,7 +6586,7 @@ const CogniLibrary = (function(){
         doc.setFont("helvetica", name ? "bold" : "normal"); doc.text(who, x0 + wl, yy);
       }
       if (b.title){ doc.setFont("helvetica", "bold"); doc.setFontSize(b.title.pt); doc.text(d.title, P(b.title.x + b.title.w / 2), P(b.title.y + b.title.h / 2) + b.title.pt * .35, { align:"center", maxWidth:P(b.title.w) }); }
-      const r = C.render(o.design, lay.tier), wId = { 1:"thick", 2:"ultra-bold", 3:"extra-bold-sensory" }[lay.strokeTier];
+      const r = drawItem(o.design, lay.tier), wId = { 1:"thick", 2:"ultra-bold", 3:"extra-bold-sensory" }[lay.strokeTier];
       C.toPDF(doc, r, P(b.art.x), P(b.art.y), P(b.art.w), { weight:wId });
       if (b.legend) V.drawLegendColumnPdf(doc, o.legend, P(b.legend.x), P(b.legend.y), V.LEGEND_COLUMN_WIDTH_IN);
       if (b.caption){
@@ -6564,7 +6609,7 @@ const CogniLibrary = (function(){
   }
   function pdfName(){
     const s = state(), who = resident() ? cgFileName(resident()) : "", pk = s.pack ? C.pack(s.pack) : null;
-    const what = pk && s.picks.join() === pk.designs.join() ? pk.title : s.picks.length === 1 ? C.design(s.picks[0]).title : s.picks.length + " coloring pages";
+    const what = pk && s.picks.join() === pk.designs.join() ? pk.title : s.picks.length === 1 ? info(s.picks[0], s.tier).title : s.picks.length + " coloring pages";
     return ["Cognicopia", what, who, "Tier " + s.tier, todayISO()].filter(Boolean).join(" - ").replace(/[\\/:*?"<>|]+/g, "") + ".pdf";
   }
 
@@ -6583,7 +6628,7 @@ const CogniLibrary = (function(){
     viewEl.innerHTML = `
       <p class="eyebrow">Cognicopia Coloring</p>
       <h1 class="view-title" tabindex="-1">The coloring library</h1>
-      <p class="lede">${st.designs} adult, dignity-first pictures, each drawn at three cognitive tiers (${st.assets} pages), in bold pure-black lines on white, plus ${st.packs} themed packs. Every page prints on US Letter with a 0.75 in binding gutter for three-ring binders.</p>
+      <p class="lede">${st.designs} adult, dignity-first pictures, each drawn at three cognitive tiers (${st.assets} pages), in bold pure-black lines on white, plus ${st.packs} themed packs, and <b>New pages</b>: fresh pictures drawn on demand, never the same twice. Every page prints on US Letter with a 0.75 in binding gutter for three-ring binders.</p>
       <div class="cc-for">
         <div class="field"><label for="ccWho">Resident</label>
           <select id="ccWho"><option value="">${people.length ? "No resident: choose pages by hand" : "No saved resident profiles"}</option>${people.map(p => `<option value="${esc(p.id)}" ${p.id === s.resident ? "selected" : ""}>${esc(cgScreenName(p))}${p.tier1_core.unitNumber && !settings.aliasScreen ? " · " + esc(p.tier1_core.unitNumber) : ""}</option>`).join("")}</select></div>
@@ -6592,9 +6637,10 @@ const CogniLibrary = (function(){
       <div class="cc-tabs" role="tablist" aria-label="Library">
         <button type="button" role="tab" id="ccTabPics" aria-controls="ccPanel" aria-selected="${s.tab === "pictures"}">Pictures</button>
         <button type="button" role="tab" id="ccTabPacks" aria-controls="ccPanel" aria-selected="${s.tab === "packs"}">Packs (${st.packs})</button>
+        ${C.infinite ? `<button type="button" role="tab" id="ccTabNew" aria-controls="ccPanel" aria-selected="${s.tab === "new"}">New pages</button>` : ""}
       </div>
       <div class="cc-layout">
-        <div id="ccPanel" role="tabpanel" aria-labelledby="${s.tab === "packs" ? "ccTabPacks" : "ccTabPics"}"></div>
+        <div id="ccPanel" role="tabpanel" aria-labelledby="${s.tab === "packs" ? "ccTabPacks" : s.tab === "new" ? "ccTabNew" : "ccTabPics"}"></div>
         <aside class="cc-side" aria-label="Your pages and print preview">
           <section class="cc-box" aria-labelledby="ccSelH"><h2 id="ccSelH">Your pages</h2><div id="ccSel"></div></section>
           <section class="cc-box" aria-labelledby="ccPvH"><h2 id="ccPvH">Print preview</h2><div id="ccPv"></div></section>
@@ -6604,10 +6650,13 @@ const CogniLibrary = (function(){
       if (p){ const n = BookUI.needsFor(p); s.tier = n.tier; } save(); render(root); });
     viewEl.querySelector("#ccTabPics").addEventListener("click", () => { s.tab = "pictures"; save(); render(root); });
     viewEl.querySelector("#ccTabPacks").addEventListener("click", () => { s.tab = "packs"; save(); render(root); });
+    const tNew = viewEl.querySelector("#ccTabNew"); if (tNew) tNew.addEventListener("click", () => { s.tab = "new"; save(); render(root); });
+    const TABS = C.infinite ? ["pictures", "packs", "new"] : ["pictures", "packs"], TAB_ID = { pictures:"#ccTabPics", packs:"#ccTabPacks", new:"#ccTabNew" };
+    viewEl.querySelectorAll(".cc-tabs [role=tab]").forEach(t => { if (t.getAttribute("aria-selected") !== "true") t.setAttribute("tabindex", "-1"); });
     viewEl.querySelector(".cc-tabs").addEventListener("keydown", e => {
       if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
-      s.tab = s.tab === "pictures" ? "packs" : "pictures"; save(); render(root);
-      const t = root.querySelector(s.tab === "packs" ? "#ccTabPacks" : "#ccTabPics"); if (t) t.focus();
+      const i = TABS.indexOf(s.tab); s.tab = TABS[(i + (e.key === "ArrowRight" ? 1 : TABS.length - 1)) % TABS.length]; save(); render(root);
+      const t = root.querySelector(TAB_ID[s.tab]); if (t) t.focus();
     });
     renderPanel(); renderSelection(); renderPreview();
   }
@@ -6620,6 +6669,7 @@ const CogniLibrary = (function(){
   function renderPanel(){
     const s = state(), el = root.querySelector("#ccPanel");
     if (s.tab === "packs") return renderPacks(el);
+    if (s.tab === "new") return renderGen(el);
     el.innerHTML = `
       <form class="cc-filters" id="ccFilters" onsubmit="return false" aria-label="Filter pictures">
         <div class="field"><label for="ccQ">Search</label><input type="text" id="ccQ" value="${esc(s.q)}" placeholder="e.g., tractor, roses, 1950s" autocomplete="off"></div>
@@ -6674,13 +6724,88 @@ const CogniLibrary = (function(){
       const pv = root.querySelector("#ccPvH"); if (pv) pv.scrollIntoView({ behavior:"smooth", block:"start" });
     }));
   }
+  /* ---------- New pages: the infinite page generator ----------
+     Draws a fresh set on this computer from the themes chosen, checks
+     every page against the tier's print rules before showing it, and
+     keeps only the page codes, so a set can be printed again. */
+  let genBusy = false, genNote = "";
+  function renderGen(el){
+    const s = state(), I = C.infinite, g = s.gen;
+    if (!I){ el.innerHTML = `<p class="callout">The page generator could not load. Reload the page to try again.</p>`; return; }
+    el.innerHTML = `
+      <p class="cc-count">Brand-new pictures, drawn on this computer from the themes you choose, never the same twice. Before a page shows here it passes every check for <b>${esc(TIER_SHORT[s.tier])}</b>: closed outlines, lines at least ${I.MIN_PT} pt thick, areas big enough to color, open white space around the subject, and words that are adult, kind and clear of the resident&rsquo;s topics to avoid.</p>
+      <form class="cc-filters cc-gen" id="ccGenForm" onsubmit="return false" aria-label="Make new pages">
+        <fieldset class="field cc-gen-themes"><legend>Themes</legend>
+          <div class="cc-chips">${I.THEMES.map(t => `<label class="cc-chip" title="${esc(t.blurb)}"><input type="checkbox" value="${esc(t.id)}" ${g.themes.indexOf(t.id) >= 0 ? "checked" : ""}><span>${esc(t.label)}</span></label>`).join("")}</div>
+          <p class="hint">Leave them all clear for a mix of every theme.</p></fieldset>
+        <div class="field"><label for="ccGenCount">How many pages</label><select id="ccGenCount">${[6, 12, 18, 24].map(n => `<option value="${n}" ${n === g.count ? "selected" : ""}>${n}</option>`).join("")}</select></div>
+        <div class="field cc-gen-go"><button type="button" class="btn btn-primary" id="ccGenGo" ${genBusy ? "disabled" : ""}>${genBusy ? "Drawing and checking&hellip;" : g.codes.length ? "Make a fresh set" : "Make new pages"}</button></div>
+        <div class="field"><label for="ccGenCode">Print a page again by its code</label><div class="cc-gen-find"><input type="text" id="ccGenCode" placeholder="e.g., 2HB-QIBJMT" autocomplete="off" spellcheck="false" maxlength="12"><button type="button" class="btn" id="ccGenFind">Find</button></div></div>
+        <fieldset class="field cc-tierseg"><legend>Cognitive tier</legend><div class="seg" role="radiogroup">${[1, 2, 3].map(t => `<label><input type="radio" name="ccGenTier" value="${t}" ${s.tier === t ? "checked" : ""}><span>${esc(TIER_SHORT[t])}</span></label>`).join("")}</div>
+          <p class="hint">${esc(C.TIERS[s.tier].about)}</p></fieldset>
+      </form>
+      <p class="cc-count" id="ccGenNote" role="status" aria-live="polite">${esc(genNote)}</p>
+      <div class="actions cc-gen-all" ${g.codes.length ? "" : "hidden"}><button type="button" class="btn" id="ccGenAll">Add all ${g.codes.length} to your pages</button></div>
+      <div class="cc-grid" id="ccGenGrid"></div>`;
+    const f = el.querySelector("#ccGenForm");
+    f.querySelectorAll(".cc-chip input").forEach(c => c.addEventListener("change", () => { g.themes = Array.from(f.querySelectorAll(".cc-chip input:checked")).map(x => x.value); save(); }));
+    f.querySelector("#ccGenCount").addEventListener("change", e => { g.count = +e.target.value || 12; save(); });
+    f.querySelectorAll('input[name="ccGenTier"]').forEach(r => r.addEventListener("change", e => { s.tier = +e.target.value; genNote = ""; save(); renderGen(el); renderPreview(); renderSelection(); }));
+    f.querySelector("#ccGenGo").addEventListener("click", () => makePages(el));
+    const find = () => {
+      const raw = f.querySelector("#ccGenCode").value.trim().toUpperCase(), sp = raw ? I.parse(raw) : null;
+      if (!sp){ genNote = raw ? `No page has the code ${raw}. Codes look like 2HB-QIBJMT: the tier, two letters for the theme, and the page number.` : "Type a page code first."; renderGen(el); return; }
+      const id = GEN + sp.code;
+      g.codes = [sp.code].concat(g.codes.filter(c => c !== sp.code)).slice(0, 24);
+      if (s.picks.indexOf(id) < 0){ s.picks.push(id); s.focus = s.picks.length - 1; }
+      if (sp.tier !== s.tier) s.tier = sp.tier;
+      genNote = `Found ${sp.title} (${sp.code}) and added it to your pages.`; save(); renderGen(el); renderSelection(); renderPreview();
+    };
+    f.querySelector("#ccGenFind").addEventListener("click", find);
+    f.querySelector("#ccGenCode").addEventListener("keydown", e => { if (e.key === "Enter"){ e.preventDefault(); find(); } });
+    const all = el.querySelector("#ccGenAll");
+    if (all) all.addEventListener("click", () => {
+      let n = 0; g.codes.forEach(c => { if (s.picks.indexOf(GEN + c) < 0){ s.picks.push(GEN + c); n++; } });
+      s.pack = ""; save(); renderGenGrid(); renderSelection(); renderPreview(); toast(n ? `Added ${n} new page${n === 1 ? "" : "s"} to your pages.` : "These pages are already in your pages.");
+    });
+    renderGenGrid();
+  }
+  function makePages(el){
+    const s = state(), I = C.infinite, g = s.gen;
+    if (genBusy) return;
+    genBusy = true; renderGen(el);
+    setTimeout(() => {
+      try {
+        const seed = "web-" + Date.now().toString(36) + "-" + Math.floor(Math.random() * 1e9).toString(36), t0 = performance.now();
+        const out = I.batch({ seed:seed, count:g.count, tier:s.tier, themes:g.themes, avoid:s.avoid ? avoidList(resident()) : [], strokes:false, skip:g.codes });
+        g.codes = out.pages.map(p => p.spec.code);
+        const ms = Math.round(performance.now() - t0);
+        genNote = out.pages.length ? `${out.pages.length} new page${out.pages.length === 1 ? "" : "s"}, drawn and checked in ${ms < 1000 ? ms + " ms" : (ms / 1000).toFixed(1) + " seconds"}` +
+          (out.rejected.length ? `. ${out.rejected.length} draft${out.rejected.length === 1 ? " was" : "s were"} drawn again because a check failed.` : ".") + " Choose any to add them to your pages."
+          : "No pages could be made with these choices. Try more themes.";
+      } catch (e){ genNote = "The pages could not be made on this computer: " + e.message; }
+      genBusy = false; save();
+      if (root && root.isConnected && state().tab === "new") renderGen(el);
+    }, 30);
+  }
+  function renderGenGrid(){
+    const s = state(), I = C.infinite, grid = root.querySelector("#ccGenGrid");
+    if (!grid) return;
+    grid.innerHTML = s.gen.codes.map(code => { const id = GEN + code, it = info(id, s.tier); if (!it) return "";
+      const on = s.picks.indexOf(id) >= 0, th = I.THEME[it.theme];
+      return `<button type="button" class="cc-card" data-id="${esc(id)}" aria-pressed="${on}" aria-label="${esc(it.title)}, ${esc(th ? th.label : "")}, page code ${esc(it.code)}${on ? ", chosen" : ""}">
+        <span class="cc-thumb" aria-hidden="true">${thumbSvg(id, s.tier)}</span><span class="cc-check" aria-hidden="true">${on ? "&#10003;" : "+"}</span>
+        <b>${esc(it.title)}</b><small>${esc(th ? th.label : "")} · ${esc(it.code)}</small></button>`; }).join("");
+    grid.querySelectorAll(".cc-card").forEach(b => b.addEventListener("click", () => toggle(b.dataset.id)));
+  }
   function renderSelection(){
     const s = state(), el = root.querySelector("#ccSel");
     const allow = typeof BookUI !== "undefined" ? BookUI.allowanceText() : "";
-    el.innerHTML = (s.picks.length ? `<ol class="cc-sel">${s.picks.map((id, i) => `<li ${i === s.focus ? 'aria-current="true"' : ""}>
-        <button type="button" class="cc-go" data-go="${i}">${i + 1}. ${esc(C.design(id).title)}</button>
-        <button type="button" class="btn btn-ghost btn-sm" data-up="${i}" ${i ? "" : "disabled"} aria-label="Move ${esc(C.design(id).title)} up">&uarr;</button>
-        <button type="button" class="btn btn-ghost btn-sm" data-rm="${esc(id)}" aria-label="Remove ${esc(C.design(id).title)}">&times;</button></li>`).join("")}</ol>`
+    el.innerHTML = (s.picks.length ? `<ol class="cc-sel">${s.picks.map((id, i) => { const it = info(id, s.tier), warn = !genPasses(id, s.tier);
+        return `<li ${i === s.focus ? 'aria-current="true"' : ""}>
+        <button type="button" class="cc-go" data-go="${i}">${i + 1}. ${esc(it.title)}${it.code ? ` <small>(${esc(it.code)})</small>` : ""}${warn ? ` <small class="cc-warn">may not print well at ${esc(TIER_SHORT[s.tier])}: remove it or make new pages at this tier</small>` : ""}</button>
+        <button type="button" class="btn btn-ghost btn-sm" data-up="${i}" ${i ? "" : "disabled"} aria-label="Move ${esc(it.title)} up">&uarr;</button>
+        <button type="button" class="btn btn-ghost btn-sm" data-rm="${esc(id)}" aria-label="Remove ${esc(it.title)}">&times;</button></li>`; }).join("")}</ol>`
       : `<p class="cc-empty">No pages yet. Choose pictures from the library, or a whole pack.</p>`) + `
       <div class="actions">
         <button type="button" class="btn btn-primary" id="ccAdd" ${s.picks.length ? "" : "disabled"}>Add ${s.picks.length || ""} to packet</button>
@@ -6701,7 +6826,7 @@ const CogniLibrary = (function(){
     if (!s.picks.length){ el.innerHTML = `<p class="cc-empty">Your first page will show here, exactly as it prints.</p>` + optionsHtml(); bindOptions(el); return; }
     if (s.focus >= s.picks.length) s.focus = 0;
     const o = pageOpts(s.focus), pg = sheet(o), lay = layout(o), F = lay.F;
-    el.innerHTML = `<div class="cc-pv-wrap"><div class="cc-pv" id="ccPvPage" role="img" aria-label="Page ${s.focus + 1} of ${s.picks.length}: ${esc(C.design(o.design).title)} at ${esc(TIER_SHORT[lay.tier])}">
+    el.innerHTML = `<div class="cc-pv-wrap"><div class="cc-pv" id="ccPvPage" role="img" aria-label="Page ${s.focus + 1} of ${s.picks.length}: ${esc(info(o.design, lay.tier).title)} at ${esc(TIER_SHORT[lay.tier])}">
         ${pg.html}${s.overlays ? overlay(F) : ""}</div></div>
       <div class="cc-pv-nav"><button type="button" class="btn btn-ghost btn-sm" id="ccPrev" ${s.focus ? "" : "disabled"} aria-label="Previous page">&larr;</button>
         <span>Page ${s.focus + 1} of ${s.picks.length}${s.duplex ? ` · gutter on the ${F.gutterSide}` : ""}</span>
@@ -6772,14 +6897,14 @@ const CogniLibrary = (function(){
      options), like every other activity, and rebuild exactly when printed. */
   const LIBRARY_ACTIVITY = {
     id:"cognicopia-coloring-library", name:"Cognicopia Coloring Page", themed:false, hidden:true,
-    desc:"A page from the Cognicopia Coloring library.",
+    desc:"A page from the Cognicopia Coloring library or its page generator.",
     icon:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="2" width="16" height="20" rx="2"/><circle cx="12" cy="10" r="3"/><path d="M12 13v6M9 16l3-2 3 2"/></svg>',
-    plan(cfg, rng, count){ const p = ((cfg.opts || {}).pages || []).filter(id => C.design(id)); const out = []; for (let i = 0; i < count; i++) out.push(p[i % Math.max(1, p.length)] || "tulips-vase"); return out; },
+    plan(cfg, rng, count){ const p = ((cfg.opts || {}).pages || []).filter(valid); const out = []; for (let i = 0; i < count; i++) out.push(p[i % Math.max(1, p.length)] || "tulips-vase"); return out; },
     generate(cfg, rng, id){
       const o = cfg.opts || {}, pages = (o.pages || []);
       const pg = sheet({ design:id, tier:o.tier || 2, weight:o.weight || "auto", header:o.header !== false, title:o.title !== false, caption:o.caption !== false,
         largePrint:!!o.largePrint, legend:o.legend || "off", duplex:false, pageNumber:1, pageCount:1, name:cfg.residentName, facility:o.facility || "" });
-      return { layout:"cc", sheet:pg.html, title:C.design(id).title, instructions:"", html:"", signature:id + "#" + (o.tier || 2) + "#" + pages.indexOf(id) };
+      return { layout:"cc", sheet:pg.html, title:info(id, o.tier || 2).title, instructions:"", html:"", signature:id + "#" + (o.tier || 2) + "#" + pages.indexOf(id) };
     }
   };
   return { render, layout, sheet, buildPdf, loadPdfKit, pageOpts, state, LIBRARY_ACTIVITY };
@@ -12701,7 +12826,7 @@ function renderCounts(){
 function renderHome(){
   // Interactive generators first, then the activity library, then the
   // reading: the reference modules live in the Resource & Clinical Hub.
-  const cc = CAT_INDEX.cognicopia-coloring, tool = (href, icon, name, desc, pills) => `
+  const cc = CAT_INDEX["cognicopia-coloring"], tool = (href, icon, name, desc, pills) => `
       <a class="card" href="${href}">
         <span class="ic">${icon}</span><b>${esc(name)}</b><span class="desc">${esc(desc)}</span>
         <span class="meta">${pills.map((p, k) => `<span class="pill${k ? "" : " live"}">${esc(p)}</span>`).join("")}</span>
