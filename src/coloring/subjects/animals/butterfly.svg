@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 304 240"
+  data-title="The Butterfly" data-tags="butterfly, garden, insect, summer, spring, meadow, flower"
+  data-angle="front" data-word="butterfly" data-completion="Floating over the flowers, a" data-banner="BUTTERFLY"
+  data-prompt="What does a garden full of butterflies bring to mind?">
+  <g id="half">
+    <path fill="#fff" stroke="#000" d="M148 108 C120 58 80 28 46 34 C20 40 22 78 40 102 C60 122 104 124 148 114 Z"/>
+    <path fill="#fff" stroke="#000" d="M148 122 C112 128 70 144 64 176 C60 204 90 214 112 196 C128 182 140 152 148 128 Z"/>
+    <circle cx="82" cy="72" r="15" fill="#fff" stroke="#000"/>
+    <ellipse class="detail" cx="112" cy="98" rx="11" ry="7" fill="#fff" stroke="#000"/>
+    <circle cx="96" cy="176" r="12" fill="#fff" stroke="#000"/>
+    <path fill="none" stroke="#000" d="M148 68 C140 50 132 40 120 34"/>
+    <circle cx="118" cy="33" r="4.5" fill="#fff" stroke="#000"/>
+  </g>
+  <g transform="matrix(-1 0 0 1 304 0)">
+    <path fill="#fff" stroke="#000" d="M148 108 C120 58 80 28 46 34 C20 40 22 78 40 102 C60 122 104 124 148 114 Z"/>
+    <path fill="#fff" stroke="#000" d="M148 122 C112 128 70 144 64 176 C60 204 90 214 112 196 C128 182 140 152 148 128 Z"/>
+    <circle cx="82" cy="72" r="15" fill="#fff" stroke="#000"/>
+    <ellipse class="detail" cx="112" cy="98" rx="11" ry="7" fill="#fff" stroke="#000"/>
+    <circle cx="96" cy="176" r="12" fill="#fff" stroke="#000"/>
+    <path fill="none" stroke="#000" d="M148 68 C140 50 132 40 120 34"/>
+    <circle cx="118" cy="33" r="4.5" fill="#fff" stroke="#000"/>
+  </g>
+  <ellipse cx="152" cy="126" rx="8" ry="48" fill="#fff" stroke="#000"/>
+  <circle cx="152" cy="74" r="10" fill="#fff" stroke="#000"/>
+</svg>

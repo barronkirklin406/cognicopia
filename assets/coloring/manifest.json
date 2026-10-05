@@ -1,0 +1,1080 @@
+{
+  "schema": "cognicopia-coloring-subjects/1",
+  "version": "ff924d4bcd94",
+  "box": {
+    "width": 800,
+    "height": 600
+  },
+  "stroke": {
+    "main": 4,
+    "detail": 3
+  },
+  "categories": [
+    "vehicles",
+    "nature",
+    "objects",
+    "animals",
+    "nostalgia"
+  ],
+  "assets": [
+    {
+      "id": "1950s_pickup_truck",
+      "title": "1950s Pickup Truck",
+      "category": "vehicles",
+      "filePath": "assets/coloring/vehicles/1950s_pickup_truck.svg",
+      "tags": [
+        "1950s",
+        "driving",
+        "farm",
+        "farm_truck",
+        "pickup",
+        "pickup_truck",
+        "transportation",
+        "truck",
+        "utility_vehicle",
+        "vehicles",
+        "work"
+      ],
+      "dementiaStageCompatibility": [
+        "early",
+        "middle",
+        "late"
+      ],
+      "recommendedAngle": "side_profile",
+      "strokeWidthMin": 3,
+      "prompt": "What would you haul in the back of a truck like this?",
+      "word": "truck",
+      "completion": "Loaded up in the old pickup",
+      "banner": "TRUCK",
+      "paths": 12,
+      "detailPaths": 4,
+      "hash": "774f1fa2138d"
+    },
+    {
+      "id": "1957_family_sedan",
+      "title": "1957 Family Sedan",
+      "category": "vehicles",
+      "filePath": "assets/coloring/vehicles/1957_family_sedan.svg",
+      "tags": [
+        "1950s",
+        "1957",
+        "automobile",
+        "car",
+        "classic_car",
+        "driving",
+        "family",
+        "family_car",
+        "family_sedan",
+        "sedan",
+        "tail_fins",
+        "transportation",
+        "vehicles"
+      ],
+      "dementiaStageCompatibility": [
+        "early",
+        "middle",
+        "late"
+      ],
+      "recommendedAngle": "side_profile",
+      "strokeWidthMin": 3,
+      "prompt": "Where would you go on a Sunday drive, and who would come along?",
+      "word": "car",
+      "completion": "Sunday drive in the family",
+      "banner": "CAR",
+      "paths": 11,
+      "detailPaths": 3,
+      "hash": "d5d0be9829a3"
+    },
+    {
+      "id": "1967_muscle_car",
+      "title": "1967 Muscle Car",
+      "category": "vehicles",
+      "filePath": "assets/coloring/vehicles/1967_muscle_car.svg",
+      "tags": [
+        "1960s",
+        "1967",
+        "automobile",
+        "car",
+        "classic_car",
+        "driving",
+        "mechanical",
+        "muscle",
+        "muscle_car",
+        "transportation",
+        "vehicles"
+      ],
+      "dementiaStageCompatibility": [
+        "early",
+        "middle",
+        "late"
+      ],
+      "recommendedAngle": "side_profile",
+      "strokeWidthMin": 3,
+      "prompt": "Where would you take a car like this on a summer evening?",
+      "word": "car",
+      "completion": "A classic 1967 muscle",
+      "banner": "CAR",
+      "paths": 16,
+      "detailPaths": 8,
+      "hash": "dbe98d8ec32f"
+    },
+    {
+      "id": "biplane",
+      "title": "The Biplane",
+      "category": "vehicles",
+      "filePath": "assets/coloring/vehicles/biplane.svg",
+      "tags": [
+        "1920s",
+        "1930s",
+        "aircraft",
+        "airplane",
+        "aviation",
+        "barnstormer",
+        "biplane",
+        "county_fair",
+        "flying",
+        "vehicles"
+      ],
+      "dementiaStageCompatibility": [
+        "early",
+        "middle",
+        "late"
+      ],
+      "recommendedAngle": "side_profile",
+      "strokeWidthMin": 3,
+      "prompt": "What would it feel like to fly in an open plane like this?",
+      "word": "plane",
+      "completion": "Loop the loop in the old",
+      "banner": "PLANE",
+      "paths": 14,
+      "detailPaths": 3,
+      "hash": "606c43eb41b1"
+    },
+    {
+      "id": "farm_tractor",
+      "title": "The Farm Tractor",
+      "category": "vehicles",
+      "filePath": "assets/coloring/vehicles/farm_tractor.svg",
+      "tags": [
+        "1950s",
+        "farm",
+        "farm_machinery",
+        "farm_tractor",
+        "farming",
+        "harvest",
+        "tractor",
+        "utility_vehicle",
+        "vehicles",
+        "work"
+      ],
+      "dementiaStageCompatibility": [
+        "early",
+        "middle",
+        "late"
+      ],
+      "recommendedAngle": "side_profile",
+      "strokeWidthMin": 3,
+      "prompt": "What would you grow in a field like this one?",
+      "word": "tractor",
+      "completion": "Out in the field on the",
+      "banner": "TRACTOR",
+      "paths": 14,
+      "detailPaths": 1,
+      "hash": "2e0f07075a01"
+    },
+    {
+      "id": "propeller_airliner",
+      "title": "The Propeller Airliner",
+      "category": "vehicles",
+      "filePath": "assets/coloring/vehicles/propeller_airliner.svg",
+      "tags": [
+        "1940s",
+        "1950s",
+        "aircraft",
+        "airliner",
+        "airplane",
+        "aviation",
+        "flying",
+        "propeller",
+        "propeller_airliner",
+        "travel",
+        "vehicles"
+      ],
+      "dementiaStageCompatibility": [
+        "early",
+        "middle",
+        "late"
+      ],
+      "recommendedAngle": "side_profile",
+      "strokeWidthMin": 3,
+      "prompt": "Where would you fly on a trip, if you could go anywhere?",
+      "word": "airplane",
+      "completion": "Up in the sky goes the",
+      "banner": "AIRPLANE",
+      "paths": 15,
+      "detailPaths": 10,
+      "hash": "dda7ef251cff"
+    },
+    {
+      "id": "sailboat",
+      "title": "The Sailboat",
+      "category": "vehicles",
+      "filePath": "assets/coloring/vehicles/sailboat.svg",
+      "tags": [
+        "boat",
+        "lake",
+        "sailboat",
+        "sailing",
+        "summer",
+        "vacation",
+        "vehicles",
+        "water"
+      ],
+      "dementiaStageCompatibility": [
+        "early",
+        "middle",
+        "late"
+      ],
+      "recommendedAngle": "side_profile",
+      "strokeWidthMin": 3,
+      "prompt": "What would a calm afternoon on the water sound like?",
+      "word": "boat",
+      "completion": "Out on the lake in a sail",
+      "banner": "BOAT",
+      "paths": 9,
+      "detailPaths": 5,
+      "hash": "0eee39e04d41"
+    },
+    {
+      "id": "steam_locomotive",
+      "title": "The Steam Locomotive",
+      "category": "vehicles",
+      "filePath": "assets/coloring/vehicles/steam_locomotive.svg",
+      "tags": [
+        "locomotive",
+        "railroad",
+        "steam",
+        "steam_locomotive",
+        "steam_train",
+        "train",
+        "transportation",
+        "travel",
+        "vehicles"
+      ],
+      "dementiaStageCompatibility": [
+        "early",
+        "middle",
+        "late"
+      ],
+      "recommendedAngle": "side_profile",
+      "strokeWidthMin": 3,
+      "prompt": "Where would you most like a train like this to take you?",
+      "word": "train",
+      "completion": "All aboard the steam",
+      "banner": "TRAIN",
+      "paths": 21,
+      "detailPaths": 6,
+      "hash": "40c370034313"
+    },
+    {
+      "id": "daisy",
+      "title": "The Daisy",
+      "category": "nature",
+      "filePath": "assets/coloring/nature/daisy.svg",
+      "tags": [
+        "daisy",
+        "flower",
+        "garden",
+        "meadow",
+        "nature",
+        "spring",
+        "summer"
+      ],
+      "dementiaStageCompatibility": [
+        "early",
+        "middle",
+        "late"
+      ],
+      "recommendedAngle": "front",
+      "strokeWidthMin": 3,
+      "prompt": "Where would a patch of daisies look lovely?",
+      "word": "daisy",
+      "completion": "Fresh as a",
+      "banner": "DAISY",
+      "paths": 17,
+      "detailPaths": 1,
+      "hash": "af545bfc2118"
+    },
+    {
+      "id": "garden_rose",
+      "title": "The Garden Rose",
+      "category": "nature",
+      "filePath": "assets/coloring/nature/garden_rose.svg",
+      "tags": [
+        "flower",
+        "garden",
+        "garden_rose",
+        "gardening",
+        "nature",
+        "romance",
+        "rose",
+        "summer",
+        "valentine"
+      ],
+      "dementiaStageCompatibility": [
+        "early",
+        "middle",
+        "late"
+      ],
+      "recommendedAngle": "front",
+      "strokeWidthMin": 3,
+      "prompt": "What color would you choose for a rose like this one?",
+      "word": "rose",
+      "completion": "A red, red",
+      "banner": "ROSE",
+      "paths": 11,
+      "detailPaths": 4,
+      "hash": "006ad7dda136"
+    },
+    {
+      "id": "oak_tree",
+      "title": "The Old Oak Tree",
+      "category": "nature",
+      "filePath": "assets/coloring/nature/oak_tree.svg",
+      "tags": [
+        "fall",
+        "farm",
+        "nature",
+        "oak",
+        "oak_tree",
+        "outdoors",
+        "park",
+        "shade",
+        "tree"
+      ],
+      "dementiaStageCompatibility": [
+        "early",
+        "middle",
+        "late"
+      ],
+      "recommendedAngle": "front",
+      "strokeWidthMin": 3,
+      "prompt": "What would you do under a big shade tree on a summer afternoon?",
+      "word": "tree",
+      "completion": "Shade under the old oak",
+      "banner": "TREE",
+      "paths": 8,
+      "detailPaths": 4,
+      "hash": "eb8fc18ca4cc"
+    },
+    {
+      "id": "pumpkin",
+      "title": "The Harvest Pumpkin",
+      "category": "nature",
+      "filePath": "assets/coloring/nature/pumpkin.svg",
+      "tags": [
+        "fall",
+        "farm",
+        "garden",
+        "halloween",
+        "harvest",
+        "nature",
+        "pie",
+        "pumpkin",
+        "thanksgiving"
+      ],
+      "dementiaStageCompatibility": [
+        "early",
+        "middle",
+        "late"
+      ],
+      "recommendedAngle": "front",
+      "strokeWidthMin": 3,
+      "prompt": "What would you make with a pumpkin like this one?",
+      "word": "pumpkin",
+      "completion": "Picked from the patch, a big",
+      "banner": "PUMPKIN",
+      "paths": 8,
+      "detailPaths": 1,
+      "hash": "744b852857b3"
+    },
+    {
+      "id": "sunflower",
+      "title": "The Sunflower",
+      "category": "nature",
+      "filePath": "assets/coloring/nature/sunflower.svg",
+      "tags": [
+        "farm",
+        "flower",
+        "garden",
+        "harvest",
+        "kansas",
+        "nature",
+        "summer",
+        "sunflower"
+      ],
+      "dementiaStageCompatibility": [
+        "early",
+        "middle",
+        "late"
+      ],
+      "recommendedAngle": "front",
+      "strokeWidthMin": 3,
+      "prompt": "Where would a row of tall sunflowers look best?",
+      "word": "sunflower",
+      "completion": "Tall and bright, a",
+      "banner": "SUNFLOWER",
+      "paths": 30,
+      "detailPaths": 9,
+      "hash": "0c76798391b5"
+    },
+    {
+      "id": "tulip",
+      "title": "The Tulip",
+      "category": "nature",
+      "filePath": "assets/coloring/nature/tulip.svg",
+      "tags": [
+        "easter",
+        "flower",
+        "garden",
+        "gardening",
+        "holland",
+        "nature",
+        "spring",
+        "tulip"
+      ],
+      "dementiaStageCompatibility": [
+        "early",
+        "middle",
+        "late"
+      ],
+      "recommendedAngle": "front",
+      "strokeWidthMin": 3,
+      "prompt": "What does a garden look like on the first warm day of spring?",
+      "word": "tulip",
+      "completion": "First sign of spring, a",
+      "banner": "TULIP",
+      "paths": 7,
+      "detailPaths": 2,
+      "hash": "bef4b13db1b8"
+    },
+    {
+      "id": "birdhouse",
+      "title": "The Birdhouse",
+      "category": "objects",
+      "filePath": "assets/coloring/objects/birdhouse.svg",
+      "tags": [
+        "backyard",
+        "bird",
+        "birdhouse",
+        "carpentry",
+        "garden",
+        "home",
+        "objects",
+        "woodworking"
+      ],
+      "dementiaStageCompatibility": [
+        "early",
+        "middle",
+        "late"
+      ],
+      "recommendedAngle": "front",
+      "strokeWidthMin": 3,
+      "prompt": "Which birds would you like to see move into this birdhouse?",
+      "word": "birdhouse",
+      "completion": "Hung up for the songbirds, the",
+      "banner": "BIRDHOUSE",
+      "paths": 8,
+      "detailPaths": 2,
+      "hash": "09b586f4a332"
+    },
+    {
+      "id": "oil_lantern",
+      "title": "The Oil Lantern",
+      "category": "objects",
+      "filePath": "assets/coloring/objects/oil_lantern.svg",
+      "tags": [
+        "barn",
+        "cabin",
+        "camping",
+        "farm",
+        "home",
+        "kerosene",
+        "lamp",
+        "lantern",
+        "objects",
+        "oil",
+        "oil_lantern"
+      ],
+      "dementiaStageCompatibility": [
+        "early",
+        "middle",
+        "late"
+      ],
+      "recommendedAngle": "front",
+      "strokeWidthMin": 3,
+      "prompt": "What makes an evening feel warm and cozy to you?",
+      "word": "lantern",
+      "completion": "A warm light from the old",
+      "banner": "LANTERN",
+      "paths": 12,
+      "detailPaths": 1,
+      "hash": "fc3f6a32b054"
+    },
+    {
+      "id": "rocking_chair",
+      "title": "The Rocking Chair",
+      "category": "objects",
+      "filePath": "assets/coloring/objects/rocking_chair.svg",
+      "tags": [
+        "carpentry",
+        "chair",
+        "front_porch",
+        "furniture",
+        "home",
+        "objects",
+        "porch",
+        "rocking",
+        "rocking_chair",
+        "woodworking"
+      ],
+      "dementiaStageCompatibility": [
+        "early",
+        "middle",
+        "late"
+      ],
+      "recommendedAngle": "side_profile",
+      "strokeWidthMin": 3,
+      "prompt": "Where would you put a rocking chair like this one?",
+      "word": "chair",
+      "completion": "Rocking slowly on the porch in the",
+      "banner": "ROCKING CHAIR",
+      "paths": 12,
+      "detailPaths": 0,
+      "hash": "d776f506fafc"
+    },
+    {
+      "id": "teacup",
+      "title": "The Teacup",
+      "category": "objects",
+      "filePath": "assets/coloring/objects/teacup.svg",
+      "tags": [
+        "afternoon_tea",
+        "china",
+        "cup",
+        "home",
+        "kitchen",
+        "objects",
+        "saucer",
+        "tea",
+        "teacup"
+      ],
+      "dementiaStageCompatibility": [
+        "early",
+        "middle",
+        "late"
+      ],
+      "recommendedAngle": "side_profile",
+      "strokeWidthMin": 3,
+      "prompt": "How do you like your tea or coffee, and where do you like to sit with it?",
+      "word": "tea",
+      "completion": "A fine china cup of",
+      "banner": "TEACUP",
+      "paths": 11,
+      "detailPaths": 6,
+      "hash": "af3f8eea2d7c"
+    },
+    {
+      "id": "teapot",
+      "title": "The Teapot",
+      "category": "objects",
+      "filePath": "assets/coloring/objects/teapot.svg",
+      "tags": [
+        "afternoon_tea",
+        "home",
+        "homemaker",
+        "kitchen",
+        "objects",
+        "tea",
+        "teapot"
+      ],
+      "dementiaStageCompatibility": [
+        "early",
+        "middle",
+        "late"
+      ],
+      "recommendedAngle": "side_profile",
+      "strokeWidthMin": 3,
+      "prompt": "Who would you most like to share a pot of tea with?",
+      "word": "teapot",
+      "completion": "Time for a cup from the",
+      "banner": "TEAPOT",
+      "paths": 12,
+      "detailPaths": 5,
+      "hash": "b1061982a50b"
+    },
+    {
+      "id": "watering_can",
+      "title": "The Watering Can",
+      "category": "objects",
+      "filePath": "assets/coloring/objects/watering_can.svg",
+      "tags": [
+        "backyard",
+        "can",
+        "chores",
+        "flower",
+        "garden",
+        "gardening",
+        "home",
+        "objects",
+        "watering",
+        "watering_can"
+      ],
+      "dementiaStageCompatibility": [
+        "early",
+        "middle",
+        "late"
+      ],
+      "recommendedAngle": "side_profile",
+      "strokeWidthMin": 3,
+      "prompt": "What would you plant in a garden of your own?",
+      "word": "can",
+      "completion": "Out to water the garden with the",
+      "banner": "WATERING CAN",
+      "paths": 8,
+      "detailPaths": 2,
+      "hash": "a9517e9149ed"
+    },
+    {
+      "id": "butterfly",
+      "title": "The Butterfly",
+      "category": "animals",
+      "filePath": "assets/coloring/animals/butterfly.svg",
+      "tags": [
+        "animals",
+        "butterfly",
+        "flower",
+        "garden",
+        "insect",
+        "meadow",
+        "spring",
+        "summer"
+      ],
+      "dementiaStageCompatibility": [
+        "early",
+        "middle",
+        "late"
+      ],
+      "recommendedAngle": "front",
+      "strokeWidthMin": 3,
+      "prompt": "What does a garden full of butterflies bring to mind?",
+      "word": "butterfly",
+      "completion": "Floating over the flowers, a",
+      "banner": "BUTTERFLY",
+      "paths": 16,
+      "detailPaths": 4,
+      "hash": "3cb21e045208"
+    },
+    {
+      "id": "cardinal",
+      "title": "The Cardinal",
+      "category": "animals",
+      "filePath": "assets/coloring/animals/cardinal.svg",
+      "tags": [
+        "animals",
+        "backyard",
+        "bird",
+        "birdwatching",
+        "cardinal",
+        "christmas",
+        "songbird",
+        "winter"
+      ],
+      "dementiaStageCompatibility": [
+        "early",
+        "middle",
+        "late"
+      ],
+      "recommendedAngle": "side_profile",
+      "strokeWidthMin": 3,
+      "prompt": "Which birds would you most like to see at a feeder?",
+      "word": "cardinal",
+      "completion": "Bright on a winter branch, a",
+      "banner": "CARDINAL",
+      "paths": 13,
+      "detailPaths": 6,
+      "hash": "3ff61e9da406"
+    },
+    {
+      "id": "horse",
+      "title": "The Horse",
+      "category": "animals",
+      "filePath": "assets/coloring/animals/horse.svg",
+      "tags": [
+        "animals",
+        "farm",
+        "farm_animal",
+        "horse",
+        "pony",
+        "ranch",
+        "riding",
+        "rodeo",
+        "western"
+      ],
+      "dementiaStageCompatibility": [
+        "early",
+        "middle",
+        "late"
+      ],
+      "recommendedAngle": "side_profile",
+      "strokeWidthMin": 3,
+      "prompt": "What do you like most about horses?",
+      "word": "horse",
+      "completion": "Out on the ranch, a fine",
+      "banner": "HORSE",
+      "paths": 11,
+      "detailPaths": 4,
+      "hash": "8353276a3eb0"
+    },
+    {
+      "id": "hummingbird",
+      "title": "The Hummingbird",
+      "category": "animals",
+      "filePath": "assets/coloring/animals/hummingbird.svg",
+      "tags": [
+        "animals",
+        "bird",
+        "birdwatching",
+        "flower",
+        "garden",
+        "hummingbird",
+        "summer"
+      ],
+      "dementiaStageCompatibility": [
+        "early",
+        "middle",
+        "late"
+      ],
+      "recommendedAngle": "side_profile",
+      "strokeWidthMin": 3,
+      "prompt": "Which flowers would a hummingbird like best?",
+      "word": "hummingbird",
+      "completion": "Sipping from a flower, a tiny",
+      "banner": "HUMMINGBIRD",
+      "paths": 15,
+      "detailPaths": 2,
+      "hash": "0d4ccb67cc3d"
+    },
+    {
+      "id": "owl",
+      "title": "The Wise Old Owl",
+      "category": "animals",
+      "filePath": "assets/coloring/animals/owl.svg",
+      "tags": [
+        "animals",
+        "barn",
+        "bird",
+        "birdwatching",
+        "farm",
+        "night",
+        "owl",
+        "woods"
+      ],
+      "dementiaStageCompatibility": [
+        "early",
+        "middle",
+        "late"
+      ],
+      "recommendedAngle": "front",
+      "strokeWidthMin": 3,
+      "prompt": "What sounds make a quiet night feel peaceful?",
+      "word": "owl",
+      "completion": "Up in the barn rafters, a wise old",
+      "banner": "OWL",
+      "paths": 18,
+      "detailPaths": 5,
+      "hash": "0698a5a92843"
+    },
+    {
+      "id": "rooster",
+      "title": "The Rooster",
+      "category": "animals",
+      "filePath": "assets/coloring/animals/rooster.svg",
+      "tags": [
+        "animals",
+        "barnyard",
+        "chicken",
+        "farm",
+        "farm_animal",
+        "morning",
+        "rooster"
+      ],
+      "dementiaStageCompatibility": [
+        "early",
+        "middle",
+        "late"
+      ],
+      "recommendedAngle": "side_profile",
+      "strokeWidthMin": 3,
+      "prompt": "What does a good morning in the country sound like?",
+      "word": "rooster",
+      "completion": "Up at dawn with the crowing",
+      "banner": "ROOSTER",
+      "paths": 17,
+      "detailPaths": 4,
+      "hash": "50a0847fcc07"
+    },
+    {
+      "id": "sitting_cat",
+      "title": "The Sitting Cat",
+      "category": "animals",
+      "filePath": "assets/coloring/animals/sitting_cat.svg",
+      "tags": [
+        "animals",
+        "cat",
+        "cozy",
+        "home",
+        "kitten",
+        "pet",
+        "sitting",
+        "sitting_cat"
+      ],
+      "dementiaStageCompatibility": [
+        "early",
+        "middle",
+        "late"
+      ],
+      "recommendedAngle": "front",
+      "strokeWidthMin": 3,
+      "prompt": "What do you enjoy most about cats?",
+      "word": "cat",
+      "completion": "Curled up by the fire, the",
+      "banner": "CAT",
+      "paths": 18,
+      "detailPaths": 11,
+      "hash": "609ec524381d"
+    },
+    {
+      "id": "sitting_dog",
+      "title": "The Faithful Dog",
+      "category": "animals",
+      "filePath": "assets/coloring/animals/sitting_dog.svg",
+      "tags": [
+        "animals",
+        "companion",
+        "dog",
+        "farm",
+        "home",
+        "pet",
+        "puppy",
+        "sitting",
+        "sitting_dog"
+      ],
+      "dementiaStageCompatibility": [
+        "early",
+        "middle",
+        "late"
+      ],
+      "recommendedAngle": "front",
+      "strokeWidthMin": 3,
+      "prompt": "What makes a dog such good company?",
+      "word": "dog",
+      "completion": "Waiting at the door, the loyal",
+      "banner": "DOG",
+      "paths": 16,
+      "detailPaths": 3,
+      "hash": "98b558b32f88"
+    },
+    {
+      "id": "cathedral_radio",
+      "title": "The Cathedral Radio",
+      "category": "nostalgia",
+      "filePath": "assets/coloring/nostalgia/cathedral_radio.svg",
+      "tags": [
+        "1930s",
+        "1940s",
+        "broadcast",
+        "cathedral",
+        "cathedral_radio",
+        "home",
+        "living_room",
+        "music",
+        "nostalgia",
+        "radio"
+      ],
+      "dementiaStageCompatibility": [
+        "early",
+        "middle",
+        "late"
+      ],
+      "recommendedAngle": "front",
+      "strokeWidthMin": 3,
+      "prompt": "What song would you like to hear on the radio right now?",
+      "word": "radio",
+      "completion": "Gathered round to hear the",
+      "banner": "RADIO",
+      "paths": 13,
+      "detailPaths": 2,
+      "hash": "66b2d9de2fc9"
+    },
+    {
+      "id": "grandfather_clock",
+      "title": "The Grandfather Clock",
+      "category": "nostalgia",
+      "filePath": "assets/coloring/nostalgia/grandfather_clock.svg",
+      "tags": [
+        "clock",
+        "furniture",
+        "grandfather",
+        "grandfather_clock",
+        "heirloom",
+        "home",
+        "nostalgia",
+        "time",
+        "woodworking"
+      ],
+      "dementiaStageCompatibility": [
+        "early",
+        "middle",
+        "late"
+      ],
+      "recommendedAngle": "front",
+      "strokeWidthMin": 3,
+      "prompt": "What room would a clock like this stand in, and how would its chime sound?",
+      "word": "clock",
+      "completion": "Chiming every hour, the grandfather",
+      "banner": "CLOCK",
+      "paths": 23,
+      "detailPaths": 11,
+      "hash": "769ae6cbd539"
+    },
+    {
+      "id": "jukebox",
+      "title": "The Jukebox",
+      "category": "nostalgia",
+      "filePath": "assets/coloring/nostalgia/jukebox.svg",
+      "tags": [
+        "1940s",
+        "1950s",
+        "dancing",
+        "diner",
+        "jukebox",
+        "music",
+        "nostalgia",
+        "records",
+        "rock_and_roll",
+        "soda_fountain"
+      ],
+      "dementiaStageCompatibility": [
+        "early",
+        "middle",
+        "late"
+      ],
+      "recommendedAngle": "front",
+      "strokeWidthMin": 3,
+      "prompt": "What song would you play on a jukebox?",
+      "word": "jukebox",
+      "completion": "A favorite song on the",
+      "banner": "JUKEBOX",
+      "paths": 19,
+      "detailPaths": 12,
+      "hash": "1497916ce120"
+    },
+    {
+      "id": "rotary_telephone",
+      "title": "The Rotary Telephone",
+      "category": "nostalgia",
+      "filePath": "assets/coloring/nostalgia/rotary_telephone.svg",
+      "tags": [
+        "1950s",
+        "1960s",
+        "home",
+        "nostalgia",
+        "office",
+        "phone",
+        "rotary",
+        "rotary_telephone",
+        "switchboard",
+        "telephone"
+      ],
+      "dementiaStageCompatibility": [
+        "early",
+        "middle",
+        "late"
+      ],
+      "recommendedAngle": "front",
+      "strokeWidthMin": 3,
+      "prompt": "Who would you most like to call for a friendly chat?",
+      "word": "telephone",
+      "completion": "A call coming in on the",
+      "banner": "TELEPHONE",
+      "paths": 17,
+      "detailPaths": 10,
+      "hash": "f8a96c2b4eee"
+    },
+    {
+      "id": "sewing_machine",
+      "title": "The Sewing Machine",
+      "category": "nostalgia",
+      "filePath": "assets/coloring/nostalgia/sewing_machine.svg",
+      "tags": [
+        "crafts",
+        "dressmaking",
+        "home",
+        "machine",
+        "nostalgia",
+        "quilting",
+        "seamstress",
+        "sewing",
+        "sewing_machine",
+        "tailor"
+      ],
+      "dementiaStageCompatibility": [
+        "early",
+        "middle",
+        "late"
+      ],
+      "recommendedAngle": "side_profile",
+      "strokeWidthMin": 3,
+      "prompt": "What would you make on a sewing machine like this one?",
+      "word": "machine",
+      "completion": "Stitching a hem on the sewing",
+      "banner": "SEWING MACHINE",
+      "paths": 10,
+      "detailPaths": 2,
+      "hash": "11234de074d2"
+    },
+    {
+      "id": "typewriter",
+      "title": "The Typewriter",
+      "category": "nostalgia",
+      "filePath": "assets/coloring/nostalgia/typewriter.svg",
+      "tags": [
+        "1940s",
+        "1950s",
+        "letters",
+        "newspaper",
+        "nostalgia",
+        "office",
+        "school",
+        "secretary",
+        "typewriter",
+        "writing"
+      ],
+      "dementiaStageCompatibility": [
+        "early",
+        "middle",
+        "late"
+      ],
+      "recommendedAngle": "front",
+      "strokeWidthMin": 3,
+      "prompt": "Who would you write a letter to today, and what would it say?",
+      "word": "typewriter",
+      "completion": "Letters typed out on the",
+      "banner": "TYPEWRITER",
+      "paths": 41,
+      "detailPaths": 30,
+      "hash": "874ccd8c9cd3"
+    }
+  ]
+}

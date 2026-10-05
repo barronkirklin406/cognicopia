@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 290"
+  data-title="The Wise Old Owl" data-tags="owl, bird, night, barn, farm, woods, birdwatching"
+  data-angle="front" data-word="owl" data-completion="Up in the barn rafters, a wise old" data-banner="OWL"
+  data-prompt="What sounds make a quiet night feel peaceful?">
+  <path fill="#fff" stroke="#000" d="M10 258 C80 250 160 252 230 246 L232 260 C160 266 80 264 12 272 Z"/>
+  <path fill="#fff" stroke="#000" d="M62 70 L56 22 L92 50 C108 44 132 44 148 50 L184 22 L178 70 C196 100 200 150 190 196 C180 236 150 252 120 252 C90 252 60 236 50 196 C40 150 44 100 62 70 Z"/>
+  <path fill="#fff" stroke="#000" d="M54 140 C40 180 50 228 84 244 C74 208 70 170 76 140 Z"/>
+  <path fill="#fff" stroke="#000" d="M186 140 C200 180 190 228 156 244 C166 208 170 170 164 140 Z"/>
+  <circle cx="90" cy="100" r="30" fill="#fff" stroke="#000"/>
+  <circle cx="150" cy="100" r="30" fill="#fff" stroke="#000"/>
+  <circle cx="90" cy="100" r="14" fill="#fff" stroke="#000"/>
+  <circle cx="150" cy="100" r="14" fill="#fff" stroke="#000"/>
+  <circle cx="90" cy="100" r="6" fill="#000" stroke="#000"/>
+  <circle cx="150" cy="100" r="6" fill="#000" stroke="#000"/>
+  <path fill="#fff" stroke="#000" d="M110 118 L130 118 L120 140 Z"/>
+  <g class="detail" fill="none" stroke="#000">
+    <path d="M96 170 L106 180 L116 170"/><path d="M124 170 L134 180 L144 170"/>
+    <path d="M110 198 L120 208 L130 198"/><path d="M90 196 L98 204"/><path d="M150 196 L142 204"/>
+  </g>
+  <path fill="#fff" stroke="#000" d="M92 248 C92 240 112 240 112 248 C112 256 92 256 92 248 Z"/>
+  <path fill="#fff" stroke="#000" d="M128 248 C128 240 148 240 148 248 C148 256 128 256 128 248 Z"/>
+</svg>

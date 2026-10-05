@@ -93,7 +93,8 @@ items below, verify each one, and publish to cognicopia.org.
 ## Useful commands
 
 ```
-npm test            # all five check suites
+npm test            # all six check suites
+npm run subjects    # reprocess the hybrid coloring subjects after editing src/coloring/subjects/
 npm run build       # checks + nav sync + research pages + link check (37 pages)
 npm run coloring    # rebuild the coloring bundle and catalog after editing assets/cognicopia-coloring/*.js
 npm run nav         # regenerate the sidebar on every page from scripts/site-nav.mjs
@@ -123,7 +124,14 @@ Everything in the previous list was finished and shipped:
 - the six pillar groups;
 - the responsive and interaction stress pass at 320–1920 px.
 
-The next piece of work is the hybrid coloring engine: library subject art plus procedural, stage-based borders. Check `docs/` for its notes before starting anything new.
+The hybrid coloring engine shipped next (`docs/hybrid-coloring-engine.md`):
+- `src/engine/ColoringEngine.js`, `src/services/ColoringManifest.js` and 34 hand-drawn subjects, processed into `assets/coloring/{vehicles,nature,objects,animals,nostalgia}/` with `manifest.json` and `subjects.bundle.js`.
+- The processor is `scripts/process_coloring_assets.mjs` (`npm run subjects`); its tests are `scripts/check-hybrid.mjs`.
+- index.html's coloring page uses it.
+- The Packet Builder's coloring library **New pages** tab makes hybrid pages; codes from the old infinite generator still print.
+- The builder's old clip-art drawers (`COLOR_ART`) are gone; their saved pages print as hybrid pages (`HYBRID_LEGACY`).
+
+The next piece of work: compare the pasted "Cognicopia Master Architect" plan with the live site and build only what is actually missing, inside the existing files. That plan covers a PWA, IndexedDB, a PDF worker, Instant Soothe, CSV roster import and CMS/MDS logs.
 
 ## Known limits to state honestly
 

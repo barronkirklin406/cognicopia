@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 280"
+  data-title="The Sewing Machine" data-tags="sewing_machine, sewing, seamstress, tailor, quilting, crafts, home, dressmaking"
+  data-angle="side_profile" data-word="machine" data-completion="Stitching a hem on the sewing" data-banner="SEWING MACHINE"
+  data-prompt="What would you make on a sewing machine like this one?">
+  <!-- the spool of thread on its pin -->
+  <path fill="#fff" stroke="#000" d="M126 34 L160 34 L160 42 L151 42 L151 56 L160 56 L160 64 L126 64 L126 56 L135 56 L135 42 L126 42 Z"/>
+  <!-- the hand wheel, seen from the front, behind the arm -->
+  <path fill="#fff" stroke="#000" d="M256 66 C276 66 278 150 256 150 C236 150 236 66 256 66 Z"/>
+  <!-- the arm, the pillar and the head in one piece -->
+  <path fill="#fff" stroke="#000" d="M196 236 L196 116 C196 110 192 106 186 106 L98 106 L98 180 L50 180 L50 88 C50 74 60 64 74 64 L214 64 C238 64 254 80 254 104 L254 236 Z"/>
+  <!-- the needle bar, the needle and the presser foot -->
+  <path fill="#fff" stroke="#000" d="M66 180 L80 180 L80 206 L66 206 Z"/>
+  <path fill="#fff" stroke="#000" d="M71 206 L75 206 L74 222 L72 222 Z"/>
+  <path fill="#fff" stroke="#000" d="M58 214 L92 214 C95 214 96 216 96 218 L96 222 L58 222 Z"/>
+  <!-- the bed and the base -->
+  <path fill="#fff" stroke="#000" d="M20 236 L300 236 C304 236 306 240 306 244 L306 254 L14 254 L14 244 C14 240 16 236 20 236 Z"/>
+  <path fill="#fff" stroke="#000" d="M30 254 L290 254 L290 268 L30 268 Z"/>
+  <g class="detail">
+    <path fill="#fff" stroke="#000" d="M116 84 C134 76 162 76 178 84 C162 94 134 94 116 84 Z"/>
+    <path fill="#fff" stroke="#000" d="M214 132 C228 132 236 150 236 170 C236 190 228 206 214 206 C208 206 206 200 206 194 L206 144 C206 138 208 132 214 132 Z"/>
+  </g>
+</svg>

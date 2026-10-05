@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 290"
+  data-title="The Sitting Cat" data-tags="cat, pet, kitten, home, cozy"
+  data-angle="front" data-word="cat" data-completion="Curled up by the fire, the" data-banner="CAT"
+  data-prompt="What do you enjoy most about cats?">
+  <path fill="#fff" stroke="#000" d="M130 110 C96 110 70 150 66 200 C62 240 80 270 130 270 C180 270 198 240 194 200 C190 150 164 110 130 110 Z"/>
+  <path fill="none" stroke="#000" d="M102 196 C100 230 100 250 102 262 C104 272 124 272 126 262 C128 250 128 230 126 200"/>
+  <path fill="none" stroke="#000" d="M134 200 C132 230 132 250 134 262 C136 272 156 272 158 262 C160 250 160 230 158 196"/>
+  <path fill="#fff" stroke="#000" d="M160 268 C200 272 236 262 240 232 C242 214 232 206 222 210 C226 236 200 252 160 256 Z"/>
+  <path fill="#fff" stroke="#000" d="M86 96 C82 70 92 46 100 28 L116 52 C124 50 136 50 144 52 L160 28 C168 46 178 70 174 96 C170 124 152 138 130 138 C108 138 90 124 86 96 Z"/>
+  <path class="detail" fill="#fff" stroke="#000" d="M101 40 L111 54 L102 60 Z"/>
+  <path class="detail" fill="#fff" stroke="#000" d="M159 40 L149 54 L158 60 Z"/>
+  <path fill="#fff" stroke="#000" d="M104 92 C110 84 120 84 124 92 C120 100 110 100 104 92 Z"/>
+  <path fill="#fff" stroke="#000" d="M136 92 C140 84 150 84 156 92 C150 100 140 100 136 92 Z"/>
+  <ellipse cx="114" cy="92" rx="2.5" ry="6" fill="#000" stroke="#000"/>
+  <ellipse cx="146" cy="92" rx="2.5" ry="6" fill="#000" stroke="#000"/>
+  <path fill="#fff" stroke="#000" d="M124 104 L136 104 L130 112 Z"/>
+  <g class="detail" fill="none" stroke="#000">
+    <path d="M130 112 C128 118 122 120 118 118"/><path d="M130 112 C132 118 138 120 142 118"/>
+    <path d="M110 108 L82 104"/><path d="M110 114 L84 118"/><path d="M150 108 L178 104"/><path d="M150 114 L176 118"/>
+  </g>
+</svg>

@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 260 370"
+  data-title="The Sunflower" data-tags="sunflower, flower, summer, garden, farm, harvest, kansas"
+  data-angle="front" data-word="sunflower" data-completion="Tall and bright, a" data-banner="SUNFLOWER"
+  data-prompt="Where would a row of tall sunflowers look best?">
+  <defs><path id="pet" d="M130 76 C118 56 120 32 130 18 C140 32 142 56 130 76 Z" fill="#fff" stroke="#000"/></defs>
+  <path fill="#fff" stroke="#000" d="M124 200 C120 260 128 300 124 360 L138 360 C142 300 134 260 138 200 Z"/>
+  <path fill="#fff" stroke="#000" d="M126 290 C92 258 52 266 38 296 C60 310 100 308 126 298 Z"/>
+  <path fill="#fff" stroke="#000" d="M136 262 C170 230 214 236 226 266 C206 280 164 278 136 270 Z"/>
+  <path class="detail" fill="none" stroke="#000" d="M122 294 C100 288 72 290 50 296"/>
+  <path class="detail" fill="none" stroke="#000" d="M140 266 C164 262 190 262 214 266"/>
+  <g>
+    <use xlink:href="#pet"/>
+    <use xlink:href="#pet" transform="rotate(22.5 130 120)"/><use xlink:href="#pet" transform="rotate(45 130 120)"/>
+    <use xlink:href="#pet" transform="rotate(67.5 130 120)"/><use xlink:href="#pet" transform="rotate(90 130 120)"/>
+    <use xlink:href="#pet" transform="rotate(112.5 130 120)"/><use xlink:href="#pet" transform="rotate(135 130 120)"/>
+    <use xlink:href="#pet" transform="rotate(157.5 130 120)"/><use xlink:href="#pet" transform="rotate(180 130 120)"/>
+    <use xlink:href="#pet" transform="rotate(202.5 130 120)"/><use xlink:href="#pet" transform="rotate(225 130 120)"/>
+    <use xlink:href="#pet" transform="rotate(247.5 130 120)"/><use xlink:href="#pet" transform="rotate(270 130 120)"/>
+    <use xlink:href="#pet" transform="rotate(292.5 130 120)"/><use xlink:href="#pet" transform="rotate(315 130 120)"/>
+    <use xlink:href="#pet" transform="rotate(337.5 130 120)"/>
+  </g>
+  <circle cx="130" cy="120" r="48" fill="#fff" stroke="#000"/>
+  <circle cx="130" cy="120" r="30" fill="#fff" stroke="#000"/>
+  <g class="detail">
+    <circle cx="130" cy="104" r="5" fill="#fff" stroke="#000"/><circle cx="144" cy="112" r="5" fill="#fff" stroke="#000"/>
+    <circle cx="144" cy="128" r="5" fill="#fff" stroke="#000"/><circle cx="130" cy="136" r="5" fill="#fff" stroke="#000"/>
+    <circle cx="116" cy="128" r="5" fill="#fff" stroke="#000"/><circle cx="116" cy="112" r="5" fill="#fff" stroke="#000"/>
+    <circle cx="130" cy="120" r="5" fill="#fff" stroke="#000"/>
+  </g>
+</svg>

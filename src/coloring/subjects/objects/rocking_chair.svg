@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 340"
+  data-title="The Rocking Chair" data-tags="rocking_chair, chair, furniture, porch, front_porch, home, woodworking, carpentry"
+  data-angle="side_profile" data-word="chair" data-completion="Rocking slowly on the porch in the" data-banner="ROCKING CHAIR"
+  data-prompt="Where would you put a rocking chair like this one?">
+<g transform="translate(44 0)">
+  <!-- the far side, behind -->
+  <path fill="#fff" stroke="#000" d="M-34 266 C26 294 162 298 236 256 L240 268 C164 312 24 308 -38 278 Z"/>
+  <path fill="#fff" stroke="#000" d="M28 284 L30 182 L42 182 L40 286 Z"/>
+  <path fill="#fff" stroke="#000" d="M154 286 L189 40 L203 40 L168 286 Z"/>
+  <!-- the back: a wide center slat (the curved top rail is drawn last, over the post tops) -->
+  <path fill="#fff" stroke="#000" d="M211 63 L233 69 L209 199 L187 193 Z"/>
+  <!-- the seat -->
+  <path fill="#fff" stroke="#000" d="M26 180 L166 186 L230 206 L90 200 Z"/>
+  <path fill="#fff" stroke="#000" d="M26 180 L90 200 L90 212 L26 192 Z"/>
+  <path fill="#fff" stroke="#000" d="M90 200 L230 206 L230 218 L90 212 Z"/>
+  <!-- the near side, in front -->
+  <path fill="#fff" stroke="#000" d="M30 286 C90 314 226 318 300 276 L304 288 C228 332 88 328 26 298 Z"/>
+  <path fill="#fff" stroke="#000" d="M92 304 L94 146 L106 146 L104 306 Z"/>
+  <path fill="#fff" stroke="#000" d="M218 306 L253 60 L267 60 L232 306 Z"/>
+  <path fill="#fff" stroke="#000" d="M184 26 C196 20 210 22 222 30 L270 46 L268 74 L218 58 C206 50 194 48 182 52 Z"/>
+  <path fill="#fff" stroke="#000" d="M68 146 C68 138 76 136 84 138 L246 146 L246 158 L84 154 C74 154 68 152 68 146 Z"/>
+</g>
+</svg>

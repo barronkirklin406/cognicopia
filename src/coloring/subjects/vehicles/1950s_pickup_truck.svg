@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 410 190"
+  data-title="1950s Pickup Truck" data-tags="pickup_truck, truck, utility_vehicle, farm, farm_truck, work, 1950s, driving, transportation"
+  data-angle="side_profile" data-word="truck" data-completion="Loaded up in the old pickup" data-banner="TRUCK"
+  data-prompt="What would you haul in the back of a truck like this?">
+  <rect x="22" y="126" width="24" height="12" rx="5" fill="#fff" stroke="#000"/>
+  <rect x="382" y="126" width="16" height="12" rx="5" fill="#fff" stroke="#000"/>
+  <path fill="#fff" stroke="#000" d="M232 94 L384 94 C387 94 388 96 388 98 L388 138 C388 141 386 142 384 142 L352 142 A34 34 0 0 0 284 142 L232 142 Z"/>
+  <line x1="232" y1="104" x2="388" y2="104" stroke="#000"/>
+  <path fill="#fff" stroke="#000" d="M230 142 L230 66 C230 55 223 49 210 49 L186 49 C177 49 171 54 167 62 L157 86 L74 88 C56 89 44 94 38 104 L34 116 L34 132 C34 138 37 142 44 142 L58 142 A34 34 0 0 1 126 142 Z"/>
+  <path fill="#fff" stroke="#000" d="M177 58 L214 58 C218 58 220 60 220 64 L220 84 L167 85 Z"/>
+  <path class="detail" fill="none" stroke="#000" d="M164 92 L222 92 L222 134 L164 134 Z"/>
+  <circle cx="50" cy="102" r="8" fill="#fff" stroke="#000"/>
+  <circle cx="92" cy="146" r="28" fill="#fff" stroke="#000"/>
+  <circle cx="92" cy="146" r="14" fill="#fff" stroke="#000"/>
+  <circle cx="318" cy="146" r="28" fill="#fff" stroke="#000"/>
+  <circle cx="318" cy="146" r="14" fill="#fff" stroke="#000"/>
+</svg>

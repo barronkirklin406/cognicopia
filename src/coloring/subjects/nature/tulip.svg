@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 340"
+  data-title="The Tulip" data-tags="tulip, flower, spring, garden, gardening, easter, holland"
+  data-angle="front" data-word="tulip" data-completion="First sign of spring, a" data-banner="TULIP"
+  data-prompt="What does a garden look like on the first warm day of spring?">
+  <path fill="#fff" stroke="#000" d="M104 150 C102 220 106 280 104 330 L116 330 C118 280 114 220 116 150 Z"/>
+  <path fill="#fff" stroke="#000" d="M106 322 C58 284 46 224 60 178 C80 220 96 262 110 296 Z"/>
+  <path fill="#fff" stroke="#000" d="M114 314 C162 276 176 222 164 188 C146 226 128 262 112 288 Z"/>
+  <path class="detail" fill="none" stroke="#000" d="M100 300 C84 268 72 232 64 196"/>
+  <path class="detail" fill="none" stroke="#000" d="M118 292 C134 262 150 232 160 204"/>
+  <path fill="#fff" stroke="#000" d="M68 64 C60 108 74 152 110 158 C146 152 160 108 152 64 C138 80 124 80 110 56 C96 80 82 80 68 64 Z"/>
+  <path fill="#fff" stroke="#000" d="M110 56 C86 86 82 130 110 158 C138 130 134 86 110 56 Z"/>
+</svg>

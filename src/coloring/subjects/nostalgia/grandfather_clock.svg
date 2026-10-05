@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 400"
+  data-title="The Grandfather Clock" data-tags="grandfather_clock, clock, time, home, furniture, heirloom, woodworking" data-angle="front"
+  data-word="clock" data-completion="Chiming every hour, the grandfather" data-banner="CLOCK" data-prompt="What room would a clock like this stand in, and how would its chime sound?">
+  <!-- finials behind the crown -->
+  <circle cx="24" cy="24" r="8" fill="#fff" stroke="#000"/>
+  <circle cx="116" cy="24" r="8" fill="#fff" stroke="#000"/>
+  <circle cx="70" cy="10" r="9" fill="#fff" stroke="#000"/>
+  <path fill="#fff" stroke="#000" d="M18 72 L18 40 C18 14 122 14 122 40 L122 72 Z"/>
+  <!-- the hood and its face -->
+  <rect x="20" y="70" width="100" height="104" rx="4" fill="#fff" stroke="#000"/>
+  <circle cx="70" cy="122" r="38" fill="#fff" stroke="#000"/>
+  <g class="detail" stroke="#000">
+    <line x1="70" y1="90" x2="70" y2="97"/><line x1="70" y1="147" x2="70" y2="154"/>
+    <line x1="38" y1="122" x2="45" y2="122"/><line x1="95" y1="122" x2="102" y2="122"/>
+  </g>
+  <path fill="#fff" stroke="#000" d="M68 124 L66 100 L70 94 L74 100 L72 124 Z"/>
+  <path fill="#fff" stroke="#000" d="M70 120 L88 132 L86 136 L68 125 Z"/>
+  <circle cx="70" cy="122" r="5" fill="#000" stroke="#000"/>
+  <!-- molding, waist with the pendulum window, molding, base, feet -->
+  <rect x="12" y="172" width="116" height="10" rx="3" fill="#fff" stroke="#000"/>
+  <rect x="32" y="182" width="76" height="140" fill="#fff" stroke="#000"/>
+  <path fill="#fff" stroke="#000" d="M48 300 L48 214 C48 196 92 196 92 214 L92 300 Z"/>
+  <line x1="70" y1="204" x2="70" y2="262" stroke="#000"/>
+  <circle cx="70" cy="276" r="15" fill="#fff" stroke="#000"/>
+  <rect x="18" y="322" width="104" height="10" rx="3" fill="#fff" stroke="#000"/>
+  <rect x="22" y="332" width="96" height="52" fill="#fff" stroke="#000"/>
+  <rect class="detail" x="36" y="344" width="68" height="28" rx="3" fill="#fff" stroke="#000"/>
+  <rect x="22" y="384" width="18" height="10" rx="2" fill="#fff" stroke="#000"/>
+  <rect x="100" y="384" width="18" height="10" rx="2" fill="#fff" stroke="#000"/>
+</svg>
