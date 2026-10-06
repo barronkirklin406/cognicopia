@@ -21,7 +21,7 @@
 (function (root) {
   "use strict";
   root.CognicopiaLicenseConfig = Object.freeze({
-    PROMO_SHA256: "ab9d7d08487aa44ade17aa9dd04a616536ca7e3b1c187a1e0a93cf294b36613f",
+    PROMO_SHA256: "243979e8974c33d1d320adaa25470f59db051582d3a728da0dcd69bfea861cbd",
     ACCESS_SHA256: "97c0fcc2e7143e13c6b104d93ad47c1e57670a24576df965b1a9eb745d6217da",
     PROMO_TYPE: "promo",
     KEYS: Object.freeze({
