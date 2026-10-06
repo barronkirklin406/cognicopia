@@ -45,7 +45,7 @@ const must = (cond, msg) => { if (!cond) throw new Error(msg); };
 console.log("Cognicopia build check");
 
 /* 1. inline scripts parse */
-const SKIP = new Set([".git", "node_modules"]);
+const SKIP = new Set([".git", "node_modules", ".next"]);   // .next: the SaaS platform's build output (platform/), never part of the site
 const htmlIn = dir => fs.readdirSync(path.join(ROOT, dir), { withFileTypes: true }).flatMap(e =>
   SKIP.has(e.name) ? [] : e.isDirectory() ? htmlIn(path.posix.join(dir, e.name)) : e.name.endsWith(".html") ? [path.posix.join(dir, e.name)] : []);
 const pages = htmlIn("").sort();

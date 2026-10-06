@@ -71,6 +71,10 @@ The Facility Portal's **Back up or move the portal** writes the portal (wings, g
 
 Every row is rebuilt field by field against the profile schema and sealed in the encrypted store. The spreadsheet itself is never copied anywhere.
 
+## The facility platform (in development)
+
+A separate service for facilities is being built in `platform/`, with accounts for staff and a database in the cloud. It keeps minimal data on a server: facility names, subscription status, staff email addresses, the shared activity library, and activity calendars that plan groups. It is built never to store resident data: no resident names, profiles, health details or notes. Everything above in this page, the resident profiles and the encrypted store, stays on the computer where it was typed. [The platform's architecture notes](saas-platform-architecture.md) explain how this is enforced and where it cannot be.
+
 ## What this is not
 
 Cognicopia supports a facility's HIPAA privacy practices: nothing is transmitted, nothing is stored in a cloud, and what is saved is encrypted on the device. It does not make a facility HIPAA compliant, and the site does not claim to. A facility's own program still decides who may use which computer, how printed pages with names are handled, and when a shared computer is cleared (Settings › Clear saved data).

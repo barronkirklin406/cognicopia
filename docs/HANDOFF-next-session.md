@@ -80,6 +80,16 @@ items below, verify each one, and publish to cognicopia.org.
 
 `builder.html` maps the old ids `cognicore-coloring` and `cognicore-library` to the new ones (`legacyIds`) so saved packets still open. Keep that mapping.
 
+## The facility platform (`platform/`)
+
+A separate Next.js and Supabase project for the B2B service, added after everything above. It does not touch the static site, and the root `npm test` and `npm run build` do not cover it. Read `docs/saas-platform-architecture.md` and `platform/README.md` before changing it.
+
+- **Check it:** from `platform/`, `npm install`, then `npm test` (about 490 tests, no Docker needed) and `npm run typecheck`.
+- **Zero PHI:** it never stores resident data. The database refuses a calendar with resident-looking keys, and the architecture notes say what that cannot catch (free text).
+- **Not yet verified:** the migrations have never run on a real Supabase stack, because the sandbox has no Docker. The first job wherever Docker exists is `supabase start`, `supabase db reset` and `supabase test db`.
+- **Next, in order:** sign-in screens and the session proxy; staff invitations; the Stripe webhook; move the generation engines into `platform/lib/generation`; continuous integration for `platform/`.
+- **Public claims:** the privacy page and the site's "no server, no account" wording are true of the static site today. Revisit them when the platform serves users.
+
 ## Hard rules (do not break)
 
 - **Branch:** work on `claude/memory-care-life-planner-1gphkr`, or whatever branch the new session's system prompt names. Push with `git push -u origin <branch>`, retrying network errors up to 4 times with backoff of 2, 4, 8 and 16 s.

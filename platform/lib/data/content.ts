@@ -1,0 +1,39 @@
+import { parseContentPayload, stagesFor } from "@/lib/domain/content";
+import type { ContentItem, ContentItemRow, DementiaStage } from "@/lib/db/models";
+import type { Db } from "./db";
+import { DataError, fromDbError } from "./errors";
+
+export interface ContentFilter {
+  /** Items that suit this stage, including the "universal" ones. */
+  stage?: DementiaStage;
+  category?: string;
+  /** At most this many (default 100, never more than 200). */
+  limit?: number;
+}
+
+const DEFAULT_LIMIT = 100;
+const MAX_LIMIT = 200;
+
+function toItem(row: ContentItemRow): ContentItem {
+  const payload = parseContentPayload(row.content_payload);
+  // The library is written by us. A bad payload is our bug: fail loudly, not quietly.
+  if (!payload.ok) throw new DataError(500, "stored_data_invalid", "A library item could not be read.");
+  return { ...row, content_payload: payload.data };
+}
+
+/** The shared activity library, filtered by the database and ordered by category, then title. */
+export async function listContent(db: Db, filter: ContentFilter = {}): Promise<ContentItem[]> {
+  let query = db
+    .from("content_items")
+    .select("*")
+    .order("category", { ascending: true })
+    .order("title", { ascending: true })
+    .limit(Math.min(Math.max(filter.limit ?? DEFAULT_LIMIT, 1), MAX_LIMIT));
+
+  if (filter.stage) query = query.in("dementia_stage", stagesFor(filter.stage));
+  if (filter.category) query = query.eq("category", filter.category);
+
+  const { data, error } = await query;
+  if (error) throw fromDbError(error);
+  return data.map(toItem);
+}
