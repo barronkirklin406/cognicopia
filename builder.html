@@ -2388,6 +2388,7 @@ textarea:focus{border-color:var(--accent)}
     <label class="field" for="gateCode" style="display:block;margin-top:18px"><b>Already paid? Enter your access code</b></label>
     <div class="gate-row"><input type="text" id="gateCode" autocomplete="off" maxlength="40"><button class="btn" type="button" id="gateUnlock">Unlock</button></div>
     <p id="gateMsg" role="status"></p>
+    <button class="btn btn-ghost" type="button" id="gatePromo" style="margin-top:6px">Have a promo code?</button>
   </div>
 </div>
 
@@ -2395,6 +2396,8 @@ textarea:focus{border-color:var(--accent)}
 <div id="printRoot" aria-hidden="true"></div>
 
 <script src="assets/services/secureStore.js"></script>
+<script src="src/config/license.js"></script>
+<script src="assets/services/licenseManager.js"></script>
 <script>
 /* Resident details are sealed in this browser's encrypted store
    (assets/services/secureStore.js). CG_LS stands in for localStorage:
@@ -9873,7 +9876,9 @@ function sha256(ascii){
   var out=""; for(var k=0;k<8;k++) out+=("00000000"+(H[k]>>>0).toString(16)).slice(-8);
   return out;
 }
-function isLicensed(){ return sha256(rawGet("cognicopia_license","")) === ACCESS_SHA; }
+/* The promo code (assets/services/licenseManager.js) is a second way in; it is re-verified from its stored proof, not read as a flag. */
+function promoActive(){ try { return !!(window.CognicopiaLicense && window.CognicopiaLicense.isPromoActive()); } catch(e){ return false; } }
+function isLicensed(){ return sha256(rawGet("cognicopia_license","")) === ACCESS_SHA || promoActive(); }
 function genCount(){ return parseInt(rawGet("cognicopia_gen_count","0"),10) || 0; }
 function bumpGen(){ rawSet("cognicopia_gen_count", String(genCount()+1)); }
 function activateLicense(code){
@@ -12767,6 +12772,7 @@ function renderSettings(){
       <p class="hint" id="licStatus"></p>
       <div class="gate-row"><input type="text" id="setCode" placeholder="Access code" autocomplete="off" maxlength="40" aria-label="Access code"><button class="btn" type="button" id="setUnlock">Unlock</button></div>
       <p id="setMsg" role="status"></p>
+      <button class="btn btn-ghost" type="button" id="setPromo">Have a promo code?</button>
     </div>
     <div class="config" id="setPrivacy">
       <h2>Privacy &amp; encryption</h2>
@@ -12802,6 +12808,7 @@ function renderSettings(){
   });
   const showLic = () => { $("#licStatus").textContent = isLicensed() ? "Licensed. Unlimited packets." : Math.max(0, FREE_RUNS - genCount()) + " of " + FREE_RUNS + " free packets left. Paid facilities enter the access code from their receipt."; };
   showLic();
+  $("#setPromo").addEventListener("click", () => { if (window.CognicopiaLicense) window.CognicopiaLicense.openPromo(); });
   $("#setUnlock").addEventListener("click", () => {
     const ok = activateLicense($("#setCode").value);
     $("#setMsg").className = ok ? "msg-ok" : "msg-bad";
@@ -12958,6 +12965,13 @@ function openGate(){
   $("#gateBuy").focus();
 }
 $("#gateClose").addEventListener("click", () => { $("#gate").hidden = true; });
+$("#gatePromo").addEventListener("click", () => { if (window.CognicopiaLicense) window.CognicopiaLicense.openPromo(); });
+/* A promo code (or a change made in another tab) opens the gates: close the buy screen and refresh the counters. */
+document.addEventListener("cognicopia:license", () => {
+  if (isLicensed()){ $("#gate").hidden = true; const m = $("#gateMsg"); if (m) m.textContent = ""; }
+  renderAllowance();
+  const ls = $("#licStatus"); if (ls) ls.textContent = isLicensed() ? "Licensed. Unlimited packets." : Math.max(0, FREE_RUNS - genCount()) + " of " + FREE_RUNS + " free packets left. Paid facilities enter the access code from their receipt.";
+});
 $("#gateUnlock").addEventListener("click", () => {
   const ok = activateLicense($("#gateCode").value);
   $("#gateMsg").className = ok ? "msg-ok" : "msg-bad";
