@@ -1,0 +1,573 @@
+{
+ "$schema": "../../schema/sayings.schema.json",
+ "version": 1,
+ "items": [
+  {
+   "id": "s01",
+   "lead": "A penny saved is a",
+   "answer": "penny earned",
+   "others": ["kettle", "window"],
+   "kind": "proverb"
+  },
+  {
+   "id": "s02",
+   "lead": "A stitch in time saves",
+   "answer": "nine",
+   "others": ["tea", "ladder"],
+   "kind": "proverb"
+  },
+  {
+   "id": "s03",
+   "lead": "The early bird catches the",
+   "answer": "worm",
+   "others": ["bus", "button"],
+   "kind": "proverb"
+  },
+  {
+   "id": "s04",
+   "lead": "Too many cooks spoil the",
+   "answer": "broth",
+   "others": ["garden", "lamp"],
+   "kind": "proverb"
+  },
+  {
+   "id": "s05",
+   "lead": "A rolling stone gathers no",
+   "answer": "moss",
+   "others": ["soup", "mail"],
+   "kind": "proverb"
+  },
+  {
+   "id": "s06",
+   "lead": "Many hands make light",
+   "answer": "work",
+   "others": ["rain", "bread"],
+   "kind": "proverb"
+  },
+  {
+   "id": "s07",
+   "lead": "Look before you",
+   "answer": "leap",
+   "others": ["sing", "paint"],
+   "kind": "proverb"
+  },
+  {
+   "id": "s08",
+   "lead": "Don't count your chickens before they",
+   "answer": "hatch",
+   "others": ["sing", "fly south"],
+   "kind": "proverb"
+  },
+  {
+   "id": "s09",
+   "lead": "A watched pot never",
+   "answer": "boils",
+   "others": ["sings", "sleeps"],
+   "kind": "proverb"
+  },
+  {
+   "id": "s10",
+   "lead": "Actions speak louder than",
+   "answer": "words",
+   "others": ["clocks", "apples"],
+   "kind": "proverb"
+  },
+  {
+   "id": "s11",
+   "lead": "Better late than",
+   "answer": "never",
+   "others": ["tea", "green"],
+   "kind": "proverb"
+  },
+  {
+   "id": "s12",
+   "lead": "Birds of a feather flock",
+   "answer": "together",
+   "others": ["softly", "upstairs"],
+   "kind": "proverb"
+  },
+  {
+   "id": "s13",
+   "lead": "Don't put all your eggs in one",
+   "answer": "basket",
+   "others": ["pocket", "kitchen"],
+   "kind": "proverb"
+  },
+  {
+   "id": "s14",
+   "lead": "Every cloud has a silver",
+   "answer": "lining",
+   "others": ["spoon", "bell"],
+   "kind": "proverb"
+  },
+  {
+   "id": "s15",
+   "lead": "Haste makes",
+   "answer": "waste",
+   "others": ["tea", "music"],
+   "kind": "proverb"
+  },
+  {
+   "id": "s16",
+   "lead": "Home is where the heart",
+   "answer": "is",
+   "others": ["sings", "grows"],
+   "kind": "proverb"
+  },
+  {
+   "id": "s17",
+   "lead": "Honesty is the best",
+   "answer": "policy",
+   "others": ["fruit", "weather"],
+   "kind": "proverb"
+  },
+  {
+   "id": "s18",
+   "lead": "Practice makes",
+   "answer": "perfect",
+   "others": ["muffins", "windows"],
+   "kind": "proverb"
+  },
+  {
+   "id": "s19",
+   "lead": "The apple doesn't fall far from the",
+   "answer": "tree",
+   "others": ["table", "river"],
+   "kind": "proverb"
+  },
+  {
+   "id": "s20",
+   "lead": "When it rains, it",
+   "answer": "pours",
+   "others": ["walks", "sings"],
+   "kind": "proverb"
+  },
+  {
+   "id": "s21",
+   "lead": "You can't judge a book by its",
+   "answer": "cover",
+   "others": ["color", "price"],
+   "kind": "proverb"
+  },
+  {
+   "id": "s22",
+   "lead": "Two heads are better than",
+   "answer": "one",
+   "others": ["tea", "carpet"],
+   "kind": "proverb"
+  },
+  {
+   "id": "s23",
+   "lead": "Slow and steady wins the",
+   "answer": "race",
+   "others": ["cake", "coat"],
+   "kind": "proverb"
+  },
+  {
+   "id": "s24",
+   "lead": "An apple a day keeps the doctor",
+   "answer": "away",
+   "others": ["green", "sweet"],
+   "kind": "proverb"
+  },
+  {
+   "id": "s25",
+   "lead": "Waste not, want",
+   "answer": "not",
+   "others": ["tea", "paint"],
+   "kind": "proverb"
+  },
+  {
+   "id": "s26",
+   "lead": "A friend in need is a friend",
+   "answer": "indeed",
+   "others": ["today", "outside"],
+   "kind": "proverb"
+  },
+  {
+   "id": "s27",
+   "lead": "The grass is always greener on the other",
+   "answer": "side",
+   "others": ["table", "day"],
+   "kind": "proverb"
+  },
+  {
+   "id": "s28",
+   "lead": "Rome wasn't built in a",
+   "answer": "day",
+   "others": ["pocket", "kettle"],
+   "kind": "proverb"
+  },
+  {
+   "id": "s29",
+   "lead": "A picture is worth a thousand",
+   "answer": "words",
+   "others": ["coats", "clocks"],
+   "kind": "proverb"
+  },
+  {
+   "id": "s30",
+   "lead": "Out of sight, out of",
+   "answer": "mind",
+   "others": ["tea", "town"],
+   "kind": "proverb"
+  },
+  {
+   "id": "s31",
+   "lead": "Variety is the spice of",
+   "answer": "life",
+   "others": ["soup", "paper"],
+   "kind": "proverb"
+  },
+  {
+   "id": "s32",
+   "lead": "Laughter is the best",
+   "answer": "medicine",
+   "others": ["hat", "weather"],
+   "kind": "proverb"
+  },
+  {
+   "id": "s33",
+   "lead": "Good things come to those who",
+   "answer": "wait",
+   "others": ["sing", "paint"],
+   "kind": "proverb"
+  },
+  {
+   "id": "s34",
+   "lead": "Busy as a",
+   "answer": "bee",
+   "others": ["table", "hat"],
+   "kind": "proverb"
+  },
+  {
+   "id": "s35",
+   "lead": "Cool as a",
+   "answer": "cucumber",
+   "others": ["hammer", "chair"],
+   "kind": "proverb"
+  },
+  {
+   "id": "s36",
+   "lead": "Right as",
+   "answer": "rain",
+   "others": ["paint", "bread"],
+   "kind": "proverb"
+  },
+  {
+   "id": "s37",
+   "lead": "Once in a blue",
+   "answer": "moon",
+   "others": ["coat", "kitchen"],
+   "kind": "proverb"
+  },
+  {
+   "id": "s38",
+   "lead": "Easy come, easy",
+   "answer": "go",
+   "others": ["tea", "fish"],
+   "kind": "proverb"
+  },
+  {
+   "id": "s39",
+   "lead": "Early to bed and early to",
+   "answer": "rise",
+   "others": ["sing", "sew"],
+   "kind": "proverb"
+  },
+  {
+   "id": "s40",
+   "lead": "Time and tide wait for no",
+   "answer": "one",
+   "others": ["pie", "hat"],
+   "kind": "proverb"
+  },
+  {
+   "id": "s41",
+   "lead": "The proof of the pudding is in the",
+   "answer": "eating",
+   "others": ["window", "walking"],
+   "kind": "proverb"
+  },
+  {
+   "id": "s42",
+   "lead": "It takes two to",
+   "answer": "tango",
+   "others": ["knit", "sneeze"],
+   "kind": "proverb"
+  },
+  {
+   "id": "s43",
+   "lead": "Like father, like",
+   "answer": "son",
+   "others": ["tea", "table"],
+   "kind": "proverb"
+  },
+  {
+   "id": "s44",
+   "lead": "Little by",
+   "answer": "little",
+   "others": ["tea", "hat"],
+   "kind": "proverb"
+  },
+  {
+   "id": "s45",
+   "lead": "First come, first",
+   "answer": "served",
+   "others": ["painted", "sung"],
+   "kind": "proverb"
+  },
+  {
+   "id": "s46",
+   "lead": "Leave no stone",
+   "answer": "unturned",
+   "others": ["untied", "unsung"],
+   "kind": "proverb"
+  },
+  {
+   "id": "s47",
+   "lead": "Salt and",
+   "answer": "pepper",
+   "others": ["ladder", "blanket"],
+   "kind": "pair"
+  },
+  {
+   "id": "s48",
+   "lead": "Peanut butter and",
+   "answer": "jelly",
+   "others": ["lumber", "umbrella"],
+   "kind": "pair"
+  },
+  {
+   "id": "s49",
+   "lead": "Bread and",
+   "answer": "butter",
+   "others": ["ladder", "window"],
+   "kind": "pair"
+  },
+  {
+   "id": "s50",
+   "lead": "Ham and",
+   "answer": "eggs",
+   "others": ["mittens", "rivers"],
+   "kind": "pair"
+  },
+  {
+   "id": "s51",
+   "lead": "Needle and",
+   "answer": "thread",
+   "others": ["bucket", "blanket"],
+   "kind": "pair"
+  },
+  {
+   "id": "s52",
+   "lead": "Pen and",
+   "answer": "paper",
+   "others": ["stairs", "coffee"],
+   "kind": "pair"
+  },
+  {
+   "id": "s53",
+   "lead": "Pots and",
+   "answer": "pans",
+   "others": ["hats", "ropes"],
+   "kind": "pair"
+  },
+  {
+   "id": "s54",
+   "lead": "Cup and",
+   "answer": "saucer",
+   "others": ["ladder", "carpet"],
+   "kind": "pair"
+  },
+  {
+   "id": "s55",
+   "lead": "Knife and",
+   "answer": "fork",
+   "others": ["chair", "candle"],
+   "kind": "pair"
+  },
+  {
+   "id": "s56",
+   "lead": "Lock and",
+   "answer": "key",
+   "others": ["bread", "sweater"],
+   "kind": "pair"
+  },
+  {
+   "id": "s57",
+   "lead": "Hammer and",
+   "answer": "nails",
+   "others": ["spoons", "pillows"],
+   "kind": "pair"
+  },
+  {
+   "id": "s58",
+   "lead": "Hide and",
+   "answer": "seek",
+   "others": ["bake", "paint"],
+   "kind": "pair"
+  },
+  {
+   "id": "s59",
+   "lead": "Cheese and",
+   "answer": "crackers",
+   "others": ["rainfall", "scissors"],
+   "kind": "pair"
+  },
+  {
+   "id": "s60",
+   "lead": "Soap and",
+   "answer": "water",
+   "others": ["gravel", "music"],
+   "kind": "pair"
+  },
+  {
+   "id": "s61",
+   "lead": "Black and",
+   "answer": "white",
+   "others": ["chair", "bread"],
+   "kind": "pair"
+  },
+  {
+   "id": "s62",
+   "lead": "Day and",
+   "answer": "night",
+   "others": ["pencil", "spoon"],
+   "kind": "pair"
+  },
+  {
+   "id": "s63",
+   "lead": "Rock and",
+   "answer": "roll",
+   "others": ["paint", "stew"],
+   "kind": "pair"
+  },
+  {
+   "id": "s64",
+   "lead": "Oil and",
+   "answer": "vinegar",
+   "others": ["button", "hammer"],
+   "kind": "pair"
+  },
+  {
+   "id": "s65",
+   "lead": "Rise and",
+   "answer": "shine",
+   "others": ["paint", "knit"],
+   "kind": "pair"
+  },
+  {
+   "id": "s66",
+   "lead": "Ladies and",
+   "answer": "gentlemen",
+   "others": ["hammers", "blankets"],
+   "kind": "pair"
+  },
+  {
+   "id": "s67",
+   "lead": "Bacon and",
+   "answer": "eggs",
+   "others": ["chairs", "rivers"],
+   "kind": "pair"
+  },
+  {
+   "id": "s68",
+   "lead": "Milk and",
+   "answer": "cookies",
+   "others": ["hammers", "carpets"],
+   "kind": "pair"
+  },
+  {
+   "id": "s69",
+   "lead": "Fish and",
+   "answer": "chips",
+   "others": ["chairs", "clocks"],
+   "kind": "pair"
+  },
+  {
+   "id": "s70",
+   "lead": "A pinch of salt and a dash of",
+   "answer": "pepper",
+   "others": ["ribbon", "gravel"],
+   "kind": "recipe"
+  },
+  {
+   "id": "s71",
+   "lead": "Cream the butter and",
+   "answer": "sugar",
+   "others": ["gravel", "buttons"],
+   "kind": "recipe"
+  },
+  {
+   "id": "s72",
+   "lead": "Preheat the",
+   "answer": "oven",
+   "others": ["garden", "radio"],
+   "kind": "recipe"
+  },
+  {
+   "id": "s73",
+   "lead": "Wash, rinse and",
+   "answer": "dry",
+   "others": ["sing", "paint"],
+   "kind": "recipe"
+  },
+  {
+   "id": "s74",
+   "lead": "Bake until golden",
+   "answer": "brown",
+   "others": ["purple", "loud"],
+   "kind": "recipe"
+  },
+  {
+   "id": "s75",
+   "lead": "Sift the",
+   "answer": "flour",
+   "others": ["carpet", "mail"],
+   "kind": "recipe"
+  },
+  {
+   "id": "s76",
+   "lead": "Stir in a spoonful of",
+   "answer": "sugar",
+   "others": ["gravel", "paint"],
+   "kind": "recipe"
+  },
+  {
+   "id": "s77",
+   "lead": "Season to",
+   "answer": "taste",
+   "others": ["paint", "music"],
+   "kind": "recipe"
+  },
+  {
+   "id": "s78",
+   "lead": "Let the dough",
+   "answer": "rise",
+   "others": ["sing", "walk"],
+   "kind": "recipe"
+  },
+  {
+   "id": "s79",
+   "lead": "Pour a cup of hot",
+   "answer": "tea",
+   "others": ["paint", "stairs"],
+   "kind": "recipe"
+  },
+  {
+   "id": "s80",
+   "lead": "Spread the butter on the",
+   "answer": "toast",
+   "others": ["carpet", "table"],
+   "kind": "recipe"
+  },
+  {
+   "id": "s81",
+   "lead": "Add a cup of milk and stir until",
+   "answer": "smooth",
+   "others": ["loud", "purple"],
+   "kind": "recipe"
+  }
+ ]
+}

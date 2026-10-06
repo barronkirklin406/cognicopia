@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cognicopia.org/src/pcg/schema/sequences.schema.json",
+  "title": "Cognicopia activity engine: everyday procedures",
+  "description": "Everyday jobs in four to six steps, for the 'Put it in order' page. Each step is a short imperative a person can picture doing. Topics are ids in topics.json; a resident whose interests match a topic is offered those first.",
+  "type": "object",
+  "required": [
+    "version",
+    "procedures"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "version": {
+      "const": 1
+    },
+    "procedures": {
+      "type": "array",
+      "minItems": 20,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "topics",
+          "steps"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9-]+$"
+          },
+          "title": {
+            "type": "string",
+            "minLength": 6,
+            "maxLength": 40
+          },
+          "topics": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 3,
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z-]+$"
+            }
+          },
+          "steps": {
+            "type": "array",
+            "minItems": 4,
+            "maxItems": 6,
+            "items": {
+              "type": "string",
+              "pattern": "^[A-Z][A-Za-z0-9,' -]{6,36}$"
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -238,7 +238,12 @@
     var page = { w:W, h:H, stage:stage, frame:{ x:F.x, y:F.y, w:F.w, h:F.h }, items:[], texts:[],
       meta:{ id:a.id, title:a.title, category:a.category, seed:seed, code:code(stage, a.id, seed), stage:stage, engine:VERSION } };
     var T = function(text, x, y, size, bold, align, role){ page.texts.push({ text:String(text), x:x, y:y, size:size, bold:!!bold, align:align || "center", role:role || "text" }); };
-    var y = F.y, subjectBox;
+    var y = F.y, subjectBox, FL = { early:14, middle:18, late:24 }[stage];
+    /* the line that names the resident: at the stage's smallest type (bold in the late stage), in a shorter form when the long one would not fit */
+    var forLine = function(nm, yy){
+      var full = "Prepared especially for " + nm, bold = stage === "late", text = full.length * FL * (bold ? 0.62 : 0.56) <= inner ? full : "Made for " + nm;
+      T(text, cx, yy + FL, FL, bold, "center", "for"); return yy + FL + 14;
+    };
     var name = header ? String(o.name || "").trim() : "";
     // the subject's own shape, so a wide car gets a frame that fits it
     var keep = o.paths.filter(function(p){ return !(stage === "late" && p[2]); });
@@ -247,14 +252,14 @@
     var aspect = (bb[2] - bb[0]) / Math.max(1, bb[3] - bb[1]);
     if (stage === "late"){
       // the name, a large banner, then the picture as big as the page allows
-      if (name) { T("Prepared especially for " + name, cx, y + 12, 12, false, "center", "for"); y += 20; }
+      if (name) { y = forLine(name, y); }
       var banner = String(a.banner || a.title).toUpperCase(), bh = Math.min(96, Math.max(64, F.h * 0.13)), size = fitSize(banner, Math.min(64, bh - 32), inner - 48, true, 30);
       page.items.push({ d:rect(X0, y, inner, bh, 18), fill:"#fff", w:S.border, role:"banner" });
       T(banner, cx, y + bh / 2 + size * 0.36, size, true, "center", "banner");
       y += bh + 22;
       subjectBox = { x:X0 + 6, y:y, w:inner - 12, h:bottom - foot - y };
     } else {
-      if (name) { T("Prepared especially for " + name, cx, y + 12, 12, false, "center", "for"); y += 20; }
+      if (name) { y = forLine(name, y); }
       if (header){
         var tsize = fitSize(a.title, stage === "early" ? 24 : 28, inner, true, 16);
         T(a.title, cx, y + tsize * 0.85, tsize, true, "center", "title"); y += tsize + 12;
@@ -275,9 +280,9 @@
       } else {
         // the completion line, with the word to write shown beside it
         var lead = a.completion || ("Here is a" + (/^[aeiou]/i.test(a.word || "") ? "n" : ""));
-        var lsize = fitSize(lead + " ____________", 22, inner, true, 16);
+        var lsize = fitSize(lead + " ____________", 22, inner, true, FL);
         T(lead + " ____________", cx, ty + 4, lsize, true, "center", "completion");
-        T("The word to write on the line: " + (a.word || a.title.toLowerCase()), cx, ty + 34, 15, false, "center", "word");
+        T("The word to write on the line: " + (a.word || a.title.toLowerCase()), cx, ty + 34, Math.max(15, FL), false, "center", "word");
       }
     }
     // Layer 1: the subject, fitted and centered; lines set in points after scaling
@@ -291,8 +296,8 @@
     page.meta.subjectScale = k;
     // footer: for staff, small
     if (footer){
-      T("Cognicopia · " + S.label, X0, bottom - 2, 9, false, "left", "footer");
-      T("Page code " + page.meta.code, X0 + inner, bottom - 2, 9, false, "right", "footer");
+      T("Cognicopia · " + S.label, X0, bottom - 2, 10, false, "left", "footer");
+      T("Page code " + page.meta.code, X0 + inner, bottom - 2, 10, false, "right", "footer");
     }
     return page;
   }
@@ -342,7 +347,7 @@
     });
     var page = { w:PAGE.w, h:PAGE.h, stage:stage, frame:{ x:F.x, y:F.y, w:F.w, h:F.h }, items:items, texts:[],
       meta:{ id:"mandala", title:"Mandala", category:"mandala", seed:seed, code:code(stage, "mandala", seed), stage:stage, engine:VERSION, pattern:N + (scallop ? "-scalloped" : "-round") } };
-    if (o.footer) page.texts.push({ text:"Cognicopia · " + S.label + " · Page code " + page.meta.code, x:F.x, y:F.y + F.h - 2, size:9, bold:false, align:"left", role:"footer" });
+    if (o.footer) page.texts.push({ text:"Cognicopia · " + S.label + " · Page code " + page.meta.code, x:F.x, y:F.y + F.h - 2, size:10, bold:false, align:"left", role:"footer" });
     return page;
   }
 
@@ -368,9 +373,9 @@
     var w = o.width ? ' width="' + esc(o.width) + '"' : "", h = o.height ? ' height="' + esc(o.height) + '"' : "";
     var body = page.items.map(function(it){ return '<path d="' + it.d + '" fill="' + (it.fill === "none" ? "none" : it.fill) + '" stroke="#000" stroke-width="' + it.w + '" stroke-linecap="round" stroke-linejoin="round"/>'; }).join("");
     var text = (o.text === false ? [] : page.texts).map(function(t){
-      return '<text x="' + f2(t.x) + '" y="' + f2(t.y) + '" font-family=\'' + FONT + '\' font-size="' + t.size + '" font-weight="' + (t.bold ? 700 : 400) + '" text-anchor="' + (t.align === "left" ? "start" : t.align === "right" ? "end" : "middle") + '" fill="#000">' + esc(t.text) + "</text>";
+      return '<text x="' + f2(t.x) + '" y="' + f2(t.y) + '" font-family=\'' + FONT + '\' font-size="' + t.size + '" font-weight="' + (t.bold ? 700 : 400) + '" text-anchor="' + (t.align === "left" ? "start" : t.align === "right" ? "end" : "middle") + '" fill="#000"' + (t.role === "footer" ? ' data-role="staff"' : "") + '>' + esc(t.text) + "</text>";
     }).join("");
-    return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + page.w + " " + page.h + '"' + w + h + ' role="img" aria-label="' + esc(page.meta.title + ", a page to color") + '"><rect width="' + page.w + '" height="' + page.h + '" fill="#fff"/>' + body + text + "</svg>";
+    return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + page.w + " " + page.h + '"' + w + h + ' role="img" aria-label="' + esc(page.meta.title + ", a page to color") + '"><rect width="' + page.w + '" height="' + page.h + '" fill="#fff" stroke="none"/>' + body + text + "</svg>";
   }
   /* screen preview, or a print-ready image: dpi 300 gives 2550 x 3300.
      A print-ready image (200 dpi or more, or o.pure) is made pure black and
@@ -495,5 +500,7 @@
 
   return { VERSION:VERSION, PAGE:PAGE, STAGES:STAGES, stageOf:stageOf, compose:compose, composeMandala:composeMandala, composeFor:composeFor, plan:plan, validate:validate,
     toSVG:toSVG, toCanvas:toCanvas, toPDF:toPDF, draw:draw, renderHybridPage:renderHybridPage, subjectPaths:subjectPaths, subjectPathsSync:subjectPathsSync,
-    pathsFromSvg:pathsFromSvg, code:code, parseCode:parseCode, parse:parse, box:box, MOTIFS:MOTIFS };
+    pathsFromSvg:pathsFromSvg, code:code, parseCode:parseCode, parse:parse, box:box, MOTIFS:MOTIFS,
+    /* the drawing helpers, for the other page makers (src/engine/ClinicalActivities.js) that share these shapes */
+    kit:{ parse:parse, str:str, map:map, box:box, circle:circle, rect:rect, poly:poly, line:line, petal:petal, polar:polar, border:border, rng:rng, MOTIFS:MOTIFS } };
 });

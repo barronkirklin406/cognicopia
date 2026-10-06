@@ -52,12 +52,12 @@
     early: {
       label: "Early (mild)", focus: "Active recall and strategy",
       wordsearch: { size: 15, dirs: [[1, 0], [0, 1], [1, 1], [1, -1]], words: 14, minLen: 4, maxLen: 11, personal: 1, quota: { F: 5, C: 4, T: 3 } },
-      crossword: { size: 13, target: 8, max: 9, pool: { F: 6, C: 4, T: 4 }, minLen: 4, maxLen: 9, attempts: 30 }
+      crossword: { size: 9, target: 5, max: 6, pool: { F: 6, C: 4, T: 4 }, minLen: 4, maxLen: 9, attempts: 30 }
     },
     middle: {
       label: "Middle (moderate)", focus: "Guided completion",
       wordsearch: { size: 8, dirs: [[1, 0], [0, 1]], words: 6, minLen: 3, maxLen: 7, personal: 0, quota: { F: 2, C: 2, T: 1 } },
-      crossword: { size: 8, target: 5, max: 6, pool: { F: 4, C: 3, T: 3 }, minLen: 3, maxLen: 7, attempts: 40 },
+      crossword: { size: 8, target: 4, max: 5, pool: { F: 4, C: 3, T: 3 }, minLen: 3, maxLen: 7, attempts: 40 },
       completions: 5
     },
     late: {

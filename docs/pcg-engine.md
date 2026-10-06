@@ -26,6 +26,8 @@ first).
 | 4 | Color Page | a bold-line picture or a mandala |
 | 5 | For Staff: Today's Packet | why these topics, action prompts, answers |
 
+Every page also carries the clinical shell (name, date and wing, a clinical tip, "Page X of 5") and holds the stage's type and line floors; see `docs/clinical-matrix.md`. The crosswords are small on purpose: a clue number is never under the type floor (14 pt early, 18 pt middle), so a cell is at least 26 or 34 pt and the grid and its clues have to fit one page.
+
 Page titles, page order and the position of everything on a page are fixed.
 Only the content moves.
 
@@ -162,7 +164,7 @@ only the topic.
 | Focus | active recall and strategy | guided completion | sensory and visual anchoring |
 | Word search | 15 x 15, across, down and diagonal, 14 words | 8 x 8, across and down, 6 words | 6 x 6, across only, 3 words |
 | Page 2 | open questions, a fact with a follow-up, lines to write on | 5 familiar lines to finish, with a box of words | 3 large cards of 10 words or fewer |
-| Page 3 | crossword of about 8 words, clues, box of words | crossword of about 5 words, first letters filled in | one picture to look at together |
+| Page 3 | crossword of about 5 words (9 square at most), clues, box of words | crossword of about 4 words (8 square), first letters filled in | one picture to look at together |
 | Page 4 | bold-line picture or mandala (3 pt lines) | the same (4.5 pt lines) | mandala (6 pt lines), no area smaller than a tenth of a square inch |
 | Sentences | may presume what the profile names | familiar completions only | no questions |
 
