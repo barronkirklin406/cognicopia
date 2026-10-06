@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cognicopia.org/src/pcg/schema/grammar.schema.json",
+  "title": "Cognicopia PCG grammar matrices",
+  "description": "Sentence templates with slots. {item}, {a_item}, {the_item}, {item_pl}, {part}, {color}, {sound} and the like are filled from the item being talked about; {item2...} from a second item; {name}, {they}, {them}, {their} from the resident; any other {word} from the named pool. A capital first letter in a slot capitalizes the result. A template's presume level says how much it assumes: 0 nothing (safe for any topic, including a tangential one), 1 that the topic is part of the resident's life, 2 that this very thing is.",
+  "type": "object",
+  "required": ["version", "pools", "stages", "ui", "caregiver"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "version": { "const": 1 },
+    "pools": { "type": "object", "additionalProperties": { "type": "array", "minItems": 3, "items": { "type": "string", "minLength": 3, "maxLength": 40 } } },
+    "stages": {
+      "type": "object",
+      "required": ["early", "middle", "late"],
+      "additionalProperties": false,
+      "properties": {
+        "early": { "type": "object", "required": ["story", "open", "pair", "factFollow"], "additionalProperties": false, "properties": {
+          "story": { "$ref": "#/$defs/templates" }, "open": { "$ref": "#/$defs/templates" }, "pair": { "$ref": "#/$defs/templates" },
+          "factFollow": { "type": "array", "minItems": 3, "items": { "type": "string", "minLength": 8, "maxLength": 80 } } } },
+        "middle": { "type": "object", "required": ["intro", "bankLabel"], "additionalProperties": false, "properties": {
+          "intro": { "type": "array", "minItems": 3, "items": { "type": "string", "minLength": 8, "maxLength": 100 } },
+          "bankLabel": { "type": "string", "minLength": 6, "maxLength": 60 } } },
+        "late": { "type": "object", "required": ["sight", "sound", "touch", "smell", "anchor"], "additionalProperties": false, "properties": {
+          "sight": { "$ref": "#/$defs/templates" }, "sound": { "$ref": "#/$defs/templates" }, "touch": { "$ref": "#/$defs/templates" },
+          "smell": { "$ref": "#/$defs/templates" }, "anchor": { "$ref": "#/$defs/templates" } } }
+      }
+    },
+    "ui": {
+      "type": "object",
+      "required": ["titles", "instructions"],
+      "additionalProperties": false,
+      "properties": {
+        "titles": { "type": "object", "additionalProperties": { "type": "string", "minLength": 3, "maxLength": 40 } },
+        "instructions": { "type": "object", "additionalProperties": { "type": "string", "minLength": 8, "maxLength": 120 } }
+      }
+    },
+    "caregiver": {
+      "type": "object",
+      "required": ["moments", "templates"],
+      "additionalProperties": false,
+      "properties": {
+        "moments": { "type": "object", "required": ["early", "middle", "late"], "additionalProperties": false, "properties": {
+          "early": { "type": "array", "minItems": 4, "items": { "type": "string", "minLength": 8, "maxLength": 60 } },
+          "middle": { "type": "array", "minItems": 4, "items": { "type": "string", "minLength": 8, "maxLength": 60 } },
+          "late": { "type": "array", "minItems": 4, "items": { "type": "string", "minLength": 8, "maxLength": 60 } } } },
+        "templates": { "type": "array", "minItems": 12, "items": { "$ref": "#/$defs/caregiverTemplate" } }
+      }
+    }
+  },
+  "$defs": {
+    "slug": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
+    "kinds": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "enum": ["*", "vehicle", "machine", "tool", "appliance", "home", "food", "drink", "plant", "animal", "bird", "place", "game", "toy", "instrument", "clothing", "furniture", "craft", "school", "container", "scene"] } },
+    "templates": { "type": "array", "minItems": 2, "items": { "$ref": "#/$defs/template" } },
+    "template": {
+      "type": "object",
+      "required": ["id", "text"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "#/$defs/slug" },
+        "text": { "type": "string", "minLength": 8, "maxLength": 140 },
+        "presume": { "type": "integer", "minimum": 0, "maximum": 2 },
+        "kinds": { "$ref": "#/$defs/kinds" }
+      }
+    },
+    "caregiverTemplate": {
+      "type": "object",
+      "required": ["id", "role", "stages", "text"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "#/$defs/slug" },
+        "role": { "enum": ["hook", "talk", "connect", "puzzle", "color", "comfort", "wrap"] },
+        "page": { "type": "integer", "minimum": 1, "maximum": 5 },
+        "stages": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "enum": ["early", "middle", "late"] } },
+        "requires": { "type": "array", "uniqueItems": true, "items": { "enum": ["name-in-grid"] } },
+        "text": { "type": "string", "minLength": 20, "maxLength": 240 }
+      }
+    }
+  }
+}
