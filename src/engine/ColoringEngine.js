@@ -297,6 +297,55 @@
     return page;
   }
 
+  /* ---------- a mandala: a pattern page with no subject ----------
+     Rings of cells drawn from a seed, for the stage. Every cell is closed (circles
+     and scalloped rings crossed by straight dividers), every line is the stage's own
+     weight, and the page is the same weight of black on white as every other:
+       late    four bands of six or eight big cells, the fewest lobes, nothing inside
+               a cell: every area to color is a generous shape
+       middle  five bands, a petal, dot or diamond in each cell of one of them
+       early   six bands and more cells, a pattern in two of them (Zentangle style)
+     The same seed draws the same mandala, so a page can be printed again. */
+  var MANDALA = {
+    early:  { counts:[8, 10, 12], mult:[0, 1, 1, 2, 2, 2], bounds:[0.12, 0.27, 0.43, 0.58, 0.77, 1], amp:[0.10, 0.08, 0.07, 0.06, 0.05, 0], motifs:[2, 4], scallop:0.6 },
+    middle: { counts:[6, 8],      mult:[0, 1, 1, 2, 2],    bounds:[0.16, 0.34, 0.56, 0.78, 1],       amp:[0.10, 0.08, 0.06, 0.04, 0],       motifs:[2], scallop:0.5 },
+    late:   { counts:[6, 8],      mult:[0, 1, 1, 2],       bounds:[0.20, 0.52, 0.78, 1],             amp:[0.08, 0.10, 0.05, 0],             motifs:[], scallop:0.3 }
+  };
+  function composeMandala(o){
+    o = o || {};
+    var stage = stageOf(o.stage), S = STAGES[stage], M = PAGE.margin, seed = (o.seed >>> 0) || 1, rnd = rng(seed), cfg = MANDALA[stage];
+    var F = o.frame || { x:M, y:M, w:PAGE.w - 2 * M, h:PAGE.h - 2 * M };
+    var cx = F.x + F.w / 2, cy = F.y + F.h / 2, R = Math.min(F.w, F.h) / 2 - S.line / 2 - 3, c = [cx, cy], TAU = Math.PI * 2;
+    var N = cfg.counts[Math.floor(rnd() * cfg.counts.length)], n = cfg.mult.map(function(m){ return m * N; });
+    var rot = rnd() < 0.5 ? 0 : Math.PI / (2 * N), scallop = rnd() < cfg.scallop;
+    var phi = n.map(function(k, i){ return k ? rot + (i % 2 ? Math.PI / k : 0) : rot; });
+    var amp = cfg.amp.map(function(a){ return scallop ? a : 0; }), bounds = cfg.bounds, last = bounds.length - 1;
+    var rOf = function(i, th){ return bounds[i] * R * (1 + amp[i] * Math.cos((n[i] || n[1]) * (th - phi[i]))); };
+    var items = [], i, j;
+    var add = function(d, fill){ items.push({ d:d, fill:fill, w:S.line, role:"subject" }); };
+    for (i = last; i >= 0; i--) add(i === last && !amp[i] ? circle(cx, cy, bounds[i] * R) : polar(c, (function(k){ return function(a){ return rOf(k, a); }; })(i), 96), "#fff");
+    for (i = 1; i <= last; i++) for (j = 0; j < n[i]; j++){
+      var th = phi[i] + TAU * j / n[i], r0 = rOf(i - 1, th), r1 = rOf(i, th);
+      add(line([cx + Math.cos(th) * r0, cy + Math.sin(th) * r0], [cx + Math.cos(th) * r1, cy + Math.sin(th) * r1]), "none");
+    }
+    if (cfg.motifs.length) add(circle(cx, cy, 0.45 * bounds[0] * R * (1 - amp[0])), "#fff");
+    var styles = ["petal", "dot", "diamond"].sort(function(){ return rnd() - 0.5; });
+    cfg.motifs.forEach(function(bi, mi){
+      var style = styles[mi % styles.length];
+      for (var k = 0; k < n[bi]; k++){
+        var a = phi[bi] + TAU * (k + 0.5) / n[bi], ri = rOf(bi - 1, a), ro = rOf(bi, a), rc = (ri + ro) / 2;
+        var m = 0.34 * Math.min(ro - ri, rc * TAU / n[bi]), ca = Math.cos(a), sa = Math.sin(a), px = cx + ca * rc, py = cy + sa * rc;
+        if (style === "dot") add(circle(px, py, m * 0.9), "#fff");
+        else if (style === "diamond") add(poly([[px + ca * m, py + sa * m], [px - sa * m, py + ca * m], [px - ca * m, py - sa * m], [px + sa * m, py - ca * m]]), "#fff");
+        else add(petal([cx + ca * (rc - m * 1.1), cy + sa * (rc - m * 1.1)], [cx + ca * (rc + m * 1.1), cy + sa * (rc + m * 1.1)], m * 0.55), "#fff");
+      }
+    });
+    var page = { w:PAGE.w, h:PAGE.h, stage:stage, frame:{ x:F.x, y:F.y, w:F.w, h:F.h }, items:items, texts:[],
+      meta:{ id:"mandala", title:"Mandala", category:"mandala", seed:seed, code:code(stage, "mandala", seed), stage:stage, engine:VERSION, pattern:N + (scallop ? "-scalloped" : "-round") } };
+    if (o.footer) page.texts.push({ text:"Cognicopia · " + S.label + " · Page code " + page.meta.code, x:F.x, y:F.y + F.h - 2, size:9, bold:false, align:"left", role:"footer" });
+    return page;
+  }
+
   /* ---------- the rules, checked ---------- */
   function validate(page){
     var S = STAGES[page.stage], problems = [], F = page.frame;
@@ -444,7 +493,7 @@
     });
   }
 
-  return { VERSION:VERSION, PAGE:PAGE, STAGES:STAGES, stageOf:stageOf, compose:compose, composeFor:composeFor, plan:plan, validate:validate,
+  return { VERSION:VERSION, PAGE:PAGE, STAGES:STAGES, stageOf:stageOf, compose:compose, composeMandala:composeMandala, composeFor:composeFor, plan:plan, validate:validate,
     toSVG:toSVG, toCanvas:toCanvas, toPDF:toPDF, draw:draw, renderHybridPage:renderHybridPage, subjectPaths:subjectPaths, subjectPathsSync:subjectPathsSync,
     pathsFromSvg:pathsFromSvg, code:code, parseCode:parseCode, parse:parse, box:box, MOTIFS:MOTIFS };
 });

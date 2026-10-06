@@ -23,6 +23,12 @@
 <script src="src/services/ColoringManifest.js"></script>
 <script src="src/engine/ColoringEngine.js"></script>
 <script src="assets/services/secureStore.js"></script>
+<script src="assets/pcg/pcg-data.bundle.js"></script>
+<script src="src/pcg/prng.js"></script>
+<script src="src/pcg/matrix.js"></script>
+<script src="src/pcg/grammar.js"></script>
+<script src="src/pcg/puzzles.js"></script>
+<script src="src/pcg/packet.js"></script>
 <script>
 /* Resident details are sealed in this browser's encrypted store
    (assets/services/secureStore.js). CG_LS stands in for localStorage:
@@ -1262,6 +1268,39 @@ summary{min-height:44px;box-sizing:border-box}
 .qpb-frame > .qp-sheet{position:absolute;top:0;left:0;transform-origin:0 0;box-shadow:0 6px 20px rgba(0,0,0,.35)}
 @media (max-width:700px){.qpb{padding:16px}.qpb-picks{grid-template-columns:1fr}.qpb-btn{flex:1 1 100%}.qpb-preview{padding:8px}}
 #qpPrintRoot{display:none}
+/* ═══ Today's Packet: the procedural content engine's card (src/pcg) ═══ */
+.pcg{margin:0 0 28px;padding:20px 22px;border-radius:18px;background:linear-gradient(160deg,#16231f,#0e1614);border:2px solid rgba(216,243,220,.3);color:#eef6f1;font-family:"Trebuchet MS","Segoe UI",sans-serif;box-shadow:0 12px 32px rgba(0,0,0,.28)}
+.pcg-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 14px;margin:0 0 6px}
+.pcg-head h2{margin:0;font-size:21px;color:#fff;font-family:inherit}
+.pcg-pill{padding:5px 14px;border-radius:999px;font-size:15px;font-weight:700;background:rgba(216,243,220,.1);color:#b3c9bf;border:1px solid rgba(216,243,220,.25)}
+.pcg-pill.is-on{background:#52b788;color:#062116;border-color:#52b788}
+.pcg-empty{margin:0 0 14px;padding:14px 16px;border-radius:12px;border:2px dashed rgba(216,243,220,.3);color:#b3c9bf;font-size:16px;line-height:1.5}
+.pcg-empty[hidden],.pcg-body[hidden],.pcg-how[hidden],.pcg .qpb-btn[hidden]{display:none}
+.pcg-meta{display:grid;grid-template-columns:max-content 1fr;gap:6px 16px;margin:0 0 6px;font-size:16px;line-height:1.4}
+.pcg-meta dt{color:#b3c9bf;font-weight:700}
+.pcg-meta dd{margin:0;color:#fff}
+.pcg-h{margin:18px 0 8px;font-size:17px;color:#fff;font-family:inherit}
+.pcg-plan{margin:0;padding:0;list-style:none;display:grid;gap:8px}
+.pcg-plan li{display:flex;gap:14px;align-items:flex-start;padding:10px 14px;border-radius:12px;background:#0b1412;border:2px solid rgba(216,243,220,.2)}
+.pcg-n{flex:none;display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:#52b788;color:#062116;font-weight:800;font-size:16px}
+.pcg-plan b{display:block;font-size:16.5px;color:#fff}
+.pcg-plan small{display:block;font-size:14.5px;line-height:1.4;color:#b3c9bf}
+.pcg-prompts{margin:0;padding:0;list-style:none}
+.pcg-prompts li{display:flex;gap:14px;padding:10px 0;border-top:1px solid rgba(216,243,220,.18);font-size:16px;line-height:1.5}
+.pcg-prompts li:first-child{border-top:0}
+.pcg-pg{flex:none;min-width:78px;font-weight:700;color:#7ad3a4;font-size:14.5px;padding-top:2px}
+.pcg-extra{margin:16px 0 14px}
+.pcg-extra label{display:block;margin:0 0 6px;font-weight:700;font-size:15.5px;color:#fff}
+.pcg-extra label span{font-weight:400;color:#b3c9bf}
+.pcg-extra input{width:100%;max-width:460px;min-height:48px;padding:8px 14px;border-radius:12px;border:2px solid rgba(216,243,220,.3);background:#0b1412;color:#fff;font:inherit;font-size:17px}
+.pcg-extra input:focus-visible{outline:3px solid #7ad3a4;outline-offset:2px}
+.pcg-how{margin:14px 0 0;color:#b3c9bf;font-size:15.5px;line-height:1.5}
+.pcg-how summary{cursor:pointer;min-height:44px;display:flex;align-items:center;font-weight:700;color:#eef6f1}
+.pcg-how summary:focus-visible{outline:3px solid #7ad3a4;outline-offset:2px}
+.pcg-how p{margin:6px 0}
+.pcg-how ul{margin:6px 0 6px 20px;padding:0}
+.pcg-how b{color:#eef6f1}
+@media (max-width:700px){.pcg{padding:16px}.pcg-meta{grid-template-columns:1fr;gap:2px}.pcg-meta dt{margin-top:8px}.pcg-prompts li{flex-direction:column;gap:2px}.pcg-extra input{max-width:none}}
 
 /* ═══ Printable pages (identical on screen preview and paper) ═══
    Pure black on white. Sizes use pt so they print at the stated size.
@@ -1351,7 +1390,7 @@ summary{min-height:44px;box-sizing:border-box}
   .resident-hero-name{color:#000 !important;border-bottom-color:#000 !important}
   .ink-gray .qp-banner{border-bottom-color:#444 !important}
   #qpPrintRoot,#qpPrintRoot *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  .qpb{display:none !important}
+  .qpb,.pcg{display:none !important}
 }
 </style>
 <style>
@@ -2022,6 +2061,42 @@ html.cg-night-shift .licbadge{color:#ffedcc !important}
   <p class="qpb-note"><b>Download PDF Packet</b> saves a ready-to-print file straight to your Downloads folder, made entirely on this computer. If you use Print instead, choose <b>Save as PDF</b> as the printer and keep the scale at 100% (Default), not "Fit to page".</p>
   <p class="qpb-status" id="qpbStatus" role="status" aria-live="polite"></p>
   <div class="qpb-preview" id="qpbPreview" aria-label="Packet preview" hidden></div>
+</section>
+
+<!-- ══ TODAY'S PACKET: five anchored pages from the procedural content engine (src/pcg).
+     The same resident on the same day always gets the same pages; tomorrow's are new.
+     Built in this browser from the form below. Nothing is sent anywhere. ══ -->
+<section class="pcg" id="pcgCard" aria-labelledby="pcgTitle">
+  <div class="pcg-head">
+    <h2 id="pcgTitle">Today's Packet</h2>
+    <span class="pcg-pill" id="pcgPill" role="status">Type a first name below</span>
+  </div>
+  <p class="qpb-lede">Five pages made fresh each morning from the resident form below: a word search, a conversation page, a puzzle, a bold-line color page, and action prompts for staff. Print it at 8 AM or 2 PM and it is the same packet. Tomorrow's is new.</p>
+  <p class="pcg-empty" id="pcgEmpty">Type a first name, a birth year and a few interests in the form below, and today's packet appears here.</p>
+  <div class="pcg-body" id="pcgBody" hidden>
+    <dl class="pcg-meta" id="pcgMeta"></dl>
+    <h3 class="pcg-h">The five pages</h3>
+    <ol class="pcg-plan" id="pcgPlan"></ol>
+    <h3 class="pcg-h">Action prompts for staff</h3>
+    <ul class="pcg-prompts" id="pcgPrompts" aria-label="Action prompts for staff"></ul>
+  </div>
+  <div class="pcg-extra">
+    <label for="pcgTopics">Add a topic for today <span>(optional, separate with commas)</span></label>
+    <input type="text" id="pcgTopics" maxlength="120" autocomplete="off" placeholder="fishing, the county fair">
+  </div>
+  <div class="qpb-actions">
+    <button type="button" class="qpb-btn qpb-btn-primary" id="pcgPrint" disabled><span aria-hidden="true">📥</span> Download Today's Packet (PDF)</button>
+    <button type="button" class="qpb-btn" id="pcgCopy" disabled><span aria-hidden="true">📋</span> Copy action prompts</button>
+    <button type="button" class="qpb-btn" id="pcgAnother" disabled><span aria-hidden="true">🔀</span> Make another version</button>
+    <button type="button" class="qpb-btn" id="pcgBack" hidden>Back to the first version</button>
+    <span class="qpb-pill" id="pcgPdfPill" role="status" aria-live="polite" hidden></span>
+  </div>
+  <p class="qpb-note">The PDF is five pages, made entirely on this computer: the word search is always Page 1 and the color page is always Page 4. Page 5 is for staff, so take it off before handing the packet over.</p>
+  <p class="qpb-status" id="pcgStatus" role="status" aria-live="polite"></p>
+  <details class="pcg-how" id="pcgHowBox" hidden>
+    <summary>How today's packet was chosen</summary>
+    <div id="pcgHow"></div>
+  </details>
 </section>
 
 <form id="f" novalidate>
@@ -13221,6 +13296,553 @@ function generateAilmentPDF(ailmentType) {
       warn.textContent = "The bundle could not be made: " + err.message; warn.hidden = false;
     });
   });
+})();
+</script>
+<script id="pcg-ui">
+/* =====================================================================
+   TODAY'S PACKET: the card and the PDF for the procedural content engine
+   (src/pcg, loaded above). The engine decides what today's packet holds;
+   this file shows it, copies the staff prompts and draws the five pages.
+   ---------------------------------------------------------------------
+   Same resident + same date = the same packet, however often it is made.
+   The PDF layout never moves: Page 1 is the word search, Page 2 the
+   conversation page, Page 3 the puzzle, Page 4 the bold-line color page,
+   Page 5 the staff sheet. Only what is on the pages changes.
+   Everything is drawn as vector text and lines with the jsPDF already in
+   this file, in pure black on white. No network, no file read, nothing
+   stored but a counter and "another version" choice for today (as a hash).
+   ===================================================================== */
+(function(){
+  "use strict";
+  var PCG = window.CognicopiaPCG, card = document.getElementById("pcgCard");
+  if (!card || !PCG || !PCG.generate || !PCG.prng) return;
+  var P = PCG.prng;
+  var $q = function(id){ return document.getElementById(id); };
+  var el = function(tag, cls, text){ var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+  var safe = function(s){ s = String(s == null ? "" : s); return typeof pdfSafe === "function" ? pdfSafe(s) : s; };
+  var store = {
+    get: function(k){ try { return CG_LS.getItem(k); } catch (e){ return null; } },
+    set: function(k, v){ try { CG_LS.setItem(k, v); } catch (e){} }
+  };
+  var VKEY = "cognicopia_pcg_variant", CKEY = "cognicopia_pcg_counted";
+
+  /* ---------- the profile, read from the packet form ---------- */
+  function field(id){ var e = $q(id); return e ? String(e.value || "").trim() : ""; }
+  function pcgProfile(){
+    var st = document.querySelector('input[name="stage"]:checked'), stage = st ? st.value : "early";
+    if (typeof window.getTemporaryActivityStage === "function") stage = window.getTemporaryActivityStage(stage);
+    var crew = [];
+    try { crew = collectCrew().map(function(c){ return c.name; }); } catch (e){}
+    return {
+      first: field("goes") || field("first"), born: field("born"), pronoun: field("pronoun") || "they", stage: stage,
+      job: field("job"), hobbies: field("hobbies"), favs: field("favs"), pets: field("pets"), firstcar: field("firstcar"),
+      firstjob: field("firstjob"), school: field("school"), town: field("town"), state: field("state"),
+      spouse: field("spouse"), kids: field("kids"), avoid: field("avoid"), topics: field("pcgTopics"), crew: crew.join(", ")
+    };
+  }
+
+  /* ---------- "another version" and "already counted", kept as hashes for today only ---------- */
+  function readJSON(k, fallback){ try { var v = JSON.parse(store.get(k) || "null"); return v == null ? fallback : v; } catch (e){ return fallback; } }
+  function variantMap(iso){ var m = readJSON(VKEY, null); return m && m.d === iso && m.v ? m : { d: iso, v: {} }; }
+  function variantOf(first, iso){ return variantMap(iso).v[P.hash32(P.nameKey(first))] | 0; }
+  function setVariant(first, iso, n){ var m = variantMap(iso); m.v[P.hash32(P.nameKey(first))] = n; store.set(VKEY, JSON.stringify(m)); }
+  function isCounted(seed){ var a = readJSON(CKEY, []); return Array.isArray(a) && a.indexOf(P.hash32(seed)) >= 0; }
+  function markCounted(seed){ var a = readJSON(CKEY, []); if (!Array.isArray(a)) a = []; a.push(P.hash32(seed)); store.set(CKEY, JSON.stringify(a.slice(-60))); }
+
+  /* ---------- what each page holds, in a line ---------- */
+  function plural(n, one, many){ return n + " " + (n === 1 ? one : many); }
+  function describe(pk){
+    return pk.pages.map(function(pg){
+      var s = "";
+      if (pg.type === "wordsearch") s = pg.size + " by " + pg.size + " grid, " + plural(pg.list.length, "word", "words") + ", going " + pg.directions + ".";
+      else if (pg.type === "talk") s = pg.style === "open" ? plural(pg.items.length, "conversation starter", "conversation starters") + ", with room to write."
+        : pg.style === "complete" ? plural(pg.items.length, "familiar line to finish", "familiar lines to finish") + ", with a box of words to choose from."
+        : plural(pg.cards.length, "large look-and-feel card", "large look-and-feel cards") + ", a few words each.";
+      else if (pg.type === "puzzle") s = pg.style === "crossword" ? "A crossword of " + plural(pg.crossword.entries.length, "word", "words") + ", with clues and a box of words" + (pg.firstLetters ? " (first letters filled in)." : ".")
+        : "A large picture of " + (pg.look.label || "something familiar") + " to look at together.";
+      else if (pg.type === "coloring") s = pg.style === "subject" ? "A bold-line picture: " + pg.label + "." : "A bold-line mandala to color any way they like.";
+      else s = plural(pk.prompts.length, "action prompt", "action prompts") + ", why these topics, and the answers. Not for the resident.";
+      return { n: pg.n, title: pg.title, line: s };
+    });
+  }
+
+  /* ---------- the card ---------- */
+  var cur = null, sig = "", timer = 0;
+  function showEmpty(msg){
+    cur = null;
+    $q("pcgBody").hidden = true; $q("pcgHowBox").hidden = true;
+    var e = $q("pcgEmpty"); e.hidden = false; if (msg) e.textContent = msg;
+    var pill = $q("pcgPill"); pill.textContent = "Type a first name below"; pill.classList.remove("is-on");
+    ["pcgPrint", "pcgCopy", "pcgAnother"].forEach(function(id){ $q(id).disabled = true; });
+    $q("pcgBack").hidden = true;
+  }
+  function meta(pk){
+    var dl = $q("pcgMeta"); dl.textContent = "";
+    var add = function(k, v){ dl.appendChild(el("dt", "", k)); dl.appendChild(el("dd", "", v)); };
+    add("Day", pk.date.label + (pk.variant ? " · version " + (pk.variant + 1) : ""));
+    add("Level", pk.stageInfo.label + ": " + pk.stageInfo.focus);
+    add("Featured today", pk.focus.feature.name);
+    add("Goes with it", pk.focus.companion.name);
+    add("A step away", pk.focus.surprise.name);
+    add("Packets possible", pk.stats.permutations.text + " different packets for this profile");
+  }
+  function plan(pk){
+    var ol = $q("pcgPlan"); ol.textContent = "";
+    describe(pk).forEach(function(r){
+      var li = el("li"), box = el("div");
+      li.appendChild(el("span", "pcg-n", String(r.n)));
+      box.appendChild(el("b", "", "Page " + r.n + " · " + r.title));
+      box.appendChild(el("small", "", r.line));
+      li.appendChild(box); ol.appendChild(li);
+    });
+  }
+  function prompts(pk){
+    var ul = $q("pcgPrompts"); ul.textContent = "";
+    pk.prompts.forEach(function(pr){
+      var li = el("li");
+      li.appendChild(el("span", "pcg-pg", pr.page ? "Page " + pr.page : "Any time"));
+      li.appendChild(el("span", "pcg-tx", pr.text));
+      ul.appendChild(li);
+    });
+  }
+  function how(pk){
+    var box = $q("pcgHow"); box.textContent = "";
+    var rd = pk.read, p1 = el("p");
+    p1.appendChild(el("b", "", "Read from the profile: "));
+    p1.appendChild(document.createTextNode(rd.generic
+      ? "no interest matched yet, so today uses familiar everyday topics. Add work, hobbies or favorite things to make it more personal."
+      : rd.topics.map(function(t){ return t.label + (t.via.length ? " (" + t.via.join(", ") + ")" : ""); }).join("; ") + "."));
+    box.appendChild(p1);
+    if (rd.decades.length){ var p2 = el("p"); p2.appendChild(el("b", "", "Years it draws from: ")); p2.appendChild(document.createTextNode(rd.decades.join(", ") + ".")); box.appendChild(p2); }
+    if (rd.avoiding){ var p3 = el("p"); p3.appendChild(el("b", "", "Topics to avoid: ")); p3.appendChild(document.createTextNode("everything on the avoid list is left out of every page.")); box.appendChild(p3); }
+    var ul = el("ul");
+    pk.why.forEach(function(w){ var li = el("li"); li.appendChild(el("b", "", w.label + ": ")); li.appendChild(document.createTextNode(w.item + ". " + w.why)); ul.appendChild(li); });
+    box.appendChild(ul);
+    box.appendChild(el("p", "", "The same name, details and date always give the same packet. A new day gives a new one. The count above is the different featured items, word choices, sentences and crossword words possible for this profile; it does not count where letters land on the grids. Nothing here leaves this computer."));
+  }
+  function render(){
+    var raw = pcgProfile(), iso = P.today().iso;
+    sig = JSON.stringify(raw) + "|" + iso;
+    if (!raw.first){ showEmpty(); return; }
+    var variant = variantOf(raw.first, iso), pk;
+    try { pk = PCG.generate(raw, { date: iso, variant: variant }); }
+    catch (e){ console.error(e); showEmpty("Today's packet could not be made from what is in the form. Check the name and birth year, then try again."); return; }
+    cur = pk;
+    $q("pcgEmpty").hidden = true; $q("pcgBody").hidden = false; $q("pcgHowBox").hidden = false;
+    var pill = $q("pcgPill"); pill.textContent = "For " + pk.resident.name + " · " + pk.date.label.replace(/^\w+, /, "") + (variant ? " · v" + (variant + 1) : ""); pill.classList.add("is-on");
+    meta(pk); plan(pk); prompts(pk); how(pk);
+    ["pcgPrint", "pcgCopy", "pcgAnother"].forEach(function(id){ $q(id).disabled = false; });
+    $q("pcgBack").hidden = !variant;
+  }
+  function later(){ clearTimeout(timer); timer = setTimeout(render, 250); }
+
+  /* ---------- the staff prompts, as plain text ---------- */
+  function promptText(pk){
+    var out = ["Action prompts for " + pk.resident.name + " · " + pk.date.label, ""];
+    pk.prompts.forEach(function(pr, i){ out.push((i + 1) + ". " + (pr.page ? "Page " + pr.page + ": " : "") + pr.text); });
+    return out.join("\n");
+  }
+  function copyPrompts(){
+    if (!cur) return;
+    var text = promptText(cur), status = $q("pcgStatus");
+    var done = function(){ status.textContent = "Copied " + cur.prompts.length + " action prompts. Paste them into a note or a message to the care team."; };
+    var fallback = function(){
+      var ta = el("textarea"); ta.value = text; ta.setAttribute("readonly", ""); ta.style.cssText = "position:fixed;left:-9999px;top:0";
+      document.body.appendChild(ta); ta.select();
+      var ok = false; try { ok = document.execCommand("copy"); } catch (e){}
+      document.body.removeChild(ta);
+      if (ok) done(); else status.textContent = "Copying is blocked in this browser. Select the prompts above and copy them by hand.";
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, fallback); else fallback();
+  }
+
+  /* ===================================================================
+     THE FIVE PAGES (vector PDF, pure black on white, Letter)
+     =================================================================== */
+  function pcgPdf(p){
+    var jsPDF = window.jspdf.jsPDF, d = new jsPDF({ unit: "pt", format: "letter" });
+    var E = window.CognicopiaColoringEngine, MF = window.CognicopiaColoringManifest;
+    var W = 612, H = 792, M = 54, CW = W - 2 * M, FOOT = H - M - 16, BOTTOM = FOOT - 12;
+    var stage = p.stage, who = safe(p.resident.name);
+    var SZ = ({
+      early:  { inst: 18, list: 16, cellMax: 30, cellMin: 24, talk: 19, clue: 15 },
+      middle: { inst: 20, list: 21, cellMax: 52, cellMin: 40, talk: 22, clue: 17 },
+      late:   { inst: 26, list: 32, cellMax: 76, cellMin: 60, talk: 34, clue: 20 }
+    })[stage] || { inst: 20, list: 21, cellMax: 52, cellMin: 40, talk: 22, clue: 17 };
+    var info = { staffSize: 0, pictures: [] };
+
+    var font = function(size, style){ d.setFont("helvetica", style || "normal"); d.setFontSize(size); };
+    var wrap = function(text, size, style, w){ font(size, style); return d.splitTextToSize(safe(text), w); };
+    var ink = function(w){ d.setDrawColor(0); d.setLineWidth(w); };
+    /* draw wrapped lines from the top of their block; returns the block's height */
+    var put = function(ls, x, y, size, style, lh, opt){
+      font(size, style); d.setTextColor(0);
+      for (var i = 0; i < ls.length; i++) d.text(ls[i], x, y + size * 0.8 + i * size * lh, opt);
+      return ls.length * size * lh;
+    };
+    var resetPen = function(){
+      d.setLineWidth(1); d.setDrawColor(0); d.setFillColor(255, 255, 255); d.setTextColor(0);
+      if (d.setLineCap) d.setLineCap(0);
+      if (d.setLineJoin) d.setLineJoin(0);
+    };
+    /* flow words into centered lines no wider than `inner` */
+    var flow = function(words, size, gapW, inner){
+      font(size, "bold");
+      var out = [], row = [], w = 0;
+      words.forEach(function(x){
+        var xw = d.getTextWidth(safe(x));
+        if (row.length && w + gapW + xw > inner){ out.push({ words: row, w: w }); row = []; w = 0; }
+        w += (row.length ? gapW : 0) + xw; row.push(x);
+      });
+      if (row.length) out.push({ words: row, w: w });
+      return out;
+    };
+    var drawFlow = function(rows, x, y, w, size, gapW, lh){
+      font(size, "bold"); d.setTextColor(0);
+      rows.forEach(function(r, i){
+        var cx = x + (w - r.w) / 2;
+        r.words.forEach(function(wd){ d.text(safe(wd), cx, y + size * 0.8 + i * size * lh); cx += d.getTextWidth(safe(wd)) + gapW; });
+      });
+    };
+
+    /* the name banner, the title, the instruction; returns where the page body starts */
+    function head(pg){
+      var y;
+      if (typeof drawResidentBanner === "function") y = drawResidentBanner(d, who, M, M, CW, { size: 28, min: 22, labelSize: 12, rule: 3 }) + 14;
+      else { font(24, "bold"); d.setTextColor(0); d.text(who, M, M + 20); y = M + 36; }
+      font(26, "bold"); d.setTextColor(0); d.text(safe(pg.title), M, y + 21);
+      y += 29; ink(2); d.line(M, y, M + CW, y); y += 10;
+      if (pg.instruction){
+        var ls = wrap(pg.instruction, SZ.inst, "normal", CW);
+        y += put(ls, M, y, SZ.inst, "normal", 1.25) + 8;
+      }
+      return y;
+    }
+    function foot(n, staff){
+      ink(1); d.line(M, FOOT, M + CW, FOOT);
+      font(10, "normal"); d.setTextColor(0);
+      d.text(safe((staff ? "Staff copy for " : "Prepared for ") + p.resident.name + " · " + p.date.label + (p.variant ? " · version " + (p.variant + 1) : "")), M, FOOT + 13);
+      d.text("Cognicopia · Page " + n + " of 5", M + CW, FOOT + 13, { align: "right" });
+    }
+
+    /* ---- Page 1: the word search ---- */
+    function pWordSearch(pg){
+      var y = head(pg), n = pg.size, words = pg.list.slice();
+      var ls = SZ.list, cell, cols, rows, rowH, box, listH, gap = 14;
+      for (;;){
+        font(ls, "bold");
+        var widest = Math.max.apply(null, words.map(function(w){ return d.getTextWidth(w); }));
+        box = Math.round(ls * 0.8);
+        cols = Math.max(1, Math.min(stage === "late" ? 3 : 4, words.length, Math.floor((CW + gap) / (widest + box + 10 + gap))));
+        rows = Math.ceil(words.length / cols); rowH = Math.max(ls * 1.45, box + 8); listH = rows * rowH;
+        cell = Math.min(SZ.cellMax, CW / n, (BOTTOM - y - listH - 22) / n);
+        if (cell >= SZ.cellMin || ls <= 13) break;
+        ls--;
+      }
+      var block = n * cell + 22 + listH, lead = Math.max(0, Math.min(30, (BOTTOM - y - block) / 2));
+      var gw = n * cell, gx = M + (CW - gw) / 2, gy = y + lead, size = cell * 0.6;
+      ink(stage === "late" ? 4 : 3); d.rect(gx, gy, gw, gw);
+      font(size, "bold"); d.setTextColor(0);
+      for (var r = 0; r < n; r++) for (var c = 0; c < n; c++)
+        d.text(pg.rows[r].charAt(c), gx + c * cell + cell / 2, gy + r * cell + cell / 2 + size * 0.36, { align: "center" });
+      var top = gy + gw + 22, colW = (CW - gap * (cols - 1)) / cols;
+      words.forEach(function(w, i){
+        var x = M + (i % cols) * (colW + gap), ry = top + Math.floor(i / cols) * rowH;
+        ink(stage === "late" ? 3 : 2); d.rect(x, ry + (rowH - box) / 2, box, box);
+        font(ls, "bold"); d.setTextColor(0); d.text(w, x + box + 10, ry + rowH / 2 + ls * 0.35);
+      });
+    }
+
+    /* ---- Page 2, early: open conversation, with a line to write on ---- */
+    function pTalkOpen(pg){
+      var y = head(pg), items = pg.items.slice(), indent = 30, GAP = 14, LINE = 36, room = BOTTOM - y;
+      var blockH = function(it, sz){
+        var h = wrap(it.text, sz, "normal", CW - indent).length * sz * 1.3;
+        if (it.follow) h += 3 + wrap(it.follow, sz, "bold", CW - indent).length * sz * 1.3;
+        return h;
+      };
+      var total = function(sz, wl){ return items.reduce(function(t, it){ return t + blockH(it, sz) + wl * LINE + GAP; }, 0); };
+      var plans = [[19, 1], [18, 1], [17, 1], [19, 0], [18, 0], [17, 0], [16, 0]], pick = null, i;
+      for (;;){
+        for (i = 0; i < plans.length && !pick; i++) if (total(plans[i][0], plans[i][1]) <= room) pick = plans[i];
+        if (pick || items.length <= 2) break;
+        items.pop();
+      }
+      if (!pick) pick = plans[plans.length - 1];
+      var sz = pick[0], wl = pick[1], extra = Math.min(22, Math.max(0, (room - total(sz, wl)) / items.length));
+      items.forEach(function(it, k){
+        font(sz, "bold"); d.setTextColor(0); d.text((k + 1) + ".", M, y + sz * 0.8);
+        var h = put(wrap(it.text, sz, "normal", CW - indent), M + indent, y, sz, "normal", 1.3);
+        if (it.follow) h += 3 + put(wrap(it.follow, sz, "bold", CW - indent), M + indent, y + h + 3, sz, "bold", 1.3);
+        y += h;
+        for (var j = 0; j < wl; j++){ y += LINE; ink(2); d.line(M + indent, y, M + CW, y); }
+        y += GAP + extra;
+      });
+    }
+
+    /* ---- Page 2, middle: familiar lines to finish, a box of words ---- */
+    function pTalkComplete(pg){
+      var y = head(pg), bsz = 22, gapW = 24, rows = flow(pg.bank, bsz, gapW, CW - 28);
+      var bh = 12 + 18 + rows.length * bsz * 1.5 + 8;
+      ink(2.5); d.rect(M, y, CW, bh);
+      font(13, "bold"); d.setTextColor(0); d.text(safe(pg.bankLabel || "Words to choose from"), M + 14, y + 22);
+      drawFlow(rows, M + 14, y + 30, CW - 28, bsz, gapW, 1.5);
+      y += bh + 20;
+      var indent = 34, BLANK = 130, room = BOTTOM - y, items = pg.items, sz, i;
+      var layout = function(s){
+        var h = 0, ls = items.map(function(it){
+          var l = wrap(it.lead, s, "normal", CW - indent), lw = d.getTextWidth(l[l.length - 1]), same = lw + 12 + BLANK <= CW - indent;
+          h += (l.length + (same ? 0 : 1)) * s * 1.35 + 16;
+          return { l: l, lw: lw, same: same };
+        });
+        return { h: h, ls: ls };
+      };
+      var sizes = [SZ.talk, 21, 20, 19, 18], lay = null;
+      for (i = 0; i < sizes.length; i++){ sz = sizes[i]; lay = layout(sz); if (lay.h <= room) break; }
+      var extra = Math.min(18, Math.max(0, (room - lay.h) / items.length));
+      items.forEach(function(it, k){
+        var m = lay.ls[k];
+        font(sz, "bold"); d.setTextColor(0); d.text((k + 1) + ".", M, y + sz * 0.8);
+        var h = put(m.l, M + indent, y, sz, "normal", 1.35);
+        ink(2);
+        if (m.same) d.line(M + indent + m.lw + 12, y + h - sz * 0.55 + 3, M + indent + m.lw + 12 + BLANK, y + h - sz * 0.55 + 3);
+        else { d.line(M + indent, y + h + sz * 0.8 + 2, M + indent + BLANK + 30, y + h + sz * 0.8 + 2); h += sz * 1.35; }
+        y += h + 16 + extra;
+      });
+    }
+
+    /* ---- Page 2, late: three large look-and-feel cards ---- */
+    function pTalkCards(pg){
+      var y = head(pg), cards = pg.cards, n = cards.length, gap = 16;
+      var ch = Math.min(200, (BOTTOM - y - gap * (n - 1)) / n);
+      cards.forEach(function(c, i){
+        var top = y + i * (ch + gap), sz, ls;
+        ink(3.5); d.setFillColor(255, 255, 255); d.roundedRect(M, top, CW, ch, 14, 14, "S");
+        font(15, "bold"); d.setTextColor(0); d.text(safe(String(c.label || "").toUpperCase()), M + 20, top + 28);
+        for (sz = 42; sz >= 26; sz -= 2){ ls = wrap(c.text, sz, "bold", CW - 48); if (ls.length <= 2 && ls.length * sz * 1.2 <= ch - 58) break; }
+        put(ls, M + CW / 2, top + 36 + (ch - 36 - ls.length * sz * 1.2) / 2, sz, "bold", 1.2, { align: "center" });
+      });
+    }
+
+    /* ---- Page 3, early and middle: the crossword ---- */
+    function pCross(pg){
+      var y = head(pg), cw = pg.crossword, cells = cw.cells, R = cells.length, C = cells[0].length, entries = cw.entries;
+      var bsz = stage === "middle" ? 17 : 15, gapW = 18;
+      var rows = flow(pg.bank, bsz, gapW, CW - 28), bankH = 12 + 18 + rows.length * bsz * 1.45 + 4;
+      var top = y + 2, region = BOTTOM - top - bankH - 14;
+      var by = function(dir){ return entries.filter(function(e){ return e.dir === dir; }).sort(function(a, b){ return a.num - b.num; }); };
+      var across = by("A"), down = by("D");
+      var colH = function(list, label, w, cs){
+        if (!list.length) return 0;
+        var h = cs * 1.5 + 4;
+        list.forEach(function(e){ h += wrap(e.num + ". " + e.clue, cs, "normal", w).length * cs * 1.25 + 4; });
+        return h + 8;
+      };
+      /* the largest cells either layout allows: the clues beside the grid, or under it */
+      var cap = stage === "middle" ? 40 : 30, best = null, s, cs;
+      for (s = Math.min(cap, Math.floor((CW - 185 - 22) / C), Math.floor(region / R)); s >= 18 && !best; s--){
+        var colW = CW - s * C - 22;
+        for (cs = SZ.clue; cs >= 13; cs--) if (colH(across, "Across", colW, cs) + colH(down, "Down", colW, cs) <= region){ best = { mode: "side", s: s, cs: cs, colW: colW }; break; }
+      }
+      var low = null;
+      for (s = Math.min(cap, Math.floor(CW / C)); s >= 14 && !low; s--){
+        var half = (CW - 24) / 2;
+        for (cs = SZ.clue; cs >= 12; cs--) if (s * R + 14 + Math.max(colH(across, "Across", half, cs), colH(down, "Down", half, cs)) <= region){ low = { mode: "below", s: s, cs: cs, colW: half }; break; }
+      }
+      var pl = best && (!low || best.s >= low.s) ? best : low;
+      if (!pl) pl = { mode: "below", s: 14, cs: 12, colW: (CW - 24) / 2 };
+      s = pl.s; cs = pl.cs;
+      var gw = s * C, gx = pl.mode === "side" ? M : M + (CW - gw) / 2, gy = top;
+      var starts = {}; entries.forEach(function(e){ var k = e.r + "," + e.c; if (!starts[k]) starts[k] = { num: e.num, letter: e.word.charAt(0) }; });
+      ink(2); d.setFillColor(255, 255, 255);
+      for (var r = 0; r < R; r++) for (var c = 0; c < C; c++){
+        if (cells[r].charAt(c) === ".") continue;
+        d.rect(gx + c * s, gy + r * s, s, s);
+        var st = starts[r + "," + c];
+        if (st){
+          var ns = Math.max(8, Math.min(11, s * 0.36)); font(ns, "bold"); d.setTextColor(0); d.text(String(st.num), gx + c * s + 2.5, gy + r * s + ns * 0.85 + 1);
+          if (pg.firstLetters){ font(s * 0.58, "bold"); d.text(st.letter, gx + c * s + s / 2, gy + r * s + s * 0.5 + s * 0.58 * 0.36 + 3, { align: "center" }); }
+        }
+      }
+      var cx = pl.mode === "side" ? gx + gw + 22 : M, cy = pl.mode === "side" ? gy : gy + R * s + 14;
+      var clues = function(list, label, x, yy, w){
+        if (!list.length) return;
+        font(cs + 1, "bold"); d.setTextColor(0); d.text(label, x, yy + (cs + 1) * 0.8);
+        yy += cs * 1.5 + 4;
+        list.forEach(function(e){ yy += put(wrap(e.num + ". " + e.clue, cs, "normal", w), x, yy, cs, "normal", 1.25) + 4; });
+      };
+      if (pl.mode === "side"){ clues(across, "Across", cx, cy, pl.colW); var ah = colH(across, "Across", pl.colW, cs); clues(down, "Down", cx, cy + ah, pl.colW); }
+      else { clues(across, "Across", M, cy, pl.colW); clues(down, "Down", M + pl.colW + 24, cy, pl.colW); }
+      var bY = BOTTOM - bankH;
+      ink(2); d.rect(M, bY, CW, bankH);
+      font(12, "bold"); d.setTextColor(0); d.text("Words to use", M + 14, bY + 19);
+      drawFlow(rows, M + 14, bY + 26, CW - 28, bsz, gapW, 1.45);
+    }
+
+    /* ---- Page 3, late: one thing to look at together ---- */
+    function pLook(pg){
+      var y = head(pg), lk = pg.look, sz = 28, tl = [];
+      (lk.lines || []).forEach(function(t){ wrap(t, sz, "bold", CW).forEach(function(x){ tl.push(x); }); });
+      var th = tl.length * sz * 1.3 + 8, drawn = false, fh = BOTTOM - y - th - 12;
+      if (lk.subject && E && MF && MF.loadSync && MF.loadSync()){
+        var asset = MF.get(lk.subject), paths = asset ? E.subjectPathsSync(asset.id) : null;
+        if (asset && paths){
+          try {
+            E.toPDF(E.compose({ asset: asset, paths: paths, stage: "late", seed: P.seedInt(p.seed + "/look"), frame: { x: M, y: y + 4, w: CW, h: fh }, header: false, footer: false }), d);
+            resetPen(); drawn = true; info.pictures.push(asset.id);
+          } catch (e){ resetPen(); }
+        }
+      }
+      if (!drawn){
+        var name = safe(String(lk.label || "").toUpperCase()), ns = 64;
+        ink(4); d.setFillColor(255, 255, 255); d.roundedRect(M, y + 4, CW, fh, 18, 18, "S");
+        for (; ns > 24; ns -= 2){ font(ns, "bold"); if (d.getTextWidth(name) <= CW - 60) break; }
+        font(ns, "bold"); d.setTextColor(0); d.text(name, M + CW / 2, y + 4 + fh / 2 + ns * 0.36, { align: "center" });
+      }
+      put(tl, M + CW / 2, BOTTOM - th, sz, "bold", 1.3, { align: "center" });
+    }
+
+    /* ---- Page 4: the bold-line color page ---- */
+    function pColor(pg){
+      var y = head(pg), asset = null, paths = null, page = null;
+      if (pg.style === "subject" && stage !== "late" && E && MF && MF.loadSync && MF.loadSync()){
+        asset = MF.get(pg.subject); paths = asset ? E.subjectPathsSync(asset.id) : null;
+        if (asset && paths){
+          font(22, "bold"); d.setTextColor(0); d.text(safe(asset.title), M, y + 18); y += 28;
+          try { page = E.compose({ asset: asset, paths: paths, stage: stage, seed: pg.seed, frame: { x: M, y: y + 2, w: CW, h: BOTTOM - y - 2 }, header: false, footer: false }); info.pictures.push(asset.id); }
+          catch (e){ page = null; }
+        }
+      }
+      if (!page) page = E.composeMandala({ stage: stage, seed: pg.seed, frame: { x: M, y: y + 2, w: CW, h: BOTTOM - y - 2 }, footer: false });
+      E.toPDF(page, d); resetPen();
+    }
+
+    /* ---- Page 5: for staff ---- */
+    function pStaff(pg){
+      var G = 94, TW = CW - G - 8, answers = pg.answers || {};
+      var build = function(sz, draw){
+        var y = M, lh = 1.28;
+        var heading = function(t){
+          y += 8;
+          if (draw){ font(sz + 2, "bold"); d.setTextColor(0); d.text(t, M, y + (sz + 2) * 0.8); ink(1); d.line(M, y + (sz + 2) * 1.2 + 1, M + CW, y + (sz + 2) * 1.2 + 1); }
+          y += (sz + 2) * 1.2 + 8;
+        };
+        var row = function(label, text){
+          var l1 = wrap(label, sz, "bold", G - 8), l2 = wrap(text, sz, "normal", TW);
+          if (draw){ put(l1, M, y, sz, "bold", lh); put(l2, M + G, y, sz, "normal", lh); }
+          y += Math.max(l1.length, l2.length) * sz * lh + 5;
+        };
+        if (draw){ font(24, "bold"); d.setTextColor(0); d.text(safe(pg.title), M, y + 19); }
+        y += 28;
+        if (draw){ ink(2); d.line(M, y, M + CW, y); }
+        y += 8;
+        var sub = who + " · " + p.date.label + " · " + p.stageInfo.label;
+        y += put(wrap(sub, 12, "bold", CW), M, y, 12, "bold", 1.3) + 3;
+        y += put(wrap(pg.note, 11, "normal", CW), M, y, 11, "normal", 1.3) + 4;
+        heading("Why these topics");
+        pg.why.forEach(function(w){ row(w.label, w.item + ". " + w.why); });
+        heading("Action prompts");
+        pg.prompts.forEach(function(pr){ row(pr.page ? "Page " + pr.page : "Any time", pr.text); });
+        heading("Answers");
+        if (answers.wordsearch) row("Word search", answers.wordsearch.join(", "));
+        if (answers.crossword) row("Crossword", answers.crossword.join("; "));
+        if (answers.completions) row("Finish the thought", answers.completions.join("; "));
+        return y;
+      };
+      var sz = 14;
+      while (sz > 9 && build(sz, false) > BOTTOM) sz -= 0.5;
+      info.staffSize = sz;
+      build(sz, true);
+    }
+
+    var painters = [
+      pWordSearch,
+      stage === "early" ? pTalkOpen : stage === "middle" ? pTalkComplete : pTalkCards,
+      function(pg){ return pg.style === "crossword" ? pCross(pg) : pLook(pg); },
+      pColor,
+      pStaff
+    ];
+    painters.forEach(function(paint, i){
+      if (i) d.addPage();
+      resetPen();
+      paint(p.pages[i]);
+      foot(i + 1, i === 4);
+    });
+    d.setProperties({ title: "Today's Packet for " + p.resident.name + ", " + p.date.iso, subject: "Today's Packet", creator: "Cognicopia" });
+    d.pcgInfo = info;
+    return d;
+  }
+
+  /* ---------- downloading ---------- */
+  function fileName(pk){
+    var nm = String(pk.resident.name || "").replace(/[^A-Za-z0-9]+/g, "_").replace(/^_+|_+$/g, "") || "Packet";
+    return "Cognicopia_Todays_Packet_" + nm + "_" + pk.date.iso + (pk.variant ? "_v" + (pk.variant + 1) : "") + ".pdf";
+  }
+  function setPill(kind, text){
+    var pill = $q("pcgPdfPill");
+    if (!kind){ pill.hidden = true; return; }
+    pill.hidden = false; pill.className = "qpb-pill is-" + kind; pill.textContent = text;
+  }
+  function download(){
+    if (!cur) return;
+    var pk = cur, counted = isCounted(pk.seed), btn = $q("pcgPrint"), status = $q("pcgStatus");
+    try {
+      if (!counted && typeof unlocked === "function" && !unlocked() && typeof runsUsed === "function" && runsUsed() >= FREE_RUNS && !WATERMARK_DEMOS){
+        if (typeof openGate === "function") openGate();
+        return;
+      }
+    } catch (e){}
+    btn.disabled = true; setPill("busy", "Making the PDF…"); status.textContent = "";
+    requestAnimationFrame(function(){ requestAnimationFrame(function(){
+      try {
+        var doc = pcgPdf(pk), name = fileName(pk);
+        doc.save(name);
+        if (!counted){
+          try { if (typeof unlocked === "function" && !unlocked() && typeof bumpGen === "function") bumpGen(); } catch (e){}
+          markCounted(pk.seed);
+        }
+        try { if (typeof showAllowance === "function") showAllowance(); } catch (e){}
+        setPill("done", "Saved");
+        status.textContent = "Saved " + name + " (5 pages) to your Downloads folder. The same packet comes back all day; tomorrow's is new.";
+      } catch (e){
+        console.error(e);
+        setPill("error", "Not saved");
+        status.textContent = "The PDF could not be made. Reload the page and try again.";
+      } finally { btn.disabled = false; }
+    }); });
+  }
+
+  /* ---------- wiring ---------- */
+  $q("pcgPrint").addEventListener("click", download);
+  $q("pcgCopy").addEventListener("click", copyPrompts);
+  $q("pcgAnother").addEventListener("click", function(){
+    if (!cur) return;
+    var raw = pcgProfile(), iso = P.today().iso, n = variantOf(raw.first, iso) + 1;
+    setVariant(raw.first, iso, n); render();
+    $q("pcgStatus").textContent = "Version " + (n + 1) + " made: same pages, new words and prompts. Today's first version is one button away.";
+  });
+  $q("pcgBack").addEventListener("click", function(){
+    var raw = pcgProfile(), iso = P.today().iso;
+    setVariant(raw.first, iso, 0); render();
+    $q("pcgStatus").textContent = "Back to today's first version.";
+  });
+  var form = $q("f");
+  if (form){ form.addEventListener("input", later); form.addEventListener("change", later); }
+  $q("pcgTopics").addEventListener("input", later);
+  document.addEventListener("cognicopia:activeresident", later);
+  document.addEventListener("cognicopia:tieroverride", later);
+  /* fields filled by code (opening a saved resident, restoring a draft) raise no event: look for a change once a second */
+  setInterval(function(){
+    if (document.hidden) return;
+    var now = JSON.stringify(pcgProfile()) + "|" + P.today().iso;
+    if (now !== sig) render();
+  }, 1000);
+  document.addEventListener("visibilitychange", function(){ if (!document.hidden) later(); });
+  var ready = window.CG_DRAFT_DONE || (typeof CG_STORE_READY !== "undefined" ? CG_STORE_READY : null);
+  if (ready && ready.then) ready.then(function(){ later(); }, function(){});
+  window.pcgPdf = pcgPdf;
+  window.pcgProfile = pcgProfile;
+  render();
 })();
 </script>
 <script>

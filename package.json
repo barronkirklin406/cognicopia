@@ -10,7 +10,7 @@
     "nav": "node scripts/site-nav.mjs",
     "research": "node scripts/research-pages.mjs",
     "lint": "node --check server.js",
-    "test": "node scripts/check-life-planner.mjs && node scripts/check-life-journal.mjs && node scripts/check-services.mjs && node scripts/check-coloring.mjs && node scripts/check-infinite.mjs && node scripts/check-hybrid.mjs",
+    "test": "node scripts/check-life-planner.mjs && node scripts/check-life-journal.mjs && node scripts/check-services.mjs && node scripts/check-coloring.mjs && node scripts/check-infinite.mjs && node scripts/check-hybrid.mjs && node scripts/check-pcg.mjs",
     "services": "node scripts/build-services.mjs",
     "coloring": "node scripts/generate_coloring_manifest.js",
     "coloring:check": "node scripts/generate_coloring_manifest.js --check",
@@ -18,7 +18,9 @@
     "coloring:ingest": "node scripts/ingest_coloring_assets.mjs",
     "pages": "node scripts/generate_infinite_pages.mjs",
     "subjects": "node scripts/process_coloring_assets.mjs",
-    "subjects:check": "node scripts/process_coloring_assets.mjs --check"
+    "subjects:check": "node scripts/process_coloring_assets.mjs --check",
+    "pcg": "node scripts/build_pcg.mjs",
+    "pcg:check": "node scripts/build_pcg.mjs --check"
   },
   "dependencies": {
     "express": "^4.21.2"
