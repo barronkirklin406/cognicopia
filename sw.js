@@ -12,7 +12,7 @@
    used. Change VERSION only to clear old copies; updates to the pages
    themselves arrive on their own.
    ===================================================================== */
-const VERSION = "cognicopia-v14";
+const VERSION = "cognicopia-v15";
 const CORE = [
   "./", "index.html", "builder.html", "profile.html", "manifest.webmanifest",
   "assets/cognicopia-logo.jpg", "assets/icon-192.png", "assets/icon-512.png", "assets/icon-maskable-512.png",
