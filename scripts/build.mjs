@@ -122,7 +122,7 @@ step("every web manifest icon exists", () => {
 
 /* 5. server and the automated checks */
 step("server.js parses", () => { execFileSync(process.execPath, ["--check", path.join(ROOT, "server.js")]); });
-for (const s of ["check-life-planner.mjs", "check-life-journal.mjs", "check-services.mjs", "check-coloring.mjs", "check-infinite.mjs", "check-hybrid.mjs", "check-pcg.mjs", "check-clinical.mjs", "check-quality-hub.mjs", "check-license.mjs"]) step(s, () => {
+for (const s of ["check-life-planner.mjs", "check-life-journal.mjs", "check-services.mjs", "check-coloring.mjs", "check-infinite.mjs", "check-hybrid.mjs", "check-pcg.mjs", "check-clinical.mjs", "check-quality-hub.mjs", "check-clinical-alignment.mjs", "check-license.mjs"]) step(s, () => {
   const out = execFileSync(process.execPath, [path.join(ROOT, "scripts", s)], { encoding: "utf8" }).trim().split("\n")[0];
   return out;
 });
