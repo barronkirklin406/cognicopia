@@ -36,7 +36,7 @@ are the ones the rulebook knows.
 | Kind | Early | Middle | Late | Tool |
 | --- | :-: | :-: | :-: | --- |
 | search-large (12 or 15 square word search) | yes | | | both |
-| search-guided (8 square, across and down) | | yes | | both |
+| search-guided (8 square, across and down) | | yes | yes | both |
 | ladder (word ladder) | yes | | | both |
 | anagram (with a clue) | yes | yes | | both |
 | sorting (two groups) | yes | yes | | both |
