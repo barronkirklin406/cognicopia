@@ -2418,9 +2418,9 @@ textarea:focus{border-color:var(--accent)}
       <div class="facility" id="facilityLabel"></div>
     </div>
     <div class="topbar-actions">
-      <button class="panic-button" type="button" id="panicButton" aria-label="Print the two-page sundowning and rapid de-escalation packet">
+      <button class="panic-button" type="button" id="panicButton" aria-label="Instant Soothe: choose a care level and a theme, then print a fresh calming packet for sundowning or rapid de-escalation">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 22 21H2L12 3Z"/><path d="M12 9v5"/><circle cx="12" cy="17.5" r=".7" fill="currentColor"/></svg>
-        <span>Sundowning / Rapid De-escalation<small>Print the ready-to-use 2-page soothing packet</small></span>
+        <span>Sundowning / Rapid De-escalation<small>Pick a level and theme, then print a fresh calming packet</small></span>
       </button>
       <button class="calm-mode-toggle" type="button" id="calmModeToggle" aria-pressed="false" aria-describedby="calmModeHelp">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12h8"/></svg><span>Late-Stage / Sundowning Calm<small id="calmModeHelp">Off · simplifies queued activity pages; emergency buttons stay fixed</small></span>
@@ -5464,7 +5464,9 @@ const LifePlannerUI = (function(){
           <p class="hint">Heavier lines are easier to see and to follow with a pen.</p></fieldset>
       </div>
       <p class="hint" id="lpBw"></p>
-      <div class="actions"><button class="btn btn-primary" type="button" id="lpPrintBtn"></button></div>
+      <div class="actions"><button class="btn btn-primary" type="button" id="lpPrintBtn"></button>
+        <button class="btn" type="button" id="lpCalmBtn">Add a fresh calming page for the binder</button></div>
+      <p class="hint">The calming page is a one-to-three page set made on the spot (a reminiscence prompt, a picture to trace, a calming puzzle or a path) at the level and theme you choose, with the resident’s name, their years and the topics to steer around. It is not part of the planner pages above, so it never changes their count.</p>
       <p class="hint">In the print window, choose <b>Save as PDF</b> or your printer. Keep <b>Scale</b> at 100% and <b>Margins</b> at Default: the gutters are built into every page.</p>
       <p class="allowance" id="lpAllow"></p>
     </section>`;
@@ -5637,8 +5639,26 @@ const LifePlannerUI = (function(){
       case "lpAiApply": applyAi(); return;
       case "lpAiClear": S.opts.aiCopy = null; save(); refresh(); document.getElementById("lpAiMsg").textContent = "AI wording removed. The planner’s own wording is back."; b.disabled = true; return;
       case "lpPrintBtn": printScope(); return;
+      case "lpCalmBtn": calmingPage(); return;
       case "lpPrintSpread": printSpread(); return;
     }
+  }
+  /* A fresh calming page for the binder, from the shared engine (src/engine/ProceduralPacketEngine.js): the same two quick choices as every
+     generator, with this resident's name, the years they were young, and the topics they steer around. */
+  const STEER_WORDS = { war:["war", "battle", "combat", "soldier"], death:["death", "died", "funeral"], medical:["hospital", "illness", "doctor", "nurse"],
+    religion:["church", "prayer", "hymn", "faith"], money:["money", "bank"], politics:["politics", "election"], driving:["driving", "car", "cars"],
+    home:["home", "house"], "family-conflict":["divorce"], children:["baby", "babies", "children"], water:["boat", "boats", "sea", "ocean", "water", "lake", "pond", "river"],
+    storms:["storm", "storms", "fire", "flood", "tornado", "thunder"] };
+  function calmingPage(){
+    const P = window.ProceduralPacketEngine;
+    if (!P){ toast("The calming-page engine did not load. Reload the page and try again."); return; }
+    const tier = +(S.opts.tier || 2), avoid = [];
+    (S.profile.avoid || []).forEach(c => (STEER_WORDS[c] || []).forEach(w => avoid.push(w)));
+    P.instantSoothe({
+      title:"Calming page for the binder", printTitle:"Cognicopia Calming Page", confirm:"\u26A1 Generate & Print Calming Page",
+      lead:"Two quick choices, then a fresh calming page is made for " + possOf() + " binder.",
+      context:{ name:who(), stage:tier === 3 ? "late" : tier === 1 ? "early" : "middle", wing:settings.wing, era:P.eraFromBirthYear(S.profile.birthYear), avoid:avoid }
+    });
   }
   function toggleOb(){
     S.obOpen = !S.obOpen; save();
@@ -6514,6 +6534,10 @@ const RosterUI = (function(){
 <script src="src/pcg/puzzles.js"></script>
 <script src="src/engine/ClinicalMatrix.js"></script>
 <script src="src/engine/ClinicalActivities.js"></script>
+<script src="src/engine/SoothingArt.js"></script>
+<script src="src/engine/SoothingContent.js"></script>
+<script src="src/engine/SoothingPacketEngine.js"></script>
+<script src="src/engine/ProceduralPacketEngine.js"></script>
 <script src="assets/services/vectorEngine.js"></script>
 <script id="cc-ui">
 /* =====================================================================
@@ -12432,6 +12456,51 @@ const TODAY_PAGE = clinicalActivity({ id:"orientation", kind:"orientation", name
 const SHAPE_FRAME = clinicalActivity({ id:"silhouette", kind:"silhouette", name:"Shape to Look At", icon:clinicalIcon('<path d="M4 15c3-6 9-7 14-3l2-3v8l-3-1c-4 3-10 2-13-1z"/>'),
   desc:"A classic car or a songbird as a solid shape inside a bold pattern or mandala frame." });
 
+/* ---------- Instant Soothing Set ----------
+   The same engine as the Instant Soothe button (src/engine/ProceduralPacketEngine.js, SoothingPacketEngine.js), so a calming page can
+   also be queued with the rest of a packet. The stage is the difficulty chosen above; the other choice is the theme. Each version is
+   a fresh page (a reminiscence prompt, a picture to trace, a calming puzzle or a path), steered away from what this computer printed
+   lately. When the pages are added to the packet their choice is written into the packet item ("frozen"), so the same sheet comes
+   back every time the packet is reopened or printed. What is printed is added to the history, so the next set is different again. */
+const SOOTHE_THEMES = [["nature", "Calming Nature & Gardens"], ["heritage", "Classic Home & Heritage (1940s\u20131970s)"], ["music", "Music, Crafts & Nostalgia"], ["mix", "Random / Surprise Mix"]];
+const SOOTHING_SET = {
+  id:"soothing-set", name:"Instant Soothing Set", themed:false, clinical:true,
+  desc:"Fresh calming pages drawn on the spot from a large library: a reminiscence prompt from 1901 to 1989, a picture to trace, a calming puzzle or a slow path. Choose the stage above and a theme here; every version is different, and pages already printed on this computer are not repeated.",
+  icon:clinicalIcon('<path d="M13 2 4 14h7l-1 8 9-12h-7z"/>'),
+  options:[{ id:"theme", type:"select", label:"Theme focus", def:"mix", choices:SOOTHE_THEMES }],
+  plan(cfg, rng, count){
+    const P = window.ProceduralPacketEngine, E = P && P.engine;
+    if (!E) throw new Error("The soothing engine is not loaded.");
+    if (Array.isArray(cfg.frozen) && cfg.frozen.length >= count) return cfg.frozen.slice(0, count);
+    const stage = CLINICAL_STAGE[cfg.difficulty] || "middle", theme = optVal(cfg, "theme", "mix"), base = rng.int(1e9).toString(36), hist = P.History.read(), out = [];
+    for (let i = 0; i < count; i++){
+      const plan = E.choose({ stage:stage, theme:theme, seed:base + "/" + i, history:hist, count:1 });
+      E.POOLS.forEach(k => { hist[k] = hist[k].concat(plan.used[k] || []); });     // later versions steer clear of this one
+      out.push({ item:plan.items[0], used:plan.used });
+    }
+    return out;
+  },
+  freeze(cfg, batchSeed, count){ return this.plan(Object.assign({}, cfg, { frozen:null }), makeRng(batchSeed), count); },
+  generate(cfg, rng, slice){
+    const P = window.ProceduralPacketEngine, E = P && P.engine, A = window.CognicopiaClinicalActivities;
+    if (!E || !A) throw new Error("The soothing engine is not loaded.");
+    const stage = CLINICAL_STAGE[cfg.difficulty] || "middle", iso = cfg.date || todayISO();
+    const plan = { v:E.VERSION, stage:stage, theme:optVal(cfg, "theme", "mix"), seed:"queue", items:[slice.item], used:slice.used };
+    const pg = E.compose(plan, { name:cfg.residentName || "", date:iso, wing:settings.wing }).pages[0];
+    return { title:pg.title, instructions:"", html:"", layout:"engine", sootheUsed:slice.used,
+      signature:signatureOf(JSON.stringify([pg.page.items, pg.page.texts])), answers:A.answerLines(pg.page).join(" \u00B7 "),
+      sheet:'<section class="sheet sheet-eng" data-shell="1" aria-label="' + esc(pg.title) + '">' + A.toSVG(pg.full, { width:"8.5in", height:"11in", background:false }) + "</section>" };
+  }
+};
+/* what a printed packet used goes into the history, so the next soothing page is a new one */
+function recordSoothing(items){
+  const P = window.ProceduralPacketEngine; if (!P) return;
+  items.forEach(it => {
+    if (it.activityId !== SOOTHING_SET.id) return;
+    try { const page = buildBatch(SOOTHING_SET, it.cfg, it.batchSeed, it.count)[it.index]; if (page && page.sootheUsed) P.History.record(page.sootheUsed); } catch (e) { /* a page that did not draw is not recorded */ }
+  });
+}
+
 const CATEGORIES = [
   { id:"word", name:"Word & Language Activities", icon:ICONS.word,
     blurb:"Word searches, sayings, scrambles, naming and reminiscence prompts. Language is often one of the best-preserved skills, and familiar words invite conversation.",
@@ -12450,7 +12519,7 @@ const CATEGORIES = [
     activities:[LYRIC_SHEET, FINISH_SONG, SINGER_MATCH] },
   { id:"multisensory", name:"Multisensory, Art & Group Activities", icon:ICONS.art,
     blurb:"A giant-type daily orientation board and shadow matching. Good for group rooms, quiet one-to-one time and the start of each day. Coloring pages now have their own category, Cognicopia Coloring.",
-    activities:[ORIENTATION_BOARD, TODAY_PAGE, SILHOUETTE_MATCH, MATCH_PICTURES, SHAPE_FRAME] },
+    activities:[SOOTHING_SET, ORIENTATION_BOARD, TODAY_PAGE, SILHOUETTE_MATCH, MATCH_PICTURES, SHAPE_FRAME] },
   { id:"cognicopia-coloring", name:"Cognicopia Coloring", icon:ICONS.brush, badge:"\u{1F3A8} Coloring", direct:true, route:"coloring",
     blurb:"Coloring pages made for each resident (New pages): one clean, bold picture chosen from their years, work and hobbies, with a border and words made for their stage. And the Cognicopia Coloring library: adult, dignity-first pictures in bold pure-black line art, each drawn at three cognitive tiers, plus themed packs. Filter by tier, theme, line thickness and detail, preview every page with its binding gutter, and print or download a PDF.",
     activities:[COGNICOPIA_COLORING] }
@@ -12590,7 +12659,10 @@ const readQueue = () => (store.get("cgb_queue", []) || []).map(q => {
 let queue = readQueue();
 function saveQueue(){ store.set("cgb_queue", queue); renderCounts(); if (drawerOpen) renderQueue(); }
 function addBatch(act, cfg, batchSeed, count){
-  for (let i = 0; i < count; i++) queue.push({ uid:uid(), activityId:act.id, cfg:Object.assign({}, cfg), batchSeed, count, index:i });
+  // an activity that draws on what was printed lately (the soothing set) writes its choice into the packet item, so it never changes
+  let frozen = null;
+  if (act.freeze){ try { frozen = act.freeze(cfg, batchSeed, count); } catch (e) { frozen = null; } }
+  for (let i = 0; i < count; i++) queue.push({ uid:uid(), activityId:act.id, cfg:Object.assign({}, cfg, frozen ? { frozen:frozen } : {}), batchSeed, count, index:i });
   saveQueue();
 }
 
@@ -13189,7 +13261,7 @@ function openGate(){
   $("#gate").hidden = false;
   $("#gateBuy").focus();
 }
-$("#gateClose").addEventListener("click", () => { $("#gate").hidden = true; });
+$("#gateClose").addEventListener("click", () => { $("#gate").hidden = true; pendingSoothe = false; });
 $("#gatePromo").addEventListener("click", () => { if (window.CognicopiaLicense) window.CognicopiaLicense.openPromo(); });
 /* A promo code (or a change made in another tab) opens the gates: close the buy screen and refresh the counters. */
 document.addEventListener("cognicopia:license", () => {
@@ -13200,13 +13272,17 @@ document.addEventListener("cognicopia:license", () => {
 $("#gateUnlock").addEventListener("click", () => {
   const ok = activateLicense($("#gateCode").value);
   $("#gateMsg").className = ok ? "msg-ok" : "msg-bad";
-  $("#gateMsg").textContent = ok ? (pendingEmergencyPrint ? "Unlocked. Printing the emergency activity." : "Unlocked. Choose Generate PDF again.") : "That code didn't match. Check it against your receipt.";
+  $("#gateMsg").textContent = ok ? (pendingEmergencyPrint ? "Unlocked. Printing the emergency activity." : pendingSoothe ? "Unlocked. Opening Instant Soothe." : "Unlocked. Choose Generate PDF again.") : "That code didn't match. Check it against your receipt.";
   if (ok){
     renderAllowance();
     if (pendingEmergencyPrint){
       const pending = pendingEmergencyPrint; pendingEmergencyPrint = null;
       $("#gate").hidden = true;
       generatePdf(pending.items, pending.options);
+    } else if (pendingSoothe){
+      pendingSoothe = false;
+      $("#gate").hidden = true;
+      if (window.ProceduralPacketEngine) window.ProceduralPacketEngine.instantSoothe();
     } else setTimeout(() => { $("#gate").hidden = true; }, 900);
   }
 });
@@ -13214,7 +13290,7 @@ $("#gateUnlock").addEventListener("click", () => {
 /* Generate PDF: fill #printRoot with one .sheet per queued page, mark it
    .pure-bw if High Contrast Mode is on, and open the print window. The
    browser's own "Save as PDF" makes the file, so this works offline. */
-let printTitle = null, printReady = false, pendingEmergencyPrint = null;
+let printTitle = null, printReady = false, pendingEmergencyPrint = null, pendingSoothe = false;
 /* Every sheet's foot says "Page X of Y": a sheet marks the place with .pgno (the older sheets) or with a text "Page 1 of 1"
    in its drawing (the activity engine's sheets); the numbers are filled in here, once the whole packet is in the print root. */
 const STAGE_MIN_LINE_PT = { early:2.25, moderate:3, advanced:4.5 };
@@ -13265,6 +13341,7 @@ function generatePdf(items, printOptions){
   items = Array.isArray(items) ? items : queue;
   if (!items.length) return;
   if (!isLicensed() && genCount() >= FREE_RUNS){
+    pendingSoothe = false;
     if (printOptions && printOptions.emergency) pendingEmergencyPrint = { items:items, options:printOptions };
     closeDrawer(); openGate(); return;
   }
@@ -13282,6 +13359,7 @@ function generatePdf(items, printOptions){
   printTitle = document.title;
   document.title = (printOptions && printOptions.title ? printOptions.title : "Cognicopia Packet") + (who ? " - " + who : "") + " - " + todayISO();  // default PDF file name
   window.print();
+  recordSoothing(items);
   if (!isLicensed()) bumpGen();
   renderAllowance();
 }
@@ -13349,7 +13427,17 @@ window.addEventListener("afterprint", () => {
   ov.addEventListener("click", closeSidebar);
 
   $("#openPacket").addEventListener("click", openDrawer);
-  $("#panicButton").addEventListener("click", printPanicPacket);
+  /* Sundowning / Rapid De-escalation is Instant Soothe: two quick choices (care level, theme), then a fresh calming packet is
+     drawn by src/engine/ProceduralPacketEngine.js and printed from its own hidden stage. The old fixed two-page packet
+     remains only as the fallback if that script did not load. */
+  if (window.ProceduralPacketEngine) window.ProceduralPacketEngine.configure({
+    licence: {
+      blocked: () => !isLicensed() && genCount() >= FREE_RUNS,
+      openGate: () => { pendingSoothe = true; closeDrawer(); openGate(); },
+      used: () => { if (!isLicensed()) bumpGen(); renderAllowance(); }
+    }
+  });
+  $("#panicButton").addEventListener("click", () => { if (window.ProceduralPacketEngine) window.ProceduralPacketEngine.instantSoothe(); else printPanicPacket(); });
   $("#calmModeToggle").addEventListener("click", () => {
     sundowningCalmActive = !sundowningCalmActive;
     syncCalmModeToggle();
@@ -13399,7 +13487,7 @@ window.addEventListener("afterprint", () => {
     const emergencyResidentId = new URLSearchParams(location.search).get("emergency");
     if (emergencyResidentId) history.replaceState(null, "", location.pathname + location.hash);
     router();
-    if (emergencyResidentId === "general") printPanicPacket();               // Instant Soothe with no resident chosen
+    if (emergencyResidentId === "general") { if (window.ProceduralPacketEngine) window.ProceduralPacketEngine.instantSoothe(); else printPanicPacket(); }   // Instant Soothe with no resident chosen
     else if (emergencyResidentId) printEmergencyActivity(emergencyResidentId);
   });
   // Another tab changed a saved resident or the queue: show it here too.

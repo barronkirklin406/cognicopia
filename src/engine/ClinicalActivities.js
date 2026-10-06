@@ -352,11 +352,12 @@
     return doc;
   }
 
-  /* an SVG string. o.crop: only the page's frame (for a host that has its own header and foot); o.width: the CSS width;
+  /* an SVG string. o.crop: only the page's frame (for a host that has its own header and foot); o.viewBox: [x, y, w, h] in
+   page points, to show only that part of the page (a host with its own print margins); o.width: the CSS width;
    o.background false: no white page behind it (a host that prints on white paper has no use for one) */
   function toSVG(page, o) {
     o = o || {};
-    var F = page.frame, vb = o.crop ? [F.x, F.y, F.w, F.h] : [0, 0, page.w, page.h];
+    var F = page.frame, vb = o.viewBox && o.viewBox.length === 4 ? o.viewBox.map(Number) : o.crop ? [F.x, F.y, F.w, F.h] : [0, 0, page.w, page.h];
     var body = page.items.map(function (it) {
       /* data-bw marks the white fills, so a page that is forced to pure black (the Packet Builder's print) keeps them white */
       return '<path d="' + it.d + '" fill="' + (it.fill === "#000" ? "#000" : it.fill === "none" ? "none" : '#fff" data-bw="white') + '" stroke="#000" stroke-width="' + it.w + '" stroke-linecap="round" stroke-linejoin="round"' + (it.role === "shell" ? ' data-role="shell"' : "") + "/>";
@@ -1446,6 +1447,9 @@
     VERSION: VERSION, MAX_ATTEMPTS: MAX_ATTEMPTS, SHELL: SH,
     generate: generate, tryGenerate: tryGenerate, kinds: kinds, answerLines: answerLines, solution: solution,
     withShell: withShell, tipLines: tipLines, bodyFrame: bodyFrame, measure: measure, toPDF: toPDF, toSVG: toSVG,
-    parse: parse, bbox: bbox, subjectName: subjectName, SILHOUETTE_OK: SILHOUETTE_OK
+    parse: parse, bbox: bbox, subjectName: subjectName, SILHOUETTE_OK: SILHOUETTE_OK,
+    /* what another page maker needs to draw a stage-ruled page of its own (src/engine/SoothingPacketEngine.js does): the
+       sheet a page is drawn on, which checks every rule, and the path-data helpers */
+    kit: Object.freeze({ sheet: sheet, dLine: dLine, dPoly: dPoly, dRect: dRect, dEllipse: dEllipse, dCircle: dCircle, mapSegs: mapSegs, segsToD: segsToD, pt: pt, r2: r2 })
   });
 })(typeof globalThis !== "undefined" ? globalThis : this);

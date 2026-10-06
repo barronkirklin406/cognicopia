@@ -31,6 +31,10 @@
 <script src="src/pcg/packet.js"></script>
 <script src="src/engine/ClinicalMatrix.js"></script>
 <script src="src/engine/ClinicalActivities.js"></script>
+<script src="src/engine/SoothingArt.js"></script>
+<script src="src/engine/SoothingContent.js"></script>
+<script src="src/engine/SoothingPacketEngine.js"></script>
+<script src="src/engine/ProceduralPacketEngine.js"></script>
 <script>
 /* Resident details are sealed in this browser's encrypted store
    (assets/services/secureStore.js). CG_LS stands in for localStorage:
@@ -1871,7 +1875,7 @@ html.cg-night-shift .licbadge{color:#ffedcc !important}
       <button type="button" id="licHdrGo">Unlock</button>
     </span>
   </span>
-  <button type="button" class="arb-btn arb-btn-emergency arb-sticky-crisis" id="arbSootheSticky" aria-label="Instant Soothe and Print: a calming page for the active resident, or a general calming packet when no resident is chosen">🟡 Instant Soothe / Print</button>
+  <button type="button" class="arb-btn arb-btn-emergency arb-sticky-crisis" id="arbSootheSticky" aria-label="Instant Soothe and Print: choose a care level and a theme, then print a fresh calming packet">🟡 Instant Soothe / Print</button>
   <span class="hdrlicmsg" id="hdrlicMsg" role="status"></span>
 </div>
 
@@ -1951,7 +1955,7 @@ html.cg-night-shift .licbadge{color:#ffedcc !important}
     </div>
   </div>
   <p class="arb-msg" id="arbMsg">Choose a saved resident to fill in the packet below from their profile, or make a new profile. Profiles stay on this computer.</p>
-  <p class="arb-msg arb-soothe-note" id="arbSootheNote">Instant Soothe prints right away: a calming page made for the active resident, or, with no resident chosen, a general two-page calming packet (a slow tracing path and a familiar song) that needs no profile.</p>
+  <p class="arb-msg arb-soothe-note" id="arbSootheNote">Instant Soothe opens two quick choices, a care level and a theme, then prints a fresh one-to-three page calming packet made for that moment. It uses the active resident's level and name when one is chosen, and needs no profile when none is.</p>
   <!-- ── Monthly Bundle: every resident in one PDF ── -->
   <div class="arb-bundle">
     <button type="button" class="arb-btn arb-btn-bundle" id="mbOpen" aria-describedby="mbBadge" aria-haspopup="dialog"><span aria-hidden="true">👥</span> Download Month (All Residents)</button>
@@ -9214,7 +9218,24 @@ function ailRenderKorsakoff(ctx, name) {
    Throws on an unknown type or if jsPDF is missing, so the caller can
    show a friendly message.
    ----------------------------------------------------------------- */
-function generateAilmentPDF(ailmentType) {
+/* The calming page added by the quick-start step (src/engine/ProceduralPacketEngine.js): one fresh page at the chosen level and
+   theme, drawn by the shared engine, steered away from what was printed lately, and placed after the condition's own pages. */
+function ailCalming(ctx, pick, name) {
+  const P = window.ProceduralPacketEngine, A = window.CognicopiaClinicalActivities;
+  if (!P || !A || !pick) return;
+  const active = window.activeResident ? getActiveResidentContext() : null;
+  const packet = P.generate({ stage: pick.stage, theme: pick.theme, count: 1, name: name || "", date: PACKET_DATE,
+    era: active ? P.eraFromBirthYear(active.birthYear) : null, avoid: active && active.avoid ? active.avoid.words : [] });
+  packet.pages.forEach(pg => {
+    ailFreshPage(ctx);
+    ctx.live = false;                                 // the engine holds this page to its own stage's rules
+    A.toPDF(pg.page, ctx.doc);
+    ctx.doc.setLineWidth(1); ctx.doc.setDrawColor(0); ctx.doc.setFillColor(255, 255, 255); ctx.doc.setTextColor(0, 0, 0);
+    ctx.live = true;
+  });
+}
+
+function generateAilmentPDF(ailmentType, pick) {
   const cfg = AILMENT_DATA[ailmentType];
   if (!cfg) throw new Error("Unknown ailment type: " + ailmentType);
   if (!window.jspdf || !window.jspdf.jsPDF) throw new Error("jsPDF is not loaded.");
@@ -9244,7 +9265,8 @@ function generateAilmentPDF(ailmentType) {
       case "late_stage": ailRenderLateStage(ctx); break;
       case "korsakoff":  ailRenderKorsakoff(ctx, name); break;
     }
-    const resident = doc.internal.getNumberOfPages();   // the cover and the condition pages; the guide's pages follow
+    ailCalming(ctx, pick, name);                        // the fresh calming page from the quick-start choices
+    const resident = doc.internal.getNumberOfPages();   // the cover, the condition pages and the calming page; the guide's pages follow
     ailGuide(ctx, ailmentType);
     ctx.live = false;                                   // the shell sets its own (staff-sized) type
 
@@ -9355,26 +9377,38 @@ function generateAilmentPDF(ailmentType) {
       return;
     }
 
+    /* Two quick choices first, the same step every generator has (src/engine/ProceduralPacketEngine.js): the level and the theme of the
+       fresh calming page added to the packet. The condition's own pages keep the settings made for that condition. */
+    const make = pick => {
+      ailBusy = true;
+      const label = genBtn.textContent;
+      genBtn.disabled = true;
+      genBtn.textContent = "Making the packet…";
+      // Two frames: one to paint the busy button, one to build under it.
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        try {
+          const file = generateAilmentPDF(currentAilment, pick);
+          if (!unlocked()) bumpGen();
+          showAllowance();
+          showMsg("Saved: " + file);
+        } catch (ex) {
+          console.error(ex);
+          showMsg("Something went wrong making the packet. Please try again.");
+        } finally {
+          ailBusy = false;
+          genBtn.disabled = false;
+          genBtn.textContent = label;
+        }
+      }));
+    };
+    const P = window.ProceduralPacketEngine;
+    if (!P) { make(null); return; }
+    const A = AILMENT_DATA[currentAilment];
     ailBusy = true;
-    const label = genBtn.textContent;
-    genBtn.disabled = true;
-    genBtn.textContent = "Making the packet…";
-    // Two frames: one to paint the busy button, one to build under it.
-    requestAnimationFrame(() => requestAnimationFrame(() => {
-      try {
-        const file = generateAilmentPDF(currentAilment);
-        if (!unlocked()) bumpGen();
-        showAllowance();
-        showMsg("Saved: " + file);
-      } catch (ex) {
-        console.error(ex);
-        showMsg("Something went wrong making the packet. Please try again.");
-      } finally {
-        ailBusy = false;
-        genBtn.disabled = false;
-        genBtn.textContent = label;
-      }
-    }));
+    P.quickStep({ title: A.packetTitle, confirm: "Generate " + A.shortLabel + " Packet", stage: currentAilment === "late_stage" ? "late" : null,
+      lead: "Two quick choices set the level and theme of the fresh calming page added to this packet.",
+      note: "The " + A.shortLabel + " pages keep the settings made for that condition." })
+      .then(pick => { ailBusy = false; if (pick) make(pick); });
   });
 })();
 
@@ -9734,9 +9768,30 @@ function generateAilmentPDF(ailmentType) {
   }
   sel.addEventListener("change", function(){ choose(sel.value, false); });
   editBtn.addEventListener("click", function(e){ if (!window.activeResident) e.preventDefault(); });
+  /* Instant Soothe: a small dialog (src/engine/ProceduralPacketEngine.js) asks for a care level and a theme, then a fresh
+     calming packet is drawn and printed from a hidden stage on this very page. The active resident, if any, sets the level,
+     the name on the page and the years the prompts lean toward; with none chosen the packet is general. */
+  if (window.ProceduralPacketEngine) window.ProceduralPacketEngine.configure({
+    context: function(){
+      var r = window.activeResident;
+      if (!r) return {};
+      var c = getActiveResidentContext(), who = c.name || "";
+      return {
+        name: who, stage: c.stage, wing: c.unitNumber || "", era: window.ProceduralPacketEngine.eraFromBirthYear(c.birthYear),
+        avoid: (c.avoid && c.avoid.words) || [],
+        alt: { label: "Print " + (who || "their") + (who ? "'s" : "") + " saved calming page instead", run: function(){ location.href = "builder.html?emergency=" + encodeURIComponent(r.id); } }
+      };
+    },
+    // the same free-packet allowance as every other packet: a print counts once, and the gate opens when it is used up
+    licence: {
+      blocked: function(){ return !unlocked() && runsUsed() >= FREE_RUNS && !WATERMARK_DEMOS; },
+      openGate: function(){ openGate(); },
+      used: function(){ if (!unlocked()){ bumpGen(); showAllowance(); } }
+    }
+  });
   sootheBtn.addEventListener("click", function(){
-    // the active resident's own calming page, or the general packet (no profile needed) in the Packet Builder
-    location.href = "builder.html?emergency=" + (window.activeResident ? encodeURIComponent(window.activeResident.id) : "general");
+    if (window.ProceduralPacketEngine) window.ProceduralPacketEngine.instantSoothe();
+    else location.href = "builder.html?emergency=" + (window.activeResident ? encodeURIComponent(window.activeResident.id) : "general");   // the engine did not load: the Packet Builder still can
   });
   delBtn.addEventListener("click", function(){
     var p = window.activeResident;

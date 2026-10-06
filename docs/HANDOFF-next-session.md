@@ -132,7 +132,7 @@ The hybrid coloring engine shipped next (`docs/hybrid-coloring-engine.md`):
 - The builder's old clip-art drawers (`COLOR_ART`) are gone; their saved pages print as hybrid pages (`HYBRID_LEGACY`).
 
 The pasted "Cognicopia Master Architect" plan was then checked item by item against the site (`docs/master-plan-gap-review.md`). Most of it already existed. Four gaps were built:
-1. Instant Soothe works with no resident chosen: it prints the general calming packet through `builder.html?emergency=general`.
+1. Instant Soothe works with no resident chosen. It now opens a two-choice dialog (care level and theme) and prints a fresh packet from a hidden stage on the same page; see `docs/soothing-packet-engine.md`. `builder.html?emergency=general` opens the same dialog.
 2. The packet tool's profile import reads EHR census spreadsheets: first name or "Last, First", date of birth, room or bed.
 3. The Facility Portal has a locked backup and restore (`.cognicopia`, kind `facility`).
 4. Every control on the three tools is at least 44 px tall.
