@@ -5,7 +5,8 @@
 
    The content the procedural engine draws on lives in plain JSON under
    src/pcg/data (the topic graph, the profile map, the grammar, the safety
-   rules and the item packs under items/). This script:
+   rules, the item packs under items/ and the activity data under
+   activities/: sorting groups, procedures, sayings and ladder words). This script:
      1. validates every file against its schema in src/pcg/schema;
      2. checks what a schema cannot: every reference resolves (topics, tags,
         coloring subjects), the topic graph is connected, every topic has
@@ -22,6 +23,7 @@
 import fs from "fs";
 import path from "path";
 import crypto from "crypto";
+import vm from "vm";
 import { fileURLToPath } from "url";
 import { validate } from "./lib/json-schema.mjs";
 
@@ -50,6 +52,14 @@ const packs = packFiles.map(f => {
   if (d.pack !== f.replace(/\.json$/, "")) bad("items/" + f, `pack "${d.pack}" must match the file name`);
   return d;
 });
+
+const activityFile = (name, schemaName) => {
+  const d = readJSON(`${SRC}/data/activities/${name}.json`);
+  validate(d, schema(schemaName)).forEach(p => bad("activities/" + name + ".json", p));
+  return d;
+};
+const sortingFile = activityFile("sorting", "sorting"), sequencesFile = activityFile("sequences", "sequences"),
+      sayingsFile = activityFile("sayings", "sayings"), wordsFile = activityFile("words", "words");
 
 /* ---------- the dignity rules ---------- */
 const banned = (safety.banned || []).map(b => ({ id: b.id, re: new RegExp(b.pattern, b.flags || "") }));
@@ -143,6 +153,58 @@ for (const tag of topicsFile.tags){
   if (n < need) bad("topics.json", `tag ${tag.id} is on only ${n} items (needs ${need})`);
 }
 
+/* ---------- the activity data ----------
+   Everything a person might read passes the dignity rules in safety.json and the adult-dignity words in
+   src/engine/ClinicalMatrix.js; the structure is checked for the mistakes that would print as nonsense. */
+const matrixCtx = vm.createContext({});
+vm.runInContext(fs.readFileSync(path.join(ROOT, "src/engine/ClinicalMatrix.js"), "utf8"), matrixCtx);
+const dignity = matrixCtx.CognicopiaClinicalMatrix.dignity;
+const lintAll = (where, text) => { lint(where, text); dignity.lint(text).forEach(id => bad(where, `breaks the adult-dignity rule "${id}": "${text}"`)); };
+{
+  const blocked = new Set(safety.blocklist);
+  const squash = w => w.toLowerCase().replace(/[^a-z]/g, "");
+  const seen = new Map();
+  for (const g of sortingFile.groups){
+    lintAll(`sorting ${g.id} label`, g.label);
+    lintAll(`sorting ${g.id} clue`, `Clue: ${g.one}`);
+    for (const w of g.words){
+      lintAll(`sorting ${g.id}`, w);
+      const k = squash(w).replace(/s$/, "");
+      if (seen.has(k)) bad(`sorting ${g.id}`, `"${w}" is also in ${seen.get(k)}: a word may belong to one group only`); else seen.set(k, g.id);
+      if (blocked.has(squash(w).toUpperCase())) bad(`sorting ${g.id}`, `"${w}" is on the blocklist`);
+    }
+  }
+  const ids = new Set(); sortingFile.groups.forEach(g => { if (ids.has(g.id)) bad("sorting", `group id ${g.id} is used twice`); ids.add(g.id); });
+  // enough pairs of groups that never share a family, so an odd-one-out is never arguable
+  let pairs = 0;
+  for (const a of sortingFile.groups) for (const b of sortingFile.groups) if (a.id < b.id && !a.family.some(f => b.family.includes(f))) pairs++;
+  if (pairs < 200) bad("sorting", `only ${pairs} pairs of unrelated groups (needs 200)`);
+  const procIds = new Set();
+  for (const pr of sequencesFile.procedures){
+    if (procIds.has(pr.id)) bad("sequences", `procedure id ${pr.id} is used twice`); procIds.add(pr.id);
+    lintAll(`sequences ${pr.id} title`, pr.title);
+    pr.topics.forEach(t => { if (!topicIds.has(t)) bad(`sequences ${pr.id}`, `unknown topic ${t}`); });
+    if (new Set(pr.steps).size !== pr.steps.length) bad(`sequences ${pr.id}`, "a step is repeated");
+    pr.steps.forEach((st, i) => { lintAll(`sequences ${pr.id} step ${i + 1}`, st); if (/\b(then|next|first|last|finally|after that)\b/i.test(st)) bad(`sequences ${pr.id}`, `step ${i + 1} "${st}" names its own place in the order, which gives the answer away`); });
+  }
+  const sayIds = new Set(), leads = new Set();
+  for (const it of sayingsFile.items){
+    if (sayIds.has(it.id)) bad("sayings", `id ${it.id} is used twice`); sayIds.add(it.id);
+    if (leads.has(it.lead.toLowerCase())) bad("sayings " + it.id, `the lead "${it.lead}" is used twice`); leads.add(it.lead.toLowerCase());
+    const lw = words(it.lead);
+    // a proverb may repeat itself ("Waste not, want not"); a pair or a recipe line may not give its answer away
+    if (it.kind !== "proverb") for (const w of words(it.answer)) if (lw.includes(w)) bad("sayings " + it.id, `the lead "${it.lead}" already holds the answer word "${w}"`);
+    if (it.others.includes(it.answer) || it.others[0] === it.others[1]) bad("sayings " + it.id, "the choices are not three different words");
+    lintAll("sayings " + it.id, it.lead + " " + it.answer); it.others.forEach(o => lintAll("sayings " + it.id + " choice", o));
+  }
+  const ladder = new Set(wordsFile.words);
+  for (const w of wordsFile.words){ if (blocked.has(w)) bad("words.json", `${w} is on the blocklist`); lintAll("words.json", w.toLowerCase()); }
+  // the ladder graph must be rich enough that every start word has somewhere to go
+  const nb = w => { const o = []; for (let i = 0; i < 4; i++) for (let c = 65; c < 91; c++){ const x = w.slice(0, i) + String.fromCharCode(c) + w.slice(i + 1); if (x !== w && ladder.has(x)) o.push(x); } return o; };
+  let isolated = 0; for (const w of wordsFile.words) if (nb(w).length < 2) isolated++;
+  if (wordsFile.words.length - isolated < 450) bad("words.json", `only ${wordsFile.words.length - isolated} words have two or more neighbors (needs 450)`);
+}
+
 /* ---------- the grammar ---------- */
 const ITEM_SLOT = /^(item|a_item|the_item|item_pl|item2|a_item2|the_item2|item2_pl)$/i;
 const KNOWN_SLOT = /^(item|a_item|the_item|item_pl|item2|a_item2|the_item2|item2_pl|part|part2|a_part|color|sight|sound|touch|smell|decade|fact|name|they|them|their|they_[a-z]+|page|word|moment|sense_cue|anchor)$/i;
@@ -194,6 +256,7 @@ const bundle = {
   topics: topicsFile.topics,
   items,
   grammar: { pools: grammar.pools, stages: grammar.stages, ui: grammar.ui, caregiver: grammar.caregiver },
+  activities: { sorting: sortingFile.groups, sequences: sequencesFile.procedures, sayings: sayingsFile.items, words: wordsFile.words },
   profileMap,
   safety: { filler: safety.filler, blocklist: safety.blocklist, banned: safety.banned }
 };

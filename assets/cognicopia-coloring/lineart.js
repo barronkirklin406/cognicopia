@@ -89,14 +89,16 @@ function pageLayout(o){
   var tier = TIERS[o.tier] ? o.tier : 2;
   var contentW = PAGE.w - PAGE.gutter - PAGE.outer, contentH = PAGE.h - PAGE.top - PAGE.bottom;
   var gap = 0.1, foot = 0.22;
-  var titlePt = [0, 24, 28, 32][tier] + (o.largePrint ? 8 : 0), captionPt = [0, 16, 18, 20][tier] + (o.largePrint ? 4 : 0);   // large print: +8 pt titles, +4 pt captions
+  var titlePt = [0, 24, 28, 32][tier] + (o.largePrint ? 8 : 0), captionPt = Math.max([0, 16, 18, 20][tier] + (o.largePrint ? 4 : 0), [0, 14, 18, 24][tier]);   // large print: +8 pt titles, +4 pt captions
   var titleH = o.title ? +(titlePt / 72 * 1.3 + 0.02).toFixed(3) : 0;
   var captionH = o.caption ? +(captionPt / 72 * 1.3 * 2 + 0.04).toFixed(3) : 0;
   var headerH = o.header ? 0.4 : 0;
   var used = foot + (headerH ? headerH + gap : 0) + (titleH ? titleH + gap : 0) + (captionH ? captionH + gap : 0) + gap;
-  var artH = contentH - used, artW = artH * 0.75;
-  if (artW > contentW){ artW = contentW; artH = artW / 0.75; }
-  return { page:PAGE, contentW:contentW, contentH:contentH, artW:+artW.toFixed(3), artH:+artH.toFixed(3),
+  var artH = contentH - used, steps = Math.floor(artH * 1000 + 1e-9);      // rounded down in steps of 0.001 in of height, so the 3:4 box always fits the room it was measured in
+  if (steps * 0.00075 > contentW) steps = Math.floor(contentW / 0.00075 + 1e-9);
+  artH = steps / 1000;
+  var artW = steps * 0.00075;
+  return { page:PAGE, contentW:contentW, contentH:contentH, artW:+artW.toFixed(5), artH:+artH.toFixed(3),
            titlePt:titlePt, captionPt:captionPt, titleH:titleH, captionH:captionH, headerH:headerH, footH:foot, gap:gap };
 }
 

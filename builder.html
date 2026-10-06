@@ -343,12 +343,13 @@ input:focus,select:focus{border-color:var(--accent)}
   font-family:"Atkinson Hyperlegible","Trebuchet MS","Segoe UI",Arial,sans-serif; line-height:1.3;
   -webkit-print-color-adjust:exact; print-color-adjust:exact;
 }
+.sheet.sheet-eng{display:block;padding:0}
+.sheet-eng > svg{display:block;width:8.5in;height:11in}
 .sh-head{display:flex;justify-content:space-between;align-items:flex-end;gap:.3in;padding-bottom:.1in;margin-bottom:.16in;border-bottom:3pt solid #2d6a4f}
 .sh-head h1{margin:0;font-size:26pt;line-height:1.1;color:#1b4332}
 .sh-meta{text-align:right;font-size:12pt;color:#3f4a46;white-space:nowrap}
 .sh-sub{margin:.05in 0 0;font-size:13pt;font-weight:700;line-height:1.2;color:#2d6a4f}
 .sh-inst{margin:0 0 .22in;font-size:14pt;color:#2f3634}
-.lvl-advanced .sh-inst{font-size:18pt}
 .sh-body{flex:1;min-height:0}
 .lvl-early .sh-body{font-size:17pt}
 .lvl-moderate .sh-body{font-size:20pt}
@@ -445,7 +446,7 @@ input:focus,select:focus{border-color:var(--accent)}
 .yoga-rep{margin:.06in 0 0;font-weight:700}
 .yoga-tip{margin:.04in 0 0;font-style:italic;color:#3f4a46;font-size:.9em}
 .yoga-wrap.one .yoga-card{flex-direction:column;align-items:center;text-align:left}
-.yoga-wrap.one .yoga-fig{width:2.3in}
+.yoga-wrap.one .yoga-fig{width:1.7in}
 .yoga-wrap.one .yoga-title{text-align:center}
 /* line tracing */
 .mt-grid{display:grid;gap:.14in}
@@ -454,7 +455,7 @@ input:focus,select:focus{border-color:var(--accent)}
 .tg-wrap{display:flex;justify-content:center;gap:.3in}
 .tg{display:block;flex:none}
 .tally{border-collapse:collapse;margin:.18in auto 0}
-.tally td,.tally th{border:2pt solid #1b1f1e;width:.92in;height:.58in;vertical-align:top;text-align:left;padding:.03in .06in}
+.tally td,.tally th{border:2pt solid #000;width:.92in;height:.58in;vertical-align:top;text-align:left;padding:.03in .06in}
 .tally th{width:auto;vertical-align:middle;font-size:.7em;white-space:nowrap}
 .tally small{font-size:9pt;color:#56615d}
 .tally .tot{border-width:3.5pt}
@@ -541,6 +542,7 @@ input:focus,select:focus{border-color:var(--accent)}
    Only #printRoot prints. Every .sheet is exactly one US Letter page.
    High Contrast Mode (isPureBlackAndWhitePDF) adds .pure-bw to
    #printRoot only, so it can never touch the web interface. ---------- */
+
 @media print{
   @page{size:8.5in 11in;margin:0}
   html,body{background:#fff !important;background-image:none !important;margin:0;padding:0}
@@ -558,7 +560,7 @@ input:focus,select:focus{border-color:var(--accent)}
     color:#000000 !important; background:#ffffff !important;
     border-color:#000000 !important; box-shadow:none !important; text-shadow:none !important;
   }
-  #printRoot.pure-bw svg *{stroke:#000000 !important}
+  #printRoot.pure-bw svg [stroke]:not([stroke="none"]){stroke:#000000 !important}   /* only what is drawn with a line is drawn black; a filled dot gets no outline */
   #printRoot.pure-bw svg [fill]:not([fill="none"]){fill:#000000 !important}
   #printRoot.pure-bw svg circle.coin-face[fill]{fill:#ffffff !important}
   #printRoot.pure-bw svg [fill][data-bw="white"]:not([fill="none"]){fill:#ffffff !important}   /* tinted rings and shapes print white */
@@ -1489,20 +1491,20 @@ textarea:focus{border-color:var(--accent)}
 .rm-nav{display:flex;justify-content:space-between;align-items:center;margin-top:10px;gap:8px}
 /* the printed card */
 .sheet.rm-sheet{gap:.12in}
-.rm-top{display:flex;justify-content:space-between;align-items:flex-end;font-size:10pt;color:#333;border-bottom:1.5pt solid #000;padding-bottom:.05in}
+.rm-top{display:flex;justify-content:space-between;align-items:flex-end;font-size:10pt;color:#000;border-bottom:max(2.25pt,var(--ml)) solid #000;padding-bottom:.05in}
 .rm-top b{font-size:11pt;color:#000}
 .rm-title{margin:0;text-align:center;font-weight:700;line-height:1.05;color:#000}
 .rm-art{flex:1 1 auto;min-height:2.4in;display:flex;justify-content:center}
 .rm-art svg{height:100%;width:auto;max-width:100%}
 .rm-invite{margin:0;text-align:center;font-weight:700;line-height:1.2;color:#000}
-.rm-care{border:2pt solid #000;border-radius:10pt;padding:.12in .16in;font-size:11.5pt;line-height:1.3;color:#000}
+.rm-care{border:max(2.25pt,var(--ml)) solid #000;border-radius:10pt;padding:.12in .16in;font-size:11.5pt;line-height:1.3;color:#000}
 .rm-care h3{margin:0 0 .04in;font-size:11pt;letter-spacing:.08em;text-transform:uppercase}
 .rm-care ol{margin:0 0 .06in;padding-left:.25in}
 .rm-care li{margin:0 0 .02in}
 .rm-care p{margin:.04in 0 0}
 .rm-care .rm-safe{font-size:10pt;font-style:italic}
 .rm-care .rm-refs{font-size:10.5pt}
-.rm-foot{display:flex;justify-content:space-between;font-size:9pt;color:#333;border-top:1px solid #999;padding-top:2pt}
+.rm-foot{display:flex;justify-content:space-between;font-size:10pt;color:#000;border-top:2.25pt solid #000;padding-top:2pt}
 .rm-t1 .rm-title{font-size:30pt}.rm-t2 .rm-title{font-size:34pt}.rm-t3 .rm-title{font-size:40pt}
 .rm-t1 .rm-invite{font-size:20pt}.rm-t2 .rm-invite{font-size:24pt}.rm-t3 .rm-invite{font-size:28pt}
 </style>
@@ -2246,6 +2248,82 @@ textarea:focus{border-color:var(--accent)}
   .ac *,.ac *::before,.ac *::after,.ac{animation:none !important;transition:none !important;scroll-behavior:auto !important}
 }
 </style>
+<style id="clinical-floor">
+/* ---- Clinical floors for the printed sheets ----
+   --ml is the thinnest line a sheet may print and --fl the smallest resident type, by stage (early / moderate / advanced).
+   Staff lines are never under 10 pt. Everything on a sheet prints in black. */
+.sheet{--ml:3pt;--fl:18pt}
+.lvl-early{--ml:2.25pt;--fl:14pt}
+.lvl-moderate{--ml:3pt;--fl:18pt}
+.lvl-advanced{--ml:4.5pt;--fl:24pt}
+.lvl-advanced,.lvl-advanced *{font-weight:700}
+.sheet{color:#000}
+.sh-head{border-bottom:max(3pt,var(--ml)) solid #000}
+.sh-head h1,.sh-sub,.num,.sh-inst,.hintx,.sh-meta,.lyr-year,.lyr-part{color:#000}
+.sh-meta{font-size:13pt;font-weight:700}
+.sh-sub{font-size:max(13pt,var(--fl))}
+.sh-inst{font-size:var(--fl);line-height:1.3}
+.hintx{font-size:max(.75em,var(--fl));font-weight:700}
+.sh-ans{font-size:10.5pt;color:#000;border-top:0}
+.sh-foot{font-size:10pt;color:#000;border-top:2.25pt solid #000}
+.sh-sensory,.art-sensory{border:2.25pt solid #000;font-size:10.5pt;color:#000}
+.care-coaching-footer{font-size:10pt;color:#000;border-top:2.25pt solid #000;line-height:1.25}
+.art-foot{font-size:10pt;color:#000}
+.cc-foot{font-size:10pt;color:#000;border-top:2.25pt solid #000}
+.cc-sheet .care-coaching-footer{left:.75in;right:.5in;bottom:.5in;font-size:10pt;padding-top:.04in}
+.cc-sheet .cc-foot{transform:none}
+.cc-sheet .care-coaching-footer{bottom:.82in}
+.cc-pgfoot{position:absolute;left:.75in;right:.5in;bottom:.5in;display:flex;justify-content:space-between;align-items:flex-end;gap:.15in;font-size:10pt;font-weight:700;color:#000;border-top:2.25pt solid #000;padding-top:.03in;line-height:1.2}
+.cc-pgfoot > span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.cc-talk{position:absolute;left:.75in;right:.5in;bottom:1.28in;margin:0;font-size:10.5pt;line-height:1.25;text-align:center;color:#000}
+.cc-foot > span{white-space:nowrap;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.cc-foot > span:first-child{flex:none;max-width:62%}
+.cc-foot > span:last-child{margin-left:.15in}
+.wline{border-bottom:var(--ml) solid #000}
+.ws{border:max(3pt,var(--ml)) solid #000}
+.ws td{border:0}
+.ws-list,.hintbox,.bankbox,.ml-choose,.rh-legend,.sm-pairs{font-size:max(.8em,var(--fl))}
+.lvl-moderate .ws-list{grid-template-columns:repeat(3,1fr)}
+.tile,.anchor,.lad-box,.choice,.yn,.tick,.hintbox,.bankbox,.yoga-card,.rh-legend,.lyr-tag,.lyr-trivia,.rm-care,.mt-panel,.or-card,.or-weather-pick,.or-menu,.art-frame{border-width:max(2.25pt,var(--ml));border-color:#000}
+.hintbox{border-style:solid}
+.lyr-trivia{font-size:max(13pt,var(--fl))}
+.sdk{border:max(3.5pt,var(--ml)) solid #000}
+.sdk td{border:var(--ml) solid #000}
+.sdk td.br{border-right-width:max(3.5pt,var(--ml))}
+.sdk td.bb{border-bottom-width:max(3.5pt,var(--ml))}
+.tally td,.tally th{border-width:max(2pt,var(--ml));border-color:#000}
+.tally .tot{border-width:max(3.5pt,var(--ml))}
+.tally small{font-size:max(10pt,var(--fl));color:#000}
+.ml-blank,.money-blank{border-bottom-width:max(2.5pt,var(--ml));border-color:#000}
+.or-line{border-bottom-width:max(3pt,var(--ml))}
+.or-label,.or-card small,.or-pick,.tagline,.sw-bonus,.lad-step,.song-kind,.lyr-tag,.lyr-part,.tally-ticks{font-size:max(10pt,var(--fl))}
+.money-q{font-size:max(.8em,var(--fl))}
+.cc-for-line{font-size:max(15pt,var(--fl))}
+.or-pick small{font-size:1em}
+.or-weather-pick{padding:.06in .1in}
+.or-pick-row{gap:.05in}
+.lvl-advanced .or-card{padding:.06in .14in .06in .08in;gap:.1in}
+.lvl-advanced .or-card .or-ic{width:.7in;height:.7in}
+.lvl-advanced .or-weather-pick{padding:.05in .06in}
+.lvl-advanced .or-pick .or-ic{width:.5in;height:.5in}
+.or-row{gap:.2in}
+.sdk td,.ml-l,.ws td{color:#000}
+.spot-bonus{font-size:max(.8em,var(--fl))}
+.spot-tags{font-size:max(11pt,var(--fl))}
+@media print{body > #fitHost{display:block !important}}
+.fit-1 .sh-inst{margin-bottom:.1in}
+.fit-1 .item,.fit-1 .ml-item,.fit-1 .sw-row{margin-bottom:.12in}
+.fit-1 .sh-head{margin-bottom:.1in;padding-bottom:.06in}
+.fit-1 .sh-ans,.fit-1 .sh-sensory{margin-top:.04in}
+.fit-2 .sh-sensory{padding:.04in .1in;line-height:1.15}
+.fit-2 .sh-foot{margin-top:.05in;padding-top:.04in}
+.fit-2 .care-coaching-footer{margin-top:.04in;padding-top:.03in}
+.fit-2 .item,.fit-2 .ml-item,.fit-2 .sw-row{margin-bottom:.07in}
+.fit-3 .sh-head h1{font-size:max(var(--fl),20pt)}
+.fit-3 .sh-inst{line-height:1.2;margin-bottom:.06in}
+.fit-3 .sh-body{line-height:1.2}
+.fit-3 .item,.fit-3 .ml-item,.fit-3 .sw-row{margin-bottom:.04in}
+</style>
 </head>
 <body>
 
@@ -2367,7 +2445,7 @@ textarea:focus{border-color:var(--accent)}
   </div>
   <div class="drawer-body" id="queueBody"></div>
   <div class="drawer-foot">
-    <p class="note" id="bwNote" hidden>High Contrast Mode is on: pages print in pure black and white.</p>
+    <p class="note" id="bwNote" hidden>Every page prints in pure black on white.</p>
     <p class="allowance" id="allowance"></p>
     <button class="btn btn-primary" type="button" id="generatePdf">Generate PDF</button>
     <p class="note">In the print window, choose <b>Save as PDF</b> to keep a copy, or pick your printer.</p>
@@ -6429,6 +6507,13 @@ const RosterUI = (function(){
 <script src="assets/coloring/subjects.bundle.js"></script>
 <script src="src/services/ColoringManifest.js"></script>
 <script src="src/engine/ColoringEngine.js"></script>
+<script src="assets/pcg/pcg-data.bundle.js"></script>
+<script src="src/pcg/prng.js"></script>
+<script src="src/pcg/matrix.js"></script>
+<script src="src/pcg/grammar.js"></script>
+<script src="src/pcg/puzzles.js"></script>
+<script src="src/engine/ClinicalMatrix.js"></script>
+<script src="src/engine/ClinicalActivities.js"></script>
 <script src="assets/services/vectorEngine.js"></script>
 <script id="cc-ui">
 /* =====================================================================
@@ -6577,6 +6662,14 @@ const CogniLibrary = (function(){
   const box = (b, extra) => `left:${b.x.toFixed(4)}in;top:${b.y.toFixed(4)}in;width:${b.w.toFixed(4)}in;height:${b.h.toFixed(4)}in;${extra || ""}`;
   function footText(o, lay){ const it = info(o.design, lay.tier), code = it && it.code;
     return [code ? `Cognicopia · Cognicopia Coloring · page code ${code}` : `Cognicopia · Cognicopia Coloring`, `${C.TIERS[lay.tier].label}${o.pageCount > 1 ? ` · page ${o.pageNumber} of ${o.pageCount}` : ""}`]; }
+  /* "Prepared especially for NAME", in a shorter form when the name is long enough that the line would not fit its box on one line */
+  function ccFor(name, lay){
+    const fl = [0, 14, 18, 24][lay.tier], w = lay.blocks.header ? lay.blocks.header.w * 72 : 0, bold = lay.tier === 3;
+    const fits = t => t.length * Math.max(fl, 15) * (bold ? 0.62 : 0.56) <= w;
+    if (!name) return "Prepared especially for you";
+    const n = `<b>${esc(name)}</b>`;
+    return fits("Prepared especially for " + name) ? "Prepared especially for " + n : fits("Made for " + name) ? "Made for " + n : n;
+  }
   /* The printed sheet for one page. */
   function sheet(o){
     if (isHy(o.design)){
@@ -6586,13 +6679,17 @@ const CogniLibrary = (function(){
     }
     const lay = layout(o), b = lay.blocks, d = info(o.design, lay.tier), art = artFor(o, lay), name = String(o.name || "").trim(), fac = String(o.facility || "").trim();
     const ft = footText(o, lay);
-    return { perf:art.report.ms, html:`<section class="sheet cc-sheet" data-tier="${lay.tier}" data-design="${esc(o.design)}">
-      ${b.header ? `<div class="cc-head" style="${box(b.header)}">${fac ? `<span class="cc-fac">${esc(fac)}</span>` : ""}<span class="cc-for-line">Prepared especially for ${name ? `<b>${esc(name)}</b>` : "you"}</span></div>` : ""}
+    return { perf:art.report.ms, html:`<section class="sheet cc-sheet lvl-${["early", "early", "moderate", "advanced"][lay.tier]}" data-tier="${lay.tier}" data-design="${esc(o.design)}">
+      ${b.header ? `<div class="cc-head" style="${box(b.header)}"><span class="cc-for-line">${ccFor(name, lay)}</span></div>` : ""}
       ${b.title ? `<div class="cc-title" style="${box(b.title, `font-size:${b.title.pt}pt`)}">${esc(d.title)}</div>` : ""}
       <div class="cc-art" style="${box(b.art)}">${art.svg}</div>
       ${b.legend ? `<div class="cc-legend" style="${box(b.legend)}">${V.legendColumnSvg(o.legend)}</div>` : ""}
-      ${b.caption ? `<div class="cc-cap" style="${box(b.caption, `font-size:${b.caption.pt}pt`)}">${esc(d.talk)}</div>` : ""}
-      <div class="cc-foot" style="${box(b.foot)}"><span>${esc(ft[0])}</span><span>${esc(ft[1])}</span></div>
+      ${o.shell
+        /* in a packet the page carries the clinical shell: the conversation prompt moves to the staff line, and the foot gains "Page X of Y" */
+        ? `${b.caption && d.talk ? `<p class="cc-talk"><b>Talk about it, if welcomed:</b> ${esc(d.talk)}</p>` : ""}
+      <div class="cc-pgfoot"><span>${esc(ft[0])}</span><b class="pgno">Page 1 of 1</b><span>${esc(fac ? fac : ft[1])}</span></div>`
+        : `${b.caption ? `<div class="cc-cap" style="${box(b.caption, `font-size:${b.caption.pt}pt`)}">${esc(d.talk)}</div>` : ""}
+      <div class="cc-foot" style="${box(b.foot)}"><span>${esc(ft[0])}</span><span>${esc(fac ? fac : ft[1])}</span></div>`}
       <footer class="care-coaching-footer">Do not ask questions or test memory. Sit beside them, place the marker in their hand, and model slow, calm breathing.</footer>
     </section>` };
   }
@@ -7004,7 +7101,7 @@ const CogniLibrary = (function(){
     generate(cfg, rng, id){
       const o = cfg.opts || {}, pages = (o.pages || []);
       const pg = sheet({ design:id, tier:o.tier || 2, weight:o.weight || "auto", header:o.header !== false, title:o.title !== false, caption:o.caption !== false,
-        largePrint:!!o.largePrint, legend:o.legend || "off", duplex:false, pageNumber:1, pageCount:1, name:cfg.residentName, facility:o.facility || "" });
+        largePrint:!!o.largePrint, legend:o.legend || "off", duplex:false, pageNumber:1, pageCount:1, name:cfg.residentName, facility:o.facility || "", shell:true });
       return { layout:"cc", sheet:pg.html, title:info(id, o.tier || 2).title, instructions:"", html:"", signature:id + "#" + (o.tier || 2) + "#" + pages.indexOf(id) };
     }
   };
@@ -7058,7 +7155,7 @@ const ReminiscenceUI = (function(){
   /* One printed card. */
   function cardHtml(card, i, n, who, name){
     const t = who.tier, song = card.song;
-    return `<div class="sheet rm-sheet rm-t${t}">
+    return `<div class="sheet rm-sheet rm-t${t} lvl-${["early", "early", "moderate", "advanced"][t] || "moderate"}">
       <div class="rm-top"><span>Reminiscence card ${i + 1} of ${n}</span><b>${name ? "For " + esc(name) : ""}</b></div>
       <h2 class="rm-title">${esc(card.title)}</h2>
       <div class="rm-art">${artFor(card, t)}</div>
@@ -7070,7 +7167,7 @@ const ReminiscenceUI = (function(){
         <p><b>Touch:</b> ${esc(card.touch.prompt)} <span class="rm-safe">${esc(card.touch.safety)}</span></p>
         ${card.refs.length ? `<p class="rm-refs"><b>From their time and place:</b> ${card.refs.map(esc).join(" · ")}</p>` : ""}
       </section>
-      <div class="rm-foot"><span>Cognicopia · Reminiscence Cards</span><span>${esc([who.placeLabel, who.vocation.code !== "general" ? who.vocation.label : ""].filter(Boolean).join(" · "))}</span></div>
+      <div class="rm-foot"><span>Cognicopia · Reminiscence Cards</span><b class="pgno">Page 1 of 1</b><span>${esc([who.placeLabel, who.vocation.code !== "general" ? who.vocation.label : ""].filter(Boolean).join(" · "))}</span></div>
     </div>`;
   }
   function pages(){
@@ -7180,7 +7277,7 @@ const ReminiscenceUI = (function(){
       S = Object.assign({}, state(), { resident:o.resident || "", manual:o.manual || state().manual, theme:o.theme || "mixed", count:o.count || 6, seed:o.seed || "1" });
       try {
         const { d, list } = pages(), card = d.cards[i] || d.cards[0];
-        return { layout:"cc", sheet:list[i] ? list[i].html : "", title:card ? card.title : "Reminiscence card", instructions:"", html:"", signature:"rm#" + (o.resident || "manual") + "#" + i + "#" + o.seed };
+        return { layout:"cc", sheet:list[i] ? list[i].html.replace(/\blvl-(early|moderate|advanced)\b/, "lvl-" + (cfg.difficulty || "moderate")) : "", title:card ? card.title : "Reminiscence card", instructions:"", html:"", signature:"rm#" + (o.resident || "manual") + "#" + i + "#" + o.seed };
       } finally { S = keep; }
     }
   };
@@ -9904,7 +10001,7 @@ const ERAS = {
   "1960s": "The 1960s",
   "1970s": "The 1970s"
 };
-const DEFAULT_SETTINGS = { facility:"", residentName:"", difficulty:"early", era:"general", variations:2, pureBW:false, actOpts:{}, aliasScreen:false, aliasFiles:false };
+const DEFAULT_SETTINGS = { facility:"", wing:"", residentName:"", difficulty:"early", era:"general", variations:2, pureBW:true, actOpts:{}, aliasScreen:false, aliasFiles:false };
 /* Read again once the encrypted store has opened (see Boot). */
 function readSettings(){
   const s = Object.assign({}, DEFAULT_SETTINGS, store.get("cgb_settings", {}));
@@ -9914,13 +10011,15 @@ function readSettings(){
   // Last-used options per activity (e.g. { "letter-tracing": { case:"upper" } }). Own copy, never the default object.
   s.actOpts = (s.actOpts && typeof s.actOpts === "object" && !Array.isArray(s.actOpts)) ? Object.assign({}, s.actOpts) : {};
   s.aliasScreen = !!s.aliasScreen; s.aliasFiles = !!s.aliasFiles;
+  s.wing = String(s.wing == null ? "" : s.wing).replace(/[\u0000-\u001F\u007F]/g, "").trim().slice(0, 40);
+  s.pureBW = true;                      // every printed page is pure black on white
   return s;
 }
 let settings = readSettings();
 
-/* High Contrast Mode is ONLY this flag. It is read when printing, to put
-   .pure-bw on #printRoot. It never touches the web interface. */
-let isPureBlackAndWhitePDF = !!settings.pureBW;
+/* Every printed page is pure black on white: this flag is always true, and .pure-bw is always put on #printRoot when
+   printing. It never touches the web interface. */
+let isPureBlackAndWhitePDF = true;
 
 function saveSettings(){ store.set("cgb_settings", settings); renderFacility(); }
 
@@ -9955,9 +10054,21 @@ function mulberry32(a){
     return ((t ^ t >>> 14) >>> 0) / 4294967296;
   };
 }
+/* Every page comes from a seed made of the resident's name and the date, and a counter for "show a different version" and
+   for each batch added. Open the builder tomorrow, or on another computer, and the same name and date give the same first
+   pages; the next day's are new. A packet already in the queue never changes: it stores its seeds. */
+let seedCounter = 0, lastNonce = 0;
+function dailySeedFor(name, date, n){
+  const P = window.CognicopiaPCG && window.CognicopiaPCG.prng;
+  if (!P) return Math.imul(n + 1, 0x9E3779B1) >>> 0;
+  let iso; try { iso = P.dateParts(date || todayISO()).iso; } catch (e){ iso = todayISO(); }
+  return P.seedInt(P.dailySeed(String(name || "").trim() || "guest", iso, 0) + "|builder|" + n) >>> 0;
+}
 function newSeed(){
-  try { return crypto.getRandomValues(new Uint32Array(1))[0]; }
-  catch(e){ return Math.floor(Math.random() * 4294967296); }
+  const nameEl = document.getElementById("cfgName"), dateEl = document.getElementById("cfgDate");
+  const name = (nameEl && nameEl.value) || (typeof settings !== "undefined" && settings.residentName) || "", date = (dateEl && dateEl.value) || todayISO();
+  lastNonce = seedCounter++;
+  return dailySeedFor(name, date, lastNonce);
 }
 function makeRng(seed){
   const next = mulberry32(seed >>> 0);
@@ -10084,7 +10195,7 @@ const WORD_SEARCH = {
   icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="10" cy="10" r="6"/><line x1="14.5" y1="14.5" x2="20" y2="20"/></svg>',
   levels: {
     early:    { size:12, count:8, maxLen:10, dirs:[[0,1],[1,0],[1,1]], cell:.5 },
-    moderate: { size:10, count:6, maxLen:9,  dirs:[[0,1],[1,0]],       cell:.6 },
+    moderate: { size:8,  count:5, maxLen:8,  dirs:[[0,1],[1,0]],       cell:.8 },
     advanced: { size:8,  count:4, maxLen:7,  dirs:[[0,1]],             cell:.72 }
   },
   plan(cfg, rng, count){
@@ -10202,7 +10313,7 @@ const NAME_THREE = {
   id: "name-three", name: "Name Three", themed: true,
   desc: "Category naming prompts. The number of answers asked for drops from three to one as the stage advances.",
   icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="9" y1="6" x2="20" y2="6"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="18" x2="20" y2="18"/><circle cx="4.5" cy="6" r="1"/><circle cx="4.5" cy="12" r="1"/><circle cx="4.5" cy="18" r="1"/></svg>',
-  levels: { early:{ count:4, answers:3, word:"three" }, moderate:{ count:4, answers:2, word:"two" }, advanced:{ count:3, answers:1, word:"one" } },
+  levels: { early:{ count:3, answers:3, word:"three" }, moderate:{ count:4, answers:2, word:"two" }, advanced:{ count:3, answers:1, word:"one" } },
   plan(cfg, rng, count){ return slicePlan(withGeneral([], cfg.era, NAME_PROMPTS), this.levels[cfg.difficulty].count, count, rng); },
   generate(cfg, rng, prompts){
     const L = this.levels[cfg.difficulty];
@@ -10478,7 +10589,7 @@ const LETTER_TRACING = {
       choices:[["both","Capital and small (A a)"],["upper","Capitals only (A)"],["lower","Small letters only (a)"]] }
   ],
   // fs = font size in SVG units (1 unit = 0.01 in); rows per page
-  levels: { early:{ rows:4, fs:150 }, moderate:{ rows:3, fs:200 }, advanced:{ rows:2, fs:290 } },
+  levels: { early:{ rows:4, fs:150 }, moderate:{ rows:3, fs:200 }, advanced:{ rows:2, fs:272 } },
   source(cfg){
     const mode = optVal(cfg, "letters", "mixed");
     const uniq = s => Array.from(new Set(String(s || "").toUpperCase().replace(/[^A-Z]/g, "").split(""))).filter(Boolean);
@@ -10539,7 +10650,7 @@ const SEQUENCE_LADDER = {
   ],
   levels: {
     early:    { count:6, steps:[1,2,5,10], blanks:2, box:.8,  showStep:false },
-    moderate: { count:5, steps:[1,2,5,10], blanks:2, box:.92, showStep:true  },
+    moderate: { count:4, steps:[1,2,5,10], blanks:2, box:.92, showStep:true  },
     advanced: { count:4, steps:[1,10],     blanks:1, box:1.02, showStep:true  }
   },
   plan(cfg, rng, count){ return Array(count).fill(null); },   // all variety comes from the layout seed
@@ -10607,8 +10718,7 @@ function coinSvg(key, scale){
   const ridge = c.ridged ? '<circle cx="50" cy="50" r="45" fill="none" stroke="#3a4441" stroke-width="3" stroke-dasharray="2 2.2"/>' : "";
   return `<svg class="coin" viewBox="0 0 100 100" width="${size}in" height="${size}in" role="img" aria-label="${c.name.toLowerCase()}, ${c.v} cents">
     <circle class="coin-face" cx="50" cy="50" r="47" fill="${c.tint}" stroke="#2c3431" stroke-width="3"/>${ridge}
-    <text x="50" y="${c.v >= 10 ? 55 : 56}" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-weight="700" font-size="${c.v >= 10 ? 30 : 34}" fill="#1b1f1e">${c.v}&#162;</text>
-    <text x="50" y="75" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-weight="700" font-size="${c.name.length > 6 ? 11 : 12.5}" fill="#1b1f1e">${c.name}</text>
+    <text x="50" y="64" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-weight="700" font-size="40" fill="#1b1f1e">${c.v}&#162;</text>
   </svg>`;
 }
 const MONEY_COUNT = {
@@ -10621,9 +10731,9 @@ const MONEY_COUNT = {
     { id:"prices", type:"check", label:"Include old-time prices", hint:"Asks whether the coins would buy a soda pop, a comic book and so on.", def:true }
   ],
   levels: {
-    early:    { count:4, coins:[3,5], kinds:"pndq", scale:.82, sort:false, maxTotal:75 },
-    moderate: { count:4, coins:[2,4], kinds:"pnd",  scale:.95, sort:true,  maxTotal:40 },
-    advanced: { count:3, coins:[1,3], kinds:"pnd",  scale:1.15, sort:true, maxTotal:30, sameKind:true }
+    early:    { count:3, coins:[3,5], kinds:"pndq", scale:.82, sort:false, maxTotal:75 },
+    moderate: { count:3, coins:[2,4], kinds:"pnd",  scale:.95, sort:true,  maxTotal:40 },
+    advanced: { count:3, coins:[1,3], kinds:"pnd",  scale:1.2, sort:true, maxTotal:30, sameKind:true }
   },
   plan(cfg, rng, count){ return Array(count).fill(null); },
   generate(cfg, rng){
@@ -10783,7 +10893,7 @@ const NUMBER_TRACING = {
       hint:"Separate with commas or spaces. Up to 4 digits each, such as a birth year or room number." },
     { id:"dots", type:"check", label:"Show counting dots", hint:"A group of dots beside each single digit, to count and match.", def:true }
   ],
-  levels: { early:{ rows:4, fs:150 }, moderate:{ rows:3, fs:200 }, advanced:{ rows:2, fs:290 } },
+  levels: { early:{ rows:4, fs:150 }, moderate:{ rows:3, fs:200 }, advanced:{ rows:2, fs:272 } },
   source(cfg){
     const mode = optVal(cfg, "numbers", "mixed");
     if (mode === "custom"){
@@ -10952,7 +11062,7 @@ const CHAIR_YOGA = {
       choices:[["all","Whole body mix"],["upper","Arms, shoulders and neck"],["lower","Legs, knees and feet"],["gentle","Very gentle: hands, wrists and breathing"]] }
   ],
   // cards per page, and how many lines each card shows
-  levels: { early:{ cards:2, tip:true }, moderate:{ cards:2, tip:false }, advanced:{ cards:1, tip:false } },
+  levels: { early:{ cards:2, tip:true }, moderate:{ cards:2, tip:false }, advanced:{ cards:1, tip:false, steps:3 } },
   pool(cfg){
     const area = optVal(cfg, "area", "all");
     const p = area === "all" ? STRETCHES : STRETCHES.filter(s => s.area.split(" ").includes(area));
@@ -10965,7 +11075,7 @@ const CHAIR_YOGA = {
       return `<div class="yoga-card">
         <div class="yoga-fig">${yogaIcon(s.pose, s.focus)}</div>
         <div class="yoga-body"><h2 class="yoga-title">${esc(s.name)}</h2>
-          <ol class="yoga-steps">${s.steps.map(t => `<li>${esc(t)}</li>`).join("")}</ol>
+          <ol class="yoga-steps">${s.steps.slice(0, L.steps || s.steps.length).map(t => `<li>${esc(t)}</li>`).join("")}</ol>
           <p class="yoga-rep">${esc(s.repeat)}</p>${L.tip ? `<p class="yoga-tip">${esc(s.tip)}</p>` : ""}</div>
       </div>`;
     }).join("");
@@ -11030,7 +11140,7 @@ const LINE_TRACING = {
   levels: {
     early:    { panels:4, H:165, pt:4, waves:[3,4], teeth:[6,8], turns:[2.5,3], lines:[3,3], vlines:[6,7], amp:.3 },
     moderate: { panels:3, H:215, pt:5, waves:[2,3], teeth:[4,5], turns:[2,2.5], lines:[2,3], vlines:[5,5], amp:.32 },
-    advanced: { panels:2, H:300, pt:6, waves:[1,2], teeth:[2,3], turns:[1.5,1.5], lines:[2,2], vlines:[4,4], amp:.3 }
+    advanced: { panels:2, H:280, pt:6, waves:[1,2], teeth:[2,3], turns:[1.5,1.5], lines:[2,2], vlines:[4,4], amp:.3 }
   },
   kinds: { mixed:["horizontal","vertical","wavy","zigzag","spiral"], straight:["horizontal","vertical"], curvy:["wavy","spiral"], zigzag:["zigzag","horizontal","vertical"] },
   plan(cfg, rng, count){ return Array(count).fill(null); },
@@ -11109,7 +11219,7 @@ const BEANBAG_TARGET = {
   generate(cfg, rng, p){
     const lvl = cfg.difficulty, L = this.levels[lvl];
     const points = optVal(cfg, "points", true), two = optVal(cfg, "targets", "1") === "2";
-    const size = two ? 3.3 : lvl === "advanced" ? 6.4 : 6.1;
+    const size = two ? 3.3 : lvl === "advanced" ? 4.3 : 5.8;
     const t = targetSvg(p.scores, p.center, points, size);
     const players = two ? ["Player 1", "Player 2"] : [""];
     const tally = players.map(who => {
@@ -11667,7 +11777,7 @@ const LYRIC_SHEET = {
   options: [ARTIST_OPTION,
     { id:"hymns", type:"check", label:"Include hymns and spirituals", hint:"Turn off for groups where a sacred song may not suit everyone.", def:true, showIf:ifRandom },
     { id:"trivia", type:"check", label:"Add a \"Did you know?\" fact", def:true }],
-  levels: { early:{ pt:24, maxLines:9, talk:2 }, moderate:{ pt:28, maxLines:6, talk:2 }, advanced:{ pt:36, maxLines:4, talk:0 } },
+  levels: { early:{ pt:24, maxLines:9, talk:2 }, moderate:{ pt:28, maxLines:6, talk:2 }, advanced:{ pt:36, maxLines:3, talk:0 } },
   optionsNote(cfg){ return findArtist(optVal(cfg, "artist", "")) || String(optVal(cfg, "artist", "")).trim() !== RANDOM_ARTIST ? musicNote(cfg, 1) : "Random: one public-domain sing-along song, different each time."; },
   pool(cfg){ return optVal(cfg, "hymns", true) ? PD_SONGS : PD_SONGS.filter(s => !s.hymn); },
   plan(cfg, rng, count){
@@ -11679,7 +11789,7 @@ const LYRIC_SHEET = {
     return artistOf(cfg) ? Array(count).fill(null) : slicePlan(this.pool(cfg), 1, count, rng).map(s => s[0]);
   },
   fitPt(lines, basePt, trivia){
-    const budget = (trivia ? 6.6 : 7.7) * 72;
+    const budget = (trivia ? 5.6 : 6.2) * 72;
     for (let pt = basePt; pt > 24; pt -= 2){
       const perLine = Math.floor(7.0 * 72 / (pt * .6));
       let h = pt * 1.12 * 1.2 + pt * .45 * 1.3 + 22;
@@ -11689,7 +11799,7 @@ const LYRIC_SHEET = {
     return 24;
   },
   generate(cfg, rng, song){
-    const L = this.levels[cfg.difficulty], trivia = optVal(cfg, "trivia", true), a = artistOf(cfg);
+    const L = this.levels[cfg.difficulty], trivia = optVal(cfg, "trivia", true) && cfg.difficulty !== "advanced", a = artistOf(cfg);
     if (a){
       // Artist reminiscence sheet: hit TITLES only, plus a fact and prompts.
       const hits = rng.shuffle(a.songs).slice(0, cfg.difficulty === "advanced" ? 3 : 4);
@@ -12041,9 +12151,10 @@ function hybridProfileOf(p){
 function hybridSheet(a, stage, seed, name, frameOpts){
   const E = hyEngine(), V = window.CogniVectorEngine;
   const F = V && V.pageFrame ? V.pageFrame(Object.assign({ unit:"pt" }, frameOpts || {})).content : { x:54, y:36, w:522, h:720 };
-  const page = E.compose({ asset:a, paths:E.subjectPathsSync(a.id), stage, seed, name, frame:{ x:F.x, y:F.y, w:F.w, h:F.h } });
+  const page = E.compose({ asset:a, paths:E.subjectPathsSync(a.id), stage, seed, name, footer:false, frame:{ x:F.x + 3, y:F.y + 3, w:F.w - 6, h:Math.min(F.h, 706 - F.y) - 3 } });   // the picture stays above the clinical tip, and its heaviest line (6 pt) stays inside the 0.5 in margin
   return { page, html:`<section class="sheet cc-sheet hy-sheet" data-stage="${esc(stage)}" data-subject="${esc(a.id)}">
       <div class="hy-page">${E.toSVG(page, { width:"100%", height:"100%" })}</div>
+      <div class="cc-pgfoot"><span>Cognicopia &middot; Cognicopia Coloring</span><b class="pgno">Page 1 of 1</b><span>${esc(page.meta.code)}</span></div>
       <footer class="care-coaching-footer">Do not ask questions or test memory. Sit beside them, place the marker in their hand, and model slow, calm breathing.</footer>
     </section>` };
 }
@@ -12225,7 +12336,7 @@ const SILHOUETTE_MATCH = {
   id: "silhouette-match", name: "Shadow Silhouette Matching", themed: false,
   desc: "Bold pictures on the left, their solid black shadows mixed up on the right. Draw a line from each picture to its shadow.",
   icon: '<svg width="22" height="22" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M6 4 C3 4 2 8 3 10 C4 13 8 13 9 10 C10 8 9 4 6 4 Z" fill="none"/><path d="M18 11 C15 11 14 15 15 17 C16 20 20 20 21 17 C22 15 21 11 18 11 Z" fill="currentColor"/><path d="M9 8 L15 15" stroke-dasharray="2 2"/></svg>',
-  levels: { early:{ count:6, size:.95 }, moderate:{ count:4, size:1.3 }, advanced:{ count:3, size:1.75 } },
+  levels: { early:{ count:6, size:.95 }, moderate:{ count:4, size:1.3 }, advanced:{ count:3, size:1.4 } },
   plan(cfg, rng, count){ return slicePlan(Object.keys(SIL_OBJECTS), this.levels[cfg.difficulty].count, count, rng); },
   generate(cfg, rng, keys){
     const L = this.levels[cfg.difficulty];
@@ -12265,10 +12376,66 @@ const ICONS = {
   roster:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.6 3.3-5.5 6.5-5.5s5.7 1.9 6.5 5.5"/><path d="M16 5.5a3 3 0 0 1 0 6M18.5 14.8c1.7.8 2.7 2.5 3 5.2"/></svg>'
 };
 
+/* ---------- Clinical activity pages ----------
+   Drawn by src/engine/ClinicalActivities.js and held to the stage rules in src/engine/ClinicalMatrix.js: type no smaller than
+   the stage's floor (24 pt and bold at the advanced stage), lines no thinner than its floor, pure black on white, nothing inside
+   0.5 in of the paper's edge, and the adult-dignity filter on every word. Each sheet is one drawing of the whole page: the
+   header (name, date, wing), the activity, a clinical tip for the person beside the resident, and the foot ("Page X of Y"). */
+const CLINICAL_STAGE = { early:"early", moderate:"middle", advanced:"late" };
+const CLINICAL_LEVEL = { early:"early", middle:"moderate", late:"advanced" };
+const clinicalOk = (level, id) => !window.CognicopiaClinicalMatrix || window.CognicopiaClinicalMatrix.allowed(CLINICAL_STAGE[level] || "middle", id, "builder");
+function clinicalSubjects(){ const M = window.CognicopiaColoringManifest; try { return M && M.loadSync ? M.loadSync() : null; } catch (e){ return null; } }
+function signatureOf(text){ let h = 2166136261; for (let i = 0; i < text.length; i++){ h ^= text.charCodeAt(i); h = Math.imul(h, 16777619); } return (h >>> 0).toString(36); }
+const clinicalIcon = d => '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + d + '</svg>';
+function clinicalActivity(def){
+  return {
+    id:def.id, name:def.name, desc:def.desc, icon:def.icon, clinical:true,
+    plan(cfg, rng, count){ const out = []; for (let i = 0; i < count; i++) out.push({ variant:rng.int(1000000) }); return out; },
+    generate(cfg, rng, slice, attempt){
+      const A = window.CognicopiaClinicalActivities, CM = window.CognicopiaClinicalMatrix;
+      if (!A || !CM) throw new Error("The activity engine is not loaded.");
+      const stage = CLINICAL_STAGE[cfg.difficulty] || "middle", name = cfg.residentName || "", iso = cfg.date || todayISO();
+      const variant = slice.variant + 7 * (attempt || 0);
+      const page = A.generate(def.kind, { stage:stage, name:name || "Friend", date:iso, variant:variant, subjects:clinicalSubjects() });
+      const cue = CM.cue({ stage:stage, activity:def.kind, rng:CM.dailyRng(name || "Friend", iso, variant, "tip"), name:name, topic:page.meta.topic });
+      const full = A.withShell(page, { name:name, date:iso, wing:settings.wing, page:1, pages:1, tip:cue ? cue.text : "", stageLabel:CM.STAGES[stage].label });
+      return { title:page.meta.title, instructions:page.meta.instruction || "", html:"", layout:"engine",
+        signature:signatureOf(JSON.stringify([page.items, page.texts])), answers:A.answerLines(page).join(" · "),
+        sheet:'<section class="sheet sheet-eng" data-shell="1" aria-label="' + esc(page.meta.title) + '">' + A.toSVG(full, { width:"8.5in", height:"11in", background:false }) + "</section>" };
+    }
+  };
+}
+const SEARCH_LARGE = clinicalActivity({ id:"search-large", kind:"search-large", name:"Large Word Search (12 or 15 square)", icon:WORD_SEARCH.icon,
+  desc:"A big grid of everyday words about one theme, going across, down and slanted. For the early stage." });
+const SEARCH_GUIDED = clinicalActivity({ id:"search-guided", kind:"search-guided", name:"Guided Word Search", icon:WORD_SEARCH.icon,
+  desc:"A small grid, words across and down only, with the first letter of every word boxed. For the middle and late stages." });
+const WORD_LADDER = clinicalActivity({ id:"ladder", kind:"ladder", name:"Word Ladder", icon:clinicalIcon('<path d="M7 3v18M17 3v18M7 7h10M7 12h10M7 17h10"/>'),
+  desc:"Change one letter at a time to climb from one word to another; the steps are in a word box. For the early stage." });
+const ANAGRAMS = clinicalActivity({ id:"anagram", kind:"anagram", name:"Anagrams with Clues", icon:clinicalIcon('<rect x="3" y="4" width="5" height="5" rx="1"/><rect x="10" y="4" width="5" height="5" rx="1"/><rect x="17" y="4" width="4" height="5" rx="1"/><path d="M4 15h16M4 19h16"/>'),
+  desc:"The mixed-up letters of a familiar word, with a clue. The middle stage gets the first letter." });
+const SORT_TWO = clinicalActivity({ id:"sorting", kind:"sorting", name:"Sort into Two Groups", icon:clinicalIcon('<rect x="3" y="4" width="8" height="16" rx="1.5"/><rect x="13" y="4" width="8" height="16" rx="1.5"/><path d="M5.5 9l1.8 1.8L10 8"/>'),
+  desc:"Kitchen tools or garden tools: a grid to tick the group each item belongs to." });
+const ODD_ONE = clinicalActivity({ id:"oddone", kind:"oddone", name:"Odd One Out", icon:clinicalIcon('<circle cx="6" cy="8" r="3"/><circle cx="14" cy="8" r="3"/><rect x="4" y="14" width="6" height="6" rx="1"/><circle cx="18" cy="17" r="3"/>'),
+  desc:"Words or pictures in rows; circle the one that does not belong." });
+const PUT_IN_ORDER = clinicalActivity({ id:"sequence", kind:"sequence", name:"Put It in Order", icon:clinicalIcon('<rect x="3" y="3" width="6" height="6" rx="1"/><rect x="3" y="15" width="6" height="6" rx="1"/><path d="M12 6h9M12 18h9"/>'),
+  desc:"Number the steps of an everyday job; a check, printed upside down, is at the foot of the page." });
+const CHOOSE_ENDING = clinicalActivity({ id:"choose-ending", kind:"choose-ending", name:"Choose the Ending", icon:clinicalIcon('<path d="M4 6h16M4 12h7"/><rect x="13" y="9" width="7" height="6" rx="2"/><path d="M4 18h16"/>'),
+  desc:"A familiar saying or pair with two or three words to choose from; the other choices are clearly not it." });
+const MATCH_PICTURES = clinicalActivity({ id:"matching", kind:"matching", name:"Match the Picture to Its Name", icon:clinicalIcon('<circle cx="6" cy="8" r="2"/><circle cx="18" cy="16" r="2"/><path d="M8 8l8 8"/>'),
+  desc:"Classic cars, tools and household things from the 1950s and 60s, matched to their bold names." });
+const LARGE_MAZE = clinicalActivity({ id:"maze-motor", kind:"maze", name:"Large-Print Maze", icon:clinicalIcon('<path d="M3 3h18v18H3zM3 9h12M9 15h12M9 9v6"/>'),
+  desc:"Thick walls and wide corridors. The early and middle mazes have a long way round; the advanced one is a wide track with few turns." });
+const FOLLOW_PATH = clinicalActivity({ id:"pathtrace", kind:"pathtrace", name:"Follow the Path", icon:clinicalIcon('<path d="M3 7c6-4 12 4 18 0M3 17c6-4 12 4 18 0"/>'),
+  desc:"A wide, winding lane to trace with a finger or a thick marker, for a steady hand." });
+const TODAY_PAGE = clinicalActivity({ id:"orientation", kind:"orientation", name:"Today: Day, Season and Weather", icon:clinicalIcon('<circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/>'),
+  desc:"A high-contrast page for the day of the week, the season and the weather, with today picked out in black." });
+const SHAPE_FRAME = clinicalActivity({ id:"silhouette", kind:"silhouette", name:"Shape to Look At", icon:clinicalIcon('<path d="M4 15c3-6 9-7 14-3l2-3v8l-3-1c-4 3-10 2-13-1z"/>'),
+  desc:"A classic car or a songbird as a solid shape inside a bold pattern or mandala frame." });
+
 const CATEGORIES = [
   { id:"word", name:"Word & Language Activities", icon:ICONS.word,
     blurb:"Word searches, sayings, scrambles, naming and reminiscence prompts. Language is often one of the best-preserved skills, and familiar words invite conversation.",
-    activities:[WORD_SEARCH, FINISH_SAYING, SCRAMBLE, NAME_THREE, GOES_TOGETHER, MEMORY_LANE] },
+    activities:[WORD_SEARCH, SEARCH_LARGE, SEARCH_GUIDED, WORD_LADDER, ANAGRAMS, CHOOSE_ENDING, SORT_TWO, ODD_ONE, FINISH_SAYING, SCRAMBLE, NAME_THREE, GOES_TOGETHER, MEMORY_LANE] },
   { id:"letters", name:"Letter & Alphabet Activities", icon:ICONS.letter,
     blurb:"Letter scrambles, missing-letter words, A-to-Z category sweeps and large-letter tracing. Big, clear letterforms support reading, recognition and fine motor practice.",
     activities:[LETTER_SCRAMBLE, MISSING_LETTERS, ALPHA_SWEEP, LETTER_TRACING] },
@@ -12277,13 +12444,13 @@ const CATEGORIES = [
     activities:[SEQUENCE_LADDER, MONEY_COUNT, MINI_SUDOKU, NUMBER_TRACING] },
   { id:"movement", name:"Exercise, Movement & Physical Motor Activities", icon:ICONS.move,
     blurb:"Seated chair yoga cards, fine-motor line tracing, tabletop beanbag targets and rhythm patterns. Everything is done sitting down, and each page carries a short safety note for staff.",
-    activities:[CHAIR_YOGA, LINE_TRACING, BEANBAG_TARGET, SEATED_RHYTHM] },
+    activities:[CHAIR_YOGA, LINE_TRACING, FOLLOW_PATH, LARGE_MAZE, PUT_IN_ORDER, BEANBAG_TARGET, SEATED_RHYTHM] },
   { id:"music", name:"Music, Rhythm & Sound Activities", icon:ICONS.music,
     blurb:"Large-print sing-along sheets, finish-the-song prompts and a singer-to-song match. Musical memory often outlasts other memories, which makes music one of the most reliable ways in. For rhythm patterns, see Seated Rhythm Sheets under Exercise & Movement.",
     activities:[LYRIC_SHEET, FINISH_SONG, SINGER_MATCH] },
   { id:"multisensory", name:"Multisensory, Art & Group Activities", icon:ICONS.art,
     blurb:"A giant-type daily orientation board and shadow matching. Good for group rooms, quiet one-to-one time and the start of each day. Coloring pages now have their own category, Cognicopia Coloring.",
-    activities:[ORIENTATION_BOARD, SILHOUETTE_MATCH] },
+    activities:[ORIENTATION_BOARD, TODAY_PAGE, SILHOUETTE_MATCH, MATCH_PICTURES, SHAPE_FRAME] },
   { id:"cognicopia-coloring", name:"Cognicopia Coloring", icon:ICONS.brush, badge:"\u{1F3A8} Coloring", direct:true, route:"coloring",
     blurb:"Coloring pages made for each resident (New pages): one clean, bold picture chosen from their years, work and hobbies, with a border and words made for their stage. And the Cognicopia Coloring library: adult, dignity-first pictures in bold pure-black line art, each drawn at three cognitive tiers, plus themed packs. Filter by tier, theme, line thickness and detail, preview every page with its binding gutter, and print or download a PDF.",
     activities:[COGNICOPIA_COLORING] }
@@ -12317,13 +12484,60 @@ function tactilePairingFor(activity, page, cfg){
 }
 
 const CAREGIVER_COACHING_NOTE = "Do not ask questions or test memory. Sit beside them, place the marker in their hand, and model slow, calm breathing.";
+/* One clinical tip for the person beside the resident, from the clinical frameworks in ClinicalMatrix.js; the same all day for the same
+   resident and page (it is chosen from the name, the date and the page's seed), a different one for the next page. */
+function clinicalTipHtml(item){
+  const CMx = window.CognicopiaClinicalMatrix;
+  let cue = null;
+  try {
+    if (CMx) cue = CMx.cue({ stage:CLINICAL_STAGE[item.cfg.difficulty] || "middle", activity:item.activityId, name:item.cfg.residentName || "",
+      rng:CMx.dailyRng(item.cfg.residentName || "Friend", item.cfg.date || todayISO(), (item.batchSeed >>> 0) % 100000, "tip" + item.index) });
+  } catch (e){ cue = null; }
+  const m = cue && /^([^:]{3,22}:)\s*(.*)$/.exec(cue.text);
+  return `<footer class="care-coaching-footer">${m ? `<b>${esc(m[1])}</b> ${esc(m[2])}` : esc(cue ? cue.text : CAREGIVER_COACHING_NOTE)}</footer>`;
+}
+/* A sheet whose activity runs past the page is tightened, spacing first and never the type: its drawing is laid out off screen and the
+   gentlest of three .fit-N classes that makes it fit is put on the sheet. */
+let fitHost = null;
+function fitHtml(html){
+  if (!html || html.indexOf("sh-body") < 0 || !/<section class="sheet (?:[^"]*\s)?lvl-/.test(html) || typeof document === "undefined") return html;
+  try {
+    if (!fitHost){
+      fitHost = document.createElement("div");
+      fitHost.id = "fitHost"; fitHost.setAttribute("aria-hidden", "true");
+      fitHost.style.cssText = "position:absolute;left:-20000px;top:0;width:8.5in;height:11in;overflow:hidden;visibility:hidden;pointer-events:none";
+      document.body.appendChild(fitHost);
+    }
+    fitHost.innerHTML = html;
+    const sh = fitHost.querySelector(".sheet"), body = sh && sh.querySelector(".sh-body");
+    if (!body) return html;
+    const over = () => body.scrollHeight > body.clientHeight + 1;
+    const used = [];
+    for (const cls of ["fit-1", "fit-2", "fit-3"]){ if (!over()) break; sh.classList.add(cls); used.push(cls); }
+    fitHost.innerHTML = "";
+    return used.length ? html.replace('<section class="sheet ', '<section class="sheet ' + used.join(" ") + " ") : html;
+  } catch (e) { return html; }
+}
+/* One activity that cannot be drawn never stops the packet: its place prints as a plain page that says so, and the rest print as usual. */
 function sheetHtml(item, calmMode){
+  try { return sheetHtmlRaw(item, calmMode); }
+  catch (e){
+    if (typeof console !== "undefined") console.warn("A page could not be made:", item && item.activityId, e);
+    const lvl = (item && item.cfg && item.cfg.difficulty) || "moderate";
+    return `<section class="sheet lvl-${esc(lvl)}"><header class="sh-head"><div><h1>This page is not ready</h1></div></header>
+      <p class="sh-inst">This page could not be made just now. Choose another version or another activity, then print again.</p>
+      <div class="sh-body"></div>
+      <footer class="sh-foot"><span>Cognicopia</span><b class="pgno">Page 1 of 1</b><span></span></footer></section>`;
+  }
+}
+function sheetHtmlRaw(item, calmMode){
   const html = activitySheetHtml(item, calmMode);
-  if (!html || html.indexOf("care-coaching-footer") >= 0) return html;
+  if (!html || html.indexOf('data-shell="1"') >= 0) return html;              // the activity engine's sheets carry their own tip and foot
+  const footer = clinicalTipHtml(item), old = /<footer class="care-coaching-footer">[\s\S]*?<\/footer>/;
+  if (old.test(html)) return fitHtml(html.replace(old, footer));
   const close = html.lastIndexOf("</section>");
   if (close < 0) return html;
-  const footer = `<footer class="care-coaching-footer">${esc(CAREGIVER_COACHING_NOTE)}</footer>`;
-  return html.slice(0, close) + footer + html.slice(close);
+  return fitHtml(html.slice(0, close) + footer + html.slice(close));
 }
 function activitySheetHtml(item, calmMode){
   const act = ACT_INDEX[item.activityId];
@@ -12336,7 +12550,7 @@ function activitySheetHtml(item, calmMode){
   const page = buildBatch(act, item.cfg, item.batchSeed, item.count)[item.index];
   const sensoryPairing = item.cfg.difficulty === "advanced" ? tactilePairingFor(act, page, item.cfg) : "";
   const sensoryHtml = sensoryPairing ? `<p class="sh-sensory"><b>For staff · Sensory Prompt:</b> ${esc(sensoryPairing)}</p>` : "";
-  if (page.layout === "cc") return page.sheet;                          // coloring library pages lay themselves out
+  if (page.layout === "cc" || page.layout === "engine") return page.sheet;      // coloring library and activity-engine pages lay themselves out
   if (page.layout === "art"){
     // Coloring pages: the picture is the page. No instructions or answer
     // lines, just a personal header, the 3:4 art and a quiet footer.
@@ -12348,20 +12562,20 @@ function activitySheetHtml(item, calmMode){
         <div class="art-box">${page.html}</div>
         ${page.talk ? `<p class="art-talk">${esc(page.talk)}</p>` : ""}
         ${sensoryPairing ? `<p class="art-sensory"><b>For staff · Sensory Prompt:</b> ${esc(sensoryPairing)}</p>` : ""}
-        <footer class="art-foot">Cognicopia &bull; Cognicopia Coloring</footer>
+        <footer class="art-foot"><span>Cognicopia &bull; Cognicopia Coloring</span> &nbsp; <b class="pgno">Page 1 of 1</b></footer>
       </div>
     </section>`;
   }
   const who = item.cfg.residentName ? "For " + esc(item.cfg.residentName) : "";
   const when = fmtDate(item.cfg.date);
   return `<section class="sheet lvl-${esc(item.cfg.difficulty)}">
-    <header class="sh-head"><div><h1>${esc(page.title)}</h1>${page.subtitle ? `<p class="sh-sub">${esc(page.subtitle)}</p>` : ""}</div><div class="sh-meta">${who}${who && when ? "<br>" : ""}${esc(when)}</div></header>
+    <header class="sh-head"><div><h1>${esc(page.title)}</h1>${page.subtitle ? `<p class="sh-sub">${esc(page.subtitle)}</p>` : ""}</div><div class="sh-meta">${who}${who && when ? "<br>" : ""}${esc(when)}${settings.wing ? " &middot; " + esc(settings.wing) : ""}</div></header>
     <p class="sh-inst">${esc(page.instructions)}</p>
     <div class="sh-body">${page.html}</div>
     ${page.answers ? `<p class="sh-ans">For staff &middot; answers: ${esc(page.answers)}</p>` : ""}
     ${page.staffNote ? `<p class="sh-ans">For staff: ${esc(page.staffNote)}</p>` : ""}
     ${sensoryHtml}
-    <footer class="sh-foot"><span>${esc(settings.facility)}</span><span>Cognicopia &middot; Version ${item.index + 1} of ${item.count}</span></footer>
+    <footer class="sh-foot"><span>${esc(settings.facility)}${settings.facility ? " &middot; " : ""}Cognicopia</span><b class="pgno">Page 1 of 1</b><span>Version ${item.index + 1} of ${item.count}</span></footer>
   </section>`;
 }
 
@@ -12498,6 +12712,13 @@ function syncCalmModeToggle(){
   renderQueue();
 }
 
+/* "Early · Middle": the stages a page is made for, from the clinical matrix */
+function stageChip(a){
+  const CMx = window.CognicopiaClinicalMatrix, e = CMx && CMx.entry("builder", a.id);
+  if (!e) return "";
+  const names = { early:"Early", middle:"Middle", late:"Advanced" }, on = ["early", "middle", "late"].filter(st => e.stages[st]);
+  return on.length === 3 ? "" : `<span class="desc" style="margin-top:6px"><b>Made for:</b> ${on.map(st => names[st]).join(", ")}</span>`;
+}
 function renderCategory(id){
   const cat = CAT_INDEX[id];
   if (!cat){ location.replace("#/"); return; }
@@ -12523,7 +12744,7 @@ function renderCategory(id){
   const cards = cat.activities.length
     ? acts.map(a => { const rec = fx && fxRank(a) < 1e3;
         return `<button class="card${fx && !rec ? " fp-dim" : ""}" type="button" data-act="${a.id}" aria-pressed="false" aria-controls="config">
-        <span class="ic">${a.icon}</span><b>${esc(a.name)}</b><span class="desc">${esc(a.desc)}</span>
+        <span class="ic">${a.icon}</span><b>${esc(a.name)}</b><span class="desc">${esc(a.desc)}</span>${stageChip(a)}
         <span class="meta">${fx ? (rec ? `<span class="pill fp-pill-rec">Recommended for Tier ${fx.tier}</span>` : `<span class="pill">Not calibrated for Tier ${fx.tier}</span>`) : '<span class="pill live">Ready</span>'}${a.themed ? '<span class="pill">Era themes</span>' : ""}</span></button>`; }).join("")
     : cat.planned.map(n => `<div class="card is-soon" aria-disabled="true"><b>${esc(n)}</b><span class="meta"><span class="pill">Coming soon</span></span></div>`).join("");
   view.innerHTML = `
@@ -12638,6 +12859,10 @@ function openConfig(actId, scroll){
   view.querySelectorAll("button.card[data-act]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.act === actId)));
   const box = $("#config");
   const fxc = typeof FacilityUI !== "undefined" ? FacilityUI.context() : null, diffDefault = fxc ? fxc.difficulty : settings.difficulty;
+  /* only the levels this page is made for can be chosen; the others say why not (ClinicalMatrix.js holds the list) */
+  const levelDefault = clinicalOk(diffDefault, act.id) ? diffDefault : (Object.keys(DIFFICULTIES).filter(k => clinicalOk(k, act.id))[0] || diffDefault);
+  const CMx = window.CognicopiaClinicalMatrix, offLevels = Object.keys(DIFFICULTIES).filter(k => !clinicalOk(k, act.id));
+  const levelNote = CMx && offLevels.length ? CMx.why(CLINICAL_STAGE[offLevels[0]], act.id, "builder") : "";
   box.hidden = false;
   box.innerHTML = `
     <div class="config-grid">
@@ -12659,7 +12884,8 @@ function openConfig(actId, scroll){
           <div class="field"><label for="cfgDate">Date</label><input id="cfgDate" type="date" value="${todayISO()}"></div>
         </div>`}
         <fieldset class="field"><legend>Difficulty</legend>
-          <div class="seg">${Object.keys(DIFFICULTIES).map(k => `<label><input type="radio" name="cfgDiff" value="${k}" ${k === diffDefault ? "checked" : ""}><span>${DIFFICULTIES[k].label}</span></label>`).join("")}</div>
+          <div class="seg">${Object.keys(DIFFICULTIES).map(k => `<label><input type="radio" name="cfgDiff" value="${k}" ${k === levelDefault ? "checked" : ""} ${clinicalOk(k, act.id) ? "" : "disabled"}><span>${DIFFICULTIES[k].label}</span></label>`).join("")}</div>
+          ${levelNote ? `<p class="hint" role="status">${esc(levelNote)}</p>` : ""}
           ${fxc ? `<p class="hint">Set for ${esc(fxc.group)}: ${esc(fxc.label)}.</p>` : ""}
         </fieldset>
         ${act.themed ? `<div class="field"><label for="cfgEra">Theme</label>
@@ -12700,8 +12926,9 @@ function openConfig(actId, scroll){
   form.addEventListener("input", e => {
     if (e.target.dataset && e.target.dataset.opt && e.target.type === "text"){ syncOptVisibility(act); settings.actOpts[act.id] = readOpts(act); saveSettings(); updatePreview(); }
   });
-  $("#cfgName").addEventListener("input", updatePreview);
-  $("#cfgDate").addEventListener("input", updatePreview);
+  const reseed = () => { previewSeed = dailySeedFor($("#cfgName").value, $("#cfgDate").value || todayISO(), lastNonce); updatePreview(); };
+  $("#cfgName").addEventListener("input", reseed);
+  $("#cfgDate").addEventListener("input", reseed);
   $("#cfgShuffle").addEventListener("click", () => { previewSeed = newSeed(); updatePreview(); });
   form.addEventListener("submit", e => {
     e.preventDefault();
@@ -12762,9 +12989,12 @@ function renderSettings(){
         <div class="field"><label for="setDiff">Default difficulty</label><select id="setDiff">${Object.keys(DIFFICULTIES).map(k => `<option value="${k}" ${k === settings.difficulty ? "selected" : ""}>${DIFFICULTIES[k].label}</option>`).join("")}</select></div>
         <div class="field"><label for="setEra">Default theme</label><select id="setEra">${Object.keys(ERAS).map(k => `<option value="${k}" ${k === settings.era ? "selected" : ""}>${ERAS[k]}</option>`).join("")}</select></div>
       </div>
+      <div class="field"><label for="setWing">Facility wing or unit</label>
+        <input id="setWing" type="text" maxlength="40" value="${esc(settings.wing)}" autocomplete="off" placeholder="Maple Wing">
+        <p class="hint">Printed at the top of every page, beside the date.</p></div>
       <label class="switch" for="setBW">
-        <input type="checkbox" id="setBW" ${isPureBlackAndWhitePDF ? "checked" : ""}>
-        <span><b>High Contrast Mode / Pure Black &amp; White</b><small>Printed pages only: pure black (#000000) on white (#ffffff). This screen stays exactly as it is.</small></span>
+        <input type="checkbox" id="setBW" checked disabled>
+        <span><b>Pure Black &amp; White</b><small>Always on: every printed page is pure black (#000000) on white (#ffffff), with no grey and no hairlines. This screen stays exactly as it is.</small></span>
       </label>
     </div>
     <div class="config">
@@ -12800,12 +13030,7 @@ function renderSettings(){
   $("#setVar").addEventListener("change", e => { settings.variations = clampInt(e.target.value, 1, 4, 2); e.target.value = settings.variations; saveSettings(); });
   bind("#setDiff", t => settings.difficulty = t.value);
   bind("#setEra", t => settings.era = t.value);
-  $("#setBW").addEventListener("change", e => {
-    isPureBlackAndWhitePDF = e.target.checked;     // flag only; no class on <body>, no style change
-    settings.pureBW = isPureBlackAndWhitePDF;
-    saveSettings();
-    renderBwNote();
-  });
+  bind("#setWing", t => settings.wing = t.value.replace(/[\u0000-\u001F\u007F]/g, "").slice(0, 40));
   const showLic = () => { $("#licStatus").textContent = isLicensed() ? "Licensed. Unlimited packets." : Math.max(0, FREE_RUNS - genCount()) + " of " + FREE_RUNS + " free packets left. Paid facilities enter the access code from their receipt."; };
   showLic();
   $("#setPromo").addEventListener("click", () => { if (window.CognicopiaLicense) window.CognicopiaLicense.openPromo(); });
@@ -12821,7 +13046,7 @@ function renderSettings(){
   $("#setClear").addEventListener("click", () => {
     if (!confirm("Clear the saved facility name, resident name, defaults, packet queue, Life Planner and Life Journal details from this computer?")) return;
     store.remove("cgb_settings"); store.remove("cgb_queue"); LifePlannerUI.clearSaved(); LifeJournalUI.clearSaved(); store.remove("cgb_roster");
-    settings = Object.assign({}, DEFAULT_SETTINGS, { actOpts:{} }); isPureBlackAndWhitePDF = false; queue = [];
+    settings = Object.assign({}, DEFAULT_SETTINGS, { actOpts:{} }); isPureBlackAndWhitePDF = true; queue = [];
     saveSettings(); saveQueue(); renderSettings(); renderBwNote();
     toast("Saved data cleared from this computer.");
   });
@@ -12990,6 +13215,52 @@ $("#gateUnlock").addEventListener("click", () => {
    .pure-bw if High Contrast Mode is on, and open the print window. The
    browser's own "Save as PDF" makes the file, so this works offline. */
 let printTitle = null, printReady = false, pendingEmergencyPrint = null;
+/* Every sheet's foot says "Page X of Y": a sheet marks the place with .pgno (the older sheets) or with a text "Page 1 of 1"
+   in its drawing (the activity engine's sheets); the numbers are filled in here, once the whole packet is in the print root. */
+const STAGE_MIN_LINE_PT = { early:2.25, moderate:3, advanced:4.5 };
+/* A drawing on a sheet may not print a line thinner than its stage allows; the older drawings set their own widths, so the thin ones are
+   thickened here, once the sheet is laid out and its real scale is known. */
+function enforceStrokeFloor(sh){
+  const m = /\blvl-(early|moderate|advanced)\b/.exec(sh.className || ""); if (!m) return;
+  const min = STAGE_MIN_LINE_PT[m[1]];
+  sh.querySelectorAll("svg").forEach(svg => {
+    const vb = svg.viewBox && svg.viewBox.baseVal, box = svg.getBoundingClientRect();
+    const k = vb && vb.width && box.width ? box.width / vb.width : 1;
+    svg.querySelectorAll("path,line,circle,rect,polyline,polygon,ellipse").forEach(el => {
+      if (el.closest("[data-decor]") || el.getAttribute("data-role") === "shell") return;
+      const cs = getComputedStyle(el), sw = parseFloat(cs.strokeWidth);
+      if (!cs.stroke || cs.stroke === "none" || !(sw > 0)) return;
+      if (sw * k * 0.75 < min - 0.01) el.style.strokeWidth = (min / 0.75 / k).toFixed(3) + "px";
+    });
+  });
+}
+/* High Contrast prints only black and white. A drawing's light fills (white, cream, a pale tint) stay white and its dark ones turn black;
+   the style sheet does the colouring, this marks which fills are the light ones. */
+function lightFill(v){
+  v = String(v || "").trim().toLowerCase();
+  if (!v || v === "none" || v === "transparent" || v.indexOf("url(") === 0 || v === "currentcolor") return false;
+  if (v === "white") return true;
+  let r, g, b, m = /^#([0-9a-f]{3}|[0-9a-f]{6})$/.exec(v);
+  if (m){ const h = m[1].length === 3 ? m[1].replace(/./g, c => c + c) : m[1]; r = parseInt(h.slice(0, 2), 16); g = parseInt(h.slice(2, 4), 16); b = parseInt(h.slice(4, 6), 16); }
+  else if ((m = /^rgba?\(\s*(\d+)[ ,]+(\d+)[ ,]+(\d+)/.exec(v))){ r = +m[1]; g = +m[2]; b = +m[3]; }
+  else return false;
+  return (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255 > 0.62;
+}
+function tagLightFills(sh){
+  sh.querySelectorAll("svg [fill]").forEach(el => { if (!el.hasAttribute("data-bw") && lightFill(el.getAttribute("fill"))) el.setAttribute("data-bw", "white"); });
+}
+function numberSheets(root){
+  const sheets = Array.prototype.slice.call(root.querySelectorAll(".sheet")), n = sheets.length;
+  /* the print root is hidden on screen; give it a page-sized box off screen while the lines are measured */
+  const was = root.style.cssText, hidden = getComputedStyle(root).display === "none";
+  if (hidden) root.style.cssText = "display:block;position:absolute;left:-20000px;top:0;width:8.5in;visibility:hidden";
+  try { sheets.forEach(sh => { try { tagLightFills(sh); enforceStrokeFloor(sh); } catch (e) { /* a sheet that cannot be measured keeps its own lines */ } }); }
+  finally { if (hidden) root.style.cssText = was; }
+  sheets.forEach((sh, i) => {
+    sh.querySelectorAll(".pgno").forEach(el => { el.textContent = "Page " + (i + 1) + " of " + n; });
+    sh.querySelectorAll("svg text").forEach(t => { if (/^Page \d+ of \d+$/.test(t.textContent)) t.textContent = "Page " + (i + 1) + " of " + n; });
+  });
+}
 function generatePdf(items, printOptions){
   items = Array.isArray(items) ? items : queue;
   if (!items.length) return;
@@ -13002,9 +13273,10 @@ function generatePdf(items, printOptions){
     return;
   }   // print in the embedded face, never a fallback
   const root = $("#printRoot");
-  root.className = isPureBlackAndWhitePDF ? "pure-bw" : "";
+  root.className = "pure-bw";           // every printed page is pure black on white
   const calmMode = printOptions && typeof printOptions.calmMode === "boolean" ? printOptions.calmMode : sundowningCalmActive;
   root.innerHTML = items.map(item => sheetHtml(item, calmMode)).join("");
+  numberSheets(root);                   // "Page X of Y" in every sheet's foot
   printReady = true;
   const who = (items.find(q => q.cfg.residentName) || { cfg:{} }).cfg.residentName;
   printTitle = document.title;
@@ -13121,7 +13393,7 @@ window.addEventListener("afterprint", () => {
   document.body.classList.remove("high-contrast-mode", "pure-bw");   // never on the page itself
   renderNav(); renderFacility(); renderCounts(); renderBwNote();
   CG_STORE_READY.then(() => {
-    settings = readSettings(); isPureBlackAndWhitePDF = !!settings.pureBW; queue = readQueue();
+    settings = readSettings(); isPureBlackAndWhitePDF = true; queue = readQueue();
     storeOpen = true;
     renderFacility(); renderCounts(); renderBwNote();
     const emergencyResidentId = new URLSearchParams(location.search).get("emergency");

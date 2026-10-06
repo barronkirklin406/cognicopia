@@ -29,6 +29,8 @@
 <script src="src/pcg/grammar.js"></script>
 <script src="src/pcg/puzzles.js"></script>
 <script src="src/pcg/packet.js"></script>
+<script src="src/engine/ClinicalMatrix.js"></script>
+<script src="src/engine/ClinicalActivities.js"></script>
 <script>
 /* Resident details are sealed in this browser's encrypted store
    (assets/services/secureStore.js). CG_LS stands in for localStorage:
@@ -2139,8 +2141,8 @@ html.cg-night-shift .licbadge{color:#ffedcc !important}
       <h2 id="accessibilityTitle">Visual accessibility</h2>
       <div class="accessibility-options">
         <label class="accessibility-option">
-          <input type="checkbox" id="highContrastMode">
-          <span><b>High Contrast Mode</b>Pure black and white on the printed packet. This page stays the same.</span>
+          <input type="checkbox" id="highContrastMode" checked disabled>
+          <span><b>High Contrast Mode</b>Always on: every printed page is pure black on white, with no grey and no hairlines.</span>
         </label>
         <label class="accessibility-option">
           <input type="checkbox" id="extraLargePrint">
@@ -2255,6 +2257,7 @@ html.cg-night-shift .licbadge{color:#ffedcc !important}
     <p class="hint">Tick as many as you like. Every page you pick is built from
     the details above and printed in large type.</p>
     <div class="tools">
+      <button type="button" id="suggestAct">Pick a set for this level</button>
       <button type="button" id="allAct">Select all</button>
       <button type="button" id="noneAct">Clear all</button>
     </div>
@@ -2281,6 +2284,9 @@ html.cg-night-shift .licbadge{color:#ffedcc !important}
         <span class="sub">Leave blank for this month</span></label>
         <input type="text" id="month" maxlength="40" autocomplete="off" placeholder="October 2026"></div>
     </div>
+    <div class="field"><label for="wing">Facility wing or unit
+      <span class="sub">Printed at the top of every page, with the date</span></label>
+      <input type="text" id="wing" maxlength="40" autocomplete="off" placeholder="Maple Wing"></div>
   </fieldset>
 
   <div class="saveload">
@@ -2419,6 +2425,10 @@ const STAGE = {
            mazeC:5, mazeR:6, bingo:3, dots:10, cbn:3, pop:4, rather:5, crossSize:9, crossN:5,
            clocks:2, coins:2, provHint:"blank", tracing:1, facCards:3}
 };
+
+/* One rulebook: the matrix clamps this table's grid sizes, word counts and directions to what the stage allows. */
+STAGE.early.dirs=[[1,0],[0,1],[1,1],[1,-1]];            // across, down and both slants
+window.CognicopiaClinicalMatrix.constrainLegacy(STAGE);
 
 const PRON = {
   she:{subj:"she",obj:"her",poss:"her"},
@@ -2575,7 +2585,6 @@ const ODD_SETS = [
 const NAME_PROMPTS = [
   "Name three things you would find in a kitchen.",
   "Name three flowers.",
-  ,
   "Name three farm animals.",
   "Name three things you would pack for a trip.",
   "Name three things that are round.",
@@ -4100,7 +4109,31 @@ const ACTIVITIES = [
   {id:"tracing", label:"Trace your name",
    note:"Dashed tracing letters for the resident’s own first name."},
   {id:"facsupport", label:"Activity support cards",
-   note:"Staff facilitation cards: balloon toss, rhythm, sing-along and more."}
+   note:"Staff facilitation cards: balloon toss, rhythm, sing-along and more."},
+  {id:"search-large", label:"Large word search",
+   note:"A 12 or 15 square grid of everyday words, going across, down and slanted."},
+  {id:"search-guided", label:"Guided word search",
+   note:"A small grid with words across and down; the first letter of each word is boxed."},
+  {id:"ladder", label:"Word ladder",
+   note:"Change one letter at a time to climb from one word to another, with the steps in a box."},
+  {id:"anagram", label:"Anagrams with clues",
+   note:"The mixed-up letters of a familiar word, with a clue to help."},
+  {id:"sorting", label:"Sort into two groups",
+   note:"Kitchen tools or garden tools: tick the group each one belongs to."},
+  {id:"oddone", label:"Odd one out",
+   note:"Words or pictures in rows; circle the one that does not belong."},
+  {id:"sequence", label:"Put it in order",
+   note:"Number the steps of an everyday job, with a check at the foot of the page."},
+  {id:"choose-ending", label:"Choose the ending",
+   note:"A familiar saying or pair, with two or three words to choose from."},
+  {id:"matching", label:"Match the picture",
+   note:"Classic cars, tools and household things, matched to their bold names."},
+  {id:"pathtrace", label:"Follow the path",
+   note:"A wide, winding lane to trace, for a steady hand."},
+  {id:"orientation", label:"Today: day, season and weather",
+   note:"A high-contrast page for the day of the week, the season and the weather."},
+  {id:"silhouette", label:"Shape to look at",
+   note:"A classic car or a songbird in a bold pattern or mandala frame."}
 ];
 
 const DEFAULT_ON = ["wordsearch","crossword","maze","dots","bingo","colornum",
@@ -4114,8 +4147,26 @@ const TWO_PAGERS=["talk","lifestory","name","language","popculture","facsupport"
    ================================================================= */
 
 const $ = id => document.getElementById(id);
-const rnd = n => Math.floor(Math.random()*n);
+/* Everything random in a packet comes from one seeded stream, never from Math.random. The seed is the resident's
+   first name and the calendar date (plus a version number when "a different version today" is asked for), so
+   printing at 8 AM and again at 2 PM gives the same packet, and tomorrow's is new. */
+let PACKET_RNG=null, PACKET_DATE="", PACKET_VARIANT=0;
+const prand=()=>PACKET_RNG?PACKET_RNG.next():Math.random();
+const rnd = n => Math.floor(prand()*n);
 const pick = a => a[rnd(a.length)];
+const VARIANT_KEY="cognicopia_pcg_variant";            // the same "another version today" choice the Today's Packet card keeps
+function todayIso(){ const P=window.CognicopiaPCG&&window.CognicopiaPCG.prng; if(P) return P.today().iso;
+  const n=new Date(), z=v=>String(v).padStart(2,"0"); return n.getFullYear()+"-"+z(n.getMonth()+1)+"-"+z(n.getDate()); }
+function variantMap(iso){ try{ const m=JSON.parse(lsGet(VARIANT_KEY,"null")); return m&&m.d===iso&&m.v?m:{d:iso,v:{}}; }catch(e){ return {d:iso,v:{}}; } }
+function variantKeyOf(first){ const P=window.CognicopiaPCG.prng; return P.hash32(P.nameKey(first)); }
+function dailyVariant(first){ return variantMap(todayIso()).v[variantKeyOf(first)]|0; }
+function bumpDailyVariant(first){ const iso=todayIso(), m=variantMap(iso), k=variantKeyOf(first); m.v[k]=(m.v[k]|0)+1; lsSet(VARIANT_KEY,JSON.stringify(m)); return m.v[k]; }
+function seedPacket(first){
+  const CM=window.CognicopiaClinicalMatrix;
+  PACKET_DATE=todayIso(); PACKET_VARIANT=dailyVariant(first);
+  PACKET_RNG=CM?CM.dailyRng(first,PACKET_DATE,PACKET_VARIANT,"packet"):null;
+}
+function unseedPacket(){ PACKET_RNG=null; }
 function shuffle(a){const c=a.slice();
   for(let i=c.length-1;i>0;i--){const j=rnd(i+1);[c[i],c[j]]=[c[j],c[i]];}return c;}
 /* Comma lists had no ceiling, and every entry flows into a dozen pages.
@@ -4285,9 +4336,11 @@ function wordSearch(words,size,dirs){
          travels along, and 0..size-1 for one it does not. Drawing from
          rnd(maxC) was one short on both, so the last row and the last
          column of every grid were never used. */
-      const maxC=size-(word.length-1)*dx, maxR=size-(word.length-1)*dy;
-      if(maxC<1||maxR<1) continue;
-      const c=rnd(maxC), rw=rnd(maxR);
+      const span=word.length-1;
+      /* a word running up or to the left starts that far from the top or the left edge */
+      const minC=dx<0?span:0, maxC=dx>0?size-span:size, minR=dy<0?span:0, maxR=dy>0?size-span:size;
+      if(maxC<=minC||maxR<=minR) continue;
+      const c=minC+rnd(maxC-minC), rw=minR+rnd(maxR-minR);
       let fits=true;
       for(let i=0;i<word.length;i++){
         const cur=grid[rw+i*dy][c+i*dx];
@@ -4583,21 +4636,6 @@ function motif(d,name,x,y,s,weight){
   d.setLineWidth(1);
 }
 
-/* A light frame with a small motif tucked into two corners. */
-function frame(d, name){
-  const i = 30;
-  d.setLineWidth(0.7);
-  d.setDrawColor(...DECO);
-  d.rect(i, i, PW-2*i, PH-2*i);
-  /* The two 15pt corner marks are gone. Nothing legible fits there:
-     the house mark is fine line art and turns to mush that small, and
-     a different icon in the corners to the one on the page would be a
-     second mark rather than a smaller one. The rule alone frames the
-     sheet, which is all the corners were doing. */
-  d.setDrawColor(0);
-  d.setLineWidth(1);
-}
-
 /* =================================================================
    RESIDENT NAME BANNER
    The same header at the top of every activity page in every PDF
@@ -4611,9 +4649,9 @@ function frame(d, name){
    ================================================================= */
 function drawResidentBanner(d, name, x, top, w, o){
   o = o || {};
-  const size = o.size || 32, min = o.min || 24, ls = o.labelSize || 13;
+  const size = o.size || 32, min = o.min || 24, ls = o.labelSize || 14;
   const rule = o.rule || 3, gap = o.ruleGap || 9, draw = !o.measure;
-  const label = "PREPARED ESPECIALLY FOR:";
+  const label = o.label || "PREPARED ESPECIALLY FOR:";
   name = String(name || "").trim();
   d.setFont("helvetica", "bold");
   d.setFontSize(ls);
@@ -4639,7 +4677,7 @@ function drawResidentBanner(d, name, x, top, w, o){
   }
   const ry = base + gap;
   if(draw){
-    d.setDrawColor(o.gray != null ? o.gray : 0); d.setLineWidth(rule);
+    d.setDrawColor(0); d.setLineWidth(rule);
     d.line(x, ry, x + w, ry);
     d.setDrawColor(0);
   }
@@ -4657,25 +4695,53 @@ class Doc{
     const {jsPDF}=window.jspdf;
     this.d=new jsPDF({unit:"pt",format:"letter"});
     this.started=false;
+    this.pages=[];                       // what each page is, so the shell can give it a tip: [{kind, topic}]
+    this.kind="page"; this.topic="";
+    this.skipped=[];                     // pages that could not be made (see safePage)
+    this.noFloor=false;                  // the shell sets its own (staff-sized) text after the last page
+    this.setStage("early");
+    /* The stage's type floor holds wherever a page maker sets text, not only through body(): a size between a
+       mark (under 9 pt, a number in a puzzle cell) and the floor is raised to the floor, and the late stage prints bold.
+       Staff pages keep their own sizes. */
+    const d=this.d, setSize=d.setFontSize.bind(d), setFont=d.setFont.bind(d), live=()=>!this.noFloor && !STAFF_PAGE.test(this.title||"");
+    d.setFontSize=(sz,...rest)=>setSize(live() && sz>=9 ? Math.max(sz,this.floor) : sz,...rest);
+    d.setFont=(name,style,...rest)=>setFont(name,live() && this.bold && style==="normal" ? "bold" : style,...rest);
   }
+  /* The stage's rules (src/engine/ClinicalMatrix.js): the smallest type a resident reads, whether it is bold,
+     the thinnest line and the weight of a rule. */
+  setStage(stage){
+    const CM=window.CognicopiaClinicalMatrix, S=CM.STAGES[CM.stageOf(stage)];
+    this.stage=S.id; this.floor=S.type.floor; this.bold=S.type.bold; this.minLine=S.stroke.min; this.rule=S.stroke.rule;
+    return this;
+  }
+  /* What the next pages are: the shell picks each page's tip from this. */
+  tag(kind,topic){ this.kind=kind; this.topic=topic||""; return this; }
   start(theme){
     if(this.started) this.d.addPage();
     this.started=true;
-    this.y=MARGIN+10;
+    this.y=MARGIN+20;                    // clear of the shell's header rule
     this.theme=theme;
-    if(!this.simplifiedLayout) frame(this.d, theme);
+    this.pages.push({kind:this.kind,topic:this.topic});
   }
   heading(t){
     this.title=t;
     // Every resident page (and every continuation sheet) opens with their name.
     if(this.who && !STAFF_PAGE.test(t))
-      this.y=drawResidentBanner(this.d,this.who,MARGIN,this.y-16,PW-2*MARGIN)+30;
-    this.d.setFont("helvetica","bold"); this.d.setFontSize(24);
+      this.y=drawResidentBanner(this.d,this.who,MARGIN,this.y-16,PW-2*MARGIN,
+        {labelSize:this.floor, rule:this.rule, label:this.stage==="late"?"MADE FOR:":"PREPARED ESPECIALLY FOR:"})+30;
+    this.d.setFont("helvetica","bold"); this.d.setFontSize(Math.max(24,this.floor));
     this.d.text(t,MARGIN,this.y); this.y+=14;
-    this.d.setLineWidth(2); this.d.line(MARGIN,this.y,PW-MARGIN,this.y);
+    this.d.setLineWidth(Math.max(2,this.minLine)); this.d.line(MARGIN,this.y,PW-MARGIN,this.y);
     this.y+=30;
   }
+  /* The size and weight a block of text is really set in: never under the stage's floor on a page the resident
+     reads (24 pt and bold at the late stage). Staff pages keep their own sizes. */
+  fit(size,bold){
+    if(STAFF_PAGE.test(this.title||"")) return {size,bold};
+    return {size:Math.max(size,this.floor), bold:bold||this.bold};
+  }
   body(t,{size=19,bold=false,gap=1.5,indent=0}={}){
+    ({size,bold}=this.fit(size,bold));
     this.d.setFont("helvetica",bold?"bold":"normal");
     this.d.setFontSize(size);
     /* Paginate line by line. Measuring the whole block and breaking once
@@ -4701,51 +4767,35 @@ class Doc{
     this.title=base;
   }
   gap(n=18){this.y+=n;}
-  /* Writing lines: never closer than half an inch, drawn 2 pt so they
-     read clearly to a shaky hand and survive a worn copier. */
+  /* Writing lines: never closer than half an inch, never thinner than the stage's floor, so they read
+     clearly to a shaky hand and survive a worn copier. */
   rules(n=1,g=WRITE_GAP){
     g=Math.max(g,WRITE_GAP);
-    this.d.setLineWidth(WRITE_STROKE); this.d.setDrawColor(0);
+    n=Math.max(1,Math.min(n,Math.floor((this.bottom()-this.y)/g)+1));      // never a line below the page's last usable row
+    this.d.setLineWidth(Math.max(WRITE_STROKE,this.minLine)); this.d.setDrawColor(0);
     for(let i=0;i<n;i++){this.d.line(MARGIN,this.y,PW-MARGIN,this.y);this.y+=g;}
     this.d.setLineWidth(1);
   }
   /* How tall would this block of text be, without drawing it? */
   measure(t,{size=19,bold=false,gap=1.5,indent=0}={}){
+    ({size,bold}=this.fit(size,bold));
     this.d.setFont("helvetica",bold?"bold":"normal");
     this.d.setFontSize(size);
     return this.d.splitTextToSize(t,PW-2*MARGIN-indent).length*size*gap;
   }
-  bottom(){ return PH-MARGIN-24; }
+  bottom(){ return PH-MARGIN-31; }       // 700: the tip and the foot (ClinicalMatrix.SHELL) own everything below
   room(){ return this.bottom()-this.y; }
+  /* The page's header, tip and foot are drawn once, after the last page, by shellPass(): the same shell on
+     every page of every packet. A page ends where its content ends; nothing is added to fill the space. */
+  finish(){}
+  /* The reminder for a page that has no clinical tip of its own (the staff pages): the same two lines, in the tip's place on the current page. */
   coachingFooter(){
-    const page=this.d.internal.getNumberOfPages();
-    if(this.footerPage===page) return;
-    this.footerPage=page;
-    this.d.setFont("helvetica","normal"); this.d.setFontSize(8.5);
-    this.d.setTextColor(92,99,95);
-    this.d.text("Do not ask questions or test memory. Sit beside them, place the marker in their hand, and model slow, calm breathing.",
-      PW/2,PH-MARGIN-6,{align:"center",maxWidth:PW-2*MARGIN});
-    this.d.setTextColor(0,0,0);
-  }
-  /* Close a page off with a small piece of art if it would otherwise
-     trail away into blank paper. A page should look finished. */
-  finish(){
-    this.coachingFooter();
-    if(this.simplifiedLayout) return;
-    const r=this.room();
-    if(r<=56) return;
-    /* A holiday packet keeps its seasonal drawing -- a pumpkin in
-       October is the point of choosing October. Everything else now
-       closes on the house mark. It needs more room than the old
-       line-art brain did, so a page with only a sliver left is simply
-       left alone rather than given a mark too small to read. */
-    const seasonal = this.theme && this.theme !== "brain";
-    if(seasonal){
-      motif(this.d, this.theme, PW/2, this.y+r/2, Math.min(72, r*0.44), 1.1);
-      this.d.setDrawColor(0); this.d.setLineWidth(1);
-      return;
-    }
-    logoMark(this.d, PW/2, this.y+r/2, Math.min(270, PW-2*MARGIN), r*0.84, 130);
+    const SH=window.CognicopiaClinicalMatrix.SHELL, dy=this.d.internal.pageSize.getHeight()-792;
+    this.d.setTextColor(0,0,0); this.d.setFont("helvetica","bold"); this.d.setFontSize(SH.tip.size);
+    this.d.text("Clinical Tip:",SH.left,SH.tip.y+dy);
+    this.d.setFont("helvetica","normal");
+    this.d.text("Do not ask questions or test memory. Sit beside them, place the marker in their hand,",SH.left+this.d.getTextWidth("Clinical Tip: ")+3,SH.tip.y+dy);
+    this.d.text("and model slow, calm breathing.",SH.left,SH.tip.y+dy+SH.tip.lead);
   }
   /* If the next block won't fit, carry on over the page instead of
      letting writing lines spill off the bottom. */
@@ -4753,6 +4803,21 @@ class Doc{
     if(this.y+h<=this.bottom()) return false;
     this.carry();
     return true;
+  }
+}
+
+/* Run one page maker so that a page that cannot be made never takes the packet down with it. Anything the maker
+   added is taken back out, the page is listed on the staff page, and the packet carries on. */
+function safePage(D,label,fn){
+  const d=D.d, mark=d.internal.getNumberOfPages(), n=D.pages.length, started=D.started, y=D.y, title=D.title, theme=D.theme;
+  try{ return fn(); }
+  catch(e){
+    console.error('The "'+label+'" page could not be made.',e);
+    while(d.internal.getNumberOfPages()>mark) d.deletePage(d.internal.getNumberOfPages());
+    d.setPage(mark);
+    D.pages.length=n; D.started=started; D.y=y; D.title=title; D.theme=theme;
+    D.skipped.push(label);
+    return null;
   }
 }
 
@@ -4836,10 +4901,6 @@ function coverPage(D,r,theme){
     if(theme && theme!=="brain") motif(D.d, theme, PW/2, 560, 46, 1.1);
     else logoMark(D.d, PW/2, 572, 300, 175, 130);
   }
-  D.d.setFontSize(9);
-  D.d.text("Cognicopia",MARGIN+38,PH-58);   // clear of the corner mark
-  D.d.setFontSize(8);
-  D.d.text("Connection, Cognition, Creation  |  BarronCrafts",MARGIN+38,PH-47);
 }
 
 function staffPage(D,r,sel){
@@ -4861,6 +4922,10 @@ function staffPage(D,r,sel){
   if(r.holidays.length) lines.push("Holidays: "+r.holidays.map(h=>HOLIDAYS[h].label).join(", "));
   lines.push("Level: "+r.stage+" stage");
   for(const l of lines) D.body(l,{size:16,gap:1.5,indent:18});
+  if(D.skipped.length){
+    D.gap(8);
+    D.body("Not made this time: "+D.skipped.join(", ")+". Make the packet again, or leave that page out.",{size:16,gap:1.5,indent:18});
+  }
   D.gap(18);
   D.body("How to use it:",{size:17,bold:true}); D.gap(8);
   const tips=["There is no score and no time limit. Finishing is not the point.",
@@ -4931,29 +4996,32 @@ function wordGrid(D,s,words,title,intro){
   const {grid,placed}=wordSearch(words,s.grid,s.dirs);
   D.heading(title);
   D.body(intro,{size:17});
-  D.gap(24);
-  const size=s.grid, cell=Math.min(30,(PW-2*MARGIN)/size);
-  const x0=(PW-cell*size)/2, y0=D.y;
-  D.d.setFont("helvetica","bold"); D.d.setFontSize(s.cell);
+  D.gap(18);
+  const size=s.grid, list=[...placed].sort();
+  /* The list goes in columns under the grid. The grid takes what room is left, so the list and the
+     page's tip never run into one another. */
+  const rows=Math.max(1,Math.ceil(list.length/Math.min(3,Math.ceil(list.length/4)||1)));
+  const cols=Math.max(1,Math.ceil(list.length/rows));
+  const lead=Math.round(Math.max(18,D.floor)*1.5), listH=34+30+lead*rows;
+  const cell=Math.max(16,Math.min(30,(PW-2*MARGIN)/size,(D.bottom()-D.y-listH-10)/size));
+  const x0=(PW-cell*size)/2, y0=D.y+cell*0.78;
+  D.d.setFont("helvetica","bold"); D.d.setFontSize(Math.min(s.cell,Math.floor(cell*0.78)));
   for(let rr=0;rr<size;rr++)for(let cc=0;cc<size;cc++)
     D.d.text(grid[rr][cc], x0+cc*cell+cell/2, y0+rr*cell, {align:"center"});
-  D.y=y0+size*cell+34;
+  D.y=y0+(size-1)*cell+34;
   D.d.setFont("helvetica","bold"); D.d.setFontSize(18);
   D.d.text("Find these words:",MARGIN,D.y); D.y+=30;
   D.d.setFont("helvetica","normal"); D.d.setFontSize(18);
   /* Columns were a fixed 173pt apart, so the third column started at
      x=580 on a 612pt sheet and any word in it ran off the paper. Divide
      the text column by the number of columns actually needed instead. */
-  const list=[...placed].sort();
-  const rows=Math.max(1,Math.ceil(list.length/Math.min(3,Math.ceil(list.length/4)||1)));
-  const cols=Math.max(1,Math.ceil(list.length/rows));
   const colW=(PW-2*MARGIN)/cols;
   let top=D.y;
   list.forEach((w,i)=>{
     const col=Math.floor(i/rows), row=i%rows;
-    D.d.text(w,MARGIN+col*colW,top+row*27);
+    D.d.text(w,MARGIN+col*colW,top+row*lead);
   });
-  D.y=top+27*rows;
+  D.y=top+lead*rows;
   D.finish();
   return placed;
 }
@@ -5461,70 +5529,8 @@ function triviaPage(D,r,s,theme){
    wide maze corridors, few dots, no timing and no score.
    ================================================================= */
 
-/* ---- Maze ---- */
-function makeMaze(cols,rows){
-  const g=[];
-  for(let r=0;r<rows;r++){ g.push([]);
-    for(let c=0;c<cols;c++) g[r].push({n:1,s:1,e:1,w:1,v:0}); }
-  const opp={n:"s",s:"n",e:"w",w:"e"};
-  const stack=[[0,0]]; g[0][0].v=1;
-  while(stack.length){
-    const [r,c]=stack[stack.length-1], o=[];
-    if(r>0        && !g[r-1][c].v) o.push(["n",r-1,c]);
-    if(r<rows-1   && !g[r+1][c].v) o.push(["s",r+1,c]);
-    if(c>0        && !g[r][c-1].v) o.push(["w",r,c-1]);
-    if(c<cols-1   && !g[r][c+1].v) o.push(["e",r,c+1]);
-    if(!o.length){ stack.pop(); continue; }
-    const [d,nr,nc]=o[Math.floor(Math.random()*o.length)];
-    g[r][c][d]=0; g[nr][nc][opp[d]]=0; g[nr][nc].v=1; stack.push([nr,nc]);
-  }
-  g[0][0].n=0; g[rows-1][cols-1].s=0;      // way in and way out
-  return g;
-}
-
-/* Knock a wall out of every dead end so no path ever traps anybody. */
-function braid(g,rows,cols){
-  const opp={n:"s",s:"n",e:"w",w:"e"};
-  for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){
-    const k=g[r][c];
-    if(["n","s","e","w"].filter(d=>!k[d]).length>1) continue;  // not a dead end
-    const opts=[];
-    if(r>0      && k.n) opts.push(["n",r-1,c]);
-    if(r<rows-1 && k.s) opts.push(["s",r+1,c]);
-    if(c>0      && k.w) opts.push(["w",r,c-1]);
-    if(c<cols-1 && k.e) opts.push(["e",r,c+1]);
-    if(!opts.length) continue;
-    const [d,nr,nc]=opts[Math.floor(Math.random()*opts.length)];
-    k[d]=0; g[nr][nc][opp[d]]=0;
-  }
-}
-
-function mazePage(D,r,s,theme){
-  const cols=s.mazeC, rows=s.mazeR;
-  const g=makeMaze(cols,rows);
-  // Middle and late stage get a maze with no dead ends at all.
-  if(s.mazeC<=6) braid(g,rows,cols);
-  D.start(theme);
-  D.heading("Find Your Way Through");
-  D.body("Start at the top and follow the open path down to the bottom.",{size:17});
-  D.gap(26);
-  const cell=Math.min((PW-2*MARGIN)/cols, (D.bottom()-D.y-56)/rows);
-  const x0=(PW-cell*cols)/2, y0=D.y+20;
-  D.d.setFont("helvetica","bold"); D.d.setFontSize(15);
-  D.d.text("START",x0+cell/2,y0-8,{align:"center"});
-  D.d.text("END",  x0+cell*(cols-0.5),y0+rows*cell+18,{align:"center"});
-  D.d.setLineWidth(2.4); D.d.setDrawColor(0);
-  for(let rr=0;rr<rows;rr++)for(let cc=0;cc<cols;cc++){
-    const x=x0+cc*cell, y=y0+rr*cell, k=g[rr][cc];
-    if(k.n) D.d.line(x,y,x+cell,y);
-    if(k.w) D.d.line(x,y,x,y+cell);
-    if(cc===cols-1 && k.e) D.d.line(x+cell,y,x+cell,y+cell);
-    if(rr===rows-1 && k.s) D.d.line(x,y+cell,x+cell,y+cell);
-  }
-  D.d.setLineWidth(1);
-  D.y=y0+rows*cell+34;
-  D.finish();
-}
+/* The maze is drawn by the activity engine (src/engine/ClinicalActivities.js): a long way round for the early and middle stages,
+   a wide track with few turns for the late stage. */
 
 const DOT_LIBRARY = [
   {name:"classic car", template:"car", dots:28, cue:"a Sunday drive"},
@@ -5546,7 +5552,7 @@ const DOT_LIBRARY = [
 ];
 
 function contentIndex(r,length,offset){
-  const seed=String(r.first||"")+String(r.born||"")+String(offset||0);
+  const seed=String(r.first||"")+String(r.born||"")+String(offset||0)+PACKET_DATE+"v"+PACKET_VARIANT;
   let n=0; for(const ch of seed) n=(n*31+ch.charCodeAt(0))%length;
   return n;
 }
@@ -6316,600 +6322,6 @@ function notesPage(D,r,theme){
   }
 }
 
-/* =================================================================
-   PUT IT IN ORDER  —  Montessori sequencing (seriation) page
-   Drop-in module for cognicopia.html. Depends only on things the file
-   already has: Doc, motif, plan, shuffle, pick, tradeOf, keepAllowed,
-   PRON, MARGIN, PW, PH, BOLD_ART, DECO.
-
-   WHY THIS ACTIVITY, AND WHY AT MODERATE STAGE
-   Procedural memory — the memory for how a familiar thing is done —
-   is supported by striatum and cerebellum rather than the medial
-   temporal lobe that Alzheimer's takes first. It is routinely intact
-   well into moderate impairment when episodic recall is gone. So a
-   person who cannot say what she had for breakfast can still order the
-   steps of hanging out washing, because she did it ten thousand times.
-   That is the one intact system this page is aimed at, and it is the
-   reason ordering beats recall as a moderate-stage task.
-
-   Montessori for Ageing and Dementia asks four things of a material.
-   This page is built to each of them:
-     1. ISOLATE ONE DIFFICULTY.  One procedure per page. No reading
-        comprehension load: steps are two to five concrete words, present
-        tense, no conditionals, no pronouns to resolve.
-     2. CONTROL OF ERROR IN THE MATERIAL.  The material tells the person
-        whether it is right, not a member of staff. Here that is the
-        check strip: the same picture cues, in true order, printed
-        rotated 180 degrees at the foot of the page. Turning the sheet
-        around is a deliberate act, so it does not give the answer away
-        at a glance, and checking costs nobody their dignity.
-     3. CONCRETE BEFORE ABSTRACT.  Every step carries a line drawing.
-        The page is solvable by picture alone, with the words as support.
-     4. PURPOSEFUL, ADULT, THEIRS.  The procedures come from the work
-        and life they actually had, through the same tradeOf() the rest
-        of the file uses. Nothing here is a children's task.
-   ================================================================= */
-
-/* ---- 1. THE BANK ------------------------------------------------
-   Each entry: {id, place, title, steps:[[cue, [phrasing, phrasing]], ...]}
-   `place` matches the TRADES place vocabulary already in the file, or
-   "any" for procedures nearly everyone of this generation performed.
-   Two phrasings per step: the same act, said two ways, so a resident who
-   gets this procedure again next quarter does not get the same sentences.
-   Steps are ordered CORRECTLY here. The page scrambles them.              */
-
-const SEQUENCES = [
-  /* ---- universal daily procedures ---- */
-  {id:"tea", place:"any", title:"Making a cup of tea", steps:[
-    ["kettle", ["Fill the kettle",        "Run water into the kettle"]],
-    ["steam",  ["Put it on to boil",      "Wait for it to whistle"]],
-    ["cup",    ["Pour it into the cup",   "Fill the cup"]],
-    ["jug",    ["Add the milk",           "Pour in a little milk"]]]},
-
-  {id:"washing", place:"any", title:"Washing on the line", steps:[
-    ["basin",  ["Wash the shirt",         "Wash it in the basin"]],
-    ["wring",  ["Wring the water out",    "Squeeze it out"]],
-    ["peg",    ["Peg it on the line",     "Hang it up to dry"]],
-    ["fold",   ["Fold it and put it away","Bring it in and fold it"]]]},
-
-  {id:"table", place:"any", title:"Setting the table", steps:[
-    ["cloth",  ["Wipe the table down",    "Clear the table"]],
-    ["plate",  ["Lay out the plates",     "Set a plate at each place"]],
-    ["fork",   ["Put the forks beside them","Lay the knives and forks"]],
-    ["glass",  ["Fill the glasses",       "Set out the glasses"]]]},
-
-  {id:"letter", place:"any", title:"Sending a letter", steps:[
-    ["pen",    ["Write the letter",       "Sit down and write it"]],
-    ["fold",   ["Fold the page",          "Fold it in three"]],
-    ["envelope",["Put it in the envelope","Seal the envelope"]],
-    ["stamp",  ["Put the stamp on",       "Stick on the stamp"]]]},
-
-  {id:"bed", place:"any", title:"Making the bed", steps:[
-    ["strip",  ["Take off the old sheet", "Strip the bed"]],
-    ["sheet",  ["Put the clean sheet on", "Spread the clean sheet"]],
-    ["smooth", ["Smooth it flat",         "Tuck it in at the corners"]],
-    ["pillow", ["Plump the pillow",       "Put the pillow back"]]]},
-
-  {id:"garden", place:"any", title:"Planting a seed", steps:[
-    ["spade",  ["Dig the hole",           "Turn the soil over"]],
-    ["seed",   ["Drop the seed in",       "Set the seed in the hole"]],
-    ["cover",  ["Cover it over",          "Rake the soil back"]],
-    ["can",    ["Water it",               "Give it a good drink"]]]},
-
-  {id:"pie", place:"any", title:"Baking a pie", steps:[
-    ["bowl",   ["Mix the pastry",         "Rub the butter in"]],
-    ["rolling",["Roll it out flat",       "Roll the pastry thin"]],
-    ["pie",    ["Fill it and put the lid on","Spoon in the filling"]],
-    ["oven",   ["Bake it",                "Put it in the oven"]]]},
-
-  {id:"shoes", place:"any", title:"Polishing shoes", steps:[
-    ["brush",  ["Brush off the dirt",     "Knock the dirt off"]],
-    ["tin",    ["Put the polish on",      "Take polish from the tin"]],
-    ["cloth",  ["Work it in with a cloth","Rub it in well"]],
-    ["shine",  ["Buff them up",           "Polish them till they shine"]]]},
-
-  /* ---- procedures keyed to the work they actually did ---- */
-  {id:"bread", place:"Kitchen", title:"Baking bread", steps:[
-    ["scale",  ["Weigh out the flour",    "Measure the flour"]],
-    ["bowl",   ["Mix the dough",          "Work it into a dough"]],
-    ["knead",  ["Knead it and leave it to rise","Set it aside to rise"]],
-    ["oven",   ["Bake it",                "Put it in the oven"]]]},
-
-  {id:"class", place:"Classroom", title:"Starting the school day", steps:[
-    ["bell",   ["Ring the bell",          "Call them in"]],
-    ["book",   ["Call the roll",          "Take the register"]],
-    ["paper",  ["Hand out the papers",    "Give out the work"]],
-    ["board",  ["Start the lesson",       "Begin at the board"]]]},
-
-  {id:"sew", place:"Sewing Room", title:"Sewing a seam", steps:[
-    ["needle", ["Thread the needle",      "Put the thread through"]],
-    ["pin",    ["Pin the two pieces",     "Pin it together"]],
-    ["stitch", ["Sew the seam",           "Stitch along the line"]],
-    ["iron",   ["Press it flat",          "Iron the seam open"]]]},
-
-  {id:"wood", place:"Workshop", title:"Cutting a board", steps:[
-    ["rule",   ["Measure the board",      "Measure it twice"]],
-    ["pencil", ["Mark the line",          "Draw your line"]],
-    ["saw",    ["Saw along the line",     "Cut it through"]],
-    ["sand",   ["Sand the edge smooth",   "Take the rough edge off"]]]},
-
-  {id:"oil", place:"Garage", title:"Changing the oil", steps:[
-    ["hood",   ["Lift the hood",          "Open her up"]],
-    ["drain",  ["Drain the old oil",      "Let the old oil out"]],
-    ["pour",   ["Pour the new oil in",    "Fill her with clean oil"]],
-    ["dip",    ["Check the dipstick",     "Check the level"]]]},
-
-  {id:"mail", place:"Office", title:"Dealing with the post", steps:[
-    ["envelope",["Open the mail",         "Slit the envelopes open"]],
-    ["tray",   ["Sort it into the trays", "Put it in the right tray"]],
-    ["pen",    ["Write the reply",        "Answer it"]],
-    ["file",   ["File the copy",          "Put the copy away"]]]},
-
-  {id:"ward", place:"Hospital", title:"Getting the ward ready", steps:[
-    ["basin",  ["Wash your hands",        "Scrub up"]],
-    ["sheet",  ["Make up the bed",        "Put clean linen on"]],
-    ["roll",   ["Roll the bandages",      "Roll them and stack them"]],
-    ["tray",   ["Set out the tray",       "Lay the tray up"]]]},
-
-  {id:"chapel", place:"Church", title:"Getting ready for Sunday", steps:[
-    ["bell",   ["Ring the bell",          "Toll the bell"]],
-    ["book",   ["Hand out the hymnals",   "Put a hymn book at each seat"]],
-    ["candle", ["Light the candles",      "Light them up front"]],
-    ["sing",   ["Start the singing",      "Strike up the first hymn"]]]},
-
-  {id:"field", place:"Farm", title:"Morning in the barn", steps:[
-    ["lamp",   ["Light the lamp",         "Out before daylight"]],
-    ["feed",   ["Feed the stock",         "Put the feed out"]],
-    ["pail",   ["Do the milking",         "Fill the pail"]],
-    ["strain", ["Strain it and cool it",  "Carry it in to cool"]]]},
-
-  {id:"quilt", place:"Sewing Room", title:"Piecing a quilt block", steps:[
-    ["cut",    ["Cut the squares",        "Cut your pieces"]],
-    ["pin",    ["Pin them together",      "Lay them out and pin"]],
-    ["stitch", ["Sew the seam",           "Run the seam through"]],
-    ["iron",   ["Press it flat",          "Press the seams open"]]]}
-];
-
-/* ---- 2. THE CUE GLYPHS ------------------------------------------
-   Drawn in the same idiom as motif(): primitives only, no fill, sized
-   from a single `s`, centred on (x,y).
-
-   HIGH-CONTRAST RULES, and why each one is here
-     * Pure black, never the DECO grey. DECO is 168,168,168 — about 34%
-       contrast on white. Care facilities photocopy packets, often from a
-       copy; grey line art is gone by the third generation. Everything on
-       this page that the resident has to read or act on is 0,0,0.
-     * Stroke 2.6pt at full size, floored at 2.0. Below ~1.5pt a line
-       both breaks up under photocopying and falls under the angular
-       width that ageing contrast sensitivity resolves comfortably.
-     * Silhouette over detail. Reduced contrast sensitivity costs interior
-       detail first, so each glyph is recognisable from its outline alone.
-       No glyph carries a mark it would not survive losing.
-     * No glyph depends on colour, orientation or relative size to be
-       read, so nothing is lost in black and white or upside down.       */
-
-function cue(d, name, x, y, s){
-  const w = Math.max(2.0, s*0.115);
-  d.setLineWidth(w);
-  d.setDrawColor(0,0,0);
-  const L=(a,b,c,e)=>d.line(x+a*s, y+b*s, x+c*s, y+e*s);
-  const C=(a,b,r)=>d.circle(x+a*s, y+b*s, r*s);
-  const BOX=(a,b,c,e)=>{ L(a,b,c,b); L(c,b,c,e); L(c,e,a,e); L(a,e,a,b); };
-  const ARC=(a,b,r,t0,t1,n)=>{                  // poly-line arc, cheap and crisp
-    n=n||10; let px=null,py=null;
-    for(let i=0;i<=n;i++){
-      const t=t0+(t1-t0)*i/n;
-      const cx=a+Math.cos(t)*r, cy=b+Math.sin(t)*r;
-      if(px!==null) L(px,py,cx,cy);
-      px=cx; py=cy;
-    }
-  };
-  switch(name){
-    case "kettle":  BOX(-.55,-.15,.45,.55); L(-.55,-.15,-.75,-.35);
-                    L(.45,.1,.75,.1); L(-.3,-.15,-.1,-.5); L(-.1,-.5,.2,-.15); break;
-    case "steam":   BOX(-.5,0,.5,.55); ARC(-.2,-.35,.22,-1.9,1.2,8);
-                    ARC(.2,-.35,.22,-1.9,1.2,8); break;
-    case "cup":     L(-.45,-.35,-.3,.5); L(.45,-.35,.3,.5); L(-.3,.5,.3,.5);
-                    L(-.45,-.35,.45,-.35); ARC(.5,0,.28,-1.2,1.2,8); break;
-    case "jug":     BOX(-.4,-.2,.4,.55); L(-.4,-.2,-.55,-.45); L(-.55,-.45,.2,-.45);
-                    L(.4,0,.62,.15); break;
-    case "basin":   ARC(0,-.1,.55,0,Math.PI,12); L(-.55,-.1,.55,-.1);
-                    C(-.15,-.4,.1); C(.2,-.45,.07); break;
-    case "wring":   ARC(-.1,0,.4,-1.6,1.6,10); ARC(.1,0,.4,1.6,4.7,10);
-                    L(-.6,-.5,.6,.5); break;
-    case "peg":     L(-.7,-.4,.7,-.4); L(-.2,-.4,-.2,.55); L(.2,-.4,.2,.55);
-                    L(-.2,.1,.2,.1); break;
-    case "fold":    L(-.6,.3,.6,.3); L(-.6,.3,-.6,-.4); L(.6,.3,.6,-.4);
-                    L(-.6,-.4,0,-.05); L(.6,-.4,0,-.05); break;
-    case "cloth":   L(-.6,-.35,.6,-.5); L(.6,-.5,.55,.5); L(.55,.5,-.55,.45);
-                    L(-.55,.45,-.6,-.35); L(-.3,-.42,-.25,.47); break;
-    case "plate":   C(0,0,.55); C(0,0,.38); break;
-    case "fork":    L(-.35,-.55,-.35,.55); L(-.5,-.55,-.5,-.1); L(-.2,-.55,-.2,-.1);
-                    L(-.5,-.1,-.2,-.1); L(.35,-.55,.35,.55);
-                    ARC(.35,-.3,.16,0,Math.PI*2,10); break;
-    case "glass":   L(-.35,-.5,-.25,.5); L(.35,-.5,.25,.5); L(-.25,.5,.25,.5);
-                    L(-.31,-.05,.31,-.05); break;
-    case "pen":     L(-.5,.5,.35,-.4); L(-.5,.5,-.3,.42); L(-.3,.42,.5,-.3);
-                    L(.35,-.4,.5,-.3); L(-.5,.5,-.42,.28); break;
-    case "envelope":BOX(-.6,-.4,.6,.4); L(-.6,-.4,0,.1); L(.6,-.4,0,.1); break;
-    case "stamp":   BOX(-.45,-.45,.45,.45); BOX(-.28,-.28,.28,.28);
-                    for(let i=-1;i<=1;i++){ C(i*.3,-.45,.06); C(i*.3,.45,.06);
-                                            C(-.45,i*.3,.06); C(.45,i*.3,.06); } break;
-    case "strip":   L(-.6,.4,.6,.4); L(-.6,.4,-.45,-.3); L(.6,.4,.45,-.3);
-                    ARC(0,-.3,.45,Math.PI,Math.PI*2,10); break;
-    case "sheet":   BOX(-.62,-.3,.62,.45); L(-.62,-.05,.62,-.05);
-                    L(-.62,-.3,-.45,-.48); L(.62,-.3,.45,-.48); break;
-    case "smooth":  L(-.62,.25,.62,.25); L(-.62,.25,-.62,-.15); L(.62,.25,.62,-.15);
-                    ARC(-.3,-.15,.3,Math.PI,Math.PI*2,8);
-                    ARC(.3,-.15,.3,Math.PI,Math.PI*2,8); break;
-    case "pillow":  ARC(0,0,.5,0,Math.PI*2,16); L(-.35,-.35,.35,.35); break;
-    case "spade":   L(0,-.6,0,.15); L(-.18,-.6,.18,-.6);
-                    L(-.35,.15,.35,.15); L(-.35,.15,-.25,.55);
-                    L(.35,.15,.25,.55); L(-.25,.55,.25,.55); break;
-    case "seed":    ARC(0,0,.3,0,Math.PI*2,14); L(0,-.3,0,-.6);
-                    L(0,-.45,.25,-.6); L(0,-.45,-.25,-.6); break;
-    case "cover":   L(-.65,.2,.65,.2); L(-.4,.2,-.4,-.3); L(0,.2,0,-.45);
-                    L(.4,.2,.4,-.3); break;
-    case "can":     BOX(-.5,-.15,.25,.5); L(.25,0,.72,-.35); L(.62,-.45,.82,-.25);
-                    L(-.5,-.15,-.3,-.45); L(-.3,-.45,.1,-.45); break;
-    case "bowl":    ARC(0,-.15,.55,0,Math.PI,12); L(-.55,-.15,.55,-.15);
-                    ARC(-.1,-.35,.2,Math.PI,Math.PI*2,8); break;
-    case "rolling": L(-.5,-.2,.5,-.2); L(-.5,.2,.5,.2); L(-.5,-.2,-.5,.2);
-                    L(.5,-.2,.5,.2); L(-.5,0,-.8,0); L(.5,0,.8,0); break;
-    case "pie":     ARC(0,.1,.55,Math.PI,Math.PI*2,12); L(-.55,.1,.55,.1);
-                    L(-.65,.1,.65,.1); L(-.2,-.2,-.05,-.35); L(.2,-.2,.35,-.35); break;
-    case "oven":    BOX(-.55,-.5,.55,.55); L(-.55,-.15,.55,-.15);
-                    ARC(0,.2,.25,0,Math.PI*2,12); C(-.35,-.33,.07); C(.35,-.33,.07); break;
-    case "brush":   BOX(-.55,-.35,.55,0); for(let i=-2;i<=2;i++) L(i*.22,0,i*.22,.45); break;
-    case "tin":     ARC(0,-.25,.45,0,Math.PI*2,14); BOX(-.45,-.25,.45,.35); break;
-    case "shine":   ARC(0,.15,.45,Math.PI,Math.PI*2,10); L(-.45,.15,.45,.15);
-                    L(.15,-.45,.3,-.6); L(.35,-.4,.55,-.45); L(-.05,-.45,-.05,-.65); break;
-    case "scale":   L(0,-.6,0,.3); L(-.5,.3,.5,.3); L(-.45,-.6,.45,-.6);
-                    ARC(-.45,-.6,.22,0,Math.PI,8); ARC(.45,-.6,.22,0,Math.PI,8); break;
-    case "knead":   ARC(0,.1,.45,Math.PI,Math.PI*2,12); L(-.45,.1,.45,.1);
-                    C(-.55,-.2,.14); C(.55,-.2,.14); break;
-    case "bell":    ARC(0,.1,.45,Math.PI,Math.PI*2,12); L(-.5,.1,.5,.1);
-                    C(0,.28,.12); L(0,-.35,0,-.55); break;
-    case "book":    L(0,-.4,0,.45); L(0,-.4,-.6,-.28); L(-.6,-.28,-.6,.45);
-                    L(-.6,.45,0,.45); L(0,-.4,.6,-.28); L(.6,-.28,.6,.45);
-                    L(.6,.45,0,.45); break;
-    case "paper":   BOX(-.42,-.5,.42,.5); L(-.28,-.25,.28,-.25);
-                    L(-.28,0,.28,0); L(-.28,.25,.1,.25); break;
-    case "board":   BOX(-.65,-.45,.65,.4); L(-.4,-.2,.4,-.2); L(-.4,.05,.2,.05); break;
-    case "needle":  L(-.55,.5,.5,-.45); ARC(.5,-.5,.12,0,Math.PI*2,10);
-                    ARC(-.3,.3,.25,-1,2.5,8); break;
-    case "pin":     L(-.5,.45,.45,-.35); C(.5,-.42,.12); L(-.5,.45,-.35,.4); break;
-    case "stitch":  L(-.65,0,.65,0);
-                    for(let i=-2;i<=2;i++) L(i*.26,-.22,i*.26+.13,.22); break;
-    case "iron":    L(-.55,.35,.5,.35); L(-.55,.35,-.3,-.05); L(-.3,-.05,.3,-.05);
-                    L(.3,-.05,.5,.35); ARC(0,-.1,.3,Math.PI,Math.PI*2,8);
-                    L(-.3,-.4,.3,-.4); break;
-    case "rule":    BOX(-.7,-.18,.7,.18);
-                    for(let i=-2;i<=2;i++) L(i*.28,-.18,i*.28,0); break;
-    case "pencil":  L(-.6,.45,.3,-.4); L(-.6,.45,-.5,.2); L(-.5,.2,.45,-.25);
-                    L(.3,-.4,.45,-.25); L(.2,-.28,.35,-.15); break;
-    case "saw":     L(-.65,-.25,.6,-.25); L(-.65,-.25,-.65,-.45); L(.6,-.25,.6,-.45);
-                    for(let i=0;i<6;i++) L(-.6+i*.22,-.25,-.49+i*.22,.05); break;
-    case "sand":    BOX(-.5,-.3,.5,.15); ARC(-.2,.35,.18,Math.PI,Math.PI*2,8);
-                    ARC(.2,.35,.18,Math.PI,Math.PI*2,8); break;
-    case "hood":    ARC(0,.35,.6,Math.PI,Math.PI*2,12); L(-.6,.35,.6,.35);
-                    L(-.35,-.15,-.1,-.55); L(-.1,-.55,.45,-.4); break;
-    case "drain":   BOX(-.45,-.5,.45,.15); L(0,.15,0,.4); C(0,.5,.12);
-                    L(-.25,-.5,.25,-.5); break;
-    case "pour":    L(-.45,-.45,-.25,.35); L(.45,-.45,.25,.35); L(-.25,.35,.25,.35);
-                    L(-.45,-.45,.45,-.45); ARC(0,.5,.2,Math.PI,Math.PI*2,8); break;
-    case "dip":     L(-.1,-.6,.1,.5); ARC(.15,-.6,.18,0,Math.PI*2,10);
-                    L(-.05,.15,.08,.15); L(-.03,.32,.1,.32); break;
-    case "tray":    L(-.65,-.2,.65,-.2); L(-.65,-.2,-.5,.3); L(.65,-.2,.5,.3);
-                    L(-.5,.3,.5,.3); L(-.75,-.2,-.65,-.35); L(.75,-.2,.65,-.35); break;
-    case "file":    BOX(-.5,-.3,.5,.5); L(-.5,-.3,-.2,-.5); L(-.2,-.5,.1,-.3);
-                    L(-.3,0,.3,0); L(-.3,.22,.3,.22); break;
-    case "roll":    ARC(0,0,.45,0,Math.PI*2,16); ARC(0,0,.22,0,Math.PI*2,10);
-                    L(.45,0,.75,-.15); break;
-    case "candle":  BOX(-.22,-.2,.22,.55); L(0,-.2,0,-.42);
-                    ARC(0,-.55,.16,0,Math.PI*2,10); break;
-    case "sing":    ARC(-.2,.3,.2,0,Math.PI*2,10); L(0,.3,0,-.45);
-                    L(0,-.45,.5,-.6); L(0,-.2,.5,-.35); break;
-    case "lamp":    ARC(0,-.1,.32,0,Math.PI*2,12); L(-.42,-.1,-.32,-.1);
-                    BOX(-.22,.2,.22,.5); L(-.32,-.35,.32,-.35); L(0,-.35,0,-.55); break;
-    case "feed":    L(-.5,-.4,-.2,.45); L(.5,-.4,.2,.45); L(-.2,.45,.2,.45);
-                    L(-.5,-.4,.5,-.4); for(let i=-1;i<=1;i++) L(i*.2,-.4,i*.25,-.62); break;
-    case "pail":    L(-.45,-.25,-.3,.45); L(.45,-.25,.3,.45); L(-.3,.45,.3,.45);
-                    ARC(0,-.25,.45,Math.PI,Math.PI*2,10); break;
-    case "strain":  ARC(0,-.1,.5,0,Math.PI,12); L(-.5,-.1,.5,-.1);
-                    for(let i=-1;i<=1;i++) L(i*.25,.2,i*.25,.45); break;
-    case "cut":     L(-.5,-.45,.25,.25); L(-.5,.45,.25,-.25);
-                    C(.4,.38,.14); C(.4,-.38,.14); break;
-    default:        BOX(-.45,-.45,.45,.45); L(-.45,-.45,.45,.45);
-  }
-}
-
-/* ---- 3. THE RANDOMISER -------------------------------------------
-   Math.random() cannot promise anything. It gives a different sheet most
-   of the time and an identical one occasionally, and it cannot reproduce
-   a sheet that has already been printed. Both matter here: a resident who
-   gets the same page twice in a quarter has been failed by the product,
-   and a director who loses a PDF wants that packet back, not a new one.
-
-   So: a seeded generator plus a spent-list, per resident, in localStorage.
-     * seed  = resident key + packet ordinal.  Same inputs, same sheet,
-               for ever. Regenerating last month's packet reproduces it.
-     * bag   = draw without replacement across generations. A procedure
-               cannot come up again until every other one has been used.
-               This is a guarantee, not a probability.
-   The store is tiny (a few dozen bytes per resident) and degrades to
-   plain shuffling if localStorage is unavailable.                      */
-
-function mulberry32(a){
-  return function(){
-    a |= 0; a = a + 0x6D2B79F5 | 0;
-    let t = Math.imul(a ^ a >>> 15, 1 | a);
-    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
-    return ((t ^ t >>> 14) >>> 0) / 4294967296;
-  };
-}
-function seedFrom(str){
-  let h = 2166136261 >>> 0;
-  for(let i=0;i<str.length;i++){ h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); }
-  return h >>> 0;
-}
-function residentKey(r){
-  return [r.first, r.last, r.born, r.town, r.job]
-           .map(x=>String(x||"").trim().toLowerCase()).join("|");
-}
-/* The name a resident's sheet counters are stored under: a hash of
-   residentKey, so no name, birth year or hometown sits in plain text in
-   localStorage. (Counters stored under the plain key before are moved.) */
-function seqHash(str){
-  let h1=0xdeadbeef, h2=0x41c6ce57;
-  for(let i=0;i<str.length;i++){ const c=str.charCodeAt(i); h1=Math.imul(h1^c, 2654435761); h2=Math.imul(h2^c, 1597334677); }
-  h1=Math.imul(h1^(h1>>>16), 2246822507)^Math.imul(h2^(h2>>>13), 3266489909);
-  h2=Math.imul(h2^(h2>>>16), 2246822507)^Math.imul(h1^(h1>>>13), 3266489909);
-  return (h2>>>0).toString(16).padStart(8,"0")+(h1>>>0).toString(16).padStart(8,"0");
-}
-function seqStoreKey(prefix, key){ return prefix+seqHash(key); }
-(function moveSeqCounters(){
-  try{
-    const old=[];
-    for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if(k && /^cc_seq_(n|bag)_/.test(k) && k.indexOf("|")>=0) old.push(k); }
-    old.forEach(k=>{
-      const m=/^(cc_seq_(?:n|bag)_)(.*)$/.exec(k), to=seqStoreKey(m[1], m[2]);
-      if(localStorage.getItem(to)==null) localStorage.setItem(to, localStorage.getItem(k));
-      localStorage.removeItem(k);
-    });
-  }catch(e){}
-})();
-/* ---- the variant space ----
-   A sheet is not just "which procedure". It is:
-       procedure  x  which phrasing each step used  x  how it was scrambled
-   Enumerate that space and draw an index out of it WITHOUT REPLACEMENT,
-   and "no two sheets alike" stops being a probability and becomes a
-   property. For n steps with two phrasings each the space is
-   2^n * D(n), where D is the derangement count:
-       n=3  ->   8 *  2 =    16 sheets per procedure
-       n=4  ->  16 *  9 =   144
-       n=5  ->  32 * 44 = 1,408
-   Times the procedures a given resident is eligible for. At one packet a
-   month, a moderate-stage resident with nine eligible procedures has
-   1,296 distinct sheets: a hundred and eight years before the bag has to
-   be refilled, and it refills in a new order when it does.             */
-
-/* All derangements of n items, generated once and cached. n is 3..6, so
-   the brute-force enumeration is trivial and runs in microseconds. */
-const DERANGE_CACHE = {};
-function derangements(n){
-  if(DERANGE_CACHE[n]) return DERANGE_CACHE[n];
-  const out = [], cur = [], used = new Array(n).fill(false);
-  (function walk(i){
-    if(i === n){ out.push(cur.slice()); return; }
-    for(let v=0; v<n; v++){
-      if(used[v] || v === i) continue;      // v===i is what makes it a derangement
-      used[v] = true; cur.push(v);
-      walk(i+1);
-      cur.pop(); used[v] = false;
-    }
-  })(0);
-  return (DERANGE_CACHE[n] = out);
-}
-
-/* Draw one unused variant for this resident. Returns {procId, phrasing, perm}.
-   `spent` is a flat list of "procId#variantIndex" strings in localStorage;
-   at ~10 bytes each and a 400-entry cap it costs under 4 KB per resident.
-   `stepsOf(procId)` gives the step count for that procedure, because the
-   variant space is a function of it and procedures differ in length.   */
-function drawVariant(storeKey, procIds, stepsOf, rand){
-  let spent;
-  try{ spent = new Set(JSON.parse(localStorage.getItem(storeKey) || "[]")); }
-  catch(e){ spent = new Set(); }
-
-  // Procedures the resident has not had recently come first: the bag is
-  // drained at the procedure level before it is drained at the variant
-  // level, so month to month she meets a different job, not the same job
-  // worded differently.
-  const usedProcs = new Set([...spent].map(k => k.split("#")[0]));
-  let procPool = procIds.filter(id => !usedProcs.has(id));
-  if(!procPool.length) procPool = procIds.slice();
-
-  const make = (procId, v) => {
-    const n = stepsOf(procId), D = derangements(n);
-    return { procId, n, phrasing: v & ((1<<n)-1), perm: D[(v >> n) % D.length] };
-  };
-  const spaceOf = id => { const n = stepsOf(id); return (1<<n) * derangements(n).length; };
-
-  for(let tries=0; tries<200; tries++){
-    const procId = procPool[Math.floor(rand()*procPool.length)];
-    const v = Math.floor(rand()*spaceOf(procId));
-    const stamp = procId + "#" + v;
-    if(spent.has(stamp)) continue;
-    spent.add(stamp);
-    try{ localStorage.setItem(storeKey, JSON.stringify([...spent].slice(-400))); }catch(e){}
-    return make(procId, v);
-  }
-  // Space exhausted (or storage unavailable): empty the bag and start over.
-  try{ localStorage.setItem(storeKey, "[]"); }catch(e){}
-  const procId = procPool[Math.floor(rand()*procPool.length)];
-  return make(procId, Math.floor(rand()*spaceOf(procId)));
-}
-
-/* ---- 4. THE PAGE --------------------------------------------------
-   Layout, top to bottom:
-     heading
-     one line of instruction
-     N step cards, each: [ number box ][ step text ][ cue drawing ]
-     the check strip, rotated 180 degrees, at the foot
-   Everything is measured from D.bottom() up so the strip is always on
-   the paper, whatever the step count.                                  */
-
-function sequencePage(D, r, s, theme){
-  const stage = r.stage;
-  const nSteps = stage === "late" ? 3 : stage === "middle" ? 4 : 5;
-
-  /* Which procedures is this resident eligible for?
-     Their own trade is weighted, not merely included. A retired mechanic
-     who gets "making a cup of tea" has been given a generic worksheet
-     with extra steps; the whole claim of this product is that the page
-     came out of her life. Trade procedures are therefore repeated into
-     the pool so they come up roughly three times as often, while the
-     universal ones keep the page from going stale.                     */
-  const t = tradeOf(r.job);
-  const place = t && t.place;
-  // The avoid list is checked against the whole procedure — title and
-  // every phrasing — not just the title. A director who blocks a subject
-  // must not meet it three lines down the page.
-  const ok = q => allowed(r, q.title + " " + q.steps.map(([,p])=>p.join(" ")).join(" "))
-                  && q.steps.length >= (stage === "late" ? 3 : 4);
-  const mine = SEQUENCES.filter(q => q.place === place && ok(q));
-  const any  = SEQUENCES.filter(q => q.place === "any"  && ok(q));
-  if(!mine.length && !any.length) return false;
-  const byId = {};
-  [...mine, ...any].forEach(q => byId[q.id] = q);
-
-  // Seed: this resident, this packet number. Same two, same sheet, always.
-  const key = residentKey(r);
-  let ordinal = 0;
-  try{ ordinal = parseInt(localStorage.getItem(seqStoreKey("cc_seq_n_", key)) || "0", 10) || 0; }catch(e){}
-  const rand = mulberry32(seedFrom(key + "#" + ordinal));
-  try{ localStorage.setItem(seqStoreKey("cc_seq_n_", key), String(ordinal+1)); }catch(e){}
-
-  /* Alternate: every second packet comes from the work she actually did,
-     the rest from procedures nearly everyone of her generation performed.
-     Weighting this by probability was not good enough — a retired mechanic
-     went four months without seeing a garage. Alternating by packet number
-     makes it a property of the schedule instead of a coin toss, and it is
-     something you can say out loud to an activity director: half her
-     sequencing pages come from her own trade.                            */
-  const useTrade = mine.length > 0 && (ordinal % 2 === 0);
-  const pool = useTrade ? mine : (any.length ? any : mine);
-  const weighted = pool.map(q => q.id);
-
-  // A procedure never has fewer steps than the stage asks for, but it may
-  // have fewer than early stage would like, so the count is per procedure.
-  const stepsOf = id => Math.min(nSteps, byId[id].steps.length);
-  const pickV = drawVariant(seqStoreKey("cc_seq_bag_", key), weighted, stepsOf, rand);
-  const q = byId[pickV.procId];
-
-  // Steps: take the first n, read each step's phrasing out of the variant's
-  // bit pattern, then scramble by the variant's permutation.
-  const n = pickV.n;
-  const steps = q.steps.slice(0, n).map(([c, phr], i) =>
-    ({ cue:c, text: phr[(pickV.phrasing >> i) & 1] || phr[0] }));
-  const order = pickV.perm;                    // order[i] = which true step sits in slot i
-
-  D.start(theme);
-  D.heading("Put It In Order");
-  D.body(q.title + ". Number the boxes 1 to " + n + ", in the order you would do them.",
-         {size:17});
-  D.gap(18);
-
-  /* --- geometry ---
-     The check strip is reserved first, out of D.bottom(), so the cards
-     can never grow into it. Card height is then whatever is left,
-     divided evenly, clamped so a three-step page does not become three
-     enormous boxes and a five-step page stays above the minimum touch
-     target for the number square.                                      */
-  const STRIP_H = 92;
-  const stripTop = D.bottom() - STRIP_H;
-  const avail = stripTop - D.y - 16;
-  /* Cards grow as the stage advances. Late stage has fewer of them, so
-     the room goes into making each one bigger: a larger number square and
-     a larger drawing are worth more at that point than white space is. */
-  const maxH = stage === "late" ? 150 : stage === "middle" ? 124 : 104;
-  const cardH = Math.max(66, Math.min(maxH, (avail - (n-1)*14) / n));
-  const gap = n > 1 ? Math.min(24, (avail - n*cardH) / (n-1)) : 0;
-  const x0 = MARGIN, cardW = PW - 2*MARGIN;
-  const NUMBOX = Math.min(46, cardH - 20);      // >= 40pt: an unsteady hand
-                                               // needs a target it can land in
-
-  let y = D.y;
-  for(let i=0;i<n;i++){
-    const st = steps[order[i]];
-    // card outline: 2pt black, not the 0.9pt DECO grey, so it survives copying
-    D.d.setDrawColor(0,0,0); D.d.setLineWidth(2);
-    D.d.rect(x0, y, cardW, cardH);
-    // the number square the resident writes in
-    const bx = x0 + 14, by = y + (cardH - NUMBOX)/2;
-    D.d.setLineWidth(2.4);
-    D.d.rect(bx, by, NUMBOX, NUMBOX);
-    // step text, vertically centred, shrunk only if it truly will not fit
-    const textX = bx + NUMBOX + 20;
-    const textW = cardW - (textX - x0) - cardH - 16;
-    D.d.setFont("helvetica","bold");
-    const line = fitText(D.d, st.text, textW, 21, 15);
-    D.d.setTextColor(0,0,0);
-    D.d.text(line, textX, y + cardH/2 + 7);
-    // cue drawing, right-hand end of the card
-    cue(D.d, st.cue, x0 + cardW - cardH/2 - 8, y + cardH/2, Math.min(44, cardH*0.34));
-    y += cardH + gap;
-  }
-  D.y = stripTop;
-
-  /* --- the control of error ---
-     Same cues, true order, rotated 180 degrees at the foot of the sheet.
-     Rotating a shape about a point is just reflecting both coordinates
-     through it, so the glyph vocabulary is reused untouched: wrap the
-     document in a proxy that maps every primitive through the centre.
-     Cheaper and less brittle than a second set of upside-down drawings. */
-  D.d.setDrawColor(0,0,0); D.d.setLineWidth(1);
-  D.d.setLineDashPattern([3,3], 0);
-  D.d.line(MARGIN, stripTop, PW-MARGIN, stripTop);
-  D.d.setLineDashPattern([], 0);
-
-  const cy = stripTop + 54;
-  const cxMid = PW/2;
-  const flip = flipped(D.d, cxMid, cy);
-  const step = Math.min(76, (PW - 2*MARGIN - 40) / n);
-  for(let i=0;i<n;i++){
-    const gx = cxMid + (i - (n-1)/2) * step;
-    cue(flip, steps[i].cue, gx, cy, 21);
-    flip.setFontSize(13); flip.setFont("helvetica","bold");
-    flip.text(String(i+1), gx, cy + 32, {align:"center"});
-  }
-  D.d.setFont("helvetica","normal"); D.d.setFontSize(10);
-  D.d.setTextColor(0,0,0);
-  D.d.text("Turn the page around to check your answer.", MARGIN, stripTop + 15);
-
-  return {
-    title: q.title,
-    order: steps.map((st,i)=>(i+1)+". "+st.text),          // for the answer key
-    id: q.id+"|"+pickV.phrasing+"|"+order.join("")          // sheet identity, for testing
-  };
-}
-
-/* Reflect every primitive through (cx,cy): a 180-degree rotation.
-   Text gets jsPDF's own angle option; geometry gets mapped coordinates. */
-function flipped(d, cx, cy){
-  const mx = x => 2*cx - x, my = y => 2*cy - y;
-  return {
-    setLineWidth: w => d.setLineWidth(w),
-    setDrawColor: (...a) => d.setDrawColor(...a),
-    setFontSize:  s => d.setFontSize(s),
-    setFont:   (...a) => d.setFont(...a),
-    line: (x1,y1,x2,y2) => d.line(mx(x1),my(y1),mx(x2),my(y2)),
-    circle: (x,y,r) => d.circle(mx(x),my(y),r),
-    text: (s,x,y,o) => d.text(s, mx(x), my(y), Object.assign({}, o, {angle:180}))
-  };
-}
-
 
 /* =================================================================
    7. BUILD THE PACKET
@@ -6986,61 +6398,56 @@ function boardSample(){
 }
 
 
-function drawClock(d, cx, cy, r, h, m){
-  /* Background circle */
-  d.setFillColor(255,255,255); d.setDrawColor(30,30,30); d.setLineWidth(2.5);
+function drawClock(d, cx, cy, r, h, m, size){
+  /* The face: a bold ring, four numerals (never smaller than the stage's floor) well inside the ticks, two clear hands. */
+  d.setFillColor(255,255,255); d.setDrawColor(0); d.setLineWidth(3.5);
   d.circle(cx, cy, r, "FD");
-  /* Hour numerals at cardinal positions */
-  const nums=[12,3,6,9], pos=[[cx,cy-r+16],[cx+r-14,cy+5],[cx,cy+r-6],[cx-r+14,cy+5]];
-  d.setFont("helvetica","bold"); d.setFontSize(16); d.setTextColor(30,30,30);
-  nums.forEach((n,i)=>d.text(String(n),pos[i][0],pos[i][1],{align:"center"}));
-  /* Tick marks */
-  d.setLineWidth(1);
+  d.setLineWidth(2.5);
   for(let i=0;i<12;i++){
-    const a=(i/12)*Math.PI*2-Math.PI/2;
-    const len=i%3===0?10:5, r1=r-4, r2=r1-len;
+    const a=(i/12)*Math.PI*2-Math.PI/2, len=i%3===0?9:5, r1=r-5, r2=r1-len;
     d.line(cx+r1*Math.cos(a),cy+r1*Math.sin(a),cx+r2*Math.cos(a),cy+r2*Math.sin(a));
   }
-  /* Hour hand */
+  const ns=size||18;
+  d.setFont("helvetica","bold"); d.setFontSize(ns); d.setTextColor(0,0,0);
+  [[12,0],[3,1],[6,2],[9,3]].forEach(([n,q])=>{
+    const a=q*Math.PI/2-Math.PI/2, rr=r*0.6;
+    d.text(String(n),cx+rr*Math.cos(a),cy+rr*Math.sin(a)+ns*0.35,{align:"center"});
+  });
+  /* Hour hand, then minute hand */
   const ha=((h%12+m/60)/12)*Math.PI*2-Math.PI/2;
-  d.setLineWidth(3.5);
-  d.line(cx,cy,cx+r*0.55*Math.cos(ha),cy+r*0.55*Math.sin(ha));
-  /* Minute hand */
+  d.setLineWidth(5.5); d.setLineCap("round");
+  d.line(cx,cy,cx+r*0.42*Math.cos(ha),cy+r*0.42*Math.sin(ha));
   const ma=(m/60)*Math.PI*2-Math.PI/2;
-  d.setLineWidth(2);
-  d.line(cx,cy,cx+r*0.75*Math.cos(ma),cy+r*0.75*Math.sin(ma));
-  /* Center dot */
-  d.setFillColor(30,30,30); d.circle(cx,cy,3,"F");
+  d.setLineWidth(3.5);
+  d.line(cx,cy,cx+r*0.6*Math.cos(ma),cy+r*0.6*Math.sin(ma));
+  d.setLineCap("butt");
+  d.setFillColor(0,0,0); d.circle(cx,cy,4,"F");
   d.setTextColor(0,0,0);
 }
-
-/* Clock-reading page: residents read the time and write the label ---- */
 function clockPage(D,r,s,theme){
   D.start(theme);
   D.heading("What Time Does the Clock Show?");
   D.body("Look at each clock. Write the time on the line.",{size:17});
-  D.gap(18);
+  D.gap(14);
   const chosen=shuffle(CLOCK_TIMES).slice(0,s.clocks);
-  const PW=612, MARGIN=54;
-  /* Lay out in a 2-column grid */
-  const cols=2, cw=(PW-2*MARGIN)/cols;
-  // A row must hold the clock, its label and the writing line, or the
-  // line runs into the 12 of the clock below it.
-  const cR=54, rowH=2*cR+10+38+30;
+  /* Two clocks to a row. A row holds the clock, its label and the writing line, and the clock grows to the room there is. */
+  const cols=2, cw=(PW-2*MARGIN)/cols, rows=Math.ceil(chosen.length/cols), fs=Math.max(17,D.floor);
+  const under=26+fs*1.3+18+fs*1.2+14, rowH=Math.min(250,(D.bottom()-D.y-6)/rows);
+  const cR=Math.max(46,Math.min(74,Math.floor((rowH-under)/2)));
   chosen.forEach((t,i)=>{
     const col=i%cols, row=Math.floor(i/cols);
-    const cx=MARGIN+col*cw+cw/2, cy=D.y+row*rowH+cR+10;
-    drawClock(D.d,cx,cy,cR,t.h,t.m);
-    /* Label line below the clock */
-    D.d.setFont("helvetica","normal"); D.d.setFontSize(17);
-    D.d.text(t.label,cx,cy+cR+20,{align:"center"});
-    D.d.setLineWidth(1); D.d.setDrawColor(0);
-    const lx=cx-60, ly=cy+cR+38;
-    D.d.line(lx,ly,lx+120,ly);
-    D.d.setFontSize(13);
-    D.d.text("Write the time:",lx,ly-4);
+    const cx=MARGIN+col*cw+cw/2, cy=D.y+row*rowH+cR+6;
+    drawClock(D.d,cx,cy,cR,t.h,t.m,Math.max(16,D.floor));
+    /* What the time is for, then a line to write it on */
+    D.d.setFont("helvetica","bold"); D.d.setFontSize(fs);
+    D.d.text(t.label,cx,cy+cR+26,{align:"center"});
+    D.d.setFont("helvetica","normal"); D.d.setFontSize(fs);
+    const prompt="Write the time:", tw=D.d.getTextWidth(prompt), ly=cy+cR+26+fs*1.3+18+fs*0.9;
+    D.d.text(prompt,cx,ly-8,{align:"center"});
+    D.d.setLineWidth(Math.max(2,D.minLine)); D.d.setDrawColor(0);
+    D.d.line(cx-tw/2-10,ly,cx+tw/2+10,ly);
   });
-  D.y+=Math.ceil(chosen.length/cols)*rowH+24;
+  D.y+=rows*rowH+12;
   D.finish();
 }
 
@@ -7198,120 +6605,179 @@ function facSupportPage(D,r,s,theme){
    ================================================================= */
 
 /* mode: "full" (default) | "staffonly" */
+/* The pages made by the activity engine (src/engine/ClinicalActivities.js). Each is drawn into the room a page has
+   between its heading and its foot, and held to the stage's rules: type, lines, grids, margins and the dignity filter. */
+const ENGINE_PAGES=["search-large","search-guided","ladder","anagram","sorting","oddone","sequence","choose-ending","matching","pathtrace","orientation","silhouette"];
+function enginePage(D,r,id,theme){
+  const A=window.CognicopiaClinicalActivities, M=window.CognicopiaColoringManifest;
+  if(!A) throw new Error("The activity engine is not loaded.");
+  let subjects=null; try{ subjects=M&&M.loadSync?M.loadSync():null; }catch(e){}
+  const base={ stage:r.stage, name:r.first, date:PACKET_DATE, variant:PACKET_VARIANT, headless:true, subjects,
+    avoid:r.avoid, allow:r.faith?["faith"]:[] };
+  /* first, what the page is called, so the heading can be drawn and the room under it measured */
+  const probe=A.generate(id,Object.assign({},base,{frame:{x:MARGIN,y:200,w:PW-2*MARGIN,h:PH-MARGIN-24-200}}));
+  D.start(theme);
+  D.heading(probe.meta.title);
+  const frame={x:MARGIN,y:D.y,w:PW-2*MARGIN,h:D.bottom()-D.y};
+  const page=A.generate(id,Object.assign({},base,{frame}));
+  A.toPDF(page,D.d);
+  D.d.setLineWidth(1); D.d.setDrawColor(0); D.d.setFillColor(255,255,255); D.d.setTextColor(0,0,0);
+  D.pages[D.pages.length-1].topic=page.meta.topic||"";
+  D.y=D.bottom();
+  D.finish();
+  return page;
+}
+
 function buildPacket(r, mode){
   r=scrubProfile(r);
-  mode=mode||"full";
-  const s=STAGE[r.stage], sel=r.acts;
-  const D=new Doc();
+  seedPacket(r.first);
+  try{ return makePacket(r, mode||"full"); }
+  finally{ unseedPacket(); }
+}
+
+function makePacket(r, mode){
+  const CM=window.CognicopiaClinicalMatrix, A=window.CognicopiaClinicalActivities;
+  r.stage=CM.stageOf(r.stage);
+  const s=STAGE[r.stage];
+  /* only the pages the stage's rulebook allows: the form already turns the others off, and this holds for a saved file too */
+  const sel={}; for(const id in r.acts){ if(r.acts[id] && CM.allowed(r.stage,id,"packet")) sel[id]=true; }
+  const D=new Doc().setStage(r.stage);
   D.who=pdfSafe(r.goes||r.first||"");              // the name banner on every activity page
   D.simplifiedLayout=!!(r.accessibility && r.accessibility.simplifiedLayout);
-  if(isPureBlackAndWhitePDF) applyPureBW(D.d);   // High Contrast Mode: output pages only
+  applyPureBW(D.d,{minLine:D.minLine});            // always: pure black on white, no line thinner than the stage's floor
 
   // The first chosen holiday sets the packet's overall look.
   const theme = r.holidays.length ? HOLIDAYS[r.holidays[0]].motif : "brain";
   const holidayWords = r.holidays.flatMap(k=>HOLIDAYS[k].words);
   const key=[];
+  const topic=(r.hobbies[0]||r.job||"").toLowerCase();
+  /* one page maker, run so that a page that cannot be made never takes the packet down with it */
+  const run=(label,kind,fn,about)=>safePage(D,label,()=>{ D.tag(kind,about==null?topic:about); return fn(); });
+  const engine=id=>{
+    const e=CM.entry("packet",id), pg=run(e?e.name:id,id,()=>enginePage(D,r,id,theme),"");
+    if(pg && pg.meta.answers && pg.meta.answers.length) key.push({title:pg.meta.title,lines:A.answerLines(pg)});
+  };
 
-  coverPage(D,r,theme);
+  D.tag("cover"); coverPage(D,r,theme);
 
   /* ---- resident activity pages — skipped when printing staff guide only ---- */
   if(mode==="full"){
 
+  if(sel.orientation) engine("orientation");           // the day, the season and the weather open the packet
   if(sel.wordsearch){
-    const found=wordSearchPage(D,r,s,theme,
+    const found=run("Word search","wordsearch",()=>wordSearchPage(D,r,s,theme,
                    [holidayWords, eraWords(r.born), tradeGridWords(r),
-                    regionBits(r,"words")]);
+                    regionBits(r,"words")]));
     if(found && found.length) key.push({title:"Word search",lines:[found.join(", ")]});
   }
   if(sel.erasearch){
-    const f=eraSearchPage(D,r,s,theme,holidayWords);
+    const f=run("Second word search","erasearch",()=>eraSearchPage(D,r,s,theme,holidayWords));
     if(f && f.length) key.push({title:"Second word search",lines:[f.join(", ")]});
   }
+  if(sel["search-large"]) engine("search-large");
+  if(sel["search-guided"]) engine("search-guided");
   if(sel.crossword){
-    const c=crossPage(D,r,s,theme);
+    const c=run("Fit the words in","crossword",()=>crossPage(D,r,s,theme));
     if(c && c.length) key.push({title:"Fit the words in",lines:[c.join(", ")]});
   }
-  if(sel.maze)     mazePage(D,r,s,theme);
-  if(sel.dots)     dotsPage(D,r,s,theme);
+  if(sel.ladder) engine("ladder");
+  if(sel.anagram) engine("anagram");
+  if(sel.maze) engine("maze");
+  if(sel.pathtrace) engine("pathtrace");
+  if(sel.dots)     run("Join the dots","dots",()=>dotsPage(D,r,s,theme));
   if(sel.bingo){
-    const c=bingoPage(D,r,s,theme);
+    const c=run("Bingo card","bingo",()=>bingoPage(D,r,s,theme));
     if(c && c.length) key.push({title:"Bingo caller list (read these out)",
                                 lines:[c.join(", ")]});
   }
-  if(sel.colornum) colorNumberPage(D,r,s,theme);
+  if(sel.colornum) run("Color by number","colornum",()=>colorNumberPage(D,r,s,theme));
   if(sel.lyric){
-    const c=lyricPage(D,r,s,theme);
-    key.push({title:"Finish the line",lines:c.map(([a,b])=>a+" "+b)});
+    const c=run("Finish the line","lyric",()=>lyricPage(D,r,s,theme));
+    if(c) key.push({title:"Finish the line",lines:c.map(([a,b])=>a+" "+b)});
   }
-  if(sel.lifestory) lifePage(D,r,s,theme);
+  if(sel.lifestory) run("My life story","lifestory",()=>lifePage(D,r,s,theme));
   if(sel.sayings){
-    const c=sayingsPage(D,r,s,theme);
-    key.push({title:"Proverbs and sayings",lines:c.map(([a,b])=>a+" "+b)});
+    const c=run("Proverbs and sayings","sayings",()=>sayingsPage(D,r,s,theme));
+    if(c) key.push({title:"Proverbs and sayings",lines:c.map(([a,b])=>a+" "+b)});
   }
+  if(sel["choose-ending"]) engine("choose-ending");
   if(sel.career){
-    const c=careerPage(D,r,s,theme);
+    const c=run("Where does it belong?","career",()=>careerPage(D,r,s,theme));
     if(c) key.push({title:"Where does it belong",lines:c.map(([w,g])=>w+"  ->  "+g)});
   }
   if(sel.scramble){
-    const c=scramblePage(D,r,s,theme);
+    const c=run("Mixed-up words","scramble",()=>scramblePage(D,r,s,theme));
     if(c) key.push({title:"Mixed-up words",lines:c.map(([m,w])=>m+"  ->  "+w)});
   }
-  if(sel.name) namePage(D,r,s,theme);
+  if(sel.name) run("Name a few","name",()=>namePage(D,r,s,theme));
   if(sel.match){
-    const c=matchPage(D,r,s,theme);
+    const c=run("Two halves that go together","match",()=>matchPage(D,r,s,theme));
     if(c) key.push({title:"Two halves that go together",lines:c.map(x=>x[0])});
   }
+  if(sel.matching) engine("matching");
   if(sel.assoc){
-    const c=assocPage(D,r,s,theme);
-    key.push({title:"What goes with it",lines:c.map(([a,b])=>a+"  ->  "+b)});
+    const c=run("What goes with it?","assoc",()=>assocPage(D,r,s,theme));
+    if(c) key.push({title:"What goes with it",lines:c.map(([a,b])=>a+"  ->  "+b)});
   }
+  if(sel.sorting) engine("sorting");
   if(sel.trivia){
-    const c=triviaPage(D,r,s,theme);
+    const c=run("About you","trivia",()=>triviaPage(D,r,s,theme));
     if(c) key.push({title:"About you",lines:c.map(([q,a])=>q+"  "+a)});
   }
-  if(sel.people) peoplePage(D,r,theme);
-  if(sel.talk)   talkPage(D,r,s,theme);
-  if(sel.era)    eraPage(D,r,theme);
-  if(sel.language) langPage(D,r,s,theme);
-  if(sel.task) taskPage(D,r,s,theme);
-  if(sel.popculture) popPage(D,r,s,theme);
-  if(sel.rather) ratherPage(D,r,s,theme);
+  if(sel.sequence) engine("sequence");
+  if(sel.people) run("The people who help you","people",()=>peoplePage(D,r,theme));
+  if(sel.talk)   run("Conversation starters","talk",()=>talkPage(D,r,s,theme));
+  if(sel.era)    run("Things you may recall","era",()=>eraPage(D,r,theme));
+  if(sel.language) run("Words from home","language",()=>langPage(D,r,s,theme));
+  if(sel.task) run("Something to do","task",()=>taskPage(D,r,s,theme));
+  if(sel.popculture) run("The songs and the pictures","popculture",()=>popPage(D,r,s,theme));
+  if(sel.rather) run("Which would you rather?","rather",()=>ratherPage(D,r,s,theme));
   if(sel.odd){
-    const c=oddPage(D,r,s,theme);
-    key.push({title:"Which one doesn't belong",
+    const c=run("Which one doesn't belong","odd",()=>oddPage(D,r,s,theme));
+    if(c) key.push({title:"Which one doesn't belong",
               lines:c.map(([w,a])=>w.join(", ")+"  ->  "+a)});
   }
+  if(sel.oddone) engine("oddone");
 
-  for(const k of r.holidays) holidayPage(D,r,k);
+  for(const k of r.holidays) run(HOLIDAYS[k].label,"talk",()=>holidayPage(D,r,k));
 
-  if(sel.games) gamesPage(D,r,theme);
-  if(sel.color) colorPage(D,r,theme);
-  if(sel.mandala) mandalaPage(D,r,s,theme);
+  if(sel.games) run("Games to play together","games",()=>gamesPage(D,r,theme));
+  if(sel.color) run("Coloring page","color",()=>colorPage(D,r,theme),"");
+  if(sel.mandala) run("Color the pattern","mandala",()=>mandalaPage(D,r,s,theme),"");
+  if(sel.silhouette) engine("silhouette");
 
   /* New world-class activity modules */
-  if(sel.clocks) clockPage(D,r,s,theme);
-  if(sel.coins)  coinPage(D,r,s,theme);
+  if(sel.clocks) run("What time is it?","clocks",()=>clockPage(D,r,s,theme));
+  if(sel.coins)  run("Match the coins","coins",()=>coinPage(D,r,s,theme));
   if(sel.provhint){
-    const c=provHintPage(D,r,s,theme);
-    key.push({title:"Proverb hints",lines:c.map(([a,b])=>a+" "+b)});
+    const c=run("Finish the proverb","provhint",()=>provHintPage(D,r,s,theme));
+    if(c) key.push({title:"Proverb hints",lines:c.map(([a,b])=>a+" "+b)});
   }
-  if(sel.tracing) tracingPage(D,r,s,theme);
+  if(sel.tracing) run("Trace your name","tracing",()=>tracingPage(D,r,s,theme));
 
   } /* end mode==="full" resident pages */
 
   // Everything from here on is for staff, grouped so it can be removed
   // in one go rather than pulled out of the middle of the packet.
-  if(sel.facsupport) facSupportPage(D,r,s,theme);
-  staffPage(D,r,sel);
+  if(sel.facsupport) run("Activity support cards","support",()=>facSupportPage(D,r,s,theme),"");
+  D.tag("staff"); staffPage(D,r,sel);
   if(mode==="full"){
-    keyPage(D,key,theme);
-    if(sel.notes) notesPage(D,r,theme);
+    D.tag("key"); keyPage(D,key,theme);
+    if(sel.notes){ D.tag("notes"); notesPage(D,r,theme); }
   }
 
-  const stamp=new Date().toISOString().slice(0,10);
+  /* the shell: every page gets the resident's name, the date and the wing, a page count, and (on the pages the
+     resident works on) one clinical tip for the person beside them */
+  D.noFloor=true;
+  shellPass(D.d,{ name:pdfSafe([r.first,r.last].filter(Boolean).join(" ")), wing:pdfSafe(r.wing||""), stageLabel:CM.STAGES[r.stage].label,
+                  tipFor:tipPlan(D.pages,r.stage,r.first,PACKET_DATE,PACKET_VARIANT), reminder:false });
+  D.pages.forEach((pg,i)=>{ if(NO_TIP.test(pg.kind)){ D.d.setPage(i+1); D.coachingFooter(); } });     // a page with no tip of its own carries the reminder
+  D.d.setPage(D.d.internal.getNumberOfPages());
+
+  const stamp=PACKET_DATE;
   const slug=(r.first+"_"+r.last).replace(/[^A-Za-z0-9_]/g,"")||"Resident";
   const suffix=mode==="staffonly"?"_StaffGuide_":"_Activities_";
-  const name=slug+suffix+stamp+".pdf";
+  const name=slug+suffix+stamp+(PACKET_VARIANT?"_v"+(PACKET_VARIANT+1):"")+".pdf";
   D.d.save(name);
   return name;
 }
@@ -7562,7 +7028,7 @@ addCrewRow(); addCrewRow(); addCrewRow();
    unchanged: the profile never leaves the machine it was typed on. */
 const IO_FIELDS=["first","last","goes","born","pronoun","town","state",
   "job","spouse","kids","pets","hobbies","favs","mil","faith","lang1","lang2",
-  "mother","school","firstcar","firstjob","sibs","avoid","fac","month"];
+  "mother","school","firstcar","firstjob","sibs","avoid","fac","wing","month"];
 /* Older saved files may also carry institutionalPartner, researchSponsor
    and packetPreferences (a workbook page target) from fields that never
    reached the printed packet. applyProfile skips names it does not know,
@@ -7590,7 +7056,7 @@ function collectProfile(){
    The switch sets this flag and nothing else. The web page keeps its
    normal theme; the black-and-white treatment happens only inside the
    jsPDF document, in applyPureBW(), when a packet is built. */
-let isPureBlackAndWhitePDF = false;
+let isPureBlackAndWhitePDF = true;
 const pdfSettings = { simplifiedLayout:false };
 window.pdfSettings = pdfSettings;
 
@@ -7599,7 +7065,8 @@ function updateSimplifiedLayoutPDFSetting(){
 }
 
 function applyAccessibilityPreset(){
-  isPureBlackAndWhitePDF = $("highContrastMode").checked;
+  /* Every printed page is pure black on white, so this is no longer a choice (the switch stays ticked). */
+  isPureBlackAndWhitePDF = true; $("highContrastMode").checked = true;
   document.body.classList.remove("high-contrast-mode");   // clear anything left by an older version
   document.body.classList.toggle("extra-large-print",$("extraLargePrint").checked);
   updateSimplifiedLayoutPDFSetting();
@@ -7615,7 +7082,8 @@ function applyAccessibilityPreset(){
      - text: dark text becomes solid black; light-grey tracing text becomes
        hollow black outline letters, the standard pure-black tracing style
    Pictures (logo, staff photos) are left as they are. */
-function applyPureBW(d){
+function applyPureBW(d,o){
+  const minOf=()=>{ const m=o&&o.minLine; return (typeof m==="function"?m():m)||2.25; };   // no line is ever thinner than this (the early stage's floor, 3 px)
   const orig={
     setTextColor:d.setTextColor.bind(d), setDrawColor:d.setDrawColor.bind(d),
     setFillColor:d.setFillColor.bind(d), setLineDashPattern:d.setLineDashPattern.bind(d),
@@ -7666,13 +7134,13 @@ function applyPureBW(d){
     return d;
   };
 
-  d.setLineWidth=w=>{ st.lineWidth=w; orig.setLineWidth(w); return d; };
+  d.setLineWidth=w=>{ st.lineWidth=Math.max(w,minOf()); orig.setLineWidth(st.lineWidth); return d; };
 
   d.text=(txt,x,y,opts,...rest)=>{
     if(!st.traceText) return orig.text(txt,x,y,opts,...rest);
     // Outline letters: thin solid black stroke, no dash, then restore.
     orig.setLineDashPattern([],0);
-    orig.setLineWidth(0.9);
+    orig.setLineWidth(1.5);
     const out=orig.text(txt,x,y,Object.assign({},opts||{},{renderingMode:"stroke"}),...rest);
     orig.setLineWidth(st.lineWidth);
     if(st.autoDash) orig.setLineDashPattern([2,3],0);
@@ -7682,7 +7150,60 @@ function applyPureBW(d){
 
   // Start from a clean black-on-white state.
   orig.setTextColor(0,0,0); orig.setDrawColor(0,0,0); orig.setFillColor(255,255,255);
+  d.setLineWidth(minOf());
   return d;
+}
+
+/* =================================================================
+   THE SHELL
+   Every page of every PDF carries the same three things, drawn after the last page is made so that no page
+   maker has to think about them: the resident's name, the date and the wing in a header; one clinical tip for
+   the person beside them; "Page X of Y" and the Cognicopia name in the foot. All of it is pure black, in the
+   top and bottom margins, inside the 0.5 in a printer cannot reach. The geometry is ClinicalMatrix.SHELL.
+   o: { name, wing, stageLabel, tipFor(pageNumber) -> "Clinical Tip: ..." or "" }
+   ================================================================= */
+function shellPass(doc,o){
+  const CM=window.CognicopiaClinicalMatrix, A=window.CognicopiaClinicalActivities, SH=CM.SHELL, n=doc.internal.getNumberOfPages();
+  const PWd=doc.internal.pageSize.getWidth(), PHt=doc.internal.pageSize.getHeight(), dy=PHt-792, L=SH.left, R=PWd-CM.SAFE.right;
+  const date=o.date||PACKET_DATE||todayIso();
+  const width=(t,size,bold)=>{ doc.setFont("helvetica",bold?"bold":"normal"); doc.setFontSize(size); return doc.getTextWidth(t); };
+  for(let p=1;p<=n;p++){
+    const pi=Object.assign({name:o.name,wing:o.wing,stageLabel:o.stageLabel,tip:o.tipFor?o.tipFor(p):"",date},o.pageInfo?o.pageInfo(p):{});
+    const H=CM.headerParts({name:pi.name,date:pi.date,wing:pi.wing});
+    let rightSize=SH.header.date;
+    while(rightSize>10 && width(H.name||"Resident",SH.header.name,true)+24+width(H.right,rightSize,true)>R-L) rightSize-=0.5;
+    doc.setPage(p);
+    doc.setDrawColor(0,0,0); doc.setTextColor(0,0,0); doc.setFillColor(255,255,255);
+    /* the header */
+    doc.setFont("helvetica","bold"); doc.setFontSize(SH.header.name);
+    doc.text(fitText(doc,H.name||"Resident",R-L-width(H.right,rightSize,true)-24,SH.header.name,10),L,SH.header.y);
+    doc.setFont("helvetica","bold"); doc.setFontSize(rightSize);
+    doc.text(H.right,R,SH.header.y,{align:"right"});
+    doc.setLineWidth(SH.header.rule); doc.line(L,SH.header.ruleY,R,SH.header.ruleY);
+    /* the tip; a page with none carries the coaching reminder (unless the caller draws it itself) */
+    const tip=pi.tip||(o.reminder===false?"":COACHING_REMINDER);
+    if(tip) A.tipLines(tip,(t,size,bold)=>width(t,size,bold)).forEach(ln=>{
+      doc.setFont("helvetica",ln.bold?"bold":"normal"); doc.setFontSize(SH.tip.size);
+      doc.text(ln.text,L+ln.x,SH.tip.y+dy+ln.row*SH.tip.lead);
+    });
+    /* the foot */
+    doc.setLineWidth(SH.footer.rule); doc.line(L,SH.footer.ruleY+dy,R,SH.footer.ruleY+dy);
+    doc.setFont("helvetica","normal"); doc.setFontSize(SH.footer.size); doc.text(pi.brand||"Cognicopia",L,SH.footer.y+dy);
+    doc.setFont("helvetica","bold"); doc.setFontSize(SH.footer.page); doc.text("Page "+p+" of "+n,(L+R)/2,SH.footer.y+dy,{align:"center"});
+    doc.setFont("helvetica","normal"); doc.setFontSize(SH.footer.size); doc.text(pi.stageLabel||"",R,SH.footer.y+dy,{align:"right"});
+  }
+  doc.setPage(n);
+  doc.setLineWidth(1); doc.setFont("helvetica","normal"); doc.setFontSize(12); doc.setTextColor(0,0,0);
+}
+/* One tip for each resident page of a packet, none repeated, from the clinical frameworks in ClinicalMatrix.js.
+   pages: [{kind, topic}] in page order; tips are for the person sitting beside the resident, so staff pages get none. */
+const NO_TIP=/^(cover|staff|key|notes|form|support)$/;
+const COACHING_REMINDER="Clinical Tip: Do not ask questions or test memory. Sit beside them, place the marker in their hand, and model slow, calm breathing.";
+function tipPlan(pages,stage,name,iso,variant){
+  const CM=window.CognicopiaClinicalMatrix, rng=CM.dailyRng(name,iso,variant,"tips"), list=[];
+  pages.forEach((pg,i)=>{ if(!NO_TIP.test(pg.kind)) list.push({n:i+1,activity:pg.kind,topic:pg.topic}); });
+  const plan=CM.cuePlan(list,stage,rng,{name});
+  return n=>plan[n]?plan[n].text:"";
 }
 
 ["highContrastMode","extraLargePrint"].forEach(id=>{
@@ -7971,15 +7492,15 @@ $("addPerson").addEventListener("click", addCrewRow);
 // so 33 choices read as seven short lists.
 const PILLAR_GROUPS=[
   {id:"words", name:"Words & conversation", blurb:"Sayings, life story and talk, with no wrong answers.",
-   acts:["talk","lifestory","people","era","trivia","rather","name","sayings","provhint","match","assoc","odd","career","language"]},
+   acts:["talk","lifestory","people","era","trivia","rather","name","sayings","provhint","choose-ending","match","matching","assoc","odd","oddone","sorting","career","language","orientation"]},
   {id:"letters", name:"Letters & spelling", blurb:"Word searches, fitting words and tracing a name.",
-   acts:["wordsearch","erasearch","crossword","scramble","bingo","tracing"]},
+   acts:["wordsearch","erasearch","search-large","search-guided","crossword","ladder","anagram","scramble","bingo","tracing"]},
   {id:"numbers", name:"Numbers", blurb:"Clocks, coins and numbered dots.",
    acts:["clocks","coins","dots"]},
   {id:"coloring", name:"Coloring & art", blurb:"Bold line art in clean black outlines.",
-   acts:["color","mandala","colornum"]},
+   acts:["color","mandala","silhouette","colornum"]},
   {id:"movement", name:"Movement & hands-on", blurb:"Real jobs, games for two and a path to follow.",
-   acts:["task","games","maze"]},
+   acts:["task","games","maze","pathtrace","sequence"]},
   {id:"music", name:"Music", blurb:"Sing-alongs and the songs of their years.",
    acts:["lyric","popculture"]},
   {id:"staff", name:"For staff", blurb:"Pages for your notes and your team, not for the resident.",
@@ -8031,29 +7552,32 @@ function updatePillarCounts(){
     det.classList.toggle("has-picks", on>0);
   });
 }
-const advancedLateIds = ["crossword","scramble","odd","maze","clocks","coins"];
+/* The stage the packet will really be made for: the level ticked on the form, unless a temporary "good day / hard day"
+   override is on. */
+function effectiveStage(){
+  const st=document.querySelector('input[name="stage"]:checked'), stage=st?st.value:"early";
+  return window.CognicopiaClinicalMatrix.stageOf(window.getTemporaryActivityStage?window.getTemporaryActivityStage(stage):stage);
+}
 const lateActivityHint = document.createElement("p");
 lateActivityHint.id = "lateActivityHint";
 lateActivityHint.className = "hint";
-lateActivityHint.textContent = "Disabled to prevent cognitive overload for Late-Stage profiles.";
 lateActivityHint.hidden = true;
 actsBox.insertAdjacentElement("afterend", lateActivityHint);
+/* Pages that ask for more than is kind at the chosen level are turned off, with the reason on the page (ClinicalMatrix.js
+   holds the list). Ticking a level back restores what was ticked before. */
 function filterAdvancedLateActivities(){
-  const ctx = typeof window.getActiveResidentContext === "function" ? window.getActiveResidentContext() : null;
-  const late = !!(ctx && !ctx.isGeneric && ctx.stage === "late");
-  let disabledCount = 0;
+  const CM=window.CognicopiaClinicalMatrix, stage=effectiveStage(), off=[];
   document.querySelectorAll(".act").forEach(function(input){
-    if (advancedLateIds.indexOf(input.value) === -1) return;
     const label = input.closest("label");
-    if (late){
+    if (!CM.allowed(stage, input.value, "packet")){
       if (input.dataset.tierDisabled !== "true") input.dataset.tierSelection = String(input.checked);
       input.checked = false;
       input.disabled = true;
       input.dataset.tierDisabled = "true";
-      input.title = "Disabled to prevent cognitive overload for Late-Stage profiles.";
+      input.title = CM.why(stage, input.value, "packet");
       input.setAttribute("aria-describedby", "lateActivityHint");
       if (label){ label.classList.add("is-tier-disabled"); label.title = input.title; }
-      disabledCount++;
+      const e=CM.entry("packet", input.value); off.push(e?e.name:input.value);
     } else if (input.dataset.tierDisabled === "true"){
       input.disabled = false;
       input.checked = input.dataset.tierSelection === "true";
@@ -8064,12 +7588,22 @@ function filterAdvancedLateActivities(){
       if (label){ label.classList.remove("is-tier-disabled"); label.removeAttribute("title"); }
     }
   });
-  lateActivityHint.hidden = !late || !disabledCount;
+  lateActivityHint.hidden = !off.length;
+  lateActivityHint.textContent = off.length ? "At the "+CM.STAGES[stage].label.split(" ")[0].toLowerCase()+" level these ask for more than is kind, so they are turned off: "+off.join(", ")+"." : "";
   estimatePages();
+}
+/* One tap for a set of pages that works well together at this level. */
+function pickSuggestedSet(){
+  const CM=window.CognicopiaClinicalMatrix, stage=effectiveStage(), set=CM.suggested(stage,"packet");
+  document.querySelectorAll(".act").forEach(c=>{ if(!c.disabled) c.checked=set.indexOf(c.value)>=0; });
+  filterAdvancedLateActivities();
+  $("stageMsg").textContent="Picked "+set.length+" pages that work well together at the "+CM.STAGES[stage].label.split(" ")[0].toLowerCase()+" level. Change any you like.";
 }
 document.addEventListener("cognicopia:activeresident", filterAdvancedLateActivities);
 document.addEventListener("cognicopia:tieroverride", filterAdvancedLateActivities);
+document.addEventListener("change", e=>{ if(e.target && e.target.name==="stage") filterAdvancedLateActivities(); });
 filterAdvancedLateActivities();
+$("suggestAct").addEventListener("click",pickSuggestedSet);
 $("allAct").addEventListener("click",()=>{
   document.querySelectorAll(".act").forEach(c=>c.checked=true);
   filterAdvancedLateActivities();   // also refreshes the page estimate
@@ -8287,22 +7821,6 @@ function estimatePages(){
   if(keyed) n+=Math.ceil(keyed/(stage==="late"?5:3.5));   // shorter answers at late stage
   el.textContent="About "+n+" pages when you print it.";
 }
-/* Late stage: the crossword and the halves-matching page are where the
-   evidence is thinnest and comprehension most likely to fail, so they
-   come off when that level is chosen. She can put them back. */
-const HARD_AT_LATE=["crossword","match","scramble"];
-document.addEventListener("change", e=>{
-  if(e.target && e.target.name==="stage" && e.target.value==="late"){
-    let changed=0;
-    document.querySelectorAll(".act").forEach(c=>{
-      if(HARD_AT_LATE.includes(c.value) && c.checked){ c.checked=false; changed++; }
-    });
-    if(changed) $("stageMsg").textContent="Turned off "+changed+" page"
-      +(changed===1?"":"s")+" that tend to be too hard at this level. "
-      +"Tick them again if you want them.";
-  }
-});
-
 document.addEventListener("change", e=>{
   if(e.target && (e.target.classList.contains("act") ||
                   e.target.classList.contains("hol") ||
@@ -8483,7 +8001,7 @@ $("f").addEventListener("submit", e=>{
     firstcar:$("firstcar").value.trim(), firstjob:$("firstjob").value.trim(),
     sibs:splitList($("sibs").value),
     crew:collectCrew(), acts, holidays,
-    fac:$("fac").value.trim(),
+    fac:$("fac").value.trim(), wing:$("wing").value.trim(),
     month:$("month").value.trim()||monthNow()
   };
 
@@ -8551,7 +8069,7 @@ if(soBtn) soBtn.addEventListener("click",()=>{
     firstcar:$("firstcar").value.trim(), firstjob:$("firstjob").value.trim(),
     sibs:splitList($("sibs").value),
     crew:collectCrew(), acts:collectActs(), holidays:collectHolidays(),
-    fac:$("fac").value.trim(),
+    fac:$("fac").value.trim(), wing:$("wing").value.trim(),
     month:$("month").value.trim()||monthNow()
   };
   try{
@@ -8598,8 +8116,9 @@ if(soBtn) soBtn.addEventListener("click",()=>{
 /* Which condition card is selected in the sidebar. null until a click. */
 let currentAilment = null;
 
-/* US Letter in points, the same page the main packet uses. */
-const AIL_PAGE = { W: 612, H: 792, M: 54 };
+/* US Letter in points, the same page the main packet uses. H is where the page's own content ends (706): below it the shell's clinical tip and foot
+   (ClinicalMatrix.SHELL) own the page, and the name is in the shell's header, so a page starts at the top margin. */
+const AIL_PAGE = { W: 612, H: 706, M: 54 };
 
 /* Light grey used for tracing in errorless-learning mode. */
 const AIL_GREY = [200, 200, 200];
@@ -8896,7 +8415,7 @@ const AILMENT_DATA = {
 function ailShuffle(arr) {
   const a = arr.slice();
   for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
+    const j = Math.floor(prand() * (i + 1));
     const t = a[i]; a[i] = a[j]; a[j] = t;
   }
   return a;
@@ -8936,13 +8455,8 @@ function ailFreshPage(ctx, opts) {
     d.setFont("helvetica", ctx.boldOnly ? "bold" : "normal");
   };
   reset();
-  // The resident's name across the top margin of every activity page
-  // (not the cover, which already leads with it, or the staff guide).
-  if (ctx.who && !(opts && opts.staff)) {
-    drawResidentBanner(d, ctx.who, AIL_PAGE.M, 22, AIL_PAGE.W - 2 * AIL_PAGE.M,
-      { size: 28, min: 20, labelSize: 12, rule: Math.max(2, ctx.baseLine), ruleGap: 8 });
-    reset();
-  }
+  /* the stage's type floor applies to the resident's pages, not to the staff guide; the name is in the shell's header on every page */
+  ctx.live = !(opts && opts.staff);
 }
 
 /* Shrink the font until the text fits the width (never below minSize). */
@@ -8963,10 +8477,10 @@ function ailWordSearch(words, size) {
   ailShuffle(words).forEach(w => {
     if (w.length > size) return;
     for (let tries = 0; tries < 200; tries++) {
-      const dir = dirs[Math.floor(Math.random() * dirs.length)];
+      const dir = dirs[Math.floor(prand() * dirs.length)];
       const dr = dir[0], dc = dir[1];
-      const r0 = Math.floor(Math.random() * (size - (dr ? w.length - 1 : 0)));
-      const c0 = Math.floor(Math.random() * (size - (dc ? w.length - 1 : 0)));
+      const r0 = Math.floor(prand() * (size - (dr ? w.length - 1 : 0)));
+      const c0 = Math.floor(prand() * (size - (dc ? w.length - 1 : 0)));
       let fits = true;
       for (let k = 0; k < w.length; k++) {
         const ch = grid[r0 + dr * k][c0 + dc * k];
@@ -8981,7 +8495,7 @@ function ailWordSearch(words, size) {
   const fill = "ABCDEFGHIJKLMNOPRSTUVWY";
   for (let r = 0; r < size; r++)
     for (let c = 0; c < size; c++)
-      if (!grid[r][c]) grid[r][c] = fill[Math.floor(Math.random() * fill.length)];
+      if (!grid[r][c]) grid[r][c] = fill[Math.floor(prand() * fill.length)];
   return { grid, placed };
 }
 
@@ -8993,14 +8507,14 @@ function ailCover(ctx, key, cfg, name) {
   const body = ctx.boldOnly ? "bold" : "normal";
   ailFreshPage(ctx, { staff: true });              // the cover leads with the name itself
 
-  // Plain frame. No fill, so the Lewy body page stays pure white.
-  d.setLineWidth(Math.max(ctx.baseLine, 2));
-  d.rect(M - 18, M - 18, W - 2 * (M - 18), H - 2 * (M - 18), "S");
+  // Plain frame, inside the body (clear of the shell's header and tip). No fill, so the Lewy body page stays pure white.
+  d.setLineWidth(Math.max(ctx.baseLine, 3));
+  d.rect(M - 14, 66, W - 2 * (M - 14), H - 66 - 6, "S");
 
-  let y = 160;
+  let y = 150;
   // Logo on every cover except Lewy body (keep that page free of imagery).
   if (key !== "lewy_body" && typeof LOGO_URI !== "undefined") {
-    try { d.addImage(LOGO_URI, "PNG", W / 2 - 60, 86, 120, 93); y = 240; } catch (e) { /* logo is optional */ }
+    try { d.addImage(LOGO_URI, "PNG", W / 2 - 60, 84, 120, 93); y = 226; } catch (e) { /* logo is optional */ }
   }
 
   d.setFont("helvetica", "bold"); d.setFontSize(32);
@@ -9032,8 +8546,10 @@ function ailCover(ctx, key, cfg, name) {
   const fac = ailField("fac");
   if (fac) { ailFitText(d, fac, W - 2 * M - 40, 18, 12); d.text(fac, W / 2, y, { align: "center" }); }
 
-  d.setFont("helvetica", body); d.setFontSize(18);
-  d.text("Staff: the Facilitator Guide is on the last page.", W / 2, H - M - 30, { align: "center" });
+  ctx.live = false;                                // a line for the staff, not the resident
+  d.setFont("helvetica", "bold"); d.setFontSize(11);
+  d.text("Staff: the Facilitator Guide is on the last page.", W / 2, H - 22, { align: "center" });
+  ctx.live = true;
 }
 
 /* -----------------------------------------------------------------
@@ -9248,7 +8764,7 @@ function ailRenderLewy(ctx) {
   const countPage = () => {
     ailFreshPage(ctx);
     const y = pageHead("How many circles are on this page?");
-    const n = 3 + Math.floor(Math.random() * 4);           // 3 to 6
+    const n = 3 + Math.floor(prand() * 4);           // 3 to 6
     const slots = [];
     for (let r = 0; r < 2; r++) for (let c = 0; c < 3; c++) slots.push([M + 84 + c * 168, y + 60 + r * 170]);
     d.setLineWidth(LW);
@@ -9326,7 +8842,7 @@ function ailRenderFTD(ctx) {
     let y = head("Trivia  ·  " + t.title, "Just for fun");
     y = intro(y, "Circle one answer for each question. No score is kept. The answers are at the bottom of the page.");
     const key = [];
-    t.trivia.forEach((q, i) => {
+    t.trivia.slice(0, 3).forEach((q, i) => {
       const opts = ailShuffle(q.options);
       key.push((i + 1) + " " + String.fromCharCode(65 + opts.indexOf(q.answer)));
       d.setFont("helvetica", "bold"); d.setFontSize(16);
@@ -9342,9 +8858,10 @@ function ailRenderFTD(ctx) {
       });
       y += 14;
     });
-    d.setFont("helvetica", "normal"); d.setFontSize(11); d.setTextColor(110, 110, 110);
-    d.text("Answers:   " + key.join("     "), M, H - M);
-    d.setTextColor(0, 0, 0);
+    ctx.live = false;                                // the answers are for the staff
+    d.setFont("helvetica", "bold"); d.setFontSize(11);
+    d.text("Answers:   " + key.join("     "), M, H - 8);
+    ctx.live = true;
   };
 
   // Word search built from the theme vocabulary
@@ -9375,7 +8892,7 @@ function ailRenderFTD(ctx) {
     y = intro(y, "Shade squares in the empty grid so it matches the grid on the left. Work one row at a time.");
     const n = 8, cell = 28, gw = n * cell, lx = M, rx = W - M - gw;
     const filled = new Set();
-    while (filled.size < 22) filled.add(Math.floor(Math.random() * n * n));
+    while (filled.size < 22) filled.add(Math.floor(prand() * n * n));
     d.setFillColor(40, 40, 40);
     d.setLineWidth(1);
     for (let r = 0; r < n; r++)
@@ -9391,9 +8908,10 @@ function ailRenderFTD(ctx) {
     d.setFont("helvetica", "bold"); d.setFontSize(16);
     d.text("Keep the rhythm", M, y); y += 20;
     d.setFont("helvetica", "normal"); d.setFontSize(13); d.setTextColor(70, 70, 70);
-    d.text("Trace the grey strokes, then continue each row's pattern to the end of the line.", M, y);
+    const tr = d.splitTextToSize("Trace the grey strokes, then continue each row's pattern to the end of the line.", W - 2 * M);
+    d.text(tr, M, y);
     d.setTextColor(0, 0, 0);
-    y += 34;
+    y += 20 + tr.length * 16;
     const patterns = [["|", "/"], ["/", "\\"], ["|", "|", "/"], ["\\", "/", "|"]];
     const slot = 28, slots = Math.floor((W - 2 * M) / slot), shown = 11, sh = 26;
     patterns.forEach(p => {
@@ -9527,17 +9045,17 @@ function ailRenderLateStage(ctx) {
     ailFreshPage(ctx);
     oneWord("Color");
     d.setLineWidth(6);
-    shape(Math.random() < 0.5 ? "circle" : "square", W / 2, H / 2 + 20, 228);
+    shape(prand() < 0.5 ? "circle" : "square", W / 2, H / 2 + 20, 228);
   };
 
   const pictureCardsPage = () => {
     ailFreshPage(ctx);
     const pics = ailPick(LS.icons, 2);
-    icon(pics[0].kind, W / 2, 230);
-    icon(pics[1].kind, W / 2, 545);
+    icon(pics[0].kind, W / 2, 175);
+    icon(pics[1].kind, W / 2, 440);
     d.setFont("helvetica", "bold"); d.setFontSize(40);
-    d.text(pics[0].word, W / 2, 392, { align: "center" });
-    d.text(pics[1].word, W / 2, 712, { align: "center" });
+    d.text(pics[0].word, W / 2, 320, { align: "center" });
+    d.text(pics[1].word, W / 2, 620, { align: "center" });
   };
 
   const songs = ailPick(LS.songs, 3);
@@ -9649,7 +9167,7 @@ function ailRenderKorsakoff(ctx, name) {
     const y = head("Guided adding");
     const probs = [], seen = new Set();
     while (probs.length < 6) {
-      const a = 1 + Math.floor(Math.random() * 6), b = 1 + Math.floor(Math.random() * 5);
+      const a = 1 + Math.floor(prand() * 6), b = 1 + Math.floor(prand() * 5);
       if (seen.has(a + "+" + b)) continue;
       seen.add(a + "+" + b);
       probs.push([a, b]);
@@ -9697,40 +9215,53 @@ function generateAilmentPDF(ailmentType) {
   const cfg = AILMENT_DATA[ailmentType];
   if (!cfg) throw new Error("Unknown ailment type: " + ailmentType);
   if (!window.jspdf || !window.jspdf.jsPDF) throw new Error("jsPDF is not loaded.");
-
-  const doc = new window.jspdf.jsPDF({ unit: "pt", format: "letter" });
-  if (typeof isPureBlackAndWhitePDF !== "undefined" && isPureBlackAndWhitePDF) applyPureBW(doc);
-  const ctx = {
-    doc,
-    pages: 0,
-    baseLine: ailmentType === "lewy_body" ? 3 : 1.5,  // Lewy body: thick lines everywhere
-    boldOnly: ailmentType === "lewy_body"             // Lewy body: bold type everywhere
-  };
+  const CM = window.CognicopiaClinicalMatrix, stage = ailmentType === "late_stage" ? "late" : "middle", SQ = CM.STAGES[stage];
   const name = ailResidentName();
-  ctx.who = name;                                   // name banner on every activity page
+  seedPacket(name || "guest");                      // the same resident gets the same packet all day; tomorrow's is new
+  try {
+    const doc = new window.jspdf.jsPDF({ unit: "pt", format: "letter" });
+    applyPureBW(doc, { minLine: SQ.stroke.min });   // always pure black, and no line thinner than the stage's floor
+    const ctx = {
+      doc, live: true,
+      pages: 0,
+      baseLine: ailmentType === "lewy_body" ? 3 : 1.5,  // Lewy body: thick lines everywhere
+      boldOnly: ailmentType === "lewy_body"             // Lewy body: bold type everywhere
+    };
+    ctx.who = name;                                   // the name is in the shell's header on every page
+    /* the stage's type floor holds wherever a page maker sets text (a size under 9 pt is a mark and stays); the late stage prints bold */
+    { const setSize = doc.setFontSize.bind(doc), setFont = doc.setFont.bind(doc);
+      doc.setFontSize = (sz, ...rest) => setSize(ctx.live && sz >= 9 ? Math.max(sz, SQ.type.floor) : sz, ...rest);
+      doc.setFont = (nm, style, ...rest) => setFont(nm, ctx.live && SQ.type.bold && style === "normal" ? "bold" : style, ...rest); }
 
-  ailCover(ctx, ailmentType, cfg, name);
-  switch (ailmentType) {
-    case "vascular":   ailRenderVascular(ctx); break;
-    case "lewy_body":  ailRenderLewy(ctx); break;
-    case "ftd":        ailRenderFTD(ctx); break;
-    case "late_stage": ailRenderLateStage(ctx); break;
-    case "korsakoff":  ailRenderKorsakoff(ctx, name); break;
-  }
-  ailGuide(ctx, ailmentType);
+    ailCover(ctx, ailmentType, cfg, name);
+    switch (ailmentType) {
+      case "vascular":   ailRenderVascular(ctx); break;
+      case "lewy_body":  ailRenderLewy(ctx); break;
+      case "ftd":        ailRenderFTD(ctx); break;
+      case "late_stage": ailRenderLateStage(ctx); break;
+      case "korsakoff":  ailRenderKorsakoff(ctx, name); break;
+    }
+    const resident = doc.internal.getNumberOfPages();   // the cover and the condition pages; the guide's pages follow
+    ailGuide(ctx, ailmentType);
+    ctx.live = false;                                   // the shell sets its own (staff-sized) type
 
-  doc.setProperties({
-    title: cfg.packetTitle + (name ? " for " + name : ""),
-    subject: cfg.label + " activity packet",
-    author: "Cognicopia",
-    creator: "Cognicopia"
-  });
+    /* the shell: name, date and wing on top, a clinical tip on the resident's pages, "Page X of Y" */
+    const total = doc.internal.getNumberOfPages(), kinds = [];
+    for (let i = 0; i < total; i++) kinds.push({ kind: i === 0 ? "cover" : i < resident ? "any" : "staff", topic: "" });
+    shellPass(doc, { name: pdfSafe(name || ""), wing: pdfSafe(($("wing") || {}).value || ""), date: PACKET_DATE, stageLabel: cfg.label,
+                     tipFor: tipPlan(kinds, stage, name || "guest", PACKET_DATE, PACKET_VARIANT) });
 
-  const now = new Date();
-  const ymd = now.getFullYear() + "-" + String(now.getMonth() + 1).padStart(2, "0") + "-" + String(now.getDate()).padStart(2, "0");
-  const file = ("Cognicopia_" + cfg.fileTag + "_" + (name || "Packet") + "_" + ymd).replace(/[^A-Za-z0-9_-]+/g, "_") + ".pdf";
-  doc.save(file);
-  return file;
+    doc.setProperties({
+      title: cfg.packetTitle + (name ? " for " + name : ""),
+      subject: cfg.label + " activity packet",
+      author: "Cognicopia",
+      creator: "Cognicopia"
+    });
+
+    const file = ("Cognicopia_" + cfg.fileTag + "_" + (name || "Packet") + "_" + PACKET_DATE).replace(/[^A-Za-z0-9_-]+/g, "_") + ".pdf";
+    doc.save(file);
+    return file;
+  } finally { unseedPacket(); }
 }
 
 /* -----------------------------------------------------------------
@@ -10021,6 +9552,7 @@ function generateAilmentPDF(ailmentType) {
     setVal("mil", ctx.military.branch && ctx.military.okToMention ? ctx.military.branch : "");
     setVal("avoid", ctx.avoid.words.join(", "));
     ["faith", "mother", "school", "firstcar", "firstjob", "lang1", "lang2"].forEach(function(id){ setVal(id, ""); });
+    setVal("wing", ctx.unitNumber || "");
 
     var stage = document.querySelector('input[name="stage"][value="' + ctx.stage + '"]');
     if (stage) stage.checked = true;
@@ -11092,7 +10624,16 @@ function generateAilmentPDF(ailmentType) {
       shuffle: function(list){ var a2 = list.slice(); for (var i = a2.length - 1; i > 0; i--){ var j = Math.floor(next() * (i + 1)); var t = a2[i]; a2[i] = a2[j]; a2[j] = t; } return a2; }
     };
   }
-  function newSeed(){ return (Date.now() ^ Math.floor(Math.random() * 4294967296)) >>> 0; }
+  /* One seed per resident per day (and per "another version"), so printing a packet twice gives the same packet and
+     tomorrow's is new. Generating again for the same resident asks for another version (see generate()). */
+  function seedName(){
+    var ctx = typeof window.getActiveResidentContext === "function" ? window.getActiveResidentContext() : null;
+    return ctx && !ctx.isGeneric && ctx.name ? ctx.name : "guest";
+  }
+  function newSeed(){
+    var P = window.CognicopiaPCG && window.CognicopiaPCG.prng, name = seedName();
+    return P.seedInt(P.dailySeed(name, todayIso(), dailyVariant(name)) + "|roster");
+  }
   function lettersOnly(s){ return String(s || "").normalize ? String(s).normalize("NFD").replace(/[̀-ͯ]/g, "").toUpperCase().replace(/[^A-Z]/g, "") : String(s || "").toUpperCase().replace(/[^A-Z]/g, ""); }
   function article(noun){ return /^[aeiou]/i.test(noun) ? "an " + noun : "a " + noun; }
   function uniq(list){ var seen = {}; return list.filter(function(x){ if (seen[x]) return false; seen[x] = 1; return true; }); }
@@ -11120,7 +10661,7 @@ function generateAilmentPDF(ailmentType) {
       vision: (ctx.print && ctx.print.vision) || "large",
       motor: (ctx.print && ctx.print.motorSkills) || "",
       paper: (ctx.print && ctx.print.paper) === "a4" ? "a4" : "letter",
-      ink: (ctx.print && ctx.print.ink) === "gray" ? "gray" : "bw",
+      ink: "bw",                                     // pure black on white, whatever the print settings say
       occupation: occ ? { code:occ.code, label:occ.label } : null,
       hobbies: codes(t1.topHobbies),
       skills: codes(t2.skills && t2.skills.items),
@@ -11167,9 +10708,9 @@ function generateAilmentPDF(ailmentType) {
 
   /* ===================== 1. WORD SEARCH ===================== */
   var WS_LEVELS = {
-    early:  { size:15, count:12, dirs:[[0,1],[1,0],[1,1]], cell:0.42, font:24 },
-    middle: { size:12, count:10, dirs:[[0,1],[1,0]],       cell:0.5,  font:29 },
-    late:   { size:12, count:10, dirs:[[0,1],[1,0]],       cell:0.5,  font:30 }
+    early:  { size:12, count:10, dirs:[[0,1],[1,0],[1,1]], cell:0.5,  font:28 },
+    middle: { size:8,  count:6,  dirs:[[0,1],[1,0]],       cell:0.72, font:32 },     // 8 square at most, across and down (ClinicalMatrix)
+    late:   { size:6,  count:3,  dirs:[[0,1]],             cell:0.95, font:44 }
   };
   var FILL_LETTERS = "AAABCDEEEEFGHIIIKLLMNNOOOPRRSSSTTTUWY";
 
@@ -11233,7 +10774,7 @@ function generateAilmentPDF(ailmentType) {
   function generateWordSearch(src, rng, override){
     src = src || packetSource(); rng = rng || makeRng(newSeed());
     var L = Object.assign({}, WS_LEVELS[src.stage] || WS_LEVELS.middle);
-    if (L.size === 15 && (src.vision === "xl" || src.motor === "significant")) L = Object.assign({}, WS_LEVELS.middle, { count:10 });
+    if (L.size === 12 && src.stage === "early" && (src.vision === "xl" || src.motor === "significant")) L = { size:12, count:10, dirs:[[0,1],[1,0]], cell:0.5, font:29 };
     if (src.vision === "xl") L.font = Math.max(L.font, 31);
     if (override) L = Object.assign(L, override);          // e.g. Tablet Mode: { size:10, count:7, dirs:[...] }
     var pool = wordPool(src, rng, L.size), want = L.count;
@@ -11535,6 +11076,8 @@ function generateAilmentPDF(ailmentType) {
   function generate(){
     var o = opts();
     if (!o.cover && !o.wordsearch && !o.cards && !o.trivia){ status.textContent = "Tick at least one page to include."; return null; }
+    /* a packet already on screen for this resident: Generate again means "another version today" */
+    if (current && current.residentId === (window.activeResident ? window.activeResident.id : null)) bumpDailyVariant(seedName());
     var pk = buildProfilePacket(o);
     var pg = PAGE[pk.src.paper];
     preview.style.setProperty("--pw", pg.w); preview.style.setProperty("--ph", pg.h);
@@ -12418,11 +11961,19 @@ function generateAilmentPDF(ailmentType) {
 
   /* ---------------- tiny layout kit on top of jsPDF ---------------- */
   function Kit(d, paper, ink){
-    this.d = d; this.W = paper.w; this.H = paper.h; this.ink = ink;
+    this.d = d; this.W = paper.w; this.H = paper.h; this.ink = "bw";   // pure black on white, whatever the print settings say
     this.left = M; this.right = paper.w - M; this.width = paper.w - 2 * M;
-    this.footTop = paper.h - M - 20;               // footer rule
+    this.footTop = paper.h - 92;                   // content stops here; the shell's tip and foot (ClinicalMatrix.SHELL) own everything below
+    this.stage = "middle"; this.staff = false;
   }
-  Kit.prototype.font = function(size, style){ this.d.setFont("helvetica", style || "normal"); this.d.setFontSize(size); };
+  /* The stage's rules (ClinicalMatrix.js) for the resident's text: nothing under the type floor, and bold at the late stage. */
+  Kit.prototype.floor = function(){ var CM = window.CognicopiaClinicalMatrix; return CM.STAGES[CM.stageOf(this.stage)].type.floor; };
+  Kit.prototype.mx = function(min, v){ return Math.max(min, this.floor(), v); };
+  Kit.prototype.font = function(size, style){
+    var live = !this.staff && size >= 9;
+    this.d.setFont("helvetica", live && this.stage === "late" && (!style || style === "normal") ? "bold" : (style || "normal"));
+    this.d.setFontSize(live ? Math.max(size, this.floor()) : size);
+  };
   Kit.prototype.wrap = function(text, size, style, width){ this.font(size, style); return this.d.splitTextToSize(safe(text), width); };
   Kit.prototype.stroke = function(gray){ this.d.setDrawColor(this.ink === "gray" && gray != null ? gray : 0); };
   Kit.prototype.textLines = function(lines, x, y, size, style, align, lh){
@@ -12437,13 +11988,13 @@ function generateAilmentPDF(ailmentType) {
      with the page fit: always 32pt, the same as the printed preview. */
   function banner(k, qps, draw){
     if (!k.who || typeof window.drawResidentBanner !== "function") return M;
-    return window.drawResidentBanner(k.d, safe(k.who), M, M, k.width,
-      { size: 32, min: 24, labelSize: 13, rule: 3, gray: k.ink === "gray" ? 68 : 0, measure: !draw }) + 10;
+    return window.drawResidentBanner(k.d, safe(k.who), M, M + 10, k.width,
+      { size: 32, min: 24, labelSize: k.floor(), rule: 3, label: k.stage === "late" ? "MADE FOR:" : "PREPARED ESPECIALLY FOR:", measure: !draw }) + 10;
   }
   function header(k, s, f, qps, draw){
     var top = banner(k, qps, draw);
     // under the name banner the activity title steps down a little: the name is the hero now
-    var tSize = Math.max(k.who ? 24 : 26, (k.who ? 26 : 30) * qps * f), sSize = Math.max(16, 16 * qps * f);
+    var tSize = k.mx(k.who ? 24 : 26, (k.who ? 26 : 30) * qps * f), sSize = k.mx(16, 16 * qps * f);
     var tl = k.wrap(s.title, tSize, "bold", k.width - 12), sl = s.subtitle ? k.wrap(s.subtitle, sSize, "normal", k.width - 12) : [];
     var h = tl.length * tSize * 1.1 + (sl.length ? 4 + sl.length * sSize * 1.25 : 0) + 8;
     if (draw){
@@ -12458,24 +12009,22 @@ function generateAilmentPDF(ailmentType) {
   }
   function instructions(k, text, y, f, qps, draw){
     if (!text) return y;
-    var size = Math.max(18, 18 * qps * f), lines = k.wrap(text, size, "normal", k.width);
+    var size = k.mx(18, 18 * qps * f), lines = k.wrap(text, size, "normal", k.width);
     if (draw) k.textLines(lines, M, y + 8, size, "normal");
     return y + 8 + lines.length * size * 1.3 + 10;
   }
-  function footer(k, name, n, total){
-    k.d.setLineWidth(1); k.stroke(); k.d.line(M, k.footTop, k.right, k.footTop);
-    k.font(11, "normal"); k.d.setTextColor(0);
-    k.d.text(safe(name ? "Prepared for " + name : "Cognicopia activity packet"), M, k.footTop + 14);
-    k.d.text("Cognicopia · Page " + n + " of " + total, k.right, k.footTop + 14, { align:"right" });
-  }
+  /* The page's header, tip and foot are drawn once, after the last page, by shellPass(). */
+  function footer(){}
   function staffLine(k, text, draw){
     if (!text) return k.footTop - 6;
+    k.staff = true;                                // staff text keeps its own size
     var lines = k.wrap(text, 12, "normal", k.width), h = lines.length * 12 * 1.3 + 8;
     var top = k.footTop - 6 - h;
     if (draw){
-      k.d.setLineWidth(1); k.stroke(); k.d.setLineDashPattern([3, 2], 0); k.d.line(M, top, k.right, top); k.d.setLineDashPattern([], 0);
+      k.d.setLineWidth(2.25); k.stroke(); k.d.setLineDashPattern([4, 3], 0); k.d.line(M, top, k.right, top); k.d.setLineDashPattern([], 0);
       k.textLines(lines, M, top + 4, 12, "normal");
     }
+    k.staff = false;
     return top - 6;
   }
 
@@ -12483,23 +12032,23 @@ function generateAilmentPDF(ailmentType) {
   var SLACK = 10;
 
   function paintCover(k, pg, f, draw){
-    var qps = pg.qps, x0 = M, y0 = M, w = k.width, h = k.footTop - 8 - M;
+    var qps = pg.qps, x0 = M, y0 = M + 14, w = k.width, h = k.footTop - 8 - y0;
     var cx = k.W / 2, parts = [];
     var add = function(lines, size, style, gapAfter){ parts.push({ lines:lines, size:size, style:style, gap:gapAfter }); };
     var inner = w - 0.8 * IN;
     if (pg.fac) add(k.wrap(pg.fac.toUpperCase(), 16, "bold", inner), 16, "bold", 0.3 * IN);
-    add(k.wrap(pg.lead || "Prepared especially for:", Math.max(28, 28 * qps * f), "normal", inner), Math.max(28, 28 * qps * f), "normal", 4);
-    var nSize = Math.max(48, 56 * qps * f);
+    add(k.wrap(pg.lead || "Prepared especially for:", k.mx(28, 28 * qps * f), "normal", inner), k.mx(28, 28 * qps * f), "normal", 4);
+    var nSize = k.mx(48, 56 * qps * f);
     k.font(nSize, "bold");
     while (nSize > 30 && k.d.getTextWidth(safe(pg.name || "You")) > inner) { nSize -= 2; k.font(nSize, "bold"); }
     add(k.wrap(pg.name || "You", nSize, "bold", inner), nSize, "bold", 0.2 * IN);
-    add(k.wrap("Your Personalized Activity Packet", Math.max(20, 20 * qps * f), "italic", inner), Math.max(20, 20 * qps * f), "italic", 0.3 * IN);
+    add(k.wrap("Your Personalized Activity Packet", k.mx(20, 20 * qps * f), "italic", inner), k.mx(20, 20 * qps * f), "italic", 0.3 * IN);
     parts.push({ art:true, h:2.6 * IN * 120 / 200, gap:0.25 * IN });
-    add(k.wrap(pg.month, Math.max(22, 22 * qps * f), "bold", inner), Math.max(22, 22 * qps * f), "bold", 0.3 * IN);
+    add(k.wrap(pg.month, k.mx(22, 22 * qps * f), "bold", inner), k.mx(22, 22 * qps * f), "bold", 0.3 * IN);
     if (pg.inside.length){
       parts.push({ rule:true, h:2, gap:0.15 * IN });
       add(["Inside this packet"], 18, "bold", 4);
-      var isz = Math.max(18, 18 * qps * f);
+      var isz = k.mx(18, 18 * qps * f);
       add(pg.inside.map(safe), isz, "normal", 0);
     }
     var total = 0;
@@ -12536,11 +12085,11 @@ function generateAilmentPDF(ailmentType) {
     var y = header(k, s, f, qps, draw);
     y = instructions(k, s.instructions, y, f, qps, draw);
     var bottom = staffLine(k, s.staff, draw) - SLACK;
-    var n = pg.size, cell = Math.max(0.36 * IN, pg.cellIn * IN * f), gfs = Math.max(24, pg.gfs * f);
+    var n = pg.size, cell = Math.max(0.36 * IN, pg.cellIn * IN * f), gfs = k.mx(24, pg.gfs * f);
     var gw = cell * n, gx = (k.W - gw) / 2, gy = y;
     // word list: as many columns of at least 2.35 in as fit, like the screen
     // word list: as many columns as the longest word allows (fewer rows = a bigger grid)
-    var wSize = Math.max(18, 19 * qps * f), gap = 0.2 * IN, box = 0.24 * IN;
+    var wSize = k.mx(18, 19 * qps * f), gap = 0.2 * IN, box = 0.24 * IN;
     k.font(wSize, "bold");
     var widest = Math.max.apply(null, pg.words.map(function(w){ return k.d.getTextWidth(w); }));
     var need = widest + box + 0.1 * IN + 4;
@@ -12570,7 +12119,7 @@ function generateAilmentPDF(ailmentType) {
     var bottom = k.footTop - 8, cut = 0.34 * IN, n = pg.prompts.length;
     var cardH = n > 1 ? (bottom - y - cut) / 2 : bottom - y;
     var padX = 0.3 * IN, padY = 0.25 * IN, inner = k.width - 2 * padX;
-    var lead = Math.max(18, 18 * qps * f), q = Math.max(24, 28 * qps * f), fo = Math.max(18, 18 * qps * f);
+    var lead = k.mx(18, 18 * qps * f), q = k.mx(24, 28 * qps * f), fo = k.mx(18, 18 * qps * f);
     var blocks = pg.prompts.map(function(p){
       var ql = k.wrap(p.text, q, "bold", inner), fl = pg.follow && p.follow ? k.wrap("You might also ask: " + p.follow, fo, "normal", inner) : [];
       return { ql:ql, fl:fl, h: lead * 1.3 + 0.1 * IN + ql.length * q * 1.25 + (fl.length ? 0.16 * IN + fl.length * fo * 1.3 : 0) };
@@ -12589,10 +12138,10 @@ function generateAilmentPDF(ailmentType) {
       if (b.fl.length) k.textLines(b.fl, M + padX, ty + 0.16 * IN, fo, "normal");
       if (i === 0 && n > 1){
         var cy = top + cardH + cut / 2;
-        k.d.setLineWidth(1.5); k.stroke(); k.d.setLineDashPattern([4, 3], 0); k.d.line(M, cy, k.right, cy); k.d.setLineDashPattern([], 0);
-        k.font(10, "normal"); var tw = k.d.getTextWidth("cut here");
+        k.d.setLineWidth(2.25); k.stroke(); k.d.setLineDashPattern([4, 3], 0); k.d.line(M, cy, k.right, cy); k.d.setLineDashPattern([], 0);
+        k.staff = true; k.font(10, "normal"); var tw = k.d.getTextWidth("cut here");
         k.d.setFillColor(255); k.d.rect(k.W / 2 - tw / 2 - 5, cy - 7, tw + 10, 14, "F");
-        k.d.setTextColor(0); k.d.text("cut here", k.W / 2, cy + 3.5, { align:"center" });
+        k.d.setTextColor(0); k.d.text("cut here", k.W / 2, cy + 3.5, { align:"center" }); k.staff = false;
       }
     });
     return true;
@@ -12628,7 +12177,7 @@ function generateAilmentPDF(ailmentType) {
     y = instructions(k, s.instructions, y, f, qps, draw);
     var staff = "For staff · answers: " + pg.items.map(function(it, i){ return (i + 1) + ". " + it.answer; }).join("   ");
     var bottom = staffLine(k, staff, draw) - SLACK;
-    var size = Math.max(20, 23 * qps * f), indent = 0.5 * IN, width = k.width - indent - 0.06 * IN;
+    var size = k.mx(20, 23 * qps * f), indent = 0.5 * IN, width = k.width - indent - 0.06 * IN;
     var ring = 0.3 * IN, optH = Math.max(ring, size * 1.2), optGap = 0.5 * IN;
     // circle-one choices flow onto a second row if they would run off the page
     var optRows = function(opts){
@@ -12748,16 +12297,23 @@ function generateAilmentPDF(ailmentType) {
     var pk = sess.pk, src = pk.src, paper = PAPER[src.paper] || PAPER.letter;
     var doc = new window.jspdf.jsPDF({ unit:"pt", format:src.paper === "a4" ? "a4" : "letter", orientation:"portrait", compress:true });
     doc.setProperties({ title:"Cognicopia activity packet", subject:"Personalized activity packet", creator:"Cognicopia (offline)" });
+    var CMq = window.CognicopiaClinicalMatrix, stageQ = CMq.stageOf(src.stage), SQ = CMq.STAGES[stageQ];
+    applyPureBW(doc, { minLine:SQ.stroke.min });   // pure black, and no line thinner than the stage's floor
     var k = new Kit(doc, paper, src.ink);
+    k.stage = stageQ;
     k.who = src.generic ? "" : src.name;           // name banner on every activity page
     var pages = pagesFrom(pk), painters = { cover:paintCover, wordsearch:paintWordSearch, cards:paintCards, trivia:paintTrivia };
     var layout = pages.map(function(pg, i){
       if (i) doc.addPage(src.paper === "a4" ? "a4" : "letter", "portrait");
       doc.setFillColor(255); doc.rect(0, 0, paper.w, paper.h, "F");          // always a white page
       var r = fitAndPaint(k, painters[pg.kind], pg);
-      footer(k, src.name, i + 1, pages.length);
       return { kind:pg.kind, scale:r.scale, fits:r.fits };
     });
+    /* the shell: name, date and wing on top; a clinical tip; "Page X of Y" */
+    var unit = window.activeResident && window.activeResident.tier1_core ? String(window.activeResident.tier1_core.unitNumber || "") : "";
+    var iso = todayIso(), kindOf = { cover:"cover", wordsearch:"wordsearch", cards:"talk", trivia:"complete" };
+    var tipFn = tipPlan(pages.map(function(pg){ return { kind:kindOf[pg.kind] || "any", topic:"" }; }), stageQ, src.name || "guest", iso, dailyVariant(src.name || "guest"));
+    shellPass(doc, { name:safe(src.name || ""), wing:safe(unit), date:iso, stageLabel:SQ.label, tipFor:tipFn });
     var name = fileName(src.name);
     if (opts.save !== false) doc.save(name);
     return { filename:name, pages:pages.length, layout:layout, doc:doc };
@@ -13011,7 +12567,7 @@ function generateAilmentPDF(ailmentType) {
   /* ---------------- 3. facility index (staff page) ---------------- */
   function indexLayout(k, rows, draw, meta){
     var P = window.qpPdf, M = P.M, IN = P.IN, pages = [[]];
-    var widths = [0.34, 1.55, 2.95, 1.35, 1.05].map(function(w){ return w * IN * k.width / (7.24 * IN); });
+    var widths = [0.34, 1.4, 2.5, 2.0, 1.0].map(function(w){ return w * IN * k.width / (7.24 * IN); });
     var xs = [M]; for (var i = 1; i < widths.length; i++) xs.push(xs[i - 1] + widths[i - 1]);
     var bottom = k.footTop - 12, size = 13;
     var headTop = function(first){
@@ -13062,7 +12618,7 @@ function generateAilmentPDF(ailmentType) {
         k.textLines([String(m.r.n)], xs[0] + 4, yy + 5, size, "normal");
         k.textLines(m.name, xs[1] + 4, yy + 5, size, "bold");
         k.textLines(m.fav, xs[2] + 4, yy + 5, size, "normal");
-        k.textLines(m.pr, xs[3] + 4, yy + 6, 11.5, "normal");
+        k.textLines(m.pr, xs[3] + 4, yy + 6, 11.5, "normal", null, 1.25);
         k.textLines([m.r.pages], xs[4] + 4, yy + 5, size, "bold");
         yy += m.h;
         d.setLineWidth(0.75); k.stroke(); d.line(M, yy, k.right, yy);
@@ -13102,17 +12658,13 @@ function generateAilmentPDF(ailmentType) {
     var doc = new window.jspdf.jsPDF({ unit:"pt", format:paperKey, orientation:"portrait", compress:true });
     doc.setProperties({ title:"Cognicopia monthly activity bundle", subject:monthLabel, creator:"Cognicopia (offline)" });
     var pageNo = 0, total = 0, first = true;
-    var newPage = function(){ if (!first) doc.addPage(paperKey, "portrait"); first = false; pageNo++; doc.setFillColor(255); doc.rect(0, 0, paper.w, paper.h, "F"); };
-    var running_header = function(k){
-      k.font(9, "normal"); doc.setTextColor(0);
-      doc.text(P.safe("Cognicopia Monthly Memory Care Bundle | " + monthLabel), P.M, 38);          // 0.5 in from the top edge, clear of printer grip margins
-    };
-    var footer = function(k, who){
-      doc.setLineWidth(1); k.stroke(); doc.line(P.M, k.footTop, k.right, k.footTop);
-      k.font(11, "normal"); doc.setTextColor(0);
-      doc.text(P.safe(who + " | Page " + pageNo + " of " + total), P.M, k.footTop + 14);
-      doc.text("Cognicopia", k.right, k.footTop + 14, { align:"right" });
-    };
+    /* What each page says in its shell (name, wing, stage, tip): set before a page is made, read by shellPass() at the end.
+       The line floor follows the resident being drawn, so a late-stage resident's lines are never thinner than 6 px. */
+    var CMb = window.CognicopiaClinicalMatrix, curInfo = { name:"Cognicopia monthly memory care bundle", wing:"", stageLabel:monthLabel, tip:"" }, pageInfos = [], curMin = 2.25;
+    applyPureBW(doc, { minLine:function(){ return curMin; } });
+    var newPage = function(){ if (!first) doc.addPage(paperKey, "portrait"); first = false; pageNo++; pageInfos[pageNo] = curInfo; doc.setFillColor(255); doc.rect(0, 0, paper.w, paper.h, "F"); };
+    var running_header = function(){};          // the shell's header carries the name, the date and the wing
+    var footer = function(){};                  // and its foot carries "Page X of Y"
 
     // index rows (page ranges are fixed per resident, so they are known before drawing)
     var rows = roster.map(function(p, i){
@@ -13152,7 +12704,7 @@ function generateAilmentPDF(ailmentType) {
           instructions: src.stage === "late" ? "Point to two things that go together, or draw a line between them. Talk about each one."
                                              : "Draw a line from each word on the left to the word that goes with it on the right." } });
       }
-      return { name:name, pages:out, ink:src.ink };
+      return { name:name, pages:out, ink:src.ink, stage:src.stage };
     }
 
     var painters = { cover:P.painters.cover, wordsearch:P.painters.wordsearch, cards:P.painters.cards, trivia:P.painters.trivia, matching:paintMatching };
@@ -13164,6 +12716,7 @@ function generateAilmentPDF(ailmentType) {
       if (state.cancelled){ running = null; doc = null; resolve(null); return; }
       if (i >= roster.length){
         running = null;
+        shellPass(doc, { name:"", date:todayIso(), pageInfo:function(pn){ var pi = pageInfos[pn] || {}; return { name:P.safe(pi.name || ""), wing:P.safe(pi.wing || ""), stageLabel:pi.stageLabel || "", tip:pi.tip || "" }; } });
         var fname = "Cognicopia_Monthly_Bundle_" + MONTHS[month] + "_" + year + "_" + (roster.length === all.length ? "All_Residents" : roster.length + "_Residents") + ".pdf";
         if (opts.save !== false) doc.save(fname);
         resolve({ filename:fname, pages:pageNo, residents:roster.length, problems:problems, doc:doc });
@@ -13177,17 +12730,21 @@ function generateAilmentPDF(ailmentType) {
         finally { window.activeResident = prev; }
         var res = residentPages(p, pk), k = new P.Kit(doc, paper, res.ink);
         k.who = res.name;                          // a fresh kit per resident: no name ever carries over
-        res.pages.forEach(function(pg){
-          newPage(); running_header(k);
+        k.stage = CMb.stageOf(res.stage); curMin = CMb.STAGES[k.stage].stroke.min;
+        var unit = String((p.tier1_core && p.tier1_core.unitNumber) || ""), kindOfPg = { cover:"cover", wordsearch:"wordsearch", cards:"talk", trivia:"complete", matching:"match" };
+        var tipOf = tipPlan(res.pages.map(function(pg){ return { kind:kindOfPg[pg.kind] || "any", topic:"" }; }), k.stage, res.name, todayIso(), dailyVariant(res.name));
+        res.pages.forEach(function(pg, pi){
+          curInfo = { name:res.name, wing:unit, stageLabel:CMb.STAGES[k.stage].label, tip:tipOf(pi + 1) };
+          newPage();
           var r = P.fitAndPaint(k, painters[pg.kind], pg);
           if (!r.fits) problems.push(res.name + ": " + pg.kind);
-          footer(k, "Resident: " + res.name);
         });
         built++;
       } catch (e){
         // keep the numbering in the index right: fill this resident's pages with a short note
         problems.push(p.tier1_core.preferredName + ": " + e.message);
         var kk = new P.Kit(doc, paper, "bw");
+        curInfo = { name:p.tier1_core.preferredName, wing:"", stageLabel:"", tip:"" };
         for (var j = pageNo - indexPages - i * perRes; j < perRes; j++){
           newPage(); running_header(kk);
           kk.textLines(kk.wrap("This page could not be made for " + p.tier1_core.preferredName + ". Open their profile, check it, and make their packet from the Packet Builder.", 18, "normal", kk.width), P.M, P.M + 40, 18, "normal");
@@ -13476,18 +13033,26 @@ function generateAilmentPDF(ailmentType) {
   function pcgPdf(p){
     var jsPDF = window.jspdf.jsPDF, d = new jsPDF({ unit: "pt", format: "letter" });
     var E = window.CognicopiaColoringEngine, MF = window.CognicopiaColoringManifest;
-    var W = 612, H = 792, M = 54, CW = W - 2 * M, FOOT = H - M - 16, BOTTOM = FOOT - 12;
+    var live = true;                  // the staff page and the shell keep their own (staff-sized) type
+    var W = 612, H = 792, M = 54, CW = W - 2 * M, BOTTOM = 700;   // below 700 the tip and the foot (ClinicalMatrix.SHELL) own the page
+    var CMX = window.CognicopiaClinicalMatrix, SX = CMX.STAGES[CMX.stageOf(p.stage)], FLOORX = SX.type.floor, MINL = SX.stroke.min;
     var stage = p.stage, who = safe(p.resident.name);
+    /* the stage's type floor holds wherever a page maker sets text: a size between a mark (under 9 pt) and the floor is raised to the floor, and the late stage prints bold */
+    (function(){
+      var setSize = d.setFontSize.bind(d), setFont = d.setFont.bind(d), bold = SX.type.bold;
+      d.setFontSize = function(sz){ var a = Array.prototype.slice.call(arguments, 1); return setSize.apply(null, [live && sz >= 9 ? Math.max(sz, FLOORX) : sz].concat(a)); };
+      d.setFont = function(name, style){ var a = Array.prototype.slice.call(arguments, 2); return setFont.apply(null, [name, live && bold && style === "normal" ? "bold" : style].concat(a)); };
+    })();
     var SZ = ({
       early:  { inst: 18, list: 16, cellMax: 30, cellMin: 24, talk: 19, clue: 15 },
-      middle: { inst: 20, list: 21, cellMax: 52, cellMin: 40, talk: 22, clue: 17 },
-      late:   { inst: 26, list: 32, cellMax: 76, cellMin: 60, talk: 34, clue: 20 }
-    })[stage] || { inst: 20, list: 21, cellMax: 52, cellMin: 40, talk: 22, clue: 17 };
+      middle: { inst: 20, list: 21, cellMax: 52, cellMin: 40, talk: 22, clue: 18 },
+      late:   { inst: 26, list: 32, cellMax: 76, cellMin: 60, talk: 34, clue: 24 }
+    })[stage] || { inst: 20, list: 21, cellMax: 52, cellMin: 40, talk: 22, clue: 18 };
     var info = { staffSize: 0, pictures: [] };
 
     var font = function(size, style){ d.setFont("helvetica", style || "normal"); d.setFontSize(size); };
     var wrap = function(text, size, style, w){ font(size, style); return d.splitTextToSize(safe(text), w); };
-    var ink = function(w){ d.setDrawColor(0); d.setLineWidth(w); };
+    var ink = function(w){ d.setDrawColor(0); d.setLineWidth(Math.max(w, MINL)); };      // never thinner than the stage's floor
     /* draw wrapped lines from the top of their block; returns the block's height */
     var put = function(ls, x, y, size, style, lh, opt){
       font(size, style); d.setTextColor(0);
@@ -13522,8 +13087,8 @@ function generateAilmentPDF(ailmentType) {
     /* the name banner, the title, the instruction; returns where the page body starts */
     function head(pg){
       var y;
-      if (typeof drawResidentBanner === "function") y = drawResidentBanner(d, who, M, M, CW, { size: 28, min: 22, labelSize: 12, rule: 3 }) + 14;
-      else { font(24, "bold"); d.setTextColor(0); d.text(who, M, M + 20); y = M + 36; }
+      if (typeof drawResidentBanner === "function") y = drawResidentBanner(d, who, M, M + 10, CW, { size: 28, min: 22, labelSize: FLOORX, rule: Math.max(3, SX.stroke.rule), label: stage === "late" ? "MADE FOR:" : "PREPARED ESPECIALLY FOR:" }) + 14;
+      else { font(24, "bold"); d.setTextColor(0); d.text(who, M, M + 30); y = M + 46; }
       font(26, "bold"); d.setTextColor(0); d.text(safe(pg.title), M, y + 21);
       y += 29; ink(2); d.line(M, y, M + CW, y); y += 10;
       if (pg.instruction){
@@ -13532,13 +13097,6 @@ function generateAilmentPDF(ailmentType) {
       }
       return y;
     }
-    function foot(n, staff){
-      ink(1); d.line(M, FOOT, M + CW, FOOT);
-      font(10, "normal"); d.setTextColor(0);
-      d.text(safe((staff ? "Staff copy for " : "Prepared for ") + p.resident.name + " · " + p.date.label + (p.variant ? " · version " + (p.variant + 1) : "")), M, FOOT + 13);
-      d.text("Cognicopia · Page " + n + " of 5", M + CW, FOOT + 13, { align: "right" });
-    }
-
     /* ---- Page 1: the word search ---- */
     function pWordSearch(pg){
       var y = head(pg), n = pg.size, words = pg.list.slice();
@@ -13550,7 +13108,7 @@ function generateAilmentPDF(ailmentType) {
         cols = Math.max(1, Math.min(stage === "late" ? 3 : 4, words.length, Math.floor((CW + gap) / (widest + box + 10 + gap))));
         rows = Math.ceil(words.length / cols); rowH = Math.max(ls * 1.45, box + 8); listH = rows * rowH;
         cell = Math.min(SZ.cellMax, CW / n, (BOTTOM - y - listH - 22) / n);
-        if (cell >= SZ.cellMin || ls <= 13) break;
+        if (cell >= SZ.cellMin || ls <= FLOORX) break;
         ls--;
       }
       var block = n * cell + 22 + listH, lead = Math.max(0, Math.min(30, (BOTTOM - y - block) / 2));
@@ -13576,7 +13134,7 @@ function generateAilmentPDF(ailmentType) {
         return h;
       };
       var total = function(sz, wl){ return items.reduce(function(t, it){ return t + blockH(it, sz) + wl * LINE + GAP; }, 0); };
-      var plans = [[19, 1], [18, 1], [17, 1], [19, 0], [18, 0], [17, 0], [16, 0]], pick = null, i;
+      var plans = [[19, 1], [18, 1], [17, 1], [19, 0], [18, 0], [17, 0], [16, 0]].filter(function(q){ return q[0] >= FLOORX; }), pick = null, i;
       for (;;){
         for (i = 0; i < plans.length && !pick; i++) if (total(plans[i][0], plans[i][1]) <= room) pick = plans[i];
         if (pick || items.length <= 2) break;
@@ -13599,7 +13157,7 @@ function generateAilmentPDF(ailmentType) {
       var y = head(pg), bsz = 22, gapW = 24, rows = flow(pg.bank, bsz, gapW, CW - 28);
       var bh = 12 + 18 + rows.length * bsz * 1.5 + 8;
       ink(2.5); d.rect(M, y, CW, bh);
-      font(13, "bold"); d.setTextColor(0); d.text(safe(pg.bankLabel || "Words to choose from"), M + 14, y + 22);
+      font(FLOORX, "bold"); d.setTextColor(0); d.text(safe(pg.bankLabel || "Words to choose from"), M + 14, y + 22);
       drawFlow(rows, M + 14, y + 30, CW - 28, bsz, gapW, 1.5);
       y += bh + 20;
       var indent = 34, BLANK = 130, room = BOTTOM - y, items = pg.items, sz, i;
@@ -13611,7 +13169,7 @@ function generateAilmentPDF(ailmentType) {
         });
         return { h: h, ls: ls };
       };
-      var sizes = [SZ.talk, 21, 20, 19, 18], lay = null;
+      var sizes = [SZ.talk, 21, 20, 19, 18].filter(function(q){ return q >= FLOORX; }), lay = null;
       for (i = 0; i < sizes.length; i++){ sz = sizes[i]; lay = layout(sz); if (lay.h <= room) break; }
       var extra = Math.min(18, Math.max(0, (room - lay.h) / items.length));
       items.forEach(function(it, k){
@@ -13632,16 +13190,17 @@ function generateAilmentPDF(ailmentType) {
       cards.forEach(function(c, i){
         var top = y + i * (ch + gap), sz, ls;
         ink(3.5); d.setFillColor(255, 255, 255); d.roundedRect(M, top, CW, ch, 14, 14, "S");
-        font(15, "bold"); d.setTextColor(0); d.text(safe(String(c.label || "").toUpperCase()), M + 20, top + 28);
-        for (sz = 42; sz >= 26; sz -= 2){ ls = wrap(c.text, sz, "bold", CW - 48); if (ls.length <= 2 && ls.length * sz * 1.2 <= ch - 58) break; }
-        put(ls, M + CW / 2, top + 36 + (ch - 36 - ls.length * sz * 1.2) / 2, sz, "bold", 1.2, { align: "center" });
+        var lab = FLOORX, labH = lab + 22;
+        font(lab, "bold"); d.setTextColor(0); d.text(safe(String(c.label || "").toUpperCase()), M + 20, top + 12 + lab * 0.8);
+        for (sz = 42; sz >= FLOORX; sz -= 2){ ls = wrap(c.text, sz, "bold", CW - 48); if (ls.length <= 2 && ls.length * sz * 1.2 <= ch - labH - 14) break; }
+        put(ls, M + CW / 2, top + labH + (ch - labH - ls.length * sz * 1.2) / 2, sz, "bold", 1.2, { align: "center" });
       });
     }
 
     /* ---- Page 3, early and middle: the crossword ---- */
     function pCross(pg){
       var y = head(pg), cw = pg.crossword, cells = cw.cells, R = cells.length, C = cells[0].length, entries = cw.entries;
-      var bsz = stage === "middle" ? 17 : 15, gapW = 18;
+      var bsz = Math.max(FLOORX, stage === "middle" ? 18 : 15), gapW = 18, smin = stage === "middle" ? 34 : 26;     // a cell is never smaller than its clue number and a letter
       var rows = flow(pg.bank, bsz, gapW, CW - 28), bankH = 12 + 18 + rows.length * bsz * 1.45 + 4;
       var top = y + 2, region = BOTTOM - top - bankH - 14;
       var by = function(dir){ return entries.filter(function(e){ return e.dir === dir; }).sort(function(a, b){ return a.num - b.num; }); };
@@ -13654,17 +13213,17 @@ function generateAilmentPDF(ailmentType) {
       };
       /* the largest cells either layout allows: the clues beside the grid, or under it */
       var cap = stage === "middle" ? 40 : 30, best = null, s, cs;
-      for (s = Math.min(cap, Math.floor((CW - 185 - 22) / C), Math.floor(region / R)); s >= 18 && !best; s--){
+      for (s = Math.min(cap, Math.floor((CW - 185 - 22) / C), Math.floor(region / R)); s >= smin && !best; s--){
         var colW = CW - s * C - 22;
-        for (cs = SZ.clue; cs >= 13; cs--) if (colH(across, "Across", colW, cs) + colH(down, "Down", colW, cs) <= region){ best = { mode: "side", s: s, cs: cs, colW: colW }; break; }
+        for (cs = SZ.clue; cs >= FLOORX; cs--) if (colH(across, "Across", colW, cs) + colH(down, "Down", colW, cs) <= region){ best = { mode: "side", s: s, cs: cs, colW: colW }; break; }
       }
       var low = null;
-      for (s = Math.min(cap, Math.floor(CW / C)); s >= 14 && !low; s--){
+      for (s = Math.min(cap, Math.floor(CW / C)); s >= smin && !low; s--){
         var half = (CW - 24) / 2;
-        for (cs = SZ.clue; cs >= 12; cs--) if (s * R + 14 + Math.max(colH(across, "Across", half, cs), colH(down, "Down", half, cs)) <= region){ low = { mode: "below", s: s, cs: cs, colW: half }; break; }
+        for (cs = SZ.clue; cs >= FLOORX; cs--) if (s * R + 14 + Math.max(colH(across, "Across", half, cs), colH(down, "Down", half, cs)) <= region){ low = { mode: "below", s: s, cs: cs, colW: half }; break; }
       }
       var pl = best && (!low || best.s >= low.s) ? best : low;
-      if (!pl) pl = { mode: "below", s: 14, cs: 12, colW: (CW - 24) / 2 };
+      if (!pl) pl = { mode: "below", s: smin, cs: FLOORX, colW: (CW - 24) / 2 };
       s = pl.s; cs = pl.cs;
       var gw = s * C, gx = pl.mode === "side" ? M : M + (CW - gw) / 2, gy = top;
       var starts = {}; entries.forEach(function(e){ var k = e.r + "," + e.c; if (!starts[k]) starts[k] = { num: e.num, letter: e.word.charAt(0) }; });
@@ -13674,7 +13233,7 @@ function generateAilmentPDF(ailmentType) {
         d.rect(gx + c * s, gy + r * s, s, s);
         var st = starts[r + "," + c];
         if (st){
-          var ns = Math.max(8, Math.min(11, s * 0.36)); font(ns, "bold"); d.setTextColor(0); d.text(String(st.num), gx + c * s + 2.5, gy + r * s + ns * 0.85 + 1);
+          var ns = FLOORX; font(ns, "bold"); d.setTextColor(0); d.text(String(st.num), gx + c * s + 2.5, gy + r * s + ns * 0.85 + 1);
           if (pg.firstLetters){ font(s * 0.58, "bold"); d.text(st.letter, gx + c * s + s / 2, gy + r * s + s * 0.5 + s * 0.58 * 0.36 + 3, { align: "center" }); }
         }
       }
@@ -13689,7 +13248,7 @@ function generateAilmentPDF(ailmentType) {
       else { clues(across, "Across", M, cy, pl.colW); clues(down, "Down", M + pl.colW + 24, cy, pl.colW); }
       var bY = BOTTOM - bankH;
       ink(2); d.rect(M, bY, CW, bankH);
-      font(12, "bold"); d.setTextColor(0); d.text("Words to use", M + 14, bY + 19);
+      font(Math.max(12, FLOORX), "bold"); d.setTextColor(0); d.text("Words to use", M + 14, bY + 19);
       drawFlow(rows, M + 14, bY + 26, CW - 28, bsz, gapW, 1.45);
     }
 
@@ -13751,8 +13310,11 @@ function generateAilmentPDF(ailmentType) {
         if (draw){ ink(2); d.line(M, y, M + CW, y); }
         y += 8;
         var sub = who + " · " + p.date.label + " · " + p.stageInfo.label;
-        y += put(wrap(sub, 12, "bold", CW), M, y, 12, "bold", 1.3) + 3;
-        y += put(wrap(pg.note, 11, "normal", CW), M, y, 11, "normal", 1.3) + 4;
+        var sl = wrap(sub, 12, "bold", CW), nl = wrap(pg.note, 11, "normal", CW);      // measured on the first pass, drawn only on the second
+        if (draw) put(sl, M, y, 12, "bold", 1.3);
+        y += sl.length * 12 * 1.3 + 3;
+        if (draw) put(nl, M, y, 11, "normal", 1.3);
+        y += nl.length * 11 * 1.3 + 4;
         heading("Why these topics");
         pg.why.forEach(function(w){ row(w.label, w.item + ". " + w.why); });
         heading("Action prompts");
@@ -13779,9 +13341,15 @@ function generateAilmentPDF(ailmentType) {
     painters.forEach(function(paint, i){
       if (i) d.addPage();
       resetPen();
+      live = i !== 4;                // page 5 is for staff: its own sizes
       paint(p.pages[i]);
-      foot(i + 1, i === 4);
     });
+    live = false;                    // the shell sets its own sizes
+    /* the shell: name, date and wing at the top, a clinical tip for the person beside them, "Page X of 5" */
+    var kinds = [{ kind: "wordsearch" }, { kind: stage === "middle" ? "complete" : "talk" }, { kind: stage === "late" ? "sensory" : "cross" }, { kind: "color" }, { kind: "staff" }];
+    kinds.forEach(function(k, i){ k.topic = i === 4 || !p.focus || !p.focus.feature ? "" : String(p.focus.feature.name || "").toLowerCase(); });
+    shellPass(d, { name: safe(p.resident.name), wing: safe(field("wing")), date: p.date.iso, stageLabel: SX.label + (p.variant ? " · version " + (p.variant + 1) : ""),
+                   tipFor: tipPlan(kinds, stage, p.resident.name, p.date.iso, p.variant | 0) });
     d.setProperties({ title: "Today's Packet for " + p.resident.name + ", " + p.date.iso, subject: "Today's Packet", creator: "Cognicopia" });
     d.pcgInfo = info;
     return d;
