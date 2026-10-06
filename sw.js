@@ -21,6 +21,8 @@ const CORE = [
   // the hybrid coloring engine: its subjects travel in the bundle, so coloring pages draw offline
   "assets/coloring/subjects.bundle.js", "assets/coloring/manifest.json", "src/services/ColoringManifest.js", "src/engine/ColoringEngine.js",
   // the procedural engine behind Today's Packet: its content travels in one bundle, so the daily packet is made offline
+  // licensing: the promo code and the license badge work offline
+  "src/config/license.js", "assets/services/licenseManager.js",
   "assets/pcg/pcg-data.bundle.js", "src/pcg/prng.js", "src/pcg/matrix.js", "src/pcg/grammar.js", "src/pcg/puzzles.js", "src/pcg/packet.js"
 ];
 const PAGE_WAIT_MS = 4000;
