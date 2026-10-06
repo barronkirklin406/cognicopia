@@ -63,7 +63,8 @@ export const SEALED_PREFIXES: readonly string[] = [
   "cognicopia_heirloom_",       // monthly memory digest entries
   "cognicopia_remin_",          // reminiscence responses
   "cognicopia_facility",        // the Facility Portal: wings, groups, team, audit trail and each wing's month schedules
-  "cognicopia_academy"          // the Academy: learners (staff names), their progress, scores and certificates
+  "cognicopia_academy",         // the Academy: learners (staff names), their progress, scores and certificates
+  "cognicopia_quality"          // the Quality Standards Hub: the survey-readiness checklist and the facility's name on its cover sheet
 ];
 export const isSealed = (name: string): boolean => SEALED_PREFIXES.some(p => name.startsWith(p));
 
