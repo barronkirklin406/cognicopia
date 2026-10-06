@@ -1,0 +1,35 @@
+# Supabase CLI configuration for local development: `supabase start`, `supabase db reset`.
+#
+# Written by hand and kept to the essentials, so the CLI's defaults supply the rest. If your
+# CLI version objects to a key, run `supabase init` in a scratch folder, copy its config.toml
+# here, and keep the three settings that matter: the project_id, the seed path, and
+# email confirmation on (the create_facility() function requires a confirmed address).
+
+project_id = "cognicopia-platform"
+
+[api]
+enabled = true
+port = 54321
+# The Data API exposes only "public". The "private" schema (internal functions) is not listed
+# on purpose: that keeps those functions out of reach of the API.
+schemas = ["public", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+port = 54322
+major_version = 17
+
+[db.seed]
+enabled = true
+sql_paths = ["./seed.sql"]
+
+[auth]
+enabled = true
+site_url = "http://127.0.0.1:3000"
+additional_redirect_urls = ["http://127.0.0.1:3000/**"]
+enable_signup = true
+
+[auth.email]
+enable_signup = true
+enable_confirmations = true

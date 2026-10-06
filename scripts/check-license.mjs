@@ -178,7 +178,7 @@ function page(opts = {}){
   const sw = read("sw.js");
   ok(sw.includes('"src/config/license.js"') && sw.includes('"assets/services/licenseManager.js"'), "the offline cache does not keep the license files");
   /* every page with a top bar loads the manager, with the right path, config first */
-  const walk = d => fs.readdirSync(path.join(ROOT, d), { withFileTypes: true }).flatMap(e => e.name === ".git" || e.name === "node_modules" ? [] : e.isDirectory() ? walk(path.posix.join(d, e.name)) : e.name.endsWith(".html") ? [path.posix.join(d, e.name)] : []);
+  const walk = d => fs.readdirSync(path.join(ROOT, d), { withFileTypes: true }).flatMap(e => e.name === ".git" || e.name === "node_modules" || e.name === ".next" ? [] : e.isDirectory() ? walk(path.posix.join(d, e.name)) : e.name.endsWith(".html") ? [path.posix.join(d, e.name)] : []);
   let withBar = 0;
   for (const f of walk(".")){
     const h = read(f);
