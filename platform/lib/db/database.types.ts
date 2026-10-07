@@ -87,23 +87,85 @@ export type Database = {
           facility_name: string;
           id: string;
           stripe_customer_id: string | null;
+          stripe_subscription_id: string | null;
+          subscription_cancel_at_period_end: boolean;
+          subscription_current_period_end: string | null;
+          subscription_interval: string | null;
           subscription_status: Database["public"]["Enums"]["subscription_status"];
+          subscription_synced_at: string | null;
         };
         Insert: {
           created_at?: string;
           facility_name: string;
           id?: string;
           stripe_customer_id?: string | null;
+          stripe_subscription_id?: string | null;
+          subscription_cancel_at_period_end?: boolean;
+          subscription_current_period_end?: string | null;
+          subscription_interval?: string | null;
           subscription_status?: Database["public"]["Enums"]["subscription_status"];
+          subscription_synced_at?: string | null;
         };
         Update: {
           created_at?: string;
           facility_name?: string;
           id?: string;
           stripe_customer_id?: string | null;
+          stripe_subscription_id?: string | null;
+          subscription_cancel_at_period_end?: boolean;
+          subscription_current_period_end?: string | null;
+          subscription_interval?: string | null;
           subscription_status?: Database["public"]["Enums"]["subscription_status"];
+          subscription_synced_at?: string | null;
         };
         Relationships: [];
+      };
+      facility_invites: {
+        Row: {
+          accepted_at: string | null;
+          accepted_by: string | null;
+          created_at: string;
+          created_by: string | null;
+          email: string | null;
+          expires_at: string;
+          facility_id: string;
+          id: string;
+          role: Database["public"]["Enums"]["facility_role"];
+          token_hash: string;
+        };
+        Insert: {
+          accepted_at?: string | null;
+          accepted_by?: string | null;
+          created_at?: string;
+          created_by?: string | null;
+          email?: string | null;
+          expires_at: string;
+          facility_id: string;
+          id?: string;
+          role?: Database["public"]["Enums"]["facility_role"];
+          token_hash: string;
+        };
+        Update: {
+          accepted_at?: string | null;
+          accepted_by?: string | null;
+          created_at?: string;
+          created_by?: string | null;
+          email?: string | null;
+          expires_at?: string;
+          facility_id?: string;
+          id?: string;
+          role?: Database["public"]["Enums"]["facility_role"];
+          token_hash?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "facility_invites_facility_id_fkey";
+            columns: ["facility_id"];
+            isOneToOne: false;
+            referencedRelation: "facilities";
+            referencedColumns: ["id"];
+          },
+        ];
       };
       facility_users: {
         Row: {
@@ -142,9 +204,38 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      accept_facility_invite: {
+        Args: { p_token: string };
+        Returns: string;
+      };
+      apply_stripe_subscription: {
+        Args: {
+          p_cancel_at_period_end?: boolean;
+          p_current_period_end?: string;
+          p_customer_id: string;
+          p_interval?: string;
+          p_observed_at: string;
+          p_status: Database["public"]["Enums"]["subscription_status"];
+          p_subscription_id: string;
+        };
+        Returns: string;
+      };
       create_facility: {
         Args: { p_facility_name: string };
         Returns: string;
+      };
+      create_facility_invite: {
+        Args: { p_email?: string; p_role?: Database["public"]["Enums"]["facility_role"] };
+        Returns: string;
+      };
+      preview_facility_invite: {
+        Args: { p_token: string };
+        Returns: {
+          email_locked: boolean;
+          email_matches: boolean;
+          facility_name: string;
+          role: Database["public"]["Enums"]["facility_role"];
+        }[];
       };
     };
     Enums: {

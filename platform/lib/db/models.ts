@@ -18,6 +18,7 @@ import { Constants, type Database, type Enums, type Tables } from "./database.ty
 
 export type Facility = Tables<"facilities">;
 export type FacilityUser = Tables<"facility_users">;
+export type FacilityInviteRow = Tables<"facility_invites">;
 export type ContentItemRow = Tables<"content_items">;
 export type ActivityCalendarRow = Tables<"activity_calendars">;
 
@@ -73,8 +74,31 @@ export interface CalendarInput {
 type TableName = keyof Database["public"]["Tables"];
 
 export const COLUMNS = {
-  facilities: { id: true, facility_name: true, subscription_status: true, stripe_customer_id: true, created_at: true },
+  facilities: {
+    id: true,
+    facility_name: true,
+    subscription_status: true,
+    stripe_customer_id: true,
+    stripe_subscription_id: true,
+    subscription_interval: true,
+    subscription_current_period_end: true,
+    subscription_cancel_at_period_end: true,
+    subscription_synced_at: true,
+    created_at: true,
+  },
   facility_users: { id: true, facility_id: true, email: true, role: true, created_at: true },
+  facility_invites: {
+    id: true,
+    facility_id: true,
+    token_hash: true,
+    email: true,
+    role: true,
+    created_by: true,
+    created_at: true,
+    expires_at: true,
+    accepted_at: true,
+    accepted_by: true,
+  },
   content_items: { id: true, title: true, category: true, dementia_stage: true, content_payload: true, created_at: true },
   activity_calendars: { id: true, facility_id: true, month_year: true, generated_data: true, created_at: true },
 } as const satisfies { [T in TableName]: Record<keyof Tables<T>, true> };

@@ -248,3 +248,78 @@ describe("the service role", () => {
     });
   });
 });
+
+// ---------------------------------------------------------------------
+// Statements with no WHERE. A policy's USING clause is the only thing standing
+// between a bare "delete from t" or "update t set ..." and every tenant's rows,
+// so each one is run bare, and the other facility's rows are checked afterwards.
+// ---------------------------------------------------------------------
+
+describe("a statement with no WHERE reaches only the caller's own facility", () => {
+  const rowsOf = (s: import("./harness").Session, table: string, facility: string) =>
+    s.value<number>(`select count(*)::int from public.${table} where facility_id = $1`, [facility]);
+
+  it("delete from activity_calendars", async () => {
+    await as(db, bob, async (s) => {
+      expect((await s.run("delete from public.activity_calendars")).affected).toBe(1);
+      await s.become(service);
+      expect(await rowsOf(s, "activity_calendars", F.a)).toBe(0);
+      expect(await rowsOf(s, "activity_calendars", F.b)).toBe(1);
+    });
+  });
+
+  it("update activity_calendars", async () => {
+    await as(db, bob, async (s) => {
+      const changed = JSON.stringify({ schema_version: 1, month: "2026-10", groups: [], slots: [], note: "changed" });
+      expect((await s.run("update public.activity_calendars set generated_data = $1::jsonb", [changed])).affected).toBe(1);
+      await s.become(service);
+      expect(await s.value("select generated_data ->> 'note' from public.activity_calendars where facility_id = $1", [F.b])).toBeNull();
+    });
+  });
+
+  it("update facilities, by an admin", async () => {
+    await as(db, alice, async (s) => {
+      expect((await s.run("update public.facilities set facility_name = 'Renamed'")).affected).toBe(1);
+      await s.become(service);
+      expect(await s.value("select facility_name from public.facilities where id = $1", [F.b])).toBe("Birch Manor");
+    });
+  });
+
+  it("update facility_users, by an admin", async () => {
+    await as(db, alice, async (s) => {
+      expect((await s.run("update public.facility_users set role = 'admin'")).affected).toBe(2); // alice and bob only
+      await s.become(service);
+      expect(await s.value("select role::text from public.facility_users where id = $1", [U.dave])).toBe("staff");
+    });
+  });
+
+  it("delete from facility_users, by an admin: only their own facility's people can go", async () => {
+    await as(db, alice, async (s) => {
+      expect((await s.run("delete from public.facility_users where role = 'staff'")).affected).toBe(1); // Bob, not Dave
+      await s.become(service);
+      expect(await rowsOf(s, "facility_users", F.b)).toBe(2);
+      expect(await rowsOf(s, "facility_users", F.a)).toBe(1);
+    });
+  });
+
+  it("delete from facility_users with nothing to narrow it: the last admin cannot go, so the database refuses all of it", async () => {
+    await as(db, alice, async (s) => {
+      expect((await s.fails("delete from public.facility_users"))?.code).toBe("CG001");
+      await s.become(service);
+      expect(await rowsOf(s, "facility_users", F.a)).toBe(2);
+      expect(await rowsOf(s, "facility_users", F.b)).toBe(2);
+    });
+  });
+
+  it("delete from facility_invites, by an admin", async () => {
+    await as(db, alice, async (s) => {
+      await s.run("select public.create_facility_invite('a@example.com')");
+      await s.become(carol);
+      await s.run("select public.create_facility_invite('b@example.com')");
+      await s.become(alice);
+      expect((await s.run("delete from public.facility_invites")).affected).toBe(1);
+      await s.become(service);
+      expect(await rowsOf(s, "facility_invites", F.b)).toBe(1);
+    });
+  });
+});

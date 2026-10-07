@@ -82,14 +82,21 @@ function asFailure(e: unknown): Failure {
 
 async function assume(db: PGlite, actor: Actor): Promise<void> {
   await db.exec("reset role");
+  // The JWT claims belong to the actor: PostgREST sets them afresh for every request. Without this a
+  // signed-in user's claims would linger after `become(service)`, and the server would appear to be them.
+  const claims = (value: object | null) =>
+    db.query("select set_config('request.jwt.claims', $1, true)", [value ? JSON.stringify(value) : ""]);
   if (actor.kind === "anon") {
     await db.exec("set local role anon");
+    await claims({ role: "anon" });
   } else if (actor.kind === "service") {
     await db.exec("set local role service_role");
+    await claims({ role: "service_role" });
   } else if (actor.kind === "user") {
     await db.exec("set local role authenticated");
-    const claims = { sub: actor.id, role: "authenticated", ...(actor.email ? { email: actor.email } : {}) };
-    await db.query("select set_config('request.jwt.claims', $1, true)", [JSON.stringify(claims)]);
+    await claims({ sub: actor.id, role: "authenticated", ...(actor.email ? { email: actor.email } : {}) });
+  } else {
+    await claims(null);
   }
 }
 

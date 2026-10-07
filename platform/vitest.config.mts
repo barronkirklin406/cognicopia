@@ -3,7 +3,11 @@ import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   resolve: {
-    alias: { "@": path.resolve(import.meta.dirname) },
+    alias: [
+      // Next.js empties "server-only" when it builds server code; the real package throws anywhere else.
+      { find: /^server-only$/, replacement: path.resolve(import.meta.dirname, "tests/stubs/server-only.ts") },
+      { find: "@", replacement: path.resolve(import.meta.dirname) },
+    ],
   },
   test: {
     environment: "node",

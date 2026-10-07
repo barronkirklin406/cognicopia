@@ -19,26 +19,30 @@ afterAll(async () => {
   await db.close();
 });
 
-const TABLES = ["facilities", "facility_users", "content_items", "activity_calendars"] as const;
+const TABLES = ["facilities", "facility_users", "content_items", "activity_calendars", "facility_invites"] as const;
 const PRIVILEGES = ["SELECT", "INSERT", "UPDATE", "DELETE", "TRUNCATE", "REFERENCES", "TRIGGER"] as const;
 
 describe("migrations", () => {
-  it("are three files, in order", () => {
+  it("are five files, in order", () => {
     expect(migrationFiles()).toEqual([
       "20261006120000_core_schema.sql",
       "20261006120100_phi_guard.sql",
       "20261006120200_tenancy_and_rls.sql",
+      "20261006180000_billing_and_access.sql",
+      "20261006180100_facility_invites.sql",
     ]);
   });
 });
 
 describe("privileges: each role has exactly what it needs and no more", () => {
   // What a signed-in user may do at TABLE level. Column-level grants are checked below.
+  // (facility_invites: SELECT is granted column by column, so it is not a table-level privilege.)
   const authenticated: Record<(typeof TABLES)[number], string[]> = {
     facilities: ["SELECT"],
     facility_users: ["SELECT", "DELETE"],
     content_items: ["SELECT"],
     activity_calendars: ["SELECT", "INSERT", "UPDATE", "DELETE"],
+    facility_invites: ["DELETE"],
   };
 
   it.each(TABLES)("signed-out visitors have no privilege at all on %s", async (table) => {
@@ -58,13 +62,13 @@ describe("privileges: each role has exactly what it needs and no more", () => {
     });
   });
 
-  it("a signed-in user may update only facilities.facility_name and facility_users.role", async () => {
+  it("a signed-in user may update only facilities.facility_name and facility_users.role, and nothing on invitations", async () => {
     await as(db, owner, async (s) => {
       const updatable = await s.rows<{ table_name: string; column_name: string }>(
         `select c.table_name, c.column_name
            from information_schema.columns c
           where c.table_schema = 'public'
-            and c.table_name in ('facilities', 'facility_users')
+            and c.table_name in ('facilities', 'facility_users', 'facility_invites')
             and has_column_privilege('authenticated', format('public.%I', c.table_name), c.column_name, 'UPDATE')
           order by 1, 2`,
       );
@@ -72,6 +76,21 @@ describe("privileges: each role has exactly what it needs and no more", () => {
         { table_name: "facilities", column_name: "facility_name" },
         { table_name: "facility_users", column_name: "role" },
       ]);
+    });
+  });
+
+  it("a signed-in user can read every column of an invitation except the hash of its secret", async () => {
+    await as(db, owner, async (s) => {
+      const readable = await s.rows<{ column_name: string; can: boolean }>(
+        `select c.column_name,
+                has_column_privilege('authenticated', 'public.facility_invites', c.column_name, 'SELECT') as can
+           from information_schema.columns c
+          where c.table_schema = 'public' and c.table_name = 'facility_invites'
+          order by c.column_name`,
+      );
+      expect(readable.filter((c) => !c.can).map((c) => c.column_name)).toEqual(["token_hash"]);
+      expect(readable.filter((c) => c.can).length).toBe(readable.length - 1);
+      expect(await s.value("select has_column_privilege('anon', 'public.facility_invites', 'id', 'SELECT')")).toBe(false);
     });
   });
 
@@ -83,10 +102,26 @@ describe("privileges: each role has exactly what it needs and no more", () => {
     });
   });
 
-  it("only signed-in users can call create_facility", async () => {
+  it("who can call each function the Data API exposes", async () => {
     await as(db, owner, async (s) => {
-      expect(await s.value("select has_function_privilege('anon', 'public.create_facility(text)', 'EXECUTE')")).toBe(false);
-      expect(await s.value("select has_function_privilege('authenticated', 'public.create_facility(text)', 'EXECUTE')")).toBe(true);
+      const can = (role: string, fn: string) =>
+        s.value<boolean>(`select has_function_privilege('${role}', '${fn}', 'EXECUTE')`);
+      // Signed-in users only, never signed-out visitors.
+      for (const fn of [
+        "public.create_facility(text)",
+        "public.create_facility_invite(text, public.facility_role)",
+        "public.preview_facility_invite(text)",
+        "public.accept_facility_invite(text)",
+      ]) {
+        expect(await can("anon", fn), `anon ${fn}`).toBe(false);
+        expect(await can("authenticated", fn), `authenticated ${fn}`).toBe(true);
+      }
+      // The server only: it records what Stripe says, and nobody else may.
+      const apply =
+        "public.apply_stripe_subscription(text, timestamptz, text, public.subscription_status, text, timestamptz, boolean)";
+      expect(await can("anon", apply)).toBe(false);
+      expect(await can("authenticated", apply)).toBe(false);
+      expect(await can("service_role", apply)).toBe(true);
     });
   });
 
@@ -98,9 +133,12 @@ describe("privileges: each role has exactly what it needs and no more", () => {
       expect(await can("authenticated", "private.current_facility_id()")).toBe(true);
       expect(await can("anon", "private.current_facility_role()")).toBe(false);
       expect(await can("authenticated", "private.current_facility_role()")).toBe(true);
+      expect(await can("anon", "private.current_facility_has_access()")).toBe(false);
+      expect(await can("authenticated", "private.current_facility_has_access()")).toBe(true);
       for (const role of ["anon", "authenticated"]) {
         expect(await can(role, "private.keep_facility_admin()"), role).toBe(false);
         expect(await can(role, "private.sync_facility_user_email()"), role).toBe(false);
+        expect(await can(role, "private.subscription_grants_access(public.subscription_status)"), role).toBe(false);
       }
       expect(await s.value("select has_schema_privilege('anon', 'private', 'USAGE')")).toBe(false);
     });
@@ -124,13 +162,15 @@ describe("rules that hold for every table and function", () => {
         "select policyname, roles::text as roles, qual, with_check from pg_policies where schemaname = 'public' order by tablename, policyname",
       );
       expect(policies.map((p) => p.policyname)).toEqual([
-        "activity_calendars_delete_own_facility",
-        "activity_calendars_insert_own_facility",
+        "activity_calendars_delete_subscribed_facility",
+        "activity_calendars_insert_subscribed_facility",
         "activity_calendars_select_own_facility",
-        "activity_calendars_update_own_facility",
-        "content_items_select_facility_members",
+        "activity_calendars_update_subscribed_facility",
+        "content_items_select_subscribed_members",
         "facilities_select_own",
         "facilities_update_admin",
+        "facility_invites_delete_admin",
+        "facility_invites_select_admin",
         "facility_users_delete_admin",
         "facility_users_select_same_facility",
         "facility_users_update_admin",
@@ -139,6 +179,25 @@ describe("rules that hold for every table and function", () => {
         expect(p.roles, p.policyname).toBe("{authenticated}");
         expect(p.qual, p.policyname).not.toBe("true");
         expect(p.with_check, p.policyname).not.toBe("true");
+      }
+    });
+  });
+
+  it("every policy on a tenant table pins its rows to the caller's facility, so the pin cannot be dropped unnoticed", async () => {
+    // A bare "delete from facility_users" cannot be run to prove this one (the last-admin rule stops it),
+    // and Postgres applies the SELECT policy on top of a DELETE's WHERE, which hides a missing pin there.
+    // So the expressions themselves are read: each must mention the caller's facility.
+    await as(db, owner, async (s) => {
+      const policies = await s.rows<{ tablename: string; policyname: string; qual: string | null; with_check: string | null }>(
+        `select tablename, policyname, qual, with_check from pg_policies
+          where schemaname = 'public' and tablename in ('facilities', 'facility_users', 'activity_calendars', 'facility_invites')
+          order by 1, 2`,
+      );
+      expect(policies.length).toBe(11);
+      for (const p of policies) {
+        for (const [part, expression] of [["using", p.qual], ["with check", p.with_check]] as const) {
+          if (expression !== null) expect(expression, `${p.policyname} (${part})`).toMatch(/current_facility_id/);
+        }
       }
     });
   });
@@ -152,23 +211,44 @@ describe("rules that hold for every table and function", () => {
           order by 1`,
       );
       expect(definers.map((d) => d.name)).toEqual([
+        "private.current_facility_has_access",
         "private.current_facility_id",
         "private.current_facility_role",
         "private.keep_facility_admin",
         "private.sync_facility_user_email",
+        "public.accept_facility_invite",
         "public.create_facility",
+        "public.create_facility_invite",
+        "public.preview_facility_invite",
       ]);
       for (const d of definers) expect(d.config, d.name).toMatch(/search_path=/);
     });
   });
 
-  it("the Data API sees only create_facility: every other function is in private", async () => {
+  it("every function in public pins its search_path, security definer or not", async () => {
+    await as(db, owner, async (s) => {
+      const fns = await s.rows<{ proname: string; config: string | null }>(
+        `select p.proname, p.proconfig::text as config
+           from pg_proc p join pg_namespace n on n.oid = p.pronamespace
+          where n.nspname = 'public' order by 1`,
+      );
+      for (const f of fns) expect(f.config, f.proname).toMatch(/search_path=/);
+    });
+  });
+
+  it("the Data API sees exactly these five functions: every other function is in private", async () => {
     await as(db, owner, async (s) => {
       const exposed = await s.rows<{ proname: string }>(
         `select p.proname from pg_proc p join pg_namespace n on n.oid = p.pronamespace
           where n.nspname = 'public' order by 1`,
       );
-      expect(exposed).toEqual([{ proname: "create_facility" }]);
+      expect(exposed).toEqual([
+        { proname: "accept_facility_invite" },
+        { proname: "apply_stripe_subscription" },
+        { proname: "create_facility" },
+        { proname: "create_facility_invite" },
+        { proname: "preview_facility_invite" },
+      ]);
     });
   });
 
@@ -201,9 +281,43 @@ describe("constraints: facilities", () => {
     });
   });
 
-  it("start in a trial", async () => {
+  it("start with no subscription: 'incomplete', which grants no access", async () => {
     await as(db, owner, async (s) => {
-      expect(await s.value("insert into public.facilities (facility_name) values ('New') returning subscription_status::text")).toBe("trialing");
+      expect(await s.value("insert into public.facilities (facility_name) values ('New') returning subscription_status::text")).toBe("incomplete");
+      expect(await s.value("select private.subscription_grants_access('incomplete')")).toBe(false);
+    });
+  });
+
+  it.each(["abc", "su_123", "", "SUB_123"])("refuse the Stripe subscription id %j", async (id) => {
+    await as(db, owner, async (s) => {
+      const failure = await s.fails("update public.facilities set stripe_subscription_id = $1 where id = $2", [id, F.a]);
+      expect(failure?.constraint).toBe("facilities_stripe_subscription_id_format");
+    });
+  });
+
+  it("refuse one subscription on two facilities", async () => {
+    await as(db, owner, async (s) => {
+      await s.run("update public.facilities set stripe_subscription_id = 'sub_one' where id = $1", [F.a]);
+      const failure = await s.fails("update public.facilities set stripe_subscription_id = 'sub_one' where id = $1", [F.b]);
+      expect(failure?.constraint).toBe("facilities_stripe_subscription_id_key");
+    });
+  });
+
+  it("accept a billing interval of month or year, or none, and nothing else", async () => {
+    await as(db, owner, async (s) => {
+      for (const interval of ["month", "year", null]) {
+        expect((await s.run("update public.facilities set subscription_interval = $1 where id = $2", [interval, F.a])).affected, String(interval)).toBe(1);
+      }
+      for (const bad of ["week", "day", "Month", "monthly", ""]) {
+        const failure = await s.fails("update public.facilities set subscription_interval = $1 where id = $2", [bad, F.a]);
+        expect(failure?.constraint, bad).toBe("facilities_subscription_interval_values");
+      }
+    });
+  });
+
+  it("do not cancel at period end unless told to", async () => {
+    await as(db, owner, async (s) => {
+      expect(await s.value("select subscription_cancel_at_period_end from public.facilities where id = $1", [F.a])).toBe(false);
     });
   });
 

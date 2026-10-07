@@ -1,13 +1,27 @@
-/**
- * Placeholder. The facility dashboard is the next piece of work; this page
- * exists so the app builds and runs. UI code in app/ never talks to the
- * database directly: it calls lib/data through a server component or a route.
- */
+import Link from "next/link";
+import { Shell } from "@/components/Shell";
+
+/** The front door. A signed-in visitor never sees it: the proxy sends them to their dashboard. */
 export default function Home() {
   return (
-    <main>
-      <h1>Cognicopia platform</h1>
-      <p>The platform foundation is in place. The public site is at cognicopia.org.</p>
-    </main>
+    <Shell>
+      <section className="hero stack">
+        <h1>Activity planning for memory care teams</h1>
+        <p>
+          Cognicopia gives your activity team one shared place for the activity library and the month's calendar. Sign in to your facility's workspace, or set one up.
+        </p>
+        <div className="row">
+          <Link className="btn" href="/login">
+            Sign in
+          </Link>
+          <Link className="btn secondary" href="/signup">
+            Create an account
+          </Link>
+        </div>
+        <p className="small muted">
+          Looking for the printable packets? They are on the <a href="https://cognicopia.org">main site</a>. Nothing about a resident is ever stored here.
+        </p>
+      </section>
+    </Shell>
   );
 }
