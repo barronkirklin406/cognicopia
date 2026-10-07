@@ -7,12 +7,12 @@ export interface ContentFilter {
   /** Items that suit this stage, including the "universal" ones. */
   stage?: DementiaStage;
   category?: string;
-  /** At most this many (default 100, never more than 200). */
+  /** At most this many (default 100, never more than 1000: the planning screens load the whole library). */
   limit?: number;
 }
 
 const DEFAULT_LIMIT = 100;
-const MAX_LIMIT = 200;
+const MAX_LIMIT = 1000;
 
 function toItem(row: ContentItemRow): ContentItem {
   const payload = parseContentPayload(row.content_payload);
@@ -45,4 +45,13 @@ export async function contentTitles(db: Db, ids: readonly string[]): Promise<Map
   const { data, error } = await db.from("content_items").select("id, title").in("id", unique);
   if (error) throw fromDbError(error);
   return new Map(data.map((row) => [row.id, row.title]));
+}
+
+/** Whole library items by id: what a calendar's sessions are, with how to run them. Items the caller may not see are simply missing. */
+export async function contentByIds(db: Db, ids: readonly string[]): Promise<Map<string, ContentItem>> {
+  const unique = [...new Set(ids)].slice(0, 500);
+  if (unique.length === 0) return new Map();
+  const { data, error } = await db.from("content_items").select("*").in("id", unique);
+  if (error) throw fromDbError(error);
+  return new Map(data.map((row) => [row.id, toItem(row)]));
 }

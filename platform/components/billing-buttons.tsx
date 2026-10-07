@@ -49,7 +49,7 @@ export function PlanButtons({ ids }: { ids?: readonly PlanId[] }) {
   return (
     <div className="stack">
       {error ? <Alert tone="bad">{error}</Alert> : null}
-      <div className="grid">
+      <div className="tiles">
         {plans.map((plan) => (
           <div key={plan.id} className="card stack">
             <h3>{plan.name}</h3>

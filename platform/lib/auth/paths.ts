@@ -4,7 +4,7 @@
  */
 
 /** Pages that need a signed-in person. The proxy sends anyone else to sign in; each page also checks for itself. */
-export const PROTECTED_PREFIXES = ["/dashboard", "/onboarding", "/admin", "/library", "/calendar"] as const;
+export const PROTECTED_PREFIXES = ["/dashboard", "/onboarding", "/admin", "/library", "/calendar", "/reminiscence"] as const;
 
 /** Pages a signed-in person has no reason to see: the proxy sends them to the dashboard. */
 export const SIGNED_OUT_ONLY = ["/", "/login", "/signup", "/forgot-password"] as const;

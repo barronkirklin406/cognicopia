@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { getCalendar, saveCalendar } from "@/lib/data/calendars";
-import { listContent } from "@/lib/data/content";
+import { getCalendar, getCalendarsForMonths, saveCalendar } from "@/lib/data/calendars";
+import { contentByIds, listContent } from "@/lib/data/content";
 import type { Db } from "@/lib/data/db";
 import { DataError } from "@/lib/data/errors";
 import { createFacility, getFacility, getMembership } from "@/lib/data/facilities";
@@ -107,6 +107,25 @@ describe("calendars", () => {
     expect(error.message).not.toMatch(/Margaret/);
   });
 
+  it("getCalendarsForMonths asks once for the distinct months, and returns the calendars by month", async () => {
+    const { db, calls } = fakeDb({ data: [row(emptyCalendar("2026-10")), { ...row(emptyCalendar("2026-11")), id: "c2", month_year: "2026-11" }] });
+    const found = await getCalendarsForMonths(db, ["2026-10", "2026-11", "2026-10", "2026-12"]);
+    expect([...found.keys()]).toEqual(["2026-10", "2026-11"]);
+    expect(calls).toContainEqual(["in", ["month_year", ["2026-10", "2026-11", "2026-12"]]]);
+    expect(calls.filter(([name]) => name === "from")).toHaveLength(1);
+  });
+
+  it("getCalendarsForMonths asks nothing for no months", async () => {
+    const { db, calls } = fakeDb({ data: [] });
+    expect((await getCalendarsForMonths(db, [])).size).toBe(0);
+    expect(calls).toHaveLength(0);
+  });
+
+  it("getCalendarsForMonths refuses stored data that no longer fits the schema", async () => {
+    const { db } = fakeDb({ data: [row({ schema_version: 1, month: "2026-10", groups: [], slots: [], extra: 1 })] });
+    expect((await rejects(getCalendarsForMonths(db, ["2026-10"]))).code).toBe("stored_data_invalid");
+  });
+
   it("saveCalendar upserts on the facility and month, and returns the saved calendar", async () => {
     const input = { facility_id: "f1", month_year: "2026-10", generated_data: emptyCalendar("2026-10") };
     const { db, calls } = fakeDb({ data: row(emptyCalendar("2026-10")) });
@@ -157,11 +176,26 @@ describe("content", () => {
     [5, 5],
     [0, 1],
     [-3, 1],
-    [999, 200],
+    [999, 999],
+    [5000, 1000],
   ])("a limit of %s asks for %i", async (asked, sent) => {
     const { db, calls } = fakeDb({ data: [] });
     await listContent(db, { limit: asked });
     expect(calls).toContainEqual(["limit", [sent]]);
+  });
+
+  it("contentByIds asks once for the distinct ids, and returns the items by id", async () => {
+    const { db, calls } = fakeDb({ data: [item("early")] });
+    const found = await contentByIds(db, ["k1", "k1", "k2"]);
+    expect([...found.keys()]).toEqual(["k1"]);
+    expect(found.get("k1")?.title).toBe("Chair yoga");
+    expect(calls).toContainEqual(["in", ["id", ["k1", "k2"]]]);
+  });
+
+  it("contentByIds asks nothing for no ids", async () => {
+    const { db, calls } = fakeDb({ data: [] });
+    expect((await contentByIds(db, [])).size).toBe(0);
+    expect(calls).toHaveLength(0);
   });
 
   it("fails loudly on a library item with a bad payload: that is our bug, not the caller's", async () => {

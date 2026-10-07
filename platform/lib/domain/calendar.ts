@@ -45,8 +45,8 @@ export const CalendarGroupSchema = z.strictObject({
   /** The wing or unit it belongs to, if the facility uses them. */
   wing: z.string().trim().max(60).optional(),
   acuity: AcuitySchema,
-  /** How many people. A count, not a list. */
-  size: z.number().int().min(1).max(60),
+  /** How many people, if known. A count, not a list. A calendar made from a stage and a theme does not know. */
+  size: z.number().int().min(1).max(60).optional(),
 });
 
 export const CalendarSlotSchema = z.strictObject({

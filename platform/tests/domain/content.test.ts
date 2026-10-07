@@ -18,8 +18,38 @@ describe("parseContentPayload", () => {
     ).toBe(true);
   });
 
+  it("accepts the planning fields: formats, themes, a decade and senses, follow-ups, and trivia questions", () => {
+    expect(
+      parseContentPayload({
+        schema_version: 1,
+        summary: "Songs on the radio.",
+        formats: ["reminiscence", "sensory"],
+        themes: ["music", "nostalgia-1950s"],
+        decade: 1950,
+        senses: ["sound"],
+        follow_ups: ["Dancing to it, or just listening?"],
+        questions: [{ q: "Which brothers made the first powered flight?", a: "The Wright brothers" }],
+      }).ok,
+    ).toBe(true);
+  });
+
   it.each([
     ["no summary", { schema_version: 1 }],
+    ["no formats listed (leave the field out instead)", { schema_version: 1, summary: "x", formats: [] }],
+    ["a format that does not exist", { schema_version: 1, summary: "x", formats: ["origami"] }],
+    ["four formats", { schema_version: 1, summary: "x", formats: ["games", "trivia", "printable", "active"] }],
+    ["a theme that does not exist", { schema_version: 1, summary: "x", themes: ["pirates"] }],
+    ["seven themes", { schema_version: 1, summary: "x", themes: ["spring", "summer", "autumn", "winter", "garden", "music", "aviation"] }],
+    ["a decade we have no prompts for", { schema_version: 1, summary: "x", decade: 1930 }],
+    ["a decade as text", { schema_version: 1, summary: "x", decade: "1950" }],
+    ["no senses listed (leave the field out instead)", { schema_version: 1, summary: "x", senses: [] }],
+    ["a sense that does not exist", { schema_version: 1, summary: "x", senses: ["intuition"] }],
+    ["four senses", { schema_version: 1, summary: "x", senses: ["sight", "sound", "smell", "taste"] }],
+    ["seven follow-ups", { schema_version: 1, summary: "x", follow_ups: Array.from({ length: 7 }, () => "Then?") }],
+    ["a follow-up over 200 characters", { schema_version: 1, summary: "x", follow_ups: ["f".repeat(201)] }],
+    ["a question without an answer", { schema_version: 1, summary: "x", questions: [{ q: "Which?" }] }],
+    ["a question with an extra field", { schema_version: 1, summary: "x", questions: [{ q: "Which?", a: "That", hint: "none" }] }],
+    ["thirteen questions", { schema_version: 1, summary: "x", questions: Array.from({ length: 13 }, (_, i) => ({ q: `Q${i}`, a: "A" })) }],
     ["a blank summary", { schema_version: 1, summary: "  " }],
     ["a summary over 500 characters", { schema_version: 1, summary: "s".repeat(501) }],
     ["the wrong version", { schema_version: 2, summary: "x" }],

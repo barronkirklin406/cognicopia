@@ -18,7 +18,7 @@ export default async function AdminHomePage() {
     <Shell session={{ user, membership }} current="/admin">
       <div className="stack">
         <h1>Managing {membership.facility.facility_name}</h1>
-        <div className="grid">
+        <div className="tiles">
           <Link className="card stack" href="/admin/team">
             <h2>Team</h2>
             <p>Invite people, and choose who is an admin.</p>
