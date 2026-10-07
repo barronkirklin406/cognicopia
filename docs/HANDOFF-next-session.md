@@ -82,13 +82,16 @@ items below, verify each one, and publish to cognicopia.org.
 
 ## The facility platform (`platform/`)
 
-A separate Next.js and Supabase project for the B2B service, added after everything above. It does not touch the static site, and the root `npm test` and `npm run build` do not cover it. Read `docs/saas-platform-architecture.md` and `platform/README.md` before changing it.
+A separate Next.js, Supabase and Stripe project for the B2B service, added after everything above. It does not touch the static site, and the root `npm test` and `npm run build` do not cover it. Read `docs/saas-platform-architecture.md` and `platform/README.md` before changing it.
 
-- **Check it:** from `platform/`, `npm install`, then `npm test` (about 490 tests, no Docker needed) and `npm run typecheck`.
+- **What it has:** sign-in with roles (an Activity Director is an admin, everyone else is staff) and invitation links; Stripe Checkout, the billing portal and a signed webhook; and the subscription gate, which closes the activity library and the calendar tools (in the pages, the API and the database) when a facility's subscription is past due, unpaid or ended, and shows a renewal prompt that links to the Stripe portal.
+- **Check it:** from `platform/`, `npm install`, then `npm test` (about 1,240 tests, no Docker needed), `npm run typecheck` and `npm run build`.
 - **Zero PHI:** it never stores resident data. The database refuses a calendar with resident-looking keys, and the architecture notes say what that cannot catch (free text).
-- **Not yet verified:** the migrations have never run on a real Supabase stack, because the sandbox has no Docker. The first job wherever Docker exists is `supabase start`, `supabase db reset` and `supabase test db`.
-- **Next, in order:** sign-in screens and the session proxy; staff invitations; the Stripe webhook; move the generation engines into `platform/lib/generation`; continuous integration for `platform/`.
+- **Not yet verified:** the migrations have never run on a real Supabase stack, and nothing has run against a real Stripe account (the sandbox has no Docker and no keys). The sign-in and billing screens were driven in a real browser against stand-ins for both; `docs/saas-platform-architecture.md` lists what remains under "Not verified here". The first jobs wherever Docker and a Stripe test account exist are `supabase start`, `supabase db reset`, `supabase test db`, and one test-mode checkout end to end.
+- **Setup that only you can do:** the Stripe products and two prices, the portal configuration, the webhook endpoint and its five events, and the hosted Supabase settings (site and redirect URLs, 12-character minimum password, your own SMTP). `platform/README.md` has the checklist and `platform/.env.example` the settings.
+- **Next, in order:** the scheduling engine behind the calendar page; emailing invitations; rate limiting and a script Content-Security-Policy; continuous integration for `platform/` and a committed browser test of the sign-in and billing flows; move the generation engines into `platform/lib/generation`.
 - **Public claims:** the privacy page and the site's "no server, no account" wording are true of the static site today. Revisit them when the platform serves users.
+- **A trap worth knowing:** inside one render, Next.js hands a repeated identical GET (every Supabase query is one) the first answer. A page that writes and then reads the same thing must make a different request for the second read, as the billing page does (`reconcileAndReload`).
 
 ## Hard rules (do not break)
 

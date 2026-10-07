@@ -26,9 +26,17 @@ sql_paths = ["./seed.sql"]
 
 [auth]
 enabled = true
+# Where the platform runs locally (APP_URL in .env.local). Confirmation and reset emails link back here.
 site_url = "http://127.0.0.1:3000"
-additional_redirect_urls = ["http://127.0.0.1:3000/**"]
+# Only the page that finishes a sign-in link (app/auth/callback) may be a link's destination, not the
+# whole site. In the hosted project, set the Site URL to your APP_URL and the redirect URL to your
+# APP_URL plus /auth/callback (Authentication > URL Configuration).
+additional_redirect_urls = ["http://127.0.0.1:3000/auth/callback", "http://localhost:3000/auth/callback"]
 enable_signup = true
+# The sign-up and reset forms ask for 12 (lib/domain/auth.ts). Set it here as well, and in the hosted
+# project (Authentication > Providers > Email), because anyone can call Supabase's sign-up address
+# directly without using our forms.
+minimum_password_length = 12
 
 [auth.email]
 enable_signup = true

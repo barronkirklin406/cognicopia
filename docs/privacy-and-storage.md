@@ -71,9 +71,9 @@ The Facility Portal's **Back up or move the portal** writes the portal (wings, g
 
 Every row is rebuilt field by field against the profile schema and sealed in the encrypted store. The spreadsheet itself is never copied anywhere.
 
-## The facility platform (in development)
+## The facility platform (separate from everything above)
 
-A separate service for facilities is being built in `platform/`, with accounts for staff and a database in the cloud. It keeps minimal data on a server: facility names, subscription status, staff email addresses, the shared activity library, and activity calendars that plan groups. It is built never to store resident data: no resident names, profiles, health details or notes. Everything above in this page, the resident profiles and the encrypted store, stays on the computer where it was typed. [The platform's architecture notes](saas-platform-architecture.md) explain how this is enforced and where it cannot be.
+A separate service for facilities is built in `platform/`, with sign-in for staff, a database in the cloud and subscriptions through Stripe. It keeps minimal data on a server: facility names; each facility's subscription status and its Stripe customer and subscription ids; staff email addresses and their roles (admin or staff); invitations to join (only a hash of each link's secret, and an email address if the admin chose to tie it to one); the shared activity library; and activity calendars that plan groups. Card details are entered on Stripe's own pages and never reach Cognicopia's servers; Stripe also holds the facility's name and the billing contact's email. The platform is built never to store resident data: no resident names, profiles, health details or notes. Everything above in this page, the resident profiles and the encrypted store, stays on the computer where it was typed. [The platform's architecture notes](saas-platform-architecture.md) explain how this is enforced and where it cannot be.
 
 ## What this is not
 

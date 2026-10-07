@@ -30,9 +30,11 @@ export class DataError extends Error {
 /**
  * Turn a database error into a DataError.
  *
- * Codes: standard Postgres SQLSTATEs, PostgREST's own (PGRST...), and three of
+ * Codes: standard Postgres SQLSTATEs, PostgREST's own (PGRST...), and five of
  * ours raised by the migrations: CG001 a facility must keep an admin, CG002 the
- * account already belongs to a facility, CG003 no confirmed email address.
+ * account already belongs to a facility, CG003 no confirmed email address, CG004
+ * the invitation is not valid (unknown, used or expired), CG005 it was sent to a
+ * different email address.
  */
 export function fromDbError(error: DbError): DataError {
   const code = error.code ?? "";
@@ -51,6 +53,12 @@ export function fromDbError(error: DbError): DataError {
       return new DataError(409, "already_member", "This account already belongs to a facility.");
     case "CG003":
       return new DataError(403, "email_not_confirmed", "Confirm your email address first.");
+    case "CG004":
+      return new DataError(410, "invite_invalid", "This invitation is no longer valid. Ask a facility admin for a new one.");
+    case "CG005":
+      return new DataError(403, "invite_wrong_email", "This invitation was sent to a different email address. Sign in with the address it was sent to.");
+    case "54000":
+      return new DataError(409, "too_many_invites", "There are too many open invitations. Cancel some first.");
     case "23505":
       return new DataError(409, "conflict", "That already exists.");
     case "23503":

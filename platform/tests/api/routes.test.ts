@@ -1,21 +1,20 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import type { AccessContext } from "@/lib/access/context";
 import { DataError } from "@/lib/data/errors";
 
 /**
  * The HTTP edge: who may call, how input is checked, what comes back. The
  * database and the data functions are replaced, so these tests are about the
- * routes alone. Row level security is proven in tests/db.
+ * routes alone. The access rules are tested in tests/access, and row level
+ * security and the subscription gate in tests/db.
  */
 
-const getUser = vi.fn();
-vi.mock("@/lib/supabase/server", () => ({ createClient: async () => ({ auth: { getUser } }) }));
+const loadAccessContext = vi.fn();
+vi.mock("@/lib/access/context", () => ({ loadAccessContext: (...args: unknown[]) => loadAccessContext(...args) }));
+vi.mock("@/lib/supabase/server", () => ({ createClient: async () => ({ marker: "the user's own client" }) }));
 
 const createFacility = vi.fn();
-const getMembership = vi.fn();
-vi.mock("@/lib/data/facilities", () => ({
-  createFacility: (...args: unknown[]) => createFacility(...args),
-  getMembership: (...args: unknown[]) => getMembership(...args),
-}));
+vi.mock("@/lib/data/facilities", () => ({ createFacility: (...args: unknown[]) => createFacility(...args) }));
 
 const getCalendar = vi.fn();
 const saveCalendar = vi.fn();
@@ -34,8 +33,22 @@ const { GET: getContent } = await import("@/app/api/content/route");
 const json = (method: string, url: string, body: unknown) =>
   new Request(`http://localhost${url}`, { method, headers: { "content-type": "application/json" }, body: JSON.stringify(body) });
 const get = (url: string) => new Request(`http://localhost${url}`);
-const signedIn = () => getUser.mockResolvedValue({ data: { user: { id: "user-1" } }, error: null });
-const signedOut = () => getUser.mockResolvedValue({ data: { user: null }, error: { message: "no session" } });
+
+const facility = (status: string) => ({
+  id: "facility-of-user-1",
+  facility_name: "Maple Court",
+  subscription_status: status,
+  stripe_customer_id: null,
+  stripe_subscription_id: null,
+  subscription_interval: null,
+  subscription_current_period_end: null,
+  subscription_cancel_at_period_end: false,
+});
+const memberOf = (status: string, role = "staff"): AccessContext =>
+  ({ user: { id: "user-1", email: "user-1@maple.example" }, membership: { role, facility: facility(status) } }) as AccessContext;
+const signedIn = (status = "active", role = "staff") => loadAccessContext.mockResolvedValue(memberOf(status, role));
+const signedOut = () => loadAccessContext.mockResolvedValue(null);
+const noFacility = () => loadAccessContext.mockResolvedValue({ user: { id: "user-2", email: "user-2@x.example" }, membership: null });
 const body = async (response: Response) => (await response.json()) as Record<string, any>;
 
 const CONTENT_ID = "5eed0000-0000-4000-8000-000000000001";
@@ -62,17 +75,59 @@ describe("every route needs a signed-in user", () => {
     const response = await call();
     expect(response.status).toBe(401);
     expect((await body(response)).error.code).toBe("unauthenticated");
-    for (const fn of [createFacility, getMembership, getCalendar, saveCalendar, listContent]) expect(fn).not.toHaveBeenCalled();
+    for (const fn of [createFacility, getCalendar, saveCalendar, listContent]) expect(fn).not.toHaveBeenCalled();
+  });
+});
+
+describe("the premium routes need a facility, and a subscription that grants access", () => {
+  const premium = [
+    ["GET /api/calendars", () => getCalendarRoute(get("/api/calendars?month=2026-10"))],
+    ["PUT /api/calendars", () => putCalendar(json("PUT", "/api/calendars", { month: "2026-10", data: calendarData() }))],
+    ["GET /api/content", () => getContent(get("/api/content"))],
+  ] as const;
+
+  it.each(premium)("%s answers 403 to a signed-in user who belongs to no facility", async (_name, call) => {
+    noFacility();
+    const response = await call();
+    expect(response.status).toBe(403);
+    expect((await body(response)).error.code).toBe("no_facility");
+    for (const fn of [getCalendar, saveCalendar, listContent]) expect(fn).not.toHaveBeenCalled();
+  });
+
+  it.each(premium)("%s answers 402 when the facility's subscription is past due, and touches no data", async (_name, call) => {
+    signedIn("past_due");
+    const response = await call();
+    expect(response.status).toBe(402);
+    expect((await body(response)).error).toMatchObject({ code: "subscription_required", subscription_status: "past_due", can_manage_billing: false });
+    for (const fn of [getCalendar, saveCalendar, listContent]) expect(fn).not.toHaveBeenCalled();
+  });
+
+  it.each(["canceled", "unpaid", "paused", "incomplete", "incomplete_expired"])("%s is refused with 402 too", async (status) => {
+    signedIn(status);
+    expect((await getContent(get("/api/content"))).status).toBe(402);
+  });
+
+  it("tells an admin they can fix it", async () => {
+    signedIn("past_due", "admin");
+    const response = await getContent(get("/api/content"));
+    expect((await body(response)).error).toMatchObject({ can_manage_billing: true });
+  });
+
+  it.each(["active", "trialing"])("a facility that is %s is let in", async (status) => {
+    signedIn(status);
+    listContent.mockResolvedValue([]);
+    expect((await getContent(get("/api/content"))).status).toBe(200);
   });
 });
 
 describe("POST /api/facilities", () => {
-  it("creates the facility and returns its id", async () => {
+  it("creates the facility and returns its id; the caller needs no facility yet", async () => {
+    noFacility();
     createFacility.mockResolvedValue("f-1");
     const response = await postFacility(json("POST", "/api/facilities", { facility_name: "  Maple Court  " }));
     expect(response.status).toBe(201);
     expect(await body(response)).toEqual({ facility_id: "f-1" });
-    expect(createFacility).toHaveBeenCalledWith(expect.anything(), "Maple Court"); // trimmed
+    expect(createFacility).toHaveBeenCalledWith({ marker: "the user's own client" }, "Maple Court"); // trimmed
   });
 
   it.each([{}, { facility_name: "" }, { facility_name: "   " }, { facility_name: 7 }, { facility_name: "x".repeat(121) }, null])(
@@ -92,6 +147,18 @@ describe("POST /api/facilities", () => {
     expect(createFacility).not.toHaveBeenCalled();
   });
 
+  it("refuses a request that another site's page made with the user's cookies", async () => {
+    const crossSite = new Request("http://localhost/api/facilities", {
+      method: "POST",
+      headers: { "content-type": "application/json", origin: "https://evil.example" },
+      body: JSON.stringify({ facility_name: "Mine" }),
+    });
+    const response = await postFacility(crossSite);
+    expect(response.status).toBe(403);
+    expect((await body(response)).error.code).toBe("forbidden_origin");
+    expect(createFacility).not.toHaveBeenCalled();
+  });
+
   it("answers 400 for a body that is not JSON", async () => {
     const broken = new Request("http://localhost/api/facilities", { method: "POST", headers: { "content-type": "application/json" }, body: "{not json" });
     expect((await postFacility(broken)).status).toBe(400);
@@ -106,7 +173,7 @@ describe("POST /api/facilities", () => {
 
   it("answers a plain 500 for anything unexpected, without its message", async () => {
     vi.spyOn(console, "error").mockImplementation(() => {});
-    createFacility.mockRejectedValue(new Error('duplicate key value violates ... Failing row contains (Margaret)'));
+    createFacility.mockRejectedValue(new Error("duplicate key value violates ... Failing row contains (Margaret)"));
     const response = await postFacility(json("POST", "/api/facilities", { facility_name: "Maple" }));
     expect(response.status).toBe(500);
     expect(JSON.stringify(await body(response))).not.toMatch(/Margaret|Failing row/);
@@ -125,23 +192,21 @@ describe("GET /api/calendars", () => {
     expect((await getCalendarRoute(get("/api/calendars?month=2026-10"))).status).toBe(404);
   });
 
-  it("returns the calendar", async () => {
+  it("returns the calendar, read as the user", async () => {
     getCalendar.mockResolvedValue({ id: "c1", month_year: "2026-10" });
     const response = await getCalendarRoute(get("/api/calendars?month=2026-10"));
     expect(response.status).toBe(200);
     expect(await body(response)).toEqual({ calendar: { id: "c1", month_year: "2026-10" } });
-    expect(getCalendar).toHaveBeenCalledWith(expect.anything(), "2026-10");
+    expect(getCalendar).toHaveBeenCalledWith({ marker: "the user's own client" }, "2026-10");
   });
 });
 
 describe("PUT /api/calendars", () => {
   it("saves the calendar into the caller's own facility, as found from their membership", async () => {
-    getMembership.mockResolvedValue({ id: "user-1", facility_id: "facility-of-user-1", role: "staff" });
     saveCalendar.mockImplementation(async (_db, input) => ({ id: "c1", ...input }));
 
     const response = await putCalendar(json("PUT", "/api/calendars", { month: "2026-10", data: calendarData() }));
     expect(response.status).toBe(200);
-    expect(getMembership).toHaveBeenCalledWith(expect.anything(), "user-1");
     expect(saveCalendar).toHaveBeenCalledWith(expect.anything(), {
       facility_id: "facility-of-user-1",
       month_year: "2026-10",
@@ -150,7 +215,6 @@ describe("PUT /api/calendars", () => {
   });
 
   it("ignores a facility the caller names: the facility always comes from their membership", async () => {
-    getMembership.mockResolvedValue({ id: "user-1", facility_id: "facility-of-user-1", role: "staff" });
     saveCalendar.mockImplementation(async (_db, input) => ({ id: "c1", ...input }));
     await putCalendar(json("PUT", "/api/calendars", { month: "2026-10", facility_id: "someone-elses", data: { ...calendarData(), facility_id: "someone-elses" } }));
     // The extra field inside the data is refused by the strict schema; the one beside it is dropped.
@@ -168,7 +232,6 @@ describe("PUT /api/calendars", () => {
     expect(payload.error.code).toBe("phi_keys");
     expect(payload.error.issues).toEqual([{ path: "residents", message: "Looks like resident or health information." }]);
     expect(JSON.stringify(payload)).not.toMatch(/Margaret/);
-    expect(getMembership).not.toHaveBeenCalled();
     expect(saveCalendar).not.toHaveBeenCalled();
   });
 
@@ -184,16 +247,7 @@ describe("PUT /api/calendars", () => {
     expect(saveCalendar).not.toHaveBeenCalled();
   });
 
-  it("answers 403 for a signed-in user who belongs to no facility", async () => {
-    getMembership.mockResolvedValue(null);
-    const response = await putCalendar(json("PUT", "/api/calendars", { month: "2026-10", data: calendarData() }));
-    expect(response.status).toBe(403);
-    expect((await body(response)).error.code).toBe("no_facility");
-    expect(saveCalendar).not.toHaveBeenCalled();
-  });
-
   it("passes on the database's refusal, such as the guard or the size limit", async () => {
-    getMembership.mockResolvedValue({ id: "user-1", facility_id: "f1", role: "staff" });
     saveCalendar.mockRejectedValue(new DataError(413, "too_large", "This calendar is too large."));
     expect((await putCalendar(json("PUT", "/api/calendars", { month: "2026-10", data: calendarData() }))).status).toBe(413);
   });
@@ -201,6 +255,16 @@ describe("PUT /api/calendars", () => {
   it("requires JSON", async () => {
     const forged = new Request("http://localhost/api/calendars", { method: "PUT", headers: { "content-type": "text/plain" }, body: "{}" });
     expect((await putCalendar(forged)).status).toBe(415);
+  });
+
+  it("refuses a request that another site's page made with the user's cookies", async () => {
+    const crossSite = new Request("http://localhost/api/calendars", {
+      method: "PUT",
+      headers: { "content-type": "application/json", origin: "https://evil.example" },
+      body: JSON.stringify({ month: "2026-10", data: calendarData() }),
+    });
+    expect((await putCalendar(crossSite)).status).toBe(403);
+    expect(saveCalendar).not.toHaveBeenCalled();
   });
 });
 

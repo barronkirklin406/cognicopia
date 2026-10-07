@@ -37,3 +37,12 @@ export async function listContent(db: Db, filter: ContentFilter = {}): Promise<C
   if (error) throw fromDbError(error);
   return data.map(toItem);
 }
+
+/** Titles for some library items, by id: to show what a calendar's sessions are. Items the caller may not see are simply missing. */
+export async function contentTitles(db: Db, ids: readonly string[]): Promise<Map<string, string>> {
+  const unique = [...new Set(ids)].slice(0, 500);
+  if (unique.length === 0) return new Map();
+  const { data, error } = await db.from("content_items").select("id, title").in("id", unique);
+  if (error) throw fromDbError(error);
+  return new Map(data.map((row) => [row.id, row.title]));
+}

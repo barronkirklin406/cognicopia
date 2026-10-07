@@ -58,6 +58,11 @@ describe("the facility record", () => {
     ["subscription_status", "update public.facilities set subscription_status = 'active'"],
     ["stripe_customer_id", "update public.facilities set stripe_customer_id = 'cus_stolen'"],
     ["created_at", "update public.facilities set created_at = now()"],
+    ["stripe_subscription_id", "update public.facilities set stripe_subscription_id = 'sub_stolen'"],
+    ["subscription_interval", "update public.facilities set subscription_interval = 'year'"],
+    ["subscription_current_period_end", "update public.facilities set subscription_current_period_end = now() + interval '10 years'"],
+    ["subscription_cancel_at_period_end", "update public.facilities set subscription_cancel_at_period_end = true"],
+    ["subscription_synced_at", "update public.facilities set subscription_synced_at = now() + interval '10 years'"],
   ])("not even an admin can change %s (billing belongs to the server)", async (_column, sql) => {
     await as(db, alice, async (s) => {
       expect((await s.fails(sql))?.code).toBe("42501");
@@ -256,21 +261,34 @@ describe("create_facility()", () => {
       const [facility] = await s.rows<{ facility_name: string; subscription_status: string; stripe_customer_id: string | null }>(
         "select facility_name, subscription_status::text as subscription_status, stripe_customer_id from public.facilities",
       );
-      expect(facility).toEqual({ facility_name: "Cedar House", subscription_status: "trialing", stripe_customer_id: null });
+      // No subscription yet: Stripe is where a trial or a plan begins.
+      expect(facility).toEqual({ facility_name: "Cedar House", subscription_status: "incomplete", stripe_customer_id: null });
     });
   });
 
-  it("the new admin can immediately use their facility, and still sees no one else's", async () => {
+  it("the new admin sees their own facility and no one else's; the library and calendars wait for a subscription", async () => {
     await as(db, erin, async (s) => {
       const id = await s.value<string>("select public.create_facility('Cedar House')");
-      const out = await s.run(
+      const insertCalendar: [string, unknown[]] = [
         "insert into public.activity_calendars (facility_id, month_year, generated_data) values ($1, '2026-10', $2::jsonb)",
         [id, EMPTY_CALENDAR],
-      );
-      expect(out.affected).toBe(1);
+      ];
+
       expect(await s.value("select count(*)::int from public.facilities")).toBe(1);
+      expect(await s.value("select count(*)::int from public.facility_users")).toBe(1);
+
+      // Not subscribed yet: no library, and nothing may be written to a calendar.
+      expect(await s.value("select count(*)::int from public.content_items")).toBe(0);
+      expect((await s.fails(...insertCalendar))?.code).toBe("42501");
+
+      // The server records a subscription; the same person can then use everything.
+      await s.become(service);
+      await s.run("update public.facilities set subscription_status = 'active' where id = $1", [id]);
+      await s.become(erin);
+      expect(await s.value("select count(*)::int from public.content_items")).toBe(3);
+      expect((await s.run(...insertCalendar)).affected).toBe(1);
       expect(await s.value("select count(*)::int from public.activity_calendars")).toBe(1);
-      expect(await s.value("select count(*)::int from public.content_items")).toBe(3); // and the library is open to them
+      expect(await s.value("select count(*)::int from public.facilities")).toBe(1); // still no one else's
     });
   });
 

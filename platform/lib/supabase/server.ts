@@ -9,8 +9,9 @@ import { getPublicEnv } from "@/lib/env";
  * so it acts AS that user and row level security applies. Use this by default.
  */
 export async function createClient() {
-  const env = getPublicEnv();
+  // Cookies first: reading them tells Next.js this page is drawn per request, never ahead of time at build.
   const cookieStore = await cookies();
+  const env = getPublicEnv();
 
   return createServerClient<Database>(env.NEXT_PUBLIC_SUPABASE_URL, env.NEXT_PUBLIC_SUPABASE_ANON_KEY, {
     cookies: {

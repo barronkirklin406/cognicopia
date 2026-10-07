@@ -14,6 +14,7 @@ export const U = {
   erin: "e4110000-0000-4000-8000-000000000005", // confirmed email, belongs to no facility yet
   frank: "f4a40000-0000-4000-8000-000000000006", // email not confirmed
   gina: "91a00000-0000-4000-8000-000000000007", // anonymous sign-in: no email at all
+  hank: "4a4c0000-0000-4000-8000-000000000008", // confirmed email, belongs to no facility yet
 } as const;
 
 /** Facilities. */
@@ -46,7 +47,8 @@ export async function seedFixtures(db: PGlite): Promise<void> {
       ('${U.dave}',  'dave@birch.example',  now(), false),
       ('${U.erin}',  'Erin@Cedar.example',  now(), false),
       ('${U.frank}', 'frank@elm.example',   null,  false),
-      ('${U.gina}',  null,                  null,  true);
+      ('${U.gina}',  null,                  null,  true),
+      ('${U.hank}',  'hank@oak.example',    now(), false);
 
     insert into public.facilities (id, facility_name, subscription_status, stripe_customer_id) values
       ('${F.a}', 'Maple Court', 'active',   'cus_maple1'),
