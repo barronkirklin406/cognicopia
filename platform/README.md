@@ -9,7 +9,8 @@ The service for memory care facilities: Next.js (App Router) in front, Supabase 
 - **Sign-in with roles.** Email and password, with email confirmation and password reset. An Activity Director is a facility *admin* (settings, team, billing); everyone else is *staff* (the activity library and the calendar). Staff join by an invitation link an admin makes.
 - **Stripe billing.** Monthly and annual plans through Stripe Checkout, the Stripe billing portal, and a signed webhook that keeps each facility's `subscription_status` in step.
 - **The subscription gate.** When a facility's subscription is past due, unpaid or ended, the activity library and the calendar tools close (in the pages, in the API and in the database) and an admin sees a renewal prompt with a button to the Stripe portal.
-- **Not built yet.** The scheduling engine behind the calendar page (it shows saved calendars), emailing invitations, rate limiting, and continuous integration. The architecture notes list them in order.
+- **The planning tools** (Tailwind CSS 4). A dashboard with today's plan and the week ahead; the activity library sorted instantly by stage (early, middle, late), kind of activity (reminiscence prompts, cognitive games, trivia, printable sheets, movement, sensory) and theme, with how to run each activity for the stage chosen; a one-click monthly calendar (choose a month and a theme, and every day is filled with a few sessions for each stage, drawn from the library) that can be saved and printed in large black type on landscape pages; and a searchable library of reminiscence prompts by decade (1940s to 1970s) and sense. All of these are premium.
+- **Not built yet.** Changing a generated month by hand, emailing invitations, rate limiting, and continuous integration. The architecture notes list them in order.
 
 ## Run the tests
 
@@ -18,7 +19,7 @@ Needs Node 22.12 or newer. No Docker, no Supabase account and no Stripe account.
 ```bash
 cd platform
 npm install
-npm test            # database rules, access rules, billing, auth flows, data layer, routes
+npm test            # database rules, access rules, billing, auth flows, data layer, routes, the planning tools
 npm run typecheck
 npm run build       # also works with no settings: nothing reads them until a request arrives
 ```
@@ -88,20 +89,26 @@ Locally, `supabase/config.toml` already holds these. In the hosted project's das
 ```
 proxy.ts         Keeps sign-in fresh and turns away signed-out visitors (a courtesy, not the security).
 app/             The UI and the HTTP edge: pages, server actions, route handlers (app/api).
-components/      The page frame, forms, the renewal prompt, the billing buttons.
-lib/domain/      Pure rules: the zero-PHI check, calendar and content schemas, subscription, plans, invitations.
+components/      The page frame, forms, the renewal prompt, the billing buttons. planner/ holds the planning tools (Tailwind).
+lib/domain/      Pure rules: the zero-PHI check, calendar and content schemas, subscription, plans, invitations,
+                 and the planning tools' (stages, formats, themes, filters, adaptation, the month planner, print layout).
 lib/access/      Who is asking and what they may do: the rules (pure), page guards, route wrappers.
 lib/auth/        Sign-in and set-up as plain functions, safe redirects, our wording for errors.
 lib/billing/     Stripe: client, customer, checkout, portal, sync with Stripe, webhook.
 lib/admin/       The team, settings and billing-check flows.
+lib/calendar/    What the month planner's Save button does.
 lib/data/        Every database query. Takes the client as an argument.
 lib/supabase/    The three clients: browser, server (as the user), admin (service role).
 lib/db/          Types: database.types.ts (Supabase's shape), models.ts (ours).
 supabase/        Migrations, development seed, local settings.
-tests/           db (real PostgreSQL), domain, access, auth, billing, data, admin, api.
+tests/           db (real PostgreSQL), domain, access, auth, billing, data, admin, api, calendar, ui.
 ```
 
 Generation logic, activity templates and asset handling belong in `lib/`, never in `app/`.
+
+**Styling.** The pages built before the planning tools use the portal's own stylesheet (`app/globals.css`). The planning tools use Tailwind CSS 4 (`@tailwindcss/postcss`, set up in `postcss.config.mjs`); only its theme and utilities are imported, not its reset, so nothing older changes, and the portal's colours are available by name (`bg-garden-dark`, `text-ink`). Do not give the portal's stylesheet a class that Tailwind also has (`container`, `grid`): `tests/ui/class-names.test.ts` fails if you do.
+
+**The development library.** `supabase/seed.sql` (104 items) is generated from `supabase/seed-source/items.mjs`: edit the items and run `npm run seed:build`, and a test fails if the two disagree. `tests/db/seed.test.ts` holds the items to the content rules (valid payloads, every stage, format and theme covered, no quizzing wording). Do not add a person's name to an item.
 
 `next dev` writes an `AGENTS.md` here (a Next.js 16.4 feature that points coding agents at the version's docs). It is not committed. To stop it, set `agentRules: false` in `next.config.ts`.
 

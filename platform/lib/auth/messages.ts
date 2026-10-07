@@ -82,3 +82,10 @@ const TEAM_NOTICES = {
 
 export type TeamNoticeKey = keyof typeof TEAM_NOTICES;
 export const teamNotice = (key: unknown): string | null => lookup(TEAM_NOTICES, key);
+
+/** What the calendar page may show for `?notice=...`: a saved calendar redirects here, so the message outlives the form. */
+const CALENDAR_NOTICES = {
+  saved: "Calendar saved. It replaces any earlier calendar for that month.",
+} as const;
+
+export const calendarNotice = (key: unknown): string | null => lookup(CALENDAR_NOTICES, key);

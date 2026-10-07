@@ -81,6 +81,12 @@ describe("parseCalendarData", () => {
       expect(refused("2026-10", input).code).toBe("invalid");
     });
 
+    it("accepts a group with no size: a calendar made from a stage and a theme does not know how many people", () => {
+      const input = valid();
+      const groups = input.groups.map(({ size: _size, ...rest }) => rest);
+      expect(parseCalendarData("2026-10", { ...input, groups }).ok).toBe(true);
+    });
+
     it.each([
       ["a group without a name", (c: ReturnType<typeof valid>) => (c.groups[0]!.name = "  ")],
       ["a group name over 60 characters", (c: ReturnType<typeof valid>) => (c.groups[0]!.name = "x".repeat(61))],

@@ -80,12 +80,12 @@ describe("loginPath", () => {
 });
 
 describe("which pages need a signed-in person", () => {
-  it.each(["/dashboard", "/dashboard/anything", "/onboarding", "/admin", "/admin/billing", "/admin/team", "/library", "/calendar", "/calendar/2026-10"])(
+  it.each(["/dashboard", "/dashboard/anything", "/onboarding", "/admin", "/admin/billing", "/admin/team", "/library", "/calendar", "/calendar/2026-10", "/calendar/generate", "/reminiscence"])(
     "%s does",
     (path) => expect(isProtectedPath(path)).toBe(true),
   );
 
-  it.each(["/", "/login", "/signup", "/forgot-password", "/reset-password", "/join", "/auth/callback", "/api/stripe/webhook", "/administrator", "/libraryx", "/calendars"])(
+  it.each(["/", "/login", "/signup", "/forgot-password", "/reset-password", "/join", "/auth/callback", "/api/stripe/webhook", "/administrator", "/libraryx", "/calendars", "/reminiscences"])(
     "%s does not",
     (path) => expect(isProtectedPath(path)).toBe(false),
   );

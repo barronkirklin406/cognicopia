@@ -14,7 +14,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <body>
-        <a className="skip" href="#main">
+        <a className="skip print:hidden" href="#main">
           Skip to the content
         </a>
         {children}

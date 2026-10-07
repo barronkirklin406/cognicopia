@@ -31,8 +31,8 @@ export function Shell({
 
   return (
     <>
-      <header className="site-header">
-        <div className="container">
+      <header className="site-header print:hidden">
+        <div className="page-width">
           <Link className="brand" href={session ? "/dashboard" : "/"}>
             Cognicopia
           </Link>
@@ -42,6 +42,7 @@ export function Shell({
                 <>
                   {link("/dashboard", "Home")}
                   {link("/library", "Library")}
+                  {link("/reminiscence", "Reminiscence")}
                   {link("/calendar", "Calendar")}
                   {isAdmin ? (
                     <>
@@ -67,14 +68,14 @@ export function Shell({
           </nav>
         </div>
         {session ? (
-          <div className="container whoami">
+          <div className="page-width whoami">
             {membership ? `${membership.facility.facility_name} · ` : ""}
             {session.user.email ?? "Signed in"}
             {membership ? ` · ${isAdmin ? "Admin" : "Staff"}` : ""}
           </div>
         ) : null}
       </header>
-      <main id="main" className="container">
+      <main id="main" className="page-width print:m-0 print:w-full print:p-0">
         {children}
       </main>
     </>

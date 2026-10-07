@@ -17,6 +17,15 @@ export async function getCalendar(db: Db, month: string): Promise<ActivityCalend
   return data ? toCalendar(data) : null;
 }
 
+/** The facility's calendars for several months at once ('YYYY-MM' each), keyed by month. Months with no calendar are missing. */
+export async function getCalendarsForMonths(db: Db, months: readonly string[]): Promise<Map<string, ActivityCalendar>> {
+  const unique = [...new Set(months)].slice(0, 36);
+  if (unique.length === 0) return new Map();
+  const { data, error } = await db.from("activity_calendars").select("*").in("month_year", unique);
+  if (error) throw fromDbError(error);
+  return new Map(data.map((row) => [row.month_year, toCalendar(row)]));
+}
+
 /**
  * Save a calendar, replacing any that exists for the facility and month.
  * `input.generated_data` must already have passed parseCalendarData(). The

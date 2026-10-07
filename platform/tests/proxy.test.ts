@@ -35,7 +35,7 @@ beforeEach(() => {
 afterEach(() => vi.unstubAllEnvs());
 
 describe("no session cookie", () => {
-  it.each(["/dashboard", "/library", "/calendar", "/admin", "/admin/billing", "/onboarding"])("%s goes to sign in, and never asks Supabase anything", async (path) => {
+  it.each(["/dashboard", "/library", "/calendar", "/calendar/generate", "/reminiscence", "/admin", "/admin/billing", "/onboarding"])("%s goes to sign in, and never asks Supabase anything", async (path) => {
     const response = await proxy(request(path));
     expect(response.status).toBe(307);
     expect(location(response)).toBe(`https://app.example/login${path === "/dashboard" ? "" : `?next=${encodeURIComponent(path)}`}`);
@@ -168,7 +168,7 @@ describe("when Supabase is not configured", () => {
 describe("what it covers", () => {
   const pattern = new RegExp(`^${config.matcher[0]}$`);
 
-  it.each(["/", "/login", "/dashboard", "/admin/billing", "/library", "/calendar", "/join", "/auth/callback", "/reset-password"])("runs for the page %s", (path) => {
+  it.each(["/", "/login", "/dashboard", "/admin/billing", "/library", "/calendar", "/calendar/generate", "/reminiscence", "/join", "/auth/callback", "/reset-password"])("runs for the page %s", (path) => {
     expect(pattern.test(path), path).toBe(true);
   });
 

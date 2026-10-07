@@ -8,6 +8,41 @@
  * Nothing depends on colour alone: states have words.
  */
 
+/*
+ * Tailwind CSS 4 is used for the planning tools (components/planner, the dashboard, the calendar).
+ * Only its theme and its utilities are imported, not its "preflight" reset, so the pages built
+ * before it keep looking exactly as they did. The portal's own rules below sit in the
+ * "components" layer, beneath the utilities: a utility class always wins over them, which is
+ * what you expect from a utility. Colours are the portal's own (see :root), by name.
+ * Class names the portal used before Tailwind that Tailwind also uses were renamed
+ * (container is now page-width, grid is now tiles), so a utility never meets an old rule of the same name.
+ */
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+
+@theme inline {
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-paper: var(--paper);
+  --color-field: var(--field);
+  --color-garden: var(--garden);
+  --color-garden-dark: var(--garden-dark);
+  --color-gold: var(--gold);
+  --color-warn: var(--warn);
+  --color-rule: var(--rule);
+  --color-rule-soft: var(--rule-soft);
+  --color-tint: var(--tint);
+  --color-good-ink: var(--good-ink);
+  --color-warn-tint: var(--warn-tint);
+  --color-bad-tint: var(--bad-tint);
+  --font-display: var(--display);
+  --font-body: var(--body);
+  /* Smallest text: still 15 px or more at the root size the pages use (17 to 18 px). */
+  --text-sm: 0.9rem;
+  --text-sm--line-height: 1.4;
+}
+
 @font-face {
   font-family: "Atkinson Hyperlegible";
   src: url("/fonts/AtkinsonHyperlegible-Regular.ttf") format("truetype");
@@ -23,6 +58,7 @@
   font-display: swap;
 }
 
+@layer components {
 :root {
   --ink: #2d241d;
   --ink-soft: #514439;
@@ -108,7 +144,7 @@ a:hover { color: var(--paper); }
 
 /* ---------- layout ---------- */
 
-.container { width: min(960px, 100% - 2rem); margin-inline: auto; }
+.page-width { width: min(960px, 100% - 2rem); margin-inline: auto; }
 .narrow { width: min(34rem, 100% - 2rem); margin-inline: auto; }
 main { padding-block: 2rem 4rem; }
 .stack > * + * { margin-top: 1rem; }
@@ -116,12 +152,12 @@ main { padding-block: 2rem 4rem; }
 .row.between { justify-content: space-between; }
 .muted { color: var(--ink-soft); }
 .small { font-size: 0.9rem; }
-.grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); }
+.tiles { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); }
 
 /* ---------- header ---------- */
 
 .site-header { background: var(--paper); color: var(--field); }
-.site-header .container {
+.site-header .page-width {
   display: flex;
   flex-wrap: wrap;
   gap: 0.25rem 1.5rem;
@@ -158,7 +194,7 @@ main { padding-block: 2rem 4rem; }
 .nav .link-button:hover { text-decoration: underline; color: var(--field); }
 .nav a[aria-current="page"] { text-decoration: underline; text-decoration-thickness: 3px; }
 .site-header :focus-visible { outline-color: var(--field); }
-.whoami { font-size: 0.85rem; color: var(--field); opacity: 0.95; }
+.whoami { font-size: 0.9rem; color: var(--field); opacity: 0.95; }
 
 /* ---------- cards, badges, alerts ---------- */
 
@@ -178,7 +214,7 @@ a.card h2, a.card h3 { color: var(--garden-dark); text-decoration: underline; te
   display: inline-block;
   padding: 0.1rem 0.6rem;
   border-radius: 999px;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   font-weight: 700;
   border: 2px solid var(--ink-soft);
   background: var(--white);
@@ -279,3 +315,26 @@ td .field { margin: 0; }
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
 }
+}
+
+/*
+ * Printing. A calendar is printed from its own plain layout (components/planner/CalendarView,
+ * the part that is only there on paper) onto one landscape letter page for each stage. The page
+ * name and size sit outside the layers: an @page rule is not a style that a utility overrides.
+ * Chrome and Edge follow the named page; where a browser does not, the print dialog's own
+ * Landscape setting does the same job, and the page says so beside the Print button.
+ */
+@page calendar {
+  size: letter landscape;
+  margin: 0.4in;
+}
+.print-calendar {
+  page: calendar;
+}
+@media print {
+  /* A table that runs onto a second page repeats its weekday row, and a week is never cut in two. */
+  thead { display: table-header-group; }
+  tr { break-inside: avoid; }
+  body { background: #fff; color: #000; }
+}
+

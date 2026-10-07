@@ -1,6 +1,9 @@
 import { z } from "zod";
 import type { Enums } from "@/lib/db/database.types";
+import { ACTIVITY_FORMATS } from "./formats";
+import { DECADES, SENSES } from "./reminiscence";
 import { type ParseResult, invalid } from "./result";
+import { THEME_IDS } from "./themes";
 
 /**
  * The shared activity library (the content_items table).
@@ -17,6 +20,8 @@ export const CONTENT_CATEGORIES = [
   "movement",
   "music",
   "multisensory",
+  "reminiscence",
+  "trivia",
 ] as const;
 export type ContentCategory = (typeof CONTENT_CATEGORIES)[number];
 
@@ -46,6 +51,17 @@ export const ContentPayloadSchema = z.strictObject({
   sensory: z.boolean().optional(),
   materials: z.array(z.string().trim().min(1).max(120)).max(30).optional(),
   steps: z.array(z.string().trim().min(1).max(400)).max(30).optional(),
+  /** What kind of activity it is, for filtering. Left out, it is taken from the category (lib/domain/formats.ts). */
+  formats: z.array(z.enum(ACTIVITY_FORMATS)).min(1).max(3).optional(),
+  /** The calendar themes it fits (lib/domain/themes.ts). None: it fits any month. */
+  themes: z.array(z.enum(THEME_IDS)).max(6).optional(),
+  /** Reminiscence prompts: the decade it is set in, and the senses it draws on. */
+  decade: z.union([z.literal(DECADES[0]), z.literal(DECADES[1]), z.literal(DECADES[2]), z.literal(DECADES[3])]).optional(),
+  senses: z.array(z.enum(SENSES)).min(1).max(3).optional(),
+  /** Reminiscence prompts: what to say next. Invitations, not tests. */
+  follow_ups: z.array(z.string().trim().min(1).max(200)).max(6).optional(),
+  /** Trivia: questions with the answer to read out. */
+  questions: z.array(z.strictObject({ q: z.string().trim().min(1).max(200), a: z.string().trim().min(1).max(120) })).max(12).optional(),
   /** The generator that draws this activity, and its settings. */
   template: z
     .strictObject({
