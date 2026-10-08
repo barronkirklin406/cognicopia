@@ -12,12 +12,18 @@
    used. Change VERSION only to clear old copies; updates to the pages
    themselves arrive on their own.
    ===================================================================== */
-const VERSION = "cognicopia-v11";
+const VERSION = "cognicopia-v16";
 const CORE = [
   "./", "index.html", "builder.html", "profile.html", "manifest.webmanifest",
   "assets/cognicopia-logo.jpg", "assets/icon-192.png", "assets/icon-512.png", "assets/icon-maskable-512.png",
   "assets/cognicopia-coloring/cognicopia-coloring.js", "assets/services/vectorEngine.js", "assets/services/secureStore.js", "assets/services/reminiscenceEngine.js", "assets/services/slpClinicalService.js", "assets/services/heirloomService.js", "assets/services/facilityPlanner.js", "assets/services/academy.js", "assets/services/nightShift.js",
-  "assets/vendor/jspdf.umd.min.js", "assets/vendor/jspdf-atkinson.js"
+  "assets/vendor/jspdf.umd.min.js", "assets/vendor/jspdf-atkinson.js",
+  // the hybrid coloring engine: its subjects travel in the bundle, so coloring pages draw offline
+  "assets/coloring/subjects.bundle.js", "assets/coloring/manifest.json", "src/services/ColoringManifest.js", "src/engine/ColoringEngine.js", "src/engine/ClinicalMatrix.js", "src/engine/ClinicalActivities.js", "src/engine/SoothingArt.js", "src/engine/SoothingContent.js", "src/engine/SoothingPacketEngine.js", "src/engine/ProceduralPacketEngine.js",
+  // the procedural engine behind Today's Packet: its content travels in one bundle, so the daily packet is made offline
+  // licensing: the promo code and the license badge work offline
+  "src/config/license.js", "assets/services/licenseManager.js",
+  "assets/pcg/pcg-data.bundle.js", "src/pcg/prng.js", "src/pcg/matrix.js", "src/pcg/grammar.js", "src/pcg/puzzles.js", "src/pcg/packet.js"
 ];
 const PAGE_WAIT_MS = 4000;
 

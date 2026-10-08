@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 250"
+  data-title="The Watering Can" data-tags="watering_can, garden, gardening, flower, backyard, chores, home"
+  data-angle="side_profile" data-word="can" data-completion="Out to water the garden with the" data-banner="WATERING CAN"
+  data-prompt="What would you plant in a garden of your own?">
+  <!-- the arched handle, over the top and down the back -->
+  <path fill="#fff" stroke="#000" d="M120 106 C120 30 232 20 238 120 C240 150 228 168 212 176 L206 160 C220 152 224 138 224 120 C220 48 136 52 134 106 Z"/>
+  <!-- the long spout and its rose -->
+  <path fill="#fff" stroke="#000" d="M92 200 L30 92 L44 84 L100 172 Z"/>
+  <path fill="#fff" stroke="#000" d="M45 83 L46 60 L8 82 L29 93 Z"/>
+  <ellipse cx="0" cy="0" rx="22" ry="7" transform="translate(27 71) rotate(-31)" fill="#fff" stroke="#000"/>
+  <!-- the can and its open top -->
+  <path fill="#fff" stroke="#000" d="M86 112 L204 112 L212 224 C212 232 206 236 198 236 L92 236 C84 236 78 232 78 224 Z"/>
+  <path fill="#fff" stroke="#000" d="M86 112 C86 100 204 100 204 112 C204 124 86 124 86 112 Z"/>
+  <g class="detail" fill="none" stroke="#000">
+    <path d="M83 150 L207 150"/><path d="M80 196 L210 196"/>
+  </g>
+</svg>

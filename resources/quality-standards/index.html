@@ -3,986 +3,304 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Institutional Standards &amp; Clinical Alignment - Cognicopia</title>
-  <meta name="description" content="Consolidated institutional standards, clinical validation, high-volume copier optimization, and publishing governance by Kirk Barron for senior living communities.">
+  <title>Quality Standards Hub - Cognicopia</title>
+  <meta name="description" content="Quality Standards Hub: governance pillars, a six-point state survey readiness check, a copier calibration sheet and procurement tools for memory care communities, by Kirk Barron of Minot, North Dakota. Runs entirely in your browser.">
   <style>
     *, *::before, *::after { box-sizing: border-box; }
     :root {
-      --glass-panel: rgba(20, 61, 43, 0.92);
-      --glass-dark: rgba(10, 38, 27, 0.96);
-      --brand: #52b788;
-      --brand-light: #74c69d;
-      --brand-dark: #1b4332;
-      --line: rgba(216, 243, 220, 0.24);
-      --tan: #92785e;
-      --gold: #e9c46a;
+      --primary-green: #1b382b;
+      --parchment-bg: #f4efe6;
+      --gold-accent: #c5a059;
+      --charcoal: #1a202c;
+      --muted: #3b4452;          /* 8.6:1 on parchment */
+      --paper: #ffffff;
+      --rule: #cfc6b3;
+      --warn: #7a1f1f;           /* 9.0:1 on parchment */
+      --ok: #1b382b;
+      --gutter: 0.65in;          /* the binding gutter the hub's own sheets keep */
     }
     body {
       margin: 0;
       line-height: 1.6;
-      font-family: "Trebuchet MS", "Segoe UI", sans-serif;
-      color: #ffffff !important;
+      font-family: "Atkinson Hyperlegible", "Trebuchet MS", "Segoe UI", sans-serif;
+      color: #ffffff;
       background-color: #1b4332;
       background-image:
         repeating-linear-gradient(45deg, rgba(216,243,220,.13) 0 1px, transparent 1px 72px),
         repeating-linear-gradient(-45deg, rgba(216,243,220,.13) 0 1px, transparent 1px 72px),
-        repeating-linear-gradient(45deg, rgba(82,183,136,.09) 0 1px, transparent 1px 18px),
-        repeating-linear-gradient(-45deg, rgba(82,183,136,.09) 0 1px, transparent 1px 18px),
         linear-gradient(135deg,#163d2d 0%,#1b4332 48%,#102b20 100%);
       min-height: 100vh;
     }
 
-    /* Universal Pure White High Contrast Rule */
-    body, p, h1, h2, h3, h4, li, span, a, label, strong, em, div, th, td, caption, button {
-      color: #ffffff !important;
-    }
-
-    /* WCAG Focus Visible System */
+    /* WCAG focus: a two-ring outline that shows on parchment and on green */
     :focus { outline: none; }
-    :focus-visible,
-    a:focus-visible,
-    button:focus-visible {
-      outline: 3px solid #ffffff !important;
+    :focus-visible {
+      outline: 3px solid var(--charcoal) !important;
       outline-offset: 3px !important;
-      box-shadow: 0 0 0 5px #1b4332, 0 0 14px rgba(255, 255, 255, 0.9) !important;
+      box-shadow: 0 0 0 6px #ffffff !important;
     }
-
     .skip-link {
-      position: absolute;
-      top: -60px;
-      left: 16px;
-      background: #081c15;
-      color: #ffffff !important;
-      padding: 12px 24px;
-      min-height: 48px;
-      display: inline-flex;
-      align-items: center;
-      font-size: 16px;
-      font-weight: 700;
-      border: 2px solid #52b788;
-      border-radius: 6px;
-      z-index: 9999;
-      transition: top 0.2s ease;
-      text-decoration: none;
+      position: absolute; top: -60px; left: 16px; z-index: 9999;
+      background: #081c15; color: #ffffff; padding: 12px 24px; min-height: 48px;
+      display: inline-flex; align-items: center; font-size: 16px; font-weight: 700;
+      border: 2px solid #52b788; border-radius: 6px; text-decoration: none;
+      transition: top .2s ease;
     }
     .skip-link:focus { top: 16px; }
 
-    /* Tech-Modern SaaS Navigation Bar */
-    .navbar {
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      width: 100%;
-      padding: 12px 36px;
-      box-sizing: border-box;
-      color: #ffffff !important;
-      background: rgba(8, 28, 21, 0.94);
-      border-bottom: 2px solid rgba(216, 243, 220, 0.25);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-    }
-    .nav-brand a {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      color: #ffffff !important;
-      font-size: 20px;
-      font-weight: 700;
-      text-decoration: none;
-      min-height: 48px;
-      min-width: 48px;
-      padding: 4px 8px;
-      border-radius: 6px;
-      font-family: inherit;
-    }
-    .nav-logo {
-      display: block;
-      width: 38px;
-      height: 30px;
-      flex: none;
-      object-fit: contain;
-      border-radius: 4px;
-    }
-    .nav-links {
-      display: flex;
-      gap: 16px;
-      align-items: center;
-      list-style: none;
-      margin: 0;
-      padding: 0;
-    }
-    .nav-links > li > a {
-      color: #ffffff !important;
-      font-size: 16px !important;
-      font-weight: 600;
-      text-decoration: none;
-      min-height: 48px;
-      min-width: 48px;
-      padding: 12px 18px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 6px;
-      transition: background 0.15s ease, color 0.15s ease;
-    }
-    .nav-links > li > a:hover {
-      background: rgba(82, 183, 136, 0.22);
-      color: #ffffff !important;
-    }
-    /* --- Categorized Resources Dropdown --- */
-    .dropdown { position: relative; }
-    .dropbtn {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: transparent;
-      border: 1.5px solid transparent;
-      cursor: pointer;
-      color: #ffffff !important;
-      font-family: inherit;
-      font-weight: 600;
-      font-size: 16px !important;
-      min-height: 48px;
-      min-width: 48px;
-      padding: 12px 18px;
-      border-radius: 8px;
-      transition: background 0.18s ease, border-color 0.18s ease, transform 0.15s ease;
-    }
-    .dropbtn:hover,
-    .dropdown:hover .dropbtn,
-    .dropdown.is-open .dropbtn {
-      background: rgba(82, 183, 136, 0.25);
-      border-color: rgba(216, 243, 220, 0.35);
-      color: #ffffff !important;
-    }
-    .chevron {
-      display: inline-block;
-      font-size: 13px;
-      line-height: 1;
-      transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
-      color: #74c69d !important;
-    }
-    .dropdown:hover .chevron,
-    .dropdown:focus-within .chevron,
-    .dropdown.is-open .chevron {
-      transform: rotate(180deg);
-    }
-    .dropdown-content {
-      position: absolute;
-      top: calc(100% + 8px);
-      right: 0;
-      left: auto;
-      z-index: 1000;
-      display: none;
-      width: 760px;
-      max-width: calc(100vw - 28px);
-      max-height: calc(100vh - 84px);
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
-      padding: 20px 22px 16px;
-      background: rgba(10, 36, 25, 0.98);
-      border: 2px solid rgba(216, 243, 220, 0.45);
-      border-radius: 14px;
-      box-shadow: 0 24px 55px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(82, 183, 136, 0.28);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-    }
-    .dropdown:hover .dropdown-content,
-    .dropdown:focus-within .dropdown-content,
-    .dropdown.is-open .dropdown-content { display: block !important; }
-    .dropdown-content::before {
-      content: "";
-      position: absolute;
-      left: 0;
-      right: 0;
-      top: -12px;
-      height: 12px;
-    }
-    .dropdown-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 16px 20px;
-    }
-    .dropdown-group {
-      display: flex;
-      flex-direction: column;
-    }
-    .dropdown-header {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 4px 8px 10px;
-      margin-bottom: 8px;
-      border-bottom: 1.5px solid rgba(116, 198, 157, 0.35);
-      color: #95d5b2 !important;
-      font-size: 13px !important;
-      font-weight: 800 !important;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      user-select: none;
-      cursor: default;
-      line-height: 1.3;
-    }
-    .dropdown-header svg {
-      flex-shrink: 0;
-      stroke: #74c69d;
-      color: #74c69d;
-    }
-    .dropdown-header span {
-      color: #95d5b2 !important;
-    }
-    .dropdown-links-list {
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
-    }
-    .dropdown-content a {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      min-height: 46px;
-      padding: 10px 12px;
-      color: #ffffff !important;
-      font-size: 15px !important;
-      font-weight: 600;
-      text-decoration: none;
-      border-radius: 8px;
-      line-height: 1.35;
-      white-space: normal;
-      border: 1.5px solid transparent;
-      background: transparent;
-      transition: background 0.16s ease, border-color 0.16s ease, transform 0.14s ease, color 0.16s ease;
-      box-sizing: border-box;
-    }
-    .dropdown-content a:hover,
-    .dropdown-content a:focus {
-      background: rgba(82, 183, 136, 0.3) !important;
-      border-color: rgba(216, 243, 220, 0.45) !important;
-      color: #ffffff !important;
-      transform: translateX(3px);
-    }
-    .dropdown-content a:focus-visible {
-      outline: 2px solid #ffffff !important;
-      outline-offset: 1px !important;
-    }
-    .dropdown-link-bullet {
-      color: #74c69d !important;
-      font-weight: 700;
-      font-size: 16px;
-      line-height: 1;
-      opacity: 0.85;
-      transition: transform 0.15s ease, opacity 0.15s ease;
-      flex-shrink: 0;
-    }
-    .dropdown-content a:hover .dropdown-link-bullet,
-    .dropdown-content a:focus .dropdown-link-bullet {
-      transform: translateX(2px);
-      opacity: 1;
-      color: #ffffff !important;
-    }
-    .dropdown-footer {
-      margin-top: 16px;
-      padding-top: 14px;
-      border-top: 1px solid rgba(216, 243, 220, 0.22);
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-    .dropdown-footer-label {
-      font-size: 13px !important;
-      font-weight: 700 !important;
-      text-transform: uppercase;
-      letter-spacing: 0.07em;
-      color: #b7e4c7 !important;
-      margin-right: auto;
-    }
-    .dropdown-footer a {
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      min-height: 42px;
-      padding: 8px 16px;
-      font-size: 14.5px !important;
-      font-weight: 600;
-      color: #ffffff !important;
-      background: rgba(255, 255, 255, 0.08);
-      border: 1.5px solid rgba(216, 243, 220, 0.35);
-      border-radius: 8px;
-      transform: none !important;
-    }
-    .dropdown-footer a:hover,
-    .dropdown-footer a:focus {
-      background: rgba(82, 183, 136, 0.35) !important;
-      border-color: #ffffff !important;
-      color: #ffffff !important;
-      transform: translateY(-1px) !important;
-    }
-
-    /* Central Tan Container Architecture */
+    /* ───────── the console ───────── */
     .container {
-      width: min(940px, calc(100% - 32px));
-      margin: 36px auto 60px;
-      padding: 42px 44px 58px;
-      background: var(--tan);
-      border: 1px solid rgba(216, 243, 220, 0.28);
-      border-radius: 18px;
-      box-shadow: 0 24px 70px rgba(0, 0, 0, 0.38);
-      box-sizing: border-box;
+      width: min(1040px, calc(100% - 32px));
+      margin: 28px auto 56px;
+      background: var(--parchment-bg);
+      color: var(--charcoal);
+      border: 3px solid var(--gold-accent);
+      border-radius: 14px;
+      box-shadow: 0 24px 70px rgba(0,0,0,.4);
       overflow: hidden;
     }
+    .container h1, .container h2, .container h3, .container h4,
+    .container p, .container li, .container td, .container th, .container label,
+    .container legend, .container summary, .container dt, .container dd, .container small,
+    .container span, .container strong, .container em, .container div { color: inherit; }
+    .container a { color: var(--primary-green); text-decoration: underline; text-underline-offset: 3px; }
+    .container a:hover { color: #000; }
 
-    /* Back Link & Navigation Breadcrumbs */
-    .nav-breadcrumbs {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-bottom: 24px;
-      padding-bottom: 16px;
-      border-bottom: 1px solid rgba(216, 243, 220, 0.22);
+    .qs-banner {
+      background: var(--primary-green);
+      color: #ffffff;
+      padding: 28px 34px 22px;
+      border-bottom: 4px solid var(--gold-accent);
     }
-    .back-home-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      padding: 12px 24px;
-      min-height: 48px;
-      min-width: 48px;
-      background: #1b4332;
-      border: 1.5px solid #52b788;
-      border-radius: 8px;
-      color: #ffffff !important;
-      text-decoration: none;
-      font-weight: 700;
-      font-size: 16px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-      transition: background 0.2s ease, transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    .qs-banner a { color: #ffffff; }
+    .qs-eyebrow { margin: 0 0 6px; font-size: 14px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--gold-accent); }
+    .qs-banner h1 { margin: 0; font-size: clamp(28px, 4.4vw, 40px); line-height: 1.12; font-weight: 800; color: #ffffff; }
+    .qs-sub { margin: 10px 0 0; max-width: 62ch; font-size: 18px; line-height: 1.5; color: #f4efe6; }
+    .qs-banner-row { margin-top: 18px; display: flex; flex-wrap: wrap; gap: 12px 22px; align-items: center; justify-content: space-between; }
+    .qs-publisher { margin: 0; font-size: 16px; color: #f4efe6; }
+    .qs-publisher strong { color: #ffffff; }
+    .qs-badge {
+      display: inline-flex; align-items: center; gap: 10px; flex-wrap: wrap;
+      min-height: 44px; padding: 8px 16px; border-radius: 999px;
+      background: #ffffff; color: var(--primary-green);
+      border: 2px solid var(--gold-accent);
+      font-size: 15px; font-weight: 800; letter-spacing: .01em;
     }
-    .back-home-btn:hover,
-    .back-home-btn:focus-visible {
-      background: #2d6a4f;
-      border-color: #ffffff;
-      transform: translateY(-2px);
-      box-shadow: 0 6px 18px rgba(82, 183, 136, 0.35);
-    }
-    .back-home-btn svg {
-      transition: transform 0.2s ease;
-      flex-shrink: 0;
-    }
-    .back-home-btn:hover svg {
-      transform: translateX(-4px);
-    }
-    .breadcrumb-tag {
-      font-size: 14.5px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: #ffffff !important;
-      background: rgba(14, 43, 30, 0.85);
-      padding: 8px 18px;
-      border-radius: 20px;
-      border: 1.5px solid rgba(216, 243, 220, 0.38);
-    }
+    .qs-badge span { color: var(--primary-green); }
+    .qs-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--primary-green); flex: none; box-shadow: 0 0 0 3px #d8f3dc; }
+    .qs-badge[data-state="warn"] .qs-dot { background: var(--warn); box-shadow: 0 0 0 3px #f5d9d9; }
+    .qs-badge[data-state="warn"], .qs-badge[data-state="warn"] span { color: var(--warn); }
+    .qs-badge-sep { opacity: .5; }
 
-    /* Typography & Hierarchy */
-    h1 {
-      margin: 0 0 12px;
-      font-size: clamp(28px, 4.5vw, 40px);
-      text-align: center;
-      font-family: Georgia, serif;
-      line-height: 1.3;
-      color: #ffffff !important;
-      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+    /* tabs */
+    .qs-tabs {
+      display: flex; flex-wrap: wrap; gap: 0; margin: 0; padding: 0 18px;
+      background: #e9e2d3; border-bottom: 3px solid var(--primary-green);
     }
-    h2 {
-      margin-top: 36px;
-      margin-bottom: 16px;
-      font-size: clamp(22px, 3.5vw, 30px);
-      font-family: Georgia, serif;
-      padding-bottom: 8px;
-      border-bottom: 2px solid rgba(82, 183, 136, 0.45);
-      line-height: 1.35;
-      color: #ffffff !important;
+    .qs-tab {
+      appearance: none; -webkit-appearance: none; cursor: pointer;
+      flex: 1 1 200px; min-height: 56px; padding: 10px 14px; margin: 0;
+      font-weight: 800; font-size: 16px; line-height: 1.25; font-family: inherit; text-align: center;
+      background: transparent; color: var(--charcoal);
+      border: 0; border-bottom: 6px solid transparent; border-radius: 0;
+      transition: background .15s ease, border-color .15s ease;
     }
-    h3 {
-      font-size: 22px;
-      font-family: Georgia, serif;
-      margin: 0 0 10px;
-      line-height: 1.35;
-      color: #ffffff !important;
-    }
-    p, li {
-      font-size: 16.5px;
-      line-height: 1.65;
-      color: #ffffff !important;
-    }
+    .qs-tab small { display: block; margin-top: 2px; font-size: 13px; font-weight: 600; color: var(--muted); }
+    .qs-tab:hover { background: #f4efe6; }
+    .qs-tab[aria-selected="true"] { background: var(--parchment-bg); border-bottom-color: var(--primary-green); color: var(--primary-green); }
+    .qs-tab[aria-selected="true"] small { color: var(--charcoal); }
+    .qs-panel { padding: 30px 34px 40px; }
+    .qs-panel[hidden] { display: none; }
+    .qs-panel.is-entering { animation: qs-in .22s ease; }
+    @keyframes qs-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+    @media (prefers-reduced-motion: reduce) { .qs-panel.is-entering { animation: none; } .qs-tab { transition: none; } }
 
-    .organic-vine-divider {
-      display: block;
-      width: 78%;
-      max-width: 500px;
-      height: auto;
-      margin: 16px auto 22px;
-      color: var(--brand);
-    }
-    .vine-subtitle {
-      display: block;
-      margin: 0 auto 28px;
-      font-size: 18.5px;
-      font-weight: 600;
-      letter-spacing: 0.03em;
-      text-align: center;
-      max-width: 68ch;
-      line-height: 1.6;
-      color: #ffffff !important;
-    }
+    /* type inside the panels */
+    .qs-panel h2 { margin: 0 0 6px; font-size: clamp(24px, 3.2vw, 31px); line-height: 1.2; color: var(--primary-green); }
+    .qs-panel h3 { margin: 26px 0 8px; font-size: 20px; line-height: 1.3; color: var(--primary-green); }
+    .qs-panel p, .qs-panel li { font-size: 17px; line-height: 1.6; }
+    .qs-lead { margin: 0 0 18px; max-width: 70ch; font-size: 19px !important; line-height: 1.55 !important; }
+    .qs-note { margin: 14px 0 0; padding: 12px 16px; border-left: 6px solid var(--gold-accent); background: #fbf8f1; font-size: 16px !important; color: var(--charcoal); }
+    .qs-muted { color: var(--muted); }
+    .qs-kicker { margin: 0 0 4px; font-size: 14px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
 
-    /* Executive Highlights Bar */
-    .executive-summary-bar {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-      margin: 28px 0 34px;
-    }
-    .summary-metric-card {
-      background: rgba(14, 43, 30, 0.92);
-      border: 1.5px solid rgba(82, 183, 136, 0.45);
-      border-radius: 12px;
-      padding: 22px 20px;
-      text-align: center;
-      box-shadow: 0 6px 18px rgba(0,0,0,0.22);
-    }
-    .metric-number {
-      display: block;
-      font-size: 28px;
-      font-weight: 700;
-      font-family: Georgia, serif;
-      color: #ffffff !important;
-      margin-bottom: 4px;
-    }
-    .metric-label {
-      font-size: 15px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: #ffffff !important;
-    }
-    .metric-detail {
-      font-size: 16px;
-      margin-top: 8px;
-      line-height: 1.6;
-      color: #ffffff !important;
-    }
+    .qs-grid { display: grid; gap: 18px; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); margin: 18px 0; }
+    .qs-card { background: #fbf8f1; border: 2px solid var(--primary-green); border-radius: 10px; padding: 20px 22px 22px; }
+    .qs-card h3 { margin-top: 0; }
+    .qs-card ul { margin: 8px 0 0; padding-left: 20px; }
+    .qs-card li { margin: 0 0 8px; }
+    .qs-card .qs-tag { display: inline-block; margin: 0 0 10px; padding: 3px 10px; border-radius: 4px; background: var(--primary-green); color: #fff; font-size: 13px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
+    .qs-cite { font-size: 15px !important; color: var(--muted); }
 
-    /* Institutional Pillar Sections */
-    .pillar-section {
-      background: var(--glass-panel);
-      border: 1.5px solid var(--line);
-      border-radius: 16px;
-      padding: 34px 30px;
-      margin-bottom: 38px;
-      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.28);
-      position: relative;
-    }
-    .pillar-header-wrap {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 18px;
-      flex-wrap: wrap;
-      margin-bottom: 20px;
-    }
-    .pillar-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: #2d6a4f;
-      border: 1.5px solid #74c69d;
-      border-radius: 20px;
-      padding: 6px 16px;
-      min-height: 36px;
-      font-size: 14px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: #ffffff !important;
-      margin-bottom: 8px;
-    }
-    .pillar-title {
-      font-size: 26px;
-      font-family: Georgia, serif;
-      margin: 0 0 8px;
-      line-height: 1.35;
-      color: #ffffff !important;
-    }
-    .pillar-kicker {
-      font-size: 16.5px;
-      font-weight: 700;
-      color: #ffffff !important;
-      margin-bottom: 12px;
-    }
-    .pillar-preview-grid {
-      display: grid;
-      grid-template-columns: 290px 1fr;
-      gap: 24px;
-      align-items: center;
-      margin: 22px 0;
-    }
-    .pillar-visual-box {
-      background: rgba(14, 43, 30, 0.95);
-      border-radius: 12px;
-      padding: 16px;
-      border: 2px solid #52b788;
-      box-shadow: 0 8px 22px rgba(0,0,0,0.3);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-    }
-    .pillar-visual-box svg {
-      width: 100%;
-      height: auto;
-      max-height: 190px;
-      display: block;
-    }
-    .pillar-visual-caption {
-      margin-top: 10px;
-      font-size: 14px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: #ffffff !important;
-      line-height: 1.5;
-    }
+    .qs-table-wrap { overflow-x: auto; margin: 16px 0; border: 2px solid var(--primary-green); border-radius: 8px; background: #fff; }
+    table.qs-table { width: 100%; border-collapse: collapse; min-width: 640px; }
+    .qs-table th, .qs-table td { padding: 12px 14px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--rule); font-size: 16px; line-height: 1.5; color: var(--charcoal); }
+    .qs-table thead th { background: var(--primary-green); color: #fff; font-size: 15px; }
+    .qs-table tbody th { background: #f4efe6; width: 20%; }
+    .qs-table tr:last-child td, .qs-table tr:last-child th { border-bottom: 0; }
 
-    /* Core Bullet Items */
-    .standards-list {
-      list-style: none;
-      padding: 0;
-      margin: 16px 0;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-    .standards-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      background: rgba(14, 43, 30, 0.85);
-      border: 1px solid rgba(82, 183, 136, 0.35);
-      border-radius: 8px;
-      padding: 14px 16px;
-    }
-    .standards-item svg {
-      flex-shrink: 0;
-      stroke: #74c69d;
-      margin-top: 3px;
-    }
-    .standards-item strong {
-      display: block;
-      font-size: 16.5px;
-      font-weight: 700;
-      color: #ffffff !important;
-      margin-bottom: 3px;
-    }
-    .standards-item span {
-      font-size: 16px;
-      line-height: 1.6;
-      color: #ffffff !important;
-    }
+    .qs-guarantee { margin-top: 26px; padding: 20px 24px; border: 3px double var(--primary-green); border-radius: 10px; background: #fbf8f1; }
+    .qs-guarantee h3 { margin-top: 0; }
 
-    /* Action Links within Category Cards */
-    .pillar-actions-row {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin-top: 22px;
-      padding-top: 18px;
-      border-top: 1px solid rgba(216, 243, 220, 0.22);
+    /* buttons */
+    .qs-btn {
+      appearance: none; -webkit-appearance: none; cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      min-height: 48px; padding: 10px 20px; margin: 0;
+      font-weight: 800; font-size: 16px; line-height: 1.2; font-family: inherit; text-decoration: none !important;
+      color: #fff; background: var(--primary-green);
+      border: 3px solid var(--primary-green); border-radius: 8px;
     }
-    .btn-pillar-primary {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 14px 24px;
-      min-height: 48px;
-      min-width: 48px;
-      background: #2d6a4f;
-      border: 1.5px solid #52b788;
-      border-radius: 8px;
-      color: #ffffff !important;
-      text-decoration: none;
-      font-weight: 700;
-      font-size: 16px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.22);
-      transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
-    }
-    .btn-pillar-primary:hover,
-    .btn-pillar-primary:focus-visible {
-      background: #40916c;
-      border-color: #ffffff;
-      transform: translateY(-2px);
-      box-shadow: 0 6px 18px rgba(82, 183, 136, 0.35);
-    }
-    .btn-pillar-secondary {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 14px 22px;
-      min-height: 48px;
-      min-width: 48px;
-      background: rgba(14, 43, 30, 0.85);
-      border: 1.5px solid rgba(216, 243, 220, 0.4);
-      border-radius: 8px;
-      color: #ffffff !important;
-      text-decoration: none;
-      font-weight: 600;
-      font-size: 16px;
-      transition: background 0.2s ease, border-color 0.2s ease;
-    }
-    .btn-pillar-secondary:hover,
-    .btn-pillar-secondary:focus-visible {
-      background: #1b4332;
-      border-color: #74c69d;
-    }
+    .qs-btn:hover { background: #102b20; border-color: #102b20; color: #fff; }
+    .qs-btn.secondary { background: #fff; color: var(--primary-green); }
+    .qs-btn.secondary:hover { background: #f4efe6; color: #102b20; }
+    .qs-btn[disabled] { opacity: .55; cursor: not-allowed; }
+    .qs-actions { display: flex; flex-wrap: wrap; gap: 12px; margin: 18px 0 0; }
 
-    /* Comparison Matrix Table */
-    .table-container {
-      width: 100%;
-      overflow-x: auto;
-      margin: 24px 0;
-      border-radius: 10px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+    /* forms */
+    .qs-form { display: grid; gap: 14px 18px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin: 16px 0; }
+    .qs-field label, .qs-field .qs-label { display: block; margin: 0 0 4px; font-size: 15px; font-weight: 800; color: var(--charcoal); }
+    .qs-field input[type=text], .qs-field input[type=number], .qs-field input[type=date], .qs-field select {
+      width: 100%; min-height: 48px; padding: 8px 12px; font-weight: 600; font-size: 17px; line-height: 1.3; font-family: inherit;
+      color: var(--charcoal); background: #fff; border: 2px solid var(--charcoal); border-radius: 8px;
     }
-    .specs-table {
-      width: 100%;
-      border-collapse: collapse;
-      background: rgba(14, 43, 30, 0.95);
-      border: 1px solid var(--line);
-      font-size: 16px;
-      text-align: left;
-    }
-    .specs-table th,
-    .specs-table td {
-      padding: 16px 18px;
-      border: 1px solid rgba(216, 243, 220, 0.22);
-      vertical-align: top;
-      line-height: 1.6;
-      color: #ffffff !important;
-    }
-    .specs-table th {
-      background: rgba(27, 67, 50, 0.98);
-      font-weight: 700;
-      color: #ffffff !important;
-    }
-    .specs-table tr:nth-child(even) td {
-      background: rgba(20, 61, 43, 0.65);
-    }
+    .qs-field .qs-hint { margin: 4px 0 0; font-size: 14px !important; color: var(--muted); line-height: 1.4 !important; }
 
-    /* Administrative Readiness Callout Banner */
-    .admin-callout-banner {
-      background: rgba(20, 61, 43, 0.95);
-      border-left: 5px solid #74c69d;
-      border-radius: 0 12px 12px 0;
-      padding: 24px;
-      margin: 28px 0;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    /* Tool A: audit checklist */
+    .qs-score {
+      display: grid; gap: 16px 28px; grid-template-columns: auto 1fr; align-items: center;
+      margin: 18px 0; padding: 18px 22px; background: #fff; border: 3px solid var(--primary-green); border-radius: 10px;
     }
-    .admin-callout-banner p,
-    .admin-callout-banner li {
-      font-size: 16px;
-      line-height: 1.6;
-      color: #ffffff !important;
-    }
+    .qs-score-num { font-size: 52px; line-height: 1; font-weight: 800; color: var(--primary-green); min-width: 3.4ch; }
+    .qs-score-num small { font-size: 24px; font-weight: 800; }
+    .qs-meter { height: 22px; border: 3px solid var(--charcoal); border-radius: 12px; background: #fff; overflow: hidden; }
+    .qs-meter > i { display: block; height: 100%; width: 0; background: var(--primary-green); transition: width .25s ease; }
+    @media (prefers-reduced-motion: reduce) { .qs-meter > i { transition: none; } }
+    .qs-score-label { margin: 8px 0 0; font-size: 17px; font-weight: 800; }
+    ol.qs-checks { list-style: none; margin: 18px 0; padding: 0; display: grid; gap: 14px; counter-reset: qs; }
+    ol.qs-checks > li { counter-increment: qs; background: #fff; border: 2px solid var(--charcoal); border-radius: 10px; padding: 0; }
+    ol.qs-checks > li.is-on { border-color: var(--primary-green); background: #f6faf6; box-shadow: inset 8px 0 0 var(--primary-green); }
+    .qs-check-row { display: grid; grid-template-columns: 52px 1fr; gap: 6px 14px; padding: 16px 18px 16px 22px; }
+    .qs-check-row input[type=checkbox] { width: 32px; height: 32px; margin: 4px 0 0; accent-color: var(--primary-green); cursor: pointer; }
+    .qs-check-row label { display: block; cursor: pointer; font-size: 18px; font-weight: 800; line-height: 1.35; }
+    .qs-check-row label::before { content: counter(qs) ". "; color: var(--primary-green); }
+    .qs-check-detail { grid-column: 2; margin: 2px 0 0; font-size: 16px !important; color: var(--charcoal); }
+    .qs-check-detail strong { color: var(--primary-green); }
+    .qs-lock-note { margin: 12px 0; padding: 12px 16px; border: 3px solid var(--warn); border-radius: 8px; background: #fff; color: var(--warn); font-weight: 700; }
+    .qs-lock-note[hidden] { display: none; }
 
-    /* Formal Verification & Institutional Quality Assurance Box */
-    .standards-guarantee-box {
-      background: rgba(20, 61, 43, 0.95);
-      border: 2px solid #52b788;
-      border-radius: 14px;
-      padding: 28px 24px;
-      margin: 32px 0;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
-      display: grid;
-      grid-template-columns: 110px 1fr;
-      gap: 22px;
-      align-items: center;
-      box-sizing: border-box;
-      width: 100%;
-      max-width: 100%;
-      overflow: hidden;
-    }
-    .standards-guarantee-seal-wrap {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-    }
-    .standards-seal-icon {
-      width: 84px;
-      height: 84px;
-      color: #74c69d;
-      filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.35));
-    }
-    .standards-seal-caption {
-      font-size: 13.5px;
-      font-weight: 700;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      color: #ffffff !important;
-      margin-top: 8px;
-      line-height: 1.4;
-    }
-    .standards-guarantee-content {
-      box-sizing: border-box;
-      width: 100%;
-    }
-    .standards-guarantee-content h3 {
-      font-family: Georgia, serif;
-      font-size: 22px;
-      font-weight: 700;
-      color: #ffffff !important;
-      margin: 0 0 12px;
-      line-height: 1.35;
-    }
-    .standards-guarantee-content p {
-      font-size: 16.5px;
-      line-height: 1.65;
-      color: #ffffff !important;
-      margin: 0 0 16px;
-    }
-    .standards-guarantee-points {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px 16px;
-      margin-bottom: 20px;
-      box-sizing: border-box;
-      width: 100%;
-    }
-    .standards-point-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 15.5px;
-      line-height: 1.5;
-      font-weight: 600;
-      color: #ffffff !important;
-      word-wrap: break-word;
-    }
-    .standards-point-item svg {
-      color: #74c69d;
-      stroke: #74c69d;
-      flex-shrink: 0;
-    }
-    .standards-point-item span {
-      color: #ffffff !important;
-    }
-    .standards-point-item a {
-      color: #ffffff !important;
-      text-decoration: underline;
-      font-weight: 700;
-    }
-    .standards-cta-actions {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      flex-wrap: wrap;
-      box-sizing: border-box;
-      width: 100%;
-      margin-top: 18px;
-    }
+    /* Tool B: calibration */
+    .qs-cal { display: grid; gap: 22px; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); align-items: start; margin: 16px 0; }
+    @media (max-width: 860px) { .qs-cal { grid-template-columns: 1fr; } }
+    .qs-sheet-wrap { background: #e9e2d3; padding: 14px; border: 2px solid var(--charcoal); border-radius: 10px; }
+    .qs-sheet-wrap svg { display: block; width: 100%; height: auto; max-width: 560px; margin: 0 auto; background: #fff; border: 1px solid var(--charcoal); box-shadow: 0 6px 18px rgba(0,0,0,.25); }
+    .qs-legend { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 6px; font-size: 15px; }
+    .qs-legend li { display: flex; gap: 10px; align-items: center; font-size: 15px; }
+    .qs-swatch { flex: none; width: 26px; height: 16px; border: 2px solid var(--charcoal); background: #fff; }
+    .qs-swatch.gutter { background: var(--gold-accent); }
+    .qs-swatch.dash { border-style: dashed; }
+    .qs-toggles { display: flex; flex-wrap: wrap; gap: 10px 22px; margin: 12px 0; }
+    .qs-toggles label { display: inline-flex; gap: 8px; align-items: center; min-height: 44px; font-size: 16px; font-weight: 700; cursor: pointer; }
+    .qs-toggles input { width: 24px; height: 24px; accent-color: var(--primary-green); }
+    ol.qs-steps { margin: 8px 0 0; padding-left: 24px; }
+    ol.qs-steps li { margin: 0 0 8px; }
 
-    /* Bottom Action Group */
-    .standards-bottom-cta {
-      background: rgba(14, 43, 30, 0.94);
-      border: 2px solid #52b788;
-      border-radius: 14px;
-      padding: 34px 28px;
-      text-align: center;
-      margin-top: 36px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
-    }
-    .standards-bottom-cta h2 {
-      margin-top: 0;
-      border: none;
-      padding: 0;
-      font-size: 26px;
-      color: #ffffff !important;
-    }
-    .cta-button-group {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 16px;
-      flex-wrap: wrap;
-      margin-top: 24px;
-    }
-    .btn-cta-main {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 9px;
-      padding: 14px 26px;
-      min-height: 48px;
-      min-width: 48px;
-      background: #2d6a4f;
-      border: 2px solid #52b788;
-      border-radius: 8px;
-      color: #ffffff !important;
-      text-decoration: none;
-      font-weight: 700;
-      font-size: 16px;
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
-      transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
-    }
-    .btn-cta-main:hover,
-    .btn-cta-main:focus-visible {
-      background: #40916c;
-      border-color: #ffffff;
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(82, 183, 136, 0.4);
-    }
-    .btn-cta-alt {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 9px;
-      padding: 14px 24px;
-      min-height: 48px;
-      min-width: 48px;
-      background: rgba(20, 61, 43, 0.85);
-      border: 1.5px solid rgba(216, 243, 220, 0.4);
-      border-radius: 8px;
-      color: #ffffff !important;
-      text-decoration: none;
-      font-weight: 600;
-      font-size: 16px;
-      transition: background 0.2s ease, border-color 0.2s ease;
-    }
-    .btn-cta-alt:hover,
-    .btn-cta-alt:focus-visible {
-      background: #1b4332;
-      border-color: #74c69d;
-    }
+    /* Tool C */
+    .qs-calc { display: grid; gap: 22px; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; margin: 16px 0; }
+    @media (max-width: 860px) { .qs-calc { grid-template-columns: 1fr; } }
+    .qs-total { margin: 14px 0 0; padding: 16px 20px; background: #fff; border: 3px solid var(--primary-green); border-radius: 10px; }
+    .qs-total dl { margin: 0; display: grid; grid-template-columns: 1fr auto; gap: 6px 16px; }
+    .qs-total dt, .qs-total dd { margin: 0; font-size: 17px; }
+    .qs-total dd { font-weight: 800; text-align: right; font-variant-numeric: tabular-nums; }
+    .qs-total .qs-grand { font-size: 24px; color: var(--primary-green); padding-top: 8px; border-top: 2px solid var(--charcoal); }
+    table.qs-sec { width: 100%; border-collapse: collapse; margin: 10px 0; background: #fff; border: 2px solid var(--charcoal); }
+    .qs-sec th, .qs-sec td { padding: 10px 12px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--rule); font-size: 16px; color: var(--charcoal); }
+    .qs-sec th { width: 46%; background: #f4efe6; }
+    .qs-pill { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 14px; font-weight: 800; border: 2px solid var(--primary-green); color: var(--primary-green); background: #fff; }
+    .qs-pill.bad { border-color: var(--warn); color: var(--warn); }
+    .qs-pill.wait { border-color: var(--muted); color: var(--muted); }
 
-    /* Site Footer */
-    .site-footer {
-      text-align: center;
-      padding: 24px 20px 48px;
-      font-size: 15.5px;
-      line-height: 1.6;
-      color: #ffffff !important;
-      opacity: 0.95;
-      border-top: 1px solid var(--line);
-      background: rgba(8, 28, 21, 0.85);
-    }
+    /* the vendor sheet dialog */
+    dialog.qs-dialog { width: min(820px, calc(100% - 24px)); max-height: calc(100vh - 32px); padding: 0; border: 4px solid var(--primary-green); border-radius: 12px; background: var(--parchment-bg); color: var(--charcoal); }
+    dialog.qs-dialog::backdrop { background: rgba(6, 20, 14, .8); }
+    .qs-dialog-bar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; padding: 14px 18px; background: var(--primary-green); color: #fff; }
+    .qs-dialog-bar h2 { margin: 0; font-size: 20px; color: #fff; }
+    .qs-dialog-body { padding: 18px; overflow: auto; max-height: calc(100vh - 150px); background: #e9e2d3; }
+    .qs-dialog-body .qs-doc { margin: 0 auto; box-shadow: 0 6px 18px rgba(0,0,0,.3); }
 
-    /* Responsive Breakpoints */
-    @media (max-width: 820px) {
-      .executive-summary-bar {
-        grid-template-columns: 1fr;
-      }
-      .pillar-preview-grid {
-        grid-template-columns: 1fr;
-      }
-      .pillar-visual-box {
-        max-width: 320px;
-        margin: 0 auto;
-      }
-      .standards-guarantee-box {
-        grid-template-columns: 1fr;
-        text-align: center;
-        padding: 24px 18px;
-      }
-      .standards-guarantee-points {
-        grid-template-columns: 1fr;
-        text-align: left;
-      }
+    /* printed documents (on screen they are previews of the paper) */
+    .qs-doc {
+      width: 8.5in; max-width: 100%; background: #fff; color: #000;
+      font-family: "Atkinson Hyperlegible", "Trebuchet MS", Arial, sans-serif;
+      padding: .5in .5in .5in var(--gutter); line-height: 1.35;
     }
+    .qs-doc h1 { margin: 0 0 4pt; font-size: 22pt; line-height: 1.15; color: #000; }
+    .qs-doc h2 { margin: 12pt 0 4pt; font-size: 14pt; color: #000; }
+    .qs-doc p, .qs-doc li, .qs-doc td, .qs-doc th { font-size: 11pt; line-height: 1.35; color: #000; }
+    .qs-doc .d-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 12pt; padding-bottom: 6pt; border-bottom: 3pt solid #000; margin-bottom: 10pt; }
+    .qs-doc .d-meta { text-align: right; font-size: 11pt; font-weight: 700; }
+    .qs-doc table { width: 100%; border-collapse: collapse; margin: 6pt 0; }
+    .qs-doc th, .qs-doc td { border: 2pt solid #000; padding: 5pt 7pt; text-align: left; vertical-align: top; }
+    .qs-doc th { background: #fff; font-weight: 800; }
+    .qs-doc .d-box { display: inline-block; width: 13pt; height: 13pt; border: 2pt solid #000; vertical-align: -2pt; margin-right: 6pt; text-align: center; line-height: 11pt; font-weight: 800; font-size: 11pt; }
+    .qs-doc .d-score { display: flex; align-items: center; gap: 16pt; border: 3pt solid #000; padding: 8pt 12pt; margin: 8pt 0; }
+    .qs-doc .d-score b { font-size: 34pt; line-height: 1; }
+    .qs-doc .d-line { display: inline-block; min-width: 2.2in; border-bottom: 2pt solid #000; height: 1.1em; vertical-align: bottom; }
+    .qs-doc .d-sign { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18pt; margin-top: 22pt; }
+    .qs-doc .d-sign div { border-top: 2pt solid #000; padding-top: 3pt; font-size: 10pt; }
+    .qs-doc .d-foot { margin-top: 12pt; padding-top: 6pt; border-top: 2pt solid #000; font-size: 10pt !important; }
+    .qs-doc .d-fill { border-bottom: 2pt solid #000; min-height: 20pt; }
+    .qs-doc .d-tight th, .qs-doc .d-tight td { padding: 3pt 6pt; }
+    .qs-doc .d-tight .d-fill { min-height: 22pt; }
+    .qs-doc.is-cal { padding: 0; height: 11in; overflow: hidden; }
+    .qs-doc.is-cal svg { display: block; width: 8.5in; height: 11in; }
+
+    .site-footer { margin: 0 auto 40px; width: min(1040px, calc(100% - 32px)); padding: 18px 8px; text-align: center; font-size: 15px; color: #d8f3dc; }
+    .qs-print-root { display: none; }
+
     @media (max-width: 640px) {
-      .navbar {
-        padding: 12px 18px;
-        flex-wrap: wrap;
-        gap: 10px;
-      }
-      .nav-links {
-        width: 100%;
-        justify-content: flex-end;
-        gap: 10px;
-      }
-      .dropdown-content {
-        width: min(440px, calc(100vw - 20px));
-        right: 0;
-        max-height: 80vh;
-        padding: 16px 14px 12px;
-      }
-      .dropdown-grid {
-        grid-template-columns: 1fr;
-        gap: 14px;
-      }
-      .dropdown-group {
-        border-bottom: 1px solid rgba(216, 243, 220, 0.16);
-        padding-bottom: 12px;
-      }
-      .dropdown-group:last-child {
-        border-bottom: none;
-        padding-bottom: 0;
-      }
-      .dropdown-footer {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 8px;
-        margin-top: 12px;
-        padding-top: 12px;
-      }
-      .dropdown-footer-label {
-        text-align: center;
-        margin-right: 0;
-        margin-bottom: 4px;
-      }
-      .dropdown-footer a {
-        width: 100%;
-        justify-content: center;
-      }
-      .container {
-        margin: 20px auto;
-        padding: 26px 18px 36px;
-      }
-      .pillar-section {
-        padding: 24px 16px;
-      }
-      .cta-button-group,
-      .standards-cta-actions {
-        flex-direction: column;
-        width: 100%;
-      }
-      .btn-cta-main,
-      .btn-cta-alt,
-      .back-home-btn,
-      .btn-pillar-primary,
-      .btn-pillar-secondary {
-        width: 100%;
-        text-align: center;
-        justify-content: center;
-      }
-      .specs-table th,
-      .specs-table td {
-        padding: 12px 14px;
-        font-size: 15px;
-      }
+      .container { width: calc(100% - 20px); margin: 14px auto 36px; border-radius: 10px; }
+      .qs-banner { padding: 22px 18px 18px; }
+      .qs-panel { padding: 22px 16px 32px; }
+      .qs-tabs { padding: 0; }
+      .qs-tab { flex: 1 1 100%; border-bottom-width: 3px; border-left: 6px solid transparent; text-align: left; }
+      .qs-tab[aria-selected="true"] { border-left-color: var(--primary-green); border-bottom-color: transparent; }
+      .qs-score { grid-template-columns: 1fr; }
+      .qs-actions .qs-btn { width: 100%; }
     }
-  
+
+    /* ───────── print ─────────
+       Printing a tool's sheet (body[data-print="sheet"]): only #qsPrintRoot prints, on US Letter, edge to edge, and
+       each sheet keeps its own 0.65 in binding gutter and 0.5 in margins. Printing the page itself (Ctrl+P) prints the
+       tab that is open, in pure black on white, with the same gutter. */
+    @page { size: 8.5in 11in; margin: 0.5in 0.5in 0.5in 0.65in; }
+    @media print {
+      html, body { background: #fff !important; background-image: none !important; padding: 0 !important; margin: 0 !important; color: #000 !important; min-height: 0 !important; }
+      .cg-sidebar, .cg-sidebar-toggle, .cg-sb-overlay, .cg-topbar, .cg-crumbs, .skip-link, .qs-no-print, .qs-tabs, .qs-actions, .qs-btn,
+      .site-footer, .qs-toggles, .qs-form, dialog.qs-dialog, .qs-lock-note { display: none !important; }
+      .container { width: auto !important; margin: 0 !important; border: 0 !important; border-radius: 0 !important; box-shadow: none !important; background: #fff !important; overflow: visible !important; color: #000 !important; }
+      .qs-banner { background: #fff !important; color: #000 !important; border-bottom: 3pt solid #000 !important; padding: 0 0 8pt !important; }
+      .qs-banner *, .container * { color: #000 !important; background-color: transparent !important; box-shadow: none !important; text-shadow: none !important; }
+      .qs-badge { border: 2pt solid #000 !important; }
+      .qs-panel { padding: 8pt 0 0 !important; }
+      .qs-panel[hidden] { display: none !important; }
+      .qs-card, .qs-note, .qs-guarantee, .qs-total, .qs-score, ol.qs-checks > li, .qs-table-wrap { border: 2.25pt solid #000 !important; border-radius: 0 !important; break-inside: avoid; }
+      .qs-table thead th { background: #fff !important; border-bottom: 3pt solid #000 !important; }
+      .qs-table th, .qs-table td { border-bottom: 1.5pt solid #000 !important; }
+      .qs-meter { border: 2.25pt solid #000 !important; }
+      .qs-meter > i { background: #000 !important; }
+      h2, h3 { break-after: avoid; }
+      a { text-decoration: none !important; }
+
+      body[data-print="sheet"] > *:not(#qsPrintRoot) { display: none !important; }
+      body[data-print="sheet"] #qsPrintRoot { display: block !important; }
+      #qsPrintRoot .qs-doc { width: 8.5in; height: 11in; max-width: none; margin: 0; box-shadow: none; page-break-after: always; break-after: page; overflow: hidden; }
+      #qsPrintRoot .qs-doc:last-child { page-break-after: auto; break-after: auto; }
+      #qsPrintRoot .qs-doc *, #qsPrintRoot .qs-doc { color: #000 !important; }
+      #qsPrintRoot .qs-doc svg * { vector-effect: none; }
+      #qsPrintRoot .qs-doc { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+
 /* ═══════════════════════════════════════════════════════════
    COGNICOPIA  —  LEFT-HAND SIDEBAR NAV  (shared)
    ══════════════════════════════════════════════════════════= */
@@ -1079,7 +397,7 @@ body { padding-left: var(--sb-w); }
   .cg-sb-overlay.is-open { display: block; }
 }
 .navbar { display: none !important; }
-</style>
+  </style>
 <style id="cg-categories-toggle">
 /* Mobile menu button: hamburger icon + "Categories" label */
 .cg-sidebar-toggle{top:10px;left:12px;width:auto;height:40px;padding:8px 12px;gap:8px;max-width:calc(100vw - 24px);
@@ -1096,12 +414,16 @@ body { padding-left: var(--sb-w); }
 </style>
 <style id="cg-nav-css">
 /* Site navigation: tools first, one Resource & Clinical Hub section, breadcrumbs.
+   Every link and button is at least 44 px tall, for touchscreens.
    Generated by scripts/site-nav.mjs; the sidebar's base styles stay in each page.
    Several pages set "color: #fff !important" and "p, li { font-size }" on every
    element, so the parts added here pin their own colors and sizes to look the
    same on every page. */
 .cg-sb-nav{flex:1 0 auto;display:flex;flex-direction:column}
 .cg-sb-nav .cg-sidebar-nav{flex:1}
+.cg-sidebar-nav a{min-height:44px;align-items:center}
+.cg-sidebar-toggle{height:44px!important}
+.cg-sb-acc > summary{min-height:44px;box-sizing:border-box}
 .cg-sidebar-nav a .cg-sb-ico{flex:none;margin-top:1px;color:var(--sb-muted);transition:color .13s}
 .cg-sidebar-nav a:hover .cg-sb-ico,.cg-sidebar-nav a.active .cg-sb-ico{color:var(--sb-accent)}
 .cg-sb-acc > summary{list-style:none;cursor:pointer;margin:4px 6px 0;padding:10px 8px 8px;border-radius:6px;transition:background .15s}
@@ -1126,6 +448,10 @@ body { padding-left: var(--sb-w); }
 .cg-crumbs [aria-current]{color:#fff!important;font-weight:700}
 @media (max-width:768px){.cg-crumbs{padding:8px 16px}}
 </style>
+<!-- cg-license:start: generated by scripts/site-nav.mjs -->
+<script src="../../src/config/license.js"></script>
+<script src="../../assets/services/licenseManager.js"></script>
+<!-- cg-license:end -->
 </head>
 <body>
 <!-- ══ COGNICOPIA LEFT SIDEBAR NAV ══ -->
@@ -1223,476 +549,743 @@ body { padding-left: var(--sb-w); }
   <!-- WCAG 2.4.1 Skip Link -->
   <a href="#main-content" class="skip-link">Skip to main content</a>
 
-  <!-- Tech-Modern SaaS Navigation Bar -->
-  
-
   <!-- Main Content Container -->
   <main class="container" id="main-content">
-    
-    <!-- Top Navigation Breadcrumbs with prominent Back to Home link -->
-    <div class="nav-breadcrumbs">
-      <a href="../../index.html" class="back-home-btn" aria-label="Return to Cognicopia Homepage and Tool">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
-        <span>Back to Home (Tool)</span>
-      </a>
-      <span class="breadcrumb-tag">B2B Institutional Governance Hub</span>
-    </div>
 
-    <header>
-      <h1>Institutional Standards &amp; Clinical Governance</h1>
-      <svg class="organic-vine-divider" viewBox="0 0 500 70" role="img" aria-label="Decorative flowing vine with leaves">
-        <path d="M28 39 C92 12 135 59 188 36 C225 20 249 19 271 34 C301 54 331 56 357 37 C393 11 431 21 472 39" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
-        <path d="M112 30 C94 18 80 21 71 34 C87 37 101 36 112 30 Z M147 45 C130 43 119 50 116 62 C130 59 141 53 147 45 Z M194 34 C181 19 167 17 157 25 C168 34 181 37 194 34 Z M305 45 C318 58 332 58 343 50 C332 43 318 41 305 45 Z M354 37 C369 22 382 21 392 30 C380 38 367 40 354 37 Z M407 30 C424 18 438 22 445 35 C431 36 418 34 407 30 Z" fill="currentColor"/>
-        <path d="M72 34 C81 29 91 28 101 29 M117 60 C124 53 132 49 141 48 M158 26 C168 26 178 29 187 34 M313 47 C323 48 332 51 340 55 M360 35 C370 31 379 29 389 30 M414 28 C423 29 432 32 440 36" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity=".72"/>
-      </svg>
-      <p class="vine-subtitle">The three institutional pillars underpinning Cognicopia: Evidence-informed clinical engagement, commercial copier-tested operational efficiency, and independent publishing oversight by Kirk Barron in Minot, North Dakota.</p>
+    <header class="qs-banner">
+      <p class="qs-eyebrow">Cognicopia &middot; Resource &amp; Clinical Hub</p>
+      <h1>Quality Standards Hub</h1>
+      <p class="qs-sub">A governance and survey-preparation console for Directors of Nursing, Activity Directors and administrators of memory care and long-term care communities.</p>
+      <div class="qs-banner-row">
+        <p class="qs-publisher">Published by <strong>Kirk Barron</strong> &middot; Minot, North Dakota &middot; <a href="../../contact.html">Contact the publisher</a></p>
+        <p class="qs-badge" id="qsBadge" role="status" aria-live="polite" data-state="wait">
+          <span class="qs-dot" aria-hidden="true"></span>
+          <span id="qsBadgeNet">100% Offline</span>
+          <span class="qs-badge-sep" aria-hidden="true">/</span>
+          <span id="qsBadgeEnc">Checking local encryption&hellip;</span>
+        </p>
+      </div>
     </header>
 
-    <!-- Executive Summary Triad Bar -->
-    <section class="executive-summary-bar" aria-label="Institutional Trust Pillars">
-      <div class="summary-metric-card">
-        <span class="metric-number">CMS Tag F679</span>
-        <span class="metric-label">Clinical Alignment</span>
-        <p class="metric-detail">Person-centered care documentation, non-infantilizing adult themes &amp; MDS 3.0 Section Q compliance.</p>
-      </div>
-      <div class="summary-metric-card">
-        <span class="metric-number">8.5 &times; 11 Sheet</span>
-        <span class="metric-label">High-Volume Copier Proof</span>
-        <p class="metric-detail">Ricoh, Xerox, Canon, and HP copier calibration; zero prep cutting, zero toner smear or ghosting.</p>
-      </div>
-      <div class="summary-metric-card">
-        <span class="metric-number">100% Client-Side</span>
-        <span class="metric-label">No Cloud Copies of Resident Data</span>
-        <p class="metric-detail">Resident details stay on the facility&rsquo;s own computer, encrypted; Net-30 invoice support and W-9 institutional vendor billing.</p>
-      </div>
-    </section>
+    <div class="qs-tabs qs-no-print" role="tablist" aria-label="Quality Standards Hub sections" id="qsTabs">
+      <button type="button" class="qs-tab" role="tab" id="qs-tab-gov" aria-selected="true" aria-controls="qs-panel-gov" tabindex="0" data-hash="governance">Governance &amp; Clinical Pillars<small>What the paper supports</small></button>
+      <button type="button" class="qs-tab" role="tab" id="qs-tab-audit" aria-selected="false" aria-controls="qs-panel-audit" tabindex="-1" data-hash="audit">State Survey Audit Engine<small>Six-point readiness check</small></button>
+      <button type="button" class="qs-tab" role="tab" id="qs-tab-cal" aria-selected="false" aria-controls="qs-panel-cal" tabindex="-1" data-hash="calibration">Copier Calibration &amp; Margin Test<small>One sheet, your machine</small></button>
+      <button type="button" class="qs-tab" role="tab" id="qs-tab-proc" aria-selected="false" aria-controls="qs-panel-proc" tabindex="-1" data-hash="procurement">Institutional Procurement &amp; W-9<small>Cost, vendor sheet, security check</small></button>
+    </div>
 
-    <!-- Executive Introduction for Administrators -->
-    <section class="pillar-section">
-      <h2>Professional Framework for Senior Living Administrators</h2>
-      <p>Long-term care facilities, specialized memory care communities, and assisted living residences operate under strict regulatory, staffing, and clinical scrutiny. Program directors and Directors of Nursing (DON) must deliver meaningful, therapeutic engagement that satisfies state survey requirements while managing tight labor budgets and multi-resident group logistics.</p>
-      <p>Cognicopia was engineered to serve as an enterprise-grade standard for geriatric cognitive stimulation. Every activity template, coloring plate, and memory journal module reflects our tripartite institutional covenant: <strong>clinical validation</strong> that respects resident cognitive reserves, <strong>high-volume print durability</strong> that requires zero staff prep time, and <strong>independent editorial accountability</strong> backed by publisher Kirk Barron.</p>
-    </section>
+    <noscript><p class="qs-panel qs-note">The audit, calibration and procurement tools run in your browser and need JavaScript. Nothing is sent anywhere.</p></noscript>
 
-    <!-- ========================================== -->
-    <!-- PILLAR 1: CLINICAL & CAREGIVER ALIGNMENT   -->
-    <!-- ========================================== -->
-    <section class="pillar-section" id="pillar-clinical" aria-labelledby="pillar-clinical-title">
-      <div class="pillar-header-wrap">
-        <div>
-          <span class="pillar-badge">Pillar 01 &bull; Clinical Science</span>
-          <h2 class="pillar-title" id="pillar-clinical-title">Clinical &amp; Caregiver Alignment</h2>
-          <div class="pillar-kicker">Reminiscence Therapy &bull; Cognitive Retention &bull; Fine Motor Adaptation</div>
-        </div>
-      </div>
+    <!-- ═════════ 1. GOVERNANCE & CLINICAL PILLARS ═════════ -->
+    <section class="qs-panel" role="tabpanel" id="qs-panel-gov" aria-labelledby="qs-tab-gov" tabindex="0">
+      <p class="qs-kicker">Tab 1 of 4</p>
+      <h2>Governance &amp; Clinical Pillars</h2>
+      <p class="qs-lead">Memory care programming is judged on whether each resident&rsquo;s activities fit that resident. Cognicopia gives your team three things a surveyor can see on paper: sheets built from the resident&rsquo;s own life, a dated page for the chart, and print that survives a busy copier room.</p>
 
-      <p>Clinical efficacy begins with understanding the neurological architecture of aging. Dementia and related neurocognitive disorders disproportionately impact short-term working memory while leaving deeply consolidated long-term episodic memories accessible. When caregivers present generic children&rsquo;s activities or demand factual recall, residents experience profound testing anxiety and emotional withdrawal.</p>
-
-      <div class="pillar-preview-grid">
-        <div class="pillar-visual-box">
-          <svg viewBox="0 0 340 210" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Clinical cognitive pathways diagram">
-            <rect width="340" height="210" rx="8" fill="#143d2b" stroke="#52b788" stroke-width="2"/>
-            <!-- Box 1 -->
-            <rect x="15" y="24" width="94" height="64" rx="6" fill="#1b4332" stroke="#74c69d" stroke-width="1.5"/>
-            <circle cx="62" cy="46" r="13" fill="#2d6a4f"/>
-            <path d="M58 46 L61 49 L67 43" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
-            <text x="62" y="72" fill="#ffffff" font-size="10" font-family="sans-serif" font-weight="bold" text-anchor="middle">Episodic Recall</text>
-            <text x="62" y="82" fill="#d8f3dc" font-size="8" font-family="sans-serif" text-anchor="middle">Mid-Century Cues</text>
-
-            <!-- Box 2 -->
-            <rect x="123" y="24" width="94" height="64" rx="6" fill="#1b4332" stroke="#74c69d" stroke-width="1.5"/>
-            <circle cx="170" cy="46" r="13" fill="#2d6a4f"/>
-            <path d="M165 51 C165 42 175 42 175 51" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
-            <text x="170" y="72" fill="#ffffff" font-size="10" font-family="sans-serif" font-weight="bold" text-anchor="middle">Motor Control</text>
-            <text x="170" y="82" fill="#d8f3dc" font-size="8" font-family="sans-serif" text-anchor="middle">2.5pt Boundary Lines</text>
-
-            <!-- Box 3 -->
-            <rect x="231" y="24" width="94" height="64" rx="6" fill="#1b4332" stroke="#74c69d" stroke-width="1.5"/>
-            <circle cx="278" cy="46" r="13" fill="#2d6a4f"/>
-            <path d="M278 42 C276 39 272 39 272 42 C272 46 278 51 278 51 C278 51 284 46 284 42 C284 39 280 39 278 42 Z" fill="#e63946"/>
-            <text x="278" y="72" fill="#ffffff" font-size="10" font-family="sans-serif" font-weight="bold" text-anchor="middle">Affective Calm</text>
-            <text x="278" y="82" fill="#d8f3dc" font-size="8" font-family="sans-serif" text-anchor="middle">Reduces Sundowning</text>
-
-            <!-- Bottom Convergence -->
-            <path d="M62 88 L62 108 L170 108" stroke="#52b788" stroke-width="2" stroke-dasharray="3 3"/>
-            <path d="M170 88 L170 108" stroke="#52b788" stroke-width="2"/>
-            <path d="M278 88 L278 108 L170 108" stroke="#52b788" stroke-width="2" stroke-dasharray="3 3"/>
-            <polygon points="170,120 165,110 175,110" fill="#52b788"/>
-
-            <rect x="30" y="126" width="280" height="66" rx="6" fill="#0e2b1e" stroke="#52b788" stroke-width="1.8"/>
-            <text x="170" y="146" fill="#74c69d" font-size="11" font-family="sans-serif" font-weight="bold" text-anchor="middle">&#9733; CMS TAG F679 &bull; PERSON-CENTERED CARE</text>
-            <text x="170" y="163" fill="#ffffff" font-size="9.5" font-family="sans-serif" text-anchor="middle">Individualized Preference Alignment &bull; Non-Pharmacological Calming</text>
-            <text x="170" y="177" fill="#d8f3dc" font-size="8.5" font-family="sans-serif" text-anchor="middle">MDS 3.0 Section Q Compliance &bull; Tangible Audit Documentation</text>
-          </svg>
-          <div class="pillar-visual-caption">Evidence-Informed Clinical Engagement Architecture</div>
-        </div>
-
-        <div>
-          <h3>Core Clinical Standards</h3>
-          <ul class="standards-list">
-            <li class="standards-item">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
-              <div>
-                <strong>CMS Tag F679 Regulatory Compliance:</strong>
-                <span>Directly satisfies §483.24(c) mandates requiring ongoing programs of activities designed to appeal to individual resident interests and physical/mental capacities.</span>
-              </div>
-            </li>
-            <li class="standards-item">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
-              <div>
-                <strong>Non-Pharmacological Behavioral Support:</strong>
-                <span>Structured evening coloring and prompt routines reduce late-day pacing, catastrophic reactions, and sundowning agitation without chemical restraint.</span>
-              </div>
-            </li>
-            <li class="standards-item">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-              <div>
-                <strong>MDS 3.0 Section Q Compatibility:</strong>
-                <span>Generates physical, dated artifacts that document resident voice, participation, and individual cognitive interventions for care plan team reviews.</span>
-              </div>
-            </li>
+      <div class="qs-grid">
+        <article class="qs-card" aria-labelledby="pillar1">
+          <span class="qs-tag">Pillar 1 &middot; Clinical</span>
+          <h3 id="pillar1">Person-centered, non-pharmacological engagement</h3>
+          <ul>
+            <li><strong>Built from the resident.</strong> Work, hobbies, hometown, the decades they grew up in and the topics to avoid shape every sheet.</li>
+            <li><strong>Matched to the stage.</strong> Type is never under 14 pt (early), 18 pt (middle) or 24 pt bold (late); late-stage pages carry one thing to look at, with nothing else on the sheet.</li>
+            <li><strong>Adult dignity.</strong> A filter on every page stops quizzing, scoring, baby talk and child-directed words. Subjects are tools, gardens, music, the kitchen and the radio.</li>
+            <li><strong>Evening support.</strong> A calm, low-demand sheet is available for the late-afternoon and sundowning hours, with a one-line tip for the person sitting beside the resident.</li>
           </ul>
-        </div>
-      </div>
-
-      <div class="pillar-actions-row">
-        <a href="../clinical-alignment/" class="btn-pillar-primary">
-          <span>Read Full Clinical Alignment Deep Dive</span>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-        </a>
-        <a href="../reminiscence-science/" class="btn-pillar-secondary">
-          <span>Explore Reminiscence Therapy Research</span>
-        </a>
-      </div>
-    </section>
-
-    <!-- ========================================== -->
-    <!-- PILLAR 2: DESIGNED FOR HIGH-VOLUME CARE    -->
-    <!-- ========================================== -->
-    <section class="pillar-section" id="pillar-facilities" aria-labelledby="pillar-facilities-title">
-      <div class="pillar-header-wrap">
-        <div>
-          <span class="pillar-badge">Pillar 02 &bull; Operational Durability</span>
-          <h2 class="pillar-title" id="pillar-facilities-title">Designed for High-Volume Facilities</h2>
-          <div class="pillar-kicker">Copier Calibration &bull; Standard Sheet-Feed &bull; Zero Prep Overhead</div>
-        </div>
-      </div>
-
-      <p>Care facility activity departments do not have the luxury of delicate craft assembly or costly specialty printing. In communities with 40 to 120 residents, materials must be printed rapidly in batches on high-cycle copy machines (Ricoh, Xerox, Canon, HP) without jamming, smearing, or bleeding through standard 20# facility bond paper.</p>
-
-      <div class="pillar-preview-grid">
-        <div class="pillar-visual-box">
-          <svg viewBox="0 0 340 210" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Commercial copier print layout diagram">
-            <rect width="340" height="210" rx="8" fill="#143d2b" stroke="#52b788" stroke-width="2"/>
-            <!-- Copier -->
-            <rect x="25" y="55" width="125" height="115" rx="6" fill="#1b4332" stroke="#74c69d" stroke-width="1.8"/>
-            <rect x="35" y="65" width="55" height="12" rx="2" fill="#0e2b1e" stroke="#52b788" stroke-width="1"/>
-            <circle cx="110" cy="71" r="5" fill="#52b788"/>
-            <circle cx="125" cy="71" r="4" fill="#e9c46a"/>
-            <rect x="38" y="95" width="98" height="60" rx="4" fill="#0e2b1e" stroke="#2d6a4f" stroke-width="1.2"/>
-            <text x="87" y="125" fill="#74c69d" font-size="10.5" font-family="sans-serif" font-weight="bold" text-anchor="middle">500 SHEETS / HR</text>
-            <text x="87" y="140" fill="#ffffff" font-size="9" font-family="sans-serif" text-anchor="middle">Laser Copier Tested</text>
-
-            <!-- Sheet output -->
-            <path d="M150 105 L205 105 L195 135 L150 135 Z" fill="#2d6a4f" stroke="#74c69d" stroke-width="1.5"/>
-            <rect x="175" y="65" width="85" height="110" rx="4" fill="#ffffff" stroke="#1b4332" stroke-width="1.8"/>
-            <rect x="185" y="75" width="65" height="14" rx="2" fill="#1b4332"/>
-            <text x="217" y="85" fill="#ffffff" font-size="7" font-family="sans-serif" font-weight="bold" text-anchor="middle">8.5x11 STANDARD</text>
-            <line x1="185" y1="97" x2="250" y2="97" stroke="#52b788" stroke-width="1.5"/>
-            <line x1="185" y1="105" x2="250" y2="105" stroke="#52b788" stroke-width="1.5"/>
-            <line x1="185" y1="113" x2="250" y2="113" stroke="#52b788" stroke-width="1.5"/>
-            <circle cx="217" cy="140" r="16" fill="none" stroke="#1b4332" stroke-width="2"/>
-            <path d="M217 124 L217 156 M201 140 L233 140" stroke="#1b4332" stroke-width="2"/>
-
-            <!-- Top Quality Badge -->
-            <rect x="225" y="16" width="105" height="24" rx="4" fill="#0e2b1e" stroke="#74c69d" stroke-width="1.2"/>
-            <text x="277" y="32" fill="#ffffff" font-size="9.5" font-family="sans-serif" font-weight="bold" text-anchor="middle">&#10003; ZERO BLEED / SMEAR</text>
-          </svg>
-          <div class="pillar-visual-caption">High-Contrast Vector Geometry &bull; Copier Optimized</div>
-        </div>
-
-        <div>
-          <h3>Facility Operational Benchmarks</h3>
-          <ul class="standards-list">
-            <li class="standards-item">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
-              <div>
-                <strong>Monochrome Laser Vector Contrast:</strong>
-                <span>Calibrated in pure 100% black vector strokes (#000000). Avoids washed-out grays or dithering that degrade across repeated multi-generation photocopies.</span>
-              </div>
-            </li>
-            <li class="standards-item">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>
-              <div>
-                <strong>Clipboard &amp; Binder Gutter Margins:</strong>
-                <span>Pre-formatted with 0.65" margin buffers along the binding edge, ensuring resident activity sheets clip into standard facility clipboards without obscuring content.</span>
-              </div>
-            </li>
-            <li class="standards-item">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
-              <div>
-                <strong>Zero Prep Overhead for Staff:</strong>
-                <span>Requires no cutting, folding, glue, or assembly. Staff members simply select the session topic, press print, and immediately distribute packets to residents.</span>
-              </div>
-            </li>
+        </article>
+        <article class="qs-card" aria-labelledby="pillar2">
+          <span class="qs-tag">Pillar 2 &middot; Operational</span>
+          <h3 id="pillar2">Copier-ready, zero staff prep</h3>
+          <ul>
+            <li><strong>Pure black, vector geometry.</strong> Lines and type print as 100% black (#000000) on white, with no grey fills to dither or smear across repeated copy generations. Results vary by machine; Tab 3 tests yours.</li>
+            <li><strong>Clipboard and binder safe.</strong> Sheets keep a binding gutter on the left (0.75 in on Cognicopia pages; Tab 3 tests that your clipboard clears 0.65 in) and nothing within 0.5 in of any edge.</li>
+            <li><strong>Nothing to prepare.</strong> No cutting, folding or assembly. Choose the resident, press print, hand out the sheets.</li>
+            <li><strong>Standard stock.</strong> US Letter, single-sided, on the 20 lb bond a facility already stocks.</li>
           </ul>
-        </div>
-      </div>
-
-      <div class="pillar-actions-row">
-        <a href="../high-volume-facilities/" class="btn-pillar-primary">
-          <span>Read Facility Printing Standards</span>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-        </a>
-        <a href="../resource-catalog/" class="btn-pillar-secondary">
-          <span>Explore Complete Resource Catalog</span>
-        </a>
-      </div>
-    </section>
-
-    <!-- ========================================== -->
-    <!-- PILLAR 3: PUBLISHING EXCELLENCE (MINOT, ND)-->
-    <!-- ========================================== -->
-    <section class="pillar-section" id="pillar-publishing" aria-labelledby="pillar-publishing-title">
-      <div class="pillar-header-wrap">
-        <div>
-          <span class="pillar-badge">Pillar 03 &bull; Editorial Provenance</span>
-          <h2 class="pillar-title" id="pillar-publishing-title">Independent Publishing Excellence</h2>
-          <div class="pillar-kicker">Publisher Kirk Barron &bull; Minot, North Dakota &bull; Client-Side Privacy</div>
-        </div>
-      </div>
-
-      <p>Cognicopia rejects the mass automated output of faceless stock mills. Our catalog is curated, published, and overseen directly by independent publisher <strong>Kirk Barron</strong> based in Minot, North Dakota. Every design undergoes personal editorial scrutiny, tactile print testing, and strict compliance validation before release.</p>
-
-      <div class="pillar-preview-grid">
-        <div class="pillar-visual-box">
-          <svg viewBox="0 0 340 210" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Official Kirk Barron publishing seal">
-            <rect width="340" height="210" rx="8" fill="#143d2b" stroke="#52b788" stroke-width="2"/>
-            <!-- Outer Gold Seal -->
-            <circle cx="170" cy="95" r="54" fill="#1b4332" stroke="#74c69d" stroke-width="2.5"/>
-            <circle cx="170" cy="95" r="46" fill="none" stroke="#52b788" stroke-width="1.5" stroke-dasharray="4 2"/>
-            <!-- North Dakota Star Motif -->
-            <path d="M170 58 L173 68 L183 68 L175 74 L178 84 L170 78 L162 84 L165 74 L157 68 L167 68 Z" fill="#e9c46a"/>
-            <text x="170" y="103" fill="#ffffff" font-size="12" font-family="Georgia, serif" font-weight="bold" text-anchor="middle">KIRK BARRON</text>
-            <text x="170" y="116" fill="#d8f3dc" font-size="8.5" font-family="sans-serif" font-weight="bold" letter-spacing="0.08em" text-anchor="middle">MINOT &bull; NORTH DAKOTA</text>
-            <text x="170" y="129" fill="#74c69d" font-size="7.5" font-family="sans-serif" text-anchor="middle">EST. INDEPENDENT IMPRINT</text>
-            <!-- Bottom Guarantee Bar -->
-            <rect x="25" y="162" width="290" height="32" rx="4" fill="#0e2b1e" stroke="#52b788" stroke-width="1.2"/>
-            <text x="170" y="182" fill="#ffffff" font-size="9.5" font-family="sans-serif" font-weight="bold" text-anchor="middle">100% CLIENT-SIDE &bull; ZERO PHI &bull; DIRECT EDITORIAL DESK</text>
-          </svg>
-          <div class="pillar-visual-caption">Personal Editorial Accountability &bull; Minot, ND</div>
-        </div>
-
-        <div>
-          <h3>Governance &amp; Business Standards</h3>
-          <ul class="standards-list">
-            <li class="standards-item">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-              <div>
-                <strong>Client-Side Architecture (supports HIPAA privacy practices):</strong>
-                <span>The generator functions 100% in your local web browser. No resident names, medical diagnoses, or facility identifiers are ever transmitted to cloud servers. Saved details are encrypted on the computer (AES-256-GCM) and can be locked with a passphrase; how printed pages and computers are handled remains part of the facility&rsquo;s own privacy program.</span>
-              </div>
-            </li>
-            <li class="standards-item">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
-              <div>
-                <strong>Commercial Amazon KDP Print Standards:</strong>
-                <span>Formatted to precise 8.5&times;11 paperback parameters, 60#–70# opaque white stock, and durable binding gutters to prevent accidental page tears.</span>
-              </div>
-            </li>
-            <li class="standards-item">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-              <div>
-                <strong>Institutional Net-30 Invoicing &amp; W-9 Support:</strong>
-                <span>Direct enterprise billing for hospital networks, non-profit hospice organizations, and county eldercare facilities with federal W-9 records on file.</span>
-              </div>
-            </li>
+        </article>
+        <article class="qs-card" aria-labelledby="pillar3">
+          <span class="qs-tag">Pillar 3 &middot; Governance</span>
+          <h3 id="pillar3">Independent publisher, local data</h3>
+          <ul>
+            <li><strong>One accountable publisher.</strong> Kirk Barron of Minot, North Dakota reviews the catalog and answers facility questions directly at <a href="mailto:cognicopia@outlook.com">cognicopia@outlook.com</a>.</li>
+            <li><strong>Nothing leaves the computer.</strong> The tools run in the browser. There is no server, account or cloud copy of resident details.</li>
+            <li><strong>Encrypted at rest.</strong> Saved details are sealed on the computer (AES-256-GCM) and can be locked with a passphrase. Printed sheets, shared computers and passphrase handling stay under your own privacy program.</li>
+            <li><strong>Procurement-ready.</strong> Net 30 invoicing, a vendor information sheet and a W-9 (Tab 4).</li>
           </ul>
-        </div>
+        </article>
       </div>
 
-      <div class="pillar-actions-row">
-        <a href="../publishing-excellence/" class="btn-pillar-primary">
-          <span>Read Full Publishing Standards</span>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-        </a>
-        <a href="../../contact.html?subject=Vendor+W-9+Inquiry" class="btn-pillar-secondary">
-          <span>Request Institutional Vendor Packet</span>
-        </a>
-      </div>
-    </section>
-
-    <!-- ========================================== -->
-    <!-- COMPREHENSIVE INSTITUTIONAL AUDIT MATRIX   -->
-    <!-- ========================================== -->
-    <section class="pillar-section" aria-labelledby="matrix-title">
-      <h2 id="matrix-title">B2B Institutional Governance &amp; Compliance Matrix</h2>
-      <p>A side-by-side synthesis of Cognicopia's three operational pillars:</p>
-
-      <div class="table-container">
-        <table class="specs-table" aria-label="Synthesis matrix of Cognicopia institutional pillars">
-          <thead>
-            <tr>
-              <th scope="col">Institutional Dimension</th>
-              <th scope="col">Clinical Alignment</th>
-              <th scope="col">High-Volume Facilities</th>
-              <th scope="col">Publishing Excellence</th>
-            </tr>
-          </thead>
+      <h3>How a Cognicopia sheet supports your survey file</h3>
+      <div class="qs-table-wrap">
+        <table class="qs-table">
+          <caption class="qs-no-print" style="position:absolute;left:-9999px">Regulatory reference points and what a dated Cognicopia sheet contributes to each</caption>
+          <thead><tr><th scope="col">Reference point</th><th scope="col">What it asks of the community</th><th scope="col">What a Cognicopia sheet contributes</th><th scope="col">What stays with your team</th></tr></thead>
           <tbody>
             <tr>
-              <th scope="row">Target Domain</th>
-              <td>Neurocognitive retention, motor tremor calibration, and sundowning agitation relief</td>
-              <td>Laser copier mechanical feed, toner cost economy, and staff prep efficiency</td>
-              <td>Editorial authenticity, KDP physical durability, and data confidentiality</td>
+              <th scope="row">CMS Tag F679<br><span class="qs-cite">42 CFR &sect;483.24(c)</span></th>
+              <td>An ongoing program of activities, based on the comprehensive assessment, the care plan and each resident&rsquo;s preferences, that supports their interests and their physical, mental and psychosocial well-being.</td>
+              <td>A daily, individualized, non-pharmacological activity built from the resident&rsquo;s own history and matched to their stage: evidence that the program is person-centered and ongoing, not generic.</td>
+              <td>The assessment, the care plan, the activity calendar, observation of participation and resident and family interviews.</td>
             </tr>
             <tr>
-              <th scope="row">Regulatory Anchor</th>
-              <td>CMS Tag F679 (§483.24(c)), MDS 3.0 Section Q, Joint Commission Senior Standards</td>
-              <td>Standard US Letter 8.5&times;11 feed specifications and OSHA ergonomic guidelines</td>
-              <td>Designed to support facilities&rsquo; HIPAA privacy practices (no transmission, no cloud storage, encrypted on the device) &amp; Federal W-9 vendor compliance</td>
+              <th scope="row">MDS 3.0<br><span class="qs-cite">Section F and Section Q</span></th>
+              <td>Section F records the resident&rsquo;s preferences for customary routine and activities. Section Q records participation in assessment and goal setting.</td>
+              <td>A dated, completed sheet with the resident&rsquo;s name, the date and a staff note is a physical artifact the interdisciplinary team can bring to a care-plan review.</td>
+              <td>Every assessment answer and every MDS code. A sheet informs the clinician; it never replaces the clinician&rsquo;s judgment.</td>
             </tr>
             <tr>
-              <th scope="row">Physical Geometry</th>
-              <td>2.5pt bold vector line boundaries, 20pt–24pt high-contrast sans-serif type</td>
-              <td>0.65" clipboard/binder safe gutters, zero bleed, high toner density contrast</td>
-              <td>60#–70# non-ghosting paper stock, single-sided sheets, durable binding gutters</td>
+              <th scope="row">Care planning<br><span class="qs-cite">F656 &middot; &sect;483.21(b)</span></th>
+              <td>A person-centered care plan that is put into practice and revised as the resident changes.</td>
+              <td>Stage-matched sheets (early, middle, late) make it easy to step an activity up or down, and the page itself shows what level was used.</td>
+              <td>Writing, approving and revising the plan.</td>
             </tr>
             <tr>
-              <th scope="row">Caregiver Benefit</th>
-              <td>Eliminates testing anxiety; unlocks spontaneous speech in non-verbal residents</td>
-              <td>Zero prep time; Activity Directors print full group sets in under 60 seconds</td>
-              <td>Direct personal access to publisher Kirk Barron at cognicopia@outlook.com</td>
-            </tr>
-            <tr>
-              <th scope="row">Procurement Model</th>
-              <td>Facility-wide unlimited printing license included with active membership</td>
-              <td>Direct multi-station facility deployment across all community memory units</td>
-              <td>Corporate Net-30 purchase orders, electronic funds transfer (EFT), W-9 on file</td>
+              <th scope="row">Privacy practices<br><span class="qs-cite">HIPAA privacy program</span></th>
+              <td>Reasonable safeguards for resident information, decided and documented by the community.</td>
+              <td>No transmission of resident details, no cloud copy, encryption on the computer and an optional passphrase: a design that supports those practices.</td>
+              <td>Policies, training, workstation security, how printouts are stored and who may use the computer.</td>
             </tr>
           </tbody>
         </table>
       </div>
-    </section>
+      <p class="qs-note">This table paraphrases the regulations to explain how the sheets are used. It is not legal advice, and no agency has endorsed, reviewed or certified Cognicopia. Check the current State Operations Manual (Appendix PP) and your state agency&rsquo;s guidance for the exact language.</p>
 
-    <!-- Administrative Readiness Callout Banner -->
-    <div class="admin-callout-banner">
-      <h3 style="margin-top:0; font-size:20px;">State Survey Preparation Checklist for Activity Directors</h3>
-      <p style="margin-bottom:12px;">When state health department surveyors conduct unannounced facility inspections, memory care programming is closely evaluated. Cognicopia ensures immediate audit readiness:</p>
-      <ul style="padding-left: 20px; margin: 0;">
-        <li style="margin-bottom: 6px;"><strong>Person-Centered Evidence:</strong> Completed activity sheets show individualized prompts matching admission life histories.</li>
-        <li style="margin-bottom: 6px;"><strong>Non-Infantilizing Verification:</strong> Adult botanical motifs confirm compliance with dignity preservation standards.</li>
-        <li style="margin-bottom: 6px;"><strong>Charted Intervention Records:</strong> Dated sheets fit directly into resident activity charting binders.</li>
+      <h3>Operational durability, in plain terms</h3>
+      <ul>
+        <li><strong>Pure #000000 vector geometry.</strong> Because pages use only black and white, a copier has no tint to screen into dots. Edges stay crisp on the tenth copy of a copy.</li>
+        <li><strong>Heavier lines for unsteady hands.</strong> The thinnest line Cognicopia prints is 2.25 pt (early), 3 pt (middle) or 4.5 pt (late). Coloring outlines are 3 pt or heavier.</li>
+        <li><strong>A gutter that clips.</strong> The binding edge stays clear so a clipboard or binder ring never covers a word.</li>
+        <li><strong>Built for high-volume copy rooms.</strong> Made for the monochrome laser copiers common in care communities (Ricoh, Xerox, Canon, HP and similar). Run the Tab 3 sheet on each machine you use.</li>
       </ul>
-    </div>
 
-    <!-- Formal Verification & Quality Assurance Statement -->
-    <section class="standards-guarantee-box" aria-label="Formal Verification & Quality Assurance Statement">
-      <div class="standards-guarantee-seal-wrap">
-        <svg class="standards-seal-icon" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Cognicopia Institutional Quality Seal">
-          <circle cx="50" cy="50" r="46" stroke="#52b788" stroke-width="2" stroke-dasharray="4 2"/>
-          <circle cx="50" cy="50" r="41" fill="#143d2b" stroke="#74c69d" stroke-width="2.5"/>
-          <path d="M50 18 L58 34 L76 36 L62 48 L66 66 L50 56 L34 66 L38 48 L24 36 L42 34 Z" fill="#2d6a4f" stroke="#e9c46a" stroke-width="1.8"/>
-          <circle cx="50" cy="46" r="16" fill="#1b4332" stroke="#52b788" stroke-width="1.5"/>
-          <path d="M43 46 L48 51 L58 40" stroke="#74c69d" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-          <text x="50" y="79" fill="#ffffff" font-size="7.5" font-family="sans-serif" font-weight="bold" text-anchor="middle" letter-spacing="0.1em">INSTITUTIONAL</text>
-          <text x="50" y="87" fill="#ffffff" font-size="6.5" font-family="sans-serif" font-weight="bold" text-anchor="middle" letter-spacing="0.1em">STANDARDS</text>
-        </svg>
-        <div class="standards-seal-caption">Publisher Quality Guarantee</div>
+      <section class="qs-guarantee" aria-labelledby="qsGuarantee">
+        <h3 id="qsGuarantee">Publisher&rsquo;s commitment</h3>
+        <p>Every Cognicopia resource is published under Kirk Barron of Minot, North Dakota, who commits to clinical dignity, print precision and responsive facility support. If an activity packet does not engage your residents or meet your community&rsquo;s clinical requirements, the publisher will provide a custom adaptation or a full institutional refund. Reach Kirk Barron directly at <a href="mailto:cognicopia@outlook.com">cognicopia@outlook.com</a>.</p>
+      </section>
+
+      <div class="qs-actions qs-no-print">
+        <a class="qs-btn" href="../../index.html">Open the packet tool</a>
+        <a class="qs-btn secondary" href="../clinical-alignment/index.html">Clinical Alignment deep dive</a>
+        <a class="qs-btn secondary" href="../resource-catalog/index.html">Resource catalog</a>
       </div>
-      <div class="standards-guarantee-content">
-        <h3>The Cognicopia Professional Quality Guarantee &amp; Publishing Integrity Statement</h3>
-        <p>Every Cognicopia resource is backed by our direct publisher commitment to clinical dignity, print precision, and responsive facility support. Curated, tested, and published under independent publisher <strong>Kirk Barron</strong> in Minot, North Dakota, all materials adhere to strict Amazon KDP physical durability standards and high-volume commercial copier feed specifications. If any activity packet fails to engage your residents or meet your facility&rsquo;s clinical requirements, we provide immediate custom adaptations or a full institutional refund. Activity Directors and care administrators can reach Kirk Barron directly at <a href="mailto:cognicopia@outlook.com" style="color:#ffffff; text-decoration:underline; font-weight:700;">cognicopia@outlook.com</a>.</p>
-        
-        <div class="standards-guarantee-points">
-          <div class="standards-point-item">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-            <span>Clinical Usability &bull; Adult Dignity Assured</span>
-          </div>
-          <div class="standards-point-item">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-            <span>High-Speed Copier &bull; 0.65" Gutter Certified</span>
-          </div>
-          <div class="standards-point-item">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-            <span>100% Client-Side Privacy &bull; No Server Copies of Resident Data</span>
-          </div>
-          <div class="standards-point-item">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-            <span>Direct Support: <a href="mailto:cognicopia@outlook.com">cognicopia@outlook.com</a></span>
-          </div>
-        </div>
+    </section>
 
-        <div class="standards-cta-actions">
-          <a href="mailto:cognicopia@outlook.com?subject=Institutional+Standards+Inquiry" class="btn-pillar-primary" style="min-height: 48px; padding: 14px 24px; font-size: 16px;">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-            <span>Email Publisher Kirk Barron (cognicopia@outlook.com)</span>
-          </a>
-          <a href="../resource-catalog/" class="btn-pillar-secondary" style="min-height: 48px; padding: 14px 22px; font-size: 16px;">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
-            <span>Explore Master Resource Catalog</span>
-          </a>
+    <!-- ═════════ 2. STATE SURVEY AUDIT ENGINE ═════════ -->
+    <section class="qs-panel" role="tabpanel" id="qs-panel-audit" aria-labelledby="qs-tab-audit" tabindex="0" hidden>
+      <p class="qs-kicker">Tab 2 of 4 &middot; Tool A</p>
+      <h2>State Survey Audit Engine</h2>
+      <p class="qs-lead">A six-point check of your own evidence against what surveyors look for in activities programming (CMS Tag F679). Tick an indicator only when the evidence is in your binder or on your workstation today.</p>
+
+      <div class="qs-lock-note" id="qsAuditLocked" role="alert" hidden>
+        Your saved checklist is locked with the Cognicopia passphrase.
+        <button type="button" class="qs-btn secondary" id="qsAuditUnlock" style="margin-left:8px">Unlock</button>
+      </div>
+
+      <div class="qs-form" aria-label="Details for the printed cover sheet">
+        <div class="qs-field"><label for="qsFac">Community name</label><input type="text" id="qsFac" maxlength="80" autocomplete="organization" placeholder="e.g. Prairie View Memory Care"></div>
+        <div class="qs-field"><label for="qsUnit">Wing or unit</label><input type="text" id="qsUnit" maxlength="60" autocomplete="off" placeholder="e.g. South Wing"></div>
+        <div class="qs-field"><label for="qsRev">Reviewed by</label><input type="text" id="qsRev" maxlength="60" autocomplete="name" placeholder="Name"></div>
+        <div class="qs-field"><label for="qsRole">Role</label><input type="text" id="qsRole" maxlength="60" autocomplete="organization-title" placeholder="e.g. Activity Director"></div>
+        <div class="qs-field"><label for="qsDate">Review date</label><input type="date" id="qsDate"></div>
+      </div>
+
+      <div class="qs-score" id="qsScoreBox">
+        <div class="qs-score-num" id="qsScoreNum" aria-hidden="true">0<small>%</small></div>
+        <div>
+          <div class="qs-meter" role="meter" id="qsMeter" aria-label="Audit readiness score" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="0 percent, 0 of 6 indicators"><i id="qsMeterFill"></i></div>
+          <p class="qs-score-label" id="qsScoreLabel" role="status" aria-live="polite">Audit Readiness Score: 0%. 0 of 6 indicators have evidence on file.</p>
+        </div>
+      </div>
+
+      <ol class="qs-checks" id="qsChecks" aria-label="Six survey-readiness indicators"></ol>
+
+      <div class="qs-actions qs-no-print">
+        <button type="button" class="qs-btn" id="qsPrintAudit">Generate Printable Survey Readiness Summary</button>
+        <button type="button" class="qs-btn secondary" id="qsResetAudit">Clear the checklist</button>
+      </div>
+      <p class="qs-note">The score is a self-assessment of how many of the six indicators you have evidence for. It is not a survey finding, a certification or a prediction of a survey outcome. Your checklist is saved on this computer only, in the encrypted store when the browser allows it.</p>
+    </section>
+
+    <!-- ═════════ 3. COPIER CALIBRATION & MARGIN TEST ═════════ -->
+    <section class="qs-panel" role="tabpanel" id="qs-panel-cal" aria-labelledby="qs-tab-cal" tabindex="0" hidden>
+      <p class="qs-kicker">Tab 3 of 4 &middot; Tool B</p>
+      <h2>Copier Calibration &amp; Margin Test</h2>
+      <p class="qs-lead">One US Letter sheet that shows whether your copier holds the line weights Cognicopia depends on, and whether a clipboard or binder ring clears the gutter. Print it on each machine, then copy the copy once to see what a second generation does.</p>
+
+      <div class="qs-cal">
+        <div>
+          <div class="qs-sheet-wrap" id="qsCalWrap" aria-label="Preview of the calibration sheet, 8.5 by 11 inches"></div>
+          <ul class="qs-legend" aria-label="Legend">
+            <li><span class="qs-swatch gutter" aria-hidden="true"></span> <span>The 0.65 in binding gutter the clipboard test checks</span></li>
+            <li><span class="qs-swatch dash" aria-hidden="true"></span> <span>Dashed lines: the 0.75 in Cognicopia page gutter and the 0.5 in outer margins</span></li>
+          </ul>
+        </div>
+        <div>
+          <h3 style="margin-top:0">Run the test</h3>
+          <div class="qs-toggles qs-no-print" role="group" aria-label="Preview options">
+            <label><input type="checkbox" id="qsShowGutter" checked> Show gutters</label>
+            <label><input type="checkbox" id="qsShowHoles" checked> Show 3-hole punch positions</label>
+          </div>
+          <div class="qs-actions qs-no-print" style="margin-top:6px"><button type="button" class="qs-btn" id="qsRunCal">Run Copier Test Print</button></div>
+          <ol class="qs-steps">
+            <li>Load plain US Letter. Choose <strong>Actual size (100%)</strong>. Turn off &ldquo;fit to page&rdquo;, &ldquo;shrink oversized pages&rdquo; and any toner-saver or economy mode.</li>
+            <li><strong>Scale.</strong> Measure the two black rulers: the long one is exactly 9.00 in, the short one 6.00 in. If either is off by more than 1/16 in, the machine is rescaling.</li>
+            <li><strong>Line weights.</strong> Find the finest of the five lines (0.5, 1.0, 1.5, 2.5, 3.0 pt) that is solid from end to end. Cognicopia&rsquo;s early-stage floor is 2.25 pt and its middle-stage floor is 3 pt, so 2.5 pt solid gives a little margin and 3.0 pt matches the middle stage. The finer lines show how much more your machine can hold.</li>
+            <li><strong>Fine pairs.</strong> The groups of parallel lines should stay separate. Merged groups mean the machine is spreading toner.</li>
+            <li><strong>Black and reverse.</strong> The black patch should be dense with no streaks, and the white 14 pt words on it should stay readable.</li>
+            <li><strong>Gutter.</strong> Clip the sheet into your clipboard or binder. The shaded 0.65 in strip should hold the clip or rings, with every word still visible.</li>
+            <li><strong>Second generation.</strong> Copy the sheet, then copy that copy. Compare the 2.5 pt line and the fine pairs.</li>
+          </ol>
+          <p class="qs-note">Marks within about 0.25 in of the paper&rsquo;s edge may not print on some machines. The test keeps its marks inside 0.5 in for that reason; the punch positions are for reference on screen only.</p>
         </div>
       </div>
     </section>
 
-    <!-- Bottom Actions & Return to Home -->
-    <section class="standards-bottom-cta">
-      <h2>Implement Institutional Standards in Your Facility</h2>
-      <p style="max-width: 62ch; margin: 0 auto; font-size: 16.5px;">Generate tailored, copier-ready activity packets right inside your browser, or connect directly with our publishing desk.</p>
-      
-      <div class="cta-button-group">
-        <a href="../../index.html#f" class="btn-cta-main">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
-          <span>Launch In-Browser Generator (Home)</span>
-        </a>
-        <a href="../resource-catalog/" class="btn-cta-alt">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
-          <span>View Master Resource Catalog</span>
-        </a>
-        <a href="../../contact.html?subject=Institutional+Standards+Inquiry" class="btn-cta-alt">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-          <span>Contact Publisher Kirk Barron</span>
-        </a>
-        <a href="../../index.html" class="back-home-btn" style="min-height: 48px;">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
-          <span>Return to Homepage</span>
-        </a>
+    <!-- ═════════ 4. INSTITUTIONAL PROCUREMENT & W-9 ═════════ -->
+    <section class="qs-panel" role="tabpanel" id="qs-panel-proc" aria-labelledby="qs-tab-proc" tabindex="0" hidden>
+      <p class="qs-kicker">Tab 4 of 4 &middot; Tool C</p>
+      <h2>Institutional Procurement &amp; W-9</h2>
+      <p class="qs-lead">Everything a purchasing office usually asks for: a cost you can put on a purchase order, a vendor information sheet to attach to it, and a live check of the security claims.</p>
+
+      <div class="qs-calc">
+        <div>
+          <h3 style="margin-top:0">Net-30 purchase order estimate</h3>
+          <div class="qs-form" style="grid-template-columns:1fr 1fr">
+            <div class="qs-field"><label for="qsUnits">Facility units</label><input type="number" id="qsUnits" min="1" max="500" step="1" value="1" inputmode="numeric"><p class="qs-hint">One unit is one building.</p></div>
+            <div class="qs-field"><label for="qsInvDate">Invoice date</label><input type="date" id="qsInvDate"></div>
+            <div class="qs-field" style="grid-column:1/-1"><label for="qsPo">Your purchase order number <span class="qs-muted">(optional)</span></label><input type="text" id="qsPo" maxlength="40" autocomplete="off"></div>
+          </div>
+          <div class="qs-total" aria-live="polite">
+            <dl>
+              <dt>Annual license, per facility unit</dt><dd id="qsUnitPrice">$129.99</dd>
+              <dt>Units</dt><dd id="qsUnitCount">1</dd>
+              <dt>Subtotal (one year)</dt><dd id="qsSubtotal">$129.99</dd>
+              <dt>Payment due (Net 30)</dt><dd id="qsDue">&mdash;</dd>
+              <dt>Renews</dt><dd id="qsRenew">&mdash;</dd>
+              <dt class="qs-grand">Total due</dt><dd class="qs-grand" id="qsTotal">$129.99</dd>
+            </dl>
+          </div>
+          <p class="qs-hint qs-muted" style="font-size:15px">Prices exclude any tax that applies to your organization. Invoices are payable by check or bank transfer on thirty-day terms, and a W-9 accompanies each invoice.</p>
+          <div class="qs-actions qs-no-print">
+            <button type="button" class="qs-btn" id="qsOpenVendor">Preview &amp; print the Vendor Information Sheet</button>
+            <a class="qs-btn secondary" id="qsMail" href="mailto:cognicopia@outlook.com">Email the publisher for an invoice</a>
+          </div>
+        </div>
+
+        <div>
+          <h3 style="margin-top:0">Live security check</h3>
+          <p style="margin-top:0">Run on this page, in this browser, right now. It reports what this page&rsquo;s own code does; it cannot see traffic from the browser itself or from extensions.</p>
+          <table class="qs-sec" aria-label="Live security check results">
+            <tbody>
+              <tr><th scope="row">Network requests made by this page&rsquo;s code since it loaded</th><td id="qsSecReq"><span class="qs-pill wait">checking</span></td></tr>
+              <tr><th scope="row">Files this page loaded</th><td id="qsSecRes"><span class="qs-pill wait">checking</span></td></tr>
+              <tr><th scope="row">Connection state</th><td id="qsSecOnline"><span class="qs-pill wait">checking</span></td></tr>
+              <tr><th scope="row">Web Crypto AES-256-GCM round trip</th><td id="qsSecCrypto"><span class="qs-pill wait">checking</span></td></tr>
+              <tr><th scope="row">Encrypted store for saved details</th><td id="qsSecStore"><span class="qs-pill wait">checking</span></td></tr>
+              <tr><th scope="row">Where this page keeps its checklist</th><td id="qsSecWhere"><span class="qs-pill wait">checking</span></td></tr>
+            </tbody>
+          </table>
+          <div class="qs-actions qs-no-print"><button type="button" class="qs-btn secondary" id="qsRunSec">Run the check again</button></div>
+          <p class="qs-hint qs-muted" id="qsSecStamp" style="font-size:15px" role="status" aria-live="polite"></p>
+        </div>
       </div>
+
+      <div class="qs-note">Nothing you type on this page is sent anywhere. The email button opens your own mail program only when you press it.</div>
     </section>
 
+    <dialog class="qs-dialog" id="qsVendorDlg" aria-labelledby="qsVendorTitle">
+      <div class="qs-dialog-bar">
+        <h2 id="qsVendorTitle">Vendor Information Sheet &amp; W-9 Request</h2>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button type="button" class="qs-btn secondary" id="qsVendorPrint">Print this sheet</button>
+          <button type="button" class="qs-btn secondary" id="qsVendorClose">Close</button>
+        </div>
+      </div>
+      <div class="qs-dialog-body" id="qsVendorBody"></div>
+    </dialog>
   </main>
 
+  <div class="qs-print-root" id="qsPrintRoot" aria-hidden="true"></div>
+
   <footer class="site-footer">
-    Cognicopia is published by Kirk Barron in Minot, North Dakota. Everything runs securely inside your browser with zero cloud tracking.
+    Cognicopia is published by Kirk Barron in Minot, North Dakota. Everything runs inside your browser with no cloud copy of resident details.
   </footer>
 
+  <script src="../../assets/services/secureStore.js"></script>
   <script>
-  (function() {
-    const dropBtn = document.getElementById("resourcesDropdownBtn");
-    const dropdown = dropBtn ? dropBtn.closest(".dropdown") : null;
-    if (dropBtn && dropdown) {
-      function toggleDropdown(open) {
-        const shouldOpen = typeof open === "boolean" ? open : !dropdown.classList.contains("is-open");
-        dropdown.classList.toggle("is-open", shouldOpen);
-        dropBtn.setAttribute("aria-expanded", String(shouldOpen));
+/* Quality Standards Hub: tabs, the survey-readiness checklist, the copier calibration sheet and the procurement tools.
+   Everything runs in this page. Nothing is fetched; the only storage is this page's own checklist, kept in the encrypted
+   store (assets/services/secureStore.js) when the browser has one and in localStorage otherwise. */
+(function () {
+  "use strict";
+
+  /* ───────── 0. a watch on this page's own network use ───────── */
+  var Net = (function () {
+    var count = 0, last = "";
+    var note = function (what) { count++; last = what; };
+    try {
+      if (window.fetch) { var f = window.fetch; window.fetch = function () { note("fetch"); return f.apply(this, arguments); }; }
+      if (window.XMLHttpRequest) { var o = XMLHttpRequest.prototype.open; XMLHttpRequest.prototype.open = function () { note("XMLHttpRequest"); return o.apply(this, arguments); }; }
+      if (navigator.sendBeacon) { var b = navigator.sendBeacon; navigator.sendBeacon = function () { note("sendBeacon"); return b.apply(this, arguments); }; }
+      ["WebSocket", "EventSource"].forEach(function (n) {
+        var C = window[n]; if (!C) return;
+        var W = function () { note(n); return new (Function.prototype.bind.apply(C, [null].concat([].slice.call(arguments))))(); };
+        W.prototype = C.prototype; window[n] = W;
+      });
+    } catch (e) { /* a browser that will not let us watch just reports what it can */ }
+    return {
+      requests: function () { return count; },
+      last: function () { return last; },
+      resources: function () {
+        var list = [], bad = [];
+        try {
+          performance.getEntriesByType("resource").forEach(function (r) {
+            list.push(r.name);
+            try { if (new URL(r.name, location.href).origin !== location.origin) bad.push(r.name); } catch (e) { bad.push(r.name); }
+          });
+        } catch (e) { /* no performance timeline */ }
+        return { total: list.length, outside: bad };
       }
-      dropBtn.addEventListener("click", function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        toggleDropdown();
-      });
-      document.addEventListener("click", function(e) {
-        if (!dropdown.contains(e.target)) toggleDropdown(false);
-      });
-      document.addEventListener("keydown", function(e) {
-        if (e.key === "Escape" && dropdown.classList.contains("is-open")) {
-          toggleDropdown(false);
-          dropBtn.focus();
+    };
+  })();
+
+  var $ = function (id) { return document.getElementById(id); };
+  var esc = function (s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return "&#" + c.charCodeAt(0) + ";"; }); };
+  var pad2 = function (n) { return (n < 10 ? "0" : "") + n; };
+  var isoOf = function (d) { return d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate()); };
+  var longDate = function (iso) {
+    var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso || ""); if (!m) return "";
+    return new Date(+m[1], +m[2] - 1, +m[3]).toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
+  };
+  var money = function (cents) { return (cents / 100).toLocaleString("en-US", { style: "currency", currency: "USD" }); };
+
+  /* ───────── 1. tabs ───────── */
+  var Tabs = (function () {
+    var tabs = [].slice.call(document.querySelectorAll("#qsTabs [role=tab]"));
+    var hooks = {};
+    function show(i, focus, push) {
+      tabs.forEach(function (t, k) {
+        var on = k === i, p = $(t.getAttribute("aria-controls"));
+        t.setAttribute("aria-selected", on ? "true" : "false");
+        t.tabIndex = on ? 0 : -1;
+        if (p) {
+          if (on) { p.hidden = false; p.classList.remove("is-entering"); void p.offsetWidth; p.classList.add("is-entering"); } else p.hidden = true;
         }
       });
+      if (focus) tabs[i].focus();
+      if (push) { try { history.replaceState(null, "", "#" + tabs[i].getAttribute("data-hash")); } catch (e) { /* the address stays */ } }
+      var h = tabs[i].getAttribute("data-hash"); if (hooks[h]) hooks[h]();
     }
+    tabs.forEach(function (t, i) {
+      t.addEventListener("click", function () { show(i, false, true); });
+      t.addEventListener("keydown", function (ev) {
+        var k = ev.key, n = tabs.length, to = -1;
+        if (k === "ArrowRight" || k === "ArrowDown") to = (i + 1) % n;
+        else if (k === "ArrowLeft" || k === "ArrowUp") to = (i + n - 1) % n;
+        else if (k === "Home") to = 0; else if (k === "End") to = n - 1;
+        if (to >= 0) { ev.preventDefault(); show(to, true, true); }
+      });
+    });
+    function fromHash() {
+      var h = (location.hash || "").replace("#", ""), i = 0;
+      tabs.forEach(function (t, k) { if (t.getAttribute("data-hash") === h) i = k; });
+      show(i, false, false);
+    }
+    window.addEventListener("hashchange", fromHash);
+    return { start: fromHash, on: function (hash, fn) { hooks[hash] = fn; } };
   })();
+
+  /* ───────── 2. where this page keeps its checklist ───────── */
+  var Store = (function () {
+    var KEY = "cognicopia_quality_audit";
+    var S = window.CogniSecureStore || null;
+    function backing() { return S && S.storage ? S.storage : window.localStorage; }
+    return {
+      secure: function () { return !!S; },
+      status: function () { try { return S ? S.status() : null; } catch (e) { return null; } },
+      ready: function () { return S && S.ready ? S.ready().then(function () { return S.status(); }, function () { return S.status(); }) : Promise.resolve(null); },
+      read: function () { try { var v = backing().getItem(KEY); return v ? JSON.parse(v) : null; } catch (e) { return null; } },
+      write: function (obj) { try { backing().setItem(KEY, JSON.stringify(obj)); return true; } catch (e) { return false; } },
+      clear: function () { try { backing().removeItem(KEY); } catch (e) { /* nothing to clear */ } },
+      locked: function () { var st = this.status(); return !!(st && st.state === "locked"); },
+      unlock: function () { return S && S.promptUnlock ? S.promptUnlock() : Promise.resolve(false); },
+      where: function () {
+        var st = this.status();
+        if (st && st.encrypted) return { enc: true, text: st.state === "locked" ? "Encrypted store (locked with a passphrase)" : (st.passphrase ? "Encrypted store (passphrase set, unlocked)" : "Encrypted store (device key)") };
+        return { enc: false, text: "Plain localStorage on this computer (the encrypted store is not available in this browser)" };
+      }
+    };
+  })();
+
+  /* ───────── 3. Tool A: the survey-readiness checklist ───────── */
+  var Audit = (function () {
+    var ITEMS = [
+      { id: "life", title: "Individualized Life History Cues (Person-Centered Alignment)",
+        support: "Each packet is built from the resident’s own profile: work, hobbies, hometown, the decades they grew up in and the topics to avoid.",
+        evidence: "A saved profile for the resident, dated packets made from it, and care-plan preferences that match." },
+      { id: "dignity", title: "Non-Infantilizing Adult Line-Art Motifs (Dignity Standard)",
+        support: "Subjects are chosen for adults (tools, gardens, music, the kitchen, cars) and a dignity filter runs on every page: no quizzing, scoring, baby talk or child-directed words.",
+        evidence: "This month’s sample sheets showing adult subjects, and a staff note on language." },
+      { id: "binder", title: "Dated Physical Activity Artifacts in Charting Binders (MDS 3.0)",
+        support: "Every page prints the resident’s name, the date and the wing in its header and “Page X of Y” in its foot, with a binding gutter so sheets file into a binder.",
+        evidence: "Completed sheets with a staff initial and a one-line note, filed by date for the interdisciplinary team (Section F preferences, Section Q participation)." },
+      { id: "evening", title: "Sundowning & Evening Agitation Reduction Routines",
+        support: "A calm, low-demand late-stage page and stage-matched evening sheets give staff a quiet activity for the late afternoon, each with a one-line caregiver tip.",
+        evidence: "An evening routine on the care plan or activity calendar, and sheets used at that time with a note on how the resident responded." },
+      { id: "motor", title: "Fine-Motor Tremor-Adaptive Line Boundaries (2.5 pt stroke)",
+        support: "Cognicopia prints no line thinner than 2.25 pt (early), 3 pt (middle) or 4.5 pt (late); coloring outlines are 3 pt or heavier.",
+        evidence: "A dated calibration sheet from your copier (Tab 3) with the 2.5 pt and 3.0 pt lines solid." },
+      { id: "privacy", title: "Offline Local Data Privacy Protocol Verification",
+        support: "The tools run in the browser with no server, account or cloud copy. Saved details are encrypted on the computer (AES-256-GCM) with an optional passphrase.",
+        evidence: "The Tab 4 security check run on the workstation and dated, plus your own policy for printed sheets, shared computers and passphrases." }
+    ];
+    var state = { checks: {}, fac: "", unit: "", rev: "", role: "", date: "" };
+    var timer = 0;
+
+    function count() { return ITEMS.filter(function (it) { return state.checks[it.id]; }).length; }
+    function band(p) {
+      if (p === 100) return "All six indicators have evidence on file.";
+      if (p >= 67) return "Nearly ready: close the remaining gaps.";
+      if (p >= 34) return "In progress: several indicators still need evidence.";
+      return "Early: most indicators still need evidence.";
+    }
+    function score() { return Math.round(100 * count() / ITEMS.length); }
+
+    function render() {
+      var ol = $("qsChecks"); if (!ol) return;
+      ol.innerHTML = ITEMS.map(function (it) {
+        var on = !!state.checks[it.id];
+        return '<li class="' + (on ? "is-on" : "") + '"><div class="qs-check-row">' +
+          '<input type="checkbox" id="qsc-' + it.id + '" data-id="' + it.id + '"' + (on ? " checked" : "") + ' aria-describedby="qsd-' + it.id + '">' +
+          '<label for="qsc-' + it.id + '">' + esc(it.title) + '</label>' +
+          '<p class="qs-check-detail" id="qsd-' + it.id + '"><strong>How Cognicopia supports it:</strong> ' + esc(it.support) +
+          '<br><strong>Evidence to have ready:</strong> ' + esc(it.evidence) + '</p></div></li>';
+      }).join("");
+      meter();
+    }
+    function meter() {
+      var p = score(), n = count();
+      $("qsScoreNum").innerHTML = p + "<small>%</small>";
+      $("qsMeterFill").style.width = p + "%";
+      var m = $("qsMeter");
+      m.setAttribute("aria-valuenow", String(p));
+      m.setAttribute("aria-valuetext", p + " percent, " + n + " of " + ITEMS.length + " indicators");
+      $("qsScoreLabel").textContent = "Audit Readiness Score: " + p + "%. " + n + " of " + ITEMS.length + " indicators have evidence on file. " + band(p);
+      [].forEach.call(document.querySelectorAll("#qsChecks > li"), function (li) {
+        var cb = li.querySelector("input"); li.classList.toggle("is-on", !!cb.checked);
+      });
+    }
+    function readFields() {
+      state.fac = $("qsFac").value.trim(); state.unit = $("qsUnit").value.trim(); state.rev = $("qsRev").value.trim();
+      state.role = $("qsRole").value.trim(); state.date = $("qsDate").value;
+    }
+    function writeFields() {
+      $("qsFac").value = state.fac || ""; $("qsUnit").value = state.unit || ""; $("qsRev").value = state.rev || "";
+      $("qsRole").value = state.role || ""; $("qsDate").value = state.date || isoOf(new Date());
+    }
+    function save() {
+      clearTimeout(timer);
+      timer = setTimeout(function () {
+        if (Store.locked()) return;
+        state.updated = new Date().toISOString();
+        Store.write(state);
+      }, 250);
+    }
+    function load() {
+      var saved = Store.read();
+      if (saved && typeof saved === "object") {
+        state.checks = {}; ITEMS.forEach(function (it) { state.checks[it.id] = !!(saved.checks && saved.checks[it.id]); });
+        ["fac", "unit", "rev", "role", "date"].forEach(function (k) { state[k] = typeof saved[k] === "string" ? saved[k].slice(0, 80) : ""; });
+      }
+      writeFields(); render();
+    }
+    function sheet() {
+      readFields();
+      var p = score(), n = count(), when = state.date || isoOf(new Date());
+      var rows = ITEMS.map(function (it, i) {
+        var on = !!state.checks[it.id];
+        return "<tr><td style='width:7%;text-align:center'><span class='d-box' style='margin:0'>" + (on ? "&#10003;" : "") + "</span></td>" +
+          "<td style='width:52%'><b>" + (i + 1) + ". " + esc(it.title) + "</b></td>" +
+          "<td style='width:12%;font-size:10pt'>" + (on ? "Evidence on file" : "Not yet") + "</td><td><div class='d-fill'></div></td></tr>";
+      }).join("");
+      return "<div class='qs-doc'>" +
+        "<div class='d-head'><div><h1>Survey Readiness Summary</h1><div style='font-size:12pt;font-weight:700'>Activities Programming &middot; CMS Tag F679 self-assessment</div></div>" +
+        "<div class='d-meta'>" + esc(longDate(when)) + "</div></div>" +
+        "<table><tbody>" +
+        "<tr><th style='width:22%'>Community</th><td>" + (state.fac ? esc(state.fac) : "<div class='d-fill'></div>") + "</td><th style='width:14%'>Wing / unit</th><td>" + (state.unit ? esc(state.unit) : "<div class='d-fill'></div>") + "</td></tr>" +
+        "<tr><th>Reviewed by</th><td>" + (state.rev ? esc(state.rev) : "<div class='d-fill'></div>") + "</td><th>Role</th><td>" + (state.role ? esc(state.role) : "<div class='d-fill'></div>") + "</td></tr></tbody></table>" +
+        "<div class='d-score'><b>" + p + "%</b><div><div style='font-size:13pt;font-weight:800'>Audit Readiness Score</div><div>" + n + " of " + ITEMS.length + " indicators have evidence on file. " + esc(band(p)) + "</div></div></div>" +
+        "<table class='d-tight'><thead><tr><th>Done</th><th>Indicator</th><th>Status</th><th>Where the evidence is kept</th></tr></thead><tbody>" + rows + "</tbody></table>" +
+        "<h2>Reference points</h2>" +
+        "<p style='font-size:10pt'>CMS Tag F679 (42 CFR &sect;483.24(c)): an ongoing program of activities, based on the assessment, the care plan and each resident&rsquo;s preferences, that supports their physical, mental and psychosocial well-being. MDS 3.0 Section F (preferences for customary routine and activities) and Section Q (participation in assessment and goal setting) are coded by the clinician; dated activity sheets are supporting artifacts for the interdisciplinary team.</p>" +
+        "<div class='d-sign'><div>Activity Director</div><div>Director of Nursing</div><div>Administrator</div></div>" +
+        "<p class='d-foot'>A self-assessment made with the Cognicopia Quality Standards Hub, a tool that runs on this computer and sends nothing anywhere. It is not a survey finding, a certification, a prediction of a survey outcome or legal advice. Cognicopia is published by Kirk Barron, Minot, North Dakota &middot; cognicopia@outlook.com.</p></div>";
+    }
+    function bind() {
+      $("qsChecks").addEventListener("change", function (ev) {
+        var t = ev.target; if (!t || !t.getAttribute("data-id")) return;
+        state.checks[t.getAttribute("data-id")] = !!t.checked; meter(); save();
+      });
+      ["qsFac", "qsUnit", "qsRev", "qsRole", "qsDate"].forEach(function (id) { $(id).addEventListener("input", function () { readFields(); save(); }); });
+      $("qsPrintAudit").addEventListener("click", function () { readFields(); save(); Print.sheets([sheet()], "Survey Readiness Summary"); });
+      $("qsResetAudit").addEventListener("click", function () {
+        if (!window.confirm("Clear all six ticks and the cover-sheet details?")) return;
+        state = { checks: {}, fac: "", unit: "", rev: "", role: "", date: "" }; Store.clear(); writeFields(); render();
+      });
+      $("qsAuditUnlock").addEventListener("click", function () { Store.unlock().then(function () { refresh(); }); });
+    }
+    function refresh() {
+      var locked = Store.locked();
+      $("qsAuditLocked").hidden = !locked;
+      if (!locked) load();
+    }
+    function start() {
+      ITEMS.forEach(function (it) { state.checks[it.id] = false; });
+      writeFields(); render(); bind();
+      Store.ready().then(refresh);
+    }
+    return { start: start, items: ITEMS };
+  })();
+
+  /* ───────── 4. printing ───────── */
+  var Print = (function () {
+    var styleEl = null, title = "";
+    function done() {
+      document.body.removeAttribute("data-print");
+      var root = $("qsPrintRoot"); if (root) root.innerHTML = "";
+      if (styleEl && styleEl.parentNode) styleEl.parentNode.removeChild(styleEl);
+      styleEl = null;
+      if (title) { document.title = title; title = ""; }
+    }
+    window.addEventListener("afterprint", done);
+    return {
+      sheets: function (docs, name) {
+        var root = $("qsPrintRoot"); if (!root) return;
+        root.innerHTML = docs.join("");
+        styleEl = document.createElement("style");
+        styleEl.textContent = "@page { size: 8.5in 11in; margin: 0; }";       // each sheet keeps its own gutter and margins
+        document.head.appendChild(styleEl);
+        document.body.setAttribute("data-print", "sheet");
+        title = document.title; if (name) document.title = name + " - Cognicopia";
+        setTimeout(function () { try { window.print(); } catch (e) { done(); } }, 60);
+      }
+    };
+  })();
+
+  /* ───────── 5. Tool B: the calibration sheet (one SVG, drawn in points so a stroke of 2.5 is 2.5 pt on paper) ───────── */
+  var Cal = (function () {
+    var WEIGHTS = [0.5, 1, 1.5, 2.5, 3];
+    var NOTES = ["hairline: often drops out", "fine: may break up", "borderline", "checklist standard", "middle-stage floor"];
+    function svg(o) {
+      o = o || {};
+      var print = !!o.print, G = 0.65 * 72, P = 0.75 * 72, L = G + 14, R = 576, s = [];
+      var line = function (x1, y1, x2, y2, w, extra) { s.push('<line x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 + '" stroke="#000" stroke-width="' + w + '"' + (extra || "") + '/>'); };
+      var text = function (x, y, size, str, o2) {
+        o2 = o2 || {};
+        s.push('<text x="' + x + '" y="' + y + '" font-size="' + size + '" font-family="Atkinson Hyperlegible, Arial, sans-serif" font-weight="' + (o2.bold ? 700 : 400) + '" fill="' + (o2.fill || "#000") + '"' + (o2.anchor ? ' text-anchor="' + o2.anchor + '"' : "") + (o2.rot ? ' transform="rotate(' + o2.rot + " " + x + " " + y + ')"' : "") + ">" + esc(str) + "</text>");
+      };
+      s.push('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 612 792" role="img" aria-label="Copier calibration sheet: gutters, line weights from 0.5 to 3 points, fine line pairs, a black patch, text samples and two rulers">');
+      s.push('<rect width="612" height="792" fill="#fff"/>');
+      /* the gutters */
+      if (o.gutters !== false) {
+        if (print) s.push('<rect x="0" y="0" width="' + G + '" height="792" fill="none" stroke="#000" stroke-width="1.5" stroke-dasharray="6 4"/>');
+        else s.push('<rect x="0" y="0" width="' + G + '" height="792" fill="#c5a059" fill-opacity=".55"/>');
+        line(G, 0, G, 792, 1.5, ' stroke-dasharray="6 4"');
+        line(P, 36, P, 756, 1, ' stroke-dasharray="2 4"');
+        line(G, 36, 576, 36, 1, ' stroke-dasharray="2 4"'); line(G, 756, 576, 756, 1, ' stroke-dasharray="2 4"'); line(576, 36, 576, 756, 1, ' stroke-dasharray="2 4"');
+        text(G / 2 + 4, 410, 10, "0.65 in binding gutter", { rot: -90, anchor: "middle", bold: true });
+      }
+      if (o.holes !== false && !print) [90, 396, 702].forEach(function (y) { s.push('<circle cx="27" cy="' + y + '" r="11.25" fill="#fff" stroke="#1a202c" stroke-width="1.5" stroke-dasharray="3 3"/>'); });
+      /* title */
+      text(L, 60, 15, "Cognicopia · Copier Calibration & Margin Test", { bold: true });
+      line(L, 68, 576, 68, 3);
+      text(L, 86, 10.5, "US Letter, printed at 100% (Actual size). Date: ____________   Machine: ______________________");
+      /* line weights, horizontal */
+      text(L, 112, 11, "1. Line weights (horizontal)", { bold: true });
+      WEIGHTS.forEach(function (w, i) {
+        var y = 128 + i * 20;
+        line(L, y, L + 190, y, w); text(L + 200, y + 4, 10.5, w.toFixed(1) + " pt — " + NOTES[i]);
+      });
+      /* vertical */
+      text(L + 372, 112, 11, "Line weights (vertical)", { bold: true });
+      WEIGHTS.forEach(function (w, i) { var x = L + 378 + i * 26; line(x, 120, x, 214, w); text(x, 228, 9, w.toFixed(1), { anchor: "middle" }); });
+      /* fine pairs */
+      text(L, 262, 11, "2. Fine line pairs (the lines should stay separate)", { bold: true });
+      [1, 1.5, 2, 3, 4].forEach(function (w, g) {
+        var x0 = L + g * 100, y0 = 272;
+        for (var k = 0; k < 5; k++) line(x0 + k * 2 * w + w / 2, y0, x0 + k * 2 * w + w / 2, y0 + 44, w);
+        text(x0, y0 + 58, 9, w + " pt lines, " + w + " pt gaps");
+      });
+      /* black patch and reverse type */
+      text(L, 360, 11, "3. Solid black and reverse type", { bold: true });
+      s.push('<rect x="' + L + '" y="368" width="250" height="52" fill="#000"/>');
+      text(L + 10, 390, 14, "Reverse type, 14 pt bold", { bold: true, fill: "#fff" });
+      text(L + 10, 410, 18, "Reverse 18 pt bold", { bold: true, fill: "#fff" });
+      s.push('<rect x="' + (L + 270) + '" y="368" width="52" height="52" fill="#fff" stroke="#000" stroke-width="3"/>');
+      text(L + 270, 436, 9, "paper white, 3 pt frame");
+      s.push('<circle cx="' + (L + 390) + '" cy="394" r="26" fill="none" stroke="#000" stroke-width="2.5"/><circle cx="' + (L + 390) + '" cy="394" r="14" fill="none" stroke="#000" stroke-width="2.5"/>');
+      line(L + 352, 394, L + 428, 394, 1); line(L + 390, 356, L + 390, 432, 1);
+      text(L + 390, 448, 9, "2.5 pt rings", { anchor: "middle" });
+      /* text samples */
+      text(L, 480, 11, "4. Text samples (black on white)", { bold: true });
+      text(L, 502, 14, "14 pt bold: Early-stage minimum type", { bold: true });
+      text(L, 526, 18, "18 pt bold: Middle-stage minimum", { bold: true });
+      text(L, 556, 24, "24 pt bold: Late stage", { bold: true });
+      text(L, 576, 10, "10 pt staff text: the clinical tip and the page footer print at this size.");
+      /* reading guide */
+      text(L, 604, 11, "5. Read your copy (tick what you see)", { bold: true });
+      ["0.5 pt solid", "1.0 pt solid", "1.5 pt solid", "2.5 pt solid", "3.0 pt solid"].forEach(function (t, i) {
+        var x = L + (i % 3) * 170, y = 622 + Math.floor(i / 3) * 20;
+        s.push('<rect x="' + x + '" y="' + (y - 11) + '" width="12" height="12" fill="none" stroke="#000" stroke-width="2"/>'); text(x + 18, y, 10.5, t);
+      });
+      ["Pairs stay separate", "Black is dense, no streaks", "Gutter clears the clip"].forEach(function (t, i) {
+        var x = L + i * 170, y = 664;
+        s.push('<rect x="' + x + '" y="' + (y - 11) + '" width="12" height="12" fill="none" stroke="#000" stroke-width="2"/>'); text(x + 18, y, 10.5, t);
+      });
+      /* rulers */
+      line(L, 700, L + 432, 700, 1.5); for (var i = 0; i <= 24; i++) line(L + i * 18, 700, L + i * 18, i % 4 === 0 ? 712 : 706, 1);
+      text(L, 726, 10, "6.00 in ruler (432 pt): measure end to end", { bold: true });
+      line(566, 72, 566, 720, 1.5); for (var j = 0; j <= 36; j++) line(566, 72 + j * 18, j % 4 === 0 ? 554 : 560, 72 + j * 18, 1);
+      text(546, 400, 10, "9.00 in ruler (648 pt)", { rot: -90, anchor: "middle", bold: true });
+      /* corner registration marks, all inside 0.5 in */
+      [[G + 6, 44], [570, 44], [G + 6, 748], [570, 748]].forEach(function (p) {
+        s.push('<circle cx="' + p[0] + '" cy="' + p[1] + '" r="5" fill="none" stroke="#000" stroke-width="1.5"/>');
+      });
+      s.push("</svg>");
+      return s.join("");
+    }
+    function preview() {
+      var wrap = $("qsCalWrap"); if (!wrap) return;
+      wrap.innerHTML = svg({ gutters: $("qsShowGutter").checked, holes: $("qsShowHoles").checked });
+    }
+    function start() {
+      preview();
+      $("qsShowGutter").addEventListener("change", preview);
+      $("qsShowHoles").addEventListener("change", preview);
+      $("qsRunCal").addEventListener("click", function () {
+        Print.sheets(["<div class='qs-doc is-cal'>" + svg({ print: true, gutters: true, holes: false }) + "</div>"], "Copier Calibration Sheet");
+      });
+    }
+    return { start: start, svg: svg };
+  })();
+
+  /* ───────── 6. Tool C: procurement and the live security check ───────── */
+  var Proc = (function () {
+    var UNIT_CENTS = 12999;
+    function dueDates() {
+      var iso = $("qsInvDate").value || isoOf(new Date());
+      var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso), d = m ? new Date(+m[1], +m[2] - 1, +m[3]) : new Date();
+      var due = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 30), renew = new Date(d.getFullYear() + 1, d.getMonth(), d.getDate());
+      return { iso: isoOf(d), inv: d, due: due, renew: renew };
+    }
+    var fmt = function (d) { return d.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }); };
+    function units() { var n = Math.floor(Number($("qsUnits").value)); return n >= 1 && n <= 500 ? n : 0; }
+    function calc() {
+      var n = units(), t = n * UNIT_CENTS, dd = dueDates();
+      $("qsUnitCount").textContent = n ? String(n) : "—";
+      $("qsSubtotal").textContent = n ? money(t) : "—";
+      $("qsTotal").textContent = n ? money(t) : "—";
+      $("qsDue").textContent = fmt(dd.due); $("qsRenew").textContent = fmt(dd.renew);
+      var u = $("qsUnits"); u.setAttribute("aria-invalid", n ? "false" : "true");
+      var po = $("qsPo").value.trim();
+      $("qsMail").href = "mailto:cognicopia@outlook.com?subject=" + encodeURIComponent("Cognicopia: invoice and W-9 request") + "&body=" +
+        encodeURIComponent("Please send an invoice and your W-9 for " + (n || 1) + " Cognicopia facility unit" + (n === 1 ? "" : "s") + " (" + money((n || 1) * UNIT_CENTS) + " for one year, Net 30).\n\nCommunity name:\nBilling address:\nAccounts payable contact (name and email):\nPurchase order number: " + po + "\n");
+    }
+    function vendorSheet() {
+      var n = units() || 1, dd = dueDates(), po = $("qsPo").value.trim(), fac = (Store.read() || {}).fac || "";
+      var blank = function (v) { return v ? esc(v) : "<div class='d-fill'></div>"; };
+      return "<div class='qs-doc'>" +
+        "<div class='d-head'><div><h1>Vendor Information Sheet</h1><div style='font-size:12pt;font-weight:700'>and W-9 Request</div></div><div class='d-meta'>" + esc(fmt(dd.inv)) + "</div></div>" +
+        "<h2>1. Vendor</h2><table><tbody>" +
+        "<tr><th style='width:30%'>Product</th><td>Cognicopia: activity packets, life planners and journals for memory care (software that runs in the browser)</td></tr>" +
+        "<tr><th>Published by</th><td>Kirk Barron, Minot, North Dakota (BarronCrafts)</td></tr>" +
+        "<tr><th>Contact</th><td>cognicopia@outlook.com</td></tr>" +
+        "<tr><th>Offer</th><td>Annual facility license, $129.99 per facility unit (one building) per year</td></tr>" +
+        "<tr><th>Terms</th><td>Net 30. Payable by check or bank transfer; card payment is available through the purchase button on the site. Prices exclude any applicable tax.</td></tr>" +
+        "<tr><th>W-9</th><td>The vendor&rsquo;s Form W-9 accompanies each invoice and is available on request. Legal name, taxpayer identification number and remit-to address are shown on the W-9 and the invoice.</td></tr>" +
+        "<tr><th>Data and security</th><td>Runs entirely in the user&rsquo;s browser. No server, account or cloud copy; no resident details are transmitted. Saved details are encrypted on the computer (AES-256-GCM) with an optional passphrase. Printing, workstation security and access remain the community&rsquo;s own privacy program.</td></tr>" +
+        "</tbody></table>" +
+        "<h2>2. Request (to be completed by the community)</h2><table><tbody>" +
+        "<tr><th style='width:30%'>Community legal name</th><td>" + blank(fac) + "</td></tr>" +
+        "<tr><th>Billing address</th><td><div class='d-fill'></div></td></tr>" +
+        "<tr><th>Accounts payable contact</th><td><div class='d-fill'></div></td></tr>" +
+        "<tr><th>Purchase order number</th><td>" + blank(po) + "</td></tr>" +
+        "<tr><th>Facility units</th><td>" + n + " &times; $129.99 = <b>" + money(n * UNIT_CENTS) + "</b> for one year</td></tr>" +
+        "<tr><th>Invoice date / payment due</th><td>" + esc(fmt(dd.inv)) + " / " + esc(fmt(dd.due)) + " (Net 30)</td></tr>" +
+        "<tr><th>Documents requested</th><td><span class='d-box'></span>Invoice &nbsp; <span class='d-box'></span>Form W-9 &nbsp; <span class='d-box'></span>Security and privacy summary</td></tr>" +
+        "</tbody></table>" +
+        "<p class='d-foot'>Send this sheet to cognicopia@outlook.com with your purchase order. Prepared with the Cognicopia Quality Standards Hub on this computer; nothing was transmitted.</p></div>";
+    }
+    function row(id, ok, text) {
+      var el = $(id); if (!el) return;
+      el.innerHTML = '<span class="qs-pill' + (ok === true ? "" : ok === false ? " bad" : " wait") + '">' + esc(text) + "</span>";
+    }
+    function cryptoTest() {
+      try {
+        if (!window.crypto || !crypto.subtle) return Promise.resolve({ ok: false, text: "Web Crypto is not available in this browser" });
+        var plain = new TextEncoder().encode("cognicopia-selftest-" + Math.random().toString(36).slice(2));
+        return crypto.subtle.generateKey({ name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]).then(function (k) {
+          var iv = crypto.getRandomValues(new Uint8Array(12));
+          return crypto.subtle.encrypt({ name: "AES-GCM", iv: iv }, k, plain).then(function (ct) {
+            return crypto.subtle.decrypt({ name: "AES-GCM", iv: iv }, k, ct).then(function (back) {
+              var a = new Uint8Array(back), same = a.length === plain.length && a.every(function (v, i) { return v === plain[i]; });
+              return { ok: same, text: same ? "Passed: encrypted and decrypted a test value" : "Failed: the test value did not match" };
+            });
+          });
+        }).catch(function () { return { ok: false, text: "Failed to run" }; });
+      } catch (e) { return Promise.resolve({ ok: false, text: "Failed to run" }); }
+    }
+    function run() {
+      var n = Net.requests(), res = Net.resources();
+      row("qsSecReq", n === 0, n === 0 ? "0 requests" : n + " request" + (n === 1 ? "" : "s") + " (" + Net.last() + ")");
+      row("qsSecRes", res.outside.length === 0, res.outside.length === 0 ? (res.total + " files, all from this site") : (res.outside.length + " from other sites"));
+      row("qsSecOnline", null, navigator.onLine ? "Online now; nothing here needs it" : "Offline now; this page is working");
+      var w = Store.where();
+      row("qsSecStore", w.enc, w.enc ? (Store.locked() ? "Present and locked" : "Present and open") : "Not available");
+      row("qsSecWhere", w.enc, w.text);
+      return cryptoTest().then(function (r) {
+        row("qsSecCrypto", r.ok, r.text);
+        $("qsSecStamp").textContent = "Checked " + new Date().toLocaleTimeString("en-US") + ".";
+        Badge.update(n === 0 && res.outside.length === 0, w, r.ok);
+      });
+    }
+    function start() {
+      $("qsInvDate").value = isoOf(new Date());
+      ["qsUnits", "qsInvDate", "qsPo"].forEach(function (id) { $(id).addEventListener("input", calc); });
+      calc();
+      $("qsOpenVendor").addEventListener("click", function () {
+        var dlg = $("qsVendorDlg"); $("qsVendorBody").innerHTML = vendorSheet();
+        if (dlg.showModal) dlg.showModal(); else dlg.setAttribute("open", "");
+      });
+      $("qsVendorClose").addEventListener("click", function () { var d = $("qsVendorDlg"); if (d.close) d.close(); else d.removeAttribute("open"); });
+      $("qsVendorPrint").addEventListener("click", function () { Print.sheets([vendorSheet()], "Vendor Information Sheet"); });
+      $("qsRunSec").addEventListener("click", run);
+    }
+    return { start: start, run: run };
+  })();
+
+  /* ───────── 7. the header badge: what is true right now ───────── */
+  var Badge = (function () {
+    return {
+      update: function (netOk, where, cryptoOk) {
+        var b = $("qsBadge"), a = $("qsBadgeNet"), e = $("qsBadgeEnc");
+        a.textContent = netOk ? "100% Offline: no network use" : "Network use detected";
+        var enc = where && where.enc && cryptoOk;
+        e.textContent = enc ? (Store.locked() ? "Local Encryption Active (locked)" : "Local Encryption Active") : "Local encryption not available in this browser";
+        b.setAttribute("data-state", netOk && enc ? "ok" : "warn");
+      }
+    };
+  })();
+
+  /* ───────── start ───────── */
+  function start() {
+    Audit.start(); Cal.start(); Proc.start();
+    Tabs.on("procurement", function () { Proc.run(); });
+    Tabs.start();
+    Store.ready().then(function () { Proc.run(); });
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start); else start();
+})();
   </script>
 </body>
 </html>

@@ -385,12 +385,22 @@ C.define({ id:"butter-churn", title:"The Butter Churn", cat:"nostalgic-heritage"
 
 C.define({ id:"porch-swing", title:"The Porch Swing", cat:"nostalgic-heritage",
   tags:["porches", "summer-evenings", "resting"], sensitive:["home"], talk:"Who would you like to sit beside on a porch swing?" }, function(g){
-  g.S(h.rect(32, 72, 536, 36));
-  g.L(h.line([116, 108], [100, 428])); g.L(h.line([484, 108], [500, 428]));
-  g.S(h.rrect(88, 400, 424, 124, 12));
-  if (g.lvl >= 2) for (var x = 148; x < 500; x += 60) g.D(h.line([x, 412], [x, 512]), g.lvl >= 3 ? 2 : 2);
-  if (g.lvl >= 2) g.S(h.rrect(160, 456, 100, 72, 24));
-  g.S(h.path([76, 524]).L([524, 524]).L([544, 580]).L([56, 580]).Z());
-  [56, 516].forEach(function(x){ if (g.is(2)) g.S(h.rrect(x, 472, 28, 80, 8)); else g.K(h.rrect(x, 472, 28, 80, 8)); });
+  g.S(h.rect(40, 60, 520, 36));
+  g.L(h.line([100, 96], [86, 362])); g.L(h.line([500, 96], [514, 362]));
+  g.S(h.rect(150, 300, 300, 150));
+  var slats = g.at(6, 4, 3);
+  for (var i = 1; i < slats; i++){ var x = 150 + i * 300 / slats; g.L(h.line([x, 318], [x, 450])); }
+  g.S(h.path([136, 300]).Q([300, 248], [464, 300]).L([464, 332]).Q([300, 280], [136, 332]).Z());
+  if (g.lvl >= 2) g.S(h.rrect(186, 380, 128, 80, 28));
+  g.S(h.rrect(60, 446, 480, 42, 10));
+  g.S(h.rect(84, 488, 432, 38));
+  var aw = g.at(28, 34, 44);
+  [[44, 128], [472, 556]].forEach(function(a){
+    if (g.lvl >= 2) g.S(h.rect((a[0] + a[1]) / 2 - 16, 360 + aw - 2, 32, 90 - aw));
+    g.S(h.rrect(a[0], 360, a[1] - a[0], aw, aw / 2.6));
+  });
+  if (g.lvl >= 3) g.D(h.line([96, 507], [504, 507]));
+  g.L(h.line([30, 640], [570, 640]));
+  if (g.lvl >= 2) [690, 740].forEach(function(y){ g.D(h.line([30, y], [570, y]), 2); });
 });
 })(globalThis.CognicopiaColoring);

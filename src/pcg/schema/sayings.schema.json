@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cognicopia.org/src/pcg/schema/sayings.schema.json",
+  "title": "Cognicopia activity engine: familiar phrases",
+  "description": "Familiar sayings, pairs and recipe lines for the 'Choose the ending' page. The lead and the answer make the whole phrase. 'others' are two plain words that do not fit, so a choice is never a trap: errorless learning offers the answer beside something clearly not it.",
+  "type": "object",
+  "required": [
+    "version",
+    "items"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "version": {
+      "const": 1
+    },
+    "items": {
+      "type": "array",
+      "minItems": 40,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "lead",
+          "answer",
+          "others",
+          "kind"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^s[0-9]{2,3}$"
+          },
+          "lead": {
+            "type": "string",
+            "minLength": 4,
+            "maxLength": 52
+          },
+          "answer": {
+            "type": "string",
+            "pattern": "^[a-z][a-z' -]{1,18}$"
+          },
+          "others": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 2,
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z][a-z' -]{1,18}$"
+            }
+          },
+          "kind": {
+            "enum": [
+              "proverb",
+              "pair",
+              "recipe"
+            ]
+          }
+        }
+      }
+    }
+  }
+}

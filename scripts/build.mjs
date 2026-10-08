@@ -14,7 +14,12 @@
         does every icon in the web manifest;
      5. the server file parses, and the planner, journal, TypeScript
         services and Cognicopia Coloring checks pass (the coloring check
-        also proves the library, catalog and browser bundle are current);
+        also proves the library, catalog and browser bundle are current;
+        the hybrid check proves the coloring subjects, their manifest and
+        bundle are current, and draws every subject at every stage; the
+        procedural-content check proves Today's Packet is the same all day,
+        new each morning, stage-appropriate, one step from the resident's
+        interests and free of anything on the avoid list);
      6. the site navigation matches scripts/site-nav.mjs (npm run nav), the
         Research Center's pages match their content (npm run research), and
         every relative link and asset on every page points at a file that
@@ -40,7 +45,7 @@ const must = (cond, msg) => { if (!cond) throw new Error(msg); };
 console.log("Cognicopia build check");
 
 /* 1. inline scripts parse */
-const SKIP = new Set([".git", "node_modules"]);
+const SKIP = new Set([".git", "node_modules", ".next"]);   // .next: the SaaS platform's build output (platform/), never part of the site
 const htmlIn = dir => fs.readdirSync(path.join(ROOT, dir), { withFileTypes: true }).flatMap(e =>
   SKIP.has(e.name) ? [] : e.isDirectory() ? htmlIn(path.posix.join(dir, e.name)) : e.name.endsWith(".html") ? [path.posix.join(dir, e.name)] : []);
 const pages = htmlIn("").sort();
@@ -117,7 +122,7 @@ step("every web manifest icon exists", () => {
 
 /* 5. server and the automated checks */
 step("server.js parses", () => { execFileSync(process.execPath, ["--check", path.join(ROOT, "server.js")]); });
-for (const s of ["check-life-planner.mjs", "check-life-journal.mjs", "check-services.mjs", "check-coloring.mjs"]) step(s, () => {
+for (const s of ["check-life-planner.mjs", "check-life-journal.mjs", "check-services.mjs", "check-coloring.mjs", "check-infinite.mjs", "check-hybrid.mjs", "check-pcg.mjs", "check-clinical.mjs", "check-quality-hub.mjs", "check-clinical-alignment.mjs", "check-soothing.mjs", "check-license.mjs"]) step(s, () => {
   const out = execFileSync(process.execPath, [path.join(ROOT, "scripts", s)], { encoding: "utf8" }).trim().split("\n")[0];
   return out;
 });

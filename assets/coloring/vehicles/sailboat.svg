@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600" data-cg-processed="1" data-title="The Sailboat" data-tags="boat,lake,sailboat,sailing,summer,vacation,vehicles,water" data-stages="early,middle,late" data-angle="side_profile" data-prompt="What would a calm afternoon on the water sound like?" data-word="boat" data-completion="Out on the lake in a sail" data-banner="BOAT">
+  <title>The Sailboat</title>
+  <rect width="800" height="600" fill="#fff" data-bg="1"/>
+  <path d="M408.56 44.28L464.23 61.41L408.56 78.54Z" fill="#fff" stroke="#000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-detail="1"/>
+  <path d="M406.42 40L410.7 40C414.25 40 417.13 42.88 417.13 46.42L417.13 431.79C417.13 435.33 414.25 438.21 410.7 438.21L406.42 438.21C402.88 438.21 400 435.33 400 431.79L400 46.42C400 42.88 402.88 40 406.42 40Z" fill="#fff" stroke="#000" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M429.97 57.13C511.33 168.45 592.68 288.35 644.06 416.8L429.97 416.8Z" fill="#fff" stroke="#000" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M387.15 82.82L387.15 416.8L190.19 416.8C250.14 309.76 314.36 194.15 387.15 82.82Z" fill="#fff" stroke="#000" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M138.81 433.93L669.76 433.93C648.35 489.59 584.12 515.28 498.48 519.57L301.52 519.57C233.01 515.28 173.06 489.59 138.81 433.93Z" fill="#fff" stroke="#000" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M333.63 472.46C333.63 480.74 326.92 487.45 318.65 487.45C310.37 487.45 303.66 480.74 303.66 472.46C303.66 464.19 310.37 457.48 318.65 457.48C326.92 457.48 333.63 464.19 333.63 472.46Z" fill="#fff" stroke="#000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-detail="1"/>
+  <path d="M419.27 472.46C419.27 480.74 412.56 487.45 404.28 487.45C396.01 487.45 389.3 480.74 389.3 472.46C389.3 464.19 396.01 457.48 404.28 457.48C412.56 457.48 419.27 464.19 419.27 472.46Z" fill="#fff" stroke="#000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-detail="1"/>
+  <path d="M504.9 472.46C504.9 480.74 498.2 487.45 489.92 487.45C481.64 487.45 474.93 480.74 474.93 472.46C474.93 464.19 481.64 457.48 489.92 457.48C498.2 457.48 504.9 464.19 504.9 472.46Z" fill="#fff" stroke="#000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-detail="1"/>
+  <path d="M104.55 553.82C168.78 532.41 233.01 575.23 297.24 553.82C361.46 532.41 425.69 575.23 489.92 553.82C554.15 532.41 618.37 575.23 695.45 553.82" fill="none" stroke="#000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" data-detail="1"/>
+</svg>

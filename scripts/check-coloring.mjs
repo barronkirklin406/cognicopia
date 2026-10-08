@@ -27,7 +27,7 @@ const designs = C.designs(), packs = C.packs();
 ok(designs.length >= 100, `${designs.length} designs (want at least 100)`);
 ok(packs.length >= 50 && packs.length <= 100, `${packs.length} packs (want 50 to 100)`);
 const cats = new Set(designs.map(d => d.cat));
-["classic-vehicles", "botanical-garden", "nostalgic-heritage", "wildlife-nature", "bold-easy-patterns", "home-everyday"].forEach(c => ok(cats.has(c) && designs.filter(d => d.cat === c).length >= 10, "category " + c + " has at least 10 designs"));
+["classic-vehicles", "botanical-garden", "nostalgic-heritage", "wildlife-nature", "bold-easy-patterns", "home-everyday", "zentangle-mandalas", "vintage-americana", "seasons-holidays"].forEach(c => ok(cats.has(c) && designs.filter(d => d.cat === c).length >= 10, "category " + c + " has at least 10 designs"));
 ok(new Set(designs.map(d => d.id)).size === designs.length, "design ids are unique");
 const inPack = new Set(); packs.forEach(p => p.designs.forEach(id => { ok(!!C.design(id), `pack ${p.id} lists unknown design ${id}`); inPack.add(id); }));
 designs.forEach(d => ok(inPack.has(d.id), `${d.id} is in no pack`));

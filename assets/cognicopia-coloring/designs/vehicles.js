@@ -13,8 +13,9 @@ function wheel(g, cx, cy, r, o){
   g.S(h.circle(cx, cy, r));
   g.S(h.circle(cx, cy, r * (o.rim || .58)), o.rimLv || 2);
   if (!g.is(2)) g.K(h.circle(cx, cy, r * .14));
-  if (o.hub !== false) g.DS(h.circle(cx, cy, r * .22), 3);
-  if (o.spokes) for (var i = 0; i < o.spokes; i++){ var a = i * 360 / o.spokes; g.D(h.line(h.onCircle(cx, cy, r * .24, a), h.onCircle(cx, cy, r * (o.rim || .58) - 2, a)), o.spokeLv || 2); }
+  var hub = o.hubR || .22;
+  if (o.hub !== false) g.DS(h.circle(cx, cy, r * hub), 3);
+  if (o.spokes) for (var i = 0; i < o.spokes; i++){ var a = (o.spokeRot || 0) + i * 360 / o.spokes; g.D(h.line(h.onCircle(cx, cy, r * (hub + .02), a), h.onCircle(cx, cy, r * (o.rim || .58) - 2, a)), o.spokeLv || 2); }
 }
 
 /* A vehicle in its scene: the drawing's bottom-centre anchor [ax, ay] lands at
@@ -105,9 +106,8 @@ function locomotive(g){
   g.S(h.path([60, 364]).L([552, 364]).L([552, 392]).L([60, 392]).Z());
   g.S(h.path([60, 392]).L([22, 462]).L([96, 462]).L([96, 392]).Z());
   g.D(h.line([46, 440], [96, 440]), 3); g.D(h.line([38, 414], [96, 414]), 3);
-  g.at([184, 290, 396], [184, 290, 396], [210, 370]).forEach(function(x){ wheel(g, x, 430, 50, { spokes:6, spokeLv:3 }); });
-  g.S(h.circle(122, 450, 26), 2);
-  g.L(h.line([184, 440], [396, 440]), 3);
+  g.at([184, 290, 396], [184, 290, 396], [210, 370]).forEach(function(x){ wheel(g, x, 430, 50, { spokes:4, spokeRot:45, spokeLv:3, hubR:.3 }); });
+  g.S(h.circle(112, 450, 24), 2);
 }
 inScene({ id:"steam-locomotive", title:"The Steam Locomotive", cat:"classic-vehicles", era:"1930s",
   tags:["trains", "railroad", "travel"], talk:"Where would you ride this train today?" },

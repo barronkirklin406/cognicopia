@@ -1,8 +1,10 @@
 # Cognicopia Coloring standards
 
-What every Cognicopia Coloring page must be, why, how the library proves it, and how new artwork (hand-drawn or AI-generated) gets in. The rules here are enforced by code, not by review alone:
+What every Cognicopia coloring page must be, why, how the library proves it, and how new artwork (hand-drawn, generated on demand, or AI-generated) gets in. The engine lives in `assets/cognicopia-coloring/` (global `CognicopiaColoring`). The rules here are enforced by code, not by review alone:
 
 - `assets/cognicopia-coloring/lineart.js` draws every page to these rules.
+- `assets/cognicopia-coloring/quality.js` prints a page to a bitmap and measures it, the same way in the browser and in Node.
+- `assets/cognicopia-coloring/infinite.js` makes new pages on demand and holds each one to these rules before it is shown (see [infinite-coloring-engine.md](infinite-coloring-engine.md)).
 - `src/services/vectorEngine.ts` applies the same line weights to any other drawing.
 - `scripts/generate_coloring_manifest.js` measures every printed page and stops if one breaks a rule.
 - `npm test` checks the whole library, the prompts and the ingest pipeline.
@@ -45,12 +47,13 @@ Line weight follows the Dynamic Vector Engine's tier table. The unit is the CSS 
 
 | Tier | For | Multiplier | Allowed | Outline | Interior detail | Smallest area to color | Areas under it allowed |
 |---|---|---|---|---|---|---|---|
-| **Tier 1 - High Detail** | early stage, enjoys detail | 1.0× | 2–3 px | 3 px (2.25 pt) | 3 px | 0.02 sq in | 10 |
+| **Tier 1 - High Detail** | early stage, enjoys detail | 1.33–2.0× | 4–4.5 px | 4 px (3 pt) | 4 px (3 pt) | 0.02 sq in | 10 |
 | **Tier 2 - Guided Focus** | moderate stage | 2.0–2.5× | 5–7 px | 6 px (4.5 pt) | 5 px (3.75 pt) | 0.05 sq in | 4 |
 | **Tier 3 - Single Focal / Sensory** | advanced stage | 3.5–4.0× | 9–12 px | 10.5 px (7.9 pt) | 9 px (6.75 pt) | 0.12 sq in | 1 |
 
-- The base line is a drawing's own main line, brought into Tier 1's 2–3 px range. Each tier multiplies it, and the result is clamped into the tier's range.
-- Library pages use a 3 px base, so they print at 3, 6 and 10.5 px. An imported drawing with 2 px lines prints at 2, 5 and 9 px.
+- **The clinical floor: no line on any page prints thinner than 3 pt (4 px).** Outlines and interior details alike, at every tier.
+- The base line is a drawing's own main line (2–3 px). Each tier multiplies it, and the result is clamped into the tier's range.
+- Library pages use a 3 px base, so they print at 4, 6 and 10.5 px (3, 4.5 and 7.9 pt). An imported drawing with 2 px lines prints at 4, 5 and 9 px.
 - "Areas under it allowed" covers small accents, such as the gap between two petals. The generator refuses a page that has more.
 - Staff can raise the line weight without changing the detail, for example a Tier 1 picture with Tier 3 lines for a resident with low vision. The engine keeps the detail tier and the stroke tier separate.
 - A Tier 3 drawing loses closed details under 0.05 sq in. Solid black accents stay unless they are specks.
@@ -106,7 +109,9 @@ Visual complexity bands, used by the library filter:
 
 ## 5. The library
 
-The library has 118 designs, each drawn at three tiers: **354 printable pages**. They are grouped into **56 packs** by theme, season, decade and therapeutic focus.
+The library has 150 designs in nine categories (Classic Vehicles, Botanical & Garden, Nostalgic Heritage, Wildlife & Nature, Bold & Easy Patterns, Home & Everyday Tasks, Zentangle & Mandalas, Vintage Americana, Seasons & Holidays), each drawn at three tiers: **450 printable pages**. They are grouped into **63 packs** by theme, season, decade and therapeutic focus.
+
+Beyond the library, the **infinite page generator** draws new pages on demand from eight themes and nine subject families, checks each against the rules on this page, and never repeats a page in a batch. It is documented in [infinite-coloring-engine.md](infinite-coloring-engine.md).
 
 | What | Where |
 |---|---|
@@ -231,12 +236,13 @@ Approved pictures join the catalog and the Packet Builder on the next `npm run c
 | `npm run coloring:check` | Verify all of the above is current (part of `npm run build`) |
 | `npm run coloring:prompts -- --category botanical-garden --tier 3 --out batch-01` | A prompt batch |
 | `npm run coloring:ingest` | Bring in the inbox for review |
+| `npm run pages -- --count 12 --tier 2` | Make new pages with the infinite generator: SVG, 300 DPI PNG, a PDF packet, prompts and a manifest |
 | `npm run services` | Build the TypeScript services for the browser |
 | `npm test` | Every check, including this library's and the services' |
 
 ## 9. Changing a number
 
-Change a tier rule in `TIERS` / `WEIGHTS` (`assets/cognicopia-coloring/lineart.js`) and in `STROKE_POLICY` (`src/services/vectorEngine.ts`) together. `npm test` fails if they disagree. Then run `npm run coloring`: the generator re-measures all 354 pages and names any that no longer pass.
+Change a tier rule in `TIERS` / `WEIGHTS` (`assets/cognicopia-coloring/lineart.js`) and in `STROKE_POLICY` (`src/services/vectorEngine.ts`) together. `npm test` fails if they disagree. Then run `npm run coloring`: the generator re-measures all 450 pages and names any that no longer pass, and `node scripts/check-infinite.mjs` re-checks a broad sample of generated pages.
 
 ## 10. Sources
 

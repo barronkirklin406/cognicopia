@@ -15,14 +15,14 @@ const STROKE_POLICY = {
         label: "Tier 1 - High Detail",
         multiplier: {
             min: 1,
-            max: 1
+            max: 2
         },
         px: {
-            min: 2,
-            max: 3,
-            target: 3
+            min: 4,
+            max: 4.5,
+            target: 4
         },
-        detailPx: 3,
+        detailPx: 4,
         simplifyPx: .35,
         dropDetailsSqIn: 0
     },

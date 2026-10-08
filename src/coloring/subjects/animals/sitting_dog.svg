@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 300"
+  data-title="The Faithful Dog" data-tags="dog, pet, puppy, home, farm, companion"
+  data-angle="front" data-word="dog" data-completion="Waiting at the door, the loyal" data-banner="DOG"
+  data-prompt="What makes a dog such good company?">
+  <path fill="#fff" stroke="#000" d="M182 250 C210 240 226 214 230 190 C232 184 240 186 240 192 C238 222 216 254 186 264 Z"/>
+  <path fill="#fff" stroke="#000" d="M130 120 C92 122 76 170 76 220 C76 258 96 280 130 280 C164 280 184 258 184 220 C184 170 168 122 130 120 Z"/>
+  <path fill="none" stroke="#000" d="M104 206 C102 236 102 256 104 270 C106 280 126 280 128 270 C130 256 130 236 128 210"/>
+  <path fill="none" stroke="#000" d="M132 210 C130 236 130 256 132 270 C134 280 154 280 156 270 C158 256 158 236 156 206"/>
+  <path fill="#fff" stroke="#000" d="M100 138 C118 148 142 148 160 138 L162 150 C142 160 118 160 98 150 Z"/>
+  <circle cx="130" cy="164" r="8" fill="#fff" stroke="#000"/>
+  <path fill="#fff" stroke="#000" d="M92 90 C90 54 112 36 130 36 C148 36 170 54 168 90 C168 120 152 140 130 140 C108 140 92 120 92 90 Z"/>
+  <path fill="#fff" stroke="#000" d="M96 54 C74 58 64 86 68 118 C72 128 86 126 90 112 C92 92 96 72 106 58 Z"/>
+  <path fill="#fff" stroke="#000" d="M164 54 C186 58 196 86 192 118 C188 128 174 126 170 112 C168 92 164 72 154 58 Z"/>
+  <ellipse cx="130" cy="114" rx="23" ry="17" fill="#fff" stroke="#000"/>
+  <path fill="#000" stroke="#000" d="M121 104 C121 98 139 98 139 104 C139 110 134 113 130 113 C126 113 121 110 121 104 Z"/>
+  <circle cx="114" cy="80" r="5" fill="#000" stroke="#000"/>
+  <circle cx="146" cy="80" r="5" fill="#000" stroke="#000"/>
+  <g class="detail" fill="none" stroke="#000"><path d="M130 113 L130 120"/><path d="M130 120 C126 126 118 126 115 122"/><path d="M130 120 C134 126 142 126 145 122"/></g>
+</svg>

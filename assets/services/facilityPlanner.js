@@ -855,7 +855,7 @@ const PREFER = {
         late: 25
     },
     words: {
-        morning: 0,
+        morning: 5,
         afternoon: 0,
         late: 10
     },

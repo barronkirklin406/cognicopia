@@ -12,11 +12,14 @@ import { fileURLToPath } from "url";
 export const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 export const SRC_DIR = path.join(ROOT, "assets", "cognicopia-coloring");
 
-/* The engine source files, in load order. The browser bundle is these
-   files joined in this order (scripts/generate_coloring_manifest.js). */
+/* The engine source files, in load order: the line-art engine, the
+   quality meter, the library's designs and packs, the prompt engine, and
+   the page generator with its subject families (generators/). The browser
+   bundle is these files joined in this order
+   (scripts/generate_coloring_manifest.js). */
 export function sourceFiles(){
-  const designs = fs.readdirSync(path.join(SRC_DIR, "designs")).filter(f => f.endsWith(".js")).sort().map(f => "designs/" + f);
-  return ["lineart.js", ...designs, "packs.js", "prompts.js"];
+  const list = dir => fs.existsSync(path.join(SRC_DIR, dir)) ? fs.readdirSync(path.join(SRC_DIR, dir)).filter(f => f.endsWith(".js")).sort().map(f => dir + "/" + f) : [];
+  return ["lineart.js", "quality.js", ...list("designs"), "packs.js", "prompts.js", "infinite.js", ...list("generators")];
 }
 
 let cached = null;

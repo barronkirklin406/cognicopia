@@ -280,7 +280,7 @@ function rng(seed: string): () => number {
    gentle hand against sundowning); balance always comes first. */
 const PREFER: Readonly<Record<Pillar, Record<"morning" | "afternoon" | "late", number>>> = {
   movement: { morning: 0, afternoon: 10, late: 25 }, numbers: { morning: 0, afternoon: 10, late: 25 },
-  words: { morning: 0, afternoon: 0, late: 10 }, letters: { morning: 0, afternoon: 10, late: 25 },
+  words: { morning: 5, afternoon: 0, late: 10 }, letters: { morning: 0, afternoon: 10, late: 25 },
   music: { morning: 10, afternoon: 0, late: 0 }, coloring: { morning: 10, afternoon: 0, late: 0 }
 };
 export interface FillOptions { groups?: string[]; seed?: string; available?: readonly string[]; }

@@ -1,0 +1,167 @@
+{
+  "$schema": "../schema/grammar.schema.json",
+  "version": 1,
+  "pools": {
+    "praise": ["dependable", "handsome", "useful", "well loved", "special", "popular", "trusted", "admired", "cheerful", "sturdy"],
+    "outing": ["a long trip", "a Saturday errand", "a Sunday afternoon", "a summer evening", "a busy morning", "a day in the country", "a quiet afternoon", "a cool autumn day"]
+  },
+  "stages": {
+    "early": {
+      "story": [
+        { "id": "e-story-fix", "presume": 2, "kinds": ["vehicle", "machine", "tool", "appliance", "furniture", "home", "instrument", "toy"], "text": "Tell me about a time you had to fix a {part} on {a_item}." },
+        { "id": "e-story-first", "presume": 2, "kinds": ["vehicle", "machine", "tool", "appliance", "furniture", "home", "instrument", "toy", "clothing", "craft", "container", "food", "drink", "plant", "animal", "bird"], "text": "Tell me about the first {item} you ever saw." },
+        { "id": "e-story-care", "presume": 2, "kinds": ["vehicle", "machine", "tool", "appliance", "furniture", "home", "instrument", "clothing", "craft", "container", "toy"], "text": "How did you look after {a_item} so that it lasted?" },
+        { "id": "e-story-day", "presume": 2, "kinds": ["*"], "text": "Tell me about a day when {a_item} made all the difference." },
+        { "id": "e-story-taught", "presume": 2, "kinds": ["vehicle", "machine", "tool", "appliance", "instrument", "craft", "toy", "home"], "text": "Who showed you how to use {a_item}, and what did they say?" },
+        { "id": "e-story-part", "presume": 2, "kinds": ["vehicle", "machine", "tool", "appliance", "furniture", "home", "instrument", "toy", "container"], "text": "What did you like best about the {part} on {a_item}?" },
+        { "id": "e-story-animal", "presume": 2, "kinds": ["animal", "bird"], "text": "Tell me about the {item} you knew best." },
+        { "id": "e-story-food", "presume": 2, "kinds": ["food", "drink"], "text": "Tell me how you made {a_item} the way you liked it." },
+        { "id": "e-story-plant", "presume": 2, "kinds": ["plant"], "text": "Tell me what you grew, and how you looked after your {item_pl}." },
+        { "id": "e-story-place", "presume": 2, "kinds": ["place", "scene"], "text": "Tell me about a day you spent at {the_item}." },
+        { "id": "e-story-game", "presume": 2, "kinds": ["game"], "text": "Tell me about playing {the_item}, and who played with you." },
+        { "id": "e-dom-secret", "presume": 1, "kinds": ["vehicle", "machine", "tool", "appliance", "furniture", "home", "instrument", "clothing", "craft", "container", "toy"], "text": "What do you think is the secret to looking after {a_item}?" },
+        { "id": "e-dom-never-tire", "presume": 1, "kinds": ["*"], "text": "What is it about {item_pl} that people never grow tired of?" },
+        { "id": "e-dom-teach", "presume": 1, "kinds": ["*"], "text": "If you were showing a young person about {item_pl}, where would you begin?" },
+        { "id": "e-dom-choose", "presume": 1, "kinds": ["*"], "text": "What would you look for when choosing {a_item}?" },
+        { "id": "e-dom-best-part", "presume": 1, "kinds": ["*"], "text": "Which part of {a_item} do you think matters most: the {part} or the {part2}?" },
+        { "id": "e-dom-loved", "presume": 1, "kinds": ["*"], "text": "What did people love most about {item_pl} in {decade}?" }
+      ],
+      "open": [
+        { "id": "e-open-made", "presume": 0, "kinds": ["*"], "text": "What do you think made {a_item} so {praise}?" },
+        { "id": "e-open-kept", "presume": 0, "kinds": ["vehicle", "machine", "tool", "appliance", "furniture", "home", "instrument", "clothing", "craft", "container", "toy"], "text": "Why do you think people kept {item_pl} for so many years?" },
+        { "id": "e-open-change", "presume": 0, "kinds": ["vehicle", "machine", "tool", "appliance", "furniture", "home", "instrument", "clothing", "craft", "container", "toy"], "text": "If you could change one thing about {a_item}, what would it be?" },
+        { "id": "e-open-describe", "presume": 0, "kinds": ["*"], "text": "How would you describe {a_item} to someone who has never seen one?" },
+        { "id": "e-open-best", "presume": 0, "kinds": ["*"], "text": "What would you say is the best thing about {a_item}?" },
+        { "id": "e-open-pick", "presume": 0, "kinds": ["*"], "text": "What would you look for if you were picking {a_item} for {outing}?" },
+        { "id": "e-open-senses", "presume": 0, "kinds": ["*"], "text": "What sight, sound or feeling goes with {a_item}?" },
+        { "id": "e-open-design", "presume": 0, "kinds": ["vehicle", "machine", "tool", "appliance", "furniture", "home", "instrument", "craft", "container", "toy"], "text": "If you were designing {a_item} today, what would you add?" },
+        { "id": "e-open-enjoy", "presume": 0, "kinds": ["*"], "text": "Who do you think would enjoy {a_item} most, and why?" },
+        { "id": "e-open-loved", "presume": 0, "kinds": ["*"], "text": "Why do you think {item_pl} have been loved for so long?" },
+        { "id": "e-open-part", "presume": 0, "kinds": ["*"], "text": "What do you think the {part} does for {a_item}?" },
+        { "id": "e-open-place", "presume": 0, "kinds": ["*"], "text": "Where would {a_item} feel most at home?" }
+      ],
+      "pair": [
+        { "id": "e-pair-choose", "presume": 0, "kinds": ["*"], "text": "Which would you choose for {outing}: {a_item} or {a_item2}? What makes you say so?" },
+        { "id": "e-pair-common", "presume": 0, "kinds": ["*"], "text": "What do {item_pl} and {item2_pl} have in common?" },
+        { "id": "e-pair-useful", "presume": 0, "kinds": ["*"], "text": "Which do you think is more useful: {a_item} or {a_item2}? Why?" },
+        { "id": "e-pair-different", "presume": 0, "kinds": ["*"], "text": "How is {a_item} different from {a_item2}?" },
+        { "id": "e-pair-together", "presume": 0, "kinds": ["*"], "text": "Could {a_item} and {a_item2} work together? How?" },
+        { "id": "e-pair-lively", "presume": 0, "kinds": ["*"], "text": "Which one would make a place feel more lively: {a_item} or {a_item2}?" }
+      ],
+      "factFollow": ["What do you make of that?", "What does that bring to mind?", "What would you add to that?", "How does that sound to you?"]
+    },
+    "middle": {
+      "intro": [
+        "Finish each thought. The word you need is in the box.",
+        "Choose a word from the box to finish each one. Any word that fits is a good one.",
+        "Read each one and finish it with a word from the box."
+      ],
+      "bankLabel": "Words to choose from"
+    },
+    "late": {
+      "sight": [
+        { "id": "l-sight-color", "kinds": ["*"], "text": "Look at the {color} color of this {item}." },
+        { "id": "l-sight-see", "kinds": ["*"], "text": "See the {color} {item}." },
+        { "id": "l-sight-part", "kinds": ["*"], "text": "Look at {a_part} on this {item}." },
+        { "id": "l-sight-detail", "kinds": ["*"], "text": "Look at the {sight}." },
+        { "id": "l-sight-slow", "kinds": ["*"], "text": "Take a slow look at {the_item}." }
+      ],
+      "sound": [
+        { "id": "l-sound-listen", "kinds": ["*"], "text": "Listen to the {sound}." },
+        { "id": "l-sound-hear", "kinds": ["*"], "text": "Hear the {sound}." }
+      ],
+      "touch": [
+        { "id": "l-touch-feel", "kinds": ["*"], "text": "Feel the {touch}." },
+        { "id": "l-touch-notice", "kinds": ["*"], "text": "Notice the {touch}." }
+      ],
+      "smell": [
+        { "id": "l-smell-breathe", "kinds": ["*"], "text": "Breathe in. Notice the {smell}." },
+        { "id": "l-smell-smell", "kinds": ["*"], "text": "Smell the {smell}." }
+      ],
+      "anchor": [
+        { "id": "l-anchor-this", "kinds": ["*"], "text": "This is {a_item}." },
+        { "id": "l-anchor-here", "kinds": ["*"], "text": "Here is {a_item}. Take a look." },
+        { "id": "l-anchor-say", "kinds": ["*"], "text": "Say it with me: {item}." },
+        { "id": "l-anchor-calm", "kinds": ["*"], "text": "Take a slow breath. Look at {the_item}." }
+      ]
+    }
+  },
+  "ui": {
+    "titles": {
+      "wordsearch": "Word Search",
+      "talk.early": "Talk It Over",
+      "talk.middle": "Finish the Thought",
+      "talk.late": "Look and Feel",
+      "puzzle.early": "Fit the Words In",
+      "puzzle.middle": "Fit the Words In",
+      "puzzle.late": "Look Together",
+      "coloring": "Color Page",
+      "staff": "For Staff: Today's Packet",
+      "factLead": "Did you know?"
+    },
+    "instructions": {
+      "wordsearch.early": "Circle each word. Words can go across, down and slanted.",
+      "wordsearch.middle": "Circle each word. Words go across and down.",
+      "wordsearch.late": "Find the word. Point to it, or circle it.",
+      "talk.early": "Talk about it, or write on the lines. Every answer is welcome.",
+      "puzzle.early": "Each word fits one of the spaces. Use the clues and the box of words.",
+      "puzzle.middle": "Each word fits one of the spaces. The first letter is already there.",
+      "puzzle.late": "Look at this together. Take as long as you like.",
+      "coloring.early": "Color it any way you like.",
+      "coloring.middle": "Color it any way you like.",
+      "coloring.late": "Any colors you like. Any way you like.",
+      "staff.note": "Pages 1 to 4 are for the resident. This page is for staff: take it off before handing the packet over."
+    }
+  },
+  "caregiver": {
+    "moments": {
+      "early": [
+        "while you help with breakfast",
+        "over a cup of tea or coffee",
+        "when you sit down together after lunch",
+        "during a quiet part of the afternoon",
+        "on the walk to the activity room",
+        "while you tidy up after a meal",
+        "as the evening settles in"
+      ],
+      "middle": [
+        "while you help with breakfast",
+        "over a warm drink",
+        "when you sit together after lunch",
+        "during the calm part of the afternoon",
+        "as you walk together to the activity room",
+        "while you set the table together",
+        "as the evening settles in"
+      ],
+      "late": [
+        "as you sit beside {them} in the morning",
+        "at the start of a meal",
+        "when you sit down together after lunch",
+        "during the quiet part of the afternoon",
+        "as you settle {them} in for the evening",
+        "when you pull your chair close"
+      ]
+    },
+    "templates": [
+      { "id": "cg-hook-name", "role": "hook", "page": 1, "stages": ["early", "middle", "late"], "requires": ["name-in-grid"], "text": "{name}'s own name is hidden in the word search on Page 1. Point to it first; it is usually the word people spot right away." },
+      { "id": "cg-hook-word", "role": "hook", "page": 1, "stages": ["early", "middle"], "text": "On Page 1, say the word {word} out loud and let {name} look for it at {their} own pace." },
+      { "id": "cg-hook-circle", "role": "hook", "page": 1, "stages": ["early"], "text": "On Page 1, circle one word together, then step back and let {name} choose the next one." },
+      { "id": "cg-hook-trace", "role": "hook", "page": 1, "stages": ["late"], "text": "Hold Page 1 where {name} can see it. Say the word {word}, then trace its letters slowly with your finger." },
+      { "id": "cg-talk-ask", "role": "talk", "page": 2, "stages": ["early"], "text": "{Moment}, ask {them} about {the_item} on Page 2. Let {them} lead; a single sentence is plenty." },
+      { "id": "cg-talk-wonder", "role": "talk", "page": 2, "stages": ["early"], "text": "{Moment}, wonder aloud about {the_item} from Page 2, and follow wherever {they} take the conversation." },
+      { "id": "cg-talk-finish", "role": "talk", "page": 2, "stages": ["middle"], "text": "Read the first thought on Page 2 aloud, then pause. If {they_finish} it, repeat it back warmly; if not, point to the box of words." },
+      { "id": "cg-talk-card", "role": "talk", "page": 2, "stages": ["late"], "text": "{Moment}, hold Page 2 where {they} can see it and read one card slowly. Then wait: silence is part of the conversation." },
+      { "id": "cg-connect-ask", "role": "connect", "stages": ["early", "middle"], "text": "Ask {them} about {the_item} mentioned on Page {page} {moment}." },
+      { "id": "cg-connect-bring", "role": "connect", "stages": ["early", "middle"], "text": "Bring up {the_item} from Page {page} {moment}, and let {them} take it wherever {they} like." },
+      { "id": "cg-connect-late", "role": "connect", "stages": ["late"], "text": "{Moment}, say a few words about {the_item} from Page {page}. A smile or a glance is an answer too." },
+      { "id": "cg-puzzle-early", "role": "puzzle", "page": 3, "stages": ["early"], "text": "If the crossword on Page 3 feels like too much, read one clue aloud and point to the box of words. Finishing is not the goal." },
+      { "id": "cg-puzzle-middle", "role": "puzzle", "page": 3, "stages": ["middle"], "text": "On Page 3, read a clue aloud and point to the matching word in the box. The first letters are already filled in to help." },
+      { "id": "cg-puzzle-late", "role": "puzzle", "page": 3, "stages": ["late"], "text": "Page 3 shows {the_item}. Hold it in {their} line of sight, say what it is, and let {them} look for as long as {they} would like." },
+      { "id": "cg-color-bold", "role": "color", "page": 4, "stages": ["early", "middle"], "text": "Offer two or three bold markers for Page 4 and let {name} choose. Staying inside the lines does not matter." },
+      { "id": "cg-color-pattern", "role": "color", "page": 4, "stages": ["late"], "text": "Page 4 is a pattern to color. Place a marker in {their} hand and make the first stroke together if {they} would like." },
+      { "id": "cg-comfort-cue", "role": "comfort", "stages": ["early", "middle", "late"], "text": "If {they_seem} restless, talk quietly about {the_item} from Page {page} and describe {sense_cue}." },
+      { "id": "cg-wrap-note", "role": "wrap", "stages": ["early", "middle", "late"], "text": "Afterward, note anything {name} enjoyed, such as a smile, a story or a single word, in today's engagement notes." },
+      { "id": "cg-wrap-settle", "role": "wrap", "stages": ["early", "middle", "late"], "text": "If any page seems to upset {name}, set it aside and sit quietly together. Nothing here needs to be finished." }
+    ]
+  }
+}
