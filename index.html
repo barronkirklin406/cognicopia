@@ -1006,20 +1006,47 @@ body { padding-left: var(--sb-w); }
 .cg-topbar .hdrlic{display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-width:0}
 .cg-topbar .stripe-btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;margin-left:0;padding:8px 14px;white-space:normal;text-align:center}
 .cg-topbar .linklike{min-height:44px;padding:8px 10px}
-.cg-topbar .arb-sticky-crisis{display:inline-flex;align-items:center;justify-content:center;position:static;z-index:auto;min-height:44px;max-width:100%;padding:8px 12px;font-size:15px;white-space:normal;box-shadow:none}
 .cg-topbar .cg-night-shift-toggle{min-height:44px;max-width:100%;padding:8px 12px}
+
+/* Tailwind utility classes for triage button and layout */
+.fixed{position:fixed!important}
+.top-4{top:1rem!important}
+.right-4{right:1rem!important}
+.z-50{z-index:50!important}
+.shadow-xl{box-shadow:0 20px 25px -5px rgba(0,0,0,.5),0 8px 10px -6px rgba(0,0,0,.5)!important}
+
+/* Persistent sticky Instant Soothe triage button */
+.arb-sticky-crisis{
+  display:inline-flex!important;
+  align-items:center;
+  justify-content:center;
+  position:fixed!important;
+  top:1rem!important;
+  right:1rem!important;
+  z-index:50!important;
+  min-height:44px;
+  padding:8px 14px;
+  font-size:15px;
+  font-weight:800;
+  box-shadow:0 20px 25px -5px rgba(0,0,0,.5),0 8px 10px -6px rgba(0,0,0,.5)!important;
+  cursor:pointer;
+  transition:transform .15s ease,opacity .15s ease;
+}
+.arb-sticky-crisis:disabled,.arb-sticky-crisis[aria-disabled="true"]{
+  opacity:.45;cursor:not-allowed;pointer-events:none
+}
+
 @media (min-width:701px){
-  .cg-topbar{flex-wrap:nowrap}
+  .cg-topbar{flex-wrap:nowrap;padding-right:240px!important}
   .cg-topbar .hdrlic{flex:0 1 auto}
-  .cg-topbar .arb-sticky-crisis,.cg-topbar .cg-night-shift-toggle{flex:0 1 auto;min-width:0}
+  .cg-topbar .cg-night-shift-toggle{flex:0 1 auto;min-width:0}
 }
 @media (min-width:701px) and (max-width:900px){
-  .cg-topbar{flex-wrap:wrap}
+  .cg-topbar{flex-wrap:wrap;padding-right:240px!important}
   .cg-topbar .hdrlic{display:contents}
   .cg-topbar #hdrlicToggle{order:4}
   .cg-topbar .stripe-btn{order:1;font-size:13px;padding:6px 10px}
-  .cg-topbar .arb-sticky-crisis{order:2;font-size:14px;padding:7px 10px}
-  .cg-topbar .cg-night-shift-toggle{order:3;font-size:13px;padding:6px 9px}
+  .cg-topbar .cg-night-shift-toggle{order:2;font-size:13px;padding:6px 9px}
 }
 
 @media (max-width: 700px) {
@@ -1028,17 +1055,120 @@ body { padding-left: var(--sb-w); }
     transform: translateX(-100%); transition: transform .22s ease;
     width: min(260px, 85vw); box-shadow: 6px 0 32px rgba(0,0,0,.45);
   }
+  .arb-sticky-crisis{
+    top:10px!important;
+    right:10px!important;
+    padding:6px 10px!important;
+    font-size:13px!important;
+    min-height:40px!important;
+    max-width:180px!important;
+  }
+  .cg-sidebar-toggle{
+    max-width:calc(100vw - 200px)!important;
+  }
   @media (max-width:700px){
     .cg-topbar{justify-content:flex-start;align-items:center;gap:8px;padding:58px 12px 10px;min-height:0}
     .cg-topbar .hdrlic{flex:1 1 100%;width:100%;gap:8px}
     .cg-topbar .stripe-btn{flex:0 1 auto;max-width:100%}
-    .cg-topbar .cg-night-shift-toggle,.cg-topbar .arb-sticky-crisis{flex:0 1 auto}
+    .cg-topbar .cg-night-shift-toggle{flex:0 1 auto}
   }
   .cg-sidebar.is-open { transform: translateX(0); }
   .cg-sidebar-toggle { display: flex; }
   .cg-sb-overlay { display: none; position: fixed; inset: 0; z-index: 850; background: rgba(0,0,0,.45); }
   .cg-sb-overlay.is-open { display: block; }
 }
+
+/* ══ Strict Visual Accessibility Mode (Hallucination Prevention - Lewy Body Dementia) ══ */
+html.strict-simplified-layout,
+body.strict-simplified-layout,
+html.simplified-layout-mode,
+body.simplified-layout-mode {
+  background-color: #000000 !important;
+  background-image: none !important;
+  color: #ffffff !important;
+}
+html.strict-simplified-layout *,
+body.strict-simplified-layout *,
+html.strict-simplified-layout *::before,
+body.strict-simplified-layout *::before,
+html.strict-simplified-layout *::after,
+body.strict-simplified-layout *::after {
+  box-shadow: none !important;
+  text-shadow: none !important;
+  background-image: none !important;
+  border-image: none !important;
+}
+html.strict-simplified-layout .wrap,
+html.strict-simplified-layout main,
+html.strict-simplified-layout .cg-topbar,
+html.strict-simplified-layout .cg-sidebar,
+html.strict-simplified-layout .panel,
+html.strict-simplified-layout fieldset,
+html.strict-simplified-layout .arb,
+html.strict-simplified-layout .qpb,
+html.strict-simplified-layout .qpb-preview,
+html.strict-simplified-layout header,
+html.strict-simplified-layout .brand {
+  background-color: #000000 !important;
+  background-image: none !important;
+  border-color: #ffffff !important;
+  box-shadow: none !important;
+  color: #ffffff !important;
+}
+html.strict-simplified-layout input,
+html.strict-simplified-layout select,
+html.strict-simplified-layout textarea,
+html.strict-simplified-layout button:not(#arbSootheSticky):not(#arbSoothe) {
+  background-color: #000000 !important;
+  background-image: none !important;
+  color: #ffffff !important;
+  border: 2px solid #ffffff !important;
+  box-shadow: none !important;
+  border-radius: 4px !important;
+}
+html.strict-simplified-layout a {
+  color: #ffffff !important;
+  text-decoration: underline !important;
+}
+html.strict-simplified-layout .qp-sheet {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  border: 3px solid #000000 !important;
+  box-shadow: none !important;
+}
+
+/* ══ Automated Backup Enforcement Warning Banners ══ */
+.cg-backup-banner-wrap{margin:12px 0 16px;width:100%}
+.cg-backup-alert-banner{
+  display:flex;
+  align-items:flex-start;
+  gap:14px;
+  padding:16px 20px;
+  background:#3b1111;
+  border:2.5px solid #ef4444;
+  border-radius:10px;
+  color:#fee2e2;
+  box-shadow:0 6px 18px rgba(0,0,0,.45);
+}
+.cg-backup-alert-icon{font-size:26px;flex-shrink:0;line-height:1}
+.cg-backup-alert-body{flex:1;font-size:14.5px;line-height:1.45}
+.cg-backup-alert-body strong{display:block;font-size:16px;color:#fff;margin-bottom:4px}
+.cg-backup-alert-body p{margin:4px 0 10px;color:#fca5a5}
+.cg-backup-now-btn{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:8px 16px;
+  background:#ef4444;
+  color:#fff;
+  border:none;
+  border-radius:6px;
+  font-weight:700;
+  font-size:14px;
+  cursor:pointer;
+  transition:background .15s;
+}
+.cg-backup-now-btn:hover{background:#dc2626}
 .navbar { display: none !important; }
 
 /* ═══════════════════════════════════════════════════════════
