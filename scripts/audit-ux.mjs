@@ -57,7 +57,7 @@ const VIEWS = [
   ["builder home", "builder.html#/"], ["builder coloring", "builder.html#/coloring"], ["builder roster", "builder.html#/roster"],
   ["builder facility", "builder.html#/facility"], ["builder planner", "builder.html#/planner"], ["builder journal", "builder.html#/journal"],
   ["builder academy", "builder.html#/academy"], ["builder reminiscence", "builder.html#/reminiscence"], ["builder digest", "builder.html#/heirloom"],
-  ["builder session notes", "builder.html#/clinical"], ["builder settings", "builder.html#/settings"]
+  ["builder session notes", "builder.html#/clinical"], ["builder shift board", "builder.html#/shift"], ["builder settings", "builder.html#/settings"]
 ];
 const VIEWPORTS = [["phone 390", 390, 844], ["laptop 1366", 1366, 768]];
 
@@ -69,6 +69,8 @@ const resident = (id, name, tier) => ({ schema: "cognicopia.residentProfile", ve
   tier2_enrichment: { birthYear: 1936, hometown: { place: "Test City" } }, tier3_deep: { notes: "", people: [] } });
 const seedResidents = page => page.evaluate(list => { list.forEach(x => localStorage.setItem("cognicopia_resident_" + x.id, JSON.stringify(x))); }, [resident("res-a", "Test A", 2), resident("res-b", "Test B", 1)]);
 const reload = page => page.reload({ waitUntil: "load" });
+const fill = (sel, text) => page => page.fill(sel, text, { timeout: 5000 });
+const lockStore = page => page.evaluate(async () => { const S = window.CogniSecureStore; await S.openForPage(); await S.setPassphrase("audit passphrase 1234"); await S.lock(); });
 const STATES = [
   ["profile: last step", "profile.html", [click("#rapNext"), click("#rapNext"), click("#rapNext"), click("#rapNext")]],
   ["index: Instant Soothe open", "index.html", [click("#arbSootheSticky")]],
@@ -87,7 +89,10 @@ const STATES = [
   ["builder: journal with an example", "builder.html#/journal", [click("#ljExample")]],
   ["builder: reminiscence set", "builder.html#/reminiscence", [click('button:has-text("A Day")')]],
   ["builder: digest, keep a memory", "builder.html#/heirloom", [click("#hlTab-keep")]],
-  ["builder: digest, hardcover book", "builder.html#/heirloom", [click("#hlTab-book")]]
+  ["builder: digest, hardcover book", "builder.html#/heirloom", [click("#hlTab-book")]],
+  ["builder: shift board, a name found in a note", "builder.html#/shift", [seedResidents, reload, fill("#shfInit", "MR"), click('#shfMeForm button[type=submit]'), fill("#shfNText", "Test A was restless"), click('#shfNote button[type=submit]')]],
+  ["builder: shift board, a task and a note", "builder.html#/shift", [fill("#shfInit", "MR"), click('#shfMeForm button[type=submit]'), fill("#shfNText", "Quiet music helped"), click('#shfNote button[type=submit]'), fill("#shfTWhat", "Set up the music cart"), click('#shfTask button[type=submit]')]],
+  ["builder: unlock dialog (a locked store)", "builder.html#/", [lockStore, reload]]
 ];
 
 /* runs in the page: every control smaller than min, with the controls marked exempt */

@@ -13,8 +13,8 @@ The owner's "Cognicope Engine" blueprint asked for six navigation hubs, three of
 | Hub: Academy | Built |
 | Hub: Resource & Clinical Hub | Built (`resources/`) |
 | Anti-duplication | Built, with a different design (D6) |
-| Workflow A: shift handoff notes, assigned staff tasks, timeline | Not built (D3) |
-| Level 2 in-browser AI | Not built (D5) |
+| Workflow A: shift handoff notes, assigned staff tasks, timeline | Built as a first version, the Shift board (D3; [daily-operations.md](daily-operations.md)) |
+| Level 2 in-browser AI | Not built; a plan is written (D5; [local-ai-plan.md](local-ai-plan.md)) |
 | `CLAUDE.md`, `.claude/skills`, developer setup | Added with this change |
 | Measured UX (tap targets, clicks, contrast, timing) | Added: `npm run audit:ux`, baseline in [ux-baseline.md](ux-baseline.md) |
 | Six-hub navigation | Done (D8), generated from one list and proved by the build |
@@ -45,6 +45,8 @@ Why: the original rule ("no cloud dependencies") would have made the Supabase an
 
 ### D3. Daily Operations (handoff notes, assigned tasks): offline, encrypted, on one device, with aliases
 
+**Built as a first version, the Shift board** (`builder.html#/shift`, Facility hub). The spec, the data it keeps, what its checks prove and the questions for Activity Directors are in [daily-operations.md](daily-operations.md). It does what is written below, plus a name check before a note is saved, a retention rule (7, 14, 30 or 90 days; open tasks are never removed), a one-page printed handoff sheet and locked backup files that add and never remove. Syncing between stations is still not built, for the reason below.
+
 Not synced and not in `platform/`. Resident names never enter it.
 
 - **Storage:** the existing encrypted store (`src/services/secureStore.ts`), on the shared facility computer, with locked `.cognicopia` files for backup and handoff between stations.
@@ -59,6 +61,8 @@ Why: "Resident Eleanor was restless" is a name tied to behavior, which is protec
 The offline Facility Portal (wings, groups, month calendars) is the scheduler for the static site. `platform/`'s calendar is for subscribed, signed-in facilities. They do not sync and neither stores a resident. Revisit when the platform serves real users; until then no "daily activity schedule" is built on a third system.
 
 ### D5. Local AI is an optional experiment, never a core tier
+
+**Planned, not built.** [local-ai-plan.md](local-ai-plan.md) says why it is not in this change, which seam it would use (the planner's and journal's `buildAiRequest` and `acceptAiCopy`, which already withhold names and filter output), how a facility would get the model without the page going online, the experiment, and the numbers that decide whether it ships.
 
 If it is built:
 
@@ -79,7 +83,7 @@ A secure random seed per print and an ids-only history, guaranteeing no repeats 
 
 - **How it is held:** one token, `--tap: 52px`, in each tool. Components size themselves with it. A `touch-floor` style at the end of each page gives any other control the floor, at zero specificity so a component's own (never smaller) size wins. The generated sidebar takes the token on all 27 pages.
 - **Exempt, as WCAG 2.2 allows:** a link inside a sentence, and anything inside an element marked `data-tap-exempt="reason"`. Two are marked: the facility calendar's month grid (a dense overview; the List layout has every action at full size, and a touch-only device starts in the list) and the lesson chapter bar (the seek slider reaches any point). Anything new needs a reason that holds.
-- **Measured:** `npm run audit:ux` counts controls under the minimum on each page and in the states a person reaches by choosing something, and `npm run build` runs it wherever Playwright is installed, so a regression stops the build. Before and after numbers are in [ux-baseline.md](ux-baseline.md).
+- **Measured:** `npm run audit:ux` counts controls under the minimum on each page and in the states a person reaches by choosing something, and `npm run build` runs it wherever Playwright is installed, so a regression stops the build. Before and after numbers are in [ux-baseline.md](ux-baseline.md). Adding the encrypted store's unlock prompt (a state only a locked store reaches) found four controls still at 44 px; they are 52 px now.
 - A goal such as "three clicks" is public copy only where the script counts it: today that is the roster print flow.
 - Badges that mark something unfinished are capped at one or two per screen (the Zeigarnik effect can feed the alert fatigue the research names as a top pain point). That is a design choice a person makes, not a number a script checks.
 - The 400 ms response budget (Doherty) applies to a response a person waits for. A whole packet is measured against its own time (about 0.3 s on the sandbox).
@@ -102,7 +106,7 @@ A secure random seed per print and an ids-only history, guaranteeing no repeats 
 
 - **One source:** `HUBS` in `scripts/site-nav.mjs`. `npm run nav` writes the sidebar into every static page and the navigation inside the Packet Builder's sidebar (the Packet Builder keeps its own brand, hooks and styles). Do not edit either by hand.
 - **Proved:** `npm run build` runs `site-nav.mjs --check`, which fails if any page is stale, shows a different set of hubs, has more or fewer than one open, marks the wrong link as current, or links to a file or Packet Builder route that does not exist. The browser measurement also checks every page type's sidebar for the 52 px floor and for contrast.
-- **Measured:** the sidebar as a page opens, before and after, is in [ux-baseline.md](ux-baseline.md). The Packet Builder went from 21 choices at once to 11 to 14; the static pages stayed at 7 to 18, with the six hubs now the same everywhere.
+- **Measured:** the sidebar as a page opens, before and after, is in [ux-baseline.md](ux-baseline.md). The Packet Builder went from 21 choices at once to 12 to 14 (the Shift board added a link to Facility); the static pages stayed at 7 to 18, with the six hubs now the same everywhere.
 - The hub page's picture count is read from the coloring catalog, so it cannot go stale (`npm run coloring` then `npm run nav`).
 - The marketing pages for the journal, the planner and Zentangle art open the Studio hub with no link marked, because their sidebar link opens the tool, not the page.
 
@@ -115,5 +119,5 @@ A secure random seed per print and an ids-only history, guaranteeing no repeats 
 1. Tooling and baseline: `CLAUDE.md`, [dev-setup.md](dev-setup.md), `npm run audit:ux`, [ux-baseline.md](ux-baseline.md), this page.
 2. Wording and tap targets (done): the claims check, the Night Shift contrast defect, 52 px.
 3. Six-hub navigation (done).
-4. Daily Operations, after its spec is reacted to.
-5. The local-AI spike, last and optional.
+4. Daily Operations: built as a first version (the Shift board), for Activity Directors to react to.
+5. The local-AI spike, last and optional: planned in [local-ai-plan.md](local-ai-plan.md), not built.
