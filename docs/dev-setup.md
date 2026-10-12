@@ -5,7 +5,8 @@ How to work on Cognicopia on your own computer, with or without a coding agent. 
 ## What you need
 
 - **Node 20 or later.** The scripts use Node's built-ins; the root `package.json` has one dependency (`express`, for `server.js`).
-- **Python 3 with PyMuPDF** (`pip install pymupdf`), only to inspect generated PDFs.
+- **Python 3 with PyMuPDF** (`pip install pymupdf`), only to inspect generated PDFs. `scripts/check-design-ui.mjs` uses it to read three printed coloring sheets back; without it that part is skipped with a notice.
+- **Optional: Pillow and vtracer** (`pip install pillow vtracer`, Python 3.9 or later), only to trace master pictures to SVG with `npm run coloring:svgs` (`scripts/build_coloring_svgs.py`). Without them the script says so and exits 2, and `npm test` and `npm run build` still pass (the tracing test is skipped with a notice). Set `PYTHON=/path/to/python` to run the checks with another interpreter.
 - **A browser driver** for anything a person sees or prints: **Playwright**. It is what this repository's own checks and `npm run audit:ux` use.
 
 ```

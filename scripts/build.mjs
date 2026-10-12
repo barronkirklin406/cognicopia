@@ -13,7 +13,9 @@
      4. every file the offline service worker pre-caches exists, and so
         does every icon in the web manifest;
      5. the server file parses, and the planner, journal, TypeScript
-        services and Cognicopia Coloring checks pass (the coloring check
+        services and Cognicopia Coloring checks pass (the design-system check
+        re-computes every contrast pair in css/styles.css and proves the SVG
+        tracing script, js/coloring.js and their data agree) (the coloring check
         also proves the library, catalog and browser bundle are current,
         and the trace check proves the line-art tracer, the tier
         derivation and the art files;
@@ -31,7 +33,10 @@
         (scripts/check-shift-ui.mjs), and licensing and pricing do what they
         say: the 25-packet limit, the upgrade screens, a pasted key, activation,
         months offline, and that only activate.html contacts anything
-        (scripts/check-license-ui.mjs);
+        (scripts/check-license-ui.mjs), and the design system does what its
+        source says: the focus ring, motion that stops when asked, the scroll
+        layers, type, the first screen, the coloring script and a printed sheet
+        read back from its PDF (scripts/check-design-ui.mjs);
      6. no page or tool text makes a claim the product cannot back (such as
         "HIPAA compliant"; scripts/check-claims.mjs);
      7. the site navigation matches scripts/site-nav.mjs (npm run nav), the
@@ -136,7 +141,7 @@ step("every web manifest icon exists", () => {
 
 /* 5. server and the automated checks */
 step("server.js parses", () => { execFileSync(process.execPath, ["--check", path.join(ROOT, "server.js")]); });
-for (const s of ["check-life-planner.mjs", "check-life-journal.mjs", "check-services.mjs", "check-coloring.mjs", "check-trace.mjs", "check-infinite.mjs", "check-hybrid.mjs", "check-pcg.mjs", "check-clinical.mjs", "check-quality-hub.mjs", "check-clinical-alignment.mjs", "check-soothing.mjs", "check-license.mjs", "check-claims.mjs"]) step(s, () => {
+for (const s of ["check-life-planner.mjs", "check-life-journal.mjs", "check-services.mjs", "check-coloring.mjs", "check-trace.mjs", "check-infinite.mjs", "check-hybrid.mjs", "check-pcg.mjs", "check-clinical.mjs", "check-quality-hub.mjs", "check-clinical-alignment.mjs", "check-soothing.mjs", "check-license.mjs", "check-design-system.mjs", "check-claims.mjs"]) step(s, () => {
   const out = execFileSync(process.execPath, [path.join(ROOT, "scripts", s)], { encoding: "utf8" }).trim().split("\n")[0];
   return out;
 });
@@ -170,6 +175,14 @@ step("the Shift board works: notes, tasks, the name check, encrypted storage, re
 
 step("licensing and pricing work: the 25-packet limit, the upgrade screens, pasted keys, activation, months offline, the invoice request, and only activate.html contacts anything (a real browser)", () => {
   try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-license-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
+  catch (e){
+    if (e.status === 2) return "skipped: Playwright is not installed here (see docs/dev-setup.md)";
+    throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message);
+  }
+});
+
+step("the design system works: the focus ring, motion that stops when asked, the scroll layers, type, the first screen, the coloring script, and a printed sheet read back from its PDF (a real browser)", () => {
+  try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-design-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
   catch (e){
     if (e.status === 2) return "skipped: Playwright is not installed here (see docs/dev-setup.md)";
     throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message);

@@ -29,7 +29,11 @@ Prices live in one place, `src/config/license.js` (`PRICES`, `FREE_RUNS`, `PAYME
 
 ## Navigation
 
-Six hubs, the same on every page: Today, Studio, Activity Packets, Facility, Academy, Resources (and a Contact footer link). They come from `HUBS` in `scripts/site-nav.mjs`; add or move a place there, run `npm run nav`, and `npm run build` proves every page agrees. Never edit a sidebar by hand.
+Six hubs, the same on every page: Today, Studio, Activity Packets, Facility, Academy, Resources (and a Contact footer link). They come from `HUBS` in `scripts/site-nav.mjs`; add or move a place there, run `npm run nav`, and `npm run build` proves every page agrees. Never edit a sidebar by hand. The same script links the shared stylesheet `css/styles.css` into every page; never add that link by hand either.
+
+## Design system
+
+`css/styles.css` is the one shared stylesheet: a palette (`--cg-*` tokens built on the four brand colors), two local typefaces (Atkinson Hyperlegible for the interface, Fraunces for headings, in `/fonts`), a spacing rhythm, a two-band focus ring, gentle motion that stops for `prefers-reduced-motion`, two faint scroll-driven background layers, and the coloring sheet's print rules. It sits **beneath** each page's own CSS (`:where()`, no specificity), so it cannot break a layout; a page opts in to the editorial type with `<html class="cg-ds">`. The system's own text pairs must reach AAA (7:1); `scripts/check-design-system.mjs` (in `npm test`) re-computes them, and `scripts/check-design-ui.mjs` (in `npm run build`) proves the behavior in a browser. Use the tokens, not new hex values, in new work. If a control's class sets a `box-shadow`, give its `:focus-visible` the ring's dark inner band too. No outside font, script or CDN. Everything about it: `docs/design-system.md`.
 
 ## Touch targets
 
@@ -47,6 +51,7 @@ npm run build     # checks + nav sync + research pages + link check; run before 
 npm run coloring  # regenerate the coloring catalog and bundle after editing assets/cognicopia-coloring/*.js or approving traced art
 npm run nav       # regenerate the six-hub navigation on every page from HUBS in scripts/site-nav.mjs (also after npm run coloring: the hub page shows the picture count)
 npm run services  # rebuild assets/services/*.js from src/services/*.ts
+npm run coloring:svgs  # trace master PNGs to closed-outline SVG and js/coloring-data.js (needs: pip install pillow vtracer; skips with a notice where they are missing)
 node scripts/license-keygen.mjs     # owner only: make the license-signing key pair (private half stays outside the repo)
 node scripts/issue-license.mjs      # make or verify a signed license key (invoices, enterprise); see docs/stripe-setup-guide.md
 npm run audit:ux  # measure tap targets, contrast, clicks, nav and print time in a real browser (not part of npm test)
@@ -60,8 +65,8 @@ Never skip, weaken or delete a test to get green. Find the cause.
 - **Going live:** `npm run build`, commit, push, open a PR to `main`, merge it when it is green, then confirm the GitHub Pages run for the merge commit succeeded. The owner wants every finished change live.
 - **Commits and PRs:** use the attribution lines the session specifies. Put no model names or identifiers anywhere else, including code comments.
 - **Markdown:** GitHub Pages runs Jekyll. Do not write the two-character Liquid openers (a doubled left brace, or a left brace followed by a percent sign) in any `.md` file, even inside code spans. Search for them before committing.
-- **Edits:** match the surrounding code's style and comment density. Do not reformat files you did not change. Do not hand-edit generated files (`assets/cognicopia-coloring/cognicopia-coloring.js`, the catalog, the sidebar block on each page and the navigation inside `builder.html`'s sidebar, `assets/services/*.js`); change the source and run its generator.
-- **Verify in a real browser** for anything a person sees or prints. Load Playwright with `createRequire('/opt/node22/lib/node_modules/')`; never run `playwright install` (Chromium is already installed). Check PDFs with PyMuPDF, not by eye alone.
+- **Edits:** match the surrounding code's style and comment density. Do not reformat files you did not change. Do not hand-edit generated files (`assets/cognicopia-coloring/cognicopia-coloring.js`, the catalog, the sidebar block on each page and the navigation inside `builder.html`'s sidebar, `assets/services/*.js`, `js/coloring-data.js`, `assets/svgs/*`); change the source and run its generator.
+- **Verify in a real browser** for anything a person sees or prints. Load Playwright with `createRequire('/opt/node22/lib/node_modules/')`; never run `playwright install` (Chromium is already installed). Check PDFs with PyMuPDF, not by eye alone (`scripts/check-design-ui.mjs` shows how). A command line is not enough for a change a person sees: look at a screenshot at 1366 x 768 and 390 x 844 as well.
 
 ## Tooling
 

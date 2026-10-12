@@ -113,7 +113,7 @@ A secure random seed per print and an ids-only history, guaranteeing no repeats 
 
 ### D9. Taglines
 
-"Engaging Todays" is a typo; use **"Engaging Today"**. The site's hero line today is "Connection, Cognition, Creation"; that stays until the owner chooses to replace it. Any claim in a tagline must be true of what it names ("Zero Internet Required" is true of the packet tools, not of sign-in).
+"Engaging Todays" was a typo; the line is **"Engaging Today"**, and it is now the tagline in the packet tool's brand block (`index.html`, the `tagline` paragraph), set in small capitals above the page's first heading. The earlier line, "Connection, Cognition, Creation · from BarronCrafts", stays directly beneath it, so nothing the owner had was removed. **To revert:** delete the one `<p class="tagline">` line; nothing else depends on it (`scripts/check-design-system.mjs` asserts both lines, so change that check in the same commit). The rule stands: any claim in a tagline must be true of what it names ("Zero Internet Required" is true of the packet tools, not of sign-in); "Engaging Today" claims nothing the product does not do.
 
 ### D10. Pricing and licensing: $39 a month, $349 a year, enterprise by quote; signed keys
 
@@ -123,6 +123,15 @@ A secure random seed per print and an ids-only history, guaranteeing no repeats 
 - **A Stripe `session_id` cannot be verified offline.** It is only a reference; proving it was paid needs Stripe. So `activate.html` (the only page allowed to use the network) sends it to the license service in `platform/`, which asks Stripe and signs a key. Everything after that is offline. If the service is not running, the owner issues keys by hand (`scripts/issue-license.mjs`) and nothing else changes.
 - **Not decided here (owner's):** honoring the earlier $129.99 code and for how long; the refund and cancellation wording (carried over from before); and who hosts the license service.
 
+### D11. One design system, beneath every page
+
+- **One stylesheet, `css/styles.css`, linked by `scripts/site-nav.mjs`**, with a palette built on the four brand colors, two open-licensed typefaces kept in `/fonts` (Atkinson Hyperlegible for the interface, Fraunces for headings), a spacing rhythm, a two-band focus ring, gentle motion that stops for anyone who asks for less, two faint scroll-driven background layers, and the coloring sheet's print standard. Details, numbers and what is measured: [design-system.md](design-system.md).
+- **It sits beneath the pages, not over them.** Shared rules use `:where()` (no specificity), so a page's own CSS always wins; only `html.cg-ds` (a page opting in), the `.cg-*` components and the coloring-sheet print rules are stronger. No page was rewritten.
+- **AAA (7:1) is the target for the system's own text pairs and is enforced** (`scripts/check-design-system.mjs` re-computes every pair; the weakest is 7.4:1). Older page text is held to AA by the browser audit and moves onto the tokens page by page. This is not a claim that any page is "AAA compliant".
+- **Tier line weights stay 3, 4.5 and 7.875 pt.** A first brief named 2, 4.5 and 8.5 px; 2 px is under the 3 pt floor that [cognicopia-coloring-standards.md](cognicopia-coloring-standards.md) sets and the engine enforces, so the project's own numbers were kept. A printed sheet was read back from its PDF to prove them.
+- **`js/coloring.js` and `scripts/build_coloring_svgs.py` are a second, lighter route for line art** (a master PNG becomes a closed-outline SVG, drawn with a tier class). They are built and tested but not wired into any screen, and no master pictures are committed. The route with review and approval (`coloring:ingest`) remains the one the Packet Builder uses ([line-art-pipeline.md](line-art-pipeline.md)).
+- **Not decided here (owner's):** whether to move the packet tool's own colors onto the tokens fully (today it maps `--ds-*` to `--cg-*`); and when the SVG route should feed a screen.
+
 ## Order of work
 
 1. Tooling and baseline: `CLAUDE.md`, [dev-setup.md](dev-setup.md), `npm run audit:ux`, [ux-baseline.md](ux-baseline.md), this page.
@@ -131,3 +140,4 @@ A secure random seed per print and an ids-only history, guaranteeing no repeats 
 4. Daily Operations: built as a first version (the Shift board), for Activity Directors to react to.
 5. The local-AI spike, last and optional: planned in [local-ai-plan.md](local-ai-plan.md), not built.
 6. Pricing and licensing (D10): built; the owner sets up Stripe and the signing key ([stripe-setup-guide.md](stripe-setup-guide.md)).
+7. The design system (D11): built and measured; pages move onto its tokens as they are next edited ([design-system.md](design-system.md)).

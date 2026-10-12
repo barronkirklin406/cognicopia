@@ -1,0 +1,282 @@
+/* =====================================================================
+   COGNICOPIA DESIGN SYSTEM: one stylesheet, every page.
+
+   Linked by scripts/site-nav.mjs (npm run nav), so no page has to remember it.
+   Plain CSS, no build step, no network: its two typefaces are files in /fonts,
+   and sw.js keeps all of it for offline use. docs/design-system.md explains
+   the choices and how they are measured (scripts/check-design-system.mjs and
+   scripts/check-design-ui.mjs; the contrast numbers below are re-computed
+   from this file by the first of them, so they cannot go stale).
+
+   How it fits with the pages. Every page has its own inline styles, so this
+   file is written to sit beneath them: the shared rules use :where(), which
+   has no specificity, so a page's own rule always wins and nothing here can
+   break a layout. The exceptions are deliberate and named:
+     - html.cg-ds        a page that opts in to the editorial type and the
+                         spacing rhythm (the pricing, activation and contact
+                         pages, the marketing pages);
+     - the .cg-* classes components new in this system use;
+     - the print rules for a coloring sheet, which are the print standard.
+
+   Who it is for. Activity Directors and families, often reading on an older
+   screen in a bright room, and residents who see only the printed pages. So:
+   plain words, large type, a 52 px floor for anything a finger must hit, an
+   AAA (7:1) target for text, a focus ring you cannot miss, and motion that
+   stays out of the way (nothing moves for a person who asks for less motion).
+   ===================================================================== */
+
+/* ---------- 1. Type: two files, both open-licensed, both in /fonts ----------
+   Atkinson Hyperlegible (Braille Institute, SIL OFL) for the interface: its
+   letters are drawn to be told apart, which is the point of a tool for
+   people with low vision. Fraunces (Undercase Type, SIL OFL; Latin only, one
+   variable file) for headings: a warm, editorial serif. The face the packets
+   are printed in is a separate, embedded copy of Atkinson, untouched. */
+@font-face{font-family:"Cognicopia UI";font-style:normal;font-weight:400;font-display:swap;src:url("../fonts/AtkinsonHyperlegible-Regular.woff2") format("woff2")}
+@font-face{font-family:"Cognicopia UI";font-style:normal;font-weight:700;font-display:swap;src:url("../fonts/AtkinsonHyperlegible-Bold.woff2") format("woff2")}
+@font-face{font-family:"Fraunces";font-style:normal;font-weight:400 700;font-display:swap;src:url("../fonts/Fraunces-latin.woff2") format("woff2")}
+
+/* ---------- 2. Tokens ----------
+   Built on the four brand colors the Quality Standards Hub already names
+   (primary green #1b382b, parchment #f4efe6, gold #c5a059, charcoal #1a202c),
+   with natural greens, warm tans and crisp neutrals around them.
+
+   Text pairs that meet AAA (7:1), by what they sit on:
+     on a green  (--cg-green-950 .. --cg-green-700):  white, --cg-sage-100, --cg-sage-200, --cg-gold-300
+     on a tan    (--cg-parchment, --cg-tan-100, --cg-tan-200): --cg-charcoal, --cg-ink-soft, --cg-green-700
+   Non-text parts (borders, the focus ring, icons) need 3:1: --cg-gold-500 and --cg-tan-400
+   on a green, --cg-green-600 on parchment. --cg-gold-500 and --cg-tan-400 are never used for
+   small text on a green: they are AA there, not AAA. */
+:root{
+  /* natural greens */
+  --cg-green-950:#0b1a13;
+  --cg-green-900:#10241a;
+  --cg-green-800:#162d21;
+  --cg-green-700:#1b382b;      /* the brand's primary green */
+  --cg-green-600:#2d5a44;
+  --cg-green-500:#3f7a5c;
+  --cg-sage-100:#e3f1e8;
+  --cg-sage-200:#c9e4d3;
+  --cg-sage-300:#9fcbb0;
+  /* warm tans and beiges */
+  --cg-parchment:#f4efe6;      /* the brand's parchment */
+  --cg-tan-100:#ebe3d3;
+  --cg-tan-200:#ddd1ba;
+  --cg-tan-300:#cdbe9f;
+  --cg-tan-400:#b5a48b;
+  --cg-tan-600:#7a6548;
+  --cg-tan-700:#66523a;        /* a page frame behind white text: 7.4:1 */
+  --cg-tan-800:#4f4030;
+  --cg-gold-500:#c5a059;       /* the brand's gold: borders and accents, not small text on green */
+  --cg-gold-300:#e8cc8a;       /* gold you can read on green */
+  --cg-gold-200:#f1dda8;
+  /* crisp neutrals */
+  --cg-charcoal:#1a202c;       /* the brand's charcoal */
+  --cg-ink-soft:#343b49;
+  --cg-white:#ffffff;
+  /* meaning */
+  --cg-danger-800:#7f1d1d;
+  --cg-danger-200:#ffc4b4;
+  --cg-ok-800:#14532d;
+  --cg-ok-200:#b7e4c7;
+  --cg-focus:#f5b800;          /* the ring's bright band, with a dark band inside it (see section 4) */
+  --cg-focus-dark:#10241a;
+
+  /* what text and surfaces mean, so a page can say "text" and not "which green" */
+  --cg-surface:var(--cg-green-800);
+  --cg-surface-raised:var(--cg-green-700);
+  --cg-text:var(--cg-white);
+  --cg-text-soft:var(--cg-sage-100);
+  --cg-link:var(--cg-sage-200);
+  --cg-accent:var(--cg-gold-300);
+  --cg-border:var(--cg-tan-400);
+  --cg-paper:var(--cg-parchment);
+  --cg-paper-text:var(--cg-charcoal);
+
+  /* type: a scale that grows with the window; body text is 16 px and up, and the one smaller step (15 px) is for labels and short captions only */
+  --cg-font-ui:"Cognicopia UI","Atkinson Hyperlegible","Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+  --cg-font-display:"Fraunces",Georgia,"Iowan Old Style","Palatino Linotype",Palatino,serif;
+  --cg-step--1:.9375rem;
+  --cg-step-0:1.0625rem;
+  --cg-step-1:clamp(1.25rem,1.1rem + .6vw,1.5rem);
+  --cg-step-2:clamp(1.5rem,1.25rem + 1vw,2rem);
+  --cg-step-3:clamp(1.875rem,1.4rem + 1.9vw,2.75rem);
+  --cg-step-4:clamp(2.25rem,1.5rem + 3vw,3.5rem);
+  --cg-leading:1.6;
+  --cg-leading-tight:1.15;
+
+  /* space: a 4 px rhythm, in steps people can feel */
+  --cg-space-1:.25rem;
+  --cg-space-2:.5rem;
+  --cg-space-3:.75rem;
+  --cg-space-4:1rem;
+  --cg-space-5:1.5rem;
+  --cg-space-6:2rem;
+  --cg-space-7:3rem;
+  --cg-space-8:4rem;
+  --cg-space-9:6rem;
+  --cg-measure:62ch;           /* a comfortable line length */
+  --cg-tap:52px;               /* the floor for anything a finger must hit (docs/blueprint-decisions.md D7) */
+
+  /* shape: three radii, used everywhere, so nothing looks accidental */
+  --cg-radius-sm:6px;
+  --cg-radius-md:12px;
+  --cg-radius-lg:20px;
+  --cg-radius-pill:999px;
+
+  /* depth: soft, never theatrical */
+  --cg-shadow-1:0 1px 2px rgba(0,0,0,.22),0 1px 1px rgba(0,0,0,.14);
+  --cg-shadow-2:0 4px 12px rgba(0,0,0,.24),0 2px 4px rgba(0,0,0,.16);
+  --cg-shadow-3:0 18px 48px rgba(0,0,0,.34),0 6px 14px rgba(0,0,0,.2);
+
+  /* motion: short, gentle, and switched off by prefers-reduced-motion */
+  --cg-ease:cubic-bezier(.2,.7,.2,1);
+  --cg-dur-1:.12s;
+  --cg-dur-2:.2s;
+  --cg-dur-3:.32s;
+
+  /* the print standard (docs/cognicopia-coloring-standards.md): US Letter, 0.5 in margins, a 0.75 in binding gutter,
+     lines never under 3 pt */
+  --cg-page-w:8.5in;
+  --cg-page-h:11in;
+  --cg-margin:.5in;
+  --cg-gutter:.75in;
+  --cg-line-1:3pt;
+  --cg-line-2:4.5pt;
+  --cg-line-3:7.875pt;
+}
+
+/* ---------- 3. Gentle defaults (no specificity: any page rule overrides them) ---------- */
+:where(html){-webkit-text-size-adjust:100%;text-size-adjust:100%;scroll-behavior:smooth}
+:where(img,svg,video,canvas){max-width:100%}
+:where(summary){cursor:pointer}
+:where(::selection){background:var(--cg-gold-300);color:var(--cg-charcoal)}
+:where(:target){scroll-margin-top:calc(var(--cg-tap) + var(--cg-space-5))}
+
+/* ---------- 4. Focus: a ring you cannot miss, on dark and on light ----------
+   Two bands: a dark inner band and a bright outer one, so one of them always
+   meets 3:1 against whatever is behind it (the yellow against a green, the
+   dark against a tan). It is 3 px wide, drawn outside the control, and shows
+   for the keyboard and for any control that was focused by a switch or a
+   stylus. A page that styles its own focus keeps its own. */
+:where(a[href],button,input,select,textarea,summary,[tabindex]:not([tabindex="-1"]),[role="button"],[role="tab"],[role="switch"]):focus-visible{
+  outline:3px solid var(--cg-focus);
+  outline-offset:3px;
+  box-shadow:0 0 0 6px var(--cg-focus-dark);
+}
+:where(a[href],button,input,select,textarea,summary,[tabindex],[role="button"],[role="tab"],[role="switch"]):focus:not(:focus-visible){outline:none}
+@media (forced-colors:active){
+  :where(a[href],button,input,select,textarea,summary,[tabindex]:not([tabindex="-1"])):focus-visible{outline:3px solid Highlight;box-shadow:none}
+}
+
+/* ---------- 5. Touch: a small, honest press, and smooth state changes ---------- */
+@media (prefers-reduced-motion:no-preference){
+  :where(button,[role="button"],a.cg-btn,a.cg-cta,.cg-btn,summary,input,select,textarea){
+    transition:background-color var(--cg-dur-2) var(--cg-ease),border-color var(--cg-dur-2) var(--cg-ease),color var(--cg-dur-2) var(--cg-ease),
+      box-shadow var(--cg-dur-2) var(--cg-ease),transform var(--cg-dur-1) var(--cg-ease),opacity var(--cg-dur-2) var(--cg-ease);
+  }
+  /* the press: it moves one pixel, the way a real key does, and returns */
+  :where(button,[role="button"],a.cg-btn,a.cg-cta,.cg-btn):active:not(:disabled){transform:translateY(1px)}
+  :where(details>summary):not(:focus-visible){transition:background-color var(--cg-dur-2) var(--cg-ease)}
+  :where(details[open]){animation:cg-open var(--cg-dur-3) var(--cg-ease)}
+}
+@keyframes cg-open{from{opacity:.55}to{opacity:1}}
+:where(button,[role="button"]):disabled{cursor:not-allowed}
+
+/* ---------- 6. Components new in this system (opt in with the class) ---------- */
+.cg-btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:var(--cg-space-2);box-sizing:border-box;
+  min-height:var(--cg-tap);min-width:var(--cg-tap);padding:var(--cg-space-3) var(--cg-space-5);
+  border:2px solid var(--cg-tan-200);border-radius:var(--cg-radius-md);background:var(--cg-parchment);color:var(--cg-charcoal);
+  font:700 var(--cg-step-0)/1.25 var(--cg-font-ui);text-align:center;text-decoration:none;cursor:pointer;box-shadow:var(--cg-shadow-1);
+}
+.cg-btn:hover{background:var(--cg-tan-100);border-color:var(--cg-tan-300);box-shadow:var(--cg-shadow-2)}
+.cg-btn-quiet{background:transparent;color:var(--cg-text);border-color:var(--cg-tan-400);box-shadow:none}
+.cg-btn-quiet:hover{background:rgba(205,190,159,.16);border-color:var(--cg-tan-300);box-shadow:none}
+/* a class beats the zero-specificity ring in section 4, so these two keep the ring's dark inner band themselves (the bright band is the outline) */
+.cg-btn:focus-visible{box-shadow:0 0 0 6px var(--cg-focus-dark),var(--cg-shadow-1)}
+.cg-btn-quiet:focus-visible{box-shadow:0 0 0 6px var(--cg-focus-dark)}
+.cg-card{
+  box-sizing:border-box;padding:var(--cg-space-5);border:1px solid var(--cg-green-600);border-radius:var(--cg-radius-lg);
+  background:var(--cg-surface-raised);color:var(--cg-text);box-shadow:var(--cg-shadow-2);
+}
+.cg-eyebrow{margin:0;color:var(--cg-accent);font:700 var(--cg-step--1)/1.3 var(--cg-font-ui);letter-spacing:.12em;text-transform:uppercase}
+/* the few things a first-time visitor needs to know, before anything else */
+.cg-values{display:grid;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));gap:var(--cg-space-4);margin:var(--cg-space-6) 0;padding:0;list-style:none}
+.cg-value{display:grid;grid-template-columns:auto 1fr;gap:var(--cg-space-1) var(--cg-space-3);align-items:start;margin:0;padding:var(--cg-space-4);
+  border:1px solid var(--cg-green-600);border-radius:var(--cg-radius-md);background:rgba(11,26,19,.35)}
+.cg-value svg{grid-row:span 2;width:2rem;height:2rem;margin-top:.1rem;color:var(--cg-gold-300);flex:none}
+.cg-value b{color:var(--cg-text);font:700 var(--cg-step-0)/1.3 var(--cg-font-ui)}
+.cg-value span{color:var(--cg-text-soft);font:400 var(--cg-step--1)/1.5 var(--cg-font-ui)}
+
+/* ---------- 7. Editorial type and rhythm, for pages that opt in: <html class="cg-ds"> ---------- */
+html.cg-ds body{font-family:var(--cg-font-ui);line-height:var(--cg-leading)}
+html.cg-ds :is(h1,h2,h3){font-family:var(--cg-font-display);font-weight:600;line-height:var(--cg-leading-tight);letter-spacing:-.01em;font-optical-sizing:auto;text-wrap:balance}
+html.cg-ds h1{font-size:var(--cg-step-3)}
+html.cg-ds h2{font-size:var(--cg-step-2)}
+html.cg-ds h3{font-size:var(--cg-step-1)}
+html.cg-ds :is(p,li,dd){max-width:var(--cg-measure)}
+html.cg-ds :is(p,li){text-wrap:pretty}
+html.cg-ds :where(main>*+*){margin-top:var(--cg-space-5)}
+
+/* ---------- 8. Scroll-driven layers: two soft pools of light that drift at different speeds ----------
+   Decoration only. They sit behind everything, take no clicks, are painted at
+   most 7% strong (so on a page background of green 800 or darker, white text
+   stays above 12:1 and gold 300 above 8:1: re-computed by
+   scripts/check-design-system.mjs and read back from painted pixels by
+   scripts/check-design-ui.mjs; a card on green 700 is opaque, so they never
+   reach it), and move only where the browser supports
+   scroll-driven animation AND the person has not asked for less motion. Without
+   either they stay still. They are off in Night Shift and in print. */
+:root::before,:root::after{
+  content:"";position:fixed;z-index:-1;pointer-events:none;inset:-20vh -10vw;
+}
+:root::before{background:radial-gradient(60vmax 40vmax at 14% 22%,rgba(159,203,176,.07),transparent 62%)}
+:root::after{background:radial-gradient(55vmax 38vmax at 86% 74%,rgba(205,190,159,.055),transparent 60%)}
+@supports (animation-timeline:scroll()){
+  @media (prefers-reduced-motion:no-preference){
+    :root::before{animation:cg-drift-slow linear both;animation-timeline:scroll(root block);will-change:transform}
+    :root::after{animation:cg-drift-fast linear both;animation-timeline:scroll(root block);will-change:transform}
+  }
+}
+@keyframes cg-drift-slow{from{transform:translate3d(0,0,0)}to{transform:translate3d(0,-9vh,0)}}
+@keyframes cg-drift-fast{from{transform:translate3d(0,0,0)}to{transform:translate3d(0,-18vh,0)}}
+html.cg-night-shift::before,html.cg-night-shift::after{display:none}
+
+/* ---------- 9. Reduced motion: nothing slides, fades or drifts ---------- */
+@media (prefers-reduced-motion:reduce){
+  :where(html){scroll-behavior:auto}
+  :where(*,*::before,*::after){animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important}
+  :root::before,:root::after{animation:none !important;transform:none !important}
+}
+
+/* ---------- 10. Print ----------
+   The packets are made by each page's own print rules and by the PDF code, and
+   they are not touched here. Only this file's own decoration is removed. */
+@media print{
+  :root::before,:root::after{display:none !important}
+  .cg-btn,.cg-values{box-shadow:none}
+}
+
+/* ---------- 11. Coloring sheets: the print standard, as CSS ----------
+   US Letter, 0.5 in margins, a 0.75 in binding gutter on the left, pure black
+   on white. js/coloring.js draws a picture into .cg-coloring with a tier class.
+   The picture's own lines come from the master it was traced from; the tier adds
+   its weight on top, never under 3 pt (docs/cognicopia-coloring-standards.md):
+     tier-1 3 pt   tier-2 4.5 pt   tier-3 7.875 pt (7.9)
+   vector-effect: non-scaling-stroke keeps a line the same width on the page
+   however the picture is scaled to fit the printable area. */
+@page cg-coloring{size:8.5in 11in;margin:0}
+.cg-coloring-sheet{
+  page:cg-coloring;box-sizing:border-box;width:var(--cg-page-w);height:var(--cg-page-h);
+  padding:var(--cg-margin) var(--cg-margin) var(--cg-margin) var(--cg-gutter);
+  background:#fff;color:#000;break-after:page;
+}
+.cg-coloring-sheet>svg.cg-coloring{display:block;width:100%;height:100%}
+svg.cg-coloring{--cg-line:var(--cg-line-1);shape-rendering:geometricPrecision;background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+svg.cg-coloring.tier-1{--cg-line:var(--cg-line-1)}
+svg.cg-coloring.tier-2{--cg-line:var(--cg-line-2)}
+svg.cg-coloring.tier-3{--cg-line:var(--cg-line-3)}
+svg.cg-coloring :is(path,line,polyline,polygon,circle,ellipse,rect){
+  fill:#000;stroke:#000;stroke-width:var(--cg-line);stroke-linejoin:round;stroke-linecap:round;vector-effect:non-scaling-stroke;
+}
+@media print{svg.cg-coloring *{fill:#000 !important;stroke:#000 !important}}
