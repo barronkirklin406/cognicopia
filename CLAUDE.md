@@ -71,6 +71,7 @@ Never skip, weaken or delete a test to get green. Find the cause.
 ## Tooling
 
 - Prefer **Playwright** (already used by this repo's checks) to a browser-automation MCP server. If you add an MCP server, **pin its version** (never an unpinned `npx -y`), check that the package is still maintained, keep tokens narrowly scoped and out of the repository, and do not commit an auto-starting `.mcp.json`. See `docs/dev-setup.md`.
+- The `cognicopia-ui` skill in this repository (`.claude/skills/cognicopia-ui/`) is the current one: the top menu bar, 52 px controls, the `--cg-*` palette. An older synced copy of the same name (it describes a 220 px left sidebar and 44 px controls) is out of date; follow this file and the repository copy.
 - The `audit-ux` skill (`.claude/skills/audit-ux/`) runs `scripts/audit-ux.mjs`, which **measures** tap targets, contrast, click counts, navigation count and print-generation time. Subjective principles are listed for a human to judge; do not answer them from reading code.
 
 ## Measured, not promised
