@@ -22,6 +22,7 @@ Built on the four brand colors the Quality Standards Hub already names (green `#
 | Natural greens | `green-950` `#0b1a13`, `green-900` `#10241a`, `green-800` `#162d21`, `green-700` `#1b382b` (the brand green), `green-600` `#2d5a44`, `green-500` `#3f7a5c`; sage `100` `#e3f1e8`, `200` `#c9e4d3`, `300` `#9fcbb0` |
 | Warm tans | `parchment` `#f4efe6` (the brand parchment), `tan-100` `#ebe3d3`, `tan-200` `#ddd1ba`, `tan-300` `#cdbe9f`, `tan-400` `#b5a48b`, `tan-600` `#7a6548`, `tan-700` `#66523a`, `tan-800` `#4f4030`; gold `500` `#c5a059` (the brand gold), `300` `#e8cc8a`, `200` `#f1dda8` |
 | Crisp neutrals | `charcoal` `#1a202c`, `ink-soft` `#343b49`, `white` |
+| Warm accents (the light pages) | `cream` `#fbf7f1` (a page), `peach-100` `#fbe9dc` (an icon tile), `peach-200` `#f6cdb4` (the hero's glow, decoration only), `clay-700` `#8a3a20` (one terracotta accent word) |
 | Meaning | `danger-800`, `danger-200`, `ok-800`, `ok-200`; the focus ring `focus` `#f5b800` and `focus-dark` `#10241a` |
 
 ### What reaches AAA (7:1)
@@ -37,6 +38,8 @@ Built on the four brand colors the Quality Standards Hub already names (green `#
 | green 700 | parchment, tan 100, tan 200 | 8.4 to 11.1 |
 | white | tan 700 (a page frame), green 600 | 7.4, 7.9 |
 | danger 800, ok 800 | parchment | 8.7, 8.0 |
+| charcoal, ink-soft, green 700 | cream, white | 15.3 to 16.3, 10.5 to 11.2, 11.9 to 12.7 |
+| clay 700 (terracotta) | cream, white | 7.3, 7.8 |
 
 The check fails the build if any pair in that list drops under 7:1; the weakest text pair in the system is **7.4:1**.
 
@@ -71,6 +74,26 @@ Three `.woff2` files, about 100 KB in all, with `fonts/OFL-Fraunces.txt` beside 
 
 `.cg-btn` and `.cg-btn-quiet` (52 px minimum, parchment or outlined), `.cg-card`, `.cg-eyebrow` (a small uppercase label), and `.cg-values` with `.cg-value` (the four reasons to use the packet tool, with a small outline icon each). The packet tool's first screen carries those four: made from the resident's own life; ready for your printer (pure black on white, binding margin); no resident data leaves this computer; free to begin (the first 25 packets cost nothing, no sign-up). On a 1366 x 768 window the first two are fully on the first screen; on a 390 x 844 phone the first one is. Both are measured.
 
+## The navigation bar (every page but the Packet Builder)
+
+`scripts/site-nav.mjs` writes the same six hubs into every static page. On a window 1100 px or wider they run across a light top bar: the logo and name on the left, Today, Studio, Activity Packets, Facility, Academy and Resources as drop-downs, and Contact on the right. Under 1100 px the same markup becomes the Menu drawer (a deep green Menu button, the hubs stacked, the one holding the page open). It is one structure at every width (an `<aside>` with the hubs as `<details>`), so the keyboard, a screen reader and the checks meet the same thing.
+
+- **Behavior.** No drop-down is open as a page opens; the hub that holds the page carries a deep green underline. Clicking a hub opens it and closes any other; Enter and Space work; Escape closes it and leaves the keyboard on the hub; a click elsewhere or moving the keyboard on closes it. The bar stays at the top while the page scrolls (68 px).
+- **The action bar** (License Key / Promo and the two buy buttons, and on the packet tool Instant Soothe and Night Shift) sits under the bar. It scrolls away on every page except the packet tool, where Instant Soothe has to stay in reach.
+- **Resources** opens a wide panel with the library in its three groups.
+- **Colors.** Charcoal on white (16.3:1); the current hub in deep green; drop-down links 52 px tall; the two-band focus ring. Night Shift turns the bar, the drop-downs and the action bar dark brown with cream text, on every page, whether or not the page runs the Night Shift script.
+- **The Packet Builder keeps its own side menu.** It is a working screen with its own categories and queue; its six hubs are the same.
+
+## The front page (index.html)
+
+The packet tool's first screen follows a classic product page: a hero in two columns, a row of what you get, the evidence, then the tool, then a footer. Every word on it was already on the page; only the arrangement and the look are new.
+
+1. **Hero** on cream with a soft peach glow: the tagline "Engaging Today" in clay, the heading with "one resident's own life." in clay, the lede, a deep green **Make a packet** button (it scrolls to the tool) and **See what you get**. Beside it, a laptop drawn in HTML and CSS showing a packet being made (a made-up resident, a word search and a flower to color), the cornucopia, and a "Large print, pure black on white" card. The picture is decoration (`aria-hidden`) and is left out on a phone.
+2. **What Cognicopia gives you:** the four value cards, side by side. On 1366 x 768 all four are on the first screen; on a 390 x 844 phone the first one is (both measured by `scripts/check-design-ui.mjs`).
+3. **Informed by the research:** five Research Center summaries as links, and a quote card with the publisher's own statement (Kirk Barron, Publisher, BarronCrafts). No client logos and no testimonials: the template had them; Cognicopia does not invent them.
+4. **Make a packet:** the privacy promise, then the tool exactly as before, in its deep green band.
+5. **Footer:** the brand line, and Tools, Facility and Resources columns (every link 52 px tall), with the contact line.
+
 ## Coloring sheets: the print standard as CSS
 
 `@page cg-coloring` is US Letter with no page margin; `.cg-coloring-sheet` draws the margins itself: **0.5 in** on three sides and a **0.75 in binding gutter** on the left, pure black on white. A picture drawn by `js/coloring.js` gets a tier class on its `<svg>` and the stylesheet draws the line weight for it:
@@ -98,6 +121,7 @@ The data comes from `scripts/build_coloring_svgs.py`; see [line-art-pipeline.md]
 | `node scripts/check-design-system.mjs` (in `npm test`) | Every contrast pair above, re-computed from the stylesheet; the focus ring, reduced-motion, forced-colors and print rules are present; no remote address; the three fonts are local, real `woff2` files and small; every page links the stylesheet and `sw.js` caches it; the page, margin, gutter and tier numbers match the engine; the tracing script and `js/coloring.js` (statically); and, where Pillow and vtracer are installed, the tracing itself on test pictures |
 | `node scripts/check-design-ui.mjs` (in `npm run build` where Playwright is installed) | The behavior in Chromium: the stylesheet and fonts load from this site only; the ring on every kind of control; press, hover and fade; reduced motion, print and Night Shift; the scroll layers drift 9 and 18 vh and read back at 7:1 or better; type on seven real pages at two sizes with no sideways scroll; the first screen; `js/coloring.js` at each tier, its refusals and its cleaning; three sheets printed to PDF and read back |
 | `npm run audit:ux` | Tap targets, contrast, clicks, navigation and print time on the real pages, including the pages that opted in |
+| `node scripts/check-nav-ui.mjs` (in `npm run build`) | The top bar: none open on arrival, the holding hub marked, one open at a time, Escape and a click elsewhere close it, it stays at the top; on a phone, the Menu drawer |
 
 ## What was deliberately not done
 

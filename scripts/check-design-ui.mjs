@@ -234,7 +234,22 @@ try {
   }
   ctx = await context(1366, 768); p = await open(ctx, "index.html"); await p.waitForTimeout(300);
   const lap = await p.evaluate(() => [...document.querySelectorAll(".cg-value")].map(e => Math.round(e.getBoundingClientRect().bottom)));
-  ok(lap.length === 4 && lap[0] <= 768 && lap[1] <= 768, `at 1366 x 768 the first two of four value cards are fully on the first screen (bottoms at ${lap.join(", ")} px)`);
+  ok(lap.length === 4 && lap.every(b => b <= 768), `at 1366 x 768 all four value cards are fully on the first screen (bottoms at ${lap.join(", ")} px)`);
+  await ctx.close();
+  /* the front of the packet tool: a hero in two columns, a button that reaches the tool, the evidence, the footer */
+  ctx = await context(1366, 768); p = await open(ctx, "index.html"); await p.waitForTimeout(300);
+  const lp = await p.evaluate(() => { const c = document.querySelector(".lp-copy").getBoundingClientRect(), v = document.querySelector(".lp-visual").getBoundingClientRect(), b = document.querySelector(".lp-btn");
+    return { side: v.left >= c.right - 1 && v.width > 300, href: b.getAttribute("href"), bh: b.getBoundingClientRect().height, make: !!document.querySelector("#make .wrap #f"),
+      marks: [...document.querySelectorAll(".lp-marks a")].map(a => a.getAttribute("href")), foot: document.querySelectorAll(".lp-footer nav a").length, quote: (document.querySelector(".lp-quote figcaption") || {}).textContent || "",
+      hidden: document.querySelector(".lp-visual").getAttribute("aria-hidden") }; });
+  ok(lp.side && lp.hidden === "true", "the hero is two columns: the words, and beside them a picture of the tool that screen readers skip");
+  ok(lp.href === "#make" && lp.bh >= 52 && lp.make, `"Make a packet" (${lp.bh} px tall) points at the packet tool, which sits under it on the same page`);
+  ok(lp.marks.length === 5 && lp.marks.every(h => /^resources\/research\/[a-z-]+\/$/.test(h)), "the evidence row links five Research Center summaries");
+  ok(lp.foot === 14 && /Kirk Barron/.test(lp.quote), "the footer has its three columns of links and the quote names the publisher");
+  await p.click(".lp-btn"); await p.waitForTimeout(900);
+  const landed = await p.evaluate(() => Math.round(document.getElementById("makeTitle").getBoundingClientRect().top));
+  ok(landed >= 136 && landed < 320, `"Make a packet" scrolls to the tool with its heading clear of the bars (${landed} px from the top)`);
+  await shot(p, "index-landing");
   await ctx.close();
   ctx = await context(390, 844); p = await open(ctx, "index.html"); await p.waitForTimeout(300);
   const ph = await p.evaluate(() => { const a = [...document.querySelectorAll(".cg-value")].map(e => { const b = e.getBoundingClientRect(); return [Math.round(b.top), Math.round(b.bottom)]; }); return { cards: a, h1: Math.round(document.querySelector(".hero-title").getBoundingClientRect().top) }; });

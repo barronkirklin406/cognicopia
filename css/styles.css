@@ -43,6 +43,7 @@
    Text pairs that meet AAA (7:1), by what they sit on:
      on a green  (--cg-green-950 .. --cg-green-700):  white, --cg-sage-100, --cg-sage-200, --cg-gold-300
      on a tan    (--cg-parchment, --cg-tan-100, --cg-tan-200): --cg-charcoal, --cg-ink-soft, --cg-green-700
+     on cream or white (--cg-cream, --cg-white):         --cg-charcoal, --cg-ink-soft, --cg-green-700, --cg-clay-700
    Non-text parts (borders, the focus ring, icons) need 3:1: --cg-gold-500 and --cg-tan-400
    on a green, --cg-green-600 on parchment. --cg-gold-500 and --cg-tan-400 are never used for
    small text on a green: they are AA there, not AAA. */
@@ -69,6 +70,11 @@
   --cg-gold-500:#c5a059;       /* the brand's gold: borders and accents, not small text on green */
   --cg-gold-300:#e8cc8a;       /* gold you can read on green */
   --cg-gold-200:#f1dda8;
+  /* warm accents for the light pages (the packet tool's front): cream, a peach glow, and clay for one accent word */
+  --cg-cream:#fbf7f1;
+  --cg-peach-100:#fbe9dc;
+  --cg-peach-200:#f6cdb4;      /* decoration only (the hero's glow) */
+  --cg-clay-700:#8a3a20;       /* terracotta text: 7.3:1 on cream, 7.8:1 on white */
   /* crisp neutrals */
   --cg-charcoal:#1a202c;       /* the brand's charcoal */
   --cg-ink-soft:#343b49;

@@ -66,6 +66,8 @@ const onGreens = ["green-950", "green-900", "green-800", "green-700"], onTans = 
 for (const bg of onGreens) for (const fg of ["white", "sage-100", "sage-200", "gold-300", "gold-200"]) TEXT.push([fg, bg]);
 for (const bg of ["green-900", "green-800"]) TEXT.push(["tan-300", bg]);
 for (const bg of onTans) for (const fg of ["charcoal", "ink-soft", "green-700"]) TEXT.push([fg, bg]);
+for (const bg of ["cream", "white", "peach-100"]) for (const fg of ["charcoal", "ink-soft", "green-700"]) TEXT.push([fg, bg]);   // the light front of the packet tool
+TEXT.push(["clay-700", "cream"], ["clay-700", "white"], ["white", "green-700"]);
 TEXT.push(["charcoal", "gold-300"], ["charcoal", "gold-200"], ["charcoal", "sage-200"], ["charcoal", "tan-300"], ["white", "tan-700"], ["white", "green-600"], ["tan-800", "parchment"],
   ["danger-800", "parchment"], ["ok-800", "parchment"], ["danger-200", "green-900"], ["danger-200", "green-700"], ["ok-200", "green-900"]);
 let worst = 99;

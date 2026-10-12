@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 /* =====================================================================
    Navigation behavior, in a real browser: the six hubs open and close the
-   way a person expects, the current page is marked, and the Packet Builder's
-   sidebar follows its screens. (scripts/site-nav.mjs --check proves what the
+   way a person expects (drop-downs across the top bar of a wide window, a
+   Menu drawer on a phone), the current page is marked, and the Packet
+   Builder's sidebar follows its screens. (scripts/site-nav.mjs --check proves what the
    pages contain; this proves what they do.)
 
    Needs Playwright. Where it is not installed this exits 2 and says so, and
@@ -21,22 +22,45 @@ const open = (p, sel, attr) => p.$$eval(sel, (n, a) => n.filter(d => d.open).map
 const only = async (p, sel, ...want) => JSON.stringify(await open(p, sel)) === JSON.stringify(want);
 
 try {
-  /* a static page: one hub open (the one holding the page), opening another closes it, the keyboard works */
+  /* a static page on a wide window: the six hubs run across a top bar, each a drop-down. None is open as the page opens; the hub that holds the
+     page is marked; opening one closes the others; a click elsewhere or Escape closes it; the bar stays at the top while the page scrolls */
   let p = await page(1366, 900);
+  const here = q => q.$$eval("details.cg-hub[data-here]", n => n.map(d => d.id.replace("cgHub-", "")));
   await p.goto(base + "index.html"); await p.waitForTimeout(400);
-  ok(await only(p, "details.cg-hub", "today"), "the packet tool opens with only Today open");
+  const bar = await p.evaluate(() => { const b = document.getElementById("cgSidebar").getBoundingClientRect(); return { top: b.top, h: b.height, w: b.width, pad: parseFloat(getComputedStyle(document.body).paddingLeft) }; });
+  ok(bar.top === 0 && bar.h <= 80 && bar.w >= 1350 && bar.pad === 0, `the six hubs are a top bar across the page (${Math.round(bar.w)} x ${Math.round(bar.h)} px), with no side column`);
+  ok((await open(p, "details.cg-hub")).length === 0 && JSON.stringify(await here(p)) === '["today"]', "the packet tool opens with no drop-down open and Today marked as the hub that holds it");
   await p.click("#cgHub-studio > summary"); await p.waitForTimeout(150);
-  ok(await only(p, "details.cg-hub", "studio"), "opening Studio closes Today");
+  ok(await only(p, "details.cg-hub", "studio"), "clicking Studio opens its drop-down");
+  const drop = await p.evaluate(() => { const nav = document.getElementById("cgSidebar").getBoundingClientRect(), d = document.querySelector("#cgHub-studio > .cg-sb-sub").getBoundingClientRect(), links = [...document.querySelectorAll("#cgHub-studio > .cg-sb-sub a")].map(a => a.getBoundingClientRect().height); return { below: d.top >= nav.bottom, h: d.height, n: links.length, min: Math.min(...links) }; });
+  ok(drop.below && drop.h > 100 && drop.n === 5 && drop.min >= 52, `the drop-down opens below the bar with its five places, each at least 52 px tall (${drop.n}, smallest ${drop.min} px)`);
   await p.focus("#cgHub-facility > summary"); await p.keyboard.press("Enter"); await p.waitForTimeout(150);
   ok(await only(p, "details.cg-hub", "facility"), "Enter on Facility opens it and closes Studio");
+  await p.keyboard.press("Escape"); await p.waitForTimeout(150);
+  ok((await open(p, "details.cg-hub")).length === 0 && await p.evaluate(() => document.activeElement === document.querySelector("#cgHub-facility > summary")), "Escape closes it and leaves the keyboard on Facility");
+  await p.click("#cgHub-resources > summary"); await p.waitForTimeout(150);
+  await p.mouse.click(700, 600); await p.waitForTimeout(150);
+  ok((await open(p, "details.cg-hub")).length === 0, "a click elsewhere on the page closes an open drop-down");
+  await p.evaluate(() => scrollTo({ top: 1500, behavior: "instant" })); await p.waitForTimeout(200);
+  ok(await p.evaluate(() => document.getElementById("cgSidebar").getBoundingClientRect().top) === 0, "the bar stays at the top while the page scrolls");
   await p.goto(base + "resources/quality-standards/"); await p.waitForTimeout(400);
-  ok(await only(p, "details.cg-hub", "resources"), "a resource module opens with Resources open");
+  ok((await open(p, "details.cg-hub")).length === 0 && JSON.stringify(await here(p)) === '["resources"]', "a resource module marks Resources as the hub that holds it");
   ok(await p.$eval(".cg-sidebar a[aria-current='page']", e => e.textContent.trim()) === "Quality Standards Hub", "a resource module marks its own link as current");
   await p.goto(base + "contact.html"); await p.waitForTimeout(300);
-  ok((await open(p, "details.cg-hub")).length === 0, "the contact page opens with no hub open");
-  ok(await p.$eval(".cg-hub-foot a[aria-current='page']", e => e.textContent.trim()) === "Contact Kirk Barron", "the contact page marks its footer link as current");
+  ok((await open(p, "details.cg-hub")).length === 0 && (await here(p)).length === 0, "the contact page opens with no hub open or marked");
+  ok(await p.$eval(".cg-hub-foot a[aria-current='page']", e => e.textContent.trim()) === "Contact Kirk Barron", "the contact page marks its Contact link as current");
   await p.goto(base + "life-planners.html"); await p.waitForTimeout(300);
-  ok(await only(p, "details.cg-hub", "studio") && (await p.$$(".cg-sidebar a[aria-current='page']")).length === 0, "a product page opens Studio and claims no link as the current page");
+  ok(JSON.stringify(await here(p)) === '["studio"]' && (await p.$$(".cg-sidebar a[aria-current='page']")).length === 0, "a product page marks Studio and claims no link as the current page");
+
+  /* the same page on a phone: the Menu drawer, with the hub that holds the page open inside it */
+  let q = await page(390, 844);
+  await q.goto(base + "index.html"); await q.waitForTimeout(400);
+  ok(await q.$eval("#cgSbToggle", e => getComputedStyle(e).display !== "none" && e.getAttribute("aria-expanded") === "false"), "on a phone the static pages show the Menu button");
+  await q.click("#cgSbToggle"); await q.waitForTimeout(300);
+  ok(await q.evaluate(() => { const b = document.getElementById("cgSidebar").getBoundingClientRect(); return b.left >= 0 && b.width > 250; }) && await only(q, "details.cg-hub", "today"), "the Menu opens the drawer with Today open inside it");
+  await q.keyboard.press("Escape"); await q.waitForTimeout(300);
+  ok(await q.$eval("#cgSbToggle", e => e.getAttribute("aria-expanded") === "false"), "Escape closes the drawer");
+  await q.context().close();
 
   /* the Packet Builder: its sidebar follows its screens */
   await p.goto(base + "builder.html#/"); await p.waitForTimeout(700);

@@ -123,6 +123,15 @@ A secure random seed per print and an ids-only history, guaranteeing no repeats 
 - **A Stripe `session_id` cannot be verified offline.** It is only a reference; proving it was paid needs Stripe. So `activate.html` (the only page allowed to use the network) sends it to the license service in `platform/`, which asks Stripe and signs a key. Everything after that is offline. If the service is not running, the owner issues keys by hand (`scripts/issue-license.mjs`) and nothing else changes.
 - **Not decided here (owner's):** honoring the earlier $129.99 code and for how long; the refund and cancellation wording (carried over from before); and who hosts the license service.
 
+### D12. A top bar and a product-style front page (the owner's template)
+
+- **The owner asked for the site to look like a product landing page** (a top menu bar, a two-column hero with a picture of the product, a row of features, a proof row, a quote and a footer), keeping all of Cognicopia's information. The owner chose the top bar for every page and a warm, light look led by the brand.
+- **The six hubs did not change, only where they sit.** On a wide window they are drop-downs across a top bar; under 1100 px they are the Menu drawer, as on phones before. D8 still holds: the same six, from `HUBS`, on every page, proved by `site-nav.mjs --check` and `scripts/check-nav-ui.mjs`. On arrival no drop-down is open and the hub holding the page is underlined, because an open drop-down would cover the page.
+- **The Packet Builder keeps its side menu.** It is a working screen, not a page to read.
+- **The front page is warm and light; the tool keeps its deep green band.** Cream, a peach glow and one terracotta accent (`--cg-clay-700`, 7.3:1), with the brand's deep green for the main button. The packet tool's own controls were not restyled, so nothing a person already knows moved.
+- **Nothing invented.** The template's client logos and testimonial became links to the Research Center's summaries and the publisher's own statement.
+- **Measured:** all four value cards on the first screen at 1366 x 768 (the first two before), the first on a 390 x 844 phone; the static pages now show 7 choices as they open (9 to 18 before); every control 52 px and no text below AA, by day and in Night Shift.
+
 ### D11. One design system, beneath every page
 
 - **One stylesheet, `css/styles.css`, linked by `scripts/site-nav.mjs`**, with a palette built on the four brand colors, two open-licensed typefaces kept in `/fonts` (Atkinson Hyperlegible for the interface, Fraunces for headings), a spacing rhythm, a two-band focus ring, gentle motion that stops for anyone who asks for less, two faint scroll-driven background layers, and the coloring sheet's print standard. Details, numbers and what is measured: [design-system.md](design-system.md).
@@ -141,3 +150,4 @@ A secure random seed per print and an ids-only history, guaranteeing no repeats 
 5. The local-AI spike, last and optional: planned in [local-ai-plan.md](local-ai-plan.md), not built.
 6. Pricing and licensing (D10): built; the owner sets up Stripe and the signing key ([stripe-setup-guide.md](stripe-setup-guide.md)).
 7. The design system (D11): built and measured; pages move onto its tokens as they are next edited ([design-system.md](design-system.md)).
+8. The top bar and the product-style front page (D12): built and measured.
