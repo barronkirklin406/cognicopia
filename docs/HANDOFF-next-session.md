@@ -75,6 +75,16 @@ Pictures from an image generator or an illustrator become crisp vector coloring 
 - **Honest limits:** derived Tiers 2 and 3 are an automatic baseline. Good for subjects made of areas; weaker for skeletal drawings (bicycle spokes) and dense repeating patterns. Use a per-tier drawing (`<design>.t3.png`), sidecar `rules`, or reject the picture. About 20 to 35 KB of bundle per replaced design; the manifest generator stops at 6 MB of art.
 - **Traps:** raw masters belong only in the unpublished `assets/coloring/_inbox/` (an underscore folder is not built by Pages) and are not committed by default; `assets/coloring/_review/` is git-ignored. Changing `assets/cognicopia-coloring/*.js`, the prompts or any approved art means running `npm run coloring` again, because `npm run build` compares the bundle and catalog to disk.
 
+## Blueprint follow-ups (steering, measuring, wording)
+
+The owner's "Cognicope Engine" blueprint was checked against the repository; `docs/blueprint-decisions.md` has the gap map and every decision (compliance wording, the offline rule's scope, Daily Operations as offline encrypted storage with aliases, one scheduler, optional local AI, 52 px targets, six hubs, taglines).
+
+- **Steering:** `CLAUDE.md` at the root is the short rule file. `docs/dev-setup.md` covers Playwright, pinned MCP servers and what not to commit.
+- **Measuring:** `npm run audit:ux` (`scripts/audit-ux.mjs`, skill in `.claude/skills/audit-ux/`) measures tap targets, contrast, click counts, navigation size, print time and page weight in a real browser; `docs/ux-baseline.md` holds the numbers to beat. It is not part of `npm test` (timings vary by machine).
+- **Claims:** `scripts/check-claims.mjs` (in `npm test` and `npm run build`) keeps "HIPAA compliant"-style wording out of the pages and tool text. Say "no resident data leaves the device" and "supports".
+- **Found by measuring, still open:** the builder's "Your packet" button is unreadable in Night Shift (1.94 : 1); a few controls on the planner, journal and Academy views are under 44 px.
+- **Order of work left:** 52 px targets, six-hub navigation, Daily Operations (spec first), the optional local-AI spike.
+
 ## Names after the owner's rename (use these)
 
 | What | Name |

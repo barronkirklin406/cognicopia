@@ -22,7 +22,9 @@
         procedural-content check proves Today's Packet is the same all day,
         new each morning, stage-appropriate, one step from the resident's
         interests and free of anything on the avoid list);
-     6. the site navigation matches scripts/site-nav.mjs (npm run nav), the
+     6. no page or tool text makes a claim the product cannot back (such as
+        "HIPAA compliant"; scripts/check-claims.mjs);
+     7. the site navigation matches scripts/site-nav.mjs (npm run nav), the
         Research Center's pages match their content (npm run research), and
         every relative link and asset on every page points at a file that
         exists (a folder means its index.html).
@@ -124,7 +126,7 @@ step("every web manifest icon exists", () => {
 
 /* 5. server and the automated checks */
 step("server.js parses", () => { execFileSync(process.execPath, ["--check", path.join(ROOT, "server.js")]); });
-for (const s of ["check-life-planner.mjs", "check-life-journal.mjs", "check-services.mjs", "check-coloring.mjs", "check-trace.mjs", "check-infinite.mjs", "check-hybrid.mjs", "check-pcg.mjs", "check-clinical.mjs", "check-quality-hub.mjs", "check-clinical-alignment.mjs", "check-soothing.mjs", "check-license.mjs"]) step(s, () => {
+for (const s of ["check-life-planner.mjs", "check-life-journal.mjs", "check-services.mjs", "check-coloring.mjs", "check-trace.mjs", "check-infinite.mjs", "check-hybrid.mjs", "check-pcg.mjs", "check-clinical.mjs", "check-quality-hub.mjs", "check-clinical-alignment.mjs", "check-soothing.mjs", "check-license.mjs", "check-claims.mjs"]) step(s, () => {
   const out = execFileSync(process.execPath, [path.join(ROOT, "scripts", s)], { encoding: "utf8" }).trim().split("\n")[0];
   return out;
 });

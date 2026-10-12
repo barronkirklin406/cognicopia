@@ -1,0 +1,58 @@
+# Cognicopia: steering file for coding agents
+
+Cognicopia (cognicopia.org) is an offline-first memory-care activity site: printable packets, coloring pages, life planners and journals for Activity Directors and families. This file is short on purpose. The long version, with the current state of every module, is `docs/HANDOFF-next-session.md`; read it before a large change.
+
+## Two codebases, two rules
+
+| Where | What | Network rule |
+|---|---|---|
+| Repository root (`index.html`, `builder.html`, `profile.html`, `assets/`, `src/`, `scripts/`, `resources/`) | The **static site**, published from `main` by GitHub Pages | **Offline only.** The three tools make no network request of their own. `npm run build` fails if one does. Resident data never leaves the browser. |
+| `platform/` | A separate Next.js, Supabase and Stripe service for facilities (sign-in, billing, shared planning) | Needs the internet by design. **Zero PHI:** it never stores a resident's name or health details. Not covered by the root `npm test`; see `platform/README.md`. |
+
+Never add a cloud dependency to the static site. Never put resident data in `platform/`.
+
+## Privacy and claims
+
+- Zero PHI outside the browser. Test data and fixtures use made-up people only; never a real name, birth date or facility.
+- Do not claim to be "HIPAA compliant". Compliance belongs to a facility's program. Say what is true: **"No resident data leaves the device"** and "supports a facility's HIPAA privacy practices". The same goes for regulatory wording (CMS, state rules): "supports", never "ensures".
+- Do not scope an offline claim wider than it is: "no internet needed" is true of the packet tools, not of sign-in or billing.
+- A repository is public: no secrets, tokens or keys in any file. Use placeholders such as `YOUR_KEY_HERE` and keep real values in the environment.
+
+## Tone (dignity first)
+
+Write and review all resident-facing text as if for an adult relative. No "Do you remember...", no quizzing, no childish words, no elderspeak, no infantilizing art. Invite; never test. The dignity and avoid-topic filters in `src/engine` and `assets/cognicopia-coloring/prompts.js` are tests, not suggestions.
+
+## Print standards
+
+Pure black on pure white. Lines at least 3 pt. 0.5 in margins and a 0.75 in binding gutter on US Letter. Type never smaller than the tier's floor. Pictures are 3:4 with closed outlines. Standards and the numbers behind them: `docs/cognicopia-coloring-standards.md`.
+
+## Commands
+
+```
+npm test          # every check suite
+npm run build     # checks + nav sync + research pages + link check; run before every push
+npm run coloring  # regenerate the coloring catalog and bundle after editing assets/cognicopia-coloring/*.js or approving traced art
+npm run nav       # regenerate the sidebar on every page from scripts/site-nav.mjs
+npm run services  # rebuild assets/services/*.js from src/services/*.ts
+npm run audit:ux  # measure tap targets, contrast, clicks, nav and print time in a real browser (not part of npm test)
+```
+
+Never skip, weaken or delete a test to get green. Find the cause.
+
+## Working rules
+
+- **Branch and push:** develop on the branch the session names; `git push -u origin <branch>`; retry network errors only (2, 4, 8, 16 s).
+- **Going live:** `npm run build`, commit, push, open a PR to `main`, merge it when it is green, then confirm the GitHub Pages run for the merge commit succeeded. The owner wants every finished change live.
+- **Commits and PRs:** use the attribution lines the session specifies. Put no model names or identifiers anywhere else, including code comments.
+- **Markdown:** GitHub Pages runs Jekyll. Do not write the two-character Liquid openers (a doubled left brace, or a left brace followed by a percent sign) in any `.md` file, even inside code spans. Search for them before committing.
+- **Edits:** match the surrounding code's style and comment density. Do not reformat files you did not change. Do not hand-edit generated files (`assets/cognicopia-coloring/cognicopia-coloring.js`, the catalog, the sidebar block on each page, `assets/services/*.js`); change the source and run its generator.
+- **Verify in a real browser** for anything a person sees or prints. Load Playwright with `createRequire('/opt/node22/lib/node_modules/')`; never run `playwright install` (Chromium is already installed). Check PDFs with PyMuPDF, not by eye alone.
+
+## Tooling
+
+- Prefer **Playwright** (already used by this repo's checks) to a browser-automation MCP server. If you add an MCP server, **pin its version** (never an unpinned `npx -y`), check that the package is still maintained, keep tokens narrowly scoped and out of the repository, and do not commit an auto-starting `.mcp.json`. See `docs/dev-setup.md`.
+- The `audit-ux` skill (`.claude/skills/audit-ux/`) runs `scripts/audit-ux.mjs`, which **measures** tap targets, contrast, click counts, navigation count and print-generation time. Subjective principles are listed for a human to judge; do not answer them from reading code.
+
+## Measured, not promised
+
+A goal such as "three clicks" or "under 400 ms" is a claim only when `scripts/audit-ux.mjs` has measured it on the real app. `docs/ux-baseline.md` holds the measurements to beat. Do not put a number on a public page that has not been measured.
