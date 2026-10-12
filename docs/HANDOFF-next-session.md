@@ -32,7 +32,7 @@ items below, verify each one, and publish to cognicopia.org.
 - `scripts/generate_infinite_pages.mjs` (`npm run pages`):
   - writes SVG, 300 DPI 1-bit PNG, a PDF packet (`scripts/lib/pdf-lite.mjs`), prompts.jsonl/csv and manifest.json;
   - `--codes` reprints pages by code;
-  - optional `--backend http` sends prompts to an image endpoint and runs the results through the ingest checks.
+  - optional `--backend http` sends prompts to an image endpoint and runs the results through the ingest (which traces them, see the line-art pipeline below).
 - `scripts/check-infinite.mjs`: 749 checks, part of `npm test` and `npm run build`.
 - Packet Builder (`builder.html`, `#/coloring`): a **New pages** tab (theme chips, count, find by code, add all). The PDF footer shows the page code.
 
@@ -64,6 +64,16 @@ items below, verify each one, and publish to cognicopia.org.
 - `npm run build` passed.
 - Browser sweep at 390 px and 1366 px of every builder route and category, index.html, profile.html and the resources hub: 48 page loads with no console errors, no horizontal overflow and no external requests.
 - index.html still produces the main packet, staff guide, family form and five condition packets. The coloring, holiday and pattern pages print as vector art.
+
+## The line-art pipeline (traced art)
+
+Pictures from an image generator or an illustrator become crisp vector coloring pages at all three tiers. Runbook: `docs/line-art-pipeline.md`; standards: `docs/cognicopia-coloring-standards.md` §6.
+
+- **What shipped:** the center-line tracer (`scripts/lib/trace.mjs`), tier derivation (`scripts/lib/tiers.mjs`), master preparation (`scripts/lib/master.mjs`), art files (`scripts/lib/art.mjs`, one JSON per design in `src/data/coloring_art/`), the engine hook `CognicopiaColoring.art.use` (engine 1.1.0), the ingest with human review (`scripts/ingest_coloring_assets.mjs`, `scripts/review_coloring_art.mjs`), master prompts (`npm run coloring:masters`), and the catalog and bundle changes (`source: "traced-art"`, `counts.traced`). `scripts/check-trace.mjs` is part of `npm test` and `npm run build`.
+- **State:** no real art is committed. The library is still the 150 hand-coded designs. The pipeline was verified end to end on stand-in masters (library designs drawn like generator output): ingest, review sheets, approve, bundle, the Packet Builder in a browser, vector PDFs at 3, 4.5 and 7.9 pt, offline reload, and `file://`.
+- **What only the owner can do:** generate the master pictures with a licensed tool (prompts from `npm run coloring:masters`), put them in `assets/coloring/_inbox/`, then ingest, look at the review sheets, approve or reject, run `npm run coloring` and push. Record the tool, license and prompt in each sidecar.
+- **Honest limits:** derived Tiers 2 and 3 are an automatic baseline. Good for subjects made of areas; weaker for skeletal drawings (bicycle spokes) and dense repeating patterns. Use a per-tier drawing (`<design>.t3.png`), sidecar `rules`, or reject the picture. About 20 to 35 KB of bundle per replaced design; the manifest generator stops at 6 MB of art.
+- **Traps:** raw masters belong only in the unpublished `assets/coloring/_inbox/` (an underscore folder is not built by Pages) and are not committed by default; `assets/coloring/_review/` is git-ignored. Changing `assets/cognicopia-coloring/*.js`, the prompts or any approved art means running `npm run coloring` again, because `npm run build` compares the bundle and catalog to disk.
 
 ## Names after the owner's rename (use these)
 
@@ -110,7 +120,8 @@ A separate Next.js, Supabase and Stripe project for the B2B service, added after
 npm test            # all six check suites
 npm run subjects    # reprocess the hybrid coloring subjects after editing src/coloring/subjects/
 npm run build       # checks + nav sync + research pages + link check (37 pages)
-npm run coloring    # rebuild the coloring bundle and catalog after editing assets/cognicopia-coloring/*.js
+npm run coloring    # rebuild the coloring bundle and catalog after editing assets/cognicopia-coloring/*.js or approving traced art
+npm run coloring:ingest   # trace the pictures in assets/coloring/_inbox/ for review (see docs/line-art-pipeline.md)
 npm run nav         # regenerate the sidebar on every page from scripts/site-nav.mjs
 npm run services    # rebuild assets/services/*.js from src/services/*.ts
 npm run research    # regenerate resources/research/* pages
@@ -155,5 +166,5 @@ Not built, with reasons, in that file: the four-tab rewrite of index.html, a PDF
 
 ## Known limits to state honestly
 
-- The infinite generator draws subjects procedurally in vector code; it does not use AI images. The `--backend http` image path is optional and was tested only against a local stand-in server, never a real provider.
+- The infinite generator draws subjects procedurally in vector code; it does not use AI images. The line-art pipeline can bring AI pictures into the library, but only after a person approves each one. The `--backend http` image path is optional and was tested only against a local stand-in server, never a real provider.
 - About 2% of first drafts fail the guardrails; batches re-roll them automatically.

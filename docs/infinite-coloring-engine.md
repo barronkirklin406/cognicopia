@@ -278,17 +278,15 @@ npm run pages -- --backend http --count 6 --tier 2
 
 1. For each page, the script POSTs the strict prompt to the endpoint as JSON `{ prompt, size: "1024x1536", n: 1, response_format: "b64_json" }` (the OpenAI images request shape; `COGNICOPIA_IMAGE_MODEL` sets `model`). It accepts a JSON answer `{ data: [{ b64_json }] }` or a PNG.
 2. It saves each picture to `<out>/inbox/` with a jobs file that carries the page's title, category, tier, caption and avoid-list topics.
-3. It runs the ingest pipeline (`scripts/ingest_coloring_assets.mjs`) on that inbox. The pipeline:
-   - flags color and gray;
-   - thresholds to pure black and white and removes specks;
+3. It runs the ingest pipeline (`scripts/ingest_coloring_assets.mjs`, described in [line-art-pipeline.md](line-art-pipeline.md)) on that inbox. The pipeline:
+   - flags color and gray, and thresholds to pure black and white and removes specks;
    - crops and reframes to 3:4;
-   - thickens lines to the tier's weight and closes small gaps;
-   - measures the areas and suggests a tier;
+   - traces the center lines, closes small gaps and fits smooth curves, so the page is crisp vector art drawn by the engine at the tier's weight;
+   - works out what each tier shows, draws every tier through the engine and measures it;
    - runs the dignity filter;
-   - writes a 300 DPI PNG (or a clean SVG);
    - holds every picture as **needs-review**. A person approves or rejects each one before it can reach a resident.
 
-   `--ingest-dry-run` measures the pictures without adding them to the review queue.
+   `--ingest-dry-run` traces and measures the pictures without adding them to the review queue.
 
 Generated pictures from outside services are not trusted by default. They go through the same thresholds as everything else, plus a human review.
 
