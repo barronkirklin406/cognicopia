@@ -18,6 +18,13 @@
      - the tier decides how much detail is drawn: Tier 1 everything,
        Tier 2 the guiding lines, Tier 3 the main shapes only.
 
+   Most designs are drawn here, in code. A design can also come from a
+   picture made elsewhere (an image generator, an illustrator): its center
+   lines are traced (scripts/lib/trace.mjs), each stroke is given the least
+   detailed tier that still shows it (scripts/lib/tiers.mjs), and the result
+   is applied with CognicopiaColoring.art.use(). From there it is drawn,
+   weighted, fitted, measured and printed exactly like any other design.
+
    A drawing is a function of (g, h): g collects the shapes for one tier,
    h holds the geometry helpers. Coordinates are a 600 x 800 box (3:4).
    Paths use only absolute M, L, C and Z, so they are easy to measure,
@@ -29,7 +36,7 @@
 (function(root){
 "use strict";
 
-var W = 600, H = 800, ENGINE_VERSION = "1.0.0";
+var W = 600, H = 800, ENGINE_VERSION = "1.1.0";
 
 /* ---------- 1. Tiers, line weights, categories, page ---------- */
 /* minArea: the smallest area to color, in square inches at the smallest
@@ -416,6 +423,44 @@ function definePack(p){
   return pk;
 }
 
+/* ---------- 5b. Traced art ----------
+   A picture brought in from an image generator or an illustrator, traced to its
+   center lines. An art record is { id, items, fit, pad, meta }:
+     items  [[kind, tiers, d], ...]: kind "m" is a main line, "d" a detail line, "k" a
+            solid accent (the same three kinds g.S / g.D / g.K draw); tiers says which
+            tiers draw it (bit 1 = Tier 1, 2 = Tier 2, 4 = Tier 3; 7 is every tier); d is an
+            absolute M / L / C / Z path, which may hold any number of strokes. Each tier has
+            its own outlines, rounded to the width of its lines, so a heavy tier does not
+            have to draw the fine points a light one can;
+     fit, pad  as for a design (the picture is fitted to its box like any other);
+     meta   only for a new design: { title, cat, talk, tags, era, season, sensitive }.
+   It replaces the drawing of the design with that id, or adds the design. */
+var ART = {};
+function artDraw(items){
+  return function(g){
+    var bit = 1 << (g.tier - 1);
+    for (var i = 0; i < items.length; i++){
+      var it = items[i], kind = it[0];
+      if (it[1] & bit) g._add(it[2], kind, kind === "k" ? 2 : 0, 1);
+    }
+  };
+}
+function useArt(list){
+  (list || []).forEach(function(a){
+    if (!a || !a.id || !a.items || !a.items.length) throw new Error("Traced art needs an id and strokes: " + JSON.stringify(a && a.id));
+    var d = BY_ID[a.id];
+    if (!d){
+      if (!a.meta) throw new Error("Traced art for a design that is not in the library needs meta: " + a.id);
+      var m = { id:a.id }; for (var k in a.meta) m[k] = a.meta[k];
+      d = define(m, artDraw(a.items));
+    } else d.draw = artDraw(a.items);
+    d.source = "traced";
+    if (a.fit) d.fit = a.fit;
+    if (a.pad != null) d.pad = a.pad;
+    ART[a.id] = a;
+  });
+}
+
 /* Tags the catalog and the search box use, from the design and the tier. */
 var CAT_TAGS = {
   "classic-vehicles":["reminiscence", "vehicles", "transport"], "botanical-garden":["nature", "garden", "flowers"],
@@ -532,6 +577,7 @@ root.CognicopiaColoring = {
   weightFor:weightFor, tagsFor:tagsFor, assetId:assetId, parsePath:parsePath, samplePath:samplePath, bboxOf:bboxOf,
   designs:function(){ return DESIGNS.slice(); }, design:function(id){ return BY_ID[id] || null; },
   packs:function(){ return PACKS.slice(); }, pack:function(id){ return PACK_BY_ID[id] || null; },
-  stats:stats, helpers:h, kit:kit, transformPath:transformPath, shapeArea:shapeArea
+  stats:stats, helpers:h, kit:kit, transformPath:transformPath, shapeArea:shapeArea,
+  art:{ draw:artDraw, use:useArt, of:function(id){ return ART[id] || null; }, ids:function(){ return Object.keys(ART).sort(); } }
 };
 })(typeof globalThis !== "undefined" ? globalThis : this);

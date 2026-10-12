@@ -39,6 +39,13 @@ var TIER_WORDS = {
   2: { add:"Middle Tier: one clear subject, bold outer contours, simplified interior detail, zero background clutter, clear figure-ground separation, balanced negative space, 12 to 30 large enclosed colorable areas", neg:["busy background"] },
   3: { add:"Late Tier: one iconic focal subject only, ultra-thick high-contrast outlines, ultra-simplified bold geometry, maximum-size coloring targets, only 4 to 12 very large enclosed colorable areas, nothing in the background", neg:["background scenery", "small parts", "fine interior lines", "text"] }
 };
+/* What a master asks for: one picture of the subject, drawn once, at the detail of the Early Tier. It is traced to its
+   center lines and simplified for each tier (scripts/ingest_coloring_assets.mjs), so it needs to be clean rather than
+   heavy: the engine draws the lines at each tier's weight. */
+var MASTER_WORDS = {
+  add:"one clear subject filling the page, 30 to 60 clearly enclosed colorable areas, one bold uniform black line weight everywhere, every shape fully closed with no gaps, solid black only for small accents such as an eye or a wheel hub, no background scenery, no border or frame",
+  neg:["varying line weight", "tapered strokes", "double outlines", "decorative border", "background scene"]
+};
 var GENERATORS = {
   "midjourney":       { label:"Midjourney",             note:"Paste into /imagine. --ar sets the 3:4 page; --no lists what to leave out." },
   "stable-diffusion": { label:"Stable Diffusion / SDXL", note:"Put the negative prompt in its own box. 1536 x 2048 keeps the 3:4 page." },
@@ -231,6 +238,20 @@ function slug(s){
   if (t.length > 48){ t = t.slice(0, 49); t = t.slice(0, t.lastIndexOf("-") > 20 ? t.lastIndexOf("-") : 48); }   // whole words only
   return t;
 }
+/* A master job: one library design (or idea) drawn once, with every generator's prompt. The job id is the design's id,
+   so the picture saved as <job_id>.png is ingested as that design's art. */
+function masterJob(o){
+  var subj = String(o.subject || "").replace(/\s+/g, " ").trim().replace(/[.]+$/, ""), rule = CATEGORY_WORDS[o.category] || "";
+  var positive = POSITIVE.replace("{SUBJECT}", subj) + (rule ? ", " + rule : "") + ", " + MASTER_WORDS.add, negative = NEGATIVE.concat(MASTER_WORDS.neg), prompts = {};
+  Object.keys(GENERATORS).forEach(function(k){ prompts[k] = format({ positive:positive, negative:negative }, k); });
+  return {
+    job_id: o.design_id, title: o.title, subject: subj, category: o.category, tier: 0, tags: (o.tags || []).slice(),
+    source: "master", design_id: o.design_id, conversation_prompt: o.talk || null, sensitive_topics: (o.sensitive || []).slice(),
+    positive: positive, negative: negative, prompts: prompts,
+    expect: { aspect_ratio:"3:4", minimum_dpi:300, color_mode:"1-bit black and white", line_weight:"one weight, any: the engine draws the lines", review:"required before use" },
+    dignity: dignityCheck(subj + " " + (o.title || "") + " " + (o.tags || []).join(" "))
+  };
+}
 /* A generation job: one subject, one tier, every generator's prompt. */
 function job(o){
   var p = buildAll(o.subject, o.tier, o.category);
@@ -247,7 +268,7 @@ function job(o){
 
 root.CognicopiaColoringPrompts = {
   POSITIVE:POSITIVE, NEGATIVE:NEGATIVE, TIER_WORDS:TIER_WORDS, GENERATORS:GENERATORS, IDEAS:IDEAS,
-  build:build, buildAll:buildAll, format:format, dignityCheck:dignityCheck, subjectFor:subjectFor, job:job, slug:slug,
+  MASTER_WORDS:MASTER_WORDS, build:build, buildAll:buildAll, format:format, dignityCheck:dignityCheck, subjectFor:subjectFor, job:job, masterJob:masterJob, slug:slug,
   JUVENILE:JUVENILE, QUIZ:QUIZ, ELDERSPEAK:ELDERSPEAK
 };
 })(typeof globalThis !== "undefined" ? globalThis : this);

@@ -21,8 +21,10 @@
    pure black on white, strokes of the tier's weight, and no more small
    areas than the tier allows (docs/cognicopia-coloring-standards.md).
 
-   Approved pictures from the ingest pipeline (src/data/coloring_ingested.json,
-   scripts/ingest_coloring_assets.mjs) are added to the catalog as they are.
+   Approved traced art (src/data/coloring_art/*.json, written by
+   scripts/ingest_coloring_assets.mjs) replaces the drawing of the design it
+   was made for, or adds a design; it is drawn, written, measured and
+   listed like every other design, and travels in the browser bundle.
 
    Run:  node scripts/generate_coloring_manifest.js           write it all
          node scripts/generate_coloring_manifest.js --import  first ingest
@@ -35,6 +37,7 @@ import fs from "fs";
 import path from "path";
 import crypto from "crypto";
 import { loadCognicopiaColoring, sourceFiles, ROOT, SRC_DIR, BANDS, complexityOf, svgProblems } from "./lib/cognicopia-coloring.mjs";
+import { listArt, itemsHash } from "./lib/art.mjs";
 import { createBitmap, paint, shapesFromRender, measure } from "./lib/raster.mjs";
 import { validate } from "./lib/json-schema.mjs";
 
@@ -43,10 +46,10 @@ const QUIET = process.argv.includes("--quiet");
 const SVG_DIR = "assets/coloring";
 const CATALOG = "src/data/cognicopia_coloring_catalog.json";
 const SCHEMA = "src/data/cognicopia_coloring_catalog.schema.json";
-const INGESTED = "src/data/coloring_ingested.json";
 const BUNDLE = "assets/cognicopia-coloring/cognicopia-coloring.js";
 const PROMPT_JOBS = "src/data/cognicopia_coloring_prompt_jobs.jsonl";
-const SCHEMA_VERSION = "1.0.0";
+const SCHEMA_VERSION = "1.1.0";
+const ART_BUDGET = 6000000;                  // bytes of traced path data the bundle may carry before it should be split by category
 const MEASURE_DPI = 100, NOISE_SQ_IN = .003;
 
 const abs = f => path.join(ROOT, f);
@@ -96,28 +99,32 @@ for (const d of C.designs()){
       print_width_in:L.artW, print_height_in:L.artH, format:"svg",
       svg_path:rel, asset_url:`${SITE}/${rel}`, sha256:sha256(svg), bytes:Buffer.byteLength(svg),
       era:d.era || "", season:d.season || "", sensitive_topics:d.sensitive.slice(), conversation_prompt:d.talk,
-      source:"cognicopia-coloring-engine", review_status:"approved", packs:(packsOf[d.id] || []).slice(),
+      source:d.source === "traced" ? "traced-art" : "cognicopia-coloring-engine", review_status:"approved", packs:(packsOf[d.id] || []).slice(),
       visual_complexity:complexityOf(m.regions), metrics:m
     });
   }
 }
 
-/* ---------- 2. approved pictures from the ingest pipeline ---------- */
-let ingested = [];
-const ingestText = read(INGESTED);
-if (ingestText){
-  const inbox = JSON.parse(ingestText);
-  ingested = (inbox.assets || []).filter(a => a.review_status === "approved");
-  ingested.forEach(a => {
-    const f = a.png_path || a.svg_path;
-    if (!f || !fs.existsSync(abs(f))) problems.push(`ingested ${a.id}: file ${f} is missing`);
-    else if (sha256(fs.readFileSync(abs(f))) !== a.sha256) problems.push(`ingested ${a.id}: ${f} changed after it was approved (re-run the ingest)`);
+/* ---------- 2. approved traced art ----------
+   The engine already draws it (loadCognicopiaColoring applies it); here it is checked
+   against what was approved, and handed to the bundle. */
+const artRecords = listArt(ROOT).filter(a => a.review && a.review.status === "approved");
+let artBytes = 0;
+artRecords.forEach(a => {
+  artBytes += a.bytes || 0;
+  if (itemsHash(a.items) !== a.items_sha256 || a.review.approved_sha256 !== a.items_sha256) problems.push(`traced art ${a.id}: changed after it was approved (ingest it again with --redo and review it)`);
+  if (!C.design(a.id) || C.design(a.id).source !== "traced") problems.push(`traced art ${a.id}: the engine is not drawing it`);
+  a.items.forEach(([kind, tiers, d]) => {
+    if (!["m", "d", "k"].includes(kind) || !Number.isInteger(tiers) || tiers < 1 || tiers > 7 || !/^M[-0-9.eE ,MLCZ]+$/.test(d)) problems.push(`traced art ${a.id}: an item is not [kind, tiers, M/L/C/Z path]`);
+    for (const n of d.match(/-?\d+(?:\.\d+)?/g) || []) if (+n < -60 || +n > 860) { problems.push(`traced art ${a.id}: a coordinate (${n}) lies outside the picture box`); break; }
   });
-}
+});
+if (artBytes > ART_BUDGET) problems.push(`traced art is ${(artBytes / 1e6).toFixed(1)} MB of path data in the browser bundle (limit ${ART_BUDGET / 1e6} MB): split the bundle by category`);
+const traced = artRecords.length;
 
 /* ---------- 3. the catalog ---------- */
 const byCat = {}; C.CATEGORIES.forEach(c => { byCat[c.id] = 0; }); C.designs().forEach(d => { byCat[d.cat]++; });
-const allAssets = assets.concat(ingested);
+const allAssets = assets;
 const catalog = {
   $schema:"./cognicopia_coloring_catalog.schema.json",
   name:"Cognicopia Coloring Catalog",
@@ -125,7 +132,7 @@ const catalog = {
   engine_version:C.version,
   generated_by:"scripts/generate_coloring_manifest.js",
   content_hash:sha256(allAssets.map(a => a.id + ":" + a.sha256).join("\n") + JSON.stringify(C.packs().map(p => [p.id, p.designs]))),
-  counts:{ designs:C.designs().length, assets:allAssets.length, packs:C.packs().length, ingested:ingested.length, by_category:byCat },
+  counts:{ designs:C.designs().length, assets:allAssets.length, packs:C.packs().length, traced, by_category:byCat },
   standards:{
     colors:{ line:"#000000", background:"#FFFFFF", grayscale:false, shading:false },
     art_aspect_ratio:"3:4",
@@ -149,8 +156,6 @@ const catalogText = JSON.stringify(catalog, null, 1) + "\n";
 /* ---------- 4. the browser bundle ---------- */
 const metricsById = {};
 allAssets.forEach(a => { metricsById[a.id] = [a.metrics.regions, a.metrics.smallest_region_sq_in, a.metrics.median_region_sq_in, a.metrics.tiny_regions, a.visual_complexity]; });
-const ingestedForBrowser = ingested.map(a => ({ id:a.id, design_id:a.design_id, title:a.title, category_id:a.category_id, tier:a.tier, tags:a.tags,
-  season:a.season, sensitive_topics:a.sensitive_topics, conversation_prompt:a.conversation_prompt, format:a.format, path:a.png_path || a.svg_path }));
 const bundle = "/* Cognicopia coloring: the line-art engine, the quality meter, every\n" +
   "   design, the packs, the prompt engine, the infinite page generator with\n" +
   "   its subject families, and the measured catalog, in one file for the\n" +
@@ -161,8 +166,10 @@ const bundle = "/* Cognicopia coloring: the line-art engine, the quality meter, 
   "\n/* ---------- measured catalog (generated) ----------\n" +
   "   metrics: asset id -> [areas to color, smallest area sq in, median area sq in, areas under the tier minimum, visual complexity] */\n" +
   "(function(C){\n\"use strict\";\nif (!C) return;\nC.catalog = " + JSON.stringify({
-    schema_version:SCHEMA_VERSION, content_hash:catalog.content_hash, bands:BANDS, metrics:metricsById, ingested:ingestedForBrowser
-  }) + ";\n})(globalThis.CognicopiaColoring);\n";
+    schema_version:SCHEMA_VERSION, content_hash:catalog.content_hash, bands:BANDS, metrics:metricsById, traced:artRecords.map(a => a.id)
+  }) + ";\n})(globalThis.CognicopiaColoring);\n" +
+  "\n/* ---------- traced art (generated) ----------\n   Pictures from an image generator or an illustrator, traced to their center lines and approved\n   (src/data/coloring_art/): they replace the drawing of the design with the same id, or add a design. */\n" +
+  "(function(C){\n\"use strict\";\nif (!C) return;\nC.art.use(" + JSON.stringify(artRecords.map(a => { const r = { id:a.id, items:a.items, fit:a.fit, pad:a.pad }; if (a.meta) r.meta = a.meta; return r; })) + ");\n})(globalThis.CognicopiaColoring);\n";
 
 /* ---------- 5. prompt jobs for AI vector pipelines ----------
    One job per library page (new art for our own subjects) and one per
@@ -192,7 +199,7 @@ for (const c of C.CATEGORIES){
   const dir = abs(`${SVG_DIR}/${c.id}`);
   if (fs.existsSync(dir)) for (const f of fs.readdirSync(dir)) if (f.endsWith(".svg") && !svgFiles.has(`${SVG_DIR}/${c.id}/${f}`)) stale.push(`${SVG_DIR}/${c.id}/${f}`);
 }
-const summary = `${C.designs().length} designs, ${allAssets.length} pages (${ingested.length} ingested), ${C.packs().length} packs, ${jobs.length} prompt jobs`;
+const summary = `${C.designs().length} designs, ${allAssets.length} pages (${traced} from traced art), ${C.packs().length} packs, ${jobs.length} prompt jobs`;
 if (CHECK){
   const differ = [...expected].filter(([f, text]) => read(f) !== text).map(([f]) => f);
   if (differ.length || stale.length){

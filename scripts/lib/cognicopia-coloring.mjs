@@ -22,15 +22,30 @@ export function sourceFiles(){
   return ["lineart.js", "quality.js", ...list("designs"), "packs.js", "prompts.js", "infinite.js", ...list("generators")];
 }
 
-let cached = null;
-export function loadCognicopiaColoring(){
-  if (cached) return cached;
+/* The traced art that has been approved (src/data/coloring_art/*.json), in the form
+   CognicopiaColoring.art.use() takes. Only approved art is ever drawn. */
+export const ART_DIR = "src/data/coloring_art";
+export function approvedArt(root = ROOT){
+  const dir = path.join(root, ART_DIR);
+  if (!fs.existsSync(dir)) return [];
+  return fs.readdirSync(dir).filter(f => f.endsWith(".json")).sort().map(f => JSON.parse(fs.readFileSync(path.join(dir, f), "utf8")))
+    .filter(a => a.review && a.review.status === "approved")
+    .map(a => { const rec = { id:a.id, items:a.items }; if (a.fit) rec.fit = a.fit; if (a.pad != null) rec.pad = a.pad; if (a.meta) rec.meta = a.meta; return rec; });
+}
+
+/* The engine as the Packet Builder runs it: the library with its approved traced art applied.
+   loadCognicopiaColoring({ art:false }) is the library as it is drawn in code, before any art. */
+const cache = {};
+export function loadCognicopiaColoring(opts){
+  const withArt = !(opts && opts.art === false), key = withArt ? "art" : "code";
+  if (cache[key]) return cache[key];
   const sandbox = { console };
   sandbox.globalThis = sandbox;
   vm.createContext(sandbox);
   for (const f of sourceFiles()) vm.runInContext(fs.readFileSync(path.join(SRC_DIR, f), "utf8"), sandbox, { filename: "assets/cognicopia-coloring/" + f });
-  cached = { C: sandbox.CognicopiaColoring, P: sandbox.CognicopiaColoringPrompts };
-  return cached;
+  if (withArt) sandbox.CognicopiaColoring.art.use(approvedArt());
+  cache[key] = { C: sandbox.CognicopiaColoring, P: sandbox.CognicopiaColoringPrompts };
+  return cache[key];
 }
 
 /* Visual complexity bands for the catalog and the filters, by the number

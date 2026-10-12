@@ -11,6 +11,10 @@
    images, save each one as <job_id>.png in assets/coloring/_inbox/, then
    run: node scripts/ingest_coloring_assets.mjs --jobs <out>.jsonl
 
+   The usual batch is --masters: one picture per library design, named after
+   the design, which the ingest traces to crisp vector art and simplifies for
+   all three tiers (no need to ask for each tier separately).
+
    Run:  node scripts/coloring_prompts.mjs                  every idea, printed
          node scripts/coloring_prompts.mjs --out batch-01    batch-01.jsonl + .csv
    Options:
@@ -18,7 +22,9 @@
      --tier <1|2|3|best>   one tier for every job (default: each idea's best tiers)
      --generator <id>      midjourney, stable-diffusion or dall-e-3 (printed text)
      --subject "<words>"   one free subject (with --category and --title)
-     --library             one job per library design: new art for our own subjects
+     --masters             one master per library design (or --category): the job id is the
+                           design's id, so <design-id>.png replaces that design's art
+     --library             one job per library design and tier (older: a picture per tier)
      --count <n>           at most n jobs
      --list                categories and how many ideas each has
    Node built-ins only.
@@ -45,6 +51,9 @@ const subject = opt("subject");
 if (subject && subject !== true){
   if (category === "all"){ console.error("--subject needs --category."); process.exit(1); }
   tiersFor([1, 2, 3]).forEach(t => jobs.push(P.job({ subject, title:opt("title") !== true ? opt("title") : undefined, category, tier:t, source:"request" })));
+} else if (args.includes("--masters")){
+  C.designs().filter(d => category === "all" || d.cat === category).forEach(d =>
+    jobs.push(P.masterJob({ subject:P.subjectFor(d), title:d.title, category:d.cat, tags:d.tags, design_id:d.id, talk:d.talk, sensitive:d.sensitive })));
 } else if (args.includes("--library")){
   C.designs().filter(d => category === "all" || d.cat === category).forEach(d =>
     tiersFor([1, 2, 3]).forEach(t => jobs.push(P.job({ subject:P.subjectFor(d), title:d.title, category:d.cat, tier:t, tags:d.tags, source:"library", design_id:d.id }))));
@@ -69,6 +78,6 @@ if (out && out !== true){
   console.log(`Wrote ${jobs.length} job(s) to ${path.relative(ROOT, stem)}.jsonl and .csv${blocked.length ? ` (${blocked.length} left out by the dignity filter)` : ""}.`);
   console.log(`Save each generated image as <job_id>.png in assets/coloring/_inbox/, then run:\n  node scripts/ingest_coloring_assets.mjs --jobs ${path.relative(ROOT, stem)}.jsonl`);
 } else {
-  jobs.forEach(j => console.log(`# ${j.job_id}  (${C.CAT[j.category].label}, ${C.TIERS[j.tier].label})\n${j.prompts[generator]}\n`));
+  jobs.forEach(j => console.log(`# ${j.job_id}  (${C.CAT[j.category].label}, ${j.tier ? C.TIERS[j.tier].label : "master"})\n${j.prompts[generator]}\n`));
   console.log(`${jobs.length} job(s). ${P.GENERATORS[generator].note}`);
 }

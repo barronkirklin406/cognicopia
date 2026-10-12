@@ -6,3 +6,6 @@ payloads/
 /out/
 .continue/
 new-config.yaml
+
+# generated review sheets for traced art (scripts/review_coloring_art.mjs)
+/assets/coloring/_review/

@@ -7,7 +7,8 @@ What every Cognicopia coloring page must be, why, how the library proves it, and
 - `assets/cognicopia-coloring/infinite.js` makes new pages on demand and holds each one to these rules before it is shown (see [infinite-coloring-engine.md](infinite-coloring-engine.md)).
 - `src/services/vectorEngine.ts` applies the same line weights to any other drawing.
 - `scripts/generate_coloring_manifest.js` measures every printed page and stops if one breaks a rule.
-- `npm test` checks the whole library, the prompts and the ingest pipeline.
+- `scripts/lib/trace.mjs`, `scripts/lib/tiers.mjs` and `scripts/ingest_coloring_assets.mjs` turn a picture from an image generator or an illustrator into crisp vector art at all three tiers (see [line-art-pipeline.md](line-art-pipeline.md)).
+- `npm test` checks the whole library, the prompts, the tracer and the ingest pipeline.
 
 ## 1. What the research supports, and what it does not
 
@@ -39,7 +40,7 @@ Sources are listed in section 10. Links point to the published abstracts and rec
 
 `assets/cognicopia-coloring/prompts.js` supplies provider-independent positive and negative constraints, with additional construction guidance for vehicles, botanicals, nature, heritage objects, architecture, household objects and repeating patterns. Tier wording is explicit: Early favors accurate detail and 30–60 enclosed regions; Middle reduces detail and background noise to 12–30 larger regions; Late uses one iconic subject and 4–12 very large regions.
 
-These are prompt instructions, not guarantees of mechanical, botanical or geometric accuracy. Image generation occurs outside the application. Every generated image remains in the human-review queue before use. The ingest pipeline normalizes raster art to pure black and white and 300-DPI 1-bit PNG; eligible SVGs are rewritten as clean black/white paths with round caps and joins. SVG ingest drops degenerate paths and paths wholly outside the declared viewBox, but deliberately retains small in-bounds details rather than risk deleting meaningful subject geometry.
+These are prompt instructions, not guarantees of mechanical, botanical or geometric accuracy. Image generation occurs outside the application. Every generated image remains in the human-review queue before use. The ingest does not keep the generator's pixels: it traces the picture's **center lines**, fits smooth curves to them and lets the engine draw them at the tier's weight, so the printed line is the standard's weight (3, 4.5 and 7.9 pt, never under 3 pt) whatever weight the picture had, and the page stays vector from the library to the PDF. One picture serves all three tiers; Tiers 2 and 3 are worked out from it by merging small areas and rounding the outlines. SVG masters are accepted too. The whole path is in [line-art-pipeline.md](line-art-pipeline.md).
 
 ### Tiers and line weights
 
@@ -132,7 +133,7 @@ That command writes:
 
 | Field | Value |
 |---|---|
-| `id` | `cc-<design>-t<tier>`, or `ai-<category>-<subject>-t<tier>` for ingested pictures |
+| `id` | `cc-<design>-t<tier>`; a new design added from a traced picture has the design id `ai-<name>`, so its pages are `cc-ai-<name>-t<tier>` |
 | `title` | The page's title |
 | `category` | Classic Vehicles, Botanical & Garden, Nostalgic Heritage, Wildlife & Nature, Bold & Easy Patterns, or Home & Everyday Tasks |
 | `cognitive_tier` | "Tier 1 - High Detail", "Tier 2 - Guided Focus" or "Tier 3 - Single Focal / Sensory" |
@@ -160,42 +161,42 @@ Then run `npm run coloring` and `npm test`. The generator refuses a page that br
 
 ## 6. AI artwork: prompts, ingest, review
 
-**1. Prompts.** `scripts/coloring_prompts.mjs` writes batches: one job per subject and tier, each with Midjourney, Stable Diffusion and DALL·E 3 wording. Jobs whose subject fails the dignity filter are left out. The templates are:
+The full runbook, with commands, sidecar fields, limits and rights, is [line-art-pipeline.md](line-art-pipeline.md). In short:
 
-- **Positive:** `Ultra-bold black line art coloring page for adults, {SUBJECT}, thick high-contrast clean black outlines, white background, no shading, no gradients, clean vector art style, simple focal point, 3:4 aspect ratio, dignity-first senior coloring book`, plus the tier's wording:
-  - Tier 1: 30–60 closed areas
-  - Tier 2: 12–30 large closed areas, one clear subject
-  - Tier 3: 4–12 very large areas, nothing in the background
-- **Negative:** `shading, grayscale, color, realistic photo, thin lines, cluttered background, extra limbs, childish, cartoon faces, tiny details, noise, texture, blur`, plus the tier's extras.
+**1. Prompts.** `npm run coloring:masters -- --out masters-01` (`scripts/coloring_prompts.mjs --masters`) writes one job per library design, each with Midjourney, Stable Diffusion and DALL·E 3 wording. Jobs whose subject fails the dignity filter are left out. The prompt asks for one picture that serves all three tiers: black line art, a single clear subject, closed shapes, white background, 3:4. The templates are:
 
-**2. Generate.** This happens outside Cognicopia; nothing here calls a generator. Save each image as `<job_id>.png` in `assets/coloring/_inbox/`. That folder is not published.
+- **Positive:** `Ultra-bold black line art coloring page for adults, {SUBJECT}, thick high-contrast clean black outlines, white background, no shading, no gradients, clean vector art style, simple focal point, 3:4 aspect ratio, dignity-first senior coloring book`, plus the category's construction words.
+- **Negative:** `shading, grayscale, color, realistic photo, thin lines, cluttered background, extra limbs, childish, cartoon faces, tiny details, noise, texture, blur`.
 
-**3. Ingest.** Run `node scripts/ingest_coloring_assets.mjs --jobs <batch>.jsonl`. For PNGs it:
+`npm run coloring:prompts` still writes per-tier and per-idea batches for new subjects.
 
-- flags color and gray shading;
-- thresholds to pure black and white (Otsu) and removes specks;
-- crops to the drawing and re-frames it on a 3:4 page;
-- thickens lines to the tier's weight;
-- measures the page, suggests the simplest tier it meets, tags it and runs the dignity filter;
-- writes a 300 DPI 1-bit PNG.
+**2. Generate.** This happens outside Cognicopia; nothing here calls a generator. Save each image as `<design-id>.png` (or `.svg`) in `assets/coloring/_inbox/`. That folder is not published.
 
-SVGs stay vector when their strokes can be raised to the weight:
+**3. Ingest.** `npm run coloring:ingest`. For each picture it:
 
-- colors become pure black and white;
-- `<text>`, gradients and images are flagged, not drawn.
+- flags color, gray shading and gradients, and makes it pure black and white (Otsu), removes specks, crops to the drawing and centers it on a 3:4 page;
+- traces the center lines, closes small gaps, keeps solid black accents and fits smooth curves;
+- works out what each tier shows (Tier 1 everything; Tiers 2 and 3 merge small areas and redraw rounder outlines) and draws every tier through the engine to measure it;
+- compares the trace to the master, checks the size and the words (dignity filter);
+- records everything in `src/data/coloring_art/<design>.json` as **needs-review**.
 
-Every picture is recorded as **needs-review** in `src/data/coloring_ingested.json`.
+A picture named after a library design replaces that design's drawing once approved; any other name adds a new design (it needs a category).
 
-**4. Review.** A person checks each picture. Five checks are measured for them:
+**4. Review.** `npm run coloring:review` writes a sheet per picture: the master, then Tiers 1, 2 and 3 as they print. A person checks each one. Measured for them:
 
 - pure black and white;
-- line weight;
-- area size;
+- line weight (the engine draws it at the tier's weight);
+- area size, every tier;
 - fills the page;
-- dignity wording.
+- traced faithfully to the master;
+- no large solid black area;
+- file size;
+- dignity wording;
+- closed shapes.
 
-Five are confirmed by eye:
+Confirmed by eye:
 
+- the tiers look right (the subject stays clear, and no line looks torn or odd);
 - adult and dignified (no cartoon faces or cute style);
 - true to life (no extra limbs, warped hands or impossible machines);
 - no letters, numbers, signatures or watermarks;
@@ -204,10 +205,10 @@ Five are confirmed by eye:
 
 **5. Approve or reject.**
 
-- Approve: `--approve <id> --reviewer "Name"`. A failed measured check needs `--override "why"`.
-- Reject: `--reject <id> --reviewer "Name" --reason "…"`.
+- Approve: `npm run coloring:ingest -- --approve <design> --reviewer "Name"`. A failed measured check needs `--override "why"`.
+- Reject: `npm run coloring:ingest -- --reject <design> --reviewer "Name" --reason "..."`.
 
-Approved pictures join the catalog and the Packet Builder on the next `npm run coloring`.
+Approved art joins the catalog (`source: "traced-art"`, counted in `counts.traced`), the offline bundle and the Packet Builder on the next `npm run coloring`. The manifest generator re-checks it: the stored hash must match, the engine must draw it, and every tier must still meet its rule.
 
 ## 7. The Dynamic Vector Engine
 
@@ -234,8 +235,10 @@ Approved pictures join the catalog and the Packet Builder on the next `npm run c
 |---|---|
 | `npm run coloring` | Draw, measure and write the library: SVGs, catalog, prompt jobs, browser bundle |
 | `npm run coloring:check` | Verify all of the above is current (part of `npm run build`) |
-| `npm run coloring:prompts -- --category botanical-garden --tier 3 --out batch-01` | A prompt batch |
-| `npm run coloring:ingest` | Bring in the inbox for review |
+| `npm run coloring:masters -- --out masters-01` | A prompt batch: one master picture per library design |
+| `npm run coloring:prompts -- --category botanical-garden --tier 3 --out batch-01` | A prompt batch for new subjects, per tier |
+| `npm run coloring:ingest` | Trace the pictures in the inbox and hold them for review (`--approve`, `--reject`, `--list`) |
+| `npm run coloring:review` | Review sheets for the pictures waiting |
 | `npm run pages -- --count 12 --tier 2` | Make new pages with the infinite generator: SVG, 300 DPI PNG, a PDF packet, prompts and a manifest |
 | `npm run services` | Build the TypeScript services for the browser |
 | `npm test` | Every check, including this library's and the services' |

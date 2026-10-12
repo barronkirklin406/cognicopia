@@ -1,15 +1,15 @@
 {
  "$schema": "./cognicopia_coloring_catalog.schema.json",
  "name": "Cognicopia Coloring Catalog",
- "schema_version": "1.0.0",
- "engine_version": "1.0.0",
+ "schema_version": "1.1.0",
+ "engine_version": "1.1.0",
  "generated_by": "scripts/generate_coloring_manifest.js",
  "content_hash": "ba8497204644a12f2c7a1980e83fec667cfe7a9700eb3a26c3ee77e21a4318f8",
  "counts": {
   "designs": 150,
   "assets": 450,
   "packs": 63,
-  "ingested": 0,
+  "traced": 0,
   "by_category": {
    "classic-vehicles": 15,
    "botanical-garden": 23,
