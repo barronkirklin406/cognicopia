@@ -11,7 +11,7 @@
     <meta name="robots" content="noindex">
     <style>
       *, *::before, *::after { box-sizing: border-box; }
-        :root { --glass-bg: rgba(10, 38, 27, 0.7); --glass-panel: rgba(20, 61, 43, 0.72); --brand: #52b788; --line: rgba(216, 243, 220, 0.18); }
+        :root { --tap: 52px; --glass-bg: rgba(10, 38, 27, 0.7); --glass-panel: rgba(20, 61, 43, 0.72); --brand: #52b788; --line: rgba(216, 243, 220, 0.18); }
         body { margin: 0; line-height: 1.6; font-family: "Trebuchet MS", "Segoe UI", sans-serif; color: #2d241d; background-color: #1b4332; background-image: repeating-linear-gradient(45deg, rgba(216,243,220,.13) 0 1px, transparent 1px 72px), repeating-linear-gradient(-45deg, rgba(216,243,220,.13) 0 1px, transparent 1px 72px), repeating-linear-gradient(45deg, rgba(82,183,136,.09) 0 1px, transparent 1px 18px), repeating-linear-gradient(-45deg, rgba(82,183,136,.09) 0 1px, transparent 1px 18px), linear-gradient(135deg,#163d2d 0%,#1b4332 48%,#102b20 100%); }
         
         .nav-brand a, .nav-links a { font-family: "Trebuchet MS", "Segoe UI", sans-serif; }
@@ -33,8 +33,8 @@
           font-family: inherit;
           font-weight: 600;
           font-size: 16px !important;
-          min-height: 48px;
-          min-width: 48px;
+          min-height: var(--tap);
+          min-width: var(--tap);
           padding: 10px 16px;
           border-radius: 8px;
           transition: background 0.18s ease, border-color 0.18s ease;
@@ -131,7 +131,7 @@
           display: flex;
           align-items: center;
           gap: 10px;
-          min-height: 46px;
+          min-height: var(--tap);
           padding: 10px 12px;
           color: #ffffff !important;
           font-size: 15px !important;
@@ -193,7 +193,7 @@
           display: inline-flex;
           align-items: center;
           gap: 7px;
-          min-height: 42px;
+          min-height: var(--tap);
           padding: 8px 16px;
           font-size: 14.5px !important;
           font-weight: 600;
@@ -406,7 +406,7 @@ body { padding-left: var(--sb-w); }
   position: fixed;
   top: 12px; left: 12px;
   z-index: 1100;
-  width: 40px; height: 40px;
+  width: var(--tap); height: var(--tap);
   background: rgba(8,28,21,.92);
   border: 1px solid var(--sb-border);
   border-radius: 8px;
@@ -566,10 +566,10 @@ body { padding-left: var(--sb-w); }
 .rap-people{display:grid;gap:10px;margin:0 0 12px}
 .rap-person{display:grid;grid-template-columns:1.3fr 1.2fr auto auto;gap:10px;align-items:end;padding:12px;border:1px solid var(--rp-line2);border-radius:12px;background:var(--rp-field)}
 .rap-person .rap-mini{display:block;margin:0 0 4px;font-size:14px;font-weight:700;color:var(--rp-muted)}
-.rap-person input[type=text],.rap-person select{min-height:50px;font-size:17px;background:#0b1412}
-.rap-passed{display:flex;align-items:center;gap:8px;min-height:50px;padding:0 6px;font-size:15px;white-space:nowrap;cursor:pointer}
+.rap-person input[type=text],.rap-person select{min-height:var(--tap);font-size:17px;background:#0b1412}
+.rap-passed{display:flex;align-items:center;gap:8px;min-height:var(--tap);padding:0 6px;font-size:15px;white-space:nowrap;cursor:pointer}
 .rap-passed input{width:22px;height:22px;margin:0;accent-color:var(--rp-accent)}
-.rap-remove{min-height:50px;min-width:50px;padding:0 14px;border-radius:12px;border:2px solid rgba(255,180,162,.4);background:transparent;color:#ffcfc4;font:inherit;font-size:15px;font-weight:700;cursor:pointer}
+.rap-remove{min-height:var(--tap);min-width:var(--tap);padding:0 14px;border-radius:12px;border:2px solid rgba(255,180,162,.4);background:transparent;color:#ffcfc4;font:inherit;font-size:15px;font-weight:700;cursor:pointer}
 .rap-remove:hover{border-color:#ffb4a2;color:#fff}
 .rap-people-empty{margin:0 0 12px;color:var(--rp-muted);font-size:15px;font-style:italic}
 .rap-people-empty[hidden]{display:none}
@@ -580,7 +580,7 @@ body { padding-left: var(--sb-w); }
 .rap-range-wrap{padding-bottom:16px}
 .rap-range-label{display:block;margin:0 0 14px;font-weight:700;font-size:18px;color:#fff}
 .rap-range-label output{margin-left:6px;padding:2px 12px;border-radius:999px;background:var(--rp-accent);color:var(--rp-ink);font-size:16px}
-.rap input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:44px;margin:0;background:transparent;cursor:pointer}
+.rap input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:var(--tap);margin:0;background:transparent;cursor:pointer}
 .rap input[type=range]::-webkit-slider-runnable-track{height:12px;border-radius:999px;background:linear-gradient(90deg,var(--rp-accent) var(--fill,50%),rgba(216,243,220,.16) var(--fill,50%))}
 .rap input[type=range]::-moz-range-track{height:12px;border-radius:999px;background:rgba(216,243,220,.16)}
 .rap input[type=range]::-moz-range-progress{height:12px;border-radius:999px;background:var(--rp-accent)}
@@ -645,7 +645,7 @@ body { padding-left: var(--sb-w); }
 .rap-btn-primary:hover:not(:disabled){background:var(--rp-accent-hi)}
 .rap-btn-ghost{background:transparent;color:var(--rp-text);border-color:var(--rp-line2)}
 .rap-btn-ghost:hover:not(:disabled){border-color:var(--rp-accent-hi);color:#fff}
-.rap-btn-sm{min-height:44px;padding:8px 16px;font-size:16px}
+.rap-btn-sm{min-height:var(--tap);padding:8px 16px;font-size:16px}
 .rap-btn-danger{background:transparent;color:#ffcfc4;border-color:rgba(255,180,162,.45)}
 .rap-btn-danger:hover{border-color:#ffb4a2;color:#fff}
 .rap-nav{position:sticky;bottom:0;z-index:2;display:flex;align-items:center;gap:14px;padding:16px clamp(18px,4vw,34px);border-top:1px solid var(--rp-line);border-radius:0 0 22px 22px;background:#0e1614}
@@ -684,7 +684,7 @@ body { padding-left: var(--sb-w); }
 </style>
 <style id="cg-categories-toggle">
 /* Mobile menu button: hamburger icon + "Categories" label */
-.cg-sidebar-toggle{top:10px;left:12px;width:auto;height:40px;padding:8px 12px;gap:8px;max-width:calc(100vw - 24px);
+.cg-sidebar-toggle{top:10px;left:12px;width:auto;height:var(--tap);padding:8px 12px;gap:8px;max-width:calc(100vw - 24px);
   align-items:center;justify-content:center;background:#000;color:#fff;border:1px solid rgba(255,255,255,.28);border-radius:6px;
   font:600 14px/1 "Segoe UI",system-ui,-apple-system,Arial,sans-serif;white-space:nowrap;backdrop-filter:none}
 .cg-sidebar-toggle svg{color:#fff;flex:none}
@@ -698,16 +698,17 @@ body { padding-left: var(--sb-w); }
 </style>
 <style id="cg-nav-css">
 /* Site navigation: tools first, one Resource & Clinical Hub section, breadcrumbs.
-   Every link and button is at least 44 px tall, for touchscreens.
+   Every link and button is at least 52 px (--tap) tall, for touchscreens.
    Generated by scripts/site-nav.mjs; the sidebar's base styles stay in each page.
    Several pages set "color: #fff !important" and "p, li { font-size }" on every
    element, so the parts added here pin their own colors and sizes to look the
    same on every page. */
 .cg-sb-nav{flex:1 0 auto;display:flex;flex-direction:column}
 .cg-sb-nav .cg-sidebar-nav{flex:1}
-.cg-sidebar-nav a{min-height:44px;align-items:center}
-.cg-sidebar-toggle{height:44px!important}
-.cg-sb-acc > summary{min-height:44px;box-sizing:border-box}
+.cg-sidebar-nav a{min-height:var(--tap,52px);align-items:center}
+.cg-sidebar-home{min-height:var(--tap,52px)}
+.cg-sidebar-toggle{height:var(--tap,52px)!important;min-width:var(--tap,52px)}
+.cg-sb-acc > summary{min-height:var(--tap,52px);box-sizing:border-box;display:flex;align-items:center}
 .cg-sidebar-nav a .cg-sb-ico{flex:none;margin-top:1px;color:var(--sb-muted);transition:color .13s}
 .cg-sidebar-nav a:hover .cg-sb-ico,.cg-sidebar-nav a.active .cg-sb-ico{color:var(--sb-accent)}
 .cg-sb-acc > summary{list-style:none;cursor:pointer;margin:4px 6px 0;padding:10px 8px 8px;border-radius:6px;transition:background .15s}
@@ -736,6 +737,21 @@ body { padding-left: var(--sb-w); }
 <script src="src/config/license.js"></script>
 <script src="assets/services/licenseManager.js"></script>
 <!-- cg-license:end -->
+<style id="touch-floor">
+/* ---- Touch targets: 52 px ----
+   --tap is the smallest a control may be, tall and wide, for staff on tablets and wall
+   touchscreens and for unsteady hands (docs/blueprint-decisions.md D7). Components size
+   themselves with var(--tap); this block catches a control that does not, at zero
+   specificity so a component's own size (never a smaller one) wins. A link inside a
+   sentence, and anything inside an element marked data-tap-exempt (with its reason), is
+   exempt, as WCAG 2.2 allows. npm run audit:ux measures it. */
+@media screen{
+  :where(button, select, summary, textarea, [role="button"], [role="tab"],
+         input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="range"])):where(:not([data-tap-exempt] *)){min-height:var(--tap)}
+  :where(button):where(:not([data-tap-exempt] *)){min-width:var(--tap)}
+  input[type="file"]::file-selector-button{min-height:calc(var(--tap) - 16px);padding:0 16px;margin-right:12px;font:inherit;cursor:pointer}
+}
+</style>
 </head>
 <body>
 <!-- ══ COGNICOPIA LEFT SIDEBAR NAV ══ -->
@@ -823,7 +839,7 @@ body { padding-left: var(--sb-w); }
 <!-- cg-nav:end -->
 <!-- ══ COGNICOPIA TOP BAR ══ -->
 <div class="cg-topbar" role="banner">
-  <a href="https://buy.stripe.com/9B614oaJV7lr0RX1ODew801" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;min-height:44px;background:#286E75;color:#fff;padding:6px 14px;border-radius:5px;font-weight:700;font-size:9.5pt;">Get Full Access →</a>
+  <a href="https://buy.stripe.com/9B614oaJV7lr0RX1ODew801" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;min-height:var(--tap);background:#286E75;color:#fff;padding:6px 14px;border-radius:5px;font-weight:700;font-size:9.5pt;">Get Full Access →</a>
 </div>
 
   <!-- Navigation Bar -->

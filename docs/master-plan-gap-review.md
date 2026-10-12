@@ -33,7 +33,7 @@ The owner chose to keep the existing files and build only what was actually miss
 | Instant Soothe without a profile | It used to be disabled until a resident was chosen. It now always works: with no resident it prints the general two-page calming packet (a slow tracing path and a familiar song); with a resident it prints their own page as before. |
 | CSV roster import from an EHR | **Import Profiles (Restore)** reads a census export: First Name or "Last, First" names, Date of Birth (several formats), and Room or Bed. See [privacy-and-storage.md](privacy-and-storage.md#importing-a-census-spreadsheet). |
 | Multi-facility preset manager | The Facility Portal had no backup. **Back up or move the portal** now writes the whole portal (wings, groups, team, calendars, audit trail) to a locked `.cognicopia` file and restores it. That covers a lost browser and a sister community. See [facility-portal.md](facility-portal.md#backing-up-or-moving-the-portal). |
-| 48–60 px touch targets | Every control on the three tools is now at least 44 px tall, the WCAG 2.2 enhanced target size. That covers sidebar links, the menu button, segmented controls, chips, small portal buttons, the condition cards and disclosure rows. The only exceptions are links inside sentences. The overflow check passes at 320–1920 px. |
+| 48–60 px touch targets | Every control on the three tools is now at least 44 px tall, the WCAG 2.2 enhanced target size (raised to 52 px later; see [blueprint-decisions.md](blueprint-decisions.md), D7). That covers sidebar links, the menu button, segmented controls, chips, small portal buttons, the condition cards and disclosure rows. The only exceptions are links inside sentences. The overflow check passes at 320–1920 px. |
 
 ## Not built, and why
 
