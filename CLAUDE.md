@@ -22,6 +22,10 @@ Never add a cloud dependency to the static site. Never put resident data in `pla
 
 Write and review all resident-facing text as if for an adult relative. No "Do you remember...", no quizzing, no childish words, no elderspeak, no infantilizing art. Invite; never test. The dignity and avoid-topic filters in `src/engine` and `assets/cognicopia-coloring/prompts.js` are tests, not suggestions.
 
+## Navigation
+
+Six hubs, the same on every page: Today, Studio, Activity Packets, Facility, Academy, Resources (and a Contact footer link). They come from `HUBS` in `scripts/site-nav.mjs`; add or move a place there, run `npm run nav`, and `npm run build` proves every page agrees. Never edit a sidebar by hand.
+
 ## Touch targets
 
 Every control a finger must hit is at least **52 px** tall and wide (`--tap` in the three tools and the Packet Builder). Size new controls with `var(--tap)`; each page's `touch-floor` style catches the rest. A link inside a sentence is exempt. Anything else needs `data-tap-exempt="reason"` on its container, and a reason that holds (a dense grid whose list view has the same actions at full size). `npm run build` measures this in a real browser wherever Playwright is installed.
@@ -36,7 +40,7 @@ Pure black on pure white. Lines at least 3 pt. 0.5 in margins and a 0.75 in bind
 npm test          # every check suite
 npm run build     # checks + nav sync + research pages + link check; run before every push
 npm run coloring  # regenerate the coloring catalog and bundle after editing assets/cognicopia-coloring/*.js or approving traced art
-npm run nav       # regenerate the sidebar on every page from scripts/site-nav.mjs
+npm run nav       # regenerate the six-hub navigation on every page from HUBS in scripts/site-nav.mjs (also after npm run coloring: the hub page shows the picture count)
 npm run services  # rebuild assets/services/*.js from src/services/*.ts
 npm run audit:ux  # measure tap targets, contrast, clicks, nav and print time in a real browser (not part of npm test)
 ```
@@ -49,7 +53,7 @@ Never skip, weaken or delete a test to get green. Find the cause.
 - **Going live:** `npm run build`, commit, push, open a PR to `main`, merge it when it is green, then confirm the GitHub Pages run for the merge commit succeeded. The owner wants every finished change live.
 - **Commits and PRs:** use the attribution lines the session specifies. Put no model names or identifiers anywhere else, including code comments.
 - **Markdown:** GitHub Pages runs Jekyll. Do not write the two-character Liquid openers (a doubled left brace, or a left brace followed by a percent sign) in any `.md` file, even inside code spans. Search for them before committing.
-- **Edits:** match the surrounding code's style and comment density. Do not reformat files you did not change. Do not hand-edit generated files (`assets/cognicopia-coloring/cognicopia-coloring.js`, the catalog, the sidebar block on each page, `assets/services/*.js`); change the source and run its generator.
+- **Edits:** match the surrounding code's style and comment density. Do not reformat files you did not change. Do not hand-edit generated files (`assets/cognicopia-coloring/cognicopia-coloring.js`, the catalog, the sidebar block on each page and the navigation inside `builder.html`'s sidebar, `assets/services/*.js`); change the source and run its generator.
 - **Verify in a real browser** for anything a person sees or prints. Load Playwright with `createRequire('/opt/node22/lib/node_modules/')`; never run `playwright install` (Chromium is already installed). Check PDFs with PyMuPDF, not by eye alone.
 
 ## Tooling

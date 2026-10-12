@@ -23,8 +23,10 @@
         new each morning, stage-appropriate, one step from the resident's
         interests and free of anything on the avoid list);
      5b. in a real browser (where Playwright is installed): every control on
-        the tools and in the states a person reaches is at least 52 px, and no
-        text is below WCAG AA by day or in Night Shift (scripts/audit-ux.mjs);
+        the tools, in the states a person reaches and in every page type's
+        sidebar is at least 52 px, and no text is below WCAG AA by day or in
+        Night Shift (scripts/audit-ux.mjs), and the six hubs open, close and mark
+        the current page as a person expects (scripts/check-nav-ui.mjs);
      6. no page or tool text makes a claim the product cannot back (such as
         "HIPAA compliant"; scripts/check-claims.mjs);
      7. the site navigation matches scripts/site-nav.mjs (npm run nav), the
@@ -137,11 +139,19 @@ for (const s of ["check-life-planner.mjs", "check-life-journal.mjs", "check-serv
 /* 5b. what only a browser can measure: tap targets and contrast (npm run audit:ux). Runs where Playwright is installed; says so where it is not. */
 step("every control is at least 52 px and no text is below WCAG AA (a real browser)", () => {
   try {
-    const out = execFileSync(process.execPath, [path.join(ROOT, "scripts", "audit-ux.mjs"), "--only", "targets,contrast", "--strict"], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] });
-    return /Every budget that was measured is met/.test(out) ? "measured on every page and state, by day and in Night Shift" : out.trim().split("\n").pop();
+    const out = execFileSync(process.execPath, [path.join(ROOT, "scripts", "audit-ux.mjs"), "--only", "targets,contrast,nav", "--strict"], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] });
+    return /Every budget that was measured is met/.test(out) ? "measured on every page and state, and in the sidebar of every page type, by day and in Night Shift" : out.trim().split("\n").pop();
   } catch (e){
     if (e.status === 2) return "skipped: Playwright is not installed here (see docs/dev-setup.md)";
     throw new Error(((e.stdout || "") + (e.stderr || "")).trim().split("\n").filter(l => /budget|under|below|control|text element/i.test(l)).slice(0, 12).join("\n      ") || e.message);
+  }
+});
+
+step("the navigation behaves: hubs open and close, the current page is marked, the Packet Builder's sidebar follows its screens (a real browser)", () => {
+  try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-nav-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
+  catch (e){
+    if (e.status === 2) return "skipped: Playwright is not installed here (see docs/dev-setup.md)";
+    throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message);
   }
 });
 

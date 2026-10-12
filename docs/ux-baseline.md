@@ -1,6 +1,6 @@
 # UX baseline
 
-What the app measured on 12 October 2026 with `npm run audit:ux` (`scripts/audit-ux.mjs`), before the touch-target and navigation changes, and what it measures after the 52 px change. Every later claim of improvement is compared with these numbers. Re-run the script, not your memory. Page weight, clicks, timing and navigation are unchanged by the 52 px work; the navigation numbers are the ones the six-hub change must beat.
+What the app measured on 12 October 2026 with `npm run audit:ux` (`scripts/audit-ux.mjs`), before the touch-target and navigation changes, and what it measures after the 52 px change. Every later claim of improvement is compared with these numbers. Re-run the script, not your memory. Page weight, clicks and timing are unchanged by the 52 px and navigation work.
 
 **Read these as relative, not absolute.** The timings come from a cloud sandbox with a headless Chromium, not from a facility PC. A slower machine will be slower. Use them to compare one build with another on the same machine.
 
@@ -38,12 +38,20 @@ The first PDF of a visit also loads the PDF library and the embedded font from t
 
 ## Navigation
 
-| Sidebar | Links | Groups | Distinct destinations |
-|---|---|---|---|
-| Packet tool (`index.html`) | 16 | 1 | 16 |
-| Packet Builder | 21 | none | 14 |
+How many choices (links, group headings and buttons in the sidebar) a person sees when a page opens, at laptop width. Measured with the same script before and after the six-hub change.
 
-Every link is visible without opening a group. Sixteen to twenty-one choices at once is above what people hold comfortably (Miller, Hick), which is the argument for the six-hub navigation.
+| Page | Before | After | Hubs after |
+|---|---|---|---|
+| index.html (packet tool, with its condition packets) | 13 | 14 | 6 |
+| profile.html | 8 | 9 | 6 |
+| Packet Builder, home | **21** | **14** | 6 |
+| Packet Builder, coloring | **21** | **12** | 6 |
+| Packet Builder, roster | **21** | **11** | 6 |
+| Resource hub page | 19 | 18 | 6 |
+| A resource module | 19 | 18 | 6 |
+| Contact | 8 | 7 | 6 |
+
+Reading it honestly: the Packet Builder, the page with the longest list, dropped by a third to a half. The static pages were already short, because the Resource & Clinical Hub started collapsed; they gain one link (the footer Contact) and lose a couple of hub-level links, so they are about the same. What changed everywhere is the shape: the same six hubs in the same order on every page, one open, instead of two different sidebars. Resource pages remain the longest (18) because the reader there wants the ten modules in front of them.
 
 ## Tap targets
 

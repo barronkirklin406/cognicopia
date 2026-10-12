@@ -17,7 +17,7 @@ The owner's "Cognicope Engine" blueprint asked for six navigation hubs, three of
 | Level 2 in-browser AI | Not built (D5) |
 | `CLAUDE.md`, `.claude/skills`, developer setup | Added with this change |
 | Measured UX (tap targets, clicks, contrast, timing) | Added: `npm run audit:ux`, baseline in [ux-baseline.md](ux-baseline.md) |
-| Six-hub navigation | Planned (D8) |
+| Six-hub navigation | Done (D8), generated from one list and proved by the build |
 | 52 px tap targets | Done (D7), measured by the audit and held by the build |
 
 ## Decisions
@@ -87,18 +87,24 @@ A secure random seed per print and an ids-only history, guaranteeing no repeats 
 
 ### D8. Six hubs for navigation
 
-The sidebars offer 16 and 21 choices at once. They group into six hubs, each a short list:
+**Done.** Every page shows the same six hubs, in this order, and one is open: the one holding the current page. A hub with several places is a collapsible group (opening one closes the others); a hub with one place is a plain link.
 
 | Hub | Holds |
 |---|---|
-| 1. Today | The packet tool, Instant Soothe, the resident profile |
-| 2. Studio | Coloring, life planners, journals, reminiscence cards, memory digest and book |
-| 3. Packets and queue | The Packet Builder's activity categories and the print queue |
-| 4. Facility | Facility Portal, resident roster, session notes |
-| 5. Academy | Lessons, knowledge checks, certificates |
-| 6. Resources | The Resource and Clinical Hub, research, standards, alignment |
+| 1. Today | The Personalized Packet Tool, Resident Profiles (and the packet tool's own Ailment-Specific Activities, on that page) |
+| 2. Studio | Cognicopia Coloring, 12-Month Life Planner, Cognitive Life Journal, Reminiscence cards, Memory digest & book |
+| 3. Activity Packets | The Packet Builder. Inside it: the six activity categories and the packet queue |
+| 4. Facility | Facility Portal, Resident roster, Session notes (SLP), Settings & defaults |
+| 5. Academy | The Caregiver & Pro Academy (a plain link) |
+| 6. Resources | The whole Resource & Clinical Hub: Browse all resources and its ten modules in three groups; in the Packet Builder, the hub and the Research Center |
 
-`scripts/site-nav.mjs` stays the single source of truth; every page's sidebar is generated from it and `npm run build` checks it. The hub names and members above are the working proposal; the build keeps every existing page reachable.
+"Contact Kirk Barron" is a footer link under the six on every page, not part of a hub.
+
+- **One source:** `HUBS` in `scripts/site-nav.mjs`. `npm run nav` writes the sidebar into every static page and the navigation inside the Packet Builder's sidebar (the Packet Builder keeps its own brand, hooks and styles). Do not edit either by hand.
+- **Proved:** `npm run build` runs `site-nav.mjs --check`, which fails if any page is stale, shows a different set of hubs, has more or fewer than one open, marks the wrong link as current, or links to a file or Packet Builder route that does not exist. The browser measurement also checks every page type's sidebar for the 52 px floor and for contrast.
+- **Measured:** the sidebar as a page opens, before and after, is in [ux-baseline.md](ux-baseline.md). The Packet Builder went from 21 choices at once to 11 to 14; the static pages stayed at 7 to 18, with the six hubs now the same everywhere.
+- The hub page's picture count is read from the coloring catalog, so it cannot go stale (`npm run coloring` then `npm run nav`).
+- The marketing pages for the journal, the planner and Zentangle art open the Studio hub with no link marked, because their sidebar link opens the tool, not the page.
 
 ### D9. Taglines
 
@@ -108,6 +114,6 @@ The sidebars offer 16 and 21 choices at once. They group into six hubs, each a s
 
 1. Tooling and baseline: `CLAUDE.md`, [dev-setup.md](dev-setup.md), `npm run audit:ux`, [ux-baseline.md](ux-baseline.md), this page.
 2. Wording and tap targets (done): the claims check, the Night Shift contrast defect, 52 px.
-3. Six-hub navigation.
+3. Six-hub navigation (done).
 4. Daily Operations, after its spec is reacted to.
 5. The local-AI spike, last and optional.

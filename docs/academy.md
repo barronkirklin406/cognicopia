@@ -1,7 +1,7 @@
 # Caregiver & Professional Academy
 
 The Academy is Cognicopia's training hub. It has short masterclasses for care teams, gentle guides for family caregivers, and a training record with certificates for everyone who learns on the computer. Its screen is in the Packet Builder (`#/academy`). It opens from:
-- the sidebar (**Learn › Caregiver & Pro Academy**);
+- the sidebar (**Academy**, a hub of its own);
 - its card under **Learning & reference** on the Packet Builder home page;
 - the **Interactive tools** tab of the Resource & Clinical Hub.
 

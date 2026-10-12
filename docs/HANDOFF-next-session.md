@@ -83,7 +83,8 @@ The owner's "Cognicope Engine" blueprint was checked against the repository; `do
 - **Measuring:** `npm run audit:ux` (`scripts/audit-ux.mjs`, skill in `.claude/skills/audit-ux/`) measures tap targets, contrast, click counts, navigation size, print time and page weight in a real browser; `docs/ux-baseline.md` holds the numbers to beat. It is not part of `npm test` (timings vary by machine).
 - **Claims:** `scripts/check-claims.mjs` (in `npm test` and `npm run build`) keeps "HIPAA compliant"-style wording out of the pages and tool text. Say "no resident data leaves the device" and "supports".
 - **Found by measuring, fixed:** the builder's "Your packet" button was unreadable in Night Shift (1.94 : 1) and a "150" badge was 4.29 : 1; controls on the planner, journal, Academy and elsewhere were under 44 px. Every control is now at least 52 px (`--tap`), measured on each page and state; `npm run build` runs the measurement where Playwright is installed. Two containers are marked `data-tap-exempt` with a reason (the facility month grid, the lesson chapter bar).
-- **Order of work left:** six-hub navigation, Daily Operations (spec first), the optional local-AI spike.
+- **Navigation:** six hubs on every page (Today, Studio, Activity Packets, Facility, Academy, Resources, plus a Contact footer link), one open, from `HUBS` in `scripts/site-nav.mjs`; `npm run nav` writes every static sidebar and the navigation inside the Packet Builder's sidebar, and `npm run build` proves them (`site-nav.mjs --check`). The Packet Builder went from 21 choices at once to 11 to 14. Details in `docs/blueprint-decisions.md` D8.
+- **Order of work left:** Daily Operations (spec first), the optional local-AI spike.
 
 ## Names after the owner's rename (use these)
 
@@ -132,7 +133,7 @@ npm run subjects    # reprocess the hybrid coloring subjects after editing src/c
 npm run build       # checks + nav sync + research pages + link check (37 pages)
 npm run coloring    # rebuild the coloring bundle and catalog after editing assets/cognicopia-coloring/*.js or approving traced art
 npm run coloring:ingest   # trace the pictures in assets/coloring/_inbox/ for review (see docs/line-art-pipeline.md)
-npm run nav         # regenerate the sidebar on every page from scripts/site-nav.mjs
+npm run nav         # regenerate the six-hub navigation on every page from scripts/site-nav.mjs
 npm run services    # rebuild assets/services/*.js from src/services/*.ts
 npm run research    # regenerate resources/research/* pages
 npm run pages -- --count 12 --tier 2   # print infinite coloring pages to out/
