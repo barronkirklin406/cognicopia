@@ -29,7 +29,7 @@ Prices live in one place, `src/config/license.js` (`PRICES`, `FREE_RUNS`, `PAYME
 
 ## Navigation
 
-Six hubs, the same on every page: Today, Studio, Activity Packets, Facility, Academy, Resources (and a Contact footer link). They come from `HUBS` in `scripts/site-nav.mjs`; add or move a place there, run `npm run nav`, and `npm run build` proves every page agrees. Never edit a sidebar by hand. The same script links the shared stylesheet `css/styles.css` into every page; never add that link by hand either.
+Six hubs, the same on every page: Today, Studio, Activity Packets, Facility, Academy, Resources (and a Contact footer link). They come from `HUBS` in `scripts/site-nav.mjs`; add or move a place there, run `npm run nav`, and `npm run build` proves every page agrees. On a window 1100 px or wider they are drop-downs across a top bar; narrower, the Menu drawer (one markup, restyled by the generated CSS). The Packet Builder keeps its own side menu. Never edit a sidebar or the top bar by hand. The same script links the shared stylesheet `css/styles.css` into every page; never add that link by hand either.
 
 ## Design system
 

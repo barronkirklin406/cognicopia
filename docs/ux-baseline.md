@@ -51,6 +51,8 @@ How many choices (links, group headings and buttons in the sidebar) a person see
 | A resource module | 19 | 18 | 6 |
 | Contact | 8 | 7 | 6 |
 
+After the top bar (D12): the static pages show **7** choices as they open (the six hubs and Contact; drop-downs closed): index.html, profile.html, the resource hub page, a resource module and Contact, against 14, 9, 18, 18 and 7 above. The Packet Builder kept its side menu, so its numbers are unchanged.
+
 Reading it honestly: the Packet Builder, the page with the longest list, dropped by a third to a half (the Shift board added one link inside Facility, so its roster row reads 12, not 11). The static pages were already short, because the Resource & Clinical Hub started collapsed; they gain one link (the footer Contact) and lose a couple of hub-level links, so they are about the same. What changed everywhere is the shape: the same six hubs in the same order on every page, one open, instead of two different sidebars. Resource pages remain the longest (18) because the reader there wants the ten modules in front of them.
 
 ## Tap targets
