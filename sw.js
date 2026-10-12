@@ -12,16 +12,17 @@
    used. Change VERSION only to clear old copies; updates to the pages
    themselves arrive on their own.
    ===================================================================== */
-const VERSION = "cognicopia-v17";
+const VERSION = "cognicopia-v18";
 const CORE = [
-  "./", "index.html", "builder.html", "profile.html", "manifest.webmanifest",
+  "./", "index.html", "builder.html", "profile.html", "pricing.html", "activate.html", "manifest.webmanifest",
   "assets/cognicopia-logo.jpg", "assets/icon-192.png", "assets/icon-512.png", "assets/icon-maskable-512.png",
   "assets/cognicopia-coloring/cognicopia-coloring.js", "assets/services/vectorEngine.js", "assets/services/secureStore.js", "assets/services/reminiscenceEngine.js", "assets/services/slpClinicalService.js", "assets/services/heirloomService.js", "assets/services/facilityPlanner.js", "assets/services/academy.js", "assets/services/dailyOps.js", "assets/services/nightShift.js",
   "assets/vendor/jspdf.umd.min.js", "assets/vendor/jspdf-atkinson.js",
   // the hybrid coloring engine: its subjects travel in the bundle, so coloring pages draw offline
   "assets/coloring/subjects.bundle.js", "assets/coloring/manifest.json", "src/services/ColoringManifest.js", "src/engine/ColoringEngine.js", "src/engine/ClinicalMatrix.js", "src/engine/ClinicalActivities.js", "src/engine/SoothingArt.js", "src/engine/SoothingContent.js", "src/engine/SoothingPacketEngine.js", "src/engine/ProceduralPacketEngine.js",
   // the procedural engine behind Today's Packet: its content travels in one bundle, so the daily packet is made offline
-  // licensing: the promo code and the license badge work offline
+  // licensing: the license key, the promo code and the license badge work offline. A key is checked on the computer, so once it is
+  // entered the tools stay unlocked with no connection, for as long as its paid-through date plus the grace days (src/config/license.js).
   "src/config/license.js", "assets/services/licenseManager.js",
   "assets/pcg/pcg-data.bundle.js", "src/pcg/prng.js", "src/pcg/matrix.js", "src/pcg/grammar.js", "src/pcg/puzzles.js", "src/pcg/packet.js"
 ];
@@ -52,8 +53,10 @@ async function freshFirst(event, req){
   const network = fetch(req);
   // Refresh the copy whenever the site answers, even after the saved copy was shown.
   // Registered while the request is still open, so the browser keeps the worker alive for it.
+  // An address that carries a license key or a checkout reference is never copied into the cache.
+  const carriesKey = /[?&#](license_key|session_id)=/.test(req.url);
   event.waitUntil(network.then(res => {
-    if (res.ok && res.status === 200 && res.type === "basic") return cache.put(req, res.clone());
+    if (!carriesKey && res.ok && res.status === 200 && res.type === "basic") return cache.put(req, res.clone());
   }).catch(() => {}));
   // A page already copied does not wait on a stalled connection.
   const wait = saved && req.mode === "navigate"

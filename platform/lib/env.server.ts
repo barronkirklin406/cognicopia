@@ -131,3 +131,39 @@ export function getPortalConfig(): PortalConfig {
 export function getWebhookSecret(): string {
   return read({ STRIPE_WEBHOOK_SECRET: z.string().regex(/^whsec_\S+$/, "must be a Stripe webhook signing secret") }).STRIPE_WEBHOOK_SECRET;
 }
+
+// ---------------------------------------------------------------------
+// License keys for the static site
+// ---------------------------------------------------------------------
+
+export interface LicenseConfig {
+  /** The private key (PEM) that signs license keys: LICENSE_SIGNING_KEY. */
+  signingKey: string;
+  /** The Stripe price id of each plan. */
+  prices: { monthly: string; annual: string };
+  /** The sites whose pages may call the redeem route (CORS): LICENSE_ALLOWED_ORIGINS, comma separated. */
+  allowedOrigins: string[];
+}
+
+/**
+ * LICENSE_SIGNING_KEY: the private half of the pair made by `node scripts/license-keygen.mjs` in the
+ * static site's repository (the public half is PUBLIC_KEYS in src/config/license.js). Paste the PEM; a
+ * host that cannot hold line breaks can use a literal \n for each one. Never commit it or log it.
+ * LICENSE_ALLOWED_ORIGINS: the address(es) of the static site, default https://cognicopia.org.
+ */
+export function getLicenseConfig(): LicenseConfig {
+  const env = read({
+    LICENSE_SIGNING_KEY: z
+      .string()
+      .transform((value) => value.replace(/\\n/g, "\n"))
+      .refine((value) => /^-----BEGIN (?:EC )?PRIVATE KEY-----[\s\S]+-----END (?:EC )?PRIVATE KEY-----$/.test(value.trim()), "must be a PEM private key"),
+    STRIPE_PRICE_MONTHLY: price,
+    STRIPE_PRICE_ANNUAL: price,
+    LICENSE_ALLOWED_ORIGINS: z.string().optional(),
+  });
+  const origins = (env.LICENSE_ALLOWED_ORIGINS ?? "https://cognicopia.org")
+    .split(",")
+    .map((o) => o.trim().replace(/\/+$/, ""))
+    .filter(Boolean);
+  return { signingKey: env.LICENSE_SIGNING_KEY.trim(), prices: { monthly: env.STRIPE_PRICE_MONTHLY, annual: env.STRIPE_PRICE_ANNUAL }, allowedOrigins: origins };
+}

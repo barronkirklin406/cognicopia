@@ -6,7 +6,8 @@ const VERSION = "1.0.0";
 const REVIEWED = "2026-09-30";
 const SITE = "https://cognicopia.org";
 const HOME = "resources/research/";
-const PRICE_PER_BUILDING = 129.99;
+const PRICE_PER_BUILDING = 349;
+const PRICE_PER_MONTH = 39;
 const READ_WPM = 200;
 const LEVELS = {
     strong: {
@@ -2633,7 +2634,7 @@ function boardBlocks(input) {
         ],
         [
             "What does it cost, and what if we stop?",
-            `${money(PRICE_PER_BUILDING)} a year per building, for every resident and staff computer. Printed materials remain the facility’s, and saved data stays on its computers until staff remove it.`
+            `${money(PRICE_PER_BUILDING)} a year per building (or $${PRICE_PER_MONTH} a month), for every resident and staff computer. Either plan can be cancelled at any time. Printed materials remain the facility’s, and saved data stays on its computers until staff remove it.`
         ],
         [
             "How will we know it is working?",
@@ -3134,5 +3135,5 @@ function draw(doc, page) {
         }
     }
 }
-root.CogniResearch = Object.freeze({ VERSION, REVIEWED, SITE, HOME, PRICE_PER_BUILDING, READ_WPM, LEVELS, LEVEL_ORDER, TYPES, TOPICS, AUDIENCES, REFS, refOf, authorList, formatRef, shortRef, refLink, fmtDate, DOCS, docOf, citeKeys, plain, docTexts, refsOf, words, minutesOf, sectionMinutes, citePage, problems, BOARD_LIMITS, normalizeBoard, worksheet, money, hoursText, BOARD_EVIDENCE, boardBlocks, PAGE, boardLayout, boardFooter, boardPages, boardFileName, draw });
+root.CogniResearch = Object.freeze({ VERSION, REVIEWED, SITE, HOME, PRICE_PER_BUILDING, PRICE_PER_MONTH, READ_WPM, LEVELS, LEVEL_ORDER, TYPES, TOPICS, AUDIENCES, REFS, refOf, authorList, formatRef, shortRef, refLink, fmtDate, DOCS, docOf, citeKeys, plain, docTexts, refsOf, words, minutesOf, sectionMinutes, citePage, problems, BOARD_LIMITS, normalizeBoard, worksheet, money, hoursText, BOARD_EVIDENCE, boardBlocks, PAGE, boardLayout, boardFooter, boardPages, boardFileName, draw });
 })(typeof globalThis !== "undefined" ? globalThis : this);

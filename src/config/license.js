@@ -1,21 +1,47 @@
 /* =====================================================================
-   Cognicopia licensing configuration: the one place the codes live.
+   Cognicopia licensing configuration: the one place prices, links and
+   keys live.
 
    Nothing here is a secret that can be kept in a web page, so nothing
-   here pretends to be. What this file holds is a SHA-256 of each code,
-   never the code itself: someone reading the page source sees only a
-   64-character string, and has to guess the code to get past it. That
-   keeps a casual visitor out; it does not stop someone who guesses a
-   short or obvious code, so choose codes that are long and unguessable.
+   here pretends to be. Three kinds of thing are in this file:
+
+   1. PUBLIC_KEYS   the public half of the license-signing key. A license
+                    key (COG1.<facility and dates>.<signature>) is signed by
+                    the owner with the private half, which is never in this
+                    repository, and checked here in the browser with no
+                    server and no internet. A public key can only check a
+                    signature, never make one, so it is safe to publish.
+                    Make the pair once with
+                        node scripts/license-keygen.mjs
+                    and paste the one line it prints into PUBLIC_KEYS. Until
+                    you do, signed keys are refused with a plain message and
+                    the older codes below keep working.
+   2. PRICES and PAYMENT_LINKS
+                    what the site says, and where the buy buttons go. The
+                    two Stripe Payment Links are made in the Stripe
+                    dashboard (docs/stripe-setup-guide.md) and pasted here.
+                    A value that still holds REPLACE_ME, or has "test_" in
+                    it, is treated as "not set up yet": the buy button then
+                    sends the visitor to the invoice request instead of a
+                    dead page or a link that takes pretend cards.
+   3. PROMO_SHA256 and ACCESS_SHA256
+                    the older, shared codes, each kept as a SHA-256 hash
+                    and never as the code itself. They keep a casual
+                    visitor out and nothing more: anyone who guesses a short
+                    code gets in, and a code that has been shared cannot be
+                    taken back. ACCESS_SHA256 is the code on the receipt of
+                    the earlier single-price licence, kept so those
+                    customers are not locked out. New purchases get a
+                    signed key instead.
 
    PROMO_SHA256   the master promo code, hashed after the page trims it and
                   upper-cases it. To change it:
                     node scripts/promo-hash.mjs "YOUR-NEW-CODE"
                   and paste the result below. (The build checks that this
                   value is well formed and that the promo works end to end.)
-   ACCESS_SHA256  the paid access code from the Stripe receipt. The same
-                  value is used by index.html and builder.html; the build
-                  checks the three agree.
+   ACCESS_SHA256  the earlier paid access code. The same value is used by
+                  index.html and builder.html; the build checks the three
+                  agree.
    KEYS           the browser-storage names the activation is kept under.
    ===================================================================== */
 (function (root) {
@@ -29,7 +55,55 @@
       type: "cognicopia_license_type",
       date: "cognicopia_activation_date",
       proof: "cognicopia_license_proof",
-      paid: "cognicopia_license"
-    })
+      paid: "cognicopia_license",
+      license: "cognicopia_license_v2",
+      ref: "cognicopia_license_ref"
+    }),
+
+    /* The signed license keys. See "1. PUBLIC_KEYS" above. Each entry is an
+       uncompressed P-256 public key as 130 hex characters (04 + x + y), as
+       printed by scripts/license-keygen.mjs. More than one is allowed so a
+       key can be replaced without ending the licenses signed by the old one. */
+    PUBLIC_KEYS: Object.freeze([]),
+    /* Ids (the "id" shown by scripts/issue-license.mjs) of keys that have
+       been withdrawn, for example after a chargeback. A page checks this list
+       every time it starts, so a withdrawal reaches a computer the next time
+       it loads a fresh copy of the site. */
+    REVOKED_IDS: Object.freeze([]),
+    /* Days a license keeps working after the date it was paid through, so a
+       late invoice or a computer that has been offline does not stop a unit
+       in the middle of a week. The signed date is the truth; this is added. */
+    GRACE_DAYS: 90,
+
+    /* What the site says it costs. Per facility, per building. */
+    FREE_RUNS: 25,
+    PRICES: Object.freeze({
+      monthly: Object.freeze({ amount: 39, per: "month", text: "$39 a month", tier: "monthly_facility" }),
+      annual: Object.freeze({ amount: 349, per: "year", text: "$349 a year", tier: "annual_facility", saves: 119, savesPercent: 25 }),
+      enterprise: Object.freeze({ text: "Custom quote", tier: "enterprise" })
+    }),
+    /* The three kinds of license a signed key can carry. */
+    TIERS: Object.freeze({
+      monthly_facility: "Monthly facility license",
+      annual_facility: "Annual facility license",
+      enterprise: "Enterprise license"
+    }),
+
+    /* Stripe Payment Links (docs/stripe-setup-guide.md, step 4). Paste the
+       two buy.stripe.com addresses over the REPLACE_ME text. */
+    PAYMENT_LINKS: Object.freeze({
+      monthly: "https://buy.stripe.com/REPLACE_ME_MONTHLY_39",
+      annual: "https://buy.stripe.com/REPLACE_ME_ANNUAL_349"
+    }),
+    /* Where "Request Corporate Invoice / W-9" goes (a page on this site; it
+       fills in the subject and a checklist for accounts payable). */
+    INVOICE_PATH: "contact.html?subject=Corporate+Invoice+Request",
+    PRICING_PATH: "pricing.html",
+    /* The one page that talks to the internet, and only to turn a Stripe
+       checkout into a key. REDEEM_URL is the address of the license service
+       (platform/ POST /api/licenses/redeem). Leave it REPLACE_ME until that
+       service is running; the page then asks for the key by hand. */
+    ACTIVATE_PATH: "activate.html",
+    REDEEM_URL: "https://REPLACE_ME.example/api/licenses/redeem"
   });
 })(typeof globalThis !== "undefined" ? globalThis : this);

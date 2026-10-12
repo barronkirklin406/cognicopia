@@ -146,11 +146,11 @@ Other details:
 | 6. Questions boards ask | Short answers: whether resident information is sent over the internet (no), whether this is a medical treatment (no), whether it replaces activity staff (no), whether Academy certificates are continuing education credit, cost and stopping, and how the board will know it is working |
 | 7. Disclosure and references | The vendor's disclosure, then every reference |
 
-**The worksheet.** The license price is the only figure that comes from Cognicopia: $129.99 a year per building. The tests check it against `PRICE` in `index.html`. Every other figure is the facility's own, typed in or written by hand:
+**The worksheet.** The license price is the only figure that comes from Cognicopia: $349 a year per building (the annual plan; the monthly plan is $39). The tests check it against `PRICE_YEAR` in `index.html` and `PRICES` in `src/config/license.js`. Every other figure is the facility's own, typed in or written by hand:
 
 | Line | Calculation |
 |---|---|
-| Annual cost | $129.99 × buildings |
+| Annual cost | $349 × buildings |
 | Cost per resident per month | annual cost ÷ residents ÷ 12 |
 | Hours returned each year | (hours a week now − hours a week with Cognicopia) × 52, never below zero |
 | Value of those hours | hours returned × hourly staff cost with benefits |
