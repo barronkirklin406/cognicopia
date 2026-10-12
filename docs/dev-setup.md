@@ -28,7 +28,7 @@ npx playwright install chromium     # on your own computer
 
 Pin the version you test with. In the cloud sandbox, Chromium and Playwright are already installed (`/opt/node22/lib/node_modules`, browsers in `/opt/pw-browsers`); load Playwright with `createRequire('/opt/node22/lib/node_modules/')` and **never run `playwright install` there**.
 
-A scripted check is a plain Node file: open the page, do what a person does, read the result. `scripts/audit-ux.mjs` is the pattern to copy.
+A scripted check is a plain Node file: open the page, do what a person does, read the result. `scripts/audit-ux.mjs` is the pattern to copy. Where Playwright is installed, `npm run build` also runs its tap-target and contrast measurement (about two minutes), so a control under 52 px or text below WCAG AA stops the build; where it is not, the build says that step was skipped.
 
 ## Browser-automation and GitHub MCP servers (optional)
 

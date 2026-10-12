@@ -12,7 +12,7 @@ A claim about usability is only true once it has been measured on the real app. 
 ```
 npm run audit:ux                              # everything, as a table
 npm run audit:ux -- --only targets,nav        # some measurements: targets, contrast, nav, clicks, print, weight
-npm run audit:ux -- --min-target 52           # tap-target minimum in CSS px (default 44)
+npm run audit:ux -- --min-target 44           # tap-target minimum in CSS px (default 52, the pages' --tap)
 npm run audit:ux -- --json audit.json         # also write the numbers
 npm run audit:ux -- --strict                  # exit 1 if a budget is broken
 ```
@@ -31,8 +31,8 @@ It serves the repository on a local port and drives Chromium with Playwright (fo
 
 | Measurement | How |
 |---|---|
-| Tap targets | Visible buttons, links (not links inside a sentence), selects, inputs, summaries: width or height under the minimum, at 390 px and 1366 px wide, on the three tools and the main Packet Builder views |
-| Contrast | Every visible text node against the background behind it, WCAG AA (4.5, or 3 for large text), by day and in Night Shift |
+| Tap targets | Visible buttons, links (not links inside a sentence), selects, inputs, summaries and the labels of checkboxes and radios: width or height under the minimum (52 px), at 390 px and 1366 px wide, on the three tools, every Packet Builder view, and the states reached by choosing something (a dialog, the packet drawer, a calendar, a lesson). A link stretched over its card is measured as the card. Anything inside an element marked `data-tap-exempt="reason"` is skipped and the reason is printed |
+| Contrast | Every visible text node against the background behind it, WCAG AA (4.5, or 3 for large text), by day and in Night Shift, on every view |
 | Navigation | Sidebar links, group headings and distinct destinations, on the packet tool and the Packet Builder |
 | Clicks | The packet, coloring-PDF and roster-print workflows, counted as the script performs them |
 | Print time | Click to a finished packet; drawing a 6-page coloring PDF; roster Print click to the print window |
@@ -40,4 +40,4 @@ It serves the repository on a local port and drives Chromium with Playwright (fo
 
 ## Fixing what it finds
 
-Fix one kind of finding at a time, re-run the same measurement, and run `npm run build` before you push. When a minimum changes (for example 44 to 52 px), update `scripts/audit-ux.mjs`'s default, the CSS comment that states the minimum, and `docs/ux-baseline.md` together.
+Fix one kind of finding at a time, re-run the same measurement, and run `npm run build` before you push. When a minimum changes, update `--tap` in the three tools, `scripts/audit-ux.mjs`'s default, and `docs/ux-baseline.md` together. `npm run build` runs the tap-target and contrast measurement where Playwright is installed, so a regression stops the build. To exempt something, mark its container `data-tap-exempt` with the reason (a dense grid whose list view has the same actions at full size, a scrubber a slider duplicates); never lower `--tap`.

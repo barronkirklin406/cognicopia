@@ -18,7 +18,7 @@ The owner's "Cognicope Engine" blueprint asked for six navigation hubs, three of
 | `CLAUDE.md`, `.claude/skills`, developer setup | Added with this change |
 | Measured UX (tap targets, clicks, contrast, timing) | Added: `npm run audit:ux`, baseline in [ux-baseline.md](ux-baseline.md) |
 | Six-hub navigation | Planned (D8) |
-| 52 px tap targets | Planned (D7) |
+| 52 px tap targets | Done (D7), measured by the audit and held by the build |
 
 ## Decisions
 
@@ -75,11 +75,15 @@ A secure random seed per print and an ids-only history, guaranteeing no repeats 
 
 ### D7. Tap targets: 52 px, and measured claims
 
-- The minimum becomes **52 px** (from 44 px) for buttons, links outside sentences, fields, switches and summaries, in the three tools and the Packet Builder's views. Inline links in a sentence are exempt, as WCAG 2.2 allows.
-- The dense Packet Builder views need layout care, not just taller boxes; `npm run audit:ux --min-target 52` is the measure.
-- A goal such as "three clicks" is public copy only where the script counts it: today that is the roster print flow ([ux-baseline.md](ux-baseline.md)).
+**Done.** The minimum is **52 px** (from 44 px) for buttons, links outside sentences, fields, switches, summaries and the labels of checkboxes and radios, in the three tools and every Packet Builder view and state.
+
+- **How it is held:** one token, `--tap: 52px`, in each tool. Components size themselves with it. A `touch-floor` style at the end of each page gives any other control the floor, at zero specificity so a component's own (never smaller) size wins. The generated sidebar takes the token on all 27 pages.
+- **Exempt, as WCAG 2.2 allows:** a link inside a sentence, and anything inside an element marked `data-tap-exempt="reason"`. Two are marked: the facility calendar's month grid (a dense overview; the List layout has every action at full size, and a touch-only device starts in the list) and the lesson chapter bar (the seek slider reaches any point). Anything new needs a reason that holds.
+- **Measured:** `npm run audit:ux` counts controls under the minimum on each page and in the states a person reaches by choosing something, and `npm run build` runs it wherever Playwright is installed, so a regression stops the build. Before and after numbers are in [ux-baseline.md](ux-baseline.md).
+- A goal such as "three clicks" is public copy only where the script counts it: today that is the roster print flow.
 - Badges that mark something unfinished are capped at one or two per screen (the Zeigarnik effect can feed the alert fatigue the research names as a top pain point). That is a design choice a person makes, not a number a script checks.
 - The 400 ms response budget (Doherty) applies to a response a person waits for. A whole packet is measured against its own time (about 0.3 s on the sandbox).
+- `platform/` (the Next.js service) keeps its own 44 px statement; D7 is about the static site.
 
 ### D8. Six hubs for navigation
 
@@ -103,7 +107,7 @@ The sidebars offer 16 and 21 choices at once. They group into six hubs, each a s
 ## Order of work
 
 1. Tooling and baseline: `CLAUDE.md`, [dev-setup.md](dev-setup.md), `npm run audit:ux`, [ux-baseline.md](ux-baseline.md), this page.
-2. Wording and tap targets: the claims check, the Night Shift contrast defect, 52 px.
+2. Wording and tap targets (done): the claims check, the Night Shift contrast defect, 52 px.
 3. Six-hub navigation.
 4. Daily Operations, after its spec is reacted to.
 5. The local-AI spike, last and optional.

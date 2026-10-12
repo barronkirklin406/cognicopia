@@ -149,7 +149,7 @@
     ".iso-form{margin:0;padding:18px 20px 20px}",
     ".iso-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}",
     ".iso-title{margin:0;font-size:28px;line-height:1.2;font-weight:700;color:#000}",
-    ".iso-x{flex:none;min-width:48px;min-height:48px;border:3px solid #000;border-radius:12px;background:#fff;color:#000;font:700 28px/1 Arial,sans-serif;cursor:pointer}",
+    ".iso-x{flex:none;min-width:52px;min-height:52px;border:3px solid #000;border-radius:12px;background:#fff;color:#000;font:700 28px/1 Arial,sans-serif;cursor:pointer}",
     ".iso-lead{margin:6px 0 14px;font-size:18px;color:#000}",
     ".iso-group{margin:0 0 14px;padding:0;border:0;min-width:0}",
     ".iso-group legend{padding:0;margin:0 0 8px;font-size:20px;font-weight:700;color:#000}",

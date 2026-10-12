@@ -82,8 +82,8 @@ The owner's "Cognicope Engine" blueprint was checked against the repository; `do
 - **Steering:** `CLAUDE.md` at the root is the short rule file. `docs/dev-setup.md` covers Playwright, pinned MCP servers and what not to commit.
 - **Measuring:** `npm run audit:ux` (`scripts/audit-ux.mjs`, skill in `.claude/skills/audit-ux/`) measures tap targets, contrast, click counts, navigation size, print time and page weight in a real browser; `docs/ux-baseline.md` holds the numbers to beat. It is not part of `npm test` (timings vary by machine).
 - **Claims:** `scripts/check-claims.mjs` (in `npm test` and `npm run build`) keeps "HIPAA compliant"-style wording out of the pages and tool text. Say "no resident data leaves the device" and "supports".
-- **Found by measuring, still open:** the builder's "Your packet" button is unreadable in Night Shift (1.94 : 1); a few controls on the planner, journal and Academy views are under 44 px.
-- **Order of work left:** 52 px targets, six-hub navigation, Daily Operations (spec first), the optional local-AI spike.
+- **Found by measuring, fixed:** the builder's "Your packet" button was unreadable in Night Shift (1.94 : 1) and a "150" badge was 4.29 : 1; controls on the planner, journal, Academy and elsewhere were under 44 px. Every control is now at least 52 px (`--tap`), measured on each page and state; `npm run build` runs the measurement where Playwright is installed. Two containers are marked `data-tap-exempt` with a reason (the facility month grid, the lesson chapter bar).
+- **Order of work left:** six-hub navigation, Daily Operations (spec first), the optional local-AI spike.
 
 ## Names after the owner's rename (use these)
 
@@ -170,7 +170,7 @@ The pasted "Cognicopia Master Architect" plan was then checked item by item agai
 1. Instant Soothe works with no resident chosen. It now opens a two-choice dialog (care level and theme) and prints a fresh packet from a hidden stage on the same page; see `docs/soothing-packet-engine.md`. `builder.html?emergency=general` opens the same dialog.
 2. The packet tool's profile import reads EHR census spreadsheets: first name or "Last, First", date of birth, room or bed.
 3. The Facility Portal has a locked backup and restore (`.cognicopia`, kind `facility`).
-4. Every control on the three tools is at least 44 px tall.
+4. Every control on the three tools is at least 44 px tall (raised to 52 px later: see `docs/blueprint-decisions.md` D7).
 
 Not built, with reasons, in that file: the four-tab rewrite of index.html, a PDF web worker, and "MDS compliant" logs. A facility logo upload is the one optional candidate left.
 

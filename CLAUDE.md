@@ -22,6 +22,10 @@ Never add a cloud dependency to the static site. Never put resident data in `pla
 
 Write and review all resident-facing text as if for an adult relative. No "Do you remember...", no quizzing, no childish words, no elderspeak, no infantilizing art. Invite; never test. The dignity and avoid-topic filters in `src/engine` and `assets/cognicopia-coloring/prompts.js` are tests, not suggestions.
 
+## Touch targets
+
+Every control a finger must hit is at least **52 px** tall and wide (`--tap` in the three tools and the Packet Builder). Size new controls with `var(--tap)`; each page's `touch-floor` style catches the rest. A link inside a sentence is exempt. Anything else needs `data-tap-exempt="reason"` on its container, and a reason that holds (a dense grid whose list view has the same actions at full size). `npm run build` measures this in a real browser wherever Playwright is installed.
+
 ## Print standards
 
 Pure black on pure white. Lines at least 3 pt. 0.5 in margins and a 0.75 in binding gutter on US Letter. Type never smaller than the tier's floor. Pictures are 3:4 with closed outlines. Standards and the numbers behind them: `docs/cognicopia-coloring-standards.md`.

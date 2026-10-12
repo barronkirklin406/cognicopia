@@ -1,6 +1,6 @@
 # UX baseline
 
-What the app measures today, taken with `npm run audit:ux` (`scripts/audit-ux.mjs`) on 12 October 2026, before the touch-target and navigation changes. Every later claim of improvement is compared with these numbers. Re-run the script, not your memory.
+What the app measured on 12 October 2026 with `npm run audit:ux` (`scripts/audit-ux.mjs`), before the touch-target and navigation changes, and what it measures after the 52 px change. Every later claim of improvement is compared with these numbers. Re-run the script, not your memory. Page weight, clicks, timing and navigation are unchanged by the 52 px work; the navigation numbers are the ones the six-hub change must beat.
 
 **Read these as relative, not absolute.** The timings come from a cloud sandbox with a headless Chromium, not from a facility PC. A slower machine will be slower. Use them to compare one build with another on the same machine.
 
@@ -47,40 +47,51 @@ Every link is visible without opening a group. Sixteen to twenty-one choices at 
 
 ## Tap targets
 
-Controls (buttons, links outside sentences, selects, inputs, summaries) smaller than the minimum in either direction, per page. The current standard is 44 px; 52 px is the target for tablets and unsteady hands.
+Controls smaller than the minimum in either direction: buttons, links outside sentences, selects, inputs, summaries, and the labels of checkboxes and radios (a person hits the label). A link stretched over its card counts as the card. Measured on each page and in the states a person reaches by choosing something (a dialog, the packet drawer, a calendar, a lesson), at phone (390 px) and laptop (1366 px) width; the worse of the two is shown.
 
-| View | Phone 390: under 44 px | Phone: under 52 px | Laptop 1366: under 44 px | Laptop: under 52 px |
+The standard was 44 px. The decision (see [blueprint-decisions.md](blueprint-decisions.md), D7) is 52 px. The first numbers in this file (taken before the method counted labels and states) understated the gap; these replace them.
+
+| View | Controls | Under 44 px before | Under 52 px before | Under 52 px now |
 |---|---|---|---|---|
-| index.html | 1 of 98 | 39 | 1 of 97 | 39 |
-| profile.html | 0 of 24 | 13 | 0 of 29 | 14 |
-| Builder home | 0 of 44 | 20 | 2 of 45 | 20 |
-| Builder coloring | 0 of 190 | 32 | 2 of 191 | 31 |
-| Builder roster | 0 of 35 | 27 | 2 of 36 | 27 |
-| Builder facility | 0 of 45 | 37 | 2 of 46 | 37 |
-| Builder planner | 10 of 61 | 41 | 12 of 62 | 43 |
-| Builder journal | 9 of 60 | 45 | 11 of 61 | 46 |
-| Builder academy | 7 of 41 | 33 | 9 of 42 | 32 |
+| index.html | 122 | 0 | 38 | 0 |
+| profile.html | 35 | 0 | 14 | 0 |
+| Builder home | 44 | 1 | 20 | 0 |
+| Builder coloring | 202 | 1 | 43 | 0 |
+| Builder roster | 40 | 1 | 29 | 0 |
+| Builder facility | 45 | 1 | 37 | 0 |
+| Builder planner | 88 | 23 | 65 | 0 |
+| Builder journal | 84 | 22 | 65 | 0 |
+| Builder academy | 48 | 9 | 34 | 0 |
+| Builder reminiscence | 47 | 1 | 39 | 0 |
+| Builder digest | 32 | 1 | 24 | 0 |
+| Builder session notes | 29 | 1 | 21 | 0 |
+| Builder settings | 45 | 3 | 34 | 0 |
+| Packet drawer with a page | 215 | 12 | 55 | 0 |
+| Coloring packs tab | 107 | 64 | 98 | 0 |
+| Facility wing with a calendar | 190 | 146 | 176 | 0 (see below) |
+| Academy lesson | 60 | 26 | 47 | 0 (see below) |
+| Planner with an example | 153 | 48 | 130 | 0 |
+| Journal with an example | 102 | 28 | 83 | 0 |
+| Instant Soothe, license form, roster with a resident, team and audit, records, digest tabs and the rest | | 0 to 8 | 20 to 50 | 0 |
 
-What is under 44 px today:
+How it was done: one token, `--tap: 52px`, in each tool; every component that had its own smaller height now uses it; and a `touch-floor` style at the end of each page gives any control that sets no size of its own the floor, at zero specificity so a component's own (never smaller) size wins. The generated sidebar takes the token on all 27 pages.
 
-- the e-mail address link on the packet tool (17 px tall);
-- the "Settings" link in the Packet Builder's top-bar message (19 px) and the "Facility view" switch (42 px);
-- the planner and journal's "Try an example" and "Start over" buttons (36 px);
-- the Academy's small "Edit" buttons (36 px) and card links (42 px).
+What is exempt, marked in the page with `data-tap-exempt` and a reason the audit prints:
 
-What is between 44 and 52 px, so it is at the standard today and below the target: the whole sidebar (every link is 44 px tall), the top-bar buttons, form fields and most buttons. Raising the minimum to 52 px is mostly a sidebar, button and field height change, not a redesign, but the dense Packet Builder views need their layouts checked.
+- **The facility calendar's month grid** (146 of 190 controls above): a dense overview whose chips and "+" buttons cannot all be 52 px. The List layout beside it has every action at full size, and a device that is touch-only now starts in the list.
+- **The lesson chapter bar** (a handful of segments sized by length): the seek slider reaches any point in the lesson.
+
+Controls that were found under 44 px and are now fixed include the planner's and journal's "Try an example", "Start over" and "Add a ..." buttons (36 px), the checkboxes' labels (20 px tall), the Academy's "Edit" buttons and filter chips (36 px), the Settings passphrase fields (31 px), the Packet Builder's "Settings" link and "Facility view" switch (19 and 42 px), and the Instant Soothe close button (48 px).
 
 ## Contrast (WCAG AA)
 
-| View | Day | Night Shift |
+| | Before | Now |
 |---|---|---|
-| index.html | 0 of 393 text elements fail | 0 of 393 |
-| profile.html | 0 of 92 | 0 of 92 |
-| Builder home | 0 of 124 | **1 of 124**: "Your packet" |
-| Builder coloring | **1 of 538**: the "150" count badge (4.29 : 1) | **1 of 538**: "Your packet" |
-| Builder roster | 0 of 94 | **1 of 94**: "Your packet" |
+| Day, every view | 1 text element fails: the "150" count badge on the current sidebar item in the Packet Builder (4.29 : 1) | 0 |
+| Night Shift, every Packet Builder view | 1 text element fails: "Your packet" (cream text on amber, 1.94 : 1, unreadable) | 0 |
+| index.html and profile.html, day and night | 0 | 0 |
 
-In Night Shift the builder's "Your packet" button shows cream text on amber at 1.94 : 1, which is unreadable. That is a real defect, found by measuring.
+Both were real defects, found by measuring. The "Your packet" button now takes the same dark-amber background and light text as the other primary buttons in Night Shift (about 6.7 : 1).
 
 ## What a script cannot tell us
 
@@ -90,7 +101,7 @@ These are listed by `npm run audit:ux` for a person to judge, and have not been 
 
 | Budget | Value |
 |---|---|
-| Controls under the minimum tap target | 0 per view |
+| Controls under the minimum tap target (52 px) | 0 per view and state |
 | Text below WCAG AA | 0 per view |
 | Clicks: packet, coloring PDF, roster print | 1, 2, 3 |
 | A response a person waits for | 400 ms (Doherty); a whole packet is judged against its own, longer, measured time |

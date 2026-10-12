@@ -4,7 +4,8 @@
    browser, and lists what only a person can judge.
 
    Measured (numbers, not opinions):
-     targets   interactive controls smaller than the minimum tap target, per page and viewport
+     targets   interactive controls smaller than the minimum tap target, on each page and in the states a person reaches
+               by choosing something (a dialog, a drawer, a calendar), at phone and laptop width
      contrast  text below WCAG AA against the background behind it, by day and in Night Shift
      nav       how many destinations and groups each sidebar offers
      clicks    clicks (and typed fields) a workflow takes, counted as the script performs it
@@ -21,7 +22,7 @@
    Run:  node scripts/audit-ux.mjs                     everything, a table
          node scripts/audit-ux.mjs --only targets,nav  some measurements
          node scripts/audit-ux.mjs --json out.json     also write the numbers
-         node scripts/audit-ux.mjs --min-target 52      tap-target minimum in CSS px (default 44)
+         node scripts/audit-ux.mjs --min-target 44      tap-target minimum in CSS px (default 52, the pages' --tap)
          node scripts/audit-ux.mjs --list               name every control that is too small, once each
          node scripts/audit-ux.mjs --strict             exit 1 if a budget below is broken
    Needs Playwright (already used by this repo's checks): it is found in node_modules, or in
@@ -39,7 +40,7 @@ const args = process.argv.slice(2);
 const opt = (name, def) => { const i = args.indexOf("--" + name); return i < 0 ? def : (args[i + 1] && !args[i + 1].startsWith("--") ? args[i + 1] : true); };
 const ONLY = opt("only") && opt("only") !== true ? String(opt("only")).split(",") : null;
 const want = k => !ONLY || ONLY.includes(k);
-const MIN = +(opt("min-target", 44)) || 44;
+const MIN = +(opt("min-target", 52)) || 52;      // the tap-target floor (--tap in the pages; docs/blueprint-decisions.md D7)
 const STRICT = args.includes("--strict"), LIST = args.includes("--list");
 
 /* Budgets: what "good" means here. Strict mode fails when one is broken. */
@@ -82,9 +83,70 @@ const VIEWS = [
   ["index.html", "index.html"], ["profile.html", "profile.html"],
   ["builder home", "builder.html#/"], ["builder coloring", "builder.html#/coloring"], ["builder roster", "builder.html#/roster"],
   ["builder facility", "builder.html#/facility"], ["builder planner", "builder.html#/planner"], ["builder journal", "builder.html#/journal"],
-  ["builder academy", "builder.html#/academy"]
+  ["builder academy", "builder.html#/academy"], ["builder reminiscence", "builder.html#/reminiscence"], ["builder digest", "builder.html#/heirloom"],
+  ["builder session notes", "builder.html#/clinical"], ["builder settings", "builder.html#/settings"]
 ];
 const VIEWPORTS = [["phone 390", 390, 844], ["laptop 1366", 1366, 768]];
+
+/* the controls that only exist once something is opened or chosen: each state is a page and the steps a person takes to reach it */
+const click = sel => page => page.click(sel, { timeout: 5000 });
+const pickPicture = page => page.click(".cc-card >> nth=0", { timeout: 5000 });
+const resident = (id, name, tier) => ({ schema: "cognicopia.residentProfile", version: 2, id, createdAt: "2026-09-01T10:00:00Z", updatedAt: "2026-09-01T10:00:00Z",
+  tier1_core: { preferredName: name, unitNumber: "Test 1", cognitiveTier: tier, visualNeeds: null, occupation: { code: "teacher", label: "Teacher" }, topHobbies: [{ code: "gardening", label: "Gardening" }], printNeeds: {}, topicsToAvoid: { topics: [], other: "" }, difficulty: { level: 3 } },
+  tier2_enrichment: { birthYear: 1936, hometown: { place: "Test City" } }, tier3_deep: { notes: "", people: [] } });
+const seedResidents = page => page.evaluate(list => { list.forEach(x => localStorage.setItem("cognicopia_resident_" + x.id, JSON.stringify(x))); }, [resident("res-a", "Test A", 2), resident("res-b", "Test B", 1)]);
+const reload = page => page.reload({ waitUntil: "load" });
+const STATES = [
+  ["profile: last step", "profile.html", [click("#rapNext"), click("#rapNext"), click("#rapNext"), click("#rapNext")]],
+  ["index: Instant Soothe open", "index.html", [click("#arbSootheSticky")]],
+  ["index: license form", "index.html", [click("#hdrlicToggle")]],
+  ["index: a saved resident to open", "index.html", [seedResidents, reload, click("#loadProfile")]],
+  ["builder: packet drawer with a page", "builder.html#/coloring", [pickPicture, click("#ccAdd"), click("#openPacket")]],
+  ["builder: Instant Soothe open", "builder.html#/", [click(".panic-button")]],
+  ["builder: coloring packs", "builder.html#/coloring", [click("#ccTabPacks")]],
+  ["builder: coloring new pages", "builder.html#/coloring", [click("#ccTabNew")]],
+  ["builder: roster with a resident chosen", "builder.html#/roster", [seedResidents, reload, click(".rs-res >> nth=0"), click(".rs-handoff summary")]],
+  ["builder: facility wing, calendar", "builder.html#/facility", [click("#fpTab-w-mcw"), click('button:has-text("Auto-populate")')]],
+  ["builder: facility team and audit", "builder.html#/facility", [click("#fpTab-team")]],
+  ["builder: academy lesson", "builder.html#/academy", [click(".ac-card-a >> nth=0")]],
+  ["builder: academy training records", "builder.html#/academy", [click("#acTab-records")]],
+  ["builder: planner with an example", "builder.html#/planner", [click("#lpExample")]],
+  ["builder: journal with an example", "builder.html#/journal", [click("#ljExample")]],
+  ["builder: reminiscence set", "builder.html#/reminiscence", [click('button:has-text("A Day")')]],
+  ["builder: digest, keep a memory", "builder.html#/heirloom", [click("#hlTab-keep")]],
+  ["builder: digest, hardcover book", "builder.html#/heirloom", [click("#hlTab-book")]]
+];
+
+/* runs in the page: every control smaller than min, with the controls marked exempt */
+function measureTargetsInPage(min){
+    const sel = "button, a[href], select, input:not([type=hidden]):not([type=checkbox]):not([type=radio]), textarea, summary, [role=button], [role=tab], [role=switch], [tabindex]:not([tabindex='-1'])";
+    const seen = new Set(), exempt = new Set(), cand = [...document.querySelectorAll(sel)];
+    /* a checkbox or radio is hit through its label, so the label is what is measured (the input itself when it has none) */
+    document.querySelectorAll("input[type=checkbox], input[type=radio]").forEach(i => { const lab = i.closest("label") || (i.id && document.querySelector(`label[for="${CSS.escape(i.id)}"]`)); cand.push(lab || i); });
+    const all = cand.filter(el => {
+      if (seen.has(el)) return false; seen.add(el);
+      const b = el.getBoundingClientRect(), cs = getComputedStyle(el);
+      if (!b.width || !b.height || cs.visibility === "hidden" || cs.display === "none" || el.closest("[hidden], .sr-only, [aria-hidden='true']")) return false;
+      if (el.closest("details:not([open]) > :not(summary)")) return false;
+      if (el.tagName === "A" && cs.display === "inline" && (el.closest("p, li, td, dd") || (el.parentElement && el.parentElement.textContent.replace(el.textContent, "").trim().length > 8))) return false;   // a link in a sentence (WCAG 2.2 inline exception)
+      if (el.closest("[data-tap-exempt]")){ exempt.add(el.closest("[data-tap-exempt]").getAttribute("data-tap-exempt")); return false; }   // marked in the page, with its reason
+      return true;
+    });
+    /* a link stretched over its card (an ::after covering the card) is hit anywhere on the card, so the card is what is measured */
+    const box = el => {
+      if (el.tagName === "A") for (const ps of ["::after", "::before"]){
+        const c = getComputedStyle(el, ps);
+        if (c.content !== "none" && c.position === "absolute" && ["top", "left", "right", "bottom"].every(k => parseFloat(c[k]) === 0)){
+          let p = el.parentElement; while (p && getComputedStyle(p).position === "static") p = p.parentElement;
+          if (p) return p.getBoundingClientRect();
+        }
+      }
+      return el.getBoundingClientRect();
+    };
+    const small = all.filter(el => { const b = box(el); return b.height < min - .5 || b.width < min - .5; });
+    return { total: all.length, exempt: [...exempt], small: small.length, sample: small.slice(0, 4).map(el => { const b = box(el); return `${Math.round(b.width)}x${Math.round(b.height)} ${el.tagName.toLowerCase()}${el.id ? "#" + el.id : ""}${typeof el.className === "string" && el.className ? "." + el.className.split(" ")[0] : ""} "${(el.textContent || el.getAttribute("aria-label") || "").trim().slice(0, 24)}"`; }),
+      all: small.map(el => { const b = box(el); return `${Math.round(b.width)}x${Math.round(b.height)} ${el.tagName.toLowerCase()}${el.id ? "#" + el.id : ""}${typeof el.className === "string" && el.className ? "." + el.className.trim().split(/\s+/).join(".") : ""} "${(el.textContent || el.getAttribute("aria-label") || el.getAttribute("title") || el.value || "").trim().replace(/\s+/g, " ").slice(0, 28)}"`; }) };
+}
 
 async function main(){
   const { chromium } = loadPlaywright();
@@ -110,25 +172,22 @@ async function main(){
       const { ctx, page } = await open(w, h);
       for (const [label, url] of VIEWS){
         await page.goto(base + url, { waitUntil: "load" }); await page.waitForTimeout(700);
-        const r = await page.evaluate(min => {
-          const sel = "button, a[href], select, input:not([type=hidden]), textarea, summary, [role=button], [role=tab], [role=switch], [tabindex]:not([tabindex='-1'])";
-          const all = [...document.querySelectorAll(sel)].filter(el => {
-            const b = el.getBoundingClientRect(), cs = getComputedStyle(el);
-            if (!b.width || !b.height || cs.visibility === "hidden" || cs.display === "none" || el.closest("[hidden], .sr-only, [aria-hidden='true']")) return false;
-            if (el.closest("details:not([open]) > :not(summary)")) return false;
-            if (el.tagName === "A" && cs.display === "inline" && el.closest("p, li, td, dd")) return false;                       // a link in a sentence (WCAG 2.2 inline exception)
-            if ((el.type === "checkbox" || el.type === "radio") && el.closest("label")) return false;                            // the label is the target
-            if (el.tagName === "INPUT" && el.type === "file") return false;
-            return true;
-          });
-          const small = all.filter(el => { const b = el.getBoundingClientRect(); return b.height < min - .5 || b.width < min - .5; });
-          return { total: all.length, small: small.length, sample: small.slice(0, 4).map(el => { const b = el.getBoundingClientRect(); return `${Math.round(b.width)}x${Math.round(b.height)} ${el.tagName.toLowerCase()}${el.id ? "#" + el.id : ""}${typeof el.className === "string" && el.className ? "." + el.className.split(" ")[0] : ""} "${(el.textContent || el.getAttribute("aria-label") || "").trim().slice(0, 24)}"`; }),
-            all: small.map(el => { const b = el.getBoundingClientRect(); return `${Math.round(b.width)}x${Math.round(b.height)} ${el.tagName.toLowerCase()}${el.id ? "#" + el.id : ""}${typeof el.className === "string" && el.className ? "." + el.className.trim().split(/\s+/).join(".") : ""} "${(el.textContent || el.getAttribute("aria-label") || el.getAttribute("title") || el.value || "").trim().replace(/\s+/g, " ").slice(0, 28)}"`; }) };
-        }, MIN);
-        results.targets.push({ view: label, viewport: vname, total: r.total, below_min: r.small, sample: r.sample, all: LIST ? r.all : undefined });
+        const r = await page.evaluate(measureTargetsInPage, MIN);
+        results.targets.push({ view: label, viewport: vname, total: r.total, exempt: r.exempt, below_min: r.small, sample: r.sample, all: LIST ? r.all : undefined });
         if (r.small > BUDGETS.tapTargetsBelowMin) broken.push(`${label} @${vname}: ${r.small} control(s) under ${MIN} px`);
       }
       await ctx.close();
+      for (const [label, url, steps] of STATES){
+        const { ctx: c2, page: p2 } = await open(w, h);
+        try {
+          await p2.goto(base + url, { waitUntil: "load" }); await p2.waitForTimeout(600);
+          for (const step of steps){ await step(p2); await p2.waitForTimeout(300); }
+          const r = await p2.evaluate(measureTargetsInPage, MIN);
+          results.targets.push({ view: label, viewport: vname, total: r.total, exempt: r.exempt, below_min: r.small, sample: r.sample, all: LIST ? r.all : undefined, state: true });
+          if (r.small > BUDGETS.tapTargetsBelowMin) broken.push(`${label} @${vname}: ${r.small} control(s) under ${MIN} px`);
+        } catch (e) { results.targets.push({ view: label, viewport: vname, error: String(e.message).split("\n")[0], state: true }); }
+        await c2.close();
+      }
     }
   }
 
@@ -158,7 +217,7 @@ async function main(){
     };
     for (const mode of ["day", "night"]){
       const { ctx, page } = await open(1366, 768);
-      for (const [label, url] of VIEWS.slice(0, 5)){
+      for (const [label, url] of VIEWS){
         await page.goto(base + url, { waitUntil: "load" }); await page.waitForTimeout(700);
         if (mode === "night") await page.evaluate(() => { document.documentElement.classList.add("cg-night-shift"); document.body.classList.add("cg-night-shift"); }), await page.waitForTimeout(500);
         const r = await page.evaluate(measure);
@@ -271,8 +330,10 @@ function report(){
   out.push(`Cognicopia UX audit, ${results.generated}. Tap-target minimum ${MIN} px. Timings are from this machine only.\n`);
   if (results.weight.length){ out.push("PAGE WEIGHT AND LOAD"); results.weight.forEach(r => out.push(`  ${pad(r.page, 14)} ${String(r.kb).padStart(6)} KB   load ${r.load_ms} ms`)); out.push(""); }
   if (results.targets.length){
-    out.push(`TAP TARGETS under ${MIN} px (controls that are not links inside a sentence)`);
-    results.targets.forEach(r => out.push(`  ${pad(r.view, 18)} ${pad(r.viewport, 14)} ${String(r.below_min).padStart(3)} of ${String(r.total).padStart(3)}${r.sample.length ? "   e.g. " + r.sample.slice(0, 2).join("; ") : ""}`));
+    out.push(`TAP TARGETS under ${MIN} px (controls that are not links inside a sentence), on each page and in the states a person reaches by choosing something`);
+    results.targets.forEach(r => out.push(r.error ? `  ${pad(r.view, 38)} ${pad(r.viewport, 14)} could not be reached (${r.error})` : `  ${pad(r.view, 38)} ${pad(r.viewport, 14)} ${String(r.below_min).padStart(3)} of ${String(r.total).padStart(3)}${r.sample.length ? "   e.g. " + r.sample.slice(0, 2).join("; ") : ""}`));
+    const exempt = new Set(); results.targets.forEach(r => (r.exempt || []).forEach(e => exempt.add(e)));
+    if (exempt.size) out.push("  Marked exempt in the page (data-tap-exempt): " + [...exempt].join("; "));
     out.push("");
     if (LIST){
       out.push("EVERY CONTROL UNDER THE MINIMUM (once per kind, with the views it appears in)");
