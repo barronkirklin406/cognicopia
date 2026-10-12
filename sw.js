@@ -12,9 +12,11 @@
    used. Change VERSION only to clear old copies; updates to the pages
    themselves arrive on their own.
    ===================================================================== */
-const VERSION = "cognicopia-v18";
+const VERSION = "cognicopia-v19";
 const CORE = [
   "./", "index.html", "builder.html", "profile.html", "pricing.html", "activate.html", "manifest.webmanifest",
+  // the shared design system and its two typefaces (Atkinson Hyperlegible for the interface, Fraunces for headings)
+  "css/styles.css", "fonts/AtkinsonHyperlegible-Regular.woff2", "fonts/AtkinsonHyperlegible-Bold.woff2", "fonts/Fraunces-latin.woff2",
   "assets/cognicopia-logo.jpg", "assets/icon-192.png", "assets/icon-512.png", "assets/icon-maskable-512.png",
   "assets/cognicopia-coloring/cognicopia-coloring.js", "assets/services/vectorEngine.js", "assets/services/secureStore.js", "assets/services/reminiscenceEngine.js", "assets/services/slpClinicalService.js", "assets/services/heirloomService.js", "assets/services/facilityPlanner.js", "assets/services/academy.js", "assets/services/dailyOps.js", "assets/services/nightShift.js",
   "assets/vendor/jspdf.umd.min.js", "assets/vendor/jspdf-atkinson.js",

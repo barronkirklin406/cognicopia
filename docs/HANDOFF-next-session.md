@@ -77,6 +77,17 @@ Decision D10 in [blueprint-decisions.md](blueprint-decisions.md); setup in [stri
 - **Checks:** `scripts/check-license.mjs` (the key logic in a sandbox, all pages), `scripts/check-license-ui.mjs` (a real browser: gates, keys, activation, months offline, the invoice request, who contacts the network).
 - **Owner still has to:** make the signing key and paste the public half, make the product, two prices and two Payment Links, host the license service (or issue keys by hand), decide how long to honor the $129.99 code, and confirm the refund and cancellation wording. Until then the buy buttons ask for an invoice.
 
+## The design system (built and measured; pages move onto it as they are edited)
+
+Decision D11 in [blueprint-decisions.md](blueprint-decisions.md); everything about it in [design-system.md](design-system.md).
+
+- **One stylesheet, `css/styles.css`**, linked into every page by `scripts/site-nav.mjs` (run `npm run nav`; never by hand). Tokens `--cg-*` on the four brand colors (green `#1b382b`, parchment `#f4efe6`, gold `#c5a059`, charcoal `#1a202c`); two local typefaces in `/fonts` (Atkinson Hyperlegible as "Cognicopia UI", Fraunces for headings; both SIL OFL, about 100 KB, cached by `sw.js`); a spacing, radius and shadow scale; a two-band focus ring; a one-pixel press and short transitions; two faint scroll-driven background layers; and `@page cg-coloring` with the 0.5 in and 0.75 in margins and the 3, 4.5 and 7.875 pt tier lines.
+- **It sits beneath the pages.** Shared rules use `:where()` (no specificity), so a page's own CSS wins. Stronger on purpose: `html.cg-ds` (the pricing, activation, contact, journal, planner and Zentangle pages opted in), the `.cg-*` components, and the coloring-sheet print rules. The packet tool maps its `--ds-*` tokens to `--cg-*`. Nothing in the Packet Builder's PDFs or the packets changed.
+- **Packet tool first screen:** the tagline "Engaging Today" (D9; the older line sits beneath it, one line to revert), the four value cards, a tighter hero. On 1366 x 768 the first two cards are on the first screen; on 390 x 844 the first one is.
+- **Checks:** `scripts/check-design-system.mjs` (in `npm test`: every contrast pair re-computed, the rules present, fonts local, pages linked, sw caches it, the SVG script) and `scripts/check-design-ui.mjs` (in `npm run build` with Playwright: ring, motion, reduced motion, layers, type, first screen, `js/coloring.js`, three printed sheets read back with PyMuPDF). The browser check found and fixed a real defect: `.cg-btn`'s own shadow hid the ring's dark band.
+- **`js/coloring.js` + `scripts/build_coloring_svgs.py`** are the lighter second line-art route (master PNG to a closed-outline SVG with VTracer; drawn with a tier class). Built and tested, **not wired into any screen, and no masters are committed** (`js/coloring-data.js` is empty). Needs `pip install pillow vtracer`; skips with a notice where they are missing.
+- **Owner's calls:** whether the packet tool's own colors should move fully onto the tokens; when the SVG route should feed a screen; whether to keep "Engaging Today" (D9).
+
 ## The line-art pipeline (traced art)
 
 Pictures from an image generator or an illustrator become crisp vector coloring pages at all three tiers. Runbook: `docs/line-art-pipeline.md`; standards: `docs/cognicopia-coloring-standards.md` §6.
@@ -99,7 +110,7 @@ The owner's "Cognicope Engine" blueprint was checked against the repository; `do
 - **Daily Operations, the Shift board** (`builder.html#/shift`, Facility hub): handoff notes, staff tasks and a printed handoff sheet for one shared computer. First version, for Activity Directors to react to. Logic in `src/services/dailyOps.ts` (global `CogniDailyOps`), screen in the `ops-ui` script of `builder.html`, spec and limits in `docs/daily-operations.md`. It keeps one sealed record (`cognicopia_dailyops`), residents by alias or room only, with a name check before a note is saved, retention (7, 14, 30 or 90 days; open tasks stay), locked backup files that add and never remove, and a sheet that checks its own layout before printing. `scripts/check-shift-ui.mjs` (real browser, in `npm run build`) proves what is stored, what prints and the unlock; the logic is the `dailyOps` group of `scripts/check-services.mjs`. **Not built:** syncing between stations (needs a vendor that signs a business associate agreement; a separate decision), roles, configurable shift hours. Next: show it to three to five Activity Directors and use the questions at the end of the spec.
 - **Local AI:** planned only, in `docs/local-ai-plan.md` (off by default, its own script, the model file chosen by the facility and read from disk, the planner's and journal's `buildAiRequest` and `acceptAiCopy` as the seam, numbers that decide whether it ships). Not built.
 - **Found while adding it:** the encrypted store's unlock prompt still had 44 px controls (only a locked store reaches it); the audit now locks the store and measures it.
-- **Order of work left:** the Activity Director reaction to the Shift board; the local-AI spike if the owner wants it; the tagline question (the hero line is still "Connection, Cognition, Creation"; D9 says "Engaging Today" if the owner wants it replaced).
+- **Order of work left:** the Activity Director reaction to the Shift board; the local-AI spike if the owner wants it; the tagline (done: "Engaging Today" with the earlier line beneath it; D9 says how to revert).
 
 ## Names after the owner's rename (use these)
 
@@ -151,6 +162,8 @@ npm run coloring    # rebuild the coloring bundle and catalog after editing asse
 npm run coloring:ingest   # trace the pictures in assets/coloring/_inbox/ for review (see docs/line-art-pipeline.md)
 npm run nav         # regenerate the six-hub navigation on every page from scripts/site-nav.mjs
 npm run services    # rebuild assets/services/*.js from src/services/*.ts
+npm run coloring:svgs   # trace master PNGs to closed-outline SVG and js/coloring-data.js (pip install pillow vtracer)
+node scripts/check-design-ui.mjs   # the design system in a real browser (SHOTS=folder keeps screenshots)
 npm run research    # regenerate resources/research/* pages
 npm run pages -- --count 12 --tier 2   # print infinite coloring pages to out/
 ```

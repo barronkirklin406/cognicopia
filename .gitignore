@@ -15,3 +15,6 @@ new-config.yaml
 *-private.*
 license-private*
 .cognicopia/
+
+# master PNG line art for scripts/build_coloring_svgs.py: not published, not committed (the SVGs it makes are)
+/assets/raw_coloring_pngs/

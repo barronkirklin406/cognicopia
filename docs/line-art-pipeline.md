@@ -6,6 +6,8 @@ How a drawing from an image generator (or an illustrator, or a scanner) becomes 
 
 You supply **one master picture per subject**: black line art on white, 3:4, any line weight. The pipeline traces the picture's **center lines** (not its outlines), so the lines stay one clean stroke each, fits smooth curves to them, and works out what each tier shows. Tier 1 keeps the whole drawing. Tiers 2 and 3 merge small areas into their neighbors, drop small details and redraw the outlines rounder and simpler. The page is then drawn by the same engine as every other (`CognicopiaColoring`) at the print standard's weights: **3 pt (Tier 1), 4.5 pt (Tier 2) and 7.9 pt (Tier 3), never under 3 pt**. The result is vector all the way to the PDF, works offline and flows through the Packet Builder, the catalog and the packs unchanged. Nothing reaches a resident until a person has looked at it and approved it.
 
+There is also a lighter second route, for keeping a picture exactly as drawn as a closed-outline SVG; it is described [below](#a-second-lighter-route-trace-a-master-straight-to-svg). Both start from the same masters.
+
 ```mermaid
 flowchart LR
   P[Prompt batch<br/>coloring:masters] --> G[Image generator<br/>outside Cognicopia]
@@ -90,6 +92,37 @@ A jobs file from step 1 (`--jobs masters-01.jsonl`) fills in the sidecar details
 
 Every tier is measured through the engine (areas to color, smallest area, areas under the minimum) and must meet the tier's rule from [cognicopia-coloring-standards.md](cognicopia-coloring-standards.md). A tier that does not is marked in the checks and in the review sheet.
 
+## A second, lighter route: trace a master straight to SVG
+
+`scripts/build_coloring_svgs.py` is for when a picture should stay exactly as it was drawn, as a closed-outline SVG that a page can show and print, without working out simpler tiers or a review record. It reads the same masters (`assets/raw_coloring_pngs/` or `assets/coloring/_inbox/`; neither is published, and the first is ignored by git), makes each one pure black on white, removes specks, crops to the drawing and centers it on a 3:4 page (a 600 x 800 viewBox) with a margin, and traces it with VTracer in binary mode with spline fitting and a speckle filter, so the curves are smooth rather than pixel steps. It keeps only closed paths, writes pure black fills, and writes two things: `assets/svgs/<name>.svg`, and one generated file, `js/coloring-data.js`, holding the same SVG text so a page can draw it with no network request (a `fetch` fails on `file://` and on a computer that is offline).
+
+```
+pip install pillow vtracer               # once; Python 3.9 or later
+python3 scripts/build_coloring_svgs.py   # or: npm run coloring:svgs
+npm run coloring:svgs:check              # exits 1 if js/coloring-data.js is not what the SVGs make
+```
+
+Options: `--only NAME` traces one picture, `--list` says what would be traced and writes nothing, `--speckle N` sets the speckle filter, `--src DIR` and `--out DIR` change the folders. Where Pillow or vtracer is missing the script says so, exits 2 and writes nothing, and `npm run build` does not need Python (the design check skips the tracing test with a note). Set `PYTHON=/path/to/python` to run the checks with another interpreter. A picture that traces to nothing (a blank page) is refused and the others still trace; the script makes no network request.
+
+A page draws a picture with `CognicopiaSvgColoring.mount(element, "name", { tier: 2, sheet: true })` (`js/coloring.js`, loaded after `css/styles.css` and `js/coloring-data.js`). The tier class puts the line weight on it: **3 pt, 4.5 pt and 7.875 pt, never under 3 pt**, with `vector-effect: non-scaling-stroke`, as in the [design system](design-system.md). `js/coloring.js` rebuilds the SVG from an allow-list and refuses a picture with an open outline, the wrong shape or no outline, with a plain message.
+
+**Which route.** Choose on purpose:
+
+| | `coloring:ingest` (this runbook) | `build_coloring_svgs.py` |
+|---|---|---|
+| Traces | The center line, one stroke each; the engine draws the weight | The outline of the ink; the line weight is the master's own, with the tier's weight added on top by CSS |
+| Tiers | Derived: Tiers 2 and 3 get fewer, rounder, larger areas | The same picture at three line weights; for simpler shapes, supply a simpler picture |
+| Review and approval | Sheets, measured checks, and a record of who approved it | None: look at each SVG yourself before a page uses it (dignity, rights, no letters) |
+| Feeds | The catalog, the bundle, the Packet Builder and its PDFs | `js/coloring.js` only. **Not wired into a screen yet, and no masters are committed, so `js/coloring-data.js` is empty today** |
+| Needs | Node only | Python with Pillow and vtracer |
+
+**Masters to live, in one list.**
+
+1. `npm run coloring:masters -- --out masters-01` writes a prompt for each subject.
+2. Generate the pictures in the tool you license, and save each into `assets/coloring/_inbox/` (or, for the SVG route, `assets/raw_coloring_pngs/`).
+3. Run the route you chose: `npm run coloring:ingest`, then `npm run coloring:review`, then approve; and/or `python3 scripts/build_coloring_svgs.py`.
+4. After approving art, `npm run coloring`, then `npm run nav` (the Studio hub page shows the picture count), then `npm run build`. Commit what changed (never a master you may not redistribute), push, and open a pull request to `main`.
+
 ## Limits worth knowing
 
 - **Derived tiers are an automatic baseline.** They are very good for subjects made of areas (flowers, animals, buildings, vehicles with bodies) and weaker for skeletal line drawings (a bicycle's spokes, a wire frame) and for dense repeating patterns (quilts, mandalas, tile patterns). For those, supply a drawing for the tier (above), tune `rules` in the sidecar, or reject the picture and keep the library's drawing, which was designed by hand for each tier.
@@ -116,7 +149,9 @@ Every tier is measured through the engine (areas to color, smallest area, areas 
 | `npm run coloring:ingest -- --approve <design> --reviewer "Name"` | Approve |
 | `npm run coloring:ingest -- --reject <design> --reviewer "Name" --reason "why"` | Reject |
 | `npm run coloring` | Write the catalog and bundle with the approved art |
-| `npm test` | Includes `scripts/check-trace.mjs`: the tracer, the tier derivation, the art files and this command line, tested on drawings whose right answer is known |
+| `npm run coloring:svgs` | The SVG route: trace every master in `assets/raw_coloring_pngs/` and `assets/coloring/_inbox/` to `assets/svgs/` and `js/coloring-data.js` (needs Pillow and vtracer) |
+| `npm run coloring:svgs:check` | Fails if `js/coloring-data.js` is not what the SVGs make |
+| `npm test` | Includes `scripts/check-trace.mjs`: the tracer, the tier derivation, the art files and this command line, tested on drawings whose right answer is known; and `scripts/check-design-system.mjs`, which tests the SVG route's script (and, where Pillow and vtracer are installed, traces test pictures) |
 
 ## For developers
 
@@ -128,6 +163,10 @@ Every tier is measured through the engine (areas to color, smallest area, areas 
 | `scripts/lib/art.mjs` | `buildArt`, the fidelity check, the art files and their hash |
 | `scripts/lib/standins.mjs` | Library designs drawn as pictures an image generator might return, for tests and benchmarks |
 | `assets/cognicopia-coloring/lineart.js` | The engine hook: `CognicopiaColoring.art.use(list)` draws a design from art records (`[kind, tier mask, path]`; mask 1 = Tier 1, 2 = Tier 2, 4 = Tier 3) |
+| `scripts/build_coloring_svgs.py` | The SVG route: master PNG to a closed-outline SVG with VTracer; writes `assets/svgs/` and `js/coloring-data.js`; `--check` proves the data is current |
+| `js/coloring.js`, `js/coloring-data.js` | `CognicopiaSvgColoring`: draws a picture into a page at a tier, from an allow-list, with no fetch; the data file is generated |
+| `css/styles.css` (section 11) | The coloring sheet as CSS: Letter, 0.5 in margins, 0.75 in gutter, tier weights 3, 4.5 and 7.875 pt |
+| `scripts/check-design-ui.mjs` | Draws pictures at each tier in a real browser and reads three printed sheets back from their PDFs (page size, margins, black and white only, line weights) |
 | `scripts/generate_coloring_manifest.js` | Verifies approved art (hash, drawable, coordinates), measures every page, writes catalog and bundle (`source: "traced-art"`, `counts.traced`) |
 
 The tracer and the tier derivation are deterministic: the same master gives the same art, byte for byte.
