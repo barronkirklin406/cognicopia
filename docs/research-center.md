@@ -7,9 +7,9 @@ The Research Center is Cognicopia's evidence library for medical directors, comp
 Every figure is cited, and every document ends with its limits. The **For facility boards** section makes a board packet as a PDF in one click.
 
 It lives at `resources/research/` and opens from:
-- the sidebar on every site page (**Resource & Clinical Hub › Clinical & Quality › Clinical Science & Research Center**);
+- the sidebar on every site page (**Resources › Clinical & quality › Clinical Science & Research Center**);
 - the first card on the Resource & Clinical Hub page;
-- the Packet Builder's sidebar (**Learn › Research Center**);
+- the Packet Builder's sidebar (**Resources › Research Center**);
 - links from the Zentangle art page, the resource catalog and the journals page, next to the claims those summaries cover.
 
 | File | What it is |

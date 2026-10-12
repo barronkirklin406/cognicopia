@@ -34,6 +34,8 @@
     "html.cg-night-shift .rap-hero h1,html.cg-night-shift .rap-step h2,html.cg-night-shift .rap-field>label,html.cg-night-shift .rap-group>legend,html.cg-night-shift .rap-privacy-main{color:#fff1cf}",
     "html.cg-night-shift .rap-wizard,html.cg-night-shift .rap input,html.cg-night-shift .rap select,html.cg-night-shift .rap textarea{background:#211910!important;color:#ffedcc!important;border-color:#9b7136!important}",
     "html.cg-night-shift .cg-sidebar a:hover,html.cg-night-shift .sidebar a:hover{background:#3a2917!important;color:#fff1cf!important}",
+    "html.cg-night-shift .cg-hub > summary,html.cg-night-shift .cg-sidebar-nav a.cg-hub-link,html.cg-night-shift .sidebar .sb-hub-head{color:#ffedcc!important}",
+    "html.cg-night-shift .cg-hub > summary:hover,html.cg-night-shift .cg-hub[open] > summary,html.cg-night-shift .sidebar .sb-hub-head:hover,html.cg-night-shift .sidebar .sb-hub[open] > .sb-hub-head{background:#3a2917!important}",
     "html.cg-night-shift :focus-visible{outline-color:#ffd477}",
     "}",
   ].join("");

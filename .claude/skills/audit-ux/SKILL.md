@@ -33,7 +33,7 @@ It serves the repository on a local port and drives Chromium with Playwright (fo
 |---|---|
 | Tap targets | Visible buttons, links (not links inside a sentence), selects, inputs, summaries and the labels of checkboxes and radios: width or height under the minimum (52 px), at 390 px and 1366 px wide, on the three tools, every Packet Builder view, and the states reached by choosing something (a dialog, the packet drawer, a calendar, a lesson). A link stretched over its card is measured as the card. Anything inside an element marked `data-tap-exempt="reason"` is skipped and the reason is printed |
 | Contrast | Every visible text node against the background behind it, WCAG AA (4.5, or 3 for large text), by day and in Night Shift, on every view |
-| Navigation | Sidebar links, group headings and distinct destinations, on the packet tool and the Packet Builder |
+| Navigation | The hubs, and how many choices (links, group headings, buttons) the sidebar shows as a page opens, on eight page types; each sidebar is also measured for the 52 px floor and for contrast |
 | Clicks | The packet, coloring-PDF and roster-print workflows, counted as the script performs them |
 | Print time | Click to a finished packet; drawing a 6-page coloring PDF; roster Print click to the print window |
 | Weight | Page size in KB and load time |

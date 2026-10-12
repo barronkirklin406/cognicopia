@@ -7,20 +7,26 @@
                                  fail if any page is out of date (npm run
                                  build runs this)
 
-   The sidebar keeps the interactive tools first. All reference and
-   educational reading lives in one "Resource & Clinical Hub" section: a
-   collapsible group in the sidebar and a tabbed hub page at resources/
-   (interactive tools on one tab, the reference library on the other), with
-   each module at its own nested route, resources/<slug>/. The packet tool's
-   Ailment-Specific Activities stay in its sidebar, under the tools: that
-   part of the block is left as the page has it.
+   Navigation is six hubs (HUBS below), the same on every page: Today,
+   Studio, Activity Packets, Facility, Academy and Resources. A hub with
+   several places is a collapsible group and the one holding the current page
+   is open; a hub with one place is a plain link. The Packet Builder
+   (builder.html) gets the same six, with its activity categories under
+   Activity Packets. All reference and educational reading lives under
+   Resources: a collapsible group in the sidebar and a tabbed hub page at
+   resources/ (interactive tools on one tab, the reference library on the
+   other), with each module at its own nested route, resources/<slug>/. The
+   packet tool's Ailment-Specific Activities stay in its sidebar, under
+   Today: that part of the block is left as the page has it.
 
    Each page gets generated blocks, between markers, never edited by hand:
    the sidebar (with its menu button and script), the breadcrumb bar (hub
    and module pages), the hub's module cards (resources/index.html), a
    <style id="cg-nav-css"> and the license manager's two scripts in the head. The
-   rest of every page is left exactly as it is. The Packet Builder
-   (builder.html) keeps its own sidebar and links to the hub.
+   rest of every page is left exactly as it is. In builder.html only the
+   sidebar's navigation is generated (its brand, hooks and styles are the
+   page's own). --check also proves the six hubs are the same on every page,
+   that exactly one is open, and that every link leads somewhere real.
    ===================================================================== */
 import fs from "fs";
 import path from "path";
@@ -57,16 +63,51 @@ const ICON = {
   roster: '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/>',
   profile: '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
   academy: '<path d="M22 9 12 4 2 9l10 5 10-5z"/><path d="M6 11.2V16c0 1.7 2.7 3 6 3s6-1.3 6-3v-4.8"/><path d="M22 9v6"/>',
+  sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+  cards: '<rect x="3" y="4" width="18" height="14" rx="2"/><path d="M7 21h10M9 9h6M8 13h8"/>',
+  gear: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>',
   microscope: '<path d="M6 18h8"/><path d="M3 22h18"/><path d="M14 22a7 7 0 1 0 0-14h-1"/><path d="M9 14h2"/><path d="M9 12a2 2 0 0 1-2-2V6h6v4a2 2 0 0 1-2 2Z"/><path d="M12 6V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v3"/>'
 };
 
-/* The interactive tools: always first. */
+/* The tools, as the hub page's cards use them (the sidebar draws HUBS). */
 export const TOOLS = [
   { key: "profile",  label: "Resident Profiles",       href: "profile.html" },
   { key: "roster",   label: "Resident Roster",         href: "builder.html#/roster" },
   { key: "journals", label: "Cognitive Life Journals", href: "cognitive-journals.html" },
   { key: "planners", label: "12-Month Life Planners",  href: "life-planners.html" }
 ];
+
+/* The six hubs: the whole navigation. Every page shows them in this order.
+   An item's `key` is what a page marks as current; an item with a `route` is
+   a screen inside the Packet Builder (builder.html#/<route>). A hub with one
+   item is drawn as a plain link. On the static pages, Activity Packets is
+   one link to the Packet Builder (its categories live inside it), and
+   Resources lists the whole reference library (HUB, GROUPS and MODULES
+   below); inside the Packet Builder, Resources is two links. Contact is a footer link under the six, on every page. */
+const B = "builder.html";
+export const HUBS = [
+  { id: "today",     label: "Today",            icon: "sun",      items: [
+      { key: "home",         label: "Personalized Packet Tool", href: "index.html",        icon: "home" },
+      { key: "profile",      label: "Resident Profiles",        href: "profile.html",      icon: "profile" } ] },
+  { id: "studio",    label: "Studio",           icon: "palette",  items: [
+      { key: "coloring",     label: "Cognicopia Coloring",      href: B + "#/coloring",     route: "coloring",     icon: "palette" },
+      { key: "planner",      label: "12-Month Life Planner",    href: B + "#/planner",      route: "planner",      icon: "calendar" },
+      { key: "journal",      label: "Cognitive Life Journal",   href: B + "#/journal",      route: "journal",      icon: "journal" },
+      { key: "reminiscence", label: "Reminiscence cards",       href: B + "#/reminiscence", route: "reminiscence", icon: "cards" },
+      { key: "heirloom",     label: "Memory digest & book",     href: B + "#/heirloom",     route: "heirloom",     icon: "books" } ] },
+  { id: "packets",   label: "Activity Packets", icon: "builder",  items: [
+      { key: "builder",      label: "Packet Builder",           href: B,                    icon: "builder" } ] },
+  { id: "facility",  label: "Facility",         icon: "building", items: [
+      { key: "facility",     label: "Facility Portal",          href: B + "#/facility",     route: "facility",     icon: "building" },
+      { key: "roster",       label: "Resident roster",          href: B + "#/roster",       route: "roster",       icon: "roster" },
+      { key: "clinical",     label: "Session notes (SLP)",      href: B + "#/clinical",     route: "clinical",     icon: "stethoscope" },
+      { key: "settings",     label: "Settings & defaults",      href: B + "#/settings",     route: "settings",     icon: "gear" } ] },
+  { id: "academy",   label: "Academy",          icon: "academy",  items: [
+      { key: "academy",      label: "Caregiver & Pro Academy",  href: B + "#/academy",      route: "academy",      icon: "academy" } ] },
+  { id: "resources", label: "Resources",        icon: "library",  items: [] }   // the hub, its modules and Contact: see sidebar() and builderSidebar()
+];
+/* The categories the Packet Builder draws under Activity Packets (its own list, with counts, is built in the page; these are the ids it uses). */
+const CONTACT = { key: "contact", label: "Contact Kirk Barron", href: "contact.html", icon: "support" };
 
 /* The informational hub: the reference modules in three groups. `legacy` is
    the page's old address, which now forwards to its route (the Research
@@ -101,11 +142,14 @@ export const MODULES = [
 ];
 export const moduleHref = m => HUB.href + m.slug + "/";
 
+/* The coloring library's size, from its catalog, so the hub page never states a stale one. */
+const COLORING_PICTURES = (() => { try { return JSON.parse(fs.readFileSync(path.join(ROOT, "src/data/cognicopia_coloring_catalog.json"), "utf8")).counts.designs; } catch (e) { return null; } })();
+
 /* The interactive generators, shown on the hub's first tab, apart from the
    reading. `href` is from the site root. */
 export const GENERATORS = [
   { key: "coloring", label: "Cognicopia Coloring",      href: "builder.html#/coloring", icon: "palette",
-    desc: "Dignified, adult line art at three support tiers, printed with a binding gutter and optional color guides.", meta: ["118 pictures", "3 tiers", "Vector PDF"] },
+    desc: "Dignified, adult line art at three support tiers, printed with a binding gutter and optional color guides.", meta: [COLORING_PICTURES ? COLORING_PICTURES + " pictures" : "Picture library", "3 tiers", "Vector PDF"] },
   { key: "reminiscence", label: "Reminiscence Cards", href: "builder.html#/reminiscence", icon: "journal",
     desc: "Cards about a resident's own work, hometown region and best-remembered years, each with conversation starters, a song and something to hold.", meta: ["Era × region × vocation", "Caregiver cues"] },
   { key: "heirloom", label: "Memory Digest & Book", href: "builder.html#/heirloom", icon: "books",
@@ -143,10 +187,11 @@ const RESEARCH = MODULES.find(m => m.slug === "research");
 export const PAGES = [
   { file: "index.html",              current: "home" },
   { file: "profile.html",            current: "profile" },
-  { file: "cognitive-journals.html", current: "journals" },
-  { file: "life-planners.html",      current: "planners" },
+  { file: "cognitive-journals.html", current: null, hub: "studio" },     // the journal's own page: Studio is open, no link is "here" (its link opens the tool)
+  { file: "life-planners.html",      current: null, hub: "studio" },
   { file: "contact.html",            current: "contact" },
-  { file: "zentangle-art.html",      current: null },
+  { file: "zentangle-art.html",      current: null, hub: "studio" },
+  { file: "builder.html",            builder: true },
   { file: HUB.href + "index.html",   current: "hub", crumbs: [] },
   ...MODULES.map(m => ({ file: moduleHref(m) + "index.html", current: m.slug, crumbs: [m] })),
   ...researchDocs().map(d => ({ file: moduleHref(RESEARCH) + d.slug + "/index.html", current: RESEARCH.slug, crumbs: [RESEARCH, { label: d.crumb }] }))
@@ -166,17 +211,39 @@ const licenseBlock = page => `${LICENSE_START}
 ${LICENSE_END}`;
 const PAGE_TOOLS_START = "<!-- cg-nav:page-tools: this page's own tools, kept as they are -->", PAGE_TOOLS_END = "<!-- cg-nav:page-tools-end -->";
 
+/* The hub a page sits in: the one that is open. */
+export const hubOf = page => page.hub
+  || (page.current && (HUBS.find(h => h.items.some(i => i.key === page.current)) || {}).id)
+  || (page.current === "hub" || MODULES.some(m => m.slug === page.current) ? "resources" : null);
+
 export function sidebar(page, pageTools){
-  const P = prefixOf(page.file), cur = page.current, onHub = cur === "hub" || MODULES.some(m => m.slug === cur);
+  const P = prefixOf(page.file), cur = page.current, open = hubOf(page);
   const link = (href, label, key, icon) => `    <li><a href="${P}${href}"${here(cur === key)}>${icon ? svg(ICON[icon], 14, "cg-sb-ico") : '<span class="cg-bullet" aria-hidden="true">&#x203A;</span>'}<span>${esc(label)}</span></a></li>`;
   const groups = GROUPS.map(g => `          <li class="cg-sb-grp"><span class="cg-sb-glabel" id="cgGrp-${g.id}">${esc(g.label)}</span>
             <ul aria-labelledby="cgGrp-${g.id}">
 ${MODULES.filter(m => m.group === g.id).map(m => "      " + link(moduleHref(m), m.label, m.slug, m.icon)).join("\n")}
             </ul></li>`).join("\n");
+  const group = (h, inner) => `    <li class="cg-hub-li" data-hub="${h.id}">
+      <details class="cg-sb-acc cg-hub" id="cgHub-${h.id}"${open === h.id ? " open data-here" : ""}>
+        <summary class="cg-sb-section cg-sb-acc-head">${svg(ICON[h.icon], 15, "cg-sb-ico", 2.2)}<span class="cg-sb-acc-title">${esc(h.label)}</span>${svg(ICON.chevron, 14, "cg-sb-chev")}</summary>
+        <ul class="cg-sb-sub">
+${inner}
+        </ul>
+      </details>
+    </li>`;
+  const single = (h, it) => `    <li class="cg-hub-li" data-hub="${h.id}"><a href="${P}${it.href}"${here(cur === it.key, "cg-hub-link")}>${svg(ICON[h.icon], 15, "cg-sb-ico", 2.2)}<span>${esc(h.label)}</span></a></li>`;
+  const hubs = HUBS.map(h => {
+    if (h.id === "resources") return group(h, `${link(HUB.href, "Browse all resources", "hub", "grid").replace("<a ", '<a data-hub-index ')}
+${groups}`);
+    if (h.items.length === 1) return single(h, h.items[0]);
+    const links = h.items.map(it => link(it.href, it.label, it.key, it.icon)).join("\n");
+    const tools = h.id === "today" && pageTools ? '\n    <li><div class="cg-sb-divider"></div></li>\n' + PAGE_TOOLS_START + "\n    " + pageTools.trim() + "\n" + PAGE_TOOLS_END : "";
+    return group(h, links + tools);
+  }).join("\n");
   return `${START}
-<button type="button" class="cg-sidebar-toggle" id="cgSbToggle" aria-label="Open Categories Menu" aria-controls="cgSidebar" aria-expanded="false">
+<button type="button" class="cg-sidebar-toggle" id="cgSbToggle" aria-label="Open Menu" aria-controls="cgSidebar" aria-expanded="false">
   ${svg(ICON.menu, 20, "", 2.2)}
-  <span class="cg-sidebar-toggle-text">Categories</span>
+  <span class="cg-sidebar-toggle-text">Menu</span>
 </button>
 <div class="cg-sb-overlay" id="cgSbOverlay" aria-hidden="true"></div>
 <aside class="cg-sidebar" id="cgSidebar" aria-label="Site navigation">
@@ -184,32 +251,10 @@ ${MODULES.filter(m => m.group === g.id).map(m => "      " + link(moduleHref(m), 
     <img src="${P}assets/cognicopia-logo.jpg" alt="Cognicopia Logo">
     <span>Cognicopia</span>
   </a>
-  <a href="${P}index.html" id="cgHomeLink"${here(cur === "home", "cg-sidebar-home")}>
-    ${svg(ICON.home, 14)}
-    Home (Tool)
-  </a>
-  <a href="${P}builder.html" class="cg-sidebar-home" id="cgBuilderLink">
-    ${svg(ICON.builder, 14)}
-    Packet Builder
-  </a>
-  <nav class="cg-sb-nav" aria-label="Tools and resources">
-  <ul class="cg-sidebar-nav">
-    <li><div class="cg-sb-section">${svg(ICON.tools, 13, "", 2.2)}Tools &amp; Planners</div></li>
-${TOOLS.map(t => link(t.href, t.label, t.key)).join("\n")}
-${pageTools ? '    <li><div class="cg-sb-divider"></div></li>\n' + PAGE_TOOLS_START + "\n    " + pageTools.trim() + "\n" + PAGE_TOOLS_END : ""}
-    <li><div class="cg-sb-divider"></div></li>
-    <li>
-      <details class="cg-sb-acc" id="cgInfoNav"${onHub ? " open data-here" : ""}>
-        <summary class="cg-sb-section cg-sb-acc-head">${svg(ICON.library, 13, "", 2.2)}<span class="cg-sb-acc-title">${esc(HUB.title)}</span><span class="cg-sb-count" aria-label="${MODULES.length} modules">${MODULES.length}</span>${svg(ICON.chevron, 14, "cg-sb-chev")}</summary>
-        <ul class="cg-sb-sub">
-${"      " + link(HUB.href, "Browse all resources", "hub", "grid").replace("<a ", '<a data-hub ')}
-${groups}
-        </ul>
-      </details>
-    </li>
-    <li><div class="cg-sb-divider"></div></li>
-    <li><div class="cg-sb-section">${svg(ICON.support, 13, "", 2.2)}Support</div></li>
-${link("contact.html", "Contact Kirk Barron", "contact")}
+  <nav class="cg-sb-nav" aria-label="Sections">
+  <ul class="cg-sidebar-nav cg-hubs">
+${hubs}
+    <li class="cg-hub-foot"><a href="${P}${CONTACT.href}"${here(cur === CONTACT.key)}>${svg(ICON[CONTACT.icon], 14, "cg-sb-ico")}<span>${esc(CONTACT.label)}</span></a></li>
   </ul>
   </nav>
 </aside>
@@ -218,22 +263,63 @@ ${link("contact.html", "Contact Kirk Barron", "contact")}
   "use strict";
   var toggle = document.getElementById("cgSbToggle"), sidebar = document.getElementById("cgSidebar"), overlay = document.getElementById("cgSbOverlay");
   if (toggle && sidebar && overlay){
-    var open = function(){ sidebar.classList.add("is-open"); overlay.classList.add("is-open"); toggle.setAttribute("aria-expanded", "true"); toggle.setAttribute("aria-label", "Close Categories Menu"); };
-    var close = function(){ sidebar.classList.remove("is-open"); overlay.classList.remove("is-open"); toggle.setAttribute("aria-expanded", "false"); toggle.setAttribute("aria-label", "Open Categories Menu"); };
+    var open = function(){ sidebar.classList.add("is-open"); overlay.classList.add("is-open"); toggle.setAttribute("aria-expanded", "true"); toggle.setAttribute("aria-label", "Close Menu"); };
+    var close = function(){ sidebar.classList.remove("is-open"); overlay.classList.remove("is-open"); toggle.setAttribute("aria-expanded", "false"); toggle.setAttribute("aria-label", "Open Menu"); };
     toggle.addEventListener("click", function(){ sidebar.classList.contains("is-open") ? close() : open(); });
     overlay.addEventListener("click", close);
     document.addEventListener("keydown", function(e){ if (e.key === "Escape" && sidebar.classList.contains("is-open")){ close(); toggle.focus(); } });
   }
-  /* The Resource & Clinical Hub is always open on its own pages; elsewhere it
-     opens the way this browser last left it (a convenience, nothing more). */
-  var acc = document.getElementById("cgInfoNav"), KEY = "cg_nav_info_open";
-  if (acc && !acc.hasAttribute("data-here")){
-    try { if (localStorage.getItem(KEY) === "1") acc.open = true; } catch (e){}
-    acc.addEventListener("toggle", function(){ try { localStorage.setItem(KEY, acc.open ? "1" : "0"); } catch (e){} });
-  }
+  /* One hub open at a time: opening a hub closes the others. The one holding this page starts open; without scripts every hub can be opened. */
+  var hubs = [].slice.call(document.querySelectorAll("details.cg-hub"));
+  hubs.forEach(function(d){
+    d.addEventListener("toggle", function(){ if (d.open) hubs.forEach(function(o){ if (o !== d && o.open) o.open = false; }); });
+  });
 })();
 </script>
 ${END}`;
+}
+
+/* The Packet Builder's navigation: the same six hubs in its own markup and
+   classes (the page's styles and script own the look and the behavior). Its
+   hooks stay as the page uses them: #catNav, #navPacket, #navCount, #navColoringCount,
+   .sb-link[data-route]. Activity Packets holds the activity categories (drawn
+   by the page, with counts) and the queue; Resources is two links; Contact is a footer link, not a hub. */
+export const BNAV_START = "<!-- cg-bnav:start: generated by scripts/site-nav.mjs. Edit that file and run npm run nav; changes made here are overwritten. -->";
+export const BNAV_END = "<!-- cg-bnav:end -->";
+export function builderSidebar(){
+  const ico = (name, size) => svg(ICON[name], size || 18, "", 2);
+  const link = it => `        <li><a class="sb-link"${it.route ? ` href="#/${it.route}" data-route="${it.route}"` : ` href="${it.href}"`}>${ico(it.icon)}<span>${esc(it.label)}</span>${it.route === "coloring" ? '<span class="tag live" id="navColoringCount"></span>' : ""}</a></li>`;
+  const group = (h, inner, openNow) => `    <details class="sb-hub" data-hub="${h.id}"${openNow ? " open" : ""}>
+      <summary class="sb-hub-head">${ico(h.icon, 20)}<span>${esc(h.label)}</span>${svg(ICON.chevron, 14, "sb-hub-chev", 2.2)}</summary>
+${inner}
+    </details>`;
+  const hubs = HUBS.map(h => {
+    if (h.id === "packets") return group(h, `      <ul class="sb-list" id="catNav" aria-label="Activity categories"></ul>
+      <ul class="sb-list">
+        <li><button class="sb-link" type="button" id="navPacket">${ico("builder")}<span>Packet queue</span><span class="badge" id="navCount">0</span></button></li>
+      </ul>`, true);
+    if (h.id === "academy") { const it = h.items[0]; return `    <a class="sb-link sb-hub-link" data-hub="${h.id}" href="#/${it.route}" data-route="${it.route}">${ico(h.icon, 20)}<span>${esc(h.label)}</span></a>`; }
+    if (h.id === "resources") return group(h, `      <ul class="sb-list">
+${[{ label: HUB.title, href: HUB.href, icon: "library" }, { label: RESEARCH.label, href: moduleHref(RESEARCH), icon: "microscope" }].map(link).join("\n")}
+      </ul>`);
+    return group(h, `      <ul class="sb-list">
+${h.items.map(link).join("\n")}
+      </ul>`);
+  }).join("\n");
+  return `${BNAV_START}
+<aside class="sidebar" id="sidebar" aria-label="Packet Builder navigation">
+  <a class="brand" href="#/">
+    <img src="assets/cognicopia-logo.jpg" alt="">
+    <span><b>Cognicopia</b><small>Packet Builder</small></span>
+  </a>
+  <nav class="sb-nav" aria-label="Sections">
+${hubs}
+    <ul class="sb-list sb-foot">
+${link(CONTACT)}
+    </ul>
+  </nav>
+</aside>
+${BNAV_END}`;
 }
 
 export function crumbs(page){
@@ -330,6 +416,15 @@ export const CSS = `<style id="cg-nav-css">
 .cg-sidebar-home{min-height:var(--tap,52px)}
 .cg-sidebar-toggle{height:var(--tap,52px)!important;min-width:var(--tap,52px)}
 .cg-sb-acc > summary{min-height:var(--tap,52px);box-sizing:border-box;display:flex;align-items:center}
+.cg-hub-li{margin:0;list-style:none}
+.cg-hub > summary,.cg-sidebar-nav a.cg-hub-link{display:flex;align-items:center;gap:10px;box-sizing:border-box;min-height:var(--tap,52px);margin:3px 6px 0;padding:8px 10px;border:0;border-radius:8px;font:700 11.5pt/1.25 "Trebuchet MS","Segoe UI",sans-serif!important;letter-spacing:0!important;text-transform:none!important;color:#fff!important;text-decoration:none;cursor:pointer}
+.cg-hub > summary:hover,.cg-sidebar-nav a.cg-hub-link:hover{background:var(--sb-hover)}
+.cg-hub[open] > summary{background:rgba(82,183,136,.14)}
+.cg-sidebar-nav a.cg-hub-link.active{background:rgba(82,183,136,.22);box-shadow:inset 3px 0 0 var(--sb-accent)}
+.cg-hub .cg-sb-ico,.cg-sidebar-nav a.cg-hub-link .cg-sb-ico{color:var(--sb-accent)}
+.cg-hub > .cg-sb-sub{padding:2px 0 8px}
+.cg-hubs{padding-top:6px}
+.cg-hub-foot{margin:8px 0 0;padding-top:6px;border-top:1px solid var(--sb-border,rgba(216,243,220,.15));list-style:none}
 .cg-sidebar-nav a .cg-sb-ico{flex:none;margin-top:1px;color:var(--sb-muted);transition:color .13s}
 .cg-sidebar-nav a:hover .cg-sb-ico,.cg-sidebar-nav a.active .cg-sb-ico{color:var(--sb-accent)}
 .cg-sb-acc > summary{list-style:none;cursor:pointer;margin:4px 6px 0;padding:10px 8px 8px;border-radius:6px;transition:background .15s}
@@ -369,6 +464,13 @@ function pageToolsOf(s){
 }
 
 export function render(s, page){
+  if (page.builder){                                   // the Packet Builder: only the navigation inside its sidebar is generated
+    const block = builderSidebar(), old = between(s, BNAV_START.slice(0, 18), BNAV_END);
+    if (old) return s.slice(0, old.i) + block + s.slice(old.j);
+    const i = s.indexOf('<aside class="sidebar" id="sidebar"'), j = s.indexOf("</aside>", i);   // the first time: the handwritten sidebar
+    if (i < 0 || j < 0) throw new Error(page.file + ": no sidebar found");
+    return s.slice(0, i) + block + s.slice(j + "</aside>".length);
+  }
   const tools = pageToolsOf(s);
   let out = s;
   // the sidebar: replace the generated block, or the first time, the old toggle, overlay, aside and toggle script
@@ -409,7 +511,44 @@ export function render(s, page){
   return out;
 }
 
-/* ---------- 4. Command line ---------- */
+/* ---------- 4. Proof: the six hubs are the same everywhere and lead somewhere real ---------- */
+export function validate(){
+  const problems = [], read = f => fs.readFileSync(path.join(ROOT, f), "utf8");
+  const ids = HUBS.map(h => h.id).join(",");
+  // every place a hub points exists, and every Packet Builder route is a route the page has
+  const table = /const routes = \{([^}]*)\}/.exec(read("builder.html"));
+  const routes = new Set(table ? [...table[1].matchAll(/"([a-z]*)"\s*:/g)].map(m => m[1]) : []);
+  if (!routes.size) problems.push("builder.html: could not read its routes table");
+  for (const it of HUBS.flatMap(h => h.items).concat([CONTACT])){
+    const file = it.href.replace(/[?#].*$/, "") || "index.html";
+    if (!fs.existsSync(path.join(ROOT, file))) problems.push(`${it.label}: ${file} does not exist`);
+    if (it.route && !routes.has(it.route)) problems.push(`${it.label}: the Packet Builder has no route "${it.route}"`);
+  }
+  let links = 0;
+  for (const page of PAGES){
+    const f = path.join(ROOT, page.file); if (!fs.existsSync(f)) continue;
+    const html = fs.readFileSync(f, "utf8"), a = html.indexOf(page.builder ? BNAV_START.slice(0, 18) : START.slice(0, 16)), b = html.indexOf(page.builder ? BNAV_END : END, a);
+    if (a < 0 || b < 0){ problems.push(`${page.file}: no generated navigation block`); continue; }
+    const block = html.slice(a, b), got = [...block.matchAll(/data-hub="([a-z]+)"/g)].map(m => m[1]).join(",");
+    if (got !== ids) problems.push(`${page.file}: the hubs are ${got || "missing"}, not ${ids}`);
+    if (page.builder){
+      const used = [...block.matchAll(/data-route="([a-z]+)"/g)].map(m => m[1]), want = HUBS.flatMap(h => h.items).filter(i => i.route).map(i => i.route);
+      used.filter(r => !routes.has(r)).forEach(r => problems.push(`${page.file}: a link goes to the route "${r}", which the page does not have`));
+      want.filter(r => !used.includes(r)).forEach(r => problems.push(`${page.file}: no link to the route "${r}"`));
+      links += used.length;
+    } else {
+      const open = hubOf(page), here = (block.match(/data-here/g) || []).length, cur = (block.match(/aria-current="page"/g) || []).length;
+      const isGroup = open && HUBS.find(h => h.id === open) && (open === "resources" || HUBS.find(h => h.id === open).items.length > 1);
+      if (isGroup && !new RegExp(`id="cgHub-${open}"[^>]*\\bopen\\b`).test(block)) problems.push(`${page.file}: the ${open} hub should be open and is not`);
+      if (here !== (isGroup ? 1 : 0)) problems.push(`${page.file}: ${here} hubs are marked as the one holding this page (expected ${isGroup ? 1 : 0})`);
+      if (cur !== (page.current ? 1 : 0)) problems.push(`${page.file}: ${cur} links are marked as the current page (expected ${page.current ? 1 : 0})`);
+      links += (block.match(/<a /g) || []).length;
+    }
+  }
+  return { problems, links };
+}
+
+/* ---------- 5. Command line ---------- */
 if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.argv[1])){
   const check = process.argv.includes("--check"), stale = [];
   for (const page of PAGES){
@@ -419,5 +558,7 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.a
     if (out !== s){ if (check) stale.push(page.file); else { fs.writeFileSync(f, out); console.log("updated " + page.file); } }
   }
   if (check && stale.length){ console.error("Navigation out of date in: " + stale.join(", ") + ". Run: npm run nav"); process.exit(1); }
-  if (check) console.log("Navigation is current on all " + PAGES.length + " pages.");
+  const { problems, links } = validate();
+  if (problems.length){ console.error("Navigation problems:\n  - " + problems.join("\n  - ")); process.exit(1); }
+  if (check) console.log("Navigation is current on all " + PAGES.length + " pages: the same " + HUBS.length + " hubs, one open, " + links + " links checked.");
 }

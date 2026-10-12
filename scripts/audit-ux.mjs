@@ -30,12 +30,8 @@
    Serves the repository on a local port; makes no other network request.
    ===================================================================== */
 import fs from "fs";
-import http from "http";
 import path from "path";
-import { createRequire } from "module";
-import { fileURLToPath } from "url";
-
-const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
+import { ROOT, loadPlaywright, serve } from "./lib/browser.mjs";
 const args = process.argv.slice(2);
 const opt = (name, def) => { const i = args.indexOf("--" + name); return i < 0 ? def : (args[i + 1] && !args[i + 1].startsWith("--") ? args[i + 1] : true); };
 const ONLY = opt("only") && opt("only") !== true ? String(opt("only")).split(",") : null;
@@ -50,29 +46,6 @@ const BUDGETS = {
   clicks: { packet: 1, coloring: 2, roster: 3 },   // clicks to a finished sheet, by workflow
   doherty_ms: 400             // a response a person waits for; printing a whole packet is judged against its own, looser line
 };
-
-/* ---------- Playwright ---------- */
-function loadPlaywright(){
-  for (const base of [ROOT + "/", "/opt/node22/lib/node_modules/", "/usr/lib/node_modules/", "/usr/local/lib/node_modules/"]){
-    try { return createRequire(base)("playwright"); } catch (e) { /* try the next place */ }
-  }
-  console.error("Playwright was not found. Install it (npm install --no-save playwright) or run where it is available.");
-  process.exit(2);
-}
-
-/* ---------- a static server for the repository ---------- */
-const TYPES = { ".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=utf-8", ".mjs": "text/javascript; charset=utf-8", ".json": "application/json", ".css": "text/css", ".svg": "image/svg+xml", ".png": "image/png", ".jpg": "image/jpeg", ".webmanifest": "application/manifest+json", ".woff2": "font/woff2", ".txt": "text/plain" };
-function serve(){
-  return new Promise(ok => {
-    const srv = http.createServer((req, res) => {
-      let p = decodeURIComponent(req.url.split("?")[0]); if (p.endsWith("/")) p += "index.html";
-      const f = path.join(ROOT, p);
-      if (!f.startsWith(ROOT) || !fs.existsSync(f) || fs.statSync(f).isDirectory()){ res.writeHead(404); res.end("not found"); return; }
-      res.writeHead(200, { "content-type": TYPES[path.extname(f)] || "application/octet-stream", "cache-control": "no-store" });
-      fs.createReadStream(f).pipe(res);
-    }).listen(0, "127.0.0.1", () => ok({ srv, base: `http://127.0.0.1:${srv.address().port}/` }));
-  });
-}
 
 const median = a => { const s = a.slice().sort((x, y) => x - y); return s.length ? s[Math.floor(s.length / 2)] : 0; };
 const results = { generated: new Date().toISOString().slice(0, 10), minTarget: MIN, targets: [], contrast: [], nav: [], clicks: [], print: [], weight: [] };
@@ -118,11 +91,12 @@ const STATES = [
 ];
 
 /* runs in the page: every control smaller than min, with the controls marked exempt */
-function measureTargetsInPage(min){
+function measureTargetsInPage(arg){
+    const min = typeof arg === "number" ? arg : arg.min, scope = typeof arg === "object" && arg.root ? document.querySelector(arg.root) : document;
     const sel = "button, a[href], select, input:not([type=hidden]):not([type=checkbox]):not([type=radio]), textarea, summary, [role=button], [role=tab], [role=switch], [tabindex]:not([tabindex='-1'])";
-    const seen = new Set(), exempt = new Set(), cand = [...document.querySelectorAll(sel)];
+    const seen = new Set(), exempt = new Set(), cand = [...scope.querySelectorAll(sel)];
     /* a checkbox or radio is hit through its label, so the label is what is measured (the input itself when it has none) */
-    document.querySelectorAll("input[type=checkbox], input[type=radio]").forEach(i => { const lab = i.closest("label") || (i.id && document.querySelector(`label[for="${CSS.escape(i.id)}"]`)); cand.push(lab || i); });
+    scope.querySelectorAll("input[type=checkbox], input[type=radio]").forEach(i => { const lab = i.closest("label") || (i.id && document.querySelector(`label[for="${CSS.escape(i.id)}"]`)); cand.push(lab || i); });
     const all = cand.filter(el => {
       if (seen.has(el)) return false; seen.add(el);
       const b = el.getBoundingClientRect(), cs = getComputedStyle(el);
@@ -146,6 +120,30 @@ function measureTargetsInPage(min){
     const small = all.filter(el => { const b = box(el); return b.height < min - .5 || b.width < min - .5; });
     return { total: all.length, exempt: [...exempt], small: small.length, sample: small.slice(0, 4).map(el => { const b = box(el); return `${Math.round(b.width)}x${Math.round(b.height)} ${el.tagName.toLowerCase()}${el.id ? "#" + el.id : ""}${typeof el.className === "string" && el.className ? "." + el.className.split(" ")[0] : ""} "${(el.textContent || el.getAttribute("aria-label") || "").trim().slice(0, 24)}"`; }),
       all: small.map(el => { const b = box(el); return `${Math.round(b.width)}x${Math.round(b.height)} ${el.tagName.toLowerCase()}${el.id ? "#" + el.id : ""}${typeof el.className === "string" && el.className ? "." + el.className.trim().split(/\s+/).join(".") : ""} "${(el.textContent || el.getAttribute("aria-label") || el.getAttribute("title") || el.value || "").trim().replace(/\s+/g, " ").slice(0, 28)}"`; }) };
+}
+
+/* runs in the page: text below WCAG AA against the background behind it, in the whole page or inside one element (rootSel) */
+function measureContrastInPage(rootSel){
+  const parse = s => { const m = s.match(/rgba?\(([^)]+)\)/); if (!m) return null; const v = m[1].split(/[ ,\/]+/).filter(Boolean).map(Number); return { r: v[0], g: v[1], b: v[2], a: v.length > 3 ? v[3] : 1 }; };
+  const lum = c => { const f = x => { x /= 255; return x <= .03928 ? x / 12.92 : Math.pow((x + .055) / 1.055, 2.4); }; return .2126 * f(c.r) + .7152 * f(c.g) + .0722 * f(c.b); };
+  const blend = (top, bot) => ({ r: top.r * top.a + bot.r * (1 - top.a), g: top.g * top.a + bot.g * (1 - top.a), b: top.b * top.a + bot.b * (1 - top.a), a: 1 });
+  const bgOf = el => { const stack = []; for (let e = el; e; e = e.parentElement){ const c = parse(getComputedStyle(e).backgroundColor); if (c && c.a > 0){ stack.push(c); if (c.a >= 1) break; } } let out = { r: 255, g: 255, b: 255, a: 1 }; for (let i = stack.length - 1; i >= 0; i--) out = blend(stack[i], out); return out; };
+  let total = 0; const bad = [], seen = new Set();
+  const walker = document.createTreeWalker(rootSel ? document.querySelector(rootSel) : document.body, NodeFilter.SHOW_TEXT); let n;
+  while ((n = walker.nextNode())){
+    const t = n.textContent.trim(); if (!t) continue;
+    const el = n.parentElement; if (!el || seen.has(el)) continue; seen.add(el);
+    const b = el.getBoundingClientRect(); if (!b.width || !b.height) continue;
+    const cs = getComputedStyle(el); if (cs.visibility === "hidden" || +cs.opacity === 0) continue;
+    if (el.closest("[hidden], script, style, svg, noscript, option, .sr-only, details:not([open]) > :not(summary)")) continue;
+    let hidden = false; for (let e = el; e; e = e.parentElement) if (getComputedStyle(e).display === "none"){ hidden = true; break; } if (hidden) continue;
+    const fg = parse(cs.color), bg = bgOf(el); if (!fg || !bg) continue;
+    const f = blend(fg, bg); total++;
+    const L1 = lum(f), L2 = lum(bg), ratio = (Math.max(L1, L2) + .05) / (Math.min(L1, L2) + .05);
+    const size = parseFloat(cs.fontSize), large = size >= 24 || (+cs.fontWeight >= 700 && size >= 18.66), need = large ? 3 : 4.5;
+    if (ratio < need) bad.push(`${ratio.toFixed(2)} < ${need} ${el.tagName.toLowerCase()}${el.id ? "#" + el.id : ""} "${t.slice(0, 28)}"`);
+  }
+  return { total, bad };
 }
 
 async function main(){
@@ -193,28 +191,7 @@ async function main(){
 
   /* ---------- contrast ---------- */
   if (want("contrast")){
-    const measure = () => {
-      const parse = s => { const m = s.match(/rgba?\(([^)]+)\)/); if (!m) return null; const v = m[1].split(/[ ,\/]+/).filter(Boolean).map(Number); return { r: v[0], g: v[1], b: v[2], a: v.length > 3 ? v[3] : 1 }; };
-      const lum = c => { const f = x => { x /= 255; return x <= .03928 ? x / 12.92 : Math.pow((x + .055) / 1.055, 2.4); }; return .2126 * f(c.r) + .7152 * f(c.g) + .0722 * f(c.b); };
-      const blend = (top, bot) => ({ r: top.r * top.a + bot.r * (1 - top.a), g: top.g * top.a + bot.g * (1 - top.a), b: top.b * top.a + bot.b * (1 - top.a), a: 1 });
-      const bgOf = el => { const stack = []; for (let e = el; e; e = e.parentElement){ const c = parse(getComputedStyle(e).backgroundColor); if (c && c.a > 0){ stack.push(c); if (c.a >= 1) break; } } let out = { r: 255, g: 255, b: 255, a: 1 }; for (let i = stack.length - 1; i >= 0; i--) out = blend(stack[i], out); return out; };
-      let total = 0; const bad = [], seen = new Set();
-      const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT); let n;
-      while ((n = walker.nextNode())){
-        const t = n.textContent.trim(); if (!t) continue;
-        const el = n.parentElement; if (!el || seen.has(el)) continue; seen.add(el);
-        const b = el.getBoundingClientRect(); if (!b.width || !b.height) continue;
-        const cs = getComputedStyle(el); if (cs.visibility === "hidden" || +cs.opacity === 0) continue;
-        if (el.closest("[hidden], script, style, svg, noscript, option, .sr-only")) continue;
-        let hidden = false; for (let e = el; e; e = e.parentElement) if (getComputedStyle(e).display === "none"){ hidden = true; break; } if (hidden) continue;
-        const fg = parse(cs.color), bg = bgOf(el); if (!fg || !bg) continue;
-        const f = blend(fg, bg); total++;
-        const L1 = lum(f), L2 = lum(bg), ratio = (Math.max(L1, L2) + .05) / (Math.min(L1, L2) + .05);
-        const size = parseFloat(cs.fontSize), large = size >= 24 || (+cs.fontWeight >= 700 && size >= 18.66), need = large ? 3 : 4.5;
-        if (ratio < need) bad.push(`${ratio.toFixed(2)} < ${need} ${el.tagName.toLowerCase()}${el.id ? "#" + el.id : ""} "${t.slice(0, 28)}"`);
-      }
-      return { total, bad };
-    };
+    const measure = measureContrastInPage;
     for (const mode of ["day", "night"]){
       const { ctx, page } = await open(1366, 768);
       for (const [label, url] of VIEWS){
@@ -231,16 +208,25 @@ async function main(){
   /* ---------- navigation ---------- */
   if (want("nav")){
     const { ctx, page } = await open(1366, 768);
-    for (const [label, url, links, groups] of [
-      ["index.html sidebar", "index.html", ".cg-sidebar-nav a", "details.cg-sb-acc"],
-      ["builder sidebar", "builder.html#/", ".sb-link", ".sb-group, .sb-heading, nav h2, nav h3"]
-    ]){
+    for (const [label, url] of [["index.html", "index.html"], ["profile.html", "profile.html"], ["builder home", "builder.html#/"], ["builder coloring", "builder.html#/coloring"],
+      ["builder roster", "builder.html#/roster"], ["resource hub page", "resources/"], ["a resource module", "resources/quality-standards/"], ["contact", "contact.html"]]){
       await page.goto(base + url, { waitUntil: "load" }); await page.waitForTimeout(500);
-      const r = await page.evaluate(([l, g]) => {
-        const links = [...document.querySelectorAll(l)], vis = links.filter(a => { const b = a.getBoundingClientRect(); return b.width && b.height; });
-        return { links: links.length, visible_without_opening: vis.length, groups: document.querySelectorAll(g).length, top_level: [...new Set(links.map(a => (a.getAttribute("href") || "").split("#")[0] || a.dataset.route || ""))].length };
-      }, [links, groups]);
-      results.nav.push(Object.assign({ view: label }, r));
+      const r = await page.evaluate(() => {
+        const aside = document.querySelector("aside"); if (!aside) return null;
+        const shown = el => { const b = el.getBoundingClientRect(), cs = getComputedStyle(el); return b.width > 0 && b.height > 0 && cs.visibility !== "hidden" && !el.closest("[hidden]") && !el.closest("details:not([open]) > :not(summary)"); };
+        const brand = aside.querySelector(".brand, .cg-sidebar-brand");
+        const choices = [...aside.querySelectorAll("a[href], summary, button")].filter(el => el !== brand && shown(el));
+        const hubs = [...aside.querySelectorAll('[data-hub]:not([data-hub=""])')];
+        const open = [...aside.querySelectorAll("details[open]")].filter(shown).length;
+        return { hubs: hubs.length, choices: choices.length, groups_open: open, tall: Math.round(aside.scrollHeight) };
+      });
+      if (r){
+        const t = await page.evaluate(measureTargetsInPage, { min: MIN, root: "aside" }), c = await page.evaluate(measureContrastInPage, "aside");
+        r.below_min = t.small; r.contrast_below_aa = c.bad.length;
+        if (t.small > BUDGETS.tapTargetsBelowMin) broken.push(`${label}: ${t.small} sidebar control(s) under ${MIN} px`);
+        if (c.bad.length > BUDGETS.contrastFailures) broken.push(`${label}: ${c.bad.length} sidebar text element(s) below WCAG AA`);
+        results.nav.push(Object.assign({ view: label }, r));
+      }
     }
     await ctx.close();
   }
@@ -348,7 +334,7 @@ function report(){
     results.contrast.forEach(r => out.push(`  ${pad(r.view, 18)} ${pad(r.mode, 6)} ${String(r.below_aa).padStart(3)} of ${String(r.text_elements).padStart(4)}${r.sample.length ? "   e.g. " + r.sample[0] : ""}`));
     out.push("");
   }
-  if (results.nav.length){ out.push("NAVIGATION"); results.nav.forEach(r => out.push(`  ${pad(r.view, 20)} ${r.links} links (${r.visible_without_opening} visible without opening a group), ${r.groups} group headings, ${r.top_level} distinct destinations`)); out.push(""); }
+  if (results.nav.length){ out.push("NAVIGATION (the sidebar as the page opens)"); results.nav.forEach(r => out.push(`  ${pad(r.view, 20)} ${r.hubs ? r.hubs + " hubs" : "no hubs"}, ${String(r.choices).padStart(2)} choices visible at once, ${r.groups_open} group(s) open, sidebar ${r.tall} px tall; under ${MIN} px: ${r.below_min}; text below AA: ${r.contrast_below_aa}`)); out.push(""); }
   if (results.clicks.length){ out.push("CLICKS (counted as performed)"); results.clicks.forEach(r => out.push(r.error ? `  ${r.workflow}: could not run (${r.error})` : `  ${pad(r.workflow, 46)} ${r.clicks} click(s), ${r.typed_fields} typed field(s), to ${r.to}   (budget ${r.budget})`)); out.push(""); }
   if (results.print.length){ out.push(`PRINT-GENERATION TIME (a response a person waits for is judged against ${BUDGETS.doherty_ms} ms; making a whole packet is a longer job)`); results.print.forEach(r => out.push(`  ${pad(r.what, 78)} ${String(r.median_ms).padStart(6)} ms`)); out.push(""); }
   out.push("FOR A PERSON TO JUDGE (a script cannot)");

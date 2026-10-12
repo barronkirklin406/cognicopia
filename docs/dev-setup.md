@@ -54,7 +54,7 @@ A coding agent can drive a browser or GitHub through an MCP server. You do not n
 | You changed | Run |
 |---|---|
 | `assets/cognicopia-coloring/*.js`, the prompts, or approved traced art | `npm run coloring` |
-| A page's navigation or `scripts/site-nav.mjs` | `npm run nav` |
+| `HUBS` or anything else in `scripts/site-nav.mjs`, or the coloring picture count (the hub page shows it) | `npm run nav` |
 | `src/services/*.ts` | `npm run services` |
 | The Research Center's content | `npm run research` |
 | Layout, controls, colors or the print flow | `npm run audit:ux` before and after, then `npm run build` |
