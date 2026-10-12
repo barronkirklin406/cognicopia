@@ -1579,6 +1579,83 @@ textarea:focus{border-color:var(--accent)}
 .slp-table{width:100%;border-collapse:collapse;font-size:10pt;margin-top:.06in}
 .slp-table th,.slp-table td{border:.75pt solid #000;padding:2pt 4pt;text-align:left;vertical-align:top}
 </style>
+<style id="shf-style">
+/* =====================================================================
+   SHIFT BOARD (#/shift): the screen, then the printed handoff sheet.
+   Handoff notes and staff tasks for one shared computer. Every control
+   keeps the 52 px floor (--tap). Colour is never the only signal: each
+   kind of note also has an icon and its name, a finished task says Done.
+   ===================================================================== */
+.shf-first{margin:0 0 14px;color:var(--muted);font-size:15px}
+.shf-day{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;margin:0 0 14px}
+.shf-day .field{margin:0;flex:0 1 230px}
+.shf-inline{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;margin:8px 0 0}
+.shf-inline .field{margin:0;flex:0 1 230px}
+.shf .seg span{gap:8px}
+.shf .seg svg{flex:none}
+.shf-sum{margin:10px 0 14px;font-weight:700}
+.shf-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px;align-items:start}
+.shf-grid > .config{margin-top:28px;min-width:0}
+@media (max-width:1100px){.shf-grid{grid-template-columns:1fr}}
+.shf textarea{min-height:96px}
+.shf input[type=time],.shf input[type=password],.shf input[type=file]{width:100%;min-height:var(--tap);padding:10px 12px;border-radius:10px;border:1px solid var(--line-2);background:var(--bg-2);color:var(--text);font:inherit}
+.shf-count{display:block;margin-top:4px;color:var(--muted);font-size:13px;text-align:right}
+.shf-list{list-style:none;margin:14px 0 0;padding:0;display:grid;gap:10px}
+.shf-entry{padding:12px 14px;border-radius:12px;border:1px solid var(--line-2);border-left-width:6px;background:var(--bg-2)}
+.shf-k-watch{border-left-color:var(--warn)}
+.shf-k-pass{border-left-color:var(--accent)}
+.shf-k-worked{border-left-color:#8fb8ff}
+.shf-top{display:flex;flex-wrap:wrap;gap:6px 14px;justify-content:space-between;align-items:center}
+.shf-kind{display:inline-flex;align-items:center;gap:8px;font-weight:800}
+.shf-k-watch .shf-kind svg{color:var(--warn)}
+.shf-k-pass .shf-kind svg{color:var(--accent-hi)}
+.shf-k-worked .shf-kind svg{color:#8fb8ff}
+.shf-when,.shf-by,.shf-sub{color:var(--muted);font-size:14px}
+.shf-about{margin:6px 0 0;font-weight:700}
+.shf-text{margin:6px 0 0;white-space:pre-line;overflow-wrap:anywhere}
+.shf-foot{display:flex;flex-wrap:wrap;gap:8px 12px;justify-content:space-between;align-items:center;margin-top:8px}
+.shf-acts{display:flex;flex-wrap:wrap;gap:8px}
+.shf-task{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px 14px;align-items:start}
+.shf-task .shf-text{margin-top:0}
+.shf-task .shf-acts{grid-column:1 / -1}
+.shf-task.is-done .shf-text{color:var(--muted)}
+.shf-done{display:inline-flex;align-items:center;gap:10px;min-height:var(--tap);padding:0 14px 0 12px;border:1px solid var(--line-2);border-radius:10px;background:var(--panel);font-weight:700;cursor:pointer}
+.shf-done input{appearance:none;-webkit-appearance:none;flex:none;display:grid;place-items:center;width:26px;height:26px;margin:0;border:2px solid var(--muted);border-radius:6px;background:transparent;cursor:pointer}
+.shf-done input:checked{background:var(--accent);border-color:var(--accent)}
+.shf-done input:checked::after{content:"";width:12px;height:6px;border-left:3px solid var(--accent-ink);border-bottom:3px solid var(--accent-ink);transform:rotate(-45deg) translate(1px,-1px)}
+.shf-done input:focus-visible{outline:3px solid var(--accent-hi);outline-offset:3px}
+.shf-late{color:var(--warn);font-weight:700}
+.shf-sub-h{margin:18px 0 0;font-size:16px}
+.shf-empty{margin:14px 0 0;padding:14px;border:1px dashed var(--line-2);border-radius:12px;color:var(--muted)}
+.shf-warn{margin:10px 0 0;padding:12px 14px;border-radius:12px;border:2px solid var(--warn);background:rgba(240,180,140,.08)}
+.shf-warn p{margin:0 0 8px}
+.shf-warn .actions{margin-top:0}
+.shf-tip{margin:10px 0 0;color:var(--muted);font-size:14px}
+.shf-msg{min-height:1.4em;margin:8px 0 0;font-weight:700}
+.shf-msg.is-bad{color:var(--warn)}
+.shf-more{margin-top:28px}
+.shf-more .shf-box{margin:0 0 20px;padding:0 0 20px;border-bottom:1px solid var(--line)}
+.shf-more .shf-box:last-child{margin:0;padding:0;border:0}
+.shf-staff{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.shf-staff li{display:inline-flex;align-items:center;gap:6px}
+/* the printed handoff sheet: pure black on white, 0.75 in binding gutter from .sheet */
+.sheet.ops-sheet{gap:.1in;color:#000}
+.ops-head{display:flex;justify-content:space-between;align-items:flex-end;gap:.2in;border-bottom:2pt solid #000;padding-bottom:.06in}
+.ops-head > div{display:flex;flex-direction:column;gap:1pt}
+.ops-head b{font-size:16pt}
+.ops-head span{font-size:10.5pt}
+.ops-who{text-align:right}
+.ops-body{flex:1 1 auto;overflow:hidden;display:flex;flex-direction:column;gap:.14in}
+.ops-block h3{margin:0 0 .05in;padding-bottom:1pt;border-bottom:1pt solid #000;font-size:11pt;letter-spacing:.06em;text-transform:uppercase}
+.ops-row{display:grid;grid-template-columns:.9in minmax(0,1fr) .75in;gap:.12in;margin:0 0 .07in;font-size:12pt;line-height:.21in;break-inside:avoid}
+.ops-lead{font-size:11pt;font-weight:700;white-space:pre-line}
+.ops-text{white-space:pre-line;overflow-wrap:anywhere}
+.ops-tail{font-size:11pt;font-weight:700;text-align:right}
+.ops-box{display:inline-block;width:.17in;height:.17in;border:1.5pt solid #000;vertical-align:-.02in}
+.ops-empty{margin:0;font-size:11pt;font-style:italic}
+.ops-hand i{display:block;height:.5in;border-bottom:2pt solid #000}
+.ops-foot{display:flex;justify-content:space-between;gap:.2in;font-size:9pt;border-top:1px solid #000;padding-top:2pt}
+</style>
 <style id="hl-style">
 /* =====================================================================
    MEMORY DIGEST & BOOK (#/heirloom): the screen, the page previews and
@@ -2413,6 +2490,7 @@ textarea:focus{border-color:var(--accent)}
       <summary class="sb-hub-head"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01M12 6h.01M16 6h.01M8 10h.01M12 10h.01M16 10h.01M8 14h.01M12 14h.01M16 14h.01"/></svg><span>Facility</span><svg class="sb-hub-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="9 6 15 12 9 18"/></svg></summary>
       <ul class="sb-list">
         <li><a class="sb-link" href="#/facility" data-route="facility"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01M12 6h.01M16 6h.01M8 10h.01M12 10h.01M16 10h.01M8 14h.01M12 14h.01M16 14h.01"/></svg><span>Facility Portal</span></a></li>
+        <li><a class="sb-link" href="#/shift" data-route="shift"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M9 12h6M9 16h6"/></svg><span>Shift board</span></a></li>
         <li><a class="sb-link" href="#/roster" data-route="roster"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></svg><span>Resident roster</span></a></li>
         <li><a class="sb-link" href="#/clinical" data-route="clinical"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 3H4a1 1 0 0 0-1 1v5a5 5 0 0 0 10 0V4a1 1 0 0 0-1-1h-1"/><path d="M8 14v1a6 6 0 0 0 12 0v-3"/><circle cx="20" cy="10" r="2"/></svg><span>Session notes (SLP)</span></a></li>
         <li><a class="sb-link" href="#/settings" data-route="settings"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg><span>Settings &amp; defaults</span></a></li>
@@ -7551,6 +7629,451 @@ const ClinicalUI = (function(){
   return { render, binderPages, readLog };
 })();
 </script>
+<script src="assets/services/dailyOps.js"></script>
+<script id="ops-ui">
+/* =====================================================================
+   SHIFT BOARD  (#/shift)
+   Handoff notes and staff tasks for one shared computer: a first version,
+   to be changed by what Activity Directors say. Write a note for the next
+   shift, assign a task, mark it done, print the handoff sheet. Residents
+   appear only as aliases; the board checks every note against the saved
+   residents' names and offers the alias instead. Kept as one record in the
+   encrypted store ("cognicopia_dailyops"), with locked .cognicopia files
+   to move it to another station. Nothing is sent anywhere. The logic is
+   CogniDailyOps (src/services/dailyOps.ts); this is the screen.
+   ===================================================================== */
+const DailyOpsUI = (function(){
+  "use strict";
+  const D = window.CogniDailyOps;
+  const S = { day:"", shift:"all", me:"", meAt:0, edit:null, kind:"pass", nameOK:{ note:false, task:false } };
+  const IDLE_MS = 15 * 60 * 1000;                       // initials are forgotten after this long without use
+  let root = null, board = null, known = [], warnTimer = null, lastRemoved = null;
+  const svg = d => `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${d}</svg>`;
+  const ICON = {
+    watch:svg('<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12z"/><circle cx="12" cy="12" r="3"/>'),
+    pass:svg('<path d="M5 12h14M13 6l6 6-6 6"/>'),
+    worked:svg('<circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6"/>')
+  };
+  const pl = (n, one, many) => n + " " + (n === 1 ? one : many);
+  const sorted = list => list.slice().sort((a, b) => a.localeCompare(b, "en", { numeric:true }));     // the board remembers who wrote last; the buttons stay where a finger expects them
+  const today = () => D.slotAt().day;
+  const q = sel => root.querySelector(sel);
+  const val = id => { const el = q("#" + id); return el ? el.value : ""; };
+
+  /* ---------- the board ---------- */
+  function readBoard(){ let raw = null; try { raw = CG_LS.getItem(D.STORE_KEY); } catch (e){ raw = null; } return D.normalizeBoard(raw); }
+  function writeBoard(next){
+    try { CG_LS.setItem(D.STORE_KEY, JSON.stringify(next)); return true; }
+    catch (e){ toast(e && e.name === "LockedError" ? e.message : "The board could not be saved: " + (e && e.message || e)); return false; }
+  }
+  function load(){
+    board = readBoard();
+    const p = D.prune(board, today());              // the retention rule runs whenever the board opens
+    if (p.board !== board){ board = p.board; writeBoard(board); }
+  }
+  function loadKnown(){
+    known = BookUI.savedProfiles().map(p => ({ name:String(p.tier1_core.preferredName || "").trim(), alias:cgAlias(p) })).filter(r => r.name);
+  }
+  /* Save a change. It is made on the board as it is stored now (not on this screen's copy), so a second tab's notes are
+     never written over; then the retention rule runs and the lists are drawn again. */
+  function commit(change, message){
+    const p = D.prune(change(readBoard()), today());
+    if (!writeBoard(p.board)) return false;
+    board = p.board;
+    renderWho(); renderLists();
+    if (message) toast(message);
+    return true;
+  }
+  const me = () => { if (S.me && Date.now() - S.meAt > IDLE_MS) S.me = ""; return S.me; };
+  function needMe(){
+    if (me()){ S.meAt = Date.now(); return true; }
+    toast("Choose your initials first.");
+    renderWho();                                     // none is shown as chosen any more (they may have lapsed while the screen sat open)
+    const first = q('input[name="shfMe"]') || q("#shfInit"); if (first) first.focus();
+    return false;
+  }
+  const aboutOf = id => { const v = val(id); return v === "__other" ? val(id + "Other") : v; };
+
+  /* ---------- the screen ---------- */
+  function render(view){
+    if (!D){
+      view.innerHTML = `<p class="eyebrow">Facility</p><h1 class="view-title" tabindex="-1">Shift board</h1>
+        <p class="callout">The Shift board could not load. Check that assets/services/dailyOps.js is on this site, then reload.</p>`;
+      return;
+    }
+    load(); loadKnown();
+    if (!S.day) S.day = today();
+    S.edit = null;
+    view.innerHTML = `<p class="eyebrow">Facility</p>
+      <h1 class="view-title" tabindex="-1">Shift board</h1>
+      <p class="lede">Pass notes to the next shift, give a task to a teammate and see what is still open. Everything stays on this computer, encrypted, and residents appear by alias only.</p>
+      <p class="shf-first"><span class="pill live">First version</span> Built to be changed by what works on your floor. If something does not fit, <a href="contact.html">tell us</a>.</p>
+      <div class="callout" role="note" style="margin-top:0"><b>Use aliases, not names.</b> Pick a resident&rsquo;s alias, or type a room or group such as &ldquo;Maple 2&rdquo;. Before a note is saved, the board checks it against your saved residents&rsquo; names and offers the alias instead. Printed sheets are handled under your facility&rsquo;s own practices.</div>
+      <div class="shf" id="shfRoot">
+        <section class="config" aria-labelledby="shfWhoH"><h2 id="shfWhoH">Who is writing</h2><div id="shfWho"></div></section>
+        <section class="config" aria-labelledby="shfWhenH"><h2 id="shfWhenH">Which day and shift</h2><div id="shfWhen"></div></section>
+        <div class="shf-grid">
+          <section class="config" aria-labelledby="shfNotesH"><h2 id="shfNotesH" tabindex="-1">Notes</h2><div id="shfNoteForm"></div><ul class="shf-list" id="shfNotes"></ul></section>
+          <section class="config" aria-labelledby="shfTasksH"><h2 id="shfTasksH" tabindex="-1">Tasks</h2><div id="shfTaskForm"></div><div id="shfTasks"></div></section>
+        </div>
+        <section class="config shf-more" aria-labelledby="shfMoreH"><h2 id="shfMoreH">Back up, keep and clear</h2><div id="shfMore"></div></section>
+      </div>`;
+    root = document.getElementById("shfRoot");
+    root.addEventListener("click", onClick); root.addEventListener("change", onChange);
+    root.addEventListener("input", onInput); root.addEventListener("submit", onSubmit);
+    root.addEventListener("focusout", () => { if (stale) setTimeout(refresh, 0); });
+    stale = false;
+    renderWho(); renderWhen(); renderForms(); renderLists(); renderMore();
+  }
+  /* A change made in another tab: show it, unless someone is typing here (then as soon as they stop). Saving here
+     never loses it either way: every change is made on the board as it is stored. */
+  let stale = false;
+  function refresh(){
+    if (!root || !root.isConnected) return;
+    if (root.querySelector(":is(input, select, textarea):focus")){ stale = true; return; }
+    stale = false; load(); renderWho(); renderLists();
+  }
+
+  function renderWho(){
+    const c = me(), box = q("#shfWho"); if (!box) return;
+    const typed = q("#shfInit") ? q("#shfInit").value : "";
+    box.innerHTML = `<fieldset class="field"><legend>Your initials</legend>
+        ${board.staff.length ? `<div class="seg">${sorted(board.staff).map(s => `<label><input type="radio" name="shfMe" value="${esc(s)}" ${s === c ? "checked" : ""}><span>${esc(s)}</span></label>`).join("")}</div>` : `<p class="hint" style="margin:0">No initials on this board yet. Add yours to begin.</p>`}
+      </fieldset>
+      <form id="shfMeForm" class="shf-inline" novalidate>
+        <div class="field"><label for="shfInit">Add your initials</label><input id="shfInit" type="text" maxlength="4" autocomplete="off" autocapitalize="characters" placeholder="MR" value="${esc(typed)}"></div>
+        <button class="btn" type="submit">Use these initials</button></form>
+      <p class="hint" id="shfMeHint"></p>`;
+    updateAs();
+  }
+  /* The words that say who is writing, beside the chips and under each form. */
+  function updateAs(){
+    const c = me(), set = (id, text) => { const el = q("#" + id); if (el) el.textContent = text; };
+    set("shfMeHint", (c ? `Writing as ${c}. ` : "") + "Initials show who wrote each note and task. They are forgotten after 15 minutes without use, so the next person starts fresh.");
+    set("shfNoteAs", c ? "Writing as " + c : "Choose your initials first");
+    set("shfTaskAs", c ? "Writing as " + c : "Choose your initials first");
+  }
+  function renderWhen(){
+    const box = q("#shfWhen"); if (!box) return;
+    box.innerHTML = `<div class="shf-day">
+        <button class="btn" type="button" data-day="-1">Previous day</button>
+        <div class="field"><label for="shfDay">Day</label><input id="shfDay" type="date" value="${esc(S.day)}"></div>
+        <button class="btn" type="button" data-day="1">Next day</button>
+        <button class="btn" type="button" data-day="today">Today</button></div>
+      <fieldset class="field"><legend>Shift</legend><div class="seg">${[["all", "All shifts"]].concat(D.SHIFTS.map(s => [s.id, s.label])).map(([v, t]) => `<label><input type="radio" name="shfShift" value="${v}" ${v === S.shift ? "checked" : ""}><span>${esc(t)}</span></label>`).join("")}</div>
+        <p class="hint">${D.SHIFTS.map(s => `${esc(s.label)}: ${esc(s.hours)}`).join(". ")}. A night shift belongs to the day it began.</p></fieldset>
+      <p class="shf-sum" id="shfSum" role="status"></p>
+      <div class="actions"><button class="btn btn-primary" type="button" id="shfPrint">Print handoff sheet</button></div>`;
+  }
+  const aboutSelect = (id, cur) => {
+    const ch = D.aliasChoices(known), listed = !cur || ch.choices.indexOf(cur) >= 0;
+    return `<select id="${id}"><option value="">Whole unit, or no one in particular</option>
+        ${ch.choices.map(a => `<option value="${esc(a)}" ${a === cur ? "selected" : ""}>${esc(a)}</option>`).join("")}
+        <option value="__other" ${listed ? "" : "selected"}>Another room or group&hellip;</option></select>
+      <input id="${id}Other" type="text" maxlength="32" autocomplete="off" aria-label="Room or group" placeholder="Room 12, Maple 2&hellip;" value="${listed ? "" : esc(cur)}" ${listed ? "hidden" : ""} style="margin-top:8px">
+      ${ch.hidden ? `<p class="hint">${pl(ch.hidden, "resident has", "residents have")} an alias that is a name, so ${ch.hidden === 1 ? "it is" : "they are"} not offered. Change ${ch.hidden === 1 ? "it" : "them"} on the profile.</p>` : ""}`;
+  };
+  const shiftOptions = (cur, any) => (any ? `<option value="">Any time</option>` : "") + D.SHIFTS.map(s => `<option value="${s.id}" ${s.id === cur ? "selected" : ""}>${esc(s.label)}</option>`).join("");
+
+  /* The two forms. A note or task being edited fills them; otherwise they start fresh. */
+  function renderForms(){ renderNoteForm(); renderTaskForm(); }
+  function renderNoteForm(){
+    const ed = S.edit, note = ed && ed.type === "note" ? board.notes.filter(n => n.id === ed.id)[0] : null;
+    const now = D.slotAt(), onToday = S.day === today(), kind = note ? note.kind : S.kind;
+    q("#shfNoteForm").innerHTML = `<form id="shfNote" novalidate>
+        <fieldset class="field"><legend>${note ? "Change this note" : "Add a note for " + esc(D.dayLabel(S.day))}</legend>
+          <div class="seg">${D.KINDS.map(k => `<label><input type="radio" name="shfKind" value="${k.id}" ${k.id === kind ? "checked" : ""}><span>${ICON[k.id]}${esc(k.label)}</span></label>`).join("")}</div></fieldset>
+        <div class="field"><label for="shfNAbout">About</label>${aboutSelect("shfNAbout", note ? note.about : "")}</div>
+        <div class="field"><label for="shfNText">Note</label><textarea id="shfNText" maxlength="${D.LIMITS.NOTE_CHARS}" rows="3" aria-describedby="shfNCount">${esc(note ? note.text : "")}</textarea>
+          <span class="shf-count" id="shfNCount" aria-hidden="true"></span></div>
+        <div class="row2"><div class="field"><label for="shfNTime">Time</label><input id="shfNTime" type="time" value="${note ? esc(note.time) : onToday ? esc(now.time) : ""}"></div>
+          <div class="field"><label for="shfNShift">Shift</label><select id="shfNShift">${shiftOptions(note ? note.shift : S.shift !== "all" ? S.shift : onToday ? now.shift : "day", false)}</select></div></div>
+        <div id="shfNWarn" aria-live="polite"></div>
+        <div class="actions"><button class="btn btn-primary" type="submit">${note ? "Save changes" : "Add note"}</button>${note ? `<button class="btn" type="button" data-cancel="note">Cancel</button>` : ""}</div>
+        <p class="hint" id="shfNoteAs" role="status"></p></form>`;
+    updateAs(); countNote();
+    if (note){ const f = q("#shfNText"); f.scrollIntoView({ block:"center" }); f.focus(); }
+  }
+  function renderTaskForm(){
+    const ed = S.edit, task = ed && ed.type === "task" ? board.tasks.filter(t => t.id === ed.id)[0] : null;
+    q("#shfTaskForm").innerHTML = `<form id="shfTask" novalidate>
+        <fieldset class="field"><legend>${task ? "Change this task" : "Give a task"}</legend>
+          <div class="field" style="margin:0"><label for="shfTWhat">What needs doing</label><input id="shfTWhat" type="text" maxlength="${D.LIMITS.TASK_CHARS}" autocomplete="off" value="${esc(task ? task.what : "")}" placeholder="Set up the music cart"></div></fieldset>
+        <div class="field"><label for="shfTAbout">About</label>${aboutSelect("shfTAbout", task ? task.about : "")}</div>
+        <div class="row2"><div class="field"><label for="shfTFor">For</label><select id="shfTFor"><option value="">Anyone on shift</option>${sorted(board.staff).map(s => `<option value="${esc(s)}" ${task && task.assignee === s ? "selected" : ""}>${esc(s)}</option>`).join("")}</select></div>
+          <div class="field"><label for="shfTShift">Shift</label><select id="shfTShift">${shiftOptions(task ? task.shift : S.shift !== "all" ? S.shift : "", true)}</select></div></div>
+        <div class="field"><label for="shfTDay">Day</label><input id="shfTDay" type="date" value="${esc(task ? task.day : S.day)}"></div>
+        <div id="shfTWarn" aria-live="polite"></div>
+        <div class="actions"><button class="btn btn-primary" type="submit">${task ? "Save changes" : "Add task"}</button>${task ? `<button class="btn" type="button" data-cancel="task">Cancel</button>` : ""}</div>
+        <p class="hint" id="shfTaskAs" role="status"></p></form>`;
+    updateAs();
+    if (task){ const f = q("#shfTWhat"); f.scrollIntoView({ block:"center" }); f.focus(); }
+  }
+  function countNote(){ const t = q("#shfNText"), c = q("#shfNCount"); if (t && c) c.textContent = t.value.length + " of " + D.LIMITS.NOTE_CHARS; }
+
+  /* ---------- the lists ---------- */
+  function noteHtml(n){
+    const k = D.kindOf(n.kind), when = [D.timeLabel(n.time), S.shift === "all" ? D.shiftLabel(n.shift) : ""].filter(Boolean).join(" · "), snip = n.text.length > 40 ? n.text.slice(0, 40) + "…" : n.text;
+    return `<li class="shf-entry shf-k-${n.kind}"><div class="shf-top"><span class="shf-kind">${ICON[n.kind]}${esc(k.label)}</span><span class="shf-when">${esc(when)}</span></div>
+      ${n.about ? `<p class="shf-about">${esc(n.about)}</p>` : ""}<p class="shf-text">${esc(n.text)}</p>
+      <div class="shf-foot"><span class="shf-by">Written by ${esc(n.by || "unknown")}${n.editedBy ? `, edited by ${esc(n.editedBy)}` : ""}</span>
+        <span class="shf-acts"><button class="btn btn-sm" type="button" data-edit="note:${esc(n.id)}" aria-label="Edit the note: ${esc(snip)}">Edit</button><button class="btn btn-sm btn-danger" type="button" data-del="note:${esc(n.id)}" aria-label="Delete the note: ${esc(snip)}">Delete</button></span></div></li>`;
+  }
+  function taskHtml(t, carried){
+    const sub = [t.assignee ? "For " + t.assignee : "Anyone on shift", t.shift ? D.shiftLabel(t.shift) : "Any time", D.dayShort(t.day)].join(" · ");
+    const doneLine = t.done ? `Done${t.doneAt ? " " + D.timeLabel(D.slotAt(new Date(t.doneAt)).time) : ""}${t.doneBy ? " by " + t.doneBy : ""}` : "";
+    const late = !t.done && t.day < today();
+    return `<li class="shf-entry shf-task${t.done ? " is-done" : ""}">
+      <label class="shf-done"><input type="checkbox" data-done="${esc(t.id)}" ${t.done ? "checked" : ""} aria-label="Done: ${esc(t.what)}"><span>Done</span></label>
+      <div><p class="shf-text">${t.about ? `<b>${esc(t.about)}</b> ` : ""}${esc(t.what)}</p>
+        <p class="shf-sub">${esc(sub)}${late ? ` · <span class="shf-late">${carried ? "Carried forward" : "Late"}</span>` : ""}${doneLine ? ` · ${esc(doneLine)}` : ""}${t.editedBy ? ` · edited by ${esc(t.editedBy)}` : ""}</p>
+        <p class="shf-sub">Added by ${esc(t.by || "unknown")}</p></div>
+      <span class="shf-acts"><button class="btn btn-sm" type="button" data-edit="task:${esc(t.id)}" aria-label="Edit the task: ${esc(t.what)}">Edit</button><button class="btn btn-sm btn-danger" type="button" data-del="task:${esc(t.id)}" aria-label="Delete the task: ${esc(t.what)}">Delete</button></span></li>`;
+  }
+  function renderLists(){
+    const t0 = today(), notes = D.notesFor(board, S.day, S.shift), view = D.tasksFor(board, S.day, S.shift, t0), open = view.today.filter(t => !t.done).length + view.carried.length;
+    keepFocus(() => {
+      q("#shfNotes").innerHTML = notes.length ? notes.map(noteHtml).join("") : `<li class="shf-empty">No notes for ${esc(S.shift === "all" ? "this day" : D.shiftLabel(S.shift).toLowerCase())} yet. Add one above.</li>`;
+      q("#shfTasks").innerHTML = (view.carried.length ? `<h3 class="shf-sub-h">Carried forward</h3><p class="hint" style="margin-top:4px">Still open from an earlier day.</p><ul class="shf-list">${view.carried.map(t => taskHtml(t, true)).join("")}</ul>` : "")
+        + (view.today.length ? (view.carried.length ? `<h3 class="shf-sub-h">${S.day === t0 ? "Today" : esc(D.dayShort(S.day))}</h3>` : "") + `<ul class="shf-list">${view.today.map(t => taskHtml(t, false)).join("")}</ul>` : view.carried.length ? "" : `<p class="shf-empty">No tasks for this day yet. Give one above.</p>`);
+    });
+    const sum = q("#shfSum");
+    if (sum) sum.textContent = `${S.day === t0 ? "Today, " : ""}${D.dayLabel(S.day)} · ${D.shiftLabel(S.shift)}: ${pl(notes.length, "note", "notes")}, ${pl(open, "open task", "open tasks")}${view.carried.length ? ` (${view.carried.length} carried forward)` : ""}`;
+  }
+  /* A list is redrawn after every change; the control the person was on keeps focus. */
+  function keepFocus(fn){
+    const a = document.activeElement, keys = ["data-done", "data-edit", "data-del"];
+    const attr = a && root && root.contains(a) ? keys.filter(k => a.hasAttribute(k))[0] : "";
+    const sel = attr ? `[${attr}="${CSS.escape(a.getAttribute(attr))}"]` : "";
+    fn();
+    if (sel){ const el = q(sel); if (el) el.focus({ preventScroll:true }); }
+  }
+
+  function renderMore(){
+    const box = q("#shfMore"); if (!box) return;
+    box.innerHTML = `<div class="shf-box"><h3>Keep notes for</h3>
+        <div class="field" style="max-width:260px"><label for="shfKeep">Days</label><select id="shfKeep">${D.KEEP_CHOICES.map(n => `<option value="${n}" ${n === board.keepDays ? "selected" : ""}>${n} days</option>`).join("")}</select></div>
+        <p class="hint">Notes and finished tasks older than this are removed from this computer. A task that is still open is kept until someone marks it done.</p></div>
+      <div class="shf-box"><h3>Back up, or move to another station</h3>
+        <p class="hint" style="margin-top:0">A locked file of the whole board, opened with a passphrase you choose for it. Opening a file adds what this board is missing and never removes anything.</p>
+        <div class="row2"><div class="field"><label for="shfBkPass">Passphrase for the file</label><input id="shfBkPass" type="password" autocomplete="new-password" minlength="10"></div>
+          <div class="field" style="align-self:end"><button class="btn" type="button" id="shfBk">Download a locked backup</button></div></div>
+        <div class="row2"><div class="field"><label for="shfRsFile">Locked file to open</label><input id="shfRsFile" type="file" accept=".cognicopia,application/octet-stream"></div>
+          <div class="field"><label for="shfRsPass">Its passphrase</label><input id="shfRsPass" type="password" autocomplete="off"></div></div>
+        <div class="actions"><button class="btn" type="button" id="shfRs">Open the file and add its notes</button></div>
+        <p class="shf-msg" id="shfBkMsg" role="status"></p></div>
+      <div class="shf-box"><h3>Initials on this board</h3>
+        ${board.staff.length ? `<ul class="shf-staff">${sorted(board.staff).map(s => `<li><span class="pill">${esc(s)}</span><button class="btn btn-sm" type="button" data-forget="${esc(s)}" aria-label="Remove the initials ${esc(s)}">Remove ${esc(s)}</button></li>`).join("")}</ul>` : `<p class="hint" style="margin:0">None yet.</p>`}
+        <p class="hint">Removing initials only takes them off the quick list. Notes and tasks they wrote keep them.</p></div>
+      <div class="shf-box"><h3>Clear the board</h3>
+        <p class="hint" style="margin-top:0">Removes every note and task from this computer. A locked backup is the only way to get them back.</p>
+        <div class="actions"><button class="btn btn-danger" type="button" id="shfClear">Clear the board</button></div></div>`;
+  }
+
+  /* ---------- names and wording ---------- */
+  function inspect(text, about){
+    const t = D.checkNames(text, known), a = D.checkNames(about, known);
+    return { hits:t.hits.concat(a.hits.filter(h => t.hits.indexOf(h) < 0)), text:t.fixed, about:a.fixed, tips:D.wordingTips(text) };
+  }
+  /* Under a form: the names found (with the alias to use instead) and any wording tips. */
+  function showWarn(which, insp, block){
+    const box = q(which === "note" ? "#shfNWarn" : "#shfTWarn"); if (!box) return;
+    const tips = insp.tips.map(t => `<p class="shf-tip"><b>Wording:</b> ${esc(t.tip)}</p>`).join("");
+    box.innerHTML = (insp.hits.length ? `<div class="shf-warn"><p><b>This includes ${insp.hits.length === 1 ? "a name" : "names"}: ${esc(insp.hits.join(", "))}.</b> The board keeps notes by alias.</p>
+        <div class="actions"><button class="btn btn-primary" type="button" data-fix="${which}">Use the alias</button><button class="btn" type="button" data-keep="${which}">Keep as written${block ? " and save" : ""}</button></div></div>` : "") + tips;
+    if (block && insp.hits.length){ const b = box.querySelector("button"); if (b) b.focus(); }
+  }
+  function updateWarn(which){
+    const insp = which === "note" ? inspect(val("shfNText"), aboutOf("shfNAbout")) : inspect(val("shfTWhat"), aboutOf("shfTAbout"));
+    showWarn(which, insp, false);
+  }
+  function applyAlias(which){
+    const tid = which === "note" ? "shfNText" : "shfTWhat", aid = which === "note" ? "shfNAbout" : "shfTAbout";
+    const insp = inspect(val(tid), aboutOf(aid));
+    q("#" + tid).value = insp.text;
+    const sel = q("#" + aid);
+    if (sel.value === "__other") q("#" + aid + "Other").value = insp.about;
+    S.nameOK[which] = false; countNote(); updateWarn(which); q("#" + tid).focus();
+  }
+
+  /* ---------- adding, changing, finishing ---------- */
+  function submitNote(){
+    if (!needMe()) return;
+    loadKnown();                                      // the residents saved since this screen opened
+    const f = { kind:(q('input[name="shfKind"]:checked') || {}).value, about:aboutOf("shfNAbout"), text:val("shfNText"), time:val("shfNTime"), shift:val("shfNShift") };
+    const insp = inspect(f.text, f.about);
+    if (insp.hits.length && !S.nameOK.note){ showWarn("note", insp, true); return; }
+    const old = S.edit && S.edit.type === "note" ? board.notes.filter(n => n.id === S.edit.id)[0] : null;
+    const made = D.makeNote(Object.assign({ day:old ? old.day : S.day, by:S.me }, f), new Date(), old || undefined, S.me);
+    if (!made.note){ toast(made.problems[0]); (made.problems[0] === "Write what to pass on." ? q("#shfNText") : q("#shfNote")).focus(); return; }
+    S.kind = "pass"; S.nameOK.note = false; S.edit = null;       // each note starts as "Pass along": the quietest kind, so nothing is flagged by habit
+    if (commit(b => D.withNote(b, made.note), old ? "Note saved." : "Note added.")){
+      renderNoteForm(); q("#shfNText").focus({ preventScroll:true });
+    }
+  }
+  function submitTask(){
+    if (!needMe()) return;
+    loadKnown();
+    const f = { what:val("shfTWhat"), about:aboutOf("shfTAbout"), assignee:val("shfTFor"), shift:val("shfTShift"), day:val("shfTDay") };
+    const insp = inspect(f.what, f.about);
+    if (insp.hits.length && !S.nameOK.task){ showWarn("task", insp, true); return; }
+    const old = S.edit && S.edit.type === "task" ? board.tasks.filter(t => t.id === S.edit.id)[0] : null;
+    const made = D.makeTask(Object.assign({ by:S.me }, f), new Date(), old || undefined, S.me);
+    if (!made.task){ toast(made.problems[0]); (made.problems[0] === "Say what needs doing." ? q("#shfTWhat") : q("#shfTDay")).focus(); return; }
+    S.nameOK.task = false; S.edit = null;
+    const elsewhere = made.task.day !== S.day;
+    if (commit(b => D.withTask(b, made.task), old ? "Task saved." : elsewhere ? "Task added for " + D.dayLabel(made.task.day) + "." : "Task added.")){
+      renderTaskForm(); q("#shfTWhat").focus({ preventScroll:true });
+    }
+  }
+  function toggleDone(id, done){
+    if (!needMe()){ renderLists(); return; }
+    commit(b => D.setTaskDone(b, id, done, S.me), done ? "Marked done." : "Reopened.");
+  }
+  function removeEntry(type, id){
+    const list = type === "note" ? board.notes : board.tasks, item = list.filter(x => x.id === id)[0]; if (!item) return;
+    if (!commit(b => D.withoutEntry(b, type, id))) return;
+    lastRemoved = { type, item };
+    if (S.edit && S.edit.id === id){ S.edit = null; renderForms(); }
+    toast(type === "note" ? "Note deleted." : "Task deleted.", "Undo", () => {
+      if (!lastRemoved) return;
+      const gone = lastRemoved; commit(b => gone.type === "note" ? D.withNote(b, gone.item) : D.withTask(b, gone.item), "Restored.");
+      lastRemoved = null;
+    });
+    const h = q(type === "note" ? "#shfNotesH" : "#shfTasksH"); if (h) h.focus({ preventScroll:true });
+  }
+
+  /* ---------- printing, backups, clearing ---------- */
+  /* The sheet is laid out from an estimate of each row's height (by the print face's character widths). Here the pages are
+     checked against the real layout, in the print face, and laid out again with room to spare if any would be cut off. */
+  function cutOff(pages){
+    const host = document.createElement("div");
+    host.style.cssText = "position:absolute;left:-10000px;top:0";
+    host.innerHTML = pages.join("");
+    document.body.appendChild(host);
+    const bad = [...host.querySelectorAll(".ops-body")].some(b => b.scrollHeight > b.clientHeight + 1);
+    host.remove();
+    return bad;
+  }
+  async function sheetPages(h){
+    const ctx = { facility:settings.facility || "", today:today() };
+    try { await Promise.all(["400", "700", "italic 400"].map(w => document.fonts.load(w + ' 16px "Atkinson Hyperlegible"'))); } catch (e){ /* a browser that cannot load it measures the fallback face */ }
+    let pages = D.handoffPages(h, ctx);
+    for (const fit of [0.85, 0.7, 0.55]){
+      if (!cutOff(pages)) break;
+      pages = D.handoffPages(h, Object.assign({ fit }, ctx));
+    }
+    return pages;
+  }
+  async function printSheet(){
+    const h = D.handoff(board, S.day, S.shift, new Date());
+    if (!h.groups.some(g => g.notes.length) && !h.open.length && !h.done.length && !confirm("There is nothing recorded for this day and shift. Print a blank handoff sheet?")) return;
+    const pages = (await sheetPages(h)).map(html => ({ html }));
+    BookUI.print(pages, ["Shift handoff", S.day, S.shift === "all" ? "all shifts" : S.shift].join(" - "), null);
+  }
+  function download(name, text, type){
+    const url = URL.createObjectURL(new Blob([text], { type }));
+    const a = document.createElement("a"); a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+  }
+  const bkMsg = (t, bad) => { const m = q("#shfBkMsg"); if (m){ m.textContent = t; m.classList.toggle("is-bad", !!bad); } };
+  function backup(){
+    const SS = window.CogniSecureStore, inp = q("#shfBkPass"), pass = inp.value;
+    if (!SS){ bkMsg("This browser cannot lock files.", true); return; }
+    const problem = SS.passphraseProblem(pass); if (problem){ bkMsg(problem, true); inp.focus(); return; }
+    bkMsg("Locking the file…");
+    const now = readBoard();                          // the board as it is stored, not this screen's copy
+    SS.sealFile(D.backupFile(now), pass, D.FILE_KIND).then(env => {
+      const fac = String(settings.facility || "").replace(/[^A-Za-z0-9 _-]/g, "").trim().slice(0, 40) || "facility";
+      download(["Cognicopia shift board", fac, today()].join(" - ") + ".cognicopia", JSON.stringify(env), "application/octet-stream");
+      inp.value = "";
+      bkMsg(`Downloaded, locked: ${pl(now.notes.length, "note", "notes")} and ${pl(now.tasks.length, "task", "tasks")}. Keep the passphrase apart from the file.`);
+    }, err => bkMsg(err.message, true));
+  }
+  function restore(){
+    const SS = window.CogniSecureStore, file = (q("#shfRsFile").files || [])[0], passEl = q("#shfRsPass");
+    if (!SS){ bkMsg("This browser cannot open locked files.", true); return; }
+    if (!file){ bkMsg("Choose the locked file first.", true); return; }
+    bkMsg("Opening…");
+    file.text().then(t => { let env; try { env = JSON.parse(t); } catch (e){ throw new Error("format"); } return SS.openFile(env, passEl.value); })
+      .then(obj => {
+        const got = D.readBackup(obj); let m = null;
+        if (!commit(b => { m = D.mergeBoards(b, got.board); return m.board; })) return;
+        passEl.value = ""; q("#shfRsFile").value = "";
+        renderForms(); renderMore();
+        bkMsg(`Added ${pl(m.addedNotes, "note", "notes")} and ${pl(m.addedTasks, "task", "tasks")}${m.updated ? `, and updated ${m.updated}` : ""} from the file${got.exportedAt ? " of " + got.exportedAt : ""}.`);
+      })
+      .catch(err => {
+        const why = { passphrase:"That passphrase does not open this file.", format:"This is not a locked Cognicopia file.", kind:"This file is not a Shift board backup." }[err.message];
+        bkMsg(why || err.message, true);
+      });
+  }
+
+  /* ---------- events ---------- */
+  function setDay(day){
+    const box = q("#shfDay");
+    if (!D.isDay(day)){ if (box) box.value = S.day; return; }                  // cleared, or not a day this board can hold: back to the one on show
+    S.day = day; S.edit = null; if (box) box.value = day;
+    renderForms(); renderLists();                                              // the date field is not redrawn, so the focus stays where it is
+  }
+  function onClick(e){
+    const b = e.target.closest("button"); if (!b || !root.contains(b)) return;
+    if (b.dataset.day){ setDay(b.dataset.day === "today" ? today() : D.addDays(S.day, +b.dataset.day)); return; }
+    if (b.id === "shfPrint") return printSheet().catch(err => toast("The sheet could not be made: " + (err && err.message || err)));
+    if (b.id === "shfBk") return backup();
+    if (b.id === "shfRs") return restore();
+    if (b.dataset.edit){ const [type, id] = b.dataset.edit.split(":"); S.edit = { type, id }; renderForms(); return; }
+    if (b.dataset.del){ const [type, id] = b.dataset.del.split(":"); return removeEntry(type, id); }
+    if (b.dataset.cancel){ S.edit = null; S.nameOK = { note:false, task:false }; renderForms(); return; }
+    if (b.dataset.fix) return applyAlias(b.dataset.fix);
+    if (b.dataset.keep){ S.nameOK[b.dataset.keep] = true; return b.dataset.keep === "note" ? submitNote() : submitTask(); }
+    if (b.dataset.forget){ if (commit(x => D.forgetInitials(x, b.dataset.forget))){ if (S.me === b.dataset.forget) S.me = ""; renderWho(); renderTaskForm(); renderMore(); } return; }
+    if (b.id === "shfClear"){
+      if (!confirm("Clear every note and task on the Shift board from this computer? This cannot be undone. A locked backup is the only way to get them back.")) return;
+      try { CG_LS.removeItem(D.STORE_KEY); } catch (err){ toast(err.message); return; }
+      board = D.emptyBoard(); S.edit = null; S.me = ""; renderWho(); renderForms(); renderLists(); renderMore(); toast("The board was cleared.");
+    }
+  }
+  function onChange(e){
+    const t = e.target;
+    if (t.name === "shfMe"){ S.me = t.value; S.meAt = Date.now(); updateAs(); return; }
+    if (t.name === "shfShift"){ S.shift = t.value; S.edit = null; renderForms(); renderLists(); return; }
+    if (t.name === "shfKind"){ S.kind = t.value; return; }
+    if (t.id === "shfDay"){ setDay(t.value); return; }
+    if (t.id === "shfNAbout" || t.id === "shfTAbout"){
+      const other = q("#" + t.id + "Other"); other.hidden = t.value !== "__other"; if (!other.hidden) other.focus();
+      S.nameOK[t.id === "shfNAbout" ? "note" : "task"] = false; updateWarn(t.id === "shfNAbout" ? "note" : "task"); return;
+    }
+    if (t.dataset.done){ toggleDone(t.dataset.done, t.checked); return; }
+    if (t.id === "shfKeep"){
+      const p = D.prune(D.setKeepDays(readBoard(), +t.value), today());
+      if ((p.removedNotes || p.removedTasks) && !confirm(`Keeping notes for ${t.value} days removes ${pl(p.removedNotes, "note", "notes")} and ${pl(p.removedTasks, "finished task", "finished tasks")} older than that. Continue?`)){ t.value = board.keepDays; return; }
+      commit(x => D.setKeepDays(x, +t.value), "Notes are kept for " + p.board.keepDays + " days.");
+    }
+  }
+  function onInput(e){
+    const t = e.target;
+    if (t.id === "shfNText" || t.id === "shfNAboutOther"){ S.nameOK.note = false; countNote(); clearTimeout(warnTimer); warnTimer = setTimeout(() => updateWarn("note"), 300); }
+    else if (t.id === "shfTWhat" || t.id === "shfTAboutOther"){ S.nameOK.task = false; clearTimeout(warnTimer); warnTimer = setTimeout(() => updateWarn("task"), 300); }
+    else if (t.id === "shfInit"){ const c = D.cleanInitials(t.value); if (c !== t.value) t.value = c; }
+  }
+  function onSubmit(e){
+    e.preventDefault();
+    const id = e.target.id;
+    if (id === "shfNote") submitNote();
+    else if (id === "shfTask") submitTask();
+    else if (id === "shfMeForm"){
+      const c = D.cleanInitials(val("shfInit"));
+      if (!c){ toast("Type your initials, such as MR."); q("#shfInit").focus(); return; }
+      S.me = c; S.meAt = Date.now();
+      commit(x => D.withInitials(x, c));
+      q("#shfInit").value = ""; renderWho(); renderForms(); renderMore();
+      const r = q('input[name="shfMe"]:checked'); if (r) r.focus();
+    }
+  }
+  return { render, refresh };
+})();
+</script>
 <script src="assets/services/heirloomService.js"></script>
 <script id="heirloom-ui">
 /* =====================================================================
@@ -12431,6 +12954,7 @@ const ICONS = {
   journal:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2z"/><path d="M22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z"/></svg>',
   facility:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18"/><path d="M5 21V6l7-3v18"/><path d="M19 21V10l-7-3"/><path d="M8 9h1M8 13h1M8 17h1M15 13h1M15 17h1"/></svg>',
   academy:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 9 12 4 2 9l10 5 10-5z"/><path d="M6 11.2V16c0 1.7 2.7 3 6 3s6-1.3 6-3v-4.8"/><path d="M22 9v6"/></svg>',
+  shift:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M9 12h6M9 16h6"/></svg>',
   roster:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.6 3.3-5.5 6.5-5.5s5.7 1.9 6.5 5.5"/><path d="M16 5.5a3 3 0 0 1 0 6M18.5 14.8c1.7.8 2.7 2.5 3 5.2"/></svg>'
 };
 
@@ -12702,9 +13226,10 @@ function addBatch(act, cfg, batchSeed, count){
 
 /* ---------- 11. Views + router ---------- */
 const view = $("#view");
-const routes = { "": renderHome, "category": renderCategory, "settings": renderSettings, "planner": renderPlanner, "journal": renderJournal, "roster": renderRoster, "coloring": renderColoring, "reminiscence": renderReminiscence, "clinical": renderClinical, "heirloom": renderHeirloom, "facility": renderFacilityPortal, "academy": renderAcademy };
+const routes = { "": renderHome, "category": renderCategory, "settings": renderSettings, "planner": renderPlanner, "journal": renderJournal, "roster": renderRoster, "coloring": renderColoring, "reminiscence": renderReminiscence, "clinical": renderClinical, "heirloom": renderHeirloom, "facility": renderFacilityPortal, "shift": renderShift, "academy": renderAcademy };
 function renderFacilityPortal(arg){ FacilityUI.render(view, arg); }
 function renderAcademy(arg){ AcademyUI.render(view, arg); }
+function renderShift(){ DailyOpsUI.render(view); }
 function renderHeirloom(){ HeirloomUI.render(view); }
 function renderClinical(){ ClinicalUI.render(view); }
 function renderReminiscence(){ ReminiscenceUI.render(view); }
@@ -12787,6 +13312,7 @@ function renderHome(){
       ${tool("#/heirloom", ICONS.journal, "Memory Digest & Book", "Keep a resident’s words, stories and finished coloring pages as they happen; send the family a monthly digest, and gather a year into a print-on-demand hardcover.", ["Monthly digest", "Hardcover PDF"])}
       ${tool("#/clinical", ICONS.journal, "Session Notes (SLP)", "GDS and FAST staging mapped to support tiers, a session log, and SOAP notes built only from what you record, for the Full Administrative Binder.", ["Staff-recorded SOAP", "Code checks"])}
       ${tool("#/facility", ICONS.facility, "Facility Portal", "For activity directors: wings and resident groups by acuity tier, recommendations for each tier across the six pillars, a balanced month of sessions in one click, and a week of group packets printed at once.", ["4 acuity tiers", "Month scheduler", "Week packets"])}
+      ${tool("#/shift", ICONS.shift, "Shift board", "Handoff notes for the next shift, tasks for the team and what is still open, with residents by alias only. Kept on this computer, encrypted, and printed as a one-page handoff sheet. A first version.", ["Handoff notes", "Staff tasks", "Aliases only"])}
       ${tool("#/roster", ICONS.roster, "Resident roster", "Every saved resident in one list. Choose a resident, choose a book, and print it at their own support tier, line weight and contrast.", ["3 clicks to print", "Search by name or unit"])}
     </div>
     <h2 style="margin-top:32px">Activity categories</h2>
@@ -13130,7 +13656,7 @@ function renderSettings(){
     </div>
     <div class="config">
       <h2>Shared computer?</h2>
-      <p class="hint">Removes the saved facility name, resident name, defaults, packet queue, Life Planner and Life Journal details from this computer. Your license stays.</p>
+      <p class="hint">Removes the saved facility name, resident name, defaults, packet queue, Life Planner, Life Journal details and the Shift board&rsquo;s notes and tasks from this computer. Your license stays.</p>
       <div class="actions"><button class="btn btn-danger" type="button" id="setClear">Clear saved data</button></div>
     </div>`;
   const bind = (id, fn) => $(id).addEventListener("input", e => { fn(e.target); saveSettings(); });
@@ -13153,8 +13679,8 @@ function renderSettings(){
   $("#setAliasFiles").addEventListener("change", e => { settings.aliasFiles = e.target.checked; saveSettings(); });
   renderEncryption();
   $("#setClear").addEventListener("click", () => {
-    if (!confirm("Clear the saved facility name, resident name, defaults, packet queue, Life Planner and Life Journal details from this computer?")) return;
-    store.remove("cgb_settings"); store.remove("cgb_queue"); LifePlannerUI.clearSaved(); LifeJournalUI.clearSaved(); store.remove("cgb_roster");
+    if (!confirm("Clear the saved facility name, resident name, defaults, packet queue, Life Planner and Life Journal details, and the Shift board's notes and tasks, from this computer?")) return;
+    store.remove("cgb_settings"); store.remove("cgb_queue"); LifePlannerUI.clearSaved(); LifeJournalUI.clearSaved(); store.remove("cgb_roster"); store.remove(window.CogniDailyOps ? window.CogniDailyOps.STORE_KEY : "cognicopia_dailyops");
     settings = Object.assign({}, DEFAULT_SETTINGS, { actOpts:{} }); isPureBlackAndWhitePDF = true; queue = [];
     saveSettings(); saveQueue(); renderSettings(); renderBwNote();
     toast("Saved data cleared from this computer.");
@@ -13539,6 +14065,7 @@ window.addEventListener("afterprint", () => {
     else if (e.key.indexOf("cognicopia_facility") === 0 && parseHash().name === "facility"
              && !document.querySelector("#view :is(input, select, textarea, details[open]):focus-within, #view dialog[open]")) router();
     else if (e.key === "cognicopia_academy" && parseHash().name === "academy" && !AcademyUI.busy()) router();
+    else if (e.key === "cognicopia_dailyops" && parseHash().name === "shift") DailyOpsUI.refresh();
   });
 })();
 </script>

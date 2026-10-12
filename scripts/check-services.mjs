@@ -842,6 +842,166 @@ group("academy", () => {
   sandbox.__acadStats = `${pro.length} masterclasses, ${fam.length} family guides, ${guidePages} guide pages`;
 });
 
+/* ---------- 9b. Daily Operations: the Shift board (dailyOps.ts) ---------- */
+group("dailyOps", () => {
+  const D = sandbox.CogniDailyOps, SS = sandbox.CogniSecureStore;
+  ok(D && typeof D.handoffPages === "function", "CogniDailyOps is not loaded");
+  ok(SS.isSealed(D.STORE_KEY) && D.STORE_KEY === "cognicopia_dailyops", "the board's storage name is sealed by the encrypted store");
+  ok(/"cognicopia_dailyops"/.test(fs.readFileSync(path.join(ROOT, "assets", "services", "secureStore.js"), "utf8")), "the built store lists the board's name too");
+  const json = x => JSON.stringify(x);
+  const at = (y, mo, d, h = 12, mi = 0) => new Date(y, mo - 1, d, h, mi);
+  const NOW = at(2026, 10, 12, 14, 5);
+  // days, times and shifts
+  ok(["2026-10-12", "2028-02-29", "2000-01-01"].every(D.isDay) && ["2026-02-30", "2026-13-01", "2026-1-1", "1999-12-31", "2026-10-12T00:00", "", null, 20261012].every(x => !D.isDay(x)), "days are real calendar days, 2000 to 2100");
+  ok(D.addDays("2026-12-31", 1) === "2027-01-01" && D.addDays("2026-03-05", -14) === "2026-02-19" && D.addDays("2028-02-28", 1) === "2028-02-29" && D.addDays("2026-10-12", 0) === "2026-10-12", "adding days crosses months, years and leap days");
+  ok(D.dayLabel("2026-10-12") === "Monday, October 12" && D.dayShort("2026-10-12") === "Oct 12" && D.dayLabel("nope") === "", "day labels: " + D.dayLabel("2026-10-12"));
+  ok(D.timeLabel("00:05") === "12:05 am" && D.timeLabel("12:00") === "12:00 pm" && D.timeLabel("14:05") === "2:05 pm" && D.timeLabel("23:59") === "11:59 pm" && D.timeLabel("24:00") === "" && D.timeLabel("") === "", "times read as 12-hour clock");
+  ok([["06:59", "night"], ["07:00", "day"], ["14:59", "day"], ["15:00", "evening"], ["22:59", "evening"], ["23:00", "night"], ["00:00", "night"]].every(([t, s]) => D.shiftOfTime(t) === s), "shift boundaries at 7 am, 3 pm and 11 pm");
+  ok(json(D.slotAt(NOW)) === json({ day: "2026-10-12", time: "14:05", shift: "day" }) && json(D.slotAt(at(2026, 10, 13, 2, 10))) === json({ day: "2026-10-12", time: "02:10", shift: "night" }) && json(D.slotAt(at(2026, 10, 12, 23, 30))) === json({ day: "2026-10-12", time: "23:30", shift: "night" }), "after midnight a night shift is still the day it began");
+  ok(json(D.nextShift("day", "2026-10-12")) === json({ shift: "evening", day: "2026-10-12" }) && json(D.nextShift("night", "2026-10-31")) === json({ shift: "day", day: "2026-11-01" }), "the next shift, and a night shift hands over to the next morning");
+  // making and cleaning records
+  const base = { day: "2026-10-12", time: "14:05", kind: "watch", about: "Resident 302-B", text: "Restless after lunch.\nQuiet music helped.", by: "m.r." };
+  const made = D.makeNote(base, NOW);
+  ok(made.note && made.note.by === "MR" && made.note.shift === "day" && made.note.kind === "watch" && made.note.text === "Restless after lunch.\nQuiet music helped." && /^n[a-z0-9]{10,}$/.test(made.note.id) && made.note.createdAt === NOW.toISOString(), "a note is made with clean initials, its shift from its time and a fresh id: " + json(made.note));
+  ok(D.makeNote(Object.assign({}, base, { by: "" }), NOW).problems[0] === "Choose your initials first." && D.makeNote(Object.assign({}, base, { text: "  \n " }), NOW).problems.includes("Write what to pass on.") && D.makeNote(Object.assign({}, base, { day: "soon" }), NOW).problems.includes("Choose the day.") && D.makeNote(Object.assign({}, base, { by: "" }), NOW).note === null, "a note needs initials, words and a day, and says which is missing");
+  const messy = D.makeNote({ day: "2026-10-12", text: "a\u0000b\r\n\r\n\r\nc\t\td " + "x".repeat(900), by: "ñb7z9q", kind: "bogus", shift: "bogus", time: "25:61" }, NOW).note;
+  ok(messy.text.length === 500 && messy.text.startsWith("ab\n\nc d xxx") && messy.by === "ÑB7Z" && messy.kind === "pass" && messy.shift === "day" && messy.time === "", "text is cleaned and capped at 500, initials at four, bad kind or time fall back: " + json(messy).slice(0, 220));
+  const t1 = D.makeTask({ day: "2026-10-12", what: "Set up the music cart", assignee: "k.t", by: "mr", shift: "evening", about: "Activity room" }, NOW).task;
+  ok(t1 && t1.assignee === "KT" && t1.shift === "evening" && !t1.done && t1.doneAt === "" && D.makeTask({ day: "2026-10-12", what: "", by: "MR" }, NOW).problems.includes("Say what needs doing.") && D.makeTask({ day: "2026-10-12", what: "x", shift: "never", by: "MR" }, NOW).task.shift === "", "a task is made, an unknown shift means any time");
+  const edited = D.makeNote(Object.assign({}, base, { text: "Calmer after music.", by: "KT" }), at(2026, 10, 12, 15, 0), made.note, "KT").note;
+  ok(edited.id === made.note.id && edited.createdAt === made.note.createdAt && edited.by === "MR" && edited.editedBy === "KT" && edited.text === "Calmer after music." && edited.updatedAt > made.note.updatedAt, "an edit keeps the id, time and first author and names the editor");
+  ok(D.makeNote(base, NOW, made.note, "MR").note.editedBy === "", "the author editing their own note is not an 'edited by'");
+  // a stored board: anything wrong is dropped, never repaired into something else
+  ok(D.normalizeBoard("not json").notes.length === 0 && D.normalizeBoard({ schema: "other", notes: [made.note] }).notes.length === 0 && D.normalizeBoard(null).keepDays === 14 && D.normalizeBoard([]).staff.length === 0, "a missing, broken or foreign board reads as empty");
+  const dirty = D.normalizeBoard({ schema: D.SCHEMA, keepDays: 45, staff: ["mr", "MR", "k.t", "", "toolonginitials", "x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8", "x9", "y1", "y2"], notes: [made.note, { id: "bad id!", day: "2026-10-12", text: "x" }, { id: "n2", day: "2026-02-30", text: "x" }, { id: "n3", day: "2026-10-12", text: "" }, { id: "n4", day: "2026-10-11", text: "ok", kind: "worked", shift: "evening" }, "string", null, 7], tasks: [t1, { id: "t9", day: "2026-10-12", what: "" }, { id: "t8", day: "2026-10-12", what: "Done thing", done: true, doneAt: "2026-10-12T10:00:00Z", doneBy: "mr" }, { id: "t7", day: "2026-10-12", what: "Not done", done: false, doneAt: "2026-10-12T10:00:00Z", doneBy: "mr" }] });
+  ok(dirty.keepDays === 14 && dirty.staff.length === 14 && dirty.staff[0] === "MR" && dirty.staff[1] === "KT" && dirty.staff[2] === "TOOL" && new Set(dirty.staff).size === 14, "a retention that is not a choice reads as 14 days; initials are cleaned and unique: " + json(dirty.staff));
+  const crowd = D.normalizeBoard({ schema: D.SCHEMA, staff: Array.from({ length: 40 }, (_, i) => "a" + i) });
+  let full = Object.assign({}, D.emptyBoard(), { staff: crowd.staff });
+  full = D.withNote(full, D.makeNote({ day: "2026-10-12", text: "x", by: "zz" }, NOW).note);
+  ok(crowd.staff.length === 24 && full.staff.length === 24 && full.staff[0] === "ZZ" && !full.staff.includes("A23"), "the initials list holds 24; a new one pushes out the one used longest ago");
+  ok(dirty.notes.map(n => n.id).join() === "n4," + made.note.id && dirty.notes[0].day === "2026-10-11" && dirty.tasks.length === 3 && dirty.tasks.find(t => t.id === "t8").doneBy === "MR" && dirty.tasks.find(t => t.id === "t7").doneAt === "" && dirty.tasks.find(t => t.id === "t7").doneBy === "", "bad records are dropped, the rest sorted oldest first; a task that is not done carries no done stamp");
+  const dup = D.normalizeBoard({ schema: D.SCHEMA, notes: [Object.assign({}, made.note, { text: "old", updatedAt: "2026-10-12T10:00:00.000Z" }), Object.assign({}, made.note, { text: "new", updatedAt: "2026-10-12T11:00:00.000Z" })] });
+  ok(dup.notes.length === 1 && dup.notes[0].text === "new", "two records with one id keep the one changed last");
+  const many = D.normalizeBoard({ schema: D.SCHEMA, notes: Array.from({ length: 2100 }, (_, i) => ({ id: "n" + i, day: D.addDays("2026-01-01", i % 300), text: "x", createdAt: new Date(2026, 0, 1, 0, i).toISOString() })) });
+  ok(many.notes.length === 2000 && many.notes[many.notes.length - 1].day >= "2026-10-01", "a board past its limit keeps the newest records");
+  // changing a board returns a new one
+  let b = D.emptyBoard();
+  const frozen = json(b);
+  b = D.withNote(b, made.note); b = D.withTask(b, t1);
+  ok(json(D.emptyBoard()) === frozen && b.notes.length === 1 && b.tasks.length === 1 && json(b.staff) === json(["MR"]), "adding a record leaves the old board as it was, and remembers the initials");
+  const n2 = D.makeNote({ day: "2026-10-12", text: "Pass this on", by: "kt", time: "14:30" }, NOW).note;
+  b = D.withNote(b, n2);
+  ok(json(b.staff) === json(["KT", "MR"]) && b.notes.length === 2, "the initials used last come first in the board's list");
+  b = D.withNote(b, Object.assign({}, n2, { text: "Changed" }));
+  ok(b.notes.length === 2 && b.notes.find(n => n.id === n2.id).text === "Changed", "a record with the same id replaces itself");
+  const doneB = D.setTaskDone(b, t1.id, true, "kt", at(2026, 10, 12, 16, 0));
+  const dt = doneB.tasks.find(t => t.id === t1.id), before = b.tasks.find(t => t.id === t1.id);
+  ok(dt.done && dt.doneBy === "KT" && dt.doneAt === at(2026, 10, 12, 16, 0).toISOString() && !before.done && D.setTaskDone(doneB, t1.id, false, "kt").tasks[0].doneAt === "" && D.setTaskDone(doneB, t1.id, false, "kt").tasks[0].doneBy === "", "a task is marked done with who and when, and can be reopened");
+  ok(D.withoutEntry(b, "note", n2.id).notes.length === 1 && D.withoutEntry(b, "task", t1.id).tasks.length === 0 && D.withoutEntry(b, "task", "none").tasks.length === 1, "an entry can be removed");
+  ok(json(D.withInitials(b, "zz").staff) === json(["ZZ", "KT", "MR"]) && json(D.withInitials(b, "mr").staff) === json(["MR", "KT"]) && D.withInitials(b, "  ").staff.length === 2 && b.staff.length === 2, "initials can be added without a note, and the one used last comes first");
+  ok(D.setKeepDays(b, 30).keepDays === 30 && D.setKeepDays(b, 12).keepDays === 14 && D.forgetInitials(b, "mr").staff.join() === "KT", "retention is one of 7, 14, 30 or 90; initials can be forgotten");
+  // retention: notes and finished tasks go, open tasks never do
+  const old = D.emptyBoard();
+  const mkN = (id, day) => D.normalizeNote({ id, day, text: "x", by: "MR" }), mkT = (id, day, extra) => D.normalizeTask(Object.assign({ id, day, what: "x", by: "MR" }, extra));
+  const ret = Object.assign({}, old, { keepDays: 14, notes: [mkN("n1", "2026-09-27"), mkN("n2", "2026-09-28"), mkN("n3", "2026-10-12")],
+    tasks: [mkT("t1", "2026-09-01"), mkT("t2", "2026-09-01", { done: true, doneAt: at(2026, 9, 2).toISOString(), doneBy: "KT" }), mkT("t3", "2026-09-01", { done: true, doneAt: at(2026, 10, 12, 9).toISOString(), doneBy: "KT" }), mkT("t4", "2026-10-01", { done: true, doneAt: at(2026, 10, 3).toISOString() })] });
+  const pr = D.prune(ret, "2026-10-12");
+  ok(pr.board.notes.map(n => n.id).join() === "n2,n3" && pr.removedNotes === 1 && pr.board.tasks.map(t => t.id).join() === "t1,t3,t4" && pr.removedTasks === 1, "14 days: older notes and finished tasks go; an open task and one finished today stay: " + json([pr.board.notes.map(n => n.id), pr.board.tasks.map(t => t.id)]));
+  ok(D.prune(ret, "2026-10-12").board !== ret && D.prune(pr.board, "2026-10-12").board === pr.board && D.prune(D.setKeepDays(ret, 90), "2026-10-12").removedNotes === 0 && D.prune(D.setKeepDays(ret, 7), "2026-10-12").removedNotes === 2, "pruning a pruned board changes nothing; 7 and 90 days work");
+  // two stations: opening a backup adds, never removes
+  const A = Object.assign({}, D.emptyBoard(), { notes: [made.note], tasks: [t1], staff: ["MR"] });
+  const doneLater = D.setTaskDone(A, t1.id, true, "KT", at(2026, 10, 12, 16, 0)).tasks[0];
+  const later = h => new Date(NOW.getTime() + h * 3600e3).toISOString();
+  const Bd = Object.assign({}, D.emptyBoard(), { notes: [Object.assign({}, made.note, { text: "Calmer after music.", updatedAt: later(1) }), n2], tasks: [Object.assign({}, t1, { what: "Set up the music cart early", updatedAt: later(4) })], staff: ["KT"] });
+  const mg = D.mergeBoards(Object.assign({}, A, { tasks: [doneLater] }), Bd);
+  ok(mg.addedNotes === 1 && mg.addedTasks === 0 && mg.updated === 2 && mg.board.notes.length === 2 && mg.board.notes.find(n => n.id === made.note.id).text === "Calmer after music.", "a backup adds the notes it has and the newer wording of one both have");
+  const mt = mg.board.tasks[0];
+  ok(mg.board.tasks.length === 1 && mt.what === "Set up the music cart early" && mt.done && mt.doneBy === "KT" && mt.doneAt === at(2026, 10, 12, 16, 0).toISOString() && json(mg.board.staff) === json(["MR", "KT"]), "a task finished at one station stays finished when the other station has the newer wording: " + json(mt));
+  ok(D.mergeBoards(mg.board, mg.board).updated === 0 && D.mergeBoards(mg.board, D.emptyBoard()).board.notes.length === 2, "merging a board with itself or an empty one changes nothing and removes nothing");
+  // what the screen shows
+  const day = D.emptyBoard();
+  const sc = Object.assign({}, day, { notes: [
+    D.normalizeNote({ id: "a", day: "2026-10-12", shift: "night", time: "02:10", text: "after midnight", createdAt: "2026-10-13T02:10:00.000Z" }),
+    D.normalizeNote({ id: "b", day: "2026-10-12", shift: "night", time: "23:30", text: "before midnight" }),
+    D.normalizeNote({ id: "c", day: "2026-10-12", shift: "day", time: "09:00", text: "morning" }),
+    D.normalizeNote({ id: "d", day: "2026-10-12", shift: "evening", text: "no time" }),
+    D.normalizeNote({ id: "e", day: "2026-10-11", shift: "day", time: "09:00", text: "yesterday" })] });
+  ok(D.notesFor(sc, "2026-10-12", "all").map(n => n.id).join() === "c,d,b,a" && D.notesFor(sc, "2026-10-12", "night").map(n => n.id).join() === "b,a" && D.notesFor(sc, "2026-10-12", "day").map(n => n.id).join() === "c" && D.notesFor(sc, "2026-10-13", "all").length === 0, "the timeline runs by shift and time, and a night shift's small hours come after its late ones");
+  const tk = Object.assign({}, day, { tasks: [
+    mkT("o1", "2026-10-09"), mkT("o2", "2026-10-11", { shift: "evening" }), mkT("o3", "2026-10-10", { done: true, doneAt: at(2026, 10, 10, 9).toISOString() }),
+    mkT("t1", "2026-10-12", { shift: "evening" }), mkT("t2", "2026-10-12"), mkT("t3", "2026-10-12", { shift: "day", done: true, doneAt: at(2026, 10, 12, 9).toISOString() }), mkT("t4", "2026-10-12", { shift: "night" }), mkT("f1", "2026-10-14")] });
+  const vAll = D.tasksFor(tk, "2026-10-12", "all", "2026-10-12"), vEve = D.tasksFor(tk, "2026-10-12", "evening", "2026-10-12");
+  ok(vAll.today.map(t => t.id).join() === "t2,t1,t4,t3" && vAll.carried.map(t => t.id).join() === "o1,o2", "today's tasks: open first, by shift; earlier open tasks are carried forward, finished ones are not: " + json([vAll.today.map(t => t.id), vAll.carried.map(t => t.id)]));
+  ok(vEve.today.map(t => t.id).join() === "t2,t1" && vEve.carried.length === 2, "a shift shows its own tasks and the ones for any time");
+  ok(D.tasksFor(tk, "2026-10-11", "all", "2026-10-12").carried.length === 0 && D.tasksFor(tk, "2026-10-14", "all", "2026-10-12").carried.map(t => t.id).join() === "o1,o2,t2,t1,t4", "yesterday shows no carried tasks; a later day shows what will still be open");
+  ok(json(D.stats(tk, "2026-10-12")) === json({ notes: 0, open: 6, overdue: 2 }), "counts of open and overdue tasks: " + json(D.stats(tk, "2026-10-12")));
+  // names
+  const known = [{ name: "Margaret", alias: "Resident 302-B" }, { name: "Peggy", alias: "Resident 302-B" }, { name: "Mr. Olsen", alias: "Maple 2" }, { name: "José García", alias: "Resident 14" }, { name: "Rose", alias: "Resident 9" }, { name: "Margaret Ann", alias: "Resident 55" }, { name: "Mary-Jo O'Brien", alias: "Resident 8" }];
+  const chk = s => D.checkNames(s, known);
+  ok(json(chk("Peggy sat with her.")) === json({ hits: ["Peggy"], fixed: "Resident 302-B sat with her." }), "a name in a note is found and offered back as the alias");
+  ok(chk("Margaret refused lunch").fixed === "a resident refused lunch", "two residents who share a name: 'a resident', never a guess");
+  ok(chk("Mr Olsen and Mr. Olsen walked; olsen's daughter visited.").fixed === "Maple 2 and Maple 2 walked; Maple 2's daughter visited." && chk("Mr Olsen and Mr. Olsen walked").hits.length === 2, "a title and surname, with or without the period, and a possessive");
+  ok(chk("Jose Garcia liked it; JOSÉ was calm; garcia too").fixed === "Resident 14 liked it; Resident 14 was calm; Resident 14 too", "case and accents do not hide a name");
+  ok(json(chk("Mary-Jo and O'Brien and Brien and Mary Jo").hits) === json(["Mary-Jo", "O'Brien", "Brien", "Mary"]) && chk("o’brien").hits.length === 1, "hyphenated and apostrophe names, straight or curly, and their parts");
+  ok(chk("Margarets and Margaretta are other words; the Rosebud room; Roses").hits.length === 0 && chk("").hits.length === 0 && chk("Nothing here. Room 12 had a good afternoon.").fixed === "Nothing here. Room 12 had a good afternoon.", "only whole words are names");
+  ok(json(chk("said Mrs. Alvarez, then Dr. Lee; Dr appointment; Mr and Mrs are fine; MRS. smith").hits) === json(["Mrs. Alvarez", "Dr. Lee"]) && chk("said Mrs. Alvarez").fixed === "said [name]", "a title and a capitalised name is flagged even when no profile has it, and a title alone is not");
+  ok(chk("PEGGY, Peggy and peggy").hits.length === 1 && chk("<b>Peggy</b> & Peggy").fixed === "<b>Resident 302-B</b> & Resident 302-B", "each name is reported once; the other characters are untouched");
+  ok(D.checkNames("Peggy", [{ name: "", alias: "x" }, null, { name: "A", alias: "z" }, { name: "Mr.", alias: "q" }]).hits.length === 0, "an empty, one-letter or title-only name finds nothing");
+  const choices = D.aliasChoices(known.concat([{ name: "Sam", alias: "Samuel" }, { name: "Samuel", alias: "Resident 1" }, { name: "Dee", alias: "" }]));
+  ok(json(choices.choices) === json(["Maple 2", "Resident 1", "Resident 8", "Resident 9", "Resident 14", "Resident 55", "Resident 302-B"]) && choices.hidden === 1, "aliases are offered in number order, once each, except one that is itself a resident's name: " + json(choices));
+  const roster300 = Array.from({ length: 300 }, (_, i) => ({ name: ["Ada", "Ben", "Cora", "Dale", "Edna", "Finn"][i % 6] + " " + ["Hart", "Lowe", "Marsh", "Nash", "Oakes"][i % 5] + i, alias: "Resident " + (100 + i) }));
+  const t0 = performance.now(); const big = D.checkNames("Cora Marsh" + 2 + " was calm and ".repeat(8) + "Finn Lowe", roster300); D.aliasChoices(roster300); const nameMs = Math.round(performance.now() - t0);
+  ok(nameMs < 400 && big.hits.length >= 1, `300 residents check in ${nameMs} ms`);
+  // wording tips
+  ok(D.wordingTips("She refused lunch and was combative; a wanderer; non-compliant, attention-seeking and a feeder").length === 6 && D.wordingTips("Declined lunch; walked to the garden; needs help eating").length === 0 && D.wordingTips("")[0] === undefined && /declined/i.test(D.wordingTips("refusal")[0].tip), "wording tips name six judging labels and say nothing about plain words");
+  // the printed handoff sheet
+  const H = D.handoff(b, "2026-10-12", "day", NOW);
+  ok(H.forLabel === "For the evening shift" && H.groups.map(g => g.kind.id).join() === "watch,pass,worked" && H.groups[0].notes.length === 1 && H.open.length === 1 && H.done.length === 0 && D.handoff(b, "2026-10-12", "night", NOW).forLabel === "For the day shift, Oct 13", "the handoff names the shift that takes over");
+  ok(D.handoff(doneB, "2026-10-12", "evening", NOW).done.length === 1 && D.handoff(doneB, "2026-10-12", "day", NOW).done.length === 0 && D.handoff(doneB, "2026-10-12", "all", NOW).done.length === 1 && D.handoff(doneB, "2026-10-12", "evening", NOW).open.length === 0, "tasks finished on a shift are listed with it, by the time they were finished");
+  const nh = D.handoff(tk, "2026-10-12", "night", NOW), dh = D.handoff(tk, "2026-10-12", "day", NOW);
+  ok(nh.open.map(t => t.id).join() === "o1,o2,t2,t1,t4" && !nh.open.some(t => t.id === "f1") && D.handoff(tk, "2026-10-13", "night", NOW).open.some(t => t.id === "f1") && D.handoff(tk, "2026-10-13", "night", NOW).open.length === 6 && dh.open.length === 5, "the sheet lists every task still open, whatever shift it is for, and a night shift's also lists the next morning's: " + json(nh.open.map(t => t.id)));
+  const pages = D.handoffPages(H, { facility: "Maple Grove", today: "2026-10-12" });
+  ok(pages.length === 1 && /^<div class="sheet ops-sheet">/.test(pages[0]) && pages[0].includes("Shift handoff") && pages[0].includes("Monday, October 12") && pages[0].includes("Day shift") && pages[0].includes("For the evening shift") && pages[0].includes("Maple Grove") && pages[0].includes("Page 1 of 1") && pages[0].includes("Resident 302-B") && pages[0].includes("Restless after lunch.") && pages[0].includes("2:05 pm"), "a typical day is one US Letter page with its day, shift, facility, notes and times");
+  ok((pages[0].match(/<h3>/g) || []).length === 5 && /Nothing recorded\./.test(pages[0]) && pages[0].includes('class="ops-box"') && pages[0].includes("Added by hand") && pages[0].includes("Residents appear by alias only"), "every group is on the sheet, empty ones say so; open tasks have a box to tick; there is room to write");
+  const quiet = D.handoffPages(D.handoff(D.emptyBoard(), "2026-10-12", "all", NOW), { facility: "", today: "2026-10-12" });
+  ok(quiet.length === 1 && quiet[0].includes("No open tasks.") && quiet[0].includes("All shifts") && quiet[0].includes("Cognicopia ·") && !quiet[0].includes("For the"), "an empty day still prints a sheet, for all shifts");
+  const xss = D.handoffPages(D.handoff(D.withNote(D.emptyBoard(), D.makeNote({ day: "2026-10-12", time: "10:00", text: '<img src=x onerror="alert(1)"> & "q"', about: "<b>x</b>", by: "MR" }, NOW).note), "2026-10-12", "day", NOW), { facility: "<script>", today: "2026-10-12" }).join("");
+  ok(!/<img|<script|<b>x/.test(xss) && /&lt;img/.test(xss) && /&amp; &quot;q&quot;/.test(xss), "everything typed is escaped on the sheet");
+  let heavy = D.emptyBoard();
+  for (let i = 0; i < 44; i++) heavy = D.withNote(heavy, D.makeNote({ day: "2026-10-12", time: "0" + (i % 9) + ":" + (10 + i % 40), kind: ["watch", "pass", "worked"][i % 3], about: "Room " + i, text: "An observation of ordinary length. ".repeat(1 + (i % 7)), by: "MR" }, at(2026, 10, 12, 9, i)).note);
+  for (let i = 0; i < 18; i++) heavy = D.withTask(heavy, D.makeTask({ day: "2026-10-1" + (i % 3), what: "Task number " + i + " with enough words in it to need a second line on the page", by: "MR", assignee: i % 2 ? "KT" : "" }, NOW).task);
+  const hh = D.handoff(heavy, "2026-10-12", "all", NOW), hp = D.handoffPages(hh, { facility: "Maple Grove", today: "2026-10-12" });
+  const rows = hp.reduce((n, p) => n + (p.match(/class="ops-row/g) || []).length, 0);
+  ok(hp.length >= 4 && hp.length <= 8 && rows === 44 + hh.open.length && hp.every((p, i) => p.includes(`Page ${i + 1} of ${hp.length}`)), `a heavy day paginates (${hp.length} pages) and every entry is printed once: ${rows} rows`);
+  ok(hp.slice(0, -1).every(p => !p.includes("Added by hand")) && hp.some(p => /\(continued\)/.test(p)), "a section that runs on says so; the write-in lines are only on the last page");
+  const pagesOf = D.paginate(D.sections(hh, "2026-10-12")).pages, L = D.LAYOUT;
+  ok(pagesOf.every(pg => pg.reduce((h, p) => h + L.HEAD_IN + p.rows.reduce((s, r) => s + D.rowHeight(r), 0), 0) <= L.PAGE_BODY_IN + 1e-9 + L.SECTION_GAP_IN * pg.length), "every page's estimated height fits the sheet's body");
+  ok(D.handoffPages(D.handoff(D.withNote(D.emptyBoard(), D.makeNote({ day: "2026-10-12", time: "10:00", text: "w".repeat(480), by: "MR" }, NOW).note), "2026-10-12", "all", NOW), { facility: "", today: "2026-10-12" }).length >= 1, "one long unbroken word still prints");
+  const allSecs = D.sections(D.handoff(b, "2026-10-12", "all", NOW), "2026-10-12");
+  ok(json(allSecs[0].rows.concat(allSecs[1].rows).map(r => r.lead)) === json(["Day\n2:05 pm", "Day\n2:30 pm"]) && D.sections(D.handoff(b, "2026-10-12", "day", NOW), "2026-10-12")[0].rows[0].lead === "2:05 pm", "on a sheet of every shift each note's lead carries its shift above its time");
+  // backup files
+  const file = D.backupFile(mg.board, NOW), back = D.readBackup(JSON.parse(JSON.stringify(file)));
+  ok(file.format === "cognicopia.dailyOpsBackup" && D.FILE_KIND === "dailyops" && json(back.board) === json(mg.board) && back.exportedAt === NOW.toISOString().slice(0, 10), "a backup file round-trips the board");
+  let kindErr = ""; try { D.readBackup({ format: "cognicopia.facilityBackup", board: {} }); } catch (e) { kindErr = e.message; }
+  let kindErr2 = ""; try { D.readBackup(null); } catch (e) { kindErr2 = e.message; }
+  ok(kindErr === "kind" && kindErr2 === "kind" && D.readBackup({ format: D.FILE_FORMAT, board: { schema: "x", notes: [made.note] } }).board.notes.length === 0, "a file that is not a Shift board backup is refused; a foreign board inside one reads as empty");
+  // ids, with and without the browser's random source
+  const ids = new Set(Array.from({ length: 2000 }, () => D.newId("t")));
+  const withCrypto = { globalThis: null, crypto: globalThis.crypto, console }; withCrypto.globalThis = withCrypto; vm.createContext(withCrypto);
+  vm.runInContext(fs.readFileSync(path.join(ROOT, "assets", "services", "dailyOps.js"), "utf8"), withCrypto);
+  const cids = new Set(Array.from({ length: 2000 }, () => withCrypto.CogniDailyOps.newId("n")));
+  ok(ids.size === 2000 && cids.size === 2000 && [...ids, ...cids].every(i => /^[nt][a-z0-9]{12,20}$/.test(i)), "ids are unique and shaped the same with or without crypto");
+  // wired into the Packet Builder, the offline cache and the navigation
+  const bh = fs.readFileSync(path.join(ROOT, "builder.html"), "utf8"), sw = fs.readFileSync(path.join(ROOT, "sw.js"), "utf8"), nav = fs.readFileSync(path.join(ROOT, "scripts", "site-nav.mjs"), "utf8");
+  ok(bh.includes('<script src="assets/services/dailyOps.js"></script>') && bh.indexOf("assets/services/dailyOps.js") < bh.indexOf('id="ops-ui"'), "the Packet Builder loads the service before the screen");
+  ok(/"shift": renderShift/.test(bh) && /function renderShift\(\)\{ DailyOpsUI\.render\(view\); \}/.test(bh), "#/shift is a route");
+  ok(sw.includes('"assets/services/dailyOps.js"'), "the service worker keeps the script for offline use");
+  ok(/key: "shift",\s+label: "Shift board",\s+href: B \+ "#\/shift",\s+route: "shift"/.test(nav), "Shift board is in the Facility hub");
+  ok(/store\.remove\(window\.CogniDailyOps \? window\.CogniDailyOps\.STORE_KEY : "cognicopia_dailyops"\)/.test(bh), "Settings > Clear saved data clears the board");
+  ok(!/fetch\(|XMLHttpRequest|sendBeacon|WebSocket|importScripts/.test(fs.readFileSync(path.join(ROOT, "src", "services", "dailyOps.ts"), "utf8")), "the service makes no network request");
+  sandbox.__opsStats = `Shift board: ${nameMs} ms to check 300 names, a heavy day on ${hp.length} pages`;
+});
+
 /* ---------- 10. Clinical Science & Research Center (researchCenter.ts) ---------- */
 group("researchCenter", () => {
   const R = sandbox.CogniResearch;
@@ -941,4 +1101,4 @@ group("researchCenter", () => {
 });
 
 if (fails.length){ console.log(`services check FAILED: ${fails.length} problem(s), ${pass} passed\n  - ` + fails.slice(0, 30).join("\n  - ")); process.exit(1); }
-console.log(`services check passed: ${pass} checks (${tscNote}; slowest page ${sandbox.__dveWorst} ms; 300 sealed residents open in ${sandbox.__storeMs} ms; ${sandbox.__remStats}; ${sandbox.__facStats}; ${sandbox.__acadStats}; ${sandbox.__rcStats})`);
+console.log(`services check passed: ${pass} checks (${tscNote}; slowest page ${sandbox.__dveWorst} ms; 300 sealed residents open in ${sandbox.__storeMs} ms; ${sandbox.__remStats}; ${sandbox.__facStats}; ${sandbox.__acadStats}; ${sandbox.__opsStats}; ${sandbox.__rcStats})`);

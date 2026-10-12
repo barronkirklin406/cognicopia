@@ -21,7 +21,8 @@ const SEALED_PREFIXES = [
     "cognicopia_facility",
     "cognicopia_academy",
     "cognicopia_quality",
-    "cognicopia_alignment"
+    "cognicopia_alignment",
+    "cognicopia_dailyops"
 ];
 const isSealed = (name)=>SEALED_PREFIXES.some((p)=>name.startsWith(p));
 const PBKDF2_ROUNDS = 600000;
@@ -1059,13 +1060,13 @@ function promptUnlock() {
       <h2 id="cssTitle" style="margin:0 0 6px;font-size:21px;line-height:1.25;color:#10251c">Saved resident details are locked</h2>
       <p id="cssBody" style="margin:0 0 14px;color:#2f4a3d">Enter this computer's Cognicopia passphrase to open them. They are encrypted on this computer and are never sent anywhere.</p>
       <label for="cssPass" style="display:block;font-weight:700;margin-bottom:4px;color:#10251c">Passphrase</label>
-      <input id="cssPass" type="password" autocomplete="current-password" required style="box-sizing:border-box;width:100%;min-height:44px;padding:8px 10px;border:2px solid #52796f;border-radius:8px;font:inherit;background:#fff;color:#10251c">
+      <input id="cssPass" type="password" autocomplete="current-password" required style="box-sizing:border-box;width:100%;min-height:52px;padding:8px 10px;border:2px solid #52796f;border-radius:8px;font:inherit;background:#fff;color:#10251c">
       <label for="cssKeep" style="display:block;font-weight:700;margin:12px 0 4px;color:#10251c">Keep unlocked on this computer for</label>
-      <select id="cssKeep" style="box-sizing:border-box;width:100%;min-height:44px;padding:6px 8px;border:2px solid #52796f;border-radius:8px;font:inherit;background:#fff;color:#10251c">${opts}</select>
+      <select id="cssKeep" style="box-sizing:border-box;width:100%;min-height:52px;padding:6px 8px;border:2px solid #52796f;border-radius:8px;font:inherit;background:#fff;color:#10251c">${opts}</select>
       <p id="cssMsg" role="alert" style="min-height:1.5em;margin:10px 0 0;color:#9b1c1c;font-weight:700"></p>
       <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:8px">
-        <button type="submit" style="min-height:44px;padding:8px 18px;border:0;border-radius:8px;background:#1b4332;color:#fff;font:inherit;font-weight:700;cursor:pointer">Unlock</button>
-        <button type="button" id="cssSkip" style="min-height:44px;padding:8px 14px;border:2px solid #1b4332;border-radius:8px;background:#fff;color:#1b4332;font:inherit;font-weight:700;cursor:pointer">Continue without them</button>
+        <button type="submit" style="min-height:52px;padding:8px 18px;border:0;border-radius:8px;background:#1b4332;color:#fff;font:inherit;font-weight:700;cursor:pointer">Unlock</button>
+        <button type="button" id="cssSkip" style="min-height:52px;padding:8px 14px;border:2px solid #1b4332;border-radius:8px;background:#fff;color:#1b4332;font:inherit;font-weight:700;cursor:pointer">Continue without them</button>
       </div></form>`;
         doc.body.appendChild(wrap);
         const form = wrap.querySelector("form"), pass = wrap.querySelector("#cssPass");

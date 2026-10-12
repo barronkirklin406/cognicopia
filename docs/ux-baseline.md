@@ -46,12 +46,12 @@ How many choices (links, group headings and buttons in the sidebar) a person see
 | profile.html | 8 | 9 | 6 |
 | Packet Builder, home | **21** | **14** | 6 |
 | Packet Builder, coloring | **21** | **12** | 6 |
-| Packet Builder, roster | **21** | **11** | 6 |
+| Packet Builder, roster (Facility open) | **21** | **12** | 6 |
 | Resource hub page | 19 | 18 | 6 |
 | A resource module | 19 | 18 | 6 |
 | Contact | 8 | 7 | 6 |
 
-Reading it honestly: the Packet Builder, the page with the longest list, dropped by a third to a half. The static pages were already short, because the Resource & Clinical Hub started collapsed; they gain one link (the footer Contact) and lose a couple of hub-level links, so they are about the same. What changed everywhere is the shape: the same six hubs in the same order on every page, one open, instead of two different sidebars. Resource pages remain the longest (18) because the reader there wants the ten modules in front of them.
+Reading it honestly: the Packet Builder, the page with the longest list, dropped by a third to a half (the Shift board added one link inside Facility, so its roster row reads 12, not 11). The static pages were already short, because the Resource & Clinical Hub started collapsed; they gain one link (the footer Contact) and lose a couple of hub-level links, so they are about the same. What changed everywhere is the shape: the same six hubs in the same order on every page, one open, instead of two different sidebars. Resource pages remain the longest (18) because the reader there wants the ten modules in front of them.
 
 ## Tap targets
 
@@ -74,6 +74,9 @@ The standard was 44 px. The decision (see [blueprint-decisions.md](blueprint-dec
 | Builder digest | 32 | 1 | 24 | 0 |
 | Builder session notes | 29 | 1 | 21 | 0 |
 | Builder settings | 45 | 3 | 34 | 0 |
+| Builder shift board (new; the Facility hub's Shift board) | 52 | n/a | n/a | 0 |
+| Shift board with a note, a task and a name found in a note | 59 | n/a | n/a | 0 |
+| The encrypted store's unlock prompt (a locked store; added to the audit with the Shift board) | 26 | 0 | 4 | 0 |
 | Packet drawer with a page | 215 | 12 | 55 | 0 |
 | Coloring packs tab | 107 | 64 | 98 | 0 |
 | Facility wing with a calendar | 190 | 146 | 176 | 0 (see below) |
@@ -88,6 +91,8 @@ What is exempt, marked in the page with `data-tap-exempt` and a reason the audit
 
 - **The facility calendar's month grid** (146 of 190 controls above): a dense overview whose chips and "+" buttons cannot all be 52 px. The List layout beside it has every action at full size, and a device that is touch-only now starts in the list.
 - **The lesson chapter bar** (a handful of segments sized by length): the seek slider reaches any point in the lesson.
+
+The unlock prompt (the dialog shown when a passphrase is set and the store is locked) was found under 52 px only when the audit was taught to lock the store: its passphrase field, its keep-unlocked menu and its two buttons were 44 px, and are 52 px now.
 
 Controls that were found under 44 px and are now fixed include the planner's and journal's "Try an example", "Start over" and "Add a ..." buttons (36 px), the checkboxes' labels (20 px tall), the Academy's "Edit" buttons and filter chips (36 px), the Settings passphrase fields (31 px), the Packet Builder's "Settings" link and "Facility view" switch (19 and 42 px), and the Instant Soothe close button (48 px).
 

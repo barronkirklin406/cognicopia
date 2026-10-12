@@ -25,8 +25,10 @@
      5b. in a real browser (where Playwright is installed): every control on
         the tools, in the states a person reaches and in every page type's
         sidebar is at least 52 px, and no text is below WCAG AA by day or in
-        Night Shift (scripts/audit-ux.mjs), and the six hubs open, close and mark
-        the current page as a person expects (scripts/check-nav-ui.mjs);
+        Night Shift (scripts/audit-ux.mjs), the six hubs open, close and mark
+        the current page as a person expects (scripts/check-nav-ui.mjs), and the
+        Shift board does what it says, down to what is stored and what prints
+        (scripts/check-shift-ui.mjs);
      6. no page or tool text makes a claim the product cannot back (such as
         "HIPAA compliant"; scripts/check-claims.mjs);
      7. the site navigation matches scripts/site-nav.mjs (npm run nav), the
@@ -149,6 +151,14 @@ step("every control is at least 52 px and no text is below WCAG AA (a real brows
 
 step("the navigation behaves: hubs open and close, the current page is marked, the Packet Builder's sidebar follows its screens (a real browser)", () => {
   try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-nav-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
+  catch (e){
+    if (e.status === 2) return "skipped: Playwright is not installed here (see docs/dev-setup.md)";
+    throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message);
+  }
+});
+
+step("the Shift board works: notes, tasks, the name check, encrypted storage, retention, the print sheet, a locked backup and the unlock (a real browser)", () => {
+  try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-shift-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
   catch (e){
     if (e.status === 2) return "skipped: Playwright is not installed here (see docs/dev-setup.md)";
     throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message);

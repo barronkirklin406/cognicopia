@@ -15,6 +15,7 @@ Cognicopia has no server, account or cloud copy. Everything staff type stays in 
 | Photos of finished pages (Memory Digest & Book) | `cognicopia_heirloom_photo_*` | Encrypted, in a separate photo store that is read only when a page needs a photo. A browser that cannot encrypt refuses photos rather than keeping them in plain storage. |
 | The Facility Portal: wings, groups (and any residents linked to them), the team, the audit trail, and each wing's month calendar | `cognicopia_facility`, `cognicopia_facility_sched_<wing>_<month>` | Encrypted. Packets, calendars and files from the portal carry group names only. |
 | The Academy: learners (staff names and roles), their lesson progress, knowledge-check scores, completions and certificate IDs, and the certificate approval statement | `cognicopia_academy` | Encrypted. Guides, toolkits and certificates are made as PDFs on this computer. |
+| The Shift board: handoff notes and staff tasks (residents by alias or room only, never meant to hold a name), the initials used on the board and how long to keep notes | `cognicopia_dailyops` | Encrypted. Notes and finished tasks older than the chosen 7, 14, 30 or 90 days are removed when the board opens; an open task is kept until it is done. A locked `.cognicopia` backup is the only copy that leaves the browser, and only when staff make it. See [daily-operations.md](daily-operations.md). |
 | The Quality Standards Hub: the survey-readiness checklist (which items are ticked) and the facility's name for the printed cover sheet | `cognicopia_quality_audit` | Encrypted |
 | Clinical & Caregiver Alignment: the objective chosen, which evidence items are ticked, the activity filters, and the community, wing, preparer and role for the printed sheets (never a resident's name) | `cognicopia_alignment_state` | Encrypted |
 | The Research Center's board packet details: the community's name, who prepared it and their role, the meeting date, and the facility's counts, hours and hourly cost | `cg_rc_board` | Plain `localStorage`: nothing about a resident. The packet is made as a PDF on this computer, and **Clear these details** removes the copy. |
@@ -60,6 +61,8 @@ On the receiving computer, **Receive a handoff** adds new residents. For a resid
 Say the passphrase in person or by phone. Never send it in the same message as the file.
 
 The Facility Portal's **Back up or move the portal** writes the portal (wings, groups, team, audit trail and calendars) into a file of the same locked kind. See [the portal's notes](facility-portal.md#backing-up-or-moving-the-portal).
+
+The Shift board's **Back up, or move to another station** does the same for its notes and tasks (kind `dailyops`). Opening such a file on another station adds what that board is missing and never removes anything. See [daily-operations.md](daily-operations.md#moving-a-board-to-another-station).
 
 ## Importing a census spreadsheet
 

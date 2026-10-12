@@ -15,6 +15,7 @@ Never add a cloud dependency to the static site. Never put resident data in `pla
 
 - Zero PHI outside the browser. Test data and fixtures use made-up people only; never a real name, birth date or facility.
 - Do not claim to be "HIPAA compliant". Compliance belongs to a facility's program. Say what is true: **"No resident data leaves the device"** and "supports a facility's HIPAA privacy practices". The same goes for regulatory wording (CMS, state rules): "supports", never "ensures".
+- The Shift board (`docs/daily-operations.md`) keeps residents by alias or room only. Never add a feature that stores a resident's name there, and keep its name check.
 - Do not scope an offline claim wider than it is: "no internet needed" is true of the packet tools, not of sign-in or billing.
 - A repository is public: no secrets, tokens or keys in any file. Use placeholders such as `YOUR_KEY_HERE` and keep real values in the environment.
 
