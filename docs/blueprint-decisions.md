@@ -40,6 +40,7 @@ Why: the privacy page already says "supports", and a blanket claim invites a wro
 - The **static site** (the root pages, `assets/`, `src/`) is offline-only. The three tools make no network request, and `npm run build` fails if one does.
 - **`platform/`** is a separate zero-PHI service (sign-in, billing, shared planning). It needs the internet by design.
 - Public copy scopes its claims: "no internet needed" is said of the packet tools, never of sign-in or billing.
+- **One exception inside the static site: `activate.html`.** It exchanges a Stripe checkout reference for a license key, only after a card purchase, and sends nothing else (see D10). The build proves no other page makes a request. The three tools still make none.
 
 Why: the original rule ("no cloud dependencies") would have made the Supabase and Stripe work a violation. Scoping it keeps the strong promise where it is true.
 
@@ -114,6 +115,14 @@ A secure random seed per print and an ids-only history, guaranteeing no repeats 
 
 "Engaging Todays" is a typo; use **"Engaging Today"**. The site's hero line today is "Connection, Cognition, Creation"; that stays until the owner chooses to replace it. Any claim in a tagline must be true of what it names ("Zero Internet Required" is true of the packet tools, not of sign-in).
 
+### D10. Pricing and licensing: $39 a month, $349 a year, enterprise by quote; signed keys
+
+- **Plans** (per facility, meaning one building): **$39 a month** (small enough for a purchasing card), **$349 a year** (best value: $39 × 12 = $468, so it saves $119, about 25%), and **Enterprise / multi-facility** by custom quote, paid by invoice (ACH or check, net-30, a W-9). **25 free packets** per computer, then the upgrade screen offers monthly, annual or an invoice request.
+- **Signed keys instead of a shared code.** The earlier model was one shared access code, kept as a hash in a public repository: anyone who learns or guesses it has a license, and it can never be taken back. A key is now `COG1.<facility, plan, dates>.<signature>`, signed (ECDSA P-256) with a private key only the owner holds and checked in the browser against the public key in `src/config/license.js`, with no server and no internet. It carries the facility, the plan and the paid-through date, works offline for 90 days past that date, and can be withdrawn by id. The earlier access code and the promo code keep working so no existing customer is locked out.
+- **Where the key is kept: `localStorage`, not the encrypted store.** The first brief asked for IndexedDB and the encrypted store. A license answer is needed synchronously on every page and before any passphrase, a signed key gains nothing from encryption, and a locked store would show a buy screen to a facility that has paid. So the key is kept in `cognicopia_license_v2`, re-verified on every read.
+- **A Stripe `session_id` cannot be verified offline.** It is only a reference; proving it was paid needs Stripe. So `activate.html` (the only page allowed to use the network) sends it to the license service in `platform/`, which asks Stripe and signs a key. Everything after that is offline. If the service is not running, the owner issues keys by hand (`scripts/issue-license.mjs`) and nothing else changes.
+- **Not decided here (owner's):** honoring the earlier $129.99 code and for how long; the refund and cancellation wording (carried over from before); and who hosts the license service.
+
 ## Order of work
 
 1. Tooling and baseline: `CLAUDE.md`, [dev-setup.md](dev-setup.md), `npm run audit:ux`, [ux-baseline.md](ux-baseline.md), this page.
@@ -121,3 +130,4 @@ A secure random seed per print and an ids-only history, guaranteeing no repeats 
 3. Six-hub navigation (done).
 4. Daily Operations: built as a first version (the Shift board), for Activity Directors to react to.
 5. The local-AI spike, last and optional: planned in [local-ai-plan.md](local-ai-plan.md), not built.
+6. Pricing and licensing (D10): built; the owner sets up Stripe and the signing key ([stripe-setup-guide.md](stripe-setup-guide.md)).

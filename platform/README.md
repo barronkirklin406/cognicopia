@@ -53,6 +53,8 @@ All are documented, with where to find each one, in [`.env.example`](.env.exampl
 | `STRIPE_PRICE_MONTHLY`, `STRIPE_PRICE_ANNUAL` | checkout | The two recurring prices (`price_...`). |
 | `STRIPE_PORTAL_CONFIGURATION_ID` | optional | A saved portal configuration (`bpc_...`); empty uses Stripe's default. |
 | `STRIPE_TRIAL_DAYS` | optional | A free trial on new subscriptions, 1 to 90 days; empty for none. |
+| `LICENSE_SIGNING_KEY` | license keys | The private key (PEM) that signs the static site's license keys. Only for the redeem route below; leave unset if you issue keys by hand. |
+| `LICENSE_ALLOWED_ORIGINS` | license keys | The static site's address(es), comma separated. Default `https://cognicopia.org`. |
 | `STRIPE_API_BASE` | local testing only | Points the Stripe client at a stand-in server. Ignored in production. |
 
 **This repository is public.** Only `.env.example`, which holds no real values, is committed. Keep real keys in `.env.local` or the host's settings.
@@ -123,3 +125,13 @@ Which subscription statuses open the premium tools is decided in two places, `li
 ## Deploying
 
 Deploy this folder to a Node host. On Vercel, set the Root Directory to `platform` and add the variables above, with `APP_URL` set to the production address. Point a live-mode Stripe webhook endpoint at `APP_URL/api/stripe/webhook`. The public site keeps deploying from `main` to GitHub Pages as before. To create the hosted database, link the Supabase project and push the migrations (`supabase link`, then `supabase db push`), then set up Supabase as above.
+
+## License keys for the static site (`POST /api/licenses/redeem`)
+
+The public site (cognicopia.org) sells a facility license through two Stripe Payment Links ($39 a month, $349 a year). After a card payment Stripe returns the buyer to the site's `activate.html` with a checkout reference, and that page asks this route for a license key.
+
+- **What it does.** Takes `{ "session_id": "cs_live_..." }`, asks Stripe whether that checkout was completed and paid, checks that it was for one of the two prices (`STRIPE_PRICE_MONTHLY`, `STRIPE_PRICE_ANNUAL`), and answers with a signed key (`COG1.<payload>.<signature>`, ECDSA P-256) holding the facility's business name, the plan and the date it is paid through. The browser checks the signature against the public key in the site's `src/config/license.js`; no server is needed after that. The format is the same one `scripts/issue-license.mjs` writes by hand, and a test loads the site's real files to prove the two agree.
+- **What it never does.** It reads nothing from the database, holds no resident information (the key is a business name and two dates), and stores nothing. It is outside the sign-in proxy, like the Stripe webhook.
+- **Who may call it.** A page on `LICENSE_ALLOWED_ORIGINS` (CORS), ten tries a minute from one address (in memory, per instance: a speed bump; put a firm limit in front if you need one). Errors are `{ "error": { "code", "message" } }`: `not_paid` 402, `not_found` 404, `not_a_license` 422, `rate_limited` 429, `not_configured` 503.
+- **Renewals.** The same reference can be redeemed again; a subscription still current gets a key paid through its present period. A purchase always gets the same license id, so withdrawing it (`REVOKED_IDS` in the site's config) withdraws every renewal.
+- **Setting it up.** [../docs/stripe-setup-guide.md](../docs/stripe-setup-guide.md). Code: `lib/licenses/` and `app/api/licenses/redeem/route.ts`; tests: `tests/licenses/`.

@@ -78,8 +78,8 @@ ok(/--primary-green:\s*#1b382b/i.test(css) && /--parchment-bg:\s*#f4efe6/i.test(
 
 /* 5. the price, the colours and the claims */
 const builder = read("builder.html");
-const price = (/PRICE = "\$([\d.]+) a year"/.exec(builder) || [])[1];
-ok(price === "129.99" && /UNIT_CENTS = 12999/.test(js), "the calculator uses the license price in the tools (" + price + ")");
+const price = (/PRICE_YEAR = "\$([\d.]+) a year"/.exec(builder) || [])[1];
+ok(price === "349" && /UNIT_CENTS = 34900/.test(js) && /\$349\.00/.test(main), "the calculator uses the license price in the tools (" + price + ")");
 ok(/Net 30/.test(main + js) && /W-9/.test(main + js), "Net 30 and the W-9 are on the page");
 ok(!/\b\d{2}-\d{7}\b/.test(html), "no taxpayer identification number is invented");
 const lum = h => { const c = [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16) / 255).map(v => v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4)); return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]; };

@@ -6,7 +6,7 @@ Cognicopia (cognicopia.org) is an offline-first memory-care activity site: print
 
 | Where | What | Network rule |
 |---|---|---|
-| Repository root (`index.html`, `builder.html`, `profile.html`, `assets/`, `src/`, `scripts/`, `resources/`) | The **static site**, published from `main` by GitHub Pages | **Offline only.** The three tools make no network request of their own. `npm run build` fails if one does. Resident data never leaves the browser. |
+| Repository root (`index.html`, `builder.html`, `profile.html`, `assets/`, `src/`, `scripts/`, `resources/`) | The **static site**, published from `main` by GitHub Pages | **Offline only.** The three tools make no network request of their own. `npm run build` fails if one does. Resident data never leaves the browser. The one exception is `activate.html`, which sends a Stripe checkout reference (nothing else) to the license service to get a license key after a card purchase; no other page may use the network. |
 | `platform/` | A separate Next.js, Supabase and Stripe service for facilities (sign-in, billing, shared planning) | Needs the internet by design. **Zero PHI:** it never stores a resident's name or health details. Not covered by the root `npm test`; see `platform/README.md`. |
 
 Never add a cloud dependency to the static site. Never put resident data in `platform/`.
@@ -22,6 +22,10 @@ Never add a cloud dependency to the static site. Never put resident data in `pla
 ## Tone (dignity first)
 
 Write and review all resident-facing text as if for an adult relative. No "Do you remember...", no quizzing, no childish words, no elderspeak, no infantilizing art. Invite; never test. The dignity and avoid-topic filters in `src/engine` and `assets/cognicopia-coloring/prompts.js` are tests, not suggestions.
+
+## Pricing and licensing
+
+Prices live in one place, `src/config/license.js` (`PRICES`, `FREE_RUNS`, `PAYMENT_LINKS`, `PUBLIC_KEYS`): **$39 a month, $349 a year (saves $119, about 25%), Enterprise by custom quote, 25 free packets**. Never type a price into a page by hand without the check passing (`scripts/check-license.mjs` fails on the old price and on a mismatch). A license is a signed key checked in the browser (`assets/services/licenseManager.js`); the private signing key is never in this repository (`.gitignore` refuses `*.pem`), and no Stripe secret, price id or live key goes in a file. A Payment Link that still holds `REPLACE_ME` or `test_` is treated as not set up. Make or check a key with `scripts/issue-license.mjs`; Stripe setup is in `docs/stripe-setup-guide.md`.
 
 ## Navigation
 
@@ -43,6 +47,8 @@ npm run build     # checks + nav sync + research pages + link check; run before 
 npm run coloring  # regenerate the coloring catalog and bundle after editing assets/cognicopia-coloring/*.js or approving traced art
 npm run nav       # regenerate the six-hub navigation on every page from HUBS in scripts/site-nav.mjs (also after npm run coloring: the hub page shows the picture count)
 npm run services  # rebuild assets/services/*.js from src/services/*.ts
+node scripts/license-keygen.mjs     # owner only: make the license-signing key pair (private half stays outside the repo)
+node scripts/issue-license.mjs      # make or verify a signed license key (invoices, enterprise); see docs/stripe-setup-guide.md
 npm run audit:ux  # measure tap targets, contrast, clicks, nav and print time in a real browser (not part of npm test)
 ```
 

@@ -34,6 +34,8 @@ for (const m of MODULES.filter(x => x.legacy)) {       // the Research Center is
 const pageRoutes = [
   'profile',
   'contact',
+  'pricing',
+  'activate',
   'zentangle-art',
   'cognitive-journals',
   'life-planners'

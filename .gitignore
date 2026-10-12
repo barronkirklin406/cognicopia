@@ -9,3 +9,9 @@ new-config.yaml
 
 # generated review sheets for traced art (scripts/review_coloring_art.mjs)
 /assets/coloring/_review/
+
+# license-signing keys (scripts/license-keygen.mjs): the private half never goes in the repository
+*.pem
+*-private.*
+license-private*
+.cognicopia/

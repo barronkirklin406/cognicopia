@@ -35,7 +35,8 @@ export const VERSION = "1.0.0";
 export const REVIEWED = "2026-09-30";         // when every summary was last checked against its sources
 export const SITE = "https://cognicopia.org";
 export const HOME = "resources/research/";
-export const PRICE_PER_BUILDING = 129.99;     // the license price the site states (index.html and builder.html: PRICE)
+export const PRICE_PER_BUILDING = 349;         // the annual license price the site states (src/config/license.js: PRICES.annual; index.html and builder.html: PRICE_YEAR)
+export const PRICE_PER_MONTH = 39;             // the monthly plan (src/config/license.js: PRICES.monthly)
 export const READ_WPM = 200;
 
 /* ---------- 1. The evidence scale, document types, topics ---------- */
@@ -1077,7 +1078,7 @@ export function boardBlocks(input: BoardInput): { blocks: PBlock[]; refs: string
     ["Is this a medical treatment?", "No. Cognicopia makes activity materials and supports activity programs. The research it cites concerns activity approaches such as cognitive stimulation and reminiscence. It does not diagnose or treat any condition."],
     ["Does it replace our activity staff?", "No. It shortens preparation so staff spend more time with residents. Federal rules require a qualified professional to direct the activity program (F680)."],
     ["Are the Academy certificates continuing education credit?", "They are in-service training records. They count as accredited continuing education only where the facility’s program or an approving body accepts them, and each certificate says which."],
-    ["What does it cost, and what if we stop?", `${money(PRICE_PER_BUILDING)} a year per building, for every resident and staff computer. Printed materials remain the facility’s, and saved data stays on its computers until staff remove it.`],
+    ["What does it cost, and what if we stop?", `${money(PRICE_PER_BUILDING)} a year per building (or $${PRICE_PER_MONTH} a month), for every resident and staff computer. Either plan can be cancelled at any time. Printed materials remain the facility’s, and saved data stays on its computers until staff remove it.`],
     ["How will we know it is working?", "Section 5 lists the measures. The activity director reports them to the board at day 90, with a recommendation."]
   ] as [string, string][]).forEach(([q, a]) => { b.push({ k: "h2", text: q }); b.push({ k: "p", text: a }); });
   // 7. references

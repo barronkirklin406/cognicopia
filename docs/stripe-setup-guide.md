@@ -1,0 +1,193 @@
+# Stripe setup guide: the facility license
+
+How Cognicopia sells and unlocks a facility license, and exactly what the owner sets up in Stripe. Everything marked **Owner** can only be done by the person who holds the Stripe account and the signing key. Nothing in this guide needs a secret to be written into the repository, and nothing may be.
+
+> **Where things stand.** The site, the keys and the license service are built and tested. Until the owner does steps 1 to 5 below, the buy buttons ask for an invoice instead of opening a payment page, and signed keys are refused with a plain message. The earlier access code and the promo code keep working throughout. See [What is placeholder](#what-is-placeholder-until-the-owner-sets-it).
+
+## What is sold
+
+| Plan | Price | Who it is for |
+|---|---|---|
+| Monthly | $39.00 per month, per facility | A department that can buy on a purchasing card (P-Card) without a sign-off. Check your own spending policy. |
+| Annual (best value) | $349.00 per year, per facility | One payment, easy to budget. $39 × 12 = $468, so $349 saves $119 a year, about 25%. |
+| Enterprise / multi-facility | Custom quote | Several buildings, paid by invoice: ACH or check, net-30, a W-9. |
+
+The free trial is **25 packets** on each computer (`FREE_RUNS` in `src/config/license.js`). A license is per facility (one building, any number of computers). These numbers are set once, in `src/config/license.js`, and the pages, the top bar, the research worksheet and the procurement calculator read them from there or are checked against them.
+
+## How the pieces fit
+
+```
+Visitor                    cognicopia.org (static)              Stripe            license service (platform/)
+  | pricing.html -> Payment Link ------------------------------> checkout
+  |                                                               | pays
+  | <---- redirect: activate.html?session_id={CHECKOUT_SESSION_ID}
+  | activate.html: POST /api/licenses/redeem {session_id} -------------------------> asks Stripe: paid? which price?
+  | <---------------------------------------------- COG1.<facility, tier, dates>.<signature> (signed)
+  | the key is checked in the browser and kept; from here on, no network is needed
+```
+
+- A **license key** looks like `COG1.<payload>.<signature>`. The payload holds the facility's business name, the plan (`monthly_facility`, `annual_facility` or `enterprise`), the date it is paid through, the date it was made and an id. The signature is ECDSA P-256 over SHA-256, made with a private key only the owner holds. The site holds the public key (`PUBLIC_KEYS`) and checks the signature in plain JavaScript, so it works with no internet, on `file://`, and on a plain `http` intranet.
+- A key keeps working until its **paid-through date plus 90 days** (`GRACE_DAYS`). A computer that has been offline for months stays unlocked; one that has not renewed locks after the grace days and says whose license ended.
+- A key can carry nothing about a resident. It is a business name and two dates.
+- `activate.html` is the **only** page that contacts anything, and only after a card payment: it sends the Stripe checkout reference, nothing else, to the license service. The build fails if any other page makes a network request.
+
+## Owner: the steps
+
+Do steps 1 to 4 in Stripe's **test mode** first, buy once with the test card `4242 4242 4242 4242`, and only then repeat them in live mode. Test and live have different keys, prices and links. A Payment Link with `test_` in it is never offered to a visitor.
+
+### 1. Make the signing key (once)
+
+On your own computer, from the repository folder:
+
+```
+node scripts/license-keygen.mjs
+```
+
+It writes the private key to `~/.cognicopia/license-private.pem` (never inside the repository; `.gitignore` refuses `*.pem` as a second guard) and prints one line:
+
+```
+PUBLIC_KEYS: Object.freeze(["04..."]),
+```
+
+Paste that line over `PUBLIC_KEYS: Object.freeze([]),` in `src/config/license.js`. **Back the private key up** in a password manager. If it is lost, every license has to be issued again under a new pair; if it leaks, make a new pair, put the new public key in the array, take the old one out, and issue fresh keys. To rotate without ending existing licenses, add the new public key and keep the old one until the old licenses run out.
+
+### 2. Make the product and the two prices
+
+Dashboard, Product catalog, **Add product**:
+
+| Field | Value |
+|---|---|
+| Name | `Cognicopia - Memory Care Facility License` |
+| Description | One building. Unlimited packets, prints and exports for every computer in the facility. Resident details stay on your computers. |
+| Price 1 | **$39.00 USD**, recurring, **monthly**. Lookup key `cognicopia_facility_monthly`. |
+| Price 2 | **$349.00 USD**, recurring, **yearly**. Lookup key `cognicopia_facility_annual`. |
+
+Copy the two **Price IDs** (`price_...`). They go in the license service's environment as `STRIPE_PRICE_MONTHLY` and `STRIPE_PRICE_ANNUAL` (the same names `platform/` already uses for its own checkout). The service only turns a payment into a key when the payment is for one of these two prices.
+
+The earlier $129.99 a year price and its Payment Link should be **archived, not deleted**, once you have decided what to do about the customers who bought it (see [Customers who bought at $129.99](#customers-who-bought-at-12999)).
+
+### 3. Make the two Payment Links
+
+Dashboard, Payment links, **New**. Make one per price (one with Price 1, one with Price 2). For each:
+
+| Setting | Value | Why |
+|---|---|---|
+| Quantity | Fixed at 1, no adjustable quantity | One license per purchase. |
+| Collect customer names | **Business name**, required | The key is printed with the facility's name, and the license service reads it from the checkout. |
+| Collect addresses | Billing address, required | Receipts and any tax need it. |
+| Tax ID collection | On, optional | A facility can put its tax ID on its receipt. |
+| Payment methods | **Cards only** | A purchasing card is a card. ACH Direct Debit is a delayed method (see below). |
+| After payment | **Don't show confirmation page**, redirect to `https://cognicopia.org/activate.html?session_id={CHECKOUT_SESSION_ID}` | Stripe replaces `{CHECKOUT_SESSION_ID}` with the real id. This is what turns a payment into a key with no one lifting a finger. |
+| Receipts | On | The buyer gets Stripe's receipt by email as a record. |
+| Custom text | "Your license key appears on the next page. Copy or print it." | Sets the expectation. |
+
+Open **each** link once in test mode, pay with the test card, and check you land on `activate.html` with a key. Then make the live links and paste the two `https://buy.stripe.com/...` addresses over the `REPLACE_ME` text in `PAYMENT_LINKS` in `src/config/license.js`:
+
+```js
+PAYMENT_LINKS: Object.freeze({
+  monthly: "https://buy.stripe.com/YOUR_MONTHLY_LINK",
+  annual: "https://buy.stripe.com/YOUR_ANNUAL_LINK"
+}),
+```
+
+A value that still holds `REPLACE_ME`, or has `test_` in it, is treated as not set up: that plan's button then asks for an invoice. `pricing.html`, the upgrade screens in both packet tools and the top bar all read this one place.
+
+> **Why cards only.** ACH Direct Debit (and any bank method) confirms days later. Until it does, the checkout is not paid, so the license service answers "Payment not finished yet" and the buyer waits. Bank payments are handled well by **invoices** (step 6), which is also what accounts payable departments expect.
+
+### 4. Deploy the license service
+
+The route is `POST /api/licenses/redeem` in `platform/` (the Next.js service). It reads nothing from the database and holds no resident information. It needs these environment variables (placeholders only in `platform/.env.example`; real values only in the host's settings):
+
+| Variable | Value |
+|---|---|
+| `STRIPE_SECRET_KEY` | A **restricted** key (`rk_live_...`) that can only **read** Checkout Sessions and Subscriptions is enough. A full secret key (`sk_live_...`) also works. |
+| `STRIPE_PRICE_MONTHLY`, `STRIPE_PRICE_ANNUAL` | The two Price IDs from step 2. |
+| `LICENSE_SIGNING_KEY` | The contents of `~/.cognicopia/license-private.pem` (use `\n` for line breaks if the host wants one line). |
+| `LICENSE_ALLOWED_ORIGINS` | `https://cognicopia.org` (default). Only pages on a listed site may call the route. |
+| `APP_URL` | The address of the service itself, as `platform/` already requires. |
+
+Then set `REDEEM_URL` in `src/config/license.js` to `https://<where the service lives>/api/licenses/redeem`. Try it from a terminal with a real test-mode session id:
+
+```
+curl -s -X POST https://<service>/api/licenses/redeem \
+  -H "Content-Type: application/json" -H "Origin: https://cognicopia.org" \
+  -d '{"session_id":"cs_test_..."}'
+```
+
+A paid session answers with `license_key`, `facility_name`, `tier` and `expires_at`. An unpaid one answers 402 `not_paid`; an unknown one 404 `not_found`; more than ten tries a minute from one address, 429.
+
+**If you would rather not run the service yet,** leave `REDEEM_URL` as the placeholder. `activate.html` then tells a buyer that automatic activation is not switched on and to email the receipt, and you issue the key by hand (step 7). Nothing else changes.
+
+**Renewals.** The same checkout reference can be redeemed again later. `activate.html?renew=1` (the license window offers a "Renew online" button when a license is near its date and the computer remembers its checkout) asks again and gets a key paid through the subscription's current period. A cancelled subscription gets the end of the period it paid for.
+
+### 5. Turn on the Customer portal
+
+Dashboard, Settings, Billing, **Customer portal**. Turn it on and allow customers to **update payment methods**, **update billing information (including tax IDs)**, **view invoices**, and **cancel subscriptions at the end of the billing period**. Leave "switch plan" off for now: a key's plan comes from the checkout it was bought in. Stripe's no-code portal gives a login link; share it with customers however you like (an email footer, or your reply to a cancellation request).
+
+### 6. Invoices, net-30, ACH and a W-9 (accounts payable)
+
+For a facility that wants an invoice (the site's **Request Corporate Invoice / W-9** button opens a pre-filled email with the checklist below):
+
+1. **Customer.** Customers, Add customer: the facility's legal name, billing address, the accounts payable email, and its tax ID if it has one.
+2. **Invoice.** Invoices, Create: add the product and price (the $349 annual, the $39 monthly, or a custom price for an Enterprise quote), set **Collection method: Send invoice**, **Due: 30 days (net-30)**. Add the purchase order number in the memo or a custom field.
+3. **Payment methods.** Turn on **Bank transfer** (ACH credit: Stripe shows a unique virtual account number on the invoice and matches the incoming transfer automatically) and, if you wish, **ACH Direct Debit** and **Card**. Settings, Billing, Invoices has the defaults.
+4. **Check.** Stripe has no check payment method. When a check arrives, open the invoice and choose **Mark as paid** (paid outside Stripe).
+5. **W-9.** Stripe does not produce a W-9. Attach or send your own, from the IRS form, with the first invoice. `resources/quality-standards/` has a **Vendor Information Sheet and W-9 request** the community can print and complete.
+6. **Key.** Make the license key (step 7) and email it with the invoice. Stripe's invoice email is the receipt; the key email is the license.
+
+An Enterprise quote is the same, with a custom price. One key names one facility. For a group of buildings, make one key per building (so each prints its own name), or one key in the group's name used on all of its computers: a key is not tied to a computer or an address.
+
+### 7. Make a key by hand (invoices, enterprise, or a lost key)
+
+```
+node scripts/issue-license.mjs --facility "Maple Court" --tier annual_facility --until 2027-10-31
+```
+
+`--tier` is `monthly_facility`, `annual_facility` or `enterprise`; `--until` is the date it is paid through. It prints the key, a one-click link (`.../activate.html#license_key=...`, with the key after the `#` so it never reaches a server log) and a short email to paste. To check a key later: `node scripts/issue-license.mjs --verify COG1...`.
+
+A person turns a key on by choosing **License Key / Promo** at the top of any page, pasting it, and choosing **Activate Access**. They can also open the one-click link, or add `?license_key=` to any page's address. The address is cleaned afterward so the key is not left in browser history.
+
+To **withdraw** a key (a chargeback, say): add its `id` (printed when it was made, and inside the key) to `REVOKED_IDS` in `src/config/license.js`. A computer sees it the next time it loads a fresh copy of the site. A key bought through a Payment Link has the same id every time it is renewed, so withdrawing it withdraws every renewal.
+
+## What is placeholder until the owner sets it
+
+| Where | What | Until it is set |
+|---|---|---|
+| `PUBLIC_KEYS` in `src/config/license.js` | The public half of the signing key | Signed keys are refused with "not switched on for this copy of the site yet" |
+| `PAYMENT_LINKS` | Two `buy.stripe.com` addresses | The plan buttons ask for an invoice |
+| `REDEEM_URL` | The address of the license service | `activate.html` asks the buyer to email the receipt |
+| The service's environment | `LICENSE_SIGNING_KEY`, the Stripe key and price ids | The route answers 503 "not set up yet", naming no value |
+| `~/.cognicopia/license-private.pem` | The private key | Only you can make keys, and only you can lose them |
+
+## Customers who bought at $129.99
+
+They bought a **single shared access code** (kept in `ACCESS_SHA256`, hashed). That code keeps working on every computer where it is entered, and the license window still accepts it, so no one is locked out by this change. It cannot be made to expire, because it has no date, and it is not a secret: anyone who learns it can use it. Two decisions are the owner's:
+
+1. **How long to honor it.** The simplest fair rule is "until the year they paid for ends", then invite them to a signed key at the new price (or a one-time discount, which is a Stripe coupon on the first renewal). When you are ready to retire the code, change `ACCESS_SHA256` in `src/config/license.js` **and** the two copies in `index.html` and `builder.html` (the build checks all three agree).
+2. **The old Payment Link.** Archive it in Stripe so no one buys at the old price. It is no longer linked from the site.
+
+## Refunds and renewals: policy to confirm
+
+The pages say: **full refund within 30 days of the first payment, no forms**; the monthly plan can be cancelled any time and stays on through the month paid for; the annual plan renews once a year and can be cancelled before the renewal date. Those are the earlier policy carried forward, not new decisions. If you want different terms, change the wording in `index.html` (the legal note), `pricing.html`, `resources/caregiver-faq/index.html` and this guide, and set Stripe's refund and cancellation settings to match.
+
+## Troubleshooting
+
+| What a person sees | Why | What to do |
+|---|---|---|
+| "Payment not finished yet" on `activate.html` | The checkout is not marked paid (a bank payment pending, or a refreshed page before the card cleared) | Wait a minute and reload. If it persists, check the payment in Stripe. |
+| "We could not find that payment" | The address was altered, or it is a test checkout against the live service (or the reverse) | Use the link from the payment page. Make sure test and live keys match the mode. |
+| "The license service could not help just now" | The service is down, or the Stripe key lacks read access | Check the service's logs (they name the setting, never its value). Issue the key by hand meanwhile. |
+| "License keys are not switched on for this copy of the site yet" | `PUBLIC_KEYS` is empty | Step 1. |
+| "This license key could not be verified" | A character was lost in copying, or it was signed by a different private key | Ask them to copy the whole key again; confirm the public key in the config is the pair of your private key. |
+| "This license key ended on ..." | Past the paid-through date plus 90 days | Renew, or make a new key with `--until` set forward. |
+| The plan buttons say "Request this plan" | That Payment Link is still a placeholder or a test link | Step 3. |
+
+## Sources
+
+Stripe's own documentation was read for this guide on the date of the commit. The points most worth re-checking before going live, because Stripe moves its screens: the **After payment** tab of a Payment Link (redirect with the `{CHECKOUT_SESSION_ID}` placeholder), the Payment Link **name collection** option, the Customer portal's cancellation setting, and the invoice **Bank transfer** payment method.
+
+- [After a payment: redirect to your website with the checkout session id](https://docs.stripe.com/checkout/fulfillment?payment-ui=stripe-hosted)
+- [Customize checkout for Payment Links (names, addresses, tax IDs)](https://docs.stripe.com/payment-links/customize)
+- [Configure the customer portal](https://docs.stripe.com/customer-management/configure-portal)
+- [Bank transfer on invoices](https://docs.stripe.com/invoicing/bank-transfer)
+- [Invoicing and ACH Direct Debit](https://docs.stripe.com/invoicing/ach-direct-debit)

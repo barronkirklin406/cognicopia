@@ -57,7 +57,8 @@ const VIEWS = [
   ["builder home", "builder.html#/"], ["builder coloring", "builder.html#/coloring"], ["builder roster", "builder.html#/roster"],
   ["builder facility", "builder.html#/facility"], ["builder planner", "builder.html#/planner"], ["builder journal", "builder.html#/journal"],
   ["builder academy", "builder.html#/academy"], ["builder reminiscence", "builder.html#/reminiscence"], ["builder digest", "builder.html#/heirloom"],
-  ["builder session notes", "builder.html#/clinical"], ["builder shift board", "builder.html#/shift"], ["builder settings", "builder.html#/settings"]
+  ["builder session notes", "builder.html#/clinical"], ["builder shift board", "builder.html#/shift"], ["builder settings", "builder.html#/settings"],
+  ["plans and pricing", "pricing.html"], ["activate a license", "activate.html"], ["contact", "contact.html"]
 ];
 const VIEWPORTS = [["phone 390", 390, 844], ["laptop 1366", 1366, 768]];
 
@@ -71,7 +72,13 @@ const seedResidents = page => page.evaluate(list => { list.forEach(x => localSto
 const reload = page => page.reload({ waitUntil: "load" });
 const fill = (sel, text) => page => page.fill(sel, text, { timeout: 5000 });
 const lockStore = page => page.evaluate(async () => { const S = window.CogniSecureStore; await S.openForPage(); await S.setPassphrase("audit passphrase 1234"); await S.lock(); });
+const openGate = page => page.evaluate(() => { try { localStorage.setItem("cognicopia_gen_count", "25"); } catch (e) {} openGate(); });
 const STATES = [
+  ["index: upgrade screen (25 packets used)", "index.html", [openGate]],
+  ["builder: upgrade screen (25 packets used)", "builder.html#/", [openGate]],
+  ["builder: upgrade banner (20 packets used)", "builder.html#/", [page => page.evaluate(() => { localStorage.setItem("cognicopia_gen_count", "20"); }), reload]],
+  ["license window (a page with a top bar)", "pricing.html", [click("#cgPromoBtn")]],
+  ["contact: an invoice request", "contact.html?subject=Corporate+Invoice+Request", []],
   ["profile: last step", "profile.html", [click("#rapNext"), click("#rapNext"), click("#rapNext"), click("#rapNext")]],
   ["index: Instant Soothe open", "index.html", [click("#arbSootheSticky")]],
   ["index: license form", "index.html", [click("#hdrlicToggle")]],

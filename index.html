@@ -598,6 +598,15 @@ h1{font-family:var(--display);font-weight:600;
 .gate .buy.alt{background:transparent;color:var(--garden);
   border:1px solid var(--garden);margin-left:12px}
 .gate .buy.alt:hover{background:var(--tint)}
+.gate-plan .buy.alt{margin:0}
+.gate-plans{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;margin:0 0 16px}
+.gate-plan{display:flex;flex-direction:column;gap:6px;padding:16px;border:1px solid var(--rule);border-radius:8px;background:#fff}
+.gate-plan.best{border:2px solid var(--garden)}
+.gate-plan .gp-tag{align-self:flex-start;margin:0;padding:2px 10px;border-radius:999px;background:var(--garden);color:#fff;font-size:13px;font-weight:700}
+.gate-plan h4{margin:0;font-family:var(--display);font-weight:600;font-size:18px}
+.gate-plan .gp-price{margin:0;font-size:22px;font-weight:700}
+.gate-plan .gp-note{flex:1;margin:0 0 6px;font-size:15px}
+.gate-plan .buy{display:flex;align-items:center;justify-content:center;box-sizing:border-box;min-height:var(--tap);padding:10px 14px;text-align:center;font-size:16px;margin:0}
 @media (max-width:520px){
   .gate .buy{display:block;text-align:center}
   .gate .buy.alt{margin:12px 0 0}
@@ -780,7 +789,7 @@ body.extra-large-print .accessibility-option b{font-size:18px}
   font:inherit;text-decoration:underline;padding:4px}
 .hdrlicform{display:inline-flex;gap:6px}
 .hdrlicform[hidden]{display:none}
-.hdrlicform input{padding:6px 8px;border:1px solid var(--rule);border-radius:6px;font:inherit;max-width:150px}
+.hdrlicform input{padding:6px 8px;border:1px solid var(--rule);border-radius:6px;font:inherit;max-width:190px}
 .hdrlicform button{padding:6px 12px}
 .hdrlicmsg{font-size:13px;color:var(--warn)}
 .hdrlicmsg.ok{color:var(--garden-dark)}
@@ -880,6 +889,7 @@ h1,h2,h3,.wordmark{color:#FFF4E5}
 .preset-actions .delete-preset:hover{background:#a94338;color:#ffffff;border-color:#ffffff}
 .stripe-btn { background-color: #635bff; color: #ffffff; padding: 8px 16px; border-radius: 4px; text-decoration: none; font-weight: 600; display: inline-block; margin-left: 10px; font-family: inherit; font-size: 14px; }
 .stripe-btn:hover { opacity: 0.9; }
+.stripe-btn-alt { background-color: transparent; border: 2px solid currentColor; color: #e8f5e9; }
 /* ═══════════════════════════════════════════════════════════
    COGNICOPIA  —  LEFT-HAND SIDEBAR NAV  (shared)
    ══════════════════════════════════════════════════════════= */
@@ -996,6 +1006,7 @@ body { padding-left: var(--sb-w); }
   .cg-topbar .hdrlic{display:contents}
   .cg-topbar #hdrlicToggle{order:4}
   .cg-topbar .stripe-btn{order:1;font-size:13px;padding:6px 10px}
+  .cg-topbar .stripe-btn-alt{order:1}
   .cg-topbar .arb-sticky-crisis{order:2;font-size:14px;padding:7px 10px}
   .cg-topbar .cg-night-shift-toggle{order:3;font-size:13px;padding:6px 9px}
 }
@@ -1633,6 +1644,13 @@ html.tb-open,html.tb-open body{overflow:hidden !important;overscroll-behavior:no
 .cg-crumbs a:focus-visible{outline:2px solid #52b788;outline-offset:2px}
 .cg-crumbs [aria-current]{color:#fff!important;font-weight:700}
 @media (max-width:768px){.cg-crumbs{padding:8px 16px}}
+.cg-topbar{height:auto!important;min-height:52px;flex-wrap:wrap;row-gap:6px;padding-top:6px;padding-bottom:6px}
+.cg-topbar .cg-cta{display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;min-height:var(--tap,52px);padding:8px 16px;border:2px solid #286E75;border-radius:8px;background:#286E75;color:#fff!important;font:700 15px/1.25 "Trebuchet MS","Segoe UI",sans-serif;text-align:center;text-decoration:none}
+.cg-topbar .cg-cta:hover{background:#1f5a60;border-color:#1f5a60}
+.cg-topbar .cg-cta-alt{background:transparent;border-color:rgba(232,245,233,.65);color:#e8f5e9!important}
+.cg-topbar .cg-cta-alt:hover{background:rgba(232,245,233,.14)}
+.cg-topbar .cg-cta:focus-visible{outline:3px solid #f5b800;outline-offset:2px}
+@media print{.cg-topbar .cg-cta{display:none}}
 </style>
 <style id="cg-design-system">
 /* ═══ Cognicopia design system for the packet tool ═══
@@ -1854,6 +1872,7 @@ html.cg-night-shift .licbadge{color:#ffedcc !important}
     <li><a href="builder.html#/roster"><svg class="cg-sb-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></svg><span>Resident roster</span></a></li>
     <li><a href="builder.html#/clinical"><svg class="cg-sb-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 3H4a1 1 0 0 0-1 1v5a5 5 0 0 0 10 0V4a1 1 0 0 0-1-1h-1"/><path d="M8 14v1a6 6 0 0 0 12 0v-3"/><circle cx="20" cy="10" r="2"/></svg><span>Session notes (SLP)</span></a></li>
     <li><a href="builder.html#/settings"><svg class="cg-sb-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg><span>Settings &amp; defaults</span></a></li>
+    <li><a href="pricing.html"><svg class="cg-sb-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="8" r="6"/><path d="M15.5 13.5L17 22l-5-3-5 3 1.5-8.5"/></svg><span>Plans &amp; pricing</span></a></li>
         </ul>
       </details>
     </li>
@@ -1912,9 +1931,10 @@ html.cg-night-shift .licbadge{color:#ffedcc !important}
 <div class="cg-topbar">
   <span class="hdrlic" id="hdrlic">
     <button type="button" class="linklike" id="hdrlicToggle">Activate license</button>
-    <a href="https://buy.stripe.com/9B614oaJV7lr0RX1ODew801" target="_blank" class="stripe-btn">Get Full Access Now</a>
+    <a href="pricing.html" target="_blank" rel="noopener" class="stripe-btn" data-upgrade-prompt>Get Full Access ($39/mo or $349/yr) &#x2192;</a>
+    <a href="contact.html?subject=Corporate+Invoice+Request" class="stripe-btn stripe-btn-alt" data-upgrade-prompt>Request Corporate Invoice / W-9</a>
     <span class="hdrlicform" id="hdrlicForm" hidden>
-      <input type="text" id="licHdr" placeholder="Access code" autocomplete="off" maxlength="40">
+      <input type="text" id="licHdr" placeholder="License key or access code" aria-label="License key or access code" autocomplete="off" maxlength="1200">
       <button type="button" id="licHdrGo">Unlock</button>
     </span>
   </span>
@@ -2396,9 +2416,9 @@ html.cg-night-shift .licbadge{color:#ffedcc !important}
       <p id="gateText"></p>
       <div id="buyWrap"></div>
       <div class="unlock">
-        <label for="lic">Already licensed? Enter your access code.</label>
+        <label for="lic">Already licensed? Enter your license key or access code.</label>
         <div class="row2">
-          <input type="text" id="lic" autocomplete="off" placeholder="Access code">
+          <input type="text" id="lic" autocomplete="off" placeholder="License key or access code" maxlength="1200">
           <button type="button" id="licGo">Unlock</button>
         </div>
         <p class="left" id="licMsg"></p>
@@ -2426,13 +2446,16 @@ html.cg-night-shift .licbadge{color:#ffedcc !important}
     policies &mdash; the same as any document on your desktop. Saved
     resident files and printed packets should be handled accordingly, and
     saved files should not be emailed.</p>
-    <p><strong>The licence</strong> is $129.99 a year for one building,
-    unlimited residents and packets. It does not auto-renew. Printed
-    packets stay yours whatever happens to the licence.</p>
-    <p><strong>The free trial</strong> is 10 packets. The count lives in
+    <p><strong>The licence</strong> is $39 a month or $349 a year (about
+    25% less) for one building, unlimited residents and packets. Several
+    buildings are a custom quote. Cancel any time: the licence stays on
+    through the period you paid for and keeps working with no internet for
+    90 days after it. Printed packets stay yours whatever happens to the
+    licence.</p>
+    <p><strong>The free trial</strong> is 25 packets. The count lives in
     this browser, so clearing site data or using another computer starts it
     again. We would rather say so than have you find out.</p>
-    <p><strong>Refunds:</strong> full refund within 30 days, no forms.</p>
+    <p><strong>Refunds:</strong> full refund within 30 days of the first payment, no forms.</p>
     <p><strong>What we claim:</strong> the pages follow published guidance
     for reminiscence therapy, cognitive stimulation and person-centred
     dementia care. The packets themselves have not been through a clinical
@@ -6432,13 +6455,13 @@ function boardSample(){
     head("Why it matters for us");
     para("Activities built from a resident's own life hold attention far longer than a generic worksheet, and they support the individualized, preference-based engagement that surveyors look for under CMS activity requirements (tag F679).");
     head("What it costs");
-    para(PRICE+" for our entire building -- unlimited residents, unlimited packets, for a full year. It does not auto-renew. That is roughly the price of a few boxes of pre-printed activity books, for a year of packets made for our actual residents by name.");
+    para(PRICE+" for our entire building -- unlimited residents and unlimited packets. The yearly plan costs about 25% less than twelve monthly payments, and either can be cancelled at any time.");
     head("Privacy -- nothing to worry about");
     para("No resident information ever leaves the computer. The tool runs inside the web browser with no account and no upload, so there is no database on anyone's end to breach. No Business Associate Agreement is required.");
     head("How to approve it");
     var how = WEBSITE
-      ? ("Pay by card at "+WEBSITE+", or reply to this note and we will request an invoice (Net 30, payable by check or bank transfer; a W-9 is provided).")
-      : ("Pay by card through the button in the tool, or email "+CONTACT+" to request an invoice (Net 30, payable by check or bank transfer; a W-9 is provided).");
+      ? ("Pay by card (a purchasing card works) at "+WEBSITE+", or reply to this note and we will request an invoice (net-30 terms, payable by ACH or check; a W-9 is provided).")
+      : ("Pay by card (a purchasing card works) through the buttons in the tool, or email "+CONTACT+" to request an invoice (net-30 terms, payable by ACH or check; a W-9 is provided).");
     para(how);
     d.setFont("helvetica","normal"); d.setFontSize(11); d.setTextColor(90,104,115);
     d.text("Prepared by the activity team   \u00b7   Questions: "+CONTACT, M, 742);
@@ -7704,13 +7727,21 @@ function monthNow(){
    software; they pay invoices. Treat this as the thing that starts the
    conversation, not as security.
    ================================================================= */
-const FREE_RUNS   = 10;
-const PRICE       = "$129.99 a year";
+const LICCFG      = window.CognicopiaLicenseConfig || {};   // prices, Payment Links and keys: src/config/license.js
+const FREE_RUNS   = LICCFG.FREE_RUNS || 25;
+const PRICE_MONTH = "$39 a month", PRICE_YEAR = "$349 a year";
+const PRICE       = PRICE_YEAR+" or "+PRICE_MONTH;
 const CONTACT     = "Cognicopia@Outlook.com";
-/* Live Stripe payment link. Opens in a new tab so the half-filled form
-   behind it is not lost. If this is ever swapped, check the address has
-   no "test_" in it -- a test link takes fake cards and pays nothing. */
-const PAY_LINK    = "https://buy.stripe.com/9B614oaJV7lr0RX1ODew801";
+/* Stripe Payment Links, one per plan, set in src/config/license.js
+   (docs/stripe-setup-guide.md). They open in a new tab so the half-filled
+   form behind them is not lost. A link that is still the placeholder, or
+   has "test_" in it (a test link takes fake cards and pays nothing), is
+   treated as not set up, and that plan's button asks for an invoice. */
+function payLink(plan){
+  const u=(LICCFG.PAYMENT_LINKS||{})[plan];
+  return (typeof u==="string" && /^https:\/\/buy\.stripe\.com\/[A-Za-z0-9_-]+$/.test(u) && !/REPLACE_ME|test_/.test(u)) ? u : "";
+}
+const INVOICE_PATH = LICCFG.INVOICE_PATH || "contact.html?subject=Corporate+Invoice+Request";
 
 /* Your public web address, if you have one, e.g. "cognicopia.com" (no
    https). Leave it "" until you actually own one -- the tool then points
@@ -7773,13 +7804,13 @@ function sha256(ascii){
 const ACCESS_SHA  = "97c0fcc2e7143e13c6b104d93ad47c1e57670a24576df965b1a9eb745d6217da";
 
 /* ============================================================
-   THE 11th-PACKET MODEL  --  read before changing this flag.
+   THE 26th-PACKET MODEL  --  read before changing this flag.
 
-   false (recommended): the first 10 packets are clean and full. On the
-   11th, the tool stops and shows a friendly buy screen. No half-usable
+   false (recommended): the first 25 packets are clean and full. On the
+   26th, the tool stops and shows a friendly buy screen. No half-usable
    output is ever produced.
 
-   true: after 10, the tool keeps generating packets but stamps a faint
+   true: after 25, the tool keeps generating packets but stamps a faint
    "SAMPLE" across every page until a licence is entered.
 
    For THIS product the recommendation is false, and the reason is
@@ -7822,7 +7853,15 @@ function isSubscribed(){
   lsSet("cognicopia_is_subscribed", ok ? "1" : "0");
   return ok;
 }
+let keyMsg="";   // why a pasted license key was refused, for the box that took it
 function activateLicense(code){
+  keyMsg="";
+  const L=window.CognicopiaLicense;
+  if(L && L.looksLikeKey(code)){
+    const r=L.activateKey(code);
+    if(!r.ok) keyMsg=r.message;
+    return r.ok;
+  }
   if(sha256(String(code||"").trim()) !== ACCESS_SHA) return false;
   lsSet("cognicopia_license", String(code).trim());
   lsSet("cognicopia_is_subscribed", "1");
@@ -7833,7 +7872,9 @@ function activateLicense(code){
 /* The promo code (assets/services/licenseManager.js) is a second way in. It is
    re-verified from its stored proof on every call, not read as a flag. */
 function promoActive(){ try{ return !!(window.CognicopiaLicense && window.CognicopiaLicense.isPromoActive()); }catch(e){ return false; } }
-function unlocked(){ return isSubscribed() || promoActive(); }
+/* A signed license key (assets/services/licenseManager.js) is the third way in; its signature and dates are re-checked on every call. */
+function keyActive(){ try{ return !!(window.CognicopiaLicense && window.CognicopiaLicense.isKeyActive()); }catch(e){ return false; } }
+function unlocked(){ return isSubscribed() || promoActive() || keyActive(); }
 function runsUsed(){ return genCount(); }
 
 /* ---- How long the packet will be ----
@@ -7896,40 +7937,41 @@ function openGate(){
   // read the number from the setting rather than hard-coding it in the copy
   $("gateTitle").textContent="You have used your "+FREE_RUNS+" free packets";
   $("gateText").textContent =
-    "Cognicopia is "+PRICE+" for your building \u2014 as many packets as "
-    +"you need, for as many residents as you have. Pay by card and you "
-    +"get your access code straight away, or we invoice the facility if "
-    +"that suits your purchasing better.";
+    "Cognicopia is for your whole building \u2014 as many packets as you need, "
+    +"for as many residents as you have. Pay by card (a purchasing card works) "
+    +"and your license key appears on screen, or ask for an invoice if that "
+    +"suits your accounts payable team better.";
   const wrap=$("buyWrap");
   wrap.innerHTML="";
 
-  if(PAY_LINK){
-    const a=document.createElement("a");
-    a.className="buy"; a.href=PAY_LINK; a.target="_blank"; a.rel="noopener";
-    a.textContent="Pay by card \u2014 "+PRICE;
-    wrap.appendChild(a);
-  }
-
-  if(CONTACT){
-    const inv=document.createElement("a");
-    inv.className="buy alt";
-    inv.href="mailto:"+CONTACT
-      +"?subject="+encodeURIComponent("Cognicopia \u2014 please send an invoice")
-      +"&body="+encodeURIComponent(
-        "Please send an invoice for Cognicopia.\n\n"
-        +"Facility name:\n"
-        +"Billing address:\n"
-        +"Who invoices should go to (name and email):\n"
-        +"Purchase order number, if you need one:\n");
-    inv.textContent="Send me an invoice instead";
-    wrap.appendChild(inv);
-  }
+  const tile=(o)=>{
+    const d=document.createElement("div"); d.className="gate-plan"+(o.best?" best":"");
+    if(o.tag){ const t=document.createElement("p"); t.className="gp-tag"; t.textContent=o.tag; d.appendChild(t); }
+    const h=document.createElement("h4"); h.textContent=o.title; d.appendChild(h);
+    const pr=document.createElement("p"); pr.className="gp-price"; pr.textContent=o.price; d.appendChild(pr);
+    const n=document.createElement("p"); n.className="gp-note"; n.textContent=o.note; d.appendChild(n);
+    const a=document.createElement("a"); a.className="buy"+(o.alt?" alt":""); a.href=o.href; a.textContent=o.cta;
+    a.target="_blank"; a.rel="noopener";
+    if(o.id) a.id=o.id;
+    d.appendChild(a); return d;
+  };
+  // a plan's button is its Stripe Payment Link, or, until that is set up, a request for an invoice
+  const planBtn=(plan,label)=>{ const u=payLink(plan); return u ? {href:u, cta:"Pay by card \u2014 "+label} : {href:INVOICE_PATH+"&plan="+plan, cta:"Request this plan"}; };
+  const plans=document.createElement("div"); plans.className="gate-plans";
+  plans.appendChild(tile(Object.assign({title:"Monthly", price:PRICE_MONTH, id:"gateMonthly",
+    note:"Per facility. Small enough that many departments can buy it on a purchasing card. Cancel any time."}, planBtn("monthly",PRICE_MONTH))));
+  plans.appendChild(tile(Object.assign({title:"Annual", price:PRICE_YEAR, best:true, tag:"Best value \u2014 save about 25%", id:"gateAnnual",
+    note:"Per facility. Saves $119 a year compared with paying monthly. One payment, easy to put in a budget."}, planBtn("annual",PRICE_YEAR))));
+  plans.appendChild(tile({title:"Pay by invoice", price:"Net-30 \u00b7 ACH or check", alt:true, id:"gateInvoice",
+    note:"A W-9 comes with it. Buying for several buildings? Ask for an Enterprise quote.",
+    href:INVOICE_PATH, cta:"Request Corporate Invoice / W-9"}));
+  wrap.appendChild(plans);
 
   const note=document.createElement("p");
-  note.className="left"; note.style.marginTop="16px";
-  note.textContent="Card payment shows your access code on the receipt page. "
-    +"Invoices are on thirty day terms, payable by check or bank transfer, "
-    +"and a W-9 comes with them.";
+  note.className="left"; note.style.marginTop="4px";
+  note.textContent="After a card payment your license key appears on screen. Copy it and paste it into "
+    +"the box below, on any computer in your building. For an invoice, we email the key with it. "
+    +"Once it is entered it works with no internet.";
   wrap.appendChild(note);
 
   const sampWrap=document.createElement("p");
@@ -7945,9 +7987,6 @@ function openGate(){
   sampWrap.appendChild(sampNote);
   wrap.appendChild(sampWrap);
 
-  if(!PAY_LINK && !CONTACT){
-    wrap.textContent="Please contact BarronCrafts to set up an invoice.";
-  }
   g.style.display="block";
   g.scrollIntoView({behavior:"smooth",block:"center"});
 }
@@ -7962,7 +8001,7 @@ function tryActivate(inputId, msgId){
     showAllowance();
     return true;
   }
-  if(msg){ msg.textContent="That code was not recognised. Check it and try again.";
+  if(msg){ msg.textContent=keyMsg||"That code was not recognised. Check it and try again.";
            msg.className=(msgId==="hdrlicMsg"?"hdrlicmsg":"left"); }
   return false;
 }
@@ -7995,7 +8034,7 @@ if(CONTACT){
 /* Building is synchronous, so nothing repaints while it runs. On an old
    facility machine a full packet is about a second of dead screen, and a
    director who gets no response clicks again -- two identical downloads,
-   and two of her ten free packets gone. Lock the button, let the
+   and two of her free packets gone. Lock the button, let the
    browser paint the new label, then build on the next frame. */
 let busy=false;
 $("f").addEventListener("submit", e=>{
@@ -11218,7 +11257,7 @@ function generateAilmentPDF(ailmentType, pick) {
     if (typeof runsUsed === "function" && runsUsed() >= FREE_RUNS && !(typeof WATERMARK_DEMOS !== "undefined" && WATERMARK_DEMOS)){
       if (typeof openGate === "function") openGate();
       var g = el("gate"); if (g) g.scrollIntoView({ behavior:"smooth", block:"center" });
-      status.textContent = "You have used your free packets. Enter an access code below to keep going.";
+      status.textContent = "You have used your free packets. Choose a plan or enter your license key below to keep going.";
       return false;
     }
     if (typeof bumpGen === "function"){ bumpGen(); if (typeof showAllowance === "function") showAllowance(); }
@@ -12891,7 +12930,7 @@ function generateAilmentPDF(ailmentType, pick) {
   function freeLeft(){
     if (typeof unlocked === "function" && unlocked()) return Infinity;
     if (typeof WATERMARK_DEMOS !== "undefined" && WATERMARK_DEMOS) return Infinity;
-    return Math.max(0, (typeof FREE_RUNS !== "undefined" ? FREE_RUNS : 10) - (typeof runsUsed === "function" ? runsUsed() : 0));
+    return Math.max(0, (typeof FREE_RUNS !== "undefined" ? FREE_RUNS : 25) - (typeof runsUsed === "function" ? runsUsed() : 0));
   }
   function refresh(){
     var n = chosenIds().length, weekly = $m("mbWeekly").checked, covers = $m("mbCovers").checked, idx = $m("mbIndex").checked;
@@ -12903,7 +12942,7 @@ function generateAilmentPDF(ailmentType, pick) {
     else if (!n){ msg = "Tick at least one resident."; blocked = true; }
     else if (n > freeLeft()){
       needCode = true;
-      msg = "This bundle uses " + n + " packets (one per resident). You have " + freeLeft() + " free packet" + (freeLeft() === 1 ? "" : "s") + " left. Enter your access code for unlimited bundles.";
+      msg = "This bundle uses " + n + " packets (one per resident). You have " + freeLeft() + " free packet" + (freeLeft() === 1 ? "" : "s") + " left. Enter your license key for unlimited bundles.";
     }
     warn.textContent = msg; warn.hidden = !msg;
     go.disabled = blocked;

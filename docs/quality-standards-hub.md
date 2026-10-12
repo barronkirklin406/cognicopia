@@ -7,7 +7,7 @@
 | Governance & Clinical Pillars | The three pillars (clinical, operational, governance) and a table of what a dated Cognicopia sheet contributes to CMS Tag F679 (42 CFR §483.24(c)), MDS 3.0 Sections F and Q, care planning (F656) and a facility's privacy practices, with what stays with the team |
 | State Survey Audit Engine (Tool A) | Six survey-readiness indicators, a live Audit Readiness Score, and a printable one-page Survey Readiness Summary for the binder |
 | Copier Calibration & Margin Test (Tool B) | A one-page US Letter test sheet (drawn in points): the 0.65 in gutter, the 0.75 in Cognicopia gutter and the 0.5 in margins, line weights 0.5 to 3.0 pt, fine line pairs, a black patch with reverse type, text samples, two rulers |
-| Institutional Procurement & W-9 (Tool C) | A Net-30 purchase-order estimate ($129.99 per facility unit per year), a printable Vendor Information Sheet and W-9 request, and a live security check |
+| Institutional Procurement & W-9 (Tool C) | A Net-30 purchase-order estimate ($349 per facility unit per year, the annual plan), a printable Vendor Information Sheet and W-9 request, and a live security check |
 
 ## What it says, and what it does not
 

@@ -1038,12 +1038,13 @@ group("researchCenter", () => {
   const first = R.refsOf(eeg);
   ok(first[0] === "usman2024" && first[1] === "lin2026", "references are numbered in the order they are first cited");
   // the board packet: the license price as the site states it, and only the facility's own figures otherwise
-  const idx = fs.readFileSync(path.join(ROOT, "index.html"), "utf8"), price = /const PRICE\s*=\s*"\$([\d.]+) a year"/.exec(idx);
-  ok(price && Number(price[1]) === R.PRICE_PER_BUILDING, "the packet's price matches the site's: " + (price && price[1]));
+  const idx = fs.readFileSync(path.join(ROOT, "index.html"), "utf8"), price = /PRICE_YEAR = "\$([\d.]+) a year"/.exec(idx);
+  const licBox = {}; licBox.globalThis = licBox; vm.runInNewContext(fs.readFileSync(path.join(ROOT, "src/config/license.js"), "utf8"), licBox);
+  ok(price && Number(price[1]) === R.PRICE_PER_BUILDING && licBox.CognicopiaLicenseConfig.PRICES.annual.amount === R.PRICE_PER_BUILDING && licBox.CognicopiaLicenseConfig.PRICES.monthly.amount === R.PRICE_PER_MONTH, "the packet's prices match the site's: " + (price && price[1]));
   const w = R.worksheet(R.normalizeBoard({ buildings: 2, residents: "120", hoursNow: "10", hoursWith: "4", hourlyCost: "$24.50" }));
-  ok(w.annualCost === 259.98 && w.perResidentMonth === 0.18 && w.hoursFreedWeek === 6 && w.hoursFreedYear === 312 && w.valueYear === 7644 && w.net === 7384.02, "worksheet: " + JSON.stringify(w));
+  ok(w.annualCost === 698 && w.perResidentMonth === 0.48 && w.hoursFreedWeek === 6 && w.hoursFreedYear === 312 && w.valueYear === 7644 && w.net === 6946, "worksheet: " + JSON.stringify(w));
   const blank = R.worksheet(R.normalizeBoard({}));
-  ok(blank.annualCost === 129.99 && blank.perResidentMonth === null && blank.hoursFreedYear === null && blank.valueYear === null && blank.net === null, "a blank worksheet invents nothing");
+  ok(blank.annualCost === 349 && blank.perResidentMonth === null && blank.hoursFreedYear === null && blank.valueYear === null && blank.net === null, "a blank worksheet invents nothing");
   ok(R.worksheet(R.normalizeBoard({ hoursNow: 3, hoursWith: 5 })).hoursFreedWeek === 0, "more hours with the tool never reads as negative time");
   const n = R.normalizeBoard({ facility: "x".repeat(300), buildings: 0, residents: 999999, hourlyCost: -4, meeting: "2026-13-45", hoursNow: "abc" });
   ok(n.facility.length === 80 && n.buildings === 1 && n.residents === 5000 && n.hourlyCost === null && n.meeting === "" && n.hoursNow === null, "board input is cleaned: " + JSON.stringify(n).slice(0, 120));
@@ -1072,7 +1073,7 @@ group("researchCenter", () => {
       ok(!pages[0].ops.some(o => o.t === "text" && /^Page \d+ of/.test(o.text)) && pages.slice(1).every((p, k) => p.ops.some(o => o.t === "text" && o.text === `Page ${k + 2} of ${pages.length}`)), `packet (widths × ${scale}): the cover has no footer, every other page is numbered`);
       ok(pages.every(p => { const body = p.ops.filter(o => o.t === "text" && o.y < p.h - 60), last = body[body.length - 1]; return !last || !(last.bold && last.size >= 12.5); }), `packet (widths × ${scale}): no page ends with a heading`);
       const all = texts.map(o => o.text).join(" ");
-      ok(/Disclosure/.test(all) && /vendor of the tools/.test(all) && /\$129\.99/.test(all), `packet (widths × ${scale}): the price and the vendor's disclosure are printed`);
+      ok(/Disclosure/.test(all) && /vendor of the tools/.test(all) && /\$349/.test(all), `packet (widths × ${scale}): the price and the vendor's disclosure are printed`);
     }
   }
   const longFoot = R.boardFooter("The Very Long Named Senior Living Community of Springfield Heights", approx);

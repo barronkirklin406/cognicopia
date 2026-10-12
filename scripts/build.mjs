@@ -28,7 +28,10 @@
         Night Shift (scripts/audit-ux.mjs), the six hubs open, close and mark
         the current page as a person expects (scripts/check-nav-ui.mjs), and the
         Shift board does what it says, down to what is stored and what prints
-        (scripts/check-shift-ui.mjs);
+        (scripts/check-shift-ui.mjs), and licensing and pricing do what they
+        say: the 25-packet limit, the upgrade screens, a pasted key, activation,
+        months offline, and that only activate.html contacts anything
+        (scripts/check-license-ui.mjs);
      6. no page or tool text makes a claim the product cannot back (such as
         "HIPAA compliant"; scripts/check-claims.mjs);
      7. the site navigation matches scripts/site-nav.mjs (npm run nav), the
@@ -159,6 +162,14 @@ step("the navigation behaves: hubs open and close, the current page is marked, t
 
 step("the Shift board works: notes, tasks, the name check, encrypted storage, retention, the print sheet, a locked backup and the unlock (a real browser)", () => {
   try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-shift-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
+  catch (e){
+    if (e.status === 2) return "skipped: Playwright is not installed here (see docs/dev-setup.md)";
+    throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message);
+  }
+});
+
+step("licensing and pricing work: the 25-packet limit, the upgrade screens, pasted keys, activation, months offline, the invoice request, and only activate.html contacts anything (a real browser)", () => {
+  try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-license-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
   catch (e){
     if (e.status === 2) return "skipped: Playwright is not installed here (see docs/dev-setup.md)";
     throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message);

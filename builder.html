@@ -325,7 +325,20 @@ input:focus,select:focus{border-color:var(--accent)}
 }
 .toast.is-open{transform:translate(-50%,0)}
 .gate{position:fixed;inset:0;z-index:1400;display:grid;place-items:center;padding:16px;background:rgba(0,0,0,.6)}
-.gate-card{width:min(520px,100%);padding:26px;border-radius:18px;background:var(--panel);border:1px solid var(--line-2)}
+.gate-card{width:min(760px,100%);max-height:calc(100vh - 32px);overflow:auto;padding:26px;border-radius:18px;background:var(--panel);border:1px solid var(--line-2)}
+.gate-plans{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:14px}
+.gate-plan{display:flex;flex-direction:column;gap:6px;padding:14px;border:1px solid var(--line-2);border-radius:12px}
+.gate-plan.best{border:2px solid var(--accent)}
+.gate-plan .gp-tag{align-self:flex-start;margin:0;padding:2px 10px;border-radius:999px;background:var(--accent);color:var(--accent-ink)!important;font-size:13px;font-weight:700}
+.gate-plan h3{margin:0;font-size:17px}
+.gate-plan .gp-price{margin:0;font-size:21px;font-weight:800;color:var(--text)}
+.gate-plan .gp-note{flex:1;margin:0 0 6px;font-size:14px}
+.gate-plan .btn{width:100%;justify-content:center;text-align:center;text-decoration:none}
+.upgrade-banner{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;padding:10px 20px;background:var(--panel);border-bottom:1px solid var(--line-2)}
+.upgrade-banner[hidden]{display:none}
+.upgrade-banner span{flex:1 1 220px;font-weight:700}
+.upgrade-banner .btn{text-decoration:none}
+.upgrade-line{margin:6px 0 10px;font-size:14px}
 .gate-card p{color:var(--muted)}
 .gate-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
 .gate-row input{flex:1;min-width:180px}
@@ -2494,6 +2507,7 @@ textarea:focus{border-color:var(--accent)}
         <li><a class="sb-link" href="#/roster" data-route="roster"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></svg><span>Resident roster</span></a></li>
         <li><a class="sb-link" href="#/clinical" data-route="clinical"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 3H4a1 1 0 0 0-1 1v5a5 5 0 0 0 10 0V4a1 1 0 0 0-1-1h-1"/><path d="M8 14v1a6 6 0 0 0 12 0v-3"/><circle cx="20" cy="10" r="2"/></svg><span>Session notes (SLP)</span></a></li>
         <li><a class="sb-link" href="#/settings" data-route="settings"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg><span>Settings &amp; defaults</span></a></li>
+        <li><a class="sb-link" href="pricing.html"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="8" r="6"/><path d="M15.5 13.5L17 22l-5-3-5 3 1.5-8.5"/></svg><span>Plans &amp; pricing</span></a></li>
       </ul>
     </details>
     <a class="sb-link sb-hub-link" data-hub="academy" href="#/academy" data-route="academy"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M22 9 12 4 2 9l10 5 10-5z"/><path d="M6 11.2V16c0 1.7 2.7 3 6 3s6-1.3 6-3v-4.8"/><path d="M22 9v6"/></svg><span>Academy</span></a>
@@ -2543,6 +2557,11 @@ textarea:focus{border-color:var(--accent)}
       </button>
     </div>
   </header>
+  <div class="upgrade-banner" id="upgradeBanner" role="status" hidden>
+    <span id="upgradeText"></span>
+    <a class="btn btn-primary btn-sm" data-upgrade-prompt href="pricing.html" target="_blank" rel="noopener">Get Full Access ($39/mo or $349/yr) &#x2192;</a>
+    <a class="btn btn-ghost btn-sm" data-upgrade-prompt href="contact.html?subject=Corporate+Invoice+Request">Request Corporate Invoice / W-9</a>
+  </div>
   <main id="view" class="view" tabindex="-1"></main>
 </div>
 
@@ -2557,6 +2576,7 @@ textarea:focus{border-color:var(--accent)}
   <div class="drawer-foot">
     <p class="note" id="bwNote" hidden>Every page prints in pure black on white.</p>
     <p class="allowance" id="allowance"></p>
+    <p class="upgrade-line" data-upgrade-prompt><a href="pricing.html" target="_blank" rel="noopener">Get Full Access ($39/mo or $349/yr) &#x2192;</a> &middot; <a href="contact.html?subject=Corporate+Invoice+Request">Request Corporate Invoice / W-9</a></p>
     <button class="btn btn-primary" type="button" id="generatePdf">Generate PDF</button>
     <p class="note">In the print window, choose <b>Save as PDF</b> to keep a copy, or pick your printer.</p>
     <button class="btn btn-danger btn-sm" type="button" id="clearQueue">Clear all pages</button>
@@ -2569,12 +2589,13 @@ textarea:focus{border-color:var(--accent)}
   <div class="gate-card">
     <h2 id="gateTitle">You have used your free packets</h2>
     <p id="gateText"></p>
+    <div class="gate-plans" id="gatePlans"></div>
+    <p class="note" id="gateNote"></p>
     <div class="gate-row">
-      <a class="btn btn-primary" id="gateBuy" target="_blank" rel="noopener">Get full access</a>
       <button class="btn btn-ghost" type="button" id="gateClose">Not now</button>
     </div>
-    <label class="field" for="gateCode" style="display:block;margin-top:18px"><b>Already paid? Enter your access code</b></label>
-    <div class="gate-row"><input type="text" id="gateCode" autocomplete="off" maxlength="40"><button class="btn" type="button" id="gateUnlock">Unlock</button></div>
+    <label class="field" for="gateCode" style="display:block;margin-top:18px"><b>Already licensed? Enter your license key or access code</b></label>
+    <div class="gate-row"><input type="text" id="gateCode" autocomplete="off" maxlength="1200"><button class="btn" type="button" id="gateUnlock">Unlock</button></div>
     <p id="gateMsg" role="status"></p>
     <button class="btn btn-ghost" type="button" id="gatePromo" style="margin-top:6px">Have a promo code?</button>
   </div>
@@ -10509,9 +10530,16 @@ function rawSet(k, v){ try { CG_LS.setItem(k, v); } catch(e){} }
 /* ---------- 2. License + free allowance ----------
    Same keys and access-code hash as index.html, so a license activated
    in either place unlocks both, and free packets are counted together. */
-const FREE_RUNS = 10;
-const PRICE = "$129.99 a year";
-const PAY_LINK = "https://buy.stripe.com/9B614oaJV7lr0RX1ODew801";
+const LICCFG = window.CognicopiaLicenseConfig || {};   // prices, Payment Links and keys: src/config/license.js
+const FREE_RUNS = LICCFG.FREE_RUNS || 25;
+const PRICE_MONTH = "$39 a month", PRICE_YEAR = "$349 a year";
+const PRICE = PRICE_YEAR + " or " + PRICE_MONTH;
+/* A plan's Stripe Payment Link, or "" while it is still the placeholder (or a test link): that plan's button then asks for an invoice. */
+function payLink(plan){
+  const u = (LICCFG.PAYMENT_LINKS || {})[plan];
+  return (typeof u === "string" && /^https:\/\/buy\.stripe\.com\/[A-Za-z0-9_-]+$/.test(u) && !/REPLACE_ME|test_/.test(u)) ? u : "";
+}
+const INVOICE_PATH = LICCFG.INVOICE_PATH || "contact.html?subject=Corporate+Invoice+Request";
 const ACCESS_SHA = "97c0fcc2e7143e13c6b104d93ad47c1e57670a24576df965b1a9eb745d6217da";
 
 function sha256(ascii){
@@ -10556,10 +10584,20 @@ function sha256(ascii){
 }
 /* The promo code (assets/services/licenseManager.js) is a second way in; it is re-verified from its stored proof, not read as a flag. */
 function promoActive(){ try { return !!(window.CognicopiaLicense && window.CognicopiaLicense.isPromoActive()); } catch(e){ return false; } }
-function isLicensed(){ return sha256(rawGet("cognicopia_license","")) === ACCESS_SHA || promoActive(); }
+/* A signed license key is the third way in; its signature and dates are re-checked on every call. */
+function keyActive(){ try { return !!(window.CognicopiaLicense && window.CognicopiaLicense.isKeyActive()); } catch(e){ return false; } }
+function isLicensed(){ return sha256(rawGet("cognicopia_license","")) === ACCESS_SHA || promoActive() || keyActive(); }
 function genCount(){ return parseInt(rawGet("cognicopia_gen_count","0"),10) || 0; }
 function bumpGen(){ rawSet("cognicopia_gen_count", String(genCount()+1)); }
+let keyMsg = "";   // why a pasted license key was refused, for the box that took it
 function activateLicense(code){
+  keyMsg = "";
+  const L = window.CognicopiaLicense;
+  if (L && L.looksLikeKey(code)){
+    const r = L.activateKey(code);
+    if (!r.ok) keyMsg = r.message;
+    return r.ok;
+  }
   code = String(code||"").trim();
   if (sha256(code) !== ACCESS_SHA) return false;
   rawSet("cognicopia_license", code);
@@ -13635,7 +13673,7 @@ function renderSettings(){
     <div class="config">
       <h2>License</h2>
       <p class="hint" id="licStatus"></p>
-      <div class="gate-row"><input type="text" id="setCode" placeholder="Access code" autocomplete="off" maxlength="40" aria-label="Access code"><button class="btn" type="button" id="setUnlock">Unlock</button></div>
+      <div class="gate-row"><input type="text" id="setCode" placeholder="License key or access code" autocomplete="off" maxlength="1200" aria-label="License key or access code"><button class="btn" type="button" id="setUnlock">Unlock</button></div>
       <p id="setMsg" role="status"></p>
       <button class="btn btn-ghost" type="button" id="setPromo">Have a promo code?</button>
     </div>
@@ -13666,13 +13704,13 @@ function renderSettings(){
   bind("#setDiff", t => settings.difficulty = t.value);
   bind("#setEra", t => settings.era = t.value);
   bind("#setWing", t => settings.wing = t.value.replace(/[\u0000-\u001F\u007F]/g, "").slice(0, 40));
-  const showLic = () => { $("#licStatus").textContent = isLicensed() ? "Licensed. Unlimited packets." : Math.max(0, FREE_RUNS - genCount()) + " of " + FREE_RUNS + " free packets left. Paid facilities enter the access code from their receipt."; };
+  const showLic = () => { $("#licStatus").textContent = isLicensed() ? "Licensed. Unlimited packets." : Math.max(0, FREE_RUNS - genCount()) + " of " + FREE_RUNS + " free packets left. Paid facilities paste the license key from their purchase email or invoice."; };
   showLic();
   $("#setPromo").addEventListener("click", () => { if (window.CognicopiaLicense) window.CognicopiaLicense.openPromo(); });
   $("#setUnlock").addEventListener("click", () => {
     const ok = activateLicense($("#setCode").value);
     $("#setMsg").className = ok ? "msg-ok" : "msg-bad";
-    $("#setMsg").textContent = ok ? "Unlocked. Thank you!" : "That code didn't match. Check it against your receipt.";
+    $("#setMsg").textContent = ok ? "Unlocked. Thank you!" : (keyMsg || "That code didn't match. Check it against your receipt.");
     showLic(); renderAllowance();
   });
   $("#setAliasScreen").addEventListener("change", e => { settings.aliasScreen = e.target.checked; saveSettings(); });
@@ -13801,10 +13839,19 @@ $("#queueBody").addEventListener("click", e => {
   }
 });
 function renderAllowance(){
+  const left = Math.max(0, FREE_RUNS - genCount());
   $("#allowance").textContent = isLicensed() ? "Licensed: unlimited packets."
-    : Math.max(0, FREE_RUNS - genCount()) + " of " + FREE_RUNS + " free packets left (shared with the Personalized Packet Tool).";
+    : left + " of " + FREE_RUNS + " free packets left (shared with the Personalized Packet Tool).";
+  // the banner appears for the last few free packets, and stays once they are gone
+  const b = $("#upgradeBanner");
+  if (b){
+    const show = !isLicensed() && left <= 5;
+    b.hidden = !show;
+    if (show) $("#upgradeText").textContent = left ? left + " free packet" + (left === 1 ? "" : "s") + " left." : "You have used your " + FREE_RUNS + " free packets.";
+  }
 }
 function renderBwNote(){ $("#bwNote").hidden = !isPureBlackAndWhitePDF; }
+renderAllowance();   // the upgrade banner is on the page from the start, not only once the packet drawer has been opened
 
 let toastTimer = null;
 function toast(msg, actionLabel, action){
@@ -13817,12 +13864,20 @@ function toast(msg, actionLabel, action){
 }
 
 function openGate(){
-  $("#gateText").textContent = `Cognicopia is ${PRICE} for your building: as many packets as you need, for as many residents as you have. Pay by card and your access code arrives straight away.`;
-  $("#gateBuy").href = PAY_LINK;
-  $("#gateBuy").textContent = "Get full access · " + PRICE;
+  $("#gateTitle").textContent = `You have used your ${FREE_RUNS} free packets`;
+  $("#gateText").textContent = "Cognicopia is for your whole building: as many packets as you need, for as many residents as you have. Pay by card (a purchasing card works) and your license key appears on screen, or ask for an invoice for your accounts payable team.";
+  // a plan's button is its Stripe Payment Link, or, until that is set up, a request for an invoice
+  const planBtn = (plan, label) => { const u = payLink(plan); return u ? { href: u, cta: "Pay by card · " + label } : { href: INVOICE_PATH + "&plan=" + plan, cta: "Request this plan" }; };
+  const tile = o => `<div class="gate-plan${o.best ? " best" : ""}">${o.tag ? `<p class="gp-tag">${esc(o.tag)}</p>` : ""}<h3>${esc(o.title)}</h3><p class="gp-price">${esc(o.price)}</p><p class="gp-note">${esc(o.note)}</p><a class="btn ${o.primary ? "btn-primary" : "btn-ghost"}" id="${o.id}" href="${esc(o.href)}" target="_blank" rel="noopener">${esc(o.cta)}</a></div>`;
+  const m = planBtn("monthly", PRICE_MONTH), y = planBtn("annual", PRICE_YEAR);
+  $("#gatePlans").innerHTML =
+    tile({ title: "Monthly", price: PRICE_MONTH, id: "gateMonthly", note: "Per facility. Small enough that many departments can buy it on a purchasing card. Cancel any time.", href: m.href, cta: m.cta }) +
+    tile({ title: "Annual", price: PRICE_YEAR, id: "gateAnnual", best: true, primary: true, tag: "Best value · save about 25%", note: "Per facility. Saves $119 a year compared with paying monthly. One payment, easy to put in a budget.", href: y.href, cta: y.cta }) +
+    tile({ title: "Pay by invoice", price: "Net-30 · ACH or check", id: "gateInvoice", note: "A W-9 comes with it. Buying for several buildings? Ask for an Enterprise quote.", href: INVOICE_PATH, cta: "Request Corporate Invoice / W-9" });
+  $("#gateNote").textContent = "After a card payment your license key appears on screen. Copy it and paste it into the box below, on any computer in your building. For an invoice, we email the key with it. Once it is entered it works with no internet.";
   $("#gateMsg").textContent = "";
   $("#gate").hidden = false;
-  $("#gateBuy").focus();
+  $("#gateAnnual").focus();
 }
 $("#gateClose").addEventListener("click", () => { $("#gate").hidden = true; pendingSoothe = false; });
 $("#gatePromo").addEventListener("click", () => { if (window.CognicopiaLicense) window.CognicopiaLicense.openPromo(); });
@@ -13830,12 +13885,12 @@ $("#gatePromo").addEventListener("click", () => { if (window.CognicopiaLicense) 
 document.addEventListener("cognicopia:license", () => {
   if (isLicensed()){ $("#gate").hidden = true; const m = $("#gateMsg"); if (m) m.textContent = ""; }
   renderAllowance();
-  const ls = $("#licStatus"); if (ls) ls.textContent = isLicensed() ? "Licensed. Unlimited packets." : Math.max(0, FREE_RUNS - genCount()) + " of " + FREE_RUNS + " free packets left. Paid facilities enter the access code from their receipt.";
+  const ls = $("#licStatus"); if (ls) ls.textContent = isLicensed() ? "Licensed. Unlimited packets." : Math.max(0, FREE_RUNS - genCount()) + " of " + FREE_RUNS + " free packets left. Paid facilities paste the license key from their purchase email or invoice.";
 });
 $("#gateUnlock").addEventListener("click", () => {
   const ok = activateLicense($("#gateCode").value);
   $("#gateMsg").className = ok ? "msg-ok" : "msg-bad";
-  $("#gateMsg").textContent = ok ? (pendingEmergencyPrint ? "Unlocked. Printing the emergency activity." : pendingSoothe ? "Unlocked. Opening Instant Soothe." : "Unlocked. Choose Generate PDF again.") : "That code didn't match. Check it against your receipt.";
+  $("#gateMsg").textContent = ok ? (pendingEmergencyPrint ? "Unlocked. Printing the emergency activity." : pendingSoothe ? "Unlocked. Opening Instant Soothe." : "Unlocked. Choose Generate PDF again.") : (keyMsg || "That code didn't match. Check it against your receipt.");
   if (ok){
     renderAllowance();
     if (pendingEmergencyPrint){
