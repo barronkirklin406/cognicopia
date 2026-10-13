@@ -194,6 +194,10 @@ step("the navigation is current on every page", () => {
   try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "site-nav.mjs"), "--check"], { encoding: "utf8" }).trim(); }
   catch (e){ throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message); }
 });
+step("the crossword on the front page's laptop is the one the engine makes", () => {
+  try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "landing-example.mjs"), "--check"], { encoding: "utf8" }).trim(); }
+  catch (e){ throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message); }
+});
 step("the Research Center pages are current", () => {
   try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "research-pages.mjs"), "--check"], { encoding: "utf8" }).trim(); }
   catch (e){ throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message); }

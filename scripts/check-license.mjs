@@ -92,7 +92,8 @@ function makeStorage(){
 function page(opts = {}){
   const storage = opts.storage || makeStorage(), events = [];
   let cfg = CONFIG.replace(real.PROMO_SHA256, sha(opts.promo || TEST_PROMO)).replace(real.ACCESS_SHA256, sha(opts.paid || TEST_PAID));
-  if (opts.keys) cfg = cfg.replace("PUBLIC_KEYS: Object.freeze([])", "PUBLIC_KEYS: Object.freeze(" + JSON.stringify(opts.keys) + ")");
+  /* the list is always set here, so a test never depends on which real key the site ships with */
+  cfg = cfg.replace(/PUBLIC_KEYS: Object\.freeze\(\[[^\]]*\]\)/, "PUBLIC_KEYS: Object.freeze(" + JSON.stringify(opts.keys || []) + ")");
   if (opts.revoked) cfg = cfg.replace("REVOKED_IDS: Object.freeze([])", "REVOKED_IDS: Object.freeze(" + JSON.stringify(opts.revoked) + ")");
   /* a clock the test can set: new Date() and Date.now() both read opts.now */
   const FakeDate = opts.now == null ? Date : class extends Date { constructor(...a){ if (a.length) super(...a); else super(opts.now); } static now(){ return opts.now; } };
