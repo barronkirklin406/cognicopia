@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>License Desk — Cognicopia</title>
+<meta name="description" content="The owner's page for making Cognicopia license keys. It runs only in your browser and sends nothing anywhere.">
+<meta name="robots" content="noindex">
+<!-- This page can never send anything out: no connection, no form, no frame is allowed, so a secret key made or opened here cannot leave the browser. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'none'; form-action 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'">
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  :root { --ink: #ffffff; --bg: #10241a; --card: #17392a; --line: rgba(216,243,220,.35); --accent: #52b788; --tap: 52px; --warn: #ffd477; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 18px/1.6 "Atkinson Hyperlegible", "Trebuchet MS", "Segoe UI", sans-serif; }
+  main { width: min(860px, calc(100% - 28px)); margin: 28px auto 60px; }
+  h1 { font-size: 30px; line-height: 1.2; margin: 0 0 8px; }
+  h2 { font-size: 22px; margin: 0 0 10px; }
+  p { margin: 0 0 12px; }
+  .lede { font-size: 19px; }
+  .card { margin: 22px 0; padding: 22px 24px; background: var(--card); border: 1px solid var(--line); border-radius: 14px; }
+  .step { display: inline-grid; place-items: center; width: 34px; height: 34px; margin-right: 10px; border-radius: 50%; background: #d8f3dc; color: #10241a; font-weight: 800; }
+  label { display: block; margin: 14px 0 6px; font-weight: 700; }
+  input[type=text], input[type=date], select, textarea { width: 100%; min-height: var(--tap); padding: 12px 14px; border: 2px solid #b7e4c7; border-radius: 10px; background: #ffffff; color: #10241a; font: inherit; }
+  textarea { min-height: 120px; font-family: Consolas, "Courier New", monospace; font-size: 15px; line-height: 1.4; resize: vertical; overflow-wrap: anywhere; }
+  input[type=file] { width: 100%; padding: 12px 0; font: inherit; color: var(--ink); }
+  input[type=file]::file-selector-button { min-height: var(--tap); margin-right: 12px; padding: 10px 18px; border: 2px solid #d8f3dc; border-radius: 10px; background: transparent; color: var(--ink); font: inherit; font-weight: 700; cursor: pointer; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; min-height: var(--tap); padding: 12px 24px; border: 2px solid #d8f3dc; border-radius: 10px; background: #2d6a4f; color: #ffffff; font: inherit; font-weight: 800; cursor: pointer; }
+  .btn:hover { background: #3a8561; }
+  .btn.alt { background: transparent; }
+  .row { display: flex; flex-wrap: wrap; gap: 12px; margin: 16px 0 0; }
+  .note { padding: 14px 16px; border-left: 5px solid var(--warn); border-radius: 0 10px 10px 0; background: rgba(255,212,119,.12); }
+  .good { padding: 14px 16px; border-left: 5px solid var(--accent); border-radius: 0 10px 10px 0; background: rgba(82,183,136,.16); }
+  .bad { padding: 14px 16px; border-left: 5px solid #ff9a8a; border-radius: 0 10px 10px 0; background: rgba(255,154,138,.14); }
+  ul { margin: 8px 0 12px; padding-left: 24px; } li { margin-bottom: 6px; }
+  :focus-visible { outline: 3px solid var(--warn); outline-offset: 2px; }
+  [hidden] { display: none !important; }
+  .small { font-size: 15px; opacity: .95; }
+  code { font-family: Consolas, "Courier New", monospace; font-size: .92em; overflow-wrap: anywhere; }
+  .out { margin-top: 16px; }
+</style>
+<script src="src/config/license.js"></script>
+<script src="assets/services/licenseManager.js"></script>
+</head>
+<body>
+<main id="main">
+  <h1>License desk</h1>
+  <p class="lede">This page makes the license keys that unlock Cognicopia for a facility. It is for the owner only. It runs in your web browser and <b>cannot send anything anywhere</b>: your secret key file stays on your computer.</p>
+
+  <section class="card" aria-labelledby="s1">
+    <h2 id="s1"><span class="step" aria-hidden="true">1</span>Make your license-making key (do this once)</h2>
+    <p>This makes two things. A <b>secret file</b> that only you keep. It is the only thing that can make license keys. And <b>one safe line</b> that you give to Claude so the website can check your keys. The safe line can only check keys, never make them, so it is fine to share.</p>
+    <div class="row"><button type="button" class="btn" id="makePair">Make my key</button></div>
+    <p class="small" id="makeMsg" role="status" aria-live="polite"></p>
+
+    <div id="pairOut" class="out" hidden>
+      <div class="good"><b>Your key was made.</b> Your browser should have saved a file named <code>cognicopia-license-private.pem</code>. Look in your <b>Downloads</b> folder. If you cannot find it, press the button below to save it again.</div>
+      <div class="row"><button type="button" class="btn alt" id="saveAgain">Save the secret file again</button></div>
+      <div class="note out"><b>Take care of that file.</b>
+        <ul>
+          <li>Copy it somewhere safe right away: your password manager, or a USB stick kept in a safe place.</li>
+          <li>Never email it, paste it into a chat, or put it on the internet. Not even to Claude.</li>
+          <li>If it is lost, every license key has to be made again.</li>
+        </ul>
+      </div>
+      <label for="pubLine">The safe line to give Claude</label>
+      <textarea id="pubLine" readonly rows="3" aria-describedby="pubHelp"></textarea>
+      <p class="small" id="pubHelp">Copy this line and paste it into your message to Claude. It starts with <code>PUBLIC_KEYS</code>.</p>
+      <div class="row"><button type="button" class="btn" id="copyLine">Copy the safe line</button></div>
+      <p class="small" id="copyMsg" role="status" aria-live="polite"></p>
+      <p class="small" id="trustMsg"></p>
+    </div>
+  </section>
+
+  <section class="card" aria-labelledby="s2">
+    <h2 id="s2"><span class="step" aria-hidden="true">2</span>Make a license key for a facility</h2>
+    <p>Use this after someone pays by invoice, or when a card buyer needs their key made by hand.</p>
+    <label for="pemFile">Your secret file (the one that was saved in step 1)</label>
+    <input type="file" id="pemFile" accept=".pem,text/plain">
+    <p class="small" id="pemMsg" role="status" aria-live="polite"></p>
+
+    <label for="fac">The facility's name, as it should be printed on the license</label>
+    <input type="text" id="fac" maxlength="120" autocomplete="off" placeholder="Maple Court">
+    <label for="plan">Which license</label>
+    <select id="plan">
+      <option value="monthly_facility">Monthly facility license</option>
+      <option value="annual_facility" selected>Annual facility license</option>
+      <option value="enterprise">Enterprise license</option>
+    </select>
+    <label for="until">Paid through (the last day it is paid for)</label>
+    <input type="date" id="until">
+    <p class="small">The license keeps working for another 90 days after this date, even with no internet.</p>
+    <div class="row"><button type="button" class="btn" id="makeKey">Make the license key</button></div>
+    <p class="small" id="keyMsg" role="status" aria-live="polite"></p>
+
+    <div id="keyOut" class="out" hidden>
+      <label for="keyText">The license key</label>
+      <textarea id="keyText" readonly rows="4"></textarea>
+      <div class="row"><button type="button" class="btn" id="copyKey">Copy the key</button></div>
+      <label for="linkText">A one-click link (it turns the license on)</label>
+      <textarea id="linkText" readonly rows="3"></textarea>
+      <div class="row"><button type="button" class="btn alt" id="copyLink">Copy the link</button></div>
+      <label for="mailText">An email you can paste</label>
+      <textarea id="mailText" readonly rows="11"></textarea>
+      <div class="row"><button type="button" class="btn alt" id="copyMail">Copy the email</button></div>
+      <p class="small" id="idLine"></p>
+      <div id="siteSays" class="out"></div>
+    </div>
+  </section>
+
+  <section class="card" aria-labelledby="s3">
+    <h2 id="s3"><span class="step" aria-hidden="true">3</span>Check a license key</h2>
+    <p>Paste any license key to see whether <b>this website</b> accepts it, and what it says.</p>
+    <label for="checkText">The license key</label>
+    <textarea id="checkText" rows="4" spellcheck="false"></textarea>
+    <div class="row"><button type="button" class="btn" id="checkKey">Check it</button></div>
+    <div id="checkOut" class="out" role="status" aria-live="polite"></div>
+  </section>
+</main>
+
+<script>
+(function () {
+  "use strict";
+  var subtle = window.crypto && window.crypto.subtle;
+  var $ = function (id) { return document.getElementById(id); };
+  var enc = new TextEncoder();
+  var CFG = window.CognicopiaLicenseConfig || {}, LIC = window.CognicopiaLicense;
+  var SITE = "https://cognicopia.org";
+  var privatePem = "";               // kept only until the page closes, so "Save again" works; never shown, never sent
+  var fileKey = null, fileLine = "";  // the key read from the chosen file
+
+  /* ---------- small helpers ---------- */
+  function bytesToB64(bytes) { var s = "", i; bytes = new Uint8Array(bytes); for (i = 0; i < bytes.length; i++) s += String.fromCharCode(bytes[i]); return btoa(s); }
+  function b64u(bytes) { return bytesToB64(bytes).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, ""); }
+  function hex(bytes) { return Array.prototype.map.call(new Uint8Array(bytes), function (b) { return ("0" + b.toString(16)).slice(-2); }).join(""); }
+  function pemOf(der) { return "-----BEGIN PRIVATE KEY-----\n" + bytesToB64(der).match(/.{1,64}/g).join("\n") + "\n-----END PRIVATE KEY-----\n"; }
+  function derOf(pem) {
+    var b = atob(String(pem).replace(/-----[^-]+-----/g, "").replace(/\s+/g, "")), out = new Uint8Array(b.length), i;
+    for (i = 0; i < b.length; i++) out[i] = b.charCodeAt(i);
+    return out.buffer;
+  }
+  function lineOf(pointHex) { return 'PUBLIC_KEYS: Object.freeze(["' + pointHex + '"]),'; }
+  function pointOfJwk(j) {
+    var p = function (s) { var b = atob(s.replace(/-/g, "+").replace(/_/g, "/")), h = "", i; for (i = 0; i < b.length; i++) h += ("0" + b.charCodeAt(i).toString(16)).slice(-2); while (h.length < 64) h = "0" + h; return h; };
+    return "04" + p(j.x) + p(j.y);
+  }
+  function say(el, text) { el.textContent = text; }
+  function copy(text, msgEl) {
+    var done = function () { say(msgEl, "Copied. You can paste it now."); };
+    var fail = function () { say(msgEl, "Your browser would not copy it. Select the text and copy it with Ctrl+C (or Command+C on a Mac)."); };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, fail);
+    else fail();
+  }
+  function download(name, text) {
+    var url = URL.createObjectURL(new Blob([text], { type: "application/x-pem-file" })), a = document.createElement("a");
+    a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
+  }
+  function trusted(point) { return (CFG.PUBLIC_KEYS || []).indexOf(point) >= 0; }
+  function ready() {
+    if (subtle) return true;
+    say($("makeMsg"), "This browser cannot make keys. Please open this page in a recent Chrome, Edge, Firefox or Safari.");
+    return false;
+  }
+
+  /* ---------- step 1: a new pair ---------- */
+  $("makePair").addEventListener("click", function () {
+    if (!ready()) return;
+    say($("makeMsg"), "Making your key…");
+    subtle.generateKey({ name: "ECDSA", namedCurve: "P-256" }, true, ["sign", "verify"]).then(function (pair) {
+      return Promise.all([subtle.exportKey("pkcs8", pair.privateKey), subtle.exportKey("raw", pair.publicKey)]);
+    }).then(function (both) {
+      privatePem = pemOf(both[0]);
+      var point = hex(both[1]);
+      $("pubLine").value = lineOf(point);
+      $("pairOut").hidden = false;
+      $("trustMsg").textContent = trusted(point)
+        ? "This website already trusts this key."
+        : "This website does not trust this key yet. Send Claude the safe line above, and wait for the word that it is on the site, before you give a license key to anyone.";
+      download("cognicopia-license-private.pem", privatePem);
+      say($("makeMsg"), "Done. Your key was made and the secret file was saved.");
+      $("saveAgain").focus();
+    }).catch(function () { say($("makeMsg"), "Something went wrong making the key. Please reload the page and try again."); });
+  });
+  $("saveAgain").addEventListener("click", function () { if (privatePem) download("cognicopia-license-private.pem", privatePem); });
+  $("copyLine").addEventListener("click", function () { copy($("pubLine").value, $("copyMsg")); });
+
+  /* ---------- step 2: a license key ---------- */
+  function two(n) { return ("0" + n).slice(-2); }
+  function isoOf(d) { return d.getFullYear() + "-" + two(d.getMonth() + 1) + "-" + two(d.getDate()); }
+  var touched = false;
+  function suggest() {
+    if (touched) return;
+    var d = new Date(), p = $("plan").value;
+    if (p === "monthly_facility") d.setMonth(d.getMonth() + 1); else d.setFullYear(d.getFullYear() + 1);
+    $("until").value = isoOf(d);
+  }
+  $("until").addEventListener("input", function () { touched = true; });
+  $("plan").addEventListener("change", suggest);
+  suggest();
+
+  $("pemFile").addEventListener("change", function () {
+    fileKey = null; fileLine = ""; say($("pemMsg"), "");
+    var f = $("pemFile").files && $("pemFile").files[0];
+    if (!f) return;
+    var r = new FileReader();
+    r.onload = function () {
+      var text = String(r.result || "");
+      if (text.indexOf("BEGIN PRIVATE KEY") < 0) { say($("pemMsg"), "That is not a secret key file. Choose the file named cognicopia-license-private.pem."); return; }
+      subtle.importKey("pkcs8", derOf(text), { name: "ECDSA", namedCurve: "P-256" }, true, ["sign"]).then(function (k) {
+        fileKey = k;
+        return subtle.exportKey("jwk", k);
+      }).then(function (jwk) {
+        fileLine = pointOfJwk(jwk);
+        say($("pemMsg"), trusted(fileLine) ? "Got it. This is the key this website trusts." : "Got it. But this website does not trust this key yet: give Claude the safe line from step 1 first.");
+      }).catch(function () { fileKey = null; say($("pemMsg"), "That file could not be read as a secret key. Choose the file named cognicopia-license-private.pem."); });
+    };
+    r.onerror = function () { say($("pemMsg"), "That file could not be opened."); };
+    r.readAsText(f);
+  });
+
+  $("makeKey").addEventListener("click", function () {
+    var fac = $("fac").value.trim(), tier = $("plan").value, until = $("until").value, msg = $("keyMsg");
+    $("keyOut").hidden = true;
+    if (!ready()) return;
+    if (!fileKey) { say(msg, "Choose your secret file first (the first box in this step)."); return; }
+    if (!fac || fac.length > 120) { say(msg, "Type the facility's name (up to 120 letters)."); return; }
+    if (!/^\d{4}-\d\d-\d\d$/.test(until) || isNaN(Date.parse(until))) { say(msg, "Choose the date it is paid through."); return; }
+    var id = "lic_" + hex(window.crypto.getRandomValues(new Uint8Array(8)));
+    var payload = { v: 1, f: fac, t: tier, e: until, i: isoOf(new Date()), n: id };
+    var body = b64u(enc.encode(JSON.stringify(payload)));
+    subtle.sign({ name: "ECDSA", hash: "SHA-256" }, fileKey, enc.encode("COG1." + body)).then(function (sig) {
+      var token = "COG1." + body + "." + b64u(sig);
+      var name = { monthly_facility: "monthly facility license", annual_facility: "annual facility license", enterprise: "enterprise license" }[tier];
+      $("keyText").value = token;
+      $("linkText").value = SITE + "/activate.html#license_key=" + token;
+      $("mailText").value = "Subject: Your Cognicopia license for " + fac + "\n\nThank you. Your " + name + " for " + fac + " is paid through " + until + ".\n\n" +
+        "To turn it on: open Cognicopia on any computer in your building, choose \"License Key / Promo\" at the top, paste this key, and choose Activate Access:\n\n" + token + "\n\n" +
+        "It is checked on the computer itself, so it works with no internet and keeps working after a restart. Use it on every computer in your building. Keep this email: it is also your receipt for the license.";
+      $("idLine").textContent = "Keep this for your records. Facility: " + fac + ". License number: " + id + ". If you ever need to withdraw this key, that number is what to give Claude.";
+      $("keyOut").hidden = false;
+      say(msg, "Done. The key is below.");
+      var res = LIC && LIC.inspectKey ? LIC.inspectKey(token) : null, box = $("siteSays");
+      box.className = "out " + (res && res.ok ? "good" : "note");
+      box.textContent = res && res.ok ? "This website accepts this key. You can send it." : "This website does NOT accept this key yet. " + (res && res.message ? res.message + " " : "") + "Do not send it until Claude has put your safe line on the site.";
+    }).catch(function () { say(msg, "Something went wrong making the key. Please try again."); });
+  });
+  $("copyKey").addEventListener("click", function () { copy($("keyText").value, $("keyMsg")); });
+  $("copyLink").addEventListener("click", function () { copy($("linkText").value, $("keyMsg")); });
+  $("copyMail").addEventListener("click", function () { copy($("mailText").value, $("keyMsg")); });
+
+  /* ---------- step 3: check ---------- */
+  $("checkKey").addEventListener("click", function () {
+    var out = $("checkOut"), res = LIC && LIC.inspectKey ? LIC.inspectKey($("checkText").value) : null;
+    if (!res) { out.className = "out note"; out.textContent = "This page could not load the license checker. Reload it."; return; }
+    if (!res.ok) { out.className = "out bad"; out.textContent = res.message || "This website does not accept that key."; return; }
+    var now = Date.now(), state = now <= res.paidThrough ? "paid and active" : now <= res.graceEnds ? "past its paid-through date, inside the 90 extra days" : "ended";
+    out.className = "out good";
+    out.textContent = "This website accepts it. " + res.facilityName + ", " + ((CFG.TIERS || {})[res.licenseTier] || res.licenseTier) + ", paid through " + res.expiresAt + " (" + state + "). License number " + res.id + ".";
+  });
+})();
+</script>
+</body>
+</html>
