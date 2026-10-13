@@ -2090,24 +2090,29 @@ textarea:focus{border-color:var(--accent)}
 <style id="ac-style">
 /* =====================================================================
    CAREGIVER & PROFESSIONAL ACADEMY (#/academy)
-   High contrast: white text on #1a2e22 (14.4:1), cards #223a2c (12.3:1),
-   secondary text #dfe9e4 (9.9:1 on a card), tan #b5a48b for borders,
-   chips and primary buttons (5.1:1 on a card; dark ink on tan 6.6:1),
-   amber #e9b872 for the family track (6.8:1), green #7ad3a4 for
-   completion (6.8:1), and a pale turquoise focus ring. Completion never
-   relies on color alone: a check mark and words go with it. Layout
-   adapts to the space the Academy has (container queries), so tablets
-   and desktops each get their own arrangement. Motion is short and
-   switches off with prefers-reduced-motion.
+   Deep slate with emerald accents. Every text pair reaches AAA (7:1):
+   text #f0f4f2 on the card 12.9:1, secondary #cfdcd5 10.1:1, muted
+   #b4c6bc 8.0:1 (the first choice, #9bb0a5, was 6.2:1), accent text
+   #8ad8b0 8.5:1, dark ink on the emerald fill 7.4:1, amber for the
+   family track #e9b872 7.9:1. Control borders #6b9080 are 4.0:1 (the
+   hairline #2a3d36 only divides, it never marks a control). Every
+   control is at least 52 px (--tap). Completion is never color alone:
+   a check mark and words go with it. Layout follows the Academy's own
+   width (container queries). Motion is gentle, runs on transform and
+   opacity only, and stops with prefers-reduced-motion.
    ===================================================================== */
 .view.view-wide .ac{margin:0}
 .ac{
-  --ac-bg:#1a2e22; --ac-surface:#223a2c; --ac-surface-2:#2a4636; --ac-sunk:#142419; --ac-stage:#0f1c14;
-  --ac-line:#b5a48b; --ac-div:rgba(223,233,228,.2); --ac-text:#ffffff; --ac-text-2:#dfe9e4; --ac-muted:#c9d6cf;
-  --ac-accent:#b5a48b; --ac-accent-hi:#c8b89f; --ac-ink:#10251c; --ac-focus:#e6f4f1; --ac-family:#e9b872; --ac-good:#7ad3a4; --ac-warn:#f0b48c;
+  --ac-bg:#0e1614; --ac-panel:#16231f; --ac-card:#1c2e29; --ac-sunk:#0a110f; --ac-stage:#08100d;
+  --ac-surface:var(--ac-card); --ac-surface-2:#1f3530;
+  --ac-accent:#52b788; --ac-accent-hi:#74c69d; --ac-accent-text:#8ad8b0; --ac-glow:rgba(82,183,136,.15); --ac-media-glow:rgba(82,183,136,.25);
+  --ac-border:#2a3d36; --ac-div:rgba(207,220,213,.16); --ac-line:#6b9080;
+  --ac-text:#f0f4f2; --ac-text-2:#cfdcd5; --ac-muted:#b4c6bc;
+  --ac-ink:#0e1614; --ac-focus:#e6f4f1; --ac-family:#e9b872; --ac-good:#7ad3a4; --ac-warn:#f0b48c;
   container:academy / inline-size;
-  position:relative; min-width:0; padding:clamp(16px,3vw,32px); border:1px solid rgba(181,164,139,.45); border-radius:20px;
-  background:var(--ac-bg); color:var(--ac-text); overflow-wrap:anywhere; box-shadow:0 18px 50px rgba(0,0,0,.3);
+  position:relative; min-width:0; padding:clamp(16px,3vw,32px); border:1px solid var(--ac-border); border-radius:22px;
+  background:radial-gradient(120% 70% at 8% -10%,var(--ac-glow),transparent 60%),radial-gradient(90% 60% at 100% 0,rgba(116,198,157,.07),transparent 60%),var(--ac-bg);
+  color:var(--ac-text); overflow-wrap:anywhere; box-shadow:0 22px 60px rgba(0,0,0,.35);
 }
 .ac *{min-width:0}
 .ac :focus-visible{outline:3px solid var(--ac-focus);outline-offset:2px}
@@ -2118,18 +2123,18 @@ textarea:focus{border-color:var(--accent)}
 @keyframes ac-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 
 /* header, learner, tabs */
-.ac-head{display:flex;flex-wrap:wrap;gap:16px 28px;align-items:flex-end;justify-content:space-between;margin:0 0 20px}
-.ac-eyebrow{margin:0 0 6px;color:var(--ac-accent);font-size:12.5px;font-weight:800;letter-spacing:.09em;text-transform:uppercase}
-.ac-title{margin:0;font-size:clamp(26px,3.2vw,38px);line-height:1.12;outline:none}
+.ac-head{display:flex;flex-wrap:wrap;gap:16px 28px;align-items:flex-end;justify-content:space-between;margin:0 0 22px}
+.ac-eyebrow{margin:0 0 6px;color:var(--ac-accent-text);font-size:12.5px;font-weight:800;letter-spacing:.09em;text-transform:uppercase}
+.ac-title{margin:0;font-size:clamp(26px,3.2vw,40px);line-height:1.12;outline:none;letter-spacing:-.01em}
 .ac .ac-title:focus-visible,.ac #acTrackH:focus-visible{outline:none}   /* focus lands on these headings so a screen reader announces them; they are not controls */
 .ac-lede{margin:8px 0 0;max-width:64ch;color:var(--ac-text-2);font-size:16.5px;line-height:1.5}
-.ac-learner{flex:0 1 380px;padding:14px 16px;border:1.5px solid var(--ac-line);border-radius:14px;background:var(--ac-surface)}
+.ac-learner{flex:0 1 380px;padding:14px 16px;border:1px solid var(--ac-border);border-radius:16px;background:linear-gradient(145deg,rgba(28,46,41,.9),rgba(22,35,31,.8));-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
 .ac-learner label,.ac-field > label,.ac-field > legend{display:block;margin:0 0 6px;padding:0;font-weight:700;font-size:14.5px;color:var(--ac-text)}
 .ac-inline{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .ac-inline > select,.ac-inline > input{flex:1 1 180px}
 .ac-hint{margin:6px 0 0;color:var(--ac-text-2);font-size:13.5px;line-height:1.45}
 .ac-form{display:grid;gap:10px;margin-top:12px;padding-top:12px;border-top:1px solid var(--ac-div)}
-.ac-tabs{display:flex;flex-wrap:wrap;gap:4px;margin:0 0 18px;border-bottom:1px solid var(--ac-div)}
+.ac-tabs{display:flex;flex-wrap:wrap;gap:4px;margin:0 0 20px;border-bottom:1px solid var(--ac-div)}
 .ac-tab{display:inline-flex;align-items:center;gap:8px;min-height:var(--tap);padding:10px 16px;border:0;border-bottom:3px solid transparent;background:none;color:var(--ac-text-2);font:inherit;font-weight:700;font-size:15.5px;cursor:pointer;transition:color .15s,border-color .15s,background .15s}
 .ac-tab:hover{color:var(--ac-text);background:rgba(255,255,255,.04)}
 .ac-tab[aria-selected="true"]{color:var(--ac-text);border-bottom-color:var(--ac-accent)}
@@ -2138,48 +2143,71 @@ textarea:focus{border-color:var(--accent)}
 
 /* fields and buttons */
 .ac input[type=text],.ac input[type=search],.ac select,.ac textarea{
-  width:100%;min-height:var(--tap);padding:9px 12px;border:2px solid var(--ac-line);border-radius:10px;background:var(--ac-sunk);color:var(--ac-text);font:inherit;font-size:15px;color-scheme:dark}
+  width:100%;min-height:var(--tap);padding:9px 12px;border:2px solid var(--ac-line);border-radius:12px;background:var(--ac-sunk);color:var(--ac-text);font:inherit;font-size:15px;color-scheme:dark}
 .ac textarea{min-height:88px;resize:vertical}
-.ac ::placeholder{color:#9fb0a7;opacity:1}
+.ac ::placeholder{color:#a9bdb2;opacity:1}
 .ac input:focus,.ac select:focus,.ac textarea:focus{border-color:var(--ac-focus)}
 .ac-field{margin:0;padding:0;border:0}
-.ac-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:var(--tap);max-width:100%;padding:9px 16px;border:2px solid var(--ac-line);border-radius:10px;background:transparent;color:var(--ac-text);font:inherit;font-weight:700;font-size:15px;line-height:1.25;text-align:center;text-decoration:none;cursor:pointer;transition:background .15s,border-color .15s,color .15s,transform .05s}
-.ac-btn:hover{background:var(--ac-surface-2)}
+.ac-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:var(--tap);max-width:100%;padding:9px 16px;border:2px solid var(--ac-line);border-radius:12px;background:transparent;color:var(--ac-text);font:inherit;font-weight:700;font-size:15px;line-height:1.25;text-align:center;text-decoration:none;cursor:pointer;transition:background .15s,border-color .15s,color .15s,transform .05s,box-shadow .15s}
+.ac-btn:hover{background:rgba(82,183,136,.16);border-color:var(--ac-accent)}
 .ac-btn:active{transform:translateY(1px)}
-.ac-btn-primary{background:var(--ac-accent);border-color:var(--ac-accent);color:var(--ac-ink)}
-.ac-btn-primary:hover{background:var(--ac-accent-hi);border-color:var(--ac-accent-hi)}
+.ac-btn-primary{background:var(--ac-accent);border-color:var(--ac-accent);color:var(--ac-ink);box-shadow:0 6px 18px var(--ac-glow)}
+.ac-btn-primary:hover{background:var(--ac-accent-hi);border-color:var(--ac-accent-hi);color:var(--ac-ink)}
 .ac-btn-family{background:var(--ac-family);border-color:var(--ac-family);color:var(--ac-ink)}
-.ac-btn-family:hover{background:#f0c88c;border-color:#f0c88c}
+.ac-btn-family:hover{background:#f0c88c;border-color:#f0c88c;color:var(--ac-ink)}
 .ac-btn-danger{border-color:var(--ac-warn);color:var(--ac-warn)}
 .ac-btn-sm{min-height:var(--tap);padding:5px 11px;font-size:14px}
-.ac-btn[aria-disabled="true"],.ac-btn[aria-disabled="true"]:hover{background:transparent;border-style:dashed;border-color:var(--ac-line);color:var(--ac-text-2);cursor:not-allowed}
+.ac-btn[aria-disabled="true"],.ac-btn[aria-disabled="true"]:hover{background:transparent;border-style:dashed;border-color:var(--ac-line);color:var(--ac-text-2);cursor:not-allowed;box-shadow:none}
 .ac-btn svg{flex:none}
 .ac-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
 
-/* filters and the card grid */
+/* the dashboard: three rings and a status line */
+.ac-dash{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;margin:0 0 20px}
+@container academy (min-width:700px){.ac-dash{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.ac-tile{display:grid;grid-template-columns:76px minmax(0,1fr);gap:14px;align-items:center;padding:16px 18px;border:1px solid var(--ac-border);border-radius:18px;
+  background:linear-gradient(145deg,rgba(28,46,41,.92),rgba(22,35,31,.78));-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);box-shadow:inset 0 1px 0 rgba(255,255,255,.05)}
+.ac-ring{display:block;width:76px;height:76px}
+.ac-ring circle{fill:none;stroke-width:8;stroke-linecap:round}
+.ac-ring .ac-ring-track{stroke:var(--ac-border)}
+.ac-ring .ac-ring-fill{stroke:var(--ac-accent);transform:rotate(-90deg);transform-origin:50% 50%;transition:stroke-dashoffset .6s ease}
+.ac-ring text{fill:var(--ac-text);font-family:inherit;font-weight:800;font-size:19px;text-anchor:middle;dominant-baseline:central}
+.ac-tile-v{display:block;font-size:26px;font-weight:800;line-height:1.1;font-variant-numeric:tabular-nums}
+.ac-tile-l{display:block;margin-top:2px;color:var(--ac-text);font-size:15px;font-weight:700}
+.ac-tile-s{display:block;margin-top:4px;color:var(--ac-muted);font-size:13px;line-height:1.35}
+.ac-statusline{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;margin:-4px 0 18px;color:var(--ac-text-2);font-size:14px}
+.ac-statusline b{color:var(--ac-accent-text)}
+
+/* filters, pills and the card grid */
 .ac-filters{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;margin:0 0 12px}
-@container academy (min-width:760px){.ac-filters{grid-template-columns:minmax(0,1.2fr) minmax(0,2fr) minmax(0,1fr);align-items:end}}
-.ac-chips{display:flex;flex-wrap:wrap;gap:6px}
+@container academy (min-width:760px){.ac-filters{grid-template-columns:minmax(0,2fr) minmax(0,1fr);align-items:end}}
+.ac-pills{margin:0 0 14px}
+.ac-chips{display:flex;flex-wrap:wrap;gap:8px}
 .ac-chips label{position:relative;cursor:pointer}
 .ac-chips input{position:absolute;inset:0;margin:0;opacity:0;cursor:pointer}
-.ac-chips span{display:inline-flex;align-items:center;justify-content:center;min-width:var(--tap);min-height:var(--tap);padding:5px 12px;border:1.5px solid var(--ac-line);border-radius:999px;background:var(--ac-sunk);color:var(--ac-text-2);font-size:13.5px;font-weight:700;transition:background .15s,color .15s}
-.ac-chips input:checked + span{background:var(--ac-accent);color:var(--ac-ink)}
+.ac-chips span{display:inline-flex;align-items:center;justify-content:center;min-width:var(--tap);min-height:var(--tap);padding:5px 16px;border:1.5px solid var(--ac-line);border-radius:999px;background:var(--ac-sunk);color:var(--ac-text-2);font-size:14.5px;font-weight:700;transition:background .15s,color .15s,border-color .15s}
+.ac-chips label:hover span{border-color:var(--ac-accent);color:var(--ac-text)}
+.ac-chips input:checked + span{background:var(--ac-accent);border-color:var(--ac-accent);color:var(--ac-ink)}
 .ac-chips input:focus-visible + span{outline:3px solid var(--ac-focus);outline-offset:2px}
 .ac-count{margin:0 0 12px;color:var(--ac-text-2);font-size:14px}
-.ac-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
+.ac-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:18px}
 @container academy (min-width:620px){.ac-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @container academy (min-width:980px){.ac-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
-.ac-card{position:relative;display:flex;flex-direction:column;overflow:hidden;border:1.5px solid var(--ac-line);border-radius:16px;background:var(--ac-surface);transition:transform .16s,box-shadow .16s}
-.ac-card.is-family{border-color:var(--ac-family)}
-.ac-card:hover{transform:translateY(-2px);box-shadow:0 14px 30px rgba(0,0,0,.35)}
+.ac-card{position:relative;display:flex;flex-direction:column;overflow:hidden;border:1px solid var(--ac-border);border-radius:20px;
+  background:linear-gradient(150deg,rgba(28,46,41,.9),rgba(20,33,29,.82));-webkit-backdrop-filter:blur(12px) saturate(1.1);backdrop-filter:blur(12px) saturate(1.1);
+  box-shadow:0 10px 28px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.06);transition:transform .18s,box-shadow .18s,border-color .18s}
+.ac-card.is-family{border-color:rgba(233,184,114,.55)}
+.ac-card:hover{transform:translateY(-3px);border-color:var(--ac-accent);box-shadow:0 18px 40px rgba(0,0,0,.4),0 0 0 1px var(--ac-accent),0 0 32px var(--ac-glow)}
+.ac-card.is-family:hover{border-color:var(--ac-family);box-shadow:0 18px 40px rgba(0,0,0,.4),0 0 0 1px var(--ac-family)}
 .ac-card:focus-within{box-shadow:0 0 0 3px var(--ac-focus)}
 .ac-card:focus-within .ac-card-a{outline:none}
-.ac-thumb{position:relative;aspect-ratio:16/9;background:var(--ac-stage)}
+.ac-thumb{position:relative;aspect-ratio:16/9;background:var(--ac-stage);overflow:hidden}
 .ac-thumb > svg{display:block;width:100%;height:100%}
-.ac-play{position:absolute;left:50%;top:50%;display:grid;place-items:center;width:56px;height:56px;border:2px solid #fff;border-radius:50%;background:rgba(10,18,13,.78);color:#fff;transform:translate(-50%,-50%);transition:transform .16s}
-.ac-card:hover .ac-play{transform:translate(-50%,-50%) scale(1.08)}
-.ac-dur{position:absolute;right:10px;bottom:10px;padding:3px 8px;border-radius:6px;background:rgba(8,14,10,.9);color:#fff;font-size:12.5px;font-weight:800;font-variant-numeric:tabular-nums}
+.ac-play{position:absolute;left:50%;top:50%;display:grid;place-items:center;width:56px;height:56px;border:2px solid #fff;border-radius:50%;background:rgba(10,18,13,.78);color:#fff;transform:translate(-50%,-50%);transition:transform .16s,box-shadow .16s}
+.ac-card:hover .ac-play{transform:translate(-50%,-50%) scale(1.08);box-shadow:0 0 0 6px var(--ac-media-glow)}
+.ac-dur{position:absolute;right:10px;bottom:10px;padding:3px 8px;border-radius:6px;background:rgba(8,14,10,.92);color:#fff;font-size:12.5px;font-weight:800;font-variant-numeric:tabular-nums}
 .ac-flag{position:absolute;left:10px;top:10px;display:inline-flex;align-items:center;gap:5px;padding:3px 9px 3px 6px;border-radius:999px;background:var(--ac-good);color:var(--ac-ink);font-size:12.5px;font-weight:800}
+.ac-cat{position:absolute;left:10px;bottom:10px;display:inline-flex;align-items:center;padding:3px 10px;border-radius:999px;background:rgba(8,14,10,.92);border:1px solid var(--ac-accent);color:var(--ac-accent-text);font-size:12px;font-weight:800;letter-spacing:.02em}
+.is-family .ac-cat{border-color:var(--ac-family);color:var(--ac-family)}
 .ac-card-body{display:flex;flex:1;flex-direction:column;gap:10px;padding:14px 16px 16px}
 .ac-card h3{margin:0;font-size:17.5px;line-height:1.25}
 .ac-card-a{color:var(--ac-text) !important;text-decoration:none}
@@ -2192,120 +2220,171 @@ textarea:focus{border-color:var(--accent)}
 .ac-instructor small{display:block;color:var(--ac-muted);font-size:12.5px;line-height:1.3}
 .ac-tags{display:flex;flex-wrap:wrap;gap:6px}
 .ac-tag{display:inline-flex;align-items:center;gap:4px;padding:2px 9px;border:1px solid var(--ac-line);border-radius:999px;color:var(--ac-text-2);font-size:12px;font-weight:700;line-height:1.5}
-.ac-card-foot{margin-top:auto;display:grid;gap:8px}
+.ac-tag.is-level{border-color:var(--ac-accent);color:var(--ac-accent-text)}
+.is-family .ac-tag.is-level,.ac-mod.is-family .ac-tag.is-level{border-color:var(--ac-family);color:var(--ac-family)}
+.ac-card-foot{margin-top:auto;display:grid;gap:10px}
 .ac-prog{display:flex;align-items:center;gap:10px;color:var(--ac-text-2);font-size:12.5px;font-weight:700}
-.ac-bar{flex:1;display:block;height:7px;border-radius:999px;background:var(--ac-sunk);overflow:hidden}
-.ac-bar > span{display:block;height:100%;border-radius:999px;background:var(--ac-accent);transition:width .3s ease}
+.ac-bar{flex:1;display:block;height:8px;border-radius:999px;background:var(--ac-sunk);box-shadow:inset 0 0 0 1px var(--ac-border);overflow:hidden}
+.ac-bar > span{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--ac-accent),var(--ac-accent-hi));transition:width .3s ease}
 .is-family .ac-bar > span{background:var(--ac-family)}
-.ac-empty{padding:28px;border:1.5px dashed var(--ac-line);border-radius:16px;color:var(--ac-text-2);text-align:center}
+.ac-go{display:flex;align-items:center;justify-content:center;gap:8px;min-height:var(--tap);padding:8px 14px;border-radius:12px;background:var(--ac-accent);color:var(--ac-ink);font-weight:800;font-size:15px;transition:background .15s}
+.ac-card:hover .ac-go{background:var(--ac-accent-hi)}
+.ac-card.is-family .ac-go{background:var(--ac-family)}
+.ac-card.is-done .ac-go{background:transparent;border:2px solid var(--ac-line);color:var(--ac-text)}
+.ac-empty{padding:28px;border:1.5px dashed var(--ac-line);border-radius:18px;color:var(--ac-text-2);text-align:center}
 
 /* family track */
-.ac-family-intro{display:grid;gap:6px;margin:0 0 18px;padding:18px;border:1.5px solid var(--ac-family);border-radius:16px;background:linear-gradient(135deg,rgba(233,184,114,.13),rgba(233,184,114,.02))}
+.ac-family-intro{display:grid;gap:6px;margin:0 0 18px;padding:18px;border:1px solid rgba(233,184,114,.55);border-radius:18px;background:linear-gradient(135deg,rgba(233,184,114,.13),rgba(233,184,114,.02))}
 .ac-family-intro h2{margin:0;font-size:22px}
 .ac-family-intro p{margin:0;color:var(--ac-text-2);max-width:70ch;line-height:1.55}
 .ac-h2{margin:22px 0 12px;font-size:19px}
 .ac-kits{display:grid;grid-template-columns:minmax(0,1fr);gap:14px}
 @container academy (min-width:620px){.ac-kits{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @container academy (min-width:1100px){.ac-kits{grid-template-columns:repeat(4,minmax(0,1fr))}}
-.ac-kit{display:flex;flex-direction:column;gap:8px;padding:16px;border:1.5px solid var(--ac-family);border-radius:16px;background:var(--ac-surface)}
+.ac-kit{display:flex;flex-direction:column;gap:8px;padding:16px;border:1px solid rgba(233,184,114,.55);border-radius:18px;background:linear-gradient(150deg,rgba(28,46,41,.9),rgba(20,33,29,.82))}
 .ac-kit-ic{display:grid;place-items:center;width:44px;height:44px;border-radius:12px;background:rgba(233,184,114,.16);color:var(--ac-family)}
 .ac-kit h3{margin:0;font-size:17px}
 .ac-kit p{margin:0;color:var(--ac-text-2);font-size:14px;line-height:1.45}
 .ac-kit .ac-actions{margin-top:auto}
 .ac-kit details{font-size:14px;color:var(--ac-text-2)}
-.ac-kit summary{cursor:pointer;font-weight:700;color:var(--ac-text)}
+.ac-kit summary{cursor:pointer;font-weight:700;color:var(--ac-text);min-height:var(--tap);display:flex;align-items:center}
 
 /* the module view */
 .ac-crumbs{margin:0 0 14px}
-.ac-back{display:inline-flex;align-items:center;gap:8px;min-height:var(--tap);padding:6px 12px 6px 8px;border:1.5px solid var(--ac-line);border-radius:10px;color:var(--ac-text) !important;font-weight:700;text-decoration:none}
-.ac-back:hover{background:var(--ac-surface-2)}
+.ac-back{display:inline-flex;align-items:center;gap:8px;min-height:var(--tap);padding:6px 14px 6px 8px;border:1.5px solid var(--ac-line);border-radius:12px;color:var(--ac-text) !important;font-weight:700;text-decoration:none}
+.ac-back:hover{background:rgba(82,183,136,.16);border-color:var(--ac-accent)}
 .ac-mod{display:grid;grid-template-columns:minmax(0,1fr);grid-template-areas:"head" "player" "side" "panes";gap:18px}
 @container academy (min-width:960px){.ac-mod{grid-template-columns:minmax(0,1fr) minmax(290px,330px);grid-template-areas:"head head" "player side" "panes side";align-items:start}}
 .ac-mod-head{grid-area:head}
 .ac-mod-meta{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;margin-top:12px}
-.ac-player{grid-area:player;position:relative;overflow:hidden;border:1.5px solid var(--ac-line);border-radius:16px;background:var(--ac-stage)}
+.ac-player{grid-area:player;position:relative;overflow:hidden;border:1px solid var(--ac-border);border-radius:20px;background:var(--ac-stage);box-shadow:0 14px 40px rgba(0,0,0,.35),0 0 0 1px rgba(82,183,136,.08)}
+.ac-player.is-playing{box-shadow:0 14px 40px rgba(0,0,0,.35),0 0 0 1px var(--ac-accent),0 0 44px var(--ac-media-glow)}
 .ac-side{grid-area:side;display:grid;gap:14px;align-content:start}
 @container academy (min-width:960px){.ac-side{position:sticky;top:84px}}
 .ac-panes{grid-area:panes}
 .ac-stage{position:relative;aspect-ratio:16/9;overflow:hidden;background:var(--ac-stage);cursor:pointer;container-type:inline-size;outline-offset:-3px}
-.ac-stage-art{position:absolute;inset:0;opacity:.42}
+.ac-stage-art{position:absolute;inset:-6%;opacity:.8;transform:translate3d(var(--px,0%),var(--py,0%),0) scale(var(--sc,1.04));transition:transform 1.6s cubic-bezier(.22,.61,.36,1)}
+.ac-kb{position:absolute;inset:0;will-change:transform}
 .ac-stage-art svg{display:block;width:100%;height:100%}
-.ac-slide{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;padding:6cqi calc(14cqi + clamp(56px,11cqi,92px)) 16cqi 7cqi;background:linear-gradient(90deg,rgba(15,28,20,.94) 0%,rgba(15,28,20,.8) 55%,rgba(15,28,20,.4) 100%)}
-.ac-slide.is-new{animation:ac-slide .45s ease-out}
-@keyframes ac-slide{from{opacity:0;transform:translateX(10px)}to{opacity:1;transform:none}}
-.ac-slide-k{margin:0;color:var(--ac-accent);font-size:clamp(11px,1.9cqi,16px);font-weight:800;letter-spacing:.1em;text-transform:uppercase}
+.ac-slide{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;padding:6cqi calc(14cqi + clamp(56px,11cqi,92px)) 16cqi 7cqi;background:linear-gradient(90deg,rgba(8,16,13,.95) 0%,rgba(8,16,13,.84) 55%,rgba(8,16,13,.3) 100%)}
+.ac-slide.is-new{animation:ac-slide .5s ease-out}
+@keyframes ac-slide{from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:none}}
+.ac-slide-k{display:flex;align-items:center;gap:.6em;margin:0;color:var(--ac-accent-text);font-size:clamp(11px,1.9cqi,16px);font-weight:800;letter-spacing:.1em;text-transform:uppercase}
+.ac-slide-ic{flex:none;display:inline-grid;place-items:center;width:clamp(26px,5cqi,40px);height:clamp(26px,5cqi,40px);border-radius:50%;border:2px solid var(--ac-accent);background:rgba(82,183,136,.14);color:var(--ac-accent-text)}
+.ac-slide-ic svg{width:62%;height:62%}
 .ac-mod.is-family .ac-slide-k{color:var(--ac-family)}
+.ac-mod.is-family .ac-slide-ic{border-color:var(--ac-family);color:var(--ac-family);background:rgba(233,184,114,.14)}
 .ac-slide-t{margin:.3em 0 .4em;color:#fff;font-size:clamp(20px,5.2cqi,46px);line-height:1.1}
 .ac-slide-s{margin:0;max-width:30ch;color:var(--ac-text-2);font-size:clamp(14px,2.8cqi,25px);line-height:1.35}
 @container (max-width:520px){.ac-slide-s{display:none}.ac-slide{padding-bottom:12cqi}.ac-stage.has-cc .ac-slide{visibility:hidden}.ac-cc{max-width:94%}}
-.ac-cc{position:absolute;left:50%;bottom:4cqi;max-width:90%;margin:0;padding:.35em .75em;border-radius:8px;background:rgba(6,11,8,.92);color:#fff;font-size:clamp(13px,2.5cqi,22px);line-height:1.35;text-align:center;transform:translateX(-50%)}
+.ac-cc{position:absolute;left:50%;bottom:4cqi;max-width:90%;margin:0;padding:.4em .8em;border-radius:10px;background:rgba(6,11,8,.93);color:#fff;font-size:clamp(13px,2.5cqi,22px);line-height:1.4;text-align:center;transform:translateX(-50%)}
 .ac-cc:empty,.ac-cc[hidden]{display:none}
+.ac-cc .w,.ac-line .w{border-radius:4px;transition:background .12s,color .12s}
+.ac-cc .w.is-word{background:var(--ac-accent);color:var(--ac-ink)}
+.ac-line .w.is-word{background:var(--ac-ink);color:#fff}
 .ac-kind{position:absolute;right:12px;top:12px;padding:3px 9px;border:1px solid rgba(255,255,255,.5);border-radius:999px;background:rgba(6,11,8,.7);color:#fff;font-size:12px;font-weight:700}
-.ac-bigplay{position:absolute;right:7cqi;top:50%;display:grid;place-items:center;width:clamp(56px,11cqi,92px);height:clamp(56px,11cqi,92px);border:3px solid #fff;border-radius:50%;background:rgba(10,18,13,.82);color:#fff;cursor:pointer;transform:translateY(-50%);transition:transform .15s,opacity .2s}
+.ac-bigplay{position:absolute;right:7cqi;top:50%;display:grid;place-items:center;width:clamp(56px,11cqi,92px);height:clamp(56px,11cqi,92px);border:3px solid #fff;border-radius:50%;background:rgba(10,18,13,.82);color:#fff;cursor:pointer;transform:translateY(-50%);transition:transform .15s,opacity .2s,box-shadow .2s;box-shadow:0 0 0 0 var(--ac-media-glow)}
 .ac-bigplay svg{width:45%;height:45%}
-.ac-bigplay:hover{transform:translateY(-50%) scale(1.06)}
+.ac-bigplay:hover{transform:translateY(-50%) scale(1.06);box-shadow:0 0 0 10px var(--ac-media-glow)}
 .ac-player.is-playing .ac-bigplay{opacity:0;pointer-events:none}
-.ac-controls{display:flex;flex-wrap:wrap;align-items:center;gap:8px 8px;padding:10px 12px;border-top:1px solid var(--ac-div);background:var(--ac-sunk)}
-.ac-cbtn{flex:none;display:grid;place-items:center;width:var(--tap);height:var(--tap);padding:0;border:1.5px solid rgba(181,164,139,.75);border-radius:10px;background:transparent;color:#fff;cursor:pointer;transition:background .15s}
-.ac-cbtn:hover{background:var(--ac-surface-2)}
+.ac-controls{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:10px 12px 6px;border-top:1px solid var(--ac-div);background:var(--ac-sunk)}
+.ac-opts{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:0 12px 10px;background:var(--ac-sunk)}
+.ac-cbtn{flex:none;display:grid;place-items:center;width:var(--tap);height:var(--tap);padding:0;border:1.5px solid var(--ac-line);border-radius:12px;background:transparent;color:#fff;cursor:pointer;transition:background .15s,border-color .15s}
+.ac-cbtn:hover{background:rgba(82,183,136,.18);border-color:var(--ac-accent)}
 .ac-cbtn[aria-pressed="true"]{background:var(--ac-accent);border-color:var(--ac-accent);color:var(--ac-ink)}
+.ac-cbtn.is-main{background:var(--ac-accent);border-color:var(--ac-accent);color:var(--ac-ink)}
+.ac-cbtn.is-main:hover{background:var(--ac-accent-hi)}
 .ac-cbtn[hidden]{display:none}
+.ac-cbtn .ac-ten{font-size:11px;font-weight:800;line-height:1;margin-top:-2px}
 .ac-time{flex:none;min-width:8.5ch;color:var(--ac-text-2);font-size:13.5px;font-variant-numeric:tabular-nums;white-space:nowrap}
 .ac-seek{flex:1 1 180px;height:var(--tap);margin:0;accent-color:var(--ac-accent);cursor:pointer}
-.ac-controls select{flex:none;width:auto;min-height:var(--tap);padding:6px 8px;font-size:14px}
+.ac-vol{flex:0 1 120px;min-width:84px;height:var(--tap);margin:0;accent-color:var(--ac-accent);cursor:pointer}
+.ac-opts select,.ac-controls select{flex:none;width:auto;max-width:min(100%,230px);min-height:var(--tap);padding:6px 8px;font-size:14px}
 .ac-chapbar{display:flex;gap:4px;padding:0 12px 12px;background:var(--ac-sunk)}
 .ac-chap{flex:1 1 0;display:flex;align-items:center;min-height:var(--tap);padding:0;border:0;background:none;cursor:pointer}
-.ac-chap > span{display:block;width:100%;height:8px;border-radius:999px;background:rgba(223,233,228,.2);overflow:hidden}
+.ac-chap > span{display:block;width:100%;height:8px;border-radius:999px;background:rgba(207,220,213,.2);overflow:hidden}
 .ac-chap > span > span{display:block;height:100%;background:var(--ac-accent);transition:width .3s ease}
 .ac-chap.is-now > span{outline:2px solid var(--ac-focus);outline-offset:2px}
 .ac-video{display:block;width:100%;aspect-ratio:16/9;background:#000}
 .ac-player:fullscreen{display:flex;flex-direction:column;justify-content:center;border:0;border-radius:0;background:#000}
 .ac-player:fullscreen .ac-stage{flex:1;aspect-ratio:auto}
+.ac-resume{margin:0;padding:6px 14px;background:var(--ac-sunk);color:var(--ac-text-2);font-size:13px}
+.ac-resume b{color:var(--ac-accent-text)}
+
+/* the lesson drawer: chapters, bookmarks and the other lessons */
+.ac-drawer{border-top:1px solid var(--ac-div);background:var(--ac-sunk)}
+.ac-drawer > summary{display:flex;align-items:center;gap:10px;min-height:var(--tap);padding:6px 14px;color:var(--ac-text);font-weight:800;font-size:15px;cursor:pointer;list-style:none}
+.ac-drawer > summary::-webkit-details-marker{display:none}
+.ac-drawer > summary::after{content:"";margin-left:auto;width:9px;height:9px;border:solid var(--ac-text-2);border-width:0 2.5px 2.5px 0;transform:rotate(45deg);transition:transform .2s}
+.ac-drawer[open] > summary::after{transform:rotate(-135deg)}
+.ac-drawer-body{display:grid;gap:16px;padding:4px 14px 16px}
+@container academy (min-width:760px){.ac-drawer-body{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.ac-drawer h3{margin:0 0 6px;font-size:14px;letter-spacing:.04em;text-transform:uppercase;color:var(--ac-accent-text)}
+.ac-dlist{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.ac-dlist a,.ac-dlist button{display:flex;align-items:center;gap:8px;width:100%;min-height:var(--tap);padding:6px 10px;border:1px solid transparent;border-radius:10px;background:none;color:var(--ac-text) !important;font:inherit;font-size:14.5px;text-align:left;text-decoration:none;cursor:pointer}
+.ac-dlist a:hover,.ac-dlist button:hover{background:rgba(82,183,136,.14);border-color:var(--ac-border)}
+.ac-dlist .is-now{border-color:var(--ac-accent);background:rgba(82,183,136,.12)}
+.ac-dlist small{margin-left:auto;color:var(--ac-muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.ac-bm{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px;align-items:center}
+.ac-bm .ac-x{width:var(--tap);padding:0;justify-content:center}
+
 .ac-subtabs{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 12px}
-.ac-subtab{min-height:var(--tap);padding:8px 14px;border:2px solid var(--ac-line);border-radius:10px;background:transparent;color:var(--ac-text);font:inherit;font-weight:700;font-size:14.5px;cursor:pointer;transition:background .15s,color .15s}
-.ac-subtab:hover{background:var(--ac-surface-2)}
-.ac-subtab[aria-selected="true"]{background:var(--ac-accent);color:var(--ac-ink)}
-.ac-pane{padding:18px;border:1.5px solid var(--ac-line);border-radius:16px;background:var(--ac-surface)}
-.ac-panel{padding:16px;border:1.5px solid var(--ac-line);border-radius:16px;background:var(--ac-surface)}
+.ac-subtab{min-height:var(--tap);padding:8px 16px;border:2px solid var(--ac-line);border-radius:12px;background:transparent;color:var(--ac-text);font:inherit;font-weight:700;font-size:14.5px;cursor:pointer;transition:background .15s,color .15s,border-color .15s}
+.ac-subtab:hover{background:rgba(82,183,136,.16);border-color:var(--ac-accent)}
+.ac-subtab[aria-selected="true"]{background:var(--ac-accent);border-color:var(--ac-accent);color:var(--ac-ink)}
+.ac-pane{padding:18px;border:1px solid var(--ac-border);border-radius:20px;background:linear-gradient(150deg,rgba(28,46,41,.9),rgba(20,33,29,.82))}
+.ac-panel{padding:16px;border:1px solid var(--ac-border);border-radius:18px;background:linear-gradient(150deg,rgba(28,46,41,.9),rgba(20,33,29,.82))}
 .ac-panel h2{margin:0 0 6px;font-size:18px}
 
 /* transcript */
 .ac-script{position:relative;max-height:min(560px,70vh);overflow:auto;padding:4px 6px 4px 2px;scroll-behavior:smooth}
 .ac-script section{margin:0 0 14px}
 .ac-script h3{margin:10px 0 6px;font-size:16px}
-.ac-script h3 button{padding:2px 4px;border:0;border-radius:6px;background:none;color:var(--ac-text);font:inherit;font-weight:800;text-align:left;cursor:pointer}
-.ac-script h3 button:hover{background:var(--ac-surface-2)}
-.ac-script p{margin:0;color:var(--ac-text-2);font-size:15.5px;line-height:1.65}
+.ac-script h3 button{min-height:var(--tap);padding:2px 6px;border:0;border-radius:8px;background:none;color:var(--ac-text);font:inherit;font-weight:800;text-align:left;cursor:pointer}
+.ac-script h3 button:hover{background:rgba(82,183,136,.14)}
+.ac-script p{margin:0;color:var(--ac-text-2);font-size:15.5px;line-height:1.7}
 .ac-line{padding:1px 2px;border-radius:4px;cursor:pointer;transition:background .15s,color .15s}
-.ac-line:hover{background:rgba(181,164,139,.2)}
+.ac-line:hover{background:rgba(82,183,136,.2)}
 .ac-line.is-played{color:var(--ac-text)}
 .ac-line.is-now{background:var(--ac-accent);color:var(--ac-ink)}
 .ac-script-tools{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between;margin:0 0 10px}
 .ac-check{display:flex;align-items:center;gap:8px;min-height:var(--tap);font-size:14.5px;cursor:pointer}
-.ac-check input{width:20px;height:20px;margin:0;accent-color:var(--ac-accent);flex:none}
+.ac-check input{width:22px;height:22px;margin:0;accent-color:var(--ac-accent);flex:none}
 .ac-readdone{margin:14px 0 0;padding-top:12px;border-top:1px solid var(--ac-div)}
 
-/* guide preview */
+/* the companion guide, with key-takeaway callouts, and the questions people ask */
 .ac-guide h3{margin:16px 0 6px;font-size:16px}
-.ac-guide ul,.ac-guide ol{margin:0;padding-left:22px;color:var(--ac-text-2);line-height:1.55}
+.ac-guide ul,.ac-guide ol{margin:0;padding-left:22px;color:var(--ac-text-2);line-height:1.6}
 .ac-guide li{margin:3px 0}
 .ac-guide .ac-src{color:var(--ac-muted);font-size:13.5px}
 .ac-guide-top{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between}
 .ac-guide-top p{margin:0;color:var(--ac-text-2)}
+.ac-callout{margin:12px 0;padding:12px 16px;border:1px solid rgba(82,183,136,.45);border-left:5px solid var(--ac-accent);border-radius:14px;background:linear-gradient(135deg,var(--ac-glow),rgba(82,183,136,.03))}
+.ac-callout b{display:block;margin:0 0 4px;color:var(--ac-accent-text);font-size:12.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+.ac-callout ul{margin:0;padding-left:20px;color:var(--ac-text);line-height:1.55}
+.ac-mod.is-family .ac-callout{border-color:rgba(233,184,114,.5);border-left-color:var(--ac-family);background:linear-gradient(135deg,rgba(233,184,114,.12),rgba(233,184,114,.02))}
+.ac-mod.is-family .ac-callout b{color:var(--ac-family)}
+.ac-faq{margin:0 0 10px;border:1px solid var(--ac-border);border-radius:14px;background:rgba(10,17,15,.55)}
+.ac-faq > summary{display:flex;align-items:center;gap:12px;min-height:var(--tap);padding:8px 16px;font-weight:800;font-size:15.5px;line-height:1.35;cursor:pointer;list-style:none}
+.ac-faq > summary::-webkit-details-marker{display:none}
+.ac-faq > summary::after{content:"";margin-left:auto;flex:none;width:9px;height:9px;border:solid var(--ac-accent-text);border-width:0 2.5px 2.5px 0;transform:rotate(45deg);transition:transform .2s}
+.ac-faq[open] > summary::after{transform:rotate(-135deg)}
+.ac-faq[open]{border-color:var(--ac-accent)}
+.ac-faq p{margin:0;padding:0 16px 14px;color:var(--ac-text-2);font-size:15px;line-height:1.65}
 
 /* knowledge check */
-.ac-q{margin:0 0 14px;padding:12px 14px;border:1.5px solid var(--ac-div);border-radius:12px}
+.ac-q{margin:0 0 14px;padding:12px 14px;border:1px solid var(--ac-border);border-radius:14px}
 .ac-q legend{padding:0 4px;font-weight:800;font-size:15.5px;line-height:1.4}
 .ac-opt{display:flex;flex-wrap:wrap;align-items:flex-start;gap:4px 10px;margin:4px 0;padding:8px 10px;border-radius:10px;cursor:pointer;transition:background .15s}
 .ac-opt > span:not(.ac-mark){flex:1 1 10em}
-.ac-opt:hover{background:var(--ac-surface-2)}
-.ac-opt input{flex:none;width:20px;height:20px;margin:2px 0 0;accent-color:var(--ac-accent)}
+.ac-opt:hover{background:rgba(82,183,136,.14)}
+.ac-opt input{flex:none;width:22px;height:22px;margin:2px 0 0;accent-color:var(--ac-accent)}
 .ac-opt.is-right{background:rgba(122,211,164,.14);outline:2px solid var(--ac-good)}
 .ac-opt.is-wrong{background:rgba(240,180,140,.12);outline:2px solid var(--ac-warn)}
 .ac-mark{flex:none;margin-left:auto;display:inline-flex;align-items:center;gap:4px;padding-left:8px;font-size:13px;font-weight:800;white-space:nowrap}
 .ac-opt.is-right .ac-mark{color:var(--ac-good)} .ac-opt.is-wrong .ac-mark{color:var(--ac-warn)}
 .ac-why{margin:8px 0 0;color:var(--ac-text-2);font-size:14px;line-height:1.5}
-.ac-result{margin:0 0 14px;padding:12px 14px;border:2px solid var(--ac-line);border-radius:12px}
+.ac-result{margin:0 0 14px;padding:12px 14px;border:2px solid var(--ac-line);border-radius:14px}
 .ac-result.is-pass{border-color:var(--ac-good)}
 .ac-result b{display:block;font-size:17px}
 
@@ -2320,14 +2399,14 @@ textarea:focus{border-color:var(--accent)}
 .ac-steps .ac-bar{margin-top:6px}
 .ac-needs{margin:8px 0 0;padding-left:18px;color:var(--ac-text-2);font-size:13.5px;line-height:1.5}
 .ac-needs.is-loud{color:var(--ac-warn)}
-.ac-done{display:flex;gap:10px;align-items:flex-start;margin:4px 0 0;padding:10px 12px;border:2px solid var(--ac-good);border-radius:12px}
+.ac-done{display:flex;gap:10px;align-items:flex-start;margin:4px 0 0;padding:10px 12px;border:2px solid var(--ac-good);border-radius:14px}
 .ac-done svg{flex:none;color:var(--ac-good);margin-top:1px}
 .ac-done p{margin:0}
 .ac-done.is-new{animation:ac-pop .5s ease-out}
 @keyframes ac-pop{0%{transform:scale(.96);opacity:0}60%{transform:scale(1.02);opacity:1}100%{transform:none}}
 .ac-next{display:grid;gap:10px}
-.ac-next a{display:grid;grid-template-columns:96px minmax(0,1fr);gap:10px;align-items:center;padding:6px;border-radius:12px;color:var(--ac-text) !important;text-decoration:none}
-.ac-next a:hover{background:var(--ac-surface-2)}
+.ac-next a{display:grid;grid-template-columns:96px minmax(0,1fr);gap:10px;align-items:center;min-height:var(--tap);padding:6px;border-radius:12px;color:var(--ac-text) !important;text-decoration:none}
+.ac-next a:hover{background:rgba(82,183,136,.14)}
 .ac-next .ac-mini{aspect-ratio:16/9;overflow:hidden;border-radius:8px;background:var(--ac-stage)}
 .ac-next .ac-mini svg{display:block;width:100%;height:100%}
 .ac-next b{font-size:14.5px;line-height:1.3}
@@ -2335,10 +2414,10 @@ textarea:focus{border-color:var(--accent)}
 
 /* records */
 .ac-kpis{list-style:none;margin:0 0 16px;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr));gap:12px}
-.ac-kpi{padding:14px 16px;border:1.5px solid var(--ac-line);border-radius:14px;background:var(--ac-surface)}
+.ac-kpi{padding:14px 16px;border:1px solid var(--ac-border);border-radius:16px;background:linear-gradient(150deg,rgba(28,46,41,.9),rgba(20,33,29,.82))}
 .ac-kpi-v{display:block;font-size:30px;font-weight:800;line-height:1.1;font-variant-numeric:proportional-nums}
 .ac-kpi-l{display:block;margin-top:2px;color:var(--ac-text-2);font-size:14px;font-weight:700}
-.ac-table-wrap{position:relative;overflow-x:auto;border:1.5px solid var(--ac-line);border-radius:14px;background:var(--ac-surface)}
+.ac-table-wrap{position:relative;overflow-x:auto;border:1px solid var(--ac-border);border-radius:16px;background:var(--ac-panel)}
 .ac-table{width:100%;border-collapse:collapse;font-size:14px}
 .ac-table th,.ac-table td{padding:10px 12px;border-bottom:1px solid var(--ac-div);text-align:left;vertical-align:top}
 .ac-table thead th{color:var(--ac-text-2);font-size:12.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap}
@@ -2350,14 +2429,48 @@ textarea:focus{border-color:var(--accent)}
 .ac-certs li{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center;justify-content:space-between}
 .ac-rec-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;margin-top:16px;align-items:start}
 @container academy (min-width:900px){.ac-rec-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-.ac-note{margin:16px 0 0;padding:12px 14px;border:1px dashed var(--ac-line);border-radius:12px;color:var(--ac-text-2);font-size:14px;line-height:1.55}
-.ac-found{margin:10px 0 0;padding:10px 12px;border-radius:10px;border:2px solid var(--ac-line)}
+.ac-note{margin:16px 0 0;padding:12px 14px;border:1px dashed var(--ac-line);border-radius:14px;color:var(--ac-text-2);font-size:14px;line-height:1.55}
+.ac-found{margin:10px 0 0;padding:10px 12px;border-radius:12px;border:2px solid var(--ac-line)}
 .ac-found.is-ok{border-color:var(--ac-good)}
 .ac-found.is-bad{border-color:var(--ac-warn)}
 
+/* motion: slow drift behind the lesson, a pulse and a glow in the pictures. Transform and opacity only. */
+@media (prefers-reduced-motion:no-preference){
+  .ac-kb{animation:ac-kb 36s ease-in-out infinite alternate;animation-play-state:paused}
+  .ac-player.is-playing .ac-kb{animation-play-state:running}
+  @keyframes ac-kb{from{transform:scale(1) translate3d(-1.2%,.6%,0)}to{transform:scale(1.07) translate3d(1.4%,-.8%,0)}}
+  .ac svg .ac-pulse{transform-box:fill-box;transform-origin:center;animation:ac-pulse 2.8s ease-in-out infinite;animation-play-state:paused}
+  .ac svg .ac-glow{animation:ac-glow 5s ease-in-out infinite alternate;animation-play-state:paused}
+  .ac svg .ac-twinkle{animation:ac-twinkle 3.4s ease-in-out infinite;animation-play-state:paused}
+  .ac svg .ac-steam{transform-box:fill-box;transform-origin:50% 100%;animation:ac-steam 4s ease-in-out infinite alternate;animation-play-state:paused}
+  .ac-player.is-playing svg .ac-pulse,.ac-player.is-playing svg .ac-glow,.ac-player.is-playing svg .ac-twinkle,.ac-player.is-playing svg .ac-steam,
+  .ac-card:hover svg .ac-pulse,.ac-card:hover svg .ac-glow,.ac-card:hover svg .ac-twinkle,.ac-card:hover svg .ac-steam{animation-play-state:running}
+  @keyframes ac-pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.14)}}
+  @keyframes ac-glow{from{opacity:.55}to{opacity:1}}
+  @keyframes ac-twinkle{0%,100%{opacity:.35}50%{opacity:.95}}
+  @keyframes ac-steam{from{transform:translateY(0) scaleY(1);opacity:.5}to{transform:translateY(-6px) scaleY(1.12);opacity:.85}}
+}
 @media (prefers-reduced-motion:reduce){
   .ac *,.ac *::before,.ac *::after,.ac{animation:none !important;transition:none !important;scroll-behavior:auto !important}
+  .ac-stage-art{transform:none}
 }
+
+/* Printed Academy sheets (key takeaways, training records). They print through #printRoot, so the Packet Builder's
+   Letter sheet, 0.75 in binding gutter and pure black on white apply; these rules only lay out their contents. */
+.ac-sheet .sh-body{font-size:12.5pt;line-height:1.35;overflow:hidden}
+.ac-sheet .sh-head h1{font-size:22pt}
+.ac-sheet h2{margin:.16in 0 .05in;font-size:14.5pt;line-height:1.2;color:#000;break-after:avoid}
+.ac-sheet p{margin:0 0 .08in}
+.ac-sheet .ac-sub{font-size:13pt;font-weight:700}
+.ac-sheet .ac-slide-line{font-style:italic}
+.ac-sheet ul{margin:0 0 .06in;padding-left:.26in}
+.ac-sheet li{margin:0 0 .04in}
+.ac-sheet .ac-srcs{font-size:11pt}
+.ac-sheet .ac-rule{height:.4in;border-bottom:3px solid #000}
+.ac-sheet .ac-ptable{width:100%;border-collapse:collapse;font-size:12pt}
+.ac-sheet .ac-ptable th,.ac-sheet .ac-ptable td{padding:.06in .08in;border-bottom:2px solid #000;text-align:left;vertical-align:top}
+.ac-sheet .ac-ptable thead th{border-bottom:3px solid #000;font-weight:800}
+.ac-sheet .ac-ptable .n{text-align:right;white-space:nowrap}
 </style>
 <style id="clinical-floor">
 /* ---- Clinical floors for the printed sheets ----
@@ -9647,48 +9760,66 @@ const FacilityUI = (function(){
 <script src="assets/services/academy.js"></script>
 <script id="academy-ui">
 /* =====================================================================
-   CAREGIVER & PROFESSIONAL ACADEMY  (#/academy)
+   COGNICOPIA STAFF & CAREGIVER ACADEMY  (#/academy)
    Masterclasses for care staff and short guides for family caregivers,
    with a training record for each learner:
-     #/academy              the masterclass grid (search, topic, audience)
+     #/academy              the dashboard and the masterclass grid
+                            (search, category pills, audience)
      #/academy/family       the family track: guides and printable toolkits
      #/academy/records      training records, certificates, checking an ID
      #/academy/<module id>  one module: the lesson player, its transcript,
-                            companion guide and knowledge check, and the
-                            progress tracker with Mark as complete
+                            companion guide, questions people ask and
+                            knowledge check, and the progress tracker with
+                            Mark as complete
    A lesson plays as a narrated slide lesson with captions. Its script is
    read aloud by this computer's own voices (never a voice service online),
    or shown line by line at a steady pace when there is no voice. A
-   recorded video, added to the catalog as a local file, plays instead.
+   recorded narration (an audio file on the site) or a recorded video
+   plays instead when the module names one. The caption and the transcript
+   follow the voice word by word. Where the learner stopped, their
+   bookmarks and their player choices are kept with the rest.
    CogniAcademy (src/services/academy.ts) holds the content and the rules;
    this screen draws them and saves each learner's progress, sealed in the
-   encrypted store under "cognicopia_academy". Guides, toolkits and
-   certificates are made as PDFs on this computer. Helpers from the Packet
-   Builder's main script (esc, toast, CogniLibrary...) are used only once
-   it has run.
+   encrypted store under "cognicopia_academy" (staff names live there, so
+   it is never plain localStorage). Guides, toolkits and certificates are
+   made as PDFs on this computer; the key takeaways and the training
+   record also print on Letter sheets through the Packet Builder's print
+   root. Helpers from the Packet Builder's main script (esc, toast,
+   CogniLibrary...) are used only once it has run.
    ===================================================================== */
 const AcademyUI = (function(){
   "use strict";
   const A = window.CogniAcademy;
-  const S = { tab:"pro", q:"", topic:"", aud:"", pane:"transcript", back:"pro", lastCard:"", edit:"", pendingCert:"", year:0, quiz:null,
-    rate:1, cc:true, voice:true, follow:true, found:null, justDone:"" };
+  const S = { tab:"pro", q:"", cat:"", aud:"", pane:"transcript", back:"pro", lastCard:"", edit:"", pendingCert:"", year:0, quiz:null,
+    rate:1, cc:true, voice:true, follow:true, volume:1, muted:false, voiceName:"", found:null, justDone:"" };
   let acad = null, root = null, P = null, artN = 0;
+  const BASE_RATE = 0.95;      // a little slower than a voice's own default: unhurried, easier to follow
 
   /* ---------- icons and pictures ---------- */
   const ic = (body, w) => `<svg width="${w || 20}" height="${w || 20}" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${body}</svg>`;
+  const ARC = '<path d="M12 5V2L7 6l5 4V7a6 6 0 1 1-6 6H4a8 8 0 1 0 8-8z" fill="currentColor"/>';
+  const TEN = '<text x="12" y="16.1" text-anchor="middle" font-size="7.2" font-weight="800" font-family="inherit" fill="currentColor">10</text>';
   const I = {
     play: ic('<path d="M8 5v14l11-7z" fill="currentColor"/>'),
     pause: ic('<path d="M7 5h4v14H7zM13 5h4v14h-4z" fill="currentColor"/>'),
     replay: ic('<path d="M12 5V2L7 6l5 4V7a6 6 0 1 1-6 6H4a8 8 0 1 0 8-8z" fill="currentColor"/>'),
-    back: ic('<path d="M11.5 12 19 6.5v11zM4 12l7.5-5.5v11z" fill="currentColor"/>'),
+    back: ic(ARC + TEN, 26),
+    fwd: ic('<g transform="translate(24 0) scale(-1 1)">' + ARC + '</g>' + TEN, 26),
     prev: ic('<path d="M6 5h2v14H6zM20 5v14L9 12z" fill="currentColor"/>'),
     next: ic('<path d="M16 5h2v14h-2zM4 5v14l11-7z" fill="currentColor"/>'),
     cc: ic('<rect x="3" y="5" width="18" height="14" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M10.5 10.2a2.2 2.2 0 1 0 0 3.6M17 10.2a2.2 2.2 0 1 0 0 3.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>'),
-    voice: ic('<path d="M4 9v6h4l5 4V5L8 9z" fill="currentColor"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>'),
+    voice: ic('<rect x="9" y="3" width="6" height="11" rx="3" fill="currentColor"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M8.5 21h7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>'),
+    vol: ic('<path d="M4 9v6h4l5 4V5L8 9z" fill="currentColor"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>'),
+    mute: ic('<path d="M4 9v6h4l5 4V5L8 9z" fill="currentColor"/><path d="M16.5 9.5l5 5M21.5 9.5l-5 5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>'),
+    mark: ic('<path d="M6 3h12v18l-6-4.5L6 21z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/>'),
+    list: ic('<path d="M9 6h11M9 12h11M9 18h11" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><circle cx="4.5" cy="6" r="1.6" fill="currentColor"/><circle cx="4.5" cy="12" r="1.6" fill="currentColor"/><circle cx="4.5" cy="18" r="1.6" fill="currentColor"/>'),
+    print: ic('<path d="M7 9V3h10v6M7 17H4v-7h16v7h-3M7 14h10v7H7z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/>', 18),
+    x: ic('<path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/>', 18),
     full: ic('<path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>'),
     check: ic('<path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>', 16),
     download: ic('<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>', 18),
     arrow: ic('<path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>', 18),
+    go: ic('<path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>', 18),
     award: ic('<circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 13.5 7 22l5-3 5 3-1.5-8.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>', 18),
     kit: {
       visit: ic('<path d="M6 21V4h12v17M3 21h18M14.5 12.5h.01" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M12 9.5c-1.3-1-2-1.7-2-2.4a1 1 0 0 1 2-.3 1 1 0 0 1 2 .3c0 .7-.7 1.4-2 2.4z" fill="currentColor"/>', 24),
@@ -9697,6 +9828,35 @@ const AcademyUI = (function(){
       checkin: ic('<path d="M12 20s-7.5-4.6-7.5-10A4.3 4.3 0 0 1 12 7.3 4.3 4.3 0 0 1 19.5 10c0 5.4-7.5 10-7.5 10z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9 12l2 2 4-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>', 24)
     }
   };
+  /* A small picture for each chapter, shown beside its number on the slide. */
+  const CI = {
+    heart: ic('<path d="M12 20s-7.5-4.6-7.5-10A4.3 4.3 0 0 1 12 7.3 4.3 4.3 0 0 1 19.5 10c0 5.4-7.5 10-7.5 10z" fill="currentColor"/>', 24),
+    people: ic('<circle cx="8" cy="8" r="3" fill="currentColor"/><circle cx="16.5" cy="9" r="2.5" fill="currentColor"/><path d="M2.5 20c.4-4 2.7-6 5.5-6s5.1 2 5.5 6zM14 20c.2-2.8 1.5-4.4 3.5-4.4 2 0 3.3 1.6 3.5 4.4z" fill="currentColor"/>', 24),
+    clock: ic('<circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M12 7v5.2l3.4 2" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>', 24),
+    speech: ic('<path d="M4 5h16v11H11l-5 4v-4H4z" fill="currentColor"/>', 24),
+    shield: ic('<path d="M12 3l8 3v6c0 4.5-3.2 7.6-8 9-4.8-1.4-8-4.5-8-9V6z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><path d="M8.5 12l2.5 2.5 4.5-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>', 24),
+    note: ic('<path d="M9 18V6l10-2v12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><circle cx="7" cy="18" r="2.6" fill="currentColor"/><circle cx="17" cy="16" r="2.6" fill="currentColor"/>', 24),
+    sun: ic('<circle cx="12" cy="12" r="4.2" fill="currentColor"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>', 24),
+    chair: ic('<path d="M7 3v10h9l3 6M7 13l-2 6M10 13v6M16 13v3" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="20" r="1.4" fill="currentColor"/>', 24),
+    stop: ic('<path d="M8 3h8l5 5v8l-5 5H8l-5-5V8z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><path d="M12 8v5M12 16.2v.1" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>', 24),
+    ear: ic('<path d="M7 9a5 5 0 0 1 10 0c0 3-2.2 3.8-2.6 6a2.6 2.6 0 0 1-5 .6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M10.5 9a1.6 1.6 0 0 1 3.2 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>', 24),
+    list: ic('<path d="M9 6h11M9 12h11M9 18h11" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><circle cx="4.5" cy="6" r="1.6" fill="currentColor"/><circle cx="4.5" cy="12" r="1.6" fill="currentColor"/><circle cx="4.5" cy="18" r="1.6" fill="currentColor"/>', 24),
+    leaf: ic('<path d="M5 19c0-8 5-14 15-14 0 10-6 15-14 15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><path d="M5 19c3-4 6-7 10-9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>', 24),
+    home: ic('<path d="M4 11l8-7 8 7v9H4z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><path d="M10 20v-6h4v6" fill="none" stroke="currentColor" stroke-width="2.2"/>', 24)
+  };
+  const CH_ICON = {
+    "reminiscence-circles": ["heart", "people", "clock", "speech", "shield", "list"],
+    "sundowning": ["sun", "heart", "clock", "speech", "shield", "leaf"],
+    "wheelchair-movement": ["chair", "list", "people", "stop", "heart", "list"],
+    "person-centered-communication": ["ear", "heart", "speech", "ear", "shield", "people"],
+    "matching-activities": ["list", "ear", "list", "clock", "shield", "clock"],
+    "music-that-reaches": ["note", "list", "people", "heart", "leaf", "list"],
+    "family-your-name": ["heart", "speech", "leaf"], "family-late-day": ["sun", "clock", "speech"], "family-their-world": ["speech", "heart", "shield"],
+    "family-daily-rhythm": ["clock", "home", "leaf"], "family-caring-for-you": ["heart", "people", "leaf"]
+  };
+  const chapterIcon = (m, ci) => CI[(CH_ICON[m.id] || [])[ci]] || CI.heart;
+  /* Slow drift for the picture behind each chapter: [x %, y %, zoom]. */
+  const PAN = [[-1.6, .6, 1.06], [1.4, -1, 1.1], [-.8, -1.4, 1.05], [1.6, .9, 1.12], [-1.3, 1.1, 1.07], [.7, -.7, 1.04]];
   /* Thumbnails: a small scene for each lesson, drawn in the Academy's palette (320 x 180). */
   function art(key){
     const k = "ac" + (++artN);
@@ -9704,9 +9864,9 @@ const AcademyUI = (function(){
       `<linearGradient id="${k}s" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5c4a73"/><stop offset=".55" stop-color="#d9826a"/><stop offset="1" stop-color="#f3c47e"/></linearGradient><radialGradient id="${k}l"><stop offset="0" stop-color="#ffe2a8" stop-opacity=".55"/><stop offset="1" stop-color="#ffe2a8" stop-opacity="0"/></radialGradient></defs>` +
       `<rect width="320" height="180" fill="url(#${k}g)"/><rect width="320" height="180" fill="url(#${k}r)"/>`;
     const person = (x, y, s, skin, shirt) => `<path d="M${x - 18 * s} ${y + 30 * s}q${18 * s} ${-26 * s} ${36 * s} 0z" fill="${shirt}"/><circle cx="${x}" cy="${y}" r="${10 * s}" fill="${skin}"/>`;
-    const heart = (x, y, s, fill) => `<path d="M${x} ${y + 11 * s}c${-9 * s} ${-6 * s} ${-13 * s} ${-10 * s} ${-13 * s} ${-15 * s}a${6 * s} ${6 * s} 0 0 1 ${13 * s} ${-2 * s}a${6 * s} ${6 * s} 0 0 1 ${13 * s} ${2 * s}c0 ${5 * s} ${-4 * s} ${9 * s} ${-13 * s} ${15 * s}z" fill="${fill}"/>`;
+    const heart = (x, y, s, fill) => `<path d="M${x} ${y + 11 * s}c${-9 * s} ${-6 * s} ${-13 * s} ${-10 * s} ${-13 * s} ${-15 * s}a${6 * s} ${6 * s} 0 0 1 ${13 * s} ${-2 * s}a${6 * s} ${6 * s} 0 0 1 ${13 * s} ${2 * s}c0 ${5 * s} ${-4 * s} ${9 * s} ${-13 * s} ${15 * s}z" fill="${fill}" class="ac-pulse"/>`;
     const sunWindow = (x, y, w, h) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="6" fill="#b5a48b"/><rect x="${x + 7}" y="${y + 7}" width="${w - 14}" height="${h - 14}" fill="url(#${k}s)"/>` +
-      `<circle cx="${x + w * .48}" cy="${y + h - 16}" r="${Math.min(w, h) * .18}" fill="#ffe1a1"/><path d="M${x + 7} ${y + h - 20}q${w * .2} ${-10} ${w * .42} ${-3}t${w * .5} ${-4}v${27}h${-(w - 14)}z" fill="#2f5a45"/>` +
+      `<circle class="ac-glow" cx="${x + w * .48}" cy="${y + h - 16}" r="${Math.min(w, h) * .18}" fill="#ffe1a1"/><path d="M${x + 7} ${y + h - 20}q${w * .2} ${-10} ${w * .42} ${-3}t${w * .5} ${-4}v${27}h${-(w - 14)}z" fill="#2f5a45"/>` +
       `<rect x="${x + w / 2 - 3}" y="${y + 7}" width="6" height="${h - 14}" fill="#b5a48b"/><rect x="${x + 7}" y="${y + h * .45}" width="${w - 14}" height="6" fill="#b5a48b"/>`;
     const SC = {
       circle: () => bg("#2f5a45", "#132219") + `<ellipse cx="160" cy="136" rx="120" ry="26" fill="#0d1811" opacity=".5"/>` +
@@ -9716,7 +9876,7 @@ const AcademyUI = (function(){
         person(76, 128, 1.2, "#d9a88a", "#d9a3a0") + person(244, 128, 1.2, "#e8c6a3", "#b5a48b") +
         `<g transform="translate(238 18)"><rect width="46" height="32" rx="10" fill="#e6f4f1"/><path d="M11 32l-4 10 13-10z" fill="#e6f4f1"/>${heart(23, 10, .75, "#d98c5f")}</g>`,
       sundown: () => bg("#1f3a2c", "#12211a") + sunWindow(30, 22, 156, 118) + `<rect x="22" y="138" width="172" height="9" rx="3" fill="#9c8a6e"/>` +
-        `<circle cx="252" cy="80" r="70" fill="url(#${k}l)"/><path d="M229 56h46l13 32h-72z" fill="#e9b872"/><rect x="249" y="88" width="6" height="46" fill="#b5a48b"/><rect x="232" y="134" width="40" height="8" rx="4" fill="#9c8a6e"/><rect x="212" y="142" width="80" height="8" rx="3" fill="#6b5a3e"/><rect x="218" y="150" width="6" height="30" fill="#6b5a3e"/><rect x="280" y="150" width="6" height="30" fill="#6b5a3e"/>`,
+        `<circle class="ac-glow" cx="252" cy="80" r="70" fill="url(#${k}l)"/><path d="M229 56h46l13 32h-72z" fill="#e9b872"/><rect x="249" y="88" width="6" height="46" fill="#b5a48b"/><rect x="232" y="134" width="40" height="8" rx="4" fill="#9c8a6e"/><rect x="212" y="142" width="80" height="8" rx="3" fill="#6b5a3e"/><rect x="218" y="150" width="6" height="30" fill="#6b5a3e"/><rect x="280" y="150" width="6" height="30" fill="#6b5a3e"/>`,
       chair: () => bg("#1f4a4f", "#12211a") + `<rect y="160" width="320" height="20" fill="#0d1811" opacity=".45"/>` +
         `<path d="M98 42a44 44 0 0 1 22-24M206 38a44 44 0 0 0-22-22" stroke="#b5a48b" stroke-width="3" fill="none" stroke-linecap="round" stroke-dasharray="2 7"/>` +
         `<circle cx="146" cy="128" r="32" stroke="#e6f4f1" stroke-width="5" fill="none"/><path d="M146 96v64M114 128h64M123 105l46 46M169 105l-46 46" stroke="#e6f4f1" stroke-width="1.5" opacity=".6"/><circle cx="146" cy="128" r="4" fill="#e6f4f1"/>` +
@@ -9740,10 +9900,10 @@ const AcademyUI = (function(){
         `<circle cx="266" cy="84" r="6.5" fill="#e6f4f1"/><rect x="269.5" y="60" width="3" height="24" fill="#e6f4f1"/>`,
       hands: () => bg("#5b4636", "#1c2a21") + `<path d="M98 160q38-56 76 0z" fill="#9fd3c7"/><circle cx="136" cy="84" r="23" fill="#e8c6a3"/><path d="M113 80a23 23 0 0 1 46 0c-9-11-37-11-46 0z" fill="#e6e1d8"/>` +
         `<path d="M150 162q37-52 74 0z" fill="#e9b872"/><circle cx="187" cy="90" r="21" fill="#c98b62"/><path d="M166 86a21 21 0 0 1 42 0c-8-12-34-12-42 0z" fill="#3b2a20"/>` + heart(161, 26, 1.3, "#d98c5f") +
-        `<circle cx="60" cy="40" r="3" fill="#fff3d6" opacity=".6"/><circle cx="262" cy="52" r="2.5" fill="#fff3d6" opacity=".6"/><circle cx="240" cy="30" r="2" fill="#fff3d6" opacity=".5"/>`,
+        `<circle class="ac-twinkle" cx="60" cy="40" r="3" fill="#fff3d6" opacity=".6"/><circle class="ac-twinkle" cx="262" cy="52" r="2.5" fill="#fff3d6" opacity=".6"/><circle class="ac-twinkle" cx="240" cy="30" r="2" fill="#fff3d6" opacity=".5"/>`,
       tea: () => bg("#3f3a55", "#18261d") + sunWindow(196, 20, 100, 76) +
         `<ellipse cx="118" cy="148" rx="62" ry="11" fill="#d8c7a8"/><path d="M76 98h84v8c0 30-18 42-42 42s-42-12-42-42z" fill="#f3ead9"/><path d="M160 108c20 0 20 28-2 28" stroke="#f3ead9" stroke-width="7" fill="none"/>` +
-        `<ellipse cx="118" cy="99" rx="42" ry="6" fill="#b07a4f"/><path d="M100 86c-8-10 8-16 0-26M118 84c-8-10 8-16 0-26M136 86c-8-10 8-16 0-26" stroke="#e6f4f1" stroke-width="3" fill="none" stroke-linecap="round" opacity=".7"/>`,
+        `<ellipse cx="118" cy="99" rx="42" ry="6" fill="#b07a4f"/><path class="ac-steam" d="M100 86c-8-10 8-16 0-26M118 84c-8-10 8-16 0-26M136 86c-8-10 8-16 0-26" stroke="#e6f4f1" stroke-width="3" fill="none" stroke-linecap="round" opacity=".7"/>`,
       bubbles: () => bg("#2f4f5a", "#132219") + `<rect x="44" y="34" width="112" height="72" rx="16" fill="#9fd3c7"/><path d="M70 106l-8 18 22-18z" fill="#9fd3c7"/>` +
         `<text x="100" y="84" font-family="inherit" font-size="40" font-weight="800" fill="#10251c" text-anchor="middle">?</text>` +
         `<rect x="164" y="66" width="112" height="72" rx="16" fill="#e9b872"/><path d="M250 138l8 18-22-18z" fill="#e9b872"/>` + heart(220, 86, 1.35, "#fbf6ec"),
@@ -9770,6 +9930,9 @@ const AcademyUI = (function(){
     try { CG_LS.setItem(A.STORE_KEY, JSON.stringify(acad)); return true; }
     catch (e){ toast("Your progress could not be saved: " + e.message); return false; }
   }
+  /* The player's choices (speed, captions, voice, volume) follow the learner from lesson to lesson. */
+  function loadPrefs(){ const p = acad.prefs; S.rate = p.rate; S.cc = p.cc; S.voice = p.voice; S.follow = p.follow; S.volume = p.volume; S.muted = p.muted; S.voiceName = p.voiceName; }
+  const savePrefs = patch => writeAcademy(A.setPrefs(acad, patch));
   const me = () => A.activeLearner(acad);
   const prog = mid => A.progressOf(acad, me().id, mid);
   const pct = x => Math.round(x * 100);
@@ -9789,28 +9952,34 @@ const AcademyUI = (function(){
     const c = A.coverage(m, p);
     return c > 0 || p.quizAttempts ? { text:"In progress · " + pct(c) + "%", share:c, done:false } : { text:"Not started", share:0, done:false };
   }
+  /* A line's words, each in its own span, so the one being read can be lit. */
+  function wordsHtml(text){
+    let last = 0, out = "";
+    A.wordSpans(text).forEach((w, i) => { out += esc(text.slice(last, w.start)) + `<span class="w" data-w="${i}">${esc(text.slice(w.start, w.end))}</span>`; last = w.end; });
+    return out + esc(text.slice(last));
+  }
 
   /* ---------- the screen ---------- */
   function render(view, arg){
     stopPlayer();
     if (!A){
-      view.innerHTML = `<p class="eyebrow">Academy</p><h1 class="view-title" tabindex="-1">Caregiver &amp; Professional Academy</h1>
+      view.innerHTML = `<p class="eyebrow">Academy</p><h1 class="view-title" tabindex="-1">Cognicopia Staff &amp; Caregiver Academy</h1>
         <p class="callout">The Academy could not load. Check that assets/services/academy.js is on this site, then reload.</p>`;
       return;
     }
-    acad = readAcademy();
+    acad = readAcademy(); loadPrefs();
     const m = arg ? A.moduleOf(arg) : null;
     if (m) return renderModule(view, m);
     S.tab = arg === "family" ? "family" : arg === "records" ? "records" : "pro";
     if (arg && S.tab === "pro") try { history.replaceState(null, "", "#/academy"); } catch (e){}     // a lesson that isn't in the catalog
     view.innerHTML = `<div class="ac ac-anim" id="acRoot">
         <header class="ac-head">
-          <div><p class="ac-eyebrow">Cognicopia Academy</p><h1 class="ac-title" tabindex="-1">Caregiver &amp; Professional Academy</h1>
+          <div><p class="ac-eyebrow">Cognicopia Academy</p><h1 class="ac-title" tabindex="-1">Cognicopia Staff &amp; Caregiver Academy</h1>
             <p class="ac-lede">Short masterclasses for care teams, gentle guides for families, and a training record with certificates for everyone who learns here. Each lesson has a transcript, a printable guide and, for staff, a knowledge check.</p></div>
           <div class="ac-learner" id="acLearner"></div>
         </header>
         <div class="ac-tabs" role="tablist" aria-label="Academy sections">
-          ${[["pro", "Professional masterclasses", A.MODULES.filter(x => x.track === "pro").length], ["family", "Family caregivers", A.MODULES.filter(x => x.track === "family").length], ["records", "Training records", ""]].map(([id, l, n]) =>
+          ${[["pro", "Staff masterclasses", A.MODULES.filter(x => x.track === "pro").length], ["family", "Family caregivers", A.MODULES.filter(x => x.track === "family").length], ["records", "Training records", ""]].map(([id, l, n]) =>
             `<button type="button" role="tab" class="ac-tab" id="acTab-${id}" data-tab="${id}" aria-controls="acPanel" aria-selected="${id === S.tab}" tabindex="${id === S.tab ? 0 : -1}">${l}${n !== "" ? `<span class="ac-n">${n}<span class="sr-only"> lessons</span></span>` : ""}</button>`).join("")}
         </div>
         <div id="acPanel" role="tabpanel" aria-labelledby="acTab-${S.tab}"></div>
@@ -9864,42 +10033,61 @@ const AcademyUI = (function(){
     </form>`;
   }
 
-  /* ---------- the masterclass grid ---------- */
+  /* ---------- the dashboard and the masterclass grid ---------- */
+  const PILLS = [["", "All Courses"], ["essentials", "Memory Care Essentials"], ["reminiscence", "Reminiscence"], ["activity", "Activity Guidance"], ["done", "Completed"]];
+  function ring(frac, label, text){
+    const r = 32, C = 2 * Math.PI * r, f = Math.max(0, Math.min(1, frac || 0));
+    return `<svg class="ac-ring" viewBox="0 0 80 80" role="img" aria-label="${esc(label)}"><circle class="ac-ring-track" cx="40" cy="40" r="${r}"/><circle class="ac-ring-fill" cx="40" cy="40" r="${r}" stroke-dasharray="${C.toFixed(2)}" stroke-dashoffset="${(C * (1 - f)).toFixed(2)}"/><text x="40" y="41">${esc(text)}</text></svg>`;
+  }
+  function dashHtml(){
+    const d = A.dashboard(acad, me().id), hoursShare = d.seriesMinutes ? Math.min(1, d.minutes / d.seriesMinutes) : 0;
+    return `<section class="ac-dash" id="acDash" aria-label="Your progress at a glance">
+        <div class="ac-tile">${ring(d.total ? d.completed / d.total : 0, `${d.completed} of ${d.total} masterclasses completed`, d.completed + "/" + d.total)}
+          <div><span class="ac-tile-v">${d.completed}</span><span class="ac-tile-l">Courses completed</span><span class="ac-tile-s">of ${d.total} masterclasses${d.guides ? ` · ${plural(d.guides, "family guide", "family guides")}` : ""}</span></div></div>
+        <div class="ac-tile">${ring(hoursShare, `${A.hoursText(d.minutes)} of about ${A.hoursText(d.seriesMinutes)} in the masterclass series`, pct(hoursShare) + "%")}
+          <div><span class="ac-tile-v">${esc(A.hoursText(d.minutes))}</span><span class="ac-tile-l">Hours learned</span><span class="ac-tile-s">of about ${esc(A.hoursText(d.seriesMinutes))} in the series</span></div></div>
+        <div class="ac-tile">${ring(d.total ? d.certificates / d.total : 0, `${d.certificates} of ${d.total} certificates earned`, d.certificates + "/" + d.total)}
+          <div><span class="ac-tile-v">${d.certificates}</span><span class="ac-tile-l">Certificates earned</span><span class="ac-tile-s">In-service training records, not accredited credit</span></div></div>
+      </section>
+      <p class="ac-statusline">Status for ${esc(nameOf(me()))}: <b>${esc(d.status)}</b></p>`;
+  }
   function proHtml(){
-    const pro = A.MODULES.filter(m => m.track === "pro"), topics = Array.from(new Set(pro.reduce((l, m) => l.concat(m.topics), [])));
-    return `<div class="ac-filters">
+    return dashHtml() + `<div class="ac-filters">
         <div class="ac-field"><label for="acQ">Search</label><input id="acQ" type="search" value="${esc(S.q)}" placeholder="Title, topic or skill" autocomplete="off"></div>
-        <fieldset class="ac-field"><legend>Topic</legend><div class="ac-chips">${[["", "All"]].concat(topics.map(t => [t, A.TOPICS[t]])).map(([v, l]) => `<label><input type="radio" name="acTopic" value="${v}" ${S.topic === v ? "checked" : ""}><span>${esc(l)}</span></label>`).join("")}</div></fieldset>
         <div class="ac-field"><label for="acAud">For</label><select id="acAud"><option value="">Everyone on the team</option>${["activities", "nursing", "therapy"].map(a => `<option value="${a}" ${S.aud === a ? "selected" : ""}>${esc(A.AUDIENCES[a])}</option>`).join("")}</select></div>
       </div>
+      <fieldset class="ac-field ac-pills"><legend class="sr-only">Show</legend><div class="ac-chips">${PILLS.map(([v, l]) => `<label><input type="radio" name="acCat" value="${v}" ${S.cat === v ? "checked" : ""}><span>${esc(l)}</span></label>`).join("")}</div></fieldset>
       <p class="ac-count" id="acCount" aria-live="polite"></p>
       <div class="ac-grid" id="acGrid"></div>`;
   }
   function matches(m){
-    if (S.topic && m.topics.indexOf(S.topic) < 0) return false;
+    if (S.cat === "done"){ if (!prog(m.id).completedAt) return false; }
+    else if (S.cat && !A.inCategory(m, S.cat)) return false;
     if (S.aud && m.audience.indexOf(S.aud) < 0) return false;
     const q = S.q.trim().toLowerCase();
     if (!q) return true;
-    const hay = [m.title, m.subtitle, m.blurb, m.instructor.focus].concat(m.topics.map(t => A.TOPICS[t]), m.chapters.map(c => c.title)).join(" ").toLowerCase();
+    const hay = [m.title, m.subtitle, m.blurb, m.instructor.focus, A.LEVELS[m.level]].concat(m.topics.map(t => A.TOPICS[t]), m.category.map(c => A.CATEGORIES[c]), m.chapters.map(c => c.title)).join(" ").toLowerCase();
     return q.split(/\s+/).every(w => hay.indexOf(w) >= 0);
   }
   function renderGrid(){
     const list = A.MODULES.filter(m => m.track === "pro" && matches(m)), grid = root.querySelector("#acGrid");
-    root.querySelector("#acCount").textContent = list.length ? plural(list.length, "masterclass", "masterclasses") + (S.q || S.topic || S.aud ? " match" : "") : "";
+    root.querySelector("#acCount").textContent = list.length ? plural(list.length, "masterclass", "masterclasses") + (S.q || S.cat || S.aud ? " match" : "") : "";
     grid.innerHTML = list.length ? list.map(cardHtml).join("") : `<div class="ac-empty" style="grid-column:1/-1">No masterclass matches that yet. <button type="button" class="ac-btn ac-btn-sm" data-act="clear-filters">Show all</button></div>`;
   }
   function cardHtml(m){
-    const st = status(m), t = A.minutes(m), fam = m.track === "family";
-    return `<article class="ac-card${fam ? " is-family" : ""}" data-card="${m.id}">
-      <div class="ac-thumb">${art(m.art)}<span class="ac-play" aria-hidden="true">${I.play}</span><span class="ac-dur"><span class="sr-only">Lesson length </span>${A.clock(A.lessonSeconds(m))}</span>
+    const st = status(m), t = A.minutes(m), fam = m.track === "family", p = prog(m.id);
+    const verb = st.done ? "Review" : st.share > 0 || p.quizAttempts ? "Continue" : "Start", cat = fam ? "Family guide" : A.CATEGORIES[m.category[0]];
+    return `<article class="ac-card${fam ? " is-family" : ""}${st.done ? " is-done" : ""}" data-card="${m.id}">
+      <div class="ac-thumb">${art(m.art)}<span class="ac-play" aria-hidden="true">${I.play}</span><span class="ac-cat">${esc(cat)}</span><span class="ac-dur"><span class="sr-only">Lesson length </span>${A.clock(A.lessonSeconds(m))}</span>
         ${st.done ? `<span class="ac-flag">${I.check}Completed</span>` : ""}</div>
       <div class="ac-card-body">
         <h3><a class="ac-card-a" href="#/academy/${m.id}">${esc(m.title)}</a></h3>
         <p class="ac-card-sub">${esc(m.subtitle)}</p>
         <div class="ac-instructor"><span class="ac-avatar" aria-hidden="true">${esc(m.instructor.initials)}</span><span><b>${esc(m.instructor.name)}</b><small>${esc(m.instructor.focus)}</small></span></div>
         <div class="ac-card-foot">
-          <div class="ac-tags">${fam ? `<span class="ac-tag">${t.total} min</span>` : `<span class="ac-tag">${t.total} min training</span><span class="ac-tag">Knowledge check</span>`}${m.audience.filter(a => a !== "family").slice(0, 2).map(a => `<span class="ac-tag">${esc(A.AUDIENCES[a])}</span>`).join("")}</div>
+          <div class="ac-tags"><span class="ac-tag is-level">${esc(A.LEVELS[m.level])}</span>${fam ? `<span class="ac-tag">${t.total} min</span>` : `<span class="ac-tag">${t.total} min training</span><span class="ac-tag">Knowledge check</span>`}${m.audience.filter(a => a !== "family").slice(0, 2).map(a => `<span class="ac-tag">${esc(A.AUDIENCES[a])}</span>`).join("")}</div>
           <div class="ac-prog"><span class="ac-bar" aria-hidden="true"><span style="width:${pct(st.share)}%"></span></span><span>${esc(st.text)}</span></div>
+          <span class="ac-go" aria-hidden="true">${verb}${I.go}</span>
         </div>
       </div>
     </article>`;
@@ -9946,7 +10134,7 @@ const AcademyUI = (function(){
         <tbody>${recs.map(r => `<tr><th scope="row">${esc(nameOf(r.learner))}${r.learner.id === me().id ? ` <span class="ac-tag">learning now</span>` : ""}</th><td>${esc(A.ROLES[r.learner.role])}</td><td class="n">${r.completed.length}${r.inProgress ? `<br><small>${r.inProgress} in progress</small>` : ""}</td>
           <td>${r.learner.role === "cna" ? `<div class="ac-meter"><span class="ac-bar" aria-hidden="true"><span style="width:${Math.min(100, pct(r.minutes / goal))}%"></span></span><small>${esc(A.hoursText(r.minutes))} of the ${A.IN_SERVICE_HOURS}-hour yearly in-service minimum</small></div>` : esc(A.hoursText(r.minutes))}</td>
           <td>${r.completed.filter(d => d.progress.cert).length ? `<ul class="ac-certs">${r.completed.filter(d => d.progress.cert).map(d => `<li><span>${esc(d.module.title)}<br><small>${esc(d.progress.cert)} · ${esc(fmtDay(d.progress.completedAt))}</small></span><button type="button" class="ac-btn ac-btn-sm" data-cert="${d.module.id}" data-learner="${r.learner.id}">${I.download}PDF</button></li>`).join("")}</ul>` : `<small>None in ${S.year}</small>`}</td></tr>`).join("")}</tbody></table></div>
-      <div class="ac-actions"><button type="button" class="ac-btn" data-act="csv">${I.download}Download ${S.year} records (CSV)</button></div>
+      <div class="ac-actions"><button type="button" class="ac-btn" data-act="csv">${I.download}Download ${S.year} records (CSV)</button><button type="button" class="ac-btn" data-act="print-records">${I.print}Print ${S.year} records</button></div>
       <div class="ac-rec-grid">
         <section class="ac-panel" aria-labelledby="acCheckH"><h2 id="acCheckH">Check a certificate</h2>
           <form data-form="check" class="ac-inline" style="margin-top:8px"><label for="acCertId" class="sr-only">Certificate ID</label><input id="acCertId" type="text" placeholder="CA-XXXX-XXXX" maxlength="12" autocomplete="off" value="${esc(f ? f.id : "")}"><button type="submit" class="ac-btn">Check</button></form>
@@ -9961,7 +10149,7 @@ const AcademyUI = (function(){
       </div>
       <p class="ac-note">Federal rules for nursing homes call for at least ${A.IN_SERVICE_HOURS} hours of in-service training a year for nurse aides, including dementia management and abuse prevention (42 CFR 483.95(g)). Your facility decides what counts toward its in-service program. These records and certificates document completion on this computer; they are not accredited continuing education unless your facility has entered an approval statement above.</p>
       <section class="ac-panel" style="margin-top:16px" aria-labelledby="acWipeH"><h2 id="acWipeH">Shared computer?</h2>
-        <p class="ac-hint">Download the records first if you need them. Removing them deletes every learner, their progress and their certificate records from this computer, and cannot be undone.</p>
+        <p class="ac-hint">Download the records first if you need them. Removing them deletes every learner, their progress, bookmarks and their certificate records from this computer, and cannot be undone.</p>
         <div class="ac-actions"><button type="button" class="ac-btn ac-btn-danger" data-act="wipe">Remove the Academy's records from this computer</button></div></section>`;
   }
 
@@ -9971,6 +10159,7 @@ const AcademyUI = (function(){
     S.back = pro ? "pro" : "family"; S.lastCard = m.id;
     if (!S.quiz || S.quiz.mid !== m.id){ S.quiz = { mid:m.id, answers:m.quiz.map(() => null), graded:null }; S.pane = "transcript"; }   // another lesson opens on its transcript
     if (!pro && S.pane === "quiz") S.pane = "transcript";
+    const panes = [["transcript", "Transcript"], ["guide", pro ? "Companion guide" : "Guide and toolkits"], ["faq", "Questions"]].concat(pro ? [["quiz", "Knowledge check"]] : []);
     view.innerHTML = `<div class="ac ac-anim" id="acRoot">
         <nav class="ac-crumbs" aria-label="Academy"><a class="ac-back" href="#/academy${pro ? "" : "/family"}">${I.arrow}${pro ? "All masterclasses" : "Family caregivers"}</a></nav>
         <div class="ac-mod${pro ? "" : " is-family"}">
@@ -9980,7 +10169,7 @@ const AcademyUI = (function(){
             <p class="ac-lede">${esc(m.blurb)}</p>
             <div class="ac-mod-meta">
               <div class="ac-instructor"><span class="ac-avatar" aria-hidden="true">${esc(m.instructor.initials)}</span><span><b>${esc(m.instructor.name)}</b><small>${esc(m.instructor.focus)}</small></span></div>
-              <div class="ac-tags"><span class="ac-tag">${A.clock(A.lessonSeconds(m))} lesson</span>${pro ? `<span class="ac-tag">${t.total} min training</span><span class="ac-tag">${m.quiz.length}-question check</span>` : ""}${m.audience.filter(a => a !== "family").map(a => `<span class="ac-tag">${esc(A.AUDIENCES[a])}</span>`).join("")}</div>
+              <div class="ac-tags"><span class="ac-tag is-level">${esc(A.LEVELS[m.level])}</span>${pro ? m.category.map(c => `<span class="ac-tag">${esc(A.CATEGORIES[c])}</span>`).join("") : ""}<span class="ac-tag">${A.clock(A.lessonSeconds(m))} lesson</span>${pro ? `<span class="ac-tag">${t.total} min training</span><span class="ac-tag">${m.quiz.length}-question check</span>` : ""}${m.audience.filter(a => a !== "family").map(a => `<span class="ac-tag">${esc(A.AUDIENCES[a])}</span>`).join("")}</div>
             </div>
           </header>
           ${playerHtml(m)}
@@ -9989,7 +10178,7 @@ const AcademyUI = (function(){
             <section class="ac-panel" id="acNext" aria-labelledby="acNextH"></section>
           </aside>
           <div class="ac-panes">
-            <div class="ac-subtabs" role="tablist" aria-label="Lesson materials">${[["transcript", "Transcript"], ["guide", pro ? "Companion guide" : "Guide and toolkits"]].concat(pro ? [["quiz", "Knowledge check"]] : []).map(([k, l]) =>
+            <div class="ac-subtabs" role="tablist" aria-label="Lesson materials">${panes.map(([k, l]) =>
               `<button type="button" role="tab" class="ac-subtab" id="acSub-${k}" data-pane="${k}" aria-controls="acPane" aria-selected="${k === S.pane}" tabindex="${k === S.pane ? 0 : -1}">${l}</button>`).join("")}</div>
             <div class="ac-pane" id="acPane" role="tabpanel" aria-labelledby="acSub-${S.pane}"></div>
           </div>
@@ -9999,13 +10188,19 @@ const AcademyUI = (function(){
     root = view.querySelector("#acRoot");
     bind();
     mountPlayer(m);
-    renderTrack(); renderNext(); renderPane();
+    renderTrack(); renderNext(); renderPane(); renderDrawer();
   }
   const current = () => P ? P.m : null;
 
   /* the lesson player */
   function voices(){
     try { return (window.speechSynthesis ? speechSynthesis.getVoices() : []).filter(v => v.localService && /^en(-|_|$)/i.test(v.lang)); } catch (e){ return []; }
+  }
+  /* The most natural local voice first: names that say "natural", "neural", "premium" or "enhanced", then US English. */
+  const rank = v => (/natural|neural|premium|enhanced|siri/i.test(v.name) ? 3 : 0) + (/^en[-_]US/i.test(v.lang) ? 1 : 0) + (v.default ? .5 : 0);
+  function pickVoice(){
+    const list = voices(); if (!list.length) return null;
+    return list.filter(v => v.name === S.voiceName)[0] || list.slice().sort((a, b) => rank(b) - rank(a))[0];
   }
   function playerHtml(m){
     if (m.video && m.video.src){
@@ -10014,49 +10209,91 @@ const AcademyUI = (function(){
     }
     const cues = A.cues(m), total = cues.reduce((s, q) => s + q.dur, 0);
     const chapDur = m.chapters.map((c, ci) => cues.filter(q => q.chapter === ci).reduce((s, q) => s + q.dur, 0));
+    const recorded = !!(m.audio && m.audio.src);
     return `<div class="ac-player" id="acPlayer">
-      <div class="ac-stage" id="acStage" tabindex="0" role="group" aria-roledescription="lesson player" aria-label="${esc(m.title)}, narrated lesson. Space plays or pauses; the arrow keys move a line at a time; C turns captions on or off.">
-        <div class="ac-stage-art" aria-hidden="true">${art(m.art)}</div>
+      <div class="ac-stage" id="acStage" tabindex="0" role="group" aria-roledescription="lesson player" aria-label="${esc(m.title)}, ${recorded ? "recorded" : "narrated"} lesson. Space plays or pauses; the arrow keys move a line at a time; C turns captions on or off; B bookmarks this moment; M mutes.">
+        <div class="ac-stage-art" id="acArt" aria-hidden="true"><div class="ac-kb">${art(m.art)}</div></div>
         <div class="ac-slide" id="acSlide" aria-hidden="true"></div>
         <p class="ac-cc" id="acCC" aria-hidden="true"></p>
-        <span class="ac-kind" aria-hidden="true">Narrated lesson</span>
+        <span class="ac-kind" aria-hidden="true">${recorded ? "Recorded lesson" : "Narrated lesson"}</span>
         <button type="button" class="ac-bigplay" id="acBig" aria-label="Play the lesson">${I.play}</button>
       </div>
+      ${recorded ? `<audio id="acAudio" preload="metadata" src="${esc(m.audio.src)}"></audio>` : ""}
+      <div class="ac-resume" id="acResume" hidden></div>
       <div class="ac-controls">
-        <button type="button" class="ac-cbtn" data-pl="toggle" id="acToggle" aria-label="Play the lesson">${I.play}</button>
+        <button type="button" class="ac-cbtn is-main" data-pl="toggle" id="acToggle" aria-label="Play the lesson">${I.play}</button>
         <button type="button" class="ac-cbtn" data-pl="back" aria-label="Back ten seconds">${I.back}</button>
+        <button type="button" class="ac-cbtn" data-pl="fwd" aria-label="Forward ten seconds">${I.fwd}</button>
         <button type="button" class="ac-cbtn" data-pl="prev" aria-label="Previous chapter">${I.prev}</button>
         <button type="button" class="ac-cbtn" data-pl="next" aria-label="Next chapter">${I.next}</button>
         <span class="ac-time" id="acTime" aria-hidden="true">0:00 / ${A.clock(total)}</span>
         <input class="ac-seek" id="acSeek" type="range" min="0" max="${total.toFixed(1)}" step="0.1" value="0" aria-label="Position in the lesson">
-        <label class="sr-only" for="acRate">Speed</label><select id="acRate">${[0.75, 1, 1.25, 1.5].map(r => `<option value="${r}" ${r === S.rate ? "selected" : ""}>${r}×</option>`).join("")}</select>
+      </div>
+      <div class="ac-opts">
+        <label class="sr-only" for="acRate">Speed</label><select id="acRate">${A.RATES.map(r => `<option value="${r}" ${r === S.rate ? "selected" : ""}>${r}×</option>`).join("")}</select>
+        <button type="button" class="ac-cbtn" data-pl="mute" id="acMute" aria-pressed="${S.muted}" aria-label="Mute">${S.muted ? I.mute : I.vol}</button>
+        <label class="sr-only" for="acVol">Volume</label><input class="ac-vol" id="acVol" type="range" min="0" max="1" step="0.05" value="${S.muted ? 0 : S.volume}" aria-label="Volume">
         <button type="button" class="ac-cbtn" data-pl="cc" aria-pressed="${S.cc}" aria-label="Captions">${I.cc}</button>
         <button type="button" class="ac-cbtn" data-pl="voice" id="acVoiceBtn" aria-pressed="false" aria-label="Read aloud with this computer's voice" hidden>${I.voice}</button>
+        <label class="sr-only" for="acVoice">Voice</label><select id="acVoice" hidden></select>
+        <button type="button" class="ac-cbtn" data-pl="mark" aria-label="Bookmark this moment">${I.mark}</button>
         <button type="button" class="ac-cbtn" data-pl="full" aria-label="Full screen">${I.full}</button>
       </div>
-      <div class="ac-chapbar" id="acChaps" data-tap-exempt="chapter segments sized by length: the seek slider reaches any point">${m.chapters.map((c, i) => `<button type="button" class="ac-chap" data-chap="${i}" style="flex-grow:${chapDur[i].toFixed(1)}" aria-label="Chapter ${i + 1}: ${esc(c.title)}" title="${i + 1}. ${esc(c.title)}"><span><span style="width:0%"></span></span></button>`).join("")}</div>
+      <div class="ac-chapbar" id="acChaps" data-tap-exempt="chapter segments sized by length: the seek slider and the chapter list below reach any point">${m.chapters.map((c, i) => `<button type="button" class="ac-chap" data-chap="${i}" style="flex-grow:${chapDur[i].toFixed(1)}" aria-label="Chapter ${i + 1}: ${esc(c.title)}" title="${i + 1}. ${esc(c.title)}"><span><span style="width:0%"></span></span></button>`).join("")}</div>
+      <details class="ac-drawer" id="acDrawer"><summary>${I.list}Chapters, bookmarks and other lessons</summary><div class="ac-drawer-body" id="acDrawerBody"></div></details>
     </div>`;
   }
   function mountPlayer(m){
     const p = prog(m.id);
     if (m.video && m.video.src){ mountVideo(m, p); return; }
-    const cues = A.cues(m), total = cues.reduce((s, q) => s + q.dur, 0);
+    const cues = A.cues(m), total = cues.reduce((s, q) => s + q.dur, 0), audio = root.querySelector("#acAudio");
     const firstUnplayed = cues.filter(q => p.played.indexOf(q.i) < 0)[0];
-    P = { m, cues, total, t:0, from:0, playing:false, played:new Set(p.played), raf:0, last:0, cue:-1, drawn:-1, chapter:-1, token:0, cueStart:0, voice:false, dirty:false, lastSave:0, sec:-1, scrubbing:false, seekTimer:0 };
-    if (firstUnplayed && p.played.length) P.t = P.from = firstUnplayed.start;
-    const vs = voices(), btn = root.querySelector("#acVoiceBtn");
-    const useVoices = list => { if (!btn || !P || P.m !== m) return; btn.hidden = !list.length; P.voice = !!list.length && S.voice; btn.setAttribute("aria-pressed", String(P.voice)); };
-    useVoices(vs);
-    if (!vs.length && window.speechSynthesis && speechSynthesis.addEventListener){ const once = () => { speechSynthesis.removeEventListener("voiceschanged", once); useVoices(voices()); }; speechSynthesis.addEventListener("voiceschanged", once); }
+    const start = p.pos > 3 && p.pos < total - 3 ? p.pos : firstUnplayed && p.played.length ? firstUnplayed.start : 0;
+    P = { m, cues, total, t:start, from:start, playing:false, played:new Set(p.played), raf:0, last:0, cue:-1, drawn:-1, chapter:-1, token:0, cueStart:0, voice:false, dirty:false, lastSave:0, sec:-1, scrubbing:false, seekTimer:0, audio:audio || null, word:-1, boundary:false };
+    const btn = root.querySelector("#acVoiceBtn"), sel = root.querySelector("#acVoice");
+    if (audio){                                                                  // a recorded narration plays the same lesson, timed by the recording
+      btn.hidden = true; sel.hidden = true;
+      const meta = () => {
+        if (!P || P.audio !== audio || !isFinite(audio.duration) || audio.duration < 1) return;
+        P.cues = A.audioTimeline(m, audio.duration); P.total = audio.duration;
+        root.querySelector("#acSeek").max = audio.duration.toFixed(1);
+        P.m.chapters.forEach((c, ci) => { const own = P.cues.filter(q => q.chapter === ci).reduce((s, q) => s + q.dur, 0), b = root.querySelector(`.ac-chap[data-chap="${ci}"]`); if (b) b.style.flexGrow = own.toFixed(1); });
+        if (P.t > 0) try { audio.currentTime = Math.min(P.t, audio.duration - 0.1); } catch (e){}
+        P.drawn = -1; update(true); renderDrawer();
+      };
+      audio.addEventListener("loadedmetadata", meta); if (audio.readyState >= 1) meta();
+      audio.addEventListener("ended", () => { if (P && P.audio === audio && P.playing) finish(); });
+      audio.addEventListener("timeupdate", () => { if (P && P.audio === audio && !P.playing && !P.scrubbing){ P.t = audio.currentTime; update(false); } });
+      audio.addEventListener("error", () => {                                    // the file will not play: the script's own timing and this computer's voice take over
+        if (!P || P.audio !== audio) return;
+        const was = P.playing; if (was) pause();
+        P.audio = null; P.cues = A.cues(m); P.total = P.cues.reduce((s, q) => s + q.dur, 0); P.t = Math.min(P.t, P.total); P.drawn = -1;
+        root.querySelector("#acSeek").max = P.total.toFixed(1); audio.remove(); useVoices(voices());
+        const k = root.querySelector(".ac-kind"); if (k) k.textContent = "Narrated lesson";
+        announce("The recording could not be played on this computer. The lesson will use this computer's voice or captions."); update(true);
+      });
+      applyVolume(); audio.playbackRate = S.rate;
+    } else useVoices(voices());
+    function useVoices(list){
+      if (!btn || !P || P.m !== m || P.audio) return;
+      btn.hidden = !list.length; P.voice = !!list.length && S.voice; btn.setAttribute("aria-pressed", String(P.voice));
+      sel.hidden = list.length < 2;
+      sel.innerHTML = list.map(v => `<option value="${esc(v.name)}" ${pickVoice() && pickVoice().name === v.name ? "selected" : ""}>${esc(v.name)}</option>`).join("");
+    }
+    if (!audio && !voices().length && window.speechSynthesis && speechSynthesis.addEventListener){ const once = () => { speechSynthesis.removeEventListener("voiceschanged", once); useVoices(voices()); }; speechSynthesis.addEventListener("voiceschanged", once); }
     const seek = root.querySelector("#acSeek");
     seek.addEventListener("pointerdown", () => { P.scrubbing = true; });
     seek.addEventListener("pointerup", () => { P.scrubbing = false; });
     seek.addEventListener("input", () => seekTo(+seek.value));
     seek.addEventListener("change", () => { P.scrubbing = false; seekTo(+seek.value); });
-    root.querySelector("#acRate").addEventListener("change", e => { S.rate = +e.target.value; if (P.playing && P.voice) speakCue(P.cue); });
+    root.querySelector("#acRate").addEventListener("change", e => { S.rate = +e.target.value; savePrefs({ rate:S.rate }); if (P.audio) P.audio.playbackRate = S.rate; else if (P.playing && P.voice) speakCue(P.cue); });
     const stage = root.querySelector("#acStage");
     stage.addEventListener("click", e => { if (!e.target.closest("button")) toggle(); });
     stage.addEventListener("keydown", stageKey);
+    if (start > 3){                                                              // where this learner stopped last time
+      const r = root.querySelector("#acResume");
+      r.hidden = false; r.innerHTML = `Picked up where you left off, at <b>${A.clock(start)}</b>. <button type="button" class="ac-btn ac-btn-sm" data-pl="restart">Start from the beginning</button>`;
+    }
     update(true);
   }
   function mountVideo(m, p){
@@ -10074,17 +10311,28 @@ const AcademyUI = (function(){
     v.addEventListener("error", () => { v.insertAdjacentHTML("afterend", `<p class="ac-hint" style="padding:10px 12px">The recording could not be played on this computer. The transcript has every word of the lesson.</p>`); });
   }
   function cueAt(t){ const c = P.cues; let lo = 0, hi = c.length - 1; while (lo < hi){ const mid = (lo + hi + 1) >> 1; if (c[mid].start <= t + 1e-6) lo = mid; else hi = mid - 1; } return lo; }
+  function applyVolume(){
+    const b = root && root.querySelector("#acMute"), v = root && root.querySelector("#acVol");
+    if (b){ b.setAttribute("aria-pressed", String(S.muted)); b.innerHTML = S.muted || !S.volume ? I.mute : I.vol; }
+    if (v) v.value = S.muted ? 0 : S.volume;
+    if (P && P.audio){ P.audio.volume = S.volume; P.audio.muted = S.muted; }
+  }
   function play(){
     if (!P || !P.cues || P.playing) return;
-    if (P.t >= P.total - 0.05){ P.t = 0; P.from = 0; }
+    if (P.t >= P.total - 0.05){ P.t = 0; P.from = 0; if (P.audio) try { P.audio.currentTime = 0; } catch (e){} }
     P.playing = true; P.last = performance.now();
     root.querySelector("#acPlayer").classList.add("is-playing");
-    if (P.voice) speakCue(cueAt(P.t)); else P.raf = requestAnimationFrame(tick);
+    if (P.audio){
+      P.audio.playbackRate = S.rate; applyVolume();
+      const pr = P.audio.play(); if (pr && pr.catch) pr.catch(() => { if (P && P.audio){ P.playing = false; const pl = root.querySelector("#acPlayer"); if (pl) pl.classList.remove("is-playing"); update(true); } });
+      P.raf = requestAnimationFrame(tick);
+    } else if (P.voice) speakCue(cueAt(P.t)); else P.raf = requestAnimationFrame(tick);
     update(true);
   }
   function pause(){
     if (!P || !P.playing) return;
     P.playing = false; P.token++; cancelAnimationFrame(P.raf);
+    if (P.audio) try { P.audio.pause(); } catch (e){}
     try { if (window.speechSynthesis) speechSynthesis.cancel(); } catch (e){}
     const pl = root && root.querySelector("#acPlayer"); if (pl) pl.classList.remove("is-playing");
     saveProgress(); update(true);
@@ -10093,15 +10341,16 @@ const AcademyUI = (function(){
   function tick(now){
     if (!P || !P.playing) return;
     const dt = Math.min(0.25, (now - P.last) / 1000); P.last = now;
-    if (P.voice){
+    if (P.voice && !P.audio){
       const c = P.cues[P.cue];
       if (c) P.t = Math.min(c.start + (now - P.cueStart) / 1000 * S.rate, c.start + c.dur - 0.05);
     } else {
-      const t0 = P.t, t1 = Math.min(P.total, t0 + dt * S.rate);
+      const t0 = P.t, t1 = P.audio ? P.audio.currentTime : Math.min(P.total, t0 + dt * S.rate);
       for (let i = cueAt(t0); i < P.cues.length && P.cues[i].start + P.cues[i].dur <= t1 + 1e-6; i++) if (P.cues[i].start >= P.from - 0.3) markCue(i);
       P.t = t1;
-      if (t1 >= P.total - 1e-6){ finish(); return; }
+      if (!P.audio && t1 >= P.total - 1e-6){ finish(); return; }
     }
+    if (!P.boundary){ const c = P.cues[cueAt(P.t)]; if (c) setWord(A.wordAt(c.text, (P.t - c.start) / c.dur)); }   // no word marks from the voice: follow its pace
     if (P.dirty && now - P.lastSave > 4000) saveProgress();
     update(false);
     P.raf = requestAnimationFrame(tick);
@@ -10111,10 +10360,11 @@ const AcademyUI = (function(){
     const pl = P, token = ++pl.token, live = () => P === pl && token === pl.token && pl.playing;   // a later line, a pause or another lesson ends this one
     clearTimeout(pl.seekTimer);
     try { speechSynthesis.cancel(); } catch (e){}
-    pl.cue = i; pl.t = c.start; pl.cueStart = performance.now();
-    const u = new SpeechSynthesisUtterance(c.text), v = voices()[0];
+    pl.cue = i; pl.t = c.start; pl.cueStart = performance.now(); pl.boundary = false;
+    const u = new SpeechSynthesisUtterance(c.text), v = pickVoice();
     if (v){ u.voice = v; u.lang = v.lang; }
-    u.rate = S.rate;
+    u.rate = BASE_RATE * S.rate; u.pitch = 1; u.volume = S.muted ? 0 : S.volume;
+    u.onboundary = e => { if (!live() || (e.name && e.name !== "word")) return; pl.boundary = true; setWord(A.wordAtChar(c.text, e.charIndex || 0)); };
     u.onend = () => { if (!live()) return; if (c.start >= pl.from - 0.3) markCue(i); if (i + 1 < pl.cues.length) speakCue(i + 1); else finish(); };
     u.onerror = e => { if (!live() || e.error === "interrupted" || e.error === "canceled") return;
       pl.voice = false; const b = root.querySelector("#acVoiceBtn"); if (b) b.setAttribute("aria-pressed", "false"); pl.last = performance.now(); pl.raf = requestAnimationFrame(tick); };
@@ -10125,6 +10375,7 @@ const AcademyUI = (function(){
   function markCue(i){ if (!P.played.has(i)){ P.played.add(i); P.dirty = true; } }
   function finish(){
     P.t = P.total; P.playing = false; P.token++; cancelAnimationFrame(P.raf);
+    if (P.audio) try { P.audio.pause(); } catch (e){}
     const pl = root.querySelector("#acPlayer"); if (pl) pl.classList.remove("is-playing");
     saveProgress(); update(true);
     announce("The lesson has finished." + (A.readiness(P.m, prog(P.m.id)).watched ? " It counts as watched." : ""));
@@ -10134,14 +10385,15 @@ const AcademyUI = (function(){
   function seekTo(t){
     if (!P || !P.cues) return;
     P.t = Math.max(0, Math.min(P.total, t)); P.from = P.t;
-    if (P.playing && P.voice){
+    if (P.audio) try { P.audio.currentTime = Math.min(P.t, Math.max(0, P.audio.duration - 0.05 || P.t)); } catch (e){}
+    if (P.playing && P.voice && !P.audio){
       const pl = P;
       pl.token++; try { speechSynthesis.cancel(); } catch (e){}
       pl.cue = cueAt(pl.t); pl.cueStart = performance.now();
       clearTimeout(pl.seekTimer);
       pl.seekTimer = setTimeout(() => { if (P === pl && pl.playing && pl.voice) speakCue(cueAt(pl.t)); }, 220);
     }
-    update(true);
+    P.drawn = -1; update(true);
   }
   const seekCue = i => { const c = P.cues[Math.max(0, Math.min(P.cues.length - 1, i))]; seekTo(c.start); };
   function stageKey(e){
@@ -10153,9 +10405,25 @@ const AcademyUI = (function(){
     else if (k === "end"){ e.preventDefault(); seekTo(P.total - 0.1); }
     else if (k === "c"){ e.preventDefault(); setCC(!S.cc); }
     else if (k === "f"){ e.preventDefault(); fullscreen(); }
+    else if (k === "b"){ e.preventDefault(); addMark(); }
+    else if (k === "m"){ e.preventDefault(); toggleMute(); }
   }
-  function setCC(on){ S.cc = on; const b = root.querySelector('[data-pl="cc"]'); if (b) b.setAttribute("aria-pressed", String(on)); update(true); announce(on ? "Captions on" : "Captions off"); }
+  function setCC(on){ S.cc = on; savePrefs({ cc:on }); const b = root.querySelector('[data-pl="cc"]'); if (b) b.setAttribute("aria-pressed", String(on)); P.drawn = -1; update(true); announce(on ? "Captions on" : "Captions off"); }
+  function toggleMute(){
+    S.muted = !S.muted; if (!S.muted && !S.volume) S.volume = 0.5;
+    savePrefs({ muted:S.muted, volume:S.volume }); applyVolume();
+    if (P && P.playing && P.voice && !P.audio) speakCue(P.cue);                  // a voice takes the new volume from its next line: start this one again
+    announce(S.muted ? "Muted" : "Sound on");
+  }
   function fullscreen(){ const el = root.querySelector("#acPlayer"); try { if (document.fullscreenElement) document.exitFullscreen(); else if (el.requestFullscreen) el.requestFullscreen(); } catch (e){} }
+  function setWord(i){
+    if (!P || P.word === i) return; P.word = i;
+    ["#acCC", "#acScript .ac-line.is-now"].forEach(sel => {
+      const el = root.querySelector(sel); if (!el) return;
+      el.querySelectorAll(".w.is-word").forEach(w => w.classList.remove("is-word"));
+      const w = el.querySelector(`.w[data-w="${i}"]`); if (w) w.classList.add("is-word");
+    });
+  }
   /* Draw the player: per frame only the clock and the bar; the slide, the caption and the transcript when the line changes. */
   function update(full){
     if (!P || !P.cues || !root) return;
@@ -10168,23 +10436,28 @@ const AcademyUI = (function(){
       if (seek) seek.setAttribute("aria-valuetext", A.spoken(P.t) + " of " + A.spoken(P.total));
     }
     if (i !== P.drawn || full){                        // P.cue is the line being read aloud; P.drawn the line on screen
-      P.drawn = i;
-      if (!P.voice || !P.playing) P.cue = i;
+      P.drawn = i; P.word = -1;
+      if (!P.voice || !P.playing || P.audio) P.cue = i;
       const cc = root.querySelector("#acCC"), showCC = S.cc && (P.playing || P.t > 0);
-      if (cc){ cc.hidden = !S.cc; cc.textContent = showCC ? c.text : ""; }
+      if (cc){ cc.hidden = !S.cc; cc.innerHTML = showCC ? wordsHtml(c.text) : ""; }
       const stage = root.querySelector("#acStage"); if (stage) stage.classList.toggle("has-cc", showCC);   // a small picture gives the caption the room
       if (c.chapter !== P.chapter || full){
         const ch = P.m.chapters[c.chapter], slide = root.querySelector("#acSlide");
-        if (slide){ slide.innerHTML = `<p class="ac-slide-k">Chapter ${c.chapter + 1} of ${P.m.chapters.length}</p><h2 class="ac-slide-t">${esc(ch.title)}</h2><p class="ac-slide-s">${esc(ch.slide)}</p>`;
+        if (slide){ slide.innerHTML = `<p class="ac-slide-k"><span class="ac-slide-ic">${chapterIcon(P.m, c.chapter)}</span>Chapter ${c.chapter + 1} of ${P.m.chapters.length}</p><h2 class="ac-slide-t">${esc(ch.title)}</h2><p class="ac-slide-s">${esc(ch.slide)}</p>`;
           if (c.chapter !== P.chapter && P.chapter !== -1 && !reduced()){ slide.classList.remove("is-new"); void slide.offsetWidth; slide.classList.add("is-new"); } }
+        const art = root.querySelector("#acArt"), pan = PAN[c.chapter % PAN.length];
+        if (art){ art.style.setProperty("--px", pan[0] + "%"); art.style.setProperty("--py", pan[1] + "%"); art.style.setProperty("--sc", pan[2]); }
         P.chapter = c.chapter;
         root.querySelectorAll(".ac-chap").forEach(b => b.classList.toggle("is-now", +b.dataset.chap === c.chapter));
+        root.querySelectorAll(".ac-dlist [data-chap]").forEach(b => b.classList.toggle("is-now", +b.dataset.chap === c.chapter));
       }
       const script = root.querySelector("#acScript");
       if (script){
-        script.querySelectorAll(".is-now").forEach(el => el.classList.remove("is-now"));
+        script.querySelectorAll(".is-now").forEach(el => { el.classList.remove("is-now"); if (el.dataset.plain != null){ el.textContent = el.dataset.plain; delete el.dataset.plain; } });
         const el = script.querySelector(`[data-cue="${i}"]`);
-        if (el && (P.playing || P.t > 0)){ el.classList.add("is-now"); if (S.follow && P.playing){ const top = el.offsetTop - script.clientHeight / 3; script.scrollTop = Math.max(0, top); } }
+        if (el && (P.playing || P.t > 0)){
+          el.classList.add("is-now"); el.dataset.plain = el.textContent; el.innerHTML = wordsHtml(el.textContent);
+          if (S.follow && P.playing){ const top = el.offsetTop - script.clientHeight / 3; script.scrollTop = Math.max(0, top); } }
       }
     }
     const btn = root.querySelector("#acToggle"), big = root.querySelector("#acBig");
@@ -10205,20 +10478,47 @@ const AcademyUI = (function(){
   function saveProgress(){
     if (!P) return;
     P.lastSave = performance.now();
-    if (!P.dirty) return;
+    const moved = !P.video && Math.abs(prog(P.m.id).pos - (P.t >= P.total - 0.5 ? 0 : P.t)) > 1;   // where the learner is, so the lesson can pick up there
+    if (!P.dirty && !moved) return;
     P.dirty = false;
     const before = A.readiness(P.m, prog(P.m.id)).watched;
     if (P.video) writeAcademy(A.markVideo(acad, me().id, P.m.id, P.watched));
-    else writeAcademy(A.markPlayed(acad, me().id, P.m.id, Array.from(P.played)));
+    else writeAcademy(A.setPos(A.markPlayed(acad, me().id, P.m.id, Array.from(P.played)), me().id, P.m.id, P.t >= P.total - 0.5 ? 0 : P.t));
     renderTrack();
     if (!before && A.readiness(P.m, prog(P.m.id)).watched) announce("The lesson now counts as watched.");
   }
   function stopPlayer(){
     if (!P) return;
     if (P.video){ try { P.video.pause(); } catch (e){} }
-    else if (P.playing){ P.playing = false; P.token++; cancelAnimationFrame(P.raf); try { if (window.speechSynthesis) speechSynthesis.cancel(); } catch (e){} }
+    else if (P.playing){ P.playing = false; P.token++; cancelAnimationFrame(P.raf); if (P.audio) try { P.audio.pause(); } catch (e){} try { if (window.speechSynthesis) speechSynthesis.cancel(); } catch (e){} }
     saveProgress();
     P = null;
+  }
+
+  /* the drawer: chapters, bookmarks and the other lessons */
+  function renderDrawer(){
+    const box = root && root.querySelector("#acDrawerBody"), m = current(); if (!box || !m || !P || !P.cues) return;
+    const p = prog(m.id), cur = P.cues[cueAt(P.t)].chapter, others = A.MODULES.filter(x => x.track === m.track && x.id !== m.id);
+    box.innerHTML = `<section aria-labelledby="acDrChap"><h3 id="acDrChap">Chapters</h3><ul class="ac-dlist">${m.chapters.map((c, ci) => {
+        const head = P.cues.filter(q => q.chapter === ci)[0];
+        return `<li><button type="button" data-chap="${ci}" class="${ci === cur ? "is-now" : ""}"><span>${ci + 1}. ${esc(c.title)}</span><small>${A.clock(head.start)}</small></button></li>`; }).join("")}</ul></section>
+      <section aria-labelledby="acDrMark"><h3 id="acDrMark">Bookmarks</h3>${p.bookmarks.length ? `<ul class="ac-dlist" id="acMarks">${p.bookmarks.map((b, i) =>
+          `<li class="ac-bm"><button type="button" data-bm="go" data-i="${i}"><span>${esc(b.label || "Bookmark")}</span><small>${A.clock(b.t)}</small></button><button type="button" class="ac-btn ac-btn-sm ac-x" data-bm="rm" data-i="${i}" aria-label="Remove the bookmark at ${A.clock(b.t)}">${I.x}</button></li>`).join("")}</ul>`
+        : `<p class="ac-hint">No bookmarks yet. Use the bookmark button to mark a moment you want to come back to.</p>`}
+        <div class="ac-actions"><button type="button" class="ac-btn ac-btn-sm" data-pl="mark">${I.mark}Bookmark this moment</button></div></section>
+      <section aria-labelledby="acDrOther"><h3 id="acDrOther">${m.track === "pro" ? "Other masterclasses" : "Other guides"}</h3><ul class="ac-dlist">${others.map(x => `<li><a href="#/academy/${x.id}"><span>${esc(x.title)}</span><small>${esc(status(x).text.split(" ·")[0])}</small></a></li>`).join("")}</ul></section>`;
+  }
+  function addMark(){
+    if (!P || !P.cues) return;
+    const m = P.m, c = P.cues[cueAt(P.t)], label = `Chapter ${c.chapter + 1}: ${m.chapters[c.chapter].title}`, before = prog(m.id).bookmarks.length;
+    const next = A.addBookmark(acad, me().id, m.id, P.t, label);
+    if (A.progressOf(next, me().id, m.id).bookmarks.length === before){
+      toast(before >= A.LIMITS.bookmarks ? "A lesson holds " + A.LIMITS.bookmarks + " bookmarks. Remove one first." : "That moment is already bookmarked.");
+      return;
+    }
+    writeAcademy(next); renderDrawer();
+    const d = root.querySelector("#acDrawer"); if (d && !reduced()) d.open = true;
+    announce("Bookmarked " + A.spoken(P.t) + " into the lesson.");
   }
 
   /* the tracker, what's next, and the panes */
@@ -10260,8 +10560,8 @@ const AcademyUI = (function(){
     const pane = root && root.querySelector("#acPane"), m = current(); if (!pane || !m) return;
     pane.setAttribute("aria-labelledby", "acSub-" + S.pane);
     root.querySelectorAll(".ac-subtab").forEach(b => { const on = b.dataset.pane === S.pane; b.setAttribute("aria-selected", on); b.tabIndex = on ? 0 : -1; });
-    pane.innerHTML = S.pane === "guide" ? guideHtml(m) : S.pane === "quiz" ? quizHtml(m) : transcriptHtml(m);
-    if (S.pane === "transcript" && P && P.cues){ chapterFills(); update(true); }
+    pane.innerHTML = S.pane === "guide" ? guideHtml(m) : S.pane === "quiz" ? quizHtml(m) : S.pane === "faq" ? faqHtml(m) : transcriptHtml(m);
+    if (S.pane === "transcript" && P && P.cues){ chapterFills(); P.drawn = -1; update(true); }
     if (anim && !reduced()){ pane.classList.remove("ac-anim"); void pane.offsetWidth; pane.classList.add("ac-anim"); }
   }
   function transcriptHtml(m){
@@ -10274,22 +10574,22 @@ const AcademyUI = (function(){
       <div class="ac-readdone">${p.read ? `<p class="ac-hint">${I.check} You've read the whole lesson; it counts as watched.</p>`
         : `<button type="button" class="ac-btn" data-act="read">${I.check}I've read the whole lesson</button><p class="ac-hint">Reading the transcript counts the same as watching.</p>`}</div>`;
   }
+  /* The companion guide: an outline, a key-takeaway callout for each chapter, then what to try, avoid and reflect on, and the sources. */
   function guideHtml(m){
-    const blocks = A.guideBlocks(m).slice(3), pro = m.track === "pro";
-    let html = "", list = "", tag = "ul";
-    const flush = () => { if (list){ html += `<${tag}>${list}</${tag}>`; list = ""; } };
-    blocks.forEach(b => {
-      const item = b.k === "li" || b.k === "num" || b.k === "check" || b.k === "small", want = b.k === "num" ? "ol" : "ul";
-      if (item && list && want !== tag) flush();       // the outline is numbered; everything else is bulleted
-      if (item) tag = want;
-      if (b.k === "h"){ flush(); html += `<h3>${esc(b.text)}</h3>`; }
-      else if (b.k === "li" || b.k === "num" || b.k === "check") list += `<li>${esc(b.text)}</li>`;
-      else if (b.k === "small"){ list += `<li class="ac-src">${esc(b.text)}</li>`; }
-      else if (b.k === "p"){ flush(); html += `<p class="ac-hint">${esc(b.text)}</p>`; }
-    });
-    flush();
+    const pro = m.track === "pro", li = list => list.map(x => `<li>${esc(x)}</li>`).join("");
     return `<div class="ac-guide"><div class="ac-guide-top"><p>${pro ? "The lesson's key points, practice steps and sources, on Letter paper to keep or share." : "The guide's key points on one page, and its printable toolkits."}</p>
-        <button type="button" class="ac-btn ac-btn-primary" data-guide="${m.id}">${I.download}Download ${pro ? "companion guide" : "guide"} (PDF)</button></div>${html}</div>`;
+        <div class="ac-actions" style="margin:0"><button type="button" class="ac-btn ac-btn-primary" data-guide="${m.id}">${I.download}Download ${pro ? "companion guide" : "guide"} (PDF)</button>
+        <button type="button" class="ac-btn" data-act="print-takeaways">${I.print}Print key takeaways</button></div></div>
+      <h3>In this lesson</h3><ol>${m.chapters.map(c => `<li>${esc(c.title)}: ${esc(c.slide)}</li>`).join("")}</ol>
+      ${m.chapters.map(c => `<h3>${esc(c.title)}</h3><div class="ac-callout"><b>Key takeaways</b><ul>${li(c.points)}</ul></div>`).join("")}
+      ${m.tryThis.length ? `<h3>Try this</h3><ul>${li(m.tryThis)}</ul>` : ""}
+      ${m.avoid.length ? `<h3>Avoid</h3><ul>${li(m.avoid)}</ul>` : ""}
+      ${m.reflect.length ? `<h3>Reflect</h3>${m.reflect.map(x => `<p class="ac-hint">${esc(x)}</p>`).join("")}` : ""}
+      ${m.sources.length ? `<h3>Sources and further reading</h3><ul>${m.sources.map(x => `<li class="ac-src">${esc(x)}</li>`).join("")}</ul>` : ""}</div>`;
+  }
+  function faqHtml(m){
+    return `<div class="ac-guide"><div class="ac-guide-top"><h2 style="margin:0;font-size:18px">Questions people ask</h2><p>Short answers. Your facility's care plans and policies always come first.</p></div>
+      <div style="margin-top:12px">${m.faq.map(f => `<details class="ac-faq"><summary>${esc(f.q)}</summary><p>${esc(f.a)}</p></details>`).join("")}</div></div>`;
   }
   function quizHtml(m){
     const q = S.quiz, g = q.graded, p = prog(m.id);
@@ -10367,6 +10667,70 @@ const AcademyUI = (function(){
     return pdfAction(btn, async () => { await makePdf(`Certificate - ${m.title} - ${l.name}.pdf`, split => [A.certificatePage(c, split)]); toast("Certificate ready: " + c.id + "."); });
   }
 
+  /* ---------- printing ----------
+     The key takeaways and the training record print on Letter sheets in the Packet Builder's own
+     print root: a 0.75 in binding gutter, Atkinson Hyperlegible, pure black on white. Training is
+     not metered, so printing here never uses one of the free packets. */
+  const sheet = (title, meta, body, foot) => `<section class="sheet ac-sheet"><header class="sh-head"><h1>${esc(title)}</h1><div class="sh-meta">${esc(meta)}</div></header><div class="sh-body">${body}</div><footer class="sh-foot"><span>${esc(foot)}</span><span class="pgno"></span></footer></section>`;
+  const FOOT = "Cognicopia Academy · in-service training record, not accredited continuing education";
+  function takeawaySheetsHtml(m){
+    const ul = list => `<ul>${list.map(x => `<li>${esc(x)}</li>`).join("")}</ul>`;
+    const parts = [`<p class="ac-sub">${esc(m.subtitle)}</p>`].concat(m.chapters.map((c, i) => `<h2>${i + 1}. ${esc(c.title)}</h2><p class="ac-slide-line">${esc(c.slide)}</p>${ul(c.points)}`));
+    if (m.tryThis.length) parts.push(`<h2>Try this</h2>${ul(m.tryThis)}`);
+    if (m.avoid.length) parts.push(`<h2>Avoid</h2>${ul(m.avoid)}`);
+    if (m.reflect.length) parts.push(`<h2>Reflect</h2>${m.reflect.map(x => `<p>${esc(x)}</p><div class="ac-rule"></div><div class="ac-rule"></div>`).join("")}`);
+    if (m.sources.length) parts.push(`<h2>Sources and further reading</h2><ul class="ac-srcs">${m.sources.map(x => `<li>${esc(x)}</li>`).join("")}</ul>`);
+    return sheet(m.title, "Key takeaways · " + (m.instructor.focus || "Cognicopia Academy"), parts.join(""), FOOT);
+  }
+  function recordSheetsHtml(year){
+    const recs = acad.learners.map(l => A.yearRecord(acad, l.id, year)), goal = A.IN_SERVICE_HOURS * 60;
+    const rows = recs.map(r => `<tr><th scope="row">${esc(nameOf(r.learner))}</th><td>${esc(A.ROLES[r.learner.role])}</td><td class="n">${r.completed.length}</td><td class="n">${esc(A.hoursText(r.minutes))}${r.learner.role === "cna" ? `<br><small>${pct(Math.min(1, r.minutes / goal))}% of ${A.IN_SERVICE_HOURS} h</small>` : ""}</td><td>${r.completed.filter(d => d.progress.cert).map(d => esc(d.progress.cert)).join("<br>") || "None"}</td></tr>`);
+    const per = 14, chunks = []; for (let i = 0; i < Math.max(1, rows.length); i += per) chunks.push(rows.slice(i, i + per));
+    return chunks.map((c, k) => sheet("Training records, " + year, "Cognicopia Academy" + (settings.facility ? " · " + settings.facility : ""),
+      `${k === 0 ? `<p class="ac-sub">${plural(recs.length, "learner", "learners")} · ${plural(recs.reduce((n, r) => n + r.completed.length, 0), "lesson", "lessons")} completed · ${esc(A.hoursText(recs.reduce((n, r) => n + r.minutes, 0)))} of training</p>` : ""}
+       <table class="ac-ptable"><thead><tr><th>Learner</th><th>Role</th><th class="n">Completed</th><th class="n">Training time</th><th>Certificate IDs</th></tr></thead><tbody>${c.join("")}</tbody></table>`, FOOT + (acad.approval ? " (see approval statement on certificates)" : ""))).join("");
+  }
+  /* Content too long for one sheet moves to the next, so nothing is cut off at the foot of the page. */
+  function flowSheets(rootEl){
+    const out = []; let sh = rootEl.querySelector(".sheet");
+    while (sh){
+      out.push(sh);
+      const body = sh.querySelector(".sh-body");
+      while (body.scrollHeight > body.clientHeight + 1 && body.children.length > 1){
+        let next = sh.nextElementSibling;
+        if (!next || !next.classList.contains("ac-cont")){
+          next = sh.cloneNode(true); next.classList.add("ac-cont"); next.querySelector(".sh-body").innerHTML = ""; sh.after(next);
+          const h = next.querySelector(".sh-head h1"); if (h) h.textContent += " (continued)";
+        }
+        const moved = body.lastElementChild;
+        if (/^H[1-6]$/.test(moved.tagName) === false && body.lastElementChild.previousElementSibling && /^H[1-6]$/.test(body.lastElementChild.previousElementSibling.tagName)){   // a heading never ends a sheet
+          next.querySelector(".sh-body").prepend(body.lastElementChild); next.querySelector(".sh-body").prepend(body.lastElementChild);
+        } else next.querySelector(".sh-body").prepend(moved);
+      }
+      sh = sh.nextElementSibling;
+    }
+    out.forEach((s, i) => { const n = s.querySelector(".pgno"); if (n) n.textContent = "Page " + (i + 1) + " of " + out.length; });
+    return out.length;
+  }
+  function printSheets(html, title){
+    const rootEl = document.getElementById("printRoot");
+    if (!rootEl){ toast("Printing is not available on this screen."); return Promise.resolve(false); }
+    const go = () => {
+      rootEl.className = "pure-bw"; rootEl.innerHTML = html;
+      rootEl.style.cssText = "display:block;position:absolute;left:-10000px;top:0";    // measured off screen, as the Packet Builder does
+      const n = flowSheets(rootEl);
+      rootEl.style.cssText = "";
+      printReady = true; if (printTitle == null) printTitle = document.title;
+      document.title = title;
+      window.print();
+      return n;
+    };
+    const ready = window.BookUI && BookUI.fontsLoaded && !BookUI.fontsLoaded() ? BookUI.loadFonts() : Promise.resolve();
+    return ready.then(go).catch(e => { toast("It could not be printed: " + e.message); return false; });
+  }
+  const printTakeaways = m => printSheets(takeawaySheetsHtml(m), `Key takeaways - ${m.title} - Cognicopia Academy`);
+  const printRecords = () => printSheets(recordSheetsHtml(S.year), `Training records ${S.year} - Cognicopia Academy`);
+
   /* ---------- events ---------- */
   function bind(){
     root.addEventListener("click", onClick);
@@ -10382,14 +10746,24 @@ const AcademyUI = (function(){
     if (d.pane){ if (d.pane !== S.pane){ S.pane = d.pane; renderPane(true); } return; }
     if (d.pl){
       if (d.pl === "toggle") return toggle();
+      if (!P || !P.cues) return;
       if (d.pl === "back") return seekTo(P.t - 10);
+      if (d.pl === "fwd") return seekTo(P.t + 10);
       if (d.pl === "prev"){ const ci = P.cues[cueAt(P.t)].chapter, head = P.cues.filter(q => q.chapter === ci)[0]; return seekTo(P.t - head.start > 2 || ci === 0 ? head.start : P.cues.filter(q => q.chapter === ci - 1)[0].start); }
       if (d.pl === "next"){ const ci = P.cues[cueAt(P.t)].chapter, nx = P.cues.filter(q => q.chapter === ci + 1)[0]; return nx ? seekTo(nx.start) : seekTo(P.total - 0.1); }
       if (d.pl === "cc") return setCC(!S.cc);
-      if (d.pl === "voice"){ S.voice = !P.voice; const was = P.playing; if (was) pause(); P.voice = S.voice; t.setAttribute("aria-pressed", String(P.voice)); if (was) play(); announce(P.voice ? "Reading aloud" : "Captions only"); return; }
+      if (d.pl === "mute") return toggleMute();
+      if (d.pl === "mark") return addMark();
+      if (d.pl === "restart"){ seekTo(0); P.from = 0; const r = root.querySelector("#acResume"); if (r) r.hidden = true; announce("Back at the start."); return; }
+      if (d.pl === "voice"){ S.voice = !P.voice; savePrefs({ voice:S.voice }); const was = P.playing; if (was) pause(); P.voice = S.voice; t.setAttribute("aria-pressed", String(P.voice)); if (was) play(); announce(P.voice ? "Reading aloud" : "Captions only"); return; }
       if (d.pl === "full") return fullscreen();
     }
     if (t.id === "acBig") return toggle();
+    if (d.bm && P && P.cues){
+      const i = +d.i, b = prog(P.m.id).bookmarks[i]; if (!b) return;
+      if (d.bm === "go"){ seekTo(b.t); return; }
+      writeAcademy(A.removeBookmark(acad, me().id, P.m.id, i)); renderDrawer(); announce("Bookmark removed."); { const m = root.querySelector('[data-pl="mark"]'); if (m) m.focus(); } return;
+    }
     if (d.chap != null && P && P.cues){ const head = P.cues.filter(q => q.chapter === +d.chap)[0]; if (head) seekTo(head.start); return; }
     if (d.seek != null && P && P.cues){ seekTo(P.cues[+d.seek].start); if (!P.playing) play(); return; }
     if (t.classList.contains("ac-line") && P && P.cues){ seekTo(P.cues[+d.cue].start); if (!P.playing) play(); return; }
@@ -10398,6 +10772,8 @@ const AcademyUI = (function(){
     if (d.cert){ certPdf(t, d.learner || me().id, d.cert); return; }
     switch (d.act){
       case "complete": return completeModule();
+      case "print-takeaways": { const m = current(); if (m) printTakeaways(m); return; }
+      case "print-records": return printRecords();
       case "read": { const m = current(); writeAcademy(A.markRead(acad, me().id, m.id)); renderPane(); renderTrack(); announce("Marked as read. It counts as watched."); const s = root.querySelector("#acScript"); if (s) s.focus(); return; }
       case "cancel-certname": { S.pendingCert = ""; renderTrack(); const b = root.querySelector("[data-cert]"); if (b) b.focus(); return; }
       case "retake": S.quiz = { mid:current().id, answers:current().quiz.map(() => null), graded:null }; renderPane(); { const f = root.querySelector('input[name="acQ0"]'); if (f) f.focus(); } return;
@@ -10407,11 +10783,11 @@ const AcademyUI = (function(){
         const l = me(); if (!confirm(`Remove ${nameOf(l)} and their training record from this computer?`)) return;
         writeAcademy(A.removeLearner(acad, l.id)); S.edit = ""; renderLearner(); refresh(); { const w = root.querySelector("#acWho"); if (w) w.focus(); } toast("Learner removed."); return;
       }
-      case "clear-filters": S.q = ""; S.topic = ""; S.aud = ""; renderPanel(); { const q = root.querySelector("#acQ"); if (q) q.focus(); } return;
+      case "clear-filters": S.q = ""; S.cat = ""; S.aud = ""; renderPanel(); { const q = root.querySelector("#acQ"); if (q) q.focus(); } return;
       case "wipe": {
-        if (!confirm("Remove every learner, their progress and their certificate records from this computer? This cannot be undone.")) return;
+        if (!confirm("Remove every learner, their progress, bookmarks and certificate records from this computer? This cannot be undone.")) return;
         try { CG_LS.removeItem(A.STORE_KEY); } catch (e){ toast("The records could not be removed: " + e.message); return; }
-        acad = readAcademy(); S.edit = ""; S.pendingCert = ""; S.found = null; S.quiz = null;
+        acad = readAcademy(); loadPrefs(); S.edit = ""; S.pendingCert = ""; S.found = null; S.quiz = null;
         renderLearner(); renderPanel(); { const w = root.querySelector("#acWho"); if (w) w.focus(); }
         toast("The Academy's records were removed from this computer."); return;
       }
@@ -10433,14 +10809,19 @@ const AcademyUI = (function(){
       renderLearner(); refresh(); const w = root.querySelector("#acWho"); if (w) w.focus();
       announce("Learning as " + nameOf(me())); return;
     }
-    if (t.name === "acTopic"){ S.topic = t.value; renderGrid(); return; }
+    if (t.name === "acCat"){ S.cat = t.value; renderGrid(); return; }
     if (t.id === "acAud"){ S.aud = t.value; renderGrid(); return; }
-    if (t.id === "acFollow"){ S.follow = t.checked; return; }
+    if (t.id === "acFollow"){ S.follow = t.checked; savePrefs({ follow:S.follow }); return; }
+    if (t.id === "acVol"){ S.volume = +t.value; S.muted = S.volume === 0; savePrefs({ volume:S.volume, muted:S.muted }); applyVolume(); if (P && P.playing && P.voice && !P.audio) speakCue(P.cue); return; }
+    if (t.id === "acVoice"){ S.voiceName = t.value; savePrefs({ voiceName:S.voiceName }); if (P && P.playing && P.voice && !P.audio) speakCue(P.cue); announce("Voice changed to " + t.value); return; }
     if (t.id === "acYear"){ S.year = +t.value; renderPanel(); const y = root.querySelector("#acYear"); if (y) y.focus(); return; }
     if (t.id === "acApproval"){ writeAcademy(A.setApproval(acad, t.value)); toast(acad.approval ? "Approval statement saved: it prints on certificates." : "Approval statement cleared: certificates show the in-service statement."); return; }
     if (/^acQ\d+$/.test(t.name) && S.quiz){ S.quiz.answers[+t.name.slice(3)] = +t.value; return; }
   }
-  function onInput(e){ if (e.target.id === "acQ"){ S.q = e.target.value; renderGrid(); } }
+  function onInput(e){
+    if (e.target.id === "acQ"){ S.q = e.target.value; renderGrid(); }
+    else if (e.target.id === "acVol"){ S.volume = +e.target.value; S.muted = S.volume === 0; applyVolume(); }
+  }
   function onSubmit(e){
     const f = e.target.closest("form[data-form]"); if (!f) return;
     e.preventDefault();
@@ -13365,7 +13746,7 @@ function renderHome(){
     </div>
     <h2 style="margin-top:32px">Learning &amp; reference</h2>
     <div class="card-grid">
-      ${tool("#/academy", ICONS.academy, "Caregiver & Professional Academy", "Narrated masterclasses for care teams, with transcripts, companion guides, knowledge checks and in-service certificates, and short guides with printable toolkits for family caregivers.", academyPills())}
+      ${tool("#/academy", ICONS.academy, "Staff & Caregiver Academy", "Narrated masterclasses for care teams, with transcripts, companion guides, knowledge checks and in-service certificates, and short guides with printable toolkits for family caregivers.", academyPills())}
       ${tool("resources/", ICONS.journal, "Resource & Clinical Hub", "The reading behind the tools, kept apart from them: the Clinical Science & Research Center with its board packet, quality standards, clinical alignment, reminiscence science, facility and publishing information, the feature guide, the resource catalog and the caregiver FAQ.", ["10 modules", "Clinical & quality", "Guides & help"])}
     </div>`;
 }

@@ -173,7 +173,7 @@ export const GENERATORS = [
     desc: "The Cognitive Life Journal: a life story in four sections, from early roots to daily comfort.", meta: ["4 sections", "Family notes"] },
   { key: "facility", label: "Facility Portal",         href: "builder.html#/facility", icon: "building",
     desc: "For activity directors: wings and resident groups by acuity tier, a balanced month of six-pillar sessions in one click, and a week of group packets printed at once.", meta: ["4 acuity tiers", "Month scheduler", "Week packets"] },
-  { key: "academy",  label: "Caregiver & Professional Academy", href: "builder.html#/academy", icon: "academy",
+  { key: "academy",  label: "Staff & Caregiver Academy", href: "builder.html#/academy", icon: "academy",
     desc: "Narrated masterclasses for care teams with transcripts, companion guides, knowledge checks and in-service certificates, plus short guides and toolkits for family caregivers.", meta: ["6 masterclasses", "Family track", "Training records"] },
   { key: "roster",   label: "Resident Roster",         href: "builder.html#/roster",   icon: "roster",
     desc: "Every saved resident in one list: choose a resident, choose a book, and print at their tier.", meta: ["3 clicks to print"] },

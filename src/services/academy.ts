@@ -1,6 +1,6 @@
 /* =====================================================================
    COGNICOPIA ACADEMY
-   The content and the logic behind the Caregiver & Professional Academy
+   The content and the logic behind the Staff & Caregiver Academy
    (the Packet Builder's #/academy): masterclasses for care staff, short
    guides and printable toolkits for family caregivers, and a training
    record for each learner.
@@ -31,7 +31,7 @@
    @global CogniAcademy
    ===================================================================== */
 
-export const VERSION = "1.0.0";
+export const VERSION = "1.1.0";
 export const STORE_KEY = "cognicopia_academy";
 export const WPM = 140;             // narration pace, words a minute
 export const READ_WPM = 200;        // reading pace for a companion guide
@@ -54,12 +54,25 @@ export interface Instructor { name: string; focus: string; initials: string; }
 export interface Chapter { id: string; title: string; slide: string; say: string[]; points: string[]; }
 export interface Question { q: string; options: string[]; answer: number; why: string; }
 export interface Video { src: string; captions?: string; }
+/* A recorded narration kept on the site (for example assets/academy/sundowning.mp3). `cues`, when
+   given, is the start second of every line of the script (one per line, in order); without it the
+   script's own timing is stretched to the recording's length. */
+export interface AudioTrack { src: string; cues?: number[]; }
+export type Category = "essentials" | "reminiscence" | "activity";
+export const CATEGORIES: Readonly<Record<Category, string>> = {
+  essentials: "Memory Care Essentials", reminiscence: "Reminiscence", activity: "Activity Guidance"
+};
+export type Level = "foundations" | "practice" | "skills";
+export const LEVELS: Readonly<Record<Level, string>> = { foundations: "Foundations", practice: "Everyday practice", skills: "Deeper skills" };
+export interface Faq { q: string; a: string; }
 export interface Module {
   id: string; track: Track; title: string; subtitle: string; blurb: string; art: string;
   audience: Audience[]; topics: Topic[]; instructor: Instructor; video: Video | null;
   chapters: Chapter[]; tryThis: string[]; avoid: string[]; reflect: string[]; sources: string[];
   quiz: Question[]; toolkits: string[];
+  category: Category[]; level: Level; faq: Faq[]; audio: AudioTrack | null;
 }
+type Base = Omit<Module, "category" | "level" | "faq" | "audio">;
 export interface ToolkitSection { heading: string; text?: string; items?: string[]; checks?: string[]; lines?: number; }
 export interface Toolkit { id: string; title: string; blurb: string; icon: string; sections: ToolkitSection[]; }
 
@@ -67,7 +80,7 @@ const ACADEMY: Instructor = { name: "Cognicopia Academy", focus: "", initials: "
 const by = (focus: string, initials: string): Instructor => ({ name: ACADEMY.name, focus, initials });
 
 /* ---------- 2. Masterclasses for care staff ---------- */
-const PRO: Module[] = [
+const PRO: Base[] = [
   { id: "reminiscence-circles", track: "pro", art: "circle",
     title: "Running Structured Reminiscence Circles",
     subtitle: "Plan, lead and close a small-group session that brings out stories without testing memory",
@@ -602,7 +615,7 @@ const PRO: Module[] = [
 ];
 
 /* ---------- 3. Guides for family caregivers ---------- */
-const FAMILY: Module[] = [
+const FAMILY: Base[] = [
   { id: "family-your-name", track: "family", art: "hands",
     title: "When They Don't Remember Your Name",
     subtitle: "Keeping connection when recognition fades",
@@ -822,7 +835,63 @@ export const TOOLKITS: readonly Toolkit[] = [
     ] }
 ];
 
-export const MODULES: readonly Module[] = PRO.concat(FAMILY);
+
+/* ---------- 3b. Category, level and questions people ask, for every module ----------
+   Kept apart from the lesson scripts so a lesson can be read as one piece. */
+const META: Readonly<Record<string, { category: Category[]; level: Level; faq: Faq[] }>> = {
+  "reminiscence-circles": { category: ["reminiscence"], level: "practice", faq: [
+    { q: "What if a story upsets someone?", a: "Slow down and acknowledge the feeling in plain words. Offer a pause, a drink or a quiet moment one to one, then move gently to a lighter topic. If the distress continues, tell the nurse or social worker and follow your facility's procedures." },
+    { q: "What if two residents remember the same event differently?", a: "Let each person tell their own version. A circle is not the place to settle facts. You can say that memories look different to each of us, and then invite the next story." },
+    { q: "How long should a circle last?", a: "Many groups do well with about 30 to 45 minutes. Watch energy and attention, and finish while people are still enjoying it." }
+  ] },
+  "sundowning": { category: ["essentials"], level: "practice", faq: [
+    { q: "Is a sudden change just sundowning?", a: "Not necessarily. A sudden change from someone's usual self can have a medical cause, such as an infection, dehydration, pain or a medicine change. Tell the nurse right away rather than waiting for the evening to pass." },
+    { q: "What helps most in the late afternoon?", a: "Lights on before dusk, lower noise, a snack and a drink, and something calm and familiar to do. The chapter on shaping the afternoon has the full list." },
+    { q: "What do I say when someone asks to go home?", a: "Respond to the feeling behind it. You might say, \"It sounds like you're missing home. Tell me about it.\" Correcting the facts usually raises distress." }
+  ] },
+  "wheelchair-movement": { category: ["essentials", "activity"], level: "skills", faq: [
+    { q: "Who decides whether someone can join a movement session?", a: "The care plan does, together with the nurse and therapy staff. Check each person's movement precautions first, and ask when you are unsure." },
+    { q: "When should I stop a movement session for someone?", a: "Stop and tell the nurse right away for chest pain or pressure, unusual shortness of breath, dizziness, sudden weakness, new or sharp pain, or pale, gray or clammy skin. Tiredness is a signal to slow down and offer rest." },
+    { q: "How can someone with limited arm movement take part?", a: "Offer a sensory or guided version: a scarf to wave, a textured ball to hold, or hand-under-hand guidance. Follow therapy guidance, and invite movement on the side that is comfortable." }
+  ] },
+  "person-centered-communication": { category: ["essentials"], level: "foundations", faq: [
+    { q: "What if the person doesn't answer?", a: "Give extra time, then offer two simple choices or show an object. A smile, eye contact at their level and a calm voice also carry your meaning." },
+    { q: "Should I correct something that isn't true?", a: "Arguing about facts rarely helps. Listen for the feeling and respond to it, then gently turn to something comforting. Follow your facility's guidance." },
+    { q: "Which words should I avoid?", a: "Avoid labels that define a person by a condition, and baby talk. Use their preferred name, speak to them as the adult they are, and say what you are about to do before you do it." }
+  ] },
+  "matching-activities": { category: ["activity"], level: "practice", faq: [
+    { q: "How do I choose the right level for someone?", a: "Start with the resident's profile and your own observation. Notice what they begin on their own and what they set aside. The best match is challenging enough to engage and easy enough to succeed." },
+    { q: "What if an activity turns out too hard in the moment?", a: "Simplify without drawing attention to it: fewer pieces, a clearer cue, or doing it alongside them. Thank them for joining, and try something different another day." },
+    { q: "How do I plan a balanced week?", a: "Mix movement, music, social time, creative and quiet activities, and place each at a time of day when people tend to feel their best. The last chapter of the lesson covers planning a balanced week." }
+  ] },
+  "music-that-reaches": { category: ["reminiscence", "activity"], level: "foundations", faq: [
+    { q: "What if a favorite song seems to upset someone?", a: "Finish the song kindly and offer something calm. A song can carry a painful memory. Ask families about songs to avoid, and note what you learn on the resident's profile." },
+    { q: "Can residents use headphones for personal playlists?", a: "Many people enjoy them with supervision. Keep the volume safe and comfortable, check that the fit is gentle, and stay close the first few times to watch their response." },
+    { q: "Do I need to be a good singer?", a: "No. Warmth matters more than pitch. Start with a well-known chorus, sing a little slower and lower than the recording, and invite clapping or swaying." }
+  ] },
+  "family-your-name": { category: ["essentials"], level: "foundations", faq: [
+    { q: "Should I tell them who I am at every visit?", a: "Yes, and kindly. Greeting them with your name and your connection saves them the worry of searching: \"Hi Mom, it's Sarah.\"" },
+    { q: "Does it mean they have stopped caring about me?", a: "No. Warmth, trust and comfort often remain even when names fade. Your presence still counts." }
+  ] },
+  "family-late-day": { category: ["essentials"], level: "foundations", faq: [
+    { q: "Why does the evening feel harder?", a: "Tiredness, fading light, hunger, pain and a busy, noisy house can add up by evening. It isn't something they do on purpose, and it isn't your fault." },
+    { q: "When should I call their doctor or the nurse line?", a: "If there is a sudden change from their usual self, signs of pain or illness, or any risk of harm, call their doctor or the nurse line right away." }
+  ] },
+  "family-their-world": { category: ["essentials"], level: "foundations", faq: [
+    { q: "What do I say when they ask for someone who has died?", a: "Respond to the feeling and invite a memory: \"You miss her. Tell me about her.\" Repeating hard news can bring fresh grief, so follow the care team's guidance." },
+    { q: "Is it wrong to go along with what they believe?", a: "Arguing about facts rarely helps. Join their world with warmth, keep them safe, and ask the care team if you are unsure." }
+  ] },
+  "family-daily-rhythm": { category: ["essentials"], level: "foundations", faq: [
+    { q: "How strict should the routine be?", a: "Keep a few anchors steady, such as waking, meals and bed, and stay flexible in between. A rhythm is a support, not a schedule to enforce." },
+    { q: "What if they refuse something at the usual time?", a: "Pause and try again later, and move harder tasks to their best time of day." }
+  ] },
+  "family-caring-for-you": { category: ["essentials"], level: "foundations", faq: [
+    { q: "Is it selfish to take time for myself?", a: "No. Caring for yourself helps you care for them. Even a small daily act counts." },
+    { q: "Who can I call for support?", a: "In the United States: the Alzheimer's Association 24/7 Helpline (800-272-3900), the Eldercare Locator (800-677-1116), and 988 to call or text in a crisis." }
+  ] }
+};
+export const MODULES: readonly Module[] = PRO.concat(FAMILY).map(m => Object.assign({}, m, META[m.id], { audio: null }) as Module);
+export const inCategory = (m: Module, c: Category | ""): boolean => !c || m.category.indexOf(c) >= 0;
 export const moduleOf = (id: string): Module | null => MODULES.filter(m => m.id === id)[0] || null;
 export const toolkitOf = (id: string): Toolkit | null => TOOLKITS.filter(t => t.id === id)[0] || null;
 
@@ -857,6 +926,39 @@ export function spoken(sec: number): string {
   const s = Math.max(0, Math.round(sec)), m = Math.floor(s / 60), r = s % 60;
   return (m ? m + (m === 1 ? " minute" : " minutes") : "") + (m && r ? " " : "") + (r || !m ? r + (r === 1 ? " second" : " seconds") : "");
 }
+/* Words in a line, so the one being read can be highlighted. */
+export interface WordSpan { start: number; end: number; }
+export function wordSpans(text: string): WordSpan[] {
+  const out: WordSpan[] = [], re = /\S+/g; let m: RegExpExecArray | null;
+  while ((m = re.exec(text))) out.push({ start: m.index, end: m.index + m[0].length });
+  return out;
+}
+/* Which word is being spoken `share` (0 to 1) of the way through a line: each word takes time in proportion to its length. */
+export function wordAt(text: string, share: number): number {
+  const w = wordSpans(text); if (!w.length) return -1;
+  const weights = w.map(x => x.end - x.start + 1), total = weights.reduce((s, x) => s + x, 0), at = Math.max(0, Math.min(0.9999, Number(share) || 0)) * total;
+  let acc = 0;
+  for (let i = 0; i < w.length; i++){ acc += weights[i]; if (at < acc) return i; }
+  return w.length - 1;
+}
+/* The word that holds a character position (what a voice reports as it speaks). */
+export function wordAtChar(text: string, charIndex: number): number {
+  const w = wordSpans(text);
+  for (let i = 0; i < w.length; i++) if (charIndex < w[i].end) return i;
+  return w.length - 1;
+}
+/* The script's lines timed to a recorded narration of `duration` seconds: at the recording's own line
+   starts when the module gives them, otherwise the script's pacing stretched to fit. */
+export function audioTimeline(m: Module, duration: number): Cue[] {
+  const base = cues(m), d = Math.max(1, Number(duration) || 0), last = base[base.length - 1], total = last ? last.start + last.dur : 0;
+  const given = m.audio && m.audio.cues ? m.audio.cues : null;
+  const ok = !!given && given.length === base.length && given.every((t, i) => Number.isFinite(t) && t >= 0 && t < d && (!i || t > (given as number[])[i - 1]));
+  const startOf = (i: number): number => ok ? (given as number[])[i] : total ? base[i].start * d / total : 0;
+  return base.map((c, i) => {
+    const start = startOf(i), end = i + 1 < base.length ? startOf(i + 1) : d;
+    return Object.assign({}, c, { start: Math.round(start * 100) / 100, dur: Math.round((end - start) * 100) / 100 });
+  });
+}
 export const hoursText = (min: number): string => { const h = Math.floor(min / 60), m = Math.round(min % 60); return (h ? h + " h" : "") + (h && m ? " " : "") + (m || !h ? m + " min" : ""); };
 
 /* ---------- 6. Learners and progress ---------- */
@@ -866,22 +968,44 @@ export const ROLES: Readonly<Record<Role, string>> = {
   therapy: "Therapy (PT, OT or SLP)", "other-staff": "Other staff", family: "Family caregiver"
 };
 export interface Learner { id: string; name: string; role: Role; }
-export interface Progress { played: number[]; read: boolean; video: number; quizBest: number; quizAttempts: number; quizPassedAt: string; completedAt: string; minutes: number; cert: string; }
-export interface Academy { v: 1; learners: Learner[]; active: string; progress: Record<string, Record<string, Progress>>; approval: string; }
-export const LIMITS = { learners: 200, name: 60, approval: 300 } as const;
+/* A bookmark is a moment in the lesson the learner wants to come back to. */
+export interface Bookmark { t: number; label: string; }
+export interface Progress { played: number[]; read: boolean; video: number; quizBest: number; quizAttempts: number; quizPassedAt: string; completedAt: string; minutes: number; cert: string; pos: number; bookmarks: Bookmark[]; }
+/* Player choices that follow the person from lesson to lesson. */
+export interface Prefs { rate: number; cc: boolean; voice: boolean; follow: boolean; volume: number; muted: boolean; voiceName: string; }
+export const RATES: readonly number[] = [0.75, 1, 1.25, 1.5];
+export const DEFAULT_PREFS: Prefs = { rate: 1, cc: true, voice: true, follow: true, volume: 1, muted: false, voiceName: "" };
+export interface Academy { v: 1; learners: Learner[]; active: string; progress: Record<string, Record<string, Progress>>; approval: string; prefs: Prefs; }
+export const LIMITS = { learners: 200, name: 60, approval: 300, bookmarks: 20, label: 60, voice: 80 } as const;
 const ID = /^[A-Za-z0-9_-]{1,40}$/;
 const line = (v: unknown, max: number): string => String(v == null ? "" : v).replace(/[\u0000-\u001F\u007F]/g, " ").replace(/\s+/g, " ").trim().slice(0, max);
 export const newId = (prefix: string): string => prefix + Math.random().toString(36).slice(2, 10) + Math.random().toString(36).slice(2, 6);
 const isRole = (r: unknown): r is Role => typeof r === "string" && Object.prototype.hasOwnProperty.call(ROLES, r);
 const isDate = (s: unknown): s is string => typeof s === "string" && /^\d{4}-\d{2}-\d{2}/.test(s) && !isNaN(Date.parse(s));
-export const emptyProgress = (): Progress => ({ played: [], read: false, video: 0, quizBest: 0, quizAttempts: 0, quizPassedAt: "", completedAt: "", minutes: 0, cert: "" });
+export const emptyProgress = (): Progress => ({ played: [], read: false, video: 0, quizBest: 0, quizAttempts: 0, quizPassedAt: "", completedAt: "", minutes: 0, cert: "", pos: 0, bookmarks: [] });
+const clampNum = (v: unknown, lo: number, hi: number): number => { const x = Number(v); return Number.isFinite(x) ? Math.max(lo, Math.min(hi, x)) : lo; };
+function normalizeBookmarks(raw: unknown): Bookmark[] {
+  const seen = new Set<number>(), out: Bookmark[] = [];
+  (Array.isArray(raw) ? raw : []).forEach(x => {
+    const b = (x && typeof x === "object" ? x : {}) as Record<string, unknown>, t = Math.round(clampNum(b.t, 0, 7200) * 10) / 10;
+    if (out.length >= LIMITS.bookmarks || seen.has(t)) return;
+    seen.add(t); out.push({ t, label: line(b.label, LIMITS.label) });
+  });
+  return out.sort((a, b) => a.t - b.t);
+}
+export function normalizePrefs(raw: unknown): Prefs {
+  const o = (raw && typeof raw === "object" ? raw : {}) as Record<string, unknown>, r = Number(o.rate);
+  return { rate: RATES.indexOf(r) >= 0 ? r : 1, cc: o.cc !== false, voice: o.voice !== false, follow: o.follow !== false,
+    volume: o.volume == null ? 1 : Math.round(clampNum(o.volume, 0, 1) * 100) / 100, muted: o.muted === true, voiceName: line(o.voiceName, LIMITS.voice) };
+}
 function normalizeProgress(raw: unknown, m: Module): Progress {
   const o = (raw && typeof raw === "object" ? raw : {}) as Record<string, unknown>, n = cues(m).length;
   const played = Array.from(new Set((Array.isArray(o.played) ? o.played : []).map(Number).filter(i => Number.isInteger(i) && i >= 0 && i < n))).sort((a, b) => a - b);
   const num = (v: unknown, lo: number, hi: number): number => { const x = Number(v); return Number.isFinite(x) ? Math.max(lo, Math.min(hi, x)) : lo; };
   return { played, read: o.read === true, video: num(o.video, 0, 1), quizBest: num(o.quizBest, 0, 1), quizAttempts: Math.round(num(o.quizAttempts, 0, 9999)),
     quizPassedAt: isDate(o.quizPassedAt) ? o.quizPassedAt : "", completedAt: isDate(o.completedAt) ? o.completedAt : "",
-    minutes: Math.round(num(o.minutes, 0, 600)), cert: typeof o.cert === "string" && /^CA-[0-9A-Z]{4}-[0-9A-Z]{4}$/.test(o.cert) ? o.cert : "" };
+    minutes: Math.round(num(o.minutes, 0, 600)), cert: typeof o.cert === "string" && /^CA-[0-9A-Z]{4}-[0-9A-Z]{4}$/.test(o.cert) ? o.cert : "",
+    pos: Math.round(num(o.pos, 0, 7200) * 10) / 10, bookmarks: normalizeBookmarks(o.bookmarks) };
 }
 export function normalizeAcademy(raw: unknown): Academy {
   const o = (raw && typeof raw === "object" ? raw : {}) as Record<string, unknown>;
@@ -902,13 +1026,13 @@ export function normalizeAcademy(raw: unknown): Academy {
     progress[l.id] = mine;
   });
   const active = typeof o.active === "string" && learners.some(l => l.id === o.active) ? o.active : learners[0].id;
-  return { v: 1, learners, active, progress, approval: line(o.approval, LIMITS.approval) };
+  return { v: 1, learners, active, progress, approval: line(o.approval, LIMITS.approval), prefs: normalizePrefs(o.prefs) };
 }
 export const learnerOf = (a: Academy, id: string): Learner | null => a.learners.filter(l => l.id === id)[0] || null;
 export const activeLearner = (a: Academy): Learner => learnerOf(a, a.active) || a.learners[0];
 export function progressOf(a: Academy, learnerId: string, moduleId: string): Progress {
   const p = (a.progress[learnerId] || {})[moduleId];
-  return p ? Object.assign({}, p, { played: p.played.slice() }) : emptyProgress();
+  return p ? Object.assign({}, p, { played: p.played.slice(), bookmarks: p.bookmarks.map(b => Object.assign({}, b)) }) : emptyProgress();
 }
 function withProgress(a: Academy, learnerId: string, moduleId: string, fn: (p: Progress) => Progress): Academy {
   if (!learnerOf(a, learnerId) || !moduleOf(moduleId)) return a;
@@ -933,6 +1057,17 @@ export function removeLearner(a: Academy, id: string): Academy {
 }
 export const setActive = (a: Academy, id: string): Academy => learnerOf(a, id) ? Object.assign({}, a, { active: id }) : a;
 export const setApproval = (a: Academy, text: string): Academy => Object.assign({}, a, { approval: line(text, LIMITS.approval) });
+export const setPrefs = (a: Academy, patch: Partial<Prefs>): Academy => Object.assign({}, a, { prefs: normalizePrefs(Object.assign({}, a.prefs, patch)) });
+
+/* Where the learner stopped, and the moments they marked. */
+export const setPos = (a: Academy, learnerId: string, moduleId: string, sec: number): Academy =>
+  withProgress(a, learnerId, moduleId, p => Object.assign(p, { pos: Math.round(clampNum(sec, 0, 7200) * 10) / 10 }));
+export function addBookmark(a: Academy, learnerId: string, moduleId: string, t: number, label: string): Academy {
+  return withProgress(a, learnerId, moduleId, p => Object.assign(p, { bookmarks: normalizeBookmarks(p.bookmarks.concat([{ t, label }])) }));
+}
+export function removeBookmark(a: Academy, learnerId: string, moduleId: string, index: number): Academy {
+  return withProgress(a, learnerId, moduleId, p => Object.assign(p, { bookmarks: p.bookmarks.filter((_, i) => i !== index) }));
+}
 
 /* Lesson coverage: the share of the narrated lesson played through (seeking
    past a line does not count it), or all of it once the learner has read the
@@ -1007,6 +1142,20 @@ export function findCertificate(a: Academy, id: string): { learner: Learner; mod
   return null;
 }
 export const NOT_ACCREDITED = "In-service training record. This is not accredited continuing education: it counts toward a license or certification only where your facility's education program or an approving body accepts it.";
+
+/* ---------- 8a. The dashboard: where this learner stands across the series ---------- */
+export interface Dashboard { completed: number; total: number; guides: number; guideTotal: number; minutes: number; seriesMinutes: number; certificates: number; quizzesPassed: number; percent: number; status: string; }
+export function dashboard(a: Academy, learnerId: string): Dashboard {
+  const pro = MODULES.filter(m => m.track === "pro"), fam = MODULES.filter(m => m.track === "family"), mine = a.progress[learnerId] || {};
+  const done = (m: Module): boolean => !!(mine[m.id] && mine[m.id].completedAt);
+  const completed = pro.filter(done).length, guides = fam.filter(done).length;
+  const mins = MODULES.reduce((n, m) => n + (done(m) ? mine[m.id].minutes : 0), 0);
+  const certificates = pro.filter(m => done(m) && !!mine[m.id].cert).length, quizzesPassed = pro.filter(m => !!(mine[m.id] && mine[m.id].quizPassedAt)).length;
+  const started = completed + guides > 0 || Object.keys(mine).some(id => mine[id].played.length > 0 || mine[id].read);
+  const status = completed === pro.length ? "All masterclasses complete" : completed ? completed + " of " + pro.length + " masterclasses complete" : started ? "Under way" : "Ready to begin";
+  return { completed, total: pro.length, guides, guideTotal: fam.length, minutes: mins, seriesMinutes: pro.reduce((n, m) => n + minutes(m).total, 0), certificates, quizzesPassed,
+    percent: pro.length ? Math.round(100 * completed / pro.length) : 0, status };
+}
 
 /* ---------- 8. Training records ---------- */
 export interface YearRecord { learner: Learner; minutes: number; completed: { module: Module; progress: Progress }[]; inProgress: number; }
@@ -1208,7 +1357,8 @@ export const LANGUAGE: readonly { id: string; re: RegExp }[] = [
 export function allText(): string[] {
   const out: string[] = [];
   MODULES.forEach(m => { out.push(m.title, m.subtitle, m.blurb); m.chapters.forEach(c => { out.push(c.title, c.slide); out.push(...c.say, ...c.points); });
-    out.push(...m.tryThis, ...m.avoid, ...m.reflect); m.quiz.forEach(q => { out.push(q.q, q.why, ...q.options); }); });
+    out.push(...m.tryThis, ...m.avoid, ...m.reflect); m.faq.forEach(f => { out.push(f.q, f.a); }); m.quiz.forEach(q => { out.push(q.q, q.why, ...q.options); }); });
+  Object.keys(CATEGORIES).forEach(k => out.push(CATEGORIES[k as Category])); Object.keys(LEVELS).forEach(k => out.push(LEVELS[k as Level]));
   TOOLKITS.forEach(t => { out.push(t.title, t.blurb); t.sections.forEach(s => { out.push(s.heading); if (s.text) out.push(s.text); out.push(...(s.items || []), ...(s.checks || [])); }); });
   return out;
 }

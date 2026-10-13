@@ -36,7 +36,9 @@
         (scripts/check-license-ui.mjs), and the design system does what its
         source says: the focus ring, motion that stops when asked, the scroll
         layers, type, the first screen, the coloring script and a printed sheet
-        read back from its PDF (scripts/check-design-ui.mjs);
+        read back from its PDF (scripts/check-design-ui.mjs), and the Academy
+        works: its design at AAA, the player, saved progress, the knowledge check,
+        the certificate and the print sheets (scripts/check-academy-ui.mjs);
      6. no page or tool text makes a claim the product cannot back (such as
         "HIPAA compliant"; scripts/check-claims.mjs);
      7. the site navigation matches scripts/site-nav.mjs (npm run nav), the
@@ -167,6 +169,14 @@ step("the navigation behaves: hubs open and close, the current page is marked, t
 
 step("the Shift board works: notes, tasks, the name check, encrypted storage, retention, the print sheet, a locked backup and the unlock (a real browser)", () => {
   try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-shift-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
+  catch (e){
+    if (e.status === 2) return "skipped: Playwright is not installed here (see docs/dev-setup.md)";
+    throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message);
+  }
+});
+
+step("the Academy works: the dark-slate design at AAA, the dashboard, search and pills, the player (play, skip, speeds, volume, captions, bookmarks, keyboard), sealed saved progress, the knowledge check, the certificate, the record, Letter print sheets and 52 px controls (a real browser)", () => {
+  try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-academy-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
   catch (e){
     if (e.status === 2) return "skipped: Playwright is not installed here (see docs/dev-setup.md)";
     throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message);

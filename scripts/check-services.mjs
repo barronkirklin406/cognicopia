@@ -805,6 +805,51 @@ group("academy", () => {
   const np = n.progress.x["reminiscence-circles"];
   ok(n.learners.length === 2 && n.learners[0].id !== n.learners[1].id && n.learners[1].role === "other-staff" && n.active === "x" && J(np.played) === "[0,1,2]" && np.quizBest === 1 && np.cert === "" && np.completedAt === "" && !n.progress.x["no-such-module"] && n.approval.length === 300,
     "stored records are cleaned: ids, roles, lines played, scores, certificate IDs, dates, unknown modules, the approval statement");
+  // the course catalog: categories, levels, questions people ask
+  ok(Object.keys(A.CATEGORIES).join() === "essentials,reminiscence,activity" && A.CATEGORIES.reminiscence === "Reminiscence", "three course categories, named without a therapy claim");
+  ok(A.MODULES.every(mm => mm.category.length >= 1 && mm.category.every(c => A.CATEGORIES[c]) && A.LEVELS[mm.level] && mm.audio === null), "every module has categories, a level and no recorded narration yet");
+  ok(A.MODULES.every(mm => mm.faq.length >= 2 && mm.faq.every(f => f.q.endsWith("?") && f.a.length >= 40 && f.a.length <= 420)), "every module has two or three questions people ask, each with a plain answer");
+  ok(A.inCategory(m, "") && A.inCategory(m, "reminiscence") && !A.inCategory(m, "activity") && pro.every(mm => A.CATEGORIES && Object.keys(A.CATEGORIES).some(c => A.inCategory(mm, c))), "the category filter matches a course in its own category only");
+  ok(Object.keys(A.CATEGORIES).every(c => pro.some(mm => A.inCategory(mm, c))), "every category holds at least one masterclass");
+  // the dashboard
+  let d0 = A.dashboard(A.normalizeAcademy(null), "l-me");
+  ok(d0.completed === 0 && d0.total === pro.length && d0.minutes === 0 && d0.percent === 0 && d0.status === "Ready to begin" && d0.certificates === 0 && d0.seriesMinutes === pro.reduce((n, mm) => n + A.minutes(mm).total, 0), "a new learner's dashboard: nothing done, ready to begin");
+  const dm = A.dashboard(a, maria);
+  ok(dm.completed === 1 && dm.guides === 1 && dm.minutes === pd.minutes + A.progressOf(a, maria, f.id).minutes && dm.certificates === 1 && dm.quizzesPassed === 1 && dm.percent === Math.round(100 / pro.length) && dm.status === `1 of ${pro.length} masterclasses complete`, "the dashboard counts completed courses, guides, minutes, certificates and checks passed");
+  let dAll = a; for (const mm of pro){ const pp = A.progressOf(dAll, maria, mm.id); if (!pp.completedAt){ dAll = A.markRead(dAll, maria, mm.id); dAll = A.recordQuiz(dAll, maria, mm.id, A.grade(mm, mm.quiz.map(q => q.answer))); dAll = A.complete(dAll, maria, mm.id).academy; } }
+  ok(A.dashboard(dAll, maria).percent === 100 && A.dashboard(dAll, maria).status === "All masterclasses complete" && A.dashboard(dAll, maria).certificates === pro.length, "finishing the series says so");
+  ok(A.dashboard(A.markPlayed(A.normalizeAcademy(null), "l-me", m.id, [0, 1]), "l-me").status === "Under way", "a lesson begun is under way");
+  // preferences, where the learner stopped, and bookmarks
+  ok(J(A.normalizePrefs(null)) === J(A.DEFAULT_PREFS) && A.normalizeAcademy(null).prefs.rate === 1, "player choices default sensibly");
+  const pf = A.normalizePrefs({ rate: 1.25, cc: false, voice: false, follow: false, volume: 7, muted: true, voiceName: "Voice\u0007 One" + "x".repeat(200) });
+  ok(pf.rate === 1.25 && pf.cc === false && pf.voice === false && pf.follow === false && pf.volume === 1 && pf.muted === true && pf.voiceName.startsWith("Voice One") && pf.voiceName.length === 80, "saved player choices are kept and cleaned");
+  ok(A.normalizePrefs({ rate: 3, volume: -4 }).rate === 1 && A.normalizePrefs({ volume: -4 }).volume === 0 && A.normalizePrefs({ rate: "fast" }).rate === 1, "a speed that is not offered, or a volume out of range, is corrected");
+  ok(A.setPrefs(a, { rate: 1.5, muted: true }).prefs.rate === 1.5 && A.setPrefs(a, { rate: 9 }).prefs.rate === 1 && A.setPrefs(a, { cc: false }).prefs.volume === 1, "choices are changed one at a time");
+  let bp = A.setPos(a, maria, m.id, 123.46);
+  ok(A.progressOf(bp, maria, m.id).pos === 123.5 && A.progressOf(A.setPos(bp, maria, m.id, -5), maria, m.id).pos === 0 && A.setPos(bp, "nobody", m.id, 9) === bp, "where the learner stopped is saved, kept in range, and ignored for an unknown learner");
+  bp = A.addBookmark(bp, maria, m.id, 61.04, "Chapter 2: Setting up\u0007 the circle"); bp = A.addBookmark(bp, maria, m.id, 12, ""); bp = A.addBookmark(bp, maria, m.id, 61, "again");
+  const bks = A.progressOf(bp, maria, m.id).bookmarks;
+  ok(bks.length === 2 && bks[0].t === 12 && bks[1].t === 61 && bks[1].label === "Chapter 2: Setting up the circle", "bookmarks are kept in order, cleaned, and one moment is marked once");
+  let many = a; for (let i = 0; i < 40; i++) many = A.addBookmark(many, maria, m.id, i * 3, "b" + i);
+  ok(A.progressOf(many, maria, m.id).bookmarks.length === A.LIMITS.bookmarks, "a lesson holds at most " + A.LIMITS.bookmarks + " bookmarks");
+  ok(A.progressOf(A.removeBookmark(bp, maria, m.id, 0), maria, m.id).bookmarks.length === 1 && A.progressOf(A.removeBookmark(bp, maria, m.id, 0), maria, m.id).bookmarks[0].t === 61, "a bookmark is removed");
+  const nb = A.normalizeAcademy({ learners: [{ id: "x", name: "A" }], progress: { x: { "reminiscence-circles": { pos: 99999, bookmarks: [{ t: 5, label: "ok" }, { t: "no" }, { t: 5, label: "dup" }, 7, null] } } }, prefs: { rate: 1.25 } });
+  ok(nb.progress.x["reminiscence-circles"].pos === 7200 && J(nb.progress.x["reminiscence-circles"].bookmarks.map(b => b.t)) === "[0,5]" && nb.prefs.rate === 1.25, "stored position, bookmarks and choices are cleaned when read");
+  ok(J(A.normalizeAcademy({ learners: [{ id: "x" }], progress: { x: { "reminiscence-circles": { played: [0] } } } }).progress.x["reminiscence-circles"].bookmarks) === "[]", "records saved before bookmarks existed read as having none");
+  // words, for the caption that follows the voice
+  const line1 = "Welcome. In this masterclass we'll plan and lead a circle.";
+  ok(A.wordSpans(line1).length === 10 && A.wordSpans("").length === 0 && A.wordSpans("  one   two ").length === 2, "words are found in a line");
+  ok(A.wordAt(line1, 0) === 0 && A.wordAt(line1, 1) === 9 && A.wordAt(line1, 0.999) === 9 && A.wordAt("", 0.5) === -1 && A.wordAt(line1, -3) === 0 && A.wordAt(line1, NaN) === 0, "the word being read follows the share of the line, at the ends too");
+  let prevW = -1, climb = true; for (let i = 0; i <= 100; i++){ const w = A.wordAt(line1, i / 100); if (w < prevW) climb = false; prevW = w; }
+  ok(climb, "the word being read only moves forward through a line");
+  ok(A.wordAtChar(line1, 0) === 0 && A.wordAtChar(line1, 9) === 1 && A.wordAtChar(line1, 999) === 9, "a voice's character position finds its word");
+  // a recorded narration: the script's lines timed to the recording
+  const base = A.cues(m), tl = A.audioTimeline(m, 600);
+  ok(tl.length === base.length && Math.abs(tl[0].start) < 0.01 && Math.abs(tl[tl.length - 1].start + tl[tl.length - 1].dur - 600) < 0.05 && tl.every((q, i) => !i || Math.abs(q.start - (tl[i - 1].start + tl[i - 1].dur)) < 0.02), "without line times, the script's pacing is stretched to the recording's length");
+  const given = base.map((q, i) => i * 4), withTimes = Object.assign({}, m, { audio: { src: "assets/academy/x.mp3", cues: given } }), tg = A.audioTimeline(withTimes, base.length * 4 + 3);
+  ok(tg.every((q, i) => q.start === i * 4 && Math.abs(q.dur - (i + 1 < tg.length ? 4 : 7)) < 0.001), "line times from the recording are used as given");
+  const wrongCues = Object.assign({}, m, { audio: { src: "assets/academy/x.mp3", cues: given.slice(0, 3) } });
+  ok(A.audioTimeline(wrongCues, 600).length === base.length && Math.abs(A.audioTimeline(wrongCues, 600)[1].start - tl[1].start) < 0.01, "line times that do not match the script are ignored");
   // printed pages, with an approximate line breaker (the page uses the real font's widths)
   const approx = (text, width, size, bold) => { const cw = size * (bold ? 0.56 : 0.52), max = Math.max(1, Math.floor(width / cw)), out = []; let cur = "";
     String(text).split(/\s+/).filter(Boolean).forEach(wd => { while (wd.length > max){ if (cur){ out.push(cur); cur = ""; } out.push(wd.slice(0, max)); wd = wd.slice(max); } if ((cur ? cur + " " + wd : wd).length > max){ out.push(cur); cur = wd; } else cur = cur ? cur + " " + wd : wd; });
