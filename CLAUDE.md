@@ -2,14 +2,15 @@
 
 Cognicopia (cognicopia.org) is an offline-first memory-care activity site: printable packets, coloring pages, life planners and journals for Activity Directors and families. This file is short on purpose. The long version, with the current state of every module, is `docs/HANDOFF-next-session.md`; read it before a large change.
 
-## Two codebases, two rules
+## Three codebases, three rules
 
 | Where | What | Network rule |
 |---|---|---|
 | Repository root (`index.html`, `builder.html`, `profile.html`, `assets/`, `src/`, `scripts/`, `resources/`) | The **static site**, published from `main` by GitHub Pages | **Offline only.** The three tools make no network request of their own. `npm run build` fails if one does. Resident data never leaves the browser. The one exception is `activate.html`, which sends a Stripe checkout reference (nothing else) to the license service to get a license key after a card purchase; no other page may use the network. |
 | `platform/` | A separate Next.js, Supabase and Stripe service for facilities (sign-in, billing, shared planning) | Needs the internet by design. **Zero PHI:** it never stores a resident's name or health details. Not covered by the root `npm test`; see `platform/README.md`. |
+| `license-service/` | A tiny serverless service, with no dependencies, that turns a Stripe payment into a signed license key and emails it to the buyer (`docs/license-service.md`) | Needs the internet by design, and holds no state. It sees only a buyer's email and business name from Stripe, **never a resident**, and keeps no key: the key goes in one email. Proved by `scripts/check-license-service.mjs` (in `npm test`). Its settings live in the host's environment only. |
 
-Never add a cloud dependency to the static site. Never put resident data in `platform/`.
+Never add a cloud dependency to the static site. Never put resident data in `platform/` or `license-service/`.
 
 ## Working with the owner
 
@@ -65,6 +66,7 @@ node scripts/landing-example.mjs  # rewrite the crossword on the front page's la
 npm run coloring:svgs  # trace master PNGs to closed-outline SVG and js/coloring-data.js (needs: pip install pillow vtracer; skips with a notice where they are missing)
 node scripts/license-keygen.mjs     # owner only: make the license-signing key pair (private half stays outside the repo)
 node scripts/issue-license.mjs      # make or verify a signed license key (invoices, enterprise); see docs/stripe-setup-guide.md
+node scripts/check-license-service.mjs  # prove the payment-to-email service without a network (also in npm test)
 npm run audit:ux  # measure tap targets, contrast, clicks, nav and print time in a real browser (not part of npm test)
 ```
 

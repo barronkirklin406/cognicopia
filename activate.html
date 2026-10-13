@@ -908,7 +908,8 @@ html.cg-night-shift .cg-sidebar-toggle{background:#332312!important;border-color
     if (ref) L.rememberRef(ref);
     var s = L.status();
     say("", "Full access is on", (s.facilityName ? s.facilityName + " — " + s.tierLabel + ", paid through " + dateText(s.expiresAt) + ". " : "")
-      + (r.persisted === false ? "This browser is not keeping saved data, so full access lasts only until this page is closed." : "It stays on after a restart and with no internet."));
+      + (r.persisted === false ? "This browser is not keeping saved data, so full access lasts only until this page is closed." : "It stays on after a restart and with no internet.")
+      + (ref && C.EMAIL_DELIVERY === true ? " We have also emailed your license key to the address you used at checkout. Please keep that email: use the key on your other computers." : ""));
     $("actKey").value = token;
     $("actDone").hidden = false;
     $("actManual").hidden = true;
@@ -916,6 +917,7 @@ html.cg-night-shift .cg-sidebar-toggle{background:#332312!important;border-color
   }
 
   var redeemReady = typeof C.REDEEM_URL === "string" && /^https:\/\//.test(C.REDEEM_URL) && C.REDEEM_URL.indexOf("REPLACE_ME") < 0;
+  var EMAIL_NOTE = "Your payment is safe. We send your license key to the email address you used at checkout: look for a message from Cognicopia, and check your spam folder if you do not see it. If it has not arrived within a few minutes, write to cognicopia@outlook.com and we will send it. When you have it, paste it in the box below.";
   var MESSAGES = {
     not_paid: ["Payment not finished yet", "Stripe has not marked this payment as paid. If you just paid, wait a minute and reload this page. If you are still stuck, email us your receipt."],
     not_found: ["We could not find that payment", "The checkout reference in the address was not recognised. Use the link from your payment page, or paste the license key below."],
@@ -923,6 +925,7 @@ html.cg-night-shift .cg-sidebar-toggle{background:#332312!important;border-color
   };
   function redeem(ref, renewing) {
     if (!redeemReady) {
+      if (C.EMAIL_DELIVERY === true) { say("wait", "Check your email for your license key", EMAIL_NOTE); return; }
       say("wait", "Automatic activation is not switched on yet", "Your payment is safe. Email your receipt to cognicopia@outlook.com and we will send your license key, or paste it below if you already have it.");
       return;
     }
@@ -934,11 +937,12 @@ html.cg-night-shift .cg-sidebar-toggle{background:#332312!important;border-color
         clearTimeout(timer);
         if (r.ok && r.body && typeof r.body.license_key === "string") { cleanAddress(); finish(r.body.license_key, ref); return; }
         var code = r.body && r.body.error && (typeof r.body.error === "string" ? r.body.error : r.body.error.code);
-        var m = MESSAGES[code] || ["The license service could not help just now", "Your payment is safe. Try again in a few minutes, or email your receipt to cognicopia@outlook.com and we will send your key."];
+        var m = MESSAGES[code] || (C.EMAIL_DELIVERY === true ? ["Check your email for your license key", EMAIL_NOTE] : ["The license service could not help just now", "Your payment is safe. Try again in a few minutes, or email your receipt to cognicopia@outlook.com and we will send your key."]);
         say("bad", m[0], m[1]);
       })
       .catch(function () {
         clearTimeout(timer);
+        if (C.EMAIL_DELIVERY === true) { say("wait", "Check your email for your license key", EMAIL_NOTE); return; }
         say("bad", "No connection to the license service", "Your payment is safe. Check that this computer is online and reload the page, or email your receipt to cognicopia@outlook.com and we will send your key.");
       });
   }
