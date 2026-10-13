@@ -1008,7 +1008,7 @@ export function boardBlocks(input: BoardInput): { blocks: PBlock[]; refs: string
     "Personalized, print-ready activities at three support tiers, built from each resident’s own history.",
     "Large-print, high-contrast pages in a typeface designed for low vision, on every page by default.",
     "A Facility Portal that plans a balanced month of group sessions and prints a week of packets at once.",
-    "The Caregiver & Professional Academy: staff masterclasses with in-service training records.",
+    "The Staff & Caregiver Academy: staff masterclasses with in-service training records.",
     "A Clinical Science & Research Center that sets out the evidence behind each approach."
   ].forEach(t => b.push({ k: "li", text: t }));
   b.push({ k: "h2", text: "Privacy and risk" });

@@ -1,4 +1,4 @@
-# Caregiver & Professional Academy
+# Staff & Caregiver Academy
 
 The Academy is Cognicopia's training hub. It has short masterclasses for care teams, gentle guides for family caregivers, and a training record with certificates for everyone who learns on the computer. Its screen is in the Packet Builder (`#/academy`). It opens from:
 - the sidebar (**Academy**, a hub of its own);
@@ -9,10 +9,19 @@ The Academy is Cognicopia's training hub. It has short masterclasses for care te
 
 | Address | Shows |
 |---|---|
-| `#/academy` | The masterclass grid |
+| `#/academy` | The dashboard and the masterclass grid |
 | `#/academy/family` | The family track: guides and toolkits |
 | `#/academy/records` | Training records, certificates, checking a certificate ID |
 | `#/academy/<lesson>` | One lesson: the player, its transcript, guide and knowledge check, and the progress tracker |
+
+## The dashboard
+
+At the top of the masterclass grid, three tiles for the learner chosen under **Learning as**, each with a circular progress ring:
+- **Courses completed**, of the six masterclasses;
+- **Hours learned**, against the series' running time;
+- **Certificates earned**.
+
+The status line says **Ready to begin**, **In progress** or the like. It is worded as an in-service record on purpose: the certificates are not accredited credit unless the facility enters an approval statement (see Certificates). Under it are a search box, an **audience** filter and five pills: **All Courses**, **Memory Care Essentials**, **Reminiscence**, **Activity Guidance** and **Completed**. The word is Reminiscence, not Reminisce Therapy: the lessons teach the practice and make no therapy claim.
 
 ## The catalog
 
@@ -74,11 +83,19 @@ The family guides have no knowledge check and no certificate. They count toward 
 | Go back ten seconds, or to the previous or next chapter | Back 10 s, Previous, Next | |
 | Go anywhere | The position slider | The slider's own arrow keys |
 | Change the speed (0.75×, 1×, 1.25×, 1.5×) | Speed | |
+| Mute, or set the volume | Mute, Volume | M |
+| Bookmark this moment | Bookmark | B |
 | Turn captions on or off | Captions | C |
 | Read aloud, or captions only | Read aloud | |
 | Fill the screen | Full screen | F |
 
-The chapter bar under the controls jumps to a chapter and shows how much of each has played.
+The chapter bar under the controls jumps to a chapter and shows how much of each has played. **Chapters, bookmarks and other lessons** opens a drawer with the chapter list, the learner's bookmarks for this lesson (up to a limit, each removable) and the other lessons.
+
+**Following along.** The word being read is highlighted in the caption and, with **Follow along as it plays** on, in the transcript. When this computer's voice reports word positions the highlight follows them; when it does not, it follows the voice's pace.
+
+**Pictures.** Each lesson has a small illustration drawn in SVG (no image files). While a lesson plays, a few parts of it move gently (a pulse, a glow, steam, a twinkle) and the picture drifts slowly under each chapter. This is transform and opacity only, and it stops with the system's reduced-motion setting.
+
+**Voice.** The player picks the most natural local voice it finds (names that say natural, neural, premium or enhanced come first, then US English) and slows it a little for clarity. A learner can choose another local voice when there is more than one. A recorded narration can be added to a lesson (set its `audio.src` in `src/services/academy.ts`); the player then uses the recording, times the transcript to it, and falls back to this computer's voice if the file cannot play. No recordings ship today, so the player says **Narrated lesson**, not recorded.
 
 **How watching counts**
 - A line counts once it has played from its start to its end. Lines skipped with the slider, the chapter buttons or the arrow keys do not count.
@@ -168,7 +185,9 @@ Companion guides, toolkits and certificates are made as PDFs on this computer:
 
 A heading never ends a page. A prompt and its writing lines always start on the same page.
 
-Academy PDFs do not use one of the free packets: training is not metered.
+**Print** (not only download): **Print key takeaways** on a lesson's guide tab and **Print** on the training record put the same content on US Letter sheets in the Packet Builder's print root: 0.75 in binding gutter, Atkinson Hyperlegible, pure black on white, lines 3 px or thicker, body type 12 pt or larger, page numbers, and content that runs over moves to a continued sheet so nothing is cut off. The footer says the record is in-service training, not accredited continuing education.
+
+Academy PDFs and prints do not use one of the free packets: training is not metered.
 
 ## Adding a recorded video
 
@@ -187,24 +206,29 @@ Everything the Academy saves is sealed in the encrypted store under `cognicopia_
 - learners (staff names and roles);
 - each learner's progress, scores and completions;
 - certificate IDs;
-- the approval statement.
+- the approval statement;
+- the player settings (speed, captions, volume, mute, chosen voice, follow along) and each lesson's bookmarks and place.
 
 **Training records › Remove the Academy's records from this computer** removes all of it. Download the records first if they are needed.
 
 ## Design
 
-The Academy has its own high-contrast palette: white text on deep green (`#1a2e22`). Completion is never shown by color alone: a check mark and words go with it.
+The Academy is a dark-slate screen: page `#0e1614`, panel `#16231f`, card `#1c2e29`, accent emerald `#52b788` (light `#74c69d`), borders `#2a3d36`, with glass-like cards (a faint gradient, a soft glow on hover). The tokens are `--ac-*` in the Academy's own style block in `builder.html`. One color was changed from the brief: the muted text was `#9bb0a5`, which reads 6.2:1 on a card and misses the 7:1 (AAA) bar this site holds its text to, so it is `#b4c6bc` (8.0:1). Completion is never shown by color alone: a check mark and words go with it.
 
 | Pair | Contrast |
 |---|---|
-| White on the page | 14.4:1 |
-| White on a card (`#223a2c`) | 12.3:1 |
-| Secondary text on a card (`#dfe9e4`) | 9.9:1 |
-| Tan borders and chips on a card (`#b5a48b`) | 5.1:1 |
-| Dark ink on tan buttons | 6.6:1 |
-| Amber for the family track (`#e9b872`) | 6.8:1 |
-| Green for completion (`#7ad3a4`) | 6.8:1 |
-| Focus ring (`#e6f4f1`) on the page | 12.7:1 |
+| Text `#f0f4f2` on the page, panel, card | 16.6, 14.6, 12.9:1 |
+| Secondary text `#cfdcd5` on a card | 10.1:1 |
+| Muted text `#b4c6bc` on a card | 8.0:1 |
+| Accent text `#8ad8b0` on a card | 8.5:1 |
+| Dark ink on the emerald button | 7.4:1 |
+| Amber for the family track (`#e9b872`) on a card | 7.9:1 |
+| Green for completion (`#7ad3a4`) on a card | 7.9:1 |
+| Focus ring (`#e6f4f1`) on a card | 12.6:1 |
+
+`scripts/check-academy-ui.mjs` recomputes every text pair from the live styles and fails below 7:1.
+
+**Touch targets** are 52 px (`--tap`, the site's rule; the brief asked for 44). The chapter segments are the one exception, marked `data-tap-exempt`: the position slider and the chapter list reach every point at full size.
 
 **Layout** follows the Academy's own width (container queries), so tablets and desktops each get an arrangement:
 - **Grid:** one to three columns of cards.
@@ -227,7 +251,7 @@ Motion is short and switches off with the system's reduced-motion setting.
   - no heading ending a page and no writing lines starting one, at five different font widths;
   - certificates with long names and a long approval statement, with nothing overlapping.
 
-**Chromium runs** checked:
+**Chromium runs by hand** when the Academy was first built (the screen has since been redesigned; the committed `check-academy-ui.mjs` below covers the current one):
 - **The grid:** cards with thumbnail, length and instructor badge, search, topic and audience filters, the empty state, keyboard tabs, focus returning to a lesson's card.
 - **The player:**
   - play, pause, captions and the keyboard, chapters, and transcript lines;
@@ -257,3 +281,5 @@ Motion is short and switches off with the system's reduced-motion setting.
   - the page never scrolls sideways, nothing leaves its card, and the slide's words, the play button and the captions never overlap.
 - **Reduced motion:** nothing animates.
 - **Privacy:** nothing stored in plain `localStorage`, and no requests to other sites.
+
+**`npm run build`** also runs `scripts/check-academy-ui.mjs`, a Chromium check of the new screen (55 checks): the dark-slate tokens and AAA text pairs; the header, the three ringed tiles, search and the five pills; the player (play and pause, position moving, a word highlighted, back and forward ten seconds, the four speeds, mute and volume, captions, a bookmark, the chapter drawer, Home and arrow keys, the illustration and its motion, full screen); settings and bookmarks saved, sealed and back after a reload; reading, the knowledge check, completing, the certificate asking for a name and downloading as a PDF; the dashboard and Completed pill afterward; the training record; the Letter print sheets (pure black and white, 0.75 in gutter, numbered pages, nothing clipped); no sideways scroll on a phone; 52 px controls; reduced motion; and no request to another site.
