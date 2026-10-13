@@ -112,9 +112,11 @@ export const HUBS = [
       { key: "roster",       label: "Resident roster",          href: B + "#/roster",       route: "roster",       icon: "roster" },
       { key: "clinical",     label: "Session notes (SLP)",      href: B + "#/clinical",     route: "clinical",     icon: "stethoscope" },
       { key: "settings",     label: "Settings & defaults",      href: B + "#/settings",     route: "settings",     icon: "gear" },
-      { key: "pricing",      label: "Plans & pricing",          href: "pricing.html",       icon: "award" } ] },
+      { key: "pricing",      label: "Plans & pricing",          href: "pricing.html",       icon: "award" },
+      { key: "pilot",        label: "Start a 30-day pilot",     href: "pilot.html",         icon: "clipboard" },
+      { key: "referral",     label: "Share with a colleague",   href: "referral.html",      icon: "cards" } ] },
   { id: "academy",   label: "Academy",          icon: "academy",  items: [
-      { key: "academy",      label: "Caregiver & Pro Academy",  href: B + "#/academy",      route: "academy",      icon: "academy" } ] },
+      { key: "academy",      label: "Staff & Caregiver Academy",  href: B + "#/academy",      route: "academy",      icon: "academy" } ] },
   { id: "resources", label: "Resources",        icon: "library",  items: [] }   // the hub, its modules and Contact: see sidebar() and builderSidebar()
 ];
 /* The categories the Packet Builder draws under Activity Packets (its own list, with counts, is built in the page; these are the ids it uses). */
@@ -202,6 +204,8 @@ export const PAGES = [
   { file: "life-planners.html",      current: null, hub: "studio" },
   { file: "contact.html",            current: "contact" },
   { file: "pricing.html",            current: "pricing" },
+  { file: "pilot.html",              current: "pilot" },
+  { file: "referral.html",           current: "referral" },
   { file: "activate.html",           current: null, hub: "facility" },        // where a purchase is turned into a license key: the one page that may use the internet
   { file: "zentangle-art.html",      current: null, hub: "studio" },
   { file: "builder.html",            builder: true },

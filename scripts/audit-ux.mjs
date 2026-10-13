@@ -59,7 +59,7 @@ const VIEWS = [
   ["builder academy", "builder.html#/academy"], ["builder reminiscence", "builder.html#/reminiscence"], ["builder digest", "builder.html#/heirloom"],
   ["builder session notes", "builder.html#/clinical"], ["builder shift board", "builder.html#/shift"], ["builder settings", "builder.html#/settings"],
   ["plans and pricing", "pricing.html"], ["activate a license", "activate.html"], ["contact", "contact.html"],
-  ["journals page", "cognitive-journals.html"], ["planners page", "life-planners.html"], ["zentangle page", "zentangle-art.html"]
+  ["journals page", "cognitive-journals.html"], ["planners page", "life-planners.html"], ["zentangle page", "zentangle-art.html"], ["pilot", "pilot.html"], ["referral", "referral.html"]
 ];
 const VIEWPORTS = [["phone 390", 390, 844], ["laptop 1366", 1366, 768]];
 

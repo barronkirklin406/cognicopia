@@ -208,6 +208,17 @@ step("the crossword on the front page's laptop is the one the engine makes", () 
   try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "landing-example.mjs"), "--check"], { encoding: "utf8" }).trim(); }
   catch (e){ throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message); }
 });
+step("findability: every public page has its own title, description and canonical address, the sitemap and robots.txt are current, and the front page's JSON-LD prices are the ones in src/config/license.js", () => {
+  try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "seo.mjs"), "--check"], { encoding: "utf8" }).trim(); }
+  catch (e){ throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message); }
+});
+step("the sample packet on the site is the PDF the tool makes now (a real browser)", () => {
+  try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "sample-packet.mjs"), "--check"], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
+  catch (e){
+    if (e.status === 2) return "skipped: Playwright is not installed here (see docs/dev-setup.md)";
+    throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message);
+  }
+});
 step("the Research Center pages are current", () => {
   try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "research-pages.mjs"), "--check"], { encoding: "utf8" }).trim(); }
   catch (e){ throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message); }
