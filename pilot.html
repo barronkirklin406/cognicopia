@@ -575,7 +575,7 @@ html body .cg-sidebar .cg-ailment-card:focus-visible{outline:3px solid var(--cg-
 .cg-crumbs li,.cg-crumbs a,.cg-crumbs span{font-size:inherit;line-height:inherit}
 .cg-crumbs li{display:flex;align-items:center;gap:8px;margin:0;color:#d8f3dc!important}
 .cg-crumbs li + li::before{content:"\203A";color:rgba(216,243,220,.55)}
-.cg-crumbs a{display:inline-flex;align-items:center;gap:6px;text-decoration:underline;text-underline-offset:3px;color:#95d5b2!important}
+.cg-crumbs a{display:inline-flex;align-items:center;gap:6px;min-height:var(--tap,52px);text-decoration:underline;text-underline-offset:3px;color:#95d5b2!important}
 .cg-crumbs a:hover{color:#fff!important}
 .cg-crumbs a:focus-visible{outline:2px solid #52b788;outline-offset:2px}
 .cg-crumbs [aria-current]{color:#fff!important;font-weight:700}
@@ -766,6 +766,12 @@ html.cg-night-shift .cg-sidebar-toggle{background:#332312!important;border-color
           <li><a href="resources/publishing-excellence/"><svg class="cg-sb-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="8" r="6"/><path d="M15.5 13.5L17 22l-5-3-5 3 1.5-8.5"/></svg><span>Publishing Excellence</span></a></li>
           <li><a href="resources/platform-overview/"><svg class="cg-sb-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10"/><polygon points="16.2 7.8 14.1 14.1 7.8 16.2 9.9 9.9 16.2 7.8"/></svg><span>Platform &amp; Mission Overview</span></a></li>
             </ul></li>
+          <li class="cg-sb-grp"><span class="cg-sb-glabel" id="cgGrp-trust">Trust &amp; security</span>
+            <ul aria-labelledby="cgGrp-trust">
+          <li><a href="resources/privacy-and-data/"><svg class="cg-sb-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg><span>Privacy &amp; Your Data</span></a></li>
+          <li><a href="resources/security-questions/"><svg class="cg-sb-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M9 12h6M9 16h6"/></svg><span>Security &amp; Vendor Questions</span></a></li>
+          <li><a href="resources/accessibility/"><svg class="cg-sb-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10"/><polygon points="16.2 7.8 14.1 14.1 7.8 16.2 9.9 9.9 16.2 7.8"/></svg><span>Accessibility Statement</span></a></li>
+            </ul></li>
           <li class="cg-sb-grp"><span class="cg-sb-glabel" id="cgGrp-guides">Guides &amp; help</span>
             <ul aria-labelledby="cgGrp-guides">
           <li><a href="resources/activity-feature-guide/"><svg class="cg-sb-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg><span>Activity Feature Guide</span></a></li>
@@ -872,7 +878,7 @@ html.cg-night-shift .cg-sidebar-toggle{background:#332312!important;border-color
       <h2>Questions an administrator or IT may ask</h2>
       <dl class="pg-qa">
         <dt>Where does resident information go?</dt>
-        <dd>It stays in the browser on the computer where it was typed. The packet tools make no network request of their own. This supports a facility's own privacy practices; it does not replace them. More in the <a href="resources/caregiver-faq/#q20">FAQ</a>.</dd>
+        <dd>It stays in the browser on the computer where it was typed. The packet tools make no network request of their own. This supports a facility's own privacy practices; it does not replace them. The full answer is on <a href="resources/privacy-and-data/">Privacy &amp; Your Data</a>, with <a href="resources/security-questions/">answers for an IT team</a> and an <a href="resources/accessibility/">accessibility statement</a>.</dd>
         <dt>Does it need the internet?</dt>
         <dd>The tools make and print packets on the computer, so a network that blocks other sites does not stop printing. Buying is separate: a card payment goes through Stripe, and an invoice is available.</dd>
         <dt>What do we need to print?</dt>

@@ -129,6 +129,7 @@ export const HUB = { href: "resources/", title: "Resource & Clinical Hub" };
 export const GROUPS = [
   { id: "clinical",   label: "Clinical & quality",        blurb: "The evidence, standards and clinical thinking behind every page." },
   { id: "facilities", label: "Facilities & publishing",   blurb: "How Cognicopia works for busy communities, and who stands behind it." },
+  { id: "trust",      label: "Trust & security",          blurb: "How resident information is kept, what has been measured, and what we do not yet have." },
   { id: "guides",     label: "Guides & help",             blurb: "What the tools do, what they make, and answers to common questions." }
 ];
 export const MODULES = [
@@ -146,6 +147,12 @@ export const MODULES = [
     desc: "Editorial standards, quality control and independent geriatric publishing." },
   { slug: "platform-overview",      label: "Platform & Mission Overview", legacy: "about.html",                  group: "facilities", icon: "compass",
     desc: "Why Cognicopia exists and how it supports dignified, meaningful memory care connections." },
+  { slug: "privacy-and-data",       label: "Privacy & Your Data",         group: "trust",      icon: "shield",
+    desc: "What is kept on your computer, how it is encrypted, what travels over the internet, and what Cognicopia does not do." },
+  { slug: "security-questions",     label: "Security & Vendor Questions", group: "trust",      icon: "clipboard",
+    desc: "Plain answers for an administrator or IT team: where data lives, subprocessors, testing, and what we do not yet have." },
+  { slug: "accessibility",          label: "Accessibility Statement",     group: "trust",      icon: "compass",
+    desc: "What is in place for low vision, keyboard use and large print, what is measured, and what is not yet tested." },
   { slug: "activity-feature-guide", label: "Activity Feature Guide",     legacy: "features.html",                group: "guides",     icon: "layout",
     desc: "A tour of the personalized activity generation and print-ready export features." },
   { slug: "resource-catalog",       label: "Master Resource Catalog",    legacy: "resources.html",               group: "guides",     icon: "books",
@@ -514,7 +521,7 @@ html body .cg-sidebar .cg-ailment-card:focus-visible{outline:3px solid var(--cg-
 .cg-crumbs li,.cg-crumbs a,.cg-crumbs span{font-size:inherit;line-height:inherit}
 .cg-crumbs li{display:flex;align-items:center;gap:8px;margin:0;color:#d8f3dc!important}
 .cg-crumbs li + li::before{content:"\\203A";color:rgba(216,243,220,.55)}
-.cg-crumbs a{display:inline-flex;align-items:center;gap:6px;text-decoration:underline;text-underline-offset:3px;color:#95d5b2!important}
+.cg-crumbs a{display:inline-flex;align-items:center;gap:6px;min-height:var(--tap,52px);text-decoration:underline;text-underline-offset:3px;color:#95d5b2!important}
 .cg-crumbs a:hover{color:#fff!important}
 .cg-crumbs a:focus-visible{outline:2px solid #52b788;outline-offset:2px}
 .cg-crumbs [aria-current]{color:#fff!important;font-weight:700}
