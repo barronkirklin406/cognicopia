@@ -40,7 +40,10 @@ const pem = privateKey.export({ type: "pkcs8", format: "pem" }), jwk = publicKey
 const hx = b => Buffer.from(b, "base64url").toString("hex").padStart(64, "0");
 const PUB = "04" + hx(jwk.x) + hx(jwk.y);
 const REAL_CFG = fs.readFileSync(path.join(ROOT, "src/config/license.js"), "utf8");
-const CFG_BARE = REAL_CFG.replace(/PUBLIC_KEYS: Object\.freeze\(\[[^\]]*\]\)/, `PUBLIC_KEYS: Object.freeze(["${PUB}"])`);   // keys on, links and service not set up
+/* keys on, links and service not set up: the real config now holds the live Payment Links, so the test puts the placeholders back before it fills in its own */
+const CFG_BARE = REAL_CFG.replace(/PUBLIC_KEYS: Object\.freeze\(\[[^\]]*\]\)/, `PUBLIC_KEYS: Object.freeze(["${PUB}"])`)
+  .replace(/(monthly:\s*)"https:\/\/buy\.stripe\.com\/[^"]*"/, '$1"https://buy.stripe.com/REPLACE_ME_MONTHLY_39"')
+  .replace(/(annual:\s*)"https:\/\/buy\.stripe\.com\/[^"]*"/, '$1"https://buy.stripe.com/REPLACE_ME_ANNUAL_349"');
 const MONTHLY = "https://buy.stripe.com/aEU1234abcd", ANNUAL = "https://buy.stripe.com/bFV5678efgh", SERVICE = "https://license.example.test/api/licenses/redeem";
 const CFG_FULL = CFG_BARE.replace("https://buy.stripe.com/REPLACE_ME_MONTHLY_39", MONTHLY).replace("https://buy.stripe.com/REPLACE_ME_ANNUAL_349", ANNUAL).replace("https://REPLACE_ME.example/api/licenses/redeem", SERVICE);
 

@@ -2,7 +2,7 @@
 
 How Cognicopia sells and unlocks a facility license, and exactly what the owner sets up in Stripe. Everything marked **Owner** can only be done by the person who holds the Stripe account and the signing key. Nothing in this guide needs a secret to be written into the repository, and nothing may be.
 
-> **Where things stand.** The site, the keys and the license service are built and tested. Until the owner does steps 1 to 5 below, the buy buttons ask for an invoice instead of opening a payment page, and signed keys are refused with a plain message. The earlier access code and the promo code keep working throughout. See [What is placeholder](#what-is-placeholder-until-the-owner-sets-it).
+> **Where things stand (October 13, 2026).** In the live Stripe account the owner now has the product "Cognicopia Facility License", a $39 monthly price, a $349 yearly price and two Payment Links (card only, business name and billing address required, redirecting to `activate.html?session_id={CHECKOUT_SESSION_ID}`). Their addresses are in `PAYMENT_LINKS` in `src/config/license.js`, so the buy buttons open them. The older $129.99 link is switched off. Not yet done: the owner's own signing key (step 1; until then the site still holds a public key whose private half was lost with a temporary session, so a key issued with a new private key is refused until `PUBLIC_KEYS` is replaced) and the license service (step 4; until `REDEEM_URL` is set, `activate.html` asks a card buyer to email the Stripe receipt and the owner makes the key by hand, step 7). The earlier access code and the promo code keep working.
 
 ## What is sold
 
@@ -36,6 +36,10 @@ Visitor                    cognicopia.org (static)              Stripe          
 Do steps 1 to 4 in Stripe's **test mode** first, buy once with the test card `4242 4242 4242 4242`, and only then repeat them in live mode. Test and live have different keys, prices and links. A Payment Link with `test_` in it is never offered to a visitor.
 
 ### 1. Make the signing key (once)
+
+**The easy way, in a web browser (no terminal, nothing to install).** Open `license-desk.html` on the live site (`https://cognicopia.org/license-desk.html`; it is not linked from any page and robots.txt asks search engines to skip it) and press **Make my key**. The page makes the key pair inside the browser, saves the secret file `cognicopia-license-private.pem` to the Downloads folder, and shows the one safe line to send. The page cannot send anything out (its content security policy forbids connections, forms and frames), never shows the secret key, and stores nothing. The file it saves is the same kind of file `scripts/issue-license.mjs` reads. Back it up the same way. The same page makes a license key for a facility (step 2 on the page) and checks whether the site accepts a key (step 3), so step 7 below can be done there too. `scripts/check-license-desk-ui.mjs` proves, in a real browser, that what the page makes is what Node and the license manager accept.
+
+**The command-line way**, if you prefer it:
 
 On your own computer, from the repository folder:
 

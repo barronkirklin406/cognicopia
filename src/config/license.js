@@ -92,8 +92,8 @@
     /* Stripe Payment Links (docs/stripe-setup-guide.md, step 4). Paste the
        two buy.stripe.com addresses over the REPLACE_ME text. */
     PAYMENT_LINKS: Object.freeze({
-      monthly: "https://buy.stripe.com/REPLACE_ME_MONTHLY_39",
-      annual: "https://buy.stripe.com/REPLACE_ME_ANNUAL_349"
+      monthly: "https://buy.stripe.com/6oUdRa5pB5djcAFfFtew802",
+      annual: "https://buy.stripe.com/6oU28sdW7fRXcAF0Kzew803"
     }),
     /* Where "Request Corporate Invoice / W-9" goes (a page on this site; it
        fills in the subject and a checklist for accounts payable). */

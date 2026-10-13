@@ -1,7 +1,8 @@
-# Cognicopia: everything may be read except the purchase-activation page and the Packet Builder's own screens.
+# Cognicopia: everything may be read except the purchase-activation page, the owner's license desk and the Packet Builder's own screens.
 User-agent: *
 Allow: /
 Disallow: /activate.html
 Disallow: /builder.html
+Disallow: /license-desk.html
 
 Sitemap: https://cognicopia.org/sitemap.xml
