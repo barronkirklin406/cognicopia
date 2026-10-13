@@ -69,7 +69,8 @@ const stored = p => p.evaluate(() => new Promise((res, rej) => {
   };
 }));
 const board = p => p.evaluate(() => JSON.parse(CG_LS.getItem("cognicopia_dailyops") || "null"));
-const yesterday = () => { const d = new Date(); d.setDate(d.getDate() - 1); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); };
+/* the board's own day: a night shift before 7 am still belongs to the day before, so "yesterday" is counted from that day */
+const yesterday = () => { const d = new Date(); d.setDate(d.getDate() - (d.getHours() < 7 ? 2 : 1)); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); };
 
 try {
   /* ---------- the first visit: initials come first ---------- */
@@ -206,7 +207,7 @@ try {
 
   /* ---------- retention runs when the board opens ---------- */
   await p.evaluate(async () => {
-    const D = CogniDailyOps, day = n => { const d = new Date(); d.setDate(d.getDate() - n); return D.isoDay(d); };
+    const D = CogniDailyOps, day = n => { const d = new Date(D.slotAt().day + "T12:00:00"); d.setDate(d.getDate() - n); return D.isoDay(d); };
     const mk = (id, n, o) => D.normalizeNote(Object.assign({ id, day: day(n), text: "kept " + id, by: "MR" }, o));
     const t = (id, n, o) => D.normalizeTask(Object.assign({ id, day: day(n), what: "task " + id, by: "MR" }, o));
     const b = Object.assign(D.emptyBoard(), { keepDays: 14, staff: ["MR"], notes: [mk("old1", 40), mk("old2", 15), mk("new1", 3), mk("today", 0)], tasks: [t("openold", 40), t("doneold", 40, { done: true, doneAt: new Date(Date.now() - 39 * 864e5).toISOString() }), t("donenew", 40, { done: true, doneAt: new Date().toISOString() })] });

@@ -486,7 +486,7 @@ body { padding-left: var(--sb-w); }
    same on every page. Colors come from css/styles.css (light: charcoal text on
    white, 16:1; deep green accents, 7.9:1 or more). */
 html:root{--sb-w:0px;--sb-bg:#ffffff;--sb-border:#ddd1ba;--sb-accent:#2d5a44;--sb-hover:#f4efe6;--sb-open:#ebe3d3;--sb-active:#e3f1e8;
-  --sb-txt:#1a202c;--sb-muted:#343b49;--cg-nav-h:68px}
+  --sb-txt:#1a202c;--sb-muted:#343b49;--cg-nav-h:76px}
 html body{padding-left:0}
 .cg-sb-nav{flex:1 0 auto;display:flex;flex-direction:column}
 .cg-sb-nav .cg-sidebar-nav{flex:1}
@@ -562,7 +562,8 @@ html.cg-night-shift .cg-topbar .cg-cta:focus-visible{outline-color:#ffd477}
     padding:0 max(24px,calc(50% - 640px));border-right:0;border-bottom:1px solid var(--sb-border);overflow:visible;transform:none;
     box-shadow:0 1px 0 rgba(255,255,255,.9),0 8px 24px rgba(79,64,48,.07)}
   html body .cg-sidebar-brand{flex:none;gap:10px;padding:0;border:0;min-height:var(--tap,52px)}
-  html body .cg-sidebar-brand img{width:36px;height:30px}
+  /* the logo file is a letter-size page with the drawing small in its middle, so the picture is cropped to the drawing and shown large */
+  html body .cg-sidebar-brand img{width:84px;height:60px;object-fit:cover;object-position:50% 46%;border-radius:0}
   html body .cg-sb-nav{flex:1 1 auto;flex-direction:row;align-items:center;min-width:0}
   html body .cg-sidebar-nav.cg-hubs{display:flex;flex-direction:row;align-items:center;gap:2px;flex:1;padding:0;margin:0}
   .cg-hubs > .cg-hub-li{position:relative}
@@ -574,8 +575,8 @@ html.cg-night-shift .cg-topbar .cg-cta:focus-visible{outline-color:#ffd477}
   /* the hub that holds this page: a deep green underline, and its name in green */
   html body .cg-hubs > .cg-hub-li > .cg-hub[data-here] > summary,html body .cg-hubs > .cg-hub-li > a.cg-hub-link.active{color:var(--cg-green-700,#1b382b)!important;background:transparent;box-shadow:inset 0 -3px 0 var(--sb-accent)}
   .cg-hubs > .cg-hub-li > .cg-hub[open] > summary{background:var(--sb-open)}
-  /* a drop-down */
-  .cg-hubs > .cg-hub-li > .cg-hub > .cg-sb-sub{position:absolute;top:calc(100% + 10px);left:0;z-index:960;box-sizing:border-box;min-width:300px;
+  /* a drop-down: it hangs 6 px below the bar itself (the hub is centred in the bar, so the offset is measured from the hub's middle), however tall the bar is */
+  .cg-hubs > .cg-hub-li > .cg-hub > .cg-sb-sub{position:absolute;top:calc(50% + var(--cg-nav-h) / 2 + 6px);left:0;z-index:960;box-sizing:border-box;min-width:300px;
     max-height:calc(100vh - var(--cg-nav-h) - 24px);overflow:auto;padding:8px;background:#ffffff;border:1px solid var(--sb-border);border-radius:16px;
     box-shadow:0 18px 48px rgba(79,64,48,.18),0 4px 12px rgba(79,64,48,.08)}
   .cg-hub .cg-sb-sub a,.cg-hub .cg-sb-sub .cg-ailment-card{gap:12px;margin:0;padding:10px 14px;border:0;border-radius:10px;
@@ -598,7 +599,14 @@ html.cg-night-shift .cg-topbar .cg-cta:focus-visible{outline-color:#ffd477}
 }
 
 /* ---------- anything narrower: the same hubs in the Menu drawer ---------- */
+/* a window just wide enough for the bar (1100 to 1279 px): a slightly smaller logo and tighter links keep every hub on one row */
+@media (min-width:1100px) and (max-width:1279px){
+  html body .cg-sidebar-brand img{width:64px;height:46px}
+  html body .cg-sidebar{gap:14px}
+  .cg-hubs > .cg-hub-li > .cg-hub > summary,.cg-hubs > .cg-hub-li > a.cg-hub-link{padding:8px 10px}
+}
 @media (max-width:1099px){
+  html body .cg-sidebar-brand img{width:63px;height:45px;object-fit:cover;object-position:50% 46%;border-radius:0}
   html body .cg-sidebar{position:fixed;top:0;left:0;z-index:900;width:min(320px,86vw);height:100vh;padding-top:68px;transform:translateX(-100%);
     transition:transform .22s ease;box-shadow:6px 0 32px rgba(26,32,44,.28);border-right:1px solid var(--sb-border)}
   html body .cg-sidebar.is-open{transform:translateX(0)}
@@ -619,6 +627,8 @@ html.cg-night-shift body .cg-sidebar,html.cg-night-shift body .cg-topbar{backgro
 html.cg-night-shift body .cg-sidebar a,html.cg-night-shift body .cg-topbar a,html.cg-night-shift body .cg-topbar button.linklike{color:#ffedcc!important}
 html.cg-night-shift body .cg-sidebar a:hover,html.cg-night-shift body .cg-hub[open] > summary{background:#3a2917!important}
 html.cg-night-shift .cg-sidebar-brand{color:#ffedcc!important}
+/* the logo file is black ink on white: at night it is inverted and blended away from its black, so no white square sits on the dark bar */
+html.cg-night-shift .cg-sidebar-brand img{filter:invert(1);mix-blend-mode:screen}
 html.cg-night-shift .cg-hub > .cg-sb-sub{background:#211910!important;border-color:#684a26!important}
 html.cg-night-shift .cg-sidebar-nav a.active,html.cg-night-shift .cg-sidebar .cg-ailment-card.active-ailment{background:#3a2917!important;color:#fff1cf!important}
 html.cg-night-shift .cg-sidebar .cg-ailment-card,html.cg-night-shift .cg-sidebar .cg-sb-section,html.cg-night-shift .cg-sidebar .cg-sb-glabel{color:#ffedcc!important}

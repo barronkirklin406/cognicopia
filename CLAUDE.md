@@ -51,6 +51,7 @@ npm run build     # checks + nav sync + research pages + link check; run before 
 npm run coloring  # regenerate the coloring catalog and bundle after editing assets/cognicopia-coloring/*.js or approving traced art
 npm run nav       # regenerate the six-hub navigation on every page from HUBS in scripts/site-nav.mjs (also after npm run coloring: the hub page shows the picture count)
 npm run services  # rebuild assets/services/*.js from src/services/*.ts
+node scripts/landing-example.mjs  # rewrite the crossword on the front page's laptop from what the engine makes (--check proves it is current; run it after any change to src/pcg)
 npm run coloring:svgs  # trace master PNGs to closed-outline SVG and js/coloring-data.js (needs: pip install pillow vtracer; skips with a notice where they are missing)
 node scripts/license-keygen.mjs     # owner only: make the license-signing key pair (private half stays outside the repo)
 node scripts/issue-license.mjs      # make or verify a signed license key (invoices, enterprise); see docs/stripe-setup-guide.md
