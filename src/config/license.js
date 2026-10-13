@@ -64,7 +64,7 @@
        uncompressed P-256 public key as 130 hex characters (04 + x + y), as
        printed by scripts/license-keygen.mjs. More than one is allowed so a
        key can be replaced without ending the licenses signed by the old one. */
-    PUBLIC_KEYS: Object.freeze(["04176a7aeb6e52ad4450dc1518541ebabbc8e92a83fde942a389e68bec977505363638e98fe5b3b314d2fbf68f7f6642b3e100be8cc9fbad984314d161719b4114"]),
+    PUBLIC_KEYS: Object.freeze(["0497ddfd60b746ae28145d7309e39f5e698f42f541149dd280e6c21e301a578c6876d3690d664f3013e270b0ff2644cd5c7e567a1e51571ca3364a0a775e782412"]),
     /* Ids (the "id" shown by scripts/issue-license.mjs) of keys that have
        been withdrawn, for example after a chargeback. A page checks this list
        every time it starts, so a withdrawal reaches a computer the next time
