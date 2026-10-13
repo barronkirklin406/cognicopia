@@ -11,6 +11,16 @@ Cognicopia (cognicopia.org) is an offline-first memory-care activity site: print
 
 Never add a cloud dependency to the static site. Never put resident data in `platform/`.
 
+## Working with the owner
+
+The owner is new to coding and to these tools, and acts on what is written here word for word. A wrong button name or an unexplained term costs them real time and trust.
+
+- **Never name a button, menu, setting or screen you have not seen.** If a step comes from documentation, say so, say the owner's screen may differ, and give one step at a time; ask what they see before the next. Do not give a list of steps for a screen you cannot see.
+- **Do it yourself first.** The owner's standing instruction is to finish requested work without handing it back. When something truly cannot be done from here, say in one plain sentence what blocked it (the real error, not a guess), then give the single shortest path, not a menu of options.
+- **No jargon.** Write as if to a smart adult who has never opened a terminal. If a term is needed, say what it is in the same sentence. Give exact steps with exact words only after they are checked.
+- **Check before you claim a limit.** Before saying "I can't do X from here," confirm the cause (a network rule, a permission, a missing tool) and name it correctly. Do not say a thing was verified unless you did it.
+- **Secrets stay with the owner.** A private key or token is made and kept on the owner's own computer. Never move one into a conversation, a file in the repository or a cloud session; if a tool blocks it, stop and explain, do not work around it.
+
 ## Privacy and claims
 
 - Zero PHI outside the browser. Test data and fixtures use made-up people only; never a real name, birth date or facility.
