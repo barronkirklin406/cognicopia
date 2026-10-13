@@ -44,7 +44,8 @@ ok(/class="skip-link"/.test(html) && /<main /.test(html), "a skip link and a mai
 
 /* 2. no network */
 ok(![...html.matchAll(/<script[^>]+src="([^"]+)"/g)].some(m => /^(https?:)?\/\//.test(m[1])), "no script comes from another site");
-ok(![...html.matchAll(/<link[^>]+href="([^"]+)"/g)].some(m => /^(https?:)?\/\//.test(m[1])), "no stylesheet comes from another site");
+/* a canonical address names this page to a search engine and fetches nothing; every other link (a stylesheet, an icon, a preload) must stay on this site */
+ok(![...html.matchAll(/<link\b[^>]*>/g)].filter(m => !/\brel="canonical"/.test(m[0])).some(m => /\bhref="(https?:)?\/\//.test(m[0])), "no stylesheet comes from another site");
 ok(!/@import\s+url\(\s*['"]?https?:/.test(css), "no CSS import from another site");
 const jsNoWrap = js.replace(/\/\*[\s\S]*?\*\//g, "");
 ok(!/\bfetch\s*\(/.test(jsNoWrap) && !/new\s+XMLHttpRequest|new\s+WebSocket|new\s+EventSource|sendBeacon\s*\(/.test(jsNoWrap.replace(/navigator\.sendBeacon\s*=|var b = navigator\.sendBeacon;/g, "")), "the page's script makes no network call");
