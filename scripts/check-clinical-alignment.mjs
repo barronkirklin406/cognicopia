@@ -54,7 +54,8 @@ ok(/role="status"/.test(main) && /aria-live="polite"/.test(main), "changes are a
 
 /* 2. no network */
 ok(![...html.matchAll(/<script[^>]+src="([^"]+)"/g)].some(m => /^(https?:)?\/\//.test(m[1])), "no script comes from another site");
-ok(![...html.matchAll(/<link[^>]+href="([^"]+)"/g)].some(m => /^(https?:)?\/\//.test(m[1])), "no stylesheet comes from another site");
+/* a canonical address names this page to a search engine and fetches nothing; every other link (a stylesheet, an icon, a preload) must stay on this site */
+ok(![...html.matchAll(/<link\b[^>]*>/g)].filter(m => !/\brel="canonical"/.test(m[0])).some(m => /\bhref="(https?:)?\/\//.test(m[0])), "no stylesheet comes from another site");
 ok(!/@import\s+url\(\s*['"]?https?:/.test(css), "no CSS import from another site");
 ok(!/\bfetch\s*\(/.test(jsNoWrap.replace(/window\.fetch|var f = window\.fetch|f\.apply/g, "")) && !/new\s+XMLHttpRequest|sendBeacon\s*\(/.test(jsNoWrap), "the page's script makes no network call");
 ok(/Net\s*=/.test(js) && /requests: function/.test(js), "the page counts its own network use for the badge");
