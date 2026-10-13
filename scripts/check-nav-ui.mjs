@@ -39,7 +39,7 @@ try {
   await p.keyboard.press("Escape"); await p.waitForTimeout(150);
   ok((await open(p, "details.cg-hub")).length === 0 && await p.evaluate(() => document.activeElement === document.querySelector("#cgHub-facility > summary")), "Escape closes it and leaves the keyboard on Facility");
   await p.click("#cgHub-resources > summary"); await p.waitForTimeout(150);
-  await p.mouse.click(700, 600); await p.waitForTimeout(150);
+  await p.mouse.click(1290, 700);   // below the page's first screen of cards and well right of the drop-down, which now holds four groups await p.waitForTimeout(150);
   ok((await open(p, "details.cg-hub")).length === 0, "a click elsewhere on the page closes an open drop-down");
   await p.evaluate(() => scrollTo({ top: 1500, behavior: "instant" })); await p.waitForTimeout(200);
   ok(await p.evaluate(() => document.getElementById("cgSidebar").getBoundingClientRect().top) === 0, "the bar stays at the top while the page scrolls");
