@@ -1,0 +1,5 @@
+# The license service (license-service/): the only thing Netlify builds from this repository.
+# The public site is served by GitHub Pages; Netlify holds no copy of it. See docs/license-service.md.
+[build]
+  publish = "license-service/public"
+  functions = "license-service/functions"

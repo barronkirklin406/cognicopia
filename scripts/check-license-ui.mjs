@@ -203,6 +203,25 @@ try {
     await r.fill("#actInput", KEY); await r.click("#actForm button[type=submit]"); await r.waitForTimeout(300);
     ok(await r.evaluate(() => CognicopiaLicense.isLicensed()), "activate.html: a pasted key works with no service at all");
     await r.close();
+    /* with email delivery switched on (the license service also emails the key), the page tells a buyer to check their email, and says so even when the service cannot answer */
+    const MAIL_CFG = CFG_FULL.replace("EMAIL_DELIVERY: false", "EMAIL_DELIVERY: true");
+    ok(MAIL_CFG !== CFG_FULL, "the test could switch email delivery on");
+    const mailOk = await context({ cfg: MAIL_CFG, service: async () => ({ status: 200, body: { license_key: KEY, facility_name: "Maple Court", tier: "annual_facility", expires_at: "2027-10-31" } }) });
+    const m1 = await open(mailOk, "activate.html?session_id=" + REF); await m1.waitForTimeout(600);
+    ok(/Full access is on/.test(await m1.textContent("#actTitle")) && /emailed your license key to the address you used at checkout/.test(await m1.textContent("#actText")), "activate.html: with email on, the page says the key was also emailed: " + (await m1.textContent("#actText")));
+    await m1.close();
+    const mailDown = await context({ cfg: MAIL_CFG, service: async () => ({ status: 500, body: { error: { code: "internal", message: "x" } } }) });
+    const m2 = await open(mailDown, "activate.html?session_id=" + REF); await m2.waitForTimeout(500);
+    ok(/Check your email for your license key/.test(await m2.textContent("#actTitle")) && /spam folder/.test(await m2.textContent("#actText")) && /cognicopia@outlook\.com/.test(await m2.textContent("#actText")) && await visible(m2, "#actInput"), "activate.html: with email on and the service down, it still says to check your email, where to look and who to write to: " + (await m2.textContent("#actTitle")));
+    await m2.close();
+    const mailNone = await context({ cfg: MAIL_CFG.replace(SERVICE, "https://REPLACE_ME.example/api/licenses/redeem") });
+    const m3 = await open(mailNone, "activate.html?session_id=" + REF); await m3.waitForTimeout(400);
+    ok(/Check your email for your license key/.test(await m3.textContent("#actTitle")), "activate.html: with email on and no service address yet, it says to check your email: " + (await m3.textContent("#actTitle")));
+    await m3.close();
+    const mailGone = await context({ cfg: MAIL_CFG, service: null });
+    const m4 = await open(mailGone, "activate.html?session_id=" + REF); await m4.waitForTimeout(700);
+    ok(/Check your email for your license key/.test(await m4.textContent("#actTitle")), "activate.html: with email on and no connection, it says to check your email: " + (await m4.textContent("#actTitle")));
+    await m4.close();
     const b = await open(await context(), "activate.html?session_id=not-a-reference");
     ok(!(await b.evaluate(() => CognicopiaLicense.isLicensed())) && external.filter(e => e.page.includes("not-a-reference")).length === 0, "activate.html: a malformed reference is never sent anywhere");
     await b.close();

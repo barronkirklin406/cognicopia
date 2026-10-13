@@ -100,29 +100,11 @@ A value that still holds `REPLACE_ME`, or has `test_` in it, is treated as not s
 
 ### 4. Deploy the license service
 
-The route is `POST /api/licenses/redeem` in `platform/` (the Next.js service). It reads nothing from the database and holds no resident information. It needs these environment variables (placeholders only in `platform/.env.example`; real values only in the host's settings):
+This is what makes the key arrive in the buyer's email by itself. It is `license-service/`, written up in [license-service.md](license-service.md): what it does, the settings, what the owner provides (a host, an email sender, the pasted settings, and the webhook in Stripe), a free end-to-end test, and what to do when something is wrong. `scripts/check-license-service.mjs` proves its behavior without a network.
 
-| Variable | Value |
-|---|---|
-| `STRIPE_SECRET_KEY` | A **restricted** key (`rk_live_...`) that can only **read** Checkout Sessions and Subscriptions is enough. A full secret key (`sk_live_...`) also works. |
-| `STRIPE_PRICE_MONTHLY`, `STRIPE_PRICE_ANNUAL` | The two Price IDs from step 2. |
-| `LICENSE_SIGNING_KEY` | The contents of `~/.cognicopia/license-private.pem` (use `\n` for line breaks if the host wants one line). |
-| `LICENSE_ALLOWED_ORIGINS` | `https://cognicopia.org` (default). Only pages on a listed site may call the route. |
-| `APP_URL` | The address of the service itself, as `platform/` already requires. |
+**If you would rather not run the service yet,** leave `REDEEM_URL` as the placeholder. `activate.html` then tells a buyer that automatic activation is not switched on and to email the receipt, and you issue the key by hand (step 7, or on `license-desk.html`). Nothing else changes.
 
-Then set `REDEEM_URL` in `src/config/license.js` to `https://<where the service lives>/api/licenses/redeem`. Try it from a terminal with a real test-mode session id:
-
-```
-curl -s -X POST https://<service>/api/licenses/redeem \
-  -H "Content-Type: application/json" -H "Origin: https://cognicopia.org" \
-  -d '{"session_id":"cs_test_..."}'
-```
-
-A paid session answers with `license_key`, `facility_name`, `tier` and `expires_at`. An unpaid one answers 402 `not_paid`; an unknown one 404 `not_found`; more than ten tries a minute from one address, 429.
-
-**If you would rather not run the service yet,** leave `REDEEM_URL` as the placeholder. `activate.html` then tells a buyer that automatic activation is not switched on and to email the receipt, and you issue the key by hand (step 7). Nothing else changes.
-
-**Renewals.** The same checkout reference can be redeemed again later. `activate.html?renew=1` (the license window offers a "Renew online" button when a license is near its date and the computer remembers its checkout) asks again and gets a key paid through the subscription's current period. A cancelled subscription gets the end of the period it paid for.
+(`platform/` also has a `POST /api/licenses/redeem` route from earlier. `license-service/` supersedes it: it needs no database, no framework and no installs, and it also emails the key.)
 
 ### 5. Turn on the Customer portal
 

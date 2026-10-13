@@ -101,9 +101,14 @@
     PRICING_PATH: "pricing.html",
     /* The one page that talks to the internet, and only to turn a Stripe
        checkout into a key. REDEEM_URL is the address of the license service
-       (platform/ POST /api/licenses/redeem). Leave it REPLACE_ME until that
-       service is running; the page then asks for the key by hand. */
+       (license-service/, POST /api/licenses/redeem). Leave it REPLACE_ME until
+       that service is running; the page then asks for the key by hand. */
     ACTIVATE_PATH: "activate.html",
-    REDEEM_URL: "https://REPLACE_ME.example/api/licenses/redeem"
+    REDEEM_URL: "https://REPLACE_ME.example/api/licenses/redeem",
+    /* True only once the license service is running AND can send email (its
+       webhook emails the key to the address the buyer gave at checkout). The
+       page then tells a buyer to check their email; while it is false the page
+       says only what is true today: the key is sent by hand. */
+    EMAIL_DELIVERY: false
   });
 })(typeof globalThis !== "undefined" ? globalThis : this);

@@ -1,0 +1,8 @@
+{
+  "name": "cognicopia-license-service",
+  "private": true,
+  "type": "module",
+  "version": "1.0.0",
+  "description": "Turns a Stripe payment into a signed license key and emails it to the buyer. No dependencies.",
+  "engines": { "node": ">=20" }
+}

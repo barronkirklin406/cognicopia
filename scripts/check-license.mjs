@@ -78,6 +78,7 @@ for (const [what, re] of Object.entries({ fetch: /\bfetch\s*\(/, XMLHttpRequest:
   ok(real.PRICES.monthly.amount === 39 && real.PRICES.annual.amount === 349 && real.PRICES.annual.saves === 119 && real.PRICES.annual.savesPercent === 25, "the prices are $39 a month and $349 a year, saving $119 (25%)");
   ok(Math.round((1 - 349 / (39 * 12)) * 100) === real.PRICES.annual.savesPercent && 39 * 12 - 349 === real.PRICES.annual.saves, "the stated saving is the real arithmetic");
   ok(Object.keys(real.TIERS).join() === "monthly_facility,annual_facility,enterprise", "the three license tiers");
+  ok(typeof real.EMAIL_DELIVERY === "boolean", "EMAIL_DELIVERY is a plain true or false (true only once the license service can send email)");
   ok(real.GRACE_DAYS === 90 && Array.isArray(real.PUBLIC_KEYS) && Array.isArray(real.REVOKED_IDS), "grace days and key lists");
   ok(real.PUBLIC_KEYS.every(k => /^04[0-9a-f]{128}$/.test(k)), "every public key is an uncompressed P-256 point");
   ok(/PUBLIC_KEYS: Object\.freeze\(\[/.test(CONFIG), "PUBLIC_KEYS is written the way the tests and docs expect");
