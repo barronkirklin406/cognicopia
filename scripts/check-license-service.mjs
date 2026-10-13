@@ -24,7 +24,8 @@
         values, a missing setting is named without its value
      5. the redeem address answers only the site, only ten tries a minute
      6. the service has no dependencies, holds no secret, and its Netlify and
-        Cloudflare entries point at the same handlers
+        Cloudflare entries point at the same handlers; the one-file bundle for
+        Cloudflare's web editor is current and answers like the modules do
    ===================================================================== */
 import crypto from "crypto";
 import fs from "fs";
@@ -213,7 +214,7 @@ try {
     ok(a.status === 200 && b.status === 404 && c.status === 200, "one entry sends the three addresses to their handlers (Cloudflare Workers)"); }
 
   /* ---------- 6. the files ---------- */
-  const files = fs.readdirSync(path.join(ROOT, "license-service/src")).map(f => "license-service/src/" + f).concat(fs.readdirSync(path.join(ROOT, "license-service/functions")).map(f => "license-service/functions/" + f), ["license-service/worker.mjs"]);
+  const files = fs.readdirSync(path.join(ROOT, "license-service/src")).map(f => "license-service/src/" + f).concat(fs.readdirSync(path.join(ROOT, "license-service/functions")).map(f => "license-service/functions/" + f), ["license-service/worker.mjs", "license-service/dist/worker.js"]);
   for (const f of files) {
     const src = read(f);
     for (const m of src.matchAll(/(?:from|import)\s+["']([^"']+)["']/g)) ok(/^(\.|node:)/.test(m[1]), `${f} imports ${m[1]}: the service must have no dependencies`);
@@ -222,7 +223,12 @@ try {
   }
   const pkg = JSON.parse(read("license-service/package.json"));
   ok(!pkg.dependencies && !pkg.devDependencies && pkg.type === "module", "the service's package has no dependencies");
-  ok(/publish = "license-service\/public"/.test(read("netlify.toml")) && /functions = "license-service\/functions"/.test(read("netlify.toml")), "netlify.toml builds only the service (the public site stays on GitHub Pages)");
+  ok(!fs.existsSync(path.join(ROOT, "netlify.toml")), "there is no netlify.toml: the owner does not use Netlify, and a settings file here could start a build on an old project");
+  { const { bundle } = await import("../license-service/build-worker.mjs");
+    ok(read("license-service/dist/worker.js") === bundle(), "the one-file bundle for Cloudflare is current (run: node license-service/build-worker.mjs)");
+    const mod = await import("../license-service/dist/worker.js");
+    const a = await mod.default.fetch(new Request("https://svc.example/api/licenses/health"), ENV), b = await mod.default.fetch(new Request("https://svc.example/nothing"), ENV);
+    ok(a.status === 200 && (await a.json()).ready === true && b.status === 404, "the bundle answers health and unknown paths like the modules do"); }
   for (const [f, p] of [["webhook", "/api/licenses/webhook"], ["redeem", "/api/licenses/redeem"], ["health", "/api/licenses/health"]]) ok(read(`license-service/functions/${f}.mjs`).includes(`path: "${p}"`), `the Netlify entry for ${f} serves ${p}`);
   ok(/\/api\/licenses\/redeem/.test(read("src/config/license.js")), "the config's redeem address ends in /api/licenses/redeem, the path the service answers");
 } finally {

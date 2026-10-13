@@ -3,7 +3,7 @@
      - read one checkout session (a plain HTTPS request with a read-only key)
      - check that a webhook really came from Stripe (an HMAC of the body)
    ===================================================================== */
-const enc = new TextEncoder();
+const stripeEnc = new TextEncoder();
 
 function hexToBytes(hex) {
   if (!/^[0-9a-f]+$/i.test(hex) || hex.length % 2) return null;
@@ -25,10 +25,10 @@ export async function verifyStripeSignature(rawBody, header, secret, { now = Dat
     const sigs = parts.filter(([k]) => k === "v1").map(([, v]) => v);
     if (!t || !/^\d+$/.test(t) || sigs.length === 0) return false;
     if (Math.abs(now / 1000 - Number(t)) > tolerance) return false;
-    const key = await crypto.subtle.importKey("raw", enc.encode(secret), { name: "HMAC", hash: "SHA-256" }, false, ["verify"]);
+    const key = await crypto.subtle.importKey("raw", stripeEnc.encode(secret), { name: "HMAC", hash: "SHA-256" }, false, ["verify"]);
     for (const hex of sigs) {
       const bytes = hexToBytes(hex);
-      if (bytes && (await crypto.subtle.verify("HMAC", key, bytes, enc.encode(`${t}.${rawBody}`)))) return true;   // verify() compares in constant time
+      if (bytes && (await crypto.subtle.verify("HMAC", key, bytes, stripeEnc.encode(`${t}.${rawBody}`)))) return true;   // verify() compares in constant time
     }
     return false;
   } catch {
