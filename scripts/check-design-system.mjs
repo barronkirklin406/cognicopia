@@ -145,7 +145,29 @@ ok(linked === PAGES.length && linked >= 30, `${linked} of ${PAGES.length} pages 
   ok(!/Reserved Font Name\s+["“]/i.test(read("fonts/OFL-Fraunces.txt")), "Fraunces declares no reserved name that a subset would breach");
 }
 /* the pages that opt in to the editorial type */
-for (const f of ["pricing.html", "activate.html", "contact.html", "cognitive-journals.html", "life-planners.html", "zentangle-art.html"]) ok(/<html lang="en" class="cg-ds">/.test(read(f)), `${f} should opt in to the editorial type (html.cg-ds)`);
+for (const f of ["pricing.html", "activate.html", "contact.html", "cognitive-journals.html", "life-planners.html", "zentangle-art.html"]) ok(/<html lang="en" class="cg-ds( cg-paper)?">/.test(read(f)), `${f} should opt in to the editorial type (html.cg-ds)`);
+/* the paper look: every page but the packet tool's front page carries it, the Builder carries its app form, and the pieces that make it work are in the stylesheet */
+{
+  const nav = read("scripts/site-nav.mjs");
+  let paper = 0, missing = [];
+  for (const p of PAGES){
+    const h = read(p.file), tag = (/<html\b[^>]*>/.exec(h) || [""])[0];
+    if (p.file === "index.html"){ ok(!/cg-paper/.test(tag), "index.html keeps its own look, not the paper class"); continue; }
+    const want = p.builder ? "cg-paper-app" : "cg-paper";
+    if (new RegExp(`class="[^"]*\\b${want}\\b`).test(tag)) paper++; else missing.push(p.file);
+  }
+  for (const [fg, bg, what] of [["#241500", "#ffcc66", "amber button text"], ["#ffffff", T["green-700"], "white on a forest green button"], [T.charcoal, T.cream, "charcoal on cream"], [T["ink-soft"], T.cream, "soft ink on cream"], [T["green-700"], T["sage-100"], "green on a sage panel"], [T["clay-800"], T["peach-100"], "clay on a peach tag"], [T.charcoal, T["ok-200"], "charcoal on a good-news chip"], [T.charcoal, T["tan-100"], "charcoal on a table header"], [T["green-700"], T.white, "green links on white"]])
+    ok(ratio(fg, bg) >= 7, `${what} is ${ratio(fg, bg).toFixed(2)}:1, under AAA`);
+  ok(!missing.length, `these pages are missing their paper class: ${missing.join(", ")}`);
+  ok(paper >= 30, `${paper} pages carry the paper look`);
+  ok(/@media screen\{[\s\S]*html\.cg-paper:not\(\.cg-night-shift\) body\{background:var\(--cg-cream\)/.test(CSS), "the stylesheet paints paper pages cream, for the screen only");
+  ok(/html\.cg-paper\.cg-night-shift body\{background:#17120c/.test(CSS), "Night Shift keeps a dim palette on paper pages");
+  ok(/html\.cg-paper-app:not\(\.cg-night-shift\)\{[^}]*--accent-ink:#ffffff/.test(CSS), "the Builder takes the palette through its own variables");
+  const paperCss = CSS.slice(CSS.indexOf("9b. Paper pages"), CSS.indexOf("10. Print"));
+  ok(!/@media print/.test(paperCss), "the paper rules are screen-only: printed packets are untouched");
+  ok(/class="cg-foot"/.test(read("pricing.html")) && /class="cg-foot"/.test(read("resources/index.html")) && !/class="site-footer"/.test(read("resources/accessibility/index.html")), "paper pages share one generated footer");
+  ok(/background:var\(--cg-parchment/.test(nav.slice(nav.indexOf(".cg-crumbs{"), nav.indexOf(".cg-crumbs{") + 200)), "the breadcrumb bar is parchment, not dark green");
+}
 /* the packet tool: its design layer now reads the shared tokens, and its hero carries the reasons to use it */
 {
   const idx = read("index.html");

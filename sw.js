@@ -12,7 +12,7 @@
    used. Change VERSION only to clear old copies; updates to the pages
    themselves arrive on their own.
    ===================================================================== */
-const VERSION = "cognicopia-v30";
+const VERSION = "cognicopia-v31";
 const CORE = [
   "./", "index.html", "builder.html", "profile.html", "pricing.html", "activate.html", "manifest.webmanifest",
   // the shared design system and its two typefaces (Atkinson Hyperlegible for the interface, Fraunces for headings)
