@@ -191,7 +191,8 @@ ok((code.match(/\bfetch\s*\(/g) || []).length <= 1 && /credentials: "omit"/.test
 ok(!/document\.cookie|localStorage|sessionStorage|indexedDB|userAgent|Math\.random|\bhttps?:\/\/[a-z]/.test(code), "no cookie, no storage, no identifier and no web address of another site");
 ok(read("sw.js").includes('"data/content-catalog.json"') && read("sw.js").includes('"assets/services/contentCatalog.js"'), "the offline worker keeps the catalog and the loader, so they work with no connection");
 ok(/^\/\* CogniContentCatalog: built from src\/services\/contentCatalog\.ts/.test(read("assets/services/contentCatalog.js")), "the browser file is the built one");
-for (const f of ["index.html", "builder.html", "profile.html"]) ok(!/contentCatalog\.js/.test(read(f)), `${f} does not load the catalog (no tool makes a request of its own; a page that adopts it needs the owner's say-so)`);
+for (const f of ["index.html", "profile.html"]) ok(!/contentCatalog\.js/.test(read(f)), `${f} does not load the catalog (only the Packet Builder's roster uses it)`);
+ok(/<script src="assets\/services\/contentCatalog\.js"><\/script>/.test(read("builder.html")) && !/\bfetch\s*\(/.test(read("builder.html")), "the Packet Builder loads the loader, and its own page still contains no fetch call");
 ok(FILE.items.every(i => !/\bhttps?:\/\//.test(JSON.stringify(i))), "the catalog holds no web address");
 
 if (fails.length) { console.log(`content catalog check FAILED: ${fails.length} problem(s), ${pass} passed\n  - ` + fails.join("\n  - ")); process.exit(1); }
