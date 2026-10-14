@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="cg-paper">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -522,15 +522,17 @@ html body .cg-sidebar .cg-ailment-card:focus-visible{outline:3px solid var(--cg-
 .cg-sb-sub,.cg-sb-sub ul{list-style:none;margin:0;padding:0}
 .cg-sb-sub a[data-hub]{font-weight:600}
 .cg-sb-glabel{display:block;padding:10px 14px 3px 20px;font:700 12px var(--cg-font-ui,"Trebuchet MS","Segoe UI",sans-serif);letter-spacing:.06em;text-transform:uppercase;color:var(--sb-muted)!important}
-.cg-crumbs{padding:8px 28px;border-bottom:1px solid var(--sb-border,rgba(216,243,220,.15));background:rgba(8,28,21,.6);font:10pt/20px "Trebuchet MS","Segoe UI",sans-serif}
+.cg-crumbs{padding:8px 28px;border-bottom:1px solid var(--cg-tan-200,#ddd1ba);background:var(--cg-parchment,#f4efe6);font:15px/20px var(--cg-font-ui,"Trebuchet MS","Segoe UI",sans-serif)}
 .cg-crumbs ol{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;margin:0;padding:0;list-style:none}
 .cg-crumbs li,.cg-crumbs a,.cg-crumbs span{font-size:inherit;line-height:inherit}
-.cg-crumbs li{display:flex;align-items:center;gap:8px;margin:0;color:#d8f3dc!important}
-.cg-crumbs li + li::before{content:"\203A";color:rgba(216,243,220,.55)}
-.cg-crumbs a{display:inline-flex;align-items:center;gap:6px;min-height:var(--tap,52px);text-decoration:underline;text-underline-offset:3px;color:#95d5b2!important}
-.cg-crumbs a:hover{color:#fff!important}
-.cg-crumbs a:focus-visible{outline:2px solid #52b788;outline-offset:2px}
-.cg-crumbs [aria-current]{color:#fff!important;font-weight:700}
+.cg-crumbs li{display:flex;align-items:center;gap:8px;margin:0;color:var(--cg-ink-soft,#343b49)!important}
+.cg-crumbs li + li::before{content:"\203A";color:var(--cg-tan-600,#7a6548)}
+.cg-crumbs a{display:inline-flex;align-items:center;gap:6px;min-height:var(--tap,52px);text-decoration:underline;text-underline-offset:3px;color:var(--cg-green-700,#1b382b)!important;font-weight:600}
+.cg-crumbs a:hover{color:var(--cg-green-600,#2d5a44)!important}
+.cg-crumbs a:focus-visible{outline:3px solid var(--cg-focus,#f5b800);outline-offset:2px;box-shadow:0 0 0 6px var(--cg-focus-dark,#10241a)}
+.cg-crumbs [aria-current]{color:var(--cg-charcoal,#1a202c)!important;font-weight:700}
+html.cg-night-shift .cg-crumbs{background:#211910;border-color:#684a26}
+html.cg-night-shift .cg-crumbs li,html.cg-night-shift .cg-crumbs a,html.cg-night-shift .cg-crumbs [aria-current]{color:#ffedcc!important}
 @media (max-width:768px){.cg-crumbs{padding:8px 16px}}
 /* the action bar under the navigation: light, like the navigation, with the buy links in the brand's deep green */
 .cg-topbar{height:auto!important;min-height:52px;flex-wrap:wrap;row-gap:6px;padding-top:8px;padding-bottom:8px}
@@ -628,6 +630,28 @@ html.cg-night-shift body .cg-hubs > .cg-hub-li > .cg-hub[data-here] > summary,ht
 html.cg-night-shift .cg-sb-ico,html.cg-night-shift .cg-sb-chev{color:#d6a64b!important}
 html.cg-night-shift .cg-sidebar-toggle{background:#332312!important;border-color:#d6a64b!important;color:#ffedcc!important}
 @media print{.cg-sidebar,.cg-sidebar-toggle,.cg-sb-overlay{display:none!important}}
+
+/* the shared footer */
+.cg-foot{margin:var(--cg-space-7,3rem) 0 0;padding:40px 0 24px;border-top:1px solid var(--cg-tan-200,#ddd1ba);background:var(--cg-cream,#fbf7f1);color:var(--cg-charcoal,#1a202c);font-family:var(--cg-font-ui,"Segoe UI",sans-serif)}
+.cg-foot-in{box-sizing:border-box;width:min(1180px,calc(100% - 48px));margin:0 auto}
+.cg-foot-grid{display:grid;grid-template-columns:minmax(0,1.4fr) repeat(3,minmax(0,1fr));gap:28px}
+.cg-foot-logo{display:inline-flex;align-items:center;gap:10px;min-height:var(--tap,52px);color:var(--cg-green-700,#1b382b)!important;font:600 24px/1 var(--cg-font-display,Georgia,serif);text-decoration:none}
+.cg-foot-logo img{width:36px;height:30px;object-fit:contain}
+.cg-foot p{margin:4px 0 0;max-width:38ch;color:var(--cg-ink-soft,#343b49)!important;font:400 16px/1.5 var(--cg-font-ui,"Segoe UI",sans-serif);text-align:left}
+.cg-foot .cg-foot-by{font-weight:600;font-size:15px}
+html.cg-paper:not(.cg-night-shift) .cg-foot h2,.cg-foot h2{margin:0 0 4px;padding:0;border:0!important;color:var(--cg-tan-800,#4f4030)!important;font:700 14px/1.2 var(--cg-font-ui,"Segoe UI",sans-serif)!important;letter-spacing:.12em;text-transform:uppercase}
+.cg-foot ul{margin:0;padding:0;list-style:none}
+.cg-foot li{margin:0;padding:0;background:none;border:0;box-shadow:none}
+.cg-foot-col a{display:flex;align-items:center;min-height:var(--tap,52px);color:var(--cg-charcoal,#1a202c)!important;font:500 16px/1.3 var(--cg-font-ui,"Segoe UI",sans-serif);text-decoration:none}
+.cg-foot-col a:hover{color:var(--cg-green-700,#1b382b)!important;text-decoration:underline;text-underline-offset:4px}
+.cg-foot a:focus-visible{outline:3px solid var(--cg-focus,#f5b800);outline-offset:3px;box-shadow:0 0 0 6px var(--cg-focus-dark,#10241a)}
+.cg-foot-base{margin-top:24px;padding-top:16px;border-top:1px solid var(--cg-tan-100,#ebe3d3)}
+.cg-foot-base p{max-width:none;font-size:15px}
+@media (max-width:1099px){.cg-foot-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:560px){.cg-foot-grid{grid-template-columns:minmax(0,1fr);gap:18px}.cg-foot-in{width:calc(100% - 40px)}}
+html.cg-night-shift .cg-foot{background:#17120c;border-color:#684a26}
+html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
+@media print{.cg-foot{display:none}}
 </style>
 <!-- cg-license:start: generated by scripts/site-nav.mjs -->
 <script src="../../../src/config/license.js"></script>
@@ -923,7 +947,49 @@ html.cg-night-shift .cg-sidebar-toggle{background:#332312!important;border-color
   </article>
 </main>
 <div class="rc-sr" aria-live="polite" id="rcLive"></div>
-<footer class="site-footer">Cognicopia is made by BarronCrafts. Everything happens inside your browser.</footer>
+<!-- cg-footer:start: generated by scripts/site-nav.mjs -->
+<footer class="cg-foot">
+  <div class="cg-foot-in cg-foot-grid">
+    <div class="cg-foot-brand">
+      <a class="cg-foot-logo" href="../../../index.html"><img src="../../../assets/cognicopia-logo.jpg" alt=""><span>Cognicopia</span></a>
+      <p class="cg-foot-by">Connection, Cognition, Creation &middot; from BarronCrafts</p>
+      <p>Printable, large-print activities made from one resident's own life, for activity directors and families.</p>
+    </div>
+    <nav class="cg-foot-col" aria-labelledby="cgFootTools">
+      <h2 id="cgFootTools">Tools</h2>
+      <ul>
+        <li><a class="cg-foot-a" href="../../../index.html">Personalized Packet Tool</a></li>
+        <li><a class="cg-foot-a" href="../../../builder.html">Packet Builder</a></li>
+        <li><a class="cg-foot-a" href="../../../profile.html">Resident Profiles</a></li>
+        <li><a class="cg-foot-a" href="../../../builder.html#/coloring">Cognicopia Coloring</a></li>
+        <li><a class="cg-foot-a" href="../../../life-planners.html">12-Month Life Planners</a></li>
+        <li><a class="cg-foot-a" href="../../../cognitive-journals.html">Cognitive Life Journals</a></li>
+      </ul>
+    </nav>
+    <nav class="cg-foot-col" aria-labelledby="cgFootFacility">
+      <h2 id="cgFootFacility">Facility</h2>
+      <ul>
+        <li><a class="cg-foot-a" href="../../../builder.html#/facility">Facility Portal</a></li>
+        <li><a class="cg-foot-a" href="../../../pricing.html">Plans &amp; pricing</a></li>
+        <li><a class="cg-foot-a" href="../../../activate.html">Activate a license</a></li>
+        <li><a class="cg-foot-a" href="../../../contact.html?subject=Corporate+Invoice+Request">Request an invoice / W-9</a></li>
+      </ul>
+    </nav>
+    <nav class="cg-foot-col" aria-labelledby="cgFootResources">
+      <h2 id="cgFootResources">Resources</h2>
+      <ul>
+        <li><a class="cg-foot-a" href="../../../resources/">Resource &amp; Clinical Hub</a></li>
+        <li><a class="cg-foot-a" href="../../../resources/research/">Research Center</a></li>
+        <li><a class="cg-foot-a" href="../../../resources/caregiver-faq/">Caregiver FAQ</a></li>
+        <li><a class="cg-foot-a" href="../../../contact.html">Contact Kirk Barron</a></li>
+      </ul>
+    </nav>
+  </div>
+  <div class="cg-foot-in cg-foot-base">
+    <p>Cognicopia is made by BarronCrafts in Minot, North Dakota. Everything happens inside your browser &mdash; there is no account, no upload, and no copy of resident information kept anywhere.</p>
+  </div>
+</footer>
+<!-- cg-footer:end -->
 <script src="../../../assets/research-center.js" defer></script>
 </body>
 </html>

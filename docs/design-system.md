@@ -114,6 +114,17 @@ The weights are the project's own print standard ([cognicopia-coloring-standards
 
 The data comes from `scripts/build_coloring_svgs.py`; see [line-art-pipeline.md](line-art-pipeline.md). **Nothing on a screen uses `js/coloring.js` yet**, and no master pictures are committed, so `js/coloring-data.js` is empty today. The Packet Builder's coloring still comes from the engine and the approved art described in that runbook.
 
+## The paper look (every inner page)
+
+The front page is cream, with white cards, Fraunces headings and forest-green buttons. Every other page used to be dark green with a pattern. They now share the front page's look, from one place: sections 9b to 9d of `css/styles.css`, switched on by a class that `scripts/site-nav.mjs` writes on the page's `<html>` tag (never by hand).
+
+- **`cg-paper`** on every page except `index.html` (which has its own) and `builder.html`. Cream page, a white frame with a warm tan edge, cream inner cards, charcoal text, serif headings. Buttons: forest green with white text; the quiet button is white with a green edge; amber (`#ffcc66`, text `#241500`) is for the one urgent action. Section 9c lists each older page's own panels by class name, so each becomes a card. A solid dark control (a tag, a number, a colored evidence label) stays a dark control with white text.
+- **`cg-paper-app`** on `builder.html`. The Builder reads its colors from variables, so it takes the same palette by changing them (including the Facility and Academy variables and the profile wizard's). The Academy's lesson player and picture stages stay a dark screen, like a video player.
+- **The shared footer**: `scripts/site-nav.mjs` writes the same four-column footer (Tools, Facility, Resources) into every paper page, replacing each page's one-line footer. The breadcrumb bar is parchment.
+- **Screen only.** None of these rules touches print, so packets still print pure black on white. Night Shift keeps its dim amber-on-brown palette on every paper page.
+- **Measured.** `scripts/check-design-system.mjs` proves each page carries its class, that the new text pairs (amber, green, clay, sage) are 7:1 or better, and that the paper rules have no print rule. A full-site scan of every page's text against its real background found nothing under 4.5:1, and nothing under 7:1 after the last fixes.
+- The owner's license desk (`license-desk.html`) uses the same palette in its own small stylesheet.
+
 ## How it is measured
 
 | Command | What it proves |

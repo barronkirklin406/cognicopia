@@ -74,6 +74,7 @@
   --cg-cream:#fbf7f1;
   --cg-peach-100:#fbe9dc;
   --cg-peach-200:#f6cdb4;      /* decoration only (the hero's glow) */
+  --cg-clay-800:#732f19;      /* terracotta for text on a peach tag: 8.5:1 */
   --cg-clay-700:#8a3a20;       /* terracotta text: 7.3:1 on cream, 7.8:1 on white */
   /* crisp neutrals */
   --cg-charcoal:#1a202c;       /* the brand's charcoal */
@@ -253,6 +254,191 @@ html.cg-night-shift::before,html.cg-night-shift::after{display:none}
   :where(html){scroll-behavior:auto}
   :where(*,*::before,*::after){animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important}
   :root::before,:root::after{animation:none !important;transform:none !important}
+}
+
+/* ---------- 9b. Paper pages: the landing page's look on every inner page: <html class="cg-paper"> ----------
+   Cream page, white cards with warm tan borders, Fraunces headings over Atkinson text, forest-green
+   buttons with white text, amber for the one urgent action. Written once here, so the 40-odd pages that
+   each carry their own older dark styles take the same look without 40 separate edits; scripts/site-nav.mjs
+   puts the class on every page that should have it. It is screen-only (print rules are untouched), and
+   Night Shift (html.cg-night-shift) keeps its dim amber-on-brown palette. Text pairs: charcoal, ink-soft and
+   green 700 on cream, white and tan-100; white on green 700; #241500 on amber. All are above 7:1. */
+@media screen{
+  :root{--cg-amber-300:#ffcc66;--cg-amber-200:#ffe0a3;--cg-amber-ink:#241500;--cg-card-line:#ddd1ba;--cg-card-shadow:0 1px 2px rgba(79,64,48,.08),0 10px 28px rgba(79,64,48,.08)}
+  html.cg-paper:not(.cg-night-shift){color-scheme:light}
+  html.cg-paper::before,html.cg-paper::after{display:none}
+  html.cg-paper:not(.cg-night-shift) body{background:var(--cg-cream) !important;background-image:none !important;color:var(--cg-charcoal) !important;font-family:var(--cg-font-ui) !important;line-height:1.65}
+  html.cg-paper:not(.cg-night-shift) :is(p,li,dd,dt,td,th,span,label,small,strong,em,b,i,div,summary,figcaption,legend,blockquote,cite,button){color:var(--cg-charcoal) !important;text-shadow:none !important}
+  html.cg-paper:not(.cg-night-shift) :is(h1,h2,h3,h4,h5,h6){color:var(--cg-charcoal) !important;font-family:var(--cg-font-display) !important;font-weight:600 !important;letter-spacing:-.01em;text-shadow:none !important}
+  html.cg-paper:not(.cg-night-shift) h1{font-size:var(--cg-step-3);line-height:1.12}
+  html.cg-paper:not(.cg-night-shift) h2{font-size:var(--cg-step-2);line-height:1.2;border-bottom:2px solid var(--cg-tan-200) !important}
+  html.cg-paper:not(.cg-night-shift) h3{font-size:var(--cg-step-1);line-height:1.25}
+  html.cg-paper:not(.cg-night-shift) :is(p,li){color:var(--cg-charcoal) !important}
+  html.cg-paper:not(.cg-night-shift) :is(main,.container,.highlight-banner,article,section,p,td,dd) a:not([class]){color:var(--cg-green-700) !important;text-decoration:underline;text-underline-offset:3px;font-weight:600}
+  html.cg-paper:not(.cg-night-shift) :is(main,.container,.highlight-banner,article,section,p,td,dd) a:not([class]):hover{color:var(--cg-green-600) !important}
+  html.cg-paper:not(.cg-night-shift) hr{border:0;border-top:1px solid var(--cg-tan-200)}
+
+  /* the page frame and its cards */
+  html.cg-paper:not(.cg-night-shift) .container{background:var(--cg-white) !important;border:1px solid var(--cg-card-line) !important;border-radius:var(--cg-radius-lg) !important;box-shadow:var(--cg-card-shadow) !important}
+  html.cg-paper:not(.cg-night-shift) :is(.card-panel,.feature-box,.facility-preview-box,.highlight-banner,.panel,.card,.box,.tile,.callout){background:var(--cg-cream) !important;border:1px solid var(--cg-card-line) !important;border-radius:var(--cg-radius-md) !important;box-shadow:none !important}
+  html.cg-paper:not(.cg-night-shift) .highlight-banner{border-left:5px solid var(--cg-green-600) !important;border-radius:0 var(--cg-radius-md) var(--cg-radius-md) 0 !important;background:var(--cg-sage-100) !important}
+  html.cg-paper:not(.cg-night-shift) .feature-icon-badge{background:var(--cg-peach-100) !important;border:1px solid var(--cg-peach-200) !important}
+  html.cg-paper:not(.cg-night-shift) .feature-icon-badge svg{color:var(--cg-clay-700) !important;stroke:var(--cg-clay-700) !important}
+  html.cg-paper:not(.cg-night-shift) .organic-vine-divider{color:var(--cg-green-600) !important}
+  html.cg-paper:not(.cg-night-shift) .vine-subtitle,html.cg-paper:not(.cg-night-shift) .preview-caption{color:var(--cg-ink-soft) !important}
+  html.cg-paper:not(.cg-night-shift) .specs-table{background:var(--cg-white) !important;border:1px solid var(--cg-card-line) !important;border-radius:var(--cg-radius-md)}
+  html.cg-paper:not(.cg-night-shift) .specs-table :is(th,td){border-bottom:1px solid var(--cg-tan-200) !important}
+  html.cg-paper:not(.cg-night-shift) .specs-table th{background:var(--cg-tan-100) !important;color:var(--cg-charcoal) !important}
+  html.cg-paper:not(.cg-night-shift) table:not(.specs-table){border-color:var(--cg-card-line)}
+  html.cg-paper:not(.cg-night-shift) :is(th){background:var(--cg-tan-100) !important}
+  html.cg-paper:not(.cg-night-shift) :is(td,th){border-color:var(--cg-tan-200) !important}
+
+  /* the top of a content page: back link and the small label */
+  html.cg-paper:not(.cg-night-shift) .nav-breadcrumbs{border-bottom:1px solid var(--cg-tan-200) !important}
+  html.cg-paper:not(.cg-night-shift) .breadcrumb-tag{background:var(--cg-peach-100) !important;color:var(--cg-clay-800) !important;border:1px solid var(--cg-peach-200) !important}
+  html.cg-paper:not(.cg-night-shift) .site-footer{color:var(--cg-ink-soft) !important}
+
+  /* buttons: forest green with white text; the quiet one is white with a green edge */
+  html.cg-paper:not(.cg-night-shift) :is(.primary-btn,.back-home-btn,.cg-btn-primary){background:var(--cg-green-700) !important;border:2px solid var(--cg-green-700) !important;border-radius:var(--cg-radius-md) !important;color:#fff !important;box-shadow:var(--cg-shadow-1) !important;text-decoration:none !important}
+  html.cg-paper:not(.cg-night-shift) :is(.primary-btn,.back-home-btn,.cg-btn-primary) :is(span,svg,b,strong){color:#fff !important;stroke:currentColor}
+  html.cg-paper:not(.cg-night-shift) :is(.primary-btn,.back-home-btn,.cg-btn-primary):is(:hover,:focus-visible){background:var(--cg-green-600) !important;border-color:var(--cg-green-600) !important;transform:translateY(-1px);box-shadow:0 6px 16px rgba(27,56,43,.28) !important}
+  html.cg-paper:not(.cg-night-shift) .secondary-btn{background:var(--cg-white) !important;border:2px solid var(--cg-green-700) !important;border-radius:var(--cg-radius-md) !important;color:var(--cg-green-700) !important;box-shadow:none !important;text-decoration:none !important}
+  html.cg-paper:not(.cg-night-shift) .secondary-btn :is(span,svg,b,strong){color:var(--cg-green-700) !important;stroke:currentColor}
+  html.cg-paper:not(.cg-night-shift) .secondary-btn:is(:hover,:focus-visible){background:var(--cg-sage-100) !important;border-color:var(--cg-green-700) !important;transform:translateY(-1px)}
+  html.cg-paper:not(.cg-night-shift) .cta-action-group{border-top:1px solid var(--cg-tan-200) !important}
+  html.cg-paper:not(.cg-night-shift) :is(.amber-btn,.cg-btn-amber){background:var(--cg-amber-300) !important;border:2px solid var(--cg-amber-300) !important;color:var(--cg-amber-ink) !important;border-radius:var(--cg-radius-md) !important;font-weight:800 !important}
+  html.cg-paper:not(.cg-night-shift) :is(.amber-btn,.cg-btn-amber):is(:hover,:focus-visible){background:var(--cg-amber-200) !important;border-color:var(--cg-amber-200) !important}
+
+  /* forms: warm inputs on white */
+  html.cg-paper:not(.cg-night-shift) :is(input:not([type=checkbox],[type=radio],[type=range],[type=color],[type=file],[type=button],[type=submit]),select,textarea){background:var(--cg-white) !important;color:var(--cg-charcoal) !important;border:1.5px solid var(--cg-tan-400) !important;border-radius:var(--cg-radius-sm) !important;box-shadow:none}
+  html.cg-paper:not(.cg-night-shift) :is(input,select,textarea)::placeholder{color:#5b6372 !important;opacity:1}
+  html.cg-paper:not(.cg-night-shift) :is(input,select,textarea):focus{border-color:var(--cg-green-600) !important}
+  html.cg-paper:not(.cg-night-shift) label{font-weight:600}
+}
+
+/* Night Shift on a paper page: the same dim amber-on-brown the packet tool uses */
+@media screen{
+  html.cg-paper.cg-night-shift body{background:#17120c !important;color:#fff1cf !important}
+  html.cg-paper.cg-night-shift :is(p,li,dd,dt,td,th,span,label,small,strong,em,b,i,div,summary,figcaption,legend,blockquote,h1,h2,h3,h4,h5,h6){color:#fff1cf !important}
+  html.cg-paper.cg-night-shift :is(.container,.card-panel,.feature-box,.facility-preview-box,.highlight-banner,.specs-table,.panel,.card,.box,.tile,.callout){background:#211910 !important;border-color:#684a26 !important}
+  html.cg-paper.cg-night-shift :is(th){background:#2b2015 !important}
+  html.cg-paper.cg-night-shift :is(.primary-btn,.back-home-btn,.secondary-btn,.cg-btn-primary){background:#332312 !important;border-color:#d6a64b !important;color:#ffedcc !important}
+  html.cg-paper.cg-night-shift :is(.primary-btn,.back-home-btn,.secondary-btn,.cg-btn-primary) :is(span,svg){color:#ffedcc !important}
+  html.cg-paper.cg-night-shift :is(main,.container,.highlight-banner,article,section,p,td,dd) a:not([class]){color:#ffd477 !important}
+  html.cg-paper.cg-night-shift :is(input,select,textarea){background:#2b2015 !important;color:#ffedcc !important;border-color:#9b7136 !important}
+}
+
+/* ---------- 9c. Paper pages, the parts each family of pages names for itself ----------
+   Every older page painted its own panels in dark green. These are those panels, listed by the
+   class each page gave them, so each takes a card's look: white (or cream inside a frame), a warm
+   tan edge, charcoal text. A solid dark control (a tag, a number, a colored evidence label) stays
+   a dark control with white text. */
+@media screen{
+  html.cg-paper:not(.cg-night-shift) :is(.hub-card,.pillar-item,.module-card,.era-card,.activity,.framework,.info-box,.summary-metric-card,.catalog-section,.catalog-visual-box,.protocol-card,.plan,.standards-guarantee-box,.catalog-bottom-cta,.publisher-seal-box,.standards-point-item,.hub-group,section.intro,aside.note,section.references,.fq-item,.fq-support,.rap-privacy,.rap-residents,.rap-nav,.rap-wizard,.ca-outcome,.qs-banner,.ca-banner,.fq-hero,.rc-band,.rc-card,.hub-tabs,main.hub,.steps li,.ticks li){background:var(--cg-white) !important;background-image:none !important;border:1px solid var(--cg-card-line) !important;border-radius:var(--cg-radius-md) !important;box-shadow:var(--cg-card-shadow) !important;color:var(--cg-charcoal) !important}
+  html.cg-paper:not(.cg-night-shift) .container :is(.hub-card,.pillar-item,.module-card,.era-card,.activity,.framework,.info-box,.summary-metric-card,.catalog-section,.catalog-visual-box,.protocol-card,.plan,.standards-guarantee-box,.catalog-bottom-cta,.publisher-seal-box,.standards-point-item,.hub-group,section.intro,aside.note,section.references,.fq-item,.fq-support,.rap-privacy,.rap-residents,.rap-nav,.rap-wizard,.ca-outcome,.rc-band,.rc-card,.steps li,.ticks li){background:var(--cg-cream) !important;box-shadow:none !important}
+  html.cg-paper:not(.cg-night-shift) :is(.plan.plan-best){border:2px solid var(--cg-green-600) !important}
+  html.cg-paper:not(.cg-night-shift) :is(main.hub,.hub-tabs){border-radius:var(--cg-radius-lg) !important}
+  html.cg-paper:not(.cg-night-shift) a.hub-card:is(:hover,:focus-visible){background:var(--cg-sage-100) !important;border-color:var(--cg-green-600) !important;transform:translateY(-2px)}
+  html.cg-paper:not(.cg-night-shift) :is(table,td){background-color:transparent}
+  html.cg-paper:not(.cg-night-shift) table{background:var(--cg-white) !important;border:1px solid var(--cg-card-line) !important}
+  html.cg-paper:not(.cg-night-shift) td{background:var(--cg-white) !important;background-image:none !important}
+  html.cg-paper:not(.cg-night-shift) :is(.qs-banner,.ca-banner,.fq-hero) :is(h1,h2,p,span,div,a){color:var(--cg-charcoal) !important}
+
+  /* small solid controls and tags */
+  html.cg-paper:not(.cg-night-shift) :is(.email-action-btn,.btn-catalog-primary,.btn-cta-main,.qs-btn,.ca-btn,.plan-btn:not(.plan-btn-alt),.cg-download-btn){background:var(--cg-green-700) !important;border:2px solid var(--cg-green-700) !important;border-radius:var(--cg-radius-md) !important;color:#fff !important;box-shadow:var(--cg-shadow-1) !important;text-decoration:none !important}
+  html.cg-paper:not(.cg-night-shift) :is(.email-action-btn,.btn-catalog-primary,.btn-cta-main,.qs-btn,.ca-btn,.plan-btn:not(.plan-btn-alt)) :is(span,svg,b,strong,i){color:#fff !important;stroke:currentColor}
+  html.cg-paper:not(.cg-night-shift) :is(.email-action-btn,.btn-catalog-primary,.btn-cta-main,.qs-btn,.ca-btn,.plan-btn:not(.plan-btn-alt)):is(:hover,:focus-visible){background:var(--cg-green-600) !important;border-color:var(--cg-green-600) !important}
+  html.cg-paper:not(.cg-night-shift) :is(.btn-catalog-secondary,.btn-cta-alt,.plan-btn-alt,.email-action-btn.alt,.fq-chip,#fqOpenAll,#fqCloseAll,.skip-link-alt){background:var(--cg-white) !important;border:2px solid var(--cg-green-700) !important;border-radius:var(--cg-radius-md) !important;color:var(--cg-green-700) !important;box-shadow:none !important;text-decoration:none !important}
+  html.cg-paper:not(.cg-night-shift) :is(.btn-catalog-secondary,.btn-cta-alt,.plan-btn-alt,.email-action-btn.alt,.fq-chip,#fqOpenAll,#fqCloseAll) :is(span,svg,b,strong,i){color:var(--cg-green-700) !important;stroke:currentColor}
+  html.cg-paper:not(.cg-night-shift) :is(.btn-catalog-secondary,.btn-cta-alt,.plan-btn-alt,.email-action-btn.alt,.fq-chip,#fqOpenAll,#fqCloseAll):is(:hover,:focus-visible){background:var(--cg-sage-100) !important}
+  html.cg-paper:not(.cg-night-shift) :is(.catalog-badge,.ca-tag,.qs-tag,.ca-chip,.module-tag,.era-tag,.fq-num,.qs-dot,.ca-dot){background:var(--cg-peach-100) !important;border:1px solid var(--cg-peach-200) !important;color:var(--cg-clay-800) !important}
+  html.cg-paper:not(.cg-night-shift) :is(.ca-chip.is-hit){background:var(--cg-ok-200) !important;border-color:var(--cg-ok-800) !important;color:var(--cg-charcoal) !important}
+  html.cg-paper:not(.cg-night-shift) :is(.protocol-icon){background:var(--cg-peach-100) !important;border:1px solid var(--cg-peach-200) !important}
+  html.cg-paper:not(.cg-night-shift) :is(.protocol-icon) svg{color:var(--cg-clay-700) !important;stroke:var(--cg-clay-700) !important}
+  html.cg-paper:not(.cg-night-shift) .hub-tabs [role="tab"]{background:transparent !important;color:var(--cg-charcoal) !important;border-radius:var(--cg-radius-md) !important}
+  html.cg-paper:not(.cg-night-shift) .hub-tabs [role="tab"]:hover{background:var(--cg-sage-100) !important}
+  html.cg-paper:not(.cg-night-shift) .hub-tabs [role="tab"][aria-selected="true"]{background:var(--cg-green-700) !important;color:#fff !important}
+  html.cg-paper:not(.cg-night-shift) .hub-tabs [role="tab"][aria-selected="true"] *{color:#fff !important}
+  html.cg-paper:not(.cg-night-shift) .hub-group{padding:var(--cg-space-5)}
+  html.cg-paper:not(.cg-night-shift) .rc-link-btn{color:var(--cg-green-700) !important;font-weight:700}
+  html.cg-paper:not(.cg-night-shift) .cg-night-shift-toggle{color:#ffedcc !important}
+  /* the resident profile wizard reads its colors from --rp-* */
+  html.cg-paper:not(.cg-night-shift) .rap{--rp-card:var(--cg-white);--rp-card2:var(--cg-cream);--rp-field:var(--cg-white);--rp-line:var(--cg-tan-200);--rp-line2:var(--cg-tan-400);--rp-text:var(--cg-charcoal);--rp-muted:var(--cg-ink-soft);--rp-accent:var(--cg-green-700);--rp-accent-hi:var(--cg-green-600);--rp-ink:#ffffff;--rp-warn:var(--cg-clay-700)}
+  html.cg-paper:not(.cg-night-shift) .rap select option{background:#fff;color:var(--cg-charcoal)}
+  html.cg-paper:not(.cg-night-shift) .rap-check:has(input:checked){color:var(--cg-charcoal) !important;background:var(--cg-sage-100)}
+  html.cg-paper:not(.cg-night-shift) :is(.cg-sidebar-toggle,.rap-btn-primary),html.cg-paper:not(.cg-night-shift) :is(.cg-sidebar-toggle,.rap-btn-primary) :is(span,svg){color:#fff !important}
+  html.cg-paper:not(.cg-night-shift) .fq-chip span{background:var(--cg-sage-100) !important;color:var(--cg-charcoal) !important}
+  html.cg-paper:not(.cg-night-shift) .fq-mail,html.cg-paper:not(.cg-night-shift) .fq-mail *{color:#fff !important}
+  html.cg-paper:not(.cg-night-shift) .fq-mail{background:var(--cg-green-700) !important;border:2px solid var(--cg-green-700) !important;border-radius:var(--cg-radius-md) !important}
+  /* the research center's evidence labels keep their meaning colors, with white text */
+  html.cg-paper:not(.cg-night-shift) .rc-lv{color:#fff !important}
+  html.cg-paper:not(.cg-night-shift) .rc-lv *{color:#fff !important}
+  html.cg-paper:not(.cg-night-shift) a.skip-link{background:var(--cg-green-700) !important;color:#fff !important}
+}
+
+/* Night Shift: the same panels, dim */
+@media screen{
+  html.cg-paper.cg-night-shift :is(.hub-card,.pillar-item,.module-card,.era-card,.activity,.framework,.info-box,.summary-metric-card,.catalog-section,.catalog-visual-box,.protocol-card,.plan,.standards-guarantee-box,.catalog-bottom-cta,.publisher-seal-box,.standards-point-item,.hub-group,section.intro,aside.note,section.references,.fq-item,.fq-support,.rap-privacy,.rap-residents,.rap-nav,.rap-wizard,.ca-outcome,.qs-banner,.ca-banner,.fq-hero,.rc-band,.rc-card,.hub-tabs,main.hub,table,td,.steps li,.ticks li){background:#211910 !important;border-color:#684a26 !important;color:#fff1cf !important}
+}
+
+/* ---------- 9d. The Packet Builder in the paper palette: <html class="cg-paper-app"> ----------
+   The builder reads its colors from a few variables, so it takes the cream, white, tan and forest-green
+   palette by changing them. Buttons that were bright green on dark become forest green with white text
+   (--accent-ink). Print previews, which draw their own white pages, are not touched; Night Shift is not
+   offered inside the builder, so there is no second set. Screen only. */
+@media screen{
+  html.cg-paper-app{
+    color-scheme:light;
+    --bg:var(--cg-cream);--bg-2:var(--cg-parchment);--panel:var(--cg-white);--panel-2:var(--cg-cream);
+    --line:var(--cg-tan-200);--line-2:var(--cg-tan-300);
+    --text:var(--cg-charcoal);--muted:var(--cg-ink-soft);
+    --accent:var(--cg-green-700);--accent-hi:var(--cg-green-600);--accent-deep:var(--cg-green-700);--accent-ink:#ffffff;
+    --sb-bg:var(--cg-white);--warn:var(--cg-clay-700);
+  }
+  html.cg-paper-app::before,html.cg-paper-app::after{display:none}
+
+  html.cg-paper-app .topbar .btn-packet,html.cg-paper-app .topbar .btn-packet :is(span,b){color:#fff}
+  html.cg-paper-app :is(.sb-hub-head,.sb-hub-link){color:var(--cg-charcoal)}
+  html.cg-paper-app :is(.sb-hub-head:hover,.sb-hub[open]>.sb-hub-head){background:var(--cg-sage-100)}
+  html.cg-paper-app .sb-link:hover{background:var(--cg-sage-100);color:var(--cg-green-700)}
+  html.cg-paper-app .sb-link[aria-current="page"]{background:var(--cg-sage-200);color:var(--cg-charcoal)}
+  html.cg-paper-app .sb-link[aria-current="page"] svg,html.cg-paper-app .sb-link:hover svg{color:var(--cg-green-700)}
+  html.cg-paper-app .sb-link .tag{background:var(--cg-tan-100);color:var(--cg-ink-soft)}
+  html.cg-paper-app .sb-link .tag.live{background:var(--cg-sage-100);color:var(--cg-green-700)}
+  html.cg-paper-app .sb-link[aria-current="page"] .tag.live{background:var(--cg-white);color:var(--cg-green-700)}
+  /* chosen cards, hover states and the few fixed dark fills the builder has */
+  html.cg-paper-app .card[aria-pressed="true"],html.cg-paper-app .lp-scope input:checked+span,html.cg-paper-app .rs-res[aria-pressed="true"]{background:var(--cg-sage-100)}
+  html.cg-paper-app :is(.btn-home,.btn):hover{background:var(--cg-sage-100);color:var(--cg-charcoal)}
+  html.cg-paper-app .calm-mode-toggle:hover{background:var(--cg-sage-100)}
+  html.cg-paper-app .fp-chip:hover{background:var(--cg-sage-100)}
+  html.cg-paper-app .lp-fig-empty .lp-thumb{background:var(--cg-tan-100)}
+  html.cg-paper-app .lp-sys pre{background:var(--cg-tan-100);color:var(--cg-charcoal)}
+  html.cg-paper-app :is(.fp-btn-primary,.fp-tier b){background:var(--cg-green-700);border-color:var(--cg-green-700);color:#fff}
+  html.cg-paper-app .fp-btn-primary:hover{background:var(--cg-green-600);border-color:var(--cg-green-600)}
+  /* the top bar, and the two buttons in it that matter most */
+  html.cg-paper-app .topbar{background:rgba(255,255,255,.94);border-bottom:1px solid var(--cg-tan-200)}
+  html.cg-paper-app .topbar,html.cg-paper-app .topbar :is(span,b,strong,small,div,p){color:var(--cg-charcoal)}
+  html.cg-paper-app .panic-button{background:var(--cg-amber-300);border-color:#b97d00;color:var(--cg-amber-ink)}
+  html.cg-paper-app .panic-button :is(span,b,small,svg,div){color:var(--cg-amber-ink)}
+  html.cg-paper-app .panic-button:hover{background:var(--cg-amber-200)}
+  html.cg-paper-app .calm-mode-toggle{background:var(--cg-white);border-color:var(--cg-green-700);color:var(--cg-charcoal)}
+  html.cg-paper-app .calm-mode-toggle :is(span,b,small,svg,div){color:var(--cg-charcoal)}
+  html.cg-paper-app .toast{background:var(--cg-green-700);border-color:var(--cg-green-700);color:#fff}
+  html.cg-paper-app .toast :is(span,b,button,a,div){color:#fff}
+  /* switches: a tan track off, forest green on */
+  html.cg-paper-app .switch input{background:var(--cg-tan-600);border-color:var(--cg-tan-600)}
+  html.cg-paper-app .switch input:checked{background:var(--cg-green-700);border-color:var(--cg-green-700)}
+  html.cg-paper-app .fp-toggle-track{background:var(--cg-tan-600);border-color:var(--cg-tan-600)}
+  html.cg-paper-app .fp-toggle-thumb{background:#fff}
+  html.cg-paper-app .lp-spread{background:var(--cg-tan-100)}
+  /* Facility: its own variables, now on cream */
+  html.cg-paper-app .fp{--fp-card:var(--cg-white);--fp-chip:var(--cg-tan-100);--fp-tan:var(--cg-tan-200);--fp-tan-hi:var(--cg-tan-300);--fp-div:var(--cg-tan-200);--fp-text:var(--cg-charcoal);--fp-text-2:var(--cg-ink-soft);--fp-muted:var(--cg-ink-soft);--fp-head:var(--cg-green-700);--fp-ink:#fff;--fp-ink-2:#cfe3d6;--fp-warn:var(--cg-clay-700)}
+  html.cg-paper-app .fp-bar select{color:var(--cg-charcoal)}
+  /* Academy: its own variables, now on cream; the lesson player and picture stages stay a dark screen, like a video player */
+  html.cg-paper-app .ac{--ac-bg:var(--cg-cream);--ac-panel:var(--cg-white);--ac-card:var(--cg-white);--ac-sunk:var(--cg-tan-100);--ac-surface:var(--cg-white);--ac-surface-2:var(--cg-tan-100);--ac-accent:var(--cg-green-700);--ac-accent-hi:var(--cg-green-600);--ac-accent-text:var(--cg-green-700);--ac-glow:rgba(197,160,89,.10);--ac-media-glow:rgba(27,56,43,.18);--ac-border:var(--cg-tan-200);--ac-div:rgba(79,64,48,.16);--ac-line:var(--cg-tan-600);--ac-text:var(--cg-charcoal);--ac-text-2:var(--cg-ink-soft);--ac-muted:#3f4756;--ac-ink:#ffffff;--ac-focus:#f5b800;--ac-family:var(--cg-clay-700);--ac-good:var(--cg-ok-800);--ac-warn:var(--cg-clay-700);box-shadow:var(--cg-card-shadow);background:var(--cg-cream)}
+  html.cg-paper-app .ac :is(.ac-player,.ac-thumb,.ac-stage,.ac-mini){--ac-text:#f0f4f2;--ac-text-2:#cfdcd5;--ac-muted:#b4c6bc;--ac-ink:#0e1614;--ac-accent:#52b788;--ac-accent-hi:#74c69d;--ac-accent-text:#8ad8b0;--ac-surface:#1c2e29;--ac-surface-2:#1f3530;--ac-border:#2a3d36;--ac-sunk:#0a110f;--ac-family:#e9b872;--ac-line:#6b9080;--ac-focus:#e6f4f1}
+  html.cg-paper-app .ac :is(.ac-card,.ac-tile,.ac-learner){background:var(--cg-white);box-shadow:var(--cg-card-shadow);-webkit-backdrop-filter:none;backdrop-filter:none}
+  html.cg-paper-app .ac-thumb .ac-cat{color:#ffe0a3;border-color:#ffe0a3}
 }
 
 /* ---------- 10. Print ----------
