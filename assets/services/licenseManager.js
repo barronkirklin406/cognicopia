@@ -373,7 +373,9 @@
   function dateText(iso){
     var d = new Date(iso);
     if (isNaN(d.getTime())) return "";
-    try { return d.toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" }); } catch (e){ return String(iso).slice(0, 10); }
+    var o = { year: "numeric", month: "long", day: "numeric" };
+    if (/^\d{4}-\d\d-\d\d$/.test(String(iso))) o.timeZone = "UTC";   /* a date with no time is a calendar day: do not let a US time zone slip it back one day */
+    try { return d.toLocaleDateString(undefined, o); } catch (e){ return String(iso).slice(0, 10); }
   }
   /* Ask the browser to keep this site's data when space runs short, so a license is not lost to a clean-up. Best effort. */
   function keepStorage(){
