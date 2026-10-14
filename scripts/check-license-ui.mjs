@@ -55,7 +55,7 @@ const REF = "cs_live_a1B2c3D4e5F6g7H8i9J0";
 
 const external = [];   // every request that left the local server (the stand-in service is expected on activate.html only)
 async function context({ cfg = CFG_FULL, service, viewport = { width: 1280, height: 900 }, storageState, clock } = {}) {
-  const ctx = await browser.newContext({ viewport, serviceWorkers: "block", storageState });
+  const ctx = await browser.newContext({ viewport, serviceWorkers: "block", storageState, timezoneId: "America/Chicago" });   // a US time zone: a date-only value must not slip back a day
   await ctx.route("**/src/config/license.js", r => r.fulfill({ contentType: "text/javascript", body: cfg }));
   await ctx.route(url => !url.href.startsWith(base) && !url.href.startsWith("data:") && !url.href.startsWith("blob:"), async route => {
     const req = route.request(), u = new URL(req.url());

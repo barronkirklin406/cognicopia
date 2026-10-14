@@ -898,7 +898,7 @@ html.cg-night-shift .cg-sidebar-toggle{background:#332312!important;border-color
   function cleanAddress() {
     try { history.replaceState(history.state, "", location.pathname); } catch (e) {}
   }
-  var dateText = function (iso) { var d = new Date(iso); return isNaN(d) ? iso : d.toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" }); };
+  var dateText = function (iso) { var d = new Date(iso), o = { year: "numeric", month: "long", day: "numeric" }; if (/^\d{4}-\d\d-\d\d$/.test(String(iso))) o.timeZone = "UTC"; return isNaN(d) ? iso : d.toLocaleDateString(undefined, o); };
 
   if (!L || !C) { say("bad", "This page could not start", "The license files did not load. Reload the page, or contact us."); return; }
 
