@@ -2723,6 +2723,7 @@ textarea:focus{border-color:var(--accent)}
 <div id="printRoot" aria-hidden="true"></div>
 
 <script src="assets/services/secureStore.js"></script>
+<script src="assets/services/trialLedger.js"></script>
 <script src="src/config/license.js"></script>
 <script src="assets/services/licenseManager.js"></script>
 <script>
@@ -10973,8 +10974,11 @@ function promoActive(){ try { return !!(window.CognicopiaLicense && window.Cogni
 /* A signed license key is the third way in; its signature and dates are re-checked on every call. */
 function keyActive(){ try { return !!(window.CognicopiaLicense && window.CognicopiaLicense.isKeyActive()); } catch(e){ return false; } }
 function isLicensed(){ return sha256(rawGet("cognicopia_license","")) === ACCESS_SHA || promoActive() || keyActive(); }
-function genCount(){ return parseInt(rawGet("cognicopia_gen_count","0"),10) || 0; }
-function bumpGen(){ rawSet("cognicopia_gen_count", String(genCount()+1)); }
+/* The free count is kept in three places on this computer and the largest is trusted
+   (assets/services/trialLedger.js); the packet tool shares it. Without the service, the old single setting is used. */
+const TRIAL = window.CogniTrialLedger ? window.CogniTrialLedger.forBrowser(CG_LS) : null;
+function genCount(){ return TRIAL ? TRIAL.count() : (parseInt(rawGet("cognicopia_gen_count","0"),10) || 0); }
+function bumpGen(){ if(TRIAL) TRIAL.record(); else rawSet("cognicopia_gen_count", String(genCount()+1)); }
 let keyMsg = "";   // why a pasted license key was refused, for the box that took it
 function activateLicense(code){
   keyMsg = "";
@@ -14238,6 +14242,7 @@ function renderAllowance(){
 }
 function renderBwNote(){ $("#bwNote").hidden = !isPureBlackAndWhitePDF; }
 renderAllowance();   // the upgrade banner is on the page from the start, not only once the packet drawer has been opened
+if(TRIAL) TRIAL.ready().then(function(r){ if(r.raised) renderAllowance(); });
 
 let toastTimer = null;
 function toast(msg, actionLabel, action){

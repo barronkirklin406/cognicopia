@@ -1,0 +1,225 @@
+/* =====================================================================
+   COGNICOPIA FREE-PACKET LEDGER (the "25 free packets" counter)
+
+   The count used to live in one browser setting. Anyone who cleared that
+   setting, or typed a smaller number into the browser's developer tools,
+   got their free packets back. This service keeps the same count in three
+   places on the computer, and trusts the largest:
+
+     1. the page's own storage (the key the pages have always used, so no
+        one's count resets when this arrives),
+     2. a small IndexedDB record (database "cg_trial"),
+     3. a Cache Storage entry whose web address ends in the number
+        (cache "cg-trial-v1"; not named "cognicopia-", because the offline
+        worker deletes caches with that prefix whenever the site updates).
+
+   A count can only go up. Lower a number in one place and the next read
+   finds the bigger one in another place and puts it back. Type junk, and
+   the junk is ignored, never punished: damaged storage must not lock out
+   an honest user. A tampered number can only hurt the person who typed it.
+
+   What this does NOT do, and says so plainly:
+     - Clearing ALL of this site's data (or a private window, or another
+       browser) starts a new count. A page that works offline and never
+       phones home cannot prevent that, and Cognicopia will not add a
+       tracker to try. Clearing everything also deletes the person's saved
+       residents, roster, Shift board and Academy progress, which is a cost
+       of its own.
+     - It is not a secret. The code is readable; a determined person can
+       edit every copy. It stops accidents and casual edits, not a
+       dedicated effort. That is the right strength for a trial of 25.
+
+   Privacy: nothing leaves the computer. No fingerprint, no identifier, no
+   cookie (cookies are sent to the server with every request), no network
+   request. The stored value is one whole number. Only the free count lives
+   here; resident details never touch it.
+
+   Built into assets/services/trialLedger.js (globalThis.CogniTrialLedger)
+   by scripts/build-services.mjs. Written against plain adapters so the
+   tests run it in Node with no browser.
+   @global CogniTrialLedger
+   ===================================================================== */
+
+export const VERSION = "1.0.0";
+export const COUNT_KEY = "cognicopia_gen_count";          // the key the pages have always used
+export const ASKED_KEY = "cognicopia_trial_persist";      // set once the browser has been asked to keep the data
+export const MIRROR_DB = "cg_trial";
+export const MIRROR_CACHE = "cg-trial-v1";                // not "cognicopia-": sw.js deletes those on each new version
+export const MAX_COUNT = 999999;
+
+export type Reading = { source: string; n: number | null };
+export type Merged = { n: number; from: string; repair: string[] };
+/** write(n) RAISES the copy to at least n and never lowers it, so a page that has not yet read the others cannot overwrite a higher number. */
+export type Mirror = { name: string; read: () => Promise<number | null>; write: (n: number) => Promise<void> };
+export type Cell = { get: () => string | null; set: (v: string) => unknown };
+export type Adapters = { primary: Cell; asked: Cell; mirrors: Mirror[]; persist?: () => Promise<unknown> };
+
+/** A whole number from a stored value, or null when it is not one. Junk, negatives, decimals and huge values are ignored. */
+export function parseCount(raw: unknown): number | null {
+  const s = typeof raw === "number" ? String(raw) : typeof raw === "string" ? raw.trim() : "";
+  if (!/^\d{1,6}$/.test(s)) return null;
+  const n = parseInt(s, 10);
+  return n <= MAX_COUNT ? n : null;
+}
+
+/** The largest valid number among the readings (and the highest this page has already seen); which stores to repair. */
+export function merge(readings: Reading[], floor: number): Merged {
+  let n = floor > 0 ? floor : 0, from = "memory";
+  for (const r of readings) if (r.n !== null && r.n > n) { n = r.n; from = r.source; }
+  const repair = readings.filter(r => r.n === null || r.n < n).map(r => r.source);
+  return { n, from, repair };
+}
+
+export function createLedger(a: Adapters) {
+  let floor = 0;
+  const listeners: Array<(n: number) => void> = [];
+  let readyPromise: Promise<{ n: number; raised: boolean; repaired: string[]; from: string }> | null = null;
+
+  const notify = (n: number) => { for (const fn of listeners.slice()) { try { fn(n); } catch (e) { /* a listener must not break the count */ } } };
+  const readPrimary = () => { try { return parseCount(a.primary.get()); } catch (e) { return null; } };
+  const writePrimary = (n: number) => { try { a.primary.set(String(n)); } catch (e) { /* storage refused: the mirrors still hold it */ } };
+  /* One write at a time per copy, in order: three packets made in a row must not race each other inside the browser's storage. */
+  const queue: { [name: string]: Promise<unknown> } = {};
+  const writeMirrors = (n: number, only?: string[]) => {
+    for (const m of a.mirrors) if (!only || only.indexOf(m.name) >= 0) {
+      queue[m.name] = (queue[m.name] || Promise.resolve()).then(() => m.write(n)).catch(() => {});
+    }
+  };
+
+  /** The number of free packets used. Never lower than anything this page has seen: a smaller stored number is put back. */
+  function count(): number {
+    const p = readPrimary() ?? 0;
+    const n = p > floor ? p : floor;
+    floor = n;
+    if (p < n) writePrimary(n);
+    return n;
+  }
+
+  /** One more packet used. Returns the new count. */
+  function record(): number {
+    const n = count() + 1;
+    floor = n;
+    writePrimary(n);
+    writeMirrors(n);
+    notify(n);
+    keepSafe();
+    return n;
+  }
+
+  /** Read the other copies, take the largest, repair any that are missing or behind. Best effort; never throws. */
+  function reconcile() {
+    return (async () => {
+      const before = count();
+      const readings: Reading[] = [{ source: "page", n: readPrimary() }];
+      for (const m of a.mirrors) {
+        let v: number | null = null;
+        try { v = await m.read(); } catch (e) { v = null; }
+        readings.push({ source: m.name, n: v });
+      }
+      const r = merge(readings, floor);
+      const raised = r.n > before;
+      if (r.n > 0) {                                        // an empty ledger has nothing to repair
+        floor = r.n;
+        if (readPrimary() === null || (readPrimary() as number) < r.n) writePrimary(r.n);
+        writeMirrors(r.n, r.repair.filter(x => x !== "page"));
+        if (raised) notify(r.n);
+      }
+      return { n: r.n, raised, repaired: r.repair, from: r.from };
+    })();
+  }
+
+  /** Raise the count to at least n (a number restored from a backup, or another computer's). Never lowers it. */
+  function absorb(n: unknown) {
+    const v = parseCount(n);
+    if (v === null || v <= count()) return count();
+    floor = v;
+    writePrimary(v);
+    writeMirrors(v);
+    notify(v);
+    return v;
+  }
+
+  /** Ask the browser, once, to keep this site's data when space runs short. Quiet where the browser decides alone. */
+  function keepSafe() {
+    try {
+      if (!a.persist || a.asked.get() === "1") return;
+      a.asked.set("1");
+      a.persist().catch(() => {});
+    } catch (e) { /* best effort */ }
+  }
+
+  function ready() { if (!readyPromise) readyPromise = reconcile(); return readyPromise; }
+  function onChange(fn: (n: number) => void) { listeners.push(fn); }
+
+  return { count, record, reconcile, absorb, keepSafe, ready, onChange };
+}
+
+/* ---------- the browser's three copies ---------- */
+
+function idbMirror(root: any): Mirror | null {
+  const idb = root && root.indexedDB;
+  if (!idb) return null;
+  const open = () => new Promise<any>((resolve, reject) => {
+    const q = idb.open(MIRROR_DB, 1);
+    q.onupgradeneeded = () => { q.result.createObjectStore("k"); };
+    q.onsuccess = () => resolve(q.result);
+    q.onerror = () => reject(q.error);
+    q.onblocked = () => reject(new Error("blocked"));
+  });
+  return {
+    name: "indexeddb",
+    read: () => open().then(db => new Promise<number | null>(resolve => {
+      const done = (v: number | null) => { try { db.close(); } catch (e) { /* closed */ } resolve(v); };
+      try { const r = db.transaction("k", "readonly").objectStore("k").get("n"); r.onsuccess = () => done(parseCount(r.result)); r.onerror = () => done(null); } catch (e) { done(null); }
+    })),
+    write: (n: number) => open().then(db => new Promise<void>(resolve => {
+      const done = () => { try { db.close(); } catch (e) { /* closed */ } resolve(); };
+      try {
+        const t = db.transaction("k", "readwrite"), st = t.objectStore("k"), g = st.get("n");
+        g.onsuccess = () => { const cur = parseCount(g.result); if (cur === null || cur < n) st.put(n, "n"); };
+        t.oncomplete = done; t.onerror = done; t.onabort = done;
+      } catch (e) { done(); }
+    })),
+  };
+}
+
+function cacheMirror(root: any): Mirror | null {
+  const caches = root && root.caches, loc = root && root.location;
+  if (!caches || typeof root.Request !== "function" || typeof root.Response !== "function" || !loc || !loc.origin || loc.origin === "null") return null;
+  const urlOf = (n: number) => loc.origin + "/__cg_trial/" + n;
+  return {
+    name: "cache",
+    read: () => caches.open(MIRROR_CACHE).then((c: any) => c.keys()).then((keys: any[]) => {
+      let best: number | null = null;
+      for (const k of keys) { const v = parseCount(String(k.url).split("/").pop()); if (v !== null && (best === null || v > best)) best = v; }
+      return best;
+    }),
+    write: (n: number) => caches.open(MIRROR_CACHE).then(async (c: any) => {
+      const keys = await c.keys();
+      let best: number | null = null;
+      for (const k of keys) { const v = parseCount(String(k.url).split("/").pop()); if (v !== null && (best === null || v > best)) best = v; }
+      if (best !== null && best >= n) return;
+      for (const k of keys) await c.delete(k);
+      await c.put(new root.Request(urlOf(n)), new root.Response("", { status: 200 }));
+    }),
+  };
+}
+
+/** The ledger for a page: `storage` is the page's own storage (the encrypted-store wrapper or localStorage). */
+export function forBrowser(storage: any, root?: any) {
+  const r = root || (typeof globalThis !== "undefined" ? globalThis : {});
+  const cell = (key: string): Cell => ({
+    get: () => { try { const v = storage.getItem(key); return v === undefined ? null : v; } catch (e) { return null; } },
+    set: (v: string) => { try { storage.setItem(key, v); return true; } catch (e) { return false; } },
+  });
+  const mirrors: Mirror[] = [];
+  const i = idbMirror(r); if (i) mirrors.push(i);
+  const c = cacheMirror(r); if (c) mirrors.push(c);
+  const nav = r.navigator;
+  const persist = nav && nav.storage && typeof nav.storage.persist === "function" ? () => nav.storage.persist() : undefined;
+  const ledger = createLedger({ primary: cell(COUNT_KEY), asked: cell(ASKED_KEY), mirrors, persist });
+  ledger.onChange(n => {
+    try { if (r.document && typeof r.CustomEvent === "function") r.document.dispatchEvent(new r.CustomEvent("cognicopia:trial", { detail: { used: n } })); } catch (e) { /* no page */ }
+  });
+  return ledger;
+}

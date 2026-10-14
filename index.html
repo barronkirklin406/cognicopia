@@ -23,6 +23,7 @@
 <script src="src/services/ColoringManifest.js"></script>
 <script src="src/engine/ColoringEngine.js"></script>
 <script src="assets/services/secureStore.js"></script>
+<script src="assets/services/trialLedger.js"></script>
 <script src="assets/pcg/pcg-data.bundle.js"></script>
 <script src="src/pcg/prng.js"></script>
 <script src="src/pcg/matrix.js"></script>
@@ -8324,8 +8325,13 @@ function lsSet(k,v){ try{ CG_LS.setItem(k,v); return true; }catch(e){ return fal
   }catch(e){}
 })();
 
-function genCount(){ return parseInt(lsGet("cognicopia_gen_count","0"),10) || 0; }
-function bumpGen(){ lsSet("cognicopia_gen_count", String(genCount()+1)); }
+/* The free count is kept in three places on this computer and the largest is trusted
+   (assets/services/trialLedger.js), so clearing one setting does not hand back the
+   free packets. Without the service (it could not load), the old single setting is used. */
+const TRIAL = window.CogniTrialLedger ? window.CogniTrialLedger.forBrowser(CG_LS) : null;
+function genCount(){ return TRIAL ? TRIAL.count() : (parseInt(lsGet("cognicopia_gen_count","0"),10) || 0); }
+function bumpGen(){ if(TRIAL) TRIAL.record(); else lsSet("cognicopia_gen_count", String(genCount()+1)); }
+if(TRIAL) TRIAL.ready().then(function(r){ if(r.raised && typeof showAllowance==="function") showAllowance(); });
 
 /* The source of truth for "paid" is the stored code, re-hashed and
    checked every time -- never a bare boolean, which anyone could flip in
