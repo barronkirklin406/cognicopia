@@ -12,7 +12,7 @@
    used. Change VERSION only to clear old copies; updates to the pages
    themselves arrive on their own.
    ===================================================================== */
-const VERSION = "cognicopia-v32";
+const VERSION = "cognicopia-v33";
 const CORE = [
   "./", "index.html", "builder.html", "profile.html", "pricing.html", "activate.html", "manifest.webmanifest",
   // the shared design system and its two typefaces (Atkinson Hyperlegible for the interface, Fraunces for headings)
@@ -25,7 +25,7 @@ const CORE = [
   // the procedural engine behind Today's Packet: its content travels in one bundle, so the daily packet is made offline
   // licensing: the license key, the promo code and the license badge work offline. A key is checked on the computer, so once it is
   // entered the tools stay unlocked with no connection, for as long as its paid-through date plus the grace days (src/config/license.js).
-  "src/config/license.js", "assets/services/licenseManager.js", "assets/services/trialLedger.js", "assets/services/localDb.js",
+  "src/config/license.js", "assets/services/licenseManager.js", "assets/services/trialLedger.js", "assets/services/localDb.js", "assets/services/contentCatalog.js", "data/content-catalog.json",
   "assets/pcg/pcg-data.bundle.js", "src/pcg/prng.js", "src/pcg/matrix.js", "src/pcg/grammar.js", "src/pcg/puzzles.js", "src/pcg/packet.js"
 ];
 const PAGE_WAIT_MS = 4000;

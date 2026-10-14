@@ -1,0 +1,153 @@
+{
+  "schema": "cognicopia.contentCatalog",
+  "catalog_version": "1.0.0",
+  "updated": "2026-10-14",
+  "description": "Public content for Cognicopia's activity packets: word search banks, conversation trivia, reminiscence prompts and packet templates. Nothing here is about a real person.",
+  "items": [
+    {
+      "item_id": "trivia_1950s_music_01",
+      "category": "Trivia",
+      "cognitive_tier": "Tier_2_Moderate",
+      "tags": ["music", "1950s", "rock_and_roll", "nostalgia"],
+      "content_payload": {
+        "framing": "An invitation to talk. Every answer is welcome: offer the choices, then follow where the conversation goes.",
+        "questions": [
+          {
+            "prompt": "Many people danced to rock and roll in the 1950s. Which of these singers is called the King of Rock and Roll?",
+            "choices": ["Elvis Presley", "Bing Crosby", "Frank Sinatra"],
+            "answer": "Elvis Presley",
+            "follow_up": "What was a song you liked to dance to?"
+          },
+          {
+            "prompt": "The soda shop jukebox was a favorite meeting spot. What did a jukebox play?",
+            "choices": ["Records", "Television shows", "Radio news"],
+            "answer": "Records",
+            "follow_up": "Who would you go to the soda shop with?"
+          },
+          {
+            "prompt": "Which of these was a popular way to hear new songs at home in the 1950s?",
+            "choices": ["The radio", "A computer", "A telephone"],
+            "answer": "The radio",
+            "follow_up": "Which radio program was your family's favorite?"
+          }
+        ]
+      }
+    },
+    {
+      "item_id": "trivia_kitchen_icebox_02",
+      "category": "Trivia",
+      "cognitive_tier": "Tier_3_Advanced",
+      "tags": ["kitchen", "household", "1940s", "everyday_objects"],
+      "content_payload": {
+        "framing": "Two choices, a clear picture on the page, and all the time in the world. Enjoy the answer together.",
+        "questions": [
+          {
+            "prompt": "Before refrigerators were common, a block of ice kept food cold in a wooden box. What was the box called?",
+            "choices": ["An icebox", "A toolbox"],
+            "answer": "An icebox",
+            "follow_up": "What did your kitchen smell like on a baking day?"
+          },
+          {
+            "prompt": "Bread was often made at home. What did a baker use to flatten the dough?",
+            "choices": ["A rolling pin", "A garden hose"],
+            "answer": "A rolling pin",
+            "follow_up": "Who in the family was the best baker?"
+          }
+        ]
+      }
+    },
+    {
+      "item_id": "trivia_movies_1960s_03",
+      "category": "Trivia",
+      "cognitive_tier": "Tier_1_Mild",
+      "tags": ["movies", "1960s", "musicals", "nostalgia"],
+      "content_payload": {
+        "framing": "A conversation starter for a group. Share the choices, then ask who has a favorite film or a favorite song from one.",
+        "questions": [
+          {
+            "prompt": "Julie Andrews sang on a mountain meadow in a 1965 film. Which film was it?",
+            "choices": ["The Sound of Music", "Mary Poppins", "My Fair Lady", "West Side Story"],
+            "answer": "The Sound of Music",
+            "follow_up": "Which song from a movie musical do you still like to hum?"
+          },
+          {
+            "prompt": "In 1964, a nanny with an umbrella floated over London. What was her name?",
+            "choices": ["Mary Poppins", "Maria von Trapp", "Eliza Doolittle", "Dorothy Gale"],
+            "answer": "Mary Poppins",
+            "follow_up": "Where did you go to see a picture show?"
+          }
+        ]
+      }
+    },
+    {
+      "item_id": "wordsearch_garden_01",
+      "category": "WordSearch",
+      "cognitive_tier": "Tier_3_Advanced",
+      "tags": ["garden", "flowers", "spring", "large_print"],
+      "content_payload": {
+        "theme": "In the Garden",
+        "words": ["ROSE", "TULIP", "DAISY", "SEEDS", "LEAF"],
+        "grid_size": { "rows": 8, "cols": 8 },
+        "directions": ["right", "down"],
+        "print_notes": "Largest letters, two directions only, the first letter of each word marked."
+      }
+    },
+    {
+      "item_id": "wordsearch_kitchen_02",
+      "category": "WordSearch",
+      "cognitive_tier": "Tier_2_Moderate",
+      "tags": ["kitchen", "baking", "household", "nostalgia"],
+      "content_payload": {
+        "theme": "Baking Day",
+        "words": ["BAKING", "SKILLET", "PIE", "APRON", "OVEN", "RECIPE", "COOKIE", "PANTRY"],
+        "grid_size": { "rows": 12, "cols": 12 },
+        "directions": ["right", "down", "down_right"],
+        "print_notes": "Large print, three directions, a word box beside the grid."
+      }
+    },
+    {
+      "item_id": "wordsearch_radio_era_03",
+      "category": "WordSearch",
+      "cognitive_tier": "Tier_1_Mild",
+      "tags": ["radio", "music", "1940s", "1950s"],
+      "content_payload": {
+        "theme": "The Radio Years",
+        "words": ["RADIO", "ANTENNA", "DIAL", "SPEAKER", "SONG", "MELODY", "ANNOUNCER", "VARIETY", "ORCHESTRA", "PROGRAM", "STATION", "TUNING", "SWING", "BALLAD"],
+        "grid_size": { "rows": 15, "cols": 15 },
+        "directions": ["right", "left", "down", "up", "down_right", "down_left", "up_right", "up_left"],
+        "print_notes": "Words run in every direction, so the grid keeps a generous margin and heavy letters."
+      }
+    },
+    {
+      "item_id": "reminiscence_summer_evenings_01",
+      "category": "ReminiscencePrompt",
+      "cognitive_tier": "Tier_2_Moderate",
+      "tags": ["summer", "family", "porch", "sensory"],
+      "content_payload": {
+        "prompts": [
+          "A summer evening might have meant sitting on the porch. What did you like to do as the day cooled?",
+          "Some families kept a garden. What was grown in yours?",
+          "Evenings had their own sounds. What was one you liked to hear?"
+        ],
+        "sensory_cues": ["cut grass", "lemonade", "crickets", "a screen door"],
+        "facilitator_note": "Sit beside the person. Use one prompt at a time and let silence be part of the answer."
+      }
+    },
+    {
+      "item_id": "template_large_print_packet_01",
+      "category": "CognitiveTemplate",
+      "cognitive_tier": "Tier_3_Advanced",
+      "tags": ["large_print", "packet", "sensory", "short_session"],
+      "content_payload": {
+        "template_name": "A Calm Quarter Hour",
+        "page_count": 3,
+        "sections": [
+          { "title": "A picture to color", "activity_type": "coloring" },
+          { "title": "Words to read together", "activity_type": "reminiscence_prompt" },
+          { "title": "A song to hum", "activity_type": "music_cue" }
+        ],
+        "print": { "min_font_pt": 26, "margin_in": 0.5, "gutter_in": 0.75 }
+      }
+    }
+  ]
+}
