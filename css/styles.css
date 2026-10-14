@@ -325,6 +325,8 @@ html.cg-night-shift::before,html.cg-night-shift::after{display:none}
   html.cg-paper.cg-night-shift :is(.primary-btn,.back-home-btn,.secondary-btn,.cg-btn-primary){background:#332312 !important;border-color:#d6a64b !important;color:#ffedcc !important}
   html.cg-paper.cg-night-shift :is(.primary-btn,.back-home-btn,.secondary-btn,.cg-btn-primary) :is(span,svg){color:#ffedcc !important}
   html.cg-paper.cg-night-shift :is(main,.container,.highlight-banner,article,section,p,td,dd) a:not([class]){color:#ffd477 !important}
+  html.cg-paper.cg-night-shift .plan .tag{color:var(--cg-amber-ink) !important}
+  html.cg-paper.cg-night-shift :is(.art-caption,.journal-caption,.planner-caption,.art-showcase-box *,.journal-sample-box *,.planner-sample-box *){color:var(--cg-charcoal) !important}
   html.cg-paper.cg-night-shift :is(input,select,textarea){background:#2b2015 !important;color:#ffedcc !important;border-color:#9b7136 !important}
 }
 
@@ -384,10 +386,10 @@ html.cg-night-shift::before,html.cg-night-shift::after{display:none}
 /* ---------- 9d. The Packet Builder in the paper palette: <html class="cg-paper-app"> ----------
    The builder reads its colors from a few variables, so it takes the cream, white, tan and forest-green
    palette by changing them. Buttons that were bright green on dark become forest green with white text
-   (--accent-ink). Print previews, which draw their own white pages, are not touched; Night Shift is not
-   offered inside the builder, so there is no second set. Screen only. */
+   (--accent-ink). Print previews, which draw their own white pages, are not touched; Night Shift keeps the builder's own dim palette,
+   so every rule here steps aside for it. Screen only. */
 @media screen{
-  html.cg-paper-app{
+  html.cg-paper-app:not(.cg-night-shift){
     color-scheme:light;
     --bg:var(--cg-cream);--bg-2:var(--cg-parchment);--panel:var(--cg-white);--panel-2:var(--cg-cream);
     --line:var(--cg-tan-200);--line-2:var(--cg-tan-300);
@@ -395,50 +397,52 @@ html.cg-night-shift::before,html.cg-night-shift::after{display:none}
     --accent:var(--cg-green-700);--accent-hi:var(--cg-green-600);--accent-deep:var(--cg-green-700);--accent-ink:#ffffff;
     --sb-bg:var(--cg-white);--warn:var(--cg-clay-700);
   }
-  html.cg-paper-app::before,html.cg-paper-app::after{display:none}
+  html.cg-paper-app:not(.cg-night-shift)::before,html.cg-paper-app:not(.cg-night-shift)::after{display:none}
 
-  html.cg-paper-app .topbar .btn-packet,html.cg-paper-app .topbar .btn-packet :is(span,b){color:#fff}
-  html.cg-paper-app :is(.sb-hub-head,.sb-hub-link){color:var(--cg-charcoal)}
-  html.cg-paper-app :is(.sb-hub-head:hover,.sb-hub[open]>.sb-hub-head){background:var(--cg-sage-100)}
-  html.cg-paper-app .sb-link:hover{background:var(--cg-sage-100);color:var(--cg-green-700)}
-  html.cg-paper-app .sb-link[aria-current="page"]{background:var(--cg-sage-200);color:var(--cg-charcoal)}
-  html.cg-paper-app .sb-link[aria-current="page"] svg,html.cg-paper-app .sb-link:hover svg{color:var(--cg-green-700)}
-  html.cg-paper-app .sb-link .tag{background:var(--cg-tan-100);color:var(--cg-ink-soft)}
-  html.cg-paper-app .sb-link .tag.live{background:var(--cg-sage-100);color:var(--cg-green-700)}
-  html.cg-paper-app .sb-link[aria-current="page"] .tag.live{background:var(--cg-white);color:var(--cg-green-700)}
+  html.cg-paper-app:not(.cg-night-shift) .topbar .btn-packet,html.cg-paper-app:not(.cg-night-shift) .topbar .btn-packet :is(span,b){color:#fff}
+  html.cg-paper-app:not(.cg-night-shift) :is(.sb-hub-head,.sb-hub-link){color:var(--cg-charcoal)}
+  html.cg-paper-app:not(.cg-night-shift) :is(.sb-hub-head:hover,.sb-hub[open]>.sb-hub-head){background:var(--cg-sage-100)}
+  html.cg-paper-app:not(.cg-night-shift) .sb-link:hover{background:var(--cg-sage-100);color:var(--cg-green-700)}
+  html.cg-paper-app:not(.cg-night-shift) .sb-link[aria-current="page"]{background:var(--cg-sage-200);color:var(--cg-charcoal)}
+  html.cg-paper-app:not(.cg-night-shift) .sb-link[aria-current="page"] svg,html.cg-paper-app:not(.cg-night-shift) .sb-link:hover svg{color:var(--cg-green-700)}
+  html.cg-paper-app:not(.cg-night-shift) .sb-link .tag{background:var(--cg-tan-100);color:var(--cg-ink-soft)}
+  html.cg-paper-app:not(.cg-night-shift) .sb-link .tag.live{background:var(--cg-sage-100);color:var(--cg-green-700)}
+  html.cg-paper-app:not(.cg-night-shift) .sb-link[aria-current="page"] .tag.live{background:var(--cg-white);color:var(--cg-green-700)}
   /* chosen cards, hover states and the few fixed dark fills the builder has */
-  html.cg-paper-app .card[aria-pressed="true"],html.cg-paper-app .lp-scope input:checked+span,html.cg-paper-app .rs-res[aria-pressed="true"]{background:var(--cg-sage-100)}
-  html.cg-paper-app :is(.btn-home,.btn):hover{background:var(--cg-sage-100);color:var(--cg-charcoal)}
-  html.cg-paper-app .calm-mode-toggle:hover{background:var(--cg-sage-100)}
-  html.cg-paper-app .fp-chip:hover{background:var(--cg-sage-100)}
-  html.cg-paper-app .lp-fig-empty .lp-thumb{background:var(--cg-tan-100)}
-  html.cg-paper-app .lp-sys pre{background:var(--cg-tan-100);color:var(--cg-charcoal)}
-  html.cg-paper-app :is(.fp-btn-primary,.fp-tier b){background:var(--cg-green-700);border-color:var(--cg-green-700);color:#fff}
-  html.cg-paper-app .fp-btn-primary:hover{background:var(--cg-green-600);border-color:var(--cg-green-600)}
+  html.cg-paper-app:not(.cg-night-shift) .card[aria-pressed="true"],html.cg-paper-app:not(.cg-night-shift) .lp-scope input:checked+span,html.cg-paper-app:not(.cg-night-shift) .rs-res[aria-pressed="true"]{background:var(--cg-sage-100)}
+  html.cg-paper-app:not(.cg-night-shift) :is(.btn-home,.btn):hover{background:var(--cg-sage-100);color:var(--cg-charcoal)}
+  html.cg-paper-app:not(.cg-night-shift) .calm-mode-toggle:hover{background:var(--cg-sage-100)}
+  html.cg-paper-app:not(.cg-night-shift) .fp-chip:hover{background:var(--cg-sage-100)}
+  html.cg-paper-app:not(.cg-night-shift) .lp-fig-empty .lp-thumb{background:var(--cg-tan-100)}
+  html.cg-paper-app:not(.cg-night-shift) .lp-sys pre{background:var(--cg-tan-100);color:var(--cg-charcoal)}
+  html.cg-paper-app:not(.cg-night-shift) :is(.fp-btn-primary,.fp-tier b){background:var(--cg-green-700);border-color:var(--cg-green-700);color:#fff}
+  html.cg-paper-app:not(.cg-night-shift) .fp-btn-primary:hover{background:var(--cg-green-600);border-color:var(--cg-green-600)}
+  html.cg-paper-app:not(.cg-night-shift) .brand,html.cg-paper-app:not(.cg-night-shift) .brand b{color:var(--cg-green-700)}
+  html.cg-paper-app:not(.cg-night-shift) .topbar .btn-packet .count{color:var(--cg-green-700)}
   /* the top bar, and the two buttons in it that matter most */
-  html.cg-paper-app .topbar{background:rgba(255,255,255,.94);border-bottom:1px solid var(--cg-tan-200)}
-  html.cg-paper-app .topbar,html.cg-paper-app .topbar :is(span,b,strong,small,div,p){color:var(--cg-charcoal)}
-  html.cg-paper-app .panic-button{background:var(--cg-amber-300);border-color:#b97d00;color:var(--cg-amber-ink)}
-  html.cg-paper-app .panic-button :is(span,b,small,svg,div){color:var(--cg-amber-ink)}
-  html.cg-paper-app .panic-button:hover{background:var(--cg-amber-200)}
-  html.cg-paper-app .calm-mode-toggle{background:var(--cg-white);border-color:var(--cg-green-700);color:var(--cg-charcoal)}
-  html.cg-paper-app .calm-mode-toggle :is(span,b,small,svg,div){color:var(--cg-charcoal)}
-  html.cg-paper-app .toast{background:var(--cg-green-700);border-color:var(--cg-green-700);color:#fff}
-  html.cg-paper-app .toast :is(span,b,button,a,div){color:#fff}
+  html.cg-paper-app:not(.cg-night-shift) .topbar{background:rgba(255,255,255,.94);border-bottom:1px solid var(--cg-tan-200)}
+  html.cg-paper-app:not(.cg-night-shift) .topbar,html.cg-paper-app:not(.cg-night-shift) .topbar :is(span,b,strong,small,div,p){color:var(--cg-charcoal)}
+  html.cg-paper-app:not(.cg-night-shift) .panic-button{background:var(--cg-amber-300);border-color:#b97d00;color:var(--cg-amber-ink)}
+  html.cg-paper-app:not(.cg-night-shift) .panic-button :is(span,b,small,svg,div){color:var(--cg-amber-ink)}
+  html.cg-paper-app:not(.cg-night-shift) .panic-button:hover{background:var(--cg-amber-200)}
+  html.cg-paper-app:not(.cg-night-shift) .calm-mode-toggle{background:var(--cg-white);border-color:var(--cg-green-700);color:var(--cg-charcoal)}
+  html.cg-paper-app:not(.cg-night-shift) .calm-mode-toggle :is(span,b,small,svg,div){color:var(--cg-charcoal)}
+  html.cg-paper-app:not(.cg-night-shift) .toast{background:var(--cg-green-700);border-color:var(--cg-green-700);color:#fff}
+  html.cg-paper-app:not(.cg-night-shift) .toast :is(span,b,button,a,div){color:#fff}
   /* switches: a tan track off, forest green on */
-  html.cg-paper-app .switch input{background:var(--cg-tan-600);border-color:var(--cg-tan-600)}
-  html.cg-paper-app .switch input:checked{background:var(--cg-green-700);border-color:var(--cg-green-700)}
-  html.cg-paper-app .fp-toggle-track{background:var(--cg-tan-600);border-color:var(--cg-tan-600)}
-  html.cg-paper-app .fp-toggle-thumb{background:#fff}
-  html.cg-paper-app .lp-spread{background:var(--cg-tan-100)}
+  html.cg-paper-app:not(.cg-night-shift) .switch input{background:var(--cg-tan-600);border-color:var(--cg-tan-600)}
+  html.cg-paper-app:not(.cg-night-shift) .switch input:checked{background:var(--cg-green-700);border-color:var(--cg-green-700)}
+  html.cg-paper-app:not(.cg-night-shift) .fp-toggle-track{background:var(--cg-tan-600);border-color:var(--cg-tan-600)}
+  html.cg-paper-app:not(.cg-night-shift) .fp-toggle-thumb{background:#fff}
+  html.cg-paper-app:not(.cg-night-shift) .lp-spread{background:var(--cg-tan-100)}
   /* Facility: its own variables, now on cream */
-  html.cg-paper-app .fp{--fp-card:var(--cg-white);--fp-chip:var(--cg-tan-100);--fp-tan:var(--cg-tan-200);--fp-tan-hi:var(--cg-tan-300);--fp-div:var(--cg-tan-200);--fp-text:var(--cg-charcoal);--fp-text-2:var(--cg-ink-soft);--fp-muted:var(--cg-ink-soft);--fp-head:var(--cg-green-700);--fp-ink:#fff;--fp-ink-2:#cfe3d6;--fp-warn:var(--cg-clay-700)}
-  html.cg-paper-app .fp-bar select{color:var(--cg-charcoal)}
+  html.cg-paper-app:not(.cg-night-shift) .fp{--fp-card:var(--cg-white);--fp-chip:var(--cg-tan-100);--fp-tan:var(--cg-tan-200);--fp-tan-hi:var(--cg-tan-300);--fp-div:var(--cg-tan-200);--fp-text:var(--cg-charcoal);--fp-text-2:var(--cg-ink-soft);--fp-muted:var(--cg-ink-soft);--fp-head:var(--cg-green-700);--fp-ink:#fff;--fp-ink-2:#cfe3d6;--fp-warn:var(--cg-clay-700)}
+  html.cg-paper-app:not(.cg-night-shift) .fp-bar select{color:var(--cg-charcoal)}
   /* Academy: its own variables, now on cream; the lesson player and picture stages stay a dark screen, like a video player */
-  html.cg-paper-app .ac{--ac-bg:var(--cg-cream);--ac-panel:var(--cg-white);--ac-card:var(--cg-white);--ac-sunk:var(--cg-tan-100);--ac-surface:var(--cg-white);--ac-surface-2:var(--cg-tan-100);--ac-accent:var(--cg-green-700);--ac-accent-hi:var(--cg-green-600);--ac-accent-text:var(--cg-green-700);--ac-glow:rgba(197,160,89,.10);--ac-media-glow:rgba(27,56,43,.18);--ac-border:var(--cg-tan-200);--ac-div:rgba(79,64,48,.16);--ac-line:var(--cg-tan-600);--ac-text:var(--cg-charcoal);--ac-text-2:var(--cg-ink-soft);--ac-muted:#3f4756;--ac-ink:#ffffff;--ac-focus:#f5b800;--ac-family:var(--cg-clay-700);--ac-good:var(--cg-ok-800);--ac-warn:var(--cg-clay-700);box-shadow:var(--cg-card-shadow);background:var(--cg-cream)}
-  html.cg-paper-app .ac :is(.ac-player,.ac-thumb,.ac-stage,.ac-mini){--ac-text:#f0f4f2;--ac-text-2:#cfdcd5;--ac-muted:#b4c6bc;--ac-ink:#0e1614;--ac-accent:#52b788;--ac-accent-hi:#74c69d;--ac-accent-text:#8ad8b0;--ac-surface:#1c2e29;--ac-surface-2:#1f3530;--ac-border:#2a3d36;--ac-sunk:#0a110f;--ac-family:#e9b872;--ac-line:#6b9080;--ac-focus:#e6f4f1}
-  html.cg-paper-app .ac :is(.ac-card,.ac-tile,.ac-learner){background:var(--cg-white);box-shadow:var(--cg-card-shadow);-webkit-backdrop-filter:none;backdrop-filter:none}
-  html.cg-paper-app .ac-thumb .ac-cat{color:#ffe0a3;border-color:#ffe0a3}
+  html.cg-paper-app:not(.cg-night-shift) .ac{--ac-bg:var(--cg-cream);--ac-panel:var(--cg-white);--ac-card:var(--cg-white);--ac-sunk:var(--cg-tan-100);--ac-surface:var(--cg-white);--ac-surface-2:var(--cg-tan-100);--ac-accent:var(--cg-green-700);--ac-accent-hi:var(--cg-green-600);--ac-accent-text:var(--cg-green-700);--ac-glow:rgba(197,160,89,.10);--ac-media-glow:rgba(27,56,43,.18);--ac-border:var(--cg-tan-200);--ac-div:rgba(79,64,48,.16);--ac-line:var(--cg-tan-600);--ac-text:var(--cg-charcoal);--ac-text-2:var(--cg-ink-soft);--ac-muted:#3f4756;--ac-ink:#ffffff;--ac-focus:#f5b800;--ac-family:var(--cg-clay-800);--ac-good:var(--cg-ok-800);--ac-warn:var(--cg-clay-800);box-shadow:var(--cg-card-shadow);background:var(--cg-cream)}
+  html.cg-paper-app:not(.cg-night-shift) .ac :is(.ac-player,.ac-thumb,.ac-stage,.ac-mini){--ac-text:#f0f4f2;--ac-text-2:#cfdcd5;--ac-muted:#b4c6bc;--ac-ink:#0e1614;--ac-accent:#52b788;--ac-accent-hi:#74c69d;--ac-accent-text:#8ad8b0;--ac-surface:#1c2e29;--ac-surface-2:#1f3530;--ac-border:#2a3d36;--ac-sunk:#0a110f;--ac-family:#e9b872;--ac-line:#6b9080;--ac-focus:#e6f4f1}
+  html.cg-paper-app:not(.cg-night-shift) .ac :is(.ac-card,.ac-tile,.ac-learner){background:var(--cg-white);box-shadow:var(--cg-card-shadow);-webkit-backdrop-filter:none;backdrop-filter:none}
+  html.cg-paper-app:not(.cg-night-shift) .ac-thumb .ac-cat{color:#ffe0a3;border-color:#ffe0a3}
 }
 
 /* ---------- 10. Print ----------

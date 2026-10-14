@@ -162,7 +162,7 @@ for (const f of ["pricing.html", "activate.html", "contact.html", "cognitive-jou
   ok(paper >= 30, `${paper} pages carry the paper look`);
   ok(/@media screen\{[\s\S]*html\.cg-paper:not\(\.cg-night-shift\) body\{background:var\(--cg-cream\)/.test(CSS), "the stylesheet paints paper pages cream, for the screen only");
   ok(/html\.cg-paper\.cg-night-shift body\{background:#17120c/.test(CSS), "Night Shift keeps a dim palette on paper pages");
-  ok(/html\.cg-paper-app\{[^}]*--accent-ink:#ffffff/.test(CSS), "the Builder takes the palette through its own variables");
+  ok(/html\.cg-paper-app:not\(\.cg-night-shift\)\{[^}]*--accent-ink:#ffffff/.test(CSS), "the Builder takes the palette through its own variables");
   const paperCss = CSS.slice(CSS.indexOf("9b. Paper pages"), CSS.indexOf("10. Print"));
   ok(!/@media print/.test(paperCss), "the paper rules are screen-only: printed packets are untouched");
   ok(/class="cg-foot"/.test(read("pricing.html")) && /class="cg-foot"/.test(read("resources/index.html")) && !/class="site-footer"/.test(read("resources/accessibility/index.html")), "paper pages share one generated footer");
