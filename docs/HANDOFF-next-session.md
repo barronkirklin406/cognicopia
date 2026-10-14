@@ -35,6 +35,8 @@ items below, verify each one, and publish to cognicopia.org.
   - optional `--backend http` sends prompts to an image endpoint and runs the results through the ingest (which traces them, see the line-art pipeline below).
 - `scripts/check-infinite.mjs`: 749 checks, part of `npm test` and `npm run build`.
 - Packet Builder (`builder.html`, `#/coloring`): a **New pages** tab (theme chips, count, find by code, add all). The PDF footer shows the page code.
+- Packet Builder (`#/coloring`): a **Describe a page** tab, the Coloring Agent (`js/coloringAgent.js`, `docs/coloring-agent.md`). Plain words, or a random page from the memory-care categories, give one library picture cleaned on a canvas to pure black and white (brightness 0.34 R + 0.5 G + 0.16 B under 200), 1800 x 2400 (6 x 8 in at 300 dpi), added to the packet or saved as a PNG. No online picture maker is built in (CLAUDE.md: no network request of the tools' own); the owner's decision on one is open, and the agent has a source seam ready for it. Checks: `scripts/check-coloringagent.mjs` (in `npm test`) and `scripts/check-coloringagent-ui.mjs` (in `npm run build`).
+- `src/data/coloring_owner_prompts.json`: the owner's 150 picture descriptions, one per library design; `npm run coloring:masters` uses them (`--library-words` for the built-in words).
 
 **Coloring library.**
 - Tier 1 lines raised to 3 pt (the clinical floor).

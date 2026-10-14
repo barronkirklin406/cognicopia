@@ -1436,6 +1436,26 @@ textarea:focus{border-color:var(--accent)}
 .cc-gen-go{display:flex;align-items:flex-end}
 .cc-gen-go .btn{width:100%}
 .cc-gen-find{display:flex;gap:8px}
+/* Describe a page (js/coloringAgent.js): the words box, the random page, and the finished page beside its actions */
+.cc-mk .cc-mk-q{grid-column:1/-1}
+.cc-mk .cc-mk-go{display:flex;align-items:flex-end}
+.cc-mk .cc-mk-go .btn{width:100%}
+.cc-mk-wait{display:flex;align-items:center;gap:12px;padding:18px;border:1px dashed var(--line);border-radius:14px;background:var(--panel);color:var(--text)}
+.cc-spin{flex:none;width:22px;height:22px;border-radius:50%;border:3px solid var(--line);border-top-color:var(--accent);animation:cc-spin .9s linear infinite}
+@keyframes cc-spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.cc-spin{animation:none}}
+.cc-mk-card{display:grid;grid-template-columns:minmax(150px,260px) minmax(0,1fr);gap:18px;padding:16px;border:1px solid var(--line);border-radius:14px;background:var(--panel)}
+@media (max-width:560px){.cc-mk-card{grid-template-columns:minmax(0,1fr)}}
+.cc-mk-img{background:#fff;border:1px solid var(--line);border-radius:10px;aspect-ratio:3/4;overflow:hidden}
+.cc-mk-img img{display:block;width:100%;height:100%;object-fit:contain}
+.cc-mk-side h3{margin:0 0 6px;font-size:18px;line-height:1.25}
+.cc-mk-meta{margin:0 0 10px;color:var(--muted);font-size:14px}
+.cc-mk-words{margin:14px 0 0}
+.cc-mk-words summary{min-height:var(--tap);display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:700;list-style:none}
+.cc-mk-words summary::-webkit-details-marker{display:none}
+.cc-mk-words summary::before{content:"\25B8";font-size:14px}
+.cc-mk-words[open] summary::before{content:"\25BE"}
+.cc-mk-words p{margin:6px 0 10px;font-size:14px;line-height:1.5;overflow-wrap:anywhere}
 /* Touch targets: every control at least 52 x 52 px (--tap; WCAG 2.2 asks 24, the
    enhanced level 44), for staff working on tablets and wall touchscreens */
 .sb-link,.fp-toggle,.btn-home,.rs-chip,.fp-btn-sm,.cc-chip span{min-height:var(--tap)}
@@ -6809,6 +6829,7 @@ const RosterUI = (function(){
 })();
 </script>
 <script src="assets/cognicopia-coloring/cognicopia-coloring.js"></script>
+<script src="js/coloringAgent.js"></script>
 <script src="assets/coloring/subjects.bundle.js"></script>
 <script src="src/services/ColoringManifest.js"></script>
 <script src="src/engine/ColoringEngine.js"></script>
@@ -6855,7 +6876,9 @@ const CogniLibrary = (function(){
       S.gen = Object.assign({ themes:[], count:8, codes:[] }, saved.gen || {}); S.gen.codes = (S.gen.codes || []).filter(c => valid(HY + c)).slice(0, 24);
       S.gen.themes = (S.gen.themes || []).filter(t => HYBRID_GROUPS.some(g => g[0] === t)); if ([4, 8, 12, 16].indexOf(S.gen.count) < 0) S.gen.count = 8;
       S.gen.who = Object.assign({ born:"", work:"", hobbies:"", avoid:"" }, S.gen.who || {});
-      if (["pictures", "packs", "new"].indexOf(S.tab) < 0) S.tab = "pictures"; }
+      S.mk = Object.assign({ q:"", cat:"any" }, saved.mk || {}); S.mk.q = String(S.mk.q || "").slice(0, 120);
+      if (S.mk.cat !== "any" && !(window.CognicopiaColoringAgent && window.CognicopiaColoringAgent.CATEGORIES.some(c => c.id === S.mk.cat))) S.mk.cat = "any";
+      if (["pictures", "packs", "new", "mk"].indexOf(S.tab) < 0) S.tab = "pictures"; }
     return S;
   };
   const save = () => { try { settings.ccLib = Object.assign({}, S); store.set("cgb_settings", settings); } catch (e){} };
@@ -7099,9 +7122,10 @@ const CogniLibrary = (function(){
         <button type="button" role="tab" id="ccTabPics" aria-controls="ccPanel" aria-selected="${s.tab === "pictures"}">Pictures</button>
         <button type="button" role="tab" id="ccTabPacks" aria-controls="ccPanel" aria-selected="${s.tab === "packs"}">Packs (${st.packs})</button>
         ${hyOk() ? `<button type="button" role="tab" id="ccTabNew" aria-controls="ccPanel" aria-selected="${s.tab === "new"}">New pages</button>` : ""}
+        ${mkOk() ? `<button type="button" role="tab" id="ccTabMk" aria-controls="ccPanel" aria-selected="${s.tab === "mk"}">Describe a page</button>` : ""}
       </div>
       <div class="cc-layout">
-        <div id="ccPanel" role="tabpanel" aria-labelledby="${s.tab === "packs" ? "ccTabPacks" : s.tab === "new" ? "ccTabNew" : "ccTabPics"}"></div>
+        <div id="ccPanel" role="tabpanel" aria-labelledby="${s.tab === "packs" ? "ccTabPacks" : s.tab === "new" ? "ccTabNew" : s.tab === "mk" ? "ccTabMk" : "ccTabPics"}"></div>
         <aside class="cc-side" aria-label="Your pages and print preview">
           <section class="cc-box" aria-labelledby="ccSelH"><h2 id="ccSelH">Your pages</h2><div id="ccSel"></div></section>
           <section class="cc-box" aria-labelledby="ccPvH"><h2 id="ccPvH">Print preview</h2><div id="ccPv"></div></section>
@@ -7112,7 +7136,8 @@ const CogniLibrary = (function(){
     viewEl.querySelector("#ccTabPics").addEventListener("click", () => { s.tab = "pictures"; save(); render(root); });
     viewEl.querySelector("#ccTabPacks").addEventListener("click", () => { s.tab = "packs"; save(); render(root); });
     const tNew = viewEl.querySelector("#ccTabNew"); if (tNew) tNew.addEventListener("click", () => { s.tab = "new"; save(); render(root); });
-    const TABS = hyOk() ? ["pictures", "packs", "new"] : ["pictures", "packs"], TAB_ID = { pictures:"#ccTabPics", packs:"#ccTabPacks", new:"#ccTabNew" };
+    const tMk = viewEl.querySelector("#ccTabMk"); if (tMk) tMk.addEventListener("click", () => { s.tab = "mk"; save(); render(root); });
+    const TABS = ["pictures", "packs"].concat(hyOk() ? ["new"] : [], mkOk() ? ["mk"] : []), TAB_ID = { pictures:"#ccTabPics", packs:"#ccTabPacks", new:"#ccTabNew", mk:"#ccTabMk" };
     viewEl.querySelectorAll(".cc-tabs [role=tab]").forEach(t => { if (t.getAttribute("aria-selected") !== "true") t.setAttribute("tabindex", "-1"); });
     viewEl.querySelector(".cc-tabs").addEventListener("keydown", e => {
       if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
@@ -7131,6 +7156,7 @@ const CogniLibrary = (function(){
     const s = state(), el = root.querySelector("#ccPanel");
     if (s.tab === "packs") return renderPacks(el);
     if (s.tab === "new") return renderGen(el);
+    if (s.tab === "mk") return renderMake(el);
     el.innerHTML = `
       <form class="cc-filters" id="ccFilters" onsubmit="return false" aria-label="Filter pictures">
         <div class="field"><label for="ccQ">Search</label><input type="text" id="ccQ" value="${esc(s.q)}" placeholder="e.g., tractor, roses, 1950s" autocomplete="off"></div>
@@ -7301,6 +7327,107 @@ const CogniLibrary = (function(){
         <b>${esc(it.title)}</b><small>${esc(grp ? grp[1] : "")} · ${esc(it.code)}</small></button>`; }).join("");
     grid.querySelectorAll(".cc-card").forEach(b => b.addEventListener("click", () => toggle(b.dataset.id)));
   }
+  /* ---------- Describe a page: the coloring agent (js/coloringAgent.js) ----------
+     Words in, or a random page from the memory-care categories, out: a clean
+     pure black-and-white 3:4 page from the library on this computer, checked
+     before it shows, with a print-ready PNG to keep. The words an image maker
+     would be given (the clinical wrapper) are shown for anyone who wants them
+     elsewhere. Nothing typed here leaves this computer. */
+  const mkOk = () => !!window.CognicopiaColoringAgent;
+  const agent = () => window.CognicopiaColoringAgent || null;
+  let mkBusy = false, mkResult = null, mkError = "", mkNote = "";
+  const pngName = r => ["Cognicopia", r.title, "Tier " + r.tier, todayISO()].filter(Boolean).join(" - ").replace(/[\\/:*?"<>|]+/g, "") + ".png";
+  function mkOutHtml(){
+    if (mkBusy) return `<div class="cc-mk-wait" role="status"><span class="cc-spin" aria-hidden="true"></span><span>Finding the page and checking it for printing&hellip;</span></div>`;
+    if (mkError) return `<p class="callout cc-mk-err" role="alert">${esc(mkError)}</p>`;
+    const r = mkResult;
+    if (!r) return `<p class="cc-empty">Your page will show here, exactly as the PNG prints.</p>`;
+    return `<article class="cc-mk-card" data-design="${esc(r.designId)}" data-tier="${r.tier}" data-category="${esc(r.categoryId)}" data-provider="${esc(r.provider)}">
+      <div class="cc-mk-img"><img src="${r.dataUrl}" width="${r.width}" height="${r.height}" alt="${esc(r.title)}, a picture to color, pure black on white"></div>
+      <div class="cc-mk-side">
+        <h3>${esc(r.title)}</h3>
+        <p class="cc-mk-meta">${esc(TIER_SHORT[r.tier])}${r.category ? " &middot; " + esc(r.category) : ""}<br>Pure black and white &middot; 3:4 &middot; ${r.width} &times; ${r.height} px, ${r.dpi} dpi at ${r.printWidthIn} &times; ${r.printHeightIn} in</p>
+        ${r.notes.map(n => `<p class="cc-mk-meta">${esc(n)}</p>`).join("")}
+        ${r.stats.thinLines ? `<p class="callout">Some lines may print thinner than 3 pt at this size. A higher tier draws heavier lines.</p>` : ""}
+        <div class="actions">
+          <button type="button" class="btn btn-primary" id="ccMkAdd" ${r.designId ? "" : "disabled"}>Add to packet</button>
+          <button type="button" class="btn" id="ccMkPng">Download print-ready PNG</button>
+        </div>
+        <details class="cc-mk-words"><summary>The words behind this page</summary>
+          <p class="cc-mk-meta">These are the words an image maker would be given for this page. Copy them to use in a tool of your own.</p>
+          <p id="ccMkWords">${esc(r.prompt)}</p>
+          <button type="button" class="btn btn-ghost btn-sm" id="ccMkCopy">Copy the words</button></details>
+      </div>
+    </article>`;
+  }
+  function renderMake(el){
+    const A = agent(), s = state(), m = s.mk, p = resident();
+    if (!A){ el.innerHTML = `<p class="callout">The page maker could not load. Reload the page to try again.</p>`; return; }
+    el.innerHTML = `
+      <p class="cc-count">Describe a picture in a few plain words, or let the library choose one. The page comes from the Cognicopia library on this computer, drawn at <b>${esc(TIER_SHORT[s.tier])}</b> and checked before it shows: pure black on white, 3:4, ready to print${p && s.avoid ? ", and nothing on their list of topics to avoid" : ""}. Nothing you type leaves this computer.</p>
+      <form class="cc-filters cc-mk" id="ccMkForm" onsubmit="return false" aria-label="Describe a page">
+        <div class="field cc-mk-q"><label for="ccMkQ">Describe the picture</label>
+          <input type="text" id="ccMkQ" maxlength="120" value="${esc(m.q)}" placeholder="e.g., a vintage rocking chair on a porch" autocomplete="off" aria-describedby="ccMkHint">
+          <p class="hint" id="ccMkHint">Describe the picture only. Please do not type a resident&rsquo;s name here.</p></div>
+        <div class="field cc-mk-go"><button type="button" class="btn btn-primary" id="ccMkFind" ${mkBusy ? "disabled" : ""}>Find this page</button></div>
+        <div class="field"><label for="ccMkCat">Random page from</label><select id="ccMkCat"><option value="any">Every category</option>${A.CATEGORIES.map(c => `<option value="${esc(c.id)}" ${m.cat === c.id ? "selected" : ""}>${esc(c.label)}</option>`).join("")}</select></div>
+        <div class="field cc-mk-go"><button type="button" class="btn" id="ccMkRandom" ${mkBusy ? "disabled" : ""}>Generate random clinical page</button></div>
+        <fieldset class="field cc-tierseg"><legend>Cognitive tier</legend><div class="seg" role="radiogroup">${[1, 2, 3].map(t => `<label><input type="radio" name="ccMkTier" value="${t}" ${s.tier === t ? "checked" : ""}><span>${esc(TIER_SHORT[t])}</span></label>`).join("")}</div>
+          <p class="hint">${esc(C.TIERS[s.tier].about)}</p></fieldset>
+      </form>
+      <p class="cc-count" id="ccMkNote" role="status" aria-live="polite">${esc(mkNote)}</p>
+      <div class="cc-mk-out" id="ccMkOut">${mkOutHtml()}</div>`;
+    const f = el.querySelector("#ccMkForm"), q = f.querySelector("#ccMkQ");
+    let t = null;
+    q.addEventListener("input", () => { m.q = q.value.slice(0, 120); clearTimeout(t); t = setTimeout(save, 250); });
+    q.addEventListener("keydown", e => { if (e.key === "Enter"){ e.preventDefault(); makePage({ subject:q.value }); } });
+    f.querySelector("#ccMkFind").addEventListener("click", () => makePage({ subject:q.value }));
+    f.querySelector("#ccMkCat").addEventListener("change", e => { m.cat = e.target.value; save(); });
+    f.querySelector("#ccMkRandom").addEventListener("click", () => makePage({ random:true, category:m.cat === "any" ? "" : m.cat }));
+    f.querySelectorAll('input[name="ccMkTier"]').forEach(r => r.addEventListener("change", e => { s.tier = +e.target.value; save(); renderPanel(); renderPreview(); renderSelection(); }));
+    bindMakeResult(el.querySelector("#ccMkOut"));
+    if (mkResult && !mkBusy && mkResult.tier !== s.tier) makePage({ subject:mkResult.subject, designId:mkResult.designId });     // the tier was changed: draw the same picture at it
+  }
+  /* one page, asked for and shown: the spinner while it is made, then the card or a plain sentence */
+  function makePage(req){
+    const A = agent(), s = state();
+    if (!A || mkBusy) return;
+    const had = document.activeElement && /^ccMk(Find|Random)$/.test(document.activeElement.id) ? document.activeElement.id : "";     // a button that waits loses focus: give it back
+    mkBusy = true; mkError = ""; mkNote = ""; paintMake();
+    setTimeout(() => {
+      A.generate(Object.assign({ tier:s.tier, avoid:s.avoid ? avoidList(resident()) : [] }, req)).then(
+        r => { mkResult = r; mkNote = (req.random ? "A random page" + (r.category ? " from " + r.category : "") + ": " : "Found: ") + r.title + "."; },
+        e => { mkError = A.describeError(e); })
+        .then(() => { mkBusy = false; paintMake(); const b = had && root && root.isConnected && root.querySelector("#" + had); if (b) b.focus(); });
+    }, 40);
+  }
+  function paintMake(){
+    if (!root || !root.isConnected || state().tab !== "mk") return;
+    const out = root.querySelector("#ccMkOut"); if (!out) return;
+    out.innerHTML = mkOutHtml();
+    root.querySelectorAll("#ccMkFind, #ccMkRandom").forEach(b => { b.disabled = mkBusy; });
+    const note = root.querySelector("#ccMkNote"); if (note) note.textContent = mkNote;
+    bindMakeResult(out);
+  }
+  function bindMakeResult(out){
+    const add = out.querySelector("#ccMkAdd"), png = out.querySelector("#ccMkPng"), cp = out.querySelector("#ccMkCopy");
+    if (add) add.addEventListener("click", () => { queuePages([mkResult.designId]); toast(`Added ${mkResult.title} to your packet.`, "Open packet", openDrawer); });
+    if (png) png.addEventListener("click", downloadPng);
+    if (cp) cp.addEventListener("click", () => {
+      const ok = () => toast("Copied the words."), no = () => { const w = root.querySelector("#ccMkWords"); if (w){ const rg = document.createRange(); rg.selectNodeContents(w); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(rg); } toast("Select and copy the words shown."); };
+      try { navigator.clipboard.writeText(mkResult.prompt).then(ok, no); } catch (e){ no(); }
+    });
+  }
+  /* a saved PNG is an export like a PDF: it counts against the free packets the same way */
+  function downloadPng(){
+    if (!mkResult) return;
+    if (!isLicensed() && genCount() >= FREE_RUNS){ openGate(); return; }
+    agent().download(mkResult, pngName(mkResult));
+    if (!isLicensed()) bumpGen();
+    toast(`Saved the PNG: pure black and white, ${mkResult.printWidthIn} × ${mkResult.printHeightIn} in at ${mkResult.dpi} dpi.`);
+    if (typeof renderAllowance === "function") renderAllowance();
+  }
+
   function renderSelection(){
     const s = state(), el = root.querySelector("#ccSel");
     const allow = typeof BookUI !== "undefined" ? BookUI.allowanceText() : "";
@@ -7372,11 +7499,16 @@ const CogniLibrary = (function(){
   }
 
   /* ---------- actions ---------- */
+  /* queue pages (library ids) in the packet with the page options as they are now */
+  function queuePages(ids){
+    const s = state();
+    const cfg = { residentName:residentName().slice(0, 40), date:todayISO(), difficulty:["", "early", "moderate", "advanced"][s.tier], era:settings.era,
+      opts:{ pages:ids.slice(), tier:s.tier, weight:s.weight, header:s.header, title:s.title, caption:s.caption, largePrint:s.largePrint, legend:s.legend, facility:(settings.facility || "").slice(0, 60) } };
+    addBatch(LIBRARY_ACTIVITY, cfg, newSeed(), ids.length);
+  }
   function addToPacket(){
     const s = state(); if (!s.picks.length) return;
-    const cfg = { residentName:residentName().slice(0, 40), date:todayISO(), difficulty:["", "early", "moderate", "advanced"][s.tier], era:settings.era,
-      opts:{ pages:s.picks.slice(), tier:s.tier, weight:s.weight, header:s.header, title:s.title, caption:s.caption, largePrint:s.largePrint, legend:s.legend, facility:(settings.facility || "").slice(0, 60) } };
-    addBatch(LIBRARY_ACTIVITY, cfg, newSeed(), s.picks.length);
+    queuePages(s.picks);
     toast(`Added ${s.picks.length} coloring page${s.picks.length === 1 ? "" : "s"} to your packet.`, "Open packet", openDrawer);
   }
   function pagesForPrint(){ const s = state(); return s.picks.map((id, i) => sheet(pageOpts(i))); }
