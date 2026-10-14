@@ -43,7 +43,9 @@ const REAL_CFG = fs.readFileSync(path.join(ROOT, "src/config/license.js"), "utf8
 /* keys on, links and service not set up: the real config now holds the live Payment Links, so the test puts the placeholders back before it fills in its own */
 const CFG_BARE = REAL_CFG.replace(/PUBLIC_KEYS: Object\.freeze\(\[[^\]]*\]\)/, `PUBLIC_KEYS: Object.freeze(["${PUB}"])`)
   .replace(/(monthly:\s*)"https:\/\/buy\.stripe\.com\/[^"]*"/, '$1"https://buy.stripe.com/REPLACE_ME_MONTHLY_39"')
-  .replace(/(annual:\s*)"https:\/\/buy\.stripe\.com\/[^"]*"/, '$1"https://buy.stripe.com/REPLACE_ME_ANNUAL_349"');
+  .replace(/(annual:\s*)"https:\/\/buy\.stripe\.com\/[^"]*"/, '$1"https://buy.stripe.com/REPLACE_ME_ANNUAL_349"')
+  .replace(/REDEEM_URL:\s*"[^"]*"/, 'REDEEM_URL: "https://REPLACE_ME.example/api/licenses/redeem"')   // the tests set the service and email states themselves,
+  .replace(/EMAIL_DELIVERY:\s*(true|false)/, "EMAIL_DELIVERY: false");                                // so they do not depend on what the live config says;
 const MONTHLY = "https://buy.stripe.com/aEU1234abcd", ANNUAL = "https://buy.stripe.com/bFV5678efgh", SERVICE = "https://license.example.test/api/licenses/redeem";
 const CFG_FULL = CFG_BARE.replace("https://buy.stripe.com/REPLACE_ME_MONTHLY_39", MONTHLY).replace("https://buy.stripe.com/REPLACE_ME_ANNUAL_349", ANNUAL).replace("https://REPLACE_ME.example/api/licenses/redeem", SERVICE);
 
