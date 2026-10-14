@@ -50,6 +50,14 @@ A setting that is missing breaks only what needs it, and the answer names the se
 
 Make the license-signing key **twice** on `license-desk.html`: a **master key** that stays on the owner's computer and makes keys by hand for invoices, and a **server key** whose private half goes into the host's settings. Both public lines go in `PUBLIC_KEYS` (it is a list). If the host were ever broken into, the server key is taken out of the list and the master key still stands. Keys already issued with the server key can be withdrawn by id (`REVOKED_IDS`), or simply replaced.
 
+## Current setup (October 14, 2026)
+
+The service runs as the Worker `cognicopia-licenses` on the owner's Cloudflare account, at `https://cognicopia-licenses.barron-kirklin406.workers.dev`. Its seven settings and two optional ones are all set: the two Stripe price ids, a read-only Stripe key (Checkout Sessions and Subscriptions, Read), the webhook signing secret (a Stripe event destination for `checkout.session.completed` and `checkout.session.async_payment_succeeded`), the service's own signing key, a Resend sending key limited to `cognicopia.org`, `EMAIL_FROM` and `EMAIL_REPLY_TO`. `cognicopia.org` is registered at Cloudflare, and Resend's DNS records were added from the Resend page with Cloudflare's one-time approval.
+
+An end-to-end test was run on October 14, 2026 with a one-use 100% off code on a temporary monthly link: the payment completed, the webhook ran and the key arrived by email within about a minute. The test subscription was canceled and the test link switched off. `REDEEM_URL` and `EMAIL_DELIVERY` in `src/config/license.js` are now set, and both live Payment Links say the key is also emailed.
+
+To change the service's code: edit `license-service/src/*.mjs`, run `node license-service/build-worker.mjs`, merge, then paste the new `license-service/dist/worker.js` into the Worker's code editor in Cloudflare and deploy.
+
 ## What the owner provides
 
 Three things only the owner can: an account to run the service on, an account to send the email, and the pasted settings. (The setup steps below are written from each provider's documentation, and their screens may differ from the words here.)

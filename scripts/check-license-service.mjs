@@ -231,6 +231,8 @@ try {
     ok(a.status === 200 && (await a.json()).ready === true && b.status === 404, "the bundle answers health and unknown paths like the modules do"); }
   for (const [f, p] of [["webhook", "/api/licenses/webhook"], ["redeem", "/api/licenses/redeem"], ["health", "/api/licenses/health"]]) ok(read(`license-service/functions/${f}.mjs`).includes(`path: "${p}"`), `the Netlify entry for ${f} serves ${p}`);
   ok(/\/api\/licenses\/redeem/.test(read("src/config/license.js")), "the config's redeem address ends in /api/licenses/redeem, the path the service answers");
+  { const cfg = read("src/config/license.js"), url = (cfg.match(/REDEEM_URL:\s*"([^"]*)"/) || [])[1] || "", on = /EMAIL_DELIVERY:\s*true/.test(cfg);
+    ok(!on || (/^https:\/\//.test(url) && !/REPLACE_ME/.test(url)), "the site only promises an emailed key when REDEEM_URL is a real address"); }
 } finally {
   console.log = realLog; console.error = realErr;
 }

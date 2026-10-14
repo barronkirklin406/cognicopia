@@ -109,11 +109,11 @@
        (license-service/, POST /api/licenses/redeem). Leave it REPLACE_ME until
        that service is running; the page then asks for the key by hand. */
     ACTIVATE_PATH: "activate.html",
-    REDEEM_URL: "https://REPLACE_ME.example/api/licenses/redeem",
+    REDEEM_URL: "https://cognicopia-licenses.barron-kirklin406.workers.dev/api/licenses/redeem",
     /* True only once the license service is running AND can send email (its
        webhook emails the key to the address the buyer gave at checkout). The
        page then tells a buyer to check their email; while it is false the page
        says only what is true today: the key is sent by hand. */
-    EMAIL_DELIVERY: false
+    EMAIL_DELIVERY: true
   });
 })(typeof globalThis !== "undefined" ? globalThis : this);
