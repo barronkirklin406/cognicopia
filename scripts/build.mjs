@@ -143,7 +143,7 @@ step("every web manifest icon exists", () => {
 
 /* 5. server and the automated checks */
 step("server.js parses", () => { execFileSync(process.execPath, ["--check", path.join(ROOT, "server.js")]); });
-for (const s of ["check-life-planner.mjs", "check-life-journal.mjs", "check-services.mjs", "check-coloring.mjs", "check-trace.mjs", "check-infinite.mjs", "check-hybrid.mjs", "check-pcg.mjs", "check-clinical.mjs", "check-quality-hub.mjs", "check-clinical-alignment.mjs", "check-soothing.mjs", "check-license.mjs", "check-license-service.mjs", "check-trial.mjs", "check-localdb.mjs", "check-contentcatalog.mjs", "check-design-system.mjs", "check-claims.mjs"]) step(s, () => {
+for (const s of ["check-life-planner.mjs", "check-life-journal.mjs", "check-services.mjs", "check-coloring.mjs", "check-trace.mjs", "check-infinite.mjs", "check-hybrid.mjs", "check-pcg.mjs", "check-clinical.mjs", "check-quality-hub.mjs", "check-clinical-alignment.mjs", "check-soothing.mjs", "check-license.mjs", "check-license-service.mjs", "check-trial.mjs", "check-localdb.mjs", "check-contentcatalog.mjs", "check-contentmatcher.mjs", "check-design-system.mjs", "check-claims.mjs"]) step(s, () => {
   const out = execFileSync(process.execPath, [path.join(ROOT, "scripts", s)], { encoding: "utf8" }).trim().split("\n")[0];
   return out;
 });
@@ -209,6 +209,14 @@ step("the local database keeps residents and packets, sealed at rest, locked whe
 
 step("the content catalog loads from the site, a missing, foreign or damaged file gives the stand-in, and it works offline from the saved copy (a real browser)", () => {
   try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-contentcatalog-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
+  catch (e){
+    if (e.status === 2) return "skipped: Playwright is not installed here (see docs/dev-setup.md)";
+    throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message);
+  }
+});
+
+step("Themed Pages in the roster: five pages from the resident's own interests at their own level, nothing clipped, in black and white, and a catalog that cannot be read still prints (a real browser)", () => {
+  try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-contentmatcher-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
   catch (e){
     if (e.status === 2) return "skipped: Playwright is not installed here (see docs/dev-setup.md)";
     throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message);

@@ -2,7 +2,7 @@
 
 The catalog is the shared bank of content that the activity tools draw from: word search lists, conversation trivia, reminiscence prompts and packet templates. It is one public JSON file, `data/content-catalog.json`. Nothing in it is about a person. The loader is `loadContentCatalog()` in `src/services/contentCatalog.ts`, built into `assets/services/contentCatalog.js` (`CogniContentCatalog`) by `npm run services`. It is checked by `scripts/check-contentcatalog.mjs` (no browser) and `scripts/check-contentcatalog-ui.mjs` (a real browser, including a cut connection).
 
-**Status:** the file and the loader are finished and tested. No page loads the loader yet. The three tools make no network request of their own (CLAUDE.md), and reading this file is a request, so a page that adopts the catalog needs the owner's decision first. The loader reads only the site's own file, and the offline worker keeps a copy, so it works with no connection once it has been loaded.
+**Status:** the file and the loader are finished and tested. The Packet Builder's roster reads the catalog (once, each time the roster opens) to make **Themed Pages**: see "Matching and the themed journal" below. The loader reads only the site's own static file, never another site, and sends nothing. The tools' rule that they make no network request of their own is about their own data and other sites; loading the site's own data file is the same kind of read as loading its scripts, and the offline worker keeps a copy, so it works with no connection once it has been loaded. If the catalog cannot be read, the roster says so and prints from a small built-in catalog.
 
 ## The record
 
@@ -68,3 +68,28 @@ The built-in stand-in is two small, valid records (one word search, one trivia).
 ## Adding to the catalog
 
 Add a record to `data/content-catalog.json` and run `node scripts/check-contentcatalog.mjs`. It names the record and the rule if anything is wrong. Keep `item_id`s stable once a packet may refer to them.
+
+## Matching and the themed journal
+
+`src/services/contentMatcher.ts` (built into `assets/services/contentMatcher.js`, `CogniContentMatcher`) picks catalog items for one resident and bundles them into a short journal. It is checked by `scripts/check-contentmatcher.mjs` (no browser) and `scripts/check-contentmatcher-ui.mjs` (the roster, in a real browser).
+
+### `selectContentForResident(residentProfile, contentCatalog, limit = 5)`
+
+1. **Their level, strictly.** Only items whose `cognitive_tier` is the resident's own. A resident at Tier_3 never receives a Tier_1 page, whatever the interests say. A resident with no known level is given nothing, because a page at the wrong level is worse than none.
+2. **Interests against tags.** An exact word is worth 3, the same family of words 2 (gardening and flowers, baking and kitchen, singing and music: the families are `GROUPS` in the source), a shared word stem 2, and a tag for a decade the resident was young in (ages 12 to 25, when a birth year is known, such as `1950s`) 1. Topics the resident asked to steer around remove every item tagged with them (`religion` also rules out hymns).
+3. **Ranking.** By score, then by the share of the item's tags that matched, then by the catalog's own order (or by a seed, so equal matches come out differently on another day).
+4. **Gentle defaults.** If fewer than `limit` items match, the rest are filled from the resident's level by a short list of well-loved themes (`ENGAGEMENT`: nostalgia, music, sensory, family, summer...). It returns fewer than `limit` when the catalog holds fewer items of that level; it never reaches into another level.
+
+It returns entries `{ item, score, matched: [{ tag, via }], reason: "interest" | "default" }`. It accepts a database resident (`{ firstName, interests, hobbies, cognitiveTier: "Mild" }`) or a saved profile from profile.html, and a list of records or a `loadContentCatalog()` result. It never throws. Templates are structure, not content, so they are not offered.
+
+### `generateThematicJournal(residentId, options)`
+
+Finds the resident (by default in `CognicopiaLocalDB`, or through `options.getResident`), reads the catalog (by default with `loadContentCatalog()`), ranks, and bundles **five pages on one theme**: a memory to share first, then something to talk about, then a word search; any page the catalog cannot fill becomes "My own page" with a gentle starter, so there are always five. It returns `{ ok, source, journal, html, savedPacketId, problems }` and never throws. `options.save` also keeps the finished journal in the database as a packet (with the ids it was made from).
+
+The pages follow the print standard: US Letter, 0.5 in margins and a 0.75 in binding gutter, pure black on white, 16, 20 and 26 point type at the three levels (never under 14, 18 and 24), writing lines 2 pt, the word search's frame and the choice boxes 3 pt. A word search's words are placed with a seeded layout and each one is checked to be really in the grid. Trivia is offered as choices to circle with a question to talk about, and the answer is kept in a note for the person beside the resident. Every line passes the adult-dignity filter before it is used.
+
+### In the Packet Builder
+
+On the **Resident roster** screen, **Themed Pages** is a fourth template beside Life Story Journal, 12-Month Life Planner and This Month's Pages. The roster builds the pages with the same ranking and bundling (at the level it already works out for the resident, with the dignity filter), seeded by the resident and the day, so a resident gets the same pages all day and new ones tomorrow. It prints through the usual path, so the free-packet count, the page numbers and the pure black-and-white setting apply as for the other books.
+
+The roster's residents live in the encrypted profile store (`cognicopia_resident_<id>`), not in `CognicopiaLocalDB`, so the roster reads them there. `generateThematicJournal` is the same logic for a resident kept in the database, ready for when a page keeps residents there.

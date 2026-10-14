@@ -2724,6 +2724,8 @@ textarea:focus{border-color:var(--accent)}
 
 <script src="assets/services/secureStore.js"></script>
 <script src="assets/services/trialLedger.js"></script>
+<script src="assets/services/contentCatalog.js"></script>
+<script src="assets/services/contentMatcher.js"></script>
 <script src="src/config/license.js"></script>
 <script src="assets/services/licenseManager.js"></script>
 <script>
@@ -6573,7 +6575,8 @@ const RosterUI = (function(){
   const TEMPLATES = {
     journal: { label: "Life Story Journal", desc: "A life told in four sections, in the resident’s own words." },
     planner: { label: "12-Month Life Planner", desc: "A year of seasons, months and the people who matter." },
-    month:   { label: "This Month’s Pages", desc: "Right Now and this month’s spread: a short packet for today." }
+    month:   { label: "This Month’s Pages", desc: "Right Now and this month’s spread: a short packet for today." },
+    themed:  { label: "Themed Pages", desc: "Five pages on one theme drawn from their own interests: a memory to share, something to talk about and a word search, all at their level." }
   };
   const AUDIENCES = {
     resident: { label: "Resident-Facing Book Only", desc: "Only the pages written for the resident. No staff or family notes." },
@@ -6599,8 +6602,38 @@ const RosterUI = (function(){
     const pages = buildBook(p, template, audience);
     return audience === "admin" && typeof ClinicalUI !== "undefined" ? pages.concat(ClinicalUI.binderPages(p)) : pages;
   }
+  /* ---------- themed pages: matched from the shared content catalog (assets/services/contentMatcher.js) ---------- */
+  let catalog = null, catalogLoading = false;
+  /* The catalog is read once, from this site, and kept in the offline cache; until it arrives (or if it cannot be read) the built-in one stands in. */
+  function catalogItems(){
+    const C = window.CogniContentCatalog;
+    return catalog ? catalog.items : C ? Array.from(C.FALLBACK_ITEMS) : [];
+  }
+  function loadCatalog(){
+    const C = window.CogniContentCatalog;
+    if (catalog || catalogLoading || !C) return;
+    catalogLoading = true;
+    C.loadContentCatalog().then(r => { catalog = r; catalogLoading = false; if (host && document.body.contains(host)) renderWork(); });
+  }
+  function themedPages(p){
+    const M = window.CogniContentMatcher, K = window.CognicopiaKit;
+    if (!M || !K) return [];
+    if (!document.getElementById("cm-css")){ const st = document.createElement("style"); st.id = "cm-css"; st.textContent = M.PAGE_CSS; document.head.appendChild(st); }
+    const nd = BookUI.needsFor(p), seed = p.id + "|" + todayISO();                  // the same pages all day, new ones tomorrow
+    const dignity = window.CognicopiaClinicalMatrix && window.CognicopiaClinicalMatrix.dignity;
+    const ranking = M.rankContent(p, catalogItems(), { tier: nd.tier, seed });
+    const journal = M.composeThematicJournal(p, ranking.entries.slice(0, 15), { tier: nd.tier, seed, date: todayISO(), lint: dignity ? dignity.lint : undefined });
+    themedNote = catalog && catalog.source === "fallback" ? "The shared content catalog could not be read, so some of these pages are writing pages." : "";
+    return journal.pages.map(pg => {
+      const q = { tab: 1, audience: "resident", role: "themed", label: journal.theme, title: journal.title, body: pg.body, no: pg.no, side: "right", spreadId: "themed-" + pg.no };
+      q.html = K.sheet(q, "binder", { res: "Themed Pages", cg: "", cgFoot: "", resFoot: "" });
+      return q;
+    });
+  }
+  let themedNote = "";
   function buildBook(p, template, audience){
     const nd = BookUI.needsFor(p), o = { tier: nd.tier, lineW: nd.lineW };
+    if (template === "themed") return themedPages(p);
     if (template === "journal"){
       const prof = Object.assign(LifeJournalUI.fromSaved(p), { facility: settings.facility });
       return window.LifeJournal.build(prof, o, audience === "admin" ? "complete" : "resident").pages;
@@ -6618,6 +6651,7 @@ const RosterUI = (function(){
   /* ---------- the screen ---------- */
   function render(viewEl){
     state();
+    loadCatalog();
     const list = BookUI.savedProfiles();
     if (S.id && !find(S.id)) S.id = null;
     viewEl.innerHTML = `<div class="rs-screen" id="rsScreen">
@@ -6708,6 +6742,7 @@ const RosterUI = (function(){
     document.getElementById("rsSummary").textContent = p
       ? TEMPLATES[S.template].label + ", " + AUDIENCES[S.audience].label.toLowerCase() + ": " + n + " pages for " + nameOf(p) + "."
       : "Choose a resident to see what will print.";
+    if (p && S.template === "themed" && themedNote) document.getElementById("rsSummary").textContent += " " + themedNote;
     btn.textContent = p ? "Print Local Packet (" + n + " pages)" : "Print Local Packet";
     document.getElementById("rsAllow").textContent = BookUI.allowanceText();
   }
