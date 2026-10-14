@@ -22,7 +22,8 @@ const SEALED_PREFIXES = [
     "cognicopia_academy",
     "cognicopia_quality",
     "cognicopia_alignment",
-    "cognicopia_dailyops"
+    "cognicopia_dailyops",
+    "cognicopia_localdb_"
 ];
 const isSealed = (name)=>SEALED_PREFIXES.some((p)=>name.startsWith(p));
 const PBKDF2_ROUNDS = 600000;
