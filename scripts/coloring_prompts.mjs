@@ -23,7 +23,10 @@
      --generator <id>      midjourney, stable-diffusion or dall-e-3 (printed text)
      --subject "<words>"   one free subject (with --category and --title)
      --masters             one master per library design (or --category): the job id is the
-                           design's id, so <design-id>.png replaces that design's art
+                           design's id, so <design-id>.png replaces that design's art. The
+                           owner's own wording (src/data/coloring_owner_prompts.json) is used
+                           as the subject and kept whole as prompts.owner
+     --library-words       with --masters: use the built-in subject words instead
      --library             one job per library design and tier (older: a picture per tier)
      --count <n>           at most n jobs
      --list                categories and how many ideas each has
@@ -52,8 +55,14 @@ if (subject && subject !== true){
   if (category === "all"){ console.error("--subject needs --category."); process.exit(1); }
   tiersFor([1, 2, 3]).forEach(t => jobs.push(P.job({ subject, title:opt("title") !== true ? opt("title") : undefined, category, tier:t, source:"request" })));
 } else if (args.includes("--masters")){
-  C.designs().filter(d => category === "all" || d.cat === category).forEach(d =>
-    jobs.push(P.masterJob({ subject:P.subjectFor(d), title:d.title, category:d.cat, tags:d.tags, design_id:d.id, talk:d.talk, sensitive:d.sensitive })));
+  /* The owner's own wording (src/data/coloring_owner_prompts.json) is used where it has one; --library-words uses the built-in words instead. */
+  const ownerFile = path.join(ROOT, "src/data/coloring_owner_prompts.json");
+  const owner = !args.includes("--library-words") && fs.existsSync(ownerFile) ? JSON.parse(fs.readFileSync(ownerFile, "utf8")).designs || {} : {};
+  C.designs().filter(d => category === "all" || d.cat === category).forEach(d => {
+    const o = owner[d.id], job = P.masterJob({ subject:o ? o.subject : P.subjectFor(d), title:d.title, category:d.cat, tags:d.tags, design_id:d.id, talk:d.talk, sensitive:d.sensitive });
+    if (o){ job.owner_prompt = o.prompt; job.prompts.owner = o.prompt; }
+    jobs.push(job);
+  });
 } else if (args.includes("--library")){
   C.designs().filter(d => category === "all" || d.cat === category).forEach(d =>
     tiersFor([1, 2, 3]).forEach(t => jobs.push(P.job({ subject:P.subjectFor(d), title:d.title, category:d.cat, tier:t, tags:d.tags, source:"library", design_id:d.id }))));
@@ -73,8 +82,9 @@ if (out && out !== true){
   fs.mkdirSync(path.dirname(stem), { recursive:true });
   fs.writeFileSync(stem + ".jsonl", jobs.map(j => JSON.stringify(j)).join("\n") + "\n");
   const q = v => '"' + String(v).replace(/"/g, '""') + '"';
-  const cols = ["job_id", "title", "category", "tier", "subject", ...Object.keys(P.GENERATORS)];
-  fs.writeFileSync(stem + ".csv", cols.join(",") + "\n" + jobs.map(j => [j.job_id, j.title, j.category, j.tier, j.subject, ...Object.keys(P.GENERATORS).map(g => j.prompts[g])].map(q).join(",")).join("\n") + "\n");
+  const withOwner = jobs.some(j => j.owner_prompt), gens = Object.keys(P.GENERATORS).concat(withOwner ? ["owner"] : []);
+  const cols = ["job_id", "title", "category", "tier", "subject", ...gens];
+  fs.writeFileSync(stem + ".csv", cols.join(",") + "\n" + jobs.map(j => [j.job_id, j.title, j.category, j.tier, j.subject, ...gens.map(g => j.prompts[g] || "")].map(q).join(",")).join("\n") + "\n");
   console.log(`Wrote ${jobs.length} job(s) to ${path.relative(ROOT, stem)}.jsonl and .csv${blocked.length ? ` (${blocked.length} left out by the dignity filter)` : ""}.`);
   console.log(`Save each generated image as <job_id>.png in assets/coloring/_inbox/, then run:\n  node scripts/ingest_coloring_assets.mjs --jobs ${path.relative(ROOT, stem)}.jsonl`);
 } else {

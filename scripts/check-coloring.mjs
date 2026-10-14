@@ -68,6 +68,14 @@ ok(shapesToSVG([], { w:600, h:800 }).includes('stroke-linejoin="round"'), "SVG w
 const jobs = fs.readFileSync(path.join(ROOT, "src", "data", "cognicopia_coloring_prompt_jobs.jsonl"), "utf8").trim().split("\n").map(l => JSON.parse(l));
 ok(jobs.length === designs.length * 3 + P.IDEAS.reduce((n, i) => n + i[3].length, 0), `${jobs.length} prompt jobs`);
 ok(new Set(jobs.map(x => x.job_id)).size === jobs.length, "prompt job ids are unique");
+/* the owner's own picture descriptions: one per library design, all passing the dignity filter, all reaching the master jobs */
+const ownerPrompts = JSON.parse(fs.readFileSync(path.join(ROOT, "src", "data", "coloring_owner_prompts.json"), "utf8")).designs;
+ok(Object.keys(ownerPrompts).length === designs.length && designs.every(d => ownerPrompts[d.id]), "the owner's descriptions cover every library design, one each");
+designs.forEach(d => { const o = ownerPrompts[d.id] || {}; ok(o.title === d.title && o.category === d.cat, `${d.id}: owner description matches the design's title and category`); ok(!P.dignityCheck(o.subject + " " + o.prompt).length && / --ar 3:4$/.test(o.prompt || "") && (o.prompt || "").startsWith(o.subject || "\0"), `${d.id}: owner description is gentle, whole and 3:4`); });
+const masters = execFileSync(process.execPath, [path.join(ROOT, "scripts", "coloring_prompts.mjs"), "--masters", "--out", path.join(os.tmpdir(), "cognicopia-masters-check")], { encoding:"utf8", stdio:["ignore", "pipe", "pipe"] });
+const masterJobs = fs.readFileSync(path.join(os.tmpdir(), "cognicopia-masters-check.jsonl"), "utf8").trim().split("\n").map(l => JSON.parse(l));
+ok(masterJobs.length === designs.length && masterJobs.every(m => m.owner_prompt === ownerPrompts[m.design_id].prompt && m.subject === ownerPrompts[m.design_id].subject), "every library design gets a master job carrying the owner's own wording");
+fs.rmSync(path.join(os.tmpdir(), "cognicopia-masters-check.jsonl"), { force:true }); fs.rmSync(path.join(os.tmpdir(), "cognicopia-masters-check.csv"), { force:true });
 
 /* 4. the catalog, its schema and its files (and that it is current) */
 try { run("generate_coloring_manifest.js", ["--check"]); pass++; } catch (e){ fails.push("catalog out of date: " + String(e.stderr || e.message).trim().split("\n")[0]); }
