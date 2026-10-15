@@ -4,12 +4,12 @@
  "schema_version": "1.1.0",
  "engine_version": "1.1.0",
  "generated_by": "scripts/generate_coloring_manifest.js",
- "content_hash": "2e2611abc34c6f6246388c53e3d804de22fb681f57d84b31f6c6aadf08a9ea7c",
+ "content_hash": "ff22bc4e086b739bbbec215e934171bf5a61e44df33bd055bd495a87d7191bcc",
  "counts": {
   "designs": 150,
   "assets": 450,
   "packs": 63,
-  "traced": 29,
+  "traced": 41,
   "by_category": {
    "classic-vehicles": 15,
    "botanical-garden": 23,
@@ -5948,8 +5948,8 @@
    "format": "svg",
    "svg_path": "assets/coloring/botanical-garden/cc-fruit-bowl-t3.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/botanical-garden/cc-fruit-bowl-t3.svg",
-   "sha256": "211d466f40e4285197cb446ac729202ecd0ddfa55902ee25a1aa470d32d6cffa",
-   "bytes": 4537,
+   "sha256": "7b0584a09b7469176e83fb54dc82d3bf7a98ee6de914e8225b4495ef92a46f36",
+   "bytes": 4492,
    "era": "",
    "season": "",
    "sensitive_topics": [],
@@ -5962,14 +5962,14 @@
    "visual_complexity": "simple",
    "metrics": {
     "regions": 9,
-    "smallest_region_sq_in": 0.462,
-    "median_region_sq_in": 1.415,
-    "largest_region_sq_in": 4.54,
+    "smallest_region_sq_in": 0.445,
+    "median_region_sq_in": 1.392,
+    "largest_region_sq_in": 4.52,
     "tiny_regions": 0,
-    "ink_coverage": 0.105,
+    "ink_coverage": 0.111,
     "subject_fill": 0.677,
-    "stroke_pt_median": 7.92,
-    "stroke_pt_p10": 7.2
+    "stroke_pt_median": 8.1,
+    "stroke_pt_p10": 7.92
    }
   },
   {
@@ -8845,8 +8845,8 @@
    "format": "svg",
    "svg_path": "assets/coloring/nostalgic-heritage/cc-teapot-and-cup-t1.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/nostalgic-heritage/cc-teapot-and-cup-t1.svg",
-   "sha256": "0e3e2be9aa690d5603997eebd35e1dc2512af6f70fe3960ff98cf20c38e64420",
-   "bytes": 23088,
+   "sha256": "3d5807311ab382c1dacc51f2b47af84c978b993520a9c49fef3d7b1d518a564a",
+   "bytes": 23044,
    "era": "",
    "season": "",
    "sensitive_topics": [],
@@ -8901,8 +8901,8 @@
    "format": "svg",
    "svg_path": "assets/coloring/nostalgic-heritage/cc-teapot-and-cup-t2.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/nostalgic-heritage/cc-teapot-and-cup-t2.svg",
-   "sha256": "f26d088803025ac1526de0ffad66a424dec839c45a1789fd6a1ca684c20efaf1",
-   "bytes": 17743,
+   "sha256": "a4964a6f50783cfaff0043b668d6cba05fdc082836f9e9e630b6a5b0091d21f3",
+   "bytes": 17699,
    "era": "",
    "season": "",
    "sensitive_topics": [],
@@ -8958,8 +8958,8 @@
    "format": "svg",
    "svg_path": "assets/coloring/nostalgic-heritage/cc-teapot-and-cup-t3.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/nostalgic-heritage/cc-teapot-and-cup-t3.svg",
-   "sha256": "f048867e508e0f8602e59f601553fdc5542eb3fe52302795eee613c173a849ee",
-   "bytes": 7630,
+   "sha256": "9fa1bf117f4b70b5e6947bf5d74faf57be177eb8597df9d4faa844d6fc2f38c3",
+   "bytes": 7548,
    "era": "",
    "season": "",
    "sensitive_topics": [],
@@ -8974,14 +8974,14 @@
    "visual_complexity": "moderate",
    "metrics": {
     "regions": 14,
-    "smallest_region_sq_in": 0.239,
-    "median_region_sq_in": 0.5,
-    "largest_region_sq_in": 3.54,
+    "smallest_region_sq_in": 0.234,
+    "median_region_sq_in": 0.477,
+    "largest_region_sq_in": 3.47,
     "tiny_regions": 0,
-    "ink_coverage": 0.169,
+    "ink_coverage": 0.179,
     "subject_fill": 0.83,
-    "stroke_pt_median": 7.92,
-    "stroke_pt_p10": 6.48
+    "stroke_pt_median": 8.1,
+    "stroke_pt_p10": 7.92
    }
   },
   {
@@ -9013,13 +9013,13 @@
    "format": "svg",
    "svg_path": "assets/coloring/nostalgic-heritage/cc-rotary-telephone-t1.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/nostalgic-heritage/cc-rotary-telephone-t1.svg",
-   "sha256": "259b06cb3e57d38d87784452e3189c9762118162576a3a1634b5987bf5ae840a",
-   "bytes": 3368,
+   "sha256": "771def1b3efe9c267eb953ad81c8990ba2c19e3e1f632921d5e54e64dccb32be",
+   "bytes": 9135,
    "era": "1950s",
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "Who would you most like to ring up for a chat?",
-   "source": "cognicopia-coloring-engine",
+   "source": "traced-art",
    "review_status": "approved",
    "packs": [
     "keeping-in-touch",
@@ -9029,14 +9029,14 @@
    ],
    "visual_complexity": "moderate",
    "metrics": {
-    "regions": 17,
-    "smallest_region_sq_in": 0.065,
-    "median_region_sq_in": 0.066,
-    "largest_region_sq_in": 5.52,
+    "regions": 21,
+    "smallest_region_sq_in": 0.083,
+    "median_region_sq_in": 0.124,
+    "largest_region_sq_in": 5.89,
     "tiny_regions": 0,
-    "ink_coverage": 0.049,
-    "subject_fill": 0.479,
-    "stroke_pt_median": 2.88,
+    "ink_coverage": 0.063,
+    "subject_fill": 0.667,
+    "stroke_pt_median": 3.06,
     "stroke_pt_p10": 2.88
    }
   },
@@ -9069,13 +9069,13 @@
    "format": "svg",
    "svg_path": "assets/coloring/nostalgic-heritage/cc-rotary-telephone-t2.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/nostalgic-heritage/cc-rotary-telephone-t2.svg",
-   "sha256": "1c2d6f8a75fcd826b5cc6d66968d39c257365cc04b3cffbf1e3e1c629d23b047",
-   "bytes": 3277,
+   "sha256": "46eb85ad8848604885ddd4b48d4fa32c723309b305a118d3e7aa0625b88977c5",
+   "bytes": 8910,
    "era": "1950s",
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "Who would you most like to ring up for a chat?",
-   "source": "cognicopia-coloring-engine",
+   "source": "traced-art",
    "review_status": "approved",
    "packs": [
     "keeping-in-touch",
@@ -9085,15 +9085,15 @@
    ],
    "visual_complexity": "moderate",
    "metrics": {
-    "regions": 17,
-    "smallest_region_sq_in": 0.069,
-    "median_region_sq_in": 0.07,
-    "largest_region_sq_in": 5.12,
+    "regions": 18,
+    "smallest_region_sq_in": 0.108,
+    "median_region_sq_in": 0.14,
+    "largest_region_sq_in": 5.49,
     "tiny_regions": 0,
-    "ink_coverage": 0.074,
-    "subject_fill": 0.482,
-    "stroke_pt_median": 4.32,
-    "stroke_pt_p10": 4.14
+    "ink_coverage": 0.083,
+    "subject_fill": 0.671,
+    "stroke_pt_median": 4.14,
+    "stroke_pt_p10": 3.6
    }
   },
   {
@@ -9126,13 +9126,13 @@
    "format": "svg",
    "svg_path": "assets/coloring/nostalgic-heritage/cc-rotary-telephone-t3.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/nostalgic-heritage/cc-rotary-telephone-t3.svg",
-   "sha256": "e60fd01cec6eedb1e23148ce5f05cd187d413e9d55ab7806efda67e9f2d6a653",
-   "bytes": 1345,
+   "sha256": "9996fd2e140df06c54b53a0f388dec7946b949edf7b79eb1f6b02195492dd012",
+   "bytes": 3824,
    "era": "1950s",
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "Who would you most like to ring up for a chat?",
-   "source": "cognicopia-coloring-engine",
+   "source": "traced-art",
    "review_status": "approved",
    "packs": [
     "keeping-in-touch",
@@ -9142,13 +9142,13 @@
    ],
    "visual_complexity": "simple",
    "metrics": {
-    "regions": 5,
-    "smallest_region_sq_in": 0.621,
-    "median_region_sq_in": 1.841,
-    "largest_region_sq_in": 4.5,
-    "tiny_regions": 0,
-    "ink_coverage": 0.101,
-    "subject_fill": 0.493,
+    "regions": 9,
+    "smallest_region_sq_in": 0.041,
+    "median_region_sq_in": 0.9,
+    "largest_region_sq_in": 4.88,
+    "tiny_regions": 1,
+    "ink_coverage": 0.128,
+    "subject_fill": 0.684,
     "stroke_pt_median": 7.92,
     "stroke_pt_p10": 7.92
    }
@@ -9298,8 +9298,8 @@
    "format": "svg",
    "svg_path": "assets/coloring/nostalgic-heritage/cc-cathedral-radio-t3.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/nostalgic-heritage/cc-cathedral-radio-t3.svg",
-   "sha256": "6a7660c12d4a2b47a71dca3e2a08b57127720b7c6524486f8406beff000cd7c5",
-   "bytes": 4296,
+   "sha256": "ae075641f8869485eea745051b0d632eb529c578a6058884ec63c1cf940eaf7d",
+   "bytes": 4252,
    "era": "1930s",
    "season": "",
    "sensitive_topics": [],
@@ -9315,14 +9315,14 @@
    "visual_complexity": "simple",
    "metrics": {
     "regions": 9,
-    "smallest_region_sq_in": 0.232,
-    "median_region_sq_in": 0.975,
-    "largest_region_sq_in": 9.72,
+    "smallest_region_sq_in": 0.218,
+    "median_region_sq_in": 0.933,
+    "largest_region_sq_in": 9.53,
     "tiny_regions": 0,
-    "ink_coverage": 0.134,
+    "ink_coverage": 0.148,
     "subject_fill": 0.644,
-    "stroke_pt_median": 7.2,
-    "stroke_pt_p10": 6.48
+    "stroke_pt_median": 7.92,
+    "stroke_pt_p10": 7.92
    }
   },
   {
@@ -9356,8 +9356,8 @@
    "format": "svg",
    "svg_path": "assets/coloring/nostalgic-heritage/cc-sewing-machine-t1.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/nostalgic-heritage/cc-sewing-machine-t1.svg",
-   "sha256": "5db1e021010fb39cf0b5fd7af5ae2b136f7d0dfc415b264c012a29362a2bca91",
-   "bytes": 18556,
+   "sha256": "3b4989885c341e80bca6fc344a9a9988f5a479a0e76c423f43cf5838c7fb16a1",
+   "bytes": 18514,
    "era": "1950s",
    "season": "",
    "sensitive_topics": [],
@@ -9412,8 +9412,8 @@
    "format": "svg",
    "svg_path": "assets/coloring/nostalgic-heritage/cc-sewing-machine-t2.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/nostalgic-heritage/cc-sewing-machine-t2.svg",
-   "sha256": "9e5044f5011c1fa5bb999eaf5be8d052cd65ac037089327b0b7783ef774a81d5",
-   "bytes": 20281,
+   "sha256": "5f2a6f63777271f3fc726435592722158d5a82602e8947926f8351c860f713d2",
+   "bytes": 20237,
    "era": "1950s",
    "season": "",
    "sensitive_topics": [],
@@ -9469,8 +9469,8 @@
    "format": "svg",
    "svg_path": "assets/coloring/nostalgic-heritage/cc-sewing-machine-t3.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/nostalgic-heritage/cc-sewing-machine-t3.svg",
-   "sha256": "db4d003d0f0d01a43d67e541312d752d1f95bb9054819f52594faa1b620455cf",
-   "bytes": 3576,
+   "sha256": "07d4f8e3d2aa512bae9faddd152115313b4fab821c7bdd77e00e31355ea06b8d",
+   "bytes": 3488,
    "era": "1950s",
    "season": "",
    "sensitive_topics": [],
@@ -9484,14 +9484,14 @@
    "visual_complexity": "simple",
    "metrics": {
     "regions": 2,
-    "smallest_region_sq_in": 10.327,
-    "median_region_sq_in": 10.528,
-    "largest_region_sq_in": 10.53,
+    "smallest_region_sq_in": 10.262,
+    "median_region_sq_in": 10.491,
+    "largest_region_sq_in": 10.49,
     "tiny_regions": 0,
-    "ink_coverage": 0.084,
+    "ink_coverage": 0.086,
     "subject_fill": 0.837,
     "stroke_pt_median": 7.92,
-    "stroke_pt_p10": 7.2
+    "stroke_pt_p10": 7.92
    }
   },
   {
@@ -9523,27 +9523,27 @@
    "format": "svg",
    "svg_path": "assets/coloring/nostalgic-heritage/cc-grandfather-clock-t1.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/nostalgic-heritage/cc-grandfather-clock-t1.svg",
-   "sha256": "3d58a09b0db4082afb89eeeb09c08e941d0e50caa09d142d3720156889a48e59",
-   "bytes": 3366,
+   "sha256": "181936549307b6c5ca3fb6bcc01e8b293957cc537b15b7543b56e4a6c2146b64",
+   "bytes": 11512,
    "era": "",
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "Where would you put a tall clock like this?",
-   "source": "cognicopia-coloring-engine",
+   "source": "traced-art",
    "review_status": "approved",
    "packs": [
     "the-parlor",
     "timepieces"
    ],
-   "visual_complexity": "simple",
+   "visual_complexity": "moderate",
    "metrics": {
-    "regions": 9,
-    "smallest_region_sq_in": 0.23,
-    "median_region_sq_in": 1.159,
-    "largest_region_sq_in": 2.43,
-    "tiny_regions": 0,
-    "ink_coverage": 0.05,
-    "subject_fill": 0.435,
+    "regions": 21,
+    "smallest_region_sq_in": 0.008,
+    "median_region_sq_in": 0.449,
+    "largest_region_sq_in": 2.31,
+    "tiny_regions": 3,
+    "ink_coverage": 0.071,
+    "subject_fill": 0.511,
     "stroke_pt_median": 2.88,
     "stroke_pt_p10": 2.88
    }
@@ -9577,29 +9577,29 @@
    "format": "svg",
    "svg_path": "assets/coloring/nostalgic-heritage/cc-grandfather-clock-t2.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/nostalgic-heritage/cc-grandfather-clock-t2.svg",
-   "sha256": "52e48a8ead13fe1e20b060f7576d391e8e01c1b2a58f57e145b4f987abc3d974",
-   "bytes": 2554,
+   "sha256": "3c572c2f53909426a4eca911626ab46d19a3ffeb0fed94aec15cd1f64ef17a14",
+   "bytes": 8224,
    "era": "",
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "Where would you put a tall clock like this?",
-   "source": "cognicopia-coloring-engine",
+   "source": "traced-art",
    "review_status": "approved",
    "packs": [
     "the-parlor",
     "timepieces"
    ],
-   "visual_complexity": "simple",
+   "visual_complexity": "moderate",
    "metrics": {
-    "regions": 8,
-    "smallest_region_sq_in": 0.203,
-    "median_region_sq_in": 1.383,
-    "largest_region_sq_in": 2.18,
+    "regions": 16,
+    "smallest_region_sq_in": 0.199,
+    "median_region_sq_in": 0.658,
+    "largest_region_sq_in": 2.45,
     "tiny_regions": 0,
-    "ink_coverage": 0.065,
-    "subject_fill": 0.436,
-    "stroke_pt_median": 4.32,
-    "stroke_pt_p10": 4.32
+    "ink_coverage": 0.088,
+    "subject_fill": 0.517,
+    "stroke_pt_median": 4.14,
+    "stroke_pt_p10": 3.6
    }
   },
   {
@@ -9632,13 +9632,13 @@
    "format": "svg",
    "svg_path": "assets/coloring/nostalgic-heritage/cc-grandfather-clock-t3.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/nostalgic-heritage/cc-grandfather-clock-t3.svg",
-   "sha256": "ae5e5c07db1d69415b4d187f8f1ddbdaeb84bcd3bc0fbfd7922fdfe05601f772",
-   "bytes": 1832,
+   "sha256": "8e8febe9ca7db41ec235dab3289d886a64115bf9b83c9ccd7bb7bb0d54bff557",
+   "bytes": 3058,
    "era": "",
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "Where would you put a tall clock like this?",
-   "source": "cognicopia-coloring-engine",
+   "source": "traced-art",
    "review_status": "approved",
    "packs": [
     "the-parlor",
@@ -9646,15 +9646,15 @@
    ],
    "visual_complexity": "simple",
    "metrics": {
-    "regions": 8,
-    "smallest_region_sq_in": 0.179,
-    "median_region_sq_in": 1.23,
-    "largest_region_sq_in": 2.05,
+    "regions": 6,
+    "smallest_region_sq_in": 0.12,
+    "median_region_sq_in": 0.839,
+    "largest_region_sq_in": 1.78,
     "tiny_regions": 0,
-    "ink_coverage": 0.111,
-    "subject_fill": 0.434,
+    "ink_coverage": 0.088,
+    "subject_fill": 0.547,
     "stroke_pt_median": 7.92,
-    "stroke_pt_p10": 7.2
+    "stroke_pt_p10": 7.92
    }
   },
   {
@@ -9959,8 +9959,8 @@
    "format": "svg",
    "svg_path": "assets/coloring/nostalgic-heritage/cc-pocket-watch-t3.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/nostalgic-heritage/cc-pocket-watch-t3.svg",
-   "sha256": "d3dadf18a9765735a49ff589d11d3fdede3f9629476aab707902d53ecd85ee4e",
-   "bytes": 3038,
+   "sha256": "1c7afb46714a2736fc8aebf222d29c991d7066a54946ec608864395ef3774852",
+   "bytes": 2994,
    "era": "",
    "season": "",
    "sensitive_topics": [],
@@ -9974,13 +9974,13 @@
    "metrics": {
     "regions": 3,
     "smallest_region_sq_in": 0.27,
-    "median_region_sq_in": 7.565,
-    "largest_region_sq_in": 8.2,
+    "median_region_sq_in": 7.489,
+    "largest_region_sq_in": 8.12,
     "tiny_regions": 0,
-    "ink_coverage": 0.102,
+    "ink_coverage": 0.106,
     "subject_fill": 0.847,
-    "stroke_pt_median": 7.92,
-    "stroke_pt_p10": 7.2
+    "stroke_pt_median": 8.1,
+    "stroke_pt_p10": 7.92
    }
   },
   {
@@ -12151,8 +12151,8 @@
    "format": "svg",
    "svg_path": "assets/coloring/nostalgic-heritage/cc-farm-windmill-t3.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/nostalgic-heritage/cc-farm-windmill-t3.svg",
-   "sha256": "405112719b98d487aad43be927acad9e27d460c590e7a6e7daa44be8c07c0b46",
-   "bytes": 4905,
+   "sha256": "3257077d0c5c4fa9969b22ac321403b2c595576cf668d73a290ae2368d64a839",
+   "bytes": 4861,
    "era": "",
    "season": "",
    "sensitive_topics": [],
@@ -12167,13 +12167,13 @@
    "visual_complexity": "simple",
    "metrics": {
     "regions": 2,
-    "smallest_region_sq_in": 3.966,
-    "median_region_sq_in": 6.396,
-    "largest_region_sq_in": 6.4,
+    "smallest_region_sq_in": 3.955,
+    "median_region_sq_in": 6.386,
+    "largest_region_sq_in": 6.39,
     "tiny_regions": 0,
-    "ink_coverage": 0.086,
+    "ink_coverage": 0.087,
     "subject_fill": 0.851,
-    "stroke_pt_median": 7.92,
+    "stroke_pt_median": 8.1,
     "stroke_pt_p10": 7.92
    }
   },
@@ -18508,8 +18508,8 @@
    "format": "svg",
    "svg_path": "assets/coloring/classic-vehicles/cc-sunday-sedan-t3.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/classic-vehicles/cc-sunday-sedan-t3.svg",
-   "sha256": "e8bbad639124eed3d032f5122a505169b116bed2b069dcd3c4cd69524f27bc3a",
-   "bytes": 11874,
+   "sha256": "182ee7be19ec3155144e9f1588667f35f5fce86257738c4b0a254573bcd7e762",
+   "bytes": 11784,
    "era": "1950s",
    "season": "",
    "sensitive_topics": [
@@ -18525,15 +18525,15 @@
    ],
    "visual_complexity": "moderate",
    "metrics": {
-    "regions": 14,
-    "smallest_region_sq_in": 0.037,
-    "median_region_sq_in": 0.354,
-    "largest_region_sq_in": 2.01,
+    "regions": 15,
+    "smallest_region_sq_in": 0.031,
+    "median_region_sq_in": 0.328,
+    "largest_region_sq_in": 1.96,
     "tiny_regions": 1,
-    "ink_coverage": 0.134,
+    "ink_coverage": 0.141,
     "subject_fill": 0.591,
-    "stroke_pt_median": 7.92,
-    "stroke_pt_p10": 6.48
+    "stroke_pt_median": 8.1,
+    "stroke_pt_p10": 7.92
    }
   },
   {
@@ -18566,15 +18566,15 @@
    "format": "svg",
    "svg_path": "assets/coloring/classic-vehicles/cc-farm-pickup-t1.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/classic-vehicles/cc-farm-pickup-t1.svg",
-   "sha256": "13e4494ad008d049ad6f493a94bfa42de2d9ea30ac21ffc5d2cd7bc0ca47e201",
-   "bytes": 4352,
+   "sha256": "1b8ce3c88c91efa4c3fdb6c1b72d5d6cd3bc3659509aee671b6913064adc56b1",
+   "bytes": 15769,
    "era": "1950s",
    "season": "",
    "sensitive_topics": [
     "driving"
    ],
    "conversation_prompt": "What would you haul in the back of this truck?",
-   "source": "cognicopia-coloring-engine",
+   "source": "traced-art",
    "review_status": "approved",
    "packs": [
     "working-wheels",
@@ -18582,14 +18582,14 @@
    ],
    "visual_complexity": "moderate",
    "metrics": {
-    "regions": 28,
-    "smallest_region_sq_in": 0.014,
-    "median_region_sq_in": 0.25,
-    "largest_region_sq_in": 14.67,
-    "tiny_regions": 3,
-    "ink_coverage": 0.078,
-    "subject_fill": 0.876,
-    "stroke_pt_median": 2.88,
+    "regions": 35,
+    "smallest_region_sq_in": 0.005,
+    "median_region_sq_in": 0.139,
+    "largest_region_sq_in": 1.89,
+    "tiny_regions": 5,
+    "ink_coverage": 0.072,
+    "subject_fill": 0.474,
+    "stroke_pt_median": 3.06,
     "stroke_pt_p10": 2.88
    }
   },
@@ -18623,15 +18623,15 @@
    "format": "svg",
    "svg_path": "assets/coloring/classic-vehicles/cc-farm-pickup-t2.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/classic-vehicles/cc-farm-pickup-t2.svg",
-   "sha256": "9704eec9d3d4217b63e88606cf086a01522330a9dabb81d470ab099c9c123724",
-   "bytes": 2065,
+   "sha256": "8fac1efab3ec19001e169d099241a3eef51b7ded03beba4a005cbb139dad6015",
+   "bytes": 14922,
    "era": "1950s",
    "season": "",
    "sensitive_topics": [
     "driving"
    ],
    "conversation_prompt": "What would you haul in the back of this truck?",
-   "source": "cognicopia-coloring-engine",
+   "source": "traced-art",
    "review_status": "approved",
    "packs": [
     "working-wheels",
@@ -18639,15 +18639,15 @@
    ],
    "visual_complexity": "moderate",
    "metrics": {
-    "regions": 15,
-    "smallest_region_sq_in": 0.12,
-    "median_region_sq_in": 0.682,
-    "largest_region_sq_in": 18.15,
-    "tiny_regions": 0,
-    "ink_coverage": 0.091,
-    "subject_fill": 0.882,
+    "regions": 27,
+    "smallest_region_sq_in": 0.025,
+    "median_region_sq_in": 0.209,
+    "largest_region_sq_in": 1.79,
+    "tiny_regions": 3,
+    "ink_coverage": 0.085,
+    "subject_fill": 0.479,
     "stroke_pt_median": 4.32,
-    "stroke_pt_p10": 4.32
+    "stroke_pt_p10": 3.6
    }
   },
   {
@@ -18681,15 +18681,15 @@
    "format": "svg",
    "svg_path": "assets/coloring/classic-vehicles/cc-farm-pickup-t3.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/classic-vehicles/cc-farm-pickup-t3.svg",
-   "sha256": "ebfc339d9f382cf590d7ee99de080a7af7ea924f2afe032ad74f2cd6b9feaaff",
-   "bytes": 1834,
+   "sha256": "282ce84af8d06b59ccbe2dd1ad27c194c767b99ee3ffb8294dbb9640897c84b1",
+   "bytes": 6816,
    "era": "1950s",
    "season": "",
    "sensitive_topics": [
     "driving"
    ],
    "conversation_prompt": "What would you haul in the back of this truck?",
-   "source": "cognicopia-coloring-engine",
+   "source": "traced-art",
    "review_status": "approved",
    "packs": [
     "working-wheels",
@@ -18698,13 +18698,13 @@
    "visual_complexity": "simple",
    "metrics": {
     "regions": 11,
-    "smallest_region_sq_in": 0.269,
-    "median_region_sq_in": 1.179,
-    "largest_region_sq_in": 17.88,
-    "tiny_regions": 0,
-    "ink_coverage": 0.138,
-    "subject_fill": 0.896,
-    "stroke_pt_median": 7.92,
+    "smallest_region_sq_in": 0.003,
+    "median_region_sq_in": 0.629,
+    "largest_region_sq_in": 2.99,
+    "tiny_regions": 1,
+    "ink_coverage": 0.101,
+    "subject_fill": 0.491,
+    "stroke_pt_median": 8.1,
     "stroke_pt_p10": 7.92
    }
   },
@@ -18851,8 +18851,8 @@
    "format": "svg",
    "svg_path": "assets/coloring/classic-vehicles/cc-farm-tractor-t3.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/classic-vehicles/cc-farm-tractor-t3.svg",
-   "sha256": "1477afc4e6563a54c5d96a23eb2dae7d9defc584fa37e9d9fc5c000bf2c1b248",
-   "bytes": 5739,
+   "sha256": "c4162ba9c383b9bc98f6c7e4c88e5b7841673d5e03e1c4a61667b018e56955e7",
+   "bytes": 5694,
    "era": "1940s",
    "season": "",
    "sensitive_topics": [],
@@ -18867,14 +18867,14 @@
    "visual_complexity": "moderate",
    "metrics": {
     "regions": 15,
-    "smallest_region_sq_in": 0.219,
+    "smallest_region_sq_in": 0.205,
     "median_region_sq_in": 0.4,
-    "largest_region_sq_in": 3.24,
+    "largest_region_sq_in": 3.2,
     "tiny_regions": 0,
-    "ink_coverage": 0.123,
+    "ink_coverage": 0.132,
     "subject_fill": 0.682,
     "stroke_pt_median": 7.92,
-    "stroke_pt_p10": 6.48
+    "stroke_pt_p10": 7.92
    }
   },
   {
@@ -19020,8 +19020,8 @@
    "format": "svg",
    "svg_path": "assets/coloring/classic-vehicles/cc-steam-locomotive-t3.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/classic-vehicles/cc-steam-locomotive-t3.svg",
-   "sha256": "b1a31c4b45f382fbb9999e706aae008785a83b7d4ce3fb3d3b157951db988c37",
-   "bytes": 6509,
+   "sha256": "de850da9c5de2df25e5ac69e492deaf64c887493ec18a43ba6cf0b396b276295",
+   "bytes": 6465,
    "era": "1930s",
    "season": "",
    "sensitive_topics": [],
@@ -19036,14 +19036,14 @@
    "visual_complexity": "moderate",
    "metrics": {
     "regions": 13,
-    "smallest_region_sq_in": 0.152,
-    "median_region_sq_in": 1.149,
-    "largest_region_sq_in": 3.15,
+    "smallest_region_sq_in": 0.141,
+    "median_region_sq_in": 1.129,
+    "largest_region_sq_in": 3.09,
     "tiny_regions": 0,
-    "ink_coverage": 0.149,
+    "ink_coverage": 0.161,
     "subject_fill": 0.745,
     "stroke_pt_median": 7.92,
-    "stroke_pt_p10": 6.48
+    "stroke_pt_p10": 7.92
    }
   },
   {
@@ -19197,8 +19197,8 @@
    "format": "svg",
    "svg_path": "assets/coloring/classic-vehicles/cc-lake-sailboat-t3.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/classic-vehicles/cc-lake-sailboat-t3.svg",
-   "sha256": "67c524d268c25c752f1f7d9b9472f5775e3d0dfc552586238b0531822efff9c7",
-   "bytes": 3692,
+   "sha256": "20749e805a5f9533c862d2229c2256cc7a62604def4e34a23be81268e9dd8aa4",
+   "bytes": 3647,
    "era": "",
    "season": "summer",
    "sensitive_topics": [
@@ -19217,14 +19217,14 @@
    "visual_complexity": "simple",
    "metrics": {
     "regions": 3,
-    "smallest_region_sq_in": 1.318,
+    "smallest_region_sq_in": 1.285,
     "median_region_sq_in": 2.764,
-    "largest_region_sq_in": 4.03,
+    "largest_region_sq_in": 4.02,
     "tiny_regions": 0,
-    "ink_coverage": 0.11,
+    "ink_coverage": 0.111,
     "subject_fill": 0.81,
     "stroke_pt_median": 7.92,
-    "stroke_pt_p10": 7.2
+    "stroke_pt_p10": 7.92
    }
   },
   {
@@ -19550,8 +19550,8 @@
    "format": "svg",
    "svg_path": "assets/coloring/classic-vehicles/cc-convertible-t3.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/classic-vehicles/cc-convertible-t3.svg",
-   "sha256": "f0063e41a8bec42a341a03929a1aa8e9052211f1aece1be439804e40a446fb4c",
-   "bytes": 2413,
+   "sha256": "902b7cc3be667197cb584c53111d213626efd3b2f93a4b01571f8c106603de7c",
+   "bytes": 2369,
    "era": "1950s",
    "season": "summer",
    "sensitive_topics": [
@@ -19571,10 +19571,10 @@
     "median_region_sq_in": 1.739,
     "largest_region_sq_in": 2.88,
     "tiny_regions": 0,
-    "ink_coverage": 0.072,
-    "subject_fill": 0.694,
+    "ink_coverage": 0.074,
+    "subject_fill": 0.695,
     "stroke_pt_median": 7.92,
-    "stroke_pt_p10": 7.2
+    "stroke_pt_p10": 7.92
    }
   },
   {
@@ -19608,15 +19608,15 @@
    "format": "svg",
    "svg_path": "assets/coloring/classic-vehicles/cc-bread-truck-t1.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/classic-vehicles/cc-bread-truck-t1.svg",
-   "sha256": "dc080cfbe0009420546e08302f6b59d64d12e2bc4231231ecec1d7793968ad1b",
-   "bytes": 4480,
+   "sha256": "aff8a1f565b077bc9808daac26915a91ccdef23e7d371909b2939904c8e9813d",
+   "bytes": 16788,
    "era": "1950s",
    "season": "",
    "sensitive_topics": [
     "driving"
    ],
    "conversation_prompt": "What would you like delivered fresh to the door?",
-   "source": "cognicopia-coloring-engine",
+   "source": "traced-art",
    "review_status": "approved",
    "packs": [
     "working-wheels",
@@ -19625,14 +19625,14 @@
    ],
    "visual_complexity": "moderate",
    "metrics": {
-    "regions": 22,
-    "smallest_region_sq_in": 0.014,
-    "median_region_sq_in": 0.417,
-    "largest_region_sq_in": 14.71,
-    "tiny_regions": 2,
-    "ink_coverage": 0.088,
-    "subject_fill": 0.876,
-    "stroke_pt_median": 2.88,
+    "regions": 38,
+    "smallest_region_sq_in": 0.004,
+    "median_region_sq_in": 0.066,
+    "largest_region_sq_in": 2.83,
+    "tiny_regions": 9,
+    "ink_coverage": 0.083,
+    "subject_fill": 0.497,
+    "stroke_pt_median": 3.06,
     "stroke_pt_p10": 2.88
    }
   },
@@ -19667,15 +19667,15 @@
    "format": "svg",
    "svg_path": "assets/coloring/classic-vehicles/cc-bread-truck-t2.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/classic-vehicles/cc-bread-truck-t2.svg",
-   "sha256": "83d88eecf322358a50d1f2271b8a9512f08da5e3577e4c3a851848292bbe6f5c",
-   "bytes": 2337,
+   "sha256": "fda7031f48d396e9b40ff33d76b5679696bb9e3a5bae195fc46b38245f905a40",
+   "bytes": 16275,
    "era": "1950s",
    "season": "",
    "sensitive_topics": [
     "driving"
    ],
    "conversation_prompt": "What would you like delivered fresh to the door?",
-   "source": "cognicopia-coloring-engine",
+   "source": "traced-art",
    "review_status": "approved",
    "packs": [
     "working-wheels",
@@ -19684,15 +19684,15 @@
    ],
    "visual_complexity": "moderate",
    "metrics": {
-    "regions": 14,
-    "smallest_region_sq_in": 0.119,
-    "median_region_sq_in": 0.648,
-    "largest_region_sq_in": 17.05,
-    "tiny_regions": 0,
-    "ink_coverage": 0.105,
-    "subject_fill": 0.882,
-    "stroke_pt_median": 4.32,
-    "stroke_pt_p10": 4.14
+    "regions": 26,
+    "smallest_region_sq_in": 0.011,
+    "median_region_sq_in": 0.168,
+    "largest_region_sq_in": 2.74,
+    "tiny_regions": 2,
+    "ink_coverage": 0.097,
+    "subject_fill": 0.498,
+    "stroke_pt_median": 4.14,
+    "stroke_pt_p10": 3.6
    }
   },
   {
@@ -19727,15 +19727,15 @@
    "format": "svg",
    "svg_path": "assets/coloring/classic-vehicles/cc-bread-truck-t3.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/classic-vehicles/cc-bread-truck-t3.svg",
-   "sha256": "6d606519cd6fd4b28e5c5ebd900bcedc50da05ee87ac5392144769f1fade4e5a",
-   "bytes": 1944,
+   "sha256": "6274708498aa7a30772be9a3f3b1485f75dfd358bb530b4f7146498e198f7ce4",
+   "bytes": 10113,
    "era": "1950s",
    "season": "",
    "sensitive_topics": [
     "driving"
    ],
    "conversation_prompt": "What would you like delivered fresh to the door?",
-   "source": "cognicopia-coloring-engine",
+   "source": "traced-art",
    "review_status": "approved",
    "packs": [
     "working-wheels",
@@ -19744,13 +19744,13 @@
    ],
    "visual_complexity": "simple",
    "metrics": {
-    "regions": 11,
-    "smallest_region_sq_in": 0.083,
-    "median_region_sq_in": 0.522,
-    "largest_region_sq_in": 16.83,
-    "tiny_regions": 1,
-    "ink_coverage": 0.151,
-    "subject_fill": 0.896,
+    "regions": 7,
+    "smallest_region_sq_in": 0.304,
+    "median_region_sq_in": 0.878,
+    "largest_region_sq_in": 3.39,
+    "tiny_regions": 0,
+    "ink_coverage": 0.118,
+    "subject_fill": 0.506,
     "stroke_pt_median": 7.92,
     "stroke_pt_p10": 7.92
    }
@@ -19899,8 +19899,8 @@
    "format": "svg",
    "svg_path": "assets/coloring/classic-vehicles/cc-streetcar-t3.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/classic-vehicles/cc-streetcar-t3.svg",
-   "sha256": "a77a02c3b5023bf7437bc76ca77cde3e5f7dbb07b05e432ccfb9b992cd75c4b5",
-   "bytes": 4386,
+   "sha256": "f760ca3416c2709b8923bdb1aa987165fc33e0f03f562e9e5ed8b380a33b3ba5",
+   "bytes": 2811,
    "era": "1940s",
    "season": "",
    "sensitive_topics": [],
@@ -19913,15 +19913,15 @@
    ],
    "visual_complexity": "simple",
    "metrics": {
-    "regions": 8,
-    "smallest_region_sq_in": 0.129,
-    "median_region_sq_in": 0.75,
-    "largest_region_sq_in": 8.54,
+    "regions": 7,
+    "smallest_region_sq_in": 0.155,
+    "median_region_sq_in": 0.413,
+    "largest_region_sq_in": 3.1,
     "tiny_regions": 0,
-    "ink_coverage": 0.114,
-    "subject_fill": 0.584,
-    "stroke_pt_median": 7.2,
-    "stroke_pt_p10": 6.48
+    "ink_coverage": 0.081,
+    "subject_fill": 0.505,
+    "stroke_pt_median": 7.92,
+    "stroke_pt_p10": 7.92
    }
   },
   {
@@ -20068,8 +20068,8 @@
    "format": "svg",
    "svg_path": "assets/coloring/classic-vehicles/cc-vintage-bicycle-t3.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/classic-vehicles/cc-vintage-bicycle-t3.svg",
-   "sha256": "b47d540849abeee8ad4f6a24dbf39aec54875776805df24aa315d0f54efa405e",
-   "bytes": 6771,
+   "sha256": "e703df42ded5a265fc3ab7bdb0f42f121cd0d0ea2500dfae0748ccb5e30071ea",
+   "bytes": 6726,
    "era": "1950s",
    "season": "",
    "sensitive_topics": [],
@@ -20083,14 +20083,14 @@
    "visual_complexity": "moderate",
    "metrics": {
     "regions": 13,
-    "smallest_region_sq_in": 0.065,
-    "median_region_sq_in": 0.785,
-    "largest_region_sq_in": 2.76,
+    "smallest_region_sq_in": 0.058,
+    "median_region_sq_in": 0.766,
+    "largest_region_sq_in": 2.7,
     "tiny_regions": 1,
-    "ink_coverage": 0.153,
+    "ink_coverage": 0.163,
     "subject_fill": 0.815,
-    "stroke_pt_median": 7.92,
-    "stroke_pt_p10": 7.2
+    "stroke_pt_median": 8.1,
+    "stroke_pt_p10": 7.92
    }
   },
   {
@@ -20124,15 +20124,15 @@
    "format": "svg",
    "svg_path": "assets/coloring/classic-vehicles/cc-motor-scooter-t1.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/classic-vehicles/cc-motor-scooter-t1.svg",
-   "sha256": "3a5b07f34980303b1c47460bf418c4d429ceea9e0d9b3241cc9c93f66de1a21d",
-   "bytes": 3951,
+   "sha256": "e668ac59b2b5668100730b2fc4b93ee92cdeecaee1e0f8a8562c61408673022e",
+   "bytes": 16157,
    "era": "1950s",
    "season": "",
    "sensitive_topics": [
     "driving"
    ],
    "conversation_prompt": "Where would you ride on a warm evening?",
-   "source": "cognicopia-coloring-engine",
+   "source": "traced-art",
    "review_status": "approved",
    "packs": [
     "sunday-drive",
@@ -20140,14 +20140,14 @@
    ],
    "visual_complexity": "moderate",
    "metrics": {
-    "regions": 27,
-    "smallest_region_sq_in": 0.013,
-    "median_region_sq_in": 0.425,
-    "largest_region_sq_in": 13.72,
-    "tiny_regions": 1,
-    "ink_coverage": 0.081,
-    "subject_fill": 0.876,
-    "stroke_pt_median": 2.88,
+    "regions": 38,
+    "smallest_region_sq_in": 0.004,
+    "median_region_sq_in": 0.144,
+    "largest_region_sq_in": 5.14,
+    "tiny_regions": 4,
+    "ink_coverage": 0.075,
+    "subject_fill": 0.786,
+    "stroke_pt_median": 3.06,
     "stroke_pt_p10": 2.88
    }
   },
@@ -20182,15 +20182,15 @@
    "format": "svg",
    "svg_path": "assets/coloring/classic-vehicles/cc-motor-scooter-t2.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/classic-vehicles/cc-motor-scooter-t2.svg",
-   "sha256": "105e8e6ed1375c2e45afc5f0e1a030dbfe81872dc1f5962387d80edfecc88206",
-   "bytes": 2323,
+   "sha256": "cce21d64a7d18e1f7e8d9bc7a09fdd68d24f8eadbabefe1fa02359ffe6f028a7",
+   "bytes": 14755,
    "era": "1950s",
    "season": "",
    "sensitive_topics": [
     "driving"
    ],
    "conversation_prompt": "Where would you ride on a warm evening?",
-   "source": "cognicopia-coloring-engine",
+   "source": "traced-art",
    "review_status": "approved",
    "packs": [
     "sunday-drive",
@@ -20198,15 +20198,15 @@
    ],
    "visual_complexity": "moderate",
    "metrics": {
-    "regions": 19,
-    "smallest_region_sq_in": 0.153,
-    "median_region_sq_in": 0.383,
-    "largest_region_sq_in": 16.86,
+    "regions": 26,
+    "smallest_region_sq_in": 0.076,
+    "median_region_sq_in": 0.322,
+    "largest_region_sq_in": 4.83,
     "tiny_regions": 0,
-    "ink_coverage": 0.1,
-    "subject_fill": 0.882,
-    "stroke_pt_median": 4.32,
-    "stroke_pt_p10": 4.32
+    "ink_coverage": 0.095,
+    "subject_fill": 0.789,
+    "stroke_pt_median": 4.14,
+    "stroke_pt_p10": 3.6
    }
   },
   {
@@ -20241,31 +20241,31 @@
    "format": "svg",
    "svg_path": "assets/coloring/classic-vehicles/cc-motor-scooter-t3.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/classic-vehicles/cc-motor-scooter-t3.svg",
-   "sha256": "171e92fb36b256269706a65e39b98c4689e22b209c2631f224dcb07de8da1178",
-   "bytes": 2172,
+   "sha256": "4ff08cf422b6430fa535f0423618899c14771e41e5b332eaebc889c79aaf08c7",
+   "bytes": 5317,
    "era": "1950s",
    "season": "",
    "sensitive_topics": [
     "driving"
    ],
    "conversation_prompt": "Where would you ride on a warm evening?",
-   "source": "cognicopia-coloring-engine",
+   "source": "traced-art",
    "review_status": "approved",
    "packs": [
     "sunday-drive",
     "decade-1950s"
    ],
-   "visual_complexity": "moderate",
+   "visual_complexity": "simple",
    "metrics": {
-    "regions": 15,
-    "smallest_region_sq_in": 0.067,
-    "median_region_sq_in": 0.698,
-    "largest_region_sq_in": 16.52,
-    "tiny_regions": 1,
-    "ink_coverage": 0.154,
-    "subject_fill": 0.896,
+    "regions": 11,
+    "smallest_region_sq_in": 0.2,
+    "median_region_sq_in": 0.674,
+    "largest_region_sq_in": 6.15,
+    "tiny_regions": 0,
+    "ink_coverage": 0.137,
+    "subject_fill": 0.801,
     "stroke_pt_median": 7.92,
-    "stroke_pt_p10": 7.2
+    "stroke_pt_p10": 7.92
    }
   },
   {
@@ -20415,8 +20415,8 @@
    "format": "svg",
    "svg_path": "assets/coloring/classic-vehicles/cc-tugboat-t3.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/classic-vehicles/cc-tugboat-t3.svg",
-   "sha256": "dd19db5586530a7f76f8892f982b412de7dec3299b2e2c04a16112945e7fd4e0",
-   "bytes": 5219,
+   "sha256": "22bde819d1bf4afd0b721f5c554f3bdd538993fd6d07731352c2238dfd525a0a",
+   "bytes": 5174,
    "era": "",
    "season": "",
    "sensitive_topics": [
@@ -20433,14 +20433,14 @@
    "visual_complexity": "moderate",
    "metrics": {
     "regions": 14,
-    "smallest_region_sq_in": 0.208,
-    "median_region_sq_in": 0.831,
-    "largest_region_sq_in": 4.59,
+    "smallest_region_sq_in": 0.194,
+    "median_region_sq_in": 0.825,
+    "largest_region_sq_in": 4.52,
     "tiny_regions": 0,
-    "ink_coverage": 0.116,
+    "ink_coverage": 0.126,
     "subject_fill": 0.757,
-    "stroke_pt_median": 7.2,
-    "stroke_pt_p10": 6.48
+    "stroke_pt_median": 7.92,
+    "stroke_pt_p10": 7.92
    }
   },
   {
@@ -20587,8 +20587,8 @@
    "format": "svg",
    "svg_path": "assets/coloring/classic-vehicles/cc-biplane-t3.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/classic-vehicles/cc-biplane-t3.svg",
-   "sha256": "9f3070bb8740441dc5d4d8821ddf52f4d1b77e747b6a8f1807a24fef2e214f20",
-   "bytes": 4592,
+   "sha256": "25fafa7ff64ce34ce938253b20ee7dd9b71a2abbb5d3a2bdd8cad6af0eaba632",
+   "bytes": 4548,
    "era": "1930s",
    "season": "",
    "sensitive_topics": [],
@@ -20602,14 +20602,14 @@
    "visual_complexity": "simple",
    "metrics": {
     "regions": 11,
-    "smallest_region_sq_in": 0.273,
-    "median_region_sq_in": 0.586,
-    "largest_region_sq_in": 3.44,
+    "smallest_region_sq_in": 0.257,
+    "median_region_sq_in": 0.568,
+    "largest_region_sq_in": 3.4,
     "tiny_regions": 0,
-    "ink_coverage": 0.1,
+    "ink_coverage": 0.106,
     "subject_fill": 0.586,
-    "stroke_pt_median": 7.92,
-    "stroke_pt_p10": 7.2
+    "stroke_pt_median": 8.1,
+    "stroke_pt_p10": 7.92
    }
   },
   {
@@ -20642,26 +20642,26 @@
    "format": "svg",
    "svg_path": "assets/coloring/classic-vehicles/cc-hot-air-balloon-t1.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/classic-vehicles/cc-hot-air-balloon-t1.svg",
-   "sha256": "5027e1eaea9616d342ccba4c34c19b640026e7895af00419ce867eb0a18c9a6a",
-   "bytes": 1696,
+   "sha256": "53b473e3b242a161ee60e5abca1cfa7fa8f7eec48c38fe3e74a738a9dc78995e",
+   "bytes": 9635,
    "era": "",
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What would you like to see from high above?",
-   "source": "cognicopia-coloring-engine",
+   "source": "traced-art",
    "review_status": "approved",
    "packs": [
     "up-in-the-sky"
    ],
    "visual_complexity": "moderate",
    "metrics": {
-    "regions": 21,
-    "smallest_region_sq_in": 0.152,
-    "median_region_sq_in": 0.448,
-    "largest_region_sq_in": 14.61,
+    "regions": 22,
+    "smallest_region_sq_in": 0.055,
+    "median_region_sq_in": 0.148,
+    "largest_region_sq_in": 4.94,
     "tiny_regions": 0,
-    "ink_coverage": 0.076,
-    "subject_fill": 0.876,
+    "ink_coverage": 0.053,
+    "subject_fill": 0.819,
     "stroke_pt_median": 2.88,
     "stroke_pt_p10": 2.88
    }
@@ -20696,28 +20696,28 @@
    "format": "svg",
    "svg_path": "assets/coloring/classic-vehicles/cc-hot-air-balloon-t2.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/classic-vehicles/cc-hot-air-balloon-t2.svg",
-   "sha256": "e199d8ef4531b4ed3028f7ea12f20575f717a6e3f37298492d06b892a31bcf07",
-   "bytes": 1557,
+   "sha256": "bfa6f5ab20ca228f34b66908a638b90ad8058820129711ddc4b2a17e92a5ae36",
+   "bytes": 10253,
    "era": "",
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What would you like to see from high above?",
-   "source": "cognicopia-coloring-engine",
+   "source": "traced-art",
    "review_status": "approved",
    "packs": [
     "up-in-the-sky"
    ],
    "visual_complexity": "moderate",
    "metrics": {
-    "regions": 17,
-    "smallest_region_sq_in": 0.137,
-    "median_region_sq_in": 0.489,
-    "largest_region_sq_in": 13.62,
+    "regions": 18,
+    "smallest_region_sq_in": 0.115,
+    "median_region_sq_in": 0.333,
+    "largest_region_sq_in": 4.69,
     "tiny_regions": 0,
-    "ink_coverage": 0.103,
-    "subject_fill": 0.882,
-    "stroke_pt_median": 4.32,
-    "stroke_pt_p10": 4.32
+    "ink_coverage": 0.071,
+    "subject_fill": 0.825,
+    "stroke_pt_median": 4.14,
+    "stroke_pt_p10": 3.6
    }
   },
   {
@@ -20751,28 +20751,28 @@
    "format": "svg",
    "svg_path": "assets/coloring/classic-vehicles/cc-hot-air-balloon-t3.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/classic-vehicles/cc-hot-air-balloon-t3.svg",
-   "sha256": "a0687971942f8ee156737ae8a2466e1a4d9238070a532f3e7c1b6a497de988b5",
-   "bytes": 940,
+   "sha256": "b67190565042ec61c1eed3bfbaf92dc6bf1ddfcace281c99659c4809596247df",
+   "bytes": 3030,
    "era": "",
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What would you like to see from high above?",
-   "source": "cognicopia-coloring-engine",
+   "source": "traced-art",
    "review_status": "approved",
    "packs": [
     "up-in-the-sky"
    ],
    "visual_complexity": "simple",
    "metrics": {
-    "regions": 7,
-    "smallest_region_sq_in": 0.084,
-    "median_region_sq_in": 2.195,
-    "largest_region_sq_in": 18.57,
-    "tiny_regions": 1,
-    "ink_coverage": 0.129,
-    "subject_fill": 0.896,
+    "regions": 8,
+    "smallest_region_sq_in": 0.741,
+    "median_region_sq_in": 2.305,
+    "largest_region_sq_in": 4.24,
+    "tiny_regions": 0,
+    "ink_coverage": 0.118,
+    "subject_fill": 0.841,
     "stroke_pt_median": 7.92,
-    "stroke_pt_p10": 7.2
+    "stroke_pt_p10": 7.92
    }
   },
   {
@@ -20806,8 +20806,8 @@
    "format": "svg",
    "svg_path": "assets/coloring/classic-vehicles/cc-fire-engine-t1.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/classic-vehicles/cc-fire-engine-t1.svg",
-   "sha256": "21495f3b532ddc7d2f7762176065893e779a0a090300e68eb351cf1aae059c5a",
-   "bytes": 22291,
+   "sha256": "72c361a076fefc76ae90f64573af86e5fa9e116a4fa2d02a467dfff3f94e797d",
+   "bytes": 22247,
    "era": "1940s",
    "season": "",
    "sensitive_topics": [
@@ -20864,8 +20864,8 @@
    "format": "svg",
    "svg_path": "assets/coloring/classic-vehicles/cc-fire-engine-t2.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/classic-vehicles/cc-fire-engine-t2.svg",
-   "sha256": "8687a70344075e0065147317c6fe6986f7d9f436bd0d0a20a1373da966de80e3",
-   "bytes": 17816,
+   "sha256": "2bffbe29ff0ec5dc80672240d2fc4e077e424a1c0fd1d139fbfc37a2ba04bed3",
+   "bytes": 17772,
    "era": "1940s",
    "season": "",
    "sensitive_topics": [
@@ -20923,8 +20923,8 @@
    "format": "svg",
    "svg_path": "assets/coloring/classic-vehicles/cc-fire-engine-t3.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/classic-vehicles/cc-fire-engine-t3.svg",
-   "sha256": "c7ea173ac9ba9b036591e9c20330c6fe914a9ceeff8f560912758da946de5469",
-   "bytes": 6130,
+   "sha256": "df326d85db0d92b1278a0923d32d8d3c455a43d4ca01d6f9e27756a059342d1f",
+   "bytes": 4522,
    "era": "1940s",
    "season": "",
    "sensitive_topics": [
@@ -20937,17 +20937,17 @@
    "packs": [
     "working-wheels"
    ],
-   "visual_complexity": "moderate",
+   "visual_complexity": "simple",
    "metrics": {
-    "regions": 15,
-    "smallest_region_sq_in": 0.02,
-    "median_region_sq_in": 0.583,
-    "largest_region_sq_in": 2.31,
+    "regions": 7,
+    "smallest_region_sq_in": 0.008,
+    "median_region_sq_in": 0.288,
+    "largest_region_sq_in": 10,
     "tiny_regions": 1,
-    "ink_coverage": 0.109,
-    "subject_fill": 0.596,
+    "ink_coverage": 0.082,
+    "subject_fill": 0.594,
     "stroke_pt_median": 7.92,
-    "stroke_pt_p10": 6.48
+    "stroke_pt_p10": 7.92
    }
   },
   {
@@ -20979,8 +20979,8 @@
    "format": "svg",
    "svg_path": "assets/coloring/wildlife-nature/cc-cardinal-branch-t1.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/wildlife-nature/cc-cardinal-branch-t1.svg",
-   "sha256": "224e238198e3ca12c789cab76ee07a49433fe9458f2210a39ae7ffe372348f81",
-   "bytes": 16245,
+   "sha256": "74f9cc38d5206bd8fc1efd5b87b4279bc066826666f03566ee486f31edf827b5",
+   "bytes": 16201,
    "era": "",
    "season": "winter",
    "sensitive_topics": [],
@@ -21033,8 +21033,8 @@
    "format": "svg",
    "svg_path": "assets/coloring/wildlife-nature/cc-cardinal-branch-t2.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/wildlife-nature/cc-cardinal-branch-t2.svg",
-   "sha256": "7937789f871995c260b2397e348929f987f4cbee60edeffa0c7dd17976f473b0",
-   "bytes": 14423,
+   "sha256": "08e9e6ed1333e89fec4f53ccc62480de72a68d8271b55b38088402cade0cf286",
+   "bytes": 14379,
    "era": "",
    "season": "winter",
    "sensitive_topics": [],
@@ -21088,8 +21088,8 @@
    "format": "svg",
    "svg_path": "assets/coloring/wildlife-nature/cc-cardinal-branch-t3.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/wildlife-nature/cc-cardinal-branch-t3.svg",
-   "sha256": "fbcff9d9235fa0a236d0725673eb6e48f04818b5686b8b603ee16bdd6b2369be",
-   "bytes": 7086,
+   "sha256": "d38b94716d2a75cb76f9c8ccea1a42b148f787c1167a30e6bbadbc2fd5b7b013",
+   "bytes": 6998,
    "era": "",
    "season": "winter",
    "sensitive_topics": [],
@@ -21102,15 +21102,15 @@
    ],
    "visual_complexity": "simple",
    "metrics": {
-    "regions": 8,
-    "smallest_region_sq_in": 0.137,
-    "median_region_sq_in": 0.351,
-    "largest_region_sq_in": 7.75,
-    "tiny_regions": 0,
-    "ink_coverage": 0.117,
+    "regions": 9,
+    "smallest_region_sq_in": 0.118,
+    "median_region_sq_in": 0.287,
+    "largest_region_sq_in": 7.65,
+    "tiny_regions": 1,
+    "ink_coverage": 0.122,
     "subject_fill": 0.837,
     "stroke_pt_median": 8.1,
-    "stroke_pt_p10": 7.2
+    "stroke_pt_p10": 7.92
    }
   },
   {
@@ -21142,13 +21142,13 @@
    "format": "svg",
    "svg_path": "assets/coloring/wildlife-nature/cc-robin-fence-t1.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/wildlife-nature/cc-robin-fence-t1.svg",
-   "sha256": "96b45b172fb1e03bcb65fe7c56032841fa4eb62d668840d229d13d8a451aa983",
-   "bytes": 2261,
+   "sha256": "b8cb97aeeaf32a37c97cbfbbe08065ded8933edfc1da72579ddeb732bc9f1bb2",
+   "bytes": 13330,
    "era": "",
    "season": "spring",
    "sensitive_topics": [],
    "conversation_prompt": "What are the first signs of spring you notice?",
-   "source": "cognicopia-coloring-engine",
+   "source": "traced-art",
    "review_status": "approved",
    "packs": [
     "spring-garden",
@@ -21157,14 +21157,14 @@
    ],
    "visual_complexity": "moderate",
    "metrics": {
-    "regions": 14,
-    "smallest_region_sq_in": 0.067,
-    "median_region_sq_in": 0.669,
-    "largest_region_sq_in": 2.92,
-    "tiny_regions": 0,
-    "ink_coverage": 0.055,
-    "subject_fill": 0.679,
-    "stroke_pt_median": 2.88,
+    "regions": 18,
+    "smallest_region_sq_in": 0.005,
+    "median_region_sq_in": 0.117,
+    "largest_region_sq_in": 9.8,
+    "tiny_regions": 4,
+    "ink_coverage": 0.053,
+    "subject_fill": 0.824,
+    "stroke_pt_median": 3.06,
     "stroke_pt_p10": 2.88
    }
   },
@@ -21197,30 +21197,30 @@
    "format": "svg",
    "svg_path": "assets/coloring/wildlife-nature/cc-robin-fence-t2.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/wildlife-nature/cc-robin-fence-t2.svg",
-   "sha256": "bc026b6a66ebbb018259e9302c80975c9a92e9a1ec1fadd0d1a6f146be549784",
-   "bytes": 2094,
+   "sha256": "ea603e2a9121b63e252f99ad8898f75bfbfd9ce13ef10bd0164a431202387877",
+   "bytes": 11984,
    "era": "",
    "season": "spring",
    "sensitive_topics": [],
    "conversation_prompt": "What are the first signs of spring you notice?",
-   "source": "cognicopia-coloring-engine",
+   "source": "traced-art",
    "review_status": "approved",
    "packs": [
     "spring-garden",
     "backyard-birds",
     "season-spring"
    ],
-   "visual_complexity": "simple",
+   "visual_complexity": "moderate",
    "metrics": {
-    "regions": 11,
-    "smallest_region_sq_in": 0.225,
-    "median_region_sq_in": 0.981,
-    "largest_region_sq_in": 3.1,
-    "tiny_regions": 0,
-    "ink_coverage": 0.08,
-    "subject_fill": 0.705,
+    "regions": 14,
+    "smallest_region_sq_in": 0.024,
+    "median_region_sq_in": 0.131,
+    "largest_region_sq_in": 9.22,
+    "tiny_regions": 3,
+    "ink_coverage": 0.071,
+    "subject_fill": 0.831,
     "stroke_pt_median": 4.32,
-    "stroke_pt_p10": 4.14
+    "stroke_pt_p10": 3.6
    }
   },
   {
@@ -21253,13 +21253,13 @@
    "format": "svg",
    "svg_path": "assets/coloring/wildlife-nature/cc-robin-fence-t3.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/wildlife-nature/cc-robin-fence-t3.svg",
-   "sha256": "30c6f4cd3e14456a29cab3a14f8aeec033a97388bcaaf7f36b9fb66b49b79523",
-   "bytes": 1692,
+   "sha256": "ba1f45af065fbe31162be9f53d88bf8200433578eb3d2968f1fb56fd4e6196bb",
+   "bytes": 6401,
    "era": "",
    "season": "spring",
    "sensitive_topics": [],
    "conversation_prompt": "What are the first signs of spring you notice?",
-   "source": "cognicopia-coloring-engine",
+   "source": "traced-art",
    "review_status": "approved",
    "packs": [
     "spring-garden",
@@ -21269,14 +21269,14 @@
    "visual_complexity": "simple",
    "metrics": {
     "regions": 6,
-    "smallest_region_sq_in": 0.381,
-    "median_region_sq_in": 1.176,
-    "largest_region_sq_in": 2.5,
+    "smallest_region_sq_in": 0.145,
+    "median_region_sq_in": 0.483,
+    "largest_region_sq_in": 8.58,
     "tiny_regions": 0,
-    "ink_coverage": 0.099,
-    "subject_fill": 0.714,
-    "stroke_pt_median": 7.92,
-    "stroke_pt_p10": 7.2
+    "ink_coverage": 0.101,
+    "subject_fill": 0.845,
+    "stroke_pt_median": 8.1,
+    "stroke_pt_p10": 7.92
    }
   },
   {
@@ -21308,8 +21308,8 @@
    "format": "svg",
    "svg_path": "assets/coloring/wildlife-nature/cc-chickadee-pine-t1.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/wildlife-nature/cc-chickadee-pine-t1.svg",
-   "sha256": "fa6fd4d1e14f7e7014a6ec105f6f24414cd7e88a583503e8d938879cd6428fe8",
-   "bytes": 19920,
+   "sha256": "ad87f6f8b2d2ef6b78b049c28d59acb5f4eb1c8da7091e69b349dfd818effc38",
+   "bytes": 19876,
    "era": "",
    "season": "winter",
    "sensitive_topics": [],
@@ -21363,8 +21363,8 @@
    "format": "svg",
    "svg_path": "assets/coloring/wildlife-nature/cc-chickadee-pine-t2.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/wildlife-nature/cc-chickadee-pine-t2.svg",
-   "sha256": "f98be6b1abc9accbe675db4d253354f28ed1d9958da2c9847adce1a23d3bf240",
-   "bytes": 22102,
+   "sha256": "f06b799a59fcb0ee5b5f360279c027c9ade330ef534e4a0ea81d805b24774632",
+   "bytes": 22058,
    "era": "",
    "season": "winter",
    "sensitive_topics": [],
@@ -21419,8 +21419,8 @@
    "format": "svg",
    "svg_path": "assets/coloring/wildlife-nature/cc-chickadee-pine-t3.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/wildlife-nature/cc-chickadee-pine-t3.svg",
-   "sha256": "36e4455cbd78af05bd5bba48287685858c0124b60ae10da8408b18950782ce1f",
-   "bytes": 11249,
+   "sha256": "4d5b78350fd553fac51b7910fefbafc87e892ac9c67eeb5d06f21c3ee6e29559",
+   "bytes": 11159,
    "era": "",
    "season": "winter",
    "sensitive_topics": [],
@@ -21435,14 +21435,14 @@
    "visual_complexity": "moderate",
    "metrics": {
     "regions": 15,
-    "smallest_region_sq_in": 0.184,
-    "median_region_sq_in": 0.377,
-    "largest_region_sq_in": 3.92,
+    "smallest_region_sq_in": 0.171,
+    "median_region_sq_in": 0.371,
+    "largest_region_sq_in": 3.86,
     "tiny_regions": 0,
-    "ink_coverage": 0.196,
+    "ink_coverage": 0.203,
     "subject_fill": 0.794,
     "stroke_pt_median": 8.1,
-    "stroke_pt_p10": 7.2
+    "stroke_pt_p10": 7.92
    }
   },
   {
@@ -21474,8 +21474,8 @@
    "format": "svg",
    "svg_path": "assets/coloring/wildlife-nature/cc-bluebird-house-t1.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/wildlife-nature/cc-bluebird-house-t1.svg",
-   "sha256": "f32560cb4a6a3e91abd6c63f81115f4d26d6ff5a6549bf95335f3ea3a145207d",
-   "bytes": 12280,
+   "sha256": "4b8cd4fe31c1f6d414bba6eec21330bbcf4ac3a80fa7e900e73ae2dc88edcba9",
+   "bytes": 12236,
    "era": "",
    "season": "spring",
    "sensitive_topics": [
@@ -21531,8 +21531,8 @@
    "format": "svg",
    "svg_path": "assets/coloring/wildlife-nature/cc-bluebird-house-t2.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/wildlife-nature/cc-bluebird-house-t2.svg",
-   "sha256": "95f95109a48fb363113d75df8b5c8126b873c3312e5c4be508abc6a8ae4f6f27",
-   "bytes": 10825,
+   "sha256": "67c582387c731d6a6a8dafda410c06f9fdbbd05d9445f3e6c77c48b807d5b37c",
+   "bytes": 10781,
    "era": "",
    "season": "spring",
    "sensitive_topics": [
@@ -21589,8 +21589,8 @@
    "format": "svg",
    "svg_path": "assets/coloring/wildlife-nature/cc-bluebird-house-t3.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/wildlife-nature/cc-bluebird-house-t3.svg",
-   "sha256": "bfe45a93e1c7d6e75062840480afe9bcd96eeef79accfdc49f6df93544cc4b38",
-   "bytes": 4470,
+   "sha256": "6f917d55b60c5b318153d95fa09bbae698bf29972ab3b7f91b5da263b879c5c8",
+   "bytes": 4382,
    "era": "",
    "season": "spring",
    "sensitive_topics": [
@@ -21607,14 +21607,14 @@
    "visual_complexity": "simple",
    "metrics": {
     "regions": 6,
-    "smallest_region_sq_in": 0.452,
-    "median_region_sq_in": 2.65,
-    "largest_region_sq_in": 4.69,
+    "smallest_region_sq_in": 0.439,
+    "median_region_sq_in": 2.596,
+    "largest_region_sq_in": 4.64,
     "tiny_regions": 0,
-    "ink_coverage": 0.098,
+    "ink_coverage": 0.103,
     "subject_fill": 0.769,
     "stroke_pt_median": 7.92,
-    "stroke_pt_p10": 6.48
+    "stroke_pt_p10": 7.92
    }
   },
   {
@@ -21646,13 +21646,13 @@
    "format": "svg",
    "svg_path": "assets/coloring/wildlife-nature/cc-hummingbird-t1.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/wildlife-nature/cc-hummingbird-t1.svg",
-   "sha256": "7041656231bf79ebac271e7c8f23e75c6531d5bf0d5ad502e3032bbee1bc5149",
-   "bytes": 4241,
+   "sha256": "c1fe93afc7d8bfb2c3e16284b545e93ed8d784f6852d2bbddcf10aa222cbb2cc",
+   "bytes": 18927,
    "era": "",
    "season": "summer",
    "sensitive_topics": [],
    "conversation_prompt": "What flowers would you plant to bring birds to a garden?",
-   "source": "cognicopia-coloring-engine",
+   "source": "traced-art",
    "review_status": "approved",
    "packs": [
     "backyard-birds",
@@ -21660,13 +21660,13 @@
    ],
    "visual_complexity": "moderate",
    "metrics": {
-    "regions": 16,
-    "smallest_region_sq_in": 0.036,
-    "median_region_sq_in": 0.276,
-    "largest_region_sq_in": 1.85,
-    "tiny_regions": 0,
-    "ink_coverage": 0.05,
-    "subject_fill": 0.825,
+    "regions": 27,
+    "smallest_region_sq_in": 0.004,
+    "median_region_sq_in": 0.141,
+    "largest_region_sq_in": 2.63,
+    "tiny_regions": 4,
+    "ink_coverage": 0.078,
+    "subject_fill": 0.789,
     "stroke_pt_median": 3.06,
     "stroke_pt_p10": 2.88
    }
@@ -21700,29 +21700,29 @@
    "format": "svg",
    "svg_path": "assets/coloring/wildlife-nature/cc-hummingbird-t2.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/wildlife-nature/cc-hummingbird-t2.svg",
-   "sha256": "eef097243c5d315133ddac8d52a1e68ecfd3f6fde0b1e3dc2c26dae61fb40941",
-   "bytes": 2985,
+   "sha256": "50414dbc363ba9ef0734ff4c745ca0a2234f81e74212918a9e62cfe24666bfdb",
+   "bytes": 15705,
    "era": "",
    "season": "summer",
    "sensitive_topics": [],
    "conversation_prompt": "What flowers would you plant to bring birds to a garden?",
-   "source": "cognicopia-coloring-engine",
+   "source": "traced-art",
    "review_status": "approved",
    "packs": [
     "backyard-birds",
     "butterfly-garden"
    ],
-   "visual_complexity": "simple",
+   "visual_complexity": "moderate",
    "metrics": {
-    "regions": 11,
-    "smallest_region_sq_in": 0.102,
-    "median_region_sq_in": 0.268,
-    "largest_region_sq_in": 1.98,
+    "regions": 19,
+    "smallest_region_sq_in": 0.063,
+    "median_region_sq_in": 0.165,
+    "largest_region_sq_in": 2.5,
     "tiny_regions": 0,
-    "ink_coverage": 0.059,
-    "subject_fill": 0.822,
-    "stroke_pt_median": 5.04,
-    "stroke_pt_p10": 4.14
+    "ink_coverage": 0.102,
+    "subject_fill": 0.795,
+    "stroke_pt_median": 4.32,
+    "stroke_pt_p10": 3.6
    }
   },
   {
@@ -21755,13 +21755,13 @@
    "format": "svg",
    "svg_path": "assets/coloring/wildlife-nature/cc-hummingbird-t3.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/wildlife-nature/cc-hummingbird-t3.svg",
-   "sha256": "726cd3813e926e2e5f3d208ac67e6777d833f68f7e669d3bd0bc660600f59aa6",
-   "bytes": 2119,
+   "sha256": "e2bedd394731c5dbe8fc8b74bbf7cb84fef83303cef200014c09ae696cfd4b02",
+   "bytes": 7502,
    "era": "",
    "season": "summer",
    "sensitive_topics": [],
    "conversation_prompt": "What flowers would you plant to bring birds to a garden?",
-   "source": "cognicopia-coloring-engine",
+   "source": "traced-art",
    "review_status": "approved",
    "packs": [
     "backyard-birds",
@@ -21769,13 +21769,13 @@
    ],
    "visual_complexity": "simple",
    "metrics": {
-    "regions": 7,
-    "smallest_region_sq_in": 0.269,
-    "median_region_sq_in": 0.425,
-    "largest_region_sq_in": 2.24,
+    "regions": 11,
+    "smallest_region_sq_in": 0.134,
+    "median_region_sq_in": 0.434,
+    "largest_region_sq_in": 2.16,
     "tiny_regions": 0,
-    "ink_coverage": 0.09,
-    "subject_fill": 0.852,
+    "ink_coverage": 0.151,
+    "subject_fill": 0.81,
     "stroke_pt_median": 8.1,
     "stroke_pt_p10": 7.92
    }
@@ -21918,8 +21918,8 @@
    "format": "svg",
    "svg_path": "assets/coloring/wildlife-nature/cc-barn-owl-t3.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/wildlife-nature/cc-barn-owl-t3.svg",
-   "sha256": "a4847638b3db5250e8ca9ad6d6aa5364467c53577849da4f463488e8391fd996",
-   "bytes": 6752,
+   "sha256": "3e4407c34c38e5ef81cc2920df8222407edcba8380a5ade8b7de7ebf34a06df1",
+   "bytes": 6708,
    "era": "",
    "season": "",
    "sensitive_topics": [],
@@ -21933,14 +21933,14 @@
    "visual_complexity": "simple",
    "metrics": {
     "regions": 10,
-    "smallest_region_sq_in": 0.399,
-    "median_region_sq_in": 0.94,
-    "largest_region_sq_in": 4.23,
+    "smallest_region_sq_in": 0.389,
+    "median_region_sq_in": 0.914,
+    "largest_region_sq_in": 4.17,
     "tiny_regions": 0,
-    "ink_coverage": 0.144,
+    "ink_coverage": 0.15,
     "subject_fill": 0.851,
     "stroke_pt_median": 7.92,
-    "stroke_pt_p10": 7.2
+    "stroke_pt_p10": 7.92
    }
   },
   {
@@ -21972,8 +21972,8 @@
    "format": "svg",
    "svg_path": "assets/coloring/wildlife-nature/cc-swan-lake-t1.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/wildlife-nature/cc-swan-lake-t1.svg",
-   "sha256": "34d8316c6bf3d105eaee0ff468a3f48f0e489af7f35de5b781bc7b24b6dc206b",
-   "bytes": 9815,
+   "sha256": "66b0fbb706fb7211fb7323ebb21ee4afe080edbd3818ee9b751af64a39af29ac",
+   "bytes": 9771,
    "era": "",
    "season": "",
    "sensitive_topics": [
@@ -22029,8 +22029,8 @@
    "format": "svg",
    "svg_path": "assets/coloring/wildlife-nature/cc-swan-lake-t2.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/wildlife-nature/cc-swan-lake-t2.svg",
-   "sha256": "95f12540cd8fed45912dec67e2d2a8a829a30bd66a7f73635f3a3856a2f790a0",
-   "bytes": 9098,
+   "sha256": "e68e073f137a8fa3af26c1466d10ee12281fd646468bc69dab2696376aeb3aeb",
+   "bytes": 9054,
    "era": "",
    "season": "",
    "sensitive_topics": [
@@ -22087,8 +22087,8 @@
    "format": "svg",
    "svg_path": "assets/coloring/wildlife-nature/cc-swan-lake-t3.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/wildlife-nature/cc-swan-lake-t3.svg",
-   "sha256": "dfa5e354bac63aa8c2ca4d944e99b3ba813f7f3a8c275b78931ecfb8d61b9e6a",
-   "bytes": 5287,
+   "sha256": "54ac171032a52ce94a4be00ff2411cd6c0d368720a742b3b1f660f17968b54a5",
+   "bytes": 5242,
    "era": "",
    "season": "",
    "sensitive_topics": [
@@ -22106,10 +22106,10 @@
    "metrics": {
     "regions": 3,
     "smallest_region_sq_in": 0.483,
-    "median_region_sq_in": 1.843,
+    "median_region_sq_in": 1.81,
     "largest_region_sq_in": 10.97,
     "tiny_regions": 0,
-    "ink_coverage": 0.119,
+    "ink_coverage": 0.12,
     "subject_fill": 0.772,
     "stroke_pt_median": 8.1,
     "stroke_pt_p10": 7.92
@@ -22252,8 +22252,8 @@
    "format": "svg",
    "svg_path": "assets/coloring/wildlife-nature/cc-mallard-duck-t3.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/wildlife-nature/cc-mallard-duck-t3.svg",
-   "sha256": "2f1f787cb956cb8fc0c9b395995ffaa802a799f95d14cd04432eb59e84078ab3",
-   "bytes": 6991,
+   "sha256": "b0fb4624d5bc33a6bbc050f0844d9ac6deaef24b43387d9593afa347048a32c8",
+   "bytes": 6947,
    "era": "",
    "season": "",
    "sensitive_topics": [
@@ -22268,13 +22268,13 @@
    "visual_complexity": "simple",
    "metrics": {
     "regions": 5,
-    "smallest_region_sq_in": 0.271,
-    "median_region_sq_in": 2.158,
-    "largest_region_sq_in": 4.73,
+    "smallest_region_sq_in": 0.268,
+    "median_region_sq_in": 2.147,
+    "largest_region_sq_in": 4.72,
     "tiny_regions": 0,
-    "ink_coverage": 0.148,
+    "ink_coverage": 0.149,
     "subject_fill": 0.779,
-    "stroke_pt_median": 7.92,
+    "stroke_pt_median": 8.1,
     "stroke_pt_p10": 7.92
    }
   },
@@ -22420,8 +22420,8 @@
    "format": "svg",
    "svg_path": "assets/coloring/wildlife-nature/cc-monarch-butterfly-t3.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/wildlife-nature/cc-monarch-butterfly-t3.svg",
-   "sha256": "06936002f0ea75262141d16cc6b73beb24ddbb26c8dbb223a747e1dc0aa16dcb",
-   "bytes": 12176,
+   "sha256": "234f20807d680c34c2fa65f16a825e7ece04379a2bc363614ef22659865b9eab",
+   "bytes": 12132,
    "era": "",
    "season": "summer",
    "sensitive_topics": [],
@@ -22437,14 +22437,14 @@
    "visual_complexity": "moderate",
    "metrics": {
     "regions": 19,
-    "smallest_region_sq_in": 0.245,
-    "median_region_sq_in": 0.824,
-    "largest_region_sq_in": 1.2,
+    "smallest_region_sq_in": 0.229,
+    "median_region_sq_in": 0.807,
+    "largest_region_sq_in": 1.15,
     "tiny_regions": 0,
-    "ink_coverage": 0.17,
+    "ink_coverage": 0.181,
     "subject_fill": 0.729,
-    "stroke_pt_median": 7.92,
-    "stroke_pt_p10": 6.48
+    "stroke_pt_median": 8.1,
+    "stroke_pt_p10": 7.92
    }
   },
   {
@@ -22591,8 +22591,8 @@
    "format": "svg",
    "svg_path": "assets/coloring/wildlife-nature/cc-dragonfly-reeds-t3.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/wildlife-nature/cc-dragonfly-reeds-t3.svg",
-   "sha256": "e97ed40c64e33bb72507326436beb237317cc17884798b27657133e4d0d12ff9",
-   "bytes": 4677,
+   "sha256": "8a233f853a65347664d02b12518089601d552e3ee5dd11998010a5f35fa8e7d9",
+   "bytes": 4633,
    "era": "",
    "season": "summer",
    "sensitive_topics": [
@@ -22609,14 +22609,14 @@
    "visual_complexity": "simple",
    "metrics": {
     "regions": 12,
-    "smallest_region_sq_in": 0.313,
-    "median_region_sq_in": 0.443,
-    "largest_region_sq_in": 1.27,
+    "smallest_region_sq_in": 0.305,
+    "median_region_sq_in": 0.428,
+    "largest_region_sq_in": 1.24,
     "tiny_regions": 0,
-    "ink_coverage": 0.099,
+    "ink_coverage": 0.103,
     "subject_fill": 0.794,
-    "stroke_pt_median": 7.92,
-    "stroke_pt_p10": 7.2
+    "stroke_pt_median": 8.1,
+    "stroke_pt_p10": 7.92
    }
   },
   {
@@ -22648,29 +22648,29 @@
    "format": "svg",
    "svg_path": "assets/coloring/wildlife-nature/cc-koi-pond-t1.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/wildlife-nature/cc-koi-pond-t1.svg",
-   "sha256": "017b39578188f90e2697bd37740b12abd74c6bb6acf492bec385e3823d23e08a",
-   "bytes": 5496,
+   "sha256": "9c16c8ef698341c5ff476dea442d3d47cd1cfa1a8a4c6160582a46de5a3ab65c",
+   "bytes": 16992,
    "era": "",
    "season": "",
    "sensitive_topics": [
     "water"
    ],
    "conversation_prompt": "What is a peaceful sound you enjoy?",
-   "source": "cognicopia-coloring-engine",
+   "source": "traced-art",
    "review_status": "approved",
    "packs": [
     "water-garden",
     "pond-life"
    ],
-   "visual_complexity": "moderate",
+   "visual_complexity": "detailed",
    "metrics": {
-    "regions": 23,
-    "smallest_region_sq_in": 0.007,
-    "median_region_sq_in": 0.152,
-    "largest_region_sq_in": 1.98,
-    "tiny_regions": 2,
-    "ink_coverage": 0.058,
-    "subject_fill": 0.748,
+    "regions": 42,
+    "smallest_region_sq_in": 0.011,
+    "median_region_sq_in": 0.166,
+    "largest_region_sq_in": 2.4,
+    "tiny_regions": 3,
+    "ink_coverage": 0.1,
+    "subject_fill": 0.807,
     "stroke_pt_median": 3.06,
     "stroke_pt_p10": 2.88
    }
@@ -22704,31 +22704,31 @@
    "format": "svg",
    "svg_path": "assets/coloring/wildlife-nature/cc-koi-pond-t2.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/wildlife-nature/cc-koi-pond-t2.svg",
-   "sha256": "c2d18455c0354c918353b67848a6cf3ff5e306a6b6ce3dd7ba086508b6ed4f36",
-   "bytes": 3453,
+   "sha256": "b526d64c29b42078a4577eec98ce6da033472d5c7b5d5b17b006cb9c6cd6102f",
+   "bytes": 19212,
    "era": "",
    "season": "",
    "sensitive_topics": [
     "water"
    ],
    "conversation_prompt": "What is a peaceful sound you enjoy?",
-   "source": "cognicopia-coloring-engine",
+   "source": "traced-art",
    "review_status": "approved",
    "packs": [
     "water-garden",
     "pond-life"
    ],
-   "visual_complexity": "simple",
+   "visual_complexity": "moderate",
    "metrics": {
-    "regions": 12,
-    "smallest_region_sq_in": 0.128,
-    "median_region_sq_in": 0.659,
-    "largest_region_sq_in": 2.37,
+    "regions": 31,
+    "smallest_region_sq_in": 0.07,
+    "median_region_sq_in": 0.395,
+    "largest_region_sq_in": 2.35,
     "tiny_regions": 0,
-    "ink_coverage": 0.066,
-    "subject_fill": 0.681,
-    "stroke_pt_median": 5.04,
-    "stroke_pt_p10": 4.14
+    "ink_coverage": 0.13,
+    "subject_fill": 0.813,
+    "stroke_pt_median": 4.32,
+    "stroke_pt_p10": 3.6
    }
   },
   {
@@ -22761,15 +22761,15 @@
    "format": "svg",
    "svg_path": "assets/coloring/wildlife-nature/cc-koi-pond-t3.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/wildlife-nature/cc-koi-pond-t3.svg",
-   "sha256": "481646038d1108fa40a4481905ffd8b3ac2866e0b35e21744fb0ca716b38e1c0",
-   "bytes": 2552,
+   "sha256": "736fea7a37598b1d63d1fbeda21aab4e5b66faf24cc0fe06521b437b883a2f7d",
+   "bytes": 6885,
    "era": "",
    "season": "",
    "sensitive_topics": [
     "water"
    ],
    "conversation_prompt": "What is a peaceful sound you enjoy?",
-   "source": "cognicopia-coloring-engine",
+   "source": "traced-art",
    "review_status": "approved",
    "packs": [
     "water-garden",
@@ -22777,13 +22777,13 @@
    ],
    "visual_complexity": "simple",
    "metrics": {
-    "regions": 8,
-    "smallest_region_sq_in": 0.162,
-    "median_region_sq_in": 0.527,
-    "largest_region_sq_in": 2.19,
+    "regions": 11,
+    "smallest_region_sq_in": 0.616,
+    "median_region_sq_in": 0.96,
+    "largest_region_sq_in": 4.29,
     "tiny_regions": 0,
-    "ink_coverage": 0.079,
-    "subject_fill": 0.619,
+    "ink_coverage": 0.156,
+    "subject_fill": 0.827,
     "stroke_pt_median": 8.1,
     "stroke_pt_p10": 7.92
    }
@@ -23091,8 +23091,8 @@
    "format": "svg",
    "svg_path": "assets/coloring/wildlife-nature/cc-seashells-t3.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/wildlife-nature/cc-seashells-t3.svg",
-   "sha256": "477487b8b91b5f3ddb39dc2a72a33532144399590ad0423d73244873982a9ae0",
-   "bytes": 5448,
+   "sha256": "c03818f9e9ddf60db70fbbb81db587f4672001fa1f4a8c952c1172a307737797",
+   "bytes": 5362,
    "era": "",
    "season": "summer",
    "sensitive_topics": [
@@ -23107,14 +23107,14 @@
    "visual_complexity": "simple",
    "metrics": {
     "regions": 5,
-    "smallest_region_sq_in": 0.433,
-    "median_region_sq_in": 2.616,
-    "largest_region_sq_in": 4.84,
+    "smallest_region_sq_in": 0.423,
+    "median_region_sq_in": 2.591,
+    "largest_region_sq_in": 4.61,
     "tiny_regions": 0,
-    "ink_coverage": 0.141,
+    "ink_coverage": 0.147,
     "subject_fill": 0.807,
-    "stroke_pt_median": 7.92,
-    "stroke_pt_p10": 7.2
+    "stroke_pt_median": 8.1,
+    "stroke_pt_p10": 7.92
    }
   },
   {
@@ -23146,28 +23146,28 @@
    "format": "svg",
    "svg_path": "assets/coloring/wildlife-nature/cc-nautilus-shell-t1.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/wildlife-nature/cc-nautilus-shell-t1.svg",
-   "sha256": "b17576fea9b63dc89e436b1a06b38aa9250581c637da6c7af4e81a75bfb1290e",
-   "bytes": 7883,
+   "sha256": "74dafa5d8592c8b3b30c63c05972ce6e725a1ce3524287e95f911e97461641a4",
+   "bytes": 10536,
    "era": "",
    "season": "",
    "sensitive_topics": [
     "water"
    ],
    "conversation_prompt": "What treasures would you keep on a windowsill?",
-   "source": "cognicopia-coloring-engine",
+   "source": "traced-art",
    "review_status": "approved",
    "packs": [
     "seashore"
    ],
    "visual_complexity": "moderate",
    "metrics": {
-    "regions": 15,
-    "smallest_region_sq_in": 0.263,
-    "median_region_sq_in": 0.751,
-    "largest_region_sq_in": 2.07,
+    "regions": 25,
+    "smallest_region_sq_in": 0.03,
+    "median_region_sq_in": 0.379,
+    "largest_region_sq_in": 9.31,
     "tiny_regions": 0,
-    "ink_coverage": 0.039,
-    "subject_fill": 0.572,
+    "ink_coverage": 0.055,
+    "subject_fill": 0.834,
     "stroke_pt_median": 3.06,
     "stroke_pt_p10": 2.88
    }
@@ -23201,30 +23201,30 @@
    "format": "svg",
    "svg_path": "assets/coloring/wildlife-nature/cc-nautilus-shell-t2.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/wildlife-nature/cc-nautilus-shell-t2.svg",
-   "sha256": "d80d7846e8f34895685e1d00228009d27359f171d3868dc7121212740431919f",
-   "bytes": 7600,
+   "sha256": "75b7d01921fba8a03f6d4488782a43b3d5b3e3dd9631f6367f8f92b8fb09e785",
+   "bytes": 9307,
    "era": "",
    "season": "",
    "sensitive_topics": [
     "water"
    ],
    "conversation_prompt": "What treasures would you keep on a windowsill?",
-   "source": "cognicopia-coloring-engine",
+   "source": "traced-art",
    "review_status": "approved",
    "packs": [
     "seashore"
    ],
-   "visual_complexity": "simple",
+   "visual_complexity": "moderate",
    "metrics": {
-    "regions": 11,
-    "smallest_region_sq_in": 0.358,
-    "median_region_sq_in": 1.029,
-    "largest_region_sq_in": 2.64,
+    "regions": 19,
+    "smallest_region_sq_in": 0.214,
+    "median_region_sq_in": 0.841,
+    "largest_region_sq_in": 8.83,
     "tiny_regions": 0,
-    "ink_coverage": 0.051,
-    "subject_fill": 0.577,
-    "stroke_pt_median": 5.04,
-    "stroke_pt_p10": 4.14
+    "ink_coverage": 0.071,
+    "subject_fill": 0.838,
+    "stroke_pt_median": 4.14,
+    "stroke_pt_p10": 3.6
    }
   },
   {
@@ -23257,15 +23257,15 @@
    "format": "svg",
    "svg_path": "assets/coloring/wildlife-nature/cc-nautilus-shell-t3.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/wildlife-nature/cc-nautilus-shell-t3.svg",
-   "sha256": "5747f0eedd0d8c1e8fcd78fb31c4af5a360971dac850992e1168e57c39fc1dd0",
-   "bytes": 7310,
+   "sha256": "66a36f9f29bc5fc808bafaf22529da7331275e4ab26c0e73ce53a865bfaedca6",
+   "bytes": 3112,
    "era": "",
    "season": "",
    "sensitive_topics": [
     "water"
    ],
    "conversation_prompt": "What treasures would you keep on a windowsill?",
-   "source": "cognicopia-coloring-engine",
+   "source": "traced-art",
    "review_status": "approved",
    "packs": [
     "seashore"
@@ -23273,12 +23273,12 @@
    "visual_complexity": "simple",
    "metrics": {
     "regions": 7,
-    "smallest_region_sq_in": 0.589,
-    "median_region_sq_in": 1.499,
-    "largest_region_sq_in": 3.7,
+    "smallest_region_sq_in": 1.092,
+    "median_region_sq_in": 1.298,
+    "largest_region_sq_in": 8.58,
     "tiny_regions": 0,
-    "ink_coverage": 0.076,
-    "subject_fill": 0.589,
+    "ink_coverage": 0.097,
+    "subject_fill": 0.855,
     "stroke_pt_median": 8.1,
     "stroke_pt_p10": 7.92
    }
@@ -23312,8 +23312,8 @@
    "format": "svg",
    "svg_path": "assets/coloring/wildlife-nature/cc-garden-rabbit-t1.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/wildlife-nature/cc-garden-rabbit-t1.svg",
-   "sha256": "4f778cfe6cc3e4622361fd485b494bf5f0cec133de8b89b9fe65ee493af98e1c",
-   "bytes": 14661,
+   "sha256": "bb3d9314f39b45ac3eb15feb5cef63163c737299e634dbb29b1a37fa8ee60ac5",
+   "bytes": 14617,
    "era": "",
    "season": "spring",
    "sensitive_topics": [],
@@ -23367,8 +23367,8 @@
    "format": "svg",
    "svg_path": "assets/coloring/wildlife-nature/cc-garden-rabbit-t2.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/wildlife-nature/cc-garden-rabbit-t2.svg",
-   "sha256": "7c7cef7d3e4cc972979ce0f442a5df5a942681d5dbccee7280f65d26a403d160",
-   "bytes": 12820,
+   "sha256": "fcbaf92c44700068cb1e944aa5c26bc64b07d184417b3b609be11a9bc1fb7a14",
+   "bytes": 12776,
    "era": "",
    "season": "spring",
    "sensitive_topics": [],
@@ -23423,8 +23423,8 @@
    "format": "svg",
    "svg_path": "assets/coloring/wildlife-nature/cc-garden-rabbit-t3.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/wildlife-nature/cc-garden-rabbit-t3.svg",
-   "sha256": "d785dd5988efdd6ba07a8f0b001adcecafdff887da24390f953191f7ee78956d",
-   "bytes": 5271,
+   "sha256": "c3f1f9434051ee91e4f5eef21a74d42dfdc96b757f064ae1724857c5208079a9",
+   "bytes": 5226,
    "era": "",
    "season": "spring",
    "sensitive_topics": [],
@@ -23441,12 +23441,12 @@
     "regions": 5,
     "smallest_region_sq_in": 0.133,
     "median_region_sq_in": 0.877,
-    "largest_region_sq_in": 12.47,
+    "largest_region_sq_in": 12.41,
     "tiny_regions": 0,
-    "ink_coverage": 0.105,
+    "ink_coverage": 0.106,
     "subject_fill": 0.825,
     "stroke_pt_median": 8.1,
-    "stroke_pt_p10": 7.2
+    "stroke_pt_p10": 7.92
    }
   },
   {
@@ -23478,8 +23478,8 @@
    "format": "svg",
    "svg_path": "assets/coloring/wildlife-nature/cc-sleeping-cat-t1.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/wildlife-nature/cc-sleeping-cat-t1.svg",
-   "sha256": "c7c4296dbe9227d8f1941e83b5b6ada1dce3e8a3d940f4f34cd48a06da1169d8",
-   "bytes": 6667,
+   "sha256": "869de31a3234030259c1a7fa7b69a396d8a4b92076a6b2004090833be7b27b0c",
+   "bytes": 6623,
    "era": "",
    "season": "",
    "sensitive_topics": [],
@@ -23532,8 +23532,8 @@
    "format": "svg",
    "svg_path": "assets/coloring/wildlife-nature/cc-sleeping-cat-t2.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/wildlife-nature/cc-sleeping-cat-t2.svg",
-   "sha256": "9db965f733f5e9322883f07e70717ba7119bf55504ae77afd790bafea67b5dc0",
-   "bytes": 7001,
+   "sha256": "e615f9873ae24acfdfa8114b7d6e29664245df8b17c0762eabc7d7587209bd37",
+   "bytes": 6957,
    "era": "",
    "season": "",
    "sensitive_topics": [],
@@ -23587,8 +23587,8 @@
    "format": "svg",
    "svg_path": "assets/coloring/wildlife-nature/cc-sleeping-cat-t3.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/wildlife-nature/cc-sleeping-cat-t3.svg",
-   "sha256": "3418206250424f9f1c686771d94759d50c9f87e2a4d61b53c8645a4320982d34",
-   "bytes": 3093,
+   "sha256": "364a83bca2e6efd3c28041f03f0ec1d01bcad79495fc55d9d789f76882f7b7c4",
+   "bytes": 3003,
    "era": "",
    "season": "",
    "sensitive_topics": [],
@@ -23603,13 +23603,13 @@
    "metrics": {
     "regions": 3,
     "smallest_region_sq_in": 1.058,
-    "median_region_sq_in": 6.98,
-    "largest_region_sq_in": 7.19,
+    "median_region_sq_in": 6.915,
+    "largest_region_sq_in": 7.06,
     "tiny_regions": 0,
-    "ink_coverage": 0.086,
+    "ink_coverage": 0.091,
     "subject_fill": 0.579,
-    "stroke_pt_median": 7.92,
-    "stroke_pt_p10": 7.2
+    "stroke_pt_median": 8.1,
+    "stroke_pt_p10": 7.92
    }
   },
   {
@@ -23641,13 +23641,13 @@
    "format": "svg",
    "svg_path": "assets/coloring/wildlife-nature/cc-faithful-dog-t1.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/wildlife-nature/cc-faithful-dog-t1.svg",
-   "sha256": "6728cd6b2ca3073049b1856caab1715d826d21d1a5d31a645ce84597503b1efb",
-   "bytes": 2868,
+   "sha256": "f7c3d66f4e3318cb6b2584152d8e701b8767ea9226b10353a8732ac9132db0f3",
+   "bytes": 14352,
    "era": "",
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What makes a dog a good companion?",
-   "source": "cognicopia-coloring-engine",
+   "source": "traced-art",
    "review_status": "approved",
    "packs": [
     "front-porch",
@@ -23655,16 +23655,16 @@
     "farmyard",
     "conversation-starters"
    ],
-   "visual_complexity": "moderate",
+   "visual_complexity": "simple",
    "metrics": {
-    "regions": 13,
-    "smallest_region_sq_in": 0.031,
-    "median_region_sq_in": 0.27,
-    "largest_region_sq_in": 5.94,
-    "tiny_regions": 0,
-    "ink_coverage": 0.041,
-    "subject_fill": 0.638,
-    "stroke_pt_median": 2.88,
+    "regions": 7,
+    "smallest_region_sq_in": 0.013,
+    "median_region_sq_in": 0.178,
+    "largest_region_sq_in": 17.96,
+    "tiny_regions": 2,
+    "ink_coverage": 0.06,
+    "subject_fill": 0.814,
+    "stroke_pt_median": 3.06,
     "stroke_pt_p10": 2.88
    }
   },
@@ -23697,13 +23697,13 @@
    "format": "svg",
    "svg_path": "assets/coloring/wildlife-nature/cc-faithful-dog-t2.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/wildlife-nature/cc-faithful-dog-t2.svg",
-   "sha256": "2c9e224d4cda798cbe533b9ac68bee4488c7f0ecf203f10c7eea653d2684003e",
-   "bytes": 2701,
+   "sha256": "8367d80ffd3de07a201cec629c27e44544ff104a1f7be545dfb7e85266d0b0ef",
+   "bytes": 12205,
    "era": "",
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What makes a dog a good companion?",
-   "source": "cognicopia-coloring-engine",
+   "source": "traced-art",
    "review_status": "approved",
    "packs": [
     "front-porch",
@@ -23713,15 +23713,15 @@
    ],
    "visual_complexity": "simple",
    "metrics": {
-    "regions": 11,
-    "smallest_region_sq_in": 0.022,
-    "median_region_sq_in": 0.235,
-    "largest_region_sq_in": 5.54,
+    "regions": 7,
+    "smallest_region_sq_in": 0.012,
+    "median_region_sq_in": 0.164,
+    "largest_region_sq_in": 17.03,
     "tiny_regions": 3,
-    "ink_coverage": 0.053,
-    "subject_fill": 0.642,
+    "ink_coverage": 0.074,
+    "subject_fill": 0.82,
     "stroke_pt_median": 4.32,
-    "stroke_pt_p10": 4.14
+    "stroke_pt_p10": 3.6
    }
   },
   {
@@ -23754,13 +23754,13 @@
    "format": "svg",
    "svg_path": "assets/coloring/wildlife-nature/cc-faithful-dog-t3.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/wildlife-nature/cc-faithful-dog-t3.svg",
-   "sha256": "3fe813b6c6a9b5ac52585f6e126a6232461f55c700d15af9ba1e0e9b4f126966",
-   "bytes": 2222,
+   "sha256": "0e051e1c16d8fcc32c7ec98ac679d61bd23727cd847c749cba56d6684f0c9e77",
+   "bytes": 8759,
    "era": "",
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "What makes a dog a good companion?",
-   "source": "cognicopia-coloring-engine",
+   "source": "traced-art",
    "review_status": "approved",
    "packs": [
     "front-porch",
@@ -23770,14 +23770,14 @@
    ],
    "visual_complexity": "simple",
    "metrics": {
-    "regions": 4,
-    "smallest_region_sq_in": 0.109,
-    "median_region_sq_in": 0.354,
-    "largest_region_sq_in": 7.37,
+    "regions": 3,
+    "smallest_region_sq_in": 0.115,
+    "median_region_sq_in": 1.221,
+    "largest_region_sq_in": 16.35,
     "tiny_regions": 1,
-    "ink_coverage": 0.069,
-    "subject_fill": 0.67,
-    "stroke_pt_median": 7.92,
+    "ink_coverage": 0.101,
+    "subject_fill": 0.834,
+    "stroke_pt_median": 8.1,
     "stroke_pt_p10": 7.92
    }
   },
@@ -23916,8 +23916,8 @@
    "format": "svg",
    "svg_path": "assets/coloring/wildlife-nature/cc-proud-rooster-t3.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/wildlife-nature/cc-proud-rooster-t3.svg",
-   "sha256": "3e6494a48152a9bf08f10589300da1012bd20764a72d8cb0b62f7800c614c159",
-   "bytes": 6517,
+   "sha256": "6b82118f7a489d1b02934d3e020efdbefb9e81b69a795443c77ae4de1372fe35",
+   "bytes": 6473,
    "era": "",
    "season": "",
    "sensitive_topics": [],
@@ -23931,14 +23931,14 @@
    "visual_complexity": "simple",
    "metrics": {
     "regions": 10,
-    "smallest_region_sq_in": 0.49,
-    "median_region_sq_in": 0.743,
-    "largest_region_sq_in": 2.39,
+    "smallest_region_sq_in": 0.471,
+    "median_region_sq_in": 0.742,
+    "largest_region_sq_in": 2.37,
     "tiny_regions": 0,
-    "ink_coverage": 0.125,
+    "ink_coverage": 0.129,
     "subject_fill": 0.863,
-    "stroke_pt_median": 7.92,
-    "stroke_pt_p10": 7.2
+    "stroke_pt_median": 8.1,
+    "stroke_pt_p10": 7.92
    }
   },
   {
@@ -24079,8 +24079,8 @@
    "format": "svg",
    "svg_path": "assets/coloring/wildlife-nature/cc-pine-cones-t3.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/wildlife-nature/cc-pine-cones-t3.svg",
-   "sha256": "be9e85060ec3a36491f9c87f0e586170315910e6fb0443637fb57a074bba3a54",
-   "bytes": 7094,
+   "sha256": "c108edc9c514539d6130560c0004c24581e7da7296c65a12eb0ed0d5bb2e9f85",
+   "bytes": 7050,
    "era": "",
    "season": "winter",
    "sensitive_topics": [],
@@ -24095,13 +24095,13 @@
    "metrics": {
     "regions": 8,
     "smallest_region_sq_in": 0.041,
-    "median_region_sq_in": 1.739,
-    "largest_region_sq_in": 4.01,
+    "median_region_sq_in": 1.716,
+    "largest_region_sq_in": 3.98,
     "tiny_regions": 1,
-    "ink_coverage": 0.156,
+    "ink_coverage": 0.16,
     "subject_fill": 0.84,
     "stroke_pt_median": 8.1,
-    "stroke_pt_p10": 7.2
+    "stroke_pt_p10": 7.92
    }
   },
   {
@@ -24133,15 +24133,15 @@
    "format": "svg",
    "svg_path": "assets/coloring/wildlife-nature/cc-mountain-lake-t1.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/wildlife-nature/cc-mountain-lake-t1.svg",
-   "sha256": "3ea7b7df90df7a2bca899a619dc082c1cd82e35087a73dd15c721dda6d42095f",
-   "bytes": 1478,
+   "sha256": "d1e1942a4ad5742d5f751628ec6a8adf38676932ca2d4a1c7394ece5b473e2c0",
+   "bytes": 19974,
    "era": "",
    "season": "",
    "sensitive_topics": [
     "water"
    ],
    "conversation_prompt": "Where is a place you would like to visit again?",
-   "source": "cognicopia-coloring-engine",
+   "source": "traced-art",
    "review_status": "approved",
    "packs": [
     "landmarks",
@@ -24150,14 +24150,14 @@
    ],
    "visual_complexity": "moderate",
    "metrics": {
-    "regions": 18,
-    "smallest_region_sq_in": 0.022,
-    "median_region_sq_in": 0.497,
-    "largest_region_sq_in": 11.68,
-    "tiny_regions": 0,
-    "ink_coverage": 0.067,
-    "subject_fill": 0.876,
-    "stroke_pt_median": 2.88,
+    "regions": 26,
+    "smallest_region_sq_in": 0.005,
+    "median_region_sq_in": 0.39,
+    "largest_region_sq_in": 4.08,
+    "tiny_regions": 4,
+    "ink_coverage": 0.072,
+    "subject_fill": 0.772,
+    "stroke_pt_median": 3.06,
     "stroke_pt_p10": 2.88
    }
   },
@@ -24190,15 +24190,15 @@
    "format": "svg",
    "svg_path": "assets/coloring/wildlife-nature/cc-mountain-lake-t2.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/wildlife-nature/cc-mountain-lake-t2.svg",
-   "sha256": "ed4d3d9180f0f1b940a3c9cdd9d56b9b9b78fd421780bdf816fbc52da86790d3",
-   "bytes": 1307,
+   "sha256": "66db140d7152c1567a7c86c05b7c8c8755dac8c506fafb6380740f06f620e1f2",
+   "bytes": 17622,
    "era": "",
    "season": "",
    "sensitive_topics": [
     "water"
    ],
    "conversation_prompt": "Where is a place you would like to visit again?",
-   "source": "cognicopia-coloring-engine",
+   "source": "traced-art",
    "review_status": "approved",
    "packs": [
     "landmarks",
@@ -24207,15 +24207,15 @@
    ],
    "visual_complexity": "moderate",
    "metrics": {
-    "regions": 13,
-    "smallest_region_sq_in": 0.031,
-    "median_region_sq_in": 0.453,
-    "largest_region_sq_in": 11,
-    "tiny_regions": 2,
-    "ink_coverage": 0.093,
-    "subject_fill": 0.882,
+    "regions": 18,
+    "smallest_region_sq_in": 0.212,
+    "median_region_sq_in": 0.584,
+    "largest_region_sq_in": 3.85,
+    "tiny_regions": 0,
+    "ink_coverage": 0.09,
+    "subject_fill": 0.777,
     "stroke_pt_median": 4.32,
-    "stroke_pt_p10": 4.14
+    "stroke_pt_p10": 3.6
    }
   },
   {
@@ -24248,15 +24248,15 @@
    "format": "svg",
    "svg_path": "assets/coloring/wildlife-nature/cc-mountain-lake-t3.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/wildlife-nature/cc-mountain-lake-t3.svg",
-   "sha256": "ba2f8121e5a196fa0c01f66ed43bb270be7e2d42f1fa28404878209540cfc207",
-   "bytes": 747,
+   "sha256": "b532af2826eaee52aaddf75b53d033fcd167d9aa41a1f52f82082991573da5dd",
+   "bytes": 6405,
    "era": "",
    "season": "",
    "sensitive_topics": [
     "water"
    ],
    "conversation_prompt": "Where is a place you would like to visit again?",
-   "source": "cognicopia-coloring-engine",
+   "source": "traced-art",
    "review_status": "approved",
    "packs": [
     "landmarks",
@@ -24265,15 +24265,15 @@
    ],
    "visual_complexity": "simple",
    "metrics": {
-    "regions": 8,
-    "smallest_region_sq_in": 0.036,
-    "median_region_sq_in": 2.763,
-    "largest_region_sq_in": 10.69,
-    "tiny_regions": 1,
-    "ink_coverage": 0.127,
-    "subject_fill": 0.896,
-    "stroke_pt_median": 7.92,
-    "stroke_pt_p10": 7.2
+    "regions": 9,
+    "smallest_region_sq_in": 0.484,
+    "median_region_sq_in": 0.73,
+    "largest_region_sq_in": 4.87,
+    "tiny_regions": 0,
+    "ink_coverage": 0.118,
+    "subject_fill": 0.781,
+    "stroke_pt_median": 8.1,
+    "stroke_pt_p10": 7.92
    }
   },
   {

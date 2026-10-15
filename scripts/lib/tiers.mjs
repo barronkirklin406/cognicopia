@@ -298,7 +298,8 @@ export function composeItems(byTier, accents){
   const masks = new Map();
   const put = (kind, d, mask) => { const k = kind + "|" + d; if (!masks.has(k)) masks.set(k, { kind, d, mask: 0 }); masks.get(k).mask |= mask; };
   for (const t of [1, 2, 3]){
-    for (const [kind, d] of byTier[t] || []) put(kind, d, 1 << (t - 1));
+    // Tier 3 is the heaviest-line tier: its interior strokes are drawn at the outline weight too, so no line on it prints thinner than 7.9 pt
+    for (const [kind, d] of byTier[t] || []) put(t === 3 && kind === "d" ? "m" : kind, d, 1 << (t - 1));
     for (const d of accents[t] || []) put("k", d, 1 << (t - 1));
   }
   const grouped = new Map();
@@ -422,7 +423,7 @@ export function deriveTiers(trace, o){
   for (const s of strokes) if (shown(s, 1, cuts[1])) first.push([kindOf(s), s.e.d]);
   byTier[1] = first;
   const measureTier = (t, pairs) => {
-    const list = pairs.map(([kind, d]) => [kind, 7, d]);
+    const list = pairs.map(([kind, d]) => [t === 3 && kind === "d" ? "m" : kind, 7, d]);   // measured at the weight Tier 3 prints at
     for (const b of trace.blobs) if (b.d && accentLv(b) <= lvl(t)) list.push(["k", 7, b.d]);
     const its = group(list);
     return its.length ? measureArt(its, t, o.meta) : null;
