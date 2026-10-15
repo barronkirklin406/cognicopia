@@ -53,7 +53,7 @@ const broken = [];
 
 /* the pages and views measured */
 const VIEWS = [
-  ["index.html", "index.html"], ["profile.html", "profile.html"],
+  ["index.html", "index.html"], ["profile.html", "profile.html"], ["tablet activities", "tablet.html"],
   ["builder home", "builder.html#/"], ["builder coloring", "builder.html#/coloring"], ["builder roster", "builder.html#/roster"],
   ["builder facility", "builder.html#/facility"], ["builder planner", "builder.html#/planner"], ["builder journal", "builder.html#/journal"],
   ["builder academy", "builder.html#/academy"], ["builder reminiscence", "builder.html#/reminiscence"], ["builder digest", "builder.html#/heirloom"],
@@ -86,6 +86,10 @@ const STATES = [
   ["index: a saved resident to open", "index.html", [seedResidents, reload, click("#loadProfile")]],
   ["builder: packet drawer with a page", "builder.html#/coloring", [pickPicture, click("#ccAdd"), click("#openPacket")]],
   ["builder: Instant Soothe open", "builder.html#/", [click(".panic-button")]],
+  ["tablet: word search", "tablet.html", [click('[data-act="wordsearch"]')]],
+  ["tablet: crossword with the keyboard", "tablet.html", [click('[data-act="crossword"]')]],
+  ["tablet: trace the path", "tablet.html", [click('[data-act="trace"]')]],
+  ["tablet: finger paint", "tablet.html", [click('[data-act="paint"]')]],
   ["builder: coloring packs", "builder.html#/coloring", [click("#ccTabPacks")]],
   ["builder: coloring new pages", "builder.html#/coloring", [click("#ccTabNew")]],
   ["builder: roster with a resident chosen", "builder.html#/roster", [seedResidents, reload, click(".rs-res >> nth=0"), click(".rs-handoff summary")]],

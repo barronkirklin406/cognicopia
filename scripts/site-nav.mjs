@@ -46,6 +46,7 @@ export const CTA = {
 /* ---------- 1. What the navigation holds ---------- */
 const svg = (d, size, cls, sw) => `<svg${cls ? ` class="${cls}"` : ""} width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${sw || 2}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${d}</svg>`;
 const ICON = {
+  tablet: '<rect x="4" y="2" width="16" height="20" rx="2"/><line x1="12" y1="18" x2="12" y2="18.01"/>',
   menu: '<line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>',
   home: '<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>',
   builder: '<path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6"/><line x1="9" y1="13" x2="16" y2="13"/><line x1="9" y1="17" x2="14" y2="17"/>',
@@ -97,6 +98,7 @@ const B = "builder.html";
 export const HUBS = [
   { id: "today",     label: "Today",            icon: "sun",      items: [
       { key: "home",         label: "Personalized Packet Tool", href: "index.html",        icon: "home" },
+      { key: "tablet",       label: "Tablet Activities",        href: "tablet.html",       icon: "tablet" },
       { key: "profile",      label: "Resident Profiles",        href: "profile.html",      icon: "profile" } ] },
   { id: "studio",    label: "Studio",           icon: "palette",  items: [
       { key: "coloring",     label: "Cognicopia Coloring",      href: B + "#/coloring",     route: "coloring",     icon: "palette" },
@@ -207,6 +209,7 @@ const RESEARCH = MODULES.find(m => m.slug === "research");
 export const PAGES = [
   { file: "index.html",              current: "home", ownTopbar: true },   // the packet tool draws its own top bar (license box and buy buttons)
   { file: "profile.html",            current: "profile" },
+  { file: "tablet.html",             current: "tablet" },
   { file: "cognitive-journals.html", current: null, hub: "studio" },     // the journal's own page: Studio is open, no link is "here" (its link opens the tool)
   { file: "life-planners.html",      current: null, hub: "studio" },
   { file: "contact.html",            current: "contact" },
