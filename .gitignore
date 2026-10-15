@@ -24,3 +24,6 @@ license-private*
 *.ckpt
 *.gguf
 __pycache__/
+
+# this computer's own permission choices for the coding assistant (never shared)
+.claude/settings.local.json
