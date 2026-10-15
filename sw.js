@@ -12,9 +12,9 @@
    used. Change VERSION only to clear old copies; updates to the pages
    themselves arrive on their own.
    ===================================================================== */
-const VERSION = "cognicopia-v35";
+const VERSION = "cognicopia-v36";
 const CORE = [
-  "./", "index.html", "builder.html", "profile.html", "pricing.html", "activate.html", "manifest.webmanifest",
+  "./", "index.html", "builder.html", "profile.html", "tablet.html", "pricing.html", "activate.html", "manifest.webmanifest",
   // the shared design system and its two typefaces (Atkinson Hyperlegible for the interface, Fraunces for headings)
   "css/styles.css", "fonts/AtkinsonHyperlegible-Regular.woff2", "fonts/AtkinsonHyperlegible-Bold.woff2", "fonts/Fraunces-latin.woff2",
   "assets/cognicopia-logo.jpg", "assets/icon-192.png", "assets/icon-512.png", "assets/icon-maskable-512.png",
@@ -26,7 +26,9 @@ const CORE = [
   // licensing: the license key, the promo code and the license badge work offline. A key is checked on the computer, so once it is
   // entered the tools stay unlocked with no connection, for as long as its paid-through date plus the grace days (src/config/license.js).
   "src/config/license.js", "assets/services/licenseManager.js", "assets/services/trialLedger.js", "assets/services/localDb.js", "assets/services/contentCatalog.js", "assets/services/contentMatcher.js", "data/content-catalog.json",
-  "assets/pcg/pcg-data.bundle.js", "src/pcg/prng.js", "src/pcg/matrix.js", "src/pcg/grammar.js", "src/pcg/puzzles.js", "src/pcg/packet.js"
+  "assets/pcg/pcg-data.bundle.js", "src/pcg/prng.js", "src/pcg/matrix.js", "src/pcg/grammar.js", "src/pcg/puzzles.js", "src/pcg/packet.js",
+  // Tablet Activities (tablet.html): the touch puzzle makers and the screen
+  "js/tabletEngine.js", "js/tablet.js"
 ];
 const PAGE_WAIT_MS = 4000;
 

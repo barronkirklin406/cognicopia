@@ -107,6 +107,15 @@ Pictures from an image generator or an illustrator become crisp vector coloring 
 - **Honest limits:** derived Tiers 2 and 3 are an automatic baseline. Good for subjects made of areas; weaker for skeletal drawings (bicycle spokes) and dense repeating patterns. Use a per-tier drawing (`<design>.t3.png`), sidecar `rules`, or reject the picture. About 20 to 35 KB of bundle per replaced design; the manifest generator stops at 6 MB of art.
 - **Traps:** raw masters belong only in the unpublished `assets/coloring/_inbox/` (an underscore folder is not built by Pages) and are not committed by default; `assets/coloring/_review/` is git-ignored. Changing `assets/cognicopia-coloring/*.js`, the prompts or any approved art means running `npm run coloring` again, because `npm run build` compares the bundle and catalog to disk.
 
+## Tablet Activities (a main menu of touch activities)
+
+`tablet.html` (guide `docs/tablet-activities.md`): thirteen activities a finger can do, reached from a **Tablet Activities** button at the top of the front page, the Today menu and `cognicopia.org/tablet.html`. Word search (drag or tap first and last letter), trace the path (a dot follows the finger; slipping off, turning back or lifting sends it to the start), crossword and Spell It with an on-screen A to Z keyboard, finish the saying, color a picture (tap a shape), finger paint, bubbles, sort, put in order, match the clue, odd one out, sights and sounds. Level (early, middle, late) and topic (42) are chosen on the page and kept in the browser; nothing about a person is stored.
+
+- **How it is built:** `js/tabletEngine.js` makes every puzzle from the PCG content and puzzle makers (so it is as sound as a printed packet); `js/tablet.js` is the screen. A session counts as one free packet, once per visit, like Tablet Mode in the packet tool. Cached offline by `sw.js` (v36).
+- **Checks:** `scripts/check-tablet.mjs` (in `npm test`: 129 level and topic combinations, the trace rule for every shape, the screen's words through the dignity filter, the offline wiring) and `scripts/check-tablet-ui.mjs` (in `npm run build`: a real browser drives all thirteen with mouse and touch input at three screen sizes). `scripts/audit-ux.mjs` measures the page and four activity screens.
+- **A fix found on the way:** "Well done!" is banned by the dignity filter ("praise that sounds like a teacher to a pupil"); the packet tool's own Tablet Mode used it. It now says "Nicely done!" there too.
+- **Traps:** the crossword and word-search sizes are chosen from the screen so a control is never under 52 px; if a layout is changed, `check-tablet-ui.mjs` says which activity now scrolls or is too small. The shared stylesheet forces dark text on paper pages with `!important`, so white-on-green controls are listed in one override block at the top of `tablet.html`'s styles.
+
 ## The local art agent (pictures made on the owner's computer)
 
 `scripts/local_art_agent.mjs` (`npm run art:doctor`, `art:setup`, `art:make`, `art:library`; guide `docs/local-art-agent.md`) makes coloring masters from words on the owner's own computer, never on the site and never through an outside service.
