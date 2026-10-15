@@ -335,7 +335,7 @@
 
   /* ===================== CROSSWORD ===================== */
   function crossword(root, o, api) {
-    var a = api.area(), side = a.w >= a.h * 1.15, panelW = side ? 440 : 0, fitW = a.w - panelW - 24, fitH = side ? a.h : a.h - 480;
+    var a = api.area(), side = a.w >= a.h * 1.15, panelW = side ? 440 : 0, fitW = a.w - panelW - 24, fitH = side ? a.h : a.h - 540;
     o.fit = { size: Math.max(5, Math.floor(Math.min(fitW, fitH) / 55)) };
     var cw = T.crossword(o);
     if (!cw) { root.innerHTML = '<p class="tb-big">No puzzle this time. Choose New one.</p>'; return; }
@@ -356,7 +356,7 @@
     var clue = h("div", "tb-clue", ""), nav = h("div", "tb-row"), kb;
     nav.innerHTML = '<button type="button" class="tb-btn" data-cwn="-1">◀ Clue</button><button type="button" class="tb-btn" id="tbCwHint"><span aria-hidden="true">💡</span> A letter</button><button type="button" class="tb-btn" data-cwn="1">Clue ▶</button>';
     panel.style.flex = "0 1 " + (side ? panelW : 560) + "px"; panel.style.maxWidth = "100%";
-    function size() { var b2 = area(), s2 = b2.w >= b2.h * 1.15, fw = b2.w - (s2 ? 440 : 0) - 24, fh = s2 ? b2.h : b2.h - 480; grid.style.setProperty("--cell", Math.max(52, Math.min(84, Math.floor(Math.min(fw / cw.cols, fh / cw.rows)) - 3)) + "px"); }
+    function size() { var b2 = area(), s2 = b2.w >= b2.h * 1.15, fw = b2.w - (s2 ? 440 : 0) - 24, fh = s2 ? b2.h : b2.h - 540; grid.style.setProperty("--cell", Math.max(52, Math.min(84, Math.floor(Math.min(fw / cw.cols, fh / cw.rows)) - 3)) + "px"); }
     function refresh() {
       var e = cur2(), inWord = {}; if (e) entryCells(e).forEach(function (p) { inWord[key(p[0], p[1])] = 1; });
       var doneCell = {}; cw.entries.forEach(function (en) { if (done[en.num + en.dir]) entryCells(en).forEach(function (p) { doneCell[key(p[0], p[1])] = 1; }); });

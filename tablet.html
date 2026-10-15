@@ -157,8 +157,18 @@ html.cg-paper:not(.cg-night-shift) :is(.tb-btn.go,.tb-back,.tb-btn.go *,.tb-back
 @media (orientation:portrait){.tb-words{display:flex;flex-wrap:wrap;justify-content:center;margin:6px 0 10px}.tb-words li{flex:1 1 auto;padding:6px 12px}.tb-side{flex:0 0 auto;width:100%;max-width:none}}
 @media (prefers-reduced-motion:reduce){.tb-trace .dot,.tb-cell.is-hint,.tb-opt.is-shake,.tb-slot.is-shake,.tb-burst,.tb-bub.is-pop{animation:none;transition:none}}
 html.tb-open{overflow:hidden}
-html.cg-night-shift .tb,html.cg-night-shift .tb-gate>div{--cg-cream:#17120c}
-html.cg-night-shift .tbp-card,html.cg-night-shift .tbp-setup{background:#2b2015;color:#ffedcc}
+/* Night Shift: warm, dark surfaces with light text (the shared stylesheet makes the text light, so the surfaces under it must be dark) */
+html.cg-night-shift .tb{background:#17120c;color:#ffedcc}
+html.cg-night-shift .tb-bar{background:#211910;border-color:#684a26}
+html.cg-night-shift :is(.tbp-card,.tbp-setup,.tbp-seg label,.tbp-sel,.tb-btn,.tb-key,.tb-opt,.tb-cell,.tb-cwc,.tb-slot,.tb-words li,.tb-clue,.tb-card,.tb-talk div,.tb-placed li,.tb-gate>div,.tbp-note){background:#2b2015 !important;border-color:#d6a64b;color:#ffedcc !important}
+html.cg-night-shift :is(.tbp-card:hover,.tb-cell.is-sel,.tb-cell.is-start,.tb-cwc.is-word,.tb-slot.is-next,.tb-opt.is-picked,.tb-key:active,.tb-opt:active){background:#684a26 !important}
+html.cg-night-shift :is(.tb-btn.go,.tb-back,.tbp-seg input:checked+label,.tb-cwc.is-cur,.tb-placed b){background:#8a641f !important;color:#fff1cf !important}
+html.cg-night-shift :is(.tb-cell[class*=" f"],.tb-cwc.is-done,.tb-words li.is-found,.tb-opt.is-right,.tb-opt.is-matched,.tb-slot.is-given,.tb-placed li.is-on){background:#4a3a1a !important}
+html.cg-night-shift :is(.tb-bar h2,.tb-prog,.tb-msg,.tbp h1,.tbp-menu h2,.tb-card,.tb-big,.tb-h,.tbp-note a){color:#ffd477 !important}
+html.cg-night-shift .tb-cheer{background:rgba(23,18,12,.96)}
+html.cg-night-shift .tb-cheer p{color:#ffd477 !important}
+html.cg-night-shift .tbp-card svg{stroke:#ffd477}
+html.cg-night-shift .tb-sky{background:linear-gradient(#211910,#2b2015)}
 </style>
 <style id="cg-nav-css">
 /* Site navigation: the six hubs, breadcrumbs and the top bar's buy links.

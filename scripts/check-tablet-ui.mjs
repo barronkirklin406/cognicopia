@@ -75,6 +75,22 @@ const small = (p, min = 52) => p.evaluate(m => {
   return out;
 }, min);
 
+/* text against its background, for everything visible in the activity screen (the colors a person sees, not the ones in the style sheet) */
+const lowContrast = (p, min = 4.5) => p.evaluate(m => {
+  const parse = c => { const x = /rgba?\(([^)]+)\)/.exec(c); if (!x) return null; const v = x[1].split(",").map(Number); return { r: v[0], g: v[1], b: v[2], a: v.length > 3 ? v[3] : 1 }; };
+  const lum = c => { const f = n => { n /= 255; return n <= .03928 ? n / 12.92 : Math.pow((n + .055) / 1.055, 2.4); }; return .2126 * f(c.r) + .7152 * f(c.g) + .0722 * f(c.b); };
+  const back = e => { for (let n = e; n; n = n.parentElement) { const c = parse(getComputedStyle(n).backgroundColor); if (c && c.a > .5) return c; if (getComputedStyle(n).backgroundImage !== "none") return null; } return { r: 255, g: 255, b: 255, a: 1 }; };
+  const bad = [];
+  document.querySelectorAll("#tb *").forEach(e => {
+    if (!Array.from(e.childNodes).some(n => n.nodeType === 3 && n.textContent.trim())) return;
+    const r = e.getBoundingClientRect(), st = getComputedStyle(e); if (!r.width || !r.height || st.visibility === "hidden" || st.display === "none") return;
+    const fg = parse(e instanceof SVGElement ? st.fill : st.color), bg = back(e); if (!fg || !bg) return;      // a drawing's text is colored by fill
+    const a = lum(fg), b = lum(bg), ratio = (Math.max(a, b) + .05) / (Math.min(a, b) + .05);
+    if (ratio < m) bad.push((e.className && e.className.baseVal === undefined ? e.className : e.tagName) + " " + ratio.toFixed(2) + " " + (e.textContent || "").trim().slice(0, 18));
+  });
+  return bad;
+}, min);
+
 try {
   /* ---------- the menu, and finding it ---------- */
   {
@@ -165,7 +181,8 @@ try {
     ok(a.n > 40 && a.round === 0 && a.idx === 0, `the first path (${a.kind}) is on the screen with the dot at the start`);
     ok(/Path 1 of 4/.test(await text(p, "#tbProg")), "the count says Path 1 of 4");
     /* touching away from the dot does not start anything */
-    const far = [a.pts[a.n - 1][0], a.pts[a.n - 1][1]]; await p.mouse.move(far[0], far[1]); await p.mouse.down(); await p.mouse.move(far[0] + 10, far[1] + 10, { steps: 3 }); await p.mouse.up();
+    const far = a.pts.reduce((best, q) => Math.hypot(q[0] - a.pts[0][0], q[1] - a.pts[0][1]) > Math.hypot(best[0] - a.pts[0][0], best[1] - a.pts[0][1]) ? q : best, a.pts[0]);
+    await p.mouse.move(far[0], far[1]); await p.mouse.down(); await p.mouse.move(far[0] + 10, far[1] + 10, { steps: 3 }); await p.mouse.up();
     ok((await pathPts()).idx === 0 && /Touch the green dot/.test(await text(p, ".tb-trace + .tb-msg")), "touching away from the dot does nothing, and says where to start");
     /* follow it part of the way, then lift: the dot goes back */
     const half = Math.floor(a.n / 2);
@@ -455,6 +472,21 @@ try {
       ok(sm.length === 0, `${name}, ${id}: every control is 52 px or more${sm.length ? " (" + sm.slice(0, 3).join(", ") + ")" : ""}`);
       ok(fit.x <= 1, `${name}, ${id}: nothing runs off the side`);
       if (noScroll) ok(fit.y <= 1, `${name}, ${id}: it fits the screen with no scrolling (${fit.y} px over)`);
+      await toMenu(p);
+    }
+    await ctx.close();
+  }
+
+  /* ---------- text can be read, by day and in Night Shift ---------- */
+  for (const night of [false, true]) {
+    const { ctx, p } = await fresh(LAND);
+    if (night) await p.evaluate(() => document.documentElement.classList.add("cg-night-shift"));
+    for (const id of ALL) {
+      await p.click(`[data-act="${id}"]`); await stageReady(p);
+      if (id === "color") { await p.waitForSelector(".tb-pics", { timeout: 8000 }).catch(() => {}); await click(p, ".tb-pic"); await p.waitForSelector(".tb-art svg path"); }
+      await sleep(250);
+      const lo = await lowContrast(p);
+      ok(lo.length === 0, `${night ? "Night Shift" : "day"}, ${id}: all text reaches 4.5:1 (${lo.slice(0, 3).join("; ")})`);
       await toMenu(p);
     }
     await ctx.close();
