@@ -5,7 +5,7 @@ The local art agent makes new coloring-page pictures from a few words, **on your
 ## What never happens
 
 - **No description, prompt, picture or resident detail leaves your computer.** The picture programs run on your computer. The Python parts block every internet connection except connections to your computer itself (a "loopback" connection: one program on your computer talking to another). The Node part makes no internet request at all. `npm test` proves all three (`scripts/check-local-art.mjs`).
-- **No cloud picture service is used.** Pollinations, Replicate, the online FLUX services and Canva are out, as you decided in October 2026. The Packet Builder's "Describe a page" tab is unchanged: it still picks from the library's own pictures, with no internet needed.
+- **The local art agent itself uses no cloud picture service.** Pollinations, Replicate and the online FLUX services are out, as you decided in October 2026. The one exception you chose on October 15, 2026: for remaking the library's pictures, you asked for Canva's picture maker, run from your own Canva account. Those pictures are downloaded to this computer and put through the `folder` engine below; the site never contacts Canva, and each picture's sidecar file records that Canva made it. The Packet Builder's "Describe a page" tab is unchanged: it still picks from the library's own pictures, with no internet needed.
 - **One step uses the internet, once, and only if you choose it:** `npm run art:setup` installs the Python packages and downloads one picture model. It sends nothing about Cognicopia, a resident or a picture: it asks for the model's public files and downloads them. After that, every step runs with the internet blocked.
 
 ## What it makes
