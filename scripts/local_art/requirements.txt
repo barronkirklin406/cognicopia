@@ -1,0 +1,10 @@
+# The local art agent's picture-model route (scripts/local_art/generate.py), installed by npm run art:setup
+# into its own Python environment (~/.cognicopia/art-venv), never into the website. Python 3.10 or newer.
+# The ComfyUI route (scripts/local_art/comfyui.py) needs none of these: only Python itself.
+# Ranges, not exact pins, so one file works on Windows, Mac and Linux; npm run art:doctor reports the versions installed.
+torch>=2.2,<3
+diffusers>=0.30,<1
+transformers>=4.44,<6
+accelerate>=0.33,<2
+safetensors>=0.4,<1
+huggingface_hub>=0.24,<3

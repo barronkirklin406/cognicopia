@@ -10,7 +10,7 @@ Cognicopia (cognicopia.org) is an offline-first memory-care activity site: print
 | `platform/` | A separate Next.js, Supabase and Stripe service for facilities (sign-in, billing, shared planning) | Needs the internet by design. **Zero PHI:** it never stores a resident's name or health details. Not covered by the root `npm test`; see `platform/README.md`. |
 | `license-service/` | A tiny serverless service, with no dependencies, that turns a Stripe payment into a signed license key and emails it to the buyer (`docs/license-service.md`) | Needs the internet by design, and holds no state. It sees only a buyer's email and business name from Stripe, **never a resident**, and keeps no key: the key goes in one email. Proved by `scripts/check-license-service.mjs` (in `npm test`). Its settings live in the host's environment only. |
 
-Never add a cloud dependency to the static site. Never put resident data in `platform/` or `license-service/`.
+Never add a cloud dependency to the static site. Never put resident data in `platform/` or `license-service/`. A tool may load a data file that ships with the site from the same folder (the Packet Builder's `data/content-catalog.json`, kept for offline use by `sw.js`); that is not an outside request. The **local art agent** (`scripts/local_art_agent.mjs`, `docs/local-art-agent.md`) is an owner's tool, not part of the site: it makes coloring masters on the owner's computer, its Python parts refuse every connection but loopback, and only `npm run art:setup` downloads anything (packages and one model, once). No cloud picture service, ever (owner's decision, October 2026).
 
 ## Working with the owner
 
@@ -64,6 +64,9 @@ npm run nav       # regenerate the six-hub navigation on every page from HUBS in
 npm run services  # rebuild assets/services/*.js from src/services/*.ts
 node scripts/landing-example.mjs  # rewrite the crossword on the front page's laptop from what the engine makes (--check proves it is current; run it after any change to src/pcg)
 npm run coloring:svgs  # trace master PNGs to closed-outline SVG and js/coloring-data.js (needs: pip install pillow vtracer; skips with a notice where they are missing)
+npm run art:doctor     # local art agent: is this computer ready to make coloring masters (add -- --selftest)
+npm run art:make -- --only sunflower   # make a master on this computer (ComfyUI or a local model); it goes to assets/coloring/_inbox/ for review
+npm run art:library    # measure the 150 designs against the print standards and list what to upgrade
 node scripts/license-keygen.mjs     # owner only: make the license-signing key pair (private half stays outside the repo)
 node scripts/issue-license.mjs      # make or verify a signed license key (invoices, enterprise); see docs/stripe-setup-guide.md
 node scripts/check-license-service.mjs  # prove the payment-to-email service without a network (also in npm test)

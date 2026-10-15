@@ -30,15 +30,13 @@ CognicopiaColoringAgent.clean(anyPictureBlobOrImage);   // the black-and-white f
 CognicopiaColoringAgent.registerProvider("name", fn, true);   // add a source (true: try it first)
 ```
 
-## Not included: an online picture maker
+## Not included: an online picture maker (decided)
 
-The request for this agent also asked for an online source (Pollinations, Flux or Replicate). It is not built, on purpose:
+The request for this agent also asked for an online source (Pollinations, Flux or Replicate). The owner decided in October 2026 to keep every outside picture service out of the site, to keep the promise that no resident data leaves the device (`CLAUDE.md`: the tools make no network request of their own, and no cloud dependency is added to the static site). A typed description can hold a resident's name, so it never leaves the browser.
 
-- `CLAUDE.md` says the three tools make no network request of their own, never add a cloud dependency to the static site, and that no resident data leaves the device. A box where staff type words that go to an outside service breaks all three, and a typed description can hold a resident's name.
-- The public pages say what is true today ("No resident data leaves the device"). An online source would make that untrue for this screen and would need new wording on the privacy, security and pricing pages, and the claims check.
-- It is the owner's decision, not a coding one. If the answer is yes, the agent is ready for it: write one function that returns a Blob, register it first with `registerProvider`, and the clean-up, the checks, the time limit and the fall back to the library already apply. What the owner would also need to decide and have written: the consent wording shown before the first use, a rule that the words sent never include a resident's name, which service and which plan (rights to use the pictures commercially), that the source is off until a facility turns it on, the build's network rule (the build check scans only the tool pages, so a page-level exception must be written down, not hidden in a script), and the privacy copy.
+New pictures are made instead on the owner's own computer by the **local art agent** (`docs/local-art-agent.md`): it turns a description into a print master with a picture model that runs on that computer, checks it with the library's own checks, and hands it to the usual review in `docs/line-art-pipeline.md`. Approved art reaches this tab through the library, so the tab keeps working offline.
 
-Until then a picture made elsewhere (a Canva or Midjourney picture from the owner's own account) belongs in the existing pipeline in `docs/line-art-pipeline.md`, which turns it into a vector page, checks it, and records who approved it.
+The provider seam (`registerProvider`) stays for tests and for a future local source; it is not a way to add an online one without a new owner decision and new privacy wording.
 
 ## The checks
 
@@ -47,6 +45,6 @@ Until then a picture made elsewhere (a Canva or Midjourney picture from the owne
 
 ## Limits worth knowing
 
-- Without an online source the page is always one of the library's 150 pictures at the chosen tier: a description chooses among them, it does not draw something new. "Nothing in the library fits" is said in plain words, with a few words to try.
+- The page is always one of the library's pictures at the chosen tier: a description chooses among them, it does not draw something new. "Nothing in the library fits" is said in plain words, with a few words to try.
 - The thin-line note is an estimate (a line's tip and corners measure short); it warns and never refuses.
 - A picture made elsewhere has whatever line weight it had. The black-and-white filter makes it pure, not thick.
