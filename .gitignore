@@ -27,3 +27,7 @@ __pycache__/
 
 # this computer's own permission choices for the coding assistant (never shared)
 .claude/settings.local.json
+
+# raw coloring masters (rights not settled): never committed
+assets/coloring/_inbox/*.png
+assets/coloring/_inbox/*.json
