@@ -17,8 +17,10 @@ function chunk(type, data){
 }
 
 /* Decode to { w, h, gray: Uint8Array (0 black .. 255 white, alpha blended on
-   white), dpi, colorFraction: the share of pixels with visible color } */
-export function decodePNG(buf){
+   white), dpi, colorFraction: the share of pixels with visible color }.
+   o.weights: the brightness weights for red, green and blue (default the usual
+   0.299, 0.587, 0.114; the local art agent uses 0.34, 0.5, 0.16). */
+export function decodePNG(buf, o){
   if (!Buffer.isBuffer(buf) || buf.length < 8 || !buf.subarray(0, 8).equals(SIG)) throw new Error("not a PNG file");
   let pos = 8, w = 0, h = 0, depth = 0, ctype = 0, interlace = 0, palette = null, trns = null, dpi = 0; const idat = [];
   while (pos + 8 <= buf.length){
@@ -44,13 +46,14 @@ export function decodePNG(buf){
     return ctype === 3 ? v : Math.round(v * 255 / ((1 << depth) - 1));
   };
   let colored = 0;
+  const [wr, wg, wb] = o && o.weights ? o.weights : [.299, .587, .114];
   const toGray = (row, x) => {
     let r, g, b, a = 255;
     if (ctype === 3){ const i = sample(row, x, 0); r = palette[i * 3]; g = palette[i * 3 + 1]; b = palette[i * 3 + 2]; if (trns && i < trns.length) a = trns[i]; }
     else if (ctype === 0 || ctype === 4){ r = g = b = sample(row, x, 0); if (ctype === 4) a = sample(row, x, 1); }
     else { r = sample(row, x, 0); g = sample(row, x, 1); b = sample(row, x, 2); if (ctype === 6) a = sample(row, x, 3); }
     if (a > 128 && Math.max(r, g, b) - Math.min(r, g, b) > 48) colored++;
-    const lum = .299 * r + .587 * g + .114 * b;
+    const lum = wr * r + wg * g + wb * b;
     return Math.round((lum * a + 255 * (255 - a)) / 255);   // transparent areas read as white paper
   };
   const unfilter = (data, off, pw, ph, emit) => {

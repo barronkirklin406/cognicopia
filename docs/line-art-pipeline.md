@@ -93,6 +93,10 @@ A jobs file from step 1 (`--jobs masters-01.jsonl`) fills in the sidecar details
 
 Every tier is measured through the engine (areas to color, smallest area, areas under the minimum) and must meet the tier's rule from [cognicopia-coloring-standards.md](cognicopia-coloring-standards.md). A tier that does not is marked in the checks and in the review sheet.
 
+## Making masters on your own computer: the local art agent
+
+Masters no longer need an outside generator. `npm run art:make -- --only <design>` makes them on the owner's own computer from the owner's description of each design, with ComfyUI or a downloaded picture model, and nothing leaves the computer. It cleans each try to a 1-bit 1800 x 2400 master at 300 dpi with 3 pt lines, scores it with this ingest's own checks in a dry run, keeps the best and writes it with its sidecar into `assets/coloring/_inbox/`. From there the routine above is unchanged. `npm run art:library` shows which designs to remake first. The guide is `docs/local-art-agent.md`.
+
 ## A second, lighter route: trace a master straight to SVG
 
 `scripts/build_coloring_svgs.py` is for when a picture should stay exactly as it was drawn, as a closed-outline SVG that a page can show and print, without working out simpler tiers or a review record. It reads the same masters (`assets/raw_coloring_pngs/` or `assets/coloring/_inbox/`; neither is published, and the first is ignored by git), makes each one pure black on white, removes specks, crops to the drawing and centers it on a 3:4 page (a 600 x 800 viewBox) with a margin, and traces it with VTracer in binary mode with spline fitting and a speckle filter, so the curves are smooth rather than pixel steps. It keeps only closed paths, writes pure black fills, and writes two things: `assets/svgs/<name>.svg`, and one generated file, `js/coloring-data.js`, holding the same SVG text so a page can draw it with no network request (a `fetch` fails on `file://` and on a computer that is offline).
@@ -120,7 +124,7 @@ A page draws a picture with `CognicopiaSvgColoring.mount(element, "name", { tier
 **Masters to live, in one list.**
 
 1. `npm run coloring:masters -- --out masters-01` writes a prompt for each subject.
-2. Generate the pictures in the tool you license, and save each into `assets/coloring/_inbox/` (or, for the SVG route, `assets/raw_coloring_pngs/`).
+2. Make the pictures on your own computer with `npm run art:make` (`docs/local-art-agent.md`), which puts each master in `assets/coloring/_inbox/`; or make them in a program you license and save each there yourself (for the SVG route, `assets/raw_coloring_pngs/`).
 3. Run the route you chose: `npm run coloring:ingest`, then `npm run coloring:review`, then approve; and/or `python3 scripts/build_coloring_svgs.py`.
 4. After approving art, `npm run coloring`, then `npm run nav` (the Studio hub page shows the picture count), then `npm run build`. Commit what changed (never a master you may not redistribute), push, and open a pull request to `main`.
 
@@ -144,6 +148,7 @@ A page draws a picture with `CognicopiaSvgColoring.mount(element, "name", { tier
 | Command | Does |
 |---|---|
 | `npm run coloring:masters -- --out masters-01` | A prompt batch: one master per library design |
+| `npm run art:make -- --only <design>` | Make a master on this computer and put it in the inbox (`docs/local-art-agent.md`) |
 | `npm run coloring:ingest` | Trace and check every picture in the inbox; hold it for review |
 | `npm run coloring:ingest -- --list` | What is waiting and what is approved |
 | `npm run coloring:review` | Review sheets and `index.html` in `assets/coloring/_review/` |
