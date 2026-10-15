@@ -395,7 +395,7 @@ try {
     await openAct(p, "color");
     await p.waitForSelector(".tb-pics .tb-pic", { timeout: 8000 });
     ok(await p.evaluate(() => document.querySelectorAll(".tb-pic").length) === 6, "six pictures to choose from");
-    await click(p, ".tb-pic"); await p.waitForSelector(".tb-art svg path");
+    await click(p, ".tb-pic"); await p.waitForSelector(".tb-art svg path", { state: "attached" });
     const nShapes = (await dbg(p)).shapes; ok(nShapes >= 3, `the picture has ${nShapes} shapes to color`);
     await click(p, '.tb-sw[data-color="#4a9d5b"]');
     ok(await p.evaluate(() => document.querySelector('.tb-sw[data-color="#4a9d5b"]').getAttribute("aria-pressed") === "true" && document.querySelectorAll('.tb-sw[aria-pressed="true"]').length === 1), "the chosen color is marked");
@@ -467,7 +467,7 @@ try {
     for (const id of ALL) {
       await p.click(`[data-act="${id}"]`); await stageReady(p); if (id === "color") await p.waitForSelector(".tb-pics", { timeout: 8000 }).catch(() => {});
       await p.waitForTimeout(250);
-      if (id === "color") { await click(p, ".tb-pic"); await p.waitForSelector(".tb-art svg path"); await sleep(150); }
+      if (id === "color") { await click(p, ".tb-pic"); await p.waitForSelector(".tb-art svg path", { state: "attached" }); await sleep(150); }
       const sm = await small(p), fit = await p.evaluate(() => { const s = document.getElementById("tbStage"); return { x: s.scrollWidth - s.clientWidth, y: s.scrollHeight - s.clientHeight }; });
       ok(sm.length === 0, `${name}, ${id}: every control is 52 px or more${sm.length ? " (" + sm.slice(0, 3).join(", ") + ")" : ""}`);
       ok(fit.x <= 1, `${name}, ${id}: nothing runs off the side`);
@@ -483,7 +483,7 @@ try {
     if (night) await p.evaluate(() => document.documentElement.classList.add("cg-night-shift"));
     for (const id of ALL) {
       await p.click(`[data-act="${id}"]`); await stageReady(p);
-      if (id === "color") { await p.waitForSelector(".tb-pics", { timeout: 8000 }).catch(() => {}); await click(p, ".tb-pic"); await p.waitForSelector(".tb-art svg path"); }
+      if (id === "color") { await p.waitForSelector(".tb-pics", { timeout: 8000 }).catch(() => {}); await click(p, ".tb-pic"); await p.waitForSelector(".tb-art svg path", { state: "attached" }); }
       await sleep(250);
       const lo = await lowContrast(p);
       ok(lo.length === 0, `${night ? "Night Shift" : "day"}, ${id}: all text reaches 4.5:1 (${lo.slice(0, 3).join("; ")})`);
