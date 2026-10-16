@@ -36,7 +36,7 @@ Every activity has a **Menu** button (and Escape) to leave, **New one** for anot
 
 ## The packet tool's own Tablet Mode
 
-A tablet session built from one resident's own life (their hometown, work and favorite things) is still in the Personalized Packet Tool: choose **Launch Tablet Interactive Mode**. This page is the general menu; that one is personal.
+A tablet session built from one resident's own life (their hometown, work and favorite things) is still in the Personalized Packet Tool: choose **Launch Tablet Interactive Mode**. It opens on its own main menu (Word Search, Finish the Thought, Let’s Talk) so the resident chooses what to do, and the Menu button at the top brings it back at any time. This page is the general menu; that one is personal.
 
 ## Files
 
