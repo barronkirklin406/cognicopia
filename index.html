@@ -1446,6 +1446,14 @@ html.tb-open,html.tb-open body{overflow:hidden !important;overscroll-behavior:no
 .tb-tabs{display:flex;gap:10px;flex:none}
 .tb-tab{min-height:64px;padding:8px 22px;border:3px solid var(--tb-line);border-radius:16px;background:#fff;font-size:clamp(19px,2.1vw,24px) !important;font-weight:700;cursor:pointer}
 .tb-tab[aria-selected="true"]{background:var(--tb-em-dk);border-color:var(--tb-em-dk);color:#fff}
+.tb-menu{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;gap:clamp(16px,3vh,32px);align-items:center}
+.tb-menu-h{margin:0;text-align:center;font-size:clamp(28px,4vw,44px);line-height:1.15;font-weight:800}
+.tb-menu-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(14px,2.4vw,28px);width:100%;max-width:1100px}
+.tb-tile{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;min-height:clamp(180px,34vh,300px);padding:18px 14px;border:4px solid var(--tb-line);border-radius:24px;background:#fff;cursor:pointer;text-align:center}
+.tb-tile:active{transform:scale(.98)}
+.tb-tile svg{width:clamp(64px,11vh,104px);height:auto;flex:none}
+.tb-tile b{font-size:clamp(24px,2.8vw,34px);line-height:1.15}
+.tb-tile span{font-size:clamp(18px,2vw,22px);color:var(--tb-soft)}
 .tb-lock{position:relative;flex:none;min-width:64px;min-height:64px;padding:6px 12px;border:2px solid #9ca3af;border-radius:14px;background:#f5f5f4;color:#57534e !important;font-size:15px !important;line-height:1.1;cursor:pointer;overflow:hidden}
 .tb-lock small{display:block;font-size:11px;color:#78716c}
 .tb-lock-fill{position:absolute;left:0;bottom:0;height:6px;width:0;background:var(--tb-em-dk)}
@@ -1559,6 +1567,9 @@ html.tb-open,html.tb-open body{overflow:hidden !important;overscroll-behavior:no
   .tb-tabs{order:3;width:100%}
   .tb-tab{flex:1;padding:8px 10px}
   .tb-care-actions,.tb-stats{grid-template-columns:1fr}
+  .tb-menu-grid{grid-template-columns:1fr}
+  .tb-tile{min-height:120px;flex-direction:row;gap:16px;text-align:left;justify-content:flex-start;padding:12px 18px}
+  .tb-tile svg{width:64px}
 }
 @media (max-width:600px){
   .tb-stage{padding:10px}
@@ -12237,6 +12248,7 @@ function generateAilmentPDF(ailmentType, pick) {
         '<p class="tb-hello"' + (S.src.name ? ' title="' + esc(S.src.name) + '"' : "") + ">" + (S.src.name ? 'Hello, <b class="tb-name">' + esc(S.src.name) + "</b>!" : "Welcome!") + "</p>" +
         '<button type="button" class="cg-night-shift-toggle tb-night-toggle" aria-label="Toggle warm-amber Night Shift theme">🌙 Night Shift: Off</button>' +
         '<div class="tb-tabs" role="tablist" aria-label="Activities">' +
+          '<button type="button" class="tb-tab" role="tab" data-tab="menu" id="tbTabMenu" aria-controls="tbPanelMenu">Menu</button>' +
           '<button type="button" class="tb-tab" role="tab" data-tab="ws" id="tbTabWs" aria-controls="tbPanelWs">Word Search</button>' +
           '<button type="button" class="tb-tab" role="tab" data-tab="trivia" id="tbTabTrivia" aria-controls="tbPanelTrivia">Finish the Thought</button>' +
           '<button type="button" class="tb-tab" role="tab" data-tab="cards" id="tbTabCards" aria-controls="tbPanelCards">Let’s Talk</button>' +
@@ -12244,7 +12256,15 @@ function generateAilmentPDF(ailmentType, pick) {
         '<button type="button" class="tb-lock" id="tbLock" aria-label="Caregiver menu. Press and hold for 2 seconds.">Exit<small id="tbLockHint">hold 2 s</small><span class="tb-lock-fill" aria-hidden="true"></span></button>' +
       "</div>" +
       '<div class="tb-stage" id="tbStage">' +
-        '<section class="tb-panel" id="tbPanelWs" role="tabpanel" aria-labelledby="tbTabWs">' +
+        '<section class="tb-panel" id="tbPanelMenu" role="tabpanel" aria-labelledby="tbTabMenu">' +
+          '<div class="tb-menu"><h2 class="tb-menu-h">What would you like to do?</h2>' +
+          '<div class="tb-menu-grid">' +
+            '<button type="button" class="tb-tile" data-pick="ws"><svg viewBox="0 0 100 100" fill="none" stroke="#111" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="16" y="16" width="68" height="68" rx="6"/><path d="M16 39 h68 M16 62 h68 M39 16 v68 M62 16 v68"/></svg><b>Word Search</b><span>Find the hidden words</span></button>' +
+            '<button type="button" class="tb-tile" data-pick="trivia"><svg viewBox="0 0 100 100" fill="none" stroke="#111" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 22 h64 a6 6 0 0 1 6 6 v36 a6 6 0 0 1 -6 6 H46 l-18 14 v-14 h-10 a6 6 0 0 1 -6 -6 V28 a6 6 0 0 1 6 -6 z"/><path d="M34 46 h32"/></svg><b>Finish the Thought</b><span>Pick the answer you like</span></button>' +
+            '<button type="button" class="tb-tile" data-pick="cards"><svg viewBox="0 0 100 100" fill="none" stroke="#111" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="36" cy="36" r="12"/><circle cx="66" cy="36" r="12"/><path d="M16 80 c2-18 38-18 40 0 M46 80 c2-18 38-18 40 0"/></svg><b>Let’s Talk</b><span>Conversation cards to swipe</span></button>' +
+          "</div></div>" +
+        "</section>" +
+        '<section class="tb-panel" id="tbPanelWs" role="tabpanel" aria-labelledby="tbTabWs" hidden>' +
           '<div class="tb-ws"><div class="tb-grid" id="tbGrid" role="grid"></div>' +
             '<div class="tb-side"><div class="tb-side-head"><h2>Find these words</h2><p class="tb-count" id="tbWsCount"></p></div><ul class="tb-words" id="tbWords"></ul>' +
             '<div class="tb-row">' + sayBtn("ws") + '<button type="button" class="tb-btn" id="tbHintWs">💡 Hint</button></div>' +
@@ -12302,7 +12322,7 @@ function generateAilmentPDF(ailmentType, pick) {
 
   function showTab(tab){
     S.tab = tab; stopSpeaking();
-    [["ws", "tbPanelWs", "tbTabWs"], ["trivia", "tbPanelTrivia", "tbTabTrivia"], ["cards", "tbPanelCards", "tbTabCards"]].forEach(function(t){
+    [["menu", "tbPanelMenu", "tbTabMenu"], ["ws", "tbPanelWs", "tbTabWs"], ["trivia", "tbPanelTrivia", "tbTabTrivia"], ["cards", "tbPanelCards", "tbTabCards"]].forEach(function(t){
       el(t[1]).hidden = t[0] !== tab;
       el(t[2]).setAttribute("aria-selected", String(t[0] === tab));
       el(t[2]).tabIndex = t[0] === tab ? 0 : -1;
@@ -12408,7 +12428,7 @@ function generateAilmentPDF(ailmentType, pick) {
   function closeCare(){
     el("tbCare").hidden = true;
     S.root.querySelector(".tb-top").inert = false; S.stage.inert = false;
-    var t = el({ ws:"tbTabWs", trivia:"tbTabTrivia", cards:"tbTabCards" }[S.tab]); if (t) t.focus();
+    var t = el({ menu:"tbTabMenu", ws:"tbTabWs", trivia:"tbTabTrivia", cards:"tbTabCards" }[S.tab]); if (t) t.focus();
   }
   function restart(){
     if (S.tab === "ws"){ S.ws.found = {}; S.ws.pending = null; renderWordSearch(); }
@@ -12443,9 +12463,10 @@ function generateAilmentPDF(ailmentType, pick) {
     root.addEventListener("pointerdown", audioUnlock, { passive:true });
     root.querySelector(".tb-tabs").addEventListener("click", function(e){ var t = e.target.closest("[data-tab]"); if (t) showTab(t.getAttribute("data-tab")); });
     root.querySelector(".tb-tabs").addEventListener("keydown", function(e){
-      var order = ["ws", "trivia", "cards"], i = order.indexOf(S.tab);
-      if (e.key === "ArrowRight" || e.key === "ArrowLeft"){ e.preventDefault(); var n = order[(i + (e.key === "ArrowRight" ? 1 : 2)) % 3]; showTab(n); el({ ws:"tbTabWs", trivia:"tbTabTrivia", cards:"tbTabCards" }[n]).focus(); }
+      var order = ["menu", "ws", "trivia", "cards"], i = order.indexOf(S.tab);
+      if (e.key === "ArrowRight" || e.key === "ArrowLeft"){ e.preventDefault(); var n = order[(i + (e.key === "ArrowRight" ? 1 : 3)) % 4]; showTab(n); el({ menu:"tbTabMenu", ws:"tbTabWs", trivia:"tbTabTrivia", cards:"tbTabCards" }[n]).focus(); }
     });
+    el("tbPanelMenu").addEventListener("click", function(e){ var t = e.target.closest("[data-pick]"); if (t){ showTab(t.getAttribute("data-pick")); var tab = el({ ws:"tbTabWs", trivia:"tbTabTrivia", cards:"tbTabCards" }[t.getAttribute("data-pick")]); if (tab) tab.focus(); } });
     wireGrid(); wireLock();
     el("tbHintWs").addEventListener("click", hint);
     el("tbOpts").addEventListener("click", function(e){ var o = e.target.closest("[data-o]"); if (o) pickOption(+o.getAttribute("data-o")); });
@@ -12528,7 +12549,7 @@ function generateAilmentPDF(ailmentType, pick) {
     var cardsPart = part("cards") || window.qpEngine.generateReminiscenceCards(src, rng);
     var triviaPart = part("trivia") || window.qpEngine.generatePersonalizedTrivia(src, rng);
     S = {
-      src: src, tab: "ws", started: Date.now(),
+      src: src, tab: "menu", started: Date.now(),
       residentId: id,
       mood: { sessionId:Date.now().toString(36) + "-" + Math.random().toString(36).slice(2), started:new Date().toISOString(), before:null, after:null },
       totals: { words:0, thoughts:0, seen:{} },          // whole-session counts; restarts never erase them
@@ -12546,8 +12567,8 @@ function generateAilmentPDF(ailmentType, pick) {
     S.stage = el("tbStage");
     wire();
     newWordSearch();
-    showTab("ws");
-    el("tbTabWs").focus();
+    showTab("menu");
+    el("tbTabMenu").focus();
     try { var fs = S.root.requestFullscreen || S.root.webkitRequestFullscreen; if (fs) { var r = fs.call(S.root); if (r && r.catch) r.catch(function(){}); } } catch (e){}
     requestWakeLock();
     setTimeout(layoutGrid, 60);
