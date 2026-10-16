@@ -199,7 +199,7 @@
     side.innerHTML = '<h3 class="tb-h">Find these words</h3><ul class="tb-words">' + ws.words.map(function (w) { return '<li data-w="' + w + '"><span class="tb-tick" aria-hidden="true"></span><span>' + w + "</span></li>"; }).join("") +
       '</ul><div class="tb-row"><button type="button" class="tb-btn" id="tbHint"><span aria-hidden="true">💡</span> Hint</button></div><p class="tb-msg" id="tbWsMsg">Slide your finger along a word, or tap its first letter and then its last letter.</p>';
     split.appendChild(grid); split.appendChild(side); root.appendChild(split);
-    function size() { var b = area(), p = b.w < b.h * 1.1, w = p ? b.w : b.w - 330, hh = p ? b.h - 330 : b.h; grid.style.setProperty("--cell", Math.max(52, Math.min(92, Math.floor(Math.min(w, hh) / n) - 3)) + "px"); }
+    function size() { var b = area(), p = b.w < b.h * 1.1, w = p ? b.w : b.w - 330, hh = p ? b.h - 352 : b.h; grid.style.setProperty("--cell", Math.max(52, Math.min(92, Math.floor(Math.min(w, hh) / n) - 3)) + "px"); }
     size(); api.onResize(size);
     var cellAt = function (rc) { return grid.querySelector('[data-r="' + rc[0] + '"][data-c="' + rc[1] + '"]'); };
     function fromPoint(x, y) { var e = document.elementFromPoint(x, y); e = e && e.closest ? e.closest(".tb-cell") : null; return e && grid.contains(e) ? [+e.getAttribute("data-r"), +e.getAttribute("data-c")] : null; }
@@ -645,7 +645,11 @@
     root.innerHTML = '<p class="tb-big">Getting the pictures ready…</p>';
     loadColoring(function (ok) {
       if (!ok || !cur || cur.act.id !== "color") { if (!ok && cur) root.innerHTML = '<p class="tb-big">The pictures could not be loaded. Choose Menu, then try again.</p>'; return; }
-      var C = window.CognicopiaColoring, tier = T.STAGES[o.stage].color.tier, ids = T.designChoices(o, C.designs());
+      var C = window.CognicopiaColoring, tier = T.STAGES[o.stage].color.tier;
+      /* a tap colors one path, so only offer pictures drawn as at least three (a remade picture drawn as one path would color all at once) */
+      var shapesOf = function (id) { return (C.toSVG(C.render(id, tier), { standalone: true, widthIn: 2, label: "" }).match(/<path/g) || []).length; };
+      var offered = C.designs().filter(function (d) { try { return shapesOf(d.id) >= 3; } catch (e) { return false; } });
+      var ids = T.designChoices(o, offered.length >= 6 ? offered : C.designs());
       function choose() {
         root.innerHTML = '<p class="tb-h">Choose a picture to color</p>'; api.progress("");
         var grid = h("div", "tb-pics");

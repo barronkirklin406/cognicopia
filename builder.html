@@ -1132,10 +1132,14 @@ textarea:focus{border-color:var(--accent)}
 .lp-pv-title{margin:0;min-width:0;text-align:center}
 .lp-pv-title b{display:block;line-height:1.25}
 .lp-pv-title span{font-size:13.5px;color:var(--muted)}
-.lj-sensory-trigger{margin:0 0 10px;padding:10px 12px;border:1px solid #9b8250;border-left:4px solid #d8b36b;border-radius:10px;background:#1b201b;color:var(--text);font-size:13.5px;line-height:1.4}
+/* This box keeps its own dark fill in every theme, so its text colors are its own too. They must not follow --text or --muted:
+   the day (paper) theme turns those dark, which put dark text on this dark fill. */
+.lj-sensory-trigger{margin:0 0 10px;padding:10px 12px;border:1px solid #9b8250;border-left:4px solid #d8b36b;border-radius:10px;background:#1b201b;color:#f5f1e6;font-size:13.5px;line-height:1.4}
 .lj-sensory-trigger b{display:block;margin-bottom:3px;color:#f1d89e}
-.lj-sensory-trigger p{margin:2px 0}
-.lj-sensory-trigger small{display:block;margin-top:5px;color:var(--muted)}
+.lj-sensory-trigger p{margin:2px 0;color:#f5f1e6}
+.lj-sensory-trigger strong{color:#ffffff}
+.lj-sensory-trigger small{display:block;margin-top:5px;color:#d9e2db}
+@media (forced-colors:active){.lj-sensory-trigger{background:Canvas;color:CanvasText;border-color:CanvasText}.lj-sensory-trigger :is(b,p,strong,small){color:CanvasText}}
 .lj-sensory-staff{flex:none;margin:.04in 0 0;padding:.04in .08in;border-top:1px solid #9b8250;color:#384139;font-size:8pt;line-height:1.2}
 .lj-sensory-staff span{display:block;margin-top:2pt;font-size:7pt;color:#626b64}
 .lp-spread{display:flex;justify-content:center;padding:12px;border-radius:12px;background:#0a120f;border:1px solid var(--line)}

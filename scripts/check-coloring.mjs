@@ -154,8 +154,8 @@ try {
       for (let i = 1; i < stack.length; i++) ok(stack[i].y >= stack[i - 1].y + stack[i - 1].h - 1e-9, "blocks do not overlap " + tag);
     }
   /* a hand-drawn design: remade pictures are traced, and a traced picture sets its own Tier 3 weight (never under the 3 pt floor) */
-  const pg = L.sheet({ design:"red-barn", tier:3, weight:"auto", header:true, title:true, caption:true, largePrint:true, legend:"high-contrast", pageNumber:1, pageCount:1, name:"Ruth", facility:"Oak Ridge" });
-  const lay = L.layout({ design:"red-barn", tier:3, header:true, title:true, caption:true, largePrint:true, legend:"high-contrast" });
+  const pg = L.sheet({ design:"quilt-ohio-star", tier:3, weight:"auto", header:true, title:true, caption:true, largePrint:true, legend:"high-contrast", pageNumber:1, pageCount:1, name:"Ruth", facility:"Oak Ridge" });
+  const lay = L.layout({ design:"quilt-ohio-star", tier:3, header:true, title:true, caption:true, largePrint:true, legend:"high-contrast" });
   const sw = +/<g [^>]*stroke-width="([0-9.]+)"/.exec(pg.html)[1], ppu = lay.blocks.art.w * 96 / 600;
   ok(Math.abs(sw * ppu - 10.5) < .02, `Tier 3 page lines print at 10.5 px (got ${(sw * ppu).toFixed(3)})`);
   ok(/Prepared especially for <b>Ruth<\/b>/.test(pg.html) && /Oak Ridge/.test(pg.html) && /data-legend="high-contrast"/.test(pg.html) && pg.perf < 150, "sheet carries the name, facility and color guide");

@@ -4,12 +4,12 @@
  "schema_version": "1.1.0",
  "engine_version": "1.1.0",
  "generated_by": "scripts/generate_coloring_manifest.js",
- "content_hash": "80d7e46e362e998fcd2a1c508ad7a740a936c86e750f1d6586151a63ac1beac4",
+ "content_hash": "9352cbb398694f5a5225d35a57d8421257e049baeed04708e9141eac9213b422",
  "counts": {
   "designs": 150,
   "assets": 450,
   "packs": 63,
-  "traced": 52,
+  "traced": 55,
   "by_category": {
    "classic-vehicles": 15,
    "botanical-garden": 23,
@@ -11862,15 +11862,15 @@
    "format": "svg",
    "svg_path": "assets/coloring/nostalgic-heritage/cc-red-barn-t1.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/nostalgic-heritage/cc-red-barn-t1.svg",
-   "sha256": "1f2882c01a7b018fa0cb714f780c5ddb7edf1ede17e38d2ffd1f028342958193",
-   "bytes": 2768,
+   "sha256": "36497a29d6c8553d2fae62e6a91a94dd7c9e94e516411c886fd048d59343d6b4",
+   "bytes": 13022,
    "era": "",
    "season": "",
    "sensitive_topics": [
     "home"
    ],
    "conversation_prompt": "What animals or crops would a barn like this hold?",
-   "source": "cognicopia-coloring-engine",
+   "source": "traced-art",
    "review_status": "approved",
    "packs": [
     "down-on-the-farm",
@@ -11878,15 +11878,15 @@
     "farmyard",
     "conversation-starters"
    ],
-   "visual_complexity": "detailed",
+   "visual_complexity": "moderate",
    "metrics": {
-    "regions": 42,
-    "smallest_region_sq_in": 0.014,
-    "median_region_sq_in": 0.138,
-    "largest_region_sq_in": 10.37,
-    "tiny_regions": 1,
-    "ink_coverage": 0.085,
-    "subject_fill": 0.876,
+    "regions": 27,
+    "smallest_region_sq_in": 0.089,
+    "median_region_sq_in": 0.331,
+    "largest_region_sq_in": 3.89,
+    "tiny_regions": 0,
+    "ink_coverage": 0.083,
+    "subject_fill": 0.689,
     "stroke_pt_median": 2.88,
     "stroke_pt_p10": 2.88
    }
@@ -11920,15 +11920,15 @@
    "format": "svg",
    "svg_path": "assets/coloring/nostalgic-heritage/cc-red-barn-t2.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/nostalgic-heritage/cc-red-barn-t2.svg",
-   "sha256": "bb110492c74d2a6a80a34345f97ec251c42d40f3dd1de94ba8f8fe1d8aa6d679",
-   "bytes": 1382,
+   "sha256": "a416c58d2a703bcd3493a681fe17429f3f0cc0b3414aaddd544237a7aa60369a",
+   "bytes": 11230,
    "era": "",
    "season": "",
    "sensitive_topics": [
     "home"
    ],
    "conversation_prompt": "What animals or crops would a barn like this hold?",
-   "source": "cognicopia-coloring-engine",
+   "source": "traced-art",
    "review_status": "approved",
    "packs": [
     "down-on-the-farm",
@@ -11938,15 +11938,15 @@
    ],
    "visual_complexity": "moderate",
    "metrics": {
-    "regions": 14,
-    "smallest_region_sq_in": 0.172,
-    "median_region_sq_in": 0.616,
-    "largest_region_sq_in": 11.21,
+    "regions": 21,
+    "smallest_region_sq_in": 0.127,
+    "median_region_sq_in": 0.383,
+    "largest_region_sq_in": 3.84,
     "tiny_regions": 0,
-    "ink_coverage": 0.091,
-    "subject_fill": 0.882,
-    "stroke_pt_median": 4.32,
-    "stroke_pt_p10": 4.32
+    "ink_coverage": 0.104,
+    "subject_fill": 0.697,
+    "stroke_pt_median": 4.14,
+    "stroke_pt_p10": 3.6
    }
   },
   {
@@ -11979,15 +11979,15 @@
    "format": "svg",
    "svg_path": "assets/coloring/nostalgic-heritage/cc-red-barn-t3.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/nostalgic-heritage/cc-red-barn-t3.svg",
-   "sha256": "f9868d3b7689a05c54a4850101206be984680c56ee044a2ee3a16d3acb56b8b4",
-   "bytes": 842,
+   "sha256": "3e1bc6205e7816d7c9e27ce0eca52d4a40587dc86706f5b1c53ad1ecc0675cb3",
+   "bytes": 5226,
    "era": "",
    "season": "",
    "sensitive_topics": [
     "home"
    ],
    "conversation_prompt": "What animals or crops would a barn like this hold?",
-   "source": "cognicopia-coloring-engine",
+   "source": "traced-art",
    "review_status": "approved",
    "packs": [
     "down-on-the-farm",
@@ -11995,17 +11995,17 @@
     "farmyard",
     "conversation-starters"
    ],
-   "visual_complexity": "simple",
+   "visual_complexity": "moderate",
    "metrics": {
-    "regions": 8,
-    "smallest_region_sq_in": 0.249,
-    "median_region_sq_in": 0.325,
-    "largest_region_sq_in": 13.98,
+    "regions": 13,
+    "smallest_region_sq_in": 0.163,
+    "median_region_sq_in": 0.663,
+    "largest_region_sq_in": 4.23,
     "tiny_regions": 0,
-    "ink_coverage": 0.126,
-    "subject_fill": 0.896,
+    "ink_coverage": 0.165,
+    "subject_fill": 0.715,
     "stroke_pt_median": 7.92,
-    "stroke_pt_p10": 7.2
+    "stroke_pt_p10": 7.92
    }
   },
   {
@@ -12207,29 +12207,29 @@
    "format": "svg",
    "svg_path": "assets/coloring/nostalgic-heritage/cc-covered-bridge-t1.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/nostalgic-heritage/cc-covered-bridge-t1.svg",
-   "sha256": "aeebc25303fa794e53d06956c5e4232d2a5199c33ecac022bac5e32c4ecc87f3",
-   "bytes": 2314,
+   "sha256": "975d386d33281f97d31d989a8d399041d2b4074d6cd5ce0d70fade10259aadf0",
+   "bytes": 28100,
    "era": "",
    "season": "",
    "sensitive_topics": [
     "water"
    ],
    "conversation_prompt": "Where does this road over the bridge lead?",
-   "source": "cognicopia-coloring-engine",
+   "source": "traced-art",
    "review_status": "approved",
    "packs": [
     "landmarks"
    ],
-   "visual_complexity": "moderate",
+   "visual_complexity": "detailed",
    "metrics": {
-    "regions": 14,
-    "smallest_region_sq_in": 0.006,
-    "median_region_sq_in": 0.841,
-    "largest_region_sq_in": 11.43,
-    "tiny_regions": 1,
-    "ink_coverage": 0.065,
-    "subject_fill": 0.876,
-    "stroke_pt_median": 2.88,
+    "regions": 122,
+    "smallest_region_sq_in": 0.014,
+    "median_region_sq_in": 0.07,
+    "largest_region_sq_in": 0.82,
+    "tiny_regions": 6,
+    "ink_coverage": 0.142,
+    "subject_fill": 0.788,
+    "stroke_pt_median": 3.06,
     "stroke_pt_p10": 2.88
    }
   },
@@ -12263,30 +12263,30 @@
    "format": "svg",
    "svg_path": "assets/coloring/nostalgic-heritage/cc-covered-bridge-t2.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/nostalgic-heritage/cc-covered-bridge-t2.svg",
-   "sha256": "4c1f9bc1f5a6ae52c8fe5afbad026fab3a2be936656de31577cb019bd4895c22",
-   "bytes": 1979,
+   "sha256": "145ddff855e682b3ffe354b31cdca18660c3d5ad5c1fae65a2f52ebb9beb9a24",
+   "bytes": 20381,
    "era": "",
    "season": "",
    "sensitive_topics": [
     "water"
    ],
    "conversation_prompt": "Where does this road over the bridge lead?",
-   "source": "cognicopia-coloring-engine",
+   "source": "traced-art",
    "review_status": "approved",
    "packs": [
     "landmarks"
    ],
-   "visual_complexity": "simple",
+   "visual_complexity": "moderate",
    "metrics": {
-    "regions": 11,
-    "smallest_region_sq_in": 0.074,
-    "median_region_sq_in": 1.354,
-    "largest_region_sq_in": 11.61,
+    "regions": 28,
+    "smallest_region_sq_in": 0.149,
+    "median_region_sq_in": 0.491,
+    "largest_region_sq_in": 1.04,
     "tiny_regions": 0,
-    "ink_coverage": 0.092,
-    "subject_fill": 0.882,
+    "ink_coverage": 0.13,
+    "subject_fill": 0.794,
     "stroke_pt_median": 4.32,
-    "stroke_pt_p10": 4.14
+    "stroke_pt_p10": 3.6
    }
   },
   {
@@ -12320,29 +12320,29 @@
    "format": "svg",
    "svg_path": "assets/coloring/nostalgic-heritage/cc-covered-bridge-t3.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/nostalgic-heritage/cc-covered-bridge-t3.svg",
-   "sha256": "25c2ccdaea37d2bf09c7a13efeb85ce8778c48d4c876b1f608308fe5c22f4658",
-   "bytes": 873,
+   "sha256": "9b826b0e7e4c85d7b371c54ee4396d9388ef8ef457ce639c53e7f006a2e0bd8a",
+   "bytes": 8462,
    "era": "",
    "season": "",
    "sensitive_topics": [
     "water"
    ],
    "conversation_prompt": "Where does this road over the bridge lead?",
-   "source": "cognicopia-coloring-engine",
+   "source": "traced-art",
    "review_status": "approved",
    "packs": [
     "landmarks"
    ],
-   "visual_complexity": "simple",
+   "visual_complexity": "moderate",
    "metrics": {
-    "regions": 8,
-    "smallest_region_sq_in": 0.566,
-    "median_region_sq_in": 2.475,
-    "largest_region_sq_in": 11.38,
+    "regions": 13,
+    "smallest_region_sq_in": 0.314,
+    "median_region_sq_in": 0.951,
+    "largest_region_sq_in": 1.39,
     "tiny_regions": 0,
-    "ink_coverage": 0.138,
-    "subject_fill": 0.896,
-    "stroke_pt_median": 7.92,
+    "ink_coverage": 0.18,
+    "subject_fill": 0.81,
+    "stroke_pt_median": 8.1,
     "stroke_pt_p10": 7.92
    }
   },
@@ -12375,27 +12375,27 @@
    "format": "svg",
    "svg_path": "assets/coloring/nostalgic-heritage/cc-rocking-chair-t1.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/nostalgic-heritage/cc-rocking-chair-t1.svg",
-   "sha256": "9d84b78e89a8ce8c16a570161fab7029a0f491d6baeb68d101ba9e4d10551a00",
-   "bytes": 1377,
+   "sha256": "bd1f0d65105005fb5640cf88532196ab7bd4217199dcb0599cb16da2532182b0",
+   "bytes": 15237,
    "era": "",
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "Where is the most comfortable chair you have ever sat in?",
-   "source": "cognicopia-coloring-engine",
+   "source": "traced-art",
    "review_status": "approved",
    "packs": [
     "the-parlor",
     "front-porch"
    ],
-   "visual_complexity": "moderate",
+   "visual_complexity": "detailed",
    "metrics": {
-    "regions": 17,
-    "smallest_region_sq_in": 0.067,
-    "median_region_sq_in": 0.537,
-    "largest_region_sq_in": 1.56,
-    "tiny_regions": 0,
-    "ink_coverage": 0.059,
-    "subject_fill": 0.749,
+    "regions": 57,
+    "smallest_region_sq_in": 0.007,
+    "median_region_sq_in": 0.232,
+    "largest_region_sq_in": 1.88,
+    "tiny_regions": 4,
+    "ink_coverage": 0.096,
+    "subject_fill": 0.814,
     "stroke_pt_median": 2.88,
     "stroke_pt_p10": 2.88
    }
@@ -12429,13 +12429,13 @@
    "format": "svg",
    "svg_path": "assets/coloring/nostalgic-heritage/cc-rocking-chair-t2.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/nostalgic-heritage/cc-rocking-chair-t2.svg",
-   "sha256": "79fcaba94d50040c6fb90a1a0c468043a5355153a1037b1e6f796c0cbe5e5948",
-   "bytes": 1378,
+   "sha256": "ca985e348d7b08e844784d72b690c3b425cf909efe3b9a8c96219f56ffe4d8ed",
+   "bytes": 20195,
    "era": "",
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "Where is the most comfortable chair you have ever sat in?",
-   "source": "cognicopia-coloring-engine",
+   "source": "traced-art",
    "review_status": "approved",
    "packs": [
     "the-parlor",
@@ -12443,15 +12443,15 @@
    ],
    "visual_complexity": "moderate",
    "metrics": {
-    "regions": 17,
-    "smallest_region_sq_in": 0.05,
-    "median_region_sq_in": 0.47,
-    "largest_region_sq_in": 1.44,
-    "tiny_regions": 0,
-    "ink_coverage": 0.088,
-    "subject_fill": 0.755,
-    "stroke_pt_median": 4.32,
-    "stroke_pt_p10": 4.32
+    "regions": 31,
+    "smallest_region_sq_in": 0.004,
+    "median_region_sq_in": 0.478,
+    "largest_region_sq_in": 1.74,
+    "tiny_regions": 1,
+    "ink_coverage": 0.118,
+    "subject_fill": 0.82,
+    "stroke_pt_median": 4.14,
+    "stroke_pt_p10": 3.6
    }
   },
   {
@@ -12484,13 +12484,13 @@
    "format": "svg",
    "svg_path": "assets/coloring/nostalgic-heritage/cc-rocking-chair-t3.svg",
    "asset_url": "https://cognicopia.org/assets/coloring/nostalgic-heritage/cc-rocking-chair-t3.svg",
-   "sha256": "039c40f64dc6fb2aa715e3107966283733d8ced683dae56594639ae591e038a6",
-   "bytes": 1110,
+   "sha256": "24c1ff484945cfdbd73472b5e6db693ce976be868fcffadf1b599d9c47a0b91a",
+   "bytes": 5531,
    "era": "",
    "season": "",
    "sensitive_topics": [],
    "conversation_prompt": "Where is the most comfortable chair you have ever sat in?",
-   "source": "cognicopia-coloring-engine",
+   "source": "traced-art",
    "review_status": "approved",
    "packs": [
     "the-parlor",
@@ -12498,15 +12498,15 @@
    ],
    "visual_complexity": "simple",
    "metrics": {
-    "regions": 8,
-    "smallest_region_sq_in": 0.167,
-    "median_region_sq_in": 0.417,
-    "largest_region_sq_in": 6.67,
-    "tiny_regions": 0,
-    "ink_coverage": 0.115,
-    "subject_fill": 0.769,
+    "regions": 12,
+    "smallest_region_sq_in": 0.098,
+    "median_region_sq_in": 1.277,
+    "largest_region_sq_in": 3.71,
+    "tiny_regions": 1,
+    "ink_coverage": 0.155,
+    "subject_fill": 0.84,
     "stroke_pt_median": 7.92,
-    "stroke_pt_p10": 7.2
+    "stroke_pt_p10": 7.92
    }
   },
   {
