@@ -106,23 +106,23 @@ button,input,select{font:inherit}
 
 .app{margin-left:var(--sb-w);min-height:100vh;display:flex;flex-direction:column}
 .topbar{
-  position:sticky; top:0; z-index:700; min-height:60px;
-  display:flex; align-items:center; justify-content:space-between; gap:16px;
-  padding:10px clamp(16px,3vw,36px);
-  background:rgba(14,22,20,.86); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+  position:sticky; top:0; z-index:700; min-height:46px;
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+  padding:6px clamp(12px,2vw,24px);
+  background:rgba(14,22,20,.92); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
   border-bottom:1px solid var(--line);
 }
-.facility{font-weight:700;color:var(--muted);overflow-wrap:anywhere;line-height:1.3;min-width:0}
-.topbar-left{display:flex;align-items:center;gap:12px;min-width:0;flex:1}
-.topbar-brand{display:flex;align-items:center;gap:9px;min-width:0;flex:0 1 auto;color:var(--text);font-weight:800;white-space:nowrap}
-.topbar-brand img{width:32px;height:28px;object-fit:contain;border-radius:4px;background:#fff;flex:none}
+.facility{font-weight:700;font-size:13px;color:var(--muted);overflow-wrap:anywhere;line-height:1.2;min-width:0}
+.topbar-left{display:flex;align-items:center;gap:10px;min-width:0;flex:1}
+.topbar-brand{display:flex;align-items:center;gap:8px;min-width:0;flex:0 1 auto;color:var(--text);font-weight:800;font-size:15px;white-space:nowrap}
+.topbar-brand img{width:28px;height:24px;object-fit:contain;border-radius:4px;background:#fff;flex:none}
 .topbar-brand span{overflow:hidden;text-overflow:ellipsis}
-.topbar-actions{display:flex;align-items:center;justify-content:flex-end;gap:10px;min-width:0}
+.topbar-actions{display:flex;align-items:center;justify-content:flex-end;gap:8px;min-width:0}
 .btn-home{
-  display:inline-flex; align-items:center; gap:8px; flex:none;
-  min-height:var(--tap); padding:8px 16px 8px 13px; border-radius:10px;
+  display:inline-flex; align-items:center; gap:6px; flex:none;
+  min-height:38px; padding:6px 12px; border-radius:8px;
   border:1px solid var(--line-2); background:var(--panel-2); color:var(--text);
-  font-weight:700; font-size:15px; text-decoration:none; letter-spacing:.01em;
+  font-weight:700; font-size:14px; text-decoration:none; letter-spacing:.01em;
   transition:background .15s, border-color .15s, color .15s, transform .05s;
 }
 .btn-home svg{color:var(--accent-hi);transition:color .15s}
@@ -130,13 +130,12 @@ button,input,select{font:inherit}
 .btn-home:hover svg{color:#fff}
 .btn-home:active{transform:translateY(1px)}
 .btn-home:focus-visible{outline:3px solid var(--accent-hi);outline-offset:2px}
-@media (max-width:560px){ .btn-home{padding:8px 11px} .btn-home span{display:none} }   /* icon only on phones; the aria-label still says Home */
+@media (max-width:560px){ .btn-home{padding:6px 9px} .btn-home span{display:none} }   /* icon only on phones; the aria-label still says Home */
 .facility b{color:var(--text)}
-@media (max-width:1800px){
-  .topbar{flex-wrap:wrap}
+@media (max-width:1000px){
+  .topbar{flex-wrap:wrap;padding:6px 12px}
   .topbar-left{flex:1 1 auto}
-  .topbar-actions{flex:1 1 100%;flex-wrap:wrap}
-  .topbar-actions .panic-button,.topbar-actions .calm-mode-toggle{flex:1 1 320px}
+  .topbar-actions{flex:0 1 auto}
 }
 .view{
   width:100%; max-width:1120px; margin:0 auto;
@@ -175,25 +174,54 @@ h2{font-size:21px;margin:0 0 8px}
 .btn-primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
 .btn-primary:hover{background:var(--accent-hi);border-color:var(--accent-hi)}
 .btn-ghost{background:transparent}
-.panic-button{
-  display:flex;align-items:center;gap:10px;flex:none;min-height:var(--tap);padding:7px 14px;
-  border:2px solid #ff8a65;border-radius:11px;background:#7f1d1d;color:#fff;
-  font:inherit;font-weight:800;text-align:left;cursor:pointer;
+.btn-soothe, .panic-button{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:38px;padding:6px 14px;
+  border:1.5px solid #d49a43;border-radius:8px;background:rgba(212,154,67,.14);
+  color:#ffd285;font:inherit;font-size:14px;font-weight:700;cursor:pointer;
+  transition:background .15s,border-color .15s,color .15s;
 }
-.panic-button:hover{background:#9f2d24;border-color:#ffb199}
-.panic-button:active{transform:translateY(1px)}
-.panic-button svg{flex:none}
-.panic-button small{display:block;color:#ffe3dc;font-size:12px;font-weight:600;line-height:1.25}
+.btn-soothe:hover, .panic-button:hover{background:rgba(212,154,67,.28);border-color:#ffbe5c;color:#fff}
+.btn-soothe:active, .panic-button:active{transform:translateY(1px)}
+.btn-soothe svg, .panic-button svg{flex:none;color:#ffbe5c}
+.btn-soothe:focus-visible, .panic-button:focus-visible{outline:3px solid #ffbe5c;outline-offset:2px}
+
+.packet-hub-bar{
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;
+  padding:12px 18px;margin:18px 0 24px;background:var(--panel-2);border:1px solid var(--line-2);
+  border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,.2);
+}
+.hub-bar-title{display:flex;align-items:center;gap:8px;font-size:14.5px;font-weight:700;color:var(--text)}
+.hub-bar-title svg{color:var(--accent)}
+.hub-bar-actions{display:flex;align-items:center;flex-wrap:wrap;gap:10px}
+.btn-hub-queue{
+  display:inline-flex;align-items:center;gap:8px;min-height:38px;padding:6px 14px;
+  border:1px solid var(--line-2);border-radius:8px;background:var(--panel);
+  color:var(--text);font:inherit;font-size:14px;font-weight:700;cursor:pointer;
+  transition:background .15s,border-color .15s,color .15s;
+}
+.btn-hub-queue:hover{background:#223630;border-color:var(--accent);color:#fff}
+.btn-hub-queue:focus-visible{outline:3px solid var(--accent-hi);outline-offset:2px}
+.hub-count{
+  display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;
+  padding:0 6px;border-radius:10px;background:var(--accent);color:var(--accent-ink);
+  font-size:12px;font-weight:800;
+}
+.drawer-actions-row{display:flex;flex-direction:column;gap:8px;width:100%;margin:10px 0 6px}
+.drawer-actions-row .btn-soothe{width:100%}
+
 .calm-mode-toggle{
-  display:flex;align-items:center;gap:9px;flex:none;min-height:var(--tap);padding:7px 13px;
-  border:2px solid #8bb7a2;border-radius:11px;background:#18372e;color:#fff;
-  font:inherit;font-weight:800;text-align:left;cursor:pointer;
+  display:flex;align-items:center;gap:8px;flex:none;min-height:38px;padding:5px 12px;
+  border:1.5px solid #8bb7a2;border-radius:8px;background:#18372e;color:#fff;
+  font:inherit;font-size:13px;font-weight:700;text-align:left;cursor:pointer;
 }
 .calm-mode-toggle:hover{background:#20483b;border-color:#b6dec9}
 .calm-mode-toggle[aria-pressed="true"]{background:#f2c66d;border-color:#ffe0a0;color:#241b0b}
-.calm-mode-toggle small{display:block;color:#d6e6dc;font-size:11px;font-weight:600;line-height:1.25}
-.calm-mode-toggle[aria-pressed="true"] small{color:#3f3115}
-.calm-mode-toggle:focus-visible,.panic-button:focus-visible{outline:3px solid #ffe08a;outline-offset:3px}
+.calm-mode-toggle small{display:none}
+@media (min-width:1400px){
+  .calm-mode-toggle small{display:block;color:#d6e6dc;font-size:11px;font-weight:600;line-height:1.2}
+  .calm-mode-toggle[aria-pressed="true"] small{color:#3f3115}
+}
+.calm-mode-toggle:focus-visible{outline:3px solid #ffe08a;outline-offset:2px}
 .sh-sensory{margin:.08in 0 0;padding:.08in .12in;border:1.5pt solid #68746f;border-radius:.06in;font-size:10pt;line-height:1.25;color:#2f3634}
 .art-sensory{margin:.08in auto 0;max-width:6.4in;padding:.08in .12in;border:1.5pt solid #68746f;border-radius:.06in;font-size:11pt;line-height:1.25;color:#2f3634}
 .care-coaching-footer{flex:none;margin:.08in 0 0;padding:.05in 0 0;border-top:1px solid #c9d1ce;color:#56615d;font-size:8pt;line-height:1.2;text-align:center}
@@ -591,15 +619,13 @@ input:focus,select:focus{border-color:var(--accent)}
 .sb-toggle svg{color:#fff;flex:none}
 .sb-toggle:focus-visible{outline:3px solid #7ad3a4;outline-offset:3px}
 @media (max-width:860px){
-  .topbar{padding-left:164px}
-  .topbar-actions{width:100%}
-  .panic-button,.calm-mode-toggle{flex:1 1 100%}
+  .topbar{padding-left:140px;padding-top:6px;padding-bottom:6px}
+  .topbar-actions{width:auto}
   .sidebar{padding-top:60px}
 }
 @media (max-width:560px){
-  .topbar{padding:60px 16px 10px}
-  .panic-button,.calm-mode-toggle{flex:1 1 100%;justify-content:center}
-  .topbar-brand{font-size:14px}
+  .topbar{padding:54px 12px 8px;gap:8px}
+  .topbar-brand{font-size:13.5px}
 }
 /* Phones: the bar keeps one row beside the Menu button. Home keeps
    its room, the Facility view switch gives way to the sidebar's Facility
@@ -2685,10 +2711,6 @@ textarea:focus{border-color:var(--accent)}
       <div class="facility" id="facilityLabel"></div>
     </div>
     <div class="topbar-actions">
-      <button class="panic-button" type="button" id="panicButton" aria-label="Instant Soothe: choose a care level and a theme, then print a fresh calming packet for sundowning or rapid de-escalation">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 22 21H2L12 3Z"/><path d="M12 9v5"/><circle cx="12" cy="17.5" r=".7" fill="currentColor"/></svg>
-        <span>Sundowning / Rapid De-escalation<small>Pick a level and theme, then print a fresh calming packet</small></span>
-      </button>
       <button class="calm-mode-toggle" type="button" id="calmModeToggle" aria-pressed="false" aria-describedby="calmModeHelp">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12h8"/></svg><span>Late-Stage / Sundowning Calm<small id="calmModeHelp">Off · simplifies queued activity pages; emergency buttons stay fixed</small></span>
       </button>
@@ -2720,7 +2742,13 @@ textarea:focus{border-color:var(--accent)}
     <p class="note" id="bwNote" hidden>Every page prints in pure black on white.</p>
     <p class="allowance" id="allowance"></p>
     <p class="upgrade-line" data-upgrade-prompt><a href="pricing.html" target="_blank" rel="noopener">Get Full Access ($39/mo or $349/yr) &#x2192;</a> &middot; <a href="contact.html?subject=Corporate+Invoice+Request">Request Corporate Invoice / W-9</a></p>
-    <button class="btn btn-primary" type="button" id="generatePdf">Generate PDF</button>
+    <div class="drawer-actions-row">
+      <button class="btn btn-primary" type="button" id="generatePdf">Generate PDF</button>
+      <button class="btn btn-soothe" type="button" id="drawerPanicButton" aria-label="Instant Soothe: choose a care level and a theme, then print a fresh calming packet for sundowning or rapid de-escalation">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 22 21H2L12 3Z"/><path d="M12 9v5"/><circle cx="12" cy="17.5" r=".7" fill="currentColor"/></svg>
+        <span>Instant Soothe Print</span>
+      </button>
+    </div>
     <p class="note">In the print window, choose <b>Save as PDF</b> to keep a copy, or pick your printer.</p>
     <button class="btn btn-danger btn-sm" type="button" id="clearQueue">Clear all pages</button>
   </div>
@@ -13884,6 +13912,8 @@ function renderFacility(){
 function renderCounts(){
   $("#navCount").textContent = queue.length;
   $("#topCount").textContent = queue.length;
+  const hubCount = $("#hubCount");
+  if (hubCount) hubCount.textContent = queue.length;
 }
 
 function renderHome(){
@@ -13903,6 +13933,22 @@ function renderHome(){
       <li><b>Pick an activity</b> and set the resident, stage and theme.</li>
       <li><b>Add to Packet</b>, then open <b>Your packet</b> and print.</li>
     </ol>
+    <div class="packet-hub-bar" role="toolbar" aria-label="Packet tools and instant calming">
+      <div class="hub-bar-title">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 8h10M7 12h10M7 16h6"/></svg>
+        <span>Packet Tools Hub</span>
+      </div>
+      <div class="hub-bar-actions">
+        <button type="button" class="btn btn-soothe" id="panicButton" aria-label="Instant Soothe: choose a care level and a theme, then print a fresh calming packet for sundowning or rapid de-escalation">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 22 21H2L12 3Z"/><path d="M12 9v5"/><circle cx="12" cy="17.5" r=".7" fill="currentColor"/></svg>
+          <span>Instant Soothe Print</span>
+        </button>
+        <button type="button" class="btn btn-hub-queue" id="hubOpenPacket" aria-label="Open your packet staging drawer">
+          <span class="hub-pk-label">Your packet</span>
+          <span class="hub-count" id="hubCount">${queue.length}</span>
+        </button>
+      </div>
+    </div>
     <h2>Interactive generators</h2>
     <div class="card-grid">
       ${tool(catHref(cc), cc.icon, "Cognicopia Coloring", "Adult, dignity-first line art in bold pure black, each picture drawn at three support tiers. Filter, preview with the binding gutter, and print or download a vector PDF.", [`${catCount(cc)} pictures`, "3 tiers", "Bundle packs"])}
@@ -14611,6 +14657,13 @@ window.addEventListener("afterprint", () => {
   hubs.forEach(d => d.addEventListener("toggle", () => { if (d.open) hubs.forEach(o => { if (o !== d && o.open) o.open = false; }); }));
 
   $("#openPacket").addEventListener("click", openDrawer);
+  document.addEventListener("click", e => {
+    if (e.target.closest("#hubOpenPacket")){ openDrawer(); return; }
+    if (e.target.closest("#panicButton, #drawerPanicButton")){
+      if (window.ProceduralPacketEngine) window.ProceduralPacketEngine.instantSoothe();
+      else printPanicPacket();
+    }
+  });
   /* Sundowning / Rapid De-escalation is Instant Soothe: two quick choices (care level, theme), then a fresh calming packet is
      drawn by src/engine/ProceduralPacketEngine.js and printed from its own hidden stage. The old fixed two-page packet
      remains only as the fallback if that script did not load. */
@@ -14621,7 +14674,6 @@ window.addEventListener("afterprint", () => {
       used: () => { if (!isLicensed()) bumpGen(); renderAllowance(); }
     }
   });
-  $("#panicButton").addEventListener("click", () => { if (window.ProceduralPacketEngine) window.ProceduralPacketEngine.instantSoothe(); else printPanicPacket(); });
   $("#calmModeToggle").addEventListener("click", () => {
     sundowningCalmActive = !sundowningCalmActive;
     syncCalmModeToggle();
