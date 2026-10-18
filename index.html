@@ -977,39 +977,38 @@ body { padding-left: var(--sb-w); }
 .cg-sidebar-toggle svg { color: #d8f3dc; }
 
 .cg-topbar {
-  position: sticky; top: 0; left: 0; right: 0; z-index: 800; height: 52px;
-  display: flex; align-items: center; justify-content: flex-end; gap: 16px;
-  padding: 0 28px 0 16px;
-  background: rgba(8,28,21,.82); border-bottom: 1px solid var(--sb-border);
+  position: relative; top: 0; left: 0; right: 0; z-index: 800; min-height: 32px;
+  display: flex; align-items: center; justify-content: flex-end; gap: 8px;
+  padding: 3px 20px 3px 14px;
+  background: rgba(8,28,21,.88); border-bottom: 1px solid var(--sb-border);
   backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  transition: transform .25s ease, opacity .25s ease;
 }
 .cg-topbar a, .cg-topbar button.linklike {
-  color: #e8f5e9; font-size: 10pt;
+  color: #e8f5e9; font-size: 9.5pt;
   font-family: "Trebuchet MS","Segoe UI",sans-serif; text-decoration: none;
 }
 .cg-topbar a:hover { color: #d8f3dc; }
 .cg-topbar .hdrlicmsg { color: #f4c7b8; }
 .cg-topbar .hdrlicmsg:empty { display: none; }
 .cg-topbar .hdrlicmsg.ok { color: #b7e4c7; }
-.cg-topbar{height:auto;min-height:60px;flex-wrap:wrap;justify-content:flex-end;gap:8px;padding:8px 16px}
-.cg-topbar .hdrlic{display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-width:0}
-.cg-topbar .stripe-btn{display:inline-flex;align-items:center;justify-content:center;min-height:var(--tap);margin-left:0;padding:8px 14px;white-space:normal;text-align:center}
-.cg-topbar .linklike{min-height:var(--tap);padding:8px 10px}
-.cg-topbar .arb-sticky-crisis{display:inline-flex;align-items:center;justify-content:center;position:static;z-index:auto;min-height:var(--tap);max-width:100%;padding:8px 12px;font-size:15px;white-space:normal;box-shadow:none}
-.cg-topbar .cg-night-shift-toggle{min-height:var(--tap);max-width:100%;padding:8px 12px}
+.cg-topbar{height:auto;min-height:32px;flex-wrap:wrap;justify-content:flex-end;gap:6px;padding:3px 12px}
+.cg-topbar .hdrlic{display:flex;align-items:center;gap:6px;flex-wrap:wrap;min-width:0}
+.cg-topbar .stripe-btn{display:inline-flex;align-items:center;justify-content:center;min-height:28px;margin-left:0;padding:3px 10px;white-space:normal;text-align:center;font-size:12px;border-radius:6px}
+.cg-topbar .linklike{min-height:28px;padding:3px 8px;font-size:12px}
+.cg-topbar .cg-night-shift-toggle{min-height:28px;max-width:100%;padding:3px 8px;font-size:12px}
 @media (min-width:701px){
   .cg-topbar{flex-wrap:nowrap}
   .cg-topbar .hdrlic{flex:0 1 auto}
-  .cg-topbar .arb-sticky-crisis,.cg-topbar .cg-night-shift-toggle{flex:0 1 auto;min-width:0}
+  .cg-topbar .cg-night-shift-toggle{flex:0 1 auto;min-width:0}
 }
 @media (min-width:701px) and (max-width:900px){
-  .cg-topbar{flex-wrap:wrap}
+  .cg-topbar{flex-wrap:wrap;padding:3px 10px}
   .cg-topbar .hdrlic{display:contents}
   .cg-topbar #hdrlicToggle{order:4}
-  .cg-topbar .stripe-btn{order:1;font-size:13px;padding:6px 10px}
+  .cg-topbar .stripe-btn{order:1;font-size:12px;padding:3px 8px}
   .cg-topbar .stripe-btn-alt{order:1}
-  .cg-topbar .arb-sticky-crisis{order:2;font-size:14px;padding:7px 10px}
-  .cg-topbar .cg-night-shift-toggle{order:3;font-size:13px;padding:6px 9px}
+  .cg-topbar .cg-night-shift-toggle{order:3;font-size:12px;padding:3px 6px}
 }
 
 @media (max-width: 700px) {
@@ -1019,10 +1018,10 @@ body { padding-left: var(--sb-w); }
     width: min(260px, 85vw); box-shadow: 6px 0 32px rgba(0,0,0,.45);
   }
   @media (max-width:700px){
-    .cg-topbar{justify-content:flex-start;align-items:center;gap:8px;padding:58px 12px 10px;min-height:0}
-    .cg-topbar .hdrlic{flex:1 1 100%;width:100%;gap:8px}
+    .cg-topbar{position:relative;justify-content:flex-start;align-items:center;gap:6px;padding:4px 10px 4px 56px;min-height:36px}
+    .cg-topbar .hdrlic{flex:1 1 100%;width:100%;gap:6px}
     .cg-topbar .stripe-btn{flex:0 1 auto;max-width:100%}
-    .cg-topbar .cg-night-shift-toggle,.cg-topbar .arb-sticky-crisis{flex:0 1 auto}
+    .cg-topbar .cg-night-shift-toggle{flex:0 1 auto}
   }
   .cg-sidebar.is-open { transform: translateX(0); }
   .cg-sidebar-toggle { display: flex; }
@@ -1141,16 +1140,24 @@ summary{min-height:var(--tap);box-sizing:border-box}
 .arb-btn-primary{background:#52b788;border-color:#52b788;color:#062116}
 .arb-btn-primary:hover{background:#7ad3a4;border-color:#7ad3a4;color:#062116}
 .arb-btn-danger{color:#ffcfc4;border-color:rgba(255,180,162,.45)}
-.arb-btn-danger:hover{border-color:#ffb4a2;color:#fff}
-.arb-btn-emergency{background:#ffcc66;border-color:#ffcc66;color:#241500;font-size:18px;font-weight:800}
-.arb-btn-emergency:hover{background:#ffe0a3;border-color:#ffe0a3;color:#241500}
+.arb-btn-emergency, .qpb-btn-soothe{
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  background:rgba(255,204,102,.18);border:1.5px solid #d49a43;border-radius:8px;
+  color:#ffd285;font-size:14.5px;font-weight:700;min-height:40px;padding:6px 14px;
+  cursor:pointer;transition:background .15s,border-color .15s,color .15s
+}
+.arb-btn-emergency:hover, .qpb-btn-soothe:hover{background:rgba(255,204,102,.32);border-color:#ffbe5c;color:#fff8db}
+.arb-btn-emergency:focus-visible, .qpb-btn-soothe:focus-visible{outline:3px solid #ffbe5c;outline-offset:2px}
+html:not(.cg-night-shift) .arb-btn-emergency,
+html:not(.cg-night-shift) .qpb-btn-soothe{background:#fdf5e6;border-color:#c98b2c;color:#6b3e04}
+html:not(.cg-night-shift) .arb-btn-emergency:hover,
+html:not(.cg-night-shift) .qpb-btn-soothe:hover{background:#faeacc;border-color:#a86c15;color:#4a2901}
 .arb-btn-guest{background:#d9f0e2;border-color:#4f9b75;color:#143d2b;font-weight:800}
 .arb-guest-presets{display:flex;flex-wrap:wrap;gap:8px;padding:14px;margin:10px 0;border:1px solid rgba(216,243,220,.25);border-radius:12px;background:rgba(8,28,21,.45)}
 .arb-guest-presets button{padding:8px 12px;border:1px solid rgba(216,243,220,.25);border-radius:8px;background:#18372a;color:#f2fff5;font:inherit;cursor:pointer}
 .arb-guest-presets p{flex-basis:100%;margin:0;color:#d8f3dc;font-size:14px}
 .arb-guest-presets[hidden]{display:none}
 .pick.is-tier-disabled{opacity:.42;cursor:not-allowed}
-.arb-sticky-crisis{display:none}
 .arb-tier-toggle{background:#332312;border-color:#d6a64b;color:#ffedcc}
 .arb-tier-toggle[aria-pressed="true"]{background:#765018;border-color:#ffd477;color:#fff1cf}
 .arb-btn[aria-disabled="true"],.arb-btn:disabled{opacity:.45;cursor:not-allowed;pointer-events:none}
@@ -1161,9 +1168,6 @@ summary{min-height:var(--tap);box-sizing:border-box}
   .arb{padding:16px}
   .arb-actions{width:100%}
   .arb-btn{flex:1 1 140px}
-}
-@media (max-width:700px){
-  .arb-sticky-crisis{display:block;position:fixed;top:62px;right:10px;z-index:1500;padding:9px 12px;font-size:14px;box-shadow:0 4px 18px rgba(0,0,0,.45)}
 }
 @media print{.arb{display:none!important}}
 </style>
@@ -1280,6 +1284,93 @@ summary{min-height:var(--tap);box-sizing:border-box}
 .qpb-btn:disabled{opacity:.45;cursor:not-allowed}
 .qpb-btn-primary{background:#52b788;border-color:#52b788;color:#062116}
 .qpb-btn-primary:hover:not(:disabled){background:#7ad3a4;border-color:#7ad3a4;color:#062116}
+.qpb-btn-digest{background:rgba(82,183,136,.15);border:1.5px solid #52b788;color:#d8f3dc;font-weight:700;transition:all .15s ease}
+.qpb-btn-digest:hover:not(:disabled){background:rgba(82,183,136,.3);border-color:#7ad3a4;color:#fff}
+.qpb-btn-digest:focus-visible{outline:3px solid #7ad3a4;outline-offset:2px}
+html:not(.cg-night-shift) .qpb-btn-digest{background:#eef8f3;border-color:#2d6a4f;color:#1b4332}
+html:not(.cg-night-shift) .qpb-btn-digest:hover:not(:disabled){background:#d8f3dc;border-color:#1b4332;color:#081c15}
+.qpb-btn-pocket{background:rgba(82,183,136,.12);border:1.5px solid #52b788;color:#7ad3a4;font-weight:700;transition:all .15s ease}
+.qpb-btn-pocket:hover:not(:disabled){background:rgba(82,183,136,.25);border-color:#7ad3a4;color:#fff}
+.qpb-btn-pocket:focus-visible{outline:3px solid #7ad3a4;outline-offset:2px}
+html:not(.cg-night-shift) .qpb-btn-pocket{background:#f0fdf4;border-color:#2d6a4f;color:#1b4332}
+html:not(.cg-night-shift) .qpb-btn-pocket:hover:not(:disabled){background:#dcfce7;border-color:#1b4332;color:#081c15}
+
+/* Family Life Digest Modal & Drawer */
+.fld-dialog{width:min(740px,calc(100vw - 32px));max-height:calc(100vh - 40px);padding:0;border:2px solid #52b788;border-radius:18px;background:#101c17;color:#eef6f1;font-family:"Trebuchet MS","Segoe UI",sans-serif;box-shadow:0 24px 64px rgba(0,0,0,.65);box-sizing:border-box}
+.fld-dialog::backdrop{background:rgba(5,15,11,.78);backdrop-filter:blur(4px)}
+.fld-container{display:flex;flex-direction:column;max-height:calc(100vh - 40px)}
+.fld-head{display:flex;align-items:flex-start;justify-content:space-between;padding:20px 24px 16px;border-bottom:1px solid rgba(216,243,220,.2);background:#14241e}
+.fld-title{margin:0 0 6px;font-size:22px;font-weight:800;color:#ffffff;display:flex;align-items:center;gap:10px}
+.fld-subtitle{margin:0;font-size:14.5px;color:#b3c9bf;line-height:1.45}
+.fld-close{background:transparent;border:0;color:#b3c9bf;font-size:32px;line-height:1;cursor:pointer;padding:0 4px}
+.fld-close:hover{color:#ffffff}
+.fld-close:focus-visible{outline:3px solid #7ad3a4;outline-offset:2px}
+.fld-body{padding:20px 24px;overflow-y:auto;display:flex;flex-direction:column;gap:16px}
+.fld-resident-bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px 20px;padding:12px 16px;background:#0b1412;border:1px solid rgba(216,243,220,.2);border-radius:12px}
+.fld-meta-label{display:block;font-size:11px;font-weight:700;text-transform:uppercase;color:#7ad3a4;letter-spacing:.05em;margin-bottom:2px}
+.fld-resident-name{font-size:18px;color:#ffffff;font-weight:800}
+.fld-meta-val{font-size:14.5px;color:#eef6f1}
+.fld-tier-badge{font-size:14px;font-weight:700;color:#ffd285}
+.fld-fieldset{margin:0;padding:0;border:0}
+.fld-legend{font-size:15.5px;font-weight:700;color:#ffffff;margin-bottom:10px}
+.fld-legend small{font-weight:400;color:#b3c9bf}
+.fld-tags-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:8px}
+.fld-tag-item{display:block;cursor:pointer}
+.fld-tag-checkbox{position:absolute;opacity:0;pointer-events:none}
+.fld-tag-btn{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;min-height:44px;border-radius:10px;border:1.5px solid rgba(216,243,220,.25);background:#0b1412;color:#cfe2d8;font-size:13.5px;line-height:1.35;transition:all .15s ease}
+.fld-tag-item:hover .fld-tag-btn{border-color:#52b788;background:rgba(82,183,136,.08);color:#ffffff}
+.fld-tag-checkbox:checked + .fld-tag-btn{border-color:#52b788;background:rgba(82,183,136,.2);color:#ffffff;font-weight:700}
+.fld-tag-check{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:rgba(216,243,220,.2);color:transparent;font-size:11px;font-weight:800;flex:none;margin-top:1px}
+.fld-tag-checkbox:checked + .fld-tag-btn .fld-tag-check{background:#52b788;color:#062116}
+.fld-field{display:flex;flex-direction:column;gap:6px}
+.fld-label-row{display:flex;align-items:center;justify-content:space-between}
+.fld-label{font-size:15px;font-weight:700;color:#ffffff}
+.fld-label small{font-weight:400;color:#b3c9bf}
+.fld-char-count{font-size:13px;color:#7ad3a4;font-variant-numeric:tabular-nums}
+.fld-char-count.is-near-limit{color:#ff9e80;font-weight:700}
+.fld-textarea{width:100%;box-sizing:border-box;padding:10px 14px;border-radius:10px;border:1.5px solid rgba(216,243,220,.3);background:#0b1412;color:#ffffff;font-family:inherit;font-size:14.5px;line-height:1.45;resize:vertical}
+.fld-textarea:focus-visible{outline:3px solid #7ad3a4;outline-offset:2px}
+.fld-options-grid{display:flex;flex-direction:column;gap:10px;padding:12px 14px;border-radius:10px;background:rgba(8,28,21,.5);border:1px solid rgba(216,243,220,.18)}
+.fld-toggle-label{display:flex;align-items:flex-start;gap:12px;cursor:pointer}
+.fld-toggle-label input[type="checkbox"]{width:20px;height:20px;margin-top:2px;accent-color:#52b788;flex:none}
+.fld-toggle-label strong{display:block;font-size:14.5px;color:#ffffff}
+.fld-toggle-label small{display:block;font-size:13px;color:#b3c9bf}
+.fld-field-inline{flex-direction:row;align-items:center;gap:12px}
+.fld-label-sm{font-size:14px;font-weight:700;color:#b3c9bf;white-space:nowrap}
+.fld-input-sm{flex:1;padding:8px 12px;border-radius:8px;border:1px solid rgba(216,243,220,.3);background:#0b1412;color:#ffffff;font-family:inherit;font-size:14px}
+.fld-privacy-note{margin:0;padding:10px 14px;border-radius:8px;background:rgba(82,183,136,.1);border:1px solid rgba(82,183,136,.25);font-size:13px;color:#cfe2d8;line-height:1.4}
+.fld-privacy-note strong{color:#7ad3a4}
+.fld-foot{display:flex;justify-content:flex-end;gap:12px;margin-top:6px;padding-top:14px;border-top:1px solid rgba(216,243,220,.18)}
+.fld-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:10px 22px;border-radius:10px;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;transition:all .15s ease}
+.fld-btn-ghost{background:transparent;border:1.5px solid rgba(216,243,220,.3);color:#cfe2d8}
+.fld-btn-ghost:hover{background:rgba(255,255,255,.08);color:#ffffff}
+.fld-btn-primary{background:#52b788;border:1.5px solid #52b788;color:#062116}
+.fld-btn-primary:hover:not(:disabled){background:#7ad3a4;border-color:#7ad3a4}
+.fld-btn:focus-visible{outline:3px solid #7ad3a4;outline-offset:2px}
+html:not(.cg-night-shift) .fld-dialog{background:#fbfdfc;color:#141816;border-color:#1b382b}
+html:not(.cg-night-shift) .fld-head{background:#1b382b;color:#ffffff}
+html:not(.cg-night-shift) .fld-title{color:#ffffff}
+html:not(.cg-night-shift) .fld-subtitle{color:#d8f3dc}
+html:not(.cg-night-shift) .fld-resident-bar{background:#f2f7f4;border-color:#cfe0d6}
+html:not(.cg-night-shift) .fld-meta-label{color:#1b382b}
+html:not(.cg-night-shift) .fld-resident-name{color:#141816}
+html:not(.cg-night-shift) .fld-tier-badge{color:#9c5c08}
+html:not(.cg-night-shift) .fld-legend{color:#141816}
+html:not(.cg-night-shift) .fld-legend small{color:#505c56}
+html:not(.cg-night-shift) .fld-tag-btn{background:#ffffff;border-color:#cfe0d6;color:#2b332f}
+html:not(.cg-night-shift) .fld-tag-item:hover .fld-tag-btn{background:#eef8f3;border-color:#2d6a4f;color:#141816}
+html:not(.cg-night-shift) .fld-tag-checkbox:checked + .fld-tag-btn{background:#e1f4ea;border-color:#2d6a4f;color:#141816}
+html:not(.cg-night-shift) .fld-label{color:#141816}
+html:not(.cg-night-shift) .fld-label small{color:#505c56}
+html:not(.cg-night-shift) .fld-textarea{background:#ffffff;border-color:#b5c7bd;color:#141816}
+html:not(.cg-night-shift) .fld-options-grid{background:#f2f7f4;border-color:#cfe0d6}
+html:not(.cg-night-shift) .fld-toggle-label strong{color:#141816}
+html:not(.cg-night-shift) .fld-toggle-label small{color:#505c56}
+html:not(.cg-night-shift) .fld-label-sm{color:#2b332f}
+html:not(.cg-night-shift) .fld-input-sm{background:#ffffff;border-color:#b5c7bd;color:#141816}
+html:not(.cg-night-shift) .fld-privacy-note{background:#eef8f3;border-color:#b8e2cc;color:#1b382b}
+html:not(.cg-night-shift) .fld-btn-ghost{border-color:#b5c7bd;color:#1b382b}
+html:not(.cg-night-shift) .fld-btn-ghost:hover{background:#eef8f3}
 .qpb-note{margin:10px 0 0;font-size:14px;color:#b3c9bf}
 .qpb-note b{color:#eef6f1}
 .qpb-status{margin:10px 0 0;font-size:15.5px;color:#d8f3dc;min-height:1em}
@@ -1683,11 +1774,10 @@ html body .cg-sidebar .cg-ailment-card:focus-visible{outline:3px solid var(--cg-
 html.cg-night-shift .cg-crumbs{background:#211910;border-color:#684a26}
 html.cg-night-shift .cg-crumbs li,html.cg-night-shift .cg-crumbs a,html.cg-night-shift .cg-crumbs [aria-current]{color:#ffedcc!important}
 @media (max-width:768px){.cg-crumbs{padding:8px 16px}}
-/* the action bar under the navigation: light, like the navigation, with the buy links in the brand's deep green */
-.cg-topbar{height:auto!important;min-height:52px;flex-wrap:wrap;row-gap:6px;padding-top:8px;padding-bottom:8px}
+.cg-topbar{height:auto!important;min-height:40px;flex-wrap:wrap;row-gap:4px;padding-top:4px;padding-bottom:4px}
 html body .cg-topbar{background:#fbf8f2;border-bottom:1px solid var(--sb-border);-webkit-backdrop-filter:none;backdrop-filter:none}
-html body .cg-topbar a,html body .cg-topbar button.linklike{color:var(--sb-txt)}
-.cg-topbar .cg-cta{display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;min-height:var(--tap,52px);padding:8px 18px;border:2px solid var(--cg-green-700,#1b382b);border-radius:var(--cg-radius-md,12px);background:var(--cg-green-700,#1b382b);color:#ffffff!important;font:700 15px/1.25 var(--cg-font-ui,"Trebuchet MS","Segoe UI",sans-serif);text-align:center;text-decoration:none;box-shadow:var(--cg-shadow-1,0 1px 2px rgba(0,0,0,.22))}
+html body .cg-topbar a,html body .cg-topbar button.linklike{color:var(--sb-txt);font-size:13px}
+.cg-topbar .cg-cta{display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;min-height:38px;padding:5px 14px;border:1.5px solid var(--cg-green-700,#1b382b);border-radius:8px;background:var(--cg-green-700,#1b382b);color:#ffffff!important;font:700 13.5px/1.2 var(--cg-font-ui,"Trebuchet MS","Segoe UI",sans-serif);text-align:center;text-decoration:none;box-shadow:var(--cg-shadow-1,0 1px 2px rgba(0,0,0,.15))}
 .cg-topbar .cg-cta:hover{background:var(--cg-green-600,#2d5a44);border-color:var(--cg-green-600,#2d5a44)}
 .cg-topbar .cg-cta-alt{background:#ffffff;border-color:var(--cg-green-700,#1b382b);color:var(--cg-green-700,#1b382b)!important;box-shadow:none}
 .cg-topbar .cg-cta-alt:hover{background:var(--cg-sage-100,#e3f1e8);border-color:var(--cg-green-700,#1b382b)}
@@ -1734,9 +1824,8 @@ html.cg-night-shift .cg-topbar .cg-cta:focus-visible{outline-color:#ffd477}
   html body .cg-hub-foot a{margin:0;padding:8px 14px;border:0;border-radius:10px;white-space:nowrap;font:600 16px/1.2 var(--cg-font-ui,"Trebuchet MS","Segoe UI",sans-serif)}
   .cg-hub-foot .cg-sb-ico{display:none}
   .cg-sidebar-toggle,.cg-sb-overlay{display:none!important}
-  /* the action bar scrolls away under the navigation; the packet tool's, which carries Instant Soothe, stays in reach */
+  /* the action bar sits cleanly under the navigation */
   html body .cg-topbar{position:relative;top:auto}
-  html body .cg-topbar:has(.arb-sticky-crisis){position:sticky;top:var(--cg-nav-h)}
 }
 
 /* ---------- anything narrower: the same hubs in the Menu drawer ---------- */
@@ -1883,7 +1972,7 @@ header{padding-top:28px}
   .cg-values{margin-top:12px}
   .cg-topbar::before{content:"";flex:0 0 112px;height:var(--tap)}
   .cg-topbar .hdrlic{display:contents}
-  .cg-topbar .stripe-btn,.cg-topbar .cgpromo-btn,.cg-topbar .arb-sticky-crisis,.cg-topbar .cg-night-shift-toggle{flex:1 1 150px;font-size:13px;padding:6px 8px;min-width:0}
+  .cg-topbar .stripe-btn,.cg-topbar .cgpromo-btn,.cg-topbar .cg-night-shift-toggle{flex:1 1 150px;font-size:13px;padding:6px 8px;min-width:0}
 }
 
 fieldset{border-color:var(--ds-line);min-width:0}
@@ -2289,6 +2378,7 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
         <summary class="cg-sb-section cg-sb-acc-head"><svg class="cg-sb-ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01M12 6h.01M16 6h.01M8 10h.01M12 10h.01M16 10h.01M8 14h.01M12 14h.01M16 14h.01"/></svg><span class="cg-sb-acc-title">Facility</span><svg class="cg-sb-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="9 6 15 12 9 18"/></svg></summary>
         <ul class="cg-sb-sub">
     <li><a href="builder.html#/facility"><svg class="cg-sb-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01M12 6h.01M16 6h.01M8 10h.01M12 10h.01M16 10h.01M8 14h.01M12 14h.01M16 14h.01"/></svg><span>Facility Portal</span></a></li>
+    <li><a href="builder.html#/facility/audit"><svg class="cg-sb-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg><span>State Audit &amp; Compliance Log</span></a></li>
     <li><a href="builder.html#/shift"><svg class="cg-sb-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M9 12h6M9 16h6"/></svg><span>Shift board</span></a></li>
     <li><a href="builder.html#/roster"><svg class="cg-sb-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></svg><span>Resident roster</span></a></li>
     <li><a href="builder.html#/clinical"><svg class="cg-sb-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 3H4a1 1 0 0 0-1 1v5a5 5 0 0 0 10 0V4a1 1 0 0 0-1-1h-1"/><path d="M8 14v1a6 6 0 0 0 12 0v-3"/><circle cx="20" cy="10" r="2"/></svg><span>Session notes (SLP)</span></a></li>
@@ -2381,7 +2471,6 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
       <button type="button" id="licHdrGo">Unlock</button>
     </span>
   </span>
-  <button type="button" class="arb-btn arb-btn-emergency arb-sticky-crisis" id="arbSootheSticky" aria-label="Instant Soothe and Print: choose a care level and a theme, then print a fresh calming packet">🟡 Instant Soothe / Print</button>
   <span class="hdrlicmsg" id="hdrlicMsg" role="status"></span>
 </div>
 
@@ -2497,6 +2586,7 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
     <div class="arb-actions">
       <a class="arb-btn arb-btn-primary" id="arbNew" href="profile.html?new=1"><span aria-hidden="true">➕</span> New Profile</a>
       <a class="arb-btn" id="arbEdit" href="profile.html" aria-disabled="true"><span aria-hidden="true">✏️</span> Edit Active Profile</a>
+      <button type="button" class="arb-btn" id="arbPocketCard" style="border-color:#52b788; color:#7ad3a4;" title="Print 3x5 laminated pocket/lanyard card"><span aria-hidden="true">📇</span> Pocket Card</button>
       <button type="button" class="arb-btn arb-btn-emergency" id="arbSoothe" aria-describedby="arbSootheNote"><span aria-hidden="true">🟡</span> Instant Soothe / Print</button>
       <button type="button" class="arb-btn arb-btn-danger" id="arbDelete" disabled><span aria-hidden="true">🗑️</span> Delete Profile</button>
     </div>
@@ -2616,6 +2706,9 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
     <button type="button" class="qpb-btn" id="qpbPrint" disabled><span aria-hidden="true">🖨️</span> Print / Save to PDF</button>
     <button type="button" class="qpb-btn qpb-btn-tablet" id="qpbTablet"><span aria-hidden="true">📱</span> Launch Tablet Interactive Mode</button>
     <button type="button" class="qpb-btn qpb-btn-pdf" id="qpbPdf"><span aria-hidden="true">📥</span> Download PDF Packet</button>
+    <button type="button" class="qpb-btn qpb-btn-soothe" id="qpbSoothe" aria-label="Instant Soothe and Print: choose a care level and a theme, then print a fresh calming packet"><span aria-hidden="true">🟡</span> Instant Soothe Print</button>
+    <button type="button" class="qpb-btn qpb-btn-digest" id="qpbFamilyDigest" aria-label="Generate Family Life Digest for this resident"><span aria-hidden="true">💌</span> Family Life Digest</button>
+    <button type="button" class="qpb-btn qpb-btn-pocket" id="qpbPocketCard" aria-label="Print 3x5 laminated pocket lanyard card for this resident"><span aria-hidden="true">📇</span> Pocket Lanyard Card</button>
     <span class="qpb-pill" id="qpbPdfPill" role="status" aria-live="polite" hidden></span>
   </div>
   <p class="qpb-note"><b>Download PDF Packet</b> saves a ready-to-print file straight to your Downloads folder, made entirely on this computer. If you use Print instead, choose <b>Save as PDF</b> as the printer and keep the scale at 100% (Default), not "Fit to page".</p>
@@ -2649,6 +2742,8 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
     <button type="button" class="qpb-btn" id="pcgCopy" disabled><span aria-hidden="true">📋</span> Copy action prompts</button>
     <button type="button" class="qpb-btn" id="pcgAnother" disabled><span aria-hidden="true">🔀</span> Make another version</button>
     <button type="button" class="qpb-btn" id="pcgBack" hidden>Back to the first version</button>
+    <button type="button" class="qpb-btn qpb-btn-digest" id="pcgFamilyDigest" disabled aria-label="Generate Family Life Digest for this resident"><span aria-hidden="true">💌</span> Family Life Digest</button>
+    <button type="button" class="qpb-btn qpb-btn-pocket" id="pcgPocketCard" disabled aria-label="Print 3x5 laminated pocket lanyard card for this resident"><span aria-hidden="true">📇</span> Pocket Lanyard Card</button>
     <span class="qpb-pill" id="pcgPdfPill" role="status" aria-live="polite" hidden></span>
   </div>
   <p class="qpb-note">The PDF is five pages, made entirely on this computer: the word search is always Page 1 and the color page is always Page 4. Page 5 is for staff, so take it off before handing the packet over.</p>
@@ -3025,7 +3120,9 @@ const STAGE = {
 
 /* One rulebook: the matrix clamps this table's grid sizes, word counts and directions to what the stage allows. */
 STAGE.early.dirs=[[1,0],[0,1],[1,1],[1,-1]];            // across, down and both slants
-window.CognicopiaClinicalMatrix.constrainLegacy(STAGE);
+if (window.CognicopiaClinicalMatrix && typeof window.CognicopiaClinicalMatrix.constrainLegacy === "function") {
+  window.CognicopiaClinicalMatrix.constrainLegacy(STAGE);
+}
 
 const PRON = {
   she:{subj:"she",obj:"her",poss:"her"},
@@ -8153,7 +8250,9 @@ function updatePillarCounts(){
    override is on. */
 function effectiveStage(){
   const st=document.querySelector('input[name="stage"]:checked'), stage=st?st.value:"early";
-  return window.CognicopiaClinicalMatrix.stageOf(window.getTemporaryActivityStage?window.getTemporaryActivityStage(stage):stage);
+  return (window.CognicopiaClinicalMatrix && typeof window.CognicopiaClinicalMatrix.stageOf === "function")
+    ? window.CognicopiaClinicalMatrix.stageOf(window.getTemporaryActivityStage?window.getTemporaryActivityStage(stage):stage)
+    : (stage || "early");
 }
 const lateActivityHint = document.createElement("p");
 lateActivityHint.id = "lateActivityHint";
@@ -8166,15 +8265,16 @@ function filterAdvancedLateActivities(){
   const CM=window.CognicopiaClinicalMatrix, stage=effectiveStage(), off=[];
   document.querySelectorAll(".act").forEach(function(input){
     const label = input.closest("label");
-    if (!CM.allowed(stage, input.value, "packet")){
+    if (!CM || !CM.allowed || !CM.allowed(stage, input.value, "packet")){
       if (input.dataset.tierDisabled !== "true") input.dataset.tierSelection = String(input.checked);
       input.checked = false;
       input.disabled = true;
       input.dataset.tierDisabled = "true";
-      input.title = CM.why(stage, input.value, "packet");
+      input.title = (CM && typeof CM.why === "function") ? CM.why(stage, input.value, "packet") : "Not offered at this level";
       input.setAttribute("aria-describedby", "lateActivityHint");
       if (label){ label.classList.add("is-tier-disabled"); label.title = input.title; }
-      const e=CM.entry("packet", input.value); off.push(e?e.name:input.value);
+      const e = (CM && typeof CM.entry === "function") ? CM.entry("packet", input.value) : null;
+      off.push(e ? e.name : input.value);
     } else if (input.dataset.tierDisabled === "true"){
       input.disabled = false;
       input.checked = input.dataset.tierSelection === "true";
@@ -8185,16 +8285,18 @@ function filterAdvancedLateActivities(){
       if (label){ label.classList.remove("is-tier-disabled"); label.removeAttribute("title"); }
     }
   });
+  const stageName = (CM && CM.STAGES && CM.STAGES[stage] && CM.STAGES[stage].label) ? CM.STAGES[stage].label.split(" ")[0].toLowerCase() : stage;
   lateActivityHint.hidden = !off.length;
-  lateActivityHint.textContent = off.length ? "At the "+CM.STAGES[stage].label.split(" ")[0].toLowerCase()+" level these ask for more than is kind, so they are turned off: "+off.join(", ")+"." : "";
+  lateActivityHint.textContent = off.length ? "At the "+stageName+" level these ask for more than is kind, so they are turned off: "+off.join(", ")+"." : "";
   estimatePages();
 }
 /* One tap for a set of pages that works well together at this level. */
 function pickSuggestedSet(){
-  const CM=window.CognicopiaClinicalMatrix, stage=effectiveStage(), set=CM.suggested(stage,"packet");
+  const CM=window.CognicopiaClinicalMatrix, stage=effectiveStage(), set=(CM && typeof CM.suggested === "function") ? CM.suggested(stage,"packet") : [];
   document.querySelectorAll(".act").forEach(c=>{ if(!c.disabled) c.checked=set.indexOf(c.value)>=0; });
   filterAdvancedLateActivities();
-  $("stageMsg").textContent="Picked "+set.length+" pages that work well together at the "+CM.STAGES[stage].label.split(" ")[0].toLowerCase()+" level. Change any you like.";
+  const stageName = (CM && CM.STAGES && CM.STAGES[stage] && CM.STAGES[stage].label) ? CM.STAGES[stage].label.split(" ")[0].toLowerCase() : stage;
+  $("stageMsg").textContent="Picked "+set.length+" pages that work well together at the "+stageName+" level. Change any you like.";
 }
 document.addEventListener("cognicopia:activeresident", filterAdvancedLateActivities);
 document.addEventListener("cognicopia:tieroverride", filterAdvancedLateActivities);
@@ -10156,6 +10258,8 @@ function generateAilmentPDF(ailmentType, pick) {
   }
   var stickySootheBtn = document.getElementById("arbSootheSticky");
   if (stickySootheBtn) stickySootheBtn.addEventListener("click", function(){ sootheBtn.click(); });
+  var qpbSootheBtn = document.getElementById("qpbSoothe");
+  if (qpbSootheBtn) qpbSootheBtn.addEventListener("click", function(){ sootheBtn.click(); });
 
   /* -------------------------------------------------------------------
      Fill the packet form below from a profile. Only resident-specific
@@ -13623,7 +13727,7 @@ function generateAilmentPDF(ailmentType, pick) {
     $q("pcgBody").hidden = true; $q("pcgHowBox").hidden = true;
     var e = $q("pcgEmpty"); e.hidden = false; if (msg) e.textContent = msg;
     var pill = $q("pcgPill"); pill.textContent = "Type a first name below"; pill.classList.remove("is-on");
-    ["pcgPrint", "pcgCopy", "pcgAnother"].forEach(function(id){ $q(id).disabled = true; });
+    ["pcgPrint", "pcgCopy", "pcgAnother", "pcgFamilyDigest", "pcgPocketCard"].forEach(function(id){ var b = $q(id); if (b) b.disabled = true; });
     $q("pcgBack").hidden = true;
   }
   function meta(pk){
@@ -13681,7 +13785,7 @@ function generateAilmentPDF(ailmentType, pick) {
     $q("pcgEmpty").hidden = true; $q("pcgBody").hidden = false; $q("pcgHowBox").hidden = false;
     var pill = $q("pcgPill"); pill.textContent = "For " + pk.resident.name + " · " + pk.date.label.replace(/^\w+, /, "") + (variant ? " · v" + (variant + 1) : ""); pill.classList.add("is-on");
     meta(pk); plan(pk); prompts(pk); how(pk);
-    ["pcgPrint", "pcgCopy", "pcgAnother"].forEach(function(id){ $q(id).disabled = false; });
+    ["pcgPrint", "pcgCopy", "pcgAnother", "pcgFamilyDigest", "pcgPocketCard"].forEach(function(id){ var b = $q(id); if (b) b.disabled = false; });
     $q("pcgBack").hidden = !variant;
   }
   function later(){ clearTimeout(timer); timer = setTimeout(render, 250); }
@@ -14112,6 +14216,95 @@ function generateAilmentPDF(ailmentType, pick) {
 if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol))
   window.addEventListener("load", function(){ navigator.serviceWorker.register("sw.js").catch(function(){}); });
 </script>
+<script src="assets/services/familyLifeDigest.js"></script>
+<script>
+(function initFamilyLifeDigestWiring() {
+  function getResidentContextForDigest() {
+    if (window.activeResident) {
+      return window.activeResident;
+    }
+    if (typeof window.pcgProfile === 'function') {
+      var p = window.pcgProfile();
+      if (p && p.first) {
+        return {
+          id: 'temp_' + p.first.toLowerCase(),
+          firstName: p.first,
+          birthYear: p.year ? parseInt(p.year, 10) : undefined,
+          hometown: p.hometown || undefined,
+          interests: p.interests ? p.interests.split(',').map(function(s){ return s.trim(); }).filter(Boolean) : [],
+          cognitiveTier: (p.stage === 'late' ? 'Advanced' : (p.stage === 'middle' ? 'Moderate' : 'Mild')),
+          roomOrWing: p.room || undefined
+        };
+      }
+    }
+    return null;
+  }
+
+  function handleOpenDigest() {
+    var res = getResidentContextForDigest();
+    if (window.CogniFamilyLifeDigest && window.CogniFamilyLifeDigest.FamilyLifeDigestUI) {
+      window.CogniFamilyLifeDigest.FamilyLifeDigestUI.open(res);
+    }
+  }
+
+  var pcgDigestBtn = document.getElementById('pcgFamilyDigest');
+  if (pcgDigestBtn) pcgDigestBtn.addEventListener('click', handleOpenDigest);
+
+  var qpbDigestBtn = document.getElementById('qpbFamilyDigest');
+  if (qpbDigestBtn) qpbDigestBtn.addEventListener('click', handleOpenDigest);
+})();
+</script>
+<script src="assets/services/pocketLanyardCard.js"></script>
+<script>
+(function initPocketLanyardCardWiring() {
+  function getResidentContextForCard() {
+    if (window.activeResident) {
+      return window.activeResident;
+    }
+    var sel = document.getElementById('arbSelect');
+    if (sel && sel.value) {
+      var key = 'cognicopia_resident_' + sel.value;
+      try {
+        var raw = localStorage.getItem(key);
+        if (raw) return JSON.parse(raw);
+      } catch(e){}
+    }
+    if (typeof window.pcgProfile === 'function') {
+      var p = window.pcgProfile();
+      if (p && p.first) {
+        return {
+          tier1_core: {
+            preferredName: p.first,
+            unitNumber: p.room || "",
+            cognitiveTier: p.stage === 'late' ? 3 : (p.stage === 'middle' ? 2 : 1)
+          },
+          tier2_enrichment: {
+            meaningfulDecades: p.era ? [p.era] : ["1950s"]
+          }
+        };
+      }
+    }
+    return null;
+  }
+
+  function handleOpenCard() {
+    var res = getResidentContextForCard();
+    if (window.CogniPocketCard && window.CogniPocketCard.PocketLanyardCardUI) {
+      window.CogniPocketCard.PocketLanyardCardUI.open(res);
+    }
+  }
+
+  var arbPocketBtn = document.getElementById('arbPocketCard');
+  if (arbPocketBtn) arbPocketBtn.addEventListener('click', handleOpenCard);
+
+  var pcgPocketBtn = document.getElementById('pcgPocketCard');
+  if (pcgPocketBtn) pcgPocketBtn.addEventListener('click', handleOpenCard);
+
+  var qpbPocketBtn = document.getElementById('qpbPocketCard');
+  if (qpbPocketBtn) qpbPocketBtn.addEventListener('click', handleOpenCard);
+})();
+</script>
+<script src="assets/services/stateAuditCompliance.js"></script>
 <script src="assets/services/nightShift.js"></script>
 </body>
 </html>
