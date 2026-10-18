@@ -625,7 +625,8 @@ body { padding-left: var(--sb-w); }
 .rap-res b{font-size:18px;color:#fff}
 .rap-res-when{display:block;font-size:14.5px;color:var(--rp-muted)}
 .rap-res-here{margin-left:8px;padding:1px 8px;border-radius:999px;font-size:12.5px;font-weight:700;background:rgba(82,183,136,.2);color:var(--rp-accent-hi)}
-.rap-res-actions{display:flex;gap:10px}
+.rap-res-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.rap-res-actions .rap-btn{font-size:13px;padding:10px 16px;min-height:44px}
 .rap-res-empty{margin:12px 0 0;color:var(--rp-muted);font-size:15.5px}
 .rap-res-empty[hidden]{display:none}
 .rap-backup-link{margin-top:16px}
@@ -1080,6 +1081,12 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
           <input id="rapName" name="preferredName" type="text" maxlength="40" required aria-describedby="rapNameHint rapNameErr" placeholder="e.g., Margaret, Peggy, Mr. Olsen">
           <p class="rap-hint" id="rapNameHint">The name they answer to and like to hear. It prints on their pages.</p>
           <p class="rap-err" id="rapNameErr" hidden></p>
+        </div>
+
+        <div class="rap-field">
+          <label for="rapNickname">Nickname they prefer <span class="rap-opt">(optional)</span></label>
+          <input id="rapNickname" name="nickname" type="text" maxlength="30" placeholder="e.g., Peggy, Maggie">
+          <p class="rap-hint">A shorter name or what close family calls them. Used on pocket cards.</p>
         </div>
 
         <div class="rap-field">
@@ -1664,6 +1671,9 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
 
 <script src="assets/services/secureStore.js"></script>
 <script src="assets/services/reminiscenceEngine.js"></script>
+<script src="assets/services/familyLifeDigest.js"></script>
+<script src="js/familyLifeDigestUI.js"></script>
+<script src="js/pocketLanyardCard.js"></script>
 <script>
 /* Resident Activity Profile wizard (phase 1).
    Plain ES2017, no libraries, no network. The draft and every saved
@@ -2182,6 +2192,7 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
       /* Tier 1: builds the primary packet template */
       tier1_core: {
         preferredName: text("rapName"),
+        nickname: text("rapNickname"),
         unitNumber: needs.unitNumber,                   // v2: shown in the roster and on staff pages only
         alias: text("rapAlias"),                        // optional: shown instead of the name when aliases are on
         cognitiveTier: needs.cognitiveTier,             // v2: 1 full detail, 2 guided, 3 simplified
@@ -2258,6 +2269,7 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
     if (vn.lineThicknessPt === sug.visualNeeds.lineThicknessPt) auto.push("line");
     return {
       preferredName: t1.preferredName || "",
+      nickname: t1.nickname || "",
       unitNumber: needs.unitNumber, alias: t1.alias || "", tier: String(needs.cognitiveTier), contrast: vn.contrastMode,
       lineThickness: String(vn.lineThicknessPt), needsAuto: auto.join(","),
       age: t2.age == null ? "" : String(t2.age), birthYear: t2.birthYear == null ? "" : String(t2.birthYear),
@@ -2412,17 +2424,52 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
       var here = p.id === residentId ? ' <span class="rap-res-here">Open now</span>' : "";
       return '<li class="rap-res"><div><b>' + name + "</b>" + here + '<span class="rap-res-when">Last saved ' + escAttr(fmtTime(p.updatedAt)) + "</span></div>" +
         '<div class="rap-res-actions"><button type="button" class="rap-btn rap-btn-ghost rap-btn-sm" data-open="' + escAttr(p.id) + '" aria-label="Open ' + name + '">Open</button>' +
+        '<button type="button" class="rap-btn rap-btn-primary rap-btn-sm" data-digest="' + escAttr(p.id) + '" aria-label="Generate Family Life Digest for ' + name + '">Family Life Digest</button>' +
+        '<button type="button" class="rap-btn rap-btn-primary rap-btn-sm" data-lanyard="' + escAttr(p.id) + '" aria-label="Print Pocket Lanyard Card for ' + name + '">Pocket Lanyard Card</button>' +
         '<button type="button" class="rap-btn rap-btn-danger rap-btn-sm" data-delete="' + escAttr(p.id) + '" aria-label="Delete ' + name + '">Delete</button></div></li>';
     }).join("");
   }
   $("rapResList").addEventListener("click", function(e){
-    var open = e.target.closest("[data-open]"), del = e.target.closest("[data-delete]");
+    var open = e.target.closest("[data-open]"), del = e.target.closest("[data-delete]"), digest = e.target.closest("[data-digest]"), lanyard = e.target.closest("[data-lanyard]");
     if (open){
       var p = readResident(open.getAttribute("data-open"));
       if (!p) { renderResidents(); return; }
       if (hasUnsaved() && residentId !== p.id && !window.confirm("Open " + p.tier1_core.preferredName + "'s profile? What is in the form now will be replaced.")) return;
       populateWizardFromProfile(p);
       toast("Opened " + p.tier1_core.preferredName + "'s profile.");
+    }
+    if (digest){
+      var p = readResident(digest.getAttribute("data-digest"));
+      if (!p) { renderResidents(); return; }
+      if (!window.CogniFamilyDigestUI){
+        toast("Family Life Digest is not available. Please refresh the page.", true);
+        return;
+      }
+      var residentData = {
+        firstName: p.tier1_core.preferredName || "Resident",
+        hometown: p.tier2_enrichment && p.tier2_enrichment.hometown ? p.tier2_enrichment.hometown : "",
+        pastOccupation: p.tier2_enrichment && p.tier2_enrichment.workHistory ? p.tier2_enrichment.workHistory : "",
+        hobbies: p.tier2_enrichment && p.tier2_enrichment.hobbies ? p.tier2_enrichment.hobbies.join(", ") : "",
+        interests: p.tier2_enrichment && p.tier2_enrichment.interests ? p.tier2_enrichment.interests : [],
+        cognitiveTier: p.tier3_deep && p.tier3_deep.difficulty ? p.tier3_deep.difficulty.label : ""
+      };
+      window.CogniFamilyDigestUI.open(p.id, "Resident Profile Review", residentData);
+    }
+    if (lanyard){
+      var p = readResident(lanyard.getAttribute("data-lanyard"));
+      if (!p) { renderResidents(); return; }
+      if (!window.CogniPocketLanyard){
+        toast("Pocket Lanyard Card is not available. Please refresh the page.", true);
+        return;
+      }
+      var residentData = {
+        firstName: p.tier1_core.preferredName || "Resident",
+        nickname: p.tier1_core.nickname || "",
+        notes: p.tier3_deep && p.tier3_deep.notes ? p.tier3_deep.notes : "",
+        decades: p.tier1_core && p.tier1_core.decades ? p.tier1_core.decades : [],
+        interests: p.tier2_enrichment && p.tier2_enrichment.interests ? p.tier2_enrichment.interests : []
+      };
+      window.CogniPocketLanyard.open(residentData);
     }
     if (del){
       var id = del.getAttribute("data-delete"), q = readResident(id), who = q ? q.tier1_core.preferredName : "this resident";

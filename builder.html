@@ -8696,6 +8696,8 @@ const HeirloomUI = (function(){
 })();
 </script>
 <script src="assets/services/facilityPlanner.js"></script>
+<script src="assets/services/auditLog.js"></script>
+<script src="js/auditLogUI.js"></script>
 <script id="facility-ui">
 /* =====================================================================
    FACILITY PORTAL  (#/facility)
@@ -8901,7 +8903,7 @@ const FacilityUI = (function(){
   }
   function fixTab(){
     const m = me();
-    if (!(S.tab === "overview" || (S.tab === "team" && m.role === "director") || wings().some(w => w.id === S.tab))) S.tab = "overview";
+    if (!(S.tab === "overview" || (S.tab === "team" && m.role === "director") || (S.tab === "audit" && m.role === "director") || wings().some(w => w.id === S.tab))) S.tab = "overview";
   }
   function syncHash(){
     const h = "#/facility" + (S.tab !== "overview" ? "/" + encodeURIComponent(S.tab) : "");
@@ -8910,7 +8912,7 @@ const FacilityUI = (function(){
   function renderBar(){
     const m = me(), ws = wings();
     const tabs = [["overview", "Overview", ""]].concat(ws.map(w => [w.id, w.name, String(w.groups.length)]));
-    if (m.role === "director") tabs.push(["team", "Team & audit", ""]);
+    if (m.role === "director") tabs.push(["audit", "Audit readiness", ""], ["team", "Team & audit", ""]);
     root.querySelector("#fpBar").innerHTML = `<div class="fp-bar-top">
         <div class="fp-id"><span class="fp-logo" aria-hidden="true">${IC.building}</span>
           <div><p class="fp-eyebrow">Facility Portal</p><h1 class="fp-title" tabindex="-1">${esc(settings.facility || "Your community")}</h1></div></div>
@@ -8926,12 +8928,16 @@ const FacilityUI = (function(){
     const body = root.querySelector("#fpBody");
     body.setAttribute("aria-labelledby", "fpTab-" + S.tab);
     const w = wing();
-    if (S.tab === "team") body.innerHTML = teamHtml();
+    if (S.tab === "audit") body.innerHTML = auditHtml();
+    else if (S.tab === "team") body.innerHTML = teamHtml();
     else if (w) body.innerHTML = wingHtml(w);
     else body.innerHTML = overviewHtml();
     if (w) renderSub(false);
     if (anim !== false) animate(body);
     syncHash();
+    if (S.tab === "audit" && window.CogniAuditLogUI) {
+      window.CogniAuditLogUI.render(document.getElementById("alcContainer"), settings.facility);
+    }
   }
   function selectTab(id){
     if (id === S.tab) return;
@@ -9614,6 +9620,14 @@ const FacilityUI = (function(){
     const bad = read("weekday").concat(read("weekend")).filter(t => t < "06:00" || t > "21:00");
     keepFocus(renderSettings);
     toast(bad.length ? "Saved. Times before 6:00 AM or after 9:00 PM were left out." : "Session times saved. They apply the next time the month is filled.");
+  }
+
+  /* ---------- audit readiness (the director) ---------- */
+  function auditHtml(){
+    return `<section aria-labelledby="fpAuditH">
+      <div class="fp-sec-head"><div><h2 id="fpAuditH">State Audit Readiness & Compliance Log</h2><p class="fp-sub">Aggregated non-PHI metrics for state inspection preparation. All data remains on this device.</p></div></div>
+      <div id="alcContainer"></div>
+    </section>`;
   }
 
   /* ---------- team & audit (the director) ---------- */

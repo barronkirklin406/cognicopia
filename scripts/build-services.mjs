@@ -29,7 +29,7 @@ export function buildService(file){
   const ts = fs.readFileSync(path.join(SRC, file), "utf8");
   const global = (/@global\s+([A-Za-z_$][\w$]*)/.exec(ts) || [])[1];
   if (!global) throw new Error(`${file}: add "@global Name" to its header comment`);
-  let js = stripTypeScriptTypes(ts, { mode:"transform", sourceMap:false });
+  let js = stripTypeScriptTypes(ts, { mode:"strip" });
   const names = [];
   js = js.replace(/^export (async function\*?|function\*?|const|let|var|class) ([A-Za-z_$][\w$]*)/gm, (m, kw, n) => { names.push(n); return kw + " " + n; });
   js = js.replace(/^export \{([^}]*)\};?[ \t]*$/gm, (m, list) => { list.split(",").map(x => x.trim()).filter(Boolean).forEach(x => { const [a, b] = x.split(/\s+as\s+/); names.push(b ? `${b}: ${a}` : a); }); return ""; });

@@ -1,0 +1,16 @@
+# Cognicopia System Rules & Architectural Mandates
+
+## Core Principles
+1. ZERO Cloud Dependencies: Pure local browser execution (HTML5, Vanilla JS, CSS3). No external APIs, npm servers, or cloud calls.
+2. Clinical Validation: All activity generation logic must align strictly with Cognitive Stimulation Therapy (CST) and Reminiscence Therapy (1901–1989 data).
+3. Accessibility: Adhere strictly to WCAG 2.2 AA/AAA guidelines for memory care residents and staff (high-contrast ratios, large touch targets, legible fonts).
+4. File Target Discipline: Always inspect and modify target files directly using local workspace relative paths.
+
+## Primary File Architecture
+- /index.html -> Main Suite Navigation & Entrance
+- /builder.html -> Print-Ready Packet Builder & Journal Generator
+- /css/styles.css -> Global Styles & High Contrast Themes
+- /css/journal.css -> Layout & Sensory Trigger Box Styling
+- /js/app.js -> Main Suite Controller & State Management
+- /js/reminiscence-engine.js -> 1901–1989 Historical Procedural Generator
+- /js/packet-builder.js -> Printable PDF & Canvas Rendering Logic
