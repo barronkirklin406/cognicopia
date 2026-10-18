@@ -6,7 +6,7 @@
  * @global CogniSurveyAuditModule
  */
 
-import { ResidentProfile } from './secureCryptoStore';
+import type { ResidentProfile } from './secureCryptoStore';
 
 export interface ActivityParticipationLog {
   id: string;

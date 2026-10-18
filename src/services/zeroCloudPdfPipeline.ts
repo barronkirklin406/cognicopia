@@ -6,7 +6,7 @@
  * @global CogniZeroCloudPdfPipeline
  */
 
-import { ResidentProfile } from './secureCryptoStore';
+import type { ResidentProfile } from './secureCryptoStore';
 
 export interface PacketPageModel {
   title: string;

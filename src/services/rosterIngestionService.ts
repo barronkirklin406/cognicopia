@@ -6,7 +6,7 @@
  * @global CogniRosterIngestionService
  */
 
-import { ResidentProfile, SecureCryptoStore } from './secureCryptoStore';
+import type { ResidentProfile, SecureCryptoStore } from './secureCryptoStore';
 
 export interface CsvMappingConfig {
   firstNameCol?: string;
