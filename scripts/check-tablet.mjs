@@ -180,7 +180,7 @@ const ui = read("js/tablet.js"), html = read("tablet.html"), eng = read("js/tabl
   const nav = HUBS.find(h => h.id === "today").items.find(i => i.key === "tablet");
   ok(nav && nav.href === "tablet.html" && nav.label === "Tablet Activities", "the Today menu has a Tablet Activities entry");
   const home = read("index.html"), hero = /<div class="lp-actions">([\s\S]*?)<\/div>/.exec(home);
-  ok(hero && /<a class="lp-btn lp-btn-tablet" href="tablet\.html">Tablet Activities<\/a>/.test(hero[1]) && hero[1].indexOf("lp-btn-tablet") < hero[1].indexOf("lp-more"), "the front page's top has a Tablet Activities button beside Make a packet");
+  ok(hero && /<a class="lp-btn lp-btn-tablet" href="(?:\.\/)?tablet\.html">Tablet Activities<\/a>/.test(hero[1]) && hero[1].indexOf("lp-btn-tablet") < hero[1].indexOf("lp-more"), "the front page's top has a Tablet Activities button beside Make a packet");
   ok(/tablet\.html/.test(read("sitemap.xml")), "the sitemap lists the page");
   ok(/<title>Tablet Activities — Cognicopia<\/title>/.test(html) && /rel="canonical" href="https:\/\/cognicopia\.org\/tablet\.html"/.test(html), "the page has its own title and canonical address");
   ok(fs.existsSync(path.join(ROOT, "docs/tablet-activities.md")), "the guide for the page exists");

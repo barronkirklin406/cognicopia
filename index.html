@@ -977,38 +977,39 @@ body { padding-left: var(--sb-w); }
 .cg-sidebar-toggle svg { color: #d8f3dc; }
 
 .cg-topbar {
-  position: relative; top: 0; left: 0; right: 0; z-index: 800; min-height: 32px;
-  display: flex; align-items: center; justify-content: flex-end; gap: 8px;
-  padding: 3px 20px 3px 14px;
-  background: rgba(8,28,21,.88); border-bottom: 1px solid var(--sb-border);
+  position: sticky; top: 0; left: 0; right: 0; z-index: 800; height: 52px;
+  display: flex; align-items: center; justify-content: flex-end; gap: 16px;
+  padding: 0 28px 0 16px;
+  background: rgba(8,28,21,.82); border-bottom: 1px solid var(--sb-border);
   backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-  transition: transform .25s ease, opacity .25s ease;
 }
 .cg-topbar a, .cg-topbar button.linklike {
-  color: #e8f5e9; font-size: 9.5pt;
+  color: #e8f5e9; font-size: 10pt;
   font-family: "Trebuchet MS","Segoe UI",sans-serif; text-decoration: none;
 }
 .cg-topbar a:hover { color: #d8f3dc; }
 .cg-topbar .hdrlicmsg { color: #f4c7b8; }
 .cg-topbar .hdrlicmsg:empty { display: none; }
 .cg-topbar .hdrlicmsg.ok { color: #b7e4c7; }
-.cg-topbar{height:auto;min-height:32px;flex-wrap:wrap;justify-content:flex-end;gap:6px;padding:3px 12px}
-.cg-topbar .hdrlic{display:flex;align-items:center;gap:6px;flex-wrap:wrap;min-width:0}
-.cg-topbar .stripe-btn{display:inline-flex;align-items:center;justify-content:center;min-height:28px;margin-left:0;padding:3px 10px;white-space:normal;text-align:center;font-size:12px;border-radius:6px}
-.cg-topbar .linklike{min-height:28px;padding:3px 8px;font-size:12px}
-.cg-topbar .cg-night-shift-toggle{min-height:28px;max-width:100%;padding:3px 8px;font-size:12px}
+.cg-topbar{height:auto;min-height:60px;flex-wrap:wrap;justify-content:flex-end;gap:8px;padding:8px 16px}
+.cg-topbar .hdrlic{display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-width:0}
+.cg-topbar .stripe-btn{display:inline-flex;align-items:center;justify-content:center;min-height:var(--tap);margin-left:0;padding:8px 14px;white-space:normal;text-align:center}
+.cg-topbar .linklike{min-height:var(--tap);padding:8px 10px}
+.cg-topbar .arb-sticky-crisis{display:inline-flex;align-items:center;justify-content:center;position:static;z-index:auto;min-height:var(--tap);max-width:100%;padding:8px 12px;font-size:15px;white-space:normal;box-shadow:none}
+.cg-topbar .cg-night-shift-toggle{min-height:var(--tap);max-width:100%;padding:8px 12px}
 @media (min-width:701px){
   .cg-topbar{flex-wrap:nowrap}
   .cg-topbar .hdrlic{flex:0 1 auto}
-  .cg-topbar .cg-night-shift-toggle{flex:0 1 auto;min-width:0}
+  .cg-topbar .arb-sticky-crisis,.cg-topbar .cg-night-shift-toggle{flex:0 1 auto;min-width:0}
 }
 @media (min-width:701px) and (max-width:900px){
-  .cg-topbar{flex-wrap:wrap;padding:3px 10px}
+  .cg-topbar{flex-wrap:wrap}
   .cg-topbar .hdrlic{display:contents}
   .cg-topbar #hdrlicToggle{order:4}
-  .cg-topbar .stripe-btn{order:1;font-size:12px;padding:3px 8px}
+  .cg-topbar .stripe-btn{order:1;font-size:13px;padding:6px 10px}
   .cg-topbar .stripe-btn-alt{order:1}
-  .cg-topbar .cg-night-shift-toggle{order:3;font-size:12px;padding:3px 6px}
+  .cg-topbar .arb-sticky-crisis{order:2;font-size:14px;padding:7px 10px}
+  .cg-topbar .cg-night-shift-toggle{order:3;font-size:13px;padding:6px 9px}
 }
 
 @media (max-width: 700px) {
@@ -1018,10 +1019,10 @@ body { padding-left: var(--sb-w); }
     width: min(260px, 85vw); box-shadow: 6px 0 32px rgba(0,0,0,.45);
   }
   @media (max-width:700px){
-    .cg-topbar{position:relative;justify-content:flex-start;align-items:center;gap:6px;padding:4px 10px 4px 56px;min-height:36px}
-    .cg-topbar .hdrlic{flex:1 1 100%;width:100%;gap:6px}
+    .cg-topbar{justify-content:flex-start;align-items:center;gap:8px;padding:58px 12px 10px;min-height:0}
+    .cg-topbar .hdrlic{flex:1 1 100%;width:100%;gap:8px}
     .cg-topbar .stripe-btn{flex:0 1 auto;max-width:100%}
-    .cg-topbar .cg-night-shift-toggle{flex:0 1 auto}
+    .cg-topbar .cg-night-shift-toggle,.cg-topbar .arb-sticky-crisis{flex:0 1 auto}
   }
   .cg-sidebar.is-open { transform: translateX(0); }
   .cg-sidebar-toggle { display: flex; }
@@ -1140,24 +1141,16 @@ summary{min-height:var(--tap);box-sizing:border-box}
 .arb-btn-primary{background:#52b788;border-color:#52b788;color:#062116}
 .arb-btn-primary:hover{background:#7ad3a4;border-color:#7ad3a4;color:#062116}
 .arb-btn-danger{color:#ffcfc4;border-color:rgba(255,180,162,.45)}
-.arb-btn-emergency, .qpb-btn-soothe{
-  display:inline-flex;align-items:center;justify-content:center;gap:6px;
-  background:rgba(255,204,102,.18);border:1.5px solid #d49a43;border-radius:8px;
-  color:#ffd285;font-size:14.5px;font-weight:700;min-height:40px;padding:6px 14px;
-  cursor:pointer;transition:background .15s,border-color .15s,color .15s
-}
-.arb-btn-emergency:hover, .qpb-btn-soothe:hover{background:rgba(255,204,102,.32);border-color:#ffbe5c;color:#fff8db}
-.arb-btn-emergency:focus-visible, .qpb-btn-soothe:focus-visible{outline:3px solid #ffbe5c;outline-offset:2px}
-html:not(.cg-night-shift) .arb-btn-emergency,
-html:not(.cg-night-shift) .qpb-btn-soothe{background:#fdf5e6;border-color:#c98b2c;color:#6b3e04}
-html:not(.cg-night-shift) .arb-btn-emergency:hover,
-html:not(.cg-night-shift) .qpb-btn-soothe:hover{background:#faeacc;border-color:#a86c15;color:#4a2901}
+.arb-btn-danger:hover{border-color:#ffb4a2;color:#fff}
+.arb-btn-emergency{background:#ffcc66;border-color:#ffcc66;color:#241500;font-size:18px;font-weight:800}
+.arb-btn-emergency:hover{background:#ffe0a3;border-color:#ffe0a3;color:#241500}
 .arb-btn-guest{background:#d9f0e2;border-color:#4f9b75;color:#143d2b;font-weight:800}
 .arb-guest-presets{display:flex;flex-wrap:wrap;gap:8px;padding:14px;margin:10px 0;border:1px solid rgba(216,243,220,.25);border-radius:12px;background:rgba(8,28,21,.45)}
 .arb-guest-presets button{padding:8px 12px;border:1px solid rgba(216,243,220,.25);border-radius:8px;background:#18372a;color:#f2fff5;font:inherit;cursor:pointer}
 .arb-guest-presets p{flex-basis:100%;margin:0;color:#d8f3dc;font-size:14px}
 .arb-guest-presets[hidden]{display:none}
 .pick.is-tier-disabled{opacity:.42;cursor:not-allowed}
+.arb-sticky-crisis{display:none}
 .arb-tier-toggle{background:#332312;border-color:#d6a64b;color:#ffedcc}
 .arb-tier-toggle[aria-pressed="true"]{background:#765018;border-color:#ffd477;color:#fff1cf}
 .arb-btn[aria-disabled="true"],.arb-btn:disabled{opacity:.45;cursor:not-allowed;pointer-events:none}
@@ -1168,6 +1161,9 @@ html:not(.cg-night-shift) .qpb-btn-soothe:hover{background:#faeacc;border-color:
   .arb{padding:16px}
   .arb-actions{width:100%}
   .arb-btn{flex:1 1 140px}
+}
+@media (max-width:700px){
+  .arb-sticky-crisis{display:block;position:fixed;top:62px;right:10px;z-index:1500;padding:9px 12px;font-size:14px;box-shadow:0 4px 18px rgba(0,0,0,.45)}
 }
 @media print{.arb{display:none!important}}
 </style>
@@ -1541,6 +1537,9 @@ html.tb-open,html.tb-open body{overflow:hidden !important;overscroll-behavior:no
 .tb-menu-h{margin:0;text-align:center;font-size:clamp(28px,4vw,44px);line-height:1.15;font-weight:800}
 .tb-menu-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(14px,2.4vw,28px);width:100%;max-width:1100px}
 .tb-tile{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;min-height:clamp(180px,34vh,300px);padding:18px 14px;border:4px solid var(--tb-line);border-radius:24px;background:#fff;cursor:pointer;text-align:center}
+.tb-tile{color:var(--tb-ink)}
+.tb .tb-tile:hover,.tb .tb-tile:focus-visible{background:#e6f4ec;border-color:#111;color:var(--tb-ink)}
+.tb .tb-tile:hover :is(b,span),.tb .tb-tile:focus-visible :is(b,span){color:var(--tb-ink)}
 .tb-tile:active{transform:scale(.98)}
 .tb-tile svg{width:clamp(64px,11vh,104px);height:auto;flex:none}
 .tb-tile b{font-size:clamp(24px,2.8vw,34px);line-height:1.15}
@@ -1774,10 +1773,11 @@ html body .cg-sidebar .cg-ailment-card:focus-visible{outline:3px solid var(--cg-
 html.cg-night-shift .cg-crumbs{background:#211910;border-color:#684a26}
 html.cg-night-shift .cg-crumbs li,html.cg-night-shift .cg-crumbs a,html.cg-night-shift .cg-crumbs [aria-current]{color:#ffedcc!important}
 @media (max-width:768px){.cg-crumbs{padding:8px 16px}}
-.cg-topbar{height:auto!important;min-height:40px;flex-wrap:wrap;row-gap:4px;padding-top:4px;padding-bottom:4px}
+/* the action bar under the navigation: light, like the navigation, with the buy links in the brand's deep green */
+.cg-topbar{height:auto!important;min-height:52px;flex-wrap:wrap;row-gap:6px;padding-top:8px;padding-bottom:8px}
 html body .cg-topbar{background:#fbf8f2;border-bottom:1px solid var(--sb-border);-webkit-backdrop-filter:none;backdrop-filter:none}
-html body .cg-topbar a,html body .cg-topbar button.linklike{color:var(--sb-txt);font-size:13px}
-.cg-topbar .cg-cta{display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;min-height:38px;padding:5px 14px;border:1.5px solid var(--cg-green-700,#1b382b);border-radius:8px;background:var(--cg-green-700,#1b382b);color:#ffffff!important;font:700 13.5px/1.2 var(--cg-font-ui,"Trebuchet MS","Segoe UI",sans-serif);text-align:center;text-decoration:none;box-shadow:var(--cg-shadow-1,0 1px 2px rgba(0,0,0,.15))}
+html body .cg-topbar a,html body .cg-topbar button.linklike{color:var(--sb-txt)}
+.cg-topbar .cg-cta{display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;min-height:var(--tap,52px);padding:8px 18px;border:2px solid var(--cg-green-700,#1b382b);border-radius:var(--cg-radius-md,12px);background:var(--cg-green-700,#1b382b);color:#ffffff!important;font:700 15px/1.25 var(--cg-font-ui,"Trebuchet MS","Segoe UI",sans-serif);text-align:center;text-decoration:none;box-shadow:var(--cg-shadow-1,0 1px 2px rgba(0,0,0,.22))}
 .cg-topbar .cg-cta:hover{background:var(--cg-green-600,#2d5a44);border-color:var(--cg-green-600,#2d5a44)}
 .cg-topbar .cg-cta-alt{background:#ffffff;border-color:var(--cg-green-700,#1b382b);color:var(--cg-green-700,#1b382b)!important;box-shadow:none}
 .cg-topbar .cg-cta-alt:hover{background:var(--cg-sage-100,#e3f1e8);border-color:var(--cg-green-700,#1b382b)}
@@ -1824,8 +1824,9 @@ html.cg-night-shift .cg-topbar .cg-cta:focus-visible{outline-color:#ffd477}
   html body .cg-hub-foot a{margin:0;padding:8px 14px;border:0;border-radius:10px;white-space:nowrap;font:600 16px/1.2 var(--cg-font-ui,"Trebuchet MS","Segoe UI",sans-serif)}
   .cg-hub-foot .cg-sb-ico{display:none}
   .cg-sidebar-toggle,.cg-sb-overlay{display:none!important}
-  /* the action bar sits cleanly under the navigation */
+  /* the action bar scrolls away under the navigation; the packet tool's, which carries Instant Soothe, stays in reach */
   html body .cg-topbar{position:relative;top:auto}
+  html body .cg-topbar:has(.arb-sticky-crisis){position:sticky;top:var(--cg-nav-h)}
 }
 
 /* ---------- anything narrower: the same hubs in the Menu drawer ---------- */
@@ -2378,7 +2379,6 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
         <summary class="cg-sb-section cg-sb-acc-head"><svg class="cg-sb-ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01M12 6h.01M16 6h.01M8 10h.01M12 10h.01M16 10h.01M8 14h.01M12 14h.01M16 14h.01"/></svg><span class="cg-sb-acc-title">Facility</span><svg class="cg-sb-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="9 6 15 12 9 18"/></svg></summary>
         <ul class="cg-sb-sub">
     <li><a href="builder.html#/facility"><svg class="cg-sb-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01M12 6h.01M16 6h.01M8 10h.01M12 10h.01M16 10h.01M8 14h.01M12 14h.01M16 14h.01"/></svg><span>Facility Portal</span></a></li>
-    <li><a href="builder.html#/facility/audit"><svg class="cg-sb-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg><span>State Audit &amp; Compliance Log</span></a></li>
     <li><a href="builder.html#/shift"><svg class="cg-sb-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M9 12h6M9 16h6"/></svg><span>Shift board</span></a></li>
     <li><a href="builder.html#/roster"><svg class="cg-sb-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></svg><span>Resident roster</span></a></li>
     <li><a href="builder.html#/clinical"><svg class="cg-sb-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 3H4a1 1 0 0 0-1 1v5a5 5 0 0 0 10 0V4a1 1 0 0 0-1-1h-1"/><path d="M8 14v1a6 6 0 0 0 12 0v-3"/><circle cx="20" cy="10" r="2"/></svg><span>Session notes (SLP)</span></a></li>
@@ -2471,6 +2471,7 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
       <button type="button" id="licHdrGo">Unlock</button>
     </span>
   </span>
+  <button type="button" class="arb-btn arb-btn-emergency arb-sticky-crisis" id="arbSootheSticky" aria-label="Instant Soothe and Print: choose a care level and a theme, then print a fresh calming packet">🟡 Instant Soothe / Print</button>
   <span class="hdrlicmsg" id="hdrlicMsg" role="status"></span>
 </div>
 
@@ -2487,7 +2488,7 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
   family's names, their work, and the things they loved.</p>
         <div class="lp-actions">
           <a class="lp-btn" href="#make">Make a packet</a>
-          <a class="lp-btn lp-btn-tablet" href="tablet.html">Tablet Activities</a>
+          <a class="lp-btn lp-btn-tablet" href="./tablet.html">Tablet Activities</a>
           <a class="lp-more" href="#features"><span>See what you get</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
         </div>
       </div>
@@ -12703,6 +12704,14 @@ function generateAilmentPDF(ailmentType, pick) {
   }
 
   launchBtn.addEventListener("click", launch);
+  /* The address index.html#tablet-fallback is where a tablet link lands when the tablet page itself could not be opened
+     (see 404.html and sw.js): open the tablet mode here instead, with a plain note. Nothing is requested. */
+  if (location.hash === "#tablet-fallback"){
+    try { history.replaceState(null, "", location.pathname + location.search); } catch (e){}
+    var note = document.getElementById("qpbStatus");
+    if (note) note.textContent = "The tablet page could not be opened, so Tablet Interactive Mode is opening here.";
+    setTimeout(function(){ try { launchBtn.scrollIntoView({ block: "center" }); launch(); } catch (e){} }, 600);
+  }
   window.launchTabletMode = launch;
   window.exitTabletMode = exit;
 })();

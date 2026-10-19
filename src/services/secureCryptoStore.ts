@@ -178,7 +178,7 @@ export class SecureCryptoStore {
     try {
       const kek = await this.deriveKek(passphrase, keyringRecord.salt, keyringRecord.iterations);
       const rawDekBuffer = await window.crypto.subtle.decrypt(
-        { name: 'AES-GCM', iv: keyringRecord.iv },
+        { name: 'AES-GCM', iv: keyringRecord.iv as BufferSource },
         kek,
         keyringRecord.wrappedKey
       );
@@ -212,7 +212,7 @@ export class SecureCryptoStore {
       {
         name: 'PBKDF2',
         hash: 'SHA-256',
-        salt: salt.buffer,
+        salt: salt.buffer as ArrayBuffer,
         iterations,
       },
       baseKey,
@@ -319,7 +319,7 @@ export class SecureCryptoStore {
     const decryptedBuffer = await window.crypto.subtle.decrypt(
       {
         name: 'AES-GCM',
-        iv: record.iv,
+        iv: record.iv as BufferSource,
         additionalData: aad,
         tagLength: 128,
       },
@@ -344,7 +344,7 @@ export class SecureCryptoStore {
         const decrypted = await window.crypto.subtle.decrypt(
           {
             name: 'AES-GCM',
-            iv: record.iv,
+            iv: record.iv as BufferSource,
             additionalData: aad,
             tagLength: 128,
           },

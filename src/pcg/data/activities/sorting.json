@@ -1,0 +1,217 @@
+{
+ "$schema": "../../schema/sorting.schema.json",
+ "version": 1,
+ "groups": [
+  {
+   "id": "kitchen-tools",
+   "label": "Kitchen tools",
+   "one": "a kitchen tool",
+   "family": ["kitchen"],
+   "words": ["rolling pin", "whisk", "ladle", "spatula", "can opener", "potato masher", "egg beater", "colander", "wooden spoon", "measuring cup", "cheese grater", "flour sifter"]
+  },
+  {
+   "id": "table-things",
+   "label": "On the dinner table",
+   "one": "something for the dinner table",
+   "family": ["kitchen"],
+   "words": ["plate", "fork", "napkin", "saucer", "teacup", "butter dish", "salt shaker", "gravy boat", "tablecloth", "pitcher", "soup spoon", "serving bowl"]
+  },
+  {
+   "id": "garden-tools",
+   "label": "Garden tools",
+   "one": "a garden tool",
+   "family": ["garden"],
+   "words": ["hoe", "rake", "trowel", "shovel", "watering can", "pruning shears", "wheelbarrow", "garden hose", "spade", "pitchfork", "bulb planter", "kneeling pad"]
+  },
+  {
+   "id": "flowers",
+   "label": "Garden flowers",
+   "one": "a garden flower",
+   "family": ["garden", "plants"],
+   "words": ["rose", "tulip", "daisy", "lilac", "peony", "marigold", "zinnia", "daffodil", "iris", "petunia", "sunflower", "pansy"]
+  },
+  {
+   "id": "vegetables",
+   "label": "Garden vegetables",
+   "one": "a garden vegetable",
+   "family": ["garden", "plants", "food"],
+   "words": ["tomatoes", "carrots", "green beans", "corn", "peas", "potatoes", "cucumbers", "onions", "cabbage", "squash", "beets", "lettuce"]
+  },
+  {
+   "id": "trees",
+   "label": "Trees",
+   "one": "a tree",
+   "family": ["plants", "outdoors"],
+   "words": ["oak", "maple", "elm", "pine", "birch", "willow", "cedar", "poplar", "sycamore", "walnut", "hickory", "spruce"]
+  },
+  {
+   "id": "fruits",
+   "label": "Fruits",
+   "one": "a fruit",
+   "family": ["food", "plants"],
+   "words": ["apples", "peaches", "pears", "cherries", "grapes", "plums", "oranges", "strawberries", "blueberries", "bananas", "lemons", "cranberries"]
+  },
+  {
+   "id": "breakfast-foods",
+   "label": "Breakfast foods",
+   "one": "a breakfast food",
+   "family": ["food"],
+   "words": ["scrambled eggs", "toast", "bacon", "oatmeal", "pancakes", "grits", "cereal", "biscuits", "orange juice", "sausage", "waffles", "hash browns"]
+  },
+  {
+   "id": "desserts",
+   "label": "Desserts",
+   "one": "a dessert",
+   "family": ["food"],
+   "words": ["apple pie", "chocolate cake", "rice pudding", "ice cream", "cobbler", "brownies", "pound cake", "fudge", "custard", "sugar cookies", "pumpkin pie", "banana bread"]
+  },
+  {
+   "id": "workshop-tools",
+   "label": "Workshop tools",
+   "one": "a workshop tool",
+   "family": ["workshop"],
+   "words": ["hammer", "handsaw", "screwdriver", "wrench", "pliers", "level", "tape measure", "chisel", "hand drill", "sandpaper", "wood plane", "vise"]
+  },
+  {
+   "id": "sewing-basket",
+   "label": "In the sewing basket",
+   "one": "something from a sewing basket",
+   "family": ["needlework"],
+   "words": ["needle", "thread", "thimble", "straight pins", "scissors", "buttons", "seam ripper", "bobbin", "pin cushion", "crochet hook", "yarn", "embroidery hoop"]
+  },
+  {
+   "id": "laundry-day",
+   "label": "Laundry day",
+   "one": "something for washing day",
+   "family": ["laundry"],
+   "words": ["washboard", "clothespins", "clothesline", "flat iron", "starch", "laundry basket", "bar of soap", "wringer", "ironing board", "coat hangers", "bleach", "fabric softener"]
+  },
+  {
+   "id": "winter-clothes",
+   "label": "Winter clothing",
+   "one": "something warm to wear",
+   "family": ["clothing"],
+   "words": ["overcoat", "mittens", "wool scarf", "galoshes", "earmuffs", "knit cap", "long johns", "snow boots", "flannel shirt", "wool socks", "parka", "fur collar"]
+  },
+  {
+   "id": "summer-clothes",
+   "label": "Summer clothing",
+   "one": "something to wear in summer",
+   "family": ["clothing"],
+   "words": ["sundress", "straw hat", "sandals", "short sleeves", "sun hat", "sunglasses", "seersucker suit", "bathing suit", "linen shirt", "parasol", "cotton blouse", "bermuda shorts"]
+  },
+  {
+   "id": "school-desk",
+   "label": "At the school desk",
+   "one": "something from a school desk",
+   "family": ["school"],
+   "words": ["pencil", "eraser", "ruler", "chalk", "inkwell", "notebook", "blackboard", "textbook", "pencil sharpener", "protractor", "slate", "fountain pen"]
+  },
+  {
+   "id": "office-desk",
+   "label": "On the office desk",
+   "one": "something for an office desk",
+   "family": ["office"],
+   "words": ["typewriter", "stapler", "ink pen", "paper clips", "ledger", "rotary phone", "blotter", "desk calendar", "filing cabinet", "carbon paper", "adding machine", "rubber stamp"]
+  },
+  {
+   "id": "farm-animals",
+   "label": "Farm animals",
+   "one": "a farm animal",
+   "family": ["animals"],
+   "words": ["cow", "horse", "pig", "sheep", "goat", "hen", "rooster", "mule", "turkey", "duck", "calf", "lamb"]
+  },
+  {
+   "id": "pets",
+   "label": "Pets",
+   "one": "a pet",
+   "family": ["animals"],
+   "words": ["dog", "cat", "canary", "goldfish", "parakeet", "rabbit", "turtle", "guinea pig", "hamster", "puppy", "kitten", "pony"]
+  },
+  {
+   "id": "songbirds",
+   "label": "Songbirds",
+   "one": "a songbird",
+   "family": ["animals", "birds"],
+   "words": ["robin", "cardinal", "sparrow", "wren", "blue jay", "finch", "meadowlark", "mockingbird", "chickadee", "oriole", "thrush", "bluebird"]
+  },
+  {
+   "id": "instruments",
+   "label": "Musical instruments",
+   "one": "a musical instrument",
+   "family": ["music"],
+   "words": ["piano", "fiddle", "trumpet", "accordion", "harmonica", "banjo", "clarinet", "pipe organ", "drums", "guitar", "tuba", "trombone"]
+  },
+  {
+   "id": "weather",
+   "label": "Kinds of weather",
+   "one": "a kind of weather",
+   "family": ["weather"],
+   "words": ["rain", "snow", "fog", "sleet", "thunderstorm", "sunshine", "drizzle", "breeze", "hail", "frost", "cloudy skies", "heat wave"]
+  },
+  {
+   "id": "money",
+   "label": "Money",
+   "one": "a coin",
+   "family": ["money"],
+   "words": ["nickel", "dime", "quarter", "penny", "dollar bill", "half dollar", "silver dollar", "change purse", "coin roll", "savings book", "money clip", "cash box"]
+  },
+  {
+   "id": "bedroom",
+   "label": "In the bedroom",
+   "one": "something for a bedroom",
+   "family": ["bedroom"],
+   "words": ["quilt", "pillow", "nightstand", "reading lamp", "dresser", "slippers", "alarm clock", "wool blanket", "bedspread", "bed sheet", "wardrobe", "bedside rug"]
+  },
+  {
+   "id": "front-porch",
+   "label": "On the front porch",
+   "one": "something for a front porch",
+   "family": ["porch"],
+   "words": ["rocking chair", "porch swing", "welcome mat", "lemonade pitcher", "screen door", "flower pot", "mailbox", "wind chimes", "porch light", "wicker table", "hanging fern", "doorbell"]
+  },
+  {
+   "id": "church",
+   "label": "At church",
+   "one": "something found in a church",
+   "family": ["church"],
+   "words": ["hymnal", "pew", "steeple", "church bell", "candle", "Bible", "altar", "choir robe", "collection plate", "stained glass", "bulletin", "hymn board"],
+   "needs": "faith"
+  },
+  {
+   "id": "road-trip",
+   "label": "For a road trip",
+   "one": "something to pack for a road trip",
+   "family": ["travel"],
+   "words": ["suitcase", "road map", "thermos", "picnic basket", "spare tire", "cooler", "camera", "sunglasses case", "travel blanket", "gas can", "compass", "luggage rack"]
+  },
+  {
+   "id": "getting-ready",
+   "label": "Getting ready for the day",
+   "one": "something for getting ready",
+   "family": ["grooming"],
+   "words": ["comb", "hairbrush", "lipstick", "cologne", "powder puff", "handkerchief", "wallet", "hat pin", "hand mirror", "cufflinks", "shaving brush", "purse"]
+  },
+  {
+   "id": "ballgame",
+   "label": "At the ballgame",
+   "one": "something from a ballgame",
+   "family": ["sport"],
+   "words": ["baseball bat", "catcher's mitt", "umpire", "scoreboard", "bleachers", "pennant", "home plate", "peanuts", "hot dogs", "program", "dugout", "pitcher's mound"]
+  },
+  {
+   "id": "fishing-gear",
+   "label": "Fishing gear",
+   "one": "something for fishing",
+   "family": ["fishing"],
+   "words": ["fishing rod", "reel", "hook", "bobber", "landing net", "tackle box", "lure", "fishing line", "waders", "bait bucket", "stringer", "creel"]
+  },
+  {
+   "id": "things-wheels",
+   "label": "Things with wheels",
+   "one": "something with wheels",
+   "family": ["transport"],
+   "words": ["bicycle", "wagon", "tractor", "train", "roller skates", "car", "truck", "bus", "streetcar", "taxicab", "motorcycle", "steamroller"]
+  }
+ ]
+}

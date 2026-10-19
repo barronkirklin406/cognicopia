@@ -3,24 +3,27 @@
 (function(root){
 "use strict";
 /* =====================================================================
-   COGNICOPIA FAMILY LIFE DIGEST SERVICE
-   A client-side PDF generator for creating a dignified, single-page
-   printable summary of a resident's completed engagement session to share
-   with family members or include in care plan meetings.
-
-   All data is read from local state/IndexedDB only. No network requests.
-   The PDF is generated entirely in browser memory using jsPDF.
-
-   Privacy: Zero-cloud guarantee. No resident data leaves the device.
+   COGNICOPIA FAMILY LIFE DIGEST
+   A one-page, family-facing summary of a completed engagement session.
+   Staff pick observation tags, may add a short note, and may include
+   biographical focus points from the resident's local profile. The page
+   is planned here and drawn with jsPDF in the browser. Nothing is sent
+   anywhere. Notes stay in session memory unless the host page saves them
+   to the resident's encrypted profile.
 
    Built into assets/services/familyLifeDigest.js (globalThis.CogniFamilyDigest) by
    scripts/build-services.mjs.
    @global CogniFamilyDigest
    ===================================================================== */
 
-const VERSION = "1.0.0";
+const VERSION = "1.1.0";
+const HEADER = "Cognicopia — Resident Engagement Digest";
+const FOOTER = "Generated locally via Cognicopia.org — Zero-Cloud Privacy Guarantee.";
+const MAX_NOTES_CHARS = 280;
 
-/** Observation tags that staff can quickly select. */
+/** Letter page in points: 0.75 in binding gutter, 0.5 in other margins. */
+const PAGE = { w: 612, h: 792, left: 54, right: 36, top: 36, bottom: 36 }         ;
+
 const OBSERVATION_TAGS                                           = [
   { id: "engaged-warmly", label: "Engaged warmly during 1950s history prompts" },
   { id: "smiled-audio", label: "Smiled while listening to vintage audio" },
@@ -32,280 +35,255 @@ const OBSERVATION_TAGS                                           = [
   { id: "comfortable-rhythm", label: "Comfortable with the session's pace and rhythm" }
 ];
 
-/** Maximum character count for custom care notes (to fit single-page layout). */
-const MAX_NOTES_CHARS = 280;
+const INK                           = [0, 0, 0];
+const GREEN                           = [27, 56, 43];
+const GOLD                           = [197, 160, 89];
+const WHITE                           = [255, 255, 255];
+const MUTED                           = [26, 32, 44];
 
-/** Data required to generate a Family Life Digest. */
+                                                                                           
+
                               
-                                       
                      
-                                                          
                                
-                                                                            
                        
-                                     
                             
-                                                   
                        
-                                                                  
                            
-                                                 
                          
  
 
-/** Resident data needed for the digest (from local profile). */
+/** Family-facing fields only. No cognitive tier, diagnosis or unit. */
                                      
                     
                     
                           
                    
                        
-                         
  
 
-/** The generated PDF as a data URL (for download/print). */
-                               
+                     
+                                      
+                       
+                           
+                         
+                                               
+                                 
+              
+                                      
+ 
+                                                             
+
                                
                   
-                           
                    
  
 
-/**
- * Sanitize text to prevent PDF injection issues.
- * Removes control characters and trims whitespace.
- */
 function cleanText(v         , max        )         {
   const s = String(v == null ? "" : v);
-  // Remove control characters except tabs and newlines
-  const cleaned = s.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, "");
-  return cleaned.trim().slice(0, max);
+  return s.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, "").replace(/\s+/g, " ").trim().slice(0, max);
 }
 
-/**
- * Format a date for display in the digest.
- */
+function pick(v         )         {
+  if (v == null) return "";
+  if (typeof v === "string" || typeof v === "number") return String(v);
+  if (typeof v === "object" && v && "label" in (v          )) return String((v                       ).label || "");
+  if (typeof v === "object" && v && "place" in (v          )) return String((v                       ).place || "");
+  return "";
+}
+
+function labels(list         )           {
+  if (!Array.isArray(list)) return [];
+  return list.map(pick).map(s => s.trim()).filter(Boolean);
+}
+
 function formatDate(dateInput                 )         {
   let date      ;
-  if (typeof dateInput === "number") {
-    date = new Date(dateInput);
-  } else if (/^\d{4}-\d{2}-\d{2}$/.test(dateInput)) {
-    date = new Date(dateInput + "T00:00:00");
-  } else {
-    date = new Date(dateInput);
-  }
-  if (isNaN(date.getTime())) return new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+  if (typeof dateInput === "number") date = new Date(dateInput);
+  else if (/^\d{4}-\d{2}-\d{2}$/.test(dateInput)) date = new Date(dateInput + "T00:00:00");
+  else date = new Date(dateInput);
+  if (isNaN(date.getTime())) return "";
   return date.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
 }
 
-/**
- * Generate a Family Life Digest PDF using jsPDF.
- * This function requires jsPDF to be loaded globally (window.jspdf.jsPDF).
- *
- * @param input The digest data (resident, session, observations)
- * @param residentData The resident's profile data (from local store)
- * @returns The generated PDF as a data URL
- */
-async function generateDigest(
-  input             ,
-  residentData                    
-)                        {
-  // Check that jsPDF is available
-  const jsPDF = (globalThis                                                       ).jspdf?.jsPDF;
-  if (!jsPDF) {
-    throw new Error("jsPDF is not loaded. Please include the jsPDF library.");
-  }
-
-  // Create PDF instance (US Letter, portrait, inches)
-  const doc = new jsPDF({
-    orientation: "portrait",
-    unit: "in",
-    format: "letter"
+function defaultSplit(text        , width        , size        , bold         )           {
+  const factor = size * (bold ? 0.56 : 0.52);
+  const words = String(text).split(/\s+/).filter(Boolean);
+  const lines           = [];
+  let cur = "";
+  words.forEach(w => {
+    const next = cur ? cur + " " + w : w;
+    if (next.length * factor <= width || !cur) cur = next;
+    else { lines.push(cur); cur = w; }
   });
+  if (cur) lines.push(cur);
+  return lines.length ? lines : [""];
+}
 
-  // Page dimensions (US Letter: 8.5 x 11 inches)
-  const pageWidth = 8.5;
-  const pageHeight = 11;
-  const margin = 0.75; // Binding gutter and margins
-  const contentWidth = pageWidth - (margin * 2);
-
-  // Colors (high contrast, senior-friendly)
-  const black = "#000000";
-  const darkGreen = "#1b382b"; // Cognicopia brand green
-  const gold = "#c5a059"; // Cognicopia brand gold
-  const gray = "#666666";
-
-  // Font setup - use Atkinson Hyperlegible if available, otherwise Helvetica
-  const fontName = "AtkinsonHyperlegible" in (doc                                       ).fonts ? "AtkinsonHyperlegible" : "helvetica";
-  doc.setFont(fontName, "normal");
-
-  // ---------- HEADER ----------
-  const headerY = 0.8;
-  
-  // Brand line
-  doc.setFillColor(darkGreen);
-  doc.rect(margin, headerY - 0.15, contentWidth, 0.1, "F");
-  
-  // Title
-  doc.setFontSize(20);
-  doc.setTextColor(black);
-  doc.setFont(fontName, "bold");
-  doc.text("Cognicopia — Resident Engagement Digest", margin, headerY, { maxWidth: contentWidth });
-  
-  // Subtitle with date
-  doc.setFontSize(12);
-  doc.setFont(fontName, "normal");
-  doc.setTextColor(gray);
-  const dateStr = formatDate(input.sessionDate);
-  doc.text(`Session Date: ${dateStr}`, margin, headerY + 0.25);
-
-  // ---------- RESIDENT INFO ----------
-  const residentY = headerY + 0.6;
-  doc.setFontSize(14);
-  doc.setFont(fontName, "bold");
-  doc.setTextColor(black);
-  doc.text(`Resident: ${cleanText(residentData.firstName, 50)}`, margin, residentY);
-  
-  doc.setFontSize(11);
-  doc.setFont(fontName, "normal");
-  doc.setTextColor(gray);
-  let bioY = residentY + 0.25;
-  
-  if (residentData.hometown) {
-    doc.text(`Hometown: ${cleanText(residentData.hometown, 80)}`, margin, bioY);
-    bioY += 0.2;
-  }
-  if (residentData.pastOccupation) {
-    doc.text(`Past Occupation: ${cleanText(residentData.pastOccupation, 80)}`, margin, bioY);
-    bioY += 0.2;
-  }
-  if (residentData.cognitiveTier) {
-    doc.text(`Care Level: ${cleanText(residentData.cognitiveTier, 30)}`, margin, bioY);
-    bioY += 0.2;
-  }
-
-  // ---------- ACTIVITY ----------
-  const activityY = bioY + 0.3;
-  doc.setFontSize(12);
-  doc.setFont(fontName, "bold");
-  doc.setTextColor(darkGreen);
-  doc.text("Activity", margin, activityY);
-  
-  doc.setFontSize(11);
-  doc.setFont(fontName, "normal");
-  doc.setTextColor(black);
-  doc.text(cleanText(input.activityType, 100), margin, activityY + 0.2);
-
-  // ---------- OBSERVATIONS ----------
-  const obsY = activityY + 0.5;
-  doc.setFontSize(12);
-  doc.setFont(fontName, "bold");
-  doc.setTextColor(darkGreen);
-  doc.text("Observations", margin, obsY);
-  
-  let obsListY = obsY + 0.25;
-  doc.setFontSize(10);
-  doc.setFont(fontName, "normal");
-  doc.setTextColor(black);
-  
-  // Add selected observation tags
-  if (input.observationTags.length > 0) {
-    input.observationTags.forEach(tagId => {
-      const tag = OBSERVATION_TAGS.find(t => t.id === tagId);
-      if (tag) {
-        // Add bullet point
-        doc.text("•", margin, obsListY);
-        doc.text(cleanText(tag.label, 200), margin + 0.15, obsListY, { maxWidth: contentWidth - 0.2 });
-        obsListY += 0.18;
-      }
-    });
-  } else {
-    doc.text("No specific observations recorded.", margin, obsListY);
-    obsListY += 0.18;
-  }
-
-  // ---------- CUSTOM NOTES ----------
-  const notesY = obsListY + 0.25;
-  doc.setFontSize(12);
-  doc.setFont(fontName, "bold");
-  doc.setTextColor(darkGreen);
-  doc.text("Care Notes", margin, notesY);
-  
-  doc.setFontSize(10);
-  doc.setFont(fontName, "normal");
-  doc.setTextColor(black);
-  const notesText = input.customNotes ? cleanText(input.customNotes, MAX_NOTES_CHARS) : "No additional notes.";
-  doc.text(notesText, margin, notesY + 0.2, { maxWidth: contentWidth });
-
-  // ---------- BIOGRAPHICAL FOCUS POINTS (optional) ----------
-  let currentY = notesY + 0.6;
-  
-  if (input.includeBioFocus) {
-    doc.setFontSize(12);
-    doc.setFont(fontName, "bold");
-    doc.setTextColor(darkGreen);
-    doc.text("Biographical Focus Points", margin, currentY);
-    
-    currentY += 0.25;
-    doc.setFontSize(10);
-    doc.setFont(fontName, "normal");
-    doc.setTextColor(black);
-    
-    if (residentData.hobbies) {
-      doc.text(`Hobbies: ${cleanText(residentData.hobbies, 200)}`, margin, currentY, { maxWidth: contentWidth });
-      currentY += 0.18;
-    }
-    if (residentData.interests && residentData.interests.length > 0) {
-      const interests = residentData.interests.slice(0, 5).join(", ");
-      doc.text(`Interests: ${cleanText(interests, 200)}`, margin, currentY, { maxWidth: contentWidth });
-      currentY += 0.18;
-    }
-  }
-
-  // ---------- FOOTER ----------
-  const footerY = pageHeight - 0.5;
-  doc.setFontSize(8);
-  doc.setFont(fontName, "normal");
-  doc.setTextColor(gray);
-  doc.text("Generated locally via Cognicopia.org — Zero-Cloud Privacy Guarantee.", margin, footerY, { maxWidth: contentWidth, align: "center" });
-
-  // ---------- STAFF INITIALS (optional) ----------
-  if (input.staffInitials) {
-    doc.text(`Recorded by: ${cleanText(input.staffInitials, 30)}`, margin, footerY - 0.15, { align: "right" });
-  }
-
-  // ---------- GENERATE DATA URL ----------
-  const dataUrl = doc.output("dataurlstring");
-  
-  // Generate filename
-  const safeName = cleanText(residentData.firstName, 30).replace(/[^a-zA-Z0-9]/g, "_");
-  const datePart = dateStr.replace(/\s+/g, "_");
-  const filename = `Cognicopia_Digest_${safeName}_${datePart}.pdf`;
-
-  return { dataUrl, filename };
+function digestFilename(firstName        , dateLabel        )         {
+  const safeName = cleanText(firstName, 30).replace(/[^a-zA-Z0-9]+/g, "_").replace(/^_|_$/g, "") || "Resident";
+  const datePart = cleanText(dateLabel, 40).replace(/[^a-zA-Z0-9]+/g, "_").replace(/^_|_$/g, "") || "session";
+  return "Cognicopia_Digest_" + safeName + "_" + datePart + ".pdf";
 }
 
 /**
- * Validate digest input before generation.
- * Returns an error message if invalid, or null if valid.
+ * Map a saved Resident Activity Profile to family-facing digest fields.
+ * Clinical, unit and avoid-list details stay out.
  */
+function residentFromProfile(p         )                     {
+  const r = p && typeof p === "object" ? p                            : {};
+  const t1 = r.tier1_core && typeof r.tier1_core === "object" ? r.tier1_core                            : {};
+  const t2 = r.tier2_enrichment && typeof r.tier2_enrichment === "object" ? r.tier2_enrichment                            : {};
+  const hometown = pick(t2.hometown);
+  const music = t2.music && typeof t2.music === "object" ? t2.music                            : {};
+  const interests = labels(t2.activityPreferences).concat(labels(music.genres)).concat(labels(music.artists));
+  const unique = interests.filter((x, i) => interests.indexOf(x) === i).slice(0, 6);
+  return {
+    firstName: cleanText(t1.preferredName || "Resident", 50) || "Resident",
+    hometown: hometown ? cleanText(hometown, 80) : "",
+    pastOccupation: cleanText(pick(t1.occupation) || pick(t1.primaryVocation), 80),
+    hobbies: labels(t1.topHobbies).slice(0, 6).join(", "),
+    interests: unique
+  };
+}
+
 function validateDigestInput(input                      )                {
-  if (!input.residentId || typeof input.residentId !== "string") {
-    return "A resident ID is required.";
-  }
-  if (!input.sessionDate) {
-    return "A session date is required.";
-  }
-  if (!input.activityType || typeof input.activityType !== "string") {
-    return "An activity type is required.";
-  }
-  if (input.customNotes && input.customNotes.length > MAX_NOTES_CHARS) {
-    return `Custom notes must be ${MAX_NOTES_CHARS} characters or less.`;
-  }
-  if (input.observationTags && !Array.isArray(input.observationTags)) {
-    return "Observation tags must be a list.";
-  }
+  if (!input || typeof input !== "object") return "Session details are required.";
+  if (!input.residentId || typeof input.residentId !== "string") return "A resident is required.";
+  if (!input.sessionDate) return "A session date is required.";
+  if (!input.activityType || typeof input.activityType !== "string" || !cleanText(input.activityType, 100)) return "An activity type is required.";
+  if (input.customNotes && String(input.customNotes).length > MAX_NOTES_CHARS) return "Custom notes must be " + MAX_NOTES_CHARS + " characters or less.";
+  if (input.observationTags && !Array.isArray(input.observationTags)) return "Observation tags must be a list.";
   return null;
 }
-root.CogniFamilyDigest = Object.freeze({ VERSION, OBSERVATION_TAGS, MAX_NOTES_CHARS, generateDigest, validateDigestInput });
+
+function tagLabel(id        )         {
+  const tag = OBSERVATION_TAGS.find(t => t.id === id);
+  return tag ? tag.label : "";
+}
+
+function planDigest(input             , resident                    , split        )          {
+  const wrap = split || defaultSplit;
+  const { w, h, left, right, top } = PAGE;
+  const contentW = w - left - right;
+  const ops       = [];
+  const text = (t        , x        , y        , size        , o              = {})       => {
+    ops.push(Object.assign({ t: "text", x, y, text: t, size, rgb: INK }, o)      );
+  };
+  let y = top + 18;
+  ops.push({ t: "fill", x: 0, y: 0, w, h: 78, rgb: GREEN });
+  ops.push({ t: "fill", x: 0, y: 78, w, h: 6, rgb: GOLD });
+  text(HEADER, left, 42, 16, { bold: true, rgb: WHITE });
+  const dateStr = formatDate(input.sessionDate) || "Session date not recorded";
+  text("Session date: " + dateStr, left, 62, 11, { rgb: WHITE });
+
+  y = 110;
+  const name = cleanText(resident.firstName, 50) || "Resident";
+  text(name, left, y, 18, { bold: true, rgb: GREEN });
+  y += 22;
+  text("A note for family about today's engagement.", left, y, 11, { rgb: MUTED });
+  y += 20;
+  ops.push({ t: "rule", x: left, y, x2: left + contentW, y2: y, lw: 1.25, rgb: GOLD });
+  y += 22;
+
+  const heading = (label        )       => {
+    text(label, left, y, 12, { bold: true, rgb: GREEN });
+    y += 16;
+  };
+  const para = (body        , size        , bold = false)       => {
+    wrap(body, contentW, size, bold).forEach(ln => { text(ln, left, y, size, { bold, rgb: INK }); y += size * 1.35; });
+    y += 8;
+  };
+
+  heading("Activity");
+  para(cleanText(input.activityType, 100) || "Engagement session", 12);
+
+  heading("Observations");
+  const tags = (input.observationTags || []).map(tagLabel).filter(Boolean);
+  if (!tags.length) para("Staff recorded this session without extra observation tags.", 11);
+  else {
+    tags.forEach(label => {
+      const lines = wrap(label, contentW - 16, 11, false);
+      lines.forEach((ln, i) => {
+        if (i === 0) text("•", left, y, 11);
+        text(ln, left + 14, y, 11);
+        y += 15;
+      });
+    });
+    y += 8;
+  }
+
+  heading("Care notes");
+  const notes = input.customNotes ? cleanText(input.customNotes, MAX_NOTES_CHARS) : "";
+  para(notes || "No additional notes.", 11);
+
+  if (input.includeBioFocus) {
+    heading("Biographical focus points");
+    const bits           = [];
+    if (resident.hometown) bits.push("Hometown: " + cleanText(resident.hometown, 80));
+    if (resident.pastOccupation) bits.push("Work: " + cleanText(resident.pastOccupation, 80));
+    if (resident.hobbies) bits.push("Hobbies: " + cleanText(resident.hobbies, 200));
+    if (resident.interests && resident.interests.length) bits.push("Interests: " + cleanText(resident.interests.slice(0, 5).join(", "), 200));
+    if (!bits.length) para("No biographical details are on this computer for this resident.", 11);
+    else bits.forEach(line => para(line, 11));
+  }
+
+  const footerY = h - 28;
+  ops.push({ t: "rule", x: left, y: footerY - 14, x2: left + contentW, y2: footerY - 14, lw: 0.8, rgb: GOLD });
+  text(FOOTER, w / 2, footerY, 8, { rgb: MUTED, align: "center" });
+  if (input.staffInitials) {
+    text("Recorded by: " + cleanText(input.staffInitials, 30), left + contentW, footerY - 18, 9, { rgb: MUTED, align: "right" });
+  }
+
+  /* Keep a single page: drop body lines that would collide with the footer. */
+  const floor = footerY - 28;
+  const kept = ops.filter(o => o.t !== "text" || o.y < floor || o.y >= footerY - 20);
+  return { w, h, ops: kept };
+}
+
+function draw(doc                                                                                                                                                                                              , page         )       {
+  for (const o of page.ops){
+    const c = o.rgb || INK;
+    if (o.t === "text"){
+      doc.setFont("helvetica", o.bold ? "bold" : "normal");
+      doc.setFontSize(o.size || 11);
+      doc.setTextColor(c[0], c[1], c[2]);
+      doc.text(String(o.text || ""), o.x, o.y, { align: o.align || "left" });
+    } else if (o.t === "rule"){
+      doc.setDrawColor(c[0], c[1], c[2]);
+      doc.setLineWidth(o.lw || 1);
+      doc.line(o.x, o.y, o.x2 == null ? o.x : o.x2, o.y2 == null ? o.y : o.y2);
+    } else if (o.t === "box"){
+      doc.setDrawColor(c[0], c[1], c[2]);
+      doc.setLineWidth(o.lw || 1);
+      doc.rect(o.x, o.y, o.w || 0, o.h || 0, "S");
+    } else {
+      doc.setFillColor(c[0], c[1], c[2]);
+      doc.rect(o.x, o.y, o.w || 0, o.h || 0, "F");
+    }
+  }
+}
+
+/**
+ * Build a PDF in browser memory when jsPDF is present (window.jspdf.jsPDF).
+ * Host pages should prefer planDigest + draw after loading the local vendor copy.
+ */
+async function generateDigest(input             , resident                    )                        {
+  const err = validateDigestInput(input);
+  if (err) throw new Error(err);
+  const JsPDF = (globalThis                                                                                 ).jspdf?.jsPDF;
+  if (!JsPDF) throw new Error("The print library is not loaded.");
+  const doc = new JsPDF({ orientation: "portrait", unit: "pt", format: "letter" });
+  const split        = (text, width, size, bold) => {
+    doc.setFont("helvetica", bold ? "bold" : "normal");
+    doc.setFontSize(size);
+    const lines = doc.splitTextToSize ? doc.splitTextToSize(text, width) : defaultSplit(text, width, size, bold);
+    return Array.isArray(lines) ? lines : [String(lines)];
+  };
+  const page = planDigest(input, resident, split);
+  draw(doc                                         , page);
+  const dateStr = formatDate(input.sessionDate);
+  return { dataUrl: String(doc.output("dataurlstring")), filename: digestFilename(resident.firstName, dateStr) };
+}
+root.CogniFamilyDigest = Object.freeze({ VERSION, HEADER, FOOTER, MAX_NOTES_CHARS, PAGE, OBSERVATION_TAGS, formatDate, defaultSplit, digestFilename, residentFromProfile, validateDigestInput, tagLabel, planDigest, draw, generateDigest });
 })(typeof globalThis !== "undefined" ? globalThis : this);

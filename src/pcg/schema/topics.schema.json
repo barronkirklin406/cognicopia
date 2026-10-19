@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cognicopia.org/src/pcg/schema/topics.schema.json",
+  "title": "Cognicopia PCG topic graph",
+  "description": "The tag registry and the topic graph. A topic is an interest or a way of life (farming, dogs, school). Its neighbors are the topics exactly one step away: the only ones the engine may reach for a surprise. Its implied tags are the cross-pollination layer: any item that carries one of them can be offered to someone who has the topic, whatever topic the item itself belongs to.",
+  "type": "object",
+  "required": ["version", "tags", "topics"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "version": { "const": 1 },
+    "tags": { "type": "array", "minItems": 20, "items": { "$ref": "#/$defs/tag" } },
+    "topics": { "type": "array", "minItems": 30, "items": { "$ref": "#/$defs/topic" } }
+  },
+  "$defs": {
+    "slug": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
+    "tag": {
+      "type": "object",
+      "required": ["id", "label"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "#/$defs/slug" },
+        "label": { "type": "string", "minLength": 3, "maxLength": 40 },
+        "decade": { "type": "boolean" },
+        "generic": { "type": "boolean" }
+      }
+    },
+    "topic": {
+      "type": "object",
+      "required": ["id", "label", "keywords", "implies", "neighbors"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "#/$defs/slug" },
+        "label": { "type": "string", "minLength": 3, "maxLength": 40 },
+        "keywords": { "type": "array", "minItems": 3, "maxItems": 40, "uniqueItems": true, "items": { "type": "string", "pattern": "^[a-z0-9]+(?: [a-z0-9]+){0,2}$" } },
+        "implies": { "type": "array", "minItems": 1, "maxItems": 6, "uniqueItems": true, "items": { "$ref": "#/$defs/slug" } },
+        "neighbors": { "type": "array", "minItems": 2, "maxItems": 8, "uniqueItems": true, "items": { "$ref": "#/$defs/slug" } },
+        "general": { "type": "boolean" }
+      }
+    }
+  }
+}
