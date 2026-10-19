@@ -8,7 +8,7 @@
    accidental word, every clue and saying passes the dignity rules.
 
      wordSearch, crossword, spellIt, sayings, sortIt, inOrder, matchUp,
-     oddOne, tracePath, soundBoard, designChoices
+     oddOne, tracePath, soundBoard, designChoices, regions, PALETTES
 
    Each takes { stage: "early" | "middle" | "late", topic: a topic id or "",
    seed: any text, fit: { size } } and returns plain data. The same seed
@@ -296,16 +296,69 @@
     return { i: next, status: next >= pts.length - 1 - close ? "done" : "on" };
   }
 
+  /* ---------- color a picture: the color sets, and the shapes in a closed-outline picture ---------- */
+  /* four sets of eight, each color named: soft, bold, natural and old-fashioned */
+  var PALETTES = [
+    { id: "pastel", name: "Soft", colors: [["Blush", "#f4b6c2"], ["Peach", "#f9c9a4"], ["Butter", "#f8e5a1"], ["Mint", "#b7e1c4"], ["Sky", "#bcd8ea"], ["Lilac", "#d4c1ec"], ["Cream", "#fbf1dc"], ["Stone", "#d9d2c3"]] },
+    { id: "primary", name: "Bold", colors: [["Red", "#d93a2f"], ["Orange", "#f28c1c"], ["Yellow", "#f6d11b"], ["Green", "#2f9e44"], ["Blue", "#2f6fd0"], ["Purple", "#7a3fb5"], ["Black", "#1a202c"], ["White", "#ffffff"]] },
+    { id: "nature", name: "Garden", colors: [["Leaf", "#4a9d5b"], ["Forest", "#2e6b44"], ["Moss", "#8aa84b"], ["Earth", "#8a5a2b"], ["Clay", "#c27a4a"], ["Sand", "#e2c79d"], ["Stone", "#8d96a3"], ["Water", "#5aa6a0"]] },
+    { id: "retro", name: "Vintage", colors: [["Harvest gold", "#e0a526"], ["Burnt orange", "#d2691e"], ["Avocado", "#7a8c2e"], ["Brown", "#6b4a2b"], ["Plum", "#6f3b5b"], ["Rust", "#a5472a"], ["Cream", "#f1e4c3"], ["Teal", "#2f8f8b"]] }
+  ];
+
+  /* The shapes of a picture made of closed outlines. data is the picture's pixels (RGBA, dark lines on white), w by h.
+     Every enclosed white area bigger than minArea is a shape; smaller specks and the lines themselves join the nearest
+     shape, so a tap anywhere on the page lands on a shape and a color never leaves its lines.
+     Returns { w, h, lab (shape number at each pixel, 1..count), count, boxes (left, top, right, bottom of each), areas, bg (the shape outside the picture) }. */
+  function regions(data, w, h, minArea) {
+    var n = w * h, line = new Uint8Array(n), lab = new Int32Array(n), stack = new Int32Array(n), i, p, x, found = 0;
+    for (i = 0; i < n; i++) line[i] = data[i * 4] < 150 ? 1 : 0;
+    var areas = [0], edge = [false], sp, a, tb;
+    for (i = 0; i < n; i++) {
+      if (line[i] || lab[i]) continue;
+      found++; sp = 0; stack[sp++] = i; lab[i] = found; a = 0; tb = false;
+      while (sp) {
+        p = stack[--sp]; a++; x = p % w;
+        if (!x || x === w - 1 || p < w || p >= n - w) tb = true;
+        if (x > 0 && !line[p - 1] && !lab[p - 1]) { lab[p - 1] = found; stack[sp++] = p - 1; }
+        if (x < w - 1 && !line[p + 1] && !lab[p + 1]) { lab[p + 1] = found; stack[sp++] = p + 1; }
+        if (p >= w && !line[p - w] && !lab[p - w]) { lab[p - w] = found; stack[sp++] = p - w; }
+        if (p < n - w && !line[p + w] && !lab[p + w]) { lab[p + w] = found; stack[sp++] = p + w; }
+      }
+      areas.push(a); edge.push(tb);
+    }
+    var map = new Int32Array(found + 1), count = 0, bg = 0, bgArea = 0, keptArea = [0];
+    for (i = 1; i <= found; i++) {
+      if (areas[i] < minArea) continue;
+      map[i] = ++count; keptArea.push(areas[i]);
+      if (edge[i] && areas[i] > bgArea) { bgArea = areas[i]; bg = count; }
+    }
+    for (i = 0; i < n; i++) lab[i] = lab[i] ? map[lab[i]] : 0;
+    if (!count) return { w: w, h: h, lab: lab, count: 0, boxes: [null], areas: [0], bg: 0 };
+    var qh = 0, qt = 0, q = stack, l;
+    for (i = 0; i < n; i++) if (lab[i]) { x = i % w; if ((x > 0 && !lab[i - 1]) || (x < w - 1 && !lab[i + 1]) || (i >= w && !lab[i - w]) || (i < n - w && !lab[i + w])) q[qt++] = i; }
+    while (qh < qt) {
+      p = q[qh++]; x = p % w; l = lab[p];
+      if (x > 0 && !lab[p - 1]) { lab[p - 1] = l; q[qt++] = p - 1; }
+      if (x < w - 1 && !lab[p + 1]) { lab[p + 1] = l; q[qt++] = p + 1; }
+      if (p >= w && !lab[p - w]) { lab[p - w] = l; q[qt++] = p - w; }
+      if (p < n - w && !lab[p + w]) { lab[p + w] = l; q[qt++] = p + w; }
+    }
+    var boxes = [null], y;
+    for (i = 1; i <= count; i++) boxes.push([w, h, -1, -1]);
+    for (i = 0; i < n; i++) { l = lab[i]; if (!l) continue; x = i % w; y = (i - x) / w; var b = boxes[l]; if (x < b[0]) b[0] = x; if (y < b[1]) b[1] = y; if (x > b[2]) b[2] = x; if (y > b[3]) b[3] = y; }
+    return { w: w, h: h, lab: lab, count: count, boxes: boxes, areas: keptArea, bg: bg };
+  }
+
   /* ---------- color a picture: which library designs to offer ---------- */
   function designChoices(o, designs) {
     var rng = rngOf(o, "co"), list = designs.filter(function (d) { return d.cat !== "zentangle-mandalas" && !(d.sensitive && d.sensitive.length); });
-    return rng.shuffle(list).slice(0, 6).map(function (d) { return d.id; });
+    return rng.shuffle(list).map(function (d) { return d.id; });
   }
 
   root.CognicopiaTablet = {
     STAGES: STAGES, TOPICS: TOPICS, SHAPES: Object.keys(SHAPES), SHAPE_LABEL: SHAPE_LABEL, SCENES: SCENES,
     wordSearch: wordSearch, crossword: crossword, spellIt: spellIt, sayings: sayings, sortIt: sortIt, oddOne: oddOne, inOrder: inOrder,
-    matchUp: matchUp, soundBoard: soundBoard, tracePath: tracePath, follow: follow, designChoices: designChoices,
+    matchUp: matchUp, soundBoard: soundBoard, tracePath: tracePath, follow: follow, designChoices: designChoices, regions: regions, PALETTES: PALETTES,
     counts: function () { return { packs: banks().PACKS.length, clueSets: banks().CLUES.length, sayings: sayingPool().length, objects: banks().OBJECTS.length }; },
     newSeed: function () { return String(Date.now()) + "-" + Math.floor(Math.random() * 1e9); }
   };

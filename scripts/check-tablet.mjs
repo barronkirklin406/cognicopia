@@ -186,6 +186,41 @@ ok(made === 3 * 43, "every stage and topic was tried (129 combinations)");
   ok(new Set(Array.from({ length: 24 }, (_, i) => T.tracePath({ stage: "middle", seed: "any" + i }).scene)).size === 3, "with no scene chosen, the seeds bring all three journeys");
 }
 
+/* color a picture: four sets of colors, and the shapes found in a picture made of closed outlines */
+{
+  const hexOf = c => [1, 3, 5].map(i => parseInt(c.slice(i, i + 2), 16));
+  ok(T.PALETTES.length === 4 && new Set(T.PALETTES.map(p => p.id)).size === 4 && new Set(T.PALETTES.map(p => p.name)).size === 4, "four sets of colors, each with its own name");
+  for (const p of T.PALETTES) {
+    ok(p.colors.length === 8, `${p.id}: eight colors`);
+    ok(new Set(p.colors.map(c => c[1])).size === 8 && new Set(p.colors.map(c => c[0])).size === 8, `${p.id}: no color or name repeats`);
+    ok(p.colors.every(c => /^#[0-9a-f]{6}$/.test(c[1]) && /^[A-Z][a-z]+( [a-z]+)?$/.test(c[0])), `${p.id}: every color has a plain name and a hex value`);
+    let near = 0; for (let i = 0; i < 8; i++) for (let j = i + 1; j < 8; j++) { const a = hexOf(p.colors[i][1]), b = hexOf(p.colors[j][1]); if (Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]) < 24) near++; }
+    ok(near === 0, `${p.id}: no two colors are hard to tell apart`);
+  }
+  const px = (w, h, fn) => { const d = new Uint8ClampedArray(w * h * 4); for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const v = fn(x, y) ? 0 : 255, i = (y * w + x) * 4; d[i] = d[i + 1] = d[i + 2] = v; d[i + 3] = 255; } return d; };
+  /* a framed page cut in two by a vertical line, with a black blob and a tiny white hole inside the left half */
+  const W = 60, H = 80, frame = (x, y) => (x >= 10 && x < 14 && y >= 10 && y < 70) || (x >= 46 && x < 50 && y >= 10 && y < 70) || (y >= 10 && y < 14 && x >= 10 && x < 50) || (y >= 66 && y < 70 && x >= 10 && x < 50);
+  const picture = px(W, H, (x, y) => frame(x, y) || (x >= 28 && x < 32 && y >= 10 && y < 70) || (x >= 16 && x < 22 && y >= 30 && y < 36 && !(x >= 18 && x < 20 && y >= 32 && y < 34)));
+  const R = T.regions(picture, W, H, 40), at = (x, y) => R.lab[y * W + x];
+  ok(R.count === 3 && R.bg === at(2, 2) && at(20, 20) !== at(40, 20) && at(20, 20) > 0 && at(40, 20) > 0 && at(20, 20) !== R.bg, "a framed page cut in two: the outside and the two halves are three shapes");
+  ok(R.lab.every(v => v > 0 && v <= R.count), "every point of the page belongs to a shape, so a tap anywhere colors something");
+  ok(at(30, 40) === at(20, 40) || at(30, 40) === at(40, 40), "a tap on a line colors the shape beside it");
+  ok(at(19, 33) === at(20, 20), "a speck too small to tap joins the shape around it");
+  const L = R.boxes[at(20, 20)], Rt = R.boxes[at(40, 20)];
+  ok(L[0] <= 14 && L[2] >= 26 && L[2] <= 32 && Rt[0] >= 28 && Rt[2] >= 46 && L[1] <= 14 && L[3] >= 66, "each shape's box covers it and stays on its own side of the line");
+  ok(R.areas[at(20, 20)] > 600 && R.areas[at(40, 20)] > 600, "the areas are counted");
+  const dark = T.regions(px(30, 30, () => true), 30, 30, 10), blank = T.regions(px(30, 30, () => false), 30, 30, 10);
+  ok(dark.count === 0 && blank.count === 1 && blank.bg === 1 && blank.lab.every(v => v === 1), "a page with no space, or with no lines, is handled");
+  /* the same picture twice gives the same shapes */
+  ok(JSON.stringify(Array.from(T.regions(picture, W, H, 40).lab)) === JSON.stringify(Array.from(R.lab)), "the same picture always gives the same shapes");
+  /* which library pictures are offered: all that suit, in a different order for each seed, never a mandala or a sensitive one */
+  const designs = Array.from({ length: 30 }, (_, i) => ({ id: "d" + i, cat: i % 5 === 0 ? "zentangle-mandalas" : "animals", sensitive: i % 7 === 3 ? ["war"] : [] }));
+  const eligible = designs.filter(d => d.cat !== "zentangle-mandalas" && !d.sensitive.length).map(d => d.id);
+  const a = T.designChoices({ seed: "a" }, designs), b = T.designChoices({ seed: "b" }, designs);
+  ok(a.length === eligible.length && [...a].sort().join() === [...eligible].sort().join(), "every picture that suits is offered, and no mandala or sensitive one");
+  ok(JSON.stringify(a) !== JSON.stringify(b) && JSON.stringify(a) === JSON.stringify(T.designChoices({ seed: "a" }, designs)), "a seed always gives the same order, another seed another");
+}
+
 /* the sounds: each one has a picture, a name and a line */
 {
   const ids = Snd.META.map(m => m.id);
@@ -249,7 +284,7 @@ const ui = UIFILES.map(f => raw[f]).join("\n"), tabletJs = raw["js/tablet.js"];
   const keys = [...new Set([...tabletJs.matchAll(/(?:getItem|setItem|removeItem)\(\s*([A-Za-z_"'][^,)]*)/g)].map(m => m[1]))];
   ok(keys.length === 1 && keys[0] === "PREFS_KEY", "the only thing read or written in this browser is the choices (PREFS_KEY): " + keys.join(", "));
   ok(UIFILES.filter(f => f !== "js/tablet.js").every(f => !/localStorage/.test(raw[f])) && !/localStorage/.test(strip(eng) + strip(art) + strip(snd) + strip(banksJs)), "no other file reads or writes anything in this browser");
-  ok(/localStorage\.setItem\(PREFS_KEY, JSON\.stringify\(prefs\)\)/.test(tabletJs) && /var PREFS_KEY = "cognicopia_tablet_prefs", prefs = \{ stage: "middle", topic: "", sound: true, speed: 2, grid: 0 \}/.test(tabletJs), "and those choices (level, topic, sound, speed, grid size) hold nothing about anyone");
+  ok(/localStorage\.setItem\(PREFS_KEY, JSON\.stringify\(prefs\)\)/.test(tabletJs) && /var PREFS_KEY = "cognicopia_tablet_prefs", prefs = \{ stage: "middle", topic: "", sound: true, speed: 2, grid: 0, palette: 0, paper: 0 \}/.test(tabletJs), "and those choices (level, topic, sound, speed, grid size, color set, paper) hold nothing about anyone");
   ok(!/cognicopia_resident|cognicopia_profile|activeResident|qpEngine|CogniSecureStore/.test(ui), "the screen reads no resident or profile storage and asks for no name");
   const sw = read("sw.js");
   ok(["tablet.html", ...want.filter(f => f.startsWith("js/")), "assets/pcg/pcg-data.bundle.js", "assets/cognicopia-coloring/cognicopia-coloring.js", "assets/services/trialLedger.js"].every(f => sw.includes('"' + f + '"')), "the service worker keeps the page, its scripts, the puzzle content and the coloring library for offline use");
