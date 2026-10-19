@@ -499,7 +499,7 @@
 
   /* ---------- the page: button, badge, modal ---------- */
   var CSS = [
-    ".cgpromo-btn,.cgpromo-badge{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:var(--tap,52px);padding:8px 14px;border-radius:8px;font:700 15px/1.2 \"Trebuchet MS\",\"Segoe UI\",system-ui,sans-serif;cursor:pointer;white-space:normal;text-align:center;box-sizing:border-box;text-decoration:none}",
+    ".cgpromo-btn,.cgpromo-badge{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:var(--tap,52px);padding:8px 14px;border-radius:8px;font:700 15px/1.2 var(--cg-font-ui,\"Atkinson Hyperlegible\",\"Trebuchet MS\",\"Segoe UI\",system-ui,sans-serif);cursor:pointer;white-space:normal;text-align:center;box-sizing:border-box;text-decoration:none}",
     ".cgpromo-btn{background:#fff;color:#14302a;border:2px solid #286E75}",
     ".cgpromo-btn:hover{background:#e6f4f1;border-color:#14302a}",
     ".cgpromo-badge{background:#1e5b3a;color:#fff;border:2px solid #14402a}",

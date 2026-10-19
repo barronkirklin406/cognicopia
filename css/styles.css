@@ -274,8 +274,8 @@ html.cg-night-shift::before,html.cg-night-shift::after{display:none}
   html.cg-paper:not(.cg-night-shift) h2{font-size:var(--cg-step-2);line-height:1.2;border-bottom:2px solid var(--cg-tan-200) !important}
   html.cg-paper:not(.cg-night-shift) h3{font-size:var(--cg-step-1);line-height:1.25}
   html.cg-paper:not(.cg-night-shift) :is(p,li){color:var(--cg-charcoal) !important}
-  html.cg-paper:not(.cg-night-shift) :is(main,.container,.highlight-banner,article,section,p,td,dd) a:not([class]){color:var(--cg-green-700) !important;text-decoration:underline;text-underline-offset:3px;font-weight:600}
-  html.cg-paper:not(.cg-night-shift) :is(main,.container,.highlight-banner,article,section,p,td,dd) a:not([class]):hover{color:var(--cg-green-600) !important}
+  html.cg-paper:not(.cg-night-shift) :is(main,.container,.highlight-banner,article,section,p,td,dd) a:is(:not([class]),.cg-email){color:var(--cg-green-700) !important;text-decoration:underline;text-underline-offset:3px;font-weight:600}
+  html.cg-paper:not(.cg-night-shift) :is(main,.container,.highlight-banner,article,section,p,td,dd) a:is(:not([class]),.cg-email):hover{color:var(--cg-green-600) !important}
   html.cg-paper:not(.cg-night-shift) hr{border:0;border-top:1px solid var(--cg-tan-200)}
 
   /* the page frame and its cards */
@@ -324,7 +324,7 @@ html.cg-night-shift::before,html.cg-night-shift::after{display:none}
   html.cg-paper.cg-night-shift :is(th){background:#2b2015 !important}
   html.cg-paper.cg-night-shift :is(.primary-btn,.back-home-btn,.secondary-btn,.cg-btn-primary){background:#332312 !important;border-color:#d6a64b !important;color:#ffedcc !important}
   html.cg-paper.cg-night-shift :is(.primary-btn,.back-home-btn,.secondary-btn,.cg-btn-primary) :is(span,svg){color:#ffedcc !important}
-  html.cg-paper.cg-night-shift :is(main,.container,.highlight-banner,article,section,p,td,dd) a:not([class]){color:#ffd477 !important}
+  html.cg-paper.cg-night-shift :is(main,.container,.highlight-banner,article,section,p,td,dd) a:is(:not([class]),.cg-email){color:#ffd477 !important}
   html.cg-paper.cg-night-shift .plan .tag{color:var(--cg-amber-ink) !important}
   html.cg-paper.cg-night-shift :is(.art-caption,.journal-caption,.planner-caption,.art-showcase-box *,.journal-sample-box *,.planner-sample-box *){color:var(--cg-charcoal) !important}
   html.cg-paper.cg-night-shift :is(input,select,textarea){background:#2b2015 !important;color:#ffedcc !important;border-color:#9b7136 !important}
@@ -476,6 +476,33 @@ svg.cg-coloring :is(path,line,polyline,polygon,circle,ellipse,rect){
   fill:#000;stroke:#000;stroke-width:var(--cg-line);stroke-linejoin:round;stroke-linecap:round;vector-effect:non-scaling-stroke;
 }
 @media print{svg.cg-coloring *{fill:#000 !important;stroke:#000 !important}}
+
+/* ---------- 9c. One type system for the paper pages (<html class="cg-paper">) ----------
+   Atkinson Hyperlegible for everything a person reads or presses; Fraunces only for the big headings.
+   Same scale on every page: 17 px reading text at 1.65 to 1.7 leading, 16 px table text, 15 px small print,
+   bold (700) headings with a little negative tracking on the large sizes, and 700 buttons with a touch of
+   positive tracking. Screen only, so printed packets and PDFs are not touched. */
+@media screen{
+  html.cg-paper body{font-size:var(--cg-step-0);line-height:1.7;letter-spacing:.003em;font-kerning:normal;font-feature-settings:"kern","liga","calt";text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+  /* one family: the readable one */
+  html.cg-paper :is(p,li,dd,dt,td,th,caption,label,legend,figcaption,blockquote,cite,small,summary,button,input,select,textarea,option,a.btn,.btn,.cg-btn){font-family:var(--cg-font-ui) !important}
+  html.cg-paper :is(p,dd):not(:is(.cg-topbar,.cg-sidebar,.cg-foot,.cg-crumbs,nav) *){line-height:1.7}
+  html.cg-paper li:not(:is(.cg-topbar,.cg-sidebar,.cg-foot,.cg-crumbs,nav) *){font-size:1.0625rem;line-height:1.65}
+  html.cg-paper dd:not(:is(.cg-topbar,.cg-sidebar,.cg-foot,.cg-crumbs,nav) *){font-size:1.0625rem}
+  html.cg-paper :is(td,th){font-size:1rem;line-height:1.55}
+  html.cg-paper th{font-weight:700;letter-spacing:.01em}
+  html.cg-paper :is(small,figcaption,caption){font-size:.9375rem;line-height:1.5}
+  html.cg-paper :is(strong,b){font-weight:700}
+  html.cg-paper :is(button,.btn,.cg-btn,a.btn){font-weight:700;letter-spacing:.012em;line-height:1.25}
+  /* headings: bold, balanced, tighter as they grow */
+  html.cg-paper:is(:not(.cg-night-shift),.cg-night-shift) :is(h1,h2,h3){font-weight:700 !important;text-wrap:balance}
+  html.cg-paper:is(:not(.cg-night-shift),.cg-night-shift) h1{line-height:1.08;letter-spacing:-.022em}
+  html.cg-paper:is(:not(.cg-night-shift),.cg-night-shift) h2{line-height:1.18;letter-spacing:-.016em}
+  html.cg-paper:is(:not(.cg-night-shift),.cg-night-shift) h3{line-height:1.25;letter-spacing:-.01em}
+  html.cg-paper :is(h4,h5,h6){font-family:var(--cg-font-ui) !important;font-weight:700 !important;font-size:1.125rem;line-height:1.3;letter-spacing:.005em}
+  /* the menus: a little air between the letters, like the rest of the interface */
+  html.cg-paper .cg-topbar :is(summary,a),html.cg-paper .cg-foot a{letter-spacing:.012em}
+}
 
 /* an e-mail address stays on one line (it is never broken mid-address); a very narrow screen makes it a little smaller instead */
 .cg-email{white-space:nowrap;overflow-wrap:normal;word-break:normal;hyphens:none}
