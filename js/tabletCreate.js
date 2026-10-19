@@ -316,14 +316,15 @@
             if (what === "clear") { Object.keys(have).forEach(function (k) { if (have[k]) { hist.push([+k, have[k]]); paintShape(+k, ""); } }); progress(); }
             if (what === "pick") chooser();
           });
-          /* the middle of a shape: the point of it nearest its center, so a tap there is always inside */
+          /* the middle of a shape: the point of it deepest inside, farthest from every edge, so a tap there lands in that shape even when
+             the shape is a ring or a crescent whose center of gravity is outside it */
           var mid = {};
           function centre(k) {
             if (mid[k]) return mid[k];
-            var b = R.boxes[k], sx = 0, sy = 0, c = 0, x, y;
-            for (y = b[1]; y <= b[3]; y++) for (x = b[0]; x <= b[2]; x++) if (R.lab[y * CW + x] === k) { sx += x; sy += y; c++; }
-            var cx = sx / c, cy = sy / c, best = 1e12, px = cx, py = cy;
-            for (y = b[1]; y <= b[3]; y++) for (x = b[0]; x <= b[2]; x++) if (R.lab[y * CW + x] === k) { var dd = (x - cx) * (x - cx) + (y - cy) * (y - cy); if (dd < best) { best = dd; px = x; py = y; } }
+            var b = R.boxes[k], w = b[2] - b[0] + 3, h = b[3] - b[1] + 3, d = new Int32Array(w * h), x, y, i, best = -1, px = b[0], py = b[1];
+            for (y = 0; y < h; y++) for (x = 0; x < w; x++) { var cx = b[0] + x - 1, cy = b[1] + y - 1; d[y * w + x] = cx >= 0 && cy >= 0 && cx < CW && cy < CH && R.lab[cy * CW + cx] === k ? 1e6 : 0; }
+            for (y = 1; y < h - 1; y++) for (x = 1; x < w - 1; x++) { i = y * w + x; if (d[i]) d[i] = Math.min(d[i], d[i - 1] + 1, d[i - w] + 1, d[i - w - 1] + 1, d[i - w + 1] + 1); }
+            for (y = h - 2; y > 0; y--) for (x = w - 2; x > 0; x--) { i = y * w + x; if (d[i]) { d[i] = Math.min(d[i], d[i + 1] + 1, d[i + w] + 1, d[i + w + 1] + 1, d[i + w - 1] + 1); if (d[i] > best) { best = d[i]; px = b[0] + x - 1; py = b[1] + y - 1; } } }
             return (mid[k] = [px, py]);
           }
           function glow(k) {
@@ -334,7 +335,7 @@
           }
           var openOnes = function () { return inner.filter(function (k) { return !have[k]; }); };
           finishIt = function () {
-            var cols = cp.colors(), open = openOnes().sort(function (a, b) { var p = centre(a), q = centre(b); return (p[1] - q[1]) || (p[0] - q[0]); }), gap = Math.min(150, 4200 / Math.max(1, open.length));
+            var cols = cp.colors(), open = openOnes().sort(function (a, b) { var p = R.boxes[a], q = R.boxes[b]; return (p[1] + p[3] - q[1] - q[3]) || (p[0] + p[2] - q[0] - q[2]); }), gap = Math.min(150, 4200 / Math.max(1, open.length));
             open.forEach(function (k, j) { api.later(function () { if (!have[k]) { hist.push([k, ""]); paintShape(k, cols[(j * 3 + 1) % cols.length]); api.tick(); progress(); } }, gap * j); });
             api.later(function () { api.cheer("Your picture is finished. Beautifully colored.", "Another picture"); }, gap * open.length + 900);
           };
@@ -345,6 +346,7 @@
           api.debug(function () {
             return { stage: "paint", id: id, shapes: inner.length, filled: count(), bank: cp.bank(), colors: cp.colors(), undo: hist.length, color: fill,
               spots: function () { var b = lineCv.getBoundingClientRect(); return inner.map(function (k) { var c = centre(k); return [b.left + (c[0] + 0.5) / CW * b.width, b.top + (c[1] + 0.5) / CH * b.height, have[k] || "", R.areas[k]]; }); },
+              at: function (x, y) { var b = lineCv.getBoundingClientRect(); return R.lab[Math.floor((y - b.top) / b.height * CH) * CW + Math.floor((x - b.left) / b.width * CW)]; },
               pixel: function (x, y) { var b = lineCv.getBoundingClientRect(), p = Math.floor((y - b.top) / b.height * CH) * CW + Math.floor((x - b.left) / b.width * CW); return [fd.data[p * 4], fd.data[p * 4 + 1], fd.data[p * 4 + 2], fd.data[p * 4 + 3]]; } };
           });
         });

@@ -71,20 +71,27 @@ for (const stage of STAGES) for (const topic of TOPICS) {
   /* sayings */
   const sy = plain(T.sayings(o));
   ok(sy.items.length === c.saying.count && sy.items.every(s => s.options.includes(s.answer) && s.options.length === c.saying.options && new Set(s.options).size === s.options.length && lintOk(s.lead + " " + s.answer) && s.lead.toLowerCase().indexOf(s.answer.toLowerCase()) < 0), `${tag}: each saying's answer is among its ${c.saying.options} different choices, and the start never gives it away`);
-  /* sort it */
-  const so = plain(T.sortIt(o)), sg = D.activities.sorting;
-  ok(so.groups.length === 2 && so.groups[0].id !== so.groups[1].id && so.items.length >= c.sort.count - 1 && so.items.every(i => sg.find(g => g.id === so.groups[i.group].id).words.includes(i.word)), `${tag}: every sorted item belongs to the group it is marked for`);
-  ok(so.items.every(i => !(groupOf[i.word] || []).includes(so.groups[1 - i.group].id)), `${tag}: no sorted item also fits the other group`);
-  /* odd one out */
+  /* sort it: pictures from two sets that cannot be mistaken for each other */
+  const SETS = Bank.SETS, setOf = {}; SETS.forEach(s => s.things.forEach(t => { setOf[t] = s.id; }));
+  const famOf = id => SETS.find(x => x.id === id).family, thingWord = a => Bank.OBJECTS.find(x => x.art === a).word;
+  const so = plain(T.sortIt(o)), per = Math.ceil(c.sort.count / 2);
+  ok(so.groups.length === 2 && so.groups[0].id !== so.groups[1].id && famOf(so.groups[0].id) !== famOf(so.groups[1].id) && so.groups.every(g => Art.has(g.cover) && g.label && g.group), `${tag}: two baskets from sets of different kinds, each with a picture`);
+  ok(so.items.length === c.sort.count && new Set(so.items.map(i => i.art)).size === so.items.length && [0, 1].every(g => so.items.filter(i => i.group === g).length === per), `${tag}: ${c.sort.count} different pictures, ${per} for each basket`);
+  ok(so.items.every(i => Art.has(i.art) && setOf[i.art] === so.groups[i.group].id && lintOk(i.word) && i.word.toLowerCase() === thingWord(i.art).toLowerCase()), `${tag}: every picture belongs to the basket it is marked for, and is named`);
+  /* odd one out: three that go together, one that does not */
   const od = plain(T.oddOne(o));
   ok(od.rounds.length === c.odd.rounds && od.rounds.every(r => r.cards.length === 4 && r.cards.filter(x => x.odd).length === 1), `${tag}: odd-one-out rounds have three that go together and one that does not`);
-  ok(od.rounds.every(r => { const odd = r.cards.find(x => x.odd).word, same = r.cards.filter(x => !x.odd).map(x => x.word), common = sg.filter(g => same.every(w => g.words.includes(w))); return common.length >= 1 && common.every(g => !g.words.includes(odd)); }), `${tag}: the three that go together share a group and the odd word is not in it`);
+  ok(od.rounds.every(r => { const odd = r.cards.find(x => x.odd), same = r.cards.filter(x => !x.odd); return same.every(x => setOf[x.art] === r.set) && setOf[odd.art] !== r.set && famOf(setOf[odd.art]) !== famOf(r.set) && r.cards.every(x => Art.has(x.art) && lintOk(x.word)) && new Set(r.cards.map(x => x.art)).size === 4; }), `${tag}: the three share a set, the odd one comes from a set of another kind, and every card has a picture and a name`);
+  ok(new Set(od.rounds.map(r => r.set)).size === od.rounds.length, `${tag}: no two rounds are about the same set`);
   /* put in order */
   const io = plain(T.inOrder(o));
   ok(io.items.length >= 2 && io.items.every(i => i.steps.length >= 3 && i.steps.length <= c.order.maxSteps && i.order.length === i.steps.length && [...i.order].sort().join() === i.steps.map((s, k) => k).join() && i.order.some((v, k) => v !== k) && i.steps.every(lintOk)), `${tag}: steps can be put in order, they are mixed up, and no more than the stage allows`);
-  /* match */
+  ok(io.items.every(i => i.art === "" || Art.has(i.art)), `${tag}: a picture on a job is one that exists`);
+  /* match the clue: a picture and the clue that goes with it */
   const ma = plain(T.matchUp(o));
-  ok(ma.pairs.length >= 3 && ma.pairs.length <= c.match.pairs && new Set(ma.words).size === ma.pairs.length && [...ma.words].sort().join() === ma.pairs.map(p => p.word).sort().join() && [...ma.clues].sort().join() === ma.pairs.map(p => p.clue).sort().join() && ma.pairs.every(p => p.clue.toUpperCase().indexOf(p.word) < 0 && lintOk(p.clue)), `${tag}: matching pairs are all different and complete, and no clue gives its word away`);
+  ok(ma.pairs.length === c.match.pairs && new Set(ma.pairs.map(p => p.art)).size === ma.pairs.length && new Set(ma.pairs.map(p => setOf[p.art])).size === ma.pairs.length && ma.pairs.every(p => p.set === setOf[p.art]), `${tag}: ${c.match.pairs} pictures with clues, each from a different set so no clue can fit two`);
+  ok([...ma.pictures].sort().join() === ma.pairs.map(p => p.art).sort().join() && [...ma.clues].sort().join() === ma.pairs.map(p => p.clue).sort().join(), `${tag}: the pictures and the clues are the pairs, mixed up`);
+  ok(ma.pairs.every(p => Art.has(p.art) && lintOk(p.clue) && lintOk(p.word) && p.clue.toLowerCase().indexOf(p.word.toLowerCase()) < 0), `${tag}: every clue passes the dignity rules and does not name its picture`);
   /* sights and sounds */
   const sb = plain(T.soundBoard(o)), ids = Snd.META.map(m => m.id);
   ok(sb.cards.length === c.sounds.cards && new Set(sb.cards.map(k => k.id)).size === sb.cards.length && sb.cards.every(k => ids.includes(k.id) && lintOk(k.name) && lintOk(k.line)), `${tag}: the sound board has ${c.sounds.cards} different sounds, each with a name and a line that pass the dignity rules`);
@@ -184,6 +191,23 @@ ok(made === 3 * 43, "every stage and topic was tried (129 combinations)");
     ok(p.scene === sc && !p.closed && T.SCENES[sc].shapes.includes(p.kind) && T.STAGES[stage].trace.kinds.includes(p.kind) && p.from === T.SCENES[sc].from && p.to === T.SCENES[sc].to && Math.hypot(p.start[0] - p.end[0], p.start[1] - p.end[1]) > 150, `${stage}/${sc}/${n}: a scene's path is an open line of a shape that suits it and the stage, with its start and goal apart`);
   }
   ok(new Set(Array.from({ length: 24 }, (_, i) => T.tracePath({ stage: "middle", seed: "any" + i }).scene)).size === 3, "with no scene chosen, the seeds bring all three journeys");
+}
+
+/* things that go together: the sets, the decks, and what a topic or a recent screen changes */
+{
+  const SETS = Bank.SETS, all = SETS.flatMap(s => s.things);
+  ok(SETS.length >= 9 && new Set(SETS.map(s => s.id)).size === SETS.length, `${SETS.length} sets of things that go together`);
+  ok(all.length === new Set(all).size && all.every(a => Art.has(a) && Bank.OBJECTS.some(x => x.art === a)), "every picture is in one set only, exists, and has a name and a clue");
+  ok(SETS.every(s => s.things.length >= 3 && Art.has(s.cover) && s.things.includes(s.cover)) && SETS.every(s => lintOk(s.label) && lintOk(s.group)), "every set has at least three things, a cover picture and plain words");
+  const topicIds = new Set(T.TOPICS.map(t => t.id));
+  ok(SETS.every(s => s.topics.length >= 3 && s.topics.every(t => topicIds.has(t))), "every set is chosen by topics that exist");
+  const decks = plain(T.oddDecks());
+  ok(decks.length >= 50 && new Set(decks.map(d => d.together + "/" + d.apart)).size === decks.length, `${decks.length} different odd-one-out decks, fifty or more`);
+  ok(decks.every(d => SETS.find(s => s.id === d.together).things.length >= 3 && SETS.find(s => s.id === d.together).family !== SETS.find(s => s.id === d.apart).family), "every deck sets one set against a set of another kind");
+  const seen = new Set(); for (let i = 0; i < 80; i++) T.oddOne({ stage: "early", topic: "", seed: "deck" + i }).rounds.forEach(r => seen.add(r.set + "/" + r.cards.find(x => x.odd).art));
+  ok(seen.size >= 30, `eighty early-stage sessions bring ${seen.size} different decks`);
+  ok(T.sortIt({ stage: "middle", topic: "farming", seed: "t" }).groups[0].id === "farm" && T.oddOne({ stage: "middle", topic: "farming", seed: "t" }).rounds[0].set === "farm" && T.matchUp({ stage: "middle", topic: "farming", seed: "t" }).pairs.some(p => SETS.find(s => s.id === "farm").things.includes(p.art)), "a topic chooses its own set first");
+  ok(T.sortIt({ stage: "middle", topic: "", seed: "t", avoid: ["fruit", "farm", "plants"] }).groups[0].id !== "fruit" && T.oddOne({ stage: "late", topic: "", seed: "t", avoid: ["fruit"] }).rounds[0].set !== "fruit", "what the last screen showed comes last");
 }
 
 /* color a picture: four sets of colors, and the shapes found in a picture made of closed outlines */

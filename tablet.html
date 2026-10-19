@@ -47,7 +47,7 @@ body{margin:0}
 /* the shared stylesheet puts a rule under every heading on paper pages; the activity bar has none */
 html.cg-paper:not(.cg-night-shift) .tb-bar h2{border-bottom:0 !important}
 /* the shared stylesheet forces dark text on paper pages; these are the controls that are white on green */
-html.cg-paper:not(.cg-night-shift) :is(.tb-btn.go,.tb-back,.tb-btn.go *,.tb-back *,.tbp-seg input:checked+label,.tb-placed b,:is(.tb-modes,.tb-banks,.tb-ptabs,.tb-grid4) .tb-btn[aria-pressed="true"],:is(.tb-modes,.tb-banks,.tb-ptabs,.tb-grid4) .tb-btn[aria-pressed="true"] *){color:#fff !important}
+html.cg-paper:not(.cg-night-shift) :is(.tb-btn.go,.tb-back,.tb-btn.go *,.tb-back *,.tbp-seg input:checked+label,.tb-oslot>b,:is(.tb-modes,.tb-banks,.tb-ptabs,.tb-grid4) .tb-btn[aria-pressed="true"],:is(.tb-modes,.tb-banks,.tb-ptabs,.tb-grid4) .tb-btn[aria-pressed="true"] *){color:#fff !important}
 .tb,.tb *,.tb-gate,.tb-gate *{box-sizing:border-box}
 .tb [hidden],.tb-gate [hidden]{display:none !important}
 /* the activity screen: one full screen, one task. Every control a finger must hit is --tbt tall and wide (72 px on a tablet, 56 px on a phone). */
@@ -175,18 +175,6 @@ html.cg-paper:not(.cg-night-shift) :is(.tb-btn.go,.tb-back,.tb-btn.go *,.tb-back
 .tb-opt.is-matched{background:var(--cg-sage-200,#c9e4d3);border-color:var(--cg-green-700,#1b382b)}
 .tb-opt.is-shake,.tb-slot.is-shake{animation:tb-shake .4s}
 @keyframes tb-shake{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
-.tb-card{align-self:center;margin:10px auto;padding:26px 34px;min-width:min(520px,90%);border:4px solid var(--cg-charcoal,#1a202c);border-radius:22px;background:#fff;text-align:center;font:700 clamp(2rem,1.4rem + 2.4vw,3.2rem) var(--cg-font-display,Georgia,serif)}
-.tb-cols{display:grid;grid-template-columns:1fr 1fr;gap:14px 24px;width:100%;max-width:980px;margin:12px auto 0}
-.tb-cols .tb-opt{font-size:1.3rem;min-height:76px}
-.tb-order{display:grid;gap:10px;flex:1 1 360px;min-width:0;margin:0}
-.tb-order .tb-opt{text-align:left;font-size:1.35rem;min-height:70px}
-.tb-placed{margin:0;padding:0;list-style:none;display:grid;gap:8px;flex:1 1 340px;min-width:0}
-.tb-placed li{display:flex;align-items:center;gap:12px;min-height:60px;padding:8px 14px;border:3px dashed var(--cg-tan-400,#b5a48b);border-radius:12px;font-size:1.3rem;font-weight:700}
-.tb-placed li.is-on{border-style:solid;border-color:var(--cg-green-700,#1b382b);background:var(--cg-sage-200,#c9e4d3)}
-.tb-placed b{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:50%;background:var(--cg-green-700,#1b382b);color:#fff}
-.tb-talk{display:grid;gap:10px;margin:14px auto;max-width:720px;font-size:1.5rem}
-.tb-talk div{padding:10px 18px;border-left:8px solid var(--cg-gold-500,#c5a059);background:#fff;border-radius:6px}
-.tb-talk small{display:block;font-size:1rem;color:var(--cg-tan-800,#4f4030);font-weight:700}
 
 /* coloring and painting */
 .tb-pics{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));width:100%;max-width:900px;margin:10px auto 0}
@@ -221,6 +209,48 @@ html.cg-paper:not(.cg-night-shift) :is(.tb-btn.go,.tb-back,.tb-btn.go *,.tb-back
 .tb-speedrow{align-items:center;gap:14px}
 .tb-speed{min-width:9ch;text-align:center;font-weight:700;color:var(--cg-green-700,#1b382b)}
 @media (orientation:portrait){.tb-ptools{flex:0 0 auto;width:100%}.tb-paintwrap{flex:1 1 auto;width:100%}}
+/* pictures that go together: Sort It, Odd One Out, Match the Clue and Put It in Order */
+.tb-thing{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;box-sizing:border-box;width:var(--thing,130px);min-height:var(--thing,130px);padding:8px 6px 10px;border:4px solid var(--cg-green-700,#1b382b);border-radius:20px;background:#fff;color:var(--cg-charcoal,#1a202c);font:700 1.15rem/1.15 var(--cg-font-ui,sans-serif);text-align:center;cursor:pointer;touch-action:none;-webkit-user-select:none;user-select:none}
+.tb-thing:disabled{color:var(--cg-charcoal,#1a202c)}
+.tb-thing img{display:block;width:calc(var(--thing,130px) - 28px);height:calc(var(--thing,130px) - 28px);max-width:100%;object-fit:contain;pointer-events:none}
+.tb-thing.is-picked,.tb-cuecard.is-picked{background:var(--cg-gold-200,#f1dda8);outline:4px solid var(--cg-gold-500,#c5a059);outline-offset:2px}
+.tb-thing.is-drag,.tb-cuecard.is-drag,.tb-step.is-drag{z-index:70;box-shadow:0 14px 30px rgba(27,56,43,.35);cursor:grabbing}
+.tb-thing.is-placed{--thing:84px;padding:4px;font-size:.9rem;cursor:default;pointer-events:none}
+.tb-sortwrap{display:flex;flex-direction:column;gap:14px;width:100%;max-width:1180px;margin:0 auto}
+.tb-bins{display:flex;gap:16px}
+.tb-bin{flex:1 1 0;min-width:0;display:flex;flex-direction:column;gap:6px;padding:10px 12px;min-height:190px}
+.tb-bin.is-over,.tb-oslot.is-over{outline:5px solid var(--cg-gold-500,#c5a059);outline-offset:3px;background:#fff8e6}
+.tb-binhead{display:flex;align-items:center;justify-content:center;gap:12px;min-height:var(--tbt,72px);padding:4px 12px;border:0;background:transparent;font:700 1.5rem var(--cg-font-ui,sans-serif);color:var(--cg-green-700,#1b382b);cursor:pointer}
+.tb-binhead img{width:56px;height:56px;object-fit:contain}
+.tb-binput{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-content:flex-start;min-height:96px;padding-top:8px;border-top:3px dashed var(--cg-tan-300,#cdbe9f)}
+.tb-tray{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;padding:14px}
+.tb-oddrow{display:flex;flex-wrap:wrap;gap:16px;justify-content:center;margin:10px 0}
+.tb-thing.is-aside{border-style:dashed;background:#efe9db}
+.tb-thing.is-together,.tb-mpic.is-matched{border-color:var(--cg-green-600,#2d5a44);background:#e8f4ec}
+.tb-thing.is-found{background:var(--cg-gold-200,#f1dda8);outline:4px solid var(--cg-gold-500,#c5a059);outline-offset:2px}
+.tb-thing.is-together::after,.tb-mpic.is-matched::after{content:"✓";font:700 1.6rem var(--cg-font-ui,sans-serif);color:var(--cg-green-700,#1b382b)}
+.tb-matchcols{display:grid;grid-template-columns:1fr 1fr;gap:16px;width:100%;max-width:1100px;margin:6px auto}
+.tb-matchcol{display:flex;flex-direction:column;gap:8px}
+.tb-mpic{flex-direction:row;justify-content:flex-start;gap:14px;width:100%;min-height:80px;padding:4px 16px;text-align:left}
+.tb-mpic img{width:68px;height:68px}
+.tb-mtext{display:flex;flex-direction:column;align-items:flex-start;gap:2px;flex:1;min-width:0}
+.tb-mtext b{font-size:1.4rem}
+.tb-mdone{font-style:normal;font-weight:600;font-size:1.05rem}
+.tb-cuecard{display:flex;align-items:center;min-height:80px;padding:6px 18px;border:4px solid var(--cg-green-700,#1b382b);border-radius:20px;background:#fff;color:var(--cg-charcoal,#1a202c);font:700 1.3rem/1.25 var(--cg-font-ui,sans-serif);text-align:left;cursor:pointer;touch-action:none}
+.tb-cuecard.is-gone{visibility:hidden}
+.tb-ohead{display:flex;align-items:center;justify-content:center;gap:12px;margin:0 0 8px}
+.tb-ohead h3{margin:0;font:700 1.6rem var(--cg-font-display,Georgia,serif);color:var(--cg-green-700,#1b382b)}
+.tb-ohead img{width:64px;height:64px;object-fit:contain}
+.tb-ostage{display:flex;gap:18px;align-items:flex-start;width:100%;max-width:1100px;margin:0 auto}
+.tb-oslots{flex:1 1 0;min-width:0;display:flex;flex-direction:column;gap:8px;margin:0;padding:0;list-style:none}
+.tb-opool{flex:1.4 1 0;min-width:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:8px}
+.tb-oslot{display:flex;align-items:center;gap:12px;min-height:72px;padding:4px 10px;border:3px dashed var(--cg-tan-600,#7a6548);border-radius:16px;background:rgba(255,255,255,.7)}
+.tb-oslot>b{flex:none;display:grid;place-items:center;width:40px;height:40px;border-radius:50%;background:var(--cg-green-700,#1b382b);color:#fff;font:700 1.2rem var(--cg-font-ui,sans-serif)}
+.tb-oslot.is-filled{border-style:solid;border-color:var(--cg-green-600,#2d5a44);background:#e8f4ec}
+.tb-step{display:flex;align-items:center;box-sizing:border-box;width:100%;min-height:72px;padding:8px 16px;border:4px solid var(--cg-green-700,#1b382b);border-radius:18px;background:#fff;color:var(--cg-charcoal,#1a202c);font:700 1.15rem/1.25 var(--cg-font-ui,sans-serif);text-align:left;cursor:pointer;touch-action:none}
+.tb-step:disabled{color:var(--cg-charcoal,#1a202c)}
+.tb-oslot .tb-step{flex:1;min-height:64px;padding:4px 8px;border:0;background:transparent;cursor:default;pointer-events:none}
+@media (max-width:699px){.tb-ostage{flex-direction:column}.tb-matchcols{grid-template-columns:1fr}.tb-opool{grid-template-columns:1fr}.tb-bins{gap:10px}.tb-bin{min-height:150px;padding:8px}.tb-binhead{flex-direction:column;gap:2px;min-height:var(--tbt,56px);padding:2px 4px;font-size:1.15rem;line-height:1.2;text-align:center}.tb-binput{min-height:92px}}
 .tb-sky{position:relative;display:block;width:100%;flex:1;min-height:260px;overflow:hidden;border:3px solid var(--cg-tan-300,#cdbe9f);border-radius:var(--cg-radius-lg,20px);background:linear-gradient(#fdf6e3,#f3e6c8);touch-action:manipulation}
 
 /* a finished activity */
@@ -261,14 +291,18 @@ html.tb-open{overflow:hidden}
 html.cg-night-shift .tb{background:#17120c;color:#ffedcc}
 html.cg-night-shift .tb{--tb-glass:rgba(43,32,21,.9);--tb-edge:#d6a64b;--tb-lift:0 10px 28px rgba(0,0,0,.5)}
 html.cg-night-shift .tb-bar{border-color:#d6a64b}
-html.cg-night-shift :is(.tbp-card,.tbp-setup,.tbp-seg label,.tbp-sel,.tb-btn,.tb-key,.tb-opt,.tb-cell,.tb-cwc,.tb-slot,.tb-words li,.tb-wd,.tb-clue,.tb-card,.tb-talk div,.tb-placed li,.tb-gate>div,.tbp-note,.tb-snd,.tb-trace){background:#2b2015 !important;border-color:#d6a64b;color:#ffedcc !important}
-html.cg-night-shift :is(.tb-snd.is-playing,.tb-btn.assist,.tbp-card:hover,.tb-cell.is-sel,.tb-cell.is-start,.tb-cwc.is-word,.tb-slot.is-next,.tb-opt.is-picked,.tb-key:active,.tb-opt:active){background:#4a3515 !important}
-html.cg-night-shift :is(.tb-btn.go,.tb-back,.tbp-seg input:checked+label,.tb-cwc.is-cur,.tb-placed b,:is(.tb-modes,.tb-banks,.tb-ptabs,.tb-grid4) .tb-btn[aria-pressed="true"]){background:#5a3e12 !important;color:#fff1cf !important}
-html.cg-night-shift :is(.tb-cell[class*=" f"],.tb-cwc.is-done,.tb-words li.is-found,.tb-wd.is-found,.tb-opt.is-right,.tb-opt.is-matched,.tb-slot.is-given,.tb-placed li.is-on){background:#4a3a1a !important}
-html.cg-night-shift :is(.tb-bar h2,.tb-prog,.tb-msg,.tbp h1,.tbp-menu h2,.tb-card,.tb-big,.tb-h,.tbp-note a){color:#ffd477 !important}
+html.cg-night-shift :is(.tbp-card,.tbp-setup,.tbp-seg label,.tbp-sel,.tb-btn,.tb-key,.tb-opt,.tb-cell,.tb-cwc,.tb-slot,.tb-words li,.tb-wd,.tb-clue,.tb-gate>div,.tbp-note,.tb-snd,.tb-trace,.tb-thing,.tb-cuecard,.tb-step,.tb-oslot){background:#2b2015 !important;border-color:#d6a64b;color:#ffedcc !important}
+html.cg-night-shift :is(.tb-thing.is-picked,.tb-cuecard.is-picked,.tb-thing.is-found,.tb-thing.is-aside,.tb-bin.is-over,.tb-oslot.is-over,.tb-snd.is-playing,.tb-btn.assist,.tbp-card:hover,.tb-cell.is-sel,.tb-cell.is-start,.tb-cwc.is-word,.tb-slot.is-next,.tb-opt.is-picked,.tb-key:active,.tb-opt:active){background:#4a3515 !important}
+html.cg-night-shift :is(.tb-btn.go,.tb-back,.tbp-seg input:checked+label,.tb-cwc.is-cur,.tb-oslot>b,:is(.tb-modes,.tb-banks,.tb-ptabs,.tb-grid4) .tb-btn[aria-pressed="true"]){background:#5a3e12 !important;color:#fff1cf !important}
+html.cg-night-shift :is(.tb-thing.is-together,.tb-mpic.is-matched,.tb-oslot.is-filled,.tb-cell[class*=" f"],.tb-cwc.is-done,.tb-words li.is-found,.tb-wd.is-found,.tb-opt.is-right,.tb-opt.is-matched,.tb-slot.is-given){background:#4a3a1a !important}
+html.cg-night-shift :is(.tb-bar h2,.tb-prog,.tb-msg,.tbp h1,.tbp-menu h2,.tb-big,.tb-h,.tbp-note a){color:#ffd477 !important}
 html.cg-night-shift .tb-cheer{background:rgba(23,18,12,.96)}
 html.cg-night-shift .tb-cheer p{color:#ffd477 !important}
 html.cg-night-shift .tbp-card svg{stroke:#ffd477}
+html.cg-night-shift .tb-thing img,html.cg-night-shift .tb-binhead img,html.cg-night-shift .tb-ohead img{background:#f6ecd4;border-radius:16px;padding:4px;box-sizing:border-box}
+html.cg-night-shift :is(.tb-binhead,.tb-ohead h3,.tb-mtext){color:#ffedcc !important}
+html.cg-night-shift .tb-oslot .tb-step{background:transparent !important;border:0}
+html.cg-night-shift .tb-thing.is-together::after,html.cg-night-shift .tb-mpic.is-matched::after{color:#ffd477}
 html.cg-night-shift .tb-sky{background:linear-gradient(#211910,#2b2015)}
 </style>
 <style id="cg-nav-css">

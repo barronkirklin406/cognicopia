@@ -1,8 +1,7 @@
 /* =====================================================================
    Cognicopia Tablet Activities: think, match and listen.
 
-   Sights and Sounds (here), and the sorting, ordering and matching
-   activities that follow it. Each registers itself with the kit
+   Sort It, Put It in Order, Match the Clue, Odd One Out and Sights and Sounds. Each registers itself with the kit
    (js/tabletKit.js) and is started by the screen (js/tablet.js).
 
    Calm by design: nothing is scored or timed, a card that does not fit
@@ -12,7 +11,7 @@
   "use strict";
   var Kit = window.CognicopiaTabletKit, T = window.CognicopiaTablet, Art = window.CognicopiaTabletArt, Snd = window.CognicopiaTabletSound;
   if (!Kit || !T || !Art) return;
-  var h = Kit.h, esc = Kit.esc, reduced = Kit.reduced;
+  var h = Kit.h, esc = Kit.esc, reduced = Kit.reduced, byId = function (id) { return document.getElementById(id); };
 
   /* ===================== SIGHTS AND SOUNDS =====================
      A board of pictures. Touch one and its sound plays, drawn as a moving wave. Or choose "Which one is it?": a sound plays,
@@ -143,6 +142,259 @@
     return function () { cancelAnimationFrame(raf); stop(); if (synth) { try { synth.stopAll(); } catch (e) { /* done */ } } };
   }
 
+
+  /* ---------- pictures that go together: how big a card may be, so a whole row fits without scrolling ---------- */
+  function cardSize(api, n, lo, hi, side) {
+    var a = api.area(); return Math.max(lo, Math.min(hi, Math.floor((a.w - (side || 56)) / n - 16)));
+  }
+  var thingHtml = function (art, word, size) { return Art.img(art, size ? { size: size } : {}) + "<span>" + esc(word) + "</span>"; };
+  var middleOf = function (el) { var r = el.getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; };
+
+  /* ===================== SORT IT =====================
+     Two baskets, each with a picture, and a tray of pictures. Drag a picture to the basket it goes with, or touch the picture and
+     then the basket. A picture that goes in the other basket floats gently back, with a soft note and a word about where it
+     does go; the right basket glows. Nothing is counted against anyone. */
+  function sort(root, o, api) {
+    var d = T.sortIt(o), total = d.items.length, placed = 0, picked = null, wrong = 0;
+    api.used(d.groups.map(function (g) { return g.id; }));
+    var wrap = h("div", "tb-sortwrap"), bins = h("div", "tb-bins"), tray = h("div", "tb-tray tb-glass"), msg = h("p", "tb-msg", "Touch a picture, then the basket it goes with.");
+    d.groups.forEach(function (g, k) {
+      var b = h("div", "tb-bin tb-glass", '<button type="button" class="tb-binhead">' + Art.img(g.cover, { size: 56 }) + "<b>" + esc(g.label) + '</b></button><div class="tb-binput"></div>');
+      b.setAttribute("data-g", k); b.setAttribute("role", "group"); b.setAttribute("aria-label", g.label); bins.appendChild(b);
+    });
+    d.items.forEach(function (it, k) {
+      var c = h("button", "tb-thing", thingHtml(it.art, it.word)); c.type = "button"; c.setAttribute("data-i", k); c.setAttribute("aria-pressed", "false"); tray.appendChild(c);
+    });
+    wrap.appendChild(bins); wrap.appendChild(tray); wrap.appendChild(msg); root.appendChild(wrap);
+    function size() { wrap.style.setProperty("--thing", cardSize(api, total, 88, 150) + "px"); }
+    size(); api.onResize(size);
+    var binOf = function (g) { return bins.children[g]; }, cardOf = function (k) { return tray.querySelector('[data-i="' + k + '"]'); };
+    var open = function () { return Array.prototype.slice.call(root.querySelectorAll(".tb-thing:not(.is-placed)")); };
+    function pick(card) {
+      if (picked) { picked.classList.remove("is-picked"); picked.setAttribute("aria-pressed", "false"); }
+      picked = card === picked ? null : card;
+      if (picked) { picked.classList.add("is-picked"); picked.setAttribute("aria-pressed", "true"); }
+      api.tick();
+    }
+    function put(card, bin) {                                        /* true when the picture goes with that basket */
+      var it = d.items[+card.getAttribute("data-i")], g = +bin.getAttribute("data-g");
+      api.unlock(); api.busy();
+      if (it.group !== g) {
+        wrong++; api.soft(); Kit.bob(card);
+        msg.textContent = "The " + it.word.toLowerCase() + " goes with " + d.groups[it.group].group + ". Try the other basket."; api.live(msg.textContent);
+        Kit.glow(binOf(it.group), 3600);
+        if (picked) { picked.classList.remove("is-picked"); picked.setAttribute("aria-pressed", "false"); picked = null; }
+        return false;
+      }
+      if (picked === card) picked = null;
+      Kit.settle(card, function () { bin.querySelector(".tb-binput").appendChild(card); card.classList.remove("is-picked"); card.classList.add("is-placed"); card.setAttribute("aria-disabled", "true"); card.tabIndex = -1; card.setAttribute("aria-pressed", "false"); });
+      placed++; api.chime(false); wrong = 0;
+      msg.textContent = api.praise() + " The " + it.word.toLowerCase() + " goes with " + d.groups[g].group + "."; api.live(msg.textContent);
+      api.progress(placed + " of " + total + " sorted");
+      if (placed === total) api.later(function () { api.cheer("All sorted. Nicely done!", "Sort more"); }, 900);
+      return true;
+    }
+    Kit.dragger(wrap, {
+      pick: function (t) { var c = t.closest && t.closest(".tb-thing"); return c && !c.classList.contains("is-placed") ? c : null; },
+      targets: function () { return Array.prototype.slice.call(bins.children); },
+      drop: function (card, bin) { return put(card, bin); },
+      tap: function (card) { api.unlock(); api.busy(); pick(card); },
+      magnet: 120
+    });
+    bins.addEventListener("click", function (e) {
+      var bin = e.target.closest(".tb-bin"); if (!bin) return;
+      if (picked) put(picked, bin); else { msg.textContent = "Touch a picture first, and then the basket it goes with."; api.live(msg.textContent); }
+    });
+    api.progress("0 of " + total + " sorted");
+    api.say(function () { return "Which basket does each picture go with? " + d.groups[0].label + ", or " + d.groups[1].label + "."; });
+    api.hint(function () { var c = picked || open()[0]; if (!c) return; var it = d.items[+c.getAttribute("data-i")]; Kit.glow(c, 3600); Kit.glow(binOf(it.group), 3600); });
+    api.assist(function () {
+      open().forEach(function (c, j) { api.later(function () { if (c.classList.contains("is-placed")) return; put(c, binOf(d.items[+c.getAttribute("data-i")].group)); }, 520 * j); });
+    });
+    api.debug(function () {
+      return { groups: d.groups, items: d.items, placed: placed, total: total, picked: picked ? +picked.getAttribute("data-i") : -1, wrong: wrong,
+        cards: function () { return open().map(function (c) { var m = middleOf(c); return { i: +c.getAttribute("data-i"), x: m[0], y: m[1], group: d.items[+c.getAttribute("data-i")].group }; }); },
+        bins: function () { return [0, 1].map(function (g) { return middleOf(binOf(g)); }); } };
+    });
+  }
+
+  /* ===================== ODD ONE OUT =====================
+     Four pictures; three belong together. Touch the one that does not. A touch on one that does belong simply sets it aside
+     with a kind word, and a second try makes the odd one glow. When it is found, the other three are named. */
+  function odd(root, o, api) {
+    var rounds = T.oddOne(o).rounds, ix = 0, found = false, tries = 0;
+    api.used(rounds.map(function (r) { return r.set; }));
+    var q = h("p", "tb-h", "Three of these go together. Touch the one that does not belong."), row = h("div", "tb-oddrow"), msg = h("p", "tb-msg", ""), nav = h("div", "tb-row");
+    nav.innerHTML = '<button type="button" class="tb-btn go" id="tbOddNext" hidden>Another round <span aria-hidden="true">▶</span></button>';
+    [q, row, msg, nav].forEach(function (x) { root.appendChild(x); });
+    var oddBtn = function () { return row.querySelector('[data-odd="1"]'); };
+    function size() { var tall = window.matchMedia("(orientation:portrait)").matches && api.area().w < 900; row.style.setProperty("--thing", cardSize(api, tall ? 2 : 4, 120, tall ? 270 : 230) + "px"); }
+    function show() {
+      var r = rounds[ix]; found = false; tries = 0;
+      row.innerHTML = r.cards.map(function (c, k) { return '<button type="button" class="tb-thing tb-oddcard" data-c="' + k + '" data-odd="' + (c.odd ? 1 : 0) + '">' + thingHtml(c.art, c.word) + "</button>"; }).join("");
+      msg.textContent = ""; byId("tbOddNext").hidden = true; size(); api.progress("Round " + (ix + 1) + " of " + rounds.length); api.busy();
+      api.say(function () { return "Which one does not belong? " + r.cards.map(function (c) { return c.word.toLowerCase(); }).join(", "); });
+    }
+    row.addEventListener("click", function (e) {
+      var b = e.target.closest("[data-c]"); if (!b || found || b.disabled) return; api.unlock(); api.busy();
+      var r = rounds[ix];
+      if (b.getAttribute("data-odd") === "1") {
+        found = true; b.classList.add("is-found"); Kit.bob(b);
+        Array.prototype.forEach.call(row.children, function (x) { if (x !== b) { x.classList.remove("is-aside"); x.classList.add("is-together"); x.disabled = true; } });
+        api.chime(false); msg.textContent = api.praise() + " The other three are all " + r.together.toLowerCase() + "."; api.live(msg.textContent);
+        if (ix === rounds.length - 1) api.later(function () { api.cheer("All done. Nicely spotted!", "More to spot"); }, 1500); else byId("tbOddNext").hidden = false;
+      } else {
+        tries++; b.classList.add("is-aside"); b.disabled = true; api.soft();
+        msg.textContent = "That one goes with the others. Have another look."; api.live(msg.textContent);
+        if (tries >= 2) Kit.glow(oddBtn(), 3600);
+      }
+    });
+    byId("tbOddNext").addEventListener("click", function () { api.unlock(); ix++; show(); });
+    api.onResize(size);
+    show();
+    api.hint(function () { if (!found) Kit.glow(oddBtn(), 3600); });
+    api.assist(function () { ix = rounds.length - 1; show(); var b = oddBtn(); if (b) b.click(); });
+    api.debug(function () {
+      return { round: rounds[ix], index: ix, found: found, tries: tries,
+        cards: function () { return Array.prototype.map.call(row.children, function (c) { var m = middleOf(c); return { x: m[0], y: m[1], odd: c.getAttribute("data-odd") === "1" }; }); } };
+    });
+  }
+
+  /* ===================== MATCH THE CLUE =====================
+     Pictures down the left, clues down the right. Touch a picture and then its clue (or a clue and then its picture), or drag a clue
+     to its picture. A pair that fits locks with a tick and the clue settles under its picture; a pair that does not fit is let go
+     with a soft note, and after two tries the right clue glows. */
+  function match(root, o, api) {
+    var m = T.matchUp(o), n = m.pairs.length, matched = 0, pickP = null, pickC = null, misses = 0, byArt = {};
+    m.pairs.forEach(function (p) { byArt[p.art] = p; });
+    api.used(m.pairs.map(function (p) { return p.set; }));
+    var cols = h("div", "tb-matchcols"), pics = h("div", "tb-matchcol"), clues = h("div", "tb-matchcol"), msg = h("p", "tb-msg", "Touch a picture, then the clue that goes with it.");
+    m.pictures.forEach(function (a) {
+      var b = h("button", "tb-thing tb-mpic", Art.img(a, { size: 72 }) + '<span class="tb-mtext"><b>' + esc(byArt[a].word) + '</b><em class="tb-mdone"></em></span>'); b.type = "button"; b.setAttribute("data-art", a); b.setAttribute("aria-pressed", "false"); pics.appendChild(b);
+    });
+    m.clues.forEach(function (c, k) { var b = h("button", "tb-cuecard", esc(c)); b.type = "button"; b.setAttribute("data-clue", c); b.setAttribute("aria-pressed", "false"); clues.appendChild(b); });
+    cols.appendChild(pics); cols.appendChild(clues); root.appendChild(cols); root.appendChild(msg); api.progress("0 of " + n + " matched");
+    var picOf = function (a) { return pics.querySelector('[data-art="' + a + '"]'); }, clueOf = function (a) { return clues.querySelector('[data-clue="' + byArt[a].clue.replace(/"/g, '\\"') + '"]'); };
+    function set(b, which) {
+      var prev = which === "p" ? pickP : pickC; if (prev) { prev.classList.remove("is-picked"); prev.setAttribute("aria-pressed", "false"); }
+      var next = b === prev ? null : b; if (next) { next.classList.add("is-picked"); next.setAttribute("aria-pressed", "true"); }
+      if (which === "p") pickP = next; else pickC = next;
+    }
+    function judge(pic, clue) {                                      /* true when the clue is the picture's */
+      var a = pic.getAttribute("data-art");
+      if (byArt[a].clue === clue.getAttribute("data-clue")) {
+        matched++; misses = 0; set(null, "p"); set(null, "c"); pickP = pickC = null;
+        pic.classList.remove("is-picked"); pic.classList.add("is-matched"); pic.disabled = true; pic.querySelector(".tb-mdone").textContent = byArt[a].clue;
+        clue.classList.remove("is-picked"); clue.classList.add("is-gone"); clue.disabled = true; clue.tabIndex = -1;
+        api.chime(false); msg.textContent = api.praise() + " The " + byArt[a].word.toLowerCase() + ": " + byArt[a].clue.charAt(0).toLowerCase() + byArt[a].clue.slice(1); api.live(msg.textContent);
+        api.progress(matched + " of " + n + " matched");
+        if (matched === n) api.later(function () { api.cheer("Every pair is matched!", "More to match"); }, 800);
+        return true;
+      }
+      misses++; api.soft(); Kit.bob(pic); Kit.bob(clue);
+      [pic, clue].forEach(function (x) { x.classList.remove("is-picked"); x.setAttribute("aria-pressed", "false"); }); pickP = pickC = null;
+      msg.textContent = "Those two do not go together. Try another."; api.live(msg.textContent);
+      if (misses >= 2) { Kit.glow(picOf(a), 3600); Kit.glow(clueOf(a), 3600); }
+      return false;
+    }
+    Kit.dragger(cols, {
+      pick: function (t) { var c = t.closest && t.closest(".tb-cuecard, .tb-mpic"); return c && !c.disabled ? c : null; },
+      targets: function () { return Array.prototype.slice.call(pics.querySelectorAll(".tb-mpic:not(.is-matched)")); },
+      drop: function (card, target) { if (!card.classList.contains("tb-cuecard")) return false; api.unlock(); api.busy(); return judge(target, card); },
+      tap: function (card) {
+        api.unlock(); api.busy(); api.tick();
+        var isPic = card.classList.contains("tb-mpic"); set(card, isPic ? "p" : "c");
+        if (pickP && pickC) judge(pickP, pickC);
+      },
+      magnet: 60
+    });
+    api.say(function () { return "Match each picture with its clue. " + m.pairs.map(function (p) { return p.word.toLowerCase() + ": " + p.clue; }).join(" "); });
+    api.hint(function () { var p = pics.querySelector(".tb-mpic:not(.is-matched)"); if (!p) return; Kit.glow(p, 3600); Kit.glow(clueOf(p.getAttribute("data-art")), 3600); });
+    api.assist(function () {
+      Array.prototype.slice.call(pics.querySelectorAll(".tb-mpic:not(.is-matched)")).forEach(function (p, j) {
+        api.later(function () { var a = p.getAttribute("data-art"), c = clueOf(a); if (p.disabled || !c) return; judge(p, c); }, 560 * j);
+      });
+    });
+    api.debug(function () {
+      return { truth: byArt, matched: matched, n: n,
+        pictures: function () { return Array.prototype.map.call(pics.children, function (b) { var mm = middleOf(b); return { art: b.getAttribute("data-art"), x: mm[0], y: mm[1], done: b.disabled }; }); },
+        cluePos: function (a) { var c = clueOf(a); return c ? middleOf(c) : null; } };
+    });
+  }
+
+  /* ===================== PUT IT IN ORDER =====================
+     The steps of an everyday job, mixed up, and numbered places to put them. Touch a step, or drag it: it goes to the next free
+     place when it is the next thing that happens, and floats back, with a soft note, when it comes a little later. */
+  function order(root, o, api) {
+    var all = T.inOrder(o).items, ix = 0, placed = 0, misses = 0;
+    api.used(all.map(function (i) { return i.id; }));
+    var head = h("div", "tb-ohead"), both = h("div", "tb-ostage"), slots = h("ol", "tb-oslots"), pool = h("div", "tb-opool"), msg = h("p", "tb-msg", ""), nav = h("div", "tb-row");
+    nav.innerHTML = '<button type="button" class="tb-btn go" id="tbOrNext" hidden>Another job <span aria-hidden="true">▶</span></button>';
+    both.appendChild(slots); both.appendChild(pool);
+    [head, both, msg, nav].forEach(function (x) { root.appendChild(x); });
+    var cur = function () { return all[ix]; }, stepBtn = function (k) { return pool.querySelector('[data-step="' + k + '"]'); };
+    function show() {
+      var it = cur(); placed = 0; misses = 0;
+      head.innerHTML = (it.art ? Art.img(it.art, { size: 64 }) : "") + "<h3>" + esc(it.title) + "</h3>";
+      slots.innerHTML = it.steps.map(function (s, k) { return '<li class="tb-oslot" data-slot="' + k + '"><b>' + (k + 1) + "</b></li>"; }).join("");
+      pool.innerHTML = it.order.map(function (k) { return '<button type="button" class="tb-step" data-step="' + k + '">' + esc(it.steps[k]) + "</button>"; }).join("");
+      msg.textContent = "What comes first?"; byId("tbOrNext").hidden = true; api.progress("Job " + (ix + 1) + " of " + all.length); api.busy();
+      api.say(function () { return it.title + ". What comes first? " + it.order.map(function (k) { return it.steps[k]; }).join(". "); });
+    }
+    function put(card) {                                              /* true when it is the next step */
+      var it = cur(), k = +card.getAttribute("data-step"); api.unlock(); api.busy();
+      if (k !== placed) {
+        misses++; api.soft(); Kit.bob(card);
+        msg.textContent = "That one comes a little later. What happens " + (placed ? "next" : "first") + "?"; api.live(msg.textContent);
+        if (misses >= 2) Kit.glow(stepBtn(placed), 3600);
+        return false;
+      }
+      var li = slots.querySelector('[data-slot="' + placed + '"]'); misses = 0;
+      Kit.settle(card, function () { li.appendChild(card); li.classList.add("is-filled"); card.classList.add("is-placed"); card.disabled = true; });
+      placed++; api.chime(false);
+      if (placed === it.steps.length) {
+        msg.textContent = api.praise() + " That is the whole job."; api.live(msg.textContent);
+        if (ix === all.length - 1) api.later(function () { api.cheer("Every step in its place!", "More to put in order"); }, 900); else byId("tbOrNext").hidden = false;
+      } else msg.textContent = "And then?";
+      return true;
+    }
+    Kit.dragger(both, {
+      pick: function (t) { var c = t.closest && t.closest(".tb-step"); return c && !c.disabled ? c : null; },
+      targets: function () { return Array.prototype.slice.call(slots.querySelectorAll(".tb-oslot:not(.is-filled)")); },
+      drop: function (card) { return put(card); },
+      tap: function (card) { put(card); },
+      magnet: 140
+    });
+    byId("tbOrNext").addEventListener("click", function () { api.unlock(); ix++; show(); });
+    show();
+    api.hint(function () { var b = stepBtn(placed); if (b && !b.disabled) Kit.glow(b, 3600); });
+    api.assist(function () {
+      ix = all.length - 1; show();
+      cur().steps.forEach(function (st, k) { api.later(function () { var b = stepBtn(k); if (b && !b.disabled) put(b); }, 460 * k); });
+    });
+    api.debug(function () {
+      return { item: cur(), index: ix, placed: placed, misses: misses,
+        steps: function () { return Array.prototype.map.call(pool.querySelectorAll(".tb-step:not(.is-placed)"), function (b) { var m = middleOf(b); return { k: +b.getAttribute("data-step"), x: m[0], y: m[1] }; }); },
+        slots: function () { return Array.prototype.map.call(slots.children, function (li) { var m = middleOf(li); return [m[0], m[1]]; }); } };
+    });
+  }
+
+  Kit.register({
+    id: "sort", group: 2, order: 1, title: "Sort It", blurb: "Which basket does it go with?",
+    icon: '<rect x="6" y="36" width="22" height="20"/><rect x="36" y="36" width="22" height="20"/><path d="M32 6v18M24 16l8 8 8-8"/>', start: sort
+  });
+  Kit.register({
+    id: "order", group: 2, order: 2, title: "Put It in Order", blurb: "Which step comes first, and then?",
+    icon: '<path d="M22 14h34M22 32h34M22 50h34"/><circle cx="10" cy="14" r="3"/><circle cx="10" cy="32" r="3"/><circle cx="10" cy="50" r="3"/>', start: order
+  });
+  Kit.register({
+    id: "match", group: 2, order: 3, title: "Match the Clue", blurb: "Join each picture with its clue.",
+    icon: '<circle cx="14" cy="32" r="9"/><circle cx="50" cy="32" r="9"/><path d="M23 32h18"/>', start: match
+  });
+  Kit.register({
+    id: "odd", group: 2, order: 4, title: "Odd One Out", blurb: "Three go together. Which one does not?",
+    icon: '<circle cx="12" cy="20" r="8"/><circle cx="32" cy="20" r="8"/><circle cx="52" cy="20" r="8"/><rect x="24" y="38" width="16" height="16"/>', start: odd
+  });
   Kit.register({
     id: "sounds", group: 2, order: 5, title: "Sights and Sounds", blurb: "Touch a picture and listen to its sound.",
     icon: '<path d="M6 32h4M16 20v24M26 10v44M36 22v20M46 14v36M56 28v8"/>', start: sounds

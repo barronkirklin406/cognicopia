@@ -294,4 +294,29 @@
     ["bone", "bone", "A dog buries it."], ["phone", "phone", "You hear it ring and pick it up."], ["waves", "waves", "They roll in toward the shore."],
     ["storm", "storm", "Thunder and lightning come with it."], ["chimes", "chimes", "They tinkle in the breeze."]
   ].map(function (x) { return { word: x[0].toUpperCase(), art: x[1], clue: x[2] }; });
+
+  /* ---------- things that go together: for Sort It and Odd One Out ----------
+     Each picture is in one set only. Sets in the same family are never put against each other (a farm animal and a pet are both
+     animals, a teapot and a chair are both in the house), so an answer is never a matter of opinion.
+     label: the set's name on a basket; group: how a sentence names it; topics: the topics that choose it first. */
+  B.SETS = [
+    { id: "fruit", family: "growing", label: "Fruit", group: "the fruit", cover: "apple", things: ["apple", "banana", "grapes", "orange"], topics: ["gardening", "cooking", "trees-orchards", "lunches", "picnics-camping"] },
+    { id: "farm", family: "living", label: "Farm animals", group: "the farm animals", cover: "cow", things: ["hen", "cow", "pig", "sheep", "horse", "duck"], topics: ["farming", "farm-animals", "horses", "county-fair"] },
+    { id: "pets", family: "living", label: "Pets", group: "the pets", cover: "cat", things: ["cat", "dog", "rabbit"], topics: ["dogs", "cats", "veterinarian"] },
+    { id: "plants", family: "growing", label: "Plants and flowers", group: "the plants and flowers", cover: "rose", things: ["rose", "tulip", "daisy", "flower", "leaf", "tree"], topics: ["gardening", "parks", "trees-orchards"] },
+    { id: "wear", family: "wear", label: "Things to wear", group: "the things to wear", cover: "hat", things: ["hat", "shoe", "sock", "scarf", "mitten"], topics: ["sewing-crafts", "grooming", "celebrations"] },
+    { id: "tea", family: "household", label: "For tea time", group: "the tea time things", cover: "teapot", things: ["teapot", "cup", "spoon", "fork", "kettle"], topics: ["coffee-tea", "cooking", "home-comforts", "lunches", "diner-soda-fountain"] },
+    { id: "home", family: "household", label: "Around the house", group: "the things around the house", cover: "clock", things: ["chair", "clock", "candle", "key", "phone"], topics: ["housework", "home-comforts", "photographs", "radio-tv"] },
+    { id: "travel", family: "travel", label: "Ways to travel", group: "the ways to travel", cover: "car", things: ["boat", "car", "train"], topics: ["cars", "trains", "boats", "aviation", "travel-trips", "fishing", "town-main-street"] },
+    { id: "music", family: "music", label: "Music makers", group: "the music makers", cover: "guitar", things: ["guitar", "bells", "chimes"], topics: ["music", "dancing", "radio-tv", "movies"] }
+  ];
+  /* library pictures with fewer than three shapes to color at a level the tablet uses: too little to do, so Color a Picture leaves them out.
+     The list comes from `node scripts/measure-tablet-color.mjs`; scripts/check-tablet-ui.mjs proves it is current. */
+  B.COLOR_SKIP = ["autumn-maple", "farm-windmill", "sewing-machine", "table-setting", "valentine-heart"];
+  /* a picture for the everyday jobs in Put It in Order, where one fits (the id is the sequence's id in the PCG content) */
+  B.SEQ_ART = {
+    "make-tea": "teapot", "brew-coffee": "kettle", "set-table": "cup", "plant-seed": "flower", "polish-shoes": "shoe", "sew-button": "button", "wind-clock": "clock",
+    "dress-church": "hat", "take-walk": "shoe", "water-plants": "flower", "feed-birds": "bird", "pick-tomatoes": "tree", "go-fishing": "fish", "write-letter": "phone",
+    "bake-pie": "apple", "make-lemonade": "orange", "scramble-eggs": "hen", "tune-radio": "chimes", "pack-suitcase": "hat", "wash-hands": "candle"
+  };
 })(typeof globalThis !== "undefined" ? globalThis : this);
