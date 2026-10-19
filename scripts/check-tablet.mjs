@@ -195,6 +195,12 @@ ok(made === 3 * 43, "every stage and topic was tried (129 combinations)");
   ok(typeof Snd.create === "function" && typeof Snd.render === "function", "the sounds are made on the tablet (a synthesizer, not recordings)");
 }
 
+/* every script the page loads parses (the browser check would otherwise be the first to notice a typo in a screen file) */
+for (const f of ["js/tablet.js", "js/tabletKit.js", "js/tabletWords.js", "js/tabletCreate.js", "js/tabletThink.js", "js/tabletBanks.js", "js/tabletArt.js", "js/tabletSound.js", "js/tabletEngine.js"]) {
+  let fine = true; try { new vm.Script(fs.readFileSync(path.join(ROOT, f), "utf8"), { filename: f }); } catch (e) { fine = false; console.error(f + ": " + e.message); }
+  ok(fine, `${f} is valid script`);
+}
+
 /* the pictures: finished illustrations kept in assets/tablet/, one transparent PNG each */
 {
   const ids = Art.ids(), dir = path.join(ROOT, "assets", "tablet"), files = fs.readdirSync(dir).filter(f => /\.png$/.test(f)).sort();

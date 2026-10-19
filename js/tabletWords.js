@@ -61,7 +61,7 @@
       }
       side.innerHTML = '<h3 class="tb-h">' + esc(ws.topicLabel) + '</h3><p class="tb-sub">Find these words</p><ul class="tb-words">' +
         ws.words.map(function (w) { return '<li><button type="button" class="tb-wd" data-w="' + w + '"><span class="tb-tick" aria-hidden="true"></span><span>' + w + "</span></button></li>"; }).join("") +
-        '</ul><div class="tb-sizer" role="group" aria-label="Grid size"><button type="button" class="tb-btn" data-grid="-1" aria-label="A smaller grid">−</button><span id="tbGridN">' + n + " × " + n + '</span><button type="button" class="tb-btn" data-grid="1" aria-label="A bigger grid">+</button></div>";
+        '</ul><div class="tb-sizer" role="group" aria-label="Grid size"><button type="button" class="tb-btn" data-grid="-1" aria-label="A smaller grid">−</button><span id="tbGridN">' + n + " × " + n + '</span><button type="button" class="tb-btn" data-grid="1" aria-label="A bigger grid">+</button></div>';
       /* at the smallest or largest grid the matching button rests */
       side.querySelector('[data-grid="-1"]').disabled = n <= 3; side.querySelector('[data-grid="1"]').disabled = n >= Math.min(6, fitSize());
       msgEl.textContent = "Slide your finger along a word, or tap its first letter and then its last letter.";
