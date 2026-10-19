@@ -47,7 +47,8 @@ const ok = (cond, msg) => { if (cond) passed++; else problems.push(msg); };
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const ALL = ["wordsearch", "crossword", "spell", "saying", "trace", "color", "paint", "bubbles", "sort", "order", "match", "odd", "sounds"];
 /* the activities already rebuilt to the 72 px floor; the others still meet the older 52 px one (this list grows until it holds all thirteen) */
-const BIG = new Set(["trace", "sounds"]);
+const BIG = new Set(["trace", "sounds", "wordsearch", "crossword", "spell", "saying"]);
+const SPEECH = "window.__spoken=[];(function(){try{var s=window.speechSynthesis;if(!s)return;var o=s.speak.bind(s);s.speak=function(u){window.__spoken.push(u.text);try{o(u)}catch(e){}};}catch(e){}})();";
 const LAND = { width: 1024, height: 768 }, PORT = { width: 768, height: 1024 }, PHONE = { width: 390, height: 844 };
 
 async function fresh(viewport, o = {}) {
@@ -139,12 +140,13 @@ try {
     const { ctx, p } = await fresh(LAND);
     await openAct(p, "wordsearch");
     let d = await dbg(p);
-    ok(d.size >= 6 && d.size <= 8 && d.words.length >= 3 && d.words.length <= 5, `a middle-stage word search is ${d.size} x ${d.size} with ${d.words.length} words`);
+    ok(d.size >= 4 && d.size <= 5 && d.words.length === ({ 4: 3, 5: 4 })[d.size], `a middle-stage word search is ${d.size} x ${d.size} with ${d.words.length} words, from the ${d.pack} pack`);
     ok(await p.evaluate(() => document.querySelectorAll("#tbStage .tb-cell").length) === d.size * d.size, "every square is on the screen");
-    /* a drag that is not a word: it fades, no sound, no red, nothing found */
-    const w0 = d.placed[0]; let bad = [0, 0], bad2 = [0, 1];
-    for (let r = 0; r < d.size; r++) for (let c = 0; c + 2 < d.size; c++) { const s = d.placed.some(pl => pl.dy === 0 && pl.r === r && c >= pl.c && c < pl.c + pl.word.length); if (!s && bad[0] === 0 && bad[1] === 0 && r > 0) { bad = [r, c]; bad2 = [r, c + 1]; } }
-    await drag(p, await cellXY(p, bad[0], bad[1]), await cellXY(p, bad2[0], bad2[1]));
+    ok(await p.evaluate(() => { const c = document.querySelector("#tbStage .tb-cell"), r = c.getBoundingClientRect(), fs = parseFloat(getComputedStyle(c).fontSize); return r.width >= 72 && fs >= r.width * 0.5; }), "the squares are at least 72 px and the letters fill them");
+    /* a drag that is not a word: it fades, no red, nothing found */
+    let bad = null;
+    for (let r = 1; r < d.size && !bad; r++) for (let c = 0; c + 1 < d.size && !bad; c++) { const s = d.placed.some(pl => pl.dy === 0 && pl.r === r && c >= pl.c && c + 1 < pl.c + pl.word.length); if (!s) bad = [r, c]; }
+    await drag(p, await cellXY(p, bad[0], bad[1]), await cellXY(p, bad[0], bad[1] + 1));
     await p.waitForTimeout(150);
     ok((await dbg(p)).found.length === 0, "a drag along letters that are not a word finds nothing");
     await p.waitForTimeout(900);
@@ -158,7 +160,7 @@ try {
       if (k < d.placed.length - 1) ok((await dbg(p)).found.length === k + 1, `dragging along ${pl.word} finds it (${k + 1} of ${d.words.length})`);
     }
     ok(await cheered(p), "finding every word brings the cheer");
-    ok(await p.evaluate(() => document.querySelectorAll("#tbWords li.is-found, .tb-words li.is-found").length) === d.words.length, "every word in the list is ticked");
+    ok(await p.evaluate(() => document.querySelectorAll("#tbStage .tb-wd.is-found").length) === d.words.length, "every word in the list is ticked");
     ok(/\d of \d found/.test(await text(p, "#tbProg")), "the count is on the screen: " + await text(p, "#tbProg"));
     /* tapping a first and a last letter, with a finger */
     await p.click("[data-cheer=next]"); await sleep(400);
@@ -169,21 +171,35 @@ try {
     ok(await p.evaluate(() => document.querySelectorAll("#tbStage .is-start").length === 1), "tapping a first letter marks it");
     await p.touchscreen.tap(tb[0], tb[1]); await sleep(150);
     ok((await dbg(p)).found.includes(t.word), "then tapping the last letter finds the word");
-    /* the hint */
-    await click(p, "#tbHint"); await sleep(150);
-    ok(await p.evaluate(() => document.querySelectorAll("#tbStage .is-hint").length === 1) && /first letter is flashing/.test(await text(p, "#tbWsMsg")), "the hint flashes the first letter of a word still to find");
+    /* a word in the list: its letters glow */
+    await click(p, "#tbStage .tb-wd:not(.is-found)"); await sleep(150);
+    ok(await p.evaluate(() => document.querySelectorAll("#tbStage .tb-cell.tb-glow").length) >= 3 && /letters are glowing/.test(await text(p, "#tbWsMsg")), "touching a word in the list makes its letters glow");
+    /* the size buttons make the grid bigger or smaller */
+    const size0 = (await dbg(p)).size;
+    await click(p, size0 > 3 ? '[data-grid="-1"]' : '[data-grid="1"]'); await sleep(300);
+    const size1 = (await dbg(p)).size;
+    ok(size1 === size0 + (size0 > 3 ? -1 : 1) && /\d × \d/.test(await text(p, "#tbGridN")), `the size buttons change the grid (${size0} x ${size0} to ${size1} x ${size1})`);
+    ok(await p.evaluate(() => JSON.parse(localStorage.getItem("cognicopia_tablet_prefs")).grid) === size1, "and the size is remembered");
     /* a new one changes the grid */
     const before = await p.evaluate(() => document.querySelector("#tbStage .tb-grid").textContent);
     await click(p, "#tbNew"); await sleep(300);
-    ok(before !== await p.evaluate(() => document.querySelector("#tbStage .tb-grid").textContent), "New one makes a different puzzle");
+    ok(before !== await p.evaluate(() => document.querySelector("#tbStage .tb-grid").textContent), "Next makes a different puzzle");
     await ctx.close();
+    /* every size from 3 x 3 to 6 x 6 */
+    for (const sz of [3, 4, 5, 6]) {
+      const s = await fresh(LAND, { init: `try{localStorage.setItem("cognicopia_tablet_prefs",JSON.stringify({stage:"early",topic:"",sound:true,speed:2,grid:${sz}}))}catch(e){}` });
+      await openAct(s.p, "wordsearch");
+      const e = await dbg(s.p), need = { 3: 2, 4: 3, 5: 4, 6: 5 }[sz];
+      ok(e.size === sz && e.words.length === need && await s.p.evaluate(() => document.querySelectorAll("#tbStage .tb-cell").length) === sz * sz, `a ${sz} x ${sz} grid with ${need} words`);
+      ok(await s.p.evaluate(() => { const c = document.querySelector("#tbStage .tb-cell").getBoundingClientRect(); return c.width >= 72; }), `${sz} x ${sz}: the squares are 72 px or more`);
+      await s.ctx.close();
+    }
     /* the three stages */
-    for (const [lvl, maxSize, maxWords] of [["early", 10, 7], ["late", 6, 3]]) {
+    for (const [lvl, lo, hi] of [["early", 5, 6], ["late", 3, 4]]) {
       const s = await fresh(LAND); await s.p.click(`label[for=tbStage${lvl[0].toUpperCase() + lvl.slice(1)}]`); await openAct(s.p, "wordsearch");
       const e = await dbg(s.p);
-      ok(e.size <= maxSize && e.words.length <= maxWords && e.words.length >= 3, `${lvl} stage: ${e.size} x ${e.size}, ${e.words.length} words`);
+      ok(e.size >= lo && e.size <= hi, `${lvl} stage: ${e.size} x ${e.size}, ${e.words.length} words`);
       if (lvl === "late") ok(e.placed.every(x => x.dy === 0 && x.dx === 1), "late stage: every word reads straight across");
-      if (lvl === "early") ok(e.size >= 9, "early stage: a bigger grid");
       await s.ctx.close();
     }
   }
@@ -290,47 +306,81 @@ try {
     await ctx.close();
   }
   {
-    const { ctx, p } = await fresh(LAND);
+    const { ctx, p } = await fresh(LAND, { init: SPEECH });
     await openAct(p, "spell");
     let d = await dbg(p); const count = d.count;
-    ok(count >= 3 && /Word 1 of/.test(await text(p, "#tbProg")), `Spell It has ${count} words`);
+    ok(count === 5 && /Word 1 of 5/.test(await text(p, "#tbProg")), `Spell It has ${count} words`);
+    const tiles = () => p.$$eval("#tbStage .tb-tile:not(.is-placed)", ts => ts.map(t => t.getAttribute("data-l")));
+    const tileXY = L => centerOf(p, `#tbStage .tb-tray .tb-tile[data-l="${L}"]:not(.is-placed)`);
+    const slotXY = k => centerOf(p, `#tbStage .tb-slot[data-s="${k}"]`);
     for (let i = 0; i < count; i++) {
       d = await dbg(p);
-      const given = await p.evaluate(() => document.querySelectorAll("#tbStage .tb-slot.is-given").length);
-      ok(given === 1, `word ${i + 1}: the first letter is given at the middle stage`);
+      ok(await p.evaluate(() => !!document.querySelector("#tbStage .tb-pic-card svg")) && /\w/.test(await text(p, "#tbStage .tb-clueline")), `word ${i + 1}: there is a picture and a clue (${d.art})`);
+      ok(!(await p.evaluate(() => document.querySelector("#tbStage .tb-pic-card").textContent.trim())), `word ${i + 1}: the picture has no letters in it`);
+      ok(await p.evaluate(() => document.querySelectorAll("#tbStage .tb-slot").length) === d.word.length && (await tiles()).sort().join("") === d.word.split("").sort().join(""), `word ${i + 1}: ${d.word.length} places and exactly the letters of the word as blocks`);
       if (i === 0) {
-        const bad = d.word.charAt(1) === "Q" ? "Z" : "Q";
-        for (let k = given; k < d.word.length; k++) await click(p, `#tbStage .tb-key[data-k="${bad}"]`);
-        await sleep(80);
-        ok(/Nearly/.test(await text(p, "#tbStage .tb-msg")) && !/wrong/i.test(await text(p, "#tbStage .tb-msg")), "a full word that is not right gets a gentle sentence: " + await text(p, "#tbStage .tb-msg"));
-        for (let k = given; k < d.word.length; k++) await click(p, '#tbStage .tb-key[data-k="BACK"]');
-        ok(await p.evaluate(() => Array.from(document.querySelectorAll("#tbStage .tb-slot")).filter(s => s.textContent).length) === given, "Back takes the letters out again");
-        await click(p, "#tbSpHint"); await sleep(60);
-        ok(await p.evaluate(() => Array.from(document.querySelectorAll("#tbStage .tb-slot")).filter(s => s.textContent).length) === given + 1, "A letter fills in the next correct letter");
-        for (let k = given + 1; k < d.word.length; k++) await click(p, `#tbStage .tb-key[data-k="${d.word.charAt(k)}"]`);
-      } else for (let k = given; k < d.word.length; k++) await click(p, `#tbStage .tb-key[data-k="${d.word.charAt(k)}"]`);
-      await sleep(100);
-      if (i < count - 1) { ok(await p.evaluate(() => !document.getElementById("tbSpNext").hidden), `word ${i + 1}: spelled right, and Next appears`); await click(p, "#tbSpNext"); await sleep(80); }
+        /* a block that is not right for the place: it hops and comes back, with a kind sentence */
+        const wrongL = (await tiles()).find(L => L !== d.word[0]);
+        if (wrongL) {
+          const c = await tileXY(wrongL); await p.mouse.click(c[0], c[1]); await sleep(250);
+          ok((await dbg(p)).placed === 0 && /Not that one/.test(await text(p, "#tbStage .tb-msg")) && !/wrong/i.test(await text(p, "#tbStage .tb-msg")), "a tap on the wrong letter places nothing, with a kind sentence: " + await text(p, "#tbStage .tb-msg"));
+          /* dragged to the wrong place: it floats back */
+          const from = await tileXY(wrongL), to = await slotXY(0), at0 = await p.evaluate(L => { const r = document.querySelector(`#tbStage .tb-tray .tb-tile[data-l="${L}"]`).getBoundingClientRect(); return [Math.round(r.left), Math.round(r.top)]; }, wrongL);
+          await drag(p, from, to); await sleep(900);
+          const at1 = await p.evaluate(L => { const r = document.querySelector(`#tbStage .tb-tray .tb-tile[data-l="${L}"]`).getBoundingClientRect(); return [Math.round(r.left), Math.round(r.top)]; }, wrongL);
+          ok((await dbg(p)).placed === 0 && Math.abs(at0[0] - at1[0]) < 3 && Math.abs(at0[1] - at1[1]) < 3, "a wrong letter dragged to a place glides back to where it was");
+        }
+        /* the right letter, dragged, stays */
+        const right = await tileXY(d.word[0]), slot = await slotXY(0);
+        await drag(p, right, slot); await sleep(600);
+        ok((await dbg(p)).placed === 1 && await p.evaluate(() => document.querySelector('#tbStage .tb-slot[data-s="0"] .tb-tile') !== null), "the right letter dragged to its place stays there");
+        /* the next one, with a real touch */
+        const t2 = await tileXY(d.word[1]), s2 = await slotXY(1);
+        await touchPath(ctx, p, [t2, [(t2[0] + s2[0]) / 2, (t2[1] + s2[1]) / 2], s2]); await sleep(600);
+        ok((await dbg(p)).placed === 2, "a real touch can slide a letter into place too");
+        for (let k = 2; k < d.word.length; k++) { const c = await tileXY(d.word[k]); await p.mouse.click(c[0], c[1]); await sleep(120); }
+      } else for (let k = 0; k < d.word.length; k++) { const c = await tileXY(d.word[k]); await p.mouse.click(c[0], c[1]); await sleep(120); }
+      await sleep(300);
+      ok((await dbg(p)).finished && (await p.evaluate(() => window.__spoken)).some(x => x.toLowerCase() === d.word.toLowerCase()), `word ${i + 1}: spelled right, and the word is spoken: ${(await p.evaluate(() => window.__spoken)).slice(-1)[0]}`);
+      if (i < count - 1) { ok(await p.evaluate(() => !document.getElementById("tbSpNext").hidden), `word ${i + 1}: Next word appears`); await click(p, "#tbSpNext"); await sleep(120); }
     }
     ok(await cheered(p), "spelling every word brings the cheer");
     await ctx.close();
+    /* the late stage gives the first letter */
+    const l = await fresh(LAND); await l.p.click("label[for=tbStageLate]"); await openAct(l.p, "spell");
+    ok(await l.p.evaluate(() => document.querySelectorAll("#tbStage .tb-slot.is-given").length) === 1 && await l.p.evaluate(() => document.querySelectorAll("#tbStage .tb-tray .tb-tile").length) + 1 === (await dbg(l.p)).word.length, "late stage: the first letter is already in place");
+    await l.ctx.close();
   }
 
   /* ---------- the choosing activities ---------- */
   {
-    const { ctx, p } = await fresh(LAND);
+    const { ctx, p } = await fresh(LAND, { init: SPEECH });
     await openAct(p, "saying");
     let d = await dbg(p); const count = d.count;
+    ok(count === 5 && d.item.options.length === 3, "five sayings, three choices each");
     for (let i = 0; i < count; i++) {
       d = await dbg(p); const it = d.item;
       if (i === 0) {
         const wrong = it.options.find(o => o !== it.answer);
         await clickAttr(p, "data-o", String(it.options.indexOf(wrong))); await sleep(100);
-        ok(/Good thought/.test(await text(p, "#tbStage .tb-msg")) && await p.evaluate(() => document.querySelectorAll("#tbStage .tb-opt.is-right").length === 1), "a different choice gets \"Good thought. Here is how it goes.\" and the saying is completed");
-        ok(await p.evaluate(a => document.querySelector("#tbStage .tb-big").textContent.includes(a), it.answer), "with the answer in the sentence");
+        ok(/Good thought\. Try another/.test(await text(p, "#tbStage .tb-msg")) && await p.evaluate(() => document.querySelectorAll("#tbStage .tb-opt.is-right").length === 0 && document.querySelectorAll("#tbStage .tb-blank-slot").length === 1 && document.querySelectorAll("#tbStage .tb-opt:not([disabled])").length === 2), "a different choice steps back softly: the saying stays open and the other two choices are still there");
+        const wrong2 = it.options.find(o => o !== it.answer && o !== wrong);
+        await clickAttr(p, "data-o", String(it.options.indexOf(wrong2))); await sleep(150);
+        ok(await p.evaluate(() => document.querySelectorAll("#tbStage .tb-opt.tb-glow").length) === 1, "after a second try the right choice glows");
+        await clickAttr(p, "data-o", String(it.options.indexOf(it.answer))); await sleep(100);
+        ok(await p.evaluate(a => document.querySelector("#tbStage .tb-big u").textContent === a && document.querySelectorAll("#tbStage .tb-opt.is-right").length === 1, it.answer), "then the right word completes the saying: " + it.answer);
+        ok((await p.evaluate(() => window.__spoken)).some(x => x.toLowerCase().includes(it.answer.toLowerCase())), "and the whole saying is spoken aloud");
+      } else if (i === 1 && await p.evaluate(() => !document.getElementById("tbSyHelp").hidden)) {
+        /* spelling it, with letter blocks */
+        await click(p, "#tbSyHelp"); await sleep(200);
+        const ans = it.answer.toUpperCase();
+        ok(await p.evaluate(() => document.querySelectorAll("#tbStage .tb-tile").length) === ans.length, `Help me spell it: ${ans.length} letter blocks for ${ans}`);
+        for (const L of ans) { const c = await centerOf(p, `#tbStage .tb-tray .tb-tile[data-l="${L}"]:not(.is-placed)`); await p.mouse.click(c[0], c[1]); await sleep(110); }
+        await sleep(200);
+        ok(await p.evaluate(a => document.querySelector("#tbStage .tb-big u") && document.querySelector("#tbStage .tb-big u").textContent === a, it.answer), "spelling the word completes the saying");
       } else {
         await clickAttr(p, "data-o", String(it.options.indexOf(it.answer))); await sleep(100);
-        ok(await p.evaluate(() => document.querySelectorAll("#tbStage .tb-opt.is-right").length === 1) && !/Good thought/.test(await text(p, "#tbStage .tb-msg")), `saying ${i + 1}: the right word is marked, with a short word of praise`);
+        ok(await p.evaluate(() => document.querySelectorAll("#tbStage .tb-opt.is-right").length === 1), `saying ${i + 1}: the right word is marked, with a short word of praise`);
       }
       if (i < count - 1) { await click(p, "#tbSyNext"); await sleep(80); }
     }

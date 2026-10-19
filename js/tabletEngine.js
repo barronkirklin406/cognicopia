@@ -25,27 +25,27 @@
   var STAGES = {
     early: {
       label: "Early stage",
-      search: { size: 10, dirs: [[1, 0], [0, 1], [1, 1]], words: 7, minLen: 4, maxLen: 9 },
-      cross: { size: 9, target: 5, max: 6, pool: 10, minLen: 3, maxLen: 8, attempts: 30 },
-      spell: { count: 5, minLen: 4, maxLen: 9, firstGiven: false },
+      search: { sizes: [5, 6], dirs: [[1, 0], [0, 1], [1, 1]] },
+      cross: { size: 6, target: 5, max: 6, minLen: 3, attempts: 40 },
+      spell: { count: 5, minLen: 4, maxLen: 6, firstGiven: false },
       saying: { count: 6, options: 3 }, sort: { count: 8 }, order: { maxSteps: 6 }, match: { pairs: 5 }, odd: { rounds: 5 },
       trace: { tol: 34, kinds: ["wave", "zigzag", "spiral", "scurve", "heart", "circle", "hill"], rounds: 3 },
       color: { tier: 2 }, sounds: { cards: 6, rounds: 3 }
     },
     middle: {
       label: "Middle stage",
-      search: { size: 8, dirs: [[1, 0], [0, 1]], words: 5, minLen: 3, maxLen: 7 },
-      cross: { size: 8, target: 4, max: 5, pool: 8, minLen: 3, maxLen: 7, attempts: 40 },
-      spell: { count: 5, minLen: 3, maxLen: 6, firstGiven: true },
+      search: { sizes: [4, 5], dirs: [[1, 0], [0, 1]] },
+      cross: { size: 6, target: 4, max: 5, minLen: 3, attempts: 40 },
+      spell: { count: 5, minLen: 3, maxLen: 5, firstGiven: false },
       saying: { count: 5, options: 3 }, sort: { count: 6 }, order: { maxSteps: 4 }, match: { pairs: 4 }, odd: { rounds: 4 },
       trace: { tol: 46, kinds: ["wave", "scurve", "heart", "circle", "hill"], rounds: 3 },
       color: { tier: 3 }, sounds: { cards: 6, rounds: 3 }
     },
     late: {
       label: "Late stage",
-      search: { size: 6, dirs: [[1, 0]], words: 3, minLen: 3, maxLen: 6 },
-      cross: { size: 6, target: 3, max: 4, pool: 6, minLen: 3, maxLen: 5, attempts: 40 },
-      spell: { count: 4, minLen: 3, maxLen: 5, firstGiven: true },
+      search: { sizes: [3, 4], dirs: [[1, 0]] },
+      cross: { size: 5, target: 3, max: 4, minLen: 3, attempts: 40 },
+      spell: { count: 4, minLen: 3, maxLen: 4, firstGiven: true },
       saying: { count: 4, options: 2 }, sort: { count: 4 }, order: { maxSteps: 3 }, match: { pairs: 3 }, odd: { rounds: 3 },
       trace: { tol: 62, kinds: ["hill", "wave", "scurve", "circle"], rounds: 3 },
       color: { tier: 3 }, sounds: { cards: 4, rounds: 2 }
@@ -79,60 +79,74 @@
   }
   function overlaps(w, list) { for (var i = 0; i < list.length; i++) if (list[i] === w || list[i].indexOf(w) >= 0 || w.indexOf(list[i]) >= 0) return true; return false; }
 
-  /* ---------- word search ---------- */
+  /* ---------- the banks (js/tabletBanks.js) ---------- */
+  var banks = function () { return root.CognicopiaTabletBanks; }, artOf = function () { return root.CognicopiaTabletArt; };
+  var NEED = { 3: 2, 4: 3, 5: 4, 6: 5 };            // how many words a word search of each size holds
+  /* a list in the order a screen should try it: what the topic asks for first, then the rest, and what was just on the screen last */
+  function ordered(list, o, rng, label) {
+    var topic = o && o.topic, avoid = (o && o.avoid) || [];
+    var hit = topic ? list.filter(function (x) { return x.topics.indexOf(topic) >= 0; }) : [], rest = list.filter(function (x) { return hit.indexOf(x) < 0; });
+    var all = rng.fork(label + "-t").shuffle(hit).concat(rng.fork(label + "-r").shuffle(rest));
+    return all.filter(function (x) { return avoid.indexOf(x.id) < 0; }).concat(all.filter(function (x) { return avoid.indexOf(x.id) >= 0; }));
+  }
+
+  /* ---------- word search: 3 x 3 to 6 x 6, from a themed pack ---------- */
   function wordSearch(o) {
-    var c = cfgOf(o, "search"), size = Math.max(5, Math.min(c.size, (o.fit && o.fit.size) || c.size)), maxLen = Math.min(c.maxLen, size);
-    for (var attempt = 0; attempt < 8; attempt++) {
-      var rng = rngOf(o, "ws" + attempt), pick = itemsFor(o, rng, 14), chosen = [];
-      rng.fork("it").shuffle(pick.items).forEach(function (it) {
-        var terms = rng.fork("t:" + it.id).shuffle(termsOf(it).filter(function (t) { return t.word.length >= c.minLen && t.word.length <= maxLen; }));
-        terms.slice(0, 2).forEach(function (t) { if (chosen.length < c.words && !overlaps(t.word, chosen.map(function (x) { return x.word; }))) chosen.push(t); });
-      });
-      if (chosen.length < Math.min(3, c.words)) continue;
-      var ws = Z.wordSearch(chosen.map(function (t) { return t.word; }), { size: size, dirs: c.dirs }, rng.fork("grid"), D.safety);
-      if (ws.placed.length < Math.min(3, c.words)) continue;
-      return { size: ws.size, rows: ws.rows, placed: ws.placed, words: ws.placed.map(function (p) { return p.word; }).sort(), topic: pick.topic, topicLabel: pick.label };
+    var c = cfgOf(o, "search"), lo = c.sizes[0], hi = c.sizes[1], cap = Math.max(3, Math.min(6, (o.fit && o.fit.size) || 6));
+    var size = o && o.size ? o.size : lo + rngOf(o, "wsz").int(hi - lo + 1);
+    size = Math.max(3, Math.min(6, size, cap));
+    var need = NEED[size], dirs = c.dirs.filter(function (d) { return size >= 5 || d[0] === 0 || d[1] === 0; });    // a small grid never reads on the diagonal
+    var packs = ordered(banks().PACKS, o, rngOf(o, "wsp"), "p");
+    for (var a = 0; a < packs.length; a++) {
+      var pack = packs[a], rng = rngOf(o, "ws" + a), chosen = [];
+      var pool = pack.words.filter(function (w) { return w.length >= 3 && w.length <= size && okWord(w); });
+      if (pool.length < need) continue;
+      rng.fork("w").shuffle(pool).forEach(function (w) { if (chosen.length < need && !overlaps(w, chosen)) chosen.push(w); });
+      if (chosen.length < need) continue;
+      var ws = Z.wordSearch(chosen, { size: size, dirs: dirs }, rng.fork("grid"), D.safety);
+      if (ws.placed.length < need) continue;
+      return { size: ws.size, rows: ws.rows, placed: ws.placed, words: ws.placed.map(function (p) { return p.word; }).sort(), pack: pack.id, topic: pack.id, topicLabel: pack.label };
     }
     return null;
   }
 
-  /* ---------- crossword ---------- */
+  /* ---------- crossword: from a clue set ---------- */
   function crossword(o) {
-    var c = cfgOf(o, "cross"), size = Math.max(5, Math.min(c.size, (o.fit && o.fit.size) || c.size)), maxLen = Math.min(c.maxLen, size);
-    for (var attempt = 0; attempt < 10; attempt++) {
-      var rng = rngOf(o, "cw" + attempt), pick = itemsFor(o, rng, 16), entries = [], seen = {};
-      rng.fork("it").shuffle(pick.items).forEach(function (it) {
-        var terms = rng.fork("t:" + it.id).shuffle(termsOf(it).filter(function (t) { return t.word.length >= c.minLen && t.word.length <= maxLen && !seen[t.word]; }));
-        terms.slice(0, 2).forEach(function (t) { if (entries.length < c.pool) { seen[t.word] = 1; entries.push(t); } });
-      });
+    var c = cfgOf(o, "cross"), size = Math.max(5, Math.min(c.size, (o.fit && o.fit.size) || c.size)), sets = ordered(banks().CLUES, o, rngOf(o, "cws"), "c");
+    for (var a = 0; a < Math.min(sets.length, 16); a++) {
+      var set = sets[a], rng = rngOf(o, "cw" + a);
+      var entries = set.entries.filter(function (e) { return e[0].length >= c.minLen && e[0].length <= size && okWord(e[0]) && okText(e[1]) && e[1].toUpperCase().indexOf(e[0]) < 0; })
+        .map(function (e) { return { word: e[0], clue: e[1], ref: set.id }; });
+      if (entries.length < 4) continue;
       var cw = Z.crossword(entries, { size: size, target: c.target, max: c.max, attempts: c.attempts }, rng.fork("x"));
       if (!cw || cw.entries.length < Math.min(3, c.target) || Z.checkCrossword(cw).length) continue;
-      cw.topic = pick.topic; cw.topicLabel = pick.label;
+      cw.topic = set.id; cw.topicLabel = set.title;
       return cw;
     }
     return null;
   }
 
-  /* ---------- spell it: a clue and the word to spell ---------- */
+  /* ---------- spell it: a picture, a clue, and the word to spell ---------- */
   function spellIt(o) {
-    var c = cfgOf(o, "spell"), rng = rngOf(o, "sp"), pick = itemsFor(o, rng, 14), out = [], seen = {};
-    rng.fork("it").shuffle(pick.items).forEach(function (it) {
-      rng.fork("t:" + it.id).shuffle(termsOf(it).filter(function (t) { return t.word.length >= c.minLen && t.word.length <= c.maxLen; })).slice(0, 1).forEach(function (t) {
-        if (out.length < c.count && !seen[t.word]) { seen[t.word] = 1; out.push({ word: t.word, clue: t.clue, ref: t.ref, given: c.firstGiven ? 1 : 0 }); }
-      });
-    });
-    return { items: out, topic: pick.topic, topicLabel: pick.label };
+    var c = cfgOf(o, "spell"), rng = rngOf(o, "sp"), avoid = (o && o.avoid) || [], Art = artOf();
+    var pool = banks().OBJECTS.filter(function (x) { return x.word.length >= c.minLen && x.word.length <= c.maxLen && okWord(x.word) && okText(x.clue) && x.clue.toUpperCase().indexOf(x.word) < 0 && Art.has(x.art); });
+    var order = rng.fork("o").shuffle(pool), fresh = order.filter(function (x) { return avoid.indexOf(x.word) < 0; }).concat(order.filter(function (x) { return avoid.indexOf(x.word) >= 0; }));
+    return { items: fresh.slice(0, c.count).map(function (x) { return { word: x.word, clue: x.clue, art: x.art, given: c.firstGiven ? 1 : 0 }; }) };
   }
 
-  /* ---------- finish the saying ---------- */
+  /* ---------- finish the saying: proverbs, hymns and songs ---------- */
+  function sayingPool() {
+    var seen = {}, out = [], norm = function (s) { return s.toLowerCase().replace(/[^a-z]/g, ""); };
+    banks().SAYINGS.concat(D.activities.sayings).forEach(function (s) { var k = norm(s.lead); if (seen[k] || !okText(s.lead + " " + s.answer) || s.lead.toLowerCase().indexOf(s.answer.toLowerCase()) >= 0) return;   /* an opening that holds its own answer gives it away */ seen[k] = 1; out.push(s); });
+    return out;
+  }
   function sayings(o) {
-    var c = cfgOf(o, "saying"), rng = rngOf(o, "sy");
-    var pool = D.activities.sayings.filter(function (s) { return okText(s.lead + " " + s.answer); });
-    var out = rng.shuffle(pool).slice(0, c.count).map(function (s) {
+    var c = cfgOf(o, "saying"), rng = rngOf(o, "sy"), avoid = (o && o.avoid) || [], order = rng.shuffle(sayingPool());
+    var fresh = order.filter(function (s) { return avoid.indexOf(s.id) < 0; }).concat(order.filter(function (s) { return avoid.indexOf(s.id) >= 0; }));
+    return { items: fresh.slice(0, c.count).map(function (s) {
       var opts = [s.answer].concat(rng.fork(s.id).shuffle(s.others).slice(0, c.options - 1));
       return { id: s.id, lead: s.lead, answer: s.answer, options: rng.fork("o" + s.id).shuffle(opts), kind: s.kind };
-    });
-    return { items: out };
+    }) };
   }
 
   /* ---------- sort it, and odd one out: groups of things ---------- */
@@ -292,6 +306,7 @@
     STAGES: STAGES, TOPICS: TOPICS, SHAPES: Object.keys(SHAPES), SHAPE_LABEL: SHAPE_LABEL, SCENES: SCENES,
     wordSearch: wordSearch, crossword: crossword, spellIt: spellIt, sayings: sayings, sortIt: sortIt, oddOne: oddOne, inOrder: inOrder,
     matchUp: matchUp, soundBoard: soundBoard, tracePath: tracePath, follow: follow, designChoices: designChoices,
+    counts: function () { return { packs: banks().PACKS.length, clueSets: banks().CLUES.length, sayings: sayingPool().length, objects: banks().OBJECTS.length }; },
     newSeed: function () { return String(Date.now()) + "-" + Math.floor(Math.random() * 1e9); }
   };
 })(typeof globalThis !== "undefined" ? globalThis : this);

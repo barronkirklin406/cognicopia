@@ -36,8 +36,8 @@ const read = f => fs.readFileSync(path.join(ROOT, f), "utf8");
 
 /* the engine in a sandbox with the real puzzle makers and content, and no browser */
 const ctx = vm.createContext({ console, Math, Date }); ctx.globalThis = ctx;
-for (const f of ["assets/pcg/pcg-data.bundle.js", "src/pcg/prng.js", "src/pcg/matrix.js", "src/pcg/grammar.js", "src/pcg/puzzles.js", "js/tabletSound.js", "js/tabletArt.js", "js/tabletEngine.js"]) vm.runInContext(read(f), ctx, { filename: f });
-const T = ctx.CognicopiaTablet, D = ctx.CognicopiaPCGData, G = ctx.CognicopiaPCG.grammar, Z = ctx.CognicopiaPCG.puzzles, Snd = ctx.CognicopiaTabletSound, Art = ctx.CognicopiaTabletArt;
+for (const f of ["assets/pcg/pcg-data.bundle.js", "src/pcg/prng.js", "src/pcg/matrix.js", "src/pcg/grammar.js", "src/pcg/puzzles.js", "js/tabletSound.js", "js/tabletArt.js", "js/tabletBanks.js", "js/tabletEngine.js"]) vm.runInContext(read(f), ctx, { filename: f });
+const T = ctx.CognicopiaTablet, D = ctx.CognicopiaPCGData, G = ctx.CognicopiaPCG.grammar, Z = ctx.CognicopiaPCG.puzzles, Snd = ctx.CognicopiaTabletSound, Art = ctx.CognicopiaTabletArt, Bank = ctx.CognicopiaTabletBanks;
 const plain = x => JSON.parse(JSON.stringify(x));          // out of the sandbox, so deep comparisons work
 const STAGES = ["early", "middle", "late"], TOPICS = ["", ...T.TOPICS.map(t => t.id)];
 const lintOk = s => !G.lint(s, D);
@@ -50,28 +50,27 @@ ok(T.TOPICS.length === 42 && STAGES.every(s => T.STAGES[s]), "all 42 topics and 
 let made = 0;
 for (const stage of STAGES) for (const topic of TOPICS) {
   const o = { stage, topic, seed: "check-" + stage + "-" + topic, fit: { size: 9 } }, tag = `${stage}/${topic || "any"}`, c = T.STAGES[stage];
-  /* word search */
-  const ws = plain(T.wordSearch(o));
-  ok(ws && ws.placed.length >= 3 && ws.size <= c.search.size && ws.size <= 9, `${tag}: a word search with at least three words that fits`);
+  /* word search: 3 x 3 up to 6 x 6, from a pack */
+  const ws = plain(T.wordSearch(o)), NEED = { 3: 2, 4: 3, 5: 4, 6: 5 };
+  ok(ws && ws.size >= c.search.sizes[0] && ws.size <= c.search.sizes[1] && ws.placed.length === NEED[ws.size], `${tag}: a word search of the stage's size with ${ws && NEED[ws.size]} words`);
   if (ws) {
-    const allowed = c.search.dirs.map(d => d.join());
-    ok(ws.placed.every(p => allowed.includes([p.dx, p.dy].join()) && [...p.word].every((ch, k) => ws.rows[p.r + p.dy * k].charAt(p.c + p.dx * k) === ch) && wordOk(p.word)), `${tag}: every search word is where it says, in an allowed direction, and is a plain word`);
-    ok(ws.words.length === ws.placed.length && ws.words.length <= c.search.words, `${tag}: the list matches what was placed`);
-    ok(ws.rows.length === ws.size && ws.rows.every(r => r.length === ws.size && /^[A-Z]+$/.test(r)), `${tag}: the grid is square and all capital letters`);
+    const allowed = c.search.dirs.filter(d => ws.size >= 5 || d[0] === 0 || d[1] === 0).map(d => d.join()), pack = Bank.PACKS.find(p => p.id === ws.pack);
+    ok(ws.placed.every(p => allowed.includes([p.dx, p.dy].join()) && [...p.word].every((ch, k) => ws.rows[p.r + p.dy * k].charAt(p.c + p.dx * k) === ch) && wordOk(p.word) && pack.words.includes(p.word) && p.word.length <= ws.size), `${tag}: every search word is from its pack, where it says, in an allowed direction, and fits the grid`);
+    ok(ws.words.length === ws.placed.length && ws.rows.length === ws.size && ws.rows.every(r => r.length === ws.size && /^[A-Z]+$/.test(r)), `${tag}: the list matches what was placed, and the grid is square and all capital letters`);
   }
-  const small = plain(T.wordSearch(Object.assign({}, o, { fit: { size: 6 } })));
-  ok(small && small.size <= 6 && small.placed.every(p => p.word.length <= 6), `${tag}: a small screen gets a smaller grid with shorter words`);
-  /* crossword */
+  const small = plain(T.wordSearch(Object.assign({}, o, { fit: { size: 4 } })));
+  ok(small && small.size <= 4 && small.placed.every(p => p.word.length <= 4), `${tag}: a small screen gets a smaller grid with shorter words`);
+  /* crossword: from a clue set */
   const cw = plain(T.crossword(o));
-  ok(cw && cw.entries.length >= 3 && cw.rows <= 9 && cw.cols <= 9 && !Z.checkCrossword(cw).length, `${tag}: a sound crossword (no accidental words, fits the screen)`);
+  ok(cw && cw.entries.length >= 3 && cw.rows <= c.cross.size && cw.cols <= c.cross.size && !Z.checkCrossword(cw).length && Bank.CLUES.some(s => s.id === cw.topic), `${tag}: a sound crossword (no accidental words) from a clue set, no bigger than ${c.cross.size} x ${c.cross.size}`);
   if (cw) ok(cw.entries.every(e => e.clue && lintOk(e.clue) && e.clue.toUpperCase().indexOf(e.word) < 0 && wordOk(e.word) && e.num > 0), `${tag}: crossword clues pass the dignity rules and never contain their answer`);
-  /* spell it */
+  /* spell it: a picture, a clue, a word */
   const sp = plain(T.spellIt(o));
-  ok(sp.items.length >= 3 && sp.items.every(i => i.word.length >= c.spell.minLen && i.word.length <= c.spell.maxLen && wordOk(i.word) && lintOk(i.clue) && i.clue.toUpperCase().indexOf(i.word) < 0 && i.given === (c.spell.firstGiven ? 1 : 0)), `${tag}: spelling words fit the stage, with a plain clue, and the first letter is given where the stage calls for it`);
+  ok(sp.items.length === c.spell.count && sp.items.every(i => i.word.length >= c.spell.minLen && i.word.length <= c.spell.maxLen && wordOk(i.word) && lintOk(i.clue) && i.clue.toUpperCase().indexOf(i.word) < 0 && Art.has(i.art) && i.given === (c.spell.firstGiven ? 1 : 0)), `${tag}: ${c.spell.count} spelling words fit the stage, each with a drawn picture and a plain clue, and the first letter is given where the stage calls for it`);
   ok(new Set(sp.items.map(i => i.word)).size === sp.items.length, `${tag}: no spelling word twice`);
   /* sayings */
   const sy = plain(T.sayings(o));
-  ok(sy.items.length === c.saying.count && sy.items.every(s => s.options.includes(s.answer) && s.options.length === c.saying.options && new Set(s.options).size === s.options.length && lintOk(s.lead + " " + s.answer)), `${tag}: each saying's answer is among its ${c.saying.options} different choices`);
+  ok(sy.items.length === c.saying.count && sy.items.every(s => s.options.includes(s.answer) && s.options.length === c.saying.options && new Set(s.options).size === s.options.length && lintOk(s.lead + " " + s.answer) && s.lead.toLowerCase().indexOf(s.answer.toLowerCase()) < 0), `${tag}: each saying's answer is among its ${c.saying.options} different choices, and the start never gives it away`);
   /* sort it */
   const so = plain(T.sortIt(o)), sg = D.activities.sorting;
   ok(so.groups.length === 2 && so.groups[0].id !== so.groups[1].id && so.items.length >= c.sort.count - 1 && so.items.every(i => sg.find(g => g.id === so.groups[i.group].id).words.includes(i.word)), `${tag}: every sorted item belongs to the group it is marked for`);
@@ -109,12 +108,38 @@ ok(made === 3 * 43, "every stage and topic was tried (129 combinations)");
 /* the stages: gentler as they go on */
 {
   const s = T.STAGES;
-  ok(s.early.search.words > s.middle.search.words && s.middle.search.words > s.late.search.words, "fewer search words at each later stage");
-  ok(s.late.search.dirs.every(d => d[1] === 0 || d[0] === 0) && s.late.search.dirs.length === 1 && s.late.search.dirs[0].join() === "1,0", "the late-stage search reads across only");
+  ok(s.early.search.sizes[0] > s.late.search.sizes[1] - 1 && s.early.search.sizes[1] === 6 && s.late.search.sizes[0] === 3 && s.middle.search.sizes.join() === "4,5", "the word search grows from 3 x 3 (late) to 6 x 6 (early)");
+  ok(s.late.search.dirs.length === 1 && s.late.search.dirs[0].join() === "1,0", "the late-stage search reads across only");
   ok(s.early.trace.tol < s.middle.trace.tol && s.middle.trace.tol < s.late.trace.tol, "the path gets wider at each later stage");
   ok(s.early.saying.options > s.late.saying.options && s.late.saying.options === 2, "a later stage has fewer choices");
   ok(s.late.cross.size < s.early.cross.size && s.late.cross.target < s.early.cross.target, "the late-stage crossword is smaller");
-  ok(s.late.spell.firstGiven && !s.early.spell.firstGiven, "the late stage is given the first letter");
+  ok(s.late.spell.firstGiven && !s.early.spell.firstGiven && s.late.spell.maxLen < s.early.spell.maxLen, "the late stage is given the first letter, and shorter words");
+}
+
+/* the banks: how much there is, and that all of it is plain and kind */
+{
+  const BL = new Set(D.safety.blocklist), words = s => s.split(/\s+/);
+  const counts = plain(T.counts());
+  ok(Bank.PACKS.length >= 20 && counts.packs === Bank.PACKS.length, `${Bank.PACKS.length} word-search packs (at least 20)`);
+  ok(Bank.PACKS.every(p => p.id && lintOk(p.label) && p.words.length >= 12 && new Set(p.words).size === p.words.length && p.words.every(w => /^[A-Z]{3,6}$/.test(w) && !BL.has(w))), "every pack has at least twelve different plain words of three to six letters, none on the blocklist");
+  ok([3, 4, 5, 6].every(sz => Bank.PACKS.filter(p => p.words.filter(w => w.length <= sz).length >= { 3: 2, 4: 3, 5: 4, 6: 5 }[sz]).length >= 12), "at least twelve packs can fill every grid size, 3 x 3 included");
+  ok(Bank.CLUES.length >= 50 && counts.clueSets === Bank.CLUES.length, `${Bank.CLUES.length} crossword clue sets (at least 50), ${Bank.CLUES.reduce((m, c) => m + c.entries.length, 0)} clues`);
+  ok(Bank.CLUES.every(c => lintOk(c.title) && c.entries.length >= 7 && new Set(c.entries.map(e => e[0])).size === c.entries.length && c.entries.every(([w, cl]) => /^[A-Z]{3,6}$/.test(w) && !BL.has(w) && lintOk(cl) && cl.toUpperCase().indexOf(w) < 0 && cl.length <= 70)), "every clue set has at least seven different answers of three to six letters; every clue passes the dignity rules and does not contain its answer");
+  ok(Bank.CLUES.some(c => c.entries.some(e => /___/.test(e[1]))) && Bank.CLUES.filter(c => c.entries.some(e => /___/.test(e[1]))).length >= 10, "at least ten sets finish sayings, such as a dog is man's best ___");
+  let sound = 0, total = 0;
+  for (const c of Bank.CLUES) for (let k = 0; k < 4; k++) { total++; const cw = T.crossword({ stage: "middle", topic: c.topics[0] || "", seed: c.id + k, fit: { size: 6 } }); if (cw && cw.entries.length >= 3) sound++; }
+  ok(sound === total, `every clue set can make crosswords (${sound} of ${total} tries)`);
+  const fillers = Bank.CLUES.filter(c => { let okc = 0; for (let k = 0; k < 4; k++) { const entries = c.entries.filter(e => e[0].length <= 5).map(e => ({ word: e[0], clue: e[1] })); const cw = Z.crossword(entries, { size: 5, target: 3, max: 4, attempts: 40 }, ctx.CognicopiaPCG.prng.create("late" + c.id + k)); if (cw && cw.entries.length >= 3 && !Z.checkCrossword(cw).length) okc++; } return okc >= 3; }).length;
+  ok(fillers >= Bank.CLUES.length * 0.85, `at least 85% of the clue sets also make a 5 x 5 crossword for the late stage (${fillers} of ${Bank.CLUES.length})`);
+  const pool = plain(T.counts());
+  ok(pool.sayings >= 100, `${pool.sayings} sayings to finish (at least 100)`);
+  const allSay = Bank.SAYINGS.concat(D.activities.sayings);
+  ok(Bank.SAYINGS.length >= 40 && Bank.SAYINGS.every(s => lintOk(s.lead + " " + s.answer) && s.others.length === 2 && !s.others.includes(s.answer) && new Set(s.others).size === 2 && s.lead.toLowerCase().indexOf(s.answer.toLowerCase()) < 0 && /^(proverb|song|hymn)$/.test(s.kind) && s.others.every(lintOk)), "the new sayings are proverbs, songs and hymns whose two other choices never fit and whose start never gives the answer away");
+  ok(["proverb", "song", "hymn"].every(k => Bank.SAYINGS.some(s => s.kind === k)), "there are proverbs, songs and hymns");
+  ok(Bank.OBJECTS.length >= 48 && counts.objects === Bank.OBJECTS.length && Bank.OBJECTS.every(x => Art.has(x.art) && /^[A-Z]{3,6}$/.test(x.word) && !BL.has(x.word) && lintOk(x.clue) && x.clue.toUpperCase().indexOf(x.word) < 0), `${Bank.OBJECTS.length} things to spell (at least 48), each with a drawn picture and a clue that does not give the word away`);
+  for (const stage of STAGES) ok(Bank.OBJECTS.filter(x => x.word.length >= T.STAGES[stage].spell.minLen && x.word.length <= T.STAGES[stage].spell.maxLen).length >= 12, `${stage} stage: at least twelve things fit its word lengths`);
+  /* nothing in the banks is a quiz about the past, or a pet name */
+  ok(![...Bank.PACKS.map(p => p.label), ...Bank.CLUES.map(c => c.title), ...Bank.CLUES.flatMap(c => c.entries.map(e => e[1])), ...Bank.SAYINGS.map(s => s.lead), ...Bank.OBJECTS.map(x => x.clue)].some(t => /\b(remember|recall|forgot|quiz|test|wrong|score|sweetheart|honey|sweetie|baby)\b/i.test(t)), "no bank text asks anyone to remember, tests, scores or uses a pet name");
 }
 
 /* trace the path: the rule the screen follows. The marker only goes forward, always stays on the line, and is never sent back. */
@@ -187,8 +212,8 @@ ok(made === 3 * 43, "every stage and topic was tried (129 combinations)");
 }
 
 /* the screen's own words: calm, never testing, never childish */
-const UIFILES = ["js/tablet.js", "js/tabletKit.js", "js/tabletCreate.js", "js/tabletThink.js"];
-const html = read("tablet.html"), eng = read("js/tabletEngine.js"), art = read("js/tabletArt.js"), snd = read("js/tabletSound.js");
+const UIFILES = ["js/tablet.js", "js/tabletKit.js", "js/tabletWords.js", "js/tabletCreate.js", "js/tabletThink.js"];
+const html = read("tablet.html"), eng = read("js/tabletEngine.js"), art = read("js/tabletArt.js"), snd = read("js/tabletSound.js"), banksJs = read("js/tabletBanks.js");
 const strip = src => src.replace(/\/\*[\s\S]*?\*\//g, "").replace(/(^|\s)\/\/[^\n]*/g, "$1");     // the code, without its comments
 const raw = Object.fromEntries(UIFILES.map(f => [f, strip(read(f))]));
 const ui = UIFILES.map(f => raw[f]).join("\n"), tabletJs = raw["js/tablet.js"];
@@ -207,18 +232,18 @@ const ui = UIFILES.map(f => raw[f]).join("\n"), tabletJs = raw["js/tablet.js"];
 /* the page is wired in */
 {
   const order = [...html.matchAll(/<script src="([^"]+)"><\/script>/g)].map(m => m[1]).filter(f => !/^(src\/config\/license|assets\/services\/licenseManager)/.test(f));
-  const want = ["assets/pcg/pcg-data.bundle.js", "src/pcg/prng.js", "src/pcg/matrix.js", "src/pcg/grammar.js", "src/pcg/puzzles.js", "assets/services/trialLedger.js", "js/tabletSound.js", "js/tabletArt.js", "js/tabletEngine.js", "js/tabletKit.js", "js/tabletCreate.js", "js/tabletThink.js", "js/tablet.js"];
+  const want = ["assets/pcg/pcg-data.bundle.js", "src/pcg/prng.js", "src/pcg/matrix.js", "src/pcg/grammar.js", "src/pcg/puzzles.js", "assets/services/trialLedger.js", "js/tabletSound.js", "js/tabletArt.js", "js/tabletBanks.js", "js/tabletEngine.js", "js/tabletKit.js", "js/tabletWords.js", "js/tabletCreate.js", "js/tabletThink.js", "js/tablet.js"];
   ok(JSON.stringify(order) === JSON.stringify(want), "the page loads the puzzle makers, the sounds and pictures, the engine, the kit, the activities and last the screen, in that order: " + order.join(", "));
   ok(order.every(f => fs.existsSync(path.join(ROOT, f))), "every script it names exists");
   ok(!/https?:\/\//.test(html.replace(/https:\/\/cognicopia\.org[^"]*/g, "").replace(/<!--[\s\S]*?-->/g, "").replace(/http:\/\/www\.w3\.org\/\d+\/svg/g, "")) || /rel="canonical"/.test(html), "the page names no outside address except its own canonical one");
-  const everything = [html, ui, strip(eng), strip(art), strip(snd)].join("\n");
+  const everything = [html, ui, strip(eng), strip(art), strip(snd), strip(banksJs)].join("\n");
   for (const [what, re] of Object.entries({ "fetch()": /\bfetch\s*\(/, "XMLHttpRequest": /XMLHttpRequest/, "sendBeacon": /sendBeacon/, "a WebSocket": /new\s+WebSocket\b/, "an EventSource": /new\s+EventSource\b/, "a remote script": /<script[^>]+src=["']?(?:https?:)?\/\//i, "a remote stylesheet": /<link(?![^>]*rel="canonical")[^>]+href=["']?(?:https?:)?\/\//i, "an import": /@import\b/, "a remote picture or sound": /(?:src|href)=["']?https?:\/\/(?!cognicopia\.org)/i }))
     ok(!re.test(everything.replace(/https:\/\/cognicopia\.org[^"]*/g, "")), "the tablet page makes no network request: it contains " + what);
   ok(!/sessionStorage|indexedDB|document\.cookie/.test(everything), "nothing is kept in cookies or session storage");
   const keys = [...new Set([...tabletJs.matchAll(/(?:getItem|setItem|removeItem)\(\s*([A-Za-z_"'][^,)]*)/g)].map(m => m[1]))];
   ok(keys.length === 1 && keys[0] === "PREFS_KEY", "the only thing read or written in this browser is the choices (PREFS_KEY): " + keys.join(", "));
-  ok(UIFILES.filter(f => f !== "js/tablet.js").every(f => !/localStorage/.test(raw[f])) && !/localStorage/.test(strip(eng) + strip(art) + strip(snd)), "no other file reads or writes anything in this browser");
-  ok(/localStorage\.setItem\(PREFS_KEY, JSON\.stringify\(prefs\)\)/.test(tabletJs) && /var PREFS_KEY = "cognicopia_tablet_prefs", prefs = \{ stage: "middle", topic: "", sound: true, speed: 2 \}/.test(tabletJs), "and those choices (level, topic, sound, speed) hold nothing about anyone");
+  ok(UIFILES.filter(f => f !== "js/tablet.js").every(f => !/localStorage/.test(raw[f])) && !/localStorage/.test(strip(eng) + strip(art) + strip(snd) + strip(banksJs)), "no other file reads or writes anything in this browser");
+  ok(/localStorage\.setItem\(PREFS_KEY, JSON\.stringify\(prefs\)\)/.test(tabletJs) && /var PREFS_KEY = "cognicopia_tablet_prefs", prefs = \{ stage: "middle", topic: "", sound: true, speed: 2, grid: 0 \}/.test(tabletJs), "and those choices (level, topic, sound, speed, grid size) hold nothing about anyone");
   ok(!/cognicopia_resident|cognicopia_profile|activeResident|qpEngine|CogniSecureStore/.test(ui), "the screen reads no resident or profile storage and asks for no name");
   const sw = read("sw.js");
   ok(["tablet.html", ...want.filter(f => f.startsWith("js/")), "assets/pcg/pcg-data.bundle.js", "assets/cognicopia-coloring/cognicopia-coloring.js", "assets/services/trialLedger.js"].every(f => sw.includes('"' + f + '"')), "the service worker keeps the page, its scripts, the puzzle content and the coloring library for offline use");

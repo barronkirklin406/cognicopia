@@ -29,7 +29,7 @@
   var praise = function () { return PRAISE[Math.floor(Math.random() * PRAISE.length)]; };
 
   /* ---------- what is remembered in this browser: the choices only, never what anyone did ---------- */
-  var PREFS_KEY = "cognicopia_tablet_prefs", prefs = { stage: "middle", topic: "", sound: true, speed: 2 };
+  var PREFS_KEY = "cognicopia_tablet_prefs", prefs = { stage: "middle", topic: "", sound: true, speed: 2, grid: 0 };
   try {
     var saved = JSON.parse(window.localStorage.getItem(PREFS_KEY) || "null");
     if (saved) {
@@ -37,6 +37,7 @@
       if (T.TOPICS.some(function (t) { return t.id === saved.topic; })) prefs.topic = saved.topic;
       if (saved.sound === false) prefs.sound = false;
       if (saved.speed >= 1 && saved.speed <= 4) prefs.speed = Math.round(saved.speed);
+      if (saved.grid >= 3 && saved.grid <= 6) prefs.grid = Math.round(saved.grid);
     }
   } catch (e) { /* private browsing: the choices simply start fresh each visit */ }
   function savePrefs() { try { window.localStorage.setItem(PREFS_KEY, JSON.stringify(prefs)); } catch (e) { /* not kept */ } }
@@ -210,304 +211,6 @@
     try { if (navigator.wakeLock && document.visibilityState === "visible") navigator.wakeLock.request("screen").then(function (l) { wake = l; }).catch(function () { /* the screen may sleep: that is all */ }); } catch (e) { /* not available */ }
   }
 
-
-  /* ---------- an on-screen keyboard: letters in order, so nothing has to be learned ---------- */
-  function keyboard(onLetter, onBack) {
-    var kb = h("div", "tb-kb"); kb.setAttribute("role", "group"); kb.setAttribute("aria-label", "Letters");
-    LETTERS.forEach(function (L) { kb.appendChild(h("button", "tb-key", L)).setAttribute("data-k", L); });
-    var back = h("button", "tb-key wide", "⌫ Back"); back.setAttribute("data-k", "BACK"); back.setAttribute("aria-label", "Take back a letter");
-    kb.appendChild(back);
-    kb.addEventListener("click", function (e) {
-      var b = e.target.closest("[data-k]"); if (!b) return;
-      var k = b.getAttribute("data-k"); tick();
-      if (k === "BACK") onBack(); else onLetter(k);
-    });
-    return kb;
-  }
-  function wordKeys(onLetter, onBack) {
-    return function (e) {
-      if (e.ctrlKey || e.metaKey || e.altKey) return;
-      if (/^[a-zA-Z]$/.test(e.key)) { e.preventDefault(); onLetter(e.key.toUpperCase()); }
-      else if (e.key === "Backspace") { e.preventDefault(); onBack(); }
-    };
-  }
-
-  /* ===================== WORD SEARCH ===================== */
-  function wordSearch(root, o, api) {
-    var a = api.area(), portrait = a.w < a.h * 1.1, gw = portrait ? a.w : a.w - 330, gh = portrait ? a.h - 330 : a.h;
-    o.fit = { size: Math.max(5, Math.floor(Math.min(gw, gh) / 55)) };
-    var ws = T.wordSearch(o);
-    if (!ws) { root.innerHTML = '<p class="tb-big">No puzzle this time. Choose New one.</p>'; return; }
-    var n = ws.size, found = {}, pending = null, down = null, moved = false, path = [], nFound = 0, colorIx = 0;
-    var split = h("div", "tb-split"), grid = h("div", "tb-grid"), side = h("div", "tb-side");
-    grid.setAttribute("role", "grid"); grid.setAttribute("aria-label", "Letter grid, " + n + " by " + n + ". Slide along a word, or tap its first letter, then its last.");
-    grid.style.setProperty("--n", n);
-    for (var r = 0; r < n; r++) for (var c = 0; c < n; c++) {
-      var cell = h("div", "tb-cell", ws.rows[r].charAt(c)); cell.setAttribute("role", "gridcell"); cell.setAttribute("data-r", r); cell.setAttribute("data-c", c); grid.appendChild(cell);
-    }
-    side.innerHTML = '<h3 class="tb-h">Find these words</h3><ul class="tb-words">' + ws.words.map(function (w) { return '<li data-w="' + w + '"><span class="tb-tick" aria-hidden="true"></span><span>' + w + "</span></li>"; }).join("") +
-      '</ul><div class="tb-row"><button type="button" class="tb-btn" id="tbHint"><span aria-hidden="true">💡</span> Hint</button></div><p class="tb-msg" id="tbWsMsg">Slide your finger along a word, or tap its first letter and then its last letter.</p>';
-    split.appendChild(grid); split.appendChild(side); root.appendChild(split);
-    function size() { var b = area(), p = b.w < b.h * 1.1, w = p ? b.w : b.w - 330, hh = p ? b.h - 352 : b.h; grid.style.setProperty("--cell", Math.max(52, Math.min(92, Math.floor(Math.min(w, hh) / n) - 3)) + "px"); }
-    size(); api.onResize(size);
-    var cellAt = function (rc) { return grid.querySelector('[data-r="' + rc[0] + '"][data-c="' + rc[1] + '"]'); };
-    function fromPoint(x, y) { var e = document.elementFromPoint(x, y); e = e && e.closest ? e.closest(".tb-cell") : null; return e && grid.contains(e) ? [+e.getAttribute("data-r"), +e.getAttribute("data-c")] : null; }
-    function line(p, q) {
-      var dr = q[0] - p[0], dc = q[1] - p[1];
-      if (!dr && !dc) return [p];
-      var k = Math.round(Math.atan2(dr, dc) / (Math.PI / 4)), sr = Math.round(Math.sin(k * Math.PI / 4)), sc = Math.round(Math.cos(k * Math.PI / 4)), len = Math.max(Math.abs(dr), Math.abs(dc)), out = [];
-      for (var i = 0; i <= len; i++) { var rr = p[0] + sr * i, cc = p[1] + sc * i; if (rr < 0 || cc < 0 || rr >= n || cc >= n) break; out.push([rr, cc]); }
-      return out;
-    }
-    function paint(p) {
-      Array.prototype.forEach.call(grid.querySelectorAll(".is-sel"), function (x) { x.classList.remove("is-sel"); });
-      (p || []).forEach(function (rc) { var e = cellAt(rc); if (e) { e.classList.remove("is-fade"); e.classList.add("is-sel"); } });
-      path = p || [];
-    }
-    function mark(rc) { Array.prototype.forEach.call(grid.querySelectorAll(".is-start"), function (x) { x.classList.remove("is-start"); }); if (rc) { var e = cellAt(rc); if (e) e.classList.add("is-start"); } }
-    function tryWord(p) {
-      var letters = p.map(function (rc) { return ws.rows[rc[0]].charAt(rc[1]); }).join(""), back = letters.split("").reverse().join(""), hit = null;
-      ws.words.forEach(function (w) { if (!hit && !found[w] && (w === letters || w === back)) hit = w; });
-      if (hit) {
-        found[hit] = true; nFound++; var cls = "f" + (colorIx++ % 7);
-        p.forEach(function (rc) { var e = cellAt(rc); if (e) e.classList.add(cls); });
-        paint([]);
-        var li = side.querySelector('[data-w="' + hit + '"]'); li.classList.add("is-found"); li.querySelector(".tb-tick").textContent = "✓";
-        api.progress(nFound + " of " + ws.words.length + " found");
-        $("tbWsMsg").textContent = praise(); live("Found " + hit + ". " + nFound + " of " + ws.words.length + ".");
-        if (nFound === ws.words.length) cheer("You found them all!", "New word search"); else chime(false);
-      } else {
-        var cs = p.map(cellAt).filter(function (e) { return e && !/ f\d/.test(" " + e.className); });
-        cs.forEach(function (e) { e.classList.add("is-fade"); e.classList.remove("is-sel"); });
-        setTimeout(function () { cs.forEach(function (e) { e.classList.remove("is-fade"); }); }, 650);
-        path = []; $("tbWsMsg").textContent = "Keep looking. Slide along a whole word.";
-      }
-    }
-    function tap(rc) {
-      if (!pending) { pending = rc; mark(rc); paint([rc]); return; }
-      if (pending[0] === rc[0] && pending[1] === rc[1]) { pending = null; mark(null); paint([]); return; }
-      var p = line(pending, rc); pending = null; mark(null); paint(p); tryWord(p);
-    }
-    grid.addEventListener("pointerdown", function (e) {
-      unlock(); var rc = fromPoint(e.clientX, e.clientY); if (!rc) return;
-      e.preventDefault(); try { grid.setPointerCapture(e.pointerId); } catch (x) { /* mouse or old browser */ }
-      down = rc; moved = false; if (!pending) paint([rc]);
-    });
-    grid.addEventListener("pointermove", function (e) {
-      if (!down) return;
-      var rc = fromPoint(e.clientX, e.clientY); if (!rc) return;
-      if (rc[0] !== down[0] || rc[1] !== down[1]) { moved = true; if (pending) { pending = null; mark(null); } }
-      if (moved) paint(line(down, rc));
-    });
-    grid.addEventListener("pointerup", function () {
-      if (!down) return;
-      var s = down; down = null;
-      if (moved) tryWord(path.length ? path : [s]); else tap(s);
-    });
-    grid.addEventListener("pointercancel", function () { down = null; paint([]); });
-    $("tbHint").addEventListener("click", function () {
-      var left = ws.placed.filter(function (p) { return !found[p.word]; });
-      if (!left.length) return;
-      var p = left[Math.floor(Math.random() * left.length)], e = cellAt([p.r, p.c]);
-      if (e) { e.classList.remove("is-hint"); void e.offsetWidth; e.classList.add("is-hint"); setTimeout(function () { e.classList.remove("is-hint"); }, 3000); }
-      $("tbWsMsg").textContent = "Look for " + p.word + ". Its first letter is flashing."; live("Look for " + p.word + ". Its first letter is flashing.");
-    });
-    function cellsOf(p) { var out = [], k; for (k = 0; k < p.word.length; k++) out.push([p.r + p.dy * k, p.c + p.dx * k]); return out; }
-    api.hint(function () {
-      var left = ws.placed.filter(function (p) { return !found[p.word]; }); if (!left.length) return;
-      var p = left[Math.floor(Math.random() * left.length)];
-      cellsOf(p).forEach(function (rc) { var e = cellAt(rc); if (e) Kit.glow(e, 3600); });
-      $("tbWsMsg").textContent = "Look for " + p.word + ". Its letters are glowing.";
-    });
-    api.assist(function () {
-      ws.placed.filter(function (p) { return !found[p.word]; }).forEach(function (p, k) { api.later(function () { if (!found[p.word]) tryWord(cellsOf(p)); }, 500 * k); });
-    });
-    api.progress("0 of " + ws.words.length + " found");
-    api.say(function () { var left = ws.words.filter(function (w) { return !found[w]; }); return left.length ? "Find these words. " + left.map(function (w) { return w.toLowerCase(); }).join(". ") + "." : "You found every word. Lovely!"; });
-    api.debug(function () { return { size: n, placed: ws.placed, words: ws.words, found: Object.keys(found), cell: function (r2, c2) { var b = cellAt([r2, c2]).getBoundingClientRect(); return [b.left + b.width / 2, b.top + b.height / 2]; } }; });
-  }
-
-  /* ===================== CROSSWORD ===================== */
-  function crossword(root, o, api) {
-    var a = api.area(), side = a.w >= a.h * 1.15, panelW = side ? 440 : 0, fitW = a.w - panelW - 24, fitH = side ? a.h : a.h - 540;
-    o.fit = { size: Math.max(5, Math.floor(Math.min(fitW, fitH) / 55)) };
-    var cw = T.crossword(o);
-    if (!cw) { root.innerHTML = '<p class="tb-big">No puzzle this time. Choose New one.</p>'; return; }
-    var typed = {}, done = {}, sel = { r: 0, c: 0, dir: "A" }, cellsEl = {};
-    var key = function (r, c) { return r + "," + c; };
-    var filled = function (r, c) { return r >= 0 && c >= 0 && r < cw.rows && c < cw.cols && cw.cells[r].charAt(c) !== "."; };
-    var entryCells = function (e) { var out = []; for (var k = 0; k < e.word.length; k++) out.push([e.r + (e.dir === "D" ? k : 0), e.c + (e.dir === "A" ? k : 0)]); return out; };
-    var entryAt = function (r, c, dir) { return cw.entries.filter(function (e) { return e.dir === dir && entryCells(e).some(function (p) { return p[0] === r && p[1] === c; }); })[0] || null; };
-    var cur2 = function () { return entryAt(sel.r, sel.c, sel.dir); };
-    var split = h("div", "tb-split"), grid = h("div", "tb-cw"), panel = h("div", "tb-side");
-    grid.style.setProperty("--cols", cw.cols); grid.setAttribute("role", "grid"); grid.setAttribute("aria-label", "Crossword, " + cw.rows + " rows by " + cw.cols + " columns");
-    var numAt = {}; cw.entries.forEach(function (e) { numAt[key(e.r, e.c)] = e.num; });
-    for (var r = 0; r < cw.rows; r++) for (var c = 0; c < cw.cols; c++) {
-      if (!filled(r, c)) { grid.appendChild(h("div", "tb-blank")); continue; }
-      var b = h("button", "tb-cwc", (numAt[key(r, c)] ? "<i>" + numAt[key(r, c)] + "</i>" : "") + '<span class="L"></span>'); b.type = "button"; b.setAttribute("data-r", r); b.setAttribute("data-c", c);
-      b.setAttribute("aria-label", "Row " + (r + 1) + ", column " + (c + 1)); grid.appendChild(b); cellsEl[key(r, c)] = b;
-    }
-    var clue = h("div", "tb-clue", ""), nav = h("div", "tb-row"), kb;
-    nav.innerHTML = '<button type="button" class="tb-btn" data-cwn="-1">◀ Clue</button><button type="button" class="tb-btn" id="tbCwHint"><span aria-hidden="true">💡</span> A letter</button><button type="button" class="tb-btn" data-cwn="1">Clue ▶</button>';
-    panel.style.flex = "0 1 " + (side ? panelW : 560) + "px"; panel.style.maxWidth = "100%";
-    function size() { var b2 = area(), s2 = b2.w >= b2.h * 1.15, fw = b2.w - (s2 ? 440 : 0) - 24, fh = s2 ? b2.h : b2.h - 540; grid.style.setProperty("--cell", Math.max(52, Math.min(84, Math.floor(Math.min(fw / cw.cols, fh / cw.rows)) - 3)) + "px"); }
-    function refresh() {
-      var e = cur2(), inWord = {}; if (e) entryCells(e).forEach(function (p) { inWord[key(p[0], p[1])] = 1; });
-      var doneCell = {}; cw.entries.forEach(function (en) { if (done[en.num + en.dir]) entryCells(en).forEach(function (p) { doneCell[key(p[0], p[1])] = 1; }); });
-      Object.keys(cellsEl).forEach(function (k) {
-        var el = cellsEl[k]; el.querySelector(".L").textContent = typed[k] || "";
-        el.classList.toggle("is-word", !!inWord[k]); el.classList.toggle("is-done", !!doneCell[k]); el.classList.toggle("is-cur", k === key(sel.r, sel.c));
-      });
-      clue.innerHTML = e ? e.num + " " + (e.dir === "A" ? "Across" : "Down") + ": " + esc(e.clue) + "<small>" + e.word.length + " letters</small>" : "Tap a square";
-      api.progress(Object.keys(done).length + " of " + cw.entries.length + " words");
-    }
-    function select(r2, c2, dir) {
-      sel.r = r2; sel.c = c2;
-      if (dir) sel.dir = dir;
-      if (!entryAt(r2, c2, sel.dir)) sel.dir = sel.dir === "A" ? "D" : "A";
-      refresh(); var e = cur2(); if (e) live(e.num + " " + (e.dir === "A" ? "across" : "down") + ". " + e.clue + ". " + e.word.length + " letters.");
-    }
-    function check() {
-      var all = true;
-      cw.entries.forEach(function (e) {
-        var ok = entryCells(e).every(function (p, k) { return typed[key(p[0], p[1])] === e.word.charAt(k); });
-        if (ok && !done[e.num + e.dir]) { done[e.num + e.dir] = true; chime(false); live(e.word + " is right."); }
-        if (!ok) all = false;
-      });
-      refresh();
-      if (all) cheer("The crossword is finished!", "New crossword");
-    }
-    function next(dirn) {
-      var order = cw.entries, e = cur2(), ix = e ? order.indexOf(e) : -1; ix = (ix + dirn + order.length) % order.length;
-      var n2 = order[ix]; select(n2.r, n2.c, n2.dir);
-    }
-    function type(L) {
-      var e = cur2(); if (!e) return;
-      typed[key(sel.r, sel.c)] = L;
-      var cs = entryCells(e), at = cs.findIndex(function (p) { return p[0] === sel.r && p[1] === sel.c; });
-      if (at < cs.length - 1) { sel.r = cs[at + 1][0]; sel.c = cs[at + 1][1]; }
-      check();
-    }
-    function back() {
-      var e = cur2(); if (!e) return;
-      if (typed[key(sel.r, sel.c)]) { delete typed[key(sel.r, sel.c)]; refresh(); return; }
-      var cs = entryCells(e), at = cs.findIndex(function (p) { return p[0] === sel.r && p[1] === sel.c; });
-      if (at > 0) { sel.r = cs[at - 1][0]; sel.c = cs[at - 1][1]; delete typed[key(sel.r, sel.c)]; }
-      refresh();
-    }
-    grid.addEventListener("click", function (e) {
-      var b = e.target.closest(".tb-cwc"); if (!b) return; unlock();
-      var r2 = +b.getAttribute("data-r"), c2 = +b.getAttribute("data-c");
-      if (r2 === sel.r && c2 === sel.c && entryAt(r2, c2, sel.dir === "A" ? "D" : "A")) select(r2, c2, sel.dir === "A" ? "D" : "A"); else select(r2, c2);
-    });
-    kb = keyboard(type, back);
-    panel.appendChild(clue); panel.appendChild(nav); panel.appendChild(h("div", "", "")).style.height = "10px"; panel.appendChild(kb);
-    split.appendChild(grid); split.appendChild(panel); root.appendChild(split);
-    nav.addEventListener("click", function (e) {
-      var b = e.target.closest("[data-cwn]"); if (b) { next(+b.getAttribute("data-cwn")); return; }
-      if (e.target.closest("#tbCwHint")) {
-        var en = cur2(); if (!en) return;
-        var cs = entryCells(en), p = cs.filter(function (q) { return typed[key(q[0], q[1])] !== en.word.charAt(cs.indexOf(q)); })[0];
-        if (p) { sel.r = p[0]; sel.c = p[1]; typed[key(p[0], p[1])] = en.word.charAt(cs.indexOf(p)); check(); }
-      }
-    });
-    var keyEl = function (L) { return kb.querySelector('[data-k="' + L + '"]'); };
-    api.hint(function () {
-      var e = cur2() || cw.entries[0], cs = entryCells(e), p = cs.filter(function (q) { return typed[key(q[0], q[1])] !== e.word.charAt(cs.indexOf(q)); })[0];
-      if (!p) { var open = cw.entries.filter(function (x) { return !done[x.num + x.dir]; })[0]; if (open) select(open.r, open.c, open.dir); return; }
-      select(p[0], p[1], e.dir); Kit.glow(cellsEl[key(p[0], p[1])], 3600); Kit.glow(keyEl(e.word.charAt(cs.indexOf(p))), 3600);
-    });
-    api.assist(function () {
-      cw.entries.filter(function (e) { return !done[e.num + e.dir]; }).forEach(function (e, n) {
-        api.later(function () { entryCells(e).forEach(function (p, k) { typed[key(p[0], p[1])] = e.word.charAt(k); }); check(); }, 450 * n);
-      });
-    });
-    api.onKey(wordKeys(type, back)); size(); api.onResize(size);
-    select(cw.entries[0].r, cw.entries[0].c, cw.entries[0].dir);
-    api.say(function () { var e = cur2(); return e ? e.num + " " + (e.dir === "A" ? "across" : "down") + ". " + e.clue + ". " + e.word.length + " letters." : ""; });
-    api.debug(function () { return { cw: cw, typed: typed, done: done, cell: function (r2, c2) { var b2 = cellsEl[key(r2, c2)].getBoundingClientRect(); return [b2.left + b2.width / 2, b2.top + b2.height / 2]; } }; });
-  }
-
-  /* ===================== SPELL IT ===================== */
-  function spell(root, o, api) {
-    var sp = T.spellIt(o), items = sp.items, ix = 0, got = [], locked = 0, finished = false;
-    if (!items.length) { root.innerHTML = '<p class="tb-big">No words this time. Choose New one.</p>'; return; }
-    var clue = h("p", "tb-big", ""), slots = h("div", "tb-slots"), msg = h("p", "tb-msg", ""), row = h("div", "tb-row");
-    row.innerHTML = '<button type="button" class="tb-btn" id="tbSpHint"><span aria-hidden="true">💡</span> A letter</button><button type="button" class="tb-btn go" id="tbSpNext" hidden>Next ▶</button>';
-    var kb = keyboard(type, back); root.appendChild(clue); root.appendChild(slots); root.appendChild(msg); root.appendChild(row); root.appendChild(kb); root.lastChild.style.marginTop = "14px";
-    var word = function () { return items[ix].word; };
-    function show() {
-      var it = items[ix]; locked = it.given; got = it.word.split("").map(function (L, k) { return k < locked ? L : ""; }); finished = false;
-      clue.textContent = it.clue; msg.textContent = "Spell the word that fits."; $("tbSpNext").hidden = true;
-      api.progress("Word " + (ix + 1) + " of " + items.length); draw();
-      api.say(function () { return it.clue + ". It has " + it.word.length + " letters."; });
-    }
-    function draw() {
-      var firstEmpty = got.indexOf("");
-      slots.innerHTML = got.map(function (L, k) { return '<div class="tb-slot' + (k < locked ? " is-given" : "") + (k === firstEmpty && !finished ? " is-next" : "") + '" data-s="' + k + '">' + L + "</div>"; }).join("");
-      slots.setAttribute("aria-label", word().length + " letters: " + got.map(function (L) { return L || "blank"; }).join(", "));
-    }
-    function type(L) {
-      if (finished) return;
-      var at = got.indexOf(""); if (at < 0) return;
-      got[at] = L; draw();
-      if (got.indexOf("") < 0) {
-        if (got.join("") === word()) {
-          finished = true; draw(); msg.textContent = praise() + " " + word().charAt(0) + word().slice(1).toLowerCase() + "."; chime(false); live(msg.textContent);
-          if (ix === items.length - 1) cheer("All the words are spelled!", "New words"); else $("tbSpNext").hidden = false;
-        } else { msg.textContent = "Nearly. Take a letter back, or tap A letter."; slots.classList.add("tb-shake"); }
-      }
-    }
-    function back() {
-      if (finished) return;
-      var at = got.indexOf(""); at = at < 0 ? got.length : at;
-      if (at > locked) { got[at - 1] = ""; draw(); msg.textContent = "Spell the word that fits."; }
-    }
-    row.addEventListener("click", function (e) {
-      if (e.target.closest("#tbSpNext")) { ix++; show(); return; }
-      if (e.target.closest("#tbSpHint") && !finished) { var at = got.indexOf(""); if (at >= 0) type(word().charAt(at)); else { got = got.map(function (L, k) { return k < locked ? L : ""; }); draw(); } }
-    });
-    api.hint(function () {
-      if (finished) return; var at = got.indexOf(""); if (at < 0) return;
-      Kit.glow(kb.querySelector('[data-k="' + word().charAt(at) + '"]'), 3600); var sl = slots.querySelector('[data-s="' + at + '"]'); if (sl) Kit.glow(sl, 3600);
-    });
-    api.assist(function () {
-      got = word().split(""); finished = true; draw(); msg.textContent = praise() + " " + word().charAt(0) + word().slice(1).toLowerCase() + "."; chime(false);
-      api.later(function () { cheer("All the words are spelled!", "New words"); }, 1100);
-    });
-    api.onKey(wordKeys(type, back)); show();
-    api.debug(function () { return { word: word(), got: got, index: ix, count: items.length }; });
-  }
-
-  /* ===================== FINISH THE SAYING ===================== */
-  function saying(root, o, api) {
-    var S = T.sayings(o).items, ix = 0, answered = false;
-    var big = h("p", "tb-big", ""), opts = h("div", "tb-opts"), msg = h("p", "tb-msg", ""), nav = h("div", "tb-row");
-    nav.innerHTML = '<button type="button" class="tb-btn go" id="tbSyNext" hidden>Next ▶</button>';
-    root.appendChild(big); root.appendChild(opts); root.appendChild(msg); root.appendChild(nav);
-    function show() {
-      var s = S[ix]; answered = false;
-      big.innerHTML = esc(s.lead) + ' <span class="blank" style="display:inline-block;min-width:3.5ch;border-bottom:6px solid #1a202c">&nbsp;</span>';
-      opts.innerHTML = s.options.map(function (t, k) { return '<button type="button" class="tb-opt" data-o="' + k + '">' + esc(t) + "</button>"; }).join("");
-      msg.textContent = ""; $("tbSyNext").hidden = true; api.progress("Saying " + (ix + 1) + " of " + S.length);
-      api.say(function () { return s.lead + " blank. Is it " + s.options.join(", or ") + "?"; });
-    }
-    opts.addEventListener("click", function (e) {
-      var b = e.target.closest("[data-o]"); if (!b || answered) return; unlock(); answered = true;
-      var s = S[ix], pick = s.options[+b.getAttribute("data-o")], right = pick === s.answer;
-      Array.prototype.forEach.call(opts.children, function (x) { x.disabled = true; if (x.textContent === s.answer) x.classList.add("is-right"); });
-      if (!right) b.classList.add("is-picked");
-      big.innerHTML = esc(s.lead) + " <u>" + esc(s.answer) + "</u>";
-      msg.textContent = right ? praise() : "Good thought. Here is how it goes."; if (right) chime(false); live(msg.textContent + " " + s.lead + " " + s.answer);
-      if (ix === S.length - 1) setTimeout(function () { if (cur && cur.act.id === "saying") cheer("All done. Lovely work!", "More sayings"); }, 1300); else $("tbSyNext").hidden = false;
-    });
-    nav.addEventListener("click", function () { ix++; show(); });
-    show();
-    var rightBtn = function () { return Array.prototype.filter.call(opts.children, function (x) { return x.textContent === S[ix].answer; })[0]; };
-    api.hint(function () { if (!answered) Kit.glow(rightBtn(), 3600); });
-    api.assist(function () { ix = S.length - 1; show(); var b = rightBtn(); if (b) b.click(); });
-    api.debug(function () { return { item: S[ix], index: ix, count: S.length }; });
-  }
 
   /* ===================== SORT IT ===================== */
   function sort(root, o, api) {
@@ -785,10 +488,6 @@
 
   /* ---------- the menu ---------- */
   var ICON = {
-    wordsearch: '<rect x="8" y="8" width="48" height="48" rx="6"/><path d="M20 8v48M32 8v48M44 8v48M8 20h48M8 32h48M8 44h48"/><path d="M14 50 50 14" stroke-width="7"/>',
-    crossword: '<rect x="8" y="8" width="48" height="48"/><path d="M8 24h48M8 40h48M24 8v48M40 8v48"/><rect x="24" y="24" width="16" height="16"/>',
-    spell: '<path d="M8 52h14M25 52h14M42 52h14"/><path d="M14 38 22 12l8 26M17 28h10"/><path d="M40 12h14M47 12v26"/>',
-    saying: '<path d="M8 10h48v32H28L16 54V42H8z"/><path d="M18 22h28M18 31h18"/>',
     color: '<path d="M32 8C16 8 6 20 6 32s10 24 22 24c6 0 6-6 2-10s0-8 6-8h12c6 0 10-4 10-10C58 16 46 8 32 8z"/><circle cx="20" cy="28" r="3"/><circle cx="32" cy="20" r="3"/><circle cx="44" cy="26" r="3"/>',
     paint: '<path d="M10 54c8 0 12-4 12-10l26-28 6 6-28 26c-2 8-8 12-16 6z"/>',
     bubbles: '<circle cx="22" cy="40" r="14"/><circle cx="46" cy="22" r="9"/><circle cx="46" cy="48" r="6"/>',
@@ -798,10 +497,6 @@
     odd: '<circle cx="12" cy="20" r="8"/><circle cx="32" cy="20" r="8"/><circle cx="52" cy="20" r="8"/><rect x="24" y="38" width="16" height="16"/>'
   };
   [
-    ["wordsearch", 0, 1, "Word Search", "Slide a finger along a hidden word.", wordSearch],
-    ["crossword", 0, 2, "Crossword", "Tap a square, then tap letters on the keyboard.", crossword],
-    ["spell", 0, 3, "Spell It", "A clue, and letters to tap in order.", spell],
-    ["saying", 0, 4, "Finish the Saying", "Choose the word that completes it.", saying],
     ["color", 1, 2, "Color a Picture", "Pick a color, tap a shape.", color],
     ["paint", 1, 3, "Finger Paint", "Paint freely with colors.", paint],
     ["bubbles", 1, 4, "Bubbles", "Tap the drifting bubbles. Calm and gentle.", bubbles],
