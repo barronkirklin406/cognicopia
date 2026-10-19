@@ -40,6 +40,44 @@
   pic("dog", "a dog");
   pic("bone", "a bone");
 
+  /* ---------- things to spell ---------- */
+  pic("apple", "a red apple");
+  pic("banana", "a bunch of bananas");
+  pic("grapes", "a bunch of grapes");
+  pic("orange", "an orange");
+  pic("hen", "a hen");
+  pic("cow", "a cow");
+  pic("pig", "a pig");
+  pic("sheep", "a sheep");
+  pic("teapot", "a china teapot");
+  pic("chair", "a rocking chair");
+  pic("clock", "an alarm clock");
+  pic("barn", "a red barn");
+  pic("duck", "a mallard duck");
+  pic("horse", "a horse");
+  pic("fish", "a fish");
+  pic("rabbit", "a rabbit");
+  pic("rose", "a rose");
+  pic("tulip", "a tulip");
+  pic("daisy", "a daisy");
+  pic("leaf", "an oak leaf");
+  pic("boat", "a rowboat");
+  pic("car", "a 1950s car");
+  pic("house", "a farmhouse");
+  pic("tree", "a tree");
+  pic("hat", "a felt hat");
+  pic("shoe", "a pair of leather shoes");
+  pic("sock", "a wool sock");
+  pic("scarf", "a plaid scarf");
+  pic("mitten", "a knitted mitten");
+  pic("button", "a button");
+  pic("key", "a brass key");
+  pic("cup", "a teacup and saucer");
+  pic("spoon", "a silver spoon");
+  pic("fork", "a silver fork");
+  pic("kettle", "a copper kettle");
+  pic("candle", "a candle");
+
   var api = {
     dir: DIR,
     has: function (id) { return !!PICS[id]; },
