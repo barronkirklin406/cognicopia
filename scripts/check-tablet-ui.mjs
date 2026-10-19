@@ -47,7 +47,7 @@ const ok = (cond, msg) => { if (cond) passed++; else problems.push(msg); };
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const ALL = ["wordsearch", "crossword", "spell", "saying", "trace", "color", "paint", "bubbles", "sort", "order", "match", "odd", "sounds"];
 /* the activities already rebuilt to the 72 px floor; the others still meet the older 52 px one (this list grows until it holds all thirteen) */
-const BIG = new Set(["trace", "sounds", "wordsearch", "crossword", "spell", "saying", "color", "paint", "bubbles"]);
+const BIG = new Set(ALL);
 const SPEECH = "window.__spoken=[];(function(){try{var s=window.speechSynthesis;if(!s)return;var o=s.speak.bind(s);s.speak=function(u){window.__spoken.push(u.text);try{o(u)}catch(e){}};}catch(e){}})();";
 const LAND = { width: 1024, height: 768 }, PORT = { width: 768, height: 1024 }, PHONE = { width: 390, height: 844 };
 
@@ -391,34 +391,63 @@ try {
   {
     const { ctx, p } = await fresh(LAND);
     await openAct(p, "sort");
-    ok(await p.evaluate(() => getComputedStyle(document.getElementById("tbSoNext")).display === "none"), "Next is not on the screen until an item has been sorted");
-    let d = await dbg(p); const total = d.groups.length === 2 ? await p.evaluate(() => /Item 1 of (\d+)/.exec(document.getElementById("tbProg").textContent)[1]) : 0;
-    for (let i = 0; i < +total; i++) {
-      d = await dbg(p);
-      const g = i === 0 ? 1 - d.item.group : d.item.group;
-      await clickAttr(p, "data-g", String(g)); await sleep(80);
-      if (i === 0) ok(await p.evaluate(() => document.querySelectorAll("#tbStage .tb-opt.is-right").length === 1) && !/wrong/i.test(await text(p, "#tbStage .tb-msg")), "a wrong group shows the right one with a plain sentence: " + await text(p, "#tbStage .tb-msg"));
-      if (i < +total - 1) { await click(p, "#tbSoNext"); await sleep(60); }
-    }
-    ok(await cheered(p), "sorting every item brings the cheer");
+    let d = await dbg(p);
+    ok(d.groups.length === 2 && await p.evaluate(() => document.querySelectorAll(".tb-bin").length) === 2 && await p.evaluate(() => Array.from(document.querySelectorAll(".tb-binhead img, .tb-thing img")).every(i => /assets\/tablet\/[\w-]+\.png$/.test(i.getAttribute("src")))), "two baskets, each with a picture, and every card is a real picture");
+    ok(await p.evaluate(() => Array.from(document.querySelectorAll(".tb-thing")).every(b => b.textContent.trim().length >= 3)), "every picture has its name under it");
+    const cards = () => p.evaluate(() => window.CognicopiaTabletUI.debug().cards()), bins = () => p.evaluate(() => window.CognicopiaTabletUI.debug().bins());
+    const drag = async (a, b2) => { await p.mouse.move(a[0], a[1]); await p.mouse.down(); await p.mouse.move(b2[0], b2[1], { steps: 8 }); await p.mouse.up(); };
+    const total = d.total, bs = await bins(); let cs = await cards();
+    ok(cs.length === total && total >= 4, `${total} pictures to sort`);
+    const c0 = cs[0]; await drag([c0.x, c0.y], bs[1 - c0.group]); await sleep(900);
+    ok((await dbg(p)).placed === 0 && (await cards()).length === total, "a picture dropped in the other basket floats back and goes nowhere");
+    ok(/goes with/.test(await text(p, "#tbStage .tb-msg")) && !/wrong/i.test(await text(p, "#tbStage .tb-msg")) && await p.evaluate(() => document.querySelectorAll(".tb-bin.tb-glow").length) === 1, "with a plain sentence about where it does go, and that basket glows: " + await text(p, "#tbStage .tb-msg"));
+    cs = await cards(); const c1 = cs.find(c => c.i === c0.i); await drag([c1.x, c1.y], bs[c1.group]); await sleep(700);
+    ok((await dbg(p)).placed === 1 && await p.evaluate(() => document.querySelectorAll(".tb-bin .tb-binput .tb-thing.is-placed").length) === 1 && /1 of \d+ sorted/.test(await text(p, "#tbProg")), "dragged to its own basket, a picture settles inside it, and the count says so");
+    cs = await cards(); const c2 = cs[0];
+    await p.mouse.click(c2.x, c2.y); await sleep(60);
+    ok((await dbg(p)).picked === c2.i && await p.evaluate(() => document.querySelectorAll(".tb-thing.is-picked[aria-pressed=true]").length) === 1, "touching a picture picks it up");
+    await p.mouse.click(bs[1 - c2.group][0], bs[1 - c2.group][1] + 30); await sleep(200);
+    ok((await dbg(p)).placed === 1 && (await dbg(p)).picked === -1, "touching the other basket puts nothing in it");
+    for (const c of await cards()) { const cc = (await cards()).find(x => x.i === c.i); if (!cc) continue; await p.mouse.click(cc.x, cc.y); await sleep(50); await p.mouse.click(bs[cc.group][0], bs[cc.group][1] + 30); await sleep(120); }
+    ok((await dbg(p)).placed === total, "touching each picture and then its basket sorts the rest");
+    ok(await cheered(p), "sorting every picture brings the cheer");
+    await ctx.close();
+  }
+  {
+    /* a real finger drags a picture, a clue and a step (touch events through the browser's own channel) */
+    const { ctx, p } = await fresh(LAND);
+    await openAct(p, "sort");
+    const d = await p.evaluate(() => { const x = window.CognicopiaTabletUI.debug(); return { cards: x.cards(), bins: x.bins() }; }), c = d.cards[0], b = d.bins[c.group];
+    await touchPath(ctx, p, [[c.x, c.y], [c.x + (b[0] - c.x) * .3, c.y + (b[1] - c.y) * .3], [c.x + (b[0] - c.x) * .7, c.y + (b[1] - c.y) * .7], b]); await sleep(700);
+    ok((await dbg(p)).placed === 1 && await p.evaluate(() => document.querySelectorAll(".tb-bin .tb-thing.is-placed").length) === 1, "Sort It: a finger drags a picture into its basket");
+    const w = d.cards.find(x => x.group !== c.group), wb = d.bins[c.group]; const cw = await p.evaluate(i => { const e = document.querySelector('[data-i="' + i + '"]'); const r = e.getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; }, w.i);
+    await touchPath(ctx, p, [cw, [(cw[0] + wb[0]) / 2, (cw[1] + wb[1]) / 2], wb]); await sleep(1000);
+    ok((await dbg(p)).placed === 1, "and a finger that takes a picture to the other basket brings it back");
+    await toMenu(p); await openAct(p, "order");
+    const st = await p.evaluate(() => { const x = window.CognicopiaTabletUI.debug(); return { steps: x.steps(), slots: x.slots() }; }), s0 = st.steps.find(q => q.k === 0);
+    await touchPath(ctx, p, [[s0.x, s0.y], [(s0.x + st.slots[0][0]) / 2, (s0.y + st.slots[0][1]) / 2], st.slots[0]]); await sleep(700);
+    ok((await dbg(p)).placed === 1, "Put It in Order: a finger drags the first step to its place");
     await ctx.close();
   }
   {
     const { ctx, p } = await fresh(LAND);
     await openAct(p, "order");
-    let d = await dbg(p);
+    ok(await p.evaluate(() => getComputedStyle(document.getElementById("tbOrNext")).display === "none"), "Another job is not on the screen until a job is done");
     const items = +(/of (\d+)/.exec(await text(p, "#tbProg"))[1]);
     for (let i = 0; i < items; i++) {
-      d = await dbg(p); const steps = d.item.steps.length;
+      const d = await dbg(p), steps = d.item.steps.length, place = () => p.evaluate(() => window.CognicopiaTabletUI.debug().steps()), slots = () => p.evaluate(() => window.CognicopiaTabletUI.debug().slots());
+      ok(steps >= 3 && await p.evaluate(() => document.querySelectorAll(".tb-oslot").length) === steps, `job ${i + 1}: ${steps} numbered places for the steps`);
       if (i === 0) {
-        const wrong = d.item.order.find(k => k !== 0);
-        await clickAttr(p, "data-step", String(wrong)); await sleep(80);
-        ok(await p.evaluate(() => document.querySelectorAll("#tbStage .tb-placed li.is-on").length === 0 && document.querySelectorAll("#tbStage .tb-opt.is-shake").length === 1), "a step tapped too early gives a small shake and goes nowhere");
-        ok(/Not quite yet/.test(await text(p, "#tbStage .tb-msg")), "with a gentle sentence");
+        const later = d.item.order.find(k => k !== 0);
+        await clickAttr(p, "data-step", String(later)); await sleep(100);
+        ok((await dbg(p)).placed === 0 && await p.evaluate(() => document.querySelectorAll(".tb-oslot.is-filled").length) === 0 && /a little later/.test(await text(p, "#tbStage .tb-msg")), "a step touched too early goes nowhere, with a gentle sentence");
+        const first = (await place()).find(s => s.k === 0), sl = await slots();
+        await p.mouse.move(first.x, first.y); await p.mouse.down(); await p.mouse.move(sl[2][0], sl[2][1], { steps: 8 }); await p.mouse.up(); await sleep(700);
+        ok((await dbg(p)).placed === 1 && await p.evaluate(() => document.querySelector('[data-slot="0"] .tb-step') !== null), "the first step, dragged to any place, settles in the first place");
       }
-      for (let k = 0; k < steps; k++) { await clickAttr(p, "data-step", String(k)); await sleep(50); }
-      ok(await p.evaluate(() => document.querySelectorAll("#tbStage .tb-placed li.is-on").length) === steps, `activity ${i + 1}: every step is in its place`);
-      if (i < items - 1) { await click(p, "#tbOrNext"); await sleep(60); }
+      for (let k = (await dbg(p)).placed; k < steps; k++) { await clickAttr(p, "data-step", String(k)); await sleep(80); }
+      ok(await p.evaluate(() => document.querySelectorAll(".tb-oslot.is-filled").length) === steps && await p.evaluate(s => s.every((t, k) => (document.querySelector(`[data-slot="${k}"] .tb-step`) || {}).textContent === t), d.item.steps), `job ${i + 1}: every step is in its place, in order`);
+      if (i < items - 1) { await click(p, "#tbOrNext"); await sleep(80); }
     }
     ok(await cheered(p), "putting every step in order brings the cheer");
     await ctx.close();
@@ -426,26 +455,36 @@ try {
   {
     const { ctx, p } = await fresh(LAND);
     await openAct(p, "match");
-    const d = await dbg(p), words = Object.keys(d.truth);
-    ok(words.length >= 3, `Match the Clue has ${words.length} pairs`);
-    const other = words[1];
-    await clickAttr(p, "data-word", words[0]); await clickAttr(p, "data-clue", d.truth[other]); await sleep(100);
-    ok(await p.evaluate(() => document.querySelectorAll("#tbStage .is-matched").length === 0) && /do not go together/.test(await text(p, "#tbStage .tb-msg")), "two that do not go together are put down again with a gentle sentence");
-    for (const w of words) { await clickAttr(p, "data-word", w); await clickAttr(p, "data-clue", d.truth[w]); await sleep(60); }
-    ok(await p.evaluate(() => document.querySelectorAll("#tbStage .is-matched").length) === words.length * 2, "every right pair is marked and locked");
+    const d = await dbg(p), arts = Object.keys(d.truth);
+    ok(arts.length >= 3 && await p.evaluate(() => document.querySelectorAll(".tb-mpic img[src$='.png']").length) === arts.length, `Match the Clue has ${arts.length} pictures, each a real picture`);
+    await clickAttr(p, "data-art", arts[0]); await clickAttr(p, "data-clue", d.truth[arts[1]].clue); await sleep(120);
+    ok(await p.evaluate(() => document.querySelectorAll(".is-matched").length === 0) && /do not go together/.test(await text(p, "#tbStage .tb-msg")), "a picture and a clue that do not go together are put down again with a gentle sentence");
+    const pos = a => p.evaluate(x => window.CognicopiaTabletUI.debug().cluePos(x), a), pics = () => p.evaluate(() => window.CognicopiaTabletUI.debug().pictures());
+    const target = (await pics()).find(x => x.art === arts[2]), from = await pos(arts[2]);
+    await p.mouse.move(from[0], from[1]); await p.mouse.down(); await p.mouse.move(target.x, target.y, { steps: 8 }); await p.mouse.up(); await sleep(200);
+    ok((await dbg(p)).matched === 1 && await p.evaluate(a => document.querySelector(`[data-art="${a}"]`).classList.contains("is-matched") && document.querySelector(`[data-art="${a}"] .tb-mdone`).textContent.length > 5, arts[2]), "a clue dragged onto its picture locks, and the clue settles under the picture");
+    for (const a of arts) { if (a === arts[2]) continue; await clickAttr(p, "data-clue", d.truth[a].clue); await clickAttr(p, "data-art", a); await sleep(80); }
+    ok(await p.evaluate(() => document.querySelectorAll(".tb-mpic.is-matched").length) === arts.length, "every right pair is marked and locked");
     ok(await cheered(p), "matching every pair brings the cheer");
     await ctx.close();
   }
   {
     const { ctx, p } = await fresh(LAND);
     await openAct(p, "odd");
-    const rounds = +(/of (\d+)/.exec(await text(p, "#tbProg"))[1]);
+    const rounds = +(/of (\d+)/.exec(await text(p, "#tbProg"))[1]), cards = () => p.evaluate(() => window.CognicopiaTabletUI.debug().cards());
+    ok(rounds >= 3 && (await cards()).length === 4 && (await cards()).filter(c => c.odd).length === 1 && await p.evaluate(() => document.querySelectorAll(".tb-oddcard img[src$='.png']").length) === 4, `${rounds} rounds of four pictures, one of them the odd one`);
     for (let i = 0; i < rounds; i++) {
-      const target = i === 0 ? 0 : 1;
-      await p.evaluate(t => { const b = Array.from(document.querySelectorAll("#tbStage [data-odd]")).filter(x => x.getAttribute("data-odd") === String(t))[0]; b.setAttribute("data-pick", "1"); }, target);
-      await click(p, '#tbStage [data-pick="1"]'); await sleep(100);
-      ok(/The other three are/.test(await text(p, "#tbStage .tb-msg")) && await p.evaluate(() => document.querySelectorAll("#tbStage .tb-opt.is-right").length === 1), i === 0 ? "a wrong pick shows the odd one and what the other three are" : `round ${i + 1}: the odd one is marked`);
-      if (i < rounds - 1) { await click(p, "#tbOdNext"); await sleep(60); }
+      let cs = await cards();
+      if (i === 0) {
+        const not = cs.find(c => !c.odd); await p.mouse.click(not.x, not.y); await sleep(100);
+        ok(await p.evaluate(() => document.querySelectorAll(".tb-oddcard.is-aside").length === 1 && document.querySelectorAll(".tb-oddcard.is-found").length === 0) && /goes with the others/.test(await text(p, "#tbStage .tb-msg")) && !/wrong/i.test(await text(p, "#tbStage .tb-msg")), "touching one that belongs sets it aside with a kind sentence: " + await text(p, "#tbStage .tb-msg"));
+        const not2 = (await cards()).filter(c => !c.odd)[1]; await p.mouse.click(not2.x, not2.y); await sleep(100);
+        ok(await p.evaluate(() => document.querySelectorAll(".tb-oddcard.tb-glow").length) === 1, "after a second try the odd one glows");
+        cs = await cards();
+      }
+      const od = cs.find(c => c.odd); await p.mouse.click(od.x, od.y); await sleep(150);
+      ok(/The other three are all/.test(await text(p, "#tbStage .tb-msg")) && await p.evaluate(() => document.querySelectorAll(".tb-oddcard.is-found").length === 1 && document.querySelectorAll(".tb-oddcard.is-together").length === 3), `round ${i + 1}: the odd one is marked, the other three are named: ` + await text(p, "#tbStage .tb-msg"));
+      if (i < rounds - 1) { await click(p, "#tbOddNext"); await sleep(80); }
     }
     ok(await cheered(p), "the last round brings the cheer");
     await ctx.close();

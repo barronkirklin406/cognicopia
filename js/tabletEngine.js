@@ -58,25 +58,8 @@
 
   /* ---------- the topics and the content for one ---------- */
   var TOPICS = D.topics.map(function (t) { return { id: t.id, label: t.label }; });
-  var topicById = {}; D.topics.forEach(function (t) { topicById[t.id] = t; });
   var okText = function (s) { return !G.lint(s, D); };
   var okWord = function (w) { return /^[A-Z]+$/.test(w) && !BLOCK.has(w); };
-  /* terms of one item that may be shown: a plain word, a clue that passes the rules and does not give the word away */
-  function termsOf(it) {
-    return it.terms.filter(function (t) { return okWord(t[0]) && okText(t[1]) && t[1].toUpperCase().indexOf(t[0]) < 0; })
-      .map(function (t) { return { word: t[0], clue: t[1], ref: it.id }; });
-  }
-  /* the items for a topic, topped up with a nearby topic's when a topic is small; "" means any one topic, chosen by the seed */
-  function itemsFor(o, rng, need) {
-    var id = o && o.topic && topicById[o.topic] ? o.topic : rng.fork("topic").pick(TOPICS).id;
-    var list = D.items.filter(function (it) { return it.topics.indexOf(id) >= 0; });
-    var count = function (l) { return l.reduce(function (n, it) { return n + termsOf(it).length; }, 0); };
-    var near = topicById[id].neighbors || [];
-    for (var i = 0; count(list) < (need || 12) && i < near.length; i++) {
-      list = list.concat(D.items.filter(function (it) { return it.topics.indexOf(near[i]) >= 0 && list.indexOf(it) < 0; }));
-    }
-    return { topic: id, label: topicById[id].label, items: list };
-  }
   function overlaps(w, list) { for (var i = 0; i < list.length; i++) if (list[i] === w || list[i].indexOf(w) >= 0 || w.indexOf(list[i]) >= 0) return true; return false; }
 
   /* ---------- the banks (js/tabletBanks.js) ---------- */
@@ -149,25 +132,45 @@
     }) };
   }
 
-  /* ---------- sort it, and odd one out: groups of things ---------- */
-  function twoGroups(rng, need) {
-    var groups = D.activities.sorting.filter(function (g) { return g.words.filter(okText).length >= need; });
-    var shuffled = rng.shuffle(groups), a = shuffled[0], b = shuffled.filter(function (g) { return g !== a && (g.family || []).join() !== (a.family || []).join(); })[0] || shuffled[1];
-    return [a, b];
+  /* ---------- sort it, odd one out and match the clue: pictures of things that go together ----------
+     The sets are in js/tabletBanks.js. Each picture is in one set only, and two sets of one family are never set against each other,
+     so what goes where is never a matter of opinion. A topic chooses its own sets first; what was just on the screen comes last. */
+  var thingMap = null;
+  function thing(art) {
+    if (!thingMap) { thingMap = {}; banks().OBJECTS.forEach(function (x) { thingMap[x.art] = { art: x.art, word: x.word.charAt(0) + x.word.slice(1).toLowerCase(), clue: x.clue }; }); }
+    return thingMap[art];
   }
+  var setsFor = function (min) { return banks().SETS.filter(function (s) { return s.things.length >= min; }); };
+  var setOut = function (s) { return { id: s.id, label: s.label, group: s.group, cover: s.cover }; };
+  /* the sets in the order a screen should try them: the topic's, then the rest, and the ones the last screen used at the end */
+  function setOrder(o, rng, min, label) {
+    var topic = o && o.topic, avoid = (o && o.avoid) || [], all = setsFor(min);
+    var hit = topic ? all.filter(function (s) { return s.topics.indexOf(topic) >= 0; }) : [], rest = all.filter(function (s) { return hit.indexOf(s) < 0; });
+    var list = rng.fork(label + "-t").shuffle(hit).concat(rng.fork(label + "-r").shuffle(rest));
+    return list.filter(function (s) { return avoid.indexOf(s.id) < 0; }).concat(list.filter(function (s) { return avoid.indexOf(s.id) >= 0; }));
+  }
+  var differ = function (a, b) { return a.id !== b.id && a.family !== b.family; };
   function sortIt(o) {
-    var c = cfgOf(o, "sort"), rng = rngOf(o, "so"), per = Math.ceil(c.count / 2), g = twoGroups(rng, per), items = [];
-    g.forEach(function (grp, gi) { rng.fork("g" + gi).shuffle(grp.words.filter(okText)).slice(0, per).forEach(function (w) { items.push({ word: w, group: gi }); }); });
-    return { groups: g.map(function (x) { return { id: x.id, label: x.label, one: x.one }; }), items: rng.fork("mix").shuffle(items) };
+    var c = cfgOf(o, "sort"), rng = rngOf(o, "so"), per = Math.ceil(c.count / 2), list = setOrder(o, rng, per, "s"), a = list[0];
+    var b = rng.fork("b").shuffle(setsFor(per).filter(function (s) { return differ(a, s); }))[0], items = [];
+    [a, b].forEach(function (grp, gi) { rng.fork("g" + gi).shuffle(grp.things).slice(0, per).forEach(function (t) { var x = thing(t); items.push({ art: t, word: x.word, group: gi }); }); });
+    return { groups: [setOut(a), setOut(b)], items: rng.fork("mix").shuffle(items) };
+  }
+  /* every pair of sets that may be set against each other is a deck: the three that go together come from the first, the odd one from the second */
+  function oddDecks() {
+    var out = [];
+    setsFor(3).forEach(function (a) { banks().SETS.forEach(function (b) { if (differ(a, b)) out.push({ together: a.id, apart: b.id }); }); });
+    return out;
   }
   function oddOne(o) {
-    var c = cfgOf(o, "odd"), rng = rngOf(o, "od"), rounds = [], tries = 0;
-    while (rounds.length < c.rounds && tries++ < 40) {
-      var g = twoGroups(rng.fork("r" + tries), 4), same = rng.fork("s" + tries).shuffle(g[0].words.filter(okText)).slice(0, 3), odd = rng.fork("d" + tries).pick(g[1].words.filter(okText));
-      if (same.length < 3 || !odd) continue;
-      var cards = same.map(function (w) { return { word: w, odd: false }; }).concat([{ word: odd, odd: true }]);
-      rounds.push({ cards: rng.fork("m" + tries).shuffle(cards), together: g[0].label, apart: g[1].label });
-    }
+    var c = cfgOf(o, "odd"), rng = rngOf(o, "od"), rounds = [], list = setOrder(o, rng, 3, "d");
+    list.forEach(function (a) {
+      if (rounds.length >= c.rounds) return;
+      var b = rng.fork("p" + a.id).shuffle(banks().SETS.filter(function (s) { return differ(a, s); }))[0];
+      var same = rng.fork("s" + a.id).shuffle(a.things).slice(0, 3), odd = rng.fork("d" + a.id).pick(b.things);
+      var cards = same.map(function (t) { return { art: t, word: thing(t).word, odd: false }; }).concat([{ art: odd, word: thing(odd).word, odd: true }]);
+      rounds.push({ cards: rng.fork("m" + a.id).shuffle(cards), together: a.label, set: a.id, apart: b.label });
+    });
     return { rounds: rounds };
   }
 
@@ -179,19 +182,20 @@
       if (out.some(function (x) { return x.id === s.id; })) return;
       var steps = s.steps.slice(0, c.maxSteps), mix = steps.map(function (t, i) { return i; }), k = 0;
       do { mix = rng.fork(s.id + k++).shuffle(mix); } while (steps.length > 1 && mix.every(function (v, i) { return v === i; }) && k < 20);
-      out.push({ id: s.id, title: s.title, steps: steps, order: mix });   // order: the step numbers in the order they are shown
+      out.push({ id: s.id, title: s.title, steps: steps, order: mix, art: banks().SEQ_ART[s.id] || "" });   // order: the step numbers in the order they are shown
     });
     return { items: out.slice(0, Math.max(2, n - 1)) };
   }
 
-  /* ---------- match the clue ---------- */
+  /* ---------- match the clue: a picture, and the clue that goes with it ---------- */
   function matchUp(o) {
-    var c = cfgOf(o, "match"), rng = rngOf(o, "ma"), pick = itemsFor(o, rng, 14), pairs = [], used = {};
-    rng.fork("it").shuffle(pick.items).forEach(function (it) {
-      var t = rng.fork("t:" + it.id).shuffle(termsOf(it).filter(function (x) { return x.word.length >= 3 && x.word.length <= 8 && x.clue.length <= 60; }))[0];
-      if (t && pairs.length < c.pairs && !used[t.word]) { used[t.word] = 1; pairs.push({ word: t.word, clue: t.clue }); }
+    var c = cfgOf(o, "match"), rng = rngOf(o, "ma"), list = setOrder(o, rng, 1, "m"), pairs = [], Art = artOf();
+    list.forEach(function (s) {                          /* one picture from each set, so no clue can fit two of them */
+      if (pairs.length >= c.pairs) return;
+      var t = rng.fork("t" + s.id).shuffle(s.things.filter(function (a) { var x = thing(a); return Art.has(a) && okText(x.clue) && x.clue.toLowerCase().indexOf(x.word.toLowerCase()) < 0; }))[0];
+      if (t) pairs.push({ art: t, set: s.id, word: thing(t).word, clue: thing(t).clue });
     });
-    return { pairs: pairs, words: rng.fork("w").shuffle(pairs.map(function (p) { return p.word; })), clues: rng.fork("c").shuffle(pairs.map(function (p) { return p.clue; })), topic: pick.topic, topicLabel: pick.label };
+    return { pairs: pairs, pictures: rng.fork("w").shuffle(pairs.map(function (p) { return p.art; })), clues: rng.fork("c").shuffle(pairs.map(function (p) { return p.clue; })) };
   }
 
   /* ---------- sights and sounds: a board of sounds to listen to ----------
@@ -358,7 +362,7 @@
   root.CognicopiaTablet = {
     STAGES: STAGES, TOPICS: TOPICS, SHAPES: Object.keys(SHAPES), SHAPE_LABEL: SHAPE_LABEL, SCENES: SCENES,
     wordSearch: wordSearch, crossword: crossword, spellIt: spellIt, sayings: sayings, sortIt: sortIt, oddOne: oddOne, inOrder: inOrder,
-    matchUp: matchUp, soundBoard: soundBoard, tracePath: tracePath, follow: follow, designChoices: designChoices, regions: regions, PALETTES: PALETTES,
+    matchUp: matchUp, soundBoard: soundBoard, tracePath: tracePath, follow: follow, designChoices: designChoices, regions: regions, PALETTES: PALETTES, oddDecks: oddDecks,
     counts: function () { return { packs: banks().PACKS.length, clueSets: banks().CLUES.length, sayings: sayingPool().length, objects: banks().OBJECTS.length }; },
     newSeed: function () { return String(Date.now()) + "-" + Math.floor(Math.random() * 1e9); }
   };
