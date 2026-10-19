@@ -174,7 +174,7 @@ ok(/not (a )?(survey finding|legal advice)|no agency has endorsed/i.test(text), 
 ok(/visual boundary, not a physical barrier/.test(text), "the page says a printed line is a visual boundary, not a physical barrier");
 ok(/not a diagnosis|not a clinical test|not a measurement/.test(text), "the page says the pillars are not a diagnosis and the simulation is not a measurement");
 ok(/F679/.test(main) && /483\.24\(c\)\(1\)/.test(main + js) && /F744/.test(js) && /483\.40\(b\)\(3\)/.test(js) && /F550/.test(main) && /F656/.test(js) && /Section F/.test(js) && /Section Q/.test(js), "F679, §483.24(c)(1), F744, §483.40(b)(3), F550, F656 and MDS Sections F and Q are cited");
-ok(/Kirk Barron/.test(main) && /Minot, North Dakota/.test(main), "the publisher is named, with Minot, North Dakota");
+ok(/Published by <strong>Cognicopia<\/strong>/.test(main) && !/Kirk Barron|Minot/.test(main), "the page is published as Cognicopia, with no personal name or city");
 ok(/100% Client-Side/.test(main) && /Clinical Validation Active/.test(js) && /data-state/.test(main) && /Network use detected/.test(js), "the badge says 100% Client-Side / Clinical Validation Active, and changes when a check fails");
 ok(/Woods et al\., 2018/.test(main) && /Rubin &amp; Legge, 1989/.test(main) && /1900s through the 1980s/.test(main), "the evidence notes name their sources, and the cues span the 1900s through the 1980s");
 ok(/reminiscence bump/.test(main) && /not as a treatment/.test(main), "the reminiscence copy says what the evidence supports and that it is not a treatment");

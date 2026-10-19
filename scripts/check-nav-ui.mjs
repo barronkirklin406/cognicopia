@@ -48,7 +48,7 @@ try {
   ok(await p.$eval(".cg-sidebar a[aria-current='page']", e => e.textContent.trim()) === "Quality Standards Hub", "a resource module marks its own link as current");
   await p.goto(base + "contact.html"); await p.waitForTimeout(300);
   ok((await open(p, "details.cg-hub")).length === 0 && (await here(p)).length === 0, "the contact page opens with no hub open or marked");
-  ok(await p.$eval(".cg-hub-foot a[aria-current='page']", e => e.textContent.trim()) === "Contact Kirk Barron", "the contact page marks its Contact link as current");
+  ok(await p.$eval(".cg-hub-foot a[aria-current='page']", e => e.textContent.trim()) === "Contact Cognicopia", "the contact page marks its Contact link as current");
   await p.goto(base + "life-planners.html"); await p.waitForTimeout(300);
   ok(JSON.stringify(await here(p)) === '["studio"]' && (await p.$$(".cg-sidebar a[aria-current='page']")).length === 0, "a product page marks Studio and claims no link as the current page");
 

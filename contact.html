@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Contact Cognicopia — Publisher & Support</title>
-    <meta name="description" content="Get in touch with Kirk Barron, publisher of Cognicopia. Reach out with questions, educator inquiries, or facility support.">
+    <meta name="description" content="Get in touch with Cognicopia. Reach out with questions, educator inquiries, or facility support.">
     <style>
       *, *::before, *::after { box-sizing: border-box; }
       :root {
@@ -260,7 +260,7 @@
       }
       .info-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
         gap: 16px;
         margin-top: 18px;
         margin-bottom: 22px;
@@ -290,7 +290,8 @@
         min-height: var(--tap, 52px);
         color: #b7e4c7;
         text-decoration: underline;
-        overflow-wrap: anywhere;
+        white-space: nowrap;
+        font-size: clamp(.95rem, 4.4vw, 1.15rem);
       }
       .info-val a:hover {
         color: #ffffff;
@@ -696,7 +697,7 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
 <meta property="og:site_name" content="Cognicopia">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Contact Cognicopia — Publisher & Support">
-<meta property="og:description" content="Get in touch with Kirk Barron, publisher of Cognicopia. Reach out with questions, educator inquiries, or facility support.">
+<meta property="og:description" content="Get in touch with Cognicopia. Reach out with questions, educator inquiries, or facility support.">
 <meta property="og:url" content="https://cognicopia.org/contact.html">
 <meta property="og:image" content="https://cognicopia.org/cognicopia-logo.jpg">
 <meta name="twitter:card" content="summary">
@@ -789,7 +790,7 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
         </ul>
       </details>
     </li>
-    <li class="cg-hub-foot"><a href="contact.html" class="active" aria-current="page"><svg class="cg-sb-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Contact Kirk Barron</span></a></li>
+    <li class="cg-hub-foot"><a href="contact.html" class="active" aria-current="page"><svg class="cg-sb-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Contact Cognicopia</span></a></li>
   </ul>
   </nav>
 </aside>
@@ -849,21 +850,17 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
     <p class="vine-subtitle">Activities built from a resident's own life</p>
 
     <div class="card">
-      <h2>Publisher Information</h2>
+      <h2>About Cognicopia</h2>
       <p>Cognicopia is developed and published with dedication to providing dignified, personalized reminiscence and cognitive engagement resources for memory care.</p>
       
       <div class="info-grid">
         <div class="info-box">
-          <div class="info-label">Publisher</div>
-          <div class="info-val">Kirk Barron</div>
-        </div>
-        <div class="info-box">
-          <div class="info-label">Location</div>
-          <div class="info-val">Minot, North Dakota</div>
+          <div class="info-label">Made by</div>
+          <div class="info-val">BarronCrafts</div>
         </div>
         <div class="info-box">
           <div class="info-label">Direct Inquiries</div>
-          <div class="info-val"><a href="mailto:cognicopia@outlook.com">cognicopia@outlook.com</a></div>
+          <div class="info-val"><a class="cg-email" href="mailto:cognicopia@outlook.com">cognicopia@outlook.com</a></div>
         </div>
       </div>
 
@@ -920,12 +917,12 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
         <li><a class="cg-foot-a" href="resources/">Resource &amp; Clinical Hub</a></li>
         <li><a class="cg-foot-a" href="resources/research/">Research Center</a></li>
         <li><a class="cg-foot-a" href="resources/caregiver-faq/">Caregiver FAQ</a></li>
-        <li><a class="cg-foot-a" href="contact.html">Contact Kirk Barron</a></li>
+        <li><a class="cg-foot-a" href="contact.html">Contact Cognicopia</a></li>
       </ul>
     </nav>
   </div>
   <div class="cg-foot-in cg-foot-base">
-    <p>Cognicopia is made by BarronCrafts in Minot, North Dakota. Everything happens inside your browser &mdash; there is no account, no upload, and no copy of resident information kept anywhere.</p>
+    <p>Cognicopia is made by BarronCrafts. Everything happens inside your browser &mdash; there is no account, no upload, and no copy of resident information kept anywhere.</p>
   </div>
 </footer>
 <!-- cg-footer:end -->

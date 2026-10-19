@@ -476,3 +476,7 @@ svg.cg-coloring :is(path,line,polyline,polygon,circle,ellipse,rect){
   fill:#000;stroke:#000;stroke-width:var(--cg-line);stroke-linejoin:round;stroke-linecap:round;vector-effect:non-scaling-stroke;
 }
 @media print{svg.cg-coloring *{fill:#000 !important;stroke:#000 !important}}
+
+/* an e-mail address stays on one line (it is never broken mid-address); a very narrow screen makes it a little smaller instead */
+.cg-email{white-space:nowrap;overflow-wrap:normal;word-break:normal;hyphens:none}
+@media (max-width:360px){.cg-email{font-size:.92em}}
