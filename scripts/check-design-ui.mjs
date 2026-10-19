@@ -245,7 +245,7 @@ try {
   ok(lp.side && lp.hidden === "true", "the hero is two columns: the words, and beside them a picture of the tool that screen readers skip");
   ok(lp.href === "#make" && lp.bh >= 52 && lp.make, `"Make a packet" (${lp.bh} px tall) points at the packet tool, which sits under it on the same page`);
   ok(lp.marks.length === 5 && lp.marks.every(h => /^resources\/research\/[a-z-]+\/$/.test(h)), "the evidence row links five Research Center summaries");
-  ok(lp.foot === 14 && /Kirk Barron/.test(lp.quote), "the footer has its three columns of links and the quote names the publisher");
+  ok(lp.foot === 14 && /Cognicopia/.test(lp.quote) && !/Kirk Barron/.test(lp.quote), "the footer has its three columns of links and the quote is credited to Cognicopia, not a person");
   await p.click(".lp-btn"); await p.waitForTimeout(900);
   const landed = await p.evaluate(() => Math.round(document.getElementById("makeTitle").getBoundingClientRect().top));
   ok(landed >= 136 && landed < 320, `"Make a packet" scrolls to the tool with its heading clear of the bars (${landed} px from the top)`);

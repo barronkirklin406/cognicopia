@@ -93,7 +93,7 @@ const text = main.replace(/<[^>]+>/g, " ").replace(/&[a-z]+;/g, " ");
   .forEach(([re, n]) => ok(!re.test(text + js), `the page does not claim "${n}"`));
 ok(/not (a )?(survey finding|legal advice)|no agency has endorsed/i.test(text + js), "the page says what it is not (a survey finding, legal advice, an endorsement)");
 ok(/F679/.test(main) && /483\.24\(c\)/.test(main) && /Section F/.test(main) && /Section Q/.test(main) && /F656/.test(main), "F679, §483.24(c), MDS Section F and Q, and F656 are cited");
-ok(/Kirk Barron/.test(main) && /Minot, North Dakota/.test(main), "the publisher is named, with Minot, North Dakota");
+ok(/Published by <strong>Cognicopia<\/strong>/.test(main) && !/Kirk Barron|Minot/.test(main), "the page is published as Cognicopia, with no personal name or city");
 ok(/Local Encryption Active/.test(js) && /100% Offline/.test(main + js), "the badge reports the local encryption state and offline use");
 ok(/data-state/.test(main) && /Network use detected/.test(js), "the badge changes when the check fails");
 try { new vm.Script(js); ok(true, ""); } catch (e) { ok(false, "the page script does not parse: " + e.message); }

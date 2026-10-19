@@ -31,7 +31,8 @@ const NEVER = [
   [/unhackable|un-hackable/i, "\"unhackable\""],
   [/100\s?%\s+(secure|safe)\b/i, "\"100% secure\""],
   [/\b(survey|audit)[- ]proof\b/i, "\"survey-proof\" or \"audit-proof\""],
-  [/\bEngaging Todays\b/, "\"Engaging Todays\" (the line is \"Engaging Today\")"]
+  [/\bEngaging Todays\b/, "\"Engaging Todays\" (the line is \"Engaging Today\")"],
+  [/Kirk Barron|Kirklin/, "a person's name (the pages speak as Cognicopia, made by BarronCrafts)"]
 ];
 /* wrong when asserted, fine when denied in the same sentence */
 const UNLESS_DENIED = [
@@ -67,6 +68,7 @@ ok(scanText("It ensures compliance with F679.").length > 0, "self-test: ensures 
 ok(scanText("It supports a facility’s privacy practices, but it does not by itself make a facility HIPAA compliant.").length === 0, "self-test: a denial is allowed");
 ok(scanText("No resident data leaves the device. It supports a facility's HIPAA privacy practices.").length === 0, "self-test: the approved wording is allowed");
 ok(scanText("The site does not claim to be CMS compliant.").length === 0, "self-test: a denied claim is allowed");
+ok(scanText("Contact Kirk Barron").length > 0 && scanText("Contact Cognicopia").length === 0, "self-test: a personal name is caught, the brand is not");
 
 /* ---------- the files ---------- */
 const SKIP_DIR = new Set(["node_modules", ".git", "out", "platform", "docs", ".claude", "vendor", "fonts"]);
@@ -91,6 +93,7 @@ for (const f of files){
   if (/jspdf|\.min\./.test(rel)) continue;
   const text = strip(fs.readFileSync(f, "utf8")); scanned++;
   const hits = scanText(text);
+  if (rel.endsWith(".html") && /Minot, (North Dakota|ND)/.test(text)) hits.push({ what: "the maker's city (pages name Cognicopia and BarronCrafts, not a place)", at: text.search(/Minot, (North Dakota|ND)/) });
   if (hits.length) hits.forEach(h => problems.push(`${rel}: ${h.what}: "${text.slice(Math.max(0, h.at - 40), h.at + 70).replace(/\s+/g, " ")}"`));
   else passed++;
 }
