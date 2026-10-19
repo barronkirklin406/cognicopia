@@ -173,6 +173,7 @@
     };
     /* wrapped lines of text no wider than maxW */
     sh.wrap = function (text, maxW, size, bold) {
+      bold = !!bold || !!T.bold;          // resident text prints bold at every stage, so it is measured bold
       var words = String(text).split(/\s+/).filter(Boolean), lines = [], cur = "";
       words.forEach(function (w) {
         var t = cur ? cur + " " + w : w;
