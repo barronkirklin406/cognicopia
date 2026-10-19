@@ -8,7 +8,7 @@
    accidental word, every clue and saying passes the dignity rules.
 
      wordSearch, crossword, spellIt, sayings, sortIt, inOrder, matchUp,
-     oddOne, tracePath, talkCards, designChoices
+     oddOne, tracePath, soundBoard, designChoices
 
    Each takes { stage: "early" | "middle" | "late", topic: a topic id or "",
    seed: any text, fit: { size } } and returns plain data. The same seed
@@ -29,8 +29,8 @@
       cross: { size: 9, target: 5, max: 6, pool: 10, minLen: 3, maxLen: 8, attempts: 30 },
       spell: { count: 5, minLen: 4, maxLen: 9, firstGiven: false },
       saying: { count: 6, options: 3 }, sort: { count: 8 }, order: { maxSteps: 6 }, match: { pairs: 5 }, odd: { rounds: 5 },
-      trace: { tol: 34, kinds: ["wave", "zigzag", "spiral", "scurve", "heart", "circle", "hill"], rounds: 4 },
-      color: { tier: 2 }, talk: { lines: 3 }
+      trace: { tol: 34, kinds: ["wave", "zigzag", "spiral", "scurve", "heart", "circle", "hill"], rounds: 3 },
+      color: { tier: 2 }, sounds: { cards: 6, rounds: 3 }
     },
     middle: {
       label: "Middle stage",
@@ -38,8 +38,8 @@
       cross: { size: 8, target: 4, max: 5, pool: 8, minLen: 3, maxLen: 7, attempts: 40 },
       spell: { count: 5, minLen: 3, maxLen: 6, firstGiven: true },
       saying: { count: 5, options: 3 }, sort: { count: 6 }, order: { maxSteps: 4 }, match: { pairs: 4 }, odd: { rounds: 4 },
-      trace: { tol: 46, kinds: ["wave", "scurve", "heart", "circle", "hill", "spiral"], rounds: 4 },
-      color: { tier: 3 }, talk: { lines: 3 }
+      trace: { tol: 46, kinds: ["wave", "scurve", "heart", "circle", "hill"], rounds: 3 },
+      color: { tier: 3 }, sounds: { cards: 6, rounds: 3 }
     },
     late: {
       label: "Late stage",
@@ -48,7 +48,7 @@
       spell: { count: 4, minLen: 3, maxLen: 5, firstGiven: true },
       saying: { count: 4, options: 2 }, sort: { count: 4 }, order: { maxSteps: 3 }, match: { pairs: 3 }, odd: { rounds: 3 },
       trace: { tol: 62, kinds: ["hill", "wave", "scurve", "circle"], rounds: 3 },
-      color: { tier: 3 }, talk: { lines: 2 }
+      color: { tier: 3 }, sounds: { cards: 4, rounds: 2 }
     }
   };
   var stageOf = function (o) { return STAGES[o && o.stage] ? o.stage : "middle"; };
@@ -180,22 +180,14 @@
     return { pairs: pairs, words: rng.fork("w").shuffle(pairs.map(function (p) { return p.word; })), clues: rng.fork("c").shuffle(pairs.map(function (p) { return p.clue; })), topic: pick.topic, topicLabel: pick.label };
   }
 
-  /* ---------- sights and sounds: a card to talk about ---------- */
-  var SENSES = [["sight", "You might see"], ["sound", "You might hear"], ["touch", "You might feel"], ["smell", "You might smell"]];
-  function talkCards(o) {
-    var c = cfgOf(o, "talk"), rng = rngOf(o, "ta"), pick = itemsFor(o, rng, 6), cards = [];
-    rng.fork("it").shuffle(pick.items).forEach(function (it) {
-      if (cards.length >= 5) return;
-      var lines = [];
-      rng.fork("s:" + it.id).shuffle(SENSES).forEach(function (s) {
-        var list = (it.senses || {})[s[0]];
-        if (list && list.length && lines.length < c.lines && okText(list[0])) lines.push({ label: s[1], text: rng.fork(it.id + s[0]).pick(list) });
-      });
-      var colors = (it.senses || {}).color;
-      if (lines.length < c.lines && colors && colors.length) lines.unshift({ label: "You might see", text: colors[0] });
-      if (lines.length >= 2) cards.push({ id: it.id, name: it.name, kind: it.kind, lines: lines.slice(0, c.lines) });
-    });
-    return { cards: cards, topic: pick.topic, topicLabel: pick.label };
+  /* ---------- sights and sounds: a board of sounds to listen to ----------
+     The sounds themselves are made on the tablet (js/tabletSound.js); this chooses which ones are on the board and which one
+     each "which one is it?" round is about. The same seed gives the same board; "avoid" lists what the last board had. */
+  function soundBoard(o) {
+    var c = cfgOf(o, "sounds"), rng = rngOf(o, "sn"), all = (root.CognicopiaTabletSound && root.CognicopiaTabletSound.META) || [], avoid = (o && o.avoid) || [];
+    var fresh = all.filter(function (m) { return avoid.indexOf(m.id) < 0; }), pool = rng.shuffle(fresh).concat(rng.shuffle(all.filter(function (m) { return avoid.indexOf(m.id) >= 0; })));
+    var cards = pool.slice(0, c.cards).map(function (m) { return { id: m.id, name: m.name, line: m.line }; });
+    return { cards: cards, targets: rng.fork("t").shuffle(cards.map(function (m) { return m.id; })).slice(0, c.rounds) };
   }
 
   /* ---------- trace the path: a line to follow with a finger ---------- */
@@ -254,26 +246,39 @@
     }
   };
   var SHAPE_LABEL = { wave: "a wave", hill: "a hill", zigzag: "a zigzag", scurve: "an S curve", spiral: "a spiral", circle: "a circle", heart: "a heart" };
+  /* three little journeys: who sets out, where they are going, and which open lines suit them */
+  var SCENES = {
+    bee: { from: "bee", to: "flower", shapes: ["wave", "scurve", "zigzag", "spiral", "hill"], line: "Help the bee fly to the flower.", arrive: "The bee has reached the flower." },
+    train: { from: "train", to: "station", shapes: ["hill", "wave", "scurve"], line: "Guide the train along the track to the station.", arrive: "The train has pulled into the station." },
+    dog: { from: "dog", to: "bone", shapes: ["zigzag", "wave", "hill", "scurve"], line: "Help the dog find its bone.", arrive: "The dog has found its bone." }
+  };
   function tracePath(o) {
-    var c = cfgOf(o, "trace"), rng = rngOf(o, "tr"), kind = o && o.kind && SHAPES[o.kind] ? o.kind : rng.pick(c.kinds);
+    var c = cfgOf(o, "trace"), rng = rngOf(o, "tr"), names = Object.keys(SCENES);
+    var scene = o && o.scene && SCENES[o.scene] ? o.scene : rng.fork("scene").pick(names.filter(function (n) { return SCENES[n].shapes.some(function (k) { return c.kinds.indexOf(k) >= 0; }); }));
+    var kinds = o && o.kind && SHAPES[o.kind] ? [o.kind] : SCENES[scene].shapes.filter(function (k) { return c.kinds.indexOf(k) >= 0; });
+    var kind = rng.fork("kind").pick(kinds.length ? kinds : c.kinds);
     var raw = SHAPES[kind](rng.fork("shape"), stageOf(o) === "late");
     if (rng.fork("flip").chance(0.5) && kind !== "heart" && kind !== "circle") raw = raw.map(function (p) { return [W - p[0], p[1]]; });
     var pts = resample(raw, 6), closed = Math.hypot(pts[0][0] - pts[pts.length - 1][0], pts[0][1] - pts[pts.length - 1][1]) < 14;
-    return { kind: kind, label: SHAPE_LABEL[kind], pts: pts, closed: closed, w: W, h: H, tol: c.tol, start: pts[0], end: pts[pts.length - 1],
+    return { kind: kind, label: SHAPE_LABEL[kind], scene: scene, from: SCENES[scene].from, to: SCENES[scene].to, line: SCENES[scene].line, arrive: SCENES[scene].arrive,
+      pts: pts, closed: closed, w: W, h: H, tol: kind === "spiral" ? Math.min(c.tol, 30) : c.tol, start: pts[0], end: pts[pts.length - 1],
       d: "M" + pts.map(function (p) { return p[0].toFixed(1) + " " + p[1].toFixed(1); }).join(" L"), length: Math.round((pts.length - 1) * 6) };
   }
-  /* The rule the screen follows, kept here so it can be proved without a screen: move a dot along the path with a finger.
-     state: { i: how far along (index), } ; point: where the finger is (in the path's own units); tolUnits: how far off the line is still on it.
-     Returns { i, status: "on" | "slipped" | "done" }. A finger that wanders further than tolUnits from the line, or turns back more than a little, sends the dot to the start. */
+  /* The rule the screen follows, kept here so it can be proved without a screen.
+     state: { i }, how far along the line the marker is (a point number); point: where the finger is, in the path's own units;
+     tolUnits: how wide the lane is on each side. The marker only ever moves forward, and it always stays on the line. A finger
+     that wanders away just leaves it waiting where it is (status "away"); a finger that comes back to the lane picks it up
+     again. Nothing sends it back to the start: lifting the finger, wobbling, or going the wrong way costs nothing.
+     Returns { i, status: "on" | "away" | "done" }. */
   function follow(path, state, point, tolUnits) {
-    var pts = path.pts, i = state.i, back = Math.max(3, Math.round(tolUnits / 6 * 0.6)), ahead = Math.round(tolUnits * 2 / 6) + 6, best = -1, bd = Infinity, j;
+    var pts = path.pts, i = state.i, ahead = 24, back = 3, reach = tolUnits * 2.2, best = -1, bd = Infinity, j;
     for (j = Math.max(0, i - back); j <= Math.min(pts.length - 1, i + ahead); j++) {
       var d = Math.hypot(pts[j][0] - point[0], pts[j][1] - point[1]);
       if (d < bd) { bd = d; best = j; }
     }
-    if (best < 0 || bd > tolUnits) return { i: 0, status: "slipped" };
-    if (best < i - back) return { i: 0, status: "slipped" };
-    var next = Math.max(i, best), close = Math.max(2, Math.round(tolUnits * 0.6 / 6));     // reaching the finish circle counts
+    var close = Math.max(2, Math.round(tolUnits * 0.6 / 6));      // reaching the finish circle counts
+    if (best < 0 || bd > reach) return { i: i, status: i >= pts.length - 1 - close ? "done" : "away" };
+    var next = Math.max(i, best);
     return { i: next, status: next >= pts.length - 1 - close ? "done" : "on" };
   }
 
@@ -284,9 +289,9 @@
   }
 
   root.CognicopiaTablet = {
-    STAGES: STAGES, TOPICS: TOPICS, SHAPES: Object.keys(SHAPES), SHAPE_LABEL: SHAPE_LABEL,
+    STAGES: STAGES, TOPICS: TOPICS, SHAPES: Object.keys(SHAPES), SHAPE_LABEL: SHAPE_LABEL, SCENES: SCENES,
     wordSearch: wordSearch, crossword: crossword, spellIt: spellIt, sayings: sayings, sortIt: sortIt, oddOne: oddOne, inOrder: inOrder,
-    matchUp: matchUp, talkCards: talkCards, tracePath: tracePath, follow: follow, designChoices: designChoices,
+    matchUp: matchUp, soundBoard: soundBoard, tracePath: tracePath, follow: follow, designChoices: designChoices,
     newSeed: function () { return String(Date.now()) + "-" + Math.floor(Math.random() * 1e9); }
   };
 })(typeof globalThis !== "undefined" ? globalThis : this);

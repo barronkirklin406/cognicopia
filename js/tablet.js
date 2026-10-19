@@ -1,43 +1,47 @@
 /* =====================================================================
    Cognicopia Tablet Activities: the screen (tablet.html).
 
-   A main menu of touch-first activities and the activities themselves.
-   The puzzles come from js/tabletEngine.js; this file draws them and
-   answers fingers: dragging along a word, a dot that follows a traced
-   line, an on-screen keyboard for crosswords and spelling, big choices,
-   a coloring picture you tap, a finger-painting canvas, bubbles to pop.
+   The shell every activity runs in, and the main menu. An activity is a
+   file that registers itself with the kit (js/tabletKit.js); this file
+   gives each one the same frame:
 
-   Calm by design: a right answer gets a soft chime, a wrong one gets
-   nothing but a gentle sentence; nothing is timed or scored; nothing a
-   person does is stored or sent anywhere (only the level, topic and
-   sound choices stay in this browser). No network request is made.
+     Home           back to the menu, from anywhere
+     Finish for me  completes the activity with a gentle celebration
+     Next           a fresh activity, instantly: nothing is scored, nothing is lost
+     Read to Me     the device's own voice reads what is on the screen
+     a hint         after 15 quiet seconds the right place glows
+
+   Calm by design: a right answer gets a soft chime; a place that does not
+   fit lets the card glide back to where it was, with a soft rising note
+   and a kind sentence. There is no red, no buzzer, no game over and no
+   score. Nothing a person does is stored or sent anywhere: only the
+   level, topic, sound and speed choices stay in this browser, and no
+   network request is made.
    ===================================================================== */
 (function () {
   "use strict";
-  var T = window.CognicopiaTablet;
-  if (!T || !document.getElementById("tbMenu")) return;
+  var T = window.CognicopiaTablet, Kit = window.CognicopiaTabletKit;
+  if (!T || !Kit || !document.getElementById("tbMenu")) return;
 
   var $ = function (id) { return document.getElementById(id); };
-  var esc = function (s) { return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); };
-  var h = function (tag, cls, html) { var e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; };
-  var reduced = function () { return !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches); };
+  var esc = Kit.esc, h = Kit.h, reduced = Kit.reduced, LETTERS = Kit.LETTERS;
   var PRAISE = ["That's it!", "Lovely!", "Wonderful!", "Just right!", "Nicely done!"];
   var praise = function () { return PRAISE[Math.floor(Math.random() * PRAISE.length)]; };
-  var LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 
   /* ---------- what is remembered in this browser: the choices only, never what anyone did ---------- */
-  var PREFS_KEY = "cognicopia_tablet_prefs", prefs = { stage: "middle", topic: "", sound: true };
+  var PREFS_KEY = "cognicopia_tablet_prefs", prefs = { stage: "middle", topic: "", sound: true, speed: 2 };
   try {
     var saved = JSON.parse(window.localStorage.getItem(PREFS_KEY) || "null");
     if (saved) {
       if (T.STAGES[saved.stage]) prefs.stage = saved.stage;
       if (T.TOPICS.some(function (t) { return t.id === saved.topic; })) prefs.topic = saved.topic;
       if (saved.sound === false) prefs.sound = false;
+      if (saved.speed >= 1 && saved.speed <= 4) prefs.speed = Math.round(saved.speed);
     }
   } catch (e) { /* private browsing: the choices simply start fresh each visit */ }
   function savePrefs() { try { window.localStorage.setItem(PREFS_KEY, JSON.stringify(prefs)); } catch (e) { /* not kept */ } }
 
-  /* ---------- sound: a soft chime (Web Audio, offline) ---------- */
+  /* ---------- sound: soft tones made on the tablet (Web Audio, offline) ---------- */
   var audio = null;
   function unlock() {
     try {
@@ -60,8 +64,11 @@
     } catch (e) { /* silent is fine */ }
   }
   var chime = function (big) { tone(big ? [523.25, 659.25, 783.99, 1046.5] : [659.25, 880], 0.09, 0.9); };
+  /* the sound of "not that one, but nearly": two soft notes that rise, like a gentle question */
+  var soft = function () { tone([392, 440], 0.05, 1.0, 0.16); };
   var pop = function () { tone([420, 300], 0.07, 0.25, 0.04); };
   var tick = function () { tone([700], 0.03, 0.12); };
+  var audioReady = function () { unlock(); return audio; };
 
   /* ---------- Read to Me: the device's own voices ---------- */
   var canSpeak = "speechSynthesis" in window && typeof window.SpeechSynthesisUtterance === "function";
@@ -93,6 +100,7 @@
 
   /* ---------- the shell: one activity at a time, full screen ---------- */
   var overlay = $("tb"), stage = $("tbStage"), cur = null, wake = null, inerted = [], returnTo = null;
+  var idleMs = 15000, idleTimer = 0, lastUsed = {}, ACT = {};
   function live(t) { $("tbLive").textContent = t; }
 
   function burst(x, y) {
@@ -105,38 +113,78 @@
       document.body.appendChild(d); setTimeout(function (n) { n.remove(); }.bind(null, d), 1200);
     }
   }
+  /* the finish: a warm medal, a chime, a little confetti, and a way on. Used when the work is done and when "Finish for me" is pressed. */
+  var MEDAL = '<svg class="tb-medal" viewBox="0 0 120 120" aria-hidden="true" focusable="false"><g class="ray" stroke="#c5a059" stroke-width="5" stroke-linecap="round" fill="none"><path d="M60 4v14M60 102v14M4 60h14M102 60h14M20 20l10 10M90 90l10 10M100 20 90 30M30 90l-10 10"/></g>' +
+    '<circle cx="60" cy="58" r="34" fill="#f1dda8" stroke="#1b382b" stroke-width="5"/><path d="M60 38l6.6 13.4 14.8 2.1-10.7 10.4 2.5 14.7L60 71.6 46.8 78.6l2.5-14.7L38.6 53.5l14.8-2.1z" fill="#1b382b"/>' +
+    '<path d="M42 88l-8 24 16-8 6 10 4-22zM78 88l8 24-16-8-6 10-4-22z" fill="#c5a059" stroke="#1b382b" stroke-width="4" stroke-linejoin="round"/></svg>';
   function cheer(text, nextLabel) {
+    if (!cur) return;
+    cur.done = true; stopIdle(); $("tbAssist").disabled = true;
     var old = stage.querySelector(".tb-cheer"); if (old) old.remove();
-    var c = h("div", "tb-cheer", "<p>" + esc(text) + '</p><div class="tb-row"><button type="button" class="tb-btn go" data-cheer="next">' + esc(nextLabel || "Another one") + '</button><button type="button" class="tb-btn" data-cheer="menu">Back to menu</button></div>');
+    var c = h("div", "tb-cheer", MEDAL + "<p>" + esc(text) + '</p><div class="tb-row"><button type="button" class="tb-btn go" data-cheer="next">' + esc(nextLabel || "Another one") + '</button><button type="button" class="tb-btn" data-cheer="menu">Home</button></div>');
     c.setAttribute("role", "status");
     stage.appendChild(c); chime(true);
     var r = c.getBoundingClientRect(); burst(r.left + r.width / 2, r.top + r.height / 3);
     live(text); c.querySelector("[data-cheer=next]").focus();
   }
-  function area() { return { w: Math.max(260, stage.clientWidth - 32), h: Math.max(260, stage.clientHeight - 32) }; }
+  function area() { return { w: Math.max(260, stage.clientWidth - 32), h: Math.max(260, stage.clientHeight - 28) }; }
+
+  /* ---------- the quiet-moment hint: after 15 seconds with no touch, the right place glows ---------- */
+  function stopIdle() { clearTimeout(idleTimer); idleTimer = 0; }
+  function armIdle() {
+    stopIdle();
+    if (!cur || !cur.hintFn || cur.done || cur.assisting || overlay.hidden) return;
+    var me = cur;
+    idleTimer = setTimeout(function () {
+      if (cur !== me || me.done || me.assisting || overlay.hidden) return;
+      me.hints++;
+      try { me.hintFn(); } catch (e) { /* a hint is only a kindness */ }
+      live("Here is a hint. The glowing place is the next step.");
+      armIdle();
+    }, idleMs);
+  }
+  /* a timer that belongs to the activity on the screen: it never fires after the activity is closed or replaced */
+  function later(fn, ms) {
+    var me = cur, t = setTimeout(function () { if (cur === me) fn(); }, ms);
+    if (me) me.timers.push(t);
+    return t;
+  }
 
   function teardown() {
+    stopIdle();
+    if (cur) { cur.timers.forEach(clearTimeout); cur.timers = []; }
     if (cur && cur.cleanup) { try { cur.cleanup(); } catch (e) { /* leaving anyway */ } }
     hush();
   }
   function run(act, seed) {
     teardown();
     stage.innerHTML = ""; stage.scrollTop = 0;
-    $("tbProg").textContent = ""; $("tbSay").hidden = true; $("tbNew").hidden = !act.again; live("");
-    cur = { act: act, seed: seed, say: null, cleanup: null, debug: null, onKey: null, onResize: null };
+    $("tbProg").textContent = ""; $("tbSay").hidden = true; $("tbAssist").hidden = true; $("tbAssist").disabled = false; $("tbNew").hidden = false; live("");
+    var me = cur = { act: act, seed: seed, say: null, cleanup: null, debug: null, onKey: null, onResize: null, assistFn: null, hintFn: null, done: false, assisting: false, timers: [], hints: 0, used: null };
     var api = {
-      area: area, live: live, chime: chime, pop: pop, tick: tick, cheer: cheer, praise: praise,
+      area: area, live: live, chime: chime, soft: soft, pop: pop, tick: tick, cheer: cheer, praise: praise, speak: speak, unlock: unlock, audio: audioReady,
+      soundOn: function () { return prefs.sound; }, setSound: function (on) { prefs.sound = !!on; savePrefs(); soundLabel(); }, prefs: prefs, savePrefs: savePrefs, later: later, busy: armIdle,
       progress: function (t) { $("tbProg").textContent = t; },
-      say: function (fn) { cur.say = fn; $("tbSay").hidden = !(canSpeak && fn); },
-      debug: function (fn) { cur.debug = fn; },
-      onKey: function (fn) { cur.onKey = fn; },
-      onResize: function (fn) { cur.onResize = fn; },
-      again: function () { run(act, T.newSeed()); }
+      say: function (fn) { me.say = fn; $("tbSay").hidden = !(canSpeak && fn); },
+      debug: function (fn) { me.debug = fn; },
+      onKey: function (fn) { me.onKey = fn; },
+      onResize: function (fn) { me.onResize = fn; },
+      assist: function (fn) { me.assistFn = fn; $("tbAssist").hidden = !fn; },
+      hint: function (fn) { me.hintFn = fn; armIdle(); },
+      used: function (ids) { me.used = ids; },
+      isDone: function () { return me.done; },
+      again: function () { next(); }
     };
-    cur.api = api;
-    var opts = { stage: prefs.stage, topic: prefs.topic, seed: seed };
-    try { cur.cleanup = act.start(stage, opts, api) || null; }
-    catch (e) { stage.innerHTML = '<p class="tb-big">That one could not start. Choose Menu, then try another.</p>'; }
+    me.api = api;
+    var opts = { stage: prefs.stage, topic: prefs.topic, seed: seed, avoid: lastUsed[act.id] || [], prefs: prefs };
+    try { me.cleanup = act.start(stage, opts, api) || null; }
+    catch (e) { stage.innerHTML = '<p class="tb-big">That one could not start. Choose Home, then try another.</p>'; if (window.console && console.error) console.error("tablet activity " + act.id + ": " + (e && e.stack || e)); }
+  }
+  /* Next: a fresh activity at once, and one that does not repeat what was just on the screen */
+  function next() {
+    if (!cur) return;
+    lastUsed[cur.act.id] = cur.used || [];
+    run(cur.act, T.newSeed());
   }
   function openAct(id, from) {
     var act = ACT[id];
@@ -161,6 +209,7 @@
   function wakeLock() {
     try { if (navigator.wakeLock && document.visibilityState === "visible") navigator.wakeLock.request("screen").then(function (l) { wake = l; }).catch(function () { /* the screen may sleep: that is all */ }); } catch (e) { /* not available */ }
   }
+
 
   /* ---------- an on-screen keyboard: letters in order, so nothing has to be learned ---------- */
   function keyboard(onLetter, onBack) {
@@ -263,74 +312,19 @@
       if (e) { e.classList.remove("is-hint"); void e.offsetWidth; e.classList.add("is-hint"); setTimeout(function () { e.classList.remove("is-hint"); }, 3000); }
       $("tbWsMsg").textContent = "Look for " + p.word + ". Its first letter is flashing."; live("Look for " + p.word + ". Its first letter is flashing.");
     });
+    function cellsOf(p) { var out = [], k; for (k = 0; k < p.word.length; k++) out.push([p.r + p.dy * k, p.c + p.dx * k]); return out; }
+    api.hint(function () {
+      var left = ws.placed.filter(function (p) { return !found[p.word]; }); if (!left.length) return;
+      var p = left[Math.floor(Math.random() * left.length)];
+      cellsOf(p).forEach(function (rc) { var e = cellAt(rc); if (e) Kit.glow(e, 3600); });
+      $("tbWsMsg").textContent = "Look for " + p.word + ". Its letters are glowing.";
+    });
+    api.assist(function () {
+      ws.placed.filter(function (p) { return !found[p.word]; }).forEach(function (p, k) { api.later(function () { if (!found[p.word]) tryWord(cellsOf(p)); }, 500 * k); });
+    });
     api.progress("0 of " + ws.words.length + " found");
     api.say(function () { var left = ws.words.filter(function (w) { return !found[w]; }); return left.length ? "Find these words. " + left.map(function (w) { return w.toLowerCase(); }).join(". ") + "." : "You found every word. Lovely!"; });
     api.debug(function () { return { size: n, placed: ws.placed, words: ws.words, found: Object.keys(found), cell: function (r2, c2) { var b = cellAt([r2, c2]).getBoundingClientRect(); return [b.left + b.width / 2, b.top + b.height / 2]; } }; });
-  }
-
-  /* ===================== TRACE THE PATH ===================== */
-  function trace(root, o, api) {
-    var cfg = T.STAGES[o.stage].trace, rounds = cfg.rounds, round = 0, path, i = 0, dragging = false;
-    var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    svg.setAttribute("class", "tb-trace"); svg.setAttribute("viewBox", "0 0 1000 600"); svg.setAttribute("preserveAspectRatio", "xMidYMid meet"); svg.setAttribute("role", "img");
-    var msg = h("p", "tb-msg", ""); root.appendChild(svg); root.appendChild(msg);
-    var lane, guide, trail, dot, startT, endC, endT;
-    var ns = function (tag, attrs) { var e = document.createElementNS("http://www.w3.org/2000/svg", tag); Object.keys(attrs || {}).forEach(function (k) { e.setAttribute(k, attrs[k]); }); return e; };
-    var scale = function () { return Math.max(0.2, Math.min(svg.clientWidth / 1000, svg.clientHeight / 600)); };
-    var tolU = function () { return path.tol / scale(); };
-    function dPart(upto) { var s = ""; for (var k = 0; k <= upto; k++) s += (k ? " L" : "M") + path.pts[k][0].toFixed(1) + " " + path.pts[k][1].toFixed(1); return s; }
-    function layout() {
-      var s = scale(), t = tolU();
-      lane.setAttribute("stroke-width", 2 * t); trail.setAttribute("stroke-width", Math.max(14, path.tol * 0.55) / s);
-      dot.setAttribute("r", Math.max(26, path.tol * 0.8) / s); guide.setAttribute("stroke-width", 4 / s);
-      endC.setAttribute("r", Math.max(26, path.tol * 0.8) / s); [startT, endT].forEach(function (x) { x.style.fontSize = 22 / s + "px"; });
-    }
-    function setDot(k, live2) {
-      var p = path.pts[k]; dot.classList.toggle("is-live", !!live2); dot.style.transform = "translate(" + p[0] + "px," + p[1] + "px)"; dot.setAttribute("data-i", k);
-    }
-    function build() {
-      svg.innerHTML = ""; i = 0; dragging = false;
-      path = T.tracePath({ stage: o.stage, seed: o.seed + "/" + round });
-      svg.setAttribute("aria-label", "Trace " + path.label + " with your finger, from the green dot to the gold finish circle.");
-      lane = ns("path", { "class": "lane", d: path.d }); guide = ns("path", { "class": "guide", d: path.d }); trail = ns("path", { "class": "trail", d: "" });
-      endC = ns("circle", { "class": "goal", cx: path.end[0], cy: path.end[1] });
-      startT = ns("text", { x: path.start[0], y: path.start[1] > 450 ? path.start[1] - 56 : path.start[1] + 64 }); startT.textContent = "Start";
-      endT = ns("text", { x: path.end[0], y: path.end[1] + 64 }); endT.textContent = "Finish";
-      dot = ns("circle", { "class": "dot", cx: 0, cy: 0 });
-      [lane, guide, trail, endC, startT, endT, dot].forEach(function (x) { svg.appendChild(x); });
-      layout(); setDot(0, false);
-      msg.textContent = "Touch the green dot, then slide along the dotted line without lifting your finger.";
-      api.progress("Path " + (round + 1) + " of " + rounds);
-    }
-    function toUnits(e) { var b = svg.getBoundingClientRect(), s = scale(); return [(e.clientX - (b.left + (b.width - 1000 * s) / 2)) / s, (e.clientY - (b.top + (b.height - 600 * s) / 2)) / s]; }
-    function slip(why) {
-      dragging = false; i = 0; trail.setAttribute("d", ""); setDot(0, false);
-      msg.textContent = why; live(why);
-    }
-    svg.addEventListener("pointerdown", function (e) {
-      unlock(); e.preventDefault();
-      var p = toUnits(e), d = path.pts[i];
-      if (Math.hypot(p[0] - d[0], p[1] - d[1]) > tolU() * 1.6) { msg.textContent = "Touch the green dot to begin."; return; }
-      try { svg.setPointerCapture(e.pointerId); } catch (x) { /* mouse or old browser */ }
-      dragging = true; msg.textContent = "Keep sliding along the line.";
-    });
-    svg.addEventListener("pointermove", function (e) {
-      if (!dragging) return;
-      var r = T.follow(path, { i: i }, toUnits(e), tolU());
-      if (r.status === "slipped") { slip("That one slipped off the line. The dot is back at the start."); return; }
-      i = r.i; setDot(i, true); trail.setAttribute("d", i > 0 ? dPart(i) : "");
-      if (r.status === "done") {
-        dragging = false; i = path.pts.length - 1; setDot(i, true); trail.setAttribute("d", dPart(i)); round++;
-        if (round >= rounds) cheer("All traced. Lovely steady hand!", "Trace more"); else { chime(false); msg.textContent = praise() + " Next path."; setTimeout(function () { if (cur && cur.act.id === "trace" && !dragging) build(); }, 900); }
-      }
-    });
-    var lift = function () { if (dragging) slip("The finger lifted, so the dot went back. Touch the dot and try again."); };
-    svg.addEventListener("pointerup", lift); svg.addEventListener("pointercancel", lift);
-    build(); api.onResize(layout);
-    api.say(function () { return "Touch the green dot, then slide your finger along the dotted line to the gold circle."; });
-    api.debug(function () {
-      return { path: path, tol: tolU(), round: round, dotIndex: +dot.getAttribute("data-i"), toClient: function (x, y) { var b = svg.getBoundingClientRect(), s = scale(); return [b.left + (b.width - 1000 * s) / 2 + x * s, b.top + (b.height - 600 * s) / 2 + y * s]; } };
-    });
   }
 
   /* ===================== CROSSWORD ===================== */
@@ -417,6 +411,17 @@
         if (p) { sel.r = p[0]; sel.c = p[1]; typed[key(p[0], p[1])] = en.word.charAt(cs.indexOf(p)); check(); }
       }
     });
+    var keyEl = function (L) { return kb.querySelector('[data-k="' + L + '"]'); };
+    api.hint(function () {
+      var e = cur2() || cw.entries[0], cs = entryCells(e), p = cs.filter(function (q) { return typed[key(q[0], q[1])] !== e.word.charAt(cs.indexOf(q)); })[0];
+      if (!p) { var open = cw.entries.filter(function (x) { return !done[x.num + x.dir]; })[0]; if (open) select(open.r, open.c, open.dir); return; }
+      select(p[0], p[1], e.dir); Kit.glow(cellsEl[key(p[0], p[1])], 3600); Kit.glow(keyEl(e.word.charAt(cs.indexOf(p))), 3600);
+    });
+    api.assist(function () {
+      cw.entries.filter(function (e) { return !done[e.num + e.dir]; }).forEach(function (e, n) {
+        api.later(function () { entryCells(e).forEach(function (p, k) { typed[key(p[0], p[1])] = e.word.charAt(k); }); check(); }, 450 * n);
+      });
+    });
     api.onKey(wordKeys(type, back)); size(); api.onResize(size);
     select(cw.entries[0].r, cw.entries[0].c, cw.entries[0].dir);
     api.say(function () { var e = cur2(); return e ? e.num + " " + (e.dir === "A" ? "across" : "down") + ". " + e.clue + ". " + e.word.length + " letters." : ""; });
@@ -462,6 +467,14 @@
       if (e.target.closest("#tbSpNext")) { ix++; show(); return; }
       if (e.target.closest("#tbSpHint") && !finished) { var at = got.indexOf(""); if (at >= 0) type(word().charAt(at)); else { got = got.map(function (L, k) { return k < locked ? L : ""; }); draw(); } }
     });
+    api.hint(function () {
+      if (finished) return; var at = got.indexOf(""); if (at < 0) return;
+      Kit.glow(kb.querySelector('[data-k="' + word().charAt(at) + '"]'), 3600); var sl = slots.querySelector('[data-s="' + at + '"]'); if (sl) Kit.glow(sl, 3600);
+    });
+    api.assist(function () {
+      got = word().split(""); finished = true; draw(); msg.textContent = praise() + " " + word().charAt(0) + word().slice(1).toLowerCase() + "."; chime(false);
+      api.later(function () { cheer("All the words are spelled!", "New words"); }, 1100);
+    });
     api.onKey(wordKeys(type, back)); show();
     api.debug(function () { return { word: word(), got: got, index: ix, count: items.length }; });
   }
@@ -490,6 +503,9 @@
     });
     nav.addEventListener("click", function () { ix++; show(); });
     show();
+    var rightBtn = function () { return Array.prototype.filter.call(opts.children, function (x) { return x.textContent === S[ix].answer; })[0]; };
+    api.hint(function () { if (!answered) Kit.glow(rightBtn(), 3600); });
+    api.assist(function () { ix = S.length - 1; show(); var b = rightBtn(); if (b) b.click(); });
     api.debug(function () { return { item: S[ix], index: ix, count: S.length }; });
   }
 
@@ -515,6 +531,9 @@
     });
     nav.addEventListener("click", function () { ix++; show(); });
     show();
+    var rightG = function () { return opts.querySelector('[data-g="' + d.items[ix].group + '"]'); };
+    api.hint(function () { if (!answered) Kit.glow(rightG(), 3600); });
+    api.assist(function () { ix = d.items.length - 1; show(); var b = rightG(); if (b) b.click(); });
     api.debug(function () { return { item: d.items[ix], groups: d.groups, index: ix }; });
   }
 
@@ -545,6 +564,11 @@
     });
     nav.addEventListener("click", function () { ix++; show(); });
     show();
+    api.hint(function () { var b = pool.querySelector('[data-step="' + placed + '"]'); if (b && !b.disabled) Kit.glow(b, 3600); });
+    api.assist(function () {
+      ix = all.length - 1; show();
+      all[ix].steps.forEach(function (st, k) { api.later(function () { var b = pool.querySelector('[data-step="' + k + '"]'); if (b) b.click(); }, 420 * k); });
+    });
     api.debug(function () { return { item: all[ix], index: ix, placed: placed }; });
   }
 
@@ -575,6 +599,11 @@
       }
     });
     api.say(function () { return "Match each word with its clue. " + m.pairs.map(function (p) { return p.word.toLowerCase() + ": " + p.clue; }).join(". "); });
+    function clueOf(w) { return R.filter(function (b) { return b.getAttribute("data-clue") === truth[w.getAttribute("data-word")]; })[0]; }
+    api.hint(function () { var w = L.filter(function (b) { return !b.disabled; })[0]; if (!w) return; Kit.glow(w, 3600); Kit.glow(clueOf(w), 3600); });
+    api.assist(function () {
+      L.filter(function (b) { return !b.disabled; }).forEach(function (w, j) { api.later(function () { var c = clueOf(w); if (w.disabled || !c) return; w.click(); c.click(); }, 520 * j); });
+    });
     api.debug(function () { return { truth: truth, matched: matched, n: n }; });
   }
 
@@ -600,27 +629,10 @@
     });
     nav.addEventListener("click", function () { ix++; show(); });
     show();
+    var oddBtn = function () { return opts.querySelector('[data-odd="1"]'); };
+    api.hint(function () { if (!answered) Kit.glow(oddBtn(), 3600); });
+    api.assist(function () { ix = rounds.length - 1; show(); var b = oddBtn(); if (b) b.click(); });
     api.debug(function () { return { round: rounds[ix], index: ix }; });
-  }
-
-  /* ===================== SIGHTS AND SOUNDS ===================== */
-  function talk(root, o, api) {
-    var cards = T.talkCards(o).cards, ix = 0;
-    var title = h("p", "tb-card", ""), lines = h("div", "tb-talk"), q = h("p", "tb-msg", "What does this bring to mind? Tell someone about it."), nav = h("div", "tb-row");
-    nav.innerHTML = '<button type="button" class="tb-btn" id="tbTaPrev">◀ Back</button><button type="button" class="tb-btn go" id="tbTaNext">Next ▶</button>';
-    [title, lines, q, nav].forEach(function (x) { root.appendChild(x); });
-    function show() {
-      var c = cards[ix]; title.textContent = c.name.charAt(0).toUpperCase() + c.name.slice(1);
-      lines.innerHTML = c.lines.map(function (l) { return "<div><small>" + esc(l.label) + "</small>" + esc(l.text.charAt(0).toUpperCase() + l.text.slice(1)) + "</div>"; }).join("");
-      $("tbTaPrev").disabled = ix === 0; $("tbTaNext").textContent = ix === cards.length - 1 ? "Start again ↺" : "Next ▶"; api.progress("Card " + (ix + 1) + " of " + cards.length);
-      api.say(function () { return c.name + ". " + c.lines.map(function (l) { return l.label + ": " + l.text; }).join(". ") + ". What does this bring to mind?"; });
-    }
-    nav.addEventListener("click", function (e) {
-      var b = e.target.closest("button"); if (!b) return;
-      ix = b.id === "tbTaPrev" ? Math.max(0, ix - 1) : (ix + 1) % cards.length; show();
-    });
-    show();
-    api.debug(function () { return { card: cards[ix], index: ix, count: cards.length }; });
   }
 
   /* ===================== COLOR A PICTURE ===================== */
@@ -649,8 +661,11 @@
       /* a tap colors one path, so only offer pictures drawn as at least three (a remade picture drawn as one path would color all at once) */
       var shapesOf = function (id) { return (C.toSVG(C.render(id, tier), { standalone: true, widthIn: 2, label: "" }).match(/<path/g) || []).length; };
       var offered = C.designs().filter(function (d) { try { return shapesOf(d.id) >= 3; } catch (e) { return false; } });
-      var ids = T.designChoices(o, offered.length >= 6 ? offered : C.designs());
+      var ids = T.designChoices(o, offered.length >= 6 ? offered : C.designs()), fillAll = null;
       function choose() {
+        fillAll = null;
+        api.hint(function () { Kit.glow(root.querySelector(".tb-pic"), 3600); });
+        api.assist(function () { var b = root.querySelector(".tb-pic"); if (b) b.click(); api.later(function () { if (fillAll) fillAll(); else cheer("Your picture is finished!", "Another picture"); }, 300); });
         root.innerHTML = '<p class="tb-h">Choose a picture to color</p>'; api.progress("");
         var grid = h("div", "tb-pics");
         ids.forEach(function (id) {
@@ -682,6 +697,14 @@
           if (what === "clear") { while (hist.length) { var h3 = hist.pop(); h3[0].style.fill = h3[1]; } }
           if (what === "pick") choose();
         });
+        var shapes = Array.prototype.slice.call(sv.querySelectorAll("path"));
+        fillAll = function () {
+          var pal = COLORS.map(function (c) { return c[1]; }), open = shapes.filter(function (p) { return !p.style.fill; }), gap = Math.min(140, 4200 / Math.max(1, open.length));
+          open.forEach(function (p, k) { api.later(function () { hist.push([p, ""]); p.style.fill = pal[k % pal.length]; tick(); }, gap * k); });
+          api.later(function () { cheer("Your picture is finished!", "Another picture"); }, gap * open.length + 900);
+        };
+        api.hint(function () { var p = shapes.filter(function (x) { return !x.style.fill; })[0]; Kit.glow(p || side.querySelector(".tb-pal"), 3600); });
+        api.assist(fillAll);
         api.say(function () { return "Pick a color, then tap a shape to color it."; });
         api.debug(function () { return { stage: "paint", id: id, shapes: sv.querySelectorAll("path").length, filled: hist.length }; });
       }
@@ -707,6 +730,15 @@
     tools.addEventListener("click", function (e) {
       var b = e.target.closest("[data-pw]"); if (!b) return; var k = b.getAttribute("data-pw");
       if (k === "undo") { strokes.pop(); redraw(); } else if (k === "clear") { strokes.length = 0; redraw(); } else width = +k;
+    });
+    api.hint(function () { Kit.glow(cv, 3600); });
+    api.assist(function () {
+      var cols = COLORS.map(function (c) { return c[1]; });
+      [0.3, 0.5, 0.7].forEach(function (fy, k) {
+        var st = { c: cols[(k * 3 + 1) % cols.length], w: 22, p: [] }; strokes.push(st);
+        for (var j = 0; j <= 30; j++) (function (j2) { api.later(function () { var p = [0.1 + 0.8 * j2 / 30, fy + 0.08 * Math.sin(j2 / 30 * 6.28 * (k + 1))], prev = st.p[st.p.length - 1]; st.p.push(p); seg(st, prev || p, p); }, k * 700 + j2 * 20); })(j);
+      });
+      api.later(function () { cheer("What a lovely painting!", "Paint again"); }, 2900);
     });
     fit(); api.onResize(fit); api.progress("");
     api.say(function () { return "Choose a color and paint with your finger."; });
@@ -741,6 +773,11 @@
     }
     for (var k = 0; k < (still ? maxN - 2 : 4); k++) { spawn(); if (!still) list[k].y = 40 + Math.random() * (sky.clientHeight - 140); }
     if (!still) raf = requestAnimationFrame(frame);
+    api.hint(function () { var b = list[Math.floor(Math.random() * list.length)]; if (b) Kit.glow(b.el, 3600); });
+    api.assist(function () {
+      list.slice().forEach(function (b, k) { api.later(function () { popIt(b); }, 160 * k); });
+      api.later(function () { cheer("Every bubble has floated away.", "More bubbles"); }, 160 * list.length + 900);
+    });
     api.progress(""); api.say(function () { return "Tap the bubbles to pop them."; });
     api.debug(function () { return { count: function () { return list.length; }, popped: function () { return popped; }, centers: function () { return list.map(function (b) { var r = b.el.getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; }); } }; });
     return function () { cancelAnimationFrame(raf); };
@@ -749,48 +786,49 @@
   /* ---------- the menu ---------- */
   var ICON = {
     wordsearch: '<rect x="8" y="8" width="48" height="48" rx="6"/><path d="M20 8v48M32 8v48M44 8v48M8 20h48M8 32h48M8 44h48"/><path d="M14 50 50 14" stroke-width="7"/>',
-    trace: '<path d="M8 46C16 10 28 10 32 32S48 58 56 20"/><circle cx="8" cy="46" r="5"/><circle cx="56" cy="20" r="5"/>',
     crossword: '<rect x="8" y="8" width="48" height="48"/><path d="M8 24h48M8 40h48M24 8v48M40 8v48"/><rect x="24" y="24" width="16" height="16"/>',
     spell: '<path d="M8 52h14M25 52h14M42 52h14"/><path d="M14 38 22 12l8 26M17 28h10"/><path d="M40 12h14M47 12v26"/>',
     saying: '<path d="M8 10h48v32H28L16 54V42H8z"/><path d="M18 22h28M18 31h18"/>',
-    sort: '<rect x="6" y="36" width="22" height="20"/><rect x="36" y="36" width="22" height="20"/><path d="M32 6v18M24 16l8 8 8-8"/>',
-    order: '<path d="M22 14h34M22 32h34M22 50h34"/><circle cx="10" cy="14" r="3"/><circle cx="10" cy="32" r="3"/><circle cx="10" cy="50" r="3"/>',
-    match: '<circle cx="14" cy="32" r="9"/><circle cx="50" cy="32" r="9"/><path d="M23 32h18"/>',
-    odd: '<circle cx="12" cy="20" r="8"/><circle cx="32" cy="20" r="8"/><circle cx="52" cy="20" r="8"/><rect x="24" y="38" width="16" height="16"/>',
     color: '<path d="M32 8C16 8 6 20 6 32s10 24 22 24c6 0 6-6 2-10s0-8 6-8h12c6 0 10-4 10-10C58 16 46 8 32 8z"/><circle cx="20" cy="28" r="3"/><circle cx="32" cy="20" r="3"/><circle cx="44" cy="26" r="3"/>',
     paint: '<path d="M10 54c8 0 12-4 12-10l26-28 6 6-28 26c-2 8-8 12-16 6z"/>',
     bubbles: '<circle cx="22" cy="40" r="14"/><circle cx="46" cy="22" r="9"/><circle cx="46" cy="48" r="6"/>',
-    talk: '<path d="M4 32C14 16 50 16 60 32 50 48 14 48 4 32z"/><circle cx="32" cy="32" r="8"/>'
+    sort: '<rect x="6" y="36" width="22" height="20"/><rect x="36" y="36" width="22" height="20"/><path d="M32 6v18M24 16l8 8 8-8"/>',
+    order: '<path d="M22 14h34M22 32h34M22 50h34"/><circle cx="10" cy="14" r="3"/><circle cx="10" cy="32" r="3"/><circle cx="10" cy="50" r="3"/>',
+    match: '<circle cx="14" cy="32" r="9"/><circle cx="50" cy="32" r="9"/><path d="M23 32h18"/>',
+    odd: '<circle cx="12" cy="20" r="8"/><circle cx="32" cy="20" r="8"/><circle cx="52" cy="20" r="8"/><rect x="24" y="38" width="16" height="16"/>'
   };
-  var ACT = {}, GROUPS = [
-    ["Words and letters", "Search, fill in and finish.", [
-      ["wordsearch", "Word Search", "Slide a finger along a hidden word.", wordSearch, 1],
-      ["crossword", "Crossword", "Tap a square, then tap letters on the keyboard.", crossword, 1],
-      ["spell", "Spell It", "A clue, and letters to tap in order.", spell, 1],
-      ["saying", "Finish the Saying", "Choose the word that completes it.", saying, 1]]],
-    ["Follow and create", "Hands-on, with a finger.", [
-      ["trace", "Trace the Path", "Slide the dot along the line. Slip off and it starts again.", trace, 0],
-      ["color", "Color a Picture", "Pick a color, tap a shape.", color, 1],
-      ["paint", "Finger Paint", "Paint freely with colors.", paint, 0],
-      ["bubbles", "Bubbles", "Tap the drifting bubbles. Calm and gentle.", bubbles, 0]]],
-    ["Think and match", "Sort, order, match and notice.", [
-      ["sort", "Sort It", "Which group does it go with?", sort, 1],
-      ["order", "Put It in Order", "Tap the steps in the order they happen.", order, 1],
-      ["match", "Match the Clue", "Join each word with its clue.", match, 1],
-      ["odd", "Odd One Out", "Three go together. Which one does not?", odd, 1],
-      ["talk", "Sights and Sounds", "Cards to look at and talk about.", talk, 1]]]
-  ];
-  var menu = $("tbMenu");
-  GROUPS.forEach(function (g) {
+  [
+    ["wordsearch", 0, 1, "Word Search", "Slide a finger along a hidden word.", wordSearch],
+    ["crossword", 0, 2, "Crossword", "Tap a square, then tap letters on the keyboard.", crossword],
+    ["spell", 0, 3, "Spell It", "A clue, and letters to tap in order.", spell],
+    ["saying", 0, 4, "Finish the Saying", "Choose the word that completes it.", saying],
+    ["color", 1, 2, "Color a Picture", "Pick a color, tap a shape.", color],
+    ["paint", 1, 3, "Finger Paint", "Paint freely with colors.", paint],
+    ["bubbles", 1, 4, "Bubbles", "Tap the drifting bubbles. Calm and gentle.", bubbles],
+    ["sort", 2, 1, "Sort It", "Which group does it go with?", sort],
+    ["order", 2, 2, "Put It in Order", "Tap the steps in the order they happen.", order],
+    ["match", 2, 3, "Match the Clue", "Join each word with its clue.", match],
+    ["odd", 2, 4, "Odd One Out", "Three go together. Which one does not?", odd]
+  ].forEach(function (a) { Kit.register({ id: a[0], group: a[1], order: a[2], title: a[3], blurb: a[4], icon: ICON[a[0]], start: a[5] }); });
+
+  var GROUPS = [["Words and letters", "Search, fill in and finish."], ["Follow and create", "Hands-on, with a finger."], ["Think and match", "Sort, order, match and listen."]];
+  var menu = $("tbMenu"), defs = Kit.registered();
+  GROUPS.forEach(function (g, gi) {
     var sec = h("div", "", "<h2>" + esc(g[0]) + "<small>" + esc(g[1]) + "</small></h2>"), ul = h("ul", "tbp-grid");
-    g[2].forEach(function (a) {
-      ACT[a[0]] = { id: a[0], title: a[1], start: a[3], again: !!a[4] };
-      var li = h("li", "", '<button type="button" class="tbp-card" data-act="' + a[0] + '"><svg viewBox="0 0 64 64" aria-hidden="true" focusable="false">' + ICON[a[0]] + "</svg><b>" + esc(a[1]) + "</b><span>" + esc(a[2]) + "</span></button>");
-      ul.appendChild(li);
+    defs.filter(function (d) { return d.group === gi; }).forEach(function (a) {
+      ACT[a.id] = { id: a.id, title: a.title, start: a.start };
+      ul.appendChild(h("li", "", '<button type="button" class="tbp-card" data-act="' + a.id + '"><svg viewBox="0 0 64 64" aria-hidden="true" focusable="false">' + a.icon + "</svg><b>" + esc(a.title) + "</b><span>" + esc(a.blurb) + "</span></button>"));
     });
     sec.appendChild(ul); menu.appendChild(sec);
   });
   menu.addEventListener("click", function (e) { var b = e.target.closest("[data-act]"); if (b) openAct(b.getAttribute("data-act"), b); });
+  /* Surprise me: the tablet chooses, and never the same one twice in a row */
+  var lastSurprise = "";
+  $("tbSurprise").addEventListener("click", function () {
+    var ids = Object.keys(ACT).filter(function (k) { return k !== lastSurprise; });
+    lastSurprise = ids[Math.floor(Math.random() * ids.length)];
+    openAct(lastSurprise, $("tbSurprise"));
+  });
 
   /* the choices at the top */
   var topic = $("tbTopic");
@@ -806,24 +844,39 @@
 
   /* the bar inside an activity */
   $("tbBack").addEventListener("click", closeAct);
-  $("tbNew").addEventListener("click", function () { if (cur) cur.api.again(); });
+  $("tbNew").addEventListener("click", function () { if (cur) next(); });
   $("tbSay").addEventListener("click", function () { if (cur && cur.say) speak(cur.say()); });
+  $("tbAssist").addEventListener("click", function () {
+    var me = cur; if (!me || me.done || me.assisting || !me.assistFn) return;
+    me.assisting = true; stopIdle(); unlock(); live("Finishing this one for you.");
+    try { me.assistFn(); } catch (e) { cheer("All done. Lovely!", "Another one"); return; }
+    later(function () { if (!me.done) cheer("All done. Lovely!", "Another one"); }, 12000);   // however an activity ends its help, the help always ends
+  });
   stage.addEventListener("click", function (e) {
     var b = e.target.closest("[data-cheer]"); if (!b) return;
-    if (b.getAttribute("data-cheer") === "menu") closeAct(); else if (cur) cur.api.again();
+    if (b.getAttribute("data-cheer") === "menu") closeAct(); else if (cur) next();
   });
+  /* any touch or key press means someone is here: the quiet-moment hint starts counting again */
+  overlay.addEventListener("pointerdown", armIdle, true);
+  overlay.addEventListener("touchstart", armIdle, { capture: true, passive: true });
+  overlay.addEventListener("keydown", armIdle, true);
   document.addEventListener("keydown", function (e) {
     if (overlay.hidden) { if (e.key === "Escape" && !$("tbGate").hidden) $("tbGate").hidden = true; return; }
     if (e.key === "Escape") { closeAct(); return; }
     if (cur && cur.onKey && !/^(INPUT|SELECT|TEXTAREA)$/.test((document.activeElement || {}).tagName || "")) cur.onKey(e);
   });
   window.addEventListener("resize", function () { if (cur && cur.onResize) cur.onResize(); });
-  document.addEventListener("visibilitychange", function () { if (document.visibilityState === "visible" && !overlay.hidden) wakeLock(); });
+  document.addEventListener("visibilitychange", function () {
+    if (document.visibilityState === "visible" && !overlay.hidden) { wakeLock(); armIdle(); } else stopIdle();
+  });
   window.addEventListener("pagehide", hush);
 
   window.CognicopiaTabletUI = {
     activities: Object.keys(ACT), open: function (id) { openAct(id); }, close: closeAct,
     current: function () { return cur ? cur.act.id : null; }, debug: function () { return cur && cur.debug ? cur.debug() : null; },
-    prefs: function () { return JSON.parse(JSON.stringify(prefs)); }
+    prefs: function () { return JSON.parse(JSON.stringify(prefs)); },
+    /* for the checks: how long a quiet moment is, and what the shell has done for this activity */
+    idleMs: function (ms) { if (ms > 0) { idleMs = ms; armIdle(); } return idleMs; },
+    stats: function () { return cur ? { hints: cur.hints, assisting: cur.assisting, done: cur.done, assist: !!cur.assistFn, hint: !!cur.hintFn } : null; }
   };
 })();

@@ -10,18 +10,25 @@
      - word search: dragging a finger along every word finds it (forwards and backwards), a drag
        that is not a word fades with no sound or red, tapping a first and a last letter finds a
        word, and finishing gives the cheer; the late stage reads across only
-     - trace the path: the dot follows a finger along the line; wandering off the line, turning
-       back or lifting the finger sends it to the start; tracing all the paths finishes
+     - trace the path (a bee, a train, a dog): the marker follows a finger along a wide glowing lane
+       and always stays on it; wandering off, lifting the finger or turning back never sends it
+       back; it works with real touch events; tracing every journey finishes
      - crossword and spelling: tapping letters on the on-screen keyboard fills the squares, a wrong
        letter is just not finished (never red), Back takes a letter back, A letter helps, a word is
        marked done and the crossword finishes; the physical keyboard works too
      - finish the saying, sort, put in order, match, odd one out: a wrong choice gets a gentle
        sentence and the right one is shown, a right choice gets a soft word, every one finishes
-     - sights and sounds cards move forward and back; color a picture colors a tapped shape in the
-       chosen color, with undo and start over; finger paint draws, undoes and clears; bubbles pop
-     - the Menu button and Escape return to the menu with focus back on the card
-     - every control is at least 52 px on a landscape tablet, a portrait tablet and a phone, nothing
-       runs sideways off the screen, and on both tablets nothing needs scrolling
+     - sights and sounds: touching a picture plays its sound and the wave moves; "which one is it?" plays
+       a sound and a wrong picture plays its own, losing nothing; the sounds are loud enough to hear and
+       never clip; color a picture colors a tapped shape in the chosen color, with undo and start over;
+       finger paint draws, undoes and clears; bubbles pop
+     - every activity has the same frame: Home, Read to Me, Finish for me (which completes it with a
+       celebration), Next (a different activity at once) and, after fifteen quiet seconds, a glowing hint
+     - nothing on any screen is red, and a wrong choice never ends the activity
+     - the Home button and Escape return to the menu with focus back on the card
+     - every control is at least 72 px on a landscape tablet and a portrait tablet (56 px on a phone, never
+       under 52), nothing runs sideways off the screen, and on both tablets nothing needs scrolling
+     - all text reaches 7:1 against its background, by day and in Night Shift
      - the free-packet count: one session is one packet, counted once, and the gate stops a session
        when they are gone
      - nothing is requested from outside the page, no script error appears, and the only things kept
@@ -38,7 +45,9 @@ const browser = await chromium.launch();
 const problems = [], foreign = [], errors = []; let passed = 0;
 const ok = (cond, msg) => { if (cond) passed++; else problems.push(msg); };
 const sleep = ms => new Promise(r => setTimeout(r, ms));
-const ALL = ["wordsearch", "crossword", "spell", "saying", "trace", "color", "paint", "bubbles", "sort", "order", "match", "odd", "talk"];
+const ALL = ["wordsearch", "crossword", "spell", "saying", "trace", "color", "paint", "bubbles", "sort", "order", "match", "odd", "sounds"];
+/* the activities already rebuilt to the 72 px floor; the others still meet the older 52 px one (this list grows until it holds all thirteen) */
+const BIG = new Set(["trace", "sounds"]);
 const LAND = { width: 1024, height: 768 }, PORT = { width: 768, height: 1024 }, PHONE = { width: 390, height: 844 };
 
 async function fresh(viewport, o = {}) {
@@ -64,6 +73,13 @@ const cheered = async p => { try { await p.waitForSelector(".tb-cheer", { timeou
 const text = (p, sel) => p.evaluate(s => (document.querySelector(s) || {}).textContent || "", sel);
 const cellXY = (p, r, c) => centerOf(p, `#tbStage .tb-cell[data-r="${r}"][data-c="${c}"]`);
 async function drag(p, a, b, steps = 8) { await p.mouse.move(a[0], a[1]); await p.mouse.down(); await p.mouse.move(b[0], b[1], { steps }); await p.mouse.up(); }
+/* a real finger: touch events sent through the browser's own channel, the way a tablet's screen sends them */
+async function touchPath(ctx, p, pts) {
+  const cdp = await ctx.newCDPSession(p), send = (type, pt) => cdp.send("Input.dispatchTouchEvent", { type, touchPoints: pt ? [{ x: pt[0], y: pt[1], id: 1 }] : [] });
+  await send("touchStart", pts[0]);
+  for (let k = 1; k < pts.length; k++) await send("touchMove", pts[k]);
+  await send("touchEnd"); await cdp.detach();
+}
 async function toMenu(p) { await p.click("#tbBack"); await p.waitForSelector("#tb", { state: "hidden" }); }
 const small = (p, min = 52) => p.evaluate(m => {
   const out = [];
@@ -176,53 +192,60 @@ try {
   {
     const { ctx, p } = await fresh(LAND);
     await openAct(p, "trace");
-    const pathPts = async () => p.evaluate(() => { const d = window.CognicopiaTabletUI.debug(); return { pts: d.path.pts.map(q => d.toClient(q[0], q[1])), tol: d.tol, round: d.round, idx: d.dotIndex, kind: d.path.kind, n: d.path.pts.length }; });
-    let a = await pathPts();
-    ok(a.n > 40 && a.round === 0 && a.idx === 0, `the first path (${a.kind}) is on the screen with the dot at the start`);
-    ok(/Path 1 of 4/.test(await text(p, "#tbProg")), "the count says Path 1 of 4");
-    /* touching away from the dot does not start anything */
+    const info = () => p.evaluate(() => { const d = window.CognicopiaTabletUI.debug(); return { pts: d.path.pts.map(q => d.toClient(q[0], q[1])), tol: d.tol, round: d.round, idx: d.index, shown: d.shown, away: d.away, over: d.over, scene: d.scene, n: d.path.pts.length, from: d.from, to: d.to, kind: d.path.kind }; });
+    const msgText = () => text(p, ".tb-trace + .tb-msg");
+    let a = await info();
+    ok(a.n > 40 && a.round === 0 && a.idx === 0 && ["bee", "train", "dog"].includes(a.scene), `the first journey (${a.scene}, ${a.kind}) is on the screen with the marker at the start`);
+    ok(/Journey 1 of 3/.test(await text(p, "#tbProg")), "the count says Journey 1 of 3");
+    ok(await p.evaluate(() => document.querySelectorAll("#tbStage canvas.tb-trace").length) === 1 && await p.evaluate(() => { const c = document.querySelector(".tb-trace"), g = c.getContext("2d"), d = g.getImageData(0, 0, c.width, c.height).data; let colored = 0; for (let i = 0; i < d.length; i += 4 * 97) if (d[i] !== d[0] || d[i + 1] !== d[1]) colored++; return colored > 200; }), "it is drawn on a canvas, with a lane, a goal and a marker");
+    { const m0 = await msgText(); ok(/Help the bee|Guide the train|Help the dog/.test(m0), "the screen says what the journey is: " + m0); }
+    /* touching away from the marker leaves it waiting, kindly */
     const far = a.pts.reduce((best, q) => Math.hypot(q[0] - a.pts[0][0], q[1] - a.pts[0][1]) > Math.hypot(best[0] - a.pts[0][0], best[1] - a.pts[0][1]) ? q : best, a.pts[0]);
     await p.mouse.move(far[0], far[1]); await p.mouse.down(); await p.mouse.move(far[0] + 10, far[1] + 10, { steps: 3 }); await p.mouse.up();
-    ok((await pathPts()).idx === 0 && /Touch the green dot/.test(await text(p, ".tb-trace + .tb-msg")), "touching away from the dot does nothing, and says where to start");
-    /* follow it part of the way, then lift: the dot goes back */
+    ok((await info()).idx === 0 && /waiting right here/.test(await msgText()), "touching away from the marker does nothing, and says it is waiting: " + await msgText());
+    /* follow part of the way, then lift: it stays where it is */
     const half = Math.floor(a.n / 2);
     await p.mouse.move(a.pts[0][0], a.pts[0][1]); await p.mouse.down();
     for (let k = 0; k <= half; k += 3) await p.mouse.move(a.pts[k][0], a.pts[k][1]);
-    const mid = (await pathPts()).idx;
-    ok(mid > half - 8 && mid <= half, `the dot follows the finger along the line (${mid} of ${a.n})`);
-    ok(await p.evaluate(() => document.querySelector(".tb-trace .trail").getAttribute("d").length > 20), "a green trail shows how far it has come");
-    await p.mouse.up(); await sleep(100);
-    ok((await pathPts()).idx === 0 && /lifted/i.test(await text(p, ".tb-trace + .tb-msg")), "lifting the finger sends the dot back to the start");
-    ok(await p.evaluate(() => document.querySelector(".tb-trace .trail").getAttribute("d") === ""), "and clears the trail");
-    /* slip off the line */
-    await p.mouse.move(a.pts[0][0], a.pts[0][1]); await p.mouse.down();
-    for (let k = 0; k <= half; k += 3) await p.mouse.move(a.pts[k][0], a.pts[k][1]);
+    await sleep(250);
+    const mid = await info();
+    ok(mid.idx > half - 8 && mid.idx <= half && Math.abs(mid.shown - mid.idx) < 6, `the marker follows the finger along the lane (point ${mid.idx} of ${a.n}) and glides, not jumps`);
+    await p.mouse.up(); await sleep(150);
+    ok((await info()).idx === mid.idx && !/lifted|slipped/i.test(await msgText()), "lifting the finger leaves the marker where it is");
+    /* wander far off, turn back along the line, wobble: nothing moves it backward */
+    await p.mouse.move(a.pts[mid.idx][0], a.pts[mid.idx][1]); await p.mouse.down();
     const out = await p.evaluate(() => { const d = window.CognicopiaTabletUI.debug(); let best = null, bd = 0; for (let x = 40; x < 960; x += 20) for (let y = 40; y < 560; y += 20) { let m = 1e9; for (const q of d.path.pts) m = Math.min(m, Math.hypot(q[0] - x, q[1] - y)); if (m > bd) { bd = m; best = [x, y]; } } return d.toClient(best[0], best[1]); });
-    await p.mouse.move(out[0], out[1], { steps: 4 }); await sleep(100);
-    ok((await pathPts()).idx === 0 && /slipped off/.test(await text(p, ".tb-trace + .tb-msg")), "slipping off the line sends the dot back to the start");
+    await p.mouse.move(out[0], out[1], { steps: 4 }); await sleep(80);
+    ok((await info()).idx >= mid.idx && (await info()).away, "wandering far off the lane leaves the marker waiting, not sent back");
+    for (let k = mid.idx; k >= Math.max(0, mid.idx - 40); k -= 3) await p.mouse.move(a.pts[k][0], a.pts[k][1]);
+    await sleep(80);
+    const back0 = (await info()).idx;
+    for (let k = back0; k >= Math.max(0, back0 - 20); k -= 2) await p.mouse.move(a.pts[k][0], a.pts[k][1]);
+    ok((await info()).idx >= back0, "turning back along the line never moves the marker backward");
     await p.mouse.up();
-    /* wrong direction */
-    await p.mouse.move(a.pts[0][0], a.pts[0][1]); await p.mouse.down();
-    for (let k = 0; k <= half; k += 3) await p.mouse.move(a.pts[k][0], a.pts[k][1]);
-    for (let k = half; k >= Math.max(0, half - 40); k -= 3) await p.mouse.move(a.pts[k][0], a.pts[k][1]);
-    await sleep(100);
-    ok((await pathPts()).idx === 0, "turning back along the line sends the dot to the start");
-    await p.mouse.up();
-    /* a steady trace of every path to the end */
-    for (let round = 0; round < 4; round++) {
-      a = await pathPts();
-      ok(a.round === round && a.idx === 0, `path ${round + 1}: the dot waits at the start`);
-      await p.mouse.move(a.pts[0][0], a.pts[0][1]); await p.mouse.down();
-      for (let k = 0; k < a.n; k += 2) await p.mouse.move(a.pts[k][0] + (k % 4 ? 2 : -2), a.pts[k][1] + (k % 6 ? 2 : -2));
-      await p.mouse.move(a.pts[a.n - 1][0], a.pts[a.n - 1][1]); await p.mouse.up();
-      if (round < 3) { await p.waitForFunction(r => window.CognicopiaTabletUI.debug().round === r + 1 && window.CognicopiaTabletUI.debug().dotIndex === 0, round, { timeout: 4000 }).catch(() => {}); ok((await pathPts()).round === round + 1, `path ${round + 1} finished and the next one came`); }
+    /* a trembling hand: wobble around the line, picking up where it was left */
+    await p.mouse.move(a.pts[mid.idx][0], a.pts[mid.idx][1]); await p.mouse.down();
+    for (let k = mid.idx; k < a.n; k += 2) await p.mouse.move(a.pts[k][0] + (k % 4 ? 0.9 : -0.9) * a.tol * 0.6, a.pts[k][1] + (k % 6 ? 0.7 : -0.7) * a.tol * 0.6);
+    await p.mouse.move(a.pts[a.n - 1][0], a.pts[a.n - 1][1]); await p.mouse.up();
+    await p.waitForFunction(() => window.CognicopiaTabletUI.debug().over, null, { timeout: 4000 }).catch(() => {});
+    ok((await info()).over && /has (reached|pulled|found)/.test(await msgText()), "a wobbling hand still finishes the journey, and the screen says so: " + await msgText());
+    /* the next two journeys: a different scene each time, finished with a real touch */
+    const seen = [a.scene];
+    for (let round = 1; round < 3; round++) {
+      await p.waitForFunction(r => window.CognicopiaTabletUI.debug().round === r && !window.CognicopiaTabletUI.debug().over, round, { timeout: 5000 }).catch(() => {});
+      const b = await info(); seen.push(b.scene);
+      ok(b.round === round && b.idx === 0, `journey ${round + 1}: the marker waits at the start`);
+      await touchPath(ctx, p, b.pts.filter((_, k) => k % 2 === 0));
+      await p.waitForFunction(() => window.CognicopiaTabletUI.debug().over, null, { timeout: 4000 }).catch(() => {});
+      ok((await info()).over, `journey ${round + 1}: a real touch along the lane carries the marker to its goal`);
     }
-    ok(await cheered(p), "tracing all four paths brings the cheer");
+    ok(new Set(seen).size === 3, "the three journeys are three different scenes: " + seen.join(", "));
+    ok(await cheered(p), "finishing all three journeys brings the cheer");
     await ctx.close();
-    const c2 = await fresh(LAND); await c2.p.click("label[for=tbStageLate]"); await openAct(c2.p, "trace");
-    const lt = await c2.p.evaluate(() => window.CognicopiaTabletUI.debug().tol), ea = await (async () => { const e = await fresh(LAND); await e.p.click("label[for=tbStageEarly]"); await openAct(e.p, "trace"); const v = await e.p.evaluate(() => window.CognicopiaTabletUI.debug().tol); await e.ctx.close(); return v; })();
+    /* the wider lane for a later stage, and Finish for me */
+    const lt = await (async () => { const e = await fresh(LAND); await e.p.click("label[for=tbStageLate]"); await openAct(e.p, "trace"); const v = await e.p.evaluate(() => window.CognicopiaTabletUI.debug().tol); await e.ctx.close(); return v; })();
+    const ea = await (async () => { const e = await fresh(LAND); await e.p.click("label[for=tbStageEarly]"); await openAct(e.p, "trace"); const v = await e.p.evaluate(() => window.CognicopiaTabletUI.debug().tol); await e.ctx.close(); return v; })();
     ok(lt > ea, `the late-stage lane is wider than the early one (${Math.round(lt)} and ${Math.round(ea)} units)`);
-    await c2.ctx.close();
   }
 
   /* ---------- crossword and spelling ---------- */
@@ -376,16 +399,66 @@ try {
     ok(await cheered(p), "the last round brings the cheer");
     await ctx.close();
   }
+  /* ---------- sights and sounds ---------- */
   {
     const { ctx, p } = await fresh(LAND);
-    await openAct(p, "talk");
-    const c0 = await text(p, "#tbStage .tb-card");
-    ok(await p.evaluate(() => document.getElementById("tbTaPrev").disabled), "the first card has no Back");
-    await click(p, "#tbTaNext"); await sleep(80);
-    ok(await text(p, "#tbStage .tb-card") !== c0 && /Card 2 of/.test(await text(p, "#tbProg")), "Next shows another card");
-    ok(await p.evaluate(() => document.querySelectorAll("#tbStage .tb-talk div").length) >= 2, "with two or more things to see, hear or feel");
-    await click(p, "#tbTaPrev"); await sleep(80);
-    ok(await text(p, "#tbStage .tb-card") === c0, "Back returns to the first");
+    await openAct(p, "sounds");
+    let d = await dbg(p);
+    ok(d.cards.length === 6 && await p.evaluate(() => document.querySelectorAll("#tbStage .tb-snd").length) === 6 && d.mode === "listen", "the board shows six pictures, each with its name, ready to listen");
+    ok(await p.evaluate(() => Array.from(document.querySelectorAll("#tbStage .tb-snd")).every(b => b.querySelector("img.tb-ico[src$=\".png\"]") && b.textContent.trim().length > 3)), "every picture is a real picture with a name beside it");
+    ok(await p.evaluate(() => document.querySelectorAll("#tbStage canvas.tb-wave").length) === 1, "a wave is drawn above the board");
+    /* touching a picture plays its sound; the wave moves */
+    await click(p, `[data-snd="${d.cards[0]}"]`); await sleep(450);
+    d = await dbg(p);
+    ok(d.playing === d.cards[0] && d.peak > 2, `touching a picture plays its sound (the sound's wave reads ${d.peak} of 128)`);
+    ok(await p.evaluate(id => document.querySelector(`[data-snd="${id}"]`).classList.contains("is-playing") && document.querySelector(`[data-snd="${id}"]`).classList.contains("is-heard"), d.cards[0]) && /1 of 6 heard/.test(await text(p, "#tbProg")), "that picture is marked as playing and heard, and the count says 1 of 6");
+    const wave = async () => p.evaluate(() => { const c = document.querySelector(".tb-wave"), g = c.getContext("2d"), px = g.getImageData(0, 0, c.width, c.height).data; let h = 0; for (let i = 0; i < px.length; i += 4 * 23) h = (h * 31 + px[i + 3] + px[i + 1]) | 0; return h; });
+    const w1 = await wave(); await sleep(120); const w2 = await wave();
+    ok(w1 !== w2, "the wave moves while the sound plays");
+    /* the rest, then the cheer */
+    for (const id of d.cards.slice(1)) { await click(p, `[data-snd="${id}"]`); await sleep(160); }
+    ok((await dbg(p)).heard.length === 6, "all six sounds have been heard");
+    ok(await (async () => { try { await p.waitForSelector(".tb-cheer", { timeout: 9000 }); return true; } catch (e) { return false; } })(), "hearing every sound brings the cheer");
+    await ctx.close();
+  }
+  {
+    /* "which one is it?": a wrong picture plays its own sound and loses nothing */
+    const { ctx, p } = await fresh(LAND);
+    await openAct(p, "sounds");
+    await click(p, '[data-mode="find"]'); await sleep(900);
+    let d = await dbg(p);
+    ok(d.mode === "find" && d.target && d.rounds === 3 && /Sound 1 of 3/.test(await text(p, "#tbProg")) && d.playing === d.target, "the second way: a sound plays, and the screen asks which picture goes with it");
+    const wrong = d.cards.find(c => c !== d.target);
+    await click(p, `[data-snd="${wrong}"]`); await sleep(300);
+    d = await dbg(p);
+    ok(d.misses === 1 && d.playing === wrong && /That one is the/.test(await text(p, "#tbStage .tb-wavebox p")) && !/wrong|incorrect/i.test(await text(p, "#tbStage .tb-wavebox p")), "a picture that is not the one plays its own sound, with a kind sentence: " + await text(p, "#tbStage .tb-wavebox p"));
+    ok(await p.evaluate(() => Array.from(document.querySelectorAll("#tbStage .tb-snd")).every(b => !b.disabled)) && d.round === 0, "nothing is locked and the round is still open");
+    await sleep(2800);
+    ok((await dbg(p)).playing === d.target, "then the sound to find plays again");
+    for (let r = 0; r < 3; r++) {
+      d = await dbg(p); await click(p, `[data-snd="${d.target}"]`); await sleep(120);
+      ok(await p.evaluate(id => document.querySelector(`[data-snd="${id}"]`).classList.contains("is-right"), d.target) && /Yes, that is/.test(await text(p, "#tbStage .tb-wavebox p")), `round ${r + 1}: the right picture is marked, with a soft word of praise`);
+      if (r < 2) await sleep(2100);
+    }
+    ok(await cheered(p) || await (async () => { try { await p.waitForSelector(".tb-cheer", { timeout: 4000 }); return true; } catch (e) { return false; } })(), "matching every sound brings the cheer");
+    await ctx.close();
+  }
+  {
+    /* with sound turned off the board says so and offers to turn it on */
+    const { ctx, p } = await fresh(LAND, { init: 'try{localStorage.setItem("cognicopia_tablet_prefs",JSON.stringify({stage:"middle",topic:"",sound:false}))}catch(e){}' });
+    await openAct(p, "sounds");
+    ok(await p.evaluate(() => !document.getElementById("tbSndOn").hidden) && /Sound is turned off/.test(await text(p, "#tbStage .tb-wavebox p")), "with the sound turned off, the board says so and offers a button to turn it on");
+    await click(p, '[data-snd]'); await sleep(200);
+    ok((await dbg(p)).playing === null, "and nothing plays until it is turned on");
+    await click(p, "#tbSndOn"); await sleep(120); await click(p, '[data-snd]'); await sleep(400);
+    ok((await dbg(p)).playing !== null && (await p.evaluate(() => JSON.parse(localStorage.getItem("cognicopia_tablet_prefs")).sound)) === true, "turning it on works, and the choice is kept");
+    await ctx.close();
+  }
+  {
+    /* every sound is made on the tablet, loud enough to hear and never clipping */
+    const { ctx, p } = await fresh(LAND);
+    const r = await p.evaluate(async () => { const S = window.CognicopiaTabletSound, out = {}; for (const m of S.META) out[m.id] = await S.render(m.id, 22050); return out; });
+    for (const [id, v] of Object.entries(r)) ok(v && !v.nan && v.peak > 0.12 && v.peak < 0.98 && v.rms > 0.015 && v.earlyRms > 0.01 && v.sounding > 1.5, `the ${id} sound is made on the tablet: peak ${v && v.peak.toFixed(2)}, loudness ${v && v.rms.toFixed(3)}, ${v && v.sounding.toFixed(1)} s`);
     await ctx.close();
   }
 
@@ -449,27 +522,99 @@ try {
   {
     const { ctx, p } = await fresh(LAND);
     await p.focus('[data-act="sort"]'); await p.keyboard.press("Enter"); await stageReady(p);
-    ok(await p.evaluate(() => document.getElementById("tbTitle").textContent === "Sort It" && document.activeElement.id === "tbBack"), "opening an activity from the keyboard focuses the Menu button");
+    ok(await p.evaluate(() => document.getElementById("tbTitle").textContent === "Sort It" && document.activeElement.id === "tbBack"), "opening an activity from the keyboard focuses the Home button");
     ok(await p.evaluate(() => Array.from(document.body.children).filter(n => n.id !== "tb" && n.id !== "tbGate" && n.tagName !== "SCRIPT").every(n => n.inert)), "everything behind the activity is out of reach");
     await p.keyboard.press("Escape"); await p.waitForSelector("#tb", { state: "hidden" });
     ok(await p.evaluate(() => document.activeElement.getAttribute("data-act") === "sort"), "Escape returns to the menu with focus back on the card");
     ok(await p.evaluate(() => !document.documentElement.classList.contains("tb-open") && Array.from(document.body.children).every(n => !n.inert)), "and the menu is usable again");
     await openAct(p, "saying"); await toMenu(p);
-    ok(await p.evaluate(() => document.activeElement.getAttribute("data-act") === "saying"), "the Menu button returns to the menu too");
+    ok(await p.evaluate(() => document.activeElement.getAttribute("data-act") === "saying"), "the Home button returns to the menu too");
+    await ctx.close();
+  }
+
+  /* ---------- the same frame on every activity: Finish for me, Next, Home and a hint after a quiet moment ---------- */
+  const redish = p => p.evaluate(() => {
+    const out = [], rx = /rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/g, red = (r, g, b, a) => r > 170 && g < 100 && b < 100 && (a == null || a > 0.3);
+    document.querySelectorAll("#tb *").forEach(e => {
+      const st = getComputedStyle(e), r0 = e.getBoundingClientRect(); if (!r0.width || st.display === "none") return;
+      if (e.closest(".tb-pal, .tb-art, .tb-pics, .tb-ico")) return;                         // colors to paint with, and the pictures themselves, are content, not signals
+      for (const prop of ["color", "backgroundColor", "borderTopColor", "borderBottomColor", "borderLeftColor", "borderRightColor", "outlineColor", "boxShadow", "fill", "stroke"]) {
+        const v = st[prop] || ""; let m; rx.lastIndex = 0;
+        while ((m = rx.exec(v))) if (red(+m[1], +m[2], +m[3], m[4] == null ? 1 : +m[4])) out.push((e.className && e.className.baseVal === undefined ? e.className : e.tagName) + " " + prop + " " + m[0]);
+      }
+    });
+    return out;
+  });
+  {
+    const { ctx, p } = await fresh(LAND);
+    ok(await p.evaluate(() => window.CognicopiaTabletUI.idleMs()) === 15000, "a quiet moment is fifteen seconds");
+    await p.evaluate(() => window.CognicopiaTabletUI.idleMs(900));
+    const sig = id => p.evaluate(x => { const d = window.CognicopiaTabletUI.debug(); if (x === "trace") return d.path.d + d.scene; if (x === "paint") return String(d.strokes); return document.getElementById("tbStage").innerHTML.replace(/style="[^"]*"/g, ""); }, id);
+    for (const id of ALL) {
+      await openAct(p, id); if (id === "color") await p.waitForSelector(".tb-pics .tb-pic", { timeout: 8000 });
+      const st = await p.evaluate(() => window.CognicopiaTabletUI.stats());
+      ok(st && st.assist && st.hint && await p.evaluate(() => !document.getElementById("tbAssist").hidden && !document.getElementById("tbNew").hidden && !document.getElementById("tbBack").hidden), `${id}: Home, Finish for me and Next are on the screen, and it can give a hint`);
+      ok(!(await redish(p)).length, `${id}: nothing on the screen is red: ${(await redish(p)).slice(0, 2).join("; ")}`);
+      /* a quiet moment: the right place glows */
+      await sleep(1600);
+      const h1 = await p.evaluate(() => ({ s: window.CognicopiaTabletUI.stats(), glow: document.querySelectorAll("#tbStage .tb-glow").length }));
+      ok(h1.s.hints >= 1 && (h1.glow >= 1 || id === "trace"), `${id}: after a quiet moment a hint appears (${h1.s.hints} given, ${h1.glow} places glowing)`);
+      /* Next: a fresh one at once, and not the same as before */
+      if (id === "paint") { const b = await p.evaluate(() => { const r = document.querySelector(".tb-paint").getBoundingClientRect(); return [r.left + r.width * .3, r.top + r.height * .5, r.left + r.width * .7]; }); await p.mouse.move(b[0], b[1]); await p.mouse.down(); await p.mouse.move(b[2], b[1], { steps: 6 }); await p.mouse.up(); ok((await sig(id)) === "1", "paint: a stroke is on the canvas before Next"); }
+      const before = await sig(id);
+      await click(p, "#tbNew"); await sleep(450); if (id === "color") await p.waitForSelector(".tb-pics .tb-pic", { timeout: 8000 });
+      const after = await sig(id);
+      ok(id === "paint" ? after === "0" : after !== before, `${id}: Next brings a fresh one at once${id === "paint" ? " (a clean sheet)" : ""}`);
+      ok(await p.evaluate(() => !window.CognicopiaTabletUI.stats().done) && !(await p.evaluate(() => document.querySelector(".tb-cheer"))), `${id}: and starts it unfinished, with nothing carried over`);
+      /* Finish for me: the activity completes with the celebration */
+      await click(p, "#tbAssist");
+      const t0 = Date.now(); let done = false;
+      try { await p.waitForSelector(".tb-cheer", { timeout: 15000 }); done = true; } catch (e) { done = false; }
+      ok(done && await p.evaluate(() => window.CognicopiaTabletUI.stats().done), `${id}: Finish for me completes it with the celebration (in ${((Date.now() - t0) / 1000).toFixed(1)} s)`);
+      ok(await p.evaluate(() => document.getElementById("tbAssist").disabled) && /\w/.test(await text(p, ".tb-cheer p")) && !(await redish(p)).length, `${id}: the celebration is warm, with no red, and Finish for me waits`);
+      /* Another one starts a new activity; Home goes back to the menu */
+      await click(p, "[data-cheer=next]"); await sleep(400);
+      ok(await p.evaluate(() => !document.querySelector(".tb-cheer") && window.CognicopiaTabletUI.stats() && !window.CognicopiaTabletUI.stats().done), `${id}: "Another one" starts a fresh activity`);
+      await toMenu(p);
+    }
+    await ctx.close();
+  }
+  {
+    /* any touch means someone is here: the hint waits another quiet moment */
+    const { ctx, p } = await fresh(LAND);
+    await p.evaluate(() => window.CognicopiaTabletUI.idleMs(1400));
+    await openAct(p, "sort");
+    await sleep(900); await click(p, "#tbTitle");
+    await sleep(900);
+    ok((await p.evaluate(() => window.CognicopiaTabletUI.stats().hints)) === 0, "a touch sends the hint's clock back to the start");
+    await sleep(1300);
+    ok((await p.evaluate(() => window.CognicopiaTabletUI.stats().hints)) >= 1, "and the hint comes after the next quiet moment");
+    await ctx.close();
+  }
+  {
+    /* Surprise me: the tablet chooses, and not the same one twice in a row */
+    const { ctx, p } = await fresh(LAND);
+    const got = [];
+    for (let k = 0; k < 4; k++) { await p.click("#tbSurprise"); await stageReady(p); got.push(await p.evaluate(() => window.CognicopiaTabletUI.current())); await toMenu(p); }
+    ok(got.every(g => ALL.includes(g)) && got.every((g, i) => i === 0 || g !== got[i - 1]), "Surprise me opens an activity each time, never the same one twice running: " + got.join(", "));
+    ok(await p.evaluate(() => document.activeElement.id === "tbSurprise"), "and Home returns to it");
     await ctx.close();
   }
 
   /* ---------- every control is big enough, nothing runs off the screen ---------- */
-  for (const [name, vp, noScroll] of [["landscape tablet", LAND, true], ["portrait tablet", PORT, true], ["phone", PHONE, false]]) {
+  for (const [name, vp, tablet, noScroll] of [["landscape tablet", LAND, true, true], ["portrait tablet", PORT, true, true], ["phone", PHONE, false, false]]) {
     const { ctx, p } = await fresh(vp);
-    const menu = await p.evaluate(() => ({ over: document.scrollingElement.scrollWidth - innerWidth, cards: Array.from(document.querySelectorAll(".tbp-card, .tbp-seg label, .tbp-sel, #tbSound, #tbFull")).filter(e => { const r = e.getBoundingClientRect(); return r.width < 52 || r.height < 52; }).length }));
+    const menu = await p.evaluate(() => ({ over: document.scrollingElement.scrollWidth - innerWidth, cards: Array.from(document.querySelectorAll(".tbp-card, .tbp-seg label, .tbp-sel, #tbSound, #tbFull, #tbSurprise")).filter(e => { const r = e.getBoundingClientRect(); return r.width < 52 || r.height < 52; }).length }));
     ok(menu.over <= 1 && menu.cards === 0, `${name}: the menu fits the width and every control is 52 px or more`);
     for (const id of ALL) {
       await p.click(`[data-act="${id}"]`); await stageReady(p); if (id === "color") await p.waitForSelector(".tb-pics", { timeout: 8000 }).catch(() => {});
       await p.waitForTimeout(250);
       if (id === "color") { await click(p, ".tb-pic"); await p.waitForSelector(".tb-art svg path", { state: "attached" }); await sleep(150); }
-      const sm = await small(p), fit = await p.evaluate(() => { const s = document.getElementById("tbStage"); return { x: s.scrollWidth - s.clientWidth, y: s.scrollHeight - s.clientHeight }; });
-      ok(sm.length === 0, `${name}, ${id}: every control is 52 px or more${sm.length ? " (" + sm.slice(0, 3).join(", ") + ")" : ""}`);
+      const floor = tablet && BIG.has(id) ? 72 : 52, sm = await small(p, floor), fit = await p.evaluate(() => { const s = document.getElementById("tbStage"); return { x: s.scrollWidth - s.clientWidth, y: s.scrollHeight - s.clientHeight }; });
+      const bar = await p.evaluate(() => Array.from(document.querySelectorAll("#tb .tb-bar button")).filter(e => e.getBoundingClientRect().width > 0).map(e => { const r = e.getBoundingClientRect(); return { id: e.id, w: Math.round(r.width), h: Math.round(r.height) }; }));
+      const barFloor = tablet ? 72 : 56;
+      ok(bar.length >= 3 && bar.every(b => b.w >= barFloor && b.h >= barFloor), `${name}, ${id}: Home, Finish for me and Next are ${barFloor} px or more${bar.filter(b => b.w < barFloor || b.h < barFloor).length ? " (" + bar.map(b => b.id + " " + b.w + "x" + b.h).join(", ") + ")" : ""}`);
+      ok(sm.length === 0, `${name}, ${id}: every control is ${floor} px or more${sm.length ? " (" + sm.slice(0, 3).join(", ") + ")" : ""}`);
       ok(fit.x <= 1, `${name}, ${id}: nothing runs off the side`);
       if (noScroll) ok(fit.y <= 1, `${name}, ${id}: it fits the screen with no scrolling (${fit.y} px over)`);
       await toMenu(p);
@@ -485,8 +630,8 @@ try {
       await p.click(`[data-act="${id}"]`); await stageReady(p);
       if (id === "color") { await p.waitForSelector(".tb-pics", { timeout: 8000 }).catch(() => {}); await click(p, ".tb-pic"); await p.waitForSelector(".tb-art svg path", { state: "attached" }); }
       await sleep(250);
-      const lo = await lowContrast(p);
-      ok(lo.length === 0, `${night ? "Night Shift" : "day"}, ${id}: all text reaches 4.5:1 (${lo.slice(0, 3).join("; ")})`);
+      const lo = await lowContrast(p, 7);
+      ok(lo.length === 0, `${night ? "Night Shift" : "day"}, ${id}: all text reaches 7:1 (${lo.slice(0, 3).join("; ")})`);
       await toMenu(p);
     }
     await ctx.close();

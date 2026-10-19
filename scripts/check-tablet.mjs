@@ -12,8 +12,11 @@
        order and are not already in order, pairs match, every clue and line passes the dignity rules
      - the same seed gives the same puzzle, a new seed a new one
      - stages get gentler: fewer words, larger grids, across-only searches, wider paths
-     - the trace rule: walking the line reaches the end; wandering off the line, turning back or
-       jumping ahead sends the dot to the start (every shape, every stage)
+     - the trace rule: walking the line reaches the end; wandering off the line, lifting the finger, turning
+       back or jumping ahead never sends the marker back (every shape, every stage, every scene)
+     - the sounds: every sound on the Sights and Sounds board has a picture, a name and a line that pass the
+       dignity rules; the board and its rounds are made from them
+     - the pictures: every picture is well formed and has a name
      - the screen's words are calm: nothing says wrong, test, quiz or easy
      - the page is wired in: scripts in the right order, cached for offline use, in the menu and on
        the front page, in the sitemap; it makes no network request, keeps only the level, topic and
@@ -33,8 +36,8 @@ const read = f => fs.readFileSync(path.join(ROOT, f), "utf8");
 
 /* the engine in a sandbox with the real puzzle makers and content, and no browser */
 const ctx = vm.createContext({ console, Math, Date }); ctx.globalThis = ctx;
-for (const f of ["assets/pcg/pcg-data.bundle.js", "src/pcg/prng.js", "src/pcg/matrix.js", "src/pcg/grammar.js", "src/pcg/puzzles.js", "js/tabletEngine.js"]) vm.runInContext(read(f), ctx, { filename: f });
-const T = ctx.CognicopiaTablet, D = ctx.CognicopiaPCGData, G = ctx.CognicopiaPCG.grammar, Z = ctx.CognicopiaPCG.puzzles;
+for (const f of ["assets/pcg/pcg-data.bundle.js", "src/pcg/prng.js", "src/pcg/matrix.js", "src/pcg/grammar.js", "src/pcg/puzzles.js", "js/tabletSound.js", "js/tabletArt.js", "js/tabletEngine.js"]) vm.runInContext(read(f), ctx, { filename: f });
+const T = ctx.CognicopiaTablet, D = ctx.CognicopiaPCGData, G = ctx.CognicopiaPCG.grammar, Z = ctx.CognicopiaPCG.puzzles, Snd = ctx.CognicopiaTabletSound, Art = ctx.CognicopiaTabletArt;
 const plain = x => JSON.parse(JSON.stringify(x));          // out of the sandbox, so deep comparisons work
 const STAGES = ["early", "middle", "late"], TOPICS = ["", ...T.TOPICS.map(t => t.id)];
 const lintOk = s => !G.lint(s, D);
@@ -84,8 +87,9 @@ for (const stage of STAGES) for (const topic of TOPICS) {
   const ma = plain(T.matchUp(o));
   ok(ma.pairs.length >= 3 && ma.pairs.length <= c.match.pairs && new Set(ma.words).size === ma.pairs.length && [...ma.words].sort().join() === ma.pairs.map(p => p.word).sort().join() && [...ma.clues].sort().join() === ma.pairs.map(p => p.clue).sort().join() && ma.pairs.every(p => p.clue.toUpperCase().indexOf(p.word) < 0 && lintOk(p.clue)), `${tag}: matching pairs are all different and complete, and no clue gives its word away`);
   /* sights and sounds */
-  const ta = plain(T.talkCards(o));
-  ok(ta.cards.length >= 2 && ta.cards.every(k => k.lines.length >= 2 && k.lines.length <= c.talk.lines && k.lines.every(l => lintOk(l.text) && l.text) && lintOk(k.name)), `${tag}: cards to talk about have two or more lines that pass the dignity rules`);
+  const sb = plain(T.soundBoard(o)), ids = Snd.META.map(m => m.id);
+  ok(sb.cards.length === c.sounds.cards && new Set(sb.cards.map(k => k.id)).size === sb.cards.length && sb.cards.every(k => ids.includes(k.id) && lintOk(k.name) && lintOk(k.line)), `${tag}: the sound board has ${c.sounds.cards} different sounds, each with a name and a line that pass the dignity rules`);
+  ok(sb.targets.length === c.sounds.rounds && new Set(sb.targets).size === sb.targets.length && sb.targets.every(t => sb.cards.some(k => k.id === t)), `${tag}: each "which one is it?" round is about a sound that is on the board, and no sound is asked twice`);
   made++;
 }
 ok(made === 3 * 43, "every stage and topic was tried (129 combinations)");
@@ -93,7 +97,7 @@ ok(made === 3 * 43, "every stage and topic was tried (129 combinations)");
 /* the same seed, the same puzzle; a new seed, a new one */
 {
   const a = { stage: "middle", topic: "farming", seed: "same" }, b = Object.assign({}, a, { seed: "other" });
-  for (const k of ["wordSearch", "crossword", "spellIt", "sayings", "sortIt", "oddOne", "inOrder", "matchUp", "talkCards", "tracePath"]) {
+  for (const k of ["wordSearch", "crossword", "spellIt", "sayings", "sortIt", "oddOne", "inOrder", "matchUp", "soundBoard", "tracePath"]) {
     ok(JSON.stringify(T[k](a)) === JSON.stringify(T[k](a)), `${k}: the same seed gives the same puzzle`);
     if (k !== "tracePath") ok(JSON.stringify(T[k](a)) !== JSON.stringify(T[k](b)), `${k}: another seed gives another`);
   }
@@ -113,7 +117,7 @@ ok(made === 3 * 43, "every stage and topic was tried (129 combinations)");
   ok(s.late.spell.firstGiven && !s.early.spell.firstGiven, "the late stage is given the first letter");
 }
 
-/* trace the path: the rule the screen follows */
+/* trace the path: the rule the screen follows. The marker only goes forward, always stays on the line, and is never sent back. */
 {
   let paths = 0;
   for (const stage of STAGES) for (const kind of T.SHAPES) {
@@ -126,57 +130,98 @@ ok(made === 3 * 43, "every stage and topic was tried (129 combinations)");
     let st = { i: 0 }, last = null;
     const walk = k => { const w = [pts[k][0] + (k % 4 ? 0.5 : -0.5) * tol * 0.5, pts[k][1] + (k % 6 ? 0.4 : -0.4) * tol * 0.5]; last = T.follow(path, st, w, tol); st = { i: last.i }; return last.status === "on" || last.status === "done"; };
     for (let k = 0; k < pts.length; k += 2) if (!walk(k)) break;
-    if (last && last.status !== "done" && last.status !== "slipped") walk(pts.length - 1);
+    if (last && last.status !== "done") walk(pts.length - 1);
     ok(last && last.status === "done", `${tag}: walking the line with a steady wobble reaches the finish`);
-    /* too far off the line: the emptiest place on the screen */
+    /* too far from the lane: the emptiest place on the screen. The marker waits where it is. It is not sent back. */
     let far = { d: 0, p: [0, 0] };
     for (let x = 30; x <= 970; x += 20) for (let y = 30; y <= 570; y += 20) { let m = 1e9; for (const q of pts) m = Math.min(m, Math.hypot(q[0] - x, q[1] - y)); if (m > far.d) far = { d: m, p: [x, y] }; }
     const mid = Math.floor(pts.length / 3), off = T.follow(path, { i: mid }, far.p, tol);
-    ok(far.d > tol * 2 && off.status === "slipped" && off.i === 0, `${tag}: wandering off the line sends the dot back to the start (the empty space is ${Math.round(far.d)} units from it, the lane ${tol} wide)`);
-    const edge = T.follow(path, { i: mid }, [pts[mid][0] + tol * 1.3, pts[mid][1]], tol), edge2 = T.follow(path, { i: mid }, [pts[mid][0] - tol * 1.3, pts[mid][1]], tol);
-    ok(edge.status === "slipped" || edge2.status === "slipped" || far.d > 0, `${tag}: just outside the lane is off the line`);
-    /* turning back */
-    const turned = T.follow(path, { i: mid }, pts[Math.max(0, mid - Math.ceil(tol * 3 / 6))], tol);
-    ok(turned.status === "slipped" || turned.i >= mid, `${tag}: turning back never moves the dot backward and a long way back sends it to the start`);
-    /* never jumps ahead */
-    const jump = T.follow(path, { i: 0 }, pts[Math.min(pts.length - 1, Math.ceil(tol * 6 / 6) + 40)], tol);
-    ok(jump.status === "slipped", `${tag}: a finger that jumps far ahead does not carry the dot with it`);
-    /* a first touch on the dot does nothing wrong */
-    ok(T.follow(path, { i: 0 }, pts[0], tol).status === "on", `${tag}: resting on the dot is fine`);
+    ok(off.status === "away" && off.i === mid, `${tag}: a finger far from the lane leaves the marker where it is (${Math.round(far.d)} units away; the lane reaches ${Math.round(tol * 2.2)})`);
+    /* the marker never goes backward, whatever the finger does, and never leaves the line */
+    let at = { i: mid }, minI = mid, wander = [pts[mid], far.p, pts[Math.max(0, mid - 30)], pts[Math.max(0, mid - 5)], far.p, pts[mid], pts[Math.min(pts.length - 1, mid + 40)], [0, 0], [1000, 600], pts[Math.max(0, mid - 60)]], monotone = true;
+    for (const w of wander) { const r = T.follow(path, at, w, tol); if (r.i < at.i) monotone = false; at = { i: r.i }; }
+    ok(monotone && at.i >= minI, `${tag}: turning back, wandering and coming back never moves the marker backward`);
+    /* a finger that jumps far ahead carries the marker only a short way */
+    const jump = T.follow(path, { i: 0 }, pts[Math.min(pts.length - 1, 90)], tol);
+    ok(jump.i <= 24 && jump.status !== "done", `${tag}: a finger that jumps far ahead does not carry the marker with it (it moved ${jump.i} points)`);
+    /* a first touch on the marker is fine */
+    ok(T.follow(path, { i: 0 }, pts[0], tol).status === "on", `${tag}: resting on the marker is fine`);
+    /* the lane is wider for people who need it */
+    ok(T.follow(path, { i: mid }, [pts[mid][0] + tol * 1.9, pts[mid][1]], tol).status !== "slipped", `${tag}: a finger well to one side of the line is still on the lane`);
   }
   ok(paths === 3 * T.SHAPES.length, "every shape at every stage was tried");
-  ok(plain(T.tracePath({ stage: "late", seed: "x", kind: "wave" })).pts.length > 0 && T.STAGES.late.trace.kinds.every(k => T.SHAPES.includes(k)), "the late stage only offers shapes that exist");
+  ok(T.STAGES.late.trace.kinds.every(k => T.SHAPES.includes(k)), "the late stage only offers shapes that exist");
+  /* the three journeys */
+  const scenes = Object.keys(T.SCENES);
+  ok(scenes.join() === "bee,train,dog" && scenes.every(n => T.SCENES[n].from && T.SCENES[n].to && lintOk(T.SCENES[n].line) && lintOk(T.SCENES[n].arrive) && Art.has(T.SCENES[n].from) && Art.has(T.SCENES[n].to)), "the bee, the train and the dog each have a start, a goal, two kind sentences and a picture for both");
+  for (const stage of STAGES) for (const sc of scenes) for (let n = 0; n < 6; n++) {
+    const p = plain(T.tracePath({ stage, seed: "scene-" + sc + n, scene: sc }));
+    ok(p.scene === sc && !p.closed && T.SCENES[sc].shapes.includes(p.kind) && T.STAGES[stage].trace.kinds.includes(p.kind) && p.from === T.SCENES[sc].from && p.to === T.SCENES[sc].to && Math.hypot(p.start[0] - p.end[0], p.start[1] - p.end[1]) > 150, `${stage}/${sc}/${n}: a scene's path is an open line of a shape that suits it and the stage, with its start and goal apart`);
+  }
+  ok(new Set(Array.from({ length: 24 }, (_, i) => T.tracePath({ stage: "middle", seed: "any" + i }).scene)).size === 3, "with no scene chosen, the seeds bring all three journeys");
+}
+
+/* the sounds: each one has a picture, a name and a line */
+{
+  const ids = Snd.META.map(m => m.id);
+  ok(ids.length >= 6 && new Set(ids).size === ids.length, `the board has ${ids.length} different sounds`);
+  for (const need of ["bird", "train", "guitar", "cat", "storm", "bells"]) ok(ids.includes(need), `the board has the ${need} sound`);
+  ok(Snd.META.every(m => Art.has(m.id) && m.name && m.line && lintOk(m.name) && lintOk(m.line) && !/\b(scary|loud|noise)\b/i.test(m.line)), "every sound has a picture, a name and a calm line that pass the dignity rules");
+  ok(typeof Snd.create === "function" && typeof Snd.render === "function", "the sounds are made on the tablet (a synthesizer, not recordings)");
+}
+
+/* the pictures: finished illustrations kept in assets/tablet/, one transparent PNG each */
+{
+  const ids = Art.ids(), dir = path.join(ROOT, "assets", "tablet"), files = fs.readdirSync(dir).filter(f => /\.png$/.test(f)).sort();
+  ok(ids.length >= 14, `${ids.length} pictures are named`);
+  ok(ids.every(id => Art.name(id) && lintOk(Art.name(id))), "every picture has a plain name for a screen reader");
+  ok(ids.every(id => fs.existsSync(path.join(dir, id + ".png"))), "every picture has its file: " + ids.filter(id => !fs.existsSync(path.join(dir, id + ".png"))).join(", "));
+  ok(files.every(f => ids.includes(f.replace(/\.png$/, ""))), "every file in assets/tablet is a named picture, so nothing is left over: " + files.filter(f => !ids.includes(f.replace(/\.png$/, ""))).join(", "));
+  const png = id => { const b = fs.readFileSync(path.join(dir, id + ".png")); return { sig: b.subarray(0, 8).toString("hex"), w: b.readUInt32BE(16), h: b.readUInt32BE(20), type: b[25], size: b.length }; };
+  const info = ids.map(id => [id, png(id)]);
+  ok(info.every(([, i]) => i.sig === "89504e470d0a1a0a" && i.w === 400 && i.h === 400), "every picture is a real 400 by 400 PNG");
+  ok(info.every(([, i]) => i.size < 60000), `every picture is light enough to keep for offline use (largest ${Math.max(...info.map(([, i]) => i.size))} bytes)`);
+  const sw = read("sw.js");
+  ok(ids.every(id => sw.includes('"assets/tablet/' + id + '.png"')), "the service worker keeps every picture for offline use");
+  ok(ids.every(id => { const beside = Art.img(id, { size: 64 }), alone = Art.img(id, { label: "" }); return beside.startsWith('<img class="tb-ico" src="assets/tablet/' + id + '.png"') && /alt=""/.test(beside) && alone.includes('alt="' + Art.name(id) + '"'); }), "a picture has no words of its own beside a label, and says its name when it stands alone");
 }
 
 /* the screen's own words: calm, never testing, never childish */
-const ui = read("js/tablet.js"), html = read("tablet.html"), eng = read("js/tabletEngine.js");
+const UIFILES = ["js/tablet.js", "js/tabletKit.js", "js/tabletCreate.js", "js/tabletThink.js"];
+const html = read("tablet.html"), eng = read("js/tabletEngine.js"), art = read("js/tabletArt.js"), snd = read("js/tabletSound.js");
+const strip = src => src.replace(/\/\*[\s\S]*?\*\//g, "").replace(/(^|\s)\/\/[^\n]*/g, "$1");     // the code, without its comments
+const raw = Object.fromEntries(UIFILES.map(f => [f, strip(read(f))]));
+const ui = UIFILES.map(f => raw[f]).join("\n"), tabletJs = raw["js/tablet.js"];
 {
-  const strings = [...(ui + "\n" + html).matchAll(/"([^"\n]{4,})"/g)].map(m => m[1]).concat([...html.matchAll(/>([^<>{}]{6,})</g)].map(m => m[1]));
-  const BAD = /\b(wrong|incorrect|failed?|mistake|stupid|easy|simple|hard|difficult|quiz|test(ing)? your|do you remember|remember when|try to remember|baby|kiddie|cute|sweetie|dearie|good girl|good boy)\b/i;
-  const hits = strings.filter(s => BAD.test(s));
-  ok(!hits.length, "the screen's words never say wrong, test, quiz or easy: " + hits.slice(0, 5).join(" | "));
-  const sentences = strings.filter(s => / /.test(s) && /[a-z]{3}/.test(s));
-  ok(sentences.length > 40 && sentences.every(s => lintOk(s)), "every sentence on the page passes the dignity rules: " + sentences.filter(s => !lintOk(s)).slice(0, 4).join(" | "));
-  ok(/Nearly|Not quite|slipped|Keep looking|Good thought|Try another/.test(ui) && !/alert\(|confirm\(/.test(ui), "a miss gets a gentle sentence, never an alert box");
-  ok(!/new\s+Audio|\.mp3|\.wav|buzz|error sound/i.test(ui), "no sound for a miss: there is no recorded sound at all, only a soft chime for a right answer");
+  const strings = [...(ui + "\n" + html).matchAll(/"((?:[^"\\\n]|\\.)*)"/g)].map(m => m[1]).filter(x => x.length >= 4).concat([...html.matchAll(/>([^<>{}]{6,})</g)].map(m => m[1]));
+  const BAD = /\b(wrong|incorrect|failed?|mistake|stupid|easy|simple|hard|difficult|quiz|test(ing)? your|do you remember|remember when|try to remember|baby|kiddie|cute|sweetie|dearie|good girl|good boy|game over|you lose|score)\b/i;
+  const hits = strings.filter(x => BAD.test(x));
+  ok(!hits.length, "the screen's words never say wrong, test, quiz, score or easy: " + hits.slice(0, 5).join(" | "));
+  const sentences = strings.filter(x => / /.test(x) && /[a-z]{3}/.test(x));
+  ok(sentences.length > 40 && sentences.every(x => lintOk(x)), "every sentence on the page passes the dignity rules: " + sentences.filter(x => !lintOk(x)).slice(0, 4).join(" | "));
+  ok(/Nearly|Not quite|Keep looking|Good thought|Try another|waiting right here|Listen again/.test(ui) && !/alert\(|confirm\(/.test(ui), "a miss gets a gentle sentence, never an alert box");
+  ok(!/new\s+Audio|\.mp3|\.wav|buzz|error sound/i.test(ui + strip(snd)) && /var soft = /.test(tabletJs), "a miss gets a soft rising note, never a buzzer, and no sound is recorded: every one is made on the tablet");
+  ok(!/\b(red|#f00\b|#ff0000|#d00\b|crimson|firebrick)\b/i.test(strip(html).replace(/<!--[\s\S]*?-->/g, "").split("<style id=\"cg-nav-css\">")[0]), "the activity styles use no red for a miss");
 }
 
 /* the page is wired in */
 {
   const order = [...html.matchAll(/<script src="([^"]+)"><\/script>/g)].map(m => m[1]).filter(f => !/^(src\/config\/license|assets\/services\/licenseManager)/.test(f));
-  const want = ["assets/pcg/pcg-data.bundle.js", "src/pcg/prng.js", "src/pcg/matrix.js", "src/pcg/grammar.js", "src/pcg/puzzles.js", "assets/services/trialLedger.js", "js/tabletEngine.js", "js/tablet.js"];
-  ok(JSON.stringify(order) === JSON.stringify(want), "the page loads the puzzle makers, then the engine, then the screen, in that order: " + order.join(", "));
+  const want = ["assets/pcg/pcg-data.bundle.js", "src/pcg/prng.js", "src/pcg/matrix.js", "src/pcg/grammar.js", "src/pcg/puzzles.js", "assets/services/trialLedger.js", "js/tabletSound.js", "js/tabletArt.js", "js/tabletEngine.js", "js/tabletKit.js", "js/tabletCreate.js", "js/tabletThink.js", "js/tablet.js"];
+  ok(JSON.stringify(order) === JSON.stringify(want), "the page loads the puzzle makers, the sounds and pictures, the engine, the kit, the activities and last the screen, in that order: " + order.join(", "));
   ok(order.every(f => fs.existsSync(path.join(ROOT, f))), "every script it names exists");
   ok(!/https?:\/\//.test(html.replace(/https:\/\/cognicopia\.org[^"]*/g, "").replace(/<!--[\s\S]*?-->/g, "").replace(/http:\/\/www\.w3\.org\/\d+\/svg/g, "")) || /rel="canonical"/.test(html), "the page names no outside address except its own canonical one");
-  for (const [what, re] of Object.entries({ "fetch()": /\bfetch\s*\(/, "XMLHttpRequest": /XMLHttpRequest/, "sendBeacon": /sendBeacon/, "a WebSocket": /new\s+WebSocket\b/, "an EventSource": /new\s+EventSource\b/, "a remote script": /<script[^>]+src=["']?(?:https?:)?\/\//i, "a remote stylesheet": /<link(?![^>]*rel="canonical")[^>]+href=["']?(?:https?:)?\/\//i, "an import": /@import\b/ }))
-    ok(!re.test(html) && !re.test(ui) && !re.test(eng), "the tablet page makes no network request: it contains " + what);
-  ok(!/sessionStorage|indexedDB|document\.cookie/.test(ui + eng), "nothing is kept in cookies or session storage");
-  const keys = [...new Set([...ui.matchAll(/(?:getItem|setItem|removeItem)\(\s*([A-Za-z_"'][^,)]*)/g)].map(m => m[1]))];
-  ok(keys.length === 1 && keys[0] === "PREFS_KEY", "the only thing read or written in this browser is the level, topic and sound choice (PREFS_KEY): " + keys.join(", "));
-  ok(/localStorage\.setItem\(PREFS_KEY, JSON\.stringify\(prefs\)\)/.test(ui) && /var PREFS_KEY = "cognicopia_tablet_prefs", prefs = \{ stage: "middle", topic: "", sound: true \}/.test(ui), "and that choice holds nothing about anyone");
+  const everything = [html, ui, strip(eng), strip(art), strip(snd)].join("\n");
+  for (const [what, re] of Object.entries({ "fetch()": /\bfetch\s*\(/, "XMLHttpRequest": /XMLHttpRequest/, "sendBeacon": /sendBeacon/, "a WebSocket": /new\s+WebSocket\b/, "an EventSource": /new\s+EventSource\b/, "a remote script": /<script[^>]+src=["']?(?:https?:)?\/\//i, "a remote stylesheet": /<link(?![^>]*rel="canonical")[^>]+href=["']?(?:https?:)?\/\//i, "an import": /@import\b/, "a remote picture or sound": /(?:src|href)=["']?https?:\/\/(?!cognicopia\.org)/i }))
+    ok(!re.test(everything.replace(/https:\/\/cognicopia\.org[^"]*/g, "")), "the tablet page makes no network request: it contains " + what);
+  ok(!/sessionStorage|indexedDB|document\.cookie/.test(everything), "nothing is kept in cookies or session storage");
+  const keys = [...new Set([...tabletJs.matchAll(/(?:getItem|setItem|removeItem)\(\s*([A-Za-z_"'][^,)]*)/g)].map(m => m[1]))];
+  ok(keys.length === 1 && keys[0] === "PREFS_KEY", "the only thing read or written in this browser is the choices (PREFS_KEY): " + keys.join(", "));
+  ok(UIFILES.filter(f => f !== "js/tablet.js").every(f => !/localStorage/.test(raw[f])) && !/localStorage/.test(strip(eng) + strip(art) + strip(snd)), "no other file reads or writes anything in this browser");
+  ok(/localStorage\.setItem\(PREFS_KEY, JSON\.stringify\(prefs\)\)/.test(tabletJs) && /var PREFS_KEY = "cognicopia_tablet_prefs", prefs = \{ stage: "middle", topic: "", sound: true, speed: 2 \}/.test(tabletJs), "and those choices (level, topic, sound, speed) hold nothing about anyone");
   ok(!/cognicopia_resident|cognicopia_profile|activeResident|qpEngine|CogniSecureStore/.test(ui), "the screen reads no resident or profile storage and asks for no name");
   const sw = read("sw.js");
-  ok(["tablet.html", "js/tabletEngine.js", "js/tablet.js", "assets/pcg/pcg-data.bundle.js", "assets/cognicopia-coloring/cognicopia-coloring.js", "assets/services/trialLedger.js"].every(f => sw.includes('"' + f + '"')), "the service worker keeps the page, its scripts, the puzzle content and the coloring library for offline use");
+  ok(["tablet.html", ...want.filter(f => f.startsWith("js/")), "assets/pcg/pcg-data.bundle.js", "assets/cognicopia-coloring/cognicopia-coloring.js", "assets/services/trialLedger.js"].every(f => sw.includes('"' + f + '"')), "the service worker keeps the page, its scripts, the puzzle content and the coloring library for offline use");
   const nav = HUBS.find(h => h.id === "today").items.find(i => i.key === "tablet");
   ok(nav && nav.href === "tablet.html" && nav.label === "Tablet Activities", "the Today menu has a Tablet Activities entry");
   const home = read("index.html"), hero = /<div class="lp-actions">([\s\S]*?)<\/div>/.exec(home);
@@ -190,14 +235,18 @@ const ui = read("js/tablet.js"), html = read("tablet.html"), eng = read("js/tabl
 
 /* the menu: every activity has an icon, a screen and a card */
 {
-  const ids = [...ui.matchAll(/\["([a-z]+)", "([^"]+)", "([^"]+)", ([a-zA-Z]+), [01]\]/g)].map(m => ({ id: m[1], title: m[2], fn: m[4] }));
+  const legacy = [...tabletJs.matchAll(/\["([a-z]+)", ([0-2]), ([1-9]), "([^"]+)", "([^"]+)", ([a-zA-Z]+)\]/g)].map(m => ({ id: m[1], title: m[4], icon: new RegExp("\\n\\s+" + m[1] + ": '<").test(tabletJs), screen: new RegExp("function " + m[6] + "\\(root, o, api\\)").test(tabletJs) }));
+  const reg = [];
+  for (const f of UIFILES) for (const m of raw[f].matchAll(/Kit\.register\(\{\s*id: "([a-z]+)", group: ([0-2]), order: ([1-9]), title: "([^"]+)"[\s\S]*?icon: '(<[^']+)', start: ([a-zA-Z]+)\s*\}\)/g)) reg.push({ id: m[1], title: m[4], icon: true, screen: new RegExp("function " + m[6] + "\\(root, o, api\\)").test(raw[f]) });
+  const ids = legacy.concat(reg);
   ok(ids.length === 13, "the menu has thirteen activities: " + ids.length);
-  ok(ids.every(a => new RegExp("\\n\\s+" + a.id + ": '<").test(ui) && new RegExp("function " + a.fn + "\\(root, o, api\\)").test(ui)), "each has an icon and a screen function");
-  ok(new Set(ids.map(a => a.title)).size === 13, "no two have the same name");
-  for (const need of ["Word Search", "Trace the Path", "Crossword"]) ok(ids.some(a => a.title === need), `the menu has ${need}`);
-  ok(/data-tap-exempt/.test(html) === false, "no control is marked exempt from the 52 px floor");
-  ok(/--tap,52px/.test(html) && /min-height:60px/.test(html), "controls are sized from the 52 px floor, and the activity buttons are larger");
+  ok(ids.every(a => a.icon && a.screen), "each has an icon and a screen function: " + ids.filter(a => !(a.icon && a.screen)).map(a => a.id).join(","));
+  ok(new Set(ids.map(a => a.title)).size === 13 && new Set(ids.map(a => a.id)).size === 13, "no two have the same name");
+  for (const need of ["Word Search", "Trace the Path", "Crossword", "Sights and Sounds"]) ok(ids.some(a => a.title === need), `the menu has ${need}`);
+  ok(/data-tap-exempt/.test(html) === false, "no control is marked exempt from the touch floor");
+  ok(/--tbt:72px/.test(html) && /@media \(max-width:699px\),\(max-height:599px\)\{\.tb\{--tbt:56px\}\}/.test(html) && /min-height:var\(--tbt/.test(html), "controls are sized from one variable: 72 px on a tablet, 56 px on a phone (never under the 52 px floor)");
+  ok(/id="tbAssist"/.test(html) && /id="tbNew"/.test(html) && /id="tbBack"/.test(html) && /id="tbSurprise"/.test(html), "the frame has Finish for me, Next, Home and the menu has Surprise me");
 }
 
 if (fails.length) { console.log(`tablet check FAILED: ${fails.length} problem(s), ${pass} passed\n  - ` + fails.slice(0, 30).join("\n  - ")); process.exit(1); }
-console.log(`tablet check passed: ${pass} checks (13 activities, 3 stages x 43 topics, every shape's trace rule, the screen's words, offline wiring)`);
+console.log(`tablet check passed: ${pass} checks (13 activities, 3 stages x 43 topics, every shape's trace rule and journey, the sounds and pictures, the screen's words, offline wiring)`);
