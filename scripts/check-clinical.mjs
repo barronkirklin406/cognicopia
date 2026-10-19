@@ -37,18 +37,26 @@ ok(!!CM && !!CA, "the matrix and the activity engine load");
 if (!CM || !CA) { console.error("clinical check FAILED: the engine did not load"); process.exit(1); }
 
 const STAGES = ["early", "middle", "late"];
-const FLOOR = { early: 14, middle: 18, late: 24 }, LINE = { early: 2.25, middle: 3, late: 4.5 };
+const FLOOR = { early: 18, middle: 18, late: 24 }, LINE = { early: 2.25, middle: 3, late: 4.5 };
 
 /* ---------- 1. the matrix ---------- */
 STAGES.forEach(st => {
   const S = CM.STAGES[st];
   ok(S.type.floor === FLOOR[st], `${st}: the type floor is ${FLOOR[st]} pt`);
   ok(S.stroke.min === LINE[st], `${st}: the line floor is ${LINE[st]} pt`);
-  ok(S.type.bold === (st === "late"), `${st}: bold type ${st === "late" ? "is" : "is not"} required`);
+  ok(S.type.bold === true, `${st}: bold type is required`);
   ["title", "instruction", "body", "label", "clue", "word"].forEach(k => ok(S.type[k] >= FLOOR[st], `${st}: the ${k} size is at least the floor`));
   ok(S.stroke.art >= S.stroke.min && S.stroke.rule >= S.stroke.min && S.stroke.motor >= S.stroke.min, `${st}: every stroke role is at least the floor`);
   ok(CM.floorFor(st) === FLOOR[st], `${st}: floorFor agrees`);
+  /* vision tiers scale every printed size, never below the floor */
+  [["standard", 1], ["large", 1.15], ["xl", 1.3]].forEach(([v, k]) => {
+    const T = CM.typeFor(st, v);
+    ok(CM.visionScale(v) === k, `${st}/${v}: the vision scale is ${k}`);
+    ok(CM.floorFor(st, "body", v) >= FLOOR[st] * k - 0.5, `${st}/${v}: the floor scales with the tier`);
+    ["title", "instruction", "body", "label", "clue", "word"].forEach(r => ok(T[r] >= CM.floorFor(st, r, v), `${st}/${v}: the ${r} size meets the scaled floor`));
+  });
 });
+ok(CM.visionScale("nonsense") === 1 && CM.visionScale() === 1, "an unknown vision tier prints at standard size");
 ok(Math.max.apply(null, CM.STAGES.middle.limits.wordsearch.sizes) <= 8, "the middle stage's word search is 8 square at most");
 ok(CM.STAGES.early.limits.wordsearch.sizes.every(n => n === 12 || n === 15), "the early stage's word search is 12 or 15 square");
 ok(CM.SAFE.edge >= 36 && CM.SAFE.left >= 54 && CM.SAFE.right >= 54, "the safe area is 0.5 in all round, with the 0.75 in binding side");
@@ -83,6 +91,23 @@ const oneLetter = (a, b) => a.length === b.length && [...a].filter((ch, i) => ch
 
 const kinds = CA.kinds();
 ok(kinds.length >= 13, "the engine has its activity kinds (" + kinds.length + ")");
+/* a larger vision tier makes larger print and still fits the page */
+for (const k of kinds) for (const st of STAGES) {
+  if (!CM.allowed(st, k.id)) continue;
+  for (const v of ["large", "xl"]) for (let i = 0; i < 3; i++) {
+    const date = new Date(Date.UTC(2026, 2, 1 + i * 11)).toISOString().slice(0, 10), tag = `${k.id}/${st}/${v}`;
+    const r = CA.tryGenerate(k.id, { stage: st, name: names[i % names.length], date, vision: v });
+    if (!r.page) { ok(false, `${tag}: could not draw on ${date}: ${r.error}`); continue; }
+    const bad = CM.validatePage(r.page);
+    ok(bad.length === 0, `${tag}: ${date}: ${bad[0] || ""}`);
+    const lo = FLOOR[st] * r.page.vision - 0.51;
+    ok(r.page.vision <= CM.visionScale(v) && r.page.meta.visionWanted === CM.visionScale(v), `${tag}: the page records the tier it used`);
+    r.page.texts.forEach(t => {
+      if (t.color === "#fff" || t.color === "#ffffff") return;
+      if (!CM.RESIDENT_ROLES || CM.RESIDENT_ROLES.indexOf(t.role) >= 0) ok(t.size >= lo, `${tag}: "${t.text}" is ${t.size} pt, under ${lo}`);
+    });
+  }
+}
 const seen = {};
 for (const k of kinds) for (const st of STAGES) {
   if (!CM.allowed(st, k.id)) continue;

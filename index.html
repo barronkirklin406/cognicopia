@@ -1126,7 +1126,7 @@ summary{min-height:var(--tap);box-sizing:border-box}
 .arb{margin:0 0 28px;padding:20px 22px;border-radius:18px;background:linear-gradient(160deg,#16231f,#0e1614);border:2px solid #52b788;color:#eef6f1;font-family:"Cognicopia UI","Atkinson Hyperlegible","Trebuchet MS","Segoe UI",sans-serif;box-shadow:0 12px 32px rgba(0,0,0,.28)}
 .arb-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 14px;margin:0 0 12px}
 .arb h2{margin:0;font-size:21px;color:#fff;font-family:inherit}
-.arb-pill{display:inline-flex;align-items:center;gap:6px;padding:5px 14px;border-radius:999px;font-size:15px;font-weight:700;background:rgba(216,243,220,.1);color:#b3c9bf;border:1px solid rgba(216,243,220,.25)}
+.arb-pill{display:inline-flex;align-items:center;gap:6px;padding:5px 14px;border-radius:999px;font-size:15px;font-weight:700;background:rgba(216,243,220,.1);color:#d4e4db;border:1px solid rgba(216,243,220,.25)}
 .arb-pill.is-on{background:#52b788;color:#062116;border-color:#52b788}
 .arb-pill.is-on::before{content:"";width:9px;height:9px;border-radius:50%;background:#062116}
 .arb-row{display:flex;flex-wrap:wrap;gap:12px;align-items:stretch}
@@ -1138,8 +1138,8 @@ summary{min-height:var(--tap);box-sizing:border-box}
 .arb-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:52px;padding:10px 16px;border-radius:12px;border:2px solid rgba(216,243,220,.3);background:transparent;color:#eef6f1;font:inherit;font-size:16px;font-weight:700;text-decoration:none;cursor:pointer;white-space:nowrap}
 .arb-btn:hover{border-color:#7ad3a4;color:#fff}
 .arb-btn:focus-visible,.arb select:focus-visible{outline:3px solid #7ad3a4;outline-offset:3px}
-.arb-btn-primary{background:#52b788;border-color:#52b788;color:#062116}
-.arb-btn-primary:hover{background:#7ad3a4;border-color:#7ad3a4;color:#062116}
+.arb-btn-primary{background:#52b788;border-color:#52b788;color:#000}
+.arb-btn-primary:hover{background:#7ad3a4;border-color:#7ad3a4;color:#000}
 .arb-btn-danger{color:#ffcfc4;border-color:rgba(255,180,162,.45)}
 .arb-btn-danger:hover{border-color:#ffb4a2;color:#fff}
 .arb-btn-emergency{background:#ffcc66;border-color:#ffcc66;color:#241500;font-size:18px;font-weight:800}
@@ -1147,14 +1147,18 @@ summary{min-height:var(--tap);box-sizing:border-box}
 .arb-btn-guest{background:#d9f0e2;border-color:#4f9b75;color:#143d2b;font-weight:800}
 .arb-guest-presets{display:flex;flex-wrap:wrap;gap:8px;padding:14px;margin:10px 0;border:1px solid rgba(216,243,220,.25);border-radius:12px;background:rgba(8,28,21,.45)}
 .arb-guest-presets button{padding:8px 12px;border:1px solid rgba(216,243,220,.25);border-radius:8px;background:#18372a;color:#f2fff5;font:inherit;cursor:pointer}
-.arb-guest-presets p{flex-basis:100%;margin:0;color:#d8f3dc;font-size:14px}
+.arb-guest-presets p{flex-basis:100%;margin:0;color:#d8f3dc;font-size:16px;font-weight:600;letter-spacing:.015em;line-height:1.5}
+.arb-guest-name{display:flex;flex-direction:column;gap:6px;flex-basis:100%;color:#f2fff5;font-size:16px;font-weight:700;letter-spacing:.015em}
+.arb-guest-name input{box-sizing:border-box;width:100%;max-width:26rem;min-height:var(--tap,52px);padding:10px 14px;border:2px solid #d8f3dc;border-radius:10px;background:#fff;color:#0f172a;font:700 20px/1.3 "Atkinson Hyperlegible","Cognicopia UI",system-ui,sans-serif;letter-spacing:.015em}
+.arb-guest-name input:focus-visible{outline:3px solid #f5b800;outline-offset:2px}
+.arb-guest-presets p.arb-guest-hint{margin-top:-2px}
 .arb-guest-presets[hidden]{display:none}
 .pick.is-tier-disabled{opacity:.42;cursor:not-allowed}
 .arb-sticky-crisis{display:none}
 .arb-tier-toggle{background:#332312;border-color:#d6a64b;color:#ffedcc}
 .arb-tier-toggle[aria-pressed="true"]{background:#765018;border-color:#ffd477;color:#fff1cf}
 .arb-btn[aria-disabled="true"],.arb-btn:disabled{opacity:.45;cursor:not-allowed;pointer-events:none}
-.arb-msg{margin:12px 0 0;font-size:15.5px;line-height:1.5;color:#b3c9bf}
+.arb-msg{margin:12px 0 0;font-size:15.5px;line-height:1.5;color:#d4e4db}
 .arb-msg b{color:#fff}
 .arb-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 @media (max-width:700px){
@@ -1175,7 +1179,7 @@ summary{min-height:var(--tap);box-sizing:border-box}
 .arb-backup summary::before{content:"";width:10px;height:10px;border-right:3px solid #7ad3a4;border-bottom:3px solid #7ad3a4;transform:rotate(-45deg);transition:transform .15s;margin:0 4px 0 2px}
 .arb-backup[open] summary::before{transform:rotate(45deg)}
 .arb-backup summary:focus-visible{outline:3px solid #7ad3a4;outline-offset:3px;border-radius:8px}
-.arb-backup-count{font-weight:400;font-size:14.5px;color:#b3c9bf}
+.arb-backup-count{font-weight:400;font-size:14.5px;color:#d4e4db}
 .arb-backup-body{margin:8px 0 0;padding:14px;border-radius:14px;border:2px dashed rgba(216,243,220,.2);transition:border-color .15s,background .15s}
 .arb-backup-body.is-drag{border-color:#7ad3a4;background:rgba(82,183,136,.12)}
 .arb-privacy{display:inline-flex;gap:6px;align-items:center;margin:0 0 12px;padding:5px 12px;border-radius:999px;font-size:14px;font-weight:700;background:rgba(82,183,136,.14);color:#b7ebcc;border:1px solid rgba(122,211,164,.35)}
@@ -1186,13 +1190,13 @@ summary{min-height:var(--tap);box-sizing:border-box}
 .arb-menu{position:absolute;top:calc(100% + 6px);left:0;z-index:40;min-width:270px;padding:6px;border-radius:12px;background:#0e1614;border:1px solid rgba(216,243,220,.3);box-shadow:0 14px 34px rgba(0,0,0,.45)}
 .arb-menu[hidden]{display:none}
 .arb-menu button{display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;min-height:52px;padding:8px 12px;border:0;border-radius:8px;background:transparent;color:#fff;font:inherit;font-size:16px;text-align:left;cursor:pointer}
-.arb-menu button small{font-size:13.5px;color:#b3c9bf}
+.arb-menu button small{font-size:13.5px;color:#d4e4db}
 .arb-menu button:hover,.arb-menu button:focus{background:rgba(82,183,136,.18);outline:none}
 .arb-pass{display:flex;flex-direction:column;gap:6px;margin:0 0 14px;font-size:15px;font-weight:700;color:#e8f5e9}
 .arb-pass input[type=password]{max-width:420px;padding:10px 12px}
-.arb-pass small{font-weight:400;font-size:14px;line-height:1.4;color:#b3c9bf}
-.arb-drop-hint{margin:10px 0 0;font-size:14.5px;color:#b3c9bf}
-.arb-caution{margin:6px 0 0;font-size:14px;color:#b3c9bf}
+.arb-pass small{font-weight:400;font-size:14px;line-height:1.4;color:#d4e4db}
+.arb-drop-hint{margin:10px 0 0;font-size:14.5px;color:#d4e4db}
+.arb-caution{margin:6px 0 0;font-size:14px;color:#d4e4db}
 .arb-banner{margin:12px 0 0;padding:12px 14px;border-radius:12px;font-size:16px;line-height:1.45;background:rgba(82,183,136,.18);border:1px solid #52b788;color:#eef6f1}
 .arb-banner b{color:#b7ebcc}
 .arb-banner.is-error{background:rgba(255,180,162,.12);border-color:rgba(255,180,162,.6);color:#ffe3db}
@@ -1219,8 +1223,8 @@ summary{min-height:var(--tap);box-sizing:border-box}
 .mb-res-item{display:flex;gap:10px;align-items:center;min-height:var(--tap);padding:6px 12px;border-radius:10px;border:1px solid rgba(216,243,220,.2);background:#0b1412;cursor:pointer;font-size:16px}
 .mb-res-item:has(input:checked){border-color:#52b788}
 .mb-res-item input{flex:none;width:20px;height:20px;margin:0;accent-color:#52b788}
-.mb-res-item small{margin-left:auto;font-size:13.5px;color:#b3c9bf;text-align:right}
-.mb-empty{margin:0;font-size:15px;color:#b3c9bf}
+.mb-res-item small{margin-left:auto;font-size:13.5px;color:#d4e4db;text-align:right}
+.mb-empty{margin:0;font-size:15px;color:#d4e4db}
 .mb-warn{margin:10px 0 0;padding:10px 12px;border-radius:10px;background:#ffedd5;color:#7c2d12;font-weight:700;font-size:15px;line-height:1.4}
 .mb-warn[hidden]{display:none}
 .mb-bar{height:22px;margin:16px 0 10px;border-radius:999px;background:#0b1412;border:2px solid rgba(216,243,220,.3);overflow:hidden}
@@ -1243,8 +1247,8 @@ summary{min-height:var(--tap);box-sizing:border-box}
 .arb-choice:has(input:checked){border-color:#52b788;background:rgba(82,183,136,.16)}
 .arb-choice input{flex:none;width:22px;height:22px;margin:2px 0 0;accent-color:#52b788}
 .arb-choice b{display:block;font-size:16.5px;color:#fff}
-.arb-choice small{display:block;font-size:14.5px;color:#b3c9bf}
-.arb-dialog-note{margin:14px 0 0;font-size:14.5px;color:#b3c9bf}
+.arb-choice small{display:block;font-size:14.5px;color:#d4e4db}
+.arb-dialog-note{margin:14px 0 0;font-size:14.5px;color:#d4e4db}
 .arb-dialog-actions{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:10px;margin-top:18px}
 @media (max-width:700px){
   .arb-split{flex:1 1 100%}
@@ -1259,12 +1263,12 @@ summary{min-height:var(--tap);box-sizing:border-box}
 .qpb{margin:0 0 28px;padding:20px 22px;border-radius:18px;background:linear-gradient(160deg,#16231f,#0e1614);border:2px solid rgba(216,243,220,.3);color:#eef6f1;font-family:"Cognicopia UI","Atkinson Hyperlegible","Trebuchet MS","Segoe UI",sans-serif;box-shadow:0 12px 32px rgba(0,0,0,.28)}
 .qpb-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 14px;margin:0 0 6px}
 .qpb-head h2{margin:0;font-size:21px;color:#fff;font-family:inherit}
-.qpb-for{padding:5px 14px;border-radius:999px;font-size:15px;font-weight:700;background:rgba(216,243,220,.1);color:#b3c9bf;border:1px solid rgba(216,243,220,.25)}
+.qpb-for{padding:5px 14px;border-radius:999px;font-size:15px;font-weight:700;background:rgba(216,243,220,.1);color:#d4e4db;border:1px solid rgba(216,243,220,.25)}
 .qpb-for.is-on{background:#52b788;color:#062116;border-color:#52b788}
 .qpb-head [data-tier-override]{flex:0 1 auto}
 .qpb-head [data-tier-override]{background:#332312;border-color:#d6a64b;color:#ffedcc}
 .qpb-head [data-tier-override][aria-pressed="true"]{background:#765018;border-color:#ffd477;color:#fff1cf}
-.qpb-lede{margin:0 0 14px;font-size:15.5px;line-height:1.5;color:#b3c9bf}
+.qpb-lede{margin:0 0 14px;font-size:15.5px;line-height:1.5;color:#d4e4db}
 .qpb-picks{margin:0 0 14px;padding:0;border:0;display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .qpb-picks legend{margin:0 0 8px;padding:0;font-weight:700;font-size:16px;color:#fff}
 .qpb-pick{display:flex;gap:12px;align-items:flex-start;min-height:56px;padding:10px 14px;border-radius:12px;border:2px solid rgba(216,243,220,.25);background:#0b1412;cursor:pointer}
@@ -1272,14 +1276,14 @@ summary{min-height:var(--tap);box-sizing:border-box}
 .qpb-pick:has(input:focus-visible){outline:3px solid #7ad3a4;outline-offset:2px}
 .qpb-pick input{flex:none;width:22px;height:22px;margin:2px 0 0;accent-color:#52b788}
 .qpb-pick b{display:block;font-size:16px;color:#fff}
-.qpb-pick small{display:block;font-size:13.5px;color:#b3c9bf;line-height:1.35}
+.qpb-pick small{display:block;font-size:13.5px;color:#d4e4db;line-height:1.35}
 .qpb-actions{display:flex;flex-wrap:wrap;gap:10px}
 .qpb-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:52px;padding:10px 20px;border-radius:12px;border:2px solid rgba(216,243,220,.3);background:transparent;color:#eef6f1;font:inherit;font-size:17px;font-weight:700;cursor:pointer}
 .qpb-btn:hover:not(:disabled){border-color:#7ad3a4;color:#fff}
 .qpb-btn:focus-visible{outline:3px solid #7ad3a4;outline-offset:3px}
 .qpb-btn:disabled{opacity:.45;cursor:not-allowed}
-.qpb-btn-primary{background:#52b788;border-color:#52b788;color:#062116}
-.qpb-btn-primary:hover:not(:disabled){background:#7ad3a4;border-color:#7ad3a4;color:#062116}
+.qpb-btn-primary{background:#52b788;border-color:#52b788;color:#000}
+.qpb-btn-primary:hover:not(:disabled){background:#7ad3a4;border-color:#7ad3a4;color:#000}
 .qpb-btn-digest{background:rgba(82,183,136,.15);border:1.5px solid #52b788;color:#d8f3dc;font-weight:700;transition:all .15s ease}
 .qpb-btn-digest:hover:not(:disabled){background:rgba(82,183,136,.3);border-color:#7ad3a4;color:#fff}
 .qpb-btn-digest:focus-visible{outline:3px solid #7ad3a4;outline-offset:2px}
@@ -1297,8 +1301,8 @@ html:not(.cg-night-shift) .qpb-btn-pocket:hover:not(:disabled){background:#dcfce
 .fld-container{display:flex;flex-direction:column;max-height:calc(100vh - 40px)}
 .fld-head{display:flex;align-items:flex-start;justify-content:space-between;padding:20px 24px 16px;border-bottom:1px solid rgba(216,243,220,.2);background:#14241e}
 .fld-title{margin:0 0 6px;font-size:22px;font-weight:800;color:#ffffff;display:flex;align-items:center;gap:10px}
-.fld-subtitle{margin:0;font-size:14.5px;color:#b3c9bf;line-height:1.45}
-.fld-close{background:transparent;border:0;color:#b3c9bf;font-size:32px;line-height:1;cursor:pointer;padding:0 4px}
+.fld-subtitle{margin:0;font-size:14.5px;color:#d4e4db;line-height:1.45}
+.fld-close{background:transparent;border:0;color:#d4e4db;font-size:32px;line-height:1;cursor:pointer;padding:0 4px}
 .fld-close:hover{color:#ffffff}
 .fld-close:focus-visible{outline:3px solid #7ad3a4;outline-offset:2px}
 .fld-body{padding:20px 24px;overflow-y:auto;display:flex;flex-direction:column;gap:16px}
@@ -1309,7 +1313,7 @@ html:not(.cg-night-shift) .qpb-btn-pocket:hover:not(:disabled){background:#dcfce
 .fld-tier-badge{font-size:14px;font-weight:700;color:#ffd285}
 .fld-fieldset{margin:0;padding:0;border:0}
 .fld-legend{font-size:15.5px;font-weight:700;color:#ffffff;margin-bottom:10px}
-.fld-legend small{font-weight:400;color:#b3c9bf}
+.fld-legend small{font-weight:400;color:#d4e4db}
 .fld-tags-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:8px}
 .fld-tag-item{display:block;cursor:pointer}
 .fld-tag-checkbox{position:absolute;opacity:0;pointer-events:none}
@@ -1321,7 +1325,7 @@ html:not(.cg-night-shift) .qpb-btn-pocket:hover:not(:disabled){background:#dcfce
 .fld-field{display:flex;flex-direction:column;gap:6px}
 .fld-label-row{display:flex;align-items:center;justify-content:space-between}
 .fld-label{font-size:15px;font-weight:700;color:#ffffff}
-.fld-label small{font-weight:400;color:#b3c9bf}
+.fld-label small{font-weight:400;color:#d4e4db}
 .fld-char-count{font-size:13px;color:#7ad3a4;font-variant-numeric:tabular-nums}
 .fld-char-count.is-near-limit{color:#ff9e80;font-weight:700}
 .fld-textarea{width:100%;box-sizing:border-box;padding:10px 14px;border-radius:10px;border:1.5px solid rgba(216,243,220,.3);background:#0b1412;color:#ffffff;font-family:inherit;font-size:14.5px;line-height:1.45;resize:vertical}
@@ -1330,9 +1334,9 @@ html:not(.cg-night-shift) .qpb-btn-pocket:hover:not(:disabled){background:#dcfce
 .fld-toggle-label{display:flex;align-items:flex-start;gap:12px;cursor:pointer}
 .fld-toggle-label input[type="checkbox"]{width:20px;height:20px;margin-top:2px;accent-color:#52b788;flex:none}
 .fld-toggle-label strong{display:block;font-size:14.5px;color:#ffffff}
-.fld-toggle-label small{display:block;font-size:13px;color:#b3c9bf}
+.fld-toggle-label small{display:block;font-size:13px;color:#d4e4db}
 .fld-field-inline{flex-direction:row;align-items:center;gap:12px}
-.fld-label-sm{font-size:14px;font-weight:700;color:#b3c9bf;white-space:nowrap}
+.fld-label-sm{font-size:14px;font-weight:700;color:#d4e4db;white-space:nowrap}
 .fld-input-sm{flex:1;padding:8px 12px;border-radius:8px;border:1px solid rgba(216,243,220,.3);background:#0b1412;color:#ffffff;font-family:inherit;font-size:14px}
 .fld-privacy-note{margin:0;padding:10px 14px;border-radius:8px;background:rgba(82,183,136,.1);border:1px solid rgba(82,183,136,.25);font-size:13px;color:#cfe2d8;line-height:1.4}
 .fld-privacy-note strong{color:#7ad3a4}
@@ -1367,7 +1371,7 @@ html:not(.cg-night-shift) .fld-input-sm{background:#ffffff;border-color:#b5c7bd;
 html:not(.cg-night-shift) .fld-privacy-note{background:#eef8f3;border-color:#b8e2cc;color:#1b382b}
 html:not(.cg-night-shift) .fld-btn-ghost{border-color:#b5c7bd;color:#1b382b}
 html:not(.cg-night-shift) .fld-btn-ghost:hover{background:#eef8f3}
-.qpb-note{margin:10px 0 0;font-size:14px;color:#b3c9bf}
+.qpb-note{margin:10px 0 0;font-size:14px;color:#d4e4db}
 .qpb-note b{color:#eef6f1}
 .qpb-status{margin:10px 0 0;font-size:15.5px;color:#d8f3dc;min-height:1em}
 .qpb-preview{display:grid;gap:18px;margin:16px 0 0;padding:16px;border-radius:14px;background:#2a3431}
@@ -1380,29 +1384,29 @@ html:not(.cg-night-shift) .fld-btn-ghost:hover{background:#eef8f3}
 .pcg{margin:0 0 28px;padding:20px 22px;border-radius:18px;background:linear-gradient(160deg,#16231f,#0e1614);border:2px solid rgba(216,243,220,.3);color:#eef6f1;font-family:"Cognicopia UI","Atkinson Hyperlegible","Trebuchet MS","Segoe UI",sans-serif;box-shadow:0 12px 32px rgba(0,0,0,.28)}
 .pcg-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 14px;margin:0 0 6px}
 .pcg-head h2{margin:0;font-size:21px;color:#fff;font-family:inherit}
-.pcg-pill{padding:5px 14px;border-radius:999px;font-size:15px;font-weight:700;background:rgba(216,243,220,.1);color:#b3c9bf;border:1px solid rgba(216,243,220,.25)}
+.pcg-pill{padding:5px 14px;border-radius:999px;font-size:15px;font-weight:700;background:rgba(216,243,220,.1);color:#d4e4db;border:1px solid rgba(216,243,220,.25)}
 .pcg-pill.is-on{background:#52b788;color:#062116;border-color:#52b788}
-.pcg-empty{margin:0 0 14px;padding:14px 16px;border-radius:12px;border:2px dashed rgba(216,243,220,.3);color:#b3c9bf;font-size:16px;line-height:1.5}
+.pcg-empty{margin:0 0 14px;padding:14px 16px;border-radius:12px;border:2px dashed rgba(216,243,220,.3);color:#d4e4db;font-size:16px;line-height:1.5}
 .pcg-empty[hidden],.pcg-body[hidden],.pcg-how[hidden],.pcg .qpb-btn[hidden]{display:none}
 .pcg-meta{display:grid;grid-template-columns:max-content 1fr;gap:6px 16px;margin:0 0 6px;font-size:16px;line-height:1.4}
-.pcg-meta dt{color:#b3c9bf;font-weight:700}
+.pcg-meta dt{color:#d4e4db;font-weight:700}
 .pcg-meta dd{margin:0;color:#fff}
 .pcg-h{margin:18px 0 8px;font-size:17px;color:#fff;font-family:inherit}
 .pcg-plan{margin:0;padding:0;list-style:none;display:grid;gap:8px}
 .pcg-plan li{display:flex;gap:14px;align-items:flex-start;padding:10px 14px;border-radius:12px;background:#0b1412;border:2px solid rgba(216,243,220,.2)}
 .pcg-n{flex:none;display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:#52b788;color:#062116;font-weight:800;font-size:16px}
 .pcg-plan b{display:block;font-size:16.5px;color:#fff}
-.pcg-plan small{display:block;font-size:14.5px;line-height:1.4;color:#b3c9bf}
+.pcg-plan small{display:block;font-size:14.5px;line-height:1.4;color:#d4e4db}
 .pcg-prompts{margin:0;padding:0;list-style:none}
 .pcg-prompts li{display:flex;gap:14px;padding:10px 0;border-top:1px solid rgba(216,243,220,.18);font-size:16px;line-height:1.5}
 .pcg-prompts li:first-child{border-top:0}
 .pcg-pg{flex:none;min-width:78px;font-weight:700;color:#7ad3a4;font-size:14.5px;padding-top:2px}
 .pcg-extra{margin:16px 0 14px}
 .pcg-extra label{display:block;margin:0 0 6px;font-weight:700;font-size:15.5px;color:#fff}
-.pcg-extra label span{font-weight:400;color:#b3c9bf}
+.pcg-extra label span{font-weight:400;color:#d4e4db}
 .pcg-extra input{width:100%;max-width:460px;min-height:var(--tap);padding:8px 14px;border-radius:12px;border:2px solid rgba(216,243,220,.3);background:#0b1412;color:#fff;font:inherit;font-size:17px}
 .pcg-extra input:focus-visible{outline:3px solid #7ad3a4;outline-offset:2px}
-.pcg-how{margin:14px 0 0;color:#b3c9bf;font-size:15.5px;line-height:1.5}
+.pcg-how{margin:14px 0 0;color:#d4e4db;font-size:15.5px;line-height:1.5}
 .pcg-how summary{cursor:pointer;min-height:var(--tap);display:flex;align-items:center;font-weight:700;color:#eef6f1}
 .pcg-how summary:focus-visible{outline:3px solid #7ad3a4;outline-offset:2px}
 .pcg-how p{margin:6px 0}
@@ -1415,23 +1419,25 @@ html:not(.cg-night-shift) .fld-btn-ghost:hover{background:#eef8f3}
    --qps: vision scale (1, 1.15, 1.3). --fit: small shrink only when a
    page would overflow; max() keeps every size at or above the minimum. */
 /* Printed sheets: a 0.75 in binding gutter on the left, 0.5 in elsewhere, set in the embedded Atkinson Hyperlegible */
-.qp-sheet{--fit:1;font-size:14pt;box-sizing:border-box;width:var(--pw,8.5in);height:var(--ph,11in);padding:.5in .5in .5in .75in;display:flex;flex-direction:column;overflow:hidden;
-  background:#fff;color:#000;font-family:"Atkinson Hyperlegible","Trebuchet MS",Verdana,Arial,sans-serif;line-height:1.3;text-align:left}
-.qp-sheet *{box-sizing:border-box;letter-spacing:normal;text-transform:none;text-shadow:none}
+.qp-sheet{--fit:1;font-size:18pt;font-weight:700;box-sizing:border-box;width:var(--pw,8.5in);height:var(--ph,11in);padding:.5in .5in .5in .75in;display:flex;flex-direction:column;overflow:hidden;
+  background:#fff;color:#000;font-family:"Atkinson Hyperlegible","Trebuchet MS",Verdana,Arial,sans-serif;line-height:1.4;letter-spacing:.01em;text-align:left;-webkit-font-smoothing:auto;text-rendering:geometricPrecision}
+.qp-sheet *{box-sizing:border-box;letter-spacing:.01em;text-transform:none;text-shadow:none}
 .qp-sheet h2,.qp-sheet p,.qp-sheet ul,.qp-sheet ol,.qp-sheet li{font-family:inherit;max-width:none}
 .qp-head{margin:0 0 .08in;padding:0 0 .08in;border-bottom:3pt solid #000}
 /* Resident name banner: the first thing on every activity page. Same size on screen and paper
    (the preview is measured to fit exactly as it prints); emerald accent on screen, black on paper. */
 .resident-hero-name{display:block;margin:0 0 12px;padding:0 0 4px;border-bottom:3px solid #10b981;font-size:32pt;font-weight:800;line-height:1.1;letter-spacing:-.5px;color:#0f172a;overflow-wrap:anywhere}
 .qp-sheet .qp-banner{flex:none;margin:0 0 .1in;padding:0 0 .05in;border-bottom-width:3pt;font-size:32pt;color:#000}
-.qp-sheet .qp-banner .rhn-label{font-size:13pt;font-weight:800;letter-spacing:.06em;text-transform:uppercase;vertical-align:.35em;margin-right:.3em}
+.qp-sheet .qp-banner .rhn-label{font-size:16pt;font-weight:800;letter-spacing:.06em;text-transform:uppercase;vertical-align:.35em;margin-right:.3em}
 .qp-sheet .qp-cover-name.resident-hero-name{border:0;padding:0;margin:.05in 0 .2in;letter-spacing:0}
 .qp-sheet .qp-title{margin:0;font-size:max(26pt,calc(30pt * var(--qps,1) * var(--fit)));line-height:1.1;font-weight:700;color:#000;font-family:inherit}
-.qp-sheet .qp-sub{margin:.04in 0 0;font-size:max(16pt,calc(16pt * var(--qps,1) * var(--fit)));color:#000}
+.qp-sheet .qp-sub{margin:.04in 0 0;font-size:max(18pt,calc(18pt * var(--qps,1) * var(--fit)));color:#000}
 .qp-sheet .qp-inst{margin:.1in 0 .14in;font-size:max(18pt,calc(18pt * var(--qps,1) * var(--fit)));line-height:1.3;color:#000}
 .qp-body{flex:1;min-height:0;display:flex;flex-direction:column}
-.qp-sheet .qp-staff{margin:.08in 0 0;font-size:12pt;color:#000;border-top:1pt dashed #000;padding-top:.05in}
-.qp-sheet .qp-foot{display:flex;justify-content:space-between;gap:.2in;margin-top:.08in;padding-top:.05in;border-top:1pt solid #000;font-size:11pt;color:#000}
+.qp-sheet .qp-staff{margin:.08in 0 0;font-size:14pt;font-weight:700;line-height:1.5;color:#000;border-top:1pt dashed #000;padding-top:.05in}
+.qp-sheet .qp-foot{display:flex;justify-content:space-between;gap:.2in;margin-top:.08in;padding-top:.05in;border-top:1pt solid #000;font-size:14pt;font-weight:700;color:#000}
+/* the site's own footer colour rule must never reach a printed page: footer text is pure black */
+.qp-sheet .qp-foot,.qp-sheet .qp-foot span{color:#000 !important}
 
 /* word search */
 .qp-grid{--c:max(0.36in,calc(var(--cell) * var(--fit)));display:grid;grid-template-columns:repeat(var(--n),var(--c));grid-auto-rows:var(--c);margin:0 auto;border:3pt solid #000}
@@ -1449,7 +1455,7 @@ html:not(.cg-night-shift) .fld-btn-ghost:hover{background:#eef8f3}
 .qp-sheet .qp-card-f{margin:.16in 0 0;font-size:max(18pt,calc(18pt * var(--qps,1) * var(--fit)));color:#000}
 .qp-cut{position:relative;height:.34in;display:flex;align-items:center;justify-content:center}
 .qp-cut::before{content:"";position:absolute;left:0;right:0;top:50%;border-top:1.5pt dashed #000}
-.qp-cut span{position:relative;padding:0 .1in;background:#fff;font-size:10pt;color:#000}
+.qp-cut span{position:relative;padding:0 .1in;background:#fff;font-size:14pt;color:#000}
 
 /* finish the thought */
 .qp-sheet .qp-fill{margin:0;padding:0 0 0 .5in;display:flex;flex-direction:column;justify-content:space-around;flex:1}
@@ -1463,19 +1469,20 @@ html:not(.cg-night-shift) .fld-btn-ghost:hover{background:#eef8f3}
 /* cover */
 /* the framed panel inside the cover page (the page itself is also .qp-cover, and keeps its 0.75 in margin) */
 .qp-body > .qp-cover{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;border:4pt double #000;padding:.4in}
-.qp-sheet .qp-cover-fac{margin:0 0 .3in;font-size:16pt;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#000}
+.qp-sheet .qp-cover-fac{margin:0 0 .3in;font-size:18pt;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#000}
 .qp-sheet .qp-cover-for{margin:0;font-size:max(28pt,calc(28pt * var(--qps,1) * var(--fit)));color:#000}
 .qp-sheet .qp-cover-name{margin:.05in 0 .2in;font-size:max(48pt,calc(56pt * var(--qps,1) * var(--fit)));font-weight:700;line-height:1.05;color:#000;overflow-wrap:anywhere}
 .qp-sheet .qp-cover-line{margin:0 0 .3in;font-size:max(20pt,calc(20pt * var(--qps,1) * var(--fit)));font-style:italic;color:#000}
 .qp-cover-art{width:2.6in;height:auto;margin:0 0 .25in}
+.qp-sheet .qp-cover-name.qp-cover-untitled{font-size:max(40pt,calc(44pt * var(--qps,1) * var(--fit)));line-height:1.15}
 .qp-sheet .qp-cover-month{margin:0 0 .3in;font-size:max(22pt,calc(22pt * var(--qps,1) * var(--fit)));font-weight:700;color:#000}
 .qp-cover-inside{border-top:2pt solid #000;padding-top:.15in}
 .qp-sheet .qp-cover-inside p{margin:0 0 .06in;font-size:18pt;font-weight:700;color:#000}
 .qp-sheet .qp-cover-inside ul{margin:0;padding:0;list-style:none;font-size:max(18pt,calc(18pt * var(--qps,1) * var(--fit)));line-height:1.45;color:#000}
 
 /* grayscale ink: soft gray fills; black-and-white ink keeps pure #000/#fff */
-.ink-gray .qp-head{background:#e6e6e6;padding:.08in .12in;border-bottom-color:#444}
-.ink-gray .qp-banner{border-bottom-color:#444}
+.ink-gray .qp-head{background:#e6e6e6;padding:.08in .12in;border-bottom-color:#000}
+.ink-gray .qp-banner{border-bottom-color:#000}
 /* spacing-only fallback when a page is still too full at the smallest type */
 .qp-sheet.qp-tight .qp-banner{line-height:1;margin-bottom:.05in;padding-bottom:.02in}
 .qp-sheet.qp-tight .qp-head{margin-bottom:.04in;padding-bottom:.05in}
@@ -1484,8 +1491,8 @@ html:not(.cg-night-shift) .fld-btn-ghost:hover{background:#eef8f3}
 .qp-sheet.qp-tight .qp-fill li p{line-height:1.2}
 .qp-sheet.qp-tight .qp-opts{margin-top:.03in !important}
 .qp-sheet .qp-banner + .qp-head .qp-title{font-size:max(24pt,calc(26pt * var(--qps,1) * var(--fit)))}
-.ink-gray .qp-card{background:#f2f2f2;border-color:#444}
-.ink-gray .qp-grid{border-color:#444}
+.ink-gray .qp-card{background:#f2f2f2;border-color:#000}
+.ink-gray .qp-grid{border-color:#000}
 
 /* ═══ Print: only the packet, true size, one activity per page ═══ */
 @media print{
@@ -1496,7 +1503,7 @@ html:not(.cg-night-shift) .fld-btn-ghost:hover{background:#eef8f3}
   #qpPrintRoot .qp-sheet:last-child{break-after:auto;page-break-after:auto}
   /* on paper the name rule is black (dark gray for grayscale ink): no emerald on a black-and-white printer */
   .resident-hero-name{color:#000 !important;border-bottom-color:#000 !important}
-  .ink-gray .qp-banner{border-bottom-color:#444 !important}
+  .ink-gray .qp-banner{border-bottom-color:#000 !important}
   #qpPrintRoot,#qpPrintRoot *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
   .qpb,.pcg{display:none !important}
 }
@@ -1724,7 +1731,7 @@ html body{padding-left:0}
 .cg-sidebar-toggle{height:var(--tap,52px)!important;min-width:var(--tap,52px);font-family:var(--cg-font-ui,"Atkinson Hyperlegible","Segoe UI",sans-serif)}
 .cg-sb-acc > summary{min-height:var(--tap,52px);box-sizing:border-box;display:flex;align-items:center}
 .cg-hub-li{margin:0;list-style:none}
-.cg-hub > summary,.cg-sidebar-nav a.cg-hub-link{display:flex;align-items:center;gap:10px;box-sizing:border-box;min-height:var(--tap,52px);margin:3px 6px 0;padding:8px 10px;border:0;border-radius:8px;font:700 11.5pt/1.25 var(--cg-font-ui,"Trebuchet MS","Segoe UI",sans-serif)!important;letter-spacing:0!important;text-transform:none!important;color:var(--sb-txt)!important;text-decoration:none;cursor:pointer}
+.cg-hub > summary,.cg-sidebar-nav a.cg-hub-link{display:flex;align-items:center;gap:10px;box-sizing:border-box;min-height:var(--tap,52px);margin:3px 6px 0;padding:8px 10px;border:0;border-radius:8px;font:700 12pt/1.35 var(--cg-font-ui,"Trebuchet MS","Segoe UI",sans-serif)!important;letter-spacing:.01em!important;text-transform:none!important;color:var(--sb-txt)!important;text-decoration:none;cursor:pointer}
 .cg-hub > summary:hover,.cg-sidebar-nav a.cg-hub-link:hover{background:var(--sb-hover)}
 .cg-hub[open] > summary{background:var(--sb-open)}
 .cg-sidebar-nav a.cg-hub-link.active{background:var(--sb-active);box-shadow:inset 3px 0 0 var(--sb-accent)}
@@ -1732,7 +1739,9 @@ html body{padding-left:0}
 html body .cg-sidebar{background:var(--sb-bg);border-color:var(--sb-border);color:var(--sb-txt);-webkit-backdrop-filter:none;backdrop-filter:none}
 html body .cg-sidebar-brand{color:var(--cg-green-700,#1b382b)!important;font:600 23px/1.1 var(--cg-font-display,Georgia,serif)!important;letter-spacing:-.01em}
 html body .cg-sidebar-brand:hover{color:var(--cg-green-600,#2d5a44)!important}
-html body .cg-sidebar-nav a{color:var(--sb-txt)!important;font-family:var(--cg-font-ui,"Trebuchet MS","Segoe UI",sans-serif)}
+html body .cg-sidebar-nav a{color:var(--sb-txt)!important;font-family:var(--cg-font-ui,"Trebuchet MS","Segoe UI",sans-serif);font-weight:600;letter-spacing:.012em;line-height:1.4}
+/* nothing in the navigation is small: 16 px links, 14 px group labels (some pages still carry an older 13 px and 12 px copy of these) */
+html body .cg-sidebar{--sb-lnk-sz:12pt;--sb-hdr-sz:10.5pt}
 html body .cg-sidebar-nav a:hover{background:var(--sb-hover);color:var(--sb-txt)!important}
 html body .cg-sidebar-nav a.active{background:var(--sb-active);color:var(--cg-green-700,#1b382b)!important;font-weight:700}
 html body .cg-sidebar .cg-sb-section{color:var(--sb-muted)!important}
@@ -1755,13 +1764,13 @@ html body .cg-sidebar .cg-ailment-card:focus-visible{outline:3px solid var(--cg-
 .cg-sb-acc > summary:hover{background:var(--sb-hover)}
 .cg-sb-acc > summary:focus-visible,.cg-sidebar-nav a:focus-visible,.cg-sidebar-brand:focus-visible{outline:3px solid var(--cg-focus,#f5b800);outline-offset:2px;box-shadow:0 0 0 6px var(--cg-focus-dark,#10241a)}
 .cg-sb-acc-title{flex:1;min-width:0}
-.cg-sb-count{flex:none;min-width:18px;padding:1px 6px;border-radius:9px;background:rgba(82,183,136,.2);color:var(--sb-txt)!important;font-size:8pt;letter-spacing:0;text-align:center}
+.cg-sb-count{flex:none;min-width:18px;padding:1px 6px;border-radius:9px;background:rgba(82,183,136,.2);color:var(--sb-txt)!important;font-size:11pt;font-weight:700;letter-spacing:.01em;text-align:center}
 .cg-sb-chev{flex:none;transition:transform .15s}
 .cg-sb-acc[open] > summary .cg-sb-chev{transform:rotate(90deg)}
 .cg-sb-sub,.cg-sb-sub ul{list-style:none;margin:0;padding:0}
 .cg-sb-sub a[data-hub]{font-weight:600}
-.cg-sb-glabel{display:block;padding:10px 14px 3px 20px;font:700 12px var(--cg-font-ui,"Trebuchet MS","Segoe UI",sans-serif);letter-spacing:.06em;text-transform:uppercase;color:var(--sb-muted)!important}
-.cg-crumbs{padding:8px 28px;border-bottom:1px solid var(--cg-tan-200,#ddd1ba);background:var(--cg-parchment,#f4efe6);font:15px/20px var(--cg-font-ui,"Trebuchet MS","Segoe UI",sans-serif)}
+.cg-sb-glabel{display:block;padding:10px 14px 3px 20px;font:700 15px/1.4 var(--cg-font-ui,"Trebuchet MS","Segoe UI",sans-serif);letter-spacing:.06em;text-transform:uppercase;color:var(--sb-muted)!important}
+.cg-crumbs{padding:8px 28px;border-bottom:1px solid var(--cg-tan-200,#ddd1ba);background:var(--cg-parchment,#f4efe6);font:500 16px/1.5 var(--cg-font-ui,"Trebuchet MS","Segoe UI",sans-serif);letter-spacing:.012em}
 .cg-crumbs ol{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;margin:0;padding:0;list-style:none}
 .cg-crumbs li,.cg-crumbs a,.cg-crumbs span{font-size:inherit;line-height:inherit}
 .cg-crumbs li{display:flex;align-items:center;gap:8px;margin:0;color:var(--cg-ink-soft,#343b49)!important}
@@ -1815,7 +1824,7 @@ html.cg-night-shift .cg-topbar .cg-cta:focus-visible{outline-color:#ffd477}
   html body .cg-hub .cg-sb-sub a.active{box-shadow:inset 3px 0 0 var(--sb-accent)}
   .cg-hub .cg-sb-sub .cg-sb-ico{width:18px;height:18px}
   .cg-hub .cg-sb-sub .cg-ailment-card{width:100%}
-  .cg-hub .cg-sb-sub .cg-sb-section{padding:12px 14px 4px;font-size:12px}
+  .cg-hub .cg-sb-sub .cg-sb-section{padding:12px 14px 4px;font-size:15px;line-height:1.4}
   .cg-hub .cg-sb-sub .cg-sb-divider{margin:6px 8px}
   /* Resources: a wide panel, the library in its three groups */
   .cg-hubs > .cg-hub-li[data-hub="resources"] > .cg-hub > .cg-sb-sub{left:auto;right:0;width:min(880px,calc(100vw - 48px));display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px 16px;padding:16px}
@@ -1877,15 +1886,15 @@ html.cg-night-shift .cg-sidebar-toggle{background:#332312!important;border-color
 .cg-foot-logo{display:inline-flex;align-items:center;gap:10px;min-height:var(--tap,52px);color:var(--cg-green-700,#1b382b)!important;font:600 24px/1 var(--cg-font-display,Georgia,serif);text-decoration:none}
 .cg-foot-logo img{width:36px;height:30px;object-fit:contain}
 .cg-foot p{margin:4px 0 0;max-width:38ch;color:var(--cg-ink-soft,#343b49)!important;font:400 16px/1.5 var(--cg-font-ui,"Segoe UI",sans-serif);text-align:left}
-.cg-foot .cg-foot-by{font-weight:600;font-size:15px}
-html.cg-paper:not(.cg-night-shift) .cg-foot h2,.cg-foot h2{margin:0 0 4px;padding:0;border:0!important;color:var(--cg-tan-800,#4f4030)!important;font:700 14px/1.2 var(--cg-font-ui,"Segoe UI",sans-serif)!important;letter-spacing:.12em;text-transform:uppercase}
+.cg-foot .cg-foot-by{font-weight:600;font-size:16px;line-height:1.5}
+html.cg-paper:not(.cg-night-shift) .cg-foot h2,.cg-foot h2{margin:0 0 4px;padding:0;border:0!important;color:var(--cg-tan-800,#4f4030)!important;font:700 15px/1.4 var(--cg-font-ui,"Segoe UI",sans-serif)!important;letter-spacing:.1em;text-transform:uppercase}
 .cg-foot ul{margin:0;padding:0;list-style:none}
 .cg-foot li{margin:0;padding:0;background:none;border:0;box-shadow:none}
 .cg-foot-col a{display:flex;align-items:center;min-height:var(--tap,52px);color:var(--cg-charcoal,#1a202c)!important;font:500 16px/1.3 var(--cg-font-ui,"Segoe UI",sans-serif);text-decoration:none}
 .cg-foot-col a:hover{color:var(--cg-green-700,#1b382b)!important;text-decoration:underline;text-underline-offset:4px}
 .cg-foot a:focus-visible{outline:3px solid var(--cg-focus,#f5b800);outline-offset:3px;box-shadow:0 0 0 6px var(--cg-focus-dark,#10241a)}
 .cg-foot-base{margin-top:24px;padding-top:16px;border-top:1px solid var(--cg-tan-100,#ebe3d3)}
-.cg-foot-base p{max-width:none;font-size:15px}
+.cg-foot-base p{max-width:none;font-size:16px;line-height:1.5;letter-spacing:.012em}
 @media (max-width:1099px){.cg-foot-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:560px){.cg-foot-grid{grid-template-columns:minmax(0,1fr);gap:18px}.cg-foot-in{width:calc(100% - 40px)}}
 html.cg-night-shift .cg-foot{background:#17120c;border-color:#684a26}
@@ -2152,7 +2161,7 @@ html body{background:var(--cg-cream,#fbf7f1)}
 .lp-foot-logo{display:inline-flex;align-items:center;gap:10px;min-height:var(--cg-tap,52px);color:var(--cg-green-700,#1b382b)!important;font:600 24px/1 var(--cg-font-display,Georgia,serif);text-decoration:none}
 .lp-foot-logo img{width:36px;height:30px;object-fit:contain}
 .lp-foot-brand p{margin:4px 0 0;max-width:38ch;color:var(--cg-ink-soft,#343b49);font:400 16px/1.5 var(--cg-font-ui,"Segoe UI",sans-serif)}
-.lp-footer h2{margin:0 0 4px;color:var(--cg-tan-800,#4f4030);font:700 14px/1.2 var(--cg-font-ui,"Segoe UI",sans-serif);letter-spacing:.12em;text-transform:uppercase}
+.lp-footer h2{margin:0 0 4px;color:var(--cg-tan-800,#4f4030);font:700 15px/1.4 var(--cg-font-ui,"Segoe UI",sans-serif);letter-spacing:.1em;text-transform:uppercase}
 .lp-foot-col ul{margin:0;padding:0;list-style:none}
 .lp-foot-col li{margin:0}
 .lp-foot-col a{display:flex;align-items:center;min-height:var(--cg-tap,52px);color:var(--cg-charcoal,#1a202c)!important;font:500 16px/1.3 var(--cg-font-ui,"Segoe UI",sans-serif);text-decoration:none}
@@ -2564,9 +2573,13 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
 <!-- ══ ACTIVE RESIDENT BAR: picks a saved Resident Activity Profile to build this packet from ══ -->
 <section class="arb" id="activeResidentBar" aria-labelledby="arbTitle">
   <div class="arb-guest-tools">
-    <button type="button" class="arb-btn arb-btn-guest" id="guestPresetToggle" aria-expanded="false" aria-controls="guestPresetMenu">⚡ Quick-Print Guest Profile</button>
+    <button type="button" class="arb-btn arb-btn-guest" id="guestPresetToggle" aria-expanded="false" aria-controls="guestPresetMenu">⚡ Quick-Print Packet</button>
     <div class="arb-guest-presets" id="guestPresetMenu" hidden>
-      <p>Choose a general archetype for a temporary packet. No profile is saved and no resident name is used.</p>
+      <p>Type the resident’s first name, then choose a general style for a quick packet. The name is used only on this printout. Nothing is saved or sent, and no profile is created.</p>
+      <label class="arb-guest-name" for="guestFirstName"><span>Resident first name</span>
+        <input type="text" id="guestFirstName" name="guestFirstName" maxlength="30" autocomplete="off" autocapitalize="words" spellcheck="false" placeholder="For example, Margaret" aria-describedby="guestNameHint">
+      </label>
+      <p class="arb-guest-hint" id="guestNameHint">Leave it blank and the packet is titled “Personalized Activity Packet”.</p>
       <button type="button" data-guest-preset="homemaker">Mid-Century Homemaker</button>
       <button type="button" data-guest-preset="farmer">Midwest Farmer/Worker</button>
       <button type="button" data-guest-preset="veteran">Post-War Veteran</button>
@@ -2701,7 +2714,7 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
     <label class="qpb-pick"><input type="checkbox" data-page="wordsearch" checked><span><b>Personalized Word Search</b><small>Words from their work, hobbies and decades</small></span></label>
     <label class="qpb-pick"><input type="checkbox" data-page="cards" checked><span><b>Reminiscence Cards</b><small>Large conversation cards, two to a page</small></span></label>
     <label class="qpb-pick"><input type="checkbox" data-page="trivia" checked><span><b>Tailored Trivia / Completion</b><small>Finish the thought, with no wrong answers</small></span></label>
-    <label class="qpb-pick"><input type="checkbox" data-page="cover" checked><span><b>Custom Cover Sheet</b><small>&ldquo;Prepared for&rdquo; with their name</small></span></label>
+    <label class="qpb-pick"><input type="checkbox" data-page="cover" checked><span><b>Custom Cover Sheet</b><small>&ldquo;Activity Packet for&rdquo; with their first name</small></span></label>
   </fieldset>
   <div class="qpb-actions">
     <button type="button" class="qpb-btn qpb-btn-primary" id="qpbGenerate"><span aria-hidden="true">⚡</span> Generate Custom Packet</button>
@@ -5380,6 +5393,7 @@ function drawResidentBanner(d, name, x, top, w, o){
   return ry + rule / 2;
 }
 /* Pages for staff, not the resident: no name banner. */
+const STAFF_MIN = 16;      // staff pages (guides, answer keys, notes) are read at arm's length too: nothing under 16 pt
 const STAFF_PAGE = /\bStaff\b|Engagement Notes|About Your Mother or Father/;
 
 /* =================================================================
@@ -5400,14 +5414,17 @@ class Doc{
        mark (under 9 pt, a number in a puzzle cell) and the floor is raised to the floor, and the late stage prints bold.
        Staff pages keep their own sizes. */
     const d=this.d, setSize=d.setFontSize.bind(d), setFont=d.setFont.bind(d), live=()=>!this.noFloor && !STAFF_PAGE.test(this.title||"");
-    d.setFontSize=(sz,...rest)=>setSize(live() && sz>=9 ? Math.max(sz,this.floor) : sz,...rest);
+    d.setFontSize=(sz,...rest)=>setSize(sz>=9 ? (live() ? Math.max(sz,this.floor) : this.noFloor ? sz : Math.max(sz,STAFF_MIN)) : sz,...rest);
     d.setFont=(name,style,...rest)=>setFont(name,live() && this.bold && style==="normal" ? "bold" : style,...rest);
   }
   /* The stage's rules (src/engine/ClinicalMatrix.js): the smallest type a resident reads, whether it is bold,
      the thinnest line and the weight of a rule. */
-  setStage(stage){
+  setStage(stage,vision){
     const CM=window.CognicopiaClinicalMatrix, S=CM.STAGES[CM.stageOf(stage)];
-    this.stage=S.id; this.floor=S.type.floor; this.bold=S.type.bold; this.minLine=S.stroke.min; this.rule=S.stroke.rule;
+    this.vision=CM.visionScale(vision);              // 1, 1.15 or 1.3: the vision tier scales the floor, so every page's type grows with it
+    this.stage=S.id; this.floor=S.type.floor;
+    this.lift=CM.floorFor(S.id,"body",vision);        // flowing text and headings grow to this; hand-laid grids and cards keep the stage floor
+    this.bold=S.type.bold; this.minLine=S.stroke.min; this.rule=S.stroke.rule;
     return this;
   }
   /* What the next pages are: the shell picks each page's tip from this. */
@@ -5425,7 +5442,12 @@ class Doc{
     if(this.who && !STAFF_PAGE.test(t))
       this.y=drawResidentBanner(this.d,this.who,MARGIN,this.y-16,PW-2*MARGIN,
         {labelSize:this.floor, rule:this.rule, label:this.stage==="late"?"MADE FOR:":"PREPARED ESPECIALLY FOR:"})+30;
-    this.d.setFont("helvetica","bold"); this.d.setFontSize(Math.max(24,this.floor));
+    this.d.setFont("helvetica","bold");
+    /* the heading grows with the vision tier but never past the line: it shrinks one point at a time, to 24 pt at the least */
+    let hs=Math.max(24,this.lift); const nf=this.noFloor; this.noFloor=true;     // the size hook would lift a smaller size back to the floor
+    this.d.setFontSize(hs);
+    while(hs>24 && this.d.getTextWidth(t)>PW-2*MARGIN){ hs-=1; this.d.setFontSize(hs); }
+    this.noFloor=nf;
     this.d.text(t,MARGIN,this.y); this.y+=14;
     this.d.setLineWidth(Math.max(2,this.minLine)); this.d.line(MARGIN,this.y,PW-MARGIN,this.y);
     this.y+=30;
@@ -5433,8 +5455,8 @@ class Doc{
   /* The size and weight a block of text is really set in: never under the stage's floor on a page the resident
      reads (24 pt and bold at the late stage). Staff pages keep their own sizes. */
   fit(size,bold){
-    if(STAFF_PAGE.test(this.title||"")) return {size,bold};
-    return {size:Math.max(size,this.floor), bold:bold||this.bold};
+    if(STAFF_PAGE.test(this.title||"")) return {size:Math.max(size,STAFF_MIN),bold};
+    return {size:Math.max(size,this.lift), bold:bold||this.bold};
   }
   body(t,{size=19,bold=false,gap=1.5,indent=0}={}){
     ({size,bold}=this.fit(size,bold));
@@ -5489,9 +5511,12 @@ class Doc{
     const SH=window.CognicopiaClinicalMatrix.SHELL, dy=this.d.internal.pageSize.getHeight()-792;
     this.d.setTextColor(0,0,0); this.d.setFont("helvetica","bold"); this.d.setFontSize(SH.tip.size);
     this.d.text("Clinical Tip:",SH.left,SH.tip.y+dy);
+    const lead=this.d.getTextWidth("Clinical Tip: ");     // measured in the bold it is drawn in
     this.d.setFont("helvetica","normal");
-    this.d.text("Do not ask questions or test memory. Sit beside them, place the marker in their hand,",SH.left+this.d.getTextWidth("Clinical Tip: ")+3,SH.tip.y+dy);
-    this.d.text("and model slow, calm breathing.",SH.left,SH.tip.y+dy+SH.tip.lead);
+    const tip="Do not ask questions or test memory. Sit beside them, place the marker in their hand, and model slow, calm breathing.";
+    const first=this.d.splitTextToSize(tip,SH.right-(SH.left+lead+3))[0], rest=tip.slice(first.length).trim();   // wrapped to the room the label leaves
+    this.d.text(first,SH.left+lead+3,SH.tip.y+dy);
+    this.d.text(rest,SH.left,SH.tip.y+dy+SH.tip.lead);
   }
   /* If the next block won't fit, carry on over the page instead of
      letting writing lines spill off the bottom. */
@@ -6389,7 +6414,13 @@ function colorNumberPage(D,r,s,theme){
   D.d.setLineWidth(1);
   D.y=y0+box+36;
   D.d.setFont("helvetica","bold"); D.d.setFontSize(17);
-  D.d.text(CBN_COLORS.map((c,i)=>(i+1)+" = "+c).join("      "),MARGIN,D.y);
+  const leg=CBN_COLORS.map((c,i)=>(i+1)+" = "+c), legAll=leg.join("      ");
+  if(D.d.getTextWidth(legAll)<=PW-2*MARGIN) D.d.text(legAll,MARGIN,D.y);
+  else{                                              // larger print: two short lines rather than one that runs off the page
+    const h=Math.ceil(leg.length/2), step=D.d.getFontSize()*1.3;
+    D.d.text(leg.slice(0,h).join("      "),MARGIN,D.y); D.y+=step;
+    D.d.text(leg.slice(h).join("      "),MARGIN,D.y);
+  }
   D.y+=22;
   D.d.setFont("helvetica","normal"); D.d.setFontSize(15);
   D.d.text("Any colors you like will do.",MARGIN,D.y);
@@ -7308,7 +7339,7 @@ function enginePage(D,r,id,theme){
   const A=window.CognicopiaClinicalActivities, M=window.CognicopiaColoringManifest;
   if(!A) throw new Error("The activity engine is not loaded.");
   let subjects=null; try{ subjects=M&&M.loadSync?M.loadSync():null; }catch(e){}
-  const base={ stage:r.stage, name:r.first, date:PACKET_DATE, variant:PACKET_VARIANT, headless:true, subjects,
+  const base={ stage:r.stage, vision:D.vision, name:r.first, date:PACKET_DATE, variant:PACKET_VARIANT, headless:true, subjects,
     avoid:r.avoid, allow:r.faith?["faith"]:[] };
   /* first, what the page is called, so the heading can be drawn and the room under it measured */
   const probe=A.generate(id,Object.assign({},base,{frame:{x:MARGIN,y:200,w:PW-2*MARGIN,h:PH-MARGIN-24-200}}));
@@ -7337,7 +7368,9 @@ function makePacket(r, mode){
   const s=STAGE[r.stage];
   /* only the pages the stage's rulebook allows: the form already turns the others off, and this holds for a saved file too */
   const sel={}; for(const id in r.acts){ if(r.acts[id] && CM.allowed(r.stage,id,"packet")) sel[id]=true; }
-  const D=new Doc().setStage(r.stage);
+  /* the vision tier: a profile's own setting, or Extra-Large Print on the form */
+  const vision=r.vision||(r.accessibility&&r.accessibility.extraLargePrint?"xl":"standard");
+  const D=new Doc().setStage(r.stage,vision);
   D.who=pdfSafe(r.goes||r.first||"");              // the name banner on every activity page
   D.simplifiedLayout=!!(r.accessibility && r.accessibility.simplifiedLayout);
   applyPureBW(D.d,{minLine:D.minLine});            // always: pure black on white, no line thinner than the stage's floor
@@ -7898,7 +7931,7 @@ const COACHING_REMINDER="Clinical Tip: Do not ask questions or test memory. Sit 
 function tipPlan(pages,stage,name,iso,variant){
   const CM=window.CognicopiaClinicalMatrix, rng=CM.dailyRng(name,iso,variant,"tips"), list=[];
   pages.forEach((pg,i)=>{ if(!NO_TIP.test(pg.kind)) list.push({n:i+1,activity:pg.kind,topic:pg.topic}); });
-  const plan=CM.cuePlan(list,stage,rng,{name});
+  const plan=CM.cuePlan(list,stage,rng,{name:/^guest$/i.test(name)?"":name});   // "guest" only seeds the day's choice; a tip never says it
   return n=>plan[n]?plan[n].text:"";
 }
 
@@ -11724,9 +11757,10 @@ function generateAilmentPDF(ailmentType, pick) {
     return { kind:"cover", sheets:[{ kind:"cover", title:"", body:
       '<div class="qp-cover">' +
         (fac.trim() ? '<p class="qp-cover-fac">' + esc(fac.trim()) + "</p>" : "") +
-        '<p class="qp-cover-for">Prepared especially for:</p>' +
-        '<p class="qp-cover-name resident-hero-name">' + esc(src.name || "You") + "</p>" +
-        '<p class="qp-cover-line">Your Personalized Activity Packet</p>' +
+        /* a name: "Activity Packet for Margaret"; no name: the packet is simply titled "Personalized Activity Packet" */
+        (src.name ? '<p class="qp-cover-for">Activity Packet for</p>' : "") +
+        '<p class="qp-cover-name resident-hero-name' + (src.name ? "" : " qp-cover-untitled") + '">' + esc(src.name || "Personalized Activity Packet") + "</p>" +
+        '<p class="qp-cover-line">' + (src.name ? "Your Personalized Activity Packet" : "Chosen just for you") + "</p>" +
         '<svg class="qp-cover-art" viewBox="0 0 200 120" aria-hidden="true"><path d="M20 100 Q100 20 180 100" fill="none" stroke="#000" stroke-width="5" stroke-linecap="round"/><circle cx="100" cy="42" r="16" fill="#fff" stroke="#000" stroke-width="5"/><path d="M60 100 L60 84 M100 100 L100 76 M140 100 L140 84" stroke="#000" stroke-width="5" stroke-linecap="round"/></svg>' +
         '<p class="qp-cover-month">' + esc(month.trim()) + "</p>" +
         (included.length ? '<div class="qp-cover-inside"><p>Inside this packet</p><ul>' + included.map(function(t){ return "<li>" + esc(t) + "</li>"; }).join("") + "</ul></div>" : "") +
@@ -11740,7 +11774,7 @@ function generateAilmentPDF(ailmentType, pick) {
   function sheetHtml(s, src, n, total){
     // every activity page opens with the resident's name (the cover leads with it anyway)
     var banner = s.kind === "cover" || src.generic || !src.name ? "" :
-      '<p class="resident-hero-name qp-banner"><span class="rhn-label">Prepared especially for:</span> <span class="rhn-name">' + esc(src.name) + "</span></p>";
+      '<p class="resident-hero-name qp-banner"><span class="rhn-label">Activity Packet for</span> <span class="rhn-name">' + esc(src.name) + "</span></p>";
     var head = s.kind === "cover" ? "" : banner +
       '<header class="qp-head"><h2 class="qp-title">' + esc(s.title) + "</h2>" + (s.subtitle ? '<p class="qp-sub">' + esc(s.subtitle) + "</p>" : "") + "</header>" +
       (s.instructions ? '<p class="qp-inst">' + esc(s.instructions) + "</p>" : "");
@@ -12482,7 +12516,7 @@ function generateAilmentPDF(ailmentType, pick) {
     if (!rows.length) throw new Error("There are no completed before-and-after mood records to export yet.");
     var doc = new window.jspdf.jsPDF({ unit:"pt", format:"letter", orientation:"portrait" });
     doc.setProperties({ title:"Staff Engagement Audit", subject:"Observed mood ratings before and after activities", creator:"Cognicopia (offline)" });
-    var y = 54, name = S.src.name || "Guest";
+    var y = 54, name = S.src.name || "Not named";
     doc.setFontSize(17); doc.text("Staff Engagement Audit", 42, y); y += 24;
     doc.setFontSize(11);
     doc.text("Resident: " + name, 42, y); y += 16;
@@ -12508,7 +12542,7 @@ function generateAilmentPDF(ailmentType, pick) {
     });
     doc.setFontSize(9);
     doc.text("Observed ratings only. This report does not establish treatment or medication effects.", 42, 760);
-    var safe = name.replace(/[^A-Za-z0-9]+/g, "_").replace(/^_|_$/g, "") || "Guest";
+    var safe = name.replace(/[^A-Za-z0-9]+/g, "_").replace(/^_|_$/g, "") || "Resident";
     var filename = "Cognicopia_Engagement_Audit_" + safe + ".pdf";
     doc.save(filename);
     return { filename:filename, sessions:rows.length };
@@ -12830,12 +12864,14 @@ function generateAilmentPDF(ailmentType, pick) {
     var add = function(lines, size, style, gapAfter){ parts.push({ lines:lines, size:size, style:style, gap:gapAfter }); };
     var inner = w - 0.8 * IN;
     if (pg.fac) add(k.wrap(pg.fac.toUpperCase(), 16, "bold", inner), 16, "bold", 0.3 * IN);
-    add(k.wrap(pg.lead || "Prepared especially for:", k.mx(28, 28 * qps * f), "normal", inner), k.mx(28, 28 * qps * f), "normal", 4);
+    /* a name: "Activity Packet for Margaret"; no name: the packet is titled "Personalized Activity Packet" */
+    var who = pg.name || "Personalized Activity Packet";
+    if (pg.name) add(k.wrap(pg.lead || "Activity Packet for", k.mx(28, 28 * qps * f), "normal", inner), k.mx(28, 28 * qps * f), "normal", 4);
     var nSize = k.mx(48, 56 * qps * f);
     k.font(nSize, "bold");
-    while (nSize > 30 && k.d.getTextWidth(safe(pg.name || "You")) > inner) { nSize -= 2; k.font(nSize, "bold"); }
-    add(k.wrap(pg.name || "You", nSize, "bold", inner), nSize, "bold", 0.2 * IN);
-    add(k.wrap("Your Personalized Activity Packet", k.mx(20, 20 * qps * f), "italic", inner), k.mx(20, 20 * qps * f), "italic", 0.3 * IN);
+    while (nSize > 30 && k.d.getTextWidth(safe(who)) > inner) { nSize -= 2; k.font(nSize, "bold"); }
+    add(k.wrap(who, nSize, "bold", inner), nSize, "bold", 0.2 * IN);
+    add(k.wrap(pg.name ? "Your Personalized Activity Packet" : "Chosen just for you", k.mx(20, 20 * qps * f), "italic", inner), k.mx(20, 20 * qps * f), "italic", 0.3 * IN);
     parts.push({ art:true, h:2.6 * IN * 120 / 200, gap:0.25 * IN });
     add(k.wrap(pg.month, k.mx(22, 22 * qps * f), "bold", inner), k.mx(22, 22 * qps * f), "bold", 0.3 * IN);
     if (pg.inside.length){
@@ -13122,14 +13158,22 @@ function generateAilmentPDF(ailmentType, pick) {
     educator:{ occupation:"Teacher", hobbies:["reading", "gardening", "music"], decades:["1940s", "1950s", "1960s"], genres:["Traditional Pop", "Big Band"], artists:["Frank Sinatra"] },
     classic:{ occupation:"Community member", hobbies:["gardening", "cooking", "music"], decades:["1930s", "1940s", "1950s"], genres:["Big Band", "Traditional Pop"], artists:["Ella Fitzgerald"] }
   };
-  function guestProfile(key){
+  /* The first name typed for a quick packet: letters, spaces, hyphens, apostrophes and periods, trimmed, one word or a short name, at most 30 characters.
+     Blank (or only symbols) means the packet is titled "Personalized Activity Packet". */
+  function quickName(raw){
+    var t = String(raw == null ? "" : raw).normalize ? String(raw == null ? "" : raw).normalize("NFC") : String(raw || "");
+    t = t.replace(/<[^>]*>/g, " ").replace(/[^A-Za-z\u00C0-\u024F .'’-]+/g, "").replace(/\s+/g, " ").replace(/^[ .'’-]+|[ '’-]+$/g, "").slice(0, 30);
+    return /[A-Za-z\u00C0-\u024F]/.test(t) ? t : "";
+  }
+  window.quickPrintName = quickName;
+  function guestProfile(key, first){
     var preset = guestPresets[key];
-    if (!preset) throw new Error("That guest profile preset is unavailable.");
+    if (!preset) throw new Error("That quick-print style is unavailable.");
     var labels = function(values){ return values.map(function(label){ return { code:label.toLowerCase().replace(/[^a-z0-9]+/g, "-"), label:label }; }); };
     return {
       id:"guest-" + key + "-" + Date.now(),
       tier1_core:{
-        preferredName:"Guest", cognitiveTier:3, unitNumber:"",
+        preferredName:quickName(first), cognitiveTier:3, unitNumber:"",
         difficulty:{ level:1, label:"Low support" },
         occupation:{ code:"other", label:preset.occupation },
         topHobbies:labels(preset.hobbies),
@@ -13158,19 +13202,19 @@ function generateAilmentPDF(ailmentType, pick) {
       button.addEventListener("click", function(){
         var oldProfile = window.activeResident || null;
         button.disabled = true;
-        guestStatus.textContent = "Building a temporary guest packet…";
+        guestStatus.textContent = "Building the packet…";
         try {
-          window.activeResident = guestProfile(button.getAttribute("data-guest-preset"));
+          window.activeResident = guestProfile(button.getAttribute("data-guest-preset"), (document.getElementById("guestFirstName") || {}).value);
           var checks = document.querySelectorAll("#profilePacket input[data-page]");
           checks.forEach(function(check){
             var kind = check.getAttribute("data-page");
             check.checked = kind === "cover" || kind === "cards";
           });
           var packet = window.generateProfilePacket();
-          if (!packet) throw new Error("The guest packet could not be generated.");
+          if (!packet) throw new Error("The packet could not be generated.");
           var result = exportPacketToPDF();
           if (!result) throw new Error("The PDF was not created. Check the packet allowance and try again.");
-          guestStatus.textContent = "Saved " + result.filename + ". This temporary archetype was not saved; the selected resident profile is unchanged.";
+          guestStatus.textContent = "Saved " + result.filename + ". The name and this style were not stored; the selected resident profile is unchanged.";
           guestMenu.hidden = true;
           guestToggle.setAttribute("aria-expanded", "false");
         } catch (error){

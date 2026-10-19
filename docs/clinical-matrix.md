@@ -13,11 +13,25 @@ Both files run in the browser and in Node. They make no network request, read
 no clock, use no browser storage and never call `Math.random`. Nothing a care
 team types leaves the computer.
 
+## Vision tiers: the type grows with the person's eyesight
+
+A profile's print needs carry a vision tier, and every printed floor scales with it, on top of the stage:
+
+| Tier | Scale | Early or middle stage floor | Late stage floor |
+| --- | --- | --- | --- |
+| Standard | 1 | 18 pt | 24 pt |
+| Large print | 1.15 | 20.5 pt | 27.5 pt |
+| Extra-large | 1.3 | 23.5 pt | 31 pt |
+
+`CognicopiaClinicalMatrix.visionScale(tier)` gives the scale (an unknown tier prints at standard size), `floorFor(stage, role, tier)` the smallest a role may be, and `typeFor(stage, tier)` the whole table. The activity engine takes `vision` as an option; a page that cannot hold the larger print at the biggest tier is drawn again one tier down (extra-large, then large, then standard) rather than refused, and the page model records `meta.visionWanted` and `meta.visionUsed`. On the packet form, Extra-Large Print sets the tier for the main PDF: flowing text and headings grow to the scaled floor (a heading shrinks to fit its line, never under 24 pt), while the hand-laid grids and cards keep the stage's own floor so letters never collide. Staff pages (guides, answer keys, notes) never print under 16 pt, and the header, tip and footer of a page are set at the 12 pt staff floor. All printed ink is pure black on white.
+
+`scripts/check-clinical.mjs` proves the scaling for every activity, stage and tier; `scripts/check-print-type-ui.mjs` (in `npm run build`) proves it on the real printed sheets and on PDFs read back with PyMuPDF.
+
 ## The three stages
 
 | | Early (GDS 3 to 4) | Middle (GDS 5) | Late (GDS 6 to 7) |
 | --- | --- | --- | --- |
-| Smallest type | 14 pt | 18 pt | 24 pt, always bold |
+| Smallest type | 18 pt, always bold | 18 pt, always bold | 24 pt, always bold |
 | Thinnest line | 2.25 pt | 3 pt | 4.5 pt (art 6 pt) |
 | Word search | 12 or 15 square, across, down and diagonal | 8 square at most, across and down, guided | none |
 | Other puzzles | word ladders, anagrams, sorting grids, odd one out, ordering | the same, with more given (the first letter, an example), forced choices | one large thing to look at or do |

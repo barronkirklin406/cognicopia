@@ -247,7 +247,7 @@ check("every printed page is set in the embedded Atkinson Hyperlegible", () => {
   eq(faces.map(m => m[1] + " " + m[2]).sort().join(), "italic 400,italic 700,normal 400,normal 700", "four embedded faces");
   ok(!/url\((?!data:)/.test(face), "no font file is fetched from anywhere");
   ok(html.indexOf('<style id="print-font">') < html.indexOf('<style id="lp-css">'), "the faces load before the page styles");
-  ok(/\.lp-sheet\{[^}]*font:14pt\/1\.3 "Atkinson Hyperlegible",/.test(css), ".lp-sheet uses it first");
+  ok(/\.lp-sheet\{[^}]*font:var\(--lpmin,16pt\)\/1\.4 "Atkinson Hyperlegible",/.test(css), ".lp-sheet uses it first");
   ok(!/Georgia/.test(css), "no other face overrides it on a page");
   ok(fs.existsSync(path.join(ROOT, "fonts", "OFL.txt")), "the font's license ships with it");
 });

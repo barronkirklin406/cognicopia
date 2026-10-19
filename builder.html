@@ -655,7 +655,7 @@ input:focus,select:focus{border-color:var(--accent)}
        the RIGHT of left-hand pages in a double-sided book (.lp-recto /
        .lp-verso), or on the left of every sheet in a single-sided binder;
      - outer margin 0.5 in;
-     - text never below 14 pt; headings 16 pt bold or larger;
+     - text never below 16 pt on resident pages (14 pt on the care team's own pages); headings 16 pt bold or larger;
      - every word set in Atkinson Hyperlegible (embedded, see print-font);
      - writing lines 0.5 in apart with a 2 pt stroke, for unsteady handwriting
        (set as 3px: a browser draws a border in whole pixels, so 2pt, which is
@@ -665,14 +665,15 @@ input:focus,select:focus{border-color:var(--accent)}
        name and icon, so it still reads in black and white.
    ===================================================================== */
 .lp-sheet{
-  --ink:#222; --tint:#f0f0f0; --acc:#666; --gut:.75in; --out:.5in;
+  --ink:#000; --tint:#f0f0f0; --acc:#000; --gut:.75in; --out:.5in;
   position:relative; box-sizing:border-box; display:flex; flex-direction:column;
-  width:8.5in; height:11in; overflow:hidden; background:#fff; color:#111;
+  width:8.5in; height:11in; overflow:hidden; background:#fff; color:#000;
   padding:.5in var(--out) .42in var(--out);
-  font:14pt/1.3 "Atkinson Hyperlegible","Trebuchet MS","Segoe UI",Arial,sans-serif; text-align:left; overflow-wrap:anywhere;
+  font:var(--lpmin,16pt)/1.4 "Atkinson Hyperlegible","Trebuchet MS","Segoe UI",Arial,sans-serif; text-align:left; overflow-wrap:anywhere;
   -webkit-print-color-adjust:exact; print-color-adjust:exact;
 }
 .lp-sheet *{box-sizing:border-box}
+.lp-sheet.lp-cg{--lpmin:14pt}   /* resident pages print at 16 pt or more; the care team's own pages keep the 14 pt floor so a dense log still fits */
 .lp-sheet.lp-recto{padding-left:var(--gut)}
 .lp-sheet.lp-verso{padding-right:var(--gut)}
 .lp-sheet svg{display:block}
@@ -683,34 +684,34 @@ input:focus,select:focus{border-color:var(--accent)}
 
 /* running head and foot: the page number always sits on the outer edge */
 .lp-top{display:flex;justify-content:space-between;align-items:baseline;gap:.2in;flex:none;height:.36in;margin:0 0 .12in;
-  border-bottom:2pt solid var(--ink);font-size:14pt;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--ink);white-space:nowrap;overflow:hidden}
+  border-bottom:2pt solid var(--ink);font-size:var(--lpmin,16pt);font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--ink);white-space:nowrap;overflow:hidden}
 .lp-verso .lp-top,.lp-verso .lp-foot{flex-direction:row-reverse}
 .lp-tag{min-width:0;overflow:hidden;text-overflow:ellipsis}
-.lp-aud{flex:none;letter-spacing:0;text-transform:none;color:#333}
-.lp-cg .lp-top{border-bottom:3pt solid #222;color:#111}
-.lp-cg .lp-aud{padding:0 .1in;border:1.5pt solid #222;border-radius:.05in;color:#111}
-.lp-foot{display:flex;justify-content:space-between;align-items:baseline;gap:.2in;flex:none;height:.34in;margin-top:.1in;padding-top:.05in;border-top:1.5pt solid #777;font-size:14pt;color:#333;white-space:nowrap;overflow:hidden}
+.lp-aud{flex:none;letter-spacing:0;text-transform:none;color:#000}
+.lp-cg .lp-top{border-bottom:3pt solid #000;color:#000}
+.lp-cg .lp-aud{padding:0 .1in;border:1.5pt solid #000;border-radius:.05in;color:#000}
+.lp-foot{display:flex;justify-content:space-between;align-items:baseline;gap:.2in;flex:none;height:.34in;margin-top:.1in;padding-top:.05in;border-top:1.5pt solid #000;font-size:var(--lpmin,16pt);color:#000;white-space:nowrap;overflow:hidden}
 .lp-foot span{min-width:0;overflow:hidden;text-overflow:ellipsis}
-.lp-no{flex:none;font-size:16pt;color:#111}
+.lp-no{flex:none;font-size:16pt;color:#000}
 .lp-body{flex:1;min-height:0;overflow:hidden;display:flex;flex-direction:column}
 
 /* type: 14 pt is the floor; every heading is 16 pt bold or larger */
-.lp-h1{margin:0 0 .05in;font-size:26pt;line-height:1.1;font-weight:700;color:#111}
+.lp-h1{margin:0 0 .05in;font-size:26pt;line-height:1.1;font-weight:700;color:#000}
 .lp-res .lp-h1{font-size:34pt}
-.lp-h1 small{display:block;margin-top:.02in;font-size:16pt;font-weight:400;color:#333}
-.lp-h2{margin:.12in 0 .05in;font-size:20pt;line-height:1.15;font-weight:700;color:#111}
-.lp-h3{margin:0 0 .04in;font-size:16pt;line-height:1.15;font-weight:700;color:#111}
-.lp-sub{margin:0 0 .1in;font-size:16pt;line-height:1.25;color:#222}
+.lp-h1 small{display:block;margin-top:.02in;font-size:16pt;font-weight:400;color:#000}
+.lp-h2{margin:.12in 0 .05in;font-size:20pt;line-height:1.15;font-weight:700;color:#000}
+.lp-h3{margin:0 0 .04in;font-size:16pt;line-height:1.15;font-weight:700;color:#000}
+.lp-sub{margin:0 0 .1in;font-size:16pt;line-height:1.25;color:#000}
 .lp-res .lp-sub{font-size:18pt}
-.lp-lab{margin:0;font-size:14pt;line-height:1.2;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink)}
-.lp-prompt{margin:0 0 .08in;font-size:18pt;line-height:1.28;font-style:italic;color:#222}
-.lp-meta{margin:0 0 .04in;font-size:14pt;font-weight:700}
-.lp-note{margin:.06in 0 0;font-size:14pt;line-height:1.3;color:#222}
-.lp-hint{margin:0;font-size:14pt;font-style:italic;color:#333}
-.lp-more{margin:.03in 0 0;font-size:14pt;font-style:italic;color:#333;list-style:none}
+.lp-lab{margin:0;font-size:var(--lpmin,16pt);line-height:1.2;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink)}
+.lp-prompt{margin:0 0 .08in;font-size:18pt;line-height:1.28;font-style:italic;color:#000}
+.lp-meta{margin:0 0 .04in;font-size:var(--lpmin,16pt);font-weight:700}
+.lp-note{margin:.06in 0 0;font-size:var(--lpmin,16pt);line-height:1.3;color:#000}
+.lp-hint{margin:0;font-size:var(--lpmin,16pt);font-style:italic;color:#000}
+.lp-more{margin:.03in 0 0;font-size:var(--lpmin,16pt);font-style:italic;color:#000;list-style:none}
 .lp-plan{margin:.04in 0;font-size:16pt;line-height:1.35}
-.lp-fill{display:inline-block;vertical-align:baseline;height:1.05em;margin:0 .05in;border-bottom:3px solid #333}
-.lp-ul{margin:.02in 0;padding-left:.25in;font-size:14pt;line-height:1.28}
+.lp-fill{display:inline-block;vertical-align:baseline;height:1.05em;margin:0 .05in;border-bottom:3px solid #000}
+.lp-ul{margin:.02in 0;padding-left:.25in;font-size:var(--lpmin,16pt);line-height:1.28}
 .lp-ul-big{font-size:18pt;line-height:1.3}
 .lp-ico{flex:none;color:var(--ink)}
 .lp-ico-row{width:.42in;height:.42in}
@@ -718,7 +719,7 @@ input:focus,select:focus{border-color:var(--accent)}
 
 /* writing lines: 0.5 in apart, 2 pt, dark enough for low vision */
 .lp-rules{flex:1;min-height:0;overflow:hidden;margin:.06in 0 .14in}   /* the bottom margin keeps the last line clear of the footer rule */
-.lp-rule{height:.5in;border-bottom:3px solid #333}
+.lp-rule{height:.5in;border-bottom:3px solid #000}
 .lp-role-lines .lp-h2{margin-top:0;font-size:24pt}
 .lp-tl-blank{margin:.02in 0}
 .lp-rules-2{flex:1 1 1in;min-height:1in;margin:0 0 .06in}
@@ -727,40 +728,40 @@ input:focus,select:focus{border-color:var(--accent)}
 .lp-cover-h.lp-long2{font-size:32pt}
 
 /* covers */
-.lp-cover,.lp-ccover{flex:1;display:flex;flex-direction:column;border:3pt solid #111;border-radius:.06in;padding:.4in .35in;position:relative}
+.lp-cover,.lp-ccover{flex:1;display:flex;flex-direction:column;border:3pt solid #000;border-radius:.06in;padding:.4in .35in;position:relative}
 .lp-cover{align-items:center;justify-content:space-between;text-align:center}
-.lp-cover::before{content:"";position:absolute;inset:.08in;border:1pt solid #111;border-radius:.03in;pointer-events:none}
-.lp-cover-h{margin:.1in 0 .05in;font-size:44pt;line-height:1.08;font-weight:700;color:#111}
-.lp-cover-name{margin:0;font-size:22pt;color:#222}
-.lp-cover-year{margin:.05in 0;font-size:30pt;font-weight:700;color:#333}
+.lp-cover::before{content:"";position:absolute;inset:.08in;border:1pt solid #000;border-radius:.03in;pointer-events:none}
+.lp-cover-h{margin:.1in 0 .05in;font-size:44pt;line-height:1.08;font-weight:700;color:#000}
+.lp-cover-name{margin:0;font-size:22pt;color:#000}
+.lp-cover-year{margin:.05in 0;font-size:30pt;font-weight:700;color:#000}
 .lp-cover-seasons{list-style:none;display:flex;gap:.2in;margin:.1in 0;padding:0}
 .lp-cover-seasons li{display:flex;flex-direction:column;align-items:center;gap:.03in;padding:.1in .16in;border:2.5pt solid var(--ink);border-radius:.14in;background:var(--tint);color:var(--ink);font-size:16pt}
-.lp-cover-tag{margin:0;font-size:20pt;line-height:1.3;font-style:italic;max-width:5.8in;color:#222}
-.lp-fac{margin:0;min-height:.25in;text-align:center;color:#111}
-.lp-vine{width:5.4in;height:auto;color:#2a2a2a}
+.lp-cover-tag{margin:0;font-size:20pt;line-height:1.3;font-style:italic;max-width:5.8in;color:#000}
+.lp-fac{margin:0;min-height:.25in;text-align:center;color:#000}
+.lp-vine{width:5.4in;height:auto;color:#000}
 .lp-vine-flip{transform:scaleY(-1)}
 .lp-ccover{gap:.06in;padding:.26in .35in}
 .lp-ccover .lp-cover-h{font-size:38pt;margin:.04in 0}
 .lp-ccover .lp-cover-year{font-size:26pt;margin:0}
 .lp-toc{list-style:none;margin:.04in 0;padding:0;display:grid;gap:.05in;font-size:18pt}
 .lp-toc li{display:flex;align-items:baseline;gap:.08in}
-.lp-toc i{flex:1;height:.18in;border-bottom:2pt dotted #555}
+.lp-toc i{flex:1;height:.18in;border-bottom:2pt dotted #000}
 .lp-toc b{min-width:.5in;text-align:right}
 
 /* Tab 1: year at a glance */
 .lp-wheel-box{flex:1 1 4.85in;min-height:3.9in;max-height:4.85in;display:flex;justify-content:center;margin:0 0 .06in}
 .lp-wheel{width:4.85in;height:4.85in;max-height:100%}
 .lp-scards{display:grid;grid-template-columns:1fr 1fr;gap:.1in;margin-top:auto}
-.lp-scard{border:2.5pt solid var(--ink);border-radius:.12in;background:var(--tint);padding:.07in .12in;height:1.76in;overflow:hidden;color:#111}   /* the header and two 0.5 in writing lines */
+.lp-scard{border:2.5pt solid var(--ink);border-radius:.12in;background:var(--tint);padding:.07in .12in;height:1.76in;overflow:hidden;color:#000}   /* the header and two 0.5 in writing lines */
 .lp-scard-h{display:flex;align-items:center;gap:.1in;margin-bottom:.03in}
 .lp-scard-h svg{width:.5in;height:.5in;color:var(--ink);flex:none}
 .lp-scard-h b{display:block;font-size:18pt;line-height:1.1;color:var(--ink)}
-.lp-scard-h span{display:block;font-size:14pt;line-height:1.1}
-.lp-scard ul{list-style:none;margin:0;padding:0;font-size:14pt;line-height:1.25}
+.lp-scard-h span{display:block;font-size:var(--lpmin,16pt);line-height:1.1}
+.lp-scard ul{list-style:none;margin:0;padding:0;font-size:var(--lpmin,16pt);line-height:1.25}
 .lp-scard li{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
 /* Tab 1: right now */
-.lp-now{border:5pt solid #111;border-radius:.2in;background:var(--tint);padding:.18in .3in .24in;text-align:center;margin:.04in 0 .14in}
+.lp-now{border:5pt solid #000;border-radius:.2in;background:var(--tint);padding:.18in .3in .24in;text-align:center;margin:.04in 0 .14in}
 .lp-now-lab{margin:0;font-size:22pt;font-weight:700}
 .lp-now-row{display:flex;align-items:center;justify-content:center;gap:.25in;margin:.02in 0}
 .lp-ico-xl{width:1.4in;height:1.4in}
@@ -769,39 +770,39 @@ input:focus,select:focus{border-color:var(--accent)}
 .lp-now-today{margin:.1in 0 0;font-size:22pt;font-weight:700}
 .lp-wxbox{margin:0 0 .1in}
 .lp-wxgrid{list-style:none;padding:0;margin:.06in 0 0;display:grid;grid-template-columns:repeat(3,1fr);gap:.1in}
-.lp-wx{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.02in;padding:.06in .04in;border:2pt solid #111;border-radius:.14in;height:1.42in;font-size:16pt;font-weight:700;text-align:center;line-height:1.1}
-.lp-wx svg{width:.92in;height:.92in;color:#111}
+.lp-wx{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.02in;padding:.06in .04in;border:2pt solid #000;border-radius:.14in;height:1.42in;font-size:16pt;font-weight:700;text-align:center;line-height:1.1}
+.lp-wx svg{width:.92in;height:.92in;color:#000}
 .lp-wx.is-on{border-width:6pt;background:var(--tint)}
-.lp-wx-mark{position:absolute;top:-.03in;right:.06in;padding:0 .08in;border:2pt solid #111;border-radius:.06in;background:#fff;font-size:14pt}
-.lp-cue{margin:0;font-size:18pt;line-height:1.3;font-style:italic;color:#222}
+.lp-wx-mark{position:absolute;top:-.03in;right:.06in;padding:0 .08in;border:2pt solid #000;border-radius:.06in;background:#fff;font-size:var(--lpmin,16pt)}
+.lp-cue{margin:0;font-size:18pt;line-height:1.3;font-style:italic;color:#000}
 
 /* Tab 1: my story */
 .lp-facts{display:grid;grid-template-columns:minmax(0,1fr);gap:.06in;margin:.04in 0}
 .lp-fact{display:flex;align-items:baseline;gap:.16in;min-width:0;padding:.06in 0;border-bottom:1.5pt solid #aaa}
 .lp-fact .lp-lab{flex:none;width:1.45in}
 .lp-val{flex:1;min-width:0;font-size:24pt;font-weight:700;line-height:1.15;display:-webkit-box;-webkit-line-clamp:2;line-clamp: 2;-webkit-box-orient:vertical;overflow:hidden}
-.lp-val-blank{flex:1;height:.5in;border-bottom:3px solid #333}
-.lp-timeline{list-style:none;margin:.04in 0 0 .1in;padding:0 0 0 .05in;border-left:3pt solid #444}
+.lp-val-blank{flex:1;height:.5in;border-bottom:3px solid #000}
+.lp-timeline{list-style:none;margin:.04in 0 0 .1in;padding:0 0 0 .05in;border-left:3pt solid #000}
 .lp-timeline li{position:relative;display:flex;gap:.14in;align-items:baseline;padding:.05in 0 .05in .22in;font-size:20pt;line-height:1.2}
-.lp-timeline li::before{content:"";position:absolute;left:-.16in;top:.15in;width:.18in;height:.18in;border-radius:50%;background:#fff;border:3pt solid #444}
+.lp-timeline li::before{content:"";position:absolute;left:-.16in;top:.15in;width:.18in;height:.18in;border-radius:50%;background:#fff;border:3pt solid #000}
 .lp-timeline b{flex:none;min-width:.8in;font-size:22pt}
 .lp-timeline span{min-width:0;display:-webkit-box;-webkit-line-clamp:2;line-clamp: 2;-webkit-box-orient:vertical;overflow:hidden}
 .lp-people{list-style:none;margin:.04in 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:.05in .2in}
-.lp-people li{display:flex;flex-direction:column;padding:.03in .1in;border-left:4pt solid #444;font-size:22pt;line-height:1.1;min-width:0}
+.lp-people li{display:flex;flex-direction:column;padding:.03in .1in;border-left:4pt solid #000;font-size:22pt;line-height:1.1;min-width:0}
 .lp-people b{font-weight:700;line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}   /* 1.2: room for the taller Atkinson descenders */
-.lp-people span{font-size:14pt;color:#333}
+.lp-people span{font-size:var(--lpmin,16pt);color:#000}
 
 /* Tab 2: a month */
 .lp-mhead{position:relative;border-left:10pt solid var(--acc);background:var(--tint);padding:.07in .18in .08in;border-radius:.06in}
-.lp-mseason{position:absolute;top:.08in;right:.15in;display:flex;align-items:center;gap:.08in;font-size:14pt;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink)}
+.lp-mseason{position:absolute;top:.08in;right:.15in;display:flex;align-items:center;gap:.08in;font-size:var(--lpmin,16pt);font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink)}
 .lp-mseason svg{width:.42in;height:.42in}
-.lp-mtitle{margin:0;font-size:38pt;line-height:1.05;font-weight:700;color:#111}
+.lp-mtitle{margin:0;font-size:38pt;line-height:1.05;font-weight:700;color:#000}
 .lp-mtitle small{margin-left:.1in;font-size:20pt;font-weight:400;color:var(--ink)}
 .lp-mtheme{margin:0;font-size:22pt;line-height:1.15;font-weight:700;color:var(--ink)}
-.lp-blurb{margin:.03in 0 0;font-size:16pt;line-height:1.25;color:#222}
+.lp-blurb{margin:.03in 0 0;font-size:16pt;line-height:1.25;color:#000}
 .lp-art-box{display:flex;justify-content:center;align-items:center;flex:1 1 2.05in;min-height:1.25in;max-height:2.05in;margin:.1in 0;border:2pt solid var(--ink);border-radius:.1in;color:var(--ink);background:#fff}
 .lp-art{width:100%;height:calc(100% - .14in);max-height:1.9in}
-.lp-art-blank{display:grid;place-items:center;width:calc(100% - .2in);height:calc(100% - .2in);border:2pt dashed #777;border-radius:.06in;font-size:16pt;color:#333}
+.lp-art-blank{display:grid;place-items:center;width:calc(100% - .2in);height:calc(100% - .2in);border:2pt dashed #000;border-radius:.06in;font-size:16pt;color:#000}
 .lp-sense{list-style:none;margin:0;padding:0}
 .lp-sense li{display:flex;gap:.12in;align-items:center;padding:.04in 0;border-bottom:1pt solid #bbb;min-height:.6in}
 .lp-sense p{margin:0;font-size:16pt;line-height:1.2;display:-webkit-box;-webkit-line-clamp:2;line-clamp: 2;-webkit-box-orient:vertical;overflow:hidden}
@@ -812,19 +813,19 @@ input:focus,select:focus{border-color:var(--accent)}
 .lp-dates b{flex:none}
 .lp-dates ul{list-style:none;margin:0;padding:0;min-width:0}
 .lp-dates li{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.lp-photo{flex:none;height:5in;margin:.08in .06in;border:3pt dashed #444;border-radius:.12in;display:grid;place-items:center;font-size:18pt;color:#333}
+.lp-photo{flex:none;height:5in;margin:.08in .06in;border:3pt dashed #000;border-radius:.12in;display:grid;place-items:center;font-size:18pt;color:#000}
 
 /* Tab 3: routine blocks, week, engagement, visits */
 .lp-blocks{display:grid;gap:.09in;margin-top:.05in}
-.lp-block{display:grid;grid-template-columns:1.25in .6in 1fr;gap:.1in;align-items:start;padding:.08in .12in;border:2pt solid #222;border-radius:.1in}
+.lp-block{display:grid;grid-template-columns:1.25in .6in 1fr;gap:.1in;align-items:start;padding:.08in .12in;border:2pt solid #000;border-radius:.1in}
 .lp-b-time b{display:block;font-size:16pt;line-height:1.15}
-.lp-b-time span{font-size:14pt}
-.lp-ico-blk{width:.52in;height:.52in;color:#222}
-.lp-b-main ul{margin:0;padding-left:.2in;font-size:14pt;line-height:1.28}
+.lp-b-time span{font-size:var(--lpmin,16pt)}
+.lp-ico-blk{width:.52in;height:.52in;color:#000}
+.lp-b-main ul{margin:0;padding-left:.2in;font-size:var(--lpmin,16pt);line-height:1.28}
 .lp-dense{gap:.06in}
 .lp-dense .lp-block{padding:.05in .1in}
 .lp-week{list-style:none;margin:.05in 0 .1in;padding:0;display:grid;gap:.07in}
-.lp-week li{display:grid;grid-template-columns:1.6in 1fr;gap:.14in;align-items:center;min-height:.72in;padding:.05in .14in;border:2pt solid #222;border-radius:.1in;font-size:18pt;line-height:1.2}
+.lp-week li{display:grid;grid-template-columns:1.6in 1fr;gap:.14in;align-items:center;min-height:.72in;padding:.05in .14in;border:2pt solid #000;border-radius:.1in;font-size:18pt;line-height:1.2}
 .lp-week li:nth-child(odd){background:#f3f3f3}
 .lp-week b{font-size:18pt}
 .lp-wlog{margin-top:.04in}
@@ -833,61 +834,61 @@ input:focus,select:focus{border-color:var(--accent)}
 .lp-wl b{font-size:16pt;line-height:1;padding:0 0 .06in}
 .lp-wl2{margin-left:.7in}
 .lp-legend{list-style:none;margin:.05in 0;padding:0;display:grid;gap:.07in}
-.lp-legend li{display:flex;gap:.16in;align-items:center;padding:.05in .12in;border:2pt solid #222;border-radius:.1in}
-.lp-badge{flex:none;display:grid;place-items:center;width:.52in;height:.52in;border:3pt solid #111;border-radius:50%;font-size:20pt;font-weight:700}
+.lp-legend li{display:flex;gap:.16in;align-items:center;padding:.05in .12in;border:2pt solid #000;border-radius:.1in}
+.lp-badge{flex:none;display:grid;place-items:center;width:.52in;height:.52in;border:3pt solid #000;border-radius:50%;font-size:20pt;font-weight:700}
 .lp-legend strong{display:block;font-size:18pt;line-height:1.15}
-.lp-legend span{display:block;font-size:14pt;line-height:1.2}
+.lp-legend span{display:block;font-size:var(--lpmin,16pt);line-height:1.2}
 .lp-checks{list-style:none;margin:.04in 0;padding:0;display:grid;gap:.07in}
 .lp-checks li{display:flex;gap:.12in;align-items:flex-start;font-size:16pt;line-height:1.25}
 .lp-checks-2{grid-template-columns:1fr 1fr;gap:.06in .2in}
 .lp-gap{margin-top:.14in}
 .lp-plan .lp-box{margin:0 .04in 0 .1in}
-.lp-box{flex:none;display:inline-block;width:.24in;height:.24in;margin-top:.03in;border:2.5pt solid #111;border-radius:.04in;vertical-align:middle}
+.lp-box{flex:none;display:inline-block;width:.24in;height:.24in;margin-top:.03in;border:2.5pt solid #000;border-radius:.04in;vertical-align:middle}
 .lp-circle{list-style:none;margin:.04in 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:.06in .16in}
-.lp-circle li{display:flex;gap:.1in;align-items:center;min-width:0;padding:.04in .08in;border:1.5pt solid #777;border-radius:.08in}
+.lp-circle li{display:flex;gap:.1in;align-items:center;min-width:0;padding:.04in .08in;border:1.5pt solid #000;border-radius:.08in}
 .lp-circle b{display:block;font-size:16pt;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.lp-circle span{display:block;font-size:14pt;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lp-circle span{display:block;font-size:var(--lpmin,16pt);line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .lp-circle li > div{min-width:0}
 
 /* Tab 4: nourishment, comfort, care plan */
 .lp-cups{display:flex;gap:.06in;margin:.04in 0}
-.lp-ico-cup{width:.62in;height:.78in;color:#222}
+.lp-ico-cup{width:.62in;height:.78in;color:#000}
 .lp-quad{display:grid;grid-template-columns:1fr 1fr;gap:.09in;margin:.05in 0}
-.lp-quad-c{display:flex;gap:.1in;align-items:flex-start;padding:.07in .1in;border:2pt solid #222;border-radius:.1in;min-height:1.1in;min-width:0}
+.lp-quad-c{display:flex;gap:.1in;align-items:flex-start;padding:.07in .1in;border:2pt solid #000;border-radius:.1in;min-height:1.1in;min-width:0}
 .lp-quad-c > div{min-width:0}
-.lp-quad-c ul{margin:0;padding-left:.18in;font-size:14pt;line-height:1.25}
+.lp-quad-c ul{margin:0;padding-left:.18in;font-size:var(--lpmin,16pt);line-height:1.25}
 .lp-quad-c li{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .lp-steps{margin:.04in 0;padding-left:.32in;font-size:16pt;line-height:1.27}
 .lp-steps li{margin:0 0 .04in}
-.lp-avoid{margin-top:.08in;padding:.07in .14in;border:2.5pt solid #111;border-radius:.08in;font-size:14pt;line-height:1.3}
+.lp-avoid{margin-top:.08in;padding:.07in .14in;border:2.5pt solid #000;border-radius:.08in;font-size:var(--lpmin,16pt);line-height:1.3}
 .lp-avoid p{margin:0 0 .03in}
-.lp-secure{display:flex;gap:.12in;align-items:center;padding:.08in .14in;border:3pt solid #111;border-radius:.1in;margin:.06in 0;font-size:16pt;line-height:1.25}
+.lp-secure{display:flex;gap:.12in;align-items:center;padding:.08in .14in;border:3pt solid #000;border-radius:.1in;margin:.06in 0;font-size:16pt;line-height:1.25}
 .lp-secure p{margin:0}
 .lp-fields{display:grid;gap:.04in}
 .lp-field .lp-lab{display:block}
-.lp-conf{flex:none;margin:.12in 0 0;font-size:14pt;font-weight:700;font-style:italic;text-align:center}
+.lp-conf{flex:none;margin:.12in 0 0;font-size:var(--lpmin,16pt);font-weight:700;font-style:italic;text-align:center}
 
 /* logging tables: rows never shorter than 0.5 in */
-.lp-tbl{width:100%;border-collapse:collapse;table-layout:fixed;margin-top:.04in;font-size:14pt}
-.lp-tbl th{height:.5in;padding:.03in .06in;border:3px solid #222;background:#ececec;font-size:14pt;line-height:1.1;font-weight:700;text-align:left;overflow:hidden}
-.lp-tbl td{height:.5in;padding:0 .05in;border:3px solid #222;vertical-align:middle}
+.lp-tbl{width:100%;border-collapse:collapse;table-layout:fixed;margin-top:.04in;font-size:var(--lpmin,16pt)}
+.lp-tbl th{height:.5in;padding:.03in .06in;border:3px solid #000;background:#ececec;font-size:var(--lpmin,16pt);line-height:1.1;font-weight:700;text-align:left;overflow:hidden}
+.lp-tbl td{height:.5in;padding:0 .05in;border:3px solid #000;vertical-align:middle}
 .lp-tbl-tall td{height:.8in}
 .lp-tbl-days td,.lp-tbl-days th[scope=row]{height:.72in}
 .lp-tbl-days th[scope=row]{font-size:16pt;text-align:center}
-.lp-resp{text-align:center;font-size:14pt;font-weight:700;letter-spacing:.04em;white-space:nowrap}
+.lp-resp{text-align:center;font-size:var(--lpmin,16pt);font-weight:700;letter-spacing:.04em;white-space:nowrap}
 .lp-cupcell{white-space:nowrap;padding:0 .05in!important;text-align:center}
-.lp-cup{display:inline-block;width:.2in;height:.28in;margin:0 .02in;border:1.5pt solid #222;border-radius:0 0 .06in .06in;vertical-align:middle}
+.lp-cup{display:inline-block;width:.2in;height:.28in;margin:0 .02in;border:1.5pt solid #000;border-radius:0 0 .06in .06in;vertical-align:middle}
 
 /* Safety net: fitSheets() adds .lp-fit1, then .lp-fit2, to a sheet whose
    content would overflow. Spacing tightens and large type steps down, but
-   never below 14 pt for text or 16 pt for headings. */
+   never below 16 pt for text on a resident page (14 pt on a care-team page) or 16 pt for headings. */
 .lp-fit1 .lp-h1{font-size:24pt}
 .lp-fit1.lp-res .lp-h1{font-size:28pt}
 .lp-fit1 .lp-h2{margin:.07in 0 .03in;font-size:18pt}
 .lp-fit1 .lp-sub,.lp-fit1 .lp-prompt,.lp-fit1 .lp-asks,.lp-fit1 .lp-ul-big{font-size:16pt}
 .lp-fit1 .lp-mtitle{font-size:32pt}
 .lp-fit1 .lp-mtheme{font-size:19pt}
-.lp-fit1 .lp-blurb,.lp-fit1 .lp-sense p,.lp-fit1 .lp-checks li,.lp-fit1 .lp-steps,.lp-fit1 .lp-plan{font-size:15pt}
+.lp-fit1 .lp-blurb,.lp-fit1 .lp-sense p,.lp-fit1 .lp-checks li,.lp-fit1 .lp-steps,.lp-fit1 .lp-plan{font-size:max(15pt,var(--lpmin,16pt))}
 .lp-fit1 .lp-sense li{min-height:.5in;padding:.02in 0}
 .lp-fit1 .lp-timeline li{padding:.03in 0 .03in .22in;font-size:17pt}
 .lp-fit1 .lp-timeline b{font-size:18pt}
@@ -903,7 +904,7 @@ input:focus,select:focus{border-color:var(--accent)}
 .lp-fit2 .lp-mtitle{font-size:28pt}
 .lp-fit2 .lp-mtheme{font-size:17pt}
 .lp-fit2 .lp-sub,.lp-fit2 .lp-prompt,.lp-fit2 .lp-asks,.lp-fit2 .lp-ul-big,.lp-fit2 .lp-blurb,.lp-fit2 .lp-sense p,.lp-fit2 .lp-checks li,
-.lp-fit2 .lp-steps,.lp-fit2 .lp-plan,.lp-fit2 .lp-timeline li,.lp-fit2 .lp-people li,.lp-fit2 .lp-dates,.lp-fit2 .lp-week li,.lp-fit2 .lp-legend strong{font-size:14pt}
+.lp-fit2 .lp-steps,.lp-fit2 .lp-plan,.lp-fit2 .lp-timeline li,.lp-fit2 .lp-people li,.lp-fit2 .lp-dates,.lp-fit2 .lp-week li,.lp-fit2 .lp-legend strong{font-size:var(--lpmin,16pt)}
 .lp-fit2 .lp-timeline b,.lp-fit2 .lp-val{font-size:16pt}
 .lp-fit2 .lp-cover-h{font-size:28pt}
 .lp-fit2 .lp-opt{display:none}
@@ -919,32 +920,32 @@ input:focus,select:focus{border-color:var(--accent)}
 .lp-starters{list-style:none;margin:.04in 0 0;padding:0;flex:1;min-height:0;display:flex;flex-direction:column}
 .lp-starters > li{flex:none;display:flex;flex-direction:column;min-height:0}
 .lp-starters > li:last-child{flex:1}
-.lp-starter{margin:.12in 0 0;font-size:20pt;line-height:1.2;font-weight:700;color:#111}
+.lp-starter{margin:.12in 0 0;font-size:20pt;line-height:1.2;font-weight:700;color:#000}
 .lp-lines{flex:none;margin:0 0 .04in}
 .lp-starter-xl{margin:.16in 0 .04in;font-size:28pt}
 .lp-rules-xl .lp-rule{height:.75in}
 .lp-choice{flex:none;margin:.08in 0 .04in}
 .lp-choice-lead{margin:0 0 .07in;font-size:19pt;line-height:1.2;font-weight:700}
 .lp-choices{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.1in}
-.lp-choices li{display:flex;align-items:center;justify-content:center;min-height:.74in;padding:.05in .08in;border:2.5pt solid #111;border-radius:.16in;background:#fff;
-  font-size:19pt;line-height:1.1;font-weight:700;text-align:center;color:#111}
+.lp-choices li{display:flex;align-items:center;justify-content:center;min-height:.74in;padding:.05in .08in;border:2.5pt solid #000;border-radius:.16in;background:#fff;
+  font-size:19pt;line-height:1.1;font-weight:700;text-align:center;color:#000}
 .lp-anchor{flex:1 1 auto;min-height:2.4in;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.08in;margin:.1in 0;padding:.14in .2in;
   border:5pt solid var(--ink);border-radius:.2in;background:#fff;color:var(--ink)}
 .lp-anchor svg{flex:1 1 auto;width:100%;min-height:0;max-height:3.6in}
-.lp-anchor-word{flex:none;margin:0;font-size:60pt;line-height:1;font-weight:700;letter-spacing:.02em;text-transform:uppercase;color:#111}
+.lp-anchor-word{flex:none;margin:0;font-size:60pt;line-height:1;font-weight:700;letter-spacing:.02em;text-transform:uppercase;color:#000}
 .lp-anchor-long{font-size:44pt}
 .lp-orient{flex:none;margin:.06in 0 .12in;display:grid;gap:.1in}
-.lp-orient > div{display:flex;align-items:center;gap:.2in;min-height:1in;padding:.08in .22in;border:5pt solid #111;border-radius:.16in}
+.lp-orient > div{display:flex;align-items:center;gap:.2in;min-height:1in;padding:.08in .22in;border:5pt solid #000;border-radius:.16in}
 .lp-orient dt{flex:none;width:2.1in;font-size:26pt;font-weight:700}
 .lp-orient dd{flex:1;min-width:0;margin:0;font-size:40pt;line-height:1.05;font-weight:700}
-.lp-orient-blank{display:block;height:.62in;border-bottom:4px solid #111}
+.lp-orient-blank{display:block;height:.62in;border-bottom:4px solid #000}
 .lp-now-t3{padding:.1in .3in}
 .lp-plansteps{flex:none;margin:.02in 0 .1in}
 .lp-plansteps ol{list-style:none;margin:.02in 0 0;padding:0}
 .lp-plansteps li{display:flex;align-items:flex-end;gap:.12in;min-height:.56in}
-.lp-step-n{flex:none;display:grid;place-items:center;width:.38in;height:.38in;border:2.5pt solid #111;border-radius:50%;font-size:16pt;font-weight:700}
+.lp-step-n{flex:none;display:grid;place-items:center;width:.38in;height:.38in;border:2.5pt solid #000;border-radius:50%;font-size:16pt;font-weight:700}
 .lp-step-lab{flex:none;width:2.9in;font-size:15pt;line-height:1.15;align-self:center}
-.lp-step-line{flex:1;min-width:.8in;height:.38in;border-bottom:3px solid #333}
+.lp-step-line{flex:1;min-width:.8in;height:.38in;border-bottom:3px solid #000}
 .lp-plansteps .lp-box{margin:0 0 .02in}
 
 /* Tier 1: full detail */
@@ -955,7 +956,7 @@ input:focus,select:focus{border-color:var(--accent)}
 .lp-t1 .lp-sub,.lp-t1 .lp-prompt,.lp-t1 .lp-cue,.lp-t1 .lp-asks,.lp-t1 .lp-sense p,.lp-t1 .lp-blurb,.lp-t1 .lp-dates,.lp-t1 .lp-starter{font-size:16pt}
 .lp-t1 .lp-val,.lp-t1 .lp-timeline li,.lp-t1 .lp-timeline b,.lp-t1 .lp-people li{font-size:16pt}
 .lp-t1.lp-fit2 .lp-sub,.lp-t1.lp-fit2 .lp-prompt,.lp-t1.lp-fit2 .lp-cue,.lp-t1.lp-fit2 .lp-asks,.lp-t1.lp-fit2 .lp-sense p,.lp-t1.lp-fit2 .lp-blurb,
-.lp-t1.lp-fit2 .lp-dates,.lp-t1.lp-fit2 .lp-timeline li,.lp-t1.lp-fit2 .lp-people li{font-size:14pt}
+.lp-t1.lp-fit2 .lp-dates,.lp-t1.lp-fit2 .lp-timeline li,.lp-t1.lp-fit2 .lp-people li{font-size:var(--lpmin,16pt)}
 
 /* Tier 2: guided */
 .lp-t2.lp-sheet .lp-h1{font-size:28pt}
@@ -1249,16 +1250,16 @@ textarea:focus{border-color:var(--accent)}
 .lj-sec-4{--ink:#1B4A2C;--tint:#E3EFE4}
 .lj-notes{--ink:#222;--tint:#EFEFEF}
 
-.lj .lj-h1{margin:0 0 .04in;font-size:32pt;line-height:1.1;color:#111}
+.lj .lj-h1{margin:0 0 .04in;font-size:32pt;line-height:1.1;color:#000}
 .lj-band{display:flex;align-items:center;gap:.12in;margin:0 0 .08in;padding:.04in .14in;border-left:8pt solid var(--ink);border-radius:0 .06in .06in 0;background:var(--tint);
   font-size:16pt;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--ink)}
 .lj-roman{font-size:18pt;letter-spacing:0}
-.lj-sub{margin:0 0 .06in;font-size:18pt;line-height:1.25;color:#222}
+.lj-sub{margin:0 0 .06in;font-size:18pt;line-height:1.25;color:#000}
 
 /* the resident's facts; a missing one leaves a line to write it in */
 .lj-facts{display:grid;grid-template-columns:minmax(0,1fr);margin:.02in 0 .06in}
-.lj-facts > div{display:flex;align-items:baseline;gap:.14in;min-width:0;padding:.04in 0 .03in;border-bottom:3px solid #555}
-.lj-facts dt{flex:none;width:1.95in;margin:0;font-size:14pt;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--ink)}
+.lj-facts > div{display:flex;align-items:baseline;gap:.14in;min-width:0;padding:.04in 0 .03in;border-bottom:3px solid #000}
+.lj-facts dt{flex:none;width:1.95in;margin:0;font-size:var(--lpmin,16pt);font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--ink)}
 .lj-facts dd{flex:1;min-width:0;margin:0;font-size:19pt;font-weight:700;line-height:1.15;display:-webkit-box;-webkit-line-clamp:2;line-clamp: 2;-webkit-box-orient:vertical;overflow:hidden}
 .lj-facts dd.lj-blank{height:.5in}
 
@@ -1267,7 +1268,7 @@ textarea:focus{border-color:var(--accent)}
   padding:.08in .12in;border:2pt solid var(--ink);border-radius:.12in;background:#fff}
 .lj-frame-art{flex:1;min-height:0;width:100%;display:flex;align-items:center;justify-content:center;color:var(--ink)}
 .lj-art{width:100%;height:100%;max-height:2.7in}
-.lj-cap{flex:none;margin:.02in 0 0;font-size:14pt;font-style:italic;color:#333;text-align:center}
+.lj-cap{flex:none;margin:.02in 0 0;font-size:var(--lpmin,16pt);font-style:italic;color:#000;text-align:center}
 .lj-frame-photo{border:3pt dashed var(--ink)}
 .lj-frame-sm{min-height:1.2in}
 
@@ -1283,16 +1284,16 @@ textarea:focus{border-color:var(--accent)}
 .lj-gen2{width:max-content;max-width:100%;margin:0 auto;padding-top:.16in;border-top:2.5pt solid var(--ink)}
 .lj-person{position:relative;min-width:1.15in;max-width:2.2in;padding:.05in .12in;border:2pt solid var(--ink);border-radius:.08in;background:#fff;text-align:center}
 .lj-gen2 .lj-person::before{content:"";position:absolute;left:50%;top:-.17in;height:.15in;border-left:2.5pt solid var(--ink)}
-.lj-person span{display:block;font-size:14pt;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--ink)}
+.lj-person span{display:block;font-size:var(--lpmin,16pt);font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--ink)}
 .lj-person b{display:block;font-size:18pt;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.lj-person i.lj-blank{display:block;height:.5in;border-bottom:3px solid #333}
+.lj-person i.lj-blank{display:block;height:.5in;border-bottom:3px solid #000}
 .lj-me{border-width:4pt;background:var(--tint)}
 
 /* lists: pets, skills and groups, proudest moments, colors */
 .lj-pets{list-style:none;margin:.04in 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:.06in .18in}
 .lj-pets li{display:flex;flex-direction:column;min-width:0;padding:.03in .12in;border-left:5pt solid var(--ink)}
 .lj-pets b{font-size:20pt;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.lj-pets span{font-size:14pt;color:#333}
+.lj-pets span{font-size:var(--lpmin,16pt);color:#000}
 .lj-skills{list-style:none;margin:.04in 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:.04in .22in}
 .lj-skills li{position:relative;min-width:0;padding:.04in 0 .04in .32in;border-bottom:1.5pt solid #bbb;font-size:18pt;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .lj-skills li::before{content:"";position:absolute;left:0;top:.12in;width:.13in;height:.13in;border:2.5pt solid var(--ink);border-radius:50%}
@@ -1300,7 +1301,7 @@ textarea:focus{border-color:var(--accent)}
 .lj-pride li{padding:.05in .16in;border:2pt solid var(--ink);border-radius:.1in;background:var(--tint);font-size:18pt;font-weight:700;line-height:1.22}
 .lj-chips{list-style:none;margin:.02in 0 .06in;padding:0;display:flex;flex-wrap:wrap;gap:.08in .24in}
 .lj-chips li{display:flex;align-items:center;gap:.1in;font-size:18pt;font-weight:700}
-.lj-chips i{flex:none;width:.42in;height:.42in;border:2pt solid #111;border-radius:.08in;background:#fff}
+.lj-chips i{flex:none;width:.42in;height:.42in;border:2pt solid #000;border-radius:.08in;background:#fff}
 
 /* a recipe card and short, fixed runs of writing lines */
 .lj-rfield{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:end;gap:.14in}
@@ -1309,14 +1310,14 @@ textarea:focus{border-color:var(--accent)}
 .lj-rgap{margin-top:.12in}
 
 /* covers and the Section IV opener */
-.lj-cover .lp-cover-name small{font-size:16pt;color:#333}
-.lj-cover-born{margin:0;font-size:18pt;color:#222}
+.lj-cover .lp-cover-name small{font-size:16pt;color:#000}
+.lj-cover-born{margin:0;font-size:18pt;color:#000}
 .lj-toc-mini{list-style:none;margin:.06in 0;padding:0;display:grid;gap:.06in;text-align:left}
-.lj-toc-mini li{display:flex;align-items:center;gap:.16in;padding:.05in .18in;border-left:8pt solid var(--ink);background:var(--tint);font-size:18pt;font-weight:700;color:#111}
+.lj-toc-mini li{display:flex;align-items:center;gap:.16in;padding:.05in .18in;border-left:8pt solid var(--ink);background:var(--tint);font-size:18pt;font-weight:700;color:#000}
 .lj-toc-mini b{min-width:.45in;color:var(--ink)}
 .lj-opener{flex:1;display:flex;flex-direction:column;gap:.06in}
 .lj-contents{margin:.02in 0;padding-left:.34in;font-size:20pt;line-height:1.4}
-.lj-notes-li{font-style:italic;color:#333}
+.lj-notes-li{font-style:italic;color:#000}
 .lj-note-res{margin:auto 0 0;padding:.1in .16in;border:2pt solid var(--ink);border-radius:.1in;background:var(--tint);font-size:16pt;line-height:1.3}
 
 /* Section IV: comfort, wisdom and small joys */
@@ -1333,7 +1334,7 @@ textarea:focus{border-color:var(--accent)}
 .lj-divider{flex:1;display:flex;flex-direction:column;min-height:0}
 .lj-entries{display:grid;gap:.12in;margin-top:.04in}
 .lj-eh{display:flex;align-items:flex-end}
-.lj-eh b{padding-bottom:.05in;font-size:14pt}
+.lj-eh b{padding-bottom:.05in;font-size:var(--lpmin,16pt)}
 .lj-eh b + b{margin-left:3.1in}
 
 /* the fit pass (fitSheets), for journal parts; floors stay at 14 pt and 16 pt */
@@ -1347,7 +1348,7 @@ textarea:focus{border-color:var(--accent)}
 .lp-fit1 .lj-frame-sm{min-height:1.1in}
 .lp-fit2 .lj-h1{font-size:22pt}
 .lp-fit2 .lj-asks,.lp-fit2 .lj-sub,.lp-fit2 .lj-facts dd,.lp-fit2 .lj-affirm li,.lp-fit2 .lj-quotes q,.lp-fit2 .lj-skills li,.lp-fit2 .lj-pride li,
-.lp-fit2 .lj-person b,.lp-fit2 .lj-chips li,.lp-fit2 .lj-contents,.lp-fit2 .lj-pets b{font-size:14pt}
+.lp-fit2 .lj-person b,.lp-fit2 .lj-chips li,.lp-fit2 .lj-contents,.lp-fit2 .lj-pets b{font-size:var(--lpmin,16pt)}
 .lp-fit2 .lj-frame{min-height:1.1in}
 
 /* support tiers, for journal parts (see lp-css): after the fit rules, so a tier's sizes hold */
@@ -1355,7 +1356,7 @@ textarea:focus{border-color:var(--accent)}
 .lp-t1 .lj-sub,.lp-t1 .lj-asks,.lp-t1 .lj-facts dd,.lp-t1 .lj-affirm li,.lp-t1 .lj-quotes q,.lp-t1 .lj-skills li,.lp-t1 .lj-pride li,.lp-t1 .lj-person b,
 .lp-t1 .lj-chips li,.lp-t1 .lj-contents,.lp-t1 .lj-pets b,.lp-t1 .lj-note-res{font-size:16pt}
 .lp-t1.lp-fit2 .lj-sub,.lp-t1.lp-fit2 .lj-asks,.lp-t1.lp-fit2 .lj-facts dd,.lp-t1.lp-fit2 .lj-affirm li,.lp-t1.lp-fit2 .lj-quotes q,.lp-t1.lp-fit2 .lj-skills li,
-.lp-t1.lp-fit2 .lj-pride li,.lp-t1.lp-fit2 .lj-person b,.lp-t1.lp-fit2 .lj-chips li,.lp-t1.lp-fit2 .lj-contents,.lp-t1.lp-fit2 .lj-pets b{font-size:14pt}
+.lp-t1.lp-fit2 .lj-pride li,.lp-t1.lp-fit2 .lj-person b,.lp-t1.lp-fit2 .lj-chips li,.lp-t1.lp-fit2 .lj-contents,.lp-t1.lp-fit2 .lj-pets b{font-size:var(--lpmin,16pt)}
 .lp-t2 .lj-h1{font-size:28pt}
 .lp-t2 .lj-band,.lp-t2 .lj-cap,.lp-t2 .lj-facts dt,.lp-t2 .lj-person span,.lp-t2 .lj-pets span,.lp-t2 .lj-quotes span{font-size:18pt}
 .lp-t2 .lj-sub,.lp-t2 .lj-asks,.lp-t2 .lj-skills li,.lp-t2 .lj-pride li,.lp-t2 .lj-person b,.lp-t2 .lj-chips li,.lp-t2 .lj-note-res{font-size:19pt}

@@ -271,6 +271,14 @@ step("the design system works: the focus ring, motion that stops when asked, the
   }
 });
 
+step("printed type: every printed sheet at all three vision tiers and stages stays at 18 pt or more, pure black and inside the page, the PDF packets are read back, and Quick-Print names the resident (a real browser)", () => {
+  try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-print-type-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
+  catch (e){
+    if (e.status === 2) return "skipped: Playwright is not installed here (see docs/dev-setup.md)";
+    throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message);
+  }
+});
+
 /* 6. navigation and links */
 step("the navigation is current on every page", () => {
   try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "site-nav.mjs"), "--check"], { encoding: "utf8" }).trim(); }
