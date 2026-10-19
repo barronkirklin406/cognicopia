@@ -6,6 +6,13 @@
 <title>Tablet Activities — Cognicopia</title>
 <meta name="description" content="Touch-friendly activities for a tablet: word search, trace the path, crosswords with an on-screen keyboard, sorting, matching, coloring and more. Large print, no internet needed, nothing about anyone is stored.">
 <style id="tb-css">
+/* The shared top bar's base: the navigation block below only overrides these, as on every other page. */
+body{margin:0}
+.cg-sidebar{display:flex;flex-direction:column;box-sizing:border-box;overflow-x:hidden}
+.cg-sidebar-brand{display:flex;align-items:center;gap:9px;box-sizing:border-box;min-height:var(--tap,52px);padding:18px 16px 14px;text-decoration:none;flex-shrink:0}
+.cg-sidebar-toggle{display:none;position:fixed;align-items:center;justify-content:center;cursor:pointer}
+.cg-topbar{position:sticky;top:0;z-index:800;display:flex;align-items:center;justify-content:flex-end;gap:16px;padding:0 28px 0 16px}
+@media (max-width:700px){body{padding-left:0}.cg-sidebar{transition:transform .22s ease}}
 /* Tablet Activities: a main menu of big, calm, touch-first activities. Every control is at least var(--tap) tall and wide. */
 .tbp{max-width:1180px;margin:0 auto;padding:var(--cg-space-6,2rem) 20px 56px;color:var(--cg-charcoal,#1a202c);font-family:var(--cg-font-ui,"Segoe UI",sans-serif);font-size:1.125rem;line-height:1.55}
 .tbp h1{margin:0 0 6px;font-family:var(--cg-font-display,Georgia,serif);font-size:var(--cg-step-3,2.25rem);line-height:1.15;color:var(--cg-green-700,#1b382b)}
@@ -26,7 +33,8 @@
 .tbp-grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));margin:12px 0 0;padding:0;list-style:none}
 .tbp-card{display:flex;flex-direction:column;align-items:flex-start;gap:6px;width:100%;min-height:172px;padding:18px;border:3px solid var(--cg-green-700,#1b382b);border-radius:var(--cg-radius-lg,20px);background:#fff;color:var(--cg-charcoal,#1a202c);font:inherit;text-align:left;cursor:pointer;box-shadow:0 3px 0 var(--cg-tan-300,#cdbe9f)}
 .tbp-card svg{width:60px;height:60px;flex:none;stroke:var(--cg-green-700,#1b382b);fill:none;stroke-width:3.5;stroke-linecap:round;stroke-linejoin:round}
-.tbp-card b{font-size:1.3rem;line-height:1.2}
+.tbp-card .tbp-pic{width:76px;height:76px;flex:none;object-fit:contain;pointer-events:none}
+.tbp-card b{font-size:1.3rem;line-height:1.2;letter-spacing:.005em}
 .tbp-card span{font-size:1rem;color:var(--cg-ink-soft,#343b49)}
 .tbp-card:hover{background:var(--cg-sage-100,#e3f1e8)}
 .tbp-card:active{transform:translateY(2px);box-shadow:0 1px 0 var(--cg-tan-300,#cdbe9f)}
