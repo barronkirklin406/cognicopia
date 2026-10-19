@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cognicopia.org/src/pcg/schema/safety.schema.json",
+  "title": "Cognicopia PCG safety rules",
+  "description": "What the engine will not print. The blocklist keeps accidental words out of the letters that fill a word search. The banned patterns are the dignity rules, applied to every sentence in the lexicon and every sentence the engine builds: no memory quizzing, no scoring, no baby talk, no clinical labels.",
+  "type": "object",
+  "required": ["version", "filler", "blocklist", "banned"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "version": { "const": 1 },
+    "filler": {
+      "type": "object",
+      "required": ["alphabet"],
+      "additionalProperties": false,
+      "properties": { "alphabet": { "type": "string", "pattern": "^[A-Z]{20,80}$" } }
+    },
+    "blocklist": { "type": "array", "minItems": 20, "uniqueItems": true, "items": { "type": "string", "pattern": "^[A-Z]{3,8}$" } },
+    "banned": {
+      "type": "array",
+      "minItems": 8,
+      "items": {
+        "type": "object",
+        "required": ["id", "pattern", "why"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+          "pattern": { "type": "string", "minLength": 3 },
+          "flags": { "type": "string", "pattern": "^[gimsu]*$" },
+          "why": { "type": "string", "minLength": 10 }
+        }
+      }
+    }
+  }
+}

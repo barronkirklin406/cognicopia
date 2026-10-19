@@ -277,7 +277,7 @@ export async function generateDigest(input: DigestInput, resident: ResidentDiges
     return Array.isArray(lines) ? lines : [String(lines)];
   };
   const page = planDigest(input, resident, split);
-  draw(doc, page);
+  draw(doc as unknown as Parameters<typeof draw>[0], page);
   const dateStr = formatDate(input.sessionDate);
   return { dataUrl: String(doc.output("dataurlstring")), filename: digestFilename(resident.firstName, dateStr) };
 }

@@ -110,7 +110,6 @@ export const HUBS = [
       { key: "builder",      label: "Packet Builder",           href: B,                    icon: "builder" } ] },
   { id: "facility",  label: "Facility",         icon: "building", items: [
       { key: "facility",     label: "Facility Portal",          href: B + "#/facility",     route: "facility",     icon: "building" },
-      { key: "audit",        label: "State Audit & Compliance Log", href: B + "#/facility/audit", route: "audit", icon: "shield" },
       { key: "shift",        label: "Shift board",              href: B + "#/shift",        route: "shift",        icon: "clipboard" },
       { key: "roster",       label: "Resident roster",          href: B + "#/roster",       route: "roster",       icon: "roster" },
       { key: "clinical",     label: "Session notes (SLP)",      href: B + "#/clinical",     route: "clinical",     icon: "stethoscope" },

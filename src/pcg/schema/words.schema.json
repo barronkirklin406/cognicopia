@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cognicopia.org/src/pcg/schema/words.schema.json",
+  "title": "Cognicopia activity engine: ladder words",
+  "description": "Common four-letter words, the rungs of a word ladder. Every word is plain, adult and safe to print; none is on the blocklist in safety.json.",
+  "type": "object",
+  "required": [
+    "version",
+    "length",
+    "words"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "version": {
+      "const": 1
+    },
+    "length": {
+      "const": 4
+    },
+    "words": {
+      "type": "array",
+      "minItems": 400,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Z]{4}$"
+      }
+    }
+  }
+}

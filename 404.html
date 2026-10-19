@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Page not found - Cognicopia</title>
+<meta name="robots" content="noindex">
+<!-- GitHub Pages serves this page for any address that is not a file. A tablet address (tablet.html in any spelling) goes to the
+     tablet mode inside the packet tool instead of an error, so the Tablet Activities button never ends on a 404. Nothing is requested. -->
+<script>
+(function(){
+  var p = location.pathname.toLowerCase();
+  if (p.indexOf("tablet") !== -1) location.replace("/index.html#tablet-fallback");
+})();
+</script>
+<style>
+body{margin:0;padding:40px 20px;background:#fbf7f1;color:#1a202c;font:18px/1.6 "Atkinson Hyperlegible","Segoe UI",system-ui,sans-serif}
+main{max-width:640px;margin:0 auto}
+h1{font-size:28px;margin:0 0 12px}
+a{display:block;margin:10px 0;padding:14px 18px;min-height:52px;box-sizing:border-box;border:2px solid #1b382b;border-radius:12px;background:#fff;color:#1b382b;font-weight:700;text-decoration:none}
+a:hover,a:focus-visible{background:#e8f3ec;outline:3px solid #1d4ed8;outline-offset:2px}
+</style>
+</head>
+<body>
+<main>
+  <h1>That page is not here</h1>
+  <p>The address may be out of date. These places always work:</p>
+  <a href="/index.html">Home: Cognicopia</a>
+  <a href="/index.html#tablet-fallback">Tablet Activities (opens in the packet tool)</a>
+  <a href="/builder.html">Packet Builder</a>
+</main>
+</body>
+</html>

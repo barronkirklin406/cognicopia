@@ -54,6 +54,7 @@ const urlOf = file => SITE + "/" + file.replace(/index\.html$/, "");
 const NOT_PUBLIC = {
   "builder.html": "the Packet Builder app", "license-desk.html": "the owner's page for making license keys", "profile.html": "the resident profile form (a tool screen)", "activate.html": "turns a purchase into a key",
   "about.html": "redirect stub", "faq.html": "redirect stub", "features.html": "redirect stub", "resources.html": "redirect stub", "high-volume-facilities.html": "redirect stub",
+  "404.html": "the page GitHub Pages shows for an address that is not a file",
   "clinical-alignment.html": "redirect stub", "publishing-excellence.html": "redirect stub", "institutional-standards.html": "redirect stub", "therapy.html": "redirect stub"
 };
 

@@ -1,0 +1,44 @@
+{
+  "$schema": "../schema/safety.schema.json",
+  "version": 1,
+  "filler": {
+    "alphabet": "AAAABCCDDEEEEFGHHIIIKLLMNNOOOPRRSSSTTTUUWY"
+  },
+  "blocklist": [
+    "ASS", "SEX", "SEXY", "NUDE", "DAMN", "HELL", "SHIT", "CRAP", "PISS", "FUCK", "BITCH", "SLUT", "WHORE", "DICK", "COCK", "PENIS", "RAPE", "KILL", "KILLS", "DIE", "DIED", "DEAD", "DEATH", "HURT", "PAIN", "SICK", "LOST", "FEAR", "CRY", "WAR", "GUN", "BOMB", "GRAVE", "COFFIN", "CANCER", "STROKE", "ALONE", "FALL", "HATE", "FAT", "UGLY", "STUPID", "DUMB", "IDIOT", "FOOL", "OLD"
+  ],
+  "banned": [
+    { "id": "memory-quiz", "pattern": "\\bremember(s|ed|ing)?\\b|\\brecall(s|ed|ing)?\\b", "flags": "i",
+      "why": "Memory quizzing. Never ask whether someone remembers or can recall; invite them to tell us instead." },
+    { "id": "forgetting", "pattern": "\\bforgot(ten)?\\b|\\bforget(s|ting)?\\b", "flags": "i",
+      "why": "Draws attention to what has been lost." },
+    { "id": "testing", "pattern": "\\bquiz(zes|zed)?\\b|\\btest (your|their|his|her) (memory|mind|brain)\\b|\\bmemory (test|game|check|exercise)s?\\b", "flags": "i",
+      "why": "Nothing here is a test." },
+    { "id": "right-wrong", "pattern": "\\bcorrect (answer|response)s?\\b|\\bright answers?\\b|\\bwrong\\b|\\bincorrect\\b|\\bmistakes?\\b|\\bfail(ed|s|ure)?\\b", "flags": "i",
+      "why": "There is no right or wrong answer to a conversation." },
+    { "id": "scoring", "pattern": "\\bscor(e|es|ed|ing)\\b|\\b\\d+ points?\\b|\\bgrad(e|es|ed|ing)\\b|\\bperformance\\b", "flags": "i",
+      "why": "No scoring, grading or performance language." },
+    { "id": "childish", "pattern": "\\bchild(ish|like)\\b|\\bbab(y|ies|yish)\\b|\\bkiddie\\b|\\bkiddy\\b|\\bcutesy\\b", "flags": "i",
+      "why": "Adults are never spoken to as children." },
+    { "id": "pet-names", "pattern": "\\b(honey|sweetie|sweetheart|dearie|dearest)\\b", "flags": "i",
+      "why": "Elderspeak: pet names are not used." },
+    { "id": "praise", "pattern": "\\bgood (job|girl|boy|work)\\b|\\bgreat job\\b|\\bwell done\\b|\\bproud of you\\b", "flags": "i",
+      "why": "Praise that sounds like a teacher to a pupil." },
+    { "id": "we-talk", "pattern": "\\bhow are we\\b|\\bare we ready\\b|\\bour (resident|patient)s?\\b|\\blet'?s (go|get) (you|ready)\\b", "flags": "i",
+      "why": "Elderspeak: the royal \"we\"." },
+    { "id": "labels", "pattern": "\\b(patients?|dementia|alzheimer'?s?|demented|senile|elderly|victims?|sufferers?|suffering|disabled|geriatric)\\b", "flags": "i",
+      "why": "Clinical labels do not belong on a page a person will see." },
+    { "id": "tag-questions", "pattern": "\\b(don'?t you|isn'?t it|won'?t you|aren'?t you|wasn'?t it|didn'?t you)\\b", "flags": "i",
+      "why": "Tag questions push for agreement." },
+    { "id": "condescending", "pattern": "\\b(this|that|it) (is|was) (so |very |really )?(easy|simple|hard|difficult)\\b|\\bnice and easy\\b|\\bjust (try|do) it\\b", "flags": "i",
+      "why": "Telling someone a task is easy or hard sets them up to feel bad." },
+    { "id": "shouting", "pattern": "!{2,}|\\?{2,}|\\b[A-Z]{12,}\\b", "flags": "",
+      "why": "No shouting." },
+    { "id": "loss", "pattern": "\\b(dead|death|died|dying|funeral|grave|cancer|hospice|widow(ed)?|lonely|alone|afraid|scared|terrified)\\b", "flags": "i",
+      "why": "Subjects that can open a wound are left out of generated content." },
+    { "id": "conflict", "pattern": "\\b(war|battle|battles|gun|guns|bomb|bombs|soldier|soldiers|army|navy|combat|enemy)\\b", "flags": "i",
+      "why": "No war or violence in generated content." },
+    { "id": "pressure", "pattern": "\\byou (should|must|need to|have to|ought to)\\b|\\bhurry\\b|\\bhurry up\\b|\\bquickly\\b", "flags": "i",
+      "why": "No pressure, no clock." }
+  ]
+}
