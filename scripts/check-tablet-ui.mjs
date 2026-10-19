@@ -322,8 +322,9 @@ try {
         /* a block that is not right for the place: it hops and comes back, with a kind sentence */
         const wrongL = (await tiles()).find(L => L !== d.word[0]);
         if (wrongL) {
-          const c = await tileXY(wrongL); await p.mouse.click(c[0], c[1]); await sleep(250);
+          const c = await tileXY(wrongL); await p.mouse.click(c[0], c[1]); await sleep(250);      /* (the hop that follows takes about a second to settle, so the drag below starts after it) */
           ok((await dbg(p)).placed === 0 && /Not that one/.test(await text(p, "#tbStage .tb-msg")) && !/wrong/i.test(await text(p, "#tbStage .tb-msg")), "a tap on the wrong letter places nothing, with a kind sentence: " + await text(p, "#tbStage .tb-msg"));
+          await sleep(900);
           /* dragged to the wrong place: it floats back */
           const from = await tileXY(wrongL), to = await slotXY(0), at0 = await p.evaluate(L => { const r = document.querySelector(`#tbStage .tb-tray .tb-tile[data-l="${L}"]`).getBoundingClientRect(); return [Math.round(r.left), Math.round(r.top)]; }, wrongL);
           await drag(p, from, to); await sleep(900);
