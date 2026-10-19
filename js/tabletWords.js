@@ -161,7 +161,7 @@
     function layoutFor(a) {
       var t = tbt(), per = t + 3, side = a.w >= 940 && a.w >= a.h * 1.15;
       if (side) return { side: true, n: Math.max(5, Math.min(6, Math.floor(Math.min(a.w * 0.5, 7 * 80) / per), Math.floor(a.h / per))), gw: Math.min(a.w * 0.5, 7 * 80), gh: a.h };
-      var cols = Math.max(4, Math.floor((a.w + 8) / (t + 8))), rows = Math.ceil(27 / cols), panelH = 96 + (t + 12) + rows * (t + 8) + 36, gh = a.h - panelH - 14;
+      var cols = Math.max(4, Math.floor((a.w + 6) / (t + 6))), rows = Math.ceil(27 / cols), panelH = 190 + rows * t + (rows - 1) * 6, gh = a.h - panelH - 14 - 40;      /* 40 more: the bar above can still grow a second row once the title is set */
       return { side: false, n: Math.max(5, Math.min(6, Math.floor((a.w - 20) / per), Math.floor(gh / per))), gw: a.w, gh: gh };
     }
     cw = T.crossword({ stage: o.stage, topic: o.topic, seed: o.seed, avoid: o.avoid, fit: { size: layoutFor(api.area()).n } });
@@ -182,7 +182,7 @@
     nav.innerHTML = '<button type="button" class="tb-btn" data-cwn="-1"><span aria-hidden="true">◀</span> Clue</button><button type="button" class="tb-btn" id="tbCwHint"><span aria-hidden="true">💡</span> A letter</button><button type="button" class="tb-btn" data-cwn="1">Clue <span aria-hidden="true">▶</span></button>';
     function size() {
       var a = api.area(), L = layoutFor(a);
-      if (!L.side && panel.offsetHeight) L.gh = a.h - panel.offsetHeight - 26;          // what is left above the keyboard, as it really is
+      if (!L.side && panel.offsetHeight) L.gh = a.h - panel.offsetHeight - 14;          // what is left above the keyboard, as it really is
       var cell = Math.floor(Math.min(L.gw / cw.cols, L.gh / cw.rows)) - 3;
       grid.style.setProperty("--cell", Math.max(L.side ? tbt() : 60, Math.min(84, cell)) + "px");
       wrap.classList.toggle("is-side", L.side);
