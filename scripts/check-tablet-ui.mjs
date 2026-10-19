@@ -409,12 +409,17 @@ try {
     ok(await p.evaluate(() => document.querySelectorAll("#tbStage canvas.tb-wave").length) === 1, "a wave is drawn above the board");
     /* touching a picture plays its sound; the wave moves */
     await click(p, `[data-snd="${d.cards[0]}"]`); await sleep(450);
-    d = await dbg(p);
+    /* a sound with a slow swell (waves, chimes) is still building on a busy machine: wait for it to be heard, up to five seconds */
+    /* (the level is read at one instant, and a song has quiet gaps, so the loudest moment seen is the one to judge) */
+    await p.evaluate(() => { window.__loudest = 0; });
+    await p.waitForFunction(() => { const k = window.CognicopiaTabletUI.debug().peak; window.__loudest = Math.max(window.__loudest, k); return window.__loudest > 2; }, null, { timeout: 5000 }).catch(() => {});
+    d = await dbg(p); d.peak = Math.max(d.peak, await p.evaluate(() => window.__loudest));
     ok(d.playing === d.cards[0] && d.peak > 2, `touching a picture plays its sound (the sound's wave reads ${d.peak} of 128)`);
     ok(await p.evaluate(id => document.querySelector(`[data-snd="${id}"]`).classList.contains("is-playing") && document.querySelector(`[data-snd="${id}"]`).classList.contains("is-heard"), d.cards[0]) && /1 of 6 heard/.test(await text(p, "#tbProg")), "that picture is marked as playing and heard, and the count says 1 of 6");
     const wave = async () => p.evaluate(() => { const c = document.querySelector(".tb-wave"), g = c.getContext("2d"), px = g.getImageData(0, 0, c.width, c.height).data; let h = 0; for (let i = 0; i < px.length; i += 4 * 23) h = (h * 31 + px[i + 3] + px[i + 1]) | 0; return h; });
-    const w1 = await wave(); await sleep(120); const w2 = await wave();
-    ok(w1 !== w2, "the wave moves while the sound plays");
+    const w1 = await wave(); let moved = false;
+    for (let k = 0; k < 12 && !moved; k++) { await sleep(120); moved = (await wave()) !== w1; }
+    ok(moved, "the wave moves while the sound plays");
     /* the rest, then the cheer */
     for (const id of d.cards.slice(1)) { await click(p, `[data-snd="${id}"]`); await sleep(160); }
     ok((await dbg(p)).heard.length === 6, "all six sounds have been heard");
