@@ -78,6 +78,21 @@
   pic("kettle", "a copper kettle");
   pic("candle", "a candle");
 
+  /* ---------- the activity menu: one illustration for each activity (m- and the activity's id) ---------- */
+  pic("m-wordsearch", "a magnifying glass");
+  pic("m-crossword", "a crossword and pencil");
+  pic("m-spell", "wooden alphabet blocks");
+  pic("m-saying", "a quill pen and inkwell");
+  pic("m-trace", "a winding country road");
+  pic("m-color", "a painter's palette");
+  pic("m-paint", "three jars of paint");
+  pic("m-bubbles", "a bubble wand and bubbles");
+  pic("m-sort", "two woven baskets");
+  pic("m-order", "three wooden steps");
+  pic("m-match", "a key and a padlock");
+  pic("m-odd", "apples and a pear");
+  pic("m-sounds", "an old gramophone");
+
   var api = {
     dir: DIR,
     has: function (id) { return !!PICS[id]; },

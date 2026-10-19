@@ -20,7 +20,7 @@
    ===================================================================== */
 (function () {
   "use strict";
-  var T = window.CognicopiaTablet, Kit = window.CognicopiaTabletKit;
+  var T = window.CognicopiaTablet, Kit = window.CognicopiaTabletKit, Art = window.CognicopiaTabletArt;
   if (!T || !Kit || !document.getElementById("tbMenu")) return;
 
   var $ = function (id) { return document.getElementById(id); };
@@ -512,7 +512,8 @@
     var sec = h("div", "", "<h2>" + esc(g[0]) + "<small>" + esc(g[1]) + "</small></h2>"), ul = h("ul", "tbp-grid");
     defs.filter(function (d) { return d.group === gi; }).forEach(function (a) {
       ACT[a.id] = { id: a.id, title: a.title, start: a.start };
-      ul.appendChild(h("li", "", '<button type="button" class="tbp-card" data-act="' + a.id + '"><svg viewBox="0 0 64 64" aria-hidden="true" focusable="false">' + a.icon + "</svg><b>" + esc(a.title) + "</b><span>" + esc(a.blurb) + "</span></button>"));
+      var mark = Art && Art.has("m-" + a.id) ? Art.img("m-" + a.id, { size: 76 }).replace('class="tb-ico"', 'class="tbp-pic"') : '<svg viewBox="0 0 64 64" aria-hidden="true" focusable="false">' + a.icon + "</svg>";
+      ul.appendChild(h("li", "", '<button type="button" class="tbp-card" data-act="' + a.id + '">' + mark + "<b>" + esc(a.title) + "</b><span>" + esc(a.blurb) + "</span></button>"));
     });
     sec.appendChild(ul); menu.appendChild(sec);
   });
