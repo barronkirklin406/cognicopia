@@ -181,8 +181,10 @@
     var clue = h("div", "tb-clue tb-glass", ""), nav = h("div", "tb-row"), kb;
     nav.innerHTML = '<button type="button" class="tb-btn" data-cwn="-1"><span aria-hidden="true">◀</span> Clue</button><button type="button" class="tb-btn" id="tbCwHint"><span aria-hidden="true">💡</span> A letter</button><button type="button" class="tb-btn" data-cwn="1">Clue <span aria-hidden="true">▶</span></button>';
     function size() {
-      var L = layoutFor(api.area()), cell = Math.floor(Math.min(L.gw / cw.cols, L.gh / cw.rows)) - 3;
-      grid.style.setProperty("--cell", Math.max(tbt(), Math.min(84, cell)) + "px");
+      var a = api.area(), L = layoutFor(a);
+      if (!L.side && panel.offsetHeight) L.gh = a.h - panel.offsetHeight - 26;          // what is left above the keyboard, as it really is
+      var cell = Math.floor(Math.min(L.gw / cw.cols, L.gh / cw.rows)) - 3;
+      grid.style.setProperty("--cell", Math.max(L.side ? tbt() : 60, Math.min(84, cell)) + "px");
       wrap.classList.toggle("is-side", L.side);
     }
     function refresh() {
@@ -247,7 +249,7 @@
       }
     });
     var keyEl = function (L) { return kb.querySelector('[data-k="' + L + '"]'); };
-    api.onKey(wordKeys(type, back)); size(); api.onResize(size);
+    api.onKey(wordKeys(type, back)); size(); api.onResize(size); window.requestAnimationFrame(size);       /* once more when the keyboard has its real height */
     select(cw.entries[0].r, cw.entries[0].c, cw.entries[0].dir);
     api.say(function () { var e = cur2(); return e ? e.num + " " + (e.dir === "A" ? "across" : "down") + ". " + e.clue + ". " + e.word.length + " letters." : ""; });
     api.hint(function () {

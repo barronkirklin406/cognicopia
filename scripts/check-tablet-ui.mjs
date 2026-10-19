@@ -315,7 +315,7 @@ try {
     const slotXY = k => centerOf(p, `#tbStage .tb-slot[data-s="${k}"]`);
     for (let i = 0; i < count; i++) {
       d = await dbg(p);
-      ok(await p.evaluate(() => !!document.querySelector("#tbStage .tb-pic-card svg")) && /\w/.test(await text(p, "#tbStage .tb-clueline")), `word ${i + 1}: there is a picture and a clue (${d.art})`);
+      ok(await p.evaluate(() => !!document.querySelector("#tbStage .tb-pic-card img")) && /\w/.test(await text(p, "#tbStage .tb-clueline")), `word ${i + 1}: there is a picture and a clue (${d.art})`);
       ok(!(await p.evaluate(() => document.querySelector("#tbStage .tb-pic-card").textContent.trim())), `word ${i + 1}: the picture has no letters in it`);
       ok(await p.evaluate(() => document.querySelectorAll("#tbStage .tb-slot").length) === d.word.length && (await tiles()).sort().join("") === d.word.split("").sort().join(""), `word ${i + 1}: ${d.word.length} places and exactly the letters of the word as blocks`);
       if (i === 0) {

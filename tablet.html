@@ -113,6 +113,7 @@ html.cg-paper:not(.cg-night-shift) :is(.tb-btn.go,.tb-back,.tb-btn.go *,.tb-back
 .tb-cwpanel{display:flex;flex-direction:column;gap:12px;width:100%;max-width:760px;min-width:0}
 .tb-cwwrap.is-side .tb-cwpanel{flex:1 1 440px}
 .tb-cwwrap:not(.is-side) .tb-cwpanel{position:sticky;bottom:0;padding:10px;border:3px solid var(--tb-edge);border-radius:24px;background:var(--tb-glass);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);box-shadow:var(--tb-lift)}
+.tb-cwwrap:not(.is-side) .tb-key{min-height:60px}
 .tb-clue{width:100%;margin:0;padding:10px 16px;font-size:1.4rem;line-height:1.3;font-weight:600;text-align:center}
 .tb-clue b{font-weight:700}
 .tb-clue small{display:block;font-size:1rem;font-weight:600;color:var(--cg-tan-800,#4f4030)}
@@ -230,10 +231,10 @@ html.tb-open{overflow:hidden}
 html.cg-night-shift .tb{background:#17120c;color:#ffedcc}
 html.cg-night-shift .tb{--tb-glass:rgba(43,32,21,.9);--tb-edge:#d6a64b;--tb-lift:0 10px 28px rgba(0,0,0,.5)}
 html.cg-night-shift .tb-bar{border-color:#d6a64b}
-html.cg-night-shift :is(.tbp-card,.tbp-setup,.tbp-seg label,.tbp-sel,.tb-btn,.tb-key,.tb-opt,.tb-cell,.tb-cwc,.tb-slot,.tb-words li,.tb-clue,.tb-card,.tb-talk div,.tb-placed li,.tb-gate>div,.tbp-note,.tb-snd,.tb-trace){background:#2b2015 !important;border-color:#d6a64b;color:#ffedcc !important}
+html.cg-night-shift :is(.tbp-card,.tbp-setup,.tbp-seg label,.tbp-sel,.tb-btn,.tb-key,.tb-opt,.tb-cell,.tb-cwc,.tb-slot,.tb-words li,.tb-wd,.tb-clue,.tb-card,.tb-talk div,.tb-placed li,.tb-gate>div,.tbp-note,.tb-snd,.tb-trace){background:#2b2015 !important;border-color:#d6a64b;color:#ffedcc !important}
 html.cg-night-shift :is(.tb-snd.is-playing,.tb-btn.assist,.tbp-card:hover,.tb-cell.is-sel,.tb-cell.is-start,.tb-cwc.is-word,.tb-slot.is-next,.tb-opt.is-picked,.tb-key:active,.tb-opt:active){background:#4a3515 !important}
 html.cg-night-shift :is(.tb-btn.go,.tb-back,.tbp-seg input:checked+label,.tb-cwc.is-cur,.tb-placed b,.tb-modes .tb-btn[aria-pressed="true"]){background:#5a3e12 !important;color:#fff1cf !important}
-html.cg-night-shift :is(.tb-cell[class*=" f"],.tb-cwc.is-done,.tb-words li.is-found,.tb-opt.is-right,.tb-opt.is-matched,.tb-slot.is-given,.tb-placed li.is-on){background:#4a3a1a !important}
+html.cg-night-shift :is(.tb-cell[class*=" f"],.tb-cwc.is-done,.tb-words li.is-found,.tb-wd.is-found,.tb-opt.is-right,.tb-opt.is-matched,.tb-slot.is-given,.tb-placed li.is-on){background:#4a3a1a !important}
 html.cg-night-shift :is(.tb-bar h2,.tb-prog,.tb-msg,.tbp h1,.tbp-menu h2,.tb-card,.tb-big,.tb-h,.tbp-note a){color:#ffd477 !important}
 html.cg-night-shift .tb-cheer{background:rgba(23,18,12,.96)}
 html.cg-night-shift .tb-cheer p{color:#ffd477 !important}
