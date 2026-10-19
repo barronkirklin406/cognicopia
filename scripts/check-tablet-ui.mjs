@@ -47,7 +47,7 @@ const ok = (cond, msg) => { if (cond) passed++; else problems.push(msg); };
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const ALL = ["wordsearch", "crossword", "spell", "saying", "trace", "color", "paint", "bubbles", "sort", "order", "match", "odd", "sounds"];
 /* the activities already rebuilt to the 72 px floor; the others still meet the older 52 px one (this list grows until it holds all thirteen) */
-const BIG = new Set(["trace", "sounds", "wordsearch", "crossword", "spell", "saying"]);
+const BIG = new Set(["trace", "sounds", "wordsearch", "crossword", "spell", "saying", "color", "paint", "bubbles"]);
 const SPEECH = "window.__spoken=[];(function(){try{var s=window.speechSynthesis;if(!s)return;var o=s.speak.bind(s);s.speak=function(u){window.__spoken.push(u.text);try{o(u)}catch(e){}};}catch(e){}})();";
 const LAND = { width: 1024, height: 768 }, PORT = { width: 768, height: 1024 }, PHONE = { width: 390, height: 844 };
 
@@ -523,53 +523,92 @@ try {
     const { ctx, p } = await fresh(LAND);
     await openAct(p, "color");
     await p.waitForSelector(".tb-pics .tb-pic", { timeout: 8000 });
-    ok(await p.evaluate(() => document.querySelectorAll(".tb-pic").length) === 6, "six pictures to choose from");
-    await click(p, ".tb-pic"); await p.waitForSelector(".tb-art svg path", { state: "attached" });
-    const nShapes = (await dbg(p)).shapes; ok(nShapes >= 3, `the picture has ${nShapes} shapes to color`);
+    ok(await p.evaluate(() => document.querySelectorAll(".tb-pic").length) === 8, "eight pictures to choose from");
+    ok((await dbg(p)).all >= 20, `${(await dbg(p)).all} pictures in all, twenty or more`);
+    const first = await p.evaluate(() => document.querySelector(".tb-pic").getAttribute("data-id"));
+    await click(p, '[data-more="1"]'); await sleep(150);
+    ok(await p.evaluate(f => document.querySelector(".tb-pic").getAttribute("data-id") !== f, first), "More pictures brings others");
+    await click(p, ".tb-pic"); await p.waitForSelector(".tb-sheet canvas.tb-lines", { timeout: 8000 });
+    const spots = () => p.evaluate(() => window.CognicopiaTabletUI.debug().spots());
+    const pixel = (x, y) => p.evaluate(([a, b]) => window.CognicopiaTabletUI.debug().pixel(a, b), [x, y]);
+    const d0 = await dbg(p); ok(d0.shapes >= 3, `the picture has ${d0.shapes} shapes to color`);
+    ok(await p.evaluate(() => document.querySelectorAll("[data-bank]").length) === 4 && await p.evaluate(() => document.querySelectorAll(".tb-sw").length) === 8, "four sets of colors, eight colors in each");
+    await click(p, '[data-bank="2"]');
+    ok(await p.evaluate(() => document.querySelector('[data-bank="2"]').getAttribute("aria-pressed") === "true" && document.querySelector(".tb-sw").getAttribute("aria-label") === "Leaf" && JSON.parse(localStorage.getItem("cognicopia_tablet_prefs")).palette === 2), "choosing the Garden set changes the colors, and the choice is kept");
     await click(p, '.tb-sw[data-color="#4a9d5b"]');
     ok(await p.evaluate(() => document.querySelector('.tb-sw[data-color="#4a9d5b"]').getAttribute("aria-pressed") === "true" && document.querySelectorAll('.tb-sw[aria-pressed="true"]').length === 1), "the chosen color is marked");
-    const spot = async () => p.evaluate(() => { const ps = Array.from(document.querySelectorAll(".tb-art svg path")); for (const e of ps) { const r = e.getBoundingClientRect(); for (const [fx, fy] of [[.5, .5], [.3, .5], [.7, .5], [.5, .3], [.5, .7], [.2, .2], [.8, .8]]) { const x = r.left + r.width * fx, y = r.top + r.height * fy; if (document.elementFromPoint(x, y) === e && !e.style.fill) return [x, y]; } } return null; });
-    const s1 = await spot(); await p.mouse.click(s1[0], s1[1]); await sleep(60);
-    ok((await dbg(p)).filled === 1 && await p.evaluate(() => Array.from(document.querySelectorAll(".tb-art svg path")).some(e => e.style.fill === "rgb(74, 157, 91)")), "tapping a shape colors it in the chosen color");
-    await click(p, '.tb-sw[data-color="#d94b3d"]'); const s2 = await spot(); await p.mouse.click(s2[0], s2[1]); await sleep(60);
-    ok((await dbg(p)).filled === 2, "a second color on a second shape");
+    let sp = await spots(); await p.mouse.click(sp[0][0], sp[0][1]); await sleep(60);
+    sp = await spots();
+    ok((await dbg(p)).filled === 1 && (await pixel(sp[0][0], sp[0][1])).join() === "74,157,91,255", "tapping a shape fills it with the chosen color");
+    ok((await Promise.all(sp.slice(1).map(s => pixel(s[0], s[1])))).every(v => v[3] === 0), "and the color stays inside its lines: no other shape changed");
+    await click(p, '.tb-sw[data-color="#c27a4a"]'); await p.mouse.click(sp[1][0], sp[1][1]); await sleep(60);
+    ok((await dbg(p)).filled === 2 && (await pixel(sp[1][0], sp[1][1])).join() === "194,122,74,255", "a second color on a second shape");
+    await p.mouse.click(sp[1][0], sp[1][1]); await sleep(60);
+    ok((await dbg(p)).filled === 2 && (await pixel(sp[1][0], sp[1][1])).join() === "194,122,74,255", "tapping the same shape again keeps it colored");
     await click(p, '[data-co="undo"]'); await sleep(60);
-    ok((await dbg(p)).filled === 1, "Undo takes the last color off");
+    ok((await dbg(p)).filled === 2, "Undo takes back the last tap");
+    await click(p, '[data-co="undo"]'); await sleep(60);
+    ok((await dbg(p)).filled === 1 && (await pixel(sp[1][0], sp[1][1]))[3] === 0, "and the one before it");
     await click(p, '[data-co="clear"]'); await sleep(60);
-    ok(await p.evaluate(() => Array.from(document.querySelectorAll(".tb-art svg path")).every(e => !e.style.fill)), "Start over clears every color");
+    ok((await dbg(p)).filled === 0 && (await pixel(sp[0][0], sp[0][1]))[3] === 0, "Start over clears every color");
+    await click(p, '[data-co="undo"]'); await sleep(60);
+    ok((await dbg(p)).filled === 1, "and Undo brings a color back after it");
+    await click(p, "#tbAssist");
+    await p.waitForSelector(".tb-cheer", { timeout: 15000 });
+    ok((await dbg(p)).filled === (await dbg(p)).shapes, "Finish for me colors every shape that is left");
+    await click(p, "[data-cheer=next]"); await sleep(300);
+    await click(p, ".tb-pic"); await p.waitForSelector(".tb-sheet canvas.tb-lines", { timeout: 8000 });
     await click(p, '[data-co="pick"]'); await sleep(200);
-    ok(await p.evaluate(() => document.querySelectorAll(".tb-pic").length) === 6, "Another picture returns to the choice");
+    ok(await p.evaluate(() => document.querySelectorAll(".tb-pic").length) === 8, "Another picture returns to the choice");
     await ctx.close();
   }
   {
     const { ctx, p } = await fresh(LAND);
     await openAct(p, "paint");
     const box = await p.evaluate(() => { const r = document.querySelector(".tb-paint").getBoundingClientRect(); return [r.left, r.top, r.width, r.height]; });
-    const px = (fx, fy) => p.evaluate(([fx2, fy2]) => { const cv = document.querySelector(".tb-paint"), c = cv.getContext("2d"); return Array.from(c.getImageData(Math.round(cv.width * fx2), Math.round(cv.height * fy2), 1, 1).data); }, [fx, fy]);
-    ok((await px(.5, .5)).join() === "255,255,255,255", "the canvas starts white");
-    await p.mouse.move(box[0] + box[2] * .2, box[1] + box[3] * .5); await p.mouse.down(); await p.mouse.move(box[0] + box[2] * .8, box[1] + box[3] * .5, { steps: 10 }); await p.mouse.up();
-    ok((await dbg(p)).strokes === 1 && (await px(.5, .5)).join() === "217,75,61,255", "a finger drawn across the canvas paints a line in the chosen color");
-    await click(p, '.tb-sw[data-color="#4a9d5b"]'); await click(p, '[data-pw="30"]');
-    await p.mouse.move(box[0] + box[2] * .5, box[1] + box[3] * .2); await p.mouse.down(); await p.mouse.move(box[0] + box[2] * .5, box[1] + box[3] * .8, { steps: 10 }); await p.mouse.up();
-    ok((await dbg(p)).strokes === 2 && (await px(.5, .3)).join() === "74,157,91,255", "another color, a thicker line");
-    await click(p, '[data-pw="undo"]'); ok((await dbg(p)).strokes === 1 && (await px(.5, .3)).join() === "255,255,255,255", "Undo takes the last line away");
-    await click(p, '[data-pw="clear"]'); ok((await dbg(p)).strokes === 0 && (await px(.5, .5)).join() === "255,255,255,255", "Clear makes the canvas white again");
+    const ink = (fx, fy) => p.evaluate(([x, y]) => window.CognicopiaTabletUI.debug().ink(x, y), [box[2] * fx, box[3] * fy]);
+    const paper = (fx, fy) => p.evaluate(([x, y]) => window.CognicopiaTabletUI.debug().bgPixel(x, y), [box[2] * fx, box[3] * fy]);
+    const near = (a, b, tol) => a.slice(0, 3).every((v, i) => Math.abs(v - b[i]) <= tol);
+    const drag = async (x0, y0, x1, y1) => { await p.mouse.move(box[0] + box[2] * x0, box[1] + box[3] * y0); await p.mouse.down(); await p.mouse.move(box[0] + box[2] * x1, box[1] + box[3] * y1, { steps: 12 }); await p.mouse.up(); };
+    const p0 = await paper(.5, .5); ok(p0[3] === 255 && !(p0[0] === 255 && p0[1] === 255 && p0[2] === 255), "the sheet starts as warm parchment, not a blank white screen");
+    ok((await ink(.5, .5))[3] === 0, "and nothing is painted on it");
+    await drag(.2, .5, .8, .5);
+    let c = await ink(.5, .5); ok((await dbg(p)).strokes === 1 && c[3] > 235 && near(c, [244, 182, 194], 10), "a finger drawn across the sheet paints a soft line in the chosen color");
+    await click(p, '[data-tab="colors"]'); await click(p, '[data-bank="1"]'); await click(p, '.tb-sw[data-color="#2f6fd0"]'); await click(p, '[data-tab="brush"]'); await click(p, '[data-size="3"]'); await click(p, '[data-brush="soft"]');
+    await drag(.5, .15, .5, .85);
+    c = await ink(.5, .3); ok((await dbg(p)).strokes === 2 && c[3] > 235 && near(c, [47, 111, 208], 10), "another color, and a wider brush");
+    ok(await p.evaluate(() => document.querySelectorAll("[data-brush]").length) === 4 && await p.evaluate(() => document.querySelectorAll("[data-size]").length) === 4, "four brushes and four sizes");
+    await click(p, '[data-brush="blend"]'); await click(p, '[data-size="1"]');
+    const before = await ink(.58, .62); await drag(.4, .62, .75, .62); const after = await ink(.58, .62);
+    ok((await dbg(p)).brush === "blend" && after[3] > before[3], "the blending brush smears paint into the space beside it");
+    await click(p, '[data-tab="paper"]'); const w0 = await paper(.5, .9); await click(p, '[data-paper="1"]'); const w1 = await paper(.5, .9);
+    ok(JSON.stringify(w0) !== JSON.stringify(w1) && (await dbg(p)).paper === 1 && await p.evaluate(() => JSON.parse(localStorage.getItem("cognicopia_tablet_prefs")).paper === 1), "a different paper (wood) can be chosen, and is kept");
+    ok(await p.evaluate(() => document.querySelectorAll("[data-paper]").length) === 4 && (await ink(.5, .3))[3] > 235, "four papers; the painting stays on top of each");
+    const n = (await dbg(p)).strokes;
+    await click(p, '[data-act="undo"]'); ok((await dbg(p)).strokes === n - 1, "Undo takes the last stroke away");
+    await click(p, '[data-act="clear"]'); ok((await ink(.5, .3))[3] === 0, "Clear makes the sheet bare");
+    await click(p, '[data-act="undo"]'); ok((await ink(.5, .3))[3] > 235, "and Undo brings the painting back after a Clear");
     await ctx.close();
   }
   {
     const { ctx, p } = await fresh(LAND);
     await openAct(p, "bubbles");
-    const centers = () => p.evaluate(() => Array.from(document.querySelectorAll(".tb-bub:not(.is-pop)")).map(b => { const r = b.getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2, r.width]; }));
+    const centers = () => p.evaluate(() => window.CognicopiaTabletUI.debug().centers());
     let cs = await centers(); ok(cs.length >= 3 && cs.every(c => c[2] >= 80), `${cs.length} bubbles drift in the sky, each at least 80 px across`);
-    const y0 = cs[0][1]; await sleep(700); const moved = (await centers()).some(c => Math.abs(c[1] - y0) > 5); ok(moved, "they drift upward on their own");
-    cs = await centers(); const t = cs.find(c => c[1] > 120 && c[1] < 650) || cs[0];
-    await p.touchscreen.tap(t[0], t[1]); await sleep(80);
-    ok(await p.evaluate(() => document.querySelectorAll(".tb-bub.is-pop").length) >= 1, "tapping a bubble pops it");
+    const y0 = cs[0][1]; await sleep(700); const moved = (await centers()).some(c => Math.abs(c[1] - y0) > 4) ; ok(moved, "they drift upward on their own");
+    const t = (await centers()).find(c => c[1] > 150 && c[1] < 600) || (await centers())[0];
+    const popped0 = await p.evaluate(() => window.CognicopiaTabletUI.debug().popped());
+    await p.touchscreen.tap(t[0], t[1]); await sleep(120);
+    ok(await p.evaluate(() => window.CognicopiaTabletUI.debug().popped()) === popped0 + 1, "tapping a bubble pops it");
     ok(!(await p.evaluate(() => /\d/.test((document.querySelector("#tbProg") || {}).textContent || ""))), "no number is shown for bubbles");
+    const s0 = (await dbg(p)).speed; await click(p, '[data-speed="1"]');
+    ok((await dbg(p)).speed === s0 + 1 && /Float:/.test(await text(p, "#tbSpeedLbl")), "Faster and Slower change how quickly they float, and say so in words");
+    await click(p, "#tbAssist"); await p.waitForSelector(".tb-cheer", { timeout: 15000 });
+    ok(await p.evaluate(() => window.CognicopiaTabletUI.debug().count()) === 0, "Finish for me lets every bubble go");
     await ctx.close();
     const r = await fresh(LAND, { reduced: true }); await openAct(r.p, "bubbles");
-    const a1 = await r.p.evaluate(() => Array.from(document.querySelectorAll(".tb-bub")).map(b => b.getBoundingClientRect().top)); await sleep(700);
-    const a2 = await r.p.evaluate(() => Array.from(document.querySelectorAll(".tb-bub")).map(b => b.getBoundingClientRect().top));
+    const a1 = await r.p.evaluate(() => window.CognicopiaTabletUI.debug().centers().map(c => c[1])); await sleep(700);
+    const a2 = await r.p.evaluate(() => window.CognicopiaTabletUI.debug().centers().map(c => c[1]));
     ok(a1.length >= 3 && JSON.stringify(a1) === JSON.stringify(a2), "for people who ask for less motion, the bubbles stay still");
     await r.ctx.close();
   }
@@ -605,7 +644,7 @@ try {
     const { ctx, p } = await fresh(LAND);
     ok(await p.evaluate(() => window.CognicopiaTabletUI.idleMs()) === 15000, "a quiet moment is fifteen seconds");
     await p.evaluate(() => window.CognicopiaTabletUI.idleMs(900));
-    const sig = id => p.evaluate(x => { const d = window.CognicopiaTabletUI.debug(); if (x === "trace") return d.path.d + d.scene; if (x === "paint") return String(d.strokes); return document.getElementById("tbStage").innerHTML.replace(/style="[^"]*"/g, ""); }, id);
+    const sig = id => p.evaluate(x => { const d = window.CognicopiaTabletUI.debug(); if (x === "trace") return d.path.d + d.scene; if (x === "paint") return String(d.strokes); if (x === "bubbles") return String(d.seed); return document.getElementById("tbStage").innerHTML.replace(/style="[^"]*"/g, ""); }, id);
     for (const id of ALL) {
       await openAct(p, id); if (id === "color") await p.waitForSelector(".tb-pics .tb-pic", { timeout: 8000 });
       const st = await p.evaluate(() => window.CognicopiaTabletUI.stats());
@@ -614,7 +653,8 @@ try {
       /* a quiet moment: the right place glows */
       await sleep(1600);
       const h1 = await p.evaluate(() => ({ s: window.CognicopiaTabletUI.stats(), glow: document.querySelectorAll("#tbStage .tb-glow").length }));
-      ok(h1.s.hints >= 1 && (h1.glow >= 1 || id === "trace"), `${id}: after a quiet moment a hint appears (${h1.s.hints} given, ${h1.glow} places glowing)`);
+      const drawn = await p.evaluate(x => { const d = window.CognicopiaTabletUI.debug() || {}; return x === "paint" ? !!d.demo || document.querySelectorAll(".tb-glow").length > 0 : x === "bubbles" ? !!(d.hintOn && d.hintOn()) : false; }, id);
+      ok(h1.s.hints >= 1 && (h1.glow >= 1 || id === "trace" || drawn), `${id}: after a quiet moment a hint appears (${h1.s.hints} given, ${h1.glow} places glowing${drawn ? ", shown on the canvas" : ""})`);
       /* Next: a fresh one at once, and not the same as before */
       if (id === "paint") { const b = await p.evaluate(() => { const r = document.querySelector(".tb-paint").getBoundingClientRect(); return [r.left + r.width * .3, r.top + r.height * .5, r.left + r.width * .7]; }); await p.mouse.move(b[0], b[1]); await p.mouse.down(); await p.mouse.move(b[2], b[1], { steps: 6 }); await p.mouse.up(); ok((await sig(id)) === "1", "paint: a stroke is on the canvas before Next"); }
       const before = await sig(id);
@@ -665,7 +705,7 @@ try {
     for (const id of ALL) {
       await p.click(`[data-act="${id}"]`); await stageReady(p); if (id === "color") await p.waitForSelector(".tb-pics", { timeout: 8000 }).catch(() => {});
       await p.waitForTimeout(250);
-      if (id === "color") { await click(p, ".tb-pic"); await p.waitForSelector(".tb-art svg path", { state: "attached" }); await sleep(150); }
+      if (id === "color") { await click(p, ".tb-pic"); await p.waitForSelector(".tb-sheet canvas.tb-lines", { timeout: 8000 }); await sleep(150); }
       const floor = tablet && BIG.has(id) ? 72 : 52, sm = await small(p, floor), fit = await p.evaluate(() => { const s = document.getElementById("tbStage"); return { x: s.scrollWidth - s.clientWidth, y: s.scrollHeight - s.clientHeight }; });
       const bar = await p.evaluate(() => Array.from(document.querySelectorAll("#tb .tb-bar button")).filter(e => e.getBoundingClientRect().width > 0).map(e => { const r = e.getBoundingClientRect(); return { id: e.id, w: Math.round(r.width), h: Math.round(r.height) }; }));
       const barFloor = tablet ? 72 : 56;
@@ -684,7 +724,7 @@ try {
     if (night) await p.evaluate(() => document.documentElement.classList.add("cg-night-shift"));
     for (const id of ALL) {
       await p.click(`[data-act="${id}"]`); await stageReady(p);
-      if (id === "color") { await p.waitForSelector(".tb-pics", { timeout: 8000 }).catch(() => {}); await click(p, ".tb-pic"); await p.waitForSelector(".tb-art svg path", { state: "attached" }); }
+      if (id === "color") { await p.waitForSelector(".tb-pics", { timeout: 8000 }).catch(() => {}); await click(p, ".tb-pic"); await p.waitForSelector(".tb-sheet canvas.tb-lines", { timeout: 8000 }); }
       await sleep(250);
       const lo = await lowContrast(p, 7);
       ok(lo.length === 0, `${night ? "Night Shift" : "day"}, ${id}: all text reaches 7:1 (${lo.slice(0, 3).join("; ")})`);

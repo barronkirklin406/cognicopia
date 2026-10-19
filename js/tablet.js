@@ -29,7 +29,7 @@
   var praise = function () { return PRAISE[Math.floor(Math.random() * PRAISE.length)]; };
 
   /* ---------- what is remembered in this browser: the choices only, never what anyone did ---------- */
-  var PREFS_KEY = "cognicopia_tablet_prefs", prefs = { stage: "middle", topic: "", sound: true, speed: 2, grid: 0 };
+  var PREFS_KEY = "cognicopia_tablet_prefs", prefs = { stage: "middle", topic: "", sound: true, speed: 2, grid: 0, palette: 0, paper: 0 };
   try {
     var saved = JSON.parse(window.localStorage.getItem(PREFS_KEY) || "null");
     if (saved) {
@@ -38,6 +38,8 @@
       if (saved.sound === false) prefs.sound = false;
       if (saved.speed >= 1 && saved.speed <= 4) prefs.speed = Math.round(saved.speed);
       if (saved.grid >= 3 && saved.grid <= 6) prefs.grid = Math.round(saved.grid);
+      if (saved.palette >= 0 && saved.palette <= 3) prefs.palette = Math.round(saved.palette);
+      if (saved.paper >= 0 && saved.paper <= 3) prefs.paper = Math.round(saved.paper);
     }
   } catch (e) { /* private browsing: the choices simply start fresh each visit */ }
   function savePrefs() { try { window.localStorage.setItem(PREFS_KEY, JSON.stringify(prefs)); } catch (e) { /* not kept */ } }
@@ -163,7 +165,7 @@
     $("tbProg").textContent = ""; $("tbSay").hidden = true; $("tbAssist").hidden = true; $("tbAssist").disabled = false; $("tbNew").hidden = false; live("");
     var me = cur = { act: act, seed: seed, say: null, cleanup: null, debug: null, onKey: null, onResize: null, assistFn: null, hintFn: null, done: false, assisting: false, timers: [], hints: 0, used: null };
     var api = {
-      area: area, live: live, chime: chime, soft: soft, pop: pop, tick: tick, cheer: cheer, praise: praise, speak: speak, unlock: unlock, audio: audioReady,
+      area: area, live: live, chime: chime, soft: soft, pop: pop, tick: tick, tone: tone, cheer: cheer, praise: praise, speak: speak, unlock: unlock, audio: audioReady,
       soundOn: function () { return prefs.sound; }, setSound: function (on) { prefs.sound = !!on; savePrefs(); soundLabel(); }, prefs: prefs, savePrefs: savePrefs, later: later, busy: armIdle,
       progress: function (t) { $("tbProg").textContent = t; },
       say: function (fn) { me.say = fn; $("tbSay").hidden = !(canSpeak && fn); },
@@ -338,168 +340,14 @@
     api.debug(function () { return { round: rounds[ix], index: ix }; });
   }
 
-  /* ===================== COLOR A PICTURE ===================== */
-  var COLORS = [["Red", "#d94b3d"], ["Orange", "#f08a24"], ["Yellow", "#f2c230", 1], ["Green", "#4a9d5b"], ["Teal", "#2e8b8b"], ["Blue", "#4f6fc2"], ["Purple", "#8e5bb5"], ["Pink", "#ee9ab8", 1], ["Brown", "#9a6a43"], ["White", "#ffffff", 1]];
-  function palette(onPick, start) {
-    var pal = h("div", "tb-pal"); pal.setAttribute("role", "group"); pal.setAttribute("aria-label", "Colors");
-    COLORS.forEach(function (c, k) {
-      var b = h("button", "tb-sw" + (c[2] ? " light" : "")); b.type = "button"; b.style.background = c[1]; b.setAttribute("aria-label", c[0]); b.setAttribute("aria-pressed", String(k === start)); b.setAttribute("data-color", c[1]); pal.appendChild(b);
-    });
-    pal.addEventListener("click", function (e) {
-      var b = e.target.closest(".tb-sw"); if (!b) return;
-      Array.prototype.forEach.call(pal.children, function (x) { x.setAttribute("aria-pressed", String(x === b)); }); onPick(b.getAttribute("data-color"), b.getAttribute("aria-label"));
-    });
-    return pal;
-  }
-  function loadColoring(cb) {
-    if (window.CognicopiaColoring) return cb(true);
-    var s = document.createElement("script"); s.src = "assets/cognicopia-coloring/cognicopia-coloring.js";
-    s.onload = function () { cb(!!window.CognicopiaColoring); }; s.onerror = function () { cb(false); }; document.head.appendChild(s);
-  }
-  function color(root, o, api) {
-    root.innerHTML = '<p class="tb-big">Getting the pictures ready…</p>';
-    loadColoring(function (ok) {
-      if (!ok || !cur || cur.act.id !== "color") { if (!ok && cur) root.innerHTML = '<p class="tb-big">The pictures could not be loaded. Choose Menu, then try again.</p>'; return; }
-      var C = window.CognicopiaColoring, tier = T.STAGES[o.stage].color.tier;
-      /* a tap colors one path, so only offer pictures drawn as at least three (a remade picture drawn as one path would color all at once) */
-      var shapesOf = function (id) { return (C.toSVG(C.render(id, tier), { standalone: true, widthIn: 2, label: "" }).match(/<path/g) || []).length; };
-      var offered = C.designs().filter(function (d) { try { return shapesOf(d.id) >= 3; } catch (e) { return false; } });
-      var ids = T.designChoices(o, offered.length >= 6 ? offered : C.designs()), fillAll = null;
-      function choose() {
-        fillAll = null;
-        api.hint(function () { Kit.glow(root.querySelector(".tb-pic"), 3600); });
-        api.assist(function () { var b = root.querySelector(".tb-pic"); if (b) b.click(); api.later(function () { if (fillAll) fillAll(); else cheer("Your picture is finished!", "Another picture"); }, 300); });
-        root.innerHTML = '<p class="tb-h">Choose a picture to color</p>'; api.progress("");
-        var grid = h("div", "tb-pics");
-        ids.forEach(function (id) {
-          var b = h("button", "tb-pic", C.toSVG(C.render(id, 3), { standalone: true, widthIn: 2, label: C.design(id).title })); b.type = "button"; b.setAttribute("data-id", id); b.setAttribute("aria-label", C.design(id).title);
-          var sv = b.querySelector("svg"); if (sv) { sv.removeAttribute("width"); sv.removeAttribute("height"); } grid.appendChild(b);
-        });
-        grid.addEventListener("click", function (e) { var b = e.target.closest(".tb-pic"); if (b) paintIt(b.getAttribute("data-id")); });
-        root.appendChild(grid); api.debug(function () { return { stage: "choose", ids: ids }; });
-      }
-      function paintIt(id) {
-        root.innerHTML = ""; api.progress(C.design(id).title);
-        var split = h("div", "tb-split"), art = h("div", "tb-art"), side = h("div", "tb-side"), fill = COLORS[0][1], hist = [];
-        split.style.alignItems = "stretch";
-        art.innerHTML = C.toSVG(C.render(id, tier), { standalone: true, widthIn: 6, label: C.design(id).title + ", a picture to color" });
-        var sv = art.querySelector("svg"); sv.removeAttribute("width"); sv.removeAttribute("height");
-        side.style.flex = "0 1 320px";
-        side.appendChild(h("p", "tb-h", "Pick a color, then tap a shape"));
-        side.appendChild(palette(function (c) { fill = c; }, 0));
-        var bar = h("div", "tb-row"); bar.style.marginTop = "14px";
-        bar.innerHTML = '<button type="button" class="tb-btn" data-co="undo">↶ Undo</button><button type="button" class="tb-btn" data-co="clear">Start over</button><button type="button" class="tb-btn" data-co="pick">Another picture</button>';
-        side.appendChild(bar); split.appendChild(art); split.appendChild(side); root.appendChild(split);
-        sv.addEventListener("click", function (e) {
-          var p = e.target.closest("path"); if (!p) return; unlock();
-          hist.push([p, p.style.fill || ""]); p.style.fill = fill; tick();
-        });
-        bar.addEventListener("click", function (e) {
-          var b = e.target.closest("[data-co]"); if (!b) return; var what = b.getAttribute("data-co");
-          if (what === "undo") { var h2 = hist.pop(); if (h2) h2[0].style.fill = h2[1]; }
-          if (what === "clear") { while (hist.length) { var h3 = hist.pop(); h3[0].style.fill = h3[1]; } }
-          if (what === "pick") choose();
-        });
-        var shapes = Array.prototype.slice.call(sv.querySelectorAll("path"));
-        fillAll = function () {
-          var pal = COLORS.map(function (c) { return c[1]; }), open = shapes.filter(function (p) { return !p.style.fill; }), gap = Math.min(140, 4200 / Math.max(1, open.length));
-          open.forEach(function (p, k) { api.later(function () { hist.push([p, ""]); p.style.fill = pal[k % pal.length]; tick(); }, gap * k); });
-          api.later(function () { cheer("Your picture is finished!", "Another picture"); }, gap * open.length + 900);
-        };
-        api.hint(function () { var p = shapes.filter(function (x) { return !x.style.fill; })[0]; Kit.glow(p || side.querySelector(".tb-pal"), 3600); });
-        api.assist(fillAll);
-        api.say(function () { return "Pick a color, then tap a shape to color it."; });
-        api.debug(function () { return { stage: "paint", id: id, shapes: sv.querySelectorAll("path").length, filled: hist.length }; });
-      }
-      choose();
-    });
-  }
-
-  /* ===================== FINGER PAINT ===================== */
-  function paint(root, o, api) {
-    var cv = h("canvas", "tb-paint"), strokes = [], col = COLORS[0][1], width = 14, down = null;
-    var bar = h("div", "tb-row"); bar.style.margin = "12px 0 0";
-    bar.appendChild(palette(function (c) { col = c; }, 0)); bar.firstChild.style.maxWidth = "560px";
-    var tools = h("div", "tb-row"); tools.innerHTML = '<button type="button" class="tb-btn" data-pw="6">Thin</button><button type="button" class="tb-btn" data-pw="14">Medium</button><button type="button" class="tb-btn" data-pw="30">Thick</button><button type="button" class="tb-btn" data-pw="undo">↶ Undo</button><button type="button" class="tb-btn" data-pw="clear">Clear</button>';
-    root.appendChild(cv); root.appendChild(bar); root.appendChild(tools);
-    var ctx = cv.getContext("2d");
-    function fit() { var r = cv.getBoundingClientRect(), d = Math.min(2, window.devicePixelRatio || 1); cv.width = Math.max(50, Math.round(r.width * d)); cv.height = Math.max(50, Math.round(r.height * d)); redraw(); }
-    function seg(s, from, to) { ctx.strokeStyle = s.c; ctx.fillStyle = s.c; ctx.lineWidth = s.w * cv.width / 1000; ctx.lineCap = "round"; ctx.lineJoin = "round"; ctx.beginPath(); ctx.moveTo(from[0] * cv.width, from[1] * cv.height); ctx.lineTo(to[0] * cv.width, to[1] * cv.height); ctx.stroke(); }
-    function redraw() { ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, cv.width, cv.height); strokes.forEach(function (s) { if (s.p.length === 1) seg(s, s.p[0], s.p[0]); for (var k = 1; k < s.p.length; k++) seg(s, s.p[k - 1], s.p[k]); }); }
-    var pt = function (e) { var r = cv.getBoundingClientRect(); return [(e.clientX - r.left) / r.width, (e.clientY - r.top) / r.height]; };
-    cv.addEventListener("pointerdown", function (e) { unlock(); e.preventDefault(); try { cv.setPointerCapture(e.pointerId); } catch (x) { /* mouse */ } down = { c: col, w: width, p: [pt(e)] }; strokes.push(down); seg(down, down.p[0], down.p[0]); });
-    cv.addEventListener("pointermove", function (e) { if (!down) return; var p = pt(e), last = down.p[down.p.length - 1]; down.p.push(p); seg(down, last, p); });
-    var end = function () { down = null; }; cv.addEventListener("pointerup", end); cv.addEventListener("pointercancel", end);
-    tools.addEventListener("click", function (e) {
-      var b = e.target.closest("[data-pw]"); if (!b) return; var k = b.getAttribute("data-pw");
-      if (k === "undo") { strokes.pop(); redraw(); } else if (k === "clear") { strokes.length = 0; redraw(); } else width = +k;
-    });
-    api.hint(function () { Kit.glow(cv, 3600); });
-    api.assist(function () {
-      var cols = COLORS.map(function (c) { return c[1]; });
-      [0.3, 0.5, 0.7].forEach(function (fy, k) {
-        var st = { c: cols[(k * 3 + 1) % cols.length], w: 22, p: [] }; strokes.push(st);
-        for (var j = 0; j <= 30; j++) (function (j2) { api.later(function () { var p = [0.1 + 0.8 * j2 / 30, fy + 0.08 * Math.sin(j2 / 30 * 6.28 * (k + 1))], prev = st.p[st.p.length - 1]; st.p.push(p); seg(st, prev || p, p); }, k * 700 + j2 * 20); })(j);
-      });
-      api.later(function () { cheer("What a lovely painting!", "Paint again"); }, 2900);
-    });
-    fit(); api.onResize(fit); api.progress("");
-    api.say(function () { return "Choose a color and paint with your finger."; });
-    api.debug(function () { return { strokes: strokes.length, canvas: cv, pixel: function (x, y) { return Array.prototype.slice.call(ctx.getImageData(x, y, 1, 1).data); } }; });
-  }
-
-  /* ===================== BUBBLES ===================== */
-  function bubbles(root, o, api) {
-    var late = o.stage === "late", sky = h("div", "tb-sky"), list = [], raf = 0, last = 0, still = reduced(), popped = 0;
-    sky.setAttribute("aria-label", "Bubbles to pop. Tap a bubble."); root.appendChild(sky);
-    root.appendChild(h("p", "tb-msg", "Tap a bubble to pop it. Take your time, and pop as many as you like."));
-    var maxN = late ? 6 : 9;
-    function spawn() {
-      var w = sky.clientWidth, hh = sky.clientHeight, d = (late ? 110 : 80) + Math.random() * (late ? 50 : 50);
-      var b = h("button", "tb-bub"); b.type = "button"; b.style.width = b.style.height = d + "px"; b.setAttribute("aria-label", "Bubble");
-      var o2 = { el: b, d: d, x: Math.random() * Math.max(10, w - d), y: still ? 20 + Math.random() * Math.max(10, hh - d - 40) : hh + 10, vy: (late ? 18 : 28) + Math.random() * 22, ph: Math.random() * 6.28 };
-      b.addEventListener("pointerdown", function (e) { e.preventDefault(); unlock(); popIt(o2); });
-      b.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); popIt(o2); } });
-      sky.appendChild(b); list.push(o2); place(o2);
-    }
-    function place(b) { b.el.style.transform = "translate(" + (b.x + (still ? 0 : Math.sin(b.ph) * 14)).toFixed(1) + "px," + b.y.toFixed(1) + "px)"; }
-    function popIt(b) {
-      var i = list.indexOf(b); if (i < 0) return; list.splice(i, 1); popped++; pop();
-      b.el.classList.add("is-pop"); b.el.style.transform += " scale(1.35)"; setTimeout(function () { b.el.remove(); }, 400);
-      if (still) setTimeout(function () { if (cur && cur.act.id === "bubbles") spawn(); }, 600);
-    }
-    function frame(t) {
-      var dt = last ? Math.min(0.1, (t - last) / 1000) : 0; last = t;
-      for (var i = list.length - 1; i >= 0; i--) { var b = list[i]; b.y -= b.vy * dt; b.ph += dt * 1.2; if (b.y < -b.d - 10) { b.el.remove(); list.splice(i, 1); } else place(b); }
-      if (list.length < maxN && Math.random() < dt * 1.4) spawn();
-      raf = requestAnimationFrame(frame);
-    }
-    for (var k = 0; k < (still ? maxN - 2 : 4); k++) { spawn(); if (!still) list[k].y = 40 + Math.random() * (sky.clientHeight - 140); }
-    if (!still) raf = requestAnimationFrame(frame);
-    api.hint(function () { var b = list[Math.floor(Math.random() * list.length)]; if (b) Kit.glow(b.el, 3600); });
-    api.assist(function () {
-      list.slice().forEach(function (b, k) { api.later(function () { popIt(b); }, 160 * k); });
-      api.later(function () { cheer("Every bubble has floated away.", "More bubbles"); }, 160 * list.length + 900);
-    });
-    api.progress(""); api.say(function () { return "Tap the bubbles to pop them."; });
-    api.debug(function () { return { count: function () { return list.length; }, popped: function () { return popped; }, centers: function () { return list.map(function (b) { var r = b.el.getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; }); } }; });
-    return function () { cancelAnimationFrame(raf); };
-  }
-
   /* ---------- the menu ---------- */
   var ICON = {
-    color: '<path d="M32 8C16 8 6 20 6 32s10 24 22 24c6 0 6-6 2-10s0-8 6-8h12c6 0 10-4 10-10C58 16 46 8 32 8z"/><circle cx="20" cy="28" r="3"/><circle cx="32" cy="20" r="3"/><circle cx="44" cy="26" r="3"/>',
-    paint: '<path d="M10 54c8 0 12-4 12-10l26-28 6 6-28 26c-2 8-8 12-16 6z"/>',
-    bubbles: '<circle cx="22" cy="40" r="14"/><circle cx="46" cy="22" r="9"/><circle cx="46" cy="48" r="6"/>',
     sort: '<rect x="6" y="36" width="22" height="20"/><rect x="36" y="36" width="22" height="20"/><path d="M32 6v18M24 16l8 8 8-8"/>',
     order: '<path d="M22 14h34M22 32h34M22 50h34"/><circle cx="10" cy="14" r="3"/><circle cx="10" cy="32" r="3"/><circle cx="10" cy="50" r="3"/>',
     match: '<circle cx="14" cy="32" r="9"/><circle cx="50" cy="32" r="9"/><path d="M23 32h18"/>',
     odd: '<circle cx="12" cy="20" r="8"/><circle cx="32" cy="20" r="8"/><circle cx="52" cy="20" r="8"/><rect x="24" y="38" width="16" height="16"/>'
   };
   [
-    ["color", 1, 2, "Color a Picture", "Pick a color, tap a shape.", color],
-    ["paint", 1, 3, "Finger Paint", "Paint freely with colors.", paint],
-    ["bubbles", 1, 4, "Bubbles", "Tap the drifting bubbles. Calm and gentle.", bubbles],
     ["sort", 2, 1, "Sort It", "Which group does it go with?", sort],
     ["order", 2, 2, "Put It in Order", "Tap the steps in the order they happen.", order],
     ["match", 2, 3, "Match the Clue", "Join each word with its clue.", match],

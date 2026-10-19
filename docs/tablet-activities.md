@@ -2,7 +2,7 @@
 
 `tablet.html` is a main menu of touch-first activities for a tablet, a touch monitor or a phone. Hand the tablet to a resident, or sit side by side. It is on the front page (the **Tablet Activities** button beside Make a packet), in the menu bar under **Today**, and at `cognicopia.org/tablet.html`.
 
-It needs no internet once the page has loaded, asks for no name, and keeps nothing about anyone. The only things the browser remembers are the choices (level, topic, sound and bubble speed) and the free-packet count, the same count the packet tools use. The sounds, the pictures and the puzzles are all made on the tablet itself: nothing is downloaded while it runs.
+It needs no internet once the page has loaded, asks for no name, and keeps nothing about anyone. The only things the browser remembers are the choices (level, topic, sound, bubble speed, color set and paper) and the free-packet count, the same count the packet tools use. The sounds, the pictures and the puzzles are all made on the tablet itself: nothing is downloaded while it runs.
 
 ## The thirteen activities
 
@@ -13,9 +13,9 @@ It needs no internet once the page has loaded, asks for no name, and keeps nothi
 | | **Spell It** | A clue and empty slots. Tap the letters. At the middle and late stages the first letter is given. |
 | | **Finish the Saying** | Choose the word that finishes it. |
 | Follow and create | **Trace the Path** | A bee goes to a flower, a train along its track to a station, a dog to its bone: slide a finger along the wide glowing lane. The marker glides after the finger and **always stays on the lane**. A finger that wanders off leaves it waiting; lifting the finger leaves it where it is; going back costs nothing. Nothing is ever sent back to the start. The arrow keys move it for someone who cannot use a finger. Three journeys a round, a different scene each time. |
-| | **Color a Picture** | Choose one of six pictures from the coloring library, choose a color, tap a shape. Undo, Start over, Another picture. |
-| | **Finger Paint** | Paint freely in ten colors and three brush sizes. Undo and Clear. |
-| | **Bubbles** | Tap the drifting bubbles to pop them. No score, no timer. People who ask their device for less motion get still bubbles that reappear when popped. |
+| | **Color a Picture** | Choose one of more than a hundred pictures from the coloring library (eight at a time, and **More pictures** for others), choose a color set (Soft, Bold, Garden or Vintage, eight named colors each), choose a color, tap a shape. The tap fills the whole shape and **the color can never leave its lines**: the shapes are found on the picture itself, so every picture in the library works, and a tap on a line colors the shape beside it. Undo, Start over, Another picture. **Finish for me** colors what is left. A hint softly glows the next shape. |
+| | **Finger Paint** | A big sheet of paper (parchment, wood, canvas or white) and a finger. Four brushes (**Soft**, **Chalk**, **Wash** for watercolor, and **Blend**, which smears what is already there), four sizes, the same four color sets. Undo takes the last stroke back; Clear can itself be undone. A resting palm is not a second brush. A pen's pressure changes the width. |
+| | **Bubbles** | Bubbles drift up the screen, bump each other gently and pop with a soft chime and a ripple that nudges the ones nearby. No score, no timer, no count. **Slower** and **Faster** change the float (Very slow to Lively) and are remembered. People who ask their device for less motion get still bubbles that reappear when popped. |
 | Think and match | **Sort It** | One word at a time and two big buttons: which group does it go with? |
 | | **Put It in Order** | Tap the steps of an everyday job in the order they happen. |
 | | **Match the Clue** | Tap a word, then the clue that goes with it. |
@@ -39,7 +39,7 @@ The menu also has **Surprise me**, which opens an activity chosen by the tablet,
 ## How it behaves
 
 - **Errorless.** A right answer gets a soft chime and a short word such as "Lovely!". A choice that does not fit gets a gentle sentence, a soft rising note (never a buzzer) and, where a card was moved, the card floats back to where it was. There is no red anywhere, no game over, no timer, no score and no "wrong". The screen's words pass the dignity filter (`scripts/check-tablet.mjs` runs every sentence through it, and `scripts/check-tablet-ui.mjs` looks for red on every screen).
-- **Big.** On a tablet every control in the frame is at least 72 px tall and wide (56 px on a phone, never under the site's 52 px floor). The activities rebuilt for this overhaul meet 72 px throughout; the checks keep a list of which (`BIG` in `scripts/check-tablet-ui.mjs`) until all thirteen are on it. On a smaller screen the puzzle gets smaller before a control gets smaller. On a landscape and a portrait tablet nothing needs scrolling.
+- **Big.** On a tablet every control in the frame is at least 72 px tall and wide (56 px on a phone, never under the site's 52 px floor). The activities rebuilt for this overhaul meet 72 px throughout; the checks keep a list of which (`BIG` in `scripts/check-tablet-ui.mjs`) until all thirteen are on it (Word Search, Crossword, Spell It, Finish the Saying, Trace the Path, Color, Finger Paint, Bubbles and Sights and Sounds so far). On a smaller screen the puzzle gets smaller before a control gets smaller. On a landscape and a portrait tablet nothing needs scrolling.
 - **Glass, and clear.** The bar and panels are frosted white glass with a firm green edge, so the words on them stay as dark and clear as on paper. All text reaches 7:1 (AAA) against its background, by day and in Night Shift; `scripts/check-tablet-ui.mjs` measures it on every screen.
 - **One task at a time.** Each activity fills the screen and the rest of the page is out of reach while it is open.
 - **High contrast without relying on blue.** Dark ink on cream, deep green controls, gold and sage highlights. A found word is marked with a tick and a line through it in the list, and an underline in the grid, not only a color.
