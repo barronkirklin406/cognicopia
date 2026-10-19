@@ -56,7 +56,7 @@ A tablet session built from one resident's own life (their hometown, work and fa
 | `tablet.html` | The page: menu, setup, the activity screen and the free-packet gate, with its own styles |
 | `js/tabletEngine.js` | The puzzle makers, for every activity, from the PCG content and puzzle makers (`src/pcg`). Pure data in, data out; the trace rule (`follow`) lives here so it can be proved without a screen |
 | `js/tabletKit.js` | Shared helpers (making elements, a card that glides to its place, dragging with a finger, a glow for hints) and the list the menu is built from |
-| `js/tabletArt.js` | Every picture, drawn as plain SVG |
+| `js/tabletArt.js` + `assets/tablet/` | Every picture: a finished Canva illustration (one transparent PNG each), cut from sheets by `scripts/make-tablet-pictures.py` |
 | `js/tabletSound.js` | The sounds, synthesized with Web Audio, and the check that renders each one |
 | `js/tabletCreate.js`, `js/tabletThink.js` | The activities, each registered with the kit |
 | `js/tablet.js` | The screen: the menu, the frame every activity runs in (Home, Finish for me, Next, hints) |

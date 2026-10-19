@@ -405,7 +405,7 @@ try {
     await openAct(p, "sounds");
     let d = await dbg(p);
     ok(d.cards.length === 6 && await p.evaluate(() => document.querySelectorAll("#tbStage .tb-snd").length) === 6 && d.mode === "listen", "the board shows six pictures, each with its name, ready to listen");
-    ok(await p.evaluate(() => Array.from(document.querySelectorAll("#tbStage .tb-snd")).every(b => b.querySelector("svg") && b.textContent.trim().length > 3)), "every picture is a drawn picture with a name beside it");
+    ok(await p.evaluate(() => Array.from(document.querySelectorAll("#tbStage .tb-snd")).every(b => b.querySelector("img.tb-ico[src$=\".png\"]") && b.textContent.trim().length > 3)), "every picture is a real picture with a name beside it");
     ok(await p.evaluate(() => document.querySelectorAll("#tbStage canvas.tb-wave").length) === 1, "a wave is drawn above the board");
     /* touching a picture plays its sound; the wave moves */
     await click(p, `[data-snd="${d.cards[0]}"]`); await sleep(450);
