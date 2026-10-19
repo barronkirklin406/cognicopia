@@ -21,6 +21,7 @@
       .pg-qa a, .pg-list a, .steps a, .card p a { color: #b7e4c7 !important; text-decoration: underline; text-underline-offset: 3px; }
       textarea.pg-note-box { width: 100%; box-sizing: border-box; min-height: 300px; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(216,243,220,.35); background: rgba(8,28,21,.8); color: #ffffff; font: 1rem/1.55 "Trebuchet MS","Segoe UI",sans-serif; resize: vertical; }
       textarea.pg-note-box:focus-visible { outline: 3px solid #ffd477; outline-offset: 2px; }
+@media print{button{display:none!important}}
 </style>
     <style>
       *, *::before, *::after { box-sizing: border-box; }
@@ -594,7 +595,7 @@ html body .cg-topbar a,html body .cg-topbar button.linklike{color:var(--sb-txt)}
 html.cg-night-shift .cg-topbar .cg-cta{background:#332312!important;border-color:#d6a64b!important;color:#ffedcc!important;box-shadow:none}
 html.cg-night-shift .cg-topbar .cg-cta-alt{background:transparent!important;border-color:#9b7136!important;color:#ffedcc!important}
 html.cg-night-shift .cg-topbar .cg-cta:focus-visible{outline-color:#ffd477}
-@media print{.cg-topbar .cg-cta{display:none}}
+@media print{.cg-topbar,.cg-crumbs{display:none!important}}
 
 /* ---------- a wide window: the six hubs across the top, each a drop-down ---------- */
 @media (min-width:1100px){
