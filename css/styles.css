@@ -519,4 +519,7 @@ svg.cg-coloring :is(path,line,polyline,polygon,circle,ellipse,rect){
   html body :is(.stripe-btn,.cgpromo-btn,.linklike,.cg-night-shift-toggle):not(:is(.qp-sheet,.lp-sheet,.lj-sheet,.sheet,#printRoot,#qpPrintRoot) *){font-size:15px !important;font-weight:700;letter-spacing:.01em}
   /* the second line inside a button stays close to its label: a little under a sentence, still never small */
   html body :is(button,[role="button"],.btn) small:not(:is(.qp-sheet,.lp-sheet,.lj-sheet,.sheet,#printRoot,#qpPrintRoot) *){font-size:.9375rem !important;line-height:1.35}
+  @media (max-width:480px){
+    html body :is(.stripe-btn,.cgpromo-btn,.linklike,.cg-night-shift-toggle):not(:is(.qp-sheet,.lp-sheet,.lj-sheet,.sheet,#printRoot,#qpPrintRoot) *){font-size:14px !important;letter-spacing:0;padding-left:10px;padding-right:10px}
+  }
 }
