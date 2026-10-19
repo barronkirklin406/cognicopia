@@ -38,6 +38,7 @@
    Run: node scripts/check-tablet-ui.mjs
    ===================================================================== */
 import { loadPlaywright, serve } from "./lib/browser.mjs";
+import { measure as measureColor, sparse as colorSparse, MIN_SHAPES, MAX_SHAPES } from "./lib/tablet-color-measure.mjs";
 
 const { chromium } = loadPlaywright();
 const { srv, base } = await serve();
@@ -599,6 +600,39 @@ try {
     await click(p, ".tb-pic"); await p.waitForSelector(".tb-sheet canvas.tb-lines", { timeout: 8000 });
     await click(p, '[data-co="pick"]'); await sleep(200);
     ok(await p.evaluate(() => document.querySelectorAll(".tb-pic").length) === 8, "Another picture returns to the choice");
+    await ctx.close();
+  }
+  {
+    /* every picture Color a Picture offers has shapes enough to color (and not too many), and the list of pictures left out is exactly the sparse ones */
+    const { ctx, p } = await fresh(LAND);
+    const m = await measureColor(p), offered = Object.keys(m).filter(id => m[id].cat !== "zentangle-mandalas" && !m[id].sensitive), skip = await p.evaluate(() => window.CognicopiaTabletBanks.COLOR_SKIP);
+    const thin = colorSparse(m), few = offered.filter(id => !skip.includes(id) && Math.min(m[id][2], m[id][3]) < MIN_SHAPES), many = offered.filter(id => Math.max(m[id][2], m[id][3]) > MAX_SHAPES);
+    ok(offered.length - skip.length >= 20 && !few.length && !many.length, `${offered.length - skip.length} pictures to offer, each with ${MIN_SHAPES} to ${MAX_SHAPES} shapes to color at both levels` + (few.length ? ` (too few: ${few.join(", ")})` : "") + (many.length ? ` (too many: ${many.join(", ")})` : ""));
+    ok(JSON.stringify([...skip].sort()) === JSON.stringify(thin), "the pictures left out are exactly the sparse ones: " + JSON.stringify(thin));
+    const eng = await p.evaluate(() => { const C = window.CognicopiaColoring, T = window.CognicopiaTablet; return C ? T.designChoices({ seed: "x" }, C.designs()) : null; });
+    ok(!eng || skip.every(id => !eng.includes(id)), "and none of them is offered");
+    await ctx.close();
+  }
+  {
+    /* a tap on the middle of any shape, in any picture, colors that shape and no other (sixteen pictures, two pages of the choice) */
+    const { ctx, p } = await fresh(LAND);
+    await openAct(p, "color"); await p.waitForSelector(".tb-pics .tb-pic", { timeout: 8000 });
+    const bad = []; let shapes = 0;
+    for (let pg = 0; pg < 2; pg++) {
+      for (let i = 0; i < 8; i++) {
+        await p.evaluate(k => document.querySelectorAll(".tb-pic")[k].click(), i); await p.waitForSelector(".tb-sheet canvas.tb-lines", { timeout: 8000 }); await sleep(120);
+        const sp = await p.evaluate(() => window.CognicopiaTabletUI.debug().spots().map(x => [x[0], x[1]]));
+        for (let k = 0; k < Math.min(4, sp.length - 1); k++) {      // never the last shape: a finished picture brings the cheer over the buttons
+          const before = await p.evaluate(() => window.CognicopiaTabletUI.debug().spots().map(x => x[2]));
+          await p.mouse.click(sp[k][0], sp[k][1]); await sleep(30);
+          const after = await p.evaluate(() => window.CognicopiaTabletUI.debug().spots().map(x => x[2])), changed = after.map((c, j) => c !== before[j] ? j : -1).filter(j => j >= 0);
+          shapes++; if (changed.length !== 1 || changed[0] !== k) bad.push(`picture ${pg * 8 + i + 1}, shape ${k + 1}: ${changed.join()}`);
+        }
+        await click(p, '[data-co="pick"]'); await sleep(80);
+      }
+      if (pg === 0) { await click(p, '[data-more="1"]'); await sleep(120); }
+    }
+    ok(shapes >= 30 && !bad.length, `a tap in the middle of ${shapes} shapes across sixteen pictures colors that shape and only that one` + (bad.length ? " (" + bad.slice(0, 3).join("; ") + ")" : ""));
     await ctx.close();
   }
   {

@@ -62,6 +62,7 @@ A tablet session built from one resident's own life (their hometown, work and fa
 | `js/tabletBanks.js` | The data the activities draw on: word packs, crossword clue sets, sayings, the picture sets that go together (`SETS`), the clues for each picture and the picture for each everyday job |
 | `js/tablet.js` | The screen: the menu, the frame every activity runs in (Home, Finish for me, Next, hints) |
 | `scripts/check-tablet.mjs` | In `npm test`: every puzzle at every level and topic, the trace rule for every shape, the screen's words, the offline wiring |
+| `scripts/measure-tablet-color.mjs`, `scripts/lib/tablet-color-measure.mjs` | Counts the shapes Color a Picture finds in each library picture, in a real browser. Run it after the coloring library changes (`npm run coloring`): it prints the pictures with too few shapes, the list that belongs in `COLOR_SKIP` in `js/tabletBanks.js`. `check-tablet-ui.mjs` proves the list is current |
 | `scripts/check-tablet-ui.mjs` | In `npm run build`: a real browser drives all thirteen activities with mouse and touch input, at three screen sizes |
 
 ## It never ends on a 404

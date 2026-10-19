@@ -355,7 +355,7 @@
 
   /* ---------- color a picture: which library designs to offer ---------- */
   function designChoices(o, designs) {
-    var rng = rngOf(o, "co"), list = designs.filter(function (d) { return d.cat !== "zentangle-mandalas" && !(d.sensitive && d.sensitive.length); });
+    var rng = rngOf(o, "co"), skip = banks().COLOR_SKIP || [], list = designs.filter(function (d) { return d.cat !== "zentangle-mandalas" && !(d.sensitive && d.sensitive.length) && skip.indexOf(d.id) < 0; });
     return rng.shuffle(list).map(function (d) { return d.id; });
   }
 
