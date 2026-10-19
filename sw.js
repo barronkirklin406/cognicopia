@@ -28,7 +28,9 @@ const CORE = [
   "src/config/license.js", "assets/services/licenseManager.js", "assets/services/trialLedger.js", "assets/services/localDb.js", "assets/services/contentCatalog.js", "assets/services/contentMatcher.js", "data/content-catalog.json",
   "assets/pcg/pcg-data.bundle.js", "src/pcg/prng.js", "src/pcg/matrix.js", "src/pcg/grammar.js", "src/pcg/puzzles.js", "src/pcg/packet.js",
   // Tablet Activities (tablet.html): the touch puzzle makers and the screen
-  "js/tabletEngine.js", "js/tablet.js"
+  "js/tabletSound.js", "js/tabletArt.js", "js/tabletEngine.js", "js/tabletKit.js", "js/tabletCreate.js", "js/tabletThink.js", "js/tablet.js",
+  // its pictures (finished illustrations, one transparent PNG each)
+  "assets/tablet/bee.png", "assets/tablet/bells.png", "assets/tablet/bird.png", "assets/tablet/bone.png", "assets/tablet/cat.png", "assets/tablet/chimes.png", "assets/tablet/dog.png", "assets/tablet/flower.png", "assets/tablet/guitar.png", "assets/tablet/phone.png", "assets/tablet/station.png", "assets/tablet/storm.png", "assets/tablet/train.png", "assets/tablet/waves.png"
 ];
 const PAGE_WAIT_MS = 4000;
 
