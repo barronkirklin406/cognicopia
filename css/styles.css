@@ -408,6 +408,7 @@ html.cg-night-shift::before,html.cg-night-shift::after{display:none}
   html.cg-paper-app:not(.cg-night-shift) .sb-link .tag{background:var(--cg-tan-100);color:var(--cg-ink-soft)}
   html.cg-paper-app:not(.cg-night-shift) .sb-link .tag.live{background:var(--cg-sage-100);color:var(--cg-green-700)}
   html.cg-paper-app:not(.cg-night-shift) .sb-link[aria-current="page"] .tag.live{background:var(--cg-white);color:var(--cg-green-700)}
+  html.cg-paper-app:not(.cg-night-shift) .pill.live{color:var(--cg-green-700)}
   /* chosen cards, hover states and the few fixed dark fills the builder has */
   html.cg-paper-app:not(.cg-night-shift) .card[aria-pressed="true"],html.cg-paper-app:not(.cg-night-shift) .lp-scope input:checked+span,html.cg-paper-app:not(.cg-night-shift) .rs-res[aria-pressed="true"]{background:var(--cg-sage-100)}
   html.cg-paper-app:not(.cg-night-shift) :is(.btn-home,.btn):hover{background:var(--cg-sage-100);color:var(--cg-charcoal)}
@@ -483,7 +484,7 @@ svg.cg-coloring :is(path,line,polyline,polygon,circle,ellipse,rect){
    bold (700) headings with a little negative tracking on the large sizes, and 700 buttons with a touch of
    positive tracking. Screen only, so printed packets and PDFs are not touched. */
 @media screen{
-  html.cg-paper body{font-size:var(--cg-step-0);line-height:1.7;letter-spacing:.003em;font-kerning:normal;font-feature-settings:"kern","liga","calt";text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+  html.cg-paper body{font-size:var(--cg-step-0);line-height:1.7;letter-spacing:.012em;font-kerning:normal;font-feature-settings:"kern","liga","calt";text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
   /* one family: the readable one */
   html.cg-paper :is(p,li,dd,dt,td,th,caption,label,legend,figcaption,blockquote,cite,small,summary,button,input,select,textarea,option,a.btn,.btn,.cg-btn){font-family:var(--cg-font-ui) !important}
   html.cg-paper :is(p,dd):not(:is(.cg-topbar,.cg-sidebar,.cg-foot,.cg-crumbs,nav) *){line-height:1.7}
@@ -491,7 +492,7 @@ svg.cg-coloring :is(path,line,polyline,polygon,circle,ellipse,rect){
   html.cg-paper dd:not(:is(.cg-topbar,.cg-sidebar,.cg-foot,.cg-crumbs,nav) *){font-size:1.0625rem}
   html.cg-paper :is(td,th){font-size:1rem;line-height:1.55}
   html.cg-paper th{font-weight:700;letter-spacing:.01em}
-  html.cg-paper :is(small,figcaption,caption){font-size:.9375rem;line-height:1.5}
+  html.cg-paper :is(small,figcaption,caption){font-size:1rem;line-height:1.5;font-weight:700;letter-spacing:.012em}
   html.cg-paper :is(strong,b){font-weight:700}
   html.cg-paper :is(button,.btn,.cg-btn,a.btn){font-weight:700;letter-spacing:.012em;line-height:1.25}
   /* headings: bold, balanced, tighter as they grow */
@@ -507,3 +508,18 @@ svg.cg-coloring :is(path,line,polyline,polygon,circle,ellipse,rect){
 /* an e-mail address stays on one line (it is never broken mid-address); a very narrow screen makes it a little smaller instead */
 .cg-email{white-space:nowrap;overflow-wrap:normal;word-break:normal;hyphens:none}
 @media (max-width:360px){.cg-email{font-size:.92em}}
+
+/* ---------- 12. Small and helper text is never small ----------
+   Labels, chips, notes, captions and hints that a page sets under 16 px are raised here: 16 px for a sentence, 15 px for a
+   chip or an upper-case label, in the bold face (the typeface ships a regular and a bold, so 600 and up is the bold),
+   with open tracking and 1.5 leading. A printed sheet (.qp-sheet, .lp-sheet, .sheet, the print roots) keeps its own sizes. */
+@media screen{
+  html body :is(small,figcaption,.hint,.note,.help,.desc,.rc-card-m,.rc-card-s,.rc-src,.rc-hint,.rc-toc-min,.rc-study-k,.rc-link-btn,.hub-blurb,.catalog-visual-caption,.standards-seal-caption,.pg-note,.arb-privacy,.arb-drop-hint,.arb-caution,.qpb-note,.ca-tab,.ca-btn):not(:is(.qp-sheet,.lp-sheet,.lj-sheet,.sheet,#printRoot,#qpPrintRoot) *){font-size:1rem !important;font-weight:700;letter-spacing:.012em;line-height:1.5}
+  html body :is(.rc-chip,.ca-chip,.ca-tag,.qs-tag,.catalog-badge,.module-tag,.era-tag,.breadcrumb-tag,.hub-n,.pill,.tag,.arb-bundle-badge,.arb-backup-count,.rc-eyebrow,.ca-eyebrow,.qs-eyebrow,.fq-eyebrow,.eyebrow,.lp-kicker,.info-label,.ca-label,.rap-eyebrow,.hub-eyebrow,.journal-caption,.planner-caption,.sb-toggle-text):not(:is(.qp-sheet,.lp-sheet,.lj-sheet,.sheet,#printRoot,#qpPrintRoot) *){font-size:15px !important;font-weight:700;letter-spacing:.03em;line-height:1.45}
+  html body :is(.stripe-btn,.cgpromo-btn,.linklike,.cg-night-shift-toggle):not(:is(.qp-sheet,.lp-sheet,.lj-sheet,.sheet,#printRoot,#qpPrintRoot) *){font-size:15px !important;font-weight:700;letter-spacing:.01em}
+  /* the second line inside a button stays close to its label: a little under a sentence, still never small */
+  html body :is(button,[role="button"],.btn) small:not(:is(.qp-sheet,.lp-sheet,.lj-sheet,.sheet,#printRoot,#qpPrintRoot) *){font-size:.9375rem !important;line-height:1.35}
+  @media (max-width:480px){
+    html body :is(.stripe-btn,.cgpromo-btn,.linklike,.cg-night-shift-toggle):not(:is(.qp-sheet,.lp-sheet,.lj-sheet,.sheet,#printRoot,#qpPrintRoot) *){font-size:14px !important;letter-spacing:0;padding-left:10px;padding-right:10px}
+  }
+}

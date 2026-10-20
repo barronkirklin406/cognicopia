@@ -142,25 +142,27 @@
   var isExempt = function (role) { return role === "number" || role === "mark"; };
 
   function sheet(kind, st, o) {
-    var S = CM.STAGES[st], T = S.type;
+    var S = CM.STAGES[st], vision = CM.visionScale(o.vision), T = CM.typeFor(st, vision);
     var F = o.frame ? { x: +o.frame.x, y: +o.frame.y, w: +o.frame.w, h: +o.frame.h } : bodyFrame();
     var meas = typeof o.measure === "function" ? o.measure : measure;
-    var sh = { kind: kind, stage: st, S: S, T: T, F: F, items: [], texts: [], meta: {}, meas: meas,
+    var sh = { kind: kind, stage: st, vision: vision, S: S, T: T, F: F, items: [], texts: [], meta: {}, meas: meas,
       cx: F.x + F.w / 2, right: F.x + F.w, bottom: F.y + F.h, notes: [] };
     /* a rule the generator could not keep: the page is drawn again from the next seed */
     sh.fail = function (why) { sh.notes.push(why); };
+    /* the smallest a role may be, at this page's vision tier */
+    sh.floorFor = function (role) { return CM.floorFor(st, role, vision); };
 
     sh.width = function (text, size, bold) { return meas(String(text), size, !!bold); };
     /* the largest size, from `size` down to the stage's floor for the role, at which the text fits maxW; null if none does */
     sh.fitSize = function (text, maxW, size, role, bold) {
-      var floor = CM.floorFor(st, role), b = !!bold || (T.bold && !isStaff(role) && !isExempt(role)), s = size;
+      var floor = sh.floorFor(role), b = !!bold || (T.bold && !isStaff(role) && !isExempt(role)), s = size;
       while (s > floor && meas(text, s, b) > maxW) s -= 0.5;
       s = Math.max(s, floor);
       return meas(text, s, b) <= maxW + 0.01 ? s : null;
     };
     sh.text = function (text, x, y, size, opt) {
       opt = opt || {};
-      var role = opt.role || "body", floor = CM.floorFor(st, role), staff = isStaff(role), exempt = isExempt(role);
+      var role = opt.role || "body", floor = sh.floorFor(role), staff = isStaff(role), exempt = isExempt(role);
       var s = Math.max(floor, size), bold = !staff && !exempt && T.bold ? true : !!opt.bold;
       var t = { text: String(text), x: r2(x), y: r2(y), size: r2(s), bold: bold, align: opt.align || "left", role: role };
       if (opt.color) t.color = opt.color;
@@ -171,6 +173,7 @@
     };
     /* wrapped lines of text no wider than maxW */
     sh.wrap = function (text, maxW, size, bold) {
+      bold = !!bold || !!T.bold;          // resident text prints bold at every stage, so it is measured bold
       var words = String(text).split(/\s+/).filter(Boolean), lines = [], cur = "";
       words.forEach(function (w) {
         var t = cur ? cur + " " + w : w;
@@ -183,7 +186,7 @@
     sh.para = function (text, x, y, maxW, size, opt) {
       opt = opt || {};
       var role = opt.role || "body", bold = !!opt.bold || (T.bold && !isStaff(role) && !isExempt(role));
-      var s = Math.max(CM.floorFor(st, role), size), lead = opt.lead || Math.round(s * 1.28), align = opt.align || "left";
+      var s = Math.max(sh.floorFor(role), size), lead = opt.lead || Math.round(s * 1.28), align = opt.align || "left";
       var ax = align === "center" ? x + maxW / 2 : align === "right" ? x + maxW : x;
       var lines = sh.wrap(text, maxW, s, bold);
       if (lines.length === 2 && opt.balance !== false) {
@@ -221,7 +224,7 @@
       /* a host that prints its own title (the packet tool's heading, the Packet Builder's sheet header) asks for the instruction alone */
       if (o.headless) return instruction ? sh.para(instruction, F.x, F.y + Math.round(T.instruction * 0.9), F.w, T.instruction, { role: "instruction" }) + 10 : F.y;
       var size = sh.fitSize(title, F.w, T.title, "title", true);
-      if (size == null) { sh.fail("the title \"" + title + "\" is wider than the page"); size = CM.floorFor(st, "title"); }
+      if (size == null) { sh.fail("the title \"" + title + "\" is wider than the page"); size = sh.floorFor("title"); }
       var y = F.y + Math.round(size * 0.9);
       sh.text(title, sh.cx, y, size, { bold: true, align: "center", role: "title" });
       y += Math.round(size * 0.42);
@@ -263,7 +266,7 @@
       return out;
     };
     sh.model = function () {
-      return { w: SAFE.pageW, h: SAFE.pageH, stage: st, kind: kind, frame: { x: F.x, y: F.y, w: F.w, h: F.h }, items: sh.items, texts: sh.texts, meta: sh.meta };
+      return { w: SAFE.pageW, h: SAFE.pageH, stage: st, vision: vision, kind: kind, frame: { x: F.x, y: F.y, w: F.w, h: F.h }, items: sh.items, texts: sh.texts, meta: sh.meta };
     };
     return sh;
   }
@@ -591,7 +594,7 @@
     /* the grid */
     var avail = listTop - 12 - top, cell = Math.floor(Math.min(F.w / size, avail / size)), gw = cell * size;
     var ls = Math.min(T.cell + (st === "early" ? 4 : 0), Math.floor(cell * 0.66));
-    if (ls < CM.floorFor(st, "cell")) { sh.fail("the grid cells are too small for " + CM.floorFor(st, "cell") + " pt letters (" + cell + " pt cells)"); return; }
+    if (ls < sh.floorFor("cell")) { sh.fail("the grid cells are too small for " + sh.floorFor("cell") + " pt letters (" + cell + " pt cells)"); return; }
     var gx = sh.cx - gw / 2, gy = top;
     sh.rect(gx, gy, gw, gw, { w: S.stroke.rule, fill: "#fff", role: "rule" });
     grid.rows.forEach(function (row, r) {
@@ -769,7 +772,7 @@
       var y = ty + headerH + ri * rh;
       if (ri) sh.line(x0, y, x0 + F.w, y, { w: S.stroke.rule });
       var s = sh.fitSize(r.text, itemW - 24, isize, "body", false);
-      if (s == null) { sh.fail("\"" + r.text + "\" does not fit its row"); s = CM.floorFor(st, "body"); }
+      if (s == null) { sh.fail("\"" + r.text + "\" does not fit its row"); s = sh.floorFor("body"); }
       sh.text(r.text, x0 + 12, y + rh / 2 + s * 0.35, s, { role: "body" });
       for (var ci = 0; ci < 2; ci++) {
         var bx = x0 + itemW + ci * colW + (colW - box) / 2, by = y + (rh - box) / 2;
@@ -809,7 +812,7 @@
       sh.text(String(ri + 1), F.x + numW - 6, y + boxH / 2 + 5, 14, { role: "number", align: "right" });
       r.cells.forEach(function (c, ci) {
         var x = F.x + numW + ci * (boxW + gap), s = sh.fitSize(c.text, boxW - 14, size, "choice", false);
-        if (s == null) { sh.fail("\"" + c.text + "\" does not fit its box"); s = CM.floorFor(sh.stage, "choice"); }
+        if (s == null) { sh.fail("\"" + c.text + "\" does not fit its box"); s = sh.floorFor("choice"); }
         sh.rect(x, y, boxW, boxH, { r: 8, w: S.stroke.rule, fill: "#fff" });
         sh.text(c.text, x + boxW / 2, y + boxH / 2 + s * 0.35, s, { role: "choice", align: "center" });
       });
@@ -851,7 +854,7 @@
         sh.rect(x, y, boxW, pitch - 12, { r: 10, w: S.stroke.rule, fill: "#fff" });
         sh.picture(S0.paths[c.asset.id], { x: x + 8, y: y + 6, w: boxW - 16, h: picH }, { detail: false, w: S.stroke.art });
         var s = sh.fitSize(nm, boxW - 12, nameSize + 2, "label", false);
-        if (s == null) { sh.fail("\"" + nm + "\" does not fit under its picture"); s = CM.floorFor(st, "label"); }
+        if (s == null) { sh.fail("\"" + nm + "\" does not fit under its picture"); s = sh.floorFor("label"); }
         sh.text(nm, x + boxW / 2, y + pitch - 12 - 10, s, { role: "label", bold: true, align: "center" });
       });
     });
@@ -912,7 +915,7 @@
       /* the card */
       sh.rect(cardX, y, cardW, ch, { r: 10, w: S.stroke.rule, fill: "#fff" });
       var s = size, lines = sh.wrap(text, cardW - 28, s, st === "late");
-      while (s > CM.floorFor(st, "body") && (lines.length > 2 || lines.length * Math.round(s * 1.25) > ch - 12 || lines.some(function (l) { return sh.width(l, s, st === "late") > cardW - 28; }))) { s -= 1; lines = sh.wrap(text, cardW - 28, s, st === "late"); }
+      while (s > sh.floorFor("body") && (lines.length > 2 || lines.length * Math.round(s * 1.25) > ch - 12 || lines.some(function (l) { return sh.width(l, s, st === "late") > cardW - 28; }))) { s -= 1; lines = sh.wrap(text, cardW - 28, s, st === "late"); }
       if (lines.length > 2 || lines.some(function (l) { return sh.width(l, s, st === "late") > cardW - 28; })) { sh.fail("\"" + text + "\" does not fit its card"); return; }
       var lead = Math.round(s * 1.25), base = y + ch / 2 - ((lines.length - 1) * lead) / 2 + s * 0.35;
       lines.forEach(function (l, li) { sh.text(l, cardX + 16, base + li * lead, s, { role: "body" }); });
@@ -942,7 +945,7 @@
       var avail = sh.bottom - top, pitch = avail / use, chipH = Math.round(ws * 1.9), leadH = pitch - chipH - 20, ok = true, blocks = [];
       items.slice(0, use).forEach(function (s) {
         var blank = "_______", text = s.lead + " " + blank, size = lineSize, lines = sh.wrap(text, F.w, size, bold);
-        while (size > CM.floorFor(st, "body") && lines.length > 1 && (lines.length * Math.round(size * 1.25) > leadH)) { size -= 1; lines = sh.wrap(text, F.w, size, bold); }
+        while (size > sh.floorFor("body") && lines.length > 1 && (lines.length * Math.round(size * 1.25) > leadH)) { size -= 1; lines = sh.wrap(text, F.w, size, bold); }
         if (lines.length * Math.round(size * 1.25) > leadH + 2 || lines.some(function (l) { return sh.width(l, size, bold) > F.w; })) ok = false;
         blocks.push({ s: s, size: size, lines: lines });
       });
@@ -1373,6 +1376,18 @@
      o: { stage, name, date, variant, slot, frame, measure, subjects, data, avoid, allow, weather, south, force } */
   function generate(kind, o) {
     o = o || {};
+    /* a page that cannot hold the larger print steps down one tier rather than fail; the page says which tier it used */
+    var want = CM.visionScale(o.vision), steps = want >= 1.3 ? ["xl", "large", "standard"] : want >= 1.15 ? ["large", "standard"] : ["standard"], i, err;
+    for (i = 0; i < steps.length; i++) {
+      try {
+        var page = generateAt(kind, Object.assign({}, o, { vision: steps[i] }));
+        page.meta.visionWanted = want; page.meta.visionUsed = page.vision;
+        return page;
+      } catch (e) { if (e.fatal || i === steps.length - 1) throw e; err = e; }
+    }
+    throw err;
+  }
+  function generateAt(kind, o) {
     var id = ALIAS[kind] || kind, g = REG[id];
     if (!g) throw new Error("There is no activity called \"" + kind + "\".");
     var st = CM.stageOf(o.stage);

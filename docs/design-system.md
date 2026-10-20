@@ -134,6 +134,10 @@ The front page is cream, with white cards, Fraunces headings and forest-green bu
 | `npm run audit:ux` | Tap targets, contrast, clicks, navigation and print time on the real pages, including the pages that opted in |
 | `node scripts/check-nav-ui.mjs` (in `npm run build`) | The top bar: none open on arrival, the holding hub marked, one open at a time, Escape and a click elsewhere close it, it stays at the top; on a phone, the Menu drawer |
 
+## Small and helper text
+
+Nothing a person reads is small. Section 12 of `css/styles.css` raises labels, chips, notes, captions and hints that a page sets under 16 px: 16 px for a sentence, 15 px for a chip or an upper-case label, in the bold face (the typeface ships a regular and a bold, so 600 and up is the bold), tracking .012em to .03em, leading 1.5. The navigation (`scripts/site-nav.mjs`) sets its links at 16 px, group labels at 15 px, and the breadcrumb and footer at 16 px. A printed sheet (`.qp-sheet`, `.lp-sheet`, `.sheet`, the print roots) keeps its own sizes, which are set in points and checked by `scripts/check-print-type-ui.mjs`. To find what is still small, run a scan in a real browser for text under 15 px, weight under 500 under 18 px, leading under 1.4 under 18 px, and contrast under 7:1 for small text.
+
 ## What was deliberately not done
 
 - **No framework, icon font, or outside font or script.** Plain CSS and vanilla script; nothing is fetched from a CDN, so the packet tools keep their promise of no network request of their own.

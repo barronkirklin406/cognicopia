@@ -352,7 +352,7 @@ check("writing lines are 0.5 in apart with a 2 pt stroke", () => {
 check("the journal prints in the embedded Atkinson Hyperlegible, with no serif override", () => {
   eq(LJ.STANDARDS.PRINT_FONT, "Atkinson Hyperlegible");
   ok(!/font-family/.test(printCss), "no journal rule changes the face");
-  ok(/\.lp-sheet\{[^}]*font:14pt\/1\.3 "Atkinson Hyperlegible",/.test(lpCss), "the shared sheet sets it");
+  ok(/\.lp-sheet\{[^}]*font:var\(--lpmin,16pt\)\/1\.4 "Atkinson Hyperlegible",/.test(lpCss), "the shared sheet sets it");
 });
 check("section colors are fixed and readable at WCAG AAA (7:1)", () => {
   const lum = h => { const c = [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16) / 255).map(v => v <= .03928 ? v / 12.92 : Math.pow((v + .055) / 1.055, 2.4)); return .2126 * c[0] + .7152 * c[1] + .0722 * c[2]; };

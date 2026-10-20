@@ -50,7 +50,7 @@
       id: "early", label: "Early (mild)", gds: "3–4", fast: "3–4", builder: "early", tier: 1,
       focus: "Active recall and problem solving", framework: "Cognitive stimulation; open recall; strategy",
       /* type: the smallest any resident-facing text may be, and the sizes the page makers aim for */
-      type: { floor: 14, title: 26, instruction: 18, body: 20, label: 16, clue: 16, word: 18, cell: 15, bold: false },
+      type: { floor: 18, title: 28, instruction: 20, body: 22, label: 18, clue: 18, word: 20, cell: 20, bold: true },
       /* stroke: the thinnest line, in points; art is the weight pictures are drawn at */
       stroke: { min: 2.25, art: 3, rule: 2.25, motor: 4.5 },
       limits: {
@@ -66,7 +66,7 @@
     middle: {
       id: "middle", label: "Middle (moderate)", gds: "5", fast: "5", builder: "moderate", tier: 2,
       focus: "Guided completion and errorless learning", framework: "Errorless learning; familiar phrases; recognition",
-      type: { floor: 18, title: 28, instruction: 20, body: 22, label: 20, clue: 18, word: 22, cell: 24, bold: false },
+      type: { floor: 18, title: 28, instruction: 22, body: 24, label: 20, clue: 20, word: 24, cell: 26, bold: true },
       stroke: { min: 3, art: 4.5, rule: 3, motor: 4.5 },
       limits: {
         wordsearch: { sizes: [8], dirs: 2, words: [5, 6] },
@@ -114,18 +114,32 @@
   /* ---------- type ---------- */
   /* The smallest a resident-facing text role may be. Staff text (tips, answers, the footer) is held to a
      lower, still readable, floor; the little numbers in a puzzle grid are labels, not reading. */
-  var STAFF_FLOOR = 10;
+  var STAFF_FLOOR = 12;
   var RESIDENT_ROLES = ["title", "instruction", "body", "label", "word", "clue", "choice", "cell", "name", "heading", "prompt"];
   var STAFF_ROLES = ["staff", "answer", "footer", "cue", "header"];
   var EXEMPT_ROLES = ["number", "mark"];
-  function floorFor(stage, role) {
+  /* The vision tier (a resident's print need) scales every resident-facing size: standard print as the stage sets it, large print
+     15% bigger, extra-large print 30% bigger. The profile's own fontSizeScale (1, 1.15, 1.3) is accepted as well. No tier given means standard. */
+  var VISION = { standard: 1, large: 1.15, xl: 1.3 };
+  function visionScale(v) {
+    var n = typeof v === "number" ? v : VISION[String(v == null ? "" : v).toLowerCase()];
+    return n === 1 || n === 1.15 || n === 1.3 ? n : 1;
+  }
+  var half = function (x) { return Math.round(x * 2) / 2; };
+  function floorFor(stage, role, vision) {
     var S = STAGES[stageOf(stage)];
     if (STAFF_ROLES.indexOf(role) >= 0) return STAFF_FLOOR;
     if (EXEMPT_ROLES.indexOf(role) >= 0) return 8;
-    return S.type.floor;
+    return half(S.type.floor * visionScale(vision));
   }
-  function typeSize(stage, role) {
-    var S = STAGES[stageOf(stage)], t = S.type;
+  /* the stage's type table at a vision tier */
+  function typeFor(stage, vision) {
+    var t = STAGES[stageOf(stage)].type, k = visionScale(vision), out = {};
+    Object.keys(t).forEach(function (r) { out[r] = typeof t[r] === "number" ? half(t[r] * k) : t[r]; });
+    return Object.freeze(out);
+  }
+  function typeSize(stage, role, vision) {
+    var t = typeFor(stage, vision);
     return Math.max(t.floor, t[role] || t.body);
   }
 
@@ -446,7 +460,7 @@
       }
     });
     (page.texts || []).forEach(function (t, i) {
-      var role = t.role || "body", floor = floorFor(st, role), resident = STAFF_ROLES.indexOf(role) < 0 && EXEMPT_ROLES.indexOf(role) < 0;
+      var role = t.role || "body", floor = floorFor(st, role, page.vision), resident = STAFF_ROLES.indexOf(role) < 0 && EXEMPT_ROLES.indexOf(role) < 0;
       if (!(t.size >= floor - 1e-9)) problems.push("the " + role + " text \"" + String(t.text).slice(0, 24) + "\" is " + t.size + " pt, under the " + floor + " pt " + st + " floor");
       if (S.type.bold && resident && !t.bold) problems.push("the " + role + " text \"" + String(t.text).slice(0, 24) + "\" is not bold, and the " + st + " stage prints bold");
       if (t.x < F.x - 0.6 && t.align !== "right" || t.x > F.x + F.w + 0.6 && t.align !== "left") problems.push("the text \"" + String(t.text).slice(0, 24) + "\" starts outside its space");
@@ -483,8 +497,8 @@
     left: SAFE.left, right: SAFE.pageW - SAFE.right,
     header: Object.freeze({ y: 47, ruleY: 52, name: 13, date: 12, rule: 3 }),
     body: Object.freeze({ top: 64, bottom: 706 }),
-    tip: Object.freeze({ size: 10, lead: 12, y: 719, lines: 2 }),
-    footer: Object.freeze({ ruleY: 738, y: 753, size: 10, page: 12, rule: 2.25 })
+    tip: Object.freeze({ size: 12, lead: 13, y: 716, lines: 2 }),
+    footer: Object.freeze({ ruleY: 738, y: 753, size: 12, page: 13, rule: 2.25 })
   });
   function headerParts(o) {
     o = o || {};
@@ -510,6 +524,7 @@
   root.CognicopiaClinicalMatrix = Object.freeze({
     VERSION: VERSION, SAFE: SAFE, STAGES: STAGES, SHELL: SHELL, ACTIVITIES: ACTIVITIES, DOMAIN_LABEL: DOMAIN_LABEL, CUES: CUES,
     STAFF_FLOOR: STAFF_FLOOR, RESIDENT_ROLES: RESIDENT_ROLES, STAFF_ROLES: STAFF_ROLES,
+    VISION: VISION, visionScale: visionScale, typeFor: typeFor,
     stageOf: stageOf, builderLevel: builderLevel, rules: rules, floorFor: floorFor, typeSize: typeSize,
     allowed: allowed, why: why, activitiesFor: activitiesFor, entry: entry, suggested: suggested, SUGGESTED: SUGGESTED,
     dignity: Object.freeze({ lint: lintText, clean: cleanText, adultSubject: adultSubject, RULES: DIGNITY, ADULT_CATEGORIES: ADULT_CATEGORIES }),

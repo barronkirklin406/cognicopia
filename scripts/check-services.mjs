@@ -68,7 +68,7 @@ group("sundowningCalmAndCoachingFooter", () => {
   ok(/if \(calmMode == null \? sundowningCalmActive : calmMode\) return `<section class="sheet sheet-calm"[\s\S]*?stroke-width="6pt"[\s\S]*?stroke-dasharray/.test(builderHtml), "calm mode replaces activity content with one maximum-weight dashed path");
   ok(/function sheetHtml\(item[^)]*\)[\s\S]*?activitySheetHtml\(item[^)]*\)[\s\S]*?care-coaching-footer/.test(builderHtml), "the shared queued-print wrapper adds the coaching footer");
   ok(builderHtml.includes(coaching) && indexHtml.includes(coaching), "the exact coaching reminder is included in both activity print pipelines");
-  ok(/coachingFooter\(\)\s*\{[\s\S]*?this\.d\.text\("Do not ask questions or test memory\./.test(indexHtml), "main PDF pages draw the coaching footer from the shared document engine");
+  ok(/coachingFooter\(\)\s*\{[\s\S]*?const tip="Do not ask questions or test memory\.[\s\S]*?this\.d\.text\(first[\s\S]*?this\.d\.text\(rest/.test(indexHtml), "main PDF pages draw the coaching footer from the shared document engine");
 });
 
 /* 3. Dynamic Vector Engine */

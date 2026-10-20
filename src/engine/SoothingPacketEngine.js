@@ -357,7 +357,7 @@
 
   function pageFinish(sh, item, plan, ctx, z) {
     var st = sh.stage, S = sh.S, F = sh.F, R = ctx.rng;
-    var n = st === "early" ? 5 : 4, nopt = st === "early" ? 3 : 2, pairs = R.shuffle(z.pairs).slice(0, n), top = head(sh, z.title, C.INSTRUCTIONS.finish[st]);
+    var n = st === "early" ? 5 : 4, nopt = 2, pairs = R.shuffle(z.pairs).slice(0, n), top = head(sh, z.title, C.INSTRUCTIONS.finish[st]);
     var gapY = 14, bottom = sh.bottom - 8, rh = Math.min(104, ((bottom - top - 8) - (n - 1) * gapY) / n);
     if (rh < 60) { sh.fail("the rows are too short"); return; }
     var stemW = 190, ow = (F.w - stemW - 8) / nopt - 10, y0 = top + 8;
