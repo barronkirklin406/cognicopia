@@ -175,7 +175,7 @@
   }
 
 
-  /* ---------- the colors: choose a set (Soft, Bold, Garden, Vintage), then a color ---------- */
+  /* ---------- the colors: choose a set (Jewel, Bold, Garden, Vintage), then a color ---------- */
   var PALETTES = T.PALETTES;
   var hexRGB = function (hex) { var n = parseInt(hex.slice(1), 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; };
   var rgba = function (hex, a) { var c = hexRGB(hex); return "rgba(" + c[0] + "," + c[1] + "," + c[2] + "," + a + ")"; };
@@ -239,7 +239,7 @@
     loadColoring(function (ok) {
       if (gone) return;
       if (!ok) { root.innerHTML = '<p class="tb-big">The pictures could not be loaded. Choose Home, then try again.</p>'; return; }
-      var C = window.CognicopiaColoring, tier = T.STAGES[o.stage].color.tier, ids = T.designChoices(o, C.designs()), page = 0, PER = 8, fill = "#f4b6c2", cp = null, finishIt = null;
+      var C = window.CognicopiaColoring, look = T.STAGES[o.stage].color, tier = look.tier, ids = T.designChoices(o, C.designs()), page = 0, PER = 8, fill = T.PALETTES[Math.min(T.PALETTES.length - 1, Math.max(0, api.prefs.palette || 0))].colors[0][1], cp = null, finishIt = null;
       api.used(ids.slice(0, PER));
       function chooser() {
         finishIt = null; root.innerHTML = ""; api.progress("");
@@ -247,7 +247,7 @@
         var box = h("div", "tb-chooser"), grid = h("div", "tb-pics"), more = h("div", "tb-row");
         box.appendChild(h("p", "tb-h", "Choose a picture to color"));
         show.forEach(function (id) {
-          var title = C.design(id).title, b = h("button", "tb-pic", C.toSVG(C.render(id, tier), { standalone: true, widthIn: 2, label: "" }));
+          var title = C.design(id).title, b = h("button", "tb-pic", C.toSVG(C.render(id, tier), { standalone: true, widthIn: 2, label: "", weight: look.weight }));
           b.type = "button"; b.setAttribute("data-id", id); b.setAttribute("aria-label", title + ", a picture to color");
           var sv = b.querySelector("svg"); if (sv) { sv.removeAttribute("width"); sv.removeAttribute("height"); }
           grid.appendChild(b);
@@ -267,11 +267,15 @@
       function paintIt(id) {
         var title = C.design(id).title;
         root.innerHTML = '<p class="tb-big">Getting your picture ready…</p>'; api.progress(title); finishIt = null;
-        rasterise(C.toSVG(C.render(id, tier), { standalone: true, widthIn: 6.25, label: "" }), function (img) {
+        /* the picture at the stage's level of detail; one with too many shapes to color is drawn again with less detail */
+        function attempt(t) {
+        rasterise(C.toSVG(C.render(id, t), { standalone: true, widthIn: 6.25, label: "", weight: look.weight }), function (img) {
           if (gone) return;
           if (!img) { root.innerHTML = '<p class="tb-big">That picture could not be opened.</p>'; api.later(chooser, 1500); return; }
+          T.enrich(img.data, CW, CH, look.enrich);                    /* more to color: the big shapes are cut up with more bold lines */
           var R = T.regions(img.data, CW, CH, 700), inner = [], hist = [], have = [], r;
           for (r = 1; r <= R.count; r++) if (r !== R.bg) inner.push(r);
+          if (inner.length > T.MAX_SHAPES && t < 3) { attempt(t + 1); return; }
           root.innerHTML = "";
           var split = h("div", "tb-split tb-colorsplit"), art = h("div", "tb-art"), sheet = h("div", "tb-sheet"), side = h("div", "tb-side tb-colorside");
           var fillCv = h("canvas", "tb-layer"), lineCv = h("canvas", "tb-layer tb-lines"), hintCv = h("canvas", "tb-layer tb-regionglow");
@@ -350,6 +354,8 @@
               pixel: function (x, y) { var b = lineCv.getBoundingClientRect(), p = Math.floor((y - b.top) / b.height * CH) * CW + Math.floor((x - b.left) / b.width * CW); return [fd.data[p * 4], fd.data[p * 4 + 1], fd.data[p * 4 + 2], fd.data[p * 4 + 3]]; } };
           });
         });
+        }
+        attempt(tier);
       }
       chooser();
     });
@@ -388,7 +394,7 @@
   }
 
   function paint(root, o, api) {
-    var prefs = api.prefs, brush = "soft", sizeIx = 1, paperIx = Math.min(3, Math.max(0, prefs.paper || 0)), color = "#f4b6c2", strokes = 0, undo = [], tab = "colors";
+    var prefs = api.prefs, brush = "soft", sizeIx = 1, paperIx = Math.min(3, Math.max(0, prefs.paper || 0)), color = T.PALETTES[Math.min(T.PALETTES.length - 1, Math.max(0, prefs.palette || 0))].colors[0][1], strokes = 0, undo = [], tab = "colors";
     var wrap = h("div", "tb-paintwrap tb-glass"), bg = h("canvas", "tb-pbg"), ink = h("canvas", "tb-paint"), tools = h("div", "tb-ptools tb-glass"), split = h("div", "tb-split tb-paintsplit");
     ink.setAttribute("role", "img"); ink.setAttribute("aria-label", "A sheet of paper to paint on with a finger");
     wrap.appendChild(bg); wrap.appendChild(ink); split.appendChild(wrap); split.appendChild(tools); root.appendChild(split);

@@ -6,8 +6,8 @@ import { measure, sparse, MIN_SHAPES, MAX_SHAPES } from "./lib/tablet-color-meas
 const { chromium } = loadPlaywright(), { srv, base } = await serve(), browser = await chromium.launch();
 try {
   const page = await browser.newPage(); await page.goto(base + "tablet.html");
-  const m = await measure(page), ids = Object.keys(m), over = ids.filter(id => Math.max(m[id][2], m[id][3]) > MAX_SHAPES);
-  console.log(`${ids.length} pictures measured; fewer than ${MIN_SHAPES} shapes at a level the tablet uses:`);
+  const m = await measure(page), ids = Object.keys(m), over = ids.filter(id => Math.max(m[id].early, m[id].middle, m[id].late) > MAX_SHAPES);
+  console.log(`${ids.length} pictures measured; fewer than ${MIN_SHAPES} shapes at a stage:`);
   console.log(JSON.stringify(sparse(m)));
   console.log(over.length ? `more than ${MAX_SHAPES} shapes (too many to color): ${over.join(", ")}` : `none has more than ${MAX_SHAPES} shapes`);
 } finally { await browser.close(); srv.close(); }

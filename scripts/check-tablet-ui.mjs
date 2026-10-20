@@ -575,16 +575,16 @@ try {
     ok(await p.evaluate(() => document.querySelectorAll("[data-bank]").length) === 4 && await p.evaluate(() => document.querySelectorAll(".tb-sw").length) === 8, "four sets of colors, eight colors in each");
     await click(p, '[data-bank="2"]');
     ok(await p.evaluate(() => document.querySelector('[data-bank="2"]').getAttribute("aria-pressed") === "true" && document.querySelector(".tb-sw").getAttribute("aria-label") === "Leaf" && JSON.parse(localStorage.getItem("cognicopia_tablet_prefs")).palette === 2), "choosing the Garden set changes the colors, and the choice is kept");
-    await click(p, '.tb-sw[data-color="#4a9d5b"]');
-    ok(await p.evaluate(() => document.querySelector('.tb-sw[data-color="#4a9d5b"]').getAttribute("aria-pressed") === "true" && document.querySelectorAll('.tb-sw[aria-pressed="true"]').length === 1), "the chosen color is marked");
+    await click(p, '.tb-sw[data-color="#2f9e3f"]');
+    ok(await p.evaluate(() => document.querySelector('.tb-sw[data-color="#2f9e3f"]').getAttribute("aria-pressed") === "true" && document.querySelectorAll('.tb-sw[aria-pressed="true"]').length === 1), "the chosen color is marked");
     let sp = await spots(); await p.mouse.click(sp[0][0], sp[0][1]); await sleep(60);
     sp = await spots();
-    ok((await dbg(p)).filled === 1 && (await pixel(sp[0][0], sp[0][1])).join() === "74,157,91,255", "tapping a shape fills it with the chosen color");
+    ok((await dbg(p)).filled === 1 && (await pixel(sp[0][0], sp[0][1])).join() === "47,158,63,255", "tapping a shape fills it with the chosen color");
     ok((await Promise.all(sp.slice(1).map(s => pixel(s[0], s[1])))).every(v => v[3] === 0), "and the color stays inside its lines: no other shape changed");
-    await click(p, '.tb-sw[data-color="#c27a4a"]'); await p.mouse.click(sp[1][0], sp[1][1]); await sleep(60);
-    ok((await dbg(p)).filled === 2 && (await pixel(sp[1][0], sp[1][1])).join() === "194,122,74,255", "a second color on a second shape");
+    await click(p, '.tb-sw[data-color="#7a4a1e"]'); await p.mouse.click(sp[1][0], sp[1][1]); await sleep(60);
+    ok((await dbg(p)).filled === 2 && (await pixel(sp[1][0], sp[1][1])).join() === "122,74,30,255", "a second color on a second shape");
     await p.mouse.click(sp[1][0], sp[1][1]); await sleep(60);
-    ok((await dbg(p)).filled === 2 && (await pixel(sp[1][0], sp[1][1])).join() === "194,122,74,255", "tapping the same shape again keeps it colored");
+    ok((await dbg(p)).filled === 2 && (await pixel(sp[1][0], sp[1][1])).join() === "122,74,30,255", "tapping the same shape again keeps it colored");
     await click(p, '[data-co="undo"]'); await sleep(60);
     ok((await dbg(p)).filled === 2, "Undo takes back the last tap");
     await click(p, '[data-co="undo"]'); await sleep(60);
@@ -603,11 +603,33 @@ try {
     await ctx.close();
   }
   {
+    /* at every stage, a touch on each shape of a detailed picture fills that shape, and only that shape, with a deep color that stays solid*/
+    for (const stage of ["early", "middle", "late"]) {
+      const { ctx, p } = await fresh(LAND, { init: `try { localStorage.setItem("cognicopia_tablet_prefs", JSON.stringify({ stage: "${stage}", topic: "", sound: false, speed: 2, grid: 0, palette: 0, paper: 0 })); } catch (e) {}` });
+      await openAct(p, "color"); await p.waitForSelector(".tb-pic", { timeout: 8000 });
+      await click(p, ".tb-pic"); await p.waitForSelector(".tb-sheet canvas.tb-lines", { timeout: 8000 });
+      const d = await dbg(p), spots = await p.evaluate(() => window.CognicopiaTabletUI.debug().spots()), shown = await p.evaluate(() => window.CognicopiaTabletUI.debug().colors);
+      ok(d.shapes >= 3 && d.shapes <= 90 && spots.length === d.shapes, `${stage}: the picture has ${d.shapes} shapes to color, and a place to tap in each`);
+      const sat = shown.map(c => { const [r, g, b] = [1, 3, 5].map(i => parseInt(c.slice(i, i + 2), 16) / 255), mx = Math.max(r, g, b), mn = Math.min(r, g, b), l = (mx + mn) / 2; return mx === mn ? 0 : (mx - mn) / (1 - Math.abs(2 * l - 1)); });
+      ok(sat.every(v => v >= 0.5), `${stage}: the colors on offer are all saturated`);
+      let right = 0, only = 0;
+      for (let i = 0; i < spots.length; i++) {
+        const sw = (await p.$$(".tb-sw"))[i % 8]; await sw.tap(); const hex = await sw.getAttribute("data-color"), want = [1, 3, 5].map(k => parseInt(hex.slice(k, k + 2), 16));
+        await p.touchscreen.tap(spots[i][0], spots[i][1]); await sleep(20);
+        const px = await p.evaluate(([a, b]) => window.CognicopiaTabletUI.debug().pixel(a, b), [spots[i][0], spots[i][1]]); if (px[3] === 255 && px[0] === want[0] && px[1] === want[1] && px[2] === want[2]) right++;
+        const now = await p.evaluate(() => window.CognicopiaTabletUI.debug().filled); if (now === i + 1) only++;
+      }
+      ok(right === spots.length, `${stage}: a touch on each of the ${spots.length} shapes fills it solid in the chosen color (${right} did)`);
+      ok(only === spots.length, `${stage}: each touch colors one shape and no other`);
+      await ctx.close();
+    }
+  }
+  {
     /* every picture Color a Picture offers has shapes enough to color (and not too many), and the list of pictures left out is exactly the sparse ones */
     const { ctx, p } = await fresh(LAND);
     const m = await measureColor(p), offered = Object.keys(m).filter(id => m[id].cat !== "zentangle-mandalas" && !m[id].sensitive), skip = await p.evaluate(() => window.CognicopiaTabletBanks.COLOR_SKIP);
-    const thin = colorSparse(m), few = offered.filter(id => !skip.includes(id) && Math.min(m[id][2], m[id][3]) < MIN_SHAPES), many = offered.filter(id => Math.max(m[id][2], m[id][3]) > MAX_SHAPES);
-    ok(offered.length - skip.length >= 20 && !few.length && !many.length, `${offered.length - skip.length} pictures to offer, each with ${MIN_SHAPES} to ${MAX_SHAPES} shapes to color at both levels` + (few.length ? ` (too few: ${few.join(", ")})` : "") + (many.length ? ` (too many: ${many.join(", ")})` : ""));
+    const thin = colorSparse(m), few = offered.filter(id => !skip.includes(id) && Math.min(m[id].early, m[id].middle, m[id].late) < MIN_SHAPES), many = offered.filter(id => Math.max(m[id].early, m[id].middle, m[id].late) > MAX_SHAPES);
+    ok(offered.length - skip.length >= 20 && !few.length && !many.length, `${offered.length - skip.length} pictures to offer, each with ${MIN_SHAPES} to ${MAX_SHAPES} shapes to color at every stage` + (few.length ? ` (too few: ${few.join(", ")})` : "") + (many.length ? ` (too many: ${many.join(", ")})` : ""));
     ok(JSON.stringify([...skip].sort()) === JSON.stringify(thin), "the pictures left out are exactly the sparse ones: " + JSON.stringify(thin));
     const eng = await p.evaluate(() => { const C = window.CognicopiaColoring, T = window.CognicopiaTablet; return C ? T.designChoices({ seed: "x" }, C.designs()) : null; });
     ok(!eng || skip.every(id => !eng.includes(id)), "and none of them is offered");
@@ -646,10 +668,10 @@ try {
     const p0 = await paper(.5, .5); ok(p0[3] === 255 && !(p0[0] === 255 && p0[1] === 255 && p0[2] === 255), "the sheet starts as warm parchment, not a blank white screen");
     ok((await ink(.5, .5))[3] === 0, "and nothing is painted on it");
     await drag(.2, .5, .8, .5);
-    let c = await ink(.5, .5); ok((await dbg(p)).strokes === 1 && c[3] > 235 && near(c, [244, 182, 194], 10), "a finger drawn across the sheet paints a soft line in the chosen color");
-    await click(p, '[data-tab="colors"]'); await click(p, '[data-bank="1"]'); await click(p, '.tb-sw[data-color="#2f6fd0"]'); await click(p, '[data-tab="brush"]'); await click(p, '[data-size="3"]'); await click(p, '[data-brush="soft"]');
+    let c = await ink(.5, .5); ok((await dbg(p)).strokes === 1 && c[3] > 235 && near(c, [193, 18, 31], 10), "a finger drawn across the sheet paints a soft line in the chosen color");
+    await click(p, '[data-tab="colors"]'); await click(p, '[data-bank="1"]'); await click(p, '.tb-sw[data-color="#0a58ca"]'); await click(p, '[data-tab="brush"]'); await click(p, '[data-size="3"]'); await click(p, '[data-brush="soft"]');
     await drag(.5, .15, .5, .85);
-    c = await ink(.5, .3); ok((await dbg(p)).strokes === 2 && c[3] > 235 && near(c, [47, 111, 208], 10), "another color, and a wider brush");
+    c = await ink(.5, .3); ok((await dbg(p)).strokes === 2 && c[3] > 235 && near(c, [10, 88, 202], 10), "another color, and a wider brush");
     ok(await p.evaluate(() => document.querySelectorAll("[data-brush]").length) === 4 && await p.evaluate(() => document.querySelectorAll("[data-size]").length) === 4, "four brushes and four sizes");
     await click(p, '[data-brush="blend"]'); await click(p, '[data-size="1"]');
     const before = await ink(.58, .62); await drag(.4, .62, .75, .62); const after = await ink(.58, .62);

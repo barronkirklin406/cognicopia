@@ -8,7 +8,7 @@
    accidental word, every clue and saying passes the dignity rules.
 
      wordSearch, crossword, spellIt, sayings, sortIt, inOrder, matchUp,
-     oddOne, tracePath, soundBoard, designChoices, regions, PALETTES
+     oddOne, tracePath, soundBoard, designChoices, regions, enrich, PALETTES
 
    Each takes { stage: "early" | "middle" | "late", topic: a topic id or "",
    seed: any text, fit: { size } } and returns plain data. The same seed
@@ -30,7 +30,8 @@
       spell: { count: 5, minLen: 4, maxLen: 6, firstGiven: false },
       saying: { count: 6, options: 3 }, sort: { count: 8 }, order: { maxSteps: 6 }, match: { pairs: 5 }, odd: { rounds: 5 },
       trace: { tol: 34, kinds: ["wave", "zigzag", "spiral", "scurve", "heart", "circle", "hill"], rounds: 3 },
-      color: { tier: 2 }, sounds: { cards: 6, rounds: 3 }
+      /* the picture is drawn with all its detail (tier 1) in the bold line of tier 2, and then every big shape is cut up further */
+      color: { tier: 1, weight: "ultra-bold", enrich: { minArea: 1200, ringDepth: 23, cell: 1400, rings: 3, band: 15, max: 110, lw: 4 } }, sounds: { cards: 6, rounds: 3 }
     },
     middle: {
       label: "Middle stage",
@@ -39,7 +40,7 @@
       spell: { count: 5, minLen: 3, maxLen: 5, firstGiven: false },
       saying: { count: 5, options: 3 }, sort: { count: 6 }, order: { maxSteps: 4 }, match: { pairs: 4 }, odd: { rounds: 4 },
       trace: { tol: 46, kinds: ["wave", "scurve", "heart", "circle", "hill"], rounds: 3 },
-      color: { tier: 3 }, sounds: { cards: 6, rounds: 3 }
+      color: { tier: 2, weight: "ultra-bold", enrich: { minArea: 2200, ringDepth: 25, cell: 2600, rings: 2, band: 18, max: 70, lw: 5 } }, sounds: { cards: 6, rounds: 3 }
     },
     late: {
       label: "Late stage",
@@ -48,7 +49,7 @@
       spell: { count: 4, minLen: 3, maxLen: 4, firstGiven: true },
       saying: { count: 4, options: 2 }, sort: { count: 4 }, order: { maxSteps: 3 }, match: { pairs: 3 }, odd: { rounds: 3 },
       trace: { tol: 62, kinds: ["hill", "wave", "scurve", "circle"], rounds: 3 },
-      color: { tier: 3 }, sounds: { cards: 4, rounds: 2 }
+      color: { tier: 3, weight: "extra-bold-sensory", enrich: { minArea: 6000, ringDepth: 40, cell: 8000, rings: 1, band: 26, max: 32, lw: 6 } }, sounds: { cards: 4, rounds: 2 }
     }
   };
   var stageOf = function (o) { return STAGES[o && o.stage] ? o.stage : "middle"; };
@@ -301,12 +302,13 @@
   }
 
   /* ---------- color a picture: the color sets, and the shapes in a closed-outline picture ---------- */
-  /* four sets of eight, each color named: soft, bold, natural and old-fashioned */
+  /* four sets of eight, each color named: rich and saturated, never pale. Jewel tones, bold primaries, a deep garden and an old-fashioned
+     Americana set. Each is dark or bright enough to stand against the black outline, and no two in a set are close. */
   var PALETTES = [
-    { id: "pastel", name: "Soft", colors: [["Blush", "#f4b6c2"], ["Peach", "#f9c9a4"], ["Butter", "#f8e5a1"], ["Mint", "#b7e1c4"], ["Sky", "#bcd8ea"], ["Lilac", "#d4c1ec"], ["Cream", "#fbf1dc"], ["Stone", "#d9d2c3"]] },
-    { id: "primary", name: "Bold", colors: [["Red", "#d93a2f"], ["Orange", "#f28c1c"], ["Yellow", "#f6d11b"], ["Green", "#2f9e44"], ["Blue", "#2f6fd0"], ["Purple", "#7a3fb5"], ["Black", "#1a202c"], ["White", "#ffffff"]] },
-    { id: "nature", name: "Garden", colors: [["Leaf", "#4a9d5b"], ["Forest", "#2e6b44"], ["Moss", "#8aa84b"], ["Earth", "#8a5a2b"], ["Clay", "#c27a4a"], ["Sand", "#e2c79d"], ["Stone", "#8d96a3"], ["Water", "#5aa6a0"]] },
-    { id: "retro", name: "Vintage", colors: [["Harvest gold", "#e0a526"], ["Burnt orange", "#d2691e"], ["Avocado", "#7a8c2e"], ["Brown", "#6b4a2b"], ["Plum", "#6f3b5b"], ["Rust", "#a5472a"], ["Cream", "#f1e4c3"], ["Teal", "#2f8f8b"]] }
+    { id: "jewel", name: "Jewel", colors: [["Crimson", "#c1121f"], ["Tangerine", "#f26a0f"], ["Gold", "#f5b700"], ["Emerald", "#0e8a4f"], ["Teal", "#0b8f94"], ["Sapphire", "#1f4fc4"], ["Indigo", "#3b2f9e"], ["Amethyst", "#8a2cc2"]] },
+    { id: "primary", name: "Bold", colors: [["Red", "#d00000"], ["Orange", "#f77f00"], ["Yellow", "#ffc800"], ["Green", "#1b9a3c"], ["Blue", "#0a58ca"], ["Violet", "#6a1fb0"], ["Magenta", "#c2185b"], ["Brown", "#7b3f12"]] },
+    { id: "nature", name: "Garden", colors: [["Leaf", "#2f9e3f"], ["Forest", "#14532d"], ["Lime", "#7fb519"], ["Sunflower", "#f5b301"], ["Poppy", "#d62828"], ["Iris", "#6b2fa3"], ["Lake", "#0f6fbf"], ["Earth", "#7a4a1e"]] },
+    { id: "retro", name: "Vintage", colors: [["Harvest gold", "#e8a200"], ["Burnt orange", "#d1560f"], ["Barn red", "#a4161a"], ["Brown", "#6b3a1e"], ["Navy", "#12306b"], ["Plum", "#6a1b5c"], ["Avocado", "#6a8d1a"], ["Teal", "#0f7a76"]] }
   ];
 
   /* The shapes of a picture made of closed outlines. data is the picture's pixels (RGBA, dark lines on white), w by h.
@@ -353,6 +355,94 @@
     return { w: w, h: h, lab: lab, count: count, boxes: boxes, areas: keptArea, bg: bg };
   }
 
+  /* ---------- color a picture: more to color ---------- */
+  /* Adds bold lines inside the big shapes of a closed-outline picture, so there is more to color and no big flat area is left.
+     data is the picture's pixels (RGBA, dark lines on white), w by h; it is changed in place. For each big shape:
+       - a ring: one more outline, set in from the edge (a border band, as on a stained-glass panel or a plate), and
+       - cells: the middle of the shape divided into a few pieces by lines half-way between seed points.
+     Every line is drawn inside a shape and nothing else, so it can only divide that shape; the shapes found afterward (regions)
+     are the old shapes, cut up. o: { minArea (smallest shape to cut), ringDepth (how deep a shape must be to get a ring), cell
+     (about how much area each cell has; 0 for no cells), rings (most rings in one shape), band (narrowest band a ring leaves, in pixels, so a finger can land in it), max (most shapes the picture may end with), lw (line width in pixels) }.
+     Returns { before, after } counts of shapes (the page outside excluded). The same picture and settings always give the same lines. */
+  function enrich(data, w, h, o) {
+    o = o || {};
+    var n = w * h, lw = o.lw || 4, minArea = o.minArea || 3200, ringDepth = o.ringDepth || 30, cell = o.cell || 0, cap = o.max || 60, maxRings = o.rings == null ? 1 : o.rings, band = o.band || 18;
+    var R = regions(data, w, h, 700), before = R.count - (R.bg ? 1 : 0), budget = cap - before, i, x, y;
+    if (!R.count || budget <= 0) return { before: before, after: before };
+    /* distance from every white pixel to the nearest line pixel (exact, Felzenszwalb) */
+    var INF = 1e20, f = new Float64Array(n), dist = new Float64Array(n), v = new Int32Array(Math.max(w, h)), z = new Float64Array(Math.max(w, h) + 1), g = new Float64Array(Math.max(w, h));
+    for (i = 0; i < n; i++) f[i] = data[i * 4] >= 150 ? INF : 0;
+    function pass(len, get, put) {
+      var k = 0, q, sI;
+      for (q = 0; q < len; q++) g[q] = get(q);
+      v[0] = 0; z[0] = -INF; z[1] = INF;
+      for (q = 1; q < len; q++) {
+        sI = ((g[q] + q * q) - (g[v[k]] + v[k] * v[k])) / (2 * q - 2 * v[k]);
+        while (sI <= z[k]) { k--; sI = ((g[q] + q * q) - (g[v[k]] + v[k] * v[k])) / (2 * q - 2 * v[k]); }
+        k++; v[k] = q; z[k] = sI; z[k + 1] = INF;
+      }
+      k = 0;
+      for (q = 0; q < len; q++) { while (z[k + 1] < q) k++; put(q, (q - v[k]) * (q - v[k]) + g[v[k]]); }
+    }
+    for (x = 0; x < w; x++) pass(h, function (q) { return f[q * w + x]; }, function (q, val) { dist[q * w + x] = val; });
+    for (y = 0; y < h; y++) pass(w, function (q) { return dist[y * w + q]; }, function (q, val) { f[y * w + q] = val; });
+    for (i = 0; i < n; i++) dist[i] = f[i] >= INF / 2 ? 9999 : Math.sqrt(f[i]);
+    var maxD = new Float64Array(R.count + 1), where = new Int32Array(R.count + 1), area = new Int32Array(R.count + 1), k;
+    for (i = 0; i < n; i++) { k = R.lab[i]; if (!k || data[i * 4] < 150) continue; area[k]++; if (dist[i] > maxD[k]) { maxD[k] = dist[i]; where[k] = i; } }
+    var dark = new Float32Array(n), order = [], used = 0;
+    for (k = 1; k <= R.count; k++) if (k !== R.bg && area[k] >= minArea && maxD[k] >= ringDepth) order.push(k);
+    order.sort(function (a, b) { return (area[b] - area[a]) || (a - b); });
+    var wide = w * h * 0.22;                                     /* a shape this big is a backdrop: a ring, never cells */
+    order.forEach(function (k) {
+      if (used >= budget) return;
+      var b = R.boxes[k], depth = maxD[k], r = Math.min(30, Math.max(band * 0.85 + lw / 2, depth * 0.38)), pitch = Math.max(band + lw, Math.min(30, depth * 0.3)), radii = [], rr;
+      for (rr = r; radii.length < maxRings && depth - rr >= band * 0.7; rr += pitch) radii.push(rr);
+      var ringOn = radii.length > 0, inner = ringOn ? radii[radii.length - 1] + lw / 2 : 0, px = [], p, a, cells = 0, t;
+      for (y = b[1]; y <= b[3]; y++) for (x = b[0]; x <= b[2]; x++) {
+        p = y * w + x; if (R.lab[p] !== k || data[p * 4] < 150) continue;
+        for (t = 0; t < radii.length; t++) { a = lw / 2 + 0.5 - Math.abs(dist[p] - radii[t]); if (a > 0 && a > dark[p]) dark[p] = Math.min(1, a); }
+        if (dist[p] > inner + 2) px.push(p);
+      }
+      used += radii.length;
+      if (cell && area[k] < wide && px.length >= cell * 1.6) {
+        var m = Math.max(2, Math.min(6, Math.floor(px.length / cell))), seeds, grow;
+        m = Math.min(m, budget - used + 1);
+        for (; m >= 2; m--) {
+          seeds = [where[k]];
+          var near = new Float64Array(px.length);
+          for (i = 0; i < px.length; i++) { var dx = px[i] % w - where[k] % w, dy = ((px[i] / w) | 0) - ((where[k] / w) | 0); near[i] = dx * dx + dy * dy; }
+          while (seeds.length < m) {
+            var bi = -1, bd = -1;
+            for (i = 0; i < px.length; i += 2) if (near[i] > bd) { bd = near[i]; bi = i; }
+            if (bi < 0 || bd < 26 * 26) break;
+            seeds.push(px[bi]);
+            for (i = 0; i < px.length; i++) { var ex = px[i] % w - px[bi] % w, ey = ((px[i] / w) | 0) - ((px[bi] / w) | 0), dd = ex * ex + ey * ey; if (dd < near[i]) near[i] = dd; }
+          }
+          if (seeds.length < 2) break;
+          /* every cell must be big enough to tap */
+          var counts = new Int32Array(seeds.length), pick = new Int32Array(px.length), j;
+          for (i = 0; i < px.length; i++) {
+            var cx = px[i] % w, cy = (px[i] / w) | 0, b1 = 1e12, bj = 0;
+            for (j = 0; j < seeds.length; j++) { var sx = seeds[j] % w - cx, sy = ((seeds[j] / w) | 0) - cy, sd = sx * sx + sy * sy; if (sd < b1) { b1 = sd; bj = j; } }
+            pick[i] = bj; counts[bj]++;
+          }
+          var small = false; for (j = 0; j < seeds.length; j++) if (counts[j] < Math.max(1100, cell * 0.55)) small = true;
+          if (small) continue;
+          for (i = 0; i < px.length; i++) {
+            var qx = px[i] % w, qy = (px[i] / w) | 0, d1 = 1e12, d2 = 1e12;
+            for (j = 0; j < seeds.length; j++) { var tx = seeds[j] % w - qx, ty = ((seeds[j] / w) | 0) - qy, td = Math.sqrt(tx * tx + ty * ty); if (td < d1) { d2 = d1; d1 = td; } else if (td < d2) d2 = td; }
+            a = lw / 2 + 0.5 - (d2 - d1) / 2; if (a > 0 && a > dark[px[i]]) dark[px[i]] = Math.min(1, a);
+          }
+          cells = seeds.length; break;
+        }
+        if (cells) used += cells - 1;
+      }
+    });
+    for (i = 0; i < n; i++) if (dark[i] > 0) { var val = Math.round(255 * (1 - dark[i])); if (val < data[i * 4]) data[i * 4] = data[i * 4 + 1] = data[i * 4 + 2] = val; }
+    var R2 = regions(data, w, h, 700);
+    return { before: before, after: R2.count - (R2.bg ? 1 : 0) };
+  }
+
   /* ---------- color a picture: which library designs to offer ---------- */
   function designChoices(o, designs) {
     var rng = rngOf(o, "co"), skip = banks().COLOR_SKIP || [], list = designs.filter(function (d) { return d.cat !== "zentangle-mandalas" && !(d.sensitive && d.sensitive.length) && skip.indexOf(d.id) < 0; });
@@ -362,7 +452,7 @@
   root.CognicopiaTablet = {
     STAGES: STAGES, TOPICS: TOPICS, SHAPES: Object.keys(SHAPES), SHAPE_LABEL: SHAPE_LABEL, SCENES: SCENES,
     wordSearch: wordSearch, crossword: crossword, spellIt: spellIt, sayings: sayings, sortIt: sortIt, oddOne: oddOne, inOrder: inOrder,
-    matchUp: matchUp, soundBoard: soundBoard, tracePath: tracePath, follow: follow, designChoices: designChoices, regions: regions, PALETTES: PALETTES, oddDecks: oddDecks,
+    matchUp: matchUp, soundBoard: soundBoard, tracePath: tracePath, follow: follow, designChoices: designChoices, regions: regions, enrich: enrich, MAX_SHAPES: 90, PALETTES: PALETTES, oddDecks: oddDecks,
     counts: function () { return { packs: banks().PACKS.length, clueSets: banks().CLUES.length, sayings: sayingPool().length, objects: banks().OBJECTS.length }; },
     newSeed: function () { return String(Date.now()) + "-" + Math.floor(Math.random() * 1e9); }
   };
