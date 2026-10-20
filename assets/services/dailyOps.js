@@ -25,6 +25,13 @@
        words for a few labels; they never block anything.
      - Locked backup files (kind "dailyops") move the board to another
        station. Opening one adds what is missing and never removes.
+     - Engagement records: which activity a resident joined and how, and
+       their mood in response, by alias only, with the day, shift and wing.
+     - An SBAR handoff sheet (Situation, Background, Assessment,
+       Recommendation) for incoming nursing staff: one US Letter page for
+       a typical shift, made only of what staff recorded and the counts of
+       it. Every record can carry the wing it belongs to, so one wing's
+       sheet never holds another's.
 
    Residents appear only as aliases (secureStore.ts: aliasFor), such as
    "Resident 302-B" or "Maple 2". This service stores nothing itself and
@@ -110,11 +117,38 @@ const KINDS                     = [
 const isKind = (k         )            => k === "watch" || k === "pass" || k === "worked";
 const kindOf = (k        )          => KINDS.filter(x => x.id === k)[0] || KINDS[1];
 
-                                                                                                                                                                                             
-                                                                                                                                                                                                                                         
-                                                                                                                            
+                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                       
+                                                                                                                                                       
 
-const LIMITS = { NOTE_CHARS: 500, TASK_CHARS: 200, ABOUT_CHARS: 32, INITIALS_CHARS: 4, STAFF_MAX: 24, NOTES_MAX: 2000, TASKS_MAX: 1000 }         ;
+const LIMITS = { NOTE_CHARS: 500, TASK_CHARS: 200, ABOUT_CHARS: 32, INITIALS_CHARS: 4, STAFF_MAX: 24, NOTES_MAX: 2000, TASKS_MAX: 1000, WING_CHARS: 40, ENGAGE_MAX: 4000, ENGAGE_NOTE_CHARS: 160, ACTIVITY_CHARS: 60 }         ;
+
+/* ---------- 2b. Engagement: how a resident took part, and how they were ----------
+   Four ways of taking part (each has a level for the shift's arithmetic) and
+   seven moods. A mood is what staff saw, never a finding; "flag" only marks the
+   ones the next shift should hear about. */
+                                                                          
+const PARTICIPATION                                                                 = [
+  { id: "declined", label: "Chose another time", level: 0 },
+  { id: "watched", label: "Watched or listened", level: 1 },
+  { id: "joined", label: "Joined in", level: 2 },
+  { id: "engaged", label: "Fully engaged", level: 3 }
+];
+const isParticipation = (v         )                     => PARTICIPATION.some(p => p.id === v);
+const participationOf = (v        )                                                      => PARTICIPATION.filter(p => p.id === v)[0] || PARTICIPATION[1];
+                                                                                           
+const MOODS                                                        = [
+  { id: "happy", label: "Happy", flag: false },
+  { id: "content", label: "Content", flag: false },
+  { id: "calm", label: "Calm", flag: false },
+  { id: "tired", label: "Tired", flag: false },
+  { id: "restless", label: "Restless", flag: true },
+  { id: "anxious", label: "Anxious or upset", flag: true },
+  { id: "sad", label: "Sad or tearful", flag: true }
+];
+const isMood = (v         )            => MOODS.some(m => m.id === v);
+const moodOf = (v        )                                                    => MOODS.filter(m => m.id === v)[0] || null;
+                                                                                                                                                                                                                                                                         
 const KEEP_CHOICES                    = [7, 14, 30, 90];
 const DEFAULT_KEEP_DAYS = 14;
 
@@ -153,7 +187,7 @@ function normalizeNote(raw         )              {
   if (!id || !text || !day) return null;
   const time = isTime(o.time) ? o.time : "", createdAt = stampOf(o.createdAt, dayStamp(day));
   return { id, day, shift: isShift(o.shift) ? o.shift : shiftOfTime(time), time, kind: isKind(o.kind) ? o.kind : "pass", about: oneLine(o.about, LIMITS.ABOUT_CHARS), text,
-    by: cleanInitials(o.by), editedBy: cleanInitials(o.editedBy), createdAt, updatedAt: stampOf(o.updatedAt, createdAt) };
+    by: cleanInitials(o.by), editedBy: cleanInitials(o.editedBy), wing: oneLine(o.wing, LIMITS.WING_CHARS), createdAt, updatedAt: stampOf(o.updatedAt, createdAt) };
 }
 function normalizeTask(raw         )              {
   if (!raw || typeof raw !== "object" || Array.isArray(raw)) return null;
@@ -162,7 +196,16 @@ function normalizeTask(raw         )              {
   if (!id || !what || !day) return null;
   const done = o.done === true, createdAt = stampOf(o.createdAt, dayStamp(day));
   return { id, day, shift: isShift(o.shift) ? o.shift : "", what, about: oneLine(o.about, LIMITS.ABOUT_CHARS), assignee: cleanInitials(o.assignee), by: cleanInitials(o.by), editedBy: cleanInitials(o.editedBy),
-    done, doneAt: done ? stampOf(o.doneAt, "") : "", doneBy: done ? cleanInitials(o.doneBy) : "", createdAt, updatedAt: stampOf(o.updatedAt, createdAt) };
+    wing: oneLine(o.wing, LIMITS.WING_CHARS), done, doneAt: done ? stampOf(o.doneAt, "") : "", doneBy: done ? cleanInitials(o.doneBy) : "", createdAt, updatedAt: stampOf(o.updatedAt, createdAt) };
+}
+function normalizeEngagement(raw         )                    {
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return null;
+  const o = raw                           ;
+  const id = typeof o.id === "string" && ID_RE.test(o.id) ? o.id : "", day = isDay(o.day) ? o.day : "", resident = oneLine(o.resident, LIMITS.ABOUT_CHARS), activity = oneLine(o.activity, LIMITS.ACTIVITY_CHARS);
+  if (!id || !day || !resident || !activity || !isParticipation(o.participation)) return null;
+  const time = isTime(o.time) ? o.time : "", createdAt = stampOf(o.createdAt, dayStamp(day));
+  return { id, day, shift: isShift(o.shift) ? o.shift : shiftOfTime(time), time, resident, activity, participation: o.participation, mood: isMood(o.mood) ? o.mood : "", note: oneLine(o.note, LIMITS.ENGAGE_NOTE_CHARS),
+    by: cleanInitials(o.by), editedBy: cleanInitials(o.editedBy), wing: oneLine(o.wing, LIMITS.WING_CHARS), createdAt, updatedAt: stampOf(o.updatedAt, createdAt) };
 }
 const cmp = (a                 , b                 )         => (a < b ? -1 : a > b ? 1 : 0);
 const byAge = (a                                                , b                                                )         =>
@@ -179,7 +222,7 @@ function staffList(list         )           {
   (Array.isArray(list) ? list : []).forEach(v => { const s = cleanInitials(v); if (s && out.indexOf(s) < 0 && out.length < LIMITS.STAFF_MAX) out.push(s); });
   return out;
 }
-const emptyBoard = ()        => ({ schema: SCHEMA, version: 1, keepDays: DEFAULT_KEEP_DAYS, staff: [], notes: [], tasks: [] });
+const emptyBoard = ()        => ({ schema: SCHEMA, version: 1, keepDays: DEFAULT_KEEP_DAYS, staff: [], notes: [], tasks: [], engagements: [] });
 /* A board from whatever was stored (an object or its JSON); anything wrong reads as an empty board. */
 function normalizeBoard(raw         )        {
   let o          = raw;
@@ -190,14 +233,16 @@ function normalizeBoard(raw         )        {
   return {
     schema: SCHEMA, version: 1, keepDays: KEEP_CHOICES.indexOf(keep) >= 0 ? keep : DEFAULT_KEEP_DAYS, staff: staffList(b.staff),
     notes: tidy((Array.isArray(b.notes) ? b.notes : []).map(normalizeNote).filter((x)            => !!x), LIMITS.NOTES_MAX),
-    tasks: tidy((Array.isArray(b.tasks) ? b.tasks : []).map(normalizeTask).filter((x)            => !!x), LIMITS.TASKS_MAX)
+    tasks: tidy((Array.isArray(b.tasks) ? b.tasks : []).map(normalizeTask).filter((x)            => !!x), LIMITS.TASKS_MAX),
+    engagements: tidy((Array.isArray(b.engagements) ? b.engagements : []).map(normalizeEngagement).filter((x)                  => !!x), LIMITS.ENGAGE_MAX)
   };
 }
 
 /* ---------- 3. Making and changing records ----------
    Every function returns a new board; none changes the one it is given. */
-                                                                                                                                      
-                                                                                                                           
+                                                                                                                                                     
+                                                                                                                                          
+                                                                                                                                                                                                         
 /* The editor of a record is named only when it is someone other than the first author. */
 const editorOf = (author        , editor        )         => (editor && editor !== author ? editor : "");
 function makeNote(input           , now       = new Date(), existing       , editor = "")                                            {
@@ -209,7 +254,7 @@ function makeNote(input           , now       = new Date(), existing       , edi
   if (problems.length) return { note: null, problems };
   const time = isTime(input.time) ? input.time : "", stamp = now.toISOString(), author = existing ? existing.by || by : by;
   return { problems, note: { id: existing ? existing.id : newId("n"), day, shift: isShift(input.shift) ? input.shift : shiftOfTime(time), time, kind: isKind(input.kind) ? input.kind : "pass",
-    about: oneLine(input.about, LIMITS.ABOUT_CHARS), text, by: author, editedBy: existing ? editorOf(author, cleanInitials(editor || by)) : "", createdAt: existing ? existing.createdAt : stamp, updatedAt: stamp } };
+    about: oneLine(input.about, LIMITS.ABOUT_CHARS), text, by: author, editedBy: existing ? editorOf(author, cleanInitials(editor || by)) : "", wing: existing ? existing.wing : oneLine(input.wing, LIMITS.WING_CHARS), createdAt: existing ? existing.createdAt : stamp, updatedAt: stamp } };
 }
 function makeTask(input           , now       = new Date(), existing       , editor = "")                                            {
   const problems           = [];
@@ -220,8 +265,22 @@ function makeTask(input           , now       = new Date(), existing       , edi
   if (problems.length) return { task: null, problems };
   const stamp = now.toISOString(), author = existing ? existing.by || by : by;
   return { problems, task: { id: existing ? existing.id : newId("t"), day, shift: isShift(input.shift) ? input.shift : "", what, about: oneLine(input.about, LIMITS.ABOUT_CHARS), assignee: cleanInitials(input.assignee),
-    by: author, editedBy: existing ? editorOf(author, cleanInitials(editor || by)) : "", done: existing ? existing.done : false, doneAt: existing ? existing.doneAt : "", doneBy: existing ? existing.doneBy : "",
+    by: author, editedBy: existing ? editorOf(author, cleanInitials(editor || by)) : "", wing: existing ? existing.wing : oneLine(input.wing, LIMITS.WING_CHARS), done: existing ? existing.done : false, doneAt: existing ? existing.doneAt : "", doneBy: existing ? existing.doneBy : "",
     createdAt: existing ? existing.createdAt : stamp, updatedAt: stamp } };
+}
+function makeEngagement(input                 , now       = new Date(), existing             , editor = "")                                                   {
+  const problems           = [];
+  const by = cleanInitials(input.by), day = isDay(input.day) ? input.day : "", resident = oneLine(input.resident, LIMITS.ABOUT_CHARS), activity = oneLine(input.activity, LIMITS.ACTIVITY_CHARS);
+  if (!(existing ? existing.by || by : by)) problems.push("Choose your initials first.");
+  if (!resident) problems.push("Choose the resident, by alias.");
+  if (!activity) problems.push("Name the activity.");
+  if (!isParticipation(input.participation)) problems.push("Choose how they took part.");
+  if (!day) problems.push("Choose the day.");
+  if (problems.length) return { entry: null, problems };
+  const time = isTime(input.time) ? input.time : "", stamp = now.toISOString(), author = existing ? existing.by || by : by;
+  return { problems, entry: { id: existing ? existing.id : newId("e"), day, shift: isShift(input.shift) ? input.shift : shiftOfTime(time), time, resident, activity, participation: input.participation                 ,
+    mood: isMood(input.mood) ? input.mood : "", note: oneLine(input.note, LIMITS.ENGAGE_NOTE_CHARS), by: author, editedBy: existing ? editorOf(author, cleanInitials(editor || by)) : "",
+    wing: existing ? existing.wing : oneLine(input.wing, LIMITS.WING_CHARS), createdAt: existing ? existing.createdAt : stamp, updatedAt: stamp } };
 }
 /* Initials used last come first, so when the list is full the ones not used for longest leave it. The screen shows them A to Z. */
 function touchStaff(staff                   , initials        )           {
@@ -234,8 +293,13 @@ function withNote(board       , note      )        {
 function withTask(board       , task      )        {
   return Object.assign({}, board, { tasks: tidy(board.tasks.filter(t => t.id !== task.id).concat([task]), LIMITS.TASKS_MAX), staff: touchStaff(board.staff, task.by) });
 }
-function withoutEntry(board       , which                 , id        )        {
-  return which === "note" ? Object.assign({}, board, { notes: board.notes.filter(n => n.id !== id) }) : Object.assign({}, board, { tasks: board.tasks.filter(t => t.id !== id) });
+function withEngagement(board       , entry            )        {
+  return Object.assign({}, board, { engagements: tidy(board.engagements.filter(e => e.id !== entry.id).concat([entry]), LIMITS.ENGAGE_MAX), staff: touchStaff(board.staff, entry.by) });
+}
+function withoutEntry(board       , which                                , id        )        {
+  return which === "note" ? Object.assign({}, board, { notes: board.notes.filter(n => n.id !== id) })
+    : which === "engagement" ? Object.assign({}, board, { engagements: board.engagements.filter(e => e.id !== id) })
+    : Object.assign({}, board, { tasks: board.tasks.filter(t => t.id !== id) });
 }
 function setTaskDone(board       , id        , done         , by        , now       = new Date())        {
   const stamp = now.toISOString(), who = cleanInitials(by);
@@ -258,18 +322,23 @@ const lastDayOf = (t      )         => {
 };
 function prune(board       , today        )                                                               {
   const cutoff = addDays(today, -board.keepDays);
-  const notes = board.notes.filter(n => n.day >= cutoff), tasks = board.tasks.filter(t => !t.done || lastDayOf(t) >= cutoff);
-  const removedNotes = board.notes.length - notes.length, removedTasks = board.tasks.length - tasks.length;
-  return { board: removedNotes || removedTasks ? Object.assign({}, board, { notes, tasks }) : board, removedNotes, removedTasks };
+  const notes = board.notes.filter(n => n.day >= cutoff), tasks = board.tasks.filter(t => !t.done || lastDayOf(t) >= cutoff), engagements = board.engagements.filter(e => e.day >= cutoff);
+  const removedNotes = board.notes.length - notes.length, removedTasks = board.tasks.length - tasks.length, removedEngagements = board.engagements.length - engagements.length;
+  return { board: removedNotes || removedTasks || removedEngagements ? Object.assign({}, board, { notes, tasks, engagements }) : board, removedNotes, removedTasks };
 }
 
 /* Opening a backup adds what this board lacks. For a record both boards have,
    the one changed last wins, except that a finished task stays finished. */
 function mergeBoards(mine       , theirs       )                                                                            {
-  const have = new Map              (), haveT = new Map              ();
-  mine.notes.forEach(n => have.set(n.id, n)); mine.tasks.forEach(t => haveT.set(t.id, t));
+  const have = new Map              (), haveT = new Map              (), haveE = new Map                    ();
+  mine.notes.forEach(n => have.set(n.id, n)); mine.tasks.forEach(t => haveT.set(t.id, t)); mine.engagements.forEach(e => haveE.set(e.id, e));
   let addedNotes = 0, addedTasks = 0, updated = 0;
-  const notes = mine.notes.slice(), tasks = mine.tasks.slice();
+  const notes = mine.notes.slice(), tasks = mine.tasks.slice(), engagements = mine.engagements.slice();
+  theirs.engagements.forEach(e => {
+    const m = haveE.get(e.id);
+    if (!m) engagements.push(e);
+    else if (e.updatedAt > m.updatedAt){ engagements[engagements.indexOf(m)] = e; updated++; }
+  });
   theirs.notes.forEach(n => {
     const m = have.get(n.id);
     if (!m){ notes.push(n); addedNotes++; }
@@ -284,7 +353,7 @@ function mergeBoards(mine       , theirs       )                                
     else if (older.done && newer.done && older.doneAt && (!newer.doneAt || older.doneAt < newer.doneAt)) pick = Object.assign({}, newer, { doneAt: older.doneAt, doneBy: older.doneBy });
     if (pick !== m){ tasks[tasks.indexOf(m)] = pick; updated++; }
   });
-  return { board: Object.assign({}, mine, { notes: tidy(notes, LIMITS.NOTES_MAX), tasks: tidy(tasks, LIMITS.TASKS_MAX), staff: staffList(mine.staff.concat(theirs.staff)) }), addedNotes, addedTasks, updated };
+  return { board: Object.assign({}, mine, { notes: tidy(notes, LIMITS.NOTES_MAX), tasks: tidy(tasks, LIMITS.TASKS_MAX), engagements: tidy(engagements, LIMITS.ENGAGE_MAX), staff: staffList(mine.staff.concat(theirs.staff)) }), addedNotes, addedTasks, updated };
 }
 
 /* ---------- 4. What the screen shows ---------- */
@@ -294,19 +363,26 @@ const timeKey = (n                                 )         => {
   const h = +n.time.slice(0, 2);
   return ((n.shift === "night" && h < 7 ? h + 24 : h) * 60) + +n.time.slice(3);
 };
-function notesFor(board       , day        , shift                 )         {
-  return board.notes.filter(n => n.day === day && (shift === "all" || n.shift === shift)).sort((a, b) =>
+/* A wing of null shows every wing; a name shows only that wing's records ("" those with no wing). Matched without regard to case. */
+const wingKey = (w         )         => String(w == null ? "" : w).replace(/\s+/g, " ").trim().toLowerCase();
+const inWingOf = (rec                  , wing                           )          => wing == null || wingKey(rec.wing) === wingKey(wing);
+function notesFor(board       , day        , shift                 , wing                = null)         {
+  return board.notes.filter(n => n.day === day && (shift === "all" || n.shift === shift) && inWingOf(n, wing)).sort((a, b) =>
     SHIFT_RANK[a.shift] - SHIFT_RANK[b.shift] || timeKey(a) - timeKey(b) || cmp(a.createdAt, b.createdAt) || cmp(a.id, b.id));
 }
                                                              
 /* The day's tasks (a task with no shift shows under every shift) and, for today or a
    later day, the open tasks from earlier days that are carried forward. Open first. */
-function tasksFor(board       , day        , shift                 , today        )           {
+function tasksFor(board       , day        , shift                 , today        , wing                = null)           {
   const rank = (t      )         => SHIFT_RANK[t.shift];
   const order = (a      , b      )         => (a.done === b.done ? 0 : a.done ? 1 : -1) || rank(a) - rank(b) || cmp(a.createdAt, b.createdAt) || cmp(a.id, b.id);
-  const todays = board.tasks.filter(t => t.day === day && (shift === "all" || !t.shift || t.shift === shift)).sort(order);
-  const carried = day < today ? [] : board.tasks.filter(t => !t.done && t.day < day).sort((a, b) => cmp(a.day, b.day) || rank(a) - rank(b) || cmp(a.createdAt, b.createdAt) || cmp(a.id, b.id));
+  const todays = board.tasks.filter(t => t.day === day && (shift === "all" || !t.shift || t.shift === shift) && inWingOf(t, wing)).sort(order);
+  const carried = day < today ? [] : board.tasks.filter(t => !t.done && t.day < day && inWingOf(t, wing)).sort((a, b) => cmp(a.day, b.day) || rank(a) - rank(b) || cmp(a.createdAt, b.createdAt) || cmp(a.id, b.id));
   return { today: todays, carried };
+}
+function engagementsFor(board       , day        , shift                 , wing                = null)               {
+  return board.engagements.filter(e => e.day === day && (shift === "all" || e.shift === shift) && inWingOf(e, wing)).sort((a, b) =>
+    SHIFT_RANK[a.shift] - SHIFT_RANK[b.shift] || timeKey(a) - timeKey(b) || cmp(a.createdAt, b.createdAt) || cmp(a.id, b.id));
 }
 function stats(board       , today        )                                                   {
   const open = board.tasks.filter(t => !t.done);
@@ -435,8 +511,8 @@ const advance = (ch        )         => { const c = ch.charCodeAt(0); return c >
 /* The sheet lists every task still open (a handoff is the to-do list as it stands, whatever shift each is
    for), including those set for the morning when a night shift hands over; the tasks finished during this
    shift; and the notes written on it. */
-function handoff(board       , day        , shift                 , now       = new Date())          {
-  const notes = notesFor(board, day, shift), next = shift === "all" ? null : nextShift(shift, day), upto = next && next.day > day ? next.day : day;
+function handoff(board       , day        , shift                 , now       = new Date(), wing                = null)          {
+  const notes = notesFor(board, day, shift, wing), next = shift === "all" ? null : nextShift(shift, day), upto = next && next.day > day ? next.day : day;
   const finishedHere = (t      )          => {
     if (!t.done || !t.doneAt) return false;
     const at = slotAt(new Date(t.doneAt));
@@ -446,16 +522,16 @@ function handoff(board       , day        , shift                 , now       = 
     day, shift, printedAt: now.toISOString(),
     forLabel: next ? "For the " + shiftLabel(next.shift).toLowerCase() + (next.day !== day ? ", " + dayShort(next.day) : "") : "",
     groups: KINDS.map(kind => ({ kind, notes: notes.filter(n => n.kind === kind.id) })),
-    open: board.tasks.filter(t => !t.done && t.day <= upto).sort((a, b) => cmp(a.day, b.day) || SHIFT_RANK[a.shift] - SHIFT_RANK[b.shift] || cmp(a.createdAt, b.createdAt) || cmp(a.id, b.id)),
-    done: board.tasks.filter(finishedHere).sort((a, b) => cmp(a.doneAt, b.doneAt) || cmp(a.id, b.id))
+    open: board.tasks.filter(t => !t.done && t.day <= upto && inWingOf(t, wing)).sort((a, b) => cmp(a.day, b.day) || SHIFT_RANK[a.shift] - SHIFT_RANK[b.shift] || cmp(a.createdAt, b.createdAt) || cmp(a.id, b.id)),
+    done: board.tasks.filter(t => finishedHere(t) && inWingOf(t, wing)).sort((a, b) => cmp(a.doneAt, b.doneAt) || cmp(a.id, b.id))
   };
 }
                                                                                         
                                                                   
                                                                                
 /* How many lines a text takes in a column, by the widths of its characters. `fit` below 1 plans for a narrower column. */
-function wrapCount(text        , fit        )         {
-  const cap = LINE_EM * 1000 * SAFETY * fit, sp = advance(" ");
+function wrapCount(text        , fit        , lineEm         = LINE_EM)         {
+  const cap = lineEm * 1000 * SAFETY * fit, sp = advance(" ");
   let count = 0;
   for (const para of text.split("\n")){
     let cur = 0; count++;
@@ -471,7 +547,7 @@ function wrapCount(text        , fit        )         {
   return count;
 }
 /* A row is as tall as its text, or its lead (the shift over the time, on a sheet of every shift), whichever has more lines. */
-const rowHeight = (r     , fit = 1)         => Math.max(wrapCount((r.about ? r.about + " " : "") + r.text, fit), r.lead.split("\n").length) * LINE_IN + ROW_GAP_IN;
+const rowHeight = (r     , fit = 1, lineEm         = LINE_EM)         => Math.max(wrapCount((r.about ? r.about + " " : "") + r.text, fit, lineEm), r.lead.split("\n").length) * LINE_IN + ROW_GAP_IN;
 function sections(h         , today        )            {
   const out            = h.groups.map(g => ({
     heading: g.kind.label, empty: "Nothing recorded.",
@@ -483,7 +559,7 @@ function sections(h         , today        )            {
   if (h.done.length) out.push({ heading: "Finished on this shift", empty: "", rows: h.done.map(t => ({ lead: "Done", box: false, about: t.about, text: t.what, tail: t.doneBy })) });
   return out;
 }
-function paginate(secs                    , fit = 1)                                     {
+function paginate(secs                    , fit = 1, lineEm         = LINE_EM)                                     {
   const pages            = [[]]; let used = 0;
   const cur = ()          => pages[pages.length - 1];
   const fresh = ()       => { pages.push([]); used = 0; };
@@ -496,10 +572,10 @@ function paginate(secs                    , fit = 1)                            
     }
     let i = 0, first = true;
     while (i < s.rows.length){
-      if (used + HEAD_IN + rowHeight(s.rows[i], fit) > PAGE_BODY_IN && cur().length) fresh();
+      if (used + HEAD_IN + rowHeight(s.rows[i], fit, lineEm) > PAGE_BODY_IN && cur().length) fresh();
       const piece        = { heading: s.heading, rows: [], cont: !first, empty: "" };
       used += HEAD_IN;
-      while (i < s.rows.length && (!piece.rows.length || used + rowHeight(s.rows[i], fit) <= PAGE_BODY_IN)){ piece.rows.push(s.rows[i]); used += rowHeight(s.rows[i], fit); i++; }
+      while (i < s.rows.length && (!piece.rows.length || used + rowHeight(s.rows[i], fit, lineEm) <= PAGE_BODY_IN)){ piece.rows.push(s.rows[i]); used += rowHeight(s.rows[i], fit, lineEm); i++; }
       cur().push(piece); first = false;
       if (i < s.rows.length) fresh();
     }
@@ -522,6 +598,80 @@ function handoffPages(h         , ctx                                           
   </div>`);
 }
 
+/* ---------- 7b. Engagement and the SBAR handoff ----------
+   For the nurse coming on: Situation, Background, Assessment, Recommendation.
+   Every line is either what staff recorded or a count of it (how many joined,
+   how many moods to watch); nothing is judged or advised that was not
+   written down. Residents appear by alias only. */
+                                                                                                                                                   
+const aliasKey = (a        )         => a.toLowerCase().replace(/\s+/g, " ").trim();
+function engageSummary(list                       )              {
+  const by = new Map                      ();
+  list.forEach(e => { const k = aliasKey(e.resident); by.set(k, (by.get(k) || []).concat([e])); });
+  const out              = [];
+  by.forEach(es => {
+    const avg = es.reduce((n, e) => n + participationOf(e.participation).level, 0) / es.length, level = Math.round(avg * 10) / 10;
+    const moods         = []; es.forEach(e => { if (e.mood && moods.indexOf(e.mood) < 0) moods.push(e.mood); });
+    out.push({ resident: es[0].resident, count: es.length, level, levelLabel: PARTICIPATION[Math.min(3, Math.round(avg))].label, moods, flagged: moods.filter(m => (moodOf(m) || { flag: false }).flag),
+      lines: es.map(e => e.activity + ": " + participationOf(e.participation).label.toLowerCase() + (e.mood ? ", " + (moodOf(e.mood)                     ).label.toLowerCase() : "") + (e.note ? " (" + e.note + ")" : "")) });
+  });
+  return out.sort((a, b) => a.resident.localeCompare(b.resident, "en", { numeric: true }));
+}
+                       
+                                                                                         
+                                                                                                                                          
+ 
+const plural = (n        , one        , many        )         => n + " " + (n === 1 ? one : many);
+function sbar(board       , day        , shift                 , now       = new Date(), wing                = null)       {
+  const h = handoff(board, day, shift, now, wing), eng = engagementsFor(board, day, shift, wing), rows = engageSummary(eng);
+  const notes = notesFor(board, day, shift, wing), watch = notes.filter(n => n.kind === "watch"), worked = notes.filter(n => n.kind === "worked"), pass = notes.filter(n => n.kind === "pass");
+  const bucket = (r           )         => Math.min(3, Math.round(r.level));
+  const lv = [0, 1, 2, 3].map(i => rows.filter(r => bucket(r) === i).length);
+  const flagged = rows.filter(r => r.flagged.length);
+  const situation           = [];
+  if (rows.length){
+    situation.push(plural(rows.length, "resident has", "residents have") + " activity records for this shift: " + lv[3] + " fully engaged, " + lv[2] + " joined in, " + lv[1] + " watched or listened, " + lv[0] + " chose another time.");
+    situation.push(flagged.length ? "Moods to keep an eye on: " + flagged.map(r => r.resident + " (" + r.flagged.map(m => (moodOf(m)                     ).label.toLowerCase()).join(", ") + ")").join("; ") + "." : "No restless, anxious or sad moods were recorded.");
+  } else situation.push("No activities are recorded for this shift.");
+  situation.push(plural(watch.length, "note to keep an eye on", "notes to keep an eye on") + " and " + plural(h.open.length, "open task", "open tasks") + ".");
+  const acts = new Map                                       ();
+  eng.forEach(e => { const k = e.activity, a = acts.get(k) || { n: 0, joined: 0 }; a.n++; if (participationOf(e.participation).level >= 2) a.joined++; acts.set(k, a); });
+  const activities           = []; acts.forEach((a, k) => activities.push(k + ": " + plural(a.n, "resident", "residents") + ", " + a.joined + " joined in or more"));
+  return { day, shift, wing: wing || "", forLabel: h.forLabel, printedAt: h.printedAt, situation, activities, rows, watch, worked, pass, open: h.open, empty: !rows.length && !notes.length && !h.open.length };
+}
+function sbarSections(b      , today        )            {
+  const asked = (n      )         => (n.about ? n.about + ": " : "") + n.text;
+  const watchOf = (alias        )         => b.watch.filter(n => aliasKey(n.about) === aliasKey(alias));
+  const rows        = b.rows.map(r => ({
+    lead: r.resident + (r.flagged.length ? "\n" + r.flagged.map(m => (moodOf(m)                     ).label).join(", ") : ""), box: false, about: "",
+    text: r.lines.concat(watchOf(r.resident).map(n => "Keep an eye on: " + n.text)).join("\n"), tail: r.levelLabel }));
+  b.watch.filter(n => n.about && !b.rows.some(r => aliasKey(r.resident) === aliasKey(n.about))).forEach(n => rows.push({ lead: n.about, box: false, about: "", text: "Keep an eye on: " + n.text, tail: "No activity recorded" }));
+  b.watch.filter(n => !n.about).forEach(n => rows.push({ lead: "Whole unit", box: false, about: "", text: "Keep an eye on: " + n.text, tail: "" }));
+  const rec        = b.open.map(t => ({ lead: "", box: true, about: t.about, text: t.what + (t.shift ? " (" + shiftLabel(t.shift).replace(" shift", "").toLowerCase() + ")" : "") + (t.day < today ? " (carried from " + dayShort(t.day) + ")" : ""), tail: t.assignee ? "For " + t.assignee : "Anyone" }))
+    .concat(b.pass.map(n => ({ lead: "Pass along", box: false, about: "", text: asked(n), tail: n.by })))
+    .concat(b.worked.map(n => ({ lead: "What worked", box: false, about: "", text: asked(n), tail: n.by })));
+  return [
+    { heading: "S \u00B7 Situation", empty: "", rows: b.situation.map(t => ({ lead: "", box: false, about: "", text: t, tail: "" })) },
+    { heading: "B \u00B7 Background: activities held", empty: "No activities recorded.", rows: b.activities.map(t => ({ lead: "", box: false, about: "", text: t, tail: "" })) },
+    { heading: "A \u00B7 Assessment: each resident, as recorded", empty: "No resident records.", rows },
+    { heading: "R \u00B7 Recommendation: for the next shift", empty: "Nothing to pass on.", rows: rec }
+  ];
+}
+/* The SBAR sheet's text column is 3.86 in (7.25 in less a 1.5 in name column, a 1.7 in tail and two gaps): 23.2 em. */
+const SBAR_LINE_EM = 23.2;
+function sbarPages(b      , ctx                                                   )           {
+  const { pages, room } = paginate(sbarSections(b, ctx.today), ctx.fit || 1, SBAR_LINE_EM), n = pages.length, printed = new Date(b.printedAt);
+  const stamp = timeLabel(pad(printed.getHours()) + ":" + pad(printed.getMinutes())) + ", " + dayShort(isoDay(printed));
+  const rowHtml = (r     )         => `<div class="ops-row${r.box ? " ops-task" : ""}"><span class="ops-lead${r.lead && !r.box && r.lead !== "Pass along" && r.lead !== "What worked" && r.lead !== "Whole unit" ? " ops-name" : ""}">${r.box ? '<i class="ops-box"></i>' : esc(r.lead)}</span><span class="ops-text">${r.about ? `<b>${esc(r.about)}</b> ` : ""}${esc(r.text)}</span><span class="ops-tail">${esc(r.tail)}</span></div>`;
+  return pages.map((pieces, k) => `<div class="sheet ops-sheet sbar-sheet">
+    <div class="ops-head"><div><b>SBAR shift handoff</b><span>${esc(b.wing || "All wings")} \u00B7 Confidential: staff and care team only</span></div>
+      <div class="ops-who"><b>${esc(dayLabel(b.day))}</b><span>${esc(shiftLabel(b.shift))}</span>${b.forLabel ? `<span>${esc(b.forLabel)}</span>` : ""}</div></div>
+    <div class="ops-body">${pieces.map(p => `<section class="ops-block"><h3>${esc(p.heading)}${p.cont ? " (continued)" : ""}</h3>${p.rows.length ? p.rows.map(rowHtml).join("") : `<p class="ops-empty">${esc(p.empty)}</p>`}</section>`).join("")}
+      ${k === n - 1 && room >= 1.2 ? `<section class="ops-block ops-hand"><h3>Added by hand</h3><i></i><i></i></section>` : ""}</div>
+    <div class="ops-foot"><span>${esc(ctx.facility || "Cognicopia")} \u00B7 Residents by alias only \u00B7 What staff recorded, and counts of it \u00B7 Printed ${esc(stamp)}</span><span>Page ${k + 1} of ${n}</span></div>
+  </div>`);
+}
+
 /* ---------- 8. Backup files ----------
    The page seals the object with CogniSecureStore.sealFile(obj, pass,
    FILE_KIND) and opens it with openFile; this is what goes inside. */
@@ -534,5 +684,5 @@ function readBackup(obj         )                                       {
   if (!o || typeof o !== "object" || o.format !== FILE_FORMAT || !o.board || typeof o.board !== "object") throw new Error("kind");
   return { board: normalizeBoard(o.board), exportedAt: String(o.exportedAt || "").slice(0, 10) };
 }
-root.CogniDailyOps = Object.freeze({ VERSION, STORE_KEY, SCHEMA, FILE_FORMAT, FILE_KIND, SHIFTS, isShift, shiftLabel, isoDay, isDay, addDays, dayLabel, dayShort, isTime, timeLabel, shiftOfTime, slotAt, nextShift, KINDS, isKind, kindOf, LIMITS, KEEP_CHOICES, DEFAULT_KEEP_DAYS, newId, cleanInitials, normalizeNote, normalizeTask, emptyBoard, normalizeBoard, makeNote, makeTask, withNote, withTask, withoutEntry, setTaskDone, withInitials, setKeepDays, forgetInitials, prune, mergeBoards, notesFor, tasksFor, stats, checkNames, aliasChoices, wordingTips, LAYOUT, handoff, rowHeight, sections, paginate, handoffPages, backupFile, readBackup });
+root.CogniDailyOps = Object.freeze({ VERSION, STORE_KEY, SCHEMA, FILE_FORMAT, FILE_KIND, SHIFTS, isShift, shiftLabel, isoDay, isDay, addDays, dayLabel, dayShort, isTime, timeLabel, shiftOfTime, slotAt, nextShift, KINDS, isKind, kindOf, LIMITS, PARTICIPATION, isParticipation, participationOf, MOODS, isMood, moodOf, KEEP_CHOICES, DEFAULT_KEEP_DAYS, newId, cleanInitials, normalizeNote, normalizeTask, normalizeEngagement, emptyBoard, normalizeBoard, makeNote, makeTask, makeEngagement, withNote, withTask, withEngagement, withoutEntry, setTaskDone, withInitials, setKeepDays, forgetInitials, prune, mergeBoards, inWingOf, notesFor, tasksFor, engagementsFor, stats, checkNames, aliasChoices, wordingTips, LAYOUT, handoff, rowHeight, sections, paginate, handoffPages, engageSummary, sbar, sbarSections, SBAR_LINE_EM, sbarPages, backupFile, readBackup });
 })(typeof globalThis !== "undefined" ? globalThis : this);

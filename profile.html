@@ -1098,6 +1098,12 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
         </div>
 
         <div class="rap-field">
+          <label for="rapWing">Wing or unit group <span class="rap-opt">(optional)</span></label>
+          <input id="rapWing" name="wing" type="text" maxlength="40" autocomplete="off" aria-describedby="rapWingHint" placeholder="e.g., Memory Care Unit A">
+          <p class="rap-hint" id="rapWingHint">Keeps each wing&rsquo;s residents apart in the Packet Builder: choose a wing there and only its residents are shown.</p>
+        </div>
+
+        <div class="rap-field">
           <label for="rapAlias">Alias for shared screens <span class="rap-opt">(optional)</span></label>
           <input id="rapAlias" name="alias" type="text" maxlength="32" autocomplete="off" aria-describedby="rapAliasHint" placeholder="e.g., Resident 302-B">
           <p class="rap-hint" id="rapAliasHint">Shown instead of the name when staff turn on aliases, on screens others can see and on staff pages. Leave it blank to use &ldquo;Resident&rdquo; and the room or unit. Never use the resident's name here.</p>
@@ -2215,6 +2221,7 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
         nickname: text("rapNickname"),
         unitNumber: needs.unitNumber,                   // v2: shown in the roster and on staff pages only
         alias: text("rapAlias"),                        // optional: shown instead of the name when aliases are on
+        wing: text("rapWing"),                          // optional: the wing this resident belongs to, so wings never mix
         cognitiveTier: needs.cognitiveTier,             // v2: 1 full detail, 2 guided, 3 simplified
         visualNeeds: needs.visualNeeds,                 // v2: contrastMode, fontSizeScale (from vision), lineThicknessPt
         occupation: occupation,
@@ -2293,7 +2300,7 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
     return {
       preferredName: t1.preferredName || "",
       nickname: t1.nickname || "",
-      unitNumber: needs.unitNumber, alias: t1.alias || "", tier: String(needs.cognitiveTier), contrast: vn.contrastMode,
+      unitNumber: needs.unitNumber, alias: t1.alias || "", wing: t1.wing || "", tier: String(needs.cognitiveTier), contrast: vn.contrastMode,
       lineThickness: String(vn.lineThicknessPt), needsAuto: auto.join(","),
       age: t2.age == null ? "" : String(t2.age), birthYear: t2.birthYear == null ? "" : String(t2.birthYear),
       completedBy: code((p.meta || {}).completedBy), decades: t2.meaningfulDecades || [],
@@ -2409,6 +2416,7 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
     var rows = [
       ["Name", t1.preferredName],
       ["Room or unit", t1.unitNumber],
+      ["Wing", t1.wing],
       ["Alias", window.CogniSecureStore ? window.CogniSecureStore.aliasFor(p) : t1.alias],
       ["Support tier", "Tier " + t1.cognitiveTier + " · " + TIER_NAMES[t1.cognitiveTier]],
       ["Visual needs", [t1.visualNeeds.contrastMode === "high_contrast" ? "High contrast" : "Standard contrast",

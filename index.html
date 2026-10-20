@@ -1155,6 +1155,18 @@ summary{min-height:var(--tap);box-sizing:border-box}
 .arb-pass{display:flex;flex-direction:column;gap:6px;margin:0 0 14px;font-size:15px;font-weight:700;color:#e8f5e9}
 .arb-pass input[type=password]{max-width:420px;padding:10px 12px}
 .arb-pass small{font-weight:400;font-size:14px;line-height:1.4;color:#d4e4db}
+.pv-boxes{display:grid;gap:12px;margin:0 0 14px}
+.pv-choice{margin:0;padding:0;border:0;display:grid;gap:8px;min-width:0}
+.pv-choice legend{padding:0;margin:0 0 6px;font-size:15px;font-weight:700;color:#e8f5e9;letter-spacing:.01em}
+.pv-opt{position:relative;display:block;min-height:var(--tap);border:1px solid rgba(232,245,233,.35);border-radius:10px;background:rgba(0,0,0,.18);cursor:pointer}
+.pv-opt input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer}
+.pv-opt > span{display:block;position:relative;padding:10px 12px 10px 44px;border-radius:10px;color:#e8f5e9}
+.pv-opt > span::before{content:"";position:absolute;left:12px;top:14px;width:20px;height:20px;box-sizing:border-box;border-radius:50%;border:2px solid #d4e4db}
+.pv-opt input:checked + span{box-shadow:inset 0 0 0 2px #ffd477}
+.pv-opt input:checked + span::before{border-color:#ffd477;background:radial-gradient(circle,#ffd477 0 5px,transparent 6px)}
+.pv-opt input:focus-visible + span{outline:3px solid #ffd477;outline-offset:2px}
+.pv-opt b{display:block;font-size:16px}
+.pv-opt small{display:block;font-size:14px;line-height:1.45;color:#d4e4db;letter-spacing:.01em}
 .arb-drop-hint{margin:10px 0 0;font-size:14.5px;color:#d4e4db}
 .arb-caution{margin:6px 0 0;font-size:14px;color:#d4e4db}
 .arb-banner{margin:12px 0 0;padding:12px 14px;border-radius:12px;font-size:16px;line-height:1.45;background:rgba(82,183,136,.18);border:1px solid #52b788;color:#eef6f1}
@@ -2645,6 +2657,7 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
       <div class="arb-pass"><label for="arbPass">Backup passphrase</label>
         <input type="password" id="arbPass" maxlength="200" autocomplete="new-password" placeholder="At least 8 characters">
         <small>Full backups are locked with this passphrase (AES-256 encryption); restoring one needs the same passphrase. A forgotten passphrase cannot be recovered.</small></div>
+      <div id="arbNamesBox" class="pv-boxes"></div>
       <div class="arb-backup-row">
         <div class="arb-split">
           <button type="button" class="arb-btn arb-btn-primary" id="arbExportJson"><span aria-hidden="true">📥</span> Export Profiles (Backup)</button>
@@ -10718,6 +10731,7 @@ function generateAilmentPDF(ailmentType, pick) {
         preferredName: name,
         unitNumber: needs.unitNumber,
         alias: str(t1.alias, 32),
+        wing: str(t1.wing, 40),
         cognitiveTier: needs.cognitiveTier,
         visualNeeds: needs.visualNeeds,
         occupation: choice(t1.occupation, BOOK.occupation, true),
@@ -10795,8 +10809,14 @@ function generateAilmentPDF(ailmentType, pick) {
      Backup passphrase: downloads cognicopia_backup_YYYY-MM-DD.cognicopia.
      Without a passphrase, and only after a warning, a plain .json.
      --------------------------------------------------------------- */
+  /* The names choice in the backup panel: a copy for a spreadsheet or to share carries aliases, never the stored profiles themselves. */
+  function namesLevel(group, fallback){
+    var r = document.querySelector('[data-privacy-choice="' + group + '"] input:checked');
+    return window.CogniPrivacy ? window.CogniPrivacy.levelOf(r ? r.value : fallback) : "keep";
+  }
+  function scrubbed(list, group, fallback){ return window.CogniPrivacy ? window.CogniPrivacy.scrubRoster(list, namesLevel(group, fallback)) : list; }
   function exportProfilesJSON(){
-    var profiles = savedProfiles().map(normalizeProfile).filter(Boolean);
+    var profiles = scrubbed(savedProfiles().map(normalizeProfile).filter(Boolean), "arbNamesBackup", "keep");
     if (!profiles.length){ banner("There are no saved resident profiles to export yet.", "", true); return 0; }
     var backup = {
       format: BACKUP_FORMAT,
@@ -10891,7 +10911,7 @@ function generateAilmentPDF(ailmentType, pick) {
      Downloads cognicopia_residents_YYYY-MM-DD.csv.
      --------------------------------------------------------------- */
   function exportProfilesCSV(){
-    var profiles = savedProfiles().map(normalizeProfile).filter(Boolean);
+    var profiles = scrubbed(savedProfiles().map(normalizeProfile).filter(Boolean), "arbNamesCsv", "alias");
     if (!profiles.length){ banner("There are no saved resident profiles to export yet.", "", true); return 0; }
     if (!window.confirm("A spreadsheet cannot be locked: anyone who opens it can read these residents' details. Export it anyway?")) return 0;
     var rows = [CSV_COLUMNS.map(function(c){ return csvCell(c[0]); }).join(",")];
@@ -11206,6 +11226,10 @@ function generateAilmentPDF(ailmentType, pick) {
   function items(){ return Array.prototype.slice.call(menu.querySelectorAll('[role="menuitem"]')); }
   function openMenu(focusFirst){ menu.hidden = false; more.setAttribute("aria-expanded", "true"); if (focusFirst) items()[0].focus(); }
   function closeMenu(focusToggle){ menu.hidden = true; more.setAttribute("aria-expanded", "false"); if (focusToggle) more.focus(); }
+  if (window.CogniPrivacy && el("arbNamesBox")){
+    el("arbNamesBox").innerHTML = window.CogniPrivacy.choiceHtml("arbNamesCsv", "alias", "Names in the summary spreadsheet") +
+      window.CogniPrivacy.choiceHtml("arbNamesBackup", "keep", "Names in the backup file (a backup meant for restoring needs the names kept; a copy with aliases restores aliases, not names)");
+  }
   el("arbExportJson").addEventListener("click", exportProfilesJSON);
   more.addEventListener("click", function(){ menu.hidden ? openMenu(true) : closeMenu(false); });
   menu.addEventListener("click", function(e){

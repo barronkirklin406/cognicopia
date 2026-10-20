@@ -41,6 +41,20 @@
         under current CPT and payer rules; this is a reference, not
         billing advice.
 
+     4. Rehabilitation templates for three domains (auditory comprehension,
+        expressive language, executive function): goal statements to pick
+        and edit, tasks to measure, Cognicopia materials that suit, the
+        codes usually considered, and sentence starters for S, A and P.
+        They are starting points for the clinician: once picked they are
+        the clinician's own words, and nothing is added to a note on its
+        own. The numbers a clinician records are combined by arithmetic only.
+
+     5. EHR text. The same note as plain text, section by section, in
+        characters every electronic health record accepts, to copy and paste.
+        The resident appears by alias unless the clinician chooses a name.
+        Medicare's functional-reporting G-codes ended in 2019; the reference
+        says so and defers to the payer.
+
    Built into assets/services/slpClinicalService.js (globalThis.
    CogniClinical) by scripts/build-services.mjs. No network, no storage:
    it turns recorded data into structured blocks and printable pages.
@@ -115,7 +129,9 @@ function tierForStage(rec                                 )                {
 function stagesForTier(tier      )             { return TIER_STAGES[tier - 1]; }
 
 /* ---------- 2. Procedure-code reference ---------- */
-                                                                                                                                                                  
+                                                                                                                                                                                     
+/* Said wherever the reference is shown. */
+const FUNCTIONAL_G_NOTE = "Medicare ended its functional-reporting G-codes and severity modifiers for outpatient therapy for dates of service from January 1, 2019. Some payers and state programs may still ask for functional reporting: use the codes your payer requires.";
 const CODES                     = [
   { code: "97129", summary: "Cognitive function intervention (attention, memory, reasoning, executive function, problem solving, pragmatics) and compensatory strategies; direct one-on-one; first 15 minutes.", timed: true, minutes: 15, cognitive: true,
     note: "Timed; the time is direct, one-on-one contact. Replaced G0515 in 2020." },
@@ -127,6 +143,8 @@ const CODES                     = [
     note: "Untimed; for group sessions." },
   { code: "96125", summary: "Standardized cognitive performance testing, per hour of the professional's time, including administering, interpreting and reporting.", timed: true, minutes: 60, cognitive: true,
     note: "For standardized testing (name the instrument in the objective section), not for treatment sessions." },
+  { code: "G0515", summary: "Cognitive function intervention, each 15 minutes (the code used before 97129 and 97130).", timed: true, minutes: 15, cognitive: false, retired: true,
+    note: "Retired. Cognitive function intervention is now 97129 (first 15 minutes) and 97130 (each additional 15)." },
   { code: "97124", summary: "Therapeutic procedure: massage (effleurage, pétrissage, tapotement), each 15 minutes.", timed: true, minutes: 15, cognitive: false,
     note: "A massage code, not a cognitive one. Cognitive treatment is usually 97129/97130 (or 92507 for speech-language treatment)." }
 ];
@@ -143,7 +161,7 @@ const DISCIPLINES                    = ["SLP", "OT", "PT", "Activities", "Nursin
                                                                  
                           
                                                                                                                                                
-                                                                                                                                                      
+                                                                                                                                                                         
  
                                                                                                          
 const str = (v         , max        )         => String(v == null ? "" : v).replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, "").replace(/\r\n?/g, "\n").replace(/[ \t]+/g, " ").replace(/\n{3,}/g, "\n\n").trim().slice(0, max);
@@ -171,7 +189,8 @@ function normalizeSession(raw         )          {
     clinician: line(o.clinician, 60), credentials: line(o.credentials, 40),
     goals: lines(o.goals, 8, 300), activities: lines(o.activities, 12, 160),
     subjective: str(o.subjective, 4000), measures, assessment: str(o.assessment, 4000), plan: str(o.plan, 4000),
-    codes, cosign: line(o.cosign, 80)
+    codes, cosign: line(o.cosign, 80),
+    domains: (Array.isArray(o.domains) ? o.domains : []).map(d => String(d)).filter((d, i, all) => DOMAINS.some(x => x.id === d) && all.indexOf(d) === i).slice(0, 3)
   };
 }
 function normalizeLog(raw         , residentId        )              {
@@ -196,7 +215,7 @@ function checkSession(s         )          {
   for (const c of s.codes){
     const ref = codeRef(c.code);
     if (!ref){ out.push({ level: "info", text: `${c.code} is not in this reference; check it against current CPT.` }); continue; }
-    if (!ref.cognitive) out.push({ level: "stop", text: `${c.code}: ${ref.note}` });
+    if (!ref.cognitive) out.push({ level: ref.retired ? "warn" : "stop", text: `${c.code}: ${ref.note}` });
     if (ref.addOnTo && codes.indexOf(ref.addOnTo) < 0) out.push({ level: "stop", text: `${c.code} is an add-on and is reported with ${ref.addOnTo}.` });
     if (ref.group && s.format !== "group") out.push({ level: "warn", text: `${c.code} is for group sessions; this session is recorded as individual.` });
     if (!ref.group && ref.code === "92507" && s.format === "group") out.push({ level: "warn", text: "92507 is individual; group treatment is 92508." });
@@ -204,12 +223,15 @@ function checkSession(s         )          {
     if (ref.code === "96125" && !s.measures.some(m => /test|assessment|scale|inventory|exam|RIPA|SLUMS|MoCA|BCAT|CLQT|ABCD|SCATBI/i.test(m.task + " " + m.note)))
       out.push({ level: "warn", text: "96125 is standardized testing: name the instrument in the objective section." });
     if (!ref.timed && c.units != null && c.units > 1) out.push({ level: "warn", text: `${c.code} is untimed: one per session.` });
+    if (ref.code === "97129" && c.units != null && c.units > 1) out.push({ level: "warn", text: "97129 is the first 15 minutes (one unit); further 15-minute blocks are 97130." });
   }
   // units against recorded minutes: arithmetic only; payers set the rules
   const timedUnits = s.codes.reduce((n, c) => { const r = codeRef(c.code); return n + (r && r.timed && r.minutes === 15 ? (c.units == null ? 1 : c.units) : 0); }, 0);
   if (s.minutes != null && timedUnits && timedUnits * 15 - 7 > s.minutes)
     out.push({ level: "warn", text: `${timedUnits} timed 15-minute unit${timedUnits === 1 ? "" : "s"} recorded for ${s.minutes} minutes: check the units against the time.` });
   if (!s.subjective && !s.measures.length && !s.assessment && !s.plan) out.push({ level: "warn", text: "Nothing is recorded in S, O, A or P yet." });
+  const open = unfilled(s);
+  if (open) out.push({ level: "warn", text: open + (open === 1 ? " blank" : " blanks") + " in [brackets] from a template " + (open === 1 ? "is" : "are") + " still to fill in." });
   return out;
 }
 
@@ -235,6 +257,7 @@ function soapBlocks(s         , ctx             )          {
     { key: "session", heading: "Session", recorded: true, paragraphs: [
       [s.date || "Date not recorded", s.minutes != null ? s.minutes + " minutes" : "minutes not recorded", s.format === "group" ? "group" : "individual", s.discipline].join(" · ") + ".",
       who ? "Provided by " + who + "." : "Provider not recorded.",
+      s.domains.length ? "Focus: " + s.domains.map(d => (domainOf(d) || { label: "" }).label).filter(Boolean).join("; ") + "." : "",
       s.activities.length ? "Cognicopia materials used: " + s.activities.join("; ") + "." : ""].filter(Boolean) },
     { key: "staging", heading: "Staging on file", recorded: !!st, paragraphs: staging.length ? staging : [NOT] },
     { key: "goals", heading: "Goals addressed", recorded: s.goals.length > 0, paragraphs: s.goals.length ? s.goals.map((g, i) => `${i + 1}. ${g}`) : [NOT] },
@@ -245,6 +268,98 @@ function soapBlocks(s         , ctx             )          {
     { key: "codes", heading: "Procedure codes recorded", recorded: s.codes.length > 0, paragraphs: s.codes.length ? codeLines : [NOT] }
   ];
 }
+
+/* ---------- 4b. Rehabilitation templates ----------
+   Three domains a speech-language pathologist works on with residents. Each
+   offers goal statements to pick and edit (with the usual number of trials,
+   accuracy and cueing already written in, to be changed), tasks to measure,
+   Cognicopia materials that suit the work, the codes usually considered, and
+   sentence starters for S, A and P with the blanks marked in [brackets]. A
+   picked goal or starter is only text put in a box: the clinician edits it,
+   and it is theirs. Nothing here is a finding. */
+                                                                                                                                                                             
+const DOMAINS                    = [
+  { id: "auditory", label: "Auditory comprehension",
+    goals: [
+      "The resident will follow one-step spoken directions with 80% accuracy and minimal cues across 3 consecutive sessions.",
+      "The resident will follow two-step spoken directions with 80% accuracy and moderate cues across 3 consecutive sessions.",
+      "The resident will answer yes/no questions about familiar topics with 80% accuracy across 3 consecutive sessions.",
+      "The resident will point to a named picture or object from a field of 3 with 80% accuracy and minimal cues.",
+      "The resident will answer who, what and where questions about a short spoken passage with 70% accuracy and moderate cues."],
+    tasks: ["One-step directions", "Two-step directions", "Yes/no questions", "Pointing to named pictures (field of 3)", "Who, what, where questions after a short passage"],
+    materials: ["Match the picture to its name", "Goes together", "Orientation board"],
+    codes: ["92507", "97129"],
+    starters: {
+      S: "Seen for [minutes] minutes. [Resident or staff report: how they have been, what they follow in the day, any change since the last session.]",
+      A: "Auditory comprehension: [accuracy] on [task] with [cue level] cues. [Clinician interpretation, and how it relates to the goal and the last session.]",
+      P: "Continue [frequency and duration]. Next session: [target and level of cueing]. Carry-over for staff and family: [for example one-step directions, a gesture with the words, extra time]." } },
+  { id: "expressive", label: "Expressive language",
+    goals: [
+      "The resident will name common objects in a category with 80% accuracy and minimal cues across 3 consecutive sessions.",
+      "The resident will complete familiar phrases and sayings with 80% accuracy given the first word as a cue.",
+      "The resident will produce a 3 to 5 word sentence to describe a picture in 4 of 5 opportunities with moderate cues.",
+      "The resident will name 5 items in a category within 60 seconds with minimal cues.",
+      "The resident will express a want or need with words or a gesture in 4 of 5 opportunities."],
+    tasks: ["Naming common objects", "Completing familiar sayings", "Describing a picture in a sentence", "Naming items in a category (60 seconds)", "Requesting wants and needs"],
+    materials: ["Finish the saying", "Name three", "Memory lane", "Sing-along"],
+    codes: ["92507"],
+    starters: {
+      S: "Seen for [minutes] minutes. [Resident or staff report: how they have been, how they are making themselves understood, any change since the last session.]",
+      A: "Expressive language: [accuracy] on [task] with [cue level] cues. [Clinician interpretation, and how it relates to the goal and the last session.]",
+      P: "Continue [frequency and duration]. Next session: [target and level of cueing]. Carry-over for staff and family: [for example offering choices, waiting for a response, familiar songs and sayings]." } },
+  { id: "executive", label: "Executive function",
+    goals: [
+      "The resident will put the steps of a familiar daily task in order with 80% accuracy and minimal cues across 3 consecutive sessions.",
+      "The resident will sort items into two categories with 80% accuracy and minimal cues.",
+      "The resident will name one solution to a familiar everyday problem in 4 of 5 opportunities with moderate cues.",
+      "The resident will stay with a 10-minute activity with 2 or fewer redirections.",
+      "The resident will begin a task within 30 seconds of a verbal cue in 4 of 5 opportunities."],
+    tasks: ["Sequencing the steps of a familiar task", "Sorting into two categories", "Solving an everyday problem", "Staying with an activity (minutes, redirections)", "Starting a task after a cue"],
+    materials: ["Put it in order", "Sort into two groups", "Odd one out", "Word ladder"],
+    codes: ["97129", "97130"],
+    starters: {
+      S: "Seen for [minutes] minutes. [Resident or staff report: how they have been, how they are managing daily routines, any change since the last session.]",
+      A: "Executive function: [accuracy or minutes] on [task] with [cue level] cues. [Clinician interpretation, and how it relates to the goal and the last session.]",
+      P: "Continue [frequency and duration]. Next session: [target and level of cueing]. Carry-over for staff and family: [for example one step at a time, a written routine, a calm start]." } }
+];
+const domainOf = (id        )                => DOMAINS.filter(d => d.id === id)[0] || null;
+/* The codes usually considered for the chosen domains and session format, each with why. Group sessions use 92508; the cognitive codes are one-on-one. */
+function domainCodes(ids                   , format                        )                                  {
+  const out                                  = [], add = (code        )       => { const r = codeRef(code); if (r && !out.some(o => o.code === code)) out.push({ code, why: r.summary }); };
+  ids.forEach(id => (domainOf(id) || { codes: []             }).codes.forEach(c => {
+    if (format === "group"){ if (c === "92507") add("92508"); }
+    else add(c);
+  }));
+  return out;
+}
+
+/* ---------- 4c. The note as plain text, to paste into an electronic health record ----------
+   Straight quotes, plain hyphens and "x" for "times", no symbols a record may
+   turn into question marks. Section by section, so each can fill its own
+   field. who is the resident as the clinician chooses: an alias by default. */
+const FOLD                                   = { "‘": "'", "’": "'", "“": '"', "”": '"', "–": "-", "—": "-", "·": "|", "×": "x", "…": "...", " ": " ", "•": "-" };
+function ascii(t        )         {
+  return String(t == null ? "" : t).replace(/[‘’“”–—·×… •]/g, c => FOLD[c]).normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^\t\n\r\x20-\x7E]/g, "?");
+}
+                                                                                                                         
+function ehrParts(s         , ctx                                   , who        )           {
+  const st = ctx.staging, map = st ? tierForStage(st) : null, prov = [s.clinician, s.credentials].filter(Boolean).join(", ");
+  const focus = s.domains.map(d => (domainOf(d) || { label: "" }).label).filter(Boolean);
+  const body = (text        )         => (text ? text.split("\n").filter(Boolean).join("\n") : NOT);
+  const header = ["SKILLED SESSION NOTE (SOAP)", "Resident: " + (who || "Resident"),
+    "Date: " + (s.date || "not recorded") + " | Time: " + (s.minutes != null ? s.minutes + " minutes" : "not recorded") + " | Format: " + (s.format === "group" ? "Group" : "Individual") + " | Discipline: " + s.discipline,
+    "Provider: " + (prov || "not recorded"), focus.length ? "Focus: " + focus.join("; ") : "",
+    st && map ? "Staging on file: " + map.basis + (st.date ? " (recorded " + st.date + (st.recordedBy ? " by " + st.recordedBy : "") + ")" : "") : "",
+    s.activities.length ? "Cognicopia materials: " + s.activities.join("; ") : ""].filter(Boolean).join("\n");
+  const goals = "GOALS ADDRESSED\n" + (s.goals.length ? s.goals.map((g, i) => (i + 1) + ". " + g).join("\n") : NOT);
+  const billing = "PROCEDURE CODES (recorded by the clinician)\n" + (s.codes.length ? s.codes.map(c => { const r = codeRef(c.code); return c.code + (c.units != null ? " x" + c.units : "") + (r ? " - " + r.summary : ""); }).join("\n") : NOT)
+    + (s.minutes != null ? "\nTotal session time: " + s.minutes + " minutes" : "");
+  return { header: ascii(header), goals: ascii(goals), S: ascii("S (Subjective)\n" + body(s.subjective)), O: ascii("O (Objective)\n" + (s.measures.length ? s.measures.map(m => "- " + measureLine(m)).join("\n") : NOT)),
+    A: ascii("A (Assessment)\n" + body(s.assessment)), P: ascii("P (Plan)\n" + body(s.plan)), billing: ascii(billing) };
+}
+function ehrText(p          )         { return [p.header, p.goals, p.S, p.O, p.A, p.P, p.billing].join("\n\n") + "\n"; }
+/* Brackets left in a note are starters the clinician has not yet filled in. */
+const unfilled = (s         )         => [s.subjective, s.assessment, s.plan].concat(s.goals).reduce((n, t) => n + (String(t).match(/\[[^\]]*\]/g) || []).length, 0);
 
 /* ---------- 5. Printable pages (US Letter, 0.75 in gutter) ----------
    The notes are laid out by an estimate of their height (Atkinson
@@ -319,5 +434,5 @@ function summaryPage(log             , ctx             , from        , to       
     <div class="slp-foot"><span>${esc(ctx.facility || "Cognicopia")} · Every entry was recorded by staff; Cognicopia adds no findings.</span><span>Summary</span></div>
   </div>`;
 }
-root.CogniClinical = Object.freeze({ VERSION, STORE_PREFIX, GDS_STAGES, FAST_STAGES, TIER_STAGES, isGds, isFast, tierForStage, stagesForTier, CODES, codeRef, CUES, DISCIPLINES, normalizeSession, normalizeLog, latestStaging, pct, checkSession, measureLine, soapBlocks, LAYOUT, paginate, soapPages, summaryPage });
+root.CogniClinical = Object.freeze({ VERSION, STORE_PREFIX, GDS_STAGES, FAST_STAGES, TIER_STAGES, isGds, isFast, tierForStage, stagesForTier, FUNCTIONAL_G_NOTE, CODES, codeRef, CUES, DISCIPLINES, normalizeSession, normalizeLog, latestStaging, pct, checkSession, measureLine, soapBlocks, DOMAINS, domainOf, domainCodes, ascii, ehrParts, ehrText, unfilled, LAYOUT, paginate, soapPages, summaryPage });
 })(typeof globalThis !== "undefined" ? globalThis : this);

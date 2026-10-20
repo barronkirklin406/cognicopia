@@ -1262,7 +1262,7 @@ textarea:focus{border-color:var(--accent)}
 .rs-res:hover{border-color:var(--accent)}
 .rs-res[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent);background:#1d332b}
 .rs-res-main{display:flex;flex-direction:column;min-width:0}
-.rs-res-main b{font-size:16px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rs-res-main b{font-family:var(--cg-font-display,"Fraunces",serif);font-size:19px;font-weight:700;letter-spacing:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .rs-res-main span{font-size:13.5px;color:var(--muted)}
 .rs-badges{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:4px;flex:none;max-width:52%}
 .rs-tier,.rs-flag{padding:2px 8px;border-radius:999px;font-size:12px;font-weight:800;white-space:nowrap}
@@ -1276,6 +1276,26 @@ textarea:focus{border-color:var(--accent)}
 .rs-handoff .field{margin-top:10px}
 .rs-handoff input[type=file]{max-width:100%}
 .enc-state{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:12px;background:var(--bg-2);border:1px solid var(--line-2)}
+/* the names choice every export offers (assets/services/privacyExport.js choiceHtml): the whole card is the control */
+.pv-choice{margin:14px 0 0;padding:0;border:0;display:grid;gap:8px;min-width:0}
+.pv-choice legend{padding:0;margin:0 0 6px;font-weight:700;letter-spacing:.01em}
+.pv-opt{position:relative;display:block;min-height:var(--tap);border:1px solid var(--line-2);border-radius:10px;background:var(--bg-2);cursor:pointer}
+.pv-opt input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer}
+.pv-opt > span{display:block;padding:10px 12px 10px 44px;position:relative;border-radius:10px}
+.pv-opt > span::before{content:"";position:absolute;left:12px;top:14px;width:20px;height:20px;box-sizing:border-box;border-radius:50%;border:2px solid var(--muted);background:transparent}
+.pv-opt input:checked + span{box-shadow:inset 0 0 0 2px var(--accent)}
+.pv-opt input:checked + span::before{border-color:var(--accent);background:radial-gradient(circle,var(--accent) 0 5px,transparent 6px)}
+.pv-opt input:focus-visible + span{outline:3px solid var(--accent);outline-offset:2px}
+.pv-opt b{display:block}
+.pv-opt small{display:block;color:var(--muted);font-size:14px;letter-spacing:.01em;line-height:1.45}
+.cs-panel{margin:14px 0 0;padding:12px 14px;border:1px solid var(--line-2);border-radius:12px;background:var(--bg-2)}
+.cs-panel > summary{cursor:pointer;font-weight:700;min-height:var(--tap);display:flex;align-items:center}
+.cs-sum{margin:10px 0 6px}
+.cs-table{max-height:340px;overflow:auto;border:1px solid var(--line-2);border-radius:10px;margin:8px 0}
+.cs-table table{width:100%;border-collapse:collapse;font-size:14px;letter-spacing:.01em}
+.cs-table th,.cs-table td{padding:6px 8px;text-align:left;border-bottom:1px solid var(--line-2);vertical-align:top}
+.cs-table small{color:var(--muted)}
+.cs-skip td,.cs-duplicate td{color:var(--muted)}
 .enc-state b{display:block}
 .enc-dot{flex:none;width:12px;height:12px;margin-top:6px;border-radius:50%;background:var(--accent)}
 .enc-dot.warn{background:var(--warn)}
@@ -1283,7 +1303,7 @@ textarea:focus{border-color:var(--accent)}
 .rs-who{padding:14px 16px;border-radius:14px;border:1px dashed var(--line-2);background:var(--bg-2)}
 .rs-who .eyebrow{margin:0}
 .rs-pick{margin:0;color:var(--muted)}
-.rs-name{margin:2px 0 0;font-size:22px;font-weight:800}
+.rs-name{margin:2px 0 0;font-family:var(--cg-font-display,"Fraunces",serif);font-size:30px;font-weight:700;letter-spacing:0;line-height:1.2}
 .rs-name span{font-size:15px;font-weight:700;color:var(--muted)}
 .rs-needs{margin:4px 0 0;font-size:14px;color:var(--muted)}
 .rs-aud{margin-top:14px}
@@ -1658,6 +1678,9 @@ textarea:focus{border-color:var(--accent)}
 .cl-row input,.cl-row select{width:100%}
 .cl-checks{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:6px}
 .cl-checks li{padding:8px 10px;border-radius:8px;border:1px solid var(--line-2);font-size:14px}
+.cl-ehr{width:100%;font:14px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;letter-spacing:0;padding:10px 12px;border:1px solid var(--line-2);border-radius:10px;background:var(--bg-2);color:var(--ink);resize:vertical}
+.cl-tpl .gate-row select{flex:1 1 260px;min-width:0}
+.cl-lab{display:block;font-size:14px;color:var(--muted);letter-spacing:.01em}
 .cl-checks li.stop{border-color:#e07a5f;background:rgba(224,122,95,.12)}
 .cl-checks li.warn{border-color:var(--warn)}
 .cl-ref{margin:0;padding:0;list-style:none;display:grid;gap:8px;font-size:14px}
@@ -1670,6 +1693,7 @@ textarea:focus{border-color:var(--accent)}
 .slp-head b{font-size:14pt}
 .slp-head span{font-size:9.5pt}
 .slp-who{text-align:right}
+.slp-who b{font-family:var(--cg-font-display,"Fraunces",serif);font-size:18pt;letter-spacing:0}
 .slp-body{flex:1 1 auto;overflow:hidden;display:flex;flex-direction:column;gap:.12in}
 .slp-block h3{margin:0 0 .03in;font-size:10.5pt;letter-spacing:.06em;text-transform:uppercase}
 .slp-block p{margin:0;font-size:11.5pt;line-height:.2in}
@@ -1759,6 +1783,12 @@ textarea:focus{border-color:var(--accent)}
 .ops-empty{margin:0;font-size:11pt;font-style:italic}
 .ops-hand i{display:block;height:.5in;border-bottom:2pt solid #000}
 .ops-foot{display:flex;justify-content:space-between;gap:.2in;font-size:9pt;border-top:1px solid #000;padding-top:2pt}
+/* resident names and aliases: large, in the display face (the same on screen and on the sheets) */
+.ops-name{font-family:var(--cg-font-display,"Fraunces",serif);font-weight:700;letter-spacing:0}
+.ops-lead.ops-name{font-size:13pt;line-height:.21in}
+.shf-text .ops-name{font-size:1.2em}
+.sbar-sheet .ops-row{grid-template-columns:1.5in minmax(0,1fr) 1.7in}
+.sbar-sheet .ops-tail{text-align:right}
 </style>
 <style id="hl-style">
 /* =====================================================================
@@ -6936,10 +6966,12 @@ const RosterUI = (function(){
           <p class="rs-count" id="rsCount" role="status" aria-live="polite"></p>
           <ul class="rs-list" id="rsList" aria-label="Residents"></ul>
           <p class="hint rs-add">${list.length ? "" : "No saved residents yet. "}<a href="profile.html">Add a resident profile</a>, then come back here to print.</p>
+          ${CensusUI.html("rs")}
           <details class="rs-handoff" id="rsHandoff">
             <summary>Hand off to another station</summary>
             <p class="hint">Move residents between computers in one locked file (.cognicopia). It opens only with the passphrase chosen here: tell it to the other station in person or by phone, never in the same message as the file.</p>
             <div class="field"><label for="rsHoFrom">From (station or unit, optional)</label><input id="rsHoFrom" type="text" maxlength="60" autocomplete="off" placeholder="e.g., Maple Unit, evening shift"></div>
+            ${window.CogniPrivacy ? window.CogniPrivacy.choiceHtml("rsHoNames", settings.exportNames, "Names in this file") : ""}
             <div class="field"><label for="rsHoPass">Passphrase for this file</label><input id="rsHoPass" type="password" autocomplete="new-password" minlength="10"></div>
             <div class="actions"><button class="btn" type="button" id="rsHoOut" ${list.length ? "" : "disabled"}>Download handoff file (${list.length} ${list.length === 1 ? "resident" : "residents"})</button></div>
             <h3>Receive a handoff</h3>
@@ -6969,6 +7001,7 @@ const RosterUI = (function(){
     host.addEventListener("click", onClick);
     host.addEventListener("input", onInput);
     host.addEventListener("change", onChange);
+    CensusUI.bind(host, "rs", () => { renderList(); renderWork(); });
     renderList(); renderWork();
   }
   function renderList(){
@@ -7030,12 +7063,13 @@ const RosterUI = (function(){
     const SS = window.CogniSecureStore, pass = document.getElementById("rsHoPass").value, from = document.getElementById("rsHoFrom").value.trim();
     if (!SS){ hoMsg("This browser cannot lock files.", true); return; }
     const problem = SS.passphraseProblem(pass); if (problem){ hoMsg(problem, true); document.getElementById("rsHoPass").focus(); return; }
-    const list = BookUI.savedProfiles(), btn = document.getElementById("rsHoOut");
+    const pick = host.querySelector('[data-privacy-choice="rsHoNames"] input:checked'), level = window.CogniPrivacy ? window.CogniPrivacy.levelOf(pick ? pick.value : settings.exportNames) : "keep";
+    const list = window.CogniPrivacy ? window.CogniPrivacy.scrubRoster(BookUI.savedProfiles(), level) : BookUI.savedProfiles(), btn = document.getElementById("rsHoOut");
     btn.disabled = true; hoMsg("Locking the file…");
     SS.exportRoster(list, pass, from).then(env => {
       const a = document.createElement("a");
       a.href = URL.createObjectURL(new Blob([JSON.stringify(env)], { type:"application/octet-stream" }));
-      a.download = ["Cognicopia handoff", from.replace(/[\\/:*?"<>|]+/g, "") || "roster", todayISO()].join(" - ") + ".cognicopia";
+      a.download = ["Cognicopia handoff", from.replace(/[\\/:*?"<>|]+/g, "") || "roster", todayISO()].concat(window.CogniPrivacy && window.CogniPrivacy.levelSuffix(level) ? [window.CogniPrivacy.levelSuffix(level)] : []).join(" - ") + ".cognicopia";
       document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 1500);
       hoMsg(`Downloaded, locked: ${list.length} ${list.length === 1 ? "resident" : "residents"}. Give the other station the passphrase separately.`);
       document.getElementById("rsHoPass").value = "";
@@ -7073,6 +7107,71 @@ const RosterUI = (function(){
     return BookUI.print(pages, title, renderWork, { pureBW: nd.highContrast });
   }
   return { render, build, TEMPLATES, AUDIENCES, state: () => state() };
+})();
+</script>
+<script id="census-ui">
+/* =====================================================================
+   CENSUS IMPORT (Resident roster and Facility Portal)
+   Reads a CSV or JSON census on this computer (assets/services/censusImport.js),
+   shows what would be added, updated or left out, and only then writes the
+   resident profiles into the encrypted store. No upload, no network.
+   ===================================================================== */
+const CensusUI = (function(){
+  const C = () => window.CogniCensus, TIER = { 1:"Tier 1", 2:"Tier 2", 3:"Tier 3" };
+  const ACTION = { add:"Add", update:"Update", skip:"Leave out", duplicate:"Repeat" };
+  function html(px){
+    if (!C()) return "";
+    return `<details class="cs-panel" id="${px}Cs">
+      <summary>Import a census (CSV or JSON)</summary>
+      <p class="hint">Add a whole unit at once from your facility&rsquo;s census file. It is read on this computer and nothing is sent anywhere. Columns are matched by name: <b>Alias</b>, <b>Preferred name</b>, <b>Acuity tier</b> (Tier 1 to 3, Mild/Moderate/Advanced, or GDS/FAST), <b>Life era</b> (such as 1940s), <b>Interests</b>, <b>Wing</b> and <b>Room</b>. Last names and full birth dates are not kept.</p>
+      <div class="field"><label for="${px}CsFile">Census file</label><input id="${px}CsFile" type="file" accept=".csv,.json,.txt,text/csv,application/json"></div>
+      <div class="field"><label for="${px}CsWing">Wing for residents whose row has none</label><input id="${px}CsWing" type="text" maxlength="40" autocomplete="off" placeholder="Memory Care Unit A" value="${esc(settings.activeWing || "")}"></div>
+      <div class="field"><label for="${px}CsMode">Residents already here</label><select id="${px}CsMode"><option value="update">Update them from the file</option><option value="skip">Leave them as they are</option></select></div>
+      <div class="actions"><button class="btn" type="button" id="${px}CsRead">Read the file</button><button class="btn btn-ghost" type="button" id="${px}CsTpl">Download a template</button></div>
+      <div id="${px}CsOut" role="status" aria-live="polite"></div>
+    </details>`;
+  }
+  function bind(root, px, onDone){
+    const q = id => root.querySelector("#" + px + id), SVC = C();
+    if (!SVC || !q("CsRead")) return;
+    let text = "", name = "";
+    q("CsFile").addEventListener("change", e => {
+      const f = e.target.files[0]; if (!f) return;
+      name = f.name;
+      f.text().then(t => { text = t; q("CsOut").innerHTML = `<p class="hint">${esc(f.name)} is ready to read.</p>`; }, () => { q("CsOut").innerHTML = `<p class="msg-bad">That file could not be opened.</p>`; });
+    });
+    q("CsTpl").addEventListener("click", () => {
+      const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([SVC.TEMPLATE_CSV], { type:"text/csv" })); a.download = "Cognicopia census template.csv";
+      document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 1500);
+    });
+    q("CsRead").addEventListener("click", () => {
+      if (!text){ q("CsOut").innerHTML = `<p class="msg-bad">Choose the census file first.</p>`; return; }
+      const a = SVC.analyze(text, { wing: q("CsWing").value });
+      if (a.problem){ q("CsOut").innerHTML = `<p class="msg-bad">${esc(a.problem)}</p>`; return; }
+      const items = SVC.plan(a.rows, BookUI.allProfiles(), q("CsMode").value), n = SVC.counts(items), who = r => settings.aliasScreen ? (r.alias || "Resident") : (r.preferredName || r.alias);
+      const mapped = Object.keys(a.mapping.fields).map(f => SVC.FIELD_LABELS[f]).join(", ");
+      q("CsOut").innerHTML = `<p class="cs-sum"><b>${n.add}</b> to add, <b>${n.update}</b> to update, <b>${n.skip + n.duplicate}</b> left out. Columns used: ${esc(mapped)}.${a.mapping.unmapped.length ? " Not used: " + esc(a.mapping.unmapped.join(", ")) + "." : ""}</p>
+        ${a.droppedLastNames ? `<p class="hint">Last names in the file were not kept.</p>` : ""}${a.droppedDates ? `<p class="hint">Only the year of a birth date was kept.</p>` : ""}${a.truncated ? `<p class="msg-bad">Only the first ${SVC.MAX_ROWS} rows were read.</p>` : ""}
+        <div class="cs-table" role="region" aria-label="Census preview" tabindex="0"><table><thead><tr><th>Line</th><th>Resident</th><th>Tier</th><th>Era</th><th>Wing</th><th>What happens</th></tr></thead><tbody>${items.slice(0, 200).map(i => `<tr class="cs-${i.action}"><td>${i.row.line}</td><td>${esc(who(i.row))}</td><td>${i.row.tierGiven ? TIER[i.row.tier] : "Tier 2 (not given)"}</td><td>${esc(i.row.decades.join(", ") || "none")}</td><td>${esc(i.row.wing || "none")}</td><td><b>${ACTION[i.action]}</b>${i.why ? " · " + esc(i.why) : ""}${i.row.notes.length ? "<br><small>" + esc(i.row.notes.join("; ")) + "</small>" : ""}</td></tr>`).join("")}</tbody></table></div>
+        ${items.length > 200 ? `<p class="hint">The first 200 rows are shown; all ${items.length} are imported.</p>` : ""}
+        <div class="actions"><button class="btn btn-primary" type="button" id="${px}CsGo" ${n.add + n.update ? "" : "disabled"}>Import ${n.add + n.update} resident${n.add + n.update === 1 ? "" : "s"}</button></div>`;
+      const go = q("CsGo"); if (!go) return;
+      go.addEventListener("click", () => {
+        go.disabled = true;
+        const have = BookUI.allProfiles(), now = new Date(); let added = 0, updated = 0, failed = 0;
+        items.forEach(i => {
+          if (i.action !== "add" && i.action !== "update") return;
+          const prev = i.action === "update" ? have.filter(p => p.id === i.existingId)[0] : null, id = prev ? prev.id : SVC.newResidentId();
+          try { CG_LS.setItem("cognicopia_resident_" + id, JSON.stringify(SVC.toProfile(i.row, id, now, prev))); if (prev) updated++; else added++; } catch (err){ failed++; }
+        });
+        (window.CogniSecureStore ? window.CogniSecureStore.flush() : Promise.resolve()).then(() => {
+          q("CsOut").innerHTML = `<p class="msg-ok"><b>${added}</b> added and <b>${updated}</b> updated from ${esc(name)}${failed ? "; " + failed + " could not be saved (storage is full or blocked)" : ""}. They were saved on this computer only.</p>`;
+          if (onDone) onDone();                                    // the file stays read, so reading it again needs no new choice
+        });
+      });
+    });
+  }
+  return { html, bind };
 })();
 </script>
 <script src="assets/cognicopia-coloring/cognicopia-coloring.js"></script>
@@ -8025,6 +8124,7 @@ const ClinicalUI = (function(){
         <aside class="config" style="margin-top:0" aria-labelledby="clRefH">
           <h2 id="clRefH">Procedure codes: a reference</h2>
           <p class="hint">Plain-language summaries, not the CPT descriptors. The treating clinician chooses codes under current CPT and payer rules; this is not billing advice.</p>
+          <p class="hint">${esc(K.FUNCTIONAL_G_NOTE)}</p>
           <ul class="cl-ref">${K.CODES.map(c => `<li><b class="${c.cognitive ? "" : "no"}">${esc(c.code)}${c.cognitive ? "" : " · not a cognitive code"}</b>${esc(c.summary)} <span class="hint">${esc(c.note)}</span></li>`).join("")}</ul>
           <h2 style="margin-top:18px">Stages and tiers</h2>
           <ul class="cl-ref">${K.TIER_STAGES.map(t => `<li><b>${esc(t.label)}</b>GDS ${esc(t.gds.join("-"))} · FAST ${esc(t.fast.length > 1 ? t.fast[0] + " to " + t.fast[t.fast.length - 1] : t.fast[0])}. <span class="hint">${esc(t.approach)}</span></li>`).join("")}
@@ -8068,7 +8168,36 @@ const ClinicalUI = (function(){
   }
   /* ---------- the session form ---------- */
   const blank = () => ({ id:"", date:todayISO(), minutes:null, format:"individual", discipline:"SLP", clinician:settings.clinician || "", credentials:settings.credentials || "",
-    goals:[], activities:[], subjective:"", measures:[{ task:"", trials:null, correct:null, cue:"", note:"" }], assessment:"", plan:"", codes:[], cosign:"" });
+    goals:[], activities:[], subjective:"", measures:[{ task:"", trials:null, correct:null, cue:"", note:"" }], assessment:"", plan:"", codes:[], cosign:"", domains:[] });
+  /* The templates for the chosen domains: goals, tasks and materials to pick from, and starters for S, A and P. A pick is only text put in a box. */
+  function tplHtml(f){
+    const ds = f.domains.map(K.domainOf).filter(Boolean);
+    if (!ds.length) return `<p class="hint">Choose one or more to see goal statements, tasks to measure and note starters for them.</p>`;
+    const opt = list => list.map(t => `<option value="${esc(t)}">${esc(t.length > 110 ? t.slice(0, 107) + "…" : t)}</option>`).join("");
+    const pick = (id, label, list, kind, btn) => `<div class="field cl-tpl"><label for="${id}">${label}</label><div class="gate-row"><select id="${id}">${opt(list)}</select><button class="btn" type="button" data-tpl="${kind}">${btn}</button></div></div>`;
+    return pick("clGoalPick", "A goal to add", ds.flatMap(d => d.goals), "goal", "Add this goal") + pick("clTaskPick", "A task to measure", ds.flatMap(d => d.tasks), "task", "Add a measure")
+      + pick("clMatPick", "A Cognicopia material that suits", Array.from(new Set(ds.flatMap(d => d.materials))), "mat", "Add this material")
+      + `<div class="field"><span class="cl-lab">Start a section from a template (the blanks in [brackets] are yours to fill)</span><div class="actions" style="margin-top:6px">${["S", "A", "P"].map(k => `<button class="btn" type="button" data-start="${k}">Start ${k}</button>`).join("")}</div></div>`;
+  }
+  /* The note as plain text for the health record, for the resident as the clinician chose. */
+  function ehrNow(){
+    const p = find(S.resident); if (!p || !S.editing) return null;
+    const P = window.CogniPrivacy, pick = document.querySelector('[data-privacy-choice="clEhrNames"] input:checked'), lvl = P ? P.levelOf(pick ? pick.value : settings.exportNames) : "keep";
+    const name = String(p.tier1_core.preferredName || "").trim(), who = lvl === "keep" && name ? name : lvl === "remove" ? "Resident" : cgAlias(p);
+    const parts = K.ehrParts(K.normalizeSession(S.editing), { staging:K.latestStaging(readLog(p.id)) }, who);
+    if (P && lvl !== "keep"){ const people = BookUI.allProfiles(); Object.keys(parts).forEach(k => { parts[k] = P.scrubText(parts[k], people, lvl).text; }); }
+    return parts;
+  }
+  function renderEhr(){
+    const box = document.getElementById("clEhr"); if (!box) return;
+    const parts = ehrNow(); box.value = parts ? K.ehrText(parts) : "";
+  }
+  function copyText(text){
+    if (navigator.clipboard && navigator.clipboard.writeText) return navigator.clipboard.writeText(text);
+    const t = document.createElement("textarea"); t.value = text; t.style.cssText = "position:fixed;left:-9999px"; document.body.appendChild(t); t.select();
+    try { document.execCommand("copy"); } catch (e){ t.remove(); return Promise.reject(e); }
+    t.remove(); return Promise.resolve();
+  }
   function renderForm(){
     const f = S.editing, box = document.getElementById("clForm");
     const cueOpts = cur => `<option value="">Cues</option>` + K.CUES.map(c => `<option value="${c.code}" ${c.code === cur ? "selected" : ""}>${esc(c.label)}</option>`).join("");
@@ -8083,21 +8212,26 @@ const ClinicalUI = (function(){
         <div class="field"><label for="clBy">Provided by</label><input id="clBy" data-f="clinician" type="text" maxlength="60" value="${esc(f.clinician)}"></div>
         <div class="field"><label for="clCred">Credentials</label><input id="clCred" data-f="credentials" type="text" maxlength="40" value="${esc(f.credentials)}" placeholder="e.g., MS, CCC-SLP"></div>
       </div>
+      <fieldset class="field"><legend>Rehabilitation focus <span class="hint">(optional: unlocks goal, task and note templates)</span></legend>
+        <div class="seg">${K.DOMAINS.map(d => `<label><input type="checkbox" data-dom="${d.id}" ${f.domains.indexOf(d.id) >= 0 ? "checked" : ""}><span>${esc(d.label)}</span></label>`).join("")}</div>
+        <div id="clTpl">${tplHtml(f)}</div></fieldset>
       <div class="field"><label for="clGoals">Goals addressed <span class="hint">(one per line)</span></label><textarea id="clGoals" data-f="goals" rows="3">${esc(f.goals.join("\n"))}</textarea></div>
       <div class="field"><label for="clMat">Cognicopia materials used <span class="hint">(one per line)</span></label><textarea id="clMat" data-f="activities" rows="2" placeholder="e.g., Reminiscence Cards: The Farm Year">${esc(f.activities.join("\n"))}</textarea></div>
       <div class="field"><label for="clS">S · Subjective</label><textarea id="clS" data-f="subjective" rows="3" placeholder="What the resident said and how they presented, in your words.">${esc(f.subjective)}</textarea></div>
       <fieldset class="field"><legend>O · Objective: what you measured</legend>
         <div class="cl-rows">${f.measures.map((m, i) => `<div class="cl-row">
-          <div><label for="clT${i}">Task</label><input id="clT${i}" data-m="${i}" data-k="task" type="text" maxlength="120" value="${esc(m.task)}"></div>
+          <div><label for="clT${i}">Task</label><input id="clT${i}" data-m="${i}" data-k="task" type="text" maxlength="120" list="clTasks" value="${esc(m.task)}"></div>
           <div><label for="clTr${i}">Trials</label><input id="clTr${i}" data-m="${i}" data-k="trials" type="number" min="0" max="500" value="${m.trials != null ? m.trials : ""}"></div>
           <div><label for="clC${i}">Correct</label><input id="clC${i}" data-m="${i}" data-k="correct" type="number" min="0" max="500" value="${m.correct != null ? m.correct : ""}"></div>
           <div><label for="clCu${i}">Cue level</label><select id="clCu${i}" data-m="${i}" data-k="cue">${cueOpts(m.cue)}</select></div>
           <div><label for="clN${i}">Note</label><input id="clN${i}" data-m="${i}" data-k="note" type="text" maxlength="200" value="${esc(m.note)}"></div>
           <button class="btn" type="button" data-drop-m="${i}" aria-label="Remove measure ${i + 1}">&times;</button></div>`).join("")}</div>
+        <datalist id="clTasks">${f.domains.map(K.domainOf).filter(Boolean).flatMap(d => d.tasks).map(t => `<option value="${esc(t)}">`).join("")}</datalist>
         <div class="actions"><button class="btn" type="button" id="clAddM">Add a measure</button></div></fieldset>
       <div class="field"><label for="clA">A · Assessment</label><textarea id="clA" data-f="assessment" rows="3" placeholder="Your clinical interpretation.">${esc(f.assessment)}</textarea></div>
       <div class="field"><label for="clP">P · Plan</label><textarea id="clP" data-f="plan" rows="2">${esc(f.plan)}</textarea></div>
       <fieldset class="field"><legend>Procedure codes</legend>
+        ${f.domains.length ? `<p class="hint" style="margin-top:0">Usually considered for ${esc(f.domains.map(d => (K.domainOf(d) || { label:"" }).label.toLowerCase()).join(" and "))}${f.format === "group" ? " in a group" : ""}: ${K.domainCodes(f.domains, f.format).map(c => `<b>${esc(c.code)}</b>`).join(", ") || "none in this format"}. The treating clinician chooses.</p>` : ""}
         <div class="cl-rows">${f.codes.map((c, i) => `<div class="cl-row cl-code">
           <div><label for="clCd${i}">Code</label><select id="clCd${i}" data-c="${i}" data-k="pick">${codeOpts(c.code)}</select></div>
           <div><label for="clCo${i}">Other code</label><input id="clCo${i}" data-c="${i}" data-k="code" type="text" maxlength="6" value="${K.codeRef(c.code) ? "" : esc(c.code)}" ${K.codeRef(c.code) || !c.code ? "disabled" : ""}></div>
@@ -8107,6 +8241,12 @@ const ClinicalUI = (function(){
       <div class="field"><label for="clCo">Co-signature <span class="hint">(if required)</span></label><input id="clCo" data-f="cosign" type="text" maxlength="80" value="${esc(f.cosign)}"></div>
       <h3>Checks</h3>
       <ul class="cl-checks" id="clChecks" role="status" aria-live="polite"></ul>
+      <h3>Copy for the health record</h3>
+      <p class="hint" style="margin-top:0">The note as plain text, with characters every record system accepts. Copy all of it, or one section into its own field.</p>
+      ${window.CogniPrivacy ? window.CogniPrivacy.choiceHtml("clEhrNames", settings.exportNames, "Resident in the copied text") : ""}
+      <label class="sr-only" for="clEhr">The note as plain text</label><textarea id="clEhr" class="cl-ehr" rows="14" readonly></textarea>
+      <div class="actions">${[["all", "Copy the whole note"], ["S", "Copy S"], ["O", "Copy O"], ["A", "Copy A"], ["P", "Copy P"], ["billing", "Copy the codes"]].map(([k, l]) => `<button class="btn${k === "all" ? " btn-primary" : ""}" type="button" data-copy="${k}">${l}</button>`).join("")}</div>
+      <p class="hint" id="clCopyMsg" role="status"></p>
       <div class="actions"><button class="btn btn-primary" type="button" id="clSave">Save session</button><button class="btn" type="button" id="clPrintThis">Save and print</button>
         ${f.id ? `<button class="btn btn-danger" type="button" id="clDelete">Delete</button>` : ""}<button class="btn" type="button" id="clCancel">Close</button></div>
     </section>`;
@@ -8116,6 +8256,7 @@ const ClinicalUI = (function(){
     const el = document.getElementById("clChecks"); if (!el) return;
     const c = K.checkSession(K.normalizeSession(S.editing));
     el.innerHTML = c.length ? c.map(x => `<li class="${x.level}">${esc(x.text)}</li>`).join("") : `<li>Nothing to fix. Read it over, then save.</li>`;
+    renderEhr();
   }
   function onInput(e){
     const t = e.target, f = S.editing; if (!f) return;
@@ -8130,6 +8271,13 @@ const ClinicalUI = (function(){
   function onChange(e){
     const t = e.target;
     if (t.id === "clWho"){ S.resident = t.value; S.editing = null; renderBody(); return; }
+    if (t.dataset.dom){
+      const d = S.editing.domains, i = d.indexOf(t.dataset.dom);
+      if (t.checked && i < 0) d.push(t.dataset.dom); else if (!t.checked && i >= 0) d.splice(i, 1);
+      renderForm(); return;
+    }
+    if (t.name === "clEhrNames"){ renderEhr(); return; }
+    if (t.id === "clFmt"){ S.editing.format = t.value; renderForm(); return; }
     if (t.dataset.c && t.dataset.k === "pick"){ const c = S.editing.codes[+t.dataset.c]; c.code = t.value === "other" ? "" : t.value; renderForm(); return; }
     onInput(e);
   }
@@ -8152,6 +8300,22 @@ const ClinicalUI = (function(){
     const b = e.target.closest("button"); if (!b || !root.contains(b)) return;
     const p = S.resident ? find(S.resident) : null; if (!p) return;
     const log = readLog(p.id);
+    if (b.dataset.tpl || b.dataset.start || b.dataset.copy){
+      const f = S.editing; if (!f) return;
+      if (b.dataset.tpl === "goal"){ const v = document.getElementById("clGoalPick").value; if (f.goals.indexOf(v) < 0) f.goals.push(v); renderForm(); return; }
+      if (b.dataset.tpl === "task"){ const v = document.getElementById("clTaskPick").value, empty = f.measures.filter(m => !m.task && m.trials == null && !m.note)[0]; if (empty) empty.task = v; else f.measures.push({ task:v, trials:null, correct:null, cue:"", note:"" }); renderForm(); return; }
+      if (b.dataset.tpl === "mat"){ const v = document.getElementById("clMatPick").value; if (f.activities.indexOf(v) < 0) f.activities.push(v); renderForm(); return; }
+      if (b.dataset.start){
+        const k = b.dataset.start, key = { S:"subjective", A:"assessment", P:"plan" }[k], text = f.domains.map(K.domainOf).filter(Boolean).slice(0, k === "S" ? 1 : 3).map(d => d.starters[k]).join("\n");   // S is about the session, so one starter serves every domain
+        f[key] = f[key] ? f[key] + "\n" + text : text; renderForm(); return;
+      }
+      if (b.dataset.copy){
+        const parts = ehrNow(); if (!parts) return;
+        const text = b.dataset.copy === "all" ? K.ehrText(parts) : parts[b.dataset.copy] + "\n", msg = document.getElementById("clCopyMsg");
+        copyText(text).then(() => { if (msg) msg.textContent = "Copied. Paste it into the record."; toast("Copied for the health record."); }, () => { if (msg) msg.textContent = "Your browser would not copy it. Select the text above and copy it."; });
+        return;
+      }
+    }
     if (b.id === "clStSave"){
       const rec = { date:document.getElementById("clStDate").value, gds:document.getElementById("clGds").value, fast:document.getElementById("clFast").value, recordedBy:document.getElementById("clStBy").value, note:"" };
       if (!rec.gds && !rec.fast){ toast("Choose a GDS or FAST stage first."); return; }
@@ -8199,7 +8363,7 @@ const ClinicalUI = (function(){
 const DailyOpsUI = (function(){
   "use strict";
   const D = window.CogniDailyOps;
-  const S = { day:"", shift:"all", me:"", meAt:0, edit:null, kind:"pass", nameOK:{ note:false, task:false } };
+  const S = { day:"", shift:"all", me:"", meAt:0, edit:null, kind:"pass", nameOK:{ note:false, task:false, eng:false } };
   const IDLE_MS = 15 * 60 * 1000;                       // initials are forgotten after this long without use
   let root = null, board = null, known = [], warnTimer = null, lastRemoved = null;
   const svg = d => `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${d}</svg>`;
@@ -8211,6 +8375,8 @@ const DailyOpsUI = (function(){
   const pl = (n, one, many) => n + " " + (n === 1 ? one : many);
   const sorted = list => list.slice().sort((a, b) => a.localeCompare(b, "en", { numeric:true }));     // the board remembers who wrote last; the buttons stay where a finger expects them
   const today = () => D.slotAt().day;
+  const wingNow = () => (typeof settings !== "undefined" ? settings.activeWing : null);    // null: every wing; otherwise the wing this board is showing
+  const wingTag = () => wingNow() || "";
   const q = sel => root.querySelector(sel);
   const val = id => { const el = q("#" + id); return el ? el.value : ""; };
 
@@ -8270,6 +8436,9 @@ const DailyOpsUI = (function(){
           <section class="config" aria-labelledby="shfNotesH"><h2 id="shfNotesH" tabindex="-1">Notes</h2><div id="shfNoteForm"></div><ul class="shf-list" id="shfNotes"></ul></section>
           <section class="config" aria-labelledby="shfTasksH"><h2 id="shfTasksH" tabindex="-1">Tasks</h2><div id="shfTaskForm"></div><div id="shfTasks"></div></section>
         </div>
+        <section class="config" aria-labelledby="shfEngH"><h2 id="shfEngH" tabindex="-1">Activities and mood</h2>
+          <p class="hint" style="margin-top:0">Record how each resident took part and how they were, by alias. The SBAR handoff sheet is made from these records, the notes and the open tasks.</p>
+          <div class="shf-grid"><div id="shfEngForm"></div><div><p class="shf-sum" id="shfEngSum" role="status"></p><ul class="shf-list" id="shfEngList"></ul></div></div></section>
         <section class="config shf-more" aria-labelledby="shfMoreH"><h2 id="shfMoreH">Back up, keep and clear</h2><div id="shfMore"></div></section>
       </div>`;
     root = document.getElementById("shfRoot");
@@ -8306,6 +8475,7 @@ const DailyOpsUI = (function(){
     set("shfMeHint", (c ? `Writing as ${c}. ` : "") + "Initials show who wrote each note and task. They are forgotten after 15 minutes without use, so the next person starts fresh.");
     set("shfNoteAs", c ? "Writing as " + c : "Choose your initials first");
     set("shfTaskAs", c ? "Writing as " + c : "Choose your initials first");
+    set("shfEngAs", c ? "Writing as " + c : "Choose your initials first");
   }
   function renderWhen(){
     const box = q("#shfWhen"); if (!box) return;
@@ -8317,7 +8487,8 @@ const DailyOpsUI = (function(){
       <fieldset class="field"><legend>Shift</legend><div class="seg">${[["all", "All shifts"]].concat(D.SHIFTS.map(s => [s.id, s.label])).map(([v, t]) => `<label><input type="radio" name="shfShift" value="${v}" ${v === S.shift ? "checked" : ""}><span>${esc(t)}</span></label>`).join("")}</div>
         <p class="hint">${D.SHIFTS.map(s => `${esc(s.label)}: ${esc(s.hours)}`).join(". ")}. A night shift belongs to the day it began.</p></fieldset>
       <p class="shf-sum" id="shfSum" role="status"></p>
-      <div class="actions"><button class="btn btn-primary" type="button" id="shfPrint">Print handoff sheet</button></div>`;
+      ${window.CogniPrivacy ? window.CogniPrivacy.choiceHtml("shfNames", settings.exportNames, "Names on printed sheets") : ""}
+      <div class="actions"><button class="btn btn-primary" type="button" id="shfSbar">Generate Shift Handoff Summary (SBAR)</button><button class="btn" type="button" id="shfPrint">Print handoff sheet</button></div>`;
   }
   const aboutSelect = (id, cur) => {
     const ch = D.aliasChoices(known), listed = !cur || ch.choices.indexOf(cur) >= 0;
@@ -8330,7 +8501,29 @@ const DailyOpsUI = (function(){
   const shiftOptions = (cur, any) => (any ? `<option value="">Any time</option>` : "") + D.SHIFTS.map(s => `<option value="${s.id}" ${s.id === cur ? "selected" : ""}>${esc(s.label)}</option>`).join("");
 
   /* The two forms. A note or task being edited fills them; otherwise they start fresh. */
-  function renderForms(){ renderNoteForm(); renderTaskForm(); }
+  function renderForms(){ renderNoteForm(); renderTaskForm(); renderEngForm(); }
+  const ICON_PART = { declined:svg('<circle cx="12" cy="12" r="9"/><path d="M8 12h8"/>'), watched:ICON.watch, joined:svg('<path d="M20 6L9 17l-5-5"/>'), engaged:svg('<path d="M12 21s-7-4.6-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 11c0 5.4-7 10-7 10z"/>') };
+  function residentSelect(id){
+    const ch = D.aliasChoices(known);
+    return `<select id="${id}"><option value="">Choose a resident</option>${ch.choices.map(a => `<option value="${esc(a)}">${esc(a)}</option>`).join("")}<option value="__other">Another room or group&hellip;</option></select>
+      <input id="${id}Other" type="text" maxlength="32" autocomplete="off" aria-label="Room or group" placeholder="Room 12, Maple 2&hellip;" hidden style="margin-top:8px">`;
+  }
+  function renderEngForm(){
+    const box = q("#shfEngForm"); if (!box) return;
+    const now = D.slotAt(), onToday = S.day === today(), acts = (window.CogniFacility ? window.CogniFacility.CATALOG.map(a => a.name) : []).concat(["Music circle", "Reminiscence group", "Exercise class", "Garden walk"]);
+    box.innerHTML = `<form id="shfEng" novalidate>
+        <div class="field"><label for="shfEWho">Resident</label>${residentSelect("shfEWho")}</div>
+        <div class="field"><label for="shfEAct">Activity</label><input id="shfEAct" type="text" maxlength="${D.LIMITS.ACTIVITY_CHARS}" autocomplete="off" list="shfActs" placeholder="Music circle"><datalist id="shfActs">${Array.from(new Set(acts)).map(a => `<option value="${esc(a)}">`).join("")}</datalist></div>
+        <fieldset class="field"><legend>How they took part</legend><div class="seg">${D.PARTICIPATION.map(p => `<label><input type="radio" name="shfEPart" value="${p.id}"><span>${ICON_PART[p.id]}${esc(p.label)}</span></label>`).join("")}</div></fieldset>
+        <fieldset class="field"><legend>Their mood <span class="hint">(optional)</span></legend><div class="seg">${D.MOODS.map(m => `<label><input type="radio" name="shfEMood" value="${m.id}"><span>${esc(m.label)}</span></label>`).join("")}</div></fieldset>
+        <div class="field"><label for="shfENote">A few words <span class="hint">(optional)</span></label><input id="shfENote" type="text" maxlength="${D.LIMITS.ENGAGE_NOTE_CHARS}" autocomplete="off" placeholder="Hummed along to the second song"></div>
+        <div class="row2"><div class="field"><label for="shfETime">Time</label><input id="shfETime" type="time" value="${onToday ? esc(now.time) : ""}"></div>
+          <div class="field"><label for="shfEShift">Shift</label><select id="shfEShift">${shiftOptions(S.shift !== "all" ? S.shift : onToday ? now.shift : "day", false)}</select></div></div>
+        <div id="shfEWarn" aria-live="polite"></div>
+        <div class="actions"><button class="btn btn-primary" type="submit">Add record</button></div>
+        <p class="hint" id="shfEngAs" role="status"></p></form>`;
+    updateAs();
+  }
   function renderNoteForm(){
     const ed = S.edit, note = ed && ed.type === "note" ? board.notes.filter(n => n.id === ed.id)[0] : null;
     const now = D.slotAt(), onToday = S.day === today(), kind = note ? note.kind : S.kind;
@@ -8385,14 +8578,24 @@ const DailyOpsUI = (function(){
       <span class="shf-acts"><button class="btn btn-sm" type="button" data-edit="task:${esc(t.id)}" aria-label="Edit the task: ${esc(t.what)}">Edit</button><button class="btn btn-sm btn-danger" type="button" data-del="task:${esc(t.id)}" aria-label="Delete the task: ${esc(t.what)}">Delete</button></span></li>`;
   }
   function renderLists(){
-    const t0 = today(), notes = D.notesFor(board, S.day, S.shift), view = D.tasksFor(board, S.day, S.shift, t0), open = view.today.filter(t => !t.done).length + view.carried.length;
+    const t0 = today(), notes = D.notesFor(board, S.day, S.shift, wingNow()), view = D.tasksFor(board, S.day, S.shift, t0, wingNow()), open = view.today.filter(t => !t.done).length + view.carried.length;
     keepFocus(() => {
       q("#shfNotes").innerHTML = notes.length ? notes.map(noteHtml).join("") : `<li class="shf-empty">No notes for ${esc(S.shift === "all" ? "this day" : D.shiftLabel(S.shift).toLowerCase())} yet. Add one above.</li>`;
       q("#shfTasks").innerHTML = (view.carried.length ? `<h3 class="shf-sub-h">Carried forward</h3><p class="hint" style="margin-top:4px">Still open from an earlier day.</p><ul class="shf-list">${view.carried.map(t => taskHtml(t, true)).join("")}</ul>` : "")
         + (view.today.length ? (view.carried.length ? `<h3 class="shf-sub-h">${S.day === t0 ? "Today" : esc(D.dayShort(S.day))}</h3>` : "") + `<ul class="shf-list">${view.today.map(t => taskHtml(t, false)).join("")}</ul>` : view.carried.length ? "" : `<p class="shf-empty">No tasks for this day yet. Give one above.</p>`);
     });
+    renderEngList();
     const sum = q("#shfSum");
     if (sum) sum.textContent = `${S.day === t0 ? "Today, " : ""}${D.dayLabel(S.day)} · ${D.shiftLabel(S.shift)}: ${pl(notes.length, "note", "notes")}, ${pl(open, "open task", "open tasks")}${view.carried.length ? ` (${view.carried.length} carried forward)` : ""}`;
+  }
+  function renderEngList(){
+    const box = q("#shfEngList"); if (!box) return;
+    const list = D.engagementsFor(board, S.day, S.shift, wingNow()), rows = D.engageSummary(list), sum = q("#shfEngSum");
+    box.innerHTML = list.length ? list.map(e => `<li class="shf-entry"><div class="shf-top"><span class="shf-kind">${ICON_PART[e.participation]}${esc(D.participationOf(e.participation).label)}</span><span class="shf-when">${esc([D.timeLabel(e.time), S.shift === "all" ? D.shiftLabel(e.shift) : ""].filter(Boolean).join(" · "))}</span></div>
+        <p class="shf-text"><b class="ops-name">${esc(e.resident)}</b> · ${esc(e.activity)}${e.mood ? " · " + esc(D.moodOf(e.mood).label) : ""}${e.note ? "<br>" + esc(e.note) : ""}</p>
+        <div class="shf-foot"><span class="shf-by">Recorded by ${esc(e.by || "unknown")}</span><span class="shf-acts"><button class="btn btn-sm btn-danger" type="button" data-del="engagement:${esc(e.id)}" aria-label="Delete the record for ${esc(e.resident)}: ${esc(e.activity)}">Delete</button></span></div></li>`).join("")
+      : `<li class="shf-empty">No activity records for ${esc(S.shift === "all" ? "this day" : D.shiftLabel(S.shift).toLowerCase())} yet.</li>`;
+    if (sum) sum.textContent = list.length ? `${pl(rows.length, "resident", "residents")}, ${pl(list.length, "record", "records")}: ${rows.filter(r => r.level >= 1.5).length} joined in or more, ${rows.filter(r => r.flagged.length).length} with a mood to keep an eye on.` : "";
   }
   /* A list is redrawn after every change; the control the person was on keeps focus. */
   function keepFocus(fn){
@@ -8458,7 +8661,7 @@ const DailyOpsUI = (function(){
     const insp = inspect(f.text, f.about);
     if (insp.hits.length && !S.nameOK.note){ showWarn("note", insp, true); return; }
     const old = S.edit && S.edit.type === "note" ? board.notes.filter(n => n.id === S.edit.id)[0] : null;
-    const made = D.makeNote(Object.assign({ day:old ? old.day : S.day, by:S.me }, f), new Date(), old || undefined, S.me);
+    const made = D.makeNote(Object.assign({ day:old ? old.day : S.day, by:S.me, wing:wingTag() }, f), new Date(), old || undefined, S.me);
     if (!made.note){ toast(made.problems[0]); (made.problems[0] === "Write what to pass on." ? q("#shfNText") : q("#shfNote")).focus(); return; }
     S.kind = "pass"; S.nameOK.note = false; S.edit = null;       // each note starts as "Pass along": the quietest kind, so nothing is flagged by habit
     if (commit(b => D.withNote(b, made.note), old ? "Note saved." : "Note added.")){
@@ -8472,7 +8675,7 @@ const DailyOpsUI = (function(){
     const insp = inspect(f.what, f.about);
     if (insp.hits.length && !S.nameOK.task){ showWarn("task", insp, true); return; }
     const old = S.edit && S.edit.type === "task" ? board.tasks.filter(t => t.id === S.edit.id)[0] : null;
-    const made = D.makeTask(Object.assign({ by:S.me }, f), new Date(), old || undefined, S.me);
+    const made = D.makeTask(Object.assign({ by:S.me, wing:wingTag() }, f), new Date(), old || undefined, S.me);
     if (!made.task){ toast(made.problems[0]); (made.problems[0] === "Say what needs doing." ? q("#shfTWhat") : q("#shfTDay")).focus(); return; }
     S.nameOK.task = false; S.edit = null;
     const elsewhere = made.task.day !== S.day;
@@ -8480,21 +8683,41 @@ const DailyOpsUI = (function(){
       renderTaskForm(); q("#shfTWhat").focus({ preventScroll:true });
     }
   }
+  function engInspect(){
+    const who = aboutOf("shfEWho"), a = D.checkNames(val("shfEAct"), known), n = D.checkNames(val("shfENote"), known), w = D.checkNames(who, known);
+    return { hits:a.hits.concat(n.hits.filter(h => a.hits.indexOf(h) < 0)).concat(w.hits.filter(h => a.hits.concat(n.hits).indexOf(h) < 0)), act:a.fixed, note:n.fixed, who:w.fixed };
+  }
+  function engWarn(block){
+    const box = q("#shfEWarn"); if (!box) return; const insp = engInspect();
+    box.innerHTML = insp.hits.length ? `<div class="shf-warn"><p><b>This includes ${insp.hits.length === 1 ? "a name" : "names"}: ${esc(insp.hits.join(", "))}.</b> The board keeps records by alias.</p>
+      <div class="actions"><button class="btn btn-primary" type="button" data-fix="eng">Use the alias</button><button class="btn" type="button" data-keep="eng">Keep as written${block ? " and save" : ""}</button></div></div>` : "";
+    if (block && insp.hits.length){ const b = box.querySelector("button"); if (b) b.focus(); }
+  }
+  function submitEng(){
+    if (!needMe()) return;
+    loadKnown();
+    const f = { resident:aboutOf("shfEWho"), activity:val("shfEAct"), participation:(q('input[name="shfEPart"]:checked') || {}).value, mood:(q('input[name="shfEMood"]:checked') || {}).value, note:val("shfENote"), time:val("shfETime"), shift:val("shfEShift") };
+    if (engInspect().hits.length && !S.nameOK.eng){ engWarn(true); return; }
+    const made = D.makeEngagement(Object.assign({ day:S.day, by:S.me, wing:wingTag() }, f), new Date(), undefined, S.me);
+    if (!made.entry){ toast(made.problems[0]); return; }
+    S.nameOK.eng = false;
+    if (commit(b => D.withEngagement(b, made.entry), "Record added.")){ renderEngForm(); const w = q("#shfEWho"); if (w) w.focus({ preventScroll:true }); }
+  }
   function toggleDone(id, done){
     if (!needMe()){ renderLists(); return; }
     commit(b => D.setTaskDone(b, id, done, S.me), done ? "Marked done." : "Reopened.");
   }
   function removeEntry(type, id){
-    const list = type === "note" ? board.notes : board.tasks, item = list.filter(x => x.id === id)[0]; if (!item) return;
+    const list = type === "note" ? board.notes : type === "engagement" ? board.engagements : board.tasks, item = list.filter(x => x.id === id)[0]; if (!item) return;
     if (!commit(b => D.withoutEntry(b, type, id))) return;
     lastRemoved = { type, item };
     if (S.edit && S.edit.id === id){ S.edit = null; renderForms(); }
-    toast(type === "note" ? "Note deleted." : "Task deleted.", "Undo", () => {
+    toast(type === "note" ? "Note deleted." : type === "engagement" ? "Record deleted." : "Task deleted.", "Undo", () => {
       if (!lastRemoved) return;
-      const gone = lastRemoved; commit(b => gone.type === "note" ? D.withNote(b, gone.item) : D.withTask(b, gone.item), "Restored.");
+      const gone = lastRemoved; commit(b => gone.type === "note" ? D.withNote(b, gone.item) : gone.type === "engagement" ? D.withEngagement(b, gone.item) : D.withTask(b, gone.item), "Restored.");
       lastRemoved = null;
     });
-    const h = q(type === "note" ? "#shfNotesH" : "#shfTasksH"); if (h) h.focus({ preventScroll:true });
+    const h = q(type === "note" ? "#shfNotesH" : type === "engagement" ? "#shfEngH" : "#shfTasksH"); if (h) h.focus({ preventScroll:true });
   }
 
   /* ---------- printing, backups, clearing ---------- */
@@ -8509,18 +8732,32 @@ const DailyOpsUI = (function(){
     host.remove();
     return bad;
   }
-  async function sheetPages(h){
-    const ctx = { facility:settings.facility || "", today:today() };
-    try { await Promise.all(["400", "700", "italic 400"].map(w => document.fonts.load(w + ' 16px "Atkinson Hyperlegible"'))); } catch (e){ /* a browser that cannot load it measures the fallback face */ }
-    let pages = D.handoffPages(h, ctx);
+  async function sheetPages(h, make){
+    const ctx = { facility:settings.facility || "", today:today() }, build = make || D.handoffPages;
+    try { await Promise.all(["400", "700", "italic 400"].map(w => document.fonts.load(w + ' 16px "Atkinson Hyperlegible"')).concat([document.fonts.load('700 16px "Fraunces"')])); } catch (e){ /* a browser that cannot load it measures the fallback face */ }
+    let pages = build(h, ctx);
     for (const fit of [0.85, 0.7, 0.55]){
       if (!cutOff(pages)) break;
-      pages = D.handoffPages(h, Object.assign({ fit }, ctx));
+      pages = build(h, Object.assign({ fit }, ctx));
     }
     return pages;
   }
+  /* The board as the printed sheet sees it: names found in the text are replaced by their aliases (or removed, with "Remove names and personal details"). */
+  function sheetBoard(){
+    const P = window.CogniPrivacy, pick = q('[data-privacy-choice="shfNames"] input:checked'), level = P ? P.levelOf(pick ? pick.value : settings.exportNames) : "keep";
+    if (!P || level === "keep") return board;
+    const people = BookUI.allProfiles(), f = t => P.scrubText(t, people, level).text;
+    return Object.assign({}, board, { notes:board.notes.map(n => Object.assign({}, n, { text:f(n.text), about:f(n.about) })), tasks:board.tasks.map(t => Object.assign({}, t, { what:f(t.what), about:f(t.about) })),
+      engagements:board.engagements.map(e => Object.assign({}, e, { resident:f(e.resident), activity:f(e.activity), note:f(e.note) })) });
+  }
+  async function printSbar(){
+    const sb = D.sbar(sheetBoard(), S.day, S.shift, new Date(), wingNow());
+    if (sb.empty && !confirm("There is nothing recorded for this day and shift. Print a blank SBAR sheet?")) return;
+    const pages = (await sheetPages(sb, D.sbarPages)).map(html => ({ html }));
+    BookUI.print(pages, ["SBAR handoff", S.day, S.shift === "all" ? "all shifts" : S.shift].join(" - "), null);
+  }
   async function printSheet(){
-    const h = D.handoff(board, S.day, S.shift, new Date());
+    const h = D.handoff(sheetBoard(), S.day, S.shift, new Date(), wingNow());
     if (!h.groups.some(g => g.notes.length) && !h.open.length && !h.done.length && !confirm("There is nothing recorded for this day and shift. Print a blank handoff sheet?")) return;
     const pages = (await sheetPages(h)).map(html => ({ html }));
     BookUI.print(pages, ["Shift handoff", S.day, S.shift === "all" ? "all shifts" : S.shift].join(" - "), null);
@@ -8573,13 +8810,20 @@ const DailyOpsUI = (function(){
   function onClick(e){
     const b = e.target.closest("button"); if (!b || !root.contains(b)) return;
     if (b.dataset.day){ setDay(b.dataset.day === "today" ? today() : D.addDays(S.day, +b.dataset.day)); return; }
+    if (b.id === "shfSbar") return printSbar().catch(err => toast("The sheet could not be made: " + (err && err.message || err)));
     if (b.id === "shfPrint") return printSheet().catch(err => toast("The sheet could not be made: " + (err && err.message || err)));
     if (b.id === "shfBk") return backup();
     if (b.id === "shfRs") return restore();
     if (b.dataset.edit){ const [type, id] = b.dataset.edit.split(":"); S.edit = { type, id }; renderForms(); return; }
     if (b.dataset.del){ const [type, id] = b.dataset.del.split(":"); return removeEntry(type, id); }
-    if (b.dataset.cancel){ S.edit = null; S.nameOK = { note:false, task:false }; renderForms(); return; }
+    if (b.dataset.cancel){ S.edit = null; S.nameOK = { note:false, task:false, eng:false }; renderForms(); return; }
+    if (b.dataset.fix === "eng"){
+      const i = engInspect(); q("#shfEAct").value = i.act; q("#shfENote").value = i.note;
+      const sel = q("#shfEWho"); if (sel.value === "__other") q("#shfEWhoOther").value = i.who;
+      S.nameOK.eng = false; engWarn(false); return;
+    }
     if (b.dataset.fix) return applyAlias(b.dataset.fix);
+    if (b.dataset.keep === "eng"){ S.nameOK.eng = true; return submitEng(); }
     if (b.dataset.keep){ S.nameOK[b.dataset.keep] = true; return b.dataset.keep === "note" ? submitNote() : submitTask(); }
     if (b.dataset.forget){ if (commit(x => D.forgetInitials(x, b.dataset.forget))){ if (S.me === b.dataset.forget) S.me = ""; renderWho(); renderTaskForm(); renderMore(); } return; }
     if (b.id === "shfClear"){
@@ -8593,11 +8837,13 @@ const DailyOpsUI = (function(){
     if (t.name === "shfMe"){ S.me = t.value; S.meAt = Date.now(); updateAs(); return; }
     if (t.name === "shfShift"){ S.shift = t.value; S.edit = null; renderForms(); renderLists(); return; }
     if (t.name === "shfKind"){ S.kind = t.value; return; }
+    if (t.name === "shfNames"){ settings.exportNames = window.CogniPrivacy.levelOf(t.value); store.set("cgb_settings", settings); return; }
     if (t.id === "shfDay"){ setDay(t.value); return; }
     if (t.id === "shfNAbout" || t.id === "shfTAbout"){
       const other = q("#" + t.id + "Other"); other.hidden = t.value !== "__other"; if (!other.hidden) other.focus();
       S.nameOK[t.id === "shfNAbout" ? "note" : "task"] = false; updateWarn(t.id === "shfNAbout" ? "note" : "task"); return;
     }
+    if (t.id === "shfEWho"){ const other = q("#shfEWhoOther"); other.hidden = t.value !== "__other"; if (!other.hidden) other.focus(); S.nameOK.eng = false; engWarn(false); return; }
     if (t.dataset.done){ toggleDone(t.dataset.done, t.checked); return; }
     if (t.id === "shfKeep"){
       const p = D.prune(D.setKeepDays(readBoard(), +t.value), today());
@@ -8609,6 +8855,7 @@ const DailyOpsUI = (function(){
     const t = e.target;
     if (t.id === "shfNText" || t.id === "shfNAboutOther"){ S.nameOK.note = false; countNote(); clearTimeout(warnTimer); warnTimer = setTimeout(() => updateWarn("note"), 300); }
     else if (t.id === "shfTWhat" || t.id === "shfTAboutOther"){ S.nameOK.task = false; clearTimeout(warnTimer); warnTimer = setTimeout(() => updateWarn("task"), 300); }
+    else if (t.id === "shfEAct" || t.id === "shfENote" || t.id === "shfEWhoOther"){ S.nameOK.eng = false; clearTimeout(warnTimer); warnTimer = setTimeout(() => engWarn(false), 300); }
     else if (t.id === "shfInit"){ const c = D.cleanInitials(t.value); if (c !== t.value) t.value = c; }
   }
   function onSubmit(e){
@@ -8616,6 +8863,7 @@ const DailyOpsUI = (function(){
     const id = e.target.id;
     if (id === "shfNote") submitNote();
     else if (id === "shfTask") submitTask();
+    else if (id === "shfEng") submitEng();
     else if (id === "shfMeForm"){
       const c = D.cleanInitials(val("shfInit"));
       if (!c){ toast("Type your initials, such as MR."); q("#shfInit").focus(); return; }
@@ -9062,6 +9310,10 @@ const FacilityUI = (function(){
   }
   function animate(el){ if (!el || reduced()) return; el.classList.remove("fp-anim"); void el.offsetWidth; el.classList.add("fp-anim"); }
   function download(name, text, type){
+    if (window.CogniPrivacy && /^text\/(csv|calendar)/.test(type)){        // spreadsheets and calendar files follow the names choice; the locked backup does not
+      const pick = root && root.querySelector('[data-privacy-choice="fpNames"] input:checked');
+      text = window.CogniPrivacy.scrubText(text, BookUI.allProfiles(), window.CogniPrivacy.levelOf(pick ? pick.value : settings.exportNames)).text;
+    }
     const url = URL.createObjectURL(new Blob([text], { type }));
     const a = document.createElement("a"); a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(url), 2000);
@@ -9162,6 +9414,8 @@ const FacilityUI = (function(){
           <label for="fpRole">Viewing as</label>
           <select id="fpRole">${fac.team.map(t => `<option value="${esc(t.id)}" ${t.id === m.id ? "selected" : ""}>${esc(t.name)}${t.name === F.ROLES[t.role].label ? "" : " · " + esc(F.ROLES[t.role].label)}</option>`).join("")}</select>
           <p class="fp-who-note">${esc(F.ROLES[m.role].summary)} A view on this computer, not a login.</p>
+          <label for="fpWingShown">Residents shown</label>
+          ${wingSelectHtml("fpWingShown")}
         </div>
       </div>
       <div class="fp-tablist" role="tablist" aria-label="Portal sections">${tabs.map(([id, label, n]) => `<button type="button" role="tab" class="fp-tab" id="fpTab-${esc(id)}" data-tab="${esc(id)}" aria-controls="fpBody" aria-selected="${id === S.tab}" tabindex="${id === S.tab ? 0 : -1}" title="${esc(label)}"><span class="fp-tab-l">${esc(label)}</span>${n ? `<span class="fp-tab-n">${n}<span class="sr-only"> ${n === "1" ? "group" : "groups"}</span></span>` : ""}</button>`).join("")}</div>`;
@@ -9173,7 +9427,7 @@ const FacilityUI = (function(){
     if (S.tab === "audit") body.innerHTML = auditHtml();
     else if (S.tab === "team") body.innerHTML = teamHtml();
     else if (w) body.innerHTML = wingHtml(w);
-    else body.innerHTML = overviewHtml();
+    else { body.innerHTML = overviewHtml() + CensusUI.html("fp"); CensusUI.bind(body, "fp", () => { renderBar(); renderBody(false); }); }
     if (w) renderSub(false);
     if (anim !== false) animate(body);
     syncHash();
@@ -9790,7 +10044,8 @@ const FacilityUI = (function(){
             <button type="button" class="fp-btn" data-act="csv">${IC.download}Spreadsheet (CSV)</button>
             <button type="button" class="fp-btn" data-act="ics">${IC.download}Calendar (.ics)</button>
           </div>
-          <p class="fp-hint">Files hold group names, times and activities only, never a resident's name. A calendar file opens in Outlook, Google Calendar or Apple Calendar.</p>
+          <p class="fp-hint">Files hold group names, times and activities. A calendar file opens in Outlook, Google Calendar or Apple Calendar.</p>
+          ${window.CogniPrivacy ? window.CogniPrivacy.choiceHtml("fpNames", settings.exportNames, "Names in these files") : ""}
         </section>
         ${first ? `<section class="fp-card" aria-labelledby="fpPvH"><h3 id="fpPvH">Cover preview</h3><p class="fp-hint">${esc(first.p.group.name)}, ${esc(weekLabel(S.week))}</p><div class="fp-thumb" aria-hidden="true">${coverPages(w, first.p)[0]}</div></section>` : ""}
       </div>
@@ -10073,6 +10328,16 @@ const FacilityUI = (function(){
   }
   function onChange(e){
     const t = e.target, w = wing();
+    if (t.name === "fpNames"){ settings.exportNames = window.CogniPrivacy.levelOf(t.value); store.set("cgb_settings", settings); return; }
+    if (t.id === "fpWingShown"){                       // one wing's residents at a time; the others stay saved, never mixed in
+      settings.activeWing = t.value === "__all" ? null : t.value === "__none" ? "" : t.value.slice(2);
+      if (settings.activeWing) settings.wing = settings.activeWing;
+      store.set("cgb_settings", settings);
+      renderBar(); renderBody(true);
+      const sel = root.querySelector("#fpWingShown"); if (sel) sel.focus();
+      announce(settings.activeWing == null ? "Showing residents from every wing." : settings.activeWing === "" ? "Showing residents with no wing." : "Showing residents of " + settings.activeWing + ".");
+      return;
+    }
     if (t.id === "fpRole"){
       if (!fac.team.some(m => m.id === t.value)) return;
       writeFacility(Object.assign({}, fac, { active:t.value }));
@@ -14547,6 +14812,40 @@ function updatePreview(){
   if (selectedAct.optionsNote && $("#optNote")) $("#optNote").textContent = selectedAct.optionsNote(cfg);
 }
 
+/* The wings on this computer: those on saved profiles plus those named in the Facility Portal. A choice of null shows every wing. */
+function wingChoices(){
+  const C = window.CogniCensus, found = C ? C.wingsIn(BookUI.allProfiles()) : { wings: [], unassigned: 0 }, by = new Map();
+  found.wings.forEach(w => by.set(w.key, { name: w.name, count: w.count }));
+  try {
+    const f = JSON.parse(CG_LS.getItem("cognicopia_facility") || "null");
+    ((f && f.wings) || []).forEach(w => { const k = C ? C.wingKey(w.name) : ""; if (k && !by.has(k)) by.set(k, { name: C.cleanWing(w.name), count: 0 }); });
+  } catch (e){}
+  return { list: Array.from(by.values()).sort((a, b) => a.name.localeCompare(b.name)), unassigned: found.unassigned };
+}
+function wingSelectHtml(id){
+  const ch = wingChoices(), cur = settings.activeWing, C = window.CogniCensus;
+  const opt = (v, label, on) => `<option value="${esc(v)}" ${on ? "selected" : ""}>${esc(label)}</option>`;
+  return `<select id="${id}">${opt("__all", "All wings (no separation)", cur == null)}` +
+    ch.list.map(w => opt("w:" + w.name, w.name + " (" + w.count + (w.count === 1 ? " resident)" : " residents)"), cur != null && C && C.wingKey(cur) === C.wingKey(w.name))).join("") +
+    (ch.unassigned ? opt("__none", "No wing yet (" + ch.unassigned + (ch.unassigned === 1 ? " resident)" : " residents)"), cur === "") : "") + `</select>`;
+}
+function bindWingSelect(id, after){
+  const el = $(id); if (!el) return;
+  el.addEventListener("change", () => {
+    const v = el.value;
+    settings.activeWing = v === "__all" ? null : v === "__none" ? "" : v.slice(2);
+    if (settings.activeWing) settings.wing = settings.activeWing;               // the wing's name is printed at the top of every page
+    saveSettings(); if (after) after();
+  });
+}
+/* What this page has asked other websites for since it opened (the browser's own list of requests). */
+function networkReport(){
+  let outside = 0, total = 0;
+  try {
+    performance.getEntriesByType("resource").forEach(e => { total++; try { const u = new URL(e.name); if (u.protocol.indexOf("http") === 0 && u.origin !== location.origin) outside++; } catch (err){} });
+  } catch (e){}
+  return { outside, total };
+}
 function renderSettings(){
   view.innerHTML = `
     <p class="eyebrow">Settings</p>
@@ -14567,6 +14866,9 @@ function renderSettings(){
       <div class="field"><label for="setWing">Facility wing or unit</label>
         <input id="setWing" type="text" maxlength="40" value="${esc(settings.wing)}" autocomplete="off" placeholder="Maple Wing">
         <p class="hint">Printed at the top of every page, beside the date.</p></div>
+      <div class="field"><label for="setActiveWing">Wing shown on this computer</label>
+        ${wingSelectHtml("setActiveWing")}
+        <p class="hint">Choose a wing and the roster, pickers and Shift board show only that wing&rsquo;s residents. Another wing&rsquo;s residents stay saved and are never mixed in. Residents are placed in a wing on their profile or by the census import.</p></div>
       <label class="switch" for="setBW">
         <input type="checkbox" id="setBW" checked disabled>
         <span><b>Pure Black &amp; White</b><small>Always on: every printed page is pure black (#000000) on white (#ffffff), with no grey and no hairlines. This screen stays exactly as it is.</small></span>
@@ -14581,6 +14883,7 @@ function renderSettings(){
     </div>
     <div class="config" id="setPrivacy">
       <h2>Privacy &amp; encryption</h2>
+      <div class="enc-state pv-banner" id="pvBanner" role="status"></div>
       <div class="enc-state" id="encState" role="status"></div>
       <div id="encControls"></div>
       <h3 style="margin:22px 0 8px">Aliases</h3>
@@ -14593,6 +14896,7 @@ function renderSettings(){
         <span><b>Use aliases in file names and print titles</b><small>Downloaded PDFs and the print window&rsquo;s title use the alias, so no name lands in a shared downloads folder or print queue.</small></span>
       </label>
       <p class="hint">An alias is the one set on the resident&rsquo;s profile, or &ldquo;Resident&rdquo; and their room or unit, or a short code.</p>
+      ${window.CogniPrivacy ? window.CogniPrivacy.choiceHtml("setExportNames", settings.exportNames, "Names in exported files and printed reports (the starting choice)") : ""}
     </div>
     <div class="config">
       <h2>Shared computer?</h2>
@@ -14615,6 +14919,10 @@ function renderSettings(){
     $("#setMsg").textContent = ok ? "Unlocked. Thank you!" : (keyMsg || "That code didn't match. Check it against your receipt.");
     showLic(); renderAllowance();
   });
+  bindWingSelect("#setActiveWing", renderSettings);
+  const pvb = $("#pvBanner"), net = networkReport();
+  if (pvb) pvb.innerHTML = `<span class="enc-dot" aria-hidden="true"></span><span><b>No telemetry, no tracking</b>Cognicopia has no analytics, advertising, error reporting or outside services. Resident details are kept only in this browser&rsquo;s storage on this computer and are never sent anywhere. Since this page opened it has made <b>${net.outside}</b> request${net.outside === 1 ? "" : "s"} to other websites (${net.total} file${net.total === 1 ? "" : "s"} in all, all from this site).</span>`;
+  document.querySelectorAll('[data-privacy-choice="setExportNames"] input').forEach(r => r.addEventListener("change", () => { settings.exportNames = r.value; saveSettings(); }));
   $("#setAliasScreen").addEventListener("change", e => { settings.aliasScreen = e.target.checked; saveSettings(); });
   $("#setAliasFiles").addEventListener("change", e => { settings.aliasFiles = e.target.checked; saveSettings(); });
   renderEncryption();
