@@ -12219,25 +12219,18 @@ function generateAilmentPDF(ailmentType, pick) {
 
   /* ---------------- Read to Me: the device's own voices ---------------- */
   var canSpeak = "speechSynthesis" in window && typeof window.SpeechSynthesisUtterance === "function";
-  function pickVoice(){
-    var list = window.speechSynthesis.getVoices() || [];
-    var en = list.filter(function(v){ return /^en/i.test(v.lang); });
-    // Prefer voices installed on the device: they work with no internet.
-    return en.filter(function(v){ return v.localService; })[0] || list.filter(function(v){ return v.localService; })[0] || en[0] || null;
-  }
   function speak(text){
     if (!canSpeak || !text) return false;
-    try {
-      var synth = window.speechSynthesis;
-      synth.cancel();
-      var u = new SpeechSynthesisUtterance(text);
-      u.rate = 0.85; u.pitch = 1; u.volume = 1; u.lang = "en-US";
-      var v = pickVoice(); if (v){ u.voice = v; u.lang = v.lang; }
-      synth.speak(u);
-      return true;
+    if (window.CogniVoice) return window.CogniVoice.speak(text);
+    try {                                   // the voice kit did not load: the device's own first local voice
+      var synth = window.speechSynthesis; synth.cancel();
+      var u = new SpeechSynthesisUtterance(text), vs = synth.getVoices() || [];
+      var v = vs.filter(function(x){ return /^en/i.test(x.lang) && x.localService; })[0];
+      u.rate = 0.9; u.pitch = 1; u.volume = 1; u.lang = "en-US"; if (v){ u.voice = v; u.lang = v.lang; }
+      synth.speak(u); return true;
     } catch (e){ return false; }
   }
-  function stopSpeaking(){ try { if (canSpeak) window.speechSynthesis.cancel(); } catch (e){} }
+  function stopSpeaking(){ try { if (window.CogniVoice) window.CogniVoice.stop(); else if (canSpeak) window.speechSynthesis.cancel(); } catch (e){} }
 
   /* ---------------- gentle confetti ---------------- */
   function burst(x, y){
@@ -12486,7 +12479,7 @@ function generateAilmentPDF(ailmentType, pick) {
     var root = document.createElement("div");
     root.className = "tb"; root.id = "tabletMode";
     root.setAttribute("role", "dialog"); root.setAttribute("aria-modal", "true"); root.setAttribute("aria-label", "Tablet activity mode");
-    var sayBtn = function(which){ return canSpeak ? '<button type="button" class="tb-btn tb-say" data-say="' + which + '">🔊 Read to Me</button>' : ""; };
+    var sayBtn = function(which){ return canSpeak ? '<button type="button" class="tb-btn tb-say" data-say="' + which + '">🔊 Read to Me</button> <button type="button" class="tb-btn tb-say tb-voice" data-voice="1" aria-label="Voice settings: choose a voice and pace, and hear a sample">Voice settings</button>' : ""; };
     root.innerHTML =
       '<div class="tb-top">' +
         '<p class="tb-hello"' + (S.src.name ? ' title="' + esc(S.src.name) + '"' : "") + ">" + (S.src.name ? 'Hello, <b class="tb-name">' + esc(S.src.name) + "</b>!" : "Welcome!") + "</p>" +
@@ -12736,6 +12729,8 @@ function generateAilmentPDF(ailmentType, pick) {
       if (Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy) * 1.5) cardStep(dx < 0 ? 1 : -1);
     });
     root.addEventListener("click", function(e){
+      var vb = e.target.closest("[data-voice]");
+      if (vb){ if (window.CogniVoice) window.CogniVoice.openPanel({ opener: vb }); return; }
       var s = e.target.closest("[data-say]"); if (!s) return;
       var w = s.getAttribute("data-say");
       if (w === "ws"){
@@ -14464,6 +14459,7 @@ if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol))
 </script>
 <script src="assets/services/stateAuditCompliance.js"></script>
 <script src="assets/services/nightShift.js"></script>
+<script src="js/voiceKit.js"></script>
 <script src="js/careTier.js"></script>
 </body>
 </html>
