@@ -1461,9 +1461,9 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
           <legend>Support tier for printed books</legend>
           <p class="rap-hint rap-hint-top">How much each page of the Life Planner and Life Journal asks, and how large it prints. Choose the tier that lets them finish a page on their own.</p>
           <div class="rap-radios">
-            <label class="rap-check rap-radio"><input type="radio" name="tier" value="1"><span><b>Tier 1 · Full detail</b> multi-step planning and open questions, 14 to 16 pt text</span></label>
-            <label class="rap-check rap-radio"><input type="radio" name="tier" value="2" checked><span><b>Tier 2 · Guided</b> sentence starters and choices to circle, 18 to 20 pt text</span></label>
-            <label class="rap-check rap-radio"><input type="radio" name="tier" value="3"><span><b>Tier 3 · Simplified</b> one word or picture at a time, large boxes, 24 pt and larger</span></label>
+            <label class="rap-check rap-radio"><input type="radio" name="tier" value="1"><span><b>Tier 1 · Mild · GDS 3–4</b> full detail: multi-step planning and open questions, 14 to 16 pt text</span></label>
+            <label class="rap-check rap-radio"><input type="radio" name="tier" value="2" checked><span><b>Tier 2 · Moderate · GDS 5</b> guided: sentence starters and choices to circle, 18 to 20 pt text</span></label>
+            <label class="rap-check rap-radio"><input type="radio" name="tier" value="3"><span><b>Tier 3 · Advanced · GDS 6–7</b> simplified: one word or picture at a time, large boxes, 24 pt and larger</span></label>
           </div>
           <p class="rap-hint rap-auto-note" id="rapTierNote">Suggested from the reading level and the difficulty in Step 5. Choose another tier if it fits better.</p>
         </fieldset>
@@ -1493,8 +1493,9 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
         </fieldset>
 
         <fieldset class="rap-field rap-group">
-          <legend>Topics to avoid</legend>
-          <p class="rap-hint rap-hint-top">Anything that could upset them. These are left out of prompts, trivia and pictures.</p>
+          <legend>Avoidance Protocols &amp; Triggers</legend>
+          <p class="rap-hint rap-hint-top">Anything that could upset them. Every word list, prompt, trivia question and picture made for this resident leaves these out, and the page is drawn again if one slips in. Kept only in this browser.</p>
+          <p class="rap-hint"><b>Topics</b></p>
           <div class="rap-checks" id="rapAvoid">
             <label class="rap-check"><input type="checkbox" name="avoidTopics" value="war"><span>War and combat</span></label>
             <label class="rap-check"><input type="checkbox" name="avoidTopics" value="death"><span>Death and loss</span></label>
@@ -1510,9 +1511,26 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
             <label class="rap-check"><input type="checkbox" name="avoidTopics" value="storms"><span>Storms, fire and disasters</span></label>
           </div>
           <p class="rap-hint rap-auto-note" id="rapWarNote" hidden>War and combat was checked because Step 2 says talking about their service is best avoided.</p>
+          <p class="rap-hint"><b>Military conflict eras</b> <span class="rap-opt">(tick any that were theirs, or that cause distress)</span></p>
+          <div class="rap-checks" id="rapAvoidEras">
+            <label class="rap-check"><input type="checkbox" name="avoidEras" value="era-wwii"><span>World War II (1939–1945)</span></label>
+            <label class="rap-check"><input type="checkbox" name="avoidEras" value="era-korea"><span>Korean War (1950–1953)</span></label>
+            <label class="rap-check"><input type="checkbox" name="avoidEras" value="era-vietnam"><span>Vietnam War (1955–1975)</span></label>
+            <label class="rap-check"><input type="checkbox" name="avoidEras" value="era-gulf"><span>Gulf, Iraq and Afghanistan wars</span></label>
+            <label class="rap-check"><input type="checkbox" name="avoidEras" value="era-coldwar"><span>Cold War and the Cuban missile crisis</span></label>
+          </div>
           <div class="rap-field rap-field-tight">
-            <label for="rapAvoidOther">Other topics to avoid <span class="rap-opt">(optional)</span></label>
-            <input id="rapAvoidOther" name="avoidOther" type="text" maxlength="80" placeholder="e.g., a late son named Tom, the farm fire">
+            <label for="rapAvoidPeople">Loved ones to leave out <span class="rap-opt">(optional)</span></label>
+            <input id="rapAvoidPeople" name="avoidPeople" type="text" maxlength="120" placeholder="Names, separated by commas: e.g., Tom, Aunt Ruth">
+            <p class="rap-hint">People who have passed, or whose name brings distress. Their names are kept off every page.</p>
+          </div>
+          <div class="rap-field rap-field-tight">
+            <label for="rapAvoidPlaces">Places or regions <span class="rap-opt">(optional)</span></label>
+            <input id="rapAvoidPlaces" name="avoidPlaces" type="text" maxlength="120" placeholder="e.g., Normandy, the old farm, Lake Erie">
+          </div>
+          <div class="rap-field rap-field-tight">
+            <label for="rapAvoidOther">Anything else to avoid <span class="rap-opt">(optional)</span></label>
+            <input id="rapAvoidOther" name="avoidOther" type="text" maxlength="80" placeholder="e.g., the farm fire, sirens">
           </div>
         </fieldset>
       </section>
@@ -2211,6 +2229,9 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
         },
         topicsToAvoid: {
           topics: ticks("avoidTopics"),
+          eras: ticks("avoidEras"),
+          people: text("rapAvoidPeople"),
+          places: text("rapAvoidPlaces"),
           other: text("rapAvoidOther")
         },
         difficulty: { level: diffLevel, label: DIFF[diffLevel - 1], scale: "1 (very easy) to 5 (challenging)" }
@@ -2288,6 +2309,7 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
       tvShows: tv.tvShows || "", movies: tv.movies || "", sportsTeams: tv.sportsTeams || "",
       readingLevel: code(pn.readingLevel), vision: code(pn.vision), motor: code(pn.motorSkills),
       avoidTopics: codes((t1.topicsToAvoid || {}).topics), avoidOther: (t1.topicsToAvoid || {}).other || "",
+      avoidEras: codes((t1.topicsToAvoid || {}).eras), avoidPeople: (t1.topicsToAvoid || {}).people || "", avoidPlaces: (t1.topicsToAvoid || {}).places || "",
       activityTypes: codes(t2.activityPreferences),
       difficulty: String((t1.difficulty || {}).level || 3),
       paper: code(pn.paper) || "letter", ink: code(pn.ink) || "bw",
@@ -2405,7 +2427,7 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
         var id = p.preselectedDeescalationActivity;
         return id === "silhouette-match" ? "Soothing shadow matching" : id === "letter-tracing" ? "Trace letters in their name" : id === "line-tracing" ? "Fine-motor line tracing" : "Default: fine-motor line tracing";
       })()],
-      ["Avoid", [labels(t1.topicsToAvoid.topics), t1.topicsToAvoid.other].filter(Boolean).join(", ")],
+      ["Avoid", [labels(t1.topicsToAvoid.topics), labels(t1.topicsToAvoid.eras || []), t1.topicsToAvoid.people, t1.topicsToAvoid.places, t1.topicsToAvoid.other].filter(Boolean).join(", ")],
       ["People and pets", t3.people.map(function(x){ return x.name + (x.passedAway ? " (passed away)" : ""); }).join(", ")]
     ];
     $("rapGlance").innerHTML = rows.map(function(r){

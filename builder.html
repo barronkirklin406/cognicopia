@@ -263,6 +263,8 @@ input:focus,select:focus{border-color:var(--accent)}
 .seg label{position:relative;cursor:pointer}
 .seg input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
 .seg span{display:flex;align-items:center;justify-content:center;min-width:var(--tap);min-height:var(--tap);padding:9px 14px;border-radius:10px;border:1px solid var(--line-2);background:var(--bg-2);font-weight:700;font-size:14.5px}
+.seg span:has(> small){flex-direction:column;gap:2px;line-height:1.25;text-align:center}
+.seg span > small{display:block;font-size:13.5px;font-weight:400}
 .seg input:checked + span{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
 .seg input:focus-visible + span{outline:3px solid var(--accent-hi);outline-offset:2px}
 .actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}
@@ -2574,6 +2576,7 @@ textarea:focus{border-color:var(--accent)}
 .sh-head{border-bottom:max(3pt,var(--ml)) solid #000}
 .sh-head h1,.sh-sub,.num,.sh-inst,.hintx,.sh-meta,.lyr-year,.lyr-part{color:#000}
 .sh-meta{font-size:13pt;font-weight:700}
+.sh-anchor{display:inline-block;margin-top:.02in;font-size:10pt;font-weight:700;color:#000}
 .sh-sub{font-size:max(13pt,var(--fl))}
 .sh-inst{font-size:var(--fl);line-height:1.3}
 .hintx{font-size:max(.75em,var(--fl));font-weight:700}
@@ -7168,8 +7171,8 @@ const CogniLibrary = (function(){
   function residents(){ return (typeof BookUI !== "undefined" ? BookUI.savedProfiles() : []); }
   function resident(){ const id = state().resident; return id ? residents().find(p => p.id === id) || null : null; }
   function avoidList(p){
-    const t = p && p.tier1_core && p.tier1_core.topicsToAvoid;
-    return ((t && t.topics) || []).map(x => typeof x === "object" && x ? String(x.code || "") : String(x || "")).filter(Boolean);
+    const a = avoidForPictures(p);
+    return a.codes.concat(a.words);
   }
   function residentName(){ const p = resident(); return p ? String(p.tier1_core.preferredName || "").trim() : ""; }
 
@@ -7822,7 +7825,7 @@ const ReminiscenceUI = (function(){
   function build(){ const s = state(); return R.deck(profile(), { count:s.count, theme:s.theme, seed:String(s.seed) }); }
   /* The picture: the first of the card's designs the resident's avoid list allows. */
   function artFor(card, tier){
-    const avoid = new Set(((profile().tier1_core || {}).topicsToAvoid || { topics:[] }).topics.map(t => t && t.code));
+    const avoid = new Set(avoidForPictures(profile()).codes);
     const okArt = a => { const d = C.design(a); return d && !(d.sensitive || []).some(x => avoid.has(x)); };
     const id = card.art.filter(okArt)[0] || ["quilt-ohio-star", "sunburst-medallion", "compass-rose"].filter(okArt)[0];   // a calm pattern when every picture is on their avoid list
     const r = C.render(id, tier);
@@ -11415,10 +11418,43 @@ function activateLicense(code){
    Everything the user types is saved as they type. The date is the one
    exception: it always starts as today, so old dates never print. */
 const DIFFICULTIES = {
-  early:    { label: "Early stage" },
-  moderate: { label: "Moderate stage" },
-  advanced: { label: "Advanced stage" }
+  early:    { label: "Early stage",    tier: 1, name: "Mild",     gds: "3\u20134", fast: "3\u20134" },
+  moderate: { label: "Moderate stage", tier: 2, name: "Moderate", gds: "5",        fast: "5" },
+  advanced: { label: "Advanced stage", tier: 3, name: "Advanced", gds: "6\u20137", fast: "6\u20137" }
 };
+/* The tier as a person reads it: "Tier 2 \u00B7 Moderate \u00B7 GDS 5" (the care team's own staging; nothing here assesses anyone). */
+const tierText = k => { const d = DIFFICULTIES[k]; return d ? "Tier " + d.tier + " \u00B7 " + d.name + " \u00B7 GDS " + d.gds : String(k); };
+const tierTwoLine = k => { const d = DIFFICULTIES[k]; return d ? `<b>Tier ${d.tier} \u00B7 ${d.name}</b><small>GDS ${d.gds} \u00B7 FAST ${d.fast}</small>` : esc(k); };
+/* A saved resident's Avoidance Protocols & Triggers as one list of terms: the topics, military eras, loved ones' names, places and anything else
+   typed in (ClinicalMatrix.js turns each code into its words). Read from the encrypted store, used on this computer only. */
+function avoidTermsOf(p){
+  const CMx = window.CognicopiaClinicalMatrix, a = (p && p.tier1_core && p.tier1_core.topicsToAvoid) || {};
+  if (!CMx) return [];
+  return CMx.avoidTerms({ topics:(a.topics || []).map(x => x && x.code), eras:(a.eras || []).map(x => x && x.code), people:a.people, places:a.places, other:a.other });
+}
+/* The same protocol as the picture libraries read it: topic codes (a military era counts as "war") for the pictures' sensitive tags, and the typed
+   names, places and words for what a picture's title or tags say. */
+function avoidForPictures(p){
+  const a = (p && p.tier1_core && p.tier1_core.topicsToAvoid) || {}, codes = (a.topics || []).map(x => x && x.code).filter(Boolean);
+  if ((a.eras || []).length && codes.indexOf("war") < 0) codes.push("war");
+  const words = [a.people, a.places, a.other].map(x => String(x || "").split(/[,;]+/)).reduce((m, l) => m.concat(l), []).map(w => w.trim()).filter(Boolean);
+  return { codes, words };
+}
+/* The therapy anchor for a queued page: "[Therapy: Reminiscence | GDS 5]" (ClinicalMatrix.js holds the table). */
+function therapyAnchor(item){
+  const CMx = window.CognicopiaClinicalMatrix;
+  if (!CMx || !item) return "";
+  try { return CMx.anchorFor(item.activityId, "builder", (typeof CLINICAL_STAGE !== "undefined" ? CLINICAL_STAGE : {})[item.cfg.difficulty] || "middle"); } catch (e){ return ""; }
+}
+/* What choosing the tier changes on the page, read from the clinical rulebook so the words and the pages cannot drift apart. */
+function tierChanges(k){
+  const CMx = window.CognicopiaClinicalMatrix, S = CMx && CMx.STAGES[(typeof CLINICAL_STAGE !== "undefined" ? CLINICAL_STAGE : {})[k]];
+  if (!S) return "";
+  const ws = S.limits.wordsearch, bits = ["type " + S.type.floor + " pt bold or larger", "lines " + S.stroke.min + " pt or heavier"];
+  bits.push(ws.sizes[0] ? "word search " + ws.sizes.join(" or ") + " square, " + (ws.dirs > 2 ? "across, down and slanted" : ws.dirs === 2 ? "across and down" : "across only") : "no word search");
+  bits.push(S.limits.sequence.steps + " steps to put in order", S.limits.choose.options + " choices at a time", S.clutter === "none" ? "one subject on the page" : S.clutter === "minimal" ? "a simple page" : "a detailed page");
+  return bits.join(" \u00B7 ");
+}
 const ERAS = {
   general: "Timeless / general",
   "1940s": "The 1940s",
@@ -11426,7 +11462,7 @@ const ERAS = {
   "1960s": "The 1960s",
   "1970s": "The 1970s"
 };
-const DEFAULT_SETTINGS = { facility:"", wing:"", residentName:"", difficulty:"early", era:"general", variations:2, pureBW:true, actOpts:{}, aliasScreen:false, aliasFiles:false };
+const DEFAULT_SETTINGS = { facility:"", wing:"", residentName:"", avoid:"", difficulty:"early", era:"general", variations:2, pureBW:true, actOpts:{}, aliasScreen:false, aliasFiles:false };
 /* Read again once the encrypted store has opened (see Boot). */
 function readSettings(){
   const s = Object.assign({}, DEFAULT_SETTINGS, store.get("cgb_settings", {}));
@@ -11587,14 +11623,21 @@ function buildBatch(act, cfg, batchSeed, count){
   const master = makeRng(batchSeed);
   const plan = act.plan(cfg, master, count);
   const pages = [], seen = new Set();
+  /* Avoidance protocols: a page that names anything on the resident's avoid list is drawn again, from a fresh draw of the word bank when
+     the same words keep coming back. If nothing clean can be made the page says so (avoidHits) instead of printing it quietly. */
+  const CMx = window.CognicopiaClinicalMatrix, mentions = cfg.avoid && cfg.avoid.length && CMx ? CMx.avoidMatcher(cfg.avoid) : null;
+  const textOf = pg => [pg.title, pg.subtitle, pg.instructions, pg.answers, pg.staffNote, String(pg.html || "").replace(/<[^>]*>/g, " "), String(pg.sheet || "").replace(/<[^>]*>/g, " ")].filter(Boolean).join(" ");
   for (let i = 0; i < count; i++){
-    let page, tries = 0;
+    let page, tries = 0, swaps = 0, slice = plan[i], hits = [];
     do {
       const seed = (batchSeed ^ Math.imul(i + 1, 0x9E3779B1) ^ Math.imul(tries + 1, 0x85EBCA6B)) >>> 0;
-      page = act.generate(cfg, makeRng(seed), plan[i], tries);
+      page = act.generate(cfg, makeRng(seed), slice, tries);
       tries++;
-    } while (seen.has(page.signature) && tries < 30);
+      hits = mentions ? mentions(textOf(page)) : [];
+      if (hits.length && tries % 3 === 0 && swaps < 14){ swaps++; slice = act.plan(cfg, makeRng((batchSeed ^ Math.imul(swaps, 0x27D4EB2F)) >>> 0), count)[i]; }
+    } while ((seen.has(page.signature) || hits.length) && tries < 45);
     seen.add(page.signature);
+    page.avoidHits = hits;
     pages.push(page);
   }
   if (batchCache.size > 200) batchCache.clear();
@@ -13570,7 +13613,7 @@ function hybridProfileOf(p){
   return { name:String(t1.preferredName || "").trim(), born:t2.birthYear || "",
     former_profession:occ ? String(occ.label || occ.code || "") : "",
     hobbies:(t1.topHobbies || []).map(h => h && (h.label || h.code)).filter(Boolean),
-    avoid:(avoid.topics || []).map(x => x && x.code).filter(Boolean).concat(String(avoid.other || "").split(/[,;]+/).map(w => w.trim()).filter(Boolean)) };
+    avoid:(a => a.codes.concat(a.words))(avoidForPictures(p)) };
 }
 /* One printed page: the whole Letter sheet, the picture laid out inside the binding gutter. */
 function hybridSheet(a, stage, seed, name, frameOpts){
@@ -13822,9 +13865,9 @@ function clinicalActivity(def){
       if (!A || !CM) throw new Error("The activity engine is not loaded.");
       const stage = CLINICAL_STAGE[cfg.difficulty] || "middle", name = cfg.residentName || "", iso = cfg.date || todayISO();
       const variant = slice.variant + 7 * (attempt || 0);
-      const page = A.generate(def.kind, { stage:stage, name:name || "Friend", date:iso, variant:variant, subjects:clinicalSubjects() });
+      const page = A.generate(def.kind, { stage:stage, name:name || "Friend", date:iso, variant:variant, subjects:clinicalSubjects(), avoid:cfg.avoid || [] });
       const cue = CM.cue({ stage:stage, activity:def.kind, rng:CM.dailyRng(name || "Friend", iso, variant, "tip"), name:name, topic:page.meta.topic });
-      const full = A.withShell(page, { name:name, date:iso, wing:settings.wing, page:1, pages:1, tip:cue ? cue.text : "", stageLabel:CM.STAGES[stage].label });
+      const full = A.withShell(page, { name:name, date:iso, wing:settings.wing, page:1, pages:1, tip:cue ? cue.text : "", stageLabel:CM.STAGES[stage].label, activity:def.kind, tool:"builder" });
       return { title:page.meta.title, instructions:page.meta.instruction || "", html:"", layout:"engine",
         signature:signatureOf(JSON.stringify([page.items, page.texts])), answers:A.answerLines(page).join(" · "),
         sheet:'<section class="sheet sheet-eng" data-shell="1" aria-label="' + esc(page.meta.title) + '">' + A.toSVG(full, { width:"8.5in", height:"11in", background:false }) + "</section>" };
@@ -14010,14 +14053,30 @@ function sheetHtmlRaw(item, calmMode){
   if (close < 0) return html;
   return fitHtml(html.slice(0, close) + footer + html.slice(close));
 }
-function activitySheetHtml(item, calmMode){
-  const act = ACT_INDEX[item.activityId];
-  if (!act) return "";
-  if (calmMode == null ? sundowningCalmActive : calmMode) return `<section class="sheet sheet-calm" aria-label="Late-stage calm activity page">
+/* Sundowning / Rapid De-escalation mode, for a queued page: instead of the activity, one quiet page for the resident, drawn by the soothing engine at the
+   late stage (one subject, 24 pt bold type, lines 4.5 pt or heavier, black on white, no timing or competing choices): a calm reminiscence invitation, then
+   a slow path or one bold picture. It honors the same avoidance protocol as every other page. If the engine did not load, the old single path stays. */
+function calmSheetHtml(item){
+  const SE = window.CognicopiaSoothingEngine, CA = window.CognicopiaClinicalActivities;
+  const cfg = item.cfg || {}, era = /^(\d{4})s$/.exec(cfg.era || "");
+  if (SE && CA){
+    try {
+      const pk = SE.generate({ stage:"late", theme:"heritage", seed:"calm|" + (item.activityId || "") + "|" + (item.batchSeed >>> 0) + "|" + item.index, count:1,
+        era:era ? [+era[1], +era[1] + 9] : null, avoid:cfg.avoid || [], name:cfg.residentName || "", date:cfg.date || todayISO(), wing:settings.wing || "" });
+      const pg = pk.pages[0];
+      return `<section class="sheet sheet-eng sheet-calm" data-shell="1" aria-label="Calm reminiscence page">${CA.toSVG(pg.full, { width:"8.5in", height:"11in", background:false })}</section>`;
+    } catch (e){ /* fall through to the single path */ }
+  }
+  return `<section class="sheet sheet-calm" aria-label="Late-stage calm activity page">
     <svg viewBox="0 0 300 400" role="img" aria-label="One broad dashed line to trace slowly">
       <path d="M48 200 C82 108 123 108 150 200 S218 292 252 200" fill="none" stroke="#000" stroke-width="6pt" vector-effect="non-scaling-stroke" stroke-dasharray="14 12" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
   </section>`;
+}
+function activitySheetHtml(item, calmMode){
+  const act = ACT_INDEX[item.activityId];
+  if (!act) return "";
+  if (calmMode == null ? sundowningCalmActive : calmMode) return calmSheetHtml(item);
   const page = buildBatch(act, item.cfg, item.batchSeed, item.count)[item.index];
   const sensoryPairing = item.cfg.difficulty === "advanced" ? tactilePairingFor(act, page, item.cfg) : "";
   const sensoryHtml = sensoryPairing ? `<p class="sh-sensory"><b>For staff · Sensory Prompt:</b> ${esc(sensoryPairing)}</p>` : "";
@@ -14040,7 +14099,7 @@ function activitySheetHtml(item, calmMode){
   const who = item.cfg.residentName ? "For " + esc(item.cfg.residentName) : "";
   const when = fmtDate(item.cfg.date);
   return `<section class="sheet lvl-${esc(item.cfg.difficulty)}">
-    <header class="sh-head"><div><h1>${esc(page.title)}</h1>${page.subtitle ? `<p class="sh-sub">${esc(page.subtitle)}</p>` : ""}</div><div class="sh-meta">${who}${who && when ? "<br>" : ""}${esc(when)}${settings.wing ? " &middot; " + esc(settings.wing) : ""}</div></header>
+    <header class="sh-head"><div><h1>${esc(page.title)}</h1>${page.subtitle ? `<p class="sh-sub">${esc(page.subtitle)}</p>` : ""}</div><div class="sh-meta">${who}${who && when ? "<br>" : ""}${esc(when)}${settings.wing ? " &middot; " + esc(settings.wing) : ""}${therapyAnchor(item) ? `<br><span class="sh-anchor">${esc(therapyAnchor(item))}</span>` : ""}</div></header>
     <p class="sh-inst">${esc(page.instructions)}</p>
     <div class="sh-body">${page.html}</div>
     ${page.answers ? `<p class="sh-ans">For staff &middot; answers: ${esc(page.answers)}</p>` : ""}
@@ -14186,9 +14245,9 @@ function syncCalmModeToggle(){
   if (!button || !help) return;
   button.setAttribute("aria-pressed", String(sundowningCalmActive));
   help.textContent = sundowningCalmActive
-    ? "On · queued activity text and choices suppressed; emergency buttons stay fixed"
-    : "Off · simplifies queued activity pages; emergency buttons stay fixed";
-  if (selectedAct) renderPreview();
+    ? "On · each queued page becomes one calm reminiscence page (one subject, 24 pt bold type); emergency buttons stay fixed"
+    : "Off · turns queued pages into calm, low-arousal reminiscence pages; emergency buttons stay fixed";
+  if (selectedAct) updatePreview();
   renderQueue();
 }
 
@@ -14197,7 +14256,8 @@ function stageChip(a){
   const CMx = window.CognicopiaClinicalMatrix, e = CMx && CMx.entry("builder", a.id);
   if (!e) return "";
   const names = { early:"Early", middle:"Middle", late:"Advanced" }, on = ["early", "middle", "late"].filter(st => e.stages[st]);
-  return on.length === 3 ? "" : `<span class="desc" style="margin-top:6px"><b>Made for:</b> ${on.map(st => names[st]).join(", ")}</span>`;
+  const th = CMx.therapyOf(a.id, "builder"), gds = CMx.gdsRange(e);
+  return `<span class="desc" style="margin-top:6px">${on.length === 3 ? "" : `<b>Made for:</b> ${on.map(st => names[st]).join(", ")} · `}<b>GDS ${esc(gds)}</b>${th ? ` · ${esc(th)}` : ""}</span>`;
 }
 function renderCategory(id){
   const cat = CAT_INDEX[id];
@@ -14325,6 +14385,8 @@ function currentCfg(){
     difficulty: (document.querySelector('input[name="cfgDiff"]:checked') || {}).value || settings.difficulty,
     era: ($("#cfgEra") || {}).value || settings.era
   };
+  const av = window.CognicopiaClinicalMatrix ? window.CognicopiaClinicalMatrix.avoidTerms($("#cfgAvoid") ? $("#cfgAvoid").value : settings.avoid) : [];
+  if (av.length) cfg.avoid = av;
   // Only activities with options carry cfg.opts, so older queued
   // Word & Language pages keep rebuilding exactly as before.
   if (selectedAct && selectedAct.options) cfg.opts = readOpts(selectedAct);
@@ -14363,8 +14425,17 @@ function openConfig(actId, scroll){
             <input id="cfgName" type="text" maxlength="40" autocomplete="off" value="${esc(settings.residentName)}"></div>
           <div class="field"><label for="cfgDate">Date</label><input id="cfgDate" type="date" value="${todayISO()}"></div>
         </div>`}
+        <details class="avoid-box"${settings.avoid ? " open" : ""}>
+          <summary>Avoidance Protocols &amp; Triggers</summary>
+          <div class="field"><label for="cfgWho">Use a saved resident&rsquo;s protocol</label>
+            <select id="cfgWho">${BookUI.savedProfileOptions().replace("Fill in from a saved profile…", "Choose a resident, or type below")}</select></div>
+          <div class="field"><label for="cfgAvoid">Keep off every page <span class="hint">(optional)</span></label>
+            <input id="cfgAvoid" type="text" maxlength="300" autocomplete="off" value="${esc(settings.avoid || "")}" placeholder="e.g., Vietnam, Tom, the old farm">
+            <p class="hint" id="avoidNote">Words, names, places or eras, separated by commas. A page that mentions one is drawn again. Kept only in this browser.</p></div>
+        </details>
         <fieldset class="field"><legend>Difficulty</legend>
-          <div class="seg">${Object.keys(DIFFICULTIES).map(k => `<label><input type="radio" name="cfgDiff" value="${k}" ${k === levelDefault ? "checked" : ""} ${clinicalOk(k, act.id) ? "" : "disabled"}><span>${DIFFICULTIES[k].label}</span></label>`).join("")}</div>
+          <div class="seg">${Object.keys(DIFFICULTIES).map(k => `<label><input type="radio" name="cfgDiff" value="${k}" ${k === levelDefault ? "checked" : ""} ${clinicalOk(k, act.id) ? "" : "disabled"}><span>${tierTwoLine(k)}</span></label>`).join("")}</div>
+          <p class="hint" id="tierNote" role="status">${esc(tierChanges(levelDefault))}</p>
           ${levelNote ? `<p class="hint" role="status">${esc(levelNote)}</p>` : ""}
           ${fxc ? `<p class="hint">Set for ${esc(fxc.group)}: ${esc(fxc.label)}.</p>` : ""}
         </fieldset>
@@ -14397,8 +14468,21 @@ function openConfig(actId, scroll){
     inp.focus(); inp.select();
   }));
   $("#cfgName").addEventListener("input", e => { settings.residentName = e.target.value.slice(0, 40); saveSettings(); });
+  $("#cfgAvoid").addEventListener("input", e => { settings.avoid = e.target.value.slice(0, 300); saveSettings(); updatePreview(); });
+  /* choosing a saved resident brings their name, their avoidance protocol and their tier into the form */
+  $("#cfgWho").addEventListener("change", e => {
+    const p = BookUI.savedProfiles().find(x => x.id === e.target.value);
+    if (!p) return;
+    const terms = avoidTermsOf(p), nameEl = $("#cfgName"), diff = ["", "early", "moderate", "advanced"][BookUI.needsFor(p).tier];
+    nameEl.value = String(p.tier1_core.preferredName || "").slice(0, 40); settings.residentName = nameEl.value;
+    $("#cfgAvoid").value = terms.join(", "); settings.avoid = $("#cfgAvoid").value.slice(0, 300);
+    const radio = form.querySelector(`input[name="cfgDiff"][value="${diff}"]`);
+    if (radio && !radio.disabled){ radio.checked = true; settings.difficulty = diff; const tn = $("#tierNote"); if (tn) tn.textContent = tierChanges(diff); }
+    $("#avoidNote").textContent = terms.length ? terms.length + " terms from " + (nameEl.value || "this resident") + "'s profile are kept off every page." : "This resident's profile lists nothing to avoid.";
+    saveSettings(); updatePreview();
+  });
   form.addEventListener("change", e => {
-    if (e.target.name === "cfgDiff"){ settings.difficulty = e.target.value; saveSettings(); }
+    if (e.target.name === "cfgDiff"){ settings.difficulty = e.target.value; saveSettings(); const tn = $("#tierNote"); if (tn) tn.textContent = tierChanges(e.target.value); }
     if (e.target.id === "cfgEra"){ settings.era = e.target.value; saveSettings(); }
     if (e.target.dataset && e.target.dataset.opt){ syncOptVisibility(act); settings.actOpts[act.id] = readOpts(act); saveSettings(); }
     updatePreview();
@@ -14447,8 +14531,8 @@ function updatePreview(){
   const cfg = currentCfg();
   $("#preview").innerHTML = sheetHtml({ activityId:selectedAct.id, cfg, batchSeed:previewSeed, count:1, index:0 });
   $("#pvMeta").textContent = sundowningCalmActive
-    ? "Late-Stage / Sundowning Calm · single 6 pt tracing path"
-    : DIFFICULTIES[cfg.difficulty].label + (selectedAct.themed ? " · " + ERAS[cfg.era] : "");
+    ? "Sundowning / De-escalation · one calm reminiscence page, late-stage type and lines"
+    : tierText(cfg.difficulty) + (selectedAct.themed ? " · " + ERAS[cfg.era] : "") + (therapyAnchor({ activityId:selectedAct.id, cfg }) ? " · " + therapyAnchor({ activityId:selectedAct.id, cfg }) : "");
   if (selectedAct.optionsNote && $("#optNote")) $("#optNote").textContent = selectedAct.optionsNote(cfg);
 }
 
@@ -14466,7 +14550,7 @@ function renderSettings(){
         <div class="field"><label for="setVar">Default number of versions</label><input id="setVar" type="number" min="1" max="4" value="${settings.variations}"></div>
       </div>
       <div class="row2">
-        <div class="field"><label for="setDiff">Default difficulty</label><select id="setDiff">${Object.keys(DIFFICULTIES).map(k => `<option value="${k}" ${k === settings.difficulty ? "selected" : ""}>${DIFFICULTIES[k].label}</option>`).join("")}</select></div>
+        <div class="field"><label for="setDiff">Default difficulty</label><select id="setDiff">${Object.keys(DIFFICULTIES).map(k => `<option value="${k}" ${k === settings.difficulty ? "selected" : ""}>${esc(tierText(k))}</option>`).join("")}</select></div>
         <div class="field"><label for="setEra">Default theme</label><select id="setEra">${Object.keys(ERAS).map(k => `<option value="${k}" ${k === settings.era ? "selected" : ""}>${ERAS[k]}</option>`).join("")}</select></div>
       </div>
       <div class="field"><label for="setWing">Facility wing or unit</label>

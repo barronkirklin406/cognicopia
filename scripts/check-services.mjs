@@ -65,7 +65,7 @@ group("sundowningCalmAndCoachingFooter", () => {
   const indexHtml = fs.readFileSync(path.join(ROOT, "index.html"), "utf8");
   const coaching = "Do not ask questions or test memory. Sit beside them, place the marker in their hand, and model slow, calm breathing.";
   ok(/id="calmModeToggle"[^>]*aria-pressed="false"[\s\S]*?Late-Stage \/ Sundowning Calm/.test(builderHtml), "calm mode has a high-visibility, accessible Packet Builder toggle");
-  ok(/if \(calmMode == null \? sundowningCalmActive : calmMode\) return `<section class="sheet sheet-calm"[\s\S]*?stroke-width="6pt"[\s\S]*?stroke-dasharray/.test(builderHtml), "calm mode replaces activity content with one maximum-weight dashed path");
+  ok(/if \(calmMode == null \? sundowningCalmActive : calmMode\) return calmSheetHtml\(item\);/.test(builderHtml) && /function calmSheetHtml\(item\)[\s\S]*?CognicopiaSoothingEngine[\s\S]*?stage:"late"[\s\S]*?<section class="sheet sheet-calm"[\s\S]*?stroke-width="6pt"[\s\S]*?stroke-dasharray/.test(builderHtml), "calm mode replaces activity content with one late-stage calm reminiscence page (the soothing engine's), and keeps the single maximum-weight dashed path if the engine did not load");
   ok(/function sheetHtml\(item[^)]*\)[\s\S]*?activitySheetHtml\(item[^)]*\)[\s\S]*?care-coaching-footer/.test(builderHtml), "the shared queued-print wrapper adds the coaching footer");
   ok(builderHtml.includes(coaching) && indexHtml.includes(coaching), "the exact coaching reminder is included in both activity print pipelines");
   ok(/coachingFooter\(\)\s*\{[\s\S]*?const tip="Do not ask questions or test memory\.[\s\S]*?this\.d\.text\(first[\s\S]*?this\.d\.text\(rest/.test(indexHtml), "main PDF pages draw the coaching footer from the shared document engine");

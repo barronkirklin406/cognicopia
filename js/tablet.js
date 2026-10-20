@@ -159,6 +159,10 @@
     if (cur && cur.cleanup) { try { cur.cleanup(); } catch (e) { /* leaving anyway */ } }
     hush();
   }
+  /* Calm mode (Sundowning / De-escalation): the late stage's size and count, and only the slow, one-thing-at-a-time activities. Not saved:
+     it is a switch on this screen, and the level chosen above is the one that comes back. */
+  var calmOn = false, avoidTerms = [];
+  function effStage() { return calmOn ? "late" : prefs.stage; }
   function run(act, seed) {
     teardown();
     stage.innerHTML = ""; stage.scrollTop = 0;
@@ -179,8 +183,17 @@
       again: function () { next(); }
     };
     me.api = api;
-    var opts = { stage: prefs.stage, topic: prefs.topic, seed: seed, avoid: lastUsed[act.id] || [], prefs: prefs };
-    try { me.cleanup = act.start(stage, opts, api) || null; }
+    var opts = { stage: effStage(), topic: prefs.topic, seed: seed, avoid: lastUsed[act.id] || [], prefs: prefs };
+    $("tbAnchor").textContent = T.anchor(act.id, opts.stage);
+    try {
+      me.cleanup = act.start(stage, opts, api) || null;
+      /* Keep off the screen: an activity that shows a word on the list is drawn again from a fresh draw (up to eight times) */
+      for (var tries = 0; avoidTerms.length && tries < 8 && T.avoidHits(stage.textContent, avoidTerms).length; tries++) {
+        if (me.cleanup) { try { me.cleanup(); } catch (e2) { /* stopped */ } me.cleanup = null; }
+        stage.innerHTML = ""; opts.seed = T.newSeed();
+        me.cleanup = act.start(stage, opts, api) || null;
+      }
+    }
     catch (e) { stage.innerHTML = '<p class="tb-big">That one could not start. Choose Home, then try another.</p>'; if (window.console && console.error) console.error("tablet activity " + act.id + ": " + (e && e.stack || e)); }
   }
   /* Next: a fresh activity at once, and one that does not repeat what was just on the screen */
@@ -220,8 +233,9 @@
     var sec = h("div", "", "<h2>" + esc(g[0]) + "<small>" + esc(g[1]) + "</small></h2>"), ul = h("ul", "tbp-grid");
     defs.filter(function (d) { return d.group === gi; }).forEach(function (a) {
       ACT[a.id] = { id: a.id, title: a.title, start: a.start };
+      var md = T.MODULES[a.id], tag = md ? "<span class=\"tbp-tag\">" + esc(md.therapy) + " \u00B7 GDS 3\u20137</span>" : "";
       var mark = Art && Art.has("m-" + a.id) ? Art.img("m-" + a.id, { size: 76 }).replace('class="tb-ico"', 'class="tbp-pic"') : '<svg viewBox="0 0 64 64" aria-hidden="true" focusable="false">' + a.icon + "</svg>";
-      ul.appendChild(h("li", "", '<button type="button" class="tbp-card" data-act="' + a.id + '">' + mark + "<b>" + esc(a.title) + "</b><span>" + esc(a.blurb) + "</span></button>"));
+      ul.appendChild(h("li", "", '<button type="button" class="tbp-card" data-act="' + a.id + '">' + mark + "<b>" + esc(a.title) + "</b><span>" + esc(a.blurb) + "</span>" + tag + "</button>"));
     });
     sec.appendChild(ul); menu.appendChild(sec);
   });
@@ -229,7 +243,7 @@
   /* Surprise me: the tablet chooses, and never the same one twice in a row */
   var lastSurprise = "";
   $("tbSurprise").addEventListener("click", function () {
-    var ids = Object.keys(ACT).filter(function (k) { return k !== lastSurprise; });
+    var ids = Object.keys(ACT).filter(function (k) { return k !== lastSurprise && (!calmOn || (T.MODULES[k] && T.MODULES[k].calm)); });
     lastSurprise = ids[Math.floor(Math.random() * ids.length)];
     openAct(lastSurprise, $("tbSurprise"));
   });
@@ -239,6 +253,19 @@
   T.TOPICS.slice().sort(function (a, b) { return a.label < b.label ? -1 : 1; }).forEach(function (t) { var op = document.createElement("option"); op.value = t.id; op.textContent = t.label.charAt(0).toUpperCase() + t.label.slice(1); topic.appendChild(op); });
   topic.value = prefs.topic; $({ early: "tbStageEarly", middle: "tbStageMiddle", late: "tbStageLate" }[prefs.stage]).checked = true;
   topic.addEventListener("change", function () { prefs.topic = topic.value; savePrefs(); });
+  $("tbAvoid").addEventListener("input", function () { avoidTerms = T.avoidWords(this.value); });
+  function calmApply() {
+    var late = $("tbStageLate"), back = $({ early: "tbStageEarly", middle: "tbStageMiddle", late: "tbStageLate" }[prefs.stage]);
+    Array.prototype.forEach.call(document.querySelectorAll("input[name=stage]"), function (r) { r.disabled = calmOn; });
+    (calmOn ? late : back).checked = true;
+    Array.prototype.forEach.call(document.querySelectorAll(".tbp-card"), function (c) {
+      var md = T.MODULES[c.getAttribute("data-act")], off = calmOn && !(md && md.calm);
+      c.parentNode.hidden = off;
+    });
+    $("tbCalm").setAttribute("aria-pressed", String(calmOn)); $("tbCalm").textContent = calmOn ? "\uD83C\uDF19 Calm mode: On" : "\uD83C\uDF19 Calm mode: Off";
+    live(calmOn ? "Calm mode is on: late-stage size and only slow, one-thing-at-a-time activities." : "Calm mode is off.");
+  }
+  $("tbCalm").addEventListener("click", function () { calmOn = !calmOn; calmApply(); });
   Array.prototype.forEach.call(document.querySelectorAll("input[name=stage]"), function (r) { r.addEventListener("change", function () { if (r.checked) { prefs.stage = r.value; savePrefs(); } }); });
   function soundLabel() { var b = $("tbSound"); b.textContent = prefs.sound ? "🔔 Sound: On" : "🔕 Sound: Off"; b.setAttribute("aria-pressed", String(prefs.sound)); }
   $("tbSound").addEventListener("click", function () { prefs.sound = !prefs.sound; savePrefs(); soundLabel(); if (prefs.sound) chime(false); });

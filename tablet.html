@@ -21,9 +21,15 @@ body{margin:0}
 .tbp-setup fieldset{margin:0;padding:0;border:0;min-width:max-content}
 .tbp-setup legend,.tbp-setup label.tbp-lab{display:block;margin:0 0 6px;padding:0;font-weight:700;font-size:1rem;color:var(--cg-tan-800,#4f4030)}
 .tbp-seg{display:flex;flex-wrap:wrap;gap:8px}
-@media (max-width:900px){.tbp-setup{grid-template-columns:1fr}.tbp-setup fieldset{min-width:0}}
+.tbp-setup .tbp-avoid{grid-column:1/-1}
+@media (max-width:1180px){.tbp-setup{grid-template-columns:1fr}.tbp-setup fieldset{min-width:0}}
 .tbp-seg input{position:absolute;opacity:0;width:1px;height:1px}
 .tbp-seg label{display:inline-flex;align-items:center;justify-content:center;min-width:var(--tap,52px);min-height:var(--tap,52px);padding:8px 18px;border:3px solid var(--cg-green-700,#1b382b);border-radius:var(--cg-radius-md,12px);background:#fff;color:var(--cg-green-700,#1b382b);font-weight:700;font-size:1.0625rem;cursor:pointer}
+.tbp-seg label{flex-direction:column;gap:1px;line-height:1.25;text-align:center}
+.tbp-seg label small{font-size:14px;font-weight:700}
+.tb-anchor{display:block;font-size:14px;font-weight:700;color:inherit;opacity:1;letter-spacing:.01em}
+.tbp-card .tbp-tag{display:block;margin-top:4px;font-size:14px;font-weight:700}
+.tbp-card[hidden],.tbp-grid li[hidden]{display:none}
 .tbp-seg input:checked+label{background:var(--cg-green-700,#1b382b);color:#fff}
 .tbp-seg input:focus-visible+label{outline:3px solid var(--cg-focus,#f5b800);outline-offset:3px;box-shadow:0 0 0 6px var(--cg-focus-dark,#10241a)}
 .tbp-sel{width:100%;min-height:var(--tap,52px);padding:8px 12px;border:3px solid var(--cg-green-700,#1b382b);border-radius:var(--cg-radius-md,12px);background:#fff;color:var(--cg-charcoal,#1a202c);font:inherit;font-size:1.0625rem}
@@ -658,16 +664,21 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
     <fieldset>
       <legend>Level</legend>
       <div class="tbp-seg" role="radiogroup" aria-label="Level">
-        <input type="radio" name="stage" id="tbStageEarly" value="early"><label for="tbStageEarly">Early stage</label>
-        <input type="radio" name="stage" id="tbStageMiddle" value="middle" checked><label for="tbStageMiddle">Middle stage</label>
-        <input type="radio" name="stage" id="tbStageLate" value="late"><label for="tbStageLate">Late stage</label>
+        <input type="radio" name="stage" id="tbStageEarly" value="early"><label for="tbStageEarly"><b>Early stage</b><small>Tier 1 · Mild · GDS 3–4</small></label>
+        <input type="radio" name="stage" id="tbStageMiddle" value="middle" checked><label for="tbStageMiddle"><b>Middle stage</b><small>Tier 2 · Moderate · GDS 5</small></label>
+        <input type="radio" name="stage" id="tbStageLate" value="late"><label for="tbStageLate"><b>Late stage</b><small>Tier 3 · Advanced · GDS 6–7</small></label>
       </div>
     </fieldset>
     <div>
       <label class="tbp-lab" for="tbTopic">Topic</label>
       <select class="tbp-sel" id="tbTopic"><option value="">Anything: a surprise each time</option></select>
     </div>
+    <div class="tbp-avoid">
+      <label class="tbp-lab" for="tbAvoid">Keep off the screen <small>(optional)</small></label>
+      <input class="tbp-sel" id="tbAvoid" type="text" maxlength="200" autocomplete="off" placeholder="Words, names or places, separated by commas">
+    </div>
     <div class="tbp-tools">
+      <button type="button" class="tb-btn" id="tbCalm" aria-pressed="false">🌙 Calm mode: Off</button>
       <button type="button" class="tb-btn" id="tbSound" aria-pressed="true">🔔 Sound: On</button>
       <button type="button" class="tb-btn" id="tbFull">⛶ Full screen</button>
     </div>
@@ -685,7 +696,7 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
 <div class="tb" id="tb" role="dialog" aria-modal="true" aria-labelledby="tbTitle" hidden>
   <div class="tb-bar tb-glass">
     <button type="button" class="tb-back" id="tbBack" aria-label="Return home to the activity menu"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 11 12 3l9 8"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg><span>Home</span></button>
-    <div class="tb-titles"><h2 id="tbTitle"></h2><span class="tb-prog" id="tbProg"></span></div>
+    <div class="tb-titles"><h2 id="tbTitle"></h2><span class="tb-prog" id="tbProg"></span><span class="tb-anchor" id="tbAnchor"></span></div>
     <div class="tb-acts">
       <button type="button" class="tb-btn" id="tbSay" hidden><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 9v6h4l5 4V5L8 9z"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg><span>Read to Me</span></button>
       <button type="button" class="tb-btn assist" id="tbAssist" hidden aria-label="Finish for me: complete this activity with a gentle celebration"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3l2.2 5.6L20 11l-5.8 2.4L12 19l-2.2-5.6L4 11l5.8-2.4z"/></svg><span>Finish for me</span></button>

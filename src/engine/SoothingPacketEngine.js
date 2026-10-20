@@ -430,7 +430,7 @@
     var stage = plan.stage, n = plan.items.length, pages = [], usedTips = [], day = ctx.date || PCG.prng.today().iso;
     plan.items.forEach(function (item, i) {
       var made = composePage(item, plan, i, ctx, n), tip = tipText(item, plan, made.page, { i: i, name: ctx.name }, usedTips);
-      var full = CA.withShell(made.page, { name: ctx.name || "", date: day, wing: ctx.wing || "", page: i + 1, pages: n, tip: tip.text, stageLabel: C.STAGE_LABEL[stage] });
+      var full = CA.withShell(made.page, { name: ctx.name || "", date: day, wing: ctx.wing || "", page: i + 1, pages: n, tip: tip.text, stageLabel: C.STAGE_LABEL[stage], activity: ACTIVITY[item.type === "puzzle" ? puzzleOf(item.id).kind : item.type], tool: "packet" });
       var probs = CM.validatePage(full, stage);
       if (probs.length) throw new Error("The shell broke a rule on page " + (i + 1) + ": " + probs[0]);
       pages.push({ kind: item.type, id: item.id, title: made.page.meta.title, theme: item.theme, page: made.page, full: full, tip: tip.text, tipId: tip.id, attempts: made.attempts });
