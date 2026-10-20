@@ -579,12 +579,12 @@ try {
     ok(await p.evaluate(() => document.querySelector('.tb-sw[data-color="#2f9e3f"]').getAttribute("aria-pressed") === "true" && document.querySelectorAll('.tb-sw[aria-pressed="true"]').length === 1), "the chosen color is marked");
     let sp = await spots(); await p.mouse.click(sp[0][0], sp[0][1]); await sleep(60);
     sp = await spots();
-    ok((await dbg(p)).filled === 1 && (await pixel(sp[0][0], sp[0][1])).join() === "74,157,91,255", "tapping a shape fills it with the chosen color");
+    ok((await dbg(p)).filled === 1 && (await pixel(sp[0][0], sp[0][1])).join() === "47,158,63,255", "tapping a shape fills it with the chosen color");
     ok((await Promise.all(sp.slice(1).map(s => pixel(s[0], s[1])))).every(v => v[3] === 0), "and the color stays inside its lines: no other shape changed");
-    await click(p, '.tb-sw[data-color="#c27a4a"]'); await p.mouse.click(sp[1][0], sp[1][1]); await sleep(60);
-    ok((await dbg(p)).filled === 2 && (await pixel(sp[1][0], sp[1][1])).join() === "194,122,74,255", "a second color on a second shape");
+    await click(p, '.tb-sw[data-color="#7a4a1e"]'); await p.mouse.click(sp[1][0], sp[1][1]); await sleep(60);
+    ok((await dbg(p)).filled === 2 && (await pixel(sp[1][0], sp[1][1])).join() === "122,74,30,255", "a second color on a second shape");
     await p.mouse.click(sp[1][0], sp[1][1]); await sleep(60);
-    ok((await dbg(p)).filled === 2 && (await pixel(sp[1][0], sp[1][1])).join() === "194,122,74,255", "tapping the same shape again keeps it colored");
+    ok((await dbg(p)).filled === 2 && (await pixel(sp[1][0], sp[1][1])).join() === "122,74,30,255", "tapping the same shape again keeps it colored");
     await click(p, '[data-co="undo"]'); await sleep(60);
     ok((await dbg(p)).filled === 2, "Undo takes back the last tap");
     await click(p, '[data-co="undo"]'); await sleep(60);
