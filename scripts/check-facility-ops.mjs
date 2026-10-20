@@ -41,10 +41,21 @@ const K = load("assets/services/slpClinicalService.js", "CogniClinical");
 
 /* ---------- 1. privacy ---------- */
 {
-  const NET = /\bfetch\s*\(|XMLHttpRequest|sendBeacon|new\s+WebSocket\b|new\s+EventSource\b|importScripts\s*\(|navigator\.serviceWorker\.register/;
+  const NET_CALLS = /\bfetch\s*\(|XMLHttpRequest|sendBeacon|new\s+WebSocket\b|new\s+EventSource\b|importScripts\s*\(/, NET = new RegExp(NET_CALLS.source + "|navigator\\.serviceWorker\\.register");
   for (const f of ["censusImport", "privacyExport", "dailyOps", "slpClinicalService", "facilityPlanner", "secureStore", "localDb"]) {
     ok(!NET.test(read("assets/services/" + f + ".js")), `${f}.js makes no network request`);
     ok(!/https?:\/\//.test(read("src/services/" + f + ".ts").replace(/\/\*[\s\S]*?\*\//g, "").replace(/\/\/.*$/gm, "")), `${f}.ts names no outside address in its code`);
+  }
+  /* the audit of every storage handler: any file of the site that touches localStorage, sessionStorage or IndexedDB sends nothing anywhere */
+  const SKIP = new Set([".git", "node_modules", "platform", "out", "license-service", "scripts", ".next"]), found = [];
+  const walk = dir => { for (const e of fs.readdirSync(path.join(ROOT, dir), { withFileTypes: true })) { if (SKIP.has(e.name)) continue; const rel = path.posix.join(dir, e.name); if (e.isDirectory()) walk(rel); else if (/\.(html|js|ts)$/.test(e.name)) found.push(rel); } };
+  walk("");
+  const stores = found.filter(f => /indexedDB|localStorage|sessionStorage/.test(read(f)));
+  ok(stores.length >= 30, `the audit found the storage handlers (${stores.length} files)`);
+  const GUARDS = new Set(["resources/quality-standards/index.html", "resources/clinical-alignment/index.html"]);   // these pages replace fetch and XMLHttpRequest with refusals
+  for (const f of stores) {
+    const t = read(f).replace(/<script id="pdf(lib|font)">[\s\S]*?<\/script>/g, "");
+    ok(GUARDS.has(f) || !NET_CALLS.test(t), `${f} touches browser storage and makes no network request`);
   }
   const builder = read("builder.html"), index = read("index.html"), sw = read("sw.js");
   for (const f of ["censusImport", "privacyExport"]) {

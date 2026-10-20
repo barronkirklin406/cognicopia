@@ -76,3 +76,7 @@ The treating clinician chooses codes under current CPT and payer rules. This is 
 - that S, A and P print exactly as typed, and that O is only the recorded numbers and their arithmetic;
 - page numbering, signature placement and continuation;
 - HTML escaping of everything typed.
+
+## Rehabilitation templates and the health-record copy
+
+A session can name a **focus** (auditory comprehension, expressive language, executive function). Each focus offers goal statements, tasks to measure, Cognicopia materials that suit, the codes usually considered, and sentence starters for S, A and P with blanks in [brackets]. These are only text put into a box for the clinician to edit; the service still writes no finding, and blanks left in a note are flagged before signing. `ehrParts` and `ehrText` give the note as plain text (straight quotes and hyphens, nothing a record could garble), section by section, for the resident as the clinician chooses (an alias by default). G0515 is shown as retired (replaced by 97129 and 97130); 97129 is one unit (the first 15 minutes), further blocks are 97130; and the reference notes that Medicare's functional-reporting G-codes ended for dates of service from January 1, 2019. See [facility-operations.md](facility-operations.md).
