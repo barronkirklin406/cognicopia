@@ -220,7 +220,15 @@ ok(made === 3 * 43, "every stage and topic was tried (129 combinations)");
     ok(p.colors.every(c => /^#[0-9a-f]{6}$/.test(c[1]) && /^[A-Z][a-z]+( [a-z]+)?$/.test(c[0])), `${p.id}: every color has a plain name and a hex value`);
     let near = 0; for (let i = 0; i < 8; i++) for (let j = i + 1; j < 8; j++) { const a = hexOf(p.colors[i][1]), b = hexOf(p.colors[j][1]); if (Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]) < 24) near++; }
     ok(near === 0, `${p.id}: no two colors are hard to tell apart`);
+    /* rich, never pale: saturated, and neither washed out nor so dark it vanishes against the black outline */
+    const hsl = c => { const [r, g, b] = hexOf(c).map(v => v / 255), mx = Math.max(r, g, b), mn = Math.min(r, g, b), l = (mx + mn) / 2, d = mx - mn; return { l, s: d === 0 ? 0 : d / (1 - Math.abs(2 * l - 1)) }; };
+    const lum = c => { const [r, g, b] = hexOf(c).map(v => { v /= 255; return v <= .03928 ? v / 12.92 : Math.pow((v + .055) / 1.055, 2.4); }); return .2126 * r + .7152 * g + .0722 * b; };
+    const pale = p.colors.filter(c => { const x = hsl(c[1]); return x.s < 0.5 || x.l < 0.18 || x.l > 0.62; }).map(c => c[0]);
+    ok(!pale.length, `${p.id}: every color is saturated and deep (not pale: ${pale.join(", ") || "none"})`);
+    const lost = p.colors.filter(c => (lum(c[1]) + .05) / .05 < 1.6).map(c => c[0]);
+    ok(!lost.length, `${p.id}: every color stands apart from the black outline (${lost.join(", ") || "all do"})`);
   }
+  ok(T.PALETTES.every(p => /^[A-Za-z]+$/.test(p.id)) && !T.PALETTES.some(p => /soft|pastel/i.test(p.id + p.name)), "no pale 'soft' or 'pastel' set is left");
   const px = (w, h, fn) => { const d = new Uint8ClampedArray(w * h * 4); for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const v = fn(x, y) ? 0 : 255, i = (y * w + x) * 4; d[i] = d[i + 1] = d[i + 2] = v; d[i + 3] = 255; } return d; };
   /* a framed page cut in two by a vertical line, with a black blob and a tiny white hole inside the left half */
   const W = 60, H = 80, frame = (x, y) => (x >= 10 && x < 14 && y >= 10 && y < 70) || (x >= 46 && x < 50 && y >= 10 && y < 70) || (y >= 10 && y < 14 && x >= 10 && x < 50) || (y >= 66 && y < 70 && x >= 10 && x < 50);
@@ -237,6 +245,29 @@ ok(made === 3 * 43, "every stage and topic was tried (129 combinations)");
   ok(dark.count === 0 && blank.count === 1 && blank.bg === 1 && blank.lab.every(v => v === 1), "a page with no space, or with no lines, is handled");
   /* the same picture twice gives the same shapes */
   ok(JSON.stringify(Array.from(T.regions(picture, W, H, 40).lab)) === JSON.stringify(Array.from(R.lab)), "the same picture always gives the same shapes");
+  /* more to color: the big shapes of a picture are cut up with more bold lines, and nothing else changes */
+  {
+    const BW = 300, BH = 400, X0 = 80, X1 = 220, Y0 = 110, Y1 = 290, big = (x, y) => (x >= X0 && x < X0 + 4 && y >= Y0 && y < Y1) || (x >= X1 - 4 && x < X1 && y >= Y0 && y < Y1) || (y >= Y0 && y < Y0 + 4 && x >= X0 && x < X1) || (y >= Y1 - 4 && y < Y1 && x >= X0 && x < X1);
+    const look = T.STAGES.early.color.enrich, pic = () => px(BW, BH, big);
+    ok(T.STAGES.early.color.tier === 1 && T.STAGES.middle.color.tier === 2 && T.STAGES.late.color.tier === 3 && ["early", "middle", "late"].every(st => T.STAGES[st].color.enrich && T.STAGES[st].color.weight), "each stage has its own level of detail, line weight and amount of extra cutting");
+    ok(T.STAGES.early.color.enrich.max > T.STAGES.middle.color.enrich.max && T.STAGES.middle.color.enrich.max > T.STAGES.late.color.enrich.max, "the early stage gets the most to color, the late stage the least");
+    const a = pic(), before = a.slice(), e = T.enrich(a, BW, BH, look);
+    ok(e.before === 1 && e.after >= 3 && e.after <= look.max, `one big framed shape is cut into ${e.after} shapes to color (3 or more, within the ${look.max} limit)`);
+    let darker = true, same = true; for (let i = 0; i < BW * BH; i++) { if (a[i * 4] > before[i * 4]) darker = false; if (before[i * 4] < 150 && a[i * 4] !== before[i * 4]) same = false; }
+    ok(darker && same, "lines are only ever added: no existing line is lightened or moved");
+    const R2 = T.regions(a, BW, BH, 700); ok(R2.lab.every(v => v > 0 && v <= R2.count), "every point still belongs to a shape, so a tap anywhere colors something");
+    ok(R2.areas.slice(1).every((v, i) => i + 1 === R2.bg || v >= 700), "no shape is too small to tap");
+    let outside = 0; for (let y = 0; y < BH; y++) for (let x = 0; x < BW; x++) if ((x < X0 || x >= X1 || y < Y0 || y >= Y1) && a[(y * BW + x) * 4] !== before[(y * BW + x) * 4]) outside++;
+    ok(outside === 0, "nothing is drawn outside the shape it cuts up");
+    let thick = 0; for (let x = X0 + 10; x < X1 - 10; x++) { let run = 0, best = 0; for (let y = Y0 + 10; y < Y1 - 10; y++) { if (a[(y * BW + x) * 4] < 110) { run++; best = Math.max(best, run); } else run = 0; } thick = Math.max(thick, best); }
+    ok(thick >= 3, `the new lines are bold (${thick} pixels thick where they run across)`);
+    const b2 = pic(); T.enrich(b2, BW, BH, look); ok(Buffer.compare(Buffer.from(a), Buffer.from(b2)) === 0, "the same picture and settings always give the same lines");
+    const tiny = px(BW, BH, (x, y) => (x % 30 < 3 || y % 30 < 3)), tb = tiny.slice(), te = T.enrich(tiny, BW, BH, look);
+    ok(te.after === te.before && Buffer.compare(Buffer.from(tiny), Buffer.from(tb)) === 0, "a picture made only of small shapes is left as it is");
+    const capped = pic(), ce = T.enrich(capped, BW, BH, Object.assign({}, look, { max: 1 })); ok(ce.after === ce.before, "a picture already at the limit is left alone");
+    const mid = T.enrich(pic(), BW, BH, T.STAGES.middle.color.enrich), late = T.enrich(pic(), BW, BH, T.STAGES.late.color.enrich);
+    ok(e.after >= mid.after && mid.after >= late.after && late.after >= late.before, `the same picture has more to color at the early stage (${e.after}) than the middle (${mid.after}) and the late (${late.after})`);
+  }
   /* which library pictures are offered: all that suit, in a different order for each seed, never a mandala or a sensitive one */
   const designs = Array.from({ length: 30 }, (_, i) => ({ id: "d" + i, cat: i % 5 === 0 ? "zentangle-mandalas" : "animals", sensitive: i % 7 === 3 ? ["war"] : [] }));
   const eligible = designs.filter(d => d.cat !== "zentangle-mandalas" && !d.sensitive.length).map(d => d.id);

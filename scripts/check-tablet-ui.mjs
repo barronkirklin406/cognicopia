@@ -606,8 +606,8 @@ try {
     /* every picture Color a Picture offers has shapes enough to color (and not too many), and the list of pictures left out is exactly the sparse ones */
     const { ctx, p } = await fresh(LAND);
     const m = await measureColor(p), offered = Object.keys(m).filter(id => m[id].cat !== "zentangle-mandalas" && !m[id].sensitive), skip = await p.evaluate(() => window.CognicopiaTabletBanks.COLOR_SKIP);
-    const thin = colorSparse(m), few = offered.filter(id => !skip.includes(id) && Math.min(m[id][2], m[id][3]) < MIN_SHAPES), many = offered.filter(id => Math.max(m[id][2], m[id][3]) > MAX_SHAPES);
-    ok(offered.length - skip.length >= 20 && !few.length && !many.length, `${offered.length - skip.length} pictures to offer, each with ${MIN_SHAPES} to ${MAX_SHAPES} shapes to color at both levels` + (few.length ? ` (too few: ${few.join(", ")})` : "") + (many.length ? ` (too many: ${many.join(", ")})` : ""));
+    const thin = colorSparse(m), few = offered.filter(id => !skip.includes(id) && Math.min(m[id].early, m[id].middle, m[id].late) < MIN_SHAPES), many = offered.filter(id => Math.max(m[id].early, m[id].middle, m[id].late) > MAX_SHAPES);
+    ok(offered.length - skip.length >= 20 && !few.length && !many.length, `${offered.length - skip.length} pictures to offer, each with ${MIN_SHAPES} to ${MAX_SHAPES} shapes to color at every stage` + (few.length ? ` (too few: ${few.join(", ")})` : "") + (many.length ? ` (too many: ${many.join(", ")})` : ""));
     ok(JSON.stringify([...skip].sort()) === JSON.stringify(thin), "the pictures left out are exactly the sparse ones: " + JSON.stringify(thin));
     const eng = await p.evaluate(() => { const C = window.CognicopiaColoring, T = window.CognicopiaTablet; return C ? T.designChoices({ seed: "x" }, C.designs()) : null; });
     ok(!eng || skip.every(id => !eng.includes(id)), "and none of them is offered");
