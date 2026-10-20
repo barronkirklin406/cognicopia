@@ -67,6 +67,9 @@ html.cg-paper:not(.cg-night-shift) :is(.tb-btn.go,.tb-back,.tb-btn.go *,.tb-back
 .tb-acts{display:flex;flex-wrap:wrap;gap:8px 12px;justify-content:flex-end;margin-left:auto}
 .tb-sr{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 #tbVoice{padding:8px 12px}
+.tb-bar:has(#tbVoice:not([hidden])) .tb-back{padding-left:14px;padding-right:14px}
+.tb-bar:has(#tbVoice:not([hidden])){gap:8px}
+.tb-acts:has(#tbVoice:not([hidden])){gap:8px}.tb-acts:has(#tbVoice:not([hidden])) .tb-btn{padding-left:14px;padding-right:14px}.tb-acts:has(#tbVoice:not([hidden])) #tbVoice{min-width:56px;padding-left:10px;padding-right:10px}
 /* a phone held upright: the three buttons share one row under the title, so the activity below has the room */
 @media (orientation:portrait) and (max-width:699px){.tb-acts{flex:1 1 100%;flex-wrap:nowrap;gap:6px;justify-content:space-between}.tb-acts .tb-btn{flex:1 1 auto;min-width:0;padding:6px 8px;gap:6px;font-size:1rem}}
 @media (orientation:portrait) and (max-width:699px){.tb-acts:has(#tbVoice:not([hidden])){flex-wrap:wrap}.tb-acts:has(#tbVoice:not([hidden])) .tb-btn{flex:1 1 40%}}
