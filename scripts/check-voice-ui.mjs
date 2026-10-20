@@ -4,7 +4,7 @@
    speech (this machine has no real voices, so what is proved is the choice,
    the order, the pace, the pauses and the panel, not how a voice sounds):
 
-     - Tablet Activities: the Voice button opens a panel with three paces, the
+     - Tablet Activities: the menu's Voice settings button opens a panel with three paces, the
        voices of the device (a voice that streams from a server is not
        listed), a Preview for each and a test sentence; Read to Me speaks with
        the chosen voice at 0.90 and pitch 1
@@ -64,14 +64,16 @@ const panelChecks = async (p, where) => {
   let found = false;
   for (const id of ids) {
     await p.click(`.tbp-card[data-act="${id}"]`); await p.waitForTimeout(350);
-    if (await p.$eval("#tbVoice", e => !e.hidden).catch(() => false)) { found = true; break; }
+    if (await p.$eval("#tbSay", e => !e.hidden).catch(() => false)) { found = true; break; }
     await p.click("#tbBack").catch(() => {}); await p.waitForTimeout(200);
   }
-  ok(found, "Tablet Activities: an activity that can be read aloud shows the Voice button");
+  ok(found, "Tablet Activities: an activity that can be read aloud shows Read to Me");
   if (found) {
     await p.click("#tbSay"); await p.waitForTimeout(150);
     let s = await said(p);
     ok(s.length >= 1 && s.every(x => x.voice === "Ava (Premium)" && x.rate === 0.90 && x.pitch === 1), `Read to Me uses the most natural voice at 0.90, pitch 1 (${JSON.stringify(s.slice(0, 1))})`);
+    await p.click("#tbBack"); await p.waitForTimeout(300);
+    ok(await p.$eval("#tbVoice", e => !e.hidden), "the menu's toolbar has the Voice settings button");
     await p.click("#tbVoice"); await p.waitForSelector("#cgVoicePanel");
     await panelChecks(p, "Tablet Activities");
     await p.evaluate(() => { window.__said.length = 0; });
@@ -88,7 +90,7 @@ const panelChecks = async (p, where) => {
     s = await said(p);
     ok(s.length && s[0].text === "Welcome to today’s activity." && s[0].voice === "Samantha", "the test button speaks the sample sentence in the chosen voice");
     await p.keyboard.press("Escape"); await p.waitForTimeout(100);
-    ok(await p.$("#cgVoicePanel") === null && await p.evaluate(() => document.activeElement && document.activeElement.id) === "tbVoice", "Escape closes the panel and returns the focus to the Voice button");
+    ok(await p.$("#cgVoicePanel") === null && await p.evaluate(() => document.activeElement && document.activeElement.id) === "tbVoice", "Escape closes the panel and returns the focus to the Voice settings button");
     await p.reload(); await p.waitForSelector(".tbp-card");
     ok(await p.evaluate(() => JSON.parse(localStorage.getItem("cognicopia_voice")).voice) === "Samantha", "the choice is kept on the device");
   }

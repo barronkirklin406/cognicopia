@@ -168,13 +168,13 @@
   function run(act, seed) {
     teardown();
     stage.innerHTML = ""; stage.scrollTop = 0;
-    $("tbProg").textContent = ""; $("tbSay").hidden = true; $("tbVoice").hidden = true; $("tbAssist").hidden = true; $("tbAssist").disabled = false; $("tbNew").hidden = false; live("");
+    $("tbProg").textContent = ""; $("tbSay").hidden = true; $("tbAssist").hidden = true; $("tbAssist").disabled = false; $("tbNew").hidden = false; live("");
     var me = cur = { act: act, seed: seed, say: null, cleanup: null, debug: null, onKey: null, onResize: null, assistFn: null, hintFn: null, done: false, assisting: false, timers: [], hints: 0, used: null };
     var api = {
       area: area, live: live, chime: chime, soft: soft, pop: pop, tick: tick, tone: tone, cheer: cheer, praise: praise, speak: speak, unlock: unlock, audio: audioReady,
       soundOn: function () { return prefs.sound; }, setSound: function (on) { prefs.sound = !!on; savePrefs(); soundLabel(); }, prefs: prefs, savePrefs: savePrefs, later: later, busy: armIdle,
       progress: function (t) { $("tbProg").textContent = t; },
-      say: function (fn) { me.say = fn; $("tbSay").hidden = !(canSpeak && fn); $("tbVoice").hidden = !(canSpeak && fn && window.CogniVoice); },
+      say: function (fn) { me.say = fn; $("tbSay").hidden = !(canSpeak && fn); },
       debug: function (fn) { me.debug = fn; },
       onKey: function (fn) { me.onKey = fn; },
       onResize: function (fn) { me.onResize = fn; },
@@ -279,6 +279,7 @@
   $("tbBack").addEventListener("click", closeAct);
   $("tbNew").addEventListener("click", function () { if (cur) next(); });
   $("tbSay").addEventListener("click", function () { if (cur && cur.say) speak(cur.say()); });
+  $("tbVoice").hidden = !(canSpeak && window.CogniVoice);
   $("tbVoice").addEventListener("click", function () { if (window.CogniVoice) window.CogniVoice.openPanel({ opener: $("tbVoice") }); });
   $("tbAssist").addEventListener("click", function () {
     var me = cur; if (!me || me.done || me.assisting || !me.assistFn) return;

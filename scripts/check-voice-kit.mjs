@@ -108,7 +108,7 @@ ok(!/\bfetch\s*\(|XMLHttpRequest|sendBeacon|WebSocket|EventSource|importScripts/
 ok(!/https?:\/\//.test(strip(kit)), "and holds no web address");
 for (const f of ["tablet.html", "index.html", "builder.html"]) ok(/<script src="js\/voiceKit\.js"><\/script>/.test(read(f)), `${f} loads the voice kit`);
 ok(read("sw.js").includes('"js/voiceKit.js"'), "the voice kit is saved for offline use");
-ok(/CogniVoice/.test(read("js/tablet.js")) && /id="tbVoice"/.test(read("tablet.html")), "the Tablet toolbar has Voice settings");
+ok(/CogniVoice/.test(read("js/tablet.js")) && /id="tbVoice"/.test(read("tablet.html")), "the Tablet menu toolbar has Voice settings");
 ok(/CogniVoice/.test(read("index.html")) && /data-voice/.test(read("index.html")), "Tablet Interactive Mode has Voice settings");
 ok(/data-pl="vset"/.test(read("builder.html")) && /High-Fidelity Voice/.test(read("builder.html")), "the Academy has Voice settings and the High-Fidelity switch");
 
