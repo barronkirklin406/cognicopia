@@ -646,10 +646,10 @@ try {
     const p0 = await paper(.5, .5); ok(p0[3] === 255 && !(p0[0] === 255 && p0[1] === 255 && p0[2] === 255), "the sheet starts as warm parchment, not a blank white screen");
     ok((await ink(.5, .5))[3] === 0, "and nothing is painted on it");
     await drag(.2, .5, .8, .5);
-    let c = await ink(.5, .5); ok((await dbg(p)).strokes === 1 && c[3] > 235 && near(c, [244, 182, 194], 10), "a finger drawn across the sheet paints a soft line in the chosen color");
+    let c = await ink(.5, .5); ok((await dbg(p)).strokes === 1 && c[3] > 235 && near(c, [193, 18, 31], 10), "a finger drawn across the sheet paints a soft line in the chosen color");
     await click(p, '[data-tab="colors"]'); await click(p, '[data-bank="1"]'); await click(p, '.tb-sw[data-color="#0a58ca"]'); await click(p, '[data-tab="brush"]'); await click(p, '[data-size="3"]'); await click(p, '[data-brush="soft"]');
     await drag(.5, .15, .5, .85);
-    c = await ink(.5, .3); ok((await dbg(p)).strokes === 2 && c[3] > 235 && near(c, [47, 111, 208], 10), "another color, and a wider brush");
+    c = await ink(.5, .3); ok((await dbg(p)).strokes === 2 && c[3] > 235 && near(c, [10, 88, 202], 10), "another color, and a wider brush");
     ok(await p.evaluate(() => document.querySelectorAll("[data-brush]").length) === 4 && await p.evaluate(() => document.querySelectorAll("[data-size]").length) === 4, "four brushes and four sizes");
     await click(p, '[data-brush="blend"]'); await click(p, '[data-size="1"]');
     const before = await ink(.58, .62); await drag(.4, .62, .75, .62); const after = await ink(.58, .62);
