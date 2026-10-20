@@ -42,7 +42,7 @@ const K = load("assets/services/slpClinicalService.js", "CogniClinical");
 /* ---------- 1. privacy ---------- */
 {
   const NET_CALLS = /\bfetch\s*\(|XMLHttpRequest|sendBeacon|new\s+WebSocket\b|new\s+EventSource\b|importScripts\s*\(/, NET = new RegExp(NET_CALLS.source + "|navigator\\.serviceWorker\\.register");
-  for (const f of ["censusImport", "privacyExport", "dailyOps", "slpClinicalService", "facilityPlanner", "secureStore", "localDb"]) {
+  for (const f of ["censusImport", "privacyExport", "dailyOps", "residentTracker", "staffCompanion", "slpClinicalService", "facilityPlanner", "secureStore", "localDb"]) {
     ok(!NET.test(read("assets/services/" + f + ".js")), `${f}.js makes no network request`);
     ok(!/https?:\/\//.test(read("src/services/" + f + ".ts").replace(/\/\*[\s\S]*?\*\//g, "").replace(/\/\/.*$/gm, "")), `${f}.ts names no outside address in its code`);
   }
@@ -143,7 +143,7 @@ const sb = D.sbar(board, "2026-10-20", "day", now, "Memory Care Unit A");
 eq(sb.rows.map(r => [r.resident, r.levelLabel, r.flagged]), [["Resident 101-A", "Fully engaged", []], ["Resident 102-B", "Joined in", ["restless"]]], "the summary by resident: arithmetic of what was recorded");
 ok(sb.situation[0].startsWith("2 residents have activity records") && /1 fully engaged, 1 joined in, 0 watched or listened, 0 chose another time/.test(sb.situation[0]), "the situation counts the levels");
 ok(/Resident 102-B \(restless\)/.test(sb.situation[1]), "a mood to keep an eye on names the alias and the mood");
-eq(sb.activities, ["Music circle: 2 residents, 1 joined in or more", "Garden pictures: 1 resident, 1 joined in or more"], "background: activities held, with counts");
+eq(sb.activities.slice().sort(), ["Garden pictures: 1 resident, 1 joined in or more", "Music circle: 2 residents, 1 joined in or more"], "background: activities held, with counts (entries made in the same minute have no fixed order)");
 const html = D.sbarPages(sb, { facility: "Maple Grove", today: "2026-10-20" }).join("");
 ok(!/201-A|Assisted Living B/.test(html) && /Memory Care Unit A/.test(html), "one wing's sheet never holds another's residents or notes");
 ok(/SBAR shift handoff/.test(html) && /S · Situation/.test(html) && /A · Assessment/.test(html) && /R · Recommendation/.test(html) && /Set up the music cart/.test(html), "the sheet has S, B, A and R and the open task");
