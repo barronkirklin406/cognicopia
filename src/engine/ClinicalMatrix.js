@@ -47,7 +47,7 @@
   /* ---------- the three stages ---------- */
   var STAGES = {
     early: {
-      id: "early", label: "Early (mild)", gds: "3–4", fast: "3–4", builder: "early", tier: 1,
+      id: "early", label: "Early (mild)", tierName: "Mild", gds: "3–4", fast: "3–4", builder: "early", tier: 1,
       focus: "Active recall and problem solving", framework: "Cognitive stimulation; open recall; strategy",
       /* type: the smallest any resident-facing text may be, and the sizes the page makers aim for */
       type: { floor: 18, title: 28, instruction: 20, body: 22, label: 18, clue: 18, word: 20, cell: 20, bold: true },
@@ -64,7 +64,7 @@
       decor: "detailed", clutter: "light", prompts: "open"
     },
     middle: {
-      id: "middle", label: "Middle (moderate)", gds: "5", fast: "5", builder: "moderate", tier: 2,
+      id: "middle", label: "Middle (moderate)", tierName: "Moderate", gds: "5", fast: "5", builder: "moderate", tier: 2,
       focus: "Guided completion and errorless learning", framework: "Errorless learning; familiar phrases; recognition",
       type: { floor: 18, title: 28, instruction: 22, body: 24, label: 20, clue: 20, word: 24, cell: 26, bold: true },
       stroke: { min: 3, art: 4.5, rule: 3, motor: 4.5 },
@@ -79,7 +79,7 @@
       decor: "simple", clutter: "minimal", prompts: "guided"
     },
     late: {
-      id: "late", label: "Late (advanced)", gds: "6–7", fast: "6–7", builder: "advanced", tier: 3,
+      id: "late", label: "Late (advanced)", tierName: "Advanced", gds: "6–7", fast: "6–7", builder: "advanced", tier: 3,
       focus: "Sensory, visual and motor anchoring", framework: "Sensory stimulation; visual anchoring; motor engagement",
       type: { floor: 24, title: 32, instruction: 26, body: 32, label: 24, clue: 24, word: 32, cell: 40, bold: true },
       stroke: { min: 4.5, art: 6, rule: 4.5, motor: 6 },
@@ -273,6 +273,123 @@
     return ACTIVITIES.filter(function (a) { return a.stages[st] && (!tool || a.tools.indexOf(tool) >= 0); });
   }
 
+  /* ---------- the tiers, as a person reads them ----------
+     "Tier 2 · Moderate · GDS 5". The numbers are the care team's own staging (GDS: Global Deterioration Scale; FAST: Functional
+     Assessment Staging); nothing here assesses anyone. */
+  function tierLabel(stage, withFast) {
+    var S = STAGES[stageOf(stage)];
+    return "Tier " + S.tier + " · " + S.tierName + " · GDS " + S.gds + (withFast ? " · FAST " + S.fast : "");
+  }
+  /* The GDS and FAST range an activity is made for, from the stages it suits: "3–5", "5–7", "3–7". */
+  function stagesRange(a, key) {
+    var on = ["early", "middle", "late"].filter(function (s) { return a.stages[s]; });
+    if (!on.length) return "";
+    var lo = STAGES[on[0]][key], hi = STAGES[on[on.length - 1]][key];
+    var first = String(lo).split("–")[0], last = String(hi).split("–").pop();
+    return first === last ? first : first + "–" + last;
+  }
+  function gdsRange(a) { return stagesRange(a, "gds"); }
+  function fastRange(a) { return stagesRange(a, "fast"); }
+
+  /* ---------- the therapy each page serves ----------
+     Evidence-based approaches, named the way a care plan names them: reminiscence, validation, errorless learning, cognitive
+     stimulation, reality orientation, Montessori-based activity, sensory stimulation. The label is for the person beside the resident
+     and for the care plan; it is a short anchor in the page's foot, never a diagnosis. */
+  var THERAPY_OF_DOMAIN = {
+    reminiscence: "Reminiscence", orientation: "Reality Orientation", motor: "Spatial / Fine Motor", sensory: "Sensory Stimulation",
+    procedural: "Spontaneous Recall", language: "Cognitive Stimulation", semantic: "Semantic Memory", executive: "Executive Function",
+    creative: "Creative Expression", social: "Validation / Social", numeracy: "Cognitive Stimulation", montessori: "Montessori"
+  };
+  /* the thirteen core page makers (src/engine/ClinicalActivities.js) are named one by one */
+  var THERAPY_OF_KIND = {
+    "search-large": "Cognitive Stimulation", "search-guided": "Errorless Learning", ladder: "Executive Function", anagram: "Cognitive Stimulation",
+    sorting: "Semantic Memory", oddone: "Semantic Memory", sequence: "Montessori / Sequencing", "choose-ending": "Validation / Spontaneous Recall",
+    matching: "Errorless Learning", "maze-motor": "Spatial / Fine Motor", pathtrace: "Spatial / Fine Motor", orientation: "Reality Orientation",
+    silhouette: "Sensory Stimulation"
+  };
+  var CORE_KINDS = Object.freeze(["search-large", "search-guided", "ladder", "anagram", "sorting", "oddone", "sequence", "choose-ending", "matching", "maze-motor", "pathtrace", "orientation", "silhouette"]);
+  function therapyOf(id, tool) {
+    var a = tool ? entry(tool, id) : (byKey["packet:" + id] || byKey["builder:" + id]);
+    if (THERAPY_OF_KIND[id] && (!a || a.tools.indexOf("builder") >= 0 || a.tools.indexOf("packet") >= 0)) return THERAPY_OF_KIND[id];
+    if (!a || a.domain === "staff") return "";
+    return THERAPY_OF_DOMAIN[a.domain] || "";
+  }
+  /* "[Therapy: Reminiscence | GDS 5]": the tier's GDS goes with the page, because the page is drawn for that tier. When the line
+     would be wider than max (points, at 12 pt bold) the second half of a two-part name is dropped. */
+  function anchorFor(id, tool, stage, o) {
+    o = o || {};
+    var th = therapyOf(id, tool);
+    if (!th) return "";
+    var gds = "GDS " + STAGES[stageOf(stage)].gds, meas = o.measure, max = o.max;
+    var make = function (t) { return "[Therapy: " + t + " | " + gds + "]"; };
+    var line = make(th);
+    if (meas && max && meas(line) > max && th.indexOf(" / ") > 0) line = make(th.split(" / ")[0]);
+    return line;
+  }
+
+  /* ---------- avoidance protocols and triggers ----------
+     What a resident's care team has asked to keep off the page: topics (war, loss, hospital...), military conflict eras, the names
+     of loved ones who have passed or are not to be mentioned, places or regions, and anything else typed in. Every page maker,
+     word bank and prompt list is held to the same list of terms; a page that mentions one is drawn again. The terms stay in the
+     browser: nothing here makes a request. */
+  var AVOID_TOPIC_WORDS = {
+    war: ["war", "battle", "combat", "soldier", "army", "navy", "marines", "veteran", "military", "draft", "bomb"],
+    death: ["death", "died", "funeral", "grave", "burial", "widow", "passed away"],
+    medical: ["hospital", "illness", "surgery", "doctor", "nurse", "cancer", "pills", "medicine"],
+    religion: ["church", "prayer", "hymn", "faith", "bible", "priest"],
+    money: ["money", "bills", "bank", "debt"], politics: ["politics", "election", "vote", "president"],
+    driving: ["driving", "car keys", "license"], home: ["going home", "old house"], "family-conflict": ["divorce", "fight", "argue"],
+    children: ["baby", "babies", "child", "children"], water: ["boat", "ocean", "drowning", "sea", "lake"],
+    storms: ["storm", "tornado", "fire", "flood", "thunder"]
+  };
+  var AVOID_ERAS = [
+    { code: "era-wwii", label: "World War II (1939–1945)", words: ["world war", "ww2", "wwii", "pearl harbor", "d-day", "nazi", "pacific theater", "iwo jima", "blitz", "rationing"] },
+    { code: "era-korea", label: "Korean War (1950–1953)", words: ["korea", "korean war", "38th parallel", "inchon", "pusan"] },
+    { code: "era-vietnam", label: "Vietnam War (1955–1975)", words: ["vietnam", "saigon", "agent orange", "viet cong", "draft lottery"] },
+    { code: "era-gulf", label: "Gulf, Iraq and Afghanistan wars", words: ["desert storm", "gulf war", "iraq", "afghanistan", "kuwait", "baghdad"] },
+    { code: "era-coldwar", label: "Cold War and the Cuban missile crisis", words: ["cold war", "iron curtain", "cuban missile", "fallout shelter", "air raid drill"] }
+  ];
+  function listOf(v) {
+    if (v == null) return [];
+    if (Array.isArray(v)) return v.map(function (x) { return x && typeof x === "object" ? (x.code || x.label || "") : x; });
+    return String(v).split(/[,;\n]+/);
+  }
+  /* avoidTerms({ topics, eras, people, places, other }) -> the lower-case terms (3+ letters, no duplicates); a plain list of words is
+     accepted as well. Topic and era codes are looked up; anything else is a term as typed. */
+  function avoidTerms(av) {
+    var out = [], seen = {};
+    var add = function (w) {
+      w = String(w || "").toLowerCase().replace(/\s+/g, " ").trim();
+      if (w.length >= 3 && !seen[w]) { seen[w] = 1; out.push(w); }
+    };
+    if (Array.isArray(av) || typeof av === "string") { listOf(av).forEach(add); return out; }
+    av = av || {};
+    listOf(av.topics).forEach(function (c) { (AVOID_TOPIC_WORDS[String(c).toLowerCase()] || []).forEach(add); });
+    listOf(av.eras).forEach(function (c) {
+      AVOID_ERAS.forEach(function (e) { if (e.code === c || e.label === c) e.words.forEach(add); });
+    });
+    ["people", "places", "other", "words"].forEach(function (k) { listOf(av[k]).forEach(add); });
+    return out;
+  }
+  function avoidMatcher(terms) {
+    var res = listOf(terms).map(function (w) { return String(w || "").toLowerCase().trim(); }).filter(function (w) { return w.length >= 3; })
+      .map(function (w) { return { term: w, re: new RegExp("(^|[^a-z0-9])" + w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/\s+/g, "[^a-z0-9]+") + "(s|es|'s)?([^a-z0-9]|$)", "i") }; });
+    return function (text) {
+      text = String(text == null ? "" : text);
+      var hits = [];
+      for (var i = 0; i < res.length; i++) if (res[i].re.test(text)) hits.push(res[i].term);
+      return hits;
+    };
+  }
+
+  /* ---------- Sundowning / Rapid De-escalation: the low-arousal rules ----------
+     When the mode is on, every generator draws less and quieter: one subject, the late stage's type and line floors (the print standard
+     itself never loosens: black on white, 3 pt lines or heavier, 0.5 in margins), no timed or competitive pages, and a calm reminiscence
+     invitation in place of a puzzle. */
+  var CALM_KINDS = Object.freeze(["orientation", "silhouette", "pathtrace", "matching", "choose-ending", "sequence", "talk", "era", "lyric", "task", "people", "color", "mandala", "reminiscence-cards", "memory-lane", "lyric-sheet", "line-tracing", "letter-tracing", "chair-yoga", "notes", "facsupport"]);
+  var CALM = Object.freeze({ stage: "late", maxItemsPerPage: 3, prompt: "reminiscence", pace: "unhurried", kinds: CALM_KINDS });
+  function calmOk(id) { return CALM_KINDS.indexOf(id) >= 0; }
+
   /* ---------- the adult-dignity filter ----------
      Residents are adults with a lifetime behind them. Nothing printed for them may sound like it is written
      for a child, and no picture may look like it came from a nursery. Words are linted; pictures are
@@ -442,8 +559,8 @@
   /* ---------- the page check ----------
      A "vector page" is { w, h, frame:{x,y,w,h}, items:[{d, fill, w, role}], texts:[{text,x,y,size,bold,align,role,rotate}] }.
      validatePage returns every rule the page breaks (an empty list is a pass). */
-  function validatePage(page, stage) {
-    var st = stageOf(stage || page.stage), S = STAGES[st], problems = [], F = page.frame || { x: SAFE.edge, y: SAFE.edge, w: SAFE.pageW - 2 * SAFE.edge, h: SAFE.pageH - 2 * SAFE.edge };
+  function validatePage(page, stage, opts) {
+    var st = stageOf(stage || page.stage), S = STAGES[st], problems = [], mentions = opts && opts.avoid && opts.avoid.length ? avoidMatcher(opts.avoid) : null, F = page.frame || { x: SAFE.edge, y: SAFE.edge, w: SAFE.pageW - 2 * SAFE.edge, h: SAFE.pageH - 2 * SAFE.edge };
     var edge = SAFE.edge;
     (page.items || []).forEach(function (it, i) {
       var floor = it.role === "motor" ? S.stroke.motor : it.role === "shell" ? 2.25 : S.stroke.min;
@@ -466,6 +583,7 @@
       if (t.x < F.x - 0.6 && t.align !== "right" || t.x > F.x + F.w + 0.6 && t.align !== "left") problems.push("the text \"" + String(t.text).slice(0, 24) + "\" starts outside its space");
       if (t.y > F.y + F.h + 0.6 || t.y < F.y - 0.6) problems.push("the text \"" + String(t.text).slice(0, 24) + "\" sits outside its space");
       if (resident && lintText(t.text).length) problems.push("the text \"" + String(t.text).slice(0, 30) + "\" breaks the dignity rule: " + lintText(t.text).join(", "));
+      if (mentions && resident) { var hit = mentions(t.text); if (hit.length) problems.push("the text \"" + String(t.text).slice(0, 30) + "\" mentions " + hit[0] + ", which this resident's care team asked to keep off the page"); }
     });
     return problems;
   }
@@ -529,6 +647,9 @@
     allowed: allowed, why: why, activitiesFor: activitiesFor, entry: entry, suggested: suggested, SUGGESTED: SUGGESTED,
     dignity: Object.freeze({ lint: lintText, clean: cleanText, adultSubject: adultSubject, RULES: DIGNITY, ADULT_CATEGORIES: ADULT_CATEGORIES }),
     dailyRng: dailyRng, dateIso: dateIso, cue: cue, cuePlan: cuePlan, kindOf: kindOf, validatePage: validatePage, constrainLegacy: constrainLegacy,
-    headerParts: headerParts, seasonOf: seasonOf, southern: southern
+    headerParts: headerParts, seasonOf: seasonOf, southern: southern,
+    tierLabel: tierLabel, gdsRange: gdsRange, fastRange: fastRange, CORE_KINDS: CORE_KINDS, therapyOf: therapyOf, anchorFor: anchorFor,
+    AVOID_TOPIC_WORDS: AVOID_TOPIC_WORDS, AVOID_ERAS: AVOID_ERAS, avoidTerms: avoidTerms, avoidMatcher: avoidMatcher,
+    CALM: CALM, calmOk: calmOk
   });
 })(typeof globalThis !== "undefined" ? globalThis : this);

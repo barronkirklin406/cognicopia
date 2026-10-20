@@ -2827,12 +2827,15 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
     easy still gets finished.</p>
     <div class="levels">
       <label class="level"><input type="radio" name="stage" value="early" checked>
-        <span><b>Early</b><span>Mild memory loss. Still enjoys working at something.</span></span></label>
+        <span><b>Early</b><span>Tier 1 · Mild · GDS 3–4 (FAST 3–4). Still enjoys working at something.</span></span></label>
       <label class="level"><input type="radio" name="stage" value="middle">
-        <span><b>Middle</b><span>Moderate. Shorter puzzles, larger letters, fewer words.</span></span></label>
+        <span><b>Middle</b><span>Tier 2 · Moderate · GDS 5 (FAST 5). Shorter puzzles, larger letters, fewer words.</span></span></label>
       <label class="level"><input type="radio" name="stage" value="late">
-        <span><b>Late</b><span>Advanced. Very simple pages, mostly conversation.</span></span></label>
+        <span><b>Late</b><span>Tier 3 · Advanced · GDS 6–7 (FAST 6–7). Very simple pages, mostly conversation.</span></span></label>
     </div>
+    <label class="pick" id="calmPick"><input type="checkbox" id="calmMode"><span><b>Sundowning / De-escalation mode</b>
+      <span class="sub">For restless, anxious or end-of-day hours. Uses the late level, turns off timed, dense and competing pages, and leaves calm reminiscence pages: one subject, big bold type, nothing to get wrong.</span></span></label>
+    <p class="hint" id="calmMsg" role="status" hidden></p>
   </fieldset>
 
   <fieldset>
@@ -7508,7 +7511,7 @@ function makePacket(r, mode){
      resident works on) one clinical tip for the person beside them */
   D.noFloor=true;
   shellPass(D.d,{ name:pdfSafe([r.first,r.last].filter(Boolean).join(" ")), wing:pdfSafe(r.wing||""), stageLabel:CM.STAGES[r.stage].label,
-                  tipFor:tipPlan(D.pages,r.stage,r.first,PACKET_DATE,PACKET_VARIANT), reminder:false });
+                  tipFor:tipPlan(D.pages,r.stage,r.first,PACKET_DATE,PACKET_VARIANT), anchorFor:anchorPlan(D.pages,r.stage), reminder:false });
   D.pages.forEach((pg,i)=>{ if(NO_TIP.test(pg.kind)){ D.d.setPage(i+1); D.coachingFooter(); } });     // a page with no tip of its own carries the reminder
   D.d.setPage(D.d.internal.getNumberOfPages());
 
@@ -7926,12 +7929,28 @@ function shellPass(doc,o){
     });
     /* the foot */
     doc.setLineWidth(SH.footer.rule); doc.line(L,SH.footer.ruleY+dy,R,SH.footer.ruleY+dy);
-    doc.setFont("helvetica","normal"); doc.setFontSize(SH.footer.size); doc.text(pi.brand||"Cognicopia",L,SH.footer.y+dy);
-    doc.setFont("helvetica","bold"); doc.setFontSize(SH.footer.page); doc.text("Page "+p+" of "+n,(L+R)/2,SH.footer.y+dy,{align:"center"});
-    doc.setFont("helvetica","normal"); doc.setFontSize(SH.footer.size); doc.text(pi.stageLabel||"",R,SH.footer.y+dy,{align:"right"});
+    const brand=pi.brand||"Cognicopia";
+    doc.setFont("helvetica","normal"); doc.setFontSize(SH.footer.size); doc.text(brand,L,SH.footer.y+dy);
+    /* the therapy anchor, "[Therapy: Reminiscence | GDS 5]", takes the right of the foot and the page number moves up beside the name;
+       a page with no anchor keeps the foot as it was (page centred, the stage at the right) */
+    let anchor=pi.anchor||(o.anchorFor?o.anchorFor(p):"");
+    if(anchor && width(anchor,SH.footer.size,true)>R-L-170) anchor=anchor.replace(/ \/ [^|]+?(?= \|)/,"");
+    if(anchor){
+      doc.setFont("helvetica","bold"); doc.setFontSize(SH.footer.page); doc.text("Page "+p+" of "+n,L+width(brand,SH.footer.size,false)+14,SH.footer.y+dy);
+      doc.setFont("helvetica","bold"); doc.setFontSize(SH.footer.size); doc.text(anchor,R,SH.footer.y+dy,{align:"right"});
+    } else {
+      doc.setFont("helvetica","bold"); doc.setFontSize(SH.footer.page); doc.text("Page "+p+" of "+n,(L+R)/2,SH.footer.y+dy,{align:"center"});
+      doc.setFont("helvetica","normal"); doc.setFontSize(SH.footer.size); doc.text(pi.stageLabel||"",R,SH.footer.y+dy,{align:"right"});
+    }
   }
   doc.setPage(n);
   doc.setLineWidth(1); doc.setFont("helvetica","normal"); doc.setFontSize(12); doc.setTextColor(0,0,0);
+}
+/* The therapy anchor for each page of a packet: "[Therapy: Reminiscence | GDS 5]", from the page's kind and the tier's GDS (ClinicalMatrix.js
+   names the therapy for every kind it knows; a staff page, a cover or a kind it does not know has none). */
+function anchorPlan(pages,stage){
+  const CM=window.CognicopiaClinicalMatrix;
+  return p=>{ const pg=pages[p-1]; if(!pg||!pg.kind||/^(cover|staff|key|notes|form|support|any)$/.test(pg.kind)) return ""; try{ return CM.anchorFor(pg.kind,"packet",stage); }catch(e){ return ""; } };
 }
 /* One tip for each resident page of a packet, none repeated, from the clinical frameworks in ClinicalMatrix.js.
    pages: [{kind, topic}] in page order; tips are for the person sitting beside the resident, so staff pages get none. */
@@ -8305,16 +8324,17 @@ lateActivityHint.hidden = true;
 actsBox.insertAdjacentElement("afterend", lateActivityHint);
 /* Pages that ask for more than is kind at the chosen level are turned off, with the reason on the page (ClinicalMatrix.js
    holds the list). Ticking a level back restores what was ticked before. */
+const calmOn=()=>{ const c=document.getElementById("calmMode"); return !!(c && c.checked); };
 function filterAdvancedLateActivities(){
-  const CM=window.CognicopiaClinicalMatrix, stage=effectiveStage(), off=[];
+  const CM=window.CognicopiaClinicalMatrix, stage=effectiveStage(), off=[], calm=calmOn();
   document.querySelectorAll(".act").forEach(function(input){
     const label = input.closest("label");
-    if (!CM || !CM.allowed || !CM.allowed(stage, input.value, "packet")){
+    if (!CM || !CM.allowed || !CM.allowed(stage, input.value, "packet") || (calm && CM.calmOk && !CM.calmOk(input.value))){
       if (input.dataset.tierDisabled !== "true") input.dataset.tierSelection = String(input.checked);
       input.checked = false;
       input.disabled = true;
       input.dataset.tierDisabled = "true";
-      input.title = (CM && typeof CM.why === "function") ? CM.why(stage, input.value, "packet") : "Not offered at this level";
+      input.title = calm && CM.allowed(stage, input.value, "packet") ? "Turned off in Sundowning / De-escalation mode: this page is timed, dense or asks for a choice." : (CM && typeof CM.why === "function") ? CM.why(stage, input.value, "packet") : "Not offered at this level";
       input.setAttribute("aria-describedby", "lateActivityHint");
       if (label){ label.classList.add("is-tier-disabled"); label.title = input.title; }
       const e = (CM && typeof CM.entry === "function") ? CM.entry("packet", input.value) : null;
@@ -8331,12 +8351,12 @@ function filterAdvancedLateActivities(){
   });
   const stageName = (CM && CM.STAGES && CM.STAGES[stage] && CM.STAGES[stage].label) ? CM.STAGES[stage].label.split(" ")[0].toLowerCase() : stage;
   lateActivityHint.hidden = !off.length;
-  lateActivityHint.textContent = off.length ? "At the "+stageName+" level these ask for more than is kind, so they are turned off: "+off.join(", ")+"." : "";
+  lateActivityHint.textContent = off.length ? (calm ? "Sundowning / De-escalation mode turns these off (timed, dense or asking for a choice): " : "At the "+stageName+" level these ask for more than is kind, so they are turned off: ")+off.join(", ")+"." : "";
   estimatePages();
 }
 /* One tap for a set of pages that works well together at this level. */
 function pickSuggestedSet(){
-  const CM=window.CognicopiaClinicalMatrix, stage=effectiveStage(), set=(CM && typeof CM.suggested === "function") ? CM.suggested(stage,"packet") : [];
+  const CM=window.CognicopiaClinicalMatrix, stage=effectiveStage(), calm=calmOn(), set=((CM && typeof CM.suggested === "function") ? CM.suggested(stage,"packet") : []).concat(calm ? ["talk","era","people","lyric","task"] : []).filter(id=>!calm || CM.calmOk(id));
   document.querySelectorAll(".act").forEach(c=>{ if(!c.disabled) c.checked=set.indexOf(c.value)>=0; });
   filterAdvancedLateActivities();
   const stageName = (CM && CM.STAGES && CM.STAGES[stage] && CM.STAGES[stage].label) ? CM.STAGES[stage].label.split(" ")[0].toLowerCase() : stage;
@@ -8345,6 +8365,29 @@ function pickSuggestedSet(){
 document.addEventListener("cognicopia:activeresident", filterAdvancedLateActivities);
 document.addEventListener("cognicopia:tieroverride", filterAdvancedLateActivities);
 document.addEventListener("change", e=>{ if(e.target && e.target.name==="stage") filterAdvancedLateActivities(); });
+/* Sundowning / De-escalation mode: the stage goes to late and is held there (the choice comes back when the mode is turned off), pages that are
+   timed, dense or ask for a choice are turned off, and the calm reminiscence pages are picked. Nothing about it is saved; it is a switch on this screen. */
+let calmPrevStage=null;
+$("calmMode").addEventListener("change",function(){
+  const radios=[...document.querySelectorAll('input[name="stage"]')], msg=$("calmMsg");
+  if(this.checked){
+    const cur=radios.find(r=>r.checked); calmPrevStage=cur?cur.value:"early";
+    const late=radios.find(r=>r.value==="late"); if(late) late.checked=true;
+    radios.forEach(r=>{ r.disabled=true; });
+    document.body.dataset.calm="1";
+    filterAdvancedLateActivities(); pickSuggestedSet();
+    msg.hidden=false; msg.textContent="Sundowning / De-escalation mode is on: late-level type and lines, and calm reminiscence pages only. Print as usual.";
+  } else {
+    radios.forEach(r=>{ r.disabled=false; });
+    const back=radios.find(r=>r.value===calmPrevStage); if(back) back.checked=true;
+    delete document.body.dataset.calm;
+    filterAdvancedLateActivities();
+    msg.hidden=false; msg.textContent="Sundowning / De-escalation mode is off. The level you had chosen is back.";
+  }
+  document.dispatchEvent(new Event("cognicopia:tieroverride"));
+});
+/* a resident chosen while the mode is on does not lift the level: the mode holds the late stage until it is turned off */
+document.addEventListener("cognicopia:activeresident",()=>{ if(!calmOn()) return; const l=document.querySelector('input[name="stage"][value="late"]'); if(l) l.checked=true; filterAdvancedLateActivities(); });
 filterAdvancedLateActivities();
 $("suggestAct").addEventListener("click",pickSuggestedSet);
 $("allAct").addEventListener("click",()=>{
@@ -10031,7 +10074,7 @@ function generateAilmentPDF(ailmentType, pick) {
     const total = doc.internal.getNumberOfPages(), kinds = [];
     for (let i = 0; i < total; i++) kinds.push({ kind: i === 0 ? "cover" : i < resident ? "any" : "staff", topic: "" });
     shellPass(doc, { name: pdfSafe(name || ""), wing: pdfSafe(($("wing") || {}).value || ""), date: PACKET_DATE, stageLabel: cfg.label,
-                     tipFor: tipPlan(kinds, stage, name || "guest", PACKET_DATE, PACKET_VARIANT) });
+                     tipFor: tipPlan(kinds, stage, name || "guest", PACKET_DATE, PACKET_VARIANT), anchorFor: anchorPlan(kinds, stage) });
 
     doc.setProperties({
       title: cfg.packetTitle + (name ? " for " + name : ""),
@@ -10446,7 +10489,9 @@ function generateAilmentPDF(ailmentType, pick) {
     var avoidTopics = codes((t1.topicsToAvoid || {}).topics);
     var avoidWords = [];
     avoidTopics.forEach(function(c){ (AVOID_WORDS[c] || []).forEach(function(w){ if (avoidWords.indexOf(w) === -1) avoidWords.push(w); }); });
-    String((t1.topicsToAvoid || {}).other || "").split(/[,;]+/).map(function(s){ return s.trim(); }).filter(Boolean)
+    /* eras, loved ones' names, places and anything typed in: the matrix turns them into the same list of terms every generator filters by */
+    var TA = t1.topicsToAvoid || {}, CMa = window.CognicopiaClinicalMatrix;
+    (CMa ? CMa.avoidTerms({ eras: codes(TA.eras), people: TA.people, places: TA.places, other: TA.other }) : String(TA.other || "").split(/[,;]+/).map(function(s){ return s.trim(); }).filter(Boolean))
       .forEach(function(w){ if (avoidWords.indexOf(w) === -1) avoidWords.push(w); });
     var peopleAll = (t3.people || []).map(function(x){
       return { name:x.name, relationship:x.relationship ? x.relationship.label : "", relationshipCode:x.relationship ? x.relationship.code : "", isPet:!!x.isPet, passedAway:!!x.passedAway };
@@ -10616,7 +10661,7 @@ function generateAilmentPDF(ailmentType, pick) {
 
   /* Answer lists copied from the wizard (profile.html), code -> label.
      Used to turn spreadsheet words back into the wizard's own answers. */
-  var BOOK = {"completedBy":[["activities-director","Activities Director"],["activity-staff","Activity or Life Enrichment staff"],["nurse","Nurse"],["caregiver","Caregiver or CNA"],["social-worker","Social Worker"],["family","Family member"],["friend","Friend or volunteer"],["resident","The resident, with help"],["other","Someone else"]],"hometown":[["rural","Rural or farm"],["small-town","Small town"],["city","City"],["suburb","Suburb"],["coastal","Coastal or lakeside"],["mountains","Mountains or forest"],["moved","Moved often (for example, a military family)"],["abroad","Grew up in another country"],["other","Somewhere else"]],"occupation":[["homemaker","Homemaker, raised a family"],["farmer","Farmer or rancher"],["mechanic","Mechanic"],["teacher","Teacher"],["nurse","Nurse"],["doctor","Doctor or other health care"],["office","Secretary or office work"],["bookkeeper","Bookkeeper, banker or accountant"],["factory","Factory or mill work"],["trades","Construction or building trades"],["carpenter","Carpenter or woodworker"],["electrician","Electrician or plumber"],["driver","Truck, bus or delivery driver"],["railroad","Railroad worker"],["postal","Postal worker"],["shop","Shopkeeper or sales"],["business","Business owner"],["engineer","Engineer or scientist"],["cook","Cook, baker or restaurant work"],["seamstress","Seamstress or tailor"],["police-fire","Police officer or firefighter"],["military","Military career"],["clergy","Clergy or church work"],["other","Other (type it in)"]],"militaryBranch":[["none","None"],["army","Army"],["navy","Navy"],["air-force","Air Force (or Army Air Forces)"],["marines","Marine Corps"],["coast-guard","Coast Guard"],["guard-reserve","National Guard or Reserves"],["merchant-marine","Merchant Marine"],["other-country","Another country's armed forces"],["unknown","Not sure, or prefer not to say"]],"militaryEra":[["ww2","World War II (1939 to 1945)"],["korea","Korean War (1950 to 1953)"],["cold-war","Peacetime or Cold War"],["vietnam","Vietnam era (1964 to 1975)"],["gulf","Gulf War (1990 to 1991)"],["other","Another time, or not sure"]],"militaryTopic":[["welcome","A welcome topic: they enjoy sharing it"],["gentle","Best handled gently: some hard memories"],["avoid","Best avoided: it can cause distress"]],"readingLevel":[["independent","Independent: reads sentences and short paragraphs"],["short","Short sentences: single words and short phrases"],["none","Cannot read independently: pictures and read-aloud"]],"vision":[["standard","Standard print"],["large","Large print"],["xl","Extra-large and high contrast"]],"motor":[["normal","Normal"],["mild","Mild limitation: stiff or slow"],["significant","Tremor or significant limitation"]],"genre":[["big-band","Big band and swing"],["crooners","Crooners and standards"],["country","Country and western"],["gospel","Gospel and hymns"],["rock-and-roll","Rock 'n' roll"],["motown","Doo-wop, Motown and soul"],["jazz-blues","Jazz and blues"],["folk","Folk"],["classical","Classical"],["broadway","Broadway and movie musicals"],["polka","Polka and old-time"],["latin","Latin"],["other","Something else"]],"relation":[["spouse","Husband or wife"],["partner","Partner"],["son","Son"],["daughter","Daughter"],["grandchild","Grandchild"],["great-grandchild","Great-grandchild"],["sibling","Brother or sister"],["parent","Mother or father"],["other-family","Other family"],["friend","Friend"],["neighbor","Neighbor"],["pet-dog","Pet dog"],["pet-cat","Pet cat"],["pet-other","Other pet"],["other","Someone else"]],"hobbies":[["gardening","Gardening"],["word-puzzles","Word puzzles"],["jigsaw","Jigsaw puzzles"],["cards","Card games"],["board-games","Board games and checkers"],["classic-cars","Classic cars"],["sewing","Sewing and quilting"],["knitting","Knitting and crochet"],["fishing","Fishing"],["outdoors","Hunting and the outdoors"],["woodworking","Woodworking"],["baking","Baking"],["cooking","Cooking"],["reading","Reading"],["singing","Music and singing"],["dancing","Dancing"],["art","Painting and drawing"],["birds","Bird watching"],["sports","Watching sports"],["golf-bowling","Golf or bowling"],["travel","Travel and road trips"],["animals","Pets and animals"],["collecting","Collecting (stamps, coins)"],["faith","Church and faith life"]],"skills":[["mechanical","Mechanical and repair"],["cooking","Cooking and baking"],["carpentry","Carpentry and woodworking"],["medical","Medical and caregiving"],["agriculture","Farming and animals"],["gardening","Gardening"],["sewing","Sewing and needlework"],["office","Typing and office work"],["numbers","Numbers and bookkeeping"],["teaching","Teaching and explaining"],["driving","Driving"],["electrical","Electrical and wiring"],["housekeeping","Housekeeping and organizing"],["music","Music or singing"],["crafts","Art and crafts"],["selling","Selling and customer service"]],"avoidTopics":[["war","War and combat"],["death","Death and loss"],["medical","Illness, hospitals and medical"],["religion","Religion"],["money","Money and finances"],["politics","Politics"],["driving","Driving and cars"],["home","\"Going home\" and their old house"],["family-conflict","Divorce or family conflict"],["children","Babies and children"],["water","Water, boats and the sea"],["storms","Storms, fire and disasters"]],"activityTypes":[["trivia","Trivia"],["word-search","Word search"],["fill-blank","Fill in the blank"],["matching","Matching"],["coloring","Coloring"],["reminiscence","Reminiscence prompts"],["mazes","Mazes and tracing"],["math","Math and numbers"]],"decades":[["1930s","1930s"],["1940s","1940s"],["1950s","1950s"],["1960s","1960s"],["1970s","1970s"],["1980s","1980s"]],"paper":[["letter","Letter"],["a4","A4"]],"ink":[["bw","Black and white"],["gray","Grayscale"]]};
+  var BOOK = {"completedBy":[["activities-director","Activities Director"],["activity-staff","Activity or Life Enrichment staff"],["nurse","Nurse"],["caregiver","Caregiver or CNA"],["social-worker","Social Worker"],["family","Family member"],["friend","Friend or volunteer"],["resident","The resident, with help"],["other","Someone else"]],"hometown":[["rural","Rural or farm"],["small-town","Small town"],["city","City"],["suburb","Suburb"],["coastal","Coastal or lakeside"],["mountains","Mountains or forest"],["moved","Moved often (for example, a military family)"],["abroad","Grew up in another country"],["other","Somewhere else"]],"occupation":[["homemaker","Homemaker, raised a family"],["farmer","Farmer or rancher"],["mechanic","Mechanic"],["teacher","Teacher"],["nurse","Nurse"],["doctor","Doctor or other health care"],["office","Secretary or office work"],["bookkeeper","Bookkeeper, banker or accountant"],["factory","Factory or mill work"],["trades","Construction or building trades"],["carpenter","Carpenter or woodworker"],["electrician","Electrician or plumber"],["driver","Truck, bus or delivery driver"],["railroad","Railroad worker"],["postal","Postal worker"],["shop","Shopkeeper or sales"],["business","Business owner"],["engineer","Engineer or scientist"],["cook","Cook, baker or restaurant work"],["seamstress","Seamstress or tailor"],["police-fire","Police officer or firefighter"],["military","Military career"],["clergy","Clergy or church work"],["other","Other (type it in)"]],"militaryBranch":[["none","None"],["army","Army"],["navy","Navy"],["air-force","Air Force (or Army Air Forces)"],["marines","Marine Corps"],["coast-guard","Coast Guard"],["guard-reserve","National Guard or Reserves"],["merchant-marine","Merchant Marine"],["other-country","Another country's armed forces"],["unknown","Not sure, or prefer not to say"]],"militaryEra":[["ww2","World War II (1939 to 1945)"],["korea","Korean War (1950 to 1953)"],["cold-war","Peacetime or Cold War"],["vietnam","Vietnam era (1964 to 1975)"],["gulf","Gulf War (1990 to 1991)"],["other","Another time, or not sure"]],"militaryTopic":[["welcome","A welcome topic: they enjoy sharing it"],["gentle","Best handled gently: some hard memories"],["avoid","Best avoided: it can cause distress"]],"readingLevel":[["independent","Independent: reads sentences and short paragraphs"],["short","Short sentences: single words and short phrases"],["none","Cannot read independently: pictures and read-aloud"]],"vision":[["standard","Standard print"],["large","Large print"],["xl","Extra-large and high contrast"]],"motor":[["normal","Normal"],["mild","Mild limitation: stiff or slow"],["significant","Tremor or significant limitation"]],"genre":[["big-band","Big band and swing"],["crooners","Crooners and standards"],["country","Country and western"],["gospel","Gospel and hymns"],["rock-and-roll","Rock 'n' roll"],["motown","Doo-wop, Motown and soul"],["jazz-blues","Jazz and blues"],["folk","Folk"],["classical","Classical"],["broadway","Broadway and movie musicals"],["polka","Polka and old-time"],["latin","Latin"],["other","Something else"]],"relation":[["spouse","Husband or wife"],["partner","Partner"],["son","Son"],["daughter","Daughter"],["grandchild","Grandchild"],["great-grandchild","Great-grandchild"],["sibling","Brother or sister"],["parent","Mother or father"],["other-family","Other family"],["friend","Friend"],["neighbor","Neighbor"],["pet-dog","Pet dog"],["pet-cat","Pet cat"],["pet-other","Other pet"],["other","Someone else"]],"hobbies":[["gardening","Gardening"],["word-puzzles","Word puzzles"],["jigsaw","Jigsaw puzzles"],["cards","Card games"],["board-games","Board games and checkers"],["classic-cars","Classic cars"],["sewing","Sewing and quilting"],["knitting","Knitting and crochet"],["fishing","Fishing"],["outdoors","Hunting and the outdoors"],["woodworking","Woodworking"],["baking","Baking"],["cooking","Cooking"],["reading","Reading"],["singing","Music and singing"],["dancing","Dancing"],["art","Painting and drawing"],["birds","Bird watching"],["sports","Watching sports"],["golf-bowling","Golf or bowling"],["travel","Travel and road trips"],["animals","Pets and animals"],["collecting","Collecting (stamps, coins)"],["faith","Church and faith life"]],"skills":[["mechanical","Mechanical and repair"],["cooking","Cooking and baking"],["carpentry","Carpentry and woodworking"],["medical","Medical and caregiving"],["agriculture","Farming and animals"],["gardening","Gardening"],["sewing","Sewing and needlework"],["office","Typing and office work"],["numbers","Numbers and bookkeeping"],["teaching","Teaching and explaining"],["driving","Driving"],["electrical","Electrical and wiring"],["housekeeping","Housekeeping and organizing"],["music","Music or singing"],["crafts","Art and crafts"],["selling","Selling and customer service"]],"avoidEras":[["era-wwii","World War II (1939–1945)"],["era-korea","Korean War (1950–1953)"],["era-vietnam","Vietnam War (1955–1975)"],["era-gulf","Gulf, Iraq and Afghanistan wars"],["era-coldwar","Cold War and the Cuban missile crisis"]],"avoidTopics":[["war","War and combat"],["death","Death and loss"],["medical","Illness, hospitals and medical"],["religion","Religion"],["money","Money and finances"],["politics","Politics"],["driving","Driving and cars"],["home","\"Going home\" and their old house"],["family-conflict","Divorce or family conflict"],["children","Babies and children"],["water","Water, boats and the sea"],["storms","Storms, fire and disasters"]],"activityTypes":[["trivia","Trivia"],["word-search","Word search"],["fill-blank","Fill in the blank"],["matching","Matching"],["coloring","Coloring"],["reminiscence","Reminiscence prompts"],["mazes","Mazes and tracing"],["math","Math and numbers"]],"decades":[["1930s","1930s"],["1940s","1940s"],["1950s","1950s"],["1960s","1960s"],["1970s","1970s"],["1980s","1980s"]],"paper":[["letter","Letter"],["a4","A4"]],"ink":[["bw","Black and white"],["gray","Grayscale"]]};
 
   var el = function(id){ return document.getElementById(id); };
   if (!el("arbBackup")) return;
@@ -10699,7 +10744,7 @@ function generateAilmentPDF(ailmentType, pick) {
           paper: choice(pn.paper, BOOK.paper, false) || { code:"letter", label:"Letter" },
           ink: choice(pn.ink, BOOK.ink, false) || { code:"bw", label:"Black and white" }
         },
-        topicsToAvoid: { topics: choices(av.topics, BOOK.avoidTopics, 20, false), other: str(av.other, 80) },
+        topicsToAvoid: { topics: choices(av.topics, BOOK.avoidTopics, 20, false), eras: choices(av.eras, BOOK.avoidEras, 10, false), people: str(av.people, 120), places: str(av.places, 120), other: str(av.other, 80) },
         difficulty: { level: lvl, label: DIFF[lvl - 1], scale: "1 (very easy) to 5 (challenging)" }
       },
       tier2_enrichment: {
@@ -10818,6 +10863,9 @@ function generateAilmentPDF(ailmentType, pick) {
     ["Ink",                   function(p){ return lab(p.tier1_core.printNeeds.ink); }],
     ["Difficulty",            function(p){ return p.tier1_core.difficulty.level + " - " + p.tier1_core.difficulty.label; }],
     ["Topics to Avoid",       function(p){ return labs(p.tier1_core.topicsToAvoid.topics); }],
+    ["Avoided Eras",          function(p){ return labs(p.tier1_core.topicsToAvoid.eras || []); }],
+    ["Avoided People",        function(p){ return p.tier1_core.topicsToAvoid.people || ""; }],
+    ["Avoided Places",        function(p){ return p.tier1_core.topicsToAvoid.places || ""; }],
     ["Other Topics to Avoid", function(p){ return p.tier1_core.topicsToAvoid.other; }],
     ["Hometown",              function(p){ return p.tier2_enrichment.hometown.place; }],
     ["Hometown Type",         function(p){ return lab(p.tier2_enrichment.hometown.environment); }],
@@ -10948,7 +10996,7 @@ function generateAilmentPDF(ailmentType, pick) {
         topHobbies: fromLabels(get("tophobbies"), BOOK.hobbies, true),
         printNeeds: { vision: fromLabel(get("vision"), BOOK.vision), readingLevel: fromLabel(get("readinglevel"), BOOK.readingLevel),
           motorSkills: fromLabel(get("motorskills"), BOOK.motor), paper: fromLabel(get("paper"), BOOK.paper), ink: fromLabel(get("ink"), BOOK.ink) },
-        topicsToAvoid: { topics: fromLabels(get("topicstoavoid"), BOOK.avoidTopics, false), other: get("othertopicstoavoid") },
+        topicsToAvoid: { topics: fromLabels(get("topicstoavoid"), BOOK.avoidTopics, false), eras: fromLabels(get("avoidederas"), BOOK.avoidEras, false), people: get("avoidedpeople"), places: get("avoidedplaces"), other: get("othertopicstoavoid") },
         difficulty: diff ? { level: diff } : {}
       },
       tier2_enrichment: {
@@ -13151,7 +13199,7 @@ function generateAilmentPDF(ailmentType, pick) {
     var unit = window.activeResident && window.activeResident.tier1_core ? String(window.activeResident.tier1_core.unitNumber || "") : "";
     var iso = todayIso(), kindOf = { cover:"cover", wordsearch:"wordsearch", cards:"talk", trivia:"complete" };
     var tipFn = tipPlan(pages.map(function(pg){ return { kind:kindOf[pg.kind] || "any", topic:"" }; }), stageQ, src.name || "guest", iso, dailyVariant(src.name || "guest"));
-    shellPass(doc, { name:safe(src.name || ""), wing:safe(unit), date:iso, stageLabel:SQ.label, tipFor:tipFn });
+    shellPass(doc, { name:safe(src.name || ""), wing:safe(unit), date:iso, stageLabel:SQ.label, tipFor:tipFn, anchorFor:anchorPlan(pages.map(function(pg){ return { kind:({ cover:"cover", wordsearch:"wordsearch", cards:"talk", trivia:"trivia" })[pg.kind] || "any", topic:"" }; }), stageQ) });
     var name = fileName(src.name);
     if (opts.save !== false) doc.save(name);
     return { filename:name, pages:pages.length, layout:layout, doc:doc };

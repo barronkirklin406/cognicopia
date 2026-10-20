@@ -74,3 +74,11 @@ If the button ever 404s on the live site, the file is missing from the branch th
 ## Adding an activity
 
 Write a builder in `js/tabletEngine.js` (data only), a screen function with the signature `function name(root, options, api)` in one of the activity files, and register it with `Kit.register({ id, group, order, title, blurb, icon, start })`. Give it `api.assist(fn)` (what Finish for me does), `api.hint(fn)` (what glows after fifteen quiet seconds) and `api.used(ids)` (so Next does not repeat it); the checks insist on all three. `scripts/check-tablet.mjs` insists on the icon and the screen function; add the builder to its loop and drive the screen in `scripts/check-tablet-ui.mjs`. Keep the sentences calm: the check refuses "wrong", "quiz", "easy", "score" and anything the dignity filter bans.
+
+## Levels with their GDS, therapy tags, Calm mode and "keep off the screen"
+
+- **Levels.** Early, middle and late carry their tier and staging: Tier 1 · Mild · GDS 3–4, Tier 2 · Moderate · GDS 5, Tier 3 · Advanced · GDS 6–7 (`gds`, `fast`, `tierName` on each stage in `js/tabletEngine.js`).
+- **Therapy tags.** `MODULES` in `js/tabletEngine.js` names the therapy each of the thirteen activities serves (cognitive stimulation, errorless learning, spontaneous recall, spatial and fine motor, creative expression, sensory stimulation, semantic memory, executive function). Each menu card shows it with the GDS range (all thirteen are made for GDS 3–7), and an open activity shows `[Therapy: Spatial / Fine Motor | GDS 5]` under its title, with the GDS of the level in use.
+- **Calm mode** (Sundowning / De-escalation). One switch in the setup: the late stage's size and count, and only the slow, one-thing-at-a-time activities (the sayings, trace, color, paint, match and the sounds); the others are hidden and Surprise me draws only from the calm ones. It is not saved; turning it off brings back every activity and the level chosen above.
+- **Keep off the screen.** An optional box for words, names or places, separated by commas. An activity that shows one of them is started again from a fresh draw (up to eight times). The list is kept in memory only; nothing is saved or sent.
+- `scripts/check-clinical-staging-ui.mjs` drives all of this in a real browser.

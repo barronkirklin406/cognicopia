@@ -250,7 +250,7 @@
     /* the rules the page must keep, found by looking at the page itself */
     sh.problems = function () {
       var out = sh.notes.slice(), page = sh.model();
-      CM.validatePage(page, st).forEach(function (p) { out.push(p); });
+      CM.validatePage(page, st, { avoid: o && o.avoid ? CM.avoidTerms(o.avoid) : null }).forEach(function (p) { out.push(p); });
       var boxes = [];
       sh.texts.forEach(function (t) {
         if (t.rotate) return;
@@ -294,8 +294,17 @@
     if (c.tip) tipLines(c.tip, meas).forEach(function (ln) { add(ln.text, L + ln.x, SH.tip.y + ln.row * SH.tip.lead, SH.tip.size, { bold: ln.bold, role: "cue" }); });
     out.items.push({ d: dLine(L, SH.footer.ruleY, R, SH.footer.ruleY), fill: "none", w: SH.footer.rule, role: "shell" });
     add("Cognicopia", L, SH.footer.y, SH.footer.size, { role: "footer" });
-    add("Page " + (c.page || 1) + " of " + (c.pages || 1), (L + R) / 2, SH.footer.y, SH.footer.page, { bold: true, align: "center", role: "footer" });
-    add(c.stageLabel || CM.STAGES[page.stage].label, R, SH.footer.y, SH.footer.size, { align: "right", role: "footer" });
+    /* The therapy anchor, "[Therapy: Reminiscence | GDS 5]", sits at the right of the foot, where it does not touch the resident's work;
+       the page number moves up beside the name to make room. Without one, the foot is as it always was. */
+    var anchor = c.anchor != null ? c.anchor : (c.activity ? CM.anchorFor(c.activity, c.tool, page.stage, { measure: function (t) { return meas(t, SH.footer.size, true); }, max: R - L - 170 }) : "");
+    if (anchor) {
+      add("Page " + (c.page || 1) + " of " + (c.pages || 1), L + meas("Cognicopia", SH.footer.size, false) + 14, SH.footer.y, SH.footer.page, { bold: true, role: "footer" });
+      add(anchor, R, SH.footer.y, SH.footer.size, { bold: true, align: "right", role: "footer" });
+      out.anchor = anchor;
+    } else {
+      add("Page " + (c.page || 1) + " of " + (c.pages || 1), (L + R) / 2, SH.footer.y, SH.footer.page, { bold: true, align: "center", role: "footer" });
+      add(c.stageLabel || CM.STAGES[page.stage].label, R, SH.footer.y, SH.footer.size, { align: "right", role: "footer" });
+    }
     return out;
   }
   /* A tip, set in at most two lines of the shell's width: "Clinical Tip:" in bold, then the sentence.

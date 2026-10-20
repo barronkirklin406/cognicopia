@@ -24,7 +24,7 @@
   /* what each stage gets: fewer, larger, simpler as the stage goes on */
   var STAGES = {
     early: {
-      label: "Early stage",
+      label: "Early stage", tier: 1, tierName: "Mild", gds: "3\u20134", fast: "3\u20134",
       search: { sizes: [5, 6], dirs: [[1, 0], [0, 1], [1, 1]] },
       cross: { size: 6, target: 5, max: 6, minLen: 3, attempts: 40 },
       spell: { count: 5, minLen: 4, maxLen: 6, firstGiven: false },
@@ -34,7 +34,7 @@
       color: { tier: 1, weight: "ultra-bold", enrich: { minArea: 1200, ringDepth: 23, cell: 1400, rings: 3, band: 15, max: 110, lw: 4 } }, sounds: { cards: 6, rounds: 3 }
     },
     middle: {
-      label: "Middle stage",
+      label: "Middle stage", tier: 2, tierName: "Moderate", gds: "5", fast: "5",
       search: { sizes: [4, 5], dirs: [[1, 0], [0, 1]] },
       cross: { size: 6, target: 4, max: 5, minLen: 3, attempts: 40 },
       spell: { count: 5, minLen: 3, maxLen: 5, firstGiven: false },
@@ -43,7 +43,7 @@
       color: { tier: 2, weight: "ultra-bold", enrich: { minArea: 2200, ringDepth: 25, cell: 2600, rings: 2, band: 18, max: 70, lw: 5 } }, sounds: { cards: 6, rounds: 3 }
     },
     late: {
-      label: "Late stage",
+      label: "Late stage", tier: 3, tierName: "Advanced", gds: "6\u20137", fast: "6\u20137",
       search: { sizes: [3, 4], dirs: [[1, 0]] },
       cross: { size: 5, target: 3, max: 4, minLen: 3, attempts: 40 },
       spell: { count: 4, minLen: 3, maxLen: 4, firstGiven: true },
@@ -449,7 +449,38 @@
     return rng.shuffle(list).map(function (d) { return d.id; });
   }
 
+  /* ---------- what each activity serves, in a care plan's words ----------
+     The therapy each of the thirteen activities offers, and whether it is a calm one: slow, one thing at a time, nothing timed or competing.
+     Every activity is made for all three stages (GDS 3 to 7); the stage changes the size and the count, never whether it can be done. */
+  var MODULES = {
+    wordsearch: { therapy: "Cognitive Stimulation", calm: false }, crossword: { therapy: "Cognitive Stimulation", calm: false },
+    spell: { therapy: "Errorless Learning", calm: false }, saying: { therapy: "Spontaneous Recall", calm: true },
+    trace: { therapy: "Spatial / Fine Motor", calm: true }, color: { therapy: "Creative Expression", calm: true },
+    paint: { therapy: "Creative Expression", calm: true }, bubbles: { therapy: "Sensory Stimulation", calm: false },
+    sort: { therapy: "Semantic Memory", calm: false }, order: { therapy: "Executive Function", calm: false },
+    match: { therapy: "Errorless Learning", calm: true }, odd: { therapy: "Semantic Memory", calm: false },
+    sounds: { therapy: "Sensory Stimulation / Music", calm: true }
+  };
+  /* "[Therapy: Spatial / Fine Motor | GDS 5]": the stage's GDS goes with the activity. */
+  function anchor(id, stage) {
+    var m = MODULES[id], S = STAGES[STAGES[stage] ? stage : "middle"];
+    return m ? "[Therapy: " + m.therapy + " | GDS " + S.gds + "]" : "";
+  }
+  /* The words an activity's screen is checked against: whole words, any case, a plural, a possessive. */
+  function avoidWords(text) {
+    return String(text == null ? "" : text).split(/[,;\n]+/).map(function (w) { return w.toLowerCase().replace(/\s+/g, " ").trim(); })
+      .filter(function (w, i, a) { return w.length >= 3 && a.indexOf(w) === i; });
+  }
+  function avoidHits(text, terms) {
+    var t = String(text == null ? "" : text), out = [];
+    (terms || []).forEach(function (w) {
+      if (new RegExp("(^|[^a-z0-9])" + w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/\s+/g, "[^a-z0-9]+") + "(s|es|'s)?([^a-z0-9]|$)", "i").test(t)) out.push(w);
+    });
+    return out;
+  }
+
   root.CognicopiaTablet = {
+    MODULES: MODULES, anchor: anchor, avoidWords: avoidWords, avoidHits: avoidHits,
     STAGES: STAGES, TOPICS: TOPICS, SHAPES: Object.keys(SHAPES), SHAPE_LABEL: SHAPE_LABEL, SCENES: SCENES,
     wordSearch: wordSearch, crossword: crossword, spellIt: spellIt, sayings: sayings, sortIt: sortIt, oddOne: oddOne, inOrder: inOrder,
     matchUp: matchUp, soundBoard: soundBoard, tracePath: tracePath, follow: follow, designChoices: designChoices, regions: regions, enrich: enrich, MAX_SHAPES: 90, PALETTES: PALETTES, oddDecks: oddDecks,
