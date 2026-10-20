@@ -447,7 +447,7 @@ html.cg-night-shift::before,html.cg-night-shift::after{display:none}
   html.cg-paper-app:not(.cg-night-shift) .switch input:checked{background:var(--cg-green-700);border-color:var(--cg-green-700)}
   html.cg-paper-app:not(.cg-night-shift) .fp-toggle-track{background:var(--cg-tan-600);border-color:var(--cg-tan-600)}
   html.cg-paper-app:not(.cg-night-shift) .fp-toggle-thumb{background:#fff}
-  html.cg-paper-app:not(.cg-night-shift) .lp-spread{background:var(--cg-tan-100)}
+  html.cg-paper-app:not(.cg-night-shift) :is(.lp-spread,.lp-wiz-pvbox){background:var(--cg-tan-100)}
   /* Facility: its own variables, now on cream */
   html.cg-paper-app:not(.cg-night-shift) .fp{--fp-card:var(--cg-white);--fp-chip:var(--cg-tan-100);--fp-tan:var(--cg-tan-200);--fp-tan-hi:var(--cg-tan-300);--fp-div:var(--cg-tan-200);--fp-text:var(--cg-charcoal);--fp-text-2:var(--cg-ink-soft);--fp-muted:var(--cg-ink-soft);--fp-head:var(--cg-green-700);--fp-ink:#fff;--fp-ink-2:#cfe3d6;--fp-warn:var(--cg-clay-700)}
   html.cg-paper-app:not(.cg-night-shift) .fp-bar select{color:var(--cg-charcoal)}
