@@ -52,9 +52,9 @@ These are the system's own pairs. Older page text that predates it is held to AA
 Two typefaces, both open-licensed, both files in `/fonts` (no font service, no request, cached for offline use by `sw.js`).
 
 - **Atkinson Hyperlegible** (Braille Institute, SIL OFL) for the interface, as "Cognicopia UI", regular and bold. Its letters are drawn to be told apart, which is the point of a tool for people with low vision.
-- **Fraunces** (Undercase Type, SIL OFL) for headings: a warm, editorial serif. One variable file, Latin only, weights 400 to 700; headings use 600.
+- **Fraunces** (Undercase Type, SIL OFL), now only for a resident's name where it is set large (`--cg-font-name`: the Shift board, the Session Notes, a printed cover). One variable file, Latin only, weights 400 to 700. Headings are the interface face (`--cg-font-display` is `--cg-font-ui`), bold, with no tracking.
 
-Three `.woff2` files, about 100 KB in all, with `fonts/OFL-Fraunces.txt` beside them (the Atkinson license already ships). A page that opts in gets headings in Fraunces and body text in the interface face, a type scale that grows with the window (body text is 16 px and up; the one smaller step, 15 px, is for labels and short captions such as the value cards' detail lines), a 1.6 line height, and a line length of about 62 characters. Stacked blocks in a page's main are one step (24 px) apart.
+Three `.woff2` files, about 100 KB in all, with `fonts/OFL-Fraunces.txt` beside them (the Atkinson license already ships). A page that opts in gets headings and body text in the interface face, a type scale that grows with the window (body text is 16 px and up; the one smaller step, 15 px, is for labels and short captions such as the value cards' detail lines), a 1.6 line height, and a line length of about 62 characters. Stacked blocks in a page's main are one step (24 px) apart.
 
 ## Space, shape and depth
 
@@ -146,6 +146,18 @@ In the Packet Builder each studio tool wears its own accent, so a person can tel
 ## Small and helper text
 
 Nothing a person reads is small. Section 12 of `css/styles.css` raises labels, chips, notes, captions and hints that a page sets under 16 px: 16 px for a sentence, 15 px for a chip or an upper-case label, in the bold face (the typeface ships a regular and a bold, so 600 and up is the bold), tracking .012em to .03em, leading 1.5. The navigation (`scripts/site-nav.mjs`) sets its links at 16 px, group labels at 15 px, and the breadcrumb and footer at 16 px. A printed sheet (`.qp-sheet`, `.lp-sheet`, `.sheet`, the print roots) keeps its own sizes, which are set in points and checked by `scripts/check-print-type-ui.mjs`. To find what is still small, run a scan in a real browser for text under 15 px, weight under 500 under 18 px, leading under 1.4 under 18 px, and contrast under 7:1 for small text.
+
+## The care tier as a color mode
+
+`js/careTier.js` reads the level a page already shows (the Packet Builder's difficulty, the packet tool's and the tablet's level, the profile's support tier) and sets `data-cg-tier` on `<html>`. It stores and sends nothing. Section 13 of `css/styles.css` turns that into colors: Tier 1 deep sapphire and indigo, Tier 2 warm terracotta with a sage edge, Tier 3 evergreen with a muted gold edge. The generator's header card (`.cg-tierhead`) carries a quiet tartan of the tier's own color, and the selected level button takes it. The tartan is two crossing sets of bands at low strength; the header text stays at 7:1 or better even where the bands cross, and `scripts/check-design-system.mjs` computes that for every tier. Night Shift drops the tartan. In print the card is plain white with a black edge.
+
+## Forms
+
+Fields in the Packet Builder's planner and journal and in the resident profile use floating labels: the real label rests inside the empty field and rises when the field has focus or something to read. In the profile this is CSS only (the label stays beside its field in the page), applies to a field that has a placeholder, and gives a phone a two-line resting label so none is cut off. The planner has a four-step stepper with a progress bar; the journal has the same strip over its three steps (the essentials, the four sections, print), which follows the part of the page being read; the profile has its six-step stepper. Fields, labels and lead lines carry .01em tracking. Controls stay 52 px.
+
+## A page printed straight from the browser
+
+A page that builds no sheets of its own (a price page, a policy, a guide for a binder, the resident profile) gets one print sheet from section 10 of `css/styles.css`: no navigation, sidebar, button or field to fill in (a box that only shows a value, such as a license key, stays); a white page with nothing behind the words; every word, tick and border pure black; US Letter with 0.5 in margins and a 0.75 in binding gutter on the left. A page that makes its own sheets (the Packet Builder's `#printRoot`, the packet tool's `#qpPrintRoot`, `#print-stage`) is left to its own rules, and its own `@page` rule wins because it comes later. `scripts/check-print-pages-ui.mjs` prints thirteen pages and three real PDFs and reads them back with PyMuPDF.
 
 ## What was deliberately not done
 

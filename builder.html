@@ -1055,6 +1055,8 @@ textarea:focus{border-color:var(--accent)}
 .lp-step-t small{font-size:13.5px;color:var(--muted)}
 .lp-step[aria-current="step"]{border-color:var(--accent);background:var(--panel);box-shadow:inset 0 4px 0 var(--accent)}
 .lp-step[aria-current="step"] .lp-step-n{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.lj-steps ol{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media (max-width:640px){.lj-steps ol{grid-template-columns:1fr}}
 .lp-prog{margin:14px 0 2px}
 .lp-prog-bar{height:12px;border-radius:999px;background:var(--panel-2);border:1px solid var(--line-2);overflow:hidden}
 .lp-prog-bar span{display:block;height:100%;width:0;border-radius:999px;background:linear-gradient(90deg,var(--accent-deep),var(--accent));transition:width .4s ease}
@@ -1262,7 +1264,7 @@ textarea:focus{border-color:var(--accent)}
 .rs-res:hover{border-color:var(--accent)}
 .rs-res[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent);background:#1d332b}
 .rs-res-main{display:flex;flex-direction:column;min-width:0}
-.rs-res-main b{font-family:var(--cg-font-display,"Fraunces",serif);font-size:19px;font-weight:700;letter-spacing:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rs-res-main b{font-family:var(--cg-font-name,"Fraunces",serif);font-size:19px;font-weight:700;letter-spacing:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .rs-res-main span{font-size:13.5px;color:var(--muted)}
 .rs-badges{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:4px;flex:none;max-width:52%}
 .rs-tier,.rs-flag{padding:2px 8px;border-radius:999px;font-size:12px;font-weight:800;white-space:nowrap}
@@ -1303,7 +1305,7 @@ textarea:focus{border-color:var(--accent)}
 .rs-who{padding:14px 16px;border-radius:14px;border:1px dashed var(--line-2);background:var(--bg-2)}
 .rs-who .eyebrow{margin:0}
 .rs-pick{margin:0;color:var(--muted)}
-.rs-name{margin:2px 0 0;font-family:var(--cg-font-display,"Fraunces",serif);font-size:30px;font-weight:700;letter-spacing:0;line-height:1.2}
+.rs-name{margin:2px 0 0;font-family:var(--cg-font-name,"Fraunces",serif);font-size:30px;font-weight:700;letter-spacing:0;line-height:1.2}
 .rs-name span{font-size:15px;font-weight:700;color:var(--muted)}
 .rs-needs{margin:4px 0 0;font-size:14px;color:var(--muted)}
 .rs-aud{margin-top:14px}
@@ -1693,7 +1695,7 @@ textarea:focus{border-color:var(--accent)}
 .slp-head b{font-size:14pt}
 .slp-head span{font-size:9.5pt}
 .slp-who{text-align:right}
-.slp-who b{font-family:var(--cg-font-display,"Fraunces",serif);font-size:18pt;letter-spacing:0}
+.slp-who b{font-family:var(--cg-font-name,"Fraunces",serif);font-size:18pt;letter-spacing:0}
 .slp-body{flex:1 1 auto;overflow:hidden;display:flex;flex-direction:column;gap:.12in}
 .slp-block h3{margin:0 0 .03in;font-size:10.5pt;letter-spacing:.06em;text-transform:uppercase}
 .slp-block p{margin:0;font-size:11.5pt;line-height:.2in}
@@ -1784,7 +1786,7 @@ textarea:focus{border-color:var(--accent)}
 .ops-hand i{display:block;height:.5in;border-bottom:2pt solid #000}
 .ops-foot{display:flex;justify-content:space-between;gap:.2in;font-size:9pt;border-top:1px solid #000;padding-top:2pt}
 /* resident names and aliases: large, in the display face (the same on screen and on the sheets) */
-.ops-name{font-family:var(--cg-font-display,"Fraunces",serif);font-weight:700;letter-spacing:0}
+.ops-name{font-family:var(--cg-font-name,"Fraunces",serif);font-weight:700;letter-spacing:0}
 .ops-lead.ops-name{font-size:13pt;line-height:.21in}
 .shf-text .ops-name{font-size:1.2em}
 .sbar-sheet .ops-row{grid-template-columns:1.5in minmax(0,1fr) 1.7in}
@@ -6278,7 +6280,7 @@ const LifeJournalUI = (function(){
   // Step 1 details that change what a section's form shows (Section II's service fields, Section IV's words of comfort).
   const DEPENDS = { 2: ["militaryBranch", "career"], 4: ["name", "career", "hometown", "militaryBranch"] }, AVOID_DEPENDS = { 1: ["home"], 2: ["war"], 3: ["religion"], 4: ["war"] };
 
-  let S = null, view0 = null, host = null, saveTimer = 0, pvTimer = 0, ro = null;
+  let S = null, view0 = null, host = null, saveTimer = 0, pvTimer = 0, ro = null, stepObs = null;
 
   /* ---------- state ---------- */
   function blankProfile(){
@@ -6319,20 +6321,22 @@ const LifeJournalUI = (function(){
   /* ---------- small builders ---------- */
   const seg = (name, list, val) => `<div class="seg">${list.map(([v, l]) => `<label><input type="radio" name="${name}" value="${esc(v)}" ${String(v) === String(val) ? "checked" : ""}><span>${esc(l)}</span></label>`).join("")}</div>`;
   const opts = (list, val) => list.map(([v, l]) => `<option value="${esc(v)}" ${String(v) === String(val) ? "selected" : ""}>${esc(l)}</option>`).join("");
-  const tx = (key, label, max, ph, hint) => `<div class="field"><label for="lj-${key}">${label}</label><input id="lj-${key}" type="text" data-p="${key}" maxlength="${max}" value="${esc(S.profile[key])}" placeholder="${esc(ph || "")}" autocomplete="off">${hint ? `<p class="hint">${hint}</p>` : ""}</div>`;
-  const ta = (key, label, ph, hint) => `<div class="field"><label for="lj-${key}">${label}</label><textarea id="lj-${key}" data-p="${key}" rows="3" maxlength="900" placeholder="${esc(ph || "One per line")}">${esc(S.profile[key])}</textarea>${hint ? `<p class="hint">${hint}</p>` : ""}</div>`;
+  const tx = (key, label, max, ph, hint) => `<div class="field fl"><input id="lj-${key}" type="text" data-p="${key}" maxlength="${max}" value="${esc(S.profile[key])}" placeholder="${esc(ph || " ")}" autocomplete="off"><label for="lj-${key}">${label}</label>${hint ? `<p class="hint">${hint}</p>` : ""}</div>`;
+  const ta = (key, label, ph, hint) => `<div class="field fl fl-ta"><textarea id="lj-${key}" data-p="${key}" rows="3" maxlength="900" placeholder="${esc(ph || "One per line")}">${esc(S.profile[key])}</textarea><label for="lj-${key}">${label}</label>${hint ? `<p class="hint">${hint}</p>` : ""}</div>`;
 
   /* ---------- the screen ---------- */
   function render(viewEl){
     state();
     view0 = viewEl;
     if (ro){ ro.disconnect(); ro = null; }
+    if (stepObs){ stepObs.disconnect(); stepObs = null; }
     viewEl.innerHTML = `<div class="lp-screen lj-screen" id="ljScreen">
       <p class="eyebrow">Journals &amp; planners</p>
       <h1 class="view-title" tabindex="-1">Cognitive Life Journal</h1>
       <p class="lede">A life story in four sections, in the resident’s own words, with a separate part where family and care staff add their notes. Every page is personalized from the details you enter, and nothing leaves this computer.</p>
+      ${stepsHtml()}
       ${essentialsHtml()}
-      <section class="lp-work" aria-labelledby="ljTabsTitle">
+      <section class="lp-work" id="ljWork" aria-labelledby="ljTabsTitle">
         <p class="eyebrow">Step 2 &middot; The four sections</p>
         <h2 id="ljTabsTitle" class="lj-step-h">Tell the story, one section at a time</h2>
         <div class="lp-tablist" role="tablist" aria-label="Journal sections">${TABS.map(tabButton).join("")}</div>
@@ -6341,10 +6345,37 @@ const LifeJournalUI = (function(){
       ${printHtml()}</div>`;
     host = document.getElementById("ljScreen");
     bind();
+    watchSteps();
     renderTab();
     syncPrint();
     checkTone();
     renderChip();
+  }
+
+  const STEPS = [["ljOnboard", "The essentials", "Name, home and work"], ["ljWork", "The four sections", "Tell the story"], ["ljPrint", "Print", "Choose and print"]];
+  function stepsHtml(){
+    return `<nav class="lp-steps lj-steps" aria-label="Journal, three steps"><ol>${STEPS.map(([id, t, sub], i) => `<li><button class="lp-step" type="button" data-ljstep="${id}" ${i ? "" : 'aria-current="step"'}><span class="lp-step-n" aria-hidden="true">${i + 1}</span><span class="lp-step-t"><b>${t}</b><small>${sub}</small></span></button></li>`).join("")}</ol></nav>
+      <div class="lp-prog"><div class="lp-prog-bar" role="progressbar" aria-label="Where you are in the journal" aria-valuemin="1" aria-valuemax="3" aria-valuenow="1" id="ljProg"><span id="ljProgFill" style="width:33%"></span></div>
+        <p class="lp-prog-t" id="ljProgTxt" aria-live="polite">Step 1 of 3: The essentials</p></div>`;
+  }
+  /* the strip follows the part of the page being read: the step whose section covers the middle of the window is the current one */
+  function watchSteps(){
+    if (stepObs){ stepObs.disconnect(); stepObs = null; }
+    if (!("IntersectionObserver" in window)) return;
+    const els = STEPS.map(([id]) => document.getElementById(id));
+    stepObs = new IntersectionObserver(() => {
+      const mid = innerHeight / 2; let cur = 0;
+      els.forEach((el, i) => { if (el && el.getBoundingClientRect().top <= mid) cur = i; });
+      markStep(cur);
+    }, { rootMargin: "-45% 0px -45% 0px", threshold: [0, 1] });
+    els.forEach(el => { if (el) stepObs.observe(el); });
+  }
+  function markStep(i){
+    host.querySelectorAll("[data-ljstep]").forEach((b, k) => { if (k === i) b.setAttribute("aria-current", "step"); else b.removeAttribute("aria-current"); });
+    const bar = document.getElementById("ljProg"), fill = document.getElementById("ljProgFill"), txt = document.getElementById("ljProgTxt");
+    if (!bar) return;
+    bar.setAttribute("aria-valuenow", String(i + 1)); fill.style.width = Math.round((i + 1) / STEPS.length * 100) + "%";
+    txt.textContent = "Step " + (i + 1) + " of " + STEPS.length + ": " + STEPS[i][1];
   }
 
   function essentialsHtml(){
@@ -6386,7 +6417,7 @@ const LifeJournalUI = (function(){
             ${tx("hometown", "Hometown, where they grew up", 40, "e.g. Duluth, Minnesota")}
           </fieldset>
           <fieldset class="lp-fs"><legend>Work and service</legend>
-            ${tx("career", "Career or life’s work, exactly as they would say it", 50, "e.g. Registered nurse; Dairy farmer; Homemaker")}
+            ${tx("career", "Career or life’s work", 50, "e.g. Registered nurse; Dairy farmer; Homemaker", "In the words they would use for it.")}
             <div class="field"><label for="lj-militaryBranch">Military service</label><select id="lj-militaryBranch" data-p="militaryBranch">${opts(D.BRANCHES, p.militaryBranch)}</select>
               <p class="hint">Rank, years and how to talk about it are in Section II.</p></div>
           </fieldset>
@@ -6776,6 +6807,11 @@ const LifeJournalUI = (function(){
     const b = e.target.closest("button");
     if (!b || !host.contains(b)) return;
     if (b.dataset.tab){ selectTab(+b.dataset.tab); return; }
+    if (b.dataset.ljstep){
+      const el = document.getElementById(b.dataset.ljstep);
+      if (el){ el.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" }); markStep(STEPS.findIndex(x => x[0] === b.dataset.ljstep)); }
+      return;
+    }
     if (b.dataset.add){
       const k = b.dataset.add, list = S.profile[k];
       if (list.length >= ROW_KINDS[k].max){ toast("That list is full."); return; }
@@ -14685,8 +14721,8 @@ function openConfig(actId, scroll){
   box.innerHTML = `
     <div class="config-grid">
       <form id="cfgForm" novalidate>
-        <h2>${esc(act.name)}</h2>
-        <p class="hint" style="margin:0 0 18px">${esc(act.desc)}</p>
+        <div class="cg-tierhead"><h2>${esc(act.name)}</h2>
+        <p class="hint">${esc(act.desc)}</p></div>
         ${act.singlePage ? "" : `<div class="field">
           <label for="cfgVar">How many different versions?</label>
           <div class="stepper">
@@ -15342,5 +15378,6 @@ if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol))
   window.addEventListener("load", function(){ navigator.serviceWorker.register("sw.js").catch(function(){}); });
 </script>
 <script src="assets/services/nightShift.js"></script>
+<script src="js/careTier.js"></script>
 </body>
 </html>

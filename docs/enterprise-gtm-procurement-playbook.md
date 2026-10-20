@@ -197,7 +197,7 @@ To eliminate the operational friction of manually typing 50 resident profiles, C
 ```csv
 FirstName,LastName,RoomWing,BirthYear,CognitiveTier,Hometown,PastOccupation,HobbiesInterests
 Eleanor,Vance,Maple Wing - 104,1938,Moderate,Red Wing MN,Elementary Teacher,Gardening; Big Band; Baking
-Walter,Sterling,Oak Unit - 212,1942,Mild,Minot ND,Civil Engineer,Woodworking; Vintage Cars; Trains
+Walter,Sterling,Oak Unit - 212,1942,Mild,Fargo ND,Civil Engineer,Woodworking; Vintage Cars; Trains
 Margaret,Holloway,Memory Care - 308,1934,Advanced,Spokane WA,Homemaker,Bird Watching; Quilting; Hymns
 ```
 

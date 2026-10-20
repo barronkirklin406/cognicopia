@@ -596,7 +596,7 @@ const clean = (v         , max = 80)         => String(v == null ? "" : v).repla
 function vocationFor(occupationCode        )           {
   return VOCATIONS.filter(v => v.occupations.indexOf(occupationCode) >= 0)[0] || VOCATIONS.filter(v => v.code === "general")[0];
 }
-/* The state (postal code) and region of a hometown such as "Minot, North Dakota" or "Dayton, OH". */
+/* The state (postal code) and region of a hometown such as "Fargo, North Dakota" or "Dayton, OH". */
 function placeOf(place        )                                           {
   const p = " " + String(place || "").replace(/[.,;()]/g, " ").replace(/\s+/g, " ") + " ";
   let best                = null, bestLen = 0, state = "";

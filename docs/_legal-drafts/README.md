@@ -9,7 +9,7 @@ What to give the attorney: both drafts, the page `resources/privacy-and-data/` (
 ## Questions the attorney should answer (the drafts leave these as bracketed text)
 
 1. **Who is the contracting party?** A sole proprietor, an LLC or another entity, and the exact name that should appear.
-2. **Governing law and venue.** The drafts assume North Dakota, where the publisher is based. Is that right for customers in other states?
+2. **Governing law and venue.** The drafts leave the publisher's state as a blank ([CITY, STATE]) to be filled in by counsel. Is that right for customers in other states?
 3. **Refund wording.** The pricing page says to ask within 30 days of the first payment for a refund. Is that the term to keep, and how should it read for an annual plan?
 4. **Auto-renewal.** The annual plan renews once a year and can be cancelled before the renewal date. Do any states' automatic-renewal laws require specific notices or a cancellation method?
 5. **Limitation of liability and disclaimers.** The software makes activity pages and records nothing about care. How far may the drafts go in saying it is not medical advice and not a medical record?

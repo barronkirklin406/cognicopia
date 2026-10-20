@@ -327,7 +327,7 @@ const ui = UIFILES.map(f => raw[f]).join("\n"), tabletJs = raw["js/tablet.js"];
 
 /* the page is wired in */
 {
-  const order = [...html.matchAll(/<script src="([^"]+)"><\/script>/g)].map(m => m[1]).filter(f => !/^(src\/config\/license|assets\/services\/licenseManager)/.test(f));
+  const order = [...html.matchAll(/<script src="([^"]+)"><\/script>/g)].map(m => m[1]).filter(f => !/^(src\/config\/license|assets\/services\/licenseManager|js\/careTier)/.test(f));   /* shared helpers loaded by every tool, not part of the activity chain */
   const want = ["assets/pcg/pcg-data.bundle.js", "src/pcg/prng.js", "src/pcg/matrix.js", "src/pcg/grammar.js", "src/pcg/puzzles.js", "assets/services/trialLedger.js", "js/tabletSound.js", "js/tabletArt.js", "js/tabletBanks.js", "js/tabletEngine.js", "js/tabletKit.js", "js/tabletWords.js", "js/tabletCreate.js", "js/tabletThink.js", "js/tablet.js"];
   ok(JSON.stringify(order) === JSON.stringify(want), "the page loads the puzzle makers, the sounds and pictures, the engine, the kit, the activities and last the screen, in that order: " + order.join(", "));
   ok(order.every(f => fs.existsSync(path.join(ROOT, f))), "every script it names exists");
