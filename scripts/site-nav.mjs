@@ -96,31 +96,34 @@ export const TOOLS = [
    below); inside the Packet Builder, Resources is two links. Contact is a footer link under the six, on every page. */
 const B = "builder.html";
 export const HUBS = [
-  { id: "today",     label: "Today",            icon: "sun",      items: [
+  { id: "today",     label: "Today",            icon: "sun",      group: "resident", items: [
       { key: "home",         label: "Personalized Packet Tool", href: "index.html",        icon: "home" },
       { key: "tablet",       label: "Tablet Activities",        href: "tablet.html",       icon: "tablet" },
       { key: "profile",      label: "Resident Profiles",        href: "profile.html",      icon: "profile" } ] },
-  { id: "studio",    label: "Studio",           icon: "palette",  items: [
+  { id: "studio",    label: "Studio",           icon: "palette",  group: "resident", items: [
       { key: "coloring",     label: "Cognicopia Coloring",      href: B + "#/coloring",     route: "coloring",     icon: "palette" },
       { key: "planner",      label: "12-Month Life Planner",    href: B + "#/planner",      route: "planner",      icon: "calendar" },
       { key: "journal",      label: "Cognitive Life Journal",   href: B + "#/journal",      route: "journal",      icon: "journal" },
-      { key: "reminiscence", label: "Reminiscence cards",       href: B + "#/reminiscence", route: "reminiscence", icon: "cards" },
-      { key: "heirloom",     label: "Memory digest & book",     href: B + "#/heirloom",     route: "heirloom",     icon: "books" } ] },
-  { id: "packets",   label: "Activity Packets", icon: "builder",  items: [
+      { key: "reminiscence", label: "Reminiscence cards",       href: B + "#/reminiscence", route: "reminiscence", icon: "cards" } ] },
+  { id: "packets",   label: "Activity Packets", icon: "builder",  group: "resident", items: [
       { key: "builder",      label: "Packet Builder",           href: B,                    icon: "builder" } ] },
-  { id: "facility",  label: "Facility",         icon: "building", items: [
+  { id: "facility",  label: "Facility",         icon: "building", group: "staff", items: [
       { key: "facility",     label: "Facility Portal",          href: B + "#/facility",     route: "facility",     icon: "building" },
       { key: "shift",        label: "Shift board",              href: B + "#/shift",        route: "shift",        icon: "clipboard" },
       { key: "roster",       label: "Resident roster",          href: B + "#/roster",       route: "roster",       icon: "roster" },
       { key: "clinical",     label: "Session notes (SLP)",      href: B + "#/clinical",     route: "clinical",     icon: "stethoscope" },
+      { key: "heirloom",     label: "Family digest & book",     href: B + "#/heirloom",     route: "heirloom",     icon: "books" },
+      { key: "planner-care-companion", label: "Care cues (planner companion)", href: B + "#/planner-care-companion", route: "planner-care-companion", icon: "journal" },
       { key: "settings",     label: "Settings & defaults",      href: B + "#/settings",     route: "settings",     icon: "gear" },
       { key: "pricing",      label: "Plans & pricing",          href: "pricing.html",       icon: "award" },
       { key: "pilot",        label: "Start a 30-day pilot",     href: "pilot.html",         icon: "clipboard" },
       { key: "referral",     label: "Share with a colleague",   href: "referral.html",      icon: "cards" } ] },
-  { id: "academy",   label: "Academy",          icon: "academy",  items: [
+  { id: "academy",   label: "Academy",          icon: "academy",  group: "staff", items: [
       { key: "academy",      label: "Staff & Caregiver Academy",  href: B + "#/academy",      route: "academy",      icon: "academy" } ] },
-  { id: "resources", label: "Resources",        icon: "library",  items: [] }   // the hub, its modules and Contact: see sidebar() and builderSidebar()
+  { id: "resources", label: "Resources",        icon: "library",  group: "staff", items: [] }   // the hub, its modules and Contact: see sidebar() and builderSidebar()
 ];
+/* The two headings above the hubs: what is for the resident, and what is for staff and family. */
+export const NAV_GROUPS = { resident: "Resident tools", staff: "Staff & family portal" };
 /* The categories the Packet Builder draws under Activity Packets (its own list, with counts, is built in the page; these are the ids it uses). */
 const CONTACT = { key: "contact", label: "Contact Cognicopia", href: "contact.html", icon: "support" };
 
@@ -332,13 +335,15 @@ ${inner}
       </details>
     </li>`;
   const single = (h, it) => `    <li class="cg-hub-li" data-hub="${h.id}"><a href="${P}${it.href}"${here(cur === it.key, "cg-hub-link")}>${svg(ICON[h.icon], 15, "cg-sb-ico", 2.2)}<span>${esc(h.label)}</span></a></li>`;
-  const hubs = HUBS.map(h => {
-    if (h.id === "resources") return group(h, `${link(HUB.href, "Browse all resources", "hub", "grid").replace("<a ", '<a data-hub-index ')}
+  const grp = h => `    <li class="cg-grp" data-grp="${h.group}"><span class="cg-grp-l" id="cgGrpHead-${h.group}">${esc(NAV_GROUPS[h.group])}</span></li>\n`;
+  const hubs = HUBS.map((h, i) => {
+    const head = !i || HUBS[i - 1].group !== h.group ? grp(h) : "";
+    if (h.id === "resources") return head + group(h, `${link(HUB.href, "Browse all resources", "hub", "grid").replace("<a ", '<a data-hub-index ')}
 ${groups}`);
-    if (h.items.length === 1) return single(h, h.items[0]);
+    if (h.items.length === 1) return head + single(h, h.items[0]);
     const links = h.items.map(it => link(it.href, it.label, it.key, it.icon)).join("\n");
     const tools = h.id === "today" && pageTools ? '\n    <li><div class="cg-sb-divider"></div></li>\n' + PAGE_TOOLS_START + "\n    " + pageTools.trim() + "\n" + PAGE_TOOLS_END : "";
-    return group(h, links + tools);
+    return head + group(h, links + tools);
   }).join("\n");
   return `${START}
 <button type="button" class="cg-sidebar-toggle" id="cgSbToggle" aria-label="Open Menu" aria-controls="cgSidebar" aria-expanded="false">
@@ -407,7 +412,9 @@ export function builderSidebar(){
       <summary class="sb-hub-head">${ico(h.icon, 20)}<span>${esc(h.label)}</span>${svg(ICON.chevron, 14, "sb-hub-chev", 2.2)}</summary>
 ${inner}
     </details>`;
-  const hubs = HUBS.map(h => {
+  const hubs = HUBS.map((h, i) => {
+    const head = !i || HUBS[i - 1].group !== h.group ? `    <p class="sb-grp" data-grp="${h.group}">${esc(NAV_GROUPS[h.group])}</p>\n` : "";
+    return head + (() => {
     if (h.id === "packets") return group(h, `      <ul class="sb-list" id="catNav" aria-label="Activity categories"></ul>
       <ul class="sb-list">
         <li><button class="sb-link" type="button" id="navPacket">${ico("builder")}<span>Packet queue</span><span class="badge" id="navCount">0</span></button></li>
@@ -419,6 +426,7 @@ ${[{ label: HUB.title, href: HUB.href, icon: "library" }, { label: RESEARCH.labe
     return group(h, `      <ul class="sb-list">
 ${h.items.map(link).join("\n")}
       </ul>`);
+    })();
   }).join("\n");
   return `${BNAV_START}
 <aside class="sidebar" id="sidebar" aria-label="Packet Builder navigation">
@@ -531,7 +539,7 @@ export const CSS = `<style id="cg-nav-css">
    same on every page. Colors come from css/styles.css (light: charcoal text on
    white, 16:1; deep green accents, 7.9:1 or more). */
 html:root{--sb-w:0px;--sb-bg:#ffffff;--sb-border:#ddd1ba;--sb-accent:#2d5a44;--sb-hover:#f4efe6;--sb-open:#ebe3d3;--sb-active:#e3f1e8;
-  --sb-txt:#1a202c;--sb-muted:#343b49;--cg-nav-h:76px}
+  --sb-txt:#1a202c;--sb-muted:#343b49;--cg-nav-h:80px}
 html body{padding-left:0}
 .cg-sb-nav{flex:1 0 auto;display:flex;flex-direction:column}
 .cg-sb-nav .cg-sidebar-nav{flex:1}
@@ -605,8 +613,22 @@ html.cg-night-shift .cg-topbar .cg-cta-alt{background:transparent!important;bord
 html.cg-night-shift .cg-topbar .cg-cta:focus-visible{outline-color:#ffd477}
 @media print{.cg-topbar,.cg-crumbs{display:none!important}}
 
+/* the two headings over the hubs: Resident tools and Staff & family portal. In the Menu drawer they are headings in the list; across the top they
+   sit above their hubs and take no room of their own (a hairline divides the two groups). */
+.cg-grp{list-style:none;margin:0;padding:14px 14px 2px}
+.cg-grp-l{display:inline-flex;align-items:center;gap:8px;font:700 15px/1.3 var(--cg-font-ui,"Trebuchet MS","Segoe UI",sans-serif);letter-spacing:.1em;text-transform:uppercase;color:var(--cg-tan-800,#4f4030)}
+.cg-grp-l::before{content:"";flex:none;width:10px;height:10px;border-radius:50%;background:var(--cg-green-600,#2d5a44)}
+.cg-grp[data-grp="staff"] .cg-grp-l::before{background:var(--cg-gold-500,#c5a059);box-shadow:0 0 0 2px var(--cg-tan-800,#4f4030)}
+.cg-grp[data-grp="staff"]{margin-top:6px;border-top:1px solid var(--sb-border)}
+html.cg-night-shift .cg-grp-l{color:#e9c98f!important}
+html.cg-night-shift .cg-grp[data-grp="staff"]{border-color:#684a26}
 /* ---------- a wide window: the six hubs across the top, each a drop-down ---------- */
 @media (min-width:1100px){
+  .cg-grp{position:relative;flex:none;width:0;height:100%;align-self:stretch;margin:0;padding:0;border:0!important;pointer-events:none}
+  html body .cg-sb-nav{align-self:stretch}
+  html body .cg-sidebar-nav.cg-hubs{align-self:stretch}
+  .cg-grp[data-grp="staff"]{margin:0 0 0 12px;border-left:1px solid var(--sb-border)!important}
+  .cg-grp-l{position:absolute;left:14px;top:3px;white-space:nowrap;line-height:1.1;font-size:15px}
   html body .cg-sidebar{position:sticky;top:0;left:auto;z-index:950;width:auto;height:var(--cg-nav-h);flex-direction:row;align-items:center;gap:20px;
     padding:0 max(24px,calc(50% - 640px));border-right:0;border-bottom:1px solid var(--sb-border);overflow:visible;transform:none;
     box-shadow:0 1px 0 rgba(255,255,255,.9),0 8px 24px rgba(79,64,48,.07)}
@@ -788,7 +810,7 @@ export function validate(){
   const ids = HUBS.map(h => h.id).join(",");
   // every place a hub points exists, and every Packet Builder route is a route the page has
   const table = /const routes = \{([^}]*)\}/.exec(read("builder.html"));
-  const routes = new Set(table ? [...table[1].matchAll(/"([a-z]*)"\s*:/g)].map(m => m[1]) : []);
+  const routes = new Set(table ? [...table[1].matchAll(/"([a-z-]*)"\s*:/g)].map(m => m[1]) : []);
   if (!routes.size) problems.push("builder.html: could not read its routes table");
   for (const it of HUBS.flatMap(h => h.items).concat([CONTACT])){
     const file = it.href.replace(/[?#].*$/, "") || "index.html";
@@ -804,7 +826,7 @@ export function validate(){
     const block = html.slice(a, b), got = [...block.matchAll(/data-hub="([a-z]+)"/g)].map(m => m[1]).join(",");
     if (got !== ids) problems.push(`${page.file}: the hubs are ${got || "missing"}, not ${ids}`);
     if (page.builder){
-      const used = [...block.matchAll(/data-route="([a-z]+)"/g)].map(m => m[1]), want = HUBS.flatMap(h => h.items).filter(i => i.route).map(i => i.route);
+      const used = [...block.matchAll(/data-route="([a-z-]+)"/g)].map(m => m[1]), want = HUBS.flatMap(h => h.items).filter(i => i.route).map(i => i.route);
       used.filter(r => !routes.has(r)).forEach(r => problems.push(`${page.file}: a link goes to the route "${r}", which the page does not have`));
       want.filter(r => !used.includes(r)).forEach(r => problems.push(`${page.file}: no link to the route "${r}"`));
       links += used.length;

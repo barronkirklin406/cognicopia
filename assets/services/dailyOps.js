@@ -125,7 +125,7 @@ const LIMITS = { NOTE_CHARS: 500, TASK_CHARS: 200, ABOUT_CHARS: 32, INITIALS_CHA
 
 /* ---------- 2b. Engagement: how a resident took part, and how they were ----------
    Four ways of taking part (each has a level for the shift's arithmetic) and
-   seven moods. A mood is what staff saw, never a finding; "flag" only marks the
+   nine moods. A mood is what staff saw, never a finding; "flag" only marks the
    ones the next shift should hear about. */
                                                                           
 const PARTICIPATION                                                                 = [
@@ -136,7 +136,7 @@ const PARTICIPATION                                                             
 ];
 const isParticipation = (v         )                     => PARTICIPATION.some(p => p.id === v);
 const participationOf = (v        )                                                      => PARTICIPATION.filter(p => p.id === v)[0] || PARTICIPATION[1];
-                                                                                           
+                                                                                                                             
 const MOODS                                                        = [
   { id: "happy", label: "Happy", flag: false },
   { id: "content", label: "Content", flag: false },
@@ -144,7 +144,9 @@ const MOODS                                                        = [
   { id: "tired", label: "Tired", flag: false },
   { id: "restless", label: "Restless", flag: true },
   { id: "anxious", label: "Anxious or upset", flag: true },
-  { id: "sad", label: "Sad or tearful", flag: true }
+  { id: "sad", label: "Sad or tearful", flag: true },
+  { id: "distracted", label: "Distracted", flag: true },
+  { id: "overstimulated", label: "Overstimulated", flag: true }
 ];
 const isMood = (v         )            => MOODS.some(m => m.id === v);
 const moodOf = (v        )                                                    => MOODS.filter(m => m.id === v)[0] || null;

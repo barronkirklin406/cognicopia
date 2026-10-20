@@ -282,6 +282,7 @@
     var L = SH.left, R = SH.right, meas = typeof c.measure === "function" ? c.measure : measure;
     var add = function (text, x, y, size, o) {
       var t = { text: text, x: r2(x), y: r2(y), size: size, bold: !!o.bold, align: o.align || "left", role: o.role };
+      if (o.staffline) t.staffline = o.staffline;   // a line that is for staff ("tip", "anchor"): a print can leave it off the resident's copy
       t.w = r2(meas(text, size, t.bold));
       out.texts.push(t); return t;
     };
@@ -291,7 +292,7 @@
     if (!H.name) out.items.push({ d: dLine(L + meas(nm, SH.header.name, true) + 8, SH.header.y + 1, L + 230, SH.header.y + 1), fill: "none", w: 2.25, role: "shell" });
     add(rightText, R, SH.header.y, rightSize, { bold: true, align: "right", role: "header" });
     out.items.push({ d: dLine(L, SH.header.ruleY, R, SH.header.ruleY), fill: "none", w: SH.header.rule, role: "shell" });
-    if (c.tip) tipLines(c.tip, meas).forEach(function (ln) { add(ln.text, L + ln.x, SH.tip.y + ln.row * SH.tip.lead, SH.tip.size, { bold: ln.bold, role: "cue" }); });
+    if (c.tip) tipLines(c.tip, meas).forEach(function (ln) { add(ln.text, L + ln.x, SH.tip.y + ln.row * SH.tip.lead, SH.tip.size, { bold: ln.bold, role: "cue", staffline: "tip" }); });
     out.items.push({ d: dLine(L, SH.footer.ruleY, R, SH.footer.ruleY), fill: "none", w: SH.footer.rule, role: "shell" });
     add("Cognicopia", L, SH.footer.y, SH.footer.size, { role: "footer" });
     /* The therapy anchor, "[Therapy: Reminiscence | GDS 5]", sits at the right of the foot, where it does not touch the resident's work;
@@ -299,7 +300,7 @@
     var anchor = c.anchor != null ? c.anchor : (c.activity ? CM.anchorFor(c.activity, c.tool, page.stage, { measure: function (t) { return meas(t, SH.footer.size, true); }, max: R - L - 170 }) : "");
     if (anchor) {
       add("Page " + (c.page || 1) + " of " + (c.pages || 1), L + meas("Cognicopia", SH.footer.size, false) + 14, SH.footer.y, SH.footer.page, { bold: true, role: "footer" });
-      add(anchor, R, SH.footer.y, SH.footer.size, { bold: true, align: "right", role: "footer" });
+      add(anchor, R, SH.footer.y, SH.footer.size, { bold: true, align: "right", role: "footer", staffline: "anchor" });
       out.anchor = anchor;
     } else {
       add("Page " + (c.page || 1) + " of " + (c.pages || 1), (L + R) / 2, SH.footer.y, SH.footer.page, { bold: true, align: "center", role: "footer" });
@@ -377,7 +378,7 @@
     var text = page.texts.map(function (t) {
       var anchor = t.align === "right" ? "end" : t.align === "center" ? "middle" : "start";
       return '<text x="' + t.x + '" y="' + t.y + '" font-family="' + FONT_STACK + '" font-size="' + t.size + '" font-weight="' + (t.bold ? 700 : 400) + '" text-anchor="' + anchor + '" fill="' + (t.color === "#fff" ? '#fff" data-bw="white' : "#000") + '"' +
-        (t.rotate ? ' transform="rotate(' + t.rotate + " " + t.x + " " + t.y + ')"' : "") + (CM.STAFF_ROLES.indexOf(t.role) >= 0 ? ' data-role="staff"' : "") + ">" + esc(t.text) + "</text>";
+        (t.rotate ? ' transform="rotate(' + t.rotate + " " + t.x + " " + t.y + ')"' : "") + (CM.STAFF_ROLES.indexOf(t.role) >= 0 ? ' data-role="staff"' : "") + (t.staffline ? ' data-staffline="' + t.staffline + '"' : "") + ">" + esc(t.text) + "</text>";
     }).join("");
     var label = (page.meta && page.meta.title ? page.meta.title : "Activity page") + (page.meta && page.meta.instruction ? ". " + page.meta.instruction : "");
     return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="' + vb.join(" ") + '"' + (o.width ? ' width="' + esc(o.width) + '"' : "") + (o.height ? ' height="' + esc(o.height) + '"' : "") +

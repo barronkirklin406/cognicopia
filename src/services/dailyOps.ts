@@ -121,7 +121,7 @@ export const LIMITS = { NOTE_CHARS: 500, TASK_CHARS: 200, ABOUT_CHARS: 32, INITI
 
 /* ---------- 2b. Engagement: how a resident took part, and how they were ----------
    Four ways of taking part (each has a level for the shift's arithmetic) and
-   seven moods. A mood is what staff saw, never a finding; "flag" only marks the
+   nine moods. A mood is what staff saw, never a finding; "flag" only marks the
    ones the next shift should hear about. */
 export type Participation = "declined" | "watched" | "joined" | "engaged";
 export const PARTICIPATION: readonly { id: Participation; label: string; level: number }[] = [
@@ -132,7 +132,7 @@ export const PARTICIPATION: readonly { id: Participation; label: string; level: 
 ];
 export const isParticipation = (v: unknown): v is Participation => PARTICIPATION.some(p => p.id === v);
 export const participationOf = (v: string): { id: Participation; label: string; level: number } => PARTICIPATION.filter(p => p.id === v)[0] || PARTICIPATION[1];
-export type Mood = "happy" | "content" | "calm" | "tired" | "restless" | "anxious" | "sad";
+export type Mood = "happy" | "content" | "calm" | "tired" | "restless" | "anxious" | "sad" | "distracted" | "overstimulated";
 export const MOODS: readonly { id: Mood; label: string; flag: boolean }[] = [
   { id: "happy", label: "Happy", flag: false },
   { id: "content", label: "Content", flag: false },
@@ -140,7 +140,9 @@ export const MOODS: readonly { id: Mood; label: string; flag: boolean }[] = [
   { id: "tired", label: "Tired", flag: false },
   { id: "restless", label: "Restless", flag: true },
   { id: "anxious", label: "Anxious or upset", flag: true },
-  { id: "sad", label: "Sad or tearful", flag: true }
+  { id: "sad", label: "Sad or tearful", flag: true },
+  { id: "distracted", label: "Distracted", flag: true },
+  { id: "overstimulated", label: "Overstimulated", flag: true }
 ];
 export const isMood = (v: unknown): v is Mood => MOODS.some(m => m.id === v);
 export const moodOf = (v: string): { id: Mood; label: string; flag: boolean } | null => MOODS.filter(m => m.id === v)[0] || null;
