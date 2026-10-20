@@ -3,7 +3,7 @@
 Last drafted: October 13, 2026. Every item in [square brackets] is a placeholder or a question for counsel.
 
 ## 1. Who we are
-Cognicopia is published by [LEGAL NAME OF THE CONTRACTING PARTY], of [ADDRESS], Minot, North Dakota ("we", "us"). You can reach us at cognicopia@outlook.com.
+Cognicopia is published by [LEGAL NAME OF THE CONTRACTING PARTY], of [ADDRESS], [CITY, STATE] ("we", "us"). You can reach us at cognicopia@outlook.com.
 
 ## 2. What Cognicopia is
 Cognicopia is a set of web pages and tools that make printable activity packets, coloring pages, life planners and journals for people living with memory loss. It runs in your web browser. It makes activity pages. It is not a medical device, not a medical record and not medical, clinical or legal advice, and it does not diagnose, treat or monitor anyone. A facility's care plans, policies and clinicians always come first.

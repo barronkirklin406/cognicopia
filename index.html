@@ -482,7 +482,7 @@ window.printFontReady = (function(){
   --rule:#CDBDA8; --rule-soft:#DCCDBA;
   --tint:#E5EFE4;
   --warn:#9B3B23;
-  --display:"Fraunces",Georgia,"Times New Roman",serif;
+  --display:"Atkinson Hyperlegible","Cognicopia UI","Segoe UI",system-ui,sans-serif;
 }
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
@@ -2089,6 +2089,8 @@ html body{background:var(--cg-cream,#fbf7f1)}
 .lp-make-head .promise{max-width:640px;margin:0 auto;padding:14px 18px;border:1px solid var(--cg-tan-300,#cdbe9f);border-radius:14px;background:var(--cg-parchment,#f4efe6);
   color:var(--cg-charcoal,#1a202c);font:400 17px/1.5 var(--cg-font-ui,"Segoe UI",sans-serif);text-align:left}
 .lp-make-head .promise strong{color:var(--cg-charcoal,#1a202c)}
+.lp-make-head .promise.cg-tierhead{border:2px solid var(--cg-tier);background-color:var(--cg-tier-soft);color:var(--cg-tier-deep)}
+.lp-make-head .promise.cg-tierhead strong{color:var(--cg-tier-deep)}
 .lp-make .wrap{padding-top:28px;padding-bottom:40px;border-radius:24px}
 .lp-make .wrap > .shots:first-child{margin-top:0}
 
@@ -2556,7 +2558,7 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
   <div class="lp-in lp-make-head">
     <p class="lp-kicker">The packet tool</p>
     <h2 id="makeTitle">Make a packet</h2>
-    <p class="promise"><strong>Nothing you type here is sent anywhere.</strong>
+    <p class="promise cg-tierhead"><strong>Nothing you type here is sent anywhere.</strong>
   The packet is made on this computer and saved straight to your downloads.
   No resident information ever reaches us.</p>
   </div>
@@ -14427,5 +14429,6 @@ if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol))
 </script>
 <script src="assets/services/stateAuditCompliance.js"></script>
 <script src="assets/services/nightShift.js"></script>
+<script src="js/careTier.js"></script>
 </body>
 </html>

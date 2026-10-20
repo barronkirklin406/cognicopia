@@ -409,7 +409,7 @@ group("reminiscenceEngine", () => {
   ok(R.person(P({ job:"nurse" })).vocation.code === "nursing" && R.person(P({ job:"cook" })).vocation.code === "culinary" && R.person(P({ job:"farmer", voc:"mechanic" })).vocation.code === "mechanic", "vocations from occupation, or chosen");
   const topicById = Object.fromEntries(R.TOPICS.map(t => [t.id, t])), songById = Object.fromEntries(R.SONGS.map(x => [x.id, x]));
   const refIndex = new Map(); R.TOPICS.forEach(t => t.refs.forEach(r => refIndex.set(t.id + "|" + r.text, r)));
-  const envs = ["rural", "small-town", "city", "coastal", "mountains", "abroad", ""], places = ["Ames, Iowa", "Brooklyn, NY", "Macon, Georgia", "Minot, ND", "Burlington, Vermont", "Austin, Texas", "Boise, Idaho", "Seattle, WA", "Wheeling, WV", "Toronto, Ontario", ""];
+  const envs = ["rural", "small-town", "city", "coastal", "mountains", "abroad", ""], places = ["Ames, Iowa", "Brooklyn, NY", "Macon, Georgia", "Fargo, ND", "Burlington, Vermont", "Austin, Texas", "Boise, Idaho", "Seattle, WA", "Wheeling, WV", "Toronto, Ontario", ""];
   const avoids = [[], ["driving"], ["war", "home"], ["medical", "religion", "water"], ["children", "money", "death"]];
   let n = 0, decks = 0;
   for (const v of R.VOCATIONS) for (const tier of [1, 2, 3]) for (let k = 0; k < 4; k++){
