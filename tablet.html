@@ -67,6 +67,7 @@ html.cg-paper:not(.cg-night-shift) :is(.tb-btn.go,.tb-back,.tb-btn.go *,.tb-back
 .tb-acts{display:flex;flex-wrap:wrap;gap:8px 12px;justify-content:flex-end;margin-left:auto}
 /* a phone held upright: the three buttons share one row under the title, so the activity below has the room */
 @media (orientation:portrait) and (max-width:699px){.tb-acts{flex:1 1 100%;flex-wrap:nowrap;gap:6px;justify-content:space-between}.tb-acts .tb-btn{flex:1 1 auto;min-width:0;padding:6px 8px;gap:6px;font-size:1rem}}
+@media (orientation:portrait) and (max-width:699px){.tb-acts:has(#tbVoice:not([hidden])){flex-wrap:wrap}.tb-acts:has(#tbVoice:not([hidden])) .tb-btn{flex:1 1 40%}}
 .tb-titles{flex:1 1 170px;min-width:0;display:flex;flex-direction:column;justify-content:center}
 .tb-bar h2{margin:0;padding:0;border:0;font-family:var(--cg-font-display,Georgia,serif);font-size:1.6rem;line-height:1.15;color:var(--cg-green-700,#1b382b)}
 .tb-prog{font-weight:700;font-size:1rem;line-height:1.2;color:var(--cg-tan-800,#4f4030)}
@@ -718,6 +719,7 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
     <div class="tb-titles"><h2 id="tbTitle"></h2><span class="tb-prog" id="tbProg"></span><span class="tb-anchor" id="tbAnchor"></span></div>
     <div class="tb-acts">
       <button type="button" class="tb-btn" id="tbSay" hidden><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 9v6h4l5 4V5L8 9z"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg><span>Read to Me</span></button>
+      <button type="button" class="tb-btn" id="tbVoice" hidden aria-label="Voice settings: choose a voice and pace, and hear a sample"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3v12M8 7v4M16 7v4M4 9v2M20 9v2"/><path d="M7 18h10"/></svg><span>Voice</span></button>
       <button type="button" class="tb-btn assist" id="tbAssist" hidden aria-label="Finish for me: complete this activity with a gentle celebration"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3l2.2 5.6L20 11l-5.8 2.4L12 19l-2.2-5.6L4 11l5.8-2.4z"/></svg><span>Finish for me</span></button>
       <button type="button" class="tb-btn" id="tbNew" aria-label="Next: a fresh activity, with nothing counted"><span>Next</span><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
     </div>
@@ -744,6 +746,7 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
 <script src="src/pcg/grammar.js"></script>
 <script src="src/pcg/puzzles.js"></script>
 <script src="assets/services/trialLedger.js"></script>
+<script src="js/voiceKit.js"></script>
 <script src="js/tabletSound.js"></script>
 <script src="js/tabletArt.js"></script>
 <script src="js/tabletBanks.js"></script>

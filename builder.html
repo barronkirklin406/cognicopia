@@ -7544,6 +7544,7 @@ const CensusUI = (function(){
 })();
 </script>
 <script src="assets/cognicopia-coloring/cognicopia-coloring.js"></script>
+<script src="js/voiceKit.js"></script>
 <script src="js/coloringAgent.js"></script>
 <script src="assets/coloring/subjects.bundle.js"></script>
 <script src="src/services/ColoringManifest.js"></script>
@@ -10861,7 +10862,7 @@ const AcademyUI = (function(){
   const S = { tab:"pro", q:"", cat:"", aud:"", pane:"transcript", back:"pro", lastCard:"", edit:"", pendingCert:"", year:0, quiz:null,
     rate:1, cc:true, voice:true, follow:true, volume:1, muted:false, voiceName:"", found:null, justDone:"" };
   let acad = null, root = null, P = null, artN = 0;
-  const BASE_RATE = 0.95;      // a little slower than a voice's own default: unhurried, easier to follow
+  const BASE_RATE = 0.90;      // a little slower than a voice's own default: unhurried, easier to follow (the Voice kit's "Natural" pace)
 
   /* ---------- icons and pictures ---------- */
   const ic = (body, w) => `<svg width="${w || 20}" height="${w || 20}" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${body}</svg>`;
@@ -11261,14 +11262,15 @@ const AcademyUI = (function(){
   const current = () => P ? P.m : null;
 
   /* the lesson player */
+  const KIT = window.CogniVoice || null, hifi = () => !KIT || KIT.get().hifi !== false;
+  /* The voices installed on this device, the most natural first (js/voiceKit.js drops novelty and robotic ones and any voice that streams from a server). */
   function voices(){
+    if (KIT) return KIT.voices();
     try { return (window.speechSynthesis ? speechSynthesis.getVoices() : []).filter(v => v.localService && /^en(-|_|$)/i.test(v.lang)); } catch (e){ return []; }
   }
-  /* The most natural local voice first: names that say "natural", "neural", "premium" or "enhanced", then US English. */
-  const rank = v => (/natural|neural|premium|enhanced|siri/i.test(v.name) ? 3 : 0) + (/^en[-_]US/i.test(v.lang) ? 1 : 0) + (v.default ? .5 : 0);
   function pickVoice(){
     const list = voices(); if (!list.length) return null;
-    return list.filter(v => v.name === S.voiceName)[0] || list.slice().sort((a, b) => rank(b) - rank(a))[0];
+    return list.filter(v => v.name === S.voiceName)[0] || (KIT ? KIT.best() : null) || list[0];
   }
   function playerHtml(m){
     if (m.video && m.video.src){
@@ -11277,7 +11279,7 @@ const AcademyUI = (function(){
     }
     const cues = A.cues(m), total = cues.reduce((s, q) => s + q.dur, 0);
     const chapDur = m.chapters.map((c, ci) => cues.filter(q => q.chapter === ci).reduce((s, q) => s + q.dur, 0));
-    const recorded = !!(m.audio && m.audio.src);
+    const recorded = !!(m.audio && m.audio.src) && hifi();   // a recording is the first choice; with High-Fidelity off, this computer's voice reads the lesson
     return `<div class="ac-player" id="acPlayer">
       <div class="ac-stage" id="acStage" tabindex="0" role="group" aria-roledescription="lesson player" aria-label="${esc(m.title)}, ${recorded ? "recorded" : "narrated"} lesson. Space plays or pauses; the arrow keys move a line at a time; C turns captions on or off; B bookmarks this moment; M mutes.">
         <div class="ac-stage-art" id="acArt" aria-hidden="true"><div class="ac-kb">${art(m.art)}</div></div>
@@ -11302,6 +11304,7 @@ const AcademyUI = (function(){
         <button type="button" class="ac-cbtn" data-pl="mute" id="acMute" aria-pressed="${S.muted}" aria-label="Mute">${S.muted ? I.mute : I.vol}</button>
         <label class="sr-only" for="acVol">Volume</label><input class="ac-vol" id="acVol" type="range" min="0" max="1" step="0.05" value="${S.muted ? 0 : S.volume}" aria-label="Volume">
         <button type="button" class="ac-cbtn" data-pl="cc" aria-pressed="${S.cc}" aria-label="Captions">${I.cc}</button>
+ <button type="button" class="ac-cbtn" data-pl="vset" id="acVset" aria-label="Voice settings: choose a voice and pace, and hear a sample"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 3v12M8 7v4M16 7v4M4 9v2M20 9v2M7 19h10"/></svg></button>
         <button type="button" class="ac-cbtn" data-pl="voice" id="acVoiceBtn" aria-pressed="false" aria-label="Read aloud with this computer's voice" hidden>${I.voice}</button>
         <label class="sr-only" for="acVoice">Voice</label><select id="acVoice" hidden></select>
         <button type="button" class="ac-cbtn" data-pl="mark" aria-label="Bookmark this moment">${I.mark}</button>
@@ -11329,6 +11332,7 @@ const AcademyUI = (function(){
         if (P.t > 0) try { audio.currentTime = Math.min(P.t, audio.duration - 0.1); } catch (e){}
         P.drawn = -1; update(true); renderDrawer();
       };
+      if (KIT && hifi()) KIT.smooth(audio);                                      // a soft low-pass takes the metallic edge off a recording
       audio.addEventListener("loadedmetadata", meta); if (audio.readyState >= 1) meta();
       audio.addEventListener("ended", () => { if (P && P.audio === audio && P.playing) finish(); });
       audio.addEventListener("timeupdate", () => { if (P && P.audio === audio && !P.playing && !P.scrubbing){ P.t = audio.currentTime; update(false); } });
@@ -11462,6 +11466,16 @@ const AcademyUI = (function(){
       pl.seekTimer = setTimeout(() => { if (P === pl && pl.playing && pl.voice) speakCue(cueAt(pl.t)); }, 220);
     }
     P.drawn = -1; update(true);
+  }
+  /* Voice settings: pace, the voices on this computer with a preview, and the High-Fidelity switch. */
+  function voiceSettings(opener){
+    if (!KIT) { announce("Voice settings are not available on this computer."); return; }
+    const steps = KIT.PACES.map((p, i) => ({ id:p.id, label:p.label, value:A.RATES[i] }));   // Slow 0.75x, Natural 1x, Normal 1.25x of the lesson pace
+    KIT.openPanel({ opener, rates:steps, getRate:() => S.rate,
+      setRate:v => { S.rate = v; savePrefs({ rate:S.rate }); const sel = root && root.querySelector("#acRate"); if (sel) sel.value = String(v); if (P && P.audio) P.audio.playbackRate = S.rate; },
+      onVoice:name => { S.voiceName = name; savePrefs({ voiceName:name }); const sel = root && root.querySelector("#acVoice"); if (sel) sel.value = name; if (P && P.playing && P.voice && !P.audio) speakCue(P.cue); },
+      hifi:{ label:"High-Fidelity Voice", hint:"On: a recorded narration plays when the lesson has one, softened for clearer sound, otherwise the most natural voice on this computer reads it. Off: this computer's standard voice reads every lesson.",
+        get:() => hifi(), set:on => { KIT.setHifi(on); const v = root && root.parentNode, m = P && P.m; if (v && m){ if (P.playing) pause(); renderModule(v, m); } } } });
   }
   const seekCue = i => { const c = P.cues[Math.max(0, Math.min(P.cues.length - 1, i))]; seekTo(c.start); };
   function stageKey(e){
@@ -11824,6 +11838,7 @@ const AcademyUI = (function(){
       if (d.pl === "mark") return addMark();
       if (d.pl === "restart"){ seekTo(0); P.from = 0; const r = root.querySelector("#acResume"); if (r) r.hidden = true; announce("Back at the start."); return; }
       if (d.pl === "voice"){ S.voice = !P.voice; savePrefs({ voice:S.voice }); const was = P.playing; if (was) pause(); P.voice = S.voice; t.setAttribute("aria-pressed", String(P.voice)); if (was) play(); announce(P.voice ? "Reading aloud" : "Captions only"); return; }
+      if (d.pl === "vset") return voiceSettings(t);
       if (d.pl === "full") return fullscreen();
     }
     if (t.id === "acBig") return toggle();

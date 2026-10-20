@@ -77,15 +77,17 @@
   var canSpeak = "speechSynthesis" in window && typeof window.SpeechSynthesisUtterance === "function";
   function speak(text) {
     if (!canSpeak || !text) return;
-    try {
+    var K = window.CogniVoice;
+    if (K) { K.speak(text); return; }
+    try {                                    // the voice kit did not load: the device's own first local voice
       var synth = window.speechSynthesis; synth.cancel();
       var u = new window.SpeechSynthesisUtterance(text), vs = synth.getVoices() || [];
-      var v = vs.filter(function (x) { return /^en/i.test(x.lang) && x.localService; })[0] || vs.filter(function (x) { return x.localService; })[0];
-      u.rate = 0.85; u.lang = "en-US"; if (v) { u.voice = v; u.lang = v.lang; }
+      var v = vs.filter(function (x) { return /^en/i.test(x.lang) && x.localService; })[0];
+      u.rate = 0.9; u.pitch = 1; u.lang = "en-US"; if (v) { u.voice = v; u.lang = v.lang; }
       synth.speak(u);
     } catch (e) { /* no voice: the text is on the screen */ }
   }
-  var hush = function () { try { if (canSpeak) window.speechSynthesis.cancel(); } catch (e) { /* nothing to stop */ } };
+  var hush = function () { try { if (window.CogniVoice) window.CogniVoice.stop(); else if (canSpeak) window.speechSynthesis.cancel(); } catch (e) { /* nothing to stop */ } };
 
   /* ---------- the free-packet count, the same as Tablet Mode in the packet tool: one session is one packet ---------- */
   var TRIAL = null;
@@ -166,13 +168,13 @@
   function run(act, seed) {
     teardown();
     stage.innerHTML = ""; stage.scrollTop = 0;
-    $("tbProg").textContent = ""; $("tbSay").hidden = true; $("tbAssist").hidden = true; $("tbAssist").disabled = false; $("tbNew").hidden = false; live("");
+    $("tbProg").textContent = ""; $("tbSay").hidden = true; $("tbVoice").hidden = true; $("tbAssist").hidden = true; $("tbAssist").disabled = false; $("tbNew").hidden = false; live("");
     var me = cur = { act: act, seed: seed, say: null, cleanup: null, debug: null, onKey: null, onResize: null, assistFn: null, hintFn: null, done: false, assisting: false, timers: [], hints: 0, used: null };
     var api = {
       area: area, live: live, chime: chime, soft: soft, pop: pop, tick: tick, tone: tone, cheer: cheer, praise: praise, speak: speak, unlock: unlock, audio: audioReady,
       soundOn: function () { return prefs.sound; }, setSound: function (on) { prefs.sound = !!on; savePrefs(); soundLabel(); }, prefs: prefs, savePrefs: savePrefs, later: later, busy: armIdle,
       progress: function (t) { $("tbProg").textContent = t; },
-      say: function (fn) { me.say = fn; $("tbSay").hidden = !(canSpeak && fn); },
+      say: function (fn) { me.say = fn; $("tbSay").hidden = !(canSpeak && fn); $("tbVoice").hidden = !(canSpeak && fn && window.CogniVoice); },
       debug: function (fn) { me.debug = fn; },
       onKey: function (fn) { me.onKey = fn; },
       onResize: function (fn) { me.onResize = fn; },
@@ -277,6 +279,7 @@
   $("tbBack").addEventListener("click", closeAct);
   $("tbNew").addEventListener("click", function () { if (cur) next(); });
   $("tbSay").addEventListener("click", function () { if (cur && cur.say) speak(cur.say()); });
+  $("tbVoice").addEventListener("click", function () { if (window.CogniVoice) window.CogniVoice.openPanel({ opener: $("tbVoice") }); });
   $("tbAssist").addEventListener("click", function () {
     var me = cur; if (!me || me.done || me.assisting || !me.assistFn) return;
     me.assisting = true; stopIdle(); unlock(); live("Finishing this one for you.");
