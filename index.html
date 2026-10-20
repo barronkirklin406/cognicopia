@@ -6370,14 +6370,23 @@ function dotsPage(D,r,s,theme){
   const box=Math.min(PW-2*MARGIN-56, D.bottom()-D.y-24);
   const x0=(PW-box)/2, y0=D.y+12;
   D.d.setFont("helvetica","bold"); D.d.setFontSize(20);
+  const dots=pts.map(([px,py])=>[x0+px*box,y0+py*box]), placed=[];
+  dots.forEach(([x,y])=>{ D.d.setFillColor(0); D.d.circle(x,y,3.8,"F"); });
+  /* a number goes outside the shape, and on the side where it touches no other number and no other dot */
+  const hit=(a,b)=>a.x0<b.x1&&a.x1>b.x0&&a.y0<b.y1&&a.y1>b.y0;
   pts.forEach(([px,py],i)=>{
-    const x=x0+px*box, y=y0+py*box;
-    D.d.setFillColor(0); D.d.circle(x,y,3.8,"F");
-    // Push the number away from the middle of the shape so it never
-    // sits on top of the outline the resident is drawing.
-    const ang=Math.atan2(py-0.5,px-0.5) || -Math.PI/2;
-    D.d.text(String(i+1), x+Math.cos(ang)*21, y+Math.sin(ang)*21+7,
-             {align:"center"});
+    const [x,y]=dots[i], txt=String(i+1), w=D.d.getTextWidth(txt), h=22;
+    const base=Math.atan2(py-0.5,px-0.5) || -Math.PI/2;
+    let best=null;
+    for(const dist of [21,28,36]) for(const turn of [0,0.6,-0.6,1.2,-1.2,1.8,-1.8,Math.PI]){
+      const ang=base+turn, cx=x+Math.cos(ang)*dist, cy=y+Math.sin(ang)*dist+7;
+      const r={x0:cx-w/2-3,x1:cx+w/2+3,y0:cy-h-2,y1:cy+5};
+      const clear=!placed.some(q=>hit(r,q)) && !dots.some(([dx,dy],k)=>hit(r,{x0:dx-5,x1:dx+5,y0:dy-5,y1:dy+5}));
+      if(clear){ best={cx,cy,r}; break; }
+      if(!best) best={cx,cy,r};
+    }
+    placed.push(best.r);
+    D.d.text(txt,best.cx,best.cy,{align:"center"});
   });
   D.y=y0+box+14;
   D.finish();
