@@ -575,8 +575,8 @@ try {
     ok(await p.evaluate(() => document.querySelectorAll("[data-bank]").length) === 4 && await p.evaluate(() => document.querySelectorAll(".tb-sw").length) === 8, "four sets of colors, eight colors in each");
     await click(p, '[data-bank="2"]');
     ok(await p.evaluate(() => document.querySelector('[data-bank="2"]').getAttribute("aria-pressed") === "true" && document.querySelector(".tb-sw").getAttribute("aria-label") === "Leaf" && JSON.parse(localStorage.getItem("cognicopia_tablet_prefs")).palette === 2), "choosing the Garden set changes the colors, and the choice is kept");
-    await click(p, '.tb-sw[data-color="#4a9d5b"]');
-    ok(await p.evaluate(() => document.querySelector('.tb-sw[data-color="#4a9d5b"]').getAttribute("aria-pressed") === "true" && document.querySelectorAll('.tb-sw[aria-pressed="true"]').length === 1), "the chosen color is marked");
+    await click(p, '.tb-sw[data-color="#2f9e3f"]');
+    ok(await p.evaluate(() => document.querySelector('.tb-sw[data-color="#2f9e3f"]').getAttribute("aria-pressed") === "true" && document.querySelectorAll('.tb-sw[aria-pressed="true"]').length === 1), "the chosen color is marked");
     let sp = await spots(); await p.mouse.click(sp[0][0], sp[0][1]); await sleep(60);
     sp = await spots();
     ok((await dbg(p)).filled === 1 && (await pixel(sp[0][0], sp[0][1])).join() === "74,157,91,255", "tapping a shape fills it with the chosen color");
@@ -647,7 +647,7 @@ try {
     ok((await ink(.5, .5))[3] === 0, "and nothing is painted on it");
     await drag(.2, .5, .8, .5);
     let c = await ink(.5, .5); ok((await dbg(p)).strokes === 1 && c[3] > 235 && near(c, [244, 182, 194], 10), "a finger drawn across the sheet paints a soft line in the chosen color");
-    await click(p, '[data-tab="colors"]'); await click(p, '[data-bank="1"]'); await click(p, '.tb-sw[data-color="#2f6fd0"]'); await click(p, '[data-tab="brush"]'); await click(p, '[data-size="3"]'); await click(p, '[data-brush="soft"]');
+    await click(p, '[data-tab="colors"]'); await click(p, '[data-bank="1"]'); await click(p, '.tb-sw[data-color="#0a58ca"]'); await click(p, '[data-tab="brush"]'); await click(p, '[data-size="3"]'); await click(p, '[data-brush="soft"]');
     await drag(.5, .15, .5, .85);
     c = await ink(.5, .3); ok((await dbg(p)).strokes === 2 && c[3] > 235 && near(c, [47, 111, 208], 10), "another color, and a wider brush");
     ok(await p.evaluate(() => document.querySelectorAll("[data-brush]").length) === 4 && await p.evaluate(() => document.querySelectorAll("[data-size]").length) === 4, "four brushes and four sizes");
