@@ -88,3 +88,7 @@ Everything above is offline. The single exception is `activate.html`, which turn
 ## What this is not
 
 Cognicopia supports a facility's HIPAA privacy practices: nothing is transmitted, nothing is stored in a cloud, and what is saved is encrypted on the device. It does not make a facility HIPAA compliant, and the site does not claim to. A facility's own program still decides who may use which computer, how printed pages with names are handled, and when a shared computer is cleared (Settings › Clear saved data).
+
+## Zero-telemetry statement, names in exports and wings
+
+Settings carries a live statement that Cognicopia has no telemetry and counts the requests the page has made to other websites (it should read 0). Every export offers a names choice (aliases by default, remove personal details, or keep names), and a wing can be chosen so a roster never mixes with another's. The audit of every storage handler, and how it is proved, is in [facility-operations.md](facility-operations.md).

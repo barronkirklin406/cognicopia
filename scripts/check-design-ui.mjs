@@ -247,8 +247,10 @@ try {
   ok(lp.marks.length === 5 && lp.marks.every(h => /^resources\/research\/[a-z-]+\/$/.test(h)), "the evidence row links five Research Center summaries");
   ok(lp.foot === 14 && /Cognicopia/.test(lp.quote) && !/Kirk Barron/.test(lp.quote), "the footer has its three columns of links and the quote is credited to Cognicopia, not a person");
   await p.click(".lp-btn"); await p.waitForTimeout(900);
-  const landed = await p.evaluate(() => Math.round(document.getElementById("makeTitle").getBoundingClientRect().top));
-  ok(landed >= 136 && landed < 320, `"Make a packet" scrolls to the tool with its heading clear of the bars (${landed} px from the top)`);
+  const landed = await p.evaluate(() => ({ title: Math.round(document.getElementById("makeTitle").getBoundingClientRect().top), wood: Math.round(document.getElementById("cgWood").getBoundingClientRect().top), vh: innerHeight }));
+  /* the packet tool now opens with the wood bar (licensing and care controls), so the page lands on the bar and the heading sits just under it */
+  ok(landed.wood >= 60 && landed.wood < 100, `"Make a packet" scrolls to the tool, which opens with the wood bar just under the navigation (${landed.wood} px from the top)`);
+  ok(landed.title >= 136 && landed.title < landed.vh * 0.6, `and the heading is clear of the bars and in the first screen (${landed.title} px from the top)`);
   await shot(p, "index-landing");
   await ctx.close();
   ctx = await context(390, 844); p = await open(ctx, "index.html"); await p.waitForTimeout(300);
