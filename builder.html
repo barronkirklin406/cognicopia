@@ -696,11 +696,11 @@ input:focus,select:focus{border-color:var(--accent)}
 .lp-body{flex:1;min-height:0;overflow:hidden;display:flex;flex-direction:column}
 
 /* type: 14 pt is the floor; every heading is 16 pt bold or larger */
-.lp-h1{margin:0 0 .05in;font-size:26pt;line-height:1.1;font-weight:700;color:#000}
+.lp-h1{margin:0 0 .05in;font-size:24pt;line-height:1.1;font-weight:700;color:#000}
 .lp-res .lp-h1{font-size:34pt}
 .lp-h1 small{display:block;margin-top:.02in;font-size:16pt;font-weight:400;color:#000}
 .lp-h2{margin:.12in 0 .05in;font-size:20pt;line-height:1.15;font-weight:700;color:#000}
-.lp-h3{margin:0 0 .04in;font-size:16pt;line-height:1.15;font-weight:700;color:#000}
+.lp-h3{margin:0 0 .04in;font-size:18pt;line-height:1.15;font-weight:700;color:#000}
 .lp-sub{margin:0 0 .1in;font-size:16pt;line-height:1.25;color:#000}
 .lp-res .lp-sub{font-size:18pt}
 .lp-lab{margin:0;font-size:var(--lpmin,16pt);line-height:1.2;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink)}
@@ -787,6 +787,9 @@ input:focus,select:focus{border-color:var(--accent)}
 .lp-timeline li::before{content:"";position:absolute;left:-.16in;top:.15in;width:.18in;height:.18in;border-radius:50%;background:#fff;border:3pt solid #000}
 .lp-timeline b{flex:none;min-width:.8in;font-size:22pt}
 .lp-timeline span{min-width:0;display:-webkit-box;-webkit-line-clamp:2;line-clamp: 2;-webkit-box-orient:vertical;overflow:hidden}
+.lp-gl{display:flex;gap:.14in;align-items:baseline;margin:.04in 0;font-size:var(--lpmin,16pt);line-height:1.25}
+.lp-gl .lp-lab{flex:none;width:1.65in}
+.lp-gl > span:last-child{flex:1;min-width:0;overflow-wrap:anywhere}
 .lp-people{list-style:none;margin:.04in 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:.05in .2in}
 .lp-people li{display:flex;flex-direction:column;padding:.03in .1in;border-left:4pt solid #000;font-size:22pt;line-height:1.1;min-width:0}
 .lp-people b{font-weight:700;line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}   /* 1.2: room for the taller Atkinson descenders */
@@ -900,7 +903,7 @@ input:focus,select:focus{border-color:var(--accent)}
 .lp-fit1 .lp-cover-h{font-size:32pt}
 
 .lp-fit2 .lp-h1,.lp-fit2.lp-res .lp-h1{font-size:22pt}
-.lp-fit2 .lp-h2{font-size:16pt}
+.lp-fit2 .lp-h2{font-size:18pt}
 .lp-fit2 .lp-mtitle{font-size:28pt}
 .lp-fit2 .lp-mtheme{font-size:17pt}
 .lp-fit2 .lp-sub,.lp-fit2 .lp-prompt,.lp-fit2 .lp-asks,.lp-fit2 .lp-ul-big,.lp-fit2 .lp-blurb,.lp-fit2 .lp-sense p,.lp-fit2 .lp-checks li,
@@ -1039,6 +1042,66 @@ textarea:focus{border-color:var(--accent)}
 @media (max-width:1060px){.lp-ob-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:700px){.lp-ob-grid{grid-template-columns:1fr}}
 
+/* four-step resident form: stepper, progress, accordion groups, floating labels, live preview */
+.lp-wiz{margin-top:18px}
+.lp-steps ol{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.lp-step{display:flex;align-items:center;gap:12px;width:100%;min-height:var(--tap);padding:10px 14px;border-radius:14px;border:1px solid var(--line-2);background:var(--panel-2);color:var(--text);font:inherit;text-align:left;cursor:pointer;transition:background .2s ease,border-color .2s ease,box-shadow .2s ease}
+.lp-step:hover{border-color:var(--accent);background:var(--panel)}
+.lp-step-n{flex:none;display:grid;place-items:center;width:34px;height:34px;border-radius:50%;border:2px solid var(--line-2);font-weight:700;transition:background .2s ease,color .2s ease}
+.lp-step-t{display:flex;flex-direction:column;min-width:0}
+.lp-step-t b{font-size:15px;line-height:1.25}
+.lp-step-t small{font-size:13.5px;color:var(--muted)}
+.lp-step[aria-current="step"]{border-color:var(--accent);background:var(--panel);box-shadow:inset 0 4px 0 var(--accent)}
+.lp-step[aria-current="step"] .lp-step-n{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.lp-prog{margin:14px 0 2px}
+.lp-prog-bar{height:12px;border-radius:999px;background:var(--panel-2);border:1px solid var(--line-2);overflow:hidden}
+.lp-prog-bar span{display:block;height:100%;width:0;border-radius:999px;background:linear-gradient(90deg,var(--accent-deep),var(--accent));transition:width .4s ease}
+.lp-prog-t{margin:8px 0 0;font-weight:700;color:var(--accent-hi);line-height:1.4}
+.lp-wiz-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,400px);gap:22px;align-items:start;margin-top:14px}
+.lp-wiz-main{min-width:0}
+.lp-step-h{margin:4px 0 4px;font-size:20px;line-height:1.3}
+.lp-step-h:focus{outline:none}
+.lp-step-lead{margin:0 0 14px;line-height:1.55;color:var(--muted)}
+.lp-step-panel.lp-step-in{animation:lpStepIn .34s ease both}
+.lp-step-panel.lp-step-in[data-dir="back"]{animation-name:lpStepBack}
+@keyframes lpStepIn{from{opacity:0;transform:translateX(28px)}to{opacity:1;transform:none}}
+@keyframes lpStepBack{from{opacity:0;transform:translateX(-28px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.lp-step-panel.lp-step-in{animation:none}.lp-prog-bar span,.lp-step,.lp-step-n,.lp-acc>summary::before,.fl>label{transition:none}}
+.lp-acc{margin:0 0 12px;border:1px solid var(--line);border-radius:14px;background:var(--bg-2);overflow:hidden}
+.lp-acc>summary{display:flex;align-items:center;gap:12px;min-height:var(--tap);padding:10px 16px;cursor:pointer;font-weight:700;color:var(--accent-hi);list-style:none}
+.lp-acc>summary::-webkit-details-marker{display:none}
+.lp-acc>summary::before{content:"";flex:none;width:9px;height:9px;border-right:3px solid currentColor;border-bottom:3px solid currentColor;transform:rotate(-45deg);transition:transform .2s ease}
+.lp-acc[open]>summary::before{transform:rotate(45deg)}
+.lp-acc>summary:hover{background:var(--panel-2)}
+.lp-acc-t{min-width:0}
+.lp-acc-s{margin-left:auto;flex:none;padding:2px 10px;border-radius:999px;background:rgba(82,183,136,.16);color:var(--accent-hi);font-size:13.5px;font-weight:700}
+.lp-acc-s:empty{display:none}
+.lp-acc-b{padding:14px 16px 10px;border-top:1px solid var(--line)}
+.lp-why-row{display:flex;justify-content:flex-end}
+.lp-why-btn{min-height:var(--tap);min-width:var(--tap);padding:8px 18px;border-radius:999px;border:1px dashed var(--line-2);background:transparent;color:var(--accent-hi);font:inherit;font-weight:700;cursor:pointer}
+.lp-why-btn:hover{border-style:solid;border-color:var(--accent);background:var(--panel-2)}
+.lp-why{margin:6px 0 6px;padding:12px 14px;border-radius:12px;border-left:4px solid var(--warn);background:rgba(240,180,140,.1);line-height:1.55}
+.fl{position:relative}
+.lp-screen .fl > input,.lp-screen .fl > textarea{width:100%;padding:26px 13px 7px}
+.lp-screen .fl > input{height:60px}
+.lp-screen .fl > textarea{min-height:116px}
+.lp-screen .fl > label{position:absolute;left:14px;top:18px;margin:0;max-width:calc(100% - 28px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:16px;font-weight:400;color:var(--muted);pointer-events:none;transition:top .18s ease,font-size .18s ease,color .18s ease}
+.fl > input::placeholder,.fl > textarea::placeholder{color:transparent;transition:color .18s ease}
+.fl > input:focus::placeholder,.fl > textarea:focus::placeholder{color:var(--muted)}
+.lp-screen .fl > input:focus ~ label,.lp-screen .fl > input:not(:placeholder-shown) ~ label,.lp-screen .fl > textarea:focus ~ label,.lp-screen .fl > textarea:not(:placeholder-shown) ~ label{top:7px;font-size:13.5px;font-weight:700;color:var(--accent-hi)}
+.lp-screen .fl-ta > .hint{margin-top:6px}
+.lp-wiz-nav{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:10px}
+.lp-wiz-nav [hidden]{display:none}
+.lp-wiz-pos{color:var(--muted);font-weight:700}
+.lp-wiz-pv{position:sticky;top:calc(var(--tb-h,70px) + 14px);max-height:calc(100vh - var(--tb-h,70px) - 28px);overflow:auto;min-width:0;padding:14px;border:1px solid var(--line-2);border-radius:16px;background:var(--panel)}
+.lp-wiz-pvbar{display:flex;flex-direction:column;gap:10px;margin-bottom:12px}
+.lp-wiz-pvt{margin:0;display:flex;flex-direction:column;line-height:1.3}
+.lp-wiz-pvt span{color:var(--muted);font-size:13.5px}
+.lp-wiz-pvbox{--lps:.4;display:flex;justify-content:center;padding:12px;border-radius:12px;background:#0a120f;border:1px solid var(--line)}
+.lp-wiz-pvnote{margin:10px 0 0}
+@media (max-width:1060px){.lp-wiz-grid{grid-template-columns:1fr}.lp-wiz-pv{position:static}}
+@media (max-width:760px){.lp-steps ol{grid-template-columns:1fr 1fr}.lp-step-t small{display:none}.lp-step{padding:8px 10px;gap:8px}}
+
 /* repeating rows: family, milestones, dates */
 .lp-rh,.lp-row{display:grid;gap:8px;align-items:center}
 .lp-rh{margin:0 0 4px;font-size:13px;font-weight:700;color:var(--muted)}
@@ -1127,7 +1190,7 @@ textarea:focus{border-color:var(--accent)}
 .lp-tone .hint{margin:4px 0 0}
 
 /* live two-page spread preview */
-.lp-pv{--lps:.36;position:sticky;top:84px;min-width:0}
+.lp-pv{--lps:.36;position:sticky;top:calc(var(--tb-h,70px) + 14px);min-width:0}
 @media (max-width:1060px){.lp-pv{position:static}}
 .lp-pv-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 10px}
 .lp-pv-bar .btn{flex:none;white-space:nowrap}
@@ -3483,6 +3546,7 @@ function senseFor(ctx, m){
     return { text: lib[key], src: "lib" };
   };
   const music = ov.music ? { text: ov.music, src: "you" }
+    : p.songs.length && p.genres.length && m % 4 === 3 ? { text: p.genres[Math.floor(m / 4) % p.genres.length], src: "fav" }   // a favorite style, every fourth month
     : p.songs.length ? { text: quoteSong(p.songs[m % p.songs.length]), src: "fav" }
     : p.genres.length ? { text: p.genres[m % p.genres.length], src: "fav" }
     : ai.music ? { text: ai.music, src: "ai" } : { text: lib.music, src: "lib" };
@@ -3512,7 +3576,8 @@ function monthPrompts(ctx, sl, count){
   const person = people.length ? promptForPerson(people[sl.i % people.length]) : null;
   const story = stories.length ? (() => { const x = stories[sl.i % stories.length]; return (x.year ? x.year + ": " : "") + x.text.replace(/[.!?]+$/, "") + ". What was that time like?"; })() : null;
   const work = p.profession ? fill(SEASON_PROFESSION_PROMPT[lib.season], { professionA: p.professionA }) : null;
-  const pool = [person, story, work], r = sl.i % 3;
+  const hobby = p.hobbies.length ? "What do you love about " + lc(p.hobbies[sl.i % p.hobbies.length]) + "? Tell me how you came to it." : null;
+  const pool = [person, story, work, hobby], r = sl.i % 4;
   pool.slice(r).concat(pool.slice(0, r)).forEach(s => add(personal, s));
   const ai = aiMonthCopy(ctx, sl.m), base = (ai && ai.prompts && ai.prompts.length ? ai.prompts.map(t => ({ t })) : lib.prompts);
   base.forEach(pr => { if (topicOk(pr.tags, avoid) && pr.t.indexOf("{") >= 0) add(seasonal, fill(pr.t, { hometown: p.hometown })); });
@@ -3697,6 +3762,8 @@ function spMonth(ctx, sl){
   const tier = ctx.o.tier, MT = MONTH_TIER[sl.m], keep = tier === 3 ? 1 : 2;
   // Tier 2's things to circle: the resident's own favorites for the month lead, the season fills the rest.
   const own = ["music", "food", "scent", "texture"].map(k => sense[k]).filter(x => x.src === "fav" || x.src === "you").map(x => clip(x.text, 28));
+  // One of the resident's own pastimes joins the circle list each month, so every hobby comes round in the year.
+  if (ctx.p.hobbies.length) own.push(clip(cap1(ctx.p.hobbies[sl.i % ctx.p.hobbies.length]), 28));
   const choices = own.concat(MT.choices).filter((t, i, a) => a.findIndex(u => u.toLowerCase() === t.toLowerCase()) === i).slice(0, 6);
   const datesHtml = dates.length ? `<div class="lp-dates"><b>This month</b><ul>${dates.slice(0, keep).map(t => `<li>${esc(t)}</li>`).join("")}${dates.length > keep ? `<li class="lp-more">and ${dates.length - keep} more</li>` : ""}</ul></div>` : "";
   const head = `<div class="lp-mhead lp-s-${k}">
@@ -3800,6 +3867,39 @@ function fitCues(sets, budgetIn){
   return sets;
 }
 /* ----- Tab 3, spread 1: Daily Rhythm ----- */
+/* ----- Tab 3, first spread: the resident at a glance (care companion) -----
+   Every answer on the form, on two pages for staff, family and visitors, so the care companion is as personal as the memory book. */
+function spProfile(ctx){
+  const p = ctx.p, y0 = ctx.slots[0].y;
+  const fact = (lab, val) => `<div class="lp-fact"><span class="lp-lab">${lab}</span>${val ? `<span class="lp-val">${esc(val)}</span>` : '<span class="lp-val lp-val-blank"></span>'}</div>`;
+  const born = p.birthYear ? "Born " + p.birthYear + " (age " + (y0 - p.birthYear) + " in " + y0 + ")" : "";
+  const stones = p.milestones.length
+    ? `<ol class="lp-timeline">${p.milestones.slice(0, 7).map(x => `<li><b>${x.year || ""}</b><span>${esc(clip(x.text, 64))}</span></li>`).join("")}</ol>`
+    : `<div class="lp-tl-blank">${rules(2)}</div>`;
+  const dates = p.dates.slice(0, 6).map(d => `<li>${esc(clip(dateText(d, ctx.o.year, true), 60))}${d.audience === "caregiver" ? ' <span class="lp-care-only">care team only</span>' : ""}</li>`).join("");
+  const living = p.family.filter(f => !f.passed), gone = p.family.filter(f => f.passed);
+  const relText = f => isPet(f.rel) ? "the " + REL_WORD[f.rel] : (REL_WORD[f.rel] || "");
+  const people = living.slice(0, 4).map(f => `<li><b>${esc(f.name)}</b><span>${esc(cap1(relText(f)))}</span></li>`).join("");
+  const mem = gone.length ? `<p class="lp-note"><b>In loving memory:</b> ${esc(andList(gone.slice(0, 6).map(f => f.name + (REL_WORD[f.rel] ? " (" + REL_WORD[f.rel] + ")" : ""))))}. Speak of them in the past tense.</p>` : "";
+  // Each comfort line holds at most two printed lines, so a long answer never pushes the page past its edge.
+  const line = (lab, arr, n) => arr.length ? `<div class="lp-gl"><span class="lp-lab">${lab}</span><span>${esc(clip(arr.slice(0, n).map(t => clip(t, 28)).join(" \u00B7 "), 74))}</span></div>` : "";
+  const comfort = [line("Music", p.songs.slice(0, 3).map(quoteSong).concat(p.genres.slice(0, 2)), 5), line("Interests", p.hobbies, 4), line("Scents", p.scents, 3),
+    line("To touch", p.textures, 3), line("Food memories", p.foods, 3), line("Favorite meals", p.meals, 3)].join("");
+  const avoid = p.avoid.map(c => lc(AVOID_TOPICS.filter(t => t[0] === c)[0][1]));
+  return { id:"profile", tab:3, title:"Resident at a Glance",
+    left:{ tab:3, audience:"caregiver", role:"visual", label:"Resident at a glance", title:"Resident at a Glance", body: `
+      <h1 class="lp-h1">About ${esc(ctx.who)}</h1>
+      <p class="lp-sub">A one-page picture of the person, for staff, family and visitors.</p>
+      <div class="lp-facts">${fact("Prefers to be called", p.name)}${fact("Full name", p.fullName)}${fact("Born", born)}${fact("Hometown", p.hometown)}${fact("Life\u2019s work", p.profession ? cap1(p.profession) : "")}${p.facility ? fact("Lives at", p.facility) : ""}</div>
+      <h2 class="lp-h2">Life story</h2>${stones}
+      <h2 class="lp-h2">Special dates</h2>${dates ? `<ul class="lp-ul">${dates}</ul>` : `<div class="lp-tl-blank">${rules(2)}</div>`}` },
+    right:{ tab:3, audience:"caregiver", role:"lines", label:"People and comforts", title:"Resident at a Glance", body: `
+      <h2 class="lp-h2">People and pets</h2>${people ? `<ul class="lp-people">${people}</ul>${living.length > 4 ? `<p class="lp-more">and ${living.length - 4} more</p>` : ""}` : `<div class="lp-tl-blank">${rules(1)}</div>`}${mem}
+      <h2 class="lp-h2">What brings comfort</h2>${comfort || `<div class="lp-tl-blank">${rules(2)}</div>`}
+      <h2 class="lp-h2">Gently steer around</h2><p class="lp-note">${avoid.length ? esc(clip(cap1(andList(avoid)), 120)) + "." : "Nothing noted yet."}</p>
+      <h2 class="lp-h2">What staff and family should know</h2><div class="lp-rules">${rules(22)}</div>` } };
+}
+
 function spDaily(ctx){
   const on = BLOCK_DEFS.filter(b => ctx.o.blocks[b.id].on), dense = on.length >= 6;
   const cueSets = fitCues(on.map(b => blockCues(ctx, b.id).slice(0, 3)), dense ? 7.55 : 7.7);
@@ -3993,7 +4093,7 @@ function spCarePlan(ctx, k){
 }
 
 /* ----- Companion cover, with contents ----- */
-const COMPANION_TOC = [["daily", "Daily Rhythm"], ["weekly", "Weekly Rhythm"], ["engage", "Engagement and Response Log"], ["visits", "Family Visit Planner"],
+const COMPANION_TOC = [["profile", "Resident at a Glance"], ["daily", "Daily Rhythm"], ["weekly", "Weekly Rhythm"], ["engage", "Engagement and Response Log"], ["visits", "Family Visit Planner"],
   ["hydration", "Hydration and Nutrition"], ["comfort", "Comfort, Sleep and Calm"], ["careplan", "Care-Plan Adjustment Notes"]];
 function companionCoverBody(ctx, pages){
   const first = {};
@@ -4068,7 +4168,7 @@ function memoryItems(ctx){
   return a;
 }
 function companionItems(ctx){
-  const a = [{ kind:"page", side:"right", id:"cover", page: pageCompanionCover(ctx) }, asSpread(spDaily(ctx))];
+  const a = [{ kind:"page", side:"right", id:"cover", page: pageCompanionCover(ctx) }, asSpread(spProfile(ctx)), asSpread(spDaily(ctx))];
   [spWeekly, spEngage, spVisits, spHydration, spComfort, spCarePlan].forEach(fn => { for (let k = 0; k < ctx.o.copies; k++) a.push(asSpread(fn(ctx, k))); });
   return a;
 }
@@ -4096,7 +4196,7 @@ function build(profileIn, optsIn, scope){
 }
 /* Page counts for all three scopes without building any HTML. */
 function countPages(optsIn){
-  const c = normOpts(optsIn).copies, memory = 1 + 2 * 3 + 2 * 12 + 1, companion = 1 + 2 * (1 + 6 * c);
+  const c = normOpts(optsIn).copies, memory = 1 + 2 * 3 + 2 * 12 + 1, companion = 1 + 2 * (2 + 6 * c);
   return { memory, companion, binder: memory + companion };
 }
 
@@ -5367,7 +5467,7 @@ const LifePlannerUI = (function(){
   }
   function defaults(){
     const now = new Date();
-    return { v:1, profile:blankProfile(), source:"", scope:"memory", tab:1, month:now.getMonth(), pos:{ 1:0, 2:0, 3:0, 4:0 }, obOpen:true,
+    return { v:1, profile:blankProfile(), source:"", scope:"memory", tab:1, month:now.getMonth(), pos:{ 1:0, 2:0, 3:0, 4:0 }, obOpen:true, wiz:1, wizBook:"memory",
       opts:{ year:now.getFullYear(), startMonth:now.getMonth(), nowMonth:now.getMonth(), weather:"circle", temp:"", art:"line", promptCount:3,
         showDates:true, binding:"book", tier:2, lineW:2, highContrast:false, copies:1, fluidGoal:"", dietNote:"", sense:{}, blocks:{}, weekly:[], aiCopy:null } };
   }
@@ -5380,6 +5480,8 @@ const LifePlannerUI = (function(){
     if (saved.month >= 0 && saved.month <= 11) d.month = saved.month | 0;
     if (isObj(saved.pos)) [1, 2, 3, 4].forEach(n => { if (saved.pos[n] >= 0) d.pos[n] = saved.pos[n] | 0; });
     d.obOpen = saved.obOpen !== false;
+    if ([1, 2, 3, 4].indexOf(saved.wiz) >= 0) d.wiz = saved.wiz;
+    if (saved.wizBook === "companion") d.wizBook = "companion";
     d.source = typeof saved.source === "string" ? saved.source.slice(0, 60) : "";
     if (isObj(saved.profile)) Object.keys(d.profile).forEach(k => {
       const v = saved.profile[k];
@@ -5406,10 +5508,12 @@ const LifePlannerUI = (function(){
   /* ---------- small builders ---------- */
   const monthOptions = sel => D.MONTHS.map((m, i) => `<option value="${i}" ${i === +sel ? "selected" : ""}>${m}</option>`).join("");
   const seg = (name, list, val) => `<div class="seg">${list.map(([v, l]) => `<label><input type="radio" name="${name}" value="${esc(v)}" ${String(v) === String(val) ? "checked" : ""}><span>${esc(l)}</span></label>`).join("")}</div>`;
-  const ta = (id, key, label, hint, ph) => `<div class="field"><label for="${id}">${label}</label>
-    <textarea id="${id}" data-p="${key}" rows="4" maxlength="900" placeholder="${esc(ph || "One per line")}">${esc(S.profile[key])}</textarea>${hint ? `<p class="hint">${hint}</p>` : ""}</div>`;
-  const tx = (id, key, label, max, ph, extra) => `<div class="field"><label for="${id}">${label}</label>
-    <input id="${id}" type="text" data-p="${key}" maxlength="${max}" value="${esc(S.profile[key])}" placeholder="${esc(ph || "")}" autocomplete="off"${extra || ""}></div>`;
+  /* Floating labels: the label sits inside the box until there is text or focus, then rises above it.
+     The example text (the placeholder) shows only on focus; CSS keys off :placeholder-shown. */
+  const ta = (id, key, label, hint, ph) => `<div class="field fl fl-ta"><textarea id="${id}" data-p="${key}" rows="4" maxlength="900" placeholder="${esc(ph || "One per line")}">${esc(S.profile[key])}</textarea>
+    <label for="${id}">${label}</label>${hint ? `<p class="hint">${hint}</p>` : ""}</div>`;
+  const tx = (id, key, label, max, ph, extra) => `<div class="field fl"><input id="${id}" type="text" data-p="${key}" maxlength="${max}" value="${esc(S.profile[key])}" placeholder="${esc(ph || "")}" autocomplete="off"${extra || ""}>
+    <label for="${id}">${label}</label></div>`;
 
   /* ---------- the screen ---------- */
   /* Everything lives in its own element inside the builder's #view, with its
@@ -5433,6 +5537,7 @@ const LifePlannerUI = (function(){
     host = document.getElementById("lpScreen");
     bind();
     renderRows("family"); renderRows("milestones"); renderRows("dates");
+    updateWizUi(); renderWizPreview();
     renderTab();
     syncPrint();
     checkTone();
@@ -5444,7 +5549,7 @@ const LifePlannerUI = (function(){
     return `<section class="config lp-ob" id="lpOnboard" aria-labelledby="lpObTitle">
       <div class="lp-ob-head">
         <div class="lp-ob-intro">
-          <p class="eyebrow">Step 1 &middot; Personalize</p>
+          <p class="eyebrow">Resident details &middot; four short steps</p>
           <h2 id="lpObTitle">About the resident <span class="lp-chip" id="lpWho"></span></h2>
           <p class="hint">These details are woven into every page, so the planner is never generic. Only the preferred name is needed to begin.</p>
         </div>
@@ -5458,48 +5563,158 @@ const LifePlannerUI = (function(){
       </div>
       <div id="lpObBody" ${S.obOpen ? "" : "hidden"}>
         <p class="lp-src" id="lpSrc" ${S.source ? "" : "hidden"}>${S.source ? "Filled in from " + esc(S.source) + ". Changes here stay with the planner." : ""}</p>
-        <div class="lp-ob-grid">
-          <fieldset class="lp-fs"><legend>Who they are</legend>
-            ${tx("lpName", "name", "Preferred name", 30, "e.g. Margaret", ' aria-describedby="lpNameHint"')}
-            <p class="hint lp-hint-top" id="lpNameHint">The name they like to be called. It titles the book: “Margaret’s Life Planner”.</p>
-            ${tx("lpFull", "fullName", "Full name <small>(cover only)</small>", 50, "e.g. Margaret Ellen Hansen")}
-            <div class="field"><label for="lpBorn">Birth year</label><input id="lpBorn" type="number" inputmode="numeric" min="1890" max="2010" data-p="birthYear" value="${esc(p.birthYear)}" placeholder="e.g. 1938"></div>
-            ${tx("lpTown", "hometown", "Hometown", 40, "e.g. Duluth, Minnesota")}
-            ${tx("lpJob", "profession", "Former profession or life’s work", 50, "e.g. Elementary school teacher")}
-          </fieldset>
-          <fieldset class="lp-fs"><legend>Music and favorites</legend>
-            ${ta("lpSongs", "songs", "Favorite songs", "One per line. Each month features one, in turn.", "e.g. Moon River")}
-            ${ta("lpGenres", "genres", "Favorite artists or music styles", "", "e.g. Big band and swing")}
-            ${ta("lpHobbies", "hobbies", "Hobbies and interests", "", "e.g. Gardening")}
-          </fieldset>
-          <fieldset class="lp-fs"><legend>Senses that comfort</legend>
-            ${ta("lpScents", "scents", "Comforting scents", "", "e.g. Lavender")}
-            ${ta("lpTextures", "textures", "Favorite things to touch", "", "e.g. A soft wool shawl")}
-            ${ta("lpFoods", "foods", "Nostalgic food memories", "For the memory book. Favorite meals for staff go in Tab 4.", "e.g. Her mother’s apple pie")}
-          </fieldset>
-          <fieldset class="lp-fs lp-fs-wide"><legend>People and pets who matter</legend>
-            <div id="lpRows-family"></div>
-            <button class="btn btn-sm" type="button" data-add="family">Add a person or pet</button>
-            <p class="hint">People marked “has passed away” never appear in conversation starters; staff see them on the visit page, to speak of in the past tense.</p>
-          </fieldset>
-          <fieldset class="lp-fs lp-fs-wide"><legend>Life milestones</legend>
-            <div id="lpRows-milestones"></div>
-            <button class="btn btn-sm" type="button" data-add="milestones">Add a milestone</button>
-            <p class="hint">Career highlights, a wedding, a move: each becomes a timeline entry and a gentle conversation starter.</p>
-          </fieldset>
-          <fieldset class="lp-fs lp-fs-wide"><legend>Special dates and anniversaries</legend>
-            <div id="lpRows-dates"></div>
-            <button class="btn btn-sm" type="button" data-add="dates">Add a date</button>
-            <p class="hint">Birthdays and anniversaries appear on the Year at a Glance and on their month. Tick “Care team only” for a date that may bring strong feelings, such as a memorial: it prints only in the care companion.</p>
-          </fieldset>
-          <fieldset class="lp-fs lp-fs-wide"><legend>Topics to steer around</legend>
-            <div class="lp-avoid-ui">${D.AVOID_TOPICS.map(([c, l]) => `<label class="lp-tick"><input type="checkbox" data-avoid="${c}" ${p.avoid.indexOf(c) >= 0 ? "checked" : ""}><span>${esc(l)}</span></label>`).join("")}</div>
-            <p class="hint">Prompts on these topics are left out of the memory book, and the care companion lists them for staff.</p>
-          </fieldset>
-        </div>
+        ${wizardHtml()}
       </div>
       <div class="lp-tone" id="lpTone" role="status" aria-live="polite"></div>
     </section>`;
+  }
+
+  /* ---------- the four-step form ----------
+     Every question lives in one of four steps. All four steps stay in the page (the hidden ones
+     are just not shown), so each field keeps its id and its value, and the live preview on the
+     right is built from the same engine as the printed book. */
+  const WIZ = [
+    { n:1, title:"Resident Story & Roots", short:"Story & roots", lead:"The name they like to be called, and where their story began." },
+    { n:2, title:"Vocational & Life Milestones", short:"Work & milestones", lead:"A life’s work and the moments that shaped it. These become the timeline and gentle conversation starters." },
+    { n:3, title:"Traditions, Passions & Rhythm", short:"Passions & comforts", lead:"The music, pastimes, tastes and comforts that shape each month and each day." },
+    { n:4, title:"Family & Care Preferences", short:"Family & care", lead:"The people who matter, the topics to steer around, and what staff need to know at mealtimes." }
+  ];
+  const WIZ_PV = {
+    memory:    { 1:"The cover", 2:"“My Story” page", 3:"A month page", 4:"Year at a Glance" },
+    companion: { 1:"Care companion cover", 2:"Resident at a Glance", 3:"Comfort page", 4:"Family Visit Planner" }
+  };
+  function grp(id, title, why, inner, open){
+    return `<details class="lp-acc"${open === false ? "" : " open"}><summary><span class="lp-acc-t">${title}</span><span class="lp-acc-s" data-sum="${id}"></span></summary>
+      <div class="lp-acc-b" role="group" aria-label="${esc(title.replace(/<[^>]+>/g, ""))}">${inner}
+        <div class="lp-why-row"><button class="lp-why-btn" type="button" data-why="${id}" aria-expanded="false" aria-controls="lpWhy-${id}">Why we ask</button></div>
+        <p class="lp-why" id="lpWhy-${id}" hidden>${why}</p></div></details>`;
+  }
+  function wizardHtml(){
+    const p = S.profile;
+    const rowsBox = (kind, label, hint) => `<div id="lpRows-${kind}"></div><button class="btn btn-sm" type="button" data-add="${kind}">${label}</button><p class="hint">${hint}</p>`;
+    const steps = [
+      /* 1 */ grp("names", "Names", "The name they like to be called titles the book (“Margaret’s Life Planner”) and speaks in every first-person prompt, so the pages sound like them. The full name appears only on the cover.",
+          tx("lpName", "name", "Preferred name", 30, "e.g. Margaret", ' aria-describedby="lpNameHint"') +
+          '<p class="hint" id="lpNameHint">The name they like to be called. Only this is needed to begin.</p>' +
+          tx("lpFull", "fullName", "Full name <small>(cover only)</small>", 50, "e.g. Margaret Ellen Hansen")) +
+        grp("roots", "Roots", "A birth year places the songs, news and daily objects of the years they were young. A hometown colors the seasonal prompts (“An autumn day in Duluth…”). Neither is ever used to test memory.",
+          `<div class="field fl"><input id="lpBorn" type="number" inputmode="numeric" min="1890" max="2010" data-p="birthYear" value="${esc(p.birthYear)}" placeholder="e.g. 1938"><label for="lpBorn">Birth year</label></div>` +
+          tx("lpTown", "hometown", "Hometown", 40, "e.g. Duluth, Minnesota")),
+      /* 2 */ grp("work", "Life’s work", "A life’s work is a source of pride. It shapes one conversation starter each season in the memory book and fills the “Resident at a Glance” page for staff.",
+          tx("lpJob", "profession", "Former profession or life’s work", 50, "e.g. Elementary school teacher")) +
+        grp("milestones", "Life milestones", "Each milestone becomes a line on “My Story” and an invitation to talk (“1961: Married Walter. What was that time like?”). War and military entries are left out of prompts when that topic is steered around.",
+          rowsBox("milestones", "Add a milestone", "Career highlights, a wedding, a move: each becomes a timeline entry and a gentle conversation starter.")) +
+        grp("dates", "Special dates and anniversaries", "Birthdays and anniversaries appear on the Year at a Glance and on their month, so a family date is never missed. A date marked “Care team only” prints in the care companion alone.",
+          rowsBox("dates", "Add a date", "Tick “Care team only” for a date that may bring strong feelings, such as a memorial: it prints only in the care companion.")),
+      /* 3 */ grp("music", "Music", "Familiar music reaches people when little else does. Each month features one favorite song and one music style in turn, and the care companion lists them for calming moments.",
+          ta("lpSongs", "songs", "Favorite songs", "One per line. Each month features one, in turn.", "e.g. Moon River") +
+          ta("lpGenres", "genres", "Favorite artists or music styles", "", "e.g. Big band and swing")) +
+        grp("pastimes", "Pastimes and flavors", "Pastimes become “circle the ones you enjoy” choices and conversation starters. Nostalgic foods join the monthly taste cue. Favorite meals for the nutrition page are in Step 4.",
+          ta("lpHobbies", "hobbies", "Hobbies and interests", "", "e.g. Gardening") +
+          ta("lpFoods", "foods", "Nostalgic food memories", "For the memory book. Favorite meals for staff go in Step 4.", "e.g. Her mother’s apple pie")) +
+        grp("senses", "Comforting senses", "Scents and textures are the quickest comfort. They appear as monthly sensory cues and on the care companion’s comfort page, for staff to use when the day feels unsettled.",
+          ta("lpScents", "scents", "Comforting scents", "", "e.g. Lavender") +
+          ta("lpTextures", "textures", "Favorite things to touch", "", "e.g. A soft wool shawl")),
+      /* 4 */ grp("people", "People and pets who matter", "People appear on “My Story” and as prompts (“Tell me about Anna, your daughter.”). A person marked “has passed away” never appears in a prompt; staff see them on the visit page, to speak of in the past tense.",
+          rowsBox("family", "Add a person or pet", "People marked “has passed away” never appear in conversation starters; staff see them on the visit page, to speak of in the past tense.")) +
+        grp("avoid", "Topics to steer around", "Prompts on these topics are left out of the memory book, and the care companion lists them for staff, so no one is surprised by a painful subject.",
+          `<div class="lp-avoid-ui">${D.AVOID_TOPICS.map(([c, l]) => `<label class="lp-tick"><input type="checkbox" data-avoid="${c}" ${p.avoid.indexOf(c) >= 0 ? "checked" : ""}><span>${esc(l)}</span></label>`).join("")}</div>` +
+          '<p class="hint">Prompts on these topics are left out of the memory book, and the care companion lists them for staff.</p>') +
+        grp("meals", "Care preferences", "Favorite meals print for staff on the nutrition page, so a meal can be a familiar pleasure. They never appear in the resident’s memory book.",
+          ta("lpMeals", "meals", "Favorite meals <small>(care team only)</small>", "Printed for staff on the nutrition page.", "e.g. Chicken and dumplings"))
+    ];
+    const stepper = WIZ.map(w => `<li><button class="lp-step" type="button" data-wiz="${w.n}" id="lpStepBtn-${w.n}" aria-controls="lpStep-${w.n}" ${w.n === S.wiz ? 'aria-current="step"' : ""}>
+        <span class="lp-step-n" aria-hidden="true">${w.n}</span><span class="lp-step-t"><b>${esc(w.title)}</b><small>${esc(w.short)}</small></span></button></li>`).join("");
+    const panels = WIZ.map((w, i) => `<section class="lp-step-panel" id="lpStep-${w.n}" data-step="${w.n}" aria-labelledby="lpStepH-${w.n}" ${w.n === S.wiz ? "" : "hidden"}>
+        <h3 id="lpStepH-${w.n}" class="lp-step-h" tabindex="-1">Step ${w.n} of 4 &middot; ${esc(w.title)}</h3>
+        <p class="lp-step-lead">${esc(w.lead)}</p>${steps[i]}</section>`).join("");
+    return `<div class="lp-wiz" id="lpWiz">
+      <nav class="lp-steps" aria-label="Resident details, four steps"><ol>${stepper}</ol></nav>
+      <div class="lp-prog"><div class="lp-prog-bar" id="lpProg" role="progressbar" aria-label="Key details filled in" aria-valuemin="0" aria-valuemax="8" aria-valuenow="0"><span id="lpProgFill"></span></div>
+        <p class="lp-prog-t" id="lpProgTxt" aria-live="polite"></p></div>
+      <div class="lp-wiz-grid">
+        <div class="lp-wiz-main">${panels}
+          <div class="lp-wiz-nav"><button class="btn" type="button" data-wizgo="-1" id="lpWizBack">&lsaquo; Back</button>
+            <span class="lp-wiz-pos" id="lpWizPos"></span>
+            <button class="btn btn-primary" type="button" data-wizgo="1" id="lpWizNext">Next &rsaquo;</button></div>
+        </div>
+        <aside class="lp-wiz-pv" aria-label="Live preview of the page this step fills in">
+          <div class="lp-wiz-pvbar"><p class="lp-wiz-pvt"><b>Live preview</b><span id="lpWizPvCap"></span></p>
+            ${seg("lpWizBook", [["memory", "Memory Book"], ["companion", "Care Companion"]], S.wizBook)}</div>
+          <div class="lp-wiz-pvbox" id="lpWizPv"></div>
+          <p class="hint lp-wiz-pvnote" id="lpWizPvNote"></p>
+        </aside>
+      </div>
+    </div>`;
+  }
+  const KEY_DETAILS = [
+    ["name", "preferred name", p => !!tidyName(p.name)], ["birth", "birth year", p => !!String(p.birthYear).trim()], ["town", "hometown", p => !!String(p.hometown).trim()],
+    ["job", "life’s work", p => !!String(p.profession).trim()], ["songs", "a favorite song", p => !!String(p.songs).trim()], ["hobbies", "a pastime", p => !!String(p.hobbies).trim()],
+    ["ms", "a milestone", p => p.milestones.some(r => r && String(r.text || "").trim())], ["fam", "a person or pet", p => p.family.some(r => r && String(r.name || "").trim())]
+  ];
+  const GROUP_SUM = {
+    names: p => [tidyName(p.name), p.fullName].filter(x => String(x).trim()).length + " of 2", roots: p => [p.birthYear, p.hometown].filter(x => String(x).trim()).length + " of 2",
+    work: p => String(p.profession).trim() ? "added" : "", milestones: p => p.milestones.filter(r => r && String(r.text || "").trim()).length || "",
+    dates: p => p.dates.filter(r => r && String(r.label || "").trim()).length || "", music: p => [p.songs, p.genres].filter(x => String(x).trim()).length + " of 2",
+    pastimes: p => [p.hobbies, p.foods].filter(x => String(x).trim()).length + " of 2", senses: p => [p.scents, p.textures].filter(x => String(x).trim()).length + " of 2",
+    people: p => p.family.filter(r => r && String(r.name || "").trim()).length || "", avoid: p => p.avoid.length || "", meals: p => String(p.meals).trim() ? "added" : ""
+  };
+  function updateWizUi(){
+    const wiz = document.getElementById("lpWiz");
+    if (!wiz) return;
+    const p = S.profile, done = KEY_DETAILS.filter(k => k[2](p)).length;
+    const bar = document.getElementById("lpProg"), fill = document.getElementById("lpProgFill"), txt = document.getElementById("lpProgTxt");
+    bar.setAttribute("aria-valuenow", done); fill.style.width = (done / 8 * 100) + "%";
+    const missing = KEY_DETAILS.filter(k => !k[2](p)).slice(0, 2).map(k => k[1]);
+    txt.textContent = done + " of 8 key details" + (done === 8 ? ". The planner is ready to print." : done ? ". Next, add " + missing.join(" or ") + "." : ". Start with a preferred name.");
+    wiz.querySelectorAll("[data-sum]").forEach(el => { const f = GROUP_SUM[el.dataset.sum], v = f ? f(p) : ""; el.textContent = v === "" || v === "0 of 2" ? "" : String(v); });
+    wiz.querySelectorAll(".lp-step").forEach(b => {
+      const n = +b.dataset.wiz;
+      if (n === S.wiz) b.setAttribute("aria-current", "step"); else b.removeAttribute("aria-current");
+    });
+    wiz.querySelectorAll(".lp-step-panel").forEach(el => { el.hidden = +el.dataset.step !== S.wiz; });
+    const back = document.getElementById("lpWizBack"), next = document.getElementById("lpWizNext");
+    back.disabled = S.wiz === 1;
+    next.hidden = S.wiz === 4;
+    next.innerHTML = "Next: " + esc(WIZ[Math.min(S.wiz, 3)].short) + " &rsaquo;";
+    document.getElementById("lpWizPos").textContent = "Step " + S.wiz + " of 4";
+  }
+  function goStep(n, focusHead){
+    n = Math.min(Math.max(n | 0, 1), 4);
+    const dir = n >= S.wiz ? "fwd" : "back", same = n === S.wiz;
+    S.wiz = n; save(); updateWizUi();
+    const panel = document.getElementById("lpStep-" + n);
+    if (!same && panel){ panel.dataset.dir = dir; panel.classList.remove("lp-step-in"); void panel.offsetWidth; panel.classList.add("lp-step-in"); }
+    renderWizPreview();
+    if (focusHead && panel){ const h = panel.querySelector(".lp-step-h"); if (h) h.focus({ preventScroll:true }); const wiz = document.getElementById("lpWiz"); if (wiz) wiz.scrollIntoView({ block:"start", behavior:"smooth" }); }
+  }
+  /* The one page each step fills in, per book. Pages are found by what they are, not by number. */
+  function wizPick(res, book, step){
+    const pg = res.pages, byTitle = (t, role) => pg.find(x => x.title === t && x.role === role);
+    if (book === "memory") return [pg.find(x => x.role === "cover"), byTitle("My Story", "visual"), byTitle(D.MONTHS[S.month], "visual"), byTitle("Year at a Glance", "visual")][step - 1] || pg[0];
+    return [pg.find(x => x.role === "cover"), byTitle("Resident at a Glance", "visual"), byTitle("Comfort, Sleep and Calm", "visual"), byTitle("Family Visit Planner", "visual")][step - 1] || pg[0];
+  }
+  function renderWizPreview(){
+    const box = document.getElementById("lpWizPv");
+    if (!box) return;
+    const book = S.wizBook, res = buildCached(book);
+    const page = wizPick(res, book, S.wiz), cap = document.getElementById("lpWizPvCap"), note = document.getElementById("lpWizPvNote");
+    cap.textContent = WIZ_PV[book][S.wiz];
+    box.innerHTML = page ? BookUI.figure(page, page.side === "right" ? "right" : "left", "", { left:"Left page: pictures and prompts", right:"Right page: writing and logging" }) : "";
+    note.textContent = book === "memory" ? "What the resident sees: first person, large print, and nothing clinical." : "Confidential: for staff and family only. It never prints in the memory book.";
+    scaleWiz();
+    LP.fitSheets(box);
+  }
+  function scaleWiz(){
+    const box = document.getElementById("lpWizPv");
+    if (box) box.style.setProperty("--lps", Math.min(.56, Math.max(.2, (box.clientWidth - 24) / 816)).toFixed(3));
+  }
+  /* The preview and the tab spreads both build the whole book; build it once per change. */
+  const bcache = {};
+  function buildCached(scope){
+    const key = scope + JSON.stringify([engineProfile(), engineOpts()]);
+    if (!bcache[scope] || bcache[scope].key !== key) bcache[scope] = { key, res:LP.build(engineProfile(), engineOpts(), scope) };
+    return bcache[scope].res;
   }
 
   /* ---------- repeating rows (family, milestones, dates) ---------- */
@@ -5624,7 +5839,7 @@ const LifePlannerUI = (function(){
   function tab4Html(){
     const o = S.opts;
     return `<h3 class="lp-oh">Hydration and nutrition</h3>
-      ${ta("lpMeals", "meals", "Favorite meals", "Printed for staff on the nutrition page.", "e.g. Chicken and dumplings")}
+      <p class="hint lp-hint-top">Favorite meals are in the resident details, Step 4 (Family &amp; Care Preferences), above. They print for staff on the nutrition page.</p>
       <div class="row2">
         <div class="field"><label for="lpFluid">Fluids each day <span class="hint">(cups)</span></label><input id="lpFluid" type="text" maxlength="12" data-o="fluidGoal" value="${esc(o.fluidGoal)}" placeholder="From the care plan"></div>
         <div class="field"><label for="lpDiet">Diet, texture or allergies</label><input id="lpDiet" type="text" maxlength="80" data-o="dietNote" value="${esc(o.dietNote)}" placeholder="Leave blank to write in"></div>
@@ -5679,7 +5894,7 @@ const LifePlannerUI = (function(){
   /* ---------- the spread preview ---------- */
   function previewScope(){ return S.tab <= 2 ? "memory" : (S.scope === "binder" ? "binder" : "companion"); }
   function tabSpreads(){
-    const res = LP.build(engineProfile(), engineOpts(), previewScope());
+    const res = buildCached(previewScope());
     return { res, list: res.spreads.filter(sp => sp.tab === S.tab) };
   }
   function renderPreview(){
@@ -5714,17 +5929,21 @@ const LifePlannerUI = (function(){
     const what = side === "left" ? (sp.id === "title" || (sp.id === "cover" && previewScope() !== "binder") ? "Inside cover" : "End of the memory book") : "Inside back cover";
     return BookUI.figure(page, side, what, { left: "Left page: pictures and prompts", right: "Right page: writing and logging" });
   }
-  function scaleThumbs(){ BookUI.scale(document.getElementById("lpPv")); }
+  /* The top bar wraps to several rows on a narrow or short window; the sticky previews sit just below however tall it is. */
+  function syncTopbar(){ const t = document.querySelector(".topbar"); if (t) document.documentElement.style.setProperty("--tb-h", t.offsetHeight + "px"); }
+  function scaleThumbs(){ syncTopbar(); BookUI.scale(document.getElementById("lpPv")); scaleWiz(); }
   function watchSize(){
     if (ro || typeof ResizeObserver === "undefined") return;
     ro = new ResizeObserver(() => scaleThumbs());
     const box = document.getElementById("lpPv"); if (box) ro.observe(box.parentNode);
+    const wp = document.getElementById("lpWizPv"); if (wp) ro.observe(wp);
+    const tb = document.querySelector(".topbar"); if (tb) ro.observe(tb);
   }
 
   /* ---------- print panel ---------- */
   function printHtml(){
     return `<section class="config lp-printbox" id="lpPrint" aria-labelledby="lpPrintTitle">
-      <p class="eyebrow">Step 3 &middot; Print</p>
+      <p class="eyebrow">Print</p>
       <h2 id="lpPrintTitle">Print or save as PDF</h2>
       <fieldset class="field"><legend>What to print</legend>
         <div class="lp-scopes">${Object.keys(SCOPES).map(k => `<label class="lp-scope lp-scope-${k}"><input type="radio" name="lpScope" value="${k}" ${S.scope === k ? "checked" : ""}>
@@ -5837,7 +6056,8 @@ const LifePlannerUI = (function(){
   /* ---------- refresh after any change ---------- */
   function refresh(){
     clearTimeout(pvTimer);
-    pvTimer = setTimeout(() => { renderPreview(); syncPrint(); checkTone(); renderResidentChip(); if (S.tab === 2) syncSensePlaceholders(); }, 120);
+    updateWizUi();
+    pvTimer = setTimeout(() => { renderWizPreview(); renderPreview(); syncPrint(); checkTone(); renderResidentChip(); if (S.tab === 2) syncSensePlaceholders(); }, 120);
   }
   function syncSensePlaceholders(){
     const sug = LP.suggest(engineProfile(), Object.assign({}, S.opts, { sense:{} }), S.month);
@@ -5860,6 +6080,7 @@ const LifePlannerUI = (function(){
     else if (ds.sense){ const m = S.month; S.opts.sense[m] = Object.assign({}, S.opts.sense[m] || {}); S.opts.sense[m][ds.sense] = t.value; }
     else if (ds.block){ S.opts.blocks[ds.block] = Object.assign({}, S.opts.blocks[ds.block] || {}); S.opts.blocks[ds.block][ds.bf] = val(); }
     else if (ds.week !== undefined){ S.opts.weekly = S.opts.weekly.slice(); S.opts.weekly[+ds.week] = t.value; }
+    else if (t.name === "lpWizBook"){ S.wizBook = t.value === "companion" ? "companion" : "memory"; }
     else if (t.name === "lpScope"){ S.scope = t.value; }
     else if (t.name === "lpBind"){ S.opts.binding = t.value; }
     else if (t.name === "lpCopies"){ S.opts.copies = +t.value; }
@@ -5881,6 +6102,13 @@ const LifePlannerUI = (function(){
     const b = e.target.closest("button, a[data-jump]");
     if (!b || !host.contains(b)) return;
     if (b.dataset.tab){ selectTab(+b.dataset.tab); return; }
+    if (b.dataset.wiz){ goStep(+b.dataset.wiz, true); return; }
+    if (b.dataset.wizgo){ goStep(S.wiz + +b.dataset.wizgo, true); return; }
+    if (b.dataset.why){
+      const tip = document.getElementById("lpWhy-" + b.dataset.why), open = tip.hidden;
+      tip.hidden = !open; b.setAttribute("aria-expanded", open); b.textContent = open ? "Hide note" : "Why we ask";
+      return;
+    }
     if (b.dataset.add){
       const list = S.profile[b.dataset.add];
       if (list.length >= (b.dataset.add === "dates" ? 16 : 12)){ toast("That list is full."); return; }
@@ -13863,7 +14091,8 @@ let lastBuilderHash = "#/";     // where the Facility view switch returns to
 function router(){
   if (!storeOpen) return;
   const { name, arg } = parseHash();
-  view.classList.toggle("view-wide", name === "facility" || name === "academy");   // the portal's calendar and the Academy's grid use the width
+  view.classList.toggle("view-wide", name === "facility" || name === "academy");
+  if (["planner", "journal", "reminiscence", "heirloom", "coloring"].indexOf(name) >= 0) view.dataset.tool = name; else delete view.dataset.tool;   // each studio tool's warm accent (css/styles.css 9e)   // the portal's calendar and the Academy's grid use the width
   $("#fpToggle").setAttribute("aria-checked", String(name === "facility"));
   if (name !== "facility") lastBuilderHash = location.hash || "#/";
   (routes[name] || renderHome)(arg);
