@@ -1750,7 +1750,18 @@ html.cg-night-shift .cg-crumbs{background:#211910;border-color:#684a26}
 html.cg-night-shift .cg-crumbs li,html.cg-night-shift .cg-crumbs a,html.cg-night-shift .cg-crumbs [aria-current]{color:#ffedcc!important}
 @media (max-width:768px){.cg-crumbs{padding:8px 16px}}
 /* the action bar under the navigation: light, like the navigation, with the buy links in the brand's deep green */
-@media print{.cg-crumbs{display:none!important}}
+.cg-topbar{height:auto!important;min-height:52px;flex-wrap:wrap;row-gap:6px;padding-top:8px;padding-bottom:8px}
+html body .cg-topbar{background:#fbf8f2;border-bottom:1px solid var(--sb-border);-webkit-backdrop-filter:none;backdrop-filter:none}
+html body .cg-topbar a,html body .cg-topbar button.linklike{color:var(--sb-txt)}
+.cg-topbar .cg-cta{display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;min-height:var(--tap,52px);padding:8px 18px;border:2px solid var(--cg-green-700,#1b382b);border-radius:var(--cg-radius-md,12px);background:var(--cg-green-700,#1b382b);color:#ffffff!important;font:700 15px/1.25 var(--cg-font-ui,"Trebuchet MS","Segoe UI",sans-serif);text-align:center;text-decoration:none;box-shadow:var(--cg-shadow-1,0 1px 2px rgba(0,0,0,.22))}
+.cg-topbar .cg-cta:hover{background:var(--cg-green-600,#2d5a44);border-color:var(--cg-green-600,#2d5a44)}
+.cg-topbar .cg-cta-alt{background:#ffffff;border-color:var(--cg-green-700,#1b382b);color:var(--cg-green-700,#1b382b)!important;box-shadow:none}
+.cg-topbar .cg-cta-alt:hover{background:var(--cg-sage-100,#e3f1e8);border-color:var(--cg-green-700,#1b382b)}
+.cg-topbar .cg-cta:focus-visible{outline:3px solid var(--cg-focus,#f5b800);outline-offset:3px;box-shadow:0 0 0 6px var(--cg-focus-dark,#10241a)}
+html.cg-night-shift .cg-topbar .cg-cta{background:#332312!important;border-color:#d6a64b!important;color:#ffedcc!important;box-shadow:none}
+html.cg-night-shift .cg-topbar .cg-cta-alt{background:transparent!important;border-color:#9b7136!important;color:#ffedcc!important}
+html.cg-night-shift .cg-topbar .cg-cta:focus-visible{outline-color:#ffd477}
+@media print{.cg-topbar,.cg-crumbs{display:none!important}}
 
 /* ---------- a wide window: the six hubs across the top, each a drop-down ---------- */
 @media (min-width:1100px){
@@ -1789,6 +1800,9 @@ html.cg-night-shift .cg-crumbs li,html.cg-night-shift .cg-crumbs a,html.cg-night
   html body .cg-hub-foot a{margin:0;padding:8px 14px;border:0;border-radius:10px;white-space:nowrap;font:600 16px/1.2 var(--cg-font-ui,"Trebuchet MS","Segoe UI",sans-serif)}
   .cg-hub-foot .cg-sb-ico{display:none}
   .cg-sidebar-toggle,.cg-sb-overlay{display:none!important}
+  /* the action bar scrolls away under the navigation; the packet tool's, which carries Instant Soothe, stays in reach */
+  html body .cg-topbar{position:relative;top:auto}
+  html body .cg-topbar:has(.arb-sticky-crisis){position:sticky;top:var(--cg-nav-h)}
 }
 
 /* ---------- anything narrower: the same hubs in the Menu drawer ---------- */
@@ -1810,12 +1824,14 @@ html.cg-night-shift .cg-crumbs li,html.cg-night-shift .cg-crumbs a,html.cg-night
   .cg-sb-overlay{display:none;position:fixed;inset:0;z-index:850;background:rgba(26,32,44,.45)}
   .cg-sb-overlay.is-open{display:block}
 }
+/* the Menu button floats over the start of the action bar: keep that place clear (each page's own style already does it on a phone) */
+@media (min-width:701px) and (max-width:1099px){html body .cg-topbar{padding-left:128px}}
 @media (prefers-reduced-motion:reduce){html body .cg-sidebar{transition:none}}
 
 /* ---------- Night Shift: the bar, its drop-downs and the action bar after dark (complete here, so a page that
    does not run assets/services/nightShift.js still gets a readable bar) ---------- */
-html.cg-night-shift body .cg-sidebar{background:#211910!important;border-color:#684a26!important;box-shadow:none}
-html.cg-night-shift body .cg-sidebar a{color:#ffedcc!important}
+html.cg-night-shift body .cg-sidebar,html.cg-night-shift body .cg-topbar{background:#211910!important;border-color:#684a26!important;box-shadow:none}
+html.cg-night-shift body .cg-sidebar a,html.cg-night-shift body .cg-topbar a,html.cg-night-shift body .cg-topbar button.linklike{color:#ffedcc!important}
 html.cg-night-shift body .cg-sidebar a:hover,html.cg-night-shift body .cg-hub[open] > summary{background:#3a2917!important}
 html.cg-night-shift .cg-sidebar-brand{color:#ffedcc!important}
 /* the logo file is black ink on white: at night it is inverted and blended away from its black, so no white square sits on the dark bar */
@@ -2116,10 +2132,10 @@ html body{background:var(--cg-cream,#fbf7f1)}
   font:700 16px/1.25 var(--cg-font-ui,"Atkinson Hyperlegible","Segoe UI",sans-serif);letter-spacing:.01em;text-align:center;text-decoration:none;white-space:normal;max-width:100%;cursor:pointer;opacity:1}
 .cg-wood-bar .stripe-btn{margin:0}
 /* brass: the main call to action */
-.cgw-gold{border:2px solid #f6e2a6;color:#2a1608;background:linear-gradient(180deg,#f6dd92 0%,#dcae4e 100%);box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 2px 0 #8d6420,0 4px 10px rgba(0,0,0,.35)}
-.cgw-gold:hover{background:linear-gradient(180deg,#fbe9b0 0%,#e6b95c 100%);color:#2a1608;text-decoration:none}
+.cgw-gold{border:2px solid #f6e2a6;color:#2a1608;background:#dcae4e linear-gradient(180deg,#f6dd92 0%,#dcae4e 100%);box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 2px 0 #8d6420,0 4px 10px rgba(0,0,0,.35)}
+.cgw-gold:hover{background:#e6b95c linear-gradient(180deg,#fbe9b0 0%,#e6b95c 100%);color:#2a1608;text-decoration:none}
 /* cream: the second and third choices */
-.cgw-cream,.cg-wood-bar .cgpromo-btn{border:2px solid #d9c79a;color:#2a1608;background:linear-gradient(180deg,#fbf4e4 0%,#eadcb9 100%);box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 2px 0 #6e4f23,0 4px 10px rgba(0,0,0,.3)}
+.cgw-cream,.cg-wood-bar .cgpromo-btn{border:2px solid #d9c79a;color:#2a1608;background:#eadcb9 linear-gradient(180deg,#fbf4e4 0%,#eadcb9 100%);box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 2px 0 #6e4f23,0 4px 10px rgba(0,0,0,.3)}
 .cgw-cream:hover,.cg-wood-bar .cgpromo-btn:hover{background:#fffaf0;color:#2a1608;text-decoration:none}
 /* ghost: a quiet outline for the form's opener */
 .cgw-ghost{border:2px solid rgba(251,244,228,.8);color:#fbf4e4;background:rgba(20,10,4,.35);box-shadow:none}
