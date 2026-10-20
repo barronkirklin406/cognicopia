@@ -2817,6 +2817,8 @@ textarea:focus{border-color:var(--accent)}
 
 <script src="assets/services/secureStore.js"></script>
 <script src="assets/services/trialLedger.js"></script>
+<script src="assets/services/censusImport.js"></script>
+<script src="assets/services/privacyExport.js"></script>
 <script src="assets/services/contentCatalog.js"></script>
 <script src="assets/services/contentMatcher.js"></script>
 <script src="src/config/license.js"></script>
@@ -5414,14 +5416,21 @@ const BookUI = (function(){
         if (p && p.schema === "cognicopia.residentProfile" && p.tier1_core) out.push(p);
       }
     } catch (e){}
-    return out.sort((a, b) => String(a.tier1_core.preferredName || "").localeCompare(String(b.tier1_core.preferredName || "")));
+    const scoped = window.CogniCensus && typeof settings !== "undefined" ? window.CogniCensus.inWing(out, settings.activeWing) : out;   // one wing's roster never mixes with another's
+    return scoped.sort((a, b) => String(a.tier1_core.preferredName || "").localeCompare(String(b.tier1_core.preferredName || "")));
+  }
+  /* every saved profile, whatever the wing: for the wing choices and the census importer only */
+  function allProfiles(){
+    const out = [];
+    try { for (let i = 0; i < CG_LS.length; i++){ const k = CG_LS.key(i); if (!k || k.indexOf("cognicopia_resident_") !== 0) continue; const p = JSON.parse(CG_LS.getItem(k)); if (p && p.schema === "cognicopia.residentProfile" && p.tier1_core) out.push(p); } } catch (e){}
+    return out;
   }
   function savedProfileOptions(){
     const list = savedProfiles();
     return `<option value="">${list.length ? "Fill in from a saved profile…" : "No saved resident profiles"}</option>` +
       list.map(p => `<option value="${esc(p.id)}">${esc(cgScreenName(p))}</option>`).join("");
   }
-  return { JOB_WORDS, stage, print, allowanceText, scale, figure, savedProfiles, savedProfileOptions, fontsLoaded, loadFonts,
+  return { JOB_WORDS, stage, print, allowanceText, scale, figure, savedProfiles, allProfiles, savedProfileOptions, fontsLoaded, loadFonts,
     residentNeeds, needsFor, TIER_NAMES };
 })();
 </script>
@@ -11462,7 +11471,7 @@ const ERAS = {
   "1960s": "The 1960s",
   "1970s": "The 1970s"
 };
-const DEFAULT_SETTINGS = { facility:"", wing:"", residentName:"", avoid:"", difficulty:"early", era:"general", variations:2, pureBW:true, actOpts:{}, aliasScreen:false, aliasFiles:false };
+const DEFAULT_SETTINGS = { facility:"", wing:"", residentName:"", avoid:"", difficulty:"early", era:"general", variations:2, pureBW:true, actOpts:{}, aliasScreen:false, aliasFiles:false, activeWing:null, exportNames:"alias" };
 /* Read again once the encrypted store has opened (see Boot). */
 function readSettings(){
   const s = Object.assign({}, DEFAULT_SETTINGS, store.get("cgb_settings", {}));
@@ -11473,6 +11482,8 @@ function readSettings(){
   s.actOpts = (s.actOpts && typeof s.actOpts === "object" && !Array.isArray(s.actOpts)) ? Object.assign({}, s.actOpts) : {};
   s.aliasScreen = !!s.aliasScreen; s.aliasFiles = !!s.aliasFiles;
   s.wing = String(s.wing == null ? "" : s.wing).replace(/[\u0000-\u001F\u007F]/g, "").trim().slice(0, 40);
+  s.activeWing = s.activeWing == null ? null : String(s.activeWing).replace(/[\u0000-\u001F\u007F]/g, "").trim().slice(0, 40);   // null: every wing; "": residents with no wing
+  s.exportNames = window.CogniPrivacy ? window.CogniPrivacy.levelOf(s.exportNames) : "alias";
   s.pureBW = true;                      // every printed page is pure black on white
   return s;
 }

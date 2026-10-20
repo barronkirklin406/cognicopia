@@ -551,7 +551,7 @@
     if (!doc || mounted) return;
     mounted = true;
     if (!doc.getElementById("cgpromo-style")){ var st = el("style"); st.id = "cgpromo-style"; st.textContent = CSS; (doc.head || doc.documentElement).appendChild(st); }
-    var bar = doc.querySelector(".cg-topbar");
+    var bar = doc.querySelector(".cg-wood-bar") || doc.querySelector(".cg-topbar");
     if (bar){
       btn = el("button", "cgpromo-btn", "License Key / Promo");
       btn.type = "button"; btn.id = "cgPromoBtn";
@@ -561,7 +561,7 @@
       badge.addEventListener("click", function(){ openPromo(); });
       var toggle = doc.getElementById("hdrlicToggle"), hdr = doc.getElementById("hdrlic");
       var stripe = bar.querySelector('a[href*="buy.stripe.com"],a[data-upgrade-prompt]');
-      if (toggle && toggle.parentNode) toggle.parentNode.insertBefore(btn, toggle.nextSibling);
+      if (toggle && toggle.parentNode) toggle.parentNode.insertBefore(btn, bar.classList.contains("cg-wood-bar") ? toggle : toggle.nextSibling);   // the wood bar reads: Get Full Access, Invoice, License Key / Promo, Activate Access
       else if (stripe && stripe.parentNode) stripe.parentNode.insertBefore(btn, stripe);
       else bar.insertBefore(btn, bar.firstChild);
       if (hdr && hdr.parentNode === bar) bar.insertBefore(badge, hdr);

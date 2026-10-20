@@ -62,7 +62,7 @@
   function syncButtons(on){
     Array.prototype.forEach.call(document.querySelectorAll(".cg-night-shift-toggle"), function(button){
       button.setAttribute("aria-pressed", String(on));
-      button.textContent = on ? "☀ Night Shift: On" : "🌙 Night Shift: Off";
+      button.textContent = button.hasAttribute("data-cg-icon") ? (on ? "Night Shift: On" : "Night Shift: Off") : (on ? "☀ Night Shift: On" : "🌙 Night Shift: Off");   // an icon badge drawn by the page's own CSS replaces the emoji
       button.title = on ? "Turn off the warm-amber Night Shift theme" : "Turn on the warm-amber Night Shift theme";
     });
   }
@@ -72,9 +72,11 @@
     button.type = "button";
     button.className = "cg-night-shift-toggle";
     button.setAttribute("aria-label", "Toggle warm-amber Night Shift theme");
-    header.appendChild(button);
+    var slot = header.querySelector("[data-cg-night-slot]");
+    if (slot) button.setAttribute("data-cg-icon", "night");
+    (slot || header).appendChild(button);
   }
-  Array.prototype.forEach.call(document.querySelectorAll(".cg-topbar, .topbar"), addHeaderButton);
+  Array.prototype.forEach.call(document.querySelectorAll(".cg-wood-bar, .cg-topbar, .topbar"), addHeaderButton);
   document.addEventListener("click", function(event){
     var button = event.target.closest && event.target.closest(".cg-night-shift-toggle");
     if (button) setEnabled(!document.documentElement.classList.contains("cg-night-shift"));
