@@ -59,6 +59,8 @@ html.cg-paper:not(.cg-night-shift) :is(.tb-btn.go,.tb-back,.tb-btn.go *,.tb-back
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){.tb-glass{background:#fff}}
 .tb-bar{display:flex;align-items:center;gap:8px 12px;flex-wrap:wrap;margin:8px 10px 0;padding:6px 12px}
 .tb-acts{display:flex;flex-wrap:wrap;gap:8px 12px;justify-content:flex-end;margin-left:auto}
+/* a phone held upright: the three buttons share one row under the title, so the activity below has the room */
+@media (orientation:portrait) and (max-width:699px){.tb-acts{flex:1 1 100%;flex-wrap:nowrap;gap:6px;justify-content:space-between}.tb-acts .tb-btn{flex:1 1 auto;min-width:0;padding:6px 8px;gap:6px;font-size:1rem}}
 .tb-titles{flex:1 1 170px;min-width:0;display:flex;flex-direction:column;justify-content:center}
 .tb-bar h2{margin:0;padding:0;border:0;font-family:var(--cg-font-display,Georgia,serif);font-size:1.6rem;line-height:1.15;color:var(--cg-green-700,#1b382b)}
 .tb-prog{font-weight:700;font-size:1rem;line-height:1.2;color:var(--cg-tan-800,#4f4030)}
@@ -192,6 +194,8 @@ html.cg-paper:not(.cg-night-shift) :is(.tb-btn.go,.tb-back,.tb-btn.go *,.tb-back
 .tb-colors{display:flex;flex-direction:column;align-items:center;gap:12px;width:100%}
 .tb-banks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;width:100%;max-width:340px}
 .tb-banks .tb-btn{padding-inline:10px}
+/* a phone held upright: the four color sets in one row, so the picture above them is as tall as it can be */
+@media (orientation:portrait) and (max-width:699px){.tb-banks{grid-template-columns:repeat(4,minmax(0,1fr));max-width:none;gap:6px}.tb-banks .tb-btn{padding-inline:2px;font-size:1rem;gap:4px}.tb-colorside{gap:8px}}
 .tb-colorsplit .tb-art{flex:0 0 auto}
 .tb-ptabs{flex-wrap:nowrap}.tb-ptabs .tb-btn{flex:1 1 0;min-width:0;padding-inline:8px}
 .tb-pal{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;max-width:340px}
