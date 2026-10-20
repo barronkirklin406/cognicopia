@@ -76,6 +76,21 @@ for (const [fg, bg] of [["gold-500", "green-900"], ["gold-500", "green-800"], ["
   ["focus", "green-900"], ["focus-dark", "parchment"], ["focus", "focus-dark"], ["focus-dark", "tan-200"]]) {
   const r = ratio(T[fg], T[bg]); ok(r >= 3, `non-text --cg-${fg} against --cg-${bg} is ${r.toFixed(2)}:1, under 3:1`);
 }
+/* the studio tools' accents (section 9e): in the day palette the text color is AAA on its own tint, on cream and on white, white text
+   is AAA on it (a button), and the bar color is 3:1 on white; in Night Shift (builder panel #16231f, page #0e1614) the light text color is AAA on
+   its tint laid over the panel and on both, dark text is AAA on the light button color, and the light bar color is 3:1 */
+for (const k of ["terra", "indigo", "moss", "ochre", "slate"]) {
+  for (const bg of ["soft", "white", "cream"]) { const b = bg === "soft" ? T[`${k}-soft`] : T[bg]; const r = ratio(T[`${k}-ink`], b); worst = Math.min(worst, r); ok(r >= 7, `tool accent ${k}: text on ${bg} is ${r.toFixed(2)}:1, under AAA`); }
+  { const r = ratio("#ffffff", T[`${k}-ink`]); worst = Math.min(worst, r); ok(r >= 7, `tool accent ${k}: white on the button color is ${r.toFixed(2)}:1, under AAA`); }
+  ok(ratio(T[`${k}-tool`], T.white) >= 3, `tool accent ${k}: its bar color is under 3:1 on white`);
+  for (const under of ["#16231f", "#0e1614"]) {
+    const tint = mix(T[`${k}-dk-tool`], 0.14, under);
+    for (const [fg, bg, what] of [[T[`${k}-dk-ink`], tint, "text on its tint"], [T[`${k}-dk-ink`], under, "text on the night panel"], [T[`${k}-dk-on`], T[`${k}-dk-tool`], "dark text on the button color"]]) {
+      const r = ratio(fg, bg); worst = Math.min(worst, r); ok(r >= 7, `tool accent ${k} (night): ${what} is ${r.toFixed(2)}:1, under AAA`);
+    }
+    ok(ratio(T[`${k}-dk-tool`], under) >= 3, `tool accent ${k} (night): its bar color is under 3:1 on ${under}`);
+  }
+}
 /* the focus ring is two bands, so one of them always meets 3:1 on whatever is behind it */
 ok(ratio(T.focus, T["green-950"]) >= 3 && ratio(T["focus-dark"], T.parchment) >= 3 && ratio(T["focus-dark"], T.white) >= 3, "the focus ring meets 3:1 on dark and on light");
 /* the scroll layers at their strongest, over the greens, under the text */

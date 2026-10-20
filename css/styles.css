@@ -76,6 +76,18 @@
   --cg-peach-200:#f6cdb4;      /* decoration only (the hero's glow) */
   --cg-clay-800:#732f19;      /* terracotta for text on a peach tag: 8.5:1 */
   --cg-clay-700:#8a3a20;       /* terracotta text: 7.3:1 on cream, 7.8:1 on white */
+  /* the studio tools' accents (section 9e): deep terracotta, royal indigo, sage, muted gold, warm slate.
+     -tool is for bars and borders (3:1), -ink is text (AAA), -soft is a tint, -line a warm border; the -dk set is for Night Shift */
+  --cg-terra-tool:#a8482a;  --cg-terra-ink:#7a2f17;  --cg-terra-soft:#fbece3;  --cg-terra-line:#dfb29b;
+  --cg-indigo-tool:#3d43a3; --cg-indigo-ink:#2b3085; --cg-indigo-soft:#eceefb; --cg-indigo-line:#c2c6ec;
+  --cg-moss-tool:#4a7c59;   --cg-moss-ink:#26503a;   --cg-moss-soft:#e8f2ea;   --cg-moss-line:#b9d3c0;
+  --cg-ochre-tool:#a9822a;  --cg-ochre-ink:#664c0c;  --cg-ochre-soft:#fbf2d9;  --cg-ochre-line:#e0cd94;
+  --cg-slate-tool:#5f5a66;  --cg-slate-ink:#3e3a45;  --cg-slate-soft:#efedf1;  --cg-slate-line:#cdc9d2;
+  --cg-terra-dk-tool:#e48a67;  --cg-terra-dk-ink:#f4b9a0;  --cg-terra-dk-deep:#8a4228;  --cg-terra-dk-on:#1d110b;
+  --cg-indigo-dk-tool:#9aa1f5; --cg-indigo-dk-ink:#c3c7ff; --cg-indigo-dk-deep:#4a50b8; --cg-indigo-dk-on:#0d0f26;
+  --cg-moss-dk-tool:#8fc9a2;   --cg-moss-dk-ink:#bde3c8;   --cg-moss-dk-deep:#3b7a52;   --cg-moss-dk-on:#0b1f14;
+  --cg-ochre-dk-tool:#e3c066;  --cg-ochre-dk-ink:#f2d98f;  --cg-ochre-dk-deep:#8a6a1c;  --cg-ochre-dk-on:#1f1805;
+  --cg-slate-dk-tool:#b9b3c4;  --cg-slate-dk-ink:#dcd8e3;  --cg-slate-dk-deep:#6b6575;  --cg-slate-dk-on:#17141c;
   /* crisp neutrals */
   --cg-charcoal:#1a202c;       /* the brand's charcoal */
   --cg-ink-soft:#343b49;
@@ -435,7 +447,7 @@ html.cg-night-shift::before,html.cg-night-shift::after{display:none}
   html.cg-paper-app:not(.cg-night-shift) .switch input:checked{background:var(--cg-green-700);border-color:var(--cg-green-700)}
   html.cg-paper-app:not(.cg-night-shift) .fp-toggle-track{background:var(--cg-tan-600);border-color:var(--cg-tan-600)}
   html.cg-paper-app:not(.cg-night-shift) .fp-toggle-thumb{background:#fff}
-  html.cg-paper-app:not(.cg-night-shift) .lp-spread{background:var(--cg-tan-100)}
+  html.cg-paper-app:not(.cg-night-shift) :is(.lp-spread,.lp-wiz-pvbox){background:var(--cg-tan-100)}
   /* Facility: its own variables, now on cream */
   html.cg-paper-app:not(.cg-night-shift) .fp{--fp-card:var(--cg-white);--fp-chip:var(--cg-tan-100);--fp-tan:var(--cg-tan-200);--fp-tan-hi:var(--cg-tan-300);--fp-div:var(--cg-tan-200);--fp-text:var(--cg-charcoal);--fp-text-2:var(--cg-ink-soft);--fp-muted:var(--cg-ink-soft);--fp-head:var(--cg-green-700);--fp-ink:#fff;--fp-ink-2:#cfe3d6;--fp-warn:var(--cg-clay-700)}
   html.cg-paper-app:not(.cg-night-shift) .fp-bar select{color:var(--cg-charcoal)}
@@ -444,6 +456,49 @@ html.cg-night-shift::before,html.cg-night-shift::after{display:none}
   html.cg-paper-app:not(.cg-night-shift) .ac :is(.ac-player,.ac-thumb,.ac-stage,.ac-mini){--ac-text:#f0f4f2;--ac-text-2:#cfdcd5;--ac-muted:#b4c6bc;--ac-ink:#0e1614;--ac-accent:#52b788;--ac-accent-hi:#74c69d;--ac-accent-text:#8ad8b0;--ac-surface:#1c2e29;--ac-surface-2:#1f3530;--ac-border:#2a3d36;--ac-sunk:#0a110f;--ac-family:#e9b872;--ac-line:#6b9080;--ac-focus:#e6f4f1}
   html.cg-paper-app:not(.cg-night-shift) .ac :is(.ac-card,.ac-tile,.ac-learner){background:var(--cg-white);box-shadow:var(--cg-card-shadow);-webkit-backdrop-filter:none;backdrop-filter:none}
   html.cg-paper-app:not(.cg-night-shift) .ac-thumb .ac-cat{color:#ffe0a3;border-color:#ffe0a3}
+}
+
+/* ---------- 9e. One warm accent for each studio tool in the Packet Builder ----------
+   The router puts the tool's name on #view (data-tool). Planner: deep terracotta. Journal: royal indigo. Reminiscence cards:
+   sage. Memory digest and book: muted gold. Coloring: warm slate. The builder reads its colors from --accent and friends, so
+   re-pointing those inside #view recolors every button, tab, chip and progress bar in the tool at once; what is added here is
+   a tinted badge over the page title, a warm card border with a colored top edge, and a hover that tints and lifts. Day and
+   Night Shift each have their own steps (text AAA, bars 3:1; scripts/check-design-system.mjs re-computes them). Screen only:
+   a printed page is pure black and white and never sees any of it. */
+@media screen{
+  html.cg-paper-app:not(.cg-night-shift) #view[data-tool="planner"]{--ax:var(--cg-terra-tool);--ax-ink:var(--cg-terra-ink);--ax-soft:var(--cg-terra-soft);--ax-line:var(--cg-terra-line);--ax-btn:var(--cg-terra-ink);--ax-on:#fff;--ax-deep:var(--cg-terra-ink)}
+  html.cg-paper-app:not(.cg-night-shift) #view[data-tool="journal"]{--ax:var(--cg-indigo-tool);--ax-ink:var(--cg-indigo-ink);--ax-soft:var(--cg-indigo-soft);--ax-line:var(--cg-indigo-line);--ax-btn:var(--cg-indigo-ink);--ax-on:#fff;--ax-deep:var(--cg-indigo-ink)}
+  html.cg-paper-app:not(.cg-night-shift) #view[data-tool="reminiscence"]{--ax:var(--cg-moss-tool);--ax-ink:var(--cg-moss-ink);--ax-soft:var(--cg-moss-soft);--ax-line:var(--cg-moss-line);--ax-btn:var(--cg-moss-ink);--ax-on:#fff;--ax-deep:var(--cg-moss-ink)}
+  html.cg-paper-app:not(.cg-night-shift) #view[data-tool="heirloom"]{--ax:var(--cg-ochre-tool);--ax-ink:var(--cg-ochre-ink);--ax-soft:var(--cg-ochre-soft);--ax-line:var(--cg-ochre-line);--ax-btn:var(--cg-ochre-ink);--ax-on:#fff;--ax-deep:var(--cg-ochre-ink)}
+  html.cg-paper-app:not(.cg-night-shift) #view[data-tool="coloring"]{--ax:var(--cg-slate-tool);--ax-ink:var(--cg-slate-ink);--ax-soft:var(--cg-slate-soft);--ax-line:var(--cg-slate-line);--ax-btn:var(--cg-slate-ink);--ax-on:#fff;--ax-deep:var(--cg-slate-ink)}
+  html.cg-night-shift #view[data-tool="planner"]{--ax:var(--cg-terra-dk-tool);--ax-ink:var(--cg-terra-dk-ink);--ax-soft:color-mix(in srgb,var(--cg-terra-dk-tool) 14%,transparent);--ax-line:color-mix(in srgb,var(--cg-terra-dk-tool) 40%,transparent);--ax-btn:var(--cg-terra-dk-tool);--ax-on:var(--cg-terra-dk-on);--ax-deep:var(--cg-terra-dk-deep)}
+  html.cg-night-shift #view[data-tool="journal"]{--ax:var(--cg-indigo-dk-tool);--ax-ink:var(--cg-indigo-dk-ink);--ax-soft:color-mix(in srgb,var(--cg-indigo-dk-tool) 14%,transparent);--ax-line:color-mix(in srgb,var(--cg-indigo-dk-tool) 40%,transparent);--ax-btn:var(--cg-indigo-dk-tool);--ax-on:var(--cg-indigo-dk-on);--ax-deep:var(--cg-indigo-dk-deep)}
+  html.cg-night-shift #view[data-tool="reminiscence"]{--ax:var(--cg-moss-dk-tool);--ax-ink:var(--cg-moss-dk-ink);--ax-soft:color-mix(in srgb,var(--cg-moss-dk-tool) 14%,transparent);--ax-line:color-mix(in srgb,var(--cg-moss-dk-tool) 40%,transparent);--ax-btn:var(--cg-moss-dk-tool);--ax-on:var(--cg-moss-dk-on);--ax-deep:var(--cg-moss-dk-deep)}
+  html.cg-night-shift #view[data-tool="heirloom"]{--ax:var(--cg-ochre-dk-tool);--ax-ink:var(--cg-ochre-dk-ink);--ax-soft:color-mix(in srgb,var(--cg-ochre-dk-tool) 14%,transparent);--ax-line:color-mix(in srgb,var(--cg-ochre-dk-tool) 40%,transparent);--ax-btn:var(--cg-ochre-dk-tool);--ax-on:var(--cg-ochre-dk-on);--ax-deep:var(--cg-ochre-dk-deep)}
+  html.cg-night-shift #view[data-tool="coloring"]{--ax:var(--cg-slate-dk-tool);--ax-ink:var(--cg-slate-dk-ink);--ax-soft:color-mix(in srgb,var(--cg-slate-dk-tool) 14%,transparent);--ax-line:color-mix(in srgb,var(--cg-slate-dk-tool) 40%,transparent);--ax-btn:var(--cg-slate-dk-tool);--ax-on:var(--cg-slate-dk-on);--ax-deep:var(--cg-slate-dk-deep)}
+  #view[data-tool]{
+    --accent:var(--ax-btn);--accent-hi:var(--ax-ink);--accent-deep:var(--ax-deep);--accent-ink:var(--ax-on);
+  }
+  #view[data-tool] .eyebrow{display:inline-flex;align-items:center;margin:0 0 10px;padding:5px 14px;border:1px solid var(--ax-line);border-radius:999px;background:var(--ax-soft);color:var(--ax-ink)}
+  #view[data-tool] h1.view-title::after{content:"";display:block;width:64px;height:5px;margin-top:10px;border-radius:3px;background:var(--ax)}
+  #view[data-tool] :is(.config,.rs-pane,.cc-filters,.cc-for,.lp-wiz-pv){border-color:var(--ax-line);border-top:5px solid var(--ax)}
+  #view[data-tool] :is(.config,.rs-pane)>:is(h2,h3):first-of-type,#view[data-tool] .lp-ob-intro h2{color:var(--ax-ink)}
+  #view[data-tool] :is(.lp-chip,.lp-acc-s,.lp-aud-res,.lp-src,.rs-step){border-color:var(--ax-line);background:var(--ax-soft);color:var(--ax-ink)}
+  #view[data-tool] .rs-step{background:var(--ax-btn);color:var(--ax-on)}
+  #view[data-tool] :is(.btn:not(.btn-primary),.lp-tab,.lp-step,.lp-why-btn,.lp-acc>summary,.cc-card,.rs-chip,.lp-scope>span,.seg label>span,.card){transition:background .2s ease,border-color .2s ease,box-shadow .2s ease,transform .2s ease}
+  #view[data-tool] :is(.btn:not(.btn-primary),.lp-tab,.lp-step,.lp-why-btn,.lp-acc>summary,.cc-card,.rs-chip,.lp-scope>span,.seg label>span,.card):hover{border-color:var(--ax);background:var(--ax-soft);color:var(--ax-ink);box-shadow:0 4px 14px var(--ax-line)}
+  #view[data-tool] :is(.lp-tab,.lp-step,.cc-card,.card):hover{transform:translateY(-1px)}
+  /* the care-team side of the planner and journal keeps its own warm slate, so the two audiences are never confused */
+  html.cg-paper-app:not(.cg-night-shift) #view :is(.lp-tab-cg,.lp-aud-cg,.lp-panel-cg .lp-panel-aud,.lp-scope-companion){--cg-side:var(--cg-slate-ink);--cg-side-soft:var(--cg-slate-soft)}
+  html.cg-night-shift #view :is(.lp-tab-cg,.lp-aud-cg,.lp-panel-cg .lp-panel-aud,.lp-scope-companion){--cg-side:var(--cg-slate-dk-ink);--cg-side-soft:color-mix(in srgb,var(--cg-slate-dk-tool) 14%,transparent)}
+  #view[data-tool] .lp-tab-cg[aria-selected="true"]{box-shadow:inset 0 4px 0 var(--cg-side)}
+  #view[data-tool] :is(.lp-aud-cg,.lp-panel-cg .lp-panel-aud){background:var(--cg-side-soft);color:var(--cg-side)}
+  #view[data-tool] .lp-scope-companion small{color:var(--cg-side)}
+  #view[data-tool] .lp-scope-companion input:checked+span{border-color:var(--cg-side);box-shadow:inset 0 0 0 1px var(--cg-side);background:var(--cg-side-soft)}
+}
+@media screen and (prefers-reduced-motion:reduce){
+  #view[data-tool] :is(.btn,.lp-tab,.lp-step,.lp-why-btn,.lp-acc>summary,.cc-card,.rs-chip,.lp-scope>span,.seg label>span,.card){transition:none}
+  #view[data-tool] :is(.lp-tab,.lp-step,.cc-card,.card):hover{transform:none}
 }
 
 /* ---------- 10. Print ----------

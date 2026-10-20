@@ -134,6 +134,15 @@ The front page is cream, with white cards, Fraunces headings and forest-green bu
 | `npm run audit:ux` | Tap targets, contrast, clicks, navigation and print time on the real pages, including the pages that opted in |
 | `node scripts/check-nav-ui.mjs` (in `npm run build`) | The top bar: none open on arrival, the holding hub marked, one open at a time, Escape and a click elsewhere close it, it stays at the top; on a phone, the Menu drawer |
 
+## One warm accent for each studio tool
+
+In the Packet Builder each studio tool wears its own accent, so a person can tell where they are at a glance: the 12-month Life Planner is deep terracotta, the Cognitive Life Journal royal indigo, Reminiscence cards sage, the Memory digest and book muted gold, and Cognicopia Coloring warm slate. The router puts the tool's name on `#view` (`data-tool`), and section 9e of `css/styles.css` re-points the builder's own `--accent` variables inside it, so every button, tab, chip and progress bar follows. It also adds a tinted badge over the page title, a short colored bar under it, a warm card border with a colored top edge, and a hover that tints and lifts (the lift stops for `prefers-reduced-motion`).
+
+- **Tokens.** `--cg-terra-*`, `--cg-indigo-*`, `--cg-moss-*`, `--cg-ochre-*`, `--cg-slate-*`: `-tool` for bars and borders (3:1), `-ink` for text (AAA), `-soft` a tint, `-line` a warm border. The `-dk-` set is for Night Shift.
+- **Measured.** `scripts/check-design-system.mjs` re-computes, for every tool, the text on its tint, on cream and on white, white text on the button color, and the Night Shift equivalents; all are 7:1 or better, bars 3:1.
+- **Print.** Screen only. A printed page is pure black on white and never sees an accent.
+- **Care-team side.** In the planner and journal, the care-team tab, chip and scope card use warm slate, so the two audiences are never confused.
+
 ## Small and helper text
 
 Nothing a person reads is small. Section 12 of `css/styles.css` raises labels, chips, notes, captions and hints that a page sets under 16 px: 16 px for a sentence, 15 px for a chip or an upper-case label, in the bold face (the typeface ships a regular and a bold, so 600 and up is the bold), tracking .012em to .03em, leading 1.5. The navigation (`scripts/site-nav.mjs`) sets its links at 16 px, group labels at 15 px, and the breadcrumb and footer at 16 px. A printed sheet (`.qp-sheet`, `.lp-sheet`, `.sheet`, the print roots) keeps its own sizes, which are set in points and checked by `scripts/check-print-type-ui.mjs`. To find what is still small, run a scan in a real browser for text under 15 px, weight under 500 under 18 px, leading under 1.4 under 18 px, and contrast under 7:1 for small text.

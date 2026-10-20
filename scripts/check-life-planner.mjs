@@ -185,7 +185,22 @@ check("every month keeps a seasonal prompt, even for a detailed profile", () => 
 });
 check("an empty profile still builds complete, respectful pages", () => {
   const r = LP.build({}, OPTS, "binder");
-  eq(r.count, 47); ok(text(r.pages).indexOf("Your Life Planner") >= 0, "generic title"); ok(text(r.pages).indexOf("undefined") < 0 && text(r.pages).indexOf("null") < 0, "no blanks leaked");
+  eq(r.count, 49); ok(text(r.pages).indexOf("Your Life Planner") >= 0, "generic title"); ok(text(r.pages).indexOf("undefined") < 0 && text(r.pages).indexOf("null") < 0, "no blanks leaked");
+});
+check("every answer on the form reaches the right book: the memory book, the care companion, or both", () => {
+  const t = k => "Zq" + k + "Zq";
+  const prof = { name: t("Name"), fullName: t("Full") + " Smith", birthYear: 1939, hometown: t("Town"), profession: t("Job"), songs: [t("Song1"), t("Song2"), t("Song3")], genres: [t("Genre")],
+    hobbies: [t("Hobby")], scents: [t("Scent")], textures: [t("Texture")], foods: [t("Food")], meals: [t("Meal")],
+    family: [{ name: t("Daughter"), rel: "daughter" }, { name: t("Spouse"), rel: "spouse", passed: true }, { name: t("Dog"), rel: "pet-dog" }],
+    milestones: [{ year: 1960, text: t("Mile1") }, { year: 1985, text: t("Mile2") }],
+    dates: [{ label: t("DateRes"), month: 6, day: 12, year: 1960 }, { label: t("DateCg"), month: 8, day: 3, audience: "caregiver" }], avoid: ["war", "medical"], facility: t("Facility") };
+  const keys = ["Name", "Full", "Town", "Job", "Song1", "Song2", "Song3", "Genre", "Hobby", "Scent", "Texture", "Food", "Meal", "Daughter", "Spouse", "Dog", "Mile1", "Mile2", "DateRes", "DateCg", "Facility"];
+  const mem = text(LP.build(prof, OPTS, "memory").pages), cg = text(LP.build(prof, OPTS, "companion").pages);
+  const hasM = k => mem.indexOf(t(k)) >= 0, hasC = k => cg.indexOf(t(k)) >= 0;
+  const onlyCare = ["Meal", "Spouse", "DateCg"];       // staff-side by design: meals and a person who has died (never in a prompt), and a care-team-only date
+  keys.filter(k => onlyCare.indexOf(k) < 0).forEach(k => ok(hasM(k), "the memory book carries " + k));
+  keys.forEach(k => ok(hasC(k), "the care companion carries " + k));
+  onlyCare.forEach(k => ok(!hasM(k), "the memory book leaves out " + k));
 });
 check("user text is escaped, never injected as markup", () => {
   const evil = "<img src=x onerror=alert(1)><script>alert(1)</script>";
