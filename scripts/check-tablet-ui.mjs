@@ -147,6 +147,7 @@ try {
     /* a drag that is not a word: it fades, no red, nothing found */
     let bad = null;
     for (let r = 1; r < d.size && !bad; r++) for (let c = 0; c + 1 < d.size && !bad; c++) { const s = d.placed.some(pl => pl.dy === 0 && pl.r === r && c >= pl.c && c + 1 < pl.c + pl.word.length); if (!s) bad = [r, c]; }
+    if (!bad) bad = [0, 0];                                      // every row holds a word: two letters are still never a word (the shortest is three)
     await drag(p, await cellXY(p, bad[0], bad[1]), await cellXY(p, bad[0], bad[1] + 1));
     await p.waitForTimeout(150);
     ok((await dbg(p)).found.length === 0, "a drag along letters that are not a word finds nothing");
@@ -643,10 +644,11 @@ try {
     for (let pg = 0; pg < 2; pg++) {
       for (let i = 0; i < 8; i++) {
         await p.evaluate(k => document.querySelectorAll(".tb-pic")[k].click(), i); await p.waitForSelector(".tb-sheet canvas.tb-lines", { timeout: 8000 }); await sleep(120);
-        const sp = await p.evaluate(() => window.CognicopiaTabletUI.debug().spots().map(x => [x[0], x[1]]));
-        for (let k = 0; k < Math.min(4, sp.length - 1); k++) {      // never the last shape: a finished picture brings the cheer over the buttons
-          const before = await p.evaluate(() => window.CognicopiaTabletUI.debug().spots().map(x => x[2]));
-          await p.mouse.click(sp[k][0], sp[k][1]); await sleep(30);
+        const total = await p.evaluate(() => window.CognicopiaTabletUI.debug().spots().length);
+        for (let k = 0; k < Math.min(4, total - 1); k++) {      // never the last shape: a finished picture brings the cheer over the buttons
+          /* where the middle of the shape is on the screen is read again for every tap: the picture may still be settling to its final size */
+          const now = await p.evaluate(() => window.CognicopiaTabletUI.debug().spots().map(x => [x[0], x[1], x[2]])), before = now.map(x => x[2]);
+          await p.mouse.click(now[k][0], now[k][1]); await sleep(60);
           const after = await p.evaluate(() => window.CognicopiaTabletUI.debug().spots().map(x => x[2])), changed = after.map((c, j) => c !== before[j] ? j : -1).filter(j => j >= 0);
           shapes++; if (changed.length !== 1 || changed[0] !== k) bad.push(`picture ${pg * 8 + i + 1}, shape ${k + 1}: ${changed.join()}`);
         }
