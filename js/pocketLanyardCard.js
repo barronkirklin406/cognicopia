@@ -257,11 +257,11 @@
 
     /* ---------- PRINT CSS: 6" x 5" card with fold line ---------- */
     @media print {
-      body * {
+      html.plc-printing body * {
         visibility: hidden;
       }
-      .plc-print-area,
-      .plc-print-area * {
+      html.plc-printing .plc-print-area,
+      html.plc-printing .plc-print-area * {
         visibility: visible;
       }
       .plc-print-area {
@@ -765,10 +765,11 @@
 
   // Open modal
   function openModal(residentData) {
-    const modal = document.getElementById("pocketLanyardModal");
+    let modal = document.getElementById("pocketLanyardModal");
     if (!modal) {
       createModal();
       initEventListeners();
+      modal = document.getElementById("pocketLanyardModal");
     }
     
     // Set data from resident profile
@@ -797,11 +798,13 @@
     
     const printArea = document.getElementById("plcPrintArea");
     printArea.style.display = "block";
+    document.documentElement.classList.add("plc-printing");
     
     window.print();
     
     setTimeout(() => {
       printArea.style.display = "none";
+      document.documentElement.classList.remove("plc-printing");
     }, 100);
   }
 

@@ -509,6 +509,20 @@ html.cg-night-shift::before,html.cg-night-shift::after{display:none}
   :root::before,:root::after{display:none !important}
   .cg-btn,.cg-values{box-shadow:none}
 }
+/* A page printed straight from the browser (a price page, a policy, a guide for a binder) has no print sheet of its own, so it gets one here:
+   no navigation, sidebar, buttons or fields to fill in (a box that only shows a value, such as a license key, stays), no background or picture behind the words, pure black on white, 0.5 in margins and a
+   0.75 in binding gutter on the left. A page that builds its own sheets (the Packet Builder, the packet tool) keeps its own rules, and its
+   own @page rule, which comes later and wins. */
+@page{size:8.5in 11in;margin:.5in .5in .5in 1.25in}
+@media print{
+  html:not(.plc-printing):not(:has(#printRoot,#qpPrintRoot,#print-stage)),html:not(.plc-printing):not(:has(#printRoot,#qpPrintRoot,#print-stage)) body{background:#fff !important;background-image:none !important;color:#000 !important}
+  html:not(.plc-printing) body:not(:has(#printRoot,#qpPrintRoot,#print-stage)) :is(.cg-sidebar,.cg-topbar,.cg-crumbs,.cg-menu-btn,.cg-skip,.cg-scrim,.cg-cta,.cg-night-shift-toggle,.stripe-btn,.cgpromo-btn,.cgpromo-badge,.arb-sticky-crisis,nav,button,.btn,.cg-btn,[role="button"],input:not([readonly]),select,textarea:not([readonly]),video,audio,iframe){display:none !important}
+  html:not(.plc-printing) body:not(:has(#printRoot,#qpPrintRoot,#print-stage)) :is(input,textarea)[readonly]{color:#000 !important;background:#fff !important;border:1px solid #000 !important}
+  html:not(.plc-printing) body:not(:has(#printRoot,#qpPrintRoot,#print-stage)) *,html:not(.plc-printing) body:not(:has(#printRoot,#qpPrintRoot,#print-stage)) *::before,html:not(.plc-printing) body:not(:has(#printRoot,#qpPrintRoot,#print-stage)) *::after{background:none !important;box-shadow:none !important;text-shadow:none !important;border-color:#000 !important;color:#000 !important}
+  html:not(.plc-printing) body:not(:has(#printRoot,#qpPrintRoot,#print-stage)) :is(section,article,figure,table,li,details,.card){break-inside:avoid}
+  html:not(.plc-printing) body:not(:has(#printRoot,#qpPrintRoot,#print-stage)) :is(h1,h2,h3,h4){break-after:avoid}
+  html:not(.plc-printing) body:not(:has(#printRoot,#qpPrintRoot,#print-stage)) a[href^="http"]:not([href*="cognicopia.org"])::after{content:" (" attr(href) ")";font-size:.85em}
+}
 
 /* ---------- 11. Coloring sheets: the print standard, as CSS ----------
    US Letter, 0.5 in margins, a 0.75 in binding gutter on the left, pure black
@@ -571,6 +585,8 @@ svg.cg-coloring :is(path,line,polyline,polygon,circle,ellipse,rect){
    with open tracking and 1.5 leading. A printed sheet (.qp-sheet, .lp-sheet, .sheet, the print roots) keeps its own sizes. */
 @media screen{
   html body :is(small,figcaption,.hint,.note,.help,.desc,.rc-card-m,.rc-card-s,.rc-src,.rc-hint,.rc-toc-min,.rc-study-k,.rc-link-btn,.hub-blurb,.catalog-visual-caption,.standards-seal-caption,.pg-note,.arb-privacy,.arb-drop-hint,.arb-caution,.qpb-note,.ca-tab,.ca-btn):not(:is(.qp-sheet,.lp-sheet,.lj-sheet,.sheet,#printRoot,#qpPrintRoot) *){font-size:1rem !important;font-weight:700;letter-spacing:.012em;line-height:1.5}
+  /* fields, their labels and the lead lines under a title get the same open tracking as the helper text above; sizes stay as each page sets them */
+  html body :is(input,select,textarea,label,.lede,.sub,.rap-lede):not(:is(.qp-sheet,.lp-sheet,.lj-sheet,.sheet,#printRoot,#qpPrintRoot) *){letter-spacing:.01em}
   html body :is(.rc-chip,.ca-chip,.ca-tag,.qs-tag,.catalog-badge,.module-tag,.era-tag,.breadcrumb-tag,.hub-n,.pill,.tag,.arb-bundle-badge,.arb-backup-count,.rc-eyebrow,.ca-eyebrow,.qs-eyebrow,.fq-eyebrow,.eyebrow,.lp-kicker,.info-label,.ca-label,.rap-eyebrow,.hub-eyebrow,.journal-caption,.planner-caption,.sb-toggle-text):not(:is(.qp-sheet,.lp-sheet,.lj-sheet,.sheet,#printRoot,#qpPrintRoot) *){font-size:15px !important;font-weight:700;letter-spacing:.03em;line-height:1.45}
   html body :is(.stripe-btn,.cgpromo-btn,.linklike,.cg-night-shift-toggle):not(:is(.qp-sheet,.lp-sheet,.lj-sheet,.sheet,#printRoot,#qpPrintRoot) *){font-size:15px !important;font-weight:700;letter-spacing:.01em}
   /* the second line inside a button stays close to its label: a little under a sentence, still never small */
@@ -604,4 +620,4 @@ html:not(.cg-night-shift) body :is(.config,.cfg,.arb) .seg input:checked + span 
 html:not(.cg-night-shift) body :is(.config,.cfg,.arb) .level input:checked + span *{color:#ffffff !important}
 html.cg-night-shift .cg-tierhead{background:transparent;border-color:#d6a64b;color:#ffedcc;box-shadow:none}
 html.cg-night-shift .cg-tierhead :is(h1,h2,h3,p,.hint,small){color:#ffedcc !important}
-@media print{.cg-tierhead{display:none !important}}
+@media print{.cg-tierhead{background:#fff !important;box-shadow:none !important;border-color:#000 !important}}

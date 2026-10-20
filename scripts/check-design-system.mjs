@@ -72,6 +72,36 @@ TEXT.push(["charcoal", "gold-300"], ["charcoal", "gold-200"], ["charcoal", "sage
   ["danger-800", "parchment"], ["ok-800", "parchment"], ["danger-200", "green-900"], ["danger-200", "green-700"], ["ok-200", "green-900"]);
 let worst = 99;
 for (const [fg, bg] of TEXT) { const r = ratio(T[fg], T[bg]); worst = Math.min(worst, r); ok(r >= 7, `text --cg-${fg} on --cg-${bg} is ${r.toFixed(2)}:1, under AAA (7:1)`); }
+
+/* ---------- 1b. the care tier as a color mode: Tier 1 sapphire and indigo, Tier 2 terracotta and sage, Tier 3 evergreen and muted gold ---------- */
+{
+  const tierVars = body => { const o = {}; for (const m of body.matchAll(/--cg-(tier(?:-[a-z]+)?)\s*:\s*(#[0-9a-fA-F]{6}|[0-9,]+)/g)) o[m[1]] = m[2].toLowerCase(); return o; };
+  const base = /html\{(--cg-tier:[^}]*)\}/.exec(CODE);
+  ok(!!base, "the stylesheet sets the default care-tier colors on html");
+  const TIERS = { 0: base ? tierVars(base[1]) : {} };
+  for (const n of [1, 2, 3]) { const m = new RegExp(`html\\[data-cg-tier="${n}"\\]\\{([^}]*)\\}`).exec(CODE); ok(!!m, `Tier ${n} has its own colors`); TIERS[n] = m ? tierVars(m[1]) : {}; }
+  const hue = h => { const [r, g, b] = [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16)); return { r, g, b }; };
+  for (const n of [0, 1, 2, 3]) {
+    const t = TIERS[n], label = n ? `Tier ${n}` : "the default tier";
+    if (!(t.tier && t["tier-deep"] && t["tier-soft"])) { ok(false, `${label}: tier, deep and soft colors are all set`); continue; }
+    const plaid = mix(t.tier, .12, mix(t.tier, .12, t["tier-soft"]));   // where two bands of the quiet tartan cross: the darkest the card's ground gets
+    for (const [what, fg, bg] of [["header text on the card", t["tier-deep"], t["tier-soft"]], ["header text where the tartan bands cross", t["tier-deep"], plaid], ["white on the selected level", "#ffffff", t.tier]]) {
+      const r = ratio(fg, bg); worst = Math.min(worst, r); ok(r >= 7, `${label}: ${what} is ${r.toFixed(2)}:1, under AAA (7:1)`);
+    }
+  }
+  const c1 = hue(TIERS[1].tier || "#000000"), c2 = hue(TIERS[2].tier || "#000000"), c3 = hue(TIERS[3].tier || "#000000");
+  ok(c1.b > c1.r && c1.b > c1.g, "Tier 1 is a sapphire or indigo (blue leads)");
+  ok(c2.r > c2.g && c2.r > c2.b && !!TIERS[2]["tier-sage"], "Tier 2 is terracotta (red leads) with a sage edge");
+  ok(c3.g > c3.r && c3.g > c3.b && !!TIERS[3]["tier-edge"], "Tier 3 is evergreen with a muted gold edge");
+  ok(/\.cg-tierhead\{[^}]*repeating-linear-gradient/.test(CODE), "the generator header card carries the quiet tartan");
+  ok(/html:not\(\.cg-night-shift\) body :is\(\.config,\.cfg,\.arb\) \.level input:checked \+ span\{background:var\(--cg-tier\)/.test(CODE), "the selected level takes the tier's color");
+}
+
+/* ---------- 1c. type, fields and print ---------- */
+ok(/html body :is\(input,select,textarea,label,\.lede,\.sub,\.rap-lede\)[^{]*\{letter-spacing:\.01em\}/.test(CODE), "fields, labels and lead lines carry .01em tracking");
+ok(/--cg-font-display:var\(--cg-font-ui\)/.test(CODE) && /--cg-font-name:"Fraunces"/.test(CODE), "headings are the interface face; Fraunces is kept for a resident's name");
+ok(/@page\{size:8\.5in 11in;margin:\.5in \.5in \.5in 1\.25in\}/.test(CODE), "a page printed from the browser has 0.5 in margins and a 0.75 in binding gutter");
+ok(/:not\(:has\(#printRoot,#qpPrintRoot,#print-stage\)\)/.test(CODE) && /nav,button,\.btn/.test(CODE), "the generic print sheet strips navigation and buttons and leaves a page with its own print root alone");
 for (const [fg, bg] of [["gold-500", "green-900"], ["gold-500", "green-800"], ["gold-500", "green-700"], ["tan-400", "green-900"], ["tan-400", "green-800"], ["tan-400", "green-700"], ["green-600", "parchment"],
   ["focus", "green-900"], ["focus-dark", "parchment"], ["focus", "focus-dark"], ["focus-dark", "tan-200"]]) {
   const r = ratio(T[fg], T[bg]); ok(r >= 3, `non-text --cg-${fg} against --cg-${bg} is ${r.toFixed(2)}:1, under 3:1`);
