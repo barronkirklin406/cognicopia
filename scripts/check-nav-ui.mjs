@@ -33,7 +33,7 @@ try {
   await p.click("#cgHub-studio > summary"); await p.waitForTimeout(150);
   ok(await only(p, "details.cg-hub", "studio"), "clicking Studio opens its drop-down");
   const drop = await p.evaluate(() => { const nav = document.getElementById("cgSidebar").getBoundingClientRect(), d = document.querySelector("#cgHub-studio > .cg-sb-sub").getBoundingClientRect(), links = [...document.querySelectorAll("#cgHub-studio > .cg-sb-sub a")].map(a => a.getBoundingClientRect().height); return { below: d.top >= nav.bottom, h: d.height, n: links.length, min: Math.min(...links) }; });
-  ok(drop.below && drop.h > 100 && drop.n === 5 && drop.min >= 52, `the drop-down opens below the bar with its five places, each at least 52 px tall (${drop.n}, smallest ${drop.min} px)`);
+  ok(drop.below && drop.h > 100 && drop.n === 4 && drop.min >= 52, `the drop-down opens below the bar with its four places, each at least 52 px tall (${drop.n}, smallest ${drop.min} px)`);
   await p.focus("#cgHub-facility > summary"); await p.keyboard.press("Enter"); await p.waitForTimeout(150);
   ok(await only(p, "details.cg-hub", "facility"), "Enter on Facility opens it and closes Studio");
   await p.keyboard.press("Escape"); await p.waitForTimeout(150);

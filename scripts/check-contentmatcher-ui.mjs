@@ -125,7 +125,10 @@ try {
   /* the choice is remembered, the resident is not */
   await p.reload({ waitUntil: "load" }); await p.waitForSelector(".rs-res");
   ok(await p.isChecked('label.lp-scope:has(input[value="themed"]) input'), "Themed Pages is still chosen after a reload (like the other templates)");
-  ok(await p.locator(".rs-res[aria-pressed=true]").count() === 0, "the resident is not remembered");
+  ok(await p.locator(".rs-res[aria-pressed=true]").count() === 1, "the resident chosen in this tab is still the one we are working with after a reload");
+  const fresh = await ctx.newPage(); await fresh.goto(base + "builder.html#/roster"); await fresh.waitForSelector(".rs-res");
+  ok(await fresh.locator(".rs-res[aria-pressed=true]").count() === 0, "but the resident is not remembered: a new tab opens with no one chosen");
+  await fresh.close();
   await ctx.close();
 
   /* ---- the catalog cannot be read ---- */
