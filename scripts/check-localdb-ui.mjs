@@ -71,8 +71,8 @@ try {
   const c = await p.evaluate(async () => CogniLocalDb.saveResident({ firstName: "Bea", cognitiveTier: "Advanced", interests: ["Hymns"] }));
   ok((await p.evaluate(() => CogniLocalDb.getAllResidents())).map(r => r.firstName).join() === "Arthur,Bea,Margaret", "everyone is listed by first name");
   await p.waitForTimeout(15);
-  const a2 = await p.evaluate(async id => CogniLocalDb.saveResident({ id, firstName: "Margaret", hometown: "Minot", cognitiveTier: "Advanced" }), a.id);
-  ok(a2.id === a.id && a2.createdAt === a.createdAt && a2.updatedAt > a.createdAt && a2.hometown === "Minot", "saving with the same id updates the profile and keeps the time it was created");
+  const a2 = await p.evaluate(async id => CogniLocalDb.saveResident({ id, firstName: "Margaret", hometown: "Fargo", cognitiveTier: "Advanced" }), a.id);
+  ok(a2.id === a.id && a2.createdAt === a.createdAt && a2.updatedAt > a.createdAt && a2.hometown === "Fargo", "saving with the same id updates the profile and keeps the time it was created");
   ok((await p.evaluate(() => CogniLocalDb.getAllResidents())).length === 3, "an update does not add a second copy");
 
   /* ---- packets ---- */

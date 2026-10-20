@@ -113,7 +113,8 @@
 
   /* type: a scale that grows with the window; body text is 16 px and up, and the one smaller step (15 px) is for labels and short captions only */
   --cg-font-ui:"Cognicopia UI","Atkinson Hyperlegible","Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
-  --cg-font-display:"Fraunces",Georgia,"Iowan Old Style","Palatino Linotype",Palatino,serif;
+  --cg-font-display:var(--cg-font-ui);   /* headings are Atkinson Hyperlegible too: one face for everything a person reads */
+  --cg-font-name:"Fraunces",Georgia,"Iowan Old Style","Palatino Linotype",Palatino,serif;   /* the one use of the serif: a resident's name, set large */
   --cg-step--1:.9375rem;
   --cg-step-0:1.0625rem;
   --cg-step-1:clamp(1.25rem,1.1rem + .6vw,1.5rem);
@@ -229,7 +230,7 @@
 
 /* ---------- 7. Editorial type and rhythm, for pages that opt in: <html class="cg-ds"> ---------- */
 html.cg-ds body{font-family:var(--cg-font-ui);line-height:var(--cg-leading)}
-html.cg-ds :is(h1,h2,h3){font-family:var(--cg-font-display);font-weight:600;line-height:var(--cg-leading-tight);letter-spacing:-.01em;font-optical-sizing:auto;text-wrap:balance}
+html.cg-ds :is(h1,h2,h3){font-family:var(--cg-font-display);font-weight:700;line-height:var(--cg-leading-tight);letter-spacing:0;font-optical-sizing:auto;text-wrap:balance}
 html.cg-ds h1{font-size:var(--cg-step-3)}
 html.cg-ds h2{font-size:var(--cg-step-2)}
 html.cg-ds h3{font-size:var(--cg-step-1)}
@@ -269,7 +270,7 @@ html.cg-night-shift::before,html.cg-night-shift::after{display:none}
 }
 
 /* ---------- 9b. Paper pages: the landing page's look on every inner page: <html class="cg-paper"> ----------
-   Cream page, white cards with warm tan borders, Fraunces headings over Atkinson text, forest-green
+   Cream page, white cards with warm tan borders, Atkinson headings and text, forest-green
    buttons with white text, amber for the one urgent action. Written once here, so the 40-odd pages that
    each carry their own older dark styles take the same look without 40 separate edits; scripts/site-nav.mjs
    puts the class on every page that should have it. It is screen-only (print rules are untouched), and
@@ -281,7 +282,7 @@ html.cg-night-shift::before,html.cg-night-shift::after{display:none}
   html.cg-paper::before,html.cg-paper::after{display:none}
   html.cg-paper:not(.cg-night-shift) body{background:var(--cg-cream) !important;background-image:none !important;color:var(--cg-charcoal) !important;font-family:var(--cg-font-ui) !important;line-height:1.65}
   html.cg-paper:not(.cg-night-shift) :is(p,li,dd,dt,td,th,span,label,small,strong,em,b,i,div,summary,figcaption,legend,blockquote,cite,button){color:var(--cg-charcoal) !important;text-shadow:none !important}
-  html.cg-paper:not(.cg-night-shift) :is(h1,h2,h3,h4,h5,h6){color:var(--cg-charcoal) !important;font-family:var(--cg-font-display) !important;font-weight:600 !important;letter-spacing:-.01em;text-shadow:none !important}
+  html.cg-paper:not(.cg-night-shift) :is(h1,h2,h3,h4,h5,h6){color:var(--cg-charcoal) !important;font-family:var(--cg-font-display) !important;font-weight:600 !important;letter-spacing:0;text-shadow:none !important}
   html.cg-paper:not(.cg-night-shift) h1{font-size:var(--cg-step-3);line-height:1.12}
   html.cg-paper:not(.cg-night-shift) h2{font-size:var(--cg-step-2);line-height:1.2;border-bottom:2px solid var(--cg-tan-200) !important}
   html.cg-paper:not(.cg-night-shift) h3{font-size:var(--cg-step-1);line-height:1.25}
@@ -534,7 +535,7 @@ svg.cg-coloring :is(path,line,polyline,polygon,circle,ellipse,rect){
 @media print{svg.cg-coloring *{fill:#000 !important;stroke:#000 !important}}
 
 /* ---------- 9c. One type system for the paper pages (<html class="cg-paper">) ----------
-   Atkinson Hyperlegible for everything a person reads or presses; Fraunces only for the big headings.
+   Atkinson Hyperlegible for everything a person reads or presses, headings included; Fraunces only for a resident's name.
    Same scale on every page: 17 px reading text at 1.65 to 1.7 leading, 16 px table text, 15 px small print,
    bold (700) headings with a little negative tracking on the large sizes, and 700 buttons with a touch of
    positive tracking. Screen only, so printed packets and PDFs are not touched. */
@@ -552,9 +553,9 @@ svg.cg-coloring :is(path,line,polyline,polygon,circle,ellipse,rect){
   html.cg-paper :is(button,.btn,.cg-btn,a.btn){font-weight:700;letter-spacing:.012em;line-height:1.25}
   /* headings: bold, balanced, tighter as they grow */
   html.cg-paper:is(:not(.cg-night-shift),.cg-night-shift) :is(h1,h2,h3){font-weight:700 !important;text-wrap:balance}
-  html.cg-paper:is(:not(.cg-night-shift),.cg-night-shift) h1{line-height:1.08;letter-spacing:-.022em}
-  html.cg-paper:is(:not(.cg-night-shift),.cg-night-shift) h2{line-height:1.18;letter-spacing:-.016em}
-  html.cg-paper:is(:not(.cg-night-shift),.cg-night-shift) h3{line-height:1.25;letter-spacing:-.01em}
+  html.cg-paper:is(:not(.cg-night-shift),.cg-night-shift) h1{line-height:1.08;letter-spacing:0}
+  html.cg-paper:is(:not(.cg-night-shift),.cg-night-shift) h2{line-height:1.18;letter-spacing:0}
+  html.cg-paper:is(:not(.cg-night-shift),.cg-night-shift) h3{line-height:1.25;letter-spacing:0}
   html.cg-paper :is(h4,h5,h6){font-family:var(--cg-font-ui) !important;font-weight:700 !important;font-size:1.125rem;line-height:1.3;letter-spacing:.005em}
   /* the menus: a little air between the letters, like the rest of the interface */
   html.cg-paper .cg-topbar :is(summary,a),html.cg-paper .cg-foot a{letter-spacing:.012em}
@@ -578,3 +579,29 @@ svg.cg-coloring :is(path,line,polyline,polygon,circle,ellipse,rect){
     html body :is(.stripe-btn,.cgpromo-btn,.linklike,.cg-night-shift-toggle):not(:is(.qp-sheet,.lp-sheet,.lj-sheet,.sheet,#printRoot,#qpPrintRoot) *){font-size:14px !important;letter-spacing:0;padding-left:10px;padding-right:10px}
   }
 }
+
+/* ---------- 13. The care tier as a color mode ----------
+   js/careTier.js sets data-cg-tier on <html> from the level choice on the page. Tier 1: deep sapphire and indigo. Tier 2: warm terracotta
+   and sage. Tier 3: evergreen and muted gold. Every text pair below is dark on pale or white on deep (7:1 or better, checked by
+   scripts/check-design-system.mjs); the tier is also named in words wherever it is chosen, so color is never the only signal. A header
+   card (.cg-tierhead) carries a quiet tartan of the tier's own color: crossing bands at low strength, behind text that stays at 7:1. */
+html{--cg-tier:#1b4332;--cg-tier-deep:#10241a;--cg-tier-soft:#edf3ee;--cg-tier-edge:#8fae9c;--cg-tier-rgb:27,67,50}
+html[data-cg-tier="1"]{--cg-tier:#1f2f86;--cg-tier-deep:#141f5e;--cg-tier-soft:#e9ecf8;--cg-tier-edge:#8d98d8;--cg-tier-rgb:31,47,134}
+html[data-cg-tier="2"]{--cg-tier:#8a3a21;--cg-tier-deep:#4f1e0e;--cg-tier-soft:#f7e9e1;--cg-tier-edge:#c98a74;--cg-tier-rgb:138,58,33;--cg-tier-sage:#dfe9dc}
+html[data-cg-tier="3"]{--cg-tier:#1f4d3a;--cg-tier-deep:#102a1f;--cg-tier-soft:#e7efe9;--cg-tier-edge:#b8963e;--cg-tier-rgb:31,77,58}
+.cg-tierhead{position:relative;box-sizing:border-box;margin:0 0 18px;padding:16px 20px;border:2px solid var(--cg-tier);border-radius:14px;color:var(--cg-tier-deep);
+  background-color:var(--cg-tier-soft);
+  background-image:repeating-linear-gradient(90deg,rgba(var(--cg-tier-rgb),.12) 0 8px,transparent 8px 30px,rgba(var(--cg-tier-rgb),.06) 30px 34px,transparent 34px 60px),
+    repeating-linear-gradient(0deg,rgba(var(--cg-tier-rgb),.12) 0 8px,transparent 8px 30px,rgba(var(--cg-tier-rgb),.06) 30px 34px,transparent 34px 60px);
+  box-shadow:inset 0 0 0 3px var(--cg-tier-soft),inset 0 0 0 5px var(--cg-tier-edge)}
+html[data-cg-tier="2"] .cg-tierhead{box-shadow:inset 0 0 0 3px var(--cg-tier-soft),inset 0 0 0 5px var(--cg-tier-sage)}
+.cg-tierhead :is(h1,h2,h3,p,.hint,small){color:var(--cg-tier-deep) !important;margin-top:0}
+.cg-tierhead h2{margin-bottom:6px}
+.cg-tierhead p:last-child{margin-bottom:0}
+html:not(.cg-night-shift) body :is(.config,.cfg,.arb) .seg input:checked + span,
+html:not(.cg-night-shift) body :is(.config,.cfg,.arb) .level input:checked + span{background:var(--cg-tier) !important;color:#ffffff !important;border-color:var(--cg-tier-deep) !important}
+html:not(.cg-night-shift) body :is(.config,.cfg,.arb) .seg input:checked + span *,
+html:not(.cg-night-shift) body :is(.config,.cfg,.arb) .level input:checked + span *{color:#ffffff !important}
+html.cg-night-shift .cg-tierhead{background:transparent;border-color:#d6a64b;color:#ffedcc;box-shadow:none}
+html.cg-night-shift .cg-tierhead :is(h1,h2,h3,p,.hint,small){color:#ffedcc !important}
+@media print{.cg-tierhead{display:none !important}}

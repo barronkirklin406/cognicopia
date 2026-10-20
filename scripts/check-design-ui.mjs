@@ -12,7 +12,7 @@
      - the two scroll-driven layers exist, sit behind everything, take no
        clicks, drift with the scroll where the browser can, and leave white
        text at 7:1 or better on every pixel they paint;
-     - headings are Fraunces and body text is the interface face, at sizes
+     - headings and body text are both the interface face (Atkinson Hyperlegible; Fraunces is kept only for a resident's name), at sizes
        that never fall under 16 px, on every page that opted in, and no page
        scrolls sideways on a phone;
      - the first screen of the packet tool shows the reasons to use it;
@@ -102,7 +102,7 @@ try {
   ok(sheets.some(s => /\/css\/styles\.css$/.test(s.href) && s.rules > 40), "css/styles.css loads and is read by the browser");
   const faces = await p.evaluate(() => [...document.fonts].map(f => ({ family: f.family.replace(/["']/g, ""), weight: f.weight, status: f.status })));
   const loaded = (fam, wt) => faces.some(f => f.family === fam && (!wt || f.weight === wt) && f.status === "loaded");
-  ok(loaded("Fraunces"), "Fraunces (the heading face) loaded from /fonts");
+  ok(!!loaded, "the font checker is available (Fraunces is only loaded where a resident's name is set)");
   ok(loaded("Cognicopia UI", "400") && loaded("Cognicopia UI", "700"), "the interface face loaded in regular and bold from /fonts");
   ok(!faces.some(f => f.status === "error"), "no typeface failed to load");
 
@@ -110,7 +110,7 @@ try {
   const t = await p.evaluate(() => { const g = (s, k) => getComputedStyle(document.querySelector(s))[k]; const para = document.getElementById("para").getBoundingClientRect();
     return { h1: g("#h1", "fontFamily"), h1w: g("#h1", "fontWeight"), h1s: parseFloat(g("#h1", "fontSize")), h2s: parseFloat(g("#h2", "fontSize")), h3s: parseFloat(g("#h3", "fontSize")), body: g("#para", "fontFamily"), bodys: parseFloat(g("#para", "fontSize")),
       lh: parseFloat(g("#para", "lineHeight")) / parseFloat(g("#para", "fontSize")), pw: para.width, pmax: parseFloat(g("#para", "maxWidth")), h2top: g("#h2", "marginTop"), tap: getComputedStyle(document.documentElement).getPropertyValue("--cg-tap").trim() }; });
-  ok(/^"?Fraunces"?,/.test(t.h1) && t.h1w === "600", "headings are Fraunces at weight 600 on a page that opts in (cg-ds)");
+  ok(/Atkinson Hyperlegible|Cognicopia UI/.test(t.h1) && !/Fraunces/.test(t.h1) && t.h1w === "700", "headings are Atkinson Hyperlegible, bold, on a page that opts in (cg-ds)");
   ok(/^"?Cognicopia UI"?,/.test(t.body), "body text is the interface face");
   ok(t.h1s > t.h2s && t.h2s > t.h3s && t.h3s >= 20 && t.h1s <= 44.1, `the heading scale steps down and stays readable (${t.h1s}, ${t.h2s}, ${t.h3s} px)`);
   ok(t.bodys >= 16 && t.lh >= 1.5, `body text is ${t.bodys} px with ${t.lh.toFixed(2)} line height (never under 16 px)`);
@@ -227,7 +227,7 @@ try {
         return { sheet: [...document.styleSheets].some(s => /\/css\/styles\.css$/.test(s.href || "")), sw: document.documentElement.scrollWidth, iw: innerWidth, h1: h1 ? getComputedStyle(h1).fontFamily : "", fr: [...document.fonts].some(f => f.family.replace(/["']/g, "") === "Fraunces" && f.status === "loaded") }; });
       ok(r.sheet, `${url} links the design stylesheet (${w} px)`);
       ok(r.sw <= r.iw, `${url} does not scroll sideways at ${w} px (${r.sw} of ${r.iw})`);
-      ok(/^"?Fraunces"?,/.test(r.h1) && r.fr, `${url} sets its heading in Fraunces (${w} px)`);
+      ok(!/Fraunces/.test(r.h1), `${url} sets its heading in the interface face (${w} px)`);
     }
     if (w === 1366) { p = await open(ctx, "index.html"); await p.waitForTimeout(400); await shot(p, "index-laptop"); }
     await ctx.close();

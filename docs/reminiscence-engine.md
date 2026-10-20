@@ -22,7 +22,7 @@ For the caregiver:
 | Profile field | Used for |
 |---|---|
 | `tier2_enrichment.birthYear` (or `age`) | The *reminiscence bump*: roughly ages 10 to 30, the years people recall most readily. Songs and references favor it, and anything outside their lifetime is dropped. |
-| `tier2_enrichment.region` (new, optional) | Midwest, Great Plains, Northeast, New England, South, Appalachia, Texas and the Southwest, Mountain West, Pacific Coast, Canada, another country. When it is empty, the region comes from the hometown ("Minot, North Dakota" or "Dayton, OH"), and so does the state. |
+| `tier2_enrichment.region` (new, optional) | Midwest, Great Plains, Northeast, New England, South, Appalachia, Texas and the Southwest, Mountain West, Pacific Coast, Canada, another country. When it is empty, the region comes from the hometown ("Fargo, North Dakota" or "Dayton, OH"), and so does the state. |
 | `tier2_enrichment.hometown.environment` | The setting, combined with the region: "Rural Midwest", "Urban Northeast". |
 | `tier1_core.primaryVocation` (new) | Mechanic, Teacher, Military, Culinary, Nursing and 13 more. It follows the occupation (saved with `auto: true`) unless staff choose another. |
 | `tier2_enrichment.music` | Their favorite song, genres and artists. |

@@ -1262,7 +1262,7 @@ textarea:focus{border-color:var(--accent)}
 .rs-res:hover{border-color:var(--accent)}
 .rs-res[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent);background:#1d332b}
 .rs-res-main{display:flex;flex-direction:column;min-width:0}
-.rs-res-main b{font-family:var(--cg-font-display,"Fraunces",serif);font-size:19px;font-weight:700;letter-spacing:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rs-res-main b{font-family:var(--cg-font-name,"Fraunces",serif);font-size:19px;font-weight:700;letter-spacing:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .rs-res-main span{font-size:13.5px;color:var(--muted)}
 .rs-badges{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:4px;flex:none;max-width:52%}
 .rs-tier,.rs-flag{padding:2px 8px;border-radius:999px;font-size:12px;font-weight:800;white-space:nowrap}
@@ -1303,7 +1303,7 @@ textarea:focus{border-color:var(--accent)}
 .rs-who{padding:14px 16px;border-radius:14px;border:1px dashed var(--line-2);background:var(--bg-2)}
 .rs-who .eyebrow{margin:0}
 .rs-pick{margin:0;color:var(--muted)}
-.rs-name{margin:2px 0 0;font-family:var(--cg-font-display,"Fraunces",serif);font-size:30px;font-weight:700;letter-spacing:0;line-height:1.2}
+.rs-name{margin:2px 0 0;font-family:var(--cg-font-name,"Fraunces",serif);font-size:30px;font-weight:700;letter-spacing:0;line-height:1.2}
 .rs-name span{font-size:15px;font-weight:700;color:var(--muted)}
 .rs-needs{margin:4px 0 0;font-size:14px;color:var(--muted)}
 .rs-aud{margin-top:14px}
@@ -1693,7 +1693,7 @@ textarea:focus{border-color:var(--accent)}
 .slp-head b{font-size:14pt}
 .slp-head span{font-size:9.5pt}
 .slp-who{text-align:right}
-.slp-who b{font-family:var(--cg-font-display,"Fraunces",serif);font-size:18pt;letter-spacing:0}
+.slp-who b{font-family:var(--cg-font-name,"Fraunces",serif);font-size:18pt;letter-spacing:0}
 .slp-body{flex:1 1 auto;overflow:hidden;display:flex;flex-direction:column;gap:.12in}
 .slp-block h3{margin:0 0 .03in;font-size:10.5pt;letter-spacing:.06em;text-transform:uppercase}
 .slp-block p{margin:0;font-size:11.5pt;line-height:.2in}
@@ -1784,7 +1784,7 @@ textarea:focus{border-color:var(--accent)}
 .ops-hand i{display:block;height:.5in;border-bottom:2pt solid #000}
 .ops-foot{display:flex;justify-content:space-between;gap:.2in;font-size:9pt;border-top:1px solid #000;padding-top:2pt}
 /* resident names and aliases: large, in the display face (the same on screen and on the sheets) */
-.ops-name{font-family:var(--cg-font-display,"Fraunces",serif);font-weight:700;letter-spacing:0}
+.ops-name{font-family:var(--cg-font-name,"Fraunces",serif);font-weight:700;letter-spacing:0}
 .ops-lead.ops-name{font-size:13pt;line-height:.21in}
 .shf-text .ops-name{font-size:1.2em}
 .sbar-sheet .ops-row{grid-template-columns:1.5in minmax(0,1fr) 1.7in}
@@ -14685,8 +14685,8 @@ function openConfig(actId, scroll){
   box.innerHTML = `
     <div class="config-grid">
       <form id="cfgForm" novalidate>
-        <h2>${esc(act.name)}</h2>
-        <p class="hint" style="margin:0 0 18px">${esc(act.desc)}</p>
+        <div class="cg-tierhead"><h2>${esc(act.name)}</h2>
+        <p class="hint">${esc(act.desc)}</p></div>
         ${act.singlePage ? "" : `<div class="field">
           <label for="cfgVar">How many different versions?</label>
           <div class="stepper">
@@ -15342,5 +15342,6 @@ if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol))
   window.addEventListener("load", function(){ navigator.serviceWorker.register("sw.js").catch(function(){}); });
 </script>
 <script src="assets/services/nightShift.js"></script>
+<script src="js/careTier.js"></script>
 </body>
 </html>
