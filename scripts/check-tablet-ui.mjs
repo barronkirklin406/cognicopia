@@ -603,6 +603,28 @@ try {
     await ctx.close();
   }
   {
+    /* at every stage, a touch on each shape of a detailed picture fills that shape, and only that shape, with a deep color that stays solid*/
+    for (const stage of ["early", "middle", "late"]) {
+      const { ctx, p } = await fresh(LAND, { init: `try { localStorage.setItem("cognicopia_tablet_prefs", JSON.stringify({ stage: "${stage}", topic: "", sound: false, speed: 2, grid: 0, palette: 0, paper: 0 })); } catch (e) {}` });
+      await openAct(p, "color"); await p.waitForSelector(".tb-pic", { timeout: 8000 });
+      await click(p, ".tb-pic"); await p.waitForSelector(".tb-sheet canvas.tb-lines", { timeout: 8000 });
+      const d = await dbg(p), spots = await p.evaluate(() => window.CognicopiaTabletUI.debug().spots()), shown = await p.evaluate(() => window.CognicopiaTabletUI.debug().colors);
+      ok(d.shapes >= 3 && d.shapes <= 90 && spots.length === d.shapes, `${stage}: the picture has ${d.shapes} shapes to color, and a place to tap in each`);
+      const sat = shown.map(c => { const [r, g, b] = [1, 3, 5].map(i => parseInt(c.slice(i, i + 2), 16) / 255), mx = Math.max(r, g, b), mn = Math.min(r, g, b), l = (mx + mn) / 2; return mx === mn ? 0 : (mx - mn) / (1 - Math.abs(2 * l - 1)); });
+      ok(sat.every(v => v >= 0.5), `${stage}: the colors on offer are all saturated`);
+      let right = 0, only = 0;
+      for (let i = 0; i < spots.length; i++) {
+        const sw = (await p.$$(".tb-sw"))[i % 8]; await sw.tap(); const hex = await sw.getAttribute("data-color"), want = [1, 3, 5].map(k => parseInt(hex.slice(k, k + 2), 16));
+        await p.touchscreen.tap(spots[i][0], spots[i][1]); await sleep(20);
+        const px = await p.evaluate(([a, b]) => window.CognicopiaTabletUI.debug().pixel(a, b), [spots[i][0], spots[i][1]]); if (px[3] === 255 && px[0] === want[0] && px[1] === want[1] && px[2] === want[2]) right++;
+        const now = await p.evaluate(() => window.CognicopiaTabletUI.debug().filled); if (now === i + 1) only++;
+      }
+      ok(right === spots.length, `${stage}: a touch on each of the ${spots.length} shapes fills it solid in the chosen color (${right} did)`);
+      ok(only === spots.length, `${stage}: each touch colors one shape and no other`);
+      await ctx.close();
+    }
+  }
+  {
     /* every picture Color a Picture offers has shapes enough to color (and not too many), and the list of pictures left out is exactly the sparse ones */
     const { ctx, p } = await fresh(LAND);
     const m = await measureColor(p), offered = Object.keys(m).filter(id => m[id].cat !== "zentangle-mandalas" && !m[id].sensitive), skip = await p.evaluate(() => window.CognicopiaTabletBanks.COLOR_SKIP);
