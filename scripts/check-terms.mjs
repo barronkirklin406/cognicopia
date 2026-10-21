@@ -111,6 +111,10 @@ try {
     await p.goto(base + file); await p.waitForSelector("#cgLegal", { timeout: 15000 }).catch(() => {});
     const shown = await p.evaluate(() => { const b = document.getElementById("cgLegal"); return b ? { text: b.querySelector(".cgl-txt p").textContent, head: b.querySelector(".cgl-txt b").textContent, btn: document.getElementById("cgLegalOk").getBoundingClientRect(), link: b.querySelector("a").getBoundingClientRect(), vis: getComputedStyle(b).display !== "none" } : null; });
     ok(!!shown && shown.vis, `${name}: the first visit shows the agreement bar`);
+    const lum = rgb => { const k = rgb.match(/[\d.]+/g).slice(0, 3).map(Number).map(v => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); }); return 0.2126 * k[0] + 0.7152 * k[1] + 0.0722 * k[2]; };
+    const cc = await p.evaluate(() => { const g = (s, pr) => getComputedStyle(document.querySelector(s))[pr]; return { bg: g("#cgLegal", "backgroundColor"), b: g("#cgLegal b", "color"), p: g("#cgLegal p", "color"), a: g("#cgLegal a", "color"), btn: g("#cgLegalOk", "color"), btnBg: g("#cgLegalOk", "backgroundColor") }; });
+    const ratio = (x, y) => { const l1 = lum(x), l2 = lum(y); return (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05); };
+    ok(ratio(cc.b, cc.bg) >= 7 && ratio(cc.p, cc.bg) >= 7 && ratio(cc.a, cc.bg) >= 7 && ratio(cc.btn, cc.btnBg) >= 7, `${name}: the bar's text, link and button read at 7:1 or better (${[ratio(cc.b, cc.bg), ratio(cc.p, cc.bg), ratio(cc.a, cc.bg), ratio(cc.btn, cc.btnBg)].map(x => x.toFixed(1)).join(", ")})`);
     ok(shown && shown.link.height >= 52, `${name}: "Read the full terms" is at least 52 px tall (${shown && Math.round(shown.link.height)})`);
     ok(shown && shown.text === TEXT && shown.head === "Cognicopia Terms of Service & Disclaimer", `${name}: the bar shows the owner's wording word for word`);
     ok(shown && shown.btn.width >= 52 && shown.btn.height >= 52, `${name}: "I agree" is at least 52 px (${shown && Math.round(shown.btn.width)} x ${shown && Math.round(shown.btn.height)})`);
