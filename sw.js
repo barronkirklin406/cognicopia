@@ -25,7 +25,7 @@ const CORE = [
   // the procedural engine behind Today's Packet: its content travels in one bundle, so the daily packet is made offline
   // licensing: the license key, the promo code and the license badge work offline. A key is checked on the computer, so once it is
   // entered the tools stay unlocked with no connection, for as long as its paid-through date plus the grace days (src/config/license.js).
-  "src/config/license.js", "assets/services/licenseManager.js", "js/careTier.js", "js/voiceKit.js", "js/legal.js", "terms.html", "assets/services/trialLedger.js", "assets/services/censusImport.js", "assets/services/privacyExport.js", "assets/services/residentTracker.js", "assets/services/staffCompanion.js", "assets/services/localDb.js", "assets/services/contentCatalog.js", "assets/services/contentMatcher.js", "data/content-catalog.json",
+  "src/config/license.js", "assets/services/licenseManager.js", "js/careTier.js", "js/voiceKit.js", "js/legal.js", "terms.html", "js/invoiceMaker.js", "assets/services/trialLedger.js", "assets/services/censusImport.js", "assets/services/privacyExport.js", "assets/services/residentTracker.js", "assets/services/staffCompanion.js", "assets/services/localDb.js", "assets/services/contentCatalog.js", "assets/services/contentMatcher.js", "data/content-catalog.json",
   "assets/pcg/pcg-data.bundle.js", "src/pcg/prng.js", "src/pcg/matrix.js", "src/pcg/grammar.js", "src/pcg/puzzles.js", "src/pcg/packet.js",
   // Tablet Activities (tablet.html): the touch puzzle makers and the screen
   "js/tabletSound.js", "js/tabletArt.js", "js/tabletBanks.js", "js/tabletEngine.js", "js/tabletKit.js", "js/tabletWords.js", "js/tabletCreate.js", "js/tabletThink.js", "js/tablet.js",
