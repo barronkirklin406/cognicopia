@@ -12014,6 +12014,7 @@ function payLink(plan){
   return (typeof u === "string" && /^https:\/\/buy\.stripe\.com\/[A-Za-z0-9_-]+$/.test(u) && !/REPLACE_ME|test_/.test(u)) ? u : "";
 }
 const INVOICE_PATH = LICCFG.INVOICE_PATH || "contact.html?subject=Corporate+Invoice+Request";
+const INVOICE_FORM_PATH = LICCFG.INVOICE_FORM_PATH || "pricing.html#invoice";
 const ACCESS_SHA = "97c0fcc2e7143e13c6b104d93ad47c1e57670a24576df965b1a9eb745d6217da";
 
 function sha256(ascii){
@@ -15493,7 +15494,7 @@ function openGate(){
   $("#gatePlans").innerHTML =
     tile({ title: "Monthly", price: PRICE_MONTH, id: "gateMonthly", note: "Per facility. Small enough that many departments can buy it on a purchasing card. Cancel any time.", href: m.href, cta: m.cta }) +
     tile({ title: "Annual", price: PRICE_YEAR, id: "gateAnnual", best: true, primary: true, tag: "Best value · save about 25%", note: "Per facility. Saves $119 a year compared with paying monthly. One payment, easy to put in a budget.", href: y.href, cta: y.cta }) +
-    tile({ title: "Pay by invoice", price: "Net-30 · ACH or check", id: "gateInvoice", note: "A W-9 comes with it. Buying for several buildings? Ask for an Enterprise quote.", href: INVOICE_PATH, cta: "Request Corporate Invoice / W-9" });
+    tile({ title: "Pay by invoice", price: "Net-30 · ACH or check", id: "gateInvoice", note: "Make an invoice request PDF in a minute and forward it to accounts payable. A W-9 comes with the final invoice. Buying for several buildings? Ask for an Enterprise quote.", href: INVOICE_FORM_PATH, cta: "Make my invoice request" });
   $("#gateNote").textContent = "After a card payment your license key appears on screen. Copy it and paste it into the box below, on any computer in your building. For an invoice, we email the key with it. Once it is entered it works with no internet.";
   $("#gateMsg").textContent = "";
   $("#gate").hidden = false;

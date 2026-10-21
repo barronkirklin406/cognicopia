@@ -103,6 +103,9 @@
     /* Where "Request Corporate Invoice / W-9" goes (a page on this site; it
        fills in the subject and a checklist for accounts payable). */
     INVOICE_PATH: "contact.html?subject=Corporate+Invoice+Request",
+    /* Where the upgrade screen's "Pay by invoice" button goes: the form on the pricing page that makes a Net-30
+       invoice request PDF on the visitor's own computer (js/invoiceMaker.js, docs/invoice-request.md). */
+    INVOICE_FORM_PATH: "pricing.html#invoice",
     PRICING_PATH: "pricing.html",
     /* The one page that talks to the internet, and only to turn a Stripe
        checkout into a key. REDEEM_URL is the address of the license service

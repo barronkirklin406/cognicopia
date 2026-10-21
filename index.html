@@ -8521,6 +8521,7 @@ function payLink(plan){
   return (typeof u==="string" && /^https:\/\/buy\.stripe\.com\/[A-Za-z0-9_-]+$/.test(u) && !/REPLACE_ME|test_/.test(u)) ? u : "";
 }
 const INVOICE_PATH = LICCFG.INVOICE_PATH || "contact.html?subject=Corporate+Invoice+Request";
+const INVOICE_FORM_PATH = LICCFG.INVOICE_FORM_PATH || "pricing.html#invoice";
 
 /* Your public web address, if you have one, e.g. "cognicopia.com" (no
    https). Leave it "" until you actually own one -- the tool then points
@@ -8747,8 +8748,8 @@ function openGate(){
   plans.appendChild(tile(Object.assign({title:"Annual", price:PRICE_YEAR, best:true, tag:"Best value \u2014 save about 25%", id:"gateAnnual",
     note:"Per facility. Saves $119 a year compared with paying monthly. One payment, easy to put in a budget."}, planBtn("annual",PRICE_YEAR))));
   plans.appendChild(tile({title:"Pay by invoice", price:"Net-30 \u00b7 ACH or check", alt:true, id:"gateInvoice",
-    note:"A W-9 comes with it. Buying for several buildings? Ask for an Enterprise quote.",
-    href:INVOICE_PATH, cta:"Request Corporate Invoice / W-9"}));
+    note:"Make an invoice request PDF in a minute and forward it to accounts payable. A W-9 comes with the final invoice. Buying for several buildings? Ask for an Enterprise quote.",
+    href:INVOICE_FORM_PATH, cta:"Make my invoice request"}));
   wrap.appendChild(plans);
 
   const note=document.createElement("p");
