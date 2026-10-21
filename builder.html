@@ -7341,8 +7341,8 @@ const RosterUI = (function(){
           <p class="hint rs-add">${list.length ? "" : "No saved residents yet. "}<a href="profile.html">Add a resident profile</a>, then come back here to print.</p>
           ${CensusUI.html("rs")}
           <details class="rs-handoff" id="rsHandoff">
-            <summary>Hand off to another station</summary>
-            <p class="hint">Move residents between computers in one locked file (.cognicopia). It opens only with the passphrase chosen here: tell it to the other station in person or by phone, never in the same message as the file.</p>
+            <summary>Back up this roster, or hand it off to another station</summary>
+            <p class="hint">Save every resident in one locked file (.cognicopia) in any folder as a backup, or move residents between computers with it. Opening the file on this or any computer puts them back. It opens only with the passphrase chosen here: tell it to the other station in person or by phone, never in the same message as the file.</p>
             <div class="field"><label for="rsHoFrom">From (station or unit, optional)</label><input id="rsHoFrom" type="text" maxlength="60" autocomplete="off" placeholder="e.g., Maple Unit, evening shift"></div>
             ${window.CogniPrivacy ? window.CogniPrivacy.choiceHtml("rsHoNames", settings.exportNames, "Names in this file") : ""}
             <div class="field"><label for="rsHoPass">Passphrase for this file</label><input id="rsHoPass" type="password" autocomplete="new-password" minlength="10"></div>
@@ -15755,6 +15755,7 @@ if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol))
 </script>
 <script src="assets/services/nightShift.js"></script>
 <script src="js/careTier.js"></script>
+<script src="js/sessionTimeout.js"></script>
 <script src="js/legal.js"></script>
 </body>
 </html>

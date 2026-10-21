@@ -59,7 +59,7 @@ A resident's own pages keep their name.
 
 ## Station handoffs (`.cognicopia`)
 
-The Resident roster's **Hand off to another station** writes every saved resident into one file, locked with a passphrase chosen for that file. It uses the same format as the packet tool's locked backups, so either one opens the other's files.
+The Resident roster's **Back up this roster, or hand it off to another station** writes every saved resident into one file, locked with a passphrase chosen for that file. It uses the same format as the packet tool's locked backups, so either one opens the other's files.
 
 On the receiving computer, **Receive a handoff** adds new residents. For a resident both computers already have, it keeps whichever copy was updated most recently.
 
