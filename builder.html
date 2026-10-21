@@ -571,6 +571,9 @@ input:focus,select:focus{border-color:var(--accent)}
     box-shadow:none; margin:0;
   }
   .sheet:last-child{page-break-after:auto;break-after:auto}
+  /* the non-medical line, in the bottom margin of every printed sheet (the PDF files carry the same line: assets/vendor/jspdf-atkinson.js) */
+  #printRoot .sheet{position:relative}
+  #printRoot .sheet::after{content:"Cognicopia Enrichment Activity — For Cognitive Engagement Only. Not Medical Advice.";position:absolute;left:.5in;right:.5in;bottom:.2in;text-align:center;font:400 8pt/1 "Atkinson Hyperlegible","Trebuchet MS",Arial,sans-serif;color:#000;letter-spacing:0;white-space:nowrap}
   /* the resident's own pages carry no staff line: the therapy and stage anchor, the clinical tip, the answers and the sensory prompt move to the staff companion's notes */
   #printRoot.res-clean [data-staffline],#printRoot.res-clean .sh-anchor,#printRoot.res-clean .care-coaching-footer,#printRoot.res-clean .sh-ans,#printRoot.res-clean .sh-sensory,#printRoot.res-clean .art-sensory{display:none !important}
 
@@ -2805,6 +2808,7 @@ textarea:focus{border-color:var(--accent)}
     </details>
     <ul class="sb-list sb-foot">
         <li><a class="sb-link" href="contact.html"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Contact Cognicopia</span></a></li>
+        <li><a class="sb-link" href="terms.html"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M9 12h6M9 16h6"/></svg><span>Terms of Service &amp; Disclaimer</span></a></li>
     </ul>
   </nav>
 </aside>
@@ -15750,5 +15754,6 @@ if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol))
 </script>
 <script src="assets/services/nightShift.js"></script>
 <script src="js/careTier.js"></script>
+<script src="js/legal.js"></script>
 </body>
 </html>

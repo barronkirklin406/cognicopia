@@ -295,6 +295,14 @@ step("voice settings: the device's natural voices ranked, three paces, a preview
   }
 });
 
+step("terms and disclaimer: the owner's wording, the first-visit agreement kept in this browser only, the non-medical line on every PDF page and printed sheet (a real browser)", () => {
+  try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-terms.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
+  catch (e){
+    if (e.status === 2) return "skipped: Playwright is not installed here (see docs/dev-setup.md)";
+    throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message);
+  }
+});
+
 step("the Tablet Activities button never ends on a 404: the page opens, and a missing or mistyped page falls back to the in-page tablet mode (a real browser)", () => {
   try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-tablet-route.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
   catch (e){
