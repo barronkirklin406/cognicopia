@@ -571,9 +571,9 @@ input:focus,select:focus{border-color:var(--accent)}
     box-shadow:none; margin:0;
   }
   .sheet:last-child{page-break-after:auto;break-after:auto}
-  /* the non-medical line, in the bottom margin of every printed sheet (the PDF files carry the same line: assets/vendor/jspdf-atkinson.js) */
+  /* the non-medical line, in the top margin of every printed sheet (the PDF files carry the same line: assets/vendor/jspdf-atkinson.js) */
   #printRoot .sheet{position:relative}
-  #printRoot .sheet::after{content:"Cognicopia Enrichment Activity — For Cognitive Engagement Only. Not Medical Advice.";position:absolute;left:.5in;right:.5in;bottom:.2in;text-align:center;font:400 8pt/1 "Atkinson Hyperlegible","Trebuchet MS",Arial,sans-serif;color:#000;letter-spacing:0;white-space:nowrap}
+  #printRoot .sheet::before{content:"Cognicopia Enrichment Activity — For Cognitive Engagement Only. Not Medical Advice.";position:absolute;left:.5in;right:.5in;top:.2in;text-align:center;font:400 8pt/1 "Atkinson Hyperlegible","Trebuchet MS",Arial,sans-serif;color:#000;letter-spacing:0;white-space:nowrap}
   /* the resident's own pages carry no staff line: the therapy and stage anchor, the clinical tip, the answers and the sensory prompt move to the staff companion's notes */
   #printRoot.res-clean [data-staffline],#printRoot.res-clean .sh-anchor,#printRoot.res-clean .care-coaching-footer,#printRoot.res-clean .sh-ans,#printRoot.res-clean .sh-sensory,#printRoot.res-clean .art-sensory{display:none !important}
 

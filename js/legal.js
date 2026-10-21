@@ -22,7 +22,7 @@
   }
 
   var CSS = [
-    "#cgLegal{position:fixed;left:0;right:0;bottom:0;z-index:2147483000;background:#10241a;color:#ffffff;border-top:4px solid #ffd477;",
+    "#cgLegal{position:fixed;left:0;right:0;bottom:0;z-index:1200;background:#10241a;color:#ffffff;border-top:4px solid #ffd477;",
     "box-shadow:0 -6px 24px rgba(0,0,0,.35);font:400 16px/1.5 'Atkinson Hyperlegible',system-ui,Arial,sans-serif;padding:14px 16px}",
     "#cgLegal .cgl-in{max-width:1100px;margin:0 auto;display:flex;gap:16px;align-items:center;flex-wrap:wrap}",
     "#cgLegal .cgl-txt{flex:1 1 420px;min-width:0;max-height:34vh;overflow:auto}",

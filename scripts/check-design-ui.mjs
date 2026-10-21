@@ -245,7 +245,7 @@ try {
   ok(lp.side && lp.hidden === "true", "the hero is two columns: the words, and beside them a picture of the tool that screen readers skip");
   ok(lp.href === "#make" && lp.bh >= 52 && lp.make, `"Make a packet" (${lp.bh} px tall) points at the packet tool, which sits under it on the same page`);
   ok(lp.marks.length === 5 && lp.marks.every(h => /^resources\/research\/[a-z-]+\/$/.test(h)), "the evidence row links five Research Center summaries");
-  ok(lp.foot === 14 && /Cognicopia/.test(lp.quote) && !/Kirk Barron/.test(lp.quote), "the footer has its three columns of links and the quote is credited to Cognicopia, not a person");
+  ok(lp.foot === 15 && /Cognicopia/.test(lp.quote) && !/Kirk Barron/.test(lp.quote), "the footer has its three columns of links and the quote is credited to Cognicopia, not a person");
   await p.click(".lp-btn"); await p.waitForTimeout(900);
   const landed = await p.evaluate(() => ({ title: Math.round(document.getElementById("makeTitle").getBoundingClientRect().top), wood: Math.round(document.getElementById("cgWood").getBoundingClientRect().top), vh: innerHeight }));
   /* the packet tool now opens with the wood bar (licensing and care controls), so the page lands on the bar and the heading sits just under it */

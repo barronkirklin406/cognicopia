@@ -12,8 +12,8 @@
   };
   var Orig = NS.jsPDF;
   /* The non-medical line on every page of every PDF (js/legal.js holds the same wording; scripts/check-terms.mjs proves the two agree).
-     It is stamped once, when the file is saved or output, so no page maker has to think about it: centred, pure black, in the bottom
-     margin about 0.3 in above the edge, small enough to stay out of the way and inside what an office printer reaches.
+     It is stamped once, when the file is saved or output, so no page maker has to think about it: centred, pure black, in the top
+     margin about 0.35 in below the edge (the foot has no room for it inside the 0.5 in safe area), small enough to stay out of the way and inside what an office printer reaches.
      A maker that is not an activity (an invoice) sets doc.__noLegal = true. */
   var LEGAL = "Cognicopia Enrichment Activity \u2014 For Cognitive Engagement Only. Not Medical Advice.";
   function legalStamp(d){
@@ -27,8 +27,8 @@
       d.setFont("helvetica", "normal"); d.setFontSize(fs);
       while (fs > 6 && d.getTextWidth(LEGAL) > W - 72){ fs -= 0.5; d.setFontSize(fs); }
       d.setTextColor(0, 0, 0);
-      if (d.getTextWidth(LEGAL) <= W - 72) d.text(LEGAL, W / 2, H - 22, { align: "center" });
-      else { var cut = LEGAL.indexOf(" \u2014 "); d.text(LEGAL.slice(0, cut), W / 2, H - 29, { align: "center" }); d.text(LEGAL.slice(cut + 3), W / 2, H - 20, { align: "center" }); }
+      if (d.getTextWidth(LEGAL) <= W - 72) d.text(LEGAL, W / 2, 27, { align: "center" });
+      else { var cut = LEGAL.indexOf(" \u2014 "); d.text(LEGAL.slice(0, cut), W / 2, 20, { align: "center" }); d.text(LEGAL.slice(cut + 3), W / 2, 29, { align: "center" }); }
     }
     d.__legalDone = n;
     d.setPage(cur); d.setFont(f.fontName, f.fontStyle); d.setFontSize(size);

@@ -10,7 +10,7 @@
                 the bar does not print; nothing is requested from outside the page
      links      "Terms of Service & Disclaimer" is in the footer of every page that has one, in the Packet Builder's menu
                 and on the packet tool's footer
-     pdf        a PDF made by the PDF maker carries the line on every page, in black, in the bottom margin and inside the page;
+     pdf        a PDF made by the PDF maker carries the line on every page, in black, in the top margin and inside the page;
                 a maker that opts out (doc.__noLegal) carries none
      print      the Packet Builder's printed sheets carry the line, in black, inside the page and clear of the page's own text
    ===================================================================== */
@@ -77,7 +77,7 @@ for pg in doc:
     if hit:
         for b in others:
             if not (b[3] <= hit["bbox"][1] - 1 or b[1] >= hit["bbox"][3] + 1 or b[2] <= hit["bbox"][0] or b[0] >= hit["bbox"][2]): clear = False
-    out.append({"w": W, "h": H, "hit": hit, "clear": clear, "below": max([b[3] for b in others] or [0])})
+    out.append({"w": W, "h": H, "hit": hit, "clear": clear, "below": max([b[3] for b in others] or [0]), "above": min([b[1] for b in others] or [9999])})
 print(json.dumps(out))
 `;
 const readPdf = file => {
@@ -93,10 +93,10 @@ const lineOnPage = (pg, label, scaled) => {
     /* the browser's own PDF of a web page is shrunk to fit, so sizes are not the printed ones: here only the order on the sheet is proved
        (the printed distances are read from the style, below) */
     ok(x0 >= 0 && x1 <= pg.w && y1 <= pg.h, `${label}: the line is inside the page`);
-    ok(y0 >= pg.below - 0.5, `${label}: the line is below everything else on the sheet`);
+    ok(y1 <= pg.above + 0.5, `${label}: the line is above everything else on the sheet`);
   } else {
     ok(x0 >= 36 - .5 && x1 <= pg.w - 36 + .5, `${label}: the line sits inside the side margins (${x0.toFixed(0)} to ${x1.toFixed(0)} of ${pg.w.toFixed(0)} pt)`);
-    ok(y1 <= pg.h - 14 && y0 >= pg.h - 36 - 8, `${label}: the line is in the bottom margin, at least 14 pt above the edge (bottom ${(pg.h - y1).toFixed(1)} pt)`);
+    ok(y0 >= 14 && y1 <= 36, `${label}: the line is in the top margin, at least 14 pt below the edge and above the 0.5 in line (top ${y0.toFixed(1)}, bottom ${y1.toFixed(1)} pt)`);
     ok(Math.min(...h.size) >= 6, `${label}: the line is not smaller than 6 pt`);
   }
   ok(h.color.every(c => c === 0), `${label}: the line is pure black`);
@@ -198,7 +198,7 @@ try {
     }
     await p.evaluate(() => document.getElementById("generatePdf").click()); await p.waitForTimeout(4000);
     await p.emulateMedia({ media: "print" });
-    const st = await p.evaluate(() => [...document.querySelectorAll("#printRoot .sheet")].map(sh => { const a = getComputedStyle(sh, "::after"), px = v => parseFloat(v); return { pos: a.position, bottom: px(a.bottom), left: px(a.left), right: px(a.right), size: px(a.fontSize) * 0.75, color: a.color, h: sh.getBoundingClientRect().height, w: sh.getBoundingClientRect().width }; }));
+    const st = await p.evaluate(() => [...document.querySelectorAll("#printRoot .sheet")].map(sh => { const a = getComputedStyle(sh, "::before"), px = v => parseFloat(v); return { pos: a.position, top: px(a.top), left: px(a.left), right: px(a.right), size: px(a.fontSize) * 0.75, color: a.color, h: sh.getBoundingClientRect().height, w: sh.getBoundingClientRect().width }; }));
     const file = path.join(tmp, "sheets.pdf");
     fs.writeFileSync(file, await p.pdf({ preferCSSPageSize: true, printBackground: true }));
     const rs = readPdf(file);
@@ -206,7 +206,7 @@ try {
     else {
       ok(rs.length >= 2, `the Packet Builder printed ${rs.length} sheets`);
       rs.forEach((pg, i) => lineOnPage(pg, `printed sheet ${i + 1}`, true));
-      ok(st.length >= 2 && st.every(x => x.pos === "absolute" && x.bottom >= 14.4 - .1 && x.bottom <= 24 && x.left >= 48 - .1 && x.right >= 48 - .1 && x.size >= 6 && x.color === "rgb(0, 0, 0)" && Math.abs(x.h - 1056) < 1 && Math.abs(x.w - 816) < 1), `every printed sheet is 8.5 x 11 in with the line ${st[0] ? (st[0].bottom * .75).toFixed(1) : "?"} pt above the bottom edge, inside the 0.5 in side margins, pure black, ${st[0] ? st[0].size.toFixed(0) : "?"} pt`);
+      ok(st.length >= 2 && st.every(x => x.pos === "absolute" && x.top >= 14.4 - .1 && x.top <= 24 && x.left >= 48 - .1 && x.right >= 48 - .1 && x.size >= 6 && x.color === "rgb(0, 0, 0)" && Math.abs(x.h - 1056) < 1 && Math.abs(x.w - 816) < 1), `every printed sheet is 8.5 x 11 in with the line ${st[0] ? (st[0].top * .75).toFixed(1) : "?"} pt below the top edge, inside the 0.5 in side margins, pure black, ${st[0] ? st[0].size.toFixed(0) : "?"} pt`);
     }
     await ctx.close();
   }
