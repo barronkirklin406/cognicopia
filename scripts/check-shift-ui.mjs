@@ -287,6 +287,7 @@ try {
   await useInitials(p, "mr");
   await addNote(p, "Written as MR");
   ok((await count(p, "#shfNotes .shf-entry")) === 1, "initials in use: a note is added");
+  await p.evaluate(() => window.CognicopiaSession.setLimit(30 * 24 * 3600 * 1000));      // the page's own 15-minute timeout (js/sessionTimeout.js) would reset the screen; this step is about the board's own rule
   await p.clock.fastForward(16 * 60 * 1000); await p.waitForTimeout(100);
   await p.fill("#shfNText", "Written after a long gap"); await p.click("#shfNote button[type=submit]"); await p.waitForTimeout(100);
   ok((await count(p, "#shfNotes .shf-entry")) === 1 && (await text(p, "#toast")).includes("Choose your initials first"), "after 15 minutes without use the initials are forgotten, so a note is not written under them");
