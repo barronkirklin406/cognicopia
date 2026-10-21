@@ -79,6 +79,7 @@ const resident = (id, name, tier, avoid) => ({ schema: "cognicopia.residentProfi
 try {
   const open = async (opts = {}) => {
     const ctx = await browser.newContext({ viewport: { width: opts.w || 1366, height: opts.h || 768 }, serviceWorkers: "block", acceptDownloads: true, reducedMotion: opts.reduced ? "reduce" : "no-preference" });
+    await ctx.addInitScript(() => { try { localStorage.setItem("cognicopia_eula_accepted", "true"); } catch (e) { /* ignore */ } });   // this check is about the Describe a page tab, not the first-visit agreement
     if (opts.clipboard) await ctx.grantPermissions(["clipboard-read", "clipboard-write"], { origin: base.replace(/\/$/, "") });
     const p = await ctx.newPage();
     p.on("pageerror", e => errors.push(e.message));
