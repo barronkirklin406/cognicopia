@@ -41,6 +41,7 @@ const resident = (id, name, unit) => ({ schema: "cognicopia.residentProfile", ve
   tier2_enrichment: { birthYear: 1936, hometown: { place: "Test City" } }, tier3_deep: { notes: "", people: [] } });
 const open = async (w = 1366, h = 1000) => {
   const ctx = await browser.newContext({ viewport: { width: w, height: h }, serviceWorkers: "block", acceptDownloads: true });
+  await ctx.addInitScript(() => { try { localStorage.setItem("cognicopia_eula_accepted", "true"); } catch (e) { /* ignore */ } });   // this check is about the Shift board, not the first-visit agreement
   await ctx.addInitScript(() => { window.print = () => { window.__printed = (window.__printed || 0) + 1; }; });   // the print window is not what is tested
   const p = await ctx.newPage();
   p.on("pageerror", e => errors.push(e.message));
@@ -280,6 +281,7 @@ try {
 
   /* ---------- initials are forgotten after 15 minutes without use ---------- */
   const ctxI = await browser.newContext({ viewport: { width: 1366, height: 1000 }, serviceWorkers: "block" });
+  await ctxI.addInitScript(() => { try { localStorage.setItem("cognicopia_eula_accepted", "true"); } catch (e) { /* ignore */ } });   // this check is about the Shift board, not the first-visit agreement
   p = await ctxI.newPage();
   p.on("pageerror", e => errors.push(e.message));
   await p.clock.install();
@@ -287,6 +289,7 @@ try {
   await useInitials(p, "mr");
   await addNote(p, "Written as MR");
   ok((await count(p, "#shfNotes .shf-entry")) === 1, "initials in use: a note is added");
+  await p.evaluate(() => window.CognicopiaSession.setLimit(30 * 24 * 3600 * 1000));      // the page's own 15-minute timeout (js/sessionTimeout.js) would reset the screen; this step is about the board's own rule
   await p.clock.fastForward(16 * 60 * 1000); await p.waitForTimeout(100);
   await p.fill("#shfNText", "Written after a long gap"); await p.click("#shfNote button[type=submit]"); await p.waitForTimeout(100);
   ok((await count(p, "#shfNotes .shf-entry")) === 1 && (await text(p, "#toast")).includes("Choose your initials first"), "after 15 minutes without use the initials are forgotten, so a note is not written under them");
@@ -296,6 +299,7 @@ try {
 
   /* ---------- two tabs on one board: neither writes over the other ---------- */
   const ctxT = await browser.newContext({ viewport: { width: 1366, height: 1000 }, serviceWorkers: "block" });
+  await ctxT.addInitScript(() => { try { localStorage.setItem("cognicopia_eula_accepted", "true"); } catch (e) { /* ignore */ } });   // this check is about the Shift board, not the first-visit agreement
   const t1 = await ctxT.newPage(), t2 = await ctxT.newPage();
   for (const t of [t1, t2]) t.on("pageerror", e => errors.push(e.message));
   await go(t1); await go(t2);

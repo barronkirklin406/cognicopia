@@ -22,6 +22,8 @@ Cognicopia has no server, account or cloud copy. Everything staff type stays in 
 | The Research Center's reading settings (text size, line spacing, colors) | `cg_rc_reader` | Plain `localStorage`: nothing about a resident |
 | Instant Soothe's memory of what it printed lately (so the next packet is new), and the last level and theme chosen | `cognicopia_soothe_history`, `cognicopia_soothe_last` | Plain `localStorage`: library ids and two option names only (for example `r079`, `m-fern`, `middle`, `nature`), never a name, a date or any text. Nothing about a resident. |
 | The license: a signed license key (a business name, the plan and two dates, never a resident) and, after a card purchase, the Stripe checkout reference kept so the license can be renewed | `cognicopia_license_v2`, `cognicopia_license_ref` | Plain `localStorage`, on purpose. The key is signed, so hiding it protects nothing, and the answer to "is this computer licensed?" is needed at once on every page, even before a passphrase is typed. Every read checks the signature again, so editing the stored record unlocks nothing. |
+| The agreement to the Terms of Service (`js/legal.js`, [terms-and-disclaimer.md](terms-and-disclaimer.md)) | `cognicopia_eula_accepted` | Plain `localStorage`: the word `true`, nothing about a resident |
+| The invoice request form on the pricing page (`js/invoiceMaker.js`): a facility's business name, billing contact, accounts payable phone, address, PO number, license and building count, so a second request needs no retyping. "Clear the form" removes it | `cognicopia_invoice_request` | Plain `localStorage`: a business's details, never a resident. The PDF is made on the computer and nothing is sent |
 | The earlier access code and the promo activation, layout choices, "no two sheets alike" counters | other names | Plain `localStorage`: nothing about a resident |
 | The local database: resident profiles and the packets made for them (`src/services/localDb.ts`, [local-database.md](local-database.md)). Not yet used by a page | IndexedDB `CognicopiaLocalDB`, with the private details in `cognicopia_localdb_resident_<id>` and `cognicopia_localdb_packet_<id>` | Encrypted: a row keeps only the id, care level, times and template list |
 | The free-packet count: one whole number, kept in three places so clearing one does not return the free packets (`src/services/trialLedger.ts`, `docs/trial-hardening.md`) | `cognicopia_gen_count`, an IndexedDB record `cg_trial`, and a Cache Storage entry `cg-trial-v1` | Plain: a number, nothing about a resident, no identifier, no cookie, nothing sent anywhere |
@@ -57,7 +59,7 @@ A resident's own pages keep their name.
 
 ## Station handoffs (`.cognicopia`)
 
-The Resident roster's **Hand off to another station** writes every saved resident into one file, locked with a passphrase chosen for that file. It uses the same format as the packet tool's locked backups, so either one opens the other's files.
+The Resident roster's **Back up this roster, or hand it off to another station** writes every saved resident into one file, locked with a passphrase chosen for that file. It uses the same format as the packet tool's locked backups, so either one opens the other's files.
 
 On the receiving computer, **Receive a handoff** adds new residents. For a resident both computers already have, it keeps whichever copy was updated most recently.
 

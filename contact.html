@@ -886,6 +886,7 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
       <div id="requestCard" hidden>
         <h2 id="requestTitle">Your request</h2>
         <p id="requestIntro"></p>
+        <p id="requestAlt" hidden>Fastest: <a href="pricing.html#invoice">make your invoice request as a PDF on the pricing page</a>. It is made on your computer, and you forward it to accounts payable.</p>
         <ul id="requestList"></ul>
         <p><a href="mailto:cognicopia@outlook.com" class="email-action-btn" id="requestBtn"><span aria-hidden="true">✉</span> Open an email with this filled in</a></p>
         <p class="request-fine">Your email program opens with the subject and a list to fill in. Nothing is sent until you send it.</p>
@@ -937,6 +938,7 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
         <li><a class="cg-foot-a" href="resources/research/">Research Center</a></li>
         <li><a class="cg-foot-a" href="resources/caregiver-faq/">Caregiver FAQ</a></li>
         <li><a class="cg-foot-a" href="contact.html">Contact Cognicopia</a></li>
+        <li><a class="cg-foot-a" href="terms.html">Terms of Service &amp; Disclaimer</a></li>
       </ul>
     </nav>
   </div>
@@ -981,6 +983,7 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
   $("requestTitle").textContent = kind.title;
   $("requestIntro").textContent = kind.intro;
   $("requestIntro").hidden = !kind.intro;
+  $("requestAlt").hidden = !/invoice/i.test(subject);
   kind.items.forEach(function (t) { var li = document.createElement("li"); li.textContent = t; $("requestList").appendChild(li); });
   var body = (kind.items.length ? "Hello,\r\n\r\n" + kind.title + ".\r\n\r\n" + kind.items.map(function (t) { return t.replace(/^Plan: .*/, "Plan: " + (plan || "")) + (/^Plan:/.test(t) ? "" : ":"); }).join("\r\n") + "\r\n" : "");
   var href = "mailto:cognicopia@outlook.com?subject=" + encodeURIComponent("Cognicopia \u2014 " + subject) + (body ? "&body=" + encodeURIComponent(body) : "");

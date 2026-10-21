@@ -511,6 +511,22 @@ body { padding-left: var(--sb-w); }
       .actions .plan-btn { flex: 1 1 200px; }
       .actions button.plan-btn { cursor: pointer; }
       label.big { display: block; margin: 0 0 8px; font-weight: 700; font-size: 17px; }
+      .inv-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px 18px; margin: 16px 0 6px; }
+      .inv-w { grid-column: 1 / -1; }
+      .inv-f label.big { margin-bottom: 6px; }
+      .inv-f input, .inv-f select { display: block; width: 100%; min-height: var(--tap, 52px); padding: 10px 14px; border: 2px solid #d8f3dc; border-radius: 10px; background: var(--cg-green-950,#0b1a13); color: #ffffff; font: 600 17px/1.3 inherit; font-family: inherit; }
+      .inv-f input[aria-invalid="true"], .inv-f select[aria-invalid="true"] { border-color: var(--cg-danger-200,#ffc4b4); }
+      .inv-f input:focus-visible, .inv-f select:focus-visible { outline: 3px solid #f5b800; outline-offset: 3px; }
+      .inv-err { margin: 6px 0 0; color: var(--cg-danger-200,#ffc4b4); font-weight: 700; font-size: 16px; }
+      #invoice h3 { margin: 22px 0 6px; font-size: 18pt; }
+      #invoice .keybox { white-space: pre-wrap; min-height: 0; }
+      #invStatus { margin: 18px 0 0; background: #10241a; color: #ffffff; }
+      #invStatus h2, #invStatus p, #invStatus strong { color: #ffffff !important; }
+      #invStatus h2 { border: 0; }
+      #invStatus .plan-btn { background: #ffd477 !important; border-color: #ffd477 !important; color: #10241a !important; }
+      #invStatus .plan-btn:hover { background: #ffe29a !important; border-color: #ffe29a !important; }
+      #invPrint { display: none; }
+      @media print { body.inv-printing .container > :not(#invPrint) { display: none !important; } body.inv-printing #invPrint { display: block !important; } }
       @media print { body > :not(main) { display: none !important; } .container { background: #fff !important; color: #000 !important; box-shadow: none; } .container * { color: #000 !important; } .actions, .cg-topbar { display: none !important; } .keybox { background: #fff; border-color: #000; color: #000; } }
     </style>
 <style id="cg-categories-toggle">
@@ -937,10 +953,93 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
     </ul>
 
     <div class="card" id="invoice">
-      <h2>Pay by invoice, with a W-9</h2>
-      <p>Accounts payable departments can buy without a card. Tell us the facility name, the billing contact and whether you need a purchase order number. We send an invoice on net-30 terms, payable by ACH or check, with our W-9 attached. We email the license key with the invoice.</p>
-      <p><a class="plan-btn" data-upgrade-prompt href="contact.html?subject=Corporate+Invoice+Request">Request Corporate Invoice / W-9</a></p>
+      <h2>Pay by purchase order or invoice (Net 30)</h2>
+      <p>No card needed. Fill in the form and your computer makes a PDF invoice request. Nothing is sent anywhere: the PDF is made here, in your browser. Forward it to your accounts payable department. When we confirm it by email, we send the final invoice and your license key together.</p>
+      <form id="invForm" class="inv-grid" novalidate aria-label="Invoice request">
+        <div class="inv-f inv-w">
+          <label class="big" for="inv-facility">Facility or company name</label>
+          <input id="inv-facility" name="facility" type="text" autocomplete="organization" aria-describedby="inv-err-facility" maxlength="120" required>
+          <p class="inv-err" id="inv-err-facility" hidden></p>
+        </div>
+        <div class="inv-f">
+          <label class="big" for="inv-contact">Billing contact name</label>
+          <input id="inv-contact" name="contact" type="text" autocomplete="name" aria-describedby="inv-err-contact" maxlength="80" required>
+          <p class="inv-err" id="inv-err-contact" hidden></p>
+        </div>
+        <div class="inv-f">
+          <label class="big" for="inv-email">Billing contact email</label>
+          <input id="inv-email" name="email" type="email" autocomplete="email" aria-describedby="inv-err-email" maxlength="120" required>
+          <p class="inv-err" id="inv-err-email" hidden></p>
+        </div>
+        <div class="inv-f">
+          <label class="big" for="inv-phone">Accounts payable phone number</label>
+          <input id="inv-phone" name="phone" type="tel" autocomplete="tel" aria-describedby="inv-err-phone" maxlength="30" required>
+          <p class="inv-err" id="inv-err-phone" hidden></p>
+        </div>
+        <div class="inv-f inv-w">
+          <label class="big" for="inv-street">Street address</label>
+          <input id="inv-street" name="street" type="text" autocomplete="address-line1" aria-describedby="inv-err-street" maxlength="100" required>
+          <p class="inv-err" id="inv-err-street" hidden></p>
+        </div>
+        <div class="inv-f">
+          <label class="big" for="inv-city">City</label>
+          <input id="inv-city" name="city" type="text" autocomplete="address-level2" aria-describedby="inv-err-city" maxlength="60" required>
+          <p class="inv-err" id="inv-err-city" hidden></p>
+        </div>
+        <div class="inv-f">
+          <label class="big" for="inv-state">State (two letters)</label>
+          <input id="inv-state" name="state" type="text" autocomplete="address-level1" aria-describedby="inv-err-state" maxlength="2" required>
+          <p class="inv-err" id="inv-err-state" hidden></p>
+        </div>
+        <div class="inv-f">
+          <label class="big" for="inv-zip">ZIP code</label>
+          <input id="inv-zip" name="zip" type="text" autocomplete="postal-code" aria-describedby="inv-err-zip" maxlength="10" required inputmode="numeric">
+          <p class="inv-err" id="inv-err-zip" hidden></p>
+        </div>
+        <div class="inv-f">
+          <label class="big" for="inv-po">Purchase order (PO) number, if you have one</label>
+          <input id="inv-po" name="po" type="text" aria-describedby="inv-err-po" maxlength="40" placeholder="Leave empty if it will follow">
+          <p class="inv-err" id="inv-err-po" hidden></p>
+        </div>
+        <div class="inv-f inv-w">
+          <label class="big" for="inv-plan">License</label>
+          <select id="inv-plan" name="plan" aria-describedby="inv-err-plan">
+            <option value="annual" selected>Annual facility license ($349 a year, per building)</option>
+            <option value="monthly">Monthly facility license ($39 a month, per building)</option>
+            <option value="enterprise">Enterprise or multi-site license (custom quote)</option>
+          </select>
+          <p class="inv-err" id="inv-err-plan" hidden></p>
+        </div>
+        <div class="inv-f">
+          <label class="big" for="inv-qty">Number of buildings</label>
+          <input id="inv-qty" name="qty" type="number" min="1" max="99" step="1" value="1" inputmode="numeric" aria-describedby="inv-err-qty" required>
+          <p class="inv-err" id="inv-err-qty" hidden></p>
+        </div>
+        <div class="actions inv-w">
+          <button type="submit" class="plan-btn" id="invMake">Make my invoice (PDF)</button>
+          <button type="button" class="plan-btn plan-btn-alt" id="invClear">Clear the form</button>
+        </div>
+        <p class="inv-w" id="invSummary" role="status"></p>
+      </form>
+      <div class="statusbox" id="invStatus" hidden tabindex="-1" role="status">
+        <h2>Your invoice request is ready</h2>
+        <p id="invOutMsg"></p>
+        <p>Reference <strong id="invOutRef"></strong> &middot; Total <strong id="invOutTotal"></strong> &middot; Due <strong id="invOutDue"></strong></p>
+        <p id="invOutFile"></p>
+        <div class="actions">
+          <button type="button" class="plan-btn" id="invAgain">Download it again</button>
+          <button type="button" class="plan-btn" id="invPrintBtn" hidden>Print it</button>
+        </div>
+      </div>
+      <h3>Vendor information for your procurement team</h3>
+      <p>Many facilities need these facts to set up a new vendor.</p>
+      <pre class="keybox" id="invVendor" aria-label="Vendor information"></pre>
+      <div class="actions"><button type="button" class="plan-btn plan-btn-alt" id="invCopy">Copy the vendor information</button></div>
+      <p id="invCopyState" role="status"></p>
+      <p>Prefer email, or need our W-9? <a class="plan-btn plan-btn-alt" data-upgrade-prompt href="contact.html?subject=Corporate+Invoice+Request">Request Corporate Invoice / W-9</a></p>
     </div>
+
+    <section id="invPrint" aria-label="Invoice request, printable copy"></section>
 
     <div class="card">
       <h2>What every plan includes</h2>
@@ -1018,6 +1117,7 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
         <li><a class="cg-foot-a" href="resources/research/">Research Center</a></li>
         <li><a class="cg-foot-a" href="resources/caregiver-faq/">Caregiver FAQ</a></li>
         <li><a class="cg-foot-a" href="contact.html">Contact Cognicopia</a></li>
+        <li><a class="cg-foot-a" href="terms.html">Terms of Service &amp; Disclaimer</a></li>
       </ul>
     </nav>
   </div>
@@ -1027,6 +1127,7 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
 </footer>
 <!-- cg-footer:end -->
 
+<script src="js/invoiceMaker.js"></script>
 <script id="cg-pricing-js">
 /* Turns the two buy buttons into Stripe Payment Links once they are set in src/config/license.js.
    Until then they stay as invoice requests, so no one ever lands on a dead or test link. */
