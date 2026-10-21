@@ -83,7 +83,7 @@
 
   root.CognicopiaSession = {
     MESSAGE: MESSAGE, DEFAULT_MS: DEFAULT_MS,
-    setLimit: function (ms) { limit = Math.max(200, +ms || DEFAULT_MS); restart(); },    // for the check; the page keeps 15 minutes
+    setLimit: function (ms) { limit = Math.min(2147483647, Math.max(200, +ms || DEFAULT_MS)); restart(); },    // for the check; the page keeps 15 minutes
     expiredCount: function () { return count; },
     expireNow: expire
   };
