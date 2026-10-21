@@ -7169,18 +7169,21 @@ const StaffCompanionUI = (function(){
   }
   /* what each queued page keeps for staff: its therapy line, the clinical tip, the answers and any note */
   function pageNotesFor(items){
-    const CMx = window.CognicopiaClinicalMatrix, out = [];
+    const CMx = window.CognicopiaClinicalMatrix, out = [], pf = ActiveResident.profile(), alias = pf ? cgAlias(pf) : "the resident";
+    /* the staff pages carry the alias and never a name: any name in a tip, an answer or a note is replaced */
+    const words = pf ? String((pf.tier1_core || {}).preferredName || "").split(/\s+/).filter(w => w.length > 1) : [];
+    const scrub = t => words.reduce((x, w) => x.replace(new RegExp("\\b" + w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "(?:\u2019s|'s)?\\b", "gi"), alias), String(t || ""));
     (items || []).forEach(item => {
       try {
         const act = ACT_INDEX[item.activityId]; if (!act) return;
         let tip = "";
         if (CMx){
-          const cue = CMx.cue({ stage:CLINICAL_STAGE[item.cfg.difficulty] || "middle", activity:item.activityId, name:item.cfg.residentName || "",
+          const cue = CMx.cue({ stage:CLINICAL_STAGE[item.cfg.difficulty] || "middle", activity:item.activityId, name:"",
             rng:CMx.dailyRng(item.cfg.residentName || "Friend", item.cfg.date || todayISO(), (item.batchSeed >>> 0) % 100000, "tip" + item.index) });
           tip = cue && cue.text ? cue.text : "";
         }
         const pg = (buildBatch(act, item.cfg, item.batchSeed, item.count)[item.index]) || {};
-        out.push({ title: act.name + (pg.title && pg.title !== act.name ? " · " + pg.title : ""), therapy: therapyAnchor(item).replace(/^\[|\]$/g, "").replace(/\s*\|\s*/g, " · "), tip, answers: pg.answers ? String(pg.answers) : "", note: pg.staffNote ? String(pg.staffNote) : "" });
+        out.push({ title: act.name, therapy: therapyAnchor(item).replace(/^\[|\]$/g, "").replace(/\s*\|\s*/g, " · "), tip: scrub(tip), answers: scrub(pg.answers), note: scrub(pg.staffNote) });
       } catch (e){ /* a page that cannot be described just has no note */ }
     });
     return out;
