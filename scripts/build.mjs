@@ -263,6 +263,22 @@ step("one resident across the tools: the daily record and the suggested tier, th
   }
 });
 
+step("the Packet Builder's buttons: the audited ones do what they say, the chosen resident stays chosen across 14 screens, the icons are large, no console errors (a real browser)", () => {
+  try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-builder-buttons-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
+  catch (e){
+    if (e.status === 2) return "skipped: Playwright is not installed here (see docs/dev-setup.md)";
+    throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message);
+  }
+});
+
+step("the 28 nostalgia, botanical, harvest and home coloring titles: registered with three tiers, found by name, previewed, queued and printed in pure black and white (a real browser)", () => {
+  try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-coloring-titles-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
+  catch (e){
+    if (e.status === 2) return "skipped: Playwright is not installed here (see docs/dev-setup.md)";
+    throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message);
+  }
+});
+
 step("a page printed straight from the browser: no navigation, buttons or fields, a white page, pure black, margins and a binding gutter, read back from real PDFs (a real browser)", () => {
   try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-print-pages-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
   catch (e){

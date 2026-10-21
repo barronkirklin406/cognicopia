@@ -616,7 +616,8 @@ try {
       let right = 0, only = 0;
       for (let i = 0; i < spots.length; i++) {
         const sw = (await p.$$(".tb-sw"))[i % 8]; await sw.tap(); const hex = await sw.getAttribute("data-color"), want = [1, 3, 5].map(k => parseInt(hex.slice(k, k + 2), 16));
-        await p.touchscreen.tap(spots[i][0], spots[i][1]); await sleep(20);
+        await p.touchscreen.tap(spots[i][0], spots[i][1]);
+        await p.waitForFunction(n => window.CognicopiaTabletUI.debug().filled >= n, i + 1, { timeout: 3000 }).catch(() => {});   // the fill lands when it lands: wait for it, then count
         const px = await p.evaluate(([a, b]) => window.CognicopiaTabletUI.debug().pixel(a, b), [spots[i][0], spots[i][1]]); if (px[3] === 255 && px[0] === want[0] && px[1] === want[1] && px[2] === want[2]) right++;
         const now = await p.evaluate(() => window.CognicopiaTabletUI.debug().filled); if (now === i + 1) only++;
       }
