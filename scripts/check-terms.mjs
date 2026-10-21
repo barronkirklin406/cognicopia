@@ -109,8 +109,9 @@ try {
     const ctx = await browser.newContext({ viewport: { width: 1366, height: 768 }, serviceWorkers: "block" });
     const p = await ctx.newPage(); watch(p);
     await p.goto(base + file); await p.waitForSelector("#cgLegal", { timeout: 15000 }).catch(() => {});
-    const shown = await p.evaluate(() => { const b = document.getElementById("cgLegal"); return b ? { text: b.querySelector(".cgl-txt p").textContent, head: b.querySelector(".cgl-txt b").textContent, btn: document.getElementById("cgLegalOk").getBoundingClientRect(), vis: getComputedStyle(b).display !== "none" } : null; });
+    const shown = await p.evaluate(() => { const b = document.getElementById("cgLegal"); return b ? { text: b.querySelector(".cgl-txt p").textContent, head: b.querySelector(".cgl-txt b").textContent, btn: document.getElementById("cgLegalOk").getBoundingClientRect(), link: b.querySelector("a").getBoundingClientRect(), vis: getComputedStyle(b).display !== "none" } : null; });
     ok(!!shown && shown.vis, `${name}: the first visit shows the agreement bar`);
+    ok(shown && shown.link.height >= 52, `${name}: "Read the full terms" is at least 52 px tall (${shown && Math.round(shown.link.height)})`);
     ok(shown && shown.text === TEXT && shown.head === "Cognicopia Terms of Service & Disclaimer", `${name}: the bar shows the owner's wording word for word`);
     ok(shown && shown.btn.width >= 52 && shown.btn.height >= 52, `${name}: "I agree" is at least 52 px (${shown && Math.round(shown.btn.width)} x ${shown && Math.round(shown.btn.height)})`);
     ok(await p.evaluate(k => localStorage.getItem(k), KEY) === null, `${name}: nothing is saved before the person agrees`);

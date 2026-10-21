@@ -28,7 +28,7 @@
     "#cgLegal .cgl-txt{flex:1 1 420px;min-width:0;max-height:34vh;overflow:auto}",
     "#cgLegal .cgl-txt b{display:block;font-size:17px;margin:0 0 2px}",
     "#cgLegal .cgl-txt p{margin:0}",
-    "#cgLegal a{color:#ffd477;text-decoration:underline;text-underline-offset:3px}",
+    "#cgLegal a{display:inline-flex;align-items:center;min-height:52px;padding:0 6px;color:#ffd477;text-decoration:underline;text-underline-offset:3px}",
     "#cgLegal .cgl-btns{display:flex;gap:12px;align-items:center;flex-wrap:wrap}",
     "#cgLegal button{min-width:52px;min-height:52px;padding:0 24px;border-radius:10px;border:2px solid #ffd477;background:#ffd477;color:#10241a;font:700 17px/1 'Atkinson Hyperlegible',system-ui,Arial,sans-serif;cursor:pointer}",
     "#cgLegal button:hover{background:#ffe29a}",
