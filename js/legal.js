@@ -41,6 +41,7 @@
   function hide() {
     var b = bar(); if (b && b.parentNode) b.parentNode.removeChild(b);
     root.document.body.style.paddingBottom = root.document.body.getAttribute("data-cgl-pad") || "";
+    root.document.documentElement.style.scrollPaddingBottom = "";
     root.document.body.removeAttribute("data-cgl-pad");
   }
 
@@ -53,6 +54,7 @@
     d.body.appendChild(b);
     d.body.setAttribute("data-cgl-pad", d.body.style.paddingBottom || "");
     d.body.style.paddingBottom = (b.offsetHeight + 8) + "px";
+    d.documentElement.style.scrollPaddingBottom = (b.offsetHeight + 16) + "px";          // a focused control scrolls clear of the bar, not under it
     d.getElementById("cgLegalOk").addEventListener("click", function () { write(true); hide(); });
   }
 
