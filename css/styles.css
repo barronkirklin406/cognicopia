@@ -655,12 +655,14 @@ html.cg-night-shift .cg-trial{background:#2b2015!important;border-color:#d6a64b!
 :root{
   --cg-gold-400:#d4af37;                                   /* the flyer's gold: borders and glow, never small text */
   --cg-cta-top:#1a4d6b; --cg-cta-bottom:#0d2c3e;           /* the call-to-action gradient: white text on it is above 9:1 */
+  --cg-cta-solid:#143f58;                                  /* what a tool that cannot read gradients sees: white on it is above 10:1 */
   --cg-cta:linear-gradient(180deg,var(--cg-cta-top) 0%,var(--cg-cta-bottom) 100%);
   --cg-glow:inset 0 0 0 1px rgba(212,175,55,.30),inset 0 0 20px rgba(212,175,55,.10);
 }
 /* the margin pattern: two columns of faint gold brains, only where a window is wide enough to leave room beside the content */
+/* (only on the pages that carry the site navigation, which are all light pages; a bare dark surface keeps its full 7:1 for gold text) */
 @media (min-width:1100px){
-  :root::before{
+  :root:has(.cg-sidebar-brand)::before{
     background:
       url("../assets/brand/brain-watermark.svg") calc(10vw + 5px) 0 / 34px auto repeat-y,
       url("../assets/brand/brain-watermark.svg") calc(100% - 10vw - 39px) 0 / 34px auto repeat-y,
@@ -674,9 +676,9 @@ html.cg-night-shift .cg-trial{background:#2b2015!important;border-color:#d6a64b!
 /* a card: clean white, soft corners, light border, a golden inner glow, a soft shadow */
 .cg-card{border:1px solid #e4dfd0;border-radius:var(--cg-radius-lg,16px);background:var(--cg-white);box-shadow:var(--cg-glow),0 8px 20px rgba(14,60,67,.08)}
 /* a call-to-action: the teal-to-navy gradient with a gold edge */
-.cg-btn-cta{display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;min-height:var(--cg-tap);padding:12px 24px;border:1px solid var(--cg-gold-400);border-radius:var(--cg-radius-md,12px);background:var(--cg-cta);color:#fff;font:700 1.0625rem/1.2 var(--cg-font-ui);text-decoration:none}
+.cg-btn-cta{display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;min-height:var(--cg-tap);padding:12px 24px;border:1px solid var(--cg-gold-400);border-radius:var(--cg-radius-md,12px);background-color:var(--cg-cta-solid);background-image:var(--cg-cta);color:#fff;font:700 1.0625rem/1.2 var(--cg-font-ui);text-decoration:none}
 /* a banner: teal into a deep gold, white lettering */
-.cg-banner{padding:var(--cg-space-4) var(--cg-space-5);border:1px solid var(--cg-gold-400);border-radius:var(--cg-radius-md,12px);background:linear-gradient(100deg,#0e3c43 0%,#0e3c43 45%,#6b5214 100%);color:#fff;font:700 1.125rem/1.4 var(--cg-font-ui)}
+.cg-banner{padding:var(--cg-space-4) var(--cg-space-5);border:1px solid var(--cg-gold-400);border-radius:var(--cg-radius-md,12px);background-color:#0e3c43;background-image:linear-gradient(100deg,#0e3c43 0%,#0e3c43 45%,#6b5214 100%);color:#fff;font:700 1.125rem/1.4 var(--cg-font-ui)}
 html.cg-night-shift .cg-brain-h::before,html.cg-night-shift .cg-sidebar-brand span::before{filter:brightness(1.25)}
 @media print{
   :root::before,:root::after{display:none !important}

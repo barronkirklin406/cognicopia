@@ -123,7 +123,7 @@ try {
   for (const id of ["link", "btn", "cta", "sum", "tab", "sw", "inp"]) {
     await p.keyboard.press("Tab"); await p.waitForTimeout(330);
     const r = await p.evaluate(() => { const e = document.activeElement, s = getComputedStyle(e); return { id: e.id, style: s.outlineStyle, width: s.outlineWidth, color: s.outlineColor, offset: s.outlineOffset, shadow: s.boxShadow }; });
-    ok(r.id === id && r.style === RING.style && r.width === RING.width && r.color === RING.color && r.offset === RING.offset && /rgb\(16, 36, 26\) 0px 0px 0px 6px/.test(r.shadow),
+    ok(r.id === id && r.style === RING.style && r.width === RING.width && r.color === RING.color && r.offset === RING.offset && /rgb\(8, 38, 44\) 0px 0px 0px 6px/.test(r.shadow),
       `Tab reaches #${id} and shows the two-band ring (${r.id}: ${r.width} ${r.style} ${r.color}, ${r.shadow})`);
   }
   await shot(p, "kit-focus");
