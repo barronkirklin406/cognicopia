@@ -31,7 +31,7 @@
     .nr-header h1 {
       margin: 0 0 8px;
       font-size: 28px;
-      color: var(--cg-green-950, #1b382b);
+      color: var(--cg-green-950, #0e3c43);
       font-family: "Fraunces", serif;
     }
     
@@ -136,8 +136,8 @@
     }
     
     .nr-sound-btn.active {
-      background: linear-gradient(180deg, #90EE90 0%, #32CD32 100%);
-      border-color: #228B22;
+      background: linear-gradient(180deg, #90eeee 0%, #32cdcd 100%);
+      border-color: #228b8b;
       color: #1a0f08;
       box-shadow: 0 0 16px rgba(50, 205, 50, 0.5);
     }
@@ -289,7 +289,7 @@
     .nr-prompts {
       margin-top: 32px;
       padding: 24px;
-      background: var(--cg-parchment, #f4efe6);
+      background: var(--cg-parchment, #f5f1e6);
       border-radius: 16px;
       border: 2px solid var(--cg-tan-200, #ddd1ba);
     }
@@ -297,7 +297,7 @@
     .nr-prompts h2 {
       margin: 0 0 20px;
       font-size: 20px;
-      color: var(--cg-green-950, #1b382b);
+      color: var(--cg-green-950, #0e3c43);
       font-family: "Fraunces", serif;
     }
     
@@ -346,7 +346,7 @@
     
     .nr-status.playing {
       background: rgba(50, 205, 50, 0.2);
-      color: #228B22;
+      color: #228b8b;
     }
     
     .nr-status.stopped {

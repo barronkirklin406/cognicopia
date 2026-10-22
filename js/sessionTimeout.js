@@ -66,7 +66,7 @@
   function notice() {
     var d = root.document; if (!d.body || d.getElementById("cgTimeoutNote")) return;
     var st = d.createElement("style");
-    st.textContent = "#cgTimeoutNote{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:1500;max-width:min(640px,92vw);padding:14px 20px;border-radius:12px;background:#10241a;color:#ffffff;border:2px solid #ffd477;font:600 17px/1.45 'Atkinson Hyperlegible',system-ui,Arial,sans-serif;box-shadow:0 10px 40px rgba(0,0,0,.4)}@media print{#cgTimeoutNote{display:none !important}}";
+    st.textContent = "#cgTimeoutNote{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:1500;max-width:min(640px,92vw);padding:14px 20px;border-radius:12px;background:#08262c;color:#ffffff;border:2px solid #ffd477;font:600 17px/1.45 'Atkinson Hyperlegible',system-ui,Arial,sans-serif;box-shadow:0 10px 40px rgba(0,0,0,.4)}@media print{#cgTimeoutNote{display:none !important}}";
     d.head.appendChild(st);
     var n = d.createElement("div"); n.id = "cgTimeoutNote"; n.setAttribute("role", "status"); n.setAttribute("aria-live", "polite"); n.textContent = MESSAGE;
     d.body.appendChild(n);

@@ -35,7 +35,7 @@
   }
 
   var CSS = [
-    "#cgLegal{position:fixed;left:0;right:0;bottom:0;z-index:1200;background:#10241a;color:#ffffff;border-top:4px solid #ffd477;",
+    "#cgLegal{position:fixed;left:0;right:0;bottom:0;z-index:1200;background:#08262c;color:#ffffff;border-top:4px solid #ffd477;",
     "box-shadow:0 -6px 24px rgba(0,0,0,.35);font:400 16px/1.5 'Atkinson Hyperlegible',system-ui,Arial,sans-serif;padding:14px 16px}",
     "#cgLegal .cgl-in{max-width:1100px;margin:0 auto;display:flex;gap:16px;align-items:center;flex-wrap:wrap}",
     "#cgLegal .cgl-txt{flex:1 1 420px;min-width:0;max-height:34vh;overflow:auto}",
@@ -43,19 +43,19 @@
     "#cgLegal .cgl-txt p{margin:0;max-width:none;color:#ffffff !important}",
     "#cgLegal a{display:inline-flex;align-items:center;min-height:52px;padding:0 6px;color:#ffd477 !important;text-decoration:underline;text-underline-offset:3px}",
     "#cgLegal .cgl-btns{display:flex;gap:12px;align-items:center;flex-wrap:wrap}",
-    "#cgLegal button{min-width:52px;min-height:52px;padding:0 24px;border-radius:10px;border:2px solid #ffd477;background:#ffd477 !important;color:#10241a !important;font:700 17px/1 'Atkinson Hyperlegible',system-ui,Arial,sans-serif;cursor:pointer}",
+    "#cgLegal button{min-width:52px;min-height:52px;padding:0 24px;border-radius:10px;border:2px solid #ffd477;background:#ffd477 !important;color:#08262c !important;font:700 17px/1 'Atkinson Hyperlegible',system-ui,Arial,sans-serif;cursor:pointer}",
     "#cgLegal button:hover{background:#ffe29a !important}",
-    "#cgLegal button:focus-visible,#cgLegal a:focus-visible{outline:3px solid #ffffff;outline-offset:3px;box-shadow:0 0 0 6px #10241a}",
-    "#cgLegalModal{width:min(640px,calc(100vw - 24px));max-height:calc(100vh - 24px);padding:0;border:3px solid #10241a;border-radius:14px;background:#ffffff;color:#10241a;font:400 17px/1.55 'Atkinson Hyperlegible',system-ui,Arial,sans-serif}",
+    "#cgLegal button:focus-visible,#cgLegal a:focus-visible{outline:3px solid #ffffff;outline-offset:3px;box-shadow:0 0 0 6px #08262c}",
+    "#cgLegalModal{width:min(640px,calc(100vw - 24px));max-height:calc(100vh - 24px);padding:0;border:3px solid #08262c;border-radius:14px;background:#ffffff;color:#08262c;font:400 17px/1.55 'Atkinson Hyperlegible',system-ui,Arial,sans-serif}",
     "#cgLegalModal::backdrop{background:rgba(0,0,0,.6)}",
     "#cgLegalModal .cgm-in{padding:22px 24px;max-height:calc(100vh - 30px);overflow:auto}",
-    "#cgLegalModal h2{margin:0 0 10px;font:700 22px/1.25 'Atkinson Hyperlegible',system-ui,Arial,sans-serif;color:#10241a !important;border:0 !important}",
-    "#cgLegalModal p,#cgLegalModal li,#cgLegalModal b{color:#10241a !important;max-width:none}",
+    "#cgLegalModal h2{margin:0 0 10px;font:700 22px/1.25 'Atkinson Hyperlegible',system-ui,Arial,sans-serif;color:#08262c !important;border:0 !important}",
+    "#cgLegalModal p,#cgLegalModal li,#cgLegalModal b{color:#08262c !important;max-width:none}",
     "#cgLegalModal p{margin:0 0 12px}#cgLegalModal ul{margin:0 0 14px;padding-left:1.2em}#cgLegalModal li{margin:0 0 8px}",
     "#cgLegalModal .cgm-btns{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:8px}",
-    "#cgLegalModal button,#cgLegalModal a.cgm-link{display:inline-flex;align-items:center;justify-content:center;min-width:52px;min-height:52px;padding:0 22px;border-radius:10px;border:2px solid #10241a;font:700 17px/1 'Atkinson Hyperlegible',system-ui,Arial,sans-serif;cursor:pointer;text-decoration:none;box-sizing:border-box}",
-    "#cgLegalModal button.cgm-main{background:#10241a !important;color:#ffffff !important}#cgLegalModal button.cgm-alt,#cgLegalModal a.cgm-link{background:#ffffff !important;color:#10241a !important}",
-    "#cgLegalModal button:focus-visible,#cgLegalModal a:focus-visible{outline:3px solid #ffd477;outline-offset:2px;box-shadow:0 0 0 6px #10241a}",
+    "#cgLegalModal button,#cgLegalModal a.cgm-link{display:inline-flex;align-items:center;justify-content:center;min-width:52px;min-height:52px;padding:0 22px;border-radius:10px;border:2px solid #08262c;font:700 17px/1 'Atkinson Hyperlegible',system-ui,Arial,sans-serif;cursor:pointer;text-decoration:none;box-sizing:border-box}",
+    "#cgLegalModal button.cgm-main{background:#08262c !important;color:#ffffff !important}#cgLegalModal button.cgm-alt,#cgLegalModal a.cgm-link{background:#ffffff !important;color:#08262c !important}",
+    "#cgLegalModal button:focus-visible,#cgLegalModal a:focus-visible{outline:3px solid #ffd477;outline-offset:2px;box-shadow:0 0 0 6px #08262c}",
     "@media print{#cgLegal,#cgLegalModal{display:none !important}}"
   ].join("");
 

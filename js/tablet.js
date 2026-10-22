@@ -111,7 +111,7 @@
 
   function burst(x, y) {
     if (reduced()) return;
-    var colors = ["#2d5a44", "#c5a059", "#f6cdb4", "#9fcbb0", "#e8cc8a", "#8a3a20"];
+    var colors = ["#1c5963", "#c5a059", "#f6cdb4", "#95c8cd", "#e8cc8a", "#8a3a20"];
     for (var i = 0; i < 14; i++) {
       var d = h("span", "tb-burst"), a = Math.random() * Math.PI * 2, r = 60 + Math.random() * 90;
       d.style.left = x + "px"; d.style.top = y + "px"; d.style.background = colors[i % colors.length];
@@ -121,8 +121,8 @@
   }
   /* the finish: a warm medal, a chime, a little confetti, and a way on. Used when the work is done and when "Finish for me" is pressed. */
   var MEDAL = '<svg class="tb-medal" viewBox="0 0 120 120" aria-hidden="true" focusable="false"><g class="ray" stroke="#c5a059" stroke-width="5" stroke-linecap="round" fill="none"><path d="M60 4v14M60 102v14M4 60h14M102 60h14M20 20l10 10M90 90l10 10M100 20 90 30M30 90l-10 10"/></g>' +
-    '<circle cx="60" cy="58" r="34" fill="#f1dda8" stroke="#1b382b" stroke-width="5"/><path d="M60 38l6.6 13.4 14.8 2.1-10.7 10.4 2.5 14.7L60 71.6 46.8 78.6l2.5-14.7L38.6 53.5l14.8-2.1z" fill="#1b382b"/>' +
-    '<path d="M42 88l-8 24 16-8 6 10 4-22zM78 88l8 24-16-8-6 10-4-22z" fill="#c5a059" stroke="#1b382b" stroke-width="4" stroke-linejoin="round"/></svg>';
+    '<circle cx="60" cy="58" r="34" fill="#f1dda8" stroke="#0e3c43" stroke-width="5"/><path d="M60 38l6.6 13.4 14.8 2.1-10.7 10.4 2.5 14.7L60 71.6 46.8 78.6l2.5-14.7L38.6 53.5l14.8-2.1z" fill="#0e3c43"/>' +
+    '<path d="M42 88l-8 24 16-8 6 10 4-22zM78 88l8 24-16-8-6 10-4-22z" fill="#c5a059" stroke="#0e3c43" stroke-width="4" stroke-linejoin="round"/></svg>';
   function cheer(text, nextLabel) {
     if (!cur) return;
     cur.done = true; stopIdle(); $("tbAssist").disabled = true;

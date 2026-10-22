@@ -75,7 +75,7 @@ ok(/size: 8\.5in 11in; margin: 0;/.test(js), "a sheet prints edge to edge so it 
 ok(/viewBox="0 0 612 792"/.test(js) && /stroke-width="' \+ w \+ '"/.test(js), "the calibration sheet is drawn in points, so a 2.5 stroke prints as 2.5 pt");
 [0.5, 1, 1.5, 2.5, 3].forEach(w => ok(new RegExp("WEIGHTS = \\[[^\\]]*\\b" + String(w).replace(".", "\\.") + "\\b").test(js), `the line-weight ladder has ${w} pt`));
 ok(/Run Copier Test Print/.test(main) && /window\.print\(\)/.test(js), "the calibration sheet has its print button");
-ok(/--primary-green:\s*#1b382b/i.test(css) && /--parchment-bg:\s*#f4efe6/i.test(css) && /--gold-accent:\s*#c5a059/i.test(css) && /--charcoal:\s*#1a202c/i.test(css), "the four brand colours are custom properties");
+ok(/--primary-green:\s*#0e3c43/i.test(css) && /--parchment-bg:\s*#f5f1e6/i.test(css) && /--gold-accent:\s*#c5a059/i.test(css) && /--charcoal:\s*#1a202c/i.test(css), "the four brand colours are custom properties");
 
 /* 5. the price, the colours and the claims */
 const builder = read("builder.html");

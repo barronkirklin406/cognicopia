@@ -163,7 +163,7 @@ ok(/id="caStageSel"/.test(main) && /id="caGoalSel"/.test(main) && ["MCI", "Early
 const lum = h => { const c = [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16) / 255).map(v => v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4)); return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]; };
 const cr = (a, b) => { const x = lum(a), y = lum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); };
 const v = n => (new RegExp("--" + n + ":\\s*(#[0-9a-f]{6})", "i").exec(css) || [])[1];
-ok(/--primary-green:\s*#1b382b/i.test(css) && /--parchment-bg:\s*#f4efe6/i.test(css) && /--gold-accent:\s*#c5a059/i.test(css) && /--charcoal:\s*#1a202c/i.test(css), "the four brand colours are custom properties");
+ok(/--primary-green:\s*#0e3c43/i.test(css) && /--parchment-bg:\s*#f5f1e6/i.test(css) && /--gold-accent:\s*#c5a059/i.test(css) && /--charcoal:\s*#1a202c/i.test(css), "the four brand colours are custom properties");
 [["charcoal", "parchment-bg"], ["primary-green", "parchment-bg"], ["muted", "parchment-bg"], ["warn", "parchment-bg"]].forEach(([a, b]) => ok(cr(v(a), v(b)) >= 7, `${a} on ${b} is ${cr(v(a), v(b)).toFixed(1)}:1 (7:1 needed)`));
 ok(cr("#ffffff", v("primary-green")) >= 7, "white on the green banner is 7:1 or better");
 const text = main.replace(/<[^>]+>/g, " ").replace(/&[a-z#0-9]+;/g, " ");

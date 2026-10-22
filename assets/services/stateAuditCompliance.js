@@ -520,7 +520,7 @@ async function exportAuditPdf(metrics                        )                {
 
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(10);
-  doc.setTextColor(116, 198, 157); // #74c69d
+  doc.setTextColor(116, 198, 157); // #7fcbd3
   doc.text('OFFLINE COMPLIANCE ARCHIVE · CMS STATE SURVEY READINESS (TAG F679 & F744)', margin + 14, y + 42);
 
   y += 66;
@@ -602,7 +602,7 @@ async function exportAuditPdf(metrics                        )                {
   y += 18;
 
   // Aggregated Audit Table Header
-  doc.setFillColor(45, 106, 79); // #2d6a4f
+  doc.setFillColor(45, 106, 79); // #1c5963
   doc.rect(margin, y, contentWidth, 22, 'F');
 
   doc.setFont('helvetica', 'bold');
@@ -767,11 +767,11 @@ function renderAuditDashboard(container             , defaultTimeframe          
     container.innerHTML = `
       <div class="cad-wrap" style="color:var(--text, #e8f3ed); font-family:var(--font, inherit);">
         <!-- Header & Action Ribbon -->
-        <div class="cad-header" style="display:flex; justify-content:space-between; align-items:flex-start; gap:16px; flex-wrap:wrap; margin-bottom:20px; border-bottom:1px solid rgba(216,243,220,0.14); padding-bottom:18px;">
+        <div class="cad-header" style="display:flex; justify-content:space-between; align-items:flex-start; gap:16px; flex-wrap:wrap; margin-bottom:20px; border-bottom:1px solid rgba(213,238,240,0.14); padding-bottom:18px;">
           <div>
             <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
               <span style="font-size:18px;">🏛️</span>
-              <p style="margin:0; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:var(--accent-hi, #74c69d);">
+              <p style="margin:0; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:var(--accent-hi, #7fcbd3);">
                 State Survey Audit Readiness &amp; Compliance Log
               </p>
             </div>
@@ -784,37 +784,37 @@ function renderAuditDashboard(container             , defaultTimeframe          
           </div>
 
           <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-            <button type="button" id="cadBtnPdf" class="fp-btn fp-btn-primary" style="display:inline-flex; align-items:center; gap:6px; padding:8px 16px; font-weight:700; border-radius:8px; cursor:pointer; background:var(--accent, #52b788); color:#08180f; border:0;">
+            <button type="button" id="cadBtnPdf" class="fp-btn fp-btn-primary" style="display:inline-flex; align-items:center; gap:6px; padding:8px 16px; font-weight:700; border-radius:8px; cursor:pointer; background:var(--accent, #4fb3bf); color:#06191d; border:0;">
               <span aria-hidden="true">📄</span> Export Audit PDF Report
             </button>
-            <button type="button" id="cadBtnCsv" class="fp-btn" style="display:inline-flex; align-items:center; gap:6px; padding:8px 14px; font-weight:600; border-radius:8px; cursor:pointer; background:rgba(82,183,136,0.16); color:var(--accent-hi, #74c69d); border:1px solid rgba(82,183,136,0.3);">
+            <button type="button" id="cadBtnCsv" class="fp-btn" style="display:inline-flex; align-items:center; gap:6px; padding:8px 14px; font-weight:600; border-radius:8px; cursor:pointer; background:rgba(79,179,191,0.16); color:var(--accent-hi, #7fcbd3); border:1px solid rgba(79,179,191,0.3);">
               <span aria-hidden="true">📊</span> Export CSV
             </button>
-            <button type="button" id="cadBtnRefresh" class="fp-btn" title="Refresh local metrics" style="display:inline-flex; align-items:center; gap:4px; padding:8px 12px; border-radius:8px; cursor:pointer; background:transparent; color:var(--muted, #a7bfb4); border:1px solid rgba(216,243,220,0.2);">
+            <button type="button" id="cadBtnRefresh" class="fp-btn" title="Refresh local metrics" style="display:inline-flex; align-items:center; gap:4px; padding:8px 12px; border-radius:8px; cursor:pointer; background:transparent; color:var(--muted, #a7bfb4); border:1px solid rgba(213,238,240,0.2);">
               <span aria-hidden="true">🔄</span> Refresh
             </button>
           </div>
         </div>
 
         <!-- Controls: Timeframe Filter + Facility Label -->
-        <div class="cad-controls" style="display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap; margin-bottom:20px; background:var(--panel, #16231f); padding:12px 16px; border-radius:12px; border:1px solid rgba(216,243,220,0.14);">
+        <div class="cad-controls" style="display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap; margin-bottom:20px; background:var(--panel, #122a2e); padding:12px 16px; border-radius:12px; border:1px solid rgba(213,238,240,0.14);">
           <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
             <span style="font-size:13px; font-weight:700; color:var(--muted, #a7bfb4);">Inspection Timeframe:</span>
-            <div class="cad-timeframe-btns" role="group" aria-label="Inspection Timeframe" style="display:inline-flex; background:rgba(0,0,0,0.25); padding:3px; border-radius:8px; border:1px solid rgba(216,243,220,0.1);">
-              <button type="button" data-tf="7days" class="cad-tf-btn ${currentTimeframe === '7days' ? 'is-active' : ''}" style="padding:5px 12px; font-size:13px; font-weight:600; border:0; border-radius:6px; cursor:pointer; background:${currentTimeframe === '7days' ? 'var(--accent, #52b788)' : 'transparent'}; color:${currentTimeframe === '7days' ? '#08180f' : 'inherit'};">Last 7 Days</button>
-              <button type="button" data-tf="30days" class="cad-tf-btn ${currentTimeframe === '30days' ? 'is-active' : ''}" style="padding:5px 12px; font-size:13px; font-weight:600; border:0; border-radius:6px; cursor:pointer; background:${currentTimeframe === '30days' ? 'var(--accent, #52b788)' : 'transparent'}; color:${currentTimeframe === '30days' ? '#08180f' : 'inherit'};">Last 30 Days</button>
-              <button type="button" data-tf="month" class="cad-tf-btn ${currentTimeframe === 'month' ? 'is-active' : ''}" style="padding:5px 12px; font-size:13px; font-weight:600; border:0; border-radius:6px; cursor:pointer; background:${currentTimeframe === 'month' ? 'var(--accent, #52b788)' : 'transparent'}; color:${currentTimeframe === 'month' ? '#08180f' : 'inherit'};">Current Month</button>
-              <button type="button" data-tf="custom" class="cad-tf-btn ${currentTimeframe === 'custom' ? 'is-active' : ''}" style="padding:5px 12px; font-size:13px; font-weight:600; border:0; border-radius:6px; cursor:pointer; background:${currentTimeframe === 'custom' ? 'var(--accent, #52b788)' : 'transparent'}; color:${currentTimeframe === 'custom' ? '#08180f' : 'inherit'};">Custom Range</button>
+            <div class="cad-timeframe-btns" role="group" aria-label="Inspection Timeframe" style="display:inline-flex; background:rgba(0,0,0,0.25); padding:3px; border-radius:8px; border:1px solid rgba(213,238,240,0.1);">
+              <button type="button" data-tf="7days" class="cad-tf-btn ${currentTimeframe === '7days' ? 'is-active' : ''}" style="padding:5px 12px; font-size:13px; font-weight:600; border:0; border-radius:6px; cursor:pointer; background:${currentTimeframe === '7days' ? 'var(--accent, #4fb3bf)' : 'transparent'}; color:${currentTimeframe === '7days' ? '#06191d' : 'inherit'};">Last 7 Days</button>
+              <button type="button" data-tf="30days" class="cad-tf-btn ${currentTimeframe === '30days' ? 'is-active' : ''}" style="padding:5px 12px; font-size:13px; font-weight:600; border:0; border-radius:6px; cursor:pointer; background:${currentTimeframe === '30days' ? 'var(--accent, #4fb3bf)' : 'transparent'}; color:${currentTimeframe === '30days' ? '#06191d' : 'inherit'};">Last 30 Days</button>
+              <button type="button" data-tf="month" class="cad-tf-btn ${currentTimeframe === 'month' ? 'is-active' : ''}" style="padding:5px 12px; font-size:13px; font-weight:600; border:0; border-radius:6px; cursor:pointer; background:${currentTimeframe === 'month' ? 'var(--accent, #4fb3bf)' : 'transparent'}; color:${currentTimeframe === 'month' ? '#06191d' : 'inherit'};">Current Month</button>
+              <button type="button" data-tf="custom" class="cad-tf-btn ${currentTimeframe === 'custom' ? 'is-active' : ''}" style="padding:5px 12px; font-size:13px; font-weight:600; border:0; border-radius:6px; cursor:pointer; background:${currentTimeframe === 'custom' ? 'var(--accent, #4fb3bf)' : 'transparent'}; color:${currentTimeframe === 'custom' ? '#06191d' : 'inherit'};">Custom Range</button>
             </div>
 
             ${
               currentTimeframe === 'custom'
                 ? `
               <div style="display:inline-flex; align-items:center; gap:6px; margin-left:8px;">
-                <input type="date" id="cadCustomStart" value="${escape(customStartDate || m.startDateIso)}" style="background:#0e1614; color:#fff; border:1px solid rgba(216,243,220,0.25); border-radius:6px; padding:4px 8px; font-size:13px;" />
+                <input type="date" id="cadCustomStart" value="${escape(customStartDate || m.startDateIso)}" style="background:#0b1719; color:#fff; border:1px solid rgba(213,238,240,0.25); border-radius:6px; padding:4px 8px; font-size:13px;" />
                 <span style="color:var(--muted); font-size:12px;">to</span>
-                <input type="date" id="cadCustomEnd" value="${escape(customEndDate || m.endDateIso)}" style="background:#0e1614; color:#fff; border:1px solid rgba(216,243,220,0.25); border-radius:6px; padding:4px 8px; font-size:13px;" />
-                <button type="button" id="cadBtnApplyCustom" style="padding:4px 10px; font-size:12px; font-weight:700; border-radius:6px; background:var(--accent-hi, #74c69d); color:#08180f; border:0; cursor:pointer;">Apply</button>
+                <input type="date" id="cadCustomEnd" value="${escape(customEndDate || m.endDateIso)}" style="background:#0b1719; color:#fff; border:1px solid rgba(213,238,240,0.25); border-radius:6px; padding:4px 8px; font-size:13px;" />
+                <button type="button" id="cadBtnApplyCustom" style="padding:4px 10px; font-size:12px; font-weight:700; border-radius:6px; background:var(--accent-hi, #7fcbd3); color:#06191d; border:0; cursor:pointer;">Apply</button>
               </div>
             `
                 : ''
@@ -823,7 +823,7 @@ function renderAuditDashboard(container             , defaultTimeframe          
 
           <div style="display:flex; align-items:center; gap:8px;">
             <span style="font-size:13px; color:var(--muted, #a7bfb4);">Facility:</span>
-            <input type="text" id="cadFacilityInput" value="${escape(m.facilityName)}" title="Click to rename facility" style="background:#0e1614; color:#fff; border:1px solid rgba(216,243,220,0.25); border-radius:6px; padding:4px 10px; font-size:13px; font-weight:600; width:220px;" />
+            <input type="text" id="cadFacilityInput" value="${escape(m.facilityName)}" title="Click to rename facility" style="background:#0b1719; color:#fff; border:1px solid rgba(213,238,240,0.25); border-radius:6px; padding:4px 10px; font-size:13px; font-weight:600; width:220px;" />
           </div>
         </div>
 
@@ -832,19 +832,19 @@ function renderAuditDashboard(container             , defaultTimeframe          
         <!-- 4 Metric Cards Dashboard Widgets -->
         <div class="cad-kpi-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:14px; margin-bottom:24px;">
           <!-- Card 1: Total Activities Generated -->
-          <div class="cad-card" style="background:var(--panel, #16231f); border:1px solid rgba(216,243,220,0.14); border-radius:12px; padding:16px;">
+          <div class="cad-card" style="background:var(--panel, #122a2e); border:1px solid rgba(213,238,240,0.14); border-radius:12px; padding:16px;">
             <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
               <span style="font-size:11.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:var(--muted, #a7bfb4);">Total Activities Generated</span>
               <span style="font-size:18px;">📑</span>
             </div>
             <div style="font-size:32px; font-weight:800; color:#fff; line-height:1.1; margin-bottom:4px;">${m.totalPackets}</div>
-            <div style="font-size:12px; color:var(--accent-hi, #74c69d); font-weight:600;">
+            <div style="font-size:12px; color:var(--accent-hi, #7fcbd3); font-weight:600;">
               ${m.periodRows.length} audit intervals recorded
             </div>
           </div>
 
           <!-- Card 2: Ailment Pathways Breakdown -->
-          <div class="cad-card" style="background:var(--panel, #16231f); border:1px solid rgba(216,243,220,0.14); border-radius:12px; padding:16px;">
+          <div class="cad-card" style="background:var(--panel, #122a2e); border:1px solid rgba(213,238,240,0.14); border-radius:12px; padding:16px;">
             <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:6px;">
               <span style="font-size:11.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:var(--muted, #a7bfb4);">Targeted Ailment Pathways</span>
               <span style="font-size:18px;">🧩</span>
@@ -865,19 +865,19 @@ function renderAuditDashboard(container             , defaultTimeframe          
           </div>
 
           <!-- Card 3: Calming & Instant Soothe Interventions -->
-          <div class="cad-card" style="background:var(--panel, #16231f); border:1px solid rgba(216,243,220,0.14); border-radius:12px; padding:16px;">
+          <div class="cad-card" style="background:var(--panel, #122a2e); border:1px solid rgba(213,238,240,0.14); border-radius:12px; padding:16px;">
             <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
               <span style="font-size:11.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:var(--muted, #a7bfb4);">De-escalation Interventions</span>
               <span style="font-size:18px;">🕊️</span>
             </div>
             <div style="font-size:32px; font-weight:800; color:#fff; line-height:1.1; margin-bottom:4px;">${m.totalCalmingUsed}</div>
-            <div style="font-size:12px; color:var(--accent-hi, #74c69d); font-weight:600;">
+            <div style="font-size:12px; color:var(--accent-hi, #7fcbd3); font-weight:600;">
               Non-pharm calm &amp; sundown sheets
             </div>
           </div>
 
           <!-- Card 4: Estimated Engagement Time -->
-          <div class="cad-card" style="background:var(--panel, #16231f); border:1px solid rgba(216,243,220,0.14); border-radius:12px; padding:16px;">
+          <div class="cad-card" style="background:var(--panel, #122a2e); border:1px solid rgba(213,238,240,0.14); border-radius:12px; padding:16px;">
             <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
               <span style="font-size:11.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:var(--muted, #a7bfb4);">Estimated Engagement</span>
               <span style="font-size:18px;">⏱️</span>
@@ -890,7 +890,7 @@ function renderAuditDashboard(container             , defaultTimeframe          
         </div>
 
         <!-- Aggregated Audit Table Section -->
-        <div style="background:var(--panel, #16231f); border:1px solid rgba(216,243,220,0.14); border-radius:12px; padding:18px; margin-bottom:20px;">
+        <div style="background:var(--panel, #122a2e); border:1px solid rgba(213,238,240,0.14); border-radius:12px; padding:18px; margin-bottom:20px;">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px;">
             <div>
               <h3 style="margin:0 0 2px; font-size:16px; font-weight:700; color:#fff;">
@@ -902,7 +902,7 @@ function renderAuditDashboard(container             , defaultTimeframe          
             </div>
             <div style="display:flex; align-items:center; gap:6px;">
               <span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:#10b981;"></span>
-              <span style="font-size:12px; font-weight:700; color:var(--accent-hi, #74c69d);">
+              <span style="font-size:12px; font-weight:700; color:var(--accent-hi, #7fcbd3);">
                 ${m.overallComplianceRate}% F679 &amp; F744 Survey Ready
               </span>
             </div>
@@ -911,7 +911,7 @@ function renderAuditDashboard(container             , defaultTimeframe          
           <div style="overflow-x:auto;">
             <table style="width:100%; border-collapse:collapse; font-size:13px; text-align:left;">
               <thead>
-                <tr style="background:#0e1614; border-bottom:1px solid rgba(216,243,220,0.2); color:var(--muted, #a7bfb4); text-transform:uppercase; font-size:11px; letter-spacing:0.06em;">
+                <tr style="background:#0b1719; border-bottom:1px solid rgba(213,238,240,0.2); color:var(--muted, #a7bfb4); text-transform:uppercase; font-size:11px; letter-spacing:0.06em;">
                   <th style="padding:10px 12px;">Date Range</th>
                   <th style="padding:10px 12px; text-align:right;">Total Sessions</th>
                   <th style="padding:10px 12px;">Primary Pathways Employed</th>
@@ -926,7 +926,7 @@ function renderAuditDashboard(container             , defaultTimeframe          
                     : m.periodRows
                         .map(
                           (r, idx) => `
-                    <tr style="border-bottom:1px solid rgba(216,243,220,0.08); background:${idx % 2 === 1 ? 'rgba(0,0,0,0.15)' : 'transparent'};">
+                    <tr style="border-bottom:1px solid rgba(213,238,240,0.08); background:${idx % 2 === 1 ? 'rgba(0,0,0,0.15)' : 'transparent'};">
                       <td style="padding:10px 12px; font-weight:700; color:#fff;">
                         ${escape(r.dateRangeLabel)}
                       </td>
@@ -936,7 +936,7 @@ function renderAuditDashboard(container             , defaultTimeframe          
                       <td style="padding:10px 12px; color:var(--muted, #a7bfb4);">
                         ${escape(r.primaryPathways)}
                       </td>
-                      <td style="padding:10px 12px; text-align:right; font-weight:600; color:${r.deescalationUsed > 0 ? 'var(--accent-hi, #74c69d)' : 'inherit'};">
+                      <td style="padding:10px 12px; text-align:right; font-weight:600; color:${r.deescalationUsed > 0 ? 'var(--accent-hi, #7fcbd3)' : 'inherit'};">
                         ${r.deescalationUsed} ${r.deescalationUsed === 1 ? 'sheet' : 'sheets'}
                       </td>
                       <td style="padding:10px 12px; text-align:center;">
@@ -959,10 +959,10 @@ function renderAuditDashboard(container             , defaultTimeframe          
         </div>
 
         <!-- Formal Regulatory Adherence Box -->
-        <div style="background:rgba(82,183,136,0.08); border:1px solid rgba(82,183,136,0.25); border-radius:10px; padding:14px 18px;">
+        <div style="background:rgba(79,179,191,0.08); border:1px solid rgba(79,179,191,0.25); border-radius:10px; padding:14px 18px;">
           <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
-            <span style="color:var(--accent-hi, #74c69d); font-size:14px; font-weight:800;">✓</span>
-            <span style="font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:var(--accent-hi, #74c69d);">
+            <span style="color:var(--accent-hi, #7fcbd3); font-size:14px; font-weight:800;">✓</span>
+            <span style="font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:var(--accent-hi, #7fcbd3);">
               Official CMS State Surveyor Inspection Notice
             </span>
           </div>

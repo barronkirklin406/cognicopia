@@ -51,12 +51,12 @@
       gap: 16px;
       padding: 20px 24px;
       border-bottom: 2px solid #e8e8e8;
-      background: #f4efe6;
+      background: #f5f1e6;
     }
     .plc-header h2 {
       margin: 0;
       font-size: 20px;
-      color: #1b382b;
+      color: #0e3c43;
       font-family: "Atkinson Hyperlegible", "Trebuchet MS", sans-serif;
       font-weight: 700;
     }
@@ -71,7 +71,7 @@
       border: 2px solid #c5a059;
       border-radius: 8px;
       background: transparent;
-      color: #1b382b;
+      color: #0e3c43;
       font-size: 24px;
       cursor: pointer;
       transition: background 0.16s ease, border-color 0.16s ease;
@@ -147,9 +147,9 @@
     }
     .plc-input:focus,
     .plc-textarea:focus {
-      border-color: #1b382b;
+      border-color: #0e3c43;
       outline: none;
-      box-shadow: 0 0 0 3px rgba(27, 56, 43, 0.2);
+      box-shadow: 0 0 0 3px rgba(14,60,67, 0.2);
     }
     .plc-textarea {
       min-height: 80px;
@@ -169,14 +169,14 @@
       font-size: 18px;
       margin-bottom: 8px;
       font-weight: 700;
-      color: #1b382b;
+      color: #0e3c43;
     }
     .plc-icon-trigger {
       color: #8a3a20;
       font-size: 20px;
     }
     .plc-icon-soothe {
-      color: #1b382b;
+      color: #0e3c43;
       font-size: 20px;
     }
 
@@ -219,7 +219,7 @@
     .plc-footer {
       padding: 16px 24px;
       border-top: 2px solid #e8e8e8;
-      background: #f4efe6;
+      background: #f5f1e6;
       display: flex;
       gap: 12px;
       justify-content: flex-end;
@@ -236,11 +236,11 @@
       transition: background 0.16s ease, border-color 0.16s ease;
     }
     .plc-btn-primary {
-      background: #1b382b;
+      background: #0e3c43;
       color: #ffffff;
     }
     .plc-btn-primary:hover:not(:disabled) {
-      background: #2d5a44;
+      background: #1c5963;
     }
     .plc-btn-primary:disabled {
       opacity: 0.5;
@@ -252,7 +252,7 @@
       border-color: #ddd1ba;
     }
     .plc-btn-ghost:hover:not(:disabled) {
-      border-color: #1b382b;
+      border-color: #0e3c43;
     }
 
     /* ---------- PRINT CSS: 6" x 5" card with fold line ---------- */
