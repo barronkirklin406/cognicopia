@@ -7,7 +7,9 @@
    this browser only (localStorage "cognicopia_invoice_request": a business's name, billing contact and address, never a
    resident) so a second invoice does not mean typing it all again; "Clear the form" removes them.
 
-   The PDF is a request, not a final invoice: BarronCrafts confirms it by email and sends the final invoice with the
+   The page sends nothing by itself. After the PDF is made, "Email this request" opens the person's OWN mail program with the
+   same details as plain text (mailRequest below), so the Net-30 desk can read them reliably; nothing leaves until they press
+   Send there. The PDF is a request, not a final invoice: BarronCrafts confirms it by email and sends the final invoice with the
    license key. Prices come from src/config/license.js (the one place prices live); the vendor's own facts are VENDOR
    below, to be changed here as they change (the DUNS number, once issued).
 
@@ -186,7 +188,22 @@
       "<pre>" + esc(vendorBlock()) + "</pre><p><b>" + FORWARD_LINE + "</b> This is a request, not a final invoice, until we confirm it by email.</p>";
   }
 
-  var api = { KEY: KEY, DUE_LINE: DUE_LINE, FORWARD_LINE: FORWARD_LINE, VENDOR: VENDOR, plans: plans, validate: validate, build: build, fileName: fileName, vendorBlock: vendorBlock, makePdf: makePdf, html: html, money: money };
+  /* The request as an email: plain "Label: value" lines under a fixed subject, so a person or the Net-30 desk (docs/net30-desk.md)
+     can read it without opening the PDF. A web page cannot send mail; this is only the text and the link that opens the
+     person's own mail program with it ready. `name` is the PDF's file name, to remind them to attach it. */
+  var MAIL_SUBJECT = "[Cognicopia Invoice Request] ";
+  function mailRequest(inv, name) {
+    var b = inv.bill, nl = "\r\n";
+    var text = ["Cognicopia Net-30 invoice request", "",
+      "Reference: " + inv.ref, "Facility: " + b.facility, "Billing contact: " + b.contact, "Contact email: " + b.email, "Phone: " + b.phone,
+      "Address: " + b.street + ", " + b.city + ", " + b.state + " " + b.zip, "PO number: " + inv.po,
+      "License: " + b.plan, "Buildings: " + b.qty, "Total: " + inv.total, "Terms: " + VENDOR.terms, "",
+      "Please attach the PDF you just downloaded" + (name ? " (" + name + ")" : "") + "."].join(nl);
+    var subject = MAIL_SUBJECT + inv.ref;
+    return { to: VENDOR.email, subject: subject, text: text, href: "mailto:" + VENDOR.email + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(text) };
+  }
+
+  var api = { KEY: KEY, MAIL_SUBJECT: MAIL_SUBJECT, mailRequest: mailRequest, DUE_LINE: DUE_LINE, FORWARD_LINE: FORWARD_LINE, VENDOR: VENDOR, plans: plans, validate: validate, build: build, fileName: fileName, vendorBlock: vendorBlock, makePdf: makePdf, html: html, money: money };
   root.CognicopiaInvoice = api;
   if (!root.document || !root.document.getElementById("invForm")) return;
 
@@ -239,6 +256,14 @@
   $("invAgain").addEventListener("click", function () { if (last && last.doc) last.doc.save(last.name); });
   $("invPrintBtn").addEventListener("click", function () { d.body.classList.add("inv-printing"); root.print(); d.body.classList.remove("inv-printing"); });
   $("invClear").addEventListener("click", function () { try { root.localStorage.removeItem(KEY); } catch (e) { /* nothing kept */ } $("invForm").reset(); $("inv-plan").value = "annual"; showErrors({ errors: {} }); $("invSummary").textContent = "The form is cleared."; });
+  $("invMail").addEventListener("click", function () { if (last) root.location.href = mailRequest(last.inv, last.name).href; });
+  $("invMailCopy").addEventListener("click", function () {
+    if (!last) return;
+    var state = $("invMailState"), box = $("invMailBox"), text = mailRequest(last.inv, last.name).text.replace(/\r\n/g, "\n");
+    var done = function () { state.textContent = "Copied. Paste it into an email to " + VENDOR.email + " with the subject " + mailRequest(last.inv, last.name).subject + ", and attach the PDF."; };
+    var fail = function () { box.textContent = text; box.hidden = false; var r = d.createRange(); r.selectNodeContents(box); var g = root.getSelection(); g.removeAllRanges(); g.addRange(r); state.textContent = "Select the text and copy it with your keyboard (Ctrl+C, or Command+C on a Mac), then paste it into an email to " + VENDOR.email + ". Subject: " + mailRequest(last.inv, last.name).subject; };
+    if (root.navigator.clipboard && root.navigator.clipboard.writeText) root.navigator.clipboard.writeText(text).then(done, fail); else fail();
+  });
   $("invVendor").textContent = vendorBlock();
   $("invCopy").addEventListener("click", function () {
     var s = $("invCopyState"), text = vendorBlock();

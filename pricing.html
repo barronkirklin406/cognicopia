@@ -505,7 +505,8 @@ body { padding-left: var(--sb-w); }
       .statusbox.is-bad { border-left-color: var(--cg-danger-200,#ffc4b4); }
       .statusbox.is-wait { border-left-color: var(--cg-gold-300,#e8cc8a); }
       .statusbox h2 { margin: 0 0 8px; border: 0; padding: 0; font-size: 18pt; }
-      .statusbox p { margin: 0 0 10px; }
+      .statusbox p { margin: 0 0 10px; overflow-wrap: anywhere; }
+      .statusbox [hidden], .keybox[hidden] { display: none !important; }
       .keybox { display: block; width: 100%; min-height: 112px; box-sizing: border-box; padding: 12px 14px; border: 2px solid #d8f3dc; border-radius: 10px; background: var(--cg-green-950,#0b1a13); color: #ffffff; font: 600 16px/1.4 Consolas, "Courier New", monospace; word-break: break-all; resize: vertical; }
       .actions { display: flex; flex-wrap: wrap; gap: 12px; margin: 14px 0 0; }
       .actions .plan-btn { flex: 1 1 200px; }
@@ -959,7 +960,7 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
 
     <div class="card" id="invoice">
       <h2>Pay by purchase order or invoice (Net 30)</h2>
-      <p>No card needed. Fill in the form and your computer makes a PDF invoice request. Nothing is sent anywhere: the PDF is made here, in your browser. Forward it to your accounts payable department. When we confirm it by email, we send the final invoice and your license key together.</p>
+      <p>No card needed. Fill in the form and your computer makes a PDF invoice request. This page sends nothing: the PDF is made here, in your browser. Then press "Email this request to Cognicopia" to open your own mail program with the details already typed (attach the PDF), or forward the PDF to your accounts payable department. We reply by email with the final invoice and your license key together.</p>
       <form id="invForm" class="inv-grid" novalidate aria-label="Invoice request">
         <div class="inv-f inv-w">
           <label class="big" for="inv-facility">Facility or company name</label>
@@ -1031,7 +1032,11 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
         <p id="invOutMsg"></p>
         <p>Reference <strong id="invOutRef"></strong> &middot; Total <strong id="invOutTotal"></strong> &middot; Due <strong id="invOutDue"></strong></p>
         <p id="invOutFile"></p>
+        <p id="invMailState" role="status"></p>
+        <pre class="keybox" id="invMailBox" hidden aria-label="The request, as text to copy"></pre>
         <div class="actions">
+          <button type="button" class="plan-btn" id="invMail">Email this request to Cognicopia</button>
+          <button type="button" class="plan-btn" id="invMailCopy">Copy the details instead</button>
           <button type="button" class="plan-btn" id="invAgain">Download it again</button>
           <button type="button" class="plan-btn" id="invPrintBtn" hidden>Print it</button>
         </div>

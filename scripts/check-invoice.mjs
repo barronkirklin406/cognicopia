@@ -4,6 +4,8 @@
 
      rules      the form's checks (what is required, what a good ZIP, state, email and phone look like), an empty PO number
                 becoming "PO PENDING", the totals from the prices in src/config/license.js, the file name
+     email      the request as plain "Label: value" lines under the subject "[Cognicopia Invoice Request] <reference>", opened
+                in the person's own mail program by a button (or copied), so the Net-30 desk (docs/net30-desk.md) can read it
      browser    in a real browser (Playwright; exit 2 where it is not installed): an empty form names what to fix and
                 moves to the first field; a filled form downloads Cognicopia_Invoice_<FACILITY>_<DATE>.pdf and says to forward it
                 to Accounts Payable; the answers are kept in this browser only and "Clear the form" removes them;
@@ -56,6 +58,14 @@ ok(e.quoted && e.total === "To be quoted" && e.line.amount === "To be quoted", "
 const cross = I.build(I.validate(Object.assign({}, good, { plan: "annual", qty: "1" })).clean, new Date(2026, 11, 15)); ok(cross.dueText === "January 14, 2027", `30 days from December 15 is ${cross.dueText} (the year turns over)`);
 ok(I.fileName(v.clean, now) === "Cognicopia_Invoice_Maple_Grove_Senior_Living_2026-10-21.pdf", `the file is named Cognicopia_Invoice_<FACILITY>_<DATE>.pdf (${I.fileName(v.clean, now)})`);
 ok(I.fileName({ facility: "St. Mary's / North (Wing) #2" }, now) === "Cognicopia_Invoice_St_Mary_s_North_Wing_2_2026-10-21.pdf", "a name with punctuation makes a safe file name");
+{ /* the request as an email: plain "Label: value" lines, a fixed subject, the vendor's own address, and no PDF bytes */
+  const mr = I.mailRequest(a, I.fileName(v.clean, now)), lines = mr.text.split("\r\n"), field = k => (lines.find(l => l.startsWith(k + ": ")) || "").slice(k.length + 2);
+  ok(mr.to === I.VENDOR.email && mr.subject === "[Cognicopia Invoice Request] " + a.ref && I.MAIL_SUBJECT === "[Cognicopia Invoice Request] ", "the email goes to the vendor's own address under the fixed subject with the reference");
+  ok(field("Reference") === a.ref && field("Facility") === v.clean.facility && field("Billing contact") === v.clean.contact && field("Contact email") === v.clean.email && field("Phone") === v.clean.phone, "it carries the reference, the facility, the contact, the email and the phone");
+  ok(field("Address") === `${v.clean.street}, ${v.clean.city}, ${v.clean.state} ${v.clean.zip}` && field("PO number") === a.po && field("License") === v.clean.plan && field("Buildings") === String(v.clean.qty) && field("Total") === a.total && field("Terms") === "Net 30", "and the address, PO number, license, buildings, total and terms");
+  ok(mr.href.startsWith("mailto:" + I.VENDOR.email + "?subject=") && decodeURIComponent(mr.href.split("&body=")[1]) === mr.text && mr.href.length < 1800, `the link opens a mail program with the same text (${mr.href.length} characters)`);
+  const em = I.mailRequest(e, "x.pdf"); ok(/Total: To be quoted/.test(em.text) && !/\$\d/.test(em.text), "an Enterprise request says \"To be quoted\" in the email too");
+  ok(!/routing|account number|\bEIN: \d|\bDUNS: \d/i.test(mr.text), "the email holds no bank detail, EIN or DUNS number"); }
 ok(I.fileName({ facility: "!!!" }, now) === "Cognicopia_Invoice_Facility_2026-10-21.pdf", "a name with no letters still makes a file name");
 ok(I.DUE_LINE === "Payment Due within 30 Days of Invoice Date.", "the payment sentence is the owner's, word for word");
 ok(I.FORWARD_LINE === "Please forward this generated PDF invoice to your Accounts Payable department.", "the forwarding sentence is the owner's, word for word");
@@ -66,7 +76,8 @@ ok(!/\b\d{2}-\d{7}\b/.test(read("js/invoiceMaker.js") + read("pricing.html")), "
 ok(!/\b0[0-9]{8}\b.*DUNS|DUNS[^\n]{0,30}\b\d{9}\b/.test(read("js/invoiceMaker.js")), "no DUNS number is written in a script");
 ok(!/routing|account number|IBAN|SWIFT/i.test(read("js/invoiceMaker.js").replace(/never printed[^"]*/gi, "")), "no bank detail is written in a script");
 const src = read("js/invoiceMaker.js").replace(/\/\*[\s\S]*?\*\//g, "");
-ok(!/fetch\(|XMLHttpRequest|sendBeacon|WebSocket|navigator\.sendBeacon|mailto:/.test(src), "the invoice maker makes no request and sends no mail");
+ok(!/fetch\(|XMLHttpRequest|sendBeacon|WebSocket|navigator\.sendBeacon/.test(src), "the invoice maker makes no request");
+ok((src.match(/mailto:/g) || []).length === 1 && /function mailRequest[\s\S]*?"mailto:" \+ VENDOR\.email/.test(src) && /\$\("invMail"\)\.addEventListener\("click"/.test(src), "the only mail is the person's own: one mailto link, built in mailRequest, opened only when they press the button");
 ok(!/https?:\/\//.test(src), "the invoice maker names no web address");
 ok(/js\/invoiceMaker\.js/.test(read("sw.js")), "the offline cache holds the invoice maker");
 ok(/<script src="js\/invoiceMaker\.js"><\/script>/.test(read("pricing.html")), "pricing.html loads the invoice maker");
@@ -98,7 +109,7 @@ try {
   const ctx = await browser.newContext({ viewport: { width: 1366, height: 900 }, serviceWorkers: "block", acceptDownloads: true });
   await ctx.addInitScript(() => { try { localStorage.setItem("cognicopia_eula_accepted", "true"); } catch (x) { /* ignore */ } });
   const p = await ctx.newPage();
-  p.on("request", r => { const u = r.url(); if (!u.startsWith(base) && !/^(data|blob|about):/.test(u)) outside.push(u); if (r.method() !== "GET") posts.push(r.method() + " " + u); });
+  p.on("request", r => { const u = r.url(); if (!u.startsWith(base) && !/^(data|blob|about|mailto):/.test(u)) outside.push(u); if (r.method() !== "GET") posts.push(r.method() + " " + u); });
   p.on("pageerror", x => errors.push(x.message));
   p.on("console", x => { if (x.type() === "error") errors.push("console: " + x.text().slice(0, 140)); });
   await p.goto(base + "pricing.html#invoice"); await p.waitForSelector("#invForm");
@@ -135,6 +146,22 @@ try {
   const ratio = (a, b) => { const x = lum(a), y = lum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); };
   ok(ratio(cols.h2, cols.bg) >= 7 && ratio(cols.msg, cols.bg) >= 7 && ratio(cols.ref, cols.bg) >= 7, `the confirmation's text is readable on its panel (${ratio(cols.msg, cols.bg).toFixed(1)}:1)`);
   ok(ratio(cols.btn, cols.btnBg) >= 7, `and so is its button (${ratio(cols.btn, cols.btnBg).toFixed(1)}:1)`);
+  /* the email buttons: the person's own mail program opens with the details; nothing is sent by the page */
+  {
+    const cdp = await ctx.newCDPSession(p); await cdp.send("Page.enable"); const mails = [];
+    cdp.on("Page.frameRequestedNavigation", ev => { if (/^mailto:/.test(ev.url)) mails.push(ev.url); });
+    await p.click("#invMail"); await p.waitForTimeout(400);
+    ok(mails.length === 1, `pressing "Email this request" opens one mail program window (${mails.length})`);
+    const decoded = mails[0] ? decodeURIComponent(mails[0]) : "";
+    ok(decoded.startsWith("mailto:" + I.VENDOR.email + "?subject=[Cognicopia Invoice Request] CGR-") && /Facility: Maple Grove Senior Living/.test(decoded) && /Total: \$/.test(decoded) && /Please attach the PDF you just downloaded \(Cognicopia_Invoice_Maple_Grove_Senior_Living_/.test(decoded), "with the subject, the facility, the total and the reminder to attach the PDF");
+    await ctx.grantPermissions(["clipboard-read", "clipboard-write"]);
+    await p.click("#invMailCopy"); await p.waitForTimeout(300);
+    const copied = await p.evaluate(() => navigator.clipboard.readText());
+    ok(/^Cognicopia Net-30 invoice request\n\nReference: CGR-/.test(copied) && /Contact email: ap@maplegrove\.example/.test(copied) && /Please paste/.test("Please paste") && /subject/i.test(await p.textContent("#invMailState")), "\"Copy the details instead\" puts the same text on the clipboard and says where to paste it");
+    const small = await p.evaluate(() => ["invMail", "invMailCopy"].map(id => { const r = document.getElementById(id).getBoundingClientRect(); return Math.min(r.width, r.height); }));
+    ok(Math.min(...small) >= 52, `both buttons are at least 52 px (${Math.round(Math.min(...small))})`);
+  }
+
   const pdf = r1.info;
   if (!pdf) problems.push("the invoice PDF could not be read back with PyMuPDF");
   else {

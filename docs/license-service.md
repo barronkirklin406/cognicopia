@@ -25,7 +25,7 @@ The buyer gets the key twice if everything works (on the page and in the email),
 
 | Address | Who calls it | What it does |
 |---|---|---|
-| `POST /api/licenses/webhook` | Stripe | Emails the key after a payment. Answers 200 when it has dealt with the event (or has nothing to do), an error when Stripe should try again. |
+| `POST /api/licenses/webhook` | Stripe | Emails the key after a card payment, and for a Net-30 invoice (below). Answers 200 when it has dealt with the event (or has nothing to do), an error when Stripe should try again. |
 | `POST /api/licenses/redeem` | `activate.html` on the site | Returns the key for a checkout reference, so the page can show it. Only `cognicopia.org` may read the answer; ten tries a minute from one address. |
 | `GET /api/licenses/health` | You | Which settings are present: names only, never values. `ready: true` means every setting is there. |
 
@@ -42,9 +42,21 @@ Set in the host's environment, never in the repository (it is public).
 | `RESEND_API_KEY` | The email service's key. |
 | `EMAIL_FROM` | The sender, for example `Cognicopia <licenses@cognicopia.org>`. The domain must be verified with the email service. |
 | `EMAIL_REPLY_TO` | Optional: where replies go, for example `cognicopia@outlook.com`. |
+| `NET30_KEY_TIMING` | Optional. `with_invoice` (the default) or `on_payment`: when a Net-30 invoice's key is emailed (see "Net-30 invoices"). |
 | `SITE_URL`, `LICENSE_ALLOWED_ORIGINS` | Optional; both default to `https://cognicopia.org`. |
 
 A setting that is missing breaks only what needs it, and the answer names the setting, never a value.
+
+## Net-30 invoices
+
+A facility that pays by invoice (Stripe "send invoice", due in 30 days) gets its key by email too, with nobody in between. The webhook also listens for `invoice.finalized` and `invoice.paid`. Both events are signed by Stripe like the others; what the service reads is the invoice in the event, and it makes **no** call back to Stripe for it.
+
+- Only an invoice that is **billed by email** (`collection_method` is `send_invoice`) and holds **exactly one** of the two license prices, quantity 1, becomes a key. A card invoice is left to the checkout path above (so nobody gets two emails), another product sends nothing, and an invoice for several licenses is left to a person (the answer says `needs_a_person` and the log names the invoice, never a key).
+- The key goes to the email on the invoice, names the customer's name on the invoice, and is paid through the end of the period the invoice covers (a yearly invoice, a year; the renewal invoice a year later, a year more). It carries the same license id for the same subscription, so withdrawing one withdraws every renewal.
+- **When** is one setting, `NET30_KEY_TIMING`. `with_invoice` (the default) sends the key when the invoice is finalized, together with Stripe's invoice email: this is what the pricing page promises ("we send the final invoice and the license key together"). `on_payment` waits until the invoice is paid; a check marked as received counts.
+- The webhook endpoint in Stripe needs `invoice.finalized` and `invoice.paid` added to its events **after** this code is deployed. Before that, Stripe does not send them.
+
+`node scripts/check-license-service.mjs` proves all of it with a stand-in for Stripe and for email. The step-by-step for whoever runs the invoices is [net30-desk.md](net30-desk.md).
 
 ## Two keys, on purpose
 
