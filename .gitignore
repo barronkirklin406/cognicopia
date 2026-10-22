@@ -31,3 +31,7 @@ __pycache__/
 # raw coloring masters (rights not settled): never committed
 assets/coloring/_inbox/*.png
 assets/coloring/_inbox/*.json
+
+# the owner's n8n workflow is private: kept outside the published repository (docs/n8n-operations.md)
+/owner-private/
+/n8n-*.json

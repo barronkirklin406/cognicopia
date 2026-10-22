@@ -68,9 +68,12 @@
   var NEED = { 3: 2, 4: 3, 5: 4, 6: 5 };            // how many words a word search of each size holds
   /* a list in the order a screen should try it: what the topic asks for first, then the rest, and what was just on the screen last */
   function ordered(list, o, rng, label) {
-    var topic = o && o.topic, avoid = (o && o.avoid) || [];
-    var hit = topic ? list.filter(function (x) { return x.topics.indexOf(topic) >= 0; }) : [], rest = list.filter(function (x) { return hit.indexOf(x) < 0; });
-    var all = rng.fork(label + "-t").shuffle(hit).concat(rng.fork(label + "-r").shuffle(rest));
+    var topic = o && o.topic, era = o && o.era, avoid = (o && o.avoid) || [];
+    /* an era the person chose comes first (the 1940s to the 1980s, js/tabletEras.js); inside it, the topic; then everything else */
+    var inEra = era ? list.filter(function (x) { return x.era === era; }) : [], others = era ? list.filter(function (x) { return x.era !== era; }) : list;
+    var hit = topic ? others.filter(function (x) { return x.topics.indexOf(topic) >= 0; }) : [], rest = others.filter(function (x) { return hit.indexOf(x) < 0; });
+    var eraTop = topic ? inEra.filter(function (x) { return x.topics.indexOf(topic) >= 0; }) : [], eraRest = inEra.filter(function (x) { return eraTop.indexOf(x) < 0; });
+    var all = rng.fork(label + "-e").shuffle(eraTop).concat(rng.fork(label + "-f").shuffle(eraRest), rng.fork(label + "-t").shuffle(hit), rng.fork(label + "-r").shuffle(rest));
     return all.filter(function (x) { return avoid.indexOf(x.id) < 0; }).concat(all.filter(function (x) { return avoid.indexOf(x.id) >= 0; }));
   }
 
@@ -125,7 +128,8 @@
     return out;
   }
   function sayings(o) {
-    var c = cfgOf(o, "saying"), rng = rngOf(o, "sy"), avoid = (o && o.avoid) || [], order = rng.shuffle(sayingPool());
+    var c = cfgOf(o, "saying"), rng = rngOf(o, "sy"), avoid = (o && o.avoid) || [], pool = sayingPool(), era = o && o.era;
+    var order = era ? rng.fork("e").shuffle(pool.filter(function (s) { return s.era === era; })).concat(rng.fork("r").shuffle(pool.filter(function (s) { return s.era !== era; }))) : rng.shuffle(pool);
     var fresh = order.filter(function (s) { return avoid.indexOf(s.id) < 0; }).concat(order.filter(function (s) { return avoid.indexOf(s.id) >= 0; }));
     return { items: fresh.slice(0, c.count).map(function (s) {
       var opts = [s.answer].concat(rng.fork(s.id).shuffle(s.others).slice(0, c.options - 1));

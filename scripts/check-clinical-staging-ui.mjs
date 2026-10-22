@@ -153,13 +153,13 @@ async function open(path, viewport) {
   const allShown = await pg.$$eval(".tbp-card", els => els.filter(c => !c.parentNode.hidden).length);
   ok(allShown === 13 && await pg.$eval("#tbStageMiddle", e => e.checked), "turning Calm mode off brings every activity and the chosen level back");
   /* keep a word off the screen: open the sayings, take a word from the screen, ask to keep it off, and the next screen does not show it */
-  await pg.click('[data-act="saying"]'); await pg.waitForTimeout(500);
+  await pg.click('[data-act="saying"]'); await pg.waitForSelector("#tbStage .tb-opt", { timeout: 15000 });   // wait for the answer buttons, not a fixed half second: a busy computer draws them later
   const screenText = await pg.evaluate(() => document.getElementById("tbStage").innerText);
   const word = (screenText.match(/\b[A-Za-z]{5,10}\b/g) || []).find(w => !/^(Choose|Circle|Which|Finish|Finishes|Another|Lovely|Wonderful|spell|Help|Next)$/i.test(w));
   ok(!!word, "an activity shows words to test with");
   if (word) {
     await pg.click("#tbBack"); await pg.waitForTimeout(300);
-    await pg.fill("#tbAvoid", word); await pg.click('[data-act="saying"]'); await pg.waitForTimeout(600);
+    await pg.fill("#tbAvoid", word); await pg.click('[data-act="saying"]'); await pg.waitForSelector("#tbStage .tb-opt", { timeout: 15000 }); await pg.waitForTimeout(150);
     const t2 = await pg.evaluate(() => document.getElementById("tbStage").innerText);
     ok(!new RegExp("\\b" + word + "\\b", "i").test(t2), `with "${word}" kept off the screen, the activity does not show it`);
     /* and in the answer buttons too: take a word that was an answer choice, keep it off, and draw many more screens. The words

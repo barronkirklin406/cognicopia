@@ -29,12 +29,13 @@
   var praise = function () { return PRAISE[Math.floor(Math.random() * PRAISE.length)]; };
 
   /* ---------- what is remembered in this browser: the choices only, never what anyone did ---------- */
-  var PREFS_KEY = "cognicopia_tablet_prefs", prefs = { stage: "middle", topic: "", sound: true, speed: 2, grid: 0, palette: 0, paper: 0 };
+  var PREFS_KEY = "cognicopia_tablet_prefs", prefs = { stage: "middle", topic: "", era: "", sound: true, speed: 2, grid: 0, palette: 0, paper: 0 };
   try {
     var saved = JSON.parse(window.localStorage.getItem(PREFS_KEY) || "null");
     if (saved) {
       if (T.STAGES[saved.stage]) prefs.stage = saved.stage;
       if (T.TOPICS.some(function (t) { return t.id === saved.topic; })) prefs.topic = saved.topic;
+      if (/^19[4-8]0s$/.test(saved.era)) prefs.era = saved.era;
       if (saved.sound === false) prefs.sound = false;
       if (saved.speed >= 1 && saved.speed <= 4) prefs.speed = Math.round(saved.speed);
       if (saved.grid >= 3 && saved.grid <= 6) prefs.grid = Math.round(saved.grid);
@@ -185,7 +186,7 @@
       again: function () { next(); }
     };
     me.api = api;
-    var opts = { stage: effStage(), topic: prefs.topic, seed: seed, avoid: lastUsed[act.id] || [], prefs: prefs };
+    var opts = { stage: effStage(), topic: prefs.topic, era: prefs.era, seed: seed, avoid: lastUsed[act.id] || [], prefs: prefs };
     $("tbAnchor").textContent = T.anchor(act.id, opts.stage);
     try {
       me.cleanup = act.start(stage, opts, api) || null;
@@ -262,6 +263,8 @@
   T.TOPICS.slice().sort(function (a, b) { return a.label < b.label ? -1 : 1; }).forEach(function (t) { var op = document.createElement("option"); op.value = t.id; op.textContent = t.label.charAt(0).toUpperCase() + t.label.slice(1); topic.appendChild(op); });
   topic.value = prefs.topic; $({ early: "tbStageEarly", middle: "tbStageMiddle", late: "tbStageLate" }[prefs.stage]).checked = true;
   topic.addEventListener("change", function () { prefs.topic = topic.value; savePrefs(); });
+  var era = $("tbEra"); era.value = prefs.era;
+  era.addEventListener("change", function () { prefs.era = /^19[4-8]0s$/.test(era.value) ? era.value : ""; savePrefs(); });
   $("tbAvoid").addEventListener("input", function () { avoidTerms = T.avoidWords(this.value); });
   function calmApply() {
     var late = $("tbStageLate"), back = $({ early: "tbStageEarly", middle: "tbStageMiddle", late: "tbStageLate" }[prefs.stage]);

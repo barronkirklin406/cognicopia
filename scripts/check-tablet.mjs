@@ -36,7 +36,7 @@ const read = f => fs.readFileSync(path.join(ROOT, f), "utf8");
 
 /* the engine in a sandbox with the real puzzle makers and content, and no browser */
 const ctx = vm.createContext({ console, Math, Date }); ctx.globalThis = ctx;
-for (const f of ["assets/pcg/pcg-data.bundle.js", "src/pcg/prng.js", "src/pcg/matrix.js", "src/pcg/grammar.js", "src/pcg/puzzles.js", "js/tabletSound.js", "js/tabletArt.js", "js/tabletBanks.js", "js/tabletEngine.js"]) vm.runInContext(read(f), ctx, { filename: f });
+for (const f of ["assets/pcg/pcg-data.bundle.js", "src/pcg/prng.js", "src/pcg/matrix.js", "src/pcg/grammar.js", "src/pcg/puzzles.js", "js/tabletSound.js", "js/tabletArt.js", "js/tabletBanks.js", "js/tabletEras.js", "js/tabletEngine.js"]) vm.runInContext(read(f), ctx, { filename: f });
 const T = ctx.CognicopiaTablet, D = ctx.CognicopiaPCGData, G = ctx.CognicopiaPCG.grammar, Z = ctx.CognicopiaPCG.puzzles, Snd = ctx.CognicopiaTabletSound, Art = ctx.CognicopiaTabletArt, Bank = ctx.CognicopiaTabletBanks;
 const plain = x => JSON.parse(JSON.stringify(x));          // out of the sandbox, so deep comparisons work
 const STAGES = ["early", "middle", "late"], TOPICS = ["", ...T.TOPICS.map(t => t.id)];
@@ -141,10 +141,38 @@ ok(made === 3 * 43, "every stage and topic was tried (129 combinations)");
   const pool = plain(T.counts());
   ok(pool.sayings >= 100, `${pool.sayings} sayings to finish (at least 100)`);
   const allSay = Bank.SAYINGS.concat(D.activities.sayings);
-  ok(Bank.SAYINGS.length >= 40 && Bank.SAYINGS.every(s => lintOk(s.lead + " " + s.answer) && s.others.length === 2 && !s.others.includes(s.answer) && new Set(s.others).size === 2 && s.lead.toLowerCase().indexOf(s.answer.toLowerCase()) < 0 && /^(proverb|song|hymn)$/.test(s.kind) && s.others.every(lintOk)), "the new sayings are proverbs, songs and hymns whose two other choices never fit and whose start never gives the answer away");
+  ok(Bank.SAYINGS.length >= 40 && Bank.SAYINGS.every(s => lintOk(s.lead + " " + s.answer) && s.others.length === 2 && !s.others.includes(s.answer) && new Set(s.others).size === 2 && s.lead.toLowerCase().indexOf(s.answer.toLowerCase()) < 0 && /^(proverb|song|hymn|slang)$/.test(s.kind) && s.others.every(lintOk)), "the new sayings are proverbs, songs, hymns and slang whose two other choices never fit and whose start never gives the answer away");
   ok(["proverb", "song", "hymn"].every(k => Bank.SAYINGS.some(s => s.kind === k)), "there are proverbs, songs and hymns");
   ok(Bank.OBJECTS.length >= 48 && counts.objects === Bank.OBJECTS.length && Bank.OBJECTS.every(x => Art.has(x.art) && /^[A-Z]{3,6}$/.test(x.word) && !BL.has(x.word) && lintOk(x.clue) && x.clue.toUpperCase().indexOf(x.word) < 0), `${Bank.OBJECTS.length} things to spell (at least 48), each with a drawn picture and a clue that does not give the word away`);
   for (const stage of STAGES) ok(Bank.OBJECTS.filter(x => x.word.length >= T.STAGES[stage].spell.minLen && x.word.length <= T.STAGES[stage].spell.maxLen).length >= 12, `${stage} stage: at least twelve things fit its word lengths`);
+  /* the 1940s to the 1980s (js/tabletEras.js) */
+  {
+    const decades = Bank.ERA_LIST, kinds = ["music", "film", "tv", "slang"];
+    ok(JSON.stringify(plain(decades)) === JSON.stringify(["1940s", "1950s", "1960s", "1970s", "1980s"]), "there are five eras, the 1940s to the 1980s");
+    for (const d of decades) for (const k of kinds) {
+      const pack = Bank.PACKS.find(p => p.era === d && p.id === d.slice(0, 4) + "-" + k), sets = Bank.CLUES.filter(c => c.era === d && c.id.startsWith(d.slice(0, 4) + "-" + k + "-"));
+      ok(pack && pack.words.length >= 30, `${d} ${k}: a word search with at least 30 words (${pack && pack.words.length})`);
+      ok(sets.length >= 3 && sets.reduce((m, c) => m + c.entries.length, 0) >= 30, `${d} ${k}: at least 30 crossword clues in at least three sets (${sets.reduce((m, c) => m + c.entries.length, 0)})`);
+    }
+    for (const d of decades) ok(Bank.SAYINGS.filter(x => x.era === d).length >= 12, `${d}: at least twelve sayings to finish`);
+    ok(Bank.SAYINGS.some(x => x.kind === "slang") && Bank.SAYINGS.filter(x => x.era).every(x => x.id.startsWith("era-")), "the era sayings include slang and keep their own ids");
+    /* titles, names and short phrases only: no line of a song, and no long quotation */
+    const quoted = [...Bank.CLUES.filter(c => c.era).flatMap(c => c.entries.map(e => e[1])), ...Bank.SAYINGS.filter(x => x.era).map(x => x.lead + " " + x.answer)].flatMap(t => [...t.matchAll(/"([^"]*)"/g)].map(m => m[1]));
+    ok(quoted.length > 20 && quoted.every(q => q.split(/\s+/).length <= 6), `every quoted title or phrase is six words or fewer (${quoted.length} of them)`);
+    ok(Bank.CLUES.filter(c => c.era).every(c => c.entries.every(e => e[1].length <= 90)), "every era clue is a short line (90 letters or fewer)");
+    /* an era the person chooses is what the screens are drawn from */
+    for (const d of decades) {
+      let cwHit = 0, wsHit = 0, syHit = 0, tries = 8;
+      for (let i = 0; i < tries; i++) {
+        const cw = T.crossword({ stage: "middle", era: d, seed: "era-cw-" + d + i, fit: { size: 6 } }); if (cw && Bank.CLUES.find(c => c.id === cw.topic && c.era === d)) cwHit++;
+        const ws = T.wordSearch({ stage: "middle", era: d, seed: "era-ws-" + d + i }); if (ws && Bank.PACKS.find(p => p.id === ws.pack && p.era === d)) wsHit++;
+        const sy = T.sayings({ stage: "middle", era: d, seed: "era-sy-" + d + i }); if (sy && sy.items.every(it => Bank.SAYINGS.some(x => x.id === it.id && x.era === d))) syHit++;
+      }
+      ok(cwHit === tries && wsHit === tries && syHit === tries, `${d}: a chosen era gives era crosswords, word searches and sayings (${cwHit}, ${wsHit}, ${syHit} of ${tries})`);
+    }
+    const mix = new Set(); for (let i = 0; i < 40; i++) { const ws = T.wordSearch({ stage: "middle", seed: "mix" + i }); if (ws) mix.add(ws.pack); }
+    ok([...mix].some(id => Bank.PACKS.find(p => p.id === id && p.era)) && [...mix].some(id => Bank.PACKS.find(p => p.id === id && !p.era)), "with no era chosen, era and everyday packs are mixed");
+  }
   /* nothing in the banks is a quiz about the past, or a pet name */
   ok(![...Bank.PACKS.map(p => p.label), ...Bank.CLUES.map(c => c.title), ...Bank.CLUES.flatMap(c => c.entries.map(e => e[1])), ...Bank.SAYINGS.map(s => s.lead), ...Bank.OBJECTS.map(x => x.clue)].some(t => /\b(remember|recall|forgot|quiz|test|wrong|score|sweetheart|honey|sweetie|baby)\b/i.test(t)), "no bank text asks anyone to remember, tests, scores or uses a pet name");
 }
@@ -286,7 +314,7 @@ ok(made === 3 * 43, "every stage and topic was tried (129 combinations)");
 }
 
 /* every script the page loads parses (the browser check would otherwise be the first to notice a typo in a screen file) */
-for (const f of ["js/tablet.js", "js/tabletKit.js", "js/tabletWords.js", "js/tabletCreate.js", "js/tabletThink.js", "js/tabletBanks.js", "js/tabletArt.js", "js/tabletSound.js", "js/tabletEngine.js"]) {
+for (const f of ["js/tablet.js", "js/tabletKit.js", "js/tabletWords.js", "js/tabletCreate.js", "js/tabletThink.js", "js/tabletBanks.js", "js/tabletEras.js", "js/tabletArt.js", "js/tabletSound.js", "js/tabletEngine.js"]) {
   let fine = true; try { new vm.Script(fs.readFileSync(path.join(ROOT, f), "utf8"), { filename: f }); } catch (e) { fine = false; console.error(f + ": " + e.message); }
   ok(fine, `${f} is valid script`);
 }
@@ -309,7 +337,7 @@ for (const f of ["js/tablet.js", "js/tabletKit.js", "js/tabletWords.js", "js/tab
 
 /* the screen's own words: calm, never testing, never childish */
 const UIFILES = ["js/tablet.js", "js/tabletKit.js", "js/tabletWords.js", "js/tabletCreate.js", "js/tabletThink.js"];
-const html = read("tablet.html"), eng = read("js/tabletEngine.js"), art = read("js/tabletArt.js"), snd = read("js/tabletSound.js"), banksJs = read("js/tabletBanks.js");
+const html = read("tablet.html"), eng = read("js/tabletEngine.js"), art = read("js/tabletArt.js"), snd = read("js/tabletSound.js"), banksJs = read("js/tabletBanks.js") + read("js/tabletEras.js");
 const strip = src => src.replace(/\/\*[\s\S]*?\*\//g, "").replace(/(^|\s)\/\/[^\n]*/g, "$1");     // the code, without its comments
 const raw = Object.fromEntries(UIFILES.map(f => [f, strip(read(f))]));
 const ui = UIFILES.map(f => raw[f]).join("\n"), tabletJs = raw["js/tablet.js"];
@@ -328,7 +356,7 @@ const ui = UIFILES.map(f => raw[f]).join("\n"), tabletJs = raw["js/tablet.js"];
 /* the page is wired in */
 {
   const order = [...html.matchAll(/<script src="([^"]+)"><\/script>/g)].map(m => m[1]).filter(f => !/^(src\/config\/license|assets\/services\/licenseManager|js\/careTier|js\/voiceKit)/.test(f));   /* shared helpers loaded by every tool, not part of the activity chain */
-  const want = ["assets/pcg/pcg-data.bundle.js", "src/pcg/prng.js", "src/pcg/matrix.js", "src/pcg/grammar.js", "src/pcg/puzzles.js", "assets/services/trialLedger.js", "js/tabletSound.js", "js/tabletArt.js", "js/tabletBanks.js", "js/tabletEngine.js", "js/tabletKit.js", "js/tabletWords.js", "js/tabletCreate.js", "js/tabletThink.js", "js/tablet.js"];
+  const want = ["assets/pcg/pcg-data.bundle.js", "src/pcg/prng.js", "src/pcg/matrix.js", "src/pcg/grammar.js", "src/pcg/puzzles.js", "assets/services/trialLedger.js", "js/tabletSound.js", "js/tabletArt.js", "js/tabletBanks.js", "js/tabletEras.js", "js/tabletEngine.js", "js/tabletKit.js", "js/tabletWords.js", "js/tabletCreate.js", "js/tabletThink.js", "js/tablet.js"];
   ok(JSON.stringify(order) === JSON.stringify(want), "the page loads the puzzle makers, the sounds and pictures, the engine, the kit, the activities and last the screen, in that order: " + order.join(", "));
   ok(order.every(f => fs.existsSync(path.join(ROOT, f))), "every script it names exists");
   ok(!/https?:\/\//.test(html.replace(/https:\/\/cognicopia\.org[^"]*/g, "").replace(/<!--[\s\S]*?-->/g, "").replace(/http:\/\/www\.w3\.org\/\d+\/svg/g, "")) || /rel="canonical"/.test(html), "the page names no outside address except its own canonical one");
@@ -339,7 +367,7 @@ const ui = UIFILES.map(f => raw[f]).join("\n"), tabletJs = raw["js/tablet.js"];
   const keys = [...new Set([...tabletJs.matchAll(/(?:getItem|setItem|removeItem)\(\s*([A-Za-z_"'][^,)]*)/g)].map(m => m[1]))];
   ok(keys.length === 1 && keys[0] === "PREFS_KEY", "the only thing read or written in this browser is the choices (PREFS_KEY): " + keys.join(", "));
   ok(UIFILES.filter(f => f !== "js/tablet.js").every(f => !/localStorage/.test(raw[f])) && !/localStorage/.test(strip(eng) + strip(art) + strip(snd) + strip(banksJs)), "no other file reads or writes anything in this browser");
-  ok(/localStorage\.setItem\(PREFS_KEY, JSON\.stringify\(prefs\)\)/.test(tabletJs) && /var PREFS_KEY = "cognicopia_tablet_prefs", prefs = \{ stage: "middle", topic: "", sound: true, speed: 2, grid: 0, palette: 0, paper: 0 \}/.test(tabletJs), "and those choices (level, topic, sound, speed, grid size, color set, paper) hold nothing about anyone");
+  ok(/localStorage\.setItem\(PREFS_KEY, JSON\.stringify\(prefs\)\)/.test(tabletJs) && /var PREFS_KEY = "cognicopia_tablet_prefs", prefs = \{ stage: "middle", topic: "", era: "", sound: true, speed: 2, grid: 0, palette: 0, paper: 0 \}/.test(tabletJs), "and those choices (level, topic, era, sound, speed, grid size, color set, paper) hold nothing about anyone");
   ok(!/cognicopia_resident|cognicopia_profile|activeResident|qpEngine|CogniSecureStore/.test(ui), "the screen reads no resident or profile storage and asks for no name");
   const sw = read("sw.js");
   ok(["tablet.html", ...want.filter(f => f.startsWith("js/")), "assets/pcg/pcg-data.bundle.js", "assets/cognicopia-coloring/cognicopia-coloring.js", "assets/services/trialLedger.js"].every(f => sw.includes('"' + f + '"')), "the service worker keeps the page, its scripts, the puzzle content and the coloring library for offline use");
