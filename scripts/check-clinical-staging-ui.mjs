@@ -155,13 +155,25 @@ async function open(path, viewport) {
   /* keep a word off the screen: open the sayings, take a word from the screen, ask to keep it off, and the next screen does not show it */
   await pg.click('[data-act="saying"]'); await pg.waitForTimeout(500);
   const screenText = await pg.evaluate(() => document.getElementById("tbStage").innerText);
-  const word = (screenText.match(/\b[A-Za-z]{5,10}\b/g) || []).find(w => !/^(Choose|Circle|Which|Finish|Another|Lovely|Wonderful)$/i.test(w));
+  const word = (screenText.match(/\b[A-Za-z]{5,10}\b/g) || []).find(w => !/^(Choose|Circle|Which|Finish|Finishes|Another|Lovely|Wonderful|spell|Help|Next)$/i.test(w));
   ok(!!word, "an activity shows words to test with");
   if (word) {
     await pg.click("#tbBack"); await pg.waitForTimeout(300);
     await pg.fill("#tbAvoid", word); await pg.click('[data-act="saying"]'); await pg.waitForTimeout(600);
     const t2 = await pg.evaluate(() => document.getElementById("tbStage").innerText);
     ok(!new RegExp("\\b" + word + "\\b", "i").test(t2), `with "${word}" kept off the screen, the activity does not show it`);
+    /* and in the answer buttons too: take a word that was an answer choice, keep it off, and draw many more screens. The words
+       on a row of buttons are read one by one, not run together ("side" "table" "day" is not "sidetableday"). */
+    await pg.click("#tbBack"); await pg.waitForTimeout(150); await pg.fill("#tbAvoid", ""); await pg.click('[data-act="saying"]'); await pg.waitForTimeout(300);
+    const choice = (await pg.$$eval("#tbStage .tb-opt", els => els.map(e => e.textContent.trim().toLowerCase()))).find(w => /^[a-z]{4,10}$/.test(w));
+    ok(!!choice, "the saying shows answer choices to test with");
+    let shown = 0;
+    for (let i = 0; choice && i < 40; i++) {
+      await pg.click("#tbBack"); await pg.waitForTimeout(100);
+      await pg.fill("#tbAvoid", choice); await pg.click('[data-act="saying"]'); await pg.waitForTimeout(200);
+      if (new RegExp("\\b" + choice + "\\b", "i").test(await pg.evaluate(() => document.getElementById("tbStage").innerText))) shown++;
+    }
+    ok(shown === 0, `across 40 draws, "${choice}" is never shown, not even as an answer choice (${shown} screens showed it)`);
   }
   ok(errors.length === 0, `the tablet raised no script error (${errors.join("; ")})`);
   ok(outside.length === 0, `the tablet asked for nothing outside the page (${outside.join(", ")})`);
