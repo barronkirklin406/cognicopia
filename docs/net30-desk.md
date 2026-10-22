@@ -48,7 +48,7 @@ The license service has one setting, `NET30_KEY_TIMING`:
 - **`with_invoice` (the default).** The key is emailed the moment the invoice is issued. This is what the pricing page promises ("we send the final invoice and your license key together") and what a facility's staff expect: they can start using Cognicopia now, and accounts payable pays within 30 days. **The risk:** a made-up facility that never pays would still hold a year's key. The intake agent's checks (below) exist to prevent that, and a key can be withdrawn.
 - **`on_payment`.** The key is emailed only when the invoice is paid. Safer, but a facility waits up to 30 days for a product it has agreed to buy, and the pricing page sentence would need to change.
 
-I recommend `with_invoice` with the checks below. 🔴 **This is your call.** Tell me if you want `on_payment`.
+**Decided (October 22, 2026): `with_invoice`**, so a facility never waits up to 30 days for the key. The checks below are what keeps it safe; to change it later, set `NET30_KEY_TIMING` in the license service.
 
 ## What the intake agent will and will not do
 
@@ -77,7 +77,7 @@ Before any real facility: I make a test request as a made-up facility with your 
 
 ## One overlap to settle
 
-Your private n8n workflow ([n8n-operations.md](n8n-operations.md)) also drafts Net-30 reminders for you to approve (Day 15, 25 and 30). The collections agent does the same job through Stripe, so running both would remind a facility twice. 🔴 **Pick one:** keep the collections agent (my recommendation: it sends from Stripe, tracks each reminder on the invoice, and never reaches your personal mailbox) and switch off the invoice-reminder part of the n8n workflow, or keep n8n and leave the collections agent off. The n8n support-email part is unaffected either way.
+Your private n8n workflow ([n8n-operations.md](n8n-operations.md)) also drafts Net-30 reminders for you to approve (Day 15, 25 and 30). The collections agent does the same job through Stripe, so running both would remind a facility twice. **Decided (October 22, 2026): keep the collections agent** (it sends from Stripe, tracks each reminder on the invoice, and never reaches the personal mailbox). Switch off the invoice-reminder part of the n8n workflow so a facility is not reminded twice; the n8n support-email part is unaffected.
 
 ## How to turn it off
 
