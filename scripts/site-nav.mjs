@@ -161,6 +161,8 @@ export const MODULES = [
     desc: "What is in place for low vision, keyboard use and large print, what is measured, and what is not yet tested." },
   { slug: "activity-feature-guide", label: "Activity Feature Guide",     legacy: "features.html",                group: "guides",     icon: "layout",
     desc: "A tour of the personalized activity generation and print-ready export features." },
+  { slug: "staff-guide",            label: "Staff Guide & Feature Tour",  group: "guides",     icon: "layout",
+    desc: "A click-by-click tour for activity staff: choose a level, make the month, use the tablet, ask for an invoice, and print a one-page guide for the breakroom." },
   { slug: "resource-catalog",       label: "Master Resource Catalog",    legacy: "resources.html",               group: "guides",     icon: "books",
     desc: "Every clinical and creative resource: botanical art, reminiscence journals and 12-month life planners." },
   { slug: "caregiver-faq",          label: "Caregiver FAQ",              legacy: "faq.html",                     group: "guides",     icon: "help",

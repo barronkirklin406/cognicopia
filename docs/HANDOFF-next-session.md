@@ -241,3 +241,4 @@ Not built, with reasons, in that file: the four-tab rewrite of index.html, a PDF
 
 - The infinite generator draws subjects procedurally in vector code; it does not use AI images. The line-art pipeline can bring AI pictures into the library, but only after a person approves each one. The `--backend http` image path is optional and was tested only against a local stand-in server, never a real provider.
 - About 2% of first drafts fail the guardrails; batches re-roll them automatically.
+- **Staff Guide and Feature Tour:** `resources/staff-guide/` (four practice screens, FAQ, one-page Quick-Start PDF), `js/staffGuide.js`, `scripts/check-staff-guide.mjs`, `docs/staff-guide.md`. The era music, film, TV and slang datasets are still to come.
