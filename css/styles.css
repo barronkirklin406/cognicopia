@@ -250,7 +250,8 @@ html.cg-ds :where(main>*+*){margin-top:var(--cg-space-5)}
 :root::before,:root::after{
   content:"";position:fixed;z-index:-1;pointer-events:none;inset:-20vh -10vw;
 }
-:root::before{background:radial-gradient(60vmax 40vmax at 14% 22%,rgba(149,200,205,.07),transparent 62%)}
+:root{--cg-pool-1:radial-gradient(60vmax 40vmax at 14% 22%,rgba(149,200,205,.07),transparent 62%)}
+:root::before{background:var(--cg-pool-1)}
 :root::after{background:radial-gradient(55vmax 38vmax at 86% 74%,rgba(205,190,159,.055),transparent 60%)}
 @supports (animation-timeline:scroll()){
   @media (prefers-reduced-motion:no-preference){
@@ -617,8 +618,8 @@ svg.cg-coloring :is(path,line,polyline,polygon,circle,ellipse,rect){
    card (.cg-tierhead) carries a quiet tartan of the tier's own color: crossing bands at low strength, behind text that stays at 7:1. */
 html{--cg-tier:#0e3c43;--cg-tier-deep:#08262c;--cg-tier-soft:#edf3f3;--cg-tier-edge:#8fabae;--cg-tier-rgb:27,67,50}
 html[data-cg-tier="1"]{--cg-tier:#1f2f86;--cg-tier-deep:#141f5e;--cg-tier-soft:#e9ecf8;--cg-tier-edge:#8d98d8;--cg-tier-rgb:31,47,134}
-html[data-cg-tier="2"]{--cg-tier:#8a3a21;--cg-tier-deep:#4f1e0e;--cg-tier-soft:#f7e9e1;--cg-tier-edge:#c98a74;--cg-tier-rgb:138,58,33;--cg-tier-sage:#dce9e8}
-html[data-cg-tier="3"]{--cg-tier:#1f484d;--cg-tier-deep:#10272a;--cg-tier-soft:#e7efef;--cg-tier-edge:#b8963e;--cg-tier-rgb:31,77,58}
+html[data-cg-tier="2"]{--cg-tier:#8a3a21;--cg-tier-deep:#4f1e0e;--cg-tier-soft:#f7e9e1;--cg-tier-edge:#c98a74;--cg-tier-rgb:138,58,33;--cg-tier-sage:#dfe9dc}
+html[data-cg-tier="3"]{--cg-tier:#1f4d3a;--cg-tier-deep:#102a1f;--cg-tier-soft:#e7efe9;--cg-tier-edge:#b8963e;--cg-tier-rgb:31,77,58}
 .cg-tierhead{position:relative;box-sizing:border-box;margin:0 0 18px;padding:16px 20px;border:2px solid var(--cg-tier);border-radius:14px;color:var(--cg-tier-deep);
   background-color:var(--cg-tier-soft);
   background-image:repeating-linear-gradient(90deg,rgba(var(--cg-tier-rgb),.12) 0 8px,transparent 8px 30px,rgba(var(--cg-tier-rgb),.06) 30px 34px,transparent 34px 60px),
@@ -663,7 +664,7 @@ html.cg-night-shift .cg-trial{background:#2b2015!important;border-color:#d6a64b!
     background:
       url("../assets/brand/brain-watermark.svg") calc(10vw + 5px) 0 / 34px auto repeat-y,
       url("../assets/brand/brain-watermark.svg") calc(100% - 10vw - 39px) 0 / 34px auto repeat-y,
-      radial-gradient(60vmax 40vmax at 14% 22%,rgba(149,200,205,.07),transparent 62%);
+      var(--cg-pool-1);
   }
 }
 /* the brain mark before a heading: add class cg-brain-h */

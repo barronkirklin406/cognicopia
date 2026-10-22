@@ -219,7 +219,7 @@ for (const f of ["pricing.html", "activate.html", "contact.html", "cognitive-jou
 {
   const idx = read("index.html");
   ok(/--ds-panel:var\(--cg-green-800/.test(idx) && /--ds-bar-ink:var\(--cg-charcoal/.test(idx), "index.html's palette is the shared tokens");
-  ok((idx.match(/class="cg-value"/g) || []).length === 4 && /Made from their own life/.test(idx) && /No resident data leaves this computer/.test(idx) && /first 25 packets/.test(idx), "index.html: four value cards above the form");
+  ok((idx.match(/class="cg-value"/g) || []).length === 5 && /Quick, personal packets/.test(idx) && /Decades of nostalgia/.test(idx) && /Low vision &amp; toner savings/.test(idx) && /Interactive tablet mode/.test(idx) && /No resident data leaves the device/.test(idx), "index.html: five value cards above the form");
   ok(/<p class="tagline">Engaging Today<\/p>/.test(idx) && /Connection, Cognition, Creation/.test(idx), "index.html: the tagline is Engaging Today, with the earlier line kept beneath it");
   ok(!/HIPAA[- ]compliant/i.test(idx), "no blanket compliance claim in the hero");
 }
