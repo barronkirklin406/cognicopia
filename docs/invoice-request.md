@@ -17,6 +17,10 @@ Facility or company name, billing contact name and email, accounts payable phone
 
 The file is named `Cognicopia_Invoice_<FACILITY>_<DATE>.pdf`. It is marked `__noLegal` so the activity footer ("Not Medical Advice") is not printed on an invoice. If the PDF library cannot load, a plain printable copy of the same invoice is offered instead.
 
+## The email button
+
+After the PDF is made, **Email this request to Cognicopia** opens the person's own mail program with the same details typed in as plain `Label: value` lines (Reference, Facility, Billing contact, Contact email, Phone, Address, PO number, License, Buildings, Total, Terms), addressed to the vendor email under the subject `[Cognicopia Invoice Request] <reference>`. They attach the PDF and press Send themselves. **Copy the details instead** puts the same text on the clipboard for a webmail they would rather paste into. The page still sends nothing: a link that opens a mail program is not a request, and `scripts/check-invoice.mjs` proves it. The Net-30 desk ([net30-desk.md](net30-desk.md)) reads exactly these lines, so the wording is fixed by `mailRequest` in `js/invoiceMaker.js` and `scripts/check-net30-desk.mjs`.
+
 ## What stays on the computer
 
 The form's answers are kept in this browser only (`cognicopia_invoice_request`: a business's details, never a resident), so a second invoice needs no retyping. "Clear the form" removes them.

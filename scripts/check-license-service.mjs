@@ -19,6 +19,10 @@
         Stripe; a paid license is emailed once, to the address given at checkout,
         with the key, the one-click link and the plain steps; an unpaid, other or
         address-less payment is not; a failed email makes Stripe try again
+     3b. a Net-30 invoice (billed by email, not a card) on one of our two prices
+        emails the key with the invoice, or on payment when NET30_KEY_TIMING says so;
+        a card invoice, another product, several licenses on one invoice and an
+        unsigned call each send nothing
      4. nothing leaks: the key is in that one email and nowhere else (not in the
         webhook's answer, not in any log), the health page shows names never
         values, a missing setting is named without its value
@@ -200,6 +204,46 @@ try {
     const m = w.sent[0]; ok(m && !/<script/i.test(m.body.html) && /Sons/.test(m.body.html), "a business name with markup in it cannot put markup in the email"); }
   { const m = licenseEmail({ licenseKey: "COG1.x.y", facilityName: "Q & A \"Court\"", tier: "enterprise", expiresAt: "2027-01-01", siteUrl: "https://cognicopia.org/" });
     ok(m.html.includes("Q &amp; A &quot;Court&quot;") && m.text.includes("https://cognicopia.org/activate.html#license_key=COG1.x.y"), "names are escaped in the HTML and the link has no double slash"); }
+  /* ---------- 3b. a Net-30 invoice: the key goes out with the invoice (or when it is paid), with nobody in between ---------- */
+  const YEAR_END = Math.floor(Date.UTC(2027, 10, 13) / 1000);
+  const inv = (over = {}) => ({ id: "in_test_net30a", object: "invoice", collection_method: "send_invoice", status: "open", created: TS, customer: "cus_test_1", customer_name: "Net Thirty Gardens (example)", customer_email: "ap@example.test",
+    parent: { subscription_details: { subscription: "sub_test_net30" } },
+    lines: { data: [{ quantity: 1, period: { start: TS, end: YEAR_END }, pricing: { price_details: { price: PRICE_A } } }] }, ...over });
+  const fireInvoice = async (type, invoice, opts = {}) => {
+    const w = opts.world || world(opts); const body = JSON.stringify({ id: "evt_inv", type, data: { object: invoice } });
+    const res = await handleWebhook(hook(body, sign(body)), opts.env || ENV, deps(w));
+    return { res, b: await bodyOf(res), w };
+  };
+  { const { res, b, w } = await fireInvoice("invoice.finalized", inv());
+    ok(res.status === 200 && b.delivered === true && w.sent.length === 1 && w.stripeCalls.length === 0, "a Net-30 invoice that Stripe finalizes emails the key with it, and needs no call back to Stripe");
+    const mail = w.sent[0], key = /COG1\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+/.exec(mail.body.text)?.[0], k = browser.inspectKey(key || "");
+    ok(mail.body.to.length === 1 && mail.body.to[0] === "ap@example.test" && mail.headers["Idempotency-Key"] === "license-in_test_net30a", "to the billing contact on the invoice only, with a key that stops a retry sending twice");
+    ok(k.ok && k.facilityName === "Net Thirty Gardens (example)" && k.licenseTier === "annual_facility" && k.expiresAt === "2027-11-13", "the key names the facility and runs to the end of the period the invoice covers: " + JSON.stringify(k).slice(0, 120));
+    const again = await fireInvoice("invoice.finalized", inv({ id: "in_test_net30b", lines: { data: [{ quantity: 1, period: { start: YEAR_END, end: YEAR_END + 365 * 86400 }, pricing: { price_details: { price: PRICE_A } } }] } }), {});
+    ok(browser.inspectKey(/COG1\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+/.exec(again.w.sent[0].body.text)[0]).id === k.id, "a renewal invoice for the same subscription gets the same license id, so withdrawing one withdraws every year");
+    const everything = JSON.stringify(b) + logged.join("\n"); ok(!everything.includes(key) && !everything.includes("ap@example.test"), "neither the key nor the address is in the webhook's answer or in any log"); }
+  { const { res, b, w } = await fireInvoice("invoice.paid", inv({ status: "paid" })); ok(res.status === 200 && b.ignored && w.sent.length === 0, "by default the paid event sends nothing: the key already went with the invoice"); }
+  { const env = { ...ENV, NET30_KEY_TIMING: "on_payment" };
+    const f = await fireInvoice("invoice.finalized", inv(), { env }); const p = await fireInvoice("invoice.paid", inv({ status: "paid" }), { env });
+    ok(f.b.ignored && f.w.sent.length === 0 && p.b.delivered === true && p.w.sent.length === 1, "with NET30_KEY_TIMING=on_payment the key waits for payment (a check marked received counts)");
+    const open = await fireInvoice("invoice.paid", inv({ status: "open" }), { env }); ok(open.w.sent.length === 0, "and a paid event for an invoice that is not paid sends nothing"); }
+  { const { b, w } = await fireInvoice("invoice.finalized", inv({ collection_method: "charge_automatically" })); ok(b.ignored && w.sent.length === 0, "a card invoice is left to the checkout path: no second email"); }
+  { const { b, w } = await fireInvoice("invoice.finalized", inv({ lines: { data: [{ quantity: 1, period: { start: TS, end: YEAR_END }, pricing: { price_details: { price: "price_old_129" } } }] } })); ok(b.ignored && w.sent.length === 0, "an invoice for any other product, such as the old $129.99 price, sends nothing"); }
+  { const two = inv({ lines: { data: [{ quantity: 2, period: { start: TS, end: YEAR_END }, pricing: { price_details: { price: PRICE_A } } }] } });
+    const { b, w } = await fireInvoice("invoice.finalized", two); ok(b.delivered === false && b.reason === "needs_a_person" && w.sent.length === 0, "an invoice for two licenses is not guessed at: a person makes those keys");
+    const { b: b2 } = await fireInvoice("invoice.finalized", inv({ lines: { data: [{ quantity: 1, period: { start: TS, end: YEAR_END }, pricing: { price_details: { price: PRICE_A } } }, { quantity: 1, period: { start: TS, end: YEAR_END }, pricing: { price_details: { price: PRICE_M } } }] } })); ok(b2.reason === "needs_a_person", "nor two license lines on one invoice"); }
+  { const old = inv({ parent: undefined, subscription: "sub_old_shape", lines: { data: [{ quantity: 1, period: { start: TS, end: YEAR_END }, price: { id: PRICE_M } }] } });
+    const { b, w } = await fireInvoice("invoice.finalized", old); const k = browser.inspectKey(/COG1\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+/.exec(w.sent[0]?.body.text || "")?.[0] || "");
+    ok(b.delivered === true && k.ok && k.licenseTier === "monthly_facility", "the older Stripe shape of an invoice (price and subscription fields) is read too"); }
+  { const noPeriod = inv({ lines: { data: [{ quantity: 1, pricing: { price_details: { price: PRICE_A } } }] } }); const { w } = await fireInvoice("invoice.finalized", noPeriod);
+    ok(browser.inspectKey(/COG1\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+/.exec(w.sent[0].body.text)[0]).expiresAt === "2027-11-13", "a yearly invoice with no period is paid through a year from the day it was made");
+    const m = await fireInvoice("invoice.finalized", inv({ lines: { data: [{ quantity: 1, pricing: { price_details: { price: PRICE_M } } }] } })); ok(m.b.reason === "needs_a_person" && m.w.sent.length === 0, "a monthly invoice that does not say its month is left to a person"); }
+  { const { b, w } = await fireInvoice("invoice.finalized", inv({ customer_email: "" })); ok(b.delivered === false && b.reason === "no_email" && w.sent.length === 0, "an invoice with no address to write to is noted, not retried forever"); }
+  { const { res } = await fireInvoice("invoice.finalized", inv(), { emailStatus: 500 }); ok(res.status === 502, "if the email cannot be sent the answer is an error, so Stripe tries again later"); }
+  { const w = world(); const body = JSON.stringify({ id: "evt_inv", type: "invoice.finalized", data: { object: inv() } }); const res = await handleWebhook(hook(body, sign(body, "whsec_not_the_secret")), ENV, deps(w));
+    ok(res.status === 400 && w.sent.length === 0, "an invoice event not signed by Stripe is refused and sends nothing"); }
+  { const { res, b, w } = await fireInvoice("invoice.finalized", { id: "x", object: "invoice" }); ok(res.status === 200 && b.ignored && w.sent.length === 0, "a malformed invoice id is ignored"); }
+
   { const w = world(); const body = event("checkout.session.completed", "cs_test_monthly1"); const missing = { ...ENV }; delete missing.RESEND_API_KEY;
     const r = await handleWebhook(hook(body, sign(body)), missing, deps(w)); const b = await bodyOf(r);
     ok(r.status === 503 && /RESEND_API_KEY/.test(b.error.message) && w.sent.length === 0, "with the email setting missing the webhook says which one, and sends nothing"); }

@@ -20,11 +20,12 @@
      RESEND_API_KEY          the email service's key
      EMAIL_FROM              for example  Cognicopia <licenses@cognicopia.org>
      EMAIL_REPLY_TO          optional, for example cognicopia@outlook.com
+     NET30_KEY_TIMING        optional: with_invoice (the default) or on_payment; when a Net-30 invoice's key is emailed
      SITE_URL                default https://cognicopia.org
      LICENSE_ALLOWED_ORIGINS default https://cognicopia.org (comma separated)
    A missing setting breaks only what needs it, and the answer names the setting, never a value.
    ===================================================================== */
-import { CHECKOUT_REFERENCE, ServiceError, licenseFromSession, redeemCheckout } from "./redeem.mjs";
+import { CHECKOUT_REFERENCE, INVOICE_REFERENCE, ServiceError, licenseFromInvoice, licenseFromSession, redeemCheckout } from "./redeem.mjs";
 import { licenseEmail, sendEmail } from "./email.mjs";
 import { retrieveCheckoutSession, verifyStripeSignature } from "./stripe.mjs";
 
@@ -87,6 +88,33 @@ export async function handleRedeem(request, env, deps = {}) {
 
 /* ---------- /api/licenses/webhook ---------- */
 const PAID_EVENTS = new Set(["checkout.session.completed", "checkout.session.async_payment_succeeded"]);
+const INVOICE_EVENTS = { "invoice.finalized": "finalized", "invoice.paid": "paid" };
+
+/** A Net-30 invoice (Stripe's own signed event, already checked): the key goes to the address on the invoice. */
+async function handleInvoiceEvent(event, moment, s, env, deps) {
+  const invoice = event.data?.object;
+  if (!invoice || typeof invoice.id !== "string" || !INVOICE_REFERENCE.test(invoice.id)) return json(200, { received: true, ignored: true });
+  let license;
+  try {
+    license = await licenseFromInvoice({ signingKey: s.LICENSE_SIGNING_KEY, prices: prices(env), timing: get(env, "NET30_KEY_TIMING"), now: deps.now }, invoice, moment);
+  } catch (error) {
+    if (error instanceof ServiceError && ["not_a_license", "not_yet", "not_paid"].includes(error.code)) return json(200, { received: true, ignored: true });   // a card invoice, another product, or the other moment
+    if (error instanceof ServiceError && error.code === "needs_a_person") {
+      console.error(`license-service: ${invoice.id} needs a person to make its key`);
+      return json(200, { received: true, delivered: false, reason: "needs_a_person" });
+    }
+    throw error;
+  }
+  const to = typeof invoice.customer_email === "string" ? invoice.customer_email : "";
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(to)) {
+    console.error(`license-service: ${invoice.id} has no email address to send the key to`);
+    return json(200, { received: true, delivered: false, reason: "no_email" });
+  }
+  const message = licenseEmail({ ...license, siteUrl: siteUrl(env) });
+  await sendEmail({ apiKey: s.RESEND_API_KEY, from: s.EMAIL_FROM, replyTo: get(env, "EMAIL_REPLY_TO") || undefined, to, ...message, idempotencyKey: `license-${invoice.id}` }, deps.fetch);
+  console.log(`license-service: sent the license for ${invoice.id}`);
+  return json(200, { received: true, delivered: true });
+}
 
 export async function handleWebhook(request, env, deps = {}) {
   try {
@@ -99,6 +127,7 @@ export async function handleWebhook(request, env, deps = {}) {
     }
     let event;
     try { event = JSON.parse(raw); } catch { return problem(400, "bad_json", "That is not a Stripe event."); }
+    if (event && INVOICE_EVENTS[event.type]) return await handleInvoiceEvent(event, INVOICE_EVENTS[event.type], s, env, deps);
     if (!event || !PAID_EVENTS.has(event.type)) return json(200, { received: true, ignored: true });
 
     const id = event.data?.object?.id;
