@@ -1445,7 +1445,7 @@ html:not(.cg-night-shift) .fld-btn-ghost:hover{background:#eef8f3}
 /* as many columns as the longest word allows: fewer rows leave a bigger grid */
 .qp-sheet .qp-words{list-style:none;margin:.16in 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(calc(var(--wlen,10) * max(18pt,calc(19pt * var(--qps,1) * var(--fit))) * .68 + .42in),1fr));gap:.04in .2in}
 .qp-sheet .qp-words li{display:flex;align-items:center;gap:.1in;min-width:0;white-space:nowrap;overflow:hidden;font-size:max(18pt,calc(19pt * var(--qps,1) * var(--fit)));font-weight:700;letter-spacing:.02em;color:#000}
-.qp-box{flex:none;width:.24in;height:.24in;border:2pt solid #000}
+.qp-box{flex:none;width:.24in;height:.24in;border:4px solid #000}   /* whole pixels: the browser rounds 2pt (2.67 px) down to 2 px, which prints as 1.5 pt; 4 px prints as 3 pt */
 
 /* conversation cards: two per page with a cut line */
 .qp-cards{flex:1;min-height:0;display:flex;flex-direction:column}
@@ -1468,7 +1468,7 @@ html:not(.cg-night-shift) .fld-btn-ghost:hover{background:#eef8f3}
 
 /* cover */
 /* the framed panel inside the cover page (the page itself is also .qp-cover, and keeps its 0.75 in margin) */
-.qp-body > .qp-cover{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;border:4pt double #000;padding:.4in}
+.qp-body > .qp-cover{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;border:12px double #000;padding:.4in}   /* 12 px double: each of the two lines is 4 px, 3 pt on paper (4pt double printed as two 1.5 pt lines) */
 .qp-sheet .qp-cover-fac{margin:0 0 .3in;font-size:18pt;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#000}
 .qp-sheet .qp-cover-for{margin:0;font-size:max(28pt,calc(28pt * var(--qps,1) * var(--fit)));color:#000}
 .qp-sheet .qp-cover-name{margin:.05in 0 .2in;font-size:max(48pt,calc(56pt * var(--qps,1) * var(--fit)));font-weight:700;line-height:1.05;color:#000;overflow-wrap:anywhere}
@@ -2022,6 +2022,7 @@ html.cg-night-shift #acts .pillar-blurb,html.cg-night-shift #acts .pillar-count{
 @media print{
   .wrap,.wrap .brand{background:#fff !important;border:0 !important;box-shadow:none !important}
   .wrap,.wrap *{color:#000 !important}
+  .wrap :is(label,div,section,aside,fieldset,details){background:none !important;box-shadow:none !important;border-color:#000 !important}   /* the choices and panels print as plain black outlines, no tint */
   .wrap .brand .logo{filter:brightness(0)}   /* the gold logo prints pure black */
 }
 /* Night Shift turns the light cards and a few buttons dark or amber;

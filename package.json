@@ -27,6 +27,7 @@
     "coloring:ingest": "node scripts/ingest_coloring_assets.mjs",
     "coloring:review": "node scripts/review_coloring_art.mjs",
     "audit:ux": "node scripts/audit-ux.mjs",
+    "audit:print": "node scripts/audit-print.mjs",
     "pages": "node scripts/generate_infinite_pages.mjs",
     "subjects": "node scripts/process_coloring_assets.mjs",
     "subjects:check": "node scripts/process_coloring_assets.mjs --check",
