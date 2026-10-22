@@ -326,6 +326,17 @@
       .email-action-btn:active {
         transform: translateY(1px);
       }
+      .email-action-btn.is-quiet { background: transparent; border: 2px solid #d8f3dc; box-shadow: none; }
+      .email-action-btn.is-quiet:hover { background: rgba(82,183,136,.35); }
+      .email-action-btn:focus-visible, .cf-field input:focus-visible, .cf-field textarea:focus-visible { outline: 3px solid #ffffff; outline-offset: 2px; box-shadow: 0 0 0 6px #0e2e20; }
+      .info-box .email-action-btn { margin-top: 10px; width: 100%; justify-content: center; box-sizing: border-box; }
+      .cf-note { min-height: 1.6em; margin: 8px 0 0; font-size: .95rem; }
+      .cf-form { display: grid; gap: 16px; margin-top: 14px; }
+      .cf-field label { display: block; margin: 0 0 6px; color: #ffffff; font-weight: 700; }
+      .cf-field input, .cf-field textarea { width: 100%; box-sizing: border-box; min-height: var(--tap, 52px); padding: 12px 14px; font: inherit; font-size: 1.05rem; color: #10241a; background: #ffffff; border: 2px solid #d8f3dc; border-radius: 8px; }
+      .cf-field textarea { min-height: 9em; resize: vertical; line-height: 1.5; }
+      .cf-field input[aria-invalid="true"], .cf-field textarea[aria-invalid="true"] { border-color: #ffd166; border-width: 3px; }
+      .cf-err { color: #ffd166; font-weight: 700; margin: 6px 0 0; }
       .organic-vine-divider {
         display: block;
         width: 78%;
@@ -337,11 +348,13 @@
       .vine-subtitle {
         display: block;
         text-align: center;
+        max-width: 34em;
         margin: 0 auto 24px;
         color: #ffffff;
-        font-size: 18px;
-        font-weight: 600;
-        letter-spacing: .04em;
+        font-size: clamp(21px, 4.6vw, 28px);
+        font-weight: 400;
+        line-height: 1.4;
+        letter-spacing: .01em;
       }
       .site-footer {
         max-width: 900px;
@@ -866,7 +879,7 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
       <path d="M112 30 C94 18 80 21 71 34 C87 37 101 36 112 30 Z M147 45 C130 43 119 50 116 62 C130 59 141 53 147 45 Z M194 34 C181 19 167 17 157 25 C168 34 181 37 194 34 Z M305 45 C318 58 332 58 343 50 C332 43 318 41 305 45 Z M354 37 C369 22 382 21 392 30 C380 38 367 40 354 37 Z M407 30 C424 18 438 22 445 35 C431 36 418 34 407 30 Z" fill="currentColor"/>
       <path d="M72 34 C81 29 91 28 101 29 M117 60 C124 53 132 49 141 48 M158 26 C168 26 178 29 187 34 M313 47 C323 48 332 51 340 55 M360 35 C370 31 379 29 389 30 M414 28 C423 29 432 32 440 36" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity=".72"/>
     </svg>
-    <p class="vine-subtitle">Activities built from a resident's own life</p>
+    <p class="vine-subtitle">Contact our support with any questions, recommendations, or concerns of any kind.</p>
 
     <div class="card">
       <h2>About Cognicopia</h2>
@@ -879,7 +892,10 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
         </div>
         <div class="info-box">
           <div class="info-label">Direct Inquiries</div>
-          <div class="info-val"><a class="cg-email" href="mailto:cognicopia@outlook.com">cognicopia@outlook.com</a></div>
+          <div class="info-val"><a class="cg-email" id="mailAddress" href="mailto:cognicopia@outlook.com">cognicopia@outlook.com</a></div>
+          <button type="button" class="email-action-btn is-quiet" id="copyEmailBtn">Copy Email</button>
+          <a href="mailto:cognicopia@outlook.com" class="email-action-btn" id="sendEmailBtn"><span aria-hidden="true">✉</span> Send an Email</a>
+          <p class="cf-note" id="mailNote" role="status" aria-live="polite"></p>
         </div>
       </div>
 
@@ -897,9 +913,19 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
       
       <p>We welcome your questions, feedback, pilot program inquiries, and purchase order requests. Please feel free to reach out directly via email, and we will get back to you promptly.</p>
 
-      <p style="margin-top: 24px;">
-        <a href="mailto:cognicopia@outlook.com" class="email-action-btn" id="sendEmailBtn"><span aria-hidden="true">✉</span> Send an Email</a>
-      </p>
+    </div>
+
+    <div class="card" id="messageCard">
+      <h2>Send us a message</h2>
+      <p>Write to us here and your email program opens with everything filled in. Nothing is sent from this page: you check the message, then press Send in your email program.</p>
+      <form class="cf-form" id="contactForm" novalidate>
+        <div class="cf-field"><label for="cfName">Full name or facility name</label><input id="cfName" name="name" type="text" autocomplete="name" maxlength="120" required placeholder="Full Name / Facility Name"><p class="cf-err" id="cfNameErr" hidden></p></div>
+        <div class="cf-field"><label for="cfEmail">Your email address</label><input id="cfEmail" name="email" type="email" autocomplete="email" maxlength="120" required placeholder="Sender Email Address"><p class="cf-err" id="cfEmailErr" hidden></p></div>
+        <div class="cf-field"><label for="cfSubject">Subject</label><input id="cfSubject" name="subject" type="text" maxlength="120" required placeholder="Subject Line"><p class="cf-err" id="cfSubjectErr" hidden></p></div>
+        <div class="cf-field"><label for="cfMessage">Your message, question, or request</label><textarea id="cfMessage" name="message" maxlength="4000" required placeholder="Your Message, Question, or Request"></textarea><p class="cf-err" id="cfMessageErr" hidden></p></div>
+        <div><button type="submit" class="email-action-btn" id="cfSend"><span aria-hidden="true">✉</span> Send Message</button></div>
+        <p class="cf-note" id="cfStatus" role="status" aria-live="polite"></p>
+      </form>
     </div>
   </main>
 
@@ -990,6 +1016,88 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
   $("requestBtn").href = href;
   $("sendEmailBtn").href = href;
   $("requestCard").hidden = false;
+})();
+</script>
+<script id="cg-contact-js">
+/* The message form, Send an Email and Copy Email. Nothing here uses the network: the form builds a mailto: link and the
+   visitor's own email program does the sending. Each step says what happened, so no one is left guessing. */
+(function () {
+  "use strict";
+  var TO = "cognicopia@outlook.com", $ = function (id) { return document.getElementById(id); };
+  var say = function (el, text) { el.textContent = text; };
+  var clean = function (t, n) { return String(t).replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/g, " ").trim().slice(0, n); };
+
+  /* Did a mail program take over? Opening one usually moves focus away from the page; if nothing happens, say what to do. */
+  function openMail(href, note, after) {
+    var left = false, mark = function () { left = true; };
+    window.addEventListener("blur", mark, { once: true });
+    document.addEventListener("visibilitychange", mark, { once: true });
+    try { window.location.href = href; } catch (e) { left = false; }
+    setTimeout(function () {
+      window.removeEventListener("blur", mark); document.removeEventListener("visibilitychange", mark);
+      if (!left) say(note, "If your email program did not open, write to " + TO + " from any email, or press Copy Email and paste the address." + (after ? " " + after : ""));
+    }, 1600);
+  }
+
+  function copyText(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      return navigator.clipboard.writeText(text).catch(function () { return legacy(text); });
+    }
+    return legacy(text);
+  }
+  function legacy(text) {
+    return new Promise(function (ok, no) {
+      var t = document.createElement("textarea"); t.value = text; t.setAttribute("readonly", ""); t.style.cssText = "position:fixed;left:-9999px;top:0";
+      document.body.appendChild(t); t.select();
+      var done = false; try { done = document.execCommand("copy"); } catch (e) {}
+      document.body.removeChild(t); done ? ok() : no(new Error("copy blocked"));
+    });
+  }
+
+  /* Send an Email: the plain address, or the filled-in one the invoice and pilot links make (set by the script above). */
+  var send = $("sendEmailBtn"), mailNote = $("mailNote");
+  send.addEventListener("click", function (e) { e.preventDefault(); say(mailNote, ""); openMail(send.getAttribute("href") || "mailto:" + TO, mailNote); });
+
+  /* Copy Email */
+  var copy = $("copyEmailBtn"), timer = null;
+  copy.addEventListener("click", function () {
+    copyText(TO).then(function () {
+      copy.textContent = "Copied to Clipboard!"; say(mailNote, "");
+      clearTimeout(timer); timer = setTimeout(function () { copy.textContent = "Copy Email"; }, 2000);
+    }, function () {
+      var r = document.createRange(); r.selectNodeContents($("mailAddress")); var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+      say(mailNote, "Your browser would not copy for you. The address is selected: press Ctrl+C (or hold and choose Copy), or write it down: " + TO);
+    });
+  });
+
+  /* The message form */
+  var form = $("contactForm"), status = $("cfStatus");
+  var rules = [
+    ["cfName", "cfNameErr", function (v) { return v ? "" : "Please enter your name or your facility's name."; }],
+    ["cfEmail", "cfEmailErr", function (v) { return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v) ? "" : "Please enter an email address such as name@facility.com."; }],
+    ["cfSubject", "cfSubjectErr", function (v) { return v ? "" : "Please add a subject."; }],
+    ["cfMessage", "cfMessageErr", function (v) { return v ? "" : "Please write your message."; }]
+  ];
+  form.addEventListener("submit", function (e) {
+    e.preventDefault(); say(status, "");
+    var first = null, v = {};
+    rules.forEach(function (r) {
+      var input = $(r[0]), err = $(r[1]), val = clean(input.value, r[0] === "cfMessage" ? 4000 : 120), msg = r[2](val);
+      v[r[0]] = val; err.hidden = !msg; err.textContent = msg; input.setAttribute("aria-invalid", msg ? "true" : "false");
+      if (msg) { input.setAttribute("aria-describedby", r[1]); if (!first) first = input; } else input.removeAttribute("aria-describedby");
+    });
+    if (first) { first.focus(); say(status, "Please fix the highlighted field" + (form.querySelectorAll('[aria-invalid="true"]').length > 1 ? "s" : "") + " and press Send Message again."); return; }
+    var subject = "[Cognicopia Inquiry] " + v.cfSubject;
+    var body = "Name: " + v.cfName + "\r\nEmail: " + v.cfEmail + "\r\n\r\nMessage:\r\n" + v.cfMessage.replace(/\r?\n/g, "\r\n");
+    var href = "mailto:" + TO + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body), after = "";
+    if (href.length > 1900) {           /* many mail programs cut a very long link: keep the start, and put the whole message on the clipboard */
+      var kept = body.slice(0, 900) + "\r\n\r\n[Message continues: please paste it here.]";
+      href = "mailto:" + TO + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(kept);
+      copyText(body).then(function () { say(status, "Your message is long, so we copied all of it. If it looks cut off in the email, paste it in."); }, function () { say(status, "Your message is long and may be cut off in the email. Please copy your message from this page first."); });
+      after = "Your full message is still in the box above.";
+    } else say(status, "Your email program should open now with your message ready. Press Send there.");
+    openMail(href, status, after);
+  });
 })();
 </script>
 </body>
