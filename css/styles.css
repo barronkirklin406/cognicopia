@@ -635,3 +635,13 @@ html:not(.cg-night-shift) body :is(.config,.cfg,.arb) .level input:checked + spa
 html.cg-night-shift .cg-tierhead{background:transparent;border-color:#d6a64b;color:#ffedcc;box-shadow:none}
 html.cg-night-shift .cg-tierhead :is(h1,h2,h3,p,.hint,small){color:#ffedcc !important}
 @media print{.cg-tierhead{background:#fff !important;box-shadow:none !important;border-color:#000 !important}}
+
+/* the free-trial badge: a calm pill, not a button (it does nothing when pressed); it turns amber at five left and a deeper amber at none */
+.cg-trial{display:inline-flex;align-items:center;gap:8px;box-sizing:border-box;min-height:var(--tap,52px);padding:8px 16px;border:2px solid var(--cg-green-700,#1b382b);border-radius:999px;background:var(--cg-sage-100,#e3f1e8);color:var(--cg-green-700,#1b382b);font:700 16px/1.25 var(--cg-font-ui,"Segoe UI",sans-serif);letter-spacing:.01em}
+.cg-trial[hidden]{display:none}
+.cg-trial b{font-weight:800}
+.cg-trial-ic{flex:none}
+.cg-trial.cg-trial-low{background:#fff3d6;border-color:#8a5a00;color:#4a2f00}
+.cg-trial.cg-trial-out{background:#ffe3d6;border-color:#8a3a20;color:#4d1a0a}
+html.cg-night-shift .cg-trial{background:#2b2015!important;border-color:#d6a64b!important;color:#ffedcc!important}
+@media print{.cg-trial{display:none!important}}

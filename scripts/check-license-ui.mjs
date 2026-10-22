@@ -101,7 +101,7 @@ try {
   const act = p.locator("input.act").first(); if (await act.count()) await act.check({ force: true });
   await p.click("#go"); await p.waitForTimeout(500);
   ok(await visible(p, "#gate"), "index.html: the 26th packet opens the upgrade screen");
-  ok((await p.textContent("#gateTitle")).includes("25 free packets"), "index.html: the screen says 25 free packets");
+  ok((await p.textContent("#gateTitle")).includes("25 Free Trial Generations"), "index.html: the screen says all 25 Free Trial Generations are used");
   for (const id of ["gateMonthly", "gateAnnual", "gateInvoice"]) ok(await visible(p, "#" + id), `index.html: the upgrade screen offers ${id}`);
   ok((await p.getAttribute("#gateMonthly", "href")) === MONTHLY && (await p.getAttribute("#gateAnnual", "href")) === ANNUAL, "index.html: the two plan buttons are the Payment Links from the config");
   ok((await p.getAttribute("#gateInvoice", "href")) === "pricing.html#invoice", "index.html: the invoice button goes to the invoice request form on the pricing page");
@@ -248,7 +248,7 @@ try {
   ok(await tall(p, "#upgradeBanner a:has-text('Get Full Access')") >= 52 && await tall(p, "#upgradeBanner a:has-text('Request Corporate')") >= 52, "builder.html: the banner's buttons are at least 52 px");
   await shot(p, "builder-banner");
   await p.evaluate(() => { localStorage.setItem("cognicopia_gen_count", "25"); openGate(); }); await p.waitForTimeout(300);
-  ok(await visible(p, "#gate") && (await p.textContent("#gateTitle")).includes("25 free packets"), "builder.html: the gate opens at 25");
+  ok(await visible(p, "#gate") && (await p.textContent("#gateTitle")).includes("25 Free Trial Generations"), "builder.html: the gate opens at 25");
   ok((await p.getAttribute("#gateMonthly", "href")) === MONTHLY && (await p.getAttribute("#gateAnnual", "href")) === ANNUAL && (await p.getAttribute("#gateInvoice", "href")) === "pricing.html#invoice", "builder.html: monthly, annual and invoice buttons");
   ok(/Best value/.test(await p.textContent("#gate")) && /save about 25%/.test(await p.textContent("#gate")) && /Net-30/.test(await p.textContent("#gate")), "builder.html: the gate states best value, the saving and net-30");
   for (const id of ["#gateMonthly", "#gateAnnual", "#gateInvoice", "#gateUnlock", "#gateClose", "#gateCode"]) ok(await tall(p, id) >= 52, `builder.html: ${id} is at least 52 px`);

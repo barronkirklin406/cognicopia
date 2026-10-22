@@ -244,3 +244,10 @@ Not built, with reasons, in that file: the four-tab rewrite of index.html, a PDF
 - The infinite generator draws subjects procedurally in vector code; it does not use AI images. The line-art pipeline can bring AI pictures into the library, but only after a person approves each one. The `--backend http` image path is optional and was tested only against a local stand-in server, never a real provider.
 - About 2% of first drafts fail the guardrails; batches re-roll them automatically.
 - **Staff Guide and Feature Tour:** `resources/staff-guide/` (four practice screens, FAQ, one-page Quick-Start PDF), `js/staffGuide.js`, `scripts/check-staff-guide.mjs`, `docs/staff-guide.md`. The era music, film, TV and slang datasets are still to come.
+
+## Free-trial badge, hero button and "all used" window (October 22, 2026)
+
+- A badge reading "Free Trial: N / 25 Generations Remaining" shows in the bar under the navigation on every page (and on the front page above the hero button and in the packet tool's wood bar). `js/trialBadge.js` fills it from the trial ledger and keeps the number in localStorage under `cognicopia_trial_generations`; a licensed computer sees no badge.
+- Front-page hero button: "Start Free Trial — 25 Free Activity Generations", with the "No credit card required" line beneath it.
+- When the 25 are used, the window is titled "You've used all 25 Free Trial Generations!" and offers "Activate Annual / Monthly License" (pricing page plans) and "Request Net-30 Invoice" (the invoice form). Proof: `scripts/check-trial-badge-ui.mjs` (in `npm run build`).
+- Staff Guide tabs and benefit titles use the owner's wording. "Saves Hours of Prep Time" became "Less Prep Time" because the guide may not state a saving that has not been measured; "Zero IT & HIPAA Liability" became "Zero IT Setup, Resident Details Stay Private" (no compliance or liability claim).

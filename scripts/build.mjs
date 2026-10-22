@@ -367,6 +367,14 @@ step("licensing and pricing work: the 25-packet limit, the upgrade screens, past
   }
 });
 
+step("the free-trial badge counts down on every page, the hero button reads right, and the window when the 25 are used offers a card or a Net-30 invoice (a real browser)", () => {
+  try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-trial-badge-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
+  catch (e){
+    if (e.status === 2) return "skipped: Playwright is not installed here (see docs/dev-setup.md)";
+    throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message);
+  }
+});
+
 step("the design system works: the focus ring, motion that stops when asked, the scroll layers, type, the first screen, the coloring script, and a printed sheet read back from its PDF (a real browser)", () => {
   try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-design-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
   catch (e){

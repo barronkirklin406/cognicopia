@@ -597,6 +597,8 @@ input:focus,select:focus{border-color:var(--accent)}
   #printRoot.pure-bw .trace{color:#ffffff !important;-webkit-text-stroke:1pt #000000}
 }
 .sb-toggle-text{font-family:var(--font)}
+.gate-ctas{display:flex;flex-wrap:wrap;gap:12px;margin:0 0 16px}
+.gate-ctas .buy{min-height:var(--tap,52px);display:inline-flex;align-items:center;justify-content:center;text-align:center;padding:10px 20px;text-decoration:none}
 </style>
 <style id="sb-categories-toggle">
 /* Mobile menu button: hamburger icon + "Menu" label */
@@ -2865,6 +2867,7 @@ textarea:focus{border-color:var(--accent)}
   </header>
   <!-- Under the slim sticky bar, and scrolling away with the page: the facility name and the Calm mode switch (the bar was 240 to 434 px tall with them in it) -->
   <div class="care-strip">
+    <span class="cg-trial" data-cg-trial hidden></span>
     <div class="facility" id="facilityLabel"></div>
       <button class="calm-mode-toggle" type="button" id="calmModeToggle" aria-pressed="false" aria-describedby="calmModeHelp">
         <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12h8"/></svg><span>Late-Stage / Sundowning Calm<small id="calmModeHelp">Off · simplifies queued activity pages; emergency buttons stay fixed</small></span>
@@ -2903,8 +2906,9 @@ textarea:focus{border-color:var(--accent)}
 
 <div class="gate" id="gate" hidden role="dialog" aria-modal="true" aria-labelledby="gateTitle">
   <div class="gate-card">
-    <h2 id="gateTitle">You have used your free packets</h2>
+    <h2 id="gateTitle">You&rsquo;ve used all 25 Free Trial Generations!</h2>
     <p id="gateText"></p>
+    <p class="gate-ctas" id="gateCtas"></p>
     <div class="gate-plans" id="gatePlans"></div>
     <p class="note" id="gateNote"></p>
     <div class="gate-row">
@@ -2922,6 +2926,7 @@ textarea:focus{border-color:var(--accent)}
 
 <script src="assets/services/secureStore.js"></script>
 <script src="assets/services/trialLedger.js"></script>
+<script src="js/trialBadge.js"></script>
 <script src="assets/services/censusImport.js"></script>
 <script src="assets/services/privacyExport.js"></script>
 <script src="assets/services/contentCatalog.js"></script>
@@ -12039,6 +12044,7 @@ function payLink(plan){
 }
 const INVOICE_PATH = LICCFG.INVOICE_PATH || "contact.html?subject=Corporate+Invoice+Request";
 const INVOICE_FORM_PATH = LICCFG.INVOICE_FORM_PATH || "pricing.html#invoice";
+const PRICING_PATH = LICCFG.PRICING_PATH || "pricing.html";
 const ACCESS_SHA = "97c0fcc2e7143e13c6b104d93ad47c1e57670a24576df965b1a9eb745d6217da";
 
 function sha256(ascii){
@@ -15509,8 +15515,9 @@ function toast(msg, actionLabel, action){
 }
 
 function openGate(){
-  $("#gateTitle").textContent = `You have used your ${FREE_RUNS} free packets`;
-  $("#gateText").textContent = "Cognicopia is for your whole building: as many packets as you need, for as many residents as you have. Pay by card (a purchasing card works) and your license key appears on screen, or ask for an invoice for your accounts payable team.";
+  $("#gateTitle").textContent = `You\u2019ve used all ${FREE_RUNS} Free Trial Generations!`;
+  $("#gateText").textContent = "Thank you for trying Cognicopia. To keep making packets, unlock unlimited access for your whole building: choose an annual or monthly license and pay by credit card through Stripe (a purchasing card works, and your license key appears on screen), or ask for a Net-30 purchase-order invoice for your accounts payable team.";
+  $("#gateCtas").innerHTML = `<a class="buy primary" id="gateActivate" href="${esc(PRICING_PATH)}#plans" target="_blank" rel="noopener">Activate Annual / Monthly License</a><a class="buy alt" id="gateNet30" href="${esc(INVOICE_FORM_PATH)}" target="_blank" rel="noopener">Request Net-30 Invoice</a>`;
   // a plan's button is its Stripe Payment Link, or, until that is set up, a request for an invoice
   const planBtn = (plan, label) => { const u = payLink(plan); return u ? { href: u, cta: "Pay by card · " + label } : { href: INVOICE_PATH + "&plan=" + plan, cta: "Request this plan" }; };
   const tile = o => `<div class="gate-plan${o.best ? " best" : ""}">${o.tag ? `<p class="gp-tag">${esc(o.tag)}</p>` : ""}<h3>${esc(o.title)}</h3><p class="gp-price">${esc(o.price)}</p><p class="gp-note">${esc(o.note)}</p><a class="btn ${o.primary ? "btn-primary" : "btn-ghost"}" id="${o.id}" href="${esc(o.href)}" target="_blank" rel="noopener">${esc(o.cta)}</a></div>`;
@@ -15522,7 +15529,7 @@ function openGate(){
   $("#gateNote").textContent = "After a card payment your license key appears on screen. Copy it and paste it into the box below, on any computer in your building. For an invoice, we email the key with it. Once it is entered it works with no internet.";
   $("#gateMsg").textContent = "";
   $("#gate").hidden = false;
-  $("#gateAnnual").focus();
+  $("#gateActivate").focus();
 }
 $("#gateClose").addEventListener("click", () => { $("#gate").hidden = true; pendingSoothe = false; });
 $("#gatePromo").addEventListener("click", () => { if (window.CognicopiaLicense) window.CognicopiaLicense.openPromo(); });
