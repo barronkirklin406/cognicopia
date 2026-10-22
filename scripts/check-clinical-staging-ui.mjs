@@ -165,7 +165,12 @@ async function open(path, viewport) {
     /* and in the answer buttons too: take a word that was an answer choice, keep it off, and draw many more screens. The words
        on a row of buttons are read one by one, not run together ("side" "table" "day" is not "sidetableday"). */
     await pg.click("#tbBack"); await pg.waitForTimeout(150); await pg.fill("#tbAvoid", ""); await pg.click('[data-act="saying"]'); await pg.waitForTimeout(300);
-    const choice = (await pg.$$eval("#tbStage .tb-opt", els => els.map(e => e.textContent.trim().toLowerCase()))).find(w => /^[a-z]{4,10}$/.test(w));
+    /* a draw can hold only short or hyphenated choices: draw again (up to ten screens) until one has a plain word to test with */
+    let choice;
+    for (let i = 0; i < 10 && !choice; i++) {
+      if (i) { await pg.click("#tbBack"); await pg.waitForTimeout(150); await pg.click('[data-act="saying"]'); await pg.waitForTimeout(300); }
+      choice = (await pg.$$eval("#tbStage .tb-opt", els => els.map(e => e.textContent.trim().toLowerCase()))).find(w => /^[a-z]{4,10}$/.test(w));
+    }
     ok(!!choice, "the saying shows answer choices to test with");
     let shown = 0;
     for (let i = 0; choice && i < 40; i++) {
