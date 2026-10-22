@@ -12,12 +12,12 @@
    used. Change VERSION only to clear old copies; updates to the pages
    themselves arrive on their own.
    ===================================================================== */
-const VERSION = "cognicopia-v44";
+const VERSION = "cognicopia-v45";
 const CORE = [
   "./", "index.html", "404.html", "builder.html", "profile.html", "tablet.html", "pricing.html", "activate.html", "manifest.webmanifest",
   // the shared design system and its two typefaces (Atkinson Hyperlegible for the interface, Fraunces for headings)
   "css/styles.css", "fonts/AtkinsonHyperlegible-Regular.woff2", "fonts/AtkinsonHyperlegible-Bold.woff2", "fonts/Fraunces-latin.woff2",
-  "assets/cognicopia-logo.jpg", "assets/icon-192.png", "assets/icon-512.png", "assets/icon-maskable-512.png",
+  "assets/cognicopia-logo.jpg", "assets/icon-192.png", "assets/favicon-16.png", "assets/favicon-32.png", "assets/apple-touch-icon.png", "favicon.ico", "assets/icon-512.png", "assets/icon-maskable-512.png",
   "assets/cognicopia-coloring/cognicopia-coloring.js", "js/coloringAgent.js", "assets/services/vectorEngine.js", "assets/services/secureStore.js", "assets/services/reminiscenceEngine.js", "assets/services/slpClinicalService.js", "assets/services/heirloomService.js", "assets/services/facilityPlanner.js", "assets/services/academy.js", "assets/services/dailyOps.js", "assets/services/nightShift.js",
   "assets/vendor/jspdf.umd.min.js", "assets/vendor/jspdf-atkinson.js",
   // the hybrid coloring engine: its subjects travel in the bundle, so coloring pages draw offline
@@ -28,7 +28,7 @@ const CORE = [
   "src/config/license.js", "assets/services/licenseManager.js", "js/careTier.js", "js/voiceKit.js", "js/legal.js", "js/sessionTimeout.js", "terms.html", "js/invoiceMaker.js", "js/staffGuide.js", "resources/staff-guide/index.html", "assets/services/trialLedger.js", "assets/services/censusImport.js", "assets/services/privacyExport.js", "assets/services/residentTracker.js", "assets/services/staffCompanion.js", "assets/services/localDb.js", "assets/services/contentCatalog.js", "assets/services/contentMatcher.js", "data/content-catalog.json",
   "assets/pcg/pcg-data.bundle.js", "src/pcg/prng.js", "src/pcg/matrix.js", "src/pcg/grammar.js", "src/pcg/puzzles.js", "src/pcg/packet.js",
   // Tablet Activities (tablet.html): the touch puzzle makers and the screen
-  "js/tabletSound.js", "js/tabletArt.js", "js/tabletBanks.js", "js/tabletEngine.js", "js/tabletKit.js", "js/tabletWords.js", "js/tabletCreate.js", "js/tabletThink.js", "js/tablet.js",
+  "js/tabletSound.js", "js/tabletArt.js", "js/tabletBanks.js", "js/tabletEras.js", "js/tabletEngine.js", "js/tabletKit.js", "js/tabletWords.js", "js/tabletCreate.js", "js/tabletThink.js", "js/tablet.js",
   // its pictures (finished illustrations, one transparent PNG each)
   "assets/tablet/apple.png", "assets/tablet/banana.png", "assets/tablet/barn.png", "assets/tablet/bee.png", "assets/tablet/bells.png", "assets/tablet/bird.png", "assets/tablet/boat.png", "assets/tablet/bone.png", "assets/tablet/button.png", "assets/tablet/candle.png", "assets/tablet/car.png", "assets/tablet/cat.png", "assets/tablet/chair.png", "assets/tablet/chimes.png", "assets/tablet/clock.png", "assets/tablet/cow.png", "assets/tablet/cup.png", "assets/tablet/daisy.png", "assets/tablet/dog.png", "assets/tablet/duck.png", "assets/tablet/fish.png", "assets/tablet/flower.png", "assets/tablet/fork.png", "assets/tablet/grapes.png", "assets/tablet/guitar.png", "assets/tablet/hat.png", "assets/tablet/hen.png", "assets/tablet/horse.png", "assets/tablet/house.png", "assets/tablet/kettle.png", "assets/tablet/key.png", "assets/tablet/leaf.png", "assets/tablet/m-bubbles.png", "assets/tablet/m-color.png", "assets/tablet/m-crossword.png", "assets/tablet/m-match.png", "assets/tablet/m-odd.png", "assets/tablet/m-order.png", "assets/tablet/m-paint.png", "assets/tablet/m-saying.png", "assets/tablet/m-sort.png", "assets/tablet/m-sounds.png", "assets/tablet/m-spell.png", "assets/tablet/m-trace.png", "assets/tablet/m-wordsearch.png", "assets/tablet/mitten.png", "assets/tablet/orange.png", "assets/tablet/phone.png", "assets/tablet/pig.png", "assets/tablet/rabbit.png", "assets/tablet/rose.png", "assets/tablet/scarf.png", "assets/tablet/sheep.png", "assets/tablet/shoe.png", "assets/tablet/sock.png", "assets/tablet/spoon.png", "assets/tablet/station.png", "assets/tablet/storm.png", "assets/tablet/teapot.png", "assets/tablet/train.png", "assets/tablet/tree.png", "assets/tablet/tulip.png", "assets/tablet/waves.png"
 ];

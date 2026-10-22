@@ -135,12 +135,51 @@ try {
     await p.goto(base + "terms.html"); await p.waitForTimeout(900);
     ok(await p.$("#cgLegal") === null, "terms.html never shows the bar over its own text");
     ok((await p.textContent("#legalBody")) === TEXT, "terms.html shows the owner's paragraph in the page");
-    await p.evaluate(k => localStorage.setItem(k, "true"), KEY);
-    await p.reload(); await p.waitForTimeout(500);
-    await p.click("#legalAgain");
-    ok(await p.evaluate(k => localStorage.getItem(k), KEY) === null, `"Show the agreement box again" clears ${KEY}`);
+    ok(await p.$("#legalAgain") === null && await p.$("#legalState") === null && !/Show the agreement box again|Not yet agreed on this computer/.test(await p.textContent("body")), "terms.html has no debug button and no agreement-status label");
+    const heads = await p.$$eval("main .card h2", h => h.map(x => x.textContent.trim()));
+    for (const h of ["Not a medical or clinical tool", "Your resident information stays on your computer", "Used with staff and family nearby", "Copyright, printing and license"]) ok(heads.includes(h), `terms.html has the section: ${h}`);
+    const body = await p.textContent("main");
+    ok(/No resident data leaves the device/.test(body) && /BarronCrafts/.test(body) && /no diagnostic ability/i.test(body) && /supervision of facility staff/i.test(body), "the four sections say what was asked: no diagnosis, no resident data leaves the device, staff supervision, BarronCrafts copyright");
+    ok(!/HIPAA[- ]compliant|ensures? compliance|guarantee/i.test(body), "terms.html claims no compliance and promises nothing it cannot");
+    await p.click("a[data-cg-terms]"); await p.waitForTimeout(300);
+    ok(await p.$("#cgLegalModal") === null, "on terms.html the footer link does not open a window over the page that already holds the text");
+    await ctx.close();
+  }
+  /* the footer link, on pages that carry only the link: a window on demand, never the first-visit bar */
+  for (const [url, pre] of [["contact.html", ""], ["resources/staff-guide/", "../../"]]) {
+    const ctx = await browser.newContext({ viewport: { width: 1366, height: 768 }, serviceWorkers: "block" });
+    const p = await ctx.newPage(); watch(p);
+    await p.goto(base + url); await p.waitForTimeout(900);
+    ok(await p.$("#cgLegal") === null, `${url}: no first-visit bar on a page that only has the footer link`);
+    const link = await p.$("a[data-cg-terms]"); ok(!!link, `${url}: the footer link is marked to open the agreement`);
+    await link.scrollIntoViewIfNeeded(); await link.focus(); await p.keyboard.press("Enter"); await p.waitForTimeout(300);
+    ok(await p.$eval("#cgLegalModal", d => d.open).catch(() => false), `${url}: the footer link opens the agreement window`);
+    ok((await p.textContent("#cgmText")) === TEXT && /In short/.test(await p.textContent("#cgLegalModal")), `${url}: it shows the owner's paragraph and a short summary`);
+    const sizes = await p.$$eval("#cgLegalModal button, #cgLegalModal a", els => els.map(e => Math.round(e.getBoundingClientRect().height)));
+    ok(sizes.length === 3 && sizes.every(h => h >= 52), `${url}: its controls are at least 52 px (${sizes.join(", ")})`);
+    ok((await p.getAttribute("#cgmFull", "href")) === pre + "terms.html", `${url}: "Read the full terms" goes to ${pre}terms.html`);
+    ok(await p.evaluate(k => localStorage.getItem(k), KEY) === null, `${url}: opening it saves nothing`);
+    await p.keyboard.press("Escape"); await p.waitForTimeout(200);
+    ok(await p.$("#cgLegalModal") === null && await p.evaluate(() => document.activeElement && document.activeElement.hasAttribute("data-cg-terms")), `${url}: Escape closes it and puts focus back on the link`);
+    await link.click(); await p.waitForTimeout(200); await p.click("#cgmOk");
+    ok(await p.evaluate(k => localStorage.getItem(k), KEY) === "true" && await p.$("#cgLegalModal") === null, `${url}: "I agree" in the window saves the agreement and closes it`);
+    await p.emulateMedia({ media: "print" }); await link.click({ force: true }).catch(() => {});
+    await ctx.close();
+  }
+  {
+    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, serviceWorkers: "block" });
+    const p = await ctx.newPage(); watch(p);
+    await p.goto(base + "contact.html"); await p.waitForTimeout(700);
+    const link = await p.$("a[data-cg-terms]"); await link.scrollIntoViewIfNeeded(); await link.click(); await p.waitForTimeout(300);
+    const m = await p.evaluate(() => { const r = document.querySelector("#cgLegalModal").getBoundingClientRect(); return { l: r.left, r: r.right, t: r.top, b: r.bottom, vw: innerWidth, vh: innerHeight }; });
+    ok(m.l >= 0 && m.r <= m.vw && m.t >= 0 && m.b <= m.vh, "on a phone the agreement window fits the screen");
+    await ctx.close();
+  }
+  {
+    const ctx = await browser.newContext({ viewport: { width: 1366, height: 768 }, serviceWorkers: "block" });
+    const p = await ctx.newPage(); watch(p);
     await p.goto(base + "index.html"); await p.waitForSelector("#cgLegal", { timeout: 15000 }).catch(() => {});
-    ok(await p.$("#cgLegal") !== null, "and the bar is back on the next visit");
+    ok(await p.$("#cgLegal") !== null, "the first-visit bar still shows on the packet tool");
     await ctx.close();
   }
   {

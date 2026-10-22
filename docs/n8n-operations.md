@@ -14,7 +14,12 @@
 3. An automatic check flags a draft that claims HIPAA compliance or FDA approval, promises something, mentions a refund or discount, quotes a price or makes a medical claim, and flags a message that seems to hold resident information.
 4. **You get an approval email** showing their message and the drafted reply, with two buttons: send it, or do not. Only "send it" emails the customer. If you would rather answer in your own words, choose not to send, and reply yourself.
 
-**Know where the text goes.** The sender's question is sent to Google's Gemini service to be answered. Check Google AI Studio's current free-tier terms about how it may use what is sent, and do not use this flow if that is not acceptable for your support mailbox.
+**Know where the text goes, and which kind of Google key you use.** The sender's question is sent to Google's Gemini service to be answered. Google's [Gemini API terms](https://ai.google.dev/gemini-api/terms) (read on October 22, 2026) treat the two kinds of key differently:
+
+- **A free key** (no billing set up): Google may use what is sent, and the answers, to develop its products, and human reviewers may read it (Google says it first removes the link to your account, key and project). Google itself advises against sending sensitive or personal information through a free key.
+- **A paid key** (the Google Cloud project behind it has billing switched on): Google says it does not use what is sent to improve its products.
+
+A support email carries a person's name and email address, and a customer sometimes writes more than they should. So use a key from a project **with billing on and a low monthly spending cap**, or do not use this flow. The terms change; read the live page before you rely on this.
 
 ## Flow 2: Net-30 invoice follow-ups
 
