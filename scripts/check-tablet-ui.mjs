@@ -855,7 +855,7 @@ try {
     const { ctx, p } = await fresh(LAND);
     for (const id of ["wordsearch", "crossword", "color", "paint"]) { await openAct(p, id); if (id === "color") await p.waitForSelector(".tb-pics", { timeout: 8000 }).catch(() => {}); await toMenu(p); }
     const keys = await p.evaluate(() => Object.keys(localStorage).concat(Object.keys(sessionStorage)));
-    ok(keys.every(k => /^(cognicopia_tablet_prefs|cognicopia_gen_count|cognicopia_trial_persist|cognicopia_license.*|cognicopia_promo.*)$/.test(k)), "nothing is kept in this browser but the choices and the free-packet count: " + keys.join(", "));
+    ok(keys.every(k => /^(cognicopia_tablet_prefs|cognicopia_gen_count|cognicopia_trial_generations|cognicopia_trial_persist|cognicopia_license.*|cognicopia_promo.*)$/.test(k)), "nothing is kept in this browser but the choices and the free-packet count: " + keys.join(", "));
     ok(await p.evaluate(() => document.cookie === ""), "no cookie is set");
     await ctx.close();
   }

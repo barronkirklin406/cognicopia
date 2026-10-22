@@ -616,6 +616,14 @@ h1{font-family:var(--display);font-weight:600;
   .shots figure{width:100%;margin:0 0 12px 0}
 }
 
+/* the free packets are used up: a window over the page, not a panel somewhere below it */
+html.gate-open body::before{content:"";position:fixed;inset:0;z-index:2147483000;background:rgba(10,20,15,.62)}
+.gate[role="dialog"][style*="display: block"]{position:fixed;z-index:2147483001;left:50%;top:50%;transform:translate(-50%,-50%);width:min(760px,calc(100vw - 32px));max-height:calc(100vh - 32px);overflow:auto;margin:0;box-shadow:0 24px 60px rgba(0,0,0,.5)}
+.gate-ctas{display:flex;flex-wrap:wrap;gap:12px;margin:0 0 18px}
+.gate-ctas .buy{min-height:var(--tap,52px);display:inline-flex;align-items:center;justify-content:center;text-align:center}
+.gate-close{margin:14px 0 0}
+.lp-trial-badge{margin:0}
+.lp-trial-sub{margin:0;max-width:52ch;font:600 16px/1.45 var(--cg-font-ui,"Segoe UI",sans-serif);color:var(--cg-ink-soft,#343b49)}
 .gate{display:none;margin-top:26px;border:1px solid var(--rule);
   border-left:4px solid var(--gold);background:var(--field);
   border-radius:0 4px 4px 0;padding:22px 24px}
@@ -1445,7 +1453,7 @@ html:not(.cg-night-shift) .fld-btn-ghost:hover{background:#eef8f3}
 /* as many columns as the longest word allows: fewer rows leave a bigger grid */
 .qp-sheet .qp-words{list-style:none;margin:.16in 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(calc(var(--wlen,10) * max(18pt,calc(19pt * var(--qps,1) * var(--fit))) * .68 + .42in),1fr));gap:.04in .2in}
 .qp-sheet .qp-words li{display:flex;align-items:center;gap:.1in;min-width:0;white-space:nowrap;overflow:hidden;font-size:max(18pt,calc(19pt * var(--qps,1) * var(--fit)));font-weight:700;letter-spacing:.02em;color:#000}
-.qp-box{flex:none;width:.24in;height:.24in;border:2pt solid #000}
+.qp-box{flex:none;width:.24in;height:.24in;border:4px solid #000}   /* whole pixels: the browser rounds 2pt (2.67 px) down to 2 px, which prints as 1.5 pt; 4 px prints as 3 pt */
 
 /* conversation cards: two per page with a cut line */
 .qp-cards{flex:1;min-height:0;display:flex;flex-direction:column}
@@ -1468,7 +1476,7 @@ html:not(.cg-night-shift) .fld-btn-ghost:hover{background:#eef8f3}
 
 /* cover */
 /* the framed panel inside the cover page (the page itself is also .qp-cover, and keeps its 0.75 in margin) */
-.qp-body > .qp-cover{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;border:4pt double #000;padding:.4in}
+.qp-body > .qp-cover{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;border:12px double #000;padding:.4in}   /* 12 px double: each of the two lines is 4 px, 3 pt on paper (4pt double printed as two 1.5 pt lines) */
 .qp-sheet .qp-cover-fac{margin:0 0 .3in;font-size:18pt;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#000}
 .qp-sheet .qp-cover-for{margin:0;font-size:max(28pt,calc(28pt * var(--qps,1) * var(--fit)));color:#000}
 .qp-sheet .qp-cover-name{margin:.05in 0 .2in;font-size:max(48pt,calc(56pt * var(--qps,1) * var(--fit)));font-weight:700;line-height:1.05;color:#000;overflow-wrap:anywhere}
@@ -1895,7 +1903,7 @@ html.cg-night-shift .cg-sidebar-toggle{background:#332312!important;border-color
 .cg-foot-in{box-sizing:border-box;width:min(1180px,calc(100% - 48px));margin:0 auto}
 .cg-foot-grid{display:grid;grid-template-columns:minmax(0,1.4fr) repeat(3,minmax(0,1fr));gap:28px}
 .cg-foot-logo{display:inline-flex;align-items:center;gap:10px;min-height:var(--tap,52px);color:var(--cg-green-700,#1b382b)!important;font:600 24px/1 var(--cg-font-display,Georgia,serif);text-decoration:none}
-.cg-foot-logo img{width:36px;height:30px;object-fit:contain}
+.cg-foot-logo img{width:63px;height:45px;object-fit:cover;object-position:50% 46%;flex:none}
 .cg-foot p{margin:4px 0 0;max-width:38ch;color:var(--cg-ink-soft,#343b49)!important;font:400 16px/1.5 var(--cg-font-ui,"Segoe UI",sans-serif);text-align:left}
 .cg-foot .cg-foot-by{font-weight:600;font-size:16px;line-height:1.5}
 html.cg-paper:not(.cg-night-shift) .cg-foot h2,.cg-foot h2{margin:0 0 4px;padding:0;border:0!important;color:var(--cg-tan-800,#4f4030)!important;font:700 15px/1.4 var(--cg-font-ui,"Segoe UI",sans-serif)!important;letter-spacing:.1em;text-transform:uppercase}
@@ -2022,6 +2030,7 @@ html.cg-night-shift #acts .pillar-blurb,html.cg-night-shift #acts .pillar-count{
 @media print{
   .wrap,.wrap .brand{background:#fff !important;border:0 !important;box-shadow:none !important}
   .wrap,.wrap *{color:#000 !important}
+  .wrap :is(label,div,section,aside,fieldset,details){background:none !important;box-shadow:none !important;border-color:#000 !important}   /* the choices and panels print as plain black outlines, no tint */
   .wrap .brand .logo{filter:brightness(0)}   /* the gold logo prints pure black */
 }
 /* Night Shift turns the light cards and a few buttons dark or amber;
@@ -2056,7 +2065,7 @@ html body{background:var(--cg-cream,#fbf7f1)}
 .lp .hero-title{margin:0 0 14px;color:var(--cg-charcoal,#1a202c);font:600 clamp(2.25rem,1.35rem + 2vw,3rem)/1.08 var(--cg-font-display,Georgia,serif);letter-spacing:-.015em;text-align:left;text-wrap:balance}
 .lp-accent{color:var(--cg-clay-700,#8a3a20)}
 .lp .lede{margin:0 0 20px;max-width:54ch;color:var(--cg-ink-soft,#343b49);font:400 18px/1.55 var(--cg-font-ui,"Segoe UI",sans-serif)}
-.lp-actions{display:flex;flex-wrap:wrap;align-items:center;gap:12px 22px;margin:0 0 14px}
+.lp-actions{display:flex;flex-wrap:wrap;align-items:center;gap:12px 22px;margin:0 0 6px}
 .lp-btn{display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;min-height:var(--cg-tap,52px);padding:12px 28px;border-radius:12px;
   background:var(--cg-green-700,#1b382b);color:#ffffff!important;font:700 17px/1.2 var(--cg-font-ui,"Segoe UI",sans-serif);text-decoration:none;
   box-shadow:0 8px 18px rgba(27,56,43,.24)}
@@ -2213,7 +2222,7 @@ html.cg-night-shift .cg-wood{border-top-color:#7a5326;border-bottom-color:#0e070
 .lp-footer{margin:0;padding:40px 0 24px;border-top:1px solid #ddd1ba;background:var(--cg-cream,#fbf7f1)}
 .lp-foot-grid{display:grid;grid-template-columns:minmax(0,1.4fr) repeat(3,minmax(0,1fr));gap:28px}
 .lp-foot-logo{display:inline-flex;align-items:center;gap:10px;min-height:var(--cg-tap,52px);color:var(--cg-green-700,#1b382b)!important;font:600 24px/1 var(--cg-font-display,Georgia,serif);text-decoration:none}
-.lp-foot-logo img{width:36px;height:30px;object-fit:contain}
+.lp-foot-logo img{width:63px;height:45px;object-fit:cover;object-position:50% 46%;flex:none}
 .lp-foot-brand p{margin:4px 0 0;max-width:38ch;color:var(--cg-ink-soft,#343b49);font:400 16px/1.5 var(--cg-font-ui,"Segoe UI",sans-serif)}
 .lp-footer h2{margin:0 0 4px;color:var(--cg-tan-800,#4f4030);font:700 15px/1.4 var(--cg-font-ui,"Segoe UI",sans-serif);letter-spacing:.1em;text-transform:uppercase}
 .lp-foot-col ul{margin:0;padding:0;list-style:none}
@@ -2252,7 +2261,7 @@ html.cg-night-shift .cg-wood{border-top-color:#7a5326;border-bottom-color:#0e070
 /* Night Shift (assets/services/nightShift.js): the same layout after dark */
 html.cg-night-shift .lp-hero,html.cg-night-shift .lp-features,html.cg-night-shift .lp-proof,html.cg-night-shift .lp-footer{background:#17120c!important}
 html.cg-night-shift .lp :is(h1,h2,.hero-title,.lp-quote p,.cg-value b,.lp-who b,.lp-float b),html.cg-night-shift .lp-footer :is(a,h2){color:#fff1cf!important}
-html.cg-night-shift .lp :is(.lede,.lp-byline,.lp-proof-sub,.cg-value span,.lp-who span,.lp-float span),html.cg-night-shift .lp-footer p{color:#e0c99d!important}
+html.cg-night-shift .lp :is(.lede,.lp-byline,.lp-proof-sub,.cg-value span,.lp-who span,.lp-float span,.lp-trial-sub),html.cg-night-shift .lp-footer p{color:#e0c99d!important}
 html.cg-night-shift .lp :is(.tagline,.lp-accent,.lp-more,.lp-marks a,.lp-marks svg,.cg-value svg){color:#ffd477!important}
 html.cg-night-shift .lp :is(.cg-value,.lp-quote,.lp-marks a,.lp-float){background:#211910!important;border-color:#684a26!important}
 html.cg-night-shift .lp .cg-value svg{background:#332312!important}
@@ -2279,6 +2288,8 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
 <!-- cg-license:start: generated by scripts/site-nav.mjs -->
 <script src="src/config/license.js"></script>
 <script src="assets/services/licenseManager.js"></script>
+<script src="assets/services/trialLedger.js"></script>
+<script src="js/trialBadge.js"></script>
 <!-- cg-license:end -->
 <!-- cg-design:start: generated by scripts/site-nav.mjs -->
 <link rel="stylesheet" href="css/styles.css">
@@ -2547,10 +2558,12 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
   and you'll get a printable large-print packet using their hometown, their
   family's names, their work, and the things they loved.</p>
         <div class="lp-actions">
-          <a class="lp-btn" href="#make">Make a packet</a>
+          <a class="lp-btn" id="heroTrial" href="#make">Start Free Trial &mdash; 25 Free Activity Generations</a>
           <a class="lp-btn lp-btn-tablet" href="./tablet.html">Tablet Activities</a>
           <a class="lp-more" href="#features"><span>See what you get</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          <span class="cg-trial lp-trial-badge" data-cg-trial hidden></span>
         </div>
+        <p class="lp-trial-sub" id="heroTrialSub">No credit card required. Pure high-contrast B&amp;W printables &amp; interactive tablet games.</p>
       </div>
       <div class="lp-visual" aria-hidden="true">
         <span class="lp-orb lp-orb-a"></span><span class="lp-orb lp-orb-b"></span><span class="lp-orb lp-orb-c"></span>
@@ -2609,6 +2622,7 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
   <div class="cg-wood" id="cgWood" role="region" aria-label="Access and care controls">
     <div class="cg-wood-bar" id="cgWoodBar">
       <span class="hdrlic cgw-left" id="hdrlic" role="group" aria-label="Licensing and access">
+        <span class="cg-trial cgw-trial" data-cg-trial hidden></span>
         <a href="pricing.html" target="_blank" rel="noopener" class="stripe-btn cgw-btn cgw-gold" data-upgrade-prompt>Get Full Access ($39/mo or $349/yr) &#x2192;</a>
         <a href="contact.html?subject=Corporate+Invoice+Request" class="stripe-btn stripe-btn-alt cgw-btn cgw-cream" data-upgrade-prompt>Request Corporate Invoice / W-9</a>
         <button type="button" class="linklike cgw-btn cgw-ghost" id="hdrlicToggle" aria-controls="hdrlicForm">Activate Access</button>
@@ -3077,10 +3091,11 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
     <p class="left" id="stageMsg"></p>
     <p class="err" id="err"></p>
 
-    <div class="gate" id="gate">
-      <h3 id="gateTitle">You have used your free packets</h3>
+    <div class="gate" id="gate" role="dialog" aria-modal="true" aria-labelledby="gateTitle">
+      <h3 id="gateTitle">You&rsquo;ve used all 25 Free Trial Generations!</h3>
       <p id="gateText"></p>
       <div id="buyWrap"></div>
+      <p class="gate-close"><button type="button" class="linklike" id="gateClose">Not now</button></p>
       <div class="unlock">
         <label for="lic">Already licensed? Enter your license key or access code.</label>
         <div class="row2">
@@ -8531,6 +8546,7 @@ function payLink(plan){
 }
 const INVOICE_PATH = LICCFG.INVOICE_PATH || "contact.html?subject=Corporate+Invoice+Request";
 const INVOICE_FORM_PATH = LICCFG.INVOICE_FORM_PATH || "pricing.html#invoice";
+const PRICING_PATH = LICCFG.PRICING_PATH || "pricing.html";
 
 /* Your public web address, if you have one, e.g. "cognicopia.com" (no
    https). Leave it "" until you actually own one -- the tool then points
@@ -8729,14 +8745,18 @@ function showAllowance(){
 function openGate(){
   const g=$("gate");
   // read the number from the setting rather than hard-coding it in the copy
-  $("gateTitle").textContent="You have used your "+FREE_RUNS+" free packets";
+  $("gateTitle").textContent="You\u2019ve used all "+FREE_RUNS+" Free Trial Generations!";
   $("gateText").textContent =
-    "Cognicopia is for your whole building \u2014 as many packets as you need, "
-    +"for as many residents as you have. Pay by card (a purchasing card works) "
-    +"and your license key appears on screen, or ask for an invoice if that "
-    +"suits your accounts payable team better.";
+    "Thank you for trying Cognicopia. To keep making packets, unlock unlimited access for your whole building: "
+    +"choose an annual or monthly license and pay by credit card through Stripe (a purchasing card works, and your "
+    +"license key appears on screen), or ask for a Net-30 purchase-order invoice for your accounts payable team.";
   const wrap=$("buyWrap");
   wrap.innerHTML="";
+  const ctas=document.createElement("p"); ctas.className="gate-ctas";
+  const cta=(label,href,id,alt)=>{ const a=document.createElement("a"); a.className="buy"+(alt?" alt":""); a.id=id; a.href=href; a.textContent=label; a.target="_blank"; a.rel="noopener"; return a; };
+  ctas.appendChild(cta("Activate Annual / Monthly License", PRICING_PATH+"#plans", "gateActivate", false));
+  ctas.appendChild(cta("Request Net-30 Invoice", INVOICE_FORM_PATH, "gateNet30", true));
+  wrap.appendChild(ctas);
 
   const tile=(o)=>{
     const d=document.createElement("div"); d.className="gate-plan"+(o.best?" best":"");
@@ -8782,8 +8802,12 @@ function openGate(){
   wrap.appendChild(sampWrap);
 
   g.style.display="block";
-  g.scrollIntoView({behavior:"smooth",block:"center"});
+  document.documentElement.classList.add("gate-open");
+  const first=$("gateActivate"); if(first) first.focus();
 }
+function closeGate(){ const g=$("gate"); if(g) g.style.display="none"; document.documentElement.classList.remove("gate-open"); }
+(function(){ const c=$("gateClose"); if(c) c.addEventListener("click", closeGate);
+  document.addEventListener("keydown", function(e){ const g=$("gate"); if(e.key==="Escape" && g && g.style.display==="block") closeGate(); }); })();
 
 function tryActivate(inputId, msgId){
   const v=$(inputId).value.trim();

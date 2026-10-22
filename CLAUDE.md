@@ -70,6 +70,7 @@ npm run art:library    # measure the 150 designs against the print standards and
 node scripts/license-keygen.mjs     # owner only: make the license-signing key pair (private half stays outside the repo)
 node scripts/issue-license.mjs      # make or verify a signed license key (invoices, enterprise); see docs/stripe-setup-guide.md
 node scripts/check-license-service.mjs  # prove the payment-to-email service without a network (also in npm test)
+npm run audit:print  # print every page, every Packet Builder activity and the front-page packet to PDF and read it back (breaks, black ink, margins, no web chrome); also part of npm run build
 npm run audit:ux  # measure tap targets, contrast, clicks, nav and print time in a real browser (not part of npm test)
 ```
 

@@ -100,7 +100,9 @@ for (const [fg, bg] of TEXT) { const r = ratio(T[fg], T[bg]); worst = Math.min(w
 /* ---------- 1c. type, fields and print ---------- */
 ok(/html body :is\(input,select,textarea,label,\.lede,\.sub,\.rap-lede\)[^{]*\{letter-spacing:\.01em\}/.test(CODE), "fields, labels and lead lines carry .01em tracking");
 ok(/--cg-font-display:var\(--cg-font-ui\)/.test(CODE) && /--cg-font-name:"Fraunces"/.test(CODE), "headings are the interface face; Fraunces is kept for a resident's name");
-ok(/@page\{size:8\.5in 11in;margin:\.5in \.5in \.5in 1\.25in\}/.test(CODE), "a page printed from the browser has 0.5 in margins and a 0.75 in binding gutter");
+ok(/@page cg-doc\{size:8\.5in 11in;margin:\.5in \.5in \.5in 1\.25in\}/.test(CODE) && /body\{page:cg-doc\}/.test(CODE), "a page printed from the browser has 0.5 in margins and a 0.75 in binding gutter (a named page, given to a document with no print root of its own)");
+ok(!/@page\s*\{[^}]*margin/.test(CODE), "the shared stylesheet sets no margin on the unnamed page: it would override the @page{margin:0} of a page that builds its own sheets (the Packet Builder printed its sheets 1.25 in to the right and cut off at the foot)");
+ok(/:root:root\{color-scheme:light\}/.test(CODE), "a dark-themed page prints on a light canvas");
 ok(/:not\(:has\(#printRoot,#qpPrintRoot,#print-stage\)\)/.test(CODE) && /nav,button,\.btn/.test(CODE), "the generic print sheet strips navigation and buttons and leaves a page with its own print root alone");
 for (const [fg, bg] of [["gold-500", "green-900"], ["gold-500", "green-800"], ["gold-500", "green-700"], ["tan-400", "green-900"], ["tan-400", "green-800"], ["tan-400", "green-700"], ["green-600", "parchment"],
   ["focus", "green-900"], ["focus-dark", "parchment"], ["focus", "focus-dark"], ["focus-dark", "tan-200"]]) {

@@ -287,6 +287,14 @@ step("a page printed straight from the browser: no navigation, buttons or fields
   }
 });
 
+step("print audit: every page, every Packet Builder activity at every level and the front page's packet, printed to PDF and read back (one sheet a page, pure black, margins, nothing of the web page on the paper) (a real browser)", () => {
+  try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "audit-print.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"], maxBuffer: 1 << 26 }).trim().split("\n").slice(-1)[0]; }
+  catch (e){
+    if (e.status === 2) return "skipped: Playwright or PyMuPDF is not installed here (see docs/dev-setup.md)";
+    throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message);
+  }
+});
+
 step("voice settings: the device's natural voices ranked, three paces, a preview and test sentence, the Academy's High-Fidelity switch, 52 px, nothing leaving the page (a real browser)", () => {
   try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-voice-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
   catch (e){
@@ -353,6 +361,14 @@ step("the Sensory Trigger box in the Cognitive Life Journal reads at 7:1 or bett
 
 step("licensing and pricing work: the 25-packet limit, the upgrade screens, pasted keys, activation, months offline, the invoice request, and only activate.html contacts anything (a real browser)", () => {
   try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-license-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
+  catch (e){
+    if (e.status === 2) return "skipped: Playwright is not installed here (see docs/dev-setup.md)";
+    throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message);
+  }
+});
+
+step("the free-trial badge counts down on every page, the hero button reads right, and the window when the 25 are used offers a card or a Net-30 invoice (a real browser)", () => {
+  try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-trial-badge-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
   catch (e){
     if (e.status === 2) return "skipped: Playwright is not installed here (see docs/dev-setup.md)";
     throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message);
