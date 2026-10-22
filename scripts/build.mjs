@@ -327,6 +327,14 @@ step("the Contact & Support page: the owner's header sentence, the message form 
   }
 });
 
+step("the Staff Guide and Feature Tour: four practice screens, the FAQ, the one-page Quick-Start PDF read back, the wording rules, 52 px controls, 7:1 text, nothing leaving the page (a real browser)", () => {
+  try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-staff-guide.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
+  catch (e){
+    if (e.status === 2) return "skipped: Playwright is not installed here (see docs/dev-setup.md)";
+    throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message);
+  }
+});
+
 step("the Tablet Activities button never ends on a 404: the page opens, and a missing or mistyped page falls back to the in-page tablet mode (a real browser)", () => {
   try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-tablet-route.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
   catch (e){
