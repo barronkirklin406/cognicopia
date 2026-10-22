@@ -7,11 +7,11 @@
 :root {
   --sb-w:      220px;          /* sidebar width */
   --sb-bg:     rgba(8,28,21,.96);
-  --sb-border: rgba(216,243,220,.15);
-  --sb-accent: #52b788;
-  --sb-hover:  rgba(82,183,136,.18);
-  --sb-txt:    #d8f3dc;
-  --sb-muted:  rgba(216,243,220,.55);
+  --sb-border: rgba(213,238,240,.15);
+  --sb-accent: #4fb3bf;
+  --sb-hover:  rgba(79,179,191,.18);
+  --sb-txt:    #d5eef0;
+  --sb-muted:  rgba(213,238,240,.55);
   --sb-hdr-sz: 10.5pt;
   --sb-lnk-sz: 12pt;
 }
@@ -35,10 +35,10 @@ body { padding-left: var(--sb-w); }
   overflow-y: auto;
   overflow-x: hidden;
   scrollbar-width: thin;
-  scrollbar-color: rgba(82,183,136,.3) transparent;
+  scrollbar-color: rgba(79,179,191,.3) transparent;
 }
 .cg-sidebar::-webkit-scrollbar { width: 4px; }
-.cg-sidebar::-webkit-scrollbar-thumb { background: rgba(82,183,136,.3); border-radius: 4px; }
+.cg-sidebar::-webkit-scrollbar-thumb { background: rgba(79,179,191,.3); border-radius: 4px; }
 
 /* ── Logo / brand at top ── */
 .cg-sidebar-brand {
@@ -129,7 +129,7 @@ body { padding-left: var(--sb-w); }
   border-left-color: var(--sb-accent);
 }
 .cg-sidebar-nav a.active {
-  background: rgba(82,183,136,.22);
+  background: rgba(79,179,191,.22);
   color: #fff;
   border-left-color: var(--sb-accent);
   font-weight: 600;
@@ -166,7 +166,7 @@ body { padding-left: var(--sb-w); }
   justify-content: center;
   backdrop-filter: blur(10px);
 }
-.cg-sidebar-toggle svg { color: #d8f3dc; }
+.cg-sidebar-toggle svg { color: #d5eef0; }
 
 /* ── Narrow top bar: replaces old .navbar ── */
 .cg-topbar {
@@ -185,12 +185,12 @@ body { padding-left: var(--sb-w); }
   -webkit-backdrop-filter: blur(16px);
 }
 .cg-topbar a, .cg-topbar button.linklike {
-  color: #e8f5e9;
+  color: #e4f3f4;
   font-size: 12pt;
   font-family: "Cognicopia UI","Atkinson Hyperlegible","Trebuchet MS","Segoe UI",sans-serif;
   text-decoration: none;
 }
-.cg-topbar a:hover { color: #d8f3dc; }
+.cg-topbar a:hover { color: #d5eef0; }
 
 /* ── Responsive: collapse sidebar on small screens ── */
 @media (max-width: 700px) {
@@ -220,7 +220,7 @@ body { padding-left: var(--sb-w); }
   align-items:center;justify-content:center;background:#000;color:#fff;border:1px solid rgba(255,255,255,.28);border-radius:6px;
   font:600 14px/1 "Segoe UI",system-ui,-apple-system,Arial,sans-serif;white-space:nowrap;backdrop-filter:none}
 .cg-sidebar-toggle svg{color:#fff;flex:none}
-.cg-sidebar-toggle:focus-visible{outline:3px solid #7ad3a4;outline-offset:3px}
+.cg-sidebar-toggle:focus-visible{outline:3px solid #86d4dc;outline-offset:3px}
 @media (max-width:700px){
   /* keep the top bar's own buttons clear of the Categories button */
   .cg-topbar{padding-left:164px;height:auto;min-height:60px;flex-wrap:wrap;row-gap:6px;padding-top:9px;padding-bottom:9px}

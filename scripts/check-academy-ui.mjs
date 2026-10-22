@@ -64,7 +64,7 @@ try {
   const pills = await p.$$eval('input[name="acCat"] + span', n => n.map(e => e.textContent.trim()));
   ok(pills.join("|") === "All Courses|Memory Care Essentials|Reminiscence|Activity Guidance|Completed", "the five filter pills: " + pills.join("|"));
   const tokens = await p.$eval("#acRoot", e => { const s = getComputedStyle(e); return ["--ac-bg", "--ac-panel", "--ac-card", "--ac-accent", "--ac-accent-hi", "--ac-glow", "--ac-media-glow", "--ac-border", "--ac-text"].map(k => s.getPropertyValue(k).replace(/\s+/g, "")); });
-  ok(tokens.join(" ") === "#fbf7f1 #ffffff #ffffff #1b382b #2d5a44 rgba(197,160,89,.10) rgba(27,56,43,.18) #ddd1ba #1a202c", "the Academy wears the site's cream, white and forest-green palette (the lesson player stays a dark screen): " + tokens.join(" "));
+  ok(tokens.join(" ") === "#f8f6ef #ffffff #ffffff #0e3c43 #1c5963 rgba(197,160,89,.10) rgba(14,60,67,.18) #ddd1ba #1a202c", "the Academy wears the site's cream, white and forest-green palette (the lesson player stays a dark screen): " + tokens.join(" "));
 
   /* every text pair at AAA */
   const pal = await p.$eval("#acRoot", e => { const s = getComputedStyle(e), g = k => s.getPropertyValue(k).trim(); return { bg: g("--ac-bg"), panel: g("--ac-panel"), card: g("--ac-card"), s2: g("--ac-surface-2"), text: g("--ac-text"), t2: g("--ac-text-2"), muted: g("--ac-muted"), at: g("--ac-accent-text"), ink: g("--ac-ink"), acc: g("--ac-accent"), hi: g("--ac-accent-hi"), fam: g("--ac-family"), good: g("--ac-good"), warn: g("--ac-warn") }; });

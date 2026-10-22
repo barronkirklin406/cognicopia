@@ -12,12 +12,12 @@
    used. Change VERSION only to clear old copies; updates to the pages
    themselves arrive on their own.
    ===================================================================== */
-const VERSION = "cognicopia-v48";
+const VERSION = "cognicopia-v49";
 const CORE = [
   "./", "index.html", "404.html", "builder.html", "profile.html", "tablet.html", "pricing.html", "activate.html", "manifest.webmanifest",
   // the shared design system and its two typefaces (Atkinson Hyperlegible for the interface, Fraunces for headings)
   "css/styles.css", "fonts/AtkinsonHyperlegible-Regular.woff2", "fonts/AtkinsonHyperlegible-Bold.woff2", "fonts/Fraunces-latin.woff2",
-  "assets/cognicopia-logo.jpg", "assets/icon-192.png", "assets/favicon-16.png", "assets/favicon-32.png", "assets/apple-touch-icon.png", "favicon.ico", "assets/icon-512.png", "assets/icon-maskable-512.png",
+  "assets/cognicopia-logo.jpg", "assets/brand/brain-mark.svg", "assets/brand/brain-watermark.svg", "assets/brand/badge-quick.svg", "assets/brand/badge-nostalgia.svg", "assets/brand/badge-lowvision.svg", "assets/brand/badge-tablet.svg", "assets/brand/badge-privacy.svg", "assets/icon-192.png", "assets/favicon-16.png", "assets/favicon-32.png", "assets/apple-touch-icon.png", "favicon.ico", "assets/icon-512.png", "assets/icon-maskable-512.png",
   "assets/cognicopia-coloring/cognicopia-coloring.js", "js/coloringAgent.js", "assets/services/vectorEngine.js", "assets/services/secureStore.js", "assets/services/reminiscenceEngine.js", "assets/services/slpClinicalService.js", "assets/services/heirloomService.js", "assets/services/facilityPlanner.js", "assets/services/academy.js", "assets/services/dailyOps.js", "assets/services/nightShift.js",
   "assets/vendor/jspdf.umd.min.js", "assets/vendor/jspdf-atkinson.js",
   // the hybrid coloring engine: its subjects travel in the bundle, so coloring pages draw offline

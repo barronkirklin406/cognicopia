@@ -161,7 +161,8 @@ try {
     ok(await p.evaluate(k => localStorage.getItem(k), KEY) === null, `${url}: opening it saves nothing`);
     await p.keyboard.press("Escape"); await p.waitForTimeout(200);
     ok(await p.$("#cgLegalModal") === null && await p.evaluate(() => document.activeElement && document.activeElement.hasAttribute("data-cg-terms")), `${url}: Escape closes it and puts focus back on the link`);
-    await link.click(); await p.waitForTimeout(200); await p.click("#cgmOk");
+    await link.click(); await p.waitForSelector("#cgLegalModal[open]", { timeout: 5000 }).catch(() => {}); await p.waitForTimeout(200); await p.click("#cgmOk");
+    await p.waitForSelector("#cgLegalModal", { state: "detached", timeout: 5000 }).catch(() => {});   /* the window is removed a moment after the click */
     ok(await p.evaluate(k => localStorage.getItem(k), KEY) === "true" && await p.$("#cgLegalModal") === null, `${url}: "I agree" in the window saves the agreement and closes it`);
     await p.emulateMedia({ media: "print" }); await link.click({ force: true }).catch(() => {});
     await ctx.close();

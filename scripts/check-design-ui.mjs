@@ -49,7 +49,7 @@ const shot = async (p, name) => { if (SHOTS) await p.screenshot({ path: path.joi
 /* ---------- pages made here, so the checks do not depend on a page's own CSS ---------- */
 const FIXTURES = {
   "kit.html": `<!doctype html><html lang="en" class="cg-ds"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Kit</title>
-<link rel="stylesheet" href="/css/styles.css"><style>body{margin:0;padding:24px;background:#10241a;color:#fff;min-height:300vh}</style></head><body><main>
+<link rel="stylesheet" href="/css/styles.css"><style>body{margin:0;padding:24px;background:#08262c;color:#fff;min-height:300vh}</style></head><body><main>
 <h1 id="h1">A heading for the page</h1><h2 id="h2">A section heading</h2><h3 id="h3">A smaller heading</h3>
 <p id="para">A paragraph of ordinary text, long enough to run past one line so that its measure can be read from the page itself and compared with the token that sets it, because a line of text that runs the whole width of a wide window is hard to follow.</p>
 <a id="link" href="#x">A link</a> <button id="btn" type="button">A button</button> <a id="cta" class="cg-btn" href="#y">A call to action</a>
@@ -59,7 +59,7 @@ const FIXTURES = {
 <ul class="cg-values"><li class="cg-value"><b>One</b><span>A detail</span></li></ul>
 </main></body></html>`,
   "bare.html": `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Bare</title><link rel="stylesheet" href="/css/styles.css">
-<style>html,body{margin:0}body{background:#162d21;min-height:300vh}</style></head><body></body></html>`,
+<style>html,body{margin:0}body{background:#0b2f36;min-height:300vh}</style></head><body></body></html>`,
   "coloring.html": `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Coloring</title><link rel="stylesheet" href="/css/styles.css">
 <style>html,body{margin:0;background:#fff}</style><script src="/js/coloring.js"></script></head><body><div id="page"></div></body></html>`
 };
@@ -123,7 +123,7 @@ try {
   for (const id of ["link", "btn", "cta", "sum", "tab", "sw", "inp"]) {
     await p.keyboard.press("Tab"); await p.waitForTimeout(330);
     const r = await p.evaluate(() => { const e = document.activeElement, s = getComputedStyle(e); return { id: e.id, style: s.outlineStyle, width: s.outlineWidth, color: s.outlineColor, offset: s.outlineOffset, shadow: s.boxShadow }; });
-    ok(r.id === id && r.style === RING.style && r.width === RING.width && r.color === RING.color && r.offset === RING.offset && /rgb\(16, 36, 26\) 0px 0px 0px 6px/.test(r.shadow),
+    ok(r.id === id && r.style === RING.style && r.width === RING.width && r.color === RING.color && r.offset === RING.offset && /rgb\(8, 38, 44\) 0px 0px 0px 6px/.test(r.shadow),
       `Tab reaches #${id} and shows the two-band ring (${r.id}: ${r.width} ${r.style} ${r.color}, ${r.shadow})`);
   }
   await shot(p, "kit-focus");
@@ -234,7 +234,7 @@ try {
   }
   ctx = await context(1366, 768); p = await open(ctx, "index.html"); await p.waitForTimeout(300);
   const lap = await p.evaluate(() => [...document.querySelectorAll(".cg-value")].map(e => Math.round(e.getBoundingClientRect().bottom)));
-  ok(lap.length === 4 && lap.every(b => b <= 768), `at 1366 x 768 all four value cards are fully on the first screen (bottoms at ${lap.join(", ")} px)`);
+  ok(lap.length === 5 && lap.every(b => b <= 768), `at 1366 x 768 all five value cards are fully on the first screen (bottoms at ${lap.join(", ")} px)`);
   await ctx.close();
   /* the front of the packet tool: a hero in two columns, a button that reaches the tool, the evidence, the footer */
   ctx = await context(1366, 768); p = await open(ctx, "index.html"); await p.waitForTimeout(300);
@@ -255,7 +255,7 @@ try {
   await ctx.close();
   ctx = await context(390, 844); p = await open(ctx, "index.html"); await p.waitForTimeout(300);
   const ph = await p.evaluate(() => { const a = [...document.querySelectorAll(".cg-value")].map(e => { const b = e.getBoundingClientRect(); return [Math.round(b.top), Math.round(b.bottom)]; }); return { cards: a, h1: Math.round(document.querySelector(".hero-title").getBoundingClientRect().top) }; });
-  ok(ph.cards.length === 4 && ph.cards[0][1] <= 844, `at 390 x 844 the first value card is fully on the first screen (${ph.cards[0].join("-")} px of 844)`);
+  ok(ph.cards.length === 5 && ph.cards[0][1] <= 844, `at 390 x 844 the first value card is fully on the first screen (${ph.cards[0].join("-")} px of 844)`);
   await shot(p, "index-phone");
   await ctx.close();
 

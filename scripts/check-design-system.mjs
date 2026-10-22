@@ -59,7 +59,7 @@ const mix = (top, alpha, under) => "#" + [1, 3, 5].map(i => Math.round(parseInt(
 ok(Object.keys(T).length >= 28, `the stylesheet names ${Object.keys(T).length} colors`);
 for (const need of ["green-950", "green-900", "green-800", "green-700", "parchment", "charcoal", "gold-500", "gold-300", "white", "focus", "focus-dark"]) ok(T[need], `missing token --cg-${need}`);
 /* the brand's four colors, as the Quality Standards Hub names them */
-ok(T["green-700"] === "#1b382b" && T.parchment === "#f4efe6" && T["gold-500"] === "#c5a059" && T.charcoal === "#1a202c", "the four brand colors are the tokens' anchors");
+ok(T["green-700"] === "#0e3c43" && T.parchment === "#f5f1e6" && T["gold-500"] === "#c5a059" && T.charcoal === "#1a202c", "the four brand colors are the tokens' anchors");
 
 const TEXT = [];   // [foreground, background]: text, which must reach AAA
 const onGreens = ["green-950", "green-900", "green-800", "green-700"], onTans = ["parchment", "tan-100", "tan-200"];
@@ -219,7 +219,7 @@ for (const f of ["pricing.html", "activate.html", "contact.html", "cognitive-jou
 {
   const idx = read("index.html");
   ok(/--ds-panel:var\(--cg-green-800/.test(idx) && /--ds-bar-ink:var\(--cg-charcoal/.test(idx), "index.html's palette is the shared tokens");
-  ok((idx.match(/class="cg-value"/g) || []).length === 4 && /Made from their own life/.test(idx) && /No resident data leaves this computer/.test(idx) && /first 25 packets/.test(idx), "index.html: four value cards above the form");
+  ok((idx.match(/class="cg-value"/g) || []).length === 5 && /Quick, personal packets/.test(idx) && /Decades of nostalgia/.test(idx) && /Low vision &amp; toner savings/.test(idx) && /Interactive tablet mode/.test(idx) && /No resident data leaves the device/.test(idx), "index.html: five value cards above the form");
   ok(/<p class="tagline">Engaging Today<\/p>/.test(idx) && /Connection, Cognition, Creation/.test(idx), "index.html: the tagline is Engaging Today, with the earlier line kept beneath it");
   ok(!/HIPAA[- ]compliant/i.test(idx), "no blanket compliance claim in the hero");
 }

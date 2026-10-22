@@ -320,7 +320,7 @@ export const POCKET_CARD_CSS = `
 .cg-plc-dialog {
   background: #0d1a16;
   color: #eaf4ef;
-  border: 2px solid #52b788;
+  border: 2px solid #4fb3bf;
   border-radius: 18px;
   width: 100%;
   max-width: 1140px;
@@ -336,7 +336,7 @@ export const POCKET_CARD_CSS = `
 .cg-plc-header {
   padding: 16px 24px;
   background: #13241f;
-  border-bottom: 1px solid rgba(82, 183, 136, 0.25);
+  border-bottom: 1px solid rgba(79,179,191, 0.25);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -354,8 +354,8 @@ export const POCKET_CARD_CSS = `
   letter-spacing: -0.01em;
 }
 .cg-plc-header-badge {
-  background: #52b788;
-  color: #062116;
+  background: #4fb3bf;
+  color: #05222a;
   font-size: 11px;
   font-weight: 800;
   text-transform: uppercase;
@@ -371,7 +371,7 @@ export const POCKET_CARD_CSS = `
 .cg-plc-btn-close {
   background: transparent;
   border: 1px solid rgba(255, 255, 255, 0.2);
-  color: #d8f3dc;
+  color: #d5eef0;
   font-size: 20px;
   line-height: 1;
   width: 36px;
@@ -386,7 +386,7 @@ export const POCKET_CARD_CSS = `
 .cg-plc-btn-close:hover {
   background: rgba(255, 255, 255, 0.12);
   color: #ffffff;
-  border-color: #52b788;
+  border-color: #4fb3bf;
 }
 
 /* Main Split Body: Editor & Preview */
@@ -405,7 +405,7 @@ export const POCKET_CARD_CSS = `
   flex: 1 1 480px;
   padding: 20px 24px;
   overflow-y: auto;
-  border-right: 1px solid rgba(82, 183, 136, 0.2);
+  border-right: 1px solid rgba(79,179,191, 0.2);
   background: #0f1d18;
   box-sizing: border-box;
 }
@@ -414,7 +414,7 @@ export const POCKET_CARD_CSS = `
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: #7ad3a4;
+  color: #86d4dc;
   margin: 0 0 16px;
   display: flex;
   align-items: center;
@@ -427,7 +427,7 @@ export const POCKET_CARD_CSS = `
   display: block;
   font-size: 13px;
   font-weight: 700;
-  color: #d8f3dc;
+  color: #d5eef0;
   margin-bottom: 6px;
 }
 .cg-plc-input {
@@ -445,8 +445,8 @@ export const POCKET_CARD_CSS = `
 }
 .cg-plc-input:focus {
   outline: none;
-  border-color: #52b788;
-  box-shadow: 0 0 0 3px rgba(82, 183, 136, 0.3);
+  border-color: #4fb3bf;
+  box-shadow: 0 0 0 3px rgba(79,179,191, 0.3);
 }
 .cg-plc-row-2 {
   display: flex;
@@ -502,7 +502,7 @@ export const POCKET_CARD_CSS = `
   font-size: 11px;
   font-weight: 700;
   background: rgba(255, 255, 255, 0.1);
-  color: #d8f3dc;
+  color: #d5eef0;
   padding: 2px 8px;
   border-radius: 6px;
 }
@@ -801,7 +801,7 @@ export const POCKET_CARD_CSS = `
 .cg-plc-footer {
   padding: 16px 24px;
   background: #13241f;
-  border-top: 1px solid rgba(82, 183, 136, 0.25);
+  border-top: 1px solid rgba(79,179,191, 0.25);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -834,23 +834,23 @@ export const POCKET_CARD_CSS = `
   border: none;
 }
 .cg-plc-btn-primary {
-  background: #52b788;
-  color: #062116;
-  box-shadow: 0 4px 14px rgba(82, 183, 136, 0.35);
+  background: #4fb3bf;
+  color: #05222a;
+  box-shadow: 0 4px 14px rgba(79,179,191, 0.35);
 }
 .cg-plc-btn-primary:hover {
-  background: #7ad3a4;
+  background: #86d4dc;
   transform: translateY(-1px);
 }
 .cg-plc-btn-secondary {
   background: rgba(255, 255, 255, 0.08);
-  color: #d8f3dc;
-  border: 1px solid rgba(82, 183, 136, 0.3);
+  color: #d5eef0;
+  border: 1px solid rgba(79,179,191, 0.3);
 }
 .cg-plc-btn-secondary:hover {
   background: rgba(255, 255, 255, 0.15);
   color: #ffffff;
-  border-color: #52b788;
+  border-color: #4fb3bf;
 }
 .cg-plc-btn-ghost {
   background: transparent;

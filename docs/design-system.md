@@ -15,12 +15,12 @@ Every page keeps its own inline styles (the site is static HTML on GitHub Pages 
 
 ## Color
 
-Built on the four brand colors the Quality Standards Hub already names (green `#1b382b`, parchment `#f4efe6`, gold `#c5a059`, charcoal `#1a202c`), with natural greens, warm tans and crisp neutrals around them. Every token is `--cg-<name>`.
+Built on the four brand colors the Quality Standards Hub already names (deep teal `#0e3c43`, parchment `#f5f1e6`, gold `#c5a059`, charcoal `#1a202c`; the teal replaced the old forest green on October 22, 2026, from the owner's brand flyer), with natural greens, warm tans and crisp neutrals around them. Every token is `--cg-<name>`.
 
 | Family | Tokens |
 |---|---|
-| Natural greens | `green-950` `#0b1a13`, `green-900` `#10241a`, `green-800` `#162d21`, `green-700` `#1b382b` (the brand green), `green-600` `#2d5a44`, `green-500` `#3f7a5c`; sage `100` `#e3f1e8`, `200` `#c9e4d3`, `300` `#9fcbb0` |
-| Warm tans | `parchment` `#f4efe6` (the brand parchment), `tan-100` `#ebe3d3`, `tan-200` `#ddd1ba`, `tan-300` `#cdbe9f`, `tan-400` `#b5a48b`, `tan-600` `#7a6548`, `tan-700` `#66523a`, `tan-800` `#4f4030`; gold `500` `#c5a059` (the brand gold), `300` `#e8cc8a`, `200` `#f1dda8` |
+| Natural greens | `green-950` `#051a1e`, `green-900` `#08262c`, `green-800` `#0b2f36`, `green-700` `#0e3c43` (the brand teal; the token names still say green so no page had to be renamed), `green-600` `#1c5963`, `green-500` `#2b7683`; sage `100` `#e3f1e8`, `200` `#c9e4d3`, `300` `#9fcbb0` |
+| Warm tans | `parchment` `#f5f1e6` (the brand parchment), `tan-100` `#ebe3d3`, `tan-200` `#ddd1ba`, `tan-300` `#cdbe9f`, `tan-400` `#b5a48b`, `tan-600` `#7a6548`, `tan-700` `#66523a`, `tan-800` `#4f4030`; gold `500` `#c5a059` (the brand gold), `300` `#e8cc8a`, `200` `#f1dda8` |
 | Crisp neutrals | `charcoal` `#1a202c`, `ink-soft` `#343b49`, `white` |
 | Warm accents (the light pages) | `cream` `#fbf7f1` (a page), `peach-100` `#fbe9dc` (an icon tile), `peach-200` `#f6cdb4` (the hero's glow, decoration only), `clay-700` `#8a3a20` (one terracotta accent word) |
 | Meaning | `danger-800`, `danger-200`, `ok-800`, `ok-200`; the focus ring `focus` `#f5b800` and `focus-dark` `#10241a` |
@@ -173,3 +173,14 @@ A page that builds no sheets of its own (a price page, a policy, a guide for a b
 - A new page: add it to `PAGES` in `scripts/site-nav.mjs` and run `npm run nav`; add `class="cg-ds"` to `<html>` to opt in to the type and rhythm.
 - A new control: size it with `var(--cg-tap)`. If its class sets a `box-shadow`, give its `:focus-visible` the ring's dark inner band too.
 - Never edit the stylesheet link or a sidebar by hand.
+
+## The brand flyer's look (October 22, 2026)
+
+The owner's flyer sets the identity: deep teal, warm gold, parchment. What was done, and what was deliberately kept:
+
+- **Tokens.** The `--cg-green-*` ramp and the sage tints are teal now, the parchment and cream are a little cooler, and a gold `--cg-gold-400` (`#d4af37`) edges buttons and cards. Hard-coded copies of the old greens in pages and scripts were moved to the same teals; the check scripts that name the brand anchors were updated to match.
+- **Kept on purpose.** The care-tier colors (Tier 3 stays evergreen, because the color is the tier's meaning), the four seasons' colors, the success and warning colors, and the coloring tools' crayon names ("green" must stay green).
+- **Call-to-action.** `--cg-cta` is the teal-to-navy gradient with a gold edge; it also carries a solid `background-color` so every tool that reads colors sees white text on a dark fill (above 10:1).
+- **Brain mark and watermark.** `assets/brand/brain-mark.svg` (two hemispheres, teal and blue, with neural nodes) sits beside the top-bar title, headings with `class="cg-brain-h"`, and the Packet Builder's titles. `assets/brand/brain-watermark.svg` is tiled faintly (gold strokes at 18 to 22 percent) down the page margins on windows 1100 px and wider, only on pages that carry the site navigation; a bare dark surface skips it so gold text there keeps its full 7:1. Both are hidden in print and the watermark in Night Shift.
+- **Feature badges.** Five rounded-square badges (`assets/brand/badge-*.svg`) head the front page's "What Cognicopia gives you" list: quick personal packets, decades of nostalgia, low vision and toner savings, interactive tablet mode, private on this computer. Names avoid claims that have not been measured ("30-second packets" and "100% privacy" were not used).
+- **Cards and banners.** `.cg-card` (white, soft radius, golden inner glow) and `.cg-banner` (teal into deep gold, white lettering) are in `css/styles.css`; print turns both plain black on white.
