@@ -190,13 +190,20 @@
     try {
       me.cleanup = act.start(stage, opts, api) || null;
       /* Keep off the screen: an activity that shows a word on the list is drawn again from a fresh draw (up to eight times) */
-      for (var tries = 0; avoidTerms.length && tries < 8 && T.avoidHits(stage.textContent, avoidTerms).length; tries++) {
+      for (var tries = 0; avoidTerms.length && tries < 8 && T.avoidHits(screenWords(stage), avoidTerms).length; tries++) {
         if (me.cleanup) { try { me.cleanup(); } catch (e2) { /* stopped */ } me.cleanup = null; }
         stage.innerHTML = ""; opts.seed = T.newSeed();
         me.cleanup = act.start(stage, opts, api) || null;
       }
     }
     catch (e) { stage.innerHTML = '<p class="tb-big">That one could not start. Choose Home, then try another.</p>'; if (window.console && console.error) console.error("tablet activity " + act.id + ": " + (e && e.stack || e)); }
+  }
+  /* Every piece of text on the screen, each set apart by a space: textContent runs a row of answer buttons together
+     ("side" "table" "day" reads as "sidetableday"), so a word to keep off the screen could hide between its neighbours. */
+  function screenWords(el) {
+    var out = [], w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null), n;
+    while ((n = w.nextNode())) out.push(n.nodeValue);
+    return out.join(" ");
   }
   /* Next: a fresh activity at once, and one that does not repeat what was just on the screen */
   function next() {

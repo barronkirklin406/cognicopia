@@ -28,6 +28,8 @@ pg.on("request", r => { const u = r.url(); if (!u.startsWith(base) && !/^(data|b
 pg.on("pageerror", e => errors.push(e.message));
 await pg.addInitScript(() => { window.print = () => {}; });
 const go = async hash => { await pg.goto(base + "builder.html" + hash); await pg.waitForTimeout(1400); };
+/* The radios and boxes are drawn inside labels, so they are ticked with a forced click at their own position. The top bar is sticky and 240 to 300 px tall and the page scrolls smoothly, so bring the control to the middle of the window at once first, or the click can land on whatever is on top at that moment. */
+const tick = async sel => { await pg.$eval(sel, el => el.scrollIntoView({ block: "center", behavior: "instant" })); await pg.check(sel, { force: true }); };
 const tmp = "/tmp/cognicopia-facility-check-census.csv";
 fs.writeFileSync(tmp, 'Alias,Preferred Name,Last Name,GDS,Life Era,Hobbies,Wing,Room\n"Resident 101-A",Dorothy,Smith,5,"1940s-1950s","gardening; church choir",Memory Care Unit A,101-A\nResident 102-B,Walter,Jones,3,1950s,"fishing, crosswords",Memory Care Unit A,102-B\nResident 201-A,Ruth,Lee,Advanced,1960s,birds,Assisted Living Unit B,201-A\n');
 
@@ -69,16 +71,16 @@ ok(await pg.$eval(".rs-res-main b", e => /Fraunces/.test(getComputedStyle(e).fon
 await go("#/shift");
 await pg.fill("#shfInit", "MR"); await pg.click("#shfMeForm button[type=submit]");
 await pg.selectOption("#shfEWho", "Resident 102-B"); await pg.fill("#shfEAct", "Music circle");
-await pg.check('input[name="shfEPart"][value="watched"]', { force: true }); await pg.check('input[name="shfEMood"][value="restless"]', { force: true }); await pg.fill("#shfENote", "left after ten minutes");
+await tick('input[name="shfEPart"][value="watched"]'); await tick('input[name="shfEMood"][value="restless"]'); await pg.fill("#shfENote", "left after ten minutes");
 await pg.click("#shfEng button[type=submit]"); await pg.waitForTimeout(250);
 await pg.selectOption("#shfEWho", "Resident 101-A"); await pg.fill("#shfEAct", "Music circle");
-await pg.check('input[name="shfEPart"][value="engaged"]', { force: true }); await pg.check('input[name="shfEMood"][value="happy"]', { force: true });
+await tick('input[name="shfEPart"][value="engaged"]'); await tick('input[name="shfEMood"][value="happy"]');
 await pg.click("#shfEng button[type=submit]"); await pg.waitForTimeout(250);
 ok(await pg.$$eval("#shfEngList > li", e => e.length) === 2, "two activity records are listed");
 ok(/2 residents, 2 records: 1 joined in or more, 1 with a mood to keep an eye on/.test(await pg.textContent("#shfEngSum")), "the day's summary is the arithmetic of the records");
-await pg.selectOption("#shfNAbout", "Resident 102-B"); await pg.fill("#shfNText", "Restless after lunch; quiet music helped."); await pg.check('input[name="shfKind"][value="watch"]', { force: true }); await pg.click("#shfNote button[type=submit]"); await pg.waitForTimeout(250);
+await pg.selectOption("#shfNAbout", "Resident 102-B"); await pg.fill("#shfNText", "Restless after lunch; quiet music helped."); await tick('input[name="shfKind"][value="watch"]'); await pg.click("#shfNote button[type=submit]"); await pg.waitForTimeout(250);
 await pg.fill("#shfTWhat", "Set up the music cart"); await pg.click("#shfTask button[type=submit]"); await pg.waitForTimeout(250);
-await pg.selectOption("#shfEWho", "Resident 101-A"); await pg.fill("#shfEAct", "Chat with Dorothy"); await pg.check('input[name="shfEPart"][value="joined"]', { force: true });
+await pg.selectOption("#shfEWho", "Resident 101-A"); await pg.fill("#shfEAct", "Chat with Dorothy"); await tick('input[name="shfEPart"][value="joined"]');
 await pg.click("#shfEng button[type=submit]"); await pg.waitForTimeout(250);
 ok(/includes a name: Dorothy/.test((await pg.textContent("#shfEWarn")).replace(/\s+/g, " ")), "a resident's name typed into an activity is caught");
 await pg.click('[data-fix="eng"]');
@@ -107,7 +109,7 @@ await pg.evaluate(() => { settings.activeWing = null; });
 await go("#/clinical");
 await pg.selectOption("#clWho", { index: 1 }); await pg.waitForTimeout(250);
 await pg.click("#clNew"); await pg.waitForSelector("#clTpl");
-await pg.check('input[data-dom="auditory"]', { force: true }); await pg.check('input[data-dom="executive"]', { force: true });
+await tick('input[data-dom="auditory"]'); await tick('input[data-dom="executive"]');
 await pg.click('[data-tpl="goal"]'); await pg.click('[data-tpl="task"]'); await pg.click('[data-start="S"]'); await pg.click('[data-start="P"]');
 await pg.fill("#clBy", "J. Lee"); await pg.fill("#clMin", "30"); await pg.fill("#clTr0", "10"); await pg.fill("#clC0", "8"); await pg.selectOption("#clCu0", "minimal");
 await pg.click("#clAddC"); await pg.selectOption("#clCd0", "92507");
@@ -117,7 +119,7 @@ ok(/^[\t\n\r\x20-\x7E]*$/.test(ehr), "and uses only plain characters");
 ok(/blanks? in \[brackets\]/.test(await pg.textContent("#clChecks")), "blanks left from a template are flagged before signing");
 await pg.click('[data-copy="O"]'); await pg.waitForTimeout(250);
 ok(/^O \(Objective\)\n- One-step directions: 8 of 10 trials \(80%\), minimal cues\./.test(await pg.evaluate(() => navigator.clipboard.readText())), "one section copies on its own");
-await pg.check('[data-privacy-choice="clEhrNames"] input[value="keep"]', { force: true });
+await tick('[data-privacy-choice="clEhrNames"] input[value="keep"]');
 ok(/Resident: Dorothy/.test(await pg.inputValue("#clEhr")), "the clinician can choose the resident's name instead of the alias");
 
 /* ---------- exports ---------- */
