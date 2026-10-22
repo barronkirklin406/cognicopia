@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* =====================================================================
-   The n8n workflow (n8n-cognicopia-operations.json): proved with no n8n and no network.
+   The n8n workflow (n8n-cognicopia-operations.json, kept in owner-private/, never in the published repository): proved with no n8n and no network.
 
      shape     valid JSON; every node has an id, a unique name, a type, a typeVersion, a position and parameters; every connection
                names nodes that exist; only standard n8n node types are used (no made-up package name such as googleAi)
@@ -18,9 +18,20 @@ import vm from "vm";
 import { fileURLToPath } from "url";
 
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
-const FILE = path.join(ROOT, "n8n-cognicopia-operations.json");
+const FILE = path.join(ROOT, "owner-private", "n8n-cognicopia-operations.json");
 let passed = 0; const problems = [];
 const ok = (c, m) => { if (c) passed++; else problems.push(m); };
+
+/* The workflow is the owner's private file: the repository is public and its pages are published, so the file is not kept in it
+   (the folder owner-private/ is in .gitignore). What the repository can prove is that no copy of it has been committed or published. */
+const publicCopies = [ROOT, path.join(ROOT, "docs"), path.join(ROOT, "assets"), path.join(ROOT, "scripts")].flatMap(d => fs.existsSync(d) ? fs.readdirSync(d).filter(f => /^n8n.*\.json$/i.test(f)).map(f => path.join(d, f)) : []);
+ok(publicCopies.length === 0, "no n8n workflow file is in a published folder: " + publicCopies.join(", "));
+ok(/^\/owner-private\/$/m.test(fs.readFileSync(path.join(ROOT, ".gitignore"), "utf8")) && /^\/n8n-\*\.json$/m.test(fs.readFileSync(path.join(ROOT, ".gitignore"), "utf8")), ".gitignore keeps owner-private/ and n8n-*.json out of the repository");
+if (!fs.existsSync(FILE)) {
+  if (problems.length) { console.error("n8n workflow check FAILED: " + problems.join(" | ")); process.exit(1); }
+  console.log("n8n workflow check passed: " + passed + " checks (no copy of the owner's workflow is in a published folder; the file itself is kept outside the repository, so its contents were not read here)");
+  process.exit(0);
+}
 
 const raw = fs.readFileSync(FILE, "utf8");
 let wf; try { wf = JSON.parse(raw); } catch (e) { console.log("n8n workflow check FAILED: not valid JSON: " + e.message); process.exit(1); }

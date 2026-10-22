@@ -1,6 +1,6 @@
 # The n8n workflow: support triage and invoice follow-ups
 
-`n8n-cognicopia-operations.json` (in the repository root) is a workflow you import into your own n8n. It helps with two chores and **sends nothing to anyone but you until you choose the Send button in an approval email.** `node scripts/check-n8n-workflow.mjs` (in `npm test` and `npm run build`) proves the file's shape, that every customer send is behind an approval, and that no secret is in it.
+`n8n-cognicopia-operations.json` is a workflow you import into your own n8n. **It is the owner's private file and is not in this repository**: the repository is public and its pages are published, so the file was handed to the owner directly. Keep it somewhere private (not in the website folder), and keep a backup. If a copy is lost, ask for a new one. It helps with two chores and **sends nothing to anyone but you until you choose the Send button in an approval email.** `node scripts/check-n8n-workflow.mjs` (in `npm test` and `npm run build`) proves the file's shape, that every customer send is behind an approval, and that no secret is in it.
 
 ## What it does not touch
 
