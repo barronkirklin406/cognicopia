@@ -1,0 +1,51 @@
+{
+  "note": "Pre-approved answers to the replies that come back. The reply helper may send these on its own for the four 'auto' categories; everything else is drafted for the owner and waits. Plain text, same rules as the outreach emails (checked by scripts/check-outreach.mjs).",
+  "categories": {
+    "wants_sample": {
+      "auto": true,
+      "when": "asks for a sample, an example, or to see it",
+      "subject": "Your sample packet",
+      "body": "Hello {{first_name}},\n\nThank you for writing. Here is the sample packet, five pages made for a made-up resident:\n\nhttps://cognicopia.org/assets/samples/cognicopia-sample-packet.pdf\n\nTo make one for a real resident, open https://cognicopia.org, fill in a few things you know about them, and press the packet button. The first 25 packets are free, with no credit card and no sign-up. I am glad to answer anything else.\n\nWarm regards,\n{{sender_name}}\nCognicopia@outlook.com"
+    },
+    "asks_price": {
+      "auto": true,
+      "when": "asks what it costs or how to buy",
+      "subject": "Cognicopia pricing",
+      "body": "Hello {{first_name}},\n\nThank you for asking. The first 25 packets are free. After that, a license for your whole building is {{price_monthly}} or {{price_annual}}. It is paid by card, and the license key arrives by email right after. If your accounts payable team prefers an invoice with 30-day terms, there is a short request form on the pricing page and the invoice and key follow from there.\n\nhttps://cognicopia.org/pricing.html\n\nIf it would help to try it first, https://cognicopia.org/pilot.html has a simple 30-day plan.\n\nWarm regards,\n{{sender_name}}\nCognicopia@outlook.com"
+    },
+    "asks_privacy": {
+      "auto": true,
+      "when": "asks about privacy, security, IT, networks, or HIPAA",
+      "subject": "About resident privacy",
+      "body": "Hello {{first_name}},\n\nGood questions, and the short answer is that no resident information leaves the computer. Cognicopia runs in the web browser, and what you type about a resident stays on that computer. It supports your community's own privacy practices; the compliance program itself stays yours.\n\nThere is a page that answers the questions IT usually asks, with a security Q and A: https://cognicopia.org/resources/security-questions/\n\nI am glad to answer anything it leaves out.\n\nWarm regards,\n{{sender_name}}\nCognicopia@outlook.com"
+    },
+    "wants_invoice": {
+      "auto": true,
+      "when": "asks for an invoice, a purchase order, a W-9, or net 30 terms",
+      "subject": "Invoice and purchase order",
+      "body": "Hello {{first_name}},\n\nThank you. There is a short form on the pricing page for a purchase order or an invoice with 30-day terms. Fill it in and send it to Cognicopia@outlook.com; the invoice follows, and the license key arrives by email with it. A W-9 is available on request.\n\nhttps://cognicopia.org/pricing.html\n\nWarm regards,\n{{sender_name}}\nCognicopia@outlook.com"
+    },
+    "unsubscribe": {
+      "auto": true,
+      "when": "asks to stop, says no thanks, or is annoyed",
+      "subject": "",
+      "body": "",
+      "action": "remove from every list now; send nothing, or one line: You have been removed, and you will not hear from us again."
+    },
+    "wrong_person": {
+      "auto": false,
+      "when": "says they are not the right person",
+      "action": "pause the whole facility; draft a one-line thank you asking who is, for the owner to send"
+    },
+    "out_of_office": {
+      "auto": false,
+      "when": "an automatic away message",
+      "action": "ignore; the next note goes out on schedule"
+    },
+    "other": {
+      "auto": false,
+      "when": "anything not listed",
+      "action": "draft a reply for the owner and wait"
+    }
+  }
+}
