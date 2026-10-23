@@ -24,6 +24,7 @@ The owner is new to coding and to these tools, and acts on what is written here 
 
 ## Privacy and claims
 
+- The outreach desk (`outreach/`, `docs/marketing-strategy.md`) writes to business contacts only. Never commit a real prospect's address (`outreach/data/` is ignored), never put a resident in a lead, and every outreach email keeps the postal address, the advertisement line and the opt-out (`scripts/check-outreach.mjs` fails the build otherwise). Do not reuse the unmeasured claims in `docs/enterprise-gtm-procurement-playbook.md` (hours saved, percentages, "guaranteeing" survey results) in any message or page.
 - Zero PHI outside the browser. Test data and fixtures use made-up people only; never a real name, birth date or facility.
 - Do not claim to be "HIPAA compliant". Compliance belongs to a facility's program. Say what is true: **"No resident data leaves the device"** and "supports a facility's HIPAA privacy practices". The same goes for regulatory wording (CMS, state rules): "supports", never "ensures".
 - The Shift board (`docs/daily-operations.md`) keeps residents by alias or room only. Never add a feature that stores a resident's name there, and keep its name check.
@@ -71,6 +72,7 @@ node scripts/license-keygen.mjs     # owner only: make the license-signing key p
 node scripts/issue-license.mjs      # make or verify a signed license key (invoices, enterprise); see docs/stripe-setup-guide.md
 node scripts/check-license-service.mjs  # prove the payment-to-email service without a network (also in npm test)
 npm run audit:print  # print every page, every Packet Builder activity and the front-page packet to PDF and read it back (breaks, black ink, margins, no web chrome); also part of npm run build
+npm run outreach -- report   # the outreach desk (docs/outreach-desk.md): import contacts, plan each day's small batch, keep the do-not-contact list; sends nothing; real contacts live in outreach/data/ and are never committed
 npm run audit:ux  # measure tap targets, contrast, clicks, nav and print time in a real browser (not part of npm test)
 ```
 

@@ -1,0 +1,44 @@
+{
+  "name": "Activity Directors: four plain notes over 21 days",
+  "note": "Plain text on purpose: no pictures, no buttons, at most one link, written the way one person writes to another. Merge fields: first_name (falls back to 'there'), facility, city, sender_name, postal_address, unsubscribe_line. Every email carries the sender's real postal address, an easy way to opt out, and a line saying it is an advertisement (the U.S. CAN-SPAM rules). scripts/check-outreach.mjs fails the build if any of that is missing, or if a line makes a claim the site does not make.",
+  "steps": [
+    {
+      "id": "intro",
+      "delayDays": 0,
+      "subjects": [
+        "Activity packets for {{facility}}",
+        "A question about your activity calendar"
+      ],
+      "body": "Hello {{first_name}},\n\nPlanning activities for residents who live with memory loss is hard to do well, and most free printables online were made for children.\n\nI built Cognicopia to help with that. You enter a few things you know about a resident (where they grew up, the work they did, the music they loved) and it prints a large-print, black-and-white activity packet made for them: word games, coloring pages, conversation prompts. Nothing childish, and nothing that quizzes them. It runs in a web browser, and no resident information leaves your computer.\n\nIf it could be useful at {{facility}}, I would be glad to send a sample packet or answer questions. Just reply to this email, or write to me at Cognicopia@outlook.com.\n\nWarm regards,\n{{sender_name}}\nCognicopia\n\n{{footer}}"
+    },
+    {
+      "id": "sample",
+      "delayDays": 4,
+      "subjects": [
+        "A sample packet, in case it helps",
+        "The sample packet I mentioned"
+      ],
+      "body": "Hello {{first_name}},\n\nI will keep this short, in case my first note got buried.\n\nHere is a sample packet, five pages made for a made-up resident, so you can see the style and the print size before deciding anything:\n\nhttps://cognicopia.org/assets/samples/cognicopia-sample-packet.pdf\n\nIf it looks like something your residents would enjoy, there are 25 free packets to try, with no credit card and no sign-up.\n\nWarm regards,\n{{sender_name}}\nCognicopia\nCognicopia@outlook.com\n\n{{footer}}"
+    },
+    {
+      "id": "pilot",
+      "delayDays": 7,
+      "subjects": [
+        "A small pilot for {{facility}}",
+        "Trying this with a few residents first"
+      ],
+      "body": "Hello {{first_name}},\n\nSome communities like to try something with a few residents for a month before anyone is asked to approve it. I wrote a short plan for that: four weeks of things to try, what to write down, and answers to the questions an administrator or IT usually asks.\n\nhttps://cognicopia.org/pilot.html\n\nThe tool does not need an install or a login, and I am happy to help if anything is unclear. Reply here, or write to Cognicopia@outlook.com.\n\nWarm regards,\n{{sender_name}}\nCognicopia\n\n{{footer}}"
+    },
+    {
+      "id": "last",
+      "delayDays": 10,
+      "subjects": [
+        "My last note",
+        "Closing the loop"
+      ],
+      "body": "Hello {{first_name}},\n\nThis is my last note, so I will not fill your inbox. If activity packets are not a priority right now, I understand completely.\n\nIf a colleague at another community might find it useful, you are welcome to pass along cognicopia.org. If you do want to talk, Cognicopia@outlook.com reaches me directly.\n\nThank you for the work you do with your residents.\n\nWarm regards,\n{{sender_name}}\nCognicopia\n\n{{footer}}"
+    }
+  ],
+  "footer": "{{postal_address}}\nThis message is an advertisement for Cognicopia, sent to a senior living provider's public business contact. {{unsubscribe_line}}",
+  "unsubscribeLine": "If you would rather not hear from us, reply \"no thanks\" and you will be removed right away."
+}

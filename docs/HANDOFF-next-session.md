@@ -251,3 +251,10 @@ Not built, with reasons, in that file: the four-tab rewrite of index.html, a PDF
 - Front-page hero button: "Start Free Trial — 25 Free Activity Generations", with the "No credit card required" line beneath it.
 - When the 25 are used, the window is titled "You've used all 25 Free Trial Generations!" and offers "Activate Annual / Monthly License" (pricing page plans) and "Request Net-30 Invoice" (the invoice form). Proof: `scripts/check-trial-badge-ui.mjs` (in `npm run build`).
 - Staff Guide tabs and benefit titles use the owner's wording. "Saves Hours of Prep Time" became "Less Prep Time" because the guide may not state a saving that has not been measured; "Zero IT & HIPAA Liability" became "Zero IT Setup, Resident Details Stay Private" (no compliance or liability claim).
+
+## Outreach desk and marketing strategy (October 23, 2026)
+
+- `docs/marketing-strategy.md` is the owner's plain-language plan: who to write to, the four-note path, what is automated and what is not, why cold notes must not come from Cognicopia@outlook.com, the CAN-SPAM rules we follow, the ramp-up, the numbers to watch, where the list comes from and a 30-day start.
+- `outreach/sequences.json` (four notes over 21 days), `outreach/replies.json` (four pre-approved answers), `scripts/lib/outreach.mjs` and `scripts/outreach.mjs` (import contacts, daily plan with a ramp-up and a gate that refuses to run without a postal address, do-not-contact list, report), `.claude/agents/outreach.md` (the reply helper). Proved by `scripts/check-outreach.mjs` (in `npm test` and the build). Nothing sends mail.
+- **Owner steps not done:** a mailing address and signing name in `outreach/data/config.json`; a second web address, two or three sending mailboxes and a cold-email tool (compare current options first); the SPF, DKIM and DMARC records; the Outlook forwarding rule (also on the Net-30 list); the go-ahead to turn on the scheduled reply helper. The older `docs/enterprise-gtm-procurement-playbook.md` still holds unmeasured claims; do not copy them into messages.
+

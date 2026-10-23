@@ -1,0 +1,4 @@
+email,first_name,role,facility,city,state,source,source_url,added
+activities@maplecourt.example,Dana,Activity Director,Maple Court Memory Care,Springfield,IL,facility website,https://maplecourt.example/contact,2026-10-23
+life.enrichment@harborview.example,,Life Enrichment Director,Harbor View Senior Living,Portland,ME,state licensing list,https://licensing.example.gov/harborview,2026-10-23
+director@willowbend.example,Sam,Executive Director,Willow Bend Assisted Living,Austin,TX,facility website,https://willowbend.example/about,2026-10-23
