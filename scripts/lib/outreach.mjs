@@ -215,3 +215,29 @@ export function report(state, seq) {
   if (sent >= 100 && complaints / sent > 0.001) warnings.push("Spam complaints are above 0.1%: stop, and look at who is receiving these notes.");
   return { leads: Object.keys(state.leads).length, byStatus: by, stillToWrite: waiting, sent, replyRate: pct(replied), bounceRate: pct(bounced), unsubscribeRate: pct(unsub), complaintRate: pct(complaints), warnings };
 }
+
+/* a page the owner opens on their own computer to send a small batch by hand: each message with big copy buttons, and a link that
+   opens a new email already addressed and titled. Self-contained: no network, nothing loaded from anywhere. */
+const esc = (t) => String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+export function batchHtml(items, today, config = {}) {
+  const from = config.mailboxes && config.mailboxes[0] ? config.mailboxes[0].email : "your business address";
+  const cards = items.map((it, i) => `<section class="card" id="m${i}">
+<h2>${i + 1}. ${esc(it.facility)} <small>${esc(it.email)}</small></h2>
+<p class="meta">Send from <b>${esc(it.mailbox)}</b> &middot; note ${it.step} of 4</p>
+<p><b>Subject:</b> <span id="s${i}">${esc(it.subject)}</span></p>
+<textarea id="b${i}" readonly rows="14">${esc(it.body)}</textarea>
+<p class="row"><button type="button" data-copy="s${i}">1. Copy the subject</button> <button type="button" data-copy="b${i}">2. Copy the message</button>
+<a class="btn" href="mailto:${encodeURIComponent(it.email).replace(/%40/g, "@")}?subject=${encodeURIComponent(it.subject)}">3. Open a new email to this address</a></p></section>`).join("\n");
+  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Today's notes, ${esc(today)}</title>
+<style>body{font:18px/1.5 system-ui,Segoe UI,Arial,sans-serif;max-width:46rem;margin:0 auto;padding:1rem;background:#f5f1e6;color:#111}h1{font-size:1.6rem}h2{font-size:1.2rem;margin:.2rem 0}small{font-weight:400;color:#444}
+.card{background:#fff;border:1px solid #d8cfb8;border-radius:14px;padding:1rem;margin:1rem 0}.meta{color:#444;margin:.2rem 0 .6rem}textarea{width:100%;box-sizing:border-box;font:inherit;padding:.6rem;border:1px solid #999;border-radius:8px;background:#fafafa}
+.row{display:flex;flex-wrap:wrap;gap:.6rem}button,.btn{min-height:52px;padding:.6rem 1rem;font:700 1rem system-ui,Arial,sans-serif;border:2px solid #0e3c43;border-radius:10px;background:#fff;color:#0e3c43;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center}
+.btn{background:#0e3c43;color:#fff}.note{background:#fff;border-left:6px solid #0e3c43;padding:.6rem 1rem;border-radius:8px}</style></head><body>
+<h1>Today's notes: ${esc(today)} (${items.length})</h1>
+<div class="note"><p>Send each one from <b>${esc(from)}</b>, one at a time, then close it. Please send no more than ${items.length} today.</p>
+<p>When you have sent them all, tell the desk (or tell me): <code>node scripts/outreach.mjs sent outreach/data/batch-${esc(today)}.json</code></p>
+<p>If anyone answers &ldquo;no thanks&rdquo;: <code>node scripts/outreach.mjs event their@address unsubscribed</code> &mdash; or just tell me, and I will do it.</p></div>
+${cards || "<p>Nothing is due today.</p>"}
+<script>document.addEventListener("click",function(e){var b=e.target.closest("[data-copy]");if(!b)return;var el=document.getElementById(b.getAttribute("data-copy")),t=el.value!==undefined?el.value:el.textContent,old=b.textContent;function done(){b.textContent="Copied";setTimeout(function(){b.textContent=old},1500)}
+if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(done,fallback)}else fallback();function fallback(){var a=document.createElement("textarea");a.value=t;document.body.appendChild(a);a.select();try{document.execCommand("copy");done()}catch(x){}a.remove()}});</script></body></html>`;
+}

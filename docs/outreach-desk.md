@@ -33,7 +33,7 @@ node scripts/outreach.mjs report                        where things stand, and 
 ## Two ways to use it
 
 1. **With a cold-email tool (recommended).** The tool sends, warms the mailboxes and handles replies. The desk does the parts the tool does not: `import` cleans and checks the list (and refuses personal mailboxes and contacts with no public source); `copy` gives the four notes to paste in; the tool's export of replies, bounces and opt-outs goes back through `events`, so the do-not-contact list stays complete in one place.
-2. **Batch by batch.** `plan` writes the day's messages (who, from which sending address, the finished subject and body) for a tool that accepts a file, or for a person sending by hand while the list is small.
+2. **By hand (free).** `plan` writes the day's messages (who, from which sending address, the finished subject and body) as a file for a tool, and also as `batch-DATE.html`: open it in a browser for a copy button per subject and message and a link that opens a new, addressed email. Set the warm-up in `outreach/data/config.json` to one step of 10 (`"warmup": [{"week": 1, "perMailbox": 10}]`) and use the business address as the only mailbox, so it can never plan more than 10 a day. After sending, `node scripts/outreach.mjs sent outreach/data/batch-DATE.json` writes it down.
 
 ## The rules the engine keeps
 
