@@ -622,7 +622,8 @@ try {
         await p.evaluate(() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))));
         spots[i] = (await p.evaluate(() => window.CognicopiaTabletUI.debug().spots()))[i];
         await p.touchscreen.tap(spots[i][0], spots[i][1]);
-        await p.waitForFunction(n => window.CognicopiaTabletUI.debug().filled >= n, i + 1, { timeout: 3000 }).catch(() => {});   // the fill lands when it lands: wait for it, then count
+        /* the fill lands when it lands: wait until it is counted AND painted in the chosen color (a busy computer paints a moment after it counts), then look */
+        await p.waitForFunction(([n, a, b2, w]) => { const D = window.CognicopiaTabletUI.debug(); if (D.filled < n) return false; const q = D.pixel(a, b2); return q[3] === 255 && q[0] === w[0] && q[1] === w[1] && q[2] === w[2]; }, [i + 1, spots[i][0], spots[i][1], want], { timeout: 4000 }).catch(() => {});
         const px = await p.evaluate(([a, b]) => window.CognicopiaTabletUI.debug().pixel(a, b), [spots[i][0], spots[i][1]]); if (px[3] === 255 && px[0] === want[0] && px[1] === want[1] && px[2] === want[2]) right++;
         const now = await p.evaluate(() => window.CognicopiaTabletUI.debug().filled); if (now === i + 1) only++;
       }
