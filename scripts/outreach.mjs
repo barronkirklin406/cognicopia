@@ -6,7 +6,7 @@
 
      node scripts/outreach.mjs init                         make outreach/data/ with a config to fill in
      node scripts/outreach.mjs import leads.csv             add public business contacts (checks every row, says why one is refused)
-     node scripts/outreach.mjs plan [--date 2026-11-03]     today's batch -> outreach/data/batch-DATE.csv and .json (previews only)
+     node scripts/outreach.mjs plan [--date 2026-11-03]     today's batch -> outreach/data/batch-DATE.csv, .json and .html (the .html is a page to send them by hand: open it in a browser)
      node scripts/outreach.mjs plan --record                the same, and write it down as sent (only after the sending tool has sent it)
      node scripts/outreach.mjs sent batch-DATE.json         write a batch down as sent
      node scripts/outreach.mjs event someone@x.org replied  replied | unsubscribed | bounced | complaint | customer
@@ -18,7 +18,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { parseCsv, toCsv, newState, importLeads, applyEvent, suppress, planDay, recordSent, report, LEAD_COLUMNS, EVENTS } from "./lib/outreach.mjs";
+import { parseCsv, toCsv, newState, importLeads, applyEvent, suppress, planDay, recordSent, report, batchHtml, LEAD_COLUMNS, EVENTS } from "./lib/outreach.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const DATA = path.join(ROOT, "outreach", "data");
@@ -51,6 +51,7 @@ if (cmd === "init") {
   fs.mkdirSync(DATA, { recursive: true });
   fs.writeFileSync(path.join(DATA, `batch-${today}.json`), JSON.stringify(plan.items, null, 1));
   fs.writeFileSync(path.join(DATA, `batch-${today}.csv`), toCsv(plan.items, BATCH_COLUMNS));
+  fs.writeFileSync(path.join(DATA, `batch-${today}.html`), batchHtml(plan.items, today, loadConfig()));
   console.log(`${today}: ${plan.items.length} messages (today's limit is ${plan.limit}). ${plan.note}`);
   if (args.includes("--record")) { recordSent(state, plan.items, today); saveState(state); console.log("Written down as sent."); }
   else console.log("Preview only. After the sending tool has sent them, run:  node scripts/outreach.mjs sent outreach/data/batch-" + today + ".json");

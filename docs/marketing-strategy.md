@@ -6,6 +6,27 @@ Written for the owner. No jargon: where a term is needed, it is explained in the
 
 An Activity Director is busy, is usually looking for something suitable for residents with memory loss, and has been burned by tools that feel like sales. So we do not sell. We write four short, plain notes over three weeks, in a person's voice, that do one thing each: say what Cognicopia is, show a sample, offer a small low-risk way to try it, and say goodbye politely. Anyone who answers gets an answer. Anyone who says "no thanks" is removed that minute and never written to again. The product does the selling: 25 free packets, no card and no sign-up, so the first experience is a packet in the person's hands.
 
+## Starting with no money (the plan to use first)
+
+Everything above about a second web address, mailboxes and a cold-email tool costs money. None of it is needed to begin. Start here, and add the paid parts only when sales pay for them.
+
+**1. Local and personal first (free, and usually the best first customers).** Communities near you can be visited or phoned, and a printed sample packet in someone's hand is more persuasive than any email. A friendly phone call or a drop-in with the sample packet, asking for the Activity Director by name, costs nothing. The first five or ten customers almost always come from people who already have a reason to trust you.
+
+**2. Small hand-sent batches from the business address (free).** The desk prepares the day's notes and writes a page, `outreach/data/batch-DATE.html`, with a copy button for each subject and message and a link that opens a new email already addressed. You paste, press send, and move on: about 20 seconds each. Ground rules, because this is the business address customers write to:
+
+- **No more than 10 a day, and a hand-picked list**, not a big imported one. Ten a day for four weeks is about 200 communities.
+- **Only business addresses with a public source**, and never an address you are unsure of (a bounce hurts the sender's name).
+- **Stop at the first sign of trouble**: if replies mention spam, or the account warns you, pause and tell me.
+- This is the one risk of the free path: the notes come from your real address. That is why it stays small. The first paid step, once there is money, is the separate sending address.
+
+**3. Free places where Activity Directors already gather.** Professional groups and online communities for activity professionals, and the pages of the associations they belong to, often let a member share a useful free resource. Offer the free 25 packets and the sample packet, honestly, with no pressure, and follow each group's rules about promotion. I can write short posts and a one-page handout for these.
+
+**4. Let the site do quiet work.** The pilot page, the sample packet, the Research Center and the pricing page already exist. A free business listing on the major map and search sites, and a short demonstration video, help people who search for activity ideas find it. These cost only time.
+
+**5. Ask every customer and every friendly contact for one introduction.** There is already a page to forward a colleague (`referral.html`).
+
+When the first sales arrive, the order to add paid parts is: the separate sending address and mailboxes first (the risk to the business address ends), then a cold-email tool (the sending and the follow-ups become automatic), then a data service for contact lists if hand-collecting is too slow.
+
 ## Who to write to, in this order
 
 1. **Activity Directors** (also called Life Enrichment Directors or Memory Care Coordinators). They feel the problem every day and they choose the tools they use.
@@ -28,7 +49,7 @@ a public list of communities  ->  four plain notes over 21 days  ->  they reply,
 | Finding communities and checking each address | Built (`node scripts/outreach.mjs import`): refuses personal mailboxes and anything with no public source, skips repeats and anyone who opted out | The list itself (see "Where the list comes from") |
 | The four notes, with the right footer, the sample link and the pilot link | Written and checked by the build | You read them once and say yes |
 | Deciding who gets which note each day, slowly at first | Built: a daily plan with a ramp-up, workdays only, follow-ups first | A real postal address and a sending setup (below) |
-| Actually sending the emails | **Not built here, on purpose.** A proper sending tool does it (below) | You open the accounts; I guide each step |
+| Actually sending the emails | **Free for now, by hand:** the desk writes a page with copy buttons and you send up to 10 a day. **Paid later:** a proper sending tool does it automatically | Nothing to buy to start; accounts only when sales pay for them |
 | Reading replies and answering the common ones | Written down (`.claude/agents/outreach.md`); sample, price, privacy and invoice questions get pre-approved answers, everything else waits for you | The one-time Outlook forwarding rule already on the Net-30 list |
 | Stopping at "no thanks", bounces and complaints | Built: remembered forever, checked before every batch | Nothing |
 | Taking payment and sending the license key | Built and tested in code (card path: Stripe, then the license service, then the key emailed; invoice path: the Net-30 desk) | Your live end-to-end test with a real card, and the Stripe and license-service steps already listed in [net30-desk.md](net30-desk.md) |

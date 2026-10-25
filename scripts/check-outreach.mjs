@@ -15,7 +15,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { parseCsv, toCsv, validateLead, newState, importLeads, applyEvent, suppress, isSuppressed, planDay, recordSent, report, renderMessage, gateProblems, dailyLimit, weekdayOf, LEAD_COLUMNS, PERSONAL_DOMAINS } from "./lib/outreach.mjs";
+import { parseCsv, toCsv, validateLead, newState, importLeads, applyEvent, suppress, isSuppressed, planDay, recordSent, report, renderMessage, gateProblems, batchHtml, dailyLimit, weekdayOf, LEAD_COLUMNS, PERSONAL_DOMAINS } from "./lib/outreach.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const read = f => fs.readFileSync(path.join(ROOT, f), "utf8");
@@ -160,6 +160,13 @@ ok(report(s8, seq).warnings.some(w => /Bounces/.test(w)), "5% bounces raises a w
 const s9 = newState(); s9.sentTotal = 200; s9.leads["c@x.example"] = { status: "complaint", step: 1 }; s9.leads["d@x.example"] = { status: "complaint", step: 1 };
 ok(report(s9, seq).warnings.some(w => /complaints/.test(w)), "spam complaints raise a warning");
 ok(report(newState(), seq).warnings.length === 0, "a quiet start raises none");
+
+/* the page for sending a small batch by hand */
+const pg = batchHtml([{ email: "a@maple.example", facility: "Maple <Court> & Sons", mailbox: "Cognicopia@outlook.com", step: 1, subject: 'Activity "packets"', body: "Hello Dana,\n\nLine two & <b>bold</b>" }], "2026-11-16", { mailboxes: [{ email: "Cognicopia@outlook.com" }] });
+ok(/mailto:a@maple\.example\?subject=Activity%20%22packets%22/.test(pg) && /Copy the subject/.test(pg) && /Copy the message/.test(pg), "the by-hand page has a copy button for the subject, one for the message, and a link that opens an addressed email");
+ok(!/Maple <Court>/.test(pg) && /Maple &lt;Court&gt; &amp; Sons/.test(pg) && !/<b>bold<\/b>/.test(pg), "what is written on the page is escaped, so a community's name cannot break it");
+ok(!/\bfetch\(|XMLHttpRequest|<script[^>]*\ssrc=|<link[^>]*href=|<img|@import|url\(/i.test(pg), "the page loads nothing from anywhere (no network, no outside file)");
+ok(/Please send no more than 1 today/.test(pg) && batchHtml([], "2026-11-16", {}).includes("Nothing is due today"), "it says how many to send, and says so when nothing is due");
 
 /* the docs and the helper exist */
 ok(fs.existsSync(path.join(ROOT, "docs/marketing-strategy.md")) && fs.existsSync(path.join(ROOT, "docs/outreach-desk.md")) && fs.existsSync(path.join(ROOT, ".claude/agents/outreach.md")), "the strategy, the desk guide and the reply helper are written");
