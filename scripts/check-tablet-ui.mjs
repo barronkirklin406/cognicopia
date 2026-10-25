@@ -291,7 +291,7 @@ try {
       /* the words cross, so the last one can already be complete before it is reached: once the "All done" window is up, stop typing */
       if (await p.$("#tbStage .tb-cheer")) break;
       if (!(await pick(e))) { problems.push("could not pick " + e.num + e.dir); continue; }
-      for (const L of e.word) await click(p, keyOf(L));
+      for (const L of e.word) { if (await p.$("#tbStage .tb-cheer")) break; await click(p, keyOf(L)); }   /* the puzzle can also finish in the middle of a word */
       await sleep(60);
     }
     d = await dbg(p);
