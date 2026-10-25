@@ -288,6 +288,8 @@ try {
     ok(!(await dbg(p)).typed[E.r + "," + E.c], "Back takes the letter out again");
     /* the whole crossword, tapped in */
     for (const e of cw.entries) {
+      /* the words cross, so the last one can already be complete before it is reached: once the "All done" window is up, stop typing */
+      if (await p.$("#tbStage .tb-cheer")) break;
       if (!(await pick(e))) { problems.push("could not pick " + e.num + e.dir); continue; }
       for (const L of e.word) await click(p, keyOf(L));
       await sleep(60);
