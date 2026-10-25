@@ -131,6 +131,7 @@ export function gateProblems(config) {
   const addr = String(config.postal_address || "");
   if (!addr.trim() || /REPLACE_ME|YOUR[_ ]|\[.*\]/i.test(addr) || addr.trim().length < 12) p.push("postal_address: put the real mailing address (a P.O. box or a mailbox rental is fine) in outreach/data/config.json");
   if (!String(config.sender_name || "").trim() || /REPLACE_ME/i.test(config.sender_name)) p.push("sender_name: the name the notes are signed with");
+  if (!String(config.sender_place || "").trim() || /REPLACE_ME/i.test(config.sender_place)) p.push("sender_place: where you are from, as the notes say it (for example the town and state)");
   if (!Array.isArray(config.mailboxes) || !config.mailboxes.length) p.push("mailboxes: at least one sending address");
   else for (const m of config.mailboxes) if (!EMAIL.test(String(m.email || "")) || /REPLACE_ME/i.test(m.email)) p.push("mailboxes: " + (m.id || "one entry") + " has no real email address");
   if (!/^\d{4}-\d{2}-\d{2}$/.test(String(config.start_date || ""))) p.push("start_date: the day the first message goes out, as YYYY-MM-DD");
@@ -152,7 +153,7 @@ export function renderMessage(seq, stepIndex, lead, config) {
   const step = seq.steps[stepIndex];
   const variant = hash(lead.email) % step.subjects.length;
   const fill = (t, extra = {}) => {
-    const v = { first_name: lead.first_name || "there", facility: lead.facility, city: lead.city, sender_name: config.sender_name, postal_address: config.postal_address, unsubscribe_line: seq.unsubscribeLine, footer: "", ...extra };
+    const v = { first_name: lead.first_name || "there", facility: lead.facility, city: lead.city, sender_name: config.sender_name, sender_place: config.sender_place || "", postal_address: config.postal_address, unsubscribe_line: seq.unsubscribeLine, footer: "", ...extra };
     v.footer = String(seq.footer).replace(/\{\{(\w+)\}\}/g, (_, k) => (v[k] != null && k !== "footer" ? v[k] : ""));
     return String(t).replace(/\{\{(\w+)\}\}/g, (_, k) => (v[k] != null ? v[k] : ""));
   };

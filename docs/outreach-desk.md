@@ -8,7 +8,7 @@ The tools behind [marketing-strategy.md](marketing-strategy.md). Nothing here se
 |---|---|
 | `outreach/sequences.json` | The four notes (each with two subject lines), the footer and the opt-out line. Plain text. |
 | `outreach/replies.json` | The pre-approved answers: a sample, the price, privacy and IT questions, an invoice. |
-| `outreach/config.sample.json` | The settings to fill in: the name notes are signed with, the postal address, the sending addresses, the start date. |
+| `outreach/config.sample.json` | The settings to fill in: the name notes are signed with, the town they say you are from (`sender_place`), the postal address, the sending addresses, the start date. |
 | `outreach/leads.sample.csv` | Three made-up contacts, to show the columns. |
 | `outreach/data/` | **Your real list, settings and send record. Never committed**: this repository is public. `node scripts/outreach.mjs init` makes it. |
 | `scripts/lib/outreach.mjs`, `scripts/outreach.mjs` | The engine and its commands. |
