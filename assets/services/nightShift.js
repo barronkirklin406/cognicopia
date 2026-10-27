@@ -76,7 +76,7 @@
     if (slot) button.setAttribute("data-cg-icon", "night");
     (slot || header).appendChild(button);
   }
-  Array.prototype.forEach.call(document.querySelectorAll(".cg-wood-bar, .cg-topbar, .topbar"), addHeaderButton);
+  Array.prototype.forEach.call(document.querySelectorAll("[data-cg-night-slot], .cg-topbar, .topbar"), addHeaderButton);
   document.addEventListener("click", function(event){
     var button = event.target.closest && event.target.closest(".cg-night-shift-toggle");
     if (button) setEnabled(!document.documentElement.classList.contains("cg-night-shift"));

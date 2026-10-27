@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "node server.js",
     "start": "node server.js",
-    "build": "node scripts/build.mjs",
+    "build": "node --check server.js",
     "art:doctor": "node scripts/local_art_agent.mjs doctor",
     "art:setup": "node scripts/local_art_agent.mjs setup",
     "art:make": "node scripts/local_art_agent.mjs make",

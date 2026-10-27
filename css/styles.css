@@ -685,3 +685,116 @@ html.cg-night-shift .cg-brain-h::before,html.cg-night-shift .cg-sidebar-brand sp
   .cg-brain-h::before,.cg-sidebar-brand span::before{display:none !important}
   .cg-card,.cg-btn-cta,.cg-banner{box-shadow:none !important;background:#fff !important;color:#000 !important;border-color:#000 !important}
 }
+
+/* ---------- 11. Modern Interactive Top Navigation Buttons ---------- */
+@media (min-width: 1100px) {
+  html body .cg-sidebar-nav.cg-hubs {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+    flex: 1;
+    padding: 0;
+    margin: 0;
+  }
+  .cg-hubs > .cg-hub-li {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+  }
+  .cg-hubs > .cg-hub-li > .cg-hub > summary,
+  .cg-hubs > .cg-hub-li > a.cg-hub-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin: 0;
+    padding: 8px 14px;
+    min-height: 38px;
+    box-sizing: border-box;
+    white-space: nowrap;
+    border-radius: 9px;
+    border: 1px solid rgba(14, 60, 67, 0.18);
+    background: #f8f6f0;
+    color: #18363b !important;
+    text-decoration: none;
+    box-shadow: 0 1px 2px rgba(14, 60, 67, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    font: 600 15px/1.2 var(--cg-font-ui, "Atkinson Hyperlegible", "Segoe UI", sans-serif) !important;
+    letter-spacing: 0.01em;
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .cg-hubs > .cg-hub-li > .cg-hub > summary:hover,
+  .cg-hubs > .cg-hub-li > a.cg-hub-link:hover {
+    background: #ffffff;
+    color: #0e3c43 !important;
+    border-color: rgba(14, 60, 67, 0.35);
+    box-shadow: 0 3px 8px rgba(14, 60, 67, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+    transform: translateY(-1px);
+  }
+  .cg-hubs > .cg-hub-li > .cg-hub > summary:active,
+  .cg-hubs > .cg-hub-li > a.cg-hub-link:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 2px rgba(14, 60, 67, 0.1);
+  }
+  .cg-hubs > .cg-hub-li > .cg-hub > summary .cg-sb-ico,
+  .cg-hubs > .cg-hub-li > a.cg-hub-link .cg-sb-ico {
+    display: none;
+  }
+  .cg-hubs > .cg-hub-li > .cg-hub > summary .cg-sb-chev,
+  .cg-hubs > .cg-hub-li > a.cg-hub-link .cg-sb-chev {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    margin-left: 4px;
+    flex: none;
+    color: var(--sb-accent, #c5a059);
+    transform: rotate(90deg);
+    transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), color 0.18s ease;
+  }
+  .cg-hubs > .cg-hub-li > a.cg-hub-link:hover .cg-sb-chev {
+    transform: rotate(90deg) translateX(1px);
+    color: #0e3c43;
+  }
+  .cg-hubs > .cg-hub-li > .cg-hub[open] > summary {
+    background: #0e3c43 !important;
+    color: #ffffff !important;
+    border-color: #0e3c43 !important;
+    box-shadow: 0 3px 12px rgba(14, 60, 67, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    transform: none;
+  }
+  .cg-hubs > .cg-hub-li > .cg-hub[open] > summary .cg-sb-chev {
+    transform: rotate(-90deg);
+    color: #f7d68a !important;
+  }
+  .cg-hubs > .cg-hub-li > a.cg-hub-link:not(:has(.cg-sb-chev))::after {
+    content: "";
+    display: inline-block;
+    width: 5px;
+    height: 5px;
+    margin-left: 5px;
+    border-right: 2px solid var(--sb-accent, #c5a059);
+    border-bottom: 2px solid var(--sb-accent, #c5a059);
+    transform: rotate(45deg);
+    flex: none;
+    transition: transform 0.2s ease;
+  }
+  .cg-hubs > .cg-hub-li > a.cg-hub-link:not(:has(.cg-sb-chev)):hover::after {
+    transform: rotate(45deg) translate(1px, 1px);
+  }
+  html body .cg-hubs > .cg-hub-li > .cg-hub[data-here] > summary,
+  html body .cg-hubs > .cg-hub-li > a.cg-hub-link.active {
+    background: #ffffff !important;
+    color: #0e3c43 !important;
+    font-weight: 700 !important;
+    border-color: #0e3c43 !important;
+    border-bottom: 2.5px solid #0e3c43 !important;
+    box-shadow: 0 2px 6px rgba(14, 60, 67, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  }
+  html body .cg-hubs > .cg-hub-li > .cg-hub[data-here][open] > summary {
+    background: #0e3c43 !important;
+    color: #ffffff !important;
+    border-color: #0e3c43 !important;
+  }
+}
