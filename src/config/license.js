@@ -65,10 +65,7 @@
        printed by scripts/license-keygen.mjs. More than one is allowed so a
        key can be replaced without ending the licenses signed by the old one. */
     PUBLIC_KEYS: Object.freeze([
-      /* the master key: the owner's computer only, for keys made by hand */
-      "0497ddfd60b746ae28145d7309e39f5e698f42f541149dd280e6c21e301a578c6876d3690d664f3013e270b0ff2644cd5c7e567a1e51571ca3364a0a775e782412",
-      /* the service key: its private half is a secret setting on the host that emails keys to buyers */
-      "04bb2651669e1318f01a2ef5c5b4e9e194c5098313470a07bc0160c958c9d1dbf9614918c7dc158dc00f0997b0f66b1188712192ff709230caf20e356215960cde"
+      "04e241222a6ab43d8ee32f1ffe256ecda5d3b54b29e0fca3be29a93e5bf0592159ff755d8d6e62a36b399854dbb69ddc9f39271d967a89c26617ae2db0e49cf1bf"
     ]),
     /* Ids (the "id" shown by scripts/issue-license.mjs) of keys that have
        been withdrawn, for example after a chargeback. A page checks this list
@@ -103,9 +100,6 @@
     /* Where "Request Corporate Invoice / W-9" goes (a page on this site; it
        fills in the subject and a checklist for accounts payable). */
     INVOICE_PATH: "contact.html?subject=Corporate+Invoice+Request",
-    /* Where the upgrade screen's "Pay by invoice" button goes: the form on the pricing page that makes a Net-30
-       invoice request PDF on the visitor's own computer (js/invoiceMaker.js, docs/invoice-request.md). */
-    INVOICE_FORM_PATH: "pricing.html#invoice",
     PRICING_PATH: "pricing.html",
     /* The one page that talks to the internet, and only to turn a Stripe
        checkout into a key. REDEEM_URL is the address of the license service

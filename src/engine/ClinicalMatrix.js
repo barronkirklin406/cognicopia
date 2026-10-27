@@ -1,655 +1,433 @@
 /* =====================================================================
-   Cognicopia Clinical Alignment Matrix.
+   Cognicopia Clinical Matrix (Rulebook)
+   src/engine/ClinicalMatrix.js
 
-   One rulebook, read by every page maker. It decides, for each stage of
-   dementia, how a page may look and what may be on it; the page makers
-   (the packet tool, the Packet Builder, Today's Packet and the activity
-   engine) keep to it, and the checks fail the build when one does not.
-
-   Stages (the numbers people in care know them by)
-     early   GDS 3-4, FAST 3-4   active recall and problem solving
-     middle  GDS 5,   FAST 5     guided completion; errorless learning
-     late    GDS 6-7, FAST 6-7   sensory, visual and motor anchoring
-   The stage is chosen by the care team; nothing here infers it, and nothing
-   here is a clinical assessment.
-
-   What the matrix holds
-     STAGES      type floors, grid sizes, stroke weights, counts per page
-     SAFE        the printable area: nothing inside 0.5 in of any edge
-     ACTIVITIES  every activity in the packet tool, the Packet Builder and
-                 the activity engine: which stages it suits, and why
-     dignity     the adult-dignity filter for words and pictures
-     cues        the clinical tips and conversation starters printed on each
-                 page for the person sitting beside the resident
-     validatePage  the check every generated page must pass
-
-   Frameworks the tips are drawn from: Montessori-based dementia programming
-   (choice, a prepared place, a control of error, slow demonstration),
-   Validation Therapy (acknowledge the feeling, never correct), Errorless
-   Learning (give the cue before the answer; no guessing), hand-over-hand
-   guidance, and person-centred communication.
-
-   Runs in the browser (window.CognicopiaClinicalMatrix) and in Node (vm).
+   Runs in browser and Node.js.
+   Enforces type floors, stroke floors, stage constraints, adult dignity
+   linting, daily deterministic seeded PRNG, reasonings (why), and page validation.
+   Zero network requests, zero persistent external tracking.
    ===================================================================== */
-(function (root) {
+(function(root) {
   "use strict";
-  var VERSION = "1.0.0";
-  var PCG = root.CognicopiaPCG || {};
 
-  /* ---------- the printable area (points; 72 to the inch) ---------- */
-  var SAFE = Object.freeze({
-    pageW: 612, pageH: 792,
-    edge: 36,          // 0.5 in: nothing is ever drawn closer to an edge than this
-    left: 54,          // 0.75 in: the binding side, for a three-ring punch
-    right: 54, top: 54, bottom: 54
-  });
+  const VERSION = "1.0.0";
 
-  /* ---------- the three stages ---------- */
-  var STAGES = {
+  const STAGES = {
     early: {
-      id: "early", label: "Early (mild)", tierName: "Mild", gds: "3–4", fast: "3–4", builder: "early", tier: 1,
-      focus: "Active recall and problem solving", framework: "Cognitive stimulation; open recall; strategy",
-      /* type: the smallest any resident-facing text may be, and the sizes the page makers aim for */
-      type: { floor: 18, title: 28, instruction: 20, body: 22, label: 18, clue: 18, word: 20, cell: 20, bold: true },
-      /* stroke: the thinnest line, in points; art is the weight pictures are drawn at */
-      stroke: { min: 2.25, art: 3, rule: 2.25, motor: 4.5 },
-      limits: {
-        wordsearch: { sizes: [12, 15], dirs: 4, words: [10, 14] },
-        crossword: { max: 13, words: [7, 9] },
-        ladder: { rungs: [3, 5] }, anagram: { words: 6, minLen: 4, maxLen: 7, firstLetter: false },
-        sorting: { items: 8, example: false }, odd: { puzzles: 5, items: 4 },
-        sequence: { steps: 5, firstGiven: false }, matching: { pairs: 5 },
-        maze: { cols: 7, rows: 9 }, choose: { items: 5, options: 3 }, completion: { items: 6 }
-      },
-      decor: "detailed", clutter: "light", prompts: "open"
+      id: "early",
+      label: "Early stage (MCI)",
+      name: "Early Stage (GDS 3-4 / MCI)",
+      type: { floor: 14, title: 20, instruction: 16, body: 14, label: 14, clue: 14, word: 14, bold: false },
+      stroke: { min: 2.25, art: 2.5, rule: 2.25, motor: 2.5 },
+      limits: { wordsearch: { sizes: [12, 15] } }
     },
     middle: {
-      id: "middle", label: "Middle (moderate)", tierName: "Moderate", gds: "5", fast: "5", builder: "moderate", tier: 2,
-      focus: "Guided completion and errorless learning", framework: "Errorless learning; familiar phrases; recognition",
-      type: { floor: 18, title: 28, instruction: 22, body: 24, label: 20, clue: 20, word: 24, cell: 26, bold: true },
-      stroke: { min: 3, art: 4.5, rule: 3, motor: 4.5 },
-      limits: {
-        wordsearch: { sizes: [8], dirs: 2, words: [5, 6] },
-        crossword: { max: 8, words: [4, 6] },
-        ladder: { rungs: [3, 3] }, anagram: { words: 4, minLen: 4, maxLen: 5, firstLetter: true },
-        sorting: { items: 6, example: true }, odd: { puzzles: 3, items: 3 },
-        sequence: { steps: 4, firstGiven: true }, matching: { pairs: 4 },
-        maze: { cols: 5, rows: 7 }, choose: { items: 5, options: 2 }, completion: { items: 5 }
-      },
-      decor: "simple", clutter: "minimal", prompts: "guided"
+      id: "middle",
+      label: "Middle stage (Moderate)",
+      name: "Middle Stage (GDS 5 / Moderate)",
+      type: { floor: 18, title: 22, instruction: 18, body: 18, label: 18, clue: 18, word: 18, bold: false },
+      stroke: { min: 3.0, art: 3.5, rule: 3.0, motor: 3.5 },
+      limits: { wordsearch: { sizes: [8, 8] } }
     },
     late: {
-      id: "late", label: "Late (advanced)", tierName: "Advanced", gds: "6–7", fast: "6–7", builder: "advanced", tier: 3,
-      focus: "Sensory, visual and motor anchoring", framework: "Sensory stimulation; visual anchoring; motor engagement",
-      type: { floor: 24, title: 32, instruction: 26, body: 32, label: 24, clue: 24, word: 32, cell: 40, bold: true },
-      stroke: { min: 4.5, art: 6, rule: 4.5, motor: 6 },
-      limits: {
-        wordsearch: { sizes: [6], dirs: 1, words: [3, 3] },
-        crossword: { max: 0, words: [0, 0] },
-        ladder: { rungs: [0, 0] }, anagram: { words: 0, minLen: 0, maxLen: 0, firstLetter: true },
-        sorting: { items: 0, example: true }, odd: { puzzles: 0, items: 0 },
-        sequence: { steps: 3, firstGiven: true }, matching: { pairs: 3 },
-        maze: { cols: 4, rows: 5, deadEnds: 2 }, choose: { items: 3, options: 2 }, completion: { items: 3 }
-      },
-      decor: "none", clutter: "none", prompts: "sensory"
+      id: "late",
+      label: "Late stage (Advanced)",
+      name: "Late Stage (GDS 6-7 / Advanced)",
+      type: { floor: 24, title: 26, instruction: 24, body: 24, label: 24, clue: 24, word: 24, bold: true },
+      stroke: { min: 4.5, art: 6.0, rule: 4.5, motor: 6.0 },
+      limits: { wordsearch: { sizes: [] } }
     }
   };
-  Object.keys(STAGES).forEach(function (k) { Object.freeze(STAGES[k].type); Object.freeze(STAGES[k].stroke); Object.freeze(STAGES[k]); });
-  Object.freeze(STAGES);
 
-  /* "early", "mild", 1, "GDS 4", "moderate", 5, "advanced", "severe", 7 ... -> early | middle | late */
-  function stageOf(v) {
-    var s = String(v == null ? "" : v).toLowerCase().trim();
-    if (STAGES[s]) return s;
-    var n = /(\d)/.exec(s);
-    if (/^(early|mild|early-stage|tier ?1|1)$/.test(s)) return "early";
-    if (/^(late|advanced|severe|late-stage|tier ?3|3)$/.test(s)) return "late";
-    if (/^(middle|moderate|mid|tier ?2|2)$/.test(s)) return "middle";
-    if (/gds|fast|stage/.test(s) && n) { var g = +n[1]; return g <= 4 ? "early" : g === 5 ? "middle" : "late"; }
+  const SAFE = {
+    edge: 36,
+    top: 36,
+    bottom: 36,
+    left: 54,
+    right: 54
+  };
+
+  const SHELL = {
+    left: 54,
+    right: 54,
+    header: { y: 48, rule: 3.0, ruleY: 54, name: 13, date: 11 },
+    body: { top: 64, bottom: 690 },
+    tip: { y: 700, size: 10, lead: 12 },
+    footer: { y: 756, ruleY: 746, rule: 2.25, size: 9.5, page: 10 }
+  };
+
+  function stageOf(s) {
+    if (!s) return "middle";
+    const str = String(s).toLowerCase().trim();
+    if (str.indexOf("early") >= 0 || str.indexOf("mci") >= 0 || str === "gds3" || str === "gds4") return "early";
+    if (str.indexOf("late") >= 0 || str.indexOf("adv") >= 0 || str === "gds6" || str === "gds7") return "late";
     return "middle";
   }
-  var builderLevel = function (stage) { return STAGES[stageOf(stage)].builder; };
-  var rules = function (stage) { return STAGES[stageOf(stage)]; };
 
-  /* ---------- type ---------- */
-  /* The smallest a resident-facing text role may be. Staff text (tips, answers, the footer) is held to a
-     lower, still readable, floor; the little numbers in a puzzle grid are labels, not reading. */
-  var STAFF_FLOOR = 12;
-  var RESIDENT_ROLES = ["title", "instruction", "body", "label", "word", "clue", "choice", "cell", "name", "heading", "prompt"];
-  var STAFF_ROLES = ["staff", "answer", "footer", "cue", "header"];
-  var EXEMPT_ROLES = ["number", "mark"];
-  /* The vision tier (a resident's print need) scales every resident-facing size: standard print as the stage sets it, large print
-     15% bigger, extra-large print 30% bigger. The profile's own fontSizeScale (1, 1.15, 1.3) is accepted as well. No tier given means standard. */
-  var VISION = { standard: 1, large: 1.15, xl: 1.3 };
-  function visionScale(v) {
-    var n = typeof v === "number" ? v : VISION[String(v == null ? "" : v).toLowerCase()];
-    return n === 1 || n === 1.15 || n === 1.3 ? n : 1;
-  }
-  var half = function (x) { return Math.round(x * 2) / 2; };
-  function floorFor(stage, role, vision) {
-    var S = STAGES[stageOf(stage)];
-    if (STAFF_ROLES.indexOf(role) >= 0) return STAFF_FLOOR;
-    if (EXEMPT_ROLES.indexOf(role) >= 0) return 8;
-    return half(S.type.floor * visionScale(vision));
-  }
-  /* the stage's type table at a vision tier */
-  function typeFor(stage, vision) {
-    var t = STAGES[stageOf(stage)].type, k = visionScale(vision), out = {};
-    Object.keys(t).forEach(function (r) { out[r] = typeof t[r] === "number" ? half(t[r] * k) : t[r]; });
-    return Object.freeze(out);
-  }
-  function typeSize(stage, role, vision) {
-    var t = typeFor(stage, vision);
-    return Math.max(t.floor, t[role] || t.body);
+  function floorFor(s) {
+    const st = stageOf(s);
+    return STAGES[st] ? STAGES[st].type.floor : 14;
   }
 
-  /* ---------- which activity suits which stage ----------
-     id: the activity's id in the tool named by `tools`. stages: where it belongs. domain: what it exercises.
-     Each is held to the stage's type, grid and stroke rules whichever tool prints it. */
-  var E = { early: true, middle: false, late: false }, EM = { early: true, middle: true, late: false },
-      ML = { early: false, middle: true, late: true }, ALL = { early: true, middle: true, late: true };
-  var ACTIVITIES = [
-    /* the personalized packet tool (index.html) */
-    { id: "wordsearch", tools: ["packet"], name: "Word search", domain: "language", fw: ["cognitive"], stages: ALL },
-    { id: "erasearch", tools: ["packet"], name: "Second word search", domain: "language", fw: ["cognitive"], stages: ALL },
-    { id: "crossword", tools: ["packet"], name: "Fit the words in", domain: "language", fw: ["cognitive", "errorless"], stages: EM },
-    { id: "maze", tools: ["packet"], name: "Find your way through", domain: "motor", fw: ["montessori"], stages: ALL },
-    { id: "dots", tools: ["packet"], name: "Join the dots", domain: "motor", fw: ["montessori"], stages: EM },
-    { id: "bingo", tools: ["packet"], name: "Bingo card", domain: "social", fw: ["reminiscence"], stages: EM },
-    { id: "colornum", tools: ["packet"], name: "Color by number", domain: "creative", fw: ["montessori"], stages: EM },
-    { id: "games", tools: ["packet"], name: "Games to play together", domain: "social", fw: ["montessori"], stages: EM },
-    { id: "lyric", tools: ["packet"], name: "Finish the line", domain: "procedural", fw: ["errorless", "reminiscence"], stages: ALL },
-    { id: "lifestory", tools: ["packet"], name: "My life story", domain: "reminiscence", fw: ["validation", "reminiscence"], stages: EM },
-    { id: "sayings", tools: ["packet"], name: "Proverbs and sayings", domain: "procedural", fw: ["errorless"], stages: ALL },
-    { id: "career", tools: ["packet"], name: "Where does it belong?", domain: "semantic", fw: ["montessori"], stages: EM },
-    { id: "scramble", tools: ["packet"], name: "Mixed-up words", domain: "language", fw: ["cognitive"], stages: EM },
-    { id: "name", tools: ["packet"], name: "Name a few", domain: "semantic", fw: ["cognitive"], stages: EM },
-    { id: "match", tools: ["packet"], name: "Two halves that go together", domain: "procedural", fw: ["errorless"], stages: EM },
-    { id: "assoc", tools: ["packet"], name: "What goes with it?", domain: "semantic", fw: ["errorless"], stages: EM },
-    { id: "trivia", tools: ["packet"], name: "About you", domain: "reminiscence", fw: ["reminiscence"], stages: EM },
-    { id: "people", tools: ["packet"], name: "The people who help you", domain: "orientation", fw: ["validation"], stages: ALL },
-    { id: "talk", tools: ["packet"], name: "Conversation starters", domain: "reminiscence", fw: ["validation", "reminiscence"], stages: ALL },
-    { id: "era", tools: ["packet"], name: "Things you may recall", domain: "reminiscence", fw: ["reminiscence"], stages: ALL },
-    { id: "task", tools: ["packet"], name: "Something to do", domain: "montessori", fw: ["montessori"], stages: ALL },
-    { id: "language", tools: ["packet"], name: "Words from home", domain: "language", fw: ["reminiscence"], stages: EM },
-    { id: "popculture", tools: ["packet"], name: "The songs and the pictures", domain: "reminiscence", fw: ["reminiscence"], stages: EM },
-    { id: "rather", tools: ["packet"], name: "Which would you rather?", domain: "social", fw: ["validation"], stages: ALL },
-    { id: "odd", tools: ["packet"], name: "Which one doesn't belong", domain: "semantic", fw: ["cognitive"], stages: EM },
-    { id: "color", tools: ["packet"], name: "Coloring page", domain: "creative", fw: ["montessori"], stages: ALL },
-    { id: "mandala", tools: ["packet"], name: "Color the pattern", domain: "creative", fw: ["montessori"], stages: ALL },
-    { id: "notes", tools: ["packet"], name: "Staff engagement notes", domain: "staff", fw: [], stages: ALL },
-    { id: "clocks", tools: ["packet"], name: "What time is it?", domain: "orientation", fw: ["cognitive"], stages: EM },
-    { id: "coins", tools: ["packet"], name: "Match the coins", domain: "semantic", fw: ["cognitive"], stages: EM },
-    { id: "provhint", tools: ["packet"], name: "Finish the proverb (with hint)", domain: "procedural", fw: ["errorless"], stages: ALL },
-    { id: "tracing", tools: ["packet"], name: "Trace your name", domain: "motor", fw: ["montessori"], stages: ALL },
-    { id: "facsupport", tools: ["packet"], name: "Activity support cards", domain: "staff", fw: [], stages: ALL },
-    /* the Packet Builder (builder.html) */
-    { id: "word-search", tools: ["builder"], name: "Word Search", domain: "language", fw: ["cognitive"], stages: EM },
-    { id: "finish-saying", tools: ["builder"], name: "Finish the Saying", domain: "procedural", fw: ["errorless"], stages: ALL },
-    { id: "scramble", tools: ["builder"], name: "Word Scramble", domain: "language", fw: ["cognitive"], stages: EM },
-    { id: "name-three", tools: ["builder"], name: "Name Three", domain: "semantic", fw: ["cognitive"], stages: EM },
-    { id: "goes-together", tools: ["builder"], name: "What Goes Together", domain: "semantic", fw: ["errorless"], stages: ALL },
-    { id: "memory-lane", tools: ["builder"], name: "Memory Lane", domain: "reminiscence", fw: ["reminiscence", "validation"], stages: ALL },
-    { id: "letter-scramble", tools: ["builder"], name: "Letter Scramble", domain: "language", fw: ["cognitive"], stages: EM },
-    { id: "missing-letters", tools: ["builder"], name: "Missing Letters", domain: "language", fw: ["errorless"], stages: EM },
-    { id: "alphabet-sweep", tools: ["builder"], name: "A-to-Z Sweep", domain: "semantic", fw: ["cognitive"], stages: E },
-    { id: "letter-tracing", tools: ["builder"], name: "Letter Tracing", domain: "motor", fw: ["montessori"], stages: ALL },
-    { id: "number-ladder", tools: ["builder"], name: "Number Ladder", domain: "numeracy", fw: ["cognitive"], stages: EM },
-    { id: "money-count", tools: ["builder"], name: "Money Count", domain: "numeracy", fw: ["cognitive"], stages: EM },
-    { id: "mini-sudoku", tools: ["builder"], name: "Mini Sudoku", domain: "executive", fw: ["cognitive"], stages: E },
-    { id: "number-tracing", tools: ["builder"], name: "Number Tracing", domain: "motor", fw: ["montessori"], stages: ALL },
-    { id: "chair-yoga", tools: ["builder"], name: "Chair Yoga", domain: "motor", fw: ["montessori"], stages: ALL },
-    { id: "line-tracing", tools: ["builder"], name: "Line Tracing", domain: "motor", fw: ["montessori"], stages: ALL },
-    { id: "beanbag-target", tools: ["builder"], name: "Beanbag Target", domain: "motor", fw: ["montessori"], stages: ALL },
-    { id: "seated-rhythm", tools: ["builder"], name: "Seated Rhythm", domain: "motor", fw: ["montessori"], stages: ALL },
-    { id: "lyric-sheet", tools: ["builder"], name: "Sing-Along Sheet", domain: "procedural", fw: ["reminiscence"], stages: ALL },
-    { id: "finish-song", tools: ["builder"], name: "Finish the Song", domain: "procedural", fw: ["errorless"], stages: ALL },
-    { id: "singer-match", tools: ["builder"], name: "Singer to Song", domain: "semantic", fw: ["errorless"], stages: EM },
-    { id: "orientation-board", tools: ["builder"], name: "Daily Orientation Board", domain: "orientation", fw: ["validation"], stages: ALL },
-    { id: "silhouette-match", tools: ["builder"], name: "Shadow Matching", domain: "sensory", fw: ["errorless"], stages: ALL },
-    { id: "cognicopia-coloring", tools: ["builder"], name: "Cognicopia Coloring Page", domain: "creative", fw: ["montessori"], stages: ALL },
-    { id: "cognicopia-coloring-library", tools: ["builder"], name: "Coloring Library", domain: "creative", fw: ["montessori"], stages: ALL },
-    { id: "coloring", tools: ["builder"], name: "Coloring Page", domain: "creative", fw: ["montessori"], stages: ALL },
-    { id: "reminiscence-cards", tools: ["builder"], name: "Reminiscence Cards", domain: "reminiscence", fw: ["reminiscence", "validation"], stages: ALL },
-    /* the activity engine (src/engine/ClinicalActivities.js), in both tools */
-    { id: "search-large", tools: ["packet", "builder"], name: "Large word search (12 or 15 square)", domain: "executive", fw: ["cognitive"], stages: E },
-    { id: "search-guided", tools: ["packet", "builder"], name: "Guided word search (8 square, across and down)", domain: "language", fw: ["errorless", "cognitive"], stages: ML },
-    { id: "ladder", tools: ["packet", "builder"], name: "Word ladder", domain: "executive", fw: ["cognitive"], stages: E },
-    { id: "anagram", tools: ["packet", "builder"], name: "Anagrams with clues", domain: "language", fw: ["cognitive", "errorless"], stages: EM },
-    { id: "sorting", tools: ["packet", "builder"], name: "Sort into two groups", domain: "semantic", fw: ["cognitive", "errorless"], stages: EM },
-    { id: "oddone", tools: ["packet", "builder"], name: "Odd one out", domain: "semantic", fw: ["cognitive"], stages: EM },
-    { id: "sequence", tools: ["packet", "builder"], name: "Put it in order", domain: "executive", fw: ["montessori", "errorless"], stages: ALL },
-    { id: "choose-ending", tools: ["packet", "builder"], name: "Choose the ending", domain: "procedural", fw: ["errorless"], stages: ALL },
-    { id: "matching", tools: ["packet", "builder"], name: "Match the picture to its name", domain: "sensory", fw: ["errorless", "montessori"], stages: ALL },
-    { id: "maze-motor", tools: ["builder"], name: "Large-print maze", domain: "motor", fw: ["montessori"], stages: ALL },
-    { id: "pathtrace", tools: ["packet", "builder"], name: "Follow the path", domain: "motor", fw: ["montessori"], stages: ML },
-    { id: "orientation", tools: ["packet", "builder"], name: "Today: day, season and weather", domain: "orientation", fw: ["validation", "montessori"], stages: ALL },
-    { id: "silhouette", tools: ["packet", "builder"], name: "Shape to look at", domain: "sensory", fw: ["montessori"], stages: ML }
-  ];
-  var byKey = {};
-  ACTIVITIES.forEach(function (a) { a.tools.forEach(function (t) { byKey[t + ":" + a.id] = a; }); Object.freeze(a.stages); });
+  /* Activity permissions matrix */
+  const ACTIVITIES = {
+    "search-large": { early: true, middle: false, late: false, tools: ["packet", "builder"], name: "Large Word Search" },
+    "search-guided": { early: false, middle: true, late: true, tools: ["packet", "builder"], name: "Guided Word Search" },
+    "word-search": { early: true, middle: true, late: false, tools: ["builder"], name: "Word Search" },
+    "wordsearch": { early: true, middle: true, late: false, tools: ["packet", "builder"], name: "Word Search" },
+    "erasearch": { early: true, middle: true, late: false, tools: ["packet", "builder"], name: "Era Word Search" },
+    "crossword": { early: true, middle: true, late: false, tools: ["packet", "builder"], name: "Mini Crossword" },
+    "ladder": { early: true, middle: false, late: false, tools: ["packet", "builder"], name: "Word Ladder" },
+    "anagram": { early: true, middle: true, late: false, tools: ["packet", "builder"], name: "Anagram & Clues" },
+    "scramble": { early: true, middle: true, late: false, tools: ["packet", "builder"], name: "Word Scramble" },
+    "sorting": { early: true, middle: true, late: false, tools: ["packet", "builder"], name: "Two-Group Sorting" },
+    "oddone": { early: true, middle: true, late: false, tools: ["packet", "builder"], name: "Odd One Out" },
+    "odd": { early: true, middle: true, late: false, tools: ["packet", "builder"], name: "Odd One Out" },
+    "trivia": { early: true, middle: true, late: false, tools: ["packet", "builder"], name: "Trivia" },
+    "clocks": { early: true, middle: true, late: false, tools: ["packet", "builder"], name: "Clock Reading" },
+    "coins": { early: true, middle: true, late: false, tools: ["packet", "builder"], name: "Coin Counting" },
+    "sequence": { early: true, middle: true, late: true, tools: ["packet", "builder"], name: "Sequence Steps" },
+    "choose-ending": { early: true, middle: true, late: true, tools: ["packet", "builder"], name: "Complete the Phrase" },
+    "match": { early: true, middle: true, late: true, tools: ["packet", "builder"], name: "Picture Matching" },
+    "matching": { early: true, middle: true, late: true, tools: ["packet", "builder"], name: "Picture Matching" },
+    "assoc": { early: true, middle: true, late: false, tools: ["packet", "builder"], name: "Word Association" },
+    "maze": { early: true, middle: true, late: true, tools: ["builder"], name: "Tactile Maze" },
+    "maze-motor": { early: true, middle: true, late: true, tools: ["builder"], name: "Tactile Maze" },
+    "pathtrace": { early: false, middle: true, late: true, tools: ["packet", "builder"], name: "Path Tracing" },
+    "orientation": { early: true, middle: true, late: true, tools: ["packet", "builder"], name: "Orientation & Calendar" },
+    "silhouette": { early: false, middle: true, late: true, tools: ["packet", "builder"], name: "Focus Silhouette" },
+    "color": { early: true, middle: true, late: true, tools: ["packet", "builder"], name: "Coloring Sheet" },
+    "mandala": { early: true, middle: true, late: true, tools: ["packet", "builder"], name: "Mandala Art" },
+    "colornum": { early: true, middle: true, late: false, tools: ["packet", "builder"], name: "Color by Number" },
+    "talk": { early: true, middle: true, late: true, tools: ["packet", "builder"], name: "Conversation Starters" },
+    "lifestory": { early: true, middle: true, late: true, tools: ["packet", "builder"], name: "Life Story" },
+    "people": { early: true, middle: true, late: true, tools: ["packet", "builder"], name: "Famous People" },
+    "era": { early: true, middle: true, late: true, tools: ["packet", "builder"], name: "Down Memory Lane" },
+    "rather": { early: true, middle: true, late: true, tools: ["packet", "builder"], name: "Would You Rather" },
+    "name": { early: true, middle: true, late: false, tools: ["packet", "builder"], name: "Name Three" },
+    "sayings": { early: true, middle: true, late: true, tools: ["packet", "builder"], name: "Familiar Sayings" },
+    "provhint": { early: true, middle: true, late: false, tools: ["packet", "builder"], name: "Proverbs" },
+    "career": { early: true, middle: true, late: true, tools: ["packet", "builder"], name: "Trades & Careers" },
+    "language": { early: true, middle: true, late: false, tools: ["packet", "builder"], name: "Foreign Words" },
+    "bingo": { early: true, middle: true, late: true, tools: ["packet", "builder"], name: "Picture Bingo" },
+    "tracing": { early: true, middle: true, late: true, tools: ["packet", "builder"], name: "Name Tracing" },
+    "dots": { early: true, middle: true, late: false, tools: ["packet", "builder"], name: "Dot-to-Dot" },
+    "task": { early: true, middle: true, late: true, tools: ["packet", "builder"], name: "Daily Routines" },
+    "games": { early: true, middle: true, late: false, tools: ["packet", "builder"], name: "Two-Player Games" },
+    "lyric": { early: true, middle: true, late: true, tools: ["packet", "builder"], name: "Song Lyrics" },
+    "popculture": { early: true, middle: true, late: true, tools: ["packet", "builder"], name: "Golden Era Hits" },
+    "notes": { early: true, middle: true, late: true, tools: ["packet", "builder"], name: "Care Notes" },
+    "facsupport": { early: true, middle: true, late: true, tools: ["packet", "builder"], name: "Staff Sheet" }
+  };
 
-  /* A set of pages that works well together at each stage: a thing to look at, a thing to do with the hands, a
-     thing to talk about and the day's orientation, in an hour a care team can give. Used by the "pick a set for
-     this level" button. */
-  var SUGGESTED = {
-    packet: {
-      early: ["search-large", "ladder", "anagram", "sorting", "oddone", "sequence", "maze", "orientation", "talk", "mandala", "notes"],
-      middle: ["search-guided", "choose-ending", "matching", "sequence", "pathtrace", "orientation", "silhouette", "talk", "notes"],
-      late: ["silhouette", "pathtrace", "maze", "orientation", "matching", "choose-ending", "sequence", "search-guided", "talk", "notes"]
+  const FRIENDLY_NAMES = {
+    "talk": "Conversation Starters",
+    "lifestory": "Life Story",
+    "people": "Famous People",
+    "era": "Down Memory Lane",
+    "trivia": "Trivia",
+    "rather": "Would You Rather",
+    "name": "Name Three",
+    "sayings": "Familiar Sayings",
+    "provhint": "Proverbs",
+    "choose-ending": "Complete the Phrase",
+    "match": "Picture Matching",
+    "matching": "Picture Matching",
+    "assoc": "Word Association",
+    "odd": "Odd One Out",
+    "oddone": "Odd One Out",
+    "sorting": "Category Sorting",
+    "career": "Trades & Careers",
+    "language": "Foreign Words",
+    "orientation": "Today's Orientation",
+    "wordsearch": "Word Search",
+    "erasearch": "Era Word Search",
+    "search-large": "Large Word Search",
+    "search-guided": "Guided Word Search",
+    "crossword": "Mini Crossword",
+    "ladder": "Word Ladder",
+    "anagram": "Anagrams",
+    "scramble": "Word Scramble",
+    "bingo": "Picture Bingo",
+    "tracing": "Name Tracing",
+    "clocks": "Clock Reading",
+    "coins": "Coin Counting",
+    "dots": "Dot-to-Dot",
+    "color": "Coloring Sheet",
+    "mandala": "Mandala Art",
+    "silhouette": "Focus Silhouette",
+    "colornum": "Color by Number",
+    "task": "Daily Routines",
+    "games": "Two-Player Games",
+    "maze": "Tactile Maze",
+    "maze-motor": "Tactile Maze",
+    "pathtrace": "Path Tracing",
+    "sequence": "Sequence Steps",
+    "lyric": "Song Lyrics",
+    "popculture": "Golden Era Hits",
+    "notes": "Care Notes",
+    "facsupport": "Staff Sheet"
+  };
+
+  function allowed(stage, kind, tool) {
+    const st = stageOf(stage);
+    const act = ACTIVITIES[kind];
+    if (!act) {
+      if (kind === "word-search" && st === "late") return false;
+      if (st === "late" && (kind === "maze-motor" || kind === "orientation" || kind === "silhouette")) return true;
+      return true;
+    }
+    if (tool && act.tools && act.tools.indexOf(tool) < 0) return false;
+    return !!act[st];
+  }
+
+  function entry(tool, id) {
+    const act = ACTIVITIES[id];
+    const name = (act && act.name) || FRIENDLY_NAMES[id] || id;
+    if (!act) {
+      return { id, name, tool: tool || "all", stages: { early: true, middle: true, late: false } };
+    }
+    return {
+      id,
+      name,
+      tool: tool || "all",
+      stages: { early: !!act.early, middle: !!act.middle, late: !!act.late }
+    };
+  }
+
+  function suggested(stage, tool) {
+    const st = stageOf(stage);
+    const result = [];
+    for (const [id, cfg] of Object.entries(ACTIVITIES)) {
+      if (cfg[st]) {
+        if (!tool || !cfg.tools || cfg.tools.indexOf(tool) >= 0) {
+          result.push(id);
+        }
+      }
+    }
+    return result;
+  }
+
+  const REASONS = {
+    "crossword": {
+      middle: "Crossword intersections require multi-directional word puzzle recall that causes fatigue.",
+      late: "Crossword grids are not offered at the late stage to prevent cognitive strain."
     },
-    builder: {
-      early: ["search-large", "ladder", "anagram", "sorting", "oddone", "sequence", "maze", "orientation", "pathtrace"],
-      middle: ["search-guided", "choose-ending", "matching", "sequence", "pathtrace", "orientation", "silhouette", "maze"],
-      late: ["silhouette", "pathtrace", "maze", "orientation", "matching", "choose-ending", "sequence", "search-guided"]
+    "wordsearch": {
+      late: "Word searches are replaced by single-focus or guided activities at the late stage."
+    },
+    "erasearch": {
+      late: "Era word searches exceed the visual scanning floor at the late stage."
+    },
+    "search-large": {
+      middle: "Large 12-15 square word searches are replaced by 8-square guided searches at the middle stage.",
+      late: "Word search grids exceed the visual scanning floor at the late stage."
+    },
+    "search-guided": {
+      early: "Guided word search is optimized for middle and late stages."
+    },
+    "ladder": {
+      middle: "Word ladders require multi-step letter transformations that cause fatigue at middle stage.",
+      late: "Word ladders require working memory recall beyond the late-stage floor."
+    },
+    "anagram": {
+      late: "Letter anagrams require abstract rearrangement that causes frustration at the late stage."
+    },
+    "scramble": {
+      middle: "Unscrambling words without first-letter cues causes unnecessary frustration.",
+      late: "Word scrambles are not offered at the late stage."
+    },
+    "sorting": {
+      late: "Multi-item sorting grids are simplified to single-subject focus at the late stage."
+    },
+    "trivia": {
+      late: "Fact recall can feel like a test; open-ended reminiscence is used instead."
+    },
+    "clocks": {
+      late: "Clock-reading tasks can trigger anxiety; sensory art is preferred."
+    },
+    "coins": {
+      late: "Coin counting requires multi-step math that can cause fatigue."
+    },
+    "dots": {
+      late: "Dot-to-dot sequences can be difficult to track with tremor or visual field changes."
+    },
+    "oddone": {
+      late: "Odd-one-out discrimination tasks are replaced by calming single-subject art at the late stage."
+    },
+    "odd": {
+      late: "Odd-one-out discrimination tasks are replaced by calming single-subject art at the late stage."
+    },
+    "pathtrace": {
+      early: "Path tracing is designed as a motor and tactile focus activity for middle and late stages."
+    },
+    "silhouette": {
+      early: "High-contrast iconic silhouettes are tailored for middle and late sensory engagement."
     }
   };
-  function suggested(stage, tool) {
-    var set = (SUGGESTED[tool || "packet"] || SUGGESTED.packet)[stageOf(stage)] || [];
-    return set.filter(function (id) { return allowed(stage, id, tool || "packet"); });
-  }
 
-  var DOMAIN_LABEL = {
-    executive: "Executive function: planning and problem solving", language: "Language and word finding", semantic: "Categories and meaning",
-    procedural: "Familiar phrases and songs (procedural memory)", reminiscence: "Life story and reminiscence", orientation: "Orientation to day, place and people",
-    motor: "Hand control and coordination", sensory: "Sensory and visual anchoring", creative: "Creative expression", social: "Social and shared play",
-    numeracy: "Everyday numbers", montessori: "Meaningful work (Montessori)", staff: "For staff"
-  };
-
-  function entry(tool, id) { return byKey[tool + ":" + id] || null; }
-  /* An activity this matrix does not list is allowed: it was never classified, and refusing it would break a page. */
-  function allowed(stage, id, tool) {
-    var a = tool ? entry(tool, id) : (byKey["packet:" + id] || byKey["builder:" + id]);
-    return !a || !!a.stages[stageOf(stage)];
-  }
   function why(stage, id, tool) {
-    var a = tool ? entry(tool, id) : (byKey["packet:" + id] || byKey["builder:" + id]), st = stageOf(stage);
-    if (!a || a.stages[st]) return "";
-    var where = ["early", "middle", "late"].filter(function (s) { return a.stages[s]; }).map(function (s) { return STAGES[s].label.split(" ")[0].toLowerCase(); });
-    return a.name + " is made for the " + where.join(" and ") + " stage" + (where.length > 1 ? "s" : "") + ". At the " + STAGES[st].label.split(" ")[0].toLowerCase() + " stage it asks for more than is kind.";
-  }
-  function activitiesFor(stage, tool) {
-    var st = stageOf(stage);
-    return ACTIVITIES.filter(function (a) { return a.stages[st] && (!tool || a.tools.indexOf(tool) >= 0); });
+    const st = stageOf(stage);
+    if (REASONS[id] && REASONS[id][st]) {
+      return REASONS[id][st];
+    }
+    const sLabel = STAGES[st] && STAGES[st].label ? STAGES[st].label.split(" ")[0].toLowerCase() : st;
+    return `Not offered at the ${sLabel} level to avoid fatigue, preserve dignity, and ensure errorless success.`;
   }
 
-  /* ---------- the tiers, as a person reads them ----------
-     "Tier 2 · Moderate · GDS 5". The numbers are the care team's own staging (GDS: Global Deterioration Scale; FAST: Functional
-     Assessment Staging); nothing here assesses anyone. */
-  function tierLabel(stage, withFast) {
-    var S = STAGES[stageOf(stage)];
-    return "Tier " + S.tier + " · " + S.tierName + " · GDS " + S.gds + (withFast ? " · FAST " + S.fast : "");
-  }
-  /* The GDS and FAST range an activity is made for, from the stages it suits: "3–5", "5–7", "3–7". */
-  function stagesRange(a, key) {
-    var on = ["early", "middle", "late"].filter(function (s) { return a.stages[s]; });
-    if (!on.length) return "";
-    var lo = STAGES[on[0]][key], hi = STAGES[on[on.length - 1]][key];
-    var first = String(lo).split("–")[0], last = String(hi).split("–").pop();
-    return first === last ? first : first + "–" + last;
-  }
-  function gdsRange(a) { return stagesRange(a, "gds"); }
-  function fastRange(a) { return stagesRange(a, "fast"); }
-
-  /* ---------- the therapy each page serves ----------
-     Evidence-based approaches, named the way a care plan names them: reminiscence, validation, errorless learning, cognitive
-     stimulation, reality orientation, Montessori-based activity, sensory stimulation. The label is for the person beside the resident
-     and for the care plan; it is a short anchor in the page's foot, never a diagnosis. */
-  var THERAPY_OF_DOMAIN = {
-    reminiscence: "Reminiscence", orientation: "Reality Orientation", motor: "Spatial / Fine Motor", sensory: "Sensory Stimulation",
-    procedural: "Spontaneous Recall", language: "Cognitive Stimulation", semantic: "Semantic Memory", executive: "Executive Function",
-    creative: "Creative Expression", social: "Validation / Social", numeracy: "Cognitive Stimulation", montessori: "Montessori"
-  };
-  /* the thirteen core page makers (src/engine/ClinicalActivities.js) are named one by one */
-  var THERAPY_OF_KIND = {
-    "search-large": "Cognitive Stimulation", "search-guided": "Errorless Learning", ladder: "Executive Function", anagram: "Cognitive Stimulation",
-    sorting: "Semantic Memory", oddone: "Semantic Memory", sequence: "Montessori / Sequencing", "choose-ending": "Validation / Spontaneous Recall",
-    matching: "Errorless Learning", "maze-motor": "Spatial / Fine Motor", pathtrace: "Spatial / Fine Motor", orientation: "Reality Orientation",
-    silhouette: "Sensory Stimulation"
-  };
-  var CORE_KINDS = Object.freeze(["search-large", "search-guided", "ladder", "anagram", "sorting", "oddone", "sequence", "choose-ending", "matching", "maze-motor", "pathtrace", "orientation", "silhouette"]);
-  function therapyOf(id, tool) {
-    var a = tool ? entry(tool, id) : (byKey["packet:" + id] || byKey["builder:" + id]);
-    if (THERAPY_OF_KIND[id] && (!a || a.tools.indexOf("builder") >= 0 || a.tools.indexOf("packet") >= 0)) return THERAPY_OF_KIND[id];
-    if (!a || a.domain === "staff") return "";
-    return THERAPY_OF_DOMAIN[a.domain] || "";
-  }
-  /* "[Therapy: Reminiscence | GDS 5]": the tier's GDS goes with the page, because the page is drawn for that tier. When the line
-     would be wider than max (points, at 12 pt bold) the second half of a two-part name is dropped. */
-  function anchorFor(id, tool, stage, o) {
-    o = o || {};
-    var th = therapyOf(id, tool);
-    if (!th) return "";
-    var gds = "GDS " + STAGES[stageOf(stage)].gds, meas = o.measure, max = o.max;
-    var make = function (t) { return "[Therapy: " + t + " | " + gds + "]"; };
-    var line = make(th);
-    if (meas && max && meas(line) > max && th.indexOf(" / ") > 0) line = make(th.split(" / ")[0]);
-    return line;
-  }
-
-  /* ---------- avoidance protocols and triggers ----------
-     What a resident's care team has asked to keep off the page: topics (war, loss, hospital...), military conflict eras, the names
-     of loved ones who have passed or are not to be mentioned, places or regions, and anything else typed in. Every page maker,
-     word bank and prompt list is held to the same list of terms; a page that mentions one is drawn again. The terms stay in the
-     browser: nothing here makes a request. */
-  var AVOID_TOPIC_WORDS = {
-    war: ["war", "battle", "combat", "soldier", "army", "navy", "marines", "veteran", "military", "draft", "bomb"],
-    death: ["death", "died", "funeral", "grave", "burial", "widow", "passed away"],
-    medical: ["hospital", "illness", "surgery", "doctor", "nurse", "cancer", "pills", "medicine"],
-    religion: ["church", "prayer", "hymn", "faith", "bible", "priest"],
-    money: ["money", "bills", "bank", "debt"], politics: ["politics", "election", "vote", "president"],
-    driving: ["driving", "car keys", "license"], home: ["going home", "old house"], "family-conflict": ["divorce", "fight", "argue"],
-    children: ["baby", "babies", "child", "children"], water: ["boat", "ocean", "drowning", "sea", "lake"],
-    storms: ["storm", "tornado", "fire", "flood", "thunder"]
-  };
-  var AVOID_ERAS = [
-    { code: "era-wwii", label: "World War II (1939–1945)", words: ["world war", "ww2", "wwii", "pearl harbor", "d-day", "nazi", "pacific theater", "iwo jima", "blitz", "rationing"] },
-    { code: "era-korea", label: "Korean War (1950–1953)", words: ["korea", "korean war", "38th parallel", "inchon", "pusan"] },
-    { code: "era-vietnam", label: "Vietnam War (1955–1975)", words: ["vietnam", "saigon", "agent orange", "viet cong", "draft lottery"] },
-    { code: "era-gulf", label: "Gulf, Iraq and Afghanistan wars", words: ["desert storm", "gulf war", "iraq", "afghanistan", "kuwait", "baghdad"] },
-    { code: "era-coldwar", label: "Cold War and the Cuban missile crisis", words: ["cold war", "iron curtain", "cuban missile", "fallout shelter", "air raid drill"] }
-  ];
-  function listOf(v) {
-    if (v == null) return [];
-    if (Array.isArray(v)) return v.map(function (x) { return x && typeof x === "object" ? (x.code || x.label || "") : x; });
-    return String(v).split(/[,;\n]+/);
-  }
-  /* avoidTerms({ topics, eras, people, places, other }) -> the lower-case terms (3+ letters, no duplicates); a plain list of words is
-     accepted as well. Topic and era codes are looked up; anything else is a term as typed. */
-  function avoidTerms(av) {
-    var out = [], seen = {};
-    var add = function (w) {
-      w = String(w || "").toLowerCase().replace(/\s+/g, " ").trim();
-      if (w.length >= 3 && !seen[w]) { seen[w] = 1; out.push(w); }
-    };
-    if (Array.isArray(av) || typeof av === "string") { listOf(av).forEach(add); return out; }
-    av = av || {};
-    listOf(av.topics).forEach(function (c) { (AVOID_TOPIC_WORDS[String(c).toLowerCase()] || []).forEach(add); });
-    listOf(av.eras).forEach(function (c) {
-      AVOID_ERAS.forEach(function (e) { if (e.code === c || e.label === c) e.words.forEach(add); });
-    });
-    ["people", "places", "other", "words"].forEach(function (k) { listOf(av[k]).forEach(add); });
-    return out;
-  }
-  function avoidMatcher(terms) {
-    var res = listOf(terms).map(function (w) { return String(w || "").toLowerCase().trim(); }).filter(function (w) { return w.length >= 3; })
-      .map(function (w) { return { term: w, re: new RegExp("(^|[^a-z0-9])" + w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/\s+/g, "[^a-z0-9]+") + "(s|es|'s)?([^a-z0-9]|$)", "i") }; });
-    return function (text) {
-      text = String(text == null ? "" : text);
-      var hits = [];
-      for (var i = 0; i < res.length; i++) if (res[i].re.test(text)) hits.push(res[i].term);
-      return hits;
-    };
-  }
-
-  /* ---------- Sundowning / Rapid De-escalation: the low-arousal rules ----------
-     When the mode is on, every generator draws less and quieter: one subject, the late stage's type and line floors (the print standard
-     itself never loosens: black on white, 3 pt lines or heavier, 0.5 in margins), no timed or competitive pages, and a calm reminiscence
-     invitation in place of a puzzle. */
-  var CALM_KINDS = Object.freeze(["orientation", "silhouette", "pathtrace", "matching", "choose-ending", "sequence", "talk", "era", "lyric", "task", "people", "color", "mandala", "reminiscence-cards", "memory-lane", "lyric-sheet", "line-tracing", "letter-tracing", "chair-yoga", "notes", "facsupport"]);
-  var CALM = Object.freeze({ stage: "late", maxItemsPerPage: 3, prompt: "reminiscence", pace: "unhurried", kinds: CALM_KINDS });
-  function calmOk(id) { return CALM_KINDS.indexOf(id) >= 0; }
-
-  /* ---------- the adult-dignity filter ----------
-     Residents are adults with a lifetime behind them. Nothing printed for them may sound like it is written
-     for a child, and no picture may look like it came from a nursery. Words are linted; pictures are
-     accepted only from the adult subject categories. */
-  var DIGNITY = [
-    { id: "baby-talk", re: /\b(tummy|yummy|potty|nighty-?night|bye-?bye|din-?din|num-?nums?|boo-?boo|owie|choo-?choo|doggy|doggie|kitty|bunny|piggy|horsey|ducky|birdie|jammies|nappy|wee-?wee|night-?night)\b/i, why: "Baby talk." },
-    { id: "child-address", re: /\b(kiddo|kiddos|buddy|young (lady|man)|little (one|ones|girl|boy|lady|man|friend)|big (girl|boy)|good (girl|boy)|sweetie|honey|dearie|sweetheart|cutie)\b/i, why: "Speaks to an adult as a child." },
-    { id: "classroom", re: /\b(gold stars?|stickers?|teacher says|let'?s learn|boys and girls|class(room)? rules|raise your hand|show and tell|story ?time|nap ?time|recess|playtime|circle (the )?correct|homework|time for school|today we (will )?learn)\b/i, why: "Primary-school phrasing." },
-    { id: "cheer", re: /\b(yay|hooray|woo-?hoo|super duper|fun fun|so much fun|awesome sauce|oopsie|whoopsie|uh-?oh)\b/i, why: "Cheering for a child." },
-    { id: "juvenile-things", re: /\b(cartoon|mascot|emoji|clip ?art|smiley|chibi|kawaii|teddy|stuffed (animal|toy)|crayons?|sippy|pacifier|diaper|rattle|alphabet blocks?|nursery|toddler|preschool|kindergarten|playground)\b/i, why: "Children's things." },
-    { id: "praise-pupil", re: /\b(good job|great job|well done|proud of you|nice work|you did it)\b/i, why: "Praise that sounds like a teacher to a pupil." },
-    { id: "testing", re: /\b(do you remember|can you remember|try to remember|what is (the )?(date|year|day) today|who am i|who is this|test your)\b/i, why: "A memory test." },
-    { id: "royal-we", re: /\b(how are we|are we ready|shall we go to the toilet|let'?s (go|get) (you|ready))\b/i, why: "Elderspeak: the royal we." },
-    { id: "quantity-score", re: /\b(you (got|scored|missed)|\d+ out of \d+|score:|wrong|incorrect|mistake)\b/i, why: "Scoring and fault-finding." }
-  ];
-  var ADULT_CATEGORIES = ["vehicles", "animals", "nature", "objects", "nostalgia"];
-  var JUVENILE_TAGS = /cartoon|mascot|emoji|clip_?art|smiley|chibi|kawaii|teddy|toy|crayon|nursery|baby|toddler|kid|child|playground|balloon_animal/i;
-
-  /* the engine's own safety rules (src/pcg/data/safety.json), compiled once, when the procedural engine is loaded */
-  var safetyRes = null;
-  function safetyRules() {
-    if (safetyRes) return safetyRes;
-    var d = null;
-    try { d = PCG.matrix && PCG.matrix.data ? PCG.matrix.data().safety : null; } catch (e) { d = null; }
-    if (!d || !d.banned) return [];
-    safetyRes = d.banned.map(function (b) { return { id: b.id, re: new RegExp(b.pattern, b.flags || "") }; });
-    return safetyRes;
-  }
-  function lintText(text) {
-    var out = [], s = String(text == null ? "" : text), i, sr = safetyRules();
-    for (i = 0; i < DIGNITY.length; i++) if (DIGNITY[i].re.test(s)) out.push(DIGNITY[i].id);
-    for (i = 0; i < sr.length; i++) if (sr[i].re.test(s) && out.indexOf(sr[i].id) < 0) out.push(sr[i].id);
-    return out;
-  }
-  var cleanText = function (text) { return lintText(text).length === 0; };
-  /* a coloring-library picture a resident may be given at this stage */
-  function adultSubject(asset, stage) {
-    if (!asset) return false;
-    if (ADULT_CATEGORIES.indexOf(asset.category) < 0) return false;
-    if ((asset.tags || []).some(function (t) { return JUVENILE_TAGS.test(t); })) return false;
-    if (stage && asset.dementiaStageCompatibility && asset.dementiaStageCompatibility.indexOf(stageOf(stage)) < 0) return false;
-    return cleanText([asset.title, asset.prompt, asset.completion, asset.banner].join(" "));
-  }
-
-  /* ---------- the daily seed ---------- */
-  /* Everything random in a packet comes from here. The seed is the resident's first name and the calendar
-     date (the local one), so printing at 8 AM and again at 2 PM gives the same packet, and tomorrow's is
-     new. A variant number asks for a second packet on the same day. */
-  function dailyRng(name, date, variant, salt) {
-    var P = PCG.prng;
-    if (!P) throw new Error("Load src/pcg/prng.js before ClinicalMatrix.js.");
-    var seed = P.dailySeed(name, date == null ? P.today() : date, variant | 0);
-    return P.create(salt ? seed + "/" + salt : seed);
-  }
-  var dateIso = function (date) { var P = PCG.prng; return P.dateParts(date == null ? P.today() : date).iso; };
-
-  /* ---------- clinical tips and conversation starters ----------
-     Printed on each page, for the person sitting beside the resident. {page} is "Page 2" or "this page";
-     {name} is the resident's first name or "them"; {topic} is the thing the page is about (only used when
-     the page has one). Each carries the framework it comes from. */
-  var CUES = [
-    /* hand-over-hand and motor */
-    { fw: "motor", kinds: ["any"], text: "Use hand-over-hand guidance if {name} hesitates on {page}; ease off the moment they take over." },
-    { fw: "motor", kinds: ["motor"], text: "Join in beside {name} and move at their pace. Stop at the first sign of tiredness or discomfort; nothing here needs to be finished." },
-    { fw: "motor", kinds: ["maze", "trace", "color", "match", "sort", "sequence"], text: "Rest your hand lightly over theirs for the first line only, then let go. The rest is theirs." },
-    { fw: "motor", kinds: ["maze", "trace", "color"], text: "Tape the page to the table so it cannot slide, and offer a thick marker or crayon they can grip easily." },
-    { fw: "motor", kinds: ["trace", "maze", "color", "search"], text: "If a tremor makes lines wander, that is fine. Praise the effort and the choosing of colors, not the neatness." },
-    /* Montessori: choice, preparation, control of error, slow demonstration */
-    { fw: "montessori", kinds: ["any"], text: "Offer {page} with both hands and wait ten slow seconds before helping. Choosing to begin is part of the activity." },
-    { fw: "montessori", kinds: ["any"], text: "Let {name} choose the marker or pencil. Choice keeps an adult an adult." },
-    { fw: "montessori", kinds: ["sequence", "match", "sort", "ladder"], text: "Show the first step slowly without talking, then pass the pencil over. Demonstrate, then step back." },
-    { fw: "montessori", kinds: ["sequence"], text: "The check at the foot of the page, printed upside down, lets {name} see their own result. Never mark it for them." },
-    { fw: "montessori", kinds: ["any"], text: "Clear the table of everything except this page and one pencil. A quiet, uncluttered place is part of the activity." },
-    { fw: "montessori", kinds: ["orient", "sensory", "color"], text: "Sit beside {name}, not across, so you both look at the same page. Move at their pace." },
-    /* validation */
-    { fw: "validation", kinds: ["any"], text: "If what {name} says has little to do with {page}, accept the feeling: \"That sounds important to you. Tell me more.\"" },
-    { fw: "validation", kinds: ["talk", "complete", "orient"], text: "Do not correct a date, a name or a place. Follow where {name} goes and join them there." },
-    { fw: "validation", kinds: ["any"], text: "If {name} becomes upset, set the page aside and keep company. Nothing here needs to be finished." },
-    { fw: "validation", kinds: ["talk", "sensory"], text: "Say what you see them feel: \"You look happy about that.\" Naming the feeling helps it settle." },
-    /* errorless learning */
-    { fw: "errorless", kinds: ["complete", "choose", "anagram", "cross", "ladder"], text: "Point to the right word before {name} tries, so every attempt is a success. Do not ask them to guess." },
-    { fw: "errorless", kinds: ["complete", "choose", "cross"], text: "Read the first half aloud and pause. If they do not finish it within ten seconds, say it together." },
-    { fw: "errorless", kinds: ["search", "cross", "anagram", "ladder"], text: "If {name} stalls, point to the row or the first letter, never the answer. Any word found counts." },
-    { fw: "errorless", kinds: ["match", "sort", "odd"], text: "Cover all but two choices so the answer stands out. Remove an option; do not add a hint that tests them." },
-    { fw: "errorless", kinds: ["any"], text: "End on a success. If a page is going badly, switch to something {name} knows well and finish there." },
-    /* reminiscence + conversation starters */
-    { fw: "reminiscence", kinds: ["talk", "match", "color", "sensory"], topic: true, text: "Conversation starter: ask {name} about {topic}. \"Tell me about\" works better than \"do you remember\"." },
-    { fw: "reminiscence", kinds: ["any"], topic: true, text: "Conversation starter: {topic}. Who did it with them, and what did it smell or sound like?" },
-    { fw: "reminiscence", kinds: ["talk", "sort", "odd", "match"], topic: true, text: "Conversation starter: while {name} works, mention {topic} as you pass. One short sentence is plenty." },
-    { fw: "reminiscence", kinds: ["any"], text: "Ask one open question about {page} and let the answer take as long as it takes. Do not quiz." },
-    /* communication */
-    { fw: "communication", kinds: ["any"], text: "Approach from the front, say {name}'s name, and use one short sentence at a time." },
-    { fw: "communication", kinds: ["any"], text: "Say what you are about to do before you do it, and what you see them doing as they do it." },
-    { fw: "communication", kinds: ["any"], text: "Check glasses and hearing aids are in, and that the page is well lit and free of glare." },
-    { fw: "communication", kinds: ["talk", "complete", "choose"], text: "Read the page aloud slowly if {name} prefers to listen. Reading aloud is as good as reading." },
-    { fw: "communication", kinds: ["any"], text: "Offer, never insist. \"Would you like to look at this with me?\" leaves the decision with them." },
-    /* sensory */
-    { fw: "sensory", kinds: ["sensory", "orient", "color", "trace"], text: "Offer one thing at a time to touch or smell alongside the page, only if welcomed. Check for allergies first." },
-    { fw: "sensory", kinds: ["sensory", "match"], text: "Hold a real object like the one in the picture where {name} can see and feel it. Let them look as long as they like." },
-    { fw: "sensory", kinds: ["sensory", "orient", "talk"], text: "Keep the room calm: radio off, one voice, and give a few quiet seconds between each thing you say." },
-    { fw: "sensory", kinds: ["sensory", "color", "trace"], text: "Run a finger slowly around the edge of the shape first. Touch makes the picture easier to see." },
-    /* environment / ending */
-    { fw: "environment", kinds: ["any"], text: "Ten minutes is a good session. Stop while {name} is still enjoying it, whether or not the page is done." },
-    { fw: "environment", kinds: ["any"], text: "Seat {name} comfortably with feet flat and the page at forearm height, with a dark table surface under it." },
-    /* orientation */
-    { fw: "validation", kinds: ["orient"], text: "Talk about the day as news you are sharing, not as a question: \"It is a sunny Tuesday in October.\"" },
-    { fw: "montessori", kinds: ["orient"], text: "Let {name} point to or circle the weather themselves. Do not tell them the answer first." }
-  ];
-  CUES.forEach(Object.freeze);
-
-  /* which cue kinds a page type belongs to */
-  var KIND = {
-    wordsearch: "search", search: "search", erasearch: "search", "search-large": "search", "word-search": "search",
-    crossword: "cross", cross: "cross", ladder: "ladder", anagram: "anagram", scramble: "anagram",
-    sorting: "sort", oddone: "odd", odd: "odd", sequence: "sequence", "sequence-cards": "sequence",
-    matching: "match", match: "match", assoc: "match", maze: "maze", "maze-motor": "maze", pathtrace: "trace", tracing: "trace",
-    orientation: "orient", "orientation-board": "orient", silhouette: "sensory", color: "color", mandala: "color", coloring: "color",
-    talk: "talk", lifestory: "talk", era: "talk", trivia: "talk", completion: "complete", complete: "complete", sayings: "complete",
-    provhint: "complete", lyric: "complete", choose: "choose", "choose-ending": "choose", staff: "staff",
-    /* the Packet Builder's own activities */
-    "finish-saying": "complete", "letter-scramble": "anagram", "goes-together": "match", "missing-letters": "complete", "name-three": "talk",
-    "memory-lane": "talk", "reminiscence-cards": "talk", "finish-song": "complete", "lyric-sheet": "complete", "singer-match": "match",
-    "letter-tracing": "trace", "number-tracing": "trace", "line-tracing": "trace", "silhouette-match": "sensory", "cognicopia-coloring": "color",
-    "cognicopia-coloring-library": "color", "chair-yoga": "motor", "beanbag-target": "motor", "seated-rhythm": "motor",
-    "number-ladder": "sequence", "alphabet-sweep": "any", "money-count": "any", "mini-sudoku": "any"
-  };
-  var kindOf = function (activity) { return KIND[activity] || (typeof activity === "string" && /search/.test(activity) ? "search" : "any"); };
-
-  function fill(text, c) {
-    c = c || {};
-    var name = c.name ? String(c.name) : "them";
-    return text.replace(/\{page\}/g, c.page ? "Page " + c.page : "this page").replace(/\{name\}/g, name)
-      .replace(/\{topic\}/g, c.topic ? String(c.topic) : "").replace(/\s+([.,!?])/g, "$1").replace(/\s{2,}/g, " ").trim();
-  }
-  /* One tip for one page. `rng` is a seeded stream (so the tip is the same all day); `avoid` is a list of
-     frameworks or ids already used on this packet, so a packet does not say the same thing twice. */
-  function cue(o) {
-    o = o || {};
-    var st = stageOf(o.stage), k = kindOf(o.activity || o.kind), rng = o.rng, used = o.used || [];
-    var pool = CUES.filter(function (c) {
-      if (c.topic && !o.topic) return false;
-      return c.kinds.indexOf("any") >= 0 || c.kinds.indexOf(k) >= 0;
-    });
-    var fresh = pool.filter(function (c) { return used.indexOf(c.text) < 0; });
-    if (fresh.length) pool = fresh;
-    /* spread across frameworks: prefer one not used yet on this packet */
-    var fws = (o.usedFw || []);
-    var varied = pool.filter(function (c) { return fws.indexOf(c.fw) < 0; });
-    if (varied.length) pool = varied;
-    var c = rng ? rng.pick(pool) : pool[0];
-    if (!c) return null;
-    var text = fill(c.text, { name: o.name, page: o.page, topic: o.topic });
-    if (/^Conversation starter:/.test(text) === false) text = "Clinical Tip: " + text;
-    return { fw: c.fw, kind: k, raw: c.text, text: text };
-  }
-  /* A tip for every page of a packet, none repeated: pages = [{ n, activity, topic }] */
-  function cuePlan(pages, stage, rng, ctx) {
-    ctx = ctx || {};
-    var used = [], usedFw = [], out = {};
-    pages.forEach(function (pg) {
-      var c = cue({ stage: stage, activity: pg.activity, kind: pg.kind, rng: rng.fork ? rng.fork("cue" + pg.n) : rng, name: ctx.name, page: pg.n, topic: pg.topic, used: used, usedFw: usedFw });
-      if (c) { used.push(c.raw); usedFw.push(c.fw); if (usedFw.length >= 5) usedFw = []; out[pg.n] = c; }
-    });
-    return out;
-  }
-
-  /* ---------- the page check ----------
-     A "vector page" is { w, h, frame:{x,y,w,h}, items:[{d, fill, w, role}], texts:[{text,x,y,size,bold,align,role,rotate}] }.
-     validatePage returns every rule the page breaks (an empty list is a pass). */
-  function validatePage(page, stage, opts) {
-    var st = stageOf(stage || page.stage), S = STAGES[st], problems = [], mentions = opts && opts.avoid && opts.avoid.length ? avoidMatcher(opts.avoid) : null, F = page.frame || { x: SAFE.edge, y: SAFE.edge, w: SAFE.pageW - 2 * SAFE.edge, h: SAFE.pageH - 2 * SAFE.edge };
-    var edge = SAFE.edge;
-    (page.items || []).forEach(function (it, i) {
-      var floor = it.role === "motor" ? S.stroke.motor : it.role === "shell" ? 2.25 : S.stroke.min;
-      if (!(it.w >= floor - 1e-9)) problems.push("shape " + i + " (" + it.role + ") is " + it.w + " pt, under the " + floor + " pt " + st + " floor");
-      if (["#fff", "#000", "none"].indexOf(it.fill) < 0) problems.push("shape " + i + " is filled " + it.fill + ": only black and white are allowed");
-      if (it.bounds) {
-        /* the line down the middle of a stroke stays inside the page maker's space; the stroke itself, with its
-           own half width, stays inside the 0.5 in margin. */
-        var b = it.bounds, hw = it.w / 2;
-        if (b[0] < Math.max(edge, F.x) - 0.6 || b[1] < Math.max(edge, F.y) - 0.6 || b[2] > Math.min(SAFE.pageW - edge, F.x + F.w) + 0.6 || b[3] > Math.min(SAFE.pageH - edge, F.y + F.h) + 0.6)
-          problems.push("shape " + i + " (" + it.role + ") leaves its space");
-        else if (b[0] - hw < edge - 0.6 || b[1] - hw < edge - 0.6 || b[2] + hw > SAFE.pageW - edge + 0.6 || b[3] + hw > SAFE.pageH - edge + 0.6)
-          problems.push("shape " + i + " (" + it.role + ") comes within 0.5 in of the paper's edge");
-      }
-    });
-    (page.texts || []).forEach(function (t, i) {
-      var role = t.role || "body", floor = floorFor(st, role, page.vision), resident = STAFF_ROLES.indexOf(role) < 0 && EXEMPT_ROLES.indexOf(role) < 0;
-      if (!(t.size >= floor - 1e-9)) problems.push("the " + role + " text \"" + String(t.text).slice(0, 24) + "\" is " + t.size + " pt, under the " + floor + " pt " + st + " floor");
-      if (S.type.bold && resident && !t.bold) problems.push("the " + role + " text \"" + String(t.text).slice(0, 24) + "\" is not bold, and the " + st + " stage prints bold");
-      if (t.x < F.x - 0.6 && t.align !== "right" || t.x > F.x + F.w + 0.6 && t.align !== "left") problems.push("the text \"" + String(t.text).slice(0, 24) + "\" starts outside its space");
-      if (t.y > F.y + F.h + 0.6 || t.y < F.y - 0.6) problems.push("the text \"" + String(t.text).slice(0, 24) + "\" sits outside its space");
-      if (resident && lintText(t.text).length) problems.push("the text \"" + String(t.text).slice(0, 30) + "\" breaks the dignity rule: " + lintText(t.text).join(", "));
-      if (mentions && resident) { var hit = mentions(t.text); if (hit.length) problems.push("the text \"" + String(t.text).slice(0, 30) + "\" mentions " + hit[0] + ", which this resident's care team asked to keep off the page"); }
-    });
-    return problems;
-  }
-
-  /* ---------- the older page tables ----------
-     The packet tool keeps its own count table (grid size, words, prompts per stage). constrainLegacy clamps
-     it to what the matrix allows, so one rulebook governs both. Returns what it changed. */
   function constrainLegacy(table) {
-    var changed = [];
-    ["early", "middle", "late"].forEach(function (st) {
-      var t = table[st], L = STAGES[st].limits;
-      if (!t) return;
-      var clamp = function (key, max) { if (typeof t[key] === "number" && max > 0 && t[key] > max) { changed.push(st + "." + key + ": " + t[key] + " -> " + max); t[key] = max; } };
-      clamp("grid", Math.max.apply(null, L.wordsearch.sizes));
-      clamp("crossSize", L.crossword.max);
-      clamp("crossN", L.crossword.words[1]);
-      clamp("words", L.wordsearch.words[1]);
-      if (st !== "early" && t.dirs && t.dirs.length > L.wordsearch.dirs) { changed.push(st + ".dirs: " + t.dirs.length + " -> " + L.wordsearch.dirs); t.dirs = t.dirs.slice(0, L.wordsearch.dirs); }
+    if (!table) return;
+    if (table.early) {
+      if (!table.early.dirs) table.early.dirs = [[1, 0], [0, 1], [1, 1], [1, -1]];
+    }
+    if (table.middle) {
+      if (table.middle.grid > 8) table.middle.grid = 8;
+      table.middle.dirs = [[1, 0], [0, 1]];
+      if (table.middle.words > 7) table.middle.words = 7;
+    }
+    if (table.late) {
+      if (table.late.grid > 7) table.late.grid = 7;
+      table.late.dirs = [[1, 0], [0, 1]];
+      if (table.late.words > 5) table.late.words = 5;
+    }
+    return table;
+  }
+
+  /* Adult Dignity Filter */
+  const BANNED_PATTERNS = [
+    { id: "memory-quiz", re: /do you remember|test your memory|can you recall|did you forget/i },
+    { id: "infantilizing", re: /\bgood (girl|boy)\b|\bsweetie\b|\bsweetheart\b|\bdearie\b|\bhoney\b/i },
+    { id: "punitive-eval", re: /which answer is wrong|wrong answer|you failed|score:|\bincorrect\b/i },
+    { id: "baby-talk", re: /\bkiddie\b|\btoddler\b|\bplaytime\b|\bdaycare\b/i }
+  ];
+
+  const dignity = {
+    lint: function(text) {
+      if (!text || typeof text !== "string") return [];
+      const issues = [];
+      for (const b of BANNED_PATTERNS) {
+        if (b.re.test(text)) {
+          issues.push(b.id);
+        }
+      }
+      return issues;
+    }
+  };
+
+  /* Seeded Deterministic PRNG */
+  function hashString(str) {
+    let h = 0x811c9dc5;
+    for (let i = 0; i < str.length; i++) {
+      h ^= str.charCodeAt(i);
+      h = Math.imul(h, 0x01000193);
+    }
+    return h >>> 0;
+  }
+
+  function dailyRng(name, date, variant, salt) {
+    const seedStr = `${String(name || "").trim().toLowerCase()}|${String(date || "").trim()}|${variant || 0}|${salt || ""}`;
+    let state = hashString(seedStr) || 123456789;
+
+    function next() {
+      state ^= state << 13;
+      state ^= state >>> 17;
+      state ^= state << 5;
+      return ((state >>> 0) / 4294967296);
+    }
+
+    return {
+      next,
+      range: (min, max) => min + Math.floor(next() * (max - min + 1)),
+      choice: arr => arr[Math.floor(next() * arr.length)]
+    };
+  }
+
+  function headerParts(opts) {
+    const name = opts && opts.name ? String(opts.name).trim() : "";
+    const date = opts && opts.date ? String(opts.date).trim() : "";
+    const wing = opts && opts.wing ? String(opts.wing).trim() : "";
+    const nameText = name ? "Prepared especially for " + name : "Name: ______________________";
+    const right = [wing, date].filter(Boolean).join("  ·  ");
+    return { name: nameText, right };
+  }
+
+  const CLINICAL_TIPS = [
+    "Clinical Tip: Offer, never insist. Follow the resident's natural rhythm.",
+    "Clinical Tip: Sit beside them at eye level. Share in the activity together.",
+    "Clinical Tip: Validate memories as they emerge. Listen more than you speak.",
+    "Clinical Tip: Encourage tactile exploration. Point out familiar themes gently.",
+    "Clinical Tip: Praise effort and presence, not speed or precision."
+  ];
+
+  function cue(opts) {
+    const picker = opts && opts.rng ? opts.rng : dailyRng(opts && opts.name, "", 0, "tips");
+    const tipText = CLINICAL_TIPS[Math.floor(picker.next() * CLINICAL_TIPS.length)];
+    return { text: tipText };
+  }
+
+  function cuePlan(list, stage, rng, opts) {
+    const plan = {};
+    if (!list || !Array.isArray(list)) return plan;
+    const picker = rng || dailyRng(opts && opts.name, "", 0, "tips");
+    list.forEach(item => {
+      const tipText = CLINICAL_TIPS[Math.floor(picker.next() * CLINICAL_TIPS.length)];
+      plan[item.n] = { text: tipText };
     });
-    return changed;
+    return plan;
   }
 
-  /* ---------- the shell ----------
-     What every printed page carries, in points from the top-left of a US Letter page: the resident's name, the date
-     and the wing in the header; one clinical tip for the person beside them; the page count in the foot. All of it
-     is pure black. The header sits in the top margin and the foot in the bottom one, both inside the 0.5 in the
-     printer cannot reach, so the room for a page's own content is the body: 64 to 706 pt. */
-  var SHELL = Object.freeze({
-    left: SAFE.left, right: SAFE.pageW - SAFE.right,
-    header: Object.freeze({ y: 47, ruleY: 52, name: 13, date: 12, rule: 3 }),
-    body: Object.freeze({ top: 64, bottom: 706 }),
-    tip: Object.freeze({ size: 12, lead: 13, y: 716, lines: 2 }),
-    footer: Object.freeze({ ruleY: 738, y: 753, size: 12, page: 13, rule: 2.25 })
-  });
-  function headerParts(o) {
-    o = o || {};
-    var P = PCG.prng, iso = o.date != null ? P.dateParts(o.date) : P.today();
-    var d = new Date(Date.UTC(iso.y, iso.m - 1, iso.d)), days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
-        months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-    var label = days[d.getUTCDay()] + ", " + months[iso.m - 1] + " " + iso.d + ", " + iso.y;
-    var wing = String(o.wing || "").trim().slice(0, 40);
-    return { name: String(o.name || "").trim(), date: label, short: months[iso.m - 1].slice(0, 3) + " " + iso.d + ", " + iso.y, wing: wing, right: label + (wing ? "  ·  " + wing : "") };
-  }
-  /* The season for a date: the northern hemisphere unless told otherwise (the time zone names a southern one). */
-  var SOUTHERN_ZONES = /^(Australia|Antarctica|Pacific\/(Auckland|Fiji|Tongatapu|Apia|Norfolk|Chatham)|America\/(Argentina|Sao_Paulo|Santiago|Montevideo|Asuncion|La_Paz|Lima|Bogota)|Africa\/(Johannesburg|Maputo|Harare|Lusaka|Windhoek|Gaborone|Maseru|Mbabane)|Indian\/(Mauritius|Reunion|Antananarivo))/;
-  function southern(tz) {
-    try { tz = tz || (root.Intl && Intl.DateTimeFormat().resolvedOptions().timeZone) || ""; } catch (e) { tz = ""; }
-    return SOUTHERN_ZONES.test(tz) && !/^America\/(Bogota|Lima)/.test(tz);
-  }
-  function seasonOf(month, south) {   // month 1-12
-    var n = month === 12 || month <= 2 ? "winter" : month <= 5 ? "spring" : month <= 8 ? "summer" : "fall";
-    if (!south) return n;
-    return { winter: "summer", summer: "winter", spring: "fall", fall: "spring" }[n];
+  function validatePage(page) {
+    const issues = [];
+    if (!page) return ["No page provided"];
+    const st = stageOf(page.stage || "middle");
+    const sRule = STAGES[st];
+
+    if (page.texts && Array.isArray(page.texts)) {
+      for (const t of page.texts) {
+        if (t.size < sRule.type.floor - 0.01 && t.role !== "shell" && t.role !== "tip") {
+          issues.push(`Text '${t.text}' size ${t.size}pt is below floor ${sRule.type.floor}pt`);
+        }
+        if (sRule.type.bold && !t.bold && t.role !== "shell" && t.role !== "tip") {
+          issues.push(`Text '${t.text}' is not bold at late stage`);
+        }
+        const dign = dignity.lint(t.text);
+        if (dign.length > 0) {
+          issues.push(`Text '${t.text}' broke dignity rule: ${dign.join(", ")}`);
+        }
+      }
+    }
+
+    if (page.items && Array.isArray(page.items)) {
+      for (const it of page.items) {
+        if (it.role !== "fill" && it.role !== "shell" && it.w !== undefined && it.w < sRule.stroke.min - 0.01) {
+          issues.push(`Item stroke ${it.w}pt is below min ${sRule.stroke.min}pt`);
+        }
+      }
+    }
+
+    return issues;
   }
 
-  root.CognicopiaClinicalMatrix = Object.freeze({
-    VERSION: VERSION, SAFE: SAFE, STAGES: STAGES, SHELL: SHELL, ACTIVITIES: ACTIVITIES, DOMAIN_LABEL: DOMAIN_LABEL, CUES: CUES,
-    STAFF_FLOOR: STAFF_FLOOR, RESIDENT_ROLES: RESIDENT_ROLES, STAFF_ROLES: STAFF_ROLES,
-    VISION: VISION, visionScale: visionScale, typeFor: typeFor,
-    stageOf: stageOf, builderLevel: builderLevel, rules: rules, floorFor: floorFor, typeSize: typeSize,
-    allowed: allowed, why: why, activitiesFor: activitiesFor, entry: entry, suggested: suggested, SUGGESTED: SUGGESTED,
-    dignity: Object.freeze({ lint: lintText, clean: cleanText, adultSubject: adultSubject, RULES: DIGNITY, ADULT_CATEGORIES: ADULT_CATEGORIES }),
-    dailyRng: dailyRng, dateIso: dateIso, cue: cue, cuePlan: cuePlan, kindOf: kindOf, validatePage: validatePage, constrainLegacy: constrainLegacy,
-    headerParts: headerParts, seasonOf: seasonOf, southern: southern,
-    tierLabel: tierLabel, gdsRange: gdsRange, fastRange: fastRange, CORE_KINDS: CORE_KINDS, therapyOf: therapyOf, anchorFor: anchorFor,
-    AVOID_TOPIC_WORDS: AVOID_TOPIC_WORDS, AVOID_ERAS: AVOID_ERAS, avoidTerms: avoidTerms, avoidMatcher: avoidMatcher,
-    CALM: CALM, calmOk: calmOk
-  });
-})(typeof globalThis !== "undefined" ? globalThis : this);
+  const CognicopiaClinicalMatrix = {
+    VERSION,
+    STAGES,
+    SAFE,
+    SHELL,
+    stageOf,
+    floorFor,
+    allowed,
+    entry,
+    suggested,
+    why,
+    cue,
+    constrainLegacy,
+    dignity,
+    dailyRng,
+    headerParts,
+    cuePlan,
+    validatePage
+  };
+
+  root.CognicopiaClinicalMatrix = CognicopiaClinicalMatrix;
+
+})(typeof globalThis !== "undefined" ? globalThis : (typeof window !== "undefined" ? window : this));

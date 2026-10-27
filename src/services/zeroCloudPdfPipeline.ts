@@ -249,6 +249,7 @@ export class ZeroCloudPdfPipeline {
   ): void {
     const margin = opts.bindingMargin ? 54 : 36;
     const pageWidth = 612;
+    const pageHeight = 792;
     const usableWidth = pageWidth - margin - 36;
 
     // Strict Clinical Matrix Type Floors (14pt Early, 18pt Middle, 24pt Bold Late)
