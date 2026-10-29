@@ -103,7 +103,7 @@ A secure random seed per print and an ids-only history, guaranteeing no repeats 
 | 5. Academy | The Caregiver & Pro Academy (a plain link) |
 | 6. Resources | The whole Resource & Clinical Hub: Browse all resources and its ten modules in three groups; in the Packet Builder, the hub and the Research Center |
 
-"Contact Kirk Barron" is a footer link under the six on every page, not part of a hub.
+"Contact Cognicopia" is a footer link under the six on every page, not part of a hub.
 
 - **One source:** `HUBS` in `scripts/site-nav.mjs`. `npm run nav` writes the sidebar into every static page and the navigation inside the Packet Builder's sidebar (the Packet Builder keeps its own brand, hooks and styles). Do not edit either by hand.
 - **Proved:** `npm run build` runs `site-nav.mjs --check`, which fails if any page is stale, shows a different set of hubs, has more or fewer than one open, marks the wrong link as current, or links to a file or Packet Builder route that does not exist. The browser measurement also checks every page type's sidebar for the 52 px floor and for contrast.

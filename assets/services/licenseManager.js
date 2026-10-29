@@ -499,7 +499,7 @@
 
   /* ---------- the page: button, badge, modal ---------- */
   var CSS = [
-    ".cgpromo-btn,.cgpromo-badge{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:var(--tap,52px);padding:8px 14px;border-radius:8px;font:700 15px/1.2 \"Trebuchet MS\",\"Segoe UI\",system-ui,sans-serif;cursor:pointer;white-space:normal;text-align:center;box-sizing:border-box;text-decoration:none}",
+    ".cgpromo-btn,.cgpromo-badge{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:var(--tap,52px);padding:8px 14px;border-radius:8px;font:700 15px/1.2 var(--cg-font-ui,\"Atkinson Hyperlegible\",\"Trebuchet MS\",\"Segoe UI\",system-ui,sans-serif);cursor:pointer;white-space:normal;text-align:center;box-sizing:border-box;text-decoration:none}",
     ".cgpromo-btn{background:#fff;color:#14302a;border:2px solid #286E75}",
     ".cgpromo-btn:hover{background:#e6f4f1;border-color:#14302a}",
     ".cgpromo-badge{background:#1e5b3a;color:#fff;border:2px solid #14402a}",
@@ -551,19 +551,24 @@
     if (!doc || mounted) return;
     mounted = true;
     if (!doc.getElementById("cgpromo-style")){ var st = el("style"); st.id = "cgpromo-style"; st.textContent = CSS; (doc.head || doc.documentElement).appendChild(st); }
-    var bar = doc.querySelector(".cg-topbar");
+    var bar = doc.querySelector(".cg-wood-bar") || doc.querySelector(".cg-topbar");
     if (bar){
-      btn = el("button", "cgpromo-btn", "License Key / Promo");
-      btn.type = "button"; btn.id = "cgPromoBtn";
+      var existingBtn = doc.getElementById("cgPromoBtn");
+      btn = existingBtn || el("button", "cgpromo-btn", "License Key / Promo");
+      if (!existingBtn) {
+        btn.type = "button"; btn.id = "cgPromoBtn";
+      }
       btn.setAttribute("aria-haspopup", "dialog");
       btn.addEventListener("click", function(){ openPromo(); });
       badge = el("button", "cgpromo-badge"); badge.type = "button"; badge.id = "cgPromoBadge"; badge.hidden = true;
       badge.addEventListener("click", function(){ openPromo(); });
       var toggle = doc.getElementById("hdrlicToggle"), hdr = doc.getElementById("hdrlic");
       var stripe = bar.querySelector('a[href*="buy.stripe.com"],a[data-upgrade-prompt]');
-      if (toggle && toggle.parentNode) toggle.parentNode.insertBefore(btn, toggle.nextSibling);
-      else if (stripe && stripe.parentNode) stripe.parentNode.insertBefore(btn, stripe);
-      else bar.insertBefore(btn, bar.firstChild);
+      if (!existingBtn) {
+        if (toggle && toggle.parentNode) toggle.parentNode.insertBefore(btn, bar.classList.contains("cg-wood-bar") ? toggle : toggle.nextSibling);   // the wood bar reads: Get Full Access, Invoice, License Key / Promo, Activate Access
+        else if (stripe && stripe.parentNode) stripe.parentNode.insertBefore(btn, stripe);
+        else bar.insertBefore(btn, bar.firstChild);
+      }
       if (hdr && hdr.parentNode === bar) bar.insertBefore(badge, hdr);
       else if (stripe && stripe.parentNode) stripe.parentNode.insertBefore(badge, stripe);
       else bar.insertBefore(badge, btn);

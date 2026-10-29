@@ -15,12 +15,12 @@ Every page keeps its own inline styles (the site is static HTML on GitHub Pages 
 
 ## Color
 
-Built on the four brand colors the Quality Standards Hub already names (green `#1b382b`, parchment `#f4efe6`, gold `#c5a059`, charcoal `#1a202c`), with natural greens, warm tans and crisp neutrals around them. Every token is `--cg-<name>`.
+Built on the four brand colors the Quality Standards Hub already names (deep teal `#0e3c43`, parchment `#f5f1e6`, gold `#c5a059`, charcoal `#1a202c`; the teal replaced the old forest green on October 22, 2026, from the owner's brand flyer), with natural greens, warm tans and crisp neutrals around them. Every token is `--cg-<name>`.
 
 | Family | Tokens |
 |---|---|
-| Natural greens | `green-950` `#0b1a13`, `green-900` `#10241a`, `green-800` `#162d21`, `green-700` `#1b382b` (the brand green), `green-600` `#2d5a44`, `green-500` `#3f7a5c`; sage `100` `#e3f1e8`, `200` `#c9e4d3`, `300` `#9fcbb0` |
-| Warm tans | `parchment` `#f4efe6` (the brand parchment), `tan-100` `#ebe3d3`, `tan-200` `#ddd1ba`, `tan-300` `#cdbe9f`, `tan-400` `#b5a48b`, `tan-600` `#7a6548`, `tan-700` `#66523a`, `tan-800` `#4f4030`; gold `500` `#c5a059` (the brand gold), `300` `#e8cc8a`, `200` `#f1dda8` |
+| Natural greens | `green-950` `#051a1e`, `green-900` `#08262c`, `green-800` `#0b2f36`, `green-700` `#0e3c43` (the brand teal; the token names still say green so no page had to be renamed), `green-600` `#1c5963`, `green-500` `#2b7683`; sage `100` `#e3f1e8`, `200` `#c9e4d3`, `300` `#9fcbb0` |
+| Warm tans | `parchment` `#f5f1e6` (the brand parchment), `tan-100` `#ebe3d3`, `tan-200` `#ddd1ba`, `tan-300` `#cdbe9f`, `tan-400` `#b5a48b`, `tan-600` `#7a6548`, `tan-700` `#66523a`, `tan-800` `#4f4030`; gold `500` `#c5a059` (the brand gold), `300` `#e8cc8a`, `200` `#f1dda8` |
 | Crisp neutrals | `charcoal` `#1a202c`, `ink-soft` `#343b49`, `white` |
 | Warm accents (the light pages) | `cream` `#fbf7f1` (a page), `peach-100` `#fbe9dc` (an icon tile), `peach-200` `#f6cdb4` (the hero's glow, decoration only), `clay-700` `#8a3a20` (one terracotta accent word) |
 | Meaning | `danger-800`, `danger-200`, `ok-800`, `ok-200`; the focus ring `focus` `#f5b800` and `focus-dark` `#10241a` |
@@ -52,9 +52,9 @@ These are the system's own pairs. Older page text that predates it is held to AA
 Two typefaces, both open-licensed, both files in `/fonts` (no font service, no request, cached for offline use by `sw.js`).
 
 - **Atkinson Hyperlegible** (Braille Institute, SIL OFL) for the interface, as "Cognicopia UI", regular and bold. Its letters are drawn to be told apart, which is the point of a tool for people with low vision.
-- **Fraunces** (Undercase Type, SIL OFL) for headings: a warm, editorial serif. One variable file, Latin only, weights 400 to 700; headings use 600.
+- **Fraunces** (Undercase Type, SIL OFL), now only for a resident's name where it is set large (`--cg-font-name`: the Shift board, the Session Notes, a printed cover). One variable file, Latin only, weights 400 to 700. Headings are the interface face (`--cg-font-display` is `--cg-font-ui`), bold, with no tracking.
 
-Three `.woff2` files, about 100 KB in all, with `fonts/OFL-Fraunces.txt` beside them (the Atkinson license already ships). A page that opts in gets headings in Fraunces and body text in the interface face, a type scale that grows with the window (body text is 16 px and up; the one smaller step, 15 px, is for labels and short captions such as the value cards' detail lines), a 1.6 line height, and a line length of about 62 characters. Stacked blocks in a page's main are one step (24 px) apart.
+Three `.woff2` files, about 100 KB in all, with `fonts/OFL-Fraunces.txt` beside them (the Atkinson license already ships). A page that opts in gets headings and body text in the interface face, a type scale that grows with the window (body text is 16 px and up; the one smaller step, 15 px, is for labels and short captions such as the value cards' detail lines), a 1.6 line height, and a line length of about 62 characters. Stacked blocks in a page's main are one step (24 px) apart.
 
 ## Space, shape and depth
 
@@ -90,7 +90,7 @@ The packet tool's first screen follows a classic product page: a hero in two col
 
 1. **Hero** on cream with a soft peach glow: the tagline "Engaging Today" in clay, the heading with "one resident's own life." in clay, the lede, a deep green **Make a packet** button (it scrolls to the tool) and **See what you get**. Beside it, a laptop (lid, camera, keyboard deck) whose screen shows the packet tool's own "Fit the Words In" page: the crossword the engine makes for a made-up resident (Ruth, born 1938; gardening, big-band music, a river town; middle stage; 1 October 2026), laid out as the printed page is, with numbered cells, the first letters, the clues and the box of words. The screen is one inline SVG written by `node scripts/landing-example.mjs` from the engine's real output, and `--check` (in `npm test` and `npm run build`) fails if the engine ever makes something different, so the picture cannot drift into a drawing of something the tool does not do. The gold cornucopia sits in the blank space between the heading and the laptop (on the laptop's corner where the columns are narrow), and a "Large print, pure black on white" card hangs below the deck. The picture is decoration (`aria-hidden`) and is left out on a phone.
 2. **What Cognicopia gives you:** the four value cards, side by side. On 1366 x 768 all four are on the first screen; on a 390 x 844 phone the first one is (both measured by `scripts/check-design-ui.mjs`).
-3. **Informed by the research:** five Research Center summaries as links, and a quote card with the publisher's own statement (Kirk Barron, Publisher, BarronCrafts). No client logos and no testimonials: the template had them; Cognicopia does not invent them.
+3. **Informed by the research:** five Research Center summaries as links, and a quote card with the publisher's own statement (credited to Cognicopia, BarronCrafts). No client logos and no testimonials: the template had them; Cognicopia does not invent them.
 4. **Make a packet:** the privacy promise, then the tool exactly as before, in its deep green band.
 5. **Footer:** the brand line, and Tools, Facility and Resources columns (every link 52 px tall), with the contact line.
 
@@ -134,6 +134,31 @@ The front page is cream, with white cards, Fraunces headings and forest-green bu
 | `npm run audit:ux` | Tap targets, contrast, clicks, navigation and print time on the real pages, including the pages that opted in |
 | `node scripts/check-nav-ui.mjs` (in `npm run build`) | The top bar: none open on arrival, the holding hub marked, one open at a time, Escape and a click elsewhere close it, it stays at the top; on a phone, the Menu drawer |
 
+## One warm accent for each studio tool
+
+In the Packet Builder each studio tool wears its own accent, so a person can tell where they are at a glance: the 12-month Life Planner is deep terracotta, the Cognitive Life Journal royal indigo, Reminiscence cards sage, the Memory digest and book muted gold, and Cognicopia Coloring warm slate. The router puts the tool's name on `#view` (`data-tool`), and section 9e of `css/styles.css` re-points the builder's own `--accent` variables inside it, so every button, tab, chip and progress bar follows. It also adds a tinted badge over the page title, a short colored bar under it, a warm card border with a colored top edge, and a hover that tints and lifts (the lift stops for `prefers-reduced-motion`).
+
+- **Tokens.** `--cg-terra-*`, `--cg-indigo-*`, `--cg-moss-*`, `--cg-ochre-*`, `--cg-slate-*`: `-tool` for bars and borders (3:1), `-ink` for text (AAA), `-soft` a tint, `-line` a warm border. The `-dk-` set is for Night Shift.
+- **Measured.** `scripts/check-design-system.mjs` re-computes, for every tool, the text on its tint, on cream and on white, white text on the button color, and the Night Shift equivalents; all are 7:1 or better, bars 3:1.
+- **Print.** Screen only. A printed page is pure black on white and never sees an accent.
+- **Care-team side.** In the planner and journal, the care-team tab, chip and scope card use warm slate, so the two audiences are never confused.
+
+## Small and helper text
+
+Nothing a person reads is small. Section 12 of `css/styles.css` raises labels, chips, notes, captions and hints that a page sets under 16 px: 16 px for a sentence, 15 px for a chip or an upper-case label, in the bold face (the typeface ships a regular and a bold, so 600 and up is the bold), tracking .012em to .03em, leading 1.5. The navigation (`scripts/site-nav.mjs`) sets its links at 16 px, group labels at 15 px, and the breadcrumb and footer at 16 px. A printed sheet (`.qp-sheet`, `.lp-sheet`, `.sheet`, the print roots) keeps its own sizes, which are set in points and checked by `scripts/check-print-type-ui.mjs`. To find what is still small, run a scan in a real browser for text under 15 px, weight under 500 under 18 px, leading under 1.4 under 18 px, and contrast under 7:1 for small text.
+
+## The care tier as a color mode
+
+`js/careTier.js` reads the level a page already shows (the Packet Builder's difficulty, the packet tool's and the tablet's level, the profile's support tier) and sets `data-cg-tier` on `<html>`. It stores and sends nothing. Section 13 of `css/styles.css` turns that into colors: Tier 1 deep sapphire and indigo, Tier 2 warm terracotta with a sage edge, Tier 3 evergreen with a muted gold edge. The generator's header card (`.cg-tierhead`) carries a quiet tartan of the tier's own color, and the selected level button takes it. The tartan is two crossing sets of bands at low strength; the header text stays at 7:1 or better even where the bands cross, and `scripts/check-design-system.mjs` computes that for every tier. Night Shift drops the tartan. In print the card is plain white with a black edge.
+
+## Forms
+
+Fields in the Packet Builder's planner and journal and in the resident profile use floating labels: the real label rests inside the empty field and rises when the field has focus or something to read. In the profile this is CSS only (the label stays beside its field in the page), applies to a field that has a placeholder, and gives a phone a two-line resting label so none is cut off. The planner has a four-step stepper with a progress bar; the journal has the same strip over its three steps (the essentials, the four sections, print), which follows the part of the page being read; the profile has its six-step stepper. Fields, labels and lead lines carry .01em tracking. Controls stay 52 px.
+
+## A page printed straight from the browser
+
+A page that builds no sheets of its own (a price page, a policy, a guide for a binder, the resident profile) gets one print sheet from section 10 of `css/styles.css`: no navigation, sidebar, button or field to fill in (a box that only shows a value, such as a license key, stays); a white page with nothing behind the words; every word, tick and border pure black; US Letter with 0.5 in margins and a 0.75 in binding gutter on the left. A page that makes its own sheets (the Packet Builder's `#printRoot`, the packet tool's `#qpPrintRoot`, `#print-stage`) is left to its own rules, and its own `@page` rule wins because it comes later. `scripts/check-print-pages-ui.mjs` prints thirteen pages and three real PDFs and reads them back with PyMuPDF.
+
 ## What was deliberately not done
 
 - **No framework, icon font, or outside font or script.** Plain CSS and vanilla script; nothing is fetched from a CDN, so the packet tools keep their promise of no network request of their own.
@@ -148,3 +173,14 @@ The front page is cream, with white cards, Fraunces headings and forest-green bu
 - A new page: add it to `PAGES` in `scripts/site-nav.mjs` and run `npm run nav`; add `class="cg-ds"` to `<html>` to opt in to the type and rhythm.
 - A new control: size it with `var(--cg-tap)`. If its class sets a `box-shadow`, give its `:focus-visible` the ring's dark inner band too.
 - Never edit the stylesheet link or a sidebar by hand.
+
+## The brand flyer's look (October 22, 2026)
+
+The owner's flyer sets the identity: deep teal, warm gold, parchment. What was done, and what was deliberately kept:
+
+- **Tokens.** The `--cg-green-*` ramp and the sage tints are teal now, the parchment and cream are a little cooler, and a gold `--cg-gold-400` (`#d4af37`) edges buttons and cards. Hard-coded copies of the old greens in pages and scripts were moved to the same teals; the check scripts that name the brand anchors were updated to match.
+- **Kept on purpose.** The care-tier colors (Tier 3 stays evergreen, because the color is the tier's meaning), the four seasons' colors, the success and warning colors, and the coloring tools' crayon names ("green" must stay green).
+- **Call-to-action.** `--cg-cta` is the teal-to-navy gradient with a gold edge; it also carries a solid `background-color` so every tool that reads colors sees white text on a dark fill (above 10:1).
+- **Brain mark and watermark.** `assets/brand/brain-mark.svg` (two hemispheres, teal and blue, with neural nodes) sits beside the top-bar title, headings with `class="cg-brain-h"`, and the Packet Builder's titles. `assets/brand/brain-watermark.svg` is tiled faintly (gold strokes at 18 to 22 percent) down the page margins on windows 1100 px and wider, only on pages that carry the site navigation; a bare dark surface skips it so gold text there keeps its full 7:1. Both are hidden in print and the watermark in Night Shift.
+- **Feature badges.** Five rounded-square badges (`assets/brand/badge-*.svg`) head the front page's "What Cognicopia gives you" list: quick personal packets, decades of nostalgia, low vision and toner savings, interactive tablet mode, private on this computer. Names avoid claims that have not been measured ("30-second packets" and "100% privacy" were not used).
+- **Cards and banners.** `.cg-card` (white, soft radius, golden inner glow) and `.cg-banner` (teal into deep gold, white lettering) are in `css/styles.css`; print turns both plain black on white.

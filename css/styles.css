@@ -37,7 +37,7 @@
 
 /* ---------- 2. Tokens ----------
    Built on the four brand colors the Quality Standards Hub already names
-   (primary green #1b382b, parchment #f4efe6, gold #c5a059, charcoal #1a202c),
+   (primary green #0e3c43, parchment #f5f1e6, gold #c5a059, charcoal #1a202c),
    with natural greens, warm tans and crisp neutrals around them.
 
    Text pairs that meet AAA (7:1), by what they sit on:
@@ -49,17 +49,17 @@
    small text on a green: they are AA there, not AAA. */
 :root{
   /* natural greens */
-  --cg-green-950:#0b1a13;
-  --cg-green-900:#10241a;
-  --cg-green-800:#162d21;
-  --cg-green-700:#1b382b;      /* the brand's primary green */
-  --cg-green-600:#2d5a44;
-  --cg-green-500:#3f7a5c;
-  --cg-sage-100:#e3f1e8;
-  --cg-sage-200:#c9e4d3;
-  --cg-sage-300:#9fcbb0;
+  --cg-green-950:#051a1e;
+  --cg-green-900:#08262c;
+  --cg-green-800:#0b2f36;
+  --cg-green-700:#0e3c43;      /* the brand's primary green */
+  --cg-green-600:#1c5963;
+  --cg-green-500:#2b7683;
+  --cg-sage-100:#e0f0f1;
+  --cg-sage-200:#c4e2e5;
+  --cg-sage-300:#95c8cd;
   /* warm tans and beiges */
-  --cg-parchment:#f4efe6;      /* the brand's parchment */
+  --cg-parchment:#f5f1e6;      /* the brand's parchment */
   --cg-tan-100:#ebe3d3;
   --cg-tan-200:#ddd1ba;
   --cg-tan-300:#cdbe9f;
@@ -71,11 +71,23 @@
   --cg-gold-300:#e8cc8a;       /* gold you can read on green */
   --cg-gold-200:#f1dda8;
   /* warm accents for the light pages (the packet tool's front): cream, a peach glow, and clay for one accent word */
-  --cg-cream:#fbf7f1;
+  --cg-cream:#f8f6ef;
   --cg-peach-100:#fbe9dc;
   --cg-peach-200:#f6cdb4;      /* decoration only (the hero's glow) */
   --cg-clay-800:#732f19;      /* terracotta for text on a peach tag: 8.5:1 */
   --cg-clay-700:#8a3a20;       /* terracotta text: 7.3:1 on cream, 7.8:1 on white */
+  /* the studio tools' accents (section 9e): deep terracotta, royal indigo, sage, muted gold, warm slate.
+     -tool is for bars and borders (3:1), -ink is text (AAA), -soft is a tint, -line a warm border; the -dk set is for Night Shift */
+  --cg-terra-tool:#a8482a;  --cg-terra-ink:#7a2f17;  --cg-terra-soft:#fbece3;  --cg-terra-line:#dfb29b;
+  --cg-indigo-tool:#3d43a3; --cg-indigo-ink:#2b3085; --cg-indigo-soft:#eceefb; --cg-indigo-line:#c2c6ec;
+  --cg-moss-tool:#4a797c;   --cg-moss-ink:#264c50;   --cg-moss-soft:#e8f2f2;   --cg-moss-line:#b9d2d3;
+  --cg-ochre-tool:#a9822a;  --cg-ochre-ink:#664c0c;  --cg-ochre-soft:#fbf2d9;  --cg-ochre-line:#e0cd94;
+  --cg-slate-tool:#5f5a66;  --cg-slate-ink:#3e3a45;  --cg-slate-soft:#efedf1;  --cg-slate-line:#cdc9d2;
+  --cg-terra-dk-tool:#e48a67;  --cg-terra-dk-ink:#f4b9a0;  --cg-terra-dk-deep:#8a4228;  --cg-terra-dk-on:#1d110b;
+  --cg-indigo-dk-tool:#9aa1f5; --cg-indigo-dk-ink:#c3c7ff; --cg-indigo-dk-deep:#4a50b8; --cg-indigo-dk-on:#0d0f26;
+  --cg-moss-dk-tool:#8fc5c9;   --cg-moss-dk-ink:#bde1e3;   --cg-moss-dk-deep:#3b757a;   --cg-moss-dk-on:#0b1d1f;
+  --cg-ochre-dk-tool:#e3c066;  --cg-ochre-dk-ink:#f2d98f;  --cg-ochre-dk-deep:#8a6a1c;  --cg-ochre-dk-on:#1f1805;
+  --cg-slate-dk-tool:#b9b3c4;  --cg-slate-dk-ink:#dcd8e3;  --cg-slate-dk-deep:#6b6575;  --cg-slate-dk-on:#17141c;
   /* crisp neutrals */
   --cg-charcoal:#1a202c;       /* the brand's charcoal */
   --cg-ink-soft:#343b49;
@@ -86,7 +98,7 @@
   --cg-ok-800:#14532d;
   --cg-ok-200:#b7e4c7;
   --cg-focus:#f5b800;          /* the ring's bright band, with a dark band inside it (see section 4) */
-  --cg-focus-dark:#10241a;
+  --cg-focus-dark:#08262c;
 
   /* what text and surfaces mean, so a page can say "text" and not "which green" */
   --cg-surface:var(--cg-green-800);
@@ -101,7 +113,8 @@
 
   /* type: a scale that grows with the window; body text is 16 px and up, and the one smaller step (15 px) is for labels and short captions only */
   --cg-font-ui:"Cognicopia UI","Atkinson Hyperlegible","Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
-  --cg-font-display:"Fraunces",Georgia,"Iowan Old Style","Palatino Linotype",Palatino,serif;
+  --cg-font-display:var(--cg-font-ui);   /* headings are Atkinson Hyperlegible too: one face for everything a person reads */
+  --cg-font-name:"Fraunces",Georgia,"Iowan Old Style","Palatino Linotype",Palatino,serif;   /* the one use of the serif: a resident's name, set large */
   --cg-step--1:.9375rem;
   --cg-step-0:1.0625rem;
   --cg-step-1:clamp(1.25rem,1.1rem + .6vw,1.5rem);
@@ -217,7 +230,7 @@
 
 /* ---------- 7. Editorial type and rhythm, for pages that opt in: <html class="cg-ds"> ---------- */
 html.cg-ds body{font-family:var(--cg-font-ui);line-height:var(--cg-leading)}
-html.cg-ds :is(h1,h2,h3){font-family:var(--cg-font-display);font-weight:600;line-height:var(--cg-leading-tight);letter-spacing:-.01em;font-optical-sizing:auto;text-wrap:balance}
+html.cg-ds :is(h1,h2,h3){font-family:var(--cg-font-display);font-weight:700;line-height:var(--cg-leading-tight);letter-spacing:0;font-optical-sizing:auto;text-wrap:balance}
 html.cg-ds h1{font-size:var(--cg-step-3)}
 html.cg-ds h2{font-size:var(--cg-step-2)}
 html.cg-ds h3{font-size:var(--cg-step-1)}
@@ -237,7 +250,8 @@ html.cg-ds :where(main>*+*){margin-top:var(--cg-space-5)}
 :root::before,:root::after{
   content:"";position:fixed;z-index:-1;pointer-events:none;inset:-20vh -10vw;
 }
-:root::before{background:radial-gradient(60vmax 40vmax at 14% 22%,rgba(159,203,176,.07),transparent 62%)}
+:root{--cg-pool-1:radial-gradient(60vmax 40vmax at 14% 22%,rgba(149,200,205,.07),transparent 62%)}
+:root::before{background:var(--cg-pool-1)}
 :root::after{background:radial-gradient(55vmax 38vmax at 86% 74%,rgba(205,190,159,.055),transparent 60%)}
 @supports (animation-timeline:scroll()){
   @media (prefers-reduced-motion:no-preference){
@@ -257,7 +271,7 @@ html.cg-night-shift::before,html.cg-night-shift::after{display:none}
 }
 
 /* ---------- 9b. Paper pages: the landing page's look on every inner page: <html class="cg-paper"> ----------
-   Cream page, white cards with warm tan borders, Fraunces headings over Atkinson text, forest-green
+   Cream page, white cards with warm tan borders, Atkinson headings and text, forest-green
    buttons with white text, amber for the one urgent action. Written once here, so the 40-odd pages that
    each carry their own older dark styles take the same look without 40 separate edits; scripts/site-nav.mjs
    puts the class on every page that should have it. It is screen-only (print rules are untouched), and
@@ -269,13 +283,13 @@ html.cg-night-shift::before,html.cg-night-shift::after{display:none}
   html.cg-paper::before,html.cg-paper::after{display:none}
   html.cg-paper:not(.cg-night-shift) body{background:var(--cg-cream) !important;background-image:none !important;color:var(--cg-charcoal) !important;font-family:var(--cg-font-ui) !important;line-height:1.65}
   html.cg-paper:not(.cg-night-shift) :is(p,li,dd,dt,td,th,span,label,small,strong,em,b,i,div,summary,figcaption,legend,blockquote,cite,button){color:var(--cg-charcoal) !important;text-shadow:none !important}
-  html.cg-paper:not(.cg-night-shift) :is(h1,h2,h3,h4,h5,h6){color:var(--cg-charcoal) !important;font-family:var(--cg-font-display) !important;font-weight:600 !important;letter-spacing:-.01em;text-shadow:none !important}
+  html.cg-paper:not(.cg-night-shift) :is(h1,h2,h3,h4,h5,h6){color:var(--cg-charcoal) !important;font-family:var(--cg-font-display) !important;font-weight:600 !important;letter-spacing:0;text-shadow:none !important}
   html.cg-paper:not(.cg-night-shift) h1{font-size:var(--cg-step-3);line-height:1.12}
   html.cg-paper:not(.cg-night-shift) h2{font-size:var(--cg-step-2);line-height:1.2;border-bottom:2px solid var(--cg-tan-200) !important}
   html.cg-paper:not(.cg-night-shift) h3{font-size:var(--cg-step-1);line-height:1.25}
   html.cg-paper:not(.cg-night-shift) :is(p,li){color:var(--cg-charcoal) !important}
-  html.cg-paper:not(.cg-night-shift) :is(main,.container,.highlight-banner,article,section,p,td,dd) a:not([class]){color:var(--cg-green-700) !important;text-decoration:underline;text-underline-offset:3px;font-weight:600}
-  html.cg-paper:not(.cg-night-shift) :is(main,.container,.highlight-banner,article,section,p,td,dd) a:not([class]):hover{color:var(--cg-green-600) !important}
+  html.cg-paper:not(.cg-night-shift) :is(main,.container,.highlight-banner,article,section,p,td,dd) a:is(:not([class]),.cg-email){color:var(--cg-green-700) !important;text-decoration:underline;text-underline-offset:3px;font-weight:600}
+  html.cg-paper:not(.cg-night-shift) :is(main,.container,.highlight-banner,article,section,p,td,dd) a:is(:not([class]),.cg-email):hover{color:var(--cg-green-600) !important}
   html.cg-paper:not(.cg-night-shift) hr{border:0;border-top:1px solid var(--cg-tan-200)}
 
   /* the page frame and its cards */
@@ -301,7 +315,7 @@ html.cg-night-shift::before,html.cg-night-shift::after{display:none}
   /* buttons: forest green with white text; the quiet one is white with a green edge */
   html.cg-paper:not(.cg-night-shift) :is(.primary-btn,.back-home-btn,.cg-btn-primary){background:var(--cg-green-700) !important;border:2px solid var(--cg-green-700) !important;border-radius:var(--cg-radius-md) !important;color:#fff !important;box-shadow:var(--cg-shadow-1) !important;text-decoration:none !important}
   html.cg-paper:not(.cg-night-shift) :is(.primary-btn,.back-home-btn,.cg-btn-primary) :is(span,svg,b,strong){color:#fff !important;stroke:currentColor}
-  html.cg-paper:not(.cg-night-shift) :is(.primary-btn,.back-home-btn,.cg-btn-primary):is(:hover,:focus-visible){background:var(--cg-green-600) !important;border-color:var(--cg-green-600) !important;transform:translateY(-1px);box-shadow:0 6px 16px rgba(27,56,43,.28) !important}
+  html.cg-paper:not(.cg-night-shift) :is(.primary-btn,.back-home-btn,.cg-btn-primary):is(:hover,:focus-visible){background:var(--cg-green-600) !important;border-color:var(--cg-green-600) !important;transform:translateY(-1px);box-shadow:0 6px 16px rgba(14,60,67,.28) !important}
   html.cg-paper:not(.cg-night-shift) .secondary-btn{background:var(--cg-white) !important;border:2px solid var(--cg-green-700) !important;border-radius:var(--cg-radius-md) !important;color:var(--cg-green-700) !important;box-shadow:none !important;text-decoration:none !important}
   html.cg-paper:not(.cg-night-shift) .secondary-btn :is(span,svg,b,strong){color:var(--cg-green-700) !important;stroke:currentColor}
   html.cg-paper:not(.cg-night-shift) .secondary-btn:is(:hover,:focus-visible){background:var(--cg-sage-100) !important;border-color:var(--cg-green-700) !important;transform:translateY(-1px)}
@@ -324,7 +338,7 @@ html.cg-night-shift::before,html.cg-night-shift::after{display:none}
   html.cg-paper.cg-night-shift :is(th){background:#2b2015 !important}
   html.cg-paper.cg-night-shift :is(.primary-btn,.back-home-btn,.secondary-btn,.cg-btn-primary){background:#332312 !important;border-color:#d6a64b !important;color:#ffedcc !important}
   html.cg-paper.cg-night-shift :is(.primary-btn,.back-home-btn,.secondary-btn,.cg-btn-primary) :is(span,svg){color:#ffedcc !important}
-  html.cg-paper.cg-night-shift :is(main,.container,.highlight-banner,article,section,p,td,dd) a:not([class]){color:#ffd477 !important}
+  html.cg-paper.cg-night-shift :is(main,.container,.highlight-banner,article,section,p,td,dd) a:is(:not([class]),.cg-email){color:#ffd477 !important}
   html.cg-paper.cg-night-shift .plan .tag{color:var(--cg-amber-ink) !important}
   html.cg-paper.cg-night-shift :is(.art-caption,.journal-caption,.planner-caption,.art-showcase-box *,.journal-sample-box *,.planner-sample-box *){color:var(--cg-charcoal) !important}
   html.cg-paper.cg-night-shift :is(input,select,textarea){background:#2b2015 !important;color:#ffedcc !important;border-color:#9b7136 !important}
@@ -408,6 +422,7 @@ html.cg-night-shift::before,html.cg-night-shift::after{display:none}
   html.cg-paper-app:not(.cg-night-shift) .sb-link .tag{background:var(--cg-tan-100);color:var(--cg-ink-soft)}
   html.cg-paper-app:not(.cg-night-shift) .sb-link .tag.live{background:var(--cg-sage-100);color:var(--cg-green-700)}
   html.cg-paper-app:not(.cg-night-shift) .sb-link[aria-current="page"] .tag.live{background:var(--cg-white);color:var(--cg-green-700)}
+  html.cg-paper-app:not(.cg-night-shift) .pill.live{color:var(--cg-green-700)}
   /* chosen cards, hover states and the few fixed dark fills the builder has */
   html.cg-paper-app:not(.cg-night-shift) .card[aria-pressed="true"],html.cg-paper-app:not(.cg-night-shift) .lp-scope input:checked+span,html.cg-paper-app:not(.cg-night-shift) .rs-res[aria-pressed="true"]{background:var(--cg-sage-100)}
   html.cg-paper-app:not(.cg-night-shift) :is(.btn-home,.btn):hover{background:var(--cg-sage-100);color:var(--cg-charcoal)}
@@ -434,15 +449,58 @@ html.cg-night-shift::before,html.cg-night-shift::after{display:none}
   html.cg-paper-app:not(.cg-night-shift) .switch input:checked{background:var(--cg-green-700);border-color:var(--cg-green-700)}
   html.cg-paper-app:not(.cg-night-shift) .fp-toggle-track{background:var(--cg-tan-600);border-color:var(--cg-tan-600)}
   html.cg-paper-app:not(.cg-night-shift) .fp-toggle-thumb{background:#fff}
-  html.cg-paper-app:not(.cg-night-shift) .lp-spread{background:var(--cg-tan-100)}
+  html.cg-paper-app:not(.cg-night-shift) :is(.lp-spread,.lp-wiz-pvbox){background:var(--cg-tan-100)}
   /* Facility: its own variables, now on cream */
-  html.cg-paper-app:not(.cg-night-shift) .fp{--fp-card:var(--cg-white);--fp-chip:var(--cg-tan-100);--fp-tan:var(--cg-tan-200);--fp-tan-hi:var(--cg-tan-300);--fp-div:var(--cg-tan-200);--fp-text:var(--cg-charcoal);--fp-text-2:var(--cg-ink-soft);--fp-muted:var(--cg-ink-soft);--fp-head:var(--cg-green-700);--fp-ink:#fff;--fp-ink-2:#cfe3d6;--fp-warn:var(--cg-clay-700)}
+  html.cg-paper-app:not(.cg-night-shift) .fp{--fp-card:var(--cg-white);--fp-chip:var(--cg-tan-100);--fp-tan:var(--cg-tan-200);--fp-tan-hi:var(--cg-tan-300);--fp-div:var(--cg-tan-200);--fp-text:var(--cg-charcoal);--fp-text-2:var(--cg-ink-soft);--fp-muted:var(--cg-ink-soft);--fp-head:var(--cg-green-700);--fp-ink:#fff;--fp-ink-2:#cfe2e3;--fp-warn:var(--cg-clay-700)}
   html.cg-paper-app:not(.cg-night-shift) .fp-bar select{color:var(--cg-charcoal)}
   /* Academy: its own variables, now on cream; the lesson player and picture stages stay a dark screen, like a video player */
-  html.cg-paper-app:not(.cg-night-shift) .ac{--ac-bg:var(--cg-cream);--ac-panel:var(--cg-white);--ac-card:var(--cg-white);--ac-sunk:var(--cg-tan-100);--ac-surface:var(--cg-white);--ac-surface-2:var(--cg-tan-100);--ac-accent:var(--cg-green-700);--ac-accent-hi:var(--cg-green-600);--ac-accent-text:var(--cg-green-700);--ac-glow:rgba(197,160,89,.10);--ac-media-glow:rgba(27,56,43,.18);--ac-border:var(--cg-tan-200);--ac-div:rgba(79,64,48,.16);--ac-line:var(--cg-tan-600);--ac-text:var(--cg-charcoal);--ac-text-2:var(--cg-ink-soft);--ac-muted:#3f4756;--ac-ink:#ffffff;--ac-focus:#f5b800;--ac-family:var(--cg-clay-800);--ac-good:var(--cg-ok-800);--ac-warn:var(--cg-clay-800);box-shadow:var(--cg-card-shadow);background:var(--cg-cream)}
-  html.cg-paper-app:not(.cg-night-shift) .ac :is(.ac-player,.ac-thumb,.ac-stage,.ac-mini){--ac-text:#f0f4f2;--ac-text-2:#cfdcd5;--ac-muted:#b4c6bc;--ac-ink:#0e1614;--ac-accent:#52b788;--ac-accent-hi:#74c69d;--ac-accent-text:#8ad8b0;--ac-surface:#1c2e29;--ac-surface-2:#1f3530;--ac-border:#2a3d36;--ac-sunk:#0a110f;--ac-family:#e9b872;--ac-line:#6b9080;--ac-focus:#e6f4f1}
+  html.cg-paper-app:not(.cg-night-shift) .ac{--ac-bg:var(--cg-cream);--ac-panel:var(--cg-white);--ac-card:var(--cg-white);--ac-sunk:var(--cg-tan-100);--ac-surface:var(--cg-white);--ac-surface-2:var(--cg-tan-100);--ac-accent:var(--cg-green-700);--ac-accent-hi:var(--cg-green-600);--ac-accent-text:var(--cg-green-700);--ac-glow:rgba(197,160,89,.10);--ac-media-glow:rgba(14,60,67,.18);--ac-border:var(--cg-tan-200);--ac-div:rgba(79,64,48,.16);--ac-line:var(--cg-tan-600);--ac-text:var(--cg-charcoal);--ac-text-2:var(--cg-ink-soft);--ac-muted:#3f4756;--ac-ink:#ffffff;--ac-focus:#f5b800;--ac-family:var(--cg-clay-800);--ac-good:var(--cg-ok-800);--ac-warn:var(--cg-clay-800);box-shadow:var(--cg-card-shadow);background:var(--cg-cream)}
+  html.cg-paper-app:not(.cg-night-shift) .ac :is(.ac-player,.ac-thumb,.ac-stage,.ac-mini){--ac-text:#f0f4f4;--ac-text-2:#cfdbdc;--ac-muted:#b4c4c6;--ac-ink:#0b1719;--ac-accent:#4fb3bf;--ac-accent-hi:#7fcbd3;--ac-accent-text:#8ad0d8;--ac-surface:#18363b;--ac-surface-2:#1f3235;--ac-border:#2a3b3d;--ac-sunk:#0a1011;--ac-family:#e9b872;--ac-line:#6b8c90;--ac-focus:#e6f2f4}
   html.cg-paper-app:not(.cg-night-shift) .ac :is(.ac-card,.ac-tile,.ac-learner){background:var(--cg-white);box-shadow:var(--cg-card-shadow);-webkit-backdrop-filter:none;backdrop-filter:none}
   html.cg-paper-app:not(.cg-night-shift) .ac-thumb .ac-cat{color:#ffe0a3;border-color:#ffe0a3}
+}
+
+/* ---------- 9e. One warm accent for each studio tool in the Packet Builder ----------
+   The router puts the tool's name on #view (data-tool). Planner: deep terracotta. Journal: royal indigo. Reminiscence cards:
+   sage. Memory digest and book: muted gold. Coloring: warm slate. The builder reads its colors from --accent and friends, so
+   re-pointing those inside #view recolors every button, tab, chip and progress bar in the tool at once; what is added here is
+   a tinted badge over the page title, a warm card border with a colored top edge, and a hover that tints and lifts. Day and
+   Night Shift each have their own steps (text AAA, bars 3:1; scripts/check-design-system.mjs re-computes them). Screen only:
+   a printed page is pure black and white and never sees any of it. */
+@media screen{
+  html.cg-paper-app:not(.cg-night-shift) #view[data-tool="planner"]{--ax:var(--cg-terra-tool);--ax-ink:var(--cg-terra-ink);--ax-soft:var(--cg-terra-soft);--ax-line:var(--cg-terra-line);--ax-btn:var(--cg-terra-ink);--ax-on:#fff;--ax-deep:var(--cg-terra-ink)}
+  html.cg-paper-app:not(.cg-night-shift) #view[data-tool="journal"]{--ax:var(--cg-indigo-tool);--ax-ink:var(--cg-indigo-ink);--ax-soft:var(--cg-indigo-soft);--ax-line:var(--cg-indigo-line);--ax-btn:var(--cg-indigo-ink);--ax-on:#fff;--ax-deep:var(--cg-indigo-ink)}
+  html.cg-paper-app:not(.cg-night-shift) #view[data-tool="reminiscence"]{--ax:var(--cg-moss-tool);--ax-ink:var(--cg-moss-ink);--ax-soft:var(--cg-moss-soft);--ax-line:var(--cg-moss-line);--ax-btn:var(--cg-moss-ink);--ax-on:#fff;--ax-deep:var(--cg-moss-ink)}
+  html.cg-paper-app:not(.cg-night-shift) #view[data-tool="heirloom"]{--ax:var(--cg-ochre-tool);--ax-ink:var(--cg-ochre-ink);--ax-soft:var(--cg-ochre-soft);--ax-line:var(--cg-ochre-line);--ax-btn:var(--cg-ochre-ink);--ax-on:#fff;--ax-deep:var(--cg-ochre-ink)}
+  html.cg-paper-app:not(.cg-night-shift) #view[data-tool="coloring"]{--ax:var(--cg-slate-tool);--ax-ink:var(--cg-slate-ink);--ax-soft:var(--cg-slate-soft);--ax-line:var(--cg-slate-line);--ax-btn:var(--cg-slate-ink);--ax-on:#fff;--ax-deep:var(--cg-slate-ink)}
+  html.cg-night-shift #view[data-tool="planner"]{--ax:var(--cg-terra-dk-tool);--ax-ink:var(--cg-terra-dk-ink);--ax-soft:color-mix(in srgb,var(--cg-terra-dk-tool) 14%,transparent);--ax-line:color-mix(in srgb,var(--cg-terra-dk-tool) 40%,transparent);--ax-btn:var(--cg-terra-dk-tool);--ax-on:var(--cg-terra-dk-on);--ax-deep:var(--cg-terra-dk-deep)}
+  html.cg-night-shift #view[data-tool="journal"]{--ax:var(--cg-indigo-dk-tool);--ax-ink:var(--cg-indigo-dk-ink);--ax-soft:color-mix(in srgb,var(--cg-indigo-dk-tool) 14%,transparent);--ax-line:color-mix(in srgb,var(--cg-indigo-dk-tool) 40%,transparent);--ax-btn:var(--cg-indigo-dk-tool);--ax-on:var(--cg-indigo-dk-on);--ax-deep:var(--cg-indigo-dk-deep)}
+  html.cg-night-shift #view[data-tool="reminiscence"]{--ax:var(--cg-moss-dk-tool);--ax-ink:var(--cg-moss-dk-ink);--ax-soft:color-mix(in srgb,var(--cg-moss-dk-tool) 14%,transparent);--ax-line:color-mix(in srgb,var(--cg-moss-dk-tool) 40%,transparent);--ax-btn:var(--cg-moss-dk-tool);--ax-on:var(--cg-moss-dk-on);--ax-deep:var(--cg-moss-dk-deep)}
+  html.cg-night-shift #view[data-tool="heirloom"]{--ax:var(--cg-ochre-dk-tool);--ax-ink:var(--cg-ochre-dk-ink);--ax-soft:color-mix(in srgb,var(--cg-ochre-dk-tool) 14%,transparent);--ax-line:color-mix(in srgb,var(--cg-ochre-dk-tool) 40%,transparent);--ax-btn:var(--cg-ochre-dk-tool);--ax-on:var(--cg-ochre-dk-on);--ax-deep:var(--cg-ochre-dk-deep)}
+  html.cg-night-shift #view[data-tool="coloring"]{--ax:var(--cg-slate-dk-tool);--ax-ink:var(--cg-slate-dk-ink);--ax-soft:color-mix(in srgb,var(--cg-slate-dk-tool) 14%,transparent);--ax-line:color-mix(in srgb,var(--cg-slate-dk-tool) 40%,transparent);--ax-btn:var(--cg-slate-dk-tool);--ax-on:var(--cg-slate-dk-on);--ax-deep:var(--cg-slate-dk-deep)}
+  #view[data-tool]{
+    --accent:var(--ax-btn);--accent-hi:var(--ax-ink);--accent-deep:var(--ax-deep);--accent-ink:var(--ax-on);
+  }
+  #view[data-tool] .eyebrow{display:inline-flex;align-items:center;margin:0 0 10px;padding:5px 14px;border:1px solid var(--ax-line);border-radius:999px;background:var(--ax-soft);color:var(--ax-ink)}
+  #view[data-tool] h1.view-title::after{content:"";display:block;width:64px;height:5px;margin-top:10px;border-radius:3px;background:var(--ax)}
+  #view[data-tool] :is(.config,.rs-pane,.cc-filters,.cc-for,.lp-wiz-pv){border-color:var(--ax-line);border-top:5px solid var(--ax)}
+  #view[data-tool] :is(.config,.rs-pane)>:is(h2,h3):first-of-type,#view[data-tool] .lp-ob-intro h2{color:var(--ax-ink)}
+  #view[data-tool] :is(.lp-chip,.lp-acc-s,.lp-aud-res,.lp-src,.rs-step){border-color:var(--ax-line);background:var(--ax-soft);color:var(--ax-ink)}
+  #view[data-tool] .rs-step{background:var(--ax-btn);color:var(--ax-on)}
+  #view[data-tool] :is(.btn:not(.btn-primary),.lp-tab,.lp-step,.lp-why-btn,.lp-acc>summary,.cc-card,.rs-chip,.lp-scope>span,.seg label>span,.card){transition:background .2s ease,border-color .2s ease,box-shadow .2s ease,transform .2s ease}
+  #view[data-tool] :is(.btn:not(.btn-primary),.lp-tab,.lp-step,.lp-why-btn,.lp-acc>summary,.cc-card,.rs-chip,.lp-scope>span,.seg label>span,.card):hover{border-color:var(--ax);background:var(--ax-soft);color:var(--ax-ink);box-shadow:0 4px 14px var(--ax-line)}
+  #view[data-tool] :is(.lp-tab,.lp-step,.cc-card,.card):hover{transform:translateY(-1px)}
+  /* the care-team side of the planner and journal keeps its own warm slate, so the two audiences are never confused */
+  html.cg-paper-app:not(.cg-night-shift) #view :is(.lp-tab-cg,.lp-aud-cg,.lp-panel-cg .lp-panel-aud,.lp-scope-companion){--cg-side:var(--cg-slate-ink);--cg-side-soft:var(--cg-slate-soft)}
+  html.cg-night-shift #view :is(.lp-tab-cg,.lp-aud-cg,.lp-panel-cg .lp-panel-aud,.lp-scope-companion){--cg-side:var(--cg-slate-dk-ink);--cg-side-soft:color-mix(in srgb,var(--cg-slate-dk-tool) 14%,transparent)}
+  #view[data-tool] .lp-tab-cg[aria-selected="true"]{box-shadow:inset 0 4px 0 var(--cg-side)}
+  #view[data-tool] :is(.lp-aud-cg,.lp-panel-cg .lp-panel-aud){background:var(--cg-side-soft);color:var(--cg-side)}
+  #view[data-tool] .lp-scope-companion small{color:var(--cg-side)}
+  #view[data-tool] .lp-scope-companion input:checked+span{border-color:var(--cg-side);box-shadow:inset 0 0 0 1px var(--cg-side);background:var(--cg-side-soft)}
+}
+@media screen and (prefers-reduced-motion:reduce){
+  #view[data-tool] :is(.btn,.lp-tab,.lp-step,.lp-why-btn,.lp-acc>summary,.cc-card,.rs-chip,.lp-scope>span,.seg label>span,.card){transition:none}
+  #view[data-tool] :is(.lp-tab,.lp-step,.cc-card,.card):hover{transform:none}
 }
 
 /* ---------- 10. Print ----------
@@ -451,6 +509,34 @@ html.cg-night-shift::before,html.cg-night-shift::after{display:none}
 @media print{
   :root::before,:root::after{display:none !important}
   .cg-btn,.cg-values{box-shadow:none}
+}
+/* A page printed straight from the browser (a price page, a policy, a guide for a binder) has no print sheet of its own, so it gets one here:
+   no navigation, sidebar, buttons (any class with "btn" in it, so a link made to look like a button is gone too), decorative or sample illustrations (svg role="img": they are colored, and the page prints black on white) or fields to fill in (a box that only shows a value, such as a license key, stays), no background or picture behind the words, pure black on white, 0.5 in margins and a
+   0.75 in binding gutter on the left. A page that builds its own sheets (the Packet Builder, the packet tool) keeps its own rules, and its
+   own @page rule, which comes later and wins. */
+/* The paper is US Letter everywhere. The margins and gutter belong to a NAMED page, given only to a document that has no print root of its own
+   (an unnamed @page margin here would also reach a page that builds its own sheets, such as the Packet Builder, whose own @page{margin:0}
+   comes earlier in its source than this stylesheet's link and would lose: its sheets were printed 1.25 in to the right and cut off at the foot). */
+@page{size:8.5in 11in}
+@page cg-doc{size:8.5in 11in;margin:.5in .5in .5in 1.25in}
+@media print{html:not(.plc-printing):not(:has(#printRoot,#qpPrintRoot,#print-stage)) body{page:cg-doc}}
+/* a page whose screen theme is dark (color-scheme: dark) would paint a dark canvas behind the paper when a printer or a PDF keeps background graphics */
+@media print{:root:root{color-scheme:light}}
+@media print{
+  html:not(.plc-printing):not(:has(#printRoot,#qpPrintRoot,#print-stage)),html:not(.plc-printing):not(:has(#printRoot,#qpPrintRoot,#print-stage)) body{background:#fff !important;background-image:none !important;color:#000 !important}
+  html:not(.plc-printing) body:not(:has(#printRoot,#qpPrintRoot,#print-stage)) :is(.cg-sidebar,.cg-topbar,.cg-crumbs,.cg-menu-btn,.cg-skip,.cg-scrim,.cg-cta,.cg-night-shift-toggle,.stripe-btn,.cgpromo-btn,.cgpromo-badge,.arb-sticky-crisis,.rap-nav,.fq-mail,nav,button,.btn,.cg-btn,[class*="btn"],[role="button"],input:not([readonly]),select,textarea:not([readonly]),video,audio,iframe,svg[role="img"]:not(.cg-coloring)){display:none !important}
+  html:not(.plc-printing) body:not(:has(#printRoot,#qpPrintRoot,#print-stage)) :is(input,textarea)[readonly]{color:#000 !important;background:#fff !important;border:1px solid #000 !important}
+  html:not(.plc-printing) body:not(:has(#printRoot,#qpPrintRoot,#print-stage)) *,html:not(.plc-printing) body:not(:has(#printRoot,#qpPrintRoot,#print-stage)) *::before,html:not(.plc-printing) body:not(:has(#printRoot,#qpPrintRoot,#print-stage)) *::after{background:none !important;box-shadow:none !important;text-shadow:none !important;border-color:#000 !important;color:#000 !important}
+  html:not(.plc-printing) body:not(:has(#printRoot,#qpPrintRoot,#print-stage)) ::marker{color:#000 !important}
+  html:not(.plc-printing) body:not(:has(#printRoot,#qpPrintRoot,#print-stage)) svg :is(path,circle,rect,line,polyline,polygon,ellipse){stroke:#000 !important}
+  html:not(.plc-printing) body:not(:has(#printRoot,#qpPrintRoot,#print-stage)) svg [fill]:not([fill="none"]){fill:#000 !important}
+  html:not(.plc-printing) body:not(:has(#printRoot,#qpPrintRoot,#print-stage)) :is(section,article,figure,table,li,details,.card,.feature-box,.module-card,.hub-card,.pillar-item,.era-card,.activity,.framework,.info-box,.summary-metric-card,.card-panel,.tile,.callout){break-inside:avoid}
+  /* a wide table scrolls sideways on a screen; on paper it is fitted to the page instead of being cut off at the right edge */
+  html:not(.plc-printing) body:not(:has(#printRoot,#qpPrintRoot,#print-stage)) :is(.table-container,.table-wrap,.table-scroll){overflow:visible !important;width:auto !important;max-width:100% !important}
+  html:not(.plc-printing) body:not(:has(#printRoot,#qpPrintRoot,#print-stage)) table{width:100% !important;max-width:100% !important;table-layout:fixed}
+  html:not(.plc-printing) body:not(:has(#printRoot,#qpPrintRoot,#print-stage)) :is(th,td){overflow-wrap:anywhere}
+  html:not(.plc-printing) body:not(:has(#printRoot,#qpPrintRoot,#print-stage)) :is(h1,h2,h3,h4){break-after:avoid}
+  html:not(.plc-printing) body:not(:has(#printRoot,#qpPrintRoot,#print-stage)) a[href^="http"]:not([href*="cognicopia.org"])::after{content:" (" attr(href) ")";font-size:.85em}
 }
 
 /* ---------- 11. Coloring sheets: the print standard, as CSS ----------
@@ -476,3 +562,239 @@ svg.cg-coloring :is(path,line,polyline,polygon,circle,ellipse,rect){
   fill:#000;stroke:#000;stroke-width:var(--cg-line);stroke-linejoin:round;stroke-linecap:round;vector-effect:non-scaling-stroke;
 }
 @media print{svg.cg-coloring *{fill:#000 !important;stroke:#000 !important}}
+
+/* ---------- 9c. One type system for the paper pages (<html class="cg-paper">) ----------
+   Atkinson Hyperlegible for everything a person reads or presses, headings included; Fraunces only for a resident's name.
+   Same scale on every page: 17 px reading text at 1.65 to 1.7 leading, 16 px table text, 15 px small print,
+   bold (700) headings with a little negative tracking on the large sizes, and 700 buttons with a touch of
+   positive tracking. Screen only, so printed packets and PDFs are not touched. */
+@media screen{
+  html.cg-paper body{font-size:var(--cg-step-0);line-height:1.7;letter-spacing:.012em;font-kerning:normal;font-feature-settings:"kern","liga","calt";text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+  /* one family: the readable one */
+  html.cg-paper :is(p,li,dd,dt,td,th,caption,label,legend,figcaption,blockquote,cite,small,summary,button,input,select,textarea,option,a.btn,.btn,.cg-btn){font-family:var(--cg-font-ui) !important}
+  html.cg-paper :is(p,dd):not(:is(.cg-topbar,.cg-sidebar,.cg-foot,.cg-crumbs,nav) *){line-height:1.7}
+  html.cg-paper li:not(:is(.cg-topbar,.cg-sidebar,.cg-foot,.cg-crumbs,nav) *){font-size:1.0625rem;line-height:1.65}
+  html.cg-paper dd:not(:is(.cg-topbar,.cg-sidebar,.cg-foot,.cg-crumbs,nav) *){font-size:1.0625rem}
+  html.cg-paper :is(td,th){font-size:1rem;line-height:1.55}
+  html.cg-paper th{font-weight:700;letter-spacing:.01em}
+  html.cg-paper :is(small,figcaption,caption){font-size:1rem;line-height:1.5;font-weight:700;letter-spacing:.012em}
+  html.cg-paper :is(strong,b){font-weight:700}
+  html.cg-paper :is(button,.btn,.cg-btn,a.btn){font-weight:700;letter-spacing:.012em;line-height:1.25}
+  /* headings: bold, balanced, tighter as they grow */
+  html.cg-paper:is(:not(.cg-night-shift),.cg-night-shift) :is(h1,h2,h3){font-weight:700 !important;text-wrap:balance}
+  html.cg-paper:is(:not(.cg-night-shift),.cg-night-shift) h1{line-height:1.08;letter-spacing:0}
+  html.cg-paper:is(:not(.cg-night-shift),.cg-night-shift) h2{line-height:1.18;letter-spacing:0}
+  html.cg-paper:is(:not(.cg-night-shift),.cg-night-shift) h3{line-height:1.25;letter-spacing:0}
+  html.cg-paper :is(h4,h5,h6){font-family:var(--cg-font-ui) !important;font-weight:700 !important;font-size:1.125rem;line-height:1.3;letter-spacing:.005em}
+  /* the menus: a little air between the letters, like the rest of the interface */
+  html.cg-paper .cg-topbar :is(summary,a),html.cg-paper .cg-foot a{letter-spacing:.012em}
+}
+
+/* an e-mail address stays on one line (it is never broken mid-address); a very narrow screen makes it a little smaller instead */
+.cg-email{white-space:nowrap;overflow-wrap:normal;word-break:normal;hyphens:none}
+@media (max-width:360px){.cg-email{font-size:.92em}}
+
+/* ---------- 12. Small and helper text is never small ----------
+   Labels, chips, notes, captions and hints that a page sets under 16 px are raised here: 16 px for a sentence, 15 px for a
+   chip or an upper-case label, in the bold face (the typeface ships a regular and a bold, so 600 and up is the bold),
+   with open tracking and 1.5 leading. A printed sheet (.qp-sheet, .lp-sheet, .sheet, the print roots) keeps its own sizes. */
+@media screen{
+  html body :is(small,figcaption,.hint,.note,.help,.desc,.rc-card-m,.rc-card-s,.rc-src,.rc-hint,.rc-toc-min,.rc-study-k,.rc-link-btn,.hub-blurb,.catalog-visual-caption,.standards-seal-caption,.pg-note,.arb-privacy,.arb-drop-hint,.arb-caution,.qpb-note,.ca-tab,.ca-btn):not(:is(.qp-sheet,.lp-sheet,.lj-sheet,.sheet,#printRoot,#qpPrintRoot) *){font-size:1rem !important;font-weight:700;letter-spacing:.012em;line-height:1.5}
+  /* fields, their labels and the lead lines under a title get the same open tracking as the helper text above; sizes stay as each page sets them */
+  html body :is(input,select,textarea,label,.lede,.sub,.rap-lede):not(:is(.qp-sheet,.lp-sheet,.lj-sheet,.sheet,#printRoot,#qpPrintRoot) *){letter-spacing:.01em}
+  html body :is(.rc-chip,.ca-chip,.ca-tag,.qs-tag,.catalog-badge,.module-tag,.era-tag,.breadcrumb-tag,.hub-n,.pill,.tag,.arb-bundle-badge,.arb-backup-count,.rc-eyebrow,.ca-eyebrow,.qs-eyebrow,.fq-eyebrow,.eyebrow,.lp-kicker,.info-label,.ca-label,.rap-eyebrow,.hub-eyebrow,.journal-caption,.planner-caption,.sb-toggle-text):not(:is(.qp-sheet,.lp-sheet,.lj-sheet,.sheet,#printRoot,#qpPrintRoot) *){font-size:15px !important;font-weight:700;letter-spacing:.03em;line-height:1.45}
+  html body :is(.stripe-btn,.cgpromo-btn,.linklike,.cg-night-shift-toggle):not(:is(.qp-sheet,.lp-sheet,.lj-sheet,.sheet,#printRoot,#qpPrintRoot) *){font-size:15px !important;font-weight:700;letter-spacing:.01em}
+  /* the second line inside a button stays close to its label: a little under a sentence, still never small */
+  html body :is(button,[role="button"],.btn) small:not(:is(.qp-sheet,.lp-sheet,.lj-sheet,.sheet,#printRoot,#qpPrintRoot) *){font-size:.9375rem !important;line-height:1.35}
+  @media (max-width:480px){
+    html body :is(.stripe-btn,.cgpromo-btn,.linklike,.cg-night-shift-toggle):not(:is(.qp-sheet,.lp-sheet,.lj-sheet,.sheet,#printRoot,#qpPrintRoot) *){font-size:14px !important;letter-spacing:0;padding-left:10px;padding-right:10px}
+  }
+}
+
+/* ---------- 13. The care tier as a color mode ----------
+   js/careTier.js sets data-cg-tier on <html> from the level choice on the page. Tier 1: deep sapphire and indigo. Tier 2: warm terracotta
+   and sage. Tier 3: evergreen and muted gold. Every text pair below is dark on pale or white on deep (7:1 or better, checked by
+   scripts/check-design-system.mjs); the tier is also named in words wherever it is chosen, so color is never the only signal. A header
+   card (.cg-tierhead) carries a quiet tartan of the tier's own color: crossing bands at low strength, behind text that stays at 7:1. */
+html{--cg-tier:#0e3c43;--cg-tier-deep:#08262c;--cg-tier-soft:#edf3f3;--cg-tier-edge:#8fabae;--cg-tier-rgb:27,67,50}
+html[data-cg-tier="1"]{--cg-tier:#1f2f86;--cg-tier-deep:#141f5e;--cg-tier-soft:#e9ecf8;--cg-tier-edge:#8d98d8;--cg-tier-rgb:31,47,134}
+html[data-cg-tier="2"]{--cg-tier:#8a3a21;--cg-tier-deep:#4f1e0e;--cg-tier-soft:#f7e9e1;--cg-tier-edge:#c98a74;--cg-tier-rgb:138,58,33;--cg-tier-sage:#dfe9dc}
+html[data-cg-tier="3"]{--cg-tier:#1f4d3a;--cg-tier-deep:#102a1f;--cg-tier-soft:#e7efe9;--cg-tier-edge:#b8963e;--cg-tier-rgb:31,77,58}
+.cg-tierhead{position:relative;box-sizing:border-box;margin:0 0 18px;padding:16px 20px;border:2px solid var(--cg-tier);border-radius:14px;color:var(--cg-tier-deep);
+  background-color:var(--cg-tier-soft);
+  background-image:repeating-linear-gradient(90deg,rgba(var(--cg-tier-rgb),.12) 0 8px,transparent 8px 30px,rgba(var(--cg-tier-rgb),.06) 30px 34px,transparent 34px 60px),
+    repeating-linear-gradient(0deg,rgba(var(--cg-tier-rgb),.12) 0 8px,transparent 8px 30px,rgba(var(--cg-tier-rgb),.06) 30px 34px,transparent 34px 60px);
+  box-shadow:inset 0 0 0 3px var(--cg-tier-soft),inset 0 0 0 5px var(--cg-tier-edge)}
+html[data-cg-tier="2"] .cg-tierhead{box-shadow:inset 0 0 0 3px var(--cg-tier-soft),inset 0 0 0 5px var(--cg-tier-sage)}
+.cg-tierhead :is(h1,h2,h3,p,.hint,small){color:var(--cg-tier-deep) !important;margin-top:0}
+.cg-tierhead h2{margin-bottom:6px}
+.cg-tierhead p:last-child{margin-bottom:0}
+html:not(.cg-night-shift) body :is(.config,.cfg,.arb) .seg input:checked + span,
+html:not(.cg-night-shift) body :is(.config,.cfg,.arb) .level input:checked + span{background:var(--cg-tier) !important;color:#ffffff !important;border-color:var(--cg-tier-deep) !important}
+html:not(.cg-night-shift) body :is(.config,.cfg,.arb) .seg input:checked + span *,
+html:not(.cg-night-shift) body :is(.config,.cfg,.arb) .level input:checked + span *{color:#ffffff !important}
+html.cg-night-shift .cg-tierhead{background:transparent;border-color:#d6a64b;color:#ffedcc;box-shadow:none}
+html.cg-night-shift .cg-tierhead :is(h1,h2,h3,p,.hint,small){color:#ffedcc !important}
+@media print{.cg-tierhead{background:#fff !important;box-shadow:none !important;border-color:#000 !important}}
+
+/* the free-trial badge: a calm pill, not a button (it does nothing when pressed); it turns amber at five left and a deeper amber at none */
+.cg-trial{display:inline-flex;align-items:center;gap:8px;box-sizing:border-box;min-height:var(--tap,52px);padding:8px 16px;border:2px solid var(--cg-green-700,#0e3c43);border-radius:999px;background:var(--cg-sage-100,#e0f0f1);color:var(--cg-green-700,#0e3c43);font:700 16px/1.25 var(--cg-font-ui,"Segoe UI",sans-serif);letter-spacing:.01em}
+.cg-trial[hidden]{display:none}
+.cg-trial b{font-weight:800}
+.cg-trial-ic{flex:none}
+.cg-trial.cg-trial-low{background:#fff3d6;border-color:#8a5a00;color:#4a2f00}
+.cg-trial.cg-trial-out{background:#ffe3d6;border-color:#8a3a20;color:#4d1a0a}
+html.cg-night-shift .cg-trial{background:#2b2015!important;border-color:#d6a64b!important;color:#ffedcc!important}
+@media print{.cg-trial{display:none!important}}
+
+/* ---------- 10. The brand flyer's look: teal and gold on parchment ----------
+   Deep teal (--cg-green-700 is #0e3c43 now) leads, warm gold accents, a faint gold brain pattern in the page margins,
+   the two-hemisphere brain mark beside headings, cards with a golden inner glow, and gradient call-to-action buttons.
+   Everything here is decoration or surface: text pairs are still the AAA pairs above, and every rule that paints is
+   switched off in print (the printed page stays pure black on white) and in Night Shift. */
+:root{
+  --cg-gold-400:#d4af37;                                   /* the flyer's gold: borders and glow, never small text */
+  --cg-cta-top:#1a4d6b; --cg-cta-bottom:#0d2c3e;           /* the call-to-action gradient: white text on it is above 9:1 */
+  --cg-cta-solid:#143f58;                                  /* what a tool that cannot read gradients sees: white on it is above 10:1 */
+  --cg-cta:linear-gradient(180deg,var(--cg-cta-top) 0%,var(--cg-cta-bottom) 100%);
+  --cg-glow:inset 0 0 0 1px rgba(212,175,55,.30),inset 0 0 20px rgba(212,175,55,.10);
+}
+/* the margin pattern: two columns of faint gold brains, only where a window is wide enough to leave room beside the content */
+/* (only on the pages that carry the site navigation, which are all light pages; a bare dark surface keeps its full 7:1 for gold text) */
+@media (min-width:1100px){
+  :root:has(.cg-sidebar-brand)::before{
+    background:
+      url("../assets/brand/brain-watermark.svg") calc(10vw + 5px) 0 / 34px auto repeat-y,
+      url("../assets/brand/brain-watermark.svg") calc(100% - 10vw - 39px) 0 / 34px auto repeat-y,
+      var(--cg-pool-1);
+  }
+}
+/* the brain mark before a heading: add class cg-brain-h */
+.cg-brain-h::before{content:"";display:inline-block;width:1.15em;height:1.15em;margin-right:.45em;vertical-align:-.18em;background:url("../assets/brand/brain-mark.svg") center / contain no-repeat}
+/* the brain mark beside the brand title in the top bar (the cornucopia logo stays) */
+.cg-sidebar-brand span::before{content:"";display:inline-block;width:1em;height:1em;margin-right:.3em;vertical-align:-.12em;background:url("../assets/brand/brain-mark.svg") center / contain no-repeat}
+/* a card: clean white, soft corners, light border, a golden inner glow, a soft shadow */
+.cg-card{border:1px solid #e4dfd0;border-radius:var(--cg-radius-lg,16px);background:var(--cg-white);box-shadow:var(--cg-glow),0 8px 20px rgba(14,60,67,.08)}
+/* a call-to-action: the teal-to-navy gradient with a gold edge */
+.cg-btn-cta{display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;min-height:var(--cg-tap);padding:12px 24px;border:1px solid var(--cg-gold-400);border-radius:var(--cg-radius-md,12px);background-color:var(--cg-cta-solid);background-image:var(--cg-cta);color:#fff;font:700 1.0625rem/1.2 var(--cg-font-ui);text-decoration:none}
+/* a banner: teal into a deep gold, white lettering */
+.cg-banner{padding:var(--cg-space-4) var(--cg-space-5);border:1px solid var(--cg-gold-400);border-radius:var(--cg-radius-md,12px);background-color:#0e3c43;background-image:linear-gradient(100deg,#0e3c43 0%,#0e3c43 45%,#6b5214 100%);color:#fff;font:700 1.125rem/1.4 var(--cg-font-ui)}
+html.cg-night-shift .cg-brain-h::before,html.cg-night-shift .cg-sidebar-brand span::before{filter:brightness(1.25)}
+@media print{
+  :root::before,:root::after{display:none !important}
+  .cg-brain-h::before,.cg-sidebar-brand span::before{display:none !important}
+  .cg-card,.cg-btn-cta,.cg-banner{box-shadow:none !important;background:#fff !important;color:#000 !important;border-color:#000 !important}
+}
+
+/* ---------- 11. Modern Interactive Top Navigation Buttons ---------- */
+@media (min-width: 1100px) {
+  html body .cg-sidebar-nav.cg-hubs {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+    flex: 1;
+    padding: 0;
+    margin: 0;
+  }
+  .cg-hubs > .cg-hub-li {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+  }
+  .cg-hubs > .cg-hub-li > .cg-hub > summary,
+  .cg-hubs > .cg-hub-li > a.cg-hub-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin: 0;
+    padding: 8px 14px;
+    min-height: 38px;
+    box-sizing: border-box;
+    white-space: nowrap;
+    border-radius: 9px;
+    border: 1px solid rgba(14, 60, 67, 0.18);
+    background: #f8f6f0;
+    color: #18363b !important;
+    text-decoration: none;
+    box-shadow: 0 1px 2px rgba(14, 60, 67, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    font: 600 15px/1.2 var(--cg-font-ui, "Atkinson Hyperlegible", "Segoe UI", sans-serif) !important;
+    letter-spacing: 0.01em;
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .cg-hubs > .cg-hub-li > .cg-hub > summary:hover,
+  .cg-hubs > .cg-hub-li > a.cg-hub-link:hover {
+    background: #ffffff;
+    color: #0e3c43 !important;
+    border-color: rgba(14, 60, 67, 0.35);
+    box-shadow: 0 3px 8px rgba(14, 60, 67, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+    transform: translateY(-1px);
+  }
+  .cg-hubs > .cg-hub-li > .cg-hub > summary:active,
+  .cg-hubs > .cg-hub-li > a.cg-hub-link:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 2px rgba(14, 60, 67, 0.1);
+  }
+  .cg-hubs > .cg-hub-li > .cg-hub > summary .cg-sb-ico,
+  .cg-hubs > .cg-hub-li > a.cg-hub-link .cg-sb-ico {
+    display: none;
+  }
+  .cg-hubs > .cg-hub-li > .cg-hub > summary .cg-sb-chev,
+  .cg-hubs > .cg-hub-li > a.cg-hub-link .cg-sb-chev {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    margin-left: 4px;
+    flex: none;
+    color: var(--sb-accent, #c5a059);
+    transform: rotate(90deg);
+    transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), color 0.18s ease;
+  }
+  .cg-hubs > .cg-hub-li > a.cg-hub-link:hover .cg-sb-chev {
+    transform: rotate(90deg) translateX(1px);
+    color: #0e3c43;
+  }
+  .cg-hubs > .cg-hub-li > .cg-hub[open] > summary {
+    background: #0e3c43 !important;
+    color: #ffffff !important;
+    border-color: #0e3c43 !important;
+    box-shadow: 0 3px 12px rgba(14, 60, 67, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    transform: none;
+  }
+  .cg-hubs > .cg-hub-li > .cg-hub[open] > summary .cg-sb-chev {
+    transform: rotate(-90deg);
+    color: #f7d68a !important;
+  }
+  .cg-hubs > .cg-hub-li > a.cg-hub-link:not(:has(.cg-sb-chev))::after {
+    content: "";
+    display: inline-block;
+    width: 5px;
+    height: 5px;
+    margin-left: 5px;
+    border-right: 2px solid var(--sb-accent, #c5a059);
+    border-bottom: 2px solid var(--sb-accent, #c5a059);
+    transform: rotate(45deg);
+    flex: none;
+    transition: transform 0.2s ease;
+  }
+  .cg-hubs > .cg-hub-li > a.cg-hub-link:not(:has(.cg-sb-chev)):hover::after {
+    transform: rotate(45deg) translate(1px, 1px);
+  }
+  html body .cg-hubs > .cg-hub-li > .cg-hub[data-here] > summary,
+  html body .cg-hubs > .cg-hub-li > a.cg-hub-link.active {
+    background: #ffffff !important;
+    color: #0e3c43 !important;
+    font-weight: 700 !important;
+    border-color: #0e3c43 !important;
+    border-bottom: 2.5px solid #0e3c43 !important;
+    box-shadow: 0 2px 6px rgba(14, 60, 67, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  }
+  html body .cg-hubs > .cg-hub-li > .cg-hub[data-here][open] > summary {
+    background: #0e3c43 !important;
+    color: #ffffff !important;
+    border-color: #0e3c43 !important;
+  }
+}

@@ -94,6 +94,10 @@ These decide what is built next. Watch someone use it before asking.
 4. Would you use the printed sheet as it is, or would you want it to look like something your facility already prints?
 5. Do two or more computers need to share a board? If yes, see below.
 
+## Activities and mood, wings and the SBAR sheet
+
+Added after the first version: **activity and mood records** (who took part in what, how, and their mood, by alias), a **wing** on every note, task and record (the board shows the wing chosen in Settings), and **Generate Shift Handoff Summary (SBAR)**, a one-page sheet for incoming nursing staff made only of what staff recorded and counts of it. The sheet's resident names are set large in the display face. The printed sheets follow the names choice (aliases by default). Details: [facility-operations.md](facility-operations.md). The board file now also holds `engagements[]` (up to 4,000 records, kept for the same number of days as notes); older boards open unchanged.
+
 ## What comes next (not built)
 
 - **Syncing between stations.** Decision D3 keeps it out of this version. Anything that stores notes on a server needs a vendor that signs a business associate agreement, and it breaks the zero-PHI promise of `platform/`. It is a separate decision, to be made after the Activity Directors answer question 5.

@@ -9,31 +9,31 @@
     *, *::before, *::after { box-sizing: border-box; }
     :root {
       --glass-panel: rgba(20, 61, 43, .72);
-      --brand: #52b788;
-      --line: rgba(216, 243, 220, .18);
+      --brand: #4fb3bf;
+      --line: rgba(213,238,240, .18);
       --ink: #2d241d;
       --tan: #92785e;
     }
     body {
       margin: 0;
       line-height: 1.6;
-      font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+      font-family: "Cognicopia UI","Atkinson Hyperlegible","Trebuchet MS", "Segoe UI", sans-serif;
       color: #ffffff;
-      background-color: #1b4332;
+      background-color: #0e3c43;
       background-image:
-        repeating-linear-gradient(45deg, rgba(216,243,220,.13) 0 1px, transparent 1px 72px),
-        repeating-linear-gradient(-45deg, rgba(216,243,220,.13) 0 1px, transparent 1px 72px),
-        repeating-linear-gradient(45deg, rgba(82,183,136,.09) 0 1px, transparent 1px 18px),
-        repeating-linear-gradient(-45deg, rgba(82,183,136,.09) 0 1px, transparent 1px 18px),
-        linear-gradient(135deg,#163d2d 0%,#1b4332 48%,#102b20 100%);
+        repeating-linear-gradient(45deg, rgba(213,238,240,.13) 0 1px, transparent 1px 72px),
+        repeating-linear-gradient(-45deg, rgba(213,238,240,.13) 0 1px, transparent 1px 72px),
+        repeating-linear-gradient(45deg, rgba(79,179,191,.09) 0 1px, transparent 1px 18px),
+        repeating-linear-gradient(-45deg, rgba(79,179,191,.09) 0 1px, transparent 1px 18px),
+        linear-gradient(135deg,#16383d 0%,#0e3c43 48%,#10282b 100%);
     }
     
-    .nav-brand a, .nav-links a { font-family: "Trebuchet MS", "Segoe UI", sans-serif; }
+    .nav-brand a, .nav-links a { font-family: "Cognicopia UI","Atkinson Hyperlegible","Trebuchet MS", "Segoe UI", sans-serif; }
     .nav-brand a { display: flex; align-items: center; gap: 8px; color: #fff; font-size: 18pt; font-weight: 700; text-decoration: none; }
     .nav-logo { display: block; width: 38px; height: 30px; flex: none; object-fit: contain; }
     .nav-links { display: flex; gap: 30px; align-items: center; list-style: none; margin: 0; padding: 0; }
-    .nav-links > li > a { color: #e8f5e9; font-size: 10.5pt; text-decoration: none; }
-    .nav-links a:hover { color: #d8f3dc; }
+    .nav-links > li > a { color: #e4f3f4; font-size: 10.5pt; text-decoration: none; }
+    .nav-links a:hover { color: #d5eef0; }
     
     .dropdown { position: relative; }
     .dropbtn {
@@ -56,8 +56,8 @@
     .dropbtn:hover,
     .dropdown:hover .dropbtn,
     .dropdown.is-open .dropbtn {
-      background: rgba(82, 183, 136, 0.25);
-      border-color: rgba(216, 243, 220, 0.35);
+      background: rgba(79,179,191, 0.25);
+      border-color: rgba(213,238,240, 0.35);
       color: #ffffff !important;
     }
     .chevron {
@@ -65,7 +65,7 @@
       font-size: 13px;
       line-height: 1;
       transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
-      color: #74c69d !important;
+      color: #7fcbd3 !important;
     }
     .dropdown:hover .chevron,
     .dropdown:focus-within .chevron,
@@ -86,9 +86,9 @@
       -webkit-overflow-scrolling: touch;
       padding: 20px 22px 16px;
       background: rgba(10, 36, 25, 0.98);
-      border: 2px solid rgba(216, 243, 220, 0.45);
+      border: 2px solid rgba(213,238,240, 0.45);
       border-radius: 14px;
-      box-shadow: 0 24px 55px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(82, 183, 136, 0.28);
+      box-shadow: 0 24px 55px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(79,179,191, 0.28);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
     }
@@ -118,8 +118,8 @@
       gap: 8px;
       padding: 4px 8px 10px;
       margin-bottom: 8px;
-      border-bottom: 1.5px solid rgba(116, 198, 157, 0.35);
-      color: #95d5b2 !important;
+      border-bottom: 1.5px solid rgba(127,203,211, 0.35);
+      color: #95cfd5 !important;
       font-size: 13px !important;
       font-weight: 800 !important;
       text-transform: uppercase;
@@ -130,11 +130,11 @@
     }
     .dropdown-header svg {
       flex-shrink: 0;
-      stroke: #74c69d;
-      color: #74c69d;
+      stroke: #7fcbd3;
+      color: #7fcbd3;
     }
     .dropdown-header span {
-      color: #95d5b2 !important;
+      color: #95cfd5 !important;
     }
     .dropdown-links-list {
       display: flex;
@@ -161,8 +161,8 @@
     }
     .dropdown-content a:hover,
     .dropdown-content a:focus {
-      background: rgba(82, 183, 136, 0.3) !important;
-      border-color: rgba(216, 243, 220, 0.45) !important;
+      background: rgba(79,179,191, 0.3) !important;
+      border-color: rgba(213,238,240, 0.45) !important;
       color: #ffffff !important;
       transform: translateX(3px);
     }
@@ -171,7 +171,7 @@
       outline-offset: 1px !important;
     }
     .dropdown-link-bullet {
-      color: #74c69d !important;
+      color: #7fcbd3 !important;
       font-weight: 700;
       font-size: 16px;
       line-height: 1;
@@ -188,7 +188,7 @@
     .dropdown-footer {
       margin-top: 16px;
       padding-top: 14px;
-      border-top: 1px solid rgba(216, 243, 220, 0.22);
+      border-top: 1px solid rgba(213,238,240, 0.22);
       display: flex;
       align-items: center;
       justify-content: flex-end;
@@ -213,13 +213,13 @@
       font-weight: 600;
       color: #ffffff !important;
       background: rgba(255, 255, 255, 0.08);
-      border: 1.5px solid rgba(216, 243, 220, 0.35);
+      border: 1.5px solid rgba(213,238,240, 0.35);
       border-radius: 8px;
       transform: none !important;
     }
     .dropdown-footer a:hover,
     .dropdown-footer a:focus {
-      background: rgba(82, 183, 136, 0.35) !important;
+      background: rgba(79,179,191, 0.35) !important;
       border-color: #ffffff !important;
       color: #ffffff !important;
       transform: translateY(-1px) !important;
@@ -229,13 +229,13 @@
       margin: 40px auto;
       padding: 34px 38px 48px;
       background: var(--tan);
-      border: 1px solid rgba(216,243,220,.24);
+      border: 1px solid rgba(213,238,240,.24);
       border-radius: 18px;
       box-shadow: 0 24px 70px rgba(0,0,0,.3);
     }
     h1, h2, h3, h4 { color: #ffffff; }
     h1 { margin: 0 0 8px; font-size: 24pt; text-align: center; }
-    h2 { margin-top: 34px; padding-bottom: 6px; border-bottom: 2px solid rgba(82,183,136,.35); }
+    h2 { margin-top: 34px; padding-bottom: 6px; border-bottom: 2px solid rgba(79,179,191,.35); }
     p, li { color: #ffffff; }
     .organic-vine-divider { display: block; width: 78%; max-width: 500px; height: auto; margin: 18px auto 24px; color: var(--brand); }
     .vine-subtitle { display: block; margin: 0 auto 24px; color: #ffffff; font-size: 18px; font-weight: 600; letter-spacing: .04em; text-align: center; }
@@ -247,7 +247,7 @@
       margin-top: 28px;
       padding: 24px 26px;
       background: rgba(8,28,21,.9);
-      border: 1px solid rgba(216,243,220,.24);
+      border: 1px solid rgba(213,238,240,.24);
       border-radius: 10px;
       box-shadow: 0 14px 30px rgba(0,0,0,.22);
       color: #ffffff;
@@ -256,7 +256,7 @@
     .references li, .references strong, .references em {
       color: #ffffff;
     }
-    .references h2 { margin-top: 0; border-bottom-color: rgba(82,183,136,.45); }
+    .references h2 { margin-top: 0; border-bottom-color: rgba(79,179,191,.45); }
     .references ul { margin: 0; padding-left: 1.4rem; }
     .references li { margin: 0 0 16px; padding-left: 6px; }
     .references li:last-child { margin-bottom: 0; }
@@ -295,11 +295,11 @@
 :root {
   --sb-w:      220px;          /* sidebar width */
   --sb-bg:     rgba(8,28,21,.96);
-  --sb-border: rgba(216,243,220,.15);
-  --sb-accent: #52b788;
-  --sb-hover:  rgba(82,183,136,.18);
-  --sb-txt:    #d8f3dc;
-  --sb-muted:  rgba(216,243,220,.55);
+  --sb-border: rgba(213,238,240,.15);
+  --sb-accent: #4fb3bf;
+  --sb-hover:  rgba(79,179,191,.18);
+  --sb-txt:    #d5eef0;
+  --sb-muted:  rgba(213,238,240,.55);
   --sb-hdr-sz: 9.5pt;
   --sb-lnk-sz: 10pt;
 }
@@ -323,10 +323,10 @@ body { padding-left: var(--sb-w); }
   overflow-y: auto;
   overflow-x: hidden;
   scrollbar-width: thin;
-  scrollbar-color: rgba(82,183,136,.3) transparent;
+  scrollbar-color: rgba(79,179,191,.3) transparent;
 }
 .cg-sidebar::-webkit-scrollbar { width: 4px; }
-.cg-sidebar::-webkit-scrollbar-thumb { background: rgba(82,183,136,.3); border-radius: 4px; }
+.cg-sidebar::-webkit-scrollbar-thumb { background: rgba(79,179,191,.3); border-radius: 4px; }
 
 /* ── Logo / brand at top ── */
 .cg-sidebar-brand {
@@ -337,7 +337,7 @@ body { padding-left: var(--sb-w); }
   border-bottom: 1px solid var(--sb-border);
   text-decoration: none;
   color: #fff;
-  font-family: "Trebuchet MS","Segoe UI",sans-serif;
+  font-family: "Cognicopia UI","Atkinson Hyperlegible","Trebuchet MS","Segoe UI",sans-serif;
   font-size: 15pt;
   font-weight: 700;
   flex-shrink: 0;
@@ -358,7 +358,7 @@ body { padding-left: var(--sb-w); }
   padding: 11px 16px;
   color: var(--sb-txt);
   font-size: var(--sb-lnk-sz);
-  font-family: "Trebuchet MS","Segoe UI",sans-serif;
+  font-family: "Cognicopia UI","Atkinson Hyperlegible","Trebuchet MS","Segoe UI",sans-serif;
   text-decoration: none;
   border-bottom: 1px solid var(--sb-border);
   transition: background .15s, color .15s;
@@ -383,7 +383,7 @@ body { padding-left: var(--sb-w); }
 .cg-sb-section {
   padding: 16px 14px 4px;
   font-size: var(--sb-hdr-sz);
-  font-family: "Trebuchet MS","Segoe UI",sans-serif;
+  font-family: "Cognicopia UI","Atkinson Hyperlegible","Trebuchet MS","Segoe UI",sans-serif;
   font-weight: 700;
   letter-spacing: .06em;
   text-transform: uppercase;
@@ -404,7 +404,7 @@ body { padding-left: var(--sb-w); }
   padding: 7px 14px 7px 20px;
   color: var(--sb-txt);
   font-size: var(--sb-lnk-sz);
-  font-family: "Trebuchet MS","Segoe UI",sans-serif;
+  font-family: "Cognicopia UI","Atkinson Hyperlegible","Trebuchet MS","Segoe UI",sans-serif;
   text-decoration: none;
   line-height: 1.35;
   border-left: 2px solid transparent;
@@ -417,7 +417,7 @@ body { padding-left: var(--sb-w); }
   border-left-color: var(--sb-accent);
 }
 .cg-sidebar-nav a.active {
-  background: rgba(82,183,136,.22);
+  background: rgba(79,179,191,.22);
   color: #fff;
   border-left-color: var(--sb-accent);
   font-weight: 600;
@@ -454,7 +454,7 @@ body { padding-left: var(--sb-w); }
   justify-content: center;
   backdrop-filter: blur(10px);
 }
-.cg-sidebar-toggle svg { color: #d8f3dc; }
+.cg-sidebar-toggle svg { color: #d5eef0; }
 
 /* ── Narrow top bar: replaces old .navbar ── */
 .cg-topbar {
@@ -473,12 +473,12 @@ body { padding-left: var(--sb-w); }
   -webkit-backdrop-filter: blur(16px);
 }
 .cg-topbar a, .cg-topbar button.linklike {
-  color: #e8f5e9;
+  color: #e4f3f4;
   font-size: 10pt;
-  font-family: "Trebuchet MS","Segoe UI",sans-serif;
+  font-family: "Cognicopia UI","Atkinson Hyperlegible","Trebuchet MS","Segoe UI",sans-serif;
   text-decoration: none;
 }
-.cg-topbar a:hover { color: #d8f3dc; }
+.cg-topbar a:hover { color: #d5eef0; }
 
 /* ── Responsive: collapse sidebar on small screens ── */
 @media (max-width: 700px) {
@@ -509,7 +509,7 @@ body { padding-left: var(--sb-w); }
   align-items:center;justify-content:center;background:#000;color:#fff;border:1px solid rgba(255,255,255,.28);border-radius:6px;
   font:600 14px/1 "Segoe UI",system-ui,-apple-system,Arial,sans-serif;white-space:nowrap;backdrop-filter:none}
 .cg-sidebar-toggle svg{color:#fff;flex:none}
-.cg-sidebar-toggle:focus-visible{outline:3px solid #7ad3a4;outline-offset:3px}
+.cg-sidebar-toggle:focus-visible{outline:3px solid #86d4dc;outline-offset:3px}
 @media (max-width:700px){
   /* keep the top bar's own buttons clear of the Categories button */
   .cg-topbar{padding-left:164px;height:auto;min-height:60px;flex-wrap:wrap;row-gap:6px;padding-top:9px;padding-bottom:9px}
@@ -530,27 +530,29 @@ body { padding-left: var(--sb-w); }
    element, so the parts added here pin their own colors and sizes to look the
    same on every page. Colors come from css/styles.css (light: charcoal text on
    white, 16:1; deep green accents, 7.9:1 or more). */
-html:root{--sb-w:0px;--sb-bg:#ffffff;--sb-border:#ddd1ba;--sb-accent:#2d5a44;--sb-hover:#f4efe6;--sb-open:#ebe3d3;--sb-active:#e3f1e8;
-  --sb-txt:#1a202c;--sb-muted:#343b49;--cg-nav-h:76px}
+html:root{--sb-w:0px;--sb-bg:#ffffff;--sb-border:#ddd1ba;--sb-accent:#1c5963;--sb-hover:#f5f1e6;--sb-open:#ebe3d3;--sb-active:#e0f0f1;
+  --sb-txt:#1a202c;--sb-muted:#343b49;--cg-nav-h:80px}
 html body{padding-left:0}
 .cg-sb-nav{flex:1 0 auto;display:flex;flex-direction:column}
 .cg-sb-nav .cg-sidebar-nav{flex:1}
 .cg-sidebar-nav a{min-height:var(--tap,52px);align-items:center}
 .cg-sidebar-home{min-height:var(--tap,52px)}
-.cg-sidebar-toggle{height:var(--tap,52px)!important;min-width:var(--tap,52px)}
+.cg-sidebar-toggle{height:var(--tap,52px)!important;min-width:var(--tap,52px);font-family:var(--cg-font-ui,"Atkinson Hyperlegible","Segoe UI",sans-serif)}
 .cg-sb-acc > summary{min-height:var(--tap,52px);box-sizing:border-box;display:flex;align-items:center}
 .cg-hub-li{margin:0;list-style:none}
-.cg-hub > summary,.cg-sidebar-nav a.cg-hub-link{display:flex;align-items:center;gap:10px;box-sizing:border-box;min-height:var(--tap,52px);margin:3px 6px 0;padding:8px 10px;border:0;border-radius:8px;font:700 11.5pt/1.25 var(--cg-font-ui,"Trebuchet MS","Segoe UI",sans-serif)!important;letter-spacing:0!important;text-transform:none!important;color:var(--sb-txt)!important;text-decoration:none;cursor:pointer}
+.cg-hub > summary,.cg-sidebar-nav a.cg-hub-link{display:flex;align-items:center;gap:10px;box-sizing:border-box;min-height:var(--tap,52px);margin:3px 6px 0;padding:8px 10px;border:0;border-radius:8px;font:700 12pt/1.35 var(--cg-font-ui,"Trebuchet MS","Segoe UI",sans-serif)!important;letter-spacing:.01em!important;text-transform:none!important;color:var(--sb-txt)!important;text-decoration:none;cursor:pointer}
 .cg-hub > summary:hover,.cg-sidebar-nav a.cg-hub-link:hover{background:var(--sb-hover)}
 .cg-hub[open] > summary{background:var(--sb-open)}
 .cg-sidebar-nav a.cg-hub-link.active{background:var(--sb-active);box-shadow:inset 3px 0 0 var(--sb-accent)}
 /* the light theme for what each page's own sidebar styles drew for a dark one */
 html body .cg-sidebar{background:var(--sb-bg);border-color:var(--sb-border);color:var(--sb-txt);-webkit-backdrop-filter:none;backdrop-filter:none}
-html body .cg-sidebar-brand{color:var(--cg-green-700,#1b382b)!important;font:600 23px/1.1 var(--cg-font-display,Georgia,serif)!important;letter-spacing:-.01em}
-html body .cg-sidebar-brand:hover{color:var(--cg-green-600,#2d5a44)!important}
-html body .cg-sidebar-nav a{color:var(--sb-txt)!important;font-family:var(--cg-font-ui,"Trebuchet MS","Segoe UI",sans-serif)}
+html body .cg-sidebar-brand{color:var(--cg-green-700,#0e3c43)!important;font:600 23px/1.1 var(--cg-font-display,Georgia,serif)!important;letter-spacing:-.01em}
+html body .cg-sidebar-brand:hover{color:var(--cg-green-600,#1c5963)!important}
+html body .cg-sidebar-nav a{color:var(--sb-txt)!important;font-family:var(--cg-font-ui,"Trebuchet MS","Segoe UI",sans-serif);font-weight:600;letter-spacing:.012em;line-height:1.4}
+/* nothing in the navigation is small: 16 px links, 14 px group labels (some pages still carry an older 13 px and 12 px copy of these) */
+html body .cg-sidebar{--sb-lnk-sz:12pt;--sb-hdr-sz:10.5pt}
 html body .cg-sidebar-nav a:hover{background:var(--sb-hover);color:var(--sb-txt)!important}
-html body .cg-sidebar-nav a.active{background:var(--sb-active);color:var(--cg-green-700,#1b382b)!important;font-weight:700}
+html body .cg-sidebar-nav a.active{background:var(--sb-active);color:var(--cg-green-700,#0e3c43)!important;font-weight:700}
 html body .cg-sidebar .cg-sb-section{color:var(--sb-muted)!important}
 html body .cg-sidebar .cg-hub > summary{color:var(--sb-txt)!important}
 html body .cg-sidebar details{border:0;margin:0}
@@ -558,33 +560,33 @@ html body .cg-sidebar details{border:0;margin:0}
 html body .cg-sidebar :is(span,li,strong,em,b){color:inherit!important}
 html body .cg-sidebar .cg-ailment-card{color:var(--sb-txt)!important;font-family:var(--cg-font-ui,"Trebuchet MS","Segoe UI",sans-serif)}
 html body .cg-sidebar .cg-ailment-card:hover{background:var(--sb-hover);color:var(--sb-txt)!important;border-color:var(--sb-border)}
-html body .cg-sidebar .cg-ailment-card.active-ailment{background:var(--sb-active);color:var(--cg-green-700,#1b382b)!important;border-color:var(--sb-accent)}
-html body .cg-sidebar .cg-ailment-card:focus-visible{outline:3px solid var(--cg-focus,#f5b800);outline-offset:2px;box-shadow:0 0 0 6px var(--cg-focus-dark,#10241a)}
+html body .cg-sidebar .cg-ailment-card.active-ailment{background:var(--sb-active);color:var(--cg-green-700,#0e3c43)!important;border-color:var(--sb-accent)}
+html body .cg-sidebar .cg-ailment-card:focus-visible{outline:3px solid var(--cg-focus,#f5b800);outline-offset:2px;box-shadow:0 0 0 6px var(--cg-focus-dark,#08262c)}
 .cg-hub .cg-sb-ico,.cg-sidebar-nav a.cg-hub-link .cg-sb-ico{color:var(--sb-accent)}
 .cg-hub > .cg-sb-sub{padding:2px 0 8px}
 .cg-hubs{padding-top:6px}
-.cg-hub-foot{margin:8px 0 0;padding-top:6px;border-top:1px solid var(--sb-border,rgba(216,243,220,.15));list-style:none}
+.cg-hub-foot{margin:8px 0 0;padding-top:6px;border-top:1px solid var(--sb-border,rgba(213,238,240,.15));list-style:none}
 .cg-sidebar-nav a .cg-sb-ico{flex:none;margin-top:1px;color:var(--sb-muted);transition:color .13s}
 .cg-sidebar-nav a:hover .cg-sb-ico,.cg-sidebar-nav a.active .cg-sb-ico{color:var(--sb-accent)}
 .cg-sb-acc > summary{list-style:none;cursor:pointer;margin:4px 6px 0;padding:10px 8px 8px;border-radius:6px;transition:background .15s}
 .cg-sb-acc > summary::-webkit-details-marker{display:none}
 .cg-sb-acc > summary:hover{background:var(--sb-hover)}
-.cg-sb-acc > summary:focus-visible,.cg-sidebar-nav a:focus-visible,.cg-sidebar-brand:focus-visible{outline:3px solid var(--cg-focus,#f5b800);outline-offset:2px;box-shadow:0 0 0 6px var(--cg-focus-dark,#10241a)}
+.cg-sb-acc > summary:focus-visible,.cg-sidebar-nav a:focus-visible,.cg-sidebar-brand:focus-visible{outline:3px solid var(--cg-focus,#f5b800);outline-offset:2px;box-shadow:0 0 0 6px var(--cg-focus-dark,#08262c)}
 .cg-sb-acc-title{flex:1;min-width:0}
-.cg-sb-count{flex:none;min-width:18px;padding:1px 6px;border-radius:9px;background:rgba(82,183,136,.2);color:var(--sb-txt)!important;font-size:8pt;letter-spacing:0;text-align:center}
+.cg-sb-count{flex:none;min-width:18px;padding:1px 6px;border-radius:9px;background:rgba(79,179,191,.2);color:var(--sb-txt)!important;font-size:11pt;font-weight:700;letter-spacing:.01em;text-align:center}
 .cg-sb-chev{flex:none;transition:transform .15s}
 .cg-sb-acc[open] > summary .cg-sb-chev{transform:rotate(90deg)}
 .cg-sb-sub,.cg-sb-sub ul{list-style:none;margin:0;padding:0}
 .cg-sb-sub a[data-hub]{font-weight:600}
-.cg-sb-glabel{display:block;padding:10px 14px 3px 20px;font:700 12px var(--cg-font-ui,"Trebuchet MS","Segoe UI",sans-serif);letter-spacing:.06em;text-transform:uppercase;color:var(--sb-muted)!important}
-.cg-crumbs{padding:8px 28px;border-bottom:1px solid var(--cg-tan-200,#ddd1ba);background:var(--cg-parchment,#f4efe6);font:15px/20px var(--cg-font-ui,"Trebuchet MS","Segoe UI",sans-serif)}
+.cg-sb-glabel{display:block;padding:10px 14px 3px 20px;font:700 15px/1.4 var(--cg-font-ui,"Trebuchet MS","Segoe UI",sans-serif);letter-spacing:.06em;text-transform:uppercase;color:var(--sb-muted)!important}
+.cg-crumbs{padding:8px 28px;border-bottom:1px solid var(--cg-tan-200,#ddd1ba);background:var(--cg-parchment,#f5f1e6);font:500 16px/1.5 var(--cg-font-ui,"Trebuchet MS","Segoe UI",sans-serif);letter-spacing:.012em}
 .cg-crumbs ol{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;margin:0;padding:0;list-style:none}
 .cg-crumbs li,.cg-crumbs a,.cg-crumbs span{font-size:inherit;line-height:inherit}
 .cg-crumbs li{display:flex;align-items:center;gap:8px;margin:0;color:var(--cg-ink-soft,#343b49)!important}
 .cg-crumbs li + li::before{content:"\203A";color:var(--cg-tan-600,#7a6548)}
-.cg-crumbs a{display:inline-flex;align-items:center;gap:6px;min-height:var(--tap,52px);text-decoration:underline;text-underline-offset:3px;color:var(--cg-green-700,#1b382b)!important;font-weight:600}
-.cg-crumbs a:hover{color:var(--cg-green-600,#2d5a44)!important}
-.cg-crumbs a:focus-visible{outline:3px solid var(--cg-focus,#f5b800);outline-offset:2px;box-shadow:0 0 0 6px var(--cg-focus-dark,#10241a)}
+.cg-crumbs a{display:inline-flex;align-items:center;gap:6px;min-height:var(--tap,52px);text-decoration:underline;text-underline-offset:3px;color:var(--cg-green-700,#0e3c43)!important;font-weight:600}
+.cg-crumbs a:hover{color:var(--cg-green-600,#1c5963)!important}
+.cg-crumbs a:focus-visible{outline:3px solid var(--cg-focus,#f5b800);outline-offset:2px;box-shadow:0 0 0 6px var(--cg-focus-dark,#08262c)}
 .cg-crumbs [aria-current]{color:var(--cg-charcoal,#1a202c)!important;font-weight:700}
 html.cg-night-shift .cg-crumbs{background:#211910;border-color:#684a26}
 html.cg-night-shift .cg-crumbs li,html.cg-night-shift .cg-crumbs a,html.cg-night-shift .cg-crumbs [aria-current]{color:#ffedcc!important}
@@ -593,18 +595,32 @@ html.cg-night-shift .cg-crumbs li,html.cg-night-shift .cg-crumbs a,html.cg-night
 .cg-topbar{height:auto!important;min-height:52px;flex-wrap:wrap;row-gap:6px;padding-top:8px;padding-bottom:8px}
 html body .cg-topbar{background:#fbf8f2;border-bottom:1px solid var(--sb-border);-webkit-backdrop-filter:none;backdrop-filter:none}
 html body .cg-topbar a,html body .cg-topbar button.linklike{color:var(--sb-txt)}
-.cg-topbar .cg-cta{display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;min-height:var(--tap,52px);padding:8px 18px;border:2px solid var(--cg-green-700,#1b382b);border-radius:var(--cg-radius-md,12px);background:var(--cg-green-700,#1b382b);color:#ffffff!important;font:700 15px/1.25 var(--cg-font-ui,"Trebuchet MS","Segoe UI",sans-serif);text-align:center;text-decoration:none;box-shadow:var(--cg-shadow-1,0 1px 2px rgba(0,0,0,.22))}
-.cg-topbar .cg-cta:hover{background:var(--cg-green-600,#2d5a44);border-color:var(--cg-green-600,#2d5a44)}
-.cg-topbar .cg-cta-alt{background:#ffffff;border-color:var(--cg-green-700,#1b382b);color:var(--cg-green-700,#1b382b)!important;box-shadow:none}
-.cg-topbar .cg-cta-alt:hover{background:var(--cg-sage-100,#e3f1e8);border-color:var(--cg-green-700,#1b382b)}
-.cg-topbar .cg-cta:focus-visible{outline:3px solid var(--cg-focus,#f5b800);outline-offset:3px;box-shadow:0 0 0 6px var(--cg-focus-dark,#10241a)}
+.cg-topbar .cg-cta{display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;min-height:var(--tap,52px);padding:8px 18px;border:1px solid #d4af37;border-radius:var(--cg-radius-md,12px);background-color:#143f58;background-image:linear-gradient(180deg,#1a4d6b 0%,#0d2c3e 100%);color:#ffffff!important;font:700 15px/1.25 var(--cg-font-ui,"Trebuchet MS","Segoe UI",sans-serif);text-align:center;text-decoration:none;box-shadow:var(--cg-shadow-1,0 1px 2px rgba(0,0,0,.22))}
+.cg-topbar .cg-cta:hover{background-color:#184a68;background-image:linear-gradient(180deg,#235f82 0%,#12384d 100%);border-color:#e2c044}
+.cg-topbar .cg-cta-alt{background:#ffffff;border-color:var(--cg-green-700,#0e3c43);color:var(--cg-green-700,#0e3c43)!important;box-shadow:none}
+.cg-topbar .cg-cta-alt:hover{background:var(--cg-sage-100,#e0f0f1);border-color:var(--cg-green-700,#0e3c43)}
+.cg-topbar .cg-cta:focus-visible{outline:3px solid var(--cg-focus,#f5b800);outline-offset:3px;box-shadow:0 0 0 6px var(--cg-focus-dark,#08262c)}
 html.cg-night-shift .cg-topbar .cg-cta{background:#332312!important;border-color:#d6a64b!important;color:#ffedcc!important;box-shadow:none}
 html.cg-night-shift .cg-topbar .cg-cta-alt{background:transparent!important;border-color:#9b7136!important;color:#ffedcc!important}
 html.cg-night-shift .cg-topbar .cg-cta:focus-visible{outline-color:#ffd477}
-@media print{.cg-topbar .cg-cta{display:none}}
+@media print{.cg-topbar,.cg-crumbs{display:none!important}}
 
+/* the two headings over the hubs: Resident tools and Staff & family portal. In the Menu drawer they are headings in the list; across the top they
+   sit above their hubs and take no room of their own (a hairline divides the two groups). */
+.cg-grp{list-style:none;margin:0;padding:14px 14px 2px}
+.cg-grp-l{display:inline-flex;align-items:center;gap:8px;font:700 15px/1.3 var(--cg-font-ui,"Trebuchet MS","Segoe UI",sans-serif);letter-spacing:.1em;text-transform:uppercase;color:var(--cg-tan-800,#4f4030)}
+.cg-grp-l::before{content:"";flex:none;width:10px;height:10px;border-radius:50%;background:var(--cg-green-600,#1c5963)}
+.cg-grp[data-grp="staff"] .cg-grp-l::before{background:var(--cg-gold-500,#c5a059);box-shadow:0 0 0 2px var(--cg-tan-800,#4f4030)}
+.cg-grp[data-grp="staff"]{margin-top:6px;border-top:1px solid var(--sb-border)}
+html.cg-night-shift .cg-grp-l{color:#e9c98f!important}
+html.cg-night-shift .cg-grp[data-grp="staff"]{border-color:#684a26}
 /* ---------- a wide window: the six hubs across the top, each a drop-down ---------- */
 @media (min-width:1100px){
+  .cg-grp{position:relative;flex:none;width:0;height:100%;align-self:stretch;margin:0;padding:0;border:0!important;pointer-events:none}
+  html body .cg-sb-nav{align-self:stretch}
+  html body .cg-sidebar-nav.cg-hubs{align-self:stretch}
+  .cg-grp[data-grp="staff"]{margin:0 0 0 12px;border-left:1px solid var(--sb-border)!important}
+  .cg-grp-l{position:absolute;left:14px;top:3px;white-space:nowrap;line-height:1.1;font-size:15px}
   html body .cg-sidebar{position:sticky;top:0;left:auto;z-index:950;width:auto;height:var(--cg-nav-h);flex-direction:row;align-items:center;gap:20px;
     padding:0 max(24px,calc(50% - 640px));border-right:0;border-bottom:1px solid var(--sb-border);overflow:visible;transform:none;
     box-shadow:0 1px 0 rgba(255,255,255,.9),0 8px 24px rgba(79,64,48,.07)}
@@ -620,7 +636,7 @@ html.cg-night-shift .cg-topbar .cg-cta:focus-visible{outline-color:#ffd477}
   .cg-hubs > .cg-hub-li > .cg-hub > summary .cg-sb-chev{transform:rotate(90deg);color:var(--sb-accent)}
   .cg-hubs > .cg-hub-li > .cg-hub[open] > summary .cg-sb-chev{transform:rotate(-90deg)}
   /* the hub that holds this page: a deep green underline, and its name in green */
-  html body .cg-hubs > .cg-hub-li > .cg-hub[data-here] > summary,html body .cg-hubs > .cg-hub-li > a.cg-hub-link.active{color:var(--cg-green-700,#1b382b)!important;background:transparent;box-shadow:inset 0 -3px 0 var(--sb-accent)}
+  html body .cg-hubs > .cg-hub-li > .cg-hub[data-here] > summary,html body .cg-hubs > .cg-hub-li > a.cg-hub-link.active{color:var(--cg-green-700,#0e3c43)!important;background:transparent;box-shadow:inset 0 -3px 0 var(--sb-accent)}
   .cg-hubs > .cg-hub-li > .cg-hub[open] > summary{background:var(--sb-open)}
   /* a drop-down: it hangs 6 px below the bar itself (the hub is centred in the bar, so the offset is measured from the hub's middle), however tall the bar is */
   .cg-hubs > .cg-hub-li > .cg-hub > .cg-sb-sub{position:absolute;top:calc(50% + var(--cg-nav-h) / 2 + 6px);left:0;z-index:960;box-sizing:border-box;min-width:300px;
@@ -631,7 +647,7 @@ html.cg-night-shift .cg-topbar .cg-cta:focus-visible{outline-color:#ffd477}
   html body .cg-hub .cg-sb-sub a.active{box-shadow:inset 3px 0 0 var(--sb-accent)}
   .cg-hub .cg-sb-sub .cg-sb-ico{width:18px;height:18px}
   .cg-hub .cg-sb-sub .cg-ailment-card{width:100%}
-  .cg-hub .cg-sb-sub .cg-sb-section{padding:12px 14px 4px;font-size:12px}
+  .cg-hub .cg-sb-sub .cg-sb-section{padding:12px 14px 4px;font-size:15px;line-height:1.4}
   .cg-hub .cg-sb-sub .cg-sb-divider{margin:6px 8px}
   /* Resources: a wide panel, the library in its three groups */
   .cg-hubs > .cg-hub-li[data-hub="resources"] > .cg-hub > .cg-sb-sub{left:auto;right:0;width:min(880px,calc(100vw - 48px));display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px 16px;padding:16px}
@@ -658,7 +674,7 @@ html.cg-night-shift .cg-topbar .cg-cta:focus-visible{outline-color:#ffd477}
     transition:transform .22s ease;box-shadow:6px 0 32px rgba(26,32,44,.28);border-right:1px solid var(--sb-border)}
   html body .cg-sidebar.is-open{transform:translateX(0)}
   html body .cg-sidebar-toggle{display:flex;position:fixed;top:10px;left:12px;z-index:1100;width:auto;gap:8px;padding:8px 14px;
-    background:var(--cg-green-700,#1b382b);color:#ffffff;border:2px solid var(--cg-green-700,#1b382b);border-radius:10px;
+    background:var(--cg-green-700,#0e3c43);color:#ffffff;border:2px solid var(--cg-green-700,#0e3c43);border-radius:10px;
     font:700 15px/1 var(--cg-font-ui,"Segoe UI",system-ui,sans-serif)}
   html body .cg-sidebar-toggle svg{color:#ffffff}
   .cg-sb-overlay{display:none;position:fixed;inset:0;z-index:850;background:rgba(26,32,44,.45)}
@@ -687,21 +703,21 @@ html.cg-night-shift .cg-sidebar-toggle{background:#332312!important;border-color
 @media print{.cg-sidebar,.cg-sidebar-toggle,.cg-sb-overlay{display:none!important}}
 
 /* the shared footer */
-.cg-foot{margin:var(--cg-space-7,3rem) 0 0;padding:40px 0 24px;border-top:1px solid var(--cg-tan-200,#ddd1ba);background:var(--cg-cream,#fbf7f1);color:var(--cg-charcoal,#1a202c);font-family:var(--cg-font-ui,"Segoe UI",sans-serif)}
+.cg-foot{margin:var(--cg-space-7,3rem) 0 0;padding:40px 0 24px;border-top:1px solid var(--cg-tan-200,#ddd1ba);background:var(--cg-cream,#f8f6ef);color:var(--cg-charcoal,#1a202c);font-family:var(--cg-font-ui,"Segoe UI",sans-serif)}
 .cg-foot-in{box-sizing:border-box;width:min(1180px,calc(100% - 48px));margin:0 auto}
 .cg-foot-grid{display:grid;grid-template-columns:minmax(0,1.4fr) repeat(3,minmax(0,1fr));gap:28px}
-.cg-foot-logo{display:inline-flex;align-items:center;gap:10px;min-height:var(--tap,52px);color:var(--cg-green-700,#1b382b)!important;font:600 24px/1 var(--cg-font-display,Georgia,serif);text-decoration:none}
-.cg-foot-logo img{width:36px;height:30px;object-fit:contain}
+.cg-foot-logo{display:inline-flex;align-items:center;gap:10px;min-height:var(--tap,52px);color:var(--cg-green-700,#0e3c43)!important;font:600 24px/1 var(--cg-font-display,Georgia,serif);text-decoration:none}
+.cg-foot-logo img{width:63px;height:45px;object-fit:cover;object-position:50% 46%;flex:none}
 .cg-foot p{margin:4px 0 0;max-width:38ch;color:var(--cg-ink-soft,#343b49)!important;font:400 16px/1.5 var(--cg-font-ui,"Segoe UI",sans-serif);text-align:left}
-.cg-foot .cg-foot-by{font-weight:600;font-size:15px}
-html.cg-paper:not(.cg-night-shift) .cg-foot h2,.cg-foot h2{margin:0 0 4px;padding:0;border:0!important;color:var(--cg-tan-800,#4f4030)!important;font:700 14px/1.2 var(--cg-font-ui,"Segoe UI",sans-serif)!important;letter-spacing:.12em;text-transform:uppercase}
+.cg-foot .cg-foot-by{font-weight:600;font-size:16px;line-height:1.5}
+html.cg-paper:not(.cg-night-shift) .cg-foot h2,.cg-foot h2{margin:0 0 4px;padding:0;border:0!important;color:var(--cg-tan-800,#4f4030)!important;font:700 15px/1.4 var(--cg-font-ui,"Segoe UI",sans-serif)!important;letter-spacing:.1em;text-transform:uppercase}
 .cg-foot ul{margin:0;padding:0;list-style:none}
 .cg-foot li{margin:0;padding:0;background:none;border:0;box-shadow:none}
 .cg-foot-col a{display:flex;align-items:center;min-height:var(--tap,52px);color:var(--cg-charcoal,#1a202c)!important;font:500 16px/1.3 var(--cg-font-ui,"Segoe UI",sans-serif);text-decoration:none}
-.cg-foot-col a:hover{color:var(--cg-green-700,#1b382b)!important;text-decoration:underline;text-underline-offset:4px}
-.cg-foot a:focus-visible{outline:3px solid var(--cg-focus,#f5b800);outline-offset:3px;box-shadow:0 0 0 6px var(--cg-focus-dark,#10241a)}
+.cg-foot-col a:hover{color:var(--cg-green-700,#0e3c43)!important;text-decoration:underline;text-underline-offset:4px}
+.cg-foot a:focus-visible{outline:3px solid var(--cg-focus,#f5b800);outline-offset:3px;box-shadow:0 0 0 6px var(--cg-focus-dark,#08262c)}
 .cg-foot-base{margin-top:24px;padding-top:16px;border-top:1px solid var(--cg-tan-100,#ebe3d3)}
-.cg-foot-base p{max-width:none;font-size:15px}
+.cg-foot-base p{max-width:none;font-size:16px;line-height:1.5;letter-spacing:.012em}
 @media (max-width:1099px){.cg-foot-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:560px){.cg-foot-grid{grid-template-columns:minmax(0,1fr);gap:18px}.cg-foot-in{width:calc(100% - 40px)}}
 html.cg-night-shift .cg-foot{background:#17120c;border-color:#684a26}
@@ -711,9 +727,15 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
 <!-- cg-license:start: generated by scripts/site-nav.mjs -->
 <script src="../../src/config/license.js"></script>
 <script src="../../assets/services/licenseManager.js"></script>
+<script src="../../assets/services/trialLedger.js"></script>
+<script src="../../js/trialBadge.js"></script>
 <!-- cg-license:end -->
 <!-- cg-design:start: generated by scripts/site-nav.mjs -->
 <link rel="stylesheet" href="../../css/styles.css">
+<link rel="icon" type="image/png" sizes="32x32" href="../../assets/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="../../assets/favicon-16.png">
+<link rel="shortcut icon" href="../../favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="../../assets/apple-touch-icon.png">
 <!-- cg-design:end -->
 <!-- seo:start: generated by scripts/seo.mjs. Edit that file and run node scripts/seo.mjs; changes made here are overwritten. -->
 <link rel="canonical" href="https://cognicopia.org/resources/reminiscence-science/">
@@ -730,7 +752,7 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
 <!-- ══ COGNICOPIA LEFT SIDEBAR NAV ══ -->
 <!-- cg-nav:start: generated by scripts/site-nav.mjs. Edit that file and run npm run nav; changes made here are overwritten. -->
 <button type="button" class="cg-sidebar-toggle" id="cgSbToggle" aria-label="Open Menu" aria-controls="cgSidebar" aria-expanded="false">
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
   <span class="cg-sidebar-toggle-text">Menu</span>
 </button>
 <div class="cg-sb-overlay" id="cgSbOverlay" aria-hidden="true"></div>
@@ -741,79 +763,83 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
   </a>
   <nav class="cg-sb-nav" aria-label="Sections">
   <ul class="cg-sidebar-nav cg-hubs">
+    <li class="cg-grp" data-grp="resident"><span class="cg-grp-l" id="cgGrpHead-resident">Resident tools</span></li>
     <li class="cg-hub-li" data-hub="today">
       <details class="cg-sb-acc cg-hub" id="cgHub-today">
-        <summary class="cg-sb-section cg-sb-acc-head"><svg class="cg-sb-ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><span class="cg-sb-acc-title">Today</span><svg class="cg-sb-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="9 6 15 12 9 18"/></svg></summary>
+        <summary class="cg-sb-section cg-sb-acc-head"><svg class="cg-sb-ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><span class="cg-sb-acc-title">Today</span><svg class="cg-sb-chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="9 6 15 12 9 18"/></svg></summary>
         <ul class="cg-sb-sub">
-    <li><a href="../../index.html"><svg class="cg-sb-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>Personalized Packet Tool</span></a></li>
-    <li><a href="../../tablet.html"><svg class="cg-sb-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="12" y1="18" x2="12" y2="18.01"/></svg><span>Tablet Activities</span></a></li>
-    <li><a href="../../profile.html"><svg class="cg-sb-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><span>Resident Profiles</span></a></li>
+    <li><a href="../../index.html"><svg class="cg-sb-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>Personalized Packet Tool</span></a></li>
+    <li><a href="../../tablet.html"><svg class="cg-sb-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="12" y1="18" x2="12" y2="18.01"/></svg><span>Tablet Activities</span></a></li>
+    <li><a href="../../profile.html"><svg class="cg-sb-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><span>Resident Profiles</span></a></li>
         </ul>
       </details>
     </li>
     <li class="cg-hub-li" data-hub="studio">
       <details class="cg-sb-acc cg-hub" id="cgHub-studio">
-        <summary class="cg-sb-section cg-sb-acc-head"><svg class="cg-sb-ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 22a10 10 0 1 1 10-10c0 2.8-2.2 4-4 4h-2a2 2 0 0 0-1.4 3.4A1.9 1.9 0 0 1 12 22z"/><circle cx="7.5" cy="10.5" r="1.3"/><circle cx="11.5" cy="6.5" r="1.3"/><circle cx="16.5" cy="9.5" r="1.3"/></svg><span class="cg-sb-acc-title">Studio</span><svg class="cg-sb-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="9 6 15 12 9 18"/></svg></summary>
+        <summary class="cg-sb-section cg-sb-acc-head"><svg class="cg-sb-ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 22a10 10 0 1 1 10-10c0 2.8-2.2 4-4 4h-2a2 2 0 0 0-1.4 3.4A1.9 1.9 0 0 1 12 22z"/><circle cx="7.5" cy="10.5" r="1.3"/><circle cx="11.5" cy="6.5" r="1.3"/><circle cx="16.5" cy="9.5" r="1.3"/></svg><span class="cg-sb-acc-title">Studio</span><svg class="cg-sb-chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="9 6 15 12 9 18"/></svg></summary>
         <ul class="cg-sb-sub">
-    <li><a href="../../builder.html#/coloring"><svg class="cg-sb-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 22a10 10 0 1 1 10-10c0 2.8-2.2 4-4 4h-2a2 2 0 0 0-1.4 3.4A1.9 1.9 0 0 1 12 22z"/><circle cx="7.5" cy="10.5" r="1.3"/><circle cx="11.5" cy="6.5" r="1.3"/><circle cx="16.5" cy="9.5" r="1.3"/></svg><span>Cognicopia Coloring</span></a></li>
-    <li><a href="../../builder.html#/planner"><svg class="cg-sb-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span>12-Month Life Planner</span></a></li>
-    <li><a href="../../builder.html#/journal"><svg class="cg-sb-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M2 4h7a3 3 0 0 1 3 3v14a2 2 0 0 0-2-2H2z"/><path d="M22 4h-7a3 3 0 0 0-3 3v14a2 2 0 0 1 2-2h8z"/></svg><span>Cognitive Life Journal</span></a></li>
-    <li><a href="../../builder.html#/reminiscence"><svg class="cg-sb-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M7 21h10M9 9h6M8 13h8"/></svg><span>Reminiscence cards</span></a></li>
-    <li><a href="../../builder.html#/heirloom"><svg class="cg-sb-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><path d="M8 7h8M8 11h6"/></svg><span>Memory digest &amp; book</span></a></li>
+    <li><a href="../../builder.html#/coloring"><svg class="cg-sb-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 22a10 10 0 1 1 10-10c0 2.8-2.2 4-4 4h-2a2 2 0 0 0-1.4 3.4A1.9 1.9 0 0 1 12 22z"/><circle cx="7.5" cy="10.5" r="1.3"/><circle cx="11.5" cy="6.5" r="1.3"/><circle cx="16.5" cy="9.5" r="1.3"/></svg><span>Cognicopia Coloring</span></a></li>
+    <li><a href="../../builder.html#/planner"><svg class="cg-sb-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span>12-Month Life Planner</span></a></li>
+    <li><a href="../../builder.html#/journal"><svg class="cg-sb-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M2 4h7a3 3 0 0 1 3 3v14a2 2 0 0 0-2-2H2z"/><path d="M22 4h-7a3 3 0 0 0-3 3v14a2 2 0 0 1 2-2h8z"/></svg><span>Cognitive Life Journal</span></a></li>
+    <li><a href="../../builder.html#/reminiscence"><svg class="cg-sb-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M7 21h10M9 9h6M8 13h8"/></svg><span>Reminiscence cards</span></a></li>
         </ul>
       </details>
     </li>
-    <li class="cg-hub-li" data-hub="packets"><a href="../../builder.html" class="cg-hub-link"><svg class="cg-sb-ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6"/><line x1="9" y1="13" x2="16" y2="13"/><line x1="9" y1="17" x2="14" y2="17"/></svg><span>Activity Packets</span></a></li>
+    <li class="cg-hub-li" data-hub="packets"><a href="../../builder.html" class="cg-hub-link"><svg class="cg-sb-ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6"/><line x1="9" y1="13" x2="16" y2="13"/><line x1="9" y1="17" x2="14" y2="17"/></svg><span>Activity Packets</span></a></li>
+    <li class="cg-grp" data-grp="staff"><span class="cg-grp-l" id="cgGrpHead-staff">Staff &amp; family portal</span></li>
     <li class="cg-hub-li" data-hub="facility">
       <details class="cg-sb-acc cg-hub" id="cgHub-facility">
-        <summary class="cg-sb-section cg-sb-acc-head"><svg class="cg-sb-ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01M12 6h.01M16 6h.01M8 10h.01M12 10h.01M16 10h.01M8 14h.01M12 14h.01M16 14h.01"/></svg><span class="cg-sb-acc-title">Facility</span><svg class="cg-sb-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="9 6 15 12 9 18"/></svg></summary>
+        <summary class="cg-sb-section cg-sb-acc-head"><svg class="cg-sb-ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01M12 6h.01M16 6h.01M8 10h.01M12 10h.01M16 10h.01M8 14h.01M12 14h.01M16 14h.01"/></svg><span class="cg-sb-acc-title">Facility</span><svg class="cg-sb-chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="9 6 15 12 9 18"/></svg></summary>
         <ul class="cg-sb-sub">
-    <li><a href="../../builder.html#/facility"><svg class="cg-sb-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01M12 6h.01M16 6h.01M8 10h.01M12 10h.01M16 10h.01M8 14h.01M12 14h.01M16 14h.01"/></svg><span>Facility Portal</span></a></li>
-    <li><a href="../../builder.html#/shift"><svg class="cg-sb-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M9 12h6M9 16h6"/></svg><span>Shift board</span></a></li>
-    <li><a href="../../builder.html#/roster"><svg class="cg-sb-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></svg><span>Resident roster</span></a></li>
-    <li><a href="../../builder.html#/clinical"><svg class="cg-sb-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 3H4a1 1 0 0 0-1 1v5a5 5 0 0 0 10 0V4a1 1 0 0 0-1-1h-1"/><path d="M8 14v1a6 6 0 0 0 12 0v-3"/><circle cx="20" cy="10" r="2"/></svg><span>Session notes (SLP)</span></a></li>
-    <li><a href="../../builder.html#/settings"><svg class="cg-sb-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg><span>Settings &amp; defaults</span></a></li>
-    <li><a href="../../pricing.html"><svg class="cg-sb-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="8" r="6"/><path d="M15.5 13.5L17 22l-5-3-5 3 1.5-8.5"/></svg><span>Plans &amp; pricing</span></a></li>
-    <li><a href="../../pilot.html"><svg class="cg-sb-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M9 12h6M9 16h6"/></svg><span>Start a 30-day pilot</span></a></li>
-    <li><a href="../../referral.html"><svg class="cg-sb-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M7 21h10M9 9h6M8 13h8"/></svg><span>Share with a colleague</span></a></li>
+    <li><a href="../../builder.html#/facility"><svg class="cg-sb-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01M12 6h.01M16 6h.01M8 10h.01M12 10h.01M16 10h.01M8 14h.01M12 14h.01M16 14h.01"/></svg><span>Facility Portal</span></a></li>
+    <li><a href="../../builder.html#/shift"><svg class="cg-sb-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M9 12h6M9 16h6"/></svg><span>Shift board</span></a></li>
+    <li><a href="../../builder.html#/roster"><svg class="cg-sb-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></svg><span>Resident roster</span></a></li>
+    <li><a href="../../builder.html#/clinical"><svg class="cg-sb-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 3H4a1 1 0 0 0-1 1v5a5 5 0 0 0 10 0V4a1 1 0 0 0-1-1h-1"/><path d="M8 14v1a6 6 0 0 0 12 0v-3"/><circle cx="20" cy="10" r="2"/></svg><span>Session notes (SLP)</span></a></li>
+    <li><a href="../../builder.html#/heirloom"><svg class="cg-sb-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><path d="M8 7h8M8 11h6"/></svg><span>Family digest &amp; book</span></a></li>
+    <li><a href="../../builder.html#/planner-care-companion"><svg class="cg-sb-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M2 4h7a3 3 0 0 1 3 3v14a2 2 0 0 0-2-2H2z"/><path d="M22 4h-7a3 3 0 0 0-3 3v14a2 2 0 0 1 2-2h8z"/></svg><span>Care cues (planner companion)</span></a></li>
+    <li><a href="../../builder.html#/settings"><svg class="cg-sb-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg><span>Settings &amp; defaults</span></a></li>
+    <li><a href="../../pricing.html"><svg class="cg-sb-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="8" r="6"/><path d="M15.5 13.5L17 22l-5-3-5 3 1.5-8.5"/></svg><span>Plans &amp; pricing</span></a></li>
+    <li><a href="../../pilot.html"><svg class="cg-sb-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M9 12h6M9 16h6"/></svg><span>Start a 30-day pilot</span></a></li>
+    <li><a href="../../referral.html"><svg class="cg-sb-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M7 21h10M9 9h6M8 13h8"/></svg><span>Share with a colleague</span></a></li>
         </ul>
       </details>
     </li>
-    <li class="cg-hub-li" data-hub="academy"><a href="../../builder.html#/academy" class="cg-hub-link"><svg class="cg-sb-ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M22 9 12 4 2 9l10 5 10-5z"/><path d="M6 11.2V16c0 1.7 2.7 3 6 3s6-1.3 6-3v-4.8"/><path d="M22 9v6"/></svg><span>Academy</span></a></li>
+    <li class="cg-hub-li" data-hub="academy"><a href="../../builder.html#/academy" class="cg-hub-link"><svg class="cg-sb-ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M22 9 12 4 2 9l10 5 10-5z"/><path d="M6 11.2V16c0 1.7 2.7 3 6 3s6-1.3 6-3v-4.8"/><path d="M22 9v6"/></svg><span>Academy</span></a></li>
     <li class="cg-hub-li" data-hub="resources">
       <details class="cg-sb-acc cg-hub" id="cgHub-resources" open data-here>
-        <summary class="cg-sb-section cg-sb-acc-head"><svg class="cg-sb-ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg><span class="cg-sb-acc-title">Resources</span><svg class="cg-sb-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="9 6 15 12 9 18"/></svg></summary>
+        <summary class="cg-sb-section cg-sb-acc-head"><svg class="cg-sb-ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg><span class="cg-sb-acc-title">Resources</span><svg class="cg-sb-chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="9 6 15 12 9 18"/></svg></summary>
         <ul class="cg-sb-sub">
-    <li><a data-hub-index href="../../resources/"><svg class="cg-sb-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span>Browse all resources</span></a></li>
+    <li><a data-hub-index href="../../resources/"><svg class="cg-sb-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span>Browse all resources</span></a></li>
           <li class="cg-sb-grp"><span class="cg-sb-glabel" id="cgGrp-clinical">Clinical &amp; quality</span>
             <ul aria-labelledby="cgGrp-clinical">
-          <li><a href="../../resources/research/"><svg class="cg-sb-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 18h8"/><path d="M3 22h18"/><path d="M14 22a7 7 0 1 0 0-14h-1"/><path d="M9 14h2"/><path d="M9 12a2 2 0 0 1-2-2V6h6v4a2 2 0 0 1-2 2Z"/><path d="M12 6V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v3"/></svg><span>Clinical Science &amp; Research Center</span></a></li>
-          <li><a href="../../resources/quality-standards/"><svg class="cg-sb-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg><span>Quality Standards Hub</span></a></li>
-          <li><a href="../../resources/clinical-alignment/"><svg class="cg-sb-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 3H4a1 1 0 0 0-1 1v5a5 5 0 0 0 10 0V4a1 1 0 0 0-1-1h-1"/><path d="M8 14v1a6 6 0 0 0 12 0v-3"/><circle cx="20" cy="10" r="2"/></svg><span>Clinical Alignment</span></a></li>
-          <li><a href="../../resources/reminiscence-science/" class="active" aria-current="page"><svg class="cg-sb-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M9 3h6"/><path d="M10 3v6.5L4.6 18.9A2 2 0 0 0 6.3 22h11.4a2 2 0 0 0 1.7-3.1L14 9.5V3"/><path d="M7.5 15h9"/></svg><span>Reminiscence Science</span></a></li>
+          <li><a href="../../resources/research/"><svg class="cg-sb-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 18h8"/><path d="M3 22h18"/><path d="M14 22a7 7 0 1 0 0-14h-1"/><path d="M9 14h2"/><path d="M9 12a2 2 0 0 1-2-2V6h6v4a2 2 0 0 1-2 2Z"/><path d="M12 6V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v3"/></svg><span>Clinical Science &amp; Research Center</span></a></li>
+          <li><a href="../../resources/quality-standards/"><svg class="cg-sb-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg><span>Quality Standards Hub</span></a></li>
+          <li><a href="../../resources/clinical-alignment/"><svg class="cg-sb-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 3H4a1 1 0 0 0-1 1v5a5 5 0 0 0 10 0V4a1 1 0 0 0-1-1h-1"/><path d="M8 14v1a6 6 0 0 0 12 0v-3"/><circle cx="20" cy="10" r="2"/></svg><span>Clinical Alignment</span></a></li>
+          <li><a href="../../resources/reminiscence-science/" class="active" aria-current="page"><svg class="cg-sb-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M9 3h6"/><path d="M10 3v6.5L4.6 18.9A2 2 0 0 0 6.3 22h11.4a2 2 0 0 0 1.7-3.1L14 9.5V3"/><path d="M7.5 15h9"/></svg><span>Reminiscence Science</span></a></li>
             </ul></li>
           <li class="cg-sb-grp"><span class="cg-sb-glabel" id="cgGrp-facilities">Facilities &amp; publishing</span>
             <ul aria-labelledby="cgGrp-facilities">
-          <li><a href="../../resources/high-volume-facilities/"><svg class="cg-sb-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01M12 6h.01M16 6h.01M8 10h.01M12 10h.01M16 10h.01M8 14h.01M12 14h.01M16 14h.01"/></svg><span>High-Volume Facilities</span></a></li>
-          <li><a href="../../resources/publishing-excellence/"><svg class="cg-sb-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="8" r="6"/><path d="M15.5 13.5L17 22l-5-3-5 3 1.5-8.5"/></svg><span>Publishing Excellence</span></a></li>
-          <li><a href="../../resources/platform-overview/"><svg class="cg-sb-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10"/><polygon points="16.2 7.8 14.1 14.1 7.8 16.2 9.9 9.9 16.2 7.8"/></svg><span>Platform &amp; Mission Overview</span></a></li>
+          <li><a href="../../resources/high-volume-facilities/"><svg class="cg-sb-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01M12 6h.01M16 6h.01M8 10h.01M12 10h.01M16 10h.01M8 14h.01M12 14h.01M16 14h.01"/></svg><span>High-Volume Facilities</span></a></li>
+          <li><a href="../../resources/publishing-excellence/"><svg class="cg-sb-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="8" r="6"/><path d="M15.5 13.5L17 22l-5-3-5 3 1.5-8.5"/></svg><span>Publishing Excellence</span></a></li>
+          <li><a href="../../resources/platform-overview/"><svg class="cg-sb-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10"/><polygon points="16.2 7.8 14.1 14.1 7.8 16.2 9.9 9.9 16.2 7.8"/></svg><span>Platform &amp; Mission Overview</span></a></li>
             </ul></li>
           <li class="cg-sb-grp"><span class="cg-sb-glabel" id="cgGrp-trust">Trust &amp; security</span>
             <ul aria-labelledby="cgGrp-trust">
-          <li><a href="../../resources/privacy-and-data/"><svg class="cg-sb-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg><span>Privacy &amp; Your Data</span></a></li>
-          <li><a href="../../resources/security-questions/"><svg class="cg-sb-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M9 12h6M9 16h6"/></svg><span>Security &amp; Vendor Questions</span></a></li>
-          <li><a href="../../resources/accessibility/"><svg class="cg-sb-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10"/><polygon points="16.2 7.8 14.1 14.1 7.8 16.2 9.9 9.9 16.2 7.8"/></svg><span>Accessibility Statement</span></a></li>
+          <li><a href="../../resources/privacy-and-data/"><svg class="cg-sb-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg><span>Privacy &amp; Your Data</span></a></li>
+          <li><a href="../../resources/security-questions/"><svg class="cg-sb-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M9 12h6M9 16h6"/></svg><span>Security &amp; Vendor Questions</span></a></li>
+          <li><a href="../../resources/accessibility/"><svg class="cg-sb-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10"/><polygon points="16.2 7.8 14.1 14.1 7.8 16.2 9.9 9.9 16.2 7.8"/></svg><span>Accessibility Statement</span></a></li>
             </ul></li>
           <li class="cg-sb-grp"><span class="cg-sb-glabel" id="cgGrp-guides">Guides &amp; help</span>
             <ul aria-labelledby="cgGrp-guides">
-          <li><a href="../../resources/activity-feature-guide/"><svg class="cg-sb-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg><span>Activity Feature Guide</span></a></li>
-          <li><a href="../../resources/resource-catalog/"><svg class="cg-sb-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><path d="M8 7h8M8 11h6"/></svg><span>Master Resource Catalog</span></a></li>
-          <li><a href="../../resources/caregiver-faq/"><svg class="cg-sb-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg><span>Caregiver FAQ</span></a></li>
+          <li><a href="../../resources/activity-feature-guide/"><svg class="cg-sb-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg><span>Activity Feature Guide</span></a></li>
+          <li><a href="../../resources/staff-guide/"><svg class="cg-sb-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg><span>Staff Guide &amp; Feature Tour</span></a></li>
+          <li><a href="../../resources/resource-catalog/"><svg class="cg-sb-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><path d="M8 7h8M8 11h6"/></svg><span>Master Resource Catalog</span></a></li>
+          <li><a href="../../resources/caregiver-faq/"><svg class="cg-sb-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg><span>Caregiver FAQ</span></a></li>
             </ul></li>
         </ul>
       </details>
     </li>
-    <li class="cg-hub-foot"><a href="../../contact.html"><svg class="cg-sb-ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Contact Kirk Barron</span></a></li>
+    <li class="cg-hub-foot"><a href="../../contact.html"><svg class="cg-sb-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Contact Cognicopia</span></a></li>
   </ul>
   </nav>
 </aside>
@@ -853,6 +879,7 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
 <!-- ══ COGNICOPIA TOP BAR ══ -->
 <div class="cg-topbar" role="banner">
   <!-- cg-cta:start: generated by scripts/site-nav.mjs -->
+  <span class="cg-trial" data-cg-trial hidden></span>
   <a class="cg-cta" data-upgrade-prompt href="../../pricing.html" target="_blank" rel="noopener">Get Full Access ($39/mo or $349/yr) &#x2192;</a>
   <a class="cg-cta cg-cta-alt" data-upgrade-prompt href="../../contact.html?subject=Corporate+Invoice+Request">Request Corporate Invoice / W-9</a>
   <!-- cg-cta:end -->
@@ -961,14 +988,16 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
         <li><a class="cg-foot-a" href="../../resources/">Resource &amp; Clinical Hub</a></li>
         <li><a class="cg-foot-a" href="../../resources/research/">Research Center</a></li>
         <li><a class="cg-foot-a" href="../../resources/caregiver-faq/">Caregiver FAQ</a></li>
-        <li><a class="cg-foot-a" href="../../contact.html">Contact Kirk Barron</a></li>
+        <li><a class="cg-foot-a" href="../../contact.html">Contact Cognicopia</a></li>
+        <li><a class="cg-foot-a" href="../../terms.html" data-cg-terms>Terms of Service &amp; Disclaimer</a></li>
       </ul>
     </nav>
   </div>
   <div class="cg-foot-in cg-foot-base">
-    <p>Cognicopia is made by BarronCrafts in Minot, North Dakota. Everything happens inside your browser &mdash; there is no account, no upload, and no copy of resident information kept anywhere.</p>
+    <p>Cognicopia is made by BarronCrafts. Everything happens inside your browser &mdash; there is no account, no upload, and no copy of resident information kept anywhere.</p>
   </div>
 </footer>
+<script src="../../js/legal.js" data-bar="off"></script>
 <!-- cg-footer:end -->
 </body>
 </html>

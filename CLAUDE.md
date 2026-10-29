@@ -10,7 +10,7 @@ Cognicopia (cognicopia.org) is an offline-first memory-care activity site: print
 | `platform/` | A separate Next.js, Supabase and Stripe service for facilities (sign-in, billing, shared planning) | Needs the internet by design. **Zero PHI:** it never stores a resident's name or health details. Not covered by the root `npm test`; see `platform/README.md`. |
 | `license-service/` | A tiny serverless service, with no dependencies, that turns a Stripe payment into a signed license key and emails it to the buyer (`docs/license-service.md`) | Needs the internet by design, and holds no state. It sees only a buyer's email and business name from Stripe, **never a resident**, and keeps no key: the key goes in one email. Proved by `scripts/check-license-service.mjs` (in `npm test`). Its settings live in the host's environment only. |
 
-Never add a cloud dependency to the static site. Never put resident data in `platform/` or `license-service/`. A tool may load a data file that ships with the site from the same folder (the Packet Builder's `data/content-catalog.json`, kept for offline use by `sw.js`); that is not an outside request. The **local art agent** (`scripts/local_art_agent.mjs`, `docs/local-art-agent.md`) is an owner's tool, not part of the site: it makes coloring masters on the owner's computer, its Python parts refuse every connection but loopback, and only `npm run art:setup` downloads anything (packages and one model, once). No cloud picture service, ever (owner's decision, October 2026).
+Never add a cloud dependency to the static site. Never put resident data in `platform/` or `license-service/`. A tool may load a data file that ships with the site from the same folder (the Packet Builder's `data/content-catalog.json`, kept for offline use by `sw.js`); that is not an outside request. The **local art agent** (`scripts/local_art_agent.mjs`, `docs/local-art-agent.md`) is an owner's tool, not part of the site: it makes coloring masters on the owner's computer, its Python parts refuse every connection but loopback, and only `npm run art:setup` downloads anything (packages and one model, once). The finished site and its tools never call a picture service or send anything to the cloud when people use them (owner's decision, October 2026). While the owner is building the site (making art, researching, tooling), any online service may be used to help finish the job (owner's clarification, October 21, 2026): the pictures it makes are saved into the repository, and the site never contacts the service. Keys for such services stay in the environment, never in a file.
 
 ## Working with the owner
 
@@ -24,6 +24,7 @@ The owner is new to coding and to these tools, and acts on what is written here 
 
 ## Privacy and claims
 
+- The outreach desk (`outreach/`, `docs/marketing-strategy.md`) writes to business contacts only. Never commit a real prospect's address (`outreach/data/` is ignored), never put a resident in a lead, and every outreach email keeps the postal address, the advertisement line and the opt-out (`scripts/check-outreach.mjs` fails the build otherwise). Do not reuse the unmeasured claims in `docs/enterprise-gtm-procurement-playbook.md` (hours saved, percentages, "guaranteeing" survey results) in any message or page.
 - Zero PHI outside the browser. Test data and fixtures use made-up people only; never a real name, birth date or facility.
 - Do not claim to be "HIPAA compliant". Compliance belongs to a facility's program. Say what is true: **"No resident data leaves the device"** and "supports a facility's HIPAA privacy practices". The same goes for regulatory wording (CMS, state rules): "supports", never "ensures".
 - The Shift board (`docs/daily-operations.md`) keeps residents by alias or room only. Never add a feature that stores a resident's name there, and keep its name check.
@@ -70,6 +71,8 @@ npm run art:library    # measure the 150 designs against the print standards and
 node scripts/license-keygen.mjs     # owner only: make the license-signing key pair (private half stays outside the repo)
 node scripts/issue-license.mjs      # make or verify a signed license key (invoices, enterprise); see docs/stripe-setup-guide.md
 node scripts/check-license-service.mjs  # prove the payment-to-email service without a network (also in npm test)
+npm run audit:print  # print every page, every Packet Builder activity and the front-page packet to PDF and read it back (breaks, black ink, margins, no web chrome); also part of npm run build
+npm run outreach -- report   # the outreach desk (docs/outreach-desk.md): import contacts, plan each day's small batch, keep the do-not-contact list; sends nothing; real contacts live in outreach/data/ and are never committed
 npm run audit:ux  # measure tap targets, contrast, clicks, nav and print time in a real browser (not part of npm test)
 ```
 

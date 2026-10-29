@@ -33,7 +33,7 @@ export function licenseEmail({ licenseKey, facilityName, tier, expiresAt, siteUr
     "Please keep this email. Stripe also sends your payment receipt separately.",
     "",
     "Questions? Reply to this email or write to cognicopia@outlook.com.",
-    "Cognicopia, published by Kirk Barron, Minot, North Dakota.",
+    "Cognicopia, made by BarronCrafts.",
   ].join("\n");
   const html = `<!doctype html><html lang="en"><body style="margin:0;padding:24px;background:#f6f3ec;color:#10241a;font:17px/1.55 Arial,Helvetica,sans-serif">
 <div style="max-width:620px;margin:0 auto;background:#ffffff;border-radius:12px;padding:28px">
@@ -45,7 +45,7 @@ export function licenseEmail({ licenseKey, facilityName, tier, expiresAt, siteUr
 <p><a href="${esc(link)}" style="display:inline-block;padding:14px 22px;background:#1b4332;color:#ffffff;text-decoration:none;border-radius:8px;font-weight:bold">Or press here to turn it on</a></p>
 <p>The key is checked on the computer itself, so it works with no internet and keeps working after a restart. Use it on every computer in your building.</p>
 <p>Please keep this email. Stripe also sends your payment receipt separately.</p>
-<p style="color:#4a5a52;font-size:15px">Questions? Reply to this email or write to cognicopia@outlook.com.<br>Cognicopia, published by Kirk Barron, Minot, North Dakota.</p>
+<p style="color:#4a5a52;font-size:15px">Questions? Reply to this email or write to cognicopia@outlook.com.<br>Cognicopia, made by BarronCrafts.</p>
 </div></body></html>`;
   return { subject, text, html };
 }

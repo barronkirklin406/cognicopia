@@ -3,7 +3,7 @@
 Last drafted: October 13, 2026. Items in [square brackets] are placeholders or questions for counsel. This draft restates what the software does, as described on the page `resources/privacy-and-data/`. If the two ever disagree, fix the software or the page first, then this.
 
 ## 1. Who we are
-Cognicopia is published by [LEGAL NAME OF THE CONTRACTING PARTY], Minot, North Dakota. Contact: cognicopia@outlook.com.
+Cognicopia is published by [LEGAL NAME OF THE CONTRACTING PARTY], [CITY, STATE]. Contact: cognicopia@outlook.com.
 
 ## 2. The short version
 Cognicopia has no server, account or cloud copy of what staff type about residents. Resident details stay in the browser on the computer where they were typed. We do not receive, store or process them.

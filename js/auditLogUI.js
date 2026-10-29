@@ -29,7 +29,7 @@
     .alc-header h1 {
       margin: 0 0 8px;
       font-size: 28px;
-      color: var(--cg-green-950, #1b382b);
+      color: var(--cg-green-950, #0e3c43);
       font-family: "Fraunces", serif;
     }
     
@@ -75,9 +75,9 @@
     
     .alc-timeframe select:focus,
     .alc-timeframe input:focus {
-      border-color: var(--cg-green-700, #1b382b);
+      border-color: var(--cg-green-700, #0e3c43);
       outline: none;
-      box-shadow: 0 0 0 3px rgba(27, 56, 43, 0.2);
+      box-shadow: 0 0 0 3px rgba(14,60,67, 0.2);
     }
     
     .alc-date-range {
@@ -110,7 +110,7 @@
       margin: 0 0 8px;
       font-size: 14px;
       font-weight: 700;
-      color: var(--cg-green-700, #1b382b);
+      color: var(--cg-green-700, #0e3c43);
       text-transform: uppercase;
       letter-spacing: 0.05em;
     }
@@ -142,7 +142,7 @@
     .alc-table-section h2 {
       margin: 0 0 16px;
       font-size: 20px;
-      color: var(--cg-green-950, #1b382b);
+      color: var(--cg-green-950, #0e3c43);
       font-family: "Fraunces", serif;
     }
     
@@ -166,10 +166,10 @@
     }
     
     .alc-table th {
-      background: var(--cg-parchment, #f4efe6);
+      background: var(--cg-parchment, #f5f1e6);
       font-weight: 700;
       font-size: 14px;
-      color: var(--cg-green-950, #1b382b);
+      color: var(--cg-green-950, #0e3c43);
       text-transform: uppercase;
       letter-spacing: 0.05em;
     }
@@ -194,8 +194,8 @@
     }
     
     .alc-status-compliant {
-      background: #d8f3dc;
-      color: #062116;
+      background: #d5eef0;
+      color: #05222a;
     }
     
     .alc-status-review {
@@ -232,12 +232,12 @@
     }
     
     .alc-btn-primary {
-      background: var(--cg-green-700, #1b382b);
+      background: var(--cg-green-700, #0e3c43);
       color: #ffffff;
     }
     
     .alc-btn-primary:hover:not(:disabled) {
-      background: var(--cg-green-600, #2d5a44);
+      background: var(--cg-green-600, #1c5963);
     }
     
     .alc-btn-primary:disabled {
@@ -252,7 +252,7 @@
     }
     
     .alc-btn-ghost:hover:not(:disabled) {
-      border-color: var(--cg-green-700, #1b382b);
+      border-color: var(--cg-green-700, #0e3c43);
     }
     
     /* ---------- Compliance Disclaimer ---------- */
@@ -267,7 +267,7 @@
     .alc-disclaimer h3 {
       margin: 0 0 12px;
       font-size: 16px;
-      color: var(--cg-green-950, #1b382b);
+      color: var(--cg-green-950, #0e3c43);
       font-weight: 700;
     }
     

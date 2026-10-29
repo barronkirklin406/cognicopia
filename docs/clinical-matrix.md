@@ -8,16 +8,75 @@ Both packet tools, the packet form on `index.html` and the Packet Builder on
 | `src/engine/ClinicalMatrix.js` | The rulebook. Stage rules, which activity is made for which stage, the page shell, the dignity filter, the clinical tips, the seeded random stream, the page checker. |
 | `src/engine/ClinicalActivities.js` | The page makers. Thirteen kinds of page, each drawn as a page model that every output (PDF, SVG, sheet) reads. |
 | `scripts/check-clinical.mjs` | The tests. Part of `npm test` and `npm run build`. |
+| `scripts/check-clinical-staging.mjs`, `scripts/check-clinical-staging-ui.mjs` | The tiers, GDS and therapy mapping, anchors, avoidance and calm mode: in Node, and in a real browser. |
 
 Both files run in the browser and in Node. They make no network request, read
 no clock, use no browser storage and never call `Math.random`. Nothing a care
 team types leaves the computer.
 
+## Vision tiers: the type grows with the person's eyesight
+
+A profile's print needs carry a vision tier, and every printed floor scales with it, on top of the stage:
+
+| Tier | Scale | Early or middle stage floor | Late stage floor |
+| --- | --- | --- | --- |
+| Standard | 1 | 18 pt | 24 pt |
+| Large print | 1.15 | 20.5 pt | 27.5 pt |
+| Extra-large | 1.3 | 23.5 pt | 31 pt |
+
+`CognicopiaClinicalMatrix.visionScale(tier)` gives the scale (an unknown tier prints at standard size), `floorFor(stage, role, tier)` the smallest a role may be, and `typeFor(stage, tier)` the whole table. The activity engine takes `vision` as an option; a page that cannot hold the larger print at the biggest tier is drawn again one tier down (extra-large, then large, then standard) rather than refused, and the page model records `meta.visionWanted` and `meta.visionUsed`. On the packet form, Extra-Large Print sets the tier for the main PDF: flowing text and headings grow to the scaled floor (a heading shrinks to fit its line, never under 24 pt), while the hand-laid grids and cards keep the stage's own floor so letters never collide. Staff pages (guides, answer keys, notes) never print under 16 pt, and the header, tip and footer of a page are set at the 12 pt staff floor. All printed ink is pure black on white.
+
+`scripts/check-clinical.mjs` proves the scaling for every activity, stage and tier; `scripts/check-print-type-ui.mjs` (in `npm run build`) proves it on the real printed sheets and on PDFs read back with PyMuPDF.
+
+## Tiers, GDS and FAST, as a person reads them
+
+Every place a level is chosen shows the same words, taken from the matrix's own numbers (`CM.tierLabel(stage)`): **Tier 1 · Mild · GDS 3–4**, **Tier 2 · Moderate · GDS 5**, **Tier 3 · Advanced · GDS 6–7** (FAST 3–4, 5, 6–7). They are the care team's own staging; nothing here assesses anyone. The Packet Builder's difficulty choice, the packet tool's level choice, the profile form's tier choice and the tablet's level choice all carry them. In the Packet Builder, a line under the choice says what the tier changes, read from the rulebook (type floor, thinnest line, word-search size, steps to put in order, choices at a time, how busy the page is), so choosing Advanced visibly changes the grid, the line weight, the words and the size of the targets, and the preview is drawn again.
+
+The thirteen core page makers, each with the GDS and FAST range of the stages it is made for and the therapy it serves (`CM.gdsRange`, `CM.fastRange`, `CM.therapyOf`; `scripts/check-clinical-staging.mjs` re-derives every row):
+
+| Page maker | GDS | FAST | Therapy |
+| --- | --- | --- | --- |
+| Large word search (`search-large`) | 3–4 | 3–4 | Cognitive Stimulation |
+| Guided word search (`search-guided`) | 5–7 | 5–7 | Errorless Learning |
+| Word ladder (`ladder`) | 3–4 | 3–4 | Executive Function |
+| Anagrams with clues (`anagram`) | 3–5 | 3–5 | Cognitive Stimulation |
+| Sort into two groups (`sorting`) | 3–5 | 3–5 | Semantic Memory |
+| Odd one out (`oddone`) | 3–5 | 3–5 | Semantic Memory |
+| Put it in order (`sequence`) | 3–7 | 3–7 | Montessori / Sequencing |
+| Choose the ending (`choose-ending`) | 3–7 | 3–7 | Validation / Spontaneous Recall |
+| Match the picture to its name (`matching`) | 3–7 | 3–7 | Errorless Learning |
+| Large-print maze (`maze-motor`) | 3–7 | 3–7 | Spatial / Fine Motor |
+| Follow the path (`pathtrace`) | 5–7 | 5–7 | Spatial / Fine Motor |
+| Today: day, season and weather (`orientation`) | 3–7 | 3–7 | Reality Orientation |
+| Shape to look at (`silhouette`) | 5–7 | 5–7 | Sensory Stimulation |
+
+Every other activity in the matrix gets its therapy from its domain (reminiscence, reality orientation, spatial and fine motor, sensory stimulation, spontaneous recall, and so on); staff pages have none. The tablet's thirteen activities have their own table (`MODULES` in `js/tabletEngine.js`); each is made for all three stages (GDS 3–7).
+
+## Therapy anchors
+
+A resident's page carries a short anchor, `[Therapy: Reminiscence | GDS 5]`, with the GDS of the tier the page is drawn for. On paper it is set in bold 12 pt at the right of the foot (the staff text size), with the page number moved up beside the name to make room, so it is out of the resident's work and costs the body no room; on a Packet Builder page of the older kind it is in the header's right corner; in a screen preview it is in the preview's header line. A two-part therapy name is shortened to its first part when the line would be too wide. `CM.anchorFor(id, tool, stage)` makes the text; a page with no activity keeps the foot as it always was.
+
+## Avoidance protocols and triggers
+
+The profile form's **Avoidance Protocols & Triggers** holds topics (war, loss, hospitals, religion, and so on), military conflict eras (World War II, Korea, Vietnam, the Gulf, Iraq and Afghanistan wars, the Cold War), the names of loved ones to leave out, places or regions, and anything else typed in. `CM.avoidTerms({ topics, eras, people, places, other })` turns them into one list of terms; `CM.avoidMatcher(terms)` finds them as whole words (never "war" inside "toward"), in any case, with a plural or a possessive. The same list is held by every generator:
+
+- the thirteen page makers keep the words off the page, and `CM.validatePage(page, stage, { avoid })` fails a page that names one, so it is drawn again (up to twelve seeds) or refused;
+- the packet tool takes the list from the active resident and from the "keep off the page" field;
+- the Packet Builder has the same field in every activity's form, with a picker that brings in a saved resident's list, name and tier; a page that names a term is drawn again from a fresh draw of the word bank, and if nothing clean can be made the preview says so;
+- the tablet has a "keep off the screen" field; an activity that shows a listed word is started again (up to eight times);
+- the soothing engine, the coloring pages and the reminiscence cards already filtered by topic codes and now take the same terms.
+
+The terms live where the rest of the resident's profile does: the encrypted store on this computer. Nothing here makes a network request (the checks prove it).
+
+## Sundowning / De-escalation mode
+
+One switch, in the Packet Builder's top bar ("Late-Stage / Sundowning Calm"), the packet tool's level choice and the tablet's setup, that makes everything quieter. `CM.CALM` is the rulebook: the late stage's type and line floors, at most three things on a page, a reminiscence invitation in place of a puzzle, no timed, dense or competing pages (`CM.calmOk(id)` lists the pages that are calm). In the Packet Builder each queued page becomes one calm late-stage page drawn by the soothing engine (a reminiscence cue with one picture or path, the avoid list honored, the anchor in the foot); in the packet tool the level goes to late and is held, the unsuited pages are turned off and the calm ones picked, and the level you had comes back when it is turned off; on the tablet only the slow activities are shown and the late stage's size is used. The print standard does not loosen in this mode: pages stay pure black on white, with lines 3 pt or heavier (4.5 pt at the late stage) and the 0.5 in margin. "Less high-contrast line pattern" is met by fewer lines and one subject, not by thinner or lighter lines, which would be harder to see. The mode is a switch on the screen and is not saved.
+
 ## The three stages
 
 | | Early (GDS 3 to 4) | Middle (GDS 5) | Late (GDS 6 to 7) |
 | --- | --- | --- | --- |
-| Smallest type | 14 pt | 18 pt | 24 pt, always bold |
+| Smallest type | 18 pt, always bold | 18 pt, always bold | 24 pt, always bold |
 | Thinnest line | 2.25 pt | 3 pt | 4.5 pt (art 6 pt) |
 | Word search | 12 or 15 square, across, down and diagonal | 8 square at most, across and down, guided | none |
 | Other puzzles | word ladders, anagrams, sorting grids, odd one out, ordering | the same, with more given (the first letter, an example), forced choices | one large thing to look at or do |

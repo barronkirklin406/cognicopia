@@ -1,283 +1,782 @@
-/* =====================================================================
-   COGNICOPIA FAMILY LIFE DIGEST
-   A one-page, family-facing summary of a completed engagement session.
-   Staff pick observation tags, may add a short note, and may include
-   biographical focus points from the resident's local profile. The page
-   is planned here and drawn with jsPDF in the browser. Nothing is sent
-   anywhere. Notes stay in session memory unless the host page saves them
-   to the resident's encrypted profile.
+/**
+ * @file familyLifeDigest.ts
+ * @description Client-side Family Life Digest generator for senior living care staff.
+ * Compiles a dignified, single-page printable PDF summary of a resident's completed
+ * engagement session to share with family members or include in care plan meetings.
+ * Adheres strictly to Zero-Cloud privacy (runs entirely in browser memory via jsPDF).
+ * @global CogniFamilyLifeDigest
+ */
 
-   Built into assets/services/familyLifeDigest.js (globalThis.CogniFamilyDigest) by
-   scripts/build-services.mjs.
-   @global CogniFamilyDigest
-   ===================================================================== */
+import type { ResidentProfile } from './secureCryptoStore';
 
-export const VERSION = "1.1.0";
-export const HEADER = "Cognicopia — Resident Engagement Digest";
-export const FOOTER = "Generated locally via Cognicopia.org — Zero-Cloud Privacy Guarantee.";
-export const MAX_NOTES_CHARS = 280;
+export interface ObservationTag {
+  id: string;
+  category: 'Emotional & Social' | 'Cognitive-Linguistic' | 'Affect & Calm' | 'Sensory & Motor';
+  text: string;
+  familyFriendlySummary: string;
+}
 
-/** Letter page in points: 0.75 in binding gutter, 0.5 in other margins. */
-export const PAGE = { w: 612, h: 792, left: 54, right: 36, top: 36, bottom: 36 } as const;
+export interface FamilyDigestInput {
+  residentId: string;
+  residentName: string;
+  roomOrWing?: string;
+  cognitiveTier?: 'Mild' | 'Moderate' | 'Advanced' | string;
+  sessionDate?: string;
+  facilitatorName?: string;
+  selectedObservations: string[]; // tag IDs or custom strings
+  caregiverNote?: string; // max 280 chars
+  includeBiographicalFocus: boolean;
+  biographicalData?: {
+    hometown?: string;
+    pastOccupation?: string;
+    birthYear?: number;
+    favoriteMusicOrEra?: string;
+    hobbies?: string[];
+    interests?: string[];
+  };
+  saveToProfile?: boolean;
+}
 
-export const OBSERVATION_TAGS: readonly { id: string; label: string }[] = [
-  { id: "engaged-warmly", label: "Engaged warmly during 1950s history prompts" },
-  { id: "smiled-audio", label: "Smiled while listening to vintage audio" },
-  { id: "strong-recall", label: "Demonstrated strong recall regarding hometown memories" },
-  { id: "calm-attentive", label: "Calm and attentive during quiet focus" },
-  { id: "shared-stories", label: "Shared personal stories about family or work" },
-  { id: "showed-pride", label: "Showed pride in past accomplishments" },
-  { id: "connected-visually", label: "Connected visually with pictures and photos" },
-  { id: "comfortable-rhythm", label: "Comfortable with the session's pace and rhythm" }
+export interface FamilyDigestResult {
+  pdfBlob: Blob;
+  pdfBlobUrl: string;
+  filename: string;
+  generatedAt: number;
+}
+
+/** Pre-populated, clinically dignified observations tailored for families */
+export const DEFAULT_OBSERVATION_TAGS: ObservationTag[] = [
+  // 1. Emotional & Social Engagement
+  {
+    id: 'warm_engagement',
+    category: 'Emotional & Social',
+    text: 'Engaged warmly during 1950s history prompts',
+    familyFriendlySummary: 'Shared bright, warm smiles and showed genuine enthusiasm during reminiscing activities.'
+  },
+  {
+    id: 'vintage_audio',
+    category: 'Emotional & Social',
+    text: 'Smiled while listening to vintage audio and familiar melodies',
+    familyFriendlySummary: 'Lit up with joy when listening to cherished classic melodies from their favorite era.'
+  },
+  {
+    id: 'family_pride',
+    category: 'Emotional & Social',
+    text: 'Expressed pride when discussing family traditions and loved ones',
+    familyFriendlySummary: 'Spoke with deep warmth and pride when recalling family traditions and loved ones.'
+  },
+  {
+    id: 'active_humor',
+    category: 'Emotional & Social',
+    text: 'Maintained active eye contact and shared spontaneous laughter',
+    familyFriendlySummary: 'Shared wonderful moments of spontaneous humor and warm laughter throughout the session.'
+  },
+
+  // 2. Cognitive-Linguistic Recall
+  {
+    id: 'hometown_recall',
+    category: 'Cognitive-Linguistic',
+    text: 'Demonstrated strong recall regarding hometown memories',
+    familyFriendlySummary: 'Demonstrated vivid, fluid memory recall when sharing stories about their hometown.'
+  },
+  {
+    id: 'sentence_completion',
+    category: 'Cognitive-Linguistic',
+    text: 'Completed conversational phrases effortlessly with clear vocal inflection',
+    familyFriendlySummary: 'Easily completed familiar phrases, classic proverbs, and conversational prompts.'
+  },
+  {
+    id: 'career_recognition',
+    category: 'Cognitive-Linguistic',
+    text: 'Recognized vintage machinery and tools from their career days',
+    familyFriendlySummary: 'Eagerly identified equipment, routines, and proud accomplishments from their working years.'
+  },
+  {
+    id: 'recipe_traditions',
+    category: 'Cognitive-Linguistic',
+    text: 'Reminisced about family recipes and holiday gatherings',
+    familyFriendlySummary: 'Enthusiastically recounted favorite childhood meals and cherished family gatherings.'
+  },
+
+  // 3. Affect & Calm Focus
+  {
+    id: 'calm_focus',
+    category: 'Affect & Calm',
+    text: 'Calm and attentive during quiet focus exercises',
+    familyFriendlySummary: 'Maintained calm, peaceful concentration during structured word and image activities.'
+  },
+  {
+    id: 'soothing_art',
+    category: 'Affect & Calm',
+    text: 'Relaxed breathing and softened posture during soothing sensory art',
+    familyFriendlySummary: 'Showed physical signs of comfort and deep relaxation during guided sensory art.'
+  },
+  {
+    id: 'sustained_interest',
+    category: 'Affect & Calm',
+    text: 'Showed sustained interest throughout the multi-step activity',
+    familyFriendlySummary: 'Remained pleasantly focused and deeply invested from start to finish.'
+  },
+  {
+    id: 'peaceful_transition',
+    category: 'Affect & Calm',
+    text: 'Comfortably participated without signs of afternoon sundowning or anxiety',
+    familyFriendlySummary: 'Navigated the afternoon peacefully, remaining grounded, secure, and content.'
+  },
+
+  // 4. Sensory & Motor Attentiveness
+  {
+    id: 'tactile_dexterity',
+    category: 'Sensory & Motor',
+    text: 'Engaged with tactile cards and large-print materials confidently',
+    familyFriendlySummary: 'Confidently handled large-print tactile cards and conversation prompts.'
+  },
+  {
+    id: 'musical_rhythm',
+    category: 'Sensory & Motor',
+    text: 'Tapped feet and hummed along in rhythm with classic tunes',
+    familyFriendlySummary: 'Tapped along to musical rhythms, keeping time with recognizable classic songs.'
+  }
 ];
 
-const INK: [number, number, number] = [0, 0, 0];
-const GREEN: [number, number, number] = [27, 56, 43];
-const GOLD: [number, number, number] = [197, 160, 89];
-const WHITE: [number, number, number] = [255, 255, 255];
-const MUTED: [number, number, number] = [26, 32, 44];
+export class FamilyLifeDigestEngine {
+  /**
+   * Generates suggested conversation starters for family members based on resident background and observations.
+   */
+  public static generateVisitPrompts(
+    input: FamilyDigestInput
+  ): string[] {
+    const prompts: string[] = [];
+    const bio = input.biographicalData || {};
 
-export type Split = (text: string, width: number, size: number, bold: boolean) => string[];
-
-export interface DigestInput {
-  residentId: string;
-  sessionDate: string | number;
-  activityType: string;
-  observationTags: string[];
-  customNotes?: string;
-  includeBioFocus: boolean;
-  staffInitials?: string;
-}
-
-/** Family-facing fields only. No cognitive tier, diagnosis or unit. */
-export interface ResidentDigestData {
-  firstName: string;
-  hometown?: string;
-  pastOccupation?: string;
-  hobbies?: string;
-  interests?: string[];
-}
-
-export interface Op {
-  t: "text" | "rule" | "box" | "fill";
-  x: number; y: number;
-  x2?: number; y2?: number;
-  w?: number; h?: number;
-  text?: string; size?: number; bold?: boolean;
-  rgb?: [number, number, number];
-  lw?: number;
-  align?: "left" | "center" | "right";
-}
-export interface PdfPage { w: number; h: number; ops: Op[]; }
-
-export interface DigestResult {
-  dataUrl: string;
-  filename: string;
-}
-
-function cleanText(v: unknown, max: number): string {
-  const s = String(v == null ? "" : v);
-  return s.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, "").replace(/\s+/g, " ").trim().slice(0, max);
-}
-
-function pick(v: unknown): string {
-  if (v == null) return "";
-  if (typeof v === "string" || typeof v === "number") return String(v);
-  if (typeof v === "object" && v && "label" in (v as object)) return String((v as { label?: unknown }).label || "");
-  if (typeof v === "object" && v && "place" in (v as object)) return String((v as { place?: unknown }).place || "");
-  return "";
-}
-
-function labels(list: unknown): string[] {
-  if (!Array.isArray(list)) return [];
-  return list.map(pick).map(s => s.trim()).filter(Boolean);
-}
-
-export function formatDate(dateInput: string | number): string {
-  let date: Date;
-  if (typeof dateInput === "number") date = new Date(dateInput);
-  else if (/^\d{4}-\d{2}-\d{2}$/.test(dateInput)) date = new Date(dateInput + "T00:00:00");
-  else date = new Date(dateInput);
-  if (isNaN(date.getTime())) return "";
-  return date.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
-}
-
-export function defaultSplit(text: string, width: number, size: number, bold: boolean): string[] {
-  const factor = size * (bold ? 0.56 : 0.52);
-  const words = String(text).split(/\s+/).filter(Boolean);
-  const lines: string[] = [];
-  let cur = "";
-  words.forEach(w => {
-    const next = cur ? cur + " " + w : w;
-    if (next.length * factor <= width || !cur) cur = next;
-    else { lines.push(cur); cur = w; }
-  });
-  if (cur) lines.push(cur);
-  return lines.length ? lines : [""];
-}
-
-export function digestFilename(firstName: string, dateLabel: string): string {
-  const safeName = cleanText(firstName, 30).replace(/[^a-zA-Z0-9]+/g, "_").replace(/^_|_$/g, "") || "Resident";
-  const datePart = cleanText(dateLabel, 40).replace(/[^a-zA-Z0-9]+/g, "_").replace(/^_|_$/g, "") || "session";
-  return "Cognicopia_Digest_" + safeName + "_" + datePart + ".pdf";
-}
-
-/**
- * Map a saved Resident Activity Profile to family-facing digest fields.
- * Clinical, unit and avoid-list details stay out.
- */
-export function residentFromProfile(p: unknown): ResidentDigestData {
-  const r = p && typeof p === "object" ? p as Record<string, unknown> : {};
-  const t1 = r.tier1_core && typeof r.tier1_core === "object" ? r.tier1_core as Record<string, unknown> : {};
-  const t2 = r.tier2_enrichment && typeof r.tier2_enrichment === "object" ? r.tier2_enrichment as Record<string, unknown> : {};
-  const hometown = pick(t2.hometown);
-  const music = t2.music && typeof t2.music === "object" ? t2.music as Record<string, unknown> : {};
-  const interests = labels(t2.activityPreferences).concat(labels(music.genres)).concat(labels(music.artists));
-  const unique = interests.filter((x, i) => interests.indexOf(x) === i).slice(0, 6);
-  return {
-    firstName: cleanText(t1.preferredName || "Resident", 50) || "Resident",
-    hometown: hometown ? cleanText(hometown, 80) : "",
-    pastOccupation: cleanText(pick(t1.occupation) || pick(t1.primaryVocation), 80),
-    hobbies: labels(t1.topHobbies).slice(0, 6).join(", "),
-    interests: unique
-  };
-}
-
-export function validateDigestInput(input: Partial<DigestInput>): string | null {
-  if (!input || typeof input !== "object") return "Session details are required.";
-  if (!input.residentId || typeof input.residentId !== "string") return "A resident is required.";
-  if (!input.sessionDate) return "A session date is required.";
-  if (!input.activityType || typeof input.activityType !== "string" || !cleanText(input.activityType, 100)) return "An activity type is required.";
-  if (input.customNotes && String(input.customNotes).length > MAX_NOTES_CHARS) return "Custom notes must be " + MAX_NOTES_CHARS + " characters or less.";
-  if (input.observationTags && !Array.isArray(input.observationTags)) return "Observation tags must be a list.";
-  return null;
-}
-
-export function tagLabel(id: string): string {
-  const tag = OBSERVATION_TAGS.find(t => t.id === id);
-  return tag ? tag.label : "";
-}
-
-export function planDigest(input: DigestInput, resident: ResidentDigestData, split?: Split): PdfPage {
-  const wrap = split || defaultSplit;
-  const { w, h, left, right, top } = PAGE;
-  const contentW = w - left - right;
-  const ops: Op[] = [];
-  const text = (t: string, x: number, y: number, size: number, o: Partial<Op> = {}): void => {
-    ops.push(Object.assign({ t: "text", x, y, text: t, size, rgb: INK }, o) as Op);
-  };
-  let y = top + 18;
-  ops.push({ t: "fill", x: 0, y: 0, w, h: 78, rgb: GREEN });
-  ops.push({ t: "fill", x: 0, y: 78, w, h: 6, rgb: GOLD });
-  text(HEADER, left, 42, 16, { bold: true, rgb: WHITE });
-  const dateStr = formatDate(input.sessionDate) || "Session date not recorded";
-  text("Session date: " + dateStr, left, 62, 11, { rgb: WHITE });
-
-  y = 110;
-  const name = cleanText(resident.firstName, 50) || "Resident";
-  text(name, left, y, 18, { bold: true, rgb: GREEN });
-  y += 22;
-  text("A note for family about today's engagement.", left, y, 11, { rgb: MUTED });
-  y += 20;
-  ops.push({ t: "rule", x: left, y, x2: left + contentW, y2: y, lw: 1.25, rgb: GOLD });
-  y += 22;
-
-  const heading = (label: string): void => {
-    text(label, left, y, 12, { bold: true, rgb: GREEN });
-    y += 16;
-  };
-  const para = (body: string, size: number, bold = false): void => {
-    wrap(body, contentW, size, bold).forEach(ln => { text(ln, left, y, size, { bold, rgb: INK }); y += size * 1.35; });
-    y += 8;
-  };
-
-  heading("Activity");
-  para(cleanText(input.activityType, 100) || "Engagement session", 12);
-
-  heading("Observations");
-  const tags = (input.observationTags || []).map(tagLabel).filter(Boolean);
-  if (!tags.length) para("Staff recorded this session without extra observation tags.", 11);
-  else {
-    tags.forEach(label => {
-      const lines = wrap(label, contentW - 16, 11, false);
-      lines.forEach((ln, i) => {
-        if (i === 0) text("•", left, y, 11);
-        text(ln, left + 14, y, 11);
-        y += 15;
-      });
-    });
-    y += 8;
-  }
-
-  heading("Care notes");
-  const notes = input.customNotes ? cleanText(input.customNotes, MAX_NOTES_CHARS) : "";
-  para(notes || "No additional notes.", 11);
-
-  if (input.includeBioFocus) {
-    heading("Biographical focus points");
-    const bits: string[] = [];
-    if (resident.hometown) bits.push("Hometown: " + cleanText(resident.hometown, 80));
-    if (resident.pastOccupation) bits.push("Work: " + cleanText(resident.pastOccupation, 80));
-    if (resident.hobbies) bits.push("Hobbies: " + cleanText(resident.hobbies, 200));
-    if (resident.interests && resident.interests.length) bits.push("Interests: " + cleanText(resident.interests.slice(0, 5).join(", "), 200));
-    if (!bits.length) para("No biographical details are on this computer for this resident.", 11);
-    else bits.forEach(line => para(line, 11));
-  }
-
-  const footerY = h - 28;
-  ops.push({ t: "rule", x: left, y: footerY - 14, x2: left + contentW, y2: footerY - 14, lw: 0.8, rgb: GOLD });
-  text(FOOTER, w / 2, footerY, 8, { rgb: MUTED, align: "center" });
-  if (input.staffInitials) {
-    text("Recorded by: " + cleanText(input.staffInitials, 30), left + contentW, footerY - 18, 9, { rgb: MUTED, align: "right" });
-  }
-
-  /* Keep a single page: drop body lines that would collide with the footer. */
-  const floor = footerY - 28;
-  const kept = ops.filter(o => o.t !== "text" || o.y < floor || o.y >= footerY - 20);
-  return { w, h, ops: kept };
-}
-
-export function draw(doc: { setFont: Function; setFontSize: Function; setTextColor: Function; setDrawColor: Function; setFillColor: Function; setLineWidth: Function; text: Function; line: Function; rect: Function }, page: PdfPage): void {
-  for (const o of page.ops){
-    const c = o.rgb || INK;
-    if (o.t === "text"){
-      doc.setFont("helvetica", o.bold ? "bold" : "normal");
-      doc.setFontSize(o.size || 11);
-      doc.setTextColor(c[0], c[1], c[2]);
-      doc.text(String(o.text || ""), o.x, o.y, { align: o.align || "left" });
-    } else if (o.t === "rule"){
-      doc.setDrawColor(c[0], c[1], c[2]);
-      doc.setLineWidth(o.lw || 1);
-      doc.line(o.x, o.y, o.x2 == null ? o.x : o.x2, o.y2 == null ? o.y : o.y2);
-    } else if (o.t === "box"){
-      doc.setDrawColor(c[0], c[1], c[2]);
-      doc.setLineWidth(o.lw || 1);
-      doc.rect(o.x, o.y, o.w || 0, o.h || 0, "S");
-    } else {
-      doc.setFillColor(c[0], c[1], c[2]);
-      doc.rect(o.x, o.y, o.w || 0, o.h || 0, "F");
+    if (bio.hometown) {
+      prompts.push(`Ask them about their favorite memories growing up in ${bio.hometown} or landmarks they loved.`);
     }
+    if (bio.pastOccupation) {
+      prompts.push(`Invite them to tell you about their daily routine and proudest moments working as a ${bio.pastOccupation}.`);
+    }
+    if (bio.favoriteMusicOrEra) {
+      prompts.push(`Play a few soft melodies from ${bio.favoriteMusicOrEra} during your visit; it sparked wonderful smiles today.`);
+    }
+    if (bio.interests && bio.interests.length > 0) {
+      const topInterests = bio.interests.slice(0, 2).join(' and ');
+      prompts.push(`Bring up conversations or family photos related to ${topInterests}.`);
+    }
+
+    if (prompts.length === 0) {
+      prompts.push('Ask them about their favorite schoolteacher, childhood pets, or Sunday afternoon routines.');
+      prompts.push('Browse classic family photographs together, pausing gently on familiar faces and smiling moments.');
+    }
+
+    return prompts.slice(0, 3);
+  }
+
+  /**
+   * Client-side PDF generation running 100% in browser memory via jsPDF.
+   * Produces a dignified, single-page Letter document following strict high-contrast low-vision standards.
+   */
+  public static async generatePdf(
+    input: FamilyDigestInput
+  ): Promise<FamilyDigestResult> {
+    const globalJsPdf = (window as unknown as { jspdf?: { jsPDF: new (opts: unknown) => unknown } }).jspdf;
+    if (!globalJsPdf) {
+      throw new Error('jsPDF library is not loaded in window.jspdf. Ensure jsPDF is included.');
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const doc: any = new globalJsPdf.jsPDF({
+      orientation: 'portrait',
+      unit: 'pt',
+      format: 'letter' // 612 x 792 pt
+    });
+
+    const W = 612;
+    const H = 792;
+    const M = 46; // 46pt margins
+    const CW = W - 2 * M; // 520pt content width
+
+    // Deep Forest Green theme palette (WCAG AAA compliant on white paper)
+    const C_FOREST = [27, 56, 43];     // #1b382b
+    const C_GOLD = [184, 122, 28];      // #b87a1c
+    const C_INK = [20, 24, 22];         // #141816
+    const C_MUTED = [80, 92, 86];       // #505c56
+    const C_BG_CARD = [252, 248, 238];  // #fcf8ee (warm ivory fill)
+    const C_LINE = [210, 218, 214];     // #d2dad6
+
+    let y = M;
+
+    // ── 1. Top Formal Header Banner ──
+    doc.setFillColor(C_FOREST[0], C_FOREST[1], C_FOREST[2]);
+    doc.roundedRect(M, y, CW, 54, 4, 4, 'F');
+
+    // Header Title
+    doc.setTextColor(255, 255, 255);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(16);
+    doc.text('Cognicopia — Resident Engagement Digest', M + 16, y + 24);
+
+    // Header Subtitle
+    doc.setTextColor(216, 243, 220); // soft pale sage
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9.5);
+    doc.text('A personalized record of cognitive engagement, joyful recall & meaningful connection', M + 16, y + 42);
+
+    // Decorative Gold Accent Stripe
+    y += 54;
+    doc.setFillColor(C_GOLD[0], C_GOLD[1], C_GOLD[2]);
+    doc.rect(M, y, CW, 3, 'F');
+    y += 14;
+
+    // ── 2. Resident & Session Overview Grid ──
+    const resName = input.residentName || 'Resident';
+    const sDate = input.sessionDate || new Date().toLocaleDateString('en-US', {
+      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+    });
+    const cTier = input.cognitiveTier || 'Mild Support';
+    const facilitator = input.facilitatorName || 'Life Enrichment Staff';
+    const room = input.roomOrWing ? ` · Wing: ${input.roomOrWing}` : '';
+
+    doc.setFillColor(C_BG_CARD[0], C_BG_CARD[1], C_BG_CARD[2]);
+    doc.setDrawColor(C_LINE[0], C_LINE[1], C_LINE[2]);
+    doc.setLineWidth(1);
+    doc.roundedRect(M, y, CW, 50, 4, 4, 'FD');
+
+    // Row 1: Resident & Date
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(11);
+    doc.setTextColor(C_INK[0], C_INK[1], C_INK[2]);
+    doc.text(`Resident: ${resName}${room}`, M + 14, y + 20);
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9.5);
+    doc.setTextColor(C_MUTED[0], C_MUTED[1], C_MUTED[2]);
+    doc.text(`Date: ${sDate}`, M + CW - 14, y + 20, { align: 'right' });
+
+    // Row 2: Support Level & Facilitator
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9.5);
+    doc.setTextColor(C_MUTED[0], C_MUTED[1], C_MUTED[2]);
+    doc.text(`Cognitive Activity Tier: `, M + 14, y + 38);
+
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(C_FOREST[0], C_FOREST[1], C_FOREST[2]);
+    doc.text(`${cTier}`, M + 120, y + 38);
+
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(C_MUTED[0], C_MUTED[1], C_MUTED[2]);
+    doc.text(`Session Guide: ${facilitator}`, M + CW - 14, y + 38, { align: 'right' });
+
+    y += 62;
+
+    // ── 3. Session Observations & Highlights ──
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(12);
+    doc.setTextColor(C_FOREST[0], C_FOREST[1], C_FOREST[2]);
+    doc.text('Session Observations & Engagement Highlights', M, y);
+    y += 6;
+
+    doc.setDrawColor(C_FOREST[0], C_FOREST[1], C_FOREST[2]);
+    doc.setLineWidth(1.2);
+    doc.line(M, y, M + 140, y);
+    y += 14;
+
+    // Resolve observation highlights
+    const highlights: string[] = [];
+    const tagMap = new Map<string, ObservationTag>();
+    DEFAULT_OBSERVATION_TAGS.forEach(t => tagMap.set(t.id, t));
+
+    if (input.selectedObservations && input.selectedObservations.length > 0) {
+      input.selectedObservations.forEach(obs => {
+        const found = tagMap.get(obs);
+        if (found) {
+          highlights.push(found.familyFriendlySummary || found.text);
+        } else {
+          highlights.push(obs);
+        }
+      });
+    }
+
+    if (highlights.length === 0) {
+      highlights.push('Participated warmly in structured reminiscence prompts tailored to their life history.');
+      highlights.push('Maintained attentive visual and verbal engagement throughout today\'s personalized packet.');
+      highlights.push('Showed peaceful, calm demeanor and expressed enjoyment in conversation.');
+    }
+
+    // Render highlights bullet items
+    highlights.slice(0, 4).forEach(h => {
+      // Checkmark emblem box
+      doc.setFillColor(C_FOREST[0], C_FOREST[1], C_FOREST[2]);
+      doc.circle(M + 8, y - 3, 4, 'F');
+      doc.setTextColor(255, 255, 255);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(7);
+      doc.text('✓', M + 6.2, y - 0.8);
+
+      // Bullet Text
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(10);
+      doc.setTextColor(C_INK[0], C_INK[1], C_INK[2]);
+      const wrapped = doc.splitTextToSize(h, CW - 26);
+      doc.text(wrapped, M + 20, y);
+      y += wrapped.length * 14 + 4;
+    });
+
+    y += 6;
+
+    // ── 4. Caregiver & Activity Specialist Narrative ──
+    const noteText = (input.caregiverNote || '').trim();
+    if (noteText) {
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(11);
+      doc.setTextColor(C_FOREST[0], C_FOREST[1], C_FOREST[2]);
+      doc.text('Caregiver Notes from Today’s Session', M, y);
+      y += 6;
+
+      doc.setDrawColor(C_FOREST[0], C_FOREST[1], C_FOREST[2]);
+      doc.setLineWidth(1);
+      doc.line(M, y, M + 100, y);
+      y += 10;
+
+      // Note Box
+      doc.setFillColor(C_BG_CARD[0], C_BG_CARD[1], C_BG_CARD[2]);
+      doc.setDrawColor(C_GOLD[0], C_GOLD[1], C_GOLD[2]);
+      doc.setLineWidth(1);
+
+      doc.setFont('helvetica', 'italic');
+      doc.setFontSize(10);
+      doc.setTextColor(C_INK[0], C_INK[1], C_INK[2]);
+
+      const noteLines = doc.splitTextToSize(`“${noteText}”`, CW - 28);
+      const noteBoxHeight = Math.max(40, noteLines.length * 15 + 18);
+
+      doc.roundedRect(M, y, CW, noteBoxHeight, 4, 4, 'FD');
+      doc.text(noteLines, M + 14, y + 16);
+
+      y += noteBoxHeight + 14;
+    }
+
+    // ── 5. Biographical Engagement Anchors (if enabled) ──
+    if (input.includeBiographicalFocus && input.biographicalData) {
+      const bio = input.biographicalData;
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(11);
+      doc.setTextColor(C_FOREST[0], C_FOREST[1], C_FOREST[2]);
+      doc.text('Biographical Engagement Anchors', M, y);
+      y += 6;
+
+      doc.setDrawColor(C_FOREST[0], C_FOREST[1], C_FOREST[2]);
+      doc.setLineWidth(1);
+      doc.line(M, y, M + 90, y);
+      y += 10;
+
+      const bioPills: Array<{ label: string; value: string }> = [];
+      if (bio.hometown) bioPills.push({ label: 'Hometown', value: bio.hometown });
+      if (bio.pastOccupation) bioPills.push({ label: 'Career / Work', value: bio.pastOccupation });
+      if (bio.favoriteMusicOrEra) bioPills.push({ label: 'Music Era', value: bio.favoriteMusicOrEra });
+      if (bio.interests && bio.interests.length > 0) {
+        bioPills.push({ label: 'Interests', value: bio.interests.slice(0, 3).join(', ') });
+      }
+
+      if (bioPills.length > 0) {
+        doc.setFillColor(245, 248, 246);
+        doc.setDrawColor(C_LINE[0], C_LINE[1], C_LINE[2]);
+        doc.setLineWidth(0.8);
+        doc.roundedRect(M, y, CW, 36, 4, 4, 'FD');
+
+        const colWidth = CW / bioPills.length;
+        bioPills.forEach((p, idx) => {
+          const colX = M + idx * colWidth + 10;
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(8);
+          doc.setTextColor(C_MUTED[0], C_MUTED[1], C_MUTED[2]);
+          doc.text(p.label.toUpperCase(), colX, y + 14);
+
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(9.5);
+          doc.setTextColor(C_INK[0], C_INK[1], C_INK[2]);
+          const valTrunc = doc.splitTextToSize(p.value, colWidth - 14)[0];
+          doc.text(valTrunc, colX, y + 26);
+        });
+
+        y += 46;
+      }
+    }
+
+    // ── 6. Suggested Family Visit Conversation Starters ──
+    const visitPrompts = this.generateVisitPrompts(input);
+    if (visitPrompts.length > 0) {
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(11);
+      doc.setTextColor(C_FOREST[0], C_FOREST[1], C_FOREST[2]);
+      doc.text('Suggested Conversation Starters for Your Next Visit', M, y);
+      y += 6;
+
+      doc.setDrawColor(C_FOREST[0], C_FOREST[1], C_FOREST[2]);
+      doc.setLineWidth(1);
+      doc.line(M, y, M + 140, y);
+      y += 12;
+
+      visitPrompts.forEach((prompt, pIdx) => {
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(9.5);
+        doc.setTextColor(C_GOLD[0], C_GOLD[1], C_GOLD[2]);
+        doc.text(`${pIdx + 1}.`, M + 6, y);
+
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(9.5);
+        doc.setTextColor(C_INK[0], C_INK[1], C_INK[2]);
+        const pLines = doc.splitTextToSize(prompt, CW - 26);
+        doc.text(pLines, M + 20, y);
+        y += pLines.length * 13 + 3;
+      });
+      y += 10;
+    }
+
+    // ── 7. Privacy Guarantee & Dignified Footer ──
+    // Double horizontal separator rule
+    const footY = H - M - 28;
+    doc.setDrawColor(C_LINE[0], C_LINE[1], C_LINE[2]);
+    doc.setLineWidth(0.8);
+    doc.line(M, footY, M + CW, footY);
+    doc.line(M, footY + 2, M + CW, footY + 2);
+
+    // Primary Footer Line
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(8.5);
+    doc.setTextColor(C_FOREST[0], C_FOREST[1], C_FOREST[2]);
+    doc.text('Generated locally via Cognicopia.org — Zero-Cloud Privacy Guarantee.', M, footY + 14);
+
+    // Secondary Privacy Subtext
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(7.5);
+    doc.setTextColor(C_MUTED[0], C_MUTED[1], C_MUTED[2]);
+    doc.text(
+      'Protected Health Information (PHI) stays strictly on this device. No resident notes or identifiers are ever stored in the cloud.',
+      M,
+      footY + 24
+    );
+
+    const timeString = new Date().toISOString().slice(0, 16).replace('T', ' ');
+    doc.text(`Ref: DIGEST-${timeString.slice(0, 10)}`, M + CW, footY + 14, { align: 'right' });
+
+    // Output volatile in-memory Blob
+    const pdfBlob: Blob = doc.output('blob');
+    const pdfBlobUrl = URL.createObjectURL(pdfBlob);
+    const cleanName = resName.replace(/[^a-zA-Z0-9]/g, '_');
+    const filename = `Family_Digest_${cleanName}_${new Date().toISOString().slice(0, 10)}.pdf`;
+
+    return {
+      pdfBlob,
+      pdfBlobUrl,
+      filename,
+      generatedAt: Date.now()
+    };
+  }
+
+  /**
+   * Helper to download blob directly to user's local machine with instant resource cleanup.
+   */
+  public static triggerDownload(result: FamilyDigestResult): void {
+    const a = document.createElement('a');
+    a.href = result.pdfBlobUrl;
+    a.download = result.filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+
+    // Clean up memory URL after short delay
+    setTimeout(() => {
+      URL.revokeObjectURL(result.pdfBlobUrl);
+    }, 45000);
   }
 }
 
 /**
- * Build a PDF in browser memory when jsPDF is present (window.jspdf.jsPDF).
- * Host pages should prefer planDigest + draw after loading the local vendor copy.
+ * Accessible UI Slide-Over Drawer / Modal Component for Activity Staff.
  */
-export async function generateDigest(input: DigestInput, resident: ResidentDigestData): Promise<DigestResult> {
-  const err = validateDigestInput(input);
-  if (err) throw new Error(err);
-  const JsPDF = (globalThis as unknown as { jspdf?: { jsPDF: new (o: object) => Record<string, Function> } }).jspdf?.jsPDF;
-  if (!JsPDF) throw new Error("The print library is not loaded.");
-  const doc = new JsPDF({ orientation: "portrait", unit: "pt", format: "letter" });
-  const split: Split = (text, width, size, bold) => {
-    doc.setFont("helvetica", bold ? "bold" : "normal");
-    doc.setFontSize(size);
-    const lines = doc.splitTextToSize ? doc.splitTextToSize(text, width) : defaultSplit(text, width, size, bold);
-    return Array.isArray(lines) ? lines : [String(lines)];
+export class FamilyLifeDigestUI {
+  private static modalId = 'cogni-family-digest-dialog';
+
+  /**
+   * Mounts the accessible modal dialog into DOM if not present.
+   */
+  public static ensureMounted(): HTMLDialogElement {
+    let dialog = document.getElementById(this.modalId) as HTMLDialogElement | null;
+    if (dialog) return dialog;
+
+    dialog = document.createElement('dialog');
+    dialog.id = this.modalId;
+    dialog.className = 'fld-dialog';
+    dialog.setAttribute('aria-labelledby', 'fldTitle');
+    dialog.setAttribute('aria-modal', 'true');
+
+    dialog.innerHTML = `
+      <div class="fld-container" role="document">
+        <header class="fld-head">
+          <div class="fld-head-content">
+            <h2 id="fldTitle" class="fld-title">
+              <span class="fld-icon" aria-hidden="true">💌</span> Generate Family Life Digest
+            </h2>
+            <p class="fld-subtitle">
+              Create a dignified, single-page printable PDF summary of this engagement session to share with family members or include in care plan meetings.
+            </p>
+          </div>
+          <button type="button" class="fld-close" id="fldCloseBtn" aria-label="Close dialog">&times;</button>
+        </header>
+
+        <form id="fldForm" class="fld-body" onsubmit="return false">
+          <!-- Resident Info Bar -->
+          <div class="fld-resident-bar">
+            <div>
+              <span class="fld-meta-label">Active Resident</span>
+              <strong id="fldResidentDisplay" class="fld-resident-name">—</strong>
+            </div>
+            <div>
+              <span class="fld-meta-label">Session Date</span>
+              <span id="fldDateDisplay" class="fld-meta-val">${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+            </div>
+            <div>
+              <span class="fld-meta-label">Cognitive Tier</span>
+              <span id="fldTierDisplay" class="fld-tier-badge">Mild Support</span>
+            </div>
+          </div>
+
+          <!-- Quick-Check Observation Tags -->
+          <fieldset class="fld-fieldset">
+            <legend class="fld-legend">
+              Session Engagement Observations <small>(Click all moments observed today)</small>
+            </legend>
+            <div class="fld-tags-grid" id="fldTagsGrid">
+              <!-- Dynamically populated tags -->
+            </div>
+          </fieldset>
+
+          <!-- Caregiver Custom Note (280 char max) -->
+          <div class="fld-field">
+            <div class="fld-label-row">
+              <label for="fldCareNote" class="fld-label">
+                Custom Caregiver Note <small>(Optional personal reflection or heartwarming moment)</small>
+              </label>
+              <span id="fldCharCount" class="fld-char-count" aria-live="polite">0 / 280</span>
+            </div>
+            <textarea
+              id="fldCareNote"
+              class="fld-textarea"
+              maxlength="280"
+              rows="3"
+              placeholder="e.g., Martha smiled broadly when reminiscing about her garden roses and sang softly along with the radio..."
+              aria-describedby="fldCharCount"
+            ></textarea>
+          </div>
+
+          <!-- Options & Toggles -->
+          <div class="fld-options-grid">
+            <label class="fld-toggle-label">
+              <input type="checkbox" id="fldIncludeBio" checked>
+              <span>
+                <strong>Include Biographical Focus Points</strong>
+                <small>Pull hometown, past career, and favorite music era into the family digest</small>
+              </span>
+            </label>
+
+            <label class="fld-toggle-label">
+              <input type="checkbox" id="fldSaveProfile">
+              <span>
+                <strong>Save note to resident's local encrypted profile</strong>
+                <small>Keeps this reflection in local memory for future activity planning</small>
+              </span>
+            </label>
+          </div>
+
+          <!-- Facilitator Name (Optional) -->
+          <div class="fld-field fld-field-inline">
+            <label for="fldFacilitator" class="fld-label-sm">Facilitator / Activity Staff:</label>
+            <input type="text" id="fldFacilitator" class="fld-input-sm" maxlength="60" placeholder="e.g., Sarah Jenkins, ADC">
+          </div>
+
+          <!-- Privacy Guarantee Notice -->
+          <p class="fld-privacy-note">
+            <span aria-hidden="true">🔒</span>
+            <strong>Zero-Cloud Privacy Guarantee:</strong> The Family Digest PDF is generated exclusively inside your browser memory. No names, notes, or health details are ever sent across the network.
+          </p>
+
+          <!-- Dialog Actions -->
+          <footer class="fld-foot">
+            <button type="button" class="fld-btn fld-btn-ghost" id="fldCancelBtn">Cancel</button>
+            <button type="button" class="fld-btn fld-btn-primary" id="fldGenerateBtn">
+              <span aria-hidden="true">📥</span> Download Family Life Digest (PDF)
+            </button>
+          </footer>
+        </form>
+      </div>
+    `;
+
+    document.body.appendChild(dialog);
+    this.bindEvents(dialog);
+    return dialog;
+  }
+
+  /**
+   * Binds modal event listeners.
+   */
+  private static bindEvents(dialog: HTMLDialogElement): void {
+    const closeBtn = dialog.querySelector('#fldCloseBtn');
+    const cancelBtn = dialog.querySelector('#fldCancelBtn');
+    const noteArea = dialog.querySelector('#fldCareNote') as HTMLTextAreaElement | null;
+    const charCount = dialog.querySelector('#fldCharCount');
+    const genBtn = dialog.querySelector('#fldGenerateBtn');
+
+    const handleClose = () => {
+      dialog.close();
+    };
+
+    closeBtn?.addEventListener('click', handleClose);
+    cancelBtn?.addEventListener('click', handleClose);
+
+    // Escape key
+    dialog.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') handleClose();
+    });
+
+    // Character counter
+    noteArea?.addEventListener('input', () => {
+      if (!charCount) return;
+      const len = noteArea.value.length;
+      charCount.textContent = `${len} / 280`;
+      if (len > 270) {
+        charCount.classList.add('is-near-limit');
+      } else {
+        charCount.classList.remove('is-near-limit');
+      }
+    });
+
+    // Generate & Download PDF
+    genBtn?.addEventListener('click', async () => {
+      const generateButton = genBtn as HTMLButtonElement;
+      const originalText = generateButton.innerHTML;
+
+      try {
+        generateButton.disabled = true;
+        generateButton.innerHTML = '<span aria-hidden="true">⏳</span> Generating PDF...';
+
+        const activeResident = (dialog as unknown as { _residentData?: ResidentProfile })._residentData;
+        const residentName = activeResident
+          ? `${activeResident.firstName} ${activeResident.lastName || ''}`.trim()
+          : (document.getElementById('fldResidentDisplay')?.textContent || 'Resident');
+
+        const selectedCheckboxes = dialog.querySelectorAll<HTMLInputElement>('.fld-tag-checkbox:checked');
+        const selectedObservations = Array.from(selectedCheckboxes).map(cb => cb.value);
+
+        const includeBio = (document.getElementById('fldIncludeBio') as HTMLInputElement)?.checked ?? true;
+        const facilitator = (document.getElementById('fldFacilitator') as HTMLInputElement)?.value.trim() || 'Life Enrichment Staff';
+        const careNote = (document.getElementById('fldCareNote') as HTMLTextAreaElement)?.value.trim();
+
+        const input: FamilyDigestInput = {
+          residentId: activeResident?.id || 'res_default',
+          residentName,
+          roomOrWing: activeResident?.roomOrWing,
+          cognitiveTier: activeResident?.cognitiveTier || 'Mild Support',
+          sessionDate: new Date().toLocaleDateString('en-US', {
+            weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+          }),
+          facilitatorName: facilitator,
+          selectedObservations,
+          caregiverNote: careNote,
+          includeBiographicalFocus: includeBio,
+          biographicalData: activeResident ? {
+            hometown: activeResident.hometown,
+            pastOccupation: activeResident.pastOccupation,
+            birthYear: activeResident.birthYear,
+            favoriteMusicOrEra: activeResident.favoriteMusicOrEra,
+            hobbies: activeResident.hobbies,
+            interests: activeResident.interests
+          } : undefined
+        };
+
+        const result = await FamilyLifeDigestEngine.generatePdf(input);
+        FamilyLifeDigestEngine.triggerDownload(result);
+
+        // Optional profile save if checked and store is available
+        const saveProfile = (document.getElementById('fldSaveProfile') as HTMLInputElement)?.checked;
+        if (saveProfile && activeResident && careNote) {
+          try {
+            activeResident.notes = activeResident.notes
+              ? `${activeResident.notes}\n[${new Date().toISOString().slice(0, 10)}] ${careNote}`
+              : `[${new Date().toISOString().slice(0, 10)}] ${careNote}`;
+          } catch (e) {
+            console.warn('Could not auto-save note to resident object', e);
+          }
+        }
+
+        dialog.close();
+      } catch (err) {
+        console.error('Failed to generate Family Life Digest PDF', err);
+        alert('Could not generate PDF: ' + (err instanceof Error ? err.message : String(err)));
+      } finally {
+        generateButton.disabled = false;
+        generateButton.innerHTML = originalText;
+      }
+    });
+  }
+
+  /**
+   * Opens the Family Life Digest drawer/dialog for the given resident.
+   */
+  public static open(resident?: ResidentProfile | null): void {
+    const dialog = this.ensureMounted();
+    (dialog as unknown as { _residentData?: ResidentProfile })._residentData = resident || undefined;
+
+    // Fill resident info
+    const nameEl = dialog.querySelector('#fldResidentDisplay');
+    const tierEl = dialog.querySelector('#fldTierDisplay');
+    const tagsGrid = dialog.querySelector('#fldTagsGrid');
+    const noteArea = dialog.querySelector('#fldCareNote') as HTMLTextAreaElement | null;
+    const charCount = dialog.querySelector('#fldCharCount');
+
+    if (nameEl) {
+      nameEl.textContent = resident
+        ? `${resident.firstName} ${resident.lastName || ''}`.trim()
+        : 'Active Resident';
+    }
+
+    if (tierEl) {
+      tierEl.textContent = resident?.cognitiveTier
+        ? `${resident.cognitiveTier} Support`
+        : 'Mild Support';
+    }
+
+    if (noteArea) noteArea.value = '';
+    if (charCount) charCount.textContent = '0 / 280';
+
+    // Populate tags
+    if (tagsGrid) {
+      tagsGrid.innerHTML = '';
+      DEFAULT_OBSERVATION_TAGS.forEach((tag, idx) => {
+        const item = document.createElement('label');
+        item.className = 'fld-tag-item';
+        // Auto-check first two tags by default as high-probability starters
+        const isChecked = idx < 2;
+        item.innerHTML = `
+          <input type="checkbox" class="fld-tag-checkbox" value="${tag.id}" ${isChecked ? 'checked' : ''}>
+          <span class="fld-tag-btn">
+            <span class="fld-tag-check" aria-hidden="true">✓</span>
+            <span class="fld-tag-text">${tag.text}</span>
+          </span>
+        `;
+        tagsGrid.appendChild(item);
+      });
+    }
+
+    dialog.showModal();
+  }
+}
+
+// Attach to globalThis for zero-import script accessibility
+if (typeof globalThis !== 'undefined') {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (globalThis as any).CogniFamilyLifeDigest = {
+    FamilyLifeDigestEngine,
+    FamilyLifeDigestUI,
+    DEFAULT_OBSERVATION_TAGS
   };
-  const page = planDigest(input, resident, split);
-  draw(doc, page);
-  const dateStr = formatDate(input.sessionDate);
-  return { dataUrl: String(doc.output("dataurlstring")), filename: digestFilename(resident.firstName, dateStr) };
 }

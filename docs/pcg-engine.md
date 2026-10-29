@@ -251,3 +251,11 @@ requires at least a million.
 - Coloring pictures come from the existing coloring library. A late-stage
   "look together" page shows a drawing only when one of the day's items has
   one; otherwise it shows the item's name in large type.
+
+## Quick-Print and the resident's first name
+
+The packet tool's Quick-Print menu has a "Resident first name" field. The name is used only on that printout: nothing is saved or sent, and no profile is created. A name makes the cover read "Activity Packet for" and the name, with "Your Personalized Activity Packet" under it, and every resident page carries the name in its banner. A blank field makes the cover read "Personalized Activity Packet" ("Chosen just for you" under it). The name is cleaned on the way in (`window.quickPrintName`): markup is stripped, only letters, spaces, apostrophes, hyphens and full stops are kept, it is cut at 30 characters, and a field with no letter in it counts as blank. The word "guest" is only a seed for the day's choices; it never prints, and a clinical tip never says it. `scripts/check-print-type-ui.mjs` reads the saved PDFs back to prove it.
+
+## Printed type in the planner and journal books
+
+On resident pages the 12-month planner and the Life Journal print at 16 pt or more (the sheet's `--lpmin`), in pure black. The care team's own pages (`.lp-cg`) keep the 14 pt floor so a dense log still fits. The fit pass (`fitSheets`) never steps resident text below the same floor. Seasonal color is kept only as a background tint and for the season's icon and name.
