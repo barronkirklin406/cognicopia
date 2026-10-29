@@ -1,0 +1,5263 @@
+{
+  "about.html": {
+    "title": "",
+    "links": [],
+    "buttons": [],
+    "inputs_and_generators": [],
+    "sample_text": []
+  },
+  "activate.html": {
+    "title": "Activate Your License \u2014 Cognicopia",
+    "links": [
+      {
+        "text": "Cognicopia",
+        "href": "index.html"
+      },
+      {
+        "text": "",
+        "href": "index.html"
+      },
+      {
+        "text": "",
+        "href": "tablet.html"
+      },
+      {
+        "text": "",
+        "href": "profile.html"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/coloring"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/planner"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/journal"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/reminiscence"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/heirloom"
+      },
+      {
+        "text": "Activity Packets",
+        "href": "builder.html"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/facility"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/shift"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/roster"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/clinical"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/settings"
+      },
+      {
+        "text": "",
+        "href": "pricing.html"
+      },
+      {
+        "text": "",
+        "href": "pilot.html"
+      },
+      {
+        "text": "",
+        "href": "referral.html"
+      },
+      {
+        "text": "Academy",
+        "href": "builder.html#/academy"
+      },
+      {
+        "text": "",
+        "href": "resources/"
+      },
+      {
+        "text": "",
+        "href": "resources/research/"
+      },
+      {
+        "text": "",
+        "href": "resources/quality-standards/"
+      },
+      {
+        "text": "",
+        "href": "resources/clinical-alignment/"
+      },
+      {
+        "text": "",
+        "href": "resources/reminiscence-science/"
+      },
+      {
+        "text": "",
+        "href": "resources/high-volume-facilities/"
+      },
+      {
+        "text": "",
+        "href": "resources/publishing-excellence/"
+      },
+      {
+        "text": "",
+        "href": "resources/platform-overview/"
+      },
+      {
+        "text": "",
+        "href": "resources/privacy-and-data/"
+      },
+      {
+        "text": "",
+        "href": "resources/security-questions/"
+      },
+      {
+        "text": "",
+        "href": "resources/accessibility/"
+      },
+      {
+        "text": "",
+        "href": "resources/activity-feature-guide/"
+      },
+      {
+        "text": "",
+        "href": "resources/resource-catalog/"
+      },
+      {
+        "text": "",
+        "href": "resources/caregiver-faq/"
+      },
+      {
+        "text": "Contact Kirk Barron",
+        "href": "contact.html"
+      },
+      {
+        "text": "Get Full Access ($39/mo or $349/yr) \u2192",
+        "href": "pricing.html"
+      },
+      {
+        "text": "Request Corporate Invoice / W-9",
+        "href": "contact.html?subject=Corporate+Invoice+Request"
+      },
+      {
+        "text": "Open the Packet Tool",
+        "href": "index.html"
+      },
+      {
+        "text": "Open the Packet Builder",
+        "href": "builder.html"
+      },
+      {
+        "text": "plans and prices",
+        "href": "pricing.html"
+      },
+      {
+        "text": "request an invoice",
+        "href": "contact.html?subject=Corporate+Invoice+Request"
+      },
+      {
+        "text": "Cognicopia",
+        "href": "index.html"
+      },
+      {
+        "text": "Personalized Packet Tool",
+        "href": "index.html"
+      },
+      {
+        "text": "Packet Builder",
+        "href": "builder.html"
+      },
+      {
+        "text": "Resident Profiles",
+        "href": "profile.html"
+      },
+      {
+        "text": "Cognicopia Coloring",
+        "href": "builder.html#/coloring"
+      },
+      {
+        "text": "12-Month Life Planners",
+        "href": "life-planners.html"
+      },
+      {
+        "text": "Cognitive Life Journals",
+        "href": "cognitive-journals.html"
+      },
+      {
+        "text": "Facility Portal",
+        "href": "builder.html#/facility"
+      },
+      {
+        "text": "Plans & pricing",
+        "href": "pricing.html"
+      },
+      {
+        "text": "Activate a license",
+        "href": "activate.html"
+      },
+      {
+        "text": "Request an invoice / W-9",
+        "href": "contact.html?subject=Corporate+Invoice+Request"
+      },
+      {
+        "text": "Resource & Clinical Hub",
+        "href": "resources/"
+      },
+      {
+        "text": "Research Center",
+        "href": "resources/research/"
+      },
+      {
+        "text": "Caregiver FAQ",
+        "href": "resources/caregiver-faq/"
+      },
+      {
+        "text": "Contact Kirk Barron",
+        "href": "contact.html"
+      }
+    ],
+    "buttons": [
+      {
+        "text": "Menu"
+      },
+      {
+        "text": "License Key / Promo"
+      },
+      {
+        "text": ""
+      },
+      {
+        "text": "Copy the key"
+      },
+      {
+        "text": "Print this page"
+      },
+      {
+        "text": "Activate Access"
+      }
+    ],
+    "inputs_and_generators": [
+      {
+        "type": "select/textarea",
+        "id": "actKey",
+        "name": ""
+      },
+      {
+        "type": "select/textarea",
+        "id": "actInput",
+        "name": ""
+      }
+    ],
+    "sample_text": [
+      "Activate your license",
+      "Turn a purchase or an invoice into full access on this computer",
+      "Ready when you are",
+      "If you just paid by card, this page finishes the job. If you were sent a license key, paste it below.",
+      "Your license key",
+      "Keep this key. It turns Cognicopia on at every computer in your building: choose License Key / Promo at the top of any page and paste it.",
+      "Paste a license key",
+      "The key is checked on this computer, with no internet needed. If you do not have one yet, see plans and prices, or request an invoice.",
+      "What this page sends",
+      "This is the only page on Cognicopia that connects to the internet, and only after a card payment. It sends the Stripe checkout reference from the address of this page (it starts with cs_) to our license service and gets a license key back. Nothing about a resident, and nothing you typed anywhere else on Cognicopia, is part of that. Every other page works with the network unplugged.",
+      "Connection, Cognition, Creation \u00b7 from BarronCrafts",
+      "Printable, large-print activities made from one resident's own life, for activity directors and families.",
+      "TOOLS",
+      "FACILITY",
+      "RESOURCES",
+      "Cognicopia is made by BarronCrafts in Minot, North Dakota. Everything happens inside your browser \u2014 there is no account, no upload, and no copy of resident information kept anywhere."
+    ]
+  },
+  "builder.html": {
+    "title": "Packet Builder \u00b7 Cognicopia",
+    "links": [
+      {
+        "text": "Cognicopia\nPACKET BUILDER",
+        "href": "#/"
+      },
+      {
+        "text": "",
+        "href": "index.html"
+      },
+      {
+        "text": "",
+        "href": "tablet.html"
+      },
+      {
+        "text": "",
+        "href": "profile.html"
+      },
+      {
+        "text": "",
+        "href": "#/coloring"
+      },
+      {
+        "text": "",
+        "href": "#/planner"
+      },
+      {
+        "text": "",
+        "href": "#/journal"
+      },
+      {
+        "text": "",
+        "href": "#/reminiscence"
+      },
+      {
+        "text": "",
+        "href": "#/heirloom"
+      },
+      {
+        "text": "Word & Language Activities\n13",
+        "href": "#/category/word"
+      },
+      {
+        "text": "Letter & Alphabet Activities\n4",
+        "href": "#/category/letters"
+      },
+      {
+        "text": "Number & Math Activities\n4",
+        "href": "#/category/numbers"
+      },
+      {
+        "text": "Exercise, Movement & Physical Motor Activities\n7",
+        "href": "#/category/movement"
+      },
+      {
+        "text": "Music, Rhythm & Sound Activities\n3",
+        "href": "#/category/music"
+      },
+      {
+        "text": "Multisensory, Art & Group Activities\n6",
+        "href": "#/category/multisensory"
+      },
+      {
+        "text": "",
+        "href": "#/facility"
+      },
+      {
+        "text": "",
+        "href": "#/shift"
+      },
+      {
+        "text": "",
+        "href": "#/roster"
+      },
+      {
+        "text": "",
+        "href": "#/clinical"
+      },
+      {
+        "text": "",
+        "href": "#/settings"
+      },
+      {
+        "text": "",
+        "href": "pricing.html"
+      },
+      {
+        "text": "",
+        "href": "pilot.html"
+      },
+      {
+        "text": "",
+        "href": "referral.html"
+      },
+      {
+        "text": "Academy",
+        "href": "#/academy"
+      },
+      {
+        "text": "",
+        "href": "resources/"
+      },
+      {
+        "text": "",
+        "href": "resources/research/"
+      },
+      {
+        "text": "Contact Kirk Barron",
+        "href": "contact.html"
+      },
+      {
+        "text": "Home",
+        "href": "index.html"
+      },
+      {
+        "text": "Settings",
+        "href": "#/settings"
+      },
+      {
+        "text": "Get Full Access ($39/mo or $349/yr) \u2192",
+        "href": "pricing.html"
+      },
+      {
+        "text": "Request Corporate Invoice / W-9",
+        "href": "contact.html?subject=Corporate+Invoice+Request"
+      },
+      {
+        "text": "Cognicopia Coloring\nAdult, dignity-first line art in bold pure black, each picture drawn at three support tiers. Filter, preview with the binding gutter, and print or download a vector PDF.\n150 pictures\n3 tiers\nBundle packs",
+        "href": "#/coloring"
+      },
+      {
+        "text": "12-Month Life Planner\nA personalized year-long memory book for the resident, with a separate, confidential care companion for staff and family. Print-ready for binders and bound books.\n4 tabs\nMemory book + care companion",
+        "href": "#/planner"
+      },
+      {
+        "text": "Life Story Journal\nThe Cognitive Life Journal: a life story in four sections, from early roots to daily comfort, personalized from the resident\u2019s own details. Family and care team notes stay in a separate part at the back.\n4 sections\nLife story + family notes",
+        "href": "#/journal"
+      },
+      {
+        "text": "Reminiscence Cards\nCards about a resident\u2019s own work, hometown region and best-remembered years, each with three conversation starters, a song from their era and something to hold.\nEra \u00d7 region \u00d7 vocation\nCaregiver cues",
+        "href": "#/reminiscence"
+      },
+      {
+        "text": "Memory Digest & Book\nKeep a resident\u2019s words, stories and finished coloring pages as they happen; send the family a monthly digest, and gather a year into a print-on-demand hardcover.\nMonthly digest\nHardcover PDF",
+        "href": "#/heirloom"
+      },
+      {
+        "text": "Session Notes (SLP)\nGDS and FAST staging mapped to support tiers, a session log, and SOAP notes built only from what you record, for the Full Administrative Binder.\nStaff-recorded SOAP\nCode checks",
+        "href": "#/clinical"
+      },
+      {
+        "text": "Facility Portal\nFor activity directors: wings and resident groups by acuity tier, recommendations for each tier across the six pillars, a balanced month of sessions in one click, and a week of group packets printed at once.\n4 acuity tiers\nMonth scheduler\nWeek packets",
+        "href": "#/facility"
+      },
+      {
+        "text": "Shift board\nHandoff notes for the next shift, tasks for the team and what is still open, with residents by alias only. Kept on this computer, encrypted, and printed as a one-page handoff sheet. A first version.\nHandoff notes\nStaff tasks\nAliases only",
+        "href": "#/shift"
+      },
+      {
+        "text": "Resident roster\nEvery saved resident in one list. Choose a resident, choose a book, and print it at their own support tier, line weight and contrast.\n3 clicks to print\nSearch by name or unit",
+        "href": "#/roster"
+      },
+      {
+        "text": "Word & Language Activities\nWord searches, sayings, scrambles, naming and reminiscence prompts. Language is often one of the best-preserved skills, and familiar words invite conversation.\n13 activities",
+        "href": "#/category/word"
+      },
+      {
+        "text": "Letter & Alphabet Activities\nLetter scrambles, missing-letter words, A-to-Z category sweeps and large-letter tracing. Big, clear letterforms support reading, recognition and fine motor practice.\n4 activities",
+        "href": "#/category/letters"
+      },
+      {
+        "text": "Number & Math Activities\nCounting ladders, coins with old-time prices, large-print sudoku and big-number tracing. Everyday numbers keep counting and sequencing skills in use.\n4 activities",
+        "href": "#/category/numbers"
+      },
+      {
+        "text": "Exercise, Movement & Physical Motor Activities\nSeated chair yoga cards, fine-motor line tracing, tabletop beanbag targets and rhythm patterns. Everything is done sitting down, and each page carries a short safety note for staff.\n7 activities",
+        "href": "#/category/movement"
+      },
+      {
+        "text": "Music, Rhythm & Sound Activities\nLarge-print sing-along sheets, finish-the-song prompts and a singer-to-song match. Musical memory often outlasts other memories, which makes music one of the most reliable ways in. For rhythm patterns, see Seated Rhythm Sheets under Exercise & Movement.\n3 activities",
+        "href": "#/category/music"
+      },
+      {
+        "text": "Multisensory, Art & Group Activities\nA giant-type daily orientation board and shadow matching. Good for group rooms, quiet one-to-one time and the start of each day. Coloring pages now have their own category, Cognicopia Coloring.\n6 activities",
+        "href": "#/category/multisensory"
+      },
+      {
+        "text": "Staff & Caregiver Academy\nNarrated masterclasses for care teams, with transcripts, companion guides, knowledge checks and in-service certificates, and short guides with printable toolkits for family caregivers.\n6 masterclasses\n5 family guides\nTraining records",
+        "href": "#/academy"
+      },
+      {
+        "text": "Resource & Clinical Hub\nThe reading behind the tools, kept apart from them: the Clinical Science & Research Center with its board packet, quality standards, clinical alignment, reminiscence science, facility and publishing information, the feature guide, the resource catalog and the caregiver FAQ.\n10 modules\nClinical & quality\nGuides & help",
+        "href": "resources/"
+      },
+      {
+        "text": "",
+        "href": "pricing.html"
+      },
+      {
+        "text": "",
+        "href": "contact.html?subject=Corporate+Invoice+Request"
+      }
+    ],
+    "buttons": [
+      {
+        "text": "Menu"
+      },
+      {
+        "text": "Packet queue\n0"
+      },
+      {
+        "text": "Sundowning / Rapid De-escalation\nPick a level and theme, then print a fresh calming packet"
+      },
+      {
+        "text": "Late-Stage / Sundowning Calm\nOff \u00b7 simplifies queued activity pages; emergency buttons stay fixed"
+      },
+      {
+        "text": "Facility view"
+      },
+      {
+        "text": "Your packet\n0"
+      },
+      {
+        "text": "\ud83c\udf19 Night Shift: Off"
+      },
+      {
+        "text": ""
+      },
+      {
+        "text": ""
+      },
+      {
+        "text": ""
+      },
+      {
+        "text": "Not now"
+      },
+      {
+        "text": "Unlock"
+      },
+      {
+        "text": "Have a promo code?"
+      }
+    ],
+    "inputs_and_generators": [
+      {
+        "type": "text",
+        "id": "gateCode",
+        "name": ""
+      }
+    ],
+    "sample_text": [
+      "PACKET BUILDER",
+      "Build a packet, one activity at a time",
+      "Pick a tool or a category, choose an activity, and add as many different versions as you need. Every version is freshly generated, so no two pages are the same. Nothing leaves this computer.",
+      "Interactive generators",
+      "Activity categories",
+      "Learning & reference",
+      "You have used your free packets"
+    ]
+  },
+  "clinical-alignment.html": {
+    "title": "",
+    "links": [],
+    "buttons": [],
+    "inputs_and_generators": [],
+    "sample_text": []
+  },
+  "cognitive-journals.html": {
+    "title": "Cognitive Prompt & Memory Journals - Cognicopia",
+    "links": [
+      {
+        "text": "Cognicopia",
+        "href": "index.html"
+      },
+      {
+        "text": "",
+        "href": "index.html"
+      },
+      {
+        "text": "",
+        "href": "tablet.html"
+      },
+      {
+        "text": "",
+        "href": "profile.html"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/coloring"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/planner"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/journal"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/reminiscence"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/heirloom"
+      },
+      {
+        "text": "Activity Packets",
+        "href": "builder.html"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/facility"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/shift"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/roster"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/clinical"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/settings"
+      },
+      {
+        "text": "",
+        "href": "pricing.html"
+      },
+      {
+        "text": "",
+        "href": "pilot.html"
+      },
+      {
+        "text": "",
+        "href": "referral.html"
+      },
+      {
+        "text": "Academy",
+        "href": "builder.html#/academy"
+      },
+      {
+        "text": "",
+        "href": "resources/"
+      },
+      {
+        "text": "",
+        "href": "resources/research/"
+      },
+      {
+        "text": "",
+        "href": "resources/quality-standards/"
+      },
+      {
+        "text": "",
+        "href": "resources/clinical-alignment/"
+      },
+      {
+        "text": "",
+        "href": "resources/reminiscence-science/"
+      },
+      {
+        "text": "",
+        "href": "resources/high-volume-facilities/"
+      },
+      {
+        "text": "",
+        "href": "resources/publishing-excellence/"
+      },
+      {
+        "text": "",
+        "href": "resources/platform-overview/"
+      },
+      {
+        "text": "",
+        "href": "resources/privacy-and-data/"
+      },
+      {
+        "text": "",
+        "href": "resources/security-questions/"
+      },
+      {
+        "text": "",
+        "href": "resources/accessibility/"
+      },
+      {
+        "text": "",
+        "href": "resources/activity-feature-guide/"
+      },
+      {
+        "text": "",
+        "href": "resources/resource-catalog/"
+      },
+      {
+        "text": "",
+        "href": "resources/caregiver-faq/"
+      },
+      {
+        "text": "Contact Kirk Barron",
+        "href": "contact.html"
+      },
+      {
+        "text": "Get Full Access ($39/mo or $349/yr) \u2192",
+        "href": "pricing.html"
+      },
+      {
+        "text": "Request Corporate Invoice / W-9",
+        "href": "contact.html?subject=Corporate+Invoice+Request"
+      },
+      {
+        "text": "Back to Home (Tool)",
+        "href": "index.html"
+      },
+      {
+        "text": "dignity-first, person-centered design",
+        "href": "resources/research/dignity-first-design/"
+      },
+      {
+        "text": "reminiscence",
+        "href": "resources/research/reminiscence-evidence/"
+      },
+      {
+        "text": "cognicopia@outlook.com",
+        "href": "mailto:cognicopia@outlook.com"
+      },
+      {
+        "text": "Build a Cognitive Life Journal (Tool)",
+        "href": "builder.html#/journal"
+      },
+      {
+        "text": "Request Institutional Review Packet",
+        "href": "contact.html?subject=Cognitive+Journals+Review"
+      },
+      {
+        "text": "Return to Homepage",
+        "href": "index.html"
+      },
+      {
+        "text": "Cognicopia",
+        "href": "index.html"
+      },
+      {
+        "text": "Personalized Packet Tool",
+        "href": "index.html"
+      },
+      {
+        "text": "Packet Builder",
+        "href": "builder.html"
+      },
+      {
+        "text": "Resident Profiles",
+        "href": "profile.html"
+      },
+      {
+        "text": "Cognicopia Coloring",
+        "href": "builder.html#/coloring"
+      },
+      {
+        "text": "12-Month Life Planners",
+        "href": "life-planners.html"
+      },
+      {
+        "text": "Cognitive Life Journals",
+        "href": "cognitive-journals.html"
+      },
+      {
+        "text": "Facility Portal",
+        "href": "builder.html#/facility"
+      },
+      {
+        "text": "Plans & pricing",
+        "href": "pricing.html"
+      },
+      {
+        "text": "Activate a license",
+        "href": "activate.html"
+      },
+      {
+        "text": "Request an invoice / W-9",
+        "href": "contact.html?subject=Corporate+Invoice+Request"
+      },
+      {
+        "text": "Resource & Clinical Hub",
+        "href": "resources/"
+      },
+      {
+        "text": "Research Center",
+        "href": "resources/research/"
+      },
+      {
+        "text": "Caregiver FAQ",
+        "href": "resources/caregiver-faq/"
+      },
+      {
+        "text": "Contact Kirk Barron",
+        "href": "contact.html"
+      }
+    ],
+    "buttons": [
+      {
+        "text": "Menu"
+      },
+      {
+        "text": "License Key / Promo"
+      },
+      {
+        "text": ""
+      }
+    ],
+    "inputs_and_generators": [],
+    "sample_text": [
+      "Cognitive Prompt & Memory Journals",
+      "Structured Reminiscence Worksheets, Era-Specific Cues & Life Review",
+      "Conversational Validation Without Testing Anxiety",
+      "Cognitive changes in older adults often impair short-term working memory while leaving deeply consolidated long-term episodic memories intact. Traditional memory exercises often feel like an anxiety-provoking cognitive test (e.g., \u201cWho is the current President?\u201d or \u201cWhat did you eat for breakfast?\u201d), causing immediate withdrawal and distress.",
+      "Cognicopia\u2019s Cognitive Prompt & Memory Journals are built on established person-centered principles: Tom Kitwood\u2019s person-centered care and Robert Butler\u2019s life review, a structured form of reminiscence. The Research Center summarizes the evidence for dignity-first, person-centered design and for reminiscence. Instead of demanding facts, our worksheets provide sensory and nostalgia-rich conversational gateways into the resident\u2019s youth, family traditions, and proudest vocational milestones.",
+      "Core Clinical & Care Architecture",
+      "Spontaneous Speech Recall",
+      "Carefully phrased open-ended questions unlock dormant vocabulary, encouraging seniors who are otherwise non-verbal to share vivid stories about early schooling, town dances, and family recipes.",
+      "Senior-Accessible Typography",
+      "Set in Atkinson Hyperlegible, a typeface designed for low vision, with bold headings of 16pt and up and wide-ruled writing lines half an inch apart at a 2pt stroke. Three support tiers, from full detail at 14 to 16pt to simplified pages at 24pt bold, accommodate reduced hand dexterity, visual tremors, and progressive lens limitations with total clarity.",
+      "Sundowning Calming Anchor",
+      "Late afternoon agitation often stems from disorientation. Reviewing deeply rooted memories creates a familiar, safe cognitive harbor that measurably lowers evening behavioral episodes.",
+      "Era-Specific Thematic Frameworks (1940s \u2013 1960s)",
+      "Our prompt engine structures questions around the demographic \"reminiscence bump\" (ages 10\u201330), when individuals form their most enduring cultural, personal, and emotional memories.",
+      "Home & Kitchen Hearth",
+      "Sunday dinners, cast iron skillets, canning preserves, bread baking, morning coffee percolators, and warm family holiday gatherings.",
+      "Vocational Craft & Trades",
+      "First job wages, farming routines, railroad yards, bookkeeping ledgers, mechanical tools, sewing circles, and military service stories.",
+      "Community & Pastimes",
+      "Main street parades, drive-in movies, county 4-H fairs, front porch visits, church picnics, and local high school sports rivalries."
+    ]
+  },
+  "contact.html": {
+    "title": "Contact Cognicopia \u2014 Publisher & Support",
+    "links": [
+      {
+        "text": "Cognicopia",
+        "href": "index.html"
+      },
+      {
+        "text": "",
+        "href": "index.html"
+      },
+      {
+        "text": "",
+        "href": "tablet.html"
+      },
+      {
+        "text": "",
+        "href": "profile.html"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/coloring"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/planner"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/journal"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/reminiscence"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/heirloom"
+      },
+      {
+        "text": "Activity Packets",
+        "href": "builder.html"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/facility"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/shift"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/roster"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/clinical"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/settings"
+      },
+      {
+        "text": "",
+        "href": "pricing.html"
+      },
+      {
+        "text": "",
+        "href": "pilot.html"
+      },
+      {
+        "text": "",
+        "href": "referral.html"
+      },
+      {
+        "text": "Academy",
+        "href": "builder.html#/academy"
+      },
+      {
+        "text": "",
+        "href": "resources/"
+      },
+      {
+        "text": "",
+        "href": "resources/research/"
+      },
+      {
+        "text": "",
+        "href": "resources/quality-standards/"
+      },
+      {
+        "text": "",
+        "href": "resources/clinical-alignment/"
+      },
+      {
+        "text": "",
+        "href": "resources/reminiscence-science/"
+      },
+      {
+        "text": "",
+        "href": "resources/high-volume-facilities/"
+      },
+      {
+        "text": "",
+        "href": "resources/publishing-excellence/"
+      },
+      {
+        "text": "",
+        "href": "resources/platform-overview/"
+      },
+      {
+        "text": "",
+        "href": "resources/privacy-and-data/"
+      },
+      {
+        "text": "",
+        "href": "resources/security-questions/"
+      },
+      {
+        "text": "",
+        "href": "resources/accessibility/"
+      },
+      {
+        "text": "",
+        "href": "resources/activity-feature-guide/"
+      },
+      {
+        "text": "",
+        "href": "resources/resource-catalog/"
+      },
+      {
+        "text": "",
+        "href": "resources/caregiver-faq/"
+      },
+      {
+        "text": "Contact Kirk Barron",
+        "href": "contact.html"
+      },
+      {
+        "text": "Get Full Access ($39/mo or $349/yr) \u2192",
+        "href": "pricing.html"
+      },
+      {
+        "text": "Request Corporate Invoice / W-9",
+        "href": "contact.html?subject=Corporate+Invoice+Request"
+      },
+      {
+        "text": "cognicopia@outlook.com",
+        "href": "mailto:cognicopia@outlook.com"
+      },
+      {
+        "text": "\u2709 Open an email with this filled in",
+        "href": "mailto:cognicopia@outlook.com"
+      },
+      {
+        "text": "\u2709\nSend an Email",
+        "href": "mailto:cognicopia@outlook.com"
+      },
+      {
+        "text": "Cognicopia",
+        "href": "index.html"
+      },
+      {
+        "text": "Personalized Packet Tool",
+        "href": "index.html"
+      },
+      {
+        "text": "Packet Builder",
+        "href": "builder.html"
+      },
+      {
+        "text": "Resident Profiles",
+        "href": "profile.html"
+      },
+      {
+        "text": "Cognicopia Coloring",
+        "href": "builder.html#/coloring"
+      },
+      {
+        "text": "12-Month Life Planners",
+        "href": "life-planners.html"
+      },
+      {
+        "text": "Cognitive Life Journals",
+        "href": "cognitive-journals.html"
+      },
+      {
+        "text": "Facility Portal",
+        "href": "builder.html#/facility"
+      },
+      {
+        "text": "Plans & pricing",
+        "href": "pricing.html"
+      },
+      {
+        "text": "Activate a license",
+        "href": "activate.html"
+      },
+      {
+        "text": "Request an invoice / W-9",
+        "href": "contact.html?subject=Corporate+Invoice+Request"
+      },
+      {
+        "text": "Resource & Clinical Hub",
+        "href": "resources/"
+      },
+      {
+        "text": "Research Center",
+        "href": "resources/research/"
+      },
+      {
+        "text": "Caregiver FAQ",
+        "href": "resources/caregiver-faq/"
+      },
+      {
+        "text": "Contact Kirk Barron",
+        "href": "contact.html"
+      }
+    ],
+    "buttons": [
+      {
+        "text": "Menu"
+      },
+      {
+        "text": "License Key / Promo"
+      },
+      {
+        "text": ""
+      }
+    ],
+    "inputs_and_generators": [],
+    "sample_text": [
+      "Contact & Support",
+      "Activities built from a resident's own life",
+      "Publisher Information",
+      "Cognicopia is developed and published with dedication to providing dignified, personalized reminiscence and cognitive engagement resources for memory care.",
+      "Your request",
+      "\u2709 Open an email with this filled in",
+      "Your email program opens with the subject and a list to fill in. Nothing is sent until you send it.",
+      "Get in Touch",
+      "Whether you are a family caregiver seeking guidance, an educator researching dementia engagement, or an activity director looking to implement personalized reminiscence packets across your facility, we are here to assist you.",
+      "We welcome your questions, feedback, pilot program inquiries, and purchase order requests. Please feel free to reach out directly via email, and we will get back to you promptly.",
+      "\u2709\nSend an Email",
+      "Connection, Cognition, Creation \u00b7 from BarronCrafts",
+      "Printable, large-print activities made from one resident's own life, for activity directors and families.",
+      "TOOLS",
+      "FACILITY",
+      "RESOURCES",
+      "Cognicopia is made by BarronCrafts in Minot, North Dakota. Everything happens inside your browser \u2014 there is no account, no upload, and no copy of resident information kept anywhere."
+    ]
+  },
+  "faq.html": {
+    "title": "",
+    "links": [],
+    "buttons": [],
+    "inputs_and_generators": [],
+    "sample_text": []
+  },
+  "features.html": {
+    "title": "",
+    "links": [],
+    "buttons": [],
+    "inputs_and_generators": [],
+    "sample_text": []
+  },
+  "high-volume-facilities.html": {
+    "title": "",
+    "links": [],
+    "buttons": [],
+    "inputs_and_generators": [],
+    "sample_text": []
+  },
+  "index.cognicopia.bak.html": {
+    "title": "Cognicopia \u2014 Personalized Activity Packets",
+    "links": [
+      {
+        "text": "Skip to main content",
+        "href": "#main-content"
+      },
+      {
+        "text": "",
+        "href": "index.html"
+      },
+      {
+        "text": "Home (Tool)",
+        "href": "index.html"
+      },
+      {
+        "text": "\u203aZentangle Loops",
+        "href": "#act-card-zentangle"
+      },
+      {
+        "text": "\u203aBotanical & Flora",
+        "href": "#act-card-botanical"
+      },
+      {
+        "text": "\u203aVintage Americana",
+        "href": "#act-card-americana"
+      },
+      {
+        "text": "\u203aSeasonal Motifs",
+        "href": "#act-card-seasonal_motifs"
+      },
+      {
+        "text": "\u203aSymmetrical Mandalas",
+        "href": "#act-card-mandala"
+      },
+      {
+        "text": "\u203aNumber Sequencing",
+        "href": "#act-card-sequence"
+      },
+      {
+        "text": "\u203aGrid Counting",
+        "href": "#act-card-colornum"
+      },
+      {
+        "text": "\u203aExtra-Large Sudoku",
+        "href": "#act-card-sudoku"
+      },
+      {
+        "text": "\u203aClock & Time Match",
+        "href": "#act-card-clock_reading"
+      },
+      {
+        "text": "\u203aCurrency Recognition",
+        "href": "#act-card-currency_grids"
+      },
+      {
+        "text": "\u203aThemed Word Searches",
+        "href": "#act-card-wordsearch"
+      },
+      {
+        "text": "\u203aProverbs & Sayings",
+        "href": "#act-card-sayings"
+      },
+      {
+        "text": "\u203aWord Associations",
+        "href": "#act-card-assoc"
+      },
+      {
+        "text": "\u203aCrossword Snippets",
+        "href": "#act-card-crossword"
+      },
+      {
+        "text": "\u203aAutobiographical Prompts",
+        "href": "#act-card-lifestory"
+      },
+      {
+        "text": "\u203aCapital Letter Tracing",
+        "href": "#act-card-letter_tracing"
+      },
+      {
+        "text": "\u203aAlphabet Sequencing",
+        "href": "#act-card-alphabet_order"
+      },
+      {
+        "text": "\u203aCursive & Print Match",
+        "href": "#act-card-cursive_print"
+      },
+      {
+        "text": "\u203aDaily Reflections",
+        "href": "#act-card-daily_reflections"
+      },
+      {
+        "text": "\u203aSignature & Name Grids",
+        "href": "#act-card-signature_practice"
+      },
+      {
+        "text": "\u203aSeated Range-of-Motion",
+        "href": "#act-card-movement_rom"
+      },
+      {
+        "text": "\u203aChair Dance & Rhythm",
+        "href": "#act-card-movement_chair_dance"
+      },
+      {
+        "text": "\u203aBalloon Toss Tracking",
+        "href": "#act-card-movement_balloon_toss"
+      },
+      {
+        "text": "\u203aStanding Balance Drills",
+        "href": "#act-card-movement_balance"
+      },
+      {
+        "text": "\u203aRhythmic Clapping & Sway",
+        "href": "#act-card-movement_rhythmic"
+      },
+      {
+        "text": "\u203aNostalgic Sing-Alongs",
+        "href": "#act-card-music_singalong"
+      },
+      {
+        "text": "\u203aRhythm & Beat Guides",
+        "href": "#act-card-music_rhythm"
+      },
+      {
+        "text": "\u203aName-That-Tune Cues",
+        "href": "#act-card-music_tune"
+      },
+      {
+        "text": "\u203aInstrumental Soundscapes",
+        "href": "#act-card-music_soundscape"
+      },
+      {
+        "text": "\u203aCall & Response Rhythm",
+        "href": "#act-card-music_call_response"
+      },
+      {
+        "text": "Build Custom 6-Pillar Packet (Tool)",
+        "href": "#f"
+      },
+      {
+        "text": "\u203a\n                  Master Resource Catalog",
+        "href": "resources.html"
+      },
+      {
+        "text": "\u203a\n                  Zentangle Botanical Art",
+        "href": "zentangle-art.html"
+      },
+      {
+        "text": "\u203a\n                  Reminiscence Science",
+        "href": "therapy.html"
+      },
+      {
+        "text": "\u203a\n                  Activity Feature Guide",
+        "href": "features.html"
+      },
+      {
+        "text": "\u203a\n                  Cognitive Life Journals",
+        "href": "cognitive-journals.html"
+      },
+      {
+        "text": "\u203a\n                  12-Month Life Planners",
+        "href": "life-planners.html"
+      },
+      {
+        "text": "\u203a\n                  Platform & Mission Overview",
+        "href": "about.html"
+      },
+      {
+        "text": "\u203a\n                  Quality Standards Hub",
+        "href": "institutional-standards.html"
+      },
+      {
+        "text": "\u203a\n                  Clinical Alignment",
+        "href": "clinical-alignment.html"
+      },
+      {
+        "text": "\u203a\n                  High-Volume Facilities",
+        "href": "high-volume-facilities.html"
+      },
+      {
+        "text": "\u203a\n                  Publishing Excellence",
+        "href": "publishing-excellence.html"
+      },
+      {
+        "text": "Caregiver FAQ",
+        "href": "faq.html"
+      },
+      {
+        "text": "Contact Kirk Barron",
+        "href": "contact.html"
+      },
+      {
+        "text": "Caregiver FAQ",
+        "href": "faq.html"
+      },
+      {
+        "text": "Contact",
+        "href": "contact.html"
+      },
+      {
+        "text": "Get Full Access Now",
+        "href": "https://buy.stripe.com/9B614oaJV7lr0RX1ODew801"
+      },
+      {
+        "text": "Explore Sample Activities & Core Tools",
+        "href": "#sample-gallery"
+      },
+      {
+        "text": "Contact & Facility Inquiries",
+        "href": "contact.html"
+      },
+      {
+        "text": "Configure Coloring in Generator\n\u2192",
+        "href": "#pillar-group-1"
+      },
+      {
+        "text": "Configure Numbers in Generator\n\u2192",
+        "href": "#pillar-group-2"
+      },
+      {
+        "text": "Configure Words in Generator\n\u2192",
+        "href": "#pillar-group-3"
+      },
+      {
+        "text": "Configure Letters in Generator\n\u2192",
+        "href": "#pillar-group-4"
+      },
+      {
+        "text": "Configure Movement in Generator\n\u2192",
+        "href": "#pillar-group-5"
+      },
+      {
+        "text": "Configure Music in Generator\n\u2192",
+        "href": "#pillar-group-6"
+      },
+      {
+        "text": "Zentangle Botanical Series \u2022 2.5pt Anti-Bleed Outlines\nART THERAPY \u2022 FINE MOTOR SKILLS\nZentangle & Botanical Art Series\n\nDignified, adult-focused botanical and geometric patterns engineered with reinforced 2.5pt stroke widths. Designed specifically for seniors with tremors, low vision, or arthritis.\n\nStimulates fine motor coordination and tactile focus\nNon-infantilizing, calming meditative art themes\nHeavy black border barriers minimize coloring spill\nEarly to Mid-Stage Memory Care\nStandard 8.5\u00d711 Print\nExplore Art in Catalog",
+        "href": "resources.html"
+      },
+      {
+        "text": "LIFE REMINISCENCE \u2022 1940s & 1950s ERA\n1\nFirst car you or your family drove:\ne.g., 1954 Chevrolet Bel Air, Navy Blue\n2\nA song that always makes you smile:\ne.g., \u201cIn the Mood\u201d by Glenn Miller\n3\nFavorite Sunday dessert from home:\ne.g., Warm Dutch Apple Pie with Cinnamon\nLarge 24pt Writing Guides \u2022 Validates Personal Identity\nREMINISCENCE \u2022 SPONTANEOUS SPEECH\nCognitive Prompt & Memory Journals\n\nStructured reminiscence worksheets featuring era-specific conversation triggers. Formatted with generous writing leads and large 20pt+ font sizes to validate personal identity.\n\nStimulates long-term memory retrieval and speech\nAssists caregivers in 1-on-1 calming during sundowning\nSenior-friendly open ruled lines for motor ease\nMild to Moderate Cognitive Support\nDaily \u2022 Weekly Group Formats\nExplore Journals in Catalog",
+        "href": "resources.html"
+      },
+      {
+        "text": "TODAY IS WEDNESDAY\nOCTOBER 14 \u2022 AUTUMN\nClear & Sunny\nCrisp Fall Breeze\nDaily Menu Highlight\nRoast Turkey & Cider\n10:00 AM\nGentle Seated Chair Yoga & Music\n2:00 PM\nReminiscence Circle & Cider Social\n\u201cEvery day brings familiar faces, warm music, and joyful moments.\u201d\nOrientation Anchor \u2022 Predictable Daily Structure\nORIENTATION \u2022 ROUTINE \u2022 CALM\n12-Month Life Planners & Organizers\n\nHigh-visibility routine organizers with temporal orientation cues (date, season, weather). Reduces disorientation, anxiety, and repetitive questioning through visual predictability.\n\nReinforces time, date, and seasonal grounding daily\nSignificantly curbs dementia-related transition anxiety\nClean visual hierarchy for staff, family, and residents\nAll Care Stages \u2022 Memory Units\n12-Month Reusable Template\nExplore Planners in Catalog",
+        "href": "resources.html"
+      },
+      {
+        "text": "Request Institutional Sample",
+        "href": "contact.html?subject=Institutional+Sample+Request"
+      },
+      {
+        "text": "EVIDENCE-INFORMED PRACTICE\nClinical & Caregiver Alignment\n\nStructured formats developed in alignment with memory care methodologies. Our modules support cognitive retention, fine motor engagement, and dignified reminiscence therapy without juvenile or infantilizing aesthetics.\n\nStimulates preserved long-term memories via mid-century cues\nReinforces fine motor control through ergonomic 2.5pt borders\nFulfills CMS Tag F679 surveyor expectations for person-centered care\nAssists in calming agitation and disorientation during sundowning\nEarly to Late Stage Support\nMDS 3.0 / Survey Ready\nExplore Clinical Standards",
+        "href": "institutional-standards.html"
+      },
+      {
+        "text": "OPERATIONAL EFFICIENCY\nDesigned for High-Volume Facilities\n\nEngineered for the daily operational realities of busy care communities. High-contrast layouts are optimized for commercial laser copiers, standard 8.5\u00d711 print trays, and fast multi-resident packet assembly.\n\nMonochrome-optimized contrast prevents toner smear & shadow bleed\nSenior-accessible 18pt\u201324pt typography accommodates low vision\nImmediate sheet-fed printing: zero prep, cutting, or sorting needed\nDurable margins formatted for facility clipboards and binders\nStandard 8.5\u00d711 Sheet-Feed\nCommercial Copier Tested\nExplore Facility Standards",
+        "href": "institutional-standards.html"
+      },
+      {
+        "text": "EDITORIAL INTEGRITY\nIndependent Publishing Excellence\n\nAuthored and curated under independent publisher Kirk Barron based in Minot, North Dakota. We provide personal quality assurance, direct institutional support, and strict data privacy with zero external tracking.\n\nDirect publisher oversight by Kirk Barron in Minot, North Dakota\nDedicated institutional inquiries & support: cognicopia@outlook.com\nComplete client-side architecture: zero resident information is uploaded\nInstitutional purchase orders, Net-30 invoicing, and W-9 support\nKirk Barron \u2022 Minot, ND\nInstitutional Licensing\nExplore Publishing Standards",
+        "href": "institutional-standards.html"
+      },
+      {
+        "text": "cognicopia@outlook.com",
+        "href": "mailto:cognicopia@outlook.com"
+      },
+      {
+        "text": "Contact Kirk Barron \u2022 Institutional Inquiries",
+        "href": "contact.html?subject=Institutional+Review+Inquiry"
+      },
+      {
+        "text": "Personalize an Activity Packet",
+        "href": "#f"
+      },
+      {
+        "text": "Cognicopia@Outlook.com",
+        "href": "mailto:Cognicopia@Outlook.com"
+      }
+    ],
+    "buttons": [
+      {
+        "text": "Activity Generators\n\u25be"
+      },
+      {
+        "text": "Resources\n\u25be"
+      },
+      {
+        "text": "Activate license"
+      },
+      {
+        "text": "Unlock"
+      },
+      {
+        "text": "Download Free Activity Sample Packet (PDF)"
+      },
+      {
+        "text": "Preview 7 Memory Care Activities"
+      },
+      {
+        "text": "Download 7-Activity Personalized Starter Packet (PDF)"
+      },
+      {
+        "text": "Choose"
+      },
+      {
+        "text": "Remove"
+      },
+      {
+        "text": "Choose"
+      },
+      {
+        "text": "Remove"
+      },
+      {
+        "text": "Choose"
+      },
+      {
+        "text": "Remove"
+      },
+      {
+        "text": "Add another person"
+      },
+      {
+        "text": "Select all 30"
+      },
+      {
+        "text": "Clear all"
+      },
+      {
+        "text": "Save this resident"
+      },
+      {
+        "text": "Open a saved resident"
+      },
+      {
+        "text": "Print a family form"
+      },
+      {
+        "text": "Save Current Configuration"
+      },
+      {
+        "text": "Load Preset"
+      },
+      {
+        "text": "Delete Preset"
+      },
+      {
+        "text": "Make the packet"
+      },
+      {
+        "text": "Unlock"
+      },
+      {
+        "text": "\u2715"
+      },
+      {
+        "text": "1. Cognitive Coloring"
+      },
+      {
+        "text": "2. Large-Print Word Search"
+      },
+      {
+        "text": "3. NostalgiaMatch"
+      },
+      {
+        "text": "4. Ultra-Wide Path Tracing"
+      },
+      {
+        "text": "5. Music & Lyric Completion"
+      },
+      {
+        "text": "6. Visual Pattern Completion"
+      },
+      {
+        "text": "7. Item Counting"
+      },
+      {
+        "text": "Print This Activity Page (PDF)"
+      },
+      {
+        "text": "Close"
+      }
+    ],
+    "inputs_and_generators": [
+      {
+        "type": "text",
+        "id": "licHdr",
+        "name": ""
+      },
+      {
+        "type": "text",
+        "id": "patientName",
+        "name": ""
+      },
+      {
+        "type": "text",
+        "id": "patientRoomUnit",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "stampPatientHeader",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "eraSwing",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "eraRock50s",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "eraMotown60s",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "eraCountry",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "eraRock70s",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "eraHymns",
+        "name": ""
+      },
+      {
+        "type": "text",
+        "id": "favoriteArtists",
+        "name": ""
+      },
+      {
+        "type": "text",
+        "id": "favoriteSongs",
+        "name": ""
+      },
+      {
+        "type": "text",
+        "id": "customBiographicalWords",
+        "name": ""
+      },
+      {
+        "type": "text",
+        "id": "first",
+        "name": ""
+      },
+      {
+        "type": "text",
+        "id": "last",
+        "name": ""
+      },
+      {
+        "type": "text",
+        "id": "goes",
+        "name": ""
+      },
+      {
+        "type": "number",
+        "id": "born",
+        "name": ""
+      },
+      {
+        "type": "select/textarea",
+        "id": "pronoun",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "highContrastMode",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "extraLargePrint",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "simplifiedLayout",
+        "name": ""
+      },
+      {
+        "type": "radio",
+        "id": "stage-early",
+        "name": "stage"
+      },
+      {
+        "type": "radio",
+        "id": "stage-middle",
+        "name": "stage"
+      },
+      {
+        "type": "radio",
+        "id": "stage-late",
+        "name": "stage"
+      },
+      {
+        "type": "text",
+        "id": "town",
+        "name": ""
+      },
+      {
+        "type": "text",
+        "id": "state",
+        "name": ""
+      },
+      {
+        "type": "text",
+        "id": "job",
+        "name": ""
+      },
+      {
+        "type": "text",
+        "id": "spouse",
+        "name": ""
+      },
+      {
+        "type": "text",
+        "id": "kids",
+        "name": ""
+      },
+      {
+        "type": "text",
+        "id": "pets",
+        "name": ""
+      },
+      {
+        "type": "text",
+        "id": "hobbies",
+        "name": ""
+      },
+      {
+        "type": "text",
+        "id": "favs",
+        "name": ""
+      },
+      {
+        "type": "text",
+        "id": "mil",
+        "name": ""
+      },
+      {
+        "type": "text",
+        "id": "faith",
+        "name": ""
+      },
+      {
+        "type": "select/textarea",
+        "id": "lang1",
+        "name": ""
+      },
+      {
+        "type": "select/textarea",
+        "id": "lang2",
+        "name": ""
+      },
+      {
+        "type": "text",
+        "id": "mother",
+        "name": ""
+      },
+      {
+        "type": "text",
+        "id": "school",
+        "name": ""
+      },
+      {
+        "type": "text",
+        "id": "firstcar",
+        "name": ""
+      },
+      {
+        "type": "text",
+        "id": "firstjob",
+        "name": ""
+      },
+      {
+        "type": "text",
+        "id": "avoid",
+        "name": ""
+      },
+      {
+        "type": "text",
+        "id": "sibs",
+        "name": ""
+      },
+      {
+        "type": "text",
+        "id": "cn1",
+        "name": ""
+      },
+      {
+        "type": "text",
+        "id": "cr1",
+        "name": ""
+      },
+      {
+        "type": "file",
+        "id": "cp1",
+        "name": ""
+      },
+      {
+        "type": "text",
+        "id": "cn2",
+        "name": ""
+      },
+      {
+        "type": "text",
+        "id": "cr2",
+        "name": ""
+      },
+      {
+        "type": "file",
+        "id": "cp2",
+        "name": ""
+      },
+      {
+        "type": "text",
+        "id": "cn3",
+        "name": ""
+      },
+      {
+        "type": "text",
+        "id": "cr3",
+        "name": ""
+      },
+      {
+        "type": "file",
+        "id": "cp3",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "act-zentangle",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "act-botanical",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "act-americana",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "act-seasonal_motifs",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "act-mandala",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "act-sequence",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "act-colornum",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "act-sudoku",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "act-clock_reading",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "act-currency_grids",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "act-wordsearch",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "act-sayings",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "act-assoc",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "act-crossword",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "act-lifestory",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "act-letter_tracing",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "act-alphabet_order",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "act-cursive_print",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "act-daily_reflections",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "act-signature_practice",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "act-movement_rom",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "act-movement_chair_dance",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "act-movement_balloon_toss",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "act-movement_balance",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "act-movement_rhythmic",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "act-music_singalong",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "act-music_rhythm",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "act-music_tune",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "act-music_soundscape",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "act-music_call_response",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "text",
+        "id": "fac",
+        "name": ""
+      },
+      {
+        "type": "text",
+        "id": "month",
+        "name": ""
+      },
+      {
+        "type": "text",
+        "id": "institutionalPartner",
+        "name": ""
+      },
+      {
+        "type": "text",
+        "id": "researchSponsor",
+        "name": ""
+      },
+      {
+        "type": "file",
+        "id": "loadFile",
+        "name": ""
+      },
+      {
+        "type": "text",
+        "id": "presetName",
+        "name": ""
+      },
+      {
+        "type": "select/textarea",
+        "id": "presetSelect",
+        "name": ""
+      },
+      {
+        "type": "text",
+        "id": "lic",
+        "name": ""
+      }
+    ],
+    "sample_text": [
+      "Cognicopia",
+      "CONNECTION, COGNITION, CREATION",
+      "from BarronCrafts",
+      "Empowering Memory Care Through Structured Cognitive Engagement & Accessible Design",
+      "Cognicopia equips Activity Directors, care facility administrators, and nursing professionals with ready-to-use cognitive tools, reminiscence activities, and high-contrast print resources tailored to each resident's personal history, dignity, and cognitive stage.",
+      "Top 30 Curated Clinical Activity Master List",
+      "Every activity is calibrated to support person-centered care, cognitive engagement, and dignity. Built across our six clinical pillars with high-contrast pure white formatting, senior-accessible typography, and non-infantilizing adult themes.",
+      "Coloring Activities",
+      "Visual Tracking & Meditative Calm",
+      "Number Activities",
+      "Numerical Cognition & Everyday Logic",
+      "Word Activities",
+      "Reminiscence, Vocabulary & Language",
+      "Letter Activities",
+      "Fine Motor Dexterity & Orthographic Recall",
+      "Physical & Interactive Movement",
+      "Stage-Aware Mobility & Circulation",
+      "Music & Auditory Engagement",
+      "Emotional & Cognitive Resonance",
+      "Explore Our Cognitive & Creative Resources"
+    ]
+  },
+  "index.html": {
+    "title": "Cognicopia \u2014 Personalized Activity Packets",
+    "links": [
+      {
+        "text": "Cognicopia",
+        "href": "index.html"
+      },
+      {
+        "text": "",
+        "href": "index.html"
+      },
+      {
+        "text": "",
+        "href": "tablet.html"
+      },
+      {
+        "text": "",
+        "href": "profile.html"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/coloring"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/planner"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/journal"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/reminiscence"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/heirloom"
+      },
+      {
+        "text": "Activity Packets",
+        "href": "builder.html"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/facility"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/facility/audit"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/shift"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/roster"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/clinical"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/settings"
+      },
+      {
+        "text": "",
+        "href": "pricing.html"
+      },
+      {
+        "text": "",
+        "href": "pilot.html"
+      },
+      {
+        "text": "",
+        "href": "referral.html"
+      },
+      {
+        "text": "Academy",
+        "href": "builder.html#/academy"
+      },
+      {
+        "text": "",
+        "href": "resources/"
+      },
+      {
+        "text": "",
+        "href": "resources/research/"
+      },
+      {
+        "text": "",
+        "href": "resources/quality-standards/"
+      },
+      {
+        "text": "",
+        "href": "resources/clinical-alignment/"
+      },
+      {
+        "text": "",
+        "href": "resources/reminiscence-science/"
+      },
+      {
+        "text": "",
+        "href": "resources/high-volume-facilities/"
+      },
+      {
+        "text": "",
+        "href": "resources/publishing-excellence/"
+      },
+      {
+        "text": "",
+        "href": "resources/platform-overview/"
+      },
+      {
+        "text": "",
+        "href": "resources/privacy-and-data/"
+      },
+      {
+        "text": "",
+        "href": "resources/security-questions/"
+      },
+      {
+        "text": "",
+        "href": "resources/accessibility/"
+      },
+      {
+        "text": "",
+        "href": "resources/activity-feature-guide/"
+      },
+      {
+        "text": "",
+        "href": "resources/resource-catalog/"
+      },
+      {
+        "text": "",
+        "href": "resources/caregiver-faq/"
+      },
+      {
+        "text": "Contact Kirk Barron",
+        "href": "contact.html"
+      },
+      {
+        "text": "Get Full Access ($39/mo or $349/yr) \u2192",
+        "href": "pricing.html"
+      },
+      {
+        "text": "Request Corporate Invoice / W-9",
+        "href": "contact.html?subject=Corporate+Invoice+Request"
+      },
+      {
+        "text": "Make a packet",
+        "href": "#make"
+      },
+      {
+        "text": "Tablet Activities",
+        "href": "tablet.html"
+      },
+      {
+        "text": "See what you get",
+        "href": "#features"
+      },
+      {
+        "text": "Reminiscence evidence",
+        "href": "resources/research/reminiscence-evidence/"
+      },
+      {
+        "text": "Cognitive stimulation",
+        "href": "resources/research/cognitive-stimulation/"
+      },
+      {
+        "text": "Music in dementia care",
+        "href": "resources/research/music-dementia/"
+      },
+      {
+        "text": "Print for low vision",
+        "href": "resources/research/low-vision-print/"
+      },
+      {
+        "text": "Dignity-first design",
+        "href": "resources/research/dignity-first-design/"
+      },
+      {
+        "text": "\u2795\nNew Profile",
+        "href": "profile.html?new=1"
+      },
+      {
+        "text": "\u270f\ufe0f\nEdit Active Profile",
+        "href": "profile.html"
+      },
+      {
+        "text": "Cognicopia",
+        "href": "index.html"
+      },
+      {
+        "text": "Personalized Packet Tool",
+        "href": "#make"
+      },
+      {
+        "text": "Packet Builder",
+        "href": "builder.html"
+      },
+      {
+        "text": "Resident Profiles",
+        "href": "profile.html"
+      },
+      {
+        "text": "Cognicopia Coloring",
+        "href": "builder.html#/coloring"
+      },
+      {
+        "text": "12-Month Life Planners",
+        "href": "life-planners.html"
+      },
+      {
+        "text": "Cognitive Life Journals",
+        "href": "cognitive-journals.html"
+      },
+      {
+        "text": "Facility Portal",
+        "href": "builder.html#/facility"
+      },
+      {
+        "text": "Plans & pricing",
+        "href": "pricing.html"
+      },
+      {
+        "text": "Activate a license",
+        "href": "activate.html"
+      },
+      {
+        "text": "Request an invoice / W-9",
+        "href": "contact.html?subject=Corporate+Invoice+Request"
+      },
+      {
+        "text": "Resource & Clinical Hub",
+        "href": "resources/"
+      },
+      {
+        "text": "Research Center",
+        "href": "resources/research/"
+      },
+      {
+        "text": "Caregiver FAQ",
+        "href": "resources/caregiver-faq/"
+      },
+      {
+        "text": "Contact Kirk Barron",
+        "href": "contact.html"
+      },
+      {
+        "text": "Cognicopia@Outlook.com",
+        "href": "mailto:Cognicopia@Outlook.com"
+      }
+    ],
+    "buttons": [
+      {
+        "text": "Menu"
+      },
+      {
+        "text": ""
+      },
+      {
+        "text": ""
+      },
+      {
+        "text": ""
+      },
+      {
+        "text": ""
+      },
+      {
+        "text": ""
+      },
+      {
+        "text": ""
+      },
+      {
+        "text": ""
+      },
+      {
+        "text": "Activate license"
+      },
+      {
+        "text": "License Key / Promo"
+      },
+      {
+        "text": "Unlock"
+      },
+      {
+        "text": "\ud83c\udf19 Night Shift: Off"
+      },
+      {
+        "text": "\u26a1 Quick-Print Guest Profile"
+      },
+      {
+        "text": "Mid-Century Homemaker"
+      },
+      {
+        "text": "Midwest Farmer/Worker"
+      },
+      {
+        "text": "Post-War Veteran"
+      },
+      {
+        "text": "Classic Educator"
+      },
+      {
+        "text": "General 1930s-1950s Classic Era"
+      },
+      {
+        "text": "\u2600 Good Day \u00b7 Usual tier"
+      },
+      {
+        "text": "\ud83d\udcc7\nPocket Card"
+      },
+      {
+        "text": "\ud83d\udfe1\nInstant Soothe / Print"
+      },
+      {
+        "text": "\ud83d\uddd1\ufe0f\nDelete Profile"
+      },
+      {
+        "text": "\ud83d\udc65\nDownload Month (All Residents)"
+      },
+      {
+        "text": "Select all"
+      },
+      {
+        "text": "Clear all"
+      },
+      {
+        "text": "Close"
+      },
+      {
+        "text": "\ud83d\udce5 Generate Bundle PDF"
+      },
+      {
+        "text": "Cancel"
+      },
+      {
+        "text": ""
+      },
+      {
+        "text": ""
+      },
+      {
+        "text": ""
+      },
+      {
+        "text": ""
+      },
+      {
+        "text": ""
+      },
+      {
+        "text": "Cancel import"
+      },
+      {
+        "text": "Continue import"
+      },
+      {
+        "text": "\u2600 Good Day \u00b7 Usual tier"
+      },
+      {
+        "text": "\u26a1\nGenerate Custom Packet"
+      },
+      {
+        "text": "\ud83d\udda8\ufe0f\nPrint / Save to PDF"
+      },
+      {
+        "text": "\ud83d\udcf1\nLaunch Tablet Interactive Mode"
+      },
+      {
+        "text": "\ud83d\udce5\nDownload PDF Packet"
+      },
+      {
+        "text": "\ud83d\udfe1\nInstant Soothe Print"
+      },
+      {
+        "text": "\ud83d\udc8c\nFamily Life Digest"
+      },
+      {
+        "text": "\ud83d\udcc7\nPocket Lanyard Card"
+      },
+      {
+        "text": "\ud83d\udce5\nDownload Today's Packet (PDF)"
+      },
+      {
+        "text": "\ud83d\udccb\nCopy action prompts"
+      },
+      {
+        "text": "\ud83d\udd00\nMake another version"
+      },
+      {
+        "text": "Back to the first version"
+      },
+      {
+        "text": "\ud83d\udc8c\nFamily Life Digest"
+      },
+      {
+        "text": "\ud83d\udcc7\nPocket Lanyard Card"
+      },
+      {
+        "text": "Choose"
+      },
+      {
+        "text": "Remove"
+      },
+      {
+        "text": "Choose"
+      },
+      {
+        "text": "Remove"
+      },
+      {
+        "text": "Choose"
+      },
+      {
+        "text": "Remove"
+      },
+      {
+        "text": "Add another person"
+      },
+      {
+        "text": "Pick a set for this level"
+      },
+      {
+        "text": "Select all"
+      },
+      {
+        "text": "Clear all"
+      },
+      {
+        "text": ""
+      },
+      {
+        "text": ""
+      },
+      {
+        "text": ""
+      },
+      {
+        "text": ""
+      },
+      {
+        "text": ""
+      },
+      {
+        "text": ""
+      },
+      {
+        "text": ""
+      },
+      {
+        "text": ""
+      },
+      {
+        "text": ""
+      },
+      {
+        "text": ""
+      },
+      {
+        "text": ""
+      },
+      {
+        "text": ""
+      },
+      {
+        "text": ""
+      },
+      {
+        "text": ""
+      },
+      {
+        "text": "Save this resident"
+      },
+      {
+        "text": "Open a saved resident"
+      },
+      {
+        "text": "Print a family form"
+      },
+      {
+        "text": "Clear the form"
+      },
+      {
+        "text": "Save Current Configuration"
+      },
+      {
+        "text": "Load Preset"
+      },
+      {
+        "text": "Delete Preset"
+      },
+      {
+        "text": "Make the packet"
+      },
+      {
+        "text": "Print staff guide only"
+      },
+      {
+        "text": "Unlock"
+      },
+      {
+        "text": "Have a promo code?"
+      }
+    ],
+    "inputs_and_generators": [
+      {
+        "type": "text",
+        "id": "licHdr",
+        "name": ""
+      },
+      {
+        "type": "select/textarea",
+        "id": "arbSelect",
+        "name": ""
+      },
+      {
+        "type": "select/textarea",
+        "id": "mbMonth",
+        "name": ""
+      },
+      {
+        "type": "select/textarea",
+        "id": "mbYear",
+        "name": ""
+      },
+      {
+        "type": "select/textarea",
+        "id": "mbPaper",
+        "name": ""
+      },
+      {
+        "type": "text",
+        "id": "mbFac",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "mbWeekly",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "mbCovers",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "mbIndex",
+        "name": ""
+      },
+      {
+        "type": "password",
+        "id": "arbPass",
+        "name": ""
+      },
+      {
+        "type": "file",
+        "id": "arbImportFile",
+        "name": ""
+      },
+      {
+        "type": "radio",
+        "id": "",
+        "name": "arbConflictMode"
+      },
+      {
+        "type": "radio",
+        "id": "",
+        "name": "arbConflictMode"
+      },
+      {
+        "type": "radio",
+        "id": "",
+        "name": "arbConflictMode"
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "text",
+        "id": "pcgTopics",
+        "name": ""
+      },
+      {
+        "type": "text",
+        "id": "first",
+        "name": ""
+      },
+      {
+        "type": "text",
+        "id": "last",
+        "name": ""
+      },
+      {
+        "type": "text",
+        "id": "goes",
+        "name": ""
+      },
+      {
+        "type": "number",
+        "id": "born",
+        "name": ""
+      },
+      {
+        "type": "select/textarea",
+        "id": "pronoun",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "highContrastMode",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "extraLargePrint",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "simplifiedLayout",
+        "name": ""
+      },
+      {
+        "type": "radio",
+        "id": "",
+        "name": "stage"
+      },
+      {
+        "type": "radio",
+        "id": "",
+        "name": "stage"
+      },
+      {
+        "type": "radio",
+        "id": "",
+        "name": "stage"
+      },
+      {
+        "type": "text",
+        "id": "town",
+        "name": ""
+      },
+      {
+        "type": "text",
+        "id": "state",
+        "name": ""
+      },
+      {
+        "type": "text",
+        "id": "job",
+        "name": ""
+      },
+      {
+        "type": "text",
+        "id": "spouse",
+        "name": ""
+      },
+      {
+        "type": "text",
+        "id": "kids",
+        "name": ""
+      },
+      {
+        "type": "text",
+        "id": "pets",
+        "name": ""
+      },
+      {
+        "type": "text",
+        "id": "hobbies",
+        "name": ""
+      },
+      {
+        "type": "text",
+        "id": "favs",
+        "name": ""
+      },
+      {
+        "type": "text",
+        "id": "mil",
+        "name": ""
+      },
+      {
+        "type": "text",
+        "id": "faith",
+        "name": ""
+      },
+      {
+        "type": "select/textarea",
+        "id": "lang1",
+        "name": ""
+      },
+      {
+        "type": "select/textarea",
+        "id": "lang2",
+        "name": ""
+      },
+      {
+        "type": "text",
+        "id": "mother",
+        "name": ""
+      },
+      {
+        "type": "text",
+        "id": "school",
+        "name": ""
+      },
+      {
+        "type": "text",
+        "id": "firstcar",
+        "name": ""
+      },
+      {
+        "type": "text",
+        "id": "firstjob",
+        "name": ""
+      },
+      {
+        "type": "text",
+        "id": "avoid",
+        "name": ""
+      },
+      {
+        "type": "text",
+        "id": "sibs",
+        "name": ""
+      },
+      {
+        "type": "text",
+        "id": "cn1",
+        "name": ""
+      },
+      {
+        "type": "text",
+        "id": "cr1",
+        "name": ""
+      },
+      {
+        "type": "file",
+        "id": "cp1",
+        "name": ""
+      },
+      {
+        "type": "text",
+        "id": "cn2",
+        "name": ""
+      },
+      {
+        "type": "text",
+        "id": "cr2",
+        "name": ""
+      },
+      {
+        "type": "file",
+        "id": "cp2",
+        "name": ""
+      },
+      {
+        "type": "text",
+        "id": "cn3",
+        "name": ""
+      },
+      {
+        "type": "text",
+        "id": "cr3",
+        "name": ""
+      },
+      {
+        "type": "file",
+        "id": "cp3",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": ""
+      },
+      {
+        "type": "text",
+        "id": "fac",
+        "name": ""
+      },
+      {
+        "type": "text",
+        "id": "month",
+        "name": ""
+      },
+      {
+        "type": "text",
+        "id": "wing",
+        "name": ""
+      },
+      {
+        "type": "password",
+        "id": "ioPass",
+        "name": ""
+      },
+      {
+        "type": "file",
+        "id": "loadFile",
+        "name": ""
+      },
+      {
+        "type": "text",
+        "id": "presetName",
+        "name": ""
+      },
+      {
+        "type": "select/textarea",
+        "id": "presetSelect",
+        "name": ""
+      },
+      {
+        "type": "text",
+        "id": "lic",
+        "name": ""
+      }
+    ],
+    "sample_text": [
+      "ENGAGING TODAY",
+      "Activities built from one resident's own life.",
+      "Fill in what you know about them, pick the pages you want, and you'll get a printable large-print packet using their hometown, their family's names, their work, and the things they loved.",
+      "What Cognicopia gives you",
+      "Informed by the research",
+      "The activities draw on published research on reminiscence, cognitive stimulation and print for older eyes. The Research Center sums up each study, with its sources and its limits.",
+      "Cognicopia is developed and published with dedication to providing dignified, personalized reminiscence and cognitive engagement resources for memory care.",
+      "THE PACKET TOOL",
+      "Make a packet",
+      "Nothing you type here is sent anywhere. The packet is made on this computer and saved straight to your downloads. No resident information ever reaches us.",
+      "Choose a general archetype for a temporary packet. No profile is saved and no resident name is used.",
+      "Active resident",
+      "No saved resident profiles yet. Press New Profile to make one; it takes about five minutes and is saved only on this computer.",
+      "Instant Soothe opens two quick choices, a care level and a theme, then prints a fresh one-to-three page calming packet made for that moment. It uses the active resident's level and name when one is chosen, and needs no profile when none is.",
+      "\ud83d\udcc5 Monthly Activity Bundle",
+      "One PDF with a personalized packet for every resident you choose. Made entirely on this computer; nothing is sent anywhere.",
+      "Building your monthly bundle\u2026"
+    ]
+  },
+  "institutional-standards.html": {
+    "title": "",
+    "links": [],
+    "buttons": [],
+    "inputs_and_generators": [],
+    "sample_text": []
+  },
+  "license-desk.html": {
+    "title": "License Desk \u2014 Cognicopia",
+    "links": [
+      {
+        "text": "Cognicopia",
+        "href": "index.html"
+      },
+      {
+        "text": "Back to Cognicopia",
+        "href": "index.html"
+      }
+    ],
+    "buttons": [
+      {
+        "text": "Make my key"
+      },
+      {
+        "text": "Save the secret file again"
+      },
+      {
+        "text": "Copy the safe line"
+      },
+      {
+        "text": "Make the license key"
+      },
+      {
+        "text": "Copy the key"
+      },
+      {
+        "text": "Copy the link"
+      },
+      {
+        "text": "Copy the email"
+      },
+      {
+        "text": "Check it"
+      }
+    ],
+    "inputs_and_generators": [
+      {
+        "type": "select/textarea",
+        "id": "pubLine",
+        "name": ""
+      },
+      {
+        "type": "file",
+        "id": "pemFile",
+        "name": ""
+      },
+      {
+        "type": "text",
+        "id": "fac",
+        "name": ""
+      },
+      {
+        "type": "select/textarea",
+        "id": "plan",
+        "name": ""
+      },
+      {
+        "type": "date",
+        "id": "until",
+        "name": ""
+      },
+      {
+        "type": "select/textarea",
+        "id": "keyText",
+        "name": ""
+      },
+      {
+        "type": "select/textarea",
+        "id": "linkText",
+        "name": ""
+      },
+      {
+        "type": "select/textarea",
+        "id": "mailText",
+        "name": ""
+      },
+      {
+        "type": "select/textarea",
+        "id": "checkText",
+        "name": ""
+      }
+    ],
+    "sample_text": [
+      "License desk",
+      "This page makes the license keys that unlock Cognicopia for a facility. It is for the owner only. It runs in your web browser and cannot send anything anywhere: your secret key file stays on your computer.",
+      "1Make your license-making key (do this once)",
+      "This makes two things. A secret file that only you keep. It is the only thing that can make license keys. And one safe line that you give to Claude so the website can check your keys. The safe line can only check keys, never make them, so it is fine to share.",
+      "Copy this line and paste it into your message to Claude. It starts with PUBLIC_KEYS.",
+      "2Make a license key for a facility",
+      "Use this after someone pays by invoice, or when a card buyer needs their key made by hand.",
+      "The license keeps working for another 90 days after this date, even with no internet.",
+      "3Check a license key",
+      "Paste any license key to see whether this website accepts it, and what it says."
+    ]
+  },
+  "life-planners.html": {
+    "title": "12-Month Life Planners & Organizers - Cognicopia",
+    "links": [
+      {
+        "text": "Cognicopia",
+        "href": "index.html"
+      },
+      {
+        "text": "",
+        "href": "index.html"
+      },
+      {
+        "text": "",
+        "href": "tablet.html"
+      },
+      {
+        "text": "",
+        "href": "profile.html"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/coloring"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/planner"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/journal"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/reminiscence"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/heirloom"
+      },
+      {
+        "text": "Activity Packets",
+        "href": "builder.html"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/facility"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/shift"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/roster"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/clinical"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/settings"
+      },
+      {
+        "text": "",
+        "href": "pricing.html"
+      },
+      {
+        "text": "",
+        "href": "pilot.html"
+      },
+      {
+        "text": "",
+        "href": "referral.html"
+      },
+      {
+        "text": "Academy",
+        "href": "builder.html#/academy"
+      },
+      {
+        "text": "",
+        "href": "resources/"
+      },
+      {
+        "text": "",
+        "href": "resources/research/"
+      },
+      {
+        "text": "",
+        "href": "resources/quality-standards/"
+      },
+      {
+        "text": "",
+        "href": "resources/clinical-alignment/"
+      },
+      {
+        "text": "",
+        "href": "resources/reminiscence-science/"
+      },
+      {
+        "text": "",
+        "href": "resources/high-volume-facilities/"
+      },
+      {
+        "text": "",
+        "href": "resources/publishing-excellence/"
+      },
+      {
+        "text": "",
+        "href": "resources/platform-overview/"
+      },
+      {
+        "text": "",
+        "href": "resources/privacy-and-data/"
+      },
+      {
+        "text": "",
+        "href": "resources/security-questions/"
+      },
+      {
+        "text": "",
+        "href": "resources/accessibility/"
+      },
+      {
+        "text": "",
+        "href": "resources/activity-feature-guide/"
+      },
+      {
+        "text": "",
+        "href": "resources/resource-catalog/"
+      },
+      {
+        "text": "",
+        "href": "resources/caregiver-faq/"
+      },
+      {
+        "text": "Contact Kirk Barron",
+        "href": "contact.html"
+      },
+      {
+        "text": "Get Full Access ($39/mo or $349/yr) \u2192",
+        "href": "pricing.html"
+      },
+      {
+        "text": "Request Corporate Invoice / W-9",
+        "href": "contact.html?subject=Corporate+Invoice+Request"
+      },
+      {
+        "text": "Back to Home (Tool)",
+        "href": "index.html"
+      },
+      {
+        "text": "cognicopia@outlook.com",
+        "href": "mailto:cognicopia@outlook.com"
+      },
+      {
+        "text": "Build Your 12-Month Planner (Tool)",
+        "href": "builder.html#/planner"
+      },
+      {
+        "text": "Request Facility Planning Consultation",
+        "href": "contact.html?subject=12-Month+Planner+Facility+Inquiry"
+      },
+      {
+        "text": "Return to Homepage",
+        "href": "index.html"
+      },
+      {
+        "text": "Cognicopia",
+        "href": "index.html"
+      },
+      {
+        "text": "Personalized Packet Tool",
+        "href": "index.html"
+      },
+      {
+        "text": "Packet Builder",
+        "href": "builder.html"
+      },
+      {
+        "text": "Resident Profiles",
+        "href": "profile.html"
+      },
+      {
+        "text": "Cognicopia Coloring",
+        "href": "builder.html#/coloring"
+      },
+      {
+        "text": "12-Month Life Planners",
+        "href": "life-planners.html"
+      },
+      {
+        "text": "Cognitive Life Journals",
+        "href": "cognitive-journals.html"
+      },
+      {
+        "text": "Facility Portal",
+        "href": "builder.html#/facility"
+      },
+      {
+        "text": "Plans & pricing",
+        "href": "pricing.html"
+      },
+      {
+        "text": "Activate a license",
+        "href": "activate.html"
+      },
+      {
+        "text": "Request an invoice / W-9",
+        "href": "contact.html?subject=Corporate+Invoice+Request"
+      },
+      {
+        "text": "Resource & Clinical Hub",
+        "href": "resources/"
+      },
+      {
+        "text": "Research Center",
+        "href": "resources/research/"
+      },
+      {
+        "text": "Caregiver FAQ",
+        "href": "resources/caregiver-faq/"
+      },
+      {
+        "text": "Contact Kirk Barron",
+        "href": "contact.html"
+      }
+    ],
+    "buttons": [
+      {
+        "text": "Menu"
+      },
+      {
+        "text": "License Key / Promo"
+      },
+      {
+        "text": ""
+      }
+    ],
+    "inputs_and_generators": [],
+    "sample_text": [
+      "12-Month Life Planners & Organizers",
+      "Visual Routine Predictability, Temporal Orientation & Calm Daily Structure",
+      "Restoring Orientation, Safety & Temporal Peace",
+      "Disorientation in time is one of the most unsettling experiences for seniors navigating dementia or cognitive decline. Losing track of what day it is, which season has arrived, or what happens next triggers repetitive questioning (\u201cWhere are we going?\u201d, \u201cIs it time for lunch yet?\u201d, \u201cWho is coming today?\u201d) and profound anxiety.",
+      "Cognicopia\u2019s 12-Month Life Planners and Routine Organizers provide an unshakeable visual anchor. Engineered for bedside clipboards, activity room boards, and caregiver stations, these sheets translate the chaos of shifting schedules into comforting, dignified predictability.",
+      "Clinical Benefits of Visual Predictability",
+      "Curbs Transition Anxiety",
+      "Uncertainty around daily transitions causes acute agitation. Clearly marked milestone slots assure residents that loved ones, meals, and comforting activities are arriving on schedule.",
+      "Seasonal & Weather Grounding",
+      "Featuring intuitive visual icons for sun, rain, and autumn leaves alongside bold month headings reinforces connection to the natural world and external environment.",
+      "Unified Staff & Family Handoff",
+      "Activity Directors, CNAs, and visiting family members share a standardized visual communication tool, eliminating confusion and ensuring individualized care continuity.",
+      "The 4 Core Organizational Modules",
+      "Annual Orientation & Temporal Anchors",
+      "A season-colored Year at a Glance, a large-print Right Now season and weather box, and a personal history of birth year, hometown, career milestones and family anniversaries.",
+      "Monthly Seasonal Themes & Sensory Cues",
+      "Twelve monthly modules, from January\u2019s Winter Warmth to December\u2019s Holiday Glow, with favorite music, scents, textures and food memories beside clean adult line art.",
+      "Daily & Weekly Rhythm Tracking",
+      "Predictable routine blocks, engagement and response logs, and a family visit planner with photo and memory preparation prompts.",
+      "Caregiver & Wellness Notes"
+    ]
+  },
+  "pilot.html": {
+    "title": "Run a 30-Day Pilot \u2014 Cognicopia",
+    "links": [
+      {
+        "text": "Cognicopia",
+        "href": "index.html"
+      },
+      {
+        "text": "",
+        "href": "index.html"
+      },
+      {
+        "text": "",
+        "href": "tablet.html"
+      },
+      {
+        "text": "",
+        "href": "profile.html"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/coloring"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/planner"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/journal"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/reminiscence"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/heirloom"
+      },
+      {
+        "text": "Activity Packets",
+        "href": "builder.html"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/facility"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/shift"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/roster"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/clinical"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/settings"
+      },
+      {
+        "text": "",
+        "href": "pricing.html"
+      },
+      {
+        "text": "",
+        "href": "pilot.html"
+      },
+      {
+        "text": "",
+        "href": "referral.html"
+      },
+      {
+        "text": "Academy",
+        "href": "builder.html#/academy"
+      },
+      {
+        "text": "",
+        "href": "resources/"
+      },
+      {
+        "text": "",
+        "href": "resources/research/"
+      },
+      {
+        "text": "",
+        "href": "resources/quality-standards/"
+      },
+      {
+        "text": "",
+        "href": "resources/clinical-alignment/"
+      },
+      {
+        "text": "",
+        "href": "resources/reminiscence-science/"
+      },
+      {
+        "text": "",
+        "href": "resources/high-volume-facilities/"
+      },
+      {
+        "text": "",
+        "href": "resources/publishing-excellence/"
+      },
+      {
+        "text": "",
+        "href": "resources/platform-overview/"
+      },
+      {
+        "text": "",
+        "href": "resources/privacy-and-data/"
+      },
+      {
+        "text": "",
+        "href": "resources/security-questions/"
+      },
+      {
+        "text": "",
+        "href": "resources/accessibility/"
+      },
+      {
+        "text": "",
+        "href": "resources/activity-feature-guide/"
+      },
+      {
+        "text": "",
+        "href": "resources/resource-catalog/"
+      },
+      {
+        "text": "",
+        "href": "resources/caregiver-faq/"
+      },
+      {
+        "text": "Contact Kirk Barron",
+        "href": "contact.html"
+      },
+      {
+        "text": "Get Full Access ($39/mo or $349/yr) \u2192",
+        "href": "pricing.html"
+      },
+      {
+        "text": "Request Corporate Invoice / W-9",
+        "href": "contact.html?subject=Corporate+Invoice+Request"
+      },
+      {
+        "text": "Open the Personalized Packet Tool",
+        "href": "index.html"
+      },
+      {
+        "text": "See a sample packet (PDF)",
+        "href": "assets/samples/cognicopia-sample-packet.pdf"
+      },
+      {
+        "text": "pricing page",
+        "href": "pricing.html"
+      },
+      {
+        "text": "Privacy & Your Data",
+        "href": "resources/privacy-and-data/"
+      },
+      {
+        "text": "answers for an IT team",
+        "href": "resources/security-questions/"
+      },
+      {
+        "text": "accessibility statement",
+        "href": "resources/accessibility/"
+      },
+      {
+        "text": "\u2709\nStart a pilot: write to us",
+        "href": "contact.html?subject=Start+a+pilot"
+      },
+      {
+        "text": "Cognicopia",
+        "href": "index.html"
+      },
+      {
+        "text": "Personalized Packet Tool",
+        "href": "index.html"
+      },
+      {
+        "text": "Packet Builder",
+        "href": "builder.html"
+      },
+      {
+        "text": "Resident Profiles",
+        "href": "profile.html"
+      },
+      {
+        "text": "Cognicopia Coloring",
+        "href": "builder.html#/coloring"
+      },
+      {
+        "text": "12-Month Life Planners",
+        "href": "life-planners.html"
+      },
+      {
+        "text": "Cognitive Life Journals",
+        "href": "cognitive-journals.html"
+      },
+      {
+        "text": "Facility Portal",
+        "href": "builder.html#/facility"
+      },
+      {
+        "text": "Plans & pricing",
+        "href": "pricing.html"
+      },
+      {
+        "text": "Activate a license",
+        "href": "activate.html"
+      },
+      {
+        "text": "Request an invoice / W-9",
+        "href": "contact.html?subject=Corporate+Invoice+Request"
+      },
+      {
+        "text": "Resource & Clinical Hub",
+        "href": "resources/"
+      },
+      {
+        "text": "Research Center",
+        "href": "resources/research/"
+      },
+      {
+        "text": "Caregiver FAQ",
+        "href": "resources/caregiver-faq/"
+      },
+      {
+        "text": "Contact Kirk Barron",
+        "href": "contact.html"
+      }
+    ],
+    "buttons": [
+      {
+        "text": "Menu"
+      },
+      {
+        "text": "License Key / Promo"
+      },
+      {
+        "text": ""
+      }
+    ],
+    "inputs_and_generators": [],
+    "sample_text": [
+      "Try it in your own community",
+      "A 30-day pilot, with nothing to buy first",
+      "What a pilot is",
+      "A pilot is a month of using Cognicopia with a few residents, so you can see whether it fits your community before anyone approves a purchase.",
+      "It costs nothing to start. The first 25 packets are free on every computer: no sign-up, no card and nothing to install. Resident details stay in the browser on the computer you use, and no resident data leaves the device.",
+      "The sample is a real packet, made by the tool for a made-up resident. Nothing in it was drawn by hand.",
+      "Your 30 days",
+      "What to write down",
+      "A short list is enough. These are your own observations, in your own words:",
+      "Cognicopia does not claim a clinical result from a month of use. The notes are for your own team and your own decision.",
+      "Questions an administrator or IT may ask",
+      "Tell us you are piloting",
+      "You do not have to, but a short note helps us help you. We will reply by email.",
+      "\u2709\nStart a pilot: write to us",
+      "Connection, Cognition, Creation \u00b7 from BarronCrafts",
+      "Printable, large-print activities made from one resident's own life, for activity directors and families.",
+      "TOOLS",
+      "FACILITY",
+      "RESOURCES",
+      "Cognicopia is made by BarronCrafts in Minot, North Dakota. Everything happens inside your browser \u2014 there is no account, no upload, and no copy of resident information kept anywhere."
+    ]
+  },
+  "pricing.html": {
+    "title": "Plans & Pricing \u2014 Cognicopia",
+    "links": [
+      {
+        "text": "Cognicopia",
+        "href": "index.html"
+      },
+      {
+        "text": "",
+        "href": "index.html"
+      },
+      {
+        "text": "",
+        "href": "tablet.html"
+      },
+      {
+        "text": "",
+        "href": "profile.html"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/coloring"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/planner"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/journal"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/reminiscence"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/heirloom"
+      },
+      {
+        "text": "Activity Packets",
+        "href": "builder.html"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/facility"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/shift"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/roster"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/clinical"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/settings"
+      },
+      {
+        "text": "",
+        "href": "pricing.html"
+      },
+      {
+        "text": "",
+        "href": "pilot.html"
+      },
+      {
+        "text": "",
+        "href": "referral.html"
+      },
+      {
+        "text": "Academy",
+        "href": "builder.html#/academy"
+      },
+      {
+        "text": "",
+        "href": "resources/"
+      },
+      {
+        "text": "",
+        "href": "resources/research/"
+      },
+      {
+        "text": "",
+        "href": "resources/quality-standards/"
+      },
+      {
+        "text": "",
+        "href": "resources/clinical-alignment/"
+      },
+      {
+        "text": "",
+        "href": "resources/reminiscence-science/"
+      },
+      {
+        "text": "",
+        "href": "resources/high-volume-facilities/"
+      },
+      {
+        "text": "",
+        "href": "resources/publishing-excellence/"
+      },
+      {
+        "text": "",
+        "href": "resources/platform-overview/"
+      },
+      {
+        "text": "",
+        "href": "resources/privacy-and-data/"
+      },
+      {
+        "text": "",
+        "href": "resources/security-questions/"
+      },
+      {
+        "text": "",
+        "href": "resources/accessibility/"
+      },
+      {
+        "text": "",
+        "href": "resources/activity-feature-guide/"
+      },
+      {
+        "text": "",
+        "href": "resources/resource-catalog/"
+      },
+      {
+        "text": "",
+        "href": "resources/caregiver-faq/"
+      },
+      {
+        "text": "Contact Kirk Barron",
+        "href": "contact.html"
+      },
+      {
+        "text": "Get Full Access ($39/mo or $349/yr) \u2192",
+        "href": "pricing.html"
+      },
+      {
+        "text": "Request Corporate Invoice / W-9",
+        "href": "contact.html?subject=Corporate+Invoice+Request"
+      },
+      {
+        "text": "Open the Personalized Packet Tool",
+        "href": "index.html"
+      },
+      {
+        "text": "See a sample packet (PDF)",
+        "href": "assets/samples/cognicopia-sample-packet.pdf"
+      },
+      {
+        "text": "Plan a 30-day pilot",
+        "href": "pilot.html"
+      },
+      {
+        "text": "Pay by card \u2014 $39 a month",
+        "href": "https://buy.stripe.com/6oUdRa5pB5djcAFfFtew802"
+      },
+      {
+        "text": "Pay by card \u2014 $349 a year",
+        "href": "https://buy.stripe.com/6oU28sdW7fRXcAF0Kzew803"
+      },
+      {
+        "text": "Ask for a quote",
+        "href": "contact.html?subject=Enterprise+Multi-Facility+Quote"
+      },
+      {
+        "text": "Request Corporate Invoice / W-9",
+        "href": "contact.html?subject=Corporate+Invoice+Request"
+      },
+      {
+        "text": "Activate it here",
+        "href": "activate.html"
+      },
+      {
+        "text": "",
+        "href": "contact.html?subject=Corporate+Invoice+Request"
+      },
+      {
+        "text": "",
+        "href": "mailto:cognicopia@outlook.com"
+      },
+      {
+        "text": "Cognicopia",
+        "href": "index.html"
+      },
+      {
+        "text": "Personalized Packet Tool",
+        "href": "index.html"
+      },
+      {
+        "text": "Packet Builder",
+        "href": "builder.html"
+      },
+      {
+        "text": "Resident Profiles",
+        "href": "profile.html"
+      },
+      {
+        "text": "Cognicopia Coloring",
+        "href": "builder.html#/coloring"
+      },
+      {
+        "text": "12-Month Life Planners",
+        "href": "life-planners.html"
+      },
+      {
+        "text": "Cognitive Life Journals",
+        "href": "cognitive-journals.html"
+      },
+      {
+        "text": "Facility Portal",
+        "href": "builder.html#/facility"
+      },
+      {
+        "text": "Plans & pricing",
+        "href": "pricing.html"
+      },
+      {
+        "text": "Activate a license",
+        "href": "activate.html"
+      },
+      {
+        "text": "Request an invoice / W-9",
+        "href": "contact.html?subject=Corporate+Invoice+Request"
+      },
+      {
+        "text": "Resource & Clinical Hub",
+        "href": "resources/"
+      },
+      {
+        "text": "Research Center",
+        "href": "resources/research/"
+      },
+      {
+        "text": "Caregiver FAQ",
+        "href": "resources/caregiver-faq/"
+      },
+      {
+        "text": "Contact Kirk Barron",
+        "href": "contact.html"
+      }
+    ],
+    "buttons": [
+      {
+        "text": "Menu"
+      },
+      {
+        "text": "License Key / Promo"
+      },
+      {
+        "text": ""
+      }
+    ],
+    "inputs_and_generators": [],
+    "sample_text": [
+      "Plans & pricing",
+      "One license for your whole building. No per-resident fees and no per-packet fees.",
+      "Start free: your first 25 packets",
+      "Try Cognicopia in your own community before anyone approves anything. The first 25 packets are free: no sign-up, no card, nothing to install. After that, the tools ask for a license.",
+      "Open the Personalized Packet Tool\nSee a sample packet (PDF)\nPlan a 30-day pilot",
+      "Monthly",
+      "$39 per month, per facility",
+      "Small enough that many communities can buy it on an activity department purchasing card (P-Card). Check your own spending policy.",
+      "Best value",
+      "Annual",
+      "$349 per year, per facility",
+      "Save $119 a year (about 25%) compared with paying monthly. One payment, easy to place in a yearly budget. It works out to under $1 a day for your whole building.",
+      "Enterprise",
+      "Custom quote for several buildings",
+      "One agreement for a group of communities, paid by invoice: ACH bank transfer or check, net-30 terms, and a W-9 with the first invoice.",
+      "Pay by invoice, with a W-9",
+      "Accounts payable departments can buy without a card. Tell us the facility name, the billing contact and whether you need a purchase order number. We send an invoice on net-30 terms, payable by ACH or check, with our W-9 attached. We email the license key with the invoice.",
+      "Request Corporate Invoice / W-9",
+      "What every plan includes",
+      "How you get your license"
+    ]
+  },
+  "profile.html": {
+    "title": "Resident Activity Profile - Cognicopia",
+    "links": [
+      {
+        "text": "Cognicopia",
+        "href": "index.html"
+      },
+      {
+        "text": "",
+        "href": "index.html"
+      },
+      {
+        "text": "",
+        "href": "tablet.html"
+      },
+      {
+        "text": "",
+        "href": "profile.html"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/coloring"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/planner"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/journal"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/reminiscence"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/heirloom"
+      },
+      {
+        "text": "Activity Packets",
+        "href": "builder.html"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/facility"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/shift"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/roster"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/clinical"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/settings"
+      },
+      {
+        "text": "",
+        "href": "pricing.html"
+      },
+      {
+        "text": "",
+        "href": "pilot.html"
+      },
+      {
+        "text": "",
+        "href": "referral.html"
+      },
+      {
+        "text": "Academy",
+        "href": "builder.html#/academy"
+      },
+      {
+        "text": "",
+        "href": "resources/"
+      },
+      {
+        "text": "",
+        "href": "resources/research/"
+      },
+      {
+        "text": "",
+        "href": "resources/quality-standards/"
+      },
+      {
+        "text": "",
+        "href": "resources/clinical-alignment/"
+      },
+      {
+        "text": "",
+        "href": "resources/reminiscence-science/"
+      },
+      {
+        "text": "",
+        "href": "resources/high-volume-facilities/"
+      },
+      {
+        "text": "",
+        "href": "resources/publishing-excellence/"
+      },
+      {
+        "text": "",
+        "href": "resources/platform-overview/"
+      },
+      {
+        "text": "",
+        "href": "resources/privacy-and-data/"
+      },
+      {
+        "text": "",
+        "href": "resources/security-questions/"
+      },
+      {
+        "text": "",
+        "href": "resources/accessibility/"
+      },
+      {
+        "text": "",
+        "href": "resources/activity-feature-guide/"
+      },
+      {
+        "text": "",
+        "href": "resources/resource-catalog/"
+      },
+      {
+        "text": "",
+        "href": "resources/caregiver-faq/"
+      },
+      {
+        "text": "Contact Kirk Barron",
+        "href": "contact.html"
+      },
+      {
+        "text": "Get Full Access ($39/mo or $349/yr) \u2192",
+        "href": "pricing.html"
+      },
+      {
+        "text": "Request Corporate Invoice / W-9",
+        "href": "contact.html?subject=Corporate+Invoice+Request"
+      },
+      {
+        "text": "Make a packet",
+        "href": "index.html"
+      },
+      {
+        "text": "Data Backup & Restore",
+        "href": "index.html#arbBackup"
+      },
+      {
+        "text": "Cognicopia",
+        "href": "index.html"
+      },
+      {
+        "text": "Personalized Packet Tool",
+        "href": "index.html"
+      },
+      {
+        "text": "Packet Builder",
+        "href": "builder.html"
+      },
+      {
+        "text": "Resident Profiles",
+        "href": "profile.html"
+      },
+      {
+        "text": "Cognicopia Coloring",
+        "href": "builder.html#/coloring"
+      },
+      {
+        "text": "12-Month Life Planners",
+        "href": "life-planners.html"
+      },
+      {
+        "text": "Cognitive Life Journals",
+        "href": "cognitive-journals.html"
+      },
+      {
+        "text": "Facility Portal",
+        "href": "builder.html#/facility"
+      },
+      {
+        "text": "Plans & pricing",
+        "href": "pricing.html"
+      },
+      {
+        "text": "Activate a license",
+        "href": "activate.html"
+      },
+      {
+        "text": "Request an invoice / W-9",
+        "href": "contact.html?subject=Corporate+Invoice+Request"
+      },
+      {
+        "text": "Resource & Clinical Hub",
+        "href": "resources/"
+      },
+      {
+        "text": "Research Center",
+        "href": "resources/research/"
+      },
+      {
+        "text": "Caregiver FAQ",
+        "href": "resources/caregiver-faq/"
+      },
+      {
+        "text": "Contact Kirk Barron",
+        "href": "contact.html"
+      }
+    ],
+    "buttons": [
+      {
+        "text": "Menu"
+      },
+      {
+        "text": "License Key / Promo"
+      },
+      {
+        "text": ""
+      },
+      {
+        "text": "\ud83c\udf19 Night Shift: Off"
+      },
+      {
+        "text": "STEP 1\nResident basics"
+      },
+      {
+        "text": "STEP 2\nLife story & work"
+      },
+      {
+        "text": "STEP 3\nFavorites & music"
+      },
+      {
+        "text": "STEP 4\nClinical & abilities"
+      },
+      {
+        "text": "STEP 5\nPacket settings"
+      },
+      {
+        "text": "STEP 6\nAnything else & save"
+      },
+      {
+        "text": "Expand All Sections"
+      },
+      {
+        "text": "Suggest from birth year"
+      },
+      {
+        "text": "+ Add a Person/Pet"
+      },
+      {
+        "text": "Start a new resident profile"
+      },
+      {
+        "text": "\u2190 Back"
+      },
+      {
+        "text": "Next \u2192"
+      },
+      {
+        "text": "Clear this form"
+      },
+      {
+        "text": "\u00d7"
+      },
+      {
+        "text": "Cancel"
+      },
+      {
+        "text": "Generate PDF"
+      }
+    ],
+    "inputs_and_generators": [
+      {
+        "type": "text",
+        "id": "rapName",
+        "name": "preferredName"
+      },
+      {
+        "type": "text",
+        "id": "rapNickname",
+        "name": "nickname"
+      },
+      {
+        "type": "text",
+        "id": "rapUnit",
+        "name": "unitNumber"
+      },
+      {
+        "type": "text",
+        "id": "rapAlias",
+        "name": "alias"
+      },
+      {
+        "type": "number",
+        "id": "rapAge",
+        "name": "age"
+      },
+      {
+        "type": "number",
+        "id": "rapBorn",
+        "name": "birthYear"
+      },
+      {
+        "type": "select/textarea",
+        "id": "rapBy",
+        "name": "completedBy"
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": "decades"
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": "decades"
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": "decades"
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": "decades"
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": "decades"
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": "decades"
+      },
+      {
+        "type": "select/textarea",
+        "id": "rapHome",
+        "name": "hometown"
+      },
+      {
+        "type": "text",
+        "id": "rapTown",
+        "name": "hometownName"
+      },
+      {
+        "type": "select/textarea",
+        "id": "rapRegion",
+        "name": "region"
+      },
+      {
+        "type": "select/textarea",
+        "id": "rapJob",
+        "name": "occupation"
+      },
+      {
+        "type": "text",
+        "id": "rapJobOther",
+        "name": "occupationOther"
+      },
+      {
+        "type": "select/textarea",
+        "id": "rapVocation",
+        "name": "primaryVocation"
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": "skills"
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": "skills"
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": "skills"
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": "skills"
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": "skills"
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": "skills"
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": "skills"
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": "skills"
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": "skills"
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": "skills"
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": "skills"
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": "skills"
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": "skills"
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": "skills"
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": "skills"
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": "skills"
+      },
+      {
+        "type": "text",
+        "id": "rapSkillOther",
+        "name": "skillsOther"
+      },
+      {
+        "type": "select/textarea",
+        "id": "rapBranch",
+        "name": "militaryBranch"
+      },
+      {
+        "type": "select/textarea",
+        "id": "rapEra",
+        "name": "militaryEra"
+      },
+      {
+        "type": "select/textarea",
+        "id": "rapMilTopic",
+        "name": "militaryTopic"
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": "hobbies"
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": "hobbies"
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": "hobbies"
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": "hobbies"
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": "hobbies"
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": "hobbies"
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": "hobbies"
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": "hobbies"
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": "hobbies"
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": "hobbies"
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": "hobbies"
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": "hobbies"
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": "hobbies"
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": "hobbies"
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": "hobbies"
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": "hobbies"
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": "hobbies"
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": "hobbies"
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": "hobbies"
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": "hobbies"
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": "hobbies"
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": "hobbies"
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": "hobbies"
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": "hobbies"
+      },
+      {
+        "type": "select/textarea",
+        "id": "rapGenre1",
+        "name": "genre1"
+      },
+      {
+        "type": "select/textarea",
+        "id": "rapGenre2",
+        "name": "genre2"
+      },
+      {
+        "type": "text",
+        "id": "rapArtist1",
+        "name": "artist1"
+      },
+      {
+        "type": "text",
+        "id": "rapArtist2",
+        "name": "artist2"
+      },
+      {
+        "type": "text",
+        "id": "rapArtist3",
+        "name": "artist3"
+      },
+      {
+        "type": "text",
+        "id": "rapSong",
+        "name": "favoriteSong"
+      },
+      {
+        "type": "text",
+        "id": "rapTv",
+        "name": "tvShows"
+      },
+      {
+        "type": "text",
+        "id": "rapMovies",
+        "name": "movies"
+      },
+      {
+        "type": "text",
+        "id": "rapTeams",
+        "name": "sportsTeams"
+      },
+      {
+        "type": "select/textarea",
+        "id": "rapRead",
+        "name": "readingLevel"
+      },
+      {
+        "type": "select/textarea",
+        "id": "rapVision",
+        "name": "vision"
+      },
+      {
+        "type": "select/textarea",
+        "id": "rapMotor",
+        "name": "motor"
+      },
+      {
+        "type": "radio",
+        "id": "",
+        "name": "tier"
+      },
+      {
+        "type": "radio",
+        "id": "",
+        "name": "tier"
+      },
+      {
+        "type": "radio",
+        "id": "",
+        "name": "tier"
+      },
+      {
+        "type": "radio",
+        "id": "",
+        "name": "contrast"
+      },
+      {
+        "type": "radio",
+        "id": "",
+        "name": "contrast"
+      },
+      {
+        "type": "select/textarea",
+        "id": "rapLine",
+        "name": "lineThickness"
+      },
+      {
+        "type": "hidden",
+        "id": "rapNeedsAuto",
+        "name": "needsAuto"
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": "avoidTopics"
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": "avoidTopics"
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": "avoidTopics"
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": "avoidTopics"
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": "avoidTopics"
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": "avoidTopics"
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": "avoidTopics"
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": "avoidTopics"
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": "avoidTopics"
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": "avoidTopics"
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": "avoidTopics"
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": "avoidTopics"
+      },
+      {
+        "type": "text",
+        "id": "rapAvoidOther",
+        "name": "avoidOther"
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": "activityTypes"
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": "activityTypes"
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": "activityTypes"
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": "activityTypes"
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": "activityTypes"
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": "activityTypes"
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": "activityTypes"
+      },
+      {
+        "type": "checkbox",
+        "id": "",
+        "name": "activityTypes"
+      },
+      {
+        "type": "range",
+        "id": "rapDiff",
+        "name": "difficulty"
+      },
+      {
+        "type": "radio",
+        "id": "",
+        "name": "paper"
+      },
+      {
+        "type": "radio",
+        "id": "",
+        "name": "paper"
+      },
+      {
+        "type": "radio",
+        "id": "",
+        "name": "ink"
+      },
+      {
+        "type": "radio",
+        "id": "",
+        "name": "ink"
+      },
+      {
+        "type": "select/textarea",
+        "id": "rapSootheActivity",
+        "name": "preselectedDeescalationActivity"
+      },
+      {
+        "type": "select/textarea",
+        "id": "rapNotes",
+        "name": "notes"
+      },
+      {
+        "type": "select/textarea",
+        "id": "fldActivityType",
+        "name": ""
+      },
+      {
+        "type": "date",
+        "id": "fldSessionDate",
+        "name": ""
+      },
+      {
+        "type": "select/textarea",
+        "id": "fldCustomNotes",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "fldIncludeBio",
+        "name": ""
+      },
+      {
+        "type": "select/textarea",
+        "id": "fldStaffInitials",
+        "name": ""
+      },
+      {
+        "type": "checkbox",
+        "id": "fldSaveNotes",
+        "name": ""
+      }
+    ],
+    "sample_text": [
+      "RESIDENT ACTIVITY PROFILE",
+      "Get to know the person behind the packet",
+      "A few short steps about who this resident is: the years they remember best, where they grew up and the work they were proud of. Cognicopia uses it to build activities that feel familiar and respectful.",
+      "\ud83d\udd12 Privacy First: All resident information entered here is saved safely and strictly on your local computer. No data is ever extracted, collected, or sent to external servers. We ask these specific questions to generate activities that honor the resident's unique identity.",
+      "Profiles are kept only in this web browser on this computer. On a shared computer, delete a profile under Saved residents when it is no longer needed.",
+      "This browser is not allowing Cognicopia to save on this computer (a private window can do this). You can still fill in the profile, but it will be lost when the page closes.",
+      "Step 1 of 6: Resident basics",
+      "Resident basics",
+      "Why we ask: The name makes every page personal. The decades anchor reminiscence prompts, music and pictures to the years that matter most to this person.",
+      "The name they answer to and like to hear. It prints on their pages.",
+      "A shorter name or what close family calls them. Used on pocket cards.",
+      "Helps staff find the right person in the resident roster. It never prints on the resident's own pages.",
+      "Shown instead of the name when staff turn on aliases, on screens others can see and on staff pages. Leave it blank to use \u201cResident\u201d and the room or unit. Never use the resident's name here.",
+      "Fill in either one and the other fills itself in. The age may be off by one until their birthday.",
+      "The years they talk about most. For many people this is their teens and twenties.",
+      "Life story, career and skills"
+    ]
+  },
+  "publishing-excellence.html": {
+    "title": "",
+    "links": [],
+    "buttons": [],
+    "inputs_and_generators": [],
+    "sample_text": []
+  },
+  "referral.html": {
+    "title": "Share Cognicopia with a Colleague \u2014 Cognicopia",
+    "links": [
+      {
+        "text": "Cognicopia",
+        "href": "index.html"
+      },
+      {
+        "text": "",
+        "href": "index.html"
+      },
+      {
+        "text": "",
+        "href": "tablet.html"
+      },
+      {
+        "text": "",
+        "href": "profile.html"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/coloring"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/planner"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/journal"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/reminiscence"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/heirloom"
+      },
+      {
+        "text": "Activity Packets",
+        "href": "builder.html"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/facility"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/shift"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/roster"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/clinical"
+      },
+      {
+        "text": "",
+        "href": "builder.html#/settings"
+      },
+      {
+        "text": "",
+        "href": "pricing.html"
+      },
+      {
+        "text": "",
+        "href": "pilot.html"
+      },
+      {
+        "text": "",
+        "href": "referral.html"
+      },
+      {
+        "text": "Academy",
+        "href": "builder.html#/academy"
+      },
+      {
+        "text": "",
+        "href": "resources/"
+      },
+      {
+        "text": "",
+        "href": "resources/research/"
+      },
+      {
+        "text": "",
+        "href": "resources/quality-standards/"
+      },
+      {
+        "text": "",
+        "href": "resources/clinical-alignment/"
+      },
+      {
+        "text": "",
+        "href": "resources/reminiscence-science/"
+      },
+      {
+        "text": "",
+        "href": "resources/high-volume-facilities/"
+      },
+      {
+        "text": "",
+        "href": "resources/publishing-excellence/"
+      },
+      {
+        "text": "",
+        "href": "resources/platform-overview/"
+      },
+      {
+        "text": "",
+        "href": "resources/privacy-and-data/"
+      },
+      {
+        "text": "",
+        "href": "resources/security-questions/"
+      },
+      {
+        "text": "",
+        "href": "resources/accessibility/"
+      },
+      {
+        "text": "",
+        "href": "resources/activity-feature-guide/"
+      },
+      {
+        "text": "",
+        "href": "resources/resource-catalog/"
+      },
+      {
+        "text": "",
+        "href": "resources/caregiver-faq/"
+      },
+      {
+        "text": "Contact Kirk Barron",
+        "href": "contact.html"
+      },
+      {
+        "text": "Get Full Access ($39/mo or $349/yr) \u2192",
+        "href": "pricing.html"
+      },
+      {
+        "text": "Request Corporate Invoice / W-9",
+        "href": "contact.html?subject=Corporate+Invoice+Request"
+      },
+      {
+        "text": "Open the sample packet (PDF)",
+        "href": "assets/samples/cognicopia-sample-packet.pdf"
+      },
+      {
+        "text": "Open it in my email",
+        "href": "mailto:?subject=A%20free%20packet%20tool%20for%20memory%20care%20activities&body=Hello%2C%0A%0AI%20came%20across%20Cognicopia%2C%20a%20website%20that%20makes%20personalized%20activity%20packets%20for%20residents%20living%20with%20memory%20loss%3A%20word%20searches%2C%20crosswords%2C%20bold-line%20coloring%20pages%20and%20a%20page%20of%20prompts%20for%20staff.%20It%20is%20built%20from%20each%20resident's%20own%20life%2C%20such%20as%20their%20work%2C%20their%20hometown%20and%20the%20music%20they%20loved.%0A%0AA%20few%20things%20I%20thought%20you%20would%20want%20to%20know%3A%0A-%20The%20first%2025%20packets%20are%20free%2C%20with%20no%20sign-up%20or%20card.%0A-%20Resident%20details%20stay%20in%20the%20browser%20on%20the%20computer%20you%20use%2C%20and%20no%20resident%20data%20leaves%20the%20device.%0A-%20It%20prints%20on%20a%20standard%20printer%2C%20on%20US%20Letter%20paper.%0A%0AHere%20is%20a%20real%20sample%20packet%20to%20look%20at%3A%20https%3A%2F%2Fcognicopia.org%2Fassets%2Fsamples%2Fcognicopia-sample-packet.pdf%0AAnd%20the%20site%3A%20https%3A%2F%2Fcognicopia.org%2F%0A%0ATake%20a%20look%20and%20tell%20me%20what%20you%20think."
+      },
+      {
+        "text": "30-day pilot plan",
+        "href": "pilot.html"
+      },
+      {
+        "text": "plans and prices",
+        "href": "pricing.html"
+      },
+      {
+        "text": "\u2709\nContact Kirk Barron",
+        "href": "contact.html"
+      },
+      {
+        "text": "Cognicopia",
+        "href": "index.html"
+      },
+      {
+        "text": "Personalized Packet Tool",
+        "href": "index.html"
+      },
+      {
+        "text": "Packet Builder",
+        "href": "builder.html"
+      },
+      {
+        "text": "Resident Profiles",
+        "href": "profile.html"
+      },
+      {
+        "text": "Cognicopia Coloring",
+        "href": "builder.html#/coloring"
+      },
+      {
+        "text": "12-Month Life Planners",
+        "href": "life-planners.html"
+      },
+      {
+        "text": "Cognitive Life Journals",
+        "href": "cognitive-journals.html"
+      },
+      {
+        "text": "Facility Portal",
+        "href": "builder.html#/facility"
+      },
+      {
+        "text": "Plans & pricing",
+        "href": "pricing.html"
+      },
+      {
+        "text": "Activate a license",
+        "href": "activate.html"
+      },
+      {
+        "text": "Request an invoice / W-9",
+        "href": "contact.html?subject=Corporate+Invoice+Request"
+      },
+      {
+        "text": "Resource & Clinical Hub",
+        "href": "resources/"
+      },
+      {
+        "text": "Research Center",
+        "href": "resources/research/"
+      },
+      {
+        "text": "Caregiver FAQ",
+        "href": "resources/caregiver-faq/"
+      },
+      {
+        "text": "Contact Kirk Barron",
+        "href": "contact.html"
+      }
+    ],
+    "buttons": [
+      {
+        "text": "Menu"
+      },
+      {
+        "text": "License Key / Promo"
+      },
+      {
+        "text": ""
+      },
+      {
+        "text": "Copy the note"
+      }
+    ],
+    "inputs_and_generators": [
+      {
+        "type": "select/textarea",
+        "id": "refNote",
+        "name": ""
+      }
+    ],
+    "sample_text": [
+      "Share Cognicopia with a colleague",
+      "Another Activity Director may be looking for this",
+      "What to send",
+      "A note you can send",
+      "Prefer to talk it through?",
+      "Questions from a colleague or an administrator are welcome. A 30-day pilot plan and the plans and prices are there to point to.",
+      "\u2709\nContact Kirk Barron",
+      "Connection, Cognition, Creation \u00b7 from BarronCrafts",
+      "Printable, large-print activities made from one resident's own life, for activity directors and families.",
+      "TOOLS",
+      "FACILITY",
+      "RESOURCES",
+      "Cognicopia is made by BarronCrafts in Minot, North Dakota. Everything happens inside your browser \u2014 there is no account, no upload, and no copy of resident information kept anywhere."
+    ]
+  },
+  "resources.html": {
+    "title": "",
+    "links": [],
+    "buttons": [],
+    "inputs_and_generators": [],
+    "sample_text": []
+  }
+}
