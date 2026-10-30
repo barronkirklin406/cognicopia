@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -1804,11 +1804,11 @@ summary{min-height:var(--tap);box-sizing:border-box}
 .korsakoff-submenu {
   display: none;
   margin: 6px 10px 10px 14px;
-  padding: 10px;
+  padding: 12px;
   background: rgba(6, 26, 22, 0.96);
   border: 1px solid rgba(79, 179, 191, 0.45);
   border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
 }
 .korsakoff-submenu.is-expanded {
   display: block;
@@ -1826,19 +1826,46 @@ summary{min-height:var(--tap);box-sizing:border-box}
   letter-spacing: 0.05em;
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
+}
+.korsakoff-filter-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+.korsakoff-filter-pill {
+  padding: 4px 8px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(79, 179, 191, 0.3);
+  border-radius: 4px;
+  color: #cbe6e8;
+  font-size: 7.5pt;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.korsakoff-filter-pill:hover {
+  background: rgba(79, 179, 191, 0.2);
+  color: #fff;
+}
+.korsakoff-filter-pill.active {
+  background: #4fb3bf;
+  color: #05222a;
+  border-color: #4fb3bf;
+  font-weight: 700;
 }
 .korsakoff-quick-actions {
   display: flex;
   gap: 6px;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 .korsakoff-quick-open, .korsakoff-quick-taskbuilder {
   flex: 1;
-  padding: 6px 8px;
+  padding: 7px 10px;
   background: linear-gradient(135deg, #1d4d54, #123338);
   border: 1px solid var(--sb-accent);
-  border-radius: 5px;
+  border-radius: 6px;
   color: #d5eef0;
   font-size: 8pt;
   font-weight: 700;
@@ -1847,63 +1874,57 @@ summary{min-height:var(--tap);box-sizing:border-box}
   align-items: center;
   justify-content: center;
   gap: 6px;
-  transition: background 0.15s;
+  transition: all 0.15s ease;
 }
 .korsakoff-quick-open:hover, .korsakoff-quick-taskbuilder:hover {
   background: linear-gradient(135deg, #26646d, #18434a);
   color: #fff;
+  transform: translateY(-1px);
 }
 .korsakoff-activity-list {
   display: flex;
   flex-direction: column;
-  gap: 5px;
-  max-height: 240px;
+  gap: 7px;
+  max-height: 280px;
   overflow-y: auto;
-  padding-right: 2px;
+  padding-right: 3px;
 }
 .korsakoff-activity-card {
-  padding: 6px 8px;
+  padding: 8px 10px;
   background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(79, 179, 191, 0.2);
-  border-radius: 5px;
-  cursor: pointer;
+  border: 1px solid rgba(79, 179, 191, 0.25);
+  border-radius: 6px;
   display: flex;
-  align-items: flex-start;
-  gap: 7px;
+  flex-direction: column;
+  gap: 6px;
   text-align: left;
   transition: all 0.15s ease;
 }
 .korsakoff-activity-card:hover {
-  background: rgba(79, 179, 191, 0.18);
-  border-color: rgba(79, 179, 191, 0.6);
-  transform: translateX(2px);
+  background: rgba(79, 179, 191, 0.1);
+  border-color: rgba(79, 179, 191, 0.55);
+}
+.korsakoff-card-top {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 .korsakoff-card-icon {
-  font-size: 13px;
+  font-size: 14px;
   flex: none;
-  margin-top: 1px;
-}
-.korsakoff-card-content {
-  flex: 1;
-  min-width: 0;
 }
 .korsakoff-card-title {
-  font-size: 8pt;
+  font-size: 8.5pt;
   font-weight: 700;
   color: #eaf6f7;
+  flex: 1;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.korsakoff-card-meta {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: 2px;
-}
-.korsakoff-badge {
+.korsakoff-card-badge {
   font-size: 6.5pt;
-  padding: 1px 4px;
+  padding: 1px 5px;
   border-radius: 3px;
   font-weight: 700;
   text-transform: uppercase;
@@ -1924,10 +1945,66 @@ summary{min-height:var(--tap);box-sizing:border-box}
   color: #81c995;
   border: 1px solid rgba(129, 201, 149, 0.5);
 }
+.korsakoff-card-desc {
+  font-size: 7.5pt;
+  color: #a5bfc2;
+  line-height: 1.35;
+  margin: 0;
+}
+.korsakoff-card-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 7pt;
+  color: #78a2a6;
+}
+.korsakoff-card-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 2px;
+}
+.korsakoff-card-btn-main {
+  flex: 1;
+  padding: 5px 8px;
+  background: rgba(79, 179, 191, 0.15);
+  border: 1px solid #4fb3bf;
+  border-radius: 4px;
+  color: #d5eef0;
+  font-size: 7.5pt;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  transition: background 0.15s;
+}
+.korsakoff-card-btn-main:hover {
+  background: rgba(79, 179, 191, 0.35);
+  color: #fff;
+}
+.korsakoff-card-print-shortcut {
+  padding: 5px 8px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  color: #d5eef0;
+  font-size: 7.5pt;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.15s;
+}
+.korsakoff-card-print-shortcut:hover {
+  background: #4fb3bf;
+  color: #05222a;
+  border-color: #4fb3bf;
+}
 
 /* Korsakoff Modal styles */
 .korsakoff-modal {
-  width: min(680px, 94vw);
+  width: min(720px, 94vw);
   max-height: 90vh;
   border: 2px solid #4fb3bf;
   border-radius: 14px;
@@ -2073,6 +2150,46 @@ summary{min-height:var(--tap);box-sizing:border-box}
   color: #b7e7eb;
   line-height: 1.4;
 }
+.korsakoff-task-banner {
+  padding: 12px 14px;
+  background: rgba(79, 179, 191, 0.1);
+  border: 1px solid rgba(79, 179, 191, 0.4);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.korsakoff-task-banner-text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 11.5px;
+  color: #cbe6e8;
+}
+.korsakoff-task-banner-text strong {
+  color: #fff;
+  font-size: 13px;
+}
+.korsakoff-task-btn-launch {
+  padding: 8px 14px;
+  background: #4fb3bf;
+  border: none;
+  border-radius: 6px;
+  color: #05222a;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+}
+.korsakoff-task-btn-launch:hover {
+  background: #7fcbd3;
+  transform: translateY(-1px);
+}
 .korsakoff-modal-actions {
   display: flex;
   justify-content: flex-end;
@@ -2117,131 +2234,71 @@ summary{min-height:var(--tap);box-sizing:border-box}
   transform: translateY(0);
 }
 
-/* Korsakoff Task Builder Panel */
-.korsakoff-task-builder {
-  position: fixed;
-  inset: 50px auto auto 50px;
-  width: min(520px, 92vw);
-  max-height: 85vh;
-  border: 2px solid #4fb3bf;
-  border-radius: 14px;
-  background: #0b1a19;
-  color: #e8f2f3;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.75);
-  z-index: 2100;
-  display: flex;
-  flex-direction: column;
+/* Task Builder Modal Specifics */
+.ktb-modal {
+  width: min(760px, 95vw);
 }
-.korsakoff-task-builder::backdrop {
-  background: rgba(3, 15, 13, 0.6);
-}
-.korsakoff-task-builder .ktb-header {
+.ktb-steps-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid rgba(79, 179, 191, 0.3);
-  padding: 14px 18px;
+  margin-bottom: 6px;
 }
-.korsakoff-task-builder .ktb-title {
-  font-size: 15px;
-  font-weight: 700;
-  color: #fff;
-  margin: 0;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.korsakoff-task-builder .ktb-close {
-  background: transparent;
-  border: none;
-  color: #a7bcbf;
-  font-size: 20px;
-  cursor: pointer;
-  padding: 4px 8px;
-  border-radius: 6px;
-  line-height: 1;
-}
-.korsakoff-task-builder .ktb-close:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: #fff;
-}
-.korsakoff-task-builder .ktb-body {
-  padding: 18px;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-.korsakoff-task-builder .ktb-field-group {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-.korsakoff-task-builder .ktb-label {
-  font-size: 12px;
-  font-weight: 700;
-  color: #d5eef0;
-}
-.korsakoff-task-builder .ktb-input {
-  width: 100%;
-  padding: 9px 12px;
-  background: #061110;
-  border: 1px solid rgba(79, 179, 191, 0.5);
-  border-radius: 7px;
-  color: #fff;
-  font-size: 14px;
-  font-family: inherit;
-  box-sizing: border-box;
-}
-.korsakoff-task-builder .ktb-input:focus {
-  outline: 2px solid #4fb3bf;
-  border-color: #4fb3bf;
-}
-.korsakoff-task-builder .ktb-steps {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.korsakoff-task-builder .ktb-steps-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.korsakoff-task-builder .ktb-add-step {
-  padding: 6px 12px;
-  background: rgba(79, 179, 191, 0.15);
+.ktb-add-step {
+  padding: 5px 12px;
+  background: rgba(79, 179, 191, 0.2);
   border: 1px solid #4fb3bf;
-  border-radius: 6px;
+  border-radius: 5px;
   color: #a8d8e0;
-  font-size: 11px;
-  font-weight: 600;
+  font-size: 11.5px;
+  font-weight: 700;
   cursor: pointer;
+  transition: all 0.15s;
 }
-.korsakoff-task-builder .ktb-add-step:hover {
-  background: rgba(79, 179, 191, 0.3);
-  color: #fff;
+.ktb-add-step:hover {
+  background: #4fb3bf;
+  color: #05222a;
 }
-.korsakoff-task-builder .ktb-steps-list {
+.ktb-steps-list {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
+  max-height: 240px;
+  overflow-y: auto;
+  padding-right: 2px;
 }
-.korsakoff-task-builder .ktb-step-row {
+.ktb-step-row {
   display: flex;
   gap: 8px;
   align-items: center;
 }
-.korsakoff-task-builder .ktb-step-input {
+.ktb-step-num {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #4fb3bf;
+  color: #05222a;
+  font-size: 12px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+}
+.ktb-step-input {
   flex: 1;
   padding: 8px 12px;
   background: #061110;
   border: 1px solid rgba(79, 179, 191, 0.5);
   border-radius: 6px;
   color: #fff;
-  font-size: 13px;
+  font-size: 13.5px;
 }
-.korsakoff-task-builder .ktb-remove-step {
-  padding: 4px 8px;
+.ktb-step-input:focus {
+  outline: 2px solid #4fb3bf;
+}
+.ktb-remove-step {
+  padding: 6px 10px;
   background: transparent;
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 6px;
@@ -2250,43 +2307,10 @@ summary{min-height:var(--tap);box-sizing:border-box}
   cursor: pointer;
   flex: none;
 }
-.korsakoff-task-builder .ktb-remove-step:hover {
-  background: rgba(255, 255, 255, 0.1);
+.ktb-remove-step:hover {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: #ef4444;
   color: #fff;
-}
-.korsakoff-task-builder .ktb-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-  margin-top: 6px;
-  padding-top: 14px;
-  border-top: 1px solid rgba(79, 179, 191, 0.3);
-}
-.korsakoff-task-builder .ktb-btn-cancel {
-  padding: 9px 16px;
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 7px;
-  color: #e8f2f3;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-}
-.korsakoff-task-builder .ktb-btn-cancel:hover {
-  background: rgba(255, 255, 255, 0.08);
-}
-.korsakoff-task-builder .ktb-btn-build {
-  padding: 9px 20px;
-  background: #4fb3bf;
-  border: none;
-  border-radius: 7px;
-  color: #05222a;
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-}
-.korsakoff-task-builder .ktb-btn-build:hover {
-  background: #7fcbd3;
 }
 
 /* â•â•â• Frontotemporal Dementia (FTD) CST Expansion Styles â•â•â• */
@@ -4837,15 +4861,21 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
       <div class="korsakoff-submenu" id="korsakoffSubmenu" aria-label="Korsakoff / Amnesia Activities">
         <div class="korsakoff-header">
           <div class="korsakoff-header-title">
-            <span>ðŸ§ </span> Korsakoff / Amnesia â€” Errorless Learning Suite
+            <span>🧠</span> Korsakoff / Amnesia — Errorless Learning Suite (10 Activities)
           </div>
+        </div>
+        <div class="korsakoff-filter-group" role="group" aria-label="Filter rehabilitation categories">
+          <button type="button" class="korsakoff-filter-pill active" data-filter="all">All Modules</button>
+          <button type="button" class="korsakoff-filter-pill" data-filter="errorless">Errorless Routines</button>
+          <button type="button" class="korsakoff-filter-pill" data-filter="procedural">Procedural Motor</button>
+          <button type="button" class="korsakoff-filter-pill" data-filter="reminiscence">Remote 1940s–60s</button>
         </div>
         <div class="korsakoff-quick-actions">
           <button type="button" class="korsakoff-quick-open" id="korsakoffOpenModalBtn">
-            <span>âš™ï¸</span> Personalize &amp; Print
+            <span>⚙️</span> Personalize &amp; Print Suite
           </button>
           <button type="button" class="korsakoff-quick-taskbuilder" id="korsakoffTaskBuilderBtn">
-            <span>ðŸ“‹</span> Errorless Task Builder
+            <span>📋</span> Errorless Task Builder
           </button>
         </div>
         <div class="korsakoff-activity-list" id="korsakoffActivityList">
@@ -5380,11 +5410,12 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
 </dialog>
 
 <!-- â•â•â• KORSAKOFF / AMNESIA PERSONALIZATION & PRINT MODAL â•â•â• -->
+<!-- ═══ KORSAKOFF / AMNESIA PERSONALIZATION & PRINT MODAL ═══ -->
 <dialog id="korsakoffModal" class="korsakoff-modal" aria-labelledby="korsakoffModalTitle">
   <div class="korsakoff-modal-header">
     <div>
-      <h2 id="korsakoffModalTitle" class="korsakoff-modal-title">ðŸ§  Korsakoff / Amnesia â€” Errorless Learning Suite</h2>
-      <p class="korsakoff-modal-subtitle">Procedural habituation Â· Remote 1940â€“1960 reminiscence Â· 0.75â€³ gutter anchor logbooks</p>
+      <h2 id="korsakoffModalTitle" class="korsakoff-modal-title">🧠 Korsakoff Syndrome &amp; Amnesia Care Suite</h2>
+      <p class="korsakoff-modal-subtitle">Procedural habituation · Errorless learning · Remote 1940–1960 reminiscence · 0.75″ gutter print</p>
     </div>
     <button type="button" class="korsakoff-modal-close" id="korsakoffModalCloseBtn" aria-label="Close dialog">&times;</button>
   </div>
@@ -5408,38 +5439,149 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
         </div>
       </div>
 
-      <div class="korsakoff-field-group">
-        <label class="korsakoff-label">Activity Output Options:</label>
-        <div class="korsakoff-options-grid">
-          <div class="korsakoff-output-card is-selected">
-            <input type="radio" name="korsakoffOutputMode" value="single" checked>
-            <div class="korsakoff-output-title">Single Activity Sheet</div>
-            <div class="korsakoff-output-desc">One focused errorless activity page for a single session.</div>
-          </div>
-          <div class="korsakoff-output-card">
-            <input type="radio" name="korsakoffOutputMode" value="mini_packet">
-            <div class="korsakoff-output-title">3-Activity Daily Mini-Packet</div>
-            <div class="korsakoff-output-desc">Three sequenced activities for a daily reminiscence block.</div>
-          </div>
-          <div class="korsakoff-output-card">
-            <input type="radio" name="korsakoffOutputMode" value="guide">
-            <div class="korsakoff-output-title">Caregiver Facilitation Guide</div>
-            <div class="korsakoff-output-desc">Staff-facing protocol with errorless prompting cues and trace-over templates.</div>
-          </div>
+      <div class="korsakoff-field-row">
+        <div class="korsakoff-field-group">
+          <label class="korsakoff-label" for="korsakoffModeSelect">Rehabilitation Pathway / Category:</label>
+          <select id="korsakoffModeSelect" class="korsakoff-select">
+            <option value="all">All Modules (Balanced CST Plan)</option>
+            <option value="errorless">Errorless Routines &amp; Memory Drills</option>
+            <option value="procedural">Procedural Motor &amp; Habituation</option>
+            <option value="reminiscence">Remote Autobiographical (1940s–1960s)</option>
+          </select>
+        </div>
+        <div class="korsakoff-field-group">
+          <label class="korsakoff-label" for="korsakoffActivitySelect">Target Activity Module:</label>
+          <select id="korsakoffActivitySelect" class="korsakoff-select">
+            <!-- Populated dynamically from KORSAKOFF_ACTIVITIES -->
+          </select>
         </div>
       </div>
 
       <div class="korsakoff-field-group" id="korsakoffRationaleContainer">
-        <label class="korsakoff-label">Clinical Rationale:</label>
+        <label class="korsakoff-label">Clinical Neurorehabilitation Rationale:</label>
         <div class="korsakoff-rationale-box" id="korsakoffRationaleText">
-          Errorless learning bypasses impaired declarative memory by pre-printing all answers in light grey for trace-over success, tapping intact procedural motor learning and remote 1940â€“1960 autobiographical memory.
+          Errorless learning bypasses impaired declarative memory by pre-printing all answers in light grey for trace-over success, tapping intact procedural motor learning and remote 1940–1960 autobiographical memory (Baddeley &amp; Wilson, 1994).
+        </div>
+      </div>
+
+      <!-- Quick Task Builder Trigger Banner -->
+      <div class="korsakoff-task-banner">
+        <div class="korsakoff-task-banner-text">
+          <strong>📋 Errorless Learning Task Builder Widget</strong>
+          <span>Construct custom step-by-step procedural checklists with pre-printed trace-over text to prevent guessing.</span>
+        </div>
+        <button type="button" class="korsakoff-task-btn-launch" id="korsakoffLaunchBuilderModalBtn">
+          <span>📋</span> Open Task Builder
+        </button>
+      </div>
+
+      <div class="korsakoff-field-group">
+        <label class="korsakoff-label">Activity Output Options (0.75″ Gutter Print Engine):</label>
+        <div class="korsakoff-options-grid" role="radiogroup" aria-label="Output format selection">
+          <label class="korsakoff-output-card is-selected" id="ksaModeSingleLabel">
+            <input type="radio" name="korsakoffOutputMode" value="single" checked>
+            <div class="korsakoff-output-title">📄 Single Activity Sheet</div>
+            <div class="korsakoff-output-desc">One focused errorless activity page with wide-ruled trace-over box and Anchor Logbook.</div>
+          </label>
+          <label class="korsakoff-output-card" id="ksaModeMiniLabel">
+            <input type="radio" name="korsakoffOutputMode" value="mini_packet">
+            <div class="korsakoff-output-title">📚 3-Activity Daily Mini-Packet</div>
+            <div class="korsakoff-output-desc">Full daily routine: Morning Routine Drill, Afternoon Procedural Skills, Evening Remote Anchor + Cover Sheet.</div>
+          </label>
+          <label class="korsakoff-output-card" id="ksaModeGuideLabel">
+            <input type="radio" name="korsakoffOutputMode" value="guide">
+            <div class="korsakoff-output-title">📋 Facilitation Guide</div>
+            <div class="korsakoff-output-desc">Clinical protocol for staff: errorless cueing hierarchy, vanishing cues, and non-confrontational redirection.</div>
+          </label>
         </div>
       </div>
     </div>
+
     <div class="korsakoff-modal-actions">
       <button type="button" class="korsakoff-btn-cancel" id="korsakoffModalCancelBtn">Cancel</button>
       <button type="submit" class="korsakoff-btn-generate" id="korsakoffModalSubmitBtn">
-        <span>ðŸ–¨ï¸</span> Generate &amp; Print
+        <span>🖨️</span> Generate &amp; Print PDF
+      </button>
+    </div>
+  </form>
+</dialog>
+
+<!-- ═══ KORSAKOFF / AMNESIA ERRORLESS LEARNING TASK BUILDER MODAL ═══ -->
+<dialog id="korsakoffTaskBuilderModal" class="korsakoff-modal ktb-modal" aria-labelledby="ktbModalTitle">
+  <div class="korsakoff-modal-header">
+    <div>
+      <h2 id="ktbModalTitle" class="korsakoff-modal-title">📋 Errorless Learning Task Builder</h2>
+      <p class="korsakoff-modal-subtitle">Construct custom multi-step procedural checklists with pre-printed trace-over text to prevent guessing.</p>
+    </div>
+    <button type="button" class="korsakoff-modal-close" id="ktbModalCloseBtn" aria-label="Close dialog">&times;</button>
+  </div>
+  <form id="ktbModalForm" method="dialog">
+    <div class="korsakoff-modal-body">
+      <div class="korsakoff-field-row">
+        <div class="korsakoff-field-group">
+          <label class="korsakoff-label" for="ktbResidentName">Resident Name (for Sheet Header):</label>
+          <input type="text" id="ktbResidentName" class="korsakoff-input" placeholder="e.g., John Miller" autocomplete="off">
+        </div>
+        <div class="korsakoff-field-group">
+          <label class="korsakoff-label" for="ktbFormativeEra">Formative Era Context:</label>
+          <select id="ktbFormativeEra" class="korsakoff-select">
+            <option value="1920s">1920s (Prohibition, Jazz Age)</option>
+            <option value="1930s">1930s (Great Depression &amp; New Deal)</option>
+            <option value="1940s">1940s (World War II &amp; Big Band)</option>
+            <option value="1950s" selected>1950s (Post-War Boom &amp; Television)</option>
+            <option value="1960s">1960s (Space Race &amp; Motown)</option>
+            <option value="1970s">1970s (Disco &amp; Folk Revival)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="korsakoff-field-row">
+        <div class="korsakoff-field-group">
+          <label class="korsakoff-label" for="ktbTaskPreset">Procedural Task Presets:</label>
+          <select id="ktbTaskPreset" class="korsakoff-select">
+            <option value="tea">Brewing a Fresh Cup of Tea</option>
+            <option value="wash">Morning Wake &amp; Refresh Routine</option>
+            <option value="table">Setting the Dining Table</option>
+            <option value="hands">Handwashing &amp; Grooming Ritual</option>
+            <option value="walk">Preparing for an Afternoon Garden Walk</option>
+            <option value="bed">Evening Wind-Down &amp; Bedtime</option>
+            <option value="custom">Custom Procedural Task</option>
+          </select>
+        </div>
+        <div class="korsakoff-field-group">
+          <label class="korsakoff-label" for="ktbTaskName">Task Name / Title:</label>
+          <input type="text" id="ktbTaskName" class="korsakoff-input" value="Brewing a Fresh Cup of Tea" placeholder="e.g., Making Tea">
+        </div>
+      </div>
+
+      <div class="korsakoff-field-group">
+        <label class="korsakoff-label" for="ktbPromptLevel">Staff Prompting Hierarchy Level:</label>
+        <select id="ktbPromptLevel" class="korsakoff-select">
+          <option value="Level 1: Full Hand-over-Hand Physical Guidance &amp; Model">Level 1: Full Hand-over-Hand Physical Guidance &amp; Model (Zero Guessing)</option>
+          <option value="Level 2: Step-by-Step Pointing &amp; Gestural Guidance">Level 2: Step-by-Step Pointing &amp; Gestural Guidance</option>
+          <option value="Level 3: Direct Verbal Step Instruction (No Open Questions)">Level 3: Direct Verbal Step Instruction (No Open Questions)</option>
+        </select>
+      </div>
+
+      <div class="korsakoff-field-group">
+        <div class="ktb-steps-header">
+          <label class="korsakoff-label">Errorless Step Sequence (pre-printed for trace-over):</label>
+          <button type="button" class="ktb-add-step" id="ktbAddStepBtn">+ Add Step</button>
+        </div>
+        <div class="ktb-steps-list" id="ktbStepsList">
+          <!-- Populated dynamically based on preset -->
+        </div>
+      </div>
+
+      <div class="korsakoff-rationale-box">
+        <strong>Errorless Procedural Rule:</strong> Every step on the generated sheet is pre-printed in clear light-grey lettering with wide ruling. Staff guides the resident's hand over the text before any trial-and-error guessing can occur.
+      </div>
+    </div>
+
+    <div class="korsakoff-modal-actions">
+      <button type="button" class="korsakoff-btn-cancel" id="ktbModalCancelBtn">Cancel</button>
+      <button type="submit" class="korsakoff-btn-generate" id="ktbModalSubmitBtn">
+        <span>🖨️</span> Generate &amp; Print Task Sheet
       </button>
     </div>
   </form>
@@ -8026,7 +8168,7 @@ function triviaPairs(r){
    words are theirs, so a name must survive being put in a puzzle. */
 function foldAccents(str){
   return String(str||"")
-    .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
     .replace(/\u00df/g,"ss").replace(/\u00c6|\u00e6/g,"AE")
     .replace(/\u0152|\u0153/g,"OE").replace(/\u00d8|\u00f8/g,"O")
     .replace(/\u0110|\u0111/g,"D").replace(/\u0141|\u0142/g,"L")
@@ -13660,6 +13802,359 @@ const LATE_STAGE_ACTIVITIES = [
   }
 ];
 
+const KORSAKOFF_ACTIVITIES = [
+  {
+    id: "errorless_routine_drills",
+    title: "Errorless Learning Routine Drills",
+    shortTitle: "Routine Drills",
+    icon: "📋",
+    mode: "errorless",
+    duration: "12–15 min",
+    clinicalFocus: "Establish automatic morning sequence habit without error-strengthening guesses",
+    rationale: "In severe amnestic states like Korsakoff syndrome, trial-and-error guessing activates implicit reinforcement of erroneous responses. Pre-printed trace-over sequences reinforce only the correct procedural pathway without relying on declarative memory (Baddeley & Wilson, 1994).",
+    instruction: "Guide resident to trace over the light-grey words in sequence. Provide immediate physical/verbal support before hesitation can turn into a guess.",
+    materials: ["Pre-printed trace-over drill sheet", "Wide-grip soft graphite pencil (2B or 4B)", "Comfortable tabletop surface"],
+    steps: [
+      { step: "Immediate Model Presentation", desc: "Place page directly in visual line of sight and state: 'The answers are already here for you. We trace them together.'" },
+      { step: "Zero-Guess Hand Guidance", desc: "Guide hand gently to trace first word, establishing rhythmic motor flow." },
+      { step: "Errorless Repetition Drill", desc: "Allow resident to trace remaining pre-printed anchor lines without time pressure." },
+      { step: "Logbook Sign-Off", desc: "Record assistance level and resident comfort in the Anchor Logbook." }
+    ],
+    guide: {
+      prep: "Ensure room is quiet and free of distractor items. Pre-fill resident's preferred name.",
+      prompting: [
+        "Level 1 (Physical): Hand-over-hand guide for the initial stroke.",
+        "Level 2 (Gestural): Point smoothly along the grey lettering: 'Right along this line.'",
+        "Level 3 (Verbal): Direct statement: 'Trace the next word here.' Never ask 'Do you remember what comes next?'"
+      ],
+      env: "Well-lit room, glare-free table, no competing audio."
+    },
+    drillContent: {
+      "1920s": ["Wash basin freshen and dry hands", "Comb hair parted neatly on side", "Fasten pocket watch to vest loop", "Lace up comfortable walking shoes"],
+      "1930s": ["Morning wash at the ceramic basin", "Button cardigan sweater up front", "Check daily pocket notebook", "Step into parlor for breakfast"],
+      "1940s": ["Morning wash and freshen up", "Smooth uniform and polish shoes", "Check wristwatch on left wrist", "Ready for the day ahead"],
+      "1950s": ["Morning wash and comb hair", "Put on reading spectacles from case", "Check calendar clock on the wall", "Pour warm cup of fresh coffee"],
+      "1960s": ["Freshen up and button shirt", "Check calendar on the sideboard", "Fasten watch and slip pen in pocket", "Greet companions with a smile"],
+      "1970s": ["Morning wash and gentle stretch", "Check daily reminder logbook", "Put on comfortable sweater", "Enjoy a warm morning breakfast"]
+    }
+  },
+  {
+    id: "remote_reminiscence_scrapbook",
+    title: "Deep Remote Reminiscence Scrapbooking (1940s–1960s)",
+    shortTitle: "Remote Scrapbook",
+    icon: "📖",
+    mode: "reminiscence",
+    duration: "15–20 min",
+    clinicalFocus: "Activate intact retrograde episodic networks and Ribot-gradient autobiographical anchors",
+    rationale: "According to Ribot's law of retrograde amnesia, memories formed during adolescent and early adult years (10–30) remain robust against diencephalic and mammillary body atrophy. Re-activating these remote anchors reinforces identity continuity.",
+    instruction: "Present remote era cultural themes and trace-over memory stems. Validate all spontaneous reminiscence without fact-checking.",
+    materials: ["Era-themed visual anchor card", "Scrapbook layout sheet", "Soft lead pencil or felt pen"],
+    steps: [
+      { step: "Era Visual Grounding", desc: "Point to the pre-printed era theme header and read it aloud warmly." },
+      { step: "Memory Stem Tracing", desc: "Resident traces pre-printed autobiographical memory statements." },
+      { step: "Spontaneous Reminiscence Validation", desc: "Listen actively to recalled stories, echoing key words with warm confirmation." },
+      { step: "Dignity Anchor Closure", desc: "Review finished page together: 'These are wonderful memories of your life.'" }
+    ],
+    guide: {
+      prep: "Select formative era based on resident's birth year (~age 16–22 anchor).",
+      prompting: [
+        "Level 1: Read the prompt aloud: 'Main Street on Saturday night.'",
+        "Level 2: Trace first letters together.",
+        "Level 3: Encourage personal reflection without demanding dates or names."
+      ],
+      env: "Quiet conversation nook."
+    },
+    drillContent: {
+      "1920s": ["Main Street Saturday night promenade", "Victrola parlor jazz and piano melodies", "Silent movie palace with grand organ", "County fair blue ribbon apple pie"],
+      "1930s": ["Sunday roast chicken family dinner", "Gathering by the living room radio at 7", "Summer lemonade on the front porch", "Autumn hayride and harvest festival"],
+      "1940s": ["Big band swing orchestra dances", "Victory garden tomatoes and canning", "Rosie the Riveter patriotic spirit", "Letters home from overseas friends"],
+      "1950s": ["Main Street corner soda fountain", "Classic chrome Chevrolet Bel Air", "Nat King Cole and Rosemary Clooney", "Suburban front yard Sunday barbecue"],
+      "1960s": ["Apollo moon landing television night", "Drive-in cinema under the summer stars", "Saturday afternoon bowling league", "Acoustic folk songs around the campfire"],
+      "1970s": ["Station wagon family road trips", "Classic vinyl records spinning smooth", "Peaceful lakeside cabin vacations", "Sunday morning pancake breakfasts"]
+    }
+  },
+  {
+    id: "procedural_kitchen_skills",
+    title: "Procedural Kitchen Skills Training (Muscle-Memory Cooking)",
+    shortTitle: "Kitchen Skills",
+    icon: "🍳",
+    mode: "procedural",
+    duration: "15–25 min",
+    clinicalFocus: "Recruit basal ganglia and cerebellar circuits for automated culinary sequences",
+    rationale: "Procedural motor memory (basal ganglia, motor cortex, cerebellum) operates independently of declarative medial temporal systems. Repetitive kitchen routines tap deeply consolidated motor programs, conferring genuine competence.",
+    instruction: "Facilitate a structured kitchen task sequence. Resident traces each step, followed by immediate hands-on motor execution.",
+    materials: ["Kitchen step checklist", "Tactile prop (e.g. linen napkin, wooden spoon, tea tin)", "Clean working table"],
+    steps: [
+      { step: "Tactile Prop Presentation", desc: "Place kitchen utensil or napkin in resident's hands to trigger haptic familiarity." },
+      { step: "Step-by-Step Trace-Over", desc: "Resident traces each action step pre-printed in light grey." },
+      { step: "Procedural Motor Action", desc: "Execute the physical movement (e.g. folding, stirring, placing)." },
+      { step: "Sensory Completion", desc: "Enjoy sensory feedback (warm tea scent, crisp folded napkin)." }
+    ],
+    guide: {
+      prep: "Set out props in order from left to right.",
+      prompting: [
+        "Level 1: Place hands over resident's: 'Let us fold the napkin together.'",
+        "Level 2: Gesture to prop: 'Next, we place the cup on the saucer.'",
+        "Level 3: Immediate verbal confirmation: 'Perfect fold. Smooth it down.'"
+      ],
+      env: "Kitchen table or activity room with warm domestic lighting."
+    },
+    drillContent: {
+      "1920s": ["Peeling fresh Russet potatoes with paring knife", "Slicing fresh crusty sourdough bread", "Whisking farm eggs in heavy ceramic bowl", "Measuring coarse sugar with metal spoon"],
+      "1930s": ["Kneading buttermilk biscuit dough smooth", "Snapping fresh green garden beans", "Rolling out flaky pie dough on floured board", "Brewing hot chicory coffee in percolator"],
+      "1940s": ["Mashing hot potatoes with sweet cream butter", "Folding crisp white linen napkins neatly", "Stirring hearty vegetable soup with wooden ladle", "Canning sweet peaches in glass Mason jars"],
+      "1950s": ["Measuring flour with level metal scoop", "Frosting yellow sheet cake with chocolate fudge", "Brewing rich drip coffee in electric pot", "Setting table with matching silverware"],
+      "1960s": ["Tossing crisp garden salad with wooden servers", "Rolling yeast cloverleaf rolls in muffin tin", "Spreading butter evenly across golden toast", "Pouring cold lemonade into tall glasses"],
+      "1970s": ["Slicing crisp apples for autumn cobbler", "Steeping peppermint tea in ceramic teapot", "Arranging assorted cookies on serving tray", "Wiping down kitchen counter clean and dry"]
+    }
+  },
+  {
+    id: "personal_timeline",
+    title: "Chronological Personal Timeline Construction",
+    shortTitle: "Timeline",
+    icon: "📅",
+    mode: "reminiscence",
+    duration: "15–20 min",
+    clinicalFocus: "Reconstruct pre-amnesic autobiographical continuity and temporal orientation",
+    rationale: "Patients with Korsakoff syndrome often exhibit severe chronological disorientation, placing events decades out of order or confabulating timelines. Pre-structured chronological anchors restore an objective, reassuring life narrative.",
+    instruction: "Review life milestones chronologically. Resident traces each epoch anchor, creating a permanent visual life reference.",
+    materials: ["Chronological timeline worksheet", "Pocket timeline card", "Pencil"],
+    steps: [
+      { step: "Epoch Orientation", desc: "Point to the first life decade block and review resident's hometown roots." },
+      { step: "Chronological Milestone Tracing", desc: "Trace pre-printed chronological milestones in sequential order." },
+      { step: "Identity Affirmation", desc: "Validate resident's life accomplishments and enduring family roles." },
+      { step: "Anchor Card Storage", desc: "Place miniature timeline card in resident's pocket or bedside frame." }
+    ],
+    guide: {
+      prep: "Verify historical birth year and early hometown details.",
+      prompting: [
+        "Level 1: 'Here is your first school in [Hometown]. Trace the line with me.'",
+        "Level 2: Follow arrow pointing to next chronological decade.",
+        "Level 3: 'Look at this proud timeline of your life.'"
+      ],
+      env: "Comfortable, calm seating area."
+    },
+    drillContent: {
+      "1920s": ["Born in cozy family home in hometown", "Attended neighbourhood primary school", "First apprentice work and family chores", "Sunday family picnics by the clear river"],
+      "1930s": ["Graduated from county grammar school", "Learned vocational trade and skilled craft", "Community youth sports and choir songs", "Building early home life with diligence"],
+      "1940s": ["Vocational service and wartime dedication", "Courtship and sweet wedding celebration", "Setting up first home with family pride", "Celebrated peace and homecoming reunions"],
+      "1950s": ["Raising thriving family in suburban home", "Workplace milestones and respected career", "Annual summer road trips in family sedan", "Active membership in community civic clubs"],
+      "1960s": ["Children high school and college milestones", "Mastery of career and supervisory leadership", "Celebrated family weddings and anniversaries", "Weekend garden, woodworking, and fishing"],
+      "1970s": ["Silver wedding jubilee with lifelong friends", "Welcoming beloved grandchildren into family", "Retirement celebration and community honor", "Quiet days enjoying lifelong hobbies and books"]
+    }
+  },
+  {
+    id: "memory_aid_habituation",
+    title: "Habitual External Memory Aid Training",
+    shortTitle: "Memory Aids",
+    icon: "📎",
+    mode: "errorless",
+    duration: "10–15 min",
+    clinicalFocus: "Train invariant look-check-act procedural habits using pocket logbooks and lanyard cards",
+    rationale: "Compensatory memory tools (lanyards, pocket diaries, cue cards) fail if staff rely on the resident remembering to check them. Consistent procedural drills form an automatic reflex loop: feel pocket -> read top line -> act.",
+    instruction: "Practice the 4-step pocket aid reflex drill errorlessly. Repeat 3 times until motor habituation is smooth.",
+    materials: ["Pocket memory cue card", "Lanyard badge or clipboard", "Pencil"],
+    steps: [
+      { step: "Tactile Pocket Touch", desc: "Caregiver prompts resident: 'Touch your pocket.' Resident touches card." },
+      { step: "Visual Retrieval", desc: "Take out the card and read the pre-printed top anchor: 'Today is [Day of Week].'" },
+      { step: "Action Identification", desc: "Read the current activity anchor: 'Next is our Music Circle.'" },
+      { step: "Automatic Replacement", desc: "Slide card smoothly back into front pocket, completing the reflex loop." }
+    ],
+    guide: {
+      prep: "Ensure card is placed in the same pocket every day (e.g. left shirt pocket).",
+      prompting: [
+        "Level 1: Tap pocket gently: 'Where is our helper card?'",
+        "Level 2: Guide hand to slide card out.",
+        "Level 3: 'Read line 1 with me: Today is [Day].'"
+      ],
+      env: "Any routine transition moment (before meal, after waking)."
+    },
+    drillContent: {
+      "1920s": ["Touch left pocket and feel the helper card", "Take out card and read: Today is a fine day", "Check current activity: Morning gathering", "Place card safely back into vest pocket"],
+      "1930s": ["Check pocket for daily reminder card", "Read top line: I am safe among good friends", "Note next event: Lunch in dining hall", "Return card to pocket for easy finding"],
+      "1940s": ["Reach for memory lanyard or pocket guide", "Read aloud: Today is filled with purpose", "Check schedule: Afternoon reminiscence circle", "Secure card neatly in pocket"],
+      "1950s": ["Touch front pocket and retrieve memory card", "Read date and time printed clearly on card", "Confirm next activity: Coffee and conversation", "Slip card smoothly back into shirt pocket"],
+      "1960s": ["Check pocket helper for today's schedule", "Read orientation anchor: I am at home here", "Identify current session: Craft and recreation", "Place card back in pocket for later"],
+      "1970s": ["Reach into pocket and take out daily anchor", "Read reassuring cue: Everything is taken care of", "Check next plan: Evening relaxation music", "Keep card safe in pocket at all times"]
+    }
+  },
+  {
+    id: "spatial_navigation_habit",
+    title: "Spatial Navigation Practice via Habituation",
+    shortTitle: "Spatial Practice",
+    icon: "🗺️",
+    mode: "procedural",
+    duration: "15–20 min",
+    clinicalFocus: "Ingrain egocentric spatial routes using salient visual landmarks and repetitive motor pacing",
+    rationale: "Hippocampal cognitive mapping of global space is profoundly disrupted in Korsakoff syndrome, but egocentric route habituation (turning at specific perceptual landmarks) can be acquired errorlessly through motor repetition.",
+    instruction: "Walk the target route together without quizzing or testing. Resident traces visual landmark map, then walks path.",
+    materials: ["Landmark route map", "High-contrast directional arrows", "Walking shoes"],
+    steps: [
+      { step: "Landmark Map Tracing", desc: "Resident traces the route path connecting 4 high-contrast landmarks." },
+      { step: "First Assisted Walk", desc: "Walk side-by-side: 'Here is our wooden grandfather clock. Now we turn right.'" },
+      { step: "Second Landmark Touch", desc: "Touch each landmark (clock frame, brass door handle, plant pot)." },
+      { step: "Destination Goal Celebration", desc: "Arrive at destination (dining table, room armchair) with warm positive praise." }
+    ],
+    guide: {
+      prep: "Select a route with highly recognizable sensory landmarks.",
+      prompting: [
+        "Level 1: Guide by forearm along the path.",
+        "Level 2: Point to the landmark ahead: 'Look for the big sunflower picture.'",
+        "Level 3: 'Turn towards the window.' Never ask 'Which way do we go?'"
+      ],
+      env: "Clear hallway free of carts or trip hazards."
+    },
+    drillContent: {
+      "1920s": ["Start from cozy room doorway and look ahead", "Walk straight toward the grandfather clock", "Turn right at the brass coat stand", "Arrive safely at the parlor armchairs"],
+      "1930s": ["Step out into the warm central hallway", "Walk toward the sunny window at the end", "Turn left by the framed mountain landscape", "Take seat at the library reading table"],
+      "1940s": ["Begin at bedroom door and glance forward", "Follow corridor past the polished oak bench", "Turn toward the dining hall double doors", "Find assigned seat with personalized nameplate"],
+      "1950s": ["Step out and locate the red orientation sign", "Walk past the garden view picture window", "Turn right at the community craft room", "Sit in favorite blue armchair by the hearth"],
+      "1960s": ["Start from room and walk down the quiet lane", "Notice the large wall calendar ahead", "Turn left past the activity showcase board", "Arrive comfortably in the music room"],
+      "1970s": ["Exit room and follow the green carpet runner", "Walk toward the welcoming indoor greenhouse", "Turn right toward the dining tables", "Sit with friendly companions for lunch"]
+    }
+  },
+  {
+    id: "meai_interview",
+    title: "Music-Evoked Autobiographical Interviewing (MEAI)",
+    shortTitle: "MEAI Interview",
+    icon: "🎵",
+    mode: "reminiscence",
+    duration: "15–25 min",
+    clinicalFocus: "Use formative melodies as affective cues to unlock involuntary autobiographical recall",
+    rationale: "Music triggers involuntary autobiographical memories (IAMs) that bypass damaged fronto-subcortical retrieval mechanisms. Hearing formative melodies evokes spontaneous, highly vivid emotional memories.",
+    instruction: "Play or sing short 30-second acoustic clips from resident's youth. Resident traces song title and lyrics, then shares memories.",
+    materials: ["MEAI lyric sheet", "Soft acoustic music player", "Pencil"],
+    steps: [
+      { step: "Melody Presentation", desc: "Play recognizable 30-second clip of formative song at comfortable volume." },
+      { step: "Lyric Line Tracing", desc: "Resident traces pre-printed chorus line in light grey." },
+      { step: "Affective Exploration", desc: "Caregiver asks open emotional cue: 'What a sweet melody. How does it feel?'" },
+      { step: "Memory Scribe", desc: "Staff jots down spontaneous reminiscences in the Anchor Logbook." }
+    ],
+    guide: {
+      prep: "Select song matching resident's formative era (~age 15–22).",
+      prompting: [
+        "Level 1: Sing chorus softly together.",
+        "Level 2: Trace the song lyrics on the worksheet.",
+        "Level 3: Affirm feelings: 'It feels warm and peaceful like Sunday morning.'"
+      ],
+      env: "Quiet room with low reverberation."
+    },
+    drillContent: {
+      "1920s": ["Daisy, Daisy, give me your answer do", "You'll look sweet upon the seat of a bicycle", "Let me call you sweetheart, I'm in love with you", "Keep the love light glowing in your eyes so true"],
+      "1930s": ["In the good old summertime, strolling through the lanes", "You hold her hand and she holds yours", "Pennies from heaven falling down all around", "Shine on, harvest moon, up in the sky"],
+      "1940s": ["Sentimental journey home to renew old memories", "Gonna make a sentimental journey to see you", "Don't sit under the apple tree with anyone else", "Home on the range where the deer and antelope play"],
+      "1950s": ["I was waltzing that night to the Tennessee Waltz", "Mona Lisa, Mona Lisa, men have named you", "Love me tender, love me sweet, never let me go", "Sweet melodies playing on the old jukebox"],
+      "1960s": ["Moon river, wider than a mile, crossing you in style", "Oh, dream maker, you heart breaker, wherever you're going", "Stand by me, oh stand by me, when the night comes", "Morning has broken like the first morning"],
+      "1970s": ["Take me home, country roads, to the place I belong", "Tie a yellow ribbon round the old oak tree", "Raindrops keep fallin' on my head, but that doesn't mean", "Peaceful easy feeling and I know you won't let me down"]
+    }
+  },
+  {
+    id: "procedural_crafting",
+    title: "Procedural Crafting (Repetitive Weaving or Pottery)",
+    shortTitle: "Crafting",
+    icon: "🧶",
+    mode: "procedural",
+    duration: "20–30 min",
+    clinicalFocus: "Engage repetitive rhythmic bilateral tactile manipulation with zero working-memory load",
+    rationale: "Rhythmic bimanual coordination tasks establish flow states that suppress confabulation anxiety. The physical object provides instant self-evident progress without needing to recall instructions.",
+    instruction: "Engage in repetitive over-under weaving, clay pinch pottery, or sanding. Resident traces pattern sequence, then performs craft.",
+    materials: ["Lap weaving loom or clay block or sanding block", "Craft guide sheet", "Pencil"],
+    steps: [
+      { step: "Motor Sequence Trace", desc: "Resident traces the repetitive rhythm rule: 'Over one, under one.'" },
+      { step: "Tactile Rhythm Guidance", desc: "Guide hands for the first 3 strokes to establish smooth muscle cadence." },
+      { step: "Independent Rhythmic Flow", desc: "Resident continues repetitive motor manipulation independently." },
+      { step: "Finished Artifact Review", desc: "Hold finished woven square or clay bowl: 'Look at your handiwork.'" }
+    ],
+    guide: {
+      prep: "Have materials pre-threaded or pre-portioned so no measuring is needed.",
+      prompting: [
+        "Level 1: Hand-over-hand rhythm: 'Over, under, through.'",
+        "Level 2: Gentle rhythmic chant: 'Smooth it down, press it soft.'",
+        "Level 3: Positive visual validation: 'Beautiful, even rows.'"
+      ],
+      env: "Sturdy activity table."
+    },
+    drillContent: {
+      "1920s": ["Weave yarn over one strand and under one strand", "Press soft potter's clay into smooth round bowl", "Sand fine pine wood along the straight grain", "Tie neat square knots in colourful macrame cord"],
+      "1930s": ["Loom weaving with warm woollen yarn", "Shaping stoneware clay with gentle thumb pressure", "Polishing wooden craft spoon with beeswax cloth", "Braiding cotton rag strips for colorful rug"],
+      "1940s": ["Weaving durable cotton webbing on lap frame", "Pinching clay edges into fluted decorative rim", "Smoothing cedar wood block with fine sandpaper", "Sorting vibrant quilt patches into neat squares"],
+      "1950s": ["Threading loom shuttle through open warp strings", "Rolling ceramic clay coils into spiral bowl", "Assembling wooden model parts with gentle press", "Weaving woven potholder loops on metal frame"],
+      "1960s": ["Macrame knotting with natural jute cord", "Shaping earthenware dish with damp sponge", "Smoothing curved wooden puzzle pieces", "Beading wooden beads onto thick cord"],
+      "1970s": ["Weaving wall tapestry with thick textured yarns", "Sculpting clay pot on rotating turntable", "Hand-sanding walnut wood coaster smooth", "Looping yarn fringes neatly along border"]
+    }
+  },
+  {
+    id: "daily_anchor_journal",
+    title: "Structured Daily Anchor Journaling",
+    shortTitle: "Anchor Journal",
+    icon: "⚓",
+    mode: "errorless",
+    duration: "10–15 min",
+    clinicalFocus: "Provide daily reality grounding through pre-filled positive identity sentence stems",
+    rationale: "Open journaling prompts cause acute distress in amnesia because residents cannot remember what they did earlier today. Pre-printed reassuring truths provide reality orientation and a sense of enduring dignity.",
+    instruction: "Resident traces pre-printed daily anchor declarations. Each sentence confirms identity, safety, and community.",
+    materials: ["Daily Anchor Journal sheet", "Fine-tip marker or pencil", "Clipboard"],
+    steps: [
+      { step: "Orientation Anchor", desc: "Read today's date and season printed boldly at the top." },
+      { step: "Sentence Stem Trace", desc: "Resident traces 4 pre-printed positive self-affirmations." },
+      { step: "Personal Signature Stamp", desc: "Resident signs preferred name on the bold verification line." },
+      { step: "Clipboard Placement", desc: "Clip sheet to resident's bedside or table board for continuous viewing." }
+    ],
+    guide: {
+      prep: "Pre-date the sheet and write resident's name in bold heading.",
+      prompting: [
+        "Level 1: Point to first sentence: 'Let us read and trace: I am safe here.'",
+        "Level 2: Guide pencil along the letters.",
+        "Level 3: 'Sign your name with pride right here.'"
+      ],
+      env: "Morning breakfast table or afternoon quiet hour."
+    },
+    drillContent: {
+      "1920s": ["Today is a peaceful and blessed day", "I am safe and surrounded by caring friends", "I have done honest and honorable work", "My heart is at rest and my mind is peaceful"],
+      "1930s": ["Today is filled with simple quiet joys", "I am well cared for by friendly neighbors", "I take pride in my family and my life story", "This evening brings comfort and good rest"],
+      "1940s": ["Today is a day of peace and steady purpose", "I am respected and valued by everyone here", "Good memories are always close to my heart", "I have lived with courage and kindness"],
+      "1950s": ["Today is a bright and pleasant day", "I am warm, safe, and among true friends", "I accomplished good things with my hands", "I am grateful for this restful moment"],
+      "1960s": ["Today brings cheerful conversation and songs", "I am appreciated for who I am today", "My life is filled with lasting blessings", "I look forward to each peaceful hour"],
+      "1970s": ["Today is an easy and comfortable day", "I am supported with dignity and gentleness", "I feel the warmth of my lifelong memories", "Peace and quiet rest surround me now"]
+    }
+  },
+  {
+    id: "errorless_matching_sorting",
+    title: "Errorless Matching & Sorting Games",
+    shortTitle: "Matching Games",
+    icon: "🎲",
+    mode: "errorless",
+    duration: "12–18 min",
+    clinicalFocus: "Maintain cognitive classification agility through physically keyed 100% successful sorting",
+    rationale: "By matching shapes, colors, or era items to physically keyed or clearly outline-stamped target slots, error possibilities are eliminated. The resident experiences 100% success rate without frustration.",
+    instruction: "Resident matches cards or outlines to identical printed shapes. Each match fits exactly with zero ambiguity.",
+    materials: ["Errorless matching board", "Matched item cards or tiles", "Tabletop"],
+    steps: [
+      { step: "Matching Board Presentation", desc: "Lay out board with 4 distinct, large-format target boxes." },
+      { step: "Item-to-Target Alignment", desc: "Hand resident the matching card: 'This red apple matches the apple box.'" },
+      { step: "Guaranteed Placement", desc: "Resident places item into identical target boundary." },
+      { step: "Reward Celebration", desc: "Confirm match: 'Spot on! All 4 pieces in perfect order.'" }
+    ],
+    guide: {
+      prep: "Present only one card at a time to eliminate distractor interference.",
+      prompting: [
+        "Level 1: Place card directly adjacent to matching box.",
+        "Level 2: Point to the identical icon.",
+        "Level 3: Immediate verbal confirmation upon placement."
+      ],
+      env: "Clean tabletop with solid, non-patterned background."
+    },
+    drillContent: {
+      "1920s": ["Match red farm apple to red apple outline", "Place brass clock card on clock shape box", "Match vintage postage stamp to envelope frame", "Set golden honey jar on honeycomb picture"],
+      "1930s": ["Match ceramic coffee cup to coffee cup outline", "Place warm biscuit card in bakery tray box", "Match green garden leaf to leaf outline", "Set vintage coin in designated coin circle"],
+      "1940s": ["Match victory garden flower to flower outline", "Place post office airmail letter in envelope slot", "Match wooden spoon to mixing bowl outline", "Set golden star emblem in star boundary box"],
+      "1950s": ["Match classic soda bottle to soda fountain box", "Place shiny automobile card in garage slot", "Match vinyl music record to turntable circle", "Set fresh cherry pie slice in pie plate frame"],
+      "1960s": ["Match space rocket to launching pad outline", "Place acoustic guitar card in guitar case box", "Match bowling pin card to bowling lane slot", "Set bright sunflower card in garden border frame"],
+      "1970s": ["Match camping lantern to campfire box", "Place yellow ribbon card on tree outline", "Match vintage camera to photo frame slot", "Set green pine cone card in woodland tray frame"]
+    }
+  }
+];
+
 const AILMENT_DATA = {
 
   vascular: {
@@ -13899,6 +14394,7 @@ const AILMENT_DATA = {
     shortLabel: "Korsakoff",
     packetTitle: "Guided Success Packet",
     fileTag: "Korsakoff",
+    activities: KORSAKOFF_ACTIVITIES,
     phrases: [
       "Today is a good day", "I am among friends", "I did a good job",
       "It is nice to see you", "Thank you for your help"
@@ -16360,324 +16856,606 @@ function generateKorsakoffSpecializedPDF(opts) {
   const residentName = options.residentName || "Resident";
   const era = options.era || "1950s";
   const outputMode = options.outputMode || "single";
+  const activityId = options.activityId || null;
 
   const doc = new window.jspdf.jsPDF({ unit: "pt", format: "letter" });
-  const W = 612, H = 792, M = 54;
+  const W = 612, H = 792, M = 54; // 0.75-inch margins (54pt)
+  const printableWidth = W - 2 * M; // 504pt
 
-  const grey = () => doc.setTextColor(200, 200, 200);
-  const black = () => doc.setTextColor(0, 0, 0);
-  const writeLine = (y) => {
-    doc.setLineWidth(0.8); doc.setDrawColor(120, 120, 120);
-    doc.line(M, y + 6, W - M, y + 6);
-    doc.setDrawColor(0, 0, 0);
-  };
-
-  /* Cover Page */
-  doc.setDrawColor(0, 0, 0);
-  doc.setLineWidth(2.5);
-  doc.rect(M, M, W - 2 * M, H - 2 * M, "S");
-  doc.setLineWidth(1);
-  doc.rect(M + 8, M + 8, W - 2 * M - 16, H - 2 * M - 16, "S");
-
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(10);
-  doc.setTextColor(30, 30, 30);
-  doc.text("COGNICOPIA  ·  ERRORLESS LEARNING SUITE", W / 2, M + 40, { align: "center" });
-
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(26);
-  doc.setTextColor(0, 0, 0);
-  doc.text("Korsakoff / Amnesia", W / 2, M + 95, { align: "center" });
-  doc.setFontSize(17);
-  doc.text("Procedural Habituation · Remote Memory Anchors", W / 2, M + 125, { align: "center" });
-
-  doc.setLineWidth(2);
-  doc.line(M + 50, M + 145, W - M - 50, M + 145);
-
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(15);
-  doc.text("Prepared for: " + residentName, W / 2, M + 180, { align: "center" });
-
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(12);
-  doc.setTextColor(60, 60, 60);
-  doc.text("Formative Era Anchor: " + era + "s", W / 2, M + 205, { align: "center" });
-
-  const eraContext = {
+  const eraDescriptions = {
     "1920s": "Prohibition · Jazz Age · Silent Film Era · Art Deco",
     "1930s": "Great Depression · New Deal · Swing Era · Golden Age of Radio",
     "1940s": "World War II · Big Band · Rosie the Riveter · Victory Gardens",
-    "1950s": "Post-War Boom · Rock 'n' Roll · Suburban Life · Television",
-    "1960s": "Space Race · Cultural Revolution · Motown · Civil Rights",
-    "1970s": "Disco · Early Computing · Environmental Movement"
+    "1950s": "Post-War Boom · Rock 'n' Roll · Suburban Life · Television Era",
+    "1960s": "Space Race · Cultural Revolution · Motown · Folk Revival",
+    "1970s": "Disco · Early Computing · Earth Day · Classic Rock"
   };
-  doc.text(eraContext[era] || eraContext["1950s"], W / 2, M + 230, { align: "center" });
 
-  doc.setFont("helvetica", "italic");
-  doc.setFontSize(10);
-  doc.setTextColor(100, 100, 100);
-  doc.text("Errorless Learning: every answer is pre-printed in light grey for trace-over success.", W / 2, M + 265, { align: "center" });
-  doc.text("No guessing. No wrong answers. Procedural memory first.", W / 2, M + 280, { align: "center" });
+  const drawBorder = () => {
+    doc.setDrawColor(30, 41, 59);
+    doc.setLineWidth(2);
+    doc.rect(M, M, printableWidth, H - 2 * M, "S");
+    doc.setLineWidth(0.6);
+    doc.rect(M + 5, M + 5, printableWidth - 10, H - 2 * M - 10, "S");
+  };
 
-  doc.addPage();
+  const drawHeader = (title, categoryBadge, pageNum, totalPages) => {
+    doc.setDrawColor(79, 179, 191);
+    doc.setLineWidth(1.5);
+    doc.line(M + 12, M + 42, W - M - 12, M + 42);
 
-  /* Activity Pages */
-  const activityCount = outputMode === "mini_packet" ? 3 : 1;
-
-  for (let i = 0; i < activityCount; i++) {
-    const act = KORSAKOFF_ACTIVITIES[i % KORSAKOFF_ACTIVITIES.length];
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(16);
-    doc.setTextColor(0, 0, 0);
-    doc.text("Activity " + (i + 1) + " of " + activityCount, M, M + 24);
+    doc.setFontSize(8.5);
+    doc.setTextColor(79, 179, 191);
+    doc.text("COGNICOPIA  ·  NEUROREHABILITATION & MEMORY CARE", M + 14, M + 24);
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8);
+    doc.setTextColor(100, 116, 139);
+    doc.text("Amnestic Rehabilitation Suite  |  0.75\" Binding Gutter", W - M - 14, M + 24, { align: "right" });
 
     doc.setFont("helvetica", "bold");
     doc.setFontSize(14);
-    const actLines = doc.splitTextToSize(act.title, W - 2 * M);
-    doc.text(actLines, M, M + 50, { lineHeightFactor: 1.3 });
+    doc.setTextColor(15, 23, 42);
+    doc.text(title, M + 14, M + 38);
 
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(10);
-    doc.setTextColor(80, 80, 80);
-    doc.text("Mode: " + act.mode.toUpperCase(), M, M + 80);
-
-    doc.setFont("helvetica", "italic");
-    doc.setFontSize(10);
-    doc.setTextColor(100, 100, 100);
-    const ratLines = doc.splitTextToSize("Rationale: " + act.rationale, W - 2 * M);
-    doc.text(ratLines, M, M + 100, { lineHeightFactor: 1.3 });
-
-    doc.setLineWidth(1.5);
-    doc.setDrawColor(0, 0, 0);
-    doc.rect(M, M + 130, W - 2 * M, 200, "S");
-
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(13);
-    doc.setTextColor(0, 0, 0);
-    doc.text("Errorless Trace-Over Section", M + 20, M + 155);
-
-    for (let li = 0; li < 6; li++) {
-      const ty = M + 185 + li * 24;
-      grey();
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(14);
-      doc.text("Trace this line for success · " + era + "s anchor", M + 20, ty);
-      writeLine(ty + 4);
+    if (categoryBadge) {
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(8);
+      doc.setTextColor(20, 83, 45);
+      doc.text(categoryBadge.toUpperCase(), W - M - 14, M + 38, { align: "right" });
     }
+  };
 
-    black();
+  const drawFooterLogbook = (actTitle, actMode) => {
+    const footTop = H - M - 110;
+    doc.setDrawColor(148, 163, 184);
+    doc.setLineWidth(0.8);
+    doc.line(M + 12, footTop, W - M - 12, footTop);
 
-    doc.setLineWidth(1);
-    doc.line(M, H - 120, W - M, H - 120);
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(11);
-    doc.text("Anchor Logbook — Staff Documentation", M, H - 100);
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(9);
-    doc.text("Resident: " + residentName + "    Date: __________    Staff: __________", M, H - 82);
-    doc.text("Activity: " + act.title + "    Era: " + era + "s    Level: Independent / Assisted / Hand-over-hand", M, H - 66);
-    doc.text("Response: ☐ Engaged  ☐ Partial  ☐ Declined    Time: ______ min", M, H - 50);
-    doc.text("Staff Notes: ________________________________________________________", M, H - 34);
-    writeLine(H - 26);
+    doc.setFontSize(8.5);
+    doc.setTextColor(15, 23, 42);
+    doc.text("ANCHOR LOGBOOK  ·  CLINICAL PROGRESSION RECORD", M + 14, footTop + 14);
 
-    if (i < activityCount - 1) doc.addPage();
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(7.5);
+    doc.setTextColor(71, 85, 105);
+    doc.text("Resident: " + residentName + "   |   Date: ____________   |   Staff / Facilitator: ______________________", M + 14, footTop + 27);
+    doc.text("Module: " + (actTitle || "Errorless Routine") + "   |   Era Anchor: " + era + "   |   Mode: " + (actMode || "Errorless"), M + 14, footTop + 39);
+
+    doc.setFont("helvetica", "bold");
+    doc.text("Prompting Level:", M + 14, footTop + 53);
+    doc.setFont("helvetica", "normal");
+    doc.text("[  ] L1: Hand-over-hand     [  ] L2: Pointing/Gestural     [  ] L3: Verbal directive     [  ] Independent", M + 95, footTop + 53);
+
+    doc.setFont("helvetica", "bold");
+    doc.text("Amnestic Response:", M + 14, footTop + 67);
+    doc.setFont("helvetica", "normal");
+    doc.text("[  ] Smooth procedural flow   [  ] Remote recall triggered   [  ] Confabulation redirected   [  ] Calm & engaged", M + 105, footTop + 67);
+
+    doc.text("Clinical Observations: ____________________________________________________________________________________", M + 14, footTop + 81);
+
+    doc.setFontSize(7);
+    doc.setTextColor(148, 163, 184);
+    doc.text("Cognicopia Memory Care CST  ·  Strict Errorless Learning Protocol  ·  Confidential Resident Care Document", M + 14, footTop + 96);
+    doc.text("0.75\" Safe Gutter", W - M - 14, footTop + 96, { align: "right" });
+  };
+
+  // Helper to determine target activities
+  let targetActivities = [];
+  if (activityId) {
+    const found = KORSAKOFF_ACTIVITIES.find(a => a.id === activityId);
+    if (found) targetActivities = [found];
+  }
+  if (targetActivities.length === 0) {
+    if (outputMode === "mini_packet") {
+      targetActivities = KORSAKOFF_ACTIVITIES.slice(0, 4);
+    } else {
+      targetActivities = [KORSAKOFF_ACTIVITIES[0]];
+    }
   }
 
-  /* Caregiver Facilitation Guide (if requested) */
+  // MODE: CAREGIVER FACILITATION GUIDE ONLY
   if (outputMode === "guide") {
-    doc.addPage();
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(16);
-    doc.setTextColor(0, 0, 0);
-    doc.text("Caregiver Facilitation Guide", M, M + 24);
+    drawBorder();
+    drawHeader("Caregiver Facilitation Guide: Korsakoff & Amnesia", "Clinical Care Protocol", 1, 1);
 
+    let cy = M + 60;
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(12);
-    doc.setTextColor(0, 0, 0);
-    doc.text("Why Errorless Learning?", M, M + 60);
+    doc.setFontSize(11);
+    doc.setTextColor(15, 23, 42);
+    doc.text("1. Neurobiological Basis & Preserved Procedural Memory", M + 14, cy);
+    cy += 14;
+
     doc.setFont("helvetica", "normal");
-    doc.setFontSize(10.5);
-    doc.setTextColor(40, 40, 40);
-    const whyLines = doc.splitTextToSize(
-      "In Korsakoff syndrome and other amnestic conditions, a wrong guess can stick in memory as firmly as the right answer. " +
-      "Every answer in this packet is pre-printed in light grey for trace-over success. The resident traces the answer " +
-      "rather than guessing, building confidence without engaging impaired short-term memory.",
-      W - 2 * M
+    doc.setFontSize(8.5);
+    doc.setTextColor(51, 65, 85);
+    const p1 = doc.splitTextToSize(
+      "Korsakoff syndrome is an amnestic disorder primarily resulting from thiamine (vitamin B1) deficiency, damaging the mammillary bodies, dorsomedial thalamus, and related diencephalic circuits. While severe anterograde declarative amnesia makes forming new conscious memories nearly impossible, implicit memory systems—especially motor habituation and procedural learning supported by the basal ganglia and cerebellum—remain remarkably preserved.",
+      printableWidth - 28
     );
-    doc.text(whyLines, M, M + 80, { lineHeightFactor: 1.35 });
+    doc.text(p1, M + 14, cy, { lineHeightFactor: 1.35 });
+    cy += p1.length * 11 + 10;
 
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(12);
-    doc.text("Facilitation Steps", M, M + 140);
-    const steps = [
-      "1. Present one page at a time. Keep other pages out of view.",
-      "2. Say: \"The answers are already on the page. You only need to trace over the grey.\"",
-      "3. Guide the resident's hand for the first trace, then hand back the pencil.",
-      "4. Never correct. If they wander off the line, gently redirect: \"Let's try this together.\"",
-      "5. Celebrate completion: \"You did it!\" — every trace is a success.",
-      "6. Record observations in the Anchor Logbook at the bottom of each page."
-    ];
-    let sy = M + 165;
-    steps.forEach(s => {
-      const sLines = doc.splitTextToSize(s, W - 2 * M);
-      doc.text(sLines, M, sy, { lineHeightFactor: 1.3 });
-      sy += sLines.length * 13 + 10;
-    });
+    doc.setFontSize(11);
+    doc.setTextColor(15, 23, 42);
+    doc.text("2. The Errorless Learning Mandate (Baddeley & Wilson, 1994)", M + 14, cy);
+    cy += 14;
+
+    const p2 = doc.splitTextToSize(
+      "In healthy memory, trial-and-error guessing allows the brain to consciously identify errors and eliminate them. In Korsakoff amnesia, the conscious 'error tag' is lost, causing the incorrect guess itself to be implicitly reinforced as the correct response. To prevent error consolidation, all activities in this packet provide pre-printed, light-grey trace-over text. The resident never guesses; they only execute correct actions.",
+      printableWidth - 28
+    );
+    doc.text(p2, M + 14, cy, { lineHeightFactor: 1.35 });
+    cy += p2.length * 11 + 10;
 
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(12);
-    doc.text("Steer Around (Avoid)", M, sy + 10);
-    sy += 30;
-    const avoid = [
-      "Asking \"Do you remember…\" questions — declarative recall is impaired.",
-      "Correcting confabulation — redirect gently instead.",
-      "Timed tasks or scoring — removes dignity and increases anxiety.",
-      "Open-ended questions without pre-printed answers.",
-      "Alcohol-related references — not clinically relevant and potentially triggering."
+    doc.setFontSize(11);
+    doc.setTextColor(15, 23, 42);
+    doc.text("3. 3-Tier Prompting Hierarchy", M + 14, cy);
+    cy += 14;
+
+    const prompts = [
+      "Level 1 — Full Hand-Over-Hand Physical Guidance: Place your warm hand over the resident's hand and guide the pencil through the first stroke. Never wait for hesitation to turn into an erroneous guess.",
+      "Level 2 — Pointing & Gestural Tracking: Smoothly trace along the grey lettering with a finger or pointer, stating clearly: 'Trace right along this word next.'",
+      "Level 3 — Direct Verbal Directives: Use clear, positive instructions ('Trace the word coffee'). Never ask open-ended questions like 'What do you do next?' or 'Do you remember?'"
     ];
-    avoid.forEach(a => {
-      const aLines = doc.splitTextToSize(a, W - 2 * M - 20);
-      doc.text("•", M + 10, sy);
-      doc.text(aLines, M + 20, sy, { lineHeightFactor: 1.3 });
-      sy += aLines.length * 12 + 6;
+    prompts.forEach(pr => {
+      const prLines = doc.splitTextToSize(pr, printableWidth - 36);
+      doc.rect(M + 14, cy + 2, 4, 4, "F");
+      doc.text(prLines, M + 24, cy + 6, { lineHeightFactor: 1.3 });
+      cy += prLines.length * 10 + 6;
     });
+    cy += 6;
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(11);
+    doc.setTextColor(15, 23, 42);
+    doc.text("4. Non-Confrontational Confabulation Management", M + 14, cy);
+    cy += 14;
+
+    const p4 = doc.splitTextToSize(
+      "Confabulation is a subconscious, involuntary compensation for memory gaps—it is never intentional deception or lying. If a resident invents a narrative (e.g., 'I must drive home to pick up my children from school'), DO NOT argue, reality-orient, or confront ('Your children are grown adults'). Instead, validate the underlying emotion and therapeutically redirect toward the physical task at hand: 'You have always been such a dedicated parent. Right now, let's complete this smooth pencil trace together.'",
+      printableWidth - 28
+    );
+    doc.text(p4, M + 14, cy, { lineHeightFactor: 1.35 });
+    cy += p4.length * 11 + 10;
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(11);
+    doc.setTextColor(15, 23, 42);
+    doc.text("5. Temporal Anchors & Ribot's Law", M + 14, cy);
+    cy += 14;
+
+    const p5 = doc.splitTextToSize(
+      "Ribot's law demonstrates that remote memories from young adulthood and adolescence (the resident's formative 1920s–1970s era) are most resistant to organic brain damage. Anchoring activities in era-authentic tools, cultural references, and song lyrics activates deep autobiographical solace without causing frustration.",
+      printableWidth - 28
+    );
+    doc.text(p5, M + 14, cy, { lineHeightFactor: 1.35 });
+
+    drawFooterLogbook("Facilitation Protocol", "Clinical Guide");
+  } else {
+    // COVER PAGE FOR MINI PACKET
+    if (outputMode === "mini_packet") {
+      drawBorder();
+      
+      // Top badge
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(9);
+      doc.setTextColor(79, 179, 191);
+      doc.text("COGNICOPIA  ·  CLINICAL MEMORY CARE SUITE", W / 2, M + 45, { align: "center" });
+
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(24);
+      doc.setTextColor(15, 23, 42);
+      doc.text("Korsakoff & Amnesia", W / 2, M + 90, { align: "center" });
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(13);
+      doc.setTextColor(71, 85, 105);
+      doc.text("Procedural Habituation & Errorless Learning Packet", W / 2, M + 115, { align: "center" });
+
+      doc.setDrawColor(79, 179, 191);
+      doc.setLineWidth(1.5);
+      doc.line(M + 60, M + 135, W - M - 60, M + 135);
+
+      // Metadata block
+      let my = M + 170;
+      doc.setFillColor(248, 250, 252);
+      doc.setDrawColor(203, 213, 225);
+      doc.roundedRect(M + 30, my, printableWidth - 60, 110, 6, 6, "FD");
+
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(10.5);
+      doc.setTextColor(30, 41, 59);
+      doc.text("PREPARED FOR RESIDENT:", M + 45, my + 24);
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(13);
+      doc.setTextColor(15, 23, 42);
+      doc.text(residentName, M + 45, my + 44);
+
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(10.5);
+      doc.setTextColor(30, 41, 59);
+      doc.text("FORMATIVE ERA ANCHOR:", M + 45, my + 72);
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(11);
+      doc.setTextColor(79, 179, 191);
+      doc.text(era + " (" + (eraDescriptions[era] || "Remote Era Anchors") + ")", M + 45, my + 90);
+
+      // Core principles
+      my += 135;
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(11);
+      doc.setTextColor(15, 23, 42);
+      doc.text("Clinical Rehabilitation Protocols Enforced in this Packet:", M + 30, my);
+      my += 18;
+
+      const bullets = [
+        "Zero-Guess Errorless Learning: Pre-printed light grey trace lines bypass short-term memory deficits.",
+        "Basal Ganglia Motor Habituation: Procedural movement sequences preserve resident dignity and autonomy.",
+        "Ribot's Law Remote Anchoring: Formative era cultural cues unlock preserved long-term autobiographical joy.",
+        "Confabulation De-Escalation: Validate emotional realities without confrontation or reality shock.",
+        "Standard 0.75-Inch Binding Gutter: Formatted for facility clipboards, three-ring binders, and bed tray tables."
+      ];
+      bullets.forEach(b => {
+        const bl = doc.splitTextToSize(b, printableWidth - 75);
+        doc.rect(M + 32, my + 2, 4, 4, "F");
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(8.5);
+        doc.setTextColor(51, 65, 85);
+        doc.text(bl, M + 42, my + 6, { lineHeightFactor: 1.3 });
+        my += bl.length * 10 + 5;
+      });
+
+      // Table of contents
+      my += 15;
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(11);
+      doc.setTextColor(15, 23, 42);
+      doc.text("Included Activity Worksheets:", M + 30, my);
+      my += 16;
+
+      targetActivities.forEach((act, idx) => {
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(8.5);
+        doc.setTextColor(30, 41, 59);
+        doc.text((idx + 1) + ". " + act.title, M + 42, my);
+        doc.setFont("helvetica", "normal");
+        doc.setTextColor(100, 116, 139);
+        doc.text("[" + act.mode.toUpperCase() + " · " + act.duration + "]", W - M - 45, my, { align: "right" });
+        my += 14;
+      });
+
+      drawFooterLogbook("Cognicopia Care Suite Packet", "Multi-Activity");
+      doc.addPage();
+    }
+
+    // RENDER EACH ACTIVITY WORKSHEET
+    targetActivities.forEach((act, aIdx) => {
+      drawBorder();
+      const badge = "[" + act.mode.toUpperCase() + " · " + act.duration + "]";
+      drawHeader(act.title, badge, aIdx + 1, targetActivities.length);
+
+      let y = M + 55;
+
+      // Clinical rationale card
+      doc.setFillColor(241, 245, 249);
+      doc.setDrawColor(203, 213, 225);
+      doc.roundedRect(M + 12, y, printableWidth - 24, 60, 4, 4, "FD");
+
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(8);
+      doc.setTextColor(79, 179, 191);
+      doc.text("NEUROLOGICAL FOCUS & OBJECTIVE:", M + 20, y + 14);
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(7.5);
+      doc.setTextColor(51, 65, 85);
+      const ratLines = doc.splitTextToSize(act.rationale, printableWidth - 40);
+      doc.text(ratLines, M + 20, y + 26, { lineHeightFactor: 1.25 });
+
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(7.5);
+      doc.setTextColor(30, 41, 59);
+      doc.text("Clinical Rule:", M + 20, y + 51);
+      doc.setFont("helvetica", "normal");
+      doc.setTextColor(71, 85, 105);
+      doc.text("Never ask 'What comes next?' Always state the step and guide the hand over the trace-line.", M + 72, y + 51);
+
+      y += 72;
+
+      // Facilitator instruction box
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(8.5);
+      doc.setTextColor(15, 23, 42);
+      doc.text("Staff Facilitation Instruction:", M + 14, y);
+      y += 12;
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(8);
+      doc.setTextColor(51, 65, 85);
+      const insLines = doc.splitTextToSize(act.instruction, printableWidth - 28);
+      doc.text(insLines, M + 14, y, { lineHeightFactor: 1.3 });
+      y += insLines.length * 9.5 + 8;
+
+      // Errorless Trace-Over Exercise Box
+      doc.setDrawColor(15, 23, 42);
+      doc.setLineWidth(1.2);
+      const boxHeight = 220;
+      doc.rect(M + 12, y, printableWidth - 24, boxHeight, "S");
+
+      // Box banner
+      doc.setFillColor(15, 23, 42);
+      doc.rect(M + 12, y, printableWidth - 24, 22, "F");
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(8.5);
+      doc.setTextColor(255, 255, 255);
+      doc.text("PRE-PRINTED ERRORLESS TRACE-OVER DRILL  ·  ERA ANCHOR: " + era.toUpperCase(), M + 20, y + 15);
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(7.5);
+      doc.text("Trace over the light-grey words. No guessing required.", W - M - 20, y + 15, { align: "right" });
+
+      y += 28;
+
+      // Extract drill items
+      let drillItems = (act.drillContent && act.drillContent[era]) ? act.drillContent[era] : null;
+      if (!drillItems && act.steps && act.steps.length > 0) {
+        drillItems = act.steps.map(s => s.step + ": " + s.desc);
+      }
+      if (!drillItems || drillItems.length === 0) {
+        drillItems = [
+          "Morning freshen up and smooth hair",
+          "Check wall calendar clock in parlor",
+          "Enjoy warm cup of fresh morning brew",
+          "Greet friends and companions with smile"
+        ];
+      }
+
+      // Draw trace-over rows (up to 4 rows for clean spacing)
+      const rowsToShow = drillItems.slice(0, 4);
+      const rowGap = 46;
+
+      rowsToShow.forEach((itemText, rIdx) => {
+        const rowY = y + rIdx * rowGap + 18;
+
+        // Checkbox and step badge
+        doc.setDrawColor(79, 179, 191);
+        doc.setLineWidth(1);
+        doc.rect(M + 22, rowY - 10, 14, 14, "S");
+
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(9);
+        doc.setTextColor(79, 179, 191);
+        doc.text("Step " + (rIdx + 1), M + 44, rowY + 1);
+
+        // Pre-printed trace-over text in light grey (#bebebe = 190, 190, 190)
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(14.5);
+        doc.setTextColor(190, 190, 190);
+        doc.text(itemText, M + 90, rowY + 1);
+
+        // Solid light grey baseline ruling for writing guidance
+        doc.setDrawColor(203, 213, 225);
+        doc.setLineWidth(0.7);
+        doc.line(M + 90, rowY + 6, W - M - 22, rowY + 6);
+      });
+
+      y += boxHeight + 10;
+
+      // Era Memory Anchor Prompts
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(8.5);
+      doc.setTextColor(15, 23, 42);
+      doc.text("Era Reminiscence Prompt & Emotional Anchor (" + era + "):", M + 14, y);
+      y += 12;
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(8);
+      doc.setTextColor(71, 85, 105);
+      const promptText = "During the " + era + " (" + (eraDescriptions[era] || "era") + "), familiar daily rhythms created comfort and stability. Focus on sensory anchors: familiar kitchen aromas, tactile linen textures, and warm companionship. Never challenge or contradict memory inaccuracies.";
+      const promptLines = doc.splitTextToSize(promptText, printableWidth - 28);
+      doc.text(promptLines, M + 14, y, { lineHeightFactor: 1.25 });
+
+      drawFooterLogbook(act.title, act.mode);
+
+      if (aIdx < targetActivities.length - 1) {
+        doc.addPage();
+      }
+    });
+
+    // If mini_packet, append Caregiver Facilitation Guide as the final reference sheet
+    if (outputMode === "mini_packet") {
+      doc.addPage();
+      drawBorder();
+      drawHeader("Caregiver Facilitation Protocol: Errorless CST", "Clinical Protocol", targetActivities.length + 2, targetActivities.length + 2);
+
+      let cy = M + 60;
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(10.5);
+      doc.setTextColor(15, 23, 42);
+      doc.text("Errorless Learning Rules for Facilitating Amnestic Residents:", M + 14, cy);
+      cy += 14;
+
+      const guidePoints = [
+        "1. Zero Guessing Rule: When an amnestic resident makes a guess, the brain encodes the guess as fact because error-correcting neural loops in the thalamus/mammillary bodies are disrupted. Always provide the answer first.",
+        "2. Hand-over-Hand Modeling: Start every new sheet with your hand over the resident's hand. Complete the first word together, speak the word warmly, then allow them to trace the remainder.",
+        "3. Affirmation over Correction: If a resident writes outside the line or repeats a word, praise the effort immediately ('Beautiful steady pencil stroke!'). Never say 'No' or 'That was wrong.'",
+        "4. Non-Confrontational Confabulation Redirection: If the resident speaks about past events as happening today (e.g., waiting for parents), validate their feeling ('Your family cares so deeply for you') and redirect attention to the trace line.",
+        "5. Ribot's Temporal Solace: Use the " + era + " anchor to evoke remote autobiographical solace. Play gentle music from this era during the session to enhance dopamine and motor coordination."
+      ];
+      guidePoints.forEach(pt => {
+        const lines = doc.splitTextToSize(pt, printableWidth - 28);
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(8);
+        doc.setTextColor(51, 65, 85);
+        doc.text(lines, M + 14, cy, { lineHeightFactor: 1.3 });
+        cy += lines.length * 10 + 6;
+      });
+
+      drawFooterLogbook("Facilitation Protocol", "Caregiver Guide");
+    }
   }
 
   const cleanName = (residentName || "Resident").replace(/[^a-zA-Z0-9_-]/g, "_");
-  const fileName = ("Cognicopia_Korsakoff_" + cleanName + "_" + era + "_" + outputMode).replace(/_+/g, "_") + ".pdf";
+  const cleanAct = (activityId || "Korsakoff_Suite").replace(/[^a-zA-Z0-9_-]/g, "_");
+  const fileName = ("Cognicopia_Korsakoff_" + cleanAct + "_" + cleanName + "_" + era).replace(/_+/g, "_") + ".pdf";
   doc.save(fileName);
   return fileName;
 }
 
 /* =====================================================================
-   KORSAKOFF TASK BUILDER: Errorless Task Sheet PDF
+   KORSAKOFF TASK BUILDER: Errorless Task Sheet PDF Generator
    --------------------------------------------------------------------- */
 function generateKorsakoffTaskBuilderPDF(opts) {
   if (!window.jspdf || !window.jspdf.jsPDF) {
     throw new Error("jsPDF library is not loaded.");
   }
   const options = opts || {};
-  const taskName = options.taskName || "Daily Routine";
+  const taskName = options.taskName || "Daily Procedural Routine";
   const residentName = options.residentName || "Resident";
   const era = options.era || "1950s";
-  const steps = options.steps || [];
-  const outputMode = options.outputMode || "single";
+  const promptLevel = options.promptLevel || "Level 1: Full Hand-over-Hand Physical Guidance";
+  const rawSteps = options.steps || [];
+  const steps = rawSteps.length > 0 ? rawSteps : [
+    "Gather materials neatly on table",
+    "Perform first procedural step smoothly",
+    "Complete routine and rest hands"
+  ];
 
   const doc = new window.jspdf.jsPDF({ unit: "pt", format: "letter" });
-  const W = 612, H = 792, M = 54;
+  const W = 612, H = 792, M = 54; // 0.75-inch margin
+  const printableWidth = W - 2 * M;
 
-  const grey = () => doc.setTextColor(200, 200, 200);
-  const black = () => doc.setTextColor(0, 0, 0);
-  const writeLine = (y) => {
-    doc.setLineWidth(0.8); doc.setDrawColor(120, 120, 120);
-    doc.line(M, y + 6, W - M, y + 6);
-    doc.setDrawColor(0, 0, 0);
-  };
-
-  /* Cover/Header Page */
-  doc.setDrawColor(0, 0, 0);
-  doc.setLineWidth(2.5);
-  doc.rect(M, M, W - 2 * M, H - 2 * M, "S");
-  doc.setLineWidth(1);
-  doc.rect(M + 8, M + 8, W - 2 * M - 16, H - 2 * M - 16, "S");
-
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(10);
-  doc.setTextColor(30, 30, 30);
-  doc.text("COGNICOPIA  ·  ERRORLESS TASK BUILDER", W / 2, M + 40, { align: "center" });
-
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(24);
-  doc.setTextColor(0, 0, 0);
-  doc.text(taskName, W / 2, M + 95, { align: "center" });
-
+  // Outer high-contrast double border
+  doc.setDrawColor(30, 41, 59);
   doc.setLineWidth(2);
-  doc.line(M + 50, M + 120, W - M - 50, M + 120);
+  doc.rect(M, M, printableWidth, H - 2 * M, "S");
+  doc.setLineWidth(0.6);
+  doc.rect(M + 5, M + 5, printableWidth - 10, H - 2 * M - 10, "S");
+
+  // Top header banner
+  doc.setDrawColor(79, 179, 191);
+  doc.setLineWidth(1.5);
+  doc.line(M + 12, M + 42, W - M - 12, M + 42);
+
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(8.5);
+  doc.setTextColor(79, 179, 191);
+  doc.text("COGNICOPIA  ·  ERRORLESS LEARNING TASK BUILDER", M + 14, M + 24);
+
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(8);
+  doc.setTextColor(100, 116, 139);
+  doc.text("Procedural Motor Habituation  ·  0.75\" Binding Gutter", W - M - 14, M + 24, { align: "right" });
 
   doc.setFont("helvetica", "bold");
   doc.setFontSize(14);
-  doc.text("Resident: " + residentName, W / 2, M + 155, { align: "center" });
+  doc.setTextColor(15, 23, 42);
+  doc.text(taskName, M + 14, M + 38);
 
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(11);
-  doc.setTextColor(60, 60, 60);
-  doc.text("Formative Era: " + era + "s", W / 2, M + 180, { align: "center" });
+  let y = M + 55;
 
+  // Metadata block
+  doc.setFillColor(241, 245, 249);
+  doc.setDrawColor(203, 213, 225);
+  doc.roundedRect(M + 12, y, printableWidth - 24, 46, 4, 4, "FD");
+
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(8);
+  doc.setTextColor(71, 85, 105);
+  doc.text("RESIDENT: " + residentName.toUpperCase(), M + 20, y + 16);
+  doc.text("FORMATIVE ERA: " + era.toUpperCase(), M + 220, y + 16);
+
+  doc.setFont("helvetica", "bold");
+  doc.setTextColor(15, 23, 42);
+  doc.text("PRESCRIBED PROMPT LEVEL: " + promptLevel, M + 20, y + 34);
+
+  y += 56;
+
+  // Instructions
   doc.setFont("helvetica", "italic");
-  doc.setFontSize(10);
-  doc.setTextColor(100, 100, 100);
-  doc.text("Errorless Learning Protocol: every step is pre-printed for trace-over.", W / 2, M + 215, { align: "center" });
-  doc.text("No guessing. Staff guides the first trace; resident completes independently.", W / 2, M + 230, { align: "center" });
+  doc.setFontSize(8);
+  doc.setTextColor(100, 116, 139);
+  doc.text("Errorless Rule: Guide the resident to trace each pre-printed step. Do not ask them to guess the next action.", M + 14, y);
+  y += 14;
 
-  doc.addPage();
+  // Render steps (up to 5 steps per sheet for optimal line height and tracing)
+  const maxStepsOnSheet = Math.min(steps.length, 5);
+  const stepBoxHeight = Math.floor((360) / maxStepsOnSheet);
 
-  /* Step Pages */
-  const stepList = steps.length > 0 ? steps : ["Gather materials on the table"];
-  for (let si = 0; si < stepList.length; si++) {
-    const step = stepList[si];
+  for (let sIdx = 0; sIdx < maxStepsOnSheet; sIdx++) {
+    const stepText = steps[sIdx];
+    const boxY = y + sIdx * stepBoxHeight;
+
+    // Step container box
+    doc.setDrawColor(203, 213, 225);
+    doc.setLineWidth(0.8);
+    doc.roundedRect(M + 12, boxY, printableWidth - 24, stepBoxHeight - 8, 4, 4, "S");
+
+    // Step badge
+    doc.setFillColor(79, 179, 191);
+    doc.roundedRect(M + 18, boxY + 6, 46, 16, 3, 3, "F");
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(16);
-    doc.setTextColor(0, 0, 0);
-    doc.text("Step " + (si + 1) + " of " + stepList.length, M, M + 24);
+    doc.setFontSize(8);
+    doc.setTextColor(255, 255, 255);
+    doc.text("STEP " + (sIdx + 1), M + 24, boxY + 17);
 
-    doc.setFont("helvetica", "bold");
+    // Large light-grey pre-printed trace line (#bebebe = 190, 190, 190)
+    doc.setFont("helvetica", "normal");
     doc.setFontSize(15);
-    const stepLines = doc.splitTextToSize(step, W - 2 * M - 40);
-    doc.text(stepLines, M, M + 60, { lineHeightFactor: 1.3 });
+    doc.setTextColor(190, 190, 190);
+    doc.text(stepText, M + 74, boxY + 18);
 
-    // Large trace-over line with grey text
-    grey();
+    // Tracing baseline rule
+    doc.setDrawColor(203, 213, 225);
+    doc.setLineWidth(0.7);
+    doc.line(M + 74, boxY + 24, W - M - 20, boxY + 24);
+
+    // Assistance checkboxes
     doc.setFont("helvetica", "normal");
-    doc.setFontSize(18);
-    doc.text(step, M + 20, M + 110);
-    black();
-
-    writeLine(M + 116);
-
-    // Staff cue box
-    doc.setLineWidth(1);
-    doc.setDrawColor(79, 179, 191);
-    doc.rect(M, M + 150, W - 2 * M, 60, "S");
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(11);
-    doc.setTextColor(0, 0, 0);
-    doc.text("Staff Cue:", M + 20, M + 170);
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(10);
-    doc.setTextColor(50, 50, 50);
-    doc.text("Guide hand through the motion once, then release. Offer praise for completion.", M + 20, M + 185);
-
-    // Checkbox for staff
-    doc.rect(M + 20, M + 200, 14, 14, "S");
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(10);
-    doc.text("Completed", M + 40, M + 210);
-
-    if (si < stepList.length - 1) doc.addPage();
+    doc.setFontSize(7.5);
+    doc.setTextColor(100, 116, 139);
+    doc.text("Staff Assist Level:  [  ] Full Hand-over-hand   [  ] Gestural Pointing   [  ] Independent Trace   [  ] Declined", M + 74, boxY + 38);
   }
 
-  /* Anchor Logbook Footer Page */
-  doc.addPage();
-  doc.setLineWidth(1);
-  doc.line(M, H - 120, W - M, H - 120);
+  // Footer Anchor Logbook
+  const footTop = H - M - 105;
+  doc.setDrawColor(148, 163, 184);
+  doc.setLineWidth(0.8);
+  doc.line(M + 12, footTop, W - M - 12, footTop);
+
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(11);
-  doc.text("Anchor Logbook — Staff Documentation", M, H - 100);
+  doc.setFontSize(8.5);
+  doc.setTextColor(15, 23, 42);
+  doc.text("ANCHOR LOGBOOK  ·  PROCEDURAL COMPLETION LOG", M + 14, footTop + 14);
+
   doc.setFont("helvetica", "normal");
-  doc.setFontSize(9);
-  doc.text("Resident: " + residentName + "    Date: __________    Staff: __________", M, H - 82);
-  doc.text("Task: " + taskName + "    Era: " + era + "s", M, H - 66);
-  doc.text("Total Steps Completed: ______ / " + stepList.length + "    Time: ______ min", M, H - 50);
-  doc.text("Resident Response: ☐ Independent  ☐ Assisted  ☐ Hand-over-hand  ☐ Declined", M, H - 34);
-  writeLine(H - 26);
+  doc.setFontSize(7.5);
+  doc.setTextColor(71, 85, 105);
+  doc.text("Resident: " + residentName + "   |   Date: ____________   |   Facilitator: ___________________________", M + 14, footTop + 27);
+  doc.text("Task: " + taskName + "   |   Era Anchor: " + era + "   |   Total Steps: " + steps.length, M + 14, footTop + 39);
+
+  doc.setFont("helvetica", "bold");
+  doc.text("Motor Performance:", M + 14, footTop + 53);
+  doc.setFont("helvetica", "normal");
+  doc.text("[  ] Smooth procedural flow    [  ] Needed gentle redirection    [  ] Confabulation calmed    [  ] High satisfaction", M + 115, footTop + 53);
+
+  doc.text("Notes / Adjustments for next session: ____________________________________________________________________", M + 14, footTop + 68);
+
+  doc.setFontSize(7);
+  doc.setTextColor(148, 163, 184);
+  doc.text("Cognicopia Memory Care CST  ·  Errorless Task Builder  ·  0.75\" Binding Gutter", M + 14, footTop + 86);
+  doc.text("Confidential Resident Healthcare Record", W - M - 14, footTop + 86, { align: "right" });
 
   const cleanName = (residentName || "Resident").replace(/[^a-zA-Z0-9_-]/g, "_");
   const cleanTask = (taskName || "Task").replace(/[^a-zA-Z0-9_-]/g, "_");
-  const fileName = ("Cognicopia_Korsakoff_Task_" + cleanTask + "_" + cleanName + ".pdf").replace(/_+/g, "_");
+  const fileName = ("Cognicopia_Korsakoff_Task_" + cleanTask + "_" + cleanName).replace(/_+/g, "_") + ".pdf";
   doc.save(fileName);
   return fileName;
 }
-
 /* -----------------------------------------------------------------
    LATE STAGE: 24pt+ minimal text, songs, full-width shapes
    ----------------------------------------------------------------- */
@@ -18310,35 +19088,91 @@ if (document.readyState === "complete" || document.readyState === "interactive")
 /* =====================================================================
    KORSAKOFF / AMNESIA ERRORLESS LEARNING MODULE
    --------------------------------------------------------------------- */
-/* Global so generateKorsakoffSpecializedPDF can reference it */
-var KORSAKOFF_ACTIVITIES = null;
+/* KORSAKOFF_ACTIVITIES is already declared above */
 
 function initKorsakoffModule() {
   const caKorsakoffBtn = document.getElementById("caKorsakoff");
   const korsakoffSubmenu = document.getElementById("korsakoffSubmenu");
   const actList = document.getElementById("korsakoffActivityList");
-
-  KORSAKOFF_ACTIVITIES = [
-    { id: "el-routine-drills", title: "Errorless Learning Routine Drills", shortTitle: "Routine Drills", icon: "ðŸ“‹", mode: "errorless", rationale: "Pre-printed trace-over steps prevent guessing; every answer succeeds." },
-    { id: "deep-remote-scrapbook", title: "Deep Remote Reminiscence Scrapbooking (1940sâ€“1960s)", shortTitle: "Remote Scrapbook", icon: "ðŸ“–", mode: "reminiscence", rationale: "Taps remote autobiographical memory through era-aligned photographs and cultural anchors." },
-    { id: "procedural-kitchen-skills", title: "Procedural Kitchen Skills Training (Muscle-Memory Cooking)", shortTitle: "Kitchen Skills", icon: "ðŸ³", mode: "procedural", rationale: "Engages basal ganglia procedural learning through repetitive cooking sequences." },
-    { id: "chronological-timeline", title: "Chronological Personal Timeline Construction", shortTitle: "Timeline", icon: "ðŸ“…", mode: "reminiscence", rationale: "Builds a visual life timeline using formative era photos and events." },
-    { id: "external-memory-aid-training", title: "Habitual External Memory Aid Training", shortTitle: "Memory Aids", icon: "ðŸ“Ž", mode: "errorless", rationale: "Trains consistent use of external aids through errorless repetition." },
-    { id: "spatial-navigation-habituation", title: "Spatial Navigation Practice via Habituation", shortTitle: "Spatial Practice", icon: "ðŸ—ºï¸", mode: "procedural", rationale: "Repeated traversal builds habit-based spatial memory." },
-    { id: "music-evoked-interviewing", title: "Music-Evoked Autobiographical Interviewing (MEAI)", shortTitle: "MEAI", icon: "ðŸŽµ", mode: "reminiscence", rationale: "Era-specific music triggers preserved emotional-autobiographical memory." },
-    { id: "procedural-crafting", title: "Procedural Crafting (Repetitive Weaving or Pottery)", shortTitle: "Crafting", icon: "ðŸ§º", mode: "procedural", rationale: "Repetitive handcraft sequences engage preserved motor memory." },
-    { id: "structured-anchor-journaling", title: "Structured Daily Anchor Journaling", shortTitle: "Anchor Journal", icon: "ðŸ“”", mode: "errorless", rationale: "Daily trace-over journal pages establish routine anchors." },
-    { id: "errorless-matching-sorting", title: "Errorless Matching & Sorting Games", shortTitle: "Matching Games", icon: "ðŸ”²", mode: "errorless", rationale: "High-contrast matching where every match is correct by design." }
-  ];
+  const filterPills = document.querySelectorAll(".korsakoff-filter-pill");
 
   if (!caKorsakoffBtn || !korsakoffSubmenu || !actList) return;
+
+  let currentCategory = "all";
+
+  // Task Presets for Task Builder
+  const TASK_PRESETS = {
+    tea: {
+      name: "Brewing a Fresh Cup of Tea",
+      steps: [
+        "Place the ceramic teacup on the saucer",
+        "Place the tea bag gently into the cup",
+        "Carefully pour hot water to the rim",
+        "Let steep for three minutes and stir gently"
+      ]
+    },
+    wash: {
+      name: "Morning Wake & Refresh Routine",
+      steps: [
+        "Turn on the warm water tap",
+        "Wet hands and lather with bar soap",
+        "Rinse completely under running water",
+        "Pat hands dry with the clean towel"
+      ]
+    },
+    table: {
+      name: "Setting the Dining Table",
+      steps: [
+        "Lay the place mat square on the table",
+        "Set the dinner plate in the center",
+        "Place the fork on the left and knife on the right",
+        "Fold and place the cloth napkin"
+      ]
+    },
+    hands: {
+      name: "Handwashing & Grooming Ritual",
+      steps: [
+        "Apply a drop of moisturizing lotion",
+        "Smooth lotion across palms and fingers",
+        "Comb hair gently parting on the left"
+      ]
+    },
+    walk: {
+      name: "Preparing for an Afternoon Garden Walk",
+      steps: [
+        "Put on comfortable walking shoes",
+        "Fasten coat buttons from bottom to top",
+        "Take walking stick in dominant hand",
+        "Step forward towards the sunroom door"
+      ]
+    },
+    bed: {
+      name: "Evening Wind-Down & Bedtime",
+      steps: [
+        "Change into comfortable nightwear",
+        "Place eyeglasses inside the bedside case",
+        "Sip a warm glass of water",
+        "Rest head back onto the soft pillow"
+      ]
+    },
+    custom: {
+      name: "Custom Procedural Routine",
+      steps: [
+        "Gather materials on the table",
+        "Perform step one with hand guided",
+        "Complete step two and rest"
+      ]
+    }
+  };
 
   /* Toggle submenu when clicking the category card */
   caKorsakoffBtn.addEventListener("click", (e) => {
     e.stopPropagation();
     const expanded = korsakoffSubmenu.classList.contains("is-expanded");
     document.querySelectorAll(".korsakoff-submenu.is-expanded").forEach(s => s.classList.remove("is-expanded"));
-    if (!expanded) korsakoffSubmenu.classList.add("is-expanded");
+    if (!expanded) {
+      korsakoffSubmenu.classList.add("is-expanded");
+    }
   });
 
   /* Close submenu when clicking outside */
@@ -18348,12 +19182,15 @@ function initKorsakoffModule() {
     }
   });
 
-  /* Populate activity cards */
-  function populateActivities() {
+  /* Render activity cards into submenu */
+  function renderActivityCards() {
     actList.innerHTML = "";
-    KORSAKOFF_ACTIVITIES.forEach(act => {
-      const card = document.createElement("button");
-      card.type = "button";
+    const filtered = (currentCategory === "all")
+      ? KORSAKOFF_ACTIVITIES
+      : KORSAKOFF_ACTIVITIES.filter(a => a.mode === currentCategory);
+
+    filtered.forEach(act => {
+      const card = document.createElement("div");
       card.className = "korsakoff-activity-card";
       card.setAttribute("data-act-id", act.id);
 
@@ -18362,58 +19199,150 @@ function initKorsakoffModule() {
       if (act.mode === "reminiscence") badgeClass = "korsakoff-badge-reminiscence";
 
       card.innerHTML = `
-        <span class="korsakoff-card-icon" aria-hidden="true">${act.icon}</span>
-        <div class="korsakoff-card-content">
-          <div class="korsakoff-card-title">${act.title}</div>
-          <div class="korsakoff-card-meta">
-            <span class="korsakoff-badge ${badgeClass}">${act.mode.toUpperCase()}</span>
-            <span style="font-size: 7pt; color: #a8d8e0;">${act.shortTitle}</span>
+        <div class="korsakoff-card-header">
+          <span class="korsakoff-card-icon" aria-hidden="true">${act.icon}</span>
+          <div class="korsakoff-card-title-wrap">
+            <h4 class="korsakoff-card-title">${act.title}</h4>
+            <div class="korsakoff-card-meta">
+              <span class="korsakoff-badge ${badgeClass}">${act.mode.toUpperCase()}</span>
+              <span>${act.duration}</span>
+            </div>
           </div>
+        </div>
+        <p class="korsakoff-card-desc">${act.clinicalFocus}</p>
+        <div class="korsakoff-card-actions">
+          <button type="button" class="korsakoff-card-btn-main" title="Customize and print activity with clinical options">
+            <span>⚙️</span> Personalize &amp; Print
+          </button>
+          <button type="button" class="korsakoff-card-print-shortcut" title="Fast 1-click print with default settings">
+            <span>🖨️</span> Quick Print
+          </button>
         </div>
       `;
 
-      card.addEventListener("click", (e) => {
+      // Main button -> open personalization modal
+      card.querySelector(".korsakoff-card-btn-main").addEventListener("click", (e) => {
         e.stopPropagation();
         openKorsakoffModal(act.id);
+      });
+
+      // Quick print shortcut
+      card.querySelector(".korsakoff-card-print-shortcut").addEventListener("click", (e) => {
+        e.stopPropagation();
+        try {
+          const resInput = document.getElementById("korsakoffResidentName");
+          const activeName = (resInput && resInput.value.trim()) || "Resident";
+          const file = generateKorsakoffSpecializedPDF({
+            residentName: activeName,
+            era: "1950s",
+            activityId: act.id,
+            outputMode: "single"
+          });
+          const statusMsg = document.getElementById("ailmentStatusMsg");
+          if (statusMsg) {
+            statusMsg.textContent = "Generated & Downloaded: " + file;
+            statusMsg.classList.add("is-visible");
+            setTimeout(() => statusMsg.classList.remove("is-visible"), 5000);
+          }
+        } catch (err) {
+          console.error(err);
+          alert("Error generating Korsakoff PDF: " + err.message);
+        }
       });
 
       actList.appendChild(card);
     });
   }
 
-  /* Modal wiring */
+  /* Submenu Filter Pills */
+  filterPills.forEach(pill => {
+    pill.addEventListener("click", (e) => {
+      e.stopPropagation();
+      filterPills.forEach(p => p.classList.remove("is-active"));
+      pill.classList.add("is-active");
+      currentCategory = pill.getAttribute("data-filter") || "all";
+      renderActivityCards();
+    });
+  });
+
+  // Modal elements
   const modal = document.getElementById("korsakoffModal");
   const modalCloseBtn = document.getElementById("korsakoffModalCloseBtn");
   const modalCancelBtn = document.getElementById("korsakoffModalCancelBtn");
   const modalForm = document.getElementById("korsakoffModalForm");
   const resNameInput = document.getElementById("korsakoffResidentName");
   const eraSelect = document.getElementById("korsakoffFormativeEra");
+  const modeSelect = document.getElementById("korsakoffModeSelect");
+  const actSelect = document.getElementById("korsakoffActivitySelect");
+  const rationaleBox = document.getElementById("korsakoffRationaleText");
   const outputRadios = document.querySelectorAll('input[name="korsakoffOutputMode"]');
   const outputCards = document.querySelectorAll(".korsakoff-output-card");
-  const rationaleBox = document.getElementById("korsakoffRationaleText");
 
-  function openKorsakoffModal(preselectActId) {
-    outputCards.forEach(c => c.classList.remove("is-selected"));
-    const first = outputCards[0];
-    if (first) first.classList.add("is-selected");
-    const radio = first ? first.querySelector('input[type="radio"]') : null;
-    if (radio) radio.checked = true;
-    if (rationaleBox && preselectActId) {
-      const act = KORSAKOFF_ACTIVITIES.find(a => a.id === preselectActId);
-      if (act) rationaleBox.textContent = act.rationale;
-    }
-    if (typeof modal.showModal === "function") {
-      modal.showModal();
+  function populateActivityDropdown(preselectId) {
+    if (!actSelect) return;
+    actSelect.innerHTML = "";
+    const filterMode = modeSelect ? modeSelect.value : "all";
+    const available = (filterMode === "all")
+      ? KORSAKOFF_ACTIVITIES
+      : KORSAKOFF_ACTIVITIES.filter(a => a.mode === filterMode);
+
+    available.forEach(act => {
+      const opt = document.createElement("option");
+      opt.value = act.id;
+      opt.textContent = act.title + " (" + act.mode.toUpperCase() + ")";
+      if (preselectId && act.id === preselectId) opt.selected = true;
+      actSelect.appendChild(opt);
+    });
+
+    updateRationaleDisplay();
+  }
+
+  function updateRationaleDisplay() {
+    if (!rationaleBox || !actSelect) return;
+    const selectedId = actSelect.value;
+    const act = KORSAKOFF_ACTIVITIES.find(a => a.id === selectedId);
+    if (act) {
+      rationaleBox.innerHTML = "<strong>" + act.title + " (" + act.mode.toUpperCase() + "):</strong> " + act.rationale;
     } else {
-      modal.setAttribute("open", "");
+      rationaleBox.textContent = "Errorless learning bypasses impaired declarative memory by pre-printing all answers in light grey for trace-over success, tapping intact procedural motor learning and remote 1940–1960 autobiographical memory (Baddeley & Wilson, 1994).";
     }
   }
 
-  function closeModal() {
-    if (typeof modal.close === "function") {
-      modal.close();
-    } else {
-      modal.removeAttribute("open");
+  if (modeSelect) {
+    modeSelect.addEventListener("change", () => {
+      populateActivityDropdown();
+    });
+  }
+
+  if (actSelect) {
+    actSelect.addEventListener("change", updateRationaleDisplay);
+  }
+
+  function openKorsakoffModal(preselectActId) {
+    if (preselectActId && modeSelect) {
+      const act = KORSAKOFF_ACTIVITIES.find(a => a.id === preselectActId);
+      if (act) {
+        modeSelect.value = "all";
+      }
+    }
+    populateActivityDropdown(preselectActId);
+
+    if (modal) {
+      if (typeof modal.showModal === "function") {
+        modal.showModal();
+      } else {
+        modal.setAttribute("open", "");
+      }
+    }
+  }
+
+  function closeKorsakoffModal() {
+    if (modal) {
+      if (typeof modal.close === "function") {
+        modal.close();
+      } else {
+        modal.removeAttribute("open");
+      }
     }
   }
 
@@ -18435,145 +19364,203 @@ function initKorsakoffModule() {
     });
   });
 
-  if (modalCloseBtn) modalCloseBtn.addEventListener("click", closeModal);
-  if (modalCancelBtn) modalCancelBtn.addEventListener("click", closeModal);
-  modal.addEventListener("click", (e) => {
-    if (e.target === modal) closeModal();
-  });
-
-  modalForm.addEventListener("submit", (e) => {
-    e.preventDefault();
-    const residentName = resNameInput ? resNameInput.value.trim() : "";
-    const era = eraSelect ? eraSelect.value : "1950s";
-    let outputMode = "single";
-    outputRadios.forEach(r => { if (r.checked) outputMode = r.value; });
-
-    try {
-      const file = generateKorsakoffSpecializedPDF({
-        residentName,
-        era,
-        activityId: null,
-        outputMode
-      });
-      closeModal();
-      const statusMsg = document.getElementById("ailmentStatusMsg");
-      if (statusMsg) {
-        statusMsg.textContent = "Generated & Downloaded: " + file;
-        statusMsg.classList.add("is-visible");
-      }
-    } catch (err) {
-      console.error(err);
-      alert("Error generating Korsakoff PDF: " + err.message);
-    }
-  });
-
-  /* Errorless Learning Task Builder Widget */
-  const taskBuilderBtn = document.getElementById("korsakoffTaskBuilderBtn");
-  if (taskBuilderBtn) {
-    taskBuilderBtn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      openKorsakoffTaskBuilder();
+  if (modalCloseBtn) modalCloseBtn.addEventListener("click", closeKorsakoffModal);
+  if (modalCancelBtn) modalCancelBtn.addEventListener("click", closeKorsakoffModal);
+  if (modal) {
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) closeKorsakoffModal();
     });
   }
 
-  function openKorsakoffTaskBuilder() {
-    const existing = document.getElementById("korsakoffTaskBuilderPanel");
-    if (existing) { existing.remove(); return; }
-    const panel = document.createElement("div");
-    panel.id = "korsakoffTaskBuilderPanel";
-    panel.className = "korsakoff-task-builder";
-    panel.innerHTML = `
-      <div class="ktb-header">
-        <span class="ktb-title">📋 Errorless Learning Task Builder</span>
-        <button type="button" class="ktb-close" id="ktbCloseBtn">✕</button>
-      </div>
-      <div class="ktb-body">
-        <div class="ktb-field-group">
-          <label class="ktb-label">Task Name:</label>
-          <input type="text" id="ktbTaskName" class="ktb-input" placeholder="e.g., Making Tea">
-        </div>
-        <div class="ktb-field-group">
-          <label class="ktb-label">Resident Name:</label>
-          <input type="text" id="ktbResidentName" class="ktb-input" placeholder="e.g., John Miller">
-        </div>
-        <div class="ktb-steps">
-          <div class="ktb-steps-header">
-            <span class="ktb-label">Errorless Step Sequence (pre-printed for trace-over):</span>
-            <button type="button" class="ktb-add-step" id="ktbAddStep">+ Add Step</button>
-          </div>
-          <div class="ktb-steps-list" id="ktbStepsList">
-            <div class="ktb-step-row">
-              <input type="text" class="ktb-step-input" value="Gather materials on the table" placeholder="Step 1">
-              <button type="button" class="ktb-remove-step">✕</button>
-            </div>
-          </div>
-        </div>
-        <div class="ktb-actions">
-          <button type="button" class="ktb-btn-cancel" id="ktbCancelBtn">Cancel</button>
-          <button type="button" class="ktb-btn-build" id="ktbBuildBtn">Build Task Sheet</button>
-        </div>
-      </div>
-    `;
-    document.body.appendChild(panel);
-
-    const stepsList = document.getElementById("ktbStepsList");
-    const addStepBtn = document.getElementById("ktbAddStep");
-    let stepCount = 1;
-
-    addStepBtn.addEventListener("click", () => {
-      stepCount++;
-      const row = document.createElement("div");
-      row.className = "ktb-step-row";
-      row.innerHTML = `
-        <input type="text" class="ktb-step-input" value="Step ${stepCount}" placeholder="Step ${stepCount}">
-        <button type="button" class="ktb-remove-step">✕</button>
-      `;
-      row.querySelector(".ktb-remove-step").addEventListener("click", () => row.remove());
-      stepsList.appendChild(row);
-    });
-
-    document.getElementById("ktbCloseBtn").addEventListener("click", () => panel.remove());
-    document.getElementById("ktbCancelBtn").addEventListener("click", () => panel.remove());
-
-    document.getElementById("ktbBuildBtn").addEventListener("click", () => {
-      const taskName = document.getElementById("ktbTaskName").value.trim() || "Daily Routine";
-      const resName = document.getElementById("ktbResidentName").value.trim() || "";
-      const steps = Array.from(stepsList.querySelectorAll(".ktb-step-input")).map(i => i.value.trim()).filter(Boolean);
+  if (modalForm) {
+    modalForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const residentName = resNameInput ? resNameInput.value.trim() : "";
+      const era = eraSelect ? eraSelect.value : "1950s";
+      const actId = actSelect ? actSelect.value : null;
+      let outputMode = "single";
+      outputRadios.forEach(r => { if (r.checked) outputMode = r.value; });
 
       try {
-        const file = generateKorsakoffTaskBuilderPDF({
-          taskName,
-          residentName: resName,
+        const file = generateKorsakoffSpecializedPDF({
+          residentName,
           era,
-          steps,
-          outputMode: "single"
+          activityId: actId,
+          outputMode
         });
-        panel.remove();
+        closeKorsakoffModal();
         const statusMsg = document.getElementById("ailmentStatusMsg");
         if (statusMsg) {
           statusMsg.textContent = "Generated & Downloaded: " + file;
           statusMsg.classList.add("is-visible");
+          setTimeout(() => statusMsg.classList.remove("is-visible"), 5000);
+        }
+      } catch (err) {
+        console.error(err);
+        alert("Error generating Korsakoff PDF: " + err.message);
+      }
+    });
+  }
+
+  // ===================================================================
+  // ERRORLESS TASK BUILDER MODAL
+  // ===================================================================
+  const taskBuilderModal = document.getElementById("korsakoffTaskBuilderModal");
+  const taskBuilderBtn = document.getElementById("korsakoffTaskBuilderBtn");
+  const launchBuilderModalBtn = document.getElementById("korsakoffLaunchBuilderModalBtn");
+  const ktbCloseBtn = document.getElementById("ktbModalCloseBtn");
+  const ktbCancelBtn = document.getElementById("ktbModalCancelBtn");
+  const ktbForm = document.getElementById("ktbModalForm");
+  const ktbPresetSelect = document.getElementById("ktbTaskPreset");
+  const ktbTaskNameInput = document.getElementById("ktbTaskName");
+  const ktbResNameInput = document.getElementById("ktbResidentName");
+  const ktbEraSelect = document.getElementById("ktbFormativeEra");
+  const ktbPromptLevelSelect = document.getElementById("ktbPromptLevel");
+  const ktbStepsList = document.getElementById("ktbStepsList");
+  const ktbAddStepBtn = document.getElementById("ktbAddStepBtn");
+
+  function openTaskBuilderModal() {
+    closeKorsakoffModal();
+    if (ktbResNameInput && resNameInput && !ktbResNameInput.value) {
+      ktbResNameInput.value = resNameInput.value;
+    }
+    if (ktbEraSelect && eraSelect) {
+      ktbEraSelect.value = eraSelect.value;
+    }
+    populateStepsFromPreset("tea");
+
+    if (taskBuilderModal) {
+      if (typeof taskBuilderModal.showModal === "function") {
+        taskBuilderModal.showModal();
+      } else {
+        taskBuilderModal.setAttribute("open", "");
+      }
+    }
+  }
+
+  function closeTaskBuilderModal() {
+    if (taskBuilderModal) {
+      if (typeof taskBuilderModal.close === "function") {
+        taskBuilderModal.close();
+      } else {
+        taskBuilderModal.removeAttribute("open");
+      }
+    }
+  }
+
+  function populateStepsFromPreset(presetKey) {
+    if (!ktbStepsList) return;
+    const preset = TASK_PRESETS[presetKey] || TASK_PRESETS.tea;
+    if (ktbTaskNameInput) ktbTaskNameInput.value = preset.name;
+
+    ktbStepsList.innerHTML = "";
+    preset.steps.forEach((stText, idx) => {
+      addStepRow(stText, idx + 1);
+    });
+  }
+
+  function addStepRow(val, num) {
+    if (!ktbStepsList) return;
+    const row = document.createElement("div");
+    row.className = "ktb-step-row";
+    const currentNum = num || (ktbStepsList.querySelectorAll(".ktb-step-row").length + 1);
+    row.innerHTML = `
+      <div class="ktb-step-num">${currentNum}</div>
+      <input type="text" class="ktb-step-input" value="${val || ""}" placeholder="Enter procedural step instruction (pre-printed for trace-over)">
+      <button type="button" class="ktb-remove-step" title="Remove step">&times;</button>
+    `;
+    row.querySelector(".ktb-remove-step").addEventListener("click", () => {
+      row.remove();
+      renumberSteps();
+    });
+    ktbStepsList.appendChild(row);
+  }
+
+  function renumberSteps() {
+    if (!ktbStepsList) return;
+    const rows = ktbStepsList.querySelectorAll(".ktb-step-row");
+    rows.forEach((r, idx) => {
+      const numBadge = r.querySelector(".ktb-step-num");
+      if (numBadge) numBadge.textContent = idx + 1;
+    });
+  }
+
+  if (ktbPresetSelect) {
+    ktbPresetSelect.addEventListener("change", (e) => {
+      populateStepsFromPreset(e.target.value);
+    });
+  }
+
+  if (ktbAddStepBtn) {
+    ktbAddStepBtn.addEventListener("click", () => {
+      addStepRow("", ktbStepsList.querySelectorAll(".ktb-step-row").length + 1);
+    });
+  }
+
+  if (taskBuilderBtn) {
+    taskBuilderBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      openTaskBuilderModal();
+    });
+  }
+
+  if (launchBuilderModalBtn) {
+    launchBuilderModalBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      openTaskBuilderModal();
+    });
+  }
+
+  if (ktbCloseBtn) ktbCloseBtn.addEventListener("click", closeTaskBuilderModal);
+  if (ktbCancelBtn) ktbCancelBtn.addEventListener("click", closeTaskBuilderModal);
+  if (taskBuilderModal) {
+    taskBuilderModal.addEventListener("click", (e) => {
+      if (e.target === taskBuilderModal) closeTaskBuilderModal();
+    });
+  }
+
+  if (ktbForm) {
+    ktbForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const taskName = (ktbTaskNameInput && ktbTaskNameInput.value.trim()) || "Procedural Routine";
+      const residentName = (ktbResNameInput && ktbResNameInput.value.trim()) || "Resident";
+      const era = (ktbEraSelect && ktbEraSelect.value) || "1950s";
+      const promptLevel = (ktbPromptLevelSelect && ktbPromptLevelSelect.value) || "Level 1: Full Hand-over-Hand Physical Guidance";
+      const stepInputs = ktbStepsList ? ktbStepsList.querySelectorAll(".ktb-step-input") : [];
+      const steps = Array.from(stepInputs).map(i => i.value.trim()).filter(Boolean);
+
+      try {
+        const file = generateKorsakoffTaskBuilderPDF({
+          taskName,
+          residentName,
+          era,
+          promptLevel,
+          steps,
+          outputMode: "single"
+        });
+        closeTaskBuilderModal();
+        const statusMsg = document.getElementById("ailmentStatusMsg");
+        if (statusMsg) {
+          statusMsg.textContent = "Generated & Downloaded Task Sheet: " + file;
+          statusMsg.classList.add("is-visible");
+          setTimeout(() => statusMsg.classList.remove("is-visible"), 5000);
         }
       } catch (err) {
         console.error(err);
         alert("Error building task sheet: " + err.message);
       }
     });
-
-    panel.addEventListener("click", (e) => {
-      if (e.target === panel) panel.remove();
-    });
   }
 
   /* Initial populate */
-  populateActivities();
+  renderActivityCards();
+  populateActivityDropdown();
 }
 
 document.addEventListener("DOMContentLoaded", initKorsakoffModule);
 if (document.readyState === "complete" || document.readyState === "interactive") {
   initKorsakoffModule();
 }
-
 </script>
 <script>
 /* =====================================================================
@@ -19868,7 +20855,7 @@ if (document.readyState === "complete" || document.readyState === "interactive")
     var P = window.CognicopiaPCG && window.CognicopiaPCG.prng, name = seedName();
     return P.seedInt(P.dailySeed(name, todayIso(), dailyVariant(name)) + "|roster");
   }
-  function lettersOnly(s){ return String(s || "").normalize ? String(s).normalize("NFD").replace(/[Ì€-Í¯]/g, "").toUpperCase().replace(/[^A-Z]/g, "") : String(s || "").toUpperCase().replace(/[^A-Z]/g, ""); }
+  function lettersOnly(s){ return String(s || "").normalize ? String(s).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase().replace(/[^A-Z]/g, "") : String(s || "").toUpperCase().replace(/[^A-Z]/g, ""); }
   function article(noun){ return /^[aeiou]/i.test(noun) ? "an " + noun : "a " + noun; }
   function uniq(list){ var seen = {}; return list.filter(function(x){ if (seen[x]) return false; seen[x] = 1; return true; }); }
 

@@ -65,7 +65,7 @@
        printed by scripts/license-keygen.mjs. More than one is allowed so a
        key can be replaced without ending the licenses signed by the old one. */
     PUBLIC_KEYS: Object.freeze([
-      "04e241222a6ab43d8ee32f1ffe256ecda5d3b54b29e0fca3be29a93e5bf0592159ff755d8d6e62a36b399854dbb69ddc9f39271d967a89c26617ae2db0e49cf1bf"
+      "04a81c7bfe5021771342f4cc326e2f8d59dbbe0cf20a6cb30482f808cbe5b248711d32f02803068d24d3c7e9dc937c345543a6912f37095604e1db07c937a47349"
     ]),
     /* Ids (the "id" shown by scripts/issue-license.mjs) of keys that have
        been withdrawn, for example after a chargeback. A page checks this list
