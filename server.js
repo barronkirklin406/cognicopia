@@ -9,6 +9,11 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const HOST = '0.0.0.0';
 
+// Health check endpoint
+app.get('/healthz', (req, res) => {
+  res.status(200).send('OK');
+});
+
 // Serve static directory with html extension fallback
 app.use(express.static(__dirname, {
   extensions: ['html', 'htm']
@@ -19,6 +24,19 @@ app.use((req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-app.listen(PORT, HOST, () => {
+// Global error handler
+app.use((err, req, res, next) => {
+  console.error('Server error:', err);
+  res.status(500).send('Internal Server Error');
+});
+
+const server = app.listen(PORT, HOST, () => {
   console.log(`Cognicopia server running at http://${HOST}:${PORT}`);
 });
+
+process.on('SIGTERM', () => {
+  server.close(() => {
+    process.exit(0);
+  });
+});
+
