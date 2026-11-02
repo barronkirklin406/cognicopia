@@ -2244,10 +2244,24 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
       difficulty: { level: diffLevel }, unitNumber: text("rapUnit"), cognitiveTier: tierPick ? Number(tierPick.code) : null,
       visualNeeds: { contrastMode: contrastPick ? contrastPick.code : "", lineThicknessPt: number("rapLine") } } });
 
+    var primVoc = primaryVocation(occupation);
+    var vocLabel = primVoc && primVoc.label ? primVoc.label : (occupation && occupation.label ? occupation.label : text("rapJobOther") || "");
+    var motorVal = $("rapMotor").value;
+    var motorLevel = motorVal === "significant" ? "assisted" : (motorVal === "mild" ? "moderate" : "high");
+    var hobbiesList = ticks("hobbies").map(function(h){ return h.label; });
+    var eraList = ticks("decades").map(function(d){ return d.code; });
+    var bornYear = number("rapBorn");
+    var formEra = eraList.length > 0 ? eraList[0] : (bornYear ? ("19" + String(Math.floor((bornYear + 18) / 10) * 10).slice(-2) + "s") : "1950s");
+
     return {
       schema: SCHEMA,
       version: SCHEMA_VERSION,
       id: residentId,                                   // filled in by saveResidentProfile()
+      pastVocation: vocLabel,
+      formativeEra: formEra,
+      corePassions: hobbiesList,
+      motorCapabilityLevel: motorLevel,
+      onHandItems: ["colored pencils", "tactile tokens", "memory stones"],
       preselectedDeescalationActivity: text("rapSootheActivity") || null,
       meta: {
         completedBy: choice("rapBy"),

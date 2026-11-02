@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Family Bridge Portal • Cognicopia</title>
+  <meta name="description" content="Secure, frictionless family portal to share photos, favorite family recipes, hometown landmarks, and career memories to personalize cognitive memory care packets.">
+  <link rel="icon" href="favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700;1,9..144,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/site.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="assets/services/familyBridgeStore.js"></script>
+  <style>
+    body { font-family: 'Atkinson Hyperlegible', sans-serif; }
+    h1, h2, h3, .font-serif { font-family: 'Fraunces', serif; }
+  </style>
+</head>
+<body class="bg-neutral-50 text-neutral-900 antialiased min-h-screen flex flex-col">
+
+  <!-- Top Navigation Header -->
+  <header class="bg-white border-b border-neutral-200 sticky top-0 z-40">
+    <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <a href="index.html" class="flex items-center gap-2 text-neutral-900 font-bold hover:text-emerald-800 transition">
+          <img src="assets/cognicopia-logo.jpg" alt="Cognicopia" class="w-8 h-8 rounded-lg object-cover">
+          <span class="text-lg tracking-tight">Cognicopia</span>
+        </a>
+        <span class="text-neutral-300">/</span>
+        <span class="text-xs font-semibold px-2.5 py-1 bg-emerald-100 text-emerald-900 rounded-full">
+          Family Bridge Portal
+        </span>
+      </div>
+
+      <div class="flex items-center gap-3 text-xs font-semibold">
+        <!-- View Mode Switcher -->
+        <button id="toggleRoleBtn" type="button" class="px-3 py-1.5 rounded-lg border border-neutral-300 hover:bg-neutral-100 transition text-neutral-700">
+          Switch to Director Console ⚙️
+        </button>
+        <a href="batch-scheduler.html" class="hidden sm:inline-block px-3 py-1.5 rounded-lg bg-neutral-900 hover:bg-black text-white transition">
+          Batch Scheduler →
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="flex-1 max-w-5xl w-full mx-auto px-4 py-8">
+    
+    <!-- ============================================================= -->
+    <!-- VIEW A: FAMILY MEMBER INTAKE FORM                             -->
+    <!-- ============================================================= -->
+    <div id="familyFormSection" class="space-y-6">
+      <!-- Facility & Resident Welcome Header -->
+      <div class="bg-emerald-900 text-white rounded-3xl p-6 md:p-8 shadow-md flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div>
+          <div class="inline-flex items-center gap-2 px-3 py-1 bg-emerald-800 text-emerald-200 text-xs font-semibold uppercase tracking-wider rounded-full mb-3">
+            <span>🛡️</span> Private &amp; Secure Family Portal
+          </div>
+          <h1 id="fbHeroTitle" class="text-2xl md:text-4xl font-bold tracking-tight">
+            Personalizing Memory Activities for Arthur Smith
+          </h1>
+          <p id="fbHeroSubtitle" class="text-emerald-200 text-sm md:text-base mt-2 max-w-xl">
+            At <span id="fbFacilityName" class="font-bold text-white">St. Jude Memory Care</span>, we weave cherished childhood recipes, hometown memories, and career pride into personalized large-print cognitive packets.
+          </p>
+        </div>
+
+        <div class="flex items-center gap-4 bg-emerald-800/80 p-4 rounded-2xl border border-emerald-700/60 self-start md:self-auto">
+          <div id="residentAvatar" class="w-14 h-14 rounded-full bg-emerald-600 border-2 border-emerald-300 flex items-center justify-center text-2xl font-bold text-white">
+            A
+          </div>
+          <div>
+            <p id="residentNameCard" class="font-bold text-base text-white">Arthur Smith</p>
+            <p id="residentUnitCard" class="text-xs text-emerald-200">Memory Care • Rm 104</p>
+            <span class="text-[11px] text-emerald-300 font-semibold">Active Care Profile</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step Progress Tabs -->
+      <div id="stepNav" class="flex overflow-x-auto gap-2 pb-2 border-b border-neutral-200 text-xs md:text-sm font-semibold">
+        <button type="button" class="step-tab active px-4 py-2 rounded-xl bg-neutral-900 text-white shadow-xs" data-target="step-welcome">1. Welcome</button>
+        <button type="button" class="step-tab px-4 py-2 rounded-xl bg-neutral-100 text-neutral-600 hover:bg-neutral-200" data-target="step-photos">2. Photos (<span id="photoBadge">0</span>)</button>
+        <button type="button" class="step-tab px-4 py-2 rounded-xl bg-neutral-100 text-neutral-600 hover:bg-neutral-200" data-target="step-recipes">3. Family Recipes (<span id="recipeBadge">1</span>)</button>
+        <button type="button" class="step-tab px-4 py-2 rounded-xl bg-neutral-100 text-neutral-600 hover:bg-neutral-200" data-target="step-landmarks">4. Hometown Landmarks (<span id="landmarkBadge">1</span>)</button>
+        <button type="button" class="step-tab px-4 py-2 rounded-xl bg-neutral-100 text-neutral-600 hover:bg-neutral-200" data-target="step-career">5. Career &amp; Dignity</button>
+        <button type="button" class="step-tab px-4 py-2 rounded-xl bg-neutral-100 text-neutral-600 hover:bg-neutral-200" data-target="step-music">6. Music &amp; Sayings</button>
+        <button type="button" class="step-tab px-4 py-2 rounded-xl bg-neutral-100 text-neutral-600 hover:bg-neutral-200" data-target="step-review">7. Review &amp; Submit</button>
+      </div>
+
+      <!-- STEP 1: WELCOME & CONTRIBUTOR INFO -->
+      <section id="step-welcome" class="form-step-content bg-white border border-neutral-200 rounded-2xl p-6 md:p-8 shadow-sm">
+        <h2 class="text-xl md:text-2xl font-bold mb-3">Welcome to the Memory Bridge</h2>
+        <p class="text-neutral-600 text-sm md:text-base leading-relaxed mb-6">
+          Thank you for taking a few moments to help our care team. The memories and details you share will be automatically transformed into large-print word searches, nostalgic conversation prompt cards, and sensory activities tailored exclusively to your loved one.
+        </p>
+
+        <div id="directorWelcomeNoteBox" class="hidden bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-lg mb-6 text-sm text-amber-900">
+          <p class="font-bold text-xs uppercase tracking-wider mb-1">Message from Activities Team:</p>
+          <p id="directorWelcomeNoteText" class="italic"></p>
+        </div>
+
+        <div class="border-t border-neutral-100 pt-6">
+          <h3 class="text-base font-bold text-neutral-800 mb-4">Your Information (So the care team knows who contributed)</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+            <div>
+              <label class="block text-xs font-semibold text-neutral-700 mb-1">Your Full Name *</label>
+              <input type="text" id="inputContributorName" placeholder="e.g. Sarah Smith Jenkins" value="Sarah Smith" class="w-full px-3.5 py-2.5 rounded-lg border border-neutral-300 text-sm focus:ring-2 focus:ring-emerald-500">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-neutral-700 mb-1">Your Relationship *</label>
+              <select id="inputRelationship" class="w-full px-3.5 py-2.5 rounded-lg border border-neutral-300 text-sm bg-white">
+                <option value="Daughter">Daughter</option>
+                <option value="Son">Son</option>
+                <option value="Spouse">Spouse / Partner</option>
+                <option value="Granddaughter">Granddaughter</option>
+                <option value="Grandson">Grandson</option>
+                <option value="Sister">Sister</option>
+                <option value="Brother">Brother</option>
+                <option value="Niece / Nephew">Niece / Nephew</option>
+                <option value="Close Friend">Close Friend / Neighbor</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-neutral-700 mb-1">Email Address (Optional)</label>
+              <input type="email" id="inputEmail" placeholder="sarah@example.com" class="w-full px-3.5 py-2.5 rounded-lg border border-neutral-300 text-sm">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-neutral-700 mb-1">Phone Number (Optional)</label>
+              <input type="tel" id="inputPhone" placeholder="(555) 019-2834" class="w-full px-3.5 py-2.5 rounded-lg border border-neutral-300 text-sm">
+            </div>
+          </div>
+
+          <button type="button" class="btn-next px-6 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-sm rounded-xl shadow-xs transition" data-next="step-photos">
+            Continue to Step 2: Photos →
+          </button>
+        </div>
+      </section>
+
+      <!-- STEP 2: PHOTOS -->
+      <section id="step-photos" class="form-step-content hidden bg-white border border-neutral-200 rounded-2xl p-6 md:p-8 shadow-sm">
+        <div class="mb-4">
+          <h2 class="text-xl md:text-2xl font-bold">Cherished Family &amp; Historical Photos</h2>
+          <p class="text-neutral-600 text-sm mt-1">
+            Vintage snapshots of weddings, military service, vacations, or working in the workshop spark vivid autobiographical recall.
+          </p>
+        </div>
+
+        <!-- Upload Drop Zone -->
+        <div class="border-2 border-dashed border-neutral-300 rounded-2xl p-6 text-center hover:border-emerald-600 transition bg-neutral-50 mb-6">
+          <div class="w-12 h-12 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center text-xl mx-auto mb-3">
+            📷
+          </div>
+          <p class="text-sm font-bold text-neutral-800 mb-1">Select photos from your phone or computer</p>
+          <p class="text-xs text-neutral-500 mb-4">Automatically optimized and compressed for fast local facility storage</p>
+          <input type="file" id="photoFileInput" accept="image/*" class="hidden">
+          <label for="photoFileInput" class="inline-block px-5 py-2.5 bg-neutral-900 text-white text-xs font-bold rounded-lg cursor-pointer hover:bg-black transition">
+            Choose Photo
+          </label>
+        </div>
+
+        <!-- Photos Grid -->
+        <div id="photosContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+          <!-- Dynamically populated -->
+        </div>
+
+        <div class="flex justify-between pt-4 border-t border-neutral-100">
+          <button type="button" class="btn-prev px-5 py-2 text-neutral-600 hover:text-black text-sm font-semibold" data-prev="step-welcome">← Back</button>
+          <button type="button" class="btn-next px-6 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-sm rounded-xl" data-next="step-recipes">Next: Family Recipes →</button>
+        </div>
+      </section>
+
+      <!-- STEP 3: RECIPES -->
+      <section id="step-recipes" class="form-step-content hidden bg-white border border-neutral-200 rounded-2xl p-6 md:p-8 shadow-sm">
+        <div class="mb-4">
+          <h2 class="text-xl md:text-2xl font-bold">Favorite Family Recipes &amp; Comfort Foods</h2>
+          <p class="text-neutral-600 text-sm mt-1">
+            Taste and aroma trigger deep emotional memory pathways. Which dishes did they love baking, grilling, or gathering around?
+          </p>
+        </div>
+
+        <div id="recipesContainer" class="space-y-4 mb-4">
+          <!-- Preloaded initial recipe -->
+          <div class="recipe-row p-4 border border-neutral-200 rounded-xl bg-neutral-50/70 space-y-3">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs font-semibold text-neutral-700 mb-1">Dish Name *</label>
+                <input type="text" class="rec-name w-full px-3 py-2 text-sm rounded-lg border border-neutral-300 bg-white" placeholder="e.g. Grandma's Cinnamon Apple Crisp" value="Sunday Roast Beef &amp; Yorkshire Pudding">
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-neutral-700 mb-1">Key Aromas &amp; Ingredients</label>
+                <input type="text" class="rec-ingredients w-full px-3 py-2 text-sm rounded-lg border border-neutral-300 bg-white" placeholder="e.g. Cinnamon, roasted garlic, rosemary" value="Rosemary, brown gravy, sweet carrots">
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-neutral-700 mb-1">Occasion &amp; Cherished Memory</label>
+              <input type="text" class="rec-memory w-full px-3 py-2 text-sm rounded-lg border border-neutral-300 bg-white" placeholder="e.g. Always served at Thanksgiving" value="Arthur carved the roast every Sunday evening after church.">
+            </div>
+          </div>
+        </div>
+
+        <button type="button" id="addRecipeBtn" class="text-xs font-bold text-emerald-800 hover:text-emerald-950 px-3 py-1.5 rounded-lg bg-emerald-50 mb-6 flex items-center gap-1.5">
+          <span>+</span> Add Another Recipe
+        </button>
+
+        <div class="flex justify-between pt-4 border-t border-neutral-100">
+          <button type="button" class="btn-prev px-5 py-2 text-neutral-600 hover:text-black text-sm font-semibold" data-prev="step-photos">← Back</button>
+          <button type="button" class="btn-next px-6 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-sm rounded-xl" data-next="step-landmarks">Next: Hometown Landmarks →</button>
+        </div>
+      </section>
+
+      <!-- STEP 4: LANDMARKS -->
+      <section id="step-landmarks" class="form-step-content hidden bg-white border border-neutral-200 rounded-2xl p-6 md:p-8 shadow-sm">
+        <div class="mb-4">
+          <h2 class="text-xl md:text-2xl font-bold">Hometown Roots &amp; Childhood Landmarks</h2>
+          <p class="text-neutral-600 text-sm mt-1">
+            Familiar street names, drive-in theaters, and fishing docks remain anchored in long-term memory.
+          </p>
+        </div>
+
+        <div id="landmarksContainer" class="space-y-4 mb-4">
+          <div class="landmark-row p-4 border border-neutral-200 rounded-xl bg-neutral-50/70 space-y-3">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs font-semibold text-neutral-700 mb-1">Place or Landmark Name *</label>
+                <input type="text" class="lm-name w-full px-3 py-2 text-sm rounded-lg border border-neutral-300 bg-white" placeholder="e.g. Rexall Drug Soda Fountain" value="Williston Great Northern Railroad Depot">
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-neutral-700 mb-1">Town / State</label>
+                <input type="text" class="lm-location w-full px-3 py-2 text-sm rounded-lg border border-neutral-300 bg-white" placeholder="e.g. Williston, North Dakota" value="Williston, ND">
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-neutral-700 mb-1">What did they do there?</label>
+              <input type="text" class="lm-memory w-full px-3 py-2 text-sm rounded-lg border border-neutral-300 bg-white" placeholder="e.g. Went every Friday evening for a cherry phosphate" value="Arthur worked in the roundhouse inspecting the steam locomotive boilers for 32 years.">
+            </div>
+          </div>
+        </div>
+
+        <button type="button" id="addLandmarkBtn" class="text-xs font-bold text-emerald-800 hover:text-emerald-950 px-3 py-1.5 rounded-lg bg-emerald-50 mb-6 flex items-center gap-1.5">
+          <span>+</span> Add Another Landmark
+        </button>
+
+        <div class="flex justify-between pt-4 border-t border-neutral-100">
+          <button type="button" class="btn-prev px-5 py-2 text-neutral-600 hover:text-black text-sm font-semibold" data-prev="step-recipes">← Back</button>
+          <button type="button" class="btn-next px-6 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-sm rounded-xl" data-next="step-career">Next: Career &amp; Dignity →</button>
+        </div>
+      </section>
+
+      <!-- STEP 5: CAREER & DIGNITY -->
+      <section id="step-career" class="form-step-content hidden bg-white border border-neutral-200 rounded-2xl p-6 md:p-8 shadow-sm">
+        <div class="mb-4">
+          <h2 class="text-xl md:text-2xl font-bold">Past Career, Workshop &amp; Tools of the Trade</h2>
+          <p class="text-neutral-600 text-sm mt-1">
+            "Who was this person at work when they were younger?" Anchoring prompts in professional skill reinforces identity and pride.
+          </p>
+        </div>
+
+        <div class="space-y-4 mb-6">
+          <div>
+            <label class="block text-xs font-semibold text-neutral-700 mb-1">Trades, Jobs, or Military Roles</label>
+            <input type="text" id="inputCareerTrades" value="Railroad Machinist, Master Carpenter, Woodturner" class="w-full px-3.5 py-2.5 rounded-lg border border-neutral-300 text-sm">
+            <p class="text-[11px] text-neutral-500 mt-1">Separate with commas</p>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-neutral-700 mb-1">Favorite Hand Tools or Equipment</label>
+            <input type="text" id="inputCareerTools" value="Stanley No. 4 smoothing plane, brass caliper, crosscut handsaw, oilstone" class="w-full px-3.5 py-2.5 rounded-lg border border-neutral-300 text-sm">
+            <p class="text-[11px] text-neutral-500 mt-1">These tools will be integrated into matching and word puzzles!</p>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-neutral-700 mb-1">Proudest Project or Legacy Achievement</label>
+            <textarea id="inputCareerProud" rows="2" class="w-full px-3.5 py-2.5 rounded-lg border border-neutral-300 text-sm">Hand-crafted the solid oak dining table that our entire family still gathers around for Thanksgiving.</textarea>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-neutral-700 mb-1">Workplace Catchphrase or Motto</label>
+            <input type="text" id="inputCareerMotto" value="Measure twice, cut once." class="w-full px-3.5 py-2.5 rounded-lg border border-neutral-300 text-sm">
+          </div>
+        </div>
+
+        <div class="flex justify-between pt-4 border-t border-neutral-100">
+          <button type="button" class="btn-prev px-5 py-2 text-neutral-600 hover:text-black text-sm font-semibold" data-prev="step-landmarks">← Back</button>
+          <button type="button" class="btn-next px-6 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-sm rounded-xl" data-next="step-music">Next: Music &amp; Sayings →</button>
+        </div>
+      </section>
+
+      <!-- STEP 6: MUSIC & SAYINGS -->
+      <section id="step-music" class="form-step-content hidden bg-white border border-neutral-200 rounded-2xl p-6 md:p-8 shadow-sm">
+        <div class="mb-4">
+          <h2 class="text-xl md:text-2xl font-bold">Cherished Music, Hymns &amp; Special Sayings</h2>
+          <p class="text-neutral-600 text-sm mt-1">
+            Melodies and familiar sayings stimulate emotional recall even in advanced cognitive stages.
+          </p>
+        </div>
+
+        <div class="space-y-4 mb-6">
+          <div>
+            <label class="block text-xs font-semibold text-neutral-700 mb-1">Favorite Hymns or Church Melodies</label>
+            <input type="text" id="inputHymns" value="In The Garden, Amazing Grace, The Old Rugged Cross" class="w-full px-3.5 py-2.5 rounded-lg border border-neutral-300 text-sm">
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-neutral-700 mb-1">Favorite Big Bands, Country, or Era Artists</label>
+            <input type="text" id="inputArtists" value="Glenn Miller Orchestra, Johnny Cash, Tennessee Ernie Ford" class="w-full px-3.5 py-2.5 rounded-lg border border-neutral-300 text-sm">
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-neutral-700 mb-1">Childhood Pets &amp; Nicknames</label>
+            <input type="text" id="inputPets" value="Childhood collie named 'Buster', nickname 'Artie'" class="w-full px-3.5 py-2.5 rounded-lg border border-neutral-300 text-sm">
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-neutral-700 mb-1">Favorite Sayings or Humor</label>
+            <textarea id="inputSayings" rows="2" class="w-full px-3.5 py-2.5 rounded-lg border border-neutral-300 text-sm">"Can't complain, nobody'd listen anyway!"
+"Keep the fire hot and the rails straight."</textarea>
+          </div>
+        </div>
+
+        <div class="flex justify-between pt-4 border-t border-neutral-100">
+          <button type="button" class="btn-prev px-5 py-2 text-neutral-600 hover:text-black text-sm font-semibold" data-prev="step-career">← Back</button>
+          <button type="button" class="btn-next px-6 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-sm rounded-xl" data-next="step-review">Review &amp; Finalize →</button>
+        </div>
+      </section>
+
+      <!-- STEP 7: REVIEW & SUBMIT -->
+      <section id="step-review" class="form-step-content hidden bg-white border border-neutral-200 rounded-2xl p-6 md:p-8 shadow-sm">
+        <div class="mb-4">
+          <h2 class="text-xl md:text-2xl font-bold">Review Your Contribution</h2>
+          <p class="text-neutral-600 text-sm mt-1">
+            Please confirm your memories. When submitted, they will be securely woven into personalized printable packets.
+          </p>
+        </div>
+
+        <div class="bg-neutral-50 rounded-xl p-5 border border-neutral-200 text-xs text-neutral-700 space-y-3 mb-6">
+          <div class="flex justify-between border-b border-neutral-200 pb-2">
+            <span class="font-semibold text-neutral-600">Loved One:</span>
+            <span id="revResident" class="font-bold text-neutral-900">Arthur Smith</span>
+          </div>
+          <div class="flex justify-between border-b border-neutral-200 pb-2">
+            <span class="font-semibold text-neutral-600">Submitted By:</span>
+            <span id="revContributor" class="font-bold text-neutral-900">Sarah Smith (Daughter)</span>
+          </div>
+          <div class="flex justify-between border-b border-neutral-200 pb-2">
+            <span class="font-semibold text-neutral-600">Photos Uploaded:</span>
+            <span id="revPhotoCount" class="font-bold text-neutral-900">0 Photos</span>
+          </div>
+          <div class="flex justify-between border-b border-neutral-200 pb-2">
+            <span class="font-semibold text-neutral-600">Recipes Shared:</span>
+            <span id="revRecipes" class="font-bold text-neutral-900">Sunday Roast Beef</span>
+          </div>
+          <div class="flex justify-between border-b border-neutral-200 pb-2">
+            <span class="font-semibold text-neutral-600">Hometown Landmarks:</span>
+            <span id="revLandmarks" class="font-bold text-neutral-900">Great Northern Railroad Depot</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="font-semibold text-neutral-600">Tools &amp; Trades:</span>
+            <span id="revTools" class="font-bold text-neutral-900">Railroad Machinist, Hand Plane</span>
+          </div>
+        </div>
+
+        <div class="flex justify-between pt-4 border-t border-neutral-100">
+          <button type="button" class="btn-prev px-5 py-2 text-neutral-600 hover:text-black text-sm font-semibold" data-prev="step-music">← Back</button>
+          <button type="button" id="submitContributionBtn" class="px-8 py-3 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-sm rounded-xl shadow-md transition flex items-center gap-2">
+            <span>✓</span> Submit to Care Team
+          </button>
+        </div>
+      </section>
+
+      <!-- SUCCESS CONFIRMATION -->
+      <section id="step-success" class="form-step-content hidden bg-white border border-neutral-200 rounded-3xl p-8 md:p-12 text-center shadow-md">
+        <div class="w-16 h-16 bg-emerald-100 text-emerald-800 rounded-full flex items-center justify-center text-3xl mx-auto mb-4 font-bold">
+          ✓
+        </div>
+        <h2 class="text-2xl md:text-3xl font-bold text-neutral-900 mb-2">Thank You, <span id="successName">Sarah</span>!</h2>
+        <p class="text-neutral-600 max-w-lg mx-auto text-sm md:text-base mb-6">
+          Your memories have been synced safely into the local care profile for <strong id="successResident">Arthur Smith</strong>. The activities team will immediately generate personalized cognitive packets featuring your recipes, photos, and hometown landmarks.
+        </p>
+
+        <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-4 max-w-md mx-auto text-left text-xs text-emerald-950 space-y-1 mb-8">
+          <p class="font-bold text-sm mb-1">📋 Submission Receipt</p>
+          <p><strong>Resident:</strong> <span id="receiptResident">Arthur Smith</span></p>
+          <p><strong>Facility:</strong> <span id="receiptFacility">St. Jude Memory Care</span></p>
+          <p><strong>Sync Timestamp:</strong> <span id="receiptTime"></span></p>
+          <p class="text-emerald-700 pt-1">Stored offline-first in facility local database with zero external tracking.</p>
+        </div>
+
+        <div class="flex flex-col sm:flex-row justify-center gap-3">
+          <button type="button" id="startOverBtn" class="px-6 py-2.5 rounded-xl border border-neutral-300 text-xs font-bold hover:bg-neutral-100 transition">
+            Add More Memories
+          </button>
+          <a href="batch-scheduler.html" class="px-6 py-2.5 rounded-xl bg-neutral-900 hover:bg-black text-white text-xs font-bold transition">
+            Open Facility Batch Scheduler →
+          </a>
+        </div>
+      </section>
+    </div>
+
+    <!-- ============================================================= -->
+    <!-- VIEW B: FACILITY DIRECTOR CONSOLE (MODAL / INBOX)             -->
+    <!-- ============================================================= -->
+    <div id="directorConsoleSection" class="hidden space-y-6">
+      <div class="bg-neutral-900 text-white rounded-3xl p-6 md:p-8 shadow-lg flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div>
+          <div class="inline-flex items-center gap-2 px-3 py-1 bg-neutral-800 text-emerald-400 text-xs font-semibold uppercase tracking-wider rounded-full mb-3">
+            <span>⚙️</span> Activities Director Console
+          </div>
+          <h1 class="text-2xl md:text-3xl font-bold tracking-tight">
+            Family Bridge Token Generator &amp; Influx
+          </h1>
+          <p class="text-neutral-300 text-xs md:text-sm mt-1 max-w-xl">
+            Generate secure, tokenized magic links to text or email to families. Review incoming submissions and merge memories into resident profiles with 1 click.
+          </p>
+        </div>
+
+        <button id="backToFamilyViewBtn" type="button" class="px-4 py-2 bg-neutral-800 hover:bg-neutral-700 text-white text-xs font-bold rounded-xl border border-neutral-700 self-start md:self-auto">
+          ← Back to Family Form View
+        </button>
+      </div>
+
+      <!-- Director Tabs -->
+      <div class="flex gap-4 border-b border-neutral-200 text-sm font-bold">
+        <button id="dirTabGen" type="button" class="pb-3 border-b-2 border-emerald-700 text-emerald-900">🔗 Generate Magic Link</button>
+        <button id="dirTabInbox" type="button" class="pb-3 border-b-2 border-transparent text-neutral-500 hover:text-neutral-900">📬 Submissions Inbox (<span id="inboxCount">0</span>)</button>
+        <button id="dirTabTokens" type="button" class="pb-3 border-b-2 border-transparent text-neutral-500 hover:text-neutral-900">📋 Active Links (<span id="tokensCount">0</span>)</button>
+      </div>
+
+      <!-- DIRECTOR PANEL 1: GENERATE LINK -->
+      <div id="panelDirectorGen" class="bg-white border border-neutral-200 rounded-2xl p-6 shadow-sm space-y-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-neutral-600 mb-1">Select Facility Resident</label>
+            <select id="dirResidentSelect" class="w-full px-3.5 py-2.5 rounded-lg border border-neutral-300 text-sm font-semibold bg-white">
+              <!-- Populated dynamically -->
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-neutral-600 mb-1">Link Expiration</label>
+            <select id="dirExpirationSelect" class="w-full px-3.5 py-2.5 rounded-lg border border-neutral-300 text-sm font-semibold bg-white">
+              <option value="14">14 Days (Recommended for Family)</option>
+              <option value="7">7 Days (Quick Intake)</option>
+              <option value="30">30 Days (Extended)</option>
+              <option value="perpetual">No Expiration (Perpetual)</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-neutral-600 mb-1">Welcome Note from Care Staff (Optional)</label>
+          <input type="text" id="dirWelcomeNote" placeholder="e.g. We are building Arthur's spring packet this Friday! We'd love his chili recipe and memories of his workshop." class="w-full px-3.5 py-2.5 rounded-lg border border-neutral-300 text-sm">
+        </div>
+
+        <button type="button" id="dirGenerateBtn" class="w-full py-3 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-sm rounded-xl shadow-xs transition flex items-center justify-center gap-2">
+          <span>⚡</span> Generate Tokenized Magic Link
+        </button>
+
+        <!-- Result Box -->
+        <div id="dirResultCard" class="hidden bg-neutral-50 border border-neutral-200 rounded-2xl p-6 space-y-4">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800 px-2.5 py-0.5 rounded">
+              Magic Link Ready
+            </span>
+            <span id="dirResultTokenId" class="text-xs font-mono text-neutral-500"></span>
+          </div>
+
+          <div class="flex gap-2">
+            <input type="text" id="dirResultUrl" readonly class="flex-1 px-3 py-2 text-xs font-mono bg-white border border-neutral-300 rounded-lg select-all">
+            <button type="button" id="copyUrlBtn" class="px-4 py-2 bg-neutral-900 hover:bg-black text-white text-xs font-bold rounded-lg whitespace-nowrap">
+              Copy Link
+            </button>
+          </div>
+
+          <!-- 1-Click Templates -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+            <div class="p-3.5 bg-white border border-neutral-200 rounded-xl space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-neutral-800">📱 1-Click SMS Text</span>
+                <button type="button" id="copySmsBtn" class="text-xs font-bold text-emerald-700 hover:text-emerald-900">Copy Text</button>
+              </div>
+              <p id="smsPreviewText" class="text-xs text-neutral-600 italic line-clamp-3"></p>
+            </div>
+
+            <div class="p-3.5 bg-white border border-neutral-200 rounded-xl space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-neutral-800">✉️ 1-Click Email</span>
+                <button type="button" id="copyEmailBtn" class="text-xs font-bold text-emerald-700 hover:text-emerald-900">Copy Draft</button>
+              </div>
+              <p id="emailPreviewText" class="text-xs text-neutral-600 line-clamp-3"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DIRECTOR PANEL 2: SUBMISSIONS INBOX -->
+      <div id="panelDirectorInbox" class="hidden bg-white border border-neutral-200 rounded-2xl p-6 shadow-sm space-y-4">
+        <div class="flex items-center justify-between">
+          <h3 class="text-base font-bold text-neutral-900">Recent Family Memory Submissions</h3>
+          <span class="text-xs text-neutral-500">Synced to offline local database</span>
+        </div>
+
+        <div id="inboxList" class="space-y-3">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+
+      <!-- DIRECTOR PANEL 3: ACTIVE TOKENS -->
+      <div id="panelDirectorTokens" class="hidden bg-white border border-neutral-200 rounded-2xl p-6 shadow-sm space-y-4">
+        <div class="flex items-center justify-between">
+          <h3 class="text-base font-bold text-neutral-900">Active Magic Links on Record</h3>
+          <button type="button" id="exportTokensBtn" class="text-xs font-bold text-emerald-700 hover:text-emerald-900">
+            Export JSON ↓
+          </button>
+        </div>
+
+        <div id="tokensList" class="space-y-2">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="bg-white border-t border-neutral-200 py-6 mt-12 text-center text-xs text-neutral-500">
+    <div class="max-w-5xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <span>Cognicopia Family Bridge • 100% Offline-First Architecture • Zero PHI Leaks</span>
+      <div class="flex gap-4">
+        <a href="index.html" class="hover:text-neutral-900">Packet Tool</a>
+        <a href="batch-scheduler.html" class="hover:text-neutral-900">Batch Scheduler</a>
+        <a href="builder.html" class="hover:text-neutral-900">Builder</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      var bridge = window.CogniFamilyBridge;
+      var roster = bridge ? bridge.getRoster() : [];
+      var activePayload = bridge ? bridge.parseUrl() : null;
+
+      var currentResident = activePayload ? {
+        id: activePayload.residentId,
+        preferredName: activePayload.residentName,
+        wing: activePayload.unitOrWing || 'Memory Care',
+        unitNumber: ''
+      } : roster[0];
+
+      var uploadedPhotos = [];
+
+      // UI Element references
+      var toggleRoleBtn = document.getElementById('toggleRoleBtn');
+      var familyFormSection = document.getElementById('familyFormSection');
+      var directorConsoleSection = document.getElementById('directorConsoleSection');
+      var backToFamilyViewBtn = document.getElementById('backToFamilyViewBtn');
+
+      var fbHeroTitle = document.getElementById('fbHeroTitle');
+      var fbFacilityName = document.getElementById('fbFacilityName');
+      var residentAvatar = document.getElementById('residentAvatar');
+      var residentNameCard = document.getElementById('residentNameCard');
+      var residentUnitCard = document.getElementById('residentUnitCard');
+      var directorWelcomeNoteBox = document.getElementById('directorWelcomeNoteBox');
+      var directorWelcomeNoteText = document.getElementById('directorWelcomeNoteText');
+
+      // Populate hero with active resident
+      function updateHeroResident(res, facility, note) {
+        if (!res) return;
+        fbHeroTitle.textContent = 'Personalizing Memory Activities for ' + res.preferredName;
+        fbFacilityName.textContent = facility || 'St. Jude Memory Care';
+        residentAvatar.textContent = res.preferredName.charAt(0);
+        residentNameCard.textContent = res.preferredName;
+        residentUnitCard.textContent = (res.wing || 'Memory Care') + (res.unitNumber ? ' • Rm ' + res.unitNumber : '');
+
+        if (note) {
+          directorWelcomeNoteBox.classList.remove('hidden');
+          directorWelcomeNoteText.textContent = '"' + note + '"';
+        } else {
+          directorWelcomeNoteBox.classList.add('hidden');
+        }
+      }
+
+      updateHeroResident(currentResident, activePayload ? activePayload.facilityName : 'St. Jude Memory Care', activePayload ? activePayload.customWelcomeNote : null);
+
+      // Step navigation logic
+      var stepTabs = document.querySelectorAll('.step-tab');
+      var stepContents = document.querySelectorAll('.form-step-content');
+
+      function showStep(stepId) {
+        stepContents.forEach(function (c) {
+          c.classList.add('hidden');
+        });
+        var target = document.getElementById(stepId);
+        if (target) target.classList.remove('hidden');
+
+        stepTabs.forEach(function (t) {
+          if (t.getAttribute('data-target') === stepId) {
+            t.className = 'step-tab active px-4 py-2 rounded-xl bg-neutral-900 text-white shadow-xs';
+          } else {
+            t.className = 'step-tab px-4 py-2 rounded-xl bg-neutral-100 text-neutral-600 hover:bg-neutral-200';
+          }
+        });
+
+        // Update review summaries
+        if (stepId === 'step-review') {
+          updateReviewSummary();
+        }
+      }
+
+      stepTabs.forEach(function (tab) {
+        tab.addEventListener('click', function () {
+          showStep(tab.getAttribute('data-target'));
+        });
+      });
+
+      document.querySelectorAll('.btn-next').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          showStep(btn.getAttribute('data-next'));
+        });
+      });
+
+      document.querySelectorAll('.btn-prev').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          showStep(btn.getAttribute('data-prev'));
+        });
+      });
+
+      // Photo upload with downscaling compression
+      var photoFileInput = document.getElementById('photoFileInput');
+      var photosContainer = document.getElementById('photosContainer');
+      var photoBadge = document.getElementById('photoBadge');
+
+      photoFileInput.addEventListener('change', function (e) {
+        var file = e.target.files[0];
+        if (!file) return;
+
+        var reader = new FileReader();
+        reader.onload = function (evt) {
+          var img = new Image();
+          img.onload = function () {
+            var canvas = document.createElement('canvas');
+            var width = img.width;
+            var height = img.height;
+            var maxDim = 800;
+
+            if (width > height && width > maxDim) {
+              height = Math.round((height * maxDim) / width);
+              width = maxDim;
+            } else if (height > maxDim) {
+              width = Math.round((width * maxDim) / height);
+              height = maxDim;
+            }
+
+            canvas.width = width;
+            canvas.height = height;
+            var ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+
+            var compressedDataUrl = canvas.toDataURL('image/jpeg', 0.75);
+            var photoObj = {
+              id: 'p_' + Date.now(),
+              dataUrl: compressedDataUrl,
+              caption: file.name.replace(/\.[^/.]+$/, ''),
+              year: 'Vintage Era'
+            };
+
+            uploadedPhotos.push(photoObj);
+            renderPhotos();
+          };
+          img.src = evt.target.result;
+        };
+        reader.readAsDataURL(file);
+      });
+
+      function renderPhotos() {
+        photoBadge.textContent = uploadedPhotos.length;
+        photosContainer.innerHTML = '';
+        uploadedPhotos.forEach(function (p, idx) {
+          var card = document.createElement('div');
+          card.className = 'flex gap-3 p-3 border border-neutral-200 rounded-xl items-center bg-white shadow-xs';
+          card.innerHTML = '<img src="' + p.dataUrl + '" class="w-20 h-20 object-cover rounded-lg border border-neutral-200">' +
+            '<div class="flex-1 min-w-0">' +
+            '  <input type="text" value="' + p.caption + '" class="w-full text-xs font-bold border border-neutral-200 rounded px-2 py-1 mb-1" placeholder="Caption...">' +
+            '  <button type="button" class="remove-photo text-xs text-red-600 font-semibold" data-idx="' + idx + '">Remove</button>' +
+            '</div>';
+          photosContainer.appendChild(card);
+        });
+
+        document.querySelectorAll('.remove-photo').forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            var idx = parseInt(btn.getAttribute('data-idx'), 10);
+            uploadedPhotos.splice(idx, 1);
+            renderPhotos();
+          });
+        });
+      }
+
+      // Dynamic Recipe rows
+      var recipesContainer = document.getElementById('recipesContainer');
+      var addRecipeBtn = document.getElementById('addRecipeBtn');
+      var recipeBadge = document.getElementById('recipeBadge');
+
+      addRecipeBtn.addEventListener('click', function () {
+        var row = document.createElement('div');
+        row.className = 'recipe-row p-4 border border-neutral-200 rounded-xl bg-neutral-50/70 space-y-3 relative';
+        row.innerHTML = '<div class="flex justify-between items-center"><span class="text-xs font-bold text-emerald-800">Additional Recipe</span><button type="button" class="del-row text-xs text-red-600 font-semibold">Delete</button></div>' +
+          '<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">' +
+          '  <div><label class="block text-xs font-semibold text-neutral-700 mb-1">Dish Name *</label><input type="text" class="rec-name w-full px-3 py-2 text-sm rounded-lg border border-neutral-300 bg-white" placeholder="e.g. Peach Cobbler"></div>' +
+          '  <div><label class="block text-xs font-semibold text-neutral-700 mb-1">Aromas &amp; Ingredients</label><input type="text" class="rec-ingredients w-full px-3 py-2 text-sm rounded-lg border border-neutral-300 bg-white" placeholder="e.g. Fresh peaches, cinnamon, sweet cream"></div>' +
+          '</div>' +
+          '<div><label class="block text-xs font-semibold text-neutral-700 mb-1">Occasion / Memory</label><input type="text" class="rec-memory w-full px-3 py-2 text-sm rounded-lg border border-neutral-300 bg-white" placeholder="e.g. Picked peaches together at the orchard"></div>';
+
+        row.querySelector('.del-row').addEventListener('click', function () {
+          row.remove();
+          updateBadges();
+        });
+
+        recipesContainer.appendChild(row);
+        updateBadges();
+      });
+
+      // Dynamic Landmark rows
+      var landmarksContainer = document.getElementById('landmarksContainer');
+      var addLandmarkBtn = document.getElementById('addLandmarkBtn');
+      var landmarkBadge = document.getElementById('landmarkBadge');
+
+      addLandmarkBtn.addEventListener('click', function () {
+        var row = document.createElement('div');
+        row.className = 'landmark-row p-4 border border-neutral-200 rounded-xl bg-neutral-50/70 space-y-3 relative';
+        row.innerHTML = '<div class="flex justify-between items-center"><span class="text-xs font-bold text-blue-800">Additional Landmark</span><button type="button" class="del-row text-xs text-red-600 font-semibold">Delete</button></div>' +
+          '<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">' +
+          '  <div><label class="block text-xs font-semibold text-neutral-700 mb-1">Landmark Name *</label><input type="text" class="lm-name w-full px-3 py-2 text-sm rounded-lg border border-neutral-300 bg-white" placeholder="e.g. Lake Sakakawea Boat Dock"></div>' +
+          '  <div><label class="block text-xs font-semibold text-neutral-700 mb-1">Town / Location</label><input type="text" class="lm-location w-full px-3 py-2 text-sm rounded-lg border border-neutral-300 bg-white" placeholder="e.g. Williston, ND"></div>' +
+          '</div>' +
+          '<div><label class="block text-xs font-semibold text-neutral-700 mb-1">What did they do there?</label><input type="text" class="lm-memory w-full px-3 py-2 text-sm rounded-lg border border-neutral-300 bg-white" placeholder="e.g. Arthur loved fishing for walleye every Saturday at dawn."></div>';
+
+        row.querySelector('.del-row').addEventListener('click', function () {
+          row.remove();
+          updateBadges();
+        });
+
+        landmarksContainer.appendChild(row);
+        updateBadges();
+      });
+
+      function updateBadges() {
+        recipeBadge.textContent = document.querySelectorAll('.recipe-row').length;
+        landmarkBadge.textContent = document.querySelectorAll('.landmark-row').length;
+      }
+
+      function updateReviewSummary() {
+        var name = document.getElementById('inputContributorName').value || 'Family Contributor';
+        var rel = document.getElementById('inputRelationship').value;
+        document.getElementById('revResident').textContent = currentResident.preferredName;
+        document.getElementById('revContributor').textContent = name + ' (' + rel + ')';
+        document.getElementById('revPhotoCount').textContent = uploadedPhotos.length + ' Photos';
+
+        var recs = [];
+        document.querySelectorAll('.rec-name').forEach(function (inp) {
+          if (inp.value) recs.push(inp.value);
+        });
+        document.getElementById('revRecipes').textContent = recs.join(', ') || 'None specified';
+
+        var lms = [];
+        document.querySelectorAll('.lm-name').forEach(function (inp) {
+          if (inp.value) lms.push(inp.value);
+        });
+        document.getElementById('revLandmarks').textContent = lms.join(', ') || 'None specified';
+
+        var trades = document.getElementById('inputCareerTrades').value;
+        var tools = document.getElementById('inputCareerTools').value;
+        document.getElementById('revTools').textContent = (trades || '') + (tools ? ' • ' + tools : '');
+      }
+
+      // Submit contribution
+      document.getElementById('submitContributionBtn').addEventListener('click', function () {
+        var contributorName = document.getElementById('inputContributorName').value.trim();
+        if (!contributorName) {
+          alert('Please enter your name so the care team knows who contributed.');
+          showStep('step-welcome');
+          return;
+        }
+
+        var recipes = [];
+        document.querySelectorAll('.recipe-row').forEach(function (row) {
+          var name = row.querySelector('.rec-name').value.trim();
+          var ing = row.querySelector('.rec-ingredients').value.trim();
+          var mem = row.querySelector('.rec-memory').value.trim();
+          if (name) {
+            recipes.push({ id: 'r_' + Date.now(), recipeName: name, sensorySmellOrTaste: ing, memorableOccasion: mem });
+          }
+        });
+
+        var landmarks = [];
+        document.querySelectorAll('.landmark-row').forEach(function (row) {
+          var name = row.querySelector('.lm-name').value.trim();
+          var loc = row.querySelector('.lm-location').value.trim();
+          var mem = row.querySelector('.lm-memory').value.trim();
+          if (name) {
+            landmarks.push({ id: 'l_' + Date.now(), landmarkName: name, locationDescription: loc, cherishedMemory: mem });
+          }
+        });
+
+        var trades = document.getElementById('inputCareerTrades').value.split(',').map(function (s) { return s.trim(); }).filter(Boolean);
+        var tools = document.getElementById('inputCareerTools').value.split(',').map(function (s) { return s.trim(); }).filter(Boolean);
+        var hymns = document.getElementById('inputHymns').value.split(',').map(function (s) { return s.trim(); }).filter(Boolean);
+        var sayings = document.getElementById('inputSayings').value.split('\n').map(function (s) { return s.trim(); }).filter(Boolean);
+
+        var contribution = {
+          id: 'contrib_' + Date.now(),
+          token: activePayload ? activePayload.token : 'portal_direct',
+          residentId: currentResident.id,
+          residentName: currentResident.preferredName,
+          contributorName: contributorName,
+          contributorRelationship: document.getElementById('inputRelationship').value,
+          contributorEmail: document.getElementById('inputEmail').value.trim(),
+          contributorPhone: document.getElementById('inputPhone').value.trim(),
+          submittedAt: new Date().toISOString(),
+          approvedByDirector: true,
+          photos: uploadedPhotos,
+          recipes: recipes,
+          landmarks: landmarks,
+          career: { pastTrades: trades, favoriteTools: tools },
+          music: { favoriteHymns: hymns },
+          specialSayings: sayings
+        };
+
+        if (bridge) {
+          bridge.saveContribution(contribution);
+          // Automatically merge into active resident profile
+          bridge.mergeContributionIntoResident(currentResident, contribution);
+        }
+
+        document.getElementById('successName').textContent = contributorName;
+        document.getElementById('successResident').textContent = currentResident.preferredName;
+        document.getElementById('receiptResident').textContent = currentResident.preferredName;
+        document.getElementById('receiptFacility').textContent = activePayload ? activePayload.facilityName : 'St. Jude Memory Care';
+        document.getElementById('receiptTime').textContent = new Date().toLocaleString();
+
+        showStep('step-success');
+      });
+
+      document.getElementById('startOverBtn').addEventListener('click', function () {
+        showStep('step-welcome');
+      });
+
+      // Role switcher (Family vs Director)
+      toggleRoleBtn.addEventListener('click', function () {
+        if (familyFormSection.classList.contains('hidden')) {
+          familyFormSection.classList.remove('hidden');
+          directorConsoleSection.classList.add('hidden');
+          toggleRoleBtn.textContent = 'Switch to Director Console ⚙️';
+        } else {
+          familyFormSection.classList.add('hidden');
+          directorConsoleSection.classList.remove('hidden');
+          toggleRoleBtn.textContent = 'Switch to Family View 👥';
+          loadDirectorConsole();
+        }
+      });
+
+      backToFamilyViewBtn.addEventListener('click', function () {
+        familyFormSection.classList.remove('hidden');
+        directorConsoleSection.classList.add('hidden');
+        toggleRoleBtn.textContent = 'Switch to Director Console ⚙️';
+      });
+
+      // Director Console Logic
+      var dirResidentSelect = document.getElementById('dirResidentSelect');
+      var dirExpirationSelect = document.getElementById('dirExpirationSelect');
+      var dirWelcomeNote = document.getElementById('dirWelcomeNote');
+      var dirGenerateBtn = document.getElementById('dirGenerateBtn');
+      var dirResultCard = document.getElementById('dirResultCard');
+      var dirResultTokenId = document.getElementById('dirResultTokenId');
+      var dirResultUrl = document.getElementById('dirResultUrl');
+      var copyUrlBtn = document.getElementById('copyUrlBtn');
+      var copySmsBtn = document.getElementById('copySmsBtn');
+      var copyEmailBtn = document.getElementById('copyEmailBtn');
+      var smsPreviewText = document.getElementById('smsPreviewText');
+      var emailPreviewText = document.getElementById('emailPreviewText');
+
+      var dirTabGen = document.getElementById('dirTabGen');
+      var dirTabInbox = document.getElementById('dirTabInbox');
+      var dirTabTokens = document.getElementById('dirTabTokens');
+      var panelDirectorGen = document.getElementById('panelDirectorGen');
+      var panelDirectorInbox = document.getElementById('panelDirectorInbox');
+      var panelDirectorTokens = document.getElementById('panelDirectorTokens');
+
+      function showDirectorTab(tab) {
+        dirTabGen.className = 'pb-3 border-b-2 border-transparent text-neutral-500 hover:text-neutral-900';
+        dirTabInbox.className = 'pb-3 border-b-2 border-transparent text-neutral-500 hover:text-neutral-900';
+        dirTabTokens.className = 'pb-3 border-b-2 border-transparent text-neutral-500 hover:text-neutral-900';
+
+        panelDirectorGen.classList.add('hidden');
+        panelDirectorInbox.classList.add('hidden');
+        panelDirectorTokens.classList.add('hidden');
+
+        if (tab === 'gen') {
+          dirTabGen.className = 'pb-3 border-b-2 border-emerald-700 text-emerald-900';
+          panelDirectorGen.classList.remove('hidden');
+        } else if (tab === 'inbox') {
+          dirTabInbox.className = 'pb-3 border-b-2 border-emerald-700 text-emerald-900';
+          panelDirectorInbox.classList.remove('hidden');
+          renderInbox();
+        } else if (tab === 'tokens') {
+          dirTabTokens.className = 'pb-3 border-b-2 border-emerald-700 text-emerald-900';
+          panelDirectorTokens.classList.remove('hidden');
+          renderTokens();
+        }
+      }
+
+      dirTabGen.addEventListener('click', function () { showDirectorTab('gen'); });
+      dirTabInbox.addEventListener('click', function () { showDirectorTab('inbox'); });
+      dirTabTokens.addEventListener('click', function () { showDirectorTab('tokens'); });
+
+      function loadDirectorConsole() {
+        dirResidentSelect.innerHTML = '';
+        roster.forEach(function (r) {
+          var opt = document.createElement('option');
+          opt.value = r.id;
+          opt.textContent = r.preferredName + ' (Rm ' + (r.unitNumber || 'N/A') + ' - ' + (r.pastVocation || 'Resident') + ')';
+          dirResidentSelect.appendChild(opt);
+        });
+
+        updateDirectorCounters();
+      }
+
+      function updateDirectorCounters() {
+        if (!bridge) return;
+        var contribs = bridge.getAllContributions();
+        var tokens = bridge.getAllTokens();
+        document.getElementById('inboxCount').textContent = contribs.length;
+        document.getElementById('tokensCount').textContent = tokens.length;
+      }
+
+      dirGenerateBtn.addEventListener('click', function () {
+        var selectedId = dirResidentSelect.value;
+        var res = roster.filter(function (r) { return r.id === selectedId; })[0] || roster[0];
+        var expDays = dirExpirationSelect.value === 'perpetual' ? null : parseInt(dirExpirationSelect.value, 10);
+        var note = dirWelcomeNote.value.trim();
+
+        if (bridge) {
+          var resLink = bridge.createMagicLink({
+            residentId: res.id,
+            residentName: res.preferredName,
+            facilityName: 'St. Jude Memory Care',
+            unitOrWing: (res.wing || 'Memory Care') + ', Rm ' + (res.unitNumber || ''),
+            expirationDays: expDays,
+            customWelcomeNote: note
+          });
+
+          dirResultTokenId.textContent = 'Token: ' + resLink.token;
+          dirResultUrl.value = resLink.url;
+
+          var sms = bridge.generateSmsTemplate(res.preferredName, 'St. Jude Memory Care', resLink.url);
+          smsPreviewText.textContent = '"' + sms + '"';
+
+          var email = bridge.generateEmailTemplate(res.preferredName, 'St. Jude Memory Care', resLink.url);
+          emailPreviewText.textContent = 'Subject: ' + email.subject + '\n\n' + email.body;
+
+          dirResultCard.classList.remove('hidden');
+          updateDirectorCounters();
+        }
+      });
+
+      copyUrlBtn.addEventListener('click', function () {
+        if (navigator.clipboard) {
+          navigator.clipboard.writeText(dirResultUrl.value);
+          copyUrlBtn.textContent = 'Copied!';
+          setTimeout(function () { copyUrlBtn.textContent = 'Copy Link'; }, 2000);
+        }
+      });
+
+      copySmsBtn.addEventListener('click', function () {
+        if (navigator.clipboard) {
+          navigator.clipboard.writeText(smsPreviewText.textContent.replace(/^"|"$/g, ''));
+          copySmsBtn.textContent = 'Copied!';
+          setTimeout(function () { copySmsBtn.textContent = 'Copy Text'; }, 2000);
+        }
+      });
+
+      copyEmailBtn.addEventListener('click', function () {
+        if (navigator.clipboard) {
+          navigator.clipboard.writeText(emailPreviewText.textContent);
+          copyEmailBtn.textContent = 'Copied!';
+          setTimeout(function () { copyEmailBtn.textContent = 'Copy Draft'; }, 2000);
+        }
+      });
+
+      function renderInbox() {
+        var listEl = document.getElementById('inboxList');
+        listEl.innerHTML = '';
+        if (!bridge) return;
+        var contribs = bridge.getAllContributions();
+
+        if (contribs.length === 0) {
+          listEl.innerHTML = '<p class="text-xs text-neutral-500 py-6 text-center">No family submissions recorded yet.</p>';
+          return;
+        }
+
+        contribs.forEach(function (c) {
+          var item = document.createElement('div');
+          item.className = 'p-4 border border-neutral-200 rounded-xl bg-white shadow-xs space-y-2';
+          item.innerHTML = '<div class="flex items-center justify-between">' +
+            '  <div><h4 class="font-bold text-sm text-neutral-900">' + c.contributorName + ' (' + c.contributorRelationship + ')</h4>' +
+            '  <p class="text-xs text-neutral-500">for <strong>' + c.residentName + '</strong> • ' + new Date(c.submittedAt).toLocaleDateString() + '</p></div>' +
+            '  <span class="text-xs font-bold text-emerald-800 bg-emerald-100 px-2.5 py-0.5 rounded-full">✓ Active in Profile</span>' +
+            '</div>' +
+            '<div class="grid grid-cols-3 gap-2 text-[11px] bg-neutral-50 p-2 rounded text-neutral-700">' +
+            '  <div><strong>Photos:</strong> ' + (c.photos ? c.photos.length : 0) + '</div>' +
+            '  <div><strong>Recipes:</strong> ' + (c.recipes ? c.recipes.length : 0) + '</div>' +
+            '  <div><strong>Landmarks:</strong> ' + (c.landmarks ? c.landmarks.length : 0) + '</div>' +
+            '</div>';
+          listEl.appendChild(item);
+        });
+      }
+
+      function renderTokens() {
+        var listEl = document.getElementById('tokensList');
+        listEl.innerHTML = '';
+        if (!bridge) return;
+        var tokens = bridge.getAllTokens();
+
+        if (tokens.length === 0) {
+          listEl.innerHTML = '<p class="text-xs text-neutral-500 py-6 text-center">No active magic links generated yet.</p>';
+          return;
+        }
+
+        tokens.forEach(function (t) {
+          var item = document.createElement('div');
+          item.className = 'flex items-center justify-between p-3 border border-neutral-200 rounded-lg text-xs bg-white';
+          item.innerHTML = '<div>' +
+            '  <p class="font-bold text-neutral-900">' + t.residentName + '</p>' +
+            '  <p class="text-neutral-500 font-mono text-[11px]">' + t.token + '</p>' +
+            '</div>' +
+            '<div class="flex items-center gap-2">' +
+            '  <span class="px-2 py-0.5 rounded font-semibold ' + (t.status === 'submitted' ? 'bg-emerald-100 text-emerald-800' : 'bg-neutral-100 text-neutral-700') + '">' + t.status.toUpperCase() + ' (' + (t.submissionCount || 0) + ')</span>' +
+            '  <button type="button" class="copy-token-link text-emerald-700 font-bold" data-url="' + t.url + '">Copy</button>' +
+            '</div>';
+
+          item.querySelector('.copy-token-link').addEventListener('click', function () {
+            if (navigator.clipboard) {
+              navigator.clipboard.writeText(t.url);
+              alert('Copied magic link to clipboard!');
+            }
+          });
+
+          listEl.appendChild(item);
+        });
+      }
+
+      document.getElementById('exportTokensBtn').addEventListener('click', function () {
+        if (!bridge) return;
+        var tokens = bridge.getAllTokens();
+        var blob = new Blob([JSON.stringify(tokens, null, 2)], { type: 'application/json' });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = 'cognicopia_family_tokens.json';
+        a.click();
+      });
+
+    })();
+  </script>
+</body>
+</html>
