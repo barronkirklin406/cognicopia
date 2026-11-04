@@ -12,7 +12,7 @@
 | Tablet Activities (`check-tablet-ui`) | Runs longer than the 280 s used here; 314 of its checks passed before the time limit. The route check (`check-tablet-route`) passes. |
 | landing example | `index.html` has no `lp-example` markers to fill. |
 | tap targets (`audit-ux`), print audit | Top-bar hub controls on the front pages measure under 52 px; `batch-scheduler.html` and `family-bridge.html` print pictures with gray and still load an outside script (`cdn.tailwindcss.com`); a few generated reference pages break a heading across pages or end 0.5 in from the right edge. |
-| facility-ops, resident-engine, quality-hub, clinical-alignment, soothing, voice-kit | Depend on the sources above, or fail on `main` the same way. |
+| facility-ops, resident-engine, quality-hub, clinical-alignment, soothing | Depend on the sources above, or fail on `main` the same way. |
 
 ## Fixed in this branch
 
