@@ -28,6 +28,8 @@
     "coloring:review": "node scripts/review_coloring_art.mjs",
     "audit:ux": "node scripts/audit-ux.mjs",
     "audit:print": "node scripts/audit-print.mjs",
+    "audit:refs": "node scripts/audit-references.mjs",
+    "audit:refs:check": "node scripts/audit-references.mjs --selftest",
     "outreach": "node scripts/outreach.mjs",
     "pages": "node scripts/generate_infinite_pages.mjs",
     "subjects": "node scripts/process_coloring_assets.mjs",
