@@ -105,7 +105,7 @@ export const HUBS = [
       { key: "tracking",     label: "Cognitive Tracking",       href: B + "#/tracking",     route: "tracking",     icon: "clipboard" },
       { key: "planner",      label: "12-Month Seasonal Planner", href: B + "#/planner",     route: "planner",      icon: "calendar" },
       { key: "journal",      label: "Life Narrative Journal",   href: B + "#/journal",      route: "journal",      icon: "journal" },
-      { key: "reminiscence", label: "Reminiscence cards",       href: B + "#/reminiscence", route: "reminiscence", icon: "cards" } ] },
+      { key: "reminiscence", label: "Conversational Decks",     href: B + "#/reminiscence", route: "reminiscence", icon: "cards" } ] },
   { id: "packets",   label: "Activity Packets", icon: "builder",  group: "resident", items: [
       { key: "builder",      label: "Packet Builder",           href: B,                    icon: "builder" } ] },
   { id: "facility",  label: "Facility",         icon: "building", group: "staff", items: [
@@ -179,7 +179,7 @@ const COLORING_PICTURES = (() => { try { return JSON.parse(fs.readFileSync(path.
 export const GENERATORS = [
   { key: "coloring", label: "Cognicopia Coloring",      href: "builder.html#/coloring", icon: "palette",
     desc: "Dignified, adult line art at three support tiers, printed with a binding gutter and optional color guides.", meta: [COLORING_PICTURES ? COLORING_PICTURES + " pictures" : "Picture library", "3 tiers", "Vector PDF"] },
-  { key: "reminiscence", label: "Reminiscence Cards", href: "builder.html#/reminiscence", icon: "journal",
+  { key: "reminiscence", label: "Era-Locked Conversational Decks", href: "builder.html#/reminiscence", icon: "journal",
     desc: "Cards about a resident's own work, hometown region and best-remembered years, each with conversation starters, a song and something to hold.", meta: ["Era × region × vocation", "Caregiver cues"] },
   { key: "heirloom", label: "Quarterly Legacy & Memory Books", href: "builder.html#/heirloom", icon: "books",
     desc: "A resident's words, stories and finished coloring pages, kept as they happen: a monthly digest for the family and a print-on-demand hardcover.", meta: ["Monthly digest", "Hardcover PDF"] },

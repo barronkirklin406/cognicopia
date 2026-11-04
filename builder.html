@@ -2798,7 +2798,7 @@ textarea:focus{border-color:var(--accent)}
         <li><a class="sb-link" href="#/tracking" data-route="tracking"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M9 12h6M9 16h6"/></svg><span>Cognitive Tracking</span></a></li>
         <li><a class="sb-link" href="#/planner" data-route="planner"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span>12-Month Seasonal Planner</span></a></li>
         <li><a class="sb-link" href="#/journal" data-route="journal"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M2 4h7a3 3 0 0 1 3 3v14a2 2 0 0 0-2-2H2z"/><path d="M22 4h-7a3 3 0 0 0-3 3v14a2 2 0 0 1 2-2h8z"/></svg><span>Life Narrative Journal</span></a></li>
-        <li><a class="sb-link" href="#/reminiscence" data-route="reminiscence"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M7 21h10M9 9h6M8 13h8"/></svg><span>Reminiscence cards</span></a></li>
+        <li><a class="sb-link" href="#/reminiscence" data-route="reminiscence"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M7 21h10M9 9h6M8 13h8"/></svg><span>Conversational Decks</span></a></li>
       </ul>
     </details>
     <details class="sb-hub" data-hub="packets" open>
@@ -5483,7 +5483,7 @@ const BookUI = (function(){
      high-contrast need) even when Settings leave High Contrast Mode off. */
   function stage(pages, fileTitle, opts){
     const rootEl = $("#printRoot");
-    rootEl.className = (isPureBlackAndWhitePDF || (opts && opts.pureBW) ? "pure-bw " : "") + "lp-print";
+    rootEl.className = ((opts && opts.color) ? "" : (isPureBlackAndWhitePDF || (opts && opts.pureBW) ? "pure-bw " : "")) + "lp-print";   // a sheet may ask for color (the deck's category tags); black and white stays the default
     rootEl.innerHTML = pages.map(p => p.html).join("");
     rootEl.style.cssText = "display:block;position:absolute;left:-10000px;top:0";   // measured off screen
     const over = window.CognicopiaKit.fitSheets(rootEl);
@@ -8322,11 +8322,12 @@ const CogniLibrary = (function(){
 const ReminiscenceUI = (function(){
   "use strict";
   const R = window.CogniReminiscence, C = window.CognicopiaColoring, V = window.CogniVectorEngine;
-  let S = null, root = null, focus = 0;
+  let S = null, root = null, focus = 0, DK = null;
+  import("./js/era-decks.js").then(m => { DK = m; if (root && document.body.contains(root)) refresh(); }).catch(() => { /* the cards still work without the category tools */ });
   const state = () => {
     if (!S){
       const saved = (settings.rmCards && typeof settings.rmCards === "object") ? settings.rmCards : {};
-      S = { resident:"", theme:R.THEMES.some(t => t.code === saved.theme) ? saved.theme : "mixed", count:[4, 6, 8, 10, 12].indexOf(saved.count) >= 0 ? saved.count : 6, seed:1,
+      S = { resident:"", theme:R.THEMES.some(t => t.code === saved.theme) ? saved.theme : "mixed", count:[4, 6, 8, 10, 12].indexOf(saved.count) >= 0 ? saved.count : 6, seed:1, cats:[], sort:false, color:false,
             manual:{ by:1945, region:"midwest", setting:"small-town", vocation:"general", tier:2 } };
     }
     return S;
@@ -8341,7 +8342,13 @@ const ReminiscenceUI = (function(){
     return { id:"manual-" + m.by + m.region + m.setting + m.vocation, tier1_core:{ preferredName:"", cognitiveTier:m.tier, primaryVocation:m.vocation === "general" ? null : { code:m.vocation } },
       tier2_enrichment:{ birthYear:m.by, region:{ code:m.region }, hometown:{ environment:{ code:m.setting } } } };
   }
-  function build(){ const s = state(); return R.deck(profile(), { count:s.count, theme:s.theme, seed:String(s.seed) }); }
+  /* the deck for this resident; with a category chosen, a longer run is made first so the chosen categories can fill the count */
+  function build(){
+    const s = state(), narrowed = DK && s.cats.length && s.cats.length < 4, d = R.deck(profile(), { count:narrowed ? 24 : s.count, theme:s.theme, seed:String(s.seed) });
+    if (!DK) return d;
+    let cards = DK.filterCards(d.cards, s.cats, s.sort); if (narrowed) cards = cards.slice(0, s.count);
+    return Object.assign({}, d, { cards });
+  }
   /* The picture: the first of the card's designs the resident's avoid list allows. */
   function artFor(card, tier){
     const avoid = new Set(avoidForPictures(profile()).codes);
@@ -8354,7 +8361,7 @@ const ReminiscenceUI = (function(){
   function cardHtml(card, i, n, who, name){
     const t = who.tier, song = card.song;
     return `<div class="sheet rm-sheet rm-t${t} lvl-${["early", "early", "moderate", "advanced"][t] || "moderate"}">
-      <div class="rm-top"><span>Reminiscence card ${i + 1} of ${n}</span><b>${name ? "For " + esc(name) : ""}</b></div>
+      <div class="rm-top"><span>${DK ? DK.tagHtml(DK.categoryOf(card)) : ""} Conversation card ${i + 1} of ${n}</span><b>${name ? "For " + esc(name) : ""}</b></div>
       <h2 class="rm-title">${esc(card.title)}</h2>
       <div class="rm-art">${artFor(card, t)}</div>
       <p class="rm-invite">${esc(card.invite)}</p>
@@ -8365,7 +8372,7 @@ const ReminiscenceUI = (function(){
         <p><b>Touch:</b> ${esc(card.touch.prompt)} <span class="rm-safe">${esc(card.touch.safety)}</span></p>
         ${card.refs.length ? `<p class="rm-refs"><b>From their time and place:</b> ${card.refs.map(esc).join(" · ")}</p>` : ""}
       </section>
-      <div class="rm-foot"><span>Cognicopia · Reminiscence Cards</span><b class="pgno">Page 1 of 1</b><span>${esc([who.placeLabel, who.vocation.code !== "general" ? who.vocation.label : ""].filter(Boolean).join(" · "))}</span></div>
+      <div class="rm-foot"><span>Cognicopia · Era-Locked Conversational Decks</span><b class="pgno">Page 1 of 1</b><span>${esc([who.placeLabel, who.vocation.code !== "general" ? who.vocation.label : ""].filter(Boolean).join(" · "))}</span></div>
     </div>`;
   }
   function pages(){
@@ -8378,8 +8385,8 @@ const ReminiscenceUI = (function(){
     ActiveResident.follow(s, "resident"); if (!s.resident && ActiveResident.get() && list.some(p => p.id === ActiveResident.get())) s.resident = ActiveResident.get();
     if (s.resident && !list.some(p => p.id === s.resident)) s.resident = "";
     view.innerHTML = `<p class="eyebrow">Interactive generator</p>
-      <h1 class="view-title" tabindex="-1">Reminiscence Cards</h1>
-      <p class="lede">Cards about a resident&rsquo;s own work, the place they grew up and the years they recall best. Each card has a picture and one invitation in large type for the resident, and a panel for the caregiver: three conversation starters, a song from their years and something to hold.</p>
+      <h1 class="view-title" tabindex="-1">Era-Locked Conversational Decks</h1>
+      <p class="lede">Conversation cards that are locked to a resident&rsquo;s own era: every prompt is anchored to the years they were born into and the life they lived (their hometown, their work, their music and their family), so each card starts from something that is theirs. Each card has a picture and one invitation in large type for the resident, and a caregiver side with three conversation starters, a song from their years and something to hold. Sort a deck by category, then print it as cut-out cards on cardstock.</p>
       <div class="rm-grid" id="rmRoot">
         <div>
           <div class="config" style="margin-top:0">
@@ -8396,14 +8403,18 @@ const ReminiscenceUI = (function(){
               <div class="field"><label for="rmTheme">Cards about</label><select id="rmTheme">${R.THEMES.map(t => `<option value="${t.code}" ${t.code === s.theme ? "selected" : ""}>${esc(t.label)}</option>`).join("")}</select></div>
               <div class="field"><label for="rmCount">How many cards</label><select id="rmCount">${[4, 6, 8, 10, 12].map(n => `<option ${n === s.count ? "selected" : ""}>${n}</option>`).join("")}</select></div>
             </div>
+            <fieldset class="dk-filter" id="dkFilter"><legend>Show these categories</legend><div class="dk-chips">${[["hometown", "Hometown", "H"], ["career", "Career", "C"], ["music", "Music", "M"], ["family", "Family", "F"]].map(([c, l, g]) => `<label class="dk-chip dk-${c}"><input type="checkbox" data-cat="${c}" ${!s.cats.length || s.cats.indexOf(c) >= 0 ? "checked" : ""}><span><i aria-hidden="true">${g}</i>${l}</span></label>`).join("")}</div>
+              <label class="dk-opt"><input type="checkbox" id="dkSort" ${s.sort ? "checked" : ""}> Group the deck by category</label>
+              <label class="dk-opt"><input type="checkbox" id="dkColor" ${s.color ? "checked" : ""}> Print category colors (needs a color printer; black and white keeps the letters and borders)</label></fieldset>
             <div class="rm-who" id="rmWhoLine" role="status" aria-live="polite"></div>
             <ul class="rm-list" id="rmList" aria-label="The cards"></ul>
             <div class="actions">
               <button class="btn btn-primary" type="button" id="rmAdd">Add to packet</button>
-              <button class="btn" type="button" id="rmPrint">Print now</button>
+              <button class="btn btn-primary" type="button" id="rmDeck">Print cut-out cards (cardstock)</button>
+              <button class="btn" type="button" id="rmPrint">Print one per page</button>
               <button class="btn" type="button" id="rmNew">A fresh set</button>
             </div>
-            <p class="hint">Print at 100% scale with Default margins: the binding gutter is built in. A resident&rsquo;s topics to avoid are never used, and service memories only when their profile says they are welcome.</p>
+            <p class="hint">Cut-out cards print four to a Letter page (3.75 by 4.85 in) with dashed cut lines, then a page of caregiver notes behind them: print two-sided and flip on the long edge. Each front has a small row to tick after use: + positive, = neutral, ! story elicited. For the one-per-page sheets, print at 100% scale with Default margins: the binding gutter is built in. A resident&rsquo;s topics to avoid are never used, and service memories only when their profile says they are welcome.</p>
           </div>
         </div>
         <aside aria-label="Card preview">
@@ -8422,7 +8433,7 @@ const ReminiscenceUI = (function(){
     focus = Math.max(0, Math.min(focus, list.length - 1));
     document.getElementById("rmWhoLine").innerHTML = `<b>${esc(who.placeLabel || "Where they grew up is not set")}${who.vocation.code !== "general" ? " · " + esc(who.vocation.label) : ""}</b>
       <p>${who.birthYearKnown ? `Born ${who.birthYear}: the years they recall best are about ${who.bump[0]} to ${who.bump[1]}.` : "No birth year on file: songs and references assume about 1945."} Tier ${who.tier}. ${d.cards.length} card${d.cards.length === 1 ? "" : "s"} fit them${d.cards.length < s.count ? ` (fewer than ${s.count}: only cards that suit them are made)` : ""}.</p>`;
-    document.getElementById("rmList").innerHTML = d.cards.map((c, i) => `<li><button type="button" data-card="${i}" aria-current="${i === focus}"><b>${esc(c.title)}</b><small>${esc(c.kind === "pastime" ? "pastimes" : c.kind)}</small></button></li>`).join("");
+    document.getElementById("rmList").innerHTML = d.cards.map((c, i) => `<li><button type="button" data-card="${i}" aria-current="${i === focus}"><b>${esc(c.title)}</b><small>${DK ? esc(DK.categoryOf(c).label) : esc(c.kind === "pastime" ? "pastimes" : c.kind)}</small></button></li>`).join("");
     const pv = document.getElementById("rmPv");
     pv.innerHTML = list[focus] ? list[focus].html : "";
     const sh = pv.querySelector(".sheet"); if (sh) sh.style.transform = `scale(${(pv.clientWidth || 400) / 816})`;
@@ -8432,6 +8443,9 @@ const ReminiscenceUI = (function(){
   }
   function onChange(e){
     const s = state(), t = e.target, m = s.manual;
+    if (t.dataset && t.dataset.cat && t.closest("#dkFilter")){ const on = [...document.querySelectorAll('#dkFilter [data-cat]')].filter(x => x.checked).map(x => x.dataset.cat); s.cats = on.length === 4 || !on.length ? [] : on; if (!on.length) document.querySelectorAll('#dkFilter [data-cat]').forEach(x => { x.checked = true; }); focus = 0; refresh(); return; }
+    if (t.id === "dkSort"){ s.sort = t.checked; focus = 0; refresh(); return; }
+    if (t.id === "dkColor"){ s.color = t.checked; return; }
     if (t.id === "rmWho"){ s.resident = t.value; if (t.value) ActiveResident.set(t.value); document.getElementById("rmManual").hidden = !!t.value; document.getElementById("rmKeep").hidden = !t.value; }
     else if (t.id === "rmBy") m.by = clampInt(t.value, 1915, 1975, 1945);
     else if (t.id === "rmRegion") m.region = t.value;
@@ -8449,6 +8463,7 @@ const ReminiscenceUI = (function(){
     if (b.id === "rmPrev"){ focus--; refresh(); } else if (b.id === "rmNext"){ focus++; refresh(); }
     else if (b.id === "rmNew"){ state().seed++; focus = 0; refresh(); toast("A fresh set of starters, songs and references."); }
     else if (b.id === "rmPrint") printNow();
+    else if (b.id === "rmDeck") printDeck();
     else if (b.id === "rmAdd") addToPacket();
     else if (b.id === "rmKeep"){                  // straight to the memory keeper, with this card filled in
       const { d } = pages(), c = d.cards[focus];
@@ -8456,8 +8471,15 @@ const ReminiscenceUI = (function(){
       location.hash = "#/heirloom";
     }
   }
-  function fileTitle(){ const s = state(), p = s.resident ? people().filter(x => x.id === s.resident)[0] : null; return ["Reminiscence Cards", p ? cgFileName(p) : "", todayISO()].filter(Boolean).join(" - "); }
+  function fileTitle(){ const s = state(), p = s.resident ? people().filter(x => x.id === s.resident)[0] : null; return ["Era-Locked Conversational Deck", p ? cgFileName(p) : "", todayISO()].filter(Boolean).join(" - "); }
   function printNow(){ const { list } = pages(); BookUI.print(list, fileTitle(), refresh); }
+  /* the cut-out deck: four to a page on cardstock, dashed cut lines, caregiver backs, a response row on every front (js/era-decks.js) */
+  function printDeck(){
+    if (!DK){ toast("The deck tools are still loading. Try again in a moment."); return; }
+    const d = build(), s = state(), p = profile(), name = String((p.tier1_core || {}).preferredName || "").trim(), t = d.person.tier;
+    const list = DK.deckPages(d.cards, { tier:t, art:(c, tr) => { try { return artFor(c, tr); } catch (e){ return ""; } }, who:name ? "For " + name + " · " + d.person.placeLabel : d.person.placeLabel, color:s.color });
+    BookUI.print(list.map(x => ({ html:x.html })), fileTitle() + " - cut-out cards", refresh, { color:s.color });
+  }
   function addToPacket(){
     const s = state(), { d } = pages();
     const cfg = { residentName:String((profile().tier1_core || {}).preferredName || "").slice(0, 40), date:todayISO(), difficulty:["", "early", "moderate", "advanced"][d.person.tier], era:settings.era,
@@ -15010,7 +15032,7 @@ function renderHome(){
       ${tool("#/tracking", ICONS.planner, "Longitudinal Cognitive Tracking", "Log engagement, frustration triggers and eye fatigue each month. After three months the page looks for a sustained pattern and suggests a gentler or fuller stage for staff to discuss.", ["Early, middle, late", "3, 6 and 12 month trends"])}
       ${tool("#/planner", ICONS.planner, "12-Month Seasonal Planner", "A year for the whole community: eras, seasonal milestones and thematic arcs by month, with one click to link the coming months to roster bundles.", ["12 months", "Bulk bundle pre-mapping"])}
       ${tool("#/journal", ICONS.journal, "Resident Life Narrative Journal", "Record breakthroughs and calming moments. New keywords and stories are added to the resident’s profile notes automatically.", ["Breakthroughs and calm", "Feeds the profile"])}
-      ${tool("#/reminiscence", ICONS.journal, "Reminiscence Cards", "Cards about a resident’s own work, hometown region and best-remembered years, each with three conversation starters, a song from their era and something to hold.", ["Era × region × vocation", "Caregiver cues"])}
+      ${tool("#/reminiscence", ICONS.journal, "Era-Locked Conversational Decks", "Prompt cards anchored to a resident’s birth era and life history: hometown, career, music and family, each with three conversation starters, a song from their era and something to hold.", ["Era × region × vocation", "Caregiver cues"])}
       ${tool("#/heirloom", ICONS.journal, "Quarterly Legacy & Memory Books", "Keep a resident’s words, stories and finished coloring pages as they happen; send the family a monthly digest, and gather a year into a print-on-demand hardcover.", ["Monthly digest", "Hardcover PDF"])}
       ${tool("#/clinical", ICONS.journal, "Session Notes (SLP)", "GDS and FAST staging mapped to support tiers, a session log, and SOAP notes built only from what you record, for the Full Administrative Binder.", ["Staff-recorded SOAP", "Code checks"])}
       ${tool("#/facility", ICONS.facility, "Facility Portal", "For activity directors: wings and resident groups by acuity tier, recommendations for each tier across the six pillars, a balanced month of sessions in one click, and a week of group packets printed at once.", ["4 acuity tiers", "Month scheduler", "Week packets"])}

@@ -976,3 +976,49 @@ html.cg-night-shift .cgre-btn:hover { background: #33271a; }
 .st-list li { padding: 12px 16px; border: 1px solid currentColor; border-radius: 10px; }
 .st-list p { margin: 6px 0 0; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* ===== Era-Locked Conversational Decks (js/era-decks.js) =====
+   Category tags and frames (Hometown, Career, Music, Family), the screen filter, and the cut-out cardstock layout: four cards to a
+   Letter page (3.75 x 4.85 in) with single dashed cut lines, a caregiver back page, and a small response row on every front. */
+.dk-filter { border: 0; padding: 0; margin: 0 0 14px; min-width: 0; }
+.dk-filter legend { padding: 0; margin: 0 0 6px; font-weight: 700; }
+.dk-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.dk-chip, .dk-opt { display: flex; align-items: center; gap: 10px; min-height: var(--cg-tap, 52px); padding: 6px 14px; border: 2px solid currentColor; border-radius: 10px; cursor: pointer; font-weight: 600; }
+.dk-opt { margin-top: 8px; border-style: dashed; }
+.dk-chip input, .dk-opt input { flex: none; width: 24px; height: 24px; margin: 0; }
+.dk-chip span { display: inline-flex; align-items: center; gap: 8px; }
+.dk-chip:has(input:checked) { outline: 3px solid currentColor; outline-offset: 1px; }
+.dk-tag { display: inline-flex; align-items: center; gap: 5pt; padding: 1pt 8pt 1pt 2pt; border: 2.25pt solid #000; border-radius: 999px; font-size: 11pt; font-weight: 700; color: #000; background: #fff; line-height: 1.2; }
+.dk-tag i, .dk-chip i { display: inline-flex; align-items: center; justify-content: center; width: 1.5em; height: 1.5em; border: 2pt solid currentColor; border-radius: 50%; font-style: normal; font-size: .9em; font-weight: 700; }
+.dk-chip.dk-hometown i, .dk-tag.dk-hometown i { border-radius: 50%; }
+.dk-chip.dk-career i, .dk-tag.dk-career i { border-radius: 2pt; }
+.dk-chip.dk-music i, .dk-tag.dk-music i { border-radius: 50% 50% 50% 0; }
+.dk-chip.dk-family i, .dk-tag.dk-family i { border-radius: 30%; }
+
+.sheet.dk-sheet { box-sizing: border-box; padding: .5in !important; display: flex; flex-direction: column; align-items: center; background: #fff; color: #000; font-family: var(--cg-font-ui, "Atkinson Hyperlegible", Arial, sans-serif); break-after: page; page-break-after: always; }
+.dk-grid { box-sizing: content-box; display: grid; grid-template-columns: repeat(2, 3.75in); grid-auto-rows: 4.85in; border-top: 3pt dashed #000; border-left: 3pt dashed #000; margin: 0; }
+.dk-card { box-sizing: border-box; width: 3.75in; height: 4.85in; padding: .1in; border-right: 3pt dashed #000; border-bottom: 3pt dashed #000; overflow: hidden; break-inside: avoid; page-break-inside: avoid; }
+.dk-frame { box-sizing: border-box; height: 100%; display: flex; flex-direction: column; gap: .05in; padding: .08in .1in; border: 3pt solid #000; border-radius: 6pt; }
+.dk-hometown .dk-frame { border-style: solid; }
+.dk-career .dk-frame { border-style: double; border-width: 6pt; }
+.dk-music .dk-frame { border-left-width: 9pt; border-right-width: 9pt; }
+.dk-family .dk-frame { border-radius: 20pt; }
+.dk-top { display: flex; justify-content: space-between; align-items: center; gap: 6pt; }
+.dk-no { font-size: 11pt; font-weight: 700; }
+.dk-title { margin: 0; font-size: 16pt; line-height: 1.1; text-align: center; color: #000; }
+.dk-title.dk-sm { font-size: 13pt; }
+.dk-art { flex: none; height: 1.35in; display: flex; justify-content: center; } .dk-art svg { height: 100%; width: auto; max-width: 100%; }
+.dk-invite { flex: 1 1 auto; min-height: 0; margin: 0; text-align: center; font-weight: 700; line-height: 1.2; overflow: hidden; color: #000; }
+.dk-t1 .dk-invite { font-size: 18pt; } .dk-t2 .dk-invite { font-size: 20pt; } .dk-t3 .dk-invite { font-size: 22pt; }
+.dk-t3 .dk-art { height: 1.1in; }
+.dk-resp { flex: none; display: flex; justify-content: space-between; align-items: center; gap: 4pt; padding-top: 3pt; border-top: 2.25pt solid #000; font-size: 11pt; color: #000; }
+.dk-r { white-space: nowrap; }
+.dk-box { display: inline-block; width: .15in; height: .15in; margin-right: 3pt; border: 2.25pt solid #000; vertical-align: -.02in; }
+.dk-back .dk-frame { font-size: 12pt; line-height: 1.3; }
+.dk-back p, .dk-back ol { margin: 0 0 .05in; } .dk-back ol { padding-left: .22in; } .dk-back li { margin: 0 0 .03in; }
+.dk-back .dk-foot { font-size: 11pt; margin-top: auto; border-top: 2.25pt solid #000; padding-top: 2pt; }
+.dk-blank { background: #fff; }
+.dk-note { margin: .06in 0 0; font-size: 10pt; text-align: center; }
+.dk-color .dk-hometown .dk-tag { background: #cfe8e6; } .dk-color .dk-career .dk-tag { background: #f6cdb4; } .dk-color .dk-music .dk-tag { background: #dfe0f7; } .dk-color .dk-family .dk-tag { background: #f3e6b3; }
+.dk-color .dk-card { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+@media print { .sheet.dk-sheet { margin: 0; box-shadow: none; } }
