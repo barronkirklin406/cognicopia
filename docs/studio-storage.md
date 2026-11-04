@@ -13,3 +13,7 @@ The three Studio tools keep their records in the Packet Builder's encrypted brow
 When a journal entry is saved the page announces it, and a background listener adds its keywords and story to the insights record. If the saved profile has a deep section, a short keyword list is also kept there under `lifeNarrative`; nothing else in the profile is touched.
 
 The tracking recommendation reads patterns in what staff recorded over the last 3, 6 and 12 months. It supports staff judgment and is not an assessment.
+
+## Where it is kept
+
+These records are kept in the sealed store with the resident profiles (the prefixes `cognicopia_studio_` and `cognicopia_slp_goals_` are on its sealed list), not in plain browser storage. An earlier version kept them in plain storage; opening the sealed store moves any such records across.

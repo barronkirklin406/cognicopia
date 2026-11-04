@@ -75,6 +75,7 @@ export const STORE_NAME = "license";
 export const RECORD_KEY = "active";
 export const BACKUP_KEY = "cognicopia_store_license";
 export const NOTICE_SEEN_KEY = "cognicopia_store_notice_seen";
+export const LOCK_KEY = "cognicopia_device_lock";
 
 const DAY = 86400000;
 const ENTITLEMENT_DAYS = 365;
@@ -154,7 +155,10 @@ export function createLicensePersistence(env) {
   const doc = "document" in e ? e.document : root.document || null;
   const now = e.now || (() => Date.now());
   const noticeDays = Number.isFinite(e.noticeDays) ? e.noticeDays : NOTICE_DAYS;
-  const fingerprintMode = e.fingerprint === "strict" ? "strict" : "rebind";
+  /* The device lock is a choice a facility makes (Security and Accessibility, Device lock), kept in localStorage under LOCK_KEY. A factory option
+     still wins, so a test can force either mode. It is read each time, so turning it on or off needs no reload. */
+  const lockPref = () => { try { const ls = e.localStorage !== undefined ? e.localStorage : root.localStorage; return !!ls && ls.getItem(LOCK_KEY) === "1"; } catch (error) { return false; } };
+  const fingerprintMode = () => (e.fingerprint === "strict" ? "strict" : e.fingerprint === "rebind" ? "rebind" : lockPref() ? "strict" : "rebind");
   const diagnostics = [];
   const boundary = createErrorBoundary({
     onError: (where, info) => {
@@ -321,7 +325,7 @@ export function createLicensePersistence(env) {
     if (activated > now() + FUTURE_SLACK_MS) out.warnings.push("clock_behind");   // flagged, never a lock-out: the clock or the record may be the one that is wrong
     if (expires <= now()) out.warnings.push("window_renewed");                    // the 365 days passed but the signed key is still good
     if (r.fp !== deviceTag()) {
-      if (fingerprintMode === "strict") { out.problems.push("device"); return out; }
+      if (fingerprintMode() === "strict") { out.problems.push("device"); return out; }
       out.warnings.push("device_changed");
     }
     out.record = r; out.info = info;
@@ -395,7 +399,8 @@ export function createLicensePersistence(env) {
     const problems = { indexedDB: primary.problems, localStorage: backup.problems };
     const warnings = primary.warnings.concat(backup.warnings);
     if (!current) {
-      const damaged = [primary, backup].some((c) => c.problems.length > 0 && c.problems[0] !== "missing");
+      /* a copy refused only because this is another computer is kept: the lock must not erase it, and "Use this key on this computer" needs it */
+      const damaged = [primary, backup].some((c) => c.problems.length > 0 && c.problems[0] !== "missing" && c.problems[0] !== "device");
       if (damaged || refused) await forget();       // do not re-read a copy that can never be used
       return { ok: true, restored: false, reason: refused || "nothing_to_restore", message, problems, warnings, layers: { indexedDB: false, localStorage: false } };
     }
@@ -411,6 +416,33 @@ export function createLicensePersistence(env) {
     }
     return { ok: true, restored, reason: restored ? "restored" : "already_active", message, problems, warnings, layers, license: typeof m.status === "function" ? m.status() : null };
   }, (info) => ({ ok: false, restored: false, reason: info.code, message: info.message }));
+
+  /* ---------- the optional device lock ----------
+     Off (the default): a changed device tag is noted and the record is rewritten with the new one, so a browser update never locks a care unit out.
+     On: a stored copy whose tag differs from this computer's is not restored, so a copied browser profile does not quietly unlock another
+     computer. It is a soft lock, not a security boundary: the tag is a short hash of coarse traits, and anyone holding the key text can paste it. */
+  const readRaw = () => { const out = []; const l = lsRead(BACKUP_KEY).value; if (l != null) out.push(l); return out; };
+  /* -> { on, mode, tag, stored, matches } where tag and stored are the first 8 characters of each (never the traits), and matches is null when nothing is stored */
+  const deviceLock = guard("deviceLock", async function deviceLockState() {
+    const idb = await idbRead(), raws = readRaw().concat(idb.value != null ? [idb.value] : []); let stored = null;
+    for (const raw of raws) { try { const r = typeof raw === "string" ? JSON.parse(raw) : raw; if (r && typeof r.fp === "string") { stored = r.fp; break; } } catch (error) { /* an unreadable copy has no tag */ } }
+    const tag = deviceTag();
+    return { ok: true, on: fingerprintMode() === "strict", mode: fingerprintMode(), tag: tag.slice(0, 8), stored: stored ? stored.slice(0, 8) : null, matches: stored == null ? null : stored === tag };
+  });
+  const setDeviceLock = guard("setDeviceLock", async function setLock(on) {
+    const ok = on ? lsWrite(LOCK_KEY, "1") : lsRemove(LOCK_KEY);
+    return Object.assign({ saved: ok }, await deviceLock());
+  });
+  /* "Use this key on this computer": after a legitimate change (a new tablet, a browser update with the lock on). The key is checked by its
+     signature again, then kept with this computer's tag. Returns { ok, reason }. */
+  const rebindDevice = guard("rebindDevice", async function rebindThisDevice() {
+    const m = manager(); if (!m) return { ok: false, reason: "no_manager", message: "The license manager is not loaded." };
+    const idb = await idbRead(), raws = readRaw().concat(idb.value != null ? [idb.value] : []); let token = "";
+    for (const raw of raws) { try { const r = typeof raw === "string" ? JSON.parse(raw) : raw; if (r && typeof r.token === "string" && digestOf(r) === r.digest) { const info = inspect(r.token); if (info && info.ok && !ended(info)) { token = r.token; break; } } } catch (error) { /* try the next copy */ } }
+    if (!token) return { ok: false, reason: "nothing_to_rebind", message: "No kept key was found to move to this computer. Paste the key again." };
+    const res = m.activateKey(token); if (res && res.ok === false) return { ok: false, reason: res.reason || "refused", message: res.message || "The key was refused." };
+    const saved = await persist(token, null); return { ok: !!(saved && saved.ok), reason: saved && saved.ok ? "rebound" : "no_storage", message: saved && saved.ok ? "This computer now holds the key." : "The key could not be kept on this computer." };
+  });
 
   /* How the stored copies look right now, for a settings page or a support call. */
   const inspectStored = guard("inspect", async function inspectStoredCopies() {
@@ -534,7 +566,7 @@ export function createLicensePersistence(env) {
   }
 
   return Object.freeze({
-    start, persist, hydrate, forget, check, inspect: inspectStored,
+    start, persist, hydrate, forget, check, inspect: inspectStored, deviceLock, setDeviceLock, rebindDevice,
     diagnostics: () => diagnostics.slice(), guard, DB_NAME, STORE_NAME, BACKUP_KEY
   });
 }

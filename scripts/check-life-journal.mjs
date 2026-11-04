@@ -373,7 +373,7 @@ check("High Contrast Mode reaches journal pages", () => {
 /* ---------- 6. The screen is wired into the builder ---------- */
 check("the sidebar, route, home card and Settings reach the journal", () => {
   ok(/<a class="sb-link" href="#\/journal" data-route="journal">[\s\S]*?Cognitive Life Journal/.test(html), "sidebar link");
-  ok(/"journal": renderJournal/.test(html) && /function renderJournal\(\)\{ LifeJournalUI\.render\(view\); \}/.test(html), "route");
+  ok(/"life-journal": renderJournal/.test(html) && /function renderJournal\(\)\{ LifeJournalUI\.render\(view\); \}/.test(html), "route");
   ok(/<a class="card" href="#\/journal">|tool\("#\/journal"/.test(html), "home card");
   ok(/LifeJournalUI\.clearSaved\(\)/.test(html), "Clear saved data includes the journal");
   const at = id => html.indexOf(`<script id="${id}">`), main = html.indexOf('<script>\n"use strict";');

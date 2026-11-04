@@ -118,6 +118,7 @@ export const HUBS = [
       { key: "therapy-goals", label: "Therapy Goals (SLP)",     href: B + "#/therapy-goals", route: "therapy-goals", icon: "stethoscope" },
       { key: "heirloom",     label: "Quarterly Legacy & Memory Books",     href: B + "#/heirloom",     route: "heirloom",     icon: "books" },
       { key: "planner-care-companion", label: "Care cues (planner companion)", href: B + "#/planner-care-companion", route: "planner-care-companion", icon: "journal" },
+      { key: "safety",       label: "Security & Accessibility", href: B + "#/safety",       route: "safety",       icon: "gear" },
       { key: "settings",     label: "Settings & defaults",      href: B + "#/settings",     route: "settings",     icon: "gear" },
       { key: "pricing",      label: "Plans & pricing",          href: "pricing.html",       icon: "award" },
       { key: "pilot",        label: "Start a 30-day pilot",     href: "pilot.html",         icon: "clipboard" },
