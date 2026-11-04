@@ -10630,6 +10630,7 @@ const FacilityUI = (function(){
 
   /* ---------- events ---------- */
   function bind(){
+    root.setAttribute("data-cg-bound", "Facility view");   // read by the boot check: window.cognicopiaBindings()
     root.addEventListener("click", onClick);
     root.addEventListener("change", onChange);
     root.addEventListener("submit", onSubmit);
@@ -10661,7 +10662,65 @@ const FacilityUI = (function(){
     d.addEventListener("click", e => { if (e.target === d) closeDialog(); });          // a click on the backdrop
     d.addEventListener("close", () => { S.editing = null; const id = d.dataset.slot; d.dataset.slot = ""; restoreFocus(id); });
   }
+  /* Error boundary for every action in the portal. A failure is logged under its name, the person is told that nothing
+     was changed, and the screen is repainted from what is stored, so one bad record can never leave a dead button. */
+  function portalFailSafe(what, err){
+    try { console.error("[Cognicopia portal] " + what + " failed:", err); } catch (x){}
+    try { toast(what + " did not work, and nothing was changed. Please try again; if it keeps happening, reload the page."); } catch (x){}
+    try { fac = readFacility() || fac; renderBar(); renderBody(false); } catch (x){ try { console.error("[Cognicopia portal] could not repaint:", x); } catch (y){} }
+  }
+  /* An in-page confirmation. window.confirm() is blocked in embedded browsers and after "prevent more dialogs": it answers
+     "no" without showing anything, and the button looks dead. Escape and Cancel answer no; Cancel has the focus. */
+  let confirmDlg = null;
+  function askConfirm(o){
+    return new Promise(resolve => {
+      try {
+        if (typeof HTMLDialogElement === "undefined" || typeof HTMLDialogElement.prototype.showModal !== "function"){ resolve(window.confirm(o.title + "\n\n" + o.body)); return; }
+        if (!document.getElementById("fpConfirmStyle")){
+          const st = document.createElement("style"); st.id = "fpConfirmStyle";
+          st.textContent = ".fp-confirm{box-sizing:border-box;width:min(30rem,calc(100vw - 32px));padding:24px;border:3px solid currentColor;border-radius:16px;background:Canvas;color:CanvasText;font:inherit}"
+            + ".fp-confirm::backdrop{background:rgba(6,20,15,.72)}.fp-confirm h2{margin:0 0 8px;font-size:1.35rem;line-height:1.25}.fp-confirm p{margin:0 0 18px;line-height:1.5}"
+            + ".fp-confirm-row{display:flex;flex-wrap:wrap;gap:12px;justify-content:flex-end;margin:0}"
+            + ".fp-confirm button{min-height:var(--tap,52px);min-width:var(--tap,52px);padding:8px 20px;border:2px solid currentColor;border-radius:10px;background:Canvas;color:CanvasText;font-family:inherit;font-size:1rem;font-weight:700;line-height:1.2;cursor:pointer}"
+            + ".fp-confirm button.fp-confirm-yes{background:CanvasText;color:Canvas}"
+            + ".fp-confirm button:focus-visible{outline:3px solid #f5b800;outline-offset:2px;box-shadow:0 0 0 6px #08262c}";
+          document.head.appendChild(st);
+        }
+        if (!confirmDlg){ confirmDlg = document.createElement("dialog"); confirmDlg.id = "fpConfirm"; confirmDlg.className = "fp-confirm"; confirmDlg.setAttribute("aria-labelledby", "fpConfirmT"); confirmDlg.setAttribute("aria-describedby", "fpConfirmB"); document.body.appendChild(confirmDlg); }
+        const d = confirmDlg, h = document.createElement("h2"), b = document.createElement("p"), f = document.createElement("form"), no = document.createElement("button"), yes = document.createElement("button");
+        d.textContent = ""; h.id = "fpConfirmT"; h.textContent = o.title; b.id = "fpConfirmB"; b.textContent = o.body;
+        f.method = "dialog"; f.className = "fp-confirm-row";
+        no.type = "submit"; no.value = "no"; no.textContent = o.no || "Cancel"; no.autofocus = true;
+        yes.type = "submit"; yes.value = "yes"; yes.className = "fp-confirm-yes"; yes.textContent = o.yes || "Continue";
+        f.appendChild(no); f.appendChild(yes); d.appendChild(h); d.appendChild(b); d.appendChild(f);
+        d.addEventListener("close", () => resolve(d.returnValue === "yes"), { once:true });
+        d.returnValue = ""; d.showModal();
+      } catch (err){ console.error("[Cognicopia portal] the confirmation window failed:", err); resolve(false); }
+    });
+  }
+  /* Everything held in memory about the grid on screen: the selection, a half-made move, the undo snapshot and the open editor. */
+  function clearTransientState(){
+    S.sel = ""; S.group = ""; S.week = ""; S.pick = null; S.moving = null; S.undo = null; S.ctx = null; S.editing = null; S.filled = false; S.spaceUp = false;
+    dragId = ""; opener = null;
+  }
+  /* Start empty: the new state is saved first, and the calendars are removed only if that worked, so a failed save loses nothing. */
+  function startEmpty(){
+    return askConfirm({ title:"Start with an empty community?", body:"The example wings, groups and calendars are removed from this computer.", yes:"Start empty", no:"Keep the example" }).then(ok => {
+      if (!ok) return;
+      const before = fac;
+      if (!writeFacility(Object.assign({}, before, { wings:[], example:false, team:before.team.map(m => Object.assign({}, m, { wings:[] })) }), "Started empty", "Removed the example community")) return;   // writeFacility has already said why
+      before.wings.forEach(w => planKeysOf(w.id).forEach(k => { try { CG_LS.removeItem(k); } catch (err){ console.warn("[Cognicopia portal] could not remove " + k + ":", err); } }));
+      clearTransientState();
+      S.tab = "overview"; renderBar(); renderBody(true);
+      const inp = root.querySelector("#fpNewWing"); if (inp) inp.focus();
+      toast("Started with an empty community.");
+    }).catch(err => portalFailSafe("Start empty", err));
+  }
   function onClick(e){
+    try { return onClickInner(e); }
+    catch (err){ portalFailSafe("That action", err); }
+  }
+  function onClickInner(e){
     const t = e.target.closest("button, [data-go]"); if (!t || !root.contains(t) || t.disabled) return;
     const ds = t.dataset;
     if (ds.tab) return selectTab(ds.tab);
@@ -10692,14 +10751,7 @@ const FacilityUI = (function(){
       case "csv": return exportCsv();
       case "ics": return exportIcs();
       case "keep-example": writeFacility(Object.assign({}, fac, { example:false }), "Kept the example community", ""); return keepFocus(() => renderBody(false));
-      case "start-empty": {
-        if (!confirm("Start with an empty community? The example wings, groups and calendars are removed.")) return;
-        fac.wings.forEach(w => planKeysOf(w.id).forEach(k => { try { CG_LS.removeItem(k); } catch (err){} }));
-        writeFacility(Object.assign({}, fac, { wings:[], example:false, team:fac.team.map(m => Object.assign({}, m, { wings:[] })) }), "Started empty", "Removed the example community");
-        S.tab = "overview"; renderBar(); renderBody(true);
-        const inp = root.querySelector("#fpNewWing"); if (inp) inp.focus();
-        return;
-      }
+      case "start-empty": return startEmpty();
       case "group-del": {
         const w = wing(), g = groupOf(w, S.sel); if (!g || !confirm(`Remove ${g.name}? Its sessions come off the calendar.`)) return;
         saveWing(w.id, x => Object.assign({}, x, { groups:x.groups.filter(y => y.id !== g.id) }), "Removed a group", `${g.name} from ${w.name}`);
@@ -15630,6 +15682,7 @@ function generatePdf(items, printOptions){
   const calmMode = printOptions && typeof printOptions.calmMode === "boolean" ? printOptions.calmMode : sundowningCalmActive;
   root.innerHTML = items.map(item => sheetHtml(item, calmMode)).join("");
   numberSheets(root);                   // "Page X of Y" in every sheet's foot
+  if (!root.firstElementChild){ printReady = false; root.innerHTML = ""; console.error("[Cognicopia] The print stage was empty, so nothing was printed and no free packet was used."); toast("That page could not be made, so nothing was printed and no free packet was used. Please try again."); return; }
   printReady = true;
   const who = (items.find(q => q.cfg.residentName) || { cfg:{} }).cfg.residentName;
   printTitle = document.title;
@@ -15718,7 +15771,36 @@ window.addEventListener("afterprint", () => {
       used: () => { if (!isLicensed()) bumpGen(); renderAllowance(); }
     }
   });
-  $("#panicButton").addEventListener("click", () => { if (window.ProceduralPacketEngine) window.ProceduralPacketEngine.instantSoothe(); else printPanicPacket(); });
+  /* Clinical action buttons run inside a boundary: a failure is logged under the action's name and the person is told
+     what happened instead of seeing nothing. bindClinical also marks the element, so the boot check below can prove it is wired. */
+  const CLINICAL_BOUND = [];
+  function clinicalFailed(name, err){
+    try { console.error("[Cognicopia] " + name + " failed:", err); } catch (x){}
+    try { toast(name + " could not be prepared. Nothing was printed. Please try again."); } catch (x){}
+  }
+  function bindClinical(target, type, name, fn){
+    const el = typeof target === "string" ? document.querySelector(target) : target;
+    if (!el){ console.warn("[Cognicopia] Could not attach \"" + name + "\": " + target + " is not on the page."); return false; }
+    el.addEventListener(type, ev => {
+      try { const out = fn(ev); if (out && typeof out.then === "function") out.then(undefined, err => clinicalFailed(name, err)); }
+      catch (err){ clinicalFailed(name, err); }
+    });
+    el.setAttribute("data-cg-bound", name); CLINICAL_BOUND.push(name);
+    return true;
+  }
+  bindClinical("#panicButton", "click", "Sundowning / Rapid De-escalation", () => {
+    const eng = window.ProceduralPacketEngine;
+    if (eng && typeof eng.instantSoothe === "function") return eng.instantSoothe();
+    console.warn("[Cognicopia] The Instant Soothe engine did not load (src/engine/ProceduralPacketEngine.js); using the built-in two-page calming packet.");
+    printPanicPacket();
+  });
+  window.cognicopiaBindings = () => Array.prototype.map.call(document.querySelectorAll("[data-cg-bound]"), e => e.getAttribute("data-cg-bound"));
+  /* Boot check: say plainly, in the console, which clinical controls are wired and which are not. */
+  (function verifyBindings(){
+    const missing = ["Sundowning / Rapid De-escalation"].filter(n => CLINICAL_BOUND.indexOf(n) < 0);
+    if (missing.length) console.warn("[Cognicopia] These clinical controls are not wired: " + missing.join(", "));
+    else console.info("[Cognicopia] Clinical controls wired: " + CLINICAL_BOUND.join(", "));
+  })();
   $("#calmModeToggle").addEventListener("click", () => {
     sundowningCalmActive = !sundowningCalmActive;
     syncCalmModeToggle();
