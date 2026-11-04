@@ -86,9 +86,9 @@ await go("#/roster");
 ok(/Sing-along/.test(await pg.textContent(".tr-log").catch(() => "")), "a Shift board record about them (by alias) lands in their record");
 
 /* ---------- the tools open on them ---------- */
-await go("#/planner");
+await go("#/life-planner");
 ok(/Dorothy/.test(await pg.$eval("#lpName", e => e.value).catch(() => "")), "the Life Planner opens filled in for the resident we are working with");
-await go("#/journal");
+await go("#/life-journal");
 ok(/Dorothy/.test(await pg.$eval("#lj-name", e => e.value).catch(() => "")), "the Life Journal too");
 await go("#/clinical");
 ok(await pg.$eval("#clWho", e => e.value) === dorothy, "Session Notes opens on them");
@@ -99,7 +99,7 @@ ok(await pg.$eval("#rmWho", e => e.value) === dorothy, "and Reminiscence Cards")
 /* changing the one resident changes what the next tool opens on, and a form holding someone else offers to be filled in */
 await pg.selectOption("#arSel", await pg.$eval("#arSel", s => [...s.options].filter(o => /Walter/.test(o.textContent)).map(o => o.value)[0])); await pg.waitForTimeout(400);
 ok(await pg.$eval("#rmWho", e => e.value) !== dorothy, "choosing Walter changes the tool on screen");
-await go("#/planner");
+await go("#/life-planner");
 ok(await pg.$(".ar-banner") !== null, "the planner, holding Dorothy's details, offers to fill itself in for Walter");
 await pg.click(".ar-banner button"); await pg.waitForTimeout(500);
 ok(/Walter/.test(await pg.$eval("#lpName", e => e.value)) && await pg.$(".ar-banner") === null, "one click fills it in for Walter");

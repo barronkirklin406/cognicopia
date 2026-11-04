@@ -102,8 +102,9 @@ export const HUBS = [
       { key: "profile",      label: "Resident Profiles",        href: "profile.html",      icon: "profile" } ] },
   { id: "studio",    label: "Studio",           icon: "palette",  group: "resident", items: [
       { key: "coloring",     label: "Cognicopia Coloring",      href: B + "#/coloring",     route: "coloring",     icon: "palette" },
-      { key: "planner",      label: "12-Month Life Planner",    href: B + "#/planner",      route: "planner",      icon: "calendar" },
-      { key: "journal",      label: "Cognitive Life Journal",   href: B + "#/journal",      route: "journal",      icon: "journal" },
+      { key: "tracking",     label: "Cognitive Tracking",       href: B + "#/tracking",     route: "tracking",     icon: "clipboard" },
+      { key: "planner",      label: "12-Month Seasonal Planner", href: B + "#/planner",     route: "planner",      icon: "calendar" },
+      { key: "journal",      label: "Life Narrative Journal",   href: B + "#/journal",      route: "journal",      icon: "journal" },
       { key: "reminiscence", label: "Reminiscence cards",       href: B + "#/reminiscence", route: "reminiscence", icon: "cards" } ] },
   { id: "packets",   label: "Activity Packets", icon: "builder",  group: "resident", items: [
       { key: "builder",      label: "Packet Builder",           href: B,                    icon: "builder" } ] },

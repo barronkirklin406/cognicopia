@@ -62,7 +62,7 @@ ok(kept === routes.length, `the chosen resident stays chosen on every screen (${
 ok(!(await pg.evaluate(() => { for (let i = 0; i < localStorage.length; i++) if (localStorage.getItem(localStorage.key(i)) === "" + sessionStorage.getItem("cgb_active_resident")) return true; return false; })), "and is kept for this tab only, not on the disk");
 
 /* ---------- the Journal's steps and the Facility tab ---------- */
-await go("#/journal");
+await go("#/life-journal");
 const y0 = await pg.evaluate(() => scrollY);
 await pg.click(".lp-step >> nth=1"); await pg.waitForTimeout(700);
 ok(await pg.evaluate(() => scrollY) !== y0, "Journal: the second step moves to its section");

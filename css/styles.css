@@ -951,3 +951,28 @@ html.cg-night-shift .cgre-btn:hover { background: #33271a; }
 .lb-by { font-size: 10.5pt; font-style: italic; }
 .lb-art { margin: .08in 0; text-align: center; } .lb-art svg { max-height: 3in; max-width: 100%; }
 @media print { .sheet.lb-sheet { margin: 0; box-shadow: none; } }
+
+/* ===== Studio tools: tracking, planner, journal (js/studio-ui.js) ===== */
+.st-tool .st-form fieldset { border: 0; padding: 0; margin: 0 0 18px; min-width: 0; }
+.st-tool legend { padding: 0; margin: 0 0 8px; font-weight: 700; }
+.st-scale, .st-stage, .st-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.st-opt { display: flex; align-items: center; gap: 10px; min-height: var(--cg-tap, 52px); padding: 8px 14px; border: 2px solid currentColor; border-radius: 10px; cursor: pointer; font-weight: 600; }
+.st-opt input { flex: none; width: 24px; height: 24px; margin: 0; }
+.st-opt:has(input:checked) { outline: 3px solid currentColor; outline-offset: 1px; }
+.st-opt small { display: block; font-weight: 400; }
+.st-banner { margin: 0 0 18px; padding: 14px 18px; border: 3px solid currentColor; border-radius: 12px; }
+.st-banner:empty { display: none; }
+.st-banner.st-gentler { border-left-width: 12px; } .st-banner.st-step-up { border-left-width: 12px; border-style: double; }
+.st-banner p { margin: 6px 0 0; }
+.st-h2 { margin: 26px 0 10px; font-size: 1.25rem; }
+.st-scroll { overflow-x: auto; }
+.st-matrix { border-collapse: collapse; width: 100%; min-width: 640px; }
+.st-matrix th, .st-matrix td { padding: 8px 10px; border: 1px solid currentColor; text-align: left; vertical-align: middle; }
+.st-matrix thead th { border-bottom-width: 3px; }
+.st-matrix .st-empty td { opacity: 1; font-style: italic; }
+.st-plan input[type=text], .st-plan select { width: 100%; min-width: 7rem; min-height: var(--cg-tap, 52px); box-sizing: border-box; }
+.st-tag { display: inline-block; margin: 0 4px 2px 0; padding: 2px 10px; border: 2px solid currentColor; border-radius: 999px; font-size: .9em; font-weight: 700; }
+.st-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.st-list li { padding: 12px 16px; border: 1px solid currentColor; border-radius: 10px; }
+.st-list p { margin: 6px 0 0; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
