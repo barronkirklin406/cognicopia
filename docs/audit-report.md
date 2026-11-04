@@ -1,68 +1,29 @@
 # Reference audit report
 
-Scanned 43 HTML, 217 JavaScript and 3 CSS files under `cognicopia`. This scan is read-only: it changed no file.
+Scanned 52 HTML, 217 JavaScript and 3 CSS files under `cognicopia`. This scan is read-only: it changed no file.
 
 **Health: RED: errors need fixing**
 
 | | Count |
 |---|---|
-| Errors | 174 |
-| Warnings | 38 |
-| Notes | 135 |
+| Errors | 2 |
+| Warnings | 42 |
+| Notes | 116 |
 
-## Errors (174)
+## Errors (2)
 
 Each of these breaks something a visitor can reach.
 
-### missing file (174)
+### missing file (2)
 
-- `activate.html:774` <a> points at "tablet.html", which does not exist
-- `activate.html:831` <a> points at "resources/security-questions/", which does not exist
-- `activate.html:837` <a> points at "resources/staff-guide/", which does not exist
-- `activate.html:838` <a> points at "resources/resource-catalog/", which does not exist
-- `activate.html:965` <a> points at "terms.html", which does not exist
 - `batch-scheduler.html:12` <link> points at "css/site.css", which does not exist
-- `builder.html:2790` <a> points at "tablet.html", which does not exist
-- `builder.html:2838` <a> points at "terms.html", which does not exist
-- `cognitive-journals.html:981` <a> points at "tablet.html", which does not exist
-- `cognitive-journals.html:1038` <a> points at "resources/security-questions/", which does not exist
-- `cognitive-journals.html:1044` <a> points at "resources/staff-guide/", which does not exist
-- `cognitive-journals.html:1045` <a> points at "resources/resource-catalog/", which does not exist
-- `cognitive-journals.html:1123` <a> points at "resources/research/reminiscence-evidence/", which does not exist
-- `cognitive-journals.html:1309` <a> points at "terms.html", which does not exist
-- `contact.html:787` <a> points at "tablet.html", which does not exist
-- `contact.html:844` <a> points at "resources/security-questions/", which does not exist
-- `contact.html:850` <a> points at "resources/staff-guide/", which does not exist
-- `contact.html:851` <a> points at "resources/resource-catalog/", which does not exist
-- `contact.html:1019` <a> points at "terms.html", which does not exist
 - `family-bridge.html:12` <link> points at "css/site.css", which does not exist
-- `index.html:5200` <a> points at "tablet.html", which does not exist
-- `index.html:5421` <a> points at "resources/security-questions/", which does not exist
-- `index.html:5427` <a> points at "resources/staff-guide/", which does not exist
-- `index.html:5428` <a> points at "resources/resource-catalog/", which does not exist
-- `index.html:5486` <a> points at "./tablet.html", which does not exist
-- `index.html:5624` <a> points at "resources/research/reminiscence-evidence/", which does not exist
-- `index.html:7060` <a> points at "terms.html", which does not exist
-- `life-planners.html:981` <a> points at "tablet.html", which does not exist
-- `life-planners.html:1038` <a> points at "resources/security-questions/", which does not exist
-- `life-planners.html:1044` <a> points at "resources/staff-guide/", which does not exist
-- `life-planners.html:1045` <a> points at "resources/resource-catalog/", which does not exist
-- `life-planners.html:1315` <a> points at "terms.html", which does not exist
-- `pilot.html:766` <a> points at "tablet.html", which does not exist
-- `pilot.html:823` <a> points at "resources/security-questions/", which does not exist
-- `pilot.html:829` <a> points at "resources/staff-guide/", which does not exist
-- `pilot.html:830` <a> points at "resources/resource-catalog/", which does not exist
-- `pilot.html:934` <a> points at "resources/security-questions/", which does not exist
-- `pilot.html:986` <a> points at "terms.html", which does not exist
-- `pricing.html:800` <a> points at "tablet.html", which does not exist
-- `pricing.html:857` <a> points at "resources/security-questions/", which does not exist
-- …and 134 more (run with --json for all of them)
 
-## Warnings (38)
+## Warnings (42)
 
 Review each one: some are real, some are ids or notes built at run time that a text scan cannot see.
 
-### dead id reference (24)
+### dead id reference (28)
 
 - `builder.html:6158` code looks up "#lpName", which no page or script creates
 - `builder.html:6858` code looks up "#lj-name", which no page or script creates
@@ -72,8 +33,6 @@ Review each one: some are real, some are ids or notes built at run time that a t
 - `builder.html:10715` code looks up "#fpNewWing", which no page or script creates
 - `builder.html:10804` code looks up "#fpWingShown", which no page or script creates
 - `builder.html:15481` code looks up "#encKeep", which no page or script creates
-- `js/staffGuide.js:60` code looks up "#sgTabs", which no page or script creates
-- `js/tablet.js:24` code looks up "#tbMenu", which no page or script creates
 - `resources/accessibility/index.html:1472` code looks up "#resourcesDropdownBtn", which no page or script creates
 - `resources/accessibility/index.html:1472` code looks up "#resourcesDropdownBtn", which no page or script creates; it checks for null before attaching a listener, so nothing breaks, but that handler never runs
 - `resources/activity-feature-guide/index.html:946` code looks up "#resourcesDropdownBtn", which no page or script creates
@@ -88,6 +47,12 @@ Review each one: some are real, some are ids or notes built at run time that a t
 - `resources/privacy-and-data/index.html:1171` code looks up "#resourcesDropdownBtn", which no page or script creates; it checks for null before attaching a listener, so nothing breaks, but that handler never runs
 - `resources/publishing-excellence/index.html:1232` code looks up "#resourcesDropdownBtn", which no page or script creates
 - `resources/publishing-excellence/index.html:1232` code looks up "#resourcesDropdownBtn", which no page or script creates; it checks for null before attaching a listener, so nothing breaks, but that handler never runs
+- `resources/resource-catalog/index.html:2042` code looks up "#resourcesDropdownBtn", which no page or script creates
+- `resources/resource-catalog/index.html:2042` code looks up "#resourcesDropdownBtn", which no page or script creates; it checks for null before attaching a listener, so nothing breaks, but that handler never runs
+- `resources/security-questions/index.html:1160` code looks up "#resourcesDropdownBtn", which no page or script creates
+- `resources/security-questions/index.html:1160` code looks up "#resourcesDropdownBtn", which no page or script creates; it checks for null before attaching a listener, so nothing breaks, but that handler never runs
+- `resources/staff-guide/index.html:1302` code looks up "#resourcesDropdownBtn", which no page or script creates
+- `resources/staff-guide/index.html:1302` code looks up "#resourcesDropdownBtn", which no page or script creates; it checks for null before attaching a listener, so nothing breaks, but that handler never runs
 
 ### in-page link (13)
 
@@ -109,11 +74,11 @@ Review each one: some are real, some are ids or notes built at run time that a t
 
 - `server.js:34` console.log( … ) left in the code
 
-## Notes (135)
+## Notes (116)
 
 Information only. A class used by a calculation can look unused here.
 
-### unreferenced class (135)
+### unreferenced class (116)
 
 - `activate.html:13` .navbar is styled but no page or script mentions it
 - `activate.html:14` .nav-brand is styled but no page or script mentions it
@@ -155,7 +120,7 @@ Information only. A class used by a calculation can look unused here.
 - `builder.html:1542` .lj-tab-2 is styled but no page or script mentions it
 - `builder.html:1543` .lj-tab-3 is styled but no page or script mentions it
 - `builder.html:1544` .lj-tab-4 is styled but no page or script mentions it
-- …and 95 more (run with --json for all of them)
+- …and 76 more (run with --json for all of them)
 
 ## What this scan cannot prove
 
