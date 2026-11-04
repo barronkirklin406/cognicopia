@@ -5485,6 +5485,7 @@ const BookUI = (function(){
     const rootEl = $("#printRoot");
     rootEl.className = ((opts && opts.color) ? "" : (isPureBlackAndWhitePDF || (opts && opts.pureBW) ? "pure-bw " : "")) + "lp-print";   // a sheet may ask for color (the deck's category tags); black and white stays the default
     rootEl.innerHTML = pages.map(p => p.html).join("");
+    rootEl.classList.toggle("bind-2sided", !!(opts && opts.twoSided));   // alternating binder gutters for two-sided printing (js/pdf-exporter.js)
     rootEl.style.cssText = "display:block;position:absolute;left:-10000px;top:0";   // measured off screen
     const over = window.CognicopiaKit.fitSheets(rootEl);
     rootEl.style.cssText = "";
@@ -9392,6 +9393,7 @@ const HeirloomUI = (function(){
         <div class="field"><label for="lbFac">Community name <span class="sub">Shown on the cover</span></label><input id="lbFac" type="text" maxlength="80" autocomplete="off" value="${esc(settings.facility || "")}"></div></div>
       <div class="field"><label for="lbMsg">A note for the family <span class="sub">Optional. Printed on its own page after the cover.</span></label><textarea id="lbMsg" rows="4" maxlength="900"></textarea></div>
       <label class="hl-check"><input type="checkbox" id="lbTeam" checked> Include &ldquo;What Our Team Noticed&rdquo;</label>
+      <label class="hl-check"><input type="checkbox" id="lbTwo" checked> Two-sided binder gutters (the 0.75 in gutter alternates sides)</label>
       <div class="actions"><button class="btn btn-primary" type="button" id="lbMake">Compile the book</button></div>
       <p class="hint" id="lbStatus" role="status" aria-live="polite"></p>`;
     panel.querySelector("#lbMake").addEventListener("click", async () => {
@@ -9406,7 +9408,7 @@ const HeirloomUI = (function(){
         }, p.id, { relation: panel.querySelector("#lbRel").value, facility: panel.querySelector("#lbFac").value, message: panel.querySelector("#lbMsg").value, includeTeam: panel.querySelector("#lbTeam").checked, art: (d, t) => artSvg(d, t, 3.2) });
         if (book.empty){ st.textContent = "Nothing has been shared in the last 90 days yet. Keep a memory first, then compile again."; return; }
         st.textContent = book.pages.length + " pages: " + Object.entries(book.counts).filter(([, n]) => n).map(([k, n]) => n + " " + k).join(", ") + ". Opening the print window…";
-        BookUI.print(book.pages.map(x => ({ html: x.html })), ["Legacy Book", cgFileName(p), todayISO()].join(" - "), null);
+        BookUI.print(book.pages.map(x => ({ html: x.html })), ["Legacy Book", cgFileName(p), todayISO()].join(" - "), null, { twoSided: panel.querySelector("#lbTwo").checked });
       } catch (e){ st.textContent = "The book could not be compiled: " + (e && e.message || e); }
     });
   }

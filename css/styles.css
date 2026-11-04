@@ -1022,3 +1022,12 @@ html.cg-night-shift .cgre-btn:hover { background: #33271a; }
 .dk-color .dk-hometown .dk-tag { background: #cfe8e6; } .dk-color .dk-career .dk-tag { background: #f6cdb4; } .dk-color .dk-music .dk-tag { background: #dfe0f7; } .dk-color .dk-family .dk-tag { background: #f3e6b3; }
 .dk-color .dk-card { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 @media print { .sheet.dk-sheet { margin: 0; box-shadow: none; } }
+
+/* ===== Two-sided binder printing (js/pdf-exporter.js) =====
+   With .bind-2sided on the print root, the 0.75 in gutter alternates: on the left of right-hand (odd) pages and on the right of
+   left-hand (even) pages, so a 3-ring binder's holes never touch the text on either side of a sheet. */
+.bind-2sided .sheet:nth-child(odd)  { padding-left: .75in !important; padding-right: .5in !important; }
+.bind-2sided .sheet:nth-child(even) { padding-left: .5in !important; padding-right: .75in !important; }
+.pk-divider { display: flex; align-items: center; justify-content: center; text-align: center; color: #000; background: #fff; }
+.pk-divider h2 { margin: .1in 0; font-size: 40pt; line-height: 1.1; } .pk-kicker { margin: 0; font-size: 14pt; letter-spacing: .14em; text-transform: uppercase; font-weight: 700; }
+.pk-sub, .pk-div p { font-size: 16pt; margin: .06in 0; } .pk-rule { border-top: 4pt solid #000; width: 4in; margin: .2in auto; }
