@@ -1089,17 +1089,14 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
    By the site's rule this page sends nothing itself: the form builds a mailto: link and the visitor's own email program
    does the sending. Each step says what happened, so no one is left guessing, and a banner never says "sent" unless it was.
 
-   CONTACT_ENDPOINT is off (empty). If the owner ever stands up a message service and decides this page may talk to it,
-   put its https address here: the form then tries one POST first (8 second limit, no cookies, no referrer) and says
-   "Message sent" only when the service answers 2xx; any failure falls back to the email program with the reason shown.
-   Turning it on also means changing the rule in CLAUDE.md, the page's wording above the form and scripts/check-contact-ui.mjs. */
+   This page makes no network request of its own (CLAUDE.md: only activate.html may). A direct-send path was once switched off here;
+   it was removed so that the code cannot be turned on by editing one value. */
 (function () {
   "use strict";
-  var TO = "cognicopia@outlook.com", CONTACT_ENDPOINT = "", $ = function (id) { return document.getElementById(id); };
+  var TO = "cognicopia@outlook.com", $ = function (id) { return document.getElementById(id); };
   var say = function (el, text) { el.textContent = text; };
   var clean = function (t, n) { return String(t).replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/g, " ").trim().slice(0, n); };
   var oneLine = function (t, n) { return clean(String(t).replace(/[\r\n\u2028\u2029]+/g, " "), n); };
-  var endpoint = function () { return /^https:\/\/[^\s]+$/.test(CONTACT_ENDPOINT) ? CONTACT_ENDPOINT : ""; };
 
   /* A banner: kind is working, ok, warn or error; empty text hides it. */
   function banner(el, kind, text) {
@@ -1194,13 +1191,6 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
     return { first: first, v: v };
   }
 
-  /* The optional direct send (off unless CONTACT_ENDPOINT is set). */
-  function post(payload) {
-    var ctl = typeof AbortController === "function" ? new AbortController() : null, t = setTimeout(function () { if (ctl) ctl.abort(); }, 8000);
-    return fetch(endpoint(), { method: "POST", mode: "cors", credentials: "omit", referrerPolicy: "no-referrer", headers: { "Content-Type": "application/json", "Accept": "application/json" }, body: JSON.stringify(payload), signal: ctl ? ctl.signal : undefined })
-      .then(function (r) { clearTimeout(t); if (!r.ok) throw new Error("the message service answered " + r.status); })
-      .catch(function (e) { clearTimeout(t); throw new Error(e && e.name === "AbortError" ? "it took too long" : (e && e.message) || "no connection"); });
-  }
 
   /* Open the visitor's email program with the message filled in. */
   function viaMail(v, lead) {
@@ -1230,17 +1220,9 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
       return;
     }
     if ($("cfWebsite").value) { banner(status, "ok", "Thank you."); return; }      /* a form filler robot: do nothing, say nothing useful */
-    var v = r.v, sendBtn = $("cfSend");
-    if (!endpoint()) { viaMail(v); return; }
-    sendBtn.disabled = true; banner(status, "working", "Sending…");
-    post({ name: v.cfName, email: v.cfEmail, subject: "[Cognicopia Inquiry] " + v.cfSubject, message: v.cfMessage }).then(function () {
-      banner(status, "ok", "Message sent successfully. We will reply to " + v.cfEmail + ".");
-      form.reset(); rules.forEach(function (x) { $(x[0]).removeAttribute("aria-invalid"); });
-    }, function (err) {
-      viaMail(v, "We could not send it from this page (" + err.message + ").");
-    }).then(function () { sendBtn.disabled = false; });
+    var v = r.v;
+    viaMail(v);
   });
-  if (endpoint()) say($("cfIntro"), "Write to us here and your message comes straight to us. If it cannot be sent, your email program opens with it filled in instead.");
 })();
 </script>
 </body>
