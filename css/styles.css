@@ -1031,3 +1031,34 @@ html.cg-night-shift .cgre-btn:hover { background: #33271a; }
 .pk-divider { display: flex; align-items: center; justify-content: center; text-align: center; color: #000; background: #fff; }
 .pk-divider h2 { margin: .1in 0; font-size: 40pt; line-height: 1.1; } .pk-kicker { margin: 0; font-size: 14pt; letter-spacing: .14em; text-transform: uppercase; font-weight: 700; }
 .pk-sub, .pk-div p { font-size: 16pt; margin: .06in 0; } .pk-rule { border-top: 4pt solid #000; width: 4in; margin: .2in auto; }
+
+/* ===== Clinical suite overrides (js/clinical-suite.js) =====
+   Pure black on white, lines of 3 pt or more, one plain element per anchor page, a 4 pt outer border for coloring pages, and three
+   illumination modes for the screen (every pair is 7:1 or better; print is always black on white). */
+.cl-icon { flex: none; width: 48px; height: 48px; }
+.cl-steps { list-style: none; margin: 0; padding: 0; color: #000; }
+.cl-step, .cl-pause { display: flex; align-items: center; gap: 14px; margin: 0 0 12px; padding: 10px 14px; border: 3pt solid #000; border-radius: 10pt; break-inside: avoid; }
+.cl-pause { border-style: dashed; justify-content: flex-start; } .cl-pause p { margin: 2px 0 0; }
+.cl-num { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 2em; height: 2em; border: 3pt solid #000; border-radius: 50%; font-weight: 700; }
+.cl-text { flex: 1; font-size: 18pt; line-height: 1.3; }
+.cl-box { flex: none; display: inline-block; width: .3in; height: .3in; border: 3pt solid #000; }
+.cl-lbd { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .2in; min-height: 5in; padding: .4in; text-align: center; border-radius: 0; }
+.cl-lbd-bright { background: #fff; color: #000; } .cl-lbd-soft { background: #f4efe3; color: #000; } .cl-lbd-low { background: #000; color: #fff; }
+/* the page-wide paper colors are !important too, so these are written to outrank them */
+html .cl-lbd.cl-lbd-low.cl-lbd, html .cl-lbd.cl-lbd-low.cl-lbd * { color: #fff !important; }
+html .cl-lbd.cl-lbd-bright.cl-lbd, html .cl-lbd.cl-lbd-bright.cl-lbd *, html .cl-lbd.cl-lbd-soft.cl-lbd, html .cl-lbd.cl-lbd-soft.cl-lbd * { color: #000 !important; }
+.cl-lbd-low .cl-anchor path, .cl-lbd-low .cl-anchor circle, .cl-lbd-low .cl-anchor ellipse { stroke: #fff; }
+.cl-anchor { width: 3.6in; height: 3.6in; } .cl-lbd-word { margin: 0; font-size: 32pt; font-weight: 700; } .cl-lbd-prompt { margin: 0; font-size: 20pt; }
+.cl-matrix { display: flex; flex-wrap: wrap; gap: .2in; color: #000; } .cl-pool { flex: 0 0 2.2in; border: 3pt solid #000; padding: .12in; } .cl-pool ul { margin: .05in 0 0; padding-left: 1.1em; font-size: 16pt; }
+.cl-grid { border-collapse: collapse; flex: 1; } .cl-grid th, .cl-grid td { border: 3pt solid #000; padding: .08in; text-align: center; font-size: 16pt; } .cl-grid td { height: .5in; }
+.cl-progress { margin: .1in 0; } .cl-segs { display: flex; gap: 4pt; } .cl-seg { flex: 1; height: .28in; border: 3pt solid #000; } .cl-seg.on { background: #000; } .cl-progress p { margin: 4pt 0 0; font-weight: 700; font-size: 16pt; }
+.cl-sil { width: 4.6in; height: 4.6in; display: block; margin: 0 auto; }
+.cl-overlay { margin-top: .2in; padding: .14in .18in; border: 3pt solid #000; border-radius: 10pt; font-size: 12pt; color: #000; } .cl-overlay h4 { margin: .06in 0 0; font-size: 12.5pt; } .cl-overlay p { margin: .02in 0; } .cl-safe { font-style: italic; }
+.cl-sr-page h2 { margin: 0 0 .08in; font-size: 26pt; } .cl-sr-note { font-size: 13pt; margin: 0 0 .2in; }
+.cl-sr { margin: 0 0 .18in; padding: .12in .2in; border: 3pt solid #000; border-radius: 10pt; text-align: center; break-inside: avoid; } .cl-sr-cue { margin: 0; font-size: 24pt; font-weight: 700; } .cl-sr-ans { margin: .04in 0 0; font-size: 24pt; }
+.cl-hint-flip { margin: .08in 0 0; font-size: 14pt; transform: rotate(180deg); }
+.cl-coins { display: flex; flex-wrap: wrap; gap: .2in; align-items: flex-end; } .cl-coin { margin: 0; text-align: center; font-size: 12pt; font-weight: 700; } .cl-coin svg { display: block; }
+.cl-bills { display: flex; flex-wrap: wrap; gap: .14in; margin: .1in 0; } .cl-bill { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 2.4in; height: 1.2in; border: 3pt double #000; font-size: 13pt; text-align: center; } .cl-bill i { font-size: 10pt; letter-spacing: .2em; }
+.cl-small { font-size: 12pt; }
+.cl-border { box-sizing: border-box; border: 4pt solid #000; padding: .15in; }
+.cl-lyric { margin: .15in 0; text-align: center; } .cl-bar { display: flex; gap: 0; border-top: 3pt solid #000; } .cl-bar span { flex: 1; height: .2in; border-right: 3pt solid #000; } .cl-bar span:first-child { border-left: 3pt solid #000; } .cl-lyric p { margin: .06in 0; font-size: 22pt; font-weight: 700; } .cl-lyric-title { font-size: 12pt !important; font-weight: 400 !important; }

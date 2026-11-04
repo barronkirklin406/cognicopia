@@ -60,6 +60,7 @@ const FILLER = "AEIOUAEIORSTLNDHCMPBGFYWKV";
 /* Strings a random fill must never spell, in any direction. A word search should never put a hurtful word in front of someone. */
 const UNWELCOME = Object.freeze(["ASS", "SEX", "DIE", "DIED", "KILL", "DEAD", "DEATH", "HELL", "WAR", "GUN", "JAIL", "SICK", "HATE", "FEAR", "BOMB", "SHOT", "TOMB", "CRY", "PAIN", "ILL", "OLD", "DEMENTIA", "LOST", "FAIL", "STUPID", "DUMB", "BAD", "SAD", "WAIL", "GRAVE", "LOSS", "HURT"]);
 const DIRS = Object.freeze([[0, 1], [1, 0]]);      // across (left to right) and down (top to bottom): nothing backward or diagonal, so no word is hard to find
+const ACROSS_ONLY = Object.freeze([[0, 1]]);       // the middle and latest stages read across only
 
 function unwelcomeIn(grid, size, locked) {
   const lines = [];
@@ -88,7 +89,7 @@ export function buildWordSearch(words, opts = {}) {
   for (const w of order) {
     if (placed.length >= maxWords) { skipped.push(w.L); continue; }
     const spots = [];
-    for (const [dr, dc] of DIRS) for (let r = 0; r < size; r++) for (let c = 0; c < size; c++) {
+    for (const [dr, dc] of (opts.horizontalOnly ? ACROSS_ONLY : DIRS)) for (let r = 0; r < size; r++) for (let c = 0; c < size; c++) {
       const er = r + dr * (w.L.length - 1), ec = c + dc * (w.L.length - 1);
       if (er >= size || ec >= size) continue;
       let ok = true; for (let k = 0; k < w.L.length && ok; k++) { const cell = grid[r + dr * k][c + dc * k]; if (cell && cell !== w.L[k]) ok = false; }
@@ -220,7 +221,7 @@ export function reminiscenceTemplate(ctx) {
   const size = capTo(tier === 3 ? 6 : tier === 2 ? 7 : 8, cal.maxGrid), count = capTo(tier === 3 ? 4 : 5, cal.maxWords);
   const wanted = [...own, ...FALLBACK_WORDS].filter((w) => w && fine(w) && toLetters(w).length >= 3 && toLetters(w).length <= size);
   let ws = null;
-  if (deep.include.wordSearch) { ws = buildWordSearch(wanted, { size, max: count, seed }); if (ws.words.length < 3) ws = null; }
+  if (deep.include.wordSearch) { ws = buildWordSearch(wanted, { size, max: count, seed, horizontalOnly: tier >= 2 }); if (ws.words.length < 3) ws = null; }
 
   /* 2. fun to know, 3. things that go together */
   const sparkCount = capTo(tier === 1 ? 3 : 2, cal.maxSparks);
@@ -263,7 +264,7 @@ const floor = tier === 3 ? 40 : 32;   // the latest stage keeps the biggest squa
     { order: 3, label: "Validation Statement", text: tier === 3 ? "Whatever they say or do, join them: \"I'm here with you.\" Do not correct. Stay as long as they want company." : "Whatever they say or feel, join it: \"That sounds like it mattered to you.\" Do not correct. Follow where they take the conversation." }
   ];
   /* Page 2 has room for about six short notes. Staff notes come first, then the rest in order of use; whatever does not fit is left off. */
-  const how = [blocks.some((b) => b.type === "wordsearch") ? "the words in the word search run across or down" : "", blocks.some((b) => b.type === "matching") ? "they can draw a line between things that go together" : ""].filter(Boolean);
+  const how = [blocks.some((b) => b.type === "wordsearch") ? (tier >= 2 ? "the words in the word search run across" : "the words in the word search run across or down") : "", blocks.some((b) => b.type === "matching") ? "they can draw a line between things that go together" : ""].filter(Boolean);
   const starters = (baseBlocks.find((b) => b.type === "prompts") || { items: [] }).items.slice(0, 2);
   const generic = base.pages.caregiver.notes.slice(how.length ? 1 : 0);      // the first generic note says what the "Page 1" note says, so it steps aside
   const guidance = (Array.isArray(cal.guidance) ? cal.guidance : []).map((g) => String(g)).filter(fine).slice(0, 2);
