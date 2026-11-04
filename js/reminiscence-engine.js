@@ -47,6 +47,8 @@ export function normalizeDeep(raw) {
   const staff = String(r.staffNotes == null ? "" : r.staffNotes).split(/\n+/).map((l) => clean(l, 140)).filter(Boolean).slice(0, 4);
   return {
     focus: Object.prototype.hasOwnProperty.call(FOCUS, r.focus) ? r.focus : "mixed",
+    themeWords: listOf(r.themeWords, 24, 8),   // words for the season or the holiday, not about anyone, so a group sheet may use them
+    notes: listOf(r.notes, 140, 4).filter((n) => !/\?\s*$/.test(n)),   // extra "fun to know" lines, such as a season's; never a question
     music: listOf(r.music, 80, 4), foods: listOf(r.foods, 60, 4), places: listOf(r.places, 60, 4), words: listOf(r.words, 24, 8),
     include: { wordSearch: on("wordSearch"), sparks: on("sparks"), matching: on("matching") },
     staffNotes: staff, variant: Math.max(0, Math.min(999, Math.floor(Number(r.variant) || 0)))
@@ -205,21 +207,22 @@ export function reminiscenceTemplate(ctx) {
   const personal = ctx.mode !== "group";                       // a group sheet is made from what the residents share: no one's private detail on it
   const avoided = avoidMatcher(ctx.avoid || profile.avoid), fine = (t) => !avoided(String(t));
   const deep0 = ctx.deep || normalizeDeep(ctx.request && ctx.request.deep);
-  const deep = Object.assign({}, deep0, { music: deep0.music.filter(fine), foods: deep0.foods.filter(fine), places: deep0.places.filter(fine), words: deep0.words.filter(fine), staffNotes: deep0.staffNotes.filter(fine) });   // a keep-off word never gets in through any field
+  const deep = Object.assign({}, deep0, { themeWords: (deep0.themeWords || []).filter(fine), notes: (deep0.notes || []).filter(fine), music: deep0.music.filter(fine), foods: deep0.foods.filter(fine), places: deep0.places.filter(fine), words: deep0.words.filter(fine), staffNotes: deep0.staffNotes.filter(fine) });   // a keep-off word never gets in through any field
   const fontPt = FONT_PT[tier] || 20, fontPx = fontPt * 96 / 72;
   const seed = [personal ? profile.name : "", profile.era, tier, deep.variant].join("|");   // used only to pick, never printed
 
   /* 1. the words for the word search: theirs first, then from their years */
   const first = (s) => String(s || "").split(/[\s,]+/).filter(Boolean)[0] || "";
   const FALLBACK_WORDS = ["MUSIC", "GARDEN", "FAMILY", "HOME", "SUNDAY", "SONG", "KITCHEN", "FLOWERS", "RADIO", "SPRING", "DANCE", "SUPPER"];
-  const own = personal ? [...deep.words, ...profile.pets, ...profile.family.map(first), ...profile.preferences.map(first), ...deep.foods.map(first), ...deep.music.map(first), first(profile.career), first(profile.hometown), ...profile.anchors.map(first)] : [...profile.preferences.map(first), ...profile.anchors.map(first)];
+  const own = [...deep.themeWords, ...(personal ? [...deep.words, ...profile.pets, ...profile.family.map(first), ...profile.preferences.map(first), ...deep.foods.map(first), ...deep.music.map(first), first(profile.career), first(profile.hometown), ...profile.anchors.map(first)] : [...profile.preferences.map(first), ...profile.anchors.map(first)])];
   const size = tier === 3 ? 6 : tier === 2 ? 7 : 8, count = tier === 3 ? 4 : 5;
   const wanted = [...own, ...FALLBACK_WORDS].filter((w) => w && fine(w) && toLetters(w).length >= 3 && toLetters(w).length <= size);
   let ws = null;
   if (deep.include.wordSearch) { ws = buildWordSearch(wanted, { size, max: count, seed }); if (ws.words.length < 3) ws = null; }
 
   /* 2. fun to know, 3. things that go together */
-  const sparks = deep.include.sparks ? sparksFor(profile.era, tier === 1 ? 3 : 2, { seed, focus: deep.focus, fine }) : [];
+  const sparkCount = tier === 1 ? 3 : 2;
+  const sparks = deep.include.sparks ? [...deep.notes, ...sparksFor(profile.era, sparkCount, { seed, focus: deep.focus, fine })].slice(0, sparkCount) : [];
   const match = deep.include.matching ? matchingItems(tier === 1 ? 4 : 3, { seed, pool: pairPoolFor(profile, deep), fine }) : { items: [], rightOrder: [] };
 
   const baseBlocks = base.pages.resident.blocks, anchors0 = (baseBlocks.find((b) => b.type === "anchors") || { items: [] }).items;
