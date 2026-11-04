@@ -3562,6 +3562,8 @@ summary{min-height:var(--tap);box-sizing:border-box}
   box-sizing: border-box;
   z-index: 2147483000;
 }
+.appm-modal:not([open]) { display: none; }   /* the class sets display:flex, which would otherwise show a closed dialog, and print it */
+@media print { .appm-modal { display: none !important; } }
 .appm-modal::backdrop {
   background: rgba(4, 8, 12, 0.88);
   backdrop-filter: blur(4px);
