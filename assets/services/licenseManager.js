@@ -431,6 +431,7 @@
   }
   function revokeKey(){
     [K.license, K.ref].forEach(remove);
+    if (doc && typeof root.CustomEvent === "function"){ try { doc.dispatchEvent(new root.CustomEvent("cognicopia:license-removed")); } catch (e){} }   // js/license-persistence.js forgets its copies too
     announce();
     return status();
   }
