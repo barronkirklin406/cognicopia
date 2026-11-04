@@ -105,7 +105,8 @@ export const HUBS = [
       { key: "tracking",     label: "Cognitive Tracking",       href: B + "#/tracking",     route: "tracking",     icon: "clipboard" },
       { key: "planner",      label: "12-Month Seasonal Planner", href: B + "#/planner",     route: "planner",      icon: "calendar" },
       { key: "journal",      label: "Life Narrative Journal",   href: B + "#/journal",      route: "journal",      icon: "journal" },
-      { key: "reminiscence", label: "Conversational Decks",     href: B + "#/reminiscence", route: "reminiscence", icon: "cards" } ] },
+      { key: "reminiscence", label: "Conversational Decks",     href: B + "#/reminiscence", route: "reminiscence", icon: "cards" },
+      { key: "toolkit",      label: "Page Toolkit",             href: B + "#/toolkit",      route: "toolkit",      icon: "builder" } ] },
   { id: "packets",   label: "Activity Packets", icon: "builder",  group: "resident", items: [
       { key: "builder",      label: "Packet Builder",           href: B,                    icon: "builder" } ] },
   { id: "facility",  label: "Facility",         icon: "building", group: "staff", items: [

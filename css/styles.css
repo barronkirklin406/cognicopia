@@ -1152,9 +1152,14 @@ html[data-cg-cb] .msg-ok::before { content: "\2713  "; font-weight: 700; } html[
 .rt-table td:not(:first-child), .rt-table th:not(:first-child):not(:last-child) { text-align: center; }
 .sa-swatches { display: flex; flex-wrap: wrap; gap: 8px; margin: 6px 0 0; } .sa-swatch { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border: 3px solid #000; border-radius: 999px; color: #000; font-weight: 700; }
 .sa-log { font-size: .95rem; } .sa-log td, .sa-log th { white-space: nowrap; }
-.sa-bar { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); z-index: 1400; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px; max-width: min(720px, 94vw); padding: 12px 16px; border: 3px solid #fff; border-radius: 14px; background: #08262c; color: #fff; box-shadow: 0 6px 24px rgba(0,0,0,.35); }
+.sa-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 0 0 14px; padding: 12px 16px; border: 3px solid #fff; border-radius: 14px; background: #08262c; color: #fff; }
 .sa-bar .btn { min-height: var(--cg-tap, 52px); } @media print { .sa-bar { display: none !important; } }
 /* the wider OpenDyslexic letters on a printed card: the response row wraps instead of running past the card */
 html[data-cg-font-print="1"] .dk-resp { flex-wrap: wrap; justify-content: center; row-gap: 2pt; column-gap: 8pt; } html[data-cg-font-print="1"] .dk-resp .dk-r { font-size: .88em; }
 /* an index card's back fills its own page: it reuses the four-up card markup, which is a fixed 3.75 x 4.85 in */
 .sheet.dk-indexback > .dk-card { width: 100%; height: 100%; padding: 0; border: 0; box-sizing: border-box; }
+
+/* Page Toolkit printed pages (js/toolkit-ui.js) */
+.sheet.cl-sheet { box-sizing: border-box; padding: .6in .5in .6in .75in !important; color: #000; background: #fff; font-size: 14pt; }
+.cl-title { margin: 0 0 .2in; font-size: 28pt; line-height: 1.1; color: #000; } .cl-title:empty { display: none; }
+progress#tkProg { width: 100%; height: 14px; }

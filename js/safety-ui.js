@@ -118,6 +118,7 @@ export function promptIfDue(d, now = new Date()) {
   const mk = (label, fn) => { const b = document.createElement("button"); b.type = "button"; b.className = "btn"; b.textContent = label; b.addEventListener("click", () => { fn(); bar.remove(); }); bar.appendChild(b); };
   mk("Back up now", () => { location.hash = "#/safety"; setTimeout(() => { const t = document.querySelector('[data-tab="backup"]'); if (t) t.click(); }, 400); });
   mk("Remind me tomorrow", () => {}); mk("Pause for a week", () => { try { BD.saveState(deps.store, BD.snooze(BD.readState(deps.store), new Date(), 24 * 7)); } catch (e) { /* ignore */ } });
-  document.body.appendChild(bar); logEv("backup-prompt", { note: r.changed + " changed" }); return r;
+  const view = document.getElementById("view"); if (view && view.parentNode) view.parentNode.insertBefore(bar, view); else document.body.prepend(bar);   // in the flow above the page, so it never covers a control
+  logEv("backup-prompt", { note: r.changed + " changed" }); return r;
 }
 if (typeof window !== "undefined") { window.CogniSafety = { init, render, teardown, current, promptIfDue }; window.dispatchEvent(new Event("cogni-safety-ready")); }

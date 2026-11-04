@@ -177,7 +177,13 @@ export const CALIBRATION_NOTE = "Adjusts the sheet to support staff judgment; no
 export class DifficultyCalibrator extends CognicopiaAgent {
   constructor(o = {}) { super({ name: "DifficultyCalibrator", stage: "analyze", role: "Functionality: cognitive difficulty calibrator", capabilities: Object.keys(CONDITIONS), ...o }); }
   async handle(ctx) {
-    const c = ctx.request && ctx.request.condition; if (!c) return ctx;
+    const c = ctx.request && ctx.request.condition;
+    if (!c) {   // no named condition: staff-logged completion tuning (js/packet-builder.js autoTune) may still set the caps, within the same limits
+      const rc = ctx.request && ctx.request.calibration; if (!rc || typeof rc !== "object") return ctx;
+      const n = (v, lo, hi) => { const x = Number(v); return Number.isFinite(x) ? Math.max(lo, Math.min(hi, x)) : null; }, caps = { minFontPt: n(rc.minFontPt, 18, 24), maxGrid: n(rc.maxGrid, 5, 10), maxWords: n(rc.maxWords, 3, 8), lineHeight: n(rc.lineHeight, 1.3, 1.7) };
+      if (caps.minFontPt == null && caps.maxGrid == null) return ctx;
+      ctx.calibration = Object.fromEntries(Object.entries(caps).filter(([, v]) => v != null)); ctx.analysis = Object.assign({}, ctx.analysis, { calibration: { condition: "completion tuning", label: "Tuned from logged completions", caps: ctx.calibration, minFontPt: caps.minFontPt, note: CALIBRATION_NOTE } }); return ctx;
+    }
     const cal = this.calibrate(c, ctx.tier); if (!cal) { ctx.analysis = Object.assign({}, ctx.analysis, { calibration: { condition: clip(c, 30), found: false } }); return ctx; }
     ctx.calibration = cal; ctx.analysis = Object.assign({}, ctx.analysis, { calibration: { condition: cal.condition, label: cal.label, caps: cal.caps, minFontPt: cal.minFontPt, note: CALIBRATION_NOTE } }); return ctx;
   }
