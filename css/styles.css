@@ -798,3 +798,81 @@ html.cg-night-shift .cg-brain-h::before,html.cg-night-shift .cg-sidebar-brand sp
     border-color: #0e3c43 !important;
   }
 }
+
+/* =====================================================================
+   Print preview modal (js/print-preview-modal.js). The chrome is here; the printed
+   sheet's own CSS travels with the module, so the preview, the printout and the
+   ink measurement all draw the same page. Tokens only; every control is --cg-tap.
+   ===================================================================== */
+.cgpp-modal { box-sizing: border-box; width: min(1100px, calc(100vw - 24px)); height: min(96vh, 1100px); max-height: 96vh; padding: 0; border: 3px solid var(--cg-charcoal); border-radius: var(--cg-radius-lg, 20px); background: var(--cg-white); color: var(--cg-charcoal); display: flex; flex-direction: column; overflow: hidden; font-family: var(--cg-font-ui); }
+.cgpp-modal::backdrop { background: rgba(5, 26, 30, .78); }
+.cgpp-modal[open] { animation: cgppIn .2s ease-out both; }
+/* the page's own heading, paragraph and span colors must never reach into the window: every text element takes the window's color */
+.cgpp-modal :where(h2, h3, p, span, strong, b, div, button, label, footer, header) { color: inherit; text-shadow: none; }
+.cgpp-modal .cgpp-sheet *, .cgpp-modal .cgpp-sheet { color: #000; }
+@keyframes cgppIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+html.cgpp-open { overflow: hidden; }
+.cgpp-modal > * { flex: none; }
+.cgpp-modal > .cgpp-viewport { flex: 1 1 0; }   /* the sheet takes every pixel the chrome does not */
+.cgpp-head { display: flex; flex-wrap: wrap; gap: 8px var(--cg-space-5, 1.5rem); align-items: center; justify-content: space-between; padding: 10px var(--cg-space-5, 1.5rem); border-bottom: 3px solid var(--cg-charcoal); }
+.cgpp-headtext { flex: 1 1 18rem; }
+.cgpp-title { margin: 0; font-size: 1.3rem; line-height: 1.2; }
+.cgpp-desc { margin: 2px 0 0; font-size: .92rem; }
+.cgpp-toner { display: flex; flex-direction: column; gap: 0; flex: 1 1 22rem; padding: 6px 12px; border: 3px solid var(--cg-green-700); border-radius: 12px; background: var(--cg-sage-100); color: var(--cg-green-900); font-size: .92rem; line-height: 1.35; }
+.cgpp-toner.is-warn { border-color: var(--cg-danger-800); background: var(--cg-danger-200); color: var(--cg-danger-800); }
+.cgpp-tag { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 8px var(--cg-space-5, 1.5rem); border-bottom: 2px solid var(--cg-tan-200); font-size: .92rem; }
+.cgpp-tag-title { margin-right: 4px; }
+.cgpp-chip { display: inline-block; padding: 2px 10px; border: 2px solid var(--cg-charcoal); border-radius: 999px; background: var(--cg-cream); }
+.cgpp-chip-plain { border-style: dashed; }
+.cgpp-audit { margin: 0; padding: 8px var(--cg-space-5, 1.5rem); font-size: .95rem; font-weight: 700; border-bottom: 2px solid var(--cg-charcoal); }
+.cgpp-audit-pass, .cgpp-audit-fixed { background: var(--cg-ok-200); color: var(--cg-charcoal); border-left: 10px solid var(--cg-ok-800); }   /* ok-800 on ok-200 is only 6.5:1, so the words are charcoal and the green is the bar */
+.cgpp-audit-blocked { background: var(--cg-danger-200); color: var(--cg-danger-800); }
+.cgpp-audit-not_run { background: var(--cg-tan-100); color: var(--cg-charcoal); }
+.cgpp-shake { animation: cgppShake .3s; }
+@keyframes cgppShake { 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
+.cgpp-bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; padding: 6px var(--cg-space-5, 1.5rem); border-bottom: 2px solid var(--cg-tan-200); }
+.cgpp-tabs { display: flex; flex-wrap: wrap; gap: 8px; }
+.cgpp-tab, .cgpp-btn { min-height: var(--cg-tap, 52px); min-width: var(--cg-tap, 52px); padding: 8px 18px; border: 3px solid var(--cg-charcoal); border-radius: 10px; background: var(--cg-white); color: var(--cg-charcoal); font: inherit; font-weight: 700; font-size: 1.02rem; line-height: 1.2; cursor: pointer; }
+.cgpp-tab { display: inline-flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 0; text-align: left; }
+.cgpp-tab-n { font-size: .8rem; letter-spacing: .06em; text-transform: uppercase; }
+.cgpp-tab-name { font-size: .95rem; }
+.cgpp-tab.is-active, .cgpp-btn-primary { background: var(--cg-charcoal); color: var(--cg-white); }
+/* hover and active states are spelled out so the page's own button:hover rules cannot wash the words out */
+.cgpp-tab:hover, .cgpp-btn:hover { background: var(--cg-tan-100); color: var(--cg-charcoal); border-color: var(--cg-charcoal); transform: none; box-shadow: none; }
+.cgpp-tab.is-active:hover, .cgpp-btn-primary:hover { background: var(--cg-charcoal); color: var(--cg-white); }
+.cgpp-btn.is-disabled:hover { background: var(--cg-tan-100); color: var(--cg-charcoal); }
+.cgpp-btn.is-disabled { background: var(--cg-tan-100); border-style: dashed; cursor: not-allowed; }
+.cgpp-tab:focus-visible, .cgpp-btn:focus-visible, .cgpp-viewport:focus-visible, .cgpp-audit:focus-visible { outline: 3px solid var(--cg-focus); outline-offset: 2px; box-shadow: 0 0 0 6px var(--cg-focus-dark); }
+.cgpp-viewport { flex: 1 1 auto; min-height: 0; overflow: auto; background: var(--cg-tan-200); padding: 12px; }
+.cgpp-stage { margin: 0 auto; }
+.cgpp-holder { transform-origin: 0 0; box-shadow: 0 2px 14px rgba(0, 0, 0, .4); }
+.cgpp-actions { margin: 0; display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-end; padding: 8px var(--cg-space-5, 1.5rem); border-top: 3px solid var(--cg-charcoal); }
+html.cg-night-shift .cgpp-modal { background: #211910; color: #ffedcc; border-color: #9b7136; }
+html.cg-night-shift .cgpp-head, html.cg-night-shift .cgpp-actions, html.cg-night-shift .cgpp-audit { border-color: #9b7136; }
+html.cg-night-shift .cgpp-tab, html.cg-night-shift .cgpp-btn, html.cg-night-shift .cgpp-chip { background: #2b2015; color: #ffedcc; border-color: #9b7136; }
+html.cg-night-shift .cgpp-tab.is-active, html.cg-night-shift .cgpp-btn-primary { background: #583a0d; color: #fff1cf; border-color: #d6a64b; }
+html.cg-night-shift .cgpp-tab:hover, html.cg-night-shift .cgpp-btn:hover { background: #3a2917; color: #fff1cf; border-color: #d6a64b; }
+html.cg-night-shift .cgpp-tab.is-active:hover, html.cg-night-shift .cgpp-btn-primary:hover { background: #583a0d; color: #fff1cf; }
+html.cg-night-shift .cgpp-viewport { background: #17120c; }
+html.cg-night-shift .cgpp-actions { background: #211910; }
+@media (max-width: 700px) {
+  .cgpp-modal { width: 100%; max-width: 100%; height: 100vh; height: 100dvh; max-height: none; margin: 0; border-radius: 0; border-width: 0; overflow-x: hidden; overflow-y: auto; }
+  .cgpp-modal > * { flex-shrink: 0; }
+  .cgpp-modal > .cgpp-viewport { flex: 0 0 auto; min-height: 60vh; }
+  .cgpp-head, .cgpp-tag, .cgpp-audit, .cgpp-bar, .cgpp-actions { padding-left: var(--cg-space-4, 1rem); padding-right: var(--cg-space-4, 1rem); }
+  .cgpp-tab { flex: 1 1 100%; }
+  .cgpp-actions { position: sticky; bottom: 0; z-index: 1; flex-wrap: nowrap; gap: 8px; background: var(--cg-white); }
+  .cgpp-actions .cgpp-btn { flex: 1 1 0; min-width: 0; padding: 6px 8px; font-size: .95rem; }
+}
+@media (prefers-reduced-motion: reduce) { .cgpp-modal[open], .cgpp-shake { animation: none; } }
+#cgpp-print-stage { display: none; }
+/* its own named page: the site's other print pages keep their margins (see the note on @page near the top of this file) */
+@page cg-preview { size: 8.5in 11in; margin: .75in; }
+#cgpp-print-stage { page: cg-preview; }
+@media print {
+  html.cgpp-printing body > *:not(#cgpp-print-stage) { display: none !important; }
+  html.cgpp-printing #cgpp-print-stage { display: block !important; }
+  #cgpp-print-stage .cgpp-sheet { width: auto; height: auto; min-height: 0; padding: 0; overflow: visible; box-shadow: none; break-after: page; page-break-after: always; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  #cgpp-print-stage .cgpp-sheet:last-child { break-after: auto; page-break-after: auto; }
+  #cgpp-print-stage .cgpp-sheet .cgpp-foot { position: static; margin-top: 18px; }
+}

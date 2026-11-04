@@ -55,6 +55,16 @@ ok(auditAsset(swapped).status === "blocked", "a changed validation notice that n
 const broken = base(); broken.pages.caregiver.steps.pop();
 ok(auditAsset(broken).status === "blocked" && auditAsset(null).status === "blocked" && auditAsset({}).status === "blocked", "a sheet missing a step, an empty sheet and no sheet are blocked, not passed");
 
+/* ---------- the keep-off-the-page list ---------- */
+const av = base(); av.pages.resident.blocks[0].items = ["Tell me about the war.", "Tell me about a warm kitchen."]; av.pages.caregiver.notes = ["Stop at the first sign of tiredness."];
+const ra = auditAsset(av, { avoid: ["war"] });
+ok(ra.status === "fixed" && ra.asset.pages.resident.blocks[0].items.length === 1 && /warm kitchen/.test(ra.asset.pages.resident.blocks[0].items[0]) && ra.fixes.some((f) => f.rule === "avoided topic removed"), "a list item about an avoided topic is removed; a warm one stays");
+const av2 = base(); av2.pages.resident.heading = "The war years";
+ok(auditAsset(av2, { avoid: ["war"] }).status === "blocked", "an avoided topic in a heading (not a removable list item) blocks the sheet");
+const piped = createOrchestrator().use(new ClinicalAuditAgent()).registerLocalTemplate("w", () => { const a = base(); a.pages.resident.blocks[0].items = ["Tell me about the war.", "Tell me about the garden."]; return a; });
+const pr = await piped.execute({ mode: "express", profile: { avoid: ["war"] }, options: { template: "w" } });
+ok(pr.audit.status === "fixed" && !/\bwar\b/i.test(assetText(pr.asset)), "through the pipeline the request's keep-off list reaches the audit");
+
 /* ---------- inside the pipeline ---------- */
 const withAudit = () => createOrchestrator().use(new ClinicalAuditAgent());
 const rude = () => { const a = base(); a.pages.resident.blocks[0].items = ["Do you remember the school, dear?"]; return a; };

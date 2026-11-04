@@ -100,7 +100,8 @@ export function normalizeProfile(raw) {
     pets: list(r.petNames || r.pets),
     career: clip(r.pastCareer || r.career, LIMITS.text),
     hometown: clip(r.hometown, LIMITS.text),
-    anchors: list(r.nostalgiaAnchors || r.anchors || r.favoriteEvents)
+    anchors: list(r.nostalgiaAnchors || r.anchors || r.favoriteEvents),
+    avoid: list(r.avoid || r.topicsToAvoid, 60)
   };
   if (p.spouse && !p.family.includes(p.spouse)) p.family.unshift(p.spouse);
   p.hasData = [p.name, p.era, p.preferences.length, p.notes, p.family.length, p.pets.length, p.career, p.hometown, p.anchors.length].filter(Boolean).length;
@@ -126,6 +127,14 @@ export function substitute(text, tokens) {
 /* Broad categories from free text: all that may ever leave in a prompt. */
 const CATEGORY_WORDS = [["music", /music|radio|song|sing|piano|band|dance|choir|record/i], ["gardening", /garden|flower|plant|farm|harvest/i], ["cooking", /cook|bak|kitchen|recipe|food/i], ["crafts", /knit|sew|craft|quilt|crochet|paint|woodwork/i], ["outdoors", /fish|walk|bird|camp|hunt|nature/i], ["animals", /dog|cat|horse|pet|animal/i], ["sports", /baseball|football|golf|bowl|sport/i], ["reading", /book|read|poem|news/i]];
 export const categoriesOf = (p) => CATEGORY_WORDS.filter(([, re]) => re.test([p.preferences.join(" "), p.career, p.anchors.join(" ")].join(" "))).map(([c]) => c);
+
+/* A topic a resident or family asked to keep off the page. Whole words only, so "war" does not catch "warm". */
+export function avoidMatcher(terms) {
+  const t = (terms || []).map((x) => String(x).trim()).filter((x) => x.length > 1).map((x) => x.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+  if (!t.length) return () => false;
+  const re = new RegExp("(^|[^A-Za-z0-9])(" + t.join("|") + ")([^A-Za-z0-9]|$)", "i");
+  return (text) => re.test(String(text == null ? "" : text));
+}
 
 /* ---------- the asset every agent reads and writes ---------- */
 export function validateAsset(a) {
@@ -251,15 +260,18 @@ const SAFETY = "Choose objects too large to swallow, free of sharp edges, and su
 /* One local template for any tier, era and amount of knowledge. Deterministic: the same input gives the same sheet. */
 export function builtinTemplate(ctx) {
   const profile = ctx.profile, tier = ctx.tier, tok = tokensOf(profile);
-  const anchors = (profile.anchors.length ? profile.anchors.slice(0, 3) : (ERA_ANCHORS[profile.era] || ERA_ANCHORS.mixed).slice(0, 3));
-  const themes = [];
+  const avoided = avoidMatcher(ctx.avoid || profile.avoid), fine = (t) => !avoided(substitute(t, tok));   // anything on the keep-off list is never produced
+  const anchors = ((profile.anchors.length ? profile.anchors : (ERA_ANCHORS[profile.era] || ERA_ANCHORS.mixed)).filter(fine).slice(0, 3));
+  if (!anchors.length) anchors.push(...ERA_ANCHORS.mixed.filter(fine).slice(0, 3));
+  let themes = [];
+  if (profile.family.length) themes.push("The people close to you: {family}");
+  if (profile.pets.length) themes.push("The animals you loved: {pets}");
   if (profile.career) themes.push("The work you did: {career}");
   if (profile.hometown) themes.push("Where you grew up: {hometown}");
-  if (profile.pets.length) themes.push("The animals you loved: {pets}");
-  if (profile.family.length) themes.push("The people close to you: {family}");
   if (profile.preferences.length) themes.push("Something you enjoy: {hobby}");
-  (ERA_ANCHORS[profile.era] || ERA_ANCHORS.mixed).forEach((a) => { if (themes.length < 4) themes.push("From " + (profile.era ? "the " + profile.era : "your years") + ": " + a); });
-  const invites = themes.slice(0, tier === 3 ? 2 : tier === 2 ? 3 : 4).map((t) => t.replace(/^[^:]+:\s*/, "").length ? "Tell me about " + t.replace(/^[^:]+:\s*/, "") + "." : "Tell me about your day.");
+  (ERA_ANCHORS[profile.era] || ERA_ANCHORS.mixed).forEach((a) => { if (themes.length < 5) themes.push("From " + (profile.era ? "the " + profile.era : "your years") + ": " + a); });
+  themes = themes.filter(fine);
+  const invites = themes.slice(0, tier === 3 ? 3 : tier === 2 ? 4 : 5).map((t) => t.replace(/^[^:]+:\s*/, "").length ? "Tell me about " + t.replace(/^[^:]+:\s*/, "") + "." : "Tell me about your day.");
   const choicePairs = [["a quiet song", "a lively song"], ["the morning", "the evening"], ["a garden", "a kitchen"]].slice(0, tier === 3 ? 1 : 2);
   const mood = /agitat|anxious|restless|upset|distress|tearful/i.test(profile.notes) ? "calm" : /interest|enjoy|smil|happy|engag/i.test(profile.notes) ? "engaged" : "neutral";
   const calmNote = mood === "calm" ? "Today's notes mention unease: keep the room quiet, offer one item at a time, and let them set the pace." : "";
@@ -288,6 +300,21 @@ export function substituteDeep(v, tokens) {
   if (Array.isArray(v)) return v.map((x) => substituteDeep(x, tokens));
   if (v && typeof v === "object") { const o = {}; for (const k of Object.keys(v)) o[k] = substituteDeep(v[k], tokens); return o; }
   return v;
+}
+
+/* Which personal details actually reached the sheet, for the preview's summary tag. Read from the finished text, so it is never a guess. */
+export function customizationOf(profile, asset, mode, shared) {
+  const text = [asset && asset.title, asset && asset.theme, assetText(asset)].join("\n"), out = [], seen = (v) => !!v && text.includes(v);
+  if (mode === MODES.GROUP) { (shared || []).slice(0, 6).forEach((s) => out.push({ label: "Shared theme", value: s.kind === "hometown" ? "a shared place" : s.key })); return out; }
+  if (seen(profile.name)) out.push({ label: "Resident name", value: profile.name });
+  const fam = profile.family.filter(seen); if (fam.length) out.push({ label: "Family member names", value: fam.join(", ") });
+  const pets = profile.pets.filter(seen); if (pets.length) out.push({ label: "Pet names", value: pets.join(", ") });
+  if (seen(profile.career)) out.push({ label: "Career reference", value: profile.career });
+  if (seen(profile.hometown)) out.push({ label: "Hometown", value: profile.hometown });
+  const anchors = profile.anchors.filter(seen); if (anchors.length) out.push({ label: "Nostalgia anchors", value: anchors.join(", ") });
+  const likes = profile.preferences.filter(seen); if (likes.length) out.push({ label: "Interests", value: likes.join(", ") });
+  if (asset && asset.era && asset.era !== "mixed") out.push({ label: "Era anchors", value: asset.era });
+  return out;
 }
 
 /* ---------- group mode: what the residents have in common ---------- */
@@ -334,6 +361,7 @@ export class GenerationAgent extends CognicopiaAgent {
     }
     if (!asset) asset = substituteDeep(this.template(ctx.templateName)(ctx), tokensOf(ctx.profile));   // whoever wrote the template, no brace reaches a page
     ctx.asset = Object.assign({ v: VERSION, mode: ctx.mode }, asset);
+    ctx.asset.customization = customizationOf(ctx.profile, ctx.asset, ctx.mode, ctx.shared);
     ctx.source = source; ctx.fallbackReason = reason; ctx.llmMs = llmMs; ctx.generateMs = ctx.clock() - t0;
     return ctx;
   }
@@ -381,7 +409,7 @@ export class AgentOrchestrator {
       const eras = shared.filter((s) => s.kind === "era").map((s) => s.key);
       profile = normalizeProfile({ formativeEra: eras[0] || "", ailmentTier: tier, nostalgiaAnchors: anchors, preferences: interests, hometown: (shared.find((s) => s.kind === "hometown") || {}).key || "" });
     }
-    const ctx = { request: req, mode, tier, profile, profiles, shared, concept: clip(req.concept, 80), llm: opts.llm || null, templateName: opts.template || "default", clock: this.clock, notesText: profiles.map((p) => p.notes).filter(Boolean).join(" \n "), stages: [], analysis: null, asset: null, audit: null };
+    const ctx = { request: req, mode, tier, profile, profiles, shared, concept: clip(req.concept, 80), llm: opts.llm || null, templateName: opts.template || "default", avoid: [...new Set(profiles.flatMap((p) => p.avoid))], clock: this.clock, notesText: profiles.map((p) => p.notes).filter(Boolean).join(" \n "), stages: [], analysis: null, asset: null, audit: null };
     for (const stage of STAGES) {
       for (const agent of this.agentsFor(stage)) {
         if (stage === "preview" && !opts.preview) continue;

@@ -16,7 +16,7 @@
                   the diagnostic record holds only tier, timings, source and the
                   offline state
    ===================================================================== */
-import { createOrchestrator, CircuitBreaker, CognicopiaAgent, DiagnosticLog, GenerationAgent, normalizeProfile, normalizeTier, substitute, dignityProblems, validateAsset, assetText, sharedThemes, LLM_TIMEOUT_MS, MODES, STAGES } from "../js/agent-orchestrator.js";
+import { avoidMatcher, createOrchestrator, CircuitBreaker, CognicopiaAgent, DiagnosticLog, GenerationAgent, normalizeProfile, normalizeTier, substitute, dignityProblems, validateAsset, assetText, sharedThemes, LLM_TIMEOUT_MS, MODES, STAGES } from "../js/agent-orchestrator.js";
 
 let passed = 0; const problems = [];
 const ok = (c, m) => { if (c) passed++; else problems.push(m); };
@@ -62,6 +62,12 @@ ok(!/Margaret|Joan|Bob|Biscuit|Rex|Cedar Falls|Dayton|Akron|schoolteacher|nurse/
 ok(sharedThemes([normalizeProfile(MARGARET), normalizeProfile(JOAN), normalizeProfile(BOB)]).some((s) => s.kind === "interest" && s.key === "gardening" && s.count === 3) && /garden/i.test(gText), "group: a shared interest (gardening, all three) is found and used");
 ok((await o.execute({ mode: "group", profiles: [MARGARET] })).mode === "individual", "a group of one is treated as one resident");
 ok((await o.execute({ mode: "bogus" })).ok === false, "an unknown mode is refused, not guessed");
+
+/* ---------- the keep-off-the-page list ---------- */
+const av = await o.execute({ mode: "individual", profile: { ...MARGARET, nostalgiaAnchors: ["the war years", "warm Sunday dinners", "church choir"], avoid: ["war", "Cedar Falls"] } });
+const avText = assetText(av.asset) + " " + av.asset.title;
+ok(!/\bwar\b/i.test(avText) && !/Cedar Falls/.test(avText) && /warm Sunday dinners/.test(avText) && /church choir/.test(avText), "an avoided topic and an avoided place are never produced, and a whole-word match keeps 'warm' (war is not 'warm')");
+ok(normalizeProfile({ avoid: "war, Cedar Falls" }).avoid.length === 2 && avoidMatcher(["war"])("the war years") && !avoidMatcher(["war"])("a warm day") && !avoidMatcher([])("war") && avoidMatcher(["a.b"])("a.b") && !avoidMatcher(["a.b"])("axb"), "the matcher is whole-word, case-insensitive, and safe with regular-expression characters");
 
 /* ---------- the breaker, with the provider failing in every way ---------- */
 ok(LLM_TIMEOUT_MS === 2500 && new CircuitBreaker().timeoutMs === 2500, "the default limit is 2,500 ms");

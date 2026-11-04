@@ -6955,7 +6955,9 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
     <div class="go-actions">
       <button type="submit" id="go">Make the packet</button>
       <button type="button" id="staffOnlyBtn" class="btn-secondary">Print staff guide only</button>
+      <button type="button" id="previewPacketBtn" class="btn-secondary" aria-describedby="previewNote"><svg class="cg-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg> Preview Packet</button>
     </div>
+    <p class="left" id="previewNote" role="status" aria-live="polite"></p>
     <p class="go-allowance" role="status"><span class="licbadge" id="licBadge"></span></p>
     <p class="note">Your printer must be set to 100% or Actual size.
     "Fit to page" shrinks the large print.</p>
@@ -25311,6 +25313,44 @@ if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol))
 <script src="js/careTier.js"></script>
 <script src="js/sessionTimeout.js"></script>
 <script src="js/legal.js"></script>
+<script type="module">
+/* The agent suite (js/agent-orchestrator.js and friends). It reads the packet form, makes a sheet on this computer, runs the
+   clinical audit, and shows the exact print preview. Nothing here uses the network. */
+import { createOrchestrator } from "./js/agent-orchestrator.js";
+import { ClinicalAuditAgent } from "./js/clinical-audit-agent.js";
+import { openPreview } from "./js/print-preview-modal.js";
+(function () {
+  "use strict";
+  var btn = document.getElementById("previewPacketBtn"), note = document.getElementById("previewNote");
+  if (!btn) return;
+  var orchestrator = createOrchestrator().use(new ClinicalAuditAgent());
+  var say = function (t) { if (note) note.textContent = t || ""; };
+  /* The form, read the way the packet maker reads it (collectProfile), in the words the agents use. */
+  function profileFromForm() {
+    var p = typeof window.collectProfile === "function" ? window.collectProfile() : { fields: {}, stage: "early" }, f = p.fields || {};
+    return { preferredName: f.goes || f.first, formativeEra: f.born, ailmentTier: p.stage, hobbies: f.hobbies, nostalgiaAnchors: f.favs, petNames: f.pets, spouse: f.spouse,
+      children: f.kids, familyNames: f.sibs, pastCareer: f.job, hometown: [f.town, f.state].filter(Boolean).join(", "), avoid: f.avoid };
+  }
+  var busy = false;
+  btn.addEventListener("click", async function () {
+    if (busy) return; busy = true; btn.setAttribute("aria-busy", "true"); say("Preparing the preview…");
+    try {
+      var profile = profileFromForm();
+      var result = await orchestrator.execute({ profile: profile });
+      say(result.mode === "express" ? "Showing a general sheet for the level you chose. Add a name, a birth year or interests for a personal one." : "");
+      await openPreview(result, {
+        beforePrint: function () { if (typeof unlocked === "function" && typeof runsUsed === "function" && typeof FREE_RUNS !== "undefined" && !unlocked() && runsUsed() >= FREE_RUNS && typeof openGate === "function") { openGate(); return false; } return true; },
+        onConfirm: function () { if (typeof unlocked === "function" && !unlocked() && typeof bumpGen === "function") { bumpGen(); if (typeof showAllowance === "function") showAllowance(); } },
+        onAdjust: function () { var first = document.getElementById("first") || document.getElementById("goes"); if (first && first.scrollIntoView) { first.scrollIntoView({ block: "center" }); first.focus(); } }
+      });
+    } catch (e) {
+      try { console.error("[Cognicopia] Preview Packet failed:", e); } catch (x) { /* no console */ }
+      say("The preview could not be opened. Your form is unchanged; please try again.");
+    } finally { busy = false; btn.removeAttribute("aria-busy"); }
+  });
+  window.CognicopiaAgents = Object.freeze({ orchestrator: orchestrator, openPreview: openPreview, profileFromForm: profileFromForm });
+})();
+</script>
 </body>
 </html>
 

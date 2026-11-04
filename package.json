@@ -32,6 +32,7 @@
     "audit:refs:check": "node scripts/audit-references.mjs --selftest",
     "check:encoding": "node scripts/check-encoding.mjs",
     "check:agents": "node scripts/check-agent-orchestrator.mjs && node scripts/check-clinical-audit-agent.mjs",
+    "check:preview": "node scripts/check-print-preview-ui.mjs",
     "outreach": "node scripts/outreach.mjs",
     "pages": "node scripts/generate_infinite_pages.mjs",
     "subjects": "node scripts/process_coloring_assets.mjs",

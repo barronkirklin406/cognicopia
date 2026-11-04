@@ -32,7 +32,7 @@
      import { ClinicalAuditAgent, auditAsset, auditText } from "./clinical-audit-agent.js";
      orchestrator.use(new ClinicalAuditAgent());
    ===================================================================== */
-import { CognicopiaAgent, dignityProblems, validateAsset } from "./agent-orchestrator.js";
+import { CognicopiaAgent, dignityProblems, validateAsset, avoidMatcher } from "./agent-orchestrator.js";
 
 export const MIN_PT = 18;
 export const SAFETY_NOTICE = "Affirm the resident's lived reality; never debate historical facts.";
@@ -76,13 +76,13 @@ export function auditText(input) {
 }
 
 /* Audit one activity (the shape validateAsset describes). The input is not changed; the cleaned copy is returned. */
-export function auditAsset(asset) {
-  const fixes = [], problems = [];
+export function auditAsset(asset, options = {}) {
+  const fixes = [], problems = [], avoided = avoidMatcher(options.avoid);
   const copy = JSON.parse(JSON.stringify(asset || {}));
   const structural = validateAsset(copy);
   const walk = (node, path) => {
-    if (typeof node === "string") { const r = auditText(node); r.fixes.forEach((f) => fixes.push({ ...f, where: path })); r.problems.forEach((p) => problems.push({ rule: p, where: path })); return r.text; }
-    if (Array.isArray(node)) return node.map((v, i) => walk(v, path + "[" + i + "]"));
+    if (typeof node === "string") { if (avoided(node)) problems.push({ rule: "an avoided topic is on the sheet", where: path }); const r = auditText(node); r.fixes.forEach((f) => fixes.push({ ...f, where: path })); r.problems.forEach((p) => problems.push({ rule: p, where: path })); return r.text; }
+    if (Array.isArray(node)) return node.filter((v, i) => { if (typeof v === "string" && avoided(v)) { fixes.push({ rule: "avoided topic removed", where: path + "[" + i + "]" }); return false; } return true; }).map((v, i) => walk(v, path + "[" + i + "]"));
     if (node && typeof node === "object") { const o = {}; for (const k of Object.keys(node)) o[k] = /^(id|type|kind|fontPt|order|sense|label|spec|grid|cells|safetyNotice)$/.test(k) ? node[k] : walk(node[k], path ? path + "." + k : k); return o; }
     return node;
   };
@@ -121,7 +121,7 @@ export class ClinicalAuditAgent extends CognicopiaAgent {
   }
   async handle(ctx) {
     if (!ctx.asset) { ctx.audit = { status: "blocked", problems: [{ rule: "there was nothing to audit", where: "asset" }], fixes: [] }; return ctx; }
-    const r = auditAsset(ctx.asset);
+    const r = auditAsset(ctx.asset, { avoid: ctx.avoid });
     ctx.asset = r.asset;
     ctx.audit = { status: r.status, fixes: r.fixes, problems: r.problems, by: this.name };
     return ctx;
