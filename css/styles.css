@@ -1101,3 +1101,35 @@ html .cl-lbd.cl-lbd-bright.cl-lbd, html .cl-lbd.cl-lbd-bright.cl-lbd *, html .cl
 .lb-family { display: flex; flex-direction: column; gap: .2in; } .lb-family h2 { margin: 0; font-size: 22pt; }
 .lb-photo { flex: none; height: 3.4in; border: 3pt dashed #000; display: flex; align-items: center; justify-content: center; font-size: 14pt; font-weight: 700; }
 .lb-lines { flex: 1 1 auto; display: flex; flex-direction: column; justify-content: space-between; } .lb-lines i { display: block; border-bottom: 3pt solid #000; height: .36in; }
+
+/* ===== Facility tools (js/facility-tools-ui.js): EHR import wizard, therapy goals, shift highlights, scenario practice =====
+   The screens reuse the Studio tool styles (.st-*). These add the wizard steps, small grids and the printed pages: pure black on white, lines of 3 pt or more. */
+.ft-steps { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 18px; padding: 0; }
+.ft-steps li { display: flex; align-items: center; gap: 8px; min-height: var(--cg-tap, 52px); padding: 6px 14px; border: 2px solid currentColor; border-radius: 999px; }
+.ft-steps li[aria-current="step"] { outline: 3px solid currentColor; outline-offset: 1px; font-weight: 700; }
+.ft-steps b { display: inline-flex; align-items: center; justify-content: center; width: 1.8em; height: 1.8em; border: 2px solid currentColor; border-radius: 50%; }
+.ft-done b { border-width: 4px; }
+.ft-panel h2 { margin: 0 0 10px; font-size: 1.3rem; }
+.ft-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: 12px; }
+.ft-grid label { display: grid; gap: 4px; font-weight: 700; } .ft-grid input, .ft-grid select, .ft-row input { min-height: var(--cg-tap, 52px); box-sizing: border-box; width: 100%; }
+.ft-row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin: 0 0 8px; } .ft-row > span { flex: 1 1 14rem; } .ft-row input { flex: 1 1 14rem; width: auto; }
+.ft-report { margin: 0 0 14px; padding-left: 1.2em; } .ft-report li { margin: 0 0 4px; }
+.ft-codes { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 8px; }
+.ft-choices { display: grid; gap: 10px; margin: 12px 0; } .ft-choice { text-align: left; white-space: normal; height: auto; min-height: var(--cg-tap, 52px); padding: 12px 16px; justify-content: flex-start; }
+.ft-q0 { border-style: dashed; } .ft-q2 { border-left-width: 12px; }
+.ft-sheet { margin-top: 18px; overflow-x: auto; } .ft-sheet .sheet { margin: 0 auto; box-shadow: 0 0 0 3px currentColor; }
+
+.sheet.slp-sheet, .sheet.sh-hi { box-sizing: border-box; padding: .6in .5in .6in .75in !important; color: #000; background: #fff; font-size: 12pt; }
+.sh-hi h1, .slp-sheet h1 { margin: 0; font-size: 26pt; line-height: 1.1; color: #000; } .slp-sheet h2 { margin: .16in 0 .06in; font-size: 17pt; color: #000; }
+.sh-sec { margin: .1in 0 0; } .sh-sec h2 { margin: 0 0 .04in; padding-bottom: 2pt; border-bottom: 3pt solid #000; font-size: 14pt; color: #000; }
+.sh-list { list-style: none; margin: 0; padding: 0; } .sh-list li { margin: 0 0 .04in; padding-left: .18in; border-left: 3pt solid #000; font-size: 11.5pt; line-height: 1.25; }
+.sh-soothe.sh-settled { border-left-width: 7pt; } .sh-soothe.sh-still-unsettled { border-left-style: dashed; border-left-width: 5pt; }
+.sh-none, .sh-more { margin: 0; font-size: 11pt; font-style: italic; }
+.sh-box { display: inline-block; width: .15in; height: .15in; margin-right: 5pt; border: 2.25pt solid #000; vertical-align: -.02in; }
+
+.sheet.sc-cert { box-sizing: border-box; padding: .5in !important; color: #000; background: #fff; text-align: center; }
+.sc-frame { box-sizing: border-box; height: 100%; padding: .5in .45in; border: 4pt double #000; display: flex; flex-direction: column; justify-content: center; gap: .1in; }
+.sc-cert h1 { margin: 0; font-size: 34pt; line-height: 1.1; color: #000; } .sc-cert h2 { margin: .1in 0 0; font-size: 28pt; color: #000; } .sc-cert h3 { margin: .08in 0; font-size: 22pt; color: #000; }
+.sc-cert p { margin: 0; font-size: 13pt; } .sc-kicker { font-size: 12pt !important; letter-spacing: .14em; text-transform: uppercase; font-weight: 700; }
+.sc-cols { display: flex; justify-content: space-around; gap: .2in; margin-top: .2in; font-size: 12pt; } .sc-sign { margin-top: .5in !important; } .sc-note { margin-top: .3in !important; font-size: 10pt !important; }
+.sc-list { text-align: left; margin: .1in auto; max-width: 5.5in; font-size: 13pt; }

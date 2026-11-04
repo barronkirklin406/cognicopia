@@ -112,7 +112,10 @@ export const HUBS = [
       { key: "facility",     label: "Facility Portal",          href: B + "#/facility",     route: "facility",     icon: "building" },
       { key: "shift",        label: "Shift board",              href: B + "#/shift",        route: "shift",        icon: "clipboard" },
       { key: "roster",       label: "Resident roster",          href: B + "#/roster",       route: "roster",       icon: "roster" },
+      { key: "highlights",   label: "Shift highlights",         href: B + "#/highlights",   route: "highlights",   icon: "clipboard" },
+      { key: "ehr-import",   label: "EHR Import Wizard",        href: B + "#/ehr-import",   route: "ehr-import",   icon: "roster" },
       { key: "clinical",     label: "Session notes (SLP)",      href: B + "#/clinical",     route: "clinical",     icon: "stethoscope" },
+      { key: "therapy-goals", label: "Therapy Goals (SLP)",     href: B + "#/therapy-goals", route: "therapy-goals", icon: "stethoscope" },
       { key: "heirloom",     label: "Quarterly Legacy & Memory Books",     href: B + "#/heirloom",     route: "heirloom",     icon: "books" },
       { key: "planner-care-companion", label: "Care cues (planner companion)", href: B + "#/planner-care-companion", route: "planner-care-companion", icon: "journal" },
       { key: "settings",     label: "Settings & defaults",      href: B + "#/settings",     route: "settings",     icon: "gear" },
@@ -120,7 +123,8 @@ export const HUBS = [
       { key: "pilot",        label: "Start a 30-day pilot",     href: "pilot.html",         icon: "clipboard" },
       { key: "referral",     label: "Share with a colleague",   href: "referral.html",      icon: "cards" } ] },
   { id: "academy",   label: "Academy",          icon: "academy",  group: "staff", items: [
-      { key: "academy",      label: "Staff & Caregiver Academy",  href: B + "#/academy",      route: "academy",      icon: "academy" } ] },
+      { key: "academy",      label: "Staff & Caregiver Academy",  href: B + "#/academy",      route: "academy",      icon: "academy" },
+      { key: "scenarios",    label: "Distress Scenario Practice", href: B + "#/scenarios",    route: "scenarios",    icon: "academy" } ] },
   { id: "resources", label: "Resources",        icon: "library",  group: "staff", items: [] }   // the hub, its modules and Contact: see sidebar() and builderSidebar()
 ];
 /* The two headings above the hubs: what is for the resident, and what is for staff and family. */
@@ -433,7 +437,7 @@ ${inner}
       <ul class="sb-list">
         <li><button class="sb-link" type="button" id="navPacket">${ico("builder")}<span>Packet queue</span><span class="badge" id="navCount">0</span></button></li>
       </ul>`, true);
-    if (h.id === "academy") { const it = h.items[0]; return `    <a class="sb-link sb-hub-link" data-hub="${h.id}" href="#/${it.route}" data-route="${it.route}">${ico(h.icon, 26)}<span>${esc(h.label)}</span></a>`; }
+    if (h.id === "academy" && h.items.length === 1) { const it = h.items[0]; return `    <a class="sb-link sb-hub-link" data-hub="${h.id}" href="#/${it.route}" data-route="${it.route}">${ico(h.icon, 26)}<span>${esc(h.label)}</span></a>`; }
     if (h.id === "resources") return group(h, `      <ul class="sb-list">
 ${[{ label: HUB.title, href: HUB.href, icon: "library" }, { label: RESEARCH.label, href: moduleHref(RESEARCH), icon: "microscope" }].map(link).join("\n")}
       </ul>`);

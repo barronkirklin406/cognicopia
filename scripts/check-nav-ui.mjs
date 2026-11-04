@@ -73,8 +73,8 @@ try {
   ok(/^\d+$/.test((await p.textContent("#navColoringCount")).trim()), "Cognicopia Coloring shows how many pictures it has");
   await p.click("details.sb-hub[data-hub='facility'] > summary"); await p.click(".sb-link[data-route='roster']"); await p.waitForTimeout(700);
   ok(await p.$eval(".sb-link[aria-current='page']", e => e.dataset.route) === "roster" && await only(p, "details.sb-hub", "facility"), "choosing the roster marks it current and keeps Facility open");
-  await p.click("a.sb-hub-link[data-route='academy']"); await p.waitForTimeout(700);
-  ok(await p.$eval("a.sb-hub-link[aria-current='page']", e => e.dataset.route) === "academy", "Academy, a plain link, is marked current");
+  await p.click("details.sb-hub[data-hub='academy'] > summary"); await p.click(".sb-link[data-route='academy']"); await p.waitForTimeout(700);
+  ok(await p.$eval(".sb-link[aria-current='page']", e => e.dataset.route) === "academy" && await only(p, "details.sb-hub", "academy"), "choosing the Academy marks it current and keeps the Academy hub open (it also holds the scenario practice)");
   await p.evaluate(() => { location.hash = "#/planner"; }); await p.waitForTimeout(600);
   ok(await only(p, "details.sb-hub", "studio"), "a typed address (#/planner) opens the hub that holds it");
   await p.evaluate(() => { location.hash = "#/category/word"; }); await p.waitForTimeout(600);
