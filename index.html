@@ -22374,7 +22374,7 @@ if (document.readyState === "complete" || document.readyState === "interactive")
         }
         return false;
       },
-      tags: function(tags){ return (tags || []).some(function(t){ return topics.indexOf(t) !== -1; }); }
+      tags: function(tags){ var list = Array.isArray(tags) ? tags : (typeof tags === "string" && tags ? [tags] : []); return list.some(function(t){ return topics.indexOf(t) !== -1; }); }   // a single tag or none is fine too
     };
   }
 

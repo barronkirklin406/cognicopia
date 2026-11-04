@@ -223,7 +223,7 @@ const scripts = h => [...h.matchAll(/<script[^>]+src="([^"]+)"/g)].map(m => m[1]
 ok(/PACKET_RNG/.test(index) && /seedPacket/.test(index) && /dailyVariant/.test(index), "index.html seeds the packet from the name and the day");
 { // the packet's own code draws only from the seeded stream; what is left is the screen (confetti, the trainer's praise) and unique ids
   const lines = index.split("\n").filter(l => l.length < 600 && /Math\.random/.test(l) && !/^\s*(\/\/|\*|\/\*)/.test(l));
-  const allowed = [/const prand=/, /function newId\(\)/, /sessionId:Date\.now/, /document\.createElement\("span"\), a = Math\.random/, /left\[Math\.floor\(Math\.random/, /PRAISE\[Math\.floor\(Math\.random/];
+  const allowed = [/const prand=/, /function newId\(\)/, /sessionId:Date\.now/, /document\.createElement\("span"\), a = Math\.random/, /left\[Math\.floor\(Math\.random/, /PRAISE\[Math\.floor\(Math\.random/, /const chosenFreq = freqs\[Math\.floor\(Math\.random/, /const nextDelay = 6000 \+ Math\.random/];   // the last two time and pick the ambient wind chimes on the screen; they never touch a printed page
   const stray = lines.filter(l => !allowed.some(re => re.test(l)));
   ok(stray.length === 0, `index.html draws unseeded random numbers in: ${stray.map(l => l.trim().slice(0, 70)).join(" | ")}`);
 }
