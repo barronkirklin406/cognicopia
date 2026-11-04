@@ -873,6 +873,42 @@ html.cg-night-shift .cgpp-actions { background: #211910; }
   html.cgpp-printing body > *:not(#cgpp-print-stage) { display: none !important; }
   html.cgpp-printing #cgpp-print-stage { display: block !important; }
   #cgpp-print-stage .cgpp-sheet { width: auto; height: auto; min-height: 0; padding: 0; overflow: visible; box-shadow: none; break-after: page; page-break-after: always; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  /* the page-wide print rule stretches every table to the full width; a word search must stay a square of its own cell size */
+  html.cgpp-printing #cgpp-print-stage table.cgpp-ws { width: var(--cgpp-ws-w, auto) !important; max-width: none !important; table-layout: fixed; }
   #cgpp-print-stage .cgpp-sheet:last-child { break-after: auto; page-break-after: auto; }
   #cgpp-print-stage .cgpp-sheet .cgpp-foot { position: static; margin-top: 18px; }
 }
+
+/* ===== Deep Packet Customization panel (js/reminiscence-engine.js) ===== */
+.cgre-mount { margin: 0 0 26px; }
+.cgre-panel { box-sizing: border-box; border: 3px solid var(--cg-charcoal); border-radius: var(--cg-radius-lg, 16px); background: var(--cg-white); color: var(--cg-charcoal); font-family: var(--cg-font-ui); }
+.cgre-panel :where(p, span, label, legend, div, summary, h3) { color: inherit; }
+.cgre-sum { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; min-height: var(--cg-tap, 52px); padding: 12px 18px; cursor: pointer; font-weight: 700; font-size: 1.15rem; list-style-position: inside; }
+.cgre-sum:hover { background: var(--cg-sage-100); border-radius: 12px; }
+.cgre-opt { font-weight: 400; font-size: .95rem; color: var(--cg-ink-soft); }
+.cgre-sum:focus-visible, .cgre-input:focus-visible, .cgre-btn:focus-visible, .cgre-check input:focus-visible { outline: 3px solid var(--cg-focus); outline-offset: 2px; box-shadow: 0 0 0 6px var(--cg-focus-dark); }
+.cgre-body { padding: 4px 18px 18px; border-top: 3px solid var(--cg-charcoal); }
+.cgre-lead { margin: 14px 0 18px; max-width: 60ch; font-size: 1rem; color: var(--cg-ink-soft); }
+.cgre-field { margin: 0 0 18px; }
+.cgre-field label { display: block; margin: 0 0 6px; font-weight: 700; font-size: 1rem; }
+.cgre-sub { display: block; font-weight: 400; font-size: .95rem; color: var(--cg-ink-soft); margin-top: 2px; }
+.cgre-input { box-sizing: border-box; width: 100%; min-height: var(--cg-tap, 52px); padding: 12px 14px; font: inherit; font-size: 1.05rem; color: var(--cg-charcoal); background: var(--cg-white); border: 2px solid var(--cg-charcoal); border-radius: 8px; }
+textarea.cgre-input { min-height: 5.5rem; resize: vertical; }
+.cgre-inc { margin: 0 0 18px; padding: 0; border: 0; }
+.cgre-inc legend { padding: 0; margin: 0 0 8px; font-weight: 700; font-size: 1rem; color: var(--cg-charcoal); }
+.cgre-check { display: flex !important; align-items: center; gap: 12px; min-height: var(--cg-tap, 52px); margin: 0 0 8px !important; padding: 8px 14px; border: 2px solid var(--cg-charcoal); border-radius: 8px; background: var(--cg-white); font-weight: 600 !important; cursor: pointer; }
+.cgre-check:hover { background: var(--cg-sage-100); }
+.cgre-check input { flex: none; width: 28px; height: 28px; margin: 0; accent-color: var(--cg-green-700); }
+.cgre-actions { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 8px; }
+.cgre-btn { min-height: var(--cg-tap, 52px); padding: 10px 20px; font: inherit; font-weight: 700; color: var(--cg-charcoal); background: var(--cg-white); border: 3px solid var(--cg-charcoal); border-radius: 10px; cursor: pointer; }
+.cgre-btn:hover { background: var(--cg-sage-200); }
+.cgre-status { min-height: 1.4em; margin: 6px 0 0; font-weight: 600; }
+html.cg-night-shift .cgre-panel { background: #211910; color: #ffedcc; border-color: #9b7136; }
+html.cg-night-shift .cgre-body { border-color: #9b7136; }
+html.cg-night-shift .cgre-inc legend { color: #ffedcc; }
+html.cg-night-shift .cgre-sum:hover, html.cg-night-shift .cgre-check:hover { background: #33271a; }
+html.cg-night-shift .cgre-lead, html.cg-night-shift .cgre-sub, html.cg-night-shift .cgre-opt { color: #e6cfa0; }
+html.cg-night-shift .cgre-input, html.cg-night-shift .cgre-check { background: #17120c; color: #ffedcc; border-color: #9b7136; }
+html.cg-night-shift .cgre-btn { background: #17120c; color: #ffedcc; border-color: #9b7136; }
+html.cg-night-shift .cgre-btn:hover { background: #33271a; }
+@media print { .cgre-mount { display: none !important; } }

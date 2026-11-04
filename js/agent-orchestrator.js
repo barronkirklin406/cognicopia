@@ -314,6 +314,7 @@ export function customizationOf(profile, asset, mode, shared) {
   const anchors = profile.anchors.filter(seen); if (anchors.length) out.push({ label: "Nostalgia anchors", value: anchors.join(", ") });
   const likes = profile.preferences.filter(seen); if (likes.length) out.push({ label: "Interests", value: likes.join(", ") });
   if (asset && asset.era && asset.era !== "mixed") out.push({ label: "Era anchors", value: asset.era });
+  if (asset && Array.isArray(asset.deepTags)) asset.deepTags.forEach((t) => { if (t && t.label && t.value) out.push({ label: String(t.label), value: String(t.value) }); });   // set by a template that took part in the sheet (the reminiscence engine)
   return out;
 }
 

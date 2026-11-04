@@ -60,7 +60,7 @@ export const SHEET_CSS = `
 .cgpp-list{margin:0;padding-left:1.2em}.cgpp-list li{margin:0 0 6px}
 .cgpp-cards{display:flex;flex-wrap:wrap;gap:10px}.cgpp-card{flex:1 1 30%;min-width:30%;border:4px solid #000;border-radius:8px;padding:10px 12px;font-weight:700}
 .cgpp-choice{display:flex;gap:12px;margin:0 0 10px}.cgpp-choice div{flex:1;border:4px solid #000;border-radius:8px;padding:12px;text-align:center;font-weight:700}
-.cgpp-ws{border-collapse:collapse;margin:0 auto 10px}.cgpp-ws td{width:30px;height:30px;text-align:center;font-weight:700;font-size:1.1em;border:0}
+.cgpp-ws{border-collapse:collapse;table-layout:fixed;margin:0 auto 10px}.cgpp-ws td{width:30px;height:30px;padding:0;line-height:1;text-align:center;font-weight:700;font-size:1.1em;border:0}
 .cgpp-words{display:flex;flex-wrap:wrap;gap:6px 18px;font-weight:700}
 .cgpp-pairs{display:flex;gap:30px}.cgpp-pairs ol{margin:0;padding-left:1.4em;flex:1}.cgpp-pairs li{margin:0 0 10px}
 .cgpp-step{display:flex;gap:12px;border:4px solid #000;border-radius:8px;padding:10px 12px;margin:0 0 10px}.cgpp-step b{flex:none;width:2em;height:2em;border:4px solid #000;border-radius:50%;text-align:center;line-height:1.6em}
@@ -84,7 +84,7 @@ function blockHtml(b) {
     case "anchors": return `<div class="cgpp-block">${head}<div class="cgpp-cards">${items.map((i) => `<div class="cgpp-card">${esc(i)}</div>`).join("")}</div></div>`;
     case "prompts": return `<div class="cgpp-block">${head}<ul class="cgpp-list">${items.map((i) => `<li>${esc(i)}</li>`).join("")}</ul></div>`;
     case "choices": return `<div class="cgpp-block">${head}${items.map((c) => `<div class="cgpp-choice"><div>${esc(c && c.a)}</div><div>${esc(c && c.b)}</div></div>`).join("")}</div>`;
-    case "wordsearch": { const g = Array.isArray(b.grid) ? b.grid : []; return `<div class="cgpp-block">${head}<table class="cgpp-ws" role="presentation">${g.map((row) => `<tr>${String(row).split("").map((c) => `<td>${esc(c)}</td>`).join("")}</tr>`).join("")}</table><div class="cgpp-words">${(b.words || []).map((w) => `<span>${esc(w)}</span>`).join("")}</div></div>`; }
+    case "wordsearch": { const g = Array.isArray(b.grid) ? b.grid : [], n = Math.max(g.length, ...g.map((r) => String(r).length), 1), cp = Math.max(14, Math.min(56, Math.floor(672 / n), Math.round(Number(b.cellPx) || 30))), cell = cp === 30 ? "" : ` style="width:${cp}px;height:${cp}px${cp < 30 ? ";font-size:" + Math.floor(cp * 0.68) + "px" : ""}"`; return `<div class="cgpp-block">${head}<table class="cgpp-ws" role="presentation" style="width:${n * cp}px;--cgpp-ws-w:${n * cp}px;table-layout:fixed">${g.map((row) => `<tr>${String(row).split("").map((c) => `<td${cell}>${esc(c)}</td>`).join("")}</tr>`).join("")}</table><div class="cgpp-words">${(b.words || []).map((w) => `<span>${esc(w)}</span>`).join("")}</div></div>`; }
     case "matching": return `<div class="cgpp-block">${head}<div class="cgpp-pairs"><ol>${items.map((p) => `<li>${esc(p && p.left)}</li>`).join("")}</ol><ol type="A">${(b.rightOrder || items.map((p) => p && p.right)).map((r) => `<li>${esc(r)}</li>`).join("")}</ol></div></div>`;
     case "note": return `<div class="cgpp-block">${head}<p>${esc(b.text)}</p></div>`;
     default: return items.length ? `<div class="cgpp-block">${head}<ul class="cgpp-list">${items.map((i) => `<li>${esc(typeof i === "string" ? i : JSON.stringify(i))}</li>`).join("")}</ul></div>` : "";
@@ -99,10 +99,11 @@ export function renderPageHtml(asset, key, pageNo, total) {
     body = (pg.blocks || []).map(blockHtml).join("");
   } else if (key === "caregiver") {
     const steps = Array.isArray(pg.steps) ? pg.steps : [];
+    const noteLines = (pg.notes || []).reduce((n, x) => n + Math.max(1, Math.ceil(String(x).length / 84)), 0), dailyLines = Math.max(2, Math.min(5, 12 - noteLines - (a.branding && (a.branding.facilityName || a.branding.headerText || a.branding.logoDataUrl) ? 2 : 0)));   // the more notes, the fewer ruled lines, so the page never spills onto a fourth sheet
     body = steps.map((s, i) => `<div class="cgpp-step"><b>${i + 1}</b><div><strong>${esc(s.label)}</strong><br/>${esc(s.text)}</div></div>`).join("")
       + `<div class="cgpp-notice"><span>Validation therapy safety notice</span><br/>${esc(pg.safetyNotice || "")}</div>`
       + ((pg.notes || []).length ? `<div class="cgpp-block"><h3 class="cgpp-h2">Staff notes</h3><ul class="cgpp-list">${pg.notes.map((x) => `<li>${esc(x)}</li>`).join("")}</ul></div>` : "")
-      + `<div class="cgpp-block"><h3 class="cgpp-h2">Daily notes</h3><div class="cgpp-lines"><div></div><div></div><div></div><div></div><div></div></div></div>`;
+      + `<div class="cgpp-block"><h3 class="cgpp-h2">Daily notes</h3><div class="cgpp-lines">${"<div></div>".repeat(dailyLines)}</div></div>`;
   } else {
     body = `<div class="cgpp-block"><ul class="cgpp-list">${(pg.items || []).map((i) => `<li><strong>${esc(i.sense)}.</strong> ${esc(i.text)}</li>`).join("")}</ul></div>` + (pg.safety ? `<div class="cgpp-notice"><span>Safety</span><br/>${esc(pg.safety)}</div>` : "");
   }

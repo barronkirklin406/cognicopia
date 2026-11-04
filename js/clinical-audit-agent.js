@@ -99,6 +99,10 @@ export function auditAsset(asset, options = {}) {
   if (res) {
     if (!(res.fontPt >= MIN_PT)) { fixes.push({ rule: "print size", where: "pages.resident.fontPt" }); res.fontPt = MIN_PT; }
     (res.blocks || []).forEach((b, i) => {
+      if (b.type === "wordsearch") {      // a word search is always N columns by N rows (1 x 1, 2 x 2 ... 20 x 20 and on)
+        const g = Array.isArray(b.grid) ? b.grid.map((r) => String(r)) : [];
+        if (!g.length || g.some((r) => r.length !== g.length)) problems.push({ rule: "a word search grid must have as many columns as rows", where: `pages.resident.blocks[${i}]` });
+      }
       if (b.type === "choices") {
         const items = Array.isArray(b.items) ? b.items : [];
         if (!items.length || items.some((c) => !c || !c.a || !c.b)) problems.push({ rule: "a choice needs two options", where: `pages.resident.blocks[${i}]` });

@@ -91,5 +91,9 @@ ok(all === 108 && notPass.length === 0, `${all} generated sheets across every ti
 const grp = await oAll.execute({ mode: "group", profiles: [{ preferredName: "A", formativeEra: "1950s", ailmentTier: 1, preferences: ["gardening"] }, { preferredName: "B", formativeEra: "1950s", ailmentTier: 3, preferences: ["gardening"] }] });
 ok(grp.audit.status === "pass" && grp.tier === 3, "a group sheet passes the audit");
 
+{ const sq = base(); sq.pages.resident.blocks.push({ type: "wordsearch", title: "Find these words", grid: ["ABC", "DEF"], words: ["ABC"] });
+  const r1 = auditAsset(sq); ok(r1.status === "blocked" && r1.problems.some((x) => /as many columns as rows/.test(x.rule)), "a word search that is not square (3 columns by 2 rows) is blocked");
+  const good = base(); good.pages.resident.blocks.push({ type: "wordsearch", title: "Find these words", grid: ["ABC", "DEF", "GHI"], words: ["ABC"] });
+  ok(!auditAsset(good).problems.some((x) => /columns as rows/.test(x.rule)), "a square word search is accepted"); }
 if (problems.length) { console.error("clinical audit agent check FAILED: " + problems.length + " problem(s), " + passed + " passed"); problems.forEach((x) => console.error("  - " + x)); process.exit(1); }
 console.log("clinical audit agent check passed: " + passed + " checks (repairs, blocks, safety notice and 18 pt, idempotent, plugged into the orchestrator, 108 generated sheets)");
