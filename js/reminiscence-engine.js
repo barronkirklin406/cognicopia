@@ -208,20 +208,22 @@ export function reminiscenceTemplate(ctx) {
   const avoided = avoidMatcher(ctx.avoid || profile.avoid), fine = (t) => !avoided(String(t));
   const deep0 = ctx.deep || normalizeDeep(ctx.request && ctx.request.deep);
   const deep = Object.assign({}, deep0, { themeWords: (deep0.themeWords || []).filter(fine), notes: (deep0.notes || []).filter(fine), music: deep0.music.filter(fine), foods: deep0.foods.filter(fine), places: deep0.places.filter(fine), words: deep0.words.filter(fine), staffNotes: deep0.staffNotes.filter(fine) });   // a keep-off word never gets in through any field
-  const fontPt = FONT_PT[tier] || 20, fontPx = fontPt * 96 / 72;
+  const cal = ctx.calibration && typeof ctx.calibration === "object" ? ctx.calibration : {};   // set by the difficulty calibrator (pillar 2): caps for the sheet, never a diagnosis
+  const capTo = (v, cap) => (Number(cap) > 0 ? Math.min(v, Number(cap)) : v);
+  const fontPt = Math.max(FONT_PT[tier] || 20, Number(cal.minFontPt) || 0), fontPx = fontPt * 96 / 72;
   const seed = [personal ? profile.name : "", profile.era, tier, deep.variant].join("|");   // used only to pick, never printed
 
   /* 1. the words for the word search: theirs first, then from their years */
   const first = (s) => String(s || "").split(/[\s,]+/).filter(Boolean)[0] || "";
   const FALLBACK_WORDS = ["MUSIC", "GARDEN", "FAMILY", "HOME", "SUNDAY", "SONG", "KITCHEN", "FLOWERS", "RADIO", "SPRING", "DANCE", "SUPPER"];
   const own = [...deep.themeWords, ...(personal ? [...deep.words, ...profile.pets, ...profile.family.map(first), ...profile.preferences.map(first), ...deep.foods.map(first), ...deep.music.map(first), first(profile.career), first(profile.hometown), ...profile.anchors.map(first)] : [...profile.preferences.map(first), ...profile.anchors.map(first)])];
-  const size = tier === 3 ? 6 : tier === 2 ? 7 : 8, count = tier === 3 ? 4 : 5;
+  const size = capTo(tier === 3 ? 6 : tier === 2 ? 7 : 8, cal.maxGrid), count = capTo(tier === 3 ? 4 : 5, cal.maxWords);
   const wanted = [...own, ...FALLBACK_WORDS].filter((w) => w && fine(w) && toLetters(w).length >= 3 && toLetters(w).length <= size);
   let ws = null;
   if (deep.include.wordSearch) { ws = buildWordSearch(wanted, { size, max: count, seed }); if (ws.words.length < 3) ws = null; }
 
   /* 2. fun to know, 3. things that go together */
-  const sparkCount = tier === 1 ? 3 : 2;
+  const sparkCount = capTo(tier === 1 ? 3 : 2, cal.maxSparks);
   const sparks = deep.include.sparks ? [...deep.notes, ...sparksFor(profile.era, sparkCount, { seed, focus: deep.focus, fine })].slice(0, sparkCount) : [];
   const match = deep.include.matching ? matchingItems(tier === 1 ? 4 : 3, { seed, pool: pairPoolFor(profile, deep), fine }) : { items: [], rightOrder: [] };
 
@@ -244,7 +246,7 @@ export function reminiscenceTemplate(ctx) {
     return blocks;
   };
   /* Fit one page: if the sheet is too full, give up the least important things first, one step at a time. */
-  const st = { talk: true, talkMax: 5, anchors: Math.min(3, anchorsAll.length), sparks: sparks.length, pairs: match.items.length, cell: tier === 3 ? 40 : tier === 2 ? 40 : 32 };
+  const st = { talk: true, talkMax: 5, anchors: Math.min(3, anchorsAll.length), sparks: sparks.length, pairs: capTo(match.items.length, cal.maxPairs), cell: tier === 3 ? 40 : tier === 2 ? 40 : 32 };
 const floor = tier === 3 ? 40 : 32;   // the latest stage keeps the biggest squares: it gives up other things first
   const reductions = [() => { st.anchors = 0; }, () => { st.sparks = Math.min(st.sparks, 1); }, () => { st.pairs = Math.min(st.pairs, 3); }, () => { st.cell = Math.max(floor, st.cell - 4); }, () => { st.pairs = Math.min(st.pairs, 2); }, () => { st.cell = tier === 3 ? floor : 30; }, () => { st.talkMax = 3; }, () => { st.talkMax = 2; }, () => { st.talk = false; }, () => { st.sparks = 0; }, () => { st.pairs = 0; }];   // the three parts outlast the "we can talk about" line, which page 2 repeats as starters
   let blocks = build(st);
@@ -264,7 +266,8 @@ const floor = tier === 3 ? 40 : 32;   // the latest stage keeps the biggest squa
   const how = [blocks.some((b) => b.type === "wordsearch") ? "the words in the word search run across or down" : "", blocks.some((b) => b.type === "matching") ? "they can draw a line between things that go together" : ""].filter(Boolean);
   const starters = (baseBlocks.find((b) => b.type === "prompts") || { items: [] }).items.slice(0, 2);
   const generic = base.pages.caregiver.notes.slice(how.length ? 1 : 0);      // the first generic note says what the "Page 1" note says, so it steps aside
-  const ranked = [...(personal ? deep.staffNotes.map((n) => "Staff note: " + n) : []), ...generic.slice(0, 2), ...(how.length ? ["Page 1: " + how.join(", and ") + ". Pointing, reading aloud or just talking all count; any response is welcome."] : []), ...generic.slice(2), ...(starters.length ? ["If they would like to talk, start with: " + starters.join(" ")] : [])];
+  const guidance = (Array.isArray(cal.guidance) ? cal.guidance : []).map((g) => String(g)).filter(fine).slice(0, 2);
+  const ranked = [...(personal ? deep.staffNotes.map((n) => "Staff note: " + n) : []), ...guidance, ...generic.slice(0, 2), ...(how.length ? ["Page 1: " + how.join(", and ") + ". Pointing, reading aloud or just talking all count; any response is welcome."] : []), ...generic.slice(2), ...(starters.length ? ["If they would like to talk, start with: " + starters.join(" ")] : [])];
   const notes = ranked.slice(0, 6);
   const caregiver = Object.assign({}, base.pages.caregiver, { heading: "Staff Facilitation Protocol", steps: steps3, notes, safetyNotice: SAFETY_NOTICE });
 
