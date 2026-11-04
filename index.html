@@ -4838,52 +4838,62 @@ html body{background:var(--cg-cream,#f8f6ef)}
 .lp-btn:focus-visible,.lp-more:focus-visible,.lp-marks a:focus-visible,.lp-footer a:focus-visible{outline:3px solid var(--cg-focus,#f5b800);outline-offset:3px;box-shadow:0 0 0 6px var(--cg-focus-dark,#08262c)}
 .lp-byline{margin:0;color:var(--cg-ink-soft,#343b49);font:600 15px/1.4 var(--cg-font-ui,"Segoe UI",sans-serif)}
 
-/* 4 Foundational Human Pillars Checklist */
-.lp-pillars-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 14px;margin:18px 0 22px}
-@media (max-width:560px){.lp-pillars-grid{grid-template-columns:1fr}}
-.lp-pillar-item{display:flex;align-items:flex-start;gap:8px}
-.lp-pillar-check{flex:none;width:20px;height:20px;border-radius:5px;background:rgba(14,60,67,.12);color:var(--cg-green-700,#0e3c43);font-size:12px;font-weight:900;display:flex;align-items:center;justify-content:center;margin-top:1px}
-.lp-pillar-item div{display:flex;flex-direction:column}
-.lp-pillar-item b{font-size:12.5px;color:var(--cg-charcoal,#1a202c);line-height:1.25}
-.lp-pillar-item span{font-size:11.5px;color:var(--cg-ink-soft,#343b49);line-height:1.35}
-html.cg-night-shift .lp-pillar-check{background:rgba(255,212,119,.2);color:#ffd477}
-html.cg-night-shift .lp-pillar-item b{color:#fff1cf}
-html.cg-night-shift .lp-pillar-item span{color:#e0c99d}
-
-/* Live Packet Sandbox (interactive split-screen hero component) */
-.lp-sandbox-wrap{position:relative;width:100%;max-width:580px;margin:0 auto}
-.lp-sandbox-card{border-radius:18px;background:#122a2e;border:2px solid rgba(79,179,191,.45);box-shadow:0 20px 40px rgba(5,26,30,.35);overflow:hidden;color:#e8f2f3;font-family:var(--cg-font-ui,"Segoe UI",sans-serif)}
-.lp-sb-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;padding:12px 18px;background:#0b1b1e;border-bottom:1px solid rgba(79,179,191,.2)}
-.lp-sb-pulse-wrap{display:flex;align-items:center;gap:8px}
-.lp-sb-pulse{position:relative;display:inline-block;width:10px;height:10px;border-radius:50%;background:#4fb3bf}
-.lp-sb-pulse::after{content:"";position:absolute;inset:-3px;border-radius:50%;border:2px solid #4fb3bf;opacity:.75;animation:sbPulse 2s cubic-bezier(0,0,.2,1) infinite}
-@keyframes sbPulse{0%{transform:scale(.8);opacity:.9}100%{transform:scale(2.2);opacity:0}}
-.lp-sb-title{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#e8f2f3;margin:0}
-.lp-sb-badge{font-size:11px;font-weight:600;padding:2px 8px;border-radius:999px;background:rgba(79,179,191,.15);border:1px solid rgba(79,179,191,.3);color:#7fcbd3}
-.lp-sb-body{padding:14px 18px;background:#0e2225;border-bottom:1px solid rgba(79,179,191,.15)}
-.lp-sb-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
-@media (max-width:580px){.lp-sb-grid{grid-template-columns:1fr}}
-.lp-sb-field label{display:block;font-size:11px;font-weight:700;color:#a7bcbf;margin-bottom:4px}
-.lp-sb-field input{width:100%;box-sizing:border-box;min-height:38px;padding:6px 10px;font-size:13px;border-radius:8px;background:#06191d;color:#e8f2f3;border:1px solid rgba(79,179,191,.3);outline:none;font-family:inherit}
-.lp-sb-field input:focus{border-color:#7fcbd3;box-shadow:0 0 0 2px rgba(127,203,211,.25)}
-.lp-sb-presets{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:10px}
-.lp-sb-presets-lbl{font-size:11px;color:#a7bcbf;font-weight:600}
-.lp-sb-chip{background:#06191d;border:1px solid rgba(79,179,191,.25);color:#a7bcbf;padding:3px 8px;border-radius:6px;font-size:11px;cursor:pointer;transition:all .15s}
-.lp-sb-chip:hover,.lp-sb-chip.active{background:#4fb3bf;color:#05222a;border-color:#4fb3bf;font-weight:700}
-.lp-sb-tabs{display:flex;align-items:center;justify-content:space-between;padding:8px 18px 0;background:#0b1b1e;border-bottom:1px solid rgba(79,179,191,.15)}
-.lp-sb-tab-group{display:flex;gap:4px}
-.lp-sb-tab{background:transparent;border:0;color:#a7bcbf;font-size:11.5px;font-weight:600;padding:6px 10px;border-radius:6px 6px 0 0;cursor:pointer;transition:all .15s}
-.lp-sb-tab.active{background:#ffffff;color:#05222a;font-weight:700}
-.lp-sb-tab-info{font-size:11px;color:rgba(167,188,191,.8)}
-.lp-sb-preview-viewport{padding:14px;background:#081517;display:flex;justify-content:center;min-height:280px}
-.lp-sb-paper{background:#ffffff;border:3px solid #000000;border-radius:8px;padding:12px;width:100%;box-shadow:0 12px 28px rgba(0,0,0,.4)}
-.lp-sb-svg-host{width:100%}
-.lp-sb-svg-host svg{display:block;width:100%;height:auto;max-height:360px}
-.lp-sb-foot{padding:8px 18px;background:#0b1b1e;display:flex;align-items:center;justify-content:space-between;font-size:11px;color:#a7bcbf;border-top:1px solid rgba(79,179,191,.15)}
-.lp-sb-cta{padding:14px 18px;background:linear-gradient(180deg,#122a2e 0%,#071618 100%);border-top:1px solid rgba(79,179,191,.25);text-align:center}
-.lp-sandbox-generate-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;box-sizing:border-box;min-height:48px;padding:10px 18px;border-radius:12px;background:#4fb3bf;color:#05222a!important;font-size:15px;font-weight:800;text-decoration:none;box-shadow:0 6px 18px rgba(79,179,191,.25);transition:all .2s;cursor:pointer}
-.lp-sandbox-generate-btn:hover{background:#7fcbd3;transform:translateY(-1px);box-shadow:0 10px 24px rgba(79,179,191,.35)}
-.lp-sb-cta-sub{margin:8px 0 0;font-size:11px;color:#a7bcbf}
+/* the picture: a laptop showing the packet tool, on a peach glow (decoration; aria-hidden) */
+.lp-visual{position:relative;display:flex;align-items:center;justify-content:center;min-height:300px;padding:6px 0}
+.lp-orb{position:absolute;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fbe2d3,#eba987)}
+.lp-orb-a{width:130px;height:130px;top:-18px;right:6%;opacity:.5}
+.lp-orb-b{width:22px;height:22px;top:30%;left:4%;opacity:.9}
+.lp-orb-c{width:14px;height:14px;bottom:12%;right:2%;opacity:.9}
+.lp-emblem{--e:clamp(150px,14.2vw,194px);position:absolute;z-index:2;top:6px;left:calc(50% - min(50%,250px) - var(--e) - 19px);width:var(--e);height:auto;filter:drop-shadow(0 6px 10px rgba(79,64,48,.18))}
+/* where the two columns are narrow the blank space beside the heading is gone: the logo tucks onto the laptop's top-left corner instead */
+@media (max-width:1279px){.lp-emblem{top:-30px;left:-34px;width:96px}}
+/* 3D Modern EliteBook Laptop Mockup & Cognicopia Activity Builder Preview */
+.elite-stage{position:relative;z-index:1;width:min(100%,560px);perspective:1400px}
+.elite-laptop-3d{position:relative;width:100%;transform-style:preserve-3d;transform:rotateY(-13deg) rotateX(9deg) rotateZ(1deg);transition:transform .4s cubic-bezier(.16,1,.3,1),filter .4s ease;filter:drop-shadow(-18px 28px 36px rgba(14,60,67,.28))}
+.elite-laptop-3d:hover{transform:rotateY(-7deg) rotateX(5deg) rotateZ(.5deg) translateY(-4px);filter:drop-shadow(-22px 34px 44px rgba(14,60,67,.34))}
+.elite-lid{position:relative;padding:9px 9px 12px;border-radius:16px 16px 4px 4px;background:linear-gradient(180deg,#e5e9ee 0%,#cbd3dc 48%,#b1bac6 100%);border:1px solid #9aa4b0;box-shadow:inset 0 1px 1px rgba(255,255,255,.9),inset 0 -1px 2px rgba(0,0,0,.35)}
+.elite-bezel{position:relative;padding:7px 7px 9px;border-radius:9px;background:#0c1015;box-shadow:inset 0 0 0 1px #222a36,0 3px 8px rgba(0,0,0,.55)}
+.elite-webcam-bar{display:flex;align-items:center;justify-content:center;gap:7px;margin-bottom:5px}
+.elite-cam-lens{width:7px;height:7px;border-radius:50%;background:#16202c;border:1px solid #2b3748;display:inline-flex;align-items:center;justify-content:center}
+.elite-cam-dot{width:2.5px;height:2.5px;border-radius:50%;background:#0e3c43}
+.elite-mic{width:3px;height:3px;border-radius:50%;background:#1a222e}
+.elite-screen{position:relative;border-radius:5px;overflow:hidden;background:#f6f3ed;border:1px solid #d5cebf;font-family:var(--cg-font-ui,"Segoe UI",sans-serif);color:#1a202c;box-shadow:inset 0 0 12px rgba(0,0,0,.06)}
+.elite-screen::after{content:"";position:absolute;inset:0;background:linear-gradient(125deg,rgba(255,255,255,.20) 0%,rgba(255,255,255,0) 40%);pointer-events:none;z-index:5}
+.elite-appbar{display:flex;align-items:center;justify-content:space-between;padding:6px 10px;background:#0e3c43;color:#ffffff;font-size:11px;font-weight:700}
+.elite-appbar-title{display:flex;align-items:center;gap:6px;font-family:var(--cg-font-display,Georgia,serif);font-size:13px;font-weight:700;letter-spacing:.02em}
+.elite-appbar-badges{display:flex;align-items:center;gap:6px}
+.elite-badge-gutter{background:#f5b800;color:#08262c;font-size:10px;font-weight:800;padding:2px 7px;border-radius:4px}
+.elite-badge-print{background:#195963;color:#ffffff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;border:1px solid #287480}
+.elite-screen-body{display:grid;grid-template-columns:140px minmax(0,1fr);gap:8px;padding:8px}
+.elite-profile-col{background:#ffffff;border:1px solid #e2dbce;border-radius:7px;padding:8px;font-size:11px;line-height:1.35;box-shadow:0 1px 3px rgba(0,0,0,.04);text-align:left}
+.elite-profile-target{font-size:9px;font-weight:800;text-transform:uppercase;color:#8a3a20;letter-spacing:.06em;margin-bottom:2px}
+.elite-profile-name{font-family:var(--cg-font-display,Georgia,serif);font-size:13px;font-weight:700;color:#0e3c43;margin-bottom:2px}
+.elite-profile-bio{font-size:10px;color:#5a6578;margin-bottom:6px;border-bottom:1px solid #eee8dd;padding-bottom:5px}
+.elite-fam-highlight{background:#e8f4f5;border:1px solid #b7dfe3;border-radius:5px;padding:4px 6px;margin:4px 0}
+.elite-fam-highlight strong{color:#0e3c43;font-weight:800;font-size:11.5px}
+.elite-sheet-col{background:#ffffff;border:2px solid #000000;border-radius:7px;padding:8px 10px;box-shadow:0 2px 6px rgba(0,0,0,.06);display:flex;flex-direction:column;justify-content:space-between;text-align:left}
+.elite-sheet-hd{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid #000000;padding-bottom:3px;margin-bottom:6px;font-weight:700}
+.elite-sheet-title{font-family:var(--cg-font-display,Georgia,serif);font-size:12px;color:#000000}
+.elite-sheet-page{font-size:9.5px;font-family:monospace;color:#000000}
+.elite-grid-container{display:inline-block;margin:0 auto 6px;border:1.5px solid #000000;background:#ffffff}
+.elite-grid-table{border-collapse:collapse;font-family:monospace;font-size:12px;font-weight:800;text-align:center}
+.elite-grid-table td{width:22px;height:22px;border:1px solid #000000;color:#000000;padding:0;line-height:22px}
+.elite-target-word{background:#f5b800!important;color:#08262c!important;font-weight:900!important}
+.elite-wordbank{background:#f1f6f6;border:1px solid #cbe0e3;border-radius:5px;padding:5px 8px;font-size:10px;line-height:1.3}
+.elite-wordbank-title{font-weight:800;color:#0e3c43;margin-bottom:3px;font-size:10.5px}
+.elite-wordbank-list{display:grid;grid-template-columns:1fr 1fr;gap:2px 6px;font-weight:700}
+.elite-word-sarah{color:#0e3c43;font-weight:800;font-size:11px}
+.elite-fill-callout{border-top:1px solid #e2dbce;margin-top:5px;padding-top:4px;font-size:10px;color:#222222;text-align:left}
+.elite-fill-callout strong{color:#0e3c43;text-decoration:underline;text-underline-offset:2px}
+.elite-screen-foot{display:flex;justify-content:space-between;padding:4px 10px;background:#ece6dc;font-size:9px;font-weight:700;color:#444b58;border-top:1px solid #dcd4c6}
+.elite-hinge{height:6px;margin:0 40px;background:linear-gradient(90deg,#96a0ac 0%,#4f5763 50%,#96a0ac 100%);border-radius:0 0 3px 3px;box-shadow:inset 0 1px 2px rgba(0,0,0,.5)}
+.elite-base{position:relative;height:16px;margin:0 -4%;border-top:1px solid #eef2f6;border-radius:0 0 22px 22px / 0 0 14px 14px;background:linear-gradient(180deg,#e4e8ed 0%,#cfd6df 50%,#9fa8b5 100%);box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 14px 28px rgba(0,0,0,.28)}
+.elite-base-notch{position:absolute;top:0;left:50%;width:70px;height:5px;transform:translateX(-50%);border-radius:0 0 6px 6px;background:#96a0ac;box-shadow:inset 0 1px 2px rgba(0,0,0,.3)}
+.lp-float{position:absolute;z-index:2;left:0%;bottom:-18px;display:grid;gap:2px;padding:9px 13px;border:1px solid #bce0e4;border-radius:12px;background:#ffffff;box-shadow:0 14px 30px rgba(14,60,67,.18)}
+.lp-float b{color:var(--cg-charcoal,#1a202c);font:700 14px/1.2 var(--cg-font-ui,"Segoe UI",sans-serif)}
+.lp-float span{color:var(--cg-ink-soft,#343b49);font:400 13px/1.3 var(--cg-font-ui,"Segoe UI",sans-serif)}
+@media (max-width:768px){.elite-laptop-3d{transform:rotateY(-5deg) rotateX(4deg)}}
+@media (max-width:480px){.elite-laptop-3d{transform:none}.elite-screen-body{grid-template-columns:1fr}.elite-profile-col{display:none}}
 
 /* what you get: the four value cards, side by side */
 .lp-features{padding:6px 0 30px}
@@ -5020,7 +5030,6 @@ html.cg-night-shift .cg-wood{border-top-color:#7a5326;border-bottom-color:#0e070
   .lp-hero{padding:22px 0 12px}
   .lp-hero-grid,.lp-proof-grid{grid-template-columns:minmax(0,1fr)}
   .lp-visual{display:none}
-  .lp-sandbox-wrap{display:block;margin-top:24px;width:100%}
   .lp .lede{font-size:17px;margin-bottom:16px}
   .lp-features{padding-bottom:24px}
   .lp-make{padding:0 0 44px}
@@ -5346,8 +5355,6 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
       <details class="cg-sb-acc cg-hub" id="cgHub-facility">
         <summary class="cg-sb-section cg-sb-acc-head"><svg class="cg-sb-ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01M12 6h.01M16 6h.01M8 10h.01M12 10h.01M16 10h.01M8 14h.01M12 14h.01M16 14h.01"/></svg><span class="cg-sb-acc-title">Facility</span><svg class="cg-sb-chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="9 6 15 12 9 18"/></svg></summary>
         <ul class="cg-sb-sub">
-    <li><a href="family-bridge.html"><svg class="cg-sb-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg><span>Family Bridge portal</span></a></li>
-    <li><a href="batch-scheduler.html"><svg class="cg-sb-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span>Bulk batch scheduler</span></a></li>
     <li><a href="builder.html#/facility"><svg class="cg-sb-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01M12 6h.01M16 6h.01M8 10h.01M12 10h.01M16 10h.01M8 14h.01M12 14h.01M16 14h.01"/></svg><span>Facility Portal</span></a></li>
     <li><a href="builder.html#/shift"><svg class="cg-sb-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M9 12h6M9 16h6"/></svg><span>Shift board</span></a></li>
     <li><a href="builder.html#/roster"><svg class="cg-sb-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></svg><span>Resident roster</span></a></li>
@@ -5446,27 +5453,6 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
         <p class="lede">Fill in what you know about them, pick the pages you want,
   and you'll get a printable large-print packet using their hometown, their
   family's names, their work, and the things they loved.</p>
-
-        <!-- 4 Foundational Human Pillars -->
-        <div class="lp-pillars-grid" aria-label="Four Foundational Human Pillars">
-          <div class="lp-pillar-item">
-            <span class="lp-pillar-check">✓</span>
-            <div><b>1. What Can They Do?</b><span>18pt+ font floor, high visual contrast, tactile motor paths</span></div>
-          </div>
-          <div class="lp-pillar-item">
-            <span class="lp-pillar-check">✓</span>
-            <div><b>2. What Do They Care About?</b><span>1940s–70s music, beloved hobbies, hometown roots</span></div>
-          </div>
-          <div class="lp-pillar-item">
-            <span class="lp-pillar-check">✓</span>
-            <div><b>3. What's On Hand?</b><span>Paired with physical tokens, pencils &amp; memory stones</span></div>
-          </div>
-          <div class="lp-pillar-item">
-            <span class="lp-pillar-check">✓</span>
-            <div><b>4. Professional Identity</b><span>Honors former vocations (machinists, nurses, teachers)</span></div>
-          </div>
-        </div>
-
         <div class="lp-actions">
           <a class="lp-btn" id="heroTrial" href="#make">Start Free Trial &mdash; 25 Free Activity Generations</a>
           <a class="lp-btn lp-btn-tablet" href="./tablet.html">Tablet Activities</a>
@@ -5474,81 +5460,116 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
         </div>
         <p class="lp-trial-sub" id="heroTrialSub">No credit card required. Pure high-contrast B&amp;W printables &amp; interactive tablet games.</p>
       </div>
-
-      <!-- LIVE PACKET SANDBOX: Interactive Real-Time SVG Transformation -->
-      <div class="lp-sandbox-wrap" id="heroSandboxWrap" aria-label="Interactive Live Packet Sandbox">
-        <div class="lp-sandbox-card">
-          
-          <!-- Sandbox Header -->
-          <div class="lp-sb-head">
-            <div class="lp-sb-pulse-wrap">
-              <span class="lp-sb-pulse" aria-hidden="true"></span>
-              <h3 class="lp-sb-title">Live Packet Sandbox</h3>
-            </div>
-            <span class="lp-sb-badge">Zero-Latency Client-Side SVG</span>
-          </div>
-
-          <!-- Sandbox 3 Inputs Panel -->
-          <div class="lp-sb-body">
-            <div class="lp-sb-grid">
-              <div class="lp-sb-field">
-                <label for="cgHeroName">1. Resident Name</label>
-                <input type="text" id="cgHeroName" value="Arthur" placeholder="e.g. Arthur Smith" autocomplete="off" autocorrect="off">
+      <div class="lp-visual" aria-hidden="true">
+        <span class="lp-orb lp-orb-a"></span><span class="lp-orb lp-orb-b"></span><span class="lp-orb lp-orb-c"></span>
+        <div class="elite-stage">
+          <div class="elite-laptop-3d">
+            <div class="elite-lid">
+              <div class="elite-bezel">
+                <div class="elite-webcam-bar">
+                  <span class="elite-mic"></span>
+                  <span class="elite-cam-lens"><span class="elite-cam-dot"></span></span>
+                  <span class="elite-mic"></span>
+                </div>
+                <div class="elite-screen">
+                  <div class="elite-appbar">
+                    <span class="elite-appbar-title">COGNICOPIA™ <span style="font-size:9.5px;opacity:.8;font-family:monospace;font-weight:400">Activity Builder</span></span>
+                    <div class="elite-appbar-badges">
+                      <span class="elite-badge-gutter">0.75″ Binder Margin</span>
+                      <span class="elite-badge-print">Print PDF</span>
+                    </div>
+                  </div>
+                  <div class="elite-screen-body">
+                    <div class="elite-profile-col">
+                      <div class="elite-profile-target">Target Resident</div>
+                      <div class="elite-profile-name">Margaret “Peggy”</div>
+                      <div class="elite-profile-bio">Born 1938 · Cedar Falls, IA<br>Music Teacher (32 yrs)</div>
+                      <div class="elite-fam-highlight">
+                        <strong>Daughter: SARAH</strong>
+                        <span style="display:block;font-size:9.5px;color:#35636b">Primary Care Contact · Visits Sundays</span>
+                      </div>
+                      <div style="font-size:9.5px;color:#444;margin-top:4px">
+                        <b>Son:</b> David (Architect)<br>
+                        <b>Favorites:</b> Piano, Roses, Choir
+                      </div>
+                      <div style="margin-top:6px;padding-top:4px;border-top:1px solid #eee8dd;font-size:9px;color:#0e3c43;font-weight:700">
+                        18pt+ Large Print Standard
+                      </div>
+                    </div>
+                    <div class="elite-sheet-col">
+                      <div>
+                        <div class="elite-sheet-hd">
+                          <span class="elite-sheet-title">Words from Margaret’s Life</span>
+                          <span class="elite-sheet-page">Page 1 of 5</span>
+                        </div>
+                        <div style="font-size:9px;font-weight:600;margin-bottom:4px;color:#000">Circle words from family, hometown &amp; music:</div>
+                        <div class="elite-grid-container">
+                          <table class="elite-grid-table">
+                            <tr>
+                              <td class="elite-target-word">S</td>
+                              <td class="elite-target-word">A</td>
+                              <td class="elite-target-word">R</td>
+                              <td class="elite-target-word">A</td>
+                              <td class="elite-target-word">H</td>
+                              <td>M</td>
+                            </tr>
+                            <tr>
+                              <td style="color:#0e3c43;font-weight:900">F</td>
+                              <td>O</td>
+                              <td>R</td>
+                              <td>T</td>
+                              <td>U</td>
+                              <td>N</td>
+                            </tr>
+                            <tr>
+                              <td style="color:#0e3c43;font-weight:900">A</td>
+                              <td style="font-weight:900">P</td>
+                              <td style="font-weight:900">I</td>
+                              <td style="font-weight:900">A</td>
+                              <td style="font-weight:900">N</td>
+                              <td style="font-weight:900">O</td>
+                            </tr>
+                            <tr>
+                              <td style="color:#0e3c43;font-weight:900">M</td>
+                              <td style="font-weight:900">C</td>
+                              <td style="font-weight:900">E</td>
+                              <td style="font-weight:900">D</td>
+                              <td style="font-weight:900">A</td>
+                              <td style="font-weight:900">R</td>
+                            </tr>
+                          </table>
+                        </div>
+                        <div class="elite-wordbank">
+                          <div class="elite-wordbank-title">Primary Word Bank (Family First):</div>
+                          <div class="elite-wordbank-list">
+                            <span class="elite-word-sarah">✓ SARAH <small style="font-weight:600;color:#555">(Daughter)</small></span>
+                            <span>✓ FAMILY</span>
+                            <span>✓ PIANO</span>
+                            <span>✓ CEDAR</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="elite-fill-callout">
+                        <b>Finish the Thought:</b> Peggy’s loving daughter is named <strong>SARAH</strong>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="elite-screen-foot">
+                    <span>✓ High-Contrast Vector SVG</span>
+                    <span>✓ 100% Offline Generation</span>
+                    <span>✓ Adult Dignity Standard</span>
+                  </div>
+                </div>
               </div>
-              <div class="lp-sb-field">
-                <label for="cgHeroHometown">2. Hometown &amp; Roots</label>
-                <input type="text" id="cgHeroHometown" value="Williston, ND" placeholder="e.g. Williston, ND" autocomplete="off" autocorrect="off">
-              </div>
-              <div class="lp-sb-field">
-                <label for="cgHeroVocation">3. Past Craft / Vocation</label>
-                <input type="text" id="cgHeroVocation" value="Railroad Machinist &amp; Master Carpenter" placeholder="e.g. Railroad Machinist" autocomplete="off" autocorrect="off">
+              <div style="display:flex;justify-content:center;margin-top:2px">
+                <span style="height:2px;width:24px;background:#8b95a2;border-radius:2px"></span>
               </div>
             </div>
-
-            <!-- Quick-Try Resident Preset Chips -->
-            <div class="lp-sb-presets">
-              <span class="lp-sb-presets-lbl">Quick Try:</span>
-              <button type="button" class="lp-sb-chip active" data-preset="arthur">Arthur (Machinist)</button>
-              <button type="button" class="lp-sb-chip" data-preset="eleanor">Eleanor (Botanist)</button>
-              <button type="button" class="lp-sb-chip" data-preset="harold">Harold (Farmer &amp; Jazz)</button>
-              <button type="button" class="lp-sb-chip" data-preset="clara">Clara (Nurse &amp; Quilter)</button>
-            </div>
+            <div class="elite-hinge"></div>
+            <div class="elite-base"><div class="elite-base-notch"></div></div>
           </div>
-
-          <!-- View Mode Tabs -->
-          <div class="lp-sb-tabs">
-            <div class="lp-sb-tab-group" role="tablist" aria-label="Packet page preview mode">
-              <button type="button" class="lp-sb-tab active" data-tab="wordSearch" role="tab" aria-selected="true">1. Word Search Preview</button>
-              <button type="button" class="lp-sb-tab" data-tab="reminiscence" role="tab" aria-selected="false">2. Reminiscence Card</button>
-              <button type="button" class="lp-sb-tab" data-tab="matching" role="tab" aria-selected="false">3. Tactile Tracing</button>
-            </div>
-            <span class="lp-sb-tab-info">18pt+ Floor • Pure B&amp;W</span>
-          </div>
-
-          <!-- Live SVG Preview Viewport -->
-          <div class="lp-sb-preview-viewport">
-            <div class="lp-sb-paper">
-              <div id="cgHeroSvgContainer" class="lp-sb-svg-host">
-                <!-- SVG dynamically injected by assets/services/heroSandbox.js -->
-              </div>
-            </div>
-          </div>
-
-          <!-- Sandbox Details Foot -->
-          <div class="lp-sb-foot">
-            <span>Laser-Ready Pure B&amp;W • 100% Offline Compatible</span>
-            <span style="font-family:monospace;color:#7fcbd3">Master SVG Vector #150</span>
-          </div>
-
-          <!-- PROMINENT CTA: GENERATE FULL 50-PAGE PACKET -->
-          <div class="lp-sb-cta">
-            <a id="cgHeroGeneratePacketBtn" class="lp-sandbox-generate-btn" href="builder.html?name=Arthur&amp;hometown=Williston%2C%20ND&amp;vocation=Railroad%20Machinist%20%26%20Master%20Carpenter">
-              <span>Generate Full 50-Page Packet for <b id="cgHeroBtnName">Arthur</b> &rarr;</span>
-            </a>
-            <p class="lp-sb-cta-sub">Instant browser compile • Full 50-page personalized workbook • Print-ready on any office printer</p>
-          </div>
-
         </div>
+        <div class="lp-float"><b>Personalized with “SARAH”</b><span>Daughter &amp; family relationship metadata</span></div>
       </div>
     </div>
   </section>
@@ -6614,12 +6635,10 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
     <label class="qpb-pick"><input type="checkbox" data-page="wordsearch" checked><span><b>Personalized Word Search</b><small>Words from their work, hobbies and decades</small></span></label>
     <label class="qpb-pick"><input type="checkbox" data-page="cards" checked><span><b>Reminiscence Cards</b><small>Large conversation cards, two to a page</small></span></label>
     <label class="qpb-pick"><input type="checkbox" data-page="trivia" checked><span><b>Tailored Trivia / Completion</b><small>Finish the thought, with no wrong answers</small></span></label>
-    <label class="qpb-pick"><input type="checkbox" data-page="matching" checked><span><b>Tactile Matching & Tracing</b><small>Guided paths & token targets for motor engagement</small></span></label>
     <label class="qpb-pick"><input type="checkbox" data-page="cover" checked><span><b>Custom Cover Sheet</b><small>&ldquo;Activity Packet for&rdquo; with their first name</small></span></label>
   </fieldset>
   <div class="qpb-actions">
     <button type="button" class="qpb-btn qpb-btn-primary" id="qpbGenerate"><span aria-hidden="true">⚡</span> Generate Custom Packet</button>
-    <button type="button" class="qpb-btn qpb-btn-svg" id="qpbSvgPacket" title="Generate Master SVG Vector Suite based on the 4 Human Pillars"><span aria-hidden="true">📐</span> Master SVG Vector Suite</button>
     <button type="button" class="qpb-btn" id="qpbPrint" disabled><span aria-hidden="true">🖨️</span> Print / Save to PDF</button>
     <button type="button" class="qpb-btn qpb-btn-tablet" id="qpbTablet"><span aria-hidden="true">📱</span> Launch Tablet Interactive Mode</button>
     <button type="button" class="qpb-btn qpb-btn-pdf" id="qpbPdf"><span aria-hidden="true">📥</span> Download PDF Packet</button>
@@ -6750,12 +6769,9 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
       <div class="field"><label for="state">State or country</label>
         <input type="text" id="state" maxlength="60" autocomplete="off" placeholder="Ohio"></div>
     </div>
-    <div class="field"><label for="job">Who was this person at work or school when they were younger?
-      <span class="sub">Past trade, vocation, homemaking role, military craft, or academic specialty (e.g., carpenter, schoolteacher, nurse, machinist, farmer, homemaker…)</span></label>
-      <input type="text" id="job" maxlength="80" autocomplete="off" placeholder="Schoolteacher"></div>
-    <div class="field"><label for="onHandItems">What do you have on hand for sensory &amp; tactile pairing?
-      <span class="sub">Items on hand in the room or unit (e.g. colored pencils, tactile tokens, memory stones, smooth river rocks)</span></label>
-      <input type="text" id="onHandItems" maxlength="120" autocomplete="off" placeholder="colored pencils, tactile tokens, memory stones"></div>
+    <div class="field"><label for="job">What they did for work
+      <span class="sub">Farmer, schoolteacher, nurse, homemaker, mechanic…</span></label>
+      <input type="text" id="job" maxlength="80" autocomplete="off"></div>
     <div class="row">
       <div class="field"><label for="spouse">Spouse's first name</label>
         <input type="text" id="spouse" maxlength="40" autocomplete="off"></div>
@@ -6994,8 +7010,6 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
     <nav class="lp-foot-col" aria-labelledby="footFacility">
       <h2 id="footFacility">Facility</h2>
       <ul>
-          <li><a href="family-bridge.html">Family Bridge Portal</a></li>
-          <li><a href="batch-scheduler.html">Bulk Batch Scheduler</a></li>
           <li><a href="builder.html#/facility">Facility Portal</a></li>
           <li><a href="pricing.html">Plans &amp; pricing</a></li>
           <li><a href="activate.html">Activate a license</a></li>
@@ -8851,14 +8865,21 @@ function tradeGridWords(r){
   return tradeWords(r).map(w=>w.toUpperCase().replace(/[^A-Z]/g,""));
 }
 
-/* Short personal words for the scramble page. */
+/* Short personal words for the scramble page, prioritizing family metadata. */
 function scrambleWords(r,s){
-  const pool=[r.town,r.spouse,...r.kids,...r.pets,...r.favs,...r.hobbies,
+  const fam = typeof extractFamilyWords === "function" ? extractFamilyWords(r, s.scramLen) : [];
+  const pool=[...fam, r.town, r.spouse, ...(Array.isArray(r.kids)?r.kids:[r.kids]),
+              ...(Array.isArray(r.sibs)?r.sibs:[r.sibs]), r.mother, ...r.pets, ...r.favs, ...r.hobbies,
               ...tradeGridWords(r), ...eraWords(r.born)];
   const out=[];
+  const seen=new Set();
   for(const raw of pool){
+    if(!raw) continue;
     const w=foldAccents(raw).toUpperCase().replace(/[^A-Z]/g,"");
-    if(w.length>=4 && w.length<=s.scramLen && !out.includes(w)) out.push(w);
+    if(w.length>=4 && w.length<=s.scramLen && !seen.has(w)){
+      seen.add(w);
+      out.push(w);
+    }
   }
   return shuffle(out);
 }
@@ -8941,14 +8962,60 @@ function normWords(list,maxLen){
   return out;
 }
 
+/* Dynamically extract and prioritize family relationship metadata (daughter, son,
+   spouse, children, siblings, parents, and core relational anchors) into the primary
+   word queue so residents engage with deeply meaningful personal words. */
+function extractFamilyWords(r, maxLen){
+  if(!r) return [];
+  const fam = [];
+  if(r.daughter) fam.push(r.daughter);
+  if(r.son) fam.push(r.son);
+  if(r.spouse) fam.push(r.spouse);
+  if(Array.isArray(r.kids)) fam.push(...r.kids);
+  else if(r.kids) fam.push(r.kids);
+  if(Array.isArray(r.sibs)) fam.push(...r.sibs);
+  else if(r.sibs) fam.push(r.sibs);
+  if(r.mother) fam.push(r.mother);
+  if(r.father) fam.push(r.father);
+  if(Array.isArray(r.family)) fam.push(...r.family);
+  const out = [];
+  const seen = new Set();
+  for(const raw of fam){
+    if(!raw) continue;
+    const parts = String(raw).split(/[,;&]/);
+    for(const p of parts){
+      const w = foldAccents(p).toUpperCase().replace(/[^A-Z]/g,"");
+      if(w.length>=3 && (!maxLen || w.length<=maxLen) && !seen.has(w)){
+        seen.add(w);
+        out.push(w);
+      }
+    }
+  }
+  // Core relational keywords that trigger cherished family reminiscence
+  const relational = ["FAMILY", "HOME", "LOVE", "HEART", "CHERISH"];
+  for(const rw of relational){
+    if((!maxLen || rw.length<=maxLen) && !seen.has(rw)){
+      seen.add(rw);
+      out.push(rw);
+    }
+  }
+  return out;
+}
+
 function personalWords(r, maxLen, extra){
-  const pool = [r.town,(r.state||"").replace(/\s/g,""),r.spouse,...r.kids,
+  const fam = extractFamilyWords(r, maxLen);
+  const pool = [r.town,(r.state||"").replace(/\s/g,""),
                 ...r.crew.map(p=>p.name),...r.pets,...r.hobbies,...r.favs,
                 r.mil,r.faith,...(extra||[])];
-  const out=[];
+  const out=[...fam];
+  const seen=new Set(fam);
   for(const raw of pool){
+    if(!raw) continue;
     const w = foldAccents(raw).toUpperCase().replace(/[^A-Z]/g,"");
-    if(w.length>=3 && w.length<=maxLen && !out.includes(w)) out.push(w);
+    if(w.length>=3 && w.length<=maxLen && !seen.has(w)){
+      seen.add(w);
+      out.push(w);
+    }
   }
   return out;
 }
@@ -21220,21 +21287,9 @@ if (document.readyState === "complete" || document.readyState === "interactive")
       return { name:x.name, relationship:x.relationship ? x.relationship.label : "", relationshipCode:x.relationship ? x.relationship.code : "", isPet:!!x.isPet, passedAway:!!x.passedAway };
     });
     var tv = t2.tvMoviesSports || {}, mus = t2.music || {};
-    var pastVoc = p.pastVocation || (t1.primaryVocation ? t1.primaryVocation.label : (t1.occupation ? t1.occupation.label : "")) || "Dedicated Craft";
-    var formEra = p.formativeEra || (t2.meaningfulDecades && t2.meaningfulDecades[0]) || (t2.birthYear ? ("19" + String(Math.floor((t2.birthYear + 18) / 10) * 10).slice(-2) + "s") : "1950s");
-    var motorLevel = p.motorCapabilityLevel || (pn.motorSkills && pn.motorSkills.code === "significant" ? "assisted" : (pn.motorSkills && pn.motorSkills.code === "mild" ? "moderate" : "high"));
-    var passions = p.corePassions || labels(t1.topHobbies);
-    var onHand = p.onHandItems || ["colored pencils", "tactile tokens", "memory stones"];
-
     var ctx = {
       isGeneric: false,
       id: p.id,
-      // Four Foundational Human Pillars
-      pastVocation: pastVoc,
-      formativeEra: formEra,
-      corePassions: passions,
-      motorCapabilityLevel: motorLevel,
-      onHandItems: onHand,
       // Tier 1: packet template
       name: t1.preferredName || "",
       unitNumber: needs.unitNumber,
@@ -22275,11 +22330,6 @@ if (document.readyState === "complete" || document.readyState === "interactive")
       paper: (ctx.print && ctx.print.paper) === "a4" ? "a4" : "letter",
       ink: "bw",                                     // pure black on white, whatever the print settings say
       occupation: occ ? { code:occ.code, label:occ.label } : null,
-      pastVocation: (p && p.pastVocation) || ctx.pastVocation || (occ ? occ.label : "Dedicated Craft"),
-      formativeEra: (p && p.formativeEra) || ctx.formativeEra || (ctx.decades && ctx.decades[0]) || "1950s",
-      corePassions: (p && p.corePassions) || ctx.corePassions || ctx.hobbies || [],
-      motorCapabilityLevel: (p && p.motorCapabilityLevel) || ctx.motorCapabilityLevel || (ctx.print && ctx.print.motorSkills === "significant" ? "assisted" : (ctx.print && ctx.print.motorSkills === "mild" ? "moderate" : "high")),
-      onHandItems: (p && p.onHandItems) || ctx.onHandItems || ["colored pencils", "tactile tokens", "memory stones"],
       hobbies: codes(t1.topHobbies),
       skills: codes(t2.skills && t2.skills.items),
       place: t2.hometown ? { env:t2.hometown.environment ? t2.hometown.environment.code : "", name:t2.hometown.place || "" } : { env:"", name:"" },
@@ -22334,6 +22384,34 @@ if (document.readyState === "complete" || document.readyState === "interactive")
   function wordPool(src, rng, maxLen){
     var groups = [];
     var avoidList = function(code){ return LIST_TOPIC[code] && src.blocked.topics.indexOf(LIST_TOPIC[code]) !== -1; };
+
+    // Priority 1: Family relationship metadata (daughter like Sarah, son, spouse, kids, siblings) & relational anchors
+    var famNames = [];
+    if (src.people && Array.isArray(src.people)) {
+      src.people.forEach(function(x){
+        var rel = String(x.relationshipCode || x.relationship || "").toLowerCase();
+        if (rel === "daughter" || rel === "son" || rel === "child" || rel === "spouse" || rel === "partner" || rel === "sister" || rel === "brother" || rel === "sibling" || rel === "family") {
+          var w = lettersOnly(x.name); if (w) famNames.push(w);
+        }
+      });
+    }
+    if (src.daughter) { var dw = lettersOnly(src.daughter); if (dw) famNames.push(dw); }
+    if (src.son) { var sw = lettersOnly(src.son); if (sw) famNames.push(sw); }
+    if (src.spouse) { var spw = lettersOnly(src.spouse); if (spw) famNames.push(spw); }
+    if (src.kids) {
+      (Array.isArray(src.kids) ? src.kids : String(src.kids).split(/[,;]/)).forEach(function(k){
+        var kw = lettersOnly(k); if (kw) famNames.push(kw);
+      });
+    }
+    if (src.sibs) {
+      (Array.isArray(src.sibs) ? src.sibs : String(src.sibs).split(/[,;]/)).forEach(function(s){
+        var sbw = lettersOnly(s); if (sbw) famNames.push(sbw);
+      });
+    }
+    var famAnchors = ["FAMILY", "HOME", "LOVE", "HEART", "CHERISH"];
+    var primaryFamilyWords = uniq(famNames.filter(function(w){ return w.length >= 3 && w.length <= maxLen; })).concat(famAnchors);
+    groups.push({ n: 4, words: primaryFamilyWords });
+
     var occCode = src.occupation && src.occupation.code;
     if (avoidList(occCode)) occCode = "";
     if (occCode && OCC_WORDS[occCode]) groups.push({ n:5, words:rng.shuffle(OCC_WORDS[occCode]) });
@@ -22524,11 +22602,32 @@ if (document.readyState === "complete" || document.readyState === "interactive")
     var want = src.stage === "early" ? 8 : 6;
     var choose = src.stage !== "early" || src.motor === "significant" || src.motor === "mild";
     var ok = function(it){ return !src.blocked.tags(it[3]) && !src.blocked.text(it[0] + " " + it[1] + " " + it[2]); };
+
+    // Primary priority: Family relationship items (daughter, son, spouse, home, family)
+    var famItems = [];
+    var daughterName = src.daughter || "";
+    if (!daughterName && src.people && Array.isArray(src.people)) {
+      var dPerson = src.people.find(function(p){ return String(p.relationshipCode || p.relationship || "").toLowerCase() === "daughter"; });
+      if (dPerson) daughterName = dPerson.name;
+    }
+    if (daughterName) {
+      if (ok(["A daughter's love brings warmth to the ____.", "HEART", "GARDEN", "family"]))
+        famItems.push(["A daughter's love brings warmth to the ____.", "HEART", "GARDEN", "family"]);
+      if (ok(["A special visit from ____ brightens our day.", daughterName, "SUNDAY", "family"]))
+        famItems.push(["A special visit from ____ brightens our day.", daughterName, "SUNDAY", "family"]);
+    }
+    if (ok(["There is no place quite like ____.", "HOME", "SUMMER", "family"]))
+      famItems.push(["There is no place quite like ____.", "HOME", "SUMMER", "family"]);
+    if (ok(["Cherished memories with ____ stay with us forever.", "FAMILY", "MUSIC", "family"]))
+      famItems.push(["Cherished memories with ____ stay with us forever.", "FAMILY", "MUSIC", "family"]);
+    famItems = rng.shuffle(famItems);
+
     var hob = [], dec = [];
     src.hobbies.forEach(function(h){ (HOBBY_FILL[h] || []).forEach(function(it){ if (ok(it)) hob.push(it); }); });
     src.decades.forEach(function(d){ (DECADE_FILL[d] || []).forEach(function(it){ if (ok(it)) dec.push(it); }); });
     hob = rng.shuffle(hob); dec = rng.shuffle(dec);
     var picked = [];
+    while (famItems.length && picked.length < 2) picked.push(famItems.shift());
     // alternate hobby and decade items, then top up with sayings
     while (picked.length < want && (hob.length || dec.length)){
       if (hob.length) picked.push(hob.shift());
@@ -22559,45 +22658,7 @@ if (document.readyState === "complete" || document.readyState === "interactive")
     };
   }
 
-  /* ===================== 4. MATCHING & GUIDED TRACING ===================== */
-  function generateMatchingTracing(src, rng){
-    src = src || packetSource(); rng = rng || makeRng(newSeed());
-    var strokeWidthPt = src.stage === "late" || src.motorCapabilityLevel === "assisted" ? 8 : (src.stage === "middle" ? 5 : 3.5);
-    var fontSizePt = src.stage === "late" ? 22 : 18;
-    var voc = src.pastVocation || "Craftsmanship";
-    var onHand = (src.onHandItems && src.onHandItems[0]) || "colored pencil";
-    var pairs = [
-      { left: "Tools of " + voc, right: "Honest Pride & Work", symbol: "●" },
-      { left: "Measuring Guide", right: "True Alignment", symbol: "▲" },
-      { left: "Morning Sunlight", right: "Peaceful Presence", symbol: "■" },
-      { left: "Familiar Music", right: "Enduring Harmony", symbol: "★" }
-    ];
-
-    var body = '<div class="qp-matching" style="padding:10px 0;">' +
-      pairs.map(function(p, idx){
-        return '<div class="qp-match-row" style="display:flex;align-items:center;justify-content:space-between;margin:16px 0;border:2.5pt solid #000;border-radius:8px;padding:14px;background:#fff;">' +
-          '<div style="width:40%;font-size:' + fontSizePt + 'pt;font-weight:bold;color:#000;">' + esc(p.left) + '</div>' +
-          '<div style="width:20%;text-align:center;font-size:18pt;font-weight:bold;">' + (src.stage === "late" ? '➔' : '⟷') + '</div>' +
-          '<div style="width:40%;font-size:' + fontSizePt + 'pt;font-weight:bold;text-align:right;color:#000;">' + esc(p.right) + ' <span style="display:inline-block;border:2pt solid #000;border-radius:50%;width:24px;height:24px;line-height:22px;text-align:center;font-size:12pt;margin-left:8px;">' + p.symbol + '</span></div>' +
-        '</div>';
-      }).join('') +
-      '<div style="margin-top:16px;border:1.5pt dashed #000;border-radius:6px;padding:10px;font-size:14pt;font-weight:bold;">' +
-        '✋ Sensory Pairing: Place a ' + esc(onHand) + ' or memory stone on each matching symbol.' +
-      '</div></div>';
-
-    return {
-      kind: "matching",
-      sheets: [{
-        kind: "matching",
-        title: "Tactile Matching & Guided Tracing",
-        subtitle: "Celebrating " + esc(voc) + " with " + esc(src.name || "Everyday Meaning"),
-        instructions: "Trace the paths between each pair. Match the tools and memories together.",
-        body: body
-      }]
-    };
-  }
-
-  /* ===================== 5. COVER ===================== */
+  /* ===================== 4. COVER ===================== */
   function generateCover(src, included){
     var fac = (document.getElementById("fac") || {}).value || "";
     var month = (document.getElementById("month") || {}).value || new Date().toLocaleString("en-US", { month:"long", year:"numeric" });
@@ -22645,7 +22706,6 @@ if (document.readyState === "complete" || document.readyState === "interactive")
     if (pick("wordsearch")){ parts.push(generateWordSearch(src, rng)); included.push("A word search from your own life"); }
     if (pick("cards")){ parts.push(generateReminiscenceCards(src, rng)); included.push("Conversation cards to share"); }
     if (pick("trivia")){ parts.push(generatePersonalizedTrivia(src, rng)); included.push("Finish the thought"); }
-    if (pick("matching")){ parts.push(generateMatchingTracing(src, rng)); included.push("Tactile matching & motor tracing"); }
     if (pick("cover")) parts.unshift(generateCover(src, included));
     var list = [];
     parts.forEach(function(p){ list = list.concat(p.sheets); });
@@ -22813,52 +22873,6 @@ if (document.readyState === "complete" || document.readyState === "interactive")
 
   genBtn.addEventListener("click", function(){ generate(); if (current) preview.firstElementChild.scrollIntoView({ behavior:"smooth", block:"start" }); });
   printBtn.addEventListener("click", printPacket);
-
-  var svgBtn = el("qpbSvgPacket");
-  function generateSvgSuite(){
-    if (!window.CogniPacketGenerator){
-      status.textContent = "Packet generator engine is loading. Please try again in a moment.";
-      return;
-    }
-    var src = packetSource();
-    var prof = {
-      id: (window.activeResident && window.activeResident.id) || "resident_temp",
-      preferredName: src.name || "Resident",
-      cognitiveTier: src.stage === "late" ? 3 : (src.stage === "early" ? 1 : 2),
-      motorCapabilityLevel: src.motorCapabilityLevel || "moderate",
-      visualNeeds: { highContrast: true, fontSizeScale: src.scale || 1.15 },
-      corePassions: src.corePassions && src.corePassions.length ? src.corePassions : (src.hobbies && src.hobbies.length ? src.hobbies : ["gardening", "baking"]),
-      formativeEra: src.formativeEra || (src.decades && src.decades[0]) || "1950s",
-      onHandItems: src.onHandItems && src.onHandItems.length ? src.onHandItems : ["colored pencils", "tactile tokens", "memory stones"],
-      pastVocation: src.pastVocation || (src.occupation ? src.occupation.label : "Dedicated Craft"),
-      hometown: { place: src.place ? src.place.name : "" }
-    };
-
-    var packet = window.CogniPacketGenerator.generatePacket(prof);
-    preview.className = "qpb-preview ink-bw stage-" + src.stage;
-    preview.innerHTML = "";
-    packet.svgPages.forEach(function(svgStr, idx){
-      var f = document.createElement("div");
-      f.className = "qpb-frame qpb-svg-frame";
-      var container = document.createElement("div");
-      container.className = "qp-sheet qp-svg-sheet";
-      container.style.cssText = "width:612pt;min-height:792pt;background:#ffffff;margin:0 auto;display:flex;align-items:center;justify-content:center;box-sizing:border-box;border:2.5pt solid #000;";
-      container.innerHTML = svgStr;
-      f.appendChild(container);
-      preview.appendChild(f);
-    });
-    preview.hidden = false;
-    fitPreview();
-    printBtn.disabled = false;
-    current = { pk: { src:src, sheets:[] }, counted:false, residentId: window.activeResident ? window.activeResident.id : null };
-    status.innerHTML = "<strong>Generated 4-Pillar Master SVG Vector Suite</strong><br>" +
-      "1. <em>What Can They Do:</em> Tier " + packet.cognitiveTierNum + ", Motor: " + packet.motorLevel + " (18pt+ font floor, zero grayscale).<br>" +
-      "2. <em>What Do They Care About:</em> " + prof.corePassions.join(", ") + " · Era: " + prof.formativeEra + ".<br>" +
-      "3. <em>What Do They Have On Hand:</em> Paired with " + packet.primaryPillarsApplied.onHandSummary + "<br>" +
-      "4. <em>Professional Identity:</em> " + prof.pastVocation + " (Historic dignity preserved).";
-  }
-  if (svgBtn) svgBtn.addEventListener("click", function(){ generateSvgSuite(); if (preview.firstElementChild) preview.firstElementChild.scrollIntoView({ behavior:"smooth", block:"start" }); });
-
   window.addEventListener("resize", function(){ if (current) fitPreview(); });
   // A different resident makes the preview out of date; never print one resident's page for another.
   document.addEventListener("cognicopia:activeresident", function(){
@@ -25247,8 +25261,6 @@ if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol))
   if (qpbPocketBtn) qpbPocketBtn.addEventListener('click', handleOpenCard);
 })();
 </script>
-<script src="assets/services/packetGenerator.js"></script>
-<script src="assets/services/heroSandbox.js"></script>
 <script src="assets/services/stateAuditCompliance.js"></script>
 <script src="assets/services/nightShift.js"></script>
 <script src="js/voiceKit.js"></script>

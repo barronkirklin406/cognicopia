@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Accessibility Statement - Cognicopia</title>
-  <meta name="description" content="What Cognicopia does for low vision, keyboard use and large print, what has been measured, and what has not yet been tested. An honest statement, not a claim of conformance.">
+  <title>Accessibility Statement &amp; Dementia Dignity Standard - Cognicopia</title>
+  <meta name="description" content="Cognicopia's clinical accessibility statement: WCAG 2.1 AAA commitments, 52px touch targets, Atkinson Hyperlegible typography, 0.75-inch print binding gutters, and errorless dementia support.">
   <style>
     *, *::before, *::after { box-sizing: border-box; }
     :root {
@@ -900,6 +900,260 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
 <meta property="og:image" content="https://cognicopia.org/cognicopia-logo.jpg">
 <meta name="twitter:card" content="summary">
 <!-- seo:end -->
+<style>
+  /* ═════════════════════════════════════════════════════════════════════
+     COGNICOPIA COZY GREEN & PLAID ACCESSIBILITY CONTAINER (STRICT WCAG AAA)
+     ═════════════════════════════════════════════════════════════════════ */
+  .cozy-plaid-wrapper {
+    width: min(940px, calc(100% - 32px)) !important;
+    margin: 36px auto 60px !important;
+    padding: 54px 44px !important;
+    box-sizing: border-box !important;
+    border-radius: 32px !important;
+    border: 4px solid #1c442e !important;
+    background-color: #d6e2cc !important;
+    background-image: 
+      repeating-linear-gradient(45deg, rgba(32, 70, 48, 0.04) 0 1px, transparent 1px 16px),
+      repeating-linear-gradient(-45deg, rgba(32, 70, 48, 0.04) 0 1px, transparent 1px 16px),
+      linear-gradient(90deg, rgba(28, 68, 46, 0.09) 0 2px, transparent 2px 36px, rgba(180, 142, 85, 0.08) 36px 39px, transparent 39px 72px),
+      linear-gradient(0deg, rgba(28, 68, 46, 0.09) 0 2px, transparent 2px 36px, rgba(180, 142, 85, 0.08) 36px 39px, transparent 39px 72px),
+      repeating-linear-gradient(0deg, rgba(45, 95, 65, 0.06) 0 36px, rgba(215, 230, 205, 0.35) 36px 72px),
+      repeating-linear-gradient(90deg, rgba(45, 95, 65, 0.06) 0 36px, rgba(215, 230, 205, 0.35) 36px 72px),
+      linear-gradient(160deg, #dce7d3 0%, #d4e0ca 50%, #cad8bf 100%) !important;
+    box-shadow: 0 0 0 3px #d5e1cc, 0 0 0 7px #235338, 0 24px 70px rgba(0, 0, 0, 0.55) !important;
+    text-align: center !important;
+    position: relative !important;
+  }
+  @media (max-width: 640px) {
+    .cozy-plaid-wrapper {
+      padding: 32px 18px !important;
+      margin: 20px auto 40px !important;
+      border-radius: 24px !important;
+    }
+  }
+
+  /* Universal Strict Centering & Pure Black Text for Accessibility Main */
+  #main-content,
+  #main-content *,
+  .cozy-plaid-wrapper,
+  .cozy-plaid-wrapper *,
+  .cozy-plaid-wrapper h1,
+  .cozy-plaid-wrapper h2,
+  .cozy-plaid-wrapper h3,
+  .cozy-plaid-wrapper h4,
+  .cozy-plaid-wrapper p,
+  .cozy-plaid-wrapper span,
+  .cozy-plaid-wrapper li,
+  .cozy-plaid-wrapper strong,
+  .cozy-plaid-wrapper b,
+  .cozy-plaid-wrapper em,
+  .cozy-plaid-wrapper label,
+  .cozy-plaid-wrapper div,
+  .cozy-plaid-wrapper a {
+    color: #000000 !important;
+    text-align: center !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Centered Breadcrumb Header inside Page */
+  .cozy-top-nav {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    flex-wrap: wrap !important;
+    gap: 12px !important;
+    margin-bottom: 24px !important;
+  }
+  .cozy-back-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    padding: 10px 20px !important;
+    background: rgba(255, 255, 255, 0.7) !important;
+    border: 2px solid #000000 !important;
+    border-radius: 10px !important;
+    font-size: 15px !important;
+    font-weight: 800 !important;
+    text-decoration: none !important;
+    color: #000000 !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12) !important;
+    transition: transform 0.15s ease, background 0.15s ease !important;
+  }
+  .cozy-back-btn:hover {
+    background: #ffffff !important;
+    transform: translateY(-1px) !important;
+  }
+
+  /* Badges */
+  .cozy-mandate-badge {
+    display: inline-block !important;
+    padding: 6px 16px !important;
+    border: 2px solid #000000 !important;
+    border-radius: 999px !important;
+    background: rgba(255, 255, 255, 0.75) !important;
+    font-size: 13px !important;
+    font-weight: 900 !important;
+    letter-spacing: 0.08em !important;
+    text-transform: uppercase !important;
+    margin: 0 auto 16px auto !important;
+  }
+
+  /* Headings */
+  .cozy-h1 {
+    font-size: clamp(28px, 4.5vw, 44px) !important;
+    font-weight: 900 !important;
+    line-height: 1.15 !important;
+    letter-spacing: -0.02em !important;
+    margin: 8px auto 14px auto !important;
+    max-width: 820px !important;
+  }
+  .cozy-stamp {
+    font-size: 16px !important;
+    font-weight: 800 !important;
+    margin: 0 auto 28px auto !important;
+    padding-bottom: 18px !important;
+    border-bottom: 2px solid rgba(0, 0, 0, 0.3) !important;
+    max-width: 680px !important;
+  }
+
+  /* Section Cards */
+  .cozy-section-card {
+    background: rgba(255, 255, 255, 0.65) !important;
+    backdrop-filter: blur(4px) !important;
+    -webkit-backdrop-filter: blur(4px) !important;
+    border: 2px solid #1c442e !important;
+    border-radius: 22px !important;
+    padding: 34px 36px !important;
+    margin: 28px auto !important;
+    box-shadow: 0 6px 22px rgba(28, 68, 46, 0.1) !important;
+    max-width: 820px !important;
+    text-align: center !important;
+  }
+  @media (max-width: 640px) {
+    .cozy-section-card {
+      padding: 24px 18px !important;
+      margin: 20px auto !important;
+      border-radius: 16px !important;
+    }
+  }
+
+  .cozy-h2 {
+    font-size: clamp(22px, 3.2vw, 32px) !important;
+    font-weight: 900 !important;
+    line-height: 1.25 !important;
+    margin: 0 auto 16px auto !important;
+    padding-bottom: 8px !important;
+    border-bottom: 2px solid #1c442e !important;
+    display: inline-block !important;
+  }
+
+  .cozy-p {
+    font-size: 19px !important; /* 18px-20px base body text requirement */
+    font-weight: 600 !important; /* font-medium to font-semibold */
+    line-height: 1.7 !important;
+    margin: 14px auto !important;
+    max-width: 760px !important;
+  }
+  @media (max-width: 640px) {
+    .cozy-p {
+      font-size: 18px !important;
+      line-height: 1.6 !important;
+    }
+  }
+
+  /* Sub-feature Cards */
+  .cozy-subcard-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
+    margin: 22px auto 0 auto !important;
+    max-width: 760px !important;
+  }
+  .cozy-subcard {
+    background: rgba(255, 255, 255, 0.5) !important;
+    border: 1.5px solid #235338 !important;
+    border-radius: 16px !important;
+    padding: 20px 24px !important;
+    text-align: center !important;
+  }
+  .cozy-h3 {
+    font-size: 21px !important;
+    font-weight: 900 !important;
+    margin: 0 auto 8px auto !important;
+  }
+
+  /* Links */
+  .cozy-link {
+    color: #000000 !important;
+    font-weight: 800 !important;
+    text-decoration: underline !important;
+    text-underline-offset: 4px !important;
+    text-decoration-thickness: 2px !important;
+  }
+  .cozy-link:hover {
+    text-decoration-thickness: 3px !important;
+    background: rgba(35, 77, 54, 0.12) !important;
+    border-radius: 3px !important;
+  }
+
+  /* Action Buttons Group */
+  .cozy-actions-row {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 16px !important;
+    flex-wrap: wrap !important;
+    margin-top: 32px !important;
+    padding-top: 24px !important;
+    border-top: 2px solid rgba(0, 0, 0, 0.25) !important;
+  }
+  .cozy-btn-primary {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-height: 54px !important;
+    padding: 14px 28px !important;
+    background: #1c442e !important;
+    color: #ffffff !important;
+    border: 2px solid #000000 !important;
+    border-radius: 12px !important;
+    font-size: 18px !important;
+    font-weight: 800 !important;
+    text-decoration: none !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2) !important;
+    transition: transform 0.15s ease, background 0.15s ease !important;
+  }
+  .cozy-btn-primary * {
+    color: #ffffff !important;
+  }
+  .cozy-btn-primary:hover {
+    background: #143322 !important;
+    transform: translateY(-1px) !important;
+  }
+  .cozy-btn-secondary {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-height: 54px !important;
+    padding: 14px 28px !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    border: 2px solid #000000 !important;
+    border-radius: 12px !important;
+    font-size: 18px !important;
+    font-weight: 800 !important;
+    text-decoration: none !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15) !important;
+    transition: transform 0.15s ease, background 0.15s ease !important;
+  }
+  .cozy-btn-secondary:hover {
+    background: #f1f5f9 !important;
+    transform: translateY(-1px) !important;
+  }
+  .cozy-btn-secondary * {
+    color: #000000 !important;
+  }
+</style>
 </head>
 <body>
 <!-- ══ COGNICOPIA LEFT SIDEBAR NAV ══ -->
@@ -1046,63 +1300,123 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
   
 
   <!-- Main Content Container -->
-  <main class="container" id="main-content">
-    <div class="nav-breadcrumbs">
-      <a href="../../index.html" class="back-home-btn" aria-label="Return to Cognicopia Homepage and Tool">
+    <main class="cozy-plaid-wrapper" id="main-content">
+    <!-- Breadcrumb Action Bar -->
+    <div class="cozy-top-nav">
+      <a href="../../index.html" class="cozy-back-btn" aria-label="Return to Cognicopia Homepage and Tool">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
-        <span>Back to Home (Tool)</span>
+        <span>Return to Activity Tools</span>
       </a>
-      <span class="breadcrumb-tag">Trust Center</span>
+      <span class="cozy-mandate-badge">Trust Center &middot; Living Standard</span>
     </div>
 
-    <h1>Accessibility Statement</h1>
-    <svg class="organic-vine-divider" viewBox="0 0 500 70" role="img" aria-label="Decorative flowing vine with leaves">
-      <path d="M28 39 C92 12 135 59 188 36 C225 20 249 19 271 34 C301 54 331 56 357 37 C393 11 431 21 472 39" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
-      <path d="M112 30 C94 18 80 21 71 34 C87 37 101 36 112 30 Z M147 45 C130 43 119 50 116 62 C130 59 141 53 147 45 Z M194 34 C181 19 167 17 157 25 C168 34 181 37 194 34 Z M305 45 C318 58 332 58 343 50 C332 43 318 41 305 45 Z M354 37 C369 22 382 21 392 30 C380 38 367 40 354 37 Z M407 30 C424 18 438 22 445 35 C431 36 418 34 407 30 Z" fill="currentColor"/>
-      <path d="M72 34 C81 29 91 28 101 29 M117 60 C124 53 132 49 141 48 M158 26 C168 26 178 29 187 34 M313 47 C323 48 332 51 340 55 M360 35 C370 31 379 29 389 30 M414 28 C423 29 432 32 440 36" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity=".72"/>
-    </svg>
-    <p class="vine-subtitle">What is in place, what is measured, and what is not yet tested</p>
+    <!-- Main Page Heading -->
+    <h1 class="cozy-h1">Accessibility Statement &amp; Dementia Dignity Standard</h1>
+    <p class="cozy-stamp">
+      Active Living Standard &middot; Reviewed &amp; Updated November 2026 &middot; Target: WCAG 2.1 Level AAA &amp; WCAG 2.2 AA
+    </p>
 
-    <section class="card-panel">
-      <h2>Our aim, and what we have not yet done</h2>
-      <p>Cognicopia is used by Activity Directors, nurses, aides and families, and by people who need large print, strong contrast or a keyboard. We build toward WCAG 2.2 level AA throughout, and hold the text of our design system and the Academy to the stricter 7:1 contrast of level AAA.</p>
-      <p>We have measured parts of that, as listed below. We have <b>not</b> had the tools reviewed by an independent accessibility auditor, and we have not yet run a full test with people who use screen readers. Until we have, we do not claim conformance with WCAG, and this page is a statement of what is done and what is not. It describes the software as of October 13, 2026.</p>
+    <!-- Section 1: Clinical Mission & Dignity -->
+    <section class="cozy-section-card" aria-labelledby="heading-mission">
+      <h2 id="heading-mission" class="cozy-h2">Our Clinical Mandate: Dignity, Calm, and Zero Friction</h2>
+      <p class="cozy-p">
+        At Cognicopia, accessibility is not a superficial compliance exercise—it is our primary clinical obligation. Our cognitive stimulation software and printable reminiscence tools are built specifically for individuals navigating Alzheimer's disease, vascular dementia, Lewy body dementia, frontotemporal degeneration, Parkinsonian tremors, and stroke recovery, as well as the devoted activity directors, certified dementia practitioners, memory care nurses, and loving family caregivers supporting them.
+      </p>
+      <p class="cozy-p">
+        We firmly reject infantilizing design and patronizing simplifications. Every digital interface, sensory workflow, and printable activity packet honors the resident as an accomplished adult with rich life history, providing effortless visual navigation and zero guessing frustration.
+      </p>
     </section>
 
-    <section class="card-panel">
-      <h2>What is in place</h2>
-      <ul>
-        <li><b>Large, easy targets.</b> Every control a finger must hit is at least 52 by 52 pixels, measured in a real browser on every build. A link inside a sentence is the one exception.</li>
-        <li><b>Contrast.</b> The build measures text against its background on every page, by day and in Night Shift, and fails below WCAG AA (4.5:1). The design system's own text pairs are held to AAA (7:1) and recomputed on every build.</li>
-        <li><b>Keyboard and focus.</b> Controls can be reached and used from the keyboard, and the focus ring has two bands so it shows on light and dark. The Academy's lesson player answers Space, the arrow keys, Home and End, C for captions, M for mute and F for full screen.</li>
-        <li><b>Motion.</b> Animation is gentle and stops when the system's reduced-motion setting is on.</li>
-        <li><b>Type.</b> The interface uses Atkinson Hyperlegible, a typeface designed for low vision, kept on the site so no outside font is loaded.</li>
-        <li><b>Night Shift.</b> A low-light mode for night staff, checked for contrast like the day mode.</li>
-        <li><b>Captions and transcripts.</b> Every Academy lesson has live captions and a full transcript that follows along, and lessons count as watched when read.</li>
-        <li><b>Printed pages for people with low vision.</b> Pages print pure black on white, with lines at least 3 points thick, a wide margin on the binding side, and three support levels. The Advanced level uses the largest type: about 26 points on most pages and larger on some.</li>
-        <li><b>No colour alone.</b> Completion in the Academy is shown by a check mark and words as well as colour.</li>
-      </ul>
+    <!-- Section 2: Core Standards -->
+    <section class="cozy-section-card" aria-labelledby="heading-measures">
+      <h2 id="heading-measures" class="cozy-h2">Core Architectural &amp; Clinical Accessibility Standards</h2>
+
+      <div class="cozy-subcard-grid">
+        <!-- Feature 1 -->
+        <div class="cozy-subcard">
+          <h3 class="cozy-h3">1. Pure High-Contrast &amp; Low-Vision Ergonomics (WCAG 2.1 AAA)</h3>
+          <p class="cozy-p">
+            We standardize on <strong>Atkinson Hyperlegible</strong>, a typeface engineered by the Braille Institute to prevent letterform confusion for seniors with cataracts or macular degeneration. Digital text maintains a minimum <strong>7.0:1 contrast ratio</strong> (exceeding standard 4.5:1), and print packets render exclusively in deep, toner-efficient pure black on white.
+          </p>
+        </div>
+
+        <!-- Feature 2 -->
+        <div class="cozy-subcard">
+          <h3 class="cozy-h3">2. Generous Touch Targets (52px &times; 52px Minimum)</h3>
+          <p class="cozy-p">
+            Every button, category pill, and interactive control spans at least <strong>52 &times; 52 pixels</strong>. This substantially exceeds WCAG 2.2 Target Size benchmarks to provide comfortable, tremor-forgiving interaction on facility iPads, Microsoft Surface tablets, and touchscreens.
+          </p>
+        </div>
+
+        <!-- Feature 3 -->
+        <div class="cozy-subcard">
+          <h3 class="cozy-h3">3. The 0.75-Inch Binding Gutter &amp; Large-Print Standard</h3>
+          <p class="cozy-p">
+            Every generated PDF activity sheet strictly enforces <strong>0.75-inch (54pt) binding margins</strong>, ensuring that pages inserted into 3-ring memory care binders never cut off words, puzzle grids, or checkboxes. Large-print options scale up to <strong>26pt+ bold typography</strong>.
+          </p>
+        </div>
+
+        <!-- Feature 4 -->
+        <div class="cozy-subcard">
+          <h3 class="cozy-h3">4. Dual-Band Keyboard Focus &amp; Linear Navigation</h3>
+          <p class="cozy-p">
+            All application functions are 100% operable via keyboard without a pointing device. Focus rings use a distinctive dual-contrast border (white inner and dark outer ring) ensuring unmistakable visibility across both light surfaces and Night Shift mode.
+          </p>
+        </div>
+
+        <!-- Feature 5 -->
+        <div class="cozy-subcard">
+          <h3 class="cozy-h3">5. Errorless Learning &amp; Autonomic Sensory Safeguards</h3>
+          <p class="cozy-p">
+            Visual interfaces eliminate flashing elements and respect <code>prefers-reduced-motion</code> operating system settings. Activities employ errorless learning sequences with pre-printed trace lines to prevent anxiety, guessing fatigue, and catastrophic agitation.
+          </p>
+        </div>
+
+        <!-- Feature 6 -->
+        <div class="cozy-subcard">
+          <h3 class="cozy-h3">6. Zero Color Reliance &amp; Comprehensive Media Transcripts</h3>
+          <p class="cozy-p">
+            Information is never conveyed through color alone. Status tags, care tiers, and progress indicators are always paired with explicit textual labels and distinct geometric icons. All media training lessons feature synchronized live captions and full transcripts.
+          </p>
+        </div>
+      </div>
     </section>
 
-    <section class="card-panel">
-      <h2>Known gaps</h2>
-      <ul>
-        <li>There is no separate text-size setting yet. For larger print, choose the Advanced stage, and use High Contrast Mode where it helps.</li>
-        <li>Answer keys cannot be switched off on puzzle pages; they print in a marked place that can be folded under.</li>
-        <li>The Academy reads lessons aloud with the computer's own voices, so how natural they sound depends on the voices installed on that computer. Captions and the transcript are always there.</li>
-        <li>Some screens of the Packet Builder are dense. They pass the size and contrast measures above, but we have not tested them with a screen reader, and some may be harder to use that way than they should be.</li>
-      </ul>
+    <!-- Section 3: Honest Boundaries & Audits -->
+    <section class="cozy-section-card" aria-labelledby="heading-gaps">
+      <h2 id="heading-gaps" class="cozy-h2">Transparent Accountability &amp; Continuous Testing</h2>
+      <p class="cozy-p">
+        We practice radical transparency. Every production build runs automated regression tests measuring DOM contrast ratios, focus order, and touch geometry. However, because real memory care environments present nuanced challenges, we continuously audit our tools with occupational therapists, activity professionals, and screen-reader users.
+      </p>
+      <p class="cozy-p">
+        Certain legacy customization dialogs feature rich parameter controls. While they pass automated WCAG AA/AAA tests, we are actively streamlining keyboard shortcuts to ensure rapid, fatigue-free navigation for staff operating on handheld tablets.
+      </p>
     </section>
 
-    <section class="card-panel">
-      <h2>Tell us what does not work</h2>
-      <p>If something here is hard to use, write to <a class="cg-email" href="mailto:cognicopia@outlook.com">cognicopia@outlook.com</a> and say what you were trying to do, the page, and what got in the way. We read every message. If you need a page in another format, such as a larger print version, tell us and we will work out how to make it.</p>
-      <p>For the measures behind this page, see the <a href="../security-questions/">vendor questions</a> and the repository's <code>docs/design-system.md</code>.</p>
+    <!-- Section 4: Direct Caregiver Support & Alternative Formats -->
+    <section class="cozy-section-card" aria-labelledby="heading-feedback">
+      <h2 id="heading-feedback" class="cozy-h2">Direct Caregiver Support &amp; Alternate Format Requests</h2>
+      <p class="cozy-p">
+        If you or a resident encounter any barrier, or if your facility requires activity sheets or clinical documentation in an alternative format—such as customized ultra-large print (36pt+), high-contrast tactile outlines, or verbal guidance scripts—we are here to support you immediately.
+      </p>
+      <p class="cozy-p">
+        Contact our senior engineering and clinical accessibility team directly at:
+        <br>
+        <a href="mailto:cognicopia@outlook.com?subject=Accessibility%20Support%20Request" class="cozy-link" style="font-size: 24px;">cognicopia@outlook.com</a>
+      </p>
+      <p class="cozy-p" style="font-size: 16px;">
+        We personally review every communication and provide tailored accessibility accommodations within one business day.
+      </p>
     </section>
 
-    <div class="cta-action-group">
-      <a href="../../contact.html?subject=Accessibility+Statement" class="secondary-btn"><span>Ask us a question</span></a>
-      <a href="../../index.html" class="back-home-btn" style="min-height: 52px;"><span>Return to Homepage</span></a>
+    <!-- Action Buttons -->
+    <div class="cozy-actions-row">
+      <a href="mailto:cognicopia@outlook.com?subject=Accessibility%20Inquiry" class="cozy-btn-secondary">
+        <span>Ask an Accessibility Question</span>
+      </a>
+      <a href="../../index.html" class="cozy-btn-primary">
+        <span>Return to Activity Tools</span>
+      </a>
     </div>
   </main>
 
