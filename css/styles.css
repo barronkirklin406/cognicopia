@@ -1062,3 +1062,42 @@ html .cl-lbd.cl-lbd-bright.cl-lbd, html .cl-lbd.cl-lbd-bright.cl-lbd *, html .cl
 .cl-small { font-size: 12pt; }
 .cl-border { box-sizing: border-box; border: 4pt solid #000; padding: .15in; }
 .cl-lyric { margin: .15in 0; text-align: center; } .cl-bar { display: flex; gap: 0; border-top: 3pt solid #000; } .cl-bar span { flex: 1; height: .2in; border-right: 3pt solid #000; } .cl-bar span:first-child { border-left: 3pt solid #000; } .cl-lyric p { margin: .06in 0; font-size: 22pt; font-weight: 700; } .cl-lyric-title { font-size: 12pt !important; font-weight: 400 !important; }
+
+/* ===== Studio extras: progress report, index cards with QR, KDP hardcover pages =====
+   Each odd size has its own named page (the unnamed @page above stays US Letter). The page names are used by .sheet rules below.
+   Pure black on white, lines of 3 pt or more. */
+@page cg-idx4x6 { size: 4in 6in; margin: 0; }
+@page cg-idx5x7 { size: 5in 7in; margin: 0; }
+@page cg-kdp { size: 8.25in 11in; margin: 0; }
+.sheet.dk-i4x6 { page: cg-idx4x6; } .sheet.dk-i5x7 { page: cg-idx5x7; } .sheet.lb-kdp { page: cg-kdp; }
+
+.sheet.tr-sheet { box-sizing: border-box; padding: .6in .5in .6in .75in !important; color: #000; background: #fff; font-size: 12pt; }
+.tr-sheet h1 { margin: 0; font-size: 30pt; line-height: 1.1; color: #000; } .tr-sheet h2 { margin: .16in 0 .06in; font-size: 17pt; color: #000; }
+.tr-kicker { margin: 0; font-size: 12pt; letter-spacing: .14em; text-transform: uppercase; font-weight: 700; }
+.tr-head { padding-bottom: .1in; border-bottom: 4pt solid #000; } .tr-head p { margin: .04in 0 0; font-size: 13pt; }
+.tr-graph { display: block; width: 100%; height: auto; max-height: 3.6in; border: 3pt solid #000; }
+.tr-table { width: 100%; border-collapse: collapse; font-size: 11.5pt; } .tr-table th, .tr-table td { border: 3pt solid #000; padding: 4pt 6pt; text-align: left; vertical-align: top; }
+.tr-table thead th { font-weight: 700; } .tr-table tbody th { font-weight: 700; }
+.tr-rec { margin: .14in 0; padding: .1in .14in; border: 4pt solid #000; border-radius: 8pt; } .tr-rec p { margin: .04in 0 0; }
+.tr-notes { margin: 0; padding-left: 1.1em; } .tr-notes li { margin: 0 0 .05in; } .tr-note { margin: .14in 0 0; font-size: 11pt; font-style: italic; }
+.tr-foot { margin-top: auto; display: flex; justify-content: space-between; border-top: 3pt solid #000; padding-top: 3pt; font-size: 10.5pt; }
+
+.sheet.dk-index { box-sizing: border-box; padding: .2in !important; page-break-after: always; display: block; background: #fff; color: #000; overflow: hidden; }
+.sheet.dk-index::before { display: none !important; }
+.sheet.dk-i4x6 { width: 4in; height: 6in; } .sheet.dk-i5x7 { width: 5in; height: 7in; }
+.dk-index .dk-frame { height: 100%; }
+.dk-i5x7 .dk-title { font-size: 20pt; } .dk-i5x7 .dk-no { font-size: 12pt; } .dk-i5x7 .dk-art { height: 1.7in; }
+.dk-i4x6 .dk-art { height: 1.2in; } .dk-i4x6.dk-t3 .dk-art { height: 1in; }
+.dk-index.dk-t1 .dk-invite { font-size: 15pt; } .dk-i5x7.dk-t1 .dk-invite { font-size: 18pt; } .dk-i5x7.dk-t2 .dk-invite { font-size: 20pt; } .dk-i5x7.dk-t3 .dk-invite { font-size: 22pt; }
+.dk-i4x6.dk-t2 .dk-invite { font-size: 17pt; } .dk-i4x6.dk-t3 .dk-invite { font-size: 19pt; }
+.dk-qr { flex: none; display: flex; align-items: center; justify-content: center; gap: .08in; margin: 0; }
+.dk-qr svg { width: .9in; height: .9in; border: 2pt solid #000; } .dk-i5x7 .dk-qr svg { width: 1.05in; height: 1.05in; }
+.dk-qr figcaption { font-size: 10pt; font-weight: 700; line-height: 1.2; text-align: left; max-width: 1.8in; }
+.dk-indexback .dk-frame { font-size: 11pt; } .dk-i5x7.dk-indexback .dk-frame { font-size: 13pt; }
+@media print { .sheet.dk-index { margin: 0; box-shadow: none; } }
+
+.sheet.lb-kdp { width: 8.25in; height: 11in; padding-top: .5in !important; padding-bottom: .5in !important; }
+.sheet.lb-kdp.lb-odd { padding-left: .75in !important; padding-right: .5in !important; } .sheet.lb-kdp.lb-even { padding-left: .5in !important; padding-right: .75in !important; }
+.lb-family { display: flex; flex-direction: column; gap: .2in; } .lb-family h2 { margin: 0; font-size: 22pt; }
+.lb-photo { flex: none; height: 3.4in; border: 3pt dashed #000; display: flex; align-items: center; justify-content: center; font-size: 14pt; font-weight: 700; }
+.lb-lines { flex: 1 1 auto; display: flex; flex-direction: column; justify-content: space-between; } .lb-lines i { display: block; border-bottom: 3pt solid #000; height: .36in; }

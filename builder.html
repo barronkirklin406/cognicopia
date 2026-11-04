@@ -8412,6 +8412,8 @@ const ReminiscenceUI = (function(){
             <div class="actions">
               <button class="btn btn-primary" type="button" id="rmAdd">Add to packet</button>
               <button class="btn btn-primary" type="button" id="rmDeck">Print cut-out cards (cardstock)</button>
+              <button class="btn" type="button" id="rmIdx4">Print 4 &times; 6 in index cards</button>
+              <button class="btn" type="button" id="rmIdx5">Print 5 &times; 7 in index cards</button>
               <button class="btn" type="button" id="rmPrint">Print one per page</button>
               <button class="btn" type="button" id="rmNew">A fresh set</button>
             </div>
@@ -8465,6 +8467,8 @@ const ReminiscenceUI = (function(){
     else if (b.id === "rmNew"){ state().seed++; focus = 0; refresh(); toast("A fresh set of starters, songs and references."); }
     else if (b.id === "rmPrint") printNow();
     else if (b.id === "rmDeck") printDeck();
+    else if (b.id === "rmIdx4") printIndexCards("4x6");
+    else if (b.id === "rmIdx5") printIndexCards("5x7");
     else if (b.id === "rmAdd") addToPacket();
     else if (b.id === "rmKeep"){                  // straight to the memory keeper, with this card filled in
       const { d } = pages(), c = d.cards[focus];
@@ -8480,6 +8484,16 @@ const ReminiscenceUI = (function(){
     const d = build(), s = state(), p = profile(), name = String((p.tier1_core || {}).preferredName || "").trim(), t = d.person.tier;
     const list = DK.deckPages(d.cards, { tier:t, art:(c, tr) => { try { return artFor(c, tr); } catch (e){ return ""; } }, who:name ? "For " + name + " · " + d.person.placeLabel : d.person.placeLabel, color:s.color });
     BookUI.print(list.map(x => ({ html:x.html })), fileTitle() + " - cut-out cards", refresh, { color:s.color });
+  }
+  /* one card to a page the size of the card, front then back, each front with a QR code to a sound that plays on the device (js/deck-formats.js) */
+  async function printIndexCards(size){
+    if (!DK){ toast("The deck tools are still loading. Try again in a moment."); return; }
+    try {
+      const F = await import("./js/deck-formats.js"), d = build(), s = state(), p = profile(), name = String((p.tier1_core || {}).preferredName || "").trim();
+      const list = F.indexCardPages(d.cards, { size, tier:d.person.tier, art:(c, tr) => { try { return artFor(c, tr); } catch (e){ return ""; } }, who:name ? "For " + name + " · " + d.person.placeLabel : d.person.placeLabel });
+      BookUI.print(list.map(x => ({ html:x.html })), fileTitle() + " - " + F.INDEX_CARDS[size].label + "s", refresh, { color:s.color });
+      toast("Set the printer to " + F.INDEX_CARDS[size].label + " paper (or print on letter paper and trim). Each card has its own page.");
+    } catch (e){ toast("The index cards could not be made: " + (e && e.message || e)); }
   }
   function addToPacket(){
     const s = state(), { d } = pages();
@@ -9394,6 +9408,7 @@ const HeirloomUI = (function(){
       <div class="field"><label for="lbMsg">A note for the family <span class="sub">Optional. Printed on its own page after the cover.</span></label><textarea id="lbMsg" rows="4" maxlength="900"></textarea></div>
       <label class="hl-check"><input type="checkbox" id="lbTeam" checked> Include &ldquo;What Our Team Noticed&rdquo;</label>
       <label class="hl-check"><input type="checkbox" id="lbTwo" checked> Two-sided binder gutters (the 0.75 in gutter alternates sides)</label>
+      <label class="hl-check"><input type="checkbox" id="lbKdp"> Hardcover print-on-demand edition (8.25 &times; 11 in pages, at least 75, with family message and photograph pages added)</label>
       <div class="actions"><button class="btn btn-primary" type="button" id="lbMake">Compile the book</button></div>
       <p class="hint" id="lbStatus" role="status" aria-live="polite"></p>`;
     panel.querySelector("#lbMake").addEventListener("click", async () => {
@@ -9405,10 +9420,10 @@ const HeirloomUI = (function(){
           profile: () => p, keeper: () => readKeeper(p.id),
           journal: () => SC.readJournal(CG_LS, p.id), tracking: () => SC.readTracking(CG_LS, p.id),
           engagement: () => { try { const a = JSON.parse(localStorage.getItem("cognicopia_p2_log") || "[]"); return (Array.isArray(a) ? a : []).filter(r => r.residentId === p.id); } catch (e){ return []; } }
-        }, p.id, { relation: panel.querySelector("#lbRel").value, facility: panel.querySelector("#lbFac").value, message: panel.querySelector("#lbMsg").value, includeTeam: panel.querySelector("#lbTeam").checked, art: (d, t) => artSvg(d, t, 3.2) });
+        }, p.id, { relation: panel.querySelector("#lbRel").value, facility: panel.querySelector("#lbFac").value, message: panel.querySelector("#lbMsg").value, includeTeam: panel.querySelector("#lbTeam").checked, kdp: panel.querySelector("#lbKdp").checked, art: (d, t) => artSvg(d, t, 3.2) });
         if (book.empty){ st.textContent = "Nothing has been shared in the last 90 days yet. Keep a memory first, then compile again."; return; }
         st.textContent = book.pages.length + " pages: " + Object.entries(book.counts).filter(([, n]) => n).map(([k, n]) => n + " " + k).join(", ") + ". Opening the print window…";
-        BookUI.print(book.pages.map(x => ({ html: x.html })), ["Legacy Book", cgFileName(p), todayISO()].join(" - "), null, { twoSided: panel.querySelector("#lbTwo").checked });
+        BookUI.print(book.pages.map(x => ({ html: x.html })), ["Legacy Book", cgFileName(p), todayISO()].join(" - "), null, { twoSided: panel.querySelector("#lbTwo").checked || panel.querySelector("#lbKdp").checked });
       } catch (e){ st.textContent = "The book could not be compiled: " + (e && e.message || e); }
     });
   }
@@ -14937,7 +14952,7 @@ function addBatch(act, cfg, batchSeed, count){
 
 /* ---------- 11. Views + router ---------- */
 const view = $("#view");
-const routes = { "": renderHome, "category": renderCategory, "settings": renderSettings, "tracking": renderTracking, "planner": renderStudioPlanner, "journal": renderStudioJournal, "life-planner": renderPlanner, "life-journal": renderJournal, "planner-care-companion": renderPlannerCareCompanion, "roster": renderRoster, "coloring": renderColoring, "reminiscence": renderReminiscence, "clinical": renderClinical, "heirloom": renderHeirloom, "facility": renderFacilityPortal, "shift": renderShift, "academy": renderAcademy };
+const routes = { "": renderHome, "category": renderCategory, "settings": renderSettings, "audio": renderAudio, "tracking": renderTracking, "planner": renderStudioPlanner, "journal": renderStudioJournal, "life-planner": renderPlanner, "life-journal": renderJournal, "planner-care-companion": renderPlannerCareCompanion, "roster": renderRoster, "coloring": renderColoring, "reminiscence": renderReminiscence, "clinical": renderClinical, "heirloom": renderHeirloom, "facility": renderFacilityPortal, "shift": renderShift, "academy": renderAcademy };
 function renderFacilityPortal(arg){ FacilityUI.render(view, arg); }
 function renderAcademy(arg){ AcademyUI.render(view, arg); }
 function renderShift(){ DailyOpsUI.render(view); }
@@ -14953,12 +14968,33 @@ function renderJournal(){ LifeJournalUI.render(view); }
 /* The three Studio tools (js/studio-ui.js): each mounts into the view and is torn down at the next address change, so no state carries over.
    The old combined planner and journal stay reachable at #/life-planner and #/life-journal for anyone with a link to them. */
 const StudioHost = {
-  deps(){ return { esc, toast, todayISO, store: CG_LS, residents: () => BookUI.savedProfiles(), activeId: () => ActiveResident.get(), nameOf: p => String(p && p.tier1_core && p.tier1_core.preferredName || "").trim() || "Unnamed resident", today: () => new Date() }; },
+  deps(){ return { esc, toast, todayISO, store: CG_LS, residents: () => BookUI.savedProfiles(), activeId: () => ActiveResident.get(), nameOf: p => String(p && p.tier1_core && p.tier1_core.preferredName || "").trim() || "Unnamed resident", today: () => new Date(), facility: () => (typeof settings !== "undefined" && settings.facility) || "", print: (pages, title) => BookUI.print(pages, title, null, {}), jsPDF: () => StudioHost.pdfKit() }; },
+  pdf: null,
+  pdfKit(){
+    if (window.jspdf && window.jspdf.jsPDF) return Promise.resolve(window.jspdf.jsPDF);
+    if (this.pdf) return this.pdf;
+    this.pdf = new Promise((ok, fail) => { const sc = document.createElement("script"); sc.src = "assets/vendor/jspdf.umd.min.js"; sc.onload = () => ok(window.jspdf.jsPDF); sc.onerror = () => { StudioHost.pdf = null; fail(new Error("Could not load the PDF tools")); }; document.head.appendChild(sc); });
+    return this.pdf;
+  },
   show(name){ if (window.CogniStudio){ window.CogniStudio.init(this.deps()); window.CogniStudio.render(name, view, this.deps()); } else { view.innerHTML = '<p class="hint">The Studio tools are still loading.</p>'; window.addEventListener("cogni-studio-ready", () => { if (parseHash().name === name) router(); }, { once:true }); } }
 };
 function renderTracking(){ StudioHost.show("tracking"); }
 function renderStudioPlanner(){ StudioHost.show("planner"); }
 function renderStudioJournal(){ StudioHost.show("journal"); }
+/* #/audio/<sound>: the page a conversation card's QR code opens. It plays a sound made on this device (js/tabletSound.js); nothing is downloaded. */
+function renderAudio(arg){
+  const id = String(arg || "").replace(/[^a-z0-9-]/gi, "");
+  view.innerHTML = '<section class="panel" id="auPanel"><h1 class="h-page">Listen</h1><p class="hint" id="auText">Loading the sound…</p><div class="actions"><button class="btn btn-primary" type="button" id="auPlay" disabled>Play the sound</button><button class="btn" type="button" id="auStop" disabled>Stop</button></div></section>';
+  const load = window.CognicopiaTabletSound ? Promise.resolve() : new Promise((ok, fail) => { const sc = document.createElement("script"); sc.src = "js/tabletSound.js"; sc.onload = ok; sc.onerror = () => fail(new Error("The sound tools did not load")); document.head.appendChild(sc); });
+  load.then(() => {
+    const T = window.CognicopiaTabletSound, meta = T.META.find(m => m.id === id), text = view.querySelector("#auText"), play = view.querySelector("#auPlay"), stop = view.querySelector("#auStop");
+    if (!meta){ text.textContent = "That sound is not on this device. Choose one from the Sights and Sounds board."; return; }
+    text.textContent = meta.name + ". " + meta.line + " This sound is made on this device; nothing is downloaded and no internet is needed.";
+    let ac = null, kit = null; play.disabled = false;
+    play.addEventListener("click", () => { try { if (!ac){ ac = new (window.AudioContext || window.webkitAudioContext)(); kit = T.create(ac); } if (ac.state === "suspended") ac.resume(); kit.stopAll(); kit.play(id, ac.currentTime + 0.05); stop.disabled = false; } catch (e){ text.textContent = "This device could not play the sound."; } });
+    stop.addEventListener("click", () => { if (kit) kit.stopAll(); stop.disabled = true; });
+  }).catch(e => { const t = view.querySelector("#auText"); if (t) t.textContent = String(e && e.message || e); });
+}
 
 function parseHash(){
   const parts = location.hash.replace(/^#\/?/, "").split("/");

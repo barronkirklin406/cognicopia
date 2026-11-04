@@ -58,13 +58,23 @@ function tracking(body, m) {
         <fieldset class="field"><legend>What seemed to bring on frustration?</legend><div class="st-chips">${C.TRIGGERS.map((t) => `<label class="st-opt"><input type="checkbox" name="trig" value="${H(t)}"${cur.triggers.includes(t) ? " checked" : ""}><span>${H(t)}</span></label>`).join("")}</div></fieldset>
         <div class="field"><label for="stNote">A note <span class="sub">Optional. What you saw, in plain words. No names but the resident's.</span></label><textarea id="stNote" rows="3" maxlength="300">${H(cur.note)}</textarea></div>
         <div class="actions"><button class="btn btn-primary" type="submit" id="stSave">Save this month</button></div></form>
+      <div class="actions"><button type="button" class="btn" id="stReport">Print the progress report</button><button type="button" class="btn" id="stReportPdf">Download the progress report (PDF)</button></div><p class="hint" id="stReportMsg" role="status" aria-live="polite">The report shows the last 90 days as a graph, the trends and the month-by-month notes, for a family or care conference.</p>
       <h2 class="st-h2">The last 12 months</h2>
       <div class="st-scroll"><table class="st-matrix"><caption class="sr-only">Monthly log, newest first</caption><thead><tr><th scope="col">Month</th><th scope="col">Stage</th><th scope="col">Engaged</th><th scope="col">Frustration</th><th scope="col">Eye fatigue</th><th scope="col">What brought it on</th><th scope="col"><span class="sr-only">Actions</span></th></tr></thead><tbody>${C.monthsBack(today(), 12).reverse().map((mo) => { const e = log.entries.find((x) => x.month === mo); return e ? `<tr><th scope="row">${H(C.monthLabel(mo))}</th><td>${H((C.STAGES.find((s) => s.code === e.stage) || {}).label)}</td><td>${e.engagement}</td><td>${e.frustration}</td><td>${e.fatigue}</td><td>${H(e.triggers.join(", ")) || "&ndash;"}</td><td><button type="button" class="btn btn-sm" data-edit="${mo}">Open</button></td></tr>` : `<tr class="st-empty"><th scope="row">${H(C.monthLabel(mo))}</th><td colspan="5">Not logged</td><td><button type="button" class="btn btn-sm" data-edit="${mo}">Add</button></td></tr>`; }).join("")}</tbody></table></div>
       <h2 class="st-h2">Trends</h2>
       <div class="st-scroll"><table class="st-matrix"><thead><tr><th scope="col">Window</th><th scope="col">Months logged</th><th scope="col">Engagement</th><th scope="col">Frustration</th><th scope="col">Eye fatigue</th><th scope="col">Most often noted</th></tr></thead><tbody>${[3, 6, 12].map((w) => { const x = a.windows[w]; return `<tr><th scope="row">${w} months</th><td>${x.n}</td>${["engagement", "frustration", "fatigue"].map((k) => `<td>${x.n ? x[k] + " of 4, " + x.trends[k] : "&ndash;"}</td>`).join("")}<td>${H(x.triggers.map((t) => t.trigger).join(", ")) || "&ndash;"}</td></tr>`; }).join("")}</tbody></table></div>`;
   };
   on(m, sel, "change", () => { S.res = sel.value; S.month = C.monthKey(today()); draw(); });
-  on(m, body, "click", (e) => { const b = e.target.closest("[data-edit]"); if (b) { S.month = b.dataset.edit; draw(); const f = body.querySelector("#stMonth"); if (f) f.focus(); } });
+  on(m, body, "click", async (e) => {
+    const b = e.target.closest("[data-edit]"); if (b) { S.month = b.dataset.edit; draw(); const f = body.querySelector("#stMonth"); if (f) f.focus(); return; }
+    if (e.target.id !== "stReport" && e.target.id !== "stReportPdf") return;
+    const msg = body.querySelector("#stReportMsg"), p = deps.residents().find((x) => x.id === S.res), model = { name: p ? deps.nameOf(p) : "Resident", entries: C.readTracking(deps.store, S.res).entries, today: today(), facility: deps.facility ? deps.facility() : "" };
+    try {
+      const R = await import("./tracking-report.js");
+      if (e.target.id === "stReport") { if (deps.print) deps.print(R.reportPages(model).map((x) => ({ html: x.html })), "Progress report - " + model.name + " - " + iso()); else msg.textContent = "Printing is not available here."; }
+      else { const J = await deps.jsPDF(); const doc = new J({ unit: "in", format: "letter", orientation: "portrait", compress: true }); R.reportPdf(doc, model); doc.save("Progress report - " + model.name + " - " + iso() + ".pdf"); msg.textContent = "The PDF was saved to your downloads."; }
+    } catch (err) { msg.textContent = "The report could not be made: " + (err && err.message || err); }
+  });
   on(m, body, "change", (e) => { if (e.target.id === "stMonth" && /^\d{4}-\d{2}$/.test(e.target.value)) { S.month = e.target.value; draw(); } });
   on(m, body, "submit", (e) => {
     if (e.target.id !== "stForm") return; e.preventDefault(); const f = e.target, v = (n) => Number((f.querySelector(`[name="${n}"]:checked`) || {}).value);
@@ -84,6 +94,8 @@ function planner(body, m) {
     body.innerHTML = `<div class="config" style="margin-top:0">
       <div class="row2"><div class="field"><label for="plYear">Year</label><select id="plYear">${[y - 1, y, y + 1].map((n) => `<option${n === S.year ? " selected" : ""}>${n}</option>`).join("")}</select></div>
         <div class="field" style="align-self:end"><div class="actions" style="margin:0"><button type="button" class="btn" id="plDefaults">${anyFilled ? "Reset to sensible defaults" : "Fill in sensible defaults"}</button></div></div></div>
+      <div class="row2"><div class="field"><label for="plClimate">Regional climate <span class="sub">Changes what each season is called and which words and notes suit it.</span></label><select id="plClimate">${Object.entries(C.CLIMATES).map(([k, c]) => `<option value="${k}"${k === p.climate ? " selected" : ""}>${H(c.label)}</option>`).join("")}</select></div>
+        <fieldset class="field"><legend>Leave out days that can be hard</legend><div class="actions" style="margin:0 0 8px"><button type="button" class="btn" id="plStressAll">${p.exclusions.length === Object.keys(C.STRESS_TAGS).length ? "Allow all days again" : "Exclude every stress-trigger day"}</button></div><div class="st-chips">${Object.entries(C.STRESS_TAGS).map(([k, l]) => `<label class="st-opt"><input type="checkbox" data-stress="${k}"${p.exclusions.includes(k) ? " checked" : ""}><span>${H(l)}</span></label>`).join("")}</div></fieldset></div>
       <p class="hint">Eras come from what residents lived through. Milestones leave out days that can stir strong feelings; add them yourself if your community wants them.</p>
       <div class="st-scroll"><table class="st-matrix st-plan"><caption class="sr-only">The year, month by month</caption><thead><tr><th scope="col">Month</th><th scope="col">Era to draw on</th><th scope="col">Season</th><th scope="col">Milestone</th><th scope="col">Thematic arc</th><th scope="col">Theme for the bundle</th><th scope="col">Notes</th></tr></thead><tbody>
       ${Array.from({ length: 12 }, (_, i) => { const k = String(i + 1).padStart(2, "0"), x = p.months[k], id = "pl" + k, b = p.bundles.find((q) => q.month === y + "-" + k); return `<tr data-m="${k}"><th scope="row">${H(C.monthLabel(y + "-" + k).replace(" " + y, ""))}${b ? `<span class="st-tag">${b.status === "generated" ? "Generated" : "Mapped"}</span>` : ""}</th>
@@ -100,10 +112,13 @@ function planner(body, m) {
   on(m, body, "change", (e) => {
     const t = e.target;
     if (t.id === "plYear") { S.year = Number(t.value); S.plan = C.readPlanner(deps.store, S.year); draw(); return; }
+    if (t.id === "plClimate") { S.plan = C.savePlanner(deps.store, C.applyOptions(S.plan, { climate: t.value })); draw(); return; }
+    if (t.dataset && t.dataset.stress) { const on = [...body.querySelectorAll("[data-stress]")].filter((x) => x.checked).map((x) => x.dataset.stress); S.plan = C.savePlanner(deps.store, C.applyOptions(S.plan, { exclusions: on })); draw(); return; }
     const tr = t.closest("tr[data-m]"); if (!tr || !t.dataset.f) return; S.plan.months[tr.dataset.m][t.dataset.f] = t.value; S.plan = C.savePlanner(deps.store, S.plan);
   });
   on(m, body, "click", (e) => {
-    if (e.target.id === "plDefaults") { S.plan = C.savePlanner(deps.store, Object.assign(C.defaultPlan(S.year), { bundles: S.plan.bundles })); draw(); say("Defaults filled in."); }
+    if (e.target.id === "plDefaults") { S.plan = C.savePlanner(deps.store, Object.assign(C.defaultPlan(S.year, { climate: S.plan.climate, exclusions: S.plan.exclusions }), { bundles: S.plan.bundles })); draw(); say("Defaults filled in."); }
+    if (e.target.id === "plStressAll") { const all = Object.keys(C.STRESS_TAGS), ex = S.plan.exclusions.length === all.length ? [] : all; S.plan = C.savePlanner(deps.store, C.applyOptions(S.plan, { exclusions: ex })); draw(); say(ex.length ? "Stress-trigger days left out." : "All days allowed again."); }
     if (e.target.id === "plPremap") { const from = S.year === today().getFullYear() ? today() : new Date(S.year, 0, 1), r = C.premap(S.plan, from, 12); S.plan = C.savePlanner(deps.store, r.planner); draw(); body.querySelector("#plStatus").textContent = r.mapped ? r.mapped + " month" + (r.mapped === 1 ? "" : "s") + " linked to roster bundles. The monthly roster generation will use them." + (r.mapped === 0 ? "" : "") : "No months to map: they may already be generated, or the year is over."; }
   });
   draw();
@@ -119,7 +134,7 @@ function journal(body, m) {
     const j = C.readJournal(deps.store, S.res), ins = C.readInsights(deps.store, S.res), top = Object.entries(ins.keywords).sort((a, b) => b[1] - a[1]).slice(0, 12);
     panel.innerHTML = `<form id="jnForm" class="st-form" novalidate>
         <fieldset class="field"><legend>What would you like to record?</legend><div class="st-stage">${C.JOURNAL_KINDS.map((k, i) => `<label class="st-opt"><input type="radio" name="kind" value="${k.code}"${i === 0 ? " checked" : ""}><span><b>${H(k.label)}</b><small>${H(k.hint)}</small></span></label>`).join("")}</div></fieldset>
-        <div class="field"><label for="jnText">What happened <span class="sub">In plain words, as it happened. Their own words in quotation marks are welcome.</span></label><textarea id="jnText" rows="5" maxlength="600" required></textarea></div>
+        <div class="field"><label for="jnText">What happened <span class="sub">In plain words, as it happened. Their own words in quotation marks are welcome.</span></label><textarea id="jnText" rows="5" maxlength="600" required></textarea><div class="actions" style="margin:8px 0 0"><button type="button" class="btn" id="jnMic" aria-pressed="false">Dictate</button></div><p class="hint" id="jnMicMsg" role="status" aria-live="polite">Dictation works hands-free, and only where speech is recognized on this device.</p></div>
         <div class="field"><label for="jnCtx">What was going on <span class="sub">Optional: the time, the place, what came before.</span></label><input id="jnCtx" type="text" maxlength="200" autocomplete="off"></div>
         <p class="hint" id="jnKw" aria-live="polite">Keywords will appear here as you write.</p>
         <div class="actions"><button class="btn btn-primary" type="submit">Save to the journal</button></div></form>
@@ -127,7 +142,17 @@ function journal(body, m) {
       <h2 class="st-h2">In their profile notes</h2><p class="hint">${top.length ? top.map(([k, n]) => `<span class="st-tag">${H(k)}${n > 1 ? " ×" + n : ""}</span>`).join(" ") : "Nothing yet. Each entry adds its keywords here."}</p>
       <h2 class="st-h2">The journal</h2><ol class="st-list">${j.entries.slice().reverse().map((e) => `<li><div><span class="st-tag">${H((C.JOURNAL_KINDS.find((k) => k.code === e.kind) || {}).label)}</span> <time datetime="${H(e.at)}">${H(new Date(e.at).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }))}</time></div><p>${H(e.text)}</p>${e.context ? `<p class="hint">${H(e.context)}</p>` : ""}${e.keywords.length ? `<p class="hint">${e.keywords.map(H).join(" · ")}</p>` : ""}</li>`).join("") || `<li class="hint">No entries yet.</li>`}</ol>`;
   };
-  on(m, sel, "change", () => { S.res = sel.value; draw(); });
+  on(m, sel, "change", () => { S.res = sel.value; stopMic(); draw(); });
+  const stopMic = () => { if (S.dict) { S.dict.stop(); S.dict = null; } };
+  m.ac.signal.addEventListener("abort", stopMic);
+  on(m, body, "click", async (e) => {
+    if (e.target.id !== "jnMic") return; const btn = e.target, msg = body.querySelector("#jnMicMsg"), ta = body.querySelector("#jnText");
+    if (S.dict) { stopMic(); btn.setAttribute("aria-pressed", "false"); btn.textContent = "Dictate"; msg.textContent = "Dictation stopped."; return; }
+    try {
+      const D = await import("./dictation.js"); S.dict = new D.Dictation({ onText: (t) => { ta.value = (ta.value ? ta.value.replace(/\s+$/, "") + " " : "") + t; ta.dispatchEvent(new Event("input", { bubbles: true })); }, onState: (st) => { msg.textContent = st.reason || ""; if (!st.listening) { btn.setAttribute("aria-pressed", "false"); btn.textContent = "Dictate"; S.dict = null; } } });
+      const r = await S.dict.start(); if (r.ok) { btn.setAttribute("aria-pressed", "true"); btn.textContent = "Stop dictating"; } else S.dict = null;
+    } catch (err) { S.dict = null; msg.textContent = "Dictation is not available: " + (err && err.message || err); }
+  });
   on(m, body, "input", (e) => { if (e.target.id === "jnText") { const k = C.keywordsOf(e.target.value), el = body.querySelector("#jnKw"); if (el) el.textContent = k.length ? "Keywords for the profile: " + k.join(", ") : "Keywords will appear here as you write."; } });
   on(m, body, "submit", (e) => {
     if (e.target.id !== "jnForm") return; e.preventDefault(); const f = e.target;
@@ -137,7 +162,7 @@ function journal(body, m) {
       draw("Saved. Adding " + (r.entry.keywords.length ? r.entry.keywords.join(", ") : "the story") + " to their profile notes…");
     } catch (err) { say(err.message); }
   });
-  const fed = (ev) => { if (!mounted || mounted.name !== "journal" || ev.detail.residentId !== S.res) return; draw(ev.detail.ok ? "Saved, and added to their profile notes: " + (ev.detail.keywords.join(", ") || "the story") + "." : "Saved. The profile notes could not be updated."); };
+  const fed = (ev) => { if (!mounted || mounted.name !== "journal" || ev.detail.residentId !== S.res) return; draw(ev.detail.ok ? "Saved, and added to their profile notes: " + (ev.detail.keywords.join(", ") || "the story") + "." + (ev.detail.mentions && ev.detail.mentions.length ? " Added to their people and pets, for you to check: " + ev.detail.mentions.map((x) => x.name + " (" + x.rel.replace("pet-", "pet ").replace("-", " ") + ")").join(", ") + "." : "") : "Saved. The profile notes could not be updated."); };
   document.addEventListener("cg-studio-profile-fed", fed, { signal: m.ac.signal });
   draw();
 }

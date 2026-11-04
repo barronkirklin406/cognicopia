@@ -16,6 +16,9 @@ import { seasonOf } from "./pillar1-production-agents.js";
 
 export const VERSION = "1.0.0";
 export const GUTTER_IN = 0.75, OUTER_IN = 0.5, LINES_PER_PAGE = 30;
+/* Commercial hardcover (Amazon KDP) layout: 8.25 x 11 in pages, a 0.125 in bleed that the printer adds, a 0.75 in inside margin (more than any KDP page-count
+   tier asks for up to 700 pages) and 0.5 in on the other three sides, and at least 75 pages. KDP changes its rules, so check the current ones before ordering. */
+export const KDP = Object.freeze({ trimIn: [8.25, 11], bleedIn: 0.125, insideIn: 0.75, outsideIn: 0.5, topIn: 0.5, bottomIn: 0.5, minPages: 75, maxPages: 550 });
 export const CHAPTERS = Object.freeze([
   { key: "artwork", title: "Artwork", blurb: "Pages they colored and made." },
   { key: "puzzles", title: "Puzzles", blurb: "Word searches, matching and other puzzles they worked on." },
@@ -93,7 +96,12 @@ function itemHtml(it, art) {
   const pic = it.design && art ? `<div class="lb-art">${art(it.design, it.tier)}</div>` : "";
   return `<article class="lb-item"><header><span class="lb-date">${esc(longDate(it.date))}</span>${it.title ? `<h3>${esc(it.title)}</h3>` : ""}</header>${pic}${it.text ? `<p>${esc(it.text)}</p>` : ""}${it.by ? `<p class="lb-by">Recorded by ${esc(it.by)}</p>` : ""}</article>`;
 }
-const sheet = (body, n, total, label, role) => `<div class="sheet lb-sheet ${n % 2 ? "lb-odd" : "lb-even"} lb-${role}" data-lb-page="${n}">${body}<footer class="lb-foot"><span>${esc(label)}</span><b class="lb-no">${role === "cover" ? "" : "Page " + n + " of " + total}</b></footer></div>`;
+const sheet = (body, n, total, label, role, kdp) => `<div class="sheet lb-sheet ${kdp ? "lb-kdp " : ""}${n % 2 ? "lb-odd" : "lb-even"} lb-${role}" data-lb-page="${n}">${body}<footer class="lb-foot"><span>${esc(label)}</span><b class="lb-no">${role === "cover" ? "" : "Page " + n + " of " + total}</b></footer></div>`;
+/* A page for the family to write on: a prompt, ruled lines and a box for a photograph. */
+export function familyPageHtml(n, prompt) {
+  const p = clip(prompt, 120) || ["A memory we want to keep.", "What we hope you remember.", "A favorite moment together.", "Something you taught us."][(n - 1) % 4];
+  return `<div class="lb-family"><p class="lb-kicker">A message from the family</p><h2>${esc(p)}</h2><div class="lb-photo" aria-label="Space for a photograph"><span>Photograph</span></div><div class="lb-lines" aria-hidden="true">${"<i></i>".repeat(9)}</div></div>`;
+}
 /* compile(deps, residentId, { today, relation, facility, message, art, days, includeTeam }) -> { pages: [{ html, role, chapter }], meta, counts, empty } */
 export async function compile(deps, residentId, o = {}) {
   const m = await aggregate(deps, residentId, o); m.today = o.today || new Date(); m.relation = o.relation; m.facility = clip(o.facility, 80); m.hemisphere = o.hemisphere;
@@ -108,10 +116,12 @@ export async function compile(deps, residentId, o = {}) {
     const pgs = paginate(m.chapters[c.key]); pgs.forEach((items, i) => parts.push({ role: "content", chapter: c.key, html: `<div class="lb-content"><h2 class="lb-run">${esc(c.title)}${pgs.length > 1 ? " <small>(" + (i + 1) + " of " + pgs.length + ")</small>" : ""}</h2>${items.map((it) => itemHtml(it, o.art)).join("")}</div>`, label: c.title }));
   }
   if (!chapters.length) parts.push({ role: "content", html: `<div class="lb-content"><h2 class="lb-run">This quarter</h2><p>Nothing has been shared for the last ${m.range.days} days yet. Keep memories during the quarter and compile the book again.</p></div>`, label: title });
+  /* commercial hardcover: family message pages (lined, with a photo box) are added after the book until it reaches the minimum, and the count is made even */
+  let added = 0; if (o.kdp) { const want = Math.max(KDP.minPages, o.minPages || 0), target = Math.min(KDP.maxPages, want + (want % 2)); while (parts.length < target || parts.length % 2) { added++; parts.push({ role: "family", html: familyPageHtml(added, o.familyPrompt), label: "Family messages and photographs" }); } }
   parts.forEach((p, i) => { p.n = i + 1; if (p.chapter && p.role === "divider") startOf[p.chapter] = p.n; });
   const contents = `<div class="lb-toc"><h2>Contents</h2><ol>${chapters.map((c) => `<li><span>${esc(c.title)}</span><i></i><b>${startOf[c.key]}</b></li>`).join("")}</ol><p class="lb-small">${m.total} entr${m.total === 1 ? "y" : "ies"} from ${esc(longDate(m.range.from))} to ${esc(longDate(m.range.to))}.</p></div>`;
-  const pages = parts.map((p) => ({ role: p.role, chapter: p.chapter || "", n: p.n, html: sheet(p.html === "@@CONTENTS@@" ? contents : p.html, p.n, parts.length, p.label, p.role) }));
-  return { pages, meta: { title, range: m.range, resident: m.resident, pageCount: parts.length, gutterIn: GUTTER_IN }, counts: m.counts, skipped: m.skipped, empty: m.total === 0 };
+  const pages = parts.map((p) => ({ role: p.role, chapter: p.chapter || "", n: p.n, html: sheet(p.html === "@@CONTENTS@@" ? contents : p.html, p.n, parts.length, p.label, p.role, !!o.kdp) }));
+  return { pages, meta: { title, range: m.range, resident: m.resident, pageCount: parts.length, gutterIn: o.kdp ? KDP.insideIn : GUTTER_IN, kdp: o.kdp ? Object.assign({ familyPages: added }, KDP) : null }, counts: m.counts, skipped: m.skipped, empty: m.total === 0 };
 }
 /* The CSS the pages need. The same rules live in css/styles.css; this is returned so a test, or a stand-alone export, can inline them. */
 export const BOOK_CSS = `

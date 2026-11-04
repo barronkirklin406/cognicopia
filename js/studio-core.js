@@ -136,12 +136,42 @@ export function feedProfile(store, residentId, entry, now = new Date()) {
   const wrote = writeJson(store, KEYS.insights + id, out); let profileUpdated = false;
   const p = readJson(store, KEYS.profile + id, null);
   if (p && p.schema === "cognicopia.residentProfile" && p.tier3_deep && typeof p.tier3_deep === "object") { p.tier3_deep.lifeNarrative = { keywords: Object.keys(out.keywords).slice(0, 20), updatedAt: out.updatedAt }; profileUpdated = writeJson(store, KEYS.profile + id, p); }
-  return { ok: wrote, keywords: e.keywords, profileUpdated, insights: out };
+  const p2 = readJson(store, KEYS.profile + id, null), known = [(p2 && p2.tier1_core && p2.tier1_core.preferredName) || "", ...((p2 && p2.tier3_deep && p2.tier3_deep.people) || []).map((x) => x && x.name)];
+  const mentions = extractMentions(e.text + " " + e.context, known), applied = applyMentions(store, id, mentions);
+  return { ok: wrote, keywords: e.keywords, profileUpdated: profileUpdated || applied.added.length > 0, insights: out, mentions: applied.added };
 }
+
+/* ---------- names and pets mentioned in a note (offline) ---------- */
+const REL_CODE = { son: "son", daughter: "daughter", grandson: "grandchild", granddaughter: "grandchild", grandchild: "grandchild", husband: "spouse", wife: "spouse", sister: "sibling", brother: "sibling", mother: "parent", father: "parent", friend: "friend", neighbor: "neighbor", neighbour: "neighbor", nephew: "other-family", niece: "other-family", cousin: "other-family" };
+const REL_LABEL = { spouse: "Husband or wife", son: "Son", daughter: "Daughter", grandchild: "Grandchild", sibling: "Brother or sister", parent: "Mother or father", "other-family": "Other family", friend: "Friend", neighbor: "Neighbor", "pet-dog": "Pet dog", "pet-cat": "Pet cat", "pet-other": "Other pet", other: "Someone else" };
+const NOT_NAMES = new Set("monday tuesday wednesday thursday friday saturday sunday january february march april june july august september october november december god lord jesus christmas easter thanksgiving mass grace amazing staff nurse doctor mom dad mama papa granny nana".split(" "));
+const NAME = "([A-Z][a-z]{2,15})";
+const PET_KIND = { dog: "pet-dog", puppy: "pet-dog", cat: "pet-cat", kitten: "pet-cat", horse: "pet-other", pony: "pet-other", bird: "pet-other", parakeet: "pet-other", canary: "pet-other", rabbit: "pet-other" };
+export function extractMentions(text, known) {
+  const t = String(text == null ? "" : text), people = [], pets = [], seen = new Set((known || []).map((k) => String(k).toLowerCase()));
+  const add = (list, name, rel) => { const k = name.toLowerCase(); if (NOT_NAMES.has(k) || seen.has(k)) return; seen.add(k); list.push({ name, rel }); };
+  for (const m of t.matchAll(new RegExp("\\b(?:dog|puppy|cat|kitten|horse|pony|bird|parakeet|canary|rabbit)\\s+(?:named|called)\\s+" + NAME, "g"))) add(pets, m[1], PET_KIND[m[0].split(/\s+/)[0].toLowerCase()] || "pet-other");
+  for (const m of t.matchAll(new RegExp("\\b" + NAME + "\\s+the\\s+(dog|puppy|cat|kitten|horse|pony|bird|parakeet|canary|rabbit)\\b", "g"))) add(pets, m[1], PET_KIND[m[2].toLowerCase()]);
+  for (const m of t.matchAll(new RegExp("\\b(?:[Hh]er|[Hh]is|[Tt]heir|[Mm]y|[Tt]he)\\s+(dog|puppy|cat|kitten|horse|pony|bird|parakeet|canary|rabbit)\\s+" + NAME, "g"))) add(pets, m[2], PET_KIND[m[1].toLowerCase()]);
+  for (const m of t.matchAll(new RegExp("\\b(?:[Hh]er|[Hh]is|[Tt]heir|[Mm]y|[Tt]he)\\s+(son|daughter|grandson|granddaughter|grandchild|husband|wife|sister|brother|mother|father|friend|neighbou?r|nephew|niece|cousin)\\s+" + NAME, "g"))) add(people, m[2], REL_CODE[m[1].toLowerCase()] || "other");
+  return { people, pets };
+}
+/* Add what a note mentioned to the saved profile's people and pets (tier3_deep.people, the list profile.html shows), marked as found in a note so staff can check it. Never more than 12 in all, never a name already there. */
+export function applyMentions(store, residentId, m) {
+  const id = rid(residentId), p = id ? readJson(store, KEYS.profile + id, null) : null, out = { added: [], skipped: 0 };
+  if (!p || p.schema !== "cognicopia.residentProfile" || !p.tier3_deep || typeof p.tier3_deep !== "object") return out;
+  const list = Array.isArray(p.tier3_deep.people) ? p.tier3_deep.people : (p.tier3_deep.people = []), have = new Set(list.map((x) => String(x && x.name).toLowerCase()));
+  for (const x of [...((m && m.people) || []), ...((m && m.pets) || [])]) {
+    if (have.has(x.name.toLowerCase())) { out.skipped++; continue; } if (list.length >= 12) { out.skipped++; continue; }
+    list.push({ name: x.name, relationship: { code: x.rel, label: REL_LABEL[x.rel] || x.rel }, isPet: /^pet-/.test(x.rel), passedAway: false, foundInJournal: true }); have.add(x.name.toLowerCase()); out.added.push(x);
+  }
+  if (out.added.length) writeJson(store, KEYS.profile + id, p); return out;
+}
+
 /* A background listener: the journal announces each new entry on the document, and this hears it. Safe to start twice. */
 export function startJournalFeed(doc, getStore) {
   if (!doc || doc.__cgStudioFeed) return doc && doc.__cgStudioFeed;
-  const handler = (ev) => { const d = ev && ev.detail || {}; setTimeout(() => { let r = { ok: false }; try { r = feedProfile(getStore(), d.residentId, d.entry); } catch (e) { r = { ok: false }; } doc.dispatchEvent(new CustomEvent("cg-studio-profile-fed", { detail: { residentId: d.residentId, ok: r.ok, keywords: r.keywords || [], profileUpdated: !!r.profileUpdated } })); }, 0); };
+  const handler = (ev) => { const d = ev && ev.detail || {}; setTimeout(() => { let r = { ok: false }; try { r = feedProfile(getStore(), d.residentId, d.entry); } catch (e) { r = { ok: false }; } doc.dispatchEvent(new CustomEvent("cg-studio-profile-fed", { detail: { residentId: d.residentId, ok: r.ok, keywords: r.keywords || [], profileUpdated: !!r.profileUpdated, mentions: r.mentions || [] } })); }, 0); };
   doc.addEventListener("cg-studio-journal-added", handler); doc.__cgStudioFeed = { stop: () => { doc.removeEventListener("cg-studio-journal-added", handler); delete doc.__cgStudioFeed; } }; return doc.__cgStudioFeed;
 }
 
@@ -149,21 +179,40 @@ export function startJournalFeed(doc, getStore) {
 export const ERAS = Object.freeze(["1930s", "1940s", "1950s", "1960s", "1970s", "Mixed"]);
 export const ARCS = Object.freeze(["Home and kitchen", "Music and radio", "Work and craft", "Family and friends", "Gardens and weather", "Outings and travel", "Faith and quiet traditions", "Sports and games"]);
 const SEASON_NAME = { winter: "Winter", spring: "Spring", summer: "Summer", autumn: "Autumn" };
+/* Regional climates: what "the season" means and which words and notes suit it. Month numbers are 1 to 12 (northern hemisphere; "south" flips them). */
+export const CLIMATES = Object.freeze({
+  temperate: { label: "Four seasons (temperate)", seasons: null },
+  cold: { label: "Long winters (northern and mountain)", seasons: [["Long winter", [11, 12, 1, 2, 3], ["SNOW", "MITTENS", "HEARTH", "SLED", "QUILT"], "Long winter evenings were for quilts, cards and stories by the stove."], ["Thaw and spring", [4, 5], ["MUD", "ROBIN", "SEEDS", "RAIN", "TULIP"], "The first thaw brought the sound of dripping water and the first robins."], ["Short summer", [6, 7, 8], ["LAKE", "GARDEN", "PORCH", "BERRIES", "FIREFLY"], "The short summer was packed with picking berries and long light evenings."], ["Early autumn", [9, 10], ["LEAVES", "HARVEST", "WOOD", "APPLE", "SCARF"], "Autumn meant putting up the harvest and stacking wood."]] },
+  warm: { label: "Warm and mild (southern)", seasons: [["Mild winter", [12, 1, 2], ["ORANGE", "BREEZE", "PORCH", "GARDEN", "SUN"], "Mild winter days were for sitting out on the porch."], ["Spring bloom", [3, 4, 5], ["BLOOM", "AZALEA", "ROSE", "PICNIC", "TEA"], "Spring came early with blossoms and picnics."], ["Long summer", [6, 7, 8, 9], ["LEMONADE", "FAN", "SHADE", "PEACH", "FIREFLY"], "Long summers were for shade, fans and sweet tea."], ["Gentle autumn", [10, 11], ["PECAN", "HARVEST", "COTTON", "FAIR", "COZY"], "Autumn brought fairs and pecans."]] },
+  tropical: { label: "Tropical (wet and dry seasons)", seasons: [["Dry season", [11, 12, 1, 2, 3, 4], ["BREEZE", "PALM", "MARKET", "SUN", "SHELL"], "In the dry season the markets and festivals filled the streets."], ["Rainy season", [5, 6, 7, 8, 9, 10], ["RAIN", "MANGO", "GREEN", "UMBRELLA", "GARDEN"], "The rains turned everything green and brought the mangoes."]] },
+  desert: { label: "Dry and desert", seasons: [["Cool season", [11, 12, 1, 2, 3], ["SAGE", "SUNSET", "ADOBE", "BLANKET", "STARS"], "Cool desert evenings were for blankets and stars."], ["Hot season", [4, 5, 6, 7, 8, 9, 10], ["SHADE", "CACTUS", "WATER", "FAN", "MESA"], "In the heat, people lived in the shade and waited for sunset."]] },
+  coastal: { label: "Coastal", seasons: null, extra: { words: ["SHELL", "TIDE", "GULL", "SAND", "BOAT"], note: "The sea air and the sound of the gulls are part of coastal memories." } }
+});
+/* Days that can be hard for some residents: each holiday carries tags, and one click can exclude every holiday that carries a chosen tag. */
+export const STRESS_TAGS = Object.freeze({ loud: "Loud celebrations and fireworks", alcohol: "Celebrations built around drinking", crowds: "Large gatherings and crowds", war: "War and remembrance", loss: "Days about parents, which can bring loss to mind", religious: "Religious observances" });
+export const HOLIDAY_TAGS = Object.freeze({ "new-year": ["loud", "alcohol", "crowds"], "st-patricks": ["alcohol", "crowds"], independence: ["loud", "crowds"], thanksgiving: ["crowds"], "winter-celebrations": ["crowds"], "mothers-day": ["loss"], "fathers-day": ["loss"], "memorial-day": ["war"], easter: ["religious"], christmas: ["religious", "crowds"] });
+const holidayExcluded = (id, ex) => (HOLIDAY_TAGS[id] || []).some((t) => (ex || []).includes(t));
+export function climateSeason(climate, month, hemisphere) {
+  const c = CLIMATES[climate]; if (!c || !c.seasons) return null; const m = hemisphere === "south" ? ((month + 5) % 12) + 1 : month;
+  const row = c.seasons.find((r) => r[1].includes(m)); return row ? { season: row[0], words: row[2], note: row[3] } : null;
+}
 const emptyMonth = () => ({ era: "Mixed", season: "", milestone: "", arc: "", notes: "", theme: "" });
 export function normalizePlanner(raw, year) {
   const r = raw && typeof raw === "object" ? raw : {}, y = int(year || r.year, 2000, 2100, new Date().getFullYear()), months = {};
   for (let m = 1; m <= 12; m++) { const k = String(m).padStart(2, "0"), x = r.months && r.months[k] || {}; months[k] = { era: ERAS.includes(x.era) ? x.era : "Mixed", season: clip(x.season, 30), milestone: clip(x.milestone, 80), arc: clip(x.arc, 40), notes: clip(x.notes, 300), theme: clip(x.theme, 60) }; }
   const bundles = (Array.isArray(r.bundles) ? r.bundles : []).map((b) => ({ id: typeof b.id === "string" && ID.test(b.id) ? b.id : uid("b"), month: monthOk(b.month), era: ERAS.includes(b.era) ? b.era : "Mixed", theme: clip(b.theme, 60), arc: clip(b.arc, 40), concept: clip(b.concept, 80), words: (Array.isArray(b.words) ? b.words : []).map((w) => clip(w, 24).toUpperCase()).filter(Boolean).slice(0, 8), notes: (Array.isArray(b.notes) ? b.notes : []).map((n) => clip(n, 140)).filter(Boolean).slice(0, 4), status: ["mapped", "generated"].includes(b.status) ? b.status : "mapped", mappedAt: clip(b.mappedAt, 30) })).filter((b) => b.month);
-  return { schema: SCHEMAS.planner, v: SCHEMA_VERSION, year: y, months, bundles };
+  const climate = Object.prototype.hasOwnProperty.call(CLIMATES, r.climate) ? r.climate : "temperate", exclusions = (Array.isArray(r.exclusions) ? r.exclusions : []).filter((t) => Object.prototype.hasOwnProperty.call(STRESS_TAGS, t));
+  return { schema: SCHEMAS.planner, v: SCHEMA_VERSION, year: y, months, bundles, climate, exclusions: [...new Set(exclusions)] };
 }
 export const readPlanner = (store, year) => normalizePlanner(readJson(store, KEYS.planner + int(year, 2000, 2100, new Date().getFullYear()), null), year);
 export function savePlanner(store, planner) { const p = normalizePlanner(planner, planner && planner.year); if (!writeJson(store, KEYS.planner + p.year, p)) throw new Error("the plan could not be saved"); return p; }
 /* Sensible starting values: the season, the first holiday of the month that is not sensitive, the eras in turn, the arcs in turn. */
-export function defaultPlan(year) {
-  const p = normalizePlanner({ year }, year), erasCycle = ["1940s", "1950s", "1960s", "1970s"];
+export function defaultPlan(year, o = {}) {
+  const p = normalizePlanner({ year, climate: o.climate, exclusions: o.exclusions }, year), erasCycle = ["1940s", "1950s", "1960s", "1970s"];
   for (let m = 1; m <= 12; m++) {
     const k = String(m).padStart(2, "0"), hol = HOLIDAYS.filter((h) => !h.gentle && !h.religious).map((h) => { const d = h.when(p.year); return { h, month: d.getUTCMonth() + 1 }; }).find((x) => x.month === m);
-    p.months[k] = { era: erasCycle[(m - 1) % 4], season: SEASON_NAME[seasonOf(new Date(p.year, m - 1, 15))], milestone: hol ? hol.h.name : "", arc: ARCS[(m - 1) % ARCS.length], notes: "", theme: "" };
+    const cs = climateSeason(p.climate, m);
+    p.months[k] = { era: erasCycle[(m - 1) % 4], season: cs ? cs.season : SEASON_NAME[seasonOf(new Date(p.year, m - 1, 15))], milestone: hol && !holidayExcluded(hol.h.id, p.exclusions) ? hol.h.name : "", arc: ARCS[(m - 1) % ARCS.length], notes: "", theme: "" };
   }
   return p;
 }
@@ -174,7 +223,11 @@ export function premap(planner, from = new Date(), count = 12) {
   for (let i = 0; i < Math.max(1, Math.min(24, count)); i++) {
     const d = new Date(start.getFullYear(), start.getMonth() + i, 1), mk = monthKey(d), m = p.months[String(d.getMonth() + 1).padStart(2, "0")] || emptyMonth();
     if (d.getFullYear() !== p.year || keep.some((b) => b.month === mk)) continue;
-    const item = agent.itemFor(new Date(d.getFullYear(), d.getMonth(), 12), {}), theme = m.theme || m.milestone || m.arc || item.concept;
+    const item = agent.itemFor(new Date(d.getFullYear(), d.getMonth(), 12), {}), cs = climateSeason(p.climate, d.getMonth() + 1), cx = CLIMATES[p.climate] && CLIMATES[p.climate].extra;
+    const holiday = HOLIDAYS.find((h) => item.holiday === h.name); if (holiday && holidayExcluded(holiday.id, p.exclusions)) { item.holiday = ""; item.concept = cs ? cs.season : item.concept; }
+    if (cs) { item.words = [...new Set([...cs.words, ...item.words.filter((w) => !holiday || !holidayExcluded(holiday.id, p.exclusions))])].slice(0, 8); item.notes = [cs.note, ...item.notes.filter((n) => !/winter|summer|spring|autumn|fall/i.test(n))].slice(0, 4); }
+    if (cx) { item.words = [...new Set([...cx.words.slice(0, 3), ...item.words])].slice(0, 8); item.notes = [cx.note, ...item.notes].slice(0, 4); }
+    const theme = m.theme || m.milestone || m.arc || item.concept;
     made.push({ id: uid("b"), month: mk, era: m.era, theme: clip(theme, 60), arc: m.arc, concept: clip(m.milestone || m.arc || item.concept, 80), words: item.words, notes: [m.notes, ...item.notes].filter(Boolean).slice(0, 4), status: "mapped", mappedAt: new Date().toISOString() });
   }
   p.bundles = [...keep, ...made].sort((a, b) => a.month.localeCompare(b.month)); return { planner: normalizePlanner(p, p.year), mapped: made.length };
@@ -187,3 +240,16 @@ export function requestsFor(planner, month, profiles, template = "reminiscence")
 }
 export function markGenerated(planner, month) { const p = normalizePlanner(planner, planner && planner.year); p.bundles.forEach((b) => { if (b.month === month) b.status = "generated"; }); return p; }
 export const emptyPlannerMonth = emptyMonth;
+
+/* Change the climate or the excluded days of a plan that already has entries: seasons follow the climate, and any milestone that carries an excluded tag is cleared (a milestone staff typed themselves is kept). */
+export function applyOptions(plan, o = {}) {
+  const p = normalizePlanner(Object.assign({}, plan, { climate: o.climate != null ? o.climate : plan && plan.climate, exclusions: o.exclusions != null ? o.exclusions : plan && plan.exclusions }), plan && plan.year);
+  for (let m = 1; m <= 12; m++) {
+    const k = String(m).padStart(2, "0"), x = p.months[k], cs = climateSeason(p.climate, m), plain = SEASON_NAME[seasonOf(new Date(p.year, m - 1, 15))];
+    if (!x.season || Object.values(SEASON_NAME).includes(x.season) || CLIMATE_NAMES.has(x.season)) x.season = cs ? cs.season : plain;
+    const h = HOLIDAYS.find((q) => x.milestone === q.name); if (h && holidayExcluded(h.id, p.exclusions)) x.milestone = "";
+  }
+  p.bundles = p.bundles.filter((b) => b.status === "generated" || !(b.concept && HOLIDAYS.some((h) => h.name === b.concept && holidayExcluded(h.id, p.exclusions))));
+  return p;
+}
+const CLIMATE_NAMES = new Set(Object.values(CLIMATES).flatMap((c) => (c.seasons || []).map((r) => r[0])));
