@@ -25319,15 +25319,16 @@ if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol))
 <script type="module">
 /* The agent suite (js/agent-orchestrator.js and friends). It reads the packet form, makes a sheet on this computer, runs the
    clinical audit, and shows the exact print preview. Nothing here uses the network. */
-import { createOrchestrator } from "./js/agent-orchestrator.js";
-import { ClinicalAuditAgent } from "./js/clinical-audit-agent.js";
+import { createSuite } from "./js/pillar5-upgrade-agents.js";
 import { openPreview } from "./js/print-preview-modal.js";
-import { registerReminiscence, mountDeepCustomization, buildRequest } from "./js/reminiscence-engine.js";
+import { mountDeepCustomization, buildRequest } from "./js/reminiscence-engine.js";
+import { webStorage } from "./js/pillar2-functionality-agents.js";
 (function () {
   "use strict";
   var btn = document.getElementById("previewPacketBtn"), note = document.getElementById("previewNote");
   if (!btn) return;
-  var orchestrator = registerReminiscence(createOrchestrator().use(new ClinicalAuditAgent()));
+  /* All thirty agents, in pipeline order (js/pillar5-upgrade-agents.js). Saved profiles and notes, if staff keep any, stay in this browser. */
+  var suite = createSuite({ storage: webStorage(typeof localStorage !== "undefined" ? localStorage : null) }), orchestrator = suite.orchestrator;
   var deepPanel = null; try { deepPanel = mountDeepCustomization(document.getElementById("deepCustomMount")); } catch (e) { deepPanel = null; }   // the page still works without the panel
   var say = function (t) { if (note) note.textContent = t || ""; };
   /* The form, read the way the packet maker reads it (collectProfile), in the words the agents use. */
@@ -25353,7 +25354,7 @@ import { registerReminiscence, mountDeepCustomization, buildRequest } from "./js
       say("The preview could not be opened. Your form is unchanged; please try again.");
     } finally { busy = false; btn.removeAttribute("aria-busy"); }
   });
-  window.CognicopiaAgents = Object.freeze({ orchestrator: orchestrator, openPreview: openPreview, profileFromForm: profileFromForm, deepPanel: deepPanel });
+  window.CognicopiaAgents = Object.freeze({ orchestrator: orchestrator, openPreview: openPreview, profileFromForm: profileFromForm, deepPanel: deepPanel, suite: suite.agents, audit: function () { return suite.agents.auditor.run(); } });
 })();
 </script>
 </body>
