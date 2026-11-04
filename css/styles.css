@@ -912,3 +912,42 @@ html.cg-night-shift .cgre-input, html.cg-night-shift .cgre-check { background: #
 html.cg-night-shift .cgre-btn { background: #17120c; color: #ffedcc; border-color: #9b7136; }
 html.cg-night-shift .cgre-btn:hover { background: #33271a; }
 @media print { .cgre-mount { display: none !important; } }
+
+/* ===== Quarterly Legacy & Memory Books (js/legacy-book.js): bindable keepsake pages =====
+   Letter pages, pure black on white, a 0.75 in binding gutter on the inside edge (left on odd pages, right on even, for two-sided
+   printing and a 3-ring or hardcover binding), a page-number footer, and a clean break after every page. */
+.sheet.lb-sheet { box-sizing: border-box; display: flex; flex-direction: column; color: #000; background: #fff; font-family: var(--cg-font-ui, "Atkinson Hyperlegible", Arial, sans-serif); font-size: 12.5pt; line-height: 1.45; break-after: page; page-break-after: always; }
+.sheet.lb-odd  { padding: .75in .5in .75in .75in !important; }
+.sheet.lb-even { padding: .75in .75in .75in .5in !important; }
+.lb-sheet > :not(.lb-foot) { flex: 1 1 auto; min-height: 0; }
+.lb-foot { flex: none !important; display: flex; justify-content: space-between; align-items: baseline; margin-top: .15in; padding-top: 3pt; border-top: 3pt solid #000; font-size: 10.5pt; color: #000; }
+.lb-even .lb-foot { flex-direction: row-reverse; }
+.lb-rule { border-top: 4pt solid #000; margin: .22in auto; width: 70%; }
+.lb-kicker { margin: 0; font-size: 12pt; letter-spacing: .14em; text-transform: uppercase; font-weight: 700; }
+.lb-small { font-size: 10.5pt; }
+.lb-cover { display: flex; flex-direction: column; justify-content: space-between; text-align: center; height: 100%; }
+.lb-cover-top { font-size: 15pt; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+.lb-cover-main { margin: auto 0; }
+.lb-cover-title { margin: 0; font-family: var(--cg-font-name, Georgia, serif); font-size: 36pt; line-height: 1.12; font-weight: 700; }
+.lb-cover-name { margin: .12in 0 0; font-size: 22pt; font-weight: 700; }
+.lb-badge { display: inline-block; margin: .14in 0 0; padding: 4pt 14pt; border: 3pt solid #000; border-radius: 999px; font-size: 14pt; font-weight: 700; }
+.lb-cover-range { margin: .2in 0 0; font-size: 14pt; }
+.lb-cover-foot p { margin: 0 0 .08in; }
+.lb-msg h2, .lb-toc h2, .lb-run { margin: 0 0 .2in; font-size: 24pt; line-height: 1.15; border-bottom: 3pt solid #000; padding-bottom: .08in; }
+.lb-message p { margin: 0 0 .14in; font-size: 15pt; line-height: 1.5; }
+.lb-toc ol { list-style: none; margin: 0 0 .2in; padding: 0; }
+.lb-toc li { display: flex; align-items: baseline; gap: 8pt; margin: 0 0 .12in; font-size: 16pt; }
+.lb-toc li i { flex: 1; border-bottom: 3pt dotted #000; transform: translateY(-3pt); }
+.lb-divider { display: flex; flex-direction: column; justify-content: center; text-align: center; height: 100%; }
+.lb-divider h2 { margin: .12in 0; font-family: var(--cg-font-name, Georgia, serif); font-size: 40pt; line-height: 1.1; }
+.lb-divider p { margin: .06in 0; font-size: 15pt; }
+.lb-count { font-weight: 700; }
+.lb-run small { font-size: 12pt; font-weight: 400; }
+.lb-item { margin: 0 0 .22in; break-inside: avoid; page-break-inside: avoid; }
+.lb-item header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2pt 10pt; }
+.lb-date { font-size: 10.5pt; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+.lb-item h3 { margin: 0; font-size: 15pt; }
+.lb-item p { margin: .04in 0 0; }
+.lb-by { font-size: 10.5pt; font-style: italic; }
+.lb-art { margin: .08in 0; text-align: center; } .lb-art svg { max-height: 3in; max-width: 100%; }
+@media print { .sheet.lb-sheet { margin: 0; box-shadow: none; } }

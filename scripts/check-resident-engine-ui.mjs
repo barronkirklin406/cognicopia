@@ -4,7 +4,7 @@
 
      the one resident   chosen once in "Working with" (or in the Roster), it stays chosen across tools for this tab only (session
                         storage, never the disk) and fills the Packet Builder's form, the Life Planner and the Life Journal, and
-                        opens Session Notes, the Memory Digest, Reminiscence Cards and the Roster on them
+                        opens Session Notes, the Quarterly Legacy & Memory Books, Reminiscence Cards and the Roster on them
      the record         the Roster holds a stage, today's schedule and a record of what they took part in and how they were; a note
                         that names them is refused; a Shift board entry about them (by alias) lands there too; a packet printed for
                         them is noted; the suggested tier gives its reasons, changes nothing until accepted, and then changes the profile
@@ -43,7 +43,7 @@ ok(await pg.$eval("#arSel", s => s.options.length) === 3, "the Working with list
 /* ---------- the two headings in the Builder's menu ---------- */
 const heads = await pg.$$eval(".sb-grp", e => e.map(x => x.textContent.trim()));
 ok(heads.join("|") === "Resident tools|Staff & family portal", `the menu has the two headings: ${heads.join(" | ")}`);
-ok((await pg.$$eval("#sidebar .sb-hub[data-hub='facility'] .sb-link", e => e.map(x => x.textContent.trim()))).some(t => /Family digest/.test(t)) && (await pg.$$eval("#sidebar .sb-hub[data-hub='facility'] .sb-link", e => e.map(x => x.textContent.trim()))).some(t => /Care cues/.test(t)), "the family digest and the care cues are on the staff side");
+ok((await pg.$$eval("#sidebar .sb-hub[data-hub='facility'] .sb-link", e => e.map(x => x.textContent.trim()))).some(t => /Quarterly Legacy/.test(t)) && (await pg.$$eval("#sidebar .sb-hub[data-hub='facility'] .sb-link", e => e.map(x => x.textContent.trim()))).some(t => /Care cues/.test(t)), "the family digest and the care cues are on the staff side");
 ok(!(await pg.$$eval("#sidebar .sb-hub[data-hub='studio'] .sb-link", e => e.map(x => x.textContent))).some(t => /digest/i.test(t)), "and no longer under the resident tools");
 const order = await pg.$$eval("#sidebar .sb-nav > *", e => e.map(x => x.className.indexOf("sb-grp") >= 0 ? "G:" + x.dataset.grp : x.dataset.hub || "?"));
 ok(order.join(",") === "G:resident,today,studio,packets,G:staff,facility,academy,resources,?", `the hubs fall under their headings: ${order.join(",")}`);
@@ -93,7 +93,7 @@ ok(/Dorothy/.test(await pg.$eval("#lj-name", e => e.value).catch(() => "")), "th
 await go("#/clinical");
 ok(await pg.$eval("#clWho", e => e.value) === dorothy, "Session Notes opens on them");
 await go("#/heirloom");
-ok(await pg.$eval("#hlWho", e => e.value) === dorothy, "the Memory Digest too");
+ok(await pg.$eval("#hlWho", e => e.value) === dorothy, "the Quarterly Legacy & Memory Books too");
 await go("#/reminiscence");
 ok(await pg.$eval("#rmWho", e => e.value) === dorothy, "and Reminiscence Cards");
 /* changing the one resident changes what the next tool opens on, and a form holding someone else offers to be filled in */
