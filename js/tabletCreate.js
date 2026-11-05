@@ -61,8 +61,8 @@
       ctx.fillStyle = "rgba(159,203,176,.55)"; ctx.beginPath(); ctx.moveTo(-400, 600); ctx.lineTo(-400, 540); ctx.quadraticCurveTo(150, 470, 420, 545); ctx.quadraticCurveTo(700, 480, 1400, 540); ctx.lineTo(1400, 600); ctx.closePath(); ctx.fill();
       ctx.fillStyle = "rgba(111,163,134,.55)"; ctx.beginPath(); ctx.moveTo(-400, 600); ctx.lineTo(-400, 575); ctx.quadraticCurveTo(300, 530, 600, 580); ctx.quadraticCurveTo(900, 540, 1400, 575); ctx.lineTo(1400, 600); ctx.closePath(); ctx.fill();
       if (scene === "bee") { for (var k = 0; k < 9; k++) { var x = 70 + k * 108, y = 566 + (k % 3) * 8; ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(x, y, 9, 0, 6.3); ctx.fill(); ctx.fillStyle = "#e0b43a"; ctx.beginPath(); ctx.arc(x, y, 4, 0, 6.3); ctx.fill(); } }
-      if (scene === "train") { ctx.strokeStyle = "rgba(79,64,48,.55)"; ctx.lineWidth = 5; ctx.lineCap = "round"; [130, 380, 630, 880].forEach(function (x) { ctx.beginPath(); ctx.moveTo(x, 590); ctx.lineTo(x, 510); ctx.moveTo(x - 20, 524); ctx.lineTo(x + 20, 524); ctx.stroke(); }); }
-      if (scene === "dog") { ctx.strokeStyle = "rgba(79,64,48,.5)"; ctx.lineWidth = 5; ctx.lineCap = "round"; for (var f = 0; f < 11; f++) { var fx = 40 + f * 92; ctx.beginPath(); ctx.moveTo(fx, 592); ctx.lineTo(fx, 540); ctx.stroke(); } ctx.beginPath(); ctx.moveTo(20, 556); ctx.lineTo(990, 556); ctx.stroke(); }
+      if (scene === "train") { ctx.strokeStyle = "rgba(69,63,55,.55)"; ctx.lineWidth = 5; ctx.lineCap = "round"; [130, 380, 630, 880].forEach(function (x) { ctx.beginPath(); ctx.moveTo(x, 590); ctx.lineTo(x, 510); ctx.moveTo(x - 20, 524); ctx.lineTo(x + 20, 524); ctx.stroke(); }); }
+      if (scene === "dog") { ctx.strokeStyle = "rgba(69,63,55,.5)"; ctx.lineWidth = 5; ctx.lineCap = "round"; for (var f = 0; f < 11; f++) { var fx = 40 + f * 92; ctx.beginPath(); ctx.moveTo(fx, 592); ctx.lineTo(fx, 540); ctx.stroke(); } ctx.beginPath(); ctx.moveTo(20, 556); ctx.lineTo(990, 556); ctx.stroke(); }
     }
     function partial(upto) {            // the line from the start to a (fractional) point number
       var n = Math.floor(upto), p = at(upto);
@@ -93,7 +93,7 @@
         ctx.strokeStyle = "#4a5260"; ctx.lineWidth = 6;
         [-1, 1].forEach(function (side) { ctx.beginPath(); for (var m = 0; m < path.pts.length - 1; m += 2) { var p0 = path.pts[m], q0 = path.pts[m + 1], a0 = Math.atan2(q0[1] - p0[1], q0[0] - p0[0]) + Math.PI / 2, x0 = p0[0] + Math.cos(a0) * side * laneW * 0.3, y0 = p0[1] + Math.sin(a0) * side * laneW * 0.3; if (m) ctx.lineTo(x0, y0); else ctx.moveTo(x0, y0); } ctx.stroke(); });
       } else {
-        ctx.strokeStyle = "#1a202c"; ctx.lineWidth = 5; ctx.setLineDash([2, 16]); ctx.lineDashOffset = still ? 0 : -clock * 26; if (lane) ctx.stroke(lane); ctx.setLineDash([]);
+        ctx.strokeStyle = "#28241f"; ctx.lineWidth = 5; ctx.setLineDash([2, 16]); ctx.lineDashOffset = still ? 0 : -clock * 26; if (lane) ctx.stroke(lane); ctx.setLineDash([]);
       }
       /* the way travelled (the one travelling stops a little short of where it is going, so both can be seen) */
       var vis = Math.min(shown, path.pts.length - 11);
@@ -519,7 +519,7 @@
   /* ===================== BUBBLE POP =====================
      Bubbles drift up the screen, bump each other gently, and pop with a soft chime and a ripple of color that nudges their neighbors.
      Nothing is counted. Slower and Faster change how quickly they float; people who ask for less motion get still bubbles. */
-  var SPEEDS = [["Very slow", 12], ["Gentle", 22], ["Brisk", 38], ["Lively", 60]], BUB = ["#e58aa5", "#e0b43a", "#66b88a", "#9a7bd0", "#f0956a", "#3fa7a0"], NOTES = [523.25, 587.33, 659.25, 783.99, 880, 1046.5];
+  var SPEEDS = [["Very slow", 12], ["Gentle", 22], ["Brisk", 38], ["Lively", 60]], BUB = ["#e58aa5", "#e0b43a", "#66b88a", "#9a7bd0", "#f0956a", "#3fa79d"], NOTES = [523.25, 587.33, 659.25, 783.99, 880, 1046.5];
   function bubbles(root, o, api) {
     var late = o.stage === "late", still = reduced(), speed = Math.min(4, Math.max(1, api.prefs.speed || 2)), cv = h("canvas", "tb-sky"), ctrl = h("div", "tb-row tb-speedrow"), msg = h("p", "tb-msg", "Tap a bubble to pop it. Take your time, and pop as many as you like.");
     ctrl.innerHTML = '<button type="button" class="tb-btn" data-speed="-1"><span aria-hidden="true">−</span> Slower</button><span class="tb-speed" id="tbSpeedLbl"></span><button type="button" class="tb-btn" data-speed="1">Faster <span aria-hidden="true">+</span></button>';

@@ -454,10 +454,10 @@ export function createLicensePersistence(env) {
   /* ---------- the 14-day notice ---------- */
   let queued = null, bannerEl = null, styleDone = false;
   const BANNER_CSS = [
-    ".cgstore-notice{position:fixed;left:0;right:0;bottom:0;z-index:9000;display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));box-sizing:border-box;background:var(--cg-paper,#f5f1e6);color:var(--cg-paper-text,#1a202c);border-top:4px solid var(--cg-gold-500,#c5a059);font-family:var(--cg-font-ui,system-ui,sans-serif);font-size:1.0625rem;line-height:1.5;box-shadow:0 -4px 16px rgba(0,0,0,.18)}",
+    ".cgstore-notice{position:fixed;left:0;right:0;bottom:0;z-index:9000;display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));box-sizing:border-box;background:var(--cg-paper,#f4f3ef);color:var(--cg-paper-text,#28241f);border-top:4px solid var(--cg-gold-500,#c5a059);font-family:var(--cg-font-ui,system-ui,sans-serif);font-size:1.0625rem;line-height:1.5;box-shadow:0 -4px 16px rgba(0,0,0,.18)}",
     ".cgstore-notice p{margin:0;flex:1 1 280px}",
-    ".cgstore-notice a,.cgstore-notice button{min-height:var(--cg-tap,52px);min-width:var(--cg-tap,52px);padding:8px 16px;box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;border-radius:10px;border:2px solid var(--cg-green-900,#08262c);background:var(--cg-white,#fff);color:var(--cg-green-900,#08262c);font-family:inherit;font-weight:700;font-size:1.0625rem;line-height:1.2;text-decoration:none;cursor:pointer}",
-    ".cgstore-notice a:focus-visible,.cgstore-notice button:focus-visible{outline:3px solid var(--cg-focus,#f5b800);outline-offset:2px;box-shadow:0 0 0 5px var(--cg-focus-dark,#08262c)}",
+    ".cgstore-notice a,.cgstore-notice button{min-height:var(--cg-tap,52px);min-width:var(--cg-tap,52px);padding:8px 16px;box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;border-radius:10px;border:2px solid var(--cg-green-900,#0f172a);background:var(--cg-white,#fff);color:var(--cg-green-900,#0f172a);font-family:inherit;font-weight:700;font-size:1.0625rem;line-height:1.2;text-decoration:none;cursor:pointer}",
+    ".cgstore-notice a:focus-visible,.cgstore-notice button:focus-visible{outline:3px solid var(--cg-focus,#f5b800);outline-offset:2px;box-shadow:0 0 0 5px var(--cg-focus-dark,#0f172a)}",
     "html.cg-night-shift .cgstore-notice{background:#211910;color:#ffedcc;border-top-color:#9b7136}",
     "html.cg-night-shift .cgstore-notice a,html.cg-night-shift .cgstore-notice button{background:#2b2015;color:#ffedcc;border-color:#9b7136}",
     "@media print{.cgstore-notice{display:none !important}}"

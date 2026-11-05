@@ -80,29 +80,29 @@
     --color-amber-100: oklch(96.2% .059 95.617);
     --color-amber-500: oklch(76.9% .188 70.08);
     --color-amber-900: oklch(41.4% .112 45.904);
-    --color-emerald-50: oklch(97.9% .021 166.113);
-    --color-emerald-100: oklch(95% .052 163.051);
-    --color-emerald-200: oklch(90.5% .093 164.15);
-    --color-emerald-300: oklch(84.5% .143 164.978);
-    --color-emerald-400: oklch(76.5% .177 163.223);
-    --color-emerald-500: oklch(69.6% .17 162.48);
-    --color-emerald-600: oklch(59.6% .145 163.225);
-    --color-emerald-700: oklch(50.8% .118 165.612);
-    --color-emerald-800: oklch(43.2% .095 166.913);
-    --color-emerald-900: oklch(37.8% .077 168.94);
-    --color-emerald-950: oklch(26.2% .051 172.552);
+    --color-emerald-50: #e6f5f2;
+    --color-emerald-100: #d9f0ec;
+    --color-emerald-200: #b6e5dc;
+    --color-emerald-300: #74d6c8;
+    --color-emerald-400: #3cc7b7;
+    --color-emerald-500: #0d9488;
+    --color-emerald-600: #0b6f68;
+    --color-emerald-700: #0b5f59;
+    --color-emerald-800: #094a45;
+    --color-emerald-900: #08423f;
+    --color-emerald-950: #052a26;
     --color-blue-800: oklch(42.4% .199 265.638);
-    --color-slate-100: oklch(96.8% .007 247.896);
-    --color-neutral-50: oklch(98.5% 0 none);
-    --color-neutral-100: oklch(97% 0 none);
-    --color-neutral-200: oklch(92.2% 0 none);
-    --color-neutral-300: oklch(87% 0 none);
-    --color-neutral-400: oklch(70.8% 0 none);
-    --color-neutral-500: oklch(55.6% 0 none);
-    --color-neutral-600: oklch(43.9% 0 none);
-    --color-neutral-700: oklch(37.1% 0 none);
-    --color-neutral-800: oklch(26.9% 0 none);
-    --color-neutral-900: oklch(20.5% 0 none);
+    --color-slate-100: #eef4f2;
+    --color-neutral-50: #fafafd;
+    --color-neutral-100: #f4f3ef;
+    --color-neutral-200: #ebe9e3;
+    --color-neutral-300: #dad7ce;
+    --color-neutral-400: #a5a092;
+    --color-neutral-500: #6e6a5e;
+    --color-neutral-600: #5b574c;
+    --color-neutral-700: #403b35;
+    --color-neutral-800: #1c2740;
+    --color-neutral-900: #0f172a;
     --color-black: #000;
     --color-white: #fff;
     --spacing: .25rem;
@@ -1395,7 +1395,7 @@
   }
 
   .border-emerald-700\/60 {
-    border-color: #00795699;
+    border-color: #0b5f5999;
   }
 
   @supports (color: color-mix(in lab, red, red)) {
@@ -1421,7 +1421,7 @@
   }
 
   .border-neutral-700\/80 {
-    border-color: #404040cc;
+    border-color: #403b35cc;
   }
 
   @supports (color: color-mix(in lab, red, red)) {
@@ -1515,7 +1515,7 @@
   }
 
   .bg-emerald-50\/40 {
-    background-color: #ecfdf566;
+    background-color: #e6f5f266;
   }
 
   @supports (color: color-mix(in lab, red, red)) {
@@ -1525,7 +1525,7 @@
   }
 
   .bg-emerald-50\/60 {
-    background-color: #ecfdf599;
+    background-color: #e6f5f299;
   }
 
   @supports (color: color-mix(in lab, red, red)) {
@@ -1535,7 +1535,7 @@
   }
 
   .bg-emerald-50\/70 {
-    background-color: #ecfdf5b3;
+    background-color: #e6f5f2b3;
   }
 
   @supports (color: color-mix(in lab, red, red)) {
@@ -1549,7 +1549,7 @@
   }
 
   .bg-emerald-200\/70 {
-    background-color: #a4f4cfb3;
+    background-color: #b6e5dcb3;
   }
 
   @supports (color: color-mix(in lab, red, red)) {
@@ -1571,7 +1571,7 @@
   }
 
   .bg-emerald-800\/80 {
-    background-color: #005f46cc;
+    background-color: #094a45cc;
   }
 
   @supports (color: color-mix(in lab, red, red)) {
@@ -1585,7 +1585,7 @@
   }
 
   .bg-emerald-900\/60 {
-    background-color: #004e3b99;
+    background-color: #08423f99;
   }
 
   @supports (color: color-mix(in lab, red, red)) {
@@ -1599,7 +1599,7 @@
   }
 
   .bg-neutral-50\/70 {
-    background-color: #fafafab3;
+    background-color: #fafafdb3;
   }
 
   @supports (color: color-mix(in lab, red, red)) {
@@ -1617,7 +1617,7 @@
   }
 
   .bg-neutral-800\/80 {
-    background-color: #262626cc;
+    background-color: #1c2740cc;
   }
 
   @supports (color: color-mix(in lab, red, red)) {
@@ -2793,6 +2793,12 @@
 
     .print\:text-black {
       color: var(--color-black);
+    }
+  }
+
+  @media screen {
+    .hover\:bg-black:hover {
+      background-color: #0a1020;
     }
   }
 }

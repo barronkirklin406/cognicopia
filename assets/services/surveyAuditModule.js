@@ -203,11 +203,11 @@ class SurveyAuditModule {
     h1 { margin-bottom: 4px; font-size: 24px; }
     .meta { color: #555; margin-bottom: 24px; font-size: 14px; }
     .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 30px; }
-    .kpi-card { border: 1.5px solid #143d2b; border-radius: 8px; padding: 14px; background: #f9fbf9; }
-    .kpi-val { font-size: 26px; font-weight: bold; color: #143d2b; }
+    .kpi-card { border: 1.5px solid #16213b; border-radius: 8px; padding: 14px; background: #f9fbf9; }
+    .kpi-val { font-size: 26px; font-weight: bold; color: #16213b; }
     .kpi-lbl { font-size: 12px; color: #444; text-transform: uppercase; letter-spacing: 0.5px; }
     table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; }
-    th { background: #143d2b; color: #fff; padding: 10px; border: 1px solid #143d2b; }
+    th { background: #16213b; color: #fff; padding: 10px; border: 1px solid #16213b; }
     .footer { margin-top: 30px; font-size: 12px; color: #777; border-top: 1px solid #ddd; padding-top: 10px; }
   </style>
 </head>

@@ -37,7 +37,7 @@
 
 /* ---------- 2. Tokens ----------
    Built on the four brand colors the Quality Standards Hub already names
-   (primary green #0e3c43, parchment #f5f1e6, gold #c5a059, charcoal #1a202c),
+   (primary green #08423f, parchment #f4f3ef, gold #c5a059, charcoal #28241f),
    with natural greens, warm tans and crisp neutrals around them.
 
    Text pairs that meet AAA (7:1), by what they sit on:
@@ -49,29 +49,29 @@
    small text on a green: they are AA there, not AAA. */
 :root{
   /* natural greens */
-  --cg-green-950:#051a1e;
-  --cg-green-900:#08262c;
-  --cg-green-800:#0b2f36;
-  --cg-green-700:#0e3c43;      /* the brand's primary green */
-  --cg-green-600:#1c5963;
-  --cg-green-500:#2b7683;
-  --cg-sage-100:#e0f0f1;
-  --cg-sage-200:#c4e2e5;
-  --cg-sage-300:#95c8cd;
+  --cg-green-950:#070d1c;
+  --cg-green-900:#0f172a;
+  --cg-green-800:#111b30;
+  --cg-green-700:#08423f;      /* the brand's primary green */
+  --cg-green-600:#0b5f59;
+  --cg-green-500:#0a7c75;
+  --cg-sage-100:#e4f4f1;
+  --cg-sage-200:#c9e8e2;
+  --cg-sage-300:#94d2c8;
   /* warm tans and beiges */
-  --cg-parchment:#f5f1e6;      /* the brand's parchment */
-  --cg-tan-100:#ebe3d3;
-  --cg-tan-200:#ddd1ba;
-  --cg-tan-300:#cdbe9f;
-  --cg-tan-400:#b5a48b;
-  --cg-tan-600:#7a6548;
-  --cg-tan-700:#66523a;        /* a page frame behind white text: 7.4:1 */
-  --cg-tan-800:#4f4030;
+  --cg-parchment:#f4f3ef;      /* the brand's parchment */
+  --cg-tan-100:#ebe9e3;
+  --cg-tan-200:#dad7ce;
+  --cg-tan-300:#c5c1b5;
+  --cg-tan-400:#a5a092;
+  --cg-tan-600:#6e6a5e;
+  --cg-tan-700:#5b574c;        /* a page frame behind white text: 7.4:1 */
+  --cg-tan-800:#453f37;
   --cg-gold-500:#c5a059;       /* the brand's gold: borders and accents, not small text on green */
   --cg-gold-300:#e8cc8a;       /* gold you can read on green */
   --cg-gold-200:#f1dda8;
   /* warm accents for the light pages (the packet tool's front): cream, a peach glow, and clay for one accent word */
-  --cg-cream:#f8f6ef;
+  --cg-cream:#fafafd;
   --cg-peach-100:#fbe9dc;
   --cg-peach-200:#f6cdb4;      /* decoration only (the hero's glow) */
   --cg-clay-800:#732f19;      /* terracotta for text on a peach tag: 8.5:1 */
@@ -89,16 +89,20 @@
   --cg-ochre-dk-tool:#e3c066;  --cg-ochre-dk-ink:#f2d98f;  --cg-ochre-dk-deep:#8a6a1c;  --cg-ochre-dk-on:#1f1805;
   --cg-slate-dk-tool:#b9b3c4;  --cg-slate-dk-ink:#dcd8e3;  --cg-slate-dk-deep:#6b6575;  --cg-slate-dk-on:#17141c;
   /* crisp neutrals */
-  --cg-charcoal:#1a202c;       /* the brand's charcoal */
-  --cg-ink-soft:#343b49;
+  --cg-charcoal:#28241f;       /* the brand's charcoal */
+  --cg-ink-soft:#403b35;
   --cg-white:#ffffff;
+  /* the oceanic screen palette (owner's decision, November 5, 2026). Teal is for borders, glows, icons and large shapes (3:1); sage-700 and ink-900 can carry text. */
+  --cg-teal:#0d9488;           /* oceanic teal: 3.6:1 on alabaster, so never body text and never under button text */
+  --cg-sage-700:#355e3b;       /* sage: 7.2:1 on alabaster, 7.5:1 under white text */
+  --cg-ink-900:#0f172a;        /* rich slate: headings and dark surfaces */
   /* meaning */
   --cg-danger-800:#7f1d1d;
   --cg-danger-200:#ffc4b4;
   --cg-ok-800:#14532d;
   --cg-ok-200:#b7e4c7;
   --cg-focus:#f5b800;          /* the ring's bright band, with a dark band inside it (see section 4) */
-  --cg-focus-dark:#08262c;
+  --cg-focus-dark:#0f172a;
 
   /* what text and surfaces mean, so a page can say "text" and not "which green" */
   --cg-surface:var(--cg-green-800);
@@ -211,7 +215,7 @@
 }
 .cg-btn:hover{background:var(--cg-tan-100);border-color:var(--cg-tan-300);box-shadow:var(--cg-shadow-2)}
 .cg-btn-quiet{background:transparent;color:var(--cg-text);border-color:var(--cg-tan-400);box-shadow:none}
-.cg-btn-quiet:hover{background:rgba(205,190,159,.16);border-color:var(--cg-tan-300);box-shadow:none}
+.cg-btn-quiet:hover{background:rgba(197,193,181,.16);border-color:var(--cg-tan-300);box-shadow:none}
 /* a class beats the zero-specificity ring in section 4, so these two keep the ring's dark inner band themselves (the bright band is the outline) */
 .cg-btn:focus-visible{box-shadow:0 0 0 6px var(--cg-focus-dark),var(--cg-shadow-1)}
 .cg-btn-quiet:focus-visible{box-shadow:0 0 0 6px var(--cg-focus-dark)}
@@ -223,7 +227,7 @@
 /* the few things a first-time visitor needs to know, before anything else */
 .cg-values{display:grid;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));gap:var(--cg-space-4);margin:var(--cg-space-6) 0;padding:0;list-style:none}
 .cg-value{display:grid;grid-template-columns:auto 1fr;gap:var(--cg-space-1) var(--cg-space-3);align-items:start;margin:0;padding:var(--cg-space-4);
-  border:1px solid var(--cg-green-600);border-radius:var(--cg-radius-md);background:rgba(11,26,19,.35)}
+  border:1px solid var(--cg-green-600);border-radius:var(--cg-radius-md);background:rgba(11,15,26,.35)}
 .cg-value svg{grid-row:span 2;width:2rem;height:2rem;margin-top:.1rem;color:var(--cg-gold-300);flex:none}
 .cg-value b{color:var(--cg-text);font:700 var(--cg-step-0)/1.3 var(--cg-font-ui)}
 .cg-value span{color:var(--cg-text-soft);font:400 var(--cg-step--1)/1.5 var(--cg-font-ui)}
@@ -250,9 +254,9 @@ html.cg-ds :where(main>*+*){margin-top:var(--cg-space-5)}
 :root::before,:root::after{
   content:"";position:fixed;z-index:-1;pointer-events:none;inset:-20vh -10vw;
 }
-:root{--cg-pool-1:radial-gradient(60vmax 40vmax at 14% 22%,rgba(149,200,205,.07),transparent 62%)}
+:root{--cg-pool-1:radial-gradient(60vmax 40vmax at 14% 22%,rgba(148,210,200,.07),transparent 62%)}
 :root::before{background:var(--cg-pool-1)}
-:root::after{background:radial-gradient(55vmax 38vmax at 86% 74%,rgba(205,190,159,.055),transparent 60%)}
+:root::after{background:radial-gradient(55vmax 38vmax at 86% 74%,rgba(197,193,181,.055),transparent 60%)}
 @supports (animation-timeline:scroll()){
   @media (prefers-reduced-motion:no-preference){
     :root::before{animation:cg-drift-slow linear both;animation-timeline:scroll(root block);will-change:transform}
@@ -278,7 +282,7 @@ html.cg-night-shift::before,html.cg-night-shift::after{display:none}
    Night Shift (html.cg-night-shift) keeps its dim amber-on-brown palette. Text pairs: charcoal, ink-soft and
    green 700 on cream, white and tan-100; white on green 700; #241500 on amber. All are above 7:1. */
 @media screen{
-  :root{--cg-amber-300:#ffcc66;--cg-amber-200:#ffe0a3;--cg-amber-ink:#241500;--cg-card-line:#ddd1ba;--cg-card-shadow:0 1px 2px rgba(79,64,48,.08),0 10px 28px rgba(79,64,48,.08)}
+  :root{--cg-amber-300:#ffcc66;--cg-amber-200:#ffe0a3;--cg-amber-ink:#241500;--cg-card-line:#dad7ce;--cg-card-shadow:0 1px 2px rgba(69,63,55,.08),0 10px 28px rgba(69,63,55,.08)}
   html.cg-paper:not(.cg-night-shift){color-scheme:light}
   html.cg-paper::before,html.cg-paper::after{display:none}
   html.cg-paper:not(.cg-night-shift) body{background:var(--cg-cream) !important;background-image:none !important;color:var(--cg-charcoal) !important;font-family:var(--cg-font-ui) !important;line-height:1.65}
@@ -315,7 +319,7 @@ html.cg-night-shift::before,html.cg-night-shift::after{display:none}
   /* buttons: forest green with white text; the quiet one is white with a green edge */
   html.cg-paper:not(.cg-night-shift) :is(.primary-btn,.back-home-btn,.cg-btn-primary){background:var(--cg-green-700) !important;border:2px solid var(--cg-green-700) !important;border-radius:var(--cg-radius-md) !important;color:#fff !important;box-shadow:var(--cg-shadow-1) !important;text-decoration:none !important}
   html.cg-paper:not(.cg-night-shift) :is(.primary-btn,.back-home-btn,.cg-btn-primary) :is(span,svg,b,strong){color:#fff !important;stroke:currentColor}
-  html.cg-paper:not(.cg-night-shift) :is(.primary-btn,.back-home-btn,.cg-btn-primary):is(:hover,:focus-visible){background:var(--cg-green-600) !important;border-color:var(--cg-green-600) !important;transform:translateY(-1px);box-shadow:0 6px 16px rgba(14,60,67,.28) !important}
+  html.cg-paper:not(.cg-night-shift) :is(.primary-btn,.back-home-btn,.cg-btn-primary):is(:hover,:focus-visible){background:var(--cg-green-600) !important;border-color:var(--cg-green-600) !important;transform:translateY(-1px);box-shadow:0 6px 16px rgba(8,66,63,.28) !important}
   html.cg-paper:not(.cg-night-shift) .secondary-btn{background:var(--cg-white) !important;border:2px solid var(--cg-green-700) !important;border-radius:var(--cg-radius-md) !important;color:var(--cg-green-700) !important;box-shadow:none !important;text-decoration:none !important}
   html.cg-paper:not(.cg-night-shift) .secondary-btn :is(span,svg,b,strong){color:var(--cg-green-700) !important;stroke:currentColor}
   html.cg-paper:not(.cg-night-shift) .secondary-btn:is(:hover,:focus-visible){background:var(--cg-sage-100) !important;border-color:var(--cg-green-700) !important;transform:translateY(-1px)}
@@ -451,11 +455,11 @@ html.cg-night-shift::before,html.cg-night-shift::after{display:none}
   html.cg-paper-app:not(.cg-night-shift) .fp-toggle-thumb{background:#fff}
   html.cg-paper-app:not(.cg-night-shift) :is(.lp-spread,.lp-wiz-pvbox){background:var(--cg-tan-100)}
   /* Facility: its own variables, now on cream */
-  html.cg-paper-app:not(.cg-night-shift) .fp{--fp-card:var(--cg-white);--fp-chip:var(--cg-tan-100);--fp-tan:var(--cg-tan-200);--fp-tan-hi:var(--cg-tan-300);--fp-div:var(--cg-tan-200);--fp-text:var(--cg-charcoal);--fp-text-2:var(--cg-ink-soft);--fp-muted:var(--cg-ink-soft);--fp-head:var(--cg-green-700);--fp-ink:#fff;--fp-ink-2:#cfe2e3;--fp-warn:var(--cg-clay-700)}
+  html.cg-paper-app:not(.cg-night-shift) .fp{--fp-card:var(--cg-white);--fp-chip:var(--cg-tan-100);--fp-tan:var(--cg-tan-200);--fp-tan-hi:var(--cg-tan-300);--fp-div:var(--cg-tan-200);--fp-text:var(--cg-charcoal);--fp-text-2:var(--cg-ink-soft);--fp-muted:var(--cg-ink-soft);--fp-head:var(--cg-green-700);--fp-ink:#fff;--fp-ink-2:#cfe3e1;--fp-warn:var(--cg-clay-700)}
   html.cg-paper-app:not(.cg-night-shift) .fp-bar select{color:var(--cg-charcoal)}
   /* Academy: its own variables, now on cream; the lesson player and picture stages stay a dark screen, like a video player */
-  html.cg-paper-app:not(.cg-night-shift) .ac{--ac-bg:var(--cg-cream);--ac-panel:var(--cg-white);--ac-card:var(--cg-white);--ac-sunk:var(--cg-tan-100);--ac-surface:var(--cg-white);--ac-surface-2:var(--cg-tan-100);--ac-accent:var(--cg-green-700);--ac-accent-hi:var(--cg-green-600);--ac-accent-text:var(--cg-green-700);--ac-glow:rgba(197,160,89,.10);--ac-media-glow:rgba(14,60,67,.18);--ac-border:var(--cg-tan-200);--ac-div:rgba(79,64,48,.16);--ac-line:var(--cg-tan-600);--ac-text:var(--cg-charcoal);--ac-text-2:var(--cg-ink-soft);--ac-muted:#3f4756;--ac-ink:#ffffff;--ac-focus:#f5b800;--ac-family:var(--cg-clay-800);--ac-good:var(--cg-ok-800);--ac-warn:var(--cg-clay-800);box-shadow:var(--cg-card-shadow);background:var(--cg-cream)}
-  html.cg-paper-app:not(.cg-night-shift) .ac :is(.ac-player,.ac-thumb,.ac-stage,.ac-mini){--ac-text:#f0f4f4;--ac-text-2:#cfdbdc;--ac-muted:#b4c4c6;--ac-ink:#0b1719;--ac-accent:#4fb3bf;--ac-accent-hi:#7fcbd3;--ac-accent-text:#8ad0d8;--ac-surface:#18363b;--ac-surface-2:#1f3235;--ac-border:#2a3b3d;--ac-sunk:#0a1011;--ac-family:#e9b872;--ac-line:#6b8c90;--ac-focus:#e6f2f4}
+  html.cg-paper-app:not(.cg-night-shift) .ac{--ac-bg:var(--cg-cream);--ac-panel:var(--cg-white);--ac-card:var(--cg-white);--ac-sunk:var(--cg-tan-100);--ac-surface:var(--cg-white);--ac-surface-2:var(--cg-tan-100);--ac-accent:var(--cg-green-700);--ac-accent-hi:var(--cg-green-600);--ac-accent-text:var(--cg-green-700);--ac-glow:rgba(197,160,89,.10);--ac-media-glow:rgba(8,66,63,.18);--ac-border:var(--cg-tan-200);--ac-div:rgba(79,64,48,.16);--ac-line:var(--cg-tan-600);--ac-text:var(--cg-charcoal);--ac-text-2:var(--cg-ink-soft);--ac-muted:#3f4756;--ac-ink:#ffffff;--ac-focus:#f5b800;--ac-family:var(--cg-clay-800);--ac-good:var(--cg-ok-800);--ac-warn:var(--cg-clay-800);box-shadow:var(--cg-card-shadow);background:var(--cg-cream)}
+  html.cg-paper-app:not(.cg-night-shift) .ac :is(.ac-player,.ac-thumb,.ac-stage,.ac-mini){--ac-text:#f0f4f4;--ac-text-2:#cfdcdb;--ac-muted:#b4c4c6;--ac-ink:#0b1918;--ac-accent:#3cc7b7;--ac-accent-hi:#74d6c8;--ac-accent-text:#8ad8d0;--ac-surface:#183b38;--ac-surface-2:#1f3533;--ac-border:#2a3d3b;--ac-sunk:#0a1110;--ac-family:#e9b872;--ac-line:#6b8c90;--ac-focus:#e6f4f3}
   html.cg-paper-app:not(.cg-night-shift) .ac :is(.ac-card,.ac-tile,.ac-learner){background:var(--cg-white);box-shadow:var(--cg-card-shadow);-webkit-backdrop-filter:none;backdrop-filter:none}
   html.cg-paper-app:not(.cg-night-shift) .ac-thumb .ac-cat{color:#ffe0a3;border-color:#ffe0a3}
 }
@@ -638,7 +642,7 @@ html.cg-night-shift .cg-tierhead :is(h1,h2,h3,p,.hint,small){color:#ffedcc !impo
 @media print{.cg-tierhead{background:#fff !important;box-shadow:none !important;border-color:#000 !important}}
 
 /* the free-trial badge: a calm pill, not a button (it does nothing when pressed); it turns amber at five left and a deeper amber at none */
-.cg-trial{display:inline-flex;align-items:center;gap:8px;box-sizing:border-box;min-height:var(--tap,52px);padding:8px 16px;border:2px solid var(--cg-green-700,#0e3c43);border-radius:999px;background:var(--cg-sage-100,#e0f0f1);color:var(--cg-green-700,#0e3c43);font:700 16px/1.25 var(--cg-font-ui,"Segoe UI",sans-serif);letter-spacing:.01em}
+.cg-trial{display:inline-flex;align-items:center;gap:8px;box-sizing:border-box;min-height:var(--tap,52px);padding:8px 16px;border:2px solid var(--cg-green-700,#08423f);border-radius:999px;background:var(--cg-sage-100,#e4f4f1);color:var(--cg-green-700,#08423f);font:700 16px/1.25 var(--cg-font-ui,"Segoe UI",sans-serif);letter-spacing:.01em}
 .cg-trial[hidden]{display:none}
 .cg-trial b{font-weight:800}
 .cg-trial-ic{flex:none}
@@ -648,7 +652,7 @@ html.cg-night-shift .cg-trial{background:#2b2015!important;border-color:#d6a64b!
 @media print{.cg-trial{display:none!important}}
 
 /* ---------- 10. The brand flyer's look: teal and gold on parchment ----------
-   Deep teal (--cg-green-700 is #0e3c43 now) leads, warm gold accents, a faint gold brain pattern in the page margins,
+   Deep teal (--cg-green-700 is #08423f now) leads, warm gold accents, a faint gold brain pattern in the page margins,
    the two-hemisphere brain mark beside headings, cards with a golden inner glow, and gradient call-to-action buttons.
    Everything here is decoration or surface: text pairs are still the AAA pairs above, and every rule that paints is
    switched off in print (the printed page stays pure black on white) and in Night Shift. */
@@ -674,11 +678,11 @@ html.cg-night-shift .cg-trial{background:#2b2015!important;border-color:#d6a64b!
 /* the brain mark beside the brand title in the top bar (the cornucopia logo stays) */
 .cg-sidebar-brand span::before{content:"";display:inline-block;width:1em;height:1em;margin-right:.3em;vertical-align:-.12em;background:url("../assets/brand/brain-mark.svg") center / contain no-repeat}
 /* a card: clean white, soft corners, light border, a golden inner glow, a soft shadow */
-.cg-card{border:1px solid #e4dfd0;border-radius:var(--cg-radius-lg,16px);background:var(--cg-white);box-shadow:var(--cg-glow),0 8px 20px rgba(14,60,67,.08)}
+.cg-card{border:1px solid #e4dfd0;border-radius:var(--cg-radius-lg,16px);background:var(--cg-white);box-shadow:var(--cg-glow),0 8px 20px rgba(8,66,63,.08)}
 /* a call-to-action: the teal-to-navy gradient with a gold edge */
 .cg-btn-cta{display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;min-height:var(--cg-tap);padding:12px 24px;border:1px solid var(--cg-gold-400);border-radius:var(--cg-radius-md,12px);background-color:var(--cg-cta-solid);background-image:var(--cg-cta);color:#fff;font:700 1.0625rem/1.2 var(--cg-font-ui);text-decoration:none}
 /* a banner: teal into a deep gold, white lettering */
-.cg-banner{padding:var(--cg-space-4) var(--cg-space-5);border:1px solid var(--cg-gold-400);border-radius:var(--cg-radius-md,12px);background-color:#0e3c43;background-image:linear-gradient(100deg,#0e3c43 0%,#0e3c43 45%,#6b5214 100%);color:#fff;font:700 1.125rem/1.4 var(--cg-font-ui)}
+.cg-banner{padding:var(--cg-space-4) var(--cg-space-5);border:1px solid var(--cg-gold-400);border-radius:var(--cg-radius-md,12px);background-color:#08423f;background-image:linear-gradient(100deg,#08423f 0%,#08423f 45%,#6b5214 100%);color:#fff;font:700 1.125rem/1.4 var(--cg-font-ui)}
 html.cg-night-shift .cg-brain-h::before,html.cg-night-shift .cg-sidebar-brand span::before{filter:brightness(1.25)}
 @media print{
   :root::before,:root::after{display:none !important}
@@ -715,11 +719,11 @@ html.cg-night-shift .cg-brain-h::before,html.cg-night-shift .cg-sidebar-brand sp
     box-sizing: border-box;
     white-space: nowrap;
     border-radius: 9px;
-    border: 1px solid rgba(14, 60, 67, 0.18);
-    background: #f8f6f0;
-    color: #18363b !important;
+    border: 1px solid rgba(8,66,63, 0.16);
+    background: rgba(255, 255, 255, 0.72);
+    color: #183b38 !important;
     text-decoration: none;
-    box-shadow: 0 1px 2px rgba(14, 60, 67, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    box-shadow: 0 1px 2px rgba(8,66,63, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.8);
     font: 600 15px/1.2 var(--cg-font-ui, "Atkinson Hyperlegible", "Segoe UI", sans-serif) !important;
     letter-spacing: 0.01em;
     cursor: pointer;
@@ -729,15 +733,15 @@ html.cg-night-shift .cg-brain-h::before,html.cg-night-shift .cg-sidebar-brand sp
   .cg-hubs > .cg-hub-li > .cg-hub > summary:hover,
   .cg-hubs > .cg-hub-li > a.cg-hub-link:hover {
     background: #ffffff;
-    color: #0e3c43 !important;
-    border-color: rgba(14, 60, 67, 0.35);
-    box-shadow: 0 3px 8px rgba(14, 60, 67, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+    color: #08423f !important;
+    border-color: rgba(13, 148, 136, 0.6);
+    box-shadow: 0 8px 20px -8px rgba(8,66,63, 0.35), 0 0 0 1px rgba(13, 148, 136, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.95);
     transform: translateY(-1px);
   }
   .cg-hubs > .cg-hub-li > .cg-hub > summary:active,
   .cg-hubs > .cg-hub-li > a.cg-hub-link:active {
-    transform: translateY(0);
-    box-shadow: 0 1px 2px rgba(14, 60, 67, 0.1);
+    transform: scale(0.96);
+    box-shadow: 0 1px 2px rgba(8,66,63, 0.1);
   }
   .cg-hubs > .cg-hub-li > .cg-hub > summary .cg-sb-ico,
   .cg-hubs > .cg-hub-li > a.cg-hub-link .cg-sb-ico {
@@ -772,13 +776,13 @@ html.cg-night-shift .cg-brain-h::before,html.cg-night-shift .cg-sidebar-brand sp
   }
   .cg-hubs > .cg-hub-li > a.cg-hub-link:hover .cg-sb-chev {
     transform: rotate(90deg) translateX(1px);
-    color: #0e3c43;
+    color: #08423f;
   }
   .cg-hubs > .cg-hub-li > .cg-hub[open] > summary {
-    background: #0e3c43 !important;
+    background: #08423f !important;
     color: #ffffff !important;
-    border-color: #0e3c43 !important;
-    box-shadow: 0 3px 12px rgba(14, 60, 67, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    border-color: #08423f !important;
+    box-shadow: 0 3px 12px rgba(8,66,63, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.2);
     transform: none;
   }
   .cg-hubs > .cg-hub-li > .cg-hub[open] > summary .cg-sb-chev {
@@ -803,16 +807,16 @@ html.cg-night-shift .cg-brain-h::before,html.cg-night-shift .cg-sidebar-brand sp
   html body .cg-hubs > .cg-hub-li > .cg-hub[data-here] > summary,
   html body .cg-hubs > .cg-hub-li > a.cg-hub-link.active {
     background: #ffffff !important;
-    color: #0e3c43 !important;
+    color: #08423f !important;
     font-weight: 700 !important;
-    border-color: #0e3c43 !important;
-    border-bottom: 2.5px solid #0e3c43 !important;
-    box-shadow: 0 2px 6px rgba(14, 60, 67, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    border-color: #08423f !important;
+    border-bottom: 2.5px solid #08423f !important;
+    box-shadow: 0 2px 6px rgba(8,66,63, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.9);
   }
   html body .cg-hubs > .cg-hub-li > .cg-hub[data-here][open] > summary {
-    background: #0e3c43 !important;
+    background: #08423f !important;
     color: #ffffff !important;
-    border-color: #0e3c43 !important;
+    border-color: #08423f !important;
   }
   /* the page you are on, after dark: a dark chip with a gold underline, not a white one under cream text */
   html.cg-night-shift body .cg-hubs > .cg-hub-li > .cg-hub[data-here] > summary,
@@ -832,7 +836,7 @@ html.cg-night-shift .cg-brain-h::before,html.cg-night-shift .cg-sidebar-brand sp
    ink measurement all draw the same page. Tokens only; every control is --cg-tap.
    ===================================================================== */
 .cgpp-modal { box-sizing: border-box; width: min(1100px, calc(100vw - 24px)); height: min(96vh, 1100px); max-height: 96vh; padding: 0; border: 3px solid var(--cg-charcoal); border-radius: var(--cg-radius-lg, 20px); background: var(--cg-white); color: var(--cg-charcoal); display: flex; flex-direction: column; overflow: hidden; font-family: var(--cg-font-ui); }
-.cgpp-modal::backdrop { background: rgba(5, 26, 30, .78); }
+.cgpp-modal::backdrop { background: rgba(7,13,28, .78); }
 .cgpp-modal[open] { animation: cgppIn .2s ease-out both; }
 /* the page's own heading, paragraph and span colors must never reach into the window: every text element takes the window's color */
 .cgpp-modal :where(h2, h3, p, span, strong, b, div, button, label, footer, header) { color: inherit; text-shadow: none; }
@@ -1046,7 +1050,7 @@ html.cg-night-shift .cgre-btn:hover { background: #33271a; }
 .dk-back .dk-foot { font-size: 11pt; margin-top: auto; border-top: 2.25pt solid #000; padding-top: 2pt; }
 .dk-blank { background: #fff; }
 .dk-note { margin: .06in 0 0; font-size: 10pt; text-align: center; }
-.dk-color .dk-hometown .dk-tag { background: var(--cg-cat-hometown, #cfe8e6); } .dk-color .dk-career .dk-tag { background: var(--cg-cat-career, #f6cdb4); } .dk-color .dk-music .dk-tag { background: var(--cg-cat-music, #dfe0f7); } .dk-color .dk-family .dk-tag { background: var(--cg-cat-family, #f3e6b3); }
+.dk-color .dk-hometown .dk-tag { background: var(--cg-cat-hometown, #cfe8e5); } .dk-color .dk-career .dk-tag { background: var(--cg-cat-career, #f6cdb4); } .dk-color .dk-music .dk-tag { background: var(--cg-cat-music, #dfe0f7); } .dk-color .dk-family .dk-tag { background: var(--cg-cat-family, #f3e6b3); }
 .dk-color .dk-card { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 @media print { .sheet.dk-sheet { margin: 0; box-shadow: none; } }
 
@@ -1179,7 +1183,7 @@ html[data-cg-cb] .msg-ok::before { content: "\2713  "; font-weight: 700; } html[
 .rt-table td:not(:first-child), .rt-table th:not(:first-child):not(:last-child) { text-align: center; }
 .sa-swatches { display: flex; flex-wrap: wrap; gap: 8px; margin: 6px 0 0; } .sa-swatch { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border: 3px solid #000; border-radius: 999px; color: #000; font-weight: 700; }
 .sa-log { font-size: .95rem; } .sa-log td, .sa-log th { white-space: nowrap; }
-.sa-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 0 0 14px; padding: 12px 16px; border: 3px solid #fff; border-radius: 14px; background: #08262c; color: #fff; }
+.sa-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 0 0 14px; padding: 12px 16px; border: 3px solid #fff; border-radius: 14px; background: #0f172a; color: #fff; }
 .sa-bar .btn { min-height: var(--cg-tap, 52px); } @media print { .sa-bar { display: none !important; } }
 /* the wider OpenDyslexic letters on a printed card: the response row wraps instead of running past the card */
 html[data-cg-font-print="1"] .dk-resp { flex-wrap: wrap; justify-content: center; row-gap: 2pt; column-gap: 8pt; } html[data-cg-font-print="1"] .dk-resp .dk-r { font-size: .88em; }
@@ -1190,3 +1194,93 @@ html[data-cg-font-print="1"] .dk-resp { flex-wrap: wrap; justify-content: center
 .sheet.cl-sheet { box-sizing: border-box; padding: .6in .5in .6in .75in !important; color: #000; background: #fff; font-size: 14pt; }
 .cl-title { margin: 0 0 .2in; font-size: 28pt; line-height: 1.1; color: #000; } .cl-title:empty { display: none; }
 progress#tkProg { width: 100%; height: 14px; }
+
+/* ---------- 14. The skin: warm clinical, oceanic serenity (screen only) ----------
+   Glass cards on an alabaster page, a slate and teal glow behind them, controls that lift when pointed at and press in when
+   used, inputs that glow when chosen. It only adds light, depth and motion: sizes, layout, wording and print are untouched, the
+   52 px floor and the focus ring stay as they are, and every pressed state and lift stops for prefers-reduced-motion.
+   Night Shift keeps its own palette; it takes only the motion. */
+@media screen{
+  :root{
+    --cg-ease-out:cubic-bezier(.22,1,.36,1);
+    --cg-ease-spring:cubic-bezier(.34,1.4,.64,1);
+    --cg-glass:rgba(255,255,255,.74);
+    --cg-glass-soft:rgba(255,255,255,.58);
+    --cg-glass-line:rgba(15,23,42,.09);
+    --cg-glass-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 1px 2px rgba(15,23,42,.05),0 18px 44px -16px rgba(15,23,42,.16);
+    --cg-lift-shadow:0 10px 26px -10px rgba(8,66,63,.38);
+    --cg-teal-glow:0 0 0 1px rgba(13,148,136,.55),0 0 22px -4px rgba(13,148,136,.45);
+  }
+
+  /* the page: alabaster, with a soft wash of teal from the top and of sage from the left, which stay put while the page scrolls */
+  html.cg-paper:not(.cg-night-shift) body{
+    background-color:var(--cg-cream) !important;
+    background-image:linear-gradient(180deg,rgba(13,148,136,.08) 0,rgba(13,148,136,0) 440px),linear-gradient(115deg,rgba(53,94,59,.06) 0,rgba(53,94,59,0) 40%) !important;
+    background-attachment:fixed !important;
+  }
+  html.cg-paper:not(.cg-night-shift) :is(h1,h2,h3,h4,h5,h6){color:var(--cg-ink-900) !important}
+  html.cg-paper:not(.cg-night-shift) h2{border-bottom:2px solid rgba(13,148,135,.28) !important}
+
+  /* glass: a translucent surface, a hairline border and a soft shadow */
+  html.cg-paper:not(.cg-night-shift) .container{
+    background:var(--cg-glass) !important;-webkit-backdrop-filter:blur(16px) saturate(1.15);backdrop-filter:blur(16px) saturate(1.15);
+    border:1px solid var(--cg-glass-line) !important;border-radius:22px !important;box-shadow:var(--cg-glass-shadow) !important;
+  }
+  html.cg-paper:not(.cg-night-shift) :is(.card-panel,.feature-box,.facility-preview-box,.panel,.card,.box,.tile,.callout){
+    background:var(--cg-glass-soft) !important;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+    border:1px solid var(--cg-glass-line) !important;border-radius:16px !important;box-shadow:0 1px 2px rgba(15,23,42,.05),0 8px 24px -14px rgba(15,23,42,.18) !important;
+  }
+  html.cg-paper:not(.cg-night-shift) .highlight-banner{background:linear-gradient(90deg,rgba(13,148,135,.10),rgba(255,255,255,.7)) !important;border-left:5px solid var(--cg-teal) !important}
+
+  /* tables: a tinted header, a gentle row highlight */
+  html.cg-paper:not(.cg-night-shift) thead th{background:var(--cg-sage-100) !important}
+  html.cg-paper:not(.cg-night-shift) tbody tr:hover :is(td,th){background:rgba(13,148,135,.06) !important}
+
+  /* fields: rounded, a soft inner edge, and a teal glow when chosen (the ring in section 4 stays for the keyboard) */
+  html.cg-paper:not(.cg-night-shift) :is(input:not([type=checkbox],[type=radio],[type=range],[type=file],[type=color],[type=hidden]),select,textarea){
+    border-radius:12px;border:1.5px solid var(--cg-tan-300);background-color:rgba(255,255,255,.92);box-shadow:inset 0 1px 2px rgba(15,23,42,.06);
+  }
+  html.cg-paper:not(.cg-night-shift) :is(input:not([type=checkbox],[type=radio],[type=range],[type=file],[type=color],[type=hidden]),select,textarea):hover{border-color:var(--cg-green-500)}
+  html.cg-paper:not(.cg-night-shift) :is(input:not([type=checkbox],[type=radio],[type=range],[type=file],[type=color],[type=hidden]),select,textarea):focus{border-color:var(--cg-green-600);box-shadow:inset 0 1px 2px rgba(15,23,42,.06),0 0 0 4px rgba(13,148,135,.20)}
+}
+
+/* touch: the same everywhere, light or dark. Pointing lifts and glows, using presses in. */
+@media screen and (prefers-reduced-motion:no-preference){
+  :where(button,[role="button"],[role="tab"],summary,a.btn,a.button,a[class*="btn"],a[class*="cta"],label.btn,input[type="button"],input[type="submit"],input[type="reset"]){
+    transition:transform .2s var(--cg-ease-out),box-shadow .2s var(--cg-ease-out),background-color .2s var(--cg-ease-out),border-color .2s var(--cg-ease-out),color .2s var(--cg-ease-out);
+    -webkit-tap-highlight-color:transparent;
+  }
+  :where(button,[role="button"],[role="tab"],a.btn,a.button,a[class*="btn"],a[class*="cta"],label.btn,input[type="button"],input[type="submit"]):hover:not(:disabled,[aria-disabled="true"]){
+    transform:translateY(-1px);box-shadow:var(--cg-lift-shadow),var(--cg-teal-glow);
+  }
+  :where(button,[role="button"],[role="tab"],a.btn,a.button,a[class*="btn"],a[class*="cta"],label.btn,input[type="button"],input[type="submit"]):active:not(:disabled,[aria-disabled="true"]){
+    transform:scale(.96);box-shadow:0 2px 6px -2px rgba(8,66,63,.4);transition-duration:.08s;
+  }
+  html.cg-paper:not(.cg-night-shift) :is(a.hub-card,a.module-card,a.card,.hub-card,.module-card,.era-card,.activity){
+    transition:transform .25s var(--cg-ease-out),box-shadow .25s var(--cg-ease-out),border-color .25s var(--cg-ease-out);
+  }
+  html.cg-paper:not(.cg-night-shift) :is(a.hub-card,a.module-card,a.card,.hub-card,.module-card,.era-card,.activity):hover{
+    transform:translateY(-3px);border-color:rgba(13,148,136,.55) !important;box-shadow:0 16px 36px -16px rgba(8,66,63,.4),0 0 0 1px rgba(13,148,136,.35) !important;
+  }
+}
+/* a lift or a glow must never hide the ring: the keyboard always gets the two bands, over any shadow a control carries */
+@media screen{
+  :is(a[href],button,input,select,textarea,summary,[tabindex]:not([tabindex="-1"]),[role="button"],[role="tab"],[role="switch"]):focus-visible{
+    outline:3px solid var(--cg-focus) !important;outline-offset:3px;box-shadow:0 0 0 6px var(--cg-focus-dark) !important;
+  }
+}
+/* the top bar: alabaster with a hairline and a long soft shadow. It is solid on purpose: the logo files are black ink on white, and a
+   translucent bar over a dark section (the packet tool) showed a pale square behind the mark. */
+@media screen{
+  html:root:not(.cg-night-shift){--sb-bg:#fafafd}
+  html:root:not(.cg-night-shift) body .cg-sidebar{
+    -webkit-backdrop-filter:blur(18px) saturate(1.4);backdrop-filter:blur(18px) saturate(1.4);
+    border-color:rgba(15,23,42,.08);
+  }
+  /* the logo files are black ink on white: multiplied onto the alabaster the white is blended away, so no square shows behind the mark */
+  html:root:not(.cg-night-shift) body .cg-sidebar-brand img,
+  html:root:not(.cg-night-shift) :is(.lp-foot-logo,.cg-foot-logo) img{mix-blend-mode:multiply}
+}
+@media screen and (min-width:1100px){
+  html:root:not(.cg-night-shift) body .cg-sidebar{box-shadow:0 10px 32px -20px rgba(15,23,42,.35)}
+}
