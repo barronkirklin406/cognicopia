@@ -10,7 +10,8 @@ The service for memory care facilities: Next.js (App Router) in front, Supabase 
 - **Stripe billing.** Monthly and annual plans through Stripe Checkout, the Stripe billing portal, and a signed webhook that keeps each facility's `subscription_status` in step.
 - **The subscription gate.** When a facility's subscription is past due, unpaid or ended, the activity library and the calendar tools close (in the pages, in the API and in the database) and an admin sees a renewal prompt with a button to the Stripe portal.
 - **The planning tools** (Tailwind CSS 4). A dashboard with today's plan and the week ahead; the activity library sorted instantly by stage (early, middle, late), kind of activity (reminiscence prompts, cognitive games, trivia, printable sheets, movement, sensory) and theme, with how to run each activity for the stage chosen; a one-click monthly calendar (choose a month and a theme, and every day is filled with a few sessions for each stage, drawn from the library) that can be saved and printed in large black type on landscape pages; and a searchable library of reminiscence prompts by decade (1940s to 1970s) and sense. All of these are premium.
-- **Not built yet.** Changing a generated month by hand, emailing invitations, rate limiting, and continuous integration. The architecture notes list them in order.
+- **Hand-editing a saved month.** On a saved month, choose a day and each session can be pinned (planning the month again keeps it), given a different activity from the library for its stage, given a note, or taken out. Two people editing the same month cannot overwrite each other: the second is told to reload.
+- **Not built yet.** Emailing invitations, rate limiting, and continuous integration. The architecture notes list them in order.
 
 ## Run the tests
 

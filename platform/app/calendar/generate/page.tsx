@@ -51,6 +51,7 @@ export default async function GenerateCalendarPage({ searchParams }: { searchPar
             library={library}
             months={months}
             savedMonths={[...saved.keys()]}
+            pinnedByMonth={Object.fromEntries([...saved].map(([key, calendar]) => [key, calendar.generated_data.slots.filter((slot) => slot.locked)]))}
             initialMonth={initialMonth}
             initialSeed={newSeed()}
             facilityName={access.membership.facility.facility_name}

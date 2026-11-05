@@ -29,6 +29,7 @@ export type Database = {
           generated_data: Json;
           id: string;
           month_year: string;
+          updated_at: string;
         };
         Insert: {
           created_at?: string;
@@ -36,6 +37,7 @@ export type Database = {
           generated_data: Json;
           id?: string;
           month_year: string;
+          updated_at?: string;
         };
         Update: {
           created_at?: string;
@@ -43,6 +45,7 @@ export type Database = {
           generated_data?: Json;
           id?: string;
           month_year?: string;
+          updated_at?: string;
         };
         Relationships: [
           {

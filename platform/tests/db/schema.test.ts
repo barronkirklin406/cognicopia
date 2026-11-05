@@ -23,13 +23,14 @@ const TABLES = ["facilities", "facility_users", "content_items", "activity_calen
 const PRIVILEGES = ["SELECT", "INSERT", "UPDATE", "DELETE", "TRUNCATE", "REFERENCES", "TRIGGER"] as const;
 
 describe("migrations", () => {
-  it("are five files, in order", () => {
+  it("are six files, in order", () => {
     expect(migrationFiles()).toEqual([
       "20261006120000_core_schema.sql",
       "20261006120100_phi_guard.sql",
       "20261006120200_tenancy_and_rls.sql",
       "20261006180000_billing_and_access.sql",
       "20261006180100_facility_invites.sql",
+      "20261107090000_calendar_updated_at.sql",
     ]);
   });
 });

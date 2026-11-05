@@ -56,7 +56,8 @@ const refused = async (s: CheckoutSessionLike | Error, ref = REF) => {
 
 /** The static site's real files, in a sandbox, with this test's public key. */
 function browser(now: Date) {
-  const cfgSrc = fs.readFileSync(path.join(ROOT, "src/config/license.js"), "utf8").replace("PUBLIC_KEYS: Object.freeze([])", `PUBLIC_KEYS: Object.freeze(["${publicHex}"])`);
+  const cfgSrc = fs.readFileSync(path.join(ROOT, "src/config/license.js"), "utf8").replace(/PUBLIC_KEYS:\s*Object\.freeze\(\[[^\]]*\]\)/, `PUBLIC_KEYS: Object.freeze(["${publicHex}"])`);   // whatever key the site holds (it is rotated from time to time): the test signs with its own
+  if (!cfgSrc.includes(publicHex)) throw new Error("the test key was not put into src/config/license.js: PUBLIC_KEYS no longer matches the pattern");
   const store = new Map<string, string>();
   const FakeDate = class extends Date { constructor(...a: unknown[]) { if (a.length) super(...(a as [string])); else super(now); } static now() { return now.getTime(); } };
   const box: Record<string, unknown> = {

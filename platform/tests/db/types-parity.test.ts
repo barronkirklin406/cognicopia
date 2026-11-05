@@ -48,7 +48,7 @@ const INSERT_OPTIONAL = {
   facility_users: ["role", "created_at"],
   facility_invites: ["id", "email", "role", "created_by", "created_at", "accepted_at", "accepted_by"],
   content_items: ["id", "created_at"],
-  activity_calendars: ["id", "created_at"],
+  activity_calendars: ["id", "created_at", "updated_at"],
 } as const satisfies { [T in TableName]: readonly (keyof TablesInsert<T>)[] };
 
 // If a list above stops matching its Insert type, these stop compiling.
