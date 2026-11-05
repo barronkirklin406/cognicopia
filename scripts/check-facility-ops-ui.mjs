@@ -68,7 +68,7 @@ ok(rosterA.join() === "Dorothy,Walter", `with Memory Care Unit A chosen the rost
 ok(await pg.$eval(".rs-res-main b", e => /Fraunces/.test(getComputedStyle(e).fontFamily) && parseFloat(getComputedStyle(e).fontSize) >= 18), "resident names are large and in the display face");
 
 /* ---------- the Shift board ---------- */
-await go("#/shift");
+await go("#/shift"); await pg.click("#shcOpenBoard"); await pg.waitForSelector("#shfRoot", { state: "visible" });
 await pg.fill("#shfInit", "MR"); await pg.click("#shfMeForm button[type=submit]");
 await pg.selectOption("#shfEWho", "Resident 102-B"); await pg.fill("#shfEAct", "Music circle");
 await tick('input[name="shfEPart"][value="watched"]'); await tick('input[name="shfEMood"][value="restless"]'); await pg.fill("#shfENote", "left after ten minutes");
