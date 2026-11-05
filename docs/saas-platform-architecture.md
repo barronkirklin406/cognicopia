@@ -132,6 +132,8 @@ A facility that wants one login on a shared computer can invite a mailbox it con
 3. Each server action re-checks for itself, because a server action is a public endpoint however it is used. Route handlers use the `withUser` and `withAccess` wrappers (`lib/access/with-access.ts`), which answer 401, 403 or 402 as JSON and refuse a browser request from another site when it would change something.
 4. The database is the last wall (row level security, above).
 
+**Emailing an invitation** (`lib/email/`, `inviteFlow` in `lib/admin/flows.ts`). With `SMTP_HOST` (and `SMTP_FROM`, and `SMTP_USER` with `SMTP_PASSWORD` if the server needs a sign-in) set, the Team page offers "Email the invitation to this address", ticked by default; without them the page is the link-only form it was. The invitation is made first and the email is a courtesy on top of it: if the mail server refuses or is slow (10 seconds per step), the invitation still exists, the link is still shown, and the admin is told in plain words that the email did not go. Nothing the mail server says is shown or logged (only the kind of failure). The connection must use TLS: port 465 from the first byte, or STARTTLS on 587 with `requireTLS`, so a server that cannot upgrade is refused and nothing is sent in the clear (a test proves it against a real socket). The email names the facility and the role, never a resident; the facility name is escaped in the HTML and stripped of line breaks in the subject, and the address was checked to hold no whitespace, so neither can add a header. The link appears in the body only. Setting up your own sending domain's SPF and DKIM records is yours to do, or invitations may land in spam. **Not yet limited:** an admin can email many addresses; the rate limiting listed under Next covers that. Tests: `tests/email/`, `tests/admin/flows.test.ts`, `tests/ui/invite-form.test.ts`.
+
 ## Billing with Stripe
 
 Stripe is the system of record. The database holds a copy, so a page can answer without calling Stripe, and the copy can always be rebuilt by asking Stripe again.
@@ -281,10 +283,9 @@ There are 1,487 tests in 42 files.
 
 ## Next
 
-1. Email the invitation, instead of showing the link to share. It needs your own SMTP and a template, and the invitation functions already return what is needed.
-2. Rate limiting on sign-in, sign-up and the invitation page (Supabase limits its own endpoints; ours are not limited yet), and a Content-Security-Policy for scripts, which needs per-request nonces.
-3. Continuous integration for `platform/` (this environment could not add a workflow file), and a committed browser test of the sign-in, billing and planning flows to replace the throwaway ones.
-4. Load the production library into `content_items` through a loading script, and move the older generation engines into `lib/generation`.
-5. Stack the team tables on a phone: at 390 px they scroll sideways inside their frame, which is usable but hides the Remove button. Admins at a desk or on a tablet are not affected.
-6. Decide where the public site's wording ("no server, no accounts") should change once facilities sign in; today the platform is a separate project and the public site says nothing about it.
-7. Ask an Activity Director to use the planner for a real month and print it on the facility's printer. Two things only a real printer can say: whether the margins and the heavy lines print cleanly, and whether two sheets for a busy stage is welcome or whether a one-sheet "compact" option is wanted.
+1. Rate limiting on sign-in, sign-up and the invitation page (Supabase limits its own endpoints; ours are not limited yet), and a Content-Security-Policy for scripts, which needs per-request nonces.
+2. Continuous integration for `platform/` (this environment could not add a workflow file), and a committed browser test of the sign-in, billing and planning flows to replace the throwaway ones.
+3. Load the production library into `content_items` through a loading script, and move the older generation engines into `lib/generation`.
+4. Stack the team tables on a phone: at 390 px they scroll sideways inside their frame, which is usable but hides the Remove button. Admins at a desk or on a tablet are not affected.
+5. Decide where the public site's wording ("no server, no accounts") should change once facilities sign in; today the platform is a separate project and the public site says nothing about it.
+6. Ask an Activity Director to use the planner for a real month and print it on the facility's printer. Two things only a real printer can say: whether the margins and the heavy lines print cleanly, and whether two sheets for a busy stage is welcome or whether a one-sheet "compact" option is wanted.

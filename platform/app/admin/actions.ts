@@ -8,6 +8,7 @@ import { appUrlOrNull, field, NOT_SET_UP, stateOf } from "@/lib/auth/action-help
 import type { TeamNoticeKey } from "@/lib/auth/messages";
 import type { FlowResult, FormState } from "@/lib/auth/state";
 import { getStripe } from "@/lib/billing/stripe";
+import { getMailer } from "@/lib/email/mailer";
 import { ConfigError } from "@/lib/errors";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -18,10 +19,12 @@ import { createAdminClient } from "@/lib/supabase/admin";
  */
 
 export async function inviteAction(_previous: FormState, formData: FormData): Promise<FormState> {
-  const { db } = await requireAdmin("/admin/team");
+  const { db, membership } = await requireAdmin("/admin/team");
   const appUrl = appUrlOrNull();
   if (!appUrl) return NOT_SET_UP;
-  const state = stateOf(await inviteFlow(db, { email: field(formData, "email"), role: field(formData, "role") }, appUrl));
+  const mailer = getMailer();
+  const mail = mailer ? { mailer, facilityName: membership.facility.facility_name } : null;
+  const state = stateOf(await inviteFlow(db, { email: field(formData, "email"), role: field(formData, "role"), send_email: field(formData, "send_email") }, appUrl, mail));
   revalidatePath("/admin/team");
   return state;
 }

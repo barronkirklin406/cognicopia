@@ -8,7 +8,9 @@ import { createInvite, cancelInvite } from "@/lib/data/invites";
 import { removeMember, renameFacility, setMemberRole } from "@/lib/data/team";
 import { FACILITY_ROLES } from "@/lib/db/models";
 import { FacilityNameSchema } from "@/lib/domain/facility";
-import { CreateInviteSchema, inviteLink } from "@/lib/domain/invite";
+import { CreateInviteSchema, INVITE_DAYS, inviteLink } from "@/lib/domain/invite";
+import type { Mailer } from "@/lib/email/mailer";
+import { buildInviteEmail } from "@/lib/email/invite-email";
 import { isStripeError } from "@/lib/errors";
 
 /**
@@ -35,8 +37,21 @@ const failed = (error: string, values?: Record<string, string>): FlowResult => (
 // Team
 // ---------------------------------------------------------------------
 
-/** Make an invitation, and hand back the link to share. The link is shown once: only its hash is kept. */
-export async function inviteFlow(db: Db, input: { email: unknown; role: unknown }, appUrl: string): Promise<FlowResult> {
+/** What emailing an invitation needs: a way to send, and the facility's name for the message. Absent: emailing is off. */
+export interface InviteMail {
+  mailer: Mailer;
+  facilityName: string;
+}
+
+/**
+ * Make an invitation, and hand back the link to share. The link is shown once: only its hash is kept.
+ *
+ * When the admin asked for it (`send_email`) and an address was given, the invitation is also emailed to that
+ * address. The invitation is made first and the email is a courtesy on top of it: if the email does not go, the
+ * invitation still exists and the link is still shown, so the admin can share it themselves. Nothing the mail
+ * server says is shown or kept.
+ */
+export async function inviteFlow(db: Db, input: { email: unknown; role: unknown; send_email?: unknown }, appUrl: string, mail: InviteMail | null = null): Promise<FlowResult> {
   const parsed = CreateInviteSchema.safeParse({ email: text(input.email), role: input.role });
   const values = { email: text(input.email).trim().toLowerCase() };
   if (!parsed.success) {
@@ -44,15 +59,28 @@ export async function inviteFlow(db: Db, input: { email: unknown; role: unknown 
     for (const issue of parsed.error.issues) fieldErrors[String(issue.path[0] ?? "form")] ??= issue.message;
     return { state: { error: "Check the highlighted fields.", fieldErrors, values } };
   }
+  const wantsEmail = input.send_email === "on" || input.send_email === "true" || input.send_email === true;
+  if (wantsEmail && !mail) return failed("Emailing invitations is not set up yet. Clear the box to make a link you can share yourself.", values);
+  if (wantsEmail && !parsed.data.email) {
+    return { state: { error: "Check the highlighted fields.", fieldErrors: { email: "Enter their email address to email the invitation." }, values } };
+  }
   try {
     const token = await createInvite(db, parsed.data);
+    const link = inviteLink(appUrl, token);
     const tied = parsed.data.email ? ` It only works for ${parsed.data.email}.` : "";
-    return {
-      state: {
-        message: `Invitation created. Share this link with the person; it works once and lasts 7 days.${tied}`,
-        link: inviteLink(appUrl, token),
-      },
-    };
+    const shared = `Share this link with the person; it works once and lasts ${INVITE_DAYS} days.${tied}`;
+
+    if (wantsEmail && mail && parsed.data.email) {
+      try {
+        await mail.mailer.send({ to: parsed.data.email, ...buildInviteEmail({ facilityName: mail.facilityName, role: parsed.data.role, link, email: parsed.data.email }) });
+        return { state: { message: `Invitation created and emailed to ${parsed.data.email}. The link also works if you would rather share it yourself; it works once and lasts ${INVITE_DAYS} days.`, link } };
+      } catch (error) {
+        // The mail server's reply can name addresses and accounts: only the kind of failure is kept.
+        console.error("[admin] the invitation email was not sent:", error instanceof Error ? error.name : typeof error);
+        return { state: { message: `Invitation created, but the email could not be sent to ${parsed.data.email}. ${shared}`, link } };
+      }
+    }
+    return { state: { message: `Invitation created. ${shared}`, link } };
   } catch (error) {
     return failed(say(error, { already_member: "That person is already on your team." }), values);
   }
