@@ -220,3 +220,16 @@ The roster's resident pane (`rs2-style` in `builder.html`) is a list or a card g
 ## The front page's laptop (November 2026)
 
 The hero laptop has no 3D tilt, so nothing on its screen is skewed. The screen is one SVG per example, 1000 x 625 (16:10), written by `scripts/landing-example.mjs` from Cognicopia's own engines: it scales as a picture and keeps its proportions. The page inside is drawn the way it prints: pure black on white, a 0.75 in binding side and 0.5 in margins at 46.5 units to the inch, Fraunces for titles and names, Atkinson Hyperlegible for everything else, and the word search's cells true squares with 3 pt outer lines. The app around the page uses the slate, teal and alabaster tokens. Three tabs under the laptop (52 px, arrow keys, Home and End) choose the example; without script the first example shows and the tabs are hidden. Night Shift recolors the tabs; the laptop is hidden under 760 px so the phone's first screen keeps its first value card.
+
+## The packet's house styles (November 2026)
+
+The front page's packet gives its page titles one of four looks, chosen from the resident and the month (`Doc.setLook` and `Doc.headLook` in `index.html`). The same packet always looks the same, the next month's or another resident's usually looks different, and every page of one packet shares its look, so the packet reads as one piece.
+
+| Look | Title | Rule |
+|---|---|---|
+| Ledger (the plain look) | sans (Atkinson Hyperlegible), on the left | one heavy rule |
+| Editorial | serif (the PDF's built-in Times), centered | a double rule |
+| Framed | sans, in a ruled box, a small solid square before it | the box |
+| Margin bar | serif, beside a heavy bar in the margin | one rule |
+
+What holds in every look: pure black on white; no line thinner than the stage's rule; and exactly the room the plain look takes (the title's baseline, then 44 pt), so a look never moves a page break (`scripts/check-packet-looks-ui.mjs` makes the same packet in all four and compares the pages). The late stage and a simplified layout always use the plain look, for calm and predictability. The body text stays in Atkinson Hyperlegible for legibility. Fraunces is not used in PDFs: it ships only as a web font, which the PDF library cannot embed.
