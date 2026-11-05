@@ -244,8 +244,12 @@ try {
   const lp = await p.evaluate(() => { const c = document.querySelector(".lp-copy").getBoundingClientRect(), v = document.querySelector(".lp-visual").getBoundingClientRect(), b = document.querySelector(".lp-btn");
     return { side: v.left >= c.right - 1 && v.width > 300, href: b.getAttribute("href"), bh: b.getBoundingClientRect().height, make: !!document.querySelector("#make .wrap #f"),
       marks: [...document.querySelectorAll(".lp-marks a")].map(a => a.getAttribute("href")), foot: document.querySelectorAll(".lp-footer nav a").length, quote: (document.querySelector(".lp-quote figcaption") || {}).textContent || "",
-      hidden: document.querySelector(".lp-visual").getAttribute("aria-hidden") }; });
-  ok(lp.side && lp.hidden === "true", "the hero is two columns: the words, and beside them a picture of the tool that screen readers skip");
+      tabs: [...document.querySelectorAll(".lp-visual [role=tab]")].map(t => Math.round(t.getBoundingClientRect().height)),
+      shots: [...document.querySelectorAll(".lp-visual .lp-panel svg")].filter(s => s.getAttribute("role") === "img" && (s.getAttribute("aria-label") || "").length > 40).length,
+      frame: [...document.querySelectorAll(".lp-visual .lp-orb, .lp-visual .lp-cam, .lp-visual .lp-hinge, .lp-visual .lp-base")].every(e => e.getAttribute("aria-hidden") === "true") }; });
+  /* the owner's brief (November 2026): the laptop shows three examples Cognicopia makes, chosen with real tabs, so the picture is no longer hidden from screen readers:
+     each example is a labelled picture, and only the laptop's frame and the glow are skipped */
+  ok(lp.side && lp.tabs.length === 3 && lp.tabs.every(h => h >= 52) && lp.shots === 3 && lp.frame, `the hero is two columns: the words, and beside them a laptop with three examples, three 52 px tabs (${lp.tabs.join(", ")} px) and a label on each example for screen readers`);
   ok(lp.href === "#make" && lp.bh >= 52 && lp.make, `"Get Started Free" (${lp.bh} px tall) points at the packet tool, which sits under it on the same page`);
   ok(lp.marks.length === 5 && lp.marks.every(h => /^resources\/research\/[a-z-]+\/$/.test(h)), "the evidence row links five Research Center summaries");
   ok(lp.foot === 15 && /Cognicopia/.test(lp.quote) && !/Kirk Barron/.test(lp.quote), "the footer has its three columns of links and the quote is credited to Cognicopia, not a person");
