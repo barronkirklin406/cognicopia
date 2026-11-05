@@ -21,6 +21,7 @@
 <script src="assets/coloring/subjects.bundle.js"></script>
 <script src="src/services/ColoringManifest.js"></script>
 <script src="src/engine/ColoringEngine.js"></script>
+<script src="src/engine/DescribeCreate.js"></script>
 <script src="assets/services/secureStore.js"></script>
 <script src="assets/services/trialLedger.js"></script>
 <script src="assets/services/privacyExport.js"></script>
@@ -6757,6 +6758,10 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
     <div class="field"><label for="favs">Favorite things
       <span class="sub">Separate with commas</span></label>
       <input type="text" id="favs" maxlength="400" autocomplete="off" placeholder="roses, coffee, the lake"></div>
+    <div class="field"><label for="colorWish">A picture to color
+      <span class="sub">Optional. Describe it in a few words, and the packet's coloring page uses the drawing that fits best</span></label>
+      <input type="text" id="colorWish" maxlength="160" autocomplete="off" placeholder="a 1950s pickup truck, a cardinal in winter" aria-describedby="colorWishNote">
+      <p class="hint" id="colorWishNote" role="status" aria-live="polite"></p></div>
     <div class="row">
       <div class="field"><label for="mil">Military branch, if they served</label>
         <input type="text" id="mil" maxlength="40" autocomplete="off" placeholder="Army"></div>
@@ -9922,7 +9927,9 @@ function subjectWords(a){
 }
 function colorPage(D,r,theme){
   const E=window.CognicopiaColoringEngine, M=window.CognicopiaColoringManifest, ready=!!(E && M && M.loadSync());
-  const sel = ready ? M.select(
+  /* a picture described in the form ("A picture to color") comes first, when a drawing fits it and the avoid list allows it (src/engine/DescribeCreate.js) */
+  const wish = ready && r.colorWish && window.CognicopiaDescribe ? window.CognicopiaDescribe.choose(r.colorWish,{ stage:E.stageOf(r.stage), filter:a=>allowed(r,subjectWords(a)) }) : null;
+  const sel = wish && wish.ok ? { asset:wish.asset } : ready ? M.select(
     { name:r.first, born:r.born, former_profession:r.job, hobbies:r.hobbies, stage:r.stage },
     { seed:M.hashSeed([r.first,r.born,r.job,r.month,"color"].join("|")), stage:E.stageOf(r.stage),
       exclude:(r.holidays||[]).map(k=>HOLIDAY_SUBJECTS[HOLIDAY_ART[k]]).filter(Boolean),
@@ -12790,6 +12797,7 @@ $("f").addEventListener("submit", e=>{
     job:$("job").value.trim(), spouse:$("spouse").value.trim(),
     kids:splitList($("kids").value), pets:splitList($("pets").value),
     hobbies:splitList($("hobbies").value), favs:splitList($("favs").value),
+    colorWish:$("colorWish").value.trim().slice(0,160),
     mil:$("mil").value.trim(), faith:$("faith").value.trim(),
     lang1:$("lang1").value, lang2:$("lang2").value,
     avoid:splitList($("avoid").value),
@@ -12858,6 +12866,7 @@ if(soBtn) soBtn.addEventListener("click",()=>{
     job:$("job").value.trim(), spouse:$("spouse").value.trim(),
     kids:splitList($("kids").value), pets:splitList($("pets").value),
     hobbies:splitList($("hobbies").value), favs:splitList($("favs").value),
+    colorWish:$("colorWish").value.trim().slice(0,160),
     mil:$("mil").value.trim(), faith:$("faith").value.trim(),
     lang1:$("lang1").value, lang2:$("lang2").value,
     avoid:splitList($("avoid").value),
@@ -25359,6 +25368,25 @@ import { webStorage } from "./js/pillar2-functionality-agents.js";
     var to = e.key === "ArrowRight" ? (i + 1) % tabs.length : e.key === "ArrowLeft" ? (i + tabs.length - 1) % tabs.length : e.key === "Home" ? 0 : e.key === "End" ? tabs.length - 1 : -1;
     if (to < 0) return; e.preventDefault(); show(tabs[to], true);
   });
+})();
+</script>
+<script>
+/* "A picture to color" in the packet form: say, as the words are typed, which drawing they choose and which words it cannot draw. */
+(function(){
+  var box = document.getElementById("colorWish"), note = document.getElementById("colorWishNote"), t = 0;
+  if (!box || !note) return;
+  function tell(){
+    var D = window.CognicopiaDescribe, M = window.CognicopiaColoringManifest, v = box.value.trim();
+    if (!v){ note.textContent = ""; return; }
+    if (!D || !M || !M.loadSync()){ note.textContent = "The coloring pictures could not load. Reload the page to try again."; return; }
+    var st = document.querySelector("input[name=stage]:checked"), c = D.choose(v, { stage:st ? (window.CognicopiaColoringEngine || { stageOf:function(x){ return x; } }).stageOf(st.value) : "" });
+    // a described picture is a request for a coloring page: tick it in the activities if it is not ticked yet
+    var page = document.querySelector('input.act[value="color"]'), added = false;
+    if (c.ok && page && !page.checked){ page.checked = true; page.dispatchEvent(new Event("change", { bubbles:true })); added = true; }
+    note.textContent = D.explain(c) + (c.ok ? (added ? " The coloring page is now ticked in the activities below." : "") : " The packet will choose its own picture instead.");
+  }
+  box.addEventListener("input", function(){ clearTimeout(t); t = setTimeout(tell, 250); });
+  document.addEventListener("change", function(e){ if (e.target && e.target.name === "stage") tell(); });
 })();
 </script>
 </body>

@@ -206,3 +206,22 @@ CognicopiaColoringEngine.renderHybridPage(
 - **Wide subjects print shorter.** Cars, trains and airliners fill the page's width, so at the late stage the picture is shorter than a tall subject.
 - **A few small areas remain.** Eight subjects keep one area just under 0.1 sq in at the late stage (for example, inside the horse's ear or under the rose), where removing it would harm the drawing. The library's own Tier 3 rule allows one.
 - **The engine does not judge whether a drawing is good.** It cleans and measures drawings; a person still looks at a new drawing at each stage before it ships.
+
+## Describe & Create (November 2026)
+
+Staff can ask for a coloring page in their own words: "a 1957 Chevy truck on a prairie road", "a grandfather clock in a cozy parlor". `src/engine/DescribeCreate.js` (global `CognicopiaDescribe`) reads the words and chooses the finished drawing that fits them best, and this engine lays it out at the resident's stage, so the page has the same bold black lines, no gray and the same print standard as every other page.
+
+Where it is:
+- the Packet Builder's coloring library, **New pages** tab: **Describe a picture**. The page joins your pages under an ordinary page code, so it previews, prints and goes into a PDF like any other;
+- the front page's packet form: **A picture to color** (optional). The packet's coloring page uses the drawing the words choose, and the coloring page is ticked in the activities when it was not.
+
+How it chooses:
+- a word names a drawing when it reaches what the drawing **is** through the tag tree: a pickup truck is a truck, a garden rose is a flower. A word may widen two steps at most, so a request for a truck never ends at a steam locomotive because both are vehicles;
+- a word that is only one of a drawing's tags (the sailboat's "lake", the jukebox's "diner", the butterfly's "flower") is the scene around it. It never decides the drawing on its own and is never said to be drawn;
+- a subject the drawings do not have gets the closest one, and the screen says so: "There is no drawing of exactly that yet. The closest one: The Tulip." A make ("Chevy", "Ford") is a closest match too, and the note adds that no maker's name or badge is drawn;
+- every answer lists the words it did not use. A page shows the subject on its own, with a border made for the stage;
+- words that are not for a coloring page in care (weapons, injury, death, war, hospitals, alcohol and the like) are refused gently, with a suggestion. The resident's topics to avoid are never crossed; when they rule out the only drawing that fits, the answer says so.
+
+What it does not do: it never draws a subject from the words. The engine draws only finished drawings (subjects drawn in code came out uneven), and the finished site never asks a picture service for one. A subject the library lacks, a tiger lily for example, joins it the usual way: drawn with the local art tool on the owner's computer, or as a licensed SVG in `src/coloring/subjects/` (see "To add a subject" above).
+
+Checks: `scripts/check-describe.mjs` (in `npm test`: the choices, the honesty of the notes, refusals and topics to avoid, every page valid at every stage, no network or storage in the module) and `scripts/check-describe-ui.mjs` (in `npm run build`: both pages in a real browser, the packet PDF read back with PyMuPDF).
