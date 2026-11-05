@@ -206,6 +206,10 @@ const FUNCTIONS = {
     args: { p_token: "required" },
     result: "TABLE(facility_name text, role facility_role, email_locked boolean, email_matches boolean)",
   },
+  rate_limit_hit: {
+    args: { p_key: "required", p_window_seconds: "required", p_max: "required" },
+    result: "TABLE(allowed boolean, hits integer, retry_after integer)",
+  },
 } as const satisfies { [K in FunctionName]: { args: { [A in keyof FunctionArgs<K>]-?: "required" | "optional" }; result: string } };
 
 // The argument names match the types' (satisfies, above), and so does which are optional:

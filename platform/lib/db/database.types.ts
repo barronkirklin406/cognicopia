@@ -240,6 +240,10 @@ export type Database = {
           role: Database["public"]["Enums"]["facility_role"];
         }[];
       };
+      rate_limit_hit: {
+        Args: { p_key: string; p_max: number; p_window_seconds: number };
+        Returns: { allowed: boolean; hits: number; retry_after: number }[];
+      };
     };
     Enums: {
       dementia_stage: "early" | "middle" | "late" | "universal";

@@ -23,7 +23,7 @@ const TABLES = ["facilities", "facility_users", "content_items", "activity_calen
 const PRIVILEGES = ["SELECT", "INSERT", "UPDATE", "DELETE", "TRUNCATE", "REFERENCES", "TRIGGER"] as const;
 
 describe("migrations", () => {
-  it("are six files, in order", () => {
+  it("are seven files, in order", () => {
     expect(migrationFiles()).toEqual([
       "20261006120000_core_schema.sql",
       "20261006120100_phi_guard.sql",
@@ -31,6 +31,7 @@ describe("migrations", () => {
       "20261006180000_billing_and_access.sql",
       "20261006180100_facility_invites.sql",
       "20261107090000_calendar_updated_at.sql",
+      "20261108090000_rate_limits.sql",
     ]);
   });
 });
@@ -123,6 +124,11 @@ describe("privileges: each role has exactly what it needs and no more", () => {
       expect(await can("anon", apply)).toBe(false);
       expect(await can("authenticated", apply)).toBe(false);
       expect(await can("service_role", apply)).toBe(true);
+      // The server only: it counts hits for rate limiting, and nobody else may count, or read, anyone's.
+      const hit = "public.rate_limit_hit(text, integer, integer)";
+      expect(await can("anon", hit)).toBe(false);
+      expect(await can("authenticated", hit)).toBe(false);
+      expect(await can("service_role", hit)).toBe(true);
     });
   });
 
@@ -221,6 +227,7 @@ describe("rules that hold for every table and function", () => {
         "public.create_facility",
         "public.create_facility_invite",
         "public.preview_facility_invite",
+        "public.rate_limit_hit",
       ]);
       for (const d of definers) expect(d.config, d.name).toMatch(/search_path=/);
     });
@@ -237,7 +244,7 @@ describe("rules that hold for every table and function", () => {
     });
   });
 
-  it("the Data API sees exactly these five functions: every other function is in private", async () => {
+  it("the Data API sees exactly these six functions: every other function is in private", async () => {
     await as(db, owner, async (s) => {
       const exposed = await s.rows<{ proname: string }>(
         `select p.proname from pg_proc p join pg_namespace n on n.oid = p.pronamespace
@@ -249,6 +256,7 @@ describe("rules that hold for every table and function", () => {
         { proname: "create_facility" },
         { proname: "create_facility_invite" },
         { proname: "preview_facility_invite" },
+        { proname: "rate_limit_hit" },
       ]);
     });
   });

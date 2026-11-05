@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useActionState } from "react";
 import { acceptInviteAction, createFacilityAction, forgotPasswordAction, resetPasswordAction, signInAction, signUpAction } from "@/app/actions";
 import { emptyState } from "@/lib/auth/state";
-import { MIN_PASSWORD_LENGTH } from "@/lib/domain/auth";
+import { MIN_PASSWORD_LENGTH } from "@/lib/domain/password-rules";
 import { Field, FormAlerts, SubmitButton } from "./forms";
 
 export function SignInForm({ next }: { next?: string }) {

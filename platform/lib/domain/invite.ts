@@ -1,3 +1,4 @@
+import "./zod-setup";
 import { z } from "zod";
 import { FACILITY_ROLES } from "@/lib/db/models";
 

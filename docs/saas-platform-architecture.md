@@ -49,7 +49,7 @@ platform/
     db/                     database.types.ts (Supabase's shape), models.ts (ours)
     env.ts, env.server.ts, errors.ts, http.ts
   supabase/
-    migrations/             The schema, row level security and the access rules (five files)
+    migrations/             The schema, row level security and the access rules (seven files)
     seed.sql                Sample content for development: 104 activities, trivia sets and reminiscence prompts
     config.toml             Local Supabase settings
   tests/                    db (real Postgres), domain, access, auth, billing, data, admin, api
@@ -232,6 +232,8 @@ The platform must never store protected health information. The existing tools a
 - **Webhook.** Verified before anything else, over the raw bytes, with a five-minute tolerance; never trusted for its contents (above).
 - **Passwords** must be 12 to 72 characters when chosen. Sign-in only asks that something was typed, so nobody is locked out by a rule that changed after they chose theirs. Set the same minimum in Supabase's own settings, because anyone can call its sign-up address without using our forms.
 
+- **Rate limiting** (`lib/security/rate-limit.ts`, `lib/security/enforce.ts`, migration 7). A fixed-window counter in the database (`private.rate_limits`, counted by `public.rate_limit_hit`, which only the service role may call), so many short-lived copies of the app share one count. Sign-in is limited to 30 tries in 10 minutes per network address and 10 in 15 per account; sign-up and password reset to 10 an hour per address and 3 per account (they send the address an email, so this is what stops a stranger's inbox being flooded); looking up an invitation link to 60 in 10 minutes per address; emailed invitations to 30 an hour per facility. Keys are hashes: the table holds no email address and no network address. A refused try is told in plain words how long to wait and never which count tripped. If the counter cannot be reached, sign-in and the like let the try through (a broken counter must not lock every facility out, and Supabase's own limits still stand behind them); emailed invitations are refused (an unlimited sender is the worse failure). The address is the LAST entry of `X-Forwarded-For`, the one only your host's proxy can add; name another header in `CLIENT_IP_HEADER` if your host sets its own. A counter can be slow to answer: each limited form makes one or two small database calls first. Not limited here: the license redeem route, which has its own in-memory limit (`lib/licenses/rate-limit.ts`), and Supabase's own endpoints.
+- **Content-Security-Policy** (`lib/security/csp.ts`, `proxy.ts`). Every page is sent with a policy made per request with a fresh nonce: scripts run only if they carry it (Next.js puts it on its own), `'strict-dynamic'` lets those load the rest and makes browsers ignore any host list or `'unsafe-inline'`, and everything else (styles, fonts, pictures, connections, forms, frames, plugins) is this site only. The one concession is inline style attributes, which the printed calendar uses for its font size and row heights. This is why every page is drawn per request (the root layout is `force-dynamic`; a page built ahead of time has no nonce) and why the 404 page is our own (Next's default carries an inline style block). zod's browser speed-up needs `new Function`, which the policy refuses, so `lib/domain/zod-setup.ts` turns it off in the browser. Checked in a real browser: no violations on the sign-in, sign-up, password-reset, invitation and 404 pages; an inline script and an outside script injected into the page do not run; the page's own scripts do. Development adds `'unsafe-eval'` and hot-reload connections.
 ## Checking it
 
 From `platform/`: `npm install`, then `npm test` and `npm run typecheck`. Node 22.12 or newer.
@@ -283,9 +285,8 @@ There are 1,487 tests in 42 files.
 
 ## Next
 
-1. Rate limiting on sign-in, sign-up and the invitation page (Supabase limits its own endpoints; ours are not limited yet), and a Content-Security-Policy for scripts, which needs per-request nonces.
-2. Continuous integration for `platform/` (this environment could not add a workflow file), and a committed browser test of the sign-in, billing and planning flows to replace the throwaway ones.
-3. Load the production library into `content_items` through a loading script, and move the older generation engines into `lib/generation`.
-4. Stack the team tables on a phone: at 390 px they scroll sideways inside their frame, which is usable but hides the Remove button. Admins at a desk or on a tablet are not affected.
-5. Decide where the public site's wording ("no server, no accounts") should change once facilities sign in; today the platform is a separate project and the public site says nothing about it.
-6. Ask an Activity Director to use the planner for a real month and print it on the facility's printer. Two things only a real printer can say: whether the margins and the heavy lines print cleanly, and whether two sheets for a busy stage is welcome or whether a one-sheet "compact" option is wanted.
+1. Continuous integration for `platform/` (this environment could not add a workflow file), and a committed browser test of the sign-in, billing and planning flows to replace the throwaway ones.
+2. Load the production library into `content_items` through a loading script, and move the older generation engines into `lib/generation`.
+3. Stack the team tables on a phone: at 390 px they scroll sideways inside their frame, which is usable but hides the Remove button. Admins at a desk or on a tablet are not affected.
+4. Decide where the public site's wording ("no server, no accounts") should change once facilities sign in; today the platform is a separate project and the public site says nothing about it.
+5. Ask an Activity Director to use the planner for a real month and print it on the facility's printer. Two things only a real printer can say: whether the margins and the heavy lines print cleanly, and whether two sheets for a busy stage is welcome or whether a one-sheet "compact" option is wanted.

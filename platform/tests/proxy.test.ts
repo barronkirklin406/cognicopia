@@ -179,3 +179,40 @@ describe("what it covers", () => {
     },
   );
 });
+
+describe("the Content-Security-Policy", () => {
+  const nonceOf = (policy: string | null) => /'nonce-([^']+)'/.exec(policy ?? "")?.[1];
+
+  it("goes on every page the proxy lets through, signed in or not, with a nonce Next.js is given too", async () => {
+    const open = await proxy(request("/login"));
+    const policy = open.headers.get("content-security-policy");
+    expect(policy).toContain("script-src 'self' 'nonce-");
+    expect(policy).toContain("'strict-dynamic'");
+    expect(nonceOf(policy)).toBeTruthy();
+    // What Next.js reads to put the nonce on its scripts: the policy and the nonce on the request it forwards.
+    expect(open.headers.get("x-middleware-request-content-security-policy")).toBe(policy);
+    expect(open.headers.get("x-middleware-request-x-nonce")).toBe(nonceOf(policy));
+
+    signedIn();
+    const inside = await proxy(request("/library", SESSION));
+    expect(inside.headers.get("content-security-policy")).toContain("'nonce-");
+    expect(inside.headers.get("x-middleware-request-x-nonce")).toBe(nonceOf(inside.headers.get("content-security-policy")));
+  });
+
+  it("is new for every request", async () => {
+    const nonces = new Set<string | undefined>();
+    for (let i = 0; i < 25; i++) nonces.add(nonceOf((await proxy(request("/login"))).headers.get("content-security-policy")));
+    expect(nonces.size).toBe(25);
+  });
+
+  it("still lets a page see the session that was just renewed", async () => {
+    getClaims.mockImplementation(async () => {
+      cookieHandlers!.setAll([{ name: "sb-abcdefgh-auth-token", value: "renewed", options: {} }], {});
+      return { data: { claims: { sub: "u1" } }, error: null };
+    });
+    const response = await proxy(request("/library", SESSION));
+    expect(response.headers.get("x-middleware-request-cookie")).toContain("sb-abcdefgh-auth-token=renewed");
+    expect(response.headers.get("set-cookie")).toContain("sb-abcdefgh-auth-token=renewed");
+    expect(response.headers.get("content-security-policy")).toContain("'nonce-");
+  });
+});

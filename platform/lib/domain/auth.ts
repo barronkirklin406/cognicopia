@@ -1,5 +1,9 @@
+import "./zod-setup";
 import { z } from "zod";
 import { FacilityNameSchema } from "./facility";
+import { MAX_PASSWORD_LENGTH, MIN_PASSWORD_LENGTH } from "./password-rules";
+
+export { MAX_PASSWORD_LENGTH, MIN_PASSWORD_LENGTH };
 
 /**
  * What people type into the sign-in, sign-up and set-up forms, and what is
@@ -14,8 +18,6 @@ import { FacilityNameSchema } from "./facility";
  * address directly without using these forms.
  */
 
-export const MIN_PASSWORD_LENGTH = 12;
-export const MAX_PASSWORD_LENGTH = 72;
 
 export const EmailSchema = z
   .string({ error: "Enter your email address." })

@@ -1,3 +1,4 @@
+import "./zod-setup";
 import { z } from "zod";
 import type { ContentItem, DementiaStage } from "@/lib/db/models";
 import { quickTip } from "./adaptation";

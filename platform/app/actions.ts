@@ -5,6 +5,7 @@ import { requireSignedIn } from "@/lib/access/guards";
 import { appUrlOrNull, field, NOT_SET_UP, settle } from "@/lib/auth/action-helpers";
 import { acceptInviteFlow, createFacilityFlow, forgotPasswordFlow, resetPasswordFlow, signInFlow, signUpFlow } from "@/lib/auth/flows";
 import type { FormState } from "@/lib/auth/state";
+import { enforceRate } from "@/lib/security/enforce";
 import { createClient } from "@/lib/supabase/server";
 
 /**
@@ -17,7 +18,12 @@ import { createClient } from "@/lib/supabase/server";
  * needs a signed-in person checks for itself (requireSignedIn).
  */
 
+/** What the address field held, lower case, for the rate limit's account count (the flow checks it properly itself). */
+const accountOf = (formData: FormData): string | null => field(formData, "email")?.trim().toLowerCase().slice(0, 254) || null;
+
 export async function signInAction(_previous: FormState, formData: FormData): Promise<FormState> {
+  const limited = await enforceRate("sign-in", { account: accountOf(formData) });
+  if (limited) return { ...limited, values: { email: accountOf(formData) ?? "" } };
   const db = await createClient();
   return settle(await signInFlow(db, { email: field(formData, "email"), password: field(formData, "password"), next: field(formData, "next") }));
 }
@@ -25,6 +31,8 @@ export async function signInAction(_previous: FormState, formData: FormData): Pr
 export async function signUpAction(_previous: FormState, formData: FormData): Promise<FormState> {
   const appUrl = appUrlOrNull();
   if (!appUrl) return NOT_SET_UP;
+  const limited = await enforceRate("sign-up", { account: accountOf(formData) });
+  if (limited) return { ...limited, values: { email: accountOf(formData) ?? "" } };
   const db = await createClient();
   return settle(await signUpFlow(db, { email: field(formData, "email"), password: field(formData, "password"), next: field(formData, "next") }, appUrl));
 }
@@ -32,6 +40,8 @@ export async function signUpAction(_previous: FormState, formData: FormData): Pr
 export async function forgotPasswordAction(_previous: FormState, formData: FormData): Promise<FormState> {
   const appUrl = appUrlOrNull();
   if (!appUrl) return NOT_SET_UP;
+  const limited = await enforceRate("forgot-password", { account: accountOf(formData) });
+  if (limited) return { ...limited, values: { email: accountOf(formData) ?? "" } };
   const db = await createClient();
   return settle(await forgotPasswordFlow(db, { email: field(formData, "email") }, appUrl));
 }
@@ -54,6 +64,8 @@ export async function createFacilityAction(_previous: FormState, formData: FormD
 }
 
 export async function acceptInviteAction(_previous: FormState, formData: FormData): Promise<FormState> {
+  const limited = await enforceRate("invite-link");
+  if (limited) return limited;
   const token = field(formData, "token");
   // If the session ended while the page was open, sign-in brings the person back to the same link.
   const { db } = await requireSignedIn(token && /^[0-9a-f]{64}$/.test(token) ? `/join?token=${token}` : "/join");

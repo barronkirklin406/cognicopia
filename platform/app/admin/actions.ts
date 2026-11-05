@@ -9,6 +9,7 @@ import type { TeamNoticeKey } from "@/lib/auth/messages";
 import type { FlowResult, FormState } from "@/lib/auth/state";
 import { getStripe } from "@/lib/billing/stripe";
 import { getMailer } from "@/lib/email/mailer";
+import { enforceRate } from "@/lib/security/enforce";
 import { ConfigError } from "@/lib/errors";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -24,6 +25,12 @@ export async function inviteAction(_previous: FormState, formData: FormData): Pr
   if (!appUrl) return NOT_SET_UP;
   const mailer = getMailer();
   const mail = mailer ? { mailer, facilityName: membership.facility.facility_name } : null;
+  // An invitation that sends email is limited per facility (a stolen admin session must not become a spam relay);
+  // one that only makes a link costs nothing to anyone but the admin.
+  if (mail && field(formData, "send_email") === "on") {
+    const limited = await enforceRate("invite-email", { facility: membership.facility.id }, { failClosed: true });
+    if (limited) return { ...limited, values: { email: field(formData, "email")?.trim().toLowerCase() ?? "" } };
+  }
   const state = stateOf(await inviteFlow(db, { email: field(formData, "email"), role: field(formData, "role"), send_email: field(formData, "send_email") }, appUrl, mail));
   revalidatePath("/admin/team");
   return state;
