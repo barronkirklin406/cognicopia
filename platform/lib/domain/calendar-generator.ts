@@ -1,3 +1,4 @@
+import "./zod-setup";
 import { z } from "zod";
 import type { ContentItem, DementiaStage } from "@/lib/db/models";
 import { quickTip } from "./adaptation";
@@ -79,6 +80,10 @@ export type Plan = z.infer<typeof PlanSchema>;
 
 export interface PlanStats {
   sessions: number;
+  /** Pinned sessions from the month being replaced that were kept as they were. */
+  pinnedKept: number;
+  /** Pinned sessions that could not be kept: their stage was not planned this time, or they fall outside the month. */
+  pinnedDropped: number;
   /** Sessions whose activity names the chosen theme. */
   themed: number;
   distinct: number;
@@ -121,7 +126,15 @@ export function newSeed(): string {
   return Array.from(bytes, (b) => b.toString(36).padStart(2, "0")).join("").slice(0, 8);
 }
 
-export function generateCalendar(plan: Plan, library: readonly GeneratorItem[]): GeneratedCalendar {
+export interface GenerateOptions {
+  /**
+   * Sessions staff pinned (locked) in the month being replaced. Regenerating keeps each one exactly as it
+   * is, in its place, and plans around it: the generator treats a pinned seat as already filled.
+   */
+  pinned?: readonly CalendarSlot[];
+}
+
+export function generateCalendar(plan: Plan, library: readonly GeneratorItem[], options: GenerateOptions = {}): GeneratedCalendar {
   if (library.length === 0) return { ok: false, message: "The activity library is empty, so there is nothing to plan from." };
 
   const theme: ThemeId | null = plan.theme === "none" ? null : plan.theme;
@@ -131,7 +144,11 @@ export function generateCalendar(plan: Plan, library: readonly GeneratorItem[]):
   const slots: CalendarSlot[] = [];
   const skipped: TrackStage[] = [];
   const used = new Set<string>();
+  const byId = new Map(library.map((item) => [item.id, item]));
+  const pinned = (options.pinned ?? []).filter((slot) => slot.locked);
+  const pinnedBySeat = new Map<string, CalendarSlot>();
   let themed = 0;
+  let pinnedKept = 0;
 
   for (const info of STAGES.filter((s) => plan.stages.includes(s.id))) {
     const pool = library.filter((item) => suitsStage(item.stage, info.id));
@@ -140,6 +157,7 @@ export function generateCalendar(plan: Plan, library: readonly GeneratorItem[]):
       continue;
     }
     groups.push({ id: info.id, name: info.label, acuity: info.acuity });
+    for (const slot of pinned) if (slot.group_id === info.id && slot.date.startsWith(plan.month)) pinnedBySeat.set(`${slot.group_id}|${slot.date}|${slot.time}`, slot);
 
     const roll = random(hash(`${plan.seed}|${plan.month}|${plan.theme}|${info.id}|${plan.perDay}`));
     const lastUsed = new Map<string, number>();
@@ -151,6 +169,24 @@ export function generateCalendar(plan: Plan, library: readonly GeneratorItem[]):
       let previousCategory = "";
 
       plans.forEach(({ role, time }, index) => {
+        const held = pinnedBySeat.get(`${info.id}|${date}|${time}`);
+        if (held) {
+          // A pinned session stays exactly as staff left it. It still counts toward spacing, so the days around it
+          // are planned as if it had been chosen: the same activity is not placed right next to it.
+          const item = byId.get(held.content_item_id);
+          if (item) {
+            lastUsed.set(item.id, day);
+            today.add(item.id);
+            previousDay.set(role, item);
+            previousCategory = item.category;
+            used.add(item.id);
+            if (theme && item.themes.includes(theme)) themed += 1;
+          }
+          slots.push(held);
+          pinnedBySeat.delete(`${info.id}|${date}|${time}`);
+          pinnedKept += 1;
+          return;
+        }
         const ofRole = pool.filter((item) => roleOf(item) === role);
         const candidates = (ofRole.length > 0 ? ofRole : pool).filter((item) => !today.has(item.id));
         const choices = candidates.length > 0 ? candidates : pool;
@@ -200,11 +236,34 @@ export function generateCalendar(plan: Plan, library: readonly GeneratorItem[]):
   }
 
   if (groups.length === 0) return { ok: false, message: "The library has nothing for the stages chosen." };
+
+  // Pinned sessions at a time this plan does not use (a plan of two a day over a month that had three) are kept too,
+  // in their own seat, as long as their stage is planned. Anything left over belongs to a stage that was not planned.
+  const planned = new Set(groups.map((g) => g.id));
+  const seats = new Set(slots.map((s) => `${s.group_id}|${s.date}|${s.time}`));
+  const takenIds = new Set(slots.map((s) => s.id));
+  let extras = 0;
+  for (const slot of pinned) {
+    if (!planned.has(slot.group_id) || !slot.date.startsWith(plan.month)) continue;
+    const seat = `${slot.group_id}|${slot.date}|${slot.time}`;
+    if (seats.has(seat) || takenIds.has(slot.id)) continue;
+    slots.push(slot);
+    seats.add(seat);
+    takenIds.add(slot.id);
+    pinnedKept += 1;
+    extras += 1;
+  }
+  if (extras > 0) {
+    const order = new Map(groups.map((g, i) => [g.id, i]));
+    slots.sort((a, b) => order.get(a.group_id)! - order.get(b.group_id)! || a.date.localeCompare(b.date) || a.time.localeCompare(b.time));
+  }
+  const pinnedDropped = pinned.length - pinnedKept;
+
   if (slots.length > MAX_SLOTS) return { ok: false, message: "That is more sessions than a calendar can hold." };
 
   return {
     ok: true,
     data: { schema_version: 1, month: plan.month, groups, slots, generator: { name: "Cognicopia month planner", version: "1", seed: plan.seed } },
-    stats: { sessions: slots.length, themed, distinct: used.size, skipped },
+    stats: { sessions: slots.length, pinnedKept, pinnedDropped, themed, distinct: used.size, skipped },
   };
 }

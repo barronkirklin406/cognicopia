@@ -141,7 +141,7 @@ function judgePdf(set, what, pages, opt = {}) {
     }
     if (p.last && pages[i + 1] && !opt.noOrphan) {
       const nextFirst = pages[i + 1].text.slice(0, 40);
-      ok(!(p.last.bold && p.last.size >= 14 && p.last.y > p.h - 1.2 * IN && !/^Page \d+ of \d+/.test(p.last.text) && nextFirst), set, tag, "breaks", `a heading ("${p.last.text}") is the last thing on the page and its text starts the next`);
+      ok(!(p.last.bold && p.last.size >= 14 && p.last.y > p.h - 1.2 * IN && !/^Page \d+ of \d+/.test(p.last.text) && !/[.!?]$/.test(p.last.text.trim()) && nextFirst), set, tag, "breaks", `a heading ("${p.last.text}") is the last thing on the page and its text starts the next`);
     }
   });
 }

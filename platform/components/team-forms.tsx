@@ -6,8 +6,12 @@ import { emptyState } from "@/lib/auth/state";
 import type { FacilityRole } from "@/lib/db/models";
 import { Field, FormAlerts, SubmitButton } from "./forms";
 
-/** Make an invitation. The link it makes is shown once, in the form's own message. */
-export function InviteForm() {
+/**
+ * Make an invitation. The link it makes is shown once, in the form's own message. When the server can send
+ * email (`canEmail`), a box offers to email the invitation to the address given; it is on by default, because
+ * that is what most admins want, and the link is still shown for anyone who would rather share it themselves.
+ */
+export function InviteForm({ canEmail = false }: { canEmail?: boolean }) {
   const [state, formAction, pending] = useActionState(inviteAction, emptyState);
   return (
     <form action={formAction} className="stack">
@@ -18,7 +22,11 @@ export function InviteForm() {
         type="email"
         autoComplete="off"
         defaultValue={state.values?.email}
-        hint="If you enter one, only that address can use the link. Leave it empty to make a link anyone you share it with can use, once."
+        hint={
+          canEmail
+            ? "If you enter one, only that address can use the link, and you can email it to them. Leave it empty to make a link anyone you share it with can use, once."
+            : "If you enter one, only that address can use the link. Leave it empty to make a link anyone you share it with can use, once."
+        }
         error={state.fieldErrors?.email}
       />
       <div className="field">
@@ -32,8 +40,19 @@ export function InviteForm() {
         </span>
         {state.fieldErrors?.role ? <span className="error">{state.fieldErrors.role}</span> : null}
       </div>
+      {canEmail ? (
+        <div className="field">
+          <label className="row" htmlFor="invite-send-email">
+            <input id="invite-send-email" type="checkbox" name="send_email" defaultChecked aria-describedby="invite-send-email-hint" />
+            <span>Email the invitation to this address</span>
+          </label>
+          <span id="invite-send-email-hint" className="hint">
+            The email says which facility invited them and holds the link. It needs an email address above.
+          </span>
+        </div>
+      ) : null}
       <SubmitButton pending={pending} pendingText="Creating…">
-        Create invitation link
+        {canEmail ? "Create the invitation" : "Create invitation link"}
       </SubmitButton>
     </form>
   );

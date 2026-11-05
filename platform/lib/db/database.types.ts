@@ -29,6 +29,7 @@ export type Database = {
           generated_data: Json;
           id: string;
           month_year: string;
+          updated_at: string;
         };
         Insert: {
           created_at?: string;
@@ -36,6 +37,7 @@ export type Database = {
           generated_data: Json;
           id?: string;
           month_year: string;
+          updated_at?: string;
         };
         Update: {
           created_at?: string;
@@ -43,6 +45,7 @@ export type Database = {
           generated_data?: Json;
           id?: string;
           month_year?: string;
+          updated_at?: string;
         };
         Relationships: [
           {
@@ -236,6 +239,10 @@ export type Database = {
           facility_name: string;
           role: Database["public"]["Enums"]["facility_role"];
         }[];
+      };
+      rate_limit_hit: {
+        Args: { p_key: string; p_max: number; p_window_seconds: number };
+        Returns: { allowed: boolean; hits: number; retry_after: number }[];
       };
     };
     Enums: {

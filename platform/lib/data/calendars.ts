@@ -1,4 +1,4 @@
-import { CalendarDataSchema } from "@/lib/domain/calendar";
+import { CalendarDataSchema, type CalendarData } from "@/lib/domain/calendar";
 import type { ActivityCalendar, ActivityCalendarRow, CalendarInput } from "@/lib/db/models";
 import type { Db } from "./db";
 import { DataError, fromDbError } from "./errors";
@@ -39,4 +39,24 @@ export async function saveCalendar(db: Db, input: CalendarInput): Promise<Activi
     .single();
   if (error) throw fromDbError(error);
   return toCalendar(data);
+}
+
+/**
+ * Save an edited calendar only if nobody has saved the month since the copy the editor started from.
+ * `expectedUpdatedAt` is that copy's updated_at; the database sets updated_at itself on every update
+ * (migration 6), so a second editor who started from the same copy finds it changed and is refused
+ * with 409 instead of silently overwriting the first. Row level security still supplies the facility.
+ */
+export async function updateCalendarIfUnchanged(db: Db, facilityId: string, month: string, data: CalendarData, expectedUpdatedAt: string): Promise<ActivityCalendar> {
+  const { data: row, error } = await db
+    .from("activity_calendars")
+    .update({ generated_data: data })
+    .eq("facility_id", facilityId)
+    .eq("month_year", month)
+    .eq("updated_at", expectedUpdatedAt)
+    .select("*")
+    .maybeSingle();
+  if (error) throw fromDbError(error);
+  if (!row) throw new DataError(409, "calendar_changed", "Someone else changed this month while you were looking at it. Reload the page to see their changes, then make yours again.");
+  return toCalendar(row);
 }

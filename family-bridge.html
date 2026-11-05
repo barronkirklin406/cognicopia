@@ -12,11 +12,17 @@
   <link rel="shortcut icon" href="favicon.ico">
   <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
   <!-- cg-design:end -->
-  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="css/pages-utilities.css">
   <script src="assets/services/familyBridgeStore.js"></script>
   <style>
     body { font-family: 'Atkinson Hyperlegible', sans-serif; }
     h1, h2, h3, .font-serif { font-family: 'Fraunces', serif; }
+    /* On paper: pure black on white, no logo picture (it prints as gray), nothing of the screen's chrome. */
+    @media print {
+      img { display: none !important; }
+      *, *::before, *::after { background: #fff !important; color: #000 !important; box-shadow: none !important; text-shadow: none !important; }
+      header, nav, button { display: none !important; }
+    }
   </style>
 </head>
 <body class="bg-neutral-50 text-neutral-900 antialiased min-h-screen flex flex-col">

@@ -38,3 +38,8 @@ assets/coloring/_inbox/*.json
 # the owner's n8n workflow is private: kept outside the published repository (docs/n8n-operations.md)
 /owner-private/
 /n8n-*.json
+
+# the platform service: installed packages and build output
+/platform/node_modules/
+/platform/.next/
+/platform/*.tsbuildinfo

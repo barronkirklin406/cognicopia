@@ -2,6 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { isProtectedPath, isSignedOutOnly, loginPath } from "@/lib/auth/paths";
 import { getPublicEnv } from "@/lib/env";
+import { buildCsp, makeNonce } from "@/lib/security/csp";
 
 /**
  * The proxy (called "middleware" before Next.js 16). It runs before a page is
@@ -14,6 +15,11 @@ import { getPublicEnv } from "@/lib/env";
  *   2. TURNS AWAY, POLITELY, anyone not signed in who asks for a page that needs it
  *      (to the sign-in page, remembering where they were going), and sends someone
  *      already signed in away from the sign-in pages.
+ *
+ * A third job: it makes this request's Content-Security-Policy, with a fresh nonce (lib/security/csp.ts). The
+ * policy goes on the request, where Next.js reads the nonce and puts it on the scripts it adds to the page,
+ * and on the response, where the browser enforces it. This is why every page is drawn per request (the root
+ * layout is dynamic): a page built ahead of time has no nonce to carry.
  *
  * It is a convenience, not the security. It reads the cookie and checks the token;
  * it cannot see the database, so it knows nothing of roles or subscriptions, and
@@ -31,18 +37,31 @@ type CookieToSet = { name: string; value: string; options?: Parameters<NextRespo
 
 export async function proxy(request: NextRequest): Promise<NextResponse> {
   const { pathname, search } = request.nextUrl;
+  const nonce = makeNonce();
+  const policy = buildCsp(nonce, { development: process.env.NODE_ENV === "development" });
+
+  /** Let the request through to the page, carrying the policy and nonce for Next.js, and sending the policy back. */
+  const next = (): NextResponse => {
+    // Built when called, not before: a renewed session's cookies are on the request by then and must reach the page.
+    const forwarded = new Headers(request.headers);
+    forwarded.set("x-nonce", nonce);
+    forwarded.set("Content-Security-Policy", policy);
+    const response = NextResponse.next({ request: { headers: forwarded } });
+    response.headers.set("Content-Security-Policy", policy);
+    return response;
+  };
   const hasSession = request.cookies.getAll().some((cookie) => SESSION_COOKIE.test(cookie.name));
 
   // No session cookie: nothing to renew, and nothing to ask Supabase.
   if (!hasSession) {
-    return isProtectedPath(pathname) ? redirect(request, loginPath(`${pathname}${search}`)) : NextResponse.next({ request });
+    return isProtectedPath(pathname) ? redirect(request, loginPath(`${pathname}${search}`)) : next();
   }
 
   let env;
   try {
     env = getPublicEnv();
   } catch {
-    return NextResponse.next({ request }); // not configured: let the page say so
+    return next(); // not configured: let the page say so
   }
 
   // What Supabase asks to be set (new cookies, and the no-cache headers that must go with them).
@@ -77,7 +96,7 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
 
   if (!signedIn && isProtectedPath(pathname)) return finish(redirect(request, loginPath(`${pathname}${search}`)));
   if (signedIn && isSignedOutOnly(pathname)) return finish(redirect(request, "/dashboard"));
-  return finish(NextResponse.next({ request }));
+  return finish(next());
 }
 
 function redirect(request: NextRequest, path: string): NextResponse {

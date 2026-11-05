@@ -9,6 +9,7 @@ import { ChipGroup } from "./ChipGroup";
 import { DayPlan, sessionsOn, type Activities } from "./DayPlan";
 import { PrintButton } from "./PrintButton";
 import { PrintCalendar } from "./PrintCalendar";
+import { SessionEditor, type CalendarEditor } from "./SessionEditor";
 
 /**
  * A month's calendar, for the stage chosen: the grid (a list of days on a phone), and the day
@@ -22,6 +23,7 @@ export function CalendarView({
   activities,
   mode,
   facilityName,
+  editor,
 }: {
   month: string;
   data: CalendarData;
@@ -29,6 +31,8 @@ export function CalendarView({
   /** A saved calendar can be printed; the generator's preview cannot. */
   mode: "saved" | "preview";
   facilityName?: string;
+  /** Present on a saved calendar that may be changed by hand: each session gets controls to pin, swap, annotate or remove it. */
+  editor?: CalendarEditor;
 }) {
   const [groupId, setGroupId] = useState(data.groups[0]?.id ?? "");
   const [selected, setSelected] = useState<string | undefined>(undefined);
@@ -109,7 +113,7 @@ export function CalendarView({
                   Close this day
                 </button>
               </div>
-              <DayPlan date={selected} groups={data.groups} slots={data.slots} activities={activities} only={group.id} headingLevel={4} />
+              <DayPlan date={selected} groups={data.groups} slots={data.slots} activities={activities} only={group.id} headingLevel={4} actions={mode === "saved" && editor ? (slot) => <SessionEditor month={month} slot={slot} editor={editor} /> : undefined} />
               {sessionsOn(data.slots, selected, group.id).length === 0 ? null : <p className="m-0 text-sm text-ink-soft">These are suggestions. The people in the room and their care plans come first.</p>}
             </div>
           ) : (

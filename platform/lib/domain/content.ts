@@ -1,3 +1,4 @@
+import "./zod-setup";
 import { z } from "zod";
 import type { Enums } from "@/lib/db/database.types";
 import { ACTIVITY_FORMATS } from "./formats";

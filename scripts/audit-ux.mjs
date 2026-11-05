@@ -141,6 +141,8 @@ function measureTargetsInPage(arg){
 
 /* runs in the page: text below WCAG AA against the background behind it, in the whole page or inside one element (rootSel) */
 function measureContrastInPage(rootSel){
+  /* a colour that is still changing (the buttons ease over 0.18 s) would be measured half way between day and night: let every transition arrive first */
+  document.getAnimations().forEach(a => { try { a.finish(); } catch (e) { /* an endless animation has no end to jump to */ } });
   const parse = s => { const m = s.match(/rgba?\(([^)]+)\)/); if (!m) return null; const v = m[1].split(/[ ,\/]+/).filter(Boolean).map(Number); return { r: v[0], g: v[1], b: v[2], a: v.length > 3 ? v[3] : 1 }; };
   const lum = c => { const f = x => { x /= 255; return x <= .03928 ? x / 12.92 : Math.pow((x + .055) / 1.055, 2.4); }; return .2126 * f(c.r) + .7152 * f(c.g) + .0722 * f(c.b); };
   const blend = (top, bot) => ({ r: top.r * top.a + bot.r * (1 - top.a), g: top.g * top.a + bot.g * (1 - top.a), b: top.b * top.a + bot.b * (1 - top.a), a: 1 });
