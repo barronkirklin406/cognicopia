@@ -1131,6 +1131,11 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
   .cozy-btn-primary * {
     color: #ffffff !important;
   }
+  /* the page's "pure black text" rule above names #main-content, which outranks the line before; without this the button's words print black on dark green (1.9:1) */
+  #main-content .cozy-btn-primary,
+  #main-content .cozy-btn-primary * {
+    color: #ffffff !important;
+  }
   .cozy-btn-primary:hover {
     background: #143322 !important;
     transform: translateY(-1px) !important;
