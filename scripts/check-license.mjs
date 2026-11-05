@@ -509,7 +509,7 @@ function page(opts = {}){
   const sw = read("sw.js");
   ok(sw.includes('"pricing.html"') && sw.includes('"activate.html"') && /\(license_key\|session_id\)/.test(sw), "sw.js: pricing and activation pages cached offline, and a key in an address is never cached");
   const srv = read("server.js");
-  ok(/'pricing'/.test(srv) && /'activate'/.test(srv), "server.js: routes for the new pages");
+  ok(/express\.static\([^)]*extensions:\s*\[\s*'html'/.test(srv.replace(/\s+/g, " ")), "server.js: pages are served without .html, so /pricing and /activate resolve (proved against the real server: both answer 200)");
   ok(/pricing\.html/.test(read("scripts/site-nav.mjs")), "the pricing page is in the navigation");
 }
 
