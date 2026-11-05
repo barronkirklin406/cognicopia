@@ -71,7 +71,7 @@ npm run build     # checks + nav sync + research pages + link check; run before 
 npm run coloring  # regenerate the coloring catalog and bundle after editing assets/cognicopia-coloring/*.js or approving traced art
 npm run nav       # regenerate the six-hub navigation on every page from HUBS in scripts/site-nav.mjs (also after npm run coloring: the hub page shows the picture count)
 npm run services  # rebuild assets/services/*.js from src/services/*.ts
-node scripts/landing-example.mjs  # rewrite the crossword on the front page's laptop from what the engine makes (--check proves it is current; run it after any change to src/pcg)
+node scripts/landing-example.mjs  # rewrite the three examples on the front page's laptop (a reminiscence card, a word search, a memory timeline) from what the engines make (--check proves they are current; run it after any change to src/pcg or the reminiscence engine)
 npm run coloring:svgs  # trace master PNGs to closed-outline SVG and js/coloring-data.js (needs: pip install pillow vtracer; skips with a notice where they are missing)
 npm run art:doctor     # local art agent: is this computer ready to make coloring masters (add -- --selftest)
 npm run art:make -- --only sunflower   # make a master on this computer (ComfyUI or a local model); it goes to assets/coloring/_inbox/ for review

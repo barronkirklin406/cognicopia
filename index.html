@@ -4832,53 +4832,61 @@ html body{background:var(--cg-cream,#fafafd)}
 .lp-emblem{--e:clamp(150px,14.2vw,194px);position:absolute;z-index:2;top:6px;left:calc(50% - min(50%,250px) - var(--e) - 19px);width:var(--e);height:auto;filter:drop-shadow(0 6px 10px rgba(69,63,55,.18))}
 /* where the two columns are narrow the blank space beside the heading is gone: the logo tucks onto the laptop's top-left corner instead */
 @media (max-width:1279px){.lp-emblem{top:-30px;left:-34px;width:96px}}
-/* 3D Modern EliteBook Laptop Mockup & Cognicopia Activity Builder Preview */
-.elite-stage{position:relative;z-index:1;width:min(100%,560px);perspective:1400px}
-.elite-laptop-3d{position:relative;width:100%;transform-style:preserve-3d;transform:rotateY(-13deg) rotateX(9deg) rotateZ(1deg);transition:transform .4s cubic-bezier(.16,1,.3,1),filter .4s ease;filter:drop-shadow(-18px 28px 36px rgba(8,66,63,.28))}
-.elite-laptop-3d:hover{transform:rotateY(-7deg) rotateX(5deg) rotateZ(.5deg) translateY(-4px);filter:drop-shadow(-22px 34px 44px rgba(8,66,63,.34))}
-.elite-lid{position:relative;padding:9px 9px 12px;border-radius:16px 16px 4px 4px;background:linear-gradient(180deg,#e5e9ee 0%,#cbd3dc 48%,#b1bac6 100%);border:1px solid #9aa4b0;box-shadow:inset 0 1px 1px rgba(255,255,255,.9),inset 0 -1px 2px rgba(0,0,0,.35)}
-.elite-bezel{position:relative;padding:7px 7px 9px;border-radius:9px;background:#0c1015;box-shadow:inset 0 0 0 1px #222a36,0 3px 8px rgba(0,0,0,.55)}
-.elite-webcam-bar{display:flex;align-items:center;justify-content:center;gap:7px;margin-bottom:5px}
-.elite-cam-lens{width:7px;height:7px;border-radius:50%;background:#16202c;border:1px solid #2b3748;display:inline-flex;align-items:center;justify-content:center}
-.elite-cam-dot{width:2.5px;height:2.5px;border-radius:50%;background:#08423f}
-.elite-mic{width:3px;height:3px;border-radius:50%;background:#1a222e}
-.elite-screen{position:relative;border-radius:5px;overflow:hidden;background:#f6f3ed;border:1px solid #d5cebf;font-family:var(--cg-font-ui,"Segoe UI",sans-serif);color:#28241f;box-shadow:inset 0 0 12px rgba(0,0,0,.06)}
-.elite-screen::after{content:"";position:absolute;inset:0;background:linear-gradient(125deg,rgba(255,255,255,.20) 0%,rgba(255,255,255,0) 40%);pointer-events:none;z-index:5}
-.elite-appbar{display:flex;align-items:center;justify-content:space-between;padding:6px 10px;background:#08423f;color:#ffffff;font-size:11px;font-weight:700}
-.elite-appbar-title{display:flex;align-items:center;gap:6px;font-family:var(--cg-font-display,Georgia,serif);font-size:13px;font-weight:700;letter-spacing:.02em}
-.elite-appbar-badges{display:flex;align-items:center;gap:6px}
-.elite-badge-gutter{background:#f5b800;color:#0f172a;font-size:10px;font-weight:800;padding:2px 7px;border-radius:4px}
-.elite-badge-print{background:#19635c;color:#ffffff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;border:1px solid #288077}
-.elite-screen-body{display:grid;grid-template-columns:140px minmax(0,1fr);gap:8px;padding:8px}
-.elite-profile-col{background:#ffffff;border:1px solid #e2dbce;border-radius:7px;padding:8px;font-size:11px;line-height:1.35;box-shadow:0 1px 3px rgba(0,0,0,.04);text-align:left}
-.elite-profile-target{font-size:9px;font-weight:800;text-transform:uppercase;color:#8a3a20;letter-spacing:.06em;margin-bottom:2px}
-.elite-profile-name{font-family:var(--cg-font-display,Georgia,serif);font-size:13px;font-weight:700;color:#08423f;margin-bottom:2px}
-.elite-profile-bio{font-size:10px;color:#5a6578;margin-bottom:6px;border-bottom:1px solid #eee8dd;padding-bottom:5px}
-.elite-fam-highlight{background:#e8f5f4;border:1px solid #b7e3df;border-radius:5px;padding:4px 6px;margin:4px 0}
-.elite-fam-highlight strong{color:#08423f;font-weight:800;font-size:11.5px}
-.elite-sheet-col{background:#ffffff;border:2px solid #000000;border-radius:7px;padding:8px 10px;box-shadow:0 2px 6px rgba(0,0,0,.06);display:flex;flex-direction:column;justify-content:space-between;text-align:left}
-.elite-sheet-hd{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid #000000;padding-bottom:3px;margin-bottom:6px;font-weight:700}
-.elite-sheet-title{font-family:var(--cg-font-display,Georgia,serif);font-size:12px;color:#000000}
-.elite-sheet-page{font-size:9.5px;font-family:monospace;color:#000000}
-.elite-grid-container{display:inline-block;margin:0 auto 6px;border:1.5px solid #000000;background:#ffffff}
-.elite-grid-table{border-collapse:collapse;font-family:monospace;font-size:12px;font-weight:800;text-align:center}
-.elite-grid-table td{width:22px;height:22px;border:1px solid #000000;color:#000000;padding:0;line-height:22px}
-.elite-target-word{background:#f5b800!important;color:#0f172a!important;font-weight:900!important}
-.elite-wordbank{background:#f1f6f6;border:1px solid #cbe3e1;border-radius:5px;padding:5px 8px;font-size:10px;line-height:1.3}
-.elite-wordbank-title{font-weight:800;color:#08423f;margin-bottom:3px;font-size:10.5px}
-.elite-wordbank-list{display:grid;grid-template-columns:1fr 1fr;gap:2px 6px;font-weight:700}
-.elite-word-sarah{color:#08423f;font-weight:800;font-size:11px}
-.elite-fill-callout{border-top:1px solid #e2dbce;margin-top:5px;padding-top:4px;font-size:10px;color:#222222;text-align:left}
-.elite-fill-callout strong{color:#08423f;text-decoration:underline;text-underline-offset:2px}
-.elite-screen-foot{display:flex;justify-content:space-between;padding:4px 10px;background:#ece6dc;font-size:9px;font-weight:700;color:#444b58;border-top:1px solid #dcd4c6}
-.elite-hinge{height:6px;margin:0 40px;background:linear-gradient(90deg,#96a0ac 0%,#4f5763 50%,#96a0ac 100%);border-radius:0 0 3px 3px;box-shadow:inset 0 1px 2px rgba(0,0,0,.5)}
-.elite-base{position:relative;height:16px;margin:0 -4%;border-top:1px solid #eef2f6;border-radius:0 0 22px 22px / 0 0 14px 14px;background:linear-gradient(180deg,#e4e8ed 0%,#cfd6df 50%,#9fa8b5 100%);box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 14px 28px rgba(0,0,0,.28)}
-.elite-base-notch{position:absolute;top:0;left:50%;width:70px;height:5px;transform:translateX(-50%);border-radius:0 0 6px 6px;background:#96a0ac;box-shadow:inset 0 1px 2px rgba(0,0,0,.3)}
-.lp-float{position:absolute;z-index:2;left:0%;bottom:-18px;display:grid;gap:2px;padding:9px 13px;border:1px solid #bce4e0;border-radius:12px;background:#ffffff;box-shadow:0 14px 30px rgba(8,66,63,.18)}
-.lp-float b{color:var(--cg-charcoal,#28241f);font:700 14px/1.2 var(--cg-font-ui,"Segoe UI",sans-serif)}
-.lp-float span{color:var(--cg-ink-soft,#403b35);font:400 13px/1.3 var(--cg-font-ui,"Segoe UI",sans-serif)}
-@media (max-width:768px){.elite-laptop-3d{transform:rotateY(-5deg) rotateX(4deg)}}
-@media (max-width:480px){.elite-laptop-3d{transform:none}.elite-screen-body{grid-template-columns:1fr}.elite-profile-col{display:none}}
+/* the picture: a laptop that shows three things Cognicopia makes, on a teal glow. The screen is one SVG per page (scripts/landing-example.mjs), so it scales as a picture and keeps its proportions; the three buttons below the laptop are real controls. */
+.lp-stage{position:relative;z-index:1;width:min(100%,520px)}
+.lp-laptop{position:relative;width:100%;transition:transform .35s cubic-bezier(.16,1,.3,1),filter .35s ease;filter:drop-shadow(0 26px 30px rgba(8,66,63,.26)) drop-shadow(0 4px 6px rgba(15,23,42,.18))}
+.lp-laptop:hover{transform:translateY(-4px);filter:drop-shadow(0 34px 38px rgba(8,66,63,.30)) drop-shadow(0 5px 8px rgba(15,23,42,.2))}
+.lp-lid{position:relative;padding:8px 8px 10px;border-radius:18px 18px 5px 5px;background:linear-gradient(180deg,#eef1f4 0%,#d3dae1 52%,#b9c2cd 100%);border:1px solid #9aa4b0;box-shadow:inset 0 1px 1px rgba(255,255,255,.95),inset 0 -1px 2px rgba(0,0,0,.3)}
+.lp-bezel{position:relative;padding:8px 8px 9px;border-radius:11px;background:#0b0f14;box-shadow:inset 0 0 0 1px #242d3a}
+.lp-cam{display:flex;justify-content:center;margin:-2px 0 5px}
+.lp-cam i{width:6px;height:6px;border-radius:50%;background:#18212d;box-shadow:0 0 0 1.5px #2a3647,inset 0 0 0 1.5px #0d3a37}
+.lp-screen{position:relative;overflow:hidden;border-radius:4px;background:#e6ecec;line-height:0}
+.lp-screen::after{content:"";position:absolute;inset:0;background:linear-gradient(125deg,rgba(255,255,255,.16) 0%,rgba(255,255,255,0) 38%);pointer-events:none}
+.lp-panel{animation:lpIn .4s ease both}
+@keyframes lpIn{from{opacity:0}to{opacity:1}}
+.lp-xw{display:block;width:100%;height:auto}
+.lp-hinge{height:7px;margin:0 38px;background:linear-gradient(90deg,#8f99a6 0%,#e1e6eb 50%,#8f99a6 100%);border-radius:0 0 4px 4px;box-shadow:inset 0 -1px 2px rgba(0,0,0,.35)}
+.lp-base{position:relative;height:15px;margin:0 -3.5%;border-radius:0 0 24px 24px / 0 0 14px 14px;background:linear-gradient(180deg,#e9edf1 0%,#d0d7df 55%,#a3acb8 100%);box-shadow:inset 0 1px 0 #fff}
+.lp-base::before{content:"";position:absolute;top:0;left:50%;width:84px;height:5px;transform:translateX(-50%);border-radius:0 0 7px 7px;background:#a0aab6;box-shadow:inset 0 1px 2px rgba(0,0,0,.3)}
+.lp-tabs{display:flex;gap:4px;margin:16px auto 0;padding:4px;max-width:560px;border:1px solid rgba(15,23,42,.1);border-radius:16px;background:rgba(255,255,255,.72);backdrop-filter:blur(8px);box-shadow:0 8px 22px rgba(15,23,42,.08)}
+.lp-tab{flex:1 1 0;min-height:52px;padding:4px 8px;border:1px solid transparent;border-radius:12px;background:transparent;color:var(--cg-ink-900,#0f172a);font:700 15px/1.2 var(--cg-font-ui,"Segoe UI",sans-serif);cursor:pointer;transition:background .2s ease,color .2s ease,transform .2s ease,box-shadow .2s ease}
+.lp-tab:hover{background:#e3f1ef}
+.lp-tab:active{transform:scale(.97)}
+.lp-tab[aria-selected="true"]{background:#0b5f59;color:#fff;box-shadow:0 4px 12px rgba(11,95,89,.35)}
+.lp-tab:focus-visible{outline:3px solid var(--cg-focus,#f5b800);outline-offset:2px;box-shadow:0 0 0 6px var(--cg-focus-dark,#0f172a)}
+.lp-tabs{display:none}.lp-js .lp-tabs{display:flex}
+@media (max-width:1000px){.lp-tab{padding:4px 3px;font-size:13px}}
+/* inside the screen: print-style type (Atkinson Hyperlegible for the interface and the letters, Fraunces for names), black on white for what would print */
+.xw-bg{fill:#e6ecec}.xw-bar{fill:#0f172a}.xw-strip{fill:#eef3f2}.xw-rail{fill:#fff}.xw-desk{fill:#dfe6e6}
+.xw-rule{stroke:#cdd6d6;stroke-width:1.5}.xw-hair{stroke:#000;stroke-width:1.5;opacity:.25}
+.xw-brand{fill:#fff;font:700 23px var(--cg-font-name,"Fraunces",Georgia,serif)}
+.xw-title{fill:#cfe8e5;font:700 17px var(--cg-font-ui,"Atkinson Hyperlegible","Segoe UI",sans-serif)}
+.xw-go{fill:#0b5f59}.xw-gotxt{fill:#fff;font:700 17px var(--cg-font-ui,"Atkinson Hyperlegible","Segoe UI",sans-serif)}
+.xw-status{fill:#28241f;font:600 15px var(--cg-font-ui,"Atkinson Hyperlegible","Segoe UI",sans-serif)}
+.xw-cap{fill:#4a5560;font:800 12.5px var(--cg-font-ui,"Atkinson Hyperlegible","Segoe UI",sans-serif);letter-spacing:.09em}
+.xw-who{fill:#0f172a;font:700 34px var(--cg-font-name,"Fraunces",Georgia,serif)}
+.xw-small{fill:#28241f;font:400 15px var(--cg-font-ui,"Atkinson Hyperlegible","Segoe UI",sans-serif)}
+.xw-chip{fill:#e3f1ef;stroke:#b7dad5;stroke-width:1}.xw-chiptxt{fill:#0b3f3b;font:700 14px var(--cg-font-ui,"Atkinson Hyperlegible","Segoe UI",sans-serif)}
+.xw-sel{fill:#0b5f59}.xw-item{fill:#28241f;font:600 16px var(--cg-font-ui,"Atkinson Hyperlegible","Segoe UI",sans-serif)}.xw-on{fill:#fff}
+.xw-paper{fill:#fff;filter:drop-shadow(0 5px 10px rgba(15,23,42,.22))}
+.xw-cardedge{fill:none;stroke:#e5d9a4;stroke-width:3}
+.xw-hd{fill:#000;font:700 16px var(--cg-font-ui,"Atkinson Hyperlegible","Segoe UI",sans-serif)}.xw-hdr{font-weight:400;font-size:14px}
+.xw-line{stroke:#000;stroke-width:2}
+.xw-h1{fill:#000;font:700 31px var(--cg-font-name,"Fraunces",Georgia,serif)}
+.xw-ins{fill:#000;font:400 15px var(--cg-font-ui,"Atkinson Hyperlegible","Segoe UI",sans-serif)}
+.xw-cell{fill:#fff;stroke:#000;stroke-width:2}.xw-frame{fill:none;stroke:#000;stroke-width:3.5}
+.xw-letter{fill:#000;font:700 23px var(--cg-font-ui,"Atkinson Hyperlegible","Segoe UI",sans-serif)}
+.xw-head{fill:#000;font:700 17px var(--cg-font-ui,"Atkinson Hyperlegible","Segoe UI",sans-serif)}
+.xw-word{fill:#000;font:700 17px var(--cg-font-ui,"Atkinson Hyperlegible","Segoe UI",sans-serif);letter-spacing:.06em}
+.xw-invite{fill:#000;font:700 19px var(--cg-font-ui,"Atkinson Hyperlegible","Segoe UI",sans-serif)}
+.xw-body{fill:#000;font:400 17px var(--cg-font-ui,"Atkinson Hyperlegible","Segoe UI",sans-serif)}
+.xw-song{fill:#000;font:700 18px var(--cg-font-ui,"Atkinson Hyperlegible","Segoe UI",sans-serif)}
+.xw-dot{fill:#0b5f59}
+.xw-axis{stroke:#0f172a;stroke-width:2.5}.xw-bump{fill:#cfe8e5}
+.xw-node{fill:#0b5f59;stroke:#fff;stroke-width:2.5}.xw-node-m{fill:#0f172a}
+.xw-year{fill:#000;font:700 16px var(--cg-font-ui,"Atkinson Hyperlegible","Segoe UI",sans-serif)}
+.xw-tl-h{fill:#000;font:700 16px var(--cg-font-ui,"Atkinson Hyperlegible","Segoe UI",sans-serif)}.xw-tl-s{fill:#28241f;font:400 14px var(--cg-font-ui,"Atkinson Hyperlegible","Segoe UI",sans-serif)}
+@media (prefers-reduced-motion:reduce){.lp-panel{animation:none}.lp-laptop,.lp-tab{transition:none}.lp-laptop:hover{transform:none}.lp-tab:active{transform:none}}
 
 /* what you get: five cards in an asymmetric three-column grid (the first is tall), white with a soft shadow, a lift on hover */
 .lp-features{padding:80px 0 44px;background:linear-gradient(180deg,var(--cg-cream,#fafafd) 0%,#f3f8f7 100%)}
@@ -5065,6 +5073,10 @@ html.cg-night-shift .lp .cg-steps li{color:#fff1cf!important}
 html.cg-night-shift .lp .cg-steps li::before{background:#ffd477!important;color:#17120c!important}
 html.cg-night-shift .lp :is(.cg-value,.lp-quote,.lp-marks a,.lp-float){background:#211910!important;border-color:#684a26!important}
 html.cg-night-shift .lp .cg-value svg{background:#332312!important}
+html.cg-night-shift .lp .lp-tabs{background:#211910!important;border-color:#684a26!important}
+html.cg-night-shift .lp .lp-tab{color:#fff1cf!important}
+html.cg-night-shift .lp .lp-tab:hover{background:#332312!important}
+html.cg-night-shift .lp .lp-tab[aria-selected="true"]{background:#6f4b16!important;color:#fff1cf!important;box-shadow:none}
 html.cg-night-shift .lp-btn{background:#6f4b16!important;color:#fff1cf!important;box-shadow:none}
 html.cg-night-shift .lp-footer{border-color:#684a26!important}
 
@@ -5483,116 +5495,31 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
         </div>
         <p class="lp-trial-sub" id="heroNote">No sign-up and no credit card. Everything stays on this computer.</p>
       </div>
-      <div class="lp-visual" aria-hidden="true">
-        <span class="lp-orb lp-orb-a"></span><span class="lp-orb lp-orb-b"></span><span class="lp-orb lp-orb-c"></span>
-        <div class="elite-stage">
-          <div class="elite-laptop-3d">
-            <div class="elite-lid">
-              <div class="elite-bezel">
-                <div class="elite-webcam-bar">
-                  <span class="elite-mic"></span>
-                  <span class="elite-cam-lens"><span class="elite-cam-dot"></span></span>
-                  <span class="elite-mic"></span>
+      <div class="lp-visual">
+        <span class="lp-orb lp-orb-a" aria-hidden="true"></span><span class="lp-orb lp-orb-b" aria-hidden="true"></span><span class="lp-orb lp-orb-c" aria-hidden="true"></span>
+        <div class="lp-stage">
+          <div class="lp-laptop">
+            <div class="lp-lid">
+              <div class="lp-bezel">
+                <div class="lp-cam" aria-hidden="true"><i></i></div>
+                <div class="lp-screen">
+<!-- lp-example:start -->
+<div class="lp-panel" role="tabpanel" id="lpPanel1" aria-labelledby="lpTab1"><svg class="lp-xw" viewBox="0 0 1000 625" role="img" aria-label="Example screen: a reminiscence card made for Ruth, “In the Garden”, with an invitation to talk, three ways in, a song from her years and something to hold." focusable="false"><rect width="1000" height="625" class="xw-bg"/><rect width="1000" height="48" class="xw-bar"/><text x="24" y="31" class="xw-brand">Cognicopia</text><text x="730" y="31" class="xw-title" text-anchor="middle">Today's packet for Ruth</text><rect x="876" y="8" width="100" height="32" rx="8" class="xw-go"/><text x="926" y="30" class="xw-gotxt" text-anchor="middle">Print</text><rect y="48" width="1000" height="34" class="xw-strip"/><text x="24" y="71" class="xw-status">Reminiscence cards · Card 3 of 6 · Large print</text><text x="976" y="71" class="xw-status" text-anchor="end">Stays on this computer</text><rect x="0" y="82" width="230" height="543" class="xw-rail"/><line x1="230" y1="82" x2="230" y2="625" class="xw-rule"/><text x="24" y="118" class="xw-cap">EXAMPLE RESIDENT</text><text x="24" y="154" class="xw-who">Ruth</text><text x="24" y="178" class="xw-small">Born 1938 · Middle stage</text><rect x="24" y="194" width="102" height="26" rx="13" class="xw-chip"/><text x="75" y="212" class="xw-chiptxt" text-anchor="middle">Gardening</text><rect x="24" y="226" width="144" height="26" rx="13" class="xw-chip"/><text x="96" y="244" class="xw-chiptxt" text-anchor="middle">Big-band music</text><rect x="24" y="258" width="127" height="26" rx="13" class="xw-chip"/><text x="87.5" y="276" class="xw-chiptxt" text-anchor="middle">A river town</text><text x="24" y="320" class="xw-cap">SIX CARDS FOR RUTH</text><text x="26" y="355" class="xw-item">The Classroom</text><text x="26" y="389" class="xw-item">At the Movies</text><rect x="12" y="402" width="206" height="30" rx="8" class="xw-sel"/><text x="26" y="423" class="xw-item xw-on">In the Garden</text><text x="26" y="457" class="xw-item">The Family Television</text><text x="26" y="491" class="xw-item">Playtime</text><text x="26" y="525" class="xw-item">On the Radio</text><rect x="230" y="82" width="770" height="543" class="xw-desk"/><rect x="417.5" y="98" width="395" height="511" rx="18" class="xw-paper"/><rect x="426.5" y="107" width="377" height="493" rx="12" class="xw-cardedge"/><text x="615" y="144" class="xw-cap" text-anchor="middle">REMINISCENCE CARD 3 OF 6</text><text x="615" y="186" class="xw-h1" text-anchor="middle">In the Garden</text><rect x="445.5" y="204" width="339" height="50" rx="10" fill="#f3e6b3"/><text x="615" y="236" class="xw-invite" text-anchor="middle">Tell me about growing things.</text><text x="449.5" y="288" class="xw-cap">THREE WAYS IN</text><circle cx="455.5" cy="309" r="3.5" class="xw-dot"/><text x="469.5" y="314" class="xw-body">Who taught you to garden?</text><circle cx="455.5" cy="337" r="3.5" class="xw-dot"/><text x="469.5" y="342" class="xw-body">What did you love to grow?</text><circle cx="455.5" cy="365" r="3.5" class="xw-dot"/><text x="469.5" y="370" class="xw-body">Tell me about the Farmers' Almanac</text><text x="469.5" y="392" class="xw-body">planting days.</text><line x1="449.5" y1="410" x2="780.5" y2="410" class="xw-hair"/><text x="449.5" y="436" class="xw-cap">A SONG FROM HER YEARS</text><text x="449.5" y="462" class="xw-song">Chicago (That Toddlin' Town)</text><text x="449.5" y="482" class="xw-small">Frank Sinatra · 1957</text><text x="449.5" y="516" class="xw-cap">SOMETHING TO HOLD</text><text x="449.5" y="540" class="xw-body">Offer a small pot of soil or a sprig of</text><text x="449.5" y="561" class="xw-body">lavender or mint to touch and smell.</text></svg></div>
+<div class="lp-panel" role="tabpanel" id="lpPanel2" aria-labelledby="lpTab2" hidden><svg class="lp-xw" viewBox="0 0 1000 625" role="img" aria-label="Example screen: a Word Search page made for Ruth, a square grid of 8 by 8 letters with 6 words to find: fish, garden, ruth, soil, spring, water." focusable="false"><rect width="1000" height="625" class="xw-bg"/><rect width="1000" height="48" class="xw-bar"/><text x="24" y="31" class="xw-brand">Cognicopia</text><text x="730" y="31" class="xw-title" text-anchor="middle">Today's packet for Ruth</text><rect x="876" y="8" width="100" height="32" rx="8" class="xw-go"/><text x="926" y="30" class="xw-gotxt" text-anchor="middle">Print</text><rect y="48" width="1000" height="34" class="xw-strip"/><text x="24" y="71" class="xw-status">Page 1 of 5 · Word Search · Large print</text><text x="976" y="71" class="xw-status" text-anchor="end">Stays on this computer</text><rect x="0" y="82" width="230" height="543" class="xw-rail"/><line x1="230" y1="82" x2="230" y2="625" class="xw-rule"/><text x="24" y="118" class="xw-cap">EXAMPLE RESIDENT</text><text x="24" y="154" class="xw-who">Ruth</text><text x="24" y="178" class="xw-small">Born 1938 · Middle stage</text><rect x="24" y="194" width="102" height="26" rx="13" class="xw-chip"/><text x="75" y="212" class="xw-chiptxt" text-anchor="middle">Gardening</text><rect x="24" y="226" width="144" height="26" rx="13" class="xw-chip"/><text x="96" y="244" class="xw-chiptxt" text-anchor="middle">Big-band music</text><rect x="24" y="258" width="127" height="26" rx="13" class="xw-chip"/><text x="87.5" y="276" class="xw-chiptxt" text-anchor="middle">A river town</text><text x="24" y="320" class="xw-cap">THE FIVE PAGES</text><rect x="12" y="334" width="206" height="30" rx="8" class="xw-sel"/><text x="26" y="355" class="xw-item xw-on">Word Search</text><text x="26" y="389" class="xw-item">Finish the Thought</text><text x="26" y="423" class="xw-item">Fit the Words In</text><text x="26" y="457" class="xw-item">Color Page</text><text x="26" y="491" class="xw-item">For Staff</text><rect x="230" y="82" width="770" height="543" class="xw-desk"/><rect x="417.5" y="98" width="395" height="511" class="xw-paper"/><text x="452.5" y="130" class="xw-hd">Ruth</text><text x="789.5" y="130" class="xw-hd xw-hdr" text-anchor="end">Page 1 of 5</text><line x1="452.5" y1="140" x2="789.5" y2="140" class="xw-line"/><text x="621" y="182" class="xw-h1" text-anchor="middle">Word Search</text><text x="621" y="208" class="xw-ins" text-anchor="middle">Circle each word. Words go across and down.</text><rect x="477" y="226" width="36" height="36" class="xw-cell"/><text x="495" y="252" class="xw-letter" text-anchor="middle">P</text><rect x="513" y="226" width="36" height="36" class="xw-cell"/><text x="531" y="252" class="xw-letter" text-anchor="middle">A</text><rect x="549" y="226" width="36" height="36" class="xw-cell"/><text x="567" y="252" class="xw-letter" text-anchor="middle">C</text><rect x="585" y="226" width="36" height="36" class="xw-cell"/><text x="603" y="252" class="xw-letter" text-anchor="middle">I</text><rect x="621" y="226" width="36" height="36" class="xw-cell"/><text x="639" y="252" class="xw-letter" text-anchor="middle">L</text><rect x="657" y="226" width="36" height="36" class="xw-cell"/><text x="675" y="252" class="xw-letter" text-anchor="middle">S</text><rect x="693" y="226" width="36" height="36" class="xw-cell"/><text x="711" y="252" class="xw-letter" text-anchor="middle">E</text><rect x="729" y="226" width="36" height="36" class="xw-cell"/><text x="747" y="252" class="xw-letter" text-anchor="middle">F</text><rect x="477" y="262" width="36" height="36" class="xw-cell"/><text x="495" y="288" class="xw-letter" text-anchor="middle">M</text><rect x="513" y="262" width="36" height="36" class="xw-cell"/><text x="531" y="288" class="xw-letter" text-anchor="middle">S</text><rect x="549" y="262" width="36" height="36" class="xw-cell"/><text x="567" y="288" class="xw-letter" text-anchor="middle">P</text><rect x="585" y="262" width="36" height="36" class="xw-cell"/><text x="603" y="288" class="xw-letter" text-anchor="middle">R</text><rect x="621" y="262" width="36" height="36" class="xw-cell"/><text x="639" y="288" class="xw-letter" text-anchor="middle">I</text><rect x="657" y="262" width="36" height="36" class="xw-cell"/><text x="675" y="288" class="xw-letter" text-anchor="middle">N</text><rect x="693" y="262" width="36" height="36" class="xw-cell"/><text x="711" y="288" class="xw-letter" text-anchor="middle">G</text><rect x="729" y="262" width="36" height="36" class="xw-cell"/><text x="747" y="288" class="xw-letter" text-anchor="middle">I</text><rect x="477" y="298" width="36" height="36" class="xw-cell"/><text x="495" y="324" class="xw-letter" text-anchor="middle">W</text><rect x="513" y="298" width="36" height="36" class="xw-cell"/><text x="531" y="324" class="xw-letter" text-anchor="middle">E</text><rect x="549" y="298" width="36" height="36" class="xw-cell"/><text x="567" y="324" class="xw-letter" text-anchor="middle">E</text><rect x="585" y="298" width="36" height="36" class="xw-cell"/><text x="603" y="324" class="xw-letter" text-anchor="middle">I</text><rect x="621" y="298" width="36" height="36" class="xw-cell"/><text x="639" y="324" class="xw-letter" text-anchor="middle">G</text><rect x="657" y="298" width="36" height="36" class="xw-cell"/><text x="675" y="324" class="xw-letter" text-anchor="middle">R</text><rect x="693" y="298" width="36" height="36" class="xw-cell"/><text x="711" y="324" class="xw-letter" text-anchor="middle">F</text><rect x="729" y="298" width="36" height="36" class="xw-cell"/><text x="747" y="324" class="xw-letter" text-anchor="middle">S</text><rect x="477" y="334" width="36" height="36" class="xw-cell"/><text x="495" y="360" class="xw-letter" text-anchor="middle">B</text><rect x="513" y="334" width="36" height="36" class="xw-cell"/><text x="531" y="360" class="xw-letter" text-anchor="middle">S</text><rect x="549" y="334" width="36" height="36" class="xw-cell"/><text x="567" y="360" class="xw-letter" text-anchor="middle">O</text><rect x="585" y="334" width="36" height="36" class="xw-cell"/><text x="603" y="360" class="xw-letter" text-anchor="middle">I</text><rect x="621" y="334" width="36" height="36" class="xw-cell"/><text x="639" y="360" class="xw-letter" text-anchor="middle">L</text><rect x="657" y="334" width="36" height="36" class="xw-cell"/><text x="675" y="360" class="xw-letter" text-anchor="middle">C</text><rect x="693" y="334" width="36" height="36" class="xw-cell"/><text x="711" y="360" class="xw-letter" text-anchor="middle">A</text><rect x="729" y="334" width="36" height="36" class="xw-cell"/><text x="747" y="360" class="xw-letter" text-anchor="middle">H</text><rect x="477" y="370" width="36" height="36" class="xw-cell"/><text x="495" y="396" class="xw-letter" text-anchor="middle">O</text><rect x="513" y="370" width="36" height="36" class="xw-cell"/><text x="531" y="396" class="xw-letter" text-anchor="middle">T</text><rect x="549" y="370" width="36" height="36" class="xw-cell"/><text x="567" y="396" class="xw-letter" text-anchor="middle">M</text><rect x="585" y="370" width="36" height="36" class="xw-cell"/><text x="603" y="396" class="xw-letter" text-anchor="middle">E</text><rect x="621" y="370" width="36" height="36" class="xw-cell"/><text x="639" y="396" class="xw-letter" text-anchor="middle">E</text><rect x="657" y="370" width="36" height="36" class="xw-cell"/><text x="675" y="396" class="xw-letter" text-anchor="middle">P</text><rect x="693" y="370" width="36" height="36" class="xw-cell"/><text x="711" y="396" class="xw-letter" text-anchor="middle">F</text><rect x="729" y="370" width="36" height="36" class="xw-cell"/><text x="747" y="396" class="xw-letter" text-anchor="middle">I</text><rect x="477" y="406" width="36" height="36" class="xw-cell"/><text x="495" y="432" class="xw-letter" text-anchor="middle">L</text><rect x="513" y="406" width="36" height="36" class="xw-cell"/><text x="531" y="432" class="xw-letter" text-anchor="middle">O</text><rect x="549" y="406" width="36" height="36" class="xw-cell"/><text x="567" y="432" class="xw-letter" text-anchor="middle">G</text><rect x="585" y="406" width="36" height="36" class="xw-cell"/><text x="603" y="432" class="xw-letter" text-anchor="middle">A</text><rect x="621" y="406" width="36" height="36" class="xw-cell"/><text x="639" y="432" class="xw-letter" text-anchor="middle">R</text><rect x="657" y="406" width="36" height="36" class="xw-cell"/><text x="675" y="432" class="xw-letter" text-anchor="middle">D</text><rect x="693" y="406" width="36" height="36" class="xw-cell"/><text x="711" y="432" class="xw-letter" text-anchor="middle">E</text><rect x="729" y="406" width="36" height="36" class="xw-cell"/><text x="747" y="432" class="xw-letter" text-anchor="middle">N</text><rect x="477" y="442" width="36" height="36" class="xw-cell"/><text x="495" y="468" class="xw-letter" text-anchor="middle">C</text><rect x="513" y="442" width="36" height="36" class="xw-cell"/><text x="531" y="468" class="xw-letter" text-anchor="middle">E</text><rect x="549" y="442" width="36" height="36" class="xw-cell"/><text x="567" y="468" class="xw-letter" text-anchor="middle">R</text><rect x="585" y="442" width="36" height="36" class="xw-cell"/><text x="603" y="468" class="xw-letter" text-anchor="middle">N</text><rect x="621" y="442" width="36" height="36" class="xw-cell"/><text x="639" y="468" class="xw-letter" text-anchor="middle">R</text><rect x="657" y="442" width="36" height="36" class="xw-cell"/><text x="675" y="468" class="xw-letter" text-anchor="middle">U</text><rect x="693" y="442" width="36" height="36" class="xw-cell"/><text x="711" y="468" class="xw-letter" text-anchor="middle">T</text><rect x="729" y="442" width="36" height="36" class="xw-cell"/><text x="747" y="468" class="xw-letter" text-anchor="middle">H</text><rect x="477" y="478" width="36" height="36" class="xw-cell"/><text x="495" y="504" class="xw-letter" text-anchor="middle">U</text><rect x="513" y="478" width="36" height="36" class="xw-cell"/><text x="531" y="504" class="xw-letter" text-anchor="middle">M</text><rect x="549" y="478" width="36" height="36" class="xw-cell"/><text x="567" y="504" class="xw-letter" text-anchor="middle">W</text><rect x="585" y="478" width="36" height="36" class="xw-cell"/><text x="603" y="504" class="xw-letter" text-anchor="middle">A</text><rect x="621" y="478" width="36" height="36" class="xw-cell"/><text x="639" y="504" class="xw-letter" text-anchor="middle">T</text><rect x="657" y="478" width="36" height="36" class="xw-cell"/><text x="675" y="504" class="xw-letter" text-anchor="middle">E</text><rect x="693" y="478" width="36" height="36" class="xw-cell"/><text x="711" y="504" class="xw-letter" text-anchor="middle">R</text><rect x="729" y="478" width="36" height="36" class="xw-cell"/><text x="747" y="504" class="xw-letter" text-anchor="middle">I</text><rect x="477" y="226" width="288" height="288" class="xw-frame"/><text x="452.5" y="544" class="xw-head">Words to find</text><text x="452.5" y="572" class="xw-word">FISH</text><text x="564.8333333333334" y="572" class="xw-word">GARDEN</text><text x="677.1666666666666" y="572" class="xw-word">RUTH</text><text x="452.5" y="596" class="xw-word">SOIL</text><text x="564.8333333333334" y="596" class="xw-word">SPRING</text><text x="677.1666666666666" y="596" class="xw-word">WATER</text></svg></div>
+<div class="lp-panel" role="tabpanel" id="lpPanel3" aria-labelledby="lpTab3" hidden><svg class="lp-xw" viewBox="0 0 1000 625" role="img" aria-label="Example screen: a memory timeline made for Ruth, born 1938, marking the years 1948 to 1968 she remembers best and the songs that were new then: Goodnight, Irene (1950), Chicago (That Toddlin' Town) (1957), Wonderful World (1960), Stand by Me (1961), I Want to Hold Your Hand (1963), Do-Re-Mi (1965)." focusable="false"><rect width="1000" height="625" class="xw-bg"/><rect width="1000" height="48" class="xw-bar"/><text x="24" y="31" class="xw-brand">Cognicopia</text><text x="730" y="31" class="xw-title" text-anchor="middle">Today's packet for Ruth</text><rect x="876" y="8" width="100" height="32" rx="8" class="xw-go"/><text x="926" y="30" class="xw-gotxt" text-anchor="middle">Print</text><rect y="48" width="1000" height="34" class="xw-strip"/><text x="24" y="71" class="xw-status">Memory timeline · Built from her birth year and her six cards</text><text x="976" y="71" class="xw-status" text-anchor="end">Stays on this computer</text><rect x="0" y="82" width="230" height="543" class="xw-rail"/><line x1="230" y1="82" x2="230" y2="625" class="xw-rule"/><text x="24" y="118" class="xw-cap">EXAMPLE RESIDENT</text><text x="24" y="154" class="xw-who">Ruth</text><text x="24" y="178" class="xw-small">Born 1938 · Middle stage</text><rect x="24" y="194" width="102" height="26" rx="13" class="xw-chip"/><text x="75" y="212" class="xw-chiptxt" text-anchor="middle">Gardening</text><rect x="24" y="226" width="144" height="26" rx="13" class="xw-chip"/><text x="96" y="244" class="xw-chiptxt" text-anchor="middle">Big-band music</text><rect x="24" y="258" width="127" height="26" rx="13" class="xw-chip"/><text x="87.5" y="276" class="xw-chiptxt" text-anchor="middle">A river town</text><text x="24" y="320" class="xw-cap">BUILT FROM</text><text x="26" y="355" class="xw-item">Her birth year, 1938</text><text x="26" y="389" class="xw-item">Ages 10 to 30</text><text x="26" y="423" class="xw-item">Songs of those years</text><rect x="230" y="82" width="770" height="543" class="xw-desk"/><rect x="417.5" y="98" width="395" height="511" class="xw-paper"/><text x="452.5" y="130" class="xw-hd">Ruth</text><text x="789.5" y="130" class="xw-hd xw-hdr" text-anchor="end">Her years</text><line x1="452.5" y1="140" x2="789.5" y2="140" class="xw-line"/><text x="621" y="182" class="xw-h1" text-anchor="middle">Ruth’s Years</text><text x="621" y="208" class="xw-ins" text-anchor="middle">People remember the years from about 10 to 30</text><text x="621" y="228" class="xw-ins" text-anchor="middle">most readily. These songs were new then.</text><rect x="515.5" y="282" width="26" height="246" rx="13" class="xw-bump"/><line x1="528.5" y1="252" x2="528.5" y2="524" class="xw-axis"/><text x="506.5" y="257" class="xw-year" text-anchor="end">1938</text><circle cx="528.5" cy="252" r="8" class="xw-node xw-node-m"/><text x="552.5" y="250" class="xw-tl-h">Ruth is born</text><text x="552.5" y="267" class="xw-tl-s">Born 1938</text><text x="506.5" y="291" class="xw-year" text-anchor="end">1948</text><circle cx="528.5" cy="286" r="8" class="xw-node xw-node-m"/><text x="552.5" y="284" class="xw-tl-h">Ten years old</text><text x="552.5" y="301" class="xw-tl-s">The years she remembers best begin</text><text x="506.5" y="325" class="xw-year" text-anchor="end">1950</text><circle cx="528.5" cy="320" r="6" class="xw-node"/><text x="552.5" y="318" class="xw-tl-h">Goodnight, Irene</text><text x="552.5" y="335" class="xw-tl-s">The Weavers</text><text x="506.5" y="359" class="xw-year" text-anchor="end">1957</text><circle cx="528.5" cy="354" r="6" class="xw-node"/><text x="552.5" y="352" class="xw-tl-h">Chicago (That Toddlin' Town)</text><text x="552.5" y="369" class="xw-tl-s">Frank Sinatra</text><text x="506.5" y="393" class="xw-year" text-anchor="end">1960</text><circle cx="528.5" cy="388" r="6" class="xw-node"/><text x="552.5" y="386" class="xw-tl-h">Wonderful World</text><text x="552.5" y="403" class="xw-tl-s">Sam Cooke</text><text x="506.5" y="427" class="xw-year" text-anchor="end">1961</text><circle cx="528.5" cy="422" r="6" class="xw-node"/><text x="552.5" y="420" class="xw-tl-h">Stand by Me</text><text x="552.5" y="437" class="xw-tl-s">Ben E. King</text><text x="506.5" y="461" class="xw-year" text-anchor="end">1963</text><circle cx="528.5" cy="456" r="6" class="xw-node"/><text x="552.5" y="454" class="xw-tl-h">I Want to Hold Your Hand</text><text x="552.5" y="471" class="xw-tl-s">The Beatles</text><text x="506.5" y="495" class="xw-year" text-anchor="end">1965</text><circle cx="528.5" cy="490" r="6" class="xw-node"/><text x="552.5" y="488" class="xw-tl-h">Do-Re-Mi</text><text x="552.5" y="505" class="xw-tl-s">from The Sound of Music</text><text x="506.5" y="529" class="xw-year" text-anchor="end">1968</text><circle cx="528.5" cy="524" r="8" class="xw-node xw-node-m"/><text x="552.5" y="522" class="xw-tl-h">Thirty years old</text><text x="552.5" y="539" class="xw-tl-s">Those years, in her own words</text><rect x="452.5" y="561" width="26" height="16" rx="8" class="xw-bump"/><text x="488.5" y="574" class="xw-small">Ages 10 to 30: remembered most vividly</text></svg></div>
+<!-- lp-example:end -->
                 </div>
-                <div class="elite-screen">
-                  <div class="elite-appbar">
-                    <span class="elite-appbar-title">COGNICOPIA™ <span style="font-size:9.5px;opacity:.8;font-family:monospace;font-weight:400">Activity Builder</span></span>
-                    <div class="elite-appbar-badges">
-                      <span class="elite-badge-gutter">0.75″ Binder Margin</span>
-                      <span class="elite-badge-print">Print PDF</span>
-                    </div>
-                  </div>
-                  <div class="elite-screen-body">
-                    <div class="elite-profile-col">
-                      <div class="elite-profile-target">Target Resident</div>
-                      <div class="elite-profile-name">Margaret “Peggy”</div>
-                      <div class="elite-profile-bio">Born 1938 · Cedar Falls, IA<br>Music Teacher (32 yrs)</div>
-                      <div class="elite-fam-highlight">
-                        <strong>Daughter: SARAH</strong>
-                        <span style="display:block;font-size:9.5px;color:#356b66">Primary Care Contact · Visits Sundays</span>
-                      </div>
-                      <div style="font-size:9.5px;color:#444;margin-top:4px">
-                        <b>Son:</b> David (Architect)<br>
-                        <b>Favorites:</b> Piano, Roses, Choir
-                      </div>
-                      <div style="margin-top:6px;padding-top:4px;border-top:1px solid #eee8dd;font-size:9px;color:#08423f;font-weight:700">
-                        18pt+ Large Print Standard
-                      </div>
-                    </div>
-                    <div class="elite-sheet-col">
-                      <div>
-                        <div class="elite-sheet-hd">
-                          <span class="elite-sheet-title">Words from Margaret’s Life</span>
-                          <span class="elite-sheet-page">Page 1 of 5</span>
-                        </div>
-                        <div style="font-size:9px;font-weight:600;margin-bottom:4px;color:#000">Circle words from family, hometown &amp; music:</div>
-                        <div class="elite-grid-container">
-                          <table class="elite-grid-table">
-                            <tr>
-                              <td class="elite-target-word">S</td>
-                              <td class="elite-target-word">A</td>
-                              <td class="elite-target-word">R</td>
-                              <td class="elite-target-word">A</td>
-                              <td class="elite-target-word">H</td>
-                              <td>M</td>
-                            </tr>
-                            <tr>
-                              <td style="color:#08423f;font-weight:900">F</td>
-                              <td>O</td>
-                              <td>R</td>
-                              <td>T</td>
-                              <td>U</td>
-                              <td>N</td>
-                            </tr>
-                            <tr>
-                              <td style="color:#08423f;font-weight:900">A</td>
-                              <td style="font-weight:900">P</td>
-                              <td style="font-weight:900">I</td>
-                              <td style="font-weight:900">A</td>
-                              <td style="font-weight:900">N</td>
-                              <td style="font-weight:900">O</td>
-                            </tr>
-                            <tr>
-                              <td style="color:#08423f;font-weight:900">M</td>
-                              <td style="font-weight:900">C</td>
-                              <td style="font-weight:900">E</td>
-                              <td style="font-weight:900">D</td>
-                              <td style="font-weight:900">A</td>
-                              <td style="font-weight:900">R</td>
-                            </tr>
-                          </table>
-                        </div>
-                        <div class="elite-wordbank">
-                          <div class="elite-wordbank-title">Primary Word Bank (Family First):</div>
-                          <div class="elite-wordbank-list">
-                            <span class="elite-word-sarah">✓ SARAH <small style="font-weight:600;color:#555">(Daughter)</small></span>
-                            <span>✓ FAMILY</span>
-                            <span>✓ PIANO</span>
-                            <span>✓ CEDAR</span>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="elite-fill-callout">
-                        <b>Finish the Thought:</b> Peggy’s loving daughter is named <strong>SARAH</strong>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="elite-screen-foot">
-                    <span>✓ High-Contrast Vector SVG</span>
-                    <span>✓ 100% Offline Generation</span>
-                    <span>✓ Adult Dignity Standard</span>
-                  </div>
-                </div>
-              </div>
-              <div style="display:flex;justify-content:center;margin-top:2px">
-                <span style="height:2px;width:24px;background:#8b95a2;border-radius:2px"></span>
               </div>
             </div>
-            <div class="elite-hinge"></div>
-            <div class="elite-base"><div class="elite-base-notch"></div></div>
+            <div class="lp-hinge" aria-hidden="true"></div>
+            <div class="lp-base" aria-hidden="true"></div>
+          </div>
+          <div class="lp-tabs" role="tablist" aria-label="Examples of what Cognicopia makes">
+            <button class="lp-tab" type="button" role="tab" id="lpTab1" aria-selected="true" aria-controls="lpPanel1">Reminiscence card</button>
+            <button class="lp-tab" type="button" role="tab" id="lpTab2" aria-selected="false" aria-controls="lpPanel2" tabindex="-1">Word search</button>
+            <button class="lp-tab" type="button" role="tab" id="lpTab3" aria-selected="false" aria-controls="lpPanel3" tabindex="-1">Memory timeline</button>
           </div>
         </div>
-        <div class="lp-float"><b>Personalized with “SARAH”</b><span>Daughter &amp; family relationship metadata</span></div>
       </div>
     </div>
   </section>
@@ -25413,6 +25340,25 @@ import { webStorage } from "./js/pillar2-functionality-agents.js";
     } finally { busy = false; btn.removeAttribute("aria-busy"); }
   });
   window.CognicopiaAgents = Object.freeze({ orchestrator: orchestrator, openPreview: openPreview, profileFromForm: profileFromForm, deepPanel: deepPanel, suite: suite.agents, audit: function () { return suite.agents.auditor.run(); } });
+})();
+</script>
+<script>
+/* The front page's laptop: three examples, one shown at a time. Tabs follow the usual keys: Left and Right move, Home and End jump. */
+(function(){
+  var list = document.querySelector(".lp-tabs"); if (!list) return;
+  var tabs = [].slice.call(list.querySelectorAll('[role="tab"]'));
+  document.documentElement.classList.add("lp-js");
+  function show(t, focus){
+    tabs.forEach(function(x){ var on = x === t, p = document.getElementById(x.getAttribute("aria-controls"));
+      x.setAttribute("aria-selected", on ? "true" : "false"); x.tabIndex = on ? 0 : -1; if (p) p.hidden = !on; });
+    if (focus) t.focus();
+  }
+  list.addEventListener("click", function(e){ var t = e.target.closest('[role="tab"]'); if (t) show(t, false); });
+  list.addEventListener("keydown", function(e){
+    var i = tabs.indexOf(document.activeElement); if (i < 0) return;
+    var to = e.key === "ArrowRight" ? (i + 1) % tabs.length : e.key === "ArrowLeft" ? (i + tabs.length - 1) % tabs.length : e.key === "Home" ? 0 : e.key === "End" ? tabs.length - 1 : -1;
+    if (to < 0) return; e.preventDefault(); show(tabs[to], true);
+  });
 })();
 </script>
 </body>

@@ -7,7 +7,6 @@
 | `check-services`, `check-localdb`, `check-contentcatalog`, `check-contentmatcher`, `check-trial` | Most `src/services/*.ts` sources and `tsconfig.json` are gone, and the ones that remain are older than the built `assets/services/*.js`, which were changed by hand afterwards. Regenerating from them would undo that work. **Owner's decision:** which is the source of truth, the built files or the TypeScript. |
 | `check-coloring`, `check-trace`, `check-infinite`, `check-coloringagent`, `check-local-art`, `check-pcg`, `check-tablet`, the 28 coloring titles check | `src/data/*` (catalog, art JSON, prompt jobs), `src/coloring/subjects/*` and `src/pcg/schema`, `src/pcg/data` are gone. **Owner's decision:** restore them from the commit that removed them, or retire the checks that need them. |
 | `check-facility-ops`, `check-resident-engine`, `check-quality-hub`, `check-clinical-alignment` | Depend on the sources above (for example `src/services/researchCenter.ts`). |
-| landing example | The front page's laptop was redesigned (a resident profile on the screen); it no longer has the `lp-example` markers the check fills with an engine-made crossword. **Owner's decision:** retire `scripts/landing-example.mjs` or put the crossword back. |
 | print audit | Three thin strokes remain in the builder's output: two coloring-library pages (picture art; the art sources above are missing) and the cut lines of the reminiscence cards (dashed cut lines are thin by design; the audit's 2 pt floor needs an exemption the owner should approve). |
 
 ## Fixed in this branch
