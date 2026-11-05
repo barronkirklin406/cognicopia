@@ -4,15 +4,16 @@
 
 | Check | Cause |
 |---|---|
-| `check-services`, `check-localdb`, `check-contentcatalog`, `check-contentmatcher`, `check-trial` | Most `src/services/*.ts` sources and `tsconfig.json` are gone, and the ones that remain are older than the built `assets/services/*.js`, which were changed by hand afterwards. Regenerating from them would undo that work. |
-| `check-coloring`, `check-trace`, `check-infinite`, `check-coloringagent`, `check-local-art`, `check-pcg` | `src/data/*` (catalog, art JSON, prompt jobs), `src/coloring/subjects/*` and `src/pcg/schema`, `src/pcg/data` are gone. |
-| Shift board (`check-shift-ui`) | "The sheet carries the notes, the open tasks and the carried one". Also failing on `main`. |
-| Tablet Activities (`check-tablet-ui`) | Runs longer than the 280 s used here; 314 of its checks passed before the time limit. The route check (`check-tablet-route`) passes. |
-| landing example | `index.html` has no `lp-example` markers to fill. |
-| print audit, `audit-ux` | `batch-scheduler.html` and `family-bridge.html` print pictures with gray and still load an outside script (`cdn.tailwindcss.com`); a few generated reference pages break a heading across pages or end 0.5 in from the right edge. |
-| facility-ops, resident-engine, quality-hub, clinical-alignment, soothing | Depend on the sources above, or fail on `main` the same way. |
+| `check-services`, `check-localdb`, `check-contentcatalog`, `check-contentmatcher`, `check-trial` | Most `src/services/*.ts` sources and `tsconfig.json` are gone, and the ones that remain are older than the built `assets/services/*.js`, which were changed by hand afterwards. Regenerating from them would undo that work. **Owner's decision:** which is the source of truth, the built files or the TypeScript. |
+| `check-coloring`, `check-trace`, `check-infinite`, `check-coloringagent`, `check-local-art`, `check-pcg`, `check-tablet`, the 28 coloring titles check | `src/data/*` (catalog, art JSON, prompt jobs), `src/coloring/subjects/*` and `src/pcg/schema`, `src/pcg/data` are gone. **Owner's decision:** restore them from the commit that removed them, or retire the checks that need them. |
+| `check-facility-ops`, `check-resident-engine`, `check-quality-hub`, `check-clinical-alignment` | Depend on the sources above (for example `src/services/researchCenter.ts`). |
+| landing example | The front page's laptop was redesigned (a resident profile on the screen); it no longer has the `lp-example` markers the check fills with an engine-made crossword. **Owner's decision:** retire `scripts/landing-example.mjs` or put the crossword back. |
+| print audit | Three thin strokes remain in the builder's output: the coloring library's pages 2 (picture art; the art sources above are missing) and the cut lines of the reminiscence cards (dashed cut lines are thin by design; the audit's 2 pt floor needs an exemption the owner should approve). |
+| `audit-ux` | Passes. It still reads 1.92:1 for one span on the accessibility page ("Return to Activity Tools"), which the browser computes as black on a pale button (about 15:1), so the audit's own measurement is the doubtful one. |
 
 ## Fixed in this branch
+
+- **Second pass (build repair):** the two pages that loaded `cdn.tailwindcss.com` and a CDN copy of jsPDF (`batch-scheduler.html`, `family-bridge.html`) now use a stylesheet made from their own classes (`css/pages-utilities.css`, by `scripts/make-pages-css.mjs`; `--check` proves it is current) and the local jsPDF, and print in pure black on white with no logo picture; the batch-scheduler header no longer scrolls sideways on a phone. Three controls under 52 px (Instant Soothe and Night Shift in the front page's bar, "Return to Activity Tools") are 52 px. The Night Shift hub buttons are dark with cream text (they were cream on near-white). The Join-the-Dots page leaves room for its numbers above the tip line (two numbers printed over it in the early and middle packets). Printed accessibility and research pages no longer strand a heading or run a table header past the margin. `check-soothing` follows the button's move to `bindClinical`; `check-shift-ui` follows the real date for "carried from"; `check-tablet-ui` sets the used-up count after a first visit (which starts it at 0) and allows the trial badge's own key; the print audit no longer calls the last line of a bold paragraph a stranded heading.
 
 - `sw.js` was missing (the page registers it and the build pre-caches from it). Restored, and extended with every module, page and font the site now needs offline. That also made the invoice, staff-guide, terms and session-timeout checks pass.
 - The inline PDF library in `index.html` was double-encoded and no longer matched `assets/vendor/jspdf.umd.min.js`.

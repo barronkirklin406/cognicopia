@@ -968,6 +968,7 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
     display: inline-flex !important;
     align-items: center !important;
     gap: 8px !important;
+    min-height: 52px !important;
     padding: 10px 20px !important;
     background: rgba(255, 255, 255, 0.7) !important;
     border: 2px solid #000000 !important;
@@ -978,6 +979,10 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
     color: #000000 !important;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12) !important;
     transition: transform 0.15s ease, background 0.15s ease !important;
+  }
+  @media print {
+    h1, h2, h3, h4 { break-after: avoid; page-break-after: avoid; }
+    .cozy-subcard, .cozy-p { break-inside: avoid; page-break-inside: avoid; }
   }
   .cozy-back-btn:hover {
     background: #ffffff !important;

@@ -845,7 +845,10 @@ try {
     const n1 = await p.evaluate(() => localStorage.getItem("cognicopia_gen_count"));
     ok((n0 === null || n0 === "0") && n1 === "1", `a session is one packet, counted once however many activities it holds (${n0} to ${n1})`);
     await ctx.close();
-    const g = await fresh(LAND, { init: 'try{localStorage.setItem("cognicopia_gen_count","25")}catch(e){}' });
+    /* a first visit starts the count at 0 whatever was set before the page ran, so the used-up state is set after it, then the page is opened again */
+    const g = await fresh(LAND);
+    await g.p.evaluate(() => { try { localStorage.setItem("cognicopia_gen_count", "25"); } catch (e) { /* the check will say so */ } });
+    await g.p.reload(); await sleep(300);
     await g.p.click('[data-act="sort"]'); await sleep(400);
     ok(await g.p.evaluate(() => !document.getElementById("tbGate").hidden && document.getElementById("tb").hidden), "with the free packets used up, a session shows the gate instead of starting");
     ok(await g.p.evaluate(() => Array.from(document.querySelectorAll("#tbGate a")).some(a => /pricing\.html/.test(a.getAttribute("href")))), "which leads to the plans");
@@ -858,7 +861,7 @@ try {
     const { ctx, p } = await fresh(LAND);
     for (const id of ["wordsearch", "crossword", "color", "paint"]) { await openAct(p, id); if (id === "color") await p.waitForSelector(".tb-pics", { timeout: 8000 }).catch(() => {}); await toMenu(p); }
     const keys = await p.evaluate(() => Object.keys(localStorage).concat(Object.keys(sessionStorage)));
-    ok(keys.every(k => /^(cognicopia_tablet_prefs|cognicopia_gen_count|cognicopia_trial_generations|cognicopia_trial_persist|cognicopia_license.*|cognicopia_promo.*)$/.test(k)), "nothing is kept in this browser but the choices and the free-packet count: " + keys.join(", "));
+    ok(keys.every(k => /^(cognicopia_tablet_prefs|cognicopia_gen_count|cognicopia_trial_generations|cognicopia_trial_persist|cognicopia_trial_reset_time|cognicopia_license.*|cognicopia_promo.*)$/.test(k)), "nothing is kept in this browser but the choices and the free-packet count: " + keys.join(", "));
     ok(await p.evaluate(() => document.cookie === ""), "no cookie is set");
     await ctx.close();
   }

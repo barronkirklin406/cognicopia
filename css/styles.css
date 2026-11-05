@@ -743,6 +743,22 @@ html.cg-night-shift .cg-brain-h::before,html.cg-night-shift .cg-sidebar-brand sp
   .cg-hubs > .cg-hub-li > a.cg-hub-link .cg-sb-ico {
     display: none;
   }
+  /* Night Shift: the hub buttons are light chips by day; after dark they are dark ones, so the cream text on them reads (it was cream on near-white) */
+  html.cg-night-shift body .cg-hubs > .cg-hub-li > .cg-hub > summary,
+  html.cg-night-shift body .cg-hubs > .cg-hub-li > a.cg-hub-link {
+    background: #332312;
+    border-color: #9b7136;
+    box-shadow: none;
+    color: #ffedcc !important;
+  }
+  html.cg-night-shift body .cg-hubs > .cg-hub-li > .cg-hub > summary:hover,
+  html.cg-night-shift body .cg-hubs > .cg-hub-li > a.cg-hub-link:hover,
+  html.cg-night-shift body .cg-hubs > .cg-hub-li > .cg-hub[open] > summary {
+    background: #3a2917;
+    border-color: #d6a64b;
+    box-shadow: none;
+    color: #fff1cf !important;
+  }
   .cg-hubs > .cg-hub-li > .cg-hub > summary .cg-sb-chev,
   .cg-hubs > .cg-hub-li > a.cg-hub-link .cg-sb-chev {
     display: inline-block;
@@ -797,6 +813,16 @@ html.cg-night-shift .cg-brain-h::before,html.cg-night-shift .cg-sidebar-brand sp
     background: #0e3c43 !important;
     color: #ffffff !important;
     border-color: #0e3c43 !important;
+  }
+  /* the page you are on, after dark: a dark chip with a gold underline, not a white one under cream text */
+  html.cg-night-shift body .cg-hubs > .cg-hub-li > .cg-hub[data-here] > summary,
+  html.cg-night-shift body .cg-hubs > .cg-hub-li > a.cg-hub-link.active,
+  html.cg-night-shift body .cg-hubs > .cg-hub-li > .cg-hub[data-here][open] > summary {
+    background: #3a2917 !important;
+    color: #fff1cf !important;
+    border-color: #d6a64b !important;
+    border-bottom: 2.5px solid #d6a64b !important;
+    box-shadow: none;
   }
 }
 

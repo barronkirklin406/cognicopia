@@ -12,21 +12,27 @@
   <link rel="shortcut icon" href="favicon.ico">
   <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
   <!-- cg-design:end -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- jsPDF built-in library support -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <link rel="stylesheet" href="css/pages-utilities.css">
+  <!-- jsPDF, from the copy that ships with the site -->
+  <script src="assets/vendor/jspdf.umd.min.js"></script>
   <script src="assets/services/familyBridgeStore.js"></script>
   <script src="assets/services/batchSchedulerEngine.js"></script>
   <style>
     body { font-family: 'Atkinson Hyperlegible', sans-serif; }
     h1, h2, h3, .font-serif { font-family: 'Fraunces', serif; }
+    /* On paper: pure black on white, no logo picture (it prints as gray), nothing of the screen's chrome. */
+    @media print {
+      img { display: none !important; }
+      *, *::before, *::after { background: #fff !important; color: #000 !important; box-shadow: none !important; text-shadow: none !important; }
+      header, nav, button { display: none !important; }
+    }
   </style>
 </head>
 <body class="bg-neutral-50 text-neutral-900 antialiased min-h-screen flex flex-col">
 
   <!-- Header -->
   <header class="bg-white border-b border-neutral-200 sticky top-0 z-40">
-    <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+    <div class="max-w-7xl mx-auto px-4 min-h-16 py-2 flex flex-wrap items-center justify-between gap-2">
       <div class="flex items-center gap-3">
         <a href="index.html" class="flex items-center gap-2 text-neutral-900 font-bold hover:text-emerald-800 transition">
           <img src="assets/cognicopia-logo.jpg" alt="Cognicopia" class="w-8 h-8 rounded-lg object-cover">

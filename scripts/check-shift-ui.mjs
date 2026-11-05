@@ -175,7 +175,7 @@ try {
     root.style.cssText = keep; return out;
   });
   ok(sheet.n >= 1 && sheet.box[0] === 816 && sheet.box[1] === 1056, "the sheet is one US Letter page (8.5 x 11 in)");
-  ok(/Shift handoff/.test(sheet.text) && /All shifts/.test(sheet.text) && /Keep an eye on/.test(sheet.text) && sheet.text.includes(NOTE_WORDS) && /Open tasks/.test(sheet.text) && /Set up the music cart/.test(sheet.text) && /carried from Oct/.test(sheet.text), "the sheet carries the notes, the open tasks and the carried one");
+  ok(/Shift handoff/.test(sheet.text) && /All shifts/.test(sheet.text) && /Keep an eye on/.test(sheet.text) && sheet.text.includes(NOTE_WORDS) && /Open tasks/.test(sheet.text) && /Set up the music cart/.test(sheet.text) && new RegExp("carried from " + new Date(yesterday() + "T12:00:00").toLocaleString("en-US", { month: "short" })).test(sheet.text), "the sheet carries the notes, the open tasks and the carried one");
   ok(sheet.clipped.every(c => c <= 0), "nothing is cut off at the foot of any page: " + sheet.clipped.join(","));
   const pdf = path.join(os.tmpdir(), "shift-handoff-check.pdf");
   await p.emulateMedia({ media: "print" });

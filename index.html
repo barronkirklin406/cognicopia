@@ -4956,10 +4956,10 @@ html body{background:var(--cg-cream,#f8f6ef)}
 .qpb-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin:0 0 12px;padding-bottom:12px;border-bottom:1px solid var(--cg-sand-300,#dfd7cb)}
 .qpb-head-title-wrap{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
 .qpb-head-controls{display:flex;align-items:center;flex-wrap:wrap;gap:8px}
-.qpb-soothe-btn{display:inline-flex;align-items:center;gap:8px;min-height:38px;padding:6px 14px;border:2px solid #fff3b8;color:#2a1608;background:#ffd34d;border-radius:10px;font:700 14px/1.2 var(--cg-font-ui,sans-serif);cursor:pointer;box-shadow:0 0 0 2px rgba(255,211,77,.35),0 2px 6px rgba(0,0,0,.25);text-decoration:none}
+.qpb-soothe-btn{display:inline-flex;align-items:center;gap:8px;min-height:var(--tap,52px);padding:6px 14px;border:2px solid #fff3b8;color:#2a1608;background:#ffd34d;border-radius:10px;font:700 14px/1.2 var(--cg-font-ui,sans-serif);cursor:pointer;box-shadow:0 0 0 2px rgba(255,211,77,.35),0 2px 6px rgba(0,0,0,.25);text-decoration:none}
 .qpb-soothe-btn:hover{background:#ffe07a;color:#2a1608;text-decoration:none}
 .cgw-badge{display:inline-flex;align-items:center;justify-content:center;flex:none;width:24px;height:24px;border-radius:50%;background:#2a1608;color:#ffd34d}
-.qpb-head-controls .cg-night-shift-toggle{display:inline-flex;align-items:center;gap:6px;min-height:38px;padding:6px 14px;border:2px solid #d6a64b;border-radius:10px;background:#1c1308;color:#ffedcc;font:700 14px/1.2 var(--cg-font-ui,sans-serif);cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.25)}
+.qpb-head-controls .cg-night-shift-toggle{display:inline-flex;align-items:center;gap:6px;min-height:var(--tap,52px);padding:6px 14px;border:2px solid #d6a64b;border-radius:10px;background:#1c1308;color:#ffedcc;font:700 14px/1.2 var(--cg-font-ui,sans-serif);cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.25)}
 .qpb-head-controls .cg-night-shift-toggle:hover{background:#2a1c0d;color:#fff3dc}
 .qpb-head-controls .cg-night-shift-toggle:focus-visible,.qpb-soothe-btn:focus-visible{outline:3px solid #ffd477;outline-offset:2px}
 
@@ -10348,7 +10348,8 @@ function dotsPage(D,r,s,theme){
   D.body("Start at number 1 and draw a line to each number in turn, "
         +"then back to number 1. Talk about "+entry.cue+" when it appears.",{size:17});
   D.gap(24);
-  const box=Math.min(PW-2*MARGIN-56, D.bottom()-D.y-24);
+  /* the numbers sit up to 36 pt outside the shape, so the shape leaves that much room above the page's tip line */
+  const box=Math.min(PW-2*MARGIN-56, D.bottom()-D.y-62);
   const x0=(PW-box)/2, y0=D.y+12;
   D.d.setFont("helvetica","bold"); D.d.setFontSize(20);
   const dots=pts.map(([px,py])=>[x0+px*box,y0+py*box]), placed=[];
