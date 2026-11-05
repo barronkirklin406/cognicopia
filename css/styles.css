@@ -319,7 +319,7 @@ html.cg-night-shift::before,html.cg-night-shift::after{display:none}
   /* buttons: forest green with white text; the quiet one is white with a green edge */
   html.cg-paper:not(.cg-night-shift) :is(.primary-btn,.back-home-btn,.cg-btn-primary){background:var(--cg-green-700) !important;border:2px solid var(--cg-green-700) !important;border-radius:var(--cg-radius-md) !important;color:#fff !important;box-shadow:var(--cg-shadow-1) !important;text-decoration:none !important}
   html.cg-paper:not(.cg-night-shift) :is(.primary-btn,.back-home-btn,.cg-btn-primary) :is(span,svg,b,strong){color:#fff !important;stroke:currentColor}
-  html.cg-paper:not(.cg-night-shift) :is(.primary-btn,.back-home-btn,.cg-btn-primary):is(:hover,:focus-visible){background:var(--cg-green-600) !important;border-color:var(--cg-green-600) !important;transform:translateY(-1px);box-shadow:0 6px 16px rgba(14,60,67,.28) !important}
+  html.cg-paper:not(.cg-night-shift) :is(.primary-btn,.back-home-btn,.cg-btn-primary):is(:hover,:focus-visible){background:var(--cg-green-600) !important;border-color:var(--cg-green-600) !important;transform:translateY(-1px);box-shadow:0 6px 16px rgba(8,66,63,.28) !important}
   html.cg-paper:not(.cg-night-shift) .secondary-btn{background:var(--cg-white) !important;border:2px solid var(--cg-green-700) !important;border-radius:var(--cg-radius-md) !important;color:var(--cg-green-700) !important;box-shadow:none !important;text-decoration:none !important}
   html.cg-paper:not(.cg-night-shift) .secondary-btn :is(span,svg,b,strong){color:var(--cg-green-700) !important;stroke:currentColor}
   html.cg-paper:not(.cg-night-shift) .secondary-btn:is(:hover,:focus-visible){background:var(--cg-sage-100) !important;border-color:var(--cg-green-700) !important;transform:translateY(-1px)}
@@ -455,11 +455,11 @@ html.cg-night-shift::before,html.cg-night-shift::after{display:none}
   html.cg-paper-app:not(.cg-night-shift) .fp-toggle-thumb{background:#fff}
   html.cg-paper-app:not(.cg-night-shift) :is(.lp-spread,.lp-wiz-pvbox){background:var(--cg-tan-100)}
   /* Facility: its own variables, now on cream */
-  html.cg-paper-app:not(.cg-night-shift) .fp{--fp-card:var(--cg-white);--fp-chip:var(--cg-tan-100);--fp-tan:var(--cg-tan-200);--fp-tan-hi:var(--cg-tan-300);--fp-div:var(--cg-tan-200);--fp-text:var(--cg-charcoal);--fp-text-2:var(--cg-ink-soft);--fp-muted:var(--cg-ink-soft);--fp-head:var(--cg-green-700);--fp-ink:#fff;--fp-ink-2:#cfe2e3;--fp-warn:var(--cg-clay-700)}
+  html.cg-paper-app:not(.cg-night-shift) .fp{--fp-card:var(--cg-white);--fp-chip:var(--cg-tan-100);--fp-tan:var(--cg-tan-200);--fp-tan-hi:var(--cg-tan-300);--fp-div:var(--cg-tan-200);--fp-text:var(--cg-charcoal);--fp-text-2:var(--cg-ink-soft);--fp-muted:var(--cg-ink-soft);--fp-head:var(--cg-green-700);--fp-ink:#fff;--fp-ink-2:#cfe3e1;--fp-warn:var(--cg-clay-700)}
   html.cg-paper-app:not(.cg-night-shift) .fp-bar select{color:var(--cg-charcoal)}
   /* Academy: its own variables, now on cream; the lesson player and picture stages stay a dark screen, like a video player */
-  html.cg-paper-app:not(.cg-night-shift) .ac{--ac-bg:var(--cg-cream);--ac-panel:var(--cg-white);--ac-card:var(--cg-white);--ac-sunk:var(--cg-tan-100);--ac-surface:var(--cg-white);--ac-surface-2:var(--cg-tan-100);--ac-accent:var(--cg-green-700);--ac-accent-hi:var(--cg-green-600);--ac-accent-text:var(--cg-green-700);--ac-glow:rgba(197,160,89,.10);--ac-media-glow:rgba(14,60,67,.18);--ac-border:var(--cg-tan-200);--ac-div:rgba(79,64,48,.16);--ac-line:var(--cg-tan-600);--ac-text:var(--cg-charcoal);--ac-text-2:var(--cg-ink-soft);--ac-muted:#3f4756;--ac-ink:#ffffff;--ac-focus:#f5b800;--ac-family:var(--cg-clay-800);--ac-good:var(--cg-ok-800);--ac-warn:var(--cg-clay-800);box-shadow:var(--cg-card-shadow);background:var(--cg-cream)}
-  html.cg-paper-app:not(.cg-night-shift) .ac :is(.ac-player,.ac-thumb,.ac-stage,.ac-mini){--ac-text:#f0f4f4;--ac-text-2:#cfdbdc;--ac-muted:#b4c4c6;--ac-ink:#0b1719;--ac-accent:#4fb3bf;--ac-accent-hi:#7fcbd3;--ac-accent-text:#8ad0d8;--ac-surface:#18363b;--ac-surface-2:#1f3235;--ac-border:#2a3b3d;--ac-sunk:#0a1011;--ac-family:#e9b872;--ac-line:#6b8c90;--ac-focus:#e6f2f4}
+  html.cg-paper-app:not(.cg-night-shift) .ac{--ac-bg:var(--cg-cream);--ac-panel:var(--cg-white);--ac-card:var(--cg-white);--ac-sunk:var(--cg-tan-100);--ac-surface:var(--cg-white);--ac-surface-2:var(--cg-tan-100);--ac-accent:var(--cg-green-700);--ac-accent-hi:var(--cg-green-600);--ac-accent-text:var(--cg-green-700);--ac-glow:rgba(197,160,89,.10);--ac-media-glow:rgba(8,66,63,.18);--ac-border:var(--cg-tan-200);--ac-div:rgba(79,64,48,.16);--ac-line:var(--cg-tan-600);--ac-text:var(--cg-charcoal);--ac-text-2:var(--cg-ink-soft);--ac-muted:#3f4756;--ac-ink:#ffffff;--ac-focus:#f5b800;--ac-family:var(--cg-clay-800);--ac-good:var(--cg-ok-800);--ac-warn:var(--cg-clay-800);box-shadow:var(--cg-card-shadow);background:var(--cg-cream)}
+  html.cg-paper-app:not(.cg-night-shift) .ac :is(.ac-player,.ac-thumb,.ac-stage,.ac-mini){--ac-text:#f0f4f4;--ac-text-2:#cfdcdb;--ac-muted:#b4c4c6;--ac-ink:#0b1918;--ac-accent:#3cc7b7;--ac-accent-hi:#74d6c8;--ac-accent-text:#8ad8d0;--ac-surface:#183b38;--ac-surface-2:#1f3533;--ac-border:#2a3d3b;--ac-sunk:#0a1110;--ac-family:#e9b872;--ac-line:#6b8c90;--ac-focus:#e6f4f3}
   html.cg-paper-app:not(.cg-night-shift) .ac :is(.ac-card,.ac-tile,.ac-learner){background:var(--cg-white);box-shadow:var(--cg-card-shadow);-webkit-backdrop-filter:none;backdrop-filter:none}
   html.cg-paper-app:not(.cg-night-shift) .ac-thumb .ac-cat{color:#ffe0a3;border-color:#ffe0a3}
 }
@@ -1219,7 +1219,7 @@ progress#tkProg { width: 100%; height: 14px; }
     background-attachment:fixed !important;
   }
   html.cg-paper:not(.cg-night-shift) :is(h1,h2,h3,h4,h5,h6){color:var(--cg-ink-900) !important}
-  html.cg-paper:not(.cg-night-shift) h2{border-bottom:2px solid rgba(13,148,136,.28) !important}
+  html.cg-paper:not(.cg-night-shift) h2{border-bottom:2px solid rgba(13,148,135,.28) !important}
 
   /* glass: a translucent surface, a hairline border and a soft shadow */
   html.cg-paper:not(.cg-night-shift) .container{
@@ -1230,18 +1230,18 @@ progress#tkProg { width: 100%; height: 14px; }
     background:var(--cg-glass-soft) !important;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
     border:1px solid var(--cg-glass-line) !important;border-radius:16px !important;box-shadow:0 1px 2px rgba(15,23,42,.05),0 8px 24px -14px rgba(15,23,42,.18) !important;
   }
-  html.cg-paper:not(.cg-night-shift) .highlight-banner{background:linear-gradient(90deg,rgba(13,148,136,.10),rgba(255,255,255,.7)) !important;border-left:5px solid var(--cg-teal) !important}
+  html.cg-paper:not(.cg-night-shift) .highlight-banner{background:linear-gradient(90deg,rgba(13,148,135,.10),rgba(255,255,255,.7)) !important;border-left:5px solid var(--cg-teal) !important}
 
   /* tables: a tinted header, a gentle row highlight */
   html.cg-paper:not(.cg-night-shift) thead th{background:var(--cg-sage-100) !important}
-  html.cg-paper:not(.cg-night-shift) tbody tr:hover :is(td,th){background:rgba(13,148,136,.06) !important}
+  html.cg-paper:not(.cg-night-shift) tbody tr:hover :is(td,th){background:rgba(13,148,135,.06) !important}
 
   /* fields: rounded, a soft inner edge, and a teal glow when chosen (the ring in section 4 stays for the keyboard) */
   html.cg-paper:not(.cg-night-shift) :is(input:not([type=checkbox],[type=radio],[type=range],[type=file],[type=color],[type=hidden]),select,textarea){
     border-radius:12px;border:1.5px solid var(--cg-tan-300);background-color:rgba(255,255,255,.92);box-shadow:inset 0 1px 2px rgba(15,23,42,.06);
   }
   html.cg-paper:not(.cg-night-shift) :is(input:not([type=checkbox],[type=radio],[type=range],[type=file],[type=color],[type=hidden]),select,textarea):hover{border-color:var(--cg-green-500)}
-  html.cg-paper:not(.cg-night-shift) :is(input:not([type=checkbox],[type=radio],[type=range],[type=file],[type=color],[type=hidden]),select,textarea):focus{border-color:var(--cg-green-600);box-shadow:inset 0 1px 2px rgba(15,23,42,.06),0 0 0 4px rgba(13,148,136,.20)}
+  html.cg-paper:not(.cg-night-shift) :is(input:not([type=checkbox],[type=radio],[type=range],[type=file],[type=color],[type=hidden]),select,textarea):focus{border-color:var(--cg-green-600);box-shadow:inset 0 1px 2px rgba(15,23,42,.06),0 0 0 4px rgba(13,148,135,.20)}
 }
 
 /* touch: the same everywhere, light or dark. Pointing lifts and glows, using presses in. */
@@ -1269,15 +1269,17 @@ progress#tkProg { width: 100%; height: 14px; }
     outline:3px solid var(--cg-focus) !important;outline-offset:3px;box-shadow:0 0 0 6px var(--cg-focus-dark) !important;
   }
 }
-/* the top bar as glass: translucent alabaster over whatever scrolls under it, a hairline and a long soft shadow */
+/* the top bar: alabaster with a hairline and a long soft shadow. It is solid on purpose: the logo files are black ink on white, and a
+   translucent bar over a dark section (the packet tool) showed a pale square behind the mark. */
 @media screen{
-  html:root:not(.cg-night-shift){--sb-bg:rgba(250,250,253,.82)}
+  html:root:not(.cg-night-shift){--sb-bg:#fafafd}
   html:root:not(.cg-night-shift) body .cg-sidebar{
     -webkit-backdrop-filter:blur(18px) saturate(1.4);backdrop-filter:blur(18px) saturate(1.4);
     border-color:rgba(15,23,42,.08);
   }
-  /* the logo files are black ink on white: on a translucent bar the white is blended away, so no square shows behind the mark */
-  html:root:not(.cg-night-shift) body .cg-sidebar-brand img{mix-blend-mode:multiply}
+  /* the logo files are black ink on white: multiplied onto the alabaster the white is blended away, so no square shows behind the mark */
+  html:root:not(.cg-night-shift) body .cg-sidebar-brand img,
+  html:root:not(.cg-night-shift) :is(.lp-foot-logo,.cg-foot-logo) img{mix-blend-mode:multiply}
 }
 @media screen and (min-width:1100px){
   html:root:not(.cg-night-shift) body .cg-sidebar{box-shadow:0 10px 32px -20px rgba(15,23,42,.35)}

@@ -37,11 +37,46 @@ try {
 }
 
 const tailwindDir = path.dirname(platform.resolve("tailwindcss/package.json"));
+/* The site's own palette (warm clinical, oceanic serenity; css/styles.css and docs/design-system.md). The two pages use Tailwind's
+   neutral and emerald names, so those two scales are replaced here: warm stone for the neutrals (never a cold gray), deep slate for
+   the darkest steps, oceanic teal and sage for the greens. Text steps keep their contrast: emerald 700 and darker are 7:1 or better
+   with white, neutral 500 and darker are 5:1 or better on white. Black stays black: the printed page is pure black on white. */
+const PALETTE = `
+@theme {
+  --color-neutral-50: #fafafd;
+  --color-neutral-100: #f4f3ef;
+  --color-neutral-200: #ebe9e3;
+  --color-neutral-300: #dad7ce;
+  --color-neutral-400: #a5a092;
+  --color-neutral-500: #6e6a5e;
+  --color-neutral-600: #5b574c;
+  --color-neutral-700: #403b35;
+  --color-neutral-800: #1c2740;
+  --color-neutral-900: #0f172a;
+  --color-emerald-50: #e6f5f2;
+  --color-emerald-100: #d9f0ec;
+  --color-emerald-200: #b6e5dc;
+  --color-emerald-300: #74d6c8;
+  --color-emerald-400: #3cc7b7;
+  --color-emerald-500: #0d9488;
+  --color-emerald-600: #0b6f68;
+  --color-emerald-700: #0b5f59;
+  --color-emerald-800: #094a45;
+  --color-emerald-900: #08423f;
+  --color-emerald-950: #052a26;
+  --color-slate-100: #eef4f2;
+}
+@layer utilities {
+  @media screen {
+    .hover\\:bg-black:hover { background-color: #0a1020; }
+  }
+}`;
 const input = [
   `@import "${path.join(tailwindDir, "theme.css")}" layer(theme);`,
   `@import "${path.join(tailwindDir, "preflight.css")}" layer(base);`,
   `@import "${path.join(tailwindDir, "utilities.css")}" layer(utilities);`,
   ...SOURCES.map((s) => `@source "${path.join(ROOT, s)}";`),
+  PALETTE,
 ].join("\n");
 
 const result = await postcss([tailwind({ optimize: { minify: false } })]).process(input, { from: path.join(ROOT, "css/pages-utilities.src.css") });

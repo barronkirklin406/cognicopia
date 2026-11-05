@@ -57,7 +57,7 @@ const lum = h => { const c = [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16) 
 const ratio = (a, b) => { const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p); return (x + 0.05) / (y + 0.05); };
 const mix = (top, alpha, under) => "#" + [1, 3, 5].map(i => Math.round(parseInt(top.slice(i, i + 2), 16) * alpha + parseInt(under.slice(i, i + 2), 16) * (1 - alpha)).toString(16).padStart(2, "0")).join("");
 ok(Object.keys(T).length >= 28, `the stylesheet names ${Object.keys(T).length} colors`);
-for (const need of ["green-950", "green-900", "green-800", "green-700", "parchment", "charcoal", "gold-500", "gold-300", "white", "focus", "focus-dark"]) ok(T[need], `missing token --cg-${need}`);
+for (const need of ["green-950", "green-900", "green-800", "green-700", "parchment", "charcoal", "gold-500", "gold-300", "white", "focus", "focus-dark", "teal", "sage-700", "ink-900"]) ok(T[need], `missing token --cg-${need}`);
 /* the screen palette (owner's decision, November 5, 2026): alabaster pages, rich slate surfaces, deep ocean teal, sage and warm charcoal; the gold stays as the one warm accent */
 ok(T["green-700"] === "#08423f" && T["green-900"] === "#0f172a" && T.cream === "#fafafd" && T["gold-500"] === "#c5a059" && T.charcoal === "#28241f", "the palette's anchors are the tokens: deep teal, slate, alabaster, gold and warm charcoal");
 
@@ -68,6 +68,8 @@ for (const bg of ["green-900", "green-800"]) TEXT.push(["tan-300", bg]);
 for (const bg of onTans) for (const fg of ["charcoal", "ink-soft", "green-700"]) TEXT.push([fg, bg]);
 for (const bg of ["cream", "white", "peach-100"]) for (const fg of ["charcoal", "ink-soft", "green-700"]) TEXT.push([fg, bg]);   // the light front of the packet tool
 TEXT.push(["clay-700", "cream"], ["clay-700", "white"], ["white", "green-700"]);
+/* the November 5 additions: sage and slate carry text, white sits on both; the oceanic teal #0d9488 is 3.6:1 on alabaster, so it is a border, glow and icon color and is checked below as non-text only */
+TEXT.push(["sage-700", "cream"], ["sage-700", "white"], ["white", "sage-700"], ["ink-900", "cream"], ["ink-900", "white"], ["ink-900", "parchment"], ["white", "ink-900"], ["sage-100", "ink-900"], ["gold-300", "ink-900"]);
 TEXT.push(["charcoal", "gold-300"], ["charcoal", "gold-200"], ["charcoal", "sage-200"], ["charcoal", "tan-300"], ["white", "tan-700"], ["white", "green-600"], ["tan-800", "parchment"],
   ["danger-800", "parchment"], ["ok-800", "parchment"], ["danger-200", "green-900"], ["danger-200", "green-700"], ["ok-200", "green-900"]);
 let worst = 99;
@@ -105,7 +107,7 @@ ok(!/@page\s*\{[^}]*margin/.test(CODE), "the shared stylesheet sets no margin on
 ok(/:root:root\{color-scheme:light\}/.test(CODE), "a dark-themed page prints on a light canvas");
 ok(/:not\(:has\(#printRoot,#qpPrintRoot,#print-stage\)\)/.test(CODE) && /nav,button,\.btn/.test(CODE), "the generic print sheet strips navigation and buttons and leaves a page with its own print root alone");
 for (const [fg, bg] of [["gold-500", "green-900"], ["gold-500", "green-800"], ["gold-500", "green-700"], ["tan-400", "green-900"], ["tan-400", "green-800"], ["tan-400", "green-700"], ["green-600", "parchment"],
-  ["focus", "green-900"], ["focus-dark", "parchment"], ["focus", "focus-dark"], ["focus-dark", "tan-200"]]) {
+  ["focus", "green-900"], ["focus-dark", "parchment"], ["focus", "focus-dark"], ["focus-dark", "tan-200"], ["teal", "cream"], ["teal", "white"], ["teal", "ink-900"]]) {
   const r = ratio(T[fg], T[bg]); ok(r >= 3, `non-text --cg-${fg} against --cg-${bg} is ${r.toFixed(2)}:1, under 3:1`);
 }
 /* the studio tools' accents (section 9e): in the day palette the text color is AAA on its own tint, on cream and on white, white text

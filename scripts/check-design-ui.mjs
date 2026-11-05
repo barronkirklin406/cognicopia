@@ -123,7 +123,7 @@ try {
   for (const id of ["link", "btn", "cta", "sum", "tab", "sw", "inp"]) {
     await p.keyboard.press("Tab"); await p.waitForTimeout(330);
     const r = await p.evaluate(() => { const e = document.activeElement, s = getComputedStyle(e); return { id: e.id, style: s.outlineStyle, width: s.outlineWidth, color: s.outlineColor, offset: s.outlineOffset, shadow: s.boxShadow }; });
-    ok(r.id === id && r.style === RING.style && r.width === RING.width && r.color === RING.color && r.offset === RING.offset && /rgb\(8, 38, 44\) 0px 0px 0px 6px/.test(r.shadow),
+    ok(r.id === id && r.style === RING.style && r.width === RING.width && r.color === RING.color && r.offset === RING.offset && /rgb\(15, 23, 42\) 0px 0px 0px 6px/.test(r.shadow),
       `Tab reaches #${id} and shows the two-band ring (${r.id}: ${r.width} ${r.style} ${r.color}, ${r.shadow})`);
   }
   await shot(p, "kit-focus");
@@ -132,18 +132,19 @@ try {
   await p.click("#inp"); await p.waitForTimeout(330);
   ok((await style(p, "#inp", ["outlineStyle", "outlineWidth"])).outlineWidth === "3px", "a text field shows the ring however it was focused");
 
-  /* touch: state changes ease, a press moves one pixel, a card lifts */
+  /* touch: state changes ease, a press shrinks the control a little, a card lifts */
   const tr = await style(p, "#btn", ["transitionProperty", "transitionDuration"]);
   ok(/background-color/.test(tr.transitionProperty) && /transform/.test(tr.transitionProperty) && /box-shadow/.test(tr.transitionProperty), "a button eases its color, shadow and press");
   ok(durations(tr.transitionDuration).every(d => d > 0 && d <= 0.2), `each transition is short (${tr.transitionDuration})`);
   await p.hover("#btn"); await p.mouse.down(); await p.waitForTimeout(330);
-  ok((await style(p, "#btn", ["transform"])).transform === "matrix(1, 0, 0, 1, 0, 1)", "pressing a button moves it one pixel down");
+  ok((await style(p, "#btn", ["transform"])).transform === "matrix(0.96, 0, 0, 0.96, 0, 0)", "pressing a button presses it in (a scale of .96)");
   await p.mouse.up(); await p.mouse.move(700, 600); await p.waitForTimeout(330);
   ok((await style(p, "#btn", ["transform"])).transform === "none", "and releasing returns it");
   const before = (await style(p, "#cta", ["boxShadow"])).boxShadow;
   await p.hover("#cta"); await p.waitForTimeout(330);
   const after = (await style(p, "#cta", ["boxShadow"])).boxShadow;
-  ok(before !== after && /12px/.test(after) && !/12px/.test(before), "a .cg-btn lifts its shadow on hover");
+  const blur = t => Math.max(0, ...(t.match(/\d+px \d+px (\d+)px/g) || []).map(x => +x.split(" ")[2].replace("px", "")));
+  ok(before !== after && blur(after) > blur(before), `a .cg-btn lifts its shadow on hover (blur ${blur(before)} px, then ${blur(after)} px)`);
   const cb = await p.evaluate(() => { const r = document.getElementById("cta").getBoundingClientRect(); return { w: r.width, h: r.height }; });
   ok(cb.h >= 52 && cb.w >= 52, `a .cg-btn is at least 52 px both ways (${Math.round(cb.w)} x ${Math.round(cb.h)})`);
   await p.click("#sum"); await p.waitForTimeout(40);
