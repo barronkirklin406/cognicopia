@@ -46,7 +46,7 @@ describe("createSmtpMailer", () => {
 
 describe("getMailer", () => {
   const set = (env: Record<string, string>) => {
-    for (const name of ["SMTP_HOST", "SMTP_PORT", "SMTP_SECURE", "SMTP_USER", "SMTP_PASSWORD", "SMTP_FROM"]) {
+    for (const name of ["SMTP_HOST", "SMTP_PORT", "SMTP_SECURE", "SMTP_USER", "SMTP_PASS", "SMTP_FROM"]) {
       vi.stubEnv(name, env[name] ?? "");
     }
   };
@@ -59,9 +59,9 @@ describe("getMailer", () => {
 
   it("is null, and says which setting is wrong by name only, when it is set up wrongly", () => {
     const log = vi.spyOn(console, "error").mockImplementation(() => {});
-    set({ SMTP_HOST: "smtp.example.com", SMTP_USER: "u", SMTP_PASSWORD: "", SMTP_FROM: "Cognicopia <no-reply@cognicopia.org>" });
+    set({ SMTP_HOST: "smtp.example.com", SMTP_USER: "u", SMTP_PASS: "", SMTP_FROM: "Cognicopia <no-reply@cognicopia.org>" });
     expect(getMailer()).toBeNull();
-    expect(log).toHaveBeenCalledWith("[mail] not configured:", "SMTP_PASSWORD");
+    expect(log).toHaveBeenCalledWith("[mail] not configured:", "SMTP_PASS");
     log.mockRestore();
   });
 
