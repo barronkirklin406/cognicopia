@@ -1855,6 +1855,64 @@ textarea:focus{border-color:var(--accent)}
 .sbar-sheet .ops-row{grid-template-columns:1.5in minmax(0,1fr) 1.7in}
 .sbar-sheet .ops-tail{text-align:right}
 </style>
+<style id="rs2-style">
+/* =====================================================================
+   RESIDENT ROSTER (#/roster): avatar rows or cards, filters that show their counts, a sort, an empty state that says what to do.
+   The tier tints are the site's care-tier colors (sapphire, terracotta, evergreen): deep ink on a soft tint, 11:1 or better.
+   ===================================================================== */
+.rs-split{grid-template-columns:minmax(300px,1fr) minmax(0,1.3fr)}
+.rs-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 12px}
+.rs-head h2{margin:0}
+.rs-view{display:inline-flex;border:1px solid var(--line-2);border-radius:12px;overflow:hidden;background:var(--bg-2)}
+.rs-view button{min-height:var(--tap);min-width:var(--tap);padding:0 14px;border:0;background:transparent;color:var(--text);font:800 14px var(--font);cursor:pointer;transition:background .2s ease,color .2s ease}
+.rs-view button+button{border-left:1px solid var(--line-2)}
+.rs-view button[aria-pressed="true"]{background:var(--accent-deep);color:#fff}
+.rs-view button:focus-visible{outline-offset:-4px}
+.rs-searchbox{position:relative;display:flex;align-items:center}
+.rs-searchbox svg{position:absolute;left:14px;color:var(--muted);pointer-events:none}
+.rs-roster .rs-searchbox input[type=search]{padding-left:44px;border-radius:14px;box-shadow:0 1px 2px rgba(15,23,42,.06) inset}
+.rs-filters{margin:12px 0 4px}
+.rs-chip{display:inline-flex;align-items:center;gap:8px;padding:0 14px}
+.rs-chip .rs-n{display:inline-block;min-width:22px;padding:1px 7px;border-radius:999px;background:rgba(15,23,42,.08);font-size:12px;font-weight:800;text-align:center}
+.rs-chip[aria-pressed="true"] .rs-n{background:rgba(255,255,255,.22)}
+.rs-toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:6px 0 8px}
+.rs-toolbar .rs-count{margin:0}
+.rs-sort{display:inline-flex;align-items:center;gap:8px;font-size:13.5px;font-weight:700;color:var(--muted)}
+.rs-sort select{min-height:var(--tap);padding:0 12px;border-radius:12px;border:1px solid var(--line-2);background:var(--bg-2);color:var(--text);font:700 14px var(--font)}
+.rs-list{padding:2px}
+.rs-res{gap:12px;justify-content:flex-start;transition:border-color .2s ease,box-shadow .2s ease,transform .2s ease}
+.rs-res:hover{box-shadow:0 6px 18px rgba(15,23,42,.10);transform:translateY(-1px)}
+.rs-res:active{transform:scale(.985)}
+.rs-res:focus-visible{box-shadow:0 0 0 6px var(--cg-focus-dark,#0f172a)}
+.rs-res-main{flex:1;min-width:0}
+.rs-badges{max-width:46%}
+.rs-av{flex:none;display:inline-flex;align-items:center;justify-content:center;width:46px;height:46px;border-radius:50%;font:700 17px var(--cg-font-name,"Fraunces",serif);letter-spacing:0;background:#edf3f3;color:#0e3c43;border:2px solid #fff;box-shadow:0 0 0 1px rgba(15,23,42,.12)}
+.rs-av-1{background:#e9ecf8;color:#141f5e}.rs-av-2{background:#f7e9e1;color:#4f1e0e}.rs-av-3{background:#e7efe9;color:#102a1f}
+.rs-av-lg{width:64px;height:64px;font-size:24px}
+.rs-tier{background:#e9ecf8;color:#141f5e}.rs-tier-2{background:#f7e9e1;color:#4f1e0e}.rs-tier-3{background:#e7efe9;color:#102a1f}
+.rs-list[data-view="cards"]{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.rs-list[data-view="cards"] .rs-res{flex-direction:column;align-items:flex-start;gap:8px;height:100%;padding:14px}
+.rs-list[data-view="cards"] .rs-res-main{width:100%;flex:none}
+.rs-list[data-view="cards"] .rs-res-main b{white-space:normal;overflow-wrap:anywhere}
+.rs-list[data-view="cards"] .rs-badges{max-width:none;justify-content:flex-start}
+.rs-empty{padding:18px;border-radius:14px;border:1px dashed var(--line-2);background:var(--bg-2)}
+.rs-empty p{margin:0 0 8px}
+.rs-empty-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px !important}
+.rs-add kbd{padding:1px 6px;border-radius:6px;border:1px solid var(--line-2);background:var(--bg-2);font:700 12px var(--font)}
+.rs-who-row{display:flex;align-items:center;gap:16px}
+.rs-who-row>div{min-width:0}
+.rs-who{border-style:solid;box-shadow:0 1px 2px rgba(15,23,42,.05)}
+html.cg-night-shift .rs-av{background:var(--panel-2);color:var(--accent-hi);border-color:var(--line-2);box-shadow:none}
+@media (max-width:900px){
+  .rs-split{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:480px){
+  .rs-toolbar{flex-wrap:wrap}
+  .rs-who-row{align-items:flex-start}
+  .rs-av-lg{width:52px;height:52px;font-size:20px}
+}
+@media (prefers-reduced-motion:reduce){.rs-res,.rs-view button{transition:none}.rs-res:hover,.rs-res:active{transform:none}}
+</style>
 <style id="shc-style">
 /* =====================================================================
    SHIFT BOARD CALENDAR (#/shift): the calendar first, the board in a slide-out.
@@ -7415,11 +7473,17 @@ const RosterUI = (function(){
   function state(){
     if (!S){
       const s = store.get(KEY, null) || {};
-      S = { id: null, q: "", tier: 0, template: TEMPLATES[s.template] ? s.template : "journal", audience: s.audience === "admin" ? "admin" : "resident" };
+      S = { id: null, q: "", tier: 0, flag: false, template: TEMPLATES[s.template] ? s.template : "journal", audience: s.audience === "admin" ? "admin" : "resident",
+            sort: s.sort === "name" ? "name" : "room", view: s.view === "cards" ? "cards" : "list" };
     }
     return S;
   }
-  const save = () => store.set(KEY, { template: S.template, audience: S.audience });   // the resident is never remembered here
+  const save = () => store.set(KEY, { template: S.template, audience: S.audience, sort: S.sort, view: S.view });   // the resident is never remembered here
+  /* The search reads the way the Ctrl+K lookup does: every word must appear in the name, the alias or the room, accents and case ignored. */
+  const norm = s => String(s || "").toLowerCase().normalize("NFKD").replace(/[̀-ͯ]/g, "").replace(/\s+/g, " ").trim();
+  const initials = name => { const w = String(name || "").split(/[\s-]+/).filter(Boolean); return (w.length > 1 ? w[0].charAt(0) + w[w.length - 1].charAt(0) : String(name || "?").slice(0, 2)).toUpperCase(); };
+  const nameKey = p => nameOf(p).toLowerCase() + " " + sortKey(p);
+  const ICON_SEARCH = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>';
   const nameOf = p => cgScreenName(p);
   const find = id => BookUI.savedProfiles().filter(p => p.id === id)[0] || null;
   const sortKey = p => { const u = BookUI.needsFor(p).unit; return (u ? "0" + u.toLowerCase().replace(/\d+/g, d => d.padStart(6, "0")) : "1") + " " + nameOf(p).toLowerCase(); };
@@ -7489,15 +7553,25 @@ const RosterUI = (function(){
       <p class="lede">Choose a resident, choose a book, and print. Every book is set at the resident’s own support tier, line weight and contrast from their profile, and made on this computer.</p>
       <div class="rs-split">
         <section class="rs-pane rs-roster" aria-labelledby="rsRosterH">
-          <h2 id="rsRosterH"><span class="rs-step" aria-hidden="true">1</span>Resident</h2>
-          <label class="sr-only" for="rsSearch">Search residents by name or unit</label>
-          <input id="rsSearch" type="search" placeholder="Search by name or unit" autocomplete="off" value="${esc(S.q)}" ${list.length ? "" : "disabled"}>
-          <div class="rs-filters" role="group" aria-label="Show residents by support tier">
-            ${[[0, "All"], [1, "Tier 1"], [2, "Tier 2"], [3, "Tier 3"]].map(([t, l]) => `<button type="button" class="rs-chip" data-tier="${t}" aria-pressed="${S.tier === t}">${l}</button>`).join("")}
+          <div class="rs-head">
+            <h2 id="rsRosterH"><span class="rs-step" aria-hidden="true">1</span>Resident</h2>
+            <div class="rs-view" role="group" aria-label="Show residents as">
+              <button type="button" data-view="list" aria-pressed="${S.view === "list"}">List</button>
+              <button type="button" data-view="cards" aria-pressed="${S.view === "cards"}">Cards</button>
+            </div>
           </div>
-          <p class="rs-count" id="rsCount" role="status" aria-live="polite"></p>
-          <ul class="rs-list" id="rsList" aria-label="Residents"></ul>
-          <p class="hint rs-add">${list.length ? "" : "No saved residents yet. "}<a href="profile.html">Add a resident profile</a>, then come back here to print.</p>
+          <div class="rs-searchbox">${ICON_SEARCH}
+            <label class="sr-only" for="rsSearch">Search residents by name, alias or room</label>
+            <input id="rsSearch" type="search" placeholder="Search name, alias or room" autocomplete="off" spellcheck="false" value="${esc(S.q)}" ${list.length ? "" : "disabled"}>
+          </div>
+          <div class="rs-filters" id="rsFilters" role="group" aria-label="Show residents by support tier or need"></div>
+          <div class="rs-toolbar">
+            <p class="rs-count" id="rsCount" role="status" aria-live="polite"></p>
+            <label class="rs-sort"><span>Sort</span><select id="rsSort"><option value="room" ${S.sort === "room" ? "selected" : ""}>By room</option><option value="name" ${S.sort === "name" ? "selected" : ""}>By name</option></select></label>
+          </div>
+          <ul class="rs-list" id="rsList" data-view="${S.view}" aria-label="Residents"></ul>
+          <div class="rs-empty" id="rsEmpty" hidden></div>
+          <p class="hint rs-add">${list.length ? "From any screen, press <kbd>Ctrl</kbd> + <kbd>K</kbd> to jump to a resident. " : ""}<a href="profile.html">Add a resident profile</a>${list.length ? "" : ", or import a census below"}, then come back here to print.</p>
           ${CensusUI.html("rs")}
           <details class="rs-handoff" id="rsHandoff">
             <summary>Back up this roster, or hand it off to another station</summary>
@@ -7534,26 +7608,43 @@ const RosterUI = (function(){
     host.addEventListener("click", onClick);
     host.addEventListener("input", onInput);
     host.addEventListener("change", onChange);
+    host.addEventListener("keydown", onKey);
+    document.getElementById("rsSearch").addEventListener("keydown", e => { if (e.key === "ArrowDown"){ const f = host.querySelector(".rs-res"); if (f){ e.preventDefault(); f.focus(); } } else if (e.key === "Enter"){ const f = host.querySelector(".rs-res"); if (f){ e.preventDefault(); f.click(); } } });
     CensusUI.bind(host, "rs", () => { renderList(); renderWork(); });
     renderList(); renderWork();
   }
   function renderList(){
     ActiveResident.syncSelect();          // residents may have just been added or taken out
-    const all = BookUI.savedProfiles().sort((a, b) => sortKey(a) < sortKey(b) ? -1 : sortKey(a) > sortKey(b) ? 1 : 0);
-    const q = S.q.trim().toLowerCase();
-    const shown = all.filter(p => {
-      const nd = BookUI.needsFor(p);
-      return (!S.tier || nd.tier === S.tier) && (!q || nameOf(p).toLowerCase().indexOf(q) >= 0 || nd.unit.toLowerCase().indexOf(q) >= 0 || cgAlias(p).toLowerCase().indexOf(q) >= 0);
-    });
+    const keyOf = S.sort === "name" ? nameKey : sortKey;
+    const all = BookUI.savedProfiles().sort((a, b) => keyOf(a) < keyOf(b) ? -1 : keyOf(a) > keyOf(b) ? 1 : 0);
+    const words = norm(S.q).split(" ").filter(Boolean);
+    const needs = new Map(all.map(p => [p.id, BookUI.needsFor(p)]));
+    const hay = p => norm([nameOf(p), cgAlias(p), needs.get(p.id).unit].join(" "));
+    const matchesText = p => { const h = hay(p); return words.every(w => h.indexOf(w) >= 0); };
+    const matchesFlag = p => !S.flag || needs.get(p.id).highContrast;
+    // the chips count what a click would show, given the words typed and the other chip
+    const textHits = all.filter(matchesText);
+    const tierCount = t => textHits.filter(p => matchesFlag(p) && (!t || needs.get(p.id).tier === t)).length;
+    const flagCount = textHits.filter(p => needs.get(p.id).highContrast && (!S.tier || needs.get(p.id).tier === S.tier)).length;
+    const shown = textHits.filter(p => matchesFlag(p) && (!S.tier || needs.get(p.id).tier === S.tier));
+    const filters = document.getElementById("rsFilters");
+    if (filters) filters.innerHTML = [[0, "All"], [1, "Tier 1"], [2, "Tier 2"], [3, "Tier 3"]].map(([t, l]) => `<button type="button" class="rs-chip" data-tier="${t}" aria-pressed="${S.tier === t}">${l}<span class="rs-n">${tierCount(t)}</span></button>`).join("")
+      + `<button type="button" class="rs-chip rs-chip-flag" data-flag="1" aria-pressed="${S.flag}">High contrast<span class="rs-n">${flagCount}</span></button>`;
     document.getElementById("rsList").innerHTML = shown.map(p => {
-      const nd = BookUI.needsFor(p), on = p.id === S.id;
+      const nd = needs.get(p.id), on = p.id === S.id;
       return `<li><button type="button" class="rs-res" data-id="${esc(p.id)}" aria-pressed="${on}">
+        <span class="rs-av rs-av-${nd.tier}" aria-hidden="true">${esc(initials(nameOf(p)))}</span>
         <span class="rs-res-main"><b>${esc(nameOf(p))}</b><span>${nd.unit ? "Unit " + esc(nd.unit) : "No unit on file"}</span></span>
         <span class="rs-badges"><span class="rs-tier rs-tier-${nd.tier}">Tier ${nd.tier}</span>${nd.highContrast ? '<span class="rs-flag">High contrast</span>' : ""}${nd.lineW > 2 ? `<span class="rs-flag">${nd.lineW} pt lines</span>` : ""}</span></button></li>`;
     }).join("");
     document.getElementById("rsCount").textContent = all.length
       ? (shown.length === all.length ? all.length + (all.length === 1 ? " resident" : " residents") : shown.length + " of " + all.length + " residents shown")
       : "";
+    // an empty roster and a search that finds nobody each say what to do next
+    const empty = document.getElementById("rsEmpty");
+    if (!all.length) empty.innerHTML = `<p><b>No residents are saved on this computer yet.</b></p><p>Add one profile at a time, or bring in a whole census file below. Everything stays on this computer.</p><p class="rs-empty-actions"><a class="btn btn-primary" href="profile.html">Add a resident profile</a><button class="btn" type="button" data-opencensus="1">Import a census</button></p>`;
+    else if (!shown.length) empty.innerHTML = `<p><b>Nobody matches that.</b></p><p>Try fewer letters, or clear the filters.</p><p class="rs-empty-actions"><button class="btn" type="button" data-clear="1">Show everyone</button></p>`;
+    empty.hidden = !!shown.length;
   }
   function renderWork(keepTracker){
     const p = S.id ? find(S.id) : null, who = document.getElementById("rsWho"), btn = document.getElementById("rsPrint");
@@ -7562,9 +7653,10 @@ const RosterUI = (function(){
       who.innerHTML = `<p class="rs-pick">Choose a resident on the left to begin.</p>`;
     } else {
       const nd = BookUI.needsFor(p);
-      who.innerHTML = `<p class="eyebrow">Printing for</p><p class="rs-name">${esc(nameOf(p))}${nd.unit ? ` <span>Unit ${esc(nd.unit)}</span>` : ""}</p>
+      who.innerHTML = `<div class="rs-who-row"><span class="rs-av rs-av-lg rs-av-${nd.tier}" aria-hidden="true">${esc(initials(nameOf(p)))}</span><div>
+        <p class="eyebrow">Printing for</p><p class="rs-name">${esc(nameOf(p))}${nd.unit ? ` <span>Unit ${esc(nd.unit)}</span>` : ""}</p>
         <p class="rs-needs">Tier ${nd.tier} · ${esc(BookUI.TIER_NAMES[nd.tier])} · ${nd.lineW} pt writing lines · ${nd.highContrast || isPureBlackAndWhitePDF ? "pure black and white" : "color, every color named"}
-        · <a href="profile.html?resident=${encodeURIComponent(p.id)}">Edit profile</a></p>`;
+        · <a href="profile.html?resident=${encodeURIComponent(p.id)}">Edit profile</a></p></div></div>`;
     }
     btn.disabled = !p;
     // page counts for the chosen resident, on every template card
@@ -7587,7 +7679,11 @@ const RosterUI = (function(){
     const b = e.target.closest("button");
     if (!b || !host.contains(b)) return;
     if (b.dataset.id){ S.id = b.dataset.id; ActiveResident.set(S.id); renderList(); renderWork(); const f = host.querySelector(`.rs-res[data-id="${CSS.escape(S.id)}"]`); if (f) f.focus(); return; }
-    if (b.dataset.tier !== undefined){ S.tier = +b.dataset.tier; host.querySelectorAll(".rs-chip").forEach(c => c.setAttribute("aria-pressed", String(+c.dataset.tier === S.tier))); renderList(); return; }
+    if (b.dataset.tier !== undefined){ S.tier = +b.dataset.tier; renderList(); const c = host.querySelector(`.rs-chip[data-tier="${S.tier}"]`); if (c) c.focus(); return; }   // the chips are redrawn with their counts, so the keyboard is put back
+    if (b.dataset.flag){ S.flag = !S.flag; renderList(); const c = host.querySelector(".rs-chip[data-flag]"); if (c) c.focus(); return; }
+    if (b.dataset.view){ S.view = b.dataset.view === "cards" ? "cards" : "list"; save(); document.getElementById("rsList").dataset.view = S.view; host.querySelectorAll(".rs-view button").forEach(v => v.setAttribute("aria-pressed", String(v.dataset.view === S.view))); return; }
+    if (b.dataset.clear){ S.q = ""; S.tier = 0; S.flag = false; const si = document.getElementById("rsSearch"); if (si){ si.value = ""; si.focus(); } renderList(); return; }
+    if (b.dataset.opencensus){ const d = document.getElementById("rsCs"); if (d){ d.open = true; d.scrollIntoView({ block: "center" }); const s = d.querySelector("summary"); if (s) s.focus(); } return; }
     if (b.id === "rsPrint") printNow();
     if (b.id === "rsHoOut") handOff();
     if (b.id === "rsHoIn") receive();
@@ -7629,8 +7725,20 @@ const RosterUI = (function(){
     }).then(() => { btn.disabled = false; });
   }
   function onInput(e){ if (e.target.id === "rsSearch"){ S.q = e.target.value.slice(0, 60); renderList(); } }
+  /* Up and Down (and Left and Right in the cards) walk the list; Home and End go to its ends. */
+  function onKey(e){
+    const b = e.target.closest && e.target.closest(".rs-res");
+    if (!b || !host.contains(b)) return;
+    const rows = Array.from(host.querySelectorAll(".rs-res")), i = rows.indexOf(b), cards = S.view === "cards";
+    const to = e.key === "ArrowDown" || (cards && e.key === "ArrowRight") ? i + 1 : e.key === "ArrowUp" || (cards && e.key === "ArrowLeft") ? i - 1 : e.key === "Home" ? 0 : e.key === "End" ? rows.length - 1 : null;
+    if (to === null) return;
+    e.preventDefault();
+    if (to < 0){ const si = document.getElementById("rsSearch"); if (si) si.focus(); return; }
+    if (rows[to]) rows[to].focus();
+  }
   function onChange(e){
     const t = e.target;
+    if (t.id === "rsSort"){ S.sort = t.value === "name" ? "name" : "room"; save(); renderList(); return; }
     if (t.name === "rsTpl"){ S.template = t.value; save(); renderWork(); }
     else if (t.name === "rsAud"){ S.audience = t.value; save(); renderWork(); }
   }
