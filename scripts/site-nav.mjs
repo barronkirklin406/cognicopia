@@ -7,11 +7,11 @@
                                  fail if any page is out of date (npm run
                                  build runs this)
 
-   Navigation is six hubs (HUBS below), the same on every page: Today,
-   Studio, Activity Packets, Facility, Academy and Resources. A hub with
+   Navigation is seven places (HUBS below), the same on every page: Today,
+   Studio, Activity Packets, Tablet Activities, Facility, Academy and Resources. A hub with
    several places is a collapsible group and the one holding the current page
    is open; a hub with one place is a plain link. The Packet Builder
-   (builder.html) gets the same six, with its activity categories under
+   (builder.html) gets the same seven, with its activity categories under
    Activity Packets. All reference and educational reading lives under
    Resources: a collapsible group in the sidebar and a tabbed hub page at
    resources/ (interactive tools on one tab, the reference library on the
@@ -25,7 +25,7 @@
    <style id="cg-nav-css"> and the license manager's two scripts in the head. The
    rest of every page is left exactly as it is. In builder.html only the
    sidebar's navigation is generated (its brand, hooks and styles are the
-   page's own). --check also proves the six hubs are the same on every page,
+   page's own). --check also proves the seven places are the same on every page,
    that exactly one is open, and that every link leads somewhere real.
    ===================================================================== */
 import fs from "fs";
@@ -47,6 +47,9 @@ export const CTA = {
 const svg = (d, size, cls, sw) => `<svg${cls ? ` class="${cls}"` : ""} width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${sw || 2}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${d}</svg>`;
 const ICON = {
   tablet: '<rect x="4" y="2" width="16" height="20" rx="2"/><line x1="12" y1="18" x2="12" y2="18.01"/>',
+  // the two group labels: sparks for the resident's own tools, two people for staff and family
+  sparkles: '<path d="M10 3l1.9 5.1L17 10l-5.1 1.9L10 17l-1.9-5.1L3 10l5.1-1.9z"/><path d="M19 14l.8 2.2L22 17l-2.2.8L19 20l-.8-2.2L16 17l2.2-.8z"/>',
+  users: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9"/><path d="M16 3.1a4 4 0 0 1 0 7.8"/>',
   menu: '<line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>',
   home: '<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>',
   builder: '<path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6"/><line x1="9" y1="13" x2="16" y2="13"/><line x1="9" y1="17" x2="14" y2="17"/>',
@@ -87,18 +90,17 @@ export const TOOLS = [
   { key: "planners", label: "12-Month Life Planners",  href: "life-planners.html" }
 ];
 
-/* The six hubs: the whole navigation. Every page shows them in this order.
+/* The seven places: the whole navigation. Every page shows them in this order.
    An item's `key` is what a page marks as current; an item with a `route` is
    a screen inside the Packet Builder (builder.html#/<route>). A hub with one
    item is drawn as a plain link. On the static pages, Activity Packets is
    one link to the Packet Builder (its categories live inside it), and
    Resources lists the whole reference library (HUB, GROUPS and MODULES
-   below); inside the Packet Builder, Resources is two links. Contact is a footer link under the six, on every page. */
+   below); inside the Packet Builder, Resources is two links. Contact is a footer link under the seven, on every page. */
 const B = "builder.html";
 export const HUBS = [
   { id: "today",     label: "Today",            icon: "sun",      group: "resident", items: [
       { key: "home",         label: "Personalized Packet Tool", href: "index.html",        icon: "home" },
-      { key: "tablet",       label: "Tablet Activities",        href: "tablet.html",       icon: "tablet" },
       { key: "profile",      label: "Resident Profiles",        href: "profile.html",      icon: "profile" } ] },
   { id: "studio",    label: "Studio",           icon: "palette",  group: "resident", items: [
       { key: "coloring",     label: "Cognicopia Coloring",      href: B + "#/coloring",     route: "coloring",     icon: "palette" },
@@ -109,6 +111,8 @@ export const HUBS = [
       { key: "toolkit",      label: "Page Toolkit",             href: B + "#/toolkit",      route: "toolkit",      icon: "builder" } ] },
   { id: "packets",   label: "Activity Packets", icon: "builder",  group: "resident", items: [
       { key: "builder",      label: "Packet Builder",           href: B,                    icon: "builder" } ] },
+  { id: "tablet",    label: "Tablet Activities", icon: "tablet",  group: "resident", items: [
+      { key: "tablet",       label: "Tablet Activities",        href: "tablet.html",       icon: "tablet" } ] },
   { id: "facility",  label: "Facility",         icon: "building", group: "staff", items: [
       { key: "facility",     label: "Facility Portal",          href: B + "#/facility",     route: "facility",     icon: "building" },
       { key: "shift",        label: "Shift board",              href: B + "#/shift",        route: "shift",        icon: "clipboard" },
@@ -131,6 +135,7 @@ export const HUBS = [
 ];
 /* The two headings above the hubs: what is for the resident, and what is for staff and family. */
 export const NAV_GROUPS = { resident: "Resident tools", staff: "Staff & family portal" };
+const GROUP_ICON = { resident: "sparkles", staff: "users" };
 /* The categories the Packet Builder draws under Activity Packets (its own list, with counts, is built in the page; these are the ids it uses). */
 const CONTACT = { key: "contact", label: "Contact Cognicopia", href: "contact.html", icon: "support" };
 const TERMS = { key: "terms", label: "Terms of Service & Disclaimer", href: "terms.html", icon: "clipboard" };
@@ -355,7 +360,7 @@ ${inner}
       </details>
     </li>`;
   const single = (h, it) => `    <li class="cg-hub-li" data-hub="${h.id}"><a href="${P}${it.href}"${here(cur === it.key, "cg-hub-link")}>${svg(ICON[h.icon], 20, "cg-sb-ico", 2.2)}<span>${esc(h.label)}</span></a></li>`;
-  const grp = h => `    <li class="cg-grp" data-grp="${h.group}"><span class="cg-grp-l" id="cgGrpHead-${h.group}">${esc(NAV_GROUPS[h.group])}</span></li>\n`;
+  const grp = h => `    <li class="cg-grp" data-grp="${h.group}"><span class="cg-grp-l" id="cgGrpHead-${h.group}">${svg(ICON[GROUP_ICON[h.group]], 16, "cg-grp-ico", 2)}<span>${esc(NAV_GROUPS[h.group])}</span></span></li>\n`;
   const hubs = HUBS.map((h, i) => {
     const head = !i || HUBS[i - 1].group !== h.group ? grp(h) : "";
     if (h.id === "resources") return head + group(h, `${link(HUB.href, "Browse all resources", "hub", "grid").replace("<a ", '<a data-hub-index ')}
@@ -379,7 +384,7 @@ ${groups}`);
   <nav class="cg-sb-nav" aria-label="Sections">
   <ul class="cg-sidebar-nav cg-hubs">
 ${hubs}
-    <li class="cg-hub-foot"><a href="${P}${CONTACT.href}"${here(cur === CONTACT.key)}>${svg(ICON[CONTACT.icon], 18, "cg-sb-ico")}<span>${esc(CONTACT.label)}</span></a></li>
+    <li class="cg-hub-foot"><a href="${P}${CONTACT.href}" aria-label="${esc(CONTACT.label)}"${here(cur === CONTACT.key)}>${svg(ICON[CONTACT.icon], 18, "cg-sb-ico")}<span>Contact<span class="cg-hub-more"> Cognicopia</span></span></a></li>
   </ul>
   </nav>
 </aside>
@@ -401,7 +406,7 @@ ${hubs}
   hubs.forEach(function(d){
     d.addEventListener("toggle", function(){ if (d.open) hubs.forEach(function(o){ if (o !== d && o.open) o.open = false; }); });
   });
-  var wide = window.matchMedia ? window.matchMedia("(min-width:1100px)") : { matches: false };
+  var wide = window.matchMedia ? window.matchMedia("(min-width:1280px)") : { matches: false };
   var settle = function(){ hubs.forEach(function(d){ d.open = !wide.matches && d.hasAttribute("data-here"); }); };
   settle();
   if (wide.addEventListener) wide.addEventListener("change", settle);
@@ -418,7 +423,7 @@ ${hubs}
 ${END}`;
 }
 
-/* The Packet Builder's navigation: the same six hubs in its own markup and
+/* The Packet Builder's navigation: the same seven in its own markup and
    classes (the page's styles and script own the look and the behavior). Its
    hooks stay as the page uses them: #catNav, #navPacket, #navCount, #navColoringCount,
    .sb-link[data-route]. Activity Packets holds the activity categories (drawn
@@ -439,6 +444,7 @@ ${inner}
       <ul class="sb-list">
         <li><button class="sb-link" type="button" id="navPacket">${ico("builder")}<span>Packet queue</span><span class="badge" id="navCount">0</span></button></li>
       </ul>`, true);
+    if (h.id === "tablet") { const it = h.items[0]; return `    <a class="sb-link sb-hub-link" data-hub="${h.id}" href="${it.href}">${ico(h.icon, 26)}<span>${esc(h.label)}</span></a>`; }
     if (h.id === "academy" && h.items.length === 1) { const it = h.items[0]; return `    <a class="sb-link sb-hub-link" data-hub="${h.id}" href="#/${it.route}" data-route="${it.route}">${ico(h.icon, 26)}<span>${esc(h.label)}</span></a>`; }
     if (h.id === "resources") return group(h, `      <ul class="sb-list">
 ${[{ label: HUB.title, href: HUB.href, icon: "library" }, { label: RESEARCH.label, href: moduleHref(RESEARCH), icon: "microscope" }].map(link).join("\n")}
@@ -547,8 +553,8 @@ ${GENERATORS.map(t => hubCard("../" + t.href, t.label, t.desc, t.icon, t.meta)).
 }
 
 export const CSS = `<style id="cg-nav-css">
-/* Site navigation: the six hubs, breadcrumbs and the top bar's buy links.
-   On a wide window (1100 px and up) the six hubs run across a light top bar,
+/* Site navigation: the seven places, breadcrumbs and the top bar's buy links.
+   On a wide window (1280 px and up) the seven places run across a light top bar,
    each a drop-down; on anything narrower they are the Menu drawer. The markup
    is the same at every width (one <aside>, the hubs as <details>), so a
    keyboard, a screen reader and the checks meet one structure.
@@ -638,13 +644,13 @@ html.cg-night-shift .cg-topbar .cg-cta:focus-visible{outline-color:#ffd477}
    sit above their hubs and take no room of their own (a hairline divides the two groups). */
 .cg-grp{list-style:none;margin:0;padding:14px 14px 2px}
 .cg-grp-l{display:inline-flex;align-items:center;gap:8px;font:700 15px/1.3 var(--cg-font-ui,"Trebuchet MS","Segoe UI",sans-serif);letter-spacing:.1em;text-transform:uppercase;color:var(--cg-tan-800,#453f37)}
-.cg-grp-l::before{content:"";flex:none;width:10px;height:10px;border-radius:50%;background:var(--cg-green-600,#0b5f59)}
-.cg-grp[data-grp="staff"] .cg-grp-l::before{background:var(--cg-gold-500,#c5a059);box-shadow:0 0 0 2px var(--cg-tan-800,#453f37)}
+.cg-grp-l .cg-grp-ico{flex:none;width:16px;height:16px;color:var(--sb-accent,#0b5f59)}
 .cg-grp[data-grp="staff"]{margin-top:6px;border-top:1px solid var(--sb-border)}
 html.cg-night-shift .cg-grp-l{color:#e9c98f!important}
+html.cg-night-shift .cg-grp-l .cg-grp-ico{color:#e9c98f}
 html.cg-night-shift .cg-grp[data-grp="staff"]{border-color:#684a26}
-/* ---------- a wide window: the six hubs across the top, each a drop-down ---------- */
-@media (min-width:1100px){
+/* ---------- a wide window: the seven places across the top, each a drop-down ---------- */
+@media (min-width:1280px){
   .cg-grp{position:relative;flex:none;width:0;height:100%;align-self:stretch;margin:0;padding:0;border:0!important;pointer-events:none}
   html body .cg-sb-nav{align-self:stretch}
   html body .cg-sidebar-nav.cg-hubs{align-self:stretch}
@@ -682,8 +688,9 @@ html.cg-night-shift .cg-grp[data-grp="staff"]{border-color:#684a26}
   .cg-hubs > .cg-hub-li[data-hub="resources"] > .cg-hub > .cg-sb-sub{left:auto;right:0;width:min(880px,calc(100vw - 48px));display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px 16px;padding:16px}
   .cg-hubs > .cg-hub-li[data-hub="resources"] > .cg-hub > .cg-sb-sub > li:first-child{grid-column:1/-1}
   .cg-hub-foot{margin:0 0 0 auto;padding:0;border:0}
-  html body .cg-hub-foot a{margin:0;padding:8px 14px;border:0;border-radius:10px;white-space:nowrap;font:600 16px/1.2 var(--cg-font-ui,"Trebuchet MS","Segoe UI",sans-serif)}
+  html body .cg-hub-foot a{margin:0;padding:8px 12px;border:0;border-radius:10px;white-space:nowrap;font:600 16px/1.2 var(--cg-font-ui,"Trebuchet MS","Segoe UI",sans-serif)}
   .cg-hub-foot .cg-sb-ico{display:none}
+  .cg-hub-more{display:none}
   .cg-sidebar-toggle,.cg-sb-overlay{display:none!important}
   /* the action bar scrolls away under the navigation; the packet tool's, which carries Instant Soothe, stays in reach */
   html body .cg-topbar{position:relative;top:auto}
@@ -691,17 +698,18 @@ html.cg-night-shift .cg-grp[data-grp="staff"]{border-color:#684a26}
 }
 
 /* ---------- anything narrower: the same hubs in the Menu drawer ---------- */
-/* a window just wide enough for the bar (1100 to 1279 px): a slightly smaller logo and tighter links keep every hub on one row */
-@media (min-width:1100px) and (max-width:1279px){
+/* a window just wide enough for the bar (1280 to 1327 px): a smaller logo and tighter links keep every place on one row */
+@media (min-width:1280px) and (max-width:1327px){
   html body .cg-sidebar-brand img{width:64px;height:46px}
-  html body .cg-sidebar{gap:14px}
-  .cg-hubs > .cg-hub-li > .cg-hub > summary,.cg-hubs > .cg-hub-li > a.cg-hub-link{padding:8px 10px}
+  html body .cg-sidebar{gap:12px}
+  html body .cg-hubs > .cg-hub-li > .cg-hub > summary,html body .cg-hubs > .cg-hub-li > a.cg-hub-link{padding:8px 10px}
+  html body .cg-hub-foot a{padding:8px 10px}
 }
-@media (max-width:1099px){
+@media (max-width:1279px){
   html body .cg-sidebar-brand img{width:63px;height:45px;object-fit:cover;object-position:50% 46%;border-radius:0}
   html body .cg-sidebar{position:fixed;top:0;left:0;z-index:900;width:min(320px,86vw);height:100vh;padding-top:68px;transform:translateX(-100%);
-    transition:transform .22s ease;box-shadow:6px 0 32px rgba(40,36,31,.28);border-right:1px solid var(--sb-border)}
-  html body .cg-sidebar.is-open{transform:translateX(0)}
+    transition:transform .22s ease;box-shadow:none;border-right:1px solid var(--sb-border)}
+  html body .cg-sidebar.is-open{transform:translateX(0);box-shadow:6px 0 32px rgba(40,36,31,.28)}
   html body .cg-sidebar-toggle{display:flex;position:fixed;top:10px;left:12px;z-index:1100;width:auto;gap:8px;padding:8px 14px;
     background:var(--cg-green-700,#08423f);color:#ffffff;border:2px solid var(--cg-green-700,#08423f);border-radius:10px;
     font:700 15px/1 var(--cg-font-ui,"Segoe UI",system-ui,sans-serif)}
@@ -710,7 +718,7 @@ html.cg-night-shift .cg-grp[data-grp="staff"]{border-color:#684a26}
   .cg-sb-overlay.is-open{display:block}
 }
 /* the Menu button floats over the start of the action bar: keep that place clear (each page's own style already does it on a phone) */
-@media (min-width:701px) and (max-width:1099px){html body .cg-topbar{padding-left:128px}}
+@media (min-width:701px) and (max-width:1279px){html body .cg-topbar{padding-left:128px}}
 @media (prefers-reduced-motion:reduce){html body .cg-sidebar{transition:none}}
 
 /* ---------- Night Shift: the bar, its drop-downs and the action bar after dark (complete here, so a page that
@@ -825,7 +833,7 @@ export function render(s, page){
   return withFooter(withPaper(withDesign(out, page), page), page);
 }
 
-/* ---------- 4. Proof: the six hubs are the same everywhere and lead somewhere real ---------- */
+/* ---------- 4. Proof: the seven places are the same everywhere and lead somewhere real ---------- */
 export function validate(){
   const problems = [], read = f => fs.readFileSync(path.join(ROOT, f), "utf8");
   const ids = HUBS.map(h => h.id).join(",");

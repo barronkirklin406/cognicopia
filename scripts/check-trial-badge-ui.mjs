@@ -7,8 +7,9 @@
               on a new computer, on a page that is not the front page, and counting down as packets are made (24 / 25), live and
               with no reload; the number is also kept in localStorage under cognicopia_trial_generations (25 on a first visit);
               a licensed computer sees no badge; at none left it says 0 / 25; clearing that one number does not give packets back
-     hero     "Start Free Trial - 25 Free Activity Generations" with "No credit card required. Pure high-contrast B&W printables &
-              interactive tablet games." directly beneath it; both fit a phone (390 px) with no sideways scroll
+     hero     "Get Started Free" (the owner's wording, November 2026: no trial count and no badge in the hero; the count lives in the
+              action bar and the packet tool's bar) with "No sign-up and no credit card. Everything stays on this computer."
+              directly beneath it; both fit a phone (390 px) with no sideways scroll
      window   with the 25 used, making a packet opens a window titled "You've used all 25 Free Trial Generations!" that explains
               the card (Stripe) and the Net-30 purchase-order routes and has "Activate Annual / Monthly License" and
               "Request Net-30 Invoice", 52 px tall, Escape closes it; the Packet Builder's gate says the same
@@ -43,9 +44,10 @@ try {
   let p = await open(ctx, "index.html");
   ok((await badge(p)).includes(BADGE), "index.html: a new computer shows " + BADGE + " (" + JSON.stringify(await badge(p)) + ")");
   ok(await p.evaluate(() => localStorage.getItem("cognicopia_trial_generations")) === "25", "and keeps 25 under cognicopia_trial_generations");
-  const hero = await p.evaluate(() => { const b = document.getElementById("heroTrial"), s = document.getElementById("heroTrialSub"), r = b.getBoundingClientRect(), q = s.getBoundingClientRect(); return { b: b.textContent.trim(), s: s.textContent.trim(), below: q.top >= r.bottom - 1, h: r.height, href: b.getAttribute("href") }; });
-  ok(hero.b === "Start Free Trial — 25 Free Activity Generations", "the hero button says: " + hero.b);
-  ok(hero.s === "No credit card required. Pure high-contrast B&W printables & interactive tablet games.", "and its subtitle: " + hero.s);
+  const hero = await p.evaluate(() => { const b = document.getElementById("heroCta"), s = document.getElementById("heroNote"), r = b.getBoundingClientRect(), q = s.getBoundingClientRect(); return { b: b.textContent.trim(), s: s.textContent.trim(), below: q.top >= r.bottom - 1, h: r.height, href: b.getAttribute("href"), badges: document.querySelectorAll(".lp-hero [data-cg-trial], .lp-hero .cg-trial").length }; });
+  ok(hero.b === "Get Started Free", "the hero button says: " + hero.b);
+  ok(hero.s === "No sign-up and no credit card. Everything stays on this computer.", "and its line: " + hero.s);
+  ok(hero.badges === 0, "the hero carries no free-trial badge or count (the action bar and the packet tool's bar do)");
   ok(hero.below && hero.h >= 52 && hero.href === "#make", `the subtitle is directly beneath it, the button is ${Math.round(hero.h)} px tall and goes to the packet tool`);
 
   /* ---- another page: the action bar ---- */
@@ -109,7 +111,7 @@ try {
   const m = await browser.newContext({ viewport: { width: 390, height: 844 }, serviceWorkers: "block" });
   await m.addInitScript(() => { try { localStorage.setItem("cognicopia_eula_accepted", "true"); } catch (e) { /* ignore */ } window.print = () => {}; });
   const mp = await open(m, "index.html"); await mp.waitForTimeout(500);
-  const ph = await mp.evaluate(() => ({ wide: document.documentElement.scrollWidth - innerWidth, btn: document.getElementById("heroTrial").getBoundingClientRect().right <= innerWidth, sub: document.getElementById("heroTrialSub").getBoundingClientRect().right <= innerWidth }));
+  const ph = await mp.evaluate(() => ({ wide: document.documentElement.scrollWidth - innerWidth, btn: document.getElementById("heroCta").getBoundingClientRect().right <= innerWidth, sub: document.getElementById("heroNote").getBoundingClientRect().right <= innerWidth }));
   ok(ph.wide <= 1 && ph.btn && ph.sub, "at 390 px the hero button and subtitle fit with no sideways scroll");
   await mp.screenshot({ path: "/tmp/trial-hero-390.png" });
 

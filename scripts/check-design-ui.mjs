@@ -234,8 +234,10 @@ try {
     await ctx.close();
   }
   ctx = await context(1366, 768); p = await open(ctx, "index.html"); await p.waitForTimeout(300);
-  const lap = await p.evaluate(() => [...document.querySelectorAll(".cg-value")].map(e => Math.round(e.getBoundingClientRect().bottom)));
-  ok(lap.length === 5 && lap.every(b => b <= 768), `at 1366 x 768 all five value cards are fully on the first screen (bottoms at ${lap.join(", ")} px)`);
+  /* the redesigned hero (the owner's brief, November 2026) is a taller, calmer first screen: headline, subtitle, the one button and its line, with the next section's heading just beginning; the five cards are one scroll down */
+  const lap = await p.evaluate(() => { const r = s => document.querySelector(s).getBoundingClientRect(); return { cta: Math.round(r(".lp-btn").bottom), note: Math.round(r("#heroNote").bottom), h1: Math.round(r(".hero-title").top), next: Math.round(r("#featTitle").top), cards: document.querySelectorAll(".cg-value").length, shown: [...document.querySelectorAll(".cg-value")].filter(e => e.getBoundingClientRect().top < innerHeight).length }; });
+  ok(lap.cards === 5 && lap.cta <= 768 && lap.note <= 768 && lap.h1 >= 80, `at 1366 x 768 the headline, the Get Started Free button and its line are fully on the first screen (button bottom ${lap.cta}, line bottom ${lap.note} px)`);
+  ok(lap.next < 768, `and the next section's heading begins on the first screen, so a visitor sees there is more (${lap.next} px from the top)`);
   await ctx.close();
   /* the front of the packet tool: a hero in two columns, a button that reaches the tool, the evidence, the footer */
   ctx = await context(1366, 768); p = await open(ctx, "index.html"); await p.waitForTimeout(300);
@@ -244,7 +246,7 @@ try {
       marks: [...document.querySelectorAll(".lp-marks a")].map(a => a.getAttribute("href")), foot: document.querySelectorAll(".lp-footer nav a").length, quote: (document.querySelector(".lp-quote figcaption") || {}).textContent || "",
       hidden: document.querySelector(".lp-visual").getAttribute("aria-hidden") }; });
   ok(lp.side && lp.hidden === "true", "the hero is two columns: the words, and beside them a picture of the tool that screen readers skip");
-  ok(lp.href === "#make" && lp.bh >= 52 && lp.make, `"Make a packet" (${lp.bh} px tall) points at the packet tool, which sits under it on the same page`);
+  ok(lp.href === "#make" && lp.bh >= 52 && lp.make, `"Get Started Free" (${lp.bh} px tall) points at the packet tool, which sits under it on the same page`);
   ok(lp.marks.length === 5 && lp.marks.every(h => /^resources\/research\/[a-z-]+\/$/.test(h)), "the evidence row links five Research Center summaries");
   ok(lp.foot === 15 && /Cognicopia/.test(lp.quote) && !/Kirk Barron/.test(lp.quote), "the footer has its three columns of links and the quote is credited to Cognicopia, not a person");
   await p.click(".lp-btn"); await p.waitForTimeout(900);
@@ -256,7 +258,8 @@ try {
   await ctx.close();
   ctx = await context(390, 844); p = await open(ctx, "index.html"); await p.waitForTimeout(300);
   const ph = await p.evaluate(() => { const a = [...document.querySelectorAll(".cg-value")].map(e => { const b = e.getBoundingClientRect(); return [Math.round(b.top), Math.round(b.bottom)]; }); return { cards: a, h1: Math.round(document.querySelector(".hero-title").getBoundingClientRect().top) }; });
-  ok(ph.cards.length === 5 && ph.cards[0][1] <= 844, `at 390 x 844 the first value card is fully on the first screen (${ph.cards[0].join("-")} px of 844)`);
+  const cta = await p.evaluate(() => Math.round(document.querySelector(".lp-btn").getBoundingClientRect().bottom));
+  ok(ph.cards.length === 5 && cta <= 844 && ph.cards[0][0] < 844, `at 390 x 844 the headline and the Get Started Free button are fully on the first screen (button bottom ${cta}) and the first value card begins on it (${ph.cards[0].join("-")} px of 844)`);
   await shot(p, "index-phone");
   await ctx.close();
 

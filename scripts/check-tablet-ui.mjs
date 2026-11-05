@@ -125,14 +125,15 @@ try {
     ok(await p.evaluate(() => document.getElementById("tbStageLate").checked && document.getElementById("tbTopic").value === "farming" && document.getElementById("tbSound").getAttribute("aria-pressed") === "false"), "and they are there again after reloading");
     ok(await p.evaluate(() => !document.getElementById("tbSound").textContent.includes("On")), "the sound button says so");
     await ctx.close();
-    /* the front page: a Tablet Activities button in the first screen, and it goes there */
+    /* the front page: Tablet Activities is in the top bar beside Activity Packets (the owner moved it there from the hero, November 2026), and it goes there */
     const home = await fresh({ width: 1366, height: 768 }, { page: "index.html" });
-    const btn = await home.p.evaluate(() => { const e = document.querySelector(".lp-btn-tablet"); if (!e) return null; const r = e.getBoundingClientRect(); return { top: r.top, bottom: r.bottom, h: r.height, w: r.width, text: e.textContent.trim() }; });
-    ok(btn && btn.bottom < 768 && btn.h >= 52 && btn.w >= 150 && btn.text === "Tablet Activities", "the front page's first screen has a Tablet Activities button: " + JSON.stringify(btn));
-    const inMenu = await home.p.evaluate(() => Array.from(document.querySelectorAll("a[href='tablet.html'], a[href='./tablet.html']")).length); ok(inMenu >= 2, "and the menu bar links to it as well (" + inMenu + " links)");
-    await home.p.click(".lp-btn-tablet"); await home.p.waitForURL("**/tablet.html"); ok(/Tablet Activities/.test(await text(home.p, "h1")), "pressing the button opens the tablet page");
+    const btn = await home.p.evaluate(() => { const e = document.querySelector('.cg-hubs > li[data-hub="tablet"] > a'), pk = document.querySelector('.cg-hubs > li[data-hub="packets"] > a'); if (!e || !pk) return null; const r = e.getBoundingClientRect(), q = pk.getBoundingClientRect(); return { top: r.top, bottom: r.bottom, h: r.height, w: r.width, text: e.textContent.trim(), nextTo: Math.abs(r.left - q.right) < 24 && Math.abs(r.top - q.top) < 2 }; });
+    ok(btn && btn.bottom < 120 && btn.h >= 52 && btn.w >= 150 && btn.text === "Tablet Activities" && btn.nextTo, "the top bar has a Tablet Activities link right next to Activity Packets: " + JSON.stringify(btn));
+    ok(await home.p.evaluate(() => !document.querySelector(".lp-btn-tablet")), "and the hero does not repeat it");
+    await home.p.click('.cg-hubs > li[data-hub="tablet"] > a'); await home.p.waitForURL("**/tablet.html"); ok(/Tablet Activities/.test(await text(home.p, "h1")), "pressing the link opens the tablet page");
     const phone = await fresh(PHONE, { page: "index.html" });
-    ok(await phone.p.evaluate(() => { const e = document.querySelector(".lp-btn-tablet"); const r = e.getBoundingClientRect(); return r.height >= 52 && r.right <= innerWidth; }), "on a phone the button fits the screen");
+    await phone.p.click("#cgSbToggle"); await phone.p.waitForTimeout(350);
+    ok(await phone.p.evaluate(() => { const e = document.querySelector('.cg-hubs > li[data-hub="tablet"] > a'); const r = e.getBoundingClientRect(); return r.height >= 52 && r.right <= innerWidth && r.left >= 0; }), "on a phone the link is in the Menu drawer, at least 52 px tall and on the screen");
     await home.ctx.close(); await phone.ctx.close();
   }
 
