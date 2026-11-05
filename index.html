@@ -3501,6 +3501,15 @@ summary{min-height:var(--tap);box-sizing:border-box}
 .mb-grid select,.mb-grid input{min-height:var(--tap);width:100%;box-sizing:border-box;padding:8px 10px;border-radius:10px;border:2px solid rgba(213,238,240,.3);background:#0b1314;color:#edf5f6;font:inherit;font-size:16px;font-weight:400}
 .mb-grid select:focus-visible,.mb-grid input:focus-visible,.mb-res-tools button:focus-visible{outline:3px solid #86d4dc;outline-offset:2px}
 .mb-dialog .mb-res{margin-top:14px}
+.mb-logo{display:grid;gap:8px;font-weight:700;font-size:15px;color:#fff}
+.mb-logo input[type=file]{min-height:var(--tap);width:100%;box-sizing:border-box;padding:12px 10px;border-radius:10px;border:2px solid rgba(213,238,240,.3);background:#0b1314;color:#edf5f6;font:inherit;font-size:16px;font-weight:400}
+.mb-logo input[type=file]:focus-visible,.mb-logo button:focus-visible{outline:3px solid #86d4dc;outline-offset:2px}
+.mb-logo-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.mb-logo-row[hidden]{display:none}
+.mb-logo-row img{display:block;max-width:220px;max-height:90px;background:#fff;border:2px solid rgba(213,238,240,.3);border-radius:8px;padding:6px}
+.mb-logo button{min-height:var(--tap);padding:4px 14px;border-radius:8px;border:1px solid rgba(213,238,240,.35);background:transparent;color:#cfe3e6;font:inherit;font-size:14.5px;cursor:pointer}
+.mb-logo small{font-weight:400;font-size:14.5px;line-height:1.4;color:#d3e6e8}
+.mb-logo small.mb-bad{color:#ffd7c9;font-weight:700}
 .mb-res-tools{display:flex;gap:8px;margin:0 0 8px}
 .mb-res-tools button{min-height:var(--tap);padding:4px 14px;border-radius:8px;border:1px solid rgba(213,238,240,.35);background:transparent;color:#cfe3e6;font:inherit;font-size:14.5px;cursor:pointer}
 .mb-res-list{max-height:230px;overflow:auto;display:grid;gap:6px;padding:2px}
@@ -5685,6 +5694,15 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
           <label>Year<select id="mbYear"></select></label>
           <label>Paper<select id="mbPaper"><option value="letter">Letter (8.5 × 11 in)</option><option value="a4">A4</option></select></label>
           <label class="mb-wide">Facility name (optional)<input type="text" id="mbFac" maxlength="80" autocomplete="off"></label>
+          <div class="mb-wide mb-logo">
+            <label for="mbLogo">Facility logo (optional)</label>
+            <input type="file" id="mbLogo" accept="image/png,image/jpeg,image/webp,image/gif" aria-describedby="mbLogoMsg">
+            <div class="mb-logo-row" id="mbLogoRow" hidden>
+              <img id="mbLogoPreview" alt="Your facility logo, as it will print in black and white">
+              <button type="button" id="mbLogoClear">Remove the logo</button>
+            </div>
+            <small id="mbLogoMsg" role="status" aria-live="polite">Printed in pure black and white on the cover sheets and the index. It is kept on this computer only and is never sent anywhere. Use your facility's logo, not a photo of a person.</small>
+          </div>
         </div>
         <fieldset>
           <legend>What to include</legend>
@@ -6604,6 +6622,7 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
     </div>
   </div>
 </dialog>
+<script src="js/facility-logo.js"></script>
 <script src="js/modalController.js"></script>
 <script>(function(){ var M=window.CognicopiaModal, d=document.getElementById("ailmentPrintPreviewModal"); if(!M) return;
   if(d) M.bind(d);   /* the preview closes on Escape, the x, or a click on the backdrop */
@@ -23783,7 +23802,11 @@ if (document.readyState === "complete" || document.readyState === "interactive")
     while (nSize > 30 && k.d.getTextWidth(safe(who)) > inner) { nSize -= 2; k.font(nSize, "bold"); }
     add(k.wrap(who, nSize, "bold", inner), nSize, "bold", 0.2 * IN);
     add(k.wrap(pg.name ? "Your Personalized Activity Packet" : "Chosen just for you", k.mx(20, 20 * qps * f), "italic", inner), k.mx(20, 20 * qps * f), "italic", 0.3 * IN);
-    parts.push({ art:true, h:2.6 * IN * 120 / 200, gap:0.25 * IN });
+    /* the picture on the cover: the facility's own logo (black and white, chosen in the bundle's dialog) when there is one, in the room the
+       Cognicopia arch takes, so the page is laid out exactly as it was; otherwise the arch */
+    var logoSize = pg.logo ? window.CogniFacilityLogo.pdfSize(pg.logo, 3.2, 1.3) : null;
+    if (logoSize) parts.push({ logo:pg.logo, w:logoSize.w, h:logoSize.h, gap:0.25 * IN + (2.6 * IN * 120 / 200 - logoSize.h) });
+    else parts.push({ art:true, h:2.6 * IN * 120 / 200, gap:0.25 * IN });
     add(k.wrap(pg.month, k.mx(22, 22 * qps * f), "bold", inner), k.mx(22, 22 * qps * f), "bold", 0.3 * IN);
     if (pg.inside.length){
       parts.push({ rule:true, h:2, gap:0.15 * IN });
@@ -23792,13 +23815,17 @@ if (document.readyState === "complete" || document.readyState === "interactive")
       add(pg.inside.map(safe), isz, "normal", 0);
     }
     var total = 0;
-    parts.forEach(function(p){ total += (p.art ? p.h : p.rule ? p.h : p.lines.length * p.size * (p.style === "bold" && p.size > 40 ? 1.05 : 1.45)) + p.gap; });
+    parts.forEach(function(p){ total += (p.art || p.logo ? p.h : p.rule ? p.h : p.lines.length * p.size * (p.style === "bold" && p.size > 40 ? 1.05 : 1.45)) + p.gap; });
     var fits = total <= h - 0.8 * IN - SLACK;
     if (!draw) return fits;
     // double border like the screen version
     k.d.setLineWidth(1.4); k.stroke(); k.d.rect(x0, y0, w, h); k.d.rect(x0 + 2.8, y0 + 2.8, w - 5.6, h - 5.6);
     var y = y0 + (h - total) / 2;
     parts.forEach(function(p){
+      if (p.logo){
+        try { k.d.addImage(p.logo.dataUrl, "PNG", cx - p.w / 2, y, p.w, p.h); } catch (e){ /* a logo that cannot be drawn is left out, never a broken page */ }
+        y += p.h + p.gap; return;
+      }
       if (p.art){
         var s = 2.6 * IN / 200, ax = cx - 100 * s, ay = y;
         k.d.setLineWidth(5 * s); k.d.setLineCap("round"); k.stroke();
@@ -24342,7 +24369,16 @@ if (document.readyState === "complete" || document.readyState === "interactive")
       var d = k.d, yy = M;
       d.setTextColor(0);
       if (pi === 0){
-        k.font(28, "bold"); d.text(P.safe("Monthly Activity Bundle"), M, yy + 24); yy += 34;
+        k.font(28, "bold"); d.text(P.safe("Monthly Activity Bundle"), M, yy + 24);
+        /* the facility's logo, top right, in the room the title leaves (it is left out rather than squeezed against the words) */
+        if (meta.logo){
+          var titleEnd = M + d.getTextWidth(P.safe("Monthly Activity Bundle")) + 16, room = k.right - titleEnd;
+          if (room >= 0.9 * IN){
+            var ls = window.CogniFacilityLogo.pdfSize(meta.logo, Math.min(1.7, room / IN), 0.75);
+            try { d.addImage(meta.logo.dataUrl, "PNG", k.right - ls.w, M, ls.w, ls.h); } catch (e){ /* left out */ }
+          }
+        }
+        yy += 34;
         k.font(15, "normal"); d.text(P.safe(meta.monthLabel + (meta.fac ? "  ·  " + meta.fac : "")), M, yy + 13); yy += 22;
         d.setLineWidth(3); k.stroke(68); d.line(M, yy + 4, k.right, yy + 4); yy += 12;
         k.font(12, "normal");
@@ -24401,6 +24437,11 @@ if (document.readyState === "complete" || document.readyState === "interactive")
     if (!roster.length) return Promise.reject(new Error("There are no saved resident profiles to include."));
     var paperKey = opts.paper === "a4" ? "a4" : "letter", paper = P.PAPER[paperKey];
     var fac = opts.fac != null ? String(opts.fac).trim() : ((document.getElementById("fac") || {}).value || "").trim();
+    /* the facility's saved logo (js/facility-logo.js), or none; a logo given in opts is checked the same way */
+    var logo = null;
+    if (window.CogniFacilityLogo && opts.logo !== false){
+      logo = opts.logo ? (window.CogniFacilityLogo.valid(opts.logo) ? opts.logo : null) : window.CogniFacilityLogo.load();
+    }
 
     var perRes = (covers ? 1 : 0) + (weekly ? PAGES_WEEKLY : 0);
     var doc = new window.jspdf.jsPDF({ unit:"pt", format:paperKey, orientation:"portrait", compress:true });
@@ -24428,7 +24469,7 @@ if (document.readyState === "complete" || document.readyState === "interactive")
       var made = now.toLocaleDateString("en-US", { month:"short", day:"numeric", year:"numeric" });
       newPage(); running_header(kIdx);
       indexLayout(kIdx, rows, { newPage:function(){ newPage(); running_header(kIdx); }, footer:function(who){ footer(kIdx, who); } },
-        { monthLabel:monthLabel, fac:fac, count:roster.length, total:total, made:made, weekly:weekly });
+        { monthLabel:monthLabel, fac:fac, count:roster.length, total:total, made:made, weekly:weekly, logo:logo });
     }
 
     var state = { cancelled:false };
@@ -24440,7 +24481,7 @@ if (document.readyState === "complete" || document.readyState === "interactive")
       var get = function(kind){ return base.filter(function(x){ return x.kind === kind; })[0]; };
       var clone = function(o, extra){ var c = {}, key; for (key in o) c[key] = o[key]; for (key in extra) c[key] = extra[key]; return c; };
       var week = function(n, sheet, sub){ return clone(sheet, { subtitle:"Week " + n + " · " + (sub || sheet.subtitle || "") }); };
-      if (covers) out.push({ kind:"cover", name:name, fac:fac, month:monthLabel, qps:src.scale, lead:MONTHS[month] + " Activity Packet for",
+      if (covers) out.push({ kind:"cover", name:name, fac:fac, logo:logo, month:monthLabel, qps:src.scale, lead:MONTHS[month] + " Activity Packet for",
         inside: weekly ? ["Week 1 · Word search", "Week 2 · Conversation cards", "Week 3 · Finish the thought", "Week 4 · Matching pairs"] : [] });
       if (weekly){
         var ws = get("wordsearch"), cd = get("cards"), tv = get("trivia");
@@ -24557,9 +24598,36 @@ if (document.readyState === "complete" || document.readyState === "interactive")
     // over the free allowance the main button takes them to the access-code screen instead
     go.innerHTML = needCode ? '<span aria-hidden="true">🔑</span> Enter Access Code' : '<span aria-hidden="true">📥</span> Generate Bundle PDF';
   }
+  /* ---------------- the facility's logo ---------------- */
+  function showLogo(message, bad){
+    var L = window.CogniFacilityLogo, logo = L ? L.load() : null, row = $m("mbLogoRow"), msg = $m("mbLogoMsg");
+    row.hidden = !logo;
+    if (logo) $m("mbLogoPreview").src = logo.dataUrl; else $m("mbLogoPreview").removeAttribute("src");
+    if (message){ msg.textContent = message; msg.classList.toggle("mb-bad", !!bad); }
+  }
+  var LOGO_HINT = "Printed in pure black and white on the cover sheets and the index. It is kept on this computer only and is never sent anywhere. Use your facility's logo, not a photo of a person.";
+  $m("mbLogo").addEventListener("change", function(){
+    var input = $m("mbLogo"), file = input.files && input.files[0], L = window.CogniFacilityLogo;
+    if (!file) return;
+    if (!L){ showLogo("The logo tool did not load. Reload the page and try again.", true); return; }
+    showLogo("Preparing the logo…", false);
+    L.fromFile(file).then(function(logo){
+      if (!L.save(logo)) throw new Error("This browser would not keep the logo (its storage may be full or switched off).");
+      showLogo("Logo saved. This is how it will print, in black and white.", false);
+    }).catch(function(err){
+      showLogo((err && err.message) || "That picture could not be used.", true);
+    }).then(function(){ input.value = ""; });
+  });
+  $m("mbLogoClear").addEventListener("click", function(){
+    if (window.CogniFacilityLogo) window.CogniFacilityLogo.clear();
+    showLogo("The logo was removed. Bundles will print without one.", false);
+    $m("mbLogo").focus();
+  });
+
   function openModal(){
     fillPickers();
     fillList();
+    showLogo(LOGO_HINT, false);
     $m("mbFac").value = ((document.getElementById("fac") || {}).value || "").trim();
     ["mbWeekly", "mbCovers", "mbIndex"].forEach(function(id){ $m(id).checked = true; });   // every bundle starts complete
     setup.hidden = false; run.hidden = true;

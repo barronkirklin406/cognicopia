@@ -17,7 +17,20 @@ items below, verify each one, and publish to cognicopia.org.
 2. Run `npm test` and `npm run build`. Both must pass before you start, and again before you ship.
 3. Start the preview server: `python3 -m http.server 8765 --bind 127.0.0.1`.
 
-## Where things stand
+## Where things stand now (November 2026: pull requests 86 and 87)
+
+The next section describes pull request 7 and is kept for history. What was added since, newest first:
+
+**Pull request 87 (this branch).**
+- **Front page and checks:** the access bar's full price labels, a 52 px top bar, the license check proved against the real `server.js`.
+- **Platform (`platform/`):** hand-editing a saved month (pin, swap, note, remove, with a version check), emailed invitations (`SMTP_*`, TLS only), rate limiting (migration 7), a nonce-based script Content-Security-Policy, CI (`.github/workflows/platform.yml`) and a committed browser check (`platform/e2e/run.mjs`). Details: `docs/saas-platform-architecture.md`.
+- **Build repair:** the two pages that loaded `cdn.tailwindcss.com` (`batch-scheduler.html`, `family-bridge.html`) now use `css/pages-utilities.css`, made by `scripts/make-pages-css.mjs`; 52 px controls; Night Shift hub buttons; the Join-the-Dots page; print fixes. What is left is listed, with the owner's decisions, in `docs/known-build-failures.md`.
+- **Facility logo:** in the Monthly Bundle dialog (`js/facility-logo.js`, `scripts/check-facility-logo-ui.mjs`). A colour or gray picture is turned into pure black and white in the browser, kept on this computer only (key `cognicopia_branding_logo`; not `cognicopia_facility*`, which the secure store seals and removes), and printed on the bundle's index and in the cover sheets' picture slot. It is not on the other packets yet; the printed page's shell is shared by every packet, so putting it there is a separate, measured change.
+- **Not built, with reasons:** screens of their own for `js/pdf-exporter.js` and `js/monthly-bundle.js`. The bundle already has its dialog (progress, cancel) and the builder already has two-sided gutters; the two modules are libraries behind them and a second screen would repeat what is there.
+
+**Pull request 86** (merged): multi-generational input and auto-tuning, time-aware wing queues, two-sided gutters and chunked compilation (`js/pdf-exporter.js`, `js/monthly-bundle.js`); visual pacing, hallucination-safe anchors, spaced retrieval and tactile templates (`js/clinical-suite.js`); the Studio progress report, climate and stress-trigger planning, dictation, index cards with offline QR audio and a KDP hardcover export; the EHR import wizard, SLP therapy goals, one-page shift highlights and distress scenario practice (`js/ehr-import.js`, `js/slp-goals.js`, `js/shift-highlights.js`, `js/scenario-trees.js`); color-blind palettes, OpenDyslexic, six micro-tiers, an idle sanitizer and access log, differential backups with a daily reminder and an optional device lock (`js/access-kit.js`, `js/idle-sanitizer.js`, `js/backup-diff.js`); the Page Toolkit screen (`js/toolkit-ui.js`, `docs/page-toolkit.md`). Storage rule learned the hard way: a key that starts with `cognicopia_facility` is sealed and removed by `assets/services/secureStore.js`.
+
+## Where things stood after pull request 7
 
 [barronkirklin406/cognicopia#7](https://github.com/barronkirklin406/cognicopia/pull/7) merged all of the following into `main`.
 
@@ -243,7 +256,7 @@ The pasted "Cognicopia Master Architect" plan was then checked item by item agai
 3. The Facility Portal has a locked backup and restore (`.cognicopia`, kind `facility`).
 4. Every control on the three tools is at least 44 px tall (raised to 52 px later: see `docs/blueprint-decisions.md` D7).
 
-Not built, with reasons, in that file: the four-tab rewrite of index.html, a PDF web worker, and "MDS compliant" logs. A facility logo upload is the one optional candidate left.
+Not built, with reasons, in that file: the four-tab rewrite of index.html, a PDF web worker, and "MDS compliant" logs. The facility logo upload that was the one optional candidate left is built for the Monthly Bundle (see the first section).
 
 ## Known limits to state honestly
 
