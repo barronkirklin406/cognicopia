@@ -1622,6 +1622,10 @@ textarea:focus{border-color:var(--accent)}
 .cc-gen-who{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px 12px}
 .cc-gen-who .field{margin:0}
 .cc-gen-find input{flex:1;min-width:0;text-transform:uppercase}
+.cc-describe{grid-column:1/-1;padding:14px 16px;border:1px solid var(--line-2);border-radius:14px;background:var(--bg-2)}
+.cc-describe .cc-gen-find input{text-transform:none;font-size:17px}
+.cc-describe .cc-gen-find .btn{flex:none}
+@media (max-width:560px){.cc-describe .cc-gen-find{flex-wrap:wrap}.cc-describe .cc-gen-find .btn{width:100%}}
 .cc-gen-all{margin:0 0 12px}
 .cc-warn{display:block;color:var(--warn);font-weight:700}
 .cc-packs{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
@@ -7823,6 +7827,7 @@ const CensusUI = (function(){
 <script src="assets/coloring/subjects.bundle.js"></script>
 <script src="src/services/ColoringManifest.js"></script>
 <script src="src/engine/ColoringEngine.js"></script>
+<script src="src/engine/DescribeCreate.js"></script>
 <script src="assets/pcg/pcg-data.bundle.js"></script>
 <script src="src/pcg/prng.js"></script>
 <script src="src/pcg/matrix.js"></script>
@@ -8210,7 +8215,7 @@ const CogniLibrary = (function(){
      Every page is checked before it shows, and keeps a page code, so a set
      can be printed again. Page codes from the retired page generator are
      still found and printed. */
-  let genBusy = false, genNote = "";
+  let genBusy = false, genNote = "", descText = "";
   function renderGen(el){
     const s = state(), g = s.gen;
     if (!hyOk()){ el.innerHTML = `<p class="callout">The coloring pictures could not load. Reload the page to try again.</p>`; return; }
@@ -8218,6 +8223,9 @@ const CogniLibrary = (function(){
     el.innerHTML = `
       <p class="cc-count">Fresh pages, never the same twice: one clean, bold picture ${p ? `chosen for <b>${esc(who || "this resident")}</b> from their profile` : "chosen from the details below, or from the groups you choose"}, with a setting made for <b>${esc(TIER_SHORT[s.tier])}</b>: ${esc(STAGE_LOOK[stage])}. Every page is checked before it shows: pure black on white, lines at least ${stage === "late" ? 5 : 3} px thick, everything inside the printable area${p && s.avoid ? ", and nothing on their list of topics to avoid" : ""}.</p>
       <form class="cc-filters cc-gen" id="ccGenForm" onsubmit="return false" aria-label="Make new pages">
+        <fieldset class="field cc-describe"><legend>Describe a picture</legend>
+          <div class="cc-gen-find"><input type="text" id="ccDescText" maxlength="160" value="${esc(descText)}" placeholder="e.g., a 1950s pickup truck, a cardinal in winter, a grandfather clock" autocomplete="off" aria-describedby="ccDescHint"><button type="button" class="btn btn-primary" id="ccDescGo">Make this page</button></div>
+          <p class="hint" id="ccDescHint">Cognicopia picks the finished drawing that fits your words best and makes the page at the tier below, then says which words it used. It never draws a new subject and sends nothing anywhere.</p></fieldset>
         <fieldset class="field cc-gen-themes"><legend>Picture groups</legend>
           <div class="cc-chips">${HYBRID_GROUPS.map(t => `<label class="cc-chip"><input type="checkbox" value="${esc(t[0])}" ${g.themes.indexOf(t[0]) >= 0 ? "checked" : ""}><span>${esc(t[1])}</span></label>`).join("")}</div>
           <p class="hint">${p ? "Leave them all clear to choose from every picture that suits them." : "Leave them all clear for a mix of every group."}</p></fieldset>
@@ -8244,6 +8252,27 @@ const CogniLibrary = (function(){
     f.querySelectorAll("[data-who]").forEach(i => i.addEventListener("input", () => { g.who[i.dataset.who] = i.value.slice(0, 80); save(); }));
     f.querySelectorAll('input[name="ccGenTier"]').forEach(r => r.addEventListener("change", e => { s.tier = +e.target.value; genNote = ""; save(); renderGen(el); renderPreview(); renderSelection(); }));
     f.querySelector("#ccGenGo").addEventListener("click", () => makePages(el));
+    /* Describe a picture (src/engine/DescribeCreate.js): the words choose the finished drawing; the page is an ordinary New pages code, so it previews, prints and goes into a PDF like the others */
+    const describe = () => {
+      const D = window.CognicopiaDescribe, E = hyEngine(), text = f.querySelector("#ccDescText").value.trim().slice(0, 160);
+      descText = text;
+      if (!D){ genNote = "The picture finder could not load. Reload the page to try again."; renderGen(el); return; }
+      const p = resident(), w = g.who, list = v => String(v || "").split(/[,;]+/).map(x => x.trim()).filter(Boolean);
+      const avoid = p ? (s.avoid ? (hybridProfileOf(p).avoid || []) : []) : list(w.avoid);
+      let out;
+      try { out = D.create(text, { stage:TIER_STAGE[s.tier], avoid, name:residentName() || "" }); }
+      catch (err){ genNote = "That page could not be made: " + err.message; renderGen(el); return; }
+      if (out.page && !(out.problems || []).length){
+        const code = out.page.meta.code, id = HY + code;
+        g.codes = [code].concat(g.codes.filter(x => x !== code)).slice(0, 24);
+        if (s.picks.indexOf(id) < 0){ s.picks.push(id); s.focus = s.picks.length - 1; }
+        genNote = out.note + " It is first in the list below and in your pages (" + code + ").";
+        save(); renderGen(el); renderSelection(); renderPreview();
+      } else { genNote = out.note; renderGen(el); }
+      const again = el.querySelector("#ccDescText"); if (again) again.focus();
+    };
+    f.querySelector("#ccDescGo").addEventListener("click", describe);
+    f.querySelector("#ccDescText").addEventListener("keydown", e => { if (e.key === "Enter"){ e.preventDefault(); describe(); } });
     const find = () => {
       const raw = f.querySelector("#ccGenCode").value.trim(), E = hyEngine(), c = raw ? E.parseCode(raw) : null, a = c && hyList().get(c.id);
       if (a){
