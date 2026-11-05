@@ -11,6 +11,10 @@ offline-first memory-care activity site. It deploys to GitHub Pages from
 accessibility and clinical memory-care UX expert. Finish the remaining
 items below, verify each one, and publish to cognicopia.org.
 
+## If a deploy to cognicopia.org hangs
+
+After a merge to `main`, GitHub's "pages build and deployment" run builds with Jekyll and then deploys. On November 5, 2026 the build passed but the deploy step sat on "updating_pages" for ten minutes and timed out ("Timeout reached, aborting!"). Re-running that run does not help: the first attempt cancels its deployment, so the re-run fails at once with "Deployment cancelled". The fix is a fresh deploy, which any new commit to `main` starts (merge the next real change; do not push an empty commit). Until a deploy succeeds the site keeps showing the last one that did. Check the run for the merge commit, not just the merge.
+
 ## Start here
 
 1. Run `git fetch origin main`. The owner also commits to `main` directly, and `main` was force-pushed once. Merge `origin/main` into your branch before you change anything, and resolve conflicts by keeping both sides' intent.
