@@ -222,7 +222,8 @@ for (const f of ["pricing.html", "activate.html", "contact.html", "cognitive-jou
   const idx = read("index.html");
   ok(/--ds-panel:var\(--cg-green-800/.test(idx) && /--ds-bar-ink:var\(--cg-charcoal/.test(idx), "index.html's palette is the shared tokens");
   ok((idx.match(/class="cg-value"/g) || []).length === 5 && /Quick, personal packets/.test(idx) && /Decades of nostalgia/.test(idx) && /Low vision &amp; toner savings/.test(idx) && /Interactive tablet mode/.test(idx) && /No resident data leaves the device/.test(idx), "index.html: five value cards above the form");
-  ok(/<p class="tagline">Engaging Today<\/p>/.test(idx) && /Connection, Cognition, Creation/.test(idx), "index.html: the tagline is Engaging Today, with the earlier line kept beneath it");
+  ok(/<h1 class="hero-title" id="heroTitle">Custom activities built with <span class="lp-accent">the individual in mind\.<\/span><\/h1>/.test(idx) && !/class="tagline"/.test(idx) && /Connection, Cognition, Creation/.test(idx), "index.html: the hero headline is the owner's, there is no eyebrow tag above it (the owner removed \"Engaging Today\", November 2026), and the byline is kept in the footer");
+  ok(!/Start Free Trial/.test(idx) && /id="heroCta" href="#make">Get Started Free</.test(idx) && !/class="lp-hero"[\s\S]{0,4000}data-cg-trial/.test(idx), "index.html: one primary hero button (Get Started Free), no trial badge in the hero");
   ok(!/HIPAA[- ]compliant/i.test(idx), "no blanket compliance claim in the hero");
 }
 

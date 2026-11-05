@@ -21,6 +21,8 @@ items below, verify each one, and publish to cognicopia.org.
 
 The next section describes pull request 7 and is kept for history. What was added since, newest first:
 
+**The front page and top bar (November 6, 2026).** Hero and "What Cognicopia gives you" rebuilt; Tablet Activities is a seventh place in the top bar; the bar starts at 1280 px; group icons instead of dots; no brain mark by the name. Details: `docs/design-system.md`, last section. `src/components/Hero.tsx` is an unused leftover (nothing imports it; the live page is `index.html`).
+
 **The redesign (November 5, 2026, "warm clinical, oceanic serenity").** One retint and one screen-only skin, no logic changed. Palette: alabaster `#FAFAFD`, slate `#0F172A`, oceanic teal `#0D9488` (borders, glows and icons only, never text), deep teal `#08423F` and `#0B5F59` and sage `#355E3B` for text and button fills, warm charcoal `#28241F`. Tokens and the new "section 14" skin (glass cards, tactile hover, the pressed `scale(.96)`, the two-band focus ring) are in `css/styles.css`; the facility service has the same look in `platform/app/globals.css`; `batch-scheduler.html` and `family-bridge.html` take it through `scripts/make-pages-css.mjs`. The old palette's contrast pairs were re-computed (`scripts/check-design-system.mjs`, 303 checks, weakest text pair 7.1:1) and the browser checks were retargeted to the new behavior (`check-design-ui`, `check-academy-ui`), not weakened. Kept on purpose: print (pure black on white), Night Shift, the care-tier colors, ok and danger colors, the studio accents. Not done: converting every flex row to a grid (layout rewrites with regression risk); where a grid already existed it stayed. Everything about it: `docs/design-system.md`, last section.
 
 **Pull request 87.**
@@ -269,7 +271,7 @@ Not built, with reasons, in that file: the four-tab rewrite of index.html, a PDF
 ## Free-trial badge, hero button and "all used" window (October 22, 2026)
 
 - A badge reading "Free Trial: N / 25 Generations Remaining" shows in the bar under the navigation on every page (and on the front page above the hero button and in the packet tool's wood bar). `js/trialBadge.js` fills it from the trial ledger and keeps the number in localStorage under `cognicopia_trial_generations`; a licensed computer sees no badge.
-- Front-page hero button: "Start Free Trial — 25 Free Activity Generations", with the "No credit card required" line beneath it.
+- Front-page hero button (changed November 6, 2026): "Get Started Free", with "No sign-up and no credit card. Everything stays on this computer." beneath it. The hero has no trial badge.
 - When the 25 are used, the window is titled "You've used all 25 Free Trial Generations!" and offers "Activate Annual / Monthly License" (pricing page plans) and "Request Net-30 Invoice" (the invoice form). Proof: `scripts/check-trial-badge-ui.mjs` (in `npm run build`).
 - Staff Guide tabs and benefit titles use the owner's wording. "Saves Hours of Prep Time" became "Less Prep Time" because the guide may not state a saving that has not been measured; "Zero IT & HIPAA Liability" became "Zero IT Setup, Resident Details Stay Private" (no compliance or liability claim).
 

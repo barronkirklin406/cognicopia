@@ -27,7 +27,7 @@
      5b. in a real browser (where Playwright is installed): every control on
         the tools, in the states a person reaches and in every page type's
         sidebar is at least 52 px, and no text is below WCAG AA by day or in
-        Night Shift (scripts/audit-ux.mjs), the six hubs open, close and mark
+        Night Shift (scripts/audit-ux.mjs), the seven places open, close and mark
         the current page as a person expects (scripts/check-nav-ui.mjs), and the
         Shift board does what it says, down to what is stored and what prints
         (scripts/check-shift-ui.mjs), and licensing and pricing do what they

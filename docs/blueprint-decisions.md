@@ -90,7 +90,7 @@ A secure random seed per print and an ids-only history, guaranteeing no repeats 
 - The 400 ms response budget (Doherty) applies to a response a person waits for. A whole packet is measured against its own time (about 0.3 s on the sandbox).
 - `platform/` (the Next.js service) keeps its own 44 px statement; D7 is about the static site.
 
-### D8. Six hubs for navigation
+### D8. Six hubs for navigation (Tablet Activities became a seventh place in November 2026; see the end of design-system.md)
 
 **Done.** Every page shows the same six hubs, in this order, and one is open: the one holding the current page. A hub with several places is a collapsible group (opening one closes the others); a hub with one place is a plain link.
 
@@ -113,7 +113,7 @@ A secure random seed per print and an ids-only history, guaranteeing no repeats 
 
 ### D9. Taglines
 
-"Engaging Todays" was a typo; the line is **"Engaging Today"**, and it is now the tagline in the packet tool's brand block (`index.html`, the `tagline` paragraph), set in small capitals above the page's first heading. The earlier line, "Connection, Cognition, Creation · from BarronCrafts", stays directly beneath it, so nothing the owner had was removed. **To revert:** delete the one `<p class="tagline">` line; nothing else depends on it (`scripts/check-design-system.mjs` asserts both lines, so change that check in the same commit). The rule stands: any claim in a tagline must be true of what it names ("Zero Internet Required" is true of the packet tools, not of sign-in); "Engaging Today" claims nothing the product does not do.
+"Engaging Todays" was a typo; the line is **"Engaging Today"**, and it was the tagline in the packet tool's brand block (the owner removed the tag from the hero on November 6, 2026, along with the "Start Free Trial" button and the hero's trial badge; the headline is now "Custom activities built with the individual in mind.") (`index.html`, the `tagline` paragraph), set in small capitals above the page's first heading. The earlier line, "Connection, Cognition, Creation · from BarronCrafts", stays directly beneath it, so nothing the owner had was removed. **To revert:** delete the one `<p class="tagline">` line; nothing else depends on it (`scripts/check-design-system.mjs` asserts both lines, so change that check in the same commit). The rule stands: any claim in a tagline must be true of what it names ("Zero Internet Required" is true of the packet tools, not of sign-in); "Engaging Today" claims nothing the product does not do.
 
 ### D10. Pricing and licensing: $39 a month, $349 a year, enterprise by quote; signed keys
 

@@ -46,7 +46,7 @@ ok(heads.join("|") === "Resident tools|Staff & family portal", `the menu has the
 ok((await pg.$$eval("#sidebar .sb-hub[data-hub='facility'] .sb-link", e => e.map(x => x.textContent.trim()))).some(t => /Quarterly Legacy/.test(t)) && (await pg.$$eval("#sidebar .sb-hub[data-hub='facility'] .sb-link", e => e.map(x => x.textContent.trim()))).some(t => /Care cues/.test(t)), "the family digest and the care cues are on the staff side");
 ok(!(await pg.$$eval("#sidebar .sb-hub[data-hub='studio'] .sb-link", e => e.map(x => x.textContent))).some(t => /digest/i.test(t)), "and no longer under the resident tools");
 const order = await pg.$$eval("#sidebar .sb-nav > *", e => e.map(x => x.className.indexOf("sb-grp") >= 0 ? "G:" + x.dataset.grp : x.dataset.hub || "?"));
-ok(order.join(",") === "G:resident,today,studio,packets,G:staff,facility,academy,resources,?", `the hubs fall under their headings: ${order.join(",")}`);
+ok(order.join(",") === "G:resident,today,studio,packets,tablet,G:staff,facility,academy,resources,?", `the hubs fall under their headings: ${order.join(",")}`);
 
 /* ---------- choosing the one resident ---------- */
 const dorothy = await pg.$eval("#arSel", s => [...s.options].filter(o => /Dorothy/.test(o.textContent)).map(o => o.value)[0]);
