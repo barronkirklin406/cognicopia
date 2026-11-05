@@ -183,6 +183,14 @@ step("the Shift board calendar: Month, Week and Day, coverage and badges, the st
   }
 });
 
+step("the Resident Roster: initials rows and cards, filter chips with counts, search by words and accents, sort and view remembered, the keyboard, the first-use screen, 52 px, a phone (a real browser)", () => {
+  try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-roster-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
+  catch (e){
+    if (e.status === 2) return "skipped: Playwright is not installed here (see docs/dev-setup.md)";
+    throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message);
+  }
+});
+
 step("the Academy works: the cream and forest-green design at AAA, the dashboard, search and pills, the player (play, skip, speeds, volume, captions, bookmarks, keyboard), sealed saved progress, the knowledge check, the certificate, the record, Letter print sheets and 52 px controls (a real browser)", () => {
   try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-academy-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
   catch (e){
