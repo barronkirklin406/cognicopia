@@ -13,7 +13,8 @@ The service for memory care facilities: Next.js (App Router) in front, Supabase 
 - **Hand-editing a saved month.** On a saved month, choose a day and each session can be pinned (planning the month again keeps it), given a different activity from the library for its stage, given a note, or taken out. Two people editing the same month cannot overwrite each other: the second is told to reload.
 - **Emailed invitations.** With your own mail server's settings (`SMTP_*` in `.env.example`), the Team page can email an invitation as well as show its link. Without them nothing changes: admins share the link themselves. Mail must travel over TLS, and a failed email never loses the invitation.
 - **Rate limiting and a script policy.** Sign-in, sign-up, password reset, invitation links and emailed invitations are limited per network address and per account, counted in the database so every copy of the app shares one count. Every page carries a Content-Security-Policy with a fresh script nonce, so a script that is not the app's own does not run.
-- **Not built yet.** Continuous integration and a committed browser test. The architecture notes list them in order.
+- **Continuous integration and a browser check.** `.github/workflows/platform.yml` runs types, tests, the build and the browser check on every change under `platform/`. `npm run e2e` (after `npm run build`) starts the built app with no database and drives it in Chromium: security headers, the script policy and its nonce, every signed-out page at three widths (one heading, named fields, 44 px controls, no sideways scrolling), injected scripts not running, sign-in pages redirecting, and sign-in failing kindly with no database. Signed-in screens need a database and Stripe and are covered by the unit and database tests.
+- **Not built yet.** Nothing from the early list; the architecture notes' Next section has what remains.
 
 ## Run the tests
 
