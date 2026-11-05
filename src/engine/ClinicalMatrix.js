@@ -224,7 +224,11 @@
     { id: "maze-motor", tools: ["builder"], name: "Large-print maze", domain: "motor", fw: ["montessori"], stages: ALL },
     { id: "pathtrace", tools: ["packet", "builder"], name: "Follow the path", domain: "motor", fw: ["montessori"], stages: ML },
     { id: "orientation", tools: ["packet", "builder"], name: "Today: day, season and weather", domain: "orientation", fw: ["validation", "montessori"], stages: ALL },
-    { id: "silhouette", tools: ["packet", "builder"], name: "Shape to look at", domain: "sensory", fw: ["montessori"], stages: ML }
+    { id: "silhouette", tools: ["packet", "builder"], name: "Shape to look at", domain: "sensory", fw: ["montessori"], stages: ML },
+    /* built from the reminiscence engine (src/engine/ReminiscencePages.js) */
+    { id: "sensorycards", tools: ["packet"], name: "Sensory memory cards", domain: "sensory", fw: ["reminiscence", "montessori"], stages: ALL },
+    { id: "youryears", tools: ["packet"], name: "Your years: a timeline", domain: "reminiscence", fw: ["reminiscence"], stages: ALL },
+    { id: "memorymap", tools: ["packet"], name: "Memory map", domain: "reminiscence", fw: ["reminiscence", "validation"], stages: ALL }
   ];
   var byKey = {};
   ACTIVITIES.forEach(function (a) { a.tools.forEach(function (t) { byKey[t + ":" + a.id] = a; }); Object.freeze(a.stages); });
@@ -507,7 +511,7 @@
     sorting: "sort", oddone: "odd", odd: "odd", sequence: "sequence", "sequence-cards": "sequence",
     matching: "match", match: "match", assoc: "match", maze: "maze", "maze-motor": "maze", pathtrace: "trace", tracing: "trace",
     orientation: "orient", "orientation-board": "orient", silhouette: "sensory", color: "color", mandala: "color", coloring: "color",
-    talk: "talk", lifestory: "talk", era: "talk", trivia: "talk", completion: "complete", complete: "complete", sayings: "complete",
+    talk: "talk", lifestory: "talk", era: "talk", trivia: "talk", sensorycards: "sensory", youryears: "talk", memorymap: "talk", completion: "complete", complete: "complete", sayings: "complete",
     provhint: "complete", lyric: "complete", choose: "choose", "choose-ending": "choose", staff: "staff",
     /* the Packet Builder's own activities */
     "finish-saying": "complete", "letter-scramble": "anagram", "goes-together": "match", "missing-letters": "complete", "name-three": "talk",

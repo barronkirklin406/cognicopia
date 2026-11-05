@@ -8751,7 +8751,13 @@ const ACTIVITIES = [
   {id:"orientation", label:"Today: day, season and weather",
    note:"A high-contrast page for the day of the week, the season and the weather."},
   {id:"silhouette", label:"Shape to look at",
-   note:"A classic car or a songbird in a bold pattern or mandala frame."}
+   note:"A classic car or a songbird in a bold pattern or mandala frame."},
+  {id:"sensorycards", label:"Sensory memory cards",
+   note:"For staff: things from their years to look at, to hold and to smell, with a song from then."},
+  {id:"youryears", label:"Your years: a timeline",
+   note:"From the year they were born to about thirty: the songs and things that were new then."},
+  {id:"memorymap", label:"Memory map",
+   note:"Their name in the middle and the parts of a life around it, with room to add more."}
 ];
 
 const DEFAULT_ON = ["wordsearch","crossword","maze","dots","bingo","colornum",
@@ -9410,9 +9416,50 @@ class Doc{
     this.d.setFontSize(hs);
     while(hs>24 && this.d.getTextWidth(t)>PW-2*MARGIN){ hs-=1; this.d.setFontSize(hs); }
     this.noFloor=nf;
-    this.d.text(t,MARGIN,this.y); this.y+=14;
-    this.d.setLineWidth(Math.max(2,this.minLine)); this.d.line(MARGIN,this.y,PW-MARGIN,this.y);
-    this.y+=30;
+    this.headLook(t,hs);
+  }
+  /* The packet's house style for its page titles (one per packet, so the packet reads as one piece; another resident's or another
+     month's packet gets another). Every look is pure black on white, its lines never thinner than the stage's rule, and it takes
+     exactly the room the plain look takes (the title's baseline, then 44 pt), so no page breaks differently. The late stage and a
+     simplified layout keep the plain look: calm and predictable.
+       ledger     the title on the left over one heavy rule (the plain look)
+       editorial  the title centered in a serif, over a double rule
+       framed     the title in a ruled box, a small solid square before it
+       margin     a heavy bar in the margin beside a serif title, over one rule */
+  setLook(seed){
+    const LOOKS=["ledger","editorial","framed","margin"];
+    let x=2166136261; String(seed||"").split("").forEach(c=>{ x^=c.charCodeAt(0); x=Math.imul(x,16777619); });
+    this.look=this.stage==="late"||this.simplifiedLayout ? "ledger" : LOOKS[(x>>>0)%LOOKS.length];
+    return this;
+  }
+  headLook(t,hs){
+    const d=this.d, w=Math.max(2,this.rule||2,this.minLine), L=MARGIN, R=PW-MARGIN, y=this.y, look=this.look||"ledger";
+    const serif=look==="editorial"||look==="margin", nf=this.noFloor;
+    if(serif){
+      // a serif title, sized to the same width rule as the sans one
+      this.noFloor=true; d.setFont("times","bold"); let s=hs; d.setFontSize(s);
+      while(s>24 && d.getTextWidth(t)>R-L-(look==="margin"?18:0)){ s-=1; d.setFontSize(s); }
+      this.noFloor=nf;
+    }
+    d.setDrawColor(0); d.setTextColor(0); d.setFillColor(0);
+    if(look==="editorial"){
+      d.text(t,PW/2,y,{align:"center"});
+      d.setLineWidth(w); d.line(L,y+12,R,y+12); d.line(L,y+12+w+4,R,y+12+w+4);
+    } else if(look==="framed"){
+      const top=y-hs*0.92, box=6;
+      d.setLineWidth(w); d.rect(L,top,R-L,y+14-top);
+      d.rect(L+12,y-hs*0.36-box/2,box,box,"F");
+      d.text(t,L+12+box+10,y);
+    } else if(look==="margin"){
+      d.rect(L,y-hs*0.8,6,hs*0.95,"F");
+      d.text(t,L+18,y);
+      d.setLineWidth(w); d.line(L,y+14,R,y+14);
+    } else {
+      d.text(t,L,y);
+      d.setLineWidth(w); d.line(L,y+14,R,y+14);
+    }
+    d.setFont("helvetica","bold");
+    this.y=y+44;
   }
   /* The size and weight a block of text is really set in: never under the stage's floor on a page the resident
      reads (24 pt and bold at the late stage). Staff pages keep their own sizes. */
@@ -9950,6 +9997,97 @@ function colorPage(D,r,theme){
   E.toPDF(page, D.d);
   D.d.setLineWidth(1); D.d.setDrawColor(0); D.d.setFillColor(255,255,255);
   D.y+=frame.h;
+}
+
+/* =================================================================
+   SENSORY MEMORY CARDS, YOUR YEARS, MEMORY MAP
+   Built from the reminiscence engine by src/engine/ReminiscencePages.js (what goes on each page), and laid out here (how it
+   prints). Pure black on white, lines at the stage's weight, type at the stage's floor; the avoid list is honored.
+   ================================================================= */
+const RPAGES=()=>{ const P=window.CognicopiaReminiscencePages; if(!P || !window.CogniReminiscence) throw new Error("The reminiscence pages are not loaded on this computer."); return P; };
+function sensoryCardsPage(D,r,theme){
+  const s=RPAGES().sensory(r,{count:r.stage==="late"?3:4, allowed:t=>allowed(r,t)});
+  if(!s.cards.length) return;
+  D.start(theme);
+  D.heading("Sensory Memory Cards (for Staff)");
+  D.body("One card at a time, at eye level. Show, hand over, offer the scent, then talk, in any order. Stop when they have had enough.",{size:16,gap:1.35});
+  D.gap(10);
+  s.cards.forEach((c,i)=>{
+    const lines=[
+      "Invite: "+c.invite,
+      "To look at and talk about: "+c.look.slice(0,2).join("; ")+".",
+      "To hold: "+c.hold.prompt+" "+c.hold.safety,
+      "To smell: "+c.smell.what.charAt(0).toUpperCase()+c.smell.what.slice(1)+". "+c.smell.safety
+    ].concat(c.song?["A song from their years: "+c.song.title+", "+c.song.artist+", "+c.song.year+"."]:[]);
+    const title=(i+1)+". "+c.title;
+    const h=D.measure(title,{size:20,bold:true,gap:1.3})+lines.reduce((n,l)=>n+D.measure(l,{size:16,gap:1.35,indent:18})+4,0)+8;
+    D.need(h);
+    const top=D.y;
+    D.body(title,{size:20,bold:true,gap:1.3});
+    lines.forEach(l=>{ D.body(l,{size:16,gap:1.35,indent:18}); D.gap(4); });
+    D.d.setFillColor(0); D.d.rect(MARGIN-14,top-15,5,D.y-top+2,"F");       // a heavy bar down the card's edge, in the margin beside it
+    D.gap(16);
+  });
+}
+function yearsPage(D,r,theme){
+  const t=RPAGES().timeline(r,{allowed:x=>allowed(r,x)});
+  if(t.rows.length<3) return;
+  D.start(theme);
+  D.heading("Your Years");
+  D.body((t.place?"From the "+t.place+". ":"")+"People remember the years from about ten to thirty most readily; the heavy line marks them. Here are songs and things that were new then. Talk about any of them, or none.",{size:19,gap:1.4});
+  D.gap(18);
+  const d=D.d, X=MARGIN+86, TX=MARGIN+110, size=D.lift, w=PW-MARGIN-TX, inBump=y=>y>=t.bump[0] && y<=t.bump[1];
+  let prev=null;                                                            // the last dot on this sheet, so the line runs dot to dot
+  /* the timeline fits on one sheet: when it would not, the latest songs and things give way (never the first or last milestone) */
+  const tall=row=>{ d.setFont("helvetica","bold"); d.setFontSize(size); return d.splitTextToSize(row.head+(row.sub?"  ·  "+row.sub:""),w).length*size*1.3+12; };
+  while(t.rows.length>3 && t.rows.reduce((n,row)=>n+tall(row),0)>D.room()){
+    const k=t.rows.map(x=>x.kind).lastIndexOf("song")>0 ? t.rows.map(x=>x.kind).lastIndexOf("song") : t.rows.map(x=>x.kind!=="mile").lastIndexOf(true);
+    if(k<=0) break; t.rows.splice(k,1);
+  }
+  t.rows.forEach((row,i)=>{
+    d.setFont("helvetica","bold"); d.setFontSize(size);
+    const text=row.head+(row.sub?"  ·  "+row.sub:""), lines=d.splitTextToSize(text,w), h=lines.length*size*1.3+12;
+    if(D.need(h)) prev=null;
+    const y=D.y;
+    d.setDrawColor(0); d.setFillColor(0);
+    d.setLineWidth(inBump(row.year) && i>0 && inBump(t.rows[i-1].year)?6:Math.max(2,D.minLine));     // a heavy line through the years remembered best
+    if(prev!=null) d.line(X,prev,X,y-size*0.35);
+    prev=y-size*0.35;
+    d.circle(X,y-size*0.35,row.kind==="mile"?7:5,"F");
+    d.setFont("helvetica","bold"); d.setFontSize(size); d.text(String(row.year),MARGIN,y);
+    lines.forEach((ln,k)=>{ d.setFont("helvetica",k===0?"bold":"normal"); d.text(ln,TX,y+k*size*1.3); });
+    D.y=y+h;
+  });
+}
+function memoryMapPage(D,r,theme){
+  const m=RPAGES().memoryMap(r,{allowed:x=>allowed(r,x)});
+  D.start(theme);
+  D.heading("My Memory Map");
+  D.body(m.invite,{size:19,gap:1.4});
+  D.gap(10);
+  const d=D.d, top=D.y, H=D.bottom()-top, n=m.spokes.length, rows=n/2, gap=16, mid=130, colW=(PW-2*MARGIN-mid)/2, rowH=(H-gap*(rows-1))/rows;
+  const cx=PW/2, cy=top+H/2, rad=56, lw=Math.max(2,D.minLine), fs=D.lift;
+  d.setDrawColor(0); d.setTextColor(0); d.setLineWidth(lw);
+  m.spokes.forEach((sp,i)=>{
+    const col=i%2, row=Math.floor(i/2), x=col?PW-MARGIN-colW:MARGIN, y=top+row*(rowH+gap);
+    // a line from the middle to the box
+    const tx=col?x:x+colW, ty=y+rowH/2, ang=Math.atan2(ty-cy,tx-cx);
+    d.setLineWidth(lw); d.line(cx+Math.cos(ang)*rad,cy+Math.sin(ang)*rad,tx,ty);
+    d.setFillColor(255,255,255); d.roundedRect(x,y,colW,rowH,10,10,"FD");
+    // words wrap inside the box (two lines at most for each) rather than being cut short
+    const wrapIn=(txt,bold)=>{ d.setFont("helvetica",bold?"bold":"normal"); d.setFontSize(fs); const ls=d.splitTextToSize(txt,colW-20);
+      return ls.length>2 ? [ls[0],fitText(d,ls.slice(1).join(" "),colW-20,fs,D.floor)] : ls; };
+    let yy=y+fs+6;
+    wrapIn(sp.label,true).forEach(ln=>{ d.setFont("helvetica","bold"); d.text(ln,x+10,yy); yy+=fs*1.25; });
+    yy+=fs*0.15;
+    sp.known.forEach(k=>wrapIn(k,false).forEach(ln=>{ if(yy<y+rowH-12){ d.setFont("helvetica","normal"); d.text(ln,x+10,yy); yy+=fs*1.3; } }));
+    d.setLineWidth(Math.max(WRITE_STROKE,D.minLine));
+    for(let ly=yy+12; ly<=y+rowH-14; ly+=WRITE_GAP) d.line(x+10,ly,x+colW-10,ly);   // room to add more
+  });
+  d.setFillColor(255,255,255); d.setLineWidth(lw*1.5); d.circle(cx,cy,rad,"FD");
+  d.setFont("helvetica","bold"); d.setFontSize(fs); d.text(fitText(d,m.name||"Me",rad*2-14,fs,D.floor),cx,cy+fs*0.35,{align:"center"});
+  d.setLineWidth(1);
+  D.y=D.bottom();
 }
 
 function holidayPage(D,r,key){
@@ -11347,6 +11485,7 @@ function makePacket(r, mode){
   const D=new Doc().setStage(r.stage,vision);
   D.who=pdfSafe(r.goes||r.first||"");              // the name banner on every activity page
   D.simplifiedLayout=!!(r.accessibility && r.accessibility.simplifiedLayout);
+  D.setLook([r.first,r.born,r.month].join("|"));     // the packet's house style for its titles: the same all month, another for the next
   applyPureBW(D.d,{minLine:D.minLine});            // always: pure black on white, no line thinner than the stage's floor
 
   // The first chosen holiday sets the packet's overall look.
@@ -11446,6 +11585,9 @@ function makePacket(r, mode){
 
   if(sel.games) run("Games to play together","games",()=>gamesPage(D,r,theme));
   if(sel.color) run("Coloring page","color",()=>colorPage(D,r,theme),"");
+  if(sel.youryears) run("Your years","youryears",()=>yearsPage(D,r,theme),"");
+  if(sel.memorymap) run("My memory map","memorymap",()=>memoryMapPage(D,r,theme),"");
+  if(sel.sensorycards) run("Sensory memory cards","sensorycards",()=>sensoryCardsPage(D,r,theme),"");
   if(sel.mandala) run("Color the pattern","mandala",()=>mandalaPage(D,r,s,theme),"");
   if(sel.silhouette) engine("silhouette");
 
@@ -12211,7 +12353,7 @@ $("addPerson").addEventListener("click", addCrewRow);
 // so 33 choices read as seven short lists.
 const PILLAR_GROUPS=[
   {id:"words", name:"Words & conversation", blurb:"Sayings, life story and talk, with no wrong answers.",
-   acts:["talk","lifestory","people","era","trivia","rather","name","sayings","provhint","choose-ending","match","matching","assoc","odd","oddone","sorting","career","language","orientation"]},
+   acts:["talk","lifestory","youryears","memorymap","people","era","trivia","rather","name","sayings","provhint","choose-ending","match","matching","assoc","odd","oddone","sorting","career","language","orientation"]},
   {id:"letters", name:"Letters & spelling", blurb:"Word searches, fitting words and tracing a name.",
    acts:["wordsearch","erasearch","search-large","search-guided","crossword","ladder","anagram","scramble","bingo","tracing"]},
   {id:"numbers", name:"Numbers", blurb:"Clocks, coins and numbered dots.",
@@ -12223,7 +12365,7 @@ const PILLAR_GROUPS=[
   {id:"music", name:"Music", blurb:"Sing-alongs and the songs of their years.",
    acts:["lyric","popculture"]},
   {id:"staff", name:"For staff", blurb:"Pages for your notes and your team, not for the resident.",
-   acts:["notes","facsupport"]}
+   acts:["notes","facsupport","sensorycards"]}
 ];
 const actsBox=$("acts");
 (function buildActivityGroups(){
@@ -25310,6 +25452,7 @@ if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol))
 <script src="js/sessionTimeout.js"></script>
 <script src="js/legal.js"></script>
 <script src="assets/services/reminiscenceEngine.js"></script>
+<script src="src/engine/ReminiscencePages.js"></script>
 <script type="module">
 /* The agent suite (js/agent-orchestrator.js and friends). It reads the packet form, makes a sheet on this computer, runs the
    clinical audit, and shows the exact print preview. Nothing here uses the network. */
