@@ -130,6 +130,33 @@ Which subscription statuses open the premium tools is decided in two places, `li
 
 Deploy this folder to a Node host. On Vercel, set the Root Directory to `platform` and add the variables above, with `APP_URL` set to the production address. Point a live-mode Stripe webhook endpoint at `APP_URL/api/stripe/webhook`. The public site keeps deploying from `main` to GitHub Pages as before. To create the hosted database, link the Supabase project and push the migrations (`supabase link`, then `supabase db push`), then set up Supabase as above.
 
+## Sending email from Cognicopia's Outlook account
+
+Invitations (and any later facility notice) go out through your own mail account when these six settings exist in the **host's environment** (on Vercel: the project's Settings, Environment Variables). Nothing is emailed, and nothing breaks, while `SMTP_HOST` is empty.
+
+| Setting | Value for `Cognicopia@outlook.com` |
+|---|---|
+| `SMTP_HOST` | `smtp-mail.outlook.com` |
+| `SMTP_PORT` | `587` (STARTTLS: the connection starts plain and must upgrade to TLS first; a server that does not is refused and nothing is sent) |
+| `SMTP_USER` | `Cognicopia@outlook.com` |
+| `SMTP_PASS` | the account's password or app password. **Secret.** Type it only into the host's environment settings (or into `.env.local` on your own computer, which git ignores). Never into a file in the repository, a chat or an issue. |
+| `SMTP_FROM` | `Cognicopia <Cognicopia@outlook.com>`. On Outlook this must be the same address as `SMTP_USER`: Microsoft sends only as the account that signed in, so the app refuses to start emailing otherwise (the log names `SMTP_FROM`). |
+| `SMTP_SECURE` | leave empty (STARTTLS on 587) |
+
+`.env.example` already holds every value except the password. After you set them, restart or redeploy the host so it reads them.
+
+**Check before relying on it.** From this folder, with the settings in `.env.local` (or exported in the shell):
+
+```bash
+npm run mail:check
+```
+
+It connects, upgrades to TLS and signs in, and says in plain words what happened; it sends nothing. To receive one test message: `npm run mail:check -- --send you@example.com`.
+
+**One thing to know first.** Microsoft has been ending password sign-in for mail programs on personal Outlook.com accounts, and sources disagree on whether an app password (made under the account's security settings, which needs two-step verification) still works for SMTP. If `mail:check` says the sign-in was refused with a correct password, this account cannot be used this way, and no setting here will change that. The options then are a Microsoft 365 mailbox set up for it, or a sending service (for example your domain's email host). Only the `SMTP_*` values change; no code does.
+
+Also set up SPF and DKIM for the sending domain if you move to your own domain, or invitations may land in spam. An Outlook.com sender cannot have them for `cognicopia.org`.
+
 ## License keys for the static site (`POST /api/licenses/redeem`)
 
 The public site (cognicopia.org) sells a facility license through two Stripe Payment Links ($39 a month, $349 a year). After a card payment Stripe returns the buyer to the site's `activate.html` with a checkout reference, and that page asks this route for a license key.
