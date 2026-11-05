@@ -183,6 +183,14 @@ step("the Shift board calendar: Month, Week and Day, coverage and badges, the st
   }
 });
 
+step("the Packet Builder's house styles on its printed sheets: four looks by resident and month, calm mode plain, nothing moved in any look, HTML and engine sheets, the late stage plain (a real browser, the PDFs read back)", () => {
+  try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-builder-looks-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
+  catch (e){
+    if (e.status === 2) return "skipped: Playwright is not installed here (see docs/dev-setup.md)";
+    throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message);
+  }
+});
+
 step("the packet's house styles and its reminiscence pages: four title looks chosen by resident and month, the same pages in every look, Your years, My memory map and Sensory memory cards from the form, the avoid list (a real browser, the PDFs read back)", () => {
   try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-packet-looks-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
   catch (e){

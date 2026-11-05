@@ -378,11 +378,22 @@
     var text = page.texts.map(function (t) {
       var anchor = t.align === "right" ? "end" : t.align === "center" ? "middle" : "start";
       return '<text x="' + t.x + '" y="' + t.y + '" font-family="' + FONT_STACK + '" font-size="' + t.size + '" font-weight="' + (t.bold ? 700 : 400) + '" text-anchor="' + anchor + '" fill="' + (t.color === "#fff" ? '#fff" data-bw="white' : "#000") + '"' +
-        (t.rotate ? ' transform="rotate(' + t.rotate + " " + t.x + " " + t.y + ')"' : "") + (CM.STAFF_ROLES.indexOf(t.role) >= 0 ? ' data-role="staff"' : "") + (t.staffline ? ' data-staffline="' + t.staffline + '"' : "") + ">" + esc(t.text) + "</text>";
+        (t.rotate ? ' transform="rotate(' + t.rotate + " " + t.x + " " + t.y + ')"' : "") + (CM.STAFF_ROLES.indexOf(t.role) >= 0 ? ' data-role="staff"' : t.role === "title" ? ' data-role="title"' : "") + (t.staffline ? ' data-staffline="' + t.staffline + '"' : "") + ">" + esc(t.text) + "</text>";
     }).join("");
     var label = (page.meta && page.meta.title ? page.meta.title : "Activity page") + (page.meta && page.meta.instruction ? ". " + page.meta.instruction : "");
+    /* The packet's house styles (the Packet Builder's #printRoot.look-*): a short rule under the title, a frame around it, or a bar beside
+       it, drawn around the page's first title and hidden unless the print area asks for one. They sit in the space the title already has,
+       so nothing on the page moves; the late stage keeps the plain look. */
+    var tt = page.stage === "late" ? null : page.texts.filter(function (t) { return t.role === "title" && t.align === "center"; })[0], looks = "";
+    if (tt && tt.w) {
+      var cx = tt.x, half = tt.w / 2, sz = tt.size, by = tt.y, rw = Math.max(2.25, (CM.STAGES[page.stage] && CM.STAGES[page.stage].stroke.rule) || 3);
+      var seg = function (x1, y1, x2, y2) { return '<path d="M' + r2(x1) + " " + r2(y1) + "L" + r2(x2) + " " + r2(y2) + '" fill="none" stroke="#000" stroke-width="' + rw + '" stroke-linecap="round"/>'; };
+      looks = '<g data-look="editorial" display="none">' + seg(cx - Math.min(half + 24, F.w / 2), by + sz * 0.3, cx + Math.min(half + 24, F.w / 2), by + sz * 0.3) + "</g>" +
+        '<g data-look="framed" display="none"><rect x="' + r2(Math.max(F.x, cx - half - 16)) + '" y="' + r2(by - sz * 0.95) + '" width="' + r2(Math.min(F.w, tt.w + 32)) + '" height="' + r2(sz * 1.25) + '" rx="6" fill="none" stroke="#000" stroke-width="' + rw + '"/></g>' +
+        '<g data-look="margin" display="none"><rect x="' + r2(Math.max(F.x, cx - half - 18)) + '" y="' + r2(by - sz * 0.74) + '" width="5" height="' + r2(sz * 0.8) + '" fill="#000" stroke="none"/></g>';
+    }
     return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="' + vb.join(" ") + '"' + (o.width ? ' width="' + esc(o.width) + '"' : "") + (o.height ? ' height="' + esc(o.height) + '"' : "") +
-      ' role="img" aria-label="' + esc(label) + '">' + (o.background === false ? "" : '<rect x="' + vb[0] + '" y="' + vb[1] + '" width="' + vb[2] + '" height="' + vb[3] + '" fill="#fff" stroke="none" data-bw="white"/>') + body + text + "</svg>";
+      ' role="img" aria-label="' + esc(label) + '">' + (o.background === false ? "" : '<rect x="' + vb[0] + '" y="' + vb[1] + '" width="' + vb[2] + '" height="' + vb[3] + '" fill="#fff" stroke="none" data-bw="white"/>') + looks + body + text + "</svg>";
   }
 
   /* ---------- the day's context: a seeded stream and a place in the rotation ---------- */
