@@ -1,0 +1,9 @@
+# Page Toolkit
+
+`builder.html#/toolkit` (Studio, Page Toolkit), module `js/toolkit-ui.js`, proved by `scripts/check-toolkit.mjs`.
+
+- **Wing packets** (`js/todays-packet.js`): one packet for every resident on the roster that is showing (change the wing in Settings), shifted for the time of day (mornings lean on orientation, evenings are calmer and one step gentler), with a divider sheet before each. Packets are made one after another so the browser stays responsive, with progress and Cancel; a packet the clinical audit blocks is held back and listed. Dividers and the list show a room alias, never a name. Printing offers the two-sided binder gutters.
+- **Their details** (`js/packet-builder.js`): children, grandchildren, great-grandchildren, the streets they grew up on and the words they use are kept on the profile (`tier3_deep.multigen`) and feed names, places and word-search words. Staff log how much of an activity was finished; after three, a print size, line height and grid size are suggested one step at a time, never outside the tier's own limits. "Use the suggested settings" saves them on the profile (`tier1_core.tuned`), and the difficulty calibrator (`js/pillar2-functionality-agents.js`) reads them from the request's `calibration`, holding each value to its limits. It is a pattern in what staff recorded, not an assessment.
+- **Clinical pages** (`js/clinical-suite.js`): step checklist with a pause after every third step, single-anchor sheet (refused if busy), sorting grid, spaced-retrieval pages 1, 3 and 5, and a coin template. Pure black on white.
+
+`js/pdf-exporter.js` (binding-gutter arithmetic and vector text) and `js/monthly-bundle.js` (chunked and worker-based compilation) are library modules covered by `scripts/check-output-pipeline.mjs`. The builder's print stage already does the alternating two-sided gutters in CSS, so neither has a screen of its own yet.

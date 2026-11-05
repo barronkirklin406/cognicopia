@@ -798,3 +798,368 @@ html.cg-night-shift .cg-brain-h::before,html.cg-night-shift .cg-sidebar-brand sp
     border-color: #0e3c43 !important;
   }
 }
+
+/* =====================================================================
+   Print preview modal (js/print-preview-modal.js). The chrome is here; the printed
+   sheet's own CSS travels with the module, so the preview, the printout and the
+   ink measurement all draw the same page. Tokens only; every control is --cg-tap.
+   ===================================================================== */
+.cgpp-modal { box-sizing: border-box; width: min(1100px, calc(100vw - 24px)); height: min(96vh, 1100px); max-height: 96vh; padding: 0; border: 3px solid var(--cg-charcoal); border-radius: var(--cg-radius-lg, 20px); background: var(--cg-white); color: var(--cg-charcoal); display: flex; flex-direction: column; overflow: hidden; font-family: var(--cg-font-ui); }
+.cgpp-modal::backdrop { background: rgba(5, 26, 30, .78); }
+.cgpp-modal[open] { animation: cgppIn .2s ease-out both; }
+/* the page's own heading, paragraph and span colors must never reach into the window: every text element takes the window's color */
+.cgpp-modal :where(h2, h3, p, span, strong, b, div, button, label, footer, header) { color: inherit; text-shadow: none; }
+.cgpp-modal .cgpp-sheet *, .cgpp-modal .cgpp-sheet { color: #000; }
+@keyframes cgppIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+html.cgpp-open { overflow: hidden; }
+.cgpp-modal > * { flex: none; }
+.cgpp-modal > .cgpp-viewport { flex: 1 1 0; }   /* the sheet takes every pixel the chrome does not */
+.cgpp-head { display: flex; flex-wrap: wrap; gap: 8px var(--cg-space-5, 1.5rem); align-items: center; justify-content: space-between; padding: 10px var(--cg-space-5, 1.5rem); border-bottom: 3px solid var(--cg-charcoal); }
+.cgpp-headtext { flex: 1 1 18rem; }
+.cgpp-title { margin: 0; font-size: 1.3rem; line-height: 1.2; }
+.cgpp-desc { margin: 2px 0 0; font-size: .92rem; }
+.cgpp-toner { display: flex; flex-direction: column; gap: 0; flex: 1 1 22rem; padding: 6px 12px; border: 3px solid var(--cg-green-700); border-radius: 12px; background: var(--cg-sage-100); color: var(--cg-green-900); font-size: .92rem; line-height: 1.35; }
+.cgpp-toner.is-warn { border-color: var(--cg-danger-800); background: var(--cg-danger-200); color: var(--cg-danger-800); }
+.cgpp-tag { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 8px var(--cg-space-5, 1.5rem); border-bottom: 2px solid var(--cg-tan-200); font-size: .92rem; }
+.cgpp-tag-title { margin-right: 4px; }
+.cgpp-chip { display: inline-block; padding: 2px 10px; border: 2px solid var(--cg-charcoal); border-radius: 999px; background: var(--cg-cream); }
+.cgpp-chip-plain { border-style: dashed; }
+.cgpp-audit { margin: 0; padding: 8px var(--cg-space-5, 1.5rem); font-size: .95rem; font-weight: 700; border-bottom: 2px solid var(--cg-charcoal); }
+.cgpp-audit-pass, .cgpp-audit-fixed { background: var(--cg-ok-200); color: var(--cg-charcoal); border-left: 10px solid var(--cg-ok-800); }   /* ok-800 on ok-200 is only 6.5:1, so the words are charcoal and the green is the bar */
+.cgpp-audit-blocked { background: var(--cg-danger-200); color: var(--cg-danger-800); }
+.cgpp-audit-not_run { background: var(--cg-tan-100); color: var(--cg-charcoal); }
+.cgpp-shake { animation: cgppShake .3s; }
+@keyframes cgppShake { 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
+.cgpp-bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; padding: 6px var(--cg-space-5, 1.5rem); border-bottom: 2px solid var(--cg-tan-200); }
+.cgpp-tabs { display: flex; flex-wrap: wrap; gap: 8px; }
+.cgpp-tab, .cgpp-btn { min-height: var(--cg-tap, 52px); min-width: var(--cg-tap, 52px); padding: 8px 18px; border: 3px solid var(--cg-charcoal); border-radius: 10px; background: var(--cg-white); color: var(--cg-charcoal); font: inherit; font-weight: 700; font-size: 1.02rem; line-height: 1.2; cursor: pointer; }
+.cgpp-tab { display: inline-flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 0; text-align: left; }
+.cgpp-tab-n { font-size: .8rem; letter-spacing: .06em; text-transform: uppercase; }
+.cgpp-tab-name { font-size: .95rem; }
+.cgpp-tab.is-active, .cgpp-btn-primary { background: var(--cg-charcoal); color: var(--cg-white); }
+/* hover and active states are spelled out so the page's own button:hover rules cannot wash the words out */
+.cgpp-tab:hover, .cgpp-btn:hover { background: var(--cg-tan-100); color: var(--cg-charcoal); border-color: var(--cg-charcoal); transform: none; box-shadow: none; }
+.cgpp-tab.is-active:hover, .cgpp-btn-primary:hover { background: var(--cg-charcoal); color: var(--cg-white); }
+.cgpp-btn.is-disabled:hover { background: var(--cg-tan-100); color: var(--cg-charcoal); }
+.cgpp-btn.is-disabled { background: var(--cg-tan-100); border-style: dashed; cursor: not-allowed; }
+.cgpp-tab:focus-visible, .cgpp-btn:focus-visible, .cgpp-viewport:focus-visible, .cgpp-audit:focus-visible { outline: 3px solid var(--cg-focus); outline-offset: 2px; box-shadow: 0 0 0 6px var(--cg-focus-dark); }
+.cgpp-viewport { flex: 1 1 auto; min-height: 0; overflow: auto; background: var(--cg-tan-200); padding: 12px; }
+.cgpp-stage { margin: 0 auto; }
+.cgpp-holder { transform-origin: 0 0; box-shadow: 0 2px 14px rgba(0, 0, 0, .4); }
+.cgpp-actions { margin: 0; display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-end; padding: 8px var(--cg-space-5, 1.5rem); border-top: 3px solid var(--cg-charcoal); }
+html.cg-night-shift .cgpp-modal { background: #211910; color: #ffedcc; border-color: #9b7136; }
+html.cg-night-shift .cgpp-head, html.cg-night-shift .cgpp-actions, html.cg-night-shift .cgpp-audit { border-color: #9b7136; }
+html.cg-night-shift .cgpp-tab, html.cg-night-shift .cgpp-btn, html.cg-night-shift .cgpp-chip { background: #2b2015; color: #ffedcc; border-color: #9b7136; }
+html.cg-night-shift .cgpp-tab.is-active, html.cg-night-shift .cgpp-btn-primary { background: #583a0d; color: #fff1cf; border-color: #d6a64b; }
+html.cg-night-shift .cgpp-tab:hover, html.cg-night-shift .cgpp-btn:hover { background: #3a2917; color: #fff1cf; border-color: #d6a64b; }
+html.cg-night-shift .cgpp-tab.is-active:hover, html.cg-night-shift .cgpp-btn-primary:hover { background: #583a0d; color: #fff1cf; }
+html.cg-night-shift .cgpp-viewport { background: #17120c; }
+html.cg-night-shift .cgpp-actions { background: #211910; }
+@media (max-width: 700px) {
+  .cgpp-modal { width: 100%; max-width: 100%; height: 100vh; height: 100dvh; max-height: none; margin: 0; border-radius: 0; border-width: 0; overflow-x: hidden; overflow-y: auto; }
+  .cgpp-modal > * { flex-shrink: 0; }
+  .cgpp-modal > .cgpp-viewport { flex: 0 0 auto; min-height: 60vh; }
+  .cgpp-head, .cgpp-tag, .cgpp-audit, .cgpp-bar, .cgpp-actions { padding-left: var(--cg-space-4, 1rem); padding-right: var(--cg-space-4, 1rem); }
+  .cgpp-tab { flex: 1 1 100%; }
+  .cgpp-actions { position: sticky; bottom: 0; z-index: 1; flex-wrap: nowrap; gap: 8px; background: var(--cg-white); }
+  .cgpp-actions .cgpp-btn { flex: 1 1 0; min-width: 0; padding: 6px 8px; font-size: .95rem; }
+}
+@media (prefers-reduced-motion: reduce) { .cgpp-modal[open], .cgpp-shake { animation: none; } }
+#cgpp-print-stage { display: none; }
+/* its own named page: the site's other print pages keep their margins (see the note on @page near the top of this file) */
+@page cg-preview { size: 8.5in 11in; margin: .75in; }
+#cgpp-print-stage { page: cg-preview; }
+@media print {
+  html.cgpp-printing body > *:not(#cgpp-print-stage) { display: none !important; }
+  html.cgpp-printing #cgpp-print-stage { display: block !important; }
+  #cgpp-print-stage .cgpp-sheet { width: auto; height: auto; min-height: 0; padding: 0; overflow: visible; box-shadow: none; break-after: page; page-break-after: always; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  /* the page-wide print rule stretches every table to the full width; a word search must stay a square of its own cell size */
+  html.cgpp-printing #cgpp-print-stage table.cgpp-ws { width: var(--cgpp-ws-w, auto) !important; max-width: none !important; table-layout: fixed; }
+  #cgpp-print-stage .cgpp-sheet:last-child { break-after: auto; page-break-after: auto; }
+  #cgpp-print-stage .cgpp-sheet .cgpp-foot { position: static; margin-top: 18px; }
+}
+
+/* ===== Deep Packet Customization panel (js/reminiscence-engine.js) ===== */
+.cgre-mount { margin: 0 0 26px; }
+.cgre-panel { box-sizing: border-box; border: 3px solid var(--cg-charcoal); border-radius: var(--cg-radius-lg, 16px); background: var(--cg-white); color: var(--cg-charcoal); font-family: var(--cg-font-ui); }
+.cgre-panel :where(p, span, label, legend, div, summary, h3) { color: inherit; }
+.cgre-sum { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; min-height: var(--cg-tap, 52px); padding: 12px 18px; cursor: pointer; font-weight: 700; font-size: 1.15rem; list-style-position: inside; }
+.cgre-sum:hover { background: var(--cg-sage-100); border-radius: 12px; }
+.cgre-opt { font-weight: 400; font-size: .95rem; color: var(--cg-ink-soft); }
+.cgre-sum:focus-visible, .cgre-input:focus-visible, .cgre-btn:focus-visible, .cgre-check input:focus-visible { outline: 3px solid var(--cg-focus); outline-offset: 2px; box-shadow: 0 0 0 6px var(--cg-focus-dark); }
+.cgre-body { padding: 4px 18px 18px; border-top: 3px solid var(--cg-charcoal); }
+.cgre-lead { margin: 14px 0 18px; max-width: 60ch; font-size: 1rem; color: var(--cg-ink-soft); }
+.cgre-field { margin: 0 0 18px; }
+.cgre-field label { display: block; margin: 0 0 6px; font-weight: 700; font-size: 1rem; }
+.cgre-sub { display: block; font-weight: 400; font-size: .95rem; color: var(--cg-ink-soft); margin-top: 2px; }
+.cgre-input { box-sizing: border-box; width: 100%; min-height: var(--cg-tap, 52px); padding: 12px 14px; font: inherit; font-size: 1.05rem; color: var(--cg-charcoal); background: var(--cg-white); border: 2px solid var(--cg-charcoal); border-radius: 8px; }
+textarea.cgre-input { min-height: 5.5rem; resize: vertical; }
+.cgre-inc { margin: 0 0 18px; padding: 0; border: 0; }
+.cgre-inc legend { padding: 0; margin: 0 0 8px; font-weight: 700; font-size: 1rem; color: var(--cg-charcoal); }
+.cgre-check { display: flex !important; align-items: center; gap: 12px; min-height: var(--cg-tap, 52px); margin: 0 0 8px !important; padding: 8px 14px; border: 2px solid var(--cg-charcoal); border-radius: 8px; background: var(--cg-white); font-weight: 600 !important; cursor: pointer; }
+.cgre-check:hover { background: var(--cg-sage-100); }
+.cgre-check input { flex: none; width: 28px; height: 28px; margin: 0; accent-color: var(--cg-green-700); }
+.cgre-actions { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 8px; }
+.cgre-btn { min-height: var(--cg-tap, 52px); padding: 10px 20px; font: inherit; font-weight: 700; color: var(--cg-charcoal); background: var(--cg-white); border: 3px solid var(--cg-charcoal); border-radius: 10px; cursor: pointer; }
+.cgre-btn:hover { background: var(--cg-sage-200); }
+.cgre-status { min-height: 1.4em; margin: 6px 0 0; font-weight: 600; }
+html.cg-night-shift .cgre-panel { background: #211910; color: #ffedcc; border-color: #9b7136; }
+html.cg-night-shift .cgre-body { border-color: #9b7136; }
+html.cg-night-shift .cgre-inc legend { color: #ffedcc; }
+html.cg-night-shift .cgre-sum:hover, html.cg-night-shift .cgre-check:hover { background: #33271a; }
+html.cg-night-shift .cgre-lead, html.cg-night-shift .cgre-sub, html.cg-night-shift .cgre-opt { color: #e6cfa0; }
+html.cg-night-shift .cgre-input, html.cg-night-shift .cgre-check { background: #17120c; color: #ffedcc; border-color: #9b7136; }
+html.cg-night-shift .cgre-btn { background: #17120c; color: #ffedcc; border-color: #9b7136; }
+html.cg-night-shift .cgre-btn:hover { background: #33271a; }
+@media print { .cgre-mount { display: none !important; } }
+
+/* ===== Quarterly Legacy & Memory Books (js/legacy-book.js): bindable keepsake pages =====
+   Letter pages, pure black on white, a 0.75 in binding gutter on the inside edge (left on odd pages, right on even, for two-sided
+   printing and a 3-ring or hardcover binding), a page-number footer, and a clean break after every page. */
+.sheet.lb-sheet { box-sizing: border-box; display: flex; flex-direction: column; color: #000; background: #fff; font-family: var(--cg-font-ui, "Atkinson Hyperlegible", Arial, sans-serif); font-size: 12.5pt; line-height: 1.45; break-after: page; page-break-after: always; }
+.sheet.lb-odd  { padding: .75in .5in .75in .75in !important; }
+.sheet.lb-even { padding: .75in .75in .75in .5in !important; }
+.lb-sheet > :not(.lb-foot) { flex: 1 1 auto; min-height: 0; }
+.lb-foot { flex: none !important; display: flex; justify-content: space-between; align-items: baseline; margin-top: .15in; padding-top: 3pt; border-top: 3pt solid #000; font-size: 10.5pt; color: #000; }
+.lb-even .lb-foot { flex-direction: row-reverse; }
+.lb-rule { border-top: 4pt solid #000; margin: .22in auto; width: 70%; }
+.lb-kicker { margin: 0; font-size: 12pt; letter-spacing: .14em; text-transform: uppercase; font-weight: 700; }
+.lb-small { font-size: 10.5pt; }
+.lb-cover { display: flex; flex-direction: column; justify-content: space-between; text-align: center; height: 100%; }
+.lb-cover-top { font-size: 15pt; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+.lb-cover-main { margin: auto 0; }
+.lb-cover-title { margin: 0; font-family: var(--cg-font-name, Georgia, serif); font-size: 36pt; line-height: 1.12; font-weight: 700; }
+.lb-cover-name { margin: .12in 0 0; font-size: 22pt; font-weight: 700; }
+.lb-badge { display: inline-block; margin: .14in 0 0; padding: 4pt 14pt; border: 3pt solid #000; border-radius: 999px; font-size: 14pt; font-weight: 700; }
+.lb-cover-range { margin: .2in 0 0; font-size: 14pt; }
+.lb-cover-foot p { margin: 0 0 .08in; }
+.lb-msg h2, .lb-toc h2, .lb-run { margin: 0 0 .2in; font-size: 24pt; line-height: 1.15; border-bottom: 3pt solid #000; padding-bottom: .08in; }
+.lb-message p { margin: 0 0 .14in; font-size: 15pt; line-height: 1.5; }
+.lb-toc ol { list-style: none; margin: 0 0 .2in; padding: 0; }
+.lb-toc li { display: flex; align-items: baseline; gap: 8pt; margin: 0 0 .12in; font-size: 16pt; }
+.lb-toc li i { flex: 1; border-bottom: 3pt dotted #000; transform: translateY(-3pt); }
+.lb-divider { display: flex; flex-direction: column; justify-content: center; text-align: center; height: 100%; }
+.lb-divider h2 { margin: .12in 0; font-family: var(--cg-font-name, Georgia, serif); font-size: 40pt; line-height: 1.1; }
+.lb-divider p { margin: .06in 0; font-size: 15pt; }
+.lb-count { font-weight: 700; }
+.lb-run small { font-size: 12pt; font-weight: 400; }
+.lb-item { margin: 0 0 .22in; break-inside: avoid; page-break-inside: avoid; }
+.lb-item header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2pt 10pt; }
+.lb-date { font-size: 10.5pt; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+.lb-item h3 { margin: 0; font-size: 15pt; }
+.lb-item p { margin: .04in 0 0; }
+.lb-by { font-size: 10.5pt; font-style: italic; }
+.lb-art { margin: .08in 0; text-align: center; } .lb-art svg { max-height: 3in; max-width: 100%; }
+@media print { .sheet.lb-sheet { margin: 0; box-shadow: none; } }
+
+/* ===== Studio tools: tracking, planner, journal (js/studio-ui.js) ===== */
+.st-tool .st-form fieldset { border: 0; padding: 0; margin: 0 0 18px; min-width: 0; }
+.st-tool legend { padding: 0; margin: 0 0 8px; font-weight: 700; }
+.st-scale, .st-stage, .st-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.st-opt { display: flex; align-items: center; gap: 10px; min-height: var(--cg-tap, 52px); padding: 8px 14px; border: 2px solid currentColor; border-radius: 10px; cursor: pointer; font-weight: 600; }
+.st-opt input { flex: none; width: 24px; height: 24px; margin: 0; }
+.st-opt:has(input:checked) { outline: 3px solid currentColor; outline-offset: 1px; }
+.st-opt small { display: block; font-weight: 400; }
+.st-banner { margin: 0 0 18px; padding: 14px 18px; border: 3px solid currentColor; border-radius: 12px; }
+.st-banner:empty { display: none; }
+.st-banner.st-gentler { border-left-width: 12px; } .st-banner.st-step-up { border-left-width: 12px; border-style: double; }
+.st-banner p { margin: 6px 0 0; }
+.st-h2 { margin: 26px 0 10px; font-size: 1.25rem; }
+.st-scroll { overflow-x: auto; }
+.st-matrix { border-collapse: collapse; width: 100%; min-width: 640px; }
+.st-matrix th, .st-matrix td { padding: 8px 10px; border: 1px solid currentColor; text-align: left; vertical-align: middle; }
+.st-matrix thead th { border-bottom-width: 3px; }
+.st-matrix .st-empty td { opacity: 1; font-style: italic; }
+.st-plan input[type=text], .st-plan select { width: 100%; min-width: 7rem; min-height: var(--cg-tap, 52px); box-sizing: border-box; }
+.st-tag { display: inline-block; margin: 0 4px 2px 0; padding: 2px 10px; border: 2px solid currentColor; border-radius: 999px; font-size: .9em; font-weight: 700; }
+.st-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.st-list li { padding: 12px 16px; border: 1px solid currentColor; border-radius: 10px; }
+.st-list p { margin: 6px 0 0; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* ===== Era-Locked Conversational Decks (js/era-decks.js) =====
+   Category tags and frames (Hometown, Career, Music, Family), the screen filter, and the cut-out cardstock layout: four cards to a
+   Letter page (3.75 x 4.85 in) with single dashed cut lines, a caregiver back page, and a small response row on every front. */
+.dk-filter { border: 0; padding: 0; margin: 0 0 14px; min-width: 0; }
+.dk-filter legend { padding: 0; margin: 0 0 6px; font-weight: 700; }
+.dk-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.dk-chip, .dk-opt { display: flex; align-items: center; gap: 10px; min-height: var(--cg-tap, 52px); padding: 6px 14px; border: 2px solid currentColor; border-radius: 10px; cursor: pointer; font-weight: 600; }
+.dk-opt { margin-top: 8px; border-style: dashed; }
+.dk-chip input, .dk-opt input { flex: none; width: 24px; height: 24px; margin: 0; }
+.dk-chip span { display: inline-flex; align-items: center; gap: 8px; }
+.dk-chip:has(input:checked) { outline: 3px solid currentColor; outline-offset: 1px; }
+.dk-tag { display: inline-flex; align-items: center; gap: 5pt; padding: 1pt 8pt 1pt 2pt; border: 2.25pt solid #000; border-radius: 999px; font-size: 11pt; font-weight: 700; color: #000; background: #fff; line-height: 1.2; }
+.dk-tag i, .dk-chip i { display: inline-flex; align-items: center; justify-content: center; width: 1.5em; height: 1.5em; border: 2pt solid currentColor; border-radius: 50%; font-style: normal; font-size: .9em; font-weight: 700; }
+.dk-chip.dk-hometown i, .dk-tag.dk-hometown i { border-radius: 50%; }
+.dk-chip.dk-career i, .dk-tag.dk-career i { border-radius: 2pt; }
+.dk-chip.dk-music i, .dk-tag.dk-music i { border-radius: 50% 50% 50% 0; }
+.dk-chip.dk-family i, .dk-tag.dk-family i { border-radius: 30%; }
+
+.sheet.dk-sheet { box-sizing: border-box; padding: .5in !important; display: flex; flex-direction: column; align-items: center; background: #fff; color: #000; font-family: var(--cg-font-ui, "Atkinson Hyperlegible", Arial, sans-serif); break-after: page; page-break-after: always; }
+.dk-grid { box-sizing: content-box; display: grid; grid-template-columns: repeat(2, 3.75in); grid-auto-rows: 4.85in; border-top: 3pt dashed #000; border-left: 3pt dashed #000; margin: 0; }
+.dk-card { box-sizing: border-box; width: 3.75in; height: 4.85in; padding: .1in; border-right: 3pt dashed #000; border-bottom: 3pt dashed #000; overflow: hidden; break-inside: avoid; page-break-inside: avoid; }
+.dk-frame { box-sizing: border-box; height: 100%; display: flex; flex-direction: column; gap: .05in; padding: .08in .1in; border: 3pt solid #000; border-radius: 6pt; }
+.dk-hometown .dk-frame { border-style: solid; }
+.dk-career .dk-frame { border-style: double; border-width: 6pt; }
+.dk-music .dk-frame { border-left-width: 9pt; border-right-width: 9pt; }
+.dk-family .dk-frame { border-radius: 20pt; }
+.dk-top { display: flex; justify-content: space-between; align-items: center; gap: 6pt; }
+.dk-no { font-size: 11pt; font-weight: 700; }
+.dk-title { margin: 0; font-size: 16pt; line-height: 1.1; text-align: center; color: #000; }
+.dk-title.dk-sm { font-size: 13pt; }
+.dk-art { flex: none; height: 1.35in; display: flex; justify-content: center; } .dk-art svg { height: 100%; width: auto; max-width: 100%; }
+.dk-invite { flex: 1 1 auto; min-height: 0; margin: 0; text-align: center; font-weight: 700; line-height: 1.2; overflow: hidden; color: #000; }
+.dk-t1 .dk-invite { font-size: 18pt; } .dk-t2 .dk-invite { font-size: 20pt; } .dk-t3 .dk-invite { font-size: 22pt; }
+.dk-t3 .dk-art { height: 1.1in; }
+.dk-resp { flex: none; display: flex; justify-content: space-between; align-items: center; gap: 4pt; padding-top: 3pt; border-top: 2.25pt solid #000; font-size: 11pt; color: #000; }
+.dk-r { white-space: nowrap; }
+.dk-box { display: inline-block; width: .15in; height: .15in; margin-right: 3pt; border: 2.25pt solid #000; vertical-align: -.02in; }
+.dk-back .dk-frame { font-size: 12pt; line-height: 1.3; }
+.dk-back p, .dk-back ol { margin: 0 0 .05in; } .dk-back ol { padding-left: .22in; } .dk-back li { margin: 0 0 .03in; }
+.dk-back .dk-foot { font-size: 11pt; margin-top: auto; border-top: 2.25pt solid #000; padding-top: 2pt; }
+.dk-blank { background: #fff; }
+.dk-note { margin: .06in 0 0; font-size: 10pt; text-align: center; }
+.dk-color .dk-hometown .dk-tag { background: var(--cg-cat-hometown, #cfe8e6); } .dk-color .dk-career .dk-tag { background: var(--cg-cat-career, #f6cdb4); } .dk-color .dk-music .dk-tag { background: var(--cg-cat-music, #dfe0f7); } .dk-color .dk-family .dk-tag { background: var(--cg-cat-family, #f3e6b3); }
+.dk-color .dk-card { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+@media print { .sheet.dk-sheet { margin: 0; box-shadow: none; } }
+
+/* ===== Two-sided binder printing (js/pdf-exporter.js) =====
+   With .bind-2sided on the print root, the 0.75 in gutter alternates: on the left of right-hand (odd) pages and on the right of
+   left-hand (even) pages, so a 3-ring binder's holes never touch the text on either side of a sheet. */
+.bind-2sided .sheet:nth-child(odd)  { padding-left: .75in !important; padding-right: .5in !important; }
+.bind-2sided .sheet:nth-child(even) { padding-left: .5in !important; padding-right: .75in !important; }
+.pk-divider { display: flex; align-items: center; justify-content: center; text-align: center; color: #000; background: #fff; }
+.pk-divider h2 { margin: .1in 0; font-size: 40pt; line-height: 1.1; } .pk-kicker { margin: 0; font-size: 14pt; letter-spacing: .14em; text-transform: uppercase; font-weight: 700; }
+.pk-sub, .pk-div p { font-size: 16pt; margin: .06in 0; } .pk-rule { border-top: 4pt solid #000; width: 4in; margin: .2in auto; }
+
+/* ===== Clinical suite overrides (js/clinical-suite.js) =====
+   Pure black on white, lines of 3 pt or more, one plain element per anchor page, a 4 pt outer border for coloring pages, and three
+   illumination modes for the screen (every pair is 7:1 or better; print is always black on white). */
+.cl-icon { flex: none; width: 48px; height: 48px; }
+.cl-steps { list-style: none; margin: 0; padding: 0; color: #000; }
+.cl-step, .cl-pause { display: flex; align-items: center; gap: 14px; margin: 0 0 12px; padding: 10px 14px; border: 3pt solid #000; border-radius: 10pt; break-inside: avoid; }
+.cl-pause { border-style: dashed; justify-content: flex-start; } .cl-pause p { margin: 2px 0 0; }
+.cl-num { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 2em; height: 2em; border: 3pt solid #000; border-radius: 50%; font-weight: 700; }
+.cl-text { flex: 1; font-size: 18pt; line-height: 1.3; }
+.cl-box { flex: none; display: inline-block; width: .3in; height: .3in; border: 3pt solid #000; }
+.cl-lbd { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .2in; min-height: 5in; padding: .4in; text-align: center; border-radius: 0; }
+.cl-lbd-bright { background: #fff; color: #000; } .cl-lbd-soft { background: #f4efe3; color: #000; } .cl-lbd-low { background: #000; color: #fff; }
+/* the page-wide paper colors are !important too, so these are written to outrank them */
+html .cl-lbd.cl-lbd-low.cl-lbd, html .cl-lbd.cl-lbd-low.cl-lbd * { color: #fff !important; }
+html .cl-lbd.cl-lbd-bright.cl-lbd, html .cl-lbd.cl-lbd-bright.cl-lbd *, html .cl-lbd.cl-lbd-soft.cl-lbd, html .cl-lbd.cl-lbd-soft.cl-lbd * { color: #000 !important; }
+.cl-lbd-low .cl-anchor path, .cl-lbd-low .cl-anchor circle, .cl-lbd-low .cl-anchor ellipse { stroke: #fff; }
+.cl-anchor { width: 3.6in; height: 3.6in; } .cl-lbd-word { margin: 0; font-size: 32pt; font-weight: 700; } .cl-lbd-prompt { margin: 0; font-size: 20pt; }
+.cl-matrix { display: flex; flex-wrap: wrap; gap: .2in; color: #000; } .cl-pool { flex: 0 0 2.2in; border: 3pt solid #000; padding: .12in; } .cl-pool ul { margin: .05in 0 0; padding-left: 1.1em; font-size: 16pt; }
+.cl-grid { border-collapse: collapse; flex: 1; } .cl-grid th, .cl-grid td { border: 3pt solid #000; padding: .08in; text-align: center; font-size: 16pt; } .cl-grid td { height: .5in; }
+.cl-progress { margin: .1in 0; } .cl-segs { display: flex; gap: 4pt; } .cl-seg { flex: 1; height: .28in; border: 3pt solid #000; } .cl-seg.on { background: #000; } .cl-progress p { margin: 4pt 0 0; font-weight: 700; font-size: 16pt; }
+.cl-sil { width: 4.6in; height: 4.6in; display: block; margin: 0 auto; }
+.cl-overlay { margin-top: .2in; padding: .14in .18in; border: 3pt solid #000; border-radius: 10pt; font-size: 12pt; color: #000; } .cl-overlay h4 { margin: .06in 0 0; font-size: 12.5pt; } .cl-overlay p { margin: .02in 0; } .cl-safe { font-style: italic; }
+.cl-sr-page h2 { margin: 0 0 .08in; font-size: 26pt; } .cl-sr-note { font-size: 13pt; margin: 0 0 .2in; }
+.cl-sr { margin: 0 0 .18in; padding: .12in .2in; border: 3pt solid #000; border-radius: 10pt; text-align: center; break-inside: avoid; } .cl-sr-cue { margin: 0; font-size: 24pt; font-weight: 700; } .cl-sr-ans { margin: .04in 0 0; font-size: 24pt; }
+.cl-hint-flip { margin: .08in 0 0; font-size: 14pt; transform: rotate(180deg); }
+.cl-coins { display: flex; flex-wrap: wrap; gap: .2in; align-items: flex-end; } .cl-coin { margin: 0; text-align: center; font-size: 12pt; font-weight: 700; } .cl-coin svg { display: block; }
+.cl-bills { display: flex; flex-wrap: wrap; gap: .14in; margin: .1in 0; } .cl-bill { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 2.4in; height: 1.2in; border: 3pt double #000; font-size: 13pt; text-align: center; } .cl-bill i { font-size: 10pt; letter-spacing: .2em; }
+.cl-small { font-size: 12pt; }
+.cl-border { box-sizing: border-box; border: 4pt solid #000; padding: .15in; }
+.cl-lyric { margin: .15in 0; text-align: center; } .cl-bar { display: flex; gap: 0; border-top: 3pt solid #000; } .cl-bar span { flex: 1; height: .2in; border-right: 3pt solid #000; } .cl-bar span:first-child { border-left: 3pt solid #000; } .cl-lyric p { margin: .06in 0; font-size: 22pt; font-weight: 700; } .cl-lyric-title { font-size: 12pt !important; font-weight: 400 !important; }
+
+/* ===== Studio extras: progress report, index cards with QR, KDP hardcover pages =====
+   Each odd size has its own named page (the unnamed @page above stays US Letter). The page names are used by .sheet rules below.
+   Pure black on white, lines of 3 pt or more. */
+@page cg-idx4x6 { size: 4in 6in; margin: 0; }
+@page cg-idx5x7 { size: 5in 7in; margin: 0; }
+@page cg-kdp { size: 8.25in 11in; margin: 0; }
+.sheet.dk-i4x6 { page: cg-idx4x6; } .sheet.dk-i5x7 { page: cg-idx5x7; } .sheet.lb-kdp { page: cg-kdp; }
+
+.sheet.tr-sheet { box-sizing: border-box; padding: .6in .5in .6in .75in !important; color: #000; background: #fff; font-size: 12pt; }
+.tr-sheet h1 { margin: 0; font-size: 30pt; line-height: 1.1; color: #000; } .tr-sheet h2 { margin: .16in 0 .06in; font-size: 17pt; color: #000; }
+.tr-kicker { margin: 0; font-size: 12pt; letter-spacing: .14em; text-transform: uppercase; font-weight: 700; }
+.tr-head { padding-bottom: .1in; border-bottom: 4pt solid #000; } .tr-head p { margin: .04in 0 0; font-size: 13pt; }
+.tr-graph { display: block; width: 100%; height: auto; max-height: 3.6in; border: 3pt solid #000; }
+.tr-table { width: 100%; border-collapse: collapse; font-size: 11.5pt; } .tr-table th, .tr-table td { border: 3pt solid #000; padding: 4pt 6pt; text-align: left; vertical-align: top; }
+.tr-table thead th { font-weight: 700; } .tr-table tbody th { font-weight: 700; }
+.tr-rec { margin: .14in 0; padding: .1in .14in; border: 4pt solid #000; border-radius: 8pt; } .tr-rec p { margin: .04in 0 0; }
+.tr-notes { margin: 0; padding-left: 1.1em; } .tr-notes li { margin: 0 0 .05in; } .tr-note { margin: .14in 0 0; font-size: 11pt; font-style: italic; }
+.tr-foot { margin-top: auto; display: flex; justify-content: space-between; border-top: 3pt solid #000; padding-top: 3pt; font-size: 10.5pt; }
+
+.sheet.dk-index { box-sizing: border-box; padding: .2in !important; page-break-after: always; display: block; background: #fff; color: #000; overflow: hidden; }
+.sheet.dk-index::before { display: none !important; }
+.sheet.dk-i4x6 { width: 4in; height: 6in; } .sheet.dk-i5x7 { width: 5in; height: 7in; }
+.dk-index .dk-frame { height: 100%; }
+.dk-i5x7 .dk-title { font-size: 20pt; } .dk-i5x7 .dk-no { font-size: 12pt; } .dk-i5x7 .dk-art { height: 1.7in; }
+.dk-i4x6 .dk-art { height: 1.2in; } .dk-i4x6.dk-t3 .dk-art { height: 1in; }
+.dk-index.dk-t1 .dk-invite { font-size: 15pt; } .dk-i5x7.dk-t1 .dk-invite { font-size: 18pt; } .dk-i5x7.dk-t2 .dk-invite { font-size: 20pt; } .dk-i5x7.dk-t3 .dk-invite { font-size: 22pt; }
+.dk-i4x6.dk-t2 .dk-invite { font-size: 17pt; } .dk-i4x6.dk-t3 .dk-invite { font-size: 19pt; }
+.dk-qr { flex: none; display: flex; align-items: center; justify-content: center; gap: .08in; margin: 0; }
+.dk-qr svg { width: .9in; height: .9in; border: 2pt solid #000; } .dk-i5x7 .dk-qr svg { width: 1.05in; height: 1.05in; }
+.dk-qr figcaption { font-size: 10pt; font-weight: 700; line-height: 1.2; text-align: left; max-width: 1.8in; }
+.dk-indexback .dk-frame { font-size: 11pt; } .dk-i5x7.dk-indexback .dk-frame { font-size: 13pt; }
+@media print { .sheet.dk-index { margin: 0; box-shadow: none; } }
+
+.sheet.lb-kdp { width: 8.25in; height: 11in; padding-top: .5in !important; padding-bottom: .5in !important; }
+.sheet.lb-kdp.lb-odd { padding-left: .75in !important; padding-right: .5in !important; } .sheet.lb-kdp.lb-even { padding-left: .5in !important; padding-right: .75in !important; }
+.lb-family { display: flex; flex-direction: column; gap: .2in; } .lb-family h2 { margin: 0; font-size: 22pt; }
+.lb-photo { flex: none; height: 3.4in; border: 3pt dashed #000; display: flex; align-items: center; justify-content: center; font-size: 14pt; font-weight: 700; }
+.lb-lines { flex: 1 1 auto; display: flex; flex-direction: column; justify-content: space-between; } .lb-lines i { display: block; border-bottom: 3pt solid #000; height: .36in; }
+
+/* ===== Facility tools (js/facility-tools-ui.js): EHR import wizard, therapy goals, shift highlights, scenario practice =====
+   The screens reuse the Studio tool styles (.st-*). These add the wizard steps, small grids and the printed pages: pure black on white, lines of 3 pt or more. */
+.ft-steps { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 18px; padding: 0; }
+.ft-steps li { display: flex; align-items: center; gap: 8px; min-height: var(--cg-tap, 52px); padding: 6px 14px; border: 2px solid currentColor; border-radius: 999px; }
+.ft-steps li[aria-current="step"] { outline: 3px solid currentColor; outline-offset: 1px; font-weight: 700; }
+.ft-steps b { display: inline-flex; align-items: center; justify-content: center; width: 1.8em; height: 1.8em; border: 2px solid currentColor; border-radius: 50%; }
+.ft-done b { border-width: 4px; }
+.ft-panel h2 { margin: 0 0 10px; font-size: 1.3rem; }
+.ft-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: 12px; }
+.ft-grid label { display: grid; gap: 4px; font-weight: 700; } .ft-grid input, .ft-grid select, .ft-row input { min-height: var(--cg-tap, 52px); box-sizing: border-box; width: 100%; }
+.ft-row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin: 0 0 8px; } .ft-row > span { flex: 1 1 14rem; } .ft-row input { flex: 1 1 14rem; width: auto; }
+.ft-report { margin: 0 0 14px; padding-left: 1.2em; } .ft-report li { margin: 0 0 4px; }
+.ft-codes { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 8px; }
+.ft-choices { display: grid; gap: 10px; margin: 12px 0; } .ft-choice { text-align: left; white-space: normal; height: auto; min-height: var(--cg-tap, 52px); padding: 12px 16px; justify-content: flex-start; }
+.ft-q0 { border-style: dashed; } .ft-q2 { border-left-width: 12px; }
+.ft-sheet { margin-top: 18px; overflow-x: auto; } .ft-sheet .sheet { margin: 0 auto; box-shadow: 0 0 0 3px currentColor; }
+
+.sheet.slp-sheet, .sheet.sh-hi { box-sizing: border-box; padding: .6in .5in .6in .75in !important; color: #000; background: #fff; font-size: 12pt; }
+.sh-hi h1, .slp-sheet h1 { margin: 0; font-size: 26pt; line-height: 1.1; color: #000; } .slp-sheet h2 { margin: .16in 0 .06in; font-size: 17pt; color: #000; }
+.sh-sec { margin: .1in 0 0; } .sh-sec h2 { margin: 0 0 .04in; padding-bottom: 2pt; border-bottom: 3pt solid #000; font-size: 14pt; color: #000; }
+.sh-list { list-style: none; margin: 0; padding: 0; } .sh-list li { margin: 0 0 .04in; padding-left: .18in; border-left: 3pt solid #000; font-size: 11.5pt; line-height: 1.25; }
+.sh-soothe.sh-settled { border-left-width: 7pt; } .sh-soothe.sh-still-unsettled { border-left-style: dashed; border-left-width: 5pt; }
+.sh-none, .sh-more { margin: 0; font-size: 11pt; font-style: italic; }
+.sh-box { display: inline-block; width: .15in; height: .15in; margin-right: 5pt; border: 2.25pt solid #000; vertical-align: -.02in; }
+
+.sheet.sc-cert { box-sizing: border-box; padding: .5in !important; color: #000; background: #fff; text-align: center; }
+.sc-frame { box-sizing: border-box; height: 100%; padding: .5in .45in; border: 4pt double #000; display: flex; flex-direction: column; justify-content: center; gap: .1in; }
+.sc-cert h1 { margin: 0; font-size: 34pt; line-height: 1.1; color: #000; } .sc-cert h2 { margin: .1in 0 0; font-size: 28pt; color: #000; } .sc-cert h3 { margin: .08in 0; font-size: 22pt; color: #000; }
+.sc-cert p { margin: 0; font-size: 13pt; } .sc-kicker { font-size: 12pt !important; letter-spacing: .14em; text-transform: uppercase; font-weight: 700; }
+.sc-cols { display: flex; justify-content: space-around; gap: .2in; margin-top: .2in; font-size: 12pt; } .sc-sign { margin-top: .5in !important; } .sc-note { margin-top: .3in !important; font-size: 10pt !important; }
+.sc-list { text-align: left; margin: .1in auto; max-width: 5.5in; font-size: 13pt; }
+
+/* ===== Accessibility (js/access-kit.js): color-blind palettes, OpenDyslexic, micro-tier worksheet =====
+   The palette is chosen in Security and Accessibility and applied as data-cg-cb and --cg-cat-* / --cg-cb-* on <html>. Color is never the only signal:
+   tags carry a shape and messages carry a mark. OpenDyslexic is loaded from this site's /fonts (SIL Open Font License). */
+@font-face { font-family: "OpenDyslexic"; font-style: normal; font-weight: 400; font-display: swap; src: url("../fonts/OpenDyslexic-Regular.woff2") format("woff2"); }
+@font-face { font-family: "OpenDyslexic"; font-style: normal; font-weight: 700; font-display: swap; src: url("../fonts/OpenDyslexic-Bold.woff2") format("woff2"); }
+html[data-cg-font="opendyslexic"] body, html[data-cg-font="opendyslexic"] :is(button, input, select, textarea) { font-family: "OpenDyslexic", "Atkinson Hyperlegible", Arial, sans-serif; letter-spacing: 0; }
+html[data-cg-font="opendyslexic"][data-cg-font-print="1"] .sheet, html[data-cg-font="opendyslexic"][data-cg-font-print="1"] .sheet :is(h1, h2, h3, p, td, th, li, span, b, footer) { font-family: "OpenDyslexic", "Atkinson Hyperlegible", Arial, sans-serif; }
+html[data-cg-cb] .dk-chip.dk-hometown { background: var(--cg-cat-hometown); color: #000; } html[data-cg-cb] .dk-chip.dk-career { background: var(--cg-cat-career); color: #000; }
+html[data-cg-cb] .dk-chip.dk-music { background: var(--cg-cat-music); color: #000; } html[data-cg-cb] .dk-chip.dk-family { background: var(--cg-cat-family); color: #000; }
+html[data-cg-cb] .msg-ok, html[data-cg-cb] .msg-ok * { color: var(--cg-cb-ok); } html[data-cg-cb] .msg-bad, html[data-cg-cb] .msg-bad * { color: var(--cg-cb-bad); }
+html[data-cg-cb] .msg-ok::before { content: "\2713  "; font-weight: 700; } html[data-cg-cb] .msg-bad::before { content: "\26A0  "; font-weight: 700; }
+.sheet.rt-sheet { box-sizing: border-box; padding: .6in .5in .6in .75in !important; color: #000; background: #fff; font-size: 12pt; }
+.rt-sheet h1 { margin: 0; font-size: 26pt; line-height: 1.1; color: #000; } .rt-intro { margin: .1in 0; } .rt-total { margin: .1in 0; font-size: 14pt; }
+.rt-table td, .rt-table th { vertical-align: middle; } .rt-table th small { font-weight: 400; }
+.rt-box { display: inline-block; width: .26in; height: .26in; border: 3pt solid #000; vertical-align: middle; }
+.rt-table td:not(:first-child), .rt-table th:not(:first-child):not(:last-child) { text-align: center; }
+.sa-swatches { display: flex; flex-wrap: wrap; gap: 8px; margin: 6px 0 0; } .sa-swatch { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border: 3px solid #000; border-radius: 999px; color: #000; font-weight: 700; }
+.sa-log { font-size: .95rem; } .sa-log td, .sa-log th { white-space: nowrap; }
+.sa-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 0 0 14px; padding: 12px 16px; border: 3px solid #fff; border-radius: 14px; background: #08262c; color: #fff; }
+.sa-bar .btn { min-height: var(--cg-tap, 52px); } @media print { .sa-bar { display: none !important; } }
+/* the wider OpenDyslexic letters on a printed card: the response row wraps instead of running past the card */
+html[data-cg-font-print="1"] .dk-resp { flex-wrap: wrap; justify-content: center; row-gap: 2pt; column-gap: 8pt; } html[data-cg-font-print="1"] .dk-resp .dk-r { font-size: .88em; }
+/* an index card's back fills its own page: it reuses the four-up card markup, which is a fixed 3.75 x 4.85 in */
+.sheet.dk-indexback > .dk-card { width: 100%; height: 100%; padding: 0; border: 0; box-sizing: border-box; }
+
+/* Page Toolkit printed pages (js/toolkit-ui.js) */
+.sheet.cl-sheet { box-sizing: border-box; padding: .6in .5in .6in .75in !important; color: #000; background: #fff; font-size: 14pt; }
+.cl-title { margin: 0 0 .2in; font-size: 28pt; line-height: 1.1; color: #000; } .cl-title:empty { display: none; }
+progress#tkProg { width: 100%; height: 14px; }

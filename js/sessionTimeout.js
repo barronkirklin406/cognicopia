@@ -19,7 +19,7 @@
   var MESSAGE = "Session timed out due to 15 minutes of inactivity to protect resident privacy.";
   var NOTICE = "cgb_session_timeout_notice", ACTIVE = "cgb_active_resident";
   var DRAFTS = ["cognicopia_packet_draft", "cognicopia_profile_draft"];
-  var limit = DEFAULT_MS, timer = 0, lastScroll = 0, count = 0;
+  var limit = DEFAULT_MS, timer = 0, lastScroll = 0, count = 0, hooks = [];
 
   function safe(fn) { try { return fn(); } catch (e) { return undefined; } }
   function store() { return safe(function () { return root.CogniSecureStore && root.CogniSecureStore.storage ? root.CogniSecureStore.storage : root.localStorage; }); }
@@ -43,6 +43,7 @@
 
   function expire() {
     timer = 0; count++;
+    hooks.forEach(function (h) { safe(h); });      // js/idle-sanitizer.js clears the page's memory and writes the access log first
     clearTransient(); relock();
     safe(function () { root.sessionStorage.setItem(NOTICE, "1"); });
     var go = function () {
@@ -85,6 +86,7 @@
     MESSAGE: MESSAGE, DEFAULT_MS: DEFAULT_MS,
     setLimit: function (ms) { limit = Math.min(2147483647, Math.max(200, +ms || DEFAULT_MS)); restart(); },    // for the check; the page keeps 15 minutes
     expiredCount: function () { return count; },
+    onExpire: function (fn) { if (typeof fn === "function") hooks.push(fn); },    // runs before the drafts are cleared and the store is locked
     expireNow: expire
   };
   if (root.document.readyState === "loading") root.document.addEventListener("DOMContentLoaded", start); else start();
