@@ -31,13 +31,13 @@
     .nr-header h1 {
       margin: 0 0 8px;
       font-size: 28px;
-      color: var(--cg-green-950, #0e3c43);
+      color: var(--cg-green-950, #08423f);
       font-family: "Fraunces", serif;
     }
     
     .nr-header p {
       margin: 0;
-      color: var(--cg-charcoal, #1a202c);
+      color: var(--cg-charcoal, #28241f);
       font-size: 16px;
       line-height: 1.5;
     }
@@ -136,8 +136,8 @@
     }
     
     .nr-sound-btn.active {
-      background: linear-gradient(180deg, #90eeee 0%, #32cdcd 100%);
-      border-color: #228b8b;
+      background: linear-gradient(180deg, #90eee5 0%, #32cdbe 100%);
+      border-color: #228b80;
       color: #1a0f08;
       box-shadow: 0 0 16px rgba(50, 205, 50, 0.5);
     }
@@ -289,15 +289,15 @@
     .nr-prompts {
       margin-top: 32px;
       padding: 24px;
-      background: var(--cg-parchment, #f5f1e6);
+      background: var(--cg-parchment, #f4f3ef);
       border-radius: 16px;
-      border: 2px solid var(--cg-tan-200, #ddd1ba);
+      border: 2px solid var(--cg-tan-200, #dad7ce);
     }
     
     .nr-prompts h2 {
       margin: 0 0 20px;
       font-size: 20px;
-      color: var(--cg-green-950, #0e3c43);
+      color: var(--cg-green-950, #08423f);
       font-family: "Fraunces", serif;
     }
     
@@ -317,7 +317,7 @@
     .nr-prompt-text {
       font-size: 22px;
       font-weight: 700;
-      color: var(--cg-charcoal, #1a202c);
+      color: var(--cg-charcoal, #28241f);
       font-family: "Atkinson Hyperlegible", sans-serif;
       line-height: 1.4;
       margin: 0;
@@ -346,7 +346,7 @@
     
     .nr-status.playing {
       background: rgba(50, 205, 50, 0.2);
-      color: #228b8b;
+      color: #228b80;
     }
     
     .nr-status.stopped {
@@ -377,7 +377,7 @@
     .nr-empty h3 {
       margin: 0 0 8px;
       font-size: 18px;
-      color: var(--cg-charcoal, #1a202c);
+      color: var(--cg-charcoal, #28241f);
     }
     
     /* ---------- Responsive Design ---------- */

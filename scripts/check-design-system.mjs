@@ -58,8 +58,8 @@ const ratio = (a, b) => { const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p);
 const mix = (top, alpha, under) => "#" + [1, 3, 5].map(i => Math.round(parseInt(top.slice(i, i + 2), 16) * alpha + parseInt(under.slice(i, i + 2), 16) * (1 - alpha)).toString(16).padStart(2, "0")).join("");
 ok(Object.keys(T).length >= 28, `the stylesheet names ${Object.keys(T).length} colors`);
 for (const need of ["green-950", "green-900", "green-800", "green-700", "parchment", "charcoal", "gold-500", "gold-300", "white", "focus", "focus-dark"]) ok(T[need], `missing token --cg-${need}`);
-/* the brand's four colors, as the Quality Standards Hub names them */
-ok(T["green-700"] === "#0e3c43" && T.parchment === "#f5f1e6" && T["gold-500"] === "#c5a059" && T.charcoal === "#1a202c", "the four brand colors are the tokens' anchors");
+/* the screen palette (owner's decision, November 5, 2026): alabaster pages, rich slate surfaces, deep ocean teal, sage and warm charcoal; the gold stays as the one warm accent */
+ok(T["green-700"] === "#08423f" && T["green-900"] === "#0f172a" && T.cream === "#fafafd" && T["gold-500"] === "#c5a059" && T.charcoal === "#28241f", "the palette's anchors are the tokens: deep teal, slate, alabaster, gold and warm charcoal");
 
 const TEXT = [];   // [foreground, background]: text, which must reach AAA
 const onGreens = ["green-950", "green-900", "green-800", "green-700"], onTans = ["parchment", "tan-100", "tan-200"];

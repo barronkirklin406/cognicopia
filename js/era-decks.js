@@ -7,7 +7,7 @@
 
 export const VERSION = "1.0.0";
 export const CATEGORIES = Object.freeze([
-  { code: "hometown", label: "Hometown", glyph: "H", kinds: ["place"], frame: "solid", tint: "#cfe8e6" },
+  { code: "hometown", label: "Hometown", glyph: "H", kinds: ["place"], frame: "solid", tint: "#cfe8e5" },
   { code: "career", label: "Career", glyph: "C", kinds: ["work"], frame: "double", tint: "#f6cdb4" },
   { code: "music", label: "Music", glyph: "M", kinds: ["era"], frame: "bars", tint: "#dfe0f7" },
   { code: "family", label: "Family", glyph: "F", kinds: ["home", "pastime"], frame: "round", tint: "#f3e6b3" }

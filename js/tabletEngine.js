@@ -309,10 +309,10 @@
   /* four sets of eight, each color named: rich and saturated, never pale. Jewel tones, bold primaries, a deep garden and an old-fashioned
      Americana set. Each is dark or bright enough to stand against the black outline, and no two in a set are close. */
   var PALETTES = [
-    { id: "jewel", name: "Jewel", colors: [["Crimson", "#c1121f"], ["Tangerine", "#f26a0f"], ["Gold", "#f5b700"], ["Emerald", "#0e8a4f"], ["Teal", "#0b8f94"], ["Sapphire", "#1f4fc4"], ["Indigo", "#3b2f9e"], ["Amethyst", "#8a2cc2"]] },
+    { id: "jewel", name: "Jewel", colors: [["Crimson", "#c1121f"], ["Tangerine", "#f26a0f"], ["Gold", "#f5b700"], ["Emerald", "#0e8a4f"], ["Teal", "#0b9486"], ["Sapphire", "#1f4fc4"], ["Indigo", "#3b2f9e"], ["Amethyst", "#8a2cc2"]] },
     { id: "primary", name: "Bold", colors: [["Red", "#d00000"], ["Orange", "#f77f00"], ["Yellow", "#ffc800"], ["Green", "#1b9a3c"], ["Blue", "#0a58ca"], ["Violet", "#6a1fb0"], ["Magenta", "#c2185b"], ["Brown", "#7b3f12"]] },
     { id: "nature", name: "Garden", colors: [["Leaf", "#2f9e3f"], ["Forest", "#14532d"], ["Lime", "#7fb519"], ["Sunflower", "#f5b301"], ["Poppy", "#d62828"], ["Iris", "#6b2fa3"], ["Lake", "#0f6fbf"], ["Earth", "#7a4a1e"]] },
-    { id: "retro", name: "Vintage", colors: [["Harvest gold", "#e8a200"], ["Burnt orange", "#d1560f"], ["Barn red", "#a4161a"], ["Brown", "#6b3a1e"], ["Navy", "#12306b"], ["Plum", "#6a1b5c"], ["Avocado", "#6a8d1a"], ["Teal", "#0f7a76"]] }
+    { id: "retro", name: "Vintage", colors: [["Harvest gold", "#e8a200"], ["Burnt orange", "#d1560f"], ["Barn red", "#a4161a"], ["Brown", "#6b3a1e"], ["Navy", "#12306b"], ["Plum", "#6a1b5c"], ["Avocado", "#6a8d1a"], ["Teal", "#0f7a6f"]] }
   ];
 
   /* The shapes of a picture made of closed outlines. data is the picture's pixels (RGBA, dark lines on white), w by h.

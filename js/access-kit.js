@@ -41,10 +41,10 @@ export function minSeparation(colors, kind) { let m = Infinity; for (let i = 0; 
 export const CATEGORIES = Object.freeze(["hometown", "career", "music", "family"]);
 export const PAPER = "#f7f4ec";   // the page color the message marks sit on
 export const PALETTES = Object.freeze({
-  standard: { label: "Standard", kind: null, cats: { hometown: "#cfe8e6", career: "#f6cdb4", music: "#dfe0f7", family: "#f3e6b3" }, ok: "#0b4f4a", bad: "#8a3300" },
+  standard: { label: "Standard", kind: null, cats: { hometown: "#cfe8e5", career: "#f6cdb4", music: "#dfe0f7", family: "#f3e6b3" }, ok: "#0b4f48", bad: "#8a3300" },
   deuteranopia: { label: "Deuteranopia (red-green, no green cones)", kind: "deuteranopia", cats: { hometown: "#56B4E9", career: "#E69F00", music: "#F4A582", family: "#FFFFFF" }, ok: "#0b4f8a", bad: "#8a3300" },
   protanopia: { label: "Protanopia (red-green, no red cones)", kind: "protanopia", cats: { hometown: "#56B4E9", career: "#F0E442", music: "#FFFFFF", family: "#B2DF8A" }, ok: "#0b4f8a", bad: "#8a3300" },
-  tritanopia: { label: "Tritanopia (blue-yellow)", kind: "tritanopia", cats: { hometown: "#56B4E9", career: "#E69F00", music: "#B8E186", family: "#FFD966" }, ok: "#005a4a", bad: "#8a1c1c" }
+  tritanopia: { label: "Tritanopia (blue-yellow)", kind: "tritanopia", cats: { hometown: "#56B4E9", career: "#E69F00", music: "#B8E186", family: "#FFD966" }, ok: "#005a51", bad: "#8a1c1c" }
 });
 export const paletteOf = (id) => PALETTES[id] || PALETTES.standard;
 
