@@ -1855,6 +1855,119 @@ textarea:focus{border-color:var(--accent)}
 .sbar-sheet .ops-row{grid-template-columns:1.5in minmax(0,1fr) 1.7in}
 .sbar-sheet .ops-tail{text-align:right}
 </style>
+<style id="shc-style">
+/* =====================================================================
+   SHIFT BOARD CALENDAR (#/shift): the calendar first, the board in a slide-out.
+   Cozy and organized: soft rounded cards, one warm accent, generous spacing. Every control keeps the 52 px floor.
+   Colour is never the only signal: each badge also has an icon and words. Badge pairs are AAA on their own tint.
+   ===================================================================== */
+.shc{--shc-r:18px;--g-bg:#dcf3e5;--g-tx:#14532d;--a-bg:#fdecc8;--a-tx:#6b3d00;--p-bg:#e9defa;--p-tx:#3b1f72;--n-bg:#ebeae6;--n-tx:#3a3a45}
+.shc-bar{display:grid;gap:12px;padding:14px 16px;margin:0 0 16px;border:1px solid var(--line);border-radius:var(--shc-r);background:var(--panel);box-shadow:0 8px 24px -16px rgba(0,0,0,.35)}
+.shc-row{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:flex-end;justify-content:space-between}.shc-row-tools{justify-content:flex-start}
+.shc-views.seg{flex:none}
+.shc-nav{display:flex;align-items:center;gap:8px;flex:0 1 auto;min-width:0}.shc-filters{margin-left:auto}
+.shc-title{margin:0 0 0 8px;font-size:clamp(1.15rem,1rem + .8vw,1.6rem);line-height:1.2;min-width:0;white-space:nowrap}
+.shc-icon{min-width:var(--tap);padding:0;display:inline-grid;place-items:center}
+.shc-filters{display:flex;gap:10px;flex-wrap:wrap}
+.shc-filters .field{margin:0;min-width:150px}
+.shc-tools{display:flex;gap:8px;flex-wrap:wrap}
+.shc-tools .btn{display:inline-flex;align-items:center;gap:8px}
+.shc-tools kbd,.ql kbd{padding:2px 6px;border:1px solid var(--line-2);border-radius:6px;font:700 12px/1.2 var(--font);color:var(--muted);background:transparent}
+@media (max-width:640px){.shc-bar{padding:12px}.shc-row{width:100%;min-width:0}.shc-nav{flex-wrap:wrap;width:100%}.shc-title{flex:1 1 100%;white-space:normal;margin:4px 0 0}.shc-filters{width:100%;margin-left:0}.shc-filters .field{flex:1 1 130px;min-width:0}.shc-tools{width:100%}.shc-tools .btn{flex:1 1 auto;justify-content:center}.shc-cal{padding:8px}}
+.shc-main{display:grid;grid-template-columns:minmax(0,1fr);gap:20px;align-items:start}
+.shc-cal{min-width:0;padding:14px;border:1px solid var(--line);border-radius:var(--shc-r);background:var(--panel)}
+.shc-rail{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:14px;min-width:0;align-items:start}
+.shc-card{padding:16px;border:1px solid var(--line);border-radius:var(--shc-r);background:var(--panel)}
+.shc-card h3{margin:0 0 6px;font-size:1.05rem}
+.shc-sub{margin:0 0 10px;color:var(--muted);font-size:14.5px;line-height:1.5}
+.shc-sub small,.shc-staff small{display:block;color:var(--muted)}
+/* month */
+.shc-month{width:100%;border-collapse:separate;border-spacing:6px;table-layout:fixed}
+.shc-month th{padding:4px 2px 6px;color:var(--muted);font-size:13px;font-weight:800;letter-spacing:.06em;text-transform:uppercase}
+.shc-month td{padding:0;vertical-align:top}
+.shc-day{container-type:inline-size;display:flex;flex-direction:column;align-items:flex-start;gap:5px;width:100%;min-height:118px;padding:8px 9px;text-align:left;border:1px solid var(--line-2);border-radius:14px;background:var(--bg-2);color:var(--text);font:inherit;cursor:pointer;transition:transform .16s cubic-bezier(.22,1,.36,1),box-shadow .16s ease,border-color .16s ease}
+.shc-day:hover{border-color:var(--accent);box-shadow:0 10px 22px -14px rgba(0,0,0,.45)}
+.shc-day.is-out{opacity:.55}
+.shc-day.is-sel{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent)}
+.shc-day.is-today .shc-num{background:var(--accent);color:var(--accent-ink)}
+.shc-num{display:inline-grid;place-items:center;min-width:30px;height:30px;padding:0 6px;border-radius:999px;font-weight:800;font-size:15px}
+.shc-badges{display:flex;flex-wrap:wrap;gap:4px}
+.shc-b{display:inline-flex;align-items:center;gap:5px;padding:3px 8px 3px 6px;border-radius:999px;font-size:12px;font-weight:800;line-height:1.25;white-space:nowrap}
+.shc-b svg{flex:none}
+.shc-b-full{background:var(--g-bg);color:var(--g-tx)}.shc-b-open{background:var(--a-bg);color:var(--a-tx)}.shc-b-mem{background:var(--p-bg);color:var(--p-tx)}.shc-b-none{background:var(--n-bg);color:var(--n-tx)}
+.shc-mini{display:flex;flex-wrap:wrap;gap:2px 8px;font-size:12px;font-weight:700;color:var(--muted)}
+.shc-mini-i.is-open,.shc-mini-i.is-empty{color:var(--warn)}
+.shc-care{display:flex;gap:10px;font-size:12px;font-weight:700;color:var(--muted)}.shc-care span{display:inline-flex;align-items:center;gap:3px}
+@media (prefers-reduced-motion:no-preference){.shc-day:hover{transform:translateY(-2px)}}
+@container (max-width:104px){.shc-day .shc-b{padding:4px}.shc-day .shc-b span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}.shc-day .shc-mini-i{font-size:11px}}
+@media (max-width:760px){.shc-month{border-spacing:3px}.shc-day{min-height:var(--tap);align-items:center;padding:6px 2px}.shc-day .shc-mini,.shc-day .shc-care,.shc-day .shc-b span{display:none}.shc-day .shc-b{padding:4px}.shc-badges{justify-content:center}.shc-num{min-width:26px;height:26px;font-size:14px}}
+/* week and day */
+.shc-week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px}
+@media (max-width:1180px){.shc-week{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}}
+.shc-wday{display:grid;align-content:start;gap:8px;padding:8px;border:1px solid var(--line);border-radius:14px;background:var(--bg-2)}
+.shc-wday.is-sel{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent)}.shc-wday.is-today .shc-wday-h>span:first-child{color:var(--accent-hi)}
+.shc-wday-h{display:grid;gap:6px;width:100%;min-height:var(--tap);padding:6px;text-align:left;border:0;border-radius:10px;background:transparent;color:var(--text);font:inherit;font-weight:800;cursor:pointer}
+.shc-shift{padding:9px 10px;border:1px solid var(--line-2);border-left-width:5px;border-radius:12px;background:var(--panel)}
+.shc-shift.is-full{border-left-color:#2f9e63}.shc-shift.is-open{border-left-color:#d99a1f}.shc-shift.is-empty{border-left-color:var(--line-2)}.shc-shift.is-high{box-shadow:inset 0 0 0 2px rgba(139,92,246,.45)}
+.shc-shift-h{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:0 0 6px}.shc-shift-h span:nth-child(2){color:var(--muted);font-weight:700;font-size:14px}
+.shc-chips{display:flex;flex-wrap:wrap;gap:6px}
+.shc-chip{display:inline-flex;align-items:center;gap:5px;min-height:30px;padding:2px 10px;border-radius:999px;border:1px solid var(--line-2);background:var(--bg-2)}.shc-chip b{font-size:14px;letter-spacing:.04em}
+.shc-star{display:inline-flex;color:#c0508d}
+.shc-none,.shc-quiet,.shc-empty{color:var(--muted);font-size:14px}
+.shc-gap{display:flex;gap:6px;align-items:flex-start;margin:8px 0 0;color:var(--warn);font-size:13.5px;font-weight:700}.shc-gap svg{flex:none;margin-top:2px}
+.shc-notes{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:6px;font-size:14px}.shc-notes li{display:flex;gap:8px;align-items:flex-start}.shc-notes svg{flex:none;margin-top:3px;color:var(--warn)}
+.shc-dayview-h{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;margin:0 0 12px}
+.shc-dayshifts{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.shc-dayshifts .shc-shift{padding:14px}.shc-dayshifts .shc-chip{min-height:36px}
+/* the rail */
+.shc-ins-list{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:10px}
+.shc-ins{padding:10px 12px;border-radius:12px;border:1px solid var(--line-2);background:var(--bg-2)}
+.shc-ins-h{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.shc-lvl{padding:2px 9px;border-radius:999px;font-size:12.5px;font-weight:800;background:var(--n-bg);color:var(--n-tx)}
+.shc-ins.is-high .shc-lvl{background:var(--p-bg);color:var(--p-tx)}.shc-ins.is-moderate .shc-lvl{background:var(--a-bg);color:var(--a-tx)}.shc-ins.is-low .shc-lvl{background:var(--g-bg);color:var(--g-tx)}
+.shc-flag{display:flex;gap:8px;align-items:flex-start;margin:8px 0 0;padding:8px 10px;border-radius:10px;background:var(--a-bg);color:var(--a-tx);font-size:14px;font-weight:700}.shc-flag svg{flex:none;margin-top:2px}
+.shc-pairs{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:6px}.shc-pairs li{display:grid;gap:1px;padding:8px 10px;border-radius:10px;border:1px dashed var(--line-2)}.shc-pairs small{color:var(--muted)}
+.shc-slot{margin:12px 0 0;padding:12px;border:1px solid var(--line-2);border-radius:14px;background:var(--bg-2)}
+.shc-slot-h{display:flex;justify-content:space-between;gap:8px;align-items:baseline}.shc-slot-h small{color:var(--muted)}
+.shc-cov{margin:4px 0 8px;font-size:14px;font-weight:800}.shc-cov.is-full{color:var(--accent-hi)}.shc-cov.is-open,.shc-cov.is-empty{color:var(--warn)}
+.shc-who{list-style:none;margin:0;padding:0;display:grid;gap:6px}.shc-who li{display:flex;align-items:center;gap:6px 8px}.shc-who small{flex:0 1 auto;min-width:0;color:var(--muted)}
+.shc-who select,.shc-add select{min-height:var(--tap);max-width:100%;padding:8px 10px;border-radius:10px;border:1px solid var(--line-2);background:var(--panel);color:var(--text);font:inherit}.shc-who select{flex:0 0 150px}.shc-who li > span:not(.shc-chip),.shc-who li > small{flex:1 1 auto}
+.shc-who li .btn{margin-left:auto;flex:none}
+.shc-add{margin:8px 0 0}.shc-add select{width:100%}
+.shc-need{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:10px 0 0;font-size:14px;color:var(--muted)}.shc-need output{min-width:22px;text-align:center;font-weight:800;color:var(--text)}
+.shc-copy{margin:14px 0 0}
+.shc-staff-form{display:grid;gap:10px}.shc-staff-form .field{margin:0}
+.shc-skills{padding:0;border:0}.shc-skills legend{font-weight:700;margin:0 0 4px}
+.shc-check{display:flex;align-items:center;gap:10px;min-height:var(--tap);cursor:pointer}.shc-check input{width:22px;height:22px;accent-color:var(--accent)}
+.shc-staff{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:8px}.shc-staff li{display:flex;align-items:center;gap:10px}.shc-staff li .btn{margin-left:auto}
+.shc-msg{min-height:1.3em;margin:8px 0 0;font-weight:700}.shc-msg.is-bad{color:var(--warn)}
+.shc-link{padding:0;min-height:var(--tap);border:0;background:none;color:var(--accent-hi);font:inherit;font-weight:700;text-decoration:underline;cursor:pointer}
+.shc-legend ul{list-style:none;margin:0;padding:0;display:grid;gap:10px;font-size:14px}.shc-legend li{display:grid;gap:4px;justify-items:start}
+/* the slide-out */
+.shc-scrim{position:fixed;inset:0;z-index:1190;background:rgba(5,14,13,.55)}
+.shc-drawer{position:fixed;top:0;right:0;bottom:0;z-index:1200;display:flex;flex-direction:column;width:min(760px,100vw);background:var(--bg);border-left:1px solid var(--line-2);box-shadow:-24px 0 60px rgba(0,0,0,.4);transform:translateX(100%);transition:transform .22s cubic-bezier(.22,1,.36,1)}
+.shc-drawer.is-open{transform:none}.shc-drawer[hidden]{display:none}
+.shc-drawer-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 18px;border-bottom:1px solid var(--line-2)}.shc-drawer-head h2{margin:0;font-size:1.25rem}
+.shc-drawer-body{flex:1 1 auto;overflow:auto;padding:6px 18px 40px}
+.shc-drawer-body > .eyebrow,.shc-drawer-body > .view-title,.shc-drawer-body > .lede,.shc-drawer-body > .shf-first{display:none}
+.shc-drawer-body .shf-grid{grid-template-columns:1fr}
+body.shc-lock{overflow:hidden}
+@media (prefers-reduced-motion:reduce){.shc-drawer{transition:none}}
+/* quick resident lookup */
+.ql{width:min(560px,calc(100vw - 24px));max-height:min(80vh,640px);padding:0;border:1px solid var(--line-2);border-radius:20px;background:var(--panel);color:var(--text);box-shadow:0 30px 80px rgba(0,0,0,.5)}
+.ql::backdrop{background:rgba(5,14,13,.6)}
+.ql-card{display:grid;gap:10px;padding:18px}
+.ql-head{display:flex;align-items:center;justify-content:space-between}.ql-head h2{margin:0;font-size:1.2rem}.ql-x{min-width:var(--tap);font-size:26px;line-height:1}
+.ql input[type=search]{width:100%;min-height:var(--tap);padding:10px 14px;border-radius:12px;border:2px solid var(--line-2);background:var(--bg-2);color:var(--text);font:inherit;font-size:18px}
+.ql-note{margin:0;min-height:1.3em;color:var(--muted);font-size:14px}
+.ql-list{list-style:none;margin:0;padding:0;display:grid;gap:6px;overflow:auto;max-height:46vh}
+.ql-row{display:flex;align-items:center;gap:12px;width:100%;min-height:60px;padding:8px 12px;text-align:left;border:1px solid var(--line-2);border-radius:14px;background:var(--bg-2);color:var(--text);font:inherit;cursor:pointer}
+.ql-row:hover,.ql-row:focus-visible{border-color:var(--accent)}
+.ql-av{flex:none;display:inline-grid;place-items:center;width:40px;height:40px;border-radius:50%;background:var(--accent);color:var(--accent-ink);font-weight:800}
+.ql-who{display:grid;min-width:0}.ql-who b{font-size:18px;overflow:hidden;text-overflow:ellipsis}.ql-who small{color:var(--muted)}
+.ql-hint{margin:0;color:var(--muted);font-size:13px}
+@media print{.shc,.ql,.shc-drawer,.shc-scrim{display:none!important}}
+</style>
 <style id="hl-style">
 /* =====================================================================
    MEMORY DIGEST & BOOK (#/heirloom): the screen, the page previews and
@@ -8810,6 +8923,7 @@ const ClinicalUI = (function(){
 })();
 </script>
 <script src="assets/services/dailyOps.js"></script>
+<script src="js/shift-calendar.js"></script>
 <script id="ops-ui">
 /* =====================================================================
    SHIFT BOARD  (#/shift)
@@ -9338,6 +9452,8 @@ const DailyOpsUI = (function(){
   return { render, refresh };
 })();
 </script>
+<script src="js/shift-calendar-ui.js"></script>
+<script src="js/quick-lookup.js"></script>
 <script src="assets/services/heirloomService.js"></script>
 <script id="heirloom-ui">
 /* =====================================================================
@@ -14967,7 +15083,7 @@ const view = $("#view");
 const routes = { "": renderHome, "category": renderCategory, "settings": renderSettings, "audio": renderAudio, "ehr-import": renderEhrImport, "therapy-goals": renderTherapyGoals, "highlights": renderHighlights, "scenarios": renderScenarios, "safety": renderSafety, "toolkit": renderToolkit, "tracking": renderTracking, "planner": renderStudioPlanner, "journal": renderStudioJournal, "life-planner": renderPlanner, "life-journal": renderJournal, "planner-care-companion": renderPlannerCareCompanion, "roster": renderRoster, "coloring": renderColoring, "reminiscence": renderReminiscence, "clinical": renderClinical, "heirloom": renderHeirloom, "facility": renderFacilityPortal, "shift": renderShift, "academy": renderAcademy };
 function renderFacilityPortal(arg){ FacilityUI.render(view, arg); }
 function renderAcademy(arg){ AcademyUI.render(view, arg); }
-function renderShift(){ DailyOpsUI.render(view); }
+function renderShift(){ ShiftCalUI.render(view); }
 function renderHeirloom(){ HeirloomUI.render(view); }
 function renderClinical(){ ClinicalUI.render(view); }
 function renderReminiscence(){ ReminiscenceUI.render(view); }
@@ -15112,7 +15228,7 @@ function renderHome(){
       ${tool("#/heirloom", ICONS.journal, "Quarterly Legacy & Memory Books", "Keep a resident’s words, stories and finished coloring pages as they happen; send the family a monthly digest, and gather a year into a print-on-demand hardcover.", ["Monthly digest", "Hardcover PDF"])}
       ${tool("#/clinical", ICONS.journal, "Session Notes (SLP)", "GDS and FAST staging mapped to support tiers, a session log, and SOAP notes built only from what you record, for the Full Administrative Binder.", ["Staff-recorded SOAP", "Code checks"])}
       ${tool("#/facility", ICONS.facility, "Facility Portal", "For activity directors: wings and resident groups by acuity tier, recommendations for each tier across the six pillars, a balanced month of sessions in one click, and a week of group packets printed at once.", ["4 acuity tiers", "Month scheduler", "Week packets"])}
-      ${tool("#/shift", ICONS.shift, "Shift board", "Handoff notes for the next shift, tasks for the team and what is still open, with residents by alias only. Kept on this computer, encrypted, and printed as a one-page handoff sheet. A first version.", ["Handoff notes", "Staff tasks", "Aliases only"])}
+      ${tool("#/shift", ICONS.shift, "Shift board", "A calendar of who is on each shift, where the gaps are and where the floor will want a dementia-trained hand, with handoff notes and tasks in a slide-out. Staff by initials, residents by alias only; kept on this computer, and the week prints as a one-page PDF.", ["Month, week, day", "Coverage gaps", "Weekly PDF"])}
       ${tool("#/roster", ICONS.roster, "Resident roster", "Every saved resident in one list. Choose a resident, choose a book, and print it at their own support tier, line weight and contrast.", ["3 clicks to print", "Search by name or unit"])}
     </div>
     <h2 style="margin-top:32px">Activity categories</h2>
@@ -15997,7 +16113,7 @@ window.addEventListener("afterprint", () => {
     else if (e.key.indexOf("cognicopia_facility") === 0 && parseHash().name === "facility"
              && !document.querySelector("#view :is(input, select, textarea, details[open]):focus-within, #view dialog[open]")) router();
     else if (e.key === "cognicopia_academy" && parseHash().name === "academy" && !AcademyUI.busy()) router();
-    else if (e.key === "cognicopia_dailyops" && parseHash().name === "shift") DailyOpsUI.refresh();
+    else if ((e.key === "cognicopia_dailyops" || e.key === "cognicopia_shiftcal") && parseHash().name === "shift") { DailyOpsUI.refresh(); ShiftCalUI.refresh(); }
   });
 })();
 </script>

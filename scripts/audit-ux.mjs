@@ -102,8 +102,8 @@ const STATES = [
   ["builder: reminiscence set", "builder.html#/reminiscence", [click('button:has-text("A Day")')]],
   ["builder: digest, keep a memory", "builder.html#/heirloom", [click("#hlTab-keep")]],
   ["builder: digest, hardcover book", "builder.html#/heirloom", [click("#hlTab-book")]],
-  ["builder: shift board, a name found in a note", "builder.html#/shift", [seedResidents, reload, fill("#shfInit", "MR"), click('#shfMeForm button[type=submit]'), fill("#shfNText", "Test A was restless"), click('#shfNote button[type=submit]')]],
-  ["builder: shift board, a task and a note", "builder.html#/shift", [fill("#shfInit", "MR"), click('#shfMeForm button[type=submit]'), fill("#shfNText", "Quiet music helped"), click('#shfNote button[type=submit]'), fill("#shfTWhat", "Set up the music cart"), click('#shfTask button[type=submit]')]],
+  ["builder: shift board, a name found in a note", "builder.html#/shift", [seedResidents, reload, click("#shcOpenBoard"), fill("#shfInit", "MR"), click('#shfMeForm button[type=submit]'), fill("#shfNText", "Test A was restless"), click('#shfNote button[type=submit]')]],
+  ["builder: shift board, a task and a note", "builder.html#/shift", [click("#shcOpenBoard"), fill("#shfInit", "MR"), click('#shfMeForm button[type=submit]'), fill("#shfNText", "Quiet music helped"), click('#shfNote button[type=submit]'), fill("#shfTWhat", "Set up the music cart"), click('#shfTask button[type=submit]')]],
   ["builder: unlock dialog (a locked store)", "builder.html#/", [lockStore, reload]]
 ];
 

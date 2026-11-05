@@ -12,14 +12,14 @@
    used. Change VERSION only to clear old copies; updates to the pages
    themselves arrive on their own.
    ===================================================================== */
-const VERSION = "cognicopia-v41";
+const VERSION = "cognicopia-v42";
 const CORE = [
   "./", "index.html", "builder.html", "profile.html", "tablet.html", "pricing.html", "activate.html", "manifest.webmanifest",
   // the shared design system and its two typefaces (Atkinson Hyperlegible for the interface, Fraunces for headings)
   "css/styles.css", "css/pages-utilities.css", "fonts/AtkinsonHyperlegible-Regular.woff2", "fonts/AtkinsonHyperlegible-Bold.woff2", "fonts/Fraunces-latin.woff2",
   "assets/cognicopia-logo.jpg", "assets/icon-192.png", "assets/icon-512.png", "assets/icon-maskable-512.png",
   "assets/cognicopia-coloring/cognicopia-coloring.js", "js/coloringAgent.js", "assets/services/vectorEngine.js", "assets/services/secureStore.js", "assets/services/reminiscenceEngine.js", "assets/services/slpClinicalService.js", "assets/services/heirloomService.js", "assets/services/facilityPlanner.js", "assets/services/academy.js", "assets/services/dailyOps.js", "assets/services/nightShift.js",
-  "js/facility-logo.js", "assets/vendor/jspdf.umd.min.js", "assets/vendor/jspdf-atkinson.js",
+  "js/facility-logo.js", "js/shift-calendar.js", "js/shift-calendar-ui.js", "js/quick-lookup.js", "assets/vendor/jspdf.umd.min.js", "assets/vendor/jspdf-atkinson.js",
   // the hybrid coloring engine: its subjects travel in the bundle, so coloring pages draw offline
   "assets/coloring/subjects.bundle.js", "assets/coloring/manifest.json", "src/services/ColoringManifest.js", "src/engine/ColoringEngine.js", "src/engine/ClinicalMatrix.js", "src/engine/ClinicalActivities.js", "src/engine/SoothingArt.js", "src/engine/SoothingContent.js", "src/engine/SoothingPacketEngine.js", "src/engine/ProceduralPacketEngine.js",
   // the procedural engine behind Today's Packet: its content travels in one bundle, so the daily packet is made offline

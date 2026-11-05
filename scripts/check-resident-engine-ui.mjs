@@ -77,7 +77,7 @@ await pg.click(".tr-log li button"); await pg.waitForTimeout(150);
 ok(await pg.$$eval(".tr-log li", e => e.length) === 5, "an entry can be removed");
 
 /* ---------- the Shift board feeds the record, by alias ---------- */
-await go("#/shift");
+await go("#/shift"); await pg.click("#shcOpenBoard"); await pg.waitForSelector("#shfRoot", { state: "visible" });
 await pg.fill("#shfInit", "MR"); await pg.click("#shfMeForm button[type=submit]");
 await pg.selectOption("#shfEWho", "Resident 201-A"); await pg.fill("#shfEAct", "Sing-along");
 await pg.check('input[name="shfEPart"][value="joined"]', { force: true }); await pg.check('input[name="shfEMood"][value="overstimulated"]', { force: true });
