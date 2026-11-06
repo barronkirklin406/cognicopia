@@ -54,7 +54,7 @@
   /* the suggested packet for each stage: three of the master inventory and a coloring page */
   var SUGGEST = { 1: ["wordgrid", "timeline", "memory", "dialogue", "coloring"], 2: ["dialogue", "household", "phrases", "coloring"], 3: ["coloring", "recognition", "rhythm", "dialogue"] };
   var LABEL = {}; KINDS.forEach(function (k) { LABEL[k[0]] = k[1]; });
-  var state = { mix: { reminiscence: true, exercise: true, daily: true, coloring: true }, vocation: "", stage: 2, dexterity: "steady", decade: 1950, born: "", name: "", nameStyle: "plain", interests: "", avoid: "",
+  var state = { mix: { reminiscence: true, exercise: true, daily: true, coloring: true }, vocation: "", stage: 2, dexterity: "steady", decade: 1950, born: "", name: "", nameStyle: "plain", personal: "", interests: "", avoid: "",
     style: "botanical", words: "", layout: "full", pages: 4, view: "one", dark: false, gutter: false, seed: (Date.now() % 1000000) + 1, variant: 0, index: 0 };
   var made = { pages: [], notes: [], code: "" };
 
@@ -74,6 +74,7 @@
         '<div class="as-row"><label class="as-lab" for="asBorn">Year born (optional; suggests the decade)</label><input id="asBorn" type="number" inputmode="numeric" min="1900" max="2010" placeholder="1938"></div>' +
         '<div class="as-row"><label class="as-lab" for="asVocation">Former work (optional; themes the word grids)</label><select id="asVocation"><option value="">Not chosen</option>' + (E.VOCATIONS || []).map(function (v) { return '<option value="' + v.id + '">' + v.label + '</option>'; }).join("") + '</select></div>' +
         '<div class="as-row"><label class="as-lab" for="asName">First name (optional; printed on the page, kept nowhere)</label><input id="asName" type="text" maxlength="40" autocomplete="off"></div>' +
+        '<div class="as-row"><label class="as-lab" for="asPersonal">Names and places from their life, one word each, with commas (family, pets, hometown, a first car; optional; printed on the page, kept nowhere)</label><input id="asPersonal" type="text" maxlength="120" autocomplete="off" placeholder="for example: Sarah, Buster, Scobey, Studebaker"></div>' +
         '<fieldset class="as-f"><legend class="as-lab">How the name is lettered (your choice; nothing is guessed from the name)</legend><div class="as-seg"><label><input type="radio" name="nameStyle" value="plain"><span>Plain</span></label><label><input type="radio" name="nameStyle" value="flow"><span>Flowing script</span></label><label><input type="radio" name="nameStyle" value="formal"><span>Formal script</span></label></div></fieldset>' +
         '<div class="as-row as-nc"><label class="as-lab" for="asInterests">Interests (optional, separated by commas)</label><input id="asInterests" type="text" maxlength="120" placeholder="gardening, baking" autocomplete="off"></div>' +
         '<div class="as-row"><label class="as-lab" for="asAvoid">Topics to avoid (separated by commas)</label><input id="asAvoid" type="text" maxlength="120" placeholder="trains, hospitals" autocomplete="off"></div>' +
@@ -100,7 +101,7 @@
   }
 
   /* ---------- making the packet ---------- */
-  function profile() { return { name: state.name, born: Number(state.born) || 0, nameStyle: state.nameStyle, stage: state.stage, dexterity: state.dexterity, decade: state.decade, interests: state.interests, avoid: state.avoid, vocation: state.vocation }; }
+  function profile() { return { name: state.name, born: Number(state.born) || 0, nameStyle: state.nameStyle, personal: state.personal, stage: state.stage, dexterity: state.dexterity, decade: state.decade, interests: state.interests, avoid: state.avoid, vocation: state.vocation }; }
   function kindsOn() { return KINDS.map(function (k) { return k[0]; }).filter(function (k) { return state.mix[k]; }); }
   function avoidList() { return state.avoid.split(/[,;]/).map(function (x) { return x.trim().toLowerCase(); }).filter(Boolean); }
   var STAGE_KEY = ["E", "M", "L"];
@@ -259,7 +260,7 @@
     $$('input[name="mix"]').forEach(function (c) { c.addEventListener("change", function () { state.mix[c.value] = c.checked; schedule(false); }); });
     $$('input[name="view"]').forEach(function (r) { r.addEventListener("change", function () { state.view = r.value; paint(); }); });
     var bind = function (id, key, num) { $("#" + id).addEventListener("input", function (e) { state[key] = num ? Number(e.target.value) : e.target.value; if (key === "words") state.variant = 0; schedule(false); }); };
-    bind("asDecade", "decade", true); bind("asVocation", "vocation"); bind("asName", "name"); bind("asInterests", "interests"); bind("asAvoid", "avoid"); bind("asStyle", "style"); bind("asWords", "words"); bind("asPages", "pages", true);
+    bind("asDecade", "decade", true); bind("asVocation", "vocation"); bind("asName", "name"); bind("asPersonal", "personal"); bind("asInterests", "interests"); bind("asAvoid", "avoid"); bind("asStyle", "style"); bind("asWords", "words"); bind("asPages", "pages", true);
     $("#asBorn").addEventListener("input", function (e) {
       state.born = e.target.value; var y = Number(e.target.value);
       if (y >= 1900 && y <= 2010) { state.decade = E.decadeFor(y); $("#asDecade").value = String(state.decade); }

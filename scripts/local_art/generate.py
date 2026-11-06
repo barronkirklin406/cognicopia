@@ -96,7 +96,7 @@ def generate(req):
         if not os.path.isfile(os.path.join(model_dir, "model_index.json")):
             raise RuntimeError("no picture model in %s (run: npm run art:setup)" % model_dir)
         device = pick_device(req.get("device", "auto"))
-        dtype = torch.float16 if device in ("cuda", "mps") else torch.float32
+        dtype = torch.float16 if device in ("cuda", "mps") else (torch.bfloat16 if os.environ.get("COGNICOPIA_CPU_BF16") == "1" else torch.float32)
         kwargs = {"local_files_only": True, "torch_dtype": dtype}
         if req.get("variant"):
             kwargs["variant"] = req["variant"]

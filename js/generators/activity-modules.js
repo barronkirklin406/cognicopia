@@ -96,6 +96,7 @@
     return { rows: grid.map(function (row) { return row.join(""); }), placed: placed };
   }
   function themeWords(P, which) {
+    if (which === "personal") return { label: "Words from your life", list: P.personal.map(function (w) { return w.toUpperCase(); }).concat(DECADE_WORDS[P.decade]) };
     var v = VOCATIONS[P.vocation];
     if (which === "vocation" && v) return { label: "Words from " + v.label, list: v.words };
     return { label: "Words from the " + P.decade + "s", list: DECADE_WORDS[P.decade] };
@@ -113,19 +114,20 @@
     return out;
   }
   function wordgridSheets(P, r, count) {
-    var out = [], plan = ["grid", "scramble", "facts", "grid2"], used = {};
+    var out = [], plan = P.personal.length >= 3 ? ["personal", "grid", "scramble", "facts", "grid2"] : ["grid", "scramble", "facts", "grid2"], used = {};
     for (var s = 0; s < count; s++) {
       var what = plan[s % plan.length], size = P.stage === 1 ? 10 : 8;
       if (K.DEXTERITY[P.dexterity].fewer) size = Math.max(7, size - 2);
       var nWords = Math.max(4, (P.stage === 1 ? 8 : 6) - fewer(P) * 2);
-      if (what === "grid" || what === "grid2") {
-        var th = themeWords(P, what === "grid2" ? "vocation" : "decade");
-        var pool = K.shuffle(th.list.filter(function (w) { return okWord(w, P) && w.length <= size; }), r), words = take(pool, nWords);
+      if (what === "grid" || what === "grid2" || what === "personal") {
+        var th = themeWords(P, what === "personal" ? "personal" : what === "grid2" ? "vocation" : "decade");
+        var own = what === "personal" ? P.personal.map(function (w) { return w.toUpperCase(); }).filter(function (w) { return okWord(w, P) && w.length <= size; }) : [];
+        var pool = K.shuffle(th.list.filter(function (w) { return own.indexOf(w) < 0 && okWord(w, P) && w.length <= size; }), r), words = take(own.concat(pool), nWords);
         var dirs = P.stage === 1 ? [[0, 1], [1, 0], [1, 1]] : [[0, 1], [1, 0]];
         var g = makeGrid(words, size, dirs, r);
         out.push({ module: "wordgrid", kind: "wordgrid", title: th.label, subtitle: "Find the words. They run across, down" + (P.stage === 1 ? " and slanting." : "."), size: size, rows: g.rows, words: g.placed.map(function (x) { return x.w; }),
           keyLines: g.placed.map(function (x) { return x.w + ": row " + (x.r + 1) + ", column " + (x.c + 1) + (x.dr && x.dc ? " going down and right" : x.dr ? " going down" : " going across"); }),
-          staffNote: HOME + "a themed word search from the resident's own years or work. Circle the first word together; the finding is the activity, so help freely." });
+          staffNote: HOME + (what === "personal" ? "a word search that holds names and places from the resident's own life. Say each word aloud as it is found and let the resident tell its story. " : "a themed word search from the resident's own years or work. ") + "Circle the first word together; the finding is the activity, so help freely." });
       } else if (what === "scramble") {
         var th2 = themeWords(P, s % 2 ? "vocation" : "decade"), n2 = Math.max(3, (P.stage === 1 ? 5 : 4) - fewer(P));
         var ws = take(K.shuffle(th2.list.filter(function (w) { return okWord(w, P) && w.length >= 4; }), r), n2);

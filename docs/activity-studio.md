@@ -77,3 +77,7 @@ The validator and the print and offline utilities beneath it are described in [f
 ## Hand-lettered name (the nameplate)
 
 The first name can be lettered three ways, chosen on the page: Plain, Flowing script (Pinyon Script) or Formal script (Marck Script). The choice is the person's; the studio never guesses it from a name, and the profile holds no gender field. Script names sit under the title with the line "Prepared with care for" (on coloring pages, above the page code). Both faces are open-licence files kept in `fonts/` (licences beside them) and in the service worker's list, so they work offline. The name is shrunk to fit a long name and never goes below the stage's type floor. Print stays pure black on white. `scripts/check-activity-studio.mjs` covers every stage, dexterity and style.
+
+## Names and places from a resident's life
+
+The form takes a short list of single words from the resident's own life: family names, a pet, a hometown, a first car, a pastime. With three or more, the first word grid in a packet is "Words from your life": the resident's own words are placed first, then period words fill the rest. A word too long for that stage's grid is left out rather than cut, a word on the avoid list is left out, and anything but letters is dropped. The words are typed for one packet, printed on the sheet and kept nowhere: nothing is stored and nothing leaves the browser. `scripts/check-activity-studio.mjs` covers both stages, every dexterity and five seeds.
