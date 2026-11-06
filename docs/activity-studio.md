@@ -17,6 +17,28 @@
 - **Daily living steps**: a familiar task (make tea, water the flowers, feed the birds, fold a towel, set the table, brush your hair) in six, four or three steps, with a library picture where one exists.
 - **Coloring pages**: a finished drawing from the library with a thick outline. Six styles (Cozy-Spooky, Vintage Americana, Botanical Gardens, Classic Animals, Simple Architecture, Kitchen and Baking), or a few words, which choose among the library through `src/engine/DescribeCreate.js`.
 
+## The master inventory: nine kinds of activity
+
+The first four kinds above are the studio's own. `js/generators/activity-modules.js` adds the rest of the master clinical inventory to the engine's router (`CognicopiaActivityEngine.register`), and `js/generators/activity-pages.js` draws them. Each is made for a stage and left out of the others, with a plain note.
+
+| # | Kind | Stage | What it is |
+|---|---|---|---|
+| 1 | Word grids and look-back | 1, 2 | A large-print word search from the resident's decade or former work (ten kinds of work), mixed-up words with the first letter in place, and "a look back": dated facts as conversation starters. The staff panel shows the answer key. |
+| 2 | Timeline sorting | 1, 2 | Five (or three) events from the resident's years, or the chapters of a life, to number from earliest to latest. |
+| 3 | Memory pairs | 1, 2 | Pairs of library drawings to cut out, in rows and columns, with dashed cut lines. |
+| 4 | Guided dialogue | 1, 2, 3 | One theme (Sunday dinner, a first car, the kitchen radio...), a ladder of questions by stage (open questions, then two, then a single sensory line), a line to note each answer and a response log for the care record. |
+| 5 | Household matching | 1, 2 | Library pictures of household things to match to their names, and materials to what they make (flour, bread). |
+| 6 | Sayings and song lines | 1, 2 | The start of a proverb or an old song line to finish; at stage 2 the endings are in a box to choose from. |
+| 7 | Coloring | 1, 2, 3 | The coloring pages (above); the staff panel now carries a question to ask while they color. |
+| 8 | Shapes and colors | 2, 3 | Shapes to match face up; one shape and two very different choices to point to; color names with something to find. Plain geometry, printed in black and white. |
+| 9 | Rhythm and word tickets | 2, 3 | A word to feel and a short line of verse, for the sideways cards and tickets. |
+
+Every poem and song line is from a work published in 1928 or earlier, so it is free to print; the verse carries its author and year, and `scripts/check-activity-studio.mjs` fails on a later one. The dated facts are ones a facility can check in a minute.
+
+**Suggested packet for this stage** sets the content mix for the stage in one click (stage 1: word grids, timeline, memory pairs, dialogue and coloring; stage 2: dialogue, household, phrases and coloring; stage 3: coloring, shapes and colors, rhythm tickets and dialogue). With the stage and Compile Packet PDF, a packet is three clicks; the browser check makes exactly those three clicks and reads the PDF back.
+
+Pages in a packet are ordered so that neighbors come from different domains (remembering, thinking, a meaningful role, creative expression, sensory and calm), so even a four-page packet is varied.
+
 ## What the stage changes
 
 | | Stage 1, mild | Stage 2, moderate | Stage 3, advanced |
@@ -51,3 +73,7 @@ Every page code (for example `ASM-R-4WZG.1`) holds the stage, the kind of sheet 
 `scripts/check-activity-studio.mjs` (in `npm test`) proves the sheets and pages without a browser: every module, stage, hand setting and layout; same seed, same page; stage 3 has less than stage 1; topics to avoid; no quizzing; 3:4; black and white; no line under 6 px; no text under its stage's floor; nothing off the page; offline. `scripts/check-activity-studio-ui.mjs` (in `npm run build`) proves the screen in a real browser, reads the PDF back with PyMuPDF, checks the PNG size, prints, and measures 52 px controls and a phone.
 
 The validator and the print and offline utilities beneath it are described in [facility-validation.md](facility-validation.md).
+
+## Hand-lettered name (the nameplate)
+
+The first name can be lettered three ways, chosen on the page: Plain, Flowing script (Pinyon Script) or Formal script (Marck Script). The choice is the person's; the studio never guesses it from a name, and the profile holds no gender field. Script names sit under the title with the line "Prepared with care for" (on coloring pages, above the page code). Both faces are open-licence files kept in `fonts/` (licences beside them) and in the service worker's list, so they work offline. The name is shrunk to fit a long name and never goes below the stage's type floor. Print stays pure black on white. `scripts/check-activity-studio.mjs` covers every stage, dexterity and style.

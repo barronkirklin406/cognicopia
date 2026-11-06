@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 220"
+  data-title="The Steam Locomotive" data-tags="train, locomotive, steam_train, railroad, travel, transportation"
+  data-angle="side_profile" data-word="train" data-completion="All aboard the steam" data-banner="TRAIN"
+  data-prompt="Where would you most like a train like this to take you?">
+  <line x1="8" y1="206" x2="412" y2="206" stroke="#000"/>
+  <circle cx="186" cy="176" r="28" fill="#fff" stroke="#000"/>
+  <circle cx="250" cy="176" r="28" fill="#fff" stroke="#000"/>
+  <circle cx="314" cy="176" r="28" fill="#fff" stroke="#000"/>
+  <circle cx="118" cy="188" r="17" fill="#fff" stroke="#000"/>
+  <path fill="#fff" stroke="#000" d="M92 72 L88 42 L76 30 L124 30 L112 42 L108 72 Z"/>
+  <path fill="#fff" stroke="#000" d="M170 80 C170 52 206 52 206 80 Z"/>
+  <path fill="#fff" stroke="#000" d="M228 80 C228 60 254 60 254 80 Z"/>
+  <rect x="104" y="78" width="180" height="72" fill="#fff" stroke="#000"/>
+  <rect x="72" y="70" width="42" height="86" rx="8" fill="#fff" stroke="#000"/>
+  <circle cx="72" cy="94" r="10" fill="#fff" stroke="#000"/>
+  <rect x="284" y="42" width="90" height="118" fill="#fff" stroke="#000"/>
+  <rect x="276" y="32" width="106" height="14" rx="5" fill="#fff" stroke="#000"/>
+  <rect x="300" y="60" width="54" height="42" rx="6" fill="#fff" stroke="#000"/>
+  <rect x="60" y="150" width="324" height="14" rx="3" fill="#fff" stroke="#000"/>
+  <path fill="#fff" stroke="#000" d="M18 202 L60 164 L60 202 Z"/>
+  <rect x="178" y="171" width="144" height="10" rx="5" fill="#fff" stroke="#000"/>
+  <g class="detail">
+    <circle cx="186" cy="176" r="7" fill="#fff" stroke="#000"/>
+    <circle cx="250" cy="176" r="7" fill="#fff" stroke="#000"/>
+    <circle cx="314" cy="176" r="7" fill="#fff" stroke="#000"/>
+    <line x1="132" y1="114" x2="268" y2="114" stroke="#000"/>
+  </g>
+</svg>

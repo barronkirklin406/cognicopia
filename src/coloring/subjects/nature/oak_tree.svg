@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 340"
+  data-title="The Old Oak Tree" data-tags="oak, tree, nature, shade, park, fall, outdoors, farm"
+  data-angle="front" data-word="tree" data-completion="Shade under the old oak" data-banner="TREE"
+  data-prompt="What would you do under a big shade tree on a summer afternoon?">
+  <path fill="#fff" stroke="#000" d="M126 330 C136 300 140 260 136 210 L164 210 C160 260 164 300 178 330 Z"/>
+  <path fill="#fff" stroke="#000" d="M58 200 A42 42 0 0 1 64 128 A54 54 0 0 1 150 70 A54 54 0 0 1 236 122 A44 44 0 0 1 246 196 A40 40 0 0 1 196 228 L106 228 A40 40 0 0 1 58 200 Z"/>
+  <path fill="none" stroke="#000" d="M150 228 L150 196 L118 166"/>
+  <path fill="none" stroke="#000" d="M150 196 L184 160"/>
+  <g class="detail">
+    <path fill="none" stroke="#000" d="M96 130 C104 118 118 114 130 118"/>
+    <path fill="none" stroke="#000" d="M170 108 C182 102 196 104 206 114"/>
+    <path fill="none" stroke="#000" d="M86 190 C92 180 102 176 112 178"/>
+    <path fill="none" stroke="#000" d="M196 186 C204 178 214 176 222 180"/>
+  </g>
+</svg>

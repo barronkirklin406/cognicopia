@@ -1,0 +1,50 @@
+{
+  "$schema": "../schema/profile-map.schema.json",
+  "version": 1,
+  "fieldWeights": {
+    "job": 1,
+    "firstjob": 0.7,
+    "hobbies": 1,
+    "favs": 0.85,
+    "pets": 0.9,
+    "school": 0.6,
+    "firstcar": 0.55,
+    "town": 0.2,
+    "extra": 1
+  },
+  "match": {
+    "ownThreshold": 0.6,
+    "maxOwnTopics": 6,
+    "fuzzyMinLength": 6,
+    "phraseBoost": 1.2,
+    "fuzzyFactor": 0.7,
+    "entryCap": 2
+  },
+  "memory": {
+    "bump": [
+      { "from": 6, "to": 9, "w": 0.5 },
+      { "from": 10, "to": 30, "w": 1 },
+      { "from": 31, "to": 45, "w": 0.35 }
+    ],
+    "eligible": 0.25,
+    "timeless": 0.7
+  },
+  "pools": {
+    "crossMax": 30,
+    "tangentMax": 40,
+    "minPool": 3,
+    "crossMinScore": 0.9,
+    "crossRelative": 0.45
+  },
+  "decadeWords": {
+    "twenties": "1920s",
+    "thirties": "1930s",
+    "forties": "1940s",
+    "fifties": "1950s",
+    "sixties": "1960s",
+    "seventies": "1970s",
+    "eighties": "1980s",
+    "nineties": "1990s"
+  },
+  "stopwords": ["a", "an", "the", "and", "or", "of", "in", "on", "at", "to", "for", "with", "my", "his", "her", "their", "from", "by", "was", "were", "is", "are", "he", "she", "they", "it", "that", "this", "as", "i", "we", "you", "our", "had", "has", "have", "very", "really", "loved", "love", "likes", "like", "enjoyed", "enjoy", "going", "being", "all", "but", "not", "no"]
+}

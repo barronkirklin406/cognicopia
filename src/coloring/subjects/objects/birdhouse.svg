@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300"
+  data-title="The Birdhouse" data-tags="birdhouse, bird, garden, backyard, woodworking, carpentry, home"
+  data-angle="front" data-word="birdhouse" data-completion="Hung up for the songbirds, the" data-banner="BIRDHOUSE"
+  data-prompt="Which birds would you like to see move into this birdhouse?">
+  <!-- the post -->
+  <path fill="#fff" stroke="#000" d="M136 230 L164 230 L164 292 L136 292 Z"/>
+  <!-- the house -->
+  <path fill="#fff" stroke="#000" d="M70 124 L150 54 L230 124 L230 222 L70 222 Z"/>
+  <g class="detail" fill="none" stroke="#000">
+    <path d="M104 94 L104 222"/><path d="M196 94 L196 222"/>
+  </g>
+  <!-- the roof -->
+  <path fill="#fff" stroke="#000" d="M46 130 L150 36 L254 130 L240 144 L150 64 L60 144 Z"/>
+  <!-- the doorway and the perch -->
+  <circle cx="150" cy="136" r="24" fill="#fff" stroke="#000"/>
+  <circle cx="150" cy="182" r="8" fill="#fff" stroke="#000"/>
+  <!-- the floor ledge -->
+  <path fill="#fff" stroke="#000" d="M58 222 L242 222 C246 222 248 224 248 228 L248 236 L52 236 L52 228 C52 224 54 222 58 222 Z"/>
+</svg>

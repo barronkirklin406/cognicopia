@@ -62,11 +62,12 @@
     minContrast: 7,                                   // the design system's own floor (AAA)
     /* the share of the page left empty, by kind of page and stage. Chosen a little under what the current library and sheets measure
        (text sheets 0.57 and up, coloring pages 0.70 and up at stages 1 and 2, 0.79 at stage 3), and calmer for later stages. */
-    minWhite: { text: { 1: 0.50, 2: 0.50, 3: 0.55 }, coloring: { 1: 0.60, 2: 0.60, 3: 0.70 } },
+    minWhite: { text: { 1: 0.50, 2: 0.50, 3: 0.55 }, coloring: { 1: 0.60, 2: 0.60, 3: 0.70 }, memory: { 1: 0.30, 2: 0.35, 3: 0.35 } },   // pairs to cut out: many small cards, each one calm
     domains: 4
   };
   var WEIGHTS = { contrast: 20, stroke: 25, whitespace: 20, variety: 15, framework: 20 };
-  var DOMAIN = { reminiscence: "Remembering", exercise: "Thinking", daily: "A meaningful role", coloring: "Creative expression" };
+  var DOMAIN = { reminiscence: "Remembering", dialogue: "Remembering", rhythm: "Sensory and calm", recognition: "Sensory and calm", exercise: "Thinking", wordgrid: "Thinking", timeline: "Thinking", memory: "Thinking",
+    household: "A meaningful role", daily: "A meaningful role", phrases: "Remembering", coloring: "Creative expression" };
   var FRAMEWORKS = [
     { id: "interest",   label: "Reflects the resident's interests and years", source: "CMS F679 (42 CFR 483.24(c)): activities based on each resident's interests, needs and preferences" },
     { id: "stage-fit",  label: "Tasks are broken down for the stage",         source: "Montessori-based dementia programming (C. Camp); occupational therapy stage guidance" },
@@ -74,6 +75,14 @@
     { id: "guidance",   label: "A staff note rides with each activity",       source: "CMS F679 guidance on one-to-one and self-directed activities; NCCAP planning models" },
     { id: "variety",    label: "The batch uses more than one domain",         source: "Montessori roles (sensory, motor, cognitive); activity-professional program planning" }
   ];
+  /* kinds of page in an order that changes domain from one page to the next, so a short packet already uses as many domains as it can */
+  function interleave(kinds) {
+    var groups = {}, names = [];
+    kinds.forEach(function (k) { var d = DOMAIN[k] || k; if (!groups[d]) { groups[d] = []; names.push(d); } groups[d].push(k); });
+    var out = [];
+    while (out.length < kinds.length) names.forEach(function (d) { if (groups[d].length) out.push(groups[d].shift()); });
+    return out;
+  }
   var QUIZ = /do you remember|remember when|what year|who is this|quiz|\btest\b|correct answer|wrong answer|can you (?:tell|name|recall)/i;
   var stageN = function (s) { s = Math.round(Number(s)); return s >= 1 && s <= 3 ? s : 2; };
   var pct = function (x) { return Math.max(0, Math.min(100, Math.round(x))); };
@@ -179,7 +188,7 @@
     if (minStroke === Infinity) minStroke = null;
     if (minContrast === Infinity) minContrast = 21;
     if (minText === Infinity) minText = null;
-    var wsh = whiteShare(occupancy(pg)), minWhite = LIMITS.minWhite[pg.meta && pg.meta.kind === "coloring" ? "coloring" : "text"][n];
+    var wsh = whiteShare(occupancy(pg)), minWhite = LIMITS.minWhite[pg.meta && pg.meta.kind === "coloring" ? "coloring" : pg.meta && pg.meta.kind === "memory" ? "memory" : "text"][n];
     var contrastOk = minContrast >= LIMITS.minContrast && Object.keys(colors).every(function (c) { return ["#000", "#fff", "none", "#000000", "#ffffff"].indexOf(c) >= 0; });
     var textOk = minText == null || minText >= textMin - 0.5;
     var strokeOk = minStroke == null || minStroke >= LIMITS.minStrokePx;
@@ -219,7 +228,7 @@
     var white = pct(per.reduce(function (s, r) { return s + Math.min(1, r.whitespace.ratio / r.whitespace.min); }, 0) / Math.max(1, N) * 100);
     /* variety: more than one domain, nothing twice */
     var kinds = {}, titles = {}, dup = 0;
-    pages.forEach(function (pg) { var m = pg.meta || {}; kinds[m.module || m.kind || "?"] = 1; var key = (m.title || "") + "|" + sheetText(pg).slice(0, 80); if (titles[key]) dup++; titles[key] = 1; });
+    pages.forEach(function (pg) { var m = pg.meta || {}; kinds[DOMAIN[m.module] || m.module || m.kind || "?"] = 1; var key = (m.title || "") + "|" + sheetText(pg).slice(0, 80); if (titles[key]) dup++; titles[key] = 1; });
     var domains = Object.keys(kinds).length, want = Math.min(LIMITS.domains, N >= 4 ? 3 : N >= 2 ? 2 : 1);
     var variety = pct(Math.min(1, domains / want) * 100 - dup * (100 / Math.max(1, N)));
     if (domains < want) find.push("The batch uses " + domains + " kind" + (domains === 1 ? "" : "s") + " of page; " + want + " or more makes it more engaging.");
@@ -228,9 +237,9 @@
     var mods = pages.map(function (pg) { return (pg.meta && pg.meta.module) || ""; }), stage = stageN(ctx.stage || (pages[0] && pages[0].meta && pages[0].meta.stage));
     var texts = pages.map(sheetText).join(" ");
     var steps = pages.filter(function (pg) { return pg.meta && pg.meta.sheetKind === "steps"; });
-    var tests = pages.some(function (pg) { return pg.meta && (pg.meta.sheetKind === "match" || pg.meta.sheetKind === "sort"); });
+    var tests = pages.some(function (pg) { return pg.meta && /^(match|sort|timeline|memory|wordgrid|scramble|household|phrases)$/.test(pg.meta.sheetKind); });
     var chk = {
-      interest: mods.indexOf("reminiscence") >= 0 || !!(ctx.interests && String(ctx.interests).trim()),
+      interest: mods.some(function (m) { return /^(reminiscence|dialogue|wordgrid|timeline)$/.test(m); }) || !!(ctx.interests && String(ctx.interests).trim()),   // these draw on the years chosen (their decade, events and conversation themes)
       "stage-fit": steps.every(function (pg) { var k = pg.meta.steps; return stage === 3 ? k <= 4 : stage === 2 ? k <= 5 : k >= 4; }),
       errorless: !QUIZ.test(texts) && (stage !== 3 || !tests),
       guidance: pages.every(function (pg) { var m = pg.meta || {}; return m.module === "coloring" || !!m.staff; }),
@@ -263,7 +272,7 @@
 
   return {
     VERSION: VERSION, LIMITS: LIMITS, WEIGHTS: WEIGHTS, FRAMEWORKS: FRAMEWORKS,
-    contrastOnWhite: contrastOnWhite, occupancy: occupancy, occupancyFromCanvas: occupancyFromCanvas, whiteShare: whiteShare, pathPoints: pathPoints,
+    DOMAIN: DOMAIN, interleave: interleave, contrastOnWhite: contrastOnWhite, occupancy: occupancy, occupancyFromCanvas: occupancyFromCanvas, whiteShare: whiteShare, pathPoints: pathPoints,
     validatePage: validatePage, validateBatch: validateBatch, scanSvg: scanSvg, format: format, report: report
   };
 });

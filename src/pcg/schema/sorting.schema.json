@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cognicopia.org/src/pcg/schema/sorting.schema.json",
+  "title": "Cognicopia activity engine: sorting groups",
+  "description": "Groups of things a person can sort or compare: the 'Sort into two groups' and 'Odd one out' pages. A group's family says what it is close to; two groups sharing a family are never set against each other in an odd-one-out, because the odd one would be arguable.",
+  "type": "object",
+  "required": [
+    "version",
+    "groups"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "version": {
+      "const": 1
+    },
+    "groups": {
+      "type": "array",
+      "minItems": 20,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "label",
+          "one",
+          "family",
+          "words"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9-]+$"
+          },
+          "label": {
+            "type": "string",
+            "minLength": 4,
+            "maxLength": 32
+          },
+          "one": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 40,
+            "description": "One of them, in words that finish 'Clue: ...': a kitchen tool, something with wheels."
+          },
+          "family": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 4,
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z-]+$"
+            }
+          },
+          "needs": {
+            "enum": [
+              "faith"
+            ]
+          },
+          "words": {
+            "type": "array",
+            "minItems": 10,
+            "maxItems": 14,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^[A-Za-z][A-Za-z' -]{1,34}$"
+            }
+          }
+        }
+      }
+    }
+  }
+}

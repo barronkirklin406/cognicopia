@@ -226,8 +226,9 @@
     var split = function (v) { return (Array.isArray(v) ? v : String(v == null ? "" : v).split(/[,;\n]/)).map(function (x) { return String(x).trim().toLowerCase(); }).filter(Boolean).slice(0, 20); };
     return {
       name: String(p.name == null ? "" : p.name).replace(/[<>&"]/g, "").trim().slice(0, 40),
+      nameStyle: p.nameStyle === "flow" || p.nameStyle === "formal" ? p.nameStyle : "plain",
       born: born, stage: stage, dexterity: dex, decade: decade,
-      season: SEASONS.indexOf(p.season) >= 0 ? p.season : "",
+      season: SEASONS.indexOf(p.season) >= 0 ? p.season : "", vocation: String(p.vocation == null ? "" : p.vocation).toLowerCase().replace(/[^a-z]/g, "").slice(0, 20),
       interests: split(p.interests), avoid: split(p.avoid)
     };
   }
@@ -315,29 +316,43 @@
     return sheets;
   }
 
+  /* ---------- the router: more kinds of sheet join here ----------
+     register(id, { label, stages, build(profile, rng, count, kit) -> sheets, max(profile) }) adds a module. js/generators/activity-modules.js
+     registers the rest of the master inventory this way, so the three modules above and every later one go through the same generate(). */
+  var REGISTRY = {};
+  function register(id, spec) { REGISTRY[id] = spec; MODULES = MODULES.filter(function (m) { return m.id !== id; }).concat([{ id: id, label: spec.label, stages: spec.stages }]); }
+  var STAGE_FIT = { reminiscence: [1, 2, 3], exercise: [1, 2, 3], daily: [1, 2, 3], coloring: [1, 2, 3] };
+  function fits(mod, stage) { var f = REGISTRY[mod] ? REGISTRY[mod].stages : STAGE_FIT[mod]; return !f || f.indexOf(stage) >= 0; }
+
   /* ---------- one call ---------- */
   /* generate(profile, { module, count, seed }) -> { stage, seed, code, sheets, problems } */
   function generate(profile, options) {
     options = options || {};
     var P = normalize(profile), S = STAGES[P.stage];
-    var mod = ["reminiscence", "exercise", "daily"].indexOf(options.module) >= 0 ? options.module : "reminiscence";
+    var mod = ["reminiscence", "exercise", "daily"].indexOf(options.module) >= 0 || REGISTRY[options.module] ? options.module : "reminiscence";
     var seed = options.seed != null ? (options.seed >>> 0) : hash(JSON.stringify([P.stage, P.decade, P.season, P.interests, Date.now()]));
     if (!seed) seed = 1;
     var r = rng(hash(JSON.stringify([P.stage, P.dexterity, P.decade, P.interests, P.avoid, mod, seed])));
     var count = Math.max(1, Math.min(60, Math.round(options.count || 3)));
-    var sheets = mod === "reminiscence" ? reminiscenceSheets(P, r, count) : mod === "exercise" ? exerciseSheets(P, r, count) : dailySheets(P, r, count);
+    var cap = REGISTRY[mod] && REGISTRY[mod].max ? REGISTRY[mod].max(P) : 60;
+    count = Math.min(count, cap);                                                // a module with a small bank never repeats a sheet
+    var sheets = !fits(mod, P.stage) ? [] : REGISTRY[mod] ? REGISTRY[mod].build(P, r, count, KIT) : mod === "reminiscence" ? reminiscenceSheets(P, r, count) : mod === "exercise" ? exerciseSheets(P, r, count) : dailySheets(P, r, count);
     var code = "AS" + S.key + "-" + mod.charAt(0).toUpperCase() + "-" + seed.toString(36).toUpperCase();
-    sheets.forEach(function (sh, i) { sh.index = i; sh.stage = P.stage; sh.dexterity = P.dexterity; sh.name = P.name; sh.code = code + "." + (i + 1); sh.dexNote = DEXTERITY[P.dexterity].note; });
-    return { stage: P.stage, profile: P, seed: seed, code: code, module: mod, sheets: sheets, problems: validate(sheets, P) };
+    sheets.forEach(function (sh, i) { sh.index = i; sh.stage = P.stage; sh.dexterity = P.dexterity; sh.name = P.name; sh.nameStyle = P.nameStyle; sh.code = code + "." + (i + 1); sh.dexNote = DEXTERITY[P.dexterity].note; });
+    return { stage: P.stage, profile: P, seed: seed, code: code, module: mod, sheets: sheets, problems: validate(sheets, P), notFitting: !fits(mod, P.stage) };
   }
 
   /* what is wrong with these sheets, in words (an empty list is a pass) */
   function validate(sheets, P) {
     var out = [];
     (sheets || []).forEach(function (sh, i) {
-      var texts = [sh.title, sh.subtitle, sh.word, sh.from, sh.to].concat((sh.items || []).map(function (x) { return x.invite + " " + x.sense + " " + x.thing; }))
-        .concat((sh.steps || []).map(function (x) { return x.text; })).concat((sh.pairs || []).map(function (x) { return x.join(" "); }))
-        .concat((sh.words || []).map(function (x) { return x.w; }));
+      /* every word a sheet puts in front of the resident (the answer key and the note for staff are not read by the resident) */
+      var texts = [], walk = function (v, key) {
+        if (typeof v === "string") { if (key !== "staffNote" && key !== "keyLines" && key !== "dexNote" && key !== "code" && key !== "staff" && key !== "source") texts.push(v); }
+        else if (Array.isArray(v)) v.forEach(function (x) { walk(x, key); });
+        else if (v && typeof v === "object") Object.keys(v).forEach(function (k) { walk(v[k], k); });
+      };
+      ["title", "subtitle", "word", "from", "to", "items", "steps", "pairs", "words", "cards", "questions", "extra", "left", "right", "bank", "colors", "event", "target", "options"].forEach(function (k) { if (sh[k] != null) walk(sh[k], k); });
       texts.forEach(function (t) {
         if (!t) return;
         toneProblems(t).forEach(function (m) { out.push("Sheet " + (i + 1) + ": " + m); });
@@ -349,8 +364,11 @@
     return out;
   }
 
+  /* what a registered module needs from this file */
+  var KIT = { STAGES: STAGES, DEXTERITY: DEXTERITY, ERA: ERA, DECADES: DECADES, rng: rng, hash: hash, shuffle: shuffle, pick: pick, cap: cap, avoided: avoided, toneProblems: toneProblems, decadeFor: decadeFor };
   return {
-    VERSION: VERSION, STAGES: STAGES, DEXTERITY: DEXTERITY, DECADES: DECADES, SEASONS: SEASONS, MODULES: MODULES,
+    kit: KIT, register: register, fits: fits, modules: function () { return MODULES.slice(); },
+    VERSION: VERSION, STAGES: STAGES, DEXTERITY: DEXTERITY, DECADES: DECADES, SEASONS: SEASONS,
     KIND_LABEL: KIND_LABEL, ERA: ERA, TASKS: TASKS, PAIRS: PAIRS, SORTS: SORTS, LOOK: LOOK,
     normalize: normalize, decadeFor: decadeFor, generate: generate, validate: validate, toneProblems: toneProblems, hash: hash
   };

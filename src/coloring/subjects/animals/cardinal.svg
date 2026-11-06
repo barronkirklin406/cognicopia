@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 270"
+  data-title="The Cardinal" data-tags="cardinal, bird, songbird, winter, birdwatching, christmas, backyard"
+  data-angle="side_profile" data-word="cardinal" data-completion="Bright on a winter branch, a" data-banner="CARDINAL"
+  data-prompt="Which birds would you most like to see at a feeder?">
+  <!-- the long tail, behind the branch -->
+  <path fill="#fff" stroke="#000" d="M176 168 C194 192 206 220 212 254 L234 262 L252 246 C240 214 222 186 198 160 Z"/>
+  <path fill="#fff" stroke="#000" d="M10 206 C80 194 180 198 270 184 L272 198 C180 212 80 210 12 220 Z"/>
+  <!-- the thick seed beak, behind the head -->
+  <path fill="#fff" stroke="#000" d="M106 72 C94 78 80 86 62 94 C80 100 94 106 106 112 Z"/>
+  <!-- body, head and the swept-back crest -->
+  <path fill="#fff" stroke="#000" d="M92 124 C88 104 96 86 106 76 C110 64 118 50 128 42 C136 34 146 28 160 22 C156 34 154 44 158 56 C178 66 200 92 206 130 C210 156 198 178 174 186 C140 196 104 176 96 150 C94 140 92 132 92 124 Z"/>
+  <path fill="#fff" stroke="#000" d="M140 112 C166 100 196 114 204 140 C198 162 176 172 150 166 C140 150 136 128 140 112 Z"/>
+  <g class="detail">
+    <!-- the face mask -->
+    <path fill="#fff" stroke="#000" d="M101 70 C113 64 126 72 127 86 C128 100 118 112 100 117 C96 103 96 85 101 70 Z"/>
+    <path fill="none" stroke="#000" d="M104 92 L72 94"/>
+    <path fill="none" stroke="#000" d="M152 124 C166 122 180 128 190 140"/>
+    <path fill="none" stroke="#000" d="M150 140 C164 140 178 146 188 156"/>
+    <path fill="none" stroke="#000" d="M140 188 L138 200 M132 202 L146 202"/>
+    <path fill="none" stroke="#000" d="M160 186 L160 198 M154 200 L168 200"/>
+  </g>
+  <circle cx="114" cy="84" r="6.5" fill="#fff" stroke="#000"/>
+  <circle cx="114" cy="84" r="3.2" fill="#000" stroke="#000"/>
+</svg>

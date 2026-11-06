@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 410 160"
+  data-title="1957 Family Sedan" data-tags="sedan, car, classic_car, family_car, tail_fins, 1950s, automobile, driving, transportation"
+  data-angle="side_profile" data-word="car" data-completion="Sunday drive in the family" data-banner="CAR"
+  data-prompt="Where would you go on a Sunday drive, and who would come along?">
+  <rect x="10" y="104" width="18" height="12" rx="5" fill="#fff" stroke="#000"/>
+  <rect x="382" y="104" width="16" height="12" rx="5" fill="#fff" stroke="#000"/>
+  <path fill="#fff" stroke="#000" d="M20 118 L20 98 C20 92 26 88 34 88 L132 84 L160 62 C166 57 174 55 184 55 L244 55 C254 55 260 59 266 65 L288 84 L350 84 L386 66 C390 64 393 66 392 70 L388 112 C387 117 384 120 378 120 L344 120 A27 27 0 0 0 290 120 L116 120 A27 27 0 0 0 62 120 L26 120 C22 120 20 119 20 118 Z"/>
+  <path fill="#fff" stroke="#000" d="M156 84 L170 66 C174 61 180 60 188 60 L242 60 C250 60 255 63 259 68 L271 84 Z"/>
+  <line x1="214" y1="60" x2="212" y2="84" stroke="#000"/>
+  <path fill="#fff" stroke="#000" d="M40 92 L300 90 C330 90 356 86 382 76 L382 84 C356 94 330 97 300 97 L40 99 Z"/>
+  <circle class="detail" cx="30" cy="96" r="5" fill="#fff" stroke="#000"/>
+  <circle cx="89" cy="124" r="24" fill="#fff" stroke="#000"/>
+  <circle cx="89" cy="124" r="12" fill="#fff" stroke="#000"/>
+  <circle cx="317" cy="124" r="24" fill="#fff" stroke="#000"/>
+  <circle cx="317" cy="124" r="12" fill="#fff" stroke="#000"/>
+</svg>

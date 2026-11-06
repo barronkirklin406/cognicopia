@@ -22,7 +22,7 @@ import { fileURLToPath } from "url";
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
 const read = f => fs.readFileSync(path.join(ROOT, f), "utf8");
 const ctx = vm.createContext({ console }); ctx.globalThis = ctx; ctx.window = ctx;
-const FILES = ["assets/coloring/subjects.bundle.js", "src/services/ColoringManifest.js", "src/engine/DescribeCreate.js", "js/generators/activity-engine.js", "js/generators/coloring-pipeline.js", "js/utils/facility-validator.js", "js/utils/print-optimizer.js"];
+const FILES = ["assets/coloring/subjects.bundle.js", "src/services/ColoringManifest.js", "src/engine/DescribeCreate.js", "js/generators/activity-engine.js", "js/generators/coloring-pipeline.js", "js/generators/activity-modules.js", "js/generators/activity-pages.js", "js/utils/facility-validator.js", "js/utils/print-optimizer.js"];
 for (const f of FILES) vm.runInContext(read(f), ctx, { filename: f });
 const E = ctx.CognicopiaActivityEngine, PL = ctx.CognicopiaColoringPipeline, FV = ctx.CognicopiaFacilityValidator, PO = ctx.CognicopiaPrintOptimizer, M = ctx.CognicopiaColoringManifest;
 M.loadSync();
@@ -55,6 +55,12 @@ for (const stage of [1, 2, 3]) for (const dex of ["steady", "limited", "minimal"
   ok(r.score >= 90 && r.findings.length === 0 && r.level === "Ready", `stage ${stage} ${dex} ${layout}: scored ${r.score} (${r.level}) ${r.findings.slice(0, 2).join(" | ")}`);
   log.push(r);
 }
+/* the suggested packet for each stage (three of the master inventory and a coloring page) also scores well */
+for (const [stage, mods] of [[1, ["wordgrid", "timeline", "memory", "dialogue", "coloring"]], [2, ["dialogue", "household", "phrases", "coloring"]], [3, ["coloring", "recognition", "rhythm", "dialogue"]]])
+  for (const dex of ["steady", "limited", "minimal"]) for (const layout of ["full", "cards8"]) {
+    const pages = packet(stage, dex, layout, FV.interleave(mods), 4), r = FV.validateBatch(pages, { stage, interests: "gardening" });
+    ok(pages.length === 4 && r.score >= 90 && r.findings.length === 0, `suggested packet, stage ${stage} ${dex} ${layout}: ${pages.length} pages, scored ${r.score} ${r.findings.slice(0, 2).join(" | ")}`);
+  }
 ok(Object.values(FV.WEIGHTS).reduce((a, b) => a + b, 0) === 100, "the weights add to 100");
 
 /* faults are found and named */

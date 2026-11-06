@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 250"
+  data-title="The Teapot" data-tags="teapot, tea, kitchen, home, homemaker, afternoon_tea" data-angle="side_profile"
+  data-word="teapot" data-completion="Time for a cup from the" data-banner="TEAPOT" data-prompt="Who would you most like to share a pot of tea with?">
+  <rect x="104" y="218" width="92" height="16" rx="7" fill="#fff" stroke="#000"/>
+  <!-- spout and handle go behind the body -->
+  <path fill="#fff" stroke="#000" d="M96 156 C62 154 44 128 30 100 C28 94 33 89 38 93 C52 114 66 128 94 130 Z"/>
+  <path fill="#fff" stroke="#000" d="M214 118 C266 108 284 164 252 196 C245 203 236 204 226 199 L230 184 C254 178 262 138 220 134 Z"/>
+  <path fill="#fff" stroke="#000" d="M70 160 C70 106 108 94 150 94 C192 94 230 106 230 160 C230 206 200 226 150 226 C100 226 70 206 70 160 Z"/>
+  <!-- the lid: knob, dome, rim -->
+  <circle cx="150" cy="64" r="10" fill="#fff" stroke="#000"/>
+  <path fill="#fff" stroke="#000" d="M110 96 C112 66 188 66 190 96 Z"/>
+  <rect x="100" y="92" width="100" height="11" rx="5" fill="#fff" stroke="#000"/>
+  <!-- a flower on the side: detail -->
+  <g class="detail">
+    <circle cx="150" cy="140" r="11" fill="#fff" stroke="#000"/>
+    <circle cx="150" cy="164" r="11" fill="#fff" stroke="#000"/>
+    <circle cx="138" cy="152" r="11" fill="#fff" stroke="#000"/>
+    <circle cx="162" cy="152" r="11" fill="#fff" stroke="#000"/>
+    <circle cx="150" cy="152" r="7" fill="#fff" stroke="#000"/>
+  </g>
+</svg>

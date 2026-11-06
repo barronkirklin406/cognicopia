@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cognicopia.org/src/pcg/schema/items.schema.json",
+  "title": "Cognicopia PCG item pack",
+  "description": "One pack of the lexicon. Each item is a thing a person can talk about, with everything the engine needs to build text and puzzles from it: the topics it belongs to, its cross-pollination tags, the names of its parts, what it looks, sounds, feels and smells like, and puzzle words with their clues. Terms are written WORD|clue and completions lead|answer; the build turns them into pairs.",
+  "type": "object",
+  "required": ["pack", "items"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "pack": { "$ref": "#/$defs/slug" },
+    "about": { "type": "string" },
+    "items": { "type": "array", "minItems": 4, "items": { "$ref": "#/$defs/item" } }
+  },
+  "$defs": {
+    "slug": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
+    "phrase": { "type": "string", "minLength": 3, "maxLength": 44, "pattern": "^[a-z0-9][a-z0-9 ,'-]*$" },
+    "alias": { "type": "string", "minLength": 2, "maxLength": 44, "pattern": "^[a-z0-9][a-z0-9 ,'-]*$" },
+    "item": {
+      "type": "object",
+      "required": ["id", "name", "kind", "topics", "tags", "parts", "senses", "terms", "completions"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "#/$defs/slug" },
+        "name": { "type": "string", "minLength": 3, "maxLength": 36, "pattern": "^[A-Za-z0-9][A-Za-z0-9 '-]*$" },
+        "aka": { "type": "array", "maxItems": 6, "uniqueItems": true, "items": { "$ref": "#/$defs/alias" } },
+        "plural": { "type": "string", "minLength": 3, "maxLength": 44, "pattern": "^[A-Za-z0-9][A-Za-z0-9 '-]*$" },
+        "kind": { "enum": ["vehicle", "machine", "tool", "appliance", "home", "food", "drink", "plant", "animal", "bird", "place", "game", "toy", "instrument", "clothing", "furniture", "craft", "school", "container", "scene"] },
+        "topics": { "type": "array", "minItems": 1, "maxItems": 3, "uniqueItems": true, "items": { "$ref": "#/$defs/slug" } },
+        "tags": { "type": "array", "minItems": 2, "maxItems": 9, "uniqueItems": true, "items": { "$ref": "#/$defs/slug" } },
+        "subject": { "type": "string", "pattern": "^[a-z0-9_]+$" },
+        "parts": { "type": "array", "minItems": 2, "maxItems": 8, "uniqueItems": true, "items": { "$ref": "#/$defs/phrase" } },
+        "senses": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "color": { "type": "array", "minItems": 1, "maxItems": 4, "items": { "$ref": "#/$defs/phrase" } },
+            "sight": { "type": "array", "minItems": 1, "maxItems": 4, "items": { "$ref": "#/$defs/phrase" } },
+            "sound": { "type": "array", "minItems": 1, "maxItems": 4, "items": { "$ref": "#/$defs/phrase" } },
+            "touch": { "type": "array", "minItems": 1, "maxItems": 4, "items": { "$ref": "#/$defs/phrase" } },
+            "smell": { "type": "array", "minItems": 1, "maxItems": 4, "items": { "$ref": "#/$defs/phrase" } }
+          }
+        },
+        "terms": { "type": "array", "minItems": 6, "maxItems": 14, "uniqueItems": true, "items": { "type": "string", "pattern": "^[A-Z]{3,11}\\|[A-Z][A-Za-z0-9 ,'-]{6,70}$" } },
+        "completions": { "type": "array", "minItems": 2, "maxItems": 4, "uniqueItems": true, "items": { "type": "string", "pattern": "^[A-Z][A-Za-z0-9 ,'-]{7,60}\\|[a-z]{3,12}$" } },
+        "facts": { "type": "array", "maxItems": 3, "items": { "type": "string", "minLength": 20, "maxLength": 140 } }
+      }
+    }
+  }
+}

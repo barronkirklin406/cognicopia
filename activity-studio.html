@@ -6,6 +6,8 @@
 <title>Activity Page Studio — Cognicopia</title>
 <meta name="description" content="Make large-print reminiscence prompts, thinking exercises, daily-living steps and bold coloring pages for the resident's stage, on a 3:4 page that prints in pure black and white. Everything is made in your browser.">
 <style id="as-css">
+@font-face{font-family:"Pinyon Script";font-weight:400;font-display:swap;src:url("fonts/PinyonScript-Regular.woff2") format("woff2")}
+@font-face{font-family:"Marck Script";font-weight:400;font-display:swap;src:url("fonts/MarckScript-Regular.woff2") format("woff2")}
 /* The shared top bar's base: the navigation block below only overrides these, as on every other page. */
 body{margin:0}
 .cg-sidebar{display:flex;flex-direction:column;box-sizing:border-box;overflow-x:hidden}
@@ -483,6 +485,8 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
 <script src="src/engine/DescribeCreate.js"></script>
 <script src="js/generators/activity-engine.js"></script>
 <script src="js/generators/coloring-pipeline.js"></script>
+<script src="js/generators/activity-modules.js"></script>
+<script src="js/generators/activity-pages.js"></script>
 <script src="js/utils/facility-validator.js"></script>
 <script src="js/utils/print-optimizer.js"></script>
 <script src="components/packet-generator-ui.js"></script>
