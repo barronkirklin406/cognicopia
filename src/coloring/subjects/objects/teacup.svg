@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 240"
+  data-title="The Teacup" data-tags="teacup, tea, cup, saucer, china, kitchen, home, afternoon_tea"
+  data-angle="side_profile" data-word="tea" data-completion="A fine china cup of" data-banner="TEACUP"
+  data-prompt="How do you like your tea or coffee, and where do you like to sit with it?">
+  <!-- the saucer -->
+  <path fill="#fff" stroke="#000" d="M24 202 C24 186 276 186 276 202 C276 218 222 228 150 228 C78 228 24 218 24 202 Z"/>
+  <!-- the handle, behind the cup -->
+  <path fill="#fff" stroke="#000" d="M222 100 C270 90 288 150 240 174 C228 180 214 180 200 178 L204 162 C246 160 252 116 224 122 Z"/>
+  <!-- the foot, the cup and its open top -->
+  <path fill="#fff" stroke="#000" d="M112 188 L188 188 L182 202 L118 202 Z"/>
+  <path fill="#fff" stroke="#000" d="M66 84 C66 140 90 186 124 194 L176 194 C210 186 234 140 234 84 Z"/>
+  <path fill="#fff" stroke="#000" d="M66 84 C66 70 234 70 234 84 C234 98 66 98 66 84 Z"/>
+  <g class="detail">
+    <path fill="#fff" stroke="#000" d="M84 86 C84 78 216 78 216 86 C216 94 84 94 84 86 Z"/>
+    <circle cx="150" cy="122" r="10" fill="#fff" stroke="#000"/><circle cx="150" cy="146" r="10" fill="#fff" stroke="#000"/><circle cx="138" cy="134" r="10" fill="#fff" stroke="#000"/><circle cx="162" cy="134" r="10" fill="#fff" stroke="#000"/><circle cx="150" cy="134" r="6" fill="#fff" stroke="#000"/>
+  </g>
+</svg>

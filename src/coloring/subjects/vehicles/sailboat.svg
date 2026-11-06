@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 300"
+  data-title="The Sailboat" data-tags="sailboat, boat, sailing, lake, water, summer, vacation"
+  data-angle="side_profile" data-word="boat" data-completion="Out on the lake in a sail" data-banner="BOAT"
+  data-prompt="What would a calm afternoon on the water sound like?">
+  <path fill="#fff" stroke="#000" d="M162 38 L188 46 L162 54 Z"/>
+  <rect x="158" y="36" width="8" height="186" rx="3" fill="#fff" stroke="#000"/>
+  <path fill="#fff" stroke="#000" d="M172 44 C210 96 248 152 272 212 L172 212 Z"/>
+  <path fill="#fff" stroke="#000" d="M152 56 L152 212 L60 212 C88 162 118 108 152 56 Z"/>
+  <path fill="#fff" stroke="#000" d="M36 220 L284 220 C274 246 244 258 204 260 L112 260 C80 258 52 246 36 220 Z"/>
+  <g class="detail">
+    <circle cx="120" cy="238" r="7" fill="#fff" stroke="#000"/>
+    <circle cx="160" cy="238" r="7" fill="#fff" stroke="#000"/>
+    <circle cx="200" cy="238" r="7" fill="#fff" stroke="#000"/>
+  </g>
+  <path class="detail" fill="none" stroke="#000" d="M20 276 C50 266 80 286 110 276 C140 266 170 286 200 276 C230 266 260 286 296 276"/>
+</svg>

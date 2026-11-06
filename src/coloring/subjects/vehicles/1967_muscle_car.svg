@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 410 160"
+  data-title="1967 Muscle Car" data-tags="car, muscle_car, classic_car, 1960s, automobile, driving, mechanical, transportation"
+  data-angle="side_profile" data-stages="early,middle,late" data-word="car" data-completion="A classic 1967 muscle" data-banner="CAR"
+  data-prompt="Where would you take a car like this on a summer evening?">
+  <!-- bumpers sit behind the body -->
+  <rect x="14" y="102" width="20" height="12" rx="5" fill="#fff" stroke="#000"/>
+  <rect x="376" y="98" width="20" height="12" rx="5" fill="#fff" stroke="#000"/>
+  <!-- the body, with both wheel arches cut in -->
+  <path fill="#fff" stroke="#000" d="M24 116 L24 96 C24 89 30 85 40 84 L168 79 L214 53 C220 50 228 49 238 49 L262 49 C290 51 320 66 350 76 L374 80
+    C382 81 386 86 386 94 L386 112 C386 116 383 118 378 118 L346 118 A36 36 0 0 0 274 118 L131 118 A36 36 0 0 0 59 118 L32 118 C27 118 24 117 24 116 Z"/>
+  <!-- the windows, split by the pillar -->
+  <path fill="#fff" stroke="#000" d="M184 79 L216 58 C220 56 226 55 234 55 L258 55 C276 57 292 64 306 72 L306 79 Z"/>
+  <line x1="250" y1="55" x2="246" y2="79" stroke="#000"/>
+  <!-- the rocker panel between the wheels -->
+  <path fill="none" stroke="#000" d="M129.3 111 L275.7 111"/>
+  <!-- door seams and the lights: detail -->
+  <line class="detail" x1="176" y1="80" x2="176" y2="111" stroke="#000"/>
+  <line class="detail" x1="262" y1="79" x2="262" y2="111" stroke="#000"/>
+  <circle class="detail" cx="36" cy="93" r="6" fill="#fff" stroke="#000"/>
+  <rect class="detail" x="366" y="86" width="14" height="8" rx="3" fill="#fff" stroke="#000"/>
+  <!-- wheels: tire, whitewall, hub -->
+  <circle cx="95" cy="122" r="30" fill="#fff" stroke="#000"/>
+  <circle cx="95" cy="122" r="17" fill="#fff" stroke="#000"/>
+  <circle class="detail" cx="95" cy="122" r="6" fill="#fff" stroke="#000"/>
+  <circle cx="310" cy="122" r="30" fill="#fff" stroke="#000"/>
+  <circle cx="310" cy="122" r="17" fill="#fff" stroke="#000"/>
+  <circle class="detail" cx="310" cy="122" r="6" fill="#fff" stroke="#000"/>
+</svg>

@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 220"
+  data-title="The Biplane" data-tags="biplane, airplane, aircraft, aviation, flying, barnstormer, 1930s, 1920s, county_fair"
+  data-angle="side_profile" data-word="plane" data-completion="Loop the loop in the old" data-banner="PLANE"
+  data-prompt="What would it feel like to fly in an open plane like this?">
+  <line x1="122" y1="56" x2="128" y2="128" stroke="#000"/>
+  <line x1="252" y1="56" x2="258" y2="128" stroke="#000"/>
+  <path fill="#fff" stroke="#000" d="M336 84 L354 46 C356 41 365 41 367 46 L376 88 Z"/>
+  <rect x="60" y="40" width="244" height="16" rx="8" fill="#fff" stroke="#000"/>
+  <!-- one landing-gear strut and its wheel -->
+  <line x1="128" y1="106" x2="114" y2="160" stroke="#000"/>
+  <circle cx="114" cy="178" r="18" fill="#fff" stroke="#000"/>
+  <circle class="detail" cx="114" cy="178" r="6" fill="#fff" stroke="#000"/>
+  <path fill="#fff" stroke="#000" d="M70 90 C70 76 90 70 120 70 L300 76 C330 78 350 80 372 84 L374 92 C350 96 330 100 300 102 L120 108 C90 108 70 104 70 90 Z"/>
+  <path fill="#fff" stroke="#000" d="M200 72 C204 60 216 56 228 58 L232 74 Z"/>
+  <path fill="#fff" stroke="#000" d="M326 92 L396 88 L396 98 L326 101 Z"/>
+  <rect x="80" y="126" width="222" height="16" rx="8" fill="#fff" stroke="#000"/>
+  <ellipse cx="66" cy="89" rx="10" ry="20" fill="#fff" stroke="#000"/>
+  <ellipse cx="52" cy="89" rx="5" ry="46" fill="#fff" stroke="#000"/>
+  <circle cx="56" cy="89" r="6" fill="#fff" stroke="#000"/>
+</svg>

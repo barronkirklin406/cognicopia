@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 330"
+  data-title="The Jukebox" data-tags="jukebox, music, dancing, records, diner, 1940s, 1950s, rock_and_roll, soda_fountain"
+  data-angle="front" data-word="jukebox" data-completion="A favorite song on the" data-banner="JUKEBOX"
+  data-prompt="What song would you play on a jukebox?">
+  <!-- the cabinet and its glowing arch -->
+  <path fill="#fff" stroke="#000" d="M40 306 L40 124 C40 54 92 20 150 20 C208 20 260 54 260 124 L260 306 Z"/>
+  <path fill="#fff" stroke="#000" d="M58 306 L58 126 C58 66 100 38 150 38 C200 38 242 66 242 126 L242 306 L226 306 L226 128 C226 78 194 54 150 54 C106 54 74 78 74 128 L74 306 Z"/>
+  <!-- the window with its record -->
+  <path fill="#fff" stroke="#000" d="M92 146 C92 102 208 102 208 146 L208 186 L92 186 Z"/>
+  <circle cx="150" cy="152" r="26" fill="#fff" stroke="#000"/>
+  <!-- the selector strip and the speaker grille -->
+  <path fill="#fff" stroke="#000" d="M92 196 L208 196 L208 218 L92 218 Z"/>
+  <path fill="#fff" stroke="#000" d="M92 228 L208 228 L208 290 L92 290 Z"/>
+  <g class="detail" fill="none" stroke="#000">
+    <circle cx="150" cy="152" r="9" fill="#fff"/>
+    <path fill="#fff" d="M102 201 L112 201 L112 213 L102 213 Z"/><path fill="#fff" d="M120 201 L130 201 L130 213 L120 213 Z"/><path fill="#fff" d="M138 201 L148 201 L148 213 L138 213 Z"/><path fill="#fff" d="M156 201 L166 201 L166 213 L156 213 Z"/><path fill="#fff" d="M174 201 L184 201 L184 213 L174 213 Z"/><path fill="#fff" d="M192 201 L202 201 L202 213 L192 213 Z"/>
+    <path d="M112 228 L112 290"/><path d="M131 228 L131 290"/><path d="M150 228 L150 290"/><path d="M169 228 L169 290"/><path d="M188 228 L188 290"/>
+  </g>
+  <!-- the base -->
+  <path fill="#fff" stroke="#000" d="M30 306 L270 306 C274 306 276 308 276 312 L276 322 L24 322 L24 312 C24 308 26 306 30 306 Z"/>
+</svg>

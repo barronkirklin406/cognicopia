@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 290"
+  data-title="The Oil Lantern" data-tags="oil_lantern, lantern, lamp, kerosene, camping, farm, barn, cabin, home"
+  data-angle="front" data-word="lantern" data-completion="A warm light from the old" data-banner="LANTERN"
+  data-prompt="What makes an evening feel warm and cozy to you?">
+  <!-- the wire handle -->
+  <path fill="#fff" stroke="#000" d="M66 76 C60 -6 240 -6 234 76 L222 76 C226 12 74 12 78 76 Z"/>
+  <!-- the frame: top bar and side tubes -->
+  <path fill="#fff" stroke="#000" d="M58 64 L242 64 L242 80 L58 80 Z"/>
+  <path fill="#fff" stroke="#000" d="M60 80 L76 80 L76 232 L60 232 Z"/>
+  <path fill="#fff" stroke="#000" d="M224 80 L240 80 L240 232 L224 232 Z"/>
+  <!-- the glass globe, the flame and its holder -->
+  <path fill="#fff" stroke="#000" d="M112 208 C80 188 80 122 110 96 L190 96 C220 122 220 188 188 208 Z"/>
+  <path fill="#fff" stroke="#000" d="M150 178 C134 166 138 140 150 122 C162 140 166 166 150 178 Z"/>
+  <path fill="#fff" stroke="#000" d="M134 182 L166 182 L170 206 L130 206 Z"/>
+  <!-- the cap over the globe -->
+  <path fill="#fff" stroke="#000" d="M94 98 L206 98 L188 80 L112 80 Z"/>
+  <path fill="#fff" stroke="#000" d="M124 80 C124 56 176 56 176 80 Z"/>
+  <!-- the fuel tank and its base -->
+  <path fill="#fff" stroke="#000" d="M64 238 C64 214 96 204 150 204 C204 204 236 214 236 238 C236 258 204 266 150 266 C96 266 64 258 64 238 Z"/>
+  <path fill="#fff" stroke="#000" d="M72 260 L228 260 L228 276 L72 276 Z"/>
+  <g class="detail">
+    <circle cx="212" cy="232" r="8" fill="#fff" stroke="#000"/>
+  </g>
+</svg>

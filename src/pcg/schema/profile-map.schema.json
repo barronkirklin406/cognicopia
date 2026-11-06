@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cognicopia.org/src/pcg/schema/profile-map.schema.json",
+  "title": "Cognicopia PCG profile map",
+  "description": "How a resident's profile becomes topics and tags: how much each form field counts, how the years of their teens and twenties weight the decades, what counts as an interest, and how big the pools the engine rotates through may be.",
+  "type": "object",
+  "required": ["version", "fieldWeights", "match", "memory", "pools", "decadeWords", "stopwords"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "version": { "const": 1 },
+    "fieldWeights": { "type": "object", "additionalProperties": { "type": "number", "minimum": 0, "maximum": 1.5 } },
+    "match": {
+      "type": "object",
+      "required": ["ownThreshold", "maxOwnTopics", "fuzzyMinLength", "phraseBoost", "fuzzyFactor", "entryCap"],
+      "additionalProperties": false,
+      "properties": {
+        "ownThreshold": { "type": "number", "minimum": 0.1, "maximum": 2 },
+        "maxOwnTopics": { "type": "integer", "minimum": 1, "maximum": 12 },
+        "fuzzyMinLength": { "type": "integer", "minimum": 4, "maximum": 12 },
+        "phraseBoost": { "type": "number", "minimum": 1, "maximum": 2 },
+        "fuzzyFactor": { "type": "number", "minimum": 0.1, "maximum": 1 },
+        "entryCap": { "type": "number", "minimum": 1, "maximum": 4 }
+      }
+    },
+    "memory": {
+      "type": "object",
+      "required": ["bump", "eligible", "timeless"],
+      "additionalProperties": false,
+      "properties": {
+        "bump": { "type": "array", "minItems": 2, "items": { "type": "object", "required": ["from", "to", "w"], "additionalProperties": false, "properties": { "from": { "type": "integer", "minimum": 0 }, "to": { "type": "integer", "minimum": 1 }, "w": { "type": "number", "minimum": 0, "maximum": 1 } } } },
+        "eligible": { "type": "number", "minimum": 0, "maximum": 1 },
+        "timeless": { "type": "number", "minimum": 0, "maximum": 1 }
+      }
+    },
+    "pools": {
+      "type": "object",
+      "required": ["crossMax", "tangentMax", "minPool", "crossMinScore", "crossRelative"],
+      "additionalProperties": false,
+      "properties": {
+        "crossMax": { "type": "integer", "minimum": 6, "maximum": 80 },
+        "tangentMax": { "type": "integer", "minimum": 6, "maximum": 120 },
+        "minPool": { "type": "integer", "minimum": 3, "maximum": 20 },
+        "crossMinScore": { "type": "number", "minimum": 0 },
+        "crossRelative": { "type": "number", "minimum": 0, "maximum": 1 }
+      }
+    },
+    "decadeWords": { "type": "object", "additionalProperties": { "type": "string", "pattern": "^(19|20)\\d0s$" } },
+    "stopwords": { "type": "array", "minItems": 10, "uniqueItems": true, "items": { "type": "string", "pattern": "^[a-z]+$" } }
+  }
+}

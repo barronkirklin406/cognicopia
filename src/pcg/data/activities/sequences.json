@@ -1,0 +1,234 @@
+{
+ "$schema": "../../schema/sequences.schema.json",
+ "version": 1,
+ "procedures": [
+  {
+   "id": "plant-seed",
+   "title": "Planting a seed",
+   "topics": ["gardening"],
+   "steps": ["Fill a pot with soil", "Make a small hole", "Drop in the seed", "Cover it with soil", "Water it gently"]
+  },
+  {
+   "id": "make-tea",
+   "title": "Making a cup of tea",
+   "topics": ["coffee-tea"],
+   "steps": ["Fill the kettle", "Boil the water", "Put tea in the cup", "Pour in the hot water", "Let it steep"]
+  },
+  {
+   "id": "brew-coffee",
+   "title": "Making a pot of coffee",
+   "topics": ["coffee-tea"],
+   "steps": ["Fill the pot with water", "Add the coffee", "Put the pot on the stove", "Wait for it to perk", "Pour a cup"]
+  },
+  {
+   "id": "set-table",
+   "title": "Setting the table",
+   "topics": ["home-comforts", "cooking"],
+   "steps": ["Spread the tablecloth", "Put out the plates", "Place the forks and knives", "Set out the glasses", "Fold the napkins"]
+  },
+  {
+   "id": "make-bed",
+   "title": "Making the bed",
+   "topics": ["housework"],
+   "steps": ["Straighten the bottom sheet", "Pull up the top sheet", "Spread the quilt", "Smooth out the wrinkles", "Fluff the pillows"]
+  },
+  {
+   "id": "write-letter",
+   "title": "Writing a letter",
+   "topics": ["letters"],
+   "steps": ["Pick up a pen", "Write Dear and the name", "Write your news", "Sign your name", "Fold it into an envelope", "Put on a stamp"]
+  },
+  {
+   "id": "mail-letter",
+   "title": "Mailing a letter",
+   "topics": ["letters"],
+   "steps": ["Seal the envelope", "Write the address", "Put on a stamp", "Walk to the mailbox", "Drop it in the slot"]
+  },
+  {
+   "id": "bake-bread",
+   "title": "Baking bread",
+   "topics": ["cooking"],
+   "steps": ["Mix the dough", "Knead it well", "Let it rise", "Shape the loaf", "Bake it in the oven"]
+  },
+  {
+   "id": "bake-pie",
+   "title": "Making an apple pie",
+   "topics": ["cooking"],
+   "steps": ["Roll out the crust", "Fill the pan with apples", "Add the top crust", "Pinch the edges", "Bake until golden"]
+  },
+  {
+   "id": "wash-dishes",
+   "title": "Washing the dishes",
+   "topics": ["housework", "cooking"],
+   "steps": ["Scrape the plates", "Fill the sink with suds", "Wash each dish", "Rinse them clean", "Dry and put away"]
+  },
+  {
+   "id": "hang-laundry",
+   "title": "Hanging out the wash",
+   "topics": ["housework"],
+   "steps": ["Fill the basket", "Carry it outside", "Shake out each shirt", "Pin it to the line", "Take it in when dry"]
+  },
+  {
+   "id": "fold-towel",
+   "title": "Folding a towel",
+   "topics": ["housework"],
+   "steps": ["Lay it flat", "Fold it in half", "Fold it in half again", "Smooth it down", "Stack it on the shelf"]
+  },
+  {
+   "id": "polish-shoes",
+   "title": "Polishing shoes",
+   "topics": ["home-comforts"],
+   "steps": ["Brush off the dirt", "Put on the polish", "Let it dry", "Buff with a soft cloth", "Lace them up"]
+  },
+  {
+   "id": "sew-button",
+   "title": "Sewing on a button",
+   "topics": ["sewing-crafts"],
+   "steps": ["Cut a length of thread", "Thread the needle", "Tie a knot", "Stitch the button on", "Snip the thread"]
+  },
+  {
+   "id": "make-sandwich",
+   "title": "Making a sandwich",
+   "topics": ["cooking", "picnics-camping"],
+   "steps": ["Lay out two slices of bread", "Spread the butter", "Add the filling", "Put the slices together", "Cut it in half"]
+  },
+  {
+   "id": "wrap-gift",
+   "title": "Wrapping a gift",
+   "topics": ["celebrations"],
+   "steps": ["Cut the paper to size", "Fold it around the box", "Tape down the edges", "Tie on a ribbon", "Add a card"]
+  },
+  {
+   "id": "water-plants",
+   "title": "Watering the houseplants",
+   "topics": ["gardening", "housework"],
+   "steps": ["Fill the watering can", "Check the soil", "Water slowly", "Let it drain", "Put the plant back by the window"]
+  },
+  {
+   "id": "sweep-porch",
+   "title": "Sweeping the porch",
+   "topics": ["housework"],
+   "steps": ["Get the broom", "Sweep from the corners", "Make a small pile", "Use the dustpan", "Empty it in the bin"]
+  },
+  {
+   "id": "feed-birds",
+   "title": "Filling the bird feeder",
+   "topics": ["birds"],
+   "steps": ["Fill a scoop with seed", "Open the feeder", "Pour in the seed", "Close the lid", "Hang it up high"]
+  },
+  {
+   "id": "shell-peas",
+   "title": "Shelling peas",
+   "topics": ["gardening", "cooking"],
+   "steps": ["Get a big bowl", "Pick up a pod", "Press it open", "Slide out the peas", "Rinse the peas"]
+  },
+  {
+   "id": "wind-clock",
+   "title": "Winding the clock",
+   "topics": ["home-comforts"],
+   "steps": ["Find the key", "Open the clock case", "Turn the key slowly", "Close the door", "Set the hands to the time"]
+  },
+  {
+   "id": "make-lemonade",
+   "title": "Making lemonade",
+   "topics": ["cooking", "picnics-camping"],
+   "steps": ["Squeeze the lemons", "Add the sugar", "Pour in cold water", "Stir it well", "Add the ice"]
+  },
+  {
+   "id": "dress-church",
+   "title": "Getting dressed for Sunday",
+   "topics": ["home-comforts"],
+   "steps": ["Choose your clothes", "Put on your shirt or dress", "Do up the buttons", "Put on your shoes", "Comb your hair", "Pick up your hat"]
+  },
+  {
+   "id": "wash-hands",
+   "title": "Washing your hands",
+   "topics": ["housework"],
+   "steps": ["Turn on the water", "Wet your hands", "Rub in the soap", "Rinse well", "Dry with a towel"]
+  },
+  {
+   "id": "make-toast",
+   "title": "Making toast",
+   "topics": ["cooking"],
+   "steps": ["Put bread in the toaster", "Push the lever down", "Wait for it to pop up", "Take out the toast", "Spread the butter"]
+  },
+  {
+   "id": "do-puzzle",
+   "title": "Doing a jigsaw puzzle",
+   "topics": ["card-board-games"],
+   "steps": ["Turn the pieces face up", "Find the edge pieces", "Build the border", "Fill in the middle", "Fit in the missing piece"]
+  },
+  {
+   "id": "take-walk",
+   "title": "Going for a walk",
+   "topics": ["parks"],
+   "steps": ["Put on your shoes", "Take your coat", "Open the door", "Walk down the path", "Come back inside"]
+  },
+  {
+   "id": "scramble-eggs",
+   "title": "Scrambling eggs",
+   "topics": ["cooking"],
+   "steps": ["Crack the eggs in a bowl", "Stir with a fork", "Pour into the pan", "Stir until set", "Put them on a plate"]
+  },
+  {
+   "id": "clean-windows",
+   "title": "Cleaning the windows",
+   "topics": ["housework"],
+   "steps": ["Mix water and vinegar", "Wipe the glass", "Dry with newspaper", "Stand back and look"]
+  },
+  {
+   "id": "peel-potatoes",
+   "title": "Peeling potatoes",
+   "topics": ["cooking"],
+   "steps": ["Wash the potatoes", "Peel the skins", "Rinse them", "Cut them up", "Put them in the pot"]
+  },
+  {
+   "id": "pack-suitcase",
+   "title": "Packing a suitcase",
+   "topics": ["travel-trips"],
+   "steps": ["Open the suitcase", "Lay out your clothes", "Fold each piece", "Place them inside", "Close and latch it"]
+  },
+  {
+   "id": "go-fishing",
+   "title": "Going fishing",
+   "topics": ["fishing"],
+   "steps": ["Choose a quiet spot", "Put the bait on", "Cast the line", "Wait quietly", "Reel it in"]
+  },
+  {
+   "id": "tune-radio",
+   "title": "Tuning the radio",
+   "topics": ["radio-tv"],
+   "steps": ["Turn the knob to on", "Wait for it to warm up", "Turn the dial slowly", "Find your station", "Set the volume"]
+  },
+  {
+   "id": "pick-tomatoes",
+   "title": "Picking tomatoes",
+   "topics": ["gardening"],
+   "steps": ["Take a basket", "Walk down the row", "Choose the ripe ones", "Twist them off gently", "Carry them to the kitchen"]
+  },
+  {
+   "id": "quilt-block",
+   "title": "Making a quilt block",
+   "topics": ["sewing-crafts"],
+   "steps": ["Cut the squares", "Lay out the pattern", "Pin the pieces", "Sew the seams", "Press it flat"]
+  },
+  {
+   "id": "brush-teeth",
+   "title": "Brushing your teeth",
+   "topics": ["housework"],
+   "steps": ["Wet the brush", "Add the toothpaste", "Brush gently", "Rinse your mouth", "Wipe your face"]
+  },
+  {
+   "id": "make-cookies",
+   "title": "Baking cookies",
+   "topics": ["cooking"],
+   "steps": ["Mix the dough", "Drop spoonfuls on the pan", "Slide the pan in the oven", "Take them out when golden", "Let them cool"]
+  },
+  {
+   "id": "write-card",
+   "title": "Sending a birthday card",
+   "topics": ["celebrations", "letters"],
+   "steps": ["Pick out a card", "Write a message", "Sign your name", "Address the envelope", "Mail it"]
+  }
+ ]
+}

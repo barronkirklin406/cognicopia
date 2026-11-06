@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 240 340"
+  data-title="The Daisy" data-tags="daisy, flower, spring, summer, garden, meadow"
+  data-angle="front" data-word="daisy" data-completion="Fresh as a" data-banner="DAISY"
+  data-prompt="Where would a patch of daisies look lovely?">
+  <defs><ellipse id="dp" cx="120" cy="62" rx="14" ry="38" fill="#fff" stroke="#000"/></defs>
+  <path fill="#fff" stroke="#000" d="M114 160 C110 220 118 270 112 334 L126 334 C132 270 124 220 128 160 Z"/>
+  <path fill="#fff" stroke="#000" d="M114 270 C96 246 64 238 44 248 C60 274 94 280 114 278 Z"/>
+  <path fill="#fff" stroke="#000" d="M126 238 C144 214 176 206 196 216 C180 242 146 248 126 246 Z"/>
+  <g>
+    <use xlink:href="#dp"/><use xlink:href="#dp" transform="rotate(30 120 110)"/><use xlink:href="#dp" transform="rotate(60 120 110)"/>
+    <use xlink:href="#dp" transform="rotate(90 120 110)"/><use xlink:href="#dp" transform="rotate(120 120 110)"/><use xlink:href="#dp" transform="rotate(150 120 110)"/>
+    <use xlink:href="#dp" transform="rotate(180 120 110)"/><use xlink:href="#dp" transform="rotate(210 120 110)"/><use xlink:href="#dp" transform="rotate(240 120 110)"/>
+    <use xlink:href="#dp" transform="rotate(270 120 110)"/><use xlink:href="#dp" transform="rotate(300 120 110)"/><use xlink:href="#dp" transform="rotate(330 120 110)"/>
+  </g>
+  <circle cx="120" cy="110" r="28" fill="#fff" stroke="#000"/>
+  <circle class="detail" cx="120" cy="110" r="14" fill="#fff" stroke="#000"/>
+</svg>

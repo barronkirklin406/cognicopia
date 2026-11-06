@@ -1,0 +1,116 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cognicopia.org/src/data/cognicopia_coloring_art.schema.json",
+  "title": "Cognicopia Coloring traced art",
+  "description": "One file per design in src/data/coloring_art/: a picture from an image generator or an illustrator, traced to its center lines (scripts/lib/trace.mjs) with the strokes each tier draws (scripts/lib/tiers.mjs), where it came from, what was checked and who reviewed it. Written by scripts/ingest_coloring_assets.mjs; only approved art is drawn.",
+  "type": "object",
+  "required": ["schema", "id", "mode", "title", "category_id", "fit", "pad", "items", "items_sha256", "source", "trace", "fidelity", "tiers", "checks", "review"],
+  "additionalProperties": false,
+  "properties": {
+    "schema": { "const": "cognicopia-coloring-art/1" },
+    "id": { "$ref": "#/$defs/slug", "description": "The design this art draws: a library design's id (replace) or a new design's id (add)." },
+    "mode": { "enum": ["replace", "add"] },
+    "title": { "type": "string", "minLength": 3 },
+    "category_id": { "$ref": "#/$defs/slug" },
+    "meta": { "type": "object", "description": "Only for a new design: title, cat, talk, tags, era, season, sensitive." },
+    "fit": { "enum": ["subject", "page"] },
+    "pad": { "type": "number", "minimum": 0, "maximum": 0.2 },
+    "items": { "type": "array", "minItems": 1, "items": { "type": "array", "minItems": 3, "maxItems": 3 }, "description": "[[kind, tiers, d], ...]: kind m, d or k; tiers a bit mask (1 Tier 1, 2 Tier 2, 4 Tier 3); d an absolute M/L/C/Z path." },
+    "items_sha256": { "$ref": "#/$defs/sha256" },
+    "source": {
+      "type": "object",
+      "required": ["file", "sha256", "format", "size", "received"],
+      "properties": {
+        "file": { "type": "string" },
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "format": { "enum": ["png", "svg"] },
+        "size": { "type": "array", "minItems": 2, "maxItems": 2 },
+        "tier_masters": { "type": "object" },
+        "generator": { "type": ["string", "null"] },
+        "prompt": { "type": ["string", "null"] },
+        "job_id": { "type": ["string", "null"] },
+        "license": { "type": ["string", "null"] },
+        "author": { "type": ["string", "null"] },
+        "received": { "type": "string" },
+        "notes": { "type": "array", "items": { "type": "string" } },
+        "auto_fixes": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "trace": {
+      "type": "object",
+      "required": ["version", "r0", "stats"],
+      "properties": {
+        "version": { "type": "integer", "minimum": 1 },
+        "r0": { "type": "number", "minimum": 0 },
+        "stats": { "type": "object" },
+        "near_ends": { "type": "integer", "minimum": 0 },
+        "derived": { "type": "object" },
+        "notes": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "fidelity": {
+      "type": "object",
+      "required": ["xor_share", "stray_p99_px", "missing_p99_px", "regions_master", "regions_traced"],
+      "properties": {
+        "xor_share": { "type": "number", "minimum": 0 },
+        "stray_p99_px": { "type": "number", "minimum": 0 },
+        "missing_p99_px": { "type": "number", "minimum": 0 },
+        "regions_master": { "type": "integer", "minimum": 0 },
+        "regions_traced": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "tiers": {
+      "type": "object",
+      "required": ["1", "2", "3"],
+      "properties": {
+        "1": { "$ref": "#/$defs/tierMeasure" },
+        "2": { "$ref": "#/$defs/tierMeasure" },
+        "3": { "$ref": "#/$defs/tierMeasure" }
+      }
+    },
+    "bytes": { "type": "integer", "minimum": 1 },
+    "checks": {
+      "type": "array",
+      "minItems": 5,
+      "items": {
+        "type": "object",
+        "required": ["id", "label", "result"],
+        "properties": {
+          "id": { "type": "string" },
+          "label": { "type": "string" },
+          "result": { "enum": ["pass", "fail", "human", "confirmed"] },
+          "detail": { "type": "string" }
+        }
+      }
+    },
+    "review": {
+      "type": "object",
+      "required": ["status", "reviewer", "reviewed"],
+      "properties": {
+        "status": { "enum": ["approved", "needs-review", "rejected"] },
+        "reviewer": { "type": ["string", "null"] },
+        "reviewed": { "type": ["string", "null"] },
+        "decision_note": { "type": ["string", "null"] },
+        "override": { "type": ["string", "null"] },
+        "approved_sha256": { "type": ["string", "null"] }
+      }
+    }
+  },
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "slug": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
+    "tierMeasure": {
+      "type": "object",
+      "required": ["regions", "tiny_regions", "smallest_region_sq_in", "meets_rule"],
+      "properties": {
+        "regions": { "type": "integer", "minimum": 0 },
+        "tiny_regions": { "type": "integer", "minimum": 0 },
+        "smallest_region_sq_in": { "type": "number", "minimum": 0 },
+        "median_region_sq_in": { "type": "number", "minimum": 0 },
+        "subject_fill": { "type": "number", "minimum": 0 },
+        "ink_coverage": { "type": "number", "minimum": 0 },
+        "meets_rule": { "type": "boolean" }
+      }
+    }
+  }
+}

@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 290 300"
+  data-title="The Horse" data-tags="horse, pony, farm, farm_animal, ranch, riding, western, rodeo"
+  data-angle="side_profile" data-word="horse" data-completion="Out on the ranch, a fine" data-banner="HORSE"
+  data-prompt="What do you like most about horses?">
+  <!-- ears and a tufted mane, behind the head -->
+  <path fill="#fff" stroke="#000" d="M178 50 L182 12 C192 22 198 40 195 58 Z"/>
+  <path fill="#fff" stroke="#000" d="M164 48 L158 8 C171 14 181 30 183 52 Z"/>
+  <path fill="#fff" stroke="#000" d="M170 46 C182 46 190 54 198 64 C236 120 254 220 262 292 L288 292 C300 284 296 254 282 250 C294 242 288 212 274 209 C286 199 279 170 265 166 C275 156 267 127 253 124 C262 114 252 86 237 85 C246 74 232 49 218 51 C212 35 190 34 176 38 Z"/>
+  <!-- head and neck in one outline -->
+  <path fill="#fff" stroke="#000" d="M170 44 C150 60 110 110 82 156 C70 170 56 182 54 196 C52 208 58 216 68 218 C74 222 82 222 86 216 C96 214 108 210 118 206 C134 210 150 200 156 182 C162 196 168 230 170 292 L264 292 C254 220 236 120 198 64 C190 54 182 46 170 44 Z"/>
+  <!-- the cheek, where the head meets the neck -->
+  <path fill="none" stroke="#000" d="M156 182 C178 158 196 112 198 64"/>
+  <path fill="#fff" stroke="#000" d="M166 50 C156 66 154 80 158 94 C166 84 172 70 180 56 Z"/>
+  <path fill="#fff" stroke="#000" d="M138 94 C144 87 156 87 162 94 C156 101 144 101 138 94 Z"/>
+  <circle cx="150" cy="94" r="3.5" fill="#000" stroke="#000"/>
+  <g class="detail" fill="none" stroke="#000">
+    <path d="M66 184 C74 181 79 189 73 196"/>
+    <path d="M60 210 C68 209 76 211 82 214"/>
+    <path d="M237 85 L214 96 M253 124 L229 132 M265 166 L241 172 M274 209 L250 214 M282 250 L257 254"/>
+  </g>
+</svg>

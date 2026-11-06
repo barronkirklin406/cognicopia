@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 310 260"
+  data-title="The Harvest Pumpkin" data-tags="pumpkin, harvest, fall, farm, garden, thanksgiving, halloween, pie"
+  data-angle="front" data-word="pumpkin" data-completion="Picked from the patch, a big" data-banner="PUMPKIN"
+  data-prompt="What would you make with a pumpkin like this one?">
+  <path fill="#fff" stroke="#000" d="M146 86 C144 62 140 46 132 38 L150 32 C158 46 164 64 164 86 Z"/>
+  <path fill="#fff" stroke="#000" d="M166 70 C176 44 206 32 232 38 C222 62 192 74 166 70 Z"/>
+  <path class="detail" fill="none" stroke="#000" d="M170 66 C188 56 206 48 224 42"/>
+  <path fill="#fff" stroke="#000" d="M155 84 C180 74 205 74 215 86 C255 80 286 110 286 158 C286 210 254 238 215 232 C200 244 170 246 155 236 C140 246 110 244 95 232 C56 238 24 210 24 158 C24 110 55 80 95 86 C105 74 130 74 155 84 Z"/>
+  <path fill="none" stroke="#000" d="M95 86 C74 126 74 192 95 232"/>
+  <path fill="none" stroke="#000" d="M155 84 C134 130 134 190 155 236"/>
+  <path fill="none" stroke="#000" d="M155 84 C176 130 176 190 155 236"/>
+  <path fill="none" stroke="#000" d="M215 86 C236 126 236 192 215 232"/>
+</svg>
