@@ -321,7 +321,7 @@
     var seed = options.seed != null ? (options.seed >>> 0) : hash(JSON.stringify([P.stage, P.decade, P.season, P.interests, Date.now()]));
     if (!seed) seed = 1;
     var r = rng(hash(JSON.stringify([P.stage, P.dexterity, P.decade, P.interests, P.avoid, mod, seed])));
-    var count = Math.max(1, Math.min(12, Math.round(options.count || 3)));
+    var count = Math.max(1, Math.min(60, Math.round(options.count || 3)));
     var sheets = mod === "reminiscence" ? reminiscenceSheets(P, r, count) : mod === "exercise" ? exerciseSheets(P, r, count) : dailySheets(P, r, count);
     var code = "AS" + S.key + "-" + mod.charAt(0).toUpperCase() + "-" + seed.toString(36).toUpperCase();
     sheets.forEach(function (sh, i) { sh.index = i; sh.stage = P.stage; sh.dexterity = P.dexterity; sh.name = P.name; sh.code = code + "." + (i + 1); sh.dexNote = DEXTERITY[P.dexterity].note; });

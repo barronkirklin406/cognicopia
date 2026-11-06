@@ -26,6 +26,7 @@
    Layouts:  full      one idea per page
              cards4    four cards, 2 x 2 (cut along the dashed lines)
              cards6    six cards, 2 x 3
+             cards8    eight wide cards, 2 x 4, each turned sideways on the upright sheet
              strips    five wide tickets across the sheet, to turn sideways
    Pages that are not made of cards (matching, sorting, the path, the
    coloring picture) are always full pages.
@@ -53,7 +54,8 @@
     { id: "full",   label: "One full page",        cols: 1, rows: 1, per: 1 },
     { id: "cards4", label: "Four cards (2 by 2)",  cols: 2, rows: 2, per: 4 },
     { id: "cards6", label: "Six cards (2 by 3)",   cols: 2, rows: 3, per: 6 },
-    { id: "strips", label: "Five wide tickets",    cols: 1, rows: 5, per: 5 }
+    { id: "cards8", label: "Eight sideways cards (2 by 4)", cols: 2, rows: 4, per: 8 },
+    { id: "strips", label: "Five wide tickets (sideways)",  cols: 1, rows: 5, per: 5 }
   ];
   var STYLES = [
     { id: "cozy",         label: "Cozy-Spooky (gentle harvest)", ids: ["pumpkin", "owl", "oil_lantern", "sitting_cat", "rocking_chair", "oak_tree"],
@@ -205,9 +207,10 @@
       x += wide ? r * 2 + 28 : 0; iw -= wide ? r * 2 + 28 : 0;
       if (!wide) y += r * 2 + 18; ih -= wide ? 0 : r * 2 + 18;
     }
-    if (card.tag) { P.text(pg, x, y + fl * 0.82, fl, card.tag, { bold: true }); y += fl * 1.3; ih -= fl * 1.3; }
     var hs = Math.min(Math.round(bp * 1.15), wide ? 74 : 110);
-    var head = fit(card.head, hs, fl, iw, ih * (card.lines && card.lines.length ? 0.6 : 1), true);
+    /* the small label above the heading goes first when a small card is short of room */
+    if (card.tag && !fit(card.head, hs, fl, iw, (ih - fl * 1.3) * (card.lines && card.lines.length ? 0.75 : 1), true).overflow) { P.text(pg, x, y + fl * 0.82, fl, card.tag, { bold: true }); y += fl * 1.3; ih -= fl * 1.3; }
+    var head = fit(card.head, hs, fl, iw, ih * (card.lines && card.lines.length ? 0.75 : 1), true);
     y = block(pg, head.lines, x, y, head.size, { bold: true }); ih -= head.h + 10;
     if (head.overflow) problems.push("text does not fit a card");
     (card.lines || []).forEach(function (l) {
@@ -343,6 +346,13 @@
     return pg;
   }
 
+  /* the prompts of several sheets dealt onto cards together, so a sheet of eight cards is full of eight ideas and not two */
+  function packPrompts(sheets, layout) {
+    var cards = []; sheets.forEach(function (sh) { sh.items.forEach(function (it) { cards.push({ tag: it.tag, head: it.thing, lines: [it.invite, it.sense].filter(Boolean) }); }); });
+    var f = sheets[0];
+    return cardPages(cards, layout, { title: f.title, stage: f.stage, dexterity: f.dexterity, code: f.code });
+  }
+
   /* the pages for one sheet in a layout; { pages, fellBack } */
   function sheetPages(sh, layout) {
     layout = layout || "full";
@@ -429,6 +439,6 @@
   return {
     VERSION: VERSION, W: W, H: H, PX_PER_PT: PT, FONT: FONT, LAYOUTS: LAYOUTS, STYLES: STYLES, BOX: BOX,
     strokeFor: strokeFor, bodyPx: bodyPx, floorPx: floorPx, chooseSubject: chooseSubject, subjectPaths: subjectPaths,
-    composeColoring: composeColoring, sheetPages: sheetPages, toSVG: toSVG, toCanvas: toCanvas, validate: validate, hash: hash
+    composeColoring: composeColoring, sheetPages: sheetPages, packPrompts: packPrompts, toSVG: toSVG, toCanvas: toCanvas, validate: validate, hash: hash
   };
 });

@@ -62,6 +62,15 @@ ok(E.generate({ stage: 1, dexterity: "steady" }, { module: "daily", count: 6, se
 ok(E.generate({ stage: 3 }, { module: "exercise", count: 4, seed: 3 }).sheets.every(s => ["look", "path"].includes(s.kind)), "stage 3 exercises are not look or path");
 ok(E.generate({ stage: 1 }, { module: "exercise", count: 6, seed: 3 }).sheets.some(s => s.kind === "match" && s.pairs.length === 5), "stage 1 matching does not use five pairs");
 
+/* prompts dealt onto cards together: every card sheet but the last is full */
+for (const stage of [1, 2, 3]) for (const dexterity of DEX) for (const layout of ["cards4", "cards6", "cards8", "strips"]) {
+  const r = E.generate({ stage, dexterity, decade: 1960 }, { module: "reminiscence", count: 24, seed: 8 });
+  const pages = PL.packPrompts(r.sheets, layout), per = PL.LAYOUTS.find(l => l.id === layout).per;
+  const cards = r.sheets.reduce((n, sh) => n + sh.items.length, 0);
+  ok(pages.length === Math.ceil(cards / per), `${layout} stage ${stage} ${dexterity}: ${cards} cards make ${pages.length} pages, not ${Math.ceil(cards / per)}`);
+  ok(pages.every(pg => PL.validate(pg).length === 0), `${layout} stage ${stage} ${dexterity}: a packed page fails the print check`);
+}
+
 /* care: topics to avoid, decades */
 {
   const r = E.generate({ stage: 1, decade: 1940, avoid: "truck, streetcar" }, { module: "reminiscence", count: 12, seed: 99 });

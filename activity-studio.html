@@ -49,14 +49,30 @@ body{margin:0}
 .as-note{margin:0 0 8px;padding:10px 14px;border-left:6px solid var(--cg-tan-500,#8f897c);background:var(--cg-parchment,#f4f3ef);border-radius:0 8px 8px 0}
 .as-note.as-ok{border-left-color:var(--cg-green-700,#08423f)}
 .as-note.as-warn{border-left-color:var(--cg-clay-700,#8a3a20);font-weight:700}
-.as-is-coloring .as-only-sheet{display:none}
-.as-only-col{display:none;gap:16px}
-.as-is-coloring .as-only-col{display:grid}
-.as-is-coloring .as-nc{display:none}
-.as-only-sheet{display:grid;gap:16px}
+.as-only-col,.as-only-sheet,.as-nc{display:none}
+.as-has-coloring .as-only-col,.as-has-sheets .as-only-sheet{display:grid;gap:16px}
+.as-has-interests .as-nc{display:block}
+.as-mix{display:grid;gap:2px}
+.as-bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin:0 0 14px}
+.as-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.as-scroll{display:grid;gap:26px;justify-items:center}
+.as-scroll[hidden]{display:none}
+.as-sw{width:min(100%,560px)}
+.as-sw .as-sheet{width:100%}
+.as-cap{margin:6px 0 0;text-align:center;font-weight:700}
 #printRoot{display:none}
 /* the chosen button is filled, so its words are white (the paper theme colors text by tag, which would otherwise win) */
 html.cg-paper:not(.cg-night-shift) :is(.as-seg label:has(input:checked),.as-seg label:has(input:checked) *,.as-btn:not(.as-alt)){color:#fff !important}
+/* the high-contrast dark panel: the screen only; the sheet itself stays white. The paper theme colors text by tag with !important, so these name the theme too. */
+.as-dark{background:#0b0f14;border-radius:16px;padding:16px}
+.as-dark .as-panel{background:#12181f;border-color:#fff}
+html.cg-paper:not(.cg-night-shift) .as-dark :is(label,legend,span,small,p,div,button){color:#fff !important}
+html.cg-paper:not(.cg-night-shift) .as-dark :is(.as-seg label,.as-btn.as-alt){background:#12181f !important;border-color:#fff}
+html.cg-paper:not(.cg-night-shift) .as-dark :is(.as-seg label:has(input:checked),.as-seg label:has(input:checked) *,.as-btn:not(.as-alt)){background:#f5b800 !important;border-color:#f5b800;color:#000 !important}
+html.cg-paper:not(.cg-night-shift) .as-dark .as-panel :is(input[type=text],input[type=number],select){background:#000 !important;color:#fff !important;border-color:#fff}
+html.cg-paper:not(.cg-night-shift) .as-dark .as-panel input::placeholder{color:#c9d1d9 !important;opacity:1}
+html.cg-paper:not(.cg-night-shift) .as-dark .as-note{background:#12181f !important;border-left-color:#f5b800}
+html.cg-paper:not(.cg-night-shift) .as-dark .as-sheet{border-color:#fff}
 html.cg-night-shift .as-panel{background:#211910;border-color:#684a26}
 html.cg-night-shift .as-seg label,html.cg-night-shift .as-btn.as-alt{background:#2a1f13 !important;border-color:#9b7136;color:#ffedcc !important}
 html.cg-night-shift :is(.as-seg label:has(input:checked),.as-btn:not(.as-alt)){background:#5a3e12 !important;border-color:#d6a64b;color:#fff1cf !important}
