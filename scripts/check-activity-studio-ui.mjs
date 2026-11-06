@@ -22,7 +22,7 @@ import { loadPlaywright, serve } from "./lib/browser.mjs";
 const { chromium } = loadPlaywright();
 const { srv, base } = await serve();
 const browser = await chromium.launch();
-const problems = [], errors = [], foreign = []; let passed = 0;
+const problems = [], errors = [], foreign = [], infos = []; let passed = 0;
 const ok = (c, m) => { if (c) passed++; else problems.push(m); };
 const PY = `
 import sys, json
@@ -42,7 +42,7 @@ async function open(w, h) {
   const ctx = await browser.newContext({ viewport: { width: w, height: h }, serviceWorkers: "block", acceptDownloads: true });
   await ctx.addInitScript(() => { try { localStorage.setItem("cognicopia_eula_accepted", "true"); } catch (e) { /* ignore */ } });
   const p = await ctx.newPage();
-  p.on("pageerror", e => errors.push(e.message)); p.on("console", m => { if (m.type() === "error") errors.push("console: " + m.text().slice(0, 140)); });
+  p.on("pageerror", e => errors.push(e.message)); p.on("console", m => { if (m.type() === "error") errors.push("console: " + m.text().slice(0, 140)); if (m.type() === "info") infos.push(m.text()); });
   p.on("request", r => { const u = r.url(); if (!u.startsWith(base) && !/^(data|blob|about):/.test(u)) foreign.push(u); });
   await p.goto(base + "activity-studio.html", { waitUntil: "load" }); await p.waitForSelector("#asSheet svg", { timeout: 10000 }); await p.waitForTimeout(500);
   return { ctx, p };
@@ -130,6 +130,38 @@ try {
   await p.uncheck("#asDark", { force: true });
   const sizes = await p.$$eval('#asForm input:not([type=radio]):not([type=checkbox]), #asForm select, #asForm .as-seg label, #asForm .as-check, .as-btn', n => n.filter(e => e.offsetParent).map(e => { const r = e.getBoundingClientRect(); return [Math.round(r.width), Math.round(r.height)]; }));
   ok(sizes.every(([w, h]) => w >= 52 && h >= 52), `every visible control is at least 52 px: ${sizes.filter(([w, h]) => w < 52 || h < 52).join(" ")}`);
+  await ctx.close();
+
+  /* the facility check: a readiness score for every batch, a console report, the same empty-space measure as real pixels */
+  ({ ctx, p } = await open(1366, 900));
+  const rd = await p.textContent("#asReady summary");
+  ok(/Clinical readiness: \d+ \/ 100/.test(rd) && /Ready/.test(rd), "every packet shows a Clinical readiness score: " + rd);
+  ok(infos.some(t => /Clinical Readiness Score: \d+ \/ 100/.test(t) && /not a clinical certification/.test(t)), "the batch writes its Clinical Readiness Score report to the console");
+  const nInfo = infos.length; await p.click("#asRandom"); await p.waitForTimeout(500); ok(infos.length > nInfo, "a new batch writes a new report");
+  await p.click("#asReady summary"); ok(await p.isVisible("#asReady .as-rd-parts") && /Framework alignment/.test(await p.textContent("#asReady")) && /CMS F679/.test(await p.textContent("#asReady")), "the score opens to its parts and the sources of the framework checks");
+  ok((await p.$eval("#asReady summary", e => e.getBoundingClientRect().height)) >= 52, "the readiness summary is at least 52 px tall");
+  const agree = await p.evaluate(() => {
+    const PL = window.CognicopiaColoringPipeline, FV = window.CognicopiaFacilityValidator, pages = window.CognicopiaActivityStudio.pages(), out = [];
+    pages.forEach(pg => { const cv = document.createElement("canvas"); PL.toCanvas(pg, cv, 0.5); const a = FV.whiteShare(FV.occupancy(pg)).white, b = FV.whiteShare(FV.occupancyFromCanvas(cv)).white; out.push([Math.round(a * 100), Math.round(b * 100), pg.meta.module]); });
+    return out;
+  });
+  ok(agree.length >= 4 && agree.every(([a, b]) => a <= b + 2 && b - a <= 20), "the empty-space estimate never claims more empty space than the pixels show (it counts a line of text as a full box), and is within 20 points: " + JSON.stringify(agree));
+  /* the offline bundle: save the files, then work with the network off */
+  const offSay = await p.textContent("#asOffline");
+  ok(/files are saved|Ready for offline/.test(offSay), "the screen says how many files are saved for offline use: " + offSay);
+  if (await p.isVisible("#asSave")) { await p.click("#asSave"); await p.waitForFunction(() => /Ready for offline use/.test(document.getElementById("asOffline").textContent), null, { timeout: 60000 }); }
+  ok(/Ready for offline use: all \d+ files/.test(await p.textContent("#asOffline")) && !(await p.isVisible("#asSave")), "Save for offline use saves every file, and the button goes away");
+  const has = await p.evaluate(async () => { const m = window.CognicopiaColoringManifest.assets()[0].filePath; return [!!(await caches.match(new URL(m, location.href).href)), !!(await caches.match(new URL("js/utils/print-optimizer.js", location.href).href)), (await caches.keys()).some(k => /^cognicopia-/.test(k) === false && k === "studio-assets-v1")]; });
+  ok(has.every(Boolean), "a library drawing and the print optimizer are in the studio's own cache: " + has);
+  await ctx.setOffline(true);
+  await p.click("#asRandom"); await p.waitForTimeout(500);
+  ok(await p.$eval("#asSheet svg", e => !!e) && /Page 1 of/.test(await pos(p)), "with the network off the studio still makes a new packet");
+  await ctx.setOffline(false);
+  /* print: nothing visible but the sheets */
+  await p.emulateMedia({ media: "print" });
+  const shown = await p.evaluate(() => { const host = document.getElementById("printRoot"), out = []; document.querySelectorAll("body *").forEach(e => { if (host.contains(e) || e.contains(host) || /^(SCRIPT|STYLE|LINK|NOSCRIPT|TEMPLATE)$/.test(e.tagName)) return; if (getComputedStyle(e).display !== "none") out.push(e.tagName + "." + e.className); }); return out; });
+  ok(shown.length === 0, "in print nothing is shown but the sheets: " + shown.slice(0, 4).join(", "));
+  ok(await p.evaluate(() => !!document.getElementById("cg-print-optimizer")), "the print optimizer's style sheet is on the page");
   await ctx.close();
 
   /* export */

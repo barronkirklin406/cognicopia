@@ -71,6 +71,14 @@ for (const stage of [1, 2, 3]) for (const dexterity of DEX) for (const layout of
   ok(pages.every(pg => PL.validate(pg).length === 0), `${layout} stage ${stage} ${dexterity}: a packed page fails the print check`);
 }
 
+/* a batch never repeats a page (the facility validator found two ways it did: a single-idea sheet overwritten by the same interest, and more daily sheets than tasks) */
+for (const stage of [1, 2, 3]) for (const dexterity of DEX) for (const module of MODS) {
+  const r = E.generate({ stage, dexterity, decade: 1950, interests: "gardening" }, { module, count: 8, seed: 11 });
+  const keys = r.sheets.map(sh => JSON.stringify([sh.title, sh.items || sh.steps || sh.pairs || sh.words || [sh.word, sh.pic, sh.from, sh.to]]));
+  ok(new Set(keys).size === keys.length, `${module} stage ${stage} ${dexterity}: a batch repeats a sheet`);
+}
+ok(E.generate({ stage: 2 }, { module: "daily", count: 12, seed: 1 }).sheets.length === E.TASKS.length, "daily living makes each task once");
+
 /* care: topics to avoid, decades */
 {
   const r = E.generate({ stage: 1, decade: 1940, avoid: "truck, streetcar" }, { module: "reminiscence", count: 12, seed: 99 });

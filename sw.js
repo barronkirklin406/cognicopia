@@ -12,7 +12,7 @@
    used. Change VERSION only to clear old copies; updates to the pages
    themselves arrive on their own.
    ===================================================================== */
-const VERSION = "cognicopia-v46";
+const VERSION = "cognicopia-v47";
 const CORE = [
   "./", "index.html", "builder.html", "profile.html", "tablet.html", "pricing.html", "activate.html", "manifest.webmanifest",
   // the shared design system and its two typefaces (Atkinson Hyperlegible for the interface, Fraunces for headings)
@@ -30,7 +30,7 @@ const CORE = [
   // Tablet Activities (tablet.html): the touch puzzle makers and the screen
   "js/tabletEngine.js", "js/tablet.js",
   // Activity Page Studio (activity-studio.html): the engine, the 3:4 page maker and the screen
-  "activity-studio.html", "js/generators/activity-engine.js", "js/generators/coloring-pipeline.js", "components/packet-generator-ui.js",
+  "activity-studio.html", "js/generators/activity-engine.js", "js/generators/coloring-pipeline.js", "components/packet-generator-ui.js", "js/utils/facility-validator.js", "js/utils/print-optimizer.js",
   // Studio, facility and accessibility screens (ES modules imported by builder.html) and the OpenDyslexic option
   "js/studio-core.js", "js/studio-ui.js", "js/facility-tools-ui.js", "js/safety-ui.js", "js/idle-sanitizer.js", "js/sha256.js", "js/access-kit.js", "js/backup-diff.js", "js/ehr-import.js", "js/slp-goals.js", "js/shift-highlights.js", "js/scenario-trees.js", "js/era-decks.js", "js/deck-formats.js", "js/qr.js", "js/legacy-book.js", "js/tracking-report.js", "js/dictation.js", "js/reminiscence-engine.js", "js/tabletSound.js", "js/sessionTimeout.js", "js/license-persistence.js", "fonts/OpenDyslexic-Regular.woff2", "fonts/OpenDyslexic-Bold.woff2", "assets/services/censusImport.js",
   "js/agent-orchestrator.js", "js/pillar1-production-agents.js", "js/pillar2-functionality-agents.js", "js/pillar3-qa-agents.js", "js/clinical-audit-agent.js", "js/print-preview-modal.js",

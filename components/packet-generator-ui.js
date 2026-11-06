@@ -37,10 +37,11 @@
    ===================================================================== */
 (function () {
   "use strict";
-  var E = window.CognicopiaActivityEngine, PL = window.CognicopiaColoringPipeline;
+  var E = window.CognicopiaActivityEngine, PL = window.CognicopiaColoringPipeline, FV = window.CognicopiaFacilityValidator, PO = window.CognicopiaPrintOptimizer;
   var root = document.getElementById("asRoot");
   if (!root) return;
   if (!E || !PL) { root.textContent = "The page maker could not load. Reload the page to try again."; return; }
+  if (PO) PO.install();                                                          // the print style sheet: only the sheets reach the paper
   try { if (window.CognicopiaColoringManifest && window.CognicopiaColoringManifest.loadSync) window.CognicopiaColoringManifest.loadSync(); } catch (e) { /* coloring pictures are optional for the other kinds */ }
 
   var $ = function (s, r) { return (r || root).querySelector(s); };
@@ -84,7 +85,9 @@
         '<div class="as-pager"><button type="button" class="as-btn as-alt" id="asPrev" aria-label="Previous page">&#x2190; Back</button><p id="asPos" role="status" aria-live="polite"></p><button type="button" class="as-btn as-alt" id="asNext" aria-label="Next page">Next &#x2192;</button></div>' +
         '<div class="as-sheet" id="asSheet"></div><div class="as-scroll" id="asScroll" hidden></div>' +
         '<div class="as-btns as-out"><button type="button" class="as-btn" id="asPdf">Compile Packet PDF</button><button type="button" class="as-btn" id="asPrint">Print all pages</button><button type="button" class="as-btn as-alt" id="asPng">Download this page (PNG)</button></div>' +
+        '<div class="as-ready" id="asReady"></div>' +
         '<div class="as-notes" id="asNotes" aria-live="polite"></div>' +
+        '<div class="as-offline"><p id="asOffline" role="status"></p><button type="button" class="as-btn as-alt" id="asSave">Save for offline use</button></div>' +
       '</section></div><div id="printRoot" aria-hidden="true"></div>';
   }
 
@@ -132,6 +135,8 @@
       lists.forEach(function (l, i) { if (pages.length < n && at[i] < l.length) pages.push(l[at[i]++]); });
     }
     var code = "ASPK-" + STAGE_KEY[state.stage - 1] + "-" + (state.seed >>> 0).toString(36).toUpperCase() + (state.variant ? "." + state.variant : "");
+    var ready = FV ? FV.validateBatch(pages, { stage: state.stage, interests: state.interests }) : null;
+    if (ready) FV.report(ready);                                                 // one console report for every batch
     var bad = [];
     pages.forEach(function (pg, i) { PL.validate(pg).forEach(function (m) { bad.push("Page " + (i + 1) + ": " + m); }); });
     notes.unshift(bad.length ? { kind: "warn", text: "Print check: " + bad.slice(0, 3).join(" ") } : { kind: "ok", text: "Print check passed: every page is 3:4, pure black on white, every line 6 px or heavier, no text under the stage's size floor, nothing off the page." });
@@ -139,7 +144,7 @@
     notes.push({ kind: "info", text: "This packet: " + kinds.filter(function (k) { return mix[k]; }).map(function (k) { return mix[k] + " " + LABEL[k].toLowerCase(); }).join(", ") + "." });
     if (pages.length < n) notes.push({ kind: "info", text: "Only " + pages.length + " of the " + n + " pages could be made from these choices." });
     if (pages.some(function (pg) { return pg.meta.fellBack; })) notes.push({ kind: "info", text: "Matching, sorting, the path and look-and-enjoy are always full pages; the layout applies to prompts and steps." });
-    return { pages: pages, notes: notes, code: code, kinds: kinds };
+    return { pages: pages, notes: notes, code: code, kinds: kinds, ready: ready };
   }
 
   /* ---------- drawing the screen ---------- */
@@ -168,12 +173,24 @@
       if (pg.meta.module === "coloring") extra.push({ kind: "info", text: "Lines are drawn at " + (PL.strokeFor(state.stage, state.dexterity) / PL.PX_PER_PT).toFixed(1) + " pt on paper. The picture is a finished drawing; words choose among the library and never draw a new subject." });
     }
     $("#asNotes").innerHTML = made.notes.concat(extra).map(function (x) { return '<p class="as-note as-' + x.kind + '">' + (x.kind === "ok" ? "&#x2713; " : x.kind === "warn" ? "&#x26A0; " : "") + escapeHtml(x.text) + '</p>'; }).join("");
-    $("#printRoot").innerHTML = made.pages.map(function (p, i) { return '<div class="as-pp' + (state.gutter ? (i % 2 === 0 ? " as-gl" : " as-gr") : "") + '">' + PL.toSVG(p, { width: "100%", height: "100%" }) + '</div>'; }).join("");
+    var svgs = made.pages.map(function (p) { return PL.toSVG(p, { width: "100%", height: "100%" }); });
+    if (PO) PO.fill($("#printRoot"), svgs, { gutter: state.gutter });
+    $("#asReady").innerHTML = made.ready ? readyHtml(made.ready) : "";
     var kinds = kindsOn();
     root.classList.toggle("as-has-coloring", !!state.mix.coloring);
     root.classList.toggle("as-has-sheets", kinds.some(function (k) { return k !== "coloring"; }));
     root.classList.toggle("as-has-interests", !!state.mix.reminiscence);
     root.classList.toggle("as-dark", state.dark);
+  }
+  /* the readiness score and what it is made of, as a folding panel */
+  function readyHtml(r) {
+    var P = r.parts, row = function (k, label) { return '<li><span>' + label + '</span><b>' + P[k] + '</b></li>'; };
+    return '<details class="as-rd as-rd-' + (r.level === "Ready" ? "ok" : r.level === "Ready with notes" ? "note" : "warn") + '"><summary>Clinical readiness: ' + r.score + ' / 100 &middot; ' + r.level + '</summary>' +
+      '<ul class="as-rd-parts">' + row("contrast", "Contrast and legibility") + row("stroke", "Stroke weight") + row("whitespace", "Negative space") + row("variety", "Variety") + row("framework", "Framework alignment") + '</ul>' +
+      '<p class="as-rd-dom">Domains in this packet: ' + escapeHtml(r.domains.join(", ") || "none") + '</p>' +
+      '<ul class="as-rd-fw">' + r.framework.map(function (f) { return '<li><span aria-hidden="true">' + (f.pass ? "&#x2713;" : "&#x26A0;") + '</span> ' + escapeHtml(f.label) + '<small> (' + escapeHtml(f.source) + ')</small></li>'; }).join("") + '</ul>' +
+      (r.findings.length ? '<ul class="as-rd-notes">' + r.findings.slice(0, 6).map(function (f) { return '<li>' + escapeHtml(f) + '</li>'; }).join("") + '</ul>' : '') +
+      '<p class="as-rd-fine">A self-check that supports a facility\'s own program; it is not a clinical certification.</p></details>';
   }
   function escapeHtml(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
   function schedule(keep) { clearTimeout(timer); timer = setTimeout(function () { refresh(keep); }, 120); }
@@ -252,6 +269,15 @@
     });
   }
 
-  build(); sync(); wire(); refresh(false);
+  function offlineStatus() { if (!PO) return; PO.status().then(function (st) { $("#asOffline").textContent = PO.say(st); $("#asSave").hidden = !st.supported || st.cached === st.total; }); }
+  function wireOffline() {
+    if (!PO) { $("#asOffline").textContent = ""; $("#asSave").hidden = true; return; }
+    $("#asSave").addEventListener("click", function () {
+      var b = $("#asSave"); b.disabled = true;
+      PO.cache(null, function (d, t) { $("#asOffline").textContent = "Saving " + d + " of " + t + "…"; }).then(function (st) { $("#asOffline").textContent = PO.say(st); b.disabled = false; b.hidden = st.cached === st.total; });
+    });
+    offlineStatus();
+  }
+  build(); sync(); wire(); wireOffline(); refresh(false);
   window.CognicopiaActivityStudio = Object.freeze({ state: state, refresh: function () { refresh(false); }, pages: function () { return made.pages; }, code: function () { return made.code; } });
 })();
