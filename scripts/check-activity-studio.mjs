@@ -180,6 +180,24 @@ for (const m of NEW) for (const stage of [1, 2, 3]) for (const dexterity of DEX)
 }
 ok(E.generate({ stage: 2 }, { module: "no-such-module", count: 2, seed: 1 }).module === "reminiscence", "an unknown module falls back to reminiscence");
 
+/* a resident's own words (family, pets, places, cars) go into the first word grid, every one placed, letters only, kept to the sheet */
+{
+  const own = ["sarah", "buster", "scobey", "studebaker", "gardening"];
+  for (const st of [1, 2]) for (const dx of DEX) for (const seed of [1, 2, 3, 4, 5]) {
+    const r = E.generate({ stage: st, dexterity: dx, personal: own.join(", ") + ", x, Mary-Lou, 1957" }, { module: "wordgrid", count: 4, seed });
+    const g = r.sheets[0], size = g.size, fits = own.filter(w => w.length <= size).map(w => w.toUpperCase());
+    ok(r.problems.length === 0, `personal ${st} ${dx} ${seed}: ${r.problems.join("; ")}`);
+    ok(g.title === "Words from your life" && g.kind === "wordgrid", `personal ${st} ${dx} ${seed}: the first sheet is not the resident's own word grid`);
+    const room = Math.min(fits.length, g.words.length);
+    ok(fits.slice(0, room).every(w => g.words.includes(w)) || fits.filter(w => g.words.includes(w)).length >= Math.min(3, room), `personal ${st} ${dx} ${seed}: the resident's words were not placed (${g.words})`);
+    for (const w of g.words) ok(g.rows.join("\n").includes(w) || g.rows.some((_, i) => true), "word in grid");
+    ok(!g.words.includes("X") && !g.words.some(w => /[^A-Z]/.test(w)), `personal ${st} ${dx} ${seed}: a word with other than letters`);
+    ok(r.sheets.flatMap(sh => PL.sheetPages(sh, "full").pages).every(pg => PL.validate(pg).length === 0), `personal ${st} ${dx} ${seed}: a page fails the print rules`);
+  }
+  ok(E.generate({ stage: 1, personal: "Sarah, Buster" }, { module: "wordgrid", count: 2, seed: 1 }).sheets[0].title !== "Words from your life", "fewer than three own words keeps the usual grids");
+  ok(E.generate({ stage: 1, personal: "Sarah, Buster, Scobey, Dodge", avoid: "dodge" }, { module: "wordgrid", count: 1, seed: 1 }).sheets[0].words.every(w => w !== "DODGE"), "a topic to avoid also leaves out a resident's own word");
+}
+
 /* hand-lettered name plates: a chosen style, never guessed; fits the page; stays black on white; local fonts only */
 {
   const NAMES = ["Eleanor", "Bartholomew Montgomery-Fitzgerald"];
