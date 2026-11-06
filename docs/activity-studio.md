@@ -73,3 +73,7 @@ Every page code (for example `ASM-R-4WZG.1`) holds the stage, the kind of sheet 
 `scripts/check-activity-studio.mjs` (in `npm test`) proves the sheets and pages without a browser: every module, stage, hand setting and layout; same seed, same page; stage 3 has less than stage 1; topics to avoid; no quizzing; 3:4; black and white; no line under 6 px; no text under its stage's floor; nothing off the page; offline. `scripts/check-activity-studio-ui.mjs` (in `npm run build`) proves the screen in a real browser, reads the PDF back with PyMuPDF, checks the PNG size, prints, and measures 52 px controls and a phone.
 
 The validator and the print and offline utilities beneath it are described in [facility-validation.md](facility-validation.md).
+
+## Hand-lettered name (the nameplate)
+
+The first name can be lettered three ways, chosen on the page: Plain, Flowing script (Pinyon Script) or Formal script (Marck Script). The choice is the person's; the studio never guesses it from a name, and the profile holds no gender field. Script names sit under the title with the line "Prepared with care for" (on coloring pages, above the page code). Both faces are open-licence files kept in `fonts/` (licences beside them) and in the service worker's list, so they work offline. The name is shrunk to fit a long name and never goes below the stage's type floor. Print stays pure black on white. `scripts/check-activity-studio.mjs` covers every stage, dexterity and style.

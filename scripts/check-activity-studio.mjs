@@ -180,6 +180,32 @@ for (const m of NEW) for (const stage of [1, 2, 3]) for (const dexterity of DEX)
 }
 ok(E.generate({ stage: 2 }, { module: "no-such-module", count: 2, seed: 1 }).module === "reminiscence", "an unknown module falls back to reminiscence");
 
+/* hand-lettered name plates: a chosen style, never guessed; fits the page; stays black on white; local fonts only */
+{
+  const NAMES = ["Eleanor", "Bartholomew Montgomery-Fitzgerald"];
+  for (const style of ["plain", "flow", "formal"]) for (const nm of NAMES) for (const st of [1, 2, 3]) for (const dx of DEX) {
+    const tag = `name ${style} ${nm.length} stage ${st} ${dx}`;
+    const r = E.generate({ stage: st, dexterity: dx, name: nm, nameStyle: style }, { module: "reminiscence", count: 3, seed: 5 });
+    ok(r.sheets.every(sh => sh.nameStyle === style), `${tag}: the style did not reach the sheets`);
+    const pgs = r.sheets.flatMap(sh => PL.sheetPages(sh, "full").pages);
+    pgs.forEach(pg => {
+      ok(PL.validate(pg).length === 0, `${tag}: ${PL.validate(pg).slice(0, 2).join("; ")}`);
+      const tx = pg.ops.filter(o => o.t === "text" && (o.str === nm || o.str === "For " + nm));
+      ok(tx.length === 1, `${tag}: the name is not printed once`);
+      if (style !== "plain") {
+        ok(tx[0].font === style && pg.ops.some(o => o.t === "text" && o.str === "Prepared with care for"), `${tag}: no script name or no label`);
+        ok(tx[0].size >= PL.kit.floorPx(st) && tx[0].y < 520, `${tag}: script name is below the type floor or not at the top`);
+        ok(PL.toSVG(pg).includes("font-family='\"" + (style === "flow" ? "Pinyon Script" : "Marck Script")), `${tag}: svg lacks the script face`);
+      }
+    });
+  }
+  const cp = PL.composeColoring(M.assets()[0], PL.subjectPaths(M.assets()[0].id), { stage: 2, dexterity: "steady", name: "Eleanor", nameStyle: "flow", code: "T" });
+  ok(cp.ops.some(o => o.font === "flow") && PL.validate(cp).length === 0, "a coloring page carries the script name inside the page");
+  ok(E.generate({ name: "Eleanor", nameStyle: "x" }, { module: "daily", count: 1, seed: 1 }).sheets[0].nameStyle === "plain", "an unknown style becomes plain");
+  for (const f of ["PinyonScript-Regular.woff2", "MarckScript-Regular.woff2", "OFL-PinyonScript.txt", "OFL-MarckScript.txt"]) ok(fs.existsSync(new URL("../fonts/" + f, import.meta.url)), "fonts/" + f + " is missing");
+  ok(/PinyonScript-Regular\.woff2/.test(read("sw.js")) && /MarckScript-Regular\.woff2/.test(read("sw.js")), "the service worker keeps the script fonts for offline use");
+}
+
 /* offline */
 for (const f of FILES.slice(4)) {
   const s = read(f);

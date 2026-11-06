@@ -226,6 +226,7 @@
     var split = function (v) { return (Array.isArray(v) ? v : String(v == null ? "" : v).split(/[,;\n]/)).map(function (x) { return String(x).trim().toLowerCase(); }).filter(Boolean).slice(0, 20); };
     return {
       name: String(p.name == null ? "" : p.name).replace(/[<>&"]/g, "").trim().slice(0, 40),
+      nameStyle: p.nameStyle === "flow" || p.nameStyle === "formal" ? p.nameStyle : "plain",
       born: born, stage: stage, dexterity: dex, decade: decade,
       season: SEASONS.indexOf(p.season) >= 0 ? p.season : "", vocation: String(p.vocation == null ? "" : p.vocation).toLowerCase().replace(/[^a-z]/g, "").slice(0, 20),
       interests: split(p.interests), avoid: split(p.avoid)
@@ -337,7 +338,7 @@
     count = Math.min(count, cap);                                                // a module with a small bank never repeats a sheet
     var sheets = !fits(mod, P.stage) ? [] : REGISTRY[mod] ? REGISTRY[mod].build(P, r, count, KIT) : mod === "reminiscence" ? reminiscenceSheets(P, r, count) : mod === "exercise" ? exerciseSheets(P, r, count) : dailySheets(P, r, count);
     var code = "AS" + S.key + "-" + mod.charAt(0).toUpperCase() + "-" + seed.toString(36).toUpperCase();
-    sheets.forEach(function (sh, i) { sh.index = i; sh.stage = P.stage; sh.dexterity = P.dexterity; sh.name = P.name; sh.code = code + "." + (i + 1); sh.dexNote = DEXTERITY[P.dexterity].note; });
+    sheets.forEach(function (sh, i) { sh.index = i; sh.stage = P.stage; sh.dexterity = P.dexterity; sh.name = P.name; sh.nameStyle = P.nameStyle; sh.code = code + "." + (i + 1); sh.dexNote = DEXTERITY[P.dexterity].note; });
     return { stage: P.stage, profile: P, seed: seed, code: code, module: mod, sheets: sheets, problems: validate(sheets, P), notFitting: !fits(mod, P.stage) };
   }
 

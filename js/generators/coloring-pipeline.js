@@ -43,6 +43,11 @@
   var VERSION = "1.0.0";
   var W = 1200, H = 1600, PT = 160 / 72, PAD = 48;
   var FONT = '"Atkinson Hyperlegible", Arial, Helvetica, sans-serif';
+  /* hand-lettered name styles (local open-licence fonts in /fonts); "plain" is the interface type */
+  var SCRIPTS = {
+    flow:   { label: "Flowing script", family: '"Pinyon Script", "Brush Script MT", cursive', k: 2.8, width: 0.55 },
+    formal: { label: "Formal script",  family: '"Marck Script", "Segoe Script", cursive',     k: 2.5, width: 0.55 }
+  };
   var BOX = { w: 800, h: 600 };                                 // the box every library drawing is made in
   var LINE_PT = { 1: 3, 2: 4.5, 3: 6 };                         // main line, in printed points
   var DEX_PT = { steady: 0, limited: 1.5, minimal: 3 };
@@ -108,7 +113,7 @@
     circle: function (pg, cx, cy, r, sw, fill) { pg.ops.push({ t: "circle", cx: f1(cx), cy: f1(cy), r: f1(r), sw: sw, fill: fill || "none" }); },
     line: function (pg, x1, y1, x2, y2, sw, dash, role) { pg.ops.push({ t: "line", x1: f1(x1), y1: f1(y1), x2: f1(x2), y2: f1(y2), sw: sw, dash: dash || "", role: role || "" }); },
     path: function (pg, d, sw, fill, stroke, tx, ty, k) { pg.ops.push({ t: "path", d: d, sw: f1(sw), fill: fill || "none", stroke: stroke || "#000", tx: f1(tx || 0), ty: f1(ty || 0), k: k || 1 }); },
-    text: function (pg, x, y, size, str, o) { o = o || {}; pg.ops.push({ t: "text", x: f1(x), y: f1(y), size: Math.round(size), str: String(str), bold: !!o.bold, anchor: o.anchor || "start", role: o.role || "" }); }
+    text: function (pg, x, y, size, str, o) { o = o || {}; pg.ops.push({ t: "text", x: f1(x), y: f1(y), size: Math.round(size), str: String(str), bold: !!o.bold, anchor: o.anchor || "start", role: o.role || "", font: o.font || "" }); }
   };
   /* lines of text; returns the y below the block */
   function block(pg, lines, x, y, size, o) {
@@ -119,12 +124,22 @@
   }
   /* the quiet line at the foot of every sheet: the page code, so any page can be made again */
   function footer(pg, code) { if (code) P.text(pg, W / 2, H - 30, 30, code, { anchor: "middle", role: "code" }); }
+  /* the resident's name, hand-lettered under the title; returns the y below it. style: "flow", "formal" or plain */
+  function nameplate(pg, name, style, n, y) {
+    var sc = SCRIPTS[style];
+    if (!sc) return block(pg, ["For " + name], W / 2, y, floorPx(n), { anchor: "middle", bold: true });
+    var lab = floorPx(n), size = Math.round(lab * sc.k);
+    while (size > lab && String(name).length * size * sc.width > W - PAD * 2) size -= 2;
+    y = block(pg, ["Prepared with care for"], W / 2, y, lab, { anchor: "middle" });
+    P.text(pg, W / 2, y + size * 0.85, size, name, { anchor: "middle", font: style, role: "nameplate" });
+    return y + size * 1.15;
+  }
   function header(pg, sh, big) {
     var n = stageN(sh.stage), bp = bodyPx(n, sh.dexterity), y = PAD;
     var t = fit(sh.title, big || 92, 64, W - PAD * 2, 200, true, 1.12);
     y = block(pg, t.lines, W / 2, y, t.size, { bold: true, anchor: "middle", lh: 1.12 });
     if (sh.subtitle) { var s = fit(sh.subtitle, Math.round(bp * 0.9), floorPx(n), W - PAD * 2, 120, false); y = block(pg, s.lines, W / 2, y + 8, s.size, { anchor: "middle" }); }
-    if (sh.name) { y = block(pg, ["For " + sh.name], W / 2, y + 6, floorPx(n), { anchor: "middle", bold: true }); }
+    if (sh.name) y = nameplate(pg, sh.name, sh.nameStyle, n, y + 6);
     return y + 16;
   }
 
@@ -183,7 +198,16 @@
       var c = fit(asset.completion + " ______", bodyPx(2, dex), floorPx(2), W - 220, 170, true); block(pg, c.lines, W / 2, 1230, c.size, { anchor: "middle", bold: true });
       P.text(pg, W / 2, 1405, floorPx(2), "Word to write: " + String(asset.word || asset.title).toUpperCase(), { anchor: "middle" });
     }
-    if (o.name) P.text(pg, W / 2, n < 3 ? 1470 : 1520, floorPx(n), "For " + o.name, { anchor: "middle", bold: true });
+    if (o.name) {
+      var sc = SCRIPTS[o.nameStyle], by = n < 3 ? 1470 : 1520;
+      if (!sc) P.text(pg, W / 2, by, floorPx(n), "For " + o.name, { anchor: "middle", bold: true });
+      else {
+        var lab = floorPx(n), size = Math.round(lab * sc.k);
+        while (size > lab && String(o.name).length * size * sc.width > W - 200) size -= 2;
+        P.text(pg, W / 2, by - size * 0.55, lab, "Prepared with care for", { anchor: "middle" });
+        P.text(pg, W / 2, by + size * 0.45, size, o.name, { anchor: "middle", font: o.nameStyle, role: "nameplate" });
+      }
+    }
     footer(pg, o.code);
     return pg;
   }
@@ -386,7 +410,7 @@
       else if (op.t === "circle") s += '<circle cx="' + op.cx + '" cy="' + op.cy + '" r="' + op.r + '" fill="' + op.fill + '" stroke="#000" stroke-width="' + op.sw + '"/>';
       else if (op.t === "line") s += '<line x1="' + op.x1 + '" y1="' + op.y1 + '" x2="' + op.x2 + '" y2="' + op.y2 + '" stroke="#000" stroke-width="' + op.sw + '"' + dash + '/>';
       else if (op.t === "path") s += '<path d="' + op.d + '" transform="translate(' + op.tx + ' ' + op.ty + ') scale(' + op.k + ')" fill="' + op.fill + '" stroke="' + op.stroke + '" stroke-width="' + op.sw + '"/>';
-      else if (op.t === "text") s += '<text x="' + op.x + '" y="' + op.y + '" font-size="' + op.size + '" font-weight="' + (op.bold ? 700 : 400) + '" text-anchor="' + op.anchor + '" fill="#000">' + esc(op.str) + '</text>';
+      else if (op.t === "text") s += '<text x="' + op.x + '" y="' + op.y + '" ' + (op.font && SCRIPTS[op.font] ? ' font-family=\'' + SCRIPTS[op.font].family + '\'' : '') + ' font-size="' + op.size + '" font-weight="' + (op.bold ? 700 : 400) + '" text-anchor="' + op.anchor + '" fill="#000">' + esc(op.str) + '</text>';
     });
     return s + '</svg>';
   }
@@ -414,7 +438,7 @@
         if (op.fill === "#fff") { c.fillStyle = "#fff"; c.fill(p); } else if (op.fill === "#000") c.fill(p);
         c.stroke(p);
       } else if (op.t === "text") {
-        c.font = (op.bold ? "700 " : "400 ") + op.size + "px " + FONT; c.textAlign = op.anchor === "middle" ? "center" : op.anchor === "end" ? "right" : "left"; c.textBaseline = "alphabetic";
+        c.font = (op.bold ? "700 " : "400 ") + op.size + "px " + (op.font && SCRIPTS[op.font] ? SCRIPTS[op.font].family : FONT); c.textAlign = op.anchor === "middle" ? "center" : op.anchor === "end" ? "right" : "left"; c.textBaseline = "alphabetic";
         c.fillText(op.str, op.x, op.y);
       }
       c.restore();

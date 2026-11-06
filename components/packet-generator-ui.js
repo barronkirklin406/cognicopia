@@ -54,7 +54,7 @@
   /* the suggested packet for each stage: three of the master inventory and a coloring page */
   var SUGGEST = { 1: ["wordgrid", "timeline", "memory", "dialogue", "coloring"], 2: ["dialogue", "household", "phrases", "coloring"], 3: ["coloring", "recognition", "rhythm", "dialogue"] };
   var LABEL = {}; KINDS.forEach(function (k) { LABEL[k[0]] = k[1]; });
-  var state = { mix: { reminiscence: true, exercise: true, daily: true, coloring: true }, vocation: "", stage: 2, dexterity: "steady", decade: 1950, born: "", name: "", interests: "", avoid: "",
+  var state = { mix: { reminiscence: true, exercise: true, daily: true, coloring: true }, vocation: "", stage: 2, dexterity: "steady", decade: 1950, born: "", name: "", nameStyle: "plain", interests: "", avoid: "",
     style: "botanical", words: "", layout: "full", pages: 4, view: "one", dark: false, gutter: false, seed: (Date.now() % 1000000) + 1, variant: 0, index: 0 };
   var made = { pages: [], notes: [], code: "" };
 
@@ -74,6 +74,7 @@
         '<div class="as-row"><label class="as-lab" for="asBorn">Year born (optional; suggests the decade)</label><input id="asBorn" type="number" inputmode="numeric" min="1900" max="2010" placeholder="1938"></div>' +
         '<div class="as-row"><label class="as-lab" for="asVocation">Former work (optional; themes the word grids)</label><select id="asVocation"><option value="">Not chosen</option>' + (E.VOCATIONS || []).map(function (v) { return '<option value="' + v.id + '">' + v.label + '</option>'; }).join("") + '</select></div>' +
         '<div class="as-row"><label class="as-lab" for="asName">First name (optional; printed on the page, kept nowhere)</label><input id="asName" type="text" maxlength="40" autocomplete="off"></div>' +
+        '<fieldset class="as-f"><legend class="as-lab">How the name is lettered (your choice; nothing is guessed from the name)</legend><div class="as-seg"><label><input type="radio" name="nameStyle" value="plain"><span>Plain</span></label><label><input type="radio" name="nameStyle" value="flow"><span>Flowing script</span></label><label><input type="radio" name="nameStyle" value="formal"><span>Formal script</span></label></div></fieldset>' +
         '<div class="as-row as-nc"><label class="as-lab" for="asInterests">Interests (optional, separated by commas)</label><input id="asInterests" type="text" maxlength="120" placeholder="gardening, baking" autocomplete="off"></div>' +
         '<div class="as-row"><label class="as-lab" for="asAvoid">Topics to avoid (separated by commas)</label><input id="asAvoid" type="text" maxlength="120" placeholder="trains, hospitals" autocomplete="off"></div>' +
         '<fieldset class="as-f"><legend>Content mix</legend><div class="as-mix">' + KINDS.map(function (k) {
@@ -99,7 +100,7 @@
   }
 
   /* ---------- making the packet ---------- */
-  function profile() { return { name: state.name, born: Number(state.born) || 0, stage: state.stage, dexterity: state.dexterity, decade: state.decade, interests: state.interests, avoid: state.avoid, vocation: state.vocation }; }
+  function profile() { return { name: state.name, born: Number(state.born) || 0, nameStyle: state.nameStyle, stage: state.stage, dexterity: state.dexterity, decade: state.decade, interests: state.interests, avoid: state.avoid, vocation: state.vocation }; }
   function kindsOn() { return KINDS.map(function (k) { return k[0]; }).filter(function (k) { return state.mix[k]; }); }
   function avoidList() { return state.avoid.split(/[,;]/).map(function (x) { return x.trim().toLowerCase(); }).filter(Boolean); }
   var STAGE_KEY = ["E", "M", "L"];
@@ -115,7 +116,7 @@
         if (seen[c.asset.id]) continue;
         seen[c.asset.id] = 1;
         var code = "ASX" + STAGE_KEY[state.stage - 1] + "-C-" + seed.toString(36).toUpperCase() + "." + (out.length + 1);
-        var pg = PL.composeColoring(c.asset, PL.subjectPaths(c.asset.id), { stage: state.stage, dexterity: state.dexterity, name: state.name, code: code });
+        var pg = PL.composeColoring(c.asset, PL.subjectPaths(c.asset.id), { stage: state.stage, dexterity: state.dexterity, name: state.name, nameStyle: state.nameStyle, code: code });
         pg.meta.kind = "coloring"; pg.meta.module = "coloring"; pg.meta.why = c.why;
         pg.meta.staff = "Goal: calm, creative focus with a familiar picture. Ask while they color: " + (c.asset.prompt || "What does this bring to mind?") + " Offer chunky crayons or thick markers; ten to fifteen minutes is plenty, and any color is the right color.";
         out.push(pg);
@@ -213,7 +214,7 @@
   function fontsReady() {
     var d = document;
     if (!d.fonts || !d.fonts.load) return Promise.resolve();
-    return Promise.all([d.fonts.load('400 40px "Atkinson Hyperlegible"'), d.fonts.load('700 40px "Atkinson Hyperlegible"')]).catch(function () {}).then(function () { return d.fonts.ready; });
+    return Promise.all([d.fonts.load('400 40px "Atkinson Hyperlegible"'), d.fonts.load('700 40px "Atkinson Hyperlegible"'), d.fonts.load('40px "Pinyon Script"'), d.fonts.load('40px "Marck Script"')]).catch(function () {}).then(function () { return d.fonts.ready; });
   }
   function download(name, href) { var a = document.createElement("a"); a.href = href; a.download = name; document.body.appendChild(a); a.click(); a.remove(); }
   function exportPng() {
@@ -245,6 +246,7 @@
     $$('input[name="dexterity"]').forEach(function (r) { r.checked = r.value === state.dexterity; });
     $$('input[name="layout"]').forEach(function (r) { r.checked = r.value === state.layout; });
     $$('input[name="view"]').forEach(function (r) { r.checked = r.value === state.view; });
+    $$('input[name="nameStyle"]').forEach(function (r) { r.checked = r.value === state.nameStyle; });
     $$('input[name="mix"]').forEach(function (c) { c.checked = !!state.mix[c.value]; });
     $("#asVocation").value = state.vocation; $("#asDecade").value = String(state.decade); $("#asStyle").value = state.style; $("#asPages").value = String(state.pages);
     $("#asDark").checked = state.dark; $("#asGutter").checked = state.gutter;
@@ -253,6 +255,7 @@
     $$('#asForm input[name="stage"], #asForm input[name="dexterity"], #asForm input[name="layout"]').forEach(function (r) {
       r.addEventListener("change", function () { state[r.name] = r.name === "stage" ? Number(r.value) : r.value; state.variant = 0; schedule(false); });
     });
+    $$('input[name="nameStyle"]').forEach(function (r) { r.addEventListener("change", function () { state.nameStyle = r.value; state.variant = 0; schedule(false); }); });
     $$('input[name="mix"]').forEach(function (c) { c.addEventListener("change", function () { state.mix[c.value] = c.checked; schedule(false); }); });
     $$('input[name="view"]').forEach(function (r) { r.addEventListener("change", function () { state.view = r.value; paint(); }); });
     var bind = function (id, key, num) { $("#" + id).addEventListener("input", function (e) { state[key] = num ? Number(e.target.value) : e.target.value; if (key === "words") state.variant = 0; schedule(false); }); };
