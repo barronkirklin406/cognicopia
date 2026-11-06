@@ -62,6 +62,8 @@ async function fresh(viewport, o = {}) {
   await p.goto(base + (o.page || "tablet.html")); await p.waitForTimeout(300);
   return { ctx, p };
 }
+/* wait until the page and the picture have stopped moving (a smooth scroll can run on for a while on a busy computer): four frames in a row at the same place */
+const scrollSettled = p => p.evaluate(() => new Promise(res => { let last = null, still = 0; const t0 = performance.now(), tick = () => { const c = document.querySelector("canvas.tb-lines"), k = Math.round((c ? c.getBoundingClientRect().top : 0) * 10) + "/" + Math.round(scrollY * 10); still = k === last ? still + 1 : 0; last = k; if (still >= 4 || performance.now() - t0 > 3000) res(); else requestAnimationFrame(tick); }; tick(); }));
 const stageReady = async p => { await p.waitForSelector("#tb:not([hidden])"); await p.waitForFunction(() => document.querySelector("#tbStage").children.length > 0); await p.waitForTimeout(200); };
 async function openAct(p, id) { await p.click(`[data-act="${id}"]`); await stageReady(p); }
 const dbg = p => p.evaluate(() => { const d = window.CognicopiaTabletUI.debug(); return d ? JSON.parse(JSON.stringify(d)) : null; });
@@ -619,13 +621,15 @@ try {
       let right = 0, only = 0;
       for (let i = 0; i < spots.length; i++) {
         const sw = (await p.$$(".tb-sw"))[i % 8]; await sw.tap(); const hex = await sw.getAttribute("data-color"), want = [1, 3, 5].map(k => parseInt(hex.slice(k, k + 2), 16));
-        /* where the shape is now: the picture settles to its size a moment after it opens, so a position read at the start can be stale */
-        await p.evaluate(() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))));
+        /* Tapping the swatch makes the browser scroll it into view, and the site's smooth scrolling (scroll-behavior in css/styles.css) keeps moving the
+           page for a while on a busy computer, so a position read too soon is stale: wait until the picture has stopped moving. */
+        await scrollSettled(p);
         spots[i] = (await p.evaluate(() => window.CognicopiaTabletUI.debug().spots()))[i];
         await p.touchscreen.tap(spots[i][0], spots[i][1]);
-        /* the fill lands when it lands: wait until it is counted AND painted in the chosen color (a busy computer paints a moment after it counts), then look */
-        await p.waitForFunction(([n, a, b2, w]) => { const D = window.CognicopiaTabletUI.debug(); if (D.filled < n) return false; const q = D.pixel(a, b2); return q[3] === 255 && q[0] === w[0] && q[1] === w[1] && q[2] === w[2]; }, [i + 1, spots[i][0], spots[i][1], want], { timeout: 4000 }).catch(() => {});
-        const px = await p.evaluate(([a, b]) => window.CognicopiaTabletUI.debug().pixel(a, b), [spots[i][0], spots[i][1]]); if (px[3] === 255 && px[0] === want[0] && px[1] === want[1] && px[2] === want[2]) right++;
+        /* the fill lands when it lands: wait until it is counted AND painted in the chosen color (a busy computer paints a moment after it counts), then look.
+           The shape's place is read again on every look, so a page that is still scrolling cannot make the look land on another shape. */
+        await p.waitForFunction(([n, k, w]) => { const D = window.CognicopiaTabletUI.debug(); if (D.filled < n) return false; const sp = D.spots()[k], q = D.pixel(sp[0], sp[1]); return q[3] === 255 && q[0] === w[0] && q[1] === w[1] && q[2] === w[2]; }, [i + 1, i, want], { timeout: 4000 }).catch(() => {});
+        const px = await p.evaluate(k => { const D = window.CognicopiaTabletUI.debug(), sp = D.spots()[k]; return D.pixel(sp[0], sp[1]); }, i); if (px[3] === 255 && px[0] === want[0] && px[1] === want[1] && px[2] === want[2]) right++;
         const now = await p.evaluate(() => window.CognicopiaTabletUI.debug().filled); if (now === i + 1) only++;
       }
       ok(right === spots.length, `${stage}: a touch on each of the ${spots.length} shapes fills it solid in the chosen color (${right} did)`);

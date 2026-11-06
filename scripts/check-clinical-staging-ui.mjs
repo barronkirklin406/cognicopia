@@ -154,8 +154,13 @@ async function open(path, viewport) {
   ok(allShown === 13 && await pg.$eval("#tbStageMiddle", e => e.checked), "turning Calm mode off brings every activity and the chosen level back");
   /* keep a word off the screen: open the sayings, take a word from the screen, ask to keep it off, and the next screen does not show it */
   await pg.click('[data-act="saying"]'); await pg.waitForSelector("#tbStage .tb-opt", { timeout: 15000 });   // wait for the answer buttons, not a fixed half second: a busy computer draws them later
-  const screenText = await pg.evaluate(() => document.getElementById("tbStage").innerText);
-  const word = (screenText.match(/\b[A-Za-z]{5,10}\b/g) || []).find(w => !/^(Choose|Circle|Which|Finish|Finishes|Another|Lovely|Wonderful|spell|Help|Next)$/i.test(w));
+  /* the sayings are drawn at random, and a draw can hold no plain word of 5 to 10 letters (short or hyphenated words only): draw again, up to ten screens, until one has one */
+  let word;
+  for (let i = 0; i < 10 && !word; i++) {
+    if (i) { await pg.click("#tbBack"); await pg.waitForTimeout(150); await pg.click('[data-act="saying"]'); await pg.waitForSelector("#tbStage .tb-opt", { timeout: 15000 }); }
+    const screenText = await pg.evaluate(() => document.getElementById("tbStage").innerText);
+    word = (screenText.match(/\b[A-Za-z]{5,10}\b/g) || []).find(w => !/^(Choose|Circle|Which|Finish|Finishes|Another|Lovely|Wonderful|spell|Help|Next)$/i.test(w));
+  }
   ok(!!word, "an activity shows words to test with");
   if (word) {
     await pg.click("#tbBack"); await pg.waitForTimeout(300);
