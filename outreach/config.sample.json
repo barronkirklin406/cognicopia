@@ -1,18 +1,39 @@
 {
   "note": "Copy of this is made by: node scripts/outreach.mjs init  ->  outreach/data/config.json (not committed). Replace every REPLACE_ME.",
   "sender_name": "REPLACE_ME (the name the notes are signed with)",
+  "sender_place": "REPLACE_ME (the town and state you are from, as the notes say it)",
   "reply_to": "Cognicopia@outlook.com",
   "postal_address": "REPLACE_ME (a real mailing address: a P.O. box or mailbox rental is fine)",
   "start_date": "2026-11-02",
   "mailboxes": [
-    { "id": "one", "email": "REPLACE_ME@your-sending-domain.example" }
+    {
+      "id": "one",
+      "email": "REPLACE_ME@your-sending-domain.example"
+    }
   ],
   "warmup": [
-    { "week": 1, "perMailbox": 10 },
-    { "week": 2, "perMailbox": 20 },
-    { "week": 3, "perMailbox": 30 },
-    { "week": 4, "perMailbox": 40 }
+    {
+      "week": 1,
+      "perMailbox": 10
+    },
+    {
+      "week": 2,
+      "perMailbox": 20
+    },
+    {
+      "week": 3,
+      "perMailbox": 30
+    },
+    {
+      "week": 4,
+      "perMailbox": 40
+    }
   ],
-  "send_days": [1, 2, 3, 4],
+  "send_days": [
+    1,
+    2,
+    3,
+    4
+  ],
   "max_per_domain_per_day": 1
 }

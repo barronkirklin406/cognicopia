@@ -103,6 +103,7 @@ export const HUBS = [
       { key: "home",         label: "Personalized Packet Tool", href: "index.html",        icon: "home" },
       { key: "profile",      label: "Resident Profiles",        href: "profile.html",      icon: "profile" } ] },
   { id: "studio",    label: "Studio",           icon: "palette",  group: "resident", items: [
+      { key: "activity-studio", label: "Activity Page Studio",  href: "activity-studio.html", icon: "builder" },
       { key: "coloring",     label: "Cognicopia Coloring",      href: B + "#/coloring",     route: "coloring",     icon: "palette" },
       { key: "tracking",     label: "Cognitive Tracking",       href: B + "#/tracking",     route: "tracking",     icon: "clipboard" },
       { key: "planner",      label: "12-Month Seasonal Planner", href: B + "#/planner",     route: "planner",      icon: "calendar" },
@@ -228,6 +229,7 @@ export const PAGES = [
   { file: "index.html",              current: "home", ownTopbar: true },   // the packet tool draws its own top bar (license box and buy buttons)
   { file: "profile.html",            current: "profile" },
   { file: "tablet.html",             current: "tablet" },
+  { file: "activity-studio.html",    current: "activity-studio" },
   { file: "cognitive-journals.html", current: null, hub: "studio" },     // the journal's own page: Studio is open, no link is "here" (its link opens the tool)
   { file: "life-planners.html",      current: null, hub: "studio" },
   { file: "contact.html",            current: "contact" },

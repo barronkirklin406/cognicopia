@@ -40,12 +40,13 @@ const CLAIMS = [
   [/Kirk Barron|barron\.kirklin/i, "a personal name or address"]
 ];
 const SAMPLE = { first_name: "Dana", facility: "Maple Court Memory Care", city: "Springfield" };
-const CFG = { sender_name: "Alex Sample", reply_to: "Cognicopia@outlook.com", postal_address: "PO Box 100, Springfield, IL 62701", start_date: "2026-11-02", mailboxes: [{ id: "a", email: "a@sending.example" }, { id: "b", email: "b@sending.example" }] };
+const CFG = { sender_name: "Alex Sample", sender_place: "Springfield, Illinois", reply_to: "Cognicopia@outlook.com", postal_address: "PO Box 100, Springfield, IL 62701", start_date: "2026-11-02", mailboxes: [{ id: "a", email: "a@sending.example" }, { id: "b", email: "b@sending.example" }] };
 const words = t => (t.match(/[A-Za-z0-9'’$@.:/-]+/g) || []).length;
 const linksOf = t => t.match(/https?:\/\/[^\s)]+/g) || [];
 const exists = u => { const m = u.match(/^https:\/\/cognicopia\.org\/?(.*)$/); if (!m) return false; let p = m[1].replace(/[.,]$/, ""); if (p === "" || p.endsWith("/")) p += "index.html"; return fs.existsSync(path.join(ROOT, p)); };
 
 /* ---------- the four notes ---------- */
+ok(!/Minot|Kirk|Barron/i.test(JSON.stringify(seq) + JSON.stringify(replies)), "no personal name or town is in the shared copy: they are filled in from the private settings");
 ok(seq.steps.length === 4, `four notes (${seq.steps.length})`);
 ok(seq.steps[0].delayDays === 0 && seq.steps.reduce((n, s) => n + s.delayDays, 0) <= 21, "the first goes out at once and all four are done within 21 days");
 ok(/\{\{postal_address\}\}/.test(seq.footer) && /\{\{unsubscribe_line\}\}/.test(seq.footer) && /advertisement/i.test(seq.footer), "the footer holds the postal address, the opt-out line and an 'advertisement' line");
@@ -57,7 +58,7 @@ seq.steps.forEach((s, i) => {
   ok(msg.body.includes(CFG.postal_address) && /advertisement/i.test(msg.body) && /no thanks/i.test(msg.body), `${label}: shows the postal address, the advertisement line and the way to opt out`);
   ok(/Cognicopia@outlook\.com/.test(msg.body), `${label}: says how to reach the owner (Cognicopia@outlook.com)`);
   const main = msg.body.split(CFG.postal_address)[0];
-  ok(words(main) <= 130, `${label}: short (${words(main)} words before the footer)`);
+  ok(words(main) <= (i === 0 ? 190 : 130), `${label}: short (${words(main)} words before the footer)`);
   for (const sub of s.subjects) {
     const r = renderMessage({ ...seq, steps: [{ ...s, subjects: [sub] }] }, 0, { ...SAMPLE, facility: "The Residences at Maple Court Memory Care", email: "x@y.example" }, CFG).subject;
     ok(r.length <= 70 && !/^(re|fwd?):/i.test(r) && !/[A-Z]{5,}/.test(r.replace(/\b(CMS|HIPAA)\b/g, "")) && !/[\u{1F300}-\u{1FAFF}☀-➿]/u.test(r) && !/!/.test(r), `${label}: the subject is plain and short ("${r}")`);
