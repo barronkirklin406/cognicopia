@@ -171,7 +171,7 @@
   function composeColoring(asset, paths, o) {
     o = o || {};
     var n = stageN(o.stage), dex = o.dexterity || "steady", lw = strokeFor(n, dex);
-    var pg = newPage({ kind: "coloring", title: asset.title, stage: n, code: o.code || "", subject: asset.id });
+    var pg = newPage({ kind: "coloring", sheetKind: "coloring", title: asset.title, stage: n, code: o.code || "", subject: asset.id });
     if (n < 3) P.rect(pg, 30, 30, W - 60, H - 120, 28, lw, "none");   // the frame stops above the page code
     var tsize = n === 3 ? 124 : 96, banner = String(asset.banner || asset.title).toUpperCase();
     var t = fit(banner, tsize, 64, W - 200, 150, true, 1.1);
@@ -350,8 +350,11 @@
   function packPrompts(sheets, layout) {
     var cards = []; sheets.forEach(function (sh) { sh.items.forEach(function (it) { cards.push({ tag: it.tag, head: it.thing, lines: [it.invite, it.sense].filter(Boolean) }); }); });
     var f = sheets[0];
-    return cardPages(cards, layout, { title: f.title, stage: f.stage, dexterity: f.dexterity, code: f.code });
+    return cardPages(cards, layout, { title: f.title, stage: f.stage, dexterity: f.dexterity, code: f.code }).map(function (pg) { return tag(pg, f); });
   }
+
+  /* what kind of sheet a page came from, for the facility validator */
+  function tag(pg, sh) { pg.meta.sheetKind = sh.kind; if (sh.steps) pg.meta.steps = sh.steps.length; return pg; }
 
   /* the pages for one sheet in a layout; { pages, fellBack } */
   function sheetPages(sh, layout) {
@@ -361,10 +364,10 @@
       var cards = sh.kind === "prompts"
         ? sh.items.map(function (it) { return { tag: it.tag, head: it.thing, lines: [it.invite, it.sense].filter(Boolean) }; })
         : sh.steps.map(function (s) { return { badge: String(s.n), head: s.text, lines: [] }; });
-      return { pages: cardPages(cards, layout, sh), fellBack: false };
+      return { pages: cardPages(cards, layout, sh).map(function (pg) { return tag(pg, sh); }), fellBack: false };
     }
     var f = { prompts: promptsFull, steps: stepsFull, match: matchFull, sort: sortFull, path: pathFull, look: lookFull }[sh.kind];
-    return { pages: [f(sh)], fellBack: layout !== "full" };
+    return { pages: [tag(f(sh), sh)], fellBack: layout !== "full" };
   }
 
   /* ---------- writers ---------- */

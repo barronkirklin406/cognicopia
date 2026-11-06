@@ -49,3 +49,5 @@ Every page code (for example `ASM-R-4WZG.1`) holds the stage, the kind of sheet 
 ## Checks
 
 `scripts/check-activity-studio.mjs` (in `npm test`) proves the sheets and pages without a browser: every module, stage, hand setting and layout; same seed, same page; stage 3 has less than stage 1; topics to avoid; no quizzing; 3:4; black and white; no line under 6 px; no text under its stage's floor; nothing off the page; offline. `scripts/check-activity-studio-ui.mjs` (in `npm run build`) proves the screen in a real browser, reads the PDF back with PyMuPDF, checks the PNG size, prints, and measures 52 px controls and a phone.
+
+The validator and the print and offline utilities beneath it are described in [facility-validation.md](facility-validation.md).

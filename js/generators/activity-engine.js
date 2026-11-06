@@ -256,8 +256,10 @@
         var line = tpl.replace("{t}", P.stage === 3 ? cap(c.thing) : c.thing);
         items.push({ kind: c.kind, tag: KIND_LABEL[c.kind], thing: cap(c.thing), invite: line, sense: P.stage === 3 ? SENSE[c.kind] : "", staff: STAFF[c.kind] });
       }
-      if (P.interests.length && P.stage < 3 && items.length) {
-        var it = pick(P.interests, r);
+      /* each of the resident's own interests takes one card, once, on every other sheet; a sheet with a single idea keeps it */
+      var own = P.interests[Math.floor(s / 2)];
+      if (own && s % 2 === 0 && P.stage < 3 && items.length > 1) {
+        var it = own;
         if (!avoided(it, P.avoid)) items[items.length - 1] = { kind: "own", tag: "Your interests", thing: cap(it), invite: P.stage === 1 ? "Tell me about " + it + "." : "Let's talk about " + it + ".", sense: "", staff: "This one comes from the resident's own interests." };
       }
       sheets.push({ module: "reminiscence", kind: "prompts", title: "The " + P.decade + "s", subtitle: P.stage === 3 ? "Things to look at and enjoy" : "Things to talk about", items: items,
@@ -301,6 +303,7 @@
   function dailySheets(P, r, count) {
     var S = STAGES[P.stage], D = DEXTERITY[P.dexterity], sheets = [];
     var order = shuffle(TASKS, r), n = Math.max(3, S.steps - D.fewer);
+    count = Math.min(count, order.length);                              // each task once: a batch never repeats a page
     for (var s = 0; s < count; s++) {
       var t = order[s % order.length];
       var list = P.stage === 3 ? t.short : P.stage === 2 ? t.mid : t.full;
