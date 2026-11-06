@@ -1859,6 +1859,42 @@ textarea:focus{border-color:var(--accent)}
 .sbar-sheet .ops-row{grid-template-columns:1.5in minmax(0,1fr) 1.7in}
 .sbar-sheet .ops-tail{text-align:right}
 </style>
+<style id="sheet-looks">
+/* =====================================================================
+   THE PACKET'S HOUSE STYLES (the printed sheets)
+   generatePdf() puts one look on #printRoot for the whole packet, chosen from the resident and the month (sheetLook): the same
+   packet always looks the same, the next month's usually differs, and every sheet of one packet shares it. Each look changes only
+   the sheet's title band and keeps its height (the border and padding are traded against each other), so nothing on the sheet
+   moves. Black on white. The late stage (.lvl-advanced) and the calm pages keep the plain look.
+     ledger     the title over one heavy rule (the plain look: no class)
+     editorial  the title in Fraunces, centered, over a double rule
+     framed     the title band in a ruled box, a small solid square before the title
+     margin     a heavy bar in the margin beside a Fraunces title, over one rule
+   ===================================================================== */
+#printRoot[class*="look-"] .sheet:not(.lvl-advanced):not(.sheet-calm) .sh-head{position:relative}
+/* editorial: the title centered between two equal columns (the date line keeps its place), a second rule drawn under the first in the
+   gap below the band, so it takes no room */
+#printRoot.look-editorial .sheet:not(.lvl-advanced):not(.sheet-calm) .sh-head{display:grid;grid-template-columns:1fr auto 1fr}
+#printRoot.look-editorial .sheet:not(.lvl-advanced):not(.sheet-calm) .sh-head::before{content:""}
+#printRoot.look-editorial .sheet:not(.lvl-advanced):not(.sheet-calm) .sh-head h1{text-align:center}
+#printRoot.look-editorial .sheet:not(.lvl-advanced):not(.sheet-calm) .sh-head .sh-meta{justify-self:end}
+#printRoot.look-editorial .sheet:not(.lvl-advanced):not(.sheet-calm) .sh-head::after{content:"";position:absolute;left:0;right:0;bottom:calc(-2pt - 2 * max(3pt,var(--ml)));border-top:max(3pt,var(--ml)) solid #000}
+#printRoot.look-editorial .sheet:not(.lvl-advanced):not(.sheet-calm) .sh-head h1,
+#printRoot.look-margin .sheet:not(.lvl-advanced):not(.sheet-calm) .sh-head h1{font-family:"Fraunces",Georgia,"Times New Roman",serif;font-weight:700;letter-spacing:0}
+/* framed: the band's own rule is the box's foot; the top and sides are drawn over the band, and a small solid square sits before the title */
+#printRoot.look-framed .sheet:not(.lvl-advanced):not(.sheet-calm) .sh-head::after{content:"";position:absolute;left:0;right:0;top:-5pt;bottom:calc(-1 * max(3pt,var(--ml)));border:max(3pt,var(--ml)) solid #000;border-radius:5pt;pointer-events:none}
+#printRoot.look-framed .sheet:not(.lvl-advanced):not(.sheet-calm) .sh-head h1{padding-left:.32in;position:relative}
+#printRoot.look-framed .sheet:not(.lvl-advanced):not(.sheet-calm) .sh-head h1::before{content:"";position:absolute;left:.13in;top:50%;width:0;height:0;margin-top:-.045in;border:.045in solid #000}
+#printRoot.look-framed .sheet:not(.lvl-advanced):not(.sheet-calm) .sh-head .sh-meta{padding-right:.1in}
+/* the sheets the activity engine draws as one picture (src/engine/ClinicalActivities.js toSVG): the engine draws each look's rule, frame or
+   bar around the title, hidden; the look shows its own, and the serif looks set the title in Fraunces. The late stage carries none. */
+#printRoot.look-editorial .sheet-eng:not(.eng-late) svg [data-look="editorial"],
+#printRoot.look-framed .sheet-eng:not(.eng-late) svg [data-look="framed"],
+#printRoot.look-margin .sheet-eng:not(.eng-late) svg [data-look="margin"]{display:inline}
+#printRoot.look-editorial .sheet-eng:not(.eng-late) svg text[data-role="title"],
+#printRoot.look-margin .sheet-eng:not(.eng-late) svg text[data-role="title"]{font-family:"Fraunces",Georgia,"Times New Roman",serif}
+#printRoot.look-margin .sheet:not(.lvl-advanced):not(.sheet-calm) .sh-head{border-left:max(6pt,calc(2 * var(--ml))) solid #000;padding-left:.14in}
+</style>
 <style id="rs2-style">
 /* =====================================================================
    RESIDENT ROSTER (#/roster): avatar rows or cards, filters that show their counts, a sort, an empty state that says what to do.
@@ -14958,7 +14994,7 @@ function clinicalActivity(def){
       const full = A.withShell(page, { name:name, date:iso, wing:settings.wing, page:1, pages:1, tip:cue ? cue.text : "", stageLabel:CM.STAGES[stage].label, activity:def.kind, tool:"builder" });
       return { title:page.meta.title, instructions:page.meta.instruction || "", html:"", layout:"engine",
         signature:signatureOf(JSON.stringify([page.items, page.texts])), answers:A.answerLines(page).join(" · "),
-        sheet:'<section class="sheet sheet-eng" data-shell="1" aria-label="' + esc(page.meta.title) + '">' + A.toSVG(full, { width:"8.5in", height:"11in", background:false }) + "</section>" };
+        sheet:'<section class="sheet sheet-eng' + (stage === "late" ? " eng-late" : "") + '" data-shell="1" aria-label="' + esc(page.meta.title) + '">' + A.toSVG(full, { width:"8.5in", height:"11in", background:false }) + "</section>" };
     }
   };
 }
@@ -16052,6 +16088,15 @@ function numberSheets(root){
     sh.querySelectorAll("svg text").forEach(t => { if (/^Page \d+ of \d+$/.test(t.textContent)) t.textContent = "Page " + (i + 1) + " of " + n; });
   });
 }
+/* The packet's house style: ledger (plain), editorial, framed or margin, from the resident's name and the month, so a packet always
+   prints the same and next month's is usually different. Calm mode keeps the plain look. */
+let sheetLookFontTried = false;
+function sheetLook(who, calm){
+  if (calm) return "ledger";
+  const LOOKS = ["ledger", "editorial", "framed", "margin"], seed = String(who || "") + "|" + todayISO().slice(0, 7);
+  let x = 2166136261; for (let i = 0; i < seed.length; i++){ x ^= seed.charCodeAt(i); x = Math.imul(x, 16777619); }
+  return LOOKS[(x >>> 0) % LOOKS.length];
+}
 function generatePdf(items, printOptions){
   items = Array.isArray(items) ? items : queue;
   if (!items.length) return;
@@ -16067,6 +16112,14 @@ function generatePdf(items, printOptions){
   const root = $("#printRoot");
   root.className = "pure-bw" + (settings.residentClean !== false ? " res-clean" : "");           // every printed page is pure black on white; staff lines stay off the resident's pages
   const calmMode = printOptions && typeof printOptions.calmMode === "boolean" ? printOptions.calmMode : sundowningCalmActive;
+  /* the packet's house style (style#sheet-looks): one look for every sheet, from the resident and the month; calm mode keeps the plain look */
+  const look = sheetLook((items.find(q => q.cfg.residentName) || { cfg:{} }).cfg.residentName, calmMode);
+  if (/editorial|margin/.test(look) && !sheetLookFontTried && document.fonts && !document.fonts.check('700 26pt "Fraunces"')){
+    sheetLookFontTried = true;                                          // print in the serif, never a fallback; one try, then print anyway
+    document.fonts.load('700 26pt "Fraunces"').then(() => generatePdf(items, printOptions), () => generatePdf(items, printOptions));
+    return;
+  }
+  if (look !== "ledger") root.classList.add("look-" + look);
   root.innerHTML = items.map(item => sheetHtml(item, calmMode)).join("");
   numberSheets(root);                   // "Page X of Y" in every sheet's foot
   if (!root.firstElementChild){ printReady = false; root.innerHTML = ""; console.error("[Cognicopia] The print stage was empty, so nothing was printed and no free packet was used."); toast("That page could not be made, so nothing was printed and no free packet was used. Please try again."); return; }
