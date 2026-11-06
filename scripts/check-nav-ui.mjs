@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* =====================================================================
-   Navigation behavior, in a real browser: the six hubs open and close the
+   Navigation behavior, in a real browser: the seven places open and close the
    way a person expects (drop-downs across the top bar of a wide window, a
    Menu drawer on a phone), the current page is marked, and the Packet
    Builder's sidebar follows its screens. (scripts/site-nav.mjs --check proves what the
@@ -22,18 +22,18 @@ const open = (p, sel, attr) => p.$$eval(sel, (n, a) => n.filter(d => d.open).map
 const only = async (p, sel, ...want) => JSON.stringify(await open(p, sel)) === JSON.stringify(want);
 
 try {
-  /* a static page on a wide window: the six hubs run across a top bar, each a drop-down. None is open as the page opens; the hub that holds the
+  /* a static page on a wide window (1280 px and up): the seven places run across a top bar (Tablet Activities and Activity Packets are plain links, the rest drop-downs). None is open as the page opens; the hub that holds the
      page is marked; opening one closes the others; a click elsewhere or Escape closes it; the bar stays at the top while the page scrolls */
   let p = await page(1366, 900);
   const here = q => q.$$eval("details.cg-hub[data-here]", n => n.map(d => d.id.replace("cgHub-", "")));
   await p.goto(base + "index.html"); await p.waitForTimeout(400);
   const bar = await p.evaluate(() => { const b = document.getElementById("cgSidebar").getBoundingClientRect(); return { top: b.top, h: b.height, w: b.width, pad: parseFloat(getComputedStyle(document.body).paddingLeft) }; });
-  ok(bar.top === 0 && bar.h <= 80 && bar.w >= 1350 && bar.pad === 0, `the six hubs are a top bar across the page (${Math.round(bar.w)} x ${Math.round(bar.h)} px), with no side column`);
+  ok(bar.top === 0 && bar.h <= 80 && bar.w >= 1350 && bar.pad === 0, `the seven places are a top bar across the page (${Math.round(bar.w)} x ${Math.round(bar.h)} px), with no side column`);
   ok((await open(p, "details.cg-hub")).length === 0 && JSON.stringify(await here(p)) === '["today"]', "the packet tool opens with no drop-down open and Today marked as the hub that holds it");
   await p.click("#cgHub-studio > summary"); await p.waitForTimeout(150);
   ok(await only(p, "details.cg-hub", "studio"), "clicking Studio opens its drop-down");
   const drop = await p.evaluate(() => { const nav = document.getElementById("cgSidebar").getBoundingClientRect(), d = document.querySelector("#cgHub-studio > .cg-sb-sub").getBoundingClientRect(), links = [...document.querySelectorAll("#cgHub-studio > .cg-sb-sub a")].map(a => a.getBoundingClientRect().height); return { below: d.top >= nav.bottom, h: d.height, n: links.length, min: Math.min(...links) }; });
-  ok(drop.below && drop.h > 100 && drop.n === 4 && drop.min >= 52, `the drop-down opens below the bar with its four places, each at least 52 px tall (${drop.n}, smallest ${drop.min} px)`);
+  ok(drop.below && drop.h > 100 && drop.n === 6 && drop.min >= 52, `the drop-down opens below the bar with its six places, each at least 52 px tall (${drop.n}, smallest ${drop.min} px)`);
   await p.focus("#cgHub-facility > summary"); await p.keyboard.press("Enter"); await p.waitForTimeout(150);
   ok(await only(p, "details.cg-hub", "facility"), "Enter on Facility opens it and closes Studio");
   await p.keyboard.press("Escape"); await p.waitForTimeout(150);
@@ -73,8 +73,8 @@ try {
   ok(/^\d+$/.test((await p.textContent("#navColoringCount")).trim()), "Cognicopia Coloring shows how many pictures it has");
   await p.click("details.sb-hub[data-hub='facility'] > summary"); await p.click(".sb-link[data-route='roster']"); await p.waitForTimeout(700);
   ok(await p.$eval(".sb-link[aria-current='page']", e => e.dataset.route) === "roster" && await only(p, "details.sb-hub", "facility"), "choosing the roster marks it current and keeps Facility open");
-  await p.click("a.sb-hub-link[data-route='academy']"); await p.waitForTimeout(700);
-  ok(await p.$eval("a.sb-hub-link[aria-current='page']", e => e.dataset.route) === "academy", "Academy, a plain link, is marked current");
+  await p.click("details.sb-hub[data-hub='academy'] > summary"); await p.click(".sb-link[data-route='academy']"); await p.waitForTimeout(700);
+  ok(await p.$eval(".sb-link[aria-current='page']", e => e.dataset.route) === "academy" && await only(p, "details.sb-hub", "academy"), "choosing the Academy marks it current and keeps the Academy hub open (it also holds the scenario practice)");
   await p.evaluate(() => { location.hash = "#/planner"; }); await p.waitForTimeout(600);
   ok(await only(p, "details.sb-hub", "studio"), "a typed address (#/planner) opens the hub that holds it");
   await p.evaluate(() => { location.hash = "#/category/word"; }); await p.waitForTimeout(600);

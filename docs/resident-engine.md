@@ -30,6 +30,24 @@ The Roster shows a **suggested support tier**, starting from the stage (or the p
 
 **Known limit:** Quick Print PDFs on `index.html` have their own clinical foot lines; they are not yet moved to the staff companion.
 
+## Deep Biographical Profiling & The Four Human Pillars (`src/engine/packetGenerator.ts`)
+
+Before any activity (word search, trivia, reminiscence card, or matching game) is compiled and rendered into the vector SVG template, the activity generation engine evaluates and weaves in four foundational human anchors:
+
+1. **WHAT CAN THEY DO? (Cognitive & motor bandwidth):**
+   - Assesses `motorCapabilityLevel` (`high`, `moderate`, `assisted`) and `cognitiveTier` (1, 2, 3 / mild, moderate, late).
+   - Enforces the clinical 18pt+ typography floor (up to 36pt for assisted motor levels), pure black-and-white contrast (#000000 on #ffffff, zero grayscale), and thick guidance stroke widths (up to 10.5pt) for motor engagement and tremor accommodation.
+2. **WHAT DO THEY CARE ABOUT? (Lifelong passions & formative music):**
+   - Weaves in `corePassions` (e.g., gardening, woodworking, baking) and era-accurate melodies and cultural references from their `formativeEra` (e.g. 1940s Big Band, 1950s Rock/Doo-Wop, 1960s Motown, 1970s Folk).
+3. **WHAT DO THEY HAVE ON HAND? (Tangible sensory pairings):**
+   - Pairs worksheets directly with physical tangible objects available in memory care (`onHandItems`: colored pencils, tactile tokens, memory stones, smooth river rocks) so residents can manipulate real physical items while participating.
+4. **PROFESSIONAL & EDUCATIONAL IDENTITY (Historical dignity & trade pride):**
+   - Integrates the resident's historical identity: *"Who was this person at work or school when they were younger before their memory started to go?"*
+   - Captures past trades, careers, homemaking roles, military service, and academic crafts (`pastVocation`) to anchor prompts and tool associations in true historical dignity without elderspeak or infantilizing quiz questions.
+
+Output strictly conforms to the **150 Master SVG Vector Architecture** (pure black lines, zero grayscale fills/gradients, Atkinson Hyperlegible geometry, US Letter margins with 0.75 in binding gutters).
+
 ## Menu and addresses
 
 The top bar and the drawer carry two headings, **Resident tools** and **Staff & family portal**, over the same six hubs. The planner's care companion has its own address, `builder.html#/planner-care-companion`.
+

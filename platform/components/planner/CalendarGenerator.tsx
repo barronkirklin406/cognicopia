@@ -6,6 +6,7 @@ import { Alert } from "@/components/Alert";
 import { FormAlerts, SubmitButton } from "@/components/forms";
 import { emptyState } from "@/lib/auth/state";
 import type { ContentItem } from "@/lib/db/models";
+import type { CalendarSlot } from "@/lib/domain/calendar";
 import { generateCalendar, newSeed, toGeneratorItem, type Plan } from "@/lib/domain/calendar-generator";
 import { monthLabel } from "@/lib/domain/months";
 import { STAGES, type TrackStage } from "@/lib/domain/stages";
@@ -26,6 +27,7 @@ export function CalendarGenerator({
   library,
   months,
   savedMonths,
+  pinnedByMonth,
   initialMonth,
   initialSeed,
   facilityName,
@@ -34,6 +36,8 @@ export function CalendarGenerator({
   months: string[];
   /** Months that already have a saved calendar: saving one of these replaces it. */
   savedMonths: string[];
+  /** Each saved month's pinned sessions: planning the month again keeps them, so the preview shows them too. */
+  pinnedByMonth: Record<string, CalendarSlot[]>;
   initialMonth: string;
   initialSeed: string;
   facilityName: string;
@@ -48,7 +52,8 @@ export function CalendarGenerator({
 
   const plan: Plan = useMemo(() => ({ month, theme, stages, perDay, seed }), [month, theme, stages, perDay, seed]);
   const generatorItems = useMemo(() => library.map(toGeneratorItem), [library]);
-  const made = useMemo(() => generateCalendar(plan, generatorItems), [plan, generatorItems]);
+  const pinned = pinnedByMonth[month];
+  const made = useMemo(() => generateCalendar(plan, generatorItems, { pinned: pinned ?? [] }), [plan, generatorItems, pinned]);
   const activities = useMemo(() => Object.fromEntries(library.map((item) => [item.id, item])), [library]);
 
   const replaces = savedMonths.includes(month);
@@ -121,6 +126,12 @@ export function CalendarGenerator({
               {made.stats.sessions} sessions across {made.data.groups.length} {made.data.groups.length === 1 ? "stage" : "stages"}, using {made.stats.distinct} different activities
               {theme !== "none" ? `. ${made.stats.themed} of them (${Math.round((made.stats.themed / made.stats.sessions) * 100)}%) fit the ${themeLabel(theme)} theme` : ""}.
             </p>
+            {made.stats.pinnedKept > 0 || made.stats.pinnedDropped > 0 ? (
+              <Alert tone="info">
+                {made.stats.pinnedKept} pinned {made.stats.pinnedKept === 1 ? "session" : "sessions"} from the saved month {made.stats.pinnedKept === 1 ? "is" : "are"} kept as {made.stats.pinnedKept === 1 ? "it is" : "they are"}.
+                {made.stats.pinnedDropped > 0 ? ` ${made.stats.pinnedDropped} could not be kept, because ${made.stats.pinnedDropped === 1 ? "its stage is" : "their stages are"} not planned this time.` : ""}
+              </Alert>
+            ) : null}
             {made.stats.skipped.length > 0 ? (
               <Alert tone="warn">The library has nothing for {made.stats.skipped.map((s) => STAGES.find((x) => x.id === s)?.label ?? s).join(" or ")} yet, so it is left out.</Alert>
             ) : null}

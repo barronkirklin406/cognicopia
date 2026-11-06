@@ -48,7 +48,7 @@ const INSERT_OPTIONAL = {
   facility_users: ["role", "created_at"],
   facility_invites: ["id", "email", "role", "created_by", "created_at", "accepted_at", "accepted_by"],
   content_items: ["id", "created_at"],
-  activity_calendars: ["id", "created_at"],
+  activity_calendars: ["id", "created_at", "updated_at"],
 } as const satisfies { [T in TableName]: readonly (keyof TablesInsert<T>)[] };
 
 // If a list above stops matching its Insert type, these stop compiling.
@@ -205,6 +205,10 @@ const FUNCTIONS = {
   preview_facility_invite: {
     args: { p_token: "required" },
     result: "TABLE(facility_name text, role facility_role, email_locked boolean, email_matches boolean)",
+  },
+  rate_limit_hit: {
+    args: { p_key: "required", p_window_seconds: "required", p_max: "required" },
+    result: "TABLE(allowed boolean, hits integer, retry_after integer)",
   },
 } as const satisfies { [K in FunctionName]: { args: { [A in keyof FunctionArgs<K>]-?: "required" | "optional" }; result: string } };
 

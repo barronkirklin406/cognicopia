@@ -1,3 +1,4 @@
+import "./zod-setup";
 import { z } from "zod";
 import { FACILITY_ROLES } from "@/lib/db/models";
 
@@ -19,6 +20,9 @@ export const CreateInviteSchema = z.object({
   email: OptionalEmail,
   role: z.enum(FACILITY_ROLES),
 });
+
+/** How long an invitation lasts. The database sets the expiry itself (migration 5); this is what people are told. */
+export const INVITE_DAYS = 7;
 
 /** The secret in an invitation link: 64 lower-case hex characters. */
 export const InviteTokenSchema = z

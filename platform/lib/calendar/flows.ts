@@ -1,5 +1,5 @@
 import type { FlowResult } from "@/lib/auth/state";
-import { saveCalendar } from "@/lib/data/calendars";
+import { getCalendar, saveCalendar } from "@/lib/data/calendars";
 import { listContent } from "@/lib/data/content";
 import type { Db } from "@/lib/data/db";
 import { DataError } from "@/lib/data/errors";
@@ -38,7 +38,10 @@ export async function saveGeneratedCalendarFlow(db: Db, facilityId: string, inpu
 
   try {
     const library = (await listContent(db, { limit: 1000 })).map(toGeneratorItem);
-    const made = generateCalendar(plan, library);
+    // Sessions staff pinned in the month being replaced are kept: planning a month again must not undo a hand edit.
+    const existing = await getCalendar(db, plan.month);
+    const pinned = existing ? existing.generated_data.slots.filter((slot) => slot.locked) : [];
+    const made = generateCalendar(plan, library, { pinned });
     if (!made.ok) return failed(made.message);
 
     const checked = parseCalendarData(plan.month, made.data);
@@ -48,7 +51,7 @@ export async function saveGeneratedCalendarFlow(db: Db, facilityId: string, inpu
     }
 
     await saveCalendar(db, { facility_id: facilityId, month_year: plan.month, generated_data: checked.data });
-    return { to: `/calendar?month=${plan.month}&notice=saved` };
+    return { to: `/calendar?month=${plan.month}&notice=${made.stats.pinnedKept > 0 ? "saved-pinned" : "saved"}` };
   } catch (error) {
     if (error instanceof DataError) return failed(error.message);
     console.error("[calendar] unexpected error", error instanceof Error ? error.name : typeof error);

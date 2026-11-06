@@ -60,24 +60,33 @@
 
 @layer components {
 :root {
-  --ink: #2d241d;
-  --ink-soft: #514439;
-  --paper: #1b4332;
-  --field: #fffdf7;
+  /* the oceanic screen palette, the same as the public site's (css/styles.css): alabaster pages, rich slate headers,
+     deep teal controls, sage for what is good, warm charcoal text. Teal (#0d9488) is for glows and borders only: it is 3.6:1 on alabaster. */
+  --ink: #28241f;
+  --ink-soft: #403b35;
+  --paper: #0f172a;
+  --field: #fafafd;
   --white: #ffffff;
-  --garden: #286e75;
-  --garden-dark: #1a5058;
+  --garden: #0b5f59;
+  --garden-dark: #08423f;
+  --teal: #0d9488;
   --gold: #a8802f;
   --warn: #9b3b23;
-  --rule: #cdbdA8;
-  --rule-soft: #dccdba;
-  --tint: #e5efe4;
-  --good-ink: #1a5038;
+  --rule: #d4d0c6;
+  --rule-soft: #e3e0d7;
+  --tint: #e4f4f1;
+  --good-ink: #355e3b;
   --warn-tint: #fff3d6;
   --bad-tint: #fbeae5;
-  --radius: 12px;
-  --display: Georgia, "Times New Roman", serif;
+  --radius: 16px;
+  --display: "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --body: "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --glass: rgba(255, 255, 255, 0.78);
+  --glass-line: rgba(15, 23, 42, 0.09);
+  --glass-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 1px 2px rgba(15, 23, 42, 0.05), 0 16px 40px -18px rgba(15, 23, 42, 0.18);
+  --lift-shadow: 0 10px 24px -10px rgba(8, 66, 63, 0.4);
+  --glow: 0 0 0 1px rgba(13, 148, 136, 0.55), 0 0 20px -4px rgba(13, 148, 136, 0.45);
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 *,
@@ -93,7 +102,9 @@ html {
 
 body {
   margin: 0;
-  background: var(--field);
+  background-color: var(--field);
+  background-image: linear-gradient(180deg, rgba(13, 148, 136, 0.08) 0, rgba(13, 148, 136, 0) 420px), linear-gradient(115deg, rgba(53, 94, 59, 0.06) 0, rgba(53, 94, 59, 0) 40%);
+  background-attachment: fixed;
   color: var(--ink);
   font-family: var(--body);
   line-height: 1.55;
@@ -102,6 +113,7 @@ body {
 h1,
 h2,
 h3 {
+  color: var(--paper);
   font-family: var(--display);
   line-height: 1.2;
   margin: 0 0 0.5em;
@@ -156,7 +168,7 @@ main { padding-block: 2rem 4rem; }
 
 /* ---------- header ---------- */
 
-.site-header { background: var(--paper); color: var(--field); }
+.site-header { background: var(--paper); color: var(--field); border-bottom: 2px solid rgba(13, 148, 136, 0.55); box-shadow: 0 10px 30px -18px rgba(15, 23, 42, 0.6); }
 .site-header .page-width {
   display: flex;
   flex-wrap: wrap;
@@ -199,15 +211,18 @@ main { padding-block: 2rem 4rem; }
 /* ---------- cards, badges, alerts ---------- */
 
 .card {
-  background: var(--white);
-  border: 1px solid var(--rule);
+  background: var(--glass);
+  -webkit-backdrop-filter: blur(14px) saturate(1.15);
+  backdrop-filter: blur(14px) saturate(1.15);
+  border: 1px solid var(--glass-line);
   border-radius: var(--radius);
+  box-shadow: var(--glass-shadow);
   padding: 1.25rem 1.5rem;
 }
 .card > :last-child { margin-bottom: 0; }
 .card h2, .card h3 { margin-top: 0; }
 a.card { display: block; color: inherit; text-decoration: none; }
-a.card:hover { border-color: var(--garden-dark); box-shadow: 0 0 0 2px var(--garden-dark); }
+a.card:hover { border-color: rgba(13, 148, 136, 0.6); box-shadow: 0 16px 36px -16px rgba(8, 66, 63, 0.4), 0 0 0 2px var(--garden-dark); }
 a.card h2, a.card h3 { color: var(--garden-dark); text-decoration: underline; text-underline-offset: 0.15em; }
 
 .badge {
@@ -240,7 +255,7 @@ a.card h2, a.card h3 { color: var(--garden-dark); text-decoration: underline; te
   justify-content: center;
   min-height: 44px;
   padding: 0.5rem 1.1rem;
-  border-radius: 8px;
+  border-radius: 12px;
   border: 2px solid var(--garden-dark);
   background: var(--garden-dark);
   color: var(--white);
@@ -249,7 +264,7 @@ a.card h2, a.card h3 { color: var(--garden-dark); text-decoration: underline; te
   text-decoration: none;
   cursor: pointer;
 }
-.btn:hover { background: var(--paper); border-color: var(--paper); color: var(--white); }
+.btn:hover { background: var(--paper); border-color: var(--paper); color: var(--white); box-shadow: var(--lift-shadow), var(--glow); }
 .btn[disabled],
 .btn[aria-disabled="true"] { opacity: 0.65; cursor: not-allowed; }
 .btn.secondary { background: transparent; color: var(--garden-dark); }
@@ -266,10 +281,16 @@ select {
   min-height: 44px;
   padding: 0.5rem 0.75rem;
   border: 2px solid var(--ink-soft);
-  border-radius: 8px;
+  border-radius: 12px;
   font: inherit;
   background: var(--white);
   color: var(--ink);
+  box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.06);
+}
+.field input:focus,
+select:focus {
+  border-color: var(--garden-dark);
+  box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.06), 0 0 0 4px rgba(13, 148, 136, 0.22);
 }
 .field input,
 .field select { width: 100%; }
@@ -286,7 +307,8 @@ select {
 .table-wrap { overflow-x: auto; position: relative; }
 table { width: 100%; border-collapse: collapse; }
 th, td { text-align: left; padding: 0.6rem 0.5rem; border-bottom: 1px solid var(--rule-soft); vertical-align: middle; }
-th { font-size: 0.9rem; color: var(--ink-soft); }
+th { font-size: 0.9rem; color: var(--ink-soft); background: var(--tint); }
+tbody tr:hover > * { background: rgba(13, 148, 136, 0.06); }
 td .field { margin: 0; }
 
 .link-box {
@@ -310,6 +332,27 @@ td .field { margin: 0; }
   h1 { font-size: 1.6rem; }
   .hero h1 { font-size: 1.9rem; }
   .card { padding: 1rem; }
+}
+
+/* Touch: pointing lifts a control and lights its edge, using it presses it in. Both stop for a person who asks for less motion (below). */
+@media (prefers-reduced-motion: no-preference) {
+  .btn,
+  button,
+  a.card,
+  .nav a,
+  .card {
+    transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease), background-color 0.2s var(--ease), border-color 0.2s var(--ease), color 0.2s var(--ease);
+  }
+  .btn:hover:not([disabled]):not([aria-disabled="true"]),
+  a.card:hover {
+    transform: translateY(-1px);
+  }
+  a.card:hover { transform: translateY(-3px); }
+  .btn:active:not([disabled]):not([aria-disabled="true"]),
+  button:active:not(:disabled) {
+    transform: scale(0.96);
+    transition-duration: 0.08s;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

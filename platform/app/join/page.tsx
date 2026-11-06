@@ -8,6 +8,7 @@ import { first, type SearchParams } from "@/lib/auth/params";
 import { previewInvite } from "@/lib/data/invites";
 import { InviteTokenSchema } from "@/lib/domain/invite";
 import { signOutAction } from "@/app/actions";
+import { enforceRate } from "@/lib/security/enforce";
 
 export const metadata: Metadata = { title: "Join a facility" };
 
@@ -76,6 +77,19 @@ export default async function JoinPage({ searchParams }: { searchParams: SearchP
               Sign out
             </button>
           </form>
+        </div>
+      </Shell>
+    );
+  }
+
+  // Looking a link up is a database call: count it, so the page cannot be used to hammer the database.
+  const limited = await enforceRate("invite-link");
+  if (limited) {
+    return (
+      <Shell session={ctx}>
+        <div className="narrow stack">
+          <h1>Please wait a moment</h1>
+          <p>{limited.error}</p>
         </div>
       </Shell>
     );

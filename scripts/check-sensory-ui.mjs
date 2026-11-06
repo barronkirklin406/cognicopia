@@ -23,7 +23,7 @@ const ratio = (a, b) => { const x = lum(a), y = lum(b); return (Math.max(x, y) +
 try {
   for (const mode of ["day", "night"]){
     const p = await browser.newPage({ viewport: { width: 1366, height: 900 } });
-    await p.goto(base + "builder.html#/journal");
+    await p.goto(base + "builder.html#/life-journal");
     await p.waitForTimeout(1200);
     await p.getByRole("button", { name: "Try an example" }).click();
     await p.waitForTimeout(800);

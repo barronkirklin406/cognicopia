@@ -86,6 +86,8 @@ export const teamNotice = (key: unknown): string | null => lookup(TEAM_NOTICES, 
 /** What the calendar page may show for `?notice=...`: a saved calendar redirects here, so the message outlives the form. */
 const CALENDAR_NOTICES = {
   saved: "Calendar saved. It replaces any earlier calendar for that month.",
+  "saved-pinned": "Calendar saved. The sessions you had pinned were kept as they were, and the rest of the month was planned around them.",
+  edited: "Saved.",
 } as const;
 
 export const calendarNotice = (key: unknown): string | null => lookup(CALENDAR_NOTICES, key);

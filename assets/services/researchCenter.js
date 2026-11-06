@@ -304,11 +304,11 @@ const DOCS                 = [
           { p: "The pattern in the review favors individual reminiscence: the probable benefits to cognition and to mood appeared for individual work, not for group programs. [@woods2018] Individual work lets the prompts come from the person’s own history: their hometown, their work, their family, the music of their younger years." },
           { p: "Group reminiscence is still worth doing for connection and enjoyment. The evidence simply suggests expecting less measurable change from general group themes than from personal material." }
         ] },
-      { id: "cognicopia", title: "How Cognicopia applies this", brief: "Reminiscence Cards, the Life Story Journal and the Memory Digest all start from the resident’s own details.",
+      { id: "cognicopia", title: "How Cognicopia applies this", brief: "Reminiscence Cards, the Life Story Journal and the Quarterly Legacy & Memory Books all start from the resident’s own details.",
         blocks: [
           { list: [
             "Reminiscence Cards are built from a resident’s era, home region and line of work, each with conversation starters, a song from their era and something to hold.",
-            "The Life Story Journal and the Memory Digest keep a resident’s own words, so the next conversation can start from them.",
+            "The Life Story Journal and the Quarterly Legacy & Memory Books keep a resident’s own words, so the next conversation can start from them.",
             "Prompts invite rather than test. The tools’ dignity checks reject quiz phrasing such as “Do you remember…?” (see [[dignity-first-design]]).",
             "Staff can learn to run a structured session in the Academy masterclass Running Structured Reminiscence Circles."
           ] }

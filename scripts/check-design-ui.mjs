@@ -123,7 +123,7 @@ try {
   for (const id of ["link", "btn", "cta", "sum", "tab", "sw", "inp"]) {
     await p.keyboard.press("Tab"); await p.waitForTimeout(330);
     const r = await p.evaluate(() => { const e = document.activeElement, s = getComputedStyle(e); return { id: e.id, style: s.outlineStyle, width: s.outlineWidth, color: s.outlineColor, offset: s.outlineOffset, shadow: s.boxShadow }; });
-    ok(r.id === id && r.style === RING.style && r.width === RING.width && r.color === RING.color && r.offset === RING.offset && /rgb\(8, 38, 44\) 0px 0px 0px 6px/.test(r.shadow),
+    ok(r.id === id && r.style === RING.style && r.width === RING.width && r.color === RING.color && r.offset === RING.offset && /rgb\(15, 23, 42\) 0px 0px 0px 6px/.test(r.shadow),
       `Tab reaches #${id} and shows the two-band ring (${r.id}: ${r.width} ${r.style} ${r.color}, ${r.shadow})`);
   }
   await shot(p, "kit-focus");
@@ -132,18 +132,19 @@ try {
   await p.click("#inp"); await p.waitForTimeout(330);
   ok((await style(p, "#inp", ["outlineStyle", "outlineWidth"])).outlineWidth === "3px", "a text field shows the ring however it was focused");
 
-  /* touch: state changes ease, a press moves one pixel, a card lifts */
+  /* touch: state changes ease, a press shrinks the control a little, a card lifts */
   const tr = await style(p, "#btn", ["transitionProperty", "transitionDuration"]);
   ok(/background-color/.test(tr.transitionProperty) && /transform/.test(tr.transitionProperty) && /box-shadow/.test(tr.transitionProperty), "a button eases its color, shadow and press");
   ok(durations(tr.transitionDuration).every(d => d > 0 && d <= 0.2), `each transition is short (${tr.transitionDuration})`);
   await p.hover("#btn"); await p.mouse.down(); await p.waitForTimeout(330);
-  ok((await style(p, "#btn", ["transform"])).transform === "matrix(1, 0, 0, 1, 0, 1)", "pressing a button moves it one pixel down");
+  ok((await style(p, "#btn", ["transform"])).transform === "matrix(0.96, 0, 0, 0.96, 0, 0)", "pressing a button presses it in (a scale of .96)");
   await p.mouse.up(); await p.mouse.move(700, 600); await p.waitForTimeout(330);
   ok((await style(p, "#btn", ["transform"])).transform === "none", "and releasing returns it");
   const before = (await style(p, "#cta", ["boxShadow"])).boxShadow;
   await p.hover("#cta"); await p.waitForTimeout(330);
   const after = (await style(p, "#cta", ["boxShadow"])).boxShadow;
-  ok(before !== after && /12px/.test(after) && !/12px/.test(before), "a .cg-btn lifts its shadow on hover");
+  const blur = t => Math.max(0, ...(t.match(/\d+px \d+px (\d+)px/g) || []).map(x => +x.split(" ")[2].replace("px", "")));
+  ok(before !== after && blur(after) > blur(before), `a .cg-btn lifts its shadow on hover (blur ${blur(before)} px, then ${blur(after)} px)`);
   const cb = await p.evaluate(() => { const r = document.getElementById("cta").getBoundingClientRect(); return { w: r.width, h: r.height }; });
   ok(cb.h >= 52 && cb.w >= 52, `a .cg-btn is at least 52 px both ways (${Math.round(cb.w)} x ${Math.round(cb.h)})`);
   await p.click("#sum"); await p.waitForTimeout(40);
@@ -233,17 +234,23 @@ try {
     await ctx.close();
   }
   ctx = await context(1366, 768); p = await open(ctx, "index.html"); await p.waitForTimeout(300);
-  const lap = await p.evaluate(() => [...document.querySelectorAll(".cg-value")].map(e => Math.round(e.getBoundingClientRect().bottom)));
-  ok(lap.length === 5 && lap.every(b => b <= 768), `at 1366 x 768 all five value cards are fully on the first screen (bottoms at ${lap.join(", ")} px)`);
+  /* the redesigned hero (the owner's brief, November 2026) is a taller, calmer first screen: headline, subtitle, the one button and its line, with the next section's heading just beginning; the five cards are one scroll down */
+  const lap = await p.evaluate(() => { const r = s => document.querySelector(s).getBoundingClientRect(); return { cta: Math.round(r(".lp-btn").bottom), note: Math.round(r("#heroNote").bottom), h1: Math.round(r(".hero-title").top), next: Math.round(r("#featTitle").top), cards: document.querySelectorAll(".cg-value").length, shown: [...document.querySelectorAll(".cg-value")].filter(e => e.getBoundingClientRect().top < innerHeight).length }; });
+  ok(lap.cards === 5 && lap.cta <= 768 && lap.note <= 768 && lap.h1 >= 80, `at 1366 x 768 the headline, the Get Started Free button and its line are fully on the first screen (button bottom ${lap.cta}, line bottom ${lap.note} px)`);
+  ok(lap.next < 768, `and the next section's heading begins on the first screen, so a visitor sees there is more (${lap.next} px from the top)`);
   await ctx.close();
   /* the front of the packet tool: a hero in two columns, a button that reaches the tool, the evidence, the footer */
   ctx = await context(1366, 768); p = await open(ctx, "index.html"); await p.waitForTimeout(300);
   const lp = await p.evaluate(() => { const c = document.querySelector(".lp-copy").getBoundingClientRect(), v = document.querySelector(".lp-visual").getBoundingClientRect(), b = document.querySelector(".lp-btn");
     return { side: v.left >= c.right - 1 && v.width > 300, href: b.getAttribute("href"), bh: b.getBoundingClientRect().height, make: !!document.querySelector("#make .wrap #f"),
       marks: [...document.querySelectorAll(".lp-marks a")].map(a => a.getAttribute("href")), foot: document.querySelectorAll(".lp-footer nav a").length, quote: (document.querySelector(".lp-quote figcaption") || {}).textContent || "",
-      hidden: document.querySelector(".lp-visual").getAttribute("aria-hidden") }; });
-  ok(lp.side && lp.hidden === "true", "the hero is two columns: the words, and beside them a picture of the tool that screen readers skip");
-  ok(lp.href === "#make" && lp.bh >= 52 && lp.make, `"Make a packet" (${lp.bh} px tall) points at the packet tool, which sits under it on the same page`);
+      tabs: [...document.querySelectorAll(".lp-visual [role=tab]")].map(t => Math.round(t.getBoundingClientRect().height)),
+      shots: [...document.querySelectorAll(".lp-visual .lp-panel svg")].filter(s => s.getAttribute("role") === "img" && (s.getAttribute("aria-label") || "").length > 40).length,
+      frame: [...document.querySelectorAll(".lp-visual .lp-orb, .lp-visual .lp-cam, .lp-visual .lp-hinge, .lp-visual .lp-base")].every(e => e.getAttribute("aria-hidden") === "true") }; });
+  /* the owner's brief (November 2026): the laptop shows three examples Cognicopia makes, chosen with real tabs, so the picture is no longer hidden from screen readers:
+     each example is a labelled picture, and only the laptop's frame and the glow are skipped */
+  ok(lp.side && lp.tabs.length === 3 && lp.tabs.every(h => h >= 52) && lp.shots === 3 && lp.frame, `the hero is two columns: the words, and beside them a laptop with three examples, three 52 px tabs (${lp.tabs.join(", ")} px) and a label on each example for screen readers`);
+  ok(lp.href === "#make" && lp.bh >= 52 && lp.make, `"Get Started Free" (${lp.bh} px tall) points at the packet tool, which sits under it on the same page`);
   ok(lp.marks.length === 5 && lp.marks.every(h => /^resources\/research\/[a-z-]+\/$/.test(h)), "the evidence row links five Research Center summaries");
   ok(lp.foot === 15 && /Cognicopia/.test(lp.quote) && !/Kirk Barron/.test(lp.quote), "the footer has its three columns of links and the quote is credited to Cognicopia, not a person");
   await p.click(".lp-btn"); await p.waitForTimeout(900);
@@ -255,7 +262,8 @@ try {
   await ctx.close();
   ctx = await context(390, 844); p = await open(ctx, "index.html"); await p.waitForTimeout(300);
   const ph = await p.evaluate(() => { const a = [...document.querySelectorAll(".cg-value")].map(e => { const b = e.getBoundingClientRect(); return [Math.round(b.top), Math.round(b.bottom)]; }); return { cards: a, h1: Math.round(document.querySelector(".hero-title").getBoundingClientRect().top) }; });
-  ok(ph.cards.length === 5 && ph.cards[0][1] <= 844, `at 390 x 844 the first value card is fully on the first screen (${ph.cards[0].join("-")} px of 844)`);
+  const cta = await p.evaluate(() => Math.round(document.querySelector(".lp-btn").getBoundingClientRect().bottom));
+  ok(ph.cards.length === 5 && cta <= 844 && ph.cards[0][0] < 844, `at 390 x 844 the headline and the Get Started Free button are fully on the first screen (button bottom ${cta}) and the first value card begins on it (${ph.cards[0].join("-")} px of 844)`);
   await shot(p, "index-phone");
   await ctx.close();
 

@@ -71,7 +71,10 @@ const SEALED_PREFIXES                    = [
   "cognicopia_quality",         // the Quality Standards Hub: the survey-readiness checklist and the facility's name on its cover sheet
   "cognicopia_alignment",       // Clinical & Caregiver Alignment: the chosen objective, the evidence ticks and the cover-sheet details
   "cognicopia_dailyops",        // The Shift board: handoff notes and tasks (residents by alias only), staff initials
-  "cognicopia_localdb_"         // CognicopiaLocalDB (localDb.ts): a resident's details and a saved packet's pages
+  "cognicopia_localdb_",        // CognicopiaLocalDB (localDb.ts): a resident's details and a saved packet's pages
+  "cognicopia_studio_",         // the Studio tools: monthly tracking, the life narrative journal, the seasonal planner (js/studio-core.js)
+  "cognicopia_slp_goals_",      // therapy goal tracking: MoCA and MMSE scores by domain, codes chosen, goals (js/slp-goals.js)
+  "cognicopia_backup_"          // the backup index: which saved records changed since the last backup (js/backup-diff.js)
 ];
 const isSealed = (name        )          => SEALED_PREFIXES.some(p => name.startsWith(p));
 
@@ -663,19 +666,19 @@ function promptUnlock()                   {
     return new Promise(resolve => doc.addEventListener("DOMContentLoaded", () => { promptUnlock().then(resolve); }, { once: true }));
   return new Promise(resolve => {
     const wrap = doc.createElement("div");
-    wrap.setAttribute("style", "position:fixed;inset:0;z-index:10000;display:grid;place-items:center;padding:16px;background:rgba(6,20,14,.78);font:16px/1.5 'Atkinson Hyperlegible','Trebuchet MS','Segoe UI',sans-serif");
+    wrap.setAttribute("style", "position:fixed;inset:0;z-index:10000;display:grid;place-items:center;padding:16px;background:rgba(7,11,19,.78);font:16px/1.5 'Atkinson Hyperlegible','Trebuchet MS','Segoe UI',sans-serif");
     const opts = KEEP_CHOICES.map(c => `<option value="${c.minutes}"${c.minutes === DEFAULT_KEEP_MINUTES ? " selected" : ""}>${c.label}</option>`).join("");
-    wrap.innerHTML = `<form role="dialog" aria-modal="true" aria-labelledby="cssTitle" aria-describedby="cssBody" style="width:min(460px,100%);padding:24px;border-radius:14px;background:#fff;color:#10251c;box-shadow:0 20px 60px rgba(0,0,0,.4)">
-      <h2 id="cssTitle" style="margin:0 0 6px;font-size:21px;line-height:1.25;color:#10251c">Saved resident details are locked</h2>
+    wrap.innerHTML = `<form role="dialog" aria-modal="true" aria-labelledby="cssTitle" aria-describedby="cssBody" style="width:min(460px,100%);padding:24px;border-radius:14px;background:#fff;color:#101625;box-shadow:0 20px 60px rgba(0,0,0,.4)">
+      <h2 id="cssTitle" style="margin:0 0 6px;font-size:21px;line-height:1.25;color:#101625">Saved resident details are locked</h2>
       <p id="cssBody" style="margin:0 0 14px;color:#2f4a3d">Enter this computer's Cognicopia passphrase to open them. They are encrypted on this computer and are never sent anywhere.</p>
-      <label for="cssPass" style="display:block;font-weight:700;margin-bottom:4px;color:#10251c">Passphrase</label>
-      <input id="cssPass" type="password" autocomplete="current-password" required style="box-sizing:border-box;width:100%;min-height:52px;padding:8px 10px;border:2px solid #52796f;border-radius:8px;font:inherit;background:#fff;color:#10251c">
-      <label for="cssKeep" style="display:block;font-weight:700;margin:12px 0 4px;color:#10251c">Keep unlocked on this computer for</label>
-      <select id="cssKeep" style="box-sizing:border-box;width:100%;min-height:52px;padding:6px 8px;border:2px solid #52796f;border-radius:8px;font:inherit;background:#fff;color:#10251c">${opts}</select>
+      <label for="cssPass" style="display:block;font-weight:700;margin-bottom:4px;color:#101625">Passphrase</label>
+      <input id="cssPass" type="password" autocomplete="current-password" required style="box-sizing:border-box;width:100%;min-height:52px;padding:8px 10px;border:2px solid #52796f;border-radius:8px;font:inherit;background:#fff;color:#101625">
+      <label for="cssKeep" style="display:block;font-weight:700;margin:12px 0 4px;color:#101625">Keep unlocked on this computer for</label>
+      <select id="cssKeep" style="box-sizing:border-box;width:100%;min-height:52px;padding:6px 8px;border:2px solid #52796f;border-radius:8px;font:inherit;background:#fff;color:#101625">${opts}</select>
       <p id="cssMsg" role="alert" style="min-height:1.5em;margin:10px 0 0;color:#9b1c1c;font-weight:700"></p>
       <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:8px">
-        <button type="submit" style="min-height:52px;padding:8px 18px;border:0;border-radius:8px;background:#0e3c43;color:#fff;font:inherit;font-weight:700;cursor:pointer">Unlock</button>
-        <button type="button" id="cssSkip" style="min-height:52px;padding:8px 14px;border:2px solid #0e3c43;border-radius:8px;background:#fff;color:#0e3c43;font:inherit;font-weight:700;cursor:pointer">Continue without them</button>
+        <button type="submit" style="min-height:52px;padding:8px 18px;border:0;border-radius:8px;background:#08423f;color:#fff;font:inherit;font-weight:700;cursor:pointer">Unlock</button>
+        <button type="button" id="cssSkip" style="min-height:52px;padding:8px 14px;border:2px solid #08423f;border-radius:8px;background:#fff;color:#08423f;font:inherit;font-weight:700;cursor:pointer">Continue without them</button>
       </div></form>`;
     doc.body.appendChild(wrap);
     const form = wrap.querySelector("form")                   , pass = wrap.querySelector("#cssPass")                    ;

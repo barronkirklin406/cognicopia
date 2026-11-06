@@ -1,3 +1,4 @@
+import "./zod-setup";
 import { z } from "zod";
 import { PhiKeyError, findPhiKeys } from "./phi-guard";
 import { type ParseResult, invalid } from "./result";

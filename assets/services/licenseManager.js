@@ -431,6 +431,7 @@
   }
   function revokeKey(){
     [K.license, K.ref].forEach(remove);
+    if (doc && typeof root.CustomEvent === "function"){ try { doc.dispatchEvent(new root.CustomEvent("cognicopia:license-removed")); } catch (e){} }   // js/license-persistence.js forgets its copies too
     announce();
     return status();
   }
@@ -500,20 +501,20 @@
   /* ---------- the page: button, badge, modal ---------- */
   var CSS = [
     ".cgpromo-btn,.cgpromo-badge{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:var(--tap,52px);padding:8px 14px;border-radius:8px;font:700 15px/1.2 var(--cg-font-ui,\"Atkinson Hyperlegible\",\"Trebuchet MS\",\"Segoe UI\",system-ui,sans-serif);cursor:pointer;white-space:normal;text-align:center;box-sizing:border-box;text-decoration:none}",
-    ".cgpromo-btn{background:#fff;color:#14302a;border:2px solid #286E75}",
-    ".cgpromo-btn:hover{background:#e6f4f1;border-color:#14302a}",
-    ".cgpromo-badge{background:#1e5b3a;color:#fff;border:2px solid #14402a}",
-    ".cgpromo-badge:hover{background:#17492e}",
-    ".cgpromo-btn:focus-visible,.cgpromo-badge:focus-visible,.cgpromo-card button:focus-visible,.cgpromo-card a:focus-visible,.cgpromo-card .cgpromo-input:focus-visible{outline:3px solid #f5b800;outline-offset:2px;box-shadow:0 0 0 5px #14302a}",
+    ".cgpromo-btn{background:#fff;color:#14302d;border:2px solid #28756d}",
+    ".cgpromo-btn:hover{background:#e6f4f3;border-color:#14302d}",
+    ".cgpromo-badge{background:#1e5b3a;color:#fff;border:2px solid #17223d}",
+    ".cgpromo-badge:hover{background:#1a2746}",
+    ".cgpromo-btn:focus-visible,.cgpromo-badge:focus-visible,.cgpromo-card button:focus-visible,.cgpromo-card a:focus-visible,.cgpromo-card .cgpromo-input:focus-visible{outline:3px solid #f5b800;outline-offset:2px;box-shadow:0 0 0 5px #14302d}",
     ".cgpromo-hide,.cgpromo-badge[hidden],.cgpromo-btn[hidden]{display:none !important}",
-    ".cgpromo-overlay{position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(6,20,15,.72)}",
+    ".cgpromo-overlay{position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(7,11,19,.72)}",
     ".cgpromo-overlay[hidden]{display:none}",
-    ".cgpromo-card{width:min(520px,100%);max-height:calc(100vh - 32px);overflow:auto;box-sizing:border-box;background:#fff;color:#14201a;border:3px solid #14302a;border-radius:16px;padding:24px;box-shadow:0 20px 60px rgba(0,0,0,.45);font:400 18px/1.5 \"Trebuchet MS\",\"Segoe UI\",system-ui,sans-serif}",
-    ".cgpromo-card h2{margin:0 0 8px;font-family:inherit;font-weight:700;font-size:24px;line-height:1.25;color:#14302a}",
+    ".cgpromo-card{width:min(520px,100%);max-height:calc(100vh - 32px);overflow:auto;box-sizing:border-box;background:#fff;color:#141820;border:3px solid #14302d;border-radius:16px;padding:24px;box-shadow:0 20px 60px rgba(0,0,0,.45);font:400 18px/1.5 \"Trebuchet MS\",\"Segoe UI\",system-ui,sans-serif}",
+    ".cgpromo-card h2{margin:0 0 8px;font-family:inherit;font-weight:700;font-size:24px;line-height:1.25;color:#14302d}",
     ".cgpromo-card p{margin:0 0 14px}",
     ".cgpromo-card label{display:block;margin:0 0 6px;font-weight:700}",
     ".cgpromo-card form{margin:0}",
-    ".cgpromo-card .cgpromo-input{display:block;width:100%;min-height:52px;box-sizing:border-box;padding:10px 14px;border:2px solid #14302a;border-radius:10px;background:#fff;color:#14201a;font-family:inherit;font-weight:700;font-size:18px;line-height:1.3;letter-spacing:.02em;resize:vertical;word-break:break-all}",
+    ".cgpromo-card .cgpromo-input{display:block;width:100%;min-height:52px;box-sizing:border-box;padding:10px 14px;border:2px solid #14302d;border-radius:10px;background:#fff;color:#141820;font-family:inherit;font-weight:700;font-size:18px;line-height:1.3;letter-spacing:.02em;resize:vertical;word-break:break-all}",
     ".cgpromo-card textarea.cgpromo-input{min-height:104px}",
     ".cgpromo-card .cgpromo-input[aria-invalid=true]{border-color:#9b1c1c}",
     ".cgpromo-card .cgpromo-input:disabled{opacity:.7}",
@@ -522,12 +523,12 @@
     ".cgpromo-status.is-bad{color:#9b1c1c}",
     ".cgpromo-note{padding:10px 14px;border-left:5px solid #8a5a00;background:#fff4dc;border-radius:6px}",
     ".cgpromo-more{margin:14px 0 0;font-size:16px}",
-    ".cgpromo-more a{color:#14302a;font-weight:700;display:inline-flex;align-items:center;min-height:var(--tap,52px)}",
+    ".cgpromo-more a{color:#14302d;font-weight:700;display:inline-flex;align-items:center;min-height:var(--tap,52px)}",
     ".cgpromo-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}",
-    ".cgpromo-actions button,.cgpromo-actions a{flex:1 1 150px;min-height:52px;padding:10px 16px;border-radius:10px;border:2px solid #14302a;background:#fff;color:#14302a;font-family:inherit;font-weight:700;font-size:18px;line-height:1.2;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;text-align:center;text-decoration:none;box-sizing:border-box}",
-    ".cgpromo-actions button:hover:not(:disabled),.cgpromo-actions a:hover{background:#e6f4f1}",
-    ".cgpromo-actions .cgpromo-go{background:#1e5b3a;color:#fff;border-color:#14402a}",
-    ".cgpromo-actions .cgpromo-go:hover:not(:disabled){background:#17492e}",
+    ".cgpromo-actions button,.cgpromo-actions a{flex:1 1 150px;min-height:52px;padding:10px 16px;border-radius:10px;border:2px solid #14302d;background:#fff;color:#14302d;font-family:inherit;font-weight:700;font-size:18px;line-height:1.2;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;text-align:center;text-decoration:none;box-sizing:border-box}",
+    ".cgpromo-actions button:hover:not(:disabled),.cgpromo-actions a:hover{background:#e6f4f3}",
+    ".cgpromo-actions .cgpromo-go{background:#1e5b3a;color:#fff;border-color:#17223d}",
+    ".cgpromo-actions .cgpromo-go:hover:not(:disabled){background:#1a2746}",
     ".cgpromo-actions button:disabled{opacity:.55;cursor:not-allowed}",
     "@media (min-width:701px) and (max-width:900px){.cg-topbar .cgpromo-btn{order:4}}",
     "@media print{.cgpromo-btn,.cgpromo-badge,.cgpromo-overlay{display:none !important}}",
@@ -553,17 +554,22 @@
     if (!doc.getElementById("cgpromo-style")){ var st = el("style"); st.id = "cgpromo-style"; st.textContent = CSS; (doc.head || doc.documentElement).appendChild(st); }
     var bar = doc.querySelector(".cg-wood-bar") || doc.querySelector(".cg-topbar");
     if (bar){
-      btn = el("button", "cgpromo-btn", "License Key / Promo");
-      btn.type = "button"; btn.id = "cgPromoBtn";
+      var existingBtn = doc.getElementById("cgPromoBtn");
+      btn = existingBtn || el("button", "cgpromo-btn", "License Key / Promo");
+      if (!existingBtn) {
+        btn.type = "button"; btn.id = "cgPromoBtn";
+      }
       btn.setAttribute("aria-haspopup", "dialog");
       btn.addEventListener("click", function(){ openPromo(); });
       badge = el("button", "cgpromo-badge"); badge.type = "button"; badge.id = "cgPromoBadge"; badge.hidden = true;
       badge.addEventListener("click", function(){ openPromo(); });
       var toggle = doc.getElementById("hdrlicToggle"), hdr = doc.getElementById("hdrlic");
       var stripe = bar.querySelector('a[href*="buy.stripe.com"],a[data-upgrade-prompt]');
-      if (toggle && toggle.parentNode) toggle.parentNode.insertBefore(btn, bar.classList.contains("cg-wood-bar") ? toggle : toggle.nextSibling);   // the wood bar reads: Get Full Access, Invoice, License Key / Promo, Activate Access
-      else if (stripe && stripe.parentNode) stripe.parentNode.insertBefore(btn, stripe);
-      else bar.insertBefore(btn, bar.firstChild);
+      if (!existingBtn) {
+        if (toggle && toggle.parentNode) toggle.parentNode.insertBefore(btn, bar.classList.contains("cg-wood-bar") ? toggle : toggle.nextSibling);   // the wood bar reads: Get Full Access, Invoice, License Key / Promo, Activate Access
+        else if (stripe && stripe.parentNode) stripe.parentNode.insertBefore(btn, stripe);
+        else bar.insertBefore(btn, bar.firstChild);
+      }
       if (hdr && hdr.parentNode === bar) bar.insertBefore(badge, hdr);
       else if (stripe && stripe.parentNode) stripe.parentNode.insertBefore(badge, stripe);
       else bar.insertBefore(badge, btn);

@@ -75,11 +75,6 @@ export class CustomerHealthAnalytics {
     this.facilitySalt = facilitySalt;
   }
 
-  /** The salt this instance was made with (read-only). */
-  get salt(): string {
-    return this.facilitySalt;
-  }
-
   // ---------------------------------------------------------------------------
   // 1. PPD Pricing Engine
   // ---------------------------------------------------------------------------

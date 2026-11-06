@@ -48,7 +48,9 @@ const open = async (w = 1366, h = 1000) => {
   p.on("dialog", d => d.accept());                          // confirm() prompts: the person agrees
   return p;
 };
-const go = async (p, hash = "#/shift") => { await p.goto(base + "builder.html" + hash); await p.waitForSelector("#view h1", { timeout: 8000 }); await p.waitForTimeout(250); };
+/* the board opens from "Notes & tasks" on the calendar (the Shift board became a calendar first, November 2026) */
+const openBoard = async p => { if (!(await p.$("#shcOpenBoard"))) return; if (await p.$eval("#shcDrawer", e => !e.hidden)) return; await p.click("#shcOpenBoard"); await p.waitForSelector("#shfRoot", { state: "visible", timeout: 6000 }); await p.waitForTimeout(250); };
+const go = async (p, hash = "#/shift") => { await p.goto(base + "builder.html" + hash); await p.waitForSelector("#view h1", { timeout: 8000 }); await p.waitForTimeout(250); if (/^#\/shift/.test(hash)) await openBoard(p); };
 const seedResidents = (p, list) => p.evaluate(l => { l.forEach(x => localStorage.setItem("cognicopia_resident_" + x.id, JSON.stringify(x))); }, list);
 const useInitials = async (p, who) => { await p.fill("#shfInit", who); await p.click("#shfMeForm button[type=submit]"); await p.waitForTimeout(80); };
 const addNote = async (p, text, { kind = "pass", about = "" } = {}) => {
@@ -78,7 +80,7 @@ try {
   let p = await open();
   await go(p);
   await seedResidents(p, [resident("res-a", "Margaret", "302-B"), resident("res-b", "Peggy", "")]);
-  await p.reload(); await p.waitForSelector("#view h1", { timeout: 8000 }); await p.waitForTimeout(300);
+  await p.reload(); await p.waitForSelector("#view h1", { timeout: 8000 }); await p.waitForTimeout(300); await openBoard(p);
   ok((await text(p, "#view h1")) === "Shift board", "the screen opens as the Shift board");
   ok((await p.$eval(".sb-link[aria-current='page']", e => e.dataset.route)) === "shift" && (await p.$eval("details.sb-hub[open]", e => e.dataset.hub)) === "facility", "the sidebar marks Shift board, under Facility");
   ok((await text(p, "#shfWho")).includes("No initials on this board yet"), "with no initials on the board it says so");
@@ -175,7 +177,7 @@ try {
     root.style.cssText = keep; return out;
   });
   ok(sheet.n >= 1 && sheet.box[0] === 816 && sheet.box[1] === 1056, "the sheet is one US Letter page (8.5 x 11 in)");
-  ok(/Shift handoff/.test(sheet.text) && /All shifts/.test(sheet.text) && /Keep an eye on/.test(sheet.text) && sheet.text.includes(NOTE_WORDS) && /Open tasks/.test(sheet.text) && /Set up the music cart/.test(sheet.text) && /carried from Oct/.test(sheet.text), "the sheet carries the notes, the open tasks and the carried one");
+  ok(/Shift handoff/.test(sheet.text) && /All shifts/.test(sheet.text) && /Keep an eye on/.test(sheet.text) && sheet.text.includes(NOTE_WORDS) && /Open tasks/.test(sheet.text) && /Set up the music cart/.test(sheet.text) && new RegExp("carried from " + new Date(yesterday() + "T12:00:00").toLocaleString("en-US", { month: "short" })).test(sheet.text), "the sheet carries the notes, the open tasks and the carried one");
   ok(sheet.clipped.every(c => c <= 0), "nothing is cut off at the foot of any page: " + sheet.clipped.join(","));
   const pdf = path.join(os.tmpdir(), "shift-handoff-check.pdf");
   await p.emulateMedia({ media: "print" });
@@ -320,7 +322,7 @@ try {
   await go(p);
   await useInitials(p, "mr"); await addNote(p, "Locked store note", { kind: "worked" });
   await p.evaluate(async () => { await CogniSecureStore.flush(); await CogniSecureStore.setPassphrase("shared station passphrase"); await CogniSecureStore.lock(); });
-  await p.reload(); await p.waitForTimeout(900);                    // what Settings > Lock now does, so no name stays on screen
+  await p.reload(); await p.waitForTimeout(900); await openBoard(p);                    // what Settings > Lock now does, so no name stays on screen
   ok(await shown(p, "#cssPass"), "with a passphrase set and the store locked, the unlock prompt shows first");
   ok((await text(p, "body")).indexOf("Locked store note") < 0, "the board's words are not on screen while locked");
   const dlg = await p.evaluate(() => [...document.querySelectorAll("#cssPass, #cssKeep, #cssSkip, form[role=dialog] button[type=submit]")].map(e => Math.round(e.getBoundingClientRect().height)));
@@ -328,7 +330,7 @@ try {
   await p.fill("#cssPass", "wrong guess here"); await p.click("form[role=dialog] button[type=submit]"); await p.waitForTimeout(2500);
   ok((await text(p, "#cssMsg")).length > 0 && await shown(p, "#cssPass"), "a wrong passphrase leaves the prompt open, with a message");
   await p.fill("#cssPass", "shared station passphrase"); await p.click("form[role=dialog] button[type=submit]"); await p.waitForTimeout(2500);
-  await p.waitForSelector("#shfRoot", { timeout: 6000 });
+  await openBoard(p); await p.waitForSelector("#shfRoot", { timeout: 6000 });
   ok((await text(p, "#shfNotes")).includes("Locked store note"), "after the unlock the board is there, as it was left");
   await p.close();
 } finally {

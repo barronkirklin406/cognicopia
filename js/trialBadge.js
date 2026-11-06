@@ -39,7 +39,12 @@
     var els = d.querySelectorAll("[data-cg-trial]");
     for (var i = 0; i < els.length; i++) {
       var el = els[i];
-      if (licensed()) { el.hidden = true; continue; }
+      if (licensed()) {
+        el.hidden = true;
+        if (el.closest) { var wrap = el.closest(".cgw-trial-wrap"); if (wrap) wrap.hidden = true; }
+        continue;
+      }
+      if (el.closest) { var wrap = el.closest(".cgw-trial-wrap"); if (wrap) wrap.hidden = false; }
       el.hidden = false;
       el.className = "cg-trial" + (left === 0 ? " cg-trial-out" : left <= 5 ? " cg-trial-low" : "");
       el.setAttribute("role", "status");
@@ -48,7 +53,37 @@
   }
   root.CognicopiaTrialBadge = { paint: paint, remaining: function () { return Math.max(0, total() - used()); } };
 
+  var RESET_KEY = "cognicopia_trial_reset_time";
+  var CYCLE_MS = 7 * 24 * 60 * 60 * 1000;                               // 7-day automatic weekly reset
+
+  function checkWeeklyReset() {
+    try {
+      var now = Date.now();
+      var raw = root.localStorage ? root.localStorage.getItem(RESET_KEY) : null;
+      var lastReset = raw ? parseInt(raw, 10) : 0;
+      if (!lastReset || isNaN(lastReset) || (now - lastReset) >= CYCLE_MS) {
+        if (root.localStorage) {
+          root.localStorage.setItem(RESET_KEY, String(now));
+          root.localStorage.setItem("cognicopia_gen_count", "0");
+          root.localStorage.setItem(KEY, String(total()));
+        }
+        var s = store();
+        if (s) {
+          try { s.setItem(RESET_KEY, String(now)); } catch(e){}
+          try { s.setItem("cognicopia_gen_count", "0"); } catch(e){}
+          try { s.setItem(KEY, String(total())); } catch(e){}
+        }
+        try { if (root.indexedDB) root.indexedDB.deleteDatabase("cg_trial"); } catch(e){}
+        try { if (root.caches) root.caches.delete("cg-trial-v1"); } catch(e){}
+        if (d && typeof d.dispatchEvent === "function") {
+          d.dispatchEvent(new CustomEvent("cognicopia:trial", { detail: { used: 0 } }));
+        }
+      }
+    } catch (e) { /* ignore */ }
+  }
+
   function start() {
+    checkWeeklyReset();
     try { if (root.localStorage.getItem(KEY) === null) root.localStorage.setItem(KEY, String(total())); } catch (e) { /* ignore */ }
     paint();
     d.addEventListener("cognicopia:trial", paint);

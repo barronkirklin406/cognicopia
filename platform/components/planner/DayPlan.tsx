@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import type { ContentItem } from "@/lib/db/models";
 import type { CalendarGroup, CalendarSlot } from "@/lib/domain/calendar";
 import { formatsOf, FORMAT_LABELS, displayTitle } from "@/lib/domain/formats";
@@ -35,6 +36,7 @@ export function DayPlan({
   only,
   large = false,
   headingLevel = 3,
+  actions,
 }: {
   date: string;
   groups: readonly CalendarGroup[];
@@ -44,6 +46,8 @@ export function DayPlan({
   only?: string;
   large?: boolean;
   headingLevel?: 3 | 4;
+  /** Something to show under each session, such as the controls for changing it. */
+  actions?: (slot: CalendarSlot) => ReactNode;
 }) {
   const shown = groups.filter((group) => only === undefined || group.id === only);
   const Heading = headingLevel === 3 ? "h3" : "h4";
@@ -62,7 +66,10 @@ export function DayPlan({
                 const minutes = item?.content_payload.minutes;
                 return (
                   <li key={slot.id} className="grid gap-2 rounded-xl border-2 border-rule bg-white p-3">
-                    <p className="m-0 text-base font-bold text-garden-dark">{timeLabel(slot.time)}</p>
+                    <p className="m-0 flex flex-wrap items-center gap-2 text-base font-bold text-garden-dark">
+                      {timeLabel(slot.time)}
+                      {slot.locked ? <Tag tone="stage">Pinned</Tag> : null}
+                    </p>
                     <p className={`m-0 font-display font-bold leading-tight text-ink ${large ? "text-2xl" : "text-xl"}`}>{sessionTitle(slot, activities)}</p>
                     {item ? (
                       <ul className="m-0 flex list-none flex-wrap gap-2 p-0" aria-label="About this session">
@@ -87,6 +94,7 @@ export function DayPlan({
                         </div>
                       </details>
                     ) : null}
+                    {actions ? actions(slot) : null}
                   </li>
                 );
               })}

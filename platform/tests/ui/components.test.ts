@@ -12,6 +12,7 @@ import { FormatFilter } from "@/components/planner/FormatFilter";
 import { LibraryBrowser, describeFilter } from "@/components/planner/LibraryBrowser";
 import { PrintCalendar } from "@/components/planner/PrintCalendar";
 import { PromptCard } from "@/components/planner/PromptCard";
+import { SessionEditor } from "@/components/planner/SessionEditor";
 import { ReminiscenceBrowser } from "@/components/planner/ReminiscenceBrowser";
 import { StageFilter } from "@/components/planner/StageFilter";
 import { ThemePicker } from "@/components/planner/ThemePicker";
@@ -364,6 +365,13 @@ describe("the calendar view", () => {
     expect(markup).toContain("This month has nothing planned yet.");
   });
 
+  it("shows no editing controls until a day is chosen, and none on the paper", () => {
+    const editor = { updatedAt: "2026-11-01T10:00:00.000Z", choices: {} };
+    const markup = html(h(CalendarView, { month: "2026-11", data, activities: byId, mode: "saved", editor }));
+    expect(markup).not.toContain("Pin this session");
+    expect(markup).not.toContain("Take this session out");
+  });
+
   it("with one stage shows its name as the heading rather than a choice", () => {
     const one = { ...data, groups: data.groups.slice(0, 1), slots: data.slots.filter((s) => s.group_id === "early") };
     const markup = html(h(CalendarView, { month: "2026-11", data: one, activities: byId, mode: "saved" }));
@@ -440,7 +448,7 @@ describe("the dashboard's plan", () => {
 
 describe("the generator", () => {
   const draw = (extra: object = {}) =>
-    html(h(CalendarGenerator, { library, months: ["2026-11", "2026-12", "2027-01"], savedMonths: [], initialMonth: "2026-12", initialSeed: "abc12345", facilityName: "Maple Court", ...extra }));
+    html(h(CalendarGenerator, { library, months: ["2026-11", "2026-12", "2027-01"], savedMonths: [], pinnedByMonth: {}, initialMonth: "2026-12", initialSeed: "abc12345", facilityName: "Maple Court", ...extra }));
 
   it("opens on the month asked for, with no theme, all three stages, three sessions a day", () => {
     const markup = draw();
@@ -467,6 +475,15 @@ describe("the generator", () => {
     expect(again).toContain("December 2026 (already saved)");
   });
 
+  it("says the pinned sessions of a saved month are kept, so the preview matches what will be saved", () => {
+    const first = generateCalendar({ month: "2026-12", theme: "none", stages: ["early", "middle", "late"], perDay: 3, seed: "x" }, library.map(toGeneratorItem));
+    if (!first.ok) throw new Error(first.message);
+    const pinned = [{ ...first.data.slots[0]!, locked: true }];
+    const markup = draw({ savedMonths: ["2026-12"], pinnedByMonth: { "2026-12": pinned } });
+    expect(markup).toContain("1 pinned session from the saved month is kept as it is.");
+    expect(draw({ savedMonths: ["2026-12"] })).not.toContain("pinned session");
+  });
+
   it("makes the same preview for the same choices, and a different one for a different seed", () => {
     const a = draw();
     expect(draw()).toBe(a);
@@ -486,5 +503,58 @@ describe("no component prints template braces or anything that looks like a pers
       html(h(CalendarView, { month: "2026-11", data, activities: byId, mode: "saved" })),
     ];
     for (const page of pages) expect(page).not.toMatch(/\{\{|\{%/);
+  });
+});
+
+describe("changing a session of a saved month", () => {
+  const early = data.groups.find((g) => g.id === "early")!;
+  const slot = data.slots.find((s) => s.group_id === early.id)!;
+  const swappable = library.filter((i) => (i.dementia_stage === "early" || i.dementia_stage === "universal") && i.id !== slot.content_item_id).slice(0, 3);
+  const editor = { updatedAt: "2026-11-01T10:00:00.000Z", choices: { [early.id]: swappable.map((i) => ({ id: i.id, title: i.title })) } };
+  const draw = (next = slot, e = editor) => html(h(SessionEditor, { month: "2026-11", slot: next, editor: e }));
+
+  it("offers a pin, a swap list for the stage, a note and a removal, each a form carrying the month, version and session", () => {
+    const markup = draw();
+    for (const text of ["Pin this session", "Change the activity", "Use this instead", "Change the note", "Save the note", "Take this session out", "Yes, take it out"]) expect(markup).toContain(text);
+    expect(count(markup, /<form /g)).toBe(4);
+    expect(count(markup, /name="expected" value="2026-11-01T10:00:00.000Z"/g)).toBe(4);
+    expect(count(markup, new RegExp(`name="slot_id" value="${slot.id}"`, "g"))).toBe(4);
+    expect(count(markup, /name="month" value="2026-11"/g)).toBe(4);
+    for (const action of ["pin", "swap", "note", "remove"]) expect(markup).toContain(`name="action" value="${action}"`);
+    for (const i of swappable) expect(markup).toContain(i.title.replace(/&/g, "&amp;").replace(/'/g, "&#x27;"));
+  });
+
+  it("does not list the activity the session already has", () => {
+    const current = byId[slot.content_item_id]!;
+    const withCurrent = { ...editor, choices: { [early.id]: [{ id: current.id, title: "ALREADY-HERE" }, ...editor.choices[early.id]!] } };
+    expect(draw(slot, withCurrent)).not.toContain("ALREADY-HERE");
+  });
+
+  it("leaves out the swap when the library has nothing else for the stage", () => {
+    const markup = draw(slot, { ...editor, choices: {} });
+    expect(markup).not.toContain("Change the activity");
+    expect(markup).toContain("Change the note");
+  });
+
+  it("warns against a resident's name, limits the note to 140 characters, and starts from the current note", () => {
+    const markup = draw({ ...slot, note: "Bring the photo album" });
+    expect(markup).toContain("do not type a resident");
+    expect(markup).toContain('maxLength="140"');
+    expect(markup).toContain("Bring the photo album");
+  });
+
+  it("offers Unpin for a pinned session, and is hidden from the paper", () => {
+    const markup = draw({ ...slot, locked: true });
+    expect(markup).toContain("Unpin this session");
+    expect(markup).not.toContain("Pin this session");
+    expect(markup).toMatch(/class="[^"]*print:hidden[^"]*"/);
+  });
+
+  it("marks a pinned session in the day's plan, and gives each session its controls through the actions prop", () => {
+    const slots = data.slots.filter((s) => s.group_id === early.id && s.date === slot.date).map((s, i) => (i === 0 ? { ...s, locked: true } : s));
+    const markup = html(h(DayPlan, { date: slot.date, groups: data.groups, slots, activities: byId, only: "early", actions: (s) => h(SessionEditor, { month: "2026-11", slot: s, editor }) }));
+    expect(markup).toContain("Pinned");
+    expect(count(markup, /Take this session out/g)).toBe(slots.length);
+    expect(html(h(DayPlan, { date: slot.date, groups: data.groups, slots, activities: byId, only: "early" }))).not.toContain("Take this session out");
   });
 });

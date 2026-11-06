@@ -9,8 +9,9 @@ import { requirePremium } from "@/lib/access/guards";
 import { calendarNotice } from "@/lib/auth/messages";
 import { first, type SearchParams } from "@/lib/auth/params";
 import { getCalendar } from "@/lib/data/calendars";
-import { contentByIds } from "@/lib/data/content";
+import { contentByIds, listContent } from "@/lib/data/content";
 import { MonthSchema } from "@/lib/domain/calendar";
+import { suitsStage, trackOf } from "@/lib/domain/stages";
 import { currentMonth, monthLabel, shiftMonth } from "@/lib/domain/months";
 
 export const metadata: Metadata = { title: "Calendar" };
@@ -49,6 +50,19 @@ export default async function CalendarPage({ searchParams }: { searchParams: Sea
   const calendar = await getCalendar(access.db, month);
   const data = calendar?.generated_data;
   const activities = data ? Object.fromEntries(await contentByIds(access.db, data.slots.map((slot) => slot.content_item_id))) : {};
+  // What each stage's sessions may be changed to: the library items made for that stage, or for any.
+  const library = calendar && data && data.slots.length > 0 ? await listContent(access.db, { limit: 1000 }) : [];
+  const editor = calendar && data
+    ? {
+        updatedAt: calendar.updated_at,
+        choices: Object.fromEntries(
+          data.groups.map((group) => {
+            const stage = trackOf(group);
+            return [group.id, library.filter((item) => (stage ? suitsStage(item.dementia_stage, stage) : true)).map((item) => ({ id: item.id, title: item.title }))];
+          }),
+        ),
+      }
+    : undefined;
 
   return (
     <Shell session={session} current="/calendar">
@@ -73,7 +87,7 @@ export default async function CalendarPage({ searchParams }: { searchParams: Sea
         </nav>
 
         {data && data.slots.length > 0 ? (
-          <CalendarView month={month} data={data} activities={activities} mode="saved" facilityName={access.membership.facility.facility_name} />
+          <CalendarView month={month} data={data} activities={activities} mode="saved" facilityName={access.membership.facility.facility_name} editor={editor} />
         ) : (
           <div className="grid gap-3 rounded-xl border-2 border-rule bg-white p-4 text-ink">
             <p className="m-0 text-lg font-bold">{data ? `${monthLabel(month)} has no sessions yet.` : `There is no calendar for ${monthLabel(month)} yet.`}</p>

@@ -1,0 +1,63 @@
+# Checks the facility platform (platform/) on every change to it: types, unit and database tests, a production
+# build, and a real-browser check. The static site at the repository root has its own checks (npm run build there)
+# and is not touched by this file. Nothing here needs a secret: the tests use stand-ins, and the browser check
+# starts the built app with placeholder settings and no database.
+name: platform
+
+on:
+  pull_request:
+    paths:
+      - "platform/**"
+      - ".github/workflows/platform.yml"
+  push:
+    branches: [main]
+    paths:
+      - "platform/**"
+      - ".github/workflows/platform.yml"
+
+# A newer push to the same branch makes the older run pointless.
+concurrency:
+  group: platform-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    defaults:
+      run:
+        working-directory: platform
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: platform/package-lock.json
+
+      # The lockfile is committed, so this installs exactly what was tested.
+      - name: Install
+        run: npm ci --no-audit --no-fund
+
+      - name: Types
+        run: npm run typecheck
+
+      # Unit tests and the database tests (an in-process Postgres: no Docker, no network).
+      - name: Tests
+        run: npm test
+
+      - name: Build
+        run: npm run build
+
+      # Playwright is not a dependency of the app: it is only needed here. The version is the one the checks were written against.
+      - name: Install the browser
+        run: |
+          npm install --no-save --no-audit --no-fund playwright@1.63.0
+          npx playwright install --with-deps chromium
+
+      - name: Browser check
+        run: npm run e2e

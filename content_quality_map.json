@@ -1,0 +1,92 @@
+{
+  "page_title": "Cognicopia \u2014 Personalized Activity Packets",
+  "sample_content_texts": [
+    "ENGAGING TODAY",
+    "Activities built from one resident's own life.",
+    "Fill in what you know about them, pick the pages you want, and you'll get a printable large-print packet using their hometown, their family's names, their work, and the things they loved.",
+    "What Cognicopia gives you",
+    "Informed by the research",
+    "The activities draw on published research on reminiscence, cognitive stimulation and print for older eyes. The Research Center sums up each study, with its sources and its limits.",
+    "Cognicopia is developed and published with dedication to providing dignified, personalized reminiscence and cognitive engagement resources for memory care.",
+    "THE PACKET TOOL",
+    "Make a packet",
+    "Nothing you type here is sent anywhere. The packet is made on this computer and saved straight to your downloads. No resident information ever reaches us.",
+    "Choose a general archetype for a temporary packet. No profile is saved and no resident name is used.",
+    "Active resident",
+    "No saved resident profiles yet. Press New Profile to make one; it takes about five minutes and is saved only on this computer.",
+    "Instant Soothe opens two quick choices, a care level and a theme, then prints a fresh one-to-three page calming packet made for that moment. It uses the active resident's level and name when one is chosen, and needs no profile when none is.",
+    "\ud83d\udcc5 Monthly Activity Bundle",
+    "One PDF with a personalized packet for every resident you choose. Made entirely on this computer; nothing is sent anywhere.",
+    "Building your monthly bundle\u2026",
+    "Keep this tab open. You can cancel at any time; nothing is saved until it finishes.",
+    "Some of these residents are already saved",
+    "Residents who are not saved yet are imported either way.",
+    "Profile Packet Builder",
+    "Quick printable pages made from the active resident's profile: their work, hobbies, people and favorite years, in large high-contrast print. Topics to avoid are always left out."
+  ],
+  "print_buttons": [
+    {
+      "text": "\u26a1 Quick-Print Guest Profile"
+    },
+    {
+      "text": "\ud83d\udfe1\nInstant Soothe / Print"
+    },
+    {
+      "text": "\ud83d\udce5 Generate Bundle PDF"
+    },
+    {
+      "text": "\ud83d\udda8\ufe0f\nPrint / Save to PDF"
+    },
+    {
+      "text": "\ud83d\udce5\nDownload PDF Packet"
+    },
+    {
+      "text": "\ud83d\udfe1\nInstant Soothe Print"
+    },
+    {
+      "text": "\ud83d\udce5\nDownload Today's Packet (PDF)"
+    },
+    {
+      "text": "Print a family form"
+    },
+    {
+      "text": "Print staff guide only"
+    }
+  ],
+  "generator_controls": [
+    {
+      "text": ""
+    },
+    {
+      "text": "No saved residents yet"
+    },
+    {
+      "text": ""
+    },
+    {
+      "text": ""
+    },
+    {
+      "text": "Letter (8.5 \u00d7 11 in)A4"
+    },
+    {
+      "text": "\ud83d\udce5 Generate Bundle PDF"
+    },
+    {
+      "text": "\u26a1\nGenerate Custom Packet"
+    },
+    {
+      "text": "she / her\nhe / him\nthey / them"
+    },
+    {
+      "text": "English, or not listed\nArabic\nChinese\nCzech\nDanish\nDutch\nFrench\nGerman\nGreek\nHindi\nHmong\nHungarian\nItalian\nJapanese\nKorean\nNorwegian\nPolish\nPortuguese\nRussian\nSomali\nSpanish\nSwedish\nTagalog\nUkrainian\nVietnamese\nYiddish"
+    },
+    {
+      "text": "None, or not listed\nArabic\nChinese\nCzech\nDanish\nDutch\nFrench\nGerman\nGreek\nHindi\nHmong\nHungarian\nItalian\nJapanese\nKorean\nNorwegian\nPolish\nPortuguese\nRussian\nSomali\nSpanish\nSwedish\nTagalog\nUkrainian\nVietnamese\nYiddish"
+    },
+    {
+      "text": "Choose a preset"
+    }
+  ],
+  "navigation_links": []
+}

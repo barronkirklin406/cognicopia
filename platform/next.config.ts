@@ -11,8 +11,9 @@ import type { NextConfig } from "next";
  *   form-action 'self', base-uri, object  forms can post only here; nothing can re-point links or embed plugins
  *   Strict-Transport-Security             browsers use https for a year (in production only)
  *
- * A full Content-Security-Policy for scripts is a next step (it needs nonces, which Next.js can
- * add per request); this one is the part that needs none.
+ * The Content-Security-Policy below is the part that needs no nonce, and it covers what the proxy does not
+ * see (API routes and files). Pages get the full policy, with a script nonce made per request, from
+ * proxy.ts (lib/security/csp.ts); the two do not conflict, since a browser enforces both.
  */
 const security = [
   { key: "X-Content-Type-Options", value: "nosniff" },

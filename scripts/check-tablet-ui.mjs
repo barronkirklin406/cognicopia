@@ -125,14 +125,15 @@ try {
     ok(await p.evaluate(() => document.getElementById("tbStageLate").checked && document.getElementById("tbTopic").value === "farming" && document.getElementById("tbSound").getAttribute("aria-pressed") === "false"), "and they are there again after reloading");
     ok(await p.evaluate(() => !document.getElementById("tbSound").textContent.includes("On")), "the sound button says so");
     await ctx.close();
-    /* the front page: a Tablet Activities button in the first screen, and it goes there */
+    /* the front page: Tablet Activities is in the top bar beside Activity Packets (the owner moved it there from the hero, November 2026), and it goes there */
     const home = await fresh({ width: 1366, height: 768 }, { page: "index.html" });
-    const btn = await home.p.evaluate(() => { const e = document.querySelector(".lp-btn-tablet"); if (!e) return null; const r = e.getBoundingClientRect(); return { top: r.top, bottom: r.bottom, h: r.height, w: r.width, text: e.textContent.trim() }; });
-    ok(btn && btn.bottom < 768 && btn.h >= 52 && btn.w >= 150 && btn.text === "Tablet Activities", "the front page's first screen has a Tablet Activities button: " + JSON.stringify(btn));
-    const inMenu = await home.p.evaluate(() => Array.from(document.querySelectorAll("a[href='tablet.html'], a[href='./tablet.html']")).length); ok(inMenu >= 2, "and the menu bar links to it as well (" + inMenu + " links)");
-    await home.p.click(".lp-btn-tablet"); await home.p.waitForURL("**/tablet.html"); ok(/Tablet Activities/.test(await text(home.p, "h1")), "pressing the button opens the tablet page");
+    const btn = await home.p.evaluate(() => { const e = document.querySelector('.cg-hubs > li[data-hub="tablet"] > a'), pk = document.querySelector('.cg-hubs > li[data-hub="packets"] > a'); if (!e || !pk) return null; const r = e.getBoundingClientRect(), q = pk.getBoundingClientRect(); return { top: r.top, bottom: r.bottom, h: r.height, w: r.width, text: e.textContent.trim(), nextTo: Math.abs(r.left - q.right) < 24 && Math.abs(r.top - q.top) < 2 }; });
+    ok(btn && btn.bottom < 120 && btn.h >= 52 && btn.w >= 150 && btn.text === "Tablet Activities" && btn.nextTo, "the top bar has a Tablet Activities link right next to Activity Packets: " + JSON.stringify(btn));
+    ok(await home.p.evaluate(() => !document.querySelector(".lp-btn-tablet")), "and the hero does not repeat it");
+    await home.p.click('.cg-hubs > li[data-hub="tablet"] > a'); await home.p.waitForURL("**/tablet.html"); ok(/Tablet Activities/.test(await text(home.p, "h1")), "pressing the link opens the tablet page");
     const phone = await fresh(PHONE, { page: "index.html" });
-    ok(await phone.p.evaluate(() => { const e = document.querySelector(".lp-btn-tablet"); const r = e.getBoundingClientRect(); return r.height >= 52 && r.right <= innerWidth; }), "on a phone the button fits the screen");
+    await phone.p.click("#cgSbToggle"); await phone.p.waitForTimeout(350);
+    ok(await phone.p.evaluate(() => { const e = document.querySelector('.cg-hubs > li[data-hub="tablet"] > a'); const r = e.getBoundingClientRect(); return r.height >= 52 && r.right <= innerWidth && r.left >= 0; }), "on a phone the link is in the Menu drawer, at least 52 px tall and on the screen");
     await home.ctx.close(); await phone.ctx.close();
   }
 
@@ -845,7 +846,10 @@ try {
     const n1 = await p.evaluate(() => localStorage.getItem("cognicopia_gen_count"));
     ok((n0 === null || n0 === "0") && n1 === "1", `a session is one packet, counted once however many activities it holds (${n0} to ${n1})`);
     await ctx.close();
-    const g = await fresh(LAND, { init: 'try{localStorage.setItem("cognicopia_gen_count","25")}catch(e){}' });
+    /* a first visit starts the count at 0 whatever was set before the page ran, so the used-up state is set after it, then the page is opened again */
+    const g = await fresh(LAND);
+    await g.p.evaluate(() => { try { localStorage.setItem("cognicopia_gen_count", "25"); } catch (e) { /* the check will say so */ } });
+    await g.p.reload(); await sleep(300);
     await g.p.click('[data-act="sort"]'); await sleep(400);
     ok(await g.p.evaluate(() => !document.getElementById("tbGate").hidden && document.getElementById("tb").hidden), "with the free packets used up, a session shows the gate instead of starting");
     ok(await g.p.evaluate(() => Array.from(document.querySelectorAll("#tbGate a")).some(a => /pricing\.html/.test(a.getAttribute("href")))), "which leads to the plans");
@@ -858,7 +862,7 @@ try {
     const { ctx, p } = await fresh(LAND);
     for (const id of ["wordsearch", "crossword", "color", "paint"]) { await openAct(p, id); if (id === "color") await p.waitForSelector(".tb-pics", { timeout: 8000 }).catch(() => {}); await toMenu(p); }
     const keys = await p.evaluate(() => Object.keys(localStorage).concat(Object.keys(sessionStorage)));
-    ok(keys.every(k => /^(cognicopia_tablet_prefs|cognicopia_gen_count|cognicopia_trial_generations|cognicopia_trial_persist|cognicopia_license.*|cognicopia_promo.*)$/.test(k)), "nothing is kept in this browser but the choices and the free-packet count: " + keys.join(", "));
+    ok(keys.every(k => /^(cognicopia_tablet_prefs|cognicopia_gen_count|cognicopia_trial_generations|cognicopia_trial_persist|cognicopia_trial_reset_time|cognicopia_license.*|cognicopia_promo.*)$/.test(k)), "nothing is kept in this browser but the choices and the free-packet count: " + keys.join(", "));
     ok(await p.evaluate(() => document.cookie === ""), "no cookie is set");
     await ctx.close();
   }

@@ -19,7 +19,7 @@
   var MESSAGE = "Session timed out due to 15 minutes of inactivity to protect resident privacy.";
   var NOTICE = "cgb_session_timeout_notice", ACTIVE = "cgb_active_resident";
   var DRAFTS = ["cognicopia_packet_draft", "cognicopia_profile_draft"];
-  var limit = DEFAULT_MS, timer = 0, lastScroll = 0, count = 0;
+  var limit = DEFAULT_MS, timer = 0, lastScroll = 0, count = 0, hooks = [];
 
   function safe(fn) { try { return fn(); } catch (e) { return undefined; } }
   function store() { return safe(function () { return root.CogniSecureStore && root.CogniSecureStore.storage ? root.CogniSecureStore.storage : root.localStorage; }); }
@@ -43,6 +43,7 @@
 
   function expire() {
     timer = 0; count++;
+    hooks.forEach(function (h) { safe(h); });      // js/idle-sanitizer.js clears the page's memory and writes the access log first
     clearTransient(); relock();
     safe(function () { root.sessionStorage.setItem(NOTICE, "1"); });
     var go = function () {
@@ -66,7 +67,7 @@
   function notice() {
     var d = root.document; if (!d.body || d.getElementById("cgTimeoutNote")) return;
     var st = d.createElement("style");
-    st.textContent = "#cgTimeoutNote{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:1500;max-width:min(640px,92vw);padding:14px 20px;border-radius:12px;background:#08262c;color:#ffffff;border:2px solid #ffd477;font:600 17px/1.45 'Atkinson Hyperlegible',system-ui,Arial,sans-serif;box-shadow:0 10px 40px rgba(0,0,0,.4)}@media print{#cgTimeoutNote{display:none !important}}";
+    st.textContent = "#cgTimeoutNote{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:1500;max-width:min(640px,92vw);padding:14px 20px;border-radius:12px;background:#0f172a;color:#ffffff;border:2px solid #ffd477;font:600 17px/1.45 'Atkinson Hyperlegible',system-ui,Arial,sans-serif;box-shadow:0 10px 40px rgba(0,0,0,.4)}@media print{#cgTimeoutNote{display:none !important}}";
     d.head.appendChild(st);
     var n = d.createElement("div"); n.id = "cgTimeoutNote"; n.setAttribute("role", "status"); n.setAttribute("aria-live", "polite"); n.textContent = MESSAGE;
     d.body.appendChild(n);
@@ -85,6 +86,7 @@
     MESSAGE: MESSAGE, DEFAULT_MS: DEFAULT_MS,
     setLimit: function (ms) { limit = Math.min(2147483647, Math.max(200, +ms || DEFAULT_MS)); restart(); },    // for the check; the page keeps 15 minutes
     expiredCount: function () { return count; },
+    onExpire: function (fn) { if (typeof fn === "function") hooks.push(fn); },    // runs before the drafts are cleared and the store is locked
     expireNow: expire
   };
   if (root.document.readyState === "loading") root.document.addEventListener("DOMContentLoaded", start); else start();

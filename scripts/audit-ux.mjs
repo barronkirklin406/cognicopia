@@ -97,13 +97,13 @@ const STATES = [
   ["builder: facility team and audit", "builder.html#/facility", [click("#fpTab-team")]],
   ["builder: academy lesson", "builder.html#/academy", [click(".ac-card-a >> nth=0")]],
   ["builder: academy training records", "builder.html#/academy", [click("#acTab-records")]],
-  ["builder: planner with an example", "builder.html#/planner", [click("#lpExample")]],
-  ["builder: journal with an example", "builder.html#/journal", [click("#ljExample")]],
+  ["builder: planner with an example", "builder.html#/life-planner", [click("#lpExample")]],
+  ["builder: journal with an example", "builder.html#/life-journal", [click("#ljExample")]],
   ["builder: reminiscence set", "builder.html#/reminiscence", [click('button:has-text("A Day")')]],
   ["builder: digest, keep a memory", "builder.html#/heirloom", [click("#hlTab-keep")]],
   ["builder: digest, hardcover book", "builder.html#/heirloom", [click("#hlTab-book")]],
-  ["builder: shift board, a name found in a note", "builder.html#/shift", [seedResidents, reload, fill("#shfInit", "MR"), click('#shfMeForm button[type=submit]'), fill("#shfNText", "Test A was restless"), click('#shfNote button[type=submit]')]],
-  ["builder: shift board, a task and a note", "builder.html#/shift", [fill("#shfInit", "MR"), click('#shfMeForm button[type=submit]'), fill("#shfNText", "Quiet music helped"), click('#shfNote button[type=submit]'), fill("#shfTWhat", "Set up the music cart"), click('#shfTask button[type=submit]')]],
+  ["builder: shift board, a name found in a note", "builder.html#/shift", [seedResidents, reload, click("#shcOpenBoard"), fill("#shfInit", "MR"), click('#shfMeForm button[type=submit]'), fill("#shfNText", "Test A was restless"), click('#shfNote button[type=submit]')]],
+  ["builder: shift board, a task and a note", "builder.html#/shift", [click("#shcOpenBoard"), fill("#shfInit", "MR"), click('#shfMeForm button[type=submit]'), fill("#shfNText", "Quiet music helped"), click('#shfNote button[type=submit]'), fill("#shfTWhat", "Set up the music cart"), click('#shfTask button[type=submit]')]],
   ["builder: unlock dialog (a locked store)", "builder.html#/", [lockStore, reload]]
 ];
 
@@ -141,6 +141,8 @@ function measureTargetsInPage(arg){
 
 /* runs in the page: text below WCAG AA against the background behind it, in the whole page or inside one element (rootSel) */
 function measureContrastInPage(rootSel){
+  /* a colour that is still changing (the buttons ease over 0.18 s) would be measured half way between day and night: let every transition arrive first */
+  document.getAnimations().forEach(a => { try { a.finish(); } catch (e) { /* an endless animation has no end to jump to */ } });
   const parse = s => { const m = s.match(/rgba?\(([^)]+)\)/); if (!m) return null; const v = m[1].split(/[ ,\/]+/).filter(Boolean).map(Number); return { r: v[0], g: v[1], b: v[2], a: v.length > 3 ? v[3] : 1 }; };
   const lum = c => { const f = x => { x /= 255; return x <= .03928 ? x / 12.92 : Math.pow((x + .055) / 1.055, 2.4); }; return .2126 * f(c.r) + .7152 * f(c.g) + .0722 * f(c.b); };
   const blend = (top, bot) => ({ r: top.r * top.a + bot.r * (1 - top.a), g: top.g * top.a + bot.g * (1 - top.a), b: top.b * top.a + bot.b * (1 - top.a), a: 1 });

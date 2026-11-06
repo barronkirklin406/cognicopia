@@ -15,35 +15,37 @@ Every page keeps its own inline styles (the site is static HTML on GitHub Pages 
 
 ## Color
 
-Built on the four brand colors the Quality Standards Hub already names (deep teal `#0e3c43`, parchment `#f5f1e6`, gold `#c5a059`, charcoal `#1a202c`; the teal replaced the old forest green on October 22, 2026, from the owner's brand flyer), with natural greens, warm tans and crisp neutrals around them. Every token is `--cg-<name>`.
+Built on the owner's November 5, 2026 direction, **warm clinical, oceanic serenity**: alabaster pages (`#fafafd`), rich slate for dark surfaces and headings (`#0f172a`), oceanic teal (`#0d9488`) and sage (`#355e3b`) as the accents, warm charcoal text (`#28241f`, never pure black and never a cold gray), and the brand gold (`#c5a059`) kept as the one warm accent. This replaced the October 22 flyer palette (deep teal `#0e3c43`, parchment `#f5f1e6`, charcoal `#1a202c`). Every token is `--cg-<name>`.
 
 | Family | Tokens |
 |---|---|
-| Natural greens | `green-950` `#051a1e`, `green-900` `#08262c`, `green-800` `#0b2f36`, `green-700` `#0e3c43` (the brand teal; the token names still say green so no page had to be renamed), `green-600` `#1c5963`, `green-500` `#2b7683`; sage `100` `#e3f1e8`, `200` `#c9e4d3`, `300` `#9fcbb0` |
-| Warm tans | `parchment` `#f5f1e6` (the brand parchment), `tan-100` `#ebe3d3`, `tan-200` `#ddd1ba`, `tan-300` `#cdbe9f`, `tan-400` `#b5a48b`, `tan-600` `#7a6548`, `tan-700` `#66523a`, `tan-800` `#4f4030`; gold `500` `#c5a059` (the brand gold), `300` `#e8cc8a`, `200` `#f1dda8` |
-| Crisp neutrals | `charcoal` `#1a202c`, `ink-soft` `#343b49`, `white` |
-| Warm accents (the light pages) | `cream` `#fbf7f1` (a page), `peach-100` `#fbe9dc` (an icon tile), `peach-200` `#f6cdb4` (the hero's glow, decoration only), `clay-700` `#8a3a20` (one terracotta accent word) |
-| Meaning | `danger-800`, `danger-200`, `ok-800`, `ok-200`; the focus ring `focus` `#f5b800` and `focus-dark` `#10241a` |
+| Slate and ocean teal (the old "greens"; the token names still say green so no page had to be renamed) | `green-950` `#070d1c`, `green-900` `#0f172a` (rich slate), `green-800` `#111b30`, `green-700` `#08423f` (deep ocean teal, for text and button fills), `green-600` `#0b5f59`, `green-500` `#0a7c75`; sage tints `100` `#e4f4f1`, `200` `#c9e8e2`, `300` `#94d2c8`; `teal` `#0d9488` (borders, glows, icons and large shapes only), `sage-700` `#355e3b`, `ink-900` `#0f172a` |
+| Warm stone | `parchment` `#f4f3ef`, `tan-100` `#ebe9e3`, `tan-200` `#dad7ce`, `tan-300` `#c5c1b5`, `tan-400` `#a5a092`, `tan-600` `#6e6a5e`, `tan-700` `#5b574c`, `tan-800` `#453f37`; gold `500` `#c5a059` (the brand gold), `300` `#e8cc8a`, `200` `#f1dda8` |
+| Warm neutrals | `charcoal` `#28241f`, `ink-soft` `#403b35`, `white` |
+| Warm accents (the light pages) | `cream` `#fafafd` (the alabaster page), `peach-100` `#fbe9dc` (an icon tile), `peach-200` `#f6cdb4` (the hero's glow, decoration only), `clay-700` `#8a3a20` (one terracotta accent word) |
+| Meaning | `danger-800`, `danger-200`, `ok-800`, `ok-200`; the focus ring `focus` `#f5b800` and `focus-dark` `#0f172a` |
 
 ### What reaches AAA (7:1)
 
 | Text | On | Contrast |
 |---|---|---|
-| white | the four dark greens | 12.7 to 17.9 |
-| sage 100 | the four dark greens | 10.9 to 15.4 |
-| sage 200 | the four dark greens | 9.4 to 13.3 |
-| gold 300 (gold you can read on green) | the four dark greens | 8.2 to 11.5 |
-| charcoal | parchment, tan 100, tan 200 | 10.8 to 14.2 |
-| ink-soft | parchment, tan 100, tan 200 | 7.4 to 9.8 |
-| green 700 | parchment, tan 100, tan 200 | 8.4 to 11.1 |
-| white | tan 700 (a page frame), green 600 | 7.4, 7.9 |
+| white | the four dark slates and teals | 11.3 to 19.4 |
+| sage 100 | the four dark slates and teals | 9.9 to 17.1 |
+| sage 200 | the four dark slates and teals | 8.7 to 14.9 |
+| gold 300 (gold you can read on slate or teal) | the four dark slates and teals | 7.2 to 12.4 |
+| charcoal | parchment, tan 100, tan 200 | 10.7 to 13.9 |
+| ink-soft | parchment, tan 100, tan 200 | 7.7 to 10.0 |
+| green 700 | parchment, tan 100, tan 200 | 7.8 to 10.2 |
+| white | tan 700 (a page frame), green 600 | 10.4, 7.5 |
 | danger 800, ok 800 | parchment | 8.7, 8.0 |
-| charcoal, ink-soft, green 700 | cream, white | 15.3 to 16.3, 10.5 to 11.2, 11.9 to 12.7 |
+| charcoal, ink-soft, green 700 | cream, white | 14.8 to 15.4, 10.6 to 11.1, 10.8 to 11.3 |
+| sage 700, slate (ink 900) | cream, white | 7.2 to 7.5, 17.1 |
+| white | sage 700 | 7.5 |
 | clay 700 (terracotta) | cream, white | 7.3, 7.8 |
 
-The check fails the build if any pair in that list drops under 7:1; the weakest text pair in the system is **7.4:1**.
+The check fails the build if any pair in that list drops under 7:1; the weakest text pair in the system is **7.1:1**.
 
-Parts that are not text (borders, icons, the ring) need 3:1: gold 500 and tan 400 on a green (5.2 to 6.7), green 600 on parchment (6.9). **Gold 500 and tan 400 are never used for small text on a green: they are AA there, not AAA.** Use gold 300 for that.
+Parts that are not text (borders, icons, the ring) need 3:1: gold 500 and tan 400 on a green, green 600 on parchment, and the oceanic teal `#0d9488` on alabaster (3.6) and on slate (4.8). **The oceanic teal is never text and never under button text** (3.6:1 on alabaster, 3.7:1 under white): text and button fills use deep teal `#08423f`, `#0b5f59`, sage `#355e3b` or slate. **Gold 500 and tan 400 are never used for small text on a green: they are AA there, not AAA.** Use gold 300 for that.
 
 These are the system's own pairs. Older page text that predates it is held to AA (4.5:1) by the browser audit (`npm run audit:ux`), which fails the build below that. Moving a page's own colors onto the tokens is how that page can reach AAA, one page at a time.
 
@@ -76,19 +78,19 @@ Three `.woff2` files, about 100 KB in all, with `fonts/OFL-Fraunces.txt` beside 
 
 ## The navigation bar (every page but the Packet Builder)
 
-`scripts/site-nav.mjs` writes the same six hubs into every static page. On a window 1100 px or wider they run across a light top bar: the logo and name on the left, Today, Studio, Activity Packets, Facility, Academy and Resources as drop-downs, and Contact on the right. Under 1100 px the same markup becomes the Menu drawer (a deep green Menu button, the hubs stacked, the one holding the page open). It is one structure at every width (an `<aside>` with the hubs as `<details>`), so the keyboard, a screen reader and the checks meet the same thing.
+`scripts/site-nav.mjs` writes the same seven places (the six hubs and Tablet Activities, a plain link beside Activity Packets) into every static page. On a window 1280 px or wider they run across a light top bar: the logo and name on the left, Today, Studio, Activity Packets, Facility, Academy and Resources as drop-downs, and Contact on the right. Under 1100 px the same markup becomes the Menu drawer (a deep green Menu button, the hubs stacked, the one holding the page open). It is one structure at every width (an `<aside>` with the hubs as `<details>`), so the keyboard, a screen reader and the checks meet the same thing.
 
 - **Behavior.** No drop-down is open as a page opens; the hub that holds the page carries a deep green underline. Clicking a hub opens it and closes any other; Enter and Space work; Escape closes it and leaves the keyboard on the hub; a click elsewhere or moving the keyboard on closes it. The bar stays at the top while the page scrolls (76 px tall). The logo is cropped to its drawing (the file is a full page with the drawing small in the middle) and shown at 84 x 60 px.
 - **The action bar** (License Key / Promo and the two buy buttons, and on the packet tool Instant Soothe and Night Shift) sits under the bar. It scrolls away on every page except the packet tool, where Instant Soothe has to stay in reach.
 - **Resources** opens a wide panel with the library in its three groups.
 - **Colors.** Charcoal on white (16.3:1); the current hub in deep green; drop-down links 52 px tall; the two-band focus ring. Night Shift turns the bar, the drop-downs and the action bar dark brown with cream text, on every page, whether or not the page runs the Night Shift script.
-- **The Packet Builder keeps its own side menu.** It is a working screen with its own categories and queue; its six hubs are the same.
+- **The Packet Builder keeps its own side menu.** It is a working screen with its own categories and queue; its seven places are the same.
 
 ## The front page (index.html)
 
 The packet tool's first screen follows a classic product page: a hero in two columns, a row of what you get, the evidence, then the tool, then a footer. Every word on it was already on the page; only the arrangement and the look are new.
 
-1. **Hero** on cream with a soft peach glow: the tagline "Engaging Today" in clay, the heading with "one resident's own life." in clay, the lede, a deep green **Make a packet** button (it scrolls to the tool) and **See what you get**. Beside it, a laptop (lid, camera, keyboard deck) whose screen shows the packet tool's own "Fit the Words In" page: the crossword the engine makes for a made-up resident (Ruth, born 1938; gardening, big-band music, a river town; middle stage; 1 October 2026), laid out as the printed page is, with numbered cells, the first letters, the clues and the box of words. The screen is one inline SVG written by `node scripts/landing-example.mjs` from the engine's real output, and `--check` (in `npm test` and `npm run build`) fails if the engine ever makes something different, so the picture cannot drift into a drawing of something the tool does not do. The gold cornucopia sits in the blank space between the heading and the laptop (on the laptop's corner where the columns are narrow), and a "Large print, pure black on white" card hangs below the deck. The picture is decoration (`aria-hidden`) and is left out on a phone.
+1. **Hero** (redesigned November 2026, the owner's brief): a soft teal and sage wash with a light geometric mesh, no eyebrow tag, the headline "Custom activities built with the individual in mind." (the last words in deep teal), a subtitle about personalized memory care, cognitive engagement and an instant print-ready packet, one primary button **Get Started Free** (it scrolls to the tool) and one quiet line (no sign-up, no card, everything on this computer). The trial count is not in the hero; it lives in the action bar and the packet tool's bar. Beside it, a laptop whose screen shows the packet tool's own "Fit the Words In" page (decoration, `aria-hidden`, left out on a phone).
 2. **What Cognicopia gives you:** the four value cards, side by side. On 1366 x 768 all four are on the first screen; on a 390 x 844 phone the first one is (both measured by `scripts/check-design-ui.mjs`).
 3. **Informed by the research:** five Research Center summaries as links, and a quote card with the publisher's own statement (credited to Cognicopia, BarronCrafts). No client logos and no testimonials: the template had them; Cognicopia does not invent them.
 4. **Make a packet:** the privacy promise, then the tool exactly as before, in its deep green band.
@@ -184,3 +186,54 @@ The owner's flyer sets the identity: deep teal, warm gold, parchment. What was d
 - **Brain mark and watermark.** `assets/brand/brain-mark.svg` (two hemispheres, teal and blue, with neural nodes) sits beside the top-bar title, headings with `class="cg-brain-h"`, and the Packet Builder's titles. `assets/brand/brain-watermark.svg` is tiled faintly (gold strokes at 18 to 22 percent) down the page margins on windows 1100 px and wider, only on pages that carry the site navigation; a bare dark surface skips it so gold text there keeps its full 7:1. Both are hidden in print and the watermark in Night Shift.
 - **Feature badges.** Five rounded-square badges (`assets/brand/badge-*.svg`) head the front page's "What Cognicopia gives you" list: quick personal packets, decades of nostalgia, low vision and toner savings, interactive tablet mode, private on this computer. Names avoid claims that have not been measured ("30-second packets" and "100% privacy" were not used).
 - **Cards and banners.** `.cg-card` (white, soft radius, golden inner glow) and `.cg-banner` (teal into deep gold, white lettering) are in `css/styles.css`; print turns both plain black on white.
+
+## Warm clinical, oceanic serenity (November 5, 2026)
+
+The owner's direction for the whole screen. It changes colors, surfaces, controls and spacing; it changes no logic, data, route or export.
+
+- **Palette.** One retint across the pages, `css/styles.css`, the generated navigation and research pages, the scripts that draw interface, the Academy and Packet Builder tokens, the web manifest and the facility service's pages (`platform/app/globals.css`). The two pages that use a Tailwind stylesheet (`batch-scheduler.html`, `family-bridge.html`) take the palette through `scripts/make-pages-css.mjs`, which replaces Tailwind's neutral and emerald scales with the site's own (black stays black, for print).
+- **Glass.** Section 14 of `css/styles.css` makes `.container` and the card classes translucent surfaces with a backdrop blur, a translucent border and a long soft shadow, on the screen only. The top bar is solid alabaster on purpose: the logo files are black ink on white, and a translucent bar over a dark section showed a pale square behind the mark.
+- **Tactile controls.** A smooth lift and a glowing border on hover (`--cg-ease-out`, a cubic-bezier curve), a pressed state of `scale(.96)`, and the two-band focus ring (a 3 px bright outline, a 6 px dark band of `focus-dark`). The lift and the press stop under `prefers-reduced-motion`.
+- **The packet section and the licensing bar** on the front page are slate with a faint teal lattice and a teal rule; the bar keeps the class name `cg-wood-bar` because the scripts find it by that name, and Night Shift keeps its warm walnut and brass.
+- **What did not change.** Print is pure black on white. The care-tier colors (sapphire, terracotta with sage, evergreen with muted gold), the ok and danger colors, the studio accents and Night Shift keep their own palettes, because they carry meaning. 52 px touch targets, dignity-first wording, no outside font or script, and the offline promise are as before.
+
+## The top bar and the front page (November 6, 2026)
+
+- **Top bar.** The brain mark beside the name is gone (the headings that carry `cg-brain-h` keep theirs). The two group captions carry the same 16 px, 2 px stroke inline icon each (sparks for Resident tools, two people for Staff & family portal) instead of a colored dot. **Tablet Activities** is a plain link right after Activity Packets (a plain link's arrow points on, a drop-down's points down), so there are seven places. To fit them on one row the bar now starts at **1280 px** (it was 1100); under that the Menu drawer is used, and the closed drawer no longer casts its shadow onto the page. In the bar, Contact reads "Contact" (its accessible name stays "Contact Cognicopia").
+- **"What Cognicopia gives you"** is an asymmetric three-column grid: one tall card (Quick, personal packets, with the three steps) beside four, white with a soft shadow and a 4 px lift on hover (the lift stops for `prefers-reduced-motion`), each with one minimal inline icon. Two columns under 1100 px, one under 560 px.
+
+## The Shift board calendar (November 2026)
+
+The Shift board opens on a calendar (Month, Week, Day) instead of the old three-column board; the board is one button away ("Open the board"). Styles live in the `shc-style` block of `builder.html`, scripts in `js/shift-calendar.js` (the rules) and `js/shift-calendar-ui.js` (the screen). Rules the styles follow:
+
+- **Three coverage badges, each a color plus words.** Green "Fully staffed", amber "Open shifts", purple "Memory care need". Each pair is dark text on a pale fill (measured: green 7.8:1, amber 7.9:1, purple 10.0:1, the gray "no plan" tag 9.3:1), and no badge is color alone: the words are always there, and a day with no plan shows no badge at all rather than a gray one that reads as a problem. The purple badge appears only when the board's own records support it (a High weekday pattern, or a High pattern plus a watch note that day).
+- **Month, Week and Day share one grid.** The day cells use container queries (`container-type: inline-size` on `.shc-day`), so a badge shortens to its short wording in a narrow cell instead of being cut off. The insight rail sits below the calendar on every window size: beside it the month and week columns shrank to about 80 px.
+- **Touch.** Every day cell, view button and navigation arrow is at least 52 px. Under 640 px the toolbar wraps into rows and the page never scrolls sideways.
+- **The staffing insight is a count, not a forecast.** It reads the engagement records already on the board (at least 6 records in a shift; 35 percent or more High is High, 18 percent or more is Moderate) and says so on the screen. Staff appear as initials only, and a resident appears by alias or room only, as everywhere on the Shift board.
+- **The weekly PDF** is one US Letter page with the 0.75 in binding gutter, built with the bundled jsPDF and the Atkinson Hyperlegible font. It prints pure black on white (the badge colors become words: "OPEN" marks the open shifts).
+- **Quick resident lookup** (`js/quick-lookup.js`): Ctrl+K, or "/" when no field has the keyboard, opens a small search dialog on every Packet Builder screen. It reads the saved roster and stores nothing. On the Shift board it shows aliases only.
+
+## The Resident Roster (November 2026)
+
+The roster's resident pane (`rs2-style` in `builder.html`) is a list or a card grid, one choice for the person, remembered with the sort but never with a resident. A resident is a round avatar of initials, the name set in Fraunces, the room and the tier tag. The tints are the care-tier colors from section 13 of `css/styles.css` (sapphire, terracotta, evergreen) as deep ink on a soft tint, measured 11.6:1 to 13.1:1. The filter chips carry a count of what a click would show, and are redrawn on every change, so the keyboard is put back on the chip that was pressed. The search matches every word in any order in the name, the alias or the room with accents ignored, the same rule as the Ctrl+K lookup. An empty roster and a search that finds nobody each say what to do next. Every chip, the two view buttons, the sort and every resident are at least 52 px; under 900 px the pane sits above the print pane in one column.
+
+## The front page's laptop (November 2026)
+
+The hero laptop has no 3D tilt, so nothing on its screen is skewed. The screen is one SVG per example, 1000 x 625 (16:10), written by `scripts/landing-example.mjs` from Cognicopia's own engines: it scales as a picture and keeps its proportions. The page inside is drawn the way it prints: pure black on white, a 0.75 in binding side and 0.5 in margins at 46.5 units to the inch, Fraunces for titles and names, Atkinson Hyperlegible for everything else, and the word search's cells true squares with 3 pt outer lines. The app around the page uses the slate, teal and alabaster tokens. Three tabs under the laptop (52 px, arrow keys, Home and End) choose the example; without script the first example shows and the tabs are hidden. Night Shift recolors the tabs; the laptop is hidden under 760 px so the phone's first screen keeps its first value card.
+
+## The packet's house styles (November 2026)
+
+The front page's packet gives its page titles one of four looks, chosen from the resident and the month (`Doc.setLook` and `Doc.headLook` in `index.html`). The same packet always looks the same, the next month's or another resident's usually looks different, and every page of one packet shares its look, so the packet reads as one piece.
+
+| Look | Title | Rule |
+|---|---|---|
+| Ledger (the plain look) | sans (Atkinson Hyperlegible), on the left | one heavy rule |
+| Editorial | serif (the PDF's built-in Times), centered | a double rule |
+| Framed | sans, in a ruled box, a small solid square before it | the box |
+| Margin bar | serif, beside a heavy bar in the margin | one rule |
+
+What holds in every look: pure black on white; no line thinner than the stage's rule; and exactly the room the plain look takes (the title's baseline, then 44 pt), so a look never moves a page break (`scripts/check-packet-looks-ui.mjs` makes the same packet in all four and compares the pages). The late stage and a simplified layout always use the plain look, for calm and predictability. The body text stays in Atkinson Hyperlegible for legibility. Fraunces is not used in PDFs: it ships only as a web font, which the PDF library cannot embed.
+
+### The same looks on the Packet Builder's printed sheets
+
+The Packet Builder's packet prints in the same four looks (`style#sheet-looks` and `sheetLook()` in `builder.html`), chosen from the resident and the month when the packet is printed; calm mode keeps the plain look. On its HTML sheets the look restyles the title band (`.sh-head`): the second rule of the editorial look and the frame are drawn with absolutely placed pseudo-elements, so the band keeps its height and nothing below it moves. Sheets the activity engine draws as one picture carry all three decorations around their title, hidden (`src/engine/ClinicalActivities.js`, `toSVG`), and the print area shows the one its look names. Here the serif is Fraunces itself: the browser prints with the site's own font. The late stage (`.lvl-advanced`, `.eng-late`) keeps the plain look. `scripts/check-builder-looks-ui.mjs` prints the same sheets in all four looks and compares every band and body.

@@ -10,6 +10,12 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = { width: "device-width", initialScale: 1 };
 
+/**
+ * Every page is drawn for each request. The Content-Security-Policy carries a fresh nonce per request
+ * (proxy.ts), and a page built ahead of time has none to put on its scripts, so they would not run.
+ */
+export const dynamic = "force-dynamic";
+
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">

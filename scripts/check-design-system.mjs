@@ -57,9 +57,9 @@ const lum = h => { const c = [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16) 
 const ratio = (a, b) => { const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p); return (x + 0.05) / (y + 0.05); };
 const mix = (top, alpha, under) => "#" + [1, 3, 5].map(i => Math.round(parseInt(top.slice(i, i + 2), 16) * alpha + parseInt(under.slice(i, i + 2), 16) * (1 - alpha)).toString(16).padStart(2, "0")).join("");
 ok(Object.keys(T).length >= 28, `the stylesheet names ${Object.keys(T).length} colors`);
-for (const need of ["green-950", "green-900", "green-800", "green-700", "parchment", "charcoal", "gold-500", "gold-300", "white", "focus", "focus-dark"]) ok(T[need], `missing token --cg-${need}`);
-/* the brand's four colors, as the Quality Standards Hub names them */
-ok(T["green-700"] === "#0e3c43" && T.parchment === "#f5f1e6" && T["gold-500"] === "#c5a059" && T.charcoal === "#1a202c", "the four brand colors are the tokens' anchors");
+for (const need of ["green-950", "green-900", "green-800", "green-700", "parchment", "charcoal", "gold-500", "gold-300", "white", "focus", "focus-dark", "teal", "sage-700", "ink-900"]) ok(T[need], `missing token --cg-${need}`);
+/* the screen palette (owner's decision, November 5, 2026): alabaster pages, rich slate surfaces, deep ocean teal, sage and warm charcoal; the gold stays as the one warm accent */
+ok(T["green-700"] === "#08423f" && T["green-900"] === "#0f172a" && T.cream === "#fafafd" && T["gold-500"] === "#c5a059" && T.charcoal === "#28241f", "the palette's anchors are the tokens: deep teal, slate, alabaster, gold and warm charcoal");
 
 const TEXT = [];   // [foreground, background]: text, which must reach AAA
 const onGreens = ["green-950", "green-900", "green-800", "green-700"], onTans = ["parchment", "tan-100", "tan-200"];
@@ -68,6 +68,8 @@ for (const bg of ["green-900", "green-800"]) TEXT.push(["tan-300", bg]);
 for (const bg of onTans) for (const fg of ["charcoal", "ink-soft", "green-700"]) TEXT.push([fg, bg]);
 for (const bg of ["cream", "white", "peach-100"]) for (const fg of ["charcoal", "ink-soft", "green-700"]) TEXT.push([fg, bg]);   // the light front of the packet tool
 TEXT.push(["clay-700", "cream"], ["clay-700", "white"], ["white", "green-700"]);
+/* the November 5 additions: sage and slate carry text, white sits on both; the oceanic teal #0d9488 is 3.6:1 on alabaster, so it is a border, glow and icon color and is checked below as non-text only */
+TEXT.push(["sage-700", "cream"], ["sage-700", "white"], ["white", "sage-700"], ["ink-900", "cream"], ["ink-900", "white"], ["ink-900", "parchment"], ["white", "ink-900"], ["sage-100", "ink-900"], ["gold-300", "ink-900"]);
 TEXT.push(["charcoal", "gold-300"], ["charcoal", "gold-200"], ["charcoal", "sage-200"], ["charcoal", "tan-300"], ["white", "tan-700"], ["white", "green-600"], ["tan-800", "parchment"],
   ["danger-800", "parchment"], ["ok-800", "parchment"], ["danger-200", "green-900"], ["danger-200", "green-700"], ["ok-200", "green-900"]);
 let worst = 99;
@@ -105,7 +107,7 @@ ok(!/@page\s*\{[^}]*margin/.test(CODE), "the shared stylesheet sets no margin on
 ok(/:root:root\{color-scheme:light\}/.test(CODE), "a dark-themed page prints on a light canvas");
 ok(/:not\(:has\(#printRoot,#qpPrintRoot,#print-stage\)\)/.test(CODE) && /nav,button,\.btn/.test(CODE), "the generic print sheet strips navigation and buttons and leaves a page with its own print root alone");
 for (const [fg, bg] of [["gold-500", "green-900"], ["gold-500", "green-800"], ["gold-500", "green-700"], ["tan-400", "green-900"], ["tan-400", "green-800"], ["tan-400", "green-700"], ["green-600", "parchment"],
-  ["focus", "green-900"], ["focus-dark", "parchment"], ["focus", "focus-dark"], ["focus-dark", "tan-200"]]) {
+  ["focus", "green-900"], ["focus-dark", "parchment"], ["focus", "focus-dark"], ["focus-dark", "tan-200"], ["teal", "cream"], ["teal", "white"], ["teal", "ink-900"]]) {
   const r = ratio(T[fg], T[bg]); ok(r >= 3, `non-text --cg-${fg} against --cg-${bg} is ${r.toFixed(2)}:1, under 3:1`);
 }
 /* the studio tools' accents (section 9e): in the day palette the text color is AAA on its own tint, on cream and on white, white text
@@ -220,7 +222,8 @@ for (const f of ["pricing.html", "activate.html", "contact.html", "cognitive-jou
   const idx = read("index.html");
   ok(/--ds-panel:var\(--cg-green-800/.test(idx) && /--ds-bar-ink:var\(--cg-charcoal/.test(idx), "index.html's palette is the shared tokens");
   ok((idx.match(/class="cg-value"/g) || []).length === 5 && /Quick, personal packets/.test(idx) && /Decades of nostalgia/.test(idx) && /Low vision &amp; toner savings/.test(idx) && /Interactive tablet mode/.test(idx) && /No resident data leaves the device/.test(idx), "index.html: five value cards above the form");
-  ok(/<p class="tagline">Engaging Today<\/p>/.test(idx) && /Connection, Cognition, Creation/.test(idx), "index.html: the tagline is Engaging Today, with the earlier line kept beneath it");
+  ok(/<h1 class="hero-title" id="heroTitle">Custom activities built with <span class="lp-accent">the individual in mind\.<\/span><\/h1>/.test(idx) && !/class="tagline"/.test(idx) && /Connection, Cognition, Creation/.test(idx), "index.html: the hero headline is the owner's, there is no eyebrow tag above it (the owner removed \"Engaging Today\", November 2026), and the byline is kept in the footer");
+  ok(!/Start Free Trial/.test(idx) && /id="heroCta" href="#make">Get Started Free</.test(idx) && !/class="lp-hero"[\s\S]{0,4000}data-cg-trial/.test(idx), "index.html: one primary hero button (Get Started Free), no trial badge in the hero");
   ok(!/HIPAA[- ]compliant/i.test(idx), "no blanket compliance claim in the hero");
 }
 

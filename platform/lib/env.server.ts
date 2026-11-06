@@ -167,3 +167,55 @@ export function getLicenseConfig(): LicenseConfig {
     .filter(Boolean);
   return { signingKey: env.LICENSE_SIGNING_KEY.trim(), prices: { monthly: env.STRIPE_PRICE_MONTHLY, annual: env.STRIPE_PRICE_ANNUAL }, allowedOrigins: origins };
 }
+
+// ---------------------------------------------------------------------
+// Email (invitations)
+// ---------------------------------------------------------------------
+
+export interface SmtpConfig {
+  host: string;
+  port: number;
+  /** True for implicit TLS (port 465 by default). Otherwise the connection starts plain and must upgrade to TLS first. */
+  secure: boolean;
+  /** Both or neither: a server that needs no sign-in (a local relay) has none. */
+  auth: { user: string; pass: string } | undefined;
+  /** The From line, such as "Cognicopia <no-reply@cognicopia.org>". */
+  from: string;
+}
+
+const noLineBreaks = (value: string) => !/[\r\n]/.test(value);
+
+/** Microsoft's mail servers (Outlook.com, Hotmail, Live, Microsoft 365). */
+const MICROSOFT_HOST = /(^|\.)(outlook|office365|hotmail|live)\.com$/i;
+
+/** The bare address in a From line: "Cognicopia <a@b.example>" gives a@b.example; a bare address is itself. */
+export const addressOf = (from: string): string => (/<([^<>]+)>/.exec(from)?.[1] ?? from).trim().toLowerCase();
+
+/**
+ * The outgoing mail server, or undefined when SMTP_HOST is not set: emailing is then simply off, and the
+ * invitation page shows the link to share, as before. Once SMTP_HOST is set the rest is required and checked
+ * (a ConfigError names the variables). SMTP_USER and SMTP_PASS go together. On a Microsoft host the From address must be
+ * the signed-in account's own (SMTP_FROM then names the problem). The password is a secret:
+ * environment only, never in a file, never logged.
+ */
+export function getSmtpConfig(): SmtpConfig | undefined {
+  if (blank(process.env.SMTP_HOST) === undefined) return undefined;
+  const env = read({
+    SMTP_HOST: z.string().regex(/^[A-Za-z0-9.-]+$/, "must be a host name"),
+    SMTP_PORT: z.coerce.number().int().min(1).max(65535).default(587),
+    SMTP_SECURE: z.enum(["true", "false"]).optional(),
+    SMTP_USER: z.string().refine(noLineBreaks, "must be one line").optional(),
+    SMTP_PASS: z.string().refine(noLineBreaks, "must be one line").optional(),
+    SMTP_FROM: z.string().min(3).max(200).refine(noLineBreaks, "must be one line"),
+  });
+  if (Boolean(env.SMTP_USER) !== Boolean(env.SMTP_PASS)) throw new ConfigError([env.SMTP_USER ? "SMTP_PASS" : "SMTP_USER"]);
+  // Microsoft sends only as the account that signed in: a different From address is rewritten or refused, so say so at start-up, not at the first invitation.
+  if (MICROSOFT_HOST.test(env.SMTP_HOST) && env.SMTP_USER && addressOf(env.SMTP_FROM) !== env.SMTP_USER.trim().toLowerCase()) throw new ConfigError(["SMTP_FROM"]);
+  return {
+    host: env.SMTP_HOST,
+    port: env.SMTP_PORT,
+    secure: env.SMTP_SECURE ? env.SMTP_SECURE === "true" : env.SMTP_PORT === 465,
+    auth: env.SMTP_USER && env.SMTP_PASS ? { user: env.SMTP_USER, pass: env.SMTP_PASS } : undefined,
+    from: env.SMTP_FROM,
+  };
+}

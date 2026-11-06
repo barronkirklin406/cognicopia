@@ -10,6 +10,7 @@ import { first, type SearchParams } from "@/lib/auth/params";
 import { listInvites } from "@/lib/data/invites";
 import { listMembers } from "@/lib/data/team";
 import { inviteState } from "@/lib/domain/invite";
+import { getMailer } from "@/lib/email/mailer";
 import { formatDate } from "@/lib/domain/subscription";
 
 export const metadata: Metadata = { title: "Team" };
@@ -26,6 +27,7 @@ export default async function TeamPage({ searchParams }: { searchParams: SearchP
   const notice = teamNotice(first((await searchParams).notice));
   const [members, invites] = await Promise.all([listMembers(db), listInvites(db)]);
   const now = new Date();
+  const canEmail = getMailer() !== null;
 
   return (
     <Shell session={{ user, membership }} current="/admin/team">
@@ -75,9 +77,12 @@ export default async function TeamPage({ searchParams }: { searchParams: SearchP
         <section className="stack" aria-labelledby="invite-title">
           <h2 id="invite-title">Invite someone</h2>
           <p>
-            Make a link and send it to them yourself. They open it, sign in or create their own account, and join. Everyone has their own sign-in; there is no shared password. For a shared computer, invite a shared mailbox your facility controls.
+            {canEmail
+              ? "Invite someone by email, or make a link and send it to them yourself. They open it, sign in or create their own account, and join."
+              : "Make a link and send it to them yourself. They open it, sign in or create their own account, and join."}{" "}
+            Everyone has their own sign-in; there is no shared password. For a shared computer, invite a shared mailbox your facility controls.
           </p>
-          <InviteForm />
+          <InviteForm canEmail={canEmail} />
         </section>
 
         <section className="stack" aria-labelledby="open-title">

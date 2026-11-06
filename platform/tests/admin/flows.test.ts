@@ -90,6 +90,82 @@ describe("inviteFlow", () => {
   });
 });
 
+describe("inviteFlow with email", () => {
+  const stand = (behaviour: "ok" | "fail" = "ok") => {
+    const sent: { to: string; subject: string; text: string; html: string }[] = [];
+    const mailer = {
+      send: vi.fn(async (message: { to: string; subject: string; text: string; html: string }) => {
+        if (behaviour === "fail") throw new Error("550 mailbox unavailable for someone@elsewhere.example (password hunter2)");
+        sent.push(message);
+      }),
+    };
+    return { sent, mailer, mail: { mailer, facilityName: "Maple Court" } };
+  };
+  const link = `${APP}/join?token=${SECRET}`;
+
+  it("emails the invitation to the address it is tied to, and still shows the link", async () => {
+    const { db } = fakeDb({ data: SECRET });
+    const { sent, mail } = stand();
+    const result = await inviteFlow(db, { email: "New@Maple.example", role: "staff", send_email: "on" }, APP, mail);
+    expect(sent).toHaveLength(1);
+    expect(sent[0]).toMatchObject({ to: "new@maple.example", subject: "You are invited to join Maple Court on Cognicopia" });
+    expect(sent[0]!.text).toContain(link);
+    expect(result).toEqual({ state: { message: expect.stringContaining("emailed to new@maple.example"), link } });
+  });
+
+  it("sends nothing unless the admin asked for it", async () => {
+    const { mailer, mail } = stand();
+    for (const send_email of [undefined, null, "", "off", "no"]) {
+      const result = await inviteFlow(fakeDb({ data: SECRET }).db, { email: "new@maple.example", role: "staff", send_email }, APP, mail);
+      expect(result).toMatchObject({ state: { message: expect.stringMatching(/^Invitation created\. Share this link/) } });
+    }
+    expect(mailer.send).not.toHaveBeenCalled();
+  });
+
+  it("asks for an address when the box is ticked and none was given, and makes no invitation", async () => {
+    const { db, calls } = fakeDb({ data: SECRET });
+    const { mailer, mail } = stand();
+    const result = await inviteFlow(db, { email: "", role: "staff", send_email: "on" }, APP, mail);
+    expect(result).toMatchObject({ state: { fieldErrors: { email: "Enter their email address to email the invitation." } } });
+    expect(calls).toEqual([]);
+    expect(mailer.send).not.toHaveBeenCalled();
+  });
+
+  it("says emailing is not set up, rather than pretending, and makes no invitation", async () => {
+    const { db, calls } = fakeDb({ data: SECRET });
+    const result = await inviteFlow(db, { email: "new@maple.example", role: "staff", send_email: "on" }, APP, null);
+    expect(result).toMatchObject({ state: { error: expect.stringContaining("not set up yet") } });
+    expect(JSON.stringify(result)).not.toContain("join?token");
+    expect(calls).toEqual([]);
+  });
+
+  it("keeps the invitation and its link when the email cannot be sent, and shows nothing the mail server said", async () => {
+    const log = vi.spyOn(console, "error").mockImplementation(() => {});
+    const { mail } = stand("fail");
+    const result = await inviteFlow(fakeDb({ data: SECRET }).db, { email: "new@maple.example", role: "staff", send_email: "on" }, APP, mail);
+    expect(result).toEqual({ state: { message: expect.stringContaining("the email could not be sent to new@maple.example"), link } });
+    expect(JSON.stringify(result)).not.toMatch(/550|hunter2|elsewhere/);
+    expect(JSON.stringify(log.mock.calls)).not.toMatch(/550|hunter2|elsewhere|new@maple/);
+    log.mockRestore();
+  });
+
+  it("sends nothing when the invitation itself could not be made", async () => {
+    const { mailer, mail } = stand();
+    const result = await inviteFlow(fakeDb({ error: { code: "CG002" } }).db, { email: "bob@maple.example", role: "staff", send_email: "on" }, APP, mail);
+    expect(result).toMatchObject({ state: { error: "That person is already on your team." } });
+    expect(mailer.send).not.toHaveBeenCalled();
+  });
+
+  it("sends nothing for an address that does not pass the check, including one that tries to add a header", async () => {
+    const { mailer, mail } = stand();
+    for (const email of ["not an email", "a@b.example\r\nBcc: c@d.example", "a@b.example, c@d.example"]) {
+      const result = await inviteFlow(fakeDb({ data: SECRET }).db, { email, role: "staff", send_email: "on" }, APP, mail);
+      expect(result).toMatchObject({ state: { fieldErrors: { email: expect.any(String) } } });
+    }
+    expect(mailer.send).not.toHaveBeenCalled();
+  });
+});
+
 describe("cancelInviteFlow", () => {
   it("cancels an open invitation", async () => {
     const { db, calls } = fakeDb({ data: [{ id: UUID }] });

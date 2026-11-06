@@ -3,12 +3,12 @@
    The Tablet Activities button never ends on a 404, in a real browser.
    Four cases, each against a small server that answers a missing file the way GitHub Pages does
    (status 404 with the body of 404.html):
-     - normal: the hero button opens tablet.html and its menu shows
+     - normal: the top bar's Tablet Activities link (beside Activity Packets) opens tablet.html and its menu shows
      - tablet.html missing: the same button lands in the packet tool with Tablet Interactive Mode open
      - a mistyped tablet address (Tablet.html) lands there too
      - any other missing page shows the friendly 404 page with working links
    Also: the files a deploy needs for this exist (tablet.html, its two scripts, 404.html, sw.js), and
-   the front page's Tablet Activities button is written with an explicit ./ path. Nothing is requested from outside.
+   the top bar's Tablet Activities link is written by scripts/site-nav.mjs right after Activity Packets. Nothing is requested from outside.
 
    Needs Playwright. Where it is missing this exits 2 and npm run build skips it.
    Run: node scripts/check-tablet-route.mjs
@@ -23,7 +23,8 @@ const ok = (c, m) => { if (c) passed++; else problems.push(m); };
 
 for (const f of ["tablet.html", "js/tablet.js", "js/tabletEngine.js", "404.html", "sw.js"]) ok(fs.existsSync(path.join(ROOT, f)), `${f} is in the repository`);
 const idx = fs.readFileSync(path.join(ROOT, "index.html"), "utf8");
-ok(/class="lp-btn lp-btn-tablet" href="\.\/tablet\.html"/.test(idx), "the front page's Tablet Activities button uses an explicit ./ path (the menu bar link is written by scripts/site-nav.mjs)");
+ok(/data-hub="packets">[\s\S]{0,600}?data-hub="tablet"><a href="tablet\.html"/.test(idx), "the top bar has Tablet Activities right after Activity Packets (written by scripts/site-nav.mjs)");
+ok(!/lp-btn-tablet/.test(idx), "the hero no longer carries a second Tablet Activities button: the link moved to the top bar");
 
 const { chromium } = loadPlaywright();
 const TYPES = { ".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=utf-8", ".css": "text/css; charset=utf-8", ".json": "application/json", ".webmanifest": "application/manifest+json", ".svg": "image/svg+xml", ".png": "image/png", ".woff2": "font/woff2" };
@@ -40,7 +41,7 @@ const serve = hide => new Promise(done => {
 const browser = await chromium.launch();
 async function visit(label, hide, start, click){
   const { srv, base } = await serve(hide);
-  const p = await browser.newPage({ viewport: { width: 1180, height: 820 } });
+  const p = await browser.newPage({ viewport: { width: 1366, height: 768 } });   /* the top bar (1280 px and up), where the link is */
   const errors = [], outside = [];
   p.on("pageerror", e => errors.push(e.message));
   p.on("request", r => { if (!r.url().startsWith(base) && !r.url().startsWith("data:") && !r.url().startsWith("blob:")) outside.push(r.url()); });
@@ -53,10 +54,11 @@ async function visit(label, hide, start, click){
   return s;
 }
 try {
-  let s = await visit("normal", false, "/index.html", "a.lp-btn-tablet");
-  ok(s.path === "/tablet.html" && s.menu, "the hero button opens the tablet page and its menu shows");
-  s = await visit("tablet page missing", true, "/index.html", "a.lp-btn-tablet");
-  ok(s.path === "/index.html" && s.inpage, "with tablet.html missing, the same button ends in Tablet Interactive Mode inside the packet tool");
+  const LINK = '.cg-hubs > li[data-hub="tablet"] > a';
+  let s = await visit("normal", false, "/index.html", LINK);
+  ok(s.path === "/tablet.html" && s.menu, "the top bar's link opens the tablet page and its menu shows");
+  s = await visit("tablet page missing", true, "/index.html", LINK);
+  ok(s.path === "/index.html" && s.inpage, "with tablet.html missing, the same link ends in Tablet Interactive Mode inside the packet tool");
   s = await visit("mistyped address", true, "/Tablet.html", null);
   ok(s.path === "/index.html" && s.inpage, "a mistyped tablet address ends in Tablet Interactive Mode too");
   s = await visit("other missing page", true, "/nope.html", null);

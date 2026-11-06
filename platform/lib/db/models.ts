@@ -100,5 +100,5 @@ export const COLUMNS = {
     accepted_by: true,
   },
   content_items: { id: true, title: true, category: true, dementia_stage: true, content_payload: true, created_at: true },
-  activity_calendars: { id: true, facility_id: true, month_year: true, generated_data: true, created_at: true },
+  activity_calendars: { id: true, facility_id: true, month_year: true, generated_data: true, created_at: true, updated_at: true },
 } as const satisfies { [T in TableName]: Record<keyof Tables<T>, true> };

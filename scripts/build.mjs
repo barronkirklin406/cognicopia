@@ -27,7 +27,7 @@
      5b. in a real browser (where Playwright is installed): every control on
         the tools, in the states a person reaches and in every page type's
         sidebar is at least 52 px, and no text is below WCAG AA by day or in
-        Night Shift (scripts/audit-ux.mjs), the six hubs open, close and mark
+        Night Shift (scripts/audit-ux.mjs), the seven places open, close and mark
         the current page as a person expects (scripts/check-nav-ui.mjs), and the
         Shift board does what it says, down to what is stored and what prints
         (scripts/check-shift-ui.mjs), and licensing and pricing do what they
@@ -143,7 +143,7 @@ step("every web manifest icon exists", () => {
 
 /* 5. server and the automated checks */
 step("server.js parses", () => { execFileSync(process.execPath, ["--check", path.join(ROOT, "server.js")]); });
-for (const s of ["check-outreach.mjs", "check-life-planner.mjs", "check-life-journal.mjs", "check-services.mjs", "check-coloring.mjs", "check-trace.mjs", "check-infinite.mjs", "check-hybrid.mjs", "check-pcg.mjs", "check-clinical.mjs", "check-clinical-staging.mjs", "check-facility-ops.mjs", "check-resident-engine.mjs", "check-quality-hub.mjs", "check-clinical-alignment.mjs", "check-soothing.mjs", "check-license.mjs", "check-license-service.mjs", "check-net30-desk.mjs", "check-trial.mjs", "check-localdb.mjs", "check-contentcatalog.mjs", "check-contentmatcher.mjs", "check-coloringagent.mjs", "check-local-art.mjs", "check-tablet.mjs", "check-voice-kit.mjs", "check-design-system.mjs", "check-claims.mjs", "check-favicon.mjs"]) step(s, () => {
+for (const s of ["check-outreach.mjs", "check-life-planner.mjs", "check-life-journal.mjs", "check-services.mjs", "check-coloring.mjs", "check-trace.mjs", "check-infinite.mjs", "check-hybrid.mjs", "check-shift-calendar.mjs", "check-describe.mjs", "check-reminiscence-pages.mjs", "check-pcg.mjs", "check-clinical.mjs", "check-clinical-staging.mjs", "check-facility-ops.mjs", "check-resident-engine.mjs", "check-quality-hub.mjs", "check-clinical-alignment.mjs", "check-soothing.mjs", "check-license.mjs", "check-license-service.mjs", "check-net30-desk.mjs", "check-trial.mjs", "check-localdb.mjs", "check-contentcatalog.mjs", "check-contentmatcher.mjs", "check-coloringagent.mjs", "check-local-art.mjs", "check-tablet.mjs", "check-voice-kit.mjs", "check-design-system.mjs", "check-claims.mjs", "check-favicon.mjs"]) step(s, () => {
   const out = execFileSync(process.execPath, [path.join(ROOT, "scripts", s)], { encoding: "utf8" }).trim().split("\n")[0];
   return out;
 });
@@ -169,6 +169,46 @@ step("the navigation behaves: hubs open and close, the current page is marked, t
 
 step("the Shift board works: notes, tasks, the name check, encrypted storage, retention, the print sheet, a locked backup and the unlock (a real browser)", () => {
   try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-shift-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
+  catch (e){
+    if (e.status === 2) return "skipped: Playwright is not installed here (see docs/dev-setup.md)";
+    throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message);
+  }
+});
+
+step("the Shift board calendar: Month, Week and Day, coverage and badges, the staffing insight, the weekly PDF read back, the slide-out board, Ctrl+K lookup, 52 px, a phone (a real browser)", () => {
+  try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-shift-calendar-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
+  catch (e){
+    if (e.status === 2) return "skipped: Playwright is not installed here (see docs/dev-setup.md)";
+    throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message);
+  }
+});
+
+step("the Packet Builder's house styles on its printed sheets: four looks by resident and month, calm mode plain, nothing moved in any look, HTML and engine sheets, the late stage plain (a real browser, the PDFs read back)", () => {
+  try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-builder-looks-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
+  catch (e){
+    if (e.status === 2) return "skipped: Playwright is not installed here (see docs/dev-setup.md)";
+    throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message);
+  }
+});
+
+step("the packet's house styles and its reminiscence pages: four title looks chosen by resident and month, the same pages in every look, Your years, My memory map and Sensory memory cards from the form, the avoid list (a real browser, the PDFs read back)", () => {
+  try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-packet-looks-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
+  catch (e){
+    if (e.status === 2) return "skipped: Playwright is not installed here (see docs/dev-setup.md)";
+    throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message);
+  }
+});
+
+step("Describe & Create: the Packet Builder's Describe a picture and the front page's A picture to color choose the drawing the words name, the packet PDF uses it (read back), refusals, 52 px, a phone (a real browser)", () => {
+  try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-describe-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
+  catch (e){
+    if (e.status === 2) return "skipped: Playwright is not installed here (see docs/dev-setup.md)";
+    throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message);
+  }
+});
+
+step("the Resident Roster: initials rows and cards, filter chips with counts, search by words and accents, sort and view remembered, the keyboard, the first-use screen, 52 px, a phone (a real browser)", () => {
+  try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-roster-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
   catch (e){
     if (e.status === 2) return "skipped: Playwright is not installed here (see docs/dev-setup.md)";
     throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message);
@@ -227,6 +267,22 @@ step("the Coloring Agent's Describe a page tab: a typed and a random page with n
   try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-coloringagent-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
   catch (e){
     if (e.status === 2) return "skipped: Playwright is not installed here (see docs/dev-setup.md)";
+    throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message);
+  }
+});
+
+step("the facility logo on the monthly bundle: chosen, turned into pure black and white, refused when wrong, kept on this computer, printed on the index and every cover sheet and read back from the PDF, nothing leaving the page (a real browser)", () => {
+  try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-facility-logo-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
+  catch (e){
+    if (e.status === 2) return "skipped: Playwright is not installed here (see docs/dev-setup.md)";
+    throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message);
+  }
+});
+
+step("the batch scheduler's and Family Bridge's utility stylesheet is made from their own classes (no outside script)", () => {
+  try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "make-pages-css.mjs"), "--check"], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
+  catch (e){
+    if (e.status === 2) return "skipped: Tailwind is not installed here (npm install in platform/ provides it)";
     throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message);
   }
 });
