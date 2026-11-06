@@ -78,7 +78,7 @@
   /* ---------- the offline bundle ---------- */
   var CORE = [
     "activity-studio.html", "css/styles.css", "css/pages-utilities.css",
-    "js/generators/activity-engine.js", "js/generators/coloring-pipeline.js", "components/packet-generator-ui.js",
+    "js/generators/activity-engine.js", "js/generators/coloring-pipeline.js", "js/generators/activity-modules.js", "js/generators/activity-pages.js", "components/packet-generator-ui.js",
     "js/utils/facility-validator.js", "js/utils/print-optimizer.js",
     "assets/coloring/subjects.bundle.js", "assets/coloring/manifest.json", "src/services/ColoringManifest.js", "src/engine/DescribeCreate.js",
     "assets/vendor/jspdf.umd.min.js", "fonts/AtkinsonHyperlegible-Regular.woff2", "fonts/AtkinsonHyperlegible-Bold.woff2"

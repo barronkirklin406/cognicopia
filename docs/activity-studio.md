@@ -17,6 +17,28 @@
 - **Daily living steps**: a familiar task (make tea, water the flowers, feed the birds, fold a towel, set the table, brush your hair) in six, four or three steps, with a library picture where one exists.
 - **Coloring pages**: a finished drawing from the library with a thick outline. Six styles (Cozy-Spooky, Vintage Americana, Botanical Gardens, Classic Animals, Simple Architecture, Kitchen and Baking), or a few words, which choose among the library through `src/engine/DescribeCreate.js`.
 
+## The master inventory: nine kinds of activity
+
+The first four kinds above are the studio's own. `js/generators/activity-modules.js` adds the rest of the master clinical inventory to the engine's router (`CognicopiaActivityEngine.register`), and `js/generators/activity-pages.js` draws them. Each is made for a stage and left out of the others, with a plain note.
+
+| # | Kind | Stage | What it is |
+|---|---|---|---|
+| 1 | Word grids and look-back | 1, 2 | A large-print word search from the resident's decade or former work (ten kinds of work), mixed-up words with the first letter in place, and "a look back": dated facts as conversation starters. The staff panel shows the answer key. |
+| 2 | Timeline sorting | 1, 2 | Five (or three) events from the resident's years, or the chapters of a life, to number from earliest to latest. |
+| 3 | Memory pairs | 1, 2 | Pairs of library drawings to cut out, in rows and columns, with dashed cut lines. |
+| 4 | Guided dialogue | 1, 2, 3 | One theme (Sunday dinner, a first car, the kitchen radio...), a ladder of questions by stage (open questions, then two, then a single sensory line), a line to note each answer and a response log for the care record. |
+| 5 | Household matching | 1, 2 | Library pictures of household things to match to their names, and materials to what they make (flour, bread). |
+| 6 | Sayings and song lines | 1, 2 | The start of a proverb or an old song line to finish; at stage 2 the endings are in a box to choose from. |
+| 7 | Coloring | 1, 2, 3 | The coloring pages (above); the staff panel now carries a question to ask while they color. |
+| 8 | Shapes and colors | 2, 3 | Shapes to match face up; one shape and two very different choices to point to; color names with something to find. Plain geometry, printed in black and white. |
+| 9 | Rhythm and word tickets | 2, 3 | A word to feel and a short line of verse, for the sideways cards and tickets. |
+
+Every poem and song line is from a work published in 1928 or earlier, so it is free to print; the verse carries its author and year, and `scripts/check-activity-studio.mjs` fails on a later one. The dated facts are ones a facility can check in a minute.
+
+**Suggested packet for this stage** sets the content mix for the stage in one click (stage 1: word grids, timeline, memory pairs, dialogue and coloring; stage 2: dialogue, household, phrases and coloring; stage 3: coloring, shapes and colors, rhythm tickets and dialogue). With the stage and Compile Packet PDF, a packet is three clicks; the browser check makes exactly those three clicks and reads the PDF back.
+
+Pages in a packet are ordered so that neighbors come from different domains (remembering, thinking, a meaningful role, creative expression, sensory and calm), so even a four-page packet is varied.
+
 ## What the stage changes
 
 | | Stage 1, mild | Stage 2, moderate | Stage 3, advanced |

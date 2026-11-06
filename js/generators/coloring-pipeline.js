@@ -353,8 +353,11 @@
     return cardPages(cards, layout, { title: f.title, stage: f.stage, dexterity: f.dexterity, code: f.code }).map(function (pg) { return tag(pg, f); });
   }
 
+  /* more kinds of sheet join here: js/generators/activity-pages.js adds the rest of the master inventory */
+  var PAGE_KINDS = {};
+  function registerPage(kind, fn) { PAGE_KINDS[kind] = fn; }
   /* what kind of sheet a page came from, for the facility validator */
-  function tag(pg, sh) { pg.meta.sheetKind = sh.kind; if (sh.steps) pg.meta.steps = sh.steps.length; return pg; }
+  function tag(pg, sh) { pg.meta.sheetKind = sh.kind; if (sh.steps) pg.meta.steps = sh.steps.length; if (sh.keyLines) pg.meta.key = sh.keyLines; return pg; }
 
   /* the pages for one sheet in a layout; { pages, fellBack } */
   function sheetPages(sh, layout) {
@@ -366,8 +369,10 @@
         : sh.steps.map(function (s) { return { badge: String(s.n), head: s.text, lines: [] }; });
       return { pages: cardPages(cards, layout, sh).map(function (pg) { return tag(pg, sh); }), fellBack: false };
     }
-    var f = { prompts: promptsFull, steps: stepsFull, match: matchFull, sort: sortFull, path: pathFull, look: lookFull }[sh.kind];
-    return { pages: [tag(f(sh), sh)], fellBack: layout !== "full" };
+    var f = { prompts: promptsFull, steps: stepsFull, match: matchFull, sort: sortFull, path: pathFull, look: lookFull }[sh.kind] || PAGE_KINDS[sh.kind];
+    if (!f) throw new Error("No page is made for a sheet of kind " + sh.kind);
+    var made = f(sh), list = Array.isArray(made) ? made : [made];
+    return { pages: list.map(function (pg) { return tag(pg, sh); }), fellBack: layout !== "full" };
   }
 
   /* ---------- writers ---------- */
@@ -441,6 +446,9 @@
 
   return {
     VERSION: VERSION, W: W, H: H, PX_PER_PT: PT, FONT: FONT, LAYOUTS: LAYOUTS, STYLES: STYLES, BOX: BOX,
+    registerPage: registerPage,
+    kit: { newPage: newPage, P: P, block: block, fit: fit, wrap: wrap, header: header, footer: footer, subjectOps: subjectOps, subjectPaths: subjectPaths, strokeFor: strokeFor, bodyPx: bodyPx, floorPx: floorPx,
+           stageN: stageN, rng: rng, hash: hash, smooth: smooth, W: W, H: H, PAD: PAD, PT: PT, BOX: BOX, drawCard: drawCard, cellsFor: cellsFor },
     strokeFor: strokeFor, bodyPx: bodyPx, floorPx: floorPx, chooseSubject: chooseSubject, subjectPaths: subjectPaths,
     composeColoring: composeColoring, sheetPages: sheetPages, packPrompts: packPrompts, toSVG: toSVG, toCanvas: toCanvas, validate: validate, hash: hash
   };

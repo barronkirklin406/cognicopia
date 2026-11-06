@@ -49,7 +49,7 @@ async function open(w, h) {
 }
 const pos = p => p.textContent("#asPos");
 const pick = async (p, name, value) => { await p.check(`input[name="${name}"][value="${value}"]`, { force: true }); await p.waitForTimeout(450); };
-const mix = async (p, kinds) => { for (const k of ["reminiscence", "exercise", "daily", "coloring"]) { await p.setChecked(`input[name="mix"][value="${k}"]`, kinds.includes(k), { force: true }); } await p.waitForTimeout(450); };
+const mix = async (p, kinds) => { for (const k of ["reminiscence", "exercise", "daily", "coloring", "wordgrid", "timeline", "memory", "dialogue", "household", "phrases", "recognition", "rhythm"]) { await p.setChecked(`input[name="mix"][value="${k}"]`, kinds.includes(k), { force: true }); } await p.waitForTimeout(450); };
 const total = async p => Number(/of (\d+)/.exec(await pos(p))[1]);
 const svgText = p => p.$eval("#asSheet svg", e => e.textContent);
 const setPages = async (p, n) => { await p.selectOption("#asPages", String(n)); await p.waitForTimeout(450); };
@@ -163,6 +163,37 @@ try {
   ok(shown.length === 0, "in print nothing is shown but the sheets: " + shown.slice(0, 4).join(", "));
   ok(await p.evaluate(() => !!document.getElementById("cg-print-optimizer")), "the print optimizer's style sheet is on the page");
   await ctx.close();
+
+  /* the rest of the master inventory: each kind of page is made for its stage, left out of the others with a plain note, and a stage's
+     suggested packet is three clicks from a PDF (the stage, Suggested packet, Compile Packet PDF) */
+  ({ ctx, p } = await open(1366, 900));
+  const NEWK = { wordgrid: [1, 2], timeline: [1, 2], memory: [1, 2], dialogue: [1, 2, 3], household: [1, 2], phrases: [1, 2], recognition: [2, 3], rhythm: [2, 3] };
+  const kindsOnScreen = await p.$$eval('input[name="mix"]', n => n.map(x => x.value));
+  ok(Object.keys(NEWK).every(k => kindsOnScreen.includes(k)) && kindsOnScreen.length === 12, "the content mix lists all twelve kinds of page: " + kindsOnScreen.join(","));
+  for (const [k, stages] of Object.entries(NEWK)) {
+    for (const st of [1, 2, 3]) {
+      await pick(p, "stage", String(st)); await mix(p, [k]); await setPages(p, 3);
+      const n = await p.evaluate(() => window.CognicopiaActivityStudio.pages().length), notes = await p.textContent("#asNotes");
+      if (stages.includes(st)) ok(n >= 1 && /Print check passed/.test(notes) && /Clinical readiness/.test(await p.textContent("#asReady")), `${k} at stage ${st}: made ${n} pages that pass the print check`);
+      else ok(n === 0 && /is made for stage/.test(notes), `${k} at stage ${st}: left out, with a note that says which stages it is made for`);
+    }
+  }
+  await pick(p, "stage", "1"); await mix(p, ["wordgrid"]); await setPages(p, 4); await p.selectOption("#asVocation", "cook"); await p.waitForTimeout(450);
+  ok((await p.evaluate(() => window.CognicopiaActivityStudio.pages().map(x => x.meta.title))).includes("Words from the kitchen"), "choosing a former kind of work themes a word grid from it");
+  ok(/Answer key \(staff only\)/.test(await p.textContent("#asNotes")), "a word grid shows its answer key to staff");
+  await p.selectOption("#asVocation", "");
+  await ctx.close();
+  for (const st of [1, 2, 3]) {
+    ({ ctx, p } = await open(1366, 900));
+    let clicks = 0; const click = async sel => { clicks++; await p.click(sel, { force: true }); };
+    await click(`label:has(input[name="stage"][value="${st}"])`); await click("#asSuggest"); await p.waitForTimeout(500);
+    const dl3 = p.waitForEvent("download", { timeout: 60000 }); await click("#asPdf"); const f3 = await dl3; const t3 = path.join(os.tmpdir(), "as3-" + process.pid + ".pdf"); await f3.saveAs(t3);
+    const pdf3 = readPdf(t3); fs.unlinkSync(t3);
+    const titles = await p.evaluate(() => window.CognicopiaActivityStudio.pages().map(x => x.meta.module));
+    ok(clicks === 3 && pdf3.length >= 4, `stage ${st}: a suggested packet in ${clicks} clicks, ${pdf3.length} pages in the PDF (${titles.join(", ")})`);
+    ok(new Set(titles).size >= 3 && /Ready/.test(await p.textContent("#asReady summary")), `stage ${st}: the suggested packet uses at least three kinds and reads Ready: ${await p.textContent("#asReady summary")}`);
+    await ctx.close();
+  }
 
   /* export */
   ({ ctx, p } = await open(1366, 900));
