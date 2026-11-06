@@ -1125,6 +1125,15 @@
   function genMaze(sh, ctx, o) {
     var rng = ctx.rng, S = sh.S, T = sh.T, F = sh.F, st = sh.stage, L = S.limits.maze, cols = L.cols, rows = L.rows;
     var built = null, best = null, solution = null, t;
+    var title = "Find Your Way Through", instruction = st === "late" ? "Trace the track from the arrow at the top to the arrow at the bottom." : "Start at the top arrow. Find the way to the bottom arrow.";
+    var top = sh.head(title, instruction), label = T.label, padTop = label + 34, padBot = label + 34;
+    var avail = sh.bottom - top - padTop - padBot;
+    /* The packet tool lays a page inside a frame shorter than a sheet, and the early stage's 7 x 9 maze does not fit there with corridors of 40 pt.
+       Take away the squares that do not fit (whichever way is tighter), never below the middle stage's 5 x 7, so the page is made smaller, not left out. */
+    var minCols = Math.min(cols, 5), minRows = Math.min(rows, 7);
+    while (Math.floor(Math.min(F.w / cols, avail / rows)) < 40 && (rows > minRows || cols > minCols)) {
+      if (cols > minCols && (F.w / cols < avail / rows || rows <= minRows)) cols--; else rows--;
+    }
     if (st === "late") {
       built = trackMaze(cols, rows, rng, L.deadEnds || 0);
       if (!built) throw fatal("no track could be drawn for the large-print maze");
@@ -1136,9 +1145,7 @@
       }
       built = best.m; solution = best.sol;
     }
-    var title = "Find Your Way Through", instruction = st === "late" ? "Trace the track from the arrow at the top to the arrow at the bottom." : "Start at the top arrow. Find the way to the bottom arrow.";
-    var top = sh.head(title, instruction), label = T.label, padTop = label + 34, padBot = label + 34;
-    var avail = sh.bottom - top - padTop - padBot, cell = Math.floor(Math.min(F.w / cols, avail / rows));
+    var cell = Math.floor(Math.min(F.w / cols, avail / rows));
     if (cell < 40) { sh.fail("the maze corridors would be under 40 pt wide"); return; }
     var mw = cell * cols, mh = cell * rows, mx = Math.round(sh.cx - mw / 2), my = Math.round(top + padTop + (avail - mh) / 2);
     var used = built.used, open = function (c1, r1, c2, r2) { return !!built.P[c1 + "," + r1 + ">" + c2 + "," + r2]; };

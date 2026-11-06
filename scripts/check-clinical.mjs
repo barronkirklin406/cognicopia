@@ -238,6 +238,15 @@ ok(/Page \d+ of|numberSheets/.test(builder) && /enforceStrokeFloor/.test(builder
   ok(/AIL_PAGE = \{ W: 612, H: 706,/.test(index), "the ailment packets end their pages above the clinical tip");
   ok(/COACHING_REMINDER/.test(index) && /coachingFooter\(\)/.test(index), "a page with no tip of its own carries the coaching reminder");
 }
+{ // the packet tool lays the maze inside a frame shorter than a sheet (x 61, width 490, from y 193 under the heading down to y 700: the numbers the tool really passes at the early stage): at every stage and
+  // vision level the page is made, with corridors of 40 pt or more, never left out ("the corridors would be under 40 pt wide")
+  for (const st of ["early", "middle", "late"]) for (const vision of ["standard", "large", "xl"]) for (const y of [150, 193, 215]) {
+    let page = null, err = "";
+    try { page = CA.generate("maze", { stage: st, vision, name: "Margaret", date: "2026-10-06", headless: true, frame: { x: 61, y, w: 490, h: 700 - y } }); } catch (e) { err = e.message; }
+    ok(page && page.meta.cell >= 40, `maze, ${st} stage, ${vision} vision, frame from y ${y}: made with corridors of 40 pt or more (${err || (page && page.meta.cell)})`);
+    if (page) { const L = CM.STAGES[st].limits.maze; ok(page.meta.cols <= L.cols && page.meta.rows <= L.rows && page.meta.cols >= Math.min(L.cols, 5) && page.meta.rows >= Math.min(L.rows, 7), `maze, ${st} stage, frame from y ${y}: the size (${page.meta.cols} x ${page.meta.rows}) is never above the stage's own or below 5 x 7`); }
+  }
+}
 ok(/safePage/.test(index), "index.html draws each page inside an error boundary");
 ok(/This page is not ready/.test(builder), "builder.html has a stand-in for a page that cannot be made");
 
