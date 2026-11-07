@@ -229,6 +229,8 @@
       nameStyle: p.nameStyle === "flow" || p.nameStyle === "formal" ? p.nameStyle : "plain",
       born: born, stage: stage, dexterity: dex, decade: decade,
       season: SEASONS.indexOf(p.season) >= 0 ? p.season : "", vocation: String(p.vocation == null ? "" : p.vocation).toLowerCase().replace(/[^a-z]/g, "").slice(0, 20),
+      /* a bigger, harder word search for an early-stage reader who wants a real workout */
+      challenge: !!p.challenge,
       interests: split(p.interests), avoid: split(p.avoid),
       /* a resident's own people, pets, places and things, as single words of 3 to 10 letters (printed on the sheet, kept nowhere) */
       personal: split(p.personal).map(function (x) { return x.replace(/[^a-z]/g, ""); }).filter(function (x, i, a) { return x.length >= 3 && x.length <= 10 && a.indexOf(x) === i; }).slice(0, 8)
