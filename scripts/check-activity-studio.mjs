@@ -180,6 +180,48 @@ for (const m of NEW) for (const stage of [1, 2, 3]) for (const dexterity of DEX)
 }
 ok(E.generate({ stage: 2 }, { module: "no-such-module", count: 2, seed: 1 }).module === "reminiscence", "an unknown module falls back to reminiscence");
 
+/* the bigger word search for an early-stage reader: a real grid, every direction, letters that never crowd each other */
+{
+  const want = { steady: [20, 20], limited: [18, 16], minimal: [16, 14] };
+  let reverse = 0, diagonal = 0;
+  for (const dx of DEX) for (const seed of [1, 2, 3, 4, 5, 6]) {
+    const tag = `big ${dx} ${seed}`, [size, nw] = want[dx];
+    const r = E.generate({ stage: 1, dexterity: dx, challenge: true, decade: 1950, vocation: "farmer", personal: "Sarah, Buster, Scobey, Studebaker" }, { module: "wordgrid", count: 3, seed });
+    ok(r.problems.length === 0, `${tag}: ${r.problems.join("; ")}`);
+    const g = r.sheets[0];
+    ok(g.kind === "wordgrid" && g.size === size, `${tag}: the big grid is ${g.size}, not ${size}`);
+    ok(g.words.length === nw, `${tag}: ${g.words.length} words, not ${nw}`);
+    ok(new Set(g.words).size === g.words.length, `${tag}: a word appears twice`);
+    ok(g.rows.length === size && g.rows.every(w => w.length === size && /^[A-Z]+$/.test(w)), `${tag}: the grid is not a full square of letters`);
+    /* every word is really in the grid, read in its stated direction */
+    for (const k of g.keyLines) {
+      const m = /^([A-Z]+): row (\d+), column (\d+), going (.+)$/.exec(k);
+      ok(!!m, `${tag}: the answer key line "${k}" is not readable`);
+      if (!m) continue;
+      const [, w, rr, cc, way] = m, dr = /up/.test(way) ? -1 : /down/.test(way) ? 1 : 0, dc = /left/.test(way) ? -1 : /right/.test(way) ? 1 : 0;
+      if (dr < 0 || dc < 0) reverse++;
+      if (dr && dc) diagonal++;
+      let got = "";
+      for (let i = 0; i < w.length; i++) got += (g.rows[+rr - 1 + dr * i] || "").charAt(+cc - 1 + dc * i);
+      ok(got === w, `${tag}: ${w} is not in the grid where the key says (found "${got}")`);
+    }
+    /* the printed page: letters stay at the stage's floor and never crowd into each other */
+    const pg = PL.sheetPages(g, "full").pages[0];
+    ok(PL.validate(pg).length === 0, `${tag}: ${PL.validate(pg).slice(0, 2).join("; ")}`);
+    const cells = pg.ops.filter(o => o.t === "text" && o.str.length === 1 && o.bold);
+    ok(cells.length === size * size, `${tag}: ${cells.length} letters drawn, not ${size * size}`);
+    const xs = [...new Set(cells.map(o => o.x))].sort((a, b) => a - b), step = xs[1] - xs[0];
+    ok(cells[0].size >= PL.kit.floorPx(1), `${tag}: a grid letter is under the stage's type floor`);
+    ok(cells[0].size <= step * 0.92, `${tag}: grid letters crowd each other (${cells[0].size}px in a ${step.toFixed(1)}px cell)`);
+    const listTop = Math.min(...pg.ops.filter(o => o.t === "text" && g.words.includes(o.str)).map(o => o.y));
+    ok(listTop > Math.max(...cells.map(o => o.y)), `${tag}: the word list runs into the grid`);
+  }
+  ok(reverse > 0 && diagonal > 0, "the big grid never used a backward or slanting direction");
+  ok(E.generate({ stage: 2, challenge: true }, { module: "wordgrid", count: 1, seed: 1 }).sheets[0].size <= 10, "the bigger grid is offered at the early stage only");
+  ok(E.generate({ stage: 1, challenge: false }, { module: "wordgrid", count: 1, seed: 1 }).sheets[0].size <= 10, "the usual packet keeps the usual grid");
+  ok(E.generate({ stage: 1, challenge: true, avoid: "jukebox, diner" }, { module: "wordgrid", count: 1, seed: 2 }).sheets[0].words.every(w => w !== "JUKEBOX" && w !== "DINER"), "a topic to avoid stays out of the big grid");
+}
+
 /* a resident's own words (family, pets, places, cars) go into the first word grid, every one placed, letters only, kept to the sheet */
 {
   const own = ["sarah", "buster", "scobey", "studebaker", "gardening"];

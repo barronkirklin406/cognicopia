@@ -57,7 +57,7 @@
 
   /* ---------- word grid ---------- */
   function wordgrid(sh) {
-    var b = base(sh), pg = page(sh, "wordgrid"), y0 = K.header(pg, sh), words = sh.words, cols = 3, rowsW = Math.ceil(words.length / cols);
+    var b = base(sh), pg = page(sh, "wordgrid"), y0 = K.header(pg, sh), words = sh.words, cols = words.length > 12 ? 4 : 3, rowsW = Math.ceil(words.length / cols);
     var wsize = Math.max(b.fl, Math.round(b.bp * 0.9)), wrow = wsize * 1.4, listH = rowsW * wrow + 30;
     var avail = H - 70 - listH - y0 - 20, cell = Math.floor(Math.min((W - 2 * PAD - 40) / sh.size, avail / sh.size)), gw = cell * sh.size, gx = Math.round((W - gw) / 2), gy = Math.round(y0 + 10);
     P.rect(pg, gx - 14, gy - 14, gw + 28, gw + 28, 20, b.lw, "none");

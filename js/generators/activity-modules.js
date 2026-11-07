@@ -95,6 +95,18 @@
     for (i = 0; i < size; i++) for (j = 0; j < size; j++) if (!grid[i][j]) grid[i][j] = fill.charAt(Math.floor(r() * fill.length));
     return { rows: grid.map(function (row) { return row.join(""); }), placed: placed };
   }
+  /* the big word search for an early-stage reader: every direction, and a pool wide enough for 20 words.
+     The size is what keeps the letters at the stage's large-print floor on one Letter page (measured, not guessed):
+     20 x 20 with 20 words, smaller where a less steady hand needs a bigger cell to circle. */
+  var CHALLENGE = { steady: { size: 20, words: 20 }, limited: { size: 18, words: 16 }, minimal: { size: 16, words: 14 } };
+  var ALL_WAYS = [[0, 1], [0, -1], [1, 0], [-1, 0], [1, 1], [-1, -1], [1, -1], [-1, 1]];
+  function bigPool(P) {
+    var v = VOCATIONS[P.vocation], out = P.personal.map(function (w) { return w.toUpperCase(); });
+    [DECADE_WORDS[P.decade], v ? v.words : [], DECADE_WORDS[Math.max(1940, P.decade - 10)], DECADE_WORDS[Math.min(1980, P.decade + 10)]].forEach(function (list) {
+      (list || []).forEach(function (w) { if (out.indexOf(w) < 0) out.push(w); });
+    });
+    return out;
+  }
   function themeWords(P, which) {
     if (which === "personal") return { label: "Words from your life", list: P.personal.map(function (w) { return w.toUpperCase(); }).concat(DECADE_WORDS[P.decade]) };
     var v = VOCATIONS[P.vocation];
@@ -115,11 +127,22 @@
   }
   function wordgridSheets(P, r, count) {
     var out = [], plan = P.personal.length >= 3 ? ["personal", "grid", "scramble", "facts", "grid2"] : ["grid", "scramble", "facts", "grid2"], used = {};
+    if (P.challenge && P.stage === 1) plan = ["big"].concat(plan);
     for (var s = 0; s < count; s++) {
       var what = plan[s % plan.length], size = P.stage === 1 ? 10 : 8;
       if (K.DEXTERITY[P.dexterity].fewer) size = Math.max(7, size - 2);
       var nWords = Math.max(4, (P.stage === 1 ? 8 : 6) - fewer(P) * 2);
-      if (what === "grid" || what === "grid2" || what === "personal") {
+      if (what === "big") {
+        var cf = CHALLENGE[P.dexterity] || CHALLENGE.steady;
+        var bp = K.shuffle(bigPool(P).filter(function (w) { return okWord(w, P) && w.length >= 3 && w.length <= cf.size; }), r);
+        var own = P.personal.map(function (w) { return w.toUpperCase(); }).filter(function (w) { return bp.indexOf(w) >= 0; });
+        var want = own.concat(bp.filter(function (w) { return own.indexOf(w) < 0; })).slice(0, cf.words);
+        var bg = makeGrid(want, cf.size, ALL_WAYS, r);
+        out.push({ module: "wordgrid", kind: "wordgrid", title: own.length ? "Words from your life" : "Words from the " + P.decade + "s", size: cf.size,
+          subtitle: "Find the words. They run in every direction: across, down, slanting, and backward.", rows: bg.rows, words: bg.placed.map(function (x) { return x.w; }),
+          keyLines: bg.placed.map(function (x) { return x.w + ": row " + (x.r + 1) + ", column " + (x.c + 1) + ", going " + (x.dr > 0 ? "down" : x.dr < 0 ? "up" : "") + (x.dr && x.dc ? " and " : "") + (x.dc > 0 ? "right" : x.dc < 0 ? "left" : ""); }),
+          staffNote: HOME + "a full-size word search for a reader who wants a real workout: words run in all eight directions, backward ones included. Offer it whole, say nothing about how long it takes, and leave it where the resident can come back to it." });
+      } else if (what === "grid" || what === "grid2" || what === "personal") {
         var th = themeWords(P, what === "personal" ? "personal" : what === "grid2" ? "vocation" : "decade");
         var own = what === "personal" ? P.personal.map(function (w) { return w.toUpperCase(); }).filter(function (w) { return okWord(w, P) && w.length <= size; }) : [];
         var pool = K.shuffle(th.list.filter(function (w) { return own.indexOf(w) < 0 && okWord(w, P) && w.length <= size; }), r), words = take(own.concat(pool), nWords);
