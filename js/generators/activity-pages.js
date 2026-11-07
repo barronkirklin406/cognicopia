@@ -62,7 +62,7 @@
     var avail = H - 70 - listH - y0 - 20, cell = Math.floor(Math.min((W - 2 * PAD - 40) / sh.size, avail / sh.size)), gw = cell * sh.size, gx = Math.round((W - gw) / 2), gy = Math.round(y0 + 10);
     P.rect(pg, gx - 14, gy - 14, gw + 28, gw + 28, 20, b.lw, "none");
     var ls = Math.max(b.fl, Math.round(cell * 0.6));
-    for (var r = 0; r < sh.size; r++) for (var c = 0; c < sh.size; c++) P.text(pg, gx + c * cell + cell / 2, gy + r * cell + cell / 2 + ls * 0.36, ls, sh.rows[r].charAt(c), { bold: true, anchor: "middle" });
+    for (var r = 0; r < sh.size; r++) for (var c = 0; c < sh.size; c++) P.text(pg, gx + c * cell + cell / 2, gy + r * cell + cell / 2 + ls * 0.36, ls, sh.rows[r].charAt(c), { bold: true, anchor: "middle", font: "grid" });
     var ly = gy + gw + 44, colW = (W - 2 * PAD) / cols;
     words.forEach(function (w, i) { var f = K.fit(w, wsize, b.fl, colW - 30, wrow, true); P.text(pg, PAD + (i % cols) * colW + colW / 2, ly + Math.floor(i / cols) * wrow + f.size * 0.82, f.size, w, { bold: true, anchor: "middle" }); });
     K.footer(pg, sh.code); return pg;
@@ -184,6 +184,26 @@
     K.footer(pg, sh.code); return pg;
   }
 
-  PL.registerPage("wordgrid", wordgrid); PL.registerPage("scramble", scramble); PL.registerPage("timeline", timeline); PL.registerPage("memory", memory);
+  /* ---------- the staff answer key ---------- */
+  function answers(sh) {
+    var b = base(sh), size = b.fl, lh = Math.round(size * 1.34), rows = [], made = [], i = 0, n = 0;
+    (sh.groups || []).forEach(function (g) {
+      rows.push({ bold: true, t: g.title });
+      (g.lines || []).forEach(function (l) {
+        K.wrap(String(l), size, W - 2 * PAD - 60, false).forEach(function (part, k) { rows.push({ bold: false, t: (k ? "    " : "") + part }); });
+      });
+    });
+    if (!rows.length) rows.push({ bold: false, t: "This packet has no answers to give." });
+    var head = { title: "Answer key", subtitle: "For staff. Keep this page out of the resident's packet.", stage: sh.stage, dexterity: sh.dexterity };
+    while (i < rows.length && n < 12) {
+      var pg = K.newPage({ kind: "answers", title: "Answer key", stage: K.stageN(sh.stage), code: sh.code + (n ? "-" + (n + 1) : "") });
+      var y = K.header(pg, head), room = Math.max(1, Math.floor((H - 90 - y) / lh));
+      for (var k = 0; k < room && i < rows.length; k++, i++) P.text(pg, PAD + 10, y + 12 + k * lh + size * 0.8, size, rows[i].t, { bold: rows[i].bold });
+      K.footer(pg, pg.meta.code); made.push(pg); n++;
+    }
+    return made;
+  }
+
+  PL.registerPage("answers", answers); PL.registerPage("wordgrid", wordgrid); PL.registerPage("scramble", scramble); PL.registerPage("timeline", timeline); PL.registerPage("memory", memory);
   PL.registerPage("dialogue", dialogue); PL.registerPage("household", household); PL.registerPage("phrases", phrases); PL.registerPage("shapes", shapes);
 })(typeof globalThis !== "undefined" ? globalThis : this);

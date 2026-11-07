@@ -216,6 +216,19 @@ ok(E.generate({ stage: 2 }, { module: "no-such-module", count: 2, seed: 1 }).mod
     const listTop = Math.min(...pg.ops.filter(o => o.t === "text" && g.words.includes(o.str)).map(o => o.y));
     ok(listTop > Math.max(...cells.map(o => o.y)), `${tag}: the word list runs into the grid`);
   }
+  /* the grid is set in the monospaced cut, so a narrow I and a wide M take the same room and the columns line up */
+  for (const st of [1, 2]) {
+    const r = E.generate({ stage: st, challenge: st === 1 }, { module: "wordgrid", count: 1, seed: 9 });
+    const pg = PL.sheetPages(r.sheets[0], "full").pages[0];
+    const cells = pg.ops.filter(o => o.t === "text" && o.str.length === 1 && o.bold);
+    ok(cells.length > 0 && cells.every(o => o.font === "grid"), `stage ${st}: a grid letter is not set in the monospaced face`);
+    ok(/Atkinson Hyperlegible Mono/.test(PL.toSVG(pg)), `stage ${st}: the drawn page does not name the monospaced face`);
+    ok(pg.ops.filter(o => o.t === "text" && o.str.length > 1).every(o => o.font !== "grid"), `stage ${st}: ordinary words were set in the grid face`);
+  }
+  ok(fs.existsSync(new URL("../fonts/AtkinsonHyperlegibleMono-Bold.woff2", import.meta.url)), "fonts/AtkinsonHyperlegibleMono-Bold.woff2 is missing");
+  ok(fs.existsSync(new URL("../fonts/OFL-AtkinsonHyperlegibleMono.txt", import.meta.url)), "the monospaced face has no licence beside it");
+  ok(/AtkinsonHyperlegibleMono-Bold\.woff2/.test(read("sw.js")) && /AtkinsonHyperlegibleMono-Bold\.woff2/.test(read("js/utils/print-optimizer.js")), "the monospaced face is not kept for offline use");
+
   ok(reverse > 0 && diagonal > 0, "the big grid never used a backward or slanting direction");
   ok(E.generate({ stage: 2, challenge: true }, { module: "wordgrid", count: 1, seed: 1 }).sheets[0].size <= 10, "the bigger grid is offered at the early stage only");
   ok(E.generate({ stage: 1, challenge: false }, { module: "wordgrid", count: 1, seed: 1 }).sheets[0].size <= 10, "the usual packet keeps the usual grid");
