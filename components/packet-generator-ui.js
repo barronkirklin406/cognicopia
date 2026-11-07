@@ -54,7 +54,7 @@
   /* the suggested packet for each stage: three of the master inventory and a coloring page */
   var SUGGEST = { 1: ["wordgrid", "timeline", "memory", "dialogue", "coloring"], 2: ["dialogue", "household", "phrases", "coloring"], 3: ["coloring", "recognition", "rhythm", "dialogue"] };
   var LABEL = {}; KINDS.forEach(function (k) { LABEL[k[0]] = k[1]; });
-  var state = { mix: { reminiscence: true, exercise: true, daily: true, coloring: true }, vocation: "", stage: 2, dexterity: "steady", decade: 1950, born: "", name: "", nameStyle: "plain", personal: "", challenge: false, interests: "", avoid: "",
+  var state = { mix: { reminiscence: true, exercise: true, daily: true, coloring: true }, vocation: "", stage: 2, dexterity: "steady", decade: 1950, born: "", name: "", nameStyle: "plain", personal: "", challenge: false, answers: false, interests: "", avoid: "",
     style: "botanical", words: "", layout: "full", pages: 4, view: "one", dark: false, gutter: false, seed: (Date.now() % 1000000) + 1, variant: 0, index: 0 };
   var made = { pages: [], notes: [], code: "" };
 
@@ -76,6 +76,7 @@
         '<div class="as-row"><label class="as-lab" for="asName">First name (optional; printed on the page, kept nowhere)</label><input id="asName" type="text" maxlength="40" autocomplete="off"></div>' +
         '<div class="as-row"><label class="as-lab" for="asPersonal">Names and places from their life, one word each, with commas (family, pets, hometown, a first car; optional; printed on the page, kept nowhere)</label><input id="asPersonal" type="text" maxlength="120" autocomplete="off" placeholder="for example: Sarah, Buster, Scobey, Studebaker"></div>' +
         '<div class="as-row"><label class="as-check"><input id="asChallenge" type="checkbox"><span>A bigger word search (early stage only): a full 20 by 20 grid of 20 words running in all eight directions, backward ones included</span></label></div>' +
+        '<div class="as-row"><label class="as-check"><input id="asAnswers" type="checkbox"><span>Add a staff answer key at the end (keep it out of the resident\'s packet)</span></label></div>' +
         '<fieldset class="as-f"><legend class="as-lab">How the name is lettered (your choice; nothing is guessed from the name)</legend><div class="as-seg"><label><input type="radio" name="nameStyle" value="plain"><span>Plain</span></label><label><input type="radio" name="nameStyle" value="flow"><span>Flowing script</span></label><label><input type="radio" name="nameStyle" value="formal"><span>Formal script</span></label></div></fieldset>' +
         '<div class="as-row as-nc"><label class="as-lab" for="asInterests">Interests (optional, separated by commas)</label><input id="asInterests" type="text" maxlength="120" placeholder="gardening, baking" autocomplete="off"></div>' +
         '<div class="as-row"><label class="as-lab" for="asAvoid">Topics to avoid (separated by commas)</label><input id="asAvoid" type="text" maxlength="120" placeholder="trains, hospitals" autocomplete="off"></div>' +
@@ -151,8 +152,15 @@
       lists.forEach(function (l, i) { if (pages.length < n && at[i] < l.length) pages.push(l[at[i]++]); });
     }
     var code = "ASPK-" + STAGE_KEY[state.stage - 1] + "-" + (state.seed >>> 0).toString(36).toUpperCase() + (state.variant ? "." + state.variant : "");
-    var ready = FV ? FV.validateBatch(pages, { stage: state.stage, interests: state.interests }) : null;
+    var ready = FV ? FV.validateBatch(pages, { stage: state.stage, interests: state.interests }) : null;   // the resident's pages only; the staff key is not an activity
     if (ready) FV.report(ready);                                                 // one console report for every batch
+    if (state.answers) {                                                         // a staff-only key, last, for the pages that have one
+      var groups = [];
+      pages.forEach(function (pg, i) { if (pg.meta.key && pg.meta.key.length) groups.push({ title: "Page " + (i + 1) + ": " + (pg.meta.title || ""), lines: pg.meta.key }); });
+      if (groups.length) PL.sheetPages({ kind: "answers", stage: state.stage, dexterity: state.dexterity, code: code + "-KEY", groups: groups }, "full").pages
+        .forEach(function (pg) { pg.meta.module = "answers"; pg.meta.staff = "Staff only: the answers to this packet. Keep it out of the resident's folder."; pages.push(pg); });
+      else notes.push({ kind: "info", text: "No page in this packet has an answer key, so none was added." });
+    }
     var bad = [];
     pages.forEach(function (pg, i) { PL.validate(pg).forEach(function (m) { bad.push("Page " + (i + 1) + ": " + m); }); });
     notes.unshift(bad.length ? { kind: "warn", text: "Print check: " + bad.slice(0, 3).join(" ") } : { kind: "ok", text: "Print check passed: every page is 3:4, pure black on white, every line 6 px or heavier, no text under the stage's size floor, nothing off the page." });
@@ -216,7 +224,7 @@
   function fontsReady() {
     var d = document;
     if (!d.fonts || !d.fonts.load) return Promise.resolve();
-    return Promise.all([d.fonts.load('400 40px "Atkinson Hyperlegible"'), d.fonts.load('700 40px "Atkinson Hyperlegible"'), d.fonts.load('40px "Pinyon Script"'), d.fonts.load('40px "Marck Script"')]).catch(function () {}).then(function () { return d.fonts.ready; });
+    return Promise.all([d.fonts.load('400 40px "Atkinson Hyperlegible"'), d.fonts.load('700 40px "Atkinson Hyperlegible"'), d.fonts.load('40px "Pinyon Script"'), d.fonts.load('40px "Marck Script"'), d.fonts.load('700 40px "Atkinson Hyperlegible Mono"')]).catch(function () {}).then(function () { return d.fonts.ready; });
   }
   function download(name, href) { var a = document.createElement("a"); a.href = href; a.download = name; document.body.appendChild(a); a.click(); a.remove(); }
   function exportPng() {
@@ -250,6 +258,7 @@
     $$('input[name="view"]').forEach(function (r) { r.checked = r.value === state.view; });
     $$('input[name="nameStyle"]').forEach(function (r) { r.checked = r.value === state.nameStyle; });
     syncChallenge();
+    $("#asAnswers").checked = !!state.answers;
     $$('input[name="mix"]').forEach(function (c) { c.checked = !!state.mix[c.value]; });
     $("#asVocation").value = state.vocation; $("#asDecade").value = String(state.decade); $("#asStyle").value = state.style; $("#asPages").value = String(state.pages);
     $("#asDark").checked = state.dark; $("#asGutter").checked = state.gutter;
@@ -261,6 +270,7 @@
       r.addEventListener("change", function () { state[r.name] = r.name === "stage" ? Number(r.value) : r.value; state.variant = 0; syncChallenge(); schedule(false); });
     });
     $("#asChallenge").addEventListener("change", function () { state.challenge = this.checked; state.variant = 0; schedule(false); });
+    $("#asAnswers").addEventListener("change", function () { state.answers = this.checked; schedule(true); });
     $$('input[name="nameStyle"]').forEach(function (r) { r.addEventListener("change", function () { state.nameStyle = r.value; state.variant = 0; schedule(false); }); });
     $$('input[name="mix"]').forEach(function (c) { c.addEventListener("change", function () { state.mix[c.value] = c.checked; schedule(false); }); });
     $$('input[name="view"]').forEach(function (r) { r.addEventListener("change", function () { state.view = r.value; paint(); }); });

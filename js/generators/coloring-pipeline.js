@@ -44,6 +44,8 @@
   var W = 1200, H = 1600, PT = 160 / 72, PAD = 48;
   var FONT = '"Atkinson Hyperlegible", Arial, Helvetica, sans-serif';
   /* hand-lettered name styles (local open-licence fonts in /fonts); "plain" is the interface type */
+  /* the letter grid is set in the monospaced cut of the same accessible face, so every column lines up */
+  var GRID_FONT = '"Atkinson Hyperlegible Mono", "Atkinson Hyperlegible", monospace';
   var SCRIPTS = {
     flow:   { label: "Flowing script", family: '"Pinyon Script", "Brush Script MT", cursive', k: 2.8, width: 0.55 },
     formal: { label: "Formal script",  family: '"Marck Script", "Segoe Script", cursive',     k: 2.5, width: 0.55 }
@@ -410,7 +412,7 @@
       else if (op.t === "circle") s += '<circle cx="' + op.cx + '" cy="' + op.cy + '" r="' + op.r + '" fill="' + op.fill + '" stroke="#000" stroke-width="' + op.sw + '"/>';
       else if (op.t === "line") s += '<line x1="' + op.x1 + '" y1="' + op.y1 + '" x2="' + op.x2 + '" y2="' + op.y2 + '" stroke="#000" stroke-width="' + op.sw + '"' + dash + '/>';
       else if (op.t === "path") s += '<path d="' + op.d + '" transform="translate(' + op.tx + ' ' + op.ty + ') scale(' + op.k + ')" fill="' + op.fill + '" stroke="' + op.stroke + '" stroke-width="' + op.sw + '"/>';
-      else if (op.t === "text") s += '<text x="' + op.x + '" y="' + op.y + '" ' + (op.font && SCRIPTS[op.font] ? ' font-family=\'' + SCRIPTS[op.font].family + '\'' : '') + ' font-size="' + op.size + '" font-weight="' + (op.bold ? 700 : 400) + '" text-anchor="' + op.anchor + '" fill="#000">' + esc(op.str) + '</text>';
+      else if (op.t === "text") s += '<text x="' + op.x + '" y="' + op.y + '" ' + (op.font === "grid" ? ' font-family=\'' + GRID_FONT + '\'' : op.font && SCRIPTS[op.font] ? ' font-family=\'' + SCRIPTS[op.font].family + '\'' : '') + ' font-size="' + op.size + '" font-weight="' + (op.bold ? 700 : 400) + '" text-anchor="' + op.anchor + '" fill="#000">' + esc(op.str) + '</text>';
     });
     return s + '</svg>';
   }
@@ -438,7 +440,7 @@
         if (op.fill === "#fff") { c.fillStyle = "#fff"; c.fill(p); } else if (op.fill === "#000") c.fill(p);
         c.stroke(p);
       } else if (op.t === "text") {
-        c.font = (op.bold ? "700 " : "400 ") + op.size + "px " + (op.font && SCRIPTS[op.font] ? SCRIPTS[op.font].family : FONT); c.textAlign = op.anchor === "middle" ? "center" : op.anchor === "end" ? "right" : "left"; c.textBaseline = "alphabetic";
+        c.font = (op.bold ? "700 " : "400 ") + op.size + "px " + (op.font === "grid" ? GRID_FONT : op.font && SCRIPTS[op.font] ? SCRIPTS[op.font].family : FONT); c.textAlign = op.anchor === "middle" ? "center" : op.anchor === "end" ? "right" : "left"; c.textBaseline = "alphabetic";
         c.fillText(op.str, op.x, op.y);
       }
       c.restore();
@@ -471,7 +473,7 @@
   return {
     VERSION: VERSION, W: W, H: H, PX_PER_PT: PT, FONT: FONT, LAYOUTS: LAYOUTS, STYLES: STYLES, BOX: BOX,
     registerPage: registerPage,
-    kit: { newPage: newPage, P: P, block: block, fit: fit, wrap: wrap, header: header, footer: footer, subjectOps: subjectOps, subjectPaths: subjectPaths, strokeFor: strokeFor, bodyPx: bodyPx, floorPx: floorPx,
+    GRID_FONT: GRID_FONT, kit: { newPage: newPage, P: P, block: block, fit: fit, wrap: wrap, header: header, footer: footer, subjectOps: subjectOps, subjectPaths: subjectPaths, strokeFor: strokeFor, bodyPx: bodyPx, floorPx: floorPx,
            stageN: stageN, rng: rng, hash: hash, smooth: smooth, W: W, H: H, PAD: PAD, PT: PT, BOX: BOX, drawCard: drawCard, cellsFor: cellsFor },
     strokeFor: strokeFor, bodyPx: bodyPx, floorPx: floorPx, chooseSubject: chooseSubject, subjectPaths: subjectPaths,
     composeColoring: composeColoring, sheetPages: sheetPages, packPrompts: packPrompts, toSVG: toSVG, toCanvas: toCanvas, validate: validate, hash: hash

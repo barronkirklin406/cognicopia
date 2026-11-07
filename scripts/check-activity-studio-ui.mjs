@@ -233,6 +233,34 @@ try {
   await pick(p, "view", "all"); ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), "on a phone the scroll of pages does not scroll sideways");
   await ctx.close();
 
+  /* the bigger word search: the letter grid really lines up in the browser, and the staff key prints */
+  {
+    const { ctx: kctx, p: q } = await open(1366, 1000);
+    await pick(q, "stage", "1");
+    await q.evaluate(() => document.querySelector("#asChallenge").click()); await q.waitForTimeout(700);
+    ok(await q.$eval("#asChallenge", e => e.checked && !e.disabled), "the bigger word search can be turned on at stage 1");
+    await mix(q, ["wordgrid"]);
+    await q.waitForTimeout(900);
+    const g = await q.evaluate(() => {
+      const ts = [...document.querySelector("svg[role=img]").querySelectorAll("text")].filter(t => t.textContent.length === 1);
+      const rows = {};
+      ts.forEach(t => { const y = Math.round(+t.getAttribute("y")), b = t.getBBox(); (rows[y] = rows[y] || []).push({ x: +t.getAttribute("x"), l: b.x, r: b.x + b.width }); });
+      const ys = Object.keys(rows).map(Number).sort((a, b) => a - b).map(y => rows[y].sort((a, b) => a.x - b.x));
+      let lo = 1e9, hi = -1e9, drift = 0;
+      for (const row of ys) for (let c = 1; c < row.length; c++) { const gap = row[c].l - row[c - 1].r; lo = Math.min(lo, gap); hi = Math.max(hi, gap); }
+      for (let c = 0; c < ys[0].length; c++) { const ls = ys.map(r => r[c].l); drift = Math.max(drift, Math.max(...ls) - Math.min(...ls)); }
+      return { rows: ys.length, cols: ys[0].length, lo, hi, drift };
+    });
+    ok(g.rows === 20 && g.cols === 20, `the bigger word search draws a 20 by 20 grid (${g.rows} x ${g.cols})`);
+    ok(g.hi - g.lo <= 2, `every letter sits on its column: the gap between neighbours varies by ${(g.hi - g.lo).toFixed(1)} px, 2 or less`);
+    ok(g.drift <= 2, `a column's letters start at the same place in every row (${g.drift.toFixed(1)} px of drift, 2 or less)`);
+    const before = await total(q);
+    await q.evaluate(() => document.querySelector("#asAnswers").click()); await q.waitForTimeout(900);
+    ok(await q.$eval("#asAnswers", e => e.checked), "the staff answer key can be turned on");
+    ok(await total(q) > before, `the staff answer key adds a page (${before} to ${await total(q)})`);
+    await kctx.close();
+  }
+
   ok(foreign.length === 0, "nothing is requested from outside the page" + (foreign.length ? ": " + foreign.slice(0, 2).join(", ") : ""));
   ok(errors.length === 0, "no script errors" + (errors.length ? ": " + errors.slice(0, 3).join("; ") : ""));
 } finally { await browser.close(); srv.close(); }

@@ -12,11 +12,11 @@
    used. Change VERSION only to clear old copies; updates to the pages
    themselves arrive on their own.
    ===================================================================== */
-const VERSION = "cognicopia-v50";
+const VERSION = "cognicopia-v51";
 const CORE = [
   "./", "index.html", "builder.html", "profile.html", "tablet.html", "pricing.html", "activate.html", "manifest.webmanifest",
   // the shared design system and its two typefaces (Atkinson Hyperlegible for the interface, Fraunces for headings)
-  "css/styles.css", "css/pages-utilities.css", "fonts/AtkinsonHyperlegible-Regular.woff2", "fonts/AtkinsonHyperlegible-Bold.woff2", "fonts/Fraunces-latin.woff2", "fonts/PinyonScript-Regular.woff2", "fonts/MarckScript-Regular.woff2",
+  "css/styles.css", "css/pages-utilities.css", "fonts/AtkinsonHyperlegible-Regular.woff2", "fonts/AtkinsonHyperlegible-Bold.woff2", "fonts/Fraunces-latin.woff2", "fonts/AtkinsonHyperlegibleMono-Bold.woff2", "fonts/PinyonScript-Regular.woff2", "fonts/MarckScript-Regular.woff2",
   "assets/cognicopia-logo.jpg", "assets/icon-192.png", "assets/icon-512.png", "assets/icon-maskable-512.png",
   "assets/cognicopia-coloring/cognicopia-coloring.js", "js/coloringAgent.js", "assets/services/vectorEngine.js", "assets/services/secureStore.js", "assets/services/reminiscenceEngine.js", "assets/services/slpClinicalService.js", "assets/services/heirloomService.js", "assets/services/facilityPlanner.js", "assets/services/academy.js", "assets/services/dailyOps.js", "assets/services/nightShift.js",
   "js/facility-logo.js", "js/shift-calendar.js", "js/shift-calendar-ui.js", "js/quick-lookup.js", "assets/vendor/jspdf.umd.min.js", "assets/vendor/jspdf-atkinson.js",

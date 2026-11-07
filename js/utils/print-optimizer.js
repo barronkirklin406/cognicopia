@@ -81,7 +81,7 @@
     "js/generators/activity-engine.js", "js/generators/coloring-pipeline.js", "js/generators/activity-modules.js", "js/generators/activity-pages.js", "components/packet-generator-ui.js",
     "js/utils/facility-validator.js", "js/utils/print-optimizer.js",
     "assets/coloring/subjects.bundle.js", "assets/coloring/manifest.json", "src/services/ColoringManifest.js", "src/engine/DescribeCreate.js",
-    "assets/vendor/jspdf.umd.min.js", "fonts/AtkinsonHyperlegible-Regular.woff2", "fonts/AtkinsonHyperlegible-Bold.woff2", "fonts/PinyonScript-Regular.woff2", "fonts/MarckScript-Regular.woff2"
+    "assets/vendor/jspdf.umd.min.js", "fonts/AtkinsonHyperlegible-Regular.woff2", "fonts/AtkinsonHyperlegible-Bold.woff2", "fonts/AtkinsonHyperlegibleMono-Bold.woff2", "fonts/PinyonScript-Regular.woff2", "fonts/MarckScript-Regular.woff2"
   ];
   /* every file the studio needs, relative to the site: the core files and the library's own drawings */
   function required(manifest) {
