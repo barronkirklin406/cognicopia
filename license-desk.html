@@ -174,8 +174,15 @@
   }
 
   /* ---------- step 1: a new pair ---------- */
+  /* Making a second key is how the owner's work gets lost: the new secret file replaces the old one,
+     and the license keys already sent to buyers were signed with the old one. So this asks first, every
+     time after the first, and says plainly what it would cost. */
   $("makePair").addEventListener("click", function () {
     if (!ready()) return;
+    if (privatePem && !window.confirm("You already made a key on this page.\n\nMaking another one does NOT cancel the license keys you have already sent out: those keep working.\n\nBut the new secret file replaces the old one on this computer, and until the new safe line is put on the website, any NEW license key you make will be refused.\n\nMake another key anyway?")) {
+      say($("makeMsg"), "Nothing was changed. Your key is still the one you made before.");
+      return;
+    }
     say($("makeMsg"), "Making your key…");
     subtle.generateKey({ name: "ECDSA", namedCurve: "P-256" }, true, ["sign", "verify"]).then(function (pair) {
       return Promise.all([subtle.exportKey("pkcs8", pair.privateKey), subtle.exportKey("raw", pair.publicKey)]);
