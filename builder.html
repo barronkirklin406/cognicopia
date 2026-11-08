@@ -7618,7 +7618,8 @@ const RosterUI = (function(){
             <summary>Back up this roster, or hand it off to another station</summary>
             <p class="hint">Save every resident in one locked file (.cognicopia) in any folder as a backup, or move residents between computers with it. Opening the file on this or any computer puts them back. It opens only with the passphrase chosen here: tell it to the other station in person or by phone, never in the same message as the file.</p>
             <div class="field"><label for="rsHoFrom">From (station or unit, optional)</label><input id="rsHoFrom" type="text" maxlength="60" autocomplete="off" placeholder="e.g., Maple Unit, evening shift"></div>
-            ${window.CogniPrivacy ? window.CogniPrivacy.choiceHtml("rsHoNames", settings.exportNames, "Names in this file") : ""}
+            ${window.CogniPrivacy ? window.CogniPrivacy.choiceHtml("rsHoNames", "keep", "Names in this file") : ""}
+            <p class="hint">The file is locked, so keeping names is how a resident arrives whole: their name, room, hometown and notes. Choose aliases or no personal details only to make a file that is safer to share: the residents opened from it will <b>not</b> get their real names or details back.</p>
             <div class="field"><label for="rsHoPass">Passphrase for this file</label><input id="rsHoPass" type="password" autocomplete="new-password" minlength="10"></div>
             <div class="actions"><button class="btn" type="button" id="rsHoOut" ${list.length ? "" : "disabled"}>Download handoff file (${list.length} ${list.length === 1 ? "resident" : "residents"})</button></div>
             <h3>Receive a handoff</h3>
@@ -7735,7 +7736,7 @@ const RosterUI = (function(){
     const SS = window.CogniSecureStore, pass = document.getElementById("rsHoPass").value, from = document.getElementById("rsHoFrom").value.trim();
     if (!SS){ hoMsg("This browser cannot lock files.", true); return; }
     const problem = SS.passphraseProblem(pass); if (problem){ hoMsg(problem, true); document.getElementById("rsHoPass").focus(); return; }
-    const pick = host.querySelector('[data-privacy-choice="rsHoNames"] input:checked'), level = window.CogniPrivacy ? window.CogniPrivacy.levelOf(pick ? pick.value : settings.exportNames) : "keep";
+    const pick = host.querySelector('[data-privacy-choice="rsHoNames"] input:checked'), level = window.CogniPrivacy ? window.CogniPrivacy.levelOf(pick ? pick.value : "keep") : "keep";
     const list = window.CogniPrivacy ? window.CogniPrivacy.scrubRoster(BookUI.savedProfiles(), level) : BookUI.savedProfiles(), btn = document.getElementById("rsHoOut");
     btn.disabled = true; hoMsg("Locking the file…");
     SS.exportRoster(list, pass, from).then(env => {
@@ -7743,7 +7744,7 @@ const RosterUI = (function(){
       a.href = URL.createObjectURL(new Blob([JSON.stringify(env)], { type:"application/octet-stream" }));
       a.download = ["Cognicopia handoff", from.replace(/[\\/:*?"<>|]+/g, "") || "roster", todayISO()].concat(window.CogniPrivacy && window.CogniPrivacy.levelSuffix(level) ? [window.CogniPrivacy.levelSuffix(level)] : []).join(" - ") + ".cognicopia";
       document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 1500);
-      hoMsg(`Downloaded, locked: ${list.length} ${list.length === 1 ? "resident" : "residents"}. Give the other station the passphrase separately.`);
+      hoMsg(`Downloaded, locked: ${list.length} ${list.length === 1 ? "resident" : "residents"}` + (level === "keep" ? "" : level === "alias" ? ", with aliases in place of names (opening it will not bring the real names back)" : ", with names and personal details removed (opening it will not bring them back)") + `. Give the other station the passphrase separately.`);
       document.getElementById("rsHoPass").value = "";
     }, e => hoMsg(e.message, true)).then(() => { btn.disabled = false; });
   }

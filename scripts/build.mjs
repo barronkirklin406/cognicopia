@@ -223,6 +223,14 @@ step("the Resident Roster: initials rows and cards, filter chips with counts, se
   }
 });
 
+step("the roster handoff, with two separate browsers: the file is locked, a wrong or missing passphrase is refused, every resident arrives whole by default and sealed, an alias file drops the names and says so, nobody is added twice, a newer copy is kept (a real browser)", () => {
+  try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-roster-handoff-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
+  catch (e){
+    if (e.status === 2) return "skipped: Playwright is not installed here (see docs/dev-setup.md)";
+    throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message);
+  }
+});
+
 step("the Academy works: the cream and forest-green design at AAA, the dashboard, search and pills, the player (play, skip, speeds, volume, captions, bookmarks, keyboard), sealed saved progress, the knowledge check, the certificate, the record, Letter print sheets and 52 px controls (a real browser)", () => {
   try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-academy-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
   catch (e){
