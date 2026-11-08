@@ -95,3 +95,12 @@ Cognicopia supports a facility's HIPAA privacy practices: nothing is transmitted
 ## Zero-telemetry statement, names in exports and wings
 
 Settings carries a live statement that Cognicopia has no telemetry and counts the requests the page has made to other websites (it should read 0). Every export offers a names choice (aliases by default, remove personal details, or keep names), and a wing can be chosen so a roster never mixes with another's. The audit of every storage handler, and how it is proved, is in [facility-operations.md](facility-operations.md).
+
+## Moving residents between computers (the station handoff)
+
+There is no account and no cloud copy, so a resident saved on one computer is not on another. To move residents, use **Resident Roster, then "Back up this roster, or hand it off to another station"** in the Packet Builder. It makes one locked file (`.cognicopia`): AES-256-GCM, with a key drawn from a passphrase the person chooses (PBKDF2, SHA-256, 600,000 rounds). Nothing can be read without the passphrase, which should be told to the other station in person or by phone, never in the same message as the file. On the other computer, "Receive a handoff" opens it with the passphrase and adds the residents to that computer's own sealed store.
+
+- **Names are kept by default** (since November 8, 2026). The file is locked, and a resident should arrive whole: name, room, hometown, notes. Before that the default was to swap names for aliases, which made a backup that could not restore a resident properly. Choosing aliases or "no personal details" is still offered for a file that is safer to share, and the screen says plainly that the residents opened from such a file will not get their real names or details back.
+- **Opening a file twice is safe.** Nobody is added twice, and a copy changed later on the receiving computer is kept, not overwritten (the newer one wins).
+- **A wrong or missing passphrase** is refused, as is a file that is not a Cognicopia roster.
+- Proved with two separate browsers, as two real computers would be: `scripts/check-roster-handoff-ui.mjs` (in `npm run build`). It checks that no name, place or note can be read in the file, that every resident arrives intact, and that nothing leaves the page.
