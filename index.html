@@ -25358,23 +25358,30 @@ if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol))
   window.addEventListener("load", function(){ navigator.serviceWorker.register("sw.js").catch(function(){}); });
 </script>
 <script src="assets/services/familyLifeDigest.js"></script>
+<script src="js/familyLifeDigestUI.js"></script>
 <script>
 (function initFamilyLifeDigestWiring() {
-  function getResidentContextForDigest() {
-    if (window.activeResident) {
-      return window.activeResident;
+  /* who the digest is about: the saved resident the packet is made for, or else the person typed into the form
+     (nothing is saved by this; the drawer keeps its notes only for the session) */
+  function getResidentForDigest() {
+    var D = window.CogniFamilyDigest;
+    if (window.activeResident && D && D.residentFromProfile) {
+      return { id: String(window.activeResident.id || "saved_resident"), data: D.residentFromProfile(window.activeResident) };
     }
     if (typeof window.pcgProfile === 'function') {
       var p = window.pcgProfile();
       if (p && p.first) {
+        var list = function(t){ return String(t || '').split(',').map(function(x){ return x.trim(); }).filter(Boolean); };
         return {
-          id: 'temp_' + p.first.toLowerCase(),
-          firstName: p.first,
-          birthYear: p.year ? parseInt(p.year, 10) : undefined,
-          hometown: p.hometown || undefined,
-          interests: p.interests ? p.interests.split(',').map(function(s){ return s.trim(); }).filter(Boolean) : [],
-          cognitiveTier: (p.stage === 'late' ? 'Advanced' : (p.stage === 'middle' ? 'Moderate' : 'Mild')),
-          roomOrWing: p.room || undefined
+          id: 'form_' + p.first.toLowerCase().replace(/[^a-z0-9]+/g, '_'),
+          data: {
+            firstName: p.first,
+            hometown: p.town || '',
+            pastOccupation: p.job || '',
+            hobbies: list(p.hobbies).slice(0, 6).join(', '),
+            interests: list(p.hobbies).concat(list(p.favs)).slice(0, 6),
+            cognitiveTier: (p.stage === 'late' ? 'Advanced' : (p.stage === 'middle' ? 'Moderate' : 'Mild'))
+          }
         };
       }
     }
@@ -25382,10 +25389,10 @@ if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol))
   }
 
   function handleOpenDigest() {
-    var res = getResidentContextForDigest();
-    if (window.CogniFamilyLifeDigest && window.CogniFamilyLifeDigest.FamilyLifeDigestUI) {
-      window.CogniFamilyLifeDigest.FamilyLifeDigestUI.open(res);
-    }
+    var who = getResidentForDigest();
+    if (!who || !window.CogniFamilyDigestUI) return;
+    /* the shipped drawer (js/familyLifeDigestUI.js): who, what the session was, and what the digest may say about them */
+    window.CogniFamilyDigestUI.open(who.id, "Activity packet", who.data);
   }
 
   var pcgDigestBtn = document.getElementById('pcgFamilyDigest');

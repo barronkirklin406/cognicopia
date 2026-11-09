@@ -26,8 +26,8 @@ try { execFileSync("tsc", ["-v"], { stdio:"pipe" }); try { execFileSync("tsc", [
 const sandbox = { console, TextEncoder, TextDecoder }; sandbox.globalThis = sandbox; vm.createContext(sandbox);
 const OUT = path.join(ROOT, "assets", "services");
 /* only services built from src/services/*.ts; browser-only scripts (nightShift.js) touch the page */
-/* A service whose TypeScript was lost is still a service: the file that ships is what is tested. (dailyOps.ts was edited after it left the repository; the built file is the only copy.) */
-const SHIPPED_ONLY = new Set(["dailyOps.js"]);
+/* A service whose TypeScript was lost is still a service: the file that ships is what is tested. (dailyOps.ts was edited after it left the repository; the built file is the only copy. familyLifeDigest.js is the same: the owner chose the shipped file, November 9, 2026, and the other TypeScript module of that name was removed.) */
+const SHIPPED_ONLY = new Set(["dailyOps.js", "familyLifeDigest.js"]);
 fs.readdirSync(OUT).filter(f => f.endsWith(".js") && (SHIPPED_ONLY.has(f) || fs.existsSync(path.join(ROOT, "src", "services", f.replace(/\.js$/, ".ts"))))).sort().forEach(f => vm.runInContext(fs.readFileSync(path.join(OUT, f), "utf8"), sandbox, { filename:"assets/services/" + f }));
 const V = sandbox.CogniVectorEngine;
 

@@ -12,7 +12,7 @@
    used. Change VERSION only to clear old copies; updates to the pages
    themselves arrive on their own.
    ===================================================================== */
-const VERSION = "cognicopia-v51";
+const VERSION = "cognicopia-v52";
 const CORE = [
   "./", "index.html", "builder.html", "profile.html", "tablet.html", "pricing.html", "activate.html", "manifest.webmanifest",
   // the shared design system and its two typefaces (Atkinson Hyperlegible for the interface, Fraunces for headings)
@@ -38,7 +38,7 @@ const CORE = [
   "js/agent-orchestrator.js", "js/pillar1-production-agents.js", "js/pillar2-functionality-agents.js", "js/pillar3-qa-agents.js", "js/clinical-audit-agent.js", "js/print-preview-modal.js",
   "js/toolkit-ui.js", "js/todays-packet.js", "js/packet-builder.js", "js/clinical-suite.js", "js/pillar4-maintenance-agents.js", "js/pillar5-upgrade-agents.js",
   // pages and scripts added since the first version of this list: the agreement, the invoice maker, the staff guide, the favicon set
-  "js/legal.js", "terms.html", "js/invoiceMaker.js", "js/staffGuide.js", "resources/staff-guide/index.html", "assets/favicon-16.png", "assets/favicon-32.png", "assets/apple-touch-icon.png", "favicon.ico", "js/careTier.js", "js/voiceKit.js", "js/auditLogUI.js", "js/familyLifeDigestUI.js", "js/nostalgiaRadioUI.js", "js/pocketLanyardCard.js", "js/trialBadge.js", "js/modalController.js", "assets/services/privacyExport.js", "assets/services/residentTracker.js", "assets/services/staffCompanion.js", "assets/services/researchCenter.js"
+  "js/legal.js", "terms.html", "js/invoiceMaker.js", "js/staffGuide.js", "resources/staff-guide/index.html", "assets/favicon-16.png", "assets/favicon-32.png", "assets/apple-touch-icon.png", "favicon.ico", "js/careTier.js", "js/voiceKit.js", "js/auditLogUI.js", "js/familyLifeDigestUI.js", "assets/services/familyLifeDigest.js", "js/nostalgiaRadioUI.js", "js/pocketLanyardCard.js", "js/trialBadge.js", "js/modalController.js", "assets/services/privacyExport.js", "assets/services/residentTracker.js", "assets/services/staffCompanion.js", "assets/services/researchCenter.js"
 ];
 const PAGE_WAIT_MS = 4000;
 

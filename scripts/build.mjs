@@ -223,6 +223,14 @@ step("the Resident Roster: initials rows and cards, filter chips with counts, se
   }
 });
 
+step("the Family Life Digest buttons on the front page open the shipped drawer and make a one-page PDF that names the person (a real browser, the PDF read back)", () => {
+  try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-family-digest-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
+  catch (e){
+    if (e.status === 2) return "skipped: Playwright is not installed here (see docs/dev-setup.md)";
+    throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message);
+  }
+});
+
 step("the Activity Page Studio and the free trial: a PDF or print uses one free packet, the badge and the line agree, the gate stops print, PDF and image when all 50 are used, a real signed key means no limit (a real browser)", () => {
   try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-studio-trial-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
   catch (e){

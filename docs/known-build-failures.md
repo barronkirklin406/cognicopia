@@ -2,10 +2,12 @@
 
 `node scripts/build.mjs` is the real gate (`npm run build` here only syntax-checks `server.js`). As of November 9, 2026 the long list that used to be here is down to the items below. Each was re-run on `main`.
 
-| Check | Cause | Owner's decision needed |
-|---|---|---|
-| `check-services` (one problem) | `assets/services/familyLifeDigest.js` is out of date. **Two different modules share this name.** The file that ships defines `CogniFamilyDigest` (289 lines; the profile page and `js/familyLifeDigestUI.js` use it). `src/services/familyLifeDigest.ts` defines a different, newer `CogniFamilyLifeDigest` (a one-page PDF digest, 788 lines) that `index.html` expects but never loads, so that part of the front page is dormant. Running `npm run services` would replace the first with the second and break the profile page, so **do not run it blindly**. | Which family digest is wanted? Either rename the TypeScript one (for example `familyLifeDigestPdf.ts`) and load it from `index.html`, or delete it. The source of the shipped `CogniFamilyDigest` is not in the repository. |
-| print audit | Three thin strokes in the builder's output: two coloring-library pages and the cut lines of the reminiscence cards (dashed cut lines are thin by design; the audit's 2 pt floor needs an exemption for them). | Whether cut lines may be exempt from the 2 pt floor. |
+Nothing is open. Every check in `node scripts/build.mjs` passes where Playwright, PyMuPDF, pypdfium2 and pdfplumber are installed (four checks, the print audit's PDF reading among them, need those Python packages and stop with a plain message where they are missing).
+
+## Closed after the owner's answers (November 9, 2026)
+
+- **`check-services` and the two family digests.** The owner chose the digest that ships (`CogniFamilyDigest`, with the drawer in `js/familyLifeDigestUI.js`). The unshipped TypeScript module of the same name (`CogniFamilyLifeDigest`, 788 lines) was removed from `src/services/` (it is in git history, `src/services/familyLifeDigest.ts` before this change). `assets/services/familyLifeDigest.js` is now a source-less service like `dailyOps.js`: the check tests the file that ships. The front page's two "Family Life Digest" buttons were wired to the removed module and did nothing; they now open the shipped drawer for the person in the packet form or the saved resident (`scripts/check-family-digest-ui.mjs`, 15 checks). The file is in the offline cache (`sw.js`, v52).
+- **The print audit's thin stroke.** The owner ruled that the dashed cut lines may not be exempt from the 2 pt floor. They did not need an exemption: the cut lines were already 3 pt. The three findings were one stroke, the outline of the small letter badge on the Career card's tag, set to 2 pt in the style sheet. Chrome rounds a border down to whole screen pixels, so 2 pt prints as 1.5 pt (anything from 2.25 pt up is safe). The badge and the QR code's frame on the cards are now 2.25 pt. The builder audit reads 0 findings over 1,740 checks.
 
 ## Fixed on November 9, 2026
 
