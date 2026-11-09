@@ -98,6 +98,14 @@ export const TOOLS = [
    Resources lists the whole reference library (HUB, GROUPS and MODULES
    below); inside the Packet Builder, Resources is two links. Contact is a footer link under the seven, on every page. */
 const B = "builder.html";
+/* The Facility group is fourteen links. In the Packet Builder's side menu they sit in four labelled sections (only the one holding the
+   open screen is open), so a person sees about nine choices, not fourteen. The top bar and the Menu drawer on other pages keep the plain list. */
+export const FACILITY_PARTS = [
+  { id: "every",    label: "Every day" },
+  { id: "records",  label: "Records and therapy" },
+  { id: "settings", label: "Settings and safety" },
+  { id: "plans",    label: "Plans and sharing" }
+];
 export const HUBS = [
   { id: "today",     label: "Today",            icon: "sun",      group: "resident", items: [
       { key: "home",         label: "Personalized Packet Tool", href: "index.html",        icon: "home" },
@@ -116,19 +124,19 @@ export const HUBS = [
       { key: "tablet",       label: "Tablet Activities",        href: "tablet.html",       icon: "tablet" } ] },
   { id: "facility",  label: "Facility",         icon: "building", group: "staff", items: [
       { key: "facility",     label: "Facility Portal",          href: B + "#/facility",     route: "facility",     icon: "building" },
-      { key: "shift",        label: "Shift board",              href: B + "#/shift",        route: "shift",        icon: "clipboard" },
-      { key: "roster",       label: "Resident roster",          href: B + "#/roster",       route: "roster",       icon: "roster" },
-      { key: "highlights",   label: "Shift highlights",         href: B + "#/highlights",   route: "highlights",   icon: "clipboard" },
-      { key: "ehr-import",   label: "EHR Import Wizard",        href: B + "#/ehr-import",   route: "ehr-import",   icon: "roster" },
-      { key: "clinical",     label: "Session notes (SLP)",      href: B + "#/clinical",     route: "clinical",     icon: "stethoscope" },
-      { key: "therapy-goals", label: "Therapy Goals (SLP)",     href: B + "#/therapy-goals", route: "therapy-goals", icon: "stethoscope" },
-      { key: "heirloom",     label: "Quarterly Legacy & Memory Books",     href: B + "#/heirloom",     route: "heirloom",     icon: "books" },
-      { key: "planner-care-companion", label: "Care cues (planner companion)", href: B + "#/planner-care-companion", route: "planner-care-companion", icon: "journal" },
-      { key: "safety",       label: "Security & Accessibility", href: B + "#/safety",       route: "safety",       icon: "gear" },
-      { key: "settings",     label: "Settings & defaults",      href: B + "#/settings",     route: "settings",     icon: "gear" },
-      { key: "pricing",      label: "Plans & pricing",          href: "pricing.html",       icon: "award" },
-      { key: "pilot",        label: "Start a 30-day pilot",     href: "pilot.html",         icon: "clipboard" },
-      { key: "referral",     label: "Share with a colleague",   href: "referral.html",      icon: "cards" } ] },
+      { key: "shift", label: "Shift board",              href: B + "#/shift",        route: "shift",        icon: "clipboard", part: "every" },
+      { key: "roster",       label: "Resident roster",          href: B + "#/roster",       route: "roster",       icon: "roster", part: "every" },
+      { key: "highlights", label: "Shift highlights",         href: B + "#/highlights",   route: "highlights",   icon: "clipboard", part: "every" },
+      { key: "ehr-import", label: "EHR Import Wizard",        href: B + "#/ehr-import",   route: "ehr-import",   icon: "roster", part: "records" },
+      { key: "clinical", label: "Session notes (SLP)",      href: B + "#/clinical",     route: "clinical",     icon: "stethoscope", part: "records" },
+      { key: "therapy-goals", label: "Therapy Goals (SLP)",     href: B + "#/therapy-goals", route: "therapy-goals", icon: "stethoscope", part: "records" },
+      { key: "heirloom", label: "Quarterly Legacy & Memory Books",     href: B + "#/heirloom",     route: "heirloom",     icon: "books", part: "records" },
+      { key: "planner-care-companion", label: "Care cues (planner companion)", href: B + "#/planner-care-companion", route: "planner-care-companion", icon: "journal", part: "every" },
+      { key: "safety", label: "Security & Accessibility", href: B + "#/safety",       route: "safety",       icon: "gear", part: "settings" },
+      { key: "settings", label: "Settings & defaults",      href: B + "#/settings",     route: "settings",     icon: "gear", part: "settings" },
+      { key: "pricing", label: "Plans & pricing",          href: "pricing.html",       icon: "award", part: "plans" },
+      { key: "pilot", label: "Start a 30-day pilot",     href: "pilot.html",         icon: "clipboard", part: "plans" },
+      { key: "referral", label: "Share with a colleague",   href: "referral.html",      icon: "cards", part: "plans" } ] },
   { id: "academy",   label: "Academy",          icon: "academy",  group: "staff", items: [
       { key: "academy",      label: "Staff & Caregiver Academy",  href: B + "#/academy",      route: "academy",      icon: "academy" },
       { key: "scenarios",    label: "Distress Scenario Practice", href: B + "#/scenarios",    route: "scenarios",    icon: "academy" } ] },
@@ -451,6 +459,19 @@ ${inner}
     if (h.id === "resources") return group(h, `      <ul class="sb-list">
 ${[{ label: HUB.title, href: HUB.href, icon: "library" }, { label: RESEARCH.label, href: moduleHref(RESEARCH), icon: "microscope" }].map(link).join("\n")}
       </ul>`);
+    if (h.id === "facility") {
+      const front = h.items.filter(it => !it.part);
+      const sections = FACILITY_PARTS.map(pt => `      <details class="sb-sub" data-part="${pt.id}">
+        <summary class="sb-sub-head"><span>${esc(pt.label)}</span>${svg(ICON.chevron, 16, "sb-sub-chev", 2.2)}</summary>
+        <ul class="sb-list">
+${h.items.filter(it => it.part === pt.id).map(link).join("\n")}
+        </ul>
+      </details>`).join("\n");
+      return group(h, `      <ul class="sb-list">
+${front.map(link).join("\n")}
+      </ul>
+${sections}`);
+    }
     return group(h, `      <ul class="sb-list">
 ${h.items.map(link).join("\n")}
       </ul>`);

@@ -71,12 +71,27 @@ try {
   await p.click(".sb-link[data-route='coloring']"); await p.waitForTimeout(700);
   ok(await p.$eval(".sb-link[aria-current='page']", e => e.dataset.route) === "coloring", "choosing Cognicopia Coloring marks it current");
   ok(/^\d+$/.test((await p.textContent("#navColoringCount")).trim()), "Cognicopia Coloring shows how many pictures it has");
-  await p.click("details.sb-hub[data-hub='facility'] > summary"); await p.click(".sb-link[data-route='roster']"); await p.waitForTimeout(700);
+  /* Facility's fourteen links sit in four sections; the Facility Portal stays on top, and a section opens by its heading */
+  await p.click("details.sb-hub[data-hub='facility'] > summary"); await p.waitForTimeout(150);
+  const facSeen = () => p.$$eval("details.sb-hub[data-hub='facility'] :is(a, summary)", els => els.filter(e => e.checkVisibility({ checkVisibilityCSS: true })).length);
+  ok(await facSeen() === 6, `opening Facility shows its own heading, the Portal and four section headings, not fourteen links (${await facSeen()})`);
+  ok(await p.$$eval("details.sb-hub[data-hub='facility'] .sb-sub", d => d.length) === 4 && await p.$$eval("details.sb-hub[data-hub='facility'] .sb-link", l => l.length) === 14, "all fourteen links are still there, in four sections");
+  ok(await p.$$eval("details.sb-sub", d => d.every(x => !x.open)), "no section starts open when no Facility screen is open");
+  await p.click("details.sb-sub[data-part='every'] > summary"); await p.waitForTimeout(150);
+  await p.click("details.sb-sub[data-part='records'] > summary"); await p.waitForTimeout(150);
+  ok(await p.$$eval("details.sb-sub", d => d.filter(x => x.open).map(x => x.dataset.part).join()) === "records", "opening one section closes the other");
+  const subH = await p.$$eval(".sb-sub-head", h => h.map(x => Math.round(x.getBoundingClientRect().height)));
+  ok(subH.length === 4 && subH.every(h => h >= 52), `the section headings are at least 52 px (${subH.join(", ")})`);
+  await p.click("details.sb-sub[data-part='every'] > summary"); await p.click(".sb-link[data-route='roster']"); await p.waitForTimeout(700);
   ok(await p.$eval(".sb-link[aria-current='page']", e => e.dataset.route) === "roster" && await only(p, "details.sb-hub", "facility"), "choosing the roster marks it current and keeps Facility open");
+  ok(await p.$$eval("details.sb-sub", d => d.filter(x => x.open).map(x => x.dataset.part).join()) === "every", "and the section that holds it is the one open");
   await p.click("details.sb-hub[data-hub='academy'] > summary"); await p.click(".sb-link[data-route='academy']"); await p.waitForTimeout(700);
   ok(await p.$eval(".sb-link[aria-current='page']", e => e.dataset.route) === "academy" && await only(p, "details.sb-hub", "academy"), "choosing the Academy marks it current and keeps the Academy hub open (it also holds the scenario practice)");
   await p.evaluate(() => { location.hash = "#/planner"; }); await p.waitForTimeout(600);
   ok(await only(p, "details.sb-hub", "studio"), "a typed address (#/planner) opens the hub that holds it");
+  await p.evaluate(() => { location.hash = "#/clinical"; }); await p.waitForTimeout(600);
+  ok(await only(p, "details.sb-hub", "facility") && await p.$$eval("details.sb-sub", d => d.filter(x => x.open).map(x => x.dataset.part).join()) === "records", "a typed address inside Facility (#/clinical) opens Facility and the section that holds it");
+  await p.evaluate(() => { location.hash = "#/planner"; }); await p.waitForTimeout(500);
   await p.evaluate(() => { location.hash = "#/category/word"; }); await p.waitForTimeout(600);
   ok(await p.$eval("#catNav .sb-link[aria-current='page']", e => e.dataset.cat) === "word" && await only(p, "details.sb-hub", "packets"), "a category marks itself current under Activity Packets");
   await p.goBack(); await p.waitForTimeout(600);
