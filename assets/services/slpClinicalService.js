@@ -206,6 +206,8 @@ const latestStaging = (log             )                       => log.staging.sl
 const pct = (m         )                => m.trials && m.correct != null ? Math.round(m.correct / m.trials * 100) : null;
 
 /* Checks on what was recorded (never on the clinical content itself). */
+                                                                                                                                                                
+                                                                                                                         
                                                                          
 function checkSession(s         )          {
   const out          = [], codes = s.codes.map(c => c.code);
@@ -324,7 +326,7 @@ const DOMAINS                    = [
 ];
 const domainOf = (id        )                => DOMAINS.filter(d => d.id === id)[0] || null;
 /* The codes usually considered for the chosen domains and session format, each with why. Group sessions use 92508; the cognitive codes are one-on-one. */
-function domainCodes(ids                   , format                        )                                  {
+function domainCodes(ids          , format        )                                  {
   const out                                  = [], add = (code        )       => { const r = codeRef(code); if (r && !out.some(o => o.code === code)) out.push({ code, why: r.summary }); };
   ids.forEach(id => (domainOf(id) || { codes: []             }).codes.forEach(c => {
     if (format === "group"){ if (c === "92507") add("92508"); }
@@ -337,12 +339,12 @@ function domainCodes(ids                   , format                        )    
    Straight quotes, plain hyphens and "x" for "times", no symbols a record may
    turn into question marks. Section by section, so each can fill its own
    field. who is the resident as the clinician chooses: an alias by default. */
-const FOLD                                   = { "‘": "'", "’": "'", "“": '"', "”": '"', "–": "-", "—": "-", "·": "|", "×": "x", "…": "...", " ": " ", "•": "-" };
-function ascii(t        )         {
+const FOLD                         = { "‘": "'", "’": "'", "“": '"', "”": '"', "–": "-", "—": "-", "·": "|", "×": "x", "…": "...", " ": " ", "•": "-" };
+function ascii(t         )         {
   return String(t == null ? "" : t).replace(/[‘’“”–—·×… •]/g, c => FOLD[c]).normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^\t\n\r\x20-\x7E]/g, "?");
 }
                                                                                                                          
-function ehrParts(s         , ctx                                   , who        )           {
+function ehrParts(s         , ctx             , who        )           {
   const st = ctx.staging, map = st ? tierForStage(st) : null, prov = [s.clinician, s.credentials].filter(Boolean).join(", ");
   const focus = s.domains.map(d => (domainOf(d) || { label: "" }).label).filter(Boolean);
   const body = (text        )         => (text ? text.split("\n").filter(Boolean).join("\n") : NOT);

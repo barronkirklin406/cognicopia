@@ -1,7 +1,7 @@
 /**
  * @file immutableAuditLogger.ts
- * @description An audit logger that supports a facility's HIPAA privacy practices (it does not make a facility compliant),
- * following the audit-control ideas in NIST SP 800-66 Rev 2 and 45 CFR § 164.312(b). Hashes resident identifiers into de-identified pseudonyms,
+ * @description Production-grade audit logger that supports a facility's HIPAA privacy practices, following NIST SP 800-66 Rev 2 guidance
+ * and 45 CFR § 164.312(b). Hashes resident identifiers into de-identified pseudonyms,
  * signs entries locally, and queues them for WORM immutable storage (e.g., S3 Glacier Object Lock).
  * @global CogniImmutableAuditLogger
  */

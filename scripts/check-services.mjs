@@ -26,7 +26,9 @@ try { execFileSync("tsc", ["-v"], { stdio:"pipe" }); try { execFileSync("tsc", [
 const sandbox = { console, TextEncoder, TextDecoder }; sandbox.globalThis = sandbox; vm.createContext(sandbox);
 const OUT = path.join(ROOT, "assets", "services");
 /* only services built from src/services/*.ts; browser-only scripts (nightShift.js) touch the page */
-fs.readdirSync(OUT).filter(f => f.endsWith(".js") && fs.existsSync(path.join(ROOT, "src", "services", f.replace(/\.js$/, ".ts")))).sort().forEach(f => vm.runInContext(fs.readFileSync(path.join(OUT, f), "utf8"), sandbox, { filename:"assets/services/" + f }));
+/* A service whose TypeScript was lost is still a service: the file that ships is what is tested. (dailyOps.ts was edited after it left the repository; the built file is the only copy.) */
+const SHIPPED_ONLY = new Set(["dailyOps.js"]);
+fs.readdirSync(OUT).filter(f => f.endsWith(".js") && (SHIPPED_ONLY.has(f) || fs.existsSync(path.join(ROOT, "src", "services", f.replace(/\.js$/, ".ts"))))).sort().forEach(f => vm.runInContext(fs.readFileSync(path.join(OUT, f), "utf8"), sandbox, { filename:"assets/services/" + f }));
 const V = sandbox.CogniVectorEngine;
 
 /* Emergency print: profile choice, direct resident action, and isolated page */
@@ -1039,11 +1041,11 @@ group("dailyOps", () => {
   // wired into the Packet Builder, the offline cache and the navigation
   const bh = fs.readFileSync(path.join(ROOT, "builder.html"), "utf8"), sw = fs.readFileSync(path.join(ROOT, "sw.js"), "utf8"), nav = fs.readFileSync(path.join(ROOT, "scripts", "site-nav.mjs"), "utf8");
   ok(bh.includes('<script src="assets/services/dailyOps.js"></script>') && bh.indexOf("assets/services/dailyOps.js") < bh.indexOf('id="ops-ui"'), "the Packet Builder loads the service before the screen");
-  ok(/"shift": renderShift/.test(bh) && /function renderShift\(\)\{ DailyOpsUI\.render\(view\); \}/.test(bh), "#/shift is a route");
+  ok(/"shift": renderShift/.test(bh) && /function renderShift\(\)\{ ShiftCalUI\.render\(view\); \}/.test(bh), "#/shift is a route (served by the calendar screen since November 6)");
   ok(sw.includes('"assets/services/dailyOps.js"'), "the service worker keeps the script for offline use");
   ok(/key: "shift",\s+label: "Shift board",\s+href: B \+ "#\/shift",\s+route: "shift"/.test(nav), "Shift board is in the Facility hub");
   ok(/store\.remove\(window\.CogniDailyOps \? window\.CogniDailyOps\.STORE_KEY : "cognicopia_dailyops"\)/.test(bh), "Settings > Clear saved data clears the board");
-  ok(!/fetch\(|XMLHttpRequest|sendBeacon|WebSocket|importScripts/.test(fs.readFileSync(path.join(ROOT, "src", "services", "dailyOps.ts"), "utf8")), "the service makes no network request");
+  ok(!/fetch\(|XMLHttpRequest|sendBeacon|WebSocket|importScripts/.test(fs.readFileSync(path.join(ROOT, "assets", "services", "dailyOps.js"), "utf8")), "the service makes no network request (the shipped file: its source is not in the repository)");
   sandbox.__opsStats = `Shift board: ${nameMs} ms to check 300 names, a heavy day on ${hp.length} pages`;
 });
 

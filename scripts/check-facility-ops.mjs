@@ -44,7 +44,9 @@ const K = load("assets/services/slpClinicalService.js", "CogniClinical");
   const NET_CALLS = /\bfetch\s*\(|XMLHttpRequest|sendBeacon|new\s+WebSocket\b|new\s+EventSource\b|importScripts\s*\(/, NET = new RegExp(NET_CALLS.source + "|navigator\\.serviceWorker\\.register");
   for (const f of ["censusImport", "privacyExport", "dailyOps", "residentTracker", "staffCompanion", "slpClinicalService", "facilityPlanner", "secureStore", "localDb"]) {
     ok(!NET.test(read("assets/services/" + f + ".js")), `${f}.js makes no network request`);
-    ok(!/https?:\/\//.test(read("src/services/" + f + ".ts").replace(/\/\*[\s\S]*?\*\//g, "").replace(/\/\/.*$/gm, "")), `${f}.ts names no outside address in its code`);
+    /* the TypeScript source where the repository has one; otherwise the file that ships, which is what must be free of outside addresses */
+    const srcFile = fs.existsSync(path.join(ROOT, "src/services/" + f + ".ts")) ? "src/services/" + f + ".ts" : "assets/services/" + f + ".js";
+    ok(!/https?:\/\//.test(read(srcFile).replace(/\/\*[\s\S]*?\*\//g, "").replace(/\/\/.*$/gm, "")), `${f} (${srcFile.split(".").pop() === "ts" ? "source" : "shipped file"}) names no outside address in its code`);
   }
   /* the audit of every storage handler: any file of the site that touches localStorage, sessionStorage or IndexedDB sends nothing anywhere */
   const SKIP = new Set([".git", "node_modules", "platform", "out", "license-service", "scripts", ".next"]), found = [];
@@ -52,7 +54,11 @@ const K = load("assets/services/slpClinicalService.js", "CogniClinical");
   walk("");
   const stores = found.filter(f => /indexedDB|localStorage|sessionStorage/.test(read(f)));
   ok(stores.length >= 30, `the audit found the storage handlers (${stores.length} files)`);
-  const GUARDS = new Set(["resources/quality-standards/index.html", "resources/clinical-alignment/index.html"]);   // these pages replace fetch and XMLHttpRequest with refusals
+  const GUARDS = new Set([
+    "resources/quality-standards/index.html", "resources/clinical-alignment/index.html",   // these pages replace fetch and XMLHttpRequest with refusals
+    "js/pillar4-maintenance-agents.js",   // the offline cache manager fetches only this site's own files: localUrl() refuses any other address (checked in check-pillar4-agents)
+    "js/pillar5-upgrade-agents.js"        // names fetch, XMLHttpRequest and the rest only as text patterns its scanner looks for; it makes no request (checked in check-pillar5-agents)
+  ]);
   for (const f of stores) {
     const t = read(f).replace(/<script id="pdf(lib|font)">[\s\S]*?<\/script>/g, "");
     ok(GUARDS.has(f) || !NET_CALLS.test(t), `${f} touches browser storage and makes no network request`);

@@ -307,7 +307,7 @@ export const POCKET_CARD_CSS = `
 .cg-plc-modal {
   position: fixed; top: 0; left: 0; right: 0; bottom: 0;
   z-index: 9999;
-  background: rgba(4, 12, 10, 0.88);
+  background: rgba(4,12,11, 0.88);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   display: flex; align-items: center; justify-content: center;
@@ -318,9 +318,9 @@ export const POCKET_CARD_CSS = `
 .cg-plc-modal[hidden] { display: none !important; }
 
 .cg-plc-dialog {
-  background: #0d1a16;
+  background: #0d111a;
   color: #eaf4ef;
-  border: 2px solid #52b788;
+  border: 2px solid #3cc7b7;
   border-radius: 18px;
   width: 100%;
   max-width: 1140px;
@@ -335,8 +335,8 @@ export const POCKET_CARD_CSS = `
 /* Modal Header */
 .cg-plc-header {
   padding: 16px 24px;
-  background: #13241f;
-  border-bottom: 1px solid rgba(82, 183, 136, 0.25);
+  background: #131824;
+  border-bottom: 1px solid rgba(60,199,183, 0.25);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -354,8 +354,8 @@ export const POCKET_CARD_CSS = `
   letter-spacing: -0.01em;
 }
 .cg-plc-header-badge {
-  background: #52b788;
-  color: #062116;
+  background: #3cc7b7;
+  color: #052a26;
   font-size: 11px;
   font-weight: 800;
   text-transform: uppercase;
@@ -371,7 +371,7 @@ export const POCKET_CARD_CSS = `
 .cg-plc-btn-close {
   background: transparent;
   border: 1px solid rgba(255, 255, 255, 0.2);
-  color: #d8f3dc;
+  color: #d9f0ec;
   font-size: 20px;
   line-height: 1;
   width: 36px;
@@ -386,7 +386,7 @@ export const POCKET_CARD_CSS = `
 .cg-plc-btn-close:hover {
   background: rgba(255, 255, 255, 0.12);
   color: #ffffff;
-  border-color: #52b788;
+  border-color: #3cc7b7;
 }
 
 /* Main Split Body: Editor & Preview */
@@ -405,8 +405,8 @@ export const POCKET_CARD_CSS = `
   flex: 1 1 480px;
   padding: 20px 24px;
   overflow-y: auto;
-  border-right: 1px solid rgba(82, 183, 136, 0.2);
-  background: #0f1d18;
+  border-right: 1px solid rgba(60,199,183, 0.2);
+  background: #0f131d;
   box-sizing: border-box;
 }
 .cg-plc-form-title {
@@ -414,7 +414,7 @@ export const POCKET_CARD_CSS = `
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: #7ad3a4;
+  color: #7fdccd;
   margin: 0 0 16px;
   display: flex;
   align-items: center;
@@ -427,13 +427,13 @@ export const POCKET_CARD_CSS = `
   display: block;
   font-size: 13px;
   font-weight: 700;
-  color: #d8f3dc;
+  color: #d9f0ec;
   margin-bottom: 6px;
 }
 .cg-plc-input {
   width: 100%;
   box-sizing: border-box;
-  background: #08120e;
+  background: #080b12;
   border: 1.5px solid rgba(122, 211, 164, 0.35);
   border-radius: 8px;
   padding: 9px 12px;
@@ -445,8 +445,8 @@ export const POCKET_CARD_CSS = `
 }
 .cg-plc-input:focus {
   outline: none;
-  border-color: #52b788;
-  box-shadow: 0 0 0 3px rgba(82, 183, 136, 0.3);
+  border-color: #3cc7b7;
+  box-shadow: 0 0 0 3px rgba(60,199,183, 0.3);
 }
 .cg-plc-row-2 {
   display: flex;
@@ -472,7 +472,7 @@ export const POCKET_CARD_CSS = `
 .cg-plc-preview-col {
   flex: 1 1 540px;
   padding: 20px 24px;
-  background: #070e0b;
+  background: #07090e;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -502,7 +502,7 @@ export const POCKET_CARD_CSS = `
   font-size: 11px;
   font-weight: 700;
   background: rgba(255, 255, 255, 0.1);
-  color: #d8f3dc;
+  color: #d9f0ec;
   padding: 2px 8px;
   border-radius: 6px;
 }
@@ -568,7 +568,7 @@ export const POCKET_CARD_CSS = `
   border-color: #000000;
 }
 .cg-header-back {
-  border-color: #064e3b;
+  border-color: #17223d;
 }
 .cg-brand-tag {
   font-size: 8.5px;
@@ -588,7 +588,7 @@ export const POCKET_CARD_CSS = `
   text-transform: uppercase;
 }
 .cg-header-back .cg-shift-type {
-  background: #065f46;
+  background: #1c2949;
 }
 
 /* Resident Hero */
@@ -622,7 +622,7 @@ export const POCKET_CARD_CSS = `
 .cg-tier-badge {
   font-size: 9.5px;
   font-weight: 800;
-  color: #064e3b;
+  color: #17223d;
   background: #d1fae5;
   padding: 1px 6px;
   border-radius: 4px;
@@ -800,8 +800,8 @@ export const POCKET_CARD_CSS = `
 /* Modal Action Footer */
 .cg-plc-footer {
   padding: 16px 24px;
-  background: #13241f;
-  border-top: 1px solid rgba(82, 183, 136, 0.25);
+  background: #131824;
+  border-top: 1px solid rgba(60,199,183, 0.25);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -834,23 +834,23 @@ export const POCKET_CARD_CSS = `
   border: none;
 }
 .cg-plc-btn-primary {
-  background: #52b788;
-  color: #062116;
-  box-shadow: 0 4px 14px rgba(82, 183, 136, 0.35);
+  background: #3cc7b7;
+  color: #052a26;
+  box-shadow: 0 4px 14px rgba(60,199,183, 0.35);
 }
 .cg-plc-btn-primary:hover {
-  background: #7ad3a4;
+  background: #7fdccd;
   transform: translateY(-1px);
 }
 .cg-plc-btn-secondary {
   background: rgba(255, 255, 255, 0.08);
-  color: #d8f3dc;
-  border: 1px solid rgba(82, 183, 136, 0.3);
+  color: #d9f0ec;
+  border: 1px solid rgba(60,199,183, 0.3);
 }
 .cg-plc-btn-secondary:hover {
   background: rgba(255, 255, 255, 0.15);
   color: #ffffff;
-  border-color: #52b788;
+  border-color: #3cc7b7;
 }
 .cg-plc-btn-ghost {
   background: transparent;
