@@ -78,7 +78,7 @@
     GRACE_DAYS: 90,
 
     /* What the site says it costs. Per facility, per building. */
-    FREE_RUNS: 25,
+    FREE_RUNS: 50,
     PRICES: Object.freeze({
       monthly: Object.freeze({ amount: 39, per: "month", text: "$39 a month", tier: "monthly_facility" }),
       annual: Object.freeze({ amount: 349, per: "year", text: "$349 a year", tier: "annual_facility", saves: 119, savesPercent: 25 }),

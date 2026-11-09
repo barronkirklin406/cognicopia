@@ -1,14 +1,14 @@
-# Hardening the 25 free packets
+# Hardening the 50 free packets
 
 The problem: the free-packet count was one browser setting, so clearing it, or typing a smaller number into the developer tools, gave the free packets back. The constraints: no resident data may leave the browser, the tools must work offline, and nothing may look like surveillance. This page compares the options, says what was built, shows how it works, and lists the edge cases. The code is `src/services/trialLedger.ts`, checked by `scripts/check-trial.mjs` (no browser) and `scripts/check-trial-ui.mjs` (a real one).
 
 ## The honest starting point
 
-A page that runs on the visitor's own computer and never contacts a server cannot make a limit that a determined person cannot beat. The code is readable and the storage is theirs to edit. Every option below is a trade between how hard the limit is to beat, how much it costs honest users, and what it does to the privacy promise. The right strength for a trial of 25 packets sold to facilities is one that stops accidents and casual edits and costs honest users nothing.
+A page that runs on the visitor's own computer and never contacts a server cannot make a limit that a determined person cannot beat. The code is readable and the storage is theirs to edit. Every option below is a trade between how hard the limit is to beat, how much it costs honest users, and what it does to the privacy promise. The right strength for a trial of 50 packets sold to facilities is one that stops accidents and casual edits and costs honest users nothing.
 
 Two facts about this product make that acceptable:
 
-- **Resetting the count costs the person their own work.** The only complete reset is clearing all of the site's data, or using another browser or a private window. That deletes the saved residents, the roster, the Shift board and the Academy progress held in the same browser. A facility that has set up residents will not do it to win back 25 packets.
+- **Resetting the count costs the person their own work.** The only complete reset is clearing all of the site's data, or using another browser or a private window. That deletes the saved residents, the roster, the Shift board and the Academy progress held in the same browser. A facility that has set up residents will not do it to win back 50 packets.
 - **The buyer is a facility.** An Activity Director's building pays $39 a month. The trial exists to let them see a real packet, not to be an obstacle course. A hard wall that sometimes locks out an honest person (a browser update, a new computer, a clean-up) costs more trust than the leakage costs revenue.
 
 ## Options compared

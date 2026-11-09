@@ -5138,7 +5138,7 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
   "offers": [
     {
       "@type": "Offer",
-      "name": "Free start: 25 packets",
+      "name": "Free start: 50 packets",
       "price": "0",
       "priceCurrency": "USD",
       "url": "https://cognicopia.org/pilot.html"
@@ -6909,7 +6909,7 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
     <p class="err" id="err"></p>
 
     <div class="gate" id="gate" role="dialog" aria-modal="true" aria-labelledby="gateTitle">
-      <h3 id="gateTitle">You&rsquo;ve used all 25 Free Trial Generations!</h3>
+      <h3 id="gateTitle">You&rsquo;ve used all 50 Free Trial Generations!</h3>
       <p id="gateText"></p>
       <div id="buyWrap"></div>
       <p class="gate-close"><button type="button" class="linklike" id="gateClose">Not now</button></p>
@@ -6950,7 +6950,7 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
     through the period you paid for and keeps working with no internet for
     90 days after it. Printed packets stay yours whatever happens to the
     licence.</p>
-    <p><strong>The free trial</strong> is 25 packets. The count lives in
+    <p><strong>The free trial</strong> is 50 packets. The count lives in
     this browser, so clearing site data or using another computer starts it
     again. We would rather say so than have you find out.</p>
     <p><strong>Refunds:</strong> full refund within 30 days of the first payment, no forms.</p>
@@ -12546,7 +12546,7 @@ function monthNow(){
    conversation, not as security.
    ================================================================= */
 const LICCFG      = window.CognicopiaLicenseConfig || {};   // prices, Payment Links and keys: src/config/license.js
-const FREE_RUNS   = LICCFG.FREE_RUNS || 25;
+const FREE_RUNS   = LICCFG.FREE_RUNS || 50;
 const PRICE_MONTH = "$39 a month", PRICE_YEAR = "$349 a year";
 const PRICE       = PRICE_YEAR+" or "+PRICE_MONTH;
 const CONTACT     = "Cognicopia@Outlook.com";
@@ -12624,13 +12624,12 @@ function sha256(ascii){
 const ACCESS_SHA  = "97c0fcc2e7143e13c6b104d93ad47c1e57670a24576df965b1a9eb745d6217da";
 
 /* ============================================================
-   THE 26th-PACKET MODEL  --  read before changing this flag.
+   THE 51st-PACKET MODEL  --  read before changing this flag.
 
-   false (recommended): the first 25 packets are clean and full. On the
-   26th, the tool stops and shows a friendly buy screen. No half-usable
+   false (recommended): the first 50 packets are clean and full. On the 51st, the tool stops and shows a friendly buy screen. No half-usable
    output is ever produced.
 
-   true: after 25, the tool keeps generating packets but stamps a faint
+   true: after 50, the tool keeps generating packets but stamps a faint
    "SAMPLE" across every page until a licence is entered.
 
    For THIS product the recommendation is false, and the reason is
@@ -12654,7 +12653,7 @@ function lsSet(k,v){ try{ CG_LS.setItem(k,v); return true; }catch(e){ return fal
 
 /* One-time carry-over from the earlier key names, so a tester's free
    count is not silently reset. Harmless when there is nothing to move. */
-/* Automatic weekly trial reset: 25 free generations reset every 7 days */
+/* Automatic weekly trial reset: 50 free generations reset every 7 days */
 (function checkWeeklyReset(){
   try {
     const CYCLE_MS = 7 * 24 * 60 * 60 * 1000;
@@ -12664,10 +12663,10 @@ function lsSet(k,v){ try{ CG_LS.setItem(k,v); return true; }catch(e){ return fal
     if (!last || isNaN(last) || (now - last) >= CYCLE_MS) {
       localStorage.setItem(RESET_KEY, String(now));
       localStorage.setItem("cognicopia_gen_count", "0");
-      localStorage.setItem("cognicopia_trial_generations", "25");
+      localStorage.setItem("cognicopia_trial_generations", String(FREE_RUNS));
       if (typeof CG_LS !== "undefined" && CG_LS) {
         try { CG_LS.setItem("cognicopia_gen_count", "0"); } catch(e){}
-        try { CG_LS.setItem("cognicopia_trial_generations", "25"); } catch(e){}
+        try { CG_LS.setItem("cognicopia_trial_generations", String(FREE_RUNS)); } catch(e){}
       }
       try { if (window.indexedDB) indexedDB.deleteDatabase("cg_trial"); } catch(e){}
       try { if (window.caches) caches.delete("cg-trial-v1"); } catch(e){}
@@ -24688,7 +24687,7 @@ if (document.readyState === "complete" || document.readyState === "interactive")
   function freeLeft(){
     if (typeof unlocked === "function" && unlocked()) return Infinity;
     if (typeof WATERMARK_DEMOS !== "undefined" && WATERMARK_DEMOS) return Infinity;
-    return Math.max(0, (typeof FREE_RUNS !== "undefined" ? FREE_RUNS : 25) - (typeof runsUsed === "function" ? runsUsed() : 0));
+    return Math.max(0, (typeof FREE_RUNS !== "undefined" ? FREE_RUNS : 50) - (typeof runsUsed === "function" ? runsUsed() : 0));
   }
   function refresh(){
     var n = chosenIds().length, weekly = $m("mbWeekly").checked, covers = $m("mbCovers").checked, idx = $m("mbIndex").checked;

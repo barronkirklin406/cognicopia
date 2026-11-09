@@ -238,12 +238,12 @@ export class LicenseStateMonitor extends CognicopiaAgent {
   constructor(o = {}) {
     super({ name: "LicenseStateMonitor", stage: "analyze", role: "Maintenance: trial and license state monitor", capabilities: ["state", "warnings", "subscribe"], ...o });
     this.ledger = o.ledger || (typeof globalThis !== "undefined" && globalThis.CogniTrialLedger && globalThis.CogniTrialLedger.forBrowser ? null : null); this.license = o.license || (typeof globalThis !== "undefined" ? globalThis.CognicopiaLicense : null) || null;
-    this.config = o.config || (typeof globalThis !== "undefined" ? globalThis.CognicopiaLicenseConfig : null) || { FREE_RUNS: 25 }; this.listeners = [];
+    this.config = o.config || (typeof globalThis !== "undefined" ? globalThis.CognicopiaLicenseConfig : null) || { FREE_RUNS: 50 }; this.listeners = [];
     if (this.license && typeof this.license.onChange === "function") { try { this.license.onChange(() => this.notify()); } catch (e) { /* a license service without change events is fine */ } }
   }
   async handle(ctx) { const s = this.state(); ctx.analysis = Object.assign({}, ctx.analysis, { license: { mode: s.mode, runsLeft: s.runsLeft } }); return ctx; }
   state() {
-    const free = Number(this.config && this.config.FREE_RUNS) || 25; let used = null; try { used = this.ledger && typeof this.ledger.count === "function" ? Number(this.ledger.count()) : null; if (!Number.isFinite(used)) used = null; } catch (e) { used = null; }
+    const free = Number(this.config && this.config.FREE_RUNS) || 50; let used = null; try { used = this.ledger && typeof this.ledger.count === "function" ? Number(this.ledger.count()) : null; if (!Number.isFinite(used)) used = null; } catch (e) { used = null; }
     let st = null; try { st = this.license && typeof this.license.status === "function" ? this.license.status() : null; } catch (e) { st = null; }
     const warnings = [], runsLeft = used == null ? null : Math.max(0, free - used);
     let mode = "unknown";

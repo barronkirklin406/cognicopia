@@ -6,7 +6,7 @@
 
    Checked, with a test key pair made on the spot and swapped in for the
    site's public key (the real one is the owner's): the top bar's two buttons
-   on a tool page and a resource page; the 25-packet limit and the upgrade
+   on a tool page and a resource page; the 50-packet limit and the upgrade
    screen with monthly, annual and invoice choices in both packet tools; a
    pasted key unlocking the gate, the top-bar window and the builder's
    settings; a key arriving in the address (?license_key=, #license_key=)
@@ -90,18 +90,18 @@ try {
     await p.close();
   }
 
-  /* ---------- the packet tool: the 25-packet limit and the upgrade screen ---------- */
+  /* ---------- the packet tool: the 50-packet limit and the upgrade screen ---------- */
   let p = await open(ctx, "index.html");
-  ok(await p.evaluate(() => FREE_RUNS === 25), "index.html: the free trial is 25 packets");
-  ok((await p.textContent("#licBadge")).trim() === "25 of 25 free packets left", "index.html: a new computer has 25 free packets: " + (await p.textContent("#licBadge")));
-  await p.evaluate(() => localStorage.setItem("cognicopia_gen_count", "24")); await p.reload(); await p.waitForTimeout(300);
-  ok((await p.textContent("#licBadge")).trim() === "1 of 25 free packets left", "index.html: after 24 packets one is left");
-  await p.evaluate(() => localStorage.setItem("cognicopia_gen_count", "25")); await p.reload(); await p.waitForTimeout(300);
+  ok(await p.evaluate(() => FREE_RUNS === 50), "index.html: the free trial is 50 packets");
+  ok((await p.textContent("#licBadge")).trim() === "50 of 50 free packets left", "index.html: a new computer has 50 free packets: " + (await p.textContent("#licBadge")));
+  await p.evaluate(() => localStorage.setItem("cognicopia_gen_count", "49")); await p.reload(); await p.waitForTimeout(300);
+  ok((await p.textContent("#licBadge")).trim() === "1 of 50 free packets left", "index.html: after 49 packets one is left");
+  await p.evaluate(() => localStorage.setItem("cognicopia_gen_count", "50")); await p.reload(); await p.waitForTimeout(300);
   await p.fill("#first", "Test"); await p.fill("#born", "1940");
   const act = p.locator("input.act").first(); if (await act.count()) await act.check({ force: true });
   await p.click("#go"); await p.waitForTimeout(500);
   ok(await visible(p, "#gate"), "index.html: the 26th packet opens the upgrade screen");
-  ok((await p.textContent("#gateTitle")).includes("25 Free Trial Generations"), "index.html: the screen says all 25 Free Trial Generations are used");
+  ok((await p.textContent("#gateTitle")).includes("50 Free Trial Generations"), "index.html: the screen says all 50 Free Trial Generations are used");
   for (const id of ["gateMonthly", "gateAnnual", "gateInvoice"]) ok(await visible(p, "#" + id), `index.html: the upgrade screen offers ${id}`);
   ok((await p.getAttribute("#gateMonthly", "href")) === MONTHLY && (await p.getAttribute("#gateAnnual", "href")) === ANNUAL, "index.html: the two plan buttons are the Payment Links from the config");
   ok((await p.getAttribute("#gateInvoice", "href")) === "pricing.html#invoice", "index.html: the invoice button goes to the invoice request form on the pricing page");
@@ -241,14 +241,14 @@ try {
   /* ---------- the Packet Builder ---------- */
   ctx = await context();
   p = await open(ctx, "builder.html");
-  ok(await p.evaluate(() => FREE_RUNS === 25) && !(await visible(p, "#upgradeBanner")), "builder.html: 25 free packets and no banner at the start");
-  await p.evaluate(() => { localStorage.setItem("cognicopia_gen_count", "20"); }); await p.reload(); await p.waitForTimeout(500);
+  ok(await p.evaluate(() => FREE_RUNS === 50) && !(await visible(p, "#upgradeBanner")), "builder.html: 50 free packets and no banner at the start");
+  await p.evaluate(() => { localStorage.setItem("cognicopia_gen_count", "45"); }); await p.reload(); await p.waitForTimeout(500);
   ok(await visible(p, "#upgradeBanner") && /5 free packets left/.test(await p.textContent("#upgradeBanner")), "builder.html: the banner appears for the last five packets");
   ok(/Get Full Access \(\$39\/mo or \$349\/yr\)/.test(await p.textContent("#upgradeBanner")) && /Request Corporate Invoice \/ W-9/.test(await p.textContent("#upgradeBanner")), "builder.html: the banner carries both buttons");
   ok(await tall(p, "#upgradeBanner a:has-text('Get Full Access')") >= 52 && await tall(p, "#upgradeBanner a:has-text('Request Corporate')") >= 52, "builder.html: the banner's buttons are at least 52 px");
   await shot(p, "builder-banner");
-  await p.evaluate(() => { localStorage.setItem("cognicopia_gen_count", "25"); openGate(); }); await p.waitForTimeout(300);
-  ok(await visible(p, "#gate") && (await p.textContent("#gateTitle")).includes("25 Free Trial Generations"), "builder.html: the gate opens at 25");
+  await p.evaluate(() => { localStorage.setItem("cognicopia_gen_count", "50"); openGate(); }); await p.waitForTimeout(300);
+  ok(await visible(p, "#gate") && (await p.textContent("#gateTitle")).includes("50 Free Trial Generations"), "builder.html: the gate opens at 50");
   ok((await p.getAttribute("#gateMonthly", "href")) === MONTHLY && (await p.getAttribute("#gateAnnual", "href")) === ANNUAL && (await p.getAttribute("#gateInvoice", "href")) === "pricing.html#invoice", "builder.html: monthly, annual and invoice buttons");
   ok(/Best value/.test(await p.textContent("#gate")) && /save about 25%/.test(await p.textContent("#gate")) && /Net-30/.test(await p.textContent("#gate")), "builder.html: the gate states best value, the saving and net-30");
   for (const id of ["#gateMonthly", "#gateAnnual", "#gateInvoice", "#gateUnlock", "#gateClose", "#gateCode"]) ok(await tall(p, id) >= 52, `builder.html: ${id} is at least 52 px`);
@@ -270,7 +270,7 @@ try {
   ctx = await context();
   p = await open(ctx, "pricing.html");
   const text = await p.textContent("main");
-  ok(/\$39/.test(text) && /\$349/.test(text) && /Save \$119/.test(text) && /Best value/.test(text) && /Custom quote/.test(text) && /first 25 packets/.test(text), "pricing.html: monthly, annual with the saving, best value, enterprise and the 25-packet trial");
+  ok(/\$39/.test(text) && /\$349/.test(text) && /Save \$119/.test(text) && /Best value/.test(text) && /Custom quote/.test(text) && /first 50 packets/.test(text), "pricing.html: monthly, annual with the saving, best value, enterprise and the 25-packet trial");
   ok((await p.getAttribute("#payMonthly", "href")) === MONTHLY && (await p.getAttribute("#payAnnual", "href")) === ANNUAL && /Pay by card/.test(await p.textContent("#payMonthly")), "pricing.html: the buy buttons are the Payment Links when they are set");
   ok((await p.getAttribute("#quoteEnterprise", "href")) === "contact.html?subject=Enterprise+Multi-Facility+Quote", "pricing.html: the enterprise button asks for a quote");
   for (const sel of ["#payMonthly", "#payAnnual", "#quoteEnterprise", "#invoice .plan-btn", "summary"]) ok(await tall(p, sel) >= 52, `pricing.html: ${sel} is at least 52 px`);

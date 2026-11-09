@@ -27,11 +27,11 @@ Say only what is true. Use "No resident data leaves the device" and "supports a 
 
 ## Part 3. A free 30-day pilot
 
-Nothing needs a key to start. The first 25 packets are free on every computer.
+Nothing needs a key to start. The first 50 packets are free on every computer.
 
 1. Send the Activity Director the pilot page (`pilot.html`, "Start a 30-day pilot") and the sample packet. It is a 30-day plan they can follow on their own.
 2. Ask them to use it on the computer they print from, with made-up or alias names first. Cognicopia keeps resident details in that browser only.
-3. **If 25 packets are not enough for a fair pilot,** make a short pilot key in License Desk: the plan "Annual facility license" and a **paid-through date** about 30 days away. The key keeps working **90 days past** that date, even with no internet, so choose the date with that in mind.
+3. **If 50 packets are not enough for a fair pilot,** make a short pilot key in License Desk: the plan "Annual facility license" and a **paid-through date** about 30 days away. The key keeps working **90 days past** that date, even with no internet, so choose the date with that in mind.
 4. Check in on about day 3, day 10, day 20 and day 28. Ask what they printed, what they would change, and who else needs to see it.
 5. Ask, in your own words, whether they would be willing to say a sentence about it. Only use a quote they have agreed to, with their name and role as they agree.
 

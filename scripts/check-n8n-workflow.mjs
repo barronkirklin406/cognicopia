@@ -101,7 +101,7 @@ const sys = g.systemInstruction.parts[0].text;
 ok(/not a medical device under FDA regulations/.test(sys) && /does not provide medical diagnoses, clinical treatment, physical health evaluation, or medical advice/.test(sys), "the approved facts carry the Terms page's wording");
 ok(!/\bis HIPAA compliant\b/i.test(sys.replace(/Never say Cognicopia is HIPAA compliant[^.]*\./, "")) && /Never say Cognicopia is HIPAA compliant/.test(sys) && /supports a facility's own HIPAA privacy practices/.test(sys), "the facts say \"supports\" and forbid \"HIPAA compliant\"");
 ok(!/\$\s?\d/.test(sys) && /never quote a price/i.test(sys), "no price is written in the facts");
-ok(/No resident data leaves the device/.test(sys) && /Printing works with no internet/.test(sys) && /25 packets are free/.test(sys), "the facts cover zero-cloud, offline printing and the free packets");
+ok(/No resident data leaves the device/.test(sys) && /Printing works with no internet/.test(sys) && /50 packets are free/.test(sys), "the facts cover zero-cloud, offline printing and the free packets");
 store[P] = out1[0].json;
 const model = r => ({ candidates: [{ content: { parts: [{ text: JSON.stringify(r) }] } }] });
 const C = "Check the draft";

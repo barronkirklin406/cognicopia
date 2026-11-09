@@ -12,7 +12,7 @@ Cognicopia is a set of web pages and tools that make printable activity packets,
 You may use Cognicopia if you are [an adult] acting for a care community, or as a family caregiver, and you accept these terms. If you accept them for a facility, you confirm you may bind it.
 
 ## 4. Free use
-Every computer begins with 25 free packets, with no sign-up and no card. After that the tools ask for a license key.
+Every computer begins with 50 free packets, with no sign-up and no card. After that the tools ask for a license key.
 
 ## 5. Licenses and fees
 - **Plans.** Monthly: US$39 a month. Annual: US$349 a year. Enterprise: a custom quote for a group of buildings. Prices are in US dollars and are stated on the pricing page. [Counsel: tax wording.]

@@ -40,7 +40,7 @@ node scripts/seo.mjs --check   fail if any of it is out of date or wrong (part o
 - **`sitemap.xml`** lists every public page and nothing else: no tool screen (`builder.html`, `profile.html`), no purchase page (`activate.html`), no redirect stub. It carries no "last modified" date, because none would be true.
 - **`robots.txt`** allows everything except `activate.html` and `builder.html`, and names the sitemap.
 - **The head block** (between `seo:start` and `seo:end`) gives each handwritten page a canonical address and the Open Graph and Twitter card tags a shared link shows. The Research Center's pages write their own canonical address in `scripts/research-pages.mjs`.
-- **JSON-LD** on the front page is a `SoftwareApplication` with three offers: the free start (25 packets, price 0), the monthly license and the annual license. The two prices are read from `src/config/license.js`, the one place prices live. The check fails if they differ, and fails on any rating or review claim.
+- **JSON-LD** on the front page is a `SoftwareApplication` with three offers: the free start (50 packets, price 0), the monthly license and the annual license. The two prices are read from `src/config/license.js`, the one place prices live. The check fails if they differ, and fails on any rating or review claim.
 - **Meta descriptions**: every public page has its own title and its own description of 70 to 320 characters. The check fails on a missing or shared one, and on a page in the repository root that is neither in the sitemap nor explained in `NOT_PUBLIC`.
 
 To add a public page: write it, add it to `HAND` in `scripts/seo.mjs` (and `PAGES` in `scripts/site-nav.mjs` if it carries the navigation), then run `node scripts/seo.mjs`.

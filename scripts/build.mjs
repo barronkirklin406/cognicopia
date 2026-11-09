@@ -31,7 +31,7 @@
         the current page as a person expects (scripts/check-nav-ui.mjs), and the
         Shift board does what it says, down to what is stored and what prints
         (scripts/check-shift-ui.mjs), and licensing and pricing do what they
-        say: the 25-packet limit, the upgrade screens, a pasted key, activation,
+        say: the 50-packet limit, the upgrade screens, a pasted key, activation,
         months offline, and that only activate.html contacts anything
         (scripts/check-license-ui.mjs), and the design system does what its
         source says: the focus ring, motion that stops when asked, the scroll
@@ -431,7 +431,7 @@ step("the Sensory Trigger box in the Cognitive Life Journal reads at 7:1 or bett
   }
 });
 
-step("licensing and pricing work: the 25-packet limit, the upgrade screens, pasted keys, activation, months offline, the invoice request, and only activate.html contacts anything (a real browser)", () => {
+step("licensing and pricing work: the 50-packet limit, the upgrade screens, pasted keys, activation, months offline, the invoice request, and only activate.html contacts anything (a real browser)", () => {
   try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-license-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
   catch (e){
     if (e.status === 2) return "skipped: Playwright is not installed here (see docs/dev-setup.md)";
@@ -439,7 +439,7 @@ step("licensing and pricing work: the 25-packet limit, the upgrade screens, past
   }
 });
 
-step("the free-trial badge counts down on every page, the hero button reads right, and the window when the 25 are used offers a card or a Net-30 invoice (a real browser)", () => {
+step("the free-trial badge counts down on every page, the hero button reads right, and the window when the 50 are used offers a card or a Net-30 invoice (a real browser)", () => {
   try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-trial-badge-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
   catch (e){
     if (e.status === 2) return "skipped: Playwright is not installed here (see docs/dev-setup.md)";

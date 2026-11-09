@@ -3132,7 +3132,7 @@ body.shc-lock{overflow:hidden}
 
 <div class="gate" id="gate" hidden role="dialog" aria-modal="true" aria-labelledby="gateTitle">
   <div class="gate-card">
-    <h2 id="gateTitle">You&rsquo;ve used all 25 Free Trial Generations!</h2>
+    <h2 id="gateTitle">You&rsquo;ve used all 50 Free Trial Generations!</h2>
     <p id="gateText"></p>
     <p class="gate-ctas" id="gateCtas"></p>
     <div class="gate-plans" id="gatePlans"></div>
@@ -12459,7 +12459,7 @@ function rawSet(k, v){ try { CG_LS.setItem(k, v); } catch(e){} }
    Same keys and access-code hash as index.html, so a license activated
    in either place unlocks both, and free packets are counted together. */
 const LICCFG = window.CognicopiaLicenseConfig || {};   // prices, Payment Links and keys: src/config/license.js
-const FREE_RUNS = LICCFG.FREE_RUNS || 25;
+const FREE_RUNS = LICCFG.FREE_RUNS || 50;
 const PRICE_MONTH = "$39 a month", PRICE_YEAR = "$349 a year";
 const PRICE = PRICE_YEAR + " or " + PRICE_MONTH;
 /* A plan's Stripe Payment Link, or "" while it is still the placeholder (or a test link): that plan's button then asks for an invoice. */
