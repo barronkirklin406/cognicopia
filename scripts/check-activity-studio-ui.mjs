@@ -6,8 +6,8 @@
                   every page shows in a scroll; the dark panel changes the screen and never the white page
      the packet   the content mix (reminiscence, thinking, daily living, coloring) is bundled into 1 to 10 pages, one of each kind
                   in turn; stage 3 has fewer ideas than stage 1; the coloring controls show only when coloring is in the mix;
-                  words choose the drawing; a topic to avoid is honored; Generate Live Preview keeps the pages and Randomize
-                  Theme makes new ones; the card layouts (4, 6, 8 sideways, 5 tickets) cut pages with dashed lines
+                  words choose the drawing; a topic to avoid is honored; the live preview keeps the pages and Try different pages makes
+                  new ones; the card layouts (4, 6, 8 sideways, 5 tickets) cut pages with dashed lines
      export       Download PDF is read back with PyMuPDF (US Letter, one page per sheet, the picture inside 0.5 in margins);
                   Download PNG is 2250 x 3000; Print makes one sheet per paper page, with no menu on the paper
      the rest     52 px controls, nothing sideways on a phone, nothing requested from outside, no script error
@@ -38,13 +38,15 @@ for pg in doc:
                 "box": [min([w[0] for w in words], default=0), min([w[1] for w in words], default=0), max([w[2] for w in words], default=0), max([w[3] for w in words], default=0)]})
 print(json.dumps(out))`;
 const readPdf = f => JSON.parse(execFileSync("python3", ["-c", PY, f], { encoding: "utf8" }));
-async function open(w, h) {
+async function open(w, h, keepClosed) {
   const ctx = await browser.newContext({ viewport: { width: w, height: h }, serviceWorkers: "block", acceptDownloads: true });
   await ctx.addInitScript(() => { try { localStorage.setItem("cognicopia_eula_accepted", "true"); } catch (e) { /* ignore */ } });
   const p = await ctx.newPage();
   p.on("pageerror", e => errors.push(e.message)); p.on("console", m => { if (m.type() === "error") errors.push("console: " + m.text().slice(0, 140)); if (m.type() === "info") infos.push(m.text()); });
   p.on("request", r => { const u = r.url(); if (!u.startsWith(base) && !/^(data|blob|about):/.test(u)) foreign.push(u); });
   await p.goto(base + "activity-studio.html", { waitUntil: "load" }); await p.waitForSelector("#asSheet svg", { timeout: 10000 }); await p.waitForTimeout(500);
+  /* the form keeps its extra settings in closed sections; the checks below that change them open the sections first, as a person would */
+  if (!keepClosed) await p.evaluate(() => document.querySelectorAll("details.as-acc").forEach(d => { d.open = true; }));
   return { ctx, p };
 }
 const pos = p => p.textContent("#asPos");
@@ -62,7 +64,7 @@ try {
   ok(/Page 1 of 4/.test(await pos(p)) && /ASPK-M-/.test(await pos(p)), "it opens on page 1 of a 4-page packet with a packet code: " + await pos(p));
   ok(/Print check passed/.test(await p.textContent("#asNotes")), "the print check passes");
   ok(/The 1950s/.test(await svgText(p)), "the first page is about the decade chosen");
-  const names = ["Generate Live Preview", "Randomize Theme", "Compile Packet PDF"];
+  const names = ["Suggested packet for this stage", "Try different pages", "Compile Packet PDF"];
   for (const n of names) ok((await p.$$eval("button", b => b.map(x => x.textContent.trim()))).includes(n), `there is a "${n}" button`);
   /* the mix: one kind of page in turn */
   const kinds = [];
@@ -80,9 +82,9 @@ try {
   await pick(p, "stage", "1"); const first = await items(p);
   ok(late < mid && mid < first, `stage 3 has fewer ideas on a page than stage 2, and stage 2 than stage 1 (${late}, ${mid}, ${first})`);
   const before = await pos(p); await p.click("#asRandom"); await p.waitForTimeout(500);
-  ok(await pos(p) !== before, "Randomize Theme makes a new packet code");
-  const again = await pos(p); await p.click("#asGen"); await p.waitForTimeout(400);
-  ok(await pos(p) === again, "Generate Live Preview keeps the same settings and pages");
+  ok(await pos(p) !== before, "Try different pages makes a new packet code");
+  const again = await pos(p); await p.waitForTimeout(700);
+  ok(await pos(p) === again, "the live preview keeps the same settings and pages until something is changed");
   await p.selectOption("#asDecade", "1970"); await p.waitForTimeout(400); ok(/The 1970s/.test(await svgText(p)), "choosing a decade changes the page");
   await p.fill("#asBorn", "1938"); await p.waitForTimeout(400); ok(await p.$eval("#asDecade", e => e.value) === "1950" && /The 1950s/.test(await svgText(p)), "a birth year of 1938 suggests the 1950s, the years the resident was about 20");
   await p.fill("#asName", "Ruth"); await p.waitForTimeout(400); ok(/For Ruth/.test(await svgText(p)), "a first name is drawn on the page");
@@ -259,6 +261,106 @@ try {
     ok(await q.$eval("#asAnswers", e => e.checked), "the staff answer key can be turned on");
     ok(await total(q) > before, `the staff answer key adds a page (${before} to ${await total(q)})`);
     await kctx.close();
+  }
+
+  /* the lighter form: three steps up front, the rest in closed sections */
+  {
+    const { ctx: c1, p: q } = await open(1366, 900, true);
+    const visible = sel => q.$$eval(sel, els => els.filter(e => e.checkVisibility({ checkVisibilityCSS: true })).length);
+    ok(await q.$$eval("details.as-acc", d => d.length === 3 && d.every(x => !x.open)), "the three extra sections are closed on arrival");
+    for (const id of ["#asResident", "#asName", "#asSuggest", "#asRandom", '#asForm input[name="stage"]']) ok(await visible(id) > 0, `${id} is on the first screen of the form without opening anything`);
+    for (const id of ["#asBorn", "#asInterests", "#asPages", "#asChallenge", "#asGutter", '#asForm input[name="mix"]']) ok(await visible(id) === 0, `${id} is tucked into a closed section`);
+    const first = await q.evaluate(() => [...document.querySelectorAll("#asForm input, #asForm select, #asForm button")].filter(e => e.checkVisibility({ checkVisibilityCSS: true }) && e.type !== "radio").length + document.querySelectorAll("#asForm fieldset").length);
+    ok(first <= 12, `the form shows 12 controls or fewer at first (${first}); it showed 28 before, measured on the old form`);
+    ok((await q.$$eval("#asForm h2", h => h.map(x => x.textContent.replace(/\s+/g, " ").trim()))).join("|") === "Who is this for?|How much support?|Make the packet", "the three steps are in order");
+    ok((await q.$$eval("#asForm h2", h => h.map(x => getComputedStyle(x, "::before").content))).every(c => c === "counter(asstep)") && await q.$eval("#asForm", f => getComputedStyle(f).counterReset.indexOf("asstep") === 0), "...and numbered by one counter that runs 1, 2, 3 (the digits themselves were looked at in a screenshot)");
+    const nc = await q.$eval("#asForm h2", h => { const c = getComputedStyle(h, "::before"); return [c.color, c.backgroundColor]; });
+    ok(nc[0] === "rgb(255, 255, 255)" && nc[1] === "rgb(11, 95, 89)", `a step number is white on dark teal, 7.5 to 1 (${nc.join(" on ")})`);
+    const sc = await q.$eval("#asAccLife > summary", s => { const c = getComputedStyle(s), bg = getComputedStyle(s.parentElement).backgroundColor; return [c.color, bg]; });
+    ok(sc[1] === "rgb(255, 255, 255)" && sc[0] === "rgb(40, 36, 31)", `a section heading is warm charcoal on white, not dark on dark (${sc.join(" on ")})`);
+    ok(/No one is saved on this computer yet/.test(await q.textContent("#asWhoHint")), "with no one saved, the form says how to save someone");
+    ok(await visible("#asOpenRes") === 0, "'Open the full profile' is not shown when no one is chosen");
+    await q.click("#asAccLife > summary"); await q.waitForTimeout(150);
+    ok(await visible("#asBorn") > 0 && await q.$eval("#asAccLife", d => d.open), "opening 'Their life and interests' shows its controls");
+    await q.keyboard.press("Tab"); // a closed section is reachable and opens from the keyboard
+    ok(await q.$eval("#asAccLife > summary", s => s.getBoundingClientRect().height >= 52), "a section heading is a 52 px target");
+    await c1.close();
+  }
+
+  /* saved residents, used where the packet is made: pick, edit, save, new, and back to the full profile */
+  {
+    const person = (id, name, o) => ({ schema: "cognicopia.residentProfile", version: 2, id, createdAt: "2026-09-01T10:00:00Z", updatedAt: "2026-09-01T10:00:00Z",
+      tier1_core: { preferredName: name, unitNumber: o.unit, cognitiveTier: o.tier, occupation: { code: o.job, label: o.jobLabel }, topHobbies: o.hobbies, printNeeds: {}, topicsToAvoid: { topics: o.avoidTopics, other: o.avoidOther, eras: [], people: "", places: "" }, difficulty: { level: o.tier } },
+      tier2_enrichment: { birthYear: o.born, hometown: { place: o.town } }, tier3_deep: { notes: o.notes, people: o.people } });
+    const DOT = person("res-dot", "Dorothy", { unit: "201-A", tier: 1, job: "teacher", jobLabel: "Teacher", born: 1938, town: "Scobey", notes: "Likes the porch swing.",
+      hobbies: [{ code: "gardening", label: "Gardening" }, { code: "baking", label: "Baking" }], avoidTopics: [{ code: "hospitals", label: "Hospitals" }], avoidOther: "trains",
+      people: [{ name: "Sarah Test", relationship: { code: "daughter" } }, { name: "Buster", relationship: { code: "pet-dog" } }] });
+    const WAL = person("res-wal", "Walter", { unit: "202-B", tier: 3, job: "farmer", jobLabel: "Farmer or rancher", born: 1931, town: "Minot", notes: "", hobbies: [], avoidTopics: [], avoidOther: "", people: [] });
+    const { ctx: c2, p: q } = await open(1366, 900);
+    await q.evaluate(list => list.forEach(x => localStorage.setItem("cognicopia_resident_" + x.id, JSON.stringify(x))), [DOT, WAL]);
+    await q.reload({ waitUntil: "load" }); await q.waitForSelector("#asSheet svg"); await q.waitForTimeout(900);
+    await q.evaluate(() => document.querySelectorAll("details.as-acc").forEach(d => { d.open = true; }));
+    const opts = await q.$$eval("#asResident option", o => o.map(x => x.textContent.trim()));
+    ok(opts.length === 3 && /Dorothy/.test(opts[1]) && /Walter/.test(opts[2]), `both saved residents are in the list (${opts.join(" | ")})`);
+    ok(await q.$eval("#asResident", e => e.value) === "", "nothing is chosen until a person is chosen");
+
+    await q.selectOption("#asResident", "res-dot"); await q.waitForTimeout(700);
+    const f = await q.evaluate(() => ({ name: asName.value, born: asBorn.value, voc: asVocation.value, dec: asDecade.value, int: asInterests.value, avoid: asAvoid.value, own: asPersonal.value, stage: document.querySelector('input[name="stage"]:checked').value }));
+    ok(f.name === "Dorothy" && f.born === "1938" && f.stage === "1" && f.voc === "teacher" && f.dec === "1950", `choosing Dorothy fills name, year, stage, work and years (${JSON.stringify(f)})`);
+    ok(f.int === "Gardening, Baking" && f.avoid === "Hospitals, trains" && f.own === "Sarah, Buster, Scobey", `...and her interests, topics to avoid and the words from her life (${f.int} | ${f.avoid} | ${f.own})`);
+    ok(/For Dorothy/.test(await svgText(q)) || /Dorothy/.test(await svgText(q)), "the page in the preview carries her name");
+    ok(await q.$eval("#asOpenRes", a => !a.hidden && /edit=res-dot/.test(a.href) && a.target === "_blank"), "the full profile opens in a new tab, so the packet keeps its place");
+    ok(/Save changes to Dorothy/.test(await q.textContent("#asSaveRes")), "the save button says whose details it will save");
+
+    await q.fill("#asInterests", "Gardening, Quilting"); await q.fill("#asPersonal", "Sarah, Buster"); await q.fill("#asAvoid", "Hospitals"); await q.waitForTimeout(300);
+    await q.click("#asSaveRes"); await q.waitForTimeout(900);
+    ok(/Updated Dorothy/.test(await q.textContent("#asWhoMsg")), `saving says what happened: "${await q.textContent("#asWhoMsg")}"`);
+    const saved = JSON.parse(await q.evaluate(() => window.CogniSecureStore.storage.getItem("cognicopia_resident_res-dot")));
+    ok(/Interests: Gardening, Quilting/.test(saved.tier3_deep.notes) && /Words from their life: Sarah, Buster/.test(saved.tier3_deep.notes) && /Likes the porch swing\./.test(saved.tier3_deep.notes), "the edits are saved and her own note is kept");
+    ok(saved.tier1_core.unitNumber === "201-A" && saved.tier2_enrichment.hometown.place === "Scobey" && saved.tier3_deep.people.length === 2 && saved.tier1_core.topHobbies.length === 2, "everything the form does not show is untouched (room, hometown, people, hobbies)");
+    ok(saved.tier1_core.topicsToAvoid.topics.length === 1 && saved.tier1_core.topicsToAvoid.other === "" && saved.updatedAt > "2026-09-01T10:00:00Z", "a topic she no longer avoids is removed, the one she does stays, and the time is updated");
+
+    await q.selectOption("#asResident", "res-wal"); await q.waitForTimeout(700);
+    ok(await q.$eval("#asName", e => e.value) === "Walter" && await q.$eval('input[name="stage"]:checked', e => e.value) === "3" && await q.$eval("#asVocation", e => e.value) === "farmer", "switching to Walter replaces everything, with no trace of Dorothy");
+    ok(await q.$eval("#asChallenge", e => e.disabled && !e.checked), "the bigger word search stays off at his stage");
+
+    await q.selectOption("#asResident", ""); await q.waitForTimeout(500);
+    const clean = await q.evaluate(() => ({ n: asName.value, b: asBorn.value, v: asVocation.value, i: asInterests.value, a: asAvoid.value, p: asPersonal.value, s: document.querySelector('input[name="stage"]:checked').value }));
+    ok(!clean.n && !clean.b && !clean.v && !clean.i && !clean.a && !clean.p, `"A new person" starts clean: nothing of Walter is carried over (${JSON.stringify(clean)})`);
+    ok(clean.s === "3", "...but the support settings (stage) are kept, because they belong to the packet being made");
+    await q.evaluate(() => document.querySelector('input[name="stage"][value="2"]').click()); await q.waitForTimeout(200);
+    await q.fill("#asName", "Evelyn"); await q.waitForTimeout(300);
+    ok(/Save as a new resident/.test(await q.textContent("#asSaveRes")), "with no one chosen the button offers a new resident");
+    await q.click("#asSaveRes"); await q.waitForTimeout(900);
+    const ev = await q.evaluate(() => { const ss = window.CogniSecureStore, out = []; for (let i = 0; i < ss.storage.length; i++) { const k = ss.storage.key(i); if (k.indexOf("cognicopia_resident_") === 0) out.push(JSON.parse(ss.storage.getItem(k))); } return out; });
+    const evelyn = ev.filter(x => x.tier1_core.preferredName === "Evelyn")[0];
+    ok(ev.length === 3 && evelyn && evelyn.schema === "cognicopia.residentProfile" && evelyn.tier1_core.cognitiveTier === 2, "Evelyn is saved as a third resident, at the stage that was set");
+    ok((await q.$$eval("#asResident option", o => o.map(x => x.textContent))).some(t => /Evelyn/.test(t)) && await q.$eval("#asResident", e => e.value) === evelyn.id, "she appears in the list and is chosen");
+
+    await q.fill("#asName", ""); await q.selectOption("#asResident", ""); await q.click("#asSaveRes"); await q.waitForTimeout(300);
+    ok(/first name/i.test(await q.textContent("#asWhoMsg")), "saving with no name asks for one, and saves nothing");
+    ok((await q.evaluate(() => { let n = 0; const s = window.CogniSecureStore.storage; for (let i = 0; i < s.length; i++) if (s.key(i).indexOf("cognicopia_resident_") === 0) n++; return n; })) === 3, "no fourth resident was made");
+
+    /* comes back: sealed, listed, and the last one chosen is chosen again */
+    await q.selectOption("#asResident", "res-dot"); await q.waitForTimeout(500);
+    await q.reload({ waitUntil: "load" }); await q.waitForSelector("#asSheet svg"); await q.waitForTimeout(1200);
+    ok(await q.$eval("#asResident", e => e.value) === "res-dot" && await q.$eval("#asName", e => e.value) === "Dorothy", "after a reload the last resident chosen is chosen again, already filled in");
+    ok(!/Dorothy|Walter|Evelyn/.test(await q.evaluate(() => Object.keys(localStorage).filter(k => k.indexOf("cognicopia_resident_") === 0).map(k => localStorage.getItem(k)).join(""))), "no resident is left in plain browser storage: they are sealed");
+
+    /* a screen left open does not stay open: after the idle time the page starts clean, and nobody saved is lost */
+    await q.evaluate(() => window.CognicopiaSession.setLimit(600));
+    await q.waitForNavigation({ waitUntil: "load", timeout: 15000 }).catch(() => {});
+    await q.waitForSelector("#asSheet svg"); await q.waitForTimeout(1500);
+    ok(await q.$eval("#asResident", e => e.value) === "" && await q.$eval("#asName", e => e.value) === "", "after the idle time the page forgets who was chosen and starts clean");
+    ok((await q.$$eval("#asResident option", o => o.length)) === 4, "...and everyone saved is still in the list (4 options: a new person and three residents)");
+    await q.evaluate(() => document.querySelectorAll("details.as-acc").forEach(d => { d.open = true; }));
+    /* the full profile opens from here, and a resident saved here is one the profile page can edit */
+    const pr = await c2.newPage(); const perr = []; pr.on("pageerror", e => perr.push(e.message));
+    await pr.goto(base + "profile.html?edit=" + encodeURIComponent(evelyn.id), { waitUntil: "load" }); await pr.waitForTimeout(1500);
+    ok(perr.length === 0, "the full profile page opens a resident saved from the Studio with no script error" + (perr.length ? ": " + perr[0] : ""));
+    ok(await pr.evaluate(() => { const el = document.getElementById("rapName"); return !!el && el.value === "Evelyn"; }), "...and shows her name, ready to edit");
+    await pr.close();
+    await c2.close();
   }
 
   ok(foreign.length === 0, "nothing is requested from outside the page" + (foreign.length ? ": " + foreign.slice(0, 2).join(", ") : ""));

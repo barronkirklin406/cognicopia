@@ -92,6 +92,23 @@ html.cg-night-shift .as-panel :is(input[type=text],input[type=number],select){ba
 html.cg-night-shift :is(.asx,.as-lab,.as-f legend,.as-hint){color:#ffedcc !important}
 html.cg-night-shift .as-note{background:#2a1f13}
 /* printing is handled by js/utils/print-optimizer.js, which installs its own style sheet */
+
+/* the form: three numbered steps, then closed sections for everything else */
+.as-step{margin:0 0 18px;padding:0 0 14px;border-bottom:1px solid var(--cg-tan-300,#c5c1b5)}
+.as-step h2{display:flex;align-items:center;gap:10px;margin:0 0 10px;font-size:1.15rem}
+.as-panel{counter-reset:asstep}
+.as-step h2::before{counter-increment:asstep;content:counter(asstep);display:inline-grid;place-items:center;width:32px;height:32px;border-radius:50%;background:#0b5f59;color:#fff;font-weight:700;font-size:1rem;line-height:1;flex:none}
+.as-acc{border:2px solid var(--cg-tan-300,#c5c1b5);border-radius:14px;margin:0 0 10px;background:#fff}
+.as-acc>summary{list-style:none;cursor:pointer;min-height:var(--tap,52px);padding:8px 14px;display:flex;flex-direction:column;justify-content:center;gap:2px;font-weight:700}
+.as-acc>summary::-webkit-details-marker{display:none}
+.as-acc>summary::after{content:"+";position:absolute;right:16px;font-size:1.4rem;font-weight:400}
+.as-acc{position:relative}.as-acc[open]>summary::after{content:"\2212"}
+.as-acc>summary small{font-weight:400;font-size:.9rem;padding-right:30px}
+.as-acc>summary:focus-visible{outline:3px solid var(--cg-focus,#0d9488);outline-offset:2px}
+.as-acc-body{padding:4px 14px 14px}
+.as-link{display:inline-flex;align-items:center;text-decoration:none}.as-link[hidden]{display:none}
+.as-who-btns{margin-top:10px}.as-ok{color:var(--cg-sage-700,#355e3b)}.as-bad{color:#9a2a14}
+@media (prefers-reduced-motion:no-preference){.as-acc>summary{transition:background .15s}.as-acc>summary:hover{background:rgba(13,148,136,.07)}}
 </style>
 <style id="cg-nav-css">
 /* Site navigation: the seven places, breadcrumbs and the top bar's buy links.
@@ -480,6 +497,8 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
   <p class="asx-lede">Choose the stage and what to make, and the page appears as it will print: large type, bold black lines, one idea at a time. Reminiscence prompts, thinking exercises, daily-living steps and coloring pages all come from the resident's stage, never from a test. Nothing leaves this computer.</p>
   <div id="asRoot"><noscript>The Activity Page Studio needs JavaScript, which runs only in this browser.</noscript></div>
 </main>
+<script src="assets/services/secureStore.js"></script>
+<script src="js/sessionTimeout.js"></script>
 <script src="assets/vendor/jspdf.umd.min.js"></script>
 <script src="assets/coloring/subjects.bundle.js"></script>
 <script src="src/services/ColoringManifest.js"></script>
