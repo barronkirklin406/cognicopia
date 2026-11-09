@@ -7698,7 +7698,7 @@ const RosterUI = (function(){
       who.innerHTML = `<div class="rs-who-row"><span class="rs-av rs-av-lg rs-av-${nd.tier}" aria-hidden="true">${esc(initials(nameOf(p)))}</span><div>
         <p class="eyebrow">Printing for</p><p class="rs-name">${esc(nameOf(p))}${nd.unit ? ` <span>Unit ${esc(nd.unit)}</span>` : ""}</p>
         <p class="rs-needs">Tier ${nd.tier} · ${esc(BookUI.TIER_NAMES[nd.tier])} · ${nd.lineW} pt writing lines · ${nd.highContrast || isPureBlackAndWhitePDF ? "pure black and white" : "color, every color named"}
-        · <a href="profile.html?resident=${encodeURIComponent(p.id)}">Edit profile</a></p></div></div>`;
+        · <a href="profile.html?edit=${encodeURIComponent(p.id)}">Edit profile</a></p></div></div>`;
     }
     btn.disabled = !p;
     // page counts for the chosen resident, on every template card

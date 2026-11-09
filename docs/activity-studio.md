@@ -97,3 +97,29 @@ The grid is now set in **Atkinson Hyperlegible Mono**, the monospaced cut of the
 ## The staff answer key
 
 A box on the form adds an answer key at the end of the packet: every page that has answers, listed with the word and where it starts ("STUDEBAKER: row 14, column 8, going right"). It is marked "For staff. Keep this page out of the resident's packet," it paginates itself when a packet has many answers, and it is left out of the clinical readiness score, because it is not an activity for the resident.
+
+## The form: three steps up front, the rest tucked away (November 9, 2026)
+
+The form used to be one long panel (28 visible controls, 3,095 px tall, measured on the old page). It is now three numbered steps and three closed sections (5 visible controls, 1,540 px):
+
+1. **Who is this for?** A list of saved residents, a first name, and a Save button.
+2. **How much support?** Cognitive stage and motor dexterity.
+3. **Make the packet.** "Suggested packet for this stage" and "Try different pages". The preview on the right is live, so there is no separate "generate" button (it was removed as redundant).
+
+Closed by default, opened by a heading: **Their life and interests** (year born, reminiscence years, former work, interests, topics to avoid, words from their life, how the name is lettered), **Choose the pages yourself** (content mix, pages, coloring style, layout) and **Printing and staff options** (the bigger word search, the staff answer key, the binding gutter).
+
+### Saved residents, where the packet is made
+
+The list reads the same sealed store as the roster and the profile form (`cognicopia_resident_<id>`, AES-256-GCM, with the facility's passphrase prompt if one is set), so a person saved anywhere appears here.
+
+- **Pick** a resident and the form fills in: name, year born (and so the reminiscence years), stage, former work, interests, topics to avoid, and words from their life (family and pet first names, and the hometown). The page in the preview carries their name at once.
+- **Edit and Save** writes back only what this form shows and leaves the rest of the profile alone (room, hometown, hobbies, the people list, other notes). Interests and words from their life are kept as two labelled lines in the profile's notes, because the full profile form has no field for free-text interests and would otherwise lose them; a topic the person no longer avoids is removed, and one still avoided stays.
+- **"A new person"** starts clean: nothing of the last resident carries over (the stage and dexterity stay, because they belong to the packet being made). Saving then makes a new resident.
+- **Open the full profile** opens the profile page in a new tab, so the packet keeps its place.
+- On arrival the Studio starts on the resident the other tools last chose. After 15 idle minutes the page forgets who was chosen and starts clean (`js/sessionTimeout.js`); nobody saved is deleted.
+
+Proved with seeded made-up residents in a real browser: `scripts/check-activity-studio-ui.mjs` (161 checks), including a round trip through the full profile page.
+
+### A link that was broken
+
+The profile page opens a person from `profile.html?edit=<id>`. The Packet Builder's roster "Edit profile" link used `?resident=<id>`, which that page does not read, so the link opened the profile page without opening the person. It now uses `?edit=`.
