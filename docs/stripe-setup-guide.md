@@ -12,7 +12,7 @@ How Cognicopia sells and unlocks a facility license, and exactly what the owner 
 | Annual (best value) | $349.00 per year, per facility | One payment, easy to budget. $39 × 12 = $468, so $349 saves $119 a year, about 25%. |
 | Enterprise / multi-facility | Custom quote | Several buildings, paid by invoice: ACH or check, net-30, a W-9. |
 
-The free trial is **25 packets** on each computer (`FREE_RUNS` in `src/config/license.js`). A license is per facility (one building, any number of computers). These numbers are set once, in `src/config/license.js`, and the pages, the top bar, the research worksheet and the procurement calculator read them from there or are checked against them.
+The free trial is **50 packets** on each computer (`FREE_RUNS` in `src/config/license.js`). A license is per facility (one building, any number of computers). These numbers are set once, in `src/config/license.js`, and the pages, the top bar, the research worksheet and the procurement calculator read them from there or are checked against them.
 
 ## How the pieces fit
 

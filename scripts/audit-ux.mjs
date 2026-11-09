@@ -73,10 +73,10 @@ const seedResidents = page => page.evaluate(list => { list.forEach(x => localSto
 const reload = page => page.reload({ waitUntil: "load" });
 const fill = (sel, text) => page => page.fill(sel, text, { timeout: 5000 });
 const lockStore = page => page.evaluate(async () => { const S = window.CogniSecureStore; await S.openForPage(); await S.setPassphrase("audit passphrase 1234"); await S.lock(); });
-const openGate = page => page.evaluate(() => { try { localStorage.setItem("cognicopia_gen_count", "25"); } catch (e) {} openGate(); });
+const openGate = page => page.evaluate(() => { try { localStorage.setItem("cognicopia_gen_count", "50"); } catch (e) {} openGate(); });
 const STATES = [
-  ["index: upgrade screen (25 packets used)", "index.html", [openGate]],
-  ["builder: upgrade screen (25 packets used)", "builder.html#/", [openGate]],
+  ["index: upgrade screen (50 packets used)", "index.html", [openGate]],
+  ["builder: upgrade screen (50 packets used)", "builder.html#/", [openGate]],
   ["builder: upgrade banner (20 packets used)", "builder.html#/", [page => page.evaluate(() => { localStorage.setItem("cognicopia_gen_count", "20"); }), reload]],
   ["license window (a page with a top bar)", "pricing.html", [click("#cgPromoBtn")]],
   ["contact: an invoice request", "contact.html?subject=Corporate+Invoice+Request", []],

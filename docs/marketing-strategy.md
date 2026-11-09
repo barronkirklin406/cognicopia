@@ -4,7 +4,7 @@ Written for the owner. No jargon: where a term is needed, it is explained in the
 
 ## The idea in one paragraph
 
-An Activity Director is busy, is usually looking for something suitable for residents with memory loss, and has been burned by tools that feel like sales. So we do not sell. We write four short, plain notes over three weeks, in a person's voice, that do one thing each: say what Cognicopia is, show a sample, offer a small low-risk way to try it, and say goodbye politely. Anyone who answers gets an answer. Anyone who says "no thanks" is removed that minute and never written to again. The product does the selling: 25 free packets, no card and no sign-up, so the first experience is a packet in the person's hands.
+An Activity Director is busy, is usually looking for something suitable for residents with memory loss, and has been burned by tools that feel like sales. So we do not sell. We write four short, plain notes over three weeks, in a person's voice, that do one thing each: say what Cognicopia is, show a sample, offer a small low-risk way to try it, and say goodbye politely. Anyone who answers gets an answer. Anyone who says "no thanks" is removed that minute and never written to again. The product does the selling: 50 free packets, no card and no sign-up, so the first experience is a packet in the person's hands.
 
 ## Starting with no money (the plan to use first)
 
@@ -19,7 +19,7 @@ Everything above about a second web address, mailboxes and a cold-email tool cos
 - **Stop at the first sign of trouble**: if replies mention spam, or the account warns you, pause and tell me.
 - This is the one risk of the free path: the notes come from your real address. That is why it stays small. The first paid step, once there is money, is the separate sending address.
 
-**3. Free places where Activity Directors already gather.** Professional groups and online communities for activity professionals, and the pages of the associations they belong to, often let a member share a useful free resource. Offer the free 25 packets and the sample packet, honestly, with no pressure, and follow each group's rules about promotion. I can write short posts and a one-page handout for these.
+**3. Free places where Activity Directors already gather.** Professional groups and online communities for activity professionals, and the pages of the associations they belong to, often let a member share a useful free resource. Offer the free 50 packets and the sample packet, honestly, with no pressure, and follow each group's rules about promotion. I can write short posts and a one-page handout for these.
 
 **4. Let the site do quiet work.** The pilot page, the sample packet, the Research Center and the pricing page already exist. A free business listing on the major map and search sites, and a short demonstration video, help people who search for activity ideas find it. These cost only time.
 
@@ -37,7 +37,7 @@ When the first sales arrive, the order to add paid parts is: the separate sendin
 
 ```
 a public list of communities  ->  four plain notes over 21 days  ->  they reply, or open the sample packet
-      ->  they try the 25 free packets  ->  the free packets run out and a window offers a license
+      ->  they try the 50 free packets  ->  the free packets run out and a window offers a license
       ->  they pay by card (the key arrives by email at once)   or   ask for an invoice (Net-30 desk: the invoice and key follow)
       ->  they are a customer and are never sent the introduction again
 ```

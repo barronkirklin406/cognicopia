@@ -5,13 +5,13 @@
       "auto": true,
       "when": "asks for a sample, an example, or to see it",
       "subject": "Your sample packet",
-      "body": "Hello {{first_name}},\n\nThank you for writing. Here is the sample packet, five pages made for a made-up resident:\n\nhttps://cognicopia.org/assets/samples/cognicopia-sample-packet.pdf\n\nTo make one for a real resident, open https://cognicopia.org, fill in a few things you know about them, and press the packet button. The first 25 packets are free, with no credit card and no sign-up. I am glad to answer anything else.\n\nWarm regards,\n{{sender_name}}\nCognicopia@outlook.com"
+      "body": "Hello {{first_name}},\n\nThank you for writing. Here is the sample packet, five pages made for a made-up resident:\n\nhttps://cognicopia.org/assets/samples/cognicopia-sample-packet.pdf\n\nTo make one for a real resident, open https://cognicopia.org, fill in a few things you know about them, and press the packet button. The first 50 packets are free, with no credit card and no sign-up. I am glad to answer anything else.\n\nWarm regards,\n{{sender_name}}\nCognicopia@outlook.com"
     },
     "asks_price": {
       "auto": true,
       "when": "asks what it costs or how to buy",
       "subject": "Cognicopia pricing",
-      "body": "Hello {{first_name}},\n\nThank you for asking. The first 25 packets are free. After that, a license for your whole building is {{price_monthly}} or {{price_annual}}. It is paid by card, and the license key arrives by email right after. If your accounts payable team prefers an invoice with 30-day terms, there is a short request form on the pricing page and the invoice and key follow from there.\n\nhttps://cognicopia.org/pricing.html\n\nIf it would help to try it first, https://cognicopia.org/pilot.html has a simple 30-day plan.\n\nWarm regards,\n{{sender_name}}\nCognicopia@outlook.com"
+      "body": "Hello {{first_name}},\n\nThank you for asking. The first 50 packets are free. After that, a license for your whole building is {{price_monthly}} or {{price_annual}}. It is paid by card, and the license key arrives by email right after. If your accounts payable team prefers an invoice with 30-day terms, there is a short request form on the pricing page and the invoice and key follow from there.\n\nhttps://cognicopia.org/pricing.html\n\nIf it would help to try it first, https://cognicopia.org/pilot.html has a simple 30-day plan.\n\nWarm regards,\n{{sender_name}}\nCognicopia@outlook.com"
     },
     "asks_privacy": {
       "auto": true,

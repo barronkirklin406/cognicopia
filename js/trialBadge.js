@@ -1,12 +1,12 @@
 /* =====================================================================
-   The free-trial badge: "Free Trial: 24 / 25 Generations Remaining", live, in the action bar under the navigation on every page
+   The free-trial badge: "Free Trial: 49 / 50 Generations Remaining", live, in the action bar under the navigation on every page
    that has one (an element marked data-cg-trial; scripts/site-nav.mjs writes it) and in the packet tool's wood bar.
 
    The count is the trial ledger's (assets/services/trialLedger.js: packets used, kept in the page's storage and two backups, so clearing
    one setting does not hand the free packets back). This only shows it: remaining = FREE_RUNS minus used. It follows every packet made
    (the ledger's "cognicopia:trial" event), a change in another tab, and a license (a licensed facility sees no badge).
 
-   The remaining number is also kept in localStorage under cognicopia_trial_generations (25 on a first visit) so another page or a
+   The remaining number is also kept in localStorage under cognicopia_trial_generations (50 on a first visit) so another page or a
    person's own script can read it; it is never the source of truth and never raises what the ledger holds. Nothing leaves the page.
    ===================================================================== */
 (function (root) {
@@ -15,7 +15,7 @@
   var d = root.document;
   if (!d) return;
 
-  function total() { var c = root.CognicopiaLicenseConfig; return (c && c.FREE_RUNS) || 25; }
+  function total() { var c = root.CognicopiaLicenseConfig; return (c && c.FREE_RUNS) || 50; }
   function store() {
     if (root.CG_LS) return root.CG_LS;                                   // the packet tool's and the builder's own (sealed) storage
     if (root.CogniSecureStore && root.CogniSecureStore.storage) return root.CogniSecureStore.storage;

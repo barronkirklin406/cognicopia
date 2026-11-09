@@ -13,7 +13,7 @@
      - clears everything: a new count starts (the stated limit, asserted so it is never forgotten)
 
    Also: the two tools share one count, the browser is asked only once to
-   keep the data, the gate still opens at 25, and nothing is requested
+   keep the data, the gate still opens at 50, and nothing is requested
    from outside the page's own site.
 
    Needs Playwright; where it is missing this exits 2 and npm run build
@@ -85,14 +85,14 @@ try {
   /* ---- the Packet Builder shares the same count ---- */
   const b = await open("builder.html");
   ok(await b.evaluate(() => genCount()) === 3, "the Packet Builder sees the same count as the packet tool");
-  ok(/22 of 25 free packets left/.test(await b.evaluate(() => document.getElementById("allowance").textContent)), "and shows 22 of 25 left: " + await b.evaluate(() => document.getElementById("allowance").textContent));
+  ok(/47 of 50 free packets left/.test(await b.evaluate(() => document.getElementById("allowance").textContent)), "and shows 47 of 50 left: " + await b.evaluate(() => document.getElementById("allowance").textContent));
   await b.evaluate(() => bumpGen()); await settle(b); await b.close();
   p = await open();
   ok(await p.evaluate(() => genCount()) === 4, "a packet made in the Builder counts in the packet tool");
 
-  /* ---- the gate still opens at 25 ---- */
-  await p.evaluate(() => { while (genCount() < 25) bumpGen(); }); await settle(p);
-  ok(await p.evaluate(() => !unlocked() && runsUsed() >= FREE_RUNS), "at 25 the free packets are used up");
+  /* ---- the gate still opens at 50 ---- */
+  await p.evaluate(() => { while (genCount() < 50) bumpGen(); }); await settle(p);
+  ok(await p.evaluate(() => !unlocked() && runsUsed() >= FREE_RUNS), "at 50 the free packets are used up");
   await p.close();
 
   /* ---- a tab that is still open remembers what it has seen: clearing the data under it does not hand the packets back ---- */
@@ -103,7 +103,7 @@ try {
     await new Promise(res => { const q = indexedDB.deleteDatabase("cg_trial"); q.onsuccess = q.onerror = q.onblocked = () => res(); });
     await caches.delete("cg-trial-v1");
   }); await settle(stale);
-  ok(await keeper.evaluate(() => genCount()) === 25, "clearing the site's data while another tab is open does not reset the count: the open tab restores it");
+  ok(await keeper.evaluate(() => genCount()) === 50, "clearing the site's data while another tab is open does not reset the count: the open tab restores it");
 
   /* ---- the stated limit: close every tab, clear everything, and a new count begins ---- */
   for (const pg of ctx.pages()) await pg.close();

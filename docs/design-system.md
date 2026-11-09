@@ -74,7 +74,7 @@ Three `.woff2` files, about 100 KB in all, with `fonts/OFL-Fraunces.txt` beside 
 
 ## Components new in this system (opt in with the class)
 
-`.cg-btn` and `.cg-btn-quiet` (52 px minimum, parchment or outlined), `.cg-card`, `.cg-eyebrow` (a small uppercase label), and `.cg-values` with `.cg-value` (the four reasons to use the packet tool, with a small outline icon each). The packet tool's first screen carries those four: made from the resident's own life; ready for your printer (pure black on white, binding margin); no resident data leaves this computer; free to begin (the first 25 packets cost nothing, no sign-up). On a 1366 x 768 window the first two are fully on the first screen; on a 390 x 844 phone the first one is. Both are measured.
+`.cg-btn` and `.cg-btn-quiet` (52 px minimum, parchment or outlined), `.cg-card`, `.cg-eyebrow` (a small uppercase label), and `.cg-values` with `.cg-value` (the four reasons to use the packet tool, with a small outline icon each). The packet tool's first screen carries those four: made from the resident's own life; ready for your printer (pure black on white, binding margin); no resident data leaves this computer; free to begin (the first 50 packets cost nothing, no sign-up). On a 1366 x 768 window the first two are fully on the first screen; on a 390 x 844 phone the first one is. Both are measured.
 
 ## The navigation bar (every page but the Packet Builder)
 

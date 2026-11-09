@@ -74,7 +74,7 @@ for (const [what, re] of Object.entries({ fetch: /\bfetch\s*\(/, XMLHttpRequest:
   const urls = CONFIG.replace(/\/\*[\s\S]*?\*\//g, "").match(/https?:\/\/[^"'\s]+/gi) || [];
   ok(urls.length === 3, `the config should hold three web addresses (two Payment Links and the license service), not ${urls.length}`);
   for (const u of urls) ok(/^https:\/\/(buy\.stripe\.com\/|[A-Za-z0-9._-]+\/api\/licenses\/redeem$)/.test(u), `an unexpected web address in the config: ${u}`);
-  ok(real.FREE_RUNS === 25, "the free trial is 25 packets");
+  ok(real.FREE_RUNS === 50, "the free trial is 50 packets");
   ok(real.PRICES.monthly.amount === 39 && real.PRICES.annual.amount === 349 && real.PRICES.annual.saves === 119 && real.PRICES.annual.savesPercent === 25, "the prices are $39 a month and $349 a year, saving $119 (25%)");
   ok(Math.round((1 - 349 / (39 * 12)) * 100) === real.PRICES.annual.savesPercent && 39 * 12 - 349 === real.PRICES.annual.saves, "the stated saving is the real arithmetic");
   ok(Object.keys(real.TIERS).join() === "monthly_facility,annual_facility,enterprise", "the three license tiers");
@@ -483,7 +483,7 @@ function page(opts = {}){
   ok(bars >= 29, `only ${bars} pages have a top bar`);
 
   /* the trial and the gates */
-  ok(/FREE_RUNS\s*=\s*LICCFG\.FREE_RUNS \|\| 25;/.test(idx) && /FREE_RUNS\s*=\s*LICCFG\.FREE_RUNS \|\| 25;/.test(bld), "index.html and builder.html: the free trial is not 25");
+  ok(/FREE_RUNS\s*=\s*LICCFG\.FREE_RUNS \|\| 50;/.test(idx) && /FREE_RUNS\s*=\s*LICCFG\.FREE_RUNS \|\| 50;/.test(bld), "index.html and builder.html: the free trial is not 50");
   ok(/PRICE_MONTH = "\$39 a month", PRICE_YEAR = "\$349 a year"/.test(idx) && /PRICE_MONTH = "\$39 a month", PRICE_YEAR = "\$349 a year"/.test(bld), "the page prices differ from $39 a month and $349 a year");
   for (const [f, h] of [["index.html", idx], ["builder.html", bld]]){
     ok(/id:\s*"gateMonthly"/.test(h) && /id:\s*"gateAnnual"/.test(h) && /id:\s*"gateInvoice"/.test(h), `${f}: the upgrade screen does not offer monthly, annual and invoice`);
@@ -493,10 +493,10 @@ function page(opts = {}){
     ok(!/maxlength="40"/.test(h.slice(h.indexOf('id="gate'), h.indexOf('id="gate') + 2500)), `${f}: the license box still stops at 40 characters`);
   }
   ok(/id="upgradeBanner"/.test(bld) && /left <= 5/.test(bld), "builder.html: no upgrade banner for the last free packets");
-  ok(/The free trial<\/strong> is 25 packets/.test(idx) && /\$39 a month or \$349 a year/.test(idx), "index.html: the legal note does not state the plans and the 25-packet trial");
+  ok(/The free trial<\/strong> is 50 packets/.test(idx) && /\$39 a month or \$349 a year/.test(idx), "index.html: the legal note does not state the plans and the 50-packet trial");
 
   /* pricing.html and activate.html */
-  ok(/\$39/.test(pricing) && /\$349/.test(pricing) && /Save \$119/.test(pricing) && /about 25%/.test(pricing) && /Custom quote/.test(pricing) && /net-30/i.test(pricing) && /W-9/.test(pricing) && /ACH/.test(pricing) && /25 packets/.test(pricing), "pricing.html: plans, saving, enterprise, invoice terms and trial");
+  ok(/\$39/.test(pricing) && /\$349/.test(pricing) && /Save \$119/.test(pricing) && /about 25%/.test(pricing) && /Custom quote/.test(pricing) && /net-30/i.test(pricing) && /W-9/.test(pricing) && /ACH/.test(pricing) && /50 packets/.test(pricing), "pricing.html: plans, saving, enterprise, invoice terms and trial");
   ok(/Best value/.test(pricing) && /Request Corporate Invoice \/ W-9/.test(pricing), "pricing.html: best value and the invoice button");
   ok(!/HIPAA[- ]compliant|ensures? compliance|guarantee/i.test(pricing + act), "pricing.html or activate.html makes a claim the product cannot back");
   ok(/data-pay="monthly"/.test(pricing) && /data-pay="annual"/.test(pricing) && /REPLACE_ME\|test_/.test(pricing), "pricing.html: the buy buttons do not guard against a placeholder link");
