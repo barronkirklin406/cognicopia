@@ -3,7 +3,7 @@
 (function(root){
 "use strict";
 /* =====================================================================
-   COGNICOPIA FREE-PACKET LEDGER (the "25 free packets" counter)
+   COGNICOPIA FREE-PACKET LEDGER (the "50 free packets" counter)
 
    The count used to live in one browser setting. Anyone who cleared that
    setting, or typed a smaller number into the browser's developer tools,
@@ -31,7 +31,7 @@
        of its own.
      - It is not a secret. The code is readable; a determined person can
        edit every copy. It stops accidents and casual edits, not a
-       dedicated effort. That is the right strength for a trial of 25.
+       dedicated effort. That is the right strength for a trial of 50.
 
    Privacy: nothing leaves the computer. No fingerprint, no identifier, no
    cookie (cookies are sent to the server with every request), no network
