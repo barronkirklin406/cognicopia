@@ -123,3 +123,15 @@ Proved with seeded made-up residents in a real browser: `scripts/check-activity-
 ### A link that was broken
 
 The profile page opens a person from `profile.html?edit=<id>`. The Packet Builder's roster "Edit profile" link used `?resident=<id>`, which that page does not read, so the link opened the profile page without opening the person. It now uses `?edit=`.
+
+## The free trial in the Studio (November 9, 2026)
+
+The Studio used to show "Free Trial: 50 / 50" and then never counted a packet or stopped anyone, so anyone could make unlimited free packets there. It now behaves like the Packet Builder and shares its count (`CogniTrialLedger`, kept in the same sealed store):
+
+- **Counted:** printing, and making the PDF, each use one free packet. The preview, changing a setting and "Try different pages" use none.
+- **Not counted but held:** "Save page image" is stopped when the free packets are used up, but does not use one.
+- **The line and the badge:** the line beside the buttons ("37 of 50 free packets left. Printing or making a PDF uses one.") and the badge in the action bar read the same count.
+- **When all 50 are used:** print, PDF and page image open a window that says so, offers the plans (`pricing.html`) and a place to enter a license key, and make nothing. The preview keeps working.
+- **Licensed:** a real signed key means no limit, no counting and no window ("Licensed: unlimited packets.").
+
+Proved in a real browser by `scripts/check-studio-trial-ui.mjs` (24 checks, in `npm run build`), which mints a real signed key from a throwaway key pair.

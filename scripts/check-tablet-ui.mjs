@@ -852,7 +852,7 @@ try {
     await ctx.close();
     /* a first visit starts the count at 0 whatever was set before the page ran, so the used-up state is set after it, then the page is opened again */
     const g = await fresh(LAND);
-    await g.p.evaluate(() => { try { localStorage.setItem("cognicopia_gen_count", "25"); } catch (e) { /* the check will say so */ } });
+    await g.p.evaluate(() => { try { localStorage.setItem("cognicopia_gen_count", String((window.CognicopiaLicenseConfig || {}).FREE_RUNS || 50)); } catch (e) { /* the check will say so */ } });
     await g.p.reload(); await sleep(300);
     await g.p.click('[data-act="sort"]'); await sleep(400);
     ok(await g.p.evaluate(() => !document.getElementById("tbGate").hidden && document.getElementById("tb").hidden), "with the free packets used up, a session shows the gate instead of starting");

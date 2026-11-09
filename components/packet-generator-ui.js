@@ -118,10 +118,14 @@
         '<div class="as-pager"><button type="button" class="as-btn as-alt" id="asPrev" aria-label="Previous page">&#x2190; Back</button><p id="asPos" role="status" aria-live="polite"></p><button type="button" class="as-btn as-alt" id="asNext" aria-label="Next page">Next &#x2192;</button></div>' +
         '<div class="as-sheet" id="asSheet"></div><div class="as-scroll" id="asScroll" hidden></div>' +
         '<div class="as-btns as-out"><button type="button" class="as-btn" id="asPdf">Compile Packet PDF</button><button type="button" class="as-btn" id="asPrint">Print all pages</button><button type="button" class="as-btn as-alt" id="asPng">Download this page (PNG)</button></div>' +
+        '<p class="as-hint" id="asLeft" role="status"></p>' +
         '<div class="as-ready" id="asReady"></div>' +
         '<div class="as-notes" id="asNotes" aria-live="polite"></div>' +
         '<div class="as-offline"><p id="asOffline" role="status"></p><button type="button" class="as-btn as-alt" id="asSave">Save for offline use</button></div>' +
-      '</section></div><div id="printRoot" aria-hidden="true"></div>';
+      '</section></div><div id="printRoot" aria-hidden="true"></div>' +
+      '<dialog class="as-gate" id="asGate" aria-labelledby="asGateT"><h2 id="asGateT">You\u2019ve used all ' + FREE + ' free packets</h2>' +
+        '<p>Thank you for trying Cognicopia. A license for your building keeps every tool going, with no limit, and still keeps every resident detail on your own computers.</p>' +
+        '<div class="as-btns"><a class="as-btn" id="asGatePlans" href="pricing.html">See plans and pricing</a><button type="button" class="as-btn as-alt" id="asGateKey">I have a license key</button><button type="button" class="as-btn as-alt" id="asGateClose">Not now</button></div></dialog>';
   }
 
   /* ---------- saved residents, in the same sealed store the roster and the profile form use ---------- */
@@ -332,6 +336,28 @@
   function escapeHtml(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
   function schedule(keep) { clearTimeout(timer); timer = setTimeout(function () { refresh(keep); }, 120); }
 
+  /* ---------- the free trial: the same count the other tools keep (assets/services/trialLedger.js) ----------
+     Printing or compiling a PDF uses one free packet; a license key means no limit. When the free packets are used up,
+     printing, the PDF and the page image ask for a license instead of working, exactly as the Packet Builder does. */
+  var CFG = window.CognicopiaLicenseConfig || {}, FREE = CFG.FREE_RUNS || 50, ledger = null;
+  function trial() {
+    if (!ledger && window.CogniTrialLedger) { try { ledger = window.CogniTrialLedger.forBrowser(SS() && SS().storage ? SS().storage : window.localStorage); } catch (e) { ledger = null; } }
+    return ledger;
+  }
+  function licensed() { try { return !!(window.CognicopiaLicense && window.CognicopiaLicense.isLicensed()); } catch (e) { return false; } }
+  function used() { var l = trial(); try { return l ? l.count() : 0; } catch (e) { return 0; } }
+  function blocked() { return !licensed() && !!trial() && used() >= FREE; }
+  function spend() { if (!licensed()) { var l = trial(); if (l) { try { l.record(); } catch (e) { /* the page still works */ } } } paintLeft(); }
+  function paintLeft() {
+    var el = $("#asLeft"); if (!el) return;
+    el.textContent = licensed() ? "Licensed: unlimited packets." : trial() ? Math.max(0, FREE - used()) + " of " + FREE + " free packets left. Printing or making a PDF uses one." : "";
+  }
+  function openGate() {
+    var d = $("#asGate"); if (!d) return;
+    try { if (d.showModal) d.showModal(); else d.setAttribute("open", ""); } catch (e) { d.setAttribute("open", ""); }
+    var b = $("#asGateKey"); if (b) b.focus();
+  }
+
   /* ---------- export ---------- */
   function fontsReady() {
     var d = document;
@@ -340,12 +366,14 @@
   }
   function download(name, href) { var a = document.createElement("a"); a.href = href; a.download = name; document.body.appendChild(a); a.click(); a.remove(); }
   function exportPng() {
+    if (blocked()) { openGate(); return; }
     fontsReady().then(function () {
       var cv = document.createElement("canvas"); PL.toCanvas(made.pages[state.index], cv, 1.875);
       download("cognicopia-" + made.code.toLowerCase() + "-page" + (state.index + 1) + ".png", cv.toDataURL("image/png"));
     });
   }
   function exportPdf() {
+    if (blocked()) { openGate(); return; }
     var lib = window.jspdf && window.jspdf.jsPDF;
     if (!lib) { alert("The PDF maker could not load. Reload the page, or use Print and choose Save as PDF."); return; }
     var btn = $("#asPdf"), label = btn.textContent; btn.disabled = true; btn.textContent = "Compiling the PDF…";
@@ -357,10 +385,10 @@
         var w = state.gutter ? 7.25 : 7.5, h = w * 4 / 3, x = state.gutter ? (i % 2 === 0 ? 0.75 : 0.5) : 0.5;
         doc.addImage(cv.toDataURL("image/png"), "PNG", x, 0.5, w, h, undefined, "FAST");
       });
-      doc.save("cognicopia-" + made.code.toLowerCase() + ".pdf");
+      doc.save("cognicopia-" + made.code.toLowerCase() + ".pdf"); spend();
     }).catch(function () { alert("The PDF could not be made. Use Print and choose Save as PDF."); }).then(function () { btn.disabled = false; btn.textContent = label; });
   }
-  function print() { fontsReady().then(function () { window.print(); }); }
+  function print() { if (blocked()) { openGate(); return; } fontsReady().then(function () { spend(); window.print(); }); }
 
   /* ---------- wiring ---------- */
   function sync() {
@@ -386,6 +414,10 @@
     $("#asAnswers").addEventListener("change", function () { state.answers = this.checked; schedule(true); });
     $("#asResident").addEventListener("change", function () { whoMsg(""); applyResident(this.value); });
     $("#asSaveRes").addEventListener("click", saveResident);
+    $("#asGateClose").addEventListener("click", function () { $("#asGate").close(); });
+    $("#asGateKey").addEventListener("click", function () { $("#asGate").close(); if (window.CognicopiaLicense && window.CognicopiaLicense.openPromo) window.CognicopiaLicense.openPromo(); });
+    document.addEventListener("cognicopia:trial", paintLeft);
+    if (window.CognicopiaLicense && window.CognicopiaLicense.onChange) window.CognicopiaLicense.onChange(paintLeft);
     $$('input[name="nameStyle"]').forEach(function (r) { r.addEventListener("change", function () { state.nameStyle = r.value; state.variant = 0; schedule(false); }); });
     $$('input[name="mix"]').forEach(function (c) { c.addEventListener("change", function () { state.mix[c.value] = c.checked; schedule(false); }); });
     $$('input[name="view"]').forEach(function (r) { r.addEventListener("change", function () { state.view = r.value; paint(); }); });
@@ -435,6 +467,7 @@
   /* saved residents: open the sealed store (it asks for the passphrase if the facility set one), list them, and start on the one the other tools last chose */
   (SS() && SS().openForPage ? SS().openForPage().catch(function () { return null; }) : Promise.resolve()).then(function () {
     paintWho();
+    var tl = trial(); if (tl && tl.ready) tl.ready().then(paintLeft, paintLeft); else paintLeft();
     var a = null; try { a = LS() && LS().getItem(ACTIVE_KEY); } catch (e) { /* ignore */ }
     if (a && readRes(a)) applyResident(a);
   });
