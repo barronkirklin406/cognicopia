@@ -169,7 +169,9 @@ const day = n => { const d = new Date(2026, 9, 20 - n, 12); return d.getFullYear
   const NET = /\bfetch\s*\(|XMLHttpRequest|sendBeacon|new\s+WebSocket\b|new\s+EventSource\b|importScripts\s*\(/;
   for (const f of ["residentTracker", "staffCompanion"]) {
     ok(!NET.test(read("assets/services/" + f + ".js")), `${f}.js makes no network request`);
-    ok(!/https?:\/\//.test(read("src/services/" + f + ".ts").replace(/\/\*[\s\S]*?\*\//g, "").replace(/\/\/.*$/gm, "")), `${f}.ts names no outside address in its code`);
+    /* the TypeScript source where the repository has one; otherwise the file that ships, which is what must be free of outside addresses */
+    const srcFile = fs.existsSync(path.join(ROOT, "src/services/" + f + ".ts")) ? "src/services/" + f + ".ts" : "assets/services/" + f + ".js";
+    ok(!/https?:\/\//.test(read(srcFile).replace(/\/\*[\s\S]*?\*\//g, "").replace(/\/\/.*$/gm, "")), `${f} (${srcFile.split(".").pop() === "ts" ? "source" : "shipped file"}) names no outside address in its code`);
   }
 }
 
