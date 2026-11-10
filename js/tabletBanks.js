@@ -272,6 +272,16 @@
     ["song", "By the light of the silvery", "moon", "sun|lamp"],
     ["song", "Camptown ladies sing this", "song", "bell|pie"]
   ].map(function (s, i) { return { id: "t" + (i < 9 ? "0" : "") + (i + 1), kind: s[0], lead: s[1], answer: s[2], others: s[3].split("|") }; });
+  /* The year each song or hymn above was first published, by how its line starts ("traditional" where no first printing is known).
+     All are 1930 or earlier, so a few words of each are free to show; scripts/check-public-domain.mjs proves every one is listed. */
+  B.SONG_YEARS = {
+    "Take me out to the ball": 1908, "Home, home on the": 1910, "Row, row, row your": 1881, "Oh, give me a home where the buffalo": 1910,
+    "Home on the range, where the deer and the antelope": 1910, "Amazing grace, how sweet the": 1779, "This little light of mine, I am going to let it": "traditional",
+    "Swing low, sweet": 1872, "Joy to the": 1839, "Jingle": 1857, "Deck the": 1862, "Hark! The herald angels": 1855, "Dashing through the": 1857,
+    "Down by the old mill": 1910, "In the good old": 1902, "She will be coming round the": 1927, "Shine on, harvest": 1908, "I have been working on the": 1894,
+    "My country, 'tis of": 1831, "O beautiful for spacious": 1910, "In the evening by the": 1880, "Meet me in St.": 1904, "By the light of the silvery": 1909,
+    "Camptown ladies sing this": 1850
+  };
 
   /* ---------- things to spell: [the word, a clue to go with its picture]. The picture is js/tabletArt.js, under the same name. ---------- */
   /* things to spell: [word, picture in assets/tablet/, clue]; a clue never holds its own word */

@@ -56,6 +56,10 @@
   var DEX_FONT = { steady: 1, limited: 1.15, minimal: 1.3 };
   var BASE_PT = { 1: 20, 2: 24, 3: 32 };                        // body type
   var FLOOR_PT = { 1: 18, 2: 20, 3: 24 };                       // the smallest type a stage may use
+  var TITLE_MIN = 72;                                           // a page title: 32 pt or more at every stage (32 pt is 71.1 px)
+  var GROW_MAX = { 1: 2.2, 2: 2.2, 3: 2.2 };                    // how far a card's type may grow to fill the room it has
+  var CALM_WHITE = { 1: 0.50, 2: 0.50, 3: 0.55 };               // the share of a page of words that stays empty, by stage (the facility validator's numbers)
+  var BLANK_MAX = 420;                                          // the tallest band a page may leave empty (2.6 in): more reads as unfinished
   var STAGE_NAME = { 1: "early", 2: "middle", 3: "late" };
   var LAYOUTS = [
     { id: "full",   label: "One full page",        cols: 1, rows: 1, per: 1 },
@@ -138,8 +142,8 @@
   }
   function header(pg, sh, big) {
     var n = stageN(sh.stage), bp = bodyPx(n, sh.dexterity), y = PAD;
-    var t = fit(sh.title, big || 92, 64, W - PAD * 2, 200, true, 1.12);
-    y = block(pg, t.lines, W / 2, y, t.size, { bold: true, anchor: "middle", lh: 1.12 });
+    var t = fit(sh.title, big || 92, TITLE_MIN, W - PAD * 2, 250, true, 1.12);   // a page title is never under 32 pt
+    y = block(pg, t.lines, W / 2, y, t.size, { bold: true, anchor: "middle", lh: 1.12, role: "title" });
     if (sh.subtitle) { var s = fit(sh.subtitle, Math.round(bp * 0.9), floorPx(n), W - PAD * 2, 120, false); y = block(pg, s.lines, W / 2, y + 8, s.size, { anchor: "middle" }); }
     if (sh.name) y = nameplate(pg, sh.name, sh.nameStyle, n, y + 6);
     return y + 16;
@@ -160,6 +164,7 @@
       var fill = p[1] === "#000" || p[1] === "#000000" || p[1] === "black" ? "#000" : (p[1] === "none" ? "none" : "#fff");
       P.path(pg, p[0], (p[2] ? Math.max(6.2, linePx * 0.8) : linePx) / k, fill, "#000", tx, ty, k);
     });
+    (pg.meta.ink = pg.meta.ink || []).push([f1(ty), f1(ty + BOX.h * k)]);
     return { x: tx, y: ty, w: BOX.w * k, h: BOX.h * k, k: k };
   }
 
@@ -265,22 +270,33 @@
 
   /* ---------- full pages for each kind of sheet ---------- */
   function promptsFull(sh) {
-    var n = stageN(sh.stage), dex = sh.dexterity || "steady", lw = strokeFor(n, dex), bp = bodyPx(n, dex), fl = floorPx(n);
-    var pg = newPage({ kind: "prompts", title: sh.title, stage: n, code: sh.code });
-    var y0 = header(pg, sh), items = sh.items, area = H - 70 - y0, bh = area / Math.max(1, items.length);
-    items.forEach(function (it, i) {
-      var y = y0 + i * bh, x = PAD + 10, iw = W - 2 * PAD - 20, ih = bh - 34;
-      if (i) P.line(pg, PAD, y - 12, W - PAD, y - 12, Math.max(7, lw * 0.7), "", "rule");
-      P.text(pg, x, y + fl * 0.82, fl, it.tag, { bold: true });
-      var yy = y + fl * 1.35, rem = ih - fl * 1.35;
-      var th = fit(it.thing, Math.round(bp * 1.2), fl, iw, rem * 0.4, true);
-      yy = block(pg, th.lines, x, yy, th.size, { bold: true }); rem -= th.h;
-      var iv = fit(it.invite, bp, fl, iw, rem * (it.sense ? 0.55 : 1), false);
-      yy = block(pg, iv.lines, x, yy + 6, iv.size); rem -= iv.h + 6;
-      if (it.sense && rem > fl * 1.3) { var se = fit(it.sense, Math.round(bp * 0.9), fl, iw, rem, false); block(pg, se.lines, x, yy + 6, se.size); }
+    var n = stageN(sh.stage), dex = sh.dexterity || "steady", lw = strokeFor(n, dex), bp = bodyPx(n, dex), fl = floorPx(n), rule = Math.max(7, f1(lw * 0.7));
+    /* each idea fills its share of the page: its type grows as far as the page stays calm, the words sit in the middle of their
+       room, and on an early or middle page each idea is a framed card with a line or two to write on when there is room */
+    return calmest(n, function (grow, extras) {
+      var pg = newPage({ kind: "prompts", title: sh.title, stage: n, code: sh.code }), framed = extras && n < 3;
+      var y0 = header(pg, sh), items = sh.items, gap = 26, area = H - 76 - y0, bh = (area - gap * (items.length - 1)) / Math.max(1, items.length);
+      items.forEach(function (it, i) {
+        var y = y0 + i * (bh + gap), pad = framed ? 30 : 10, x = PAD + pad, iw = W - 2 * PAD - pad * 2, ih = bh - pad * 2, lay = null;
+        if (framed) P.rect(pg, PAD, y, W - 2 * PAD, bh, 24, lw); else if (i) P.line(pg, PAD, y - gap / 2, W - PAD, y - gap / 2, rule, "", "rule");
+        for (var k = grow; k >= 0.59; k -= 0.1) {
+          var sz = function (m) { return Math.max(fl, Math.round(bp * m * k)); };                // never under the stage's floor
+          var th = fit(it.thing, sz(1.2), fl, iw, ih, true, 1.15), iv = fit(it.invite, sz(1), fl, iw, ih, false), se = it.sense ? fit(it.sense, sz(0.9), fl, iw, ih, false) : null;
+          lay = { th: th, iv: iv, se: se, tot: fl * 1.35 + th.h + 8 + iv.h + (se ? se.h + 8 : 0) };
+          if (lay.tot <= ih) break;
+        }
+        if (lay.tot > ih && lay.se) { lay.tot -= lay.se.h + 8; lay.se = null; }               // the sense line is the first to go when the room is small
+        var step = fl * 2.4, spare = ih - lay.tot, lines = framed && spare > step * 1.3 ? Math.min(2, Math.floor(spare / step)) : 0;
+        var yy = y + pad + Math.max(0, (ih - lay.tot - lines * step) / 2);
+        P.text(pg, x, yy + fl * 0.82, fl, it.tag, { bold: true }); yy += fl * 1.35;
+        yy = block(pg, lay.th.lines, x, yy, lay.th.size, { bold: true, lh: 1.15 });
+        yy = block(pg, lay.iv.lines, x, yy + 8, lay.iv.size);
+        if (lay.se) yy = block(pg, lay.se.lines, x, yy + 8, lay.se.size);
+        for (var q = 1; q <= lines; q++) P.line(pg, x, yy + q * step, x + iw, yy + q * step, rule, "", "write");
+      });
+      footer(pg, sh.code);
+      return pg;
     });
-    footer(pg, sh.code);
-    return pg;
   }
   function stepsFull(sh) {
     var n = stageN(sh.stage), dex = sh.dexterity || "steady", lw = strokeFor(n, dex), bp = bodyPx(n, dex), fl = floorPx(n);
@@ -303,13 +319,17 @@
   function matchFull(sh) {
     var n = stageN(sh.stage), dex = sh.dexterity || "steady", lw = strokeFor(n, dex), bp = bodyPx(n, dex), fl = floorPx(n);
     var pg = newPage({ kind: "match", title: sh.title, stage: n, code: sh.code });
-    var y0 = header(pg, sh), rows = sh.pairs.length, rh = (H - 90 - y0) / rows;
+    var y0 = header(pg, sh), rows = sh.pairs.length, bottom = H - 86, rh = (bottom - y0) / rows, colW = 400, big = Math.round(Math.min(bp * 2.1, Math.max(bp * 1.3, rh * 0.26)));
+    /* the two columns stand in their own frames, with the dots to join between them; the words grow with the room each has */
+    P.rect(pg, PAD, y0, colW, bottom - y0, 24, lw); P.rect(pg, W - PAD - colW, y0, colW, bottom - y0, 24, lw);
     sh.pairs.forEach(function (p, i) {
       var cy = y0 + i * rh + rh / 2, lw2 = sh.right[i];
-      var a = fit(p[0].toUpperCase(), Math.round(bp * 1.3), fl, 380, rh - 16, true), b = fit(lw2.toUpperCase(), Math.round(bp * 1.3), fl, 380, rh - 16, true);
-      block(pg, a.lines, PAD + 20, cy - a.h / 2, a.size, { bold: true });
-      block(pg, b.lines, W - PAD - 20, cy - b.h / 2, b.size, { bold: true, anchor: "end" });
-      P.circle(pg, 470, cy, 22, lw, "none"); P.circle(pg, 730, cy, 22, lw, "none");
+      var tw = (colW - 70) * 0.8;                                                     // capitals run wider than the estimate allows for
+      var a = fit(p[0].toUpperCase(), big, fl, tw, rh - 24, true), b = fit(lw2.toUpperCase(), big, fl, tw, rh - 24, true);
+      block(pg, a.lines, PAD + 30, cy - a.h / 2, a.size, { bold: true });
+      block(pg, b.lines, W - PAD - 30, cy - b.h / 2, b.size, { bold: true, anchor: "end" });
+      if (i) { P.line(pg, PAD + 20, y0 + i * rh, PAD + colW - 20, y0 + i * rh, Math.max(7, f1(lw * 0.6)), "", "rule"); P.line(pg, W - PAD - colW + 20, y0 + i * rh, W - PAD - 20, y0 + i * rh, Math.max(7, f1(lw * 0.6)), "", "rule"); }
+      P.circle(pg, PAD + colW + 46, cy, 22, lw, "none"); P.circle(pg, W - PAD - colW - 46, cy, 22, lw, "none");
     });
     footer(pg, sh.code);
     return pg;
@@ -372,6 +392,148 @@
     return pg;
   }
 
+  /* ---------- a page of several items (kind "blocks") ----------
+     A sheet lists two to five blocks: a large prompt, then companions (choices to circle, a line to write on, things to pair, a short
+     list, numbered steps, dated moments, frames for people) and, if wanted, a strip for staff at the foot. The composer shares the
+     height of the page among them by how much each holds, and each block grows its type and spreads its rows to fill what it is
+     given, so a page neither crowds nor ends in an empty band.
+
+       { kind: "prompt",   text, sub }                       the main idea, in a frame
+       { kind: "choices",  label, options: [text] }           boxes to circle or point to
+       { kind: "write",    label, lines: 2 }                  a label and lines to write on
+       { kind: "starters", items: [text] }                    sentence openings, each with a line to finish it
+       { kind: "pairs",    label, left: [text], right: [text] }   two columns to join
+       { kind: "list",     label, items: [text] }             things to tick
+       { kind: "steps",    label, items: [text] }             numbered steps
+       { kind: "moments",  items: [{ year, text }] }          dated moments down a line
+       { kind: "frames",   items: [{ name, sub }] }           a frame, a name and a line under it
+       { kind: "staff",    text }                             a strip at the foot, for the person helping */
+  var BLOCK_GAP = 30;
+  function blockNeed(b, c) {                                    // { min, want }: the least a block needs and its share of what is left
+    var n = (b.items || b.options || b.left || []).length, row = c.fl * 2.5, lab = b.label ? c.fl * 1.6 : 0;
+    if (b.kind === "prompt") return { min: c.bp * (b.sub ? 4.6 : 3.2), want: 3 };
+    if (b.kind === "choices") { var cols = choiceCols(b, c), rows = Math.ceil(n / cols); return { min: lab + rows * (c.fl * 2.7), want: 1 + rows * 1.1 }; }
+    if (b.kind === "write") { var ln = Math.max(1, b.lines || 2); return { min: lab + ln * c.fl * 2.3, want: 0.6 + ln * 0.8 }; }
+    if (b.kind === "starters") return { min: n * c.fl * 3.4, want: n * 1.3 };
+    if (b.kind === "pairs") return { min: lab + n * row, want: 1 + n * 0.9 };
+    if (b.kind === "list" || b.kind === "steps") return { min: lab + n * row, want: 0.8 + n * 0.9 };
+    if (b.kind === "moments") return { min: n * c.fl * 2.9, want: n * 1.2 };
+    if (b.kind === "frames") { var fr = Math.ceil(n / frameCols(n)); return { min: fr * c.fl * 8.5, want: fr * 6 }; }
+    return { min: c.fl * 2.4, want: 1 };
+  }
+  function choiceCols(b, c) { var longest = (b.options || []).reduce(function (m, o) { return Math.max(m, String(o).length); }, 0); return c.n === 3 || longest > 24 || (b.options || []).length < 3 ? 1 : 2; }
+  function frameCols(n) { return n <= 2 ? n || 1 : n <= 4 ? 2 : 3; }
+  function blockLabel(pg, b, c, x, y, w) {
+    if (!b.label) return y;
+    var t = fit(b.label, c.sz(0.95), c.fl, w, c.fl * 2.6, true);
+    return block(pg, t.lines, x, y, t.size, { bold: true }) + 8;
+  }
+  var BLOCKS = {
+    prompt: function (pg, b, c, x, y, w, h) {
+      if (!c.plain) P.rect(pg, x, y, w, h, 26, c.lw);
+      var subH = b.sub ? Math.min(h * 0.34, c.bp * 2.6) : 0, pad = 34;
+      var t = fit(b.text, c.sz(1.6), c.sz(0.8), w - pad * 2, h - pad * 2 - subH, true, 1.18);
+      var s2 = b.sub ? fit(b.sub, c.bp, c.fl, w - pad * 2, subH, false) : null, total = t.h + (s2 ? s2.h + 14 : 0), yy = y + (h - total) / 2;
+      yy = block(pg, t.lines, x + w / 2, yy, t.size, { bold: true, anchor: "middle", lh: 1.18 });
+      if (s2) block(pg, s2.lines, x + w / 2, yy + 14, s2.size, { anchor: "middle" });
+    },
+    choices: function (pg, b, c, x, y, w, h) {
+      var y1 = blockLabel(pg, b, c, x, y, w), opts = b.options || [], cols = choiceCols(b, c), rows = Math.ceil(opts.length / cols), g = 18;
+      var cw = (w - g * (cols - 1)) / cols, ch = Math.min((y + h - y1 - g * (rows - 1)) / rows, c.bp * 4.2), r = Math.max(18, Math.min(30, ch * 0.2));
+      opts.forEach(function (o, i) {
+        var bx = x + (i % cols) * (cw + g), by = y1 + Math.floor(i / cols) * (ch + g);
+        if (!c.plain) P.rect(pg, bx, by, cw, ch, 18, c.lw);
+        P.circle(pg, bx + 26 + r, by + ch / 2, r, c.lw, "none");
+        var tx = bx + 26 + r * 2 + 36, t = fit(o, c.sz(1.25), c.fl, bx + cw - 18 - tx, ch - 14, true);
+        block(pg, t.lines, tx, by + (ch - t.h) / 2, t.size, { bold: true });
+      });
+    },
+    write: function (pg, b, c, x, y, w, h) {
+      var y1 = blockLabel(pg, b, c, x, y, w), n = Math.max(1, b.lines || 2), rh = Math.min((y + h - y1) / n, c.fl * 3.4);
+      for (var i = 0; i < n; i++) P.line(pg, x, y1 + (i + 1) * rh - 6, x + w, y1 + (i + 1) * rh - 6, c.rule, "", "write");
+    },
+    starters: function (pg, b, c, x, y, w, h) {
+      var items = b.items || [], rh = Math.min(h / Math.max(1, items.length), c.bp * 5);
+      items.forEach(function (it, i) {
+        var yy = y + i * rh, t = fit(it, c.sz(1.2), c.fl, w, rh * 0.5, true);
+        block(pg, t.lines, x, yy + 4, t.size, { bold: true });
+        P.line(pg, x, yy + rh - 12, x + w, yy + rh - 12, c.rule, "", "write");
+      });
+    },
+    pairs: function (pg, b, c, x, y, w, h) {
+      var y1 = blockLabel(pg, b, c, x, y, w), left = b.left || [], right = b.right || [], n = Math.max(left.length, right.length), rh = Math.min((y + h - y1) / Math.max(1, n), c.bp * 3.4), col = w * 0.36;
+      for (var i = 0; i < n; i++) {
+        var cy = y1 + i * rh + rh / 2;
+        if (left[i] != null) { var a = fit(left[i], c.sz(1.2), c.fl, col, rh - 12, true); block(pg, a.lines, x + 8, cy - a.h / 2, a.size, { bold: true }); P.circle(pg, x + col + 44, cy, 20, c.lw, "none"); }
+        if (right[i] != null) { var d = fit(right[i], c.sz(1.2), c.fl, col, rh - 12, true); block(pg, d.lines, x + w - 8, cy - d.h / 2, d.size, { bold: true, anchor: "end" }); P.circle(pg, x + w - col - 44, cy, 20, c.lw, "none"); }
+      }
+    },
+    list: function (pg, b, c, x, y, w, h) { rowsOf(pg, b, c, x, y, w, h, false); },
+    steps: function (pg, b, c, x, y, w, h) { rowsOf(pg, b, c, x, y, w, h, true); },
+    moments: function (pg, b, c, x, y, w, h) {
+      var items = b.items || [], rh = Math.min(h / Math.max(1, items.length), c.bp * 4.4), lx = x + 30, ys = c.sz(1.15), yearW = Math.round(ys * 0.64 * 4 + 28);
+      if (items.length > 1) P.line(pg, lx, y + rh / 2, lx, y + (items.length - 1) * rh + rh / 2, c.rule, "", "rule");
+      items.forEach(function (it, i) {
+        var cy = y + i * rh + rh / 2, tx = lx + 46;
+        P.circle(pg, lx, cy, 18, c.lw, "#fff");
+        if (it.year) { P.text(pg, tx, cy + ys * 0.36, ys, String(it.year), { bold: true }); tx += yearW; }
+        var t = fit(it.text, c.sz(1.15), c.fl, x + w - tx, rh - 12, false);
+        block(pg, t.lines, tx, cy - t.h / 2, t.size);
+      });
+    },
+    frames: function (pg, b, c, x, y, w, h) {
+      var items = b.items || [], cols = frameCols(items.length), rows = Math.ceil(items.length / cols), g = 26, cw = (w - g * (cols - 1)) / cols, ch = Math.min((h - g * (rows - 1)) / rows, cw * 1.25);
+      items.forEach(function (it, i) {
+        var bx = x + (i % cols) * (cw + g), by = y + Math.floor(i / cols) * (ch + g), capH = c.bp * (it.sub ? 2.9 : 1.7), ph = ch - capH;
+        P.rect(pg, bx, by, cw, ph, 16, c.lw);
+        { var hint = fit(it.hint || "A photo can go here", c.fl, c.fl, cw - 30, ph - 20, false); block(pg, hint.lines, bx + cw / 2, by + (ph - hint.h) / 2, hint.size, { anchor: "middle", role: "hint" }); }
+        var nm = fit(it.name, c.sz(1.3), c.fl, cw, c.bp * 1.6, true), yy = block(pg, nm.lines.slice(0, 1), bx + cw / 2, by + ph + 6, nm.size, { bold: true, anchor: "middle" });
+        if (it.sub) { var sb = fit(it.sub, c.fl, c.fl, cw, c.bp * 1.3, false); block(pg, sb.lines.slice(0, 1), bx + cw / 2, yy, sb.size, { anchor: "middle" }); }
+      });
+    },
+    staff: function (pg, b, c, x, y, w, h) {
+      P.line(pg, x, y, x + w, y, c.rule, "", "rule");
+      var t = fit("For staff: " + b.text, c.fl, c.fl, w, h - 14, false);
+      block(pg, t.lines, x, y + 14, t.size, { role: "staff" });
+    }
+  };
+  function rowsOf(pg, b, c, x, y, w, h, numbered) {
+    var y1 = blockLabel(pg, b, c, x, y, w), items = b.items || [], rh = Math.min((y + h - y1) / Math.max(1, items.length), c.bp * 3.6), r = Math.max(c.fl * 0.62, Math.min(34, rh * 0.3));
+    items.forEach(function (it, i) {
+      var cy = y1 + i * rh + rh / 2;
+      if (numbered) { P.circle(pg, x + r, cy, r, c.lw, "none"); var ds = Math.max(c.fl, Math.round(r * 1.1)); P.text(pg, x + r, cy + ds * 0.36, ds, String(i + 1), { bold: true, anchor: "middle" }); }
+      else P.rect(pg, x, cy - r, r * 2, r * 2, 8, c.lw);
+      var tx = x + r * 2 + 26, t = fit(it, c.sz(1.2), c.fl, x + w - tx, rh - 12, numbered);
+      block(pg, t.lines, tx, cy - t.h / 2, t.size, { bold: numbered });
+    });
+  }
+  function blocksFull(sh) {
+    var n = stageN(sh.stage), dex = sh.dexterity || "steady", lw = strokeFor(n, dex), bp = bodyPx(n, dex), fl = floorPx(n);
+    /* drawn at the largest type that leaves the page calm; a page still too full gives up its frames, then some size, and if it
+       is still too full it says so (the stage wants fewer parts on a page, not smaller ones) */
+    var page = calmest(n, function (grow, extras) {
+      var c = { n: n, lw: lw, rule: Math.max(7, f1(lw * 0.7)), bp: bp, fl: fl, g: grow, plain: !extras, sz: function (m) { return Math.max(fl, Math.round(bp * m * grow)); } };
+      var pg = newPage({ kind: "blocks", title: sh.title, stage: n, code: sh.code });
+      var y0 = header(pg, sh), x = PAD + 6, w = W - 2 * PAD - 12, bottom = H - 76;
+      var all = (sh.blocks || []).filter(function (b) { return b && BLOCKS[b.kind]; }), staff = all.filter(function (b) { return b.kind === "staff"; })[0], blocks = all.filter(function (b) { return b.kind !== "staff"; });
+      if (staff) { var st = fit("For staff: " + staff.text, fl, fl, w, 400, false), sh2 = st.h + 26; BLOCKS.staff(pg, staff, c, x, bottom - sh2, w, sh2); bottom -= sh2 + BLOCK_GAP; }
+      var needs = blocks.map(function (b) { return blockNeed(b, c); }), room = bottom - y0 - BLOCK_GAP * Math.max(0, blocks.length - 1);
+      var minSum = needs.reduce(function (m, q) { return m + q.min; }, 0), wantSum = needs.reduce(function (m, q) { return m + q.want; }, 0), spare = room - minSum;
+      if (spare < 0) (pg.meta.fit = pg.meta.fit || []).push("This page holds more than fits: " + blocks.length + " parts need " + Math.round(minSum) + " px and there are " + Math.round(room) + ".");
+      var y = y0;
+      blocks.forEach(function (b, i) {
+        var h = spare >= 0 ? needs[i].min + spare * needs[i].want / wantSum : needs[i].min * room / minSum;
+        BLOCKS[b.kind](pg, b, c, x, y, w, h); y += h + BLOCK_GAP;
+      });
+      pg.meta.blocks = blocks.length + (staff ? 1 : 0);
+      footer(pg, sh.code);
+      return pg;
+    }, 1.5);
+    var white = whiteShare(page);
+    if (white < CALM_WHITE[n]) (page.meta.fit = page.meta.fit || []).push("This page is fuller than stays calm at stage " + n + ": " + Math.round(white * 100) + " percent of it is empty and " + Math.round(CALM_WHITE[n] * 100) + " is wanted. Give it fewer parts.");
+    return page;
+  }
+
   /* the prompts of several sheets dealt onto cards together, so a sheet of eight cards is full of eight ideas and not two */
   function packPrompts(sheets, layout) {
     var cards = []; sheets.forEach(function (sh) { sh.items.forEach(function (it) { cards.push({ tag: it.tag, head: it.thing, lines: [it.invite, it.sense].filter(Boolean) }); }); });
@@ -395,7 +557,7 @@
         : sh.steps.map(function (s) { return { badge: String(s.n), head: s.text, lines: [] }; });
       return { pages: cardPages(cards, layout, sh).map(function (pg) { return tag(pg, sh); }), fellBack: false };
     }
-    var f = { prompts: promptsFull, steps: stepsFull, match: matchFull, sort: sortFull, path: pathFull, look: lookFull }[sh.kind] || PAGE_KINDS[sh.kind];
+    var f = { prompts: promptsFull, steps: stepsFull, match: matchFull, sort: sortFull, path: pathFull, look: lookFull, blocks: blocksFull }[sh.kind] || PAGE_KINDS[sh.kind];
     if (!f) throw new Error("No page is made for a sheet of kind " + sh.kind);
     var made = f(sh), list = Array.isArray(made) ? made : [made];
     return { pages: list.map(function (pg) { return tag(pg, sh); }), fellBack: layout !== "full" };
@@ -448,6 +610,67 @@
     return canvas;
   }
 
+  /* How much of a page of words and boxes is left empty, on the same 60 x 80 grid the facility validator lays over a page
+     (js/utils/facility-validator.js): a cell counts as used when a word's box, a line or an outline touches it. The page makers
+     read it to grow their type only as far as the page stays calm. Library drawings are measured by the validator, not here. */
+  var GC = 60, GR = 80;
+  function whiteShare(pg) {
+    var g = new Uint8Array(GC * GR), cw = W / GC, ch = H / GR;
+    var cell = function (x, y, hw) {
+      var x0 = Math.floor((x - hw) / cw), x1 = Math.floor((x + hw) / cw), y0 = Math.floor((y - hw) / ch), y1 = Math.floor((y + hw) / ch);
+      for (var cy = Math.max(0, y0); cy <= Math.min(GR - 1, y1); cy++) for (var cx = Math.max(0, x0); cx <= Math.min(GC - 1, x1); cx++) g[cy * GC + cx] = 1;
+    };
+    var seg = function (x1, y1, x2, y2, hw) { var n = Math.max(1, Math.ceil(Math.hypot(x2 - x1, y2 - y1) / 8)); for (var i = 0; i <= n; i++) cell(x1 + (x2 - x1) * i / n, y1 + (y2 - y1) * i / n, hw); };
+    var box = function (x, y, w, h) { for (var cy = Math.floor(y / ch); cy <= Math.floor((y + h) / ch); cy++) for (var cx = Math.floor(x / cw); cx <= Math.floor((x + w) / cw); cx++) if (cx >= 0 && cy >= 0 && cx < GC && cy < GR) g[cy * GC + cx] = 1; };
+    pg.ops.forEach(function (op) {
+      var hw = (op.sw || 1) / 2;
+      if (op.t === "rect") {
+        if (op.fill === "#000") box(op.x, op.y, op.w, op.h);
+        seg(op.x, op.y, op.x + op.w, op.y, hw); seg(op.x + op.w, op.y, op.x + op.w, op.y + op.h, hw); seg(op.x + op.w, op.y + op.h, op.x, op.y + op.h, hw); seg(op.x, op.y + op.h, op.x, op.y, hw);
+      } else if (op.t === "circle") {
+        if (op.fill === "#000") box(op.cx - op.r, op.cy - op.r, op.r * 2, op.r * 2);
+        for (var a = 0; a < 24; a++) cell(op.cx + op.r * Math.cos(a / 24 * 6.2832), op.cy + op.r * Math.sin(a / 24 * 6.2832), hw);
+      } else if (op.t === "line") seg(op.x1, op.y1, op.x2, op.y2, hw);
+      else if (op.t === "text") {
+        var w = op.str.length * op.size * (op.bold ? 0.6 : 0.55), x = op.anchor === "middle" ? op.x - w / 2 : op.anchor === "end" ? op.x - w : op.x;
+        box(x, op.y - op.size * 0.8, w, op.size * 0.95);
+      }
+    });
+    var used = 0; for (var i = 0; i < g.length; i++) used += g[i];
+    return 1 - used / g.length;
+  }
+  /* the page a maker draws at the largest growth that still leaves it calm: make(grow, extras) is tried from the stage's most
+     generous growth down to none, then once more without its extras (frames, lines to write on) */
+  function calmest(n, make, most) {
+    var pg = null, calm = function () { return whiteShare(pg) >= CALM_WHITE[n] + 0.012; };
+    for (var grow = most || GROW_MAX[n]; grow >= 0.79; grow -= 0.1) { pg = make(grow, true); if (calm()) return pg; }
+    for (var less = 1; less >= 0.59; less -= 0.1) { pg = make(less, false); if (calm()) return pg; }   // a crowded page gives up its extras, then some size (never under the stage's floor)
+    return pg;
+  }
+
+  /* where the ink is, top to bottom: [top, bottom] for everything drawn (the page code at the foot aside) */
+  function inkBands(pg) {
+    var out = (pg.meta && pg.meta.ink || []).map(function (b) { return [b[0], b[1]]; });
+    pg.ops.forEach(function (op) {
+      if (op.t === "text") { if (op.role !== "code") out.push([op.y - op.size * 0.8, op.y + op.size * 0.25]); }
+      else if (op.t === "rect") out.push([op.y, op.y + op.h]);
+      else if (op.t === "circle") out.push([op.cy - op.r, op.cy + op.r]);
+      else if (op.t === "line") out.push([Math.min(op.y1, op.y2) - op.sw / 2, Math.max(op.y1, op.y2) + op.sw / 2]);
+      else if (op.t === "path" && !/[a-y]/.test(op.d)) {                 // absolute commands only: every second number is a y
+        var nums = op.d.match(/-?\d*\.?\d+(?:e-?\d+)?/g) || [], lo = Infinity, hi = -Infinity;
+        for (var i = 1; i < nums.length; i += 2) { var yy = Number(nums[i]) * op.k + op.ty; if (yy < lo) lo = yy; if (yy > hi) hi = yy; }
+        if (hi >= lo) out.push([lo, hi]);
+      }
+    });
+    return out.sort(function (a, b) { return a[0] - b[0]; });
+  }
+  /* the tallest band of the page with nothing on it, between the top margin and the foot */
+  function blankBand(pg) {
+    var top = PAD, foot = H - 76, at = top, worst = 0;
+    inkBands(pg).forEach(function (b) { if (b[0] > at) worst = Math.max(worst, Math.min(b[0], foot) - at); at = Math.max(at, b[1]); });
+    return Math.round(Math.max(worst, foot - at));
+  }
+
   /* what is wrong with a page, in words (an empty list is a pass) */
   function validate(pg) {
     var out = [], n = stageN(pg.meta && pg.meta.stage), fl = floorPx(n);
@@ -459,6 +682,7 @@
         if (sw < minLine && !(op.t === "path" && op.stroke === "#fff")) out.push("Line " + (i + 1) + " is only " + f1(sw) + " px (needs " + minLine + " or more).");
         [op.fill, op.stroke].forEach(function (c) { if (c && ["none", "#fff", "#000"].indexOf(c) < 0) out.push("Line " + (i + 1) + " uses a color other than black or white."); });
       } else {
+        if (op.role === "title" && op.size < TITLE_MIN) out.push("The title “" + op.str.slice(0, 20) + "” is " + op.size + " px, under 32 pt (" + TITLE_MIN + " px).");
         if (op.role !== "code" && op.size < fl) out.push("Text “" + op.str.slice(0, 20) + "” is " + op.size + " px, under the stage floor of " + fl + " px.");
         var half = op.str.length * op.size * (op.bold ? 0.6 : 0.55) * (op.anchor === "middle" ? 0.5 : op.anchor === "end" ? 1 : 0);
         var left = op.anchor === "middle" ? op.x - half : op.anchor === "end" ? op.x - half : op.x, right = op.anchor === "middle" ? op.x + half : op.anchor === "end" ? op.x : op.x + op.str.length * op.size * (op.bold ? 0.6 : 0.55);
@@ -466,6 +690,8 @@
       }
       if (op.t === "rect" && (op.x < 0 || op.y < 0 || op.x + op.w > W || op.y + op.h > H)) out.push("A box runs off the page.");
     });
+    var blank = blankBand(pg);
+    if (blank > BLANK_MAX) out.push("The page leaves a band of " + blank + " px empty (" + BLANK_MAX + " or less reads as finished).");
     (pg.meta && pg.meta.fit || []).forEach(function (m) { out.push(m); });
     return out;
   }
@@ -474,8 +700,9 @@
     VERSION: VERSION, W: W, H: H, PX_PER_PT: PT, FONT: FONT, LAYOUTS: LAYOUTS, STYLES: STYLES, BOX: BOX,
     registerPage: registerPage,
     GRID_FONT: GRID_FONT, kit: { newPage: newPage, P: P, block: block, fit: fit, wrap: wrap, header: header, footer: footer, subjectOps: subjectOps, subjectPaths: subjectPaths, strokeFor: strokeFor, bodyPx: bodyPx, floorPx: floorPx,
-           stageN: stageN, rng: rng, hash: hash, smooth: smooth, W: W, H: H, PAD: PAD, PT: PT, BOX: BOX, drawCard: drawCard, cellsFor: cellsFor },
+           stageN: stageN, rng: rng, hash: hash, smooth: smooth, W: W, H: H, PAD: PAD, PT: PT, BOX: BOX, drawCard: drawCard, cellsFor: cellsFor, calmest: calmest, whiteShare: whiteShare },
     strokeFor: strokeFor, bodyPx: bodyPx, floorPx: floorPx, chooseSubject: chooseSubject, subjectPaths: subjectPaths,
-    composeColoring: composeColoring, sheetPages: sheetPages, packPrompts: packPrompts, toSVG: toSVG, toCanvas: toCanvas, validate: validate, hash: hash
+    composeColoring: composeColoring, sheetPages: sheetPages, packPrompts: packPrompts, toSVG: toSVG, toCanvas: toCanvas, validate: validate, hash: hash,
+    TITLE_MIN: TITLE_MIN, BLANK_MAX: BLANK_MAX, CALM_WHITE: CALM_WHITE, blankBand: blankBand, whiteShare: whiteShare
   };
 });

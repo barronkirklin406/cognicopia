@@ -133,31 +133,20 @@
   var VOC_IDS = ["farmer", "teacher", "nurse", "cook", "mechanic", "secretary", "carpenter", "driver", "shopkeeper", "seamstress"];
   function SS() { return window.CogniSecureStore || null; }
   function LS() { var ss = SS(); if (ss && ss.storage) return ss.storage; try { return window.localStorage; } catch (e) { return null; } }
-  function readRes(id) { try { var p = JSON.parse(LS().getItem(PREFIX + id)); return p && p.schema === SCHEMA ? p : null; } catch (e) { return null; } }
-  function listRes() {
-    var out = [], ls = LS(); if (!ls) return out;
-    try { for (var i = 0; i < ls.length; i++) { var k = ls.key(i); if (k && k.indexOf(PREFIX) === 0) { var p = readRes(k.slice(PREFIX.length)); if (p && p.tier1_core && String(p.tier1_core.preferredName || "").trim()) out.push(p); } } } catch (e) { /* blocked */ }
-    return out.sort(function (a, b) { return String(a.tier1_core.preferredName).localeCompare(String(b.tier1_core.preferredName)); });
-  }
+  var R = window.CogniResident;                      // js/residentContext.js: the one reader of a saved resident
+  function readRes(id) { var ls = LS(); return ls ? R.read(ls, id) : null; }
+  function listRes() { var ls = LS(); return ls ? R.list(ls) : []; }
   var words = function (v) { return String(v == null ? "" : v).split(/[,;\n]/).map(function (x) { return x.trim(); }).filter(Boolean); };
-  var labelOf = function (x) { return x && typeof x === "object" ? String(x.label || x.code || "") : String(x || ""); };
   var firstWord = function (n) { return String(n || "").trim().split(/\s+/)[0] || ""; };
   var slug = function (t) { return String(t).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 40); };
   /* what the form would hold for a saved resident */
   function fromProfile(p) {
-    var t1 = p.tier1_core || {}, t2 = p.tier2_enrichment || {}, t3 = p.tier3_deep || {}, occ = t1.occupation || t1.primaryVocation || {};
-    var occText = (String(occ.code || "") + " " + labelOf(occ)).toLowerCase(), voc = "";
-    VOC_IDS.forEach(function (v) { if (!voc && occText.indexOf(v) >= 0) voc = v; });
-    var tier = Math.round(Number(t1.cognitiveTier)) || Math.round(Number((t1.difficulty || {}).level)) || 0;
-    var stage = tier >= 1 && tier <= 3 ? tier : state.stage;
-    var avoid = ((t1.topicsToAvoid || {}).topics || []).map(labelOf).concat(words((t1.topicsToAvoid || {}).other), words((t1.topicsToAvoid || {}).places), words((t1.topicsToAvoid || {}).people));
-    var own = [];
-    (t3.people || []).forEach(function (x) { var w = firstWord(x.name); if (w) own.push(w); });
-    var town = firstWord(((t2.hometown || {}).place || "").split(",")[0]); if (town) own.push(town);
-    var seen = {}; own = own.filter(function (w) { var k = w.toLowerCase(); if (seen[k]) return false; seen[k] = 1; return true; });
-    var m = /(?:^|\n)Words from their life: ([^\n]*)/.exec(t3.notes || ""), n2 = /(?:^|\n)Interests: ([^\n]*)/.exec(t3.notes || "");
-    return { name: String(t1.preferredName || "").trim(), born: Number(t2.birthYear) || "", stage: stage, vocation: voc,
-      interests: (n2 ? words(n2[1]) : (t1.topHobbies || []).map(labelOf)).join(", "), avoid: avoid.join(", "), personal: (m ? words(m[1]) : own).join(", ") };
+    var who = R.person(p), voc = "";
+    VOC_IDS.forEach(function (v) { if (!voc && who.work.text.indexOf(v) >= 0) voc = v; });
+    /* a ticked topic or era shows by its short name (the engine knows the words behind it); what staff typed shows as typed */
+    var avoid = who.avoid.names.concat(who.avoid.other, who.avoid.places, who.avoid.people);
+    return { name: who.name, born: who.born || "", stage: who.stage || state.stage, vocation: voc,
+      interests: who.interests.join(", "), avoid: avoid.join(", "), personal: who.personalWords.join(", ") };
   }
   function setField(id, v) { var el = $("#" + id); if (el) el.value = v == null ? "" : String(v); }
   function applyResident(id) {
@@ -205,10 +194,18 @@
     if (Number(state.born)) t2.birthYear = Number(state.born);
     if (state.vocation && state.vocation !== mapped.vocation) { var v = (E.VOCATIONS || []).filter(function (x) { return x.id === state.vocation; })[0]; t1.occupation = { code: state.vocation, label: v ? v.label : state.vocation }; }
     if (state.avoid !== (mapped.avoid || "")) {
-      var now2 = words(state.avoid).map(function (x) { return x.toLowerCase(); }), ta = t1.topicsToAvoid = t1.topicsToAvoid || { topics: [], eras: [], people: "", places: "", other: "" };
-      ta.topics = (ta.topics || []).filter(function (x) { return now2.indexOf(labelOf(x).toLowerCase()) >= 0; });
-      var have = ta.topics.map(function (x) { return labelOf(x).toLowerCase(); });
-      ta.other = words(state.avoid).filter(function (x) { return have.indexOf(x.toLowerCase()) < 0; }).join(", ");
+      var ta = t1.topicsToAvoid = t1.topicsToAvoid || { topics: [], eras: [], people: "", places: "", other: "" }, sorted = R.sortAvoidText(state.avoid);
+      var typedNow = sorted.typed.map(function (x) { return x.toLowerCase(); });
+      var keep = function (list, codesNow) {                                // a ticked box stays ticked while its name is still in the field
+        var out = (list || []).filter(function (x) { var c = String(x && x.code || ""); return codesNow.indexOf(c) >= 0 || (!R.AVOID_NAMES[c] && typedNow.indexOf(R.avoidName(x).toLowerCase()) >= 0); });
+        codesNow.forEach(function (c) { if (!out.some(function (x) { return x && x.code === c; })) out.push({ code: c, label: R.AVOID_NAMES[c] }); });
+        return out;
+      };
+      ta.topics = keep(ta.topics, sorted.topics); ta.eras = keep(ta.eras, sorted.eras);
+      var held = ta.topics.concat(ta.eras).map(function (x) { return R.avoidName(x).toLowerCase(); }).concat(words(ta.people), words(ta.places)).map(function (x) { return x.toLowerCase(); });
+      ta.people = words(ta.people).filter(function (x) { return typedNow.indexOf(x.toLowerCase()) >= 0; }).join(", ");
+      ta.places = words(ta.places).filter(function (x) { return typedNow.indexOf(x.toLowerCase()) >= 0; }).join(", ");
+      ta.other = sorted.typed.filter(function (x) { return held.indexOf(x.toLowerCase()) < 0; }).join(", ");
     }
     if (state.interests !== (mapped.interests || "")) t3.notes = setNoteLine(t3.notes, "Interests", words(state.interests).join(", "));
     if (state.personal !== (mapped.personal || "")) t3.notes = setNoteLine(t3.notes, "Words from their life", words(state.personal).join(", "));
@@ -221,7 +218,7 @@
   /* ---------- making the packet ---------- */
   function profile() { return { name: state.name, born: Number(state.born) || 0, nameStyle: state.nameStyle, personal: state.personal, challenge: state.challenge, stage: state.stage, dexterity: state.dexterity, decade: state.decade, interests: state.interests, avoid: state.avoid, vocation: state.vocation }; }
   function kindsOn() { return KINDS.map(function (k) { return k[0]; }).filter(function (k) { return state.mix[k]; }); }
-  function avoidList() { return state.avoid.split(/[,;]/).map(function (x) { return x.trim().toLowerCase(); }).filter(Boolean); }
+  function avoidList() { return R.avoidFromText(state.avoid); }
   var STAGE_KEY = ["E", "M", "L"];
 
   /* one list of pages per kind, each long enough to fill the packet */

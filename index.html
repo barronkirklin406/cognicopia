@@ -7910,40 +7910,42 @@ function langsOf(r){
   return [...new Set(keys)].map(k=>LANGS[k]);
 }
 
-/* ---- Finish the Line. PUBLIC DOMAIN ONLY. Everything here was
-   published before 1929, so none of it is under copyright.
+/* ---- Finish the Line. PUBLIC DOMAIN ONLY. Each line carries the year its
+   song was first published (the last number); all are 1930 or earlier, so
+   none is under copyright in the United States. scripts/check-public-domain.mjs
+   holds every tool to that one rule.
    Do not add modern song lyrics: they are licensed material. ---- */
 const LYRICS = [
-  ["Amazing grace, how sweet the","sound","hymn"],
-  ["What a friend we have in","Jesus","hymn"],
-  ["Rock of ages, cleft for","me","hymn"],
-  ["Blessed assurance, Jesus is","mine","hymn"],
-  ["Nearer, my God, to","thee","hymn"],
-  ["Abide with me, fast falls the","eventide","hymn"],
-  ["Shall we gather at the","river","hymn"],
-  ["Onward, Christian","soldiers","hymn"],
-  ["Just as I am, without one","plea","hymn"],
-  ["I come to the garden","alone","hymn"],
-  ["On a hill far away stood an old rugged","cross","hymn"],
-  ["Sweet hour of","prayer","hymn"],
-  ["When the roll is called up","yonder","hymn"],
-  ["Take me out to the ball","game","song"],
-  ["Oh give me a home where the buffalo","roam","song"],
-  ["Daisy, Daisy, give me your answer","do","song"],
-  ["My Bonnie lies over the","ocean","song"],
-  ["She'll be coming round the mountain when she","comes","song"],
-  ["I've been working on the","railroad","song"],
-  ["Down by the old mill","stream","song"],
-  ["Let me call you","sweetheart","song"],
-  ["Shine on, shine on harvest","moon","song"],
-  ["By the light of the silvery","moon","song"],
-  ["When Irish eyes are","smiling","song"],
-  ["Swing low, sweet","chariot","song"],
-  ["Oh Susanna, oh don't you cry for","me","song"],
-  ["Should auld acquaintance be","forgot","song"],
-  ["Oh beautiful for spacious","skies","song"],
-  ["When the saints go marching","in","song"],
-  ["Row, row, row your","boat","song"]
+  ["Amazing grace, how sweet the","sound","hymn",1779],
+  ["What a friend we have in","Jesus","hymn",1868],
+  ["Rock of ages, cleft for","me","hymn",1776],
+  ["Blessed assurance, Jesus is","mine","hymn",1873],
+  ["Nearer, my God, to","thee","hymn",1841],
+  ["Abide with me, fast falls the","eventide","hymn",1861],
+  ["Shall we gather at the","river","hymn",1865],
+  ["Onward, Christian","soldiers","hymn",1871],
+  ["Just as I am, without one","plea","hymn",1836],
+  ["I come to the garden","alone","hymn",1913],
+  ["On a hill far away stood an old rugged","cross","hymn",1913],
+  ["Sweet hour of","prayer","hymn",1861],
+  ["When the roll is called up","yonder","hymn",1893],
+  ["Take me out to the ball","game","song",1908],
+  ["Oh give me a home where the buffalo","roam","song",1910],
+  ["Daisy, Daisy, give me your answer","do","song",1892],
+  ["My Bonnie lies over the","ocean","song",1881],
+  ["She'll be coming round the mountain when she","comes","song",1927],
+  ["I've been working on the","railroad","song",1894],
+  ["Down by the old mill","stream","song",1910],
+  ["Let me call you","sweetheart","song",1910],
+  ["Shine on, shine on harvest","moon","song",1908],
+  ["By the light of the silvery","moon","song",1909],
+  ["When Irish eyes are","smiling","song",1912],
+  ["Swing low, sweet","chariot","song",1872],
+  ["Oh Susanna, oh don't you cry for","me","song",1848],
+  ["Should auld acquaintance be","forgot","song",1796],
+  ["Oh beautiful for spacious","skies","song",1910],
+  ["When the saints go marching","in","song",1896],
+  ["Row, row, row your","boat","song",1881]
 ];
 
 /* ---- Line matching. Public domain poems, plus King James verses
