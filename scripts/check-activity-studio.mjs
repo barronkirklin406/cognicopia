@@ -20,7 +20,7 @@ const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
 const read = f => fs.readFileSync(path.join(ROOT, f), "utf8");
 const ctx = vm.createContext({ console }); ctx.globalThis = ctx; ctx.window = ctx;
 const FILES = ["assets/coloring/subjects.bundle.js", "src/services/ColoringManifest.js", "src/engine/ColoringEngine.js", "src/engine/DescribeCreate.js",
-  "js/generators/activity-engine.js", "js/generators/coloring-pipeline.js", "js/generators/activity-modules.js", "js/generators/activity-pages.js"];
+  "js/residentContext.js", "js/generators/activity-engine.js", "js/generators/coloring-pipeline.js", "js/generators/activity-modules.js", "js/generators/activity-pages.js"];
 for (const f of FILES) vm.runInContext(read(f), ctx, { filename: f });
 const E = ctx.CognicopiaActivityEngine, PL = ctx.CognicopiaColoringPipeline, M = ctx.CognicopiaColoringManifest;
 M.loadSync();
@@ -277,6 +277,87 @@ ok(E.generate({ stage: 2 }, { module: "no-such-module", count: 2, seed: 1 }).mod
   ok(E.generate({ name: "Eleanor", nameStyle: "x" }, { module: "daily", count: 1, seed: 1 }).sheets[0].nameStyle === "plain", "an unknown style becomes plain");
   for (const f of ["PinyonScript-Regular.woff2", "MarckScript-Regular.woff2", "OFL-PinyonScript.txt", "OFL-MarckScript.txt"]) ok(fs.existsSync(new URL("../fonts/" + f, import.meta.url)), "fonts/" + f + " is missing");
   ok(/PinyonScript-Regular\.woff2/.test(read("sw.js")) && /MarckScript-Regular\.woff2/.test(read("sw.js")), "the service worker keeps the script fonts for offline use");
+}
+
+/* ---------- the page rules added November 10, 2026: titles of 32 pt or more, no large empty band, calm pages ---------- */
+{
+  const mods = E.modules().filter(m => m.id !== "coloring");
+  let pagesSeen = 0, smallTitle = 0, bands = 0, worst = 0, emptySheets = 0;
+  for (const m of mods) for (const stage of (m.stages || [1, 2, 3])) for (const dexterity of DEX) for (const seed of [1, 7, 99]) {
+    const r = E.generate({ stage, dexterity, decade: 1950, name: "Ruth", interests: "gardening, baking", personal: "Sarah, Buster, Scobey" }, { module: m.id, count: 4, seed });
+    for (const sh of r.sheets) {
+      if (sh.items && !sh.items.length) emptySheets++;
+      for (const pg of PL.sheetPages(sh, "full").pages) {
+        pagesSeen++;
+        const titles = pg.ops.filter(o => o.t === "text" && o.role === "title");
+        /* a sheet of cards to cut out (memory pairs) carries an instruction, not a title; every other page has one */
+        if (titles.some(o => o.size < PL.TITLE_MIN) || (!titles.length && sh.kind !== "memory")) smallTitle++;
+        const b = PL.blankBand(pg); worst = Math.max(worst, b); if (b > PL.BLANK_MAX) bands++;
+      }
+    }
+  }
+  ok(pagesSeen > 800, `the page rules were tried on every kind of page (${pagesSeen} pages)`);
+  ok(PL.TITLE_MIN >= 32 * PL.PX_PER_PT && smallTitle === 0, `every full page has a title of 32 pt or more (${smallTitle} do not)`);
+  ok(bands === 0, `no page leaves a band taller than ${PL.BLANK_MAX} px empty (${bands} do; the tallest is ${worst} px)`);
+  ok(emptySheets === 0, `no sheet is dealt with nothing on it (${emptySheets} were: the late-stage word tickets once filtered every line away)`);
+  /* the rules catch what they are for */
+  const bare = PL.sheetPages({ kind: "prompts", stage: 2, title: "Nothing here", items: [], code: "X" }, "full").pages[0];
+  ok(PL.validate(bare).some(x => /leaves a band/.test(x)), "a page with only a title is refused for its empty band");
+  const tiny = PL.kit.newPage({ stage: 1 }); PL.kit.P.text(tiny, 600, 100, 60, "Small title", { bold: true, anchor: "middle", role: "title" }); PL.kit.P.rect(tiny, 48, 140, 1104, 1380, 20, 8);
+  ok(PL.validate(tiny).some(x => /under 32 pt/.test(x)), "a title under 32 pt is refused");
+}
+/* ---------- a page of several items (kind "blocks") ---------- */
+{
+  const parts = {
+    prompt: { kind: "prompt", text: "What was on the table at Sunday dinner?", sub: "Take your time. Any part of it is welcome." },
+    choices: { kind: "choices", label: "Which of these do you like the sound of?", options: ["A kettle coming to the boil", "Rain on a porch roof", "A clock in the hall", "Voices in the yard"] },
+    write: { kind: "write", label: "A few words to keep", lines: 2 },
+    starters: { kind: "starters", items: ["The year I liked best was", "Something I am proud of is"] },
+    pairs: { kind: "pairs", label: "These go together", left: ["Needle", "Kettle", "Rake"], right: ["Leaves", "Thread", "Tea"] },
+    list: { kind: "list", label: "Today I would enjoy", items: ["A walk outside", "Some music", "A cup of coffee"] },
+    steps: { kind: "steps", label: "Making the pie", items: ["Roll the crust", "Fill it with fruit", "Bake until golden"] },
+    moments: { kind: "moments", items: [{ year: 1934, text: "Born in Scobey, Montana" }, { year: 1952, text: "Finished school" }, { year: 1956, text: "Began teaching" }] },
+    frames: { kind: "frames", items: [{ name: "Sarah", sub: "Daughter" }, { name: "Ben", sub: "Grandson" }, { name: "June", sub: "Sister" }] },
+    staff: { kind: "staff", text: "Offer one part at a time and follow the story wherever it goes." },
+    two: { kind: "choices", options: ["Some music", "A quiet rest"] }
+  };
+  const make = (stage, dexterity, kinds) => PL.sheetPages({ kind: "blocks", stage, dexterity, title: "Sunday dinner", subtitle: "Something to talk about", name: "Ruth", code: "T-" + stage, blocks: kinds.map(k => parts[k]) }, "full").pages[0];
+  /* how much a page holds goes down with the stage: four parts early, two or three in the middle, one or two late */
+  const MIXES = {
+    1: [["prompt", "choices", "write", "staff"], ["moments", "starters"], ["frames", "pairs"], ["prompt", "list"], ["steps", "write"], ["choices"]],
+    2: [["prompt", "choices", "staff"], ["moments", "starters"], ["frames", "list"], ["prompt", "list"], ["steps", "write"], ["choices"]],
+    3: [["prompt", "two"], ["frames"], ["prompt", "list"], ["steps"], ["choices"], ["prompt", "staff"]]
+  }, mixes = MIXES[1];
+  for (const stage of [1, 2, 3]) for (const dexterity of DEX) for (const mix of MIXES[stage]) {
+    const pg = make(stage, dexterity, mix), v = PL.validate(pg), tag = `blocks stage ${stage} ${dexterity} ${mix.join("+")}`;
+    ok(v.length === 0, `${tag}: ${v.slice(0, 2).join(" | ")}`);
+    ok(pg.w === 1200 && pg.h === 1600 && pg.meta.blocks === mix.length && pg.meta.kind === "blocks", `${tag}: a 3:4 page that knows it holds ${mix.length} parts`);
+    ok(PL.whiteShare(pg) >= PL.CALM_WHITE[stage], `${tag}: only ${Math.round(PL.whiteShare(pg) * 100)} percent of the page is empty (the stage needs ${PL.CALM_WHITE[stage] * 100})`);
+    ok(pg.ops.every(o => o.t !== "text" || o.role === "code" || o.size >= PL.floorPx(stage)), `${tag}: type under the stage's floor`);
+  }
+  /* every kind of part draws, and its words are on the page */
+  for (const k of Object.keys(parts)) {
+    const pg = make(1, "steady", [k]), txt = pg.ops.filter(o => o.t === "text").map(o => o.str).join(" ");
+    const want = k === "two" ? "quiet" : k === "prompt" ? "Sunday" : k === "choices" ? "kettle" : k === "write" ? "few words" : k === "starters" ? "proud" : k === "pairs" ? "Thread" : k === "list" ? "walk" : k === "steps" ? "crust" : k === "moments" ? "1952" : k === "frames" ? "Grandson" : "For staff";
+    ok(txt.includes(want) && pg.ops.length > 4, `a ${k} part did not draw its words`);
+  }
+  ok(make(1, "steady", ["write"]).ops.filter(o => o.t === "line" && o.role === "write").length === 2, "a part to write on draws the lines it was asked for");
+  ok(make(2, "steady", ["steps"]).ops.filter(o => o.t === "text" && /^[123]$/.test(o.str)).length === 3, "steps are numbered");
+  /* a late-stage page for someone with little hand control holds less: a prompt and four choices is said to be too full */
+  ok(PL.validate(make(3, "minimal", ["prompt", "choices"])).some(x => /fuller than stays calm/.test(x)), "a page too full to stay calm at the late stage says so");
+  /* too much for one page is said, not squeezed in silently */
+  const many = make(3, "minimal", ["prompt", "choices", "moments", "frames", "pairs", "list", "steps"]);
+  ok(PL.validate(many).some(x => /holds more than fits/.test(x)), "a page asked to hold too much says so");
+  /* the same sheet always makes the same page */
+  ok(JSON.stringify(make(2, "limited", mixes[0])) === JSON.stringify(make(2, "limited", mixes[0])), "the same sheet makes the same page every time");
+}
+/* whole words: a topic to avoid does not take its neighbours with it */
+{
+  const K = E.kit;
+  ok(!K.avoided("a warm afternoon", ["war"]) && !K.avoided("an award", ["war"]) && K.avoided("the wars", ["war"]) && K.avoided("WAR", ["war"]), "avoiding war leaves warm and award alone and still finds wars");
+  ok(K.avoided("gardening gloves", ["garden"]) && K.avoided("the farm fire", ["farm fire"]) && !K.avoided("gardenia", ["garden"]), "a plural, an -ing form and a phrase are found; another word that starts the same is not");
+  const P = E.normalize({ stage: 1, avoid: "war, trains" });
+  ok(P.avoid.includes("soldier") && P.avoid.includes("trains"), "with the resident reader loaded, a topic's name stands for all of its words");
 }
 
 /* offline */

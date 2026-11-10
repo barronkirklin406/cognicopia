@@ -22,7 +22,7 @@ import { fileURLToPath } from "url";
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
 const read = f => fs.readFileSync(path.join(ROOT, f), "utf8");
 const ctx = vm.createContext({ console }); ctx.globalThis = ctx; ctx.window = ctx;
-const FILES = ["assets/coloring/subjects.bundle.js", "src/services/ColoringManifest.js", "src/engine/DescribeCreate.js", "js/generators/activity-engine.js", "js/generators/coloring-pipeline.js", "js/generators/activity-modules.js", "js/generators/activity-pages.js", "js/utils/facility-validator.js", "js/utils/print-optimizer.js"];
+const FILES = ["assets/coloring/subjects.bundle.js", "src/services/ColoringManifest.js", "src/engine/DescribeCreate.js", "js/residentContext.js", "js/generators/activity-engine.js", "js/generators/coloring-pipeline.js", "js/generators/activity-modules.js", "js/generators/activity-pages.js", "js/utils/facility-validator.js", "js/utils/print-optimizer.js"];
 for (const f of FILES) vm.runInContext(read(f), ctx, { filename: f });
 const E = ctx.CognicopiaActivityEngine, PL = ctx.CognicopiaColoringPipeline, FV = ctx.CognicopiaFacilityValidator, PO = ctx.CognicopiaPrintOptimizer, M = ctx.CognicopiaColoringManifest;
 M.loadSync();
@@ -54,6 +54,19 @@ for (const stage of [1, 2, 3]) for (const dex of ["steady", "limited", "minimal"
   const r = FV.validateBatch(pages, { stage, interests: "gardening" });
   ok(r.score >= 90 && r.findings.length === 0 && r.level === "Ready", `stage ${stage} ${dex} ${layout}: scored ${r.score} (${r.level}) ${r.findings.slice(0, 2).join(" | ")}`);
   log.push(r);
+}
+/* the page engine measures its own white space to keep a page calm; its measure is the validator's, cell for cell, on every page of words */
+{
+  let n = 0, off = 0, worst = 0;
+  for (const stage of [1, 2, 3]) for (const dex of ["steady", "limited", "minimal"]) for (const m of ["reminiscence", "exercise", "dialogue", "phrases", "rhythm"]) {
+    if (!E.modules().some(x => x.id === m && (!x.stages || x.stages.includes(stage)))) continue;
+    for (const sh of E.generate({ stage, dexterity: dex, decade: 1950 }, { module: m, count: 4, seed: 21 }).sheets) for (const pg of PL.sheetPages(sh, "full").pages) {
+      if (pg.ops.some(o => o.t === "path")) continue;                    // drawings are measured by the validator alone
+      const a = PL.whiteShare(pg), b = FV.validatePage(pg, { stage }).whitespace.ratio; n++; worst = Math.max(worst, Math.abs(a - b)); if (Math.abs(a - b) > 0.002) off++;
+    }
+  }
+  ok(n > 100 && off === 0, `the engine's own white-space measure agrees with the validator's on ${n} pages of words (${off} differ; the largest gap is ${worst.toFixed(4)})`);
+  ok(JSON.stringify(PL.CALM_WHITE) === JSON.stringify(FV.LIMITS.minWhite.text), "and it aims for the validator's own numbers");
 }
 /* the suggested packet for each stage (three of the master inventory and a coloring page) also scores well */
 for (const [stage, mods] of [[1, ["wordgrid", "timeline", "memory", "dialogue", "coloring"]], [2, ["dialogue", "household", "phrases", "coloring"]], [3, ["coloring", "recognition", "rhythm", "dialogue"]]])

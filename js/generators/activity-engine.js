@@ -231,7 +231,7 @@
       season: SEASONS.indexOf(p.season) >= 0 ? p.season : "", vocation: String(p.vocation == null ? "" : p.vocation).toLowerCase().replace(/[^a-z]/g, "").slice(0, 20),
       /* a bigger, harder word search for an early-stage reader who wants a real workout */
       challenge: !!p.challenge,
-      interests: split(p.interests), avoid: split(p.avoid),
+      interests: split(p.interests), avoid: avoidTerms(p.avoid, split),
       /* a resident's own people, pets, places and things, as single words of 3 to 10 letters (printed on the sheet, kept nowhere) */
       personal: split(p.personal).map(function (x) { return x.replace(/[^a-z]/g, ""); }).filter(function (x, i, a) { return x.length >= 3 && x.length <= 10 && a.indexOf(x) === i; }).slice(0, 8)
     };
@@ -242,7 +242,20 @@
     var d = Math.floor((born + 20) / 10) * 10;
     return Math.max(1940, Math.min(1980, d));
   }
-  function avoided(text, avoid) { var t = String(text).toLowerCase(); return avoid.some(function (a) { return a && t.indexOf(a) >= 0; }); }
+  /* The words to keep off a page. With the shared resident reader on the page (js/residentContext.js) a topic's name, such as
+     "war" or "Korean War", stands for that topic's whole word list; anything else is a word as typed. */
+  function avoidTerms(v, split) {
+    var R = root.CogniResident;
+    if (R && R.avoidFromText && !Array.isArray(v)) return R.avoidFromText(v).slice(0, 80);
+    return split(v);
+  }
+  /* Whole words only: avoiding "war" leaves "warm" and "award" alone, and still catches "wars"; a plural, a possessive and the
+     -ing, -ed and -er forms count ("garden" also keeps out "gardening" and "gardener"). */
+  var AVOID_RE = {};
+  function avoidRe(a) {
+    return AVOID_RE[a] || (AVOID_RE[a] = new RegExp("(^|[^a-z0-9])" + String(a).replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/\s+/g, "[^a-z0-9]+") + "(s|es|'s|ing|ed|er|ers)?([^a-z0-9]|$)", "i"));
+  }
+  function avoided(text, avoid) { var t = String(text); return avoid.some(function (a) { return a && avoidRe(a).test(t); }); }
 
   /* ---------- the sheets ---------- */
   function reminiscenceSheets(P, r, count) {

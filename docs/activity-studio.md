@@ -135,3 +135,36 @@ The Studio used to show "Free Trial: 50 / 50" and then never counted a packet or
 - **Licensed:** a real signed key means no limit, no counting and no window ("Licensed: unlimited packets.").
 
 Proved in a real browser by `scripts/check-studio-trial-ui.mjs` (24 checks, in `npm run build`), which mints a real signed key from a throwaway key pair.
+
+## Foundations for more personal pages (November 10, 2026)
+
+Step 1 of the plan the owner approved on November 10 (more personal activities, a quick daily screen, sharper PDFs, a residents folder). Nothing a person has to learn changed; the pages got fuller and the rules behind them got stricter.
+
+### One reader of a saved resident
+
+`js/residentContext.js` (`window.CogniResident`) is the one place that turns a saved profile into a plain description of the person: name, the years they were 15 to 25, the decade they turned twenty, stage and GDS range, former work, hometown in parts, family by generation (with "has passed away" kept, so a page a visitor holds can leave someone out), music, pastimes, the optional parts of a life story, and the words to keep off a page. It guesses nothing: a field the profile does not hold comes back empty. It reads from the storage it is handed and never writes. The Studio uses it now; the older tools keep their own readers until they are moved over.
+
+**A fault it fixed.** When a resident had a topic ticked in their profile (for example "War and combat"), the Studio showed the tick's label in "Topics to avoid" and looked for those exact words, so it kept nothing off the page. A ticked topic now shows by a short name ("war", "Korean War") and stands for the topic's whole word list, the same lists `src/engine/ClinicalMatrix.js` holds. Typing a topic's name in the Studio and pressing Save ticks that topic in the profile.
+
+**Whole words.** Avoiding "war" used to remove "warm" and "award" as well. Matching is by whole word now; a plural, a possessive and the -ing, -ed and -er forms still count ("garden" keeps out "gardening").
+
+Proved by `scripts/check-resident-context.mjs` (35 checks) and a browser check with a control (the same pages with the field emptied do mention the word).
+
+### Pages that are full, and calm
+
+Two rules pull against each other, and a page now has to meet both:
+
+- **No large empty band.** `PL.validate` fails a page that leaves more than 420 px (2.6 in) of its height empty. The first run found real faults: a middle-stage reminiscence page for someone with little hand control was one idea and then 889 px of nothing, and at the late stage the word tickets page could filter every line away and print a title over an empty sheet.
+- **Calm.** The facility validator wants half of a page of words left empty (55 percent at the late stage). The page engine now measures this itself (`PL.whiteShare`, the validator's own grid, proved identical on every page of words) and grows a page's type only as far as the page stays calm.
+
+What changed on the paper: each idea on a reminiscence page fills its share of the sheet and its type grows to suit (on an early or middle page each idea is a framed card, with a line or two to write on when there is room); the matching page's two columns stand in frames and its words grow with the room; the room under a dialogue question is ruled for the answer.
+
+**Titles.** A page title is never under 32 pt (it could shrink to 28.8 pt). A sheet of cards to cut out carries an instruction, not a title.
+
+### A page of several items
+
+A new kind of sheet, `blocks`, for the pages still to come: a page lists two to five parts (a large prompt, choices to circle, lines to write on, sentence openings, two columns to join, a short list, numbered steps, dated moments down a line, frames for people, and a strip for staff at the foot) and the composer shares the height among them, grows the type as far as stays calm, and says so in words when a page is asked to hold more than fits or more than stays calm at its stage. How much a page holds goes down with the stage: four parts early, two or three in the middle, one or two late.
+
+### One rule for printed song lines
+
+The tools stated four different cut-off years and two lists carried no year. There is one rule now: a song or hymn line is printed only when the work was first published in 1930 or earlier (public domain in the United States since January 1, 2026) or is traditional; anything newer appears by title, artist and year. `scripts/check-public-domain.mjs` (105 checks) reads every list in five tools. The front page's Finish the Line list and the Tablet's sayings now carry the year of each song.

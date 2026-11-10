@@ -114,13 +114,21 @@
 
   /* ---------- dialogue ---------- */
   function dialogue(sh) {
+    /* the room under each question is ruled for the answer; fewer rules are drawn when more would crowd the page */
+    var b0 = base(sh), pgOut = null;
+    for (var most = 3; most >= 1; most--) { pgOut = dialogueWith(sh, most); if (K.whiteShare(pgOut) >= PL.CALM_WHITE[b0.n] + 0.012) break; }
+    return pgOut;
+  }
+  function dialogueWith(sh, most) {
     var b = base(sh), pg = page(sh, "dialogue"), y0 = K.header(pg, sh), logH = 290, qs = sh.questions, area = H - 70 - logH - y0, extraH = sh.extra ? 150 : 0, rh = (area - extraH) / qs.length;
     if (sh.extra) { var ex = K.fit(sh.extra, b.fl + 4, b.fl, W - 2 * PAD - 60, 110, false); P.rect(pg, PAD, y0, W - 2 * PAD, 130, 16, b.lw, "none"); K.block(pg, ex.lines, PAD + 30, y0 + (130 - ex.h) / 2, ex.size, {}); y0 += extraH; }
     var r = Math.min(40, rh * 0.18);
     qs.forEach(function (q, i) {
       var y = y0 + i * rh; P.circle(pg, PAD + 20 + r, y + r + 6, r, b.lw, "none"); P.text(pg, PAD + 20 + r, y + r + 6 + Math.max(b.fl, r * 1.1) * 0.36, Math.max(b.fl, Math.round(r * 1.1)), String(i + 1), { bold: true, anchor: "middle" });
-      var tx = PAD + 20 + r * 2 + 24, f = K.fit(q, Math.round(b.bp * 1.1), b.fl, W - tx - PAD, rh - 80, true); K.block(pg, f.lines, tx, y, f.size, { bold: true });
-      P.line(pg, tx, y + rh - 34, W - PAD, y + rh - 34, b.lw, "", "rule");
+      var tx = PAD + 20 + r * 2 + 24, f = K.fit(q, Math.round(b.bp * 1.1), b.fl, W - tx - PAD, rh - 80, true), yq = K.block(pg, f.lines, tx, y, f.size, { bold: true });
+      /* at least as many rules as keep the room from reading as an empty band, spread evenly down it */
+      var last = y + rh - 34, room = last - yq, step = Math.max(b.fl * 2.3, 96), nl = Math.max(Math.ceil(room / 380), Math.min(most, Math.floor((room - 20) / step)), 1);
+      for (var li = 1; li <= nl; li++) P.line(pg, tx, yq + room * li / nl, W - PAD, yq + room * li / nl, li === nl ? b.lw : Math.max(7, b.lw * 0.7), "", "rule");
     });
     var ly = H - 60 - logH; P.rect(pg, PAD, ly, W - 2 * PAD, logH, 18, b.lw, "none");
     P.text(pg, PAD + 24, ly + 20 + b.fl * 0.8, b.fl, "For staff: how it went", { bold: true });

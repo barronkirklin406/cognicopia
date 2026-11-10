@@ -319,10 +319,12 @@
     FEEL.forEach(function (w) { if (okWord(w, P)) bank.push({ kind: "feel", tag: "A word to feel", thing: w, invite: "Feel it. Breathe slowly.", sense: "", staff: "Say it slowly and let the word settle." }); });
     VERSE.forEach(function (v) { if (okWord(v[0], P)) bank.push({ kind: "verse", tag: "A line of verse", thing: v[0], invite: "Say it with me.", sense: v[1], source: v[1], year: v[2], staff: "A familiar line to say or hum; the rhythm carries it." }); });
     bank = K.shuffle(bank, r);
+    /* the late stage keeps to single words and short lines; the choice is made before the page is dealt, so a page is never left empty */
+    var pool = P.stage === 3 ? bank.filter(function (x) { return x.kind === "feel" || x.thing.length < 33; }) : bank;
     var out = [];
     for (var s = 0; s < count; s++) {
-      var items = take(bank.slice(s * per).concat(bank), per);
-      if (P.stage === 3) items = items.filter(function (x) { return x.kind === "feel" || x.thing.length < 33; }).map(function (x) { return Object.assign({}, x, { sense: "" }); });   // one thing at a time: no line about the author
+      var items = take(pool.slice(s * per).concat(pool), per);
+      if (P.stage === 3) items = items.map(function (x) { return Object.assign({}, x, { sense: "" }); });   // one thing at a time: no line about the author
       out.push({ module: "rhythm", kind: "prompts", title: "Words to enjoy", subtitle: "Something to feel and something to say", items: items,
         staffNote: HOME + "short words and familiar verse for cutting into tickets. Hand one over, read it slowly, and tap a gentle beat. Each poem and song line is from a work published in 1928 or earlier, free to print." });
     }

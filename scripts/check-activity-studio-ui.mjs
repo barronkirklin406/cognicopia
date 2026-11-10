@@ -55,7 +55,8 @@ const mix = async (p, kinds) => { for (const k of ["reminiscence", "exercise", "
 const total = async p => Number(/of (\d+)/.exec(await pos(p))[1]);
 const svgText = p => p.$eval("#asSheet svg", e => e.textContent);
 const setPages = async (p, n) => { await p.selectOption("#asPages", String(n)); await p.waitForTimeout(450); };
-const items = p => p.$$eval("#asSheet line", t => t.length + 1);        // the rules between ideas: one fewer than the ideas on the page
+/* the ideas on a page: each is a framed card on an early or middle page; a late page keeps them open, with a rule between them */
+const items = p => p.$eval("#asSheet svg", svg => svg.querySelectorAll('rect[rx="24"]').length || svg.querySelectorAll("line").length + 1);
 
 try {
   let { ctx, p } = await open(1366, 768);
@@ -361,6 +362,37 @@ try {
     ok(await pr.evaluate(() => { const el = document.getElementById("rapName"); return !!el && el.value === "Evelyn"; }), "...and shows her name, ready to edit");
     await pr.close();
     await c2.close();
+  }
+
+  /* a ticked topic to avoid keeps the whole topic off the page (the Studio used to read the tick's label and match nothing) */
+  {
+    const GEO = { schema: "cognicopia.residentProfile", version: 2, id: "res-geo", createdAt: "2026-09-01T10:00:00Z", updatedAt: "2026-09-01T10:00:00Z",
+      tier1_core: { preferredName: "George", cognitiveTier: 1, occupation: { code: "mechanic", label: "Mechanic" }, topHobbies: [], printNeeds: {},
+        topicsToAvoid: { topics: [{ code: "religion", label: "Religion" }], eras: [{ code: "era-korea", label: "Korean War (1950–1953)" }], people: "", places: "", other: "" } },
+      tier2_enrichment: { birthYear: 1934, hometown: { place: "Minot, North Dakota" } }, tier3_deep: { notes: "", people: [] } };
+    const { ctx: c3, p: g } = await open(1366, 900);
+    await g.evaluate(x => localStorage.setItem("cognicopia_resident_" + x.id, JSON.stringify(x)), GEO);
+    await g.reload({ waitUntil: "load" }); await g.waitForSelector("#asSheet svg"); await g.waitForTimeout(900);
+    await g.evaluate(() => document.querySelectorAll("details.as-acc").forEach(d => { d.open = true; }));
+    await g.selectOption("#asResident", "res-geo"); await g.waitForTimeout(700);
+    ok(await g.$eval("#asAvoid", e => e.value) === "religion, Korean War", `the two ticked boxes show by their short names (${await g.$eval("#asAvoid", e => e.value)})`);
+    ok(await g.$eval("#asDecade", e => e.value) === "1950", "his years are the 1950s");
+    await mix(g, ["reminiscence"]); await setPages(g, 6);
+    /* every page of several sets, read from the preview */
+    const sets = async (n, until) => { let all = ""; for (let i = 0; i < n; i++) {
+      for (let k = 0; k < 6; k++) { all += " " + await svgText(g); if (await g.$eval("#asNext", b => b.disabled)) break; await g.click("#asNext"); await g.waitForTimeout(100); }
+      if (until && until.test(all)) break; await g.click("#asRandom"); await g.waitForTimeout(400); } return all; };
+    const kept = await sets(5);
+    ok(kept.length > 1500 && !/\b(church|churches|prayer|hymn|bible|faith|korea)\b/i.test(kept), "across five sets of 1950s pages none of the topic's words appears: not church, prayer, hymn or Korea");
+    /* the control: the same pages with the field emptied do carry the word, so the check above is not passing by luck */
+    await g.fill("#asAvoid", ""); await g.waitForTimeout(400);
+    ok(/\bchurch/i.test(await sets(12, /\bchurch/i)), "with nothing to avoid, the 1950s pages do mention a church supper, so the tick is what keeps it out");
+    await g.fill("#asAvoid", "religion, Korean War, money, trains"); await g.waitForTimeout(300);
+    await g.click("#asSaveRes"); await g.waitForTimeout(900);
+    const geo = JSON.parse(await g.evaluate(() => window.CogniSecureStore.storage.getItem("cognicopia_resident_res-geo"))), ta = geo.tier1_core.topicsToAvoid;
+    ok(ta.topics.map(x => x.code).join() === "religion,money" && ta.eras.map(x => x.code).join() === "era-korea" && ta.other === "trains", `typing a topic's name ticks that topic in his profile; a plain word stays a word (${JSON.stringify(ta)})`);
+    ok(ta.topics[0].label === "Religion", "a box that was already ticked keeps its own label");
+    await c3.close();
   }
 
   ok(foreign.length === 0, "nothing is requested from outside the page" + (foreign.length ? ": " + foreign.slice(0, 2).join(", ") : ""));
