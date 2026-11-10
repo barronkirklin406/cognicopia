@@ -407,26 +407,39 @@
        { kind: "steps",    label, items: [text] }             numbered steps
        { kind: "moments",  items: [{ year, text }] }          dated moments down a line
        { kind: "frames",   items: [{ name, sub }] }           a frame, a name and a line under it
+       { kind: "tiers",    items: [{ label, names, more, blanks }] }   a family, one generation to a row
+       { kind: "blanks",   items: [text] }                    numbered kinds of word, each with a line for the word chosen
+       { kind: "picture",  pic, caption }                     a finished drawing from the library, and its name
+       { kind: "ladder",   rungs: [{ word, clue }] }          a word ladder: the first word given, a clue for each step
        { kind: "staff",    text }                             a strip at the foot, for the person helping */
   var BLOCK_GAP = 30;
-  function blockNeed(b, c) {                                    // { min, want }: the least a block needs and its share of what is left
-    var n = (b.items || b.options || b.left || []).length, row = c.fl * 2.5, lab = b.label ? c.fl * 1.6 : 0;
-    if (b.kind === "prompt") return { min: c.bp * (b.sub ? 4.6 : 3.2), want: 3 };
-    if (b.kind === "choices") { var cols = choiceCols(b, c), rows = Math.ceil(n / cols); return { min: lab + rows * (c.fl * 2.7), want: 1 + rows * 1.1 }; }
-    if (b.kind === "write") { var ln = Math.max(1, b.lines || 2); return { min: lab + ln * c.fl * 2.3, want: 0.6 + ln * 0.8 }; }
-    if (b.kind === "starters") return { min: n * c.fl * 3.4, want: n * 1.3 };
-    if (b.kind === "pairs") return { min: lab + n * row, want: 1 + n * 0.9 };
-    if (b.kind === "list" || b.kind === "steps") return { min: lab + n * row, want: 0.8 + n * 0.9 };
-    if (b.kind === "moments") return { min: n * c.fl * 2.9, want: n * 1.2 };
-    if (b.kind === "frames") { var fr = Math.ceil(n / frameCols(n)); return { min: fr * c.fl * 8.5, want: fr * 6 }; }
-    return { min: c.fl * 2.4, want: 1 };
+  function blockNeed(b, c) {                                    // { min, want, max }: the least a part needs, its share of what is left, and the most it can use well
+    var n = (b.items || b.options || b.left || []).length, row = c.fl * 2.5, lab = b.label ? c.fl * 1.6 + 8 : 0, w = W - 2 * PAD - 12;
+    if (b.kind === "prompt") return { min: c.bp * (b.sub ? 4.6 : 3.2), want: 3, max: c.bp * (b.sub ? 9.5 : 8) };
+    if (b.kind === "choices") { var cols = choiceCols(b, c), rows = Math.ceil(n / cols); return { min: lab + rows * (c.fl * 2.5), want: 1 + rows * 1.1, max: lab + rows * c.bp * 4.2 + 18 * (rows - 1) }; }
+    if (b.kind === "write") { var ln = Math.max(1, b.lines || 2); return { min: lab + ln * c.fl * 2.3, want: 0.6 + ln * 0.8, max: lab + ln * c.fl * 3.4 }; }
+    if (b.kind === "starters") return { min: n * c.fl * 3.4, want: n * 1.3, max: n * c.bp * 5 };
+    if (b.kind === "pairs") return { min: lab + n * row, want: 1 + n * 0.9, max: lab + n * c.bp * 4 };
+    if (b.kind === "list" || b.kind === "steps") return { min: lab + n * row, want: 0.8 + n * 0.9, max: lab + n * c.bp * 3.6 };
+    if (b.kind === "moments") return { min: n * c.fl * 2.9, want: n * 1.2, max: n * c.bp * 4.4 };
+    if (b.kind === "frames") { var fc = frameCols(n), fr = Math.ceil(n / fc), fw = (w - 26 * (fc - 1)) / fc; return { min: fr * c.fl * 8.5, want: fr * 6, max: fr * fw * 1.25 + 26 * (fr - 1) }; }
+    if (b.kind === "tiers") return { min: n * (c.fl * 1.5 + c.bp * 2.1 + 16), want: n * 1.7, max: n * c.bp * 5.2 };
+    if (b.kind === "blanks") return { min: n * c.fl * 2.4, want: n * 0.9, max: n * c.bp * 3.2 };
+    if (b.kind === "picture") return { min: c.fl * 8, want: 4.5, max: c.bp * 10 };
+    if (b.kind === "ladder") { var rn = (b.rungs || []).length; return { min: rn * c.fl * 2.9, want: rn * 1.5, max: rn * c.bp * 4.6 }; }
+    return { min: c.fl * 2.4, want: 1, max: c.fl * 4 };
   }
-  function choiceCols(b, c) { var longest = (b.options || []).reduce(function (m, o) { return Math.max(m, String(o).length); }, 0); return c.n === 3 || longest > 24 || (b.options || []).length < 3 ? 1 : 2; }
+  function choiceCols(b, c) { if (b.cols === 1 || b.cols === 2) return b.cols; var longest = (b.options || []).reduce(function (m, o) { return Math.max(m, String(o).length); }, 0); return c.n === 3 || longest > 24 || (b.options || []).length < 3 ? 1 : 2; }
   function frameCols(n) { return n <= 2 ? n || 1 : n <= 4 ? 2 : 3; }
   function blockLabel(pg, b, c, x, y, w) {
     if (!b.label) return y;
     var t = fit(b.label, c.sz(0.95), c.fl, w, c.fl * 2.6, true);
     return block(pg, t.lines, x, y, t.size, { bold: true }) + 8;
+  }
+  /* one size for lines that share a part of the page: the largest at which every one of them fits its box */
+  function fitAll(texts, size, min, maxW, maxH, bold, lh) {
+    var out = size; texts.forEach(function (t) { out = Math.min(out, fit(t, size, min, maxW, maxH, bold, lh).size); });
+    return Math.max(min, out);
   }
   var BLOCKS = {
     prompt: function (pg, b, c, x, y, w, h) {
@@ -440,11 +453,12 @@
     choices: function (pg, b, c, x, y, w, h) {
       var y1 = blockLabel(pg, b, c, x, y, w), opts = b.options || [], cols = choiceCols(b, c), rows = Math.ceil(opts.length / cols), g = 18;
       var cw = (w - g * (cols - 1)) / cols, ch = Math.min((y + h - y1 - g * (rows - 1)) / rows, c.bp * 4.2), r = Math.max(18, Math.min(30, ch * 0.2));
+      var osz = fitAll(opts, c.sz(1.25), c.fl, cw - 18 - (26 + r * 2 + 36), ch - 14, true);
       opts.forEach(function (o, i) {
         var bx = x + (i % cols) * (cw + g), by = y1 + Math.floor(i / cols) * (ch + g);
         if (!c.plain) P.rect(pg, bx, by, cw, ch, 18, c.lw);
         P.circle(pg, bx + 26 + r, by + ch / 2, r, c.lw, "none");
-        var tx = bx + 26 + r * 2 + 36, t = fit(o, c.sz(1.25), c.fl, bx + cw - 18 - tx, ch - 14, true);
+        var tx = bx + 26 + r * 2 + 36, t = fit(o, osz, c.fl, bx + cw - 18 - tx, ch - 14, true);
         block(pg, t.lines, tx, by + (ch - t.h) / 2, t.size, { bold: true });
       });
     },
@@ -454,18 +468,20 @@
     },
     starters: function (pg, b, c, x, y, w, h) {
       var items = b.items || [], rh = Math.min(h / Math.max(1, items.length), c.bp * 5);
+      var ssz = fitAll(items, c.sz(1.2), c.fl, w, rh * 0.5, true);
       items.forEach(function (it, i) {
-        var yy = y + i * rh, t = fit(it, c.sz(1.2), c.fl, w, rh * 0.5, true);
+        var yy = y + i * rh, t = fit(it, ssz, c.fl, w, rh * 0.5, true);
         block(pg, t.lines, x, yy + 4, t.size, { bold: true });
         P.line(pg, x, yy + rh - 12, x + w, yy + rh - 12, c.rule, "", "write");
       });
     },
     pairs: function (pg, b, c, x, y, w, h) {
-      var y1 = blockLabel(pg, b, c, x, y, w), left = b.left || [], right = b.right || [], n = Math.max(left.length, right.length), rh = Math.min((y + h - y1) / Math.max(1, n), c.bp * 3.4), col = w * 0.36;
+      var y1 = blockLabel(pg, b, c, x, y, w), left = b.left || [], right = b.right || [], n = Math.max(left.length, right.length), rh = Math.min((y + h - y1) / Math.max(1, n), c.bp * 4), col = w * 0.36;
+      var lsz = fitAll(left, c.sz(1.2), c.fl, col, rh - 12, true), rsz = fitAll(right, c.sz(1.2), c.fl, col, rh - 12, true);
       for (var i = 0; i < n; i++) {
         var cy = y1 + i * rh + rh / 2;
-        if (left[i] != null) { var a = fit(left[i], c.sz(1.2), c.fl, col, rh - 12, true); block(pg, a.lines, x + 8, cy - a.h / 2, a.size, { bold: true }); P.circle(pg, x + col + 44, cy, 20, c.lw, "none"); }
-        if (right[i] != null) { var d = fit(right[i], c.sz(1.2), c.fl, col, rh - 12, true); block(pg, d.lines, x + w - 8, cy - d.h / 2, d.size, { bold: true, anchor: "end" }); P.circle(pg, x + w - col - 44, cy, 20, c.lw, "none"); }
+        if (left[i] != null) { var a = fit(left[i], lsz, c.fl, col, rh - 12, true); block(pg, a.lines, x + 8, cy - a.h / 2, a.size, { bold: true }); P.circle(pg, x + col + 44, cy, 20, c.lw, "none"); }
+        if (right[i] != null) { var d = fit(right[i], rsz, c.fl, col, rh - 12, true); block(pg, d.lines, x + w - 8, cy - d.h / 2, d.size, { bold: true, anchor: "end" }); P.circle(pg, x + w - col - 44, cy, 20, c.lw, "none"); }
       }
     },
     list: function (pg, b, c, x, y, w, h) { rowsOf(pg, b, c, x, y, w, h, false); },
@@ -473,22 +489,65 @@
     moments: function (pg, b, c, x, y, w, h) {
       var items = b.items || [], rh = Math.min(h / Math.max(1, items.length), c.bp * 4.4), lx = x + 30, ys = c.sz(1.15), yearW = Math.round(ys * 0.64 * 4 + 28);
       if (items.length > 1) P.line(pg, lx, y + rh / 2, lx, y + (items.length - 1) * rh + rh / 2, c.rule, "", "rule");
+      var anyYear = items.some(function (it) { return it.year; }), msz = fitAll(items.map(function (it) { return it.text; }), c.sz(1.15), c.fl, x + w - (lx + 46) - (anyYear ? yearW : 0), rh - 12, false);
       items.forEach(function (it, i) {
         var cy = y + i * rh + rh / 2, tx = lx + 46;
         P.circle(pg, lx, cy, 18, c.lw, "#fff");
         if (it.year) { P.text(pg, tx, cy + ys * 0.36, ys, String(it.year), { bold: true }); tx += yearW; }
-        var t = fit(it.text, c.sz(1.15), c.fl, x + w - tx, rh - 12, false);
+        var t = fit(it.text, msz, c.fl, x + w - tx, rh - 12, false);
         block(pg, t.lines, tx, cy - t.h / 2, t.size);
       });
     },
     frames: function (pg, b, c, x, y, w, h) {
       var items = b.items || [], cols = frameCols(items.length), rows = Math.ceil(items.length / cols), g = 26, cw = (w - g * (cols - 1)) / cols, ch = Math.min((h - g * (rows - 1)) / rows, cw * 1.25);
+      var subLines = items.reduce(function (m, it) { return Math.max(m, it.sub ? Math.min(2, fit(it.sub, c.fl, c.fl, cw, c.fl * 2.6, false).lines.length) : 0); }, 0);
       items.forEach(function (it, i) {
-        var bx = x + (i % cols) * (cw + g), by = y + Math.floor(i / cols) * (ch + g), capH = c.bp * (it.sub ? 2.9 : 1.7), ph = ch - capH;
+        var bx = x + (i % cols) * (cw + g), by = y + Math.floor(i / cols) * (ch + g), capH = c.bp * 1.7 + subLines * c.fl * 1.22 + (subLines ? 6 : 0), ph = ch - capH;
         P.rect(pg, bx, by, cw, ph, 16, c.lw);
         { var hint = fit(it.hint || "A photo can go here", c.fl, c.fl, cw - 30, ph - 20, false); block(pg, hint.lines, bx + cw / 2, by + (ph - hint.h) / 2, hint.size, { anchor: "middle", role: "hint" }); }
+        if (!it.name) { P.line(pg, bx + 20, by + ch - 18, bx + cw - 20, by + ch - 18, c.rule, "", "write"); return; }      // no name yet: a line to write it on
         var nm = fit(it.name, c.sz(1.3), c.fl, cw, c.bp * 1.6, true), yy = block(pg, nm.lines.slice(0, 1), bx + cw / 2, by + ph + 6, nm.size, { bold: true, anchor: "middle" });
-        if (it.sub) { var sb = fit(it.sub, c.fl, c.fl, cw, c.bp * 1.3, false); block(pg, sb.lines.slice(0, 1), bx + cw / 2, yy, sb.size, { anchor: "middle" }); }
+        if (it.sub) { var sb = fit(it.sub, c.fl, c.fl, cw, c.fl * 2.6, false); block(pg, sb.lines.slice(0, 2), bx + cw / 2, yy, sb.size, { anchor: "middle" }); }
+      });
+    },
+    tiers: function (pg, b, c, x, y, w, h) {
+      var rows = b.items || [], rh = Math.min(h / Math.max(1, rows.length), c.bp * 5.2), labH = c.fl * 1.5, g = 18;
+      rows.forEach(function (row, i) {
+        var yy = y + i * rh, names = (row.names || []).slice(), boxes = names.length || row.blanks || 1, extra = row.more ? 1 : 0, k = Math.max(2, boxes + extra), bw = Math.min((w - g * (k - 1)) / k, w * 0.46), bh = rh - labH - 18;
+        var lab = fit(row.label, c.fl, c.fl, w, labH, true); block(pg, lab.lines.slice(0, 1), x, yy, lab.size, { bold: true });
+        if (i) P.line(pg, x + bw / 2, yy - 14, x + bw / 2, yy + 2, c.rule, "", "rule");           // the line of descent
+        for (var j = 0; j < boxes; j++) {
+          var bx = x + j * (bw + g), by = yy + labH;
+          P.rect(pg, bx, by, bw, bh, 16, c.lw);
+          if (names[j]) { var t = fit(names[j], c.sz(1.2), c.fl, bw - 24, bh - 10, true); block(pg, t.lines.slice(0, 1), bx + bw / 2, by + (bh - t.size * 1.22) / 2, t.size, { bold: true, anchor: "middle" }); }
+        }
+        if (row.more) { var mt = fit("and " + row.more + " more", c.fl, c.fl, bw, bh, false); block(pg, mt.lines, x + boxes * (bw + g), yy + labH + (bh - mt.h) / 2, mt.size, {}); }
+      });
+    },
+    blanks: function (pg, b, c, x, y, w, h) {
+      var items = b.items || [], rh = Math.min(h / Math.max(1, items.length), c.bp * 3.2), r = Math.max(c.fl * 0.6, Math.min(30, rh * 0.3)), ds = Math.max(c.fl, Math.round(r * 1.1));
+      var bsz = fitAll(items, c.sz(1.05), c.fl, w * 0.52 - (r * 2 + 22), rh - 10, true);
+      items.forEach(function (it, i) {
+        var cy = y + i * rh + rh / 2, tx = x + r * 2 + 22, half = w * 0.52;
+        P.circle(pg, x + r, cy, r, c.lw, "none"); P.text(pg, x + r, cy + ds * 0.36, ds, String(i + 1), { bold: true, anchor: "middle" });
+        var t = fit(it, bsz, c.fl, x + half - tx, rh - 10, true); block(pg, t.lines, tx, cy - t.h / 2, t.size, { bold: true });
+        P.line(pg, x + half + 16, cy + c.fl * 0.5, x + w, cy + c.fl * 0.5, c.rule, "", "write");
+      });
+    },
+    picture: function (pg, b, c, x, y, w, h) {
+      var cap = b.caption ? fit(b.caption, c.sz(1.1), c.fl, w, c.bp * 1.6, true) : null, capH = cap ? cap.h + 10 : 0, paths = b.pic ? subjectPaths(b.pic) : null;
+      if (paths) subjectOps(pg, paths, { x: x + w * 0.2, y: y, w: w * 0.6, h: h - capH }, c.lw, c.n);
+      if (cap) block(pg, cap.lines.slice(0, 1), x + w / 2, y + h - capH + 6, cap.size, { bold: true, anchor: "middle" });
+    },
+    ladder: function (pg, b, c, x, y, w, h) {
+      var rungs = b.rungs || [], rh = Math.min(h / Math.max(1, rungs.length), c.bp * 4.6), len = rungs.reduce(function (m, q) { return Math.max(m, String(q.word).length); }, 1);
+      var bs = Math.max(c.fl * 1.5, Math.min(rh - 26, 118, (w * 0.46) / len)), g = 10, ls = Math.max(c.fl, Math.round(bs * 0.62)), bx0 = x + 4;
+      rungs.forEach(function (q, i) {
+        var by = y + i * rh + (rh - bs) / 2, word = String(q.word);
+        for (var j = 0; j < word.length; j++) { P.rect(pg, bx0 + j * (bs + g), by, bs, bs, 10, c.lw); if (!i) P.text(pg, bx0 + j * (bs + g) + bs / 2, by + bs / 2 + ls * 0.36, ls, word.charAt(j), { bold: true, anchor: "middle" }); }
+        if (i) P.line(pg, bx0 + bs / 2, by - (rh - bs), bx0 + bs / 2, by, c.rule, "", "rule");     // the ladder's rail between two steps
+        var tx = bx0 + word.length * (bs + g) + 26, t = fit(i ? q.clue : "Start here", c.sz(1.05), c.fl, x + w - tx, rh - 12, !i);
+        block(pg, t.lines, tx, by + (bs - t.h) / 2, t.size, { bold: !i });
       });
     },
     staff: function (pg, b, c, x, y, w, h) {
@@ -499,11 +558,12 @@
   };
   function rowsOf(pg, b, c, x, y, w, h, numbered) {
     var y1 = blockLabel(pg, b, c, x, y, w), items = b.items || [], rh = Math.min((y + h - y1) / Math.max(1, items.length), c.bp * 3.6), r = Math.max(c.fl * 0.62, Math.min(34, rh * 0.3));
+    var rsz = fitAll(items, c.sz(1.2), c.fl, w - (r * 2 + 26), rh - 12, numbered);
     items.forEach(function (it, i) {
       var cy = y1 + i * rh + rh / 2;
       if (numbered) { P.circle(pg, x + r, cy, r, c.lw, "none"); var ds = Math.max(c.fl, Math.round(r * 1.1)); P.text(pg, x + r, cy + ds * 0.36, ds, String(i + 1), { bold: true, anchor: "middle" }); }
       else P.rect(pg, x, cy - r, r * 2, r * 2, 8, c.lw);
-      var tx = x + r * 2 + 26, t = fit(it, c.sz(1.2), c.fl, x + w - tx, rh - 12, numbered);
+      var tx = x + r * 2 + 26, t = fit(it, rsz, c.fl, x + w - tx, rh - 12, numbered);
       block(pg, t.lines, tx, cy - t.h / 2, t.size, { bold: numbered });
     });
   }
@@ -520,11 +580,18 @@
       var needs = blocks.map(function (b) { return blockNeed(b, c); }), room = bottom - y0 - BLOCK_GAP * Math.max(0, blocks.length - 1);
       var minSum = needs.reduce(function (m, q) { return m + q.min; }, 0), wantSum = needs.reduce(function (m, q) { return m + q.want; }, 0), spare = room - minSum;
       if (spare < 0) (pg.meta.fit = pg.meta.fit || []).push("This page holds more than fits: " + blocks.length + " parts need " + Math.round(minSum) + " px and there are " + Math.round(room) + ".");
-      var y = y0;
-      blocks.forEach(function (b, i) {
-        var h = spare >= 0 ? needs[i].min + spare * needs[i].want / wantSum : needs[i].min * room / minSum;
-        BLOCKS[b.kind](pg, b, c, x, y, w, h); y += h + BLOCK_GAP;
-      });
+      /* each part takes its share of the room, but no more than it can use well; what is left over becomes even air above,
+         between and below, so a page with little on it sits in the middle of the sheet and not at its top */
+      var hs = needs.map(function (q) { return spare >= 0 ? q.min : q.min * room / minSum; }), left = Math.max(0, spare);
+      for (var pass = 0; pass < 5 && left > 1; pass++) {
+        var open = needs.map(function (q, i) { return i; }).filter(function (i) { return hs[i] < Math.max(needs[i].min, needs[i].max) - 0.5; });
+        if (!open.length) break;
+        var ws = open.reduce(function (m, i) { return m + needs[i].want; }, 0), used = 0;
+        open.forEach(function (i) { var add = Math.min(Math.max(needs[i].min, needs[i].max) - hs[i], left * needs[i].want / ws); hs[i] += add; used += add; });
+        left -= used;
+      }
+      var air = left > 1 ? left / (blocks.length + 1) : 0, y = y0 + air;
+      blocks.forEach(function (b, i) { BLOCKS[b.kind](pg, b, c, x, y, w, hs[i]); y += hs[i] + BLOCK_GAP + air; });
       pg.meta.blocks = blocks.length + (staff ? 1 : 0);
       footer(pg, sh.code);
       return pg;
@@ -612,8 +679,27 @@
 
   /* How much of a page of words and boxes is left empty, on the same 60 x 80 grid the facility validator lays over a page
      (js/utils/facility-validator.js): a cell counts as used when a word's box, a line or an outline touches it. The page makers
-     read it to grow their type only as far as the page stays calm. Library drawings are measured by the validator, not here. */
+     read it to grow their type only as far as the page stays calm. */
   var GC = 60, GR = 80;
+  /* the points a path passes through or is pulled toward (control points included), in order */
+  function pathPoints(d) {
+    var tok = String(d).match(/[a-zA-Z]|-?\d*\.?\d+(?:e-?\d+)?/g) || [], pts = [], i = 0, cmd = "", cx = 0, cy = 0, sx = 0, sy = 0;
+    var num = function () { return parseFloat(tok[i++]); };
+    while (i < tok.length) {
+      if (/[a-zA-Z]/.test(tok[i])) cmd = tok[i++];
+      var rel = cmd === cmd.toLowerCase(), C = cmd.toUpperCase(), ox = rel ? cx : 0, oy = rel ? cy : 0;
+      if (C === "Z") { cx = sx; cy = sy; pts.push([cx, cy]); if (i < tok.length && !/[a-zA-Z]/.test(tok[i])) i++; continue; }
+      if (C === "H") { cx = num() + ox; pts.push([cx, cy]); continue; }
+      if (C === "V") { cy = num() + oy; pts.push([cx, cy]); continue; }
+      var n = { M: 2, L: 2, T: 2, C: 6, S: 4, Q: 4, A: 7 }[C]; if (!n) { i++; continue; }
+      var a = []; for (var k = 0; k < n; k++) a.push(num());
+      if (C === "A") { cx = a[5] + ox; cy = a[6] + oy; pts.push([cx, cy]); continue; }
+      for (var j = 0; j < n; j += 2) pts.push([a[j] + ox, a[j + 1] + oy]);
+      cx = a[n - 2] + ox; cy = a[n - 1] + oy;
+      if (C === "M") { sx = cx; sy = cy; cmd = rel ? "l" : "L"; }
+    }
+    return pts;
+  }
   function whiteShare(pg) {
     var g = new Uint8Array(GC * GR), cw = W / GC, ch = H / GR;
     var cell = function (x, y, hw) {
@@ -631,7 +717,11 @@
         if (op.fill === "#000") box(op.cx - op.r, op.cy - op.r, op.r * 2, op.r * 2);
         for (var a = 0; a < 24; a++) cell(op.cx + op.r * Math.cos(a / 24 * 6.2832), op.cy + op.r * Math.sin(a / 24 * 6.2832), hw);
       } else if (op.t === "line") seg(op.x1, op.y1, op.x2, op.y2, hw);
-      else if (op.t === "text") {
+      else if (op.t === "path") {
+        if (op.stroke === "#fff") return;                                // the white center of a road marks nothing
+        var k = op.k || 1, pts = pathPoints(op.d);
+        for (var q = 1; q < pts.length; q++) seg(pts[q - 1][0] * k + op.tx, pts[q - 1][1] * k + op.ty, pts[q][0] * k + op.tx, pts[q][1] * k + op.ty, hw * k);
+      } else if (op.t === "text") {
         var w = op.str.length * op.size * (op.bold ? 0.6 : 0.55), x = op.anchor === "middle" ? op.x - w / 2 : op.anchor === "end" ? op.x - w : op.x;
         box(x, op.y - op.size * 0.8, w, op.size * 0.95);
       }

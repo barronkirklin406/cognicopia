@@ -20,7 +20,7 @@ const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
 const read = f => fs.readFileSync(path.join(ROOT, f), "utf8");
 const ctx = vm.createContext({ console }); ctx.globalThis = ctx; ctx.window = ctx;
 const FILES = ["assets/coloring/subjects.bundle.js", "src/services/ColoringManifest.js", "src/engine/ColoringEngine.js", "src/engine/DescribeCreate.js",
-  "js/residentContext.js", "js/generators/activity-engine.js", "js/generators/coloring-pipeline.js", "js/generators/activity-modules.js", "js/generators/activity-pages.js"];
+  "assets/services/reminiscenceEngine.js", "js/residentContext.js", "js/generators/activity-engine.js", "js/generators/coloring-pipeline.js", "js/generators/activity-modules.js", "js/generators/activity-pages.js", "js/generators/activity-life-data.js", "js/generators/activity-life.js"];
 for (const f of FILES) vm.runInContext(read(f), ctx, { filename: f });
 const E = ctx.CognicopiaActivityEngine, PL = ctx.CognicopiaColoringPipeline, M = ctx.CognicopiaColoringManifest;
 M.loadSync();
@@ -343,8 +343,10 @@ ok(E.generate({ stage: 2 }, { module: "no-such-module", count: 2, seed: 1 }).mod
   }
   ok(make(1, "steady", ["write"]).ops.filter(o => o.t === "line" && o.role === "write").length === 2, "a part to write on draws the lines it was asked for");
   ok(make(2, "steady", ["steps"]).ops.filter(o => o.t === "text" && /^[123]$/.test(o.str)).length === 3, "steps are numbered");
-  /* a late-stage page for someone with little hand control holds less: a prompt and four choices is said to be too full */
-  ok(PL.validate(make(3, "minimal", ["prompt", "choices"])).some(x => /fuller than stays calm/.test(x)), "a page too full to stay calm at the late stage says so");
+  /* a page with too many words on it to stay calm at the late stage says so (the stage wants fewer parts, not smaller type) */
+  const long = "One fine morning I put on my coat and set out for town. On the way I met a neighbor who was carrying a basket of apples, and we walked the rest of the road together, talking about the weather, the garden, the price of flour and the dance on Saturday.";
+  const wordy = PL.sheetPages({ kind: "blocks", stage: 3, dexterity: "minimal", title: "A story", code: "T-9", blocks: [{ kind: "prompt", text: long }, { kind: "prompt", text: long }] }, "full").pages[0];
+  ok(PL.validate(wordy).some(x => /fuller than stays calm/.test(x)), "a page too full of words to stay calm at the late stage says so");
   /* too much for one page is said, not squeezed in silently */
   const many = make(3, "minimal", ["prompt", "choices", "moments", "frames", "pairs", "list", "steps"]);
   ok(PL.validate(many).some(x => /holds more than fits/.test(x)), "a page asked to hold too much says so");

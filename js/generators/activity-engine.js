@@ -232,6 +232,8 @@
       /* a bigger, harder word search for an early-stage reader who wants a real workout */
       challenge: !!p.challenge,
       interests: split(p.interests), avoid: avoidTerms(p.avoid, split),
+      /* the saved resident, read once by js/residentContext.js: the life pages are made from it (null when nobody is chosen) */
+      person: p.person && typeof p.person === "object" ? p.person : null,
       /* a resident's own people, pets, places and things, as single words of 3 to 10 letters (printed on the sheet, kept nowhere) */
       personal: split(p.personal).map(function (x) { return x.replace(/[^a-z]/g, ""); }).filter(function (x, i, a) { return x.length >= 3 && x.length <= 10 && a.indexOf(x) === i; }).slice(0, 8)
     };
@@ -354,12 +356,25 @@
     var cap = REGISTRY[mod] && REGISTRY[mod].max ? REGISTRY[mod].max(P) : 60;
     count = Math.min(count, cap);                                                // a module with a small bank never repeats a sheet
     var sheets = !fits(mod, P.stage) ? [] : REGISTRY[mod] ? REGISTRY[mod].build(P, r, count, KIT) : mod === "reminiscence" ? reminiscenceSheets(P, r, count) : mod === "exercise" ? exerciseSheets(P, r, count) : dailySheets(P, r, count);
-    var code = "AS" + S.key + "-" + mod.charAt(0).toUpperCase() + "-" + seed.toString(36).toUpperCase();
+    /* the page code says the stage, the kind of page and the seed. A module may name its own letters (the life pages do, so
+       "twenty" and "then and now" are not both T); the older kinds keep their first letter. */
+    var code = "AS" + S.key + "-" + ((REGISTRY[mod] && REGISTRY[mod].code) || mod.charAt(0).toUpperCase()) + "-" + seed.toString(36).toUpperCase();
     sheets.forEach(function (sh, i) { sh.index = i; sh.stage = P.stage; sh.dexterity = P.dexterity; sh.name = P.name; sh.nameStyle = P.nameStyle; sh.code = code + "." + (i + 1); sh.dexNote = DEXTERITY[P.dexterity].note; });
     return { stage: P.stage, profile: P, seed: seed, code: code, module: mod, sheets: sheets, problems: validate(sheets, P), notFitting: !fits(mod, P.stage) };
   }
 
   /* what is wrong with these sheets, in words (an empty list is a pass) */
+  /* The tone rules are for the words Cognicopia writes, not for the names of the resident's own people: a daughter called Honey,
+     a dog called Dear or a family named Test is not baby talk. The names in the profile are set aside before a line is judged. */
+  function withoutNames(text, P) {
+    var w = P && P.person, names = [];
+    if (P && P.name) names.push(P.name);
+    if (w && w.family && w.family.all) w.family.all.forEach(function (x) { if (x && x.name) { names.push(x.name); if (x.first) names.push(x.first); } });
+    if (!names.length) return text;
+    var out = String(text);
+    names.sort(function (a, b) { return b.length - a.length; }).forEach(function (n) { out = out.replace(new RegExp("(^|[^A-Za-z])" + String(n).replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "(?![A-Za-z])", "g"), "$1"); });
+    return out;
+  }
   function validate(sheets, P) {
     var out = [];
     (sheets || []).forEach(function (sh, i) {
@@ -370,9 +385,11 @@
         else if (v && typeof v === "object") Object.keys(v).forEach(function (k) { walk(v[k], k); });
       };
       ["title", "subtitle", "word", "from", "to", "items", "steps", "pairs", "words", "cards", "questions", "extra", "left", "right", "bank", "colors", "event", "target", "options"].forEach(function (k) { if (sh[k] != null) walk(sh[k], k); });
+      /* a page of several items: everything in it is read by the resident, the strip for staff and the names of its parts aside */
+      (sh.blocks || []).forEach(function (b) { if (b && b.kind !== "staff") Object.keys(b).forEach(function (k) { if (k !== "kind" && k !== "pic" && k !== "photo") walk(b[k], k === "label" || k === "text" || k === "sub" || k === "caption" ? "items" : k); }); });
       texts.forEach(function (t) {
         if (!t) return;
-        toneProblems(t).forEach(function (m) { out.push("Sheet " + (i + 1) + ": " + m); });
+        toneProblems(withoutNames(t, P)).forEach(function (m) { out.push("Sheet " + (i + 1) + ": " + m); });
         if (P && avoided(t, P.avoid)) out.push("Sheet " + (i + 1) + ": “" + t + "” touches a topic to avoid");
       });
       if (sh.kind === "steps" && sh.steps.length < 3) out.push("Sheet " + (i + 1) + ": fewer than three steps");

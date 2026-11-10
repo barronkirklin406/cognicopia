@@ -47,7 +47,7 @@ It needs a browser that understands `:has()` in print (Chrome and Edge 105 and l
 
 The site's service worker already keeps the core files. The optimizer keeps the whole list in a cache of its own, `studio-assets-v1`, which a site update does not clear (its name does not start with `cognicopia-`, the prefix the service worker clears).
 
-- `required()` lists 15 core files and every library drawing (49 files with today's 34 drawings).
+- `required()` lists the core files and every library drawing (26 core files and 34 drawings, 60 files, as of November 10, 2026; the check reads the counts from the list itself).
 - `status()` says how many are on this computer without the network.
 - `cache()` saves the missing ones, one at a time, and a missing file does not stop the rest.
 - On the screen: the line under the preview says how many are saved, and **Save for offline use** saves them. A facility's IT contact can do this once on each computer that will be used inside a wing with no internet.
