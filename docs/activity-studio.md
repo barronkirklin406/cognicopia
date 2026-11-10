@@ -19,6 +19,8 @@
 
 ## The master inventory: nine kinds of activity
 
+(Twelve more kinds, about the resident's own life, were added on November 10, 2026: see the section on the life pages near the end.)
+
 The first four kinds above are the studio's own. `js/generators/activity-modules.js` adds the rest of the master clinical inventory to the engine's router (`CognicopiaActivityEngine.register`), and `js/generators/activity-pages.js` draws them. Each is made for a stage and left out of the others, with a plain note.
 
 | # | Kind | Stage | What it is |
@@ -168,3 +170,40 @@ A new kind of sheet, `blocks`, for the pages still to come: a page lists two to 
 ### One rule for printed song lines
 
 The tools stated four different cut-off years and two lists carried no year. There is one rule now: a song or hymn line is printed only when the work was first published in 1930 or earlier (public domain in the United States since January 1, 2026) or is traditional; anything newer appears by title, artist and year. `scripts/check-public-domain.mjs` (105 checks) reads every list in five tools. The front page's Finish the Line list and the Tablet's sayings now carry the year of each song.
+
+## The life pages: twelve kinds of page about one person (November 10, 2026)
+
+Step 2 of the November 10 plan. The Studio now makes twenty-four kinds of page: the twelve it had, and twelve that are about the resident's own life. They are under **Choose the pages yourself**, in a group called **About their own life**, and **Suggested packet for this stage** leads with them when a saved resident is chosen.
+
+| Page | What it holds | Made personal by | Stages |
+|---|---|---|---|
+| My life story | The moments of a life down a line, and a sentence to finish | Birth year, hometown, work, family (or the milestones in the profile, once Step 3 adds them) | 1, 2 |
+| Family across the generations | Parents, me, brothers and sisters, children, grandchildren, one generation to a row | The people in the profile; an empty generation is boxes to write in | 1, 2 |
+| Who's who | A frame, a name and how each person belongs | The people in the profile who are living | 1, 2, 3 |
+| My work and its tools | The tools of the trade, each joined to its job, or ticked off | Former work (ten trades) | 1, 2 |
+| Where I come from | The town by name, and the sights and tastes of its region | Hometown | 1, 2, 3 |
+| Songs of my years | Title, artist and year, to tick or to listen to | Birth year (the years they were 15 to 25), favorite artists | 1, 2, 3 |
+| The year I turned twenty | What was new, and the sayings of the day | Birth year | 1, 2 |
+| Then and now | The old thing joined to what does its job today, sometimes with its drawing | Nothing: the same for everyone | 1, 2 |
+| My day, step by step | A morning and an evening, in order, under a drawing | Nothing | 2, 3 |
+| A dish I made | What goes in, and how it is made | Region (or their own dish, once Step 3 adds it) | 1, 2 |
+| What I would like | A few large choices to point to | Nothing (their own comforts, once Step 3 adds them) | 2, 3 |
+| Word play | Two words that make one, a story with gaps, a word ladder | Pastimes and work choose the ladder; family and hometown are offered as ideas for the story | 1, 2 |
+
+### The rules they keep
+
+- **Nothing is guessed.** A page says only what the profile says. With no profile the same pages still work: the family page is boxes to write in, the life story is the chapters any life has, the hometown page asks about "the place you grew up". A town's own landmarks are never invented: the page asks about the town by name and offers the well-known sights of its part of the country.
+- **A page for visits shows the living.** Who's who leaves out anyone the profile marks as having passed away. The family page and the life story keep them, because a family and a life include them.
+- **A person the profile says to leave out is left out everywhere.** "Loved ones to leave out" in the profile is honored on every page.
+- **A name is a name.** The tone rules judge Cognicopia's words, not the names of a resident's people: a daughter called Honey or a dog called Dear belongs on the page. (The first version dropped them; a made-up surname in a test caught it.)
+- **A trade that is itself a topic to avoid is not opened up.** A nurse who avoids illness and hospitals, or a driver who avoids the subject of driving, gets a page about a working life in general.
+- **No song words.** Songs appear by title, artist and year. A song's words are not printed on these pages.
+- **Each kind has two letters of its own in the page code** (`ASE-LS-…` is a life story, `ASE-TW-…` the year they turned twenty), so two kinds are not told apart only by luck.
+
+### How a page is laid out
+
+Every one is a page of several items. The composer gives each part the room it can use well and turns what is left into even air above, between and below, so a page with little on it sits in the middle of the sheet. Lines that share a part are set at one size. Four more kinds of part were added for these pages: a family in rows, numbered gaps for a story, a finished drawing from the library with its name, and a word ladder.
+
+### Files and checks
+
+`js/generators/activity-life.js` (the twelve kinds), `js/generators/activity-life-data.js` (trades, regions, later songs, sayings, then and now, a day, dishes, comforts, word play). The Studio page also loads `assets/services/reminiscenceEngine.js` for its list of songs and its map of towns to regions. `scripts/check-activity-life.mjs` (1,153 checks: the data, 1,926 pages at every stage and hand with a profile and without, what a profile makes personal, topics and people left out) and eleven more steps in `scripts/check-activity-studio-ui.mjs` (a saved resident's life on the page in a real browser).

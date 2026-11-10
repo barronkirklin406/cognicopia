@@ -51,7 +51,9 @@ async function open(w, h, keepClosed) {
 }
 const pos = p => p.textContent("#asPos");
 const pick = async (p, name, value) => { await p.check(`input[name="${name}"][value="${value}"]`, { force: true }); await p.waitForTimeout(450); };
-const mix = async (p, kinds) => { for (const k of ["reminiscence", "exercise", "daily", "coloring", "wordgrid", "timeline", "memory", "dialogue", "household", "phrases", "recognition", "rhythm"]) { await p.setChecked(`input[name="mix"][value="${k}"]`, kinds.includes(k), { force: true }); } await p.waitForTimeout(450); };
+const ALL_KINDS = ["reminiscence", "exercise", "daily", "coloring", "wordgrid", "timeline", "memory", "dialogue", "household", "phrases", "recognition", "rhythm",
+  "lifestory", "generations", "whoswho", "mytrade", "hometown", "songs", "twenty", "thennow", "myday", "dish", "comfort", "wordplay"];
+const mix = async (p, kinds) => { for (const k of ALL_KINDS) { await p.setChecked(`input[name="mix"][value="${k}"]`, kinds.includes(k), { force: true }); } await p.waitForTimeout(450); };
 const total = async p => Number(/of (\d+)/.exec(await pos(p))[1]);
 const svgText = p => p.$eval("#asSheet svg", e => e.textContent);
 const setPages = async (p, n) => { await p.selectOption("#asPages", String(n)); await p.waitForTimeout(450); };
@@ -172,7 +174,7 @@ try {
   ({ ctx, p } = await open(1366, 900));
   const NEWK = { wordgrid: [1, 2], timeline: [1, 2], memory: [1, 2], dialogue: [1, 2, 3], household: [1, 2], phrases: [1, 2], recognition: [2, 3], rhythm: [2, 3] };
   const kindsOnScreen = await p.$$eval('input[name="mix"]', n => n.map(x => x.value));
-  ok(Object.keys(NEWK).every(k => kindsOnScreen.includes(k)) && kindsOnScreen.length === 12, "the content mix lists all twelve kinds of page: " + kindsOnScreen.join(","));
+  ok(Object.keys(NEWK).every(k => kindsOnScreen.includes(k)) && kindsOnScreen.length === 24, "the content mix lists all twenty-four kinds of page (twelve general, twelve about the person's own life): " + kindsOnScreen.join(","));
   for (const [k, stages] of Object.entries(NEWK)) {
     for (const st of [1, 2, 3]) {
       await pick(p, "stage", String(st)); await mix(p, [k]); await setPages(p, 3);
@@ -362,6 +364,48 @@ try {
     ok(await pr.evaluate(() => { const el = document.getElementById("rapName"); return !!el && el.value === "Evelyn"; }), "...and shows her name, ready to edit");
     await pr.close();
     await c2.close();
+  }
+
+  /* the life pages: a saved resident's own life on the page, and a suggested packet that leans on what their profile holds */
+  {
+    const AMY = { schema: "cognicopia.residentProfile", version: 2, id: "res-amy", createdAt: "2026-09-01T10:00:00Z", updatedAt: "2026-09-01T10:00:00Z",
+      tier1_core: { preferredName: "Amelia", cognitiveTier: 1, occupation: { code: "teacher", label: "Teacher" }, topHobbies: [{ code: "gardening", label: "Gardening" }], printNeeds: {}, topicsToAvoid: { topics: [], eras: [], people: "", places: "", other: "" } },
+      tier2_enrichment: { birthYear: 1938, hometown: { place: "Scobey, Montana" }, music: { genres: [], artists: ["Patsy Cline"], favoriteSong: "" } },
+      tier3_deep: { notes: "", people: [{ name: "Harold Test", relationship: { code: "spouse", label: "Husband or wife" }, passedAway: true }, { name: "Sarah Test", relationship: { code: "daughter", label: "Daughter" } }, { name: "Buster", relationship: { code: "pet-dog", label: "Pet dog" }, isPet: true }] } };
+    const { ctx: c4, p: a } = await open(1366, 900);
+    await a.evaluate(x => localStorage.setItem("cognicopia_resident_" + x.id, JSON.stringify(x)), AMY);
+    await a.reload({ waitUntil: "load" }); await a.waitForSelector("#asSheet svg"); await a.waitForTimeout(900);
+    await a.evaluate(() => document.querySelectorAll("details.as-acc").forEach(d => { d.open = true; }));
+    ok(await a.$$eval('#asLifeHead ~ .as-mix input[name="mix"]', b => b.length) === 12 && /About their own life/.test(await a.textContent("#asLifeHead")), "the twelve life pages have a group of their own under Choose the pages yourself");
+    const everyPage = async () => { let all = ""; for (let k = 0; k < 10; k++) { all += " || " + await svgText(a); if (await a.$eval("#asNext", b => b.disabled)) break; await a.click("#asNext"); await a.waitForTimeout(100); } return all; };
+    /* with no one chosen, the suggested packet is the stage's own, as before */
+    await a.evaluate(() => document.querySelector('input[name="stage"][value="1"]').click()); await a.waitForTimeout(300);
+    await a.click("#asSuggest"); await a.waitForTimeout(600);
+    ok((await a.$$eval('input[name="mix"]:checked', b => b.map(x => x.value))).join() === "coloring,wordgrid,timeline,memory,dialogue", "with no one chosen the suggested packet is the stage's own five kinds");
+    /* choosing her and asking again leads with pages her profile can make its own */
+    await a.selectOption("#asResident", "res-amy"); await a.waitForTimeout(700);
+    await a.click("#asSuggest"); await a.waitForTimeout(700);
+    const on = await a.$$eval('input[name="mix"]:checked', b => b.map(x => x.value));
+    ok(["lifestory", "generations", "mytrade"].every(k => on.includes(k)) && on.includes("coloring") && on.length === 5, `with Amelia chosen it leads with her life story, her family and her work (${on.join(", ")})`);
+    const first = await everyPage();
+    ok(/Born in Scobey/.test(first) && /1938/.test(first) && /Worked as a teacher/.test(first), "her life story page says where and when she was born and what she did");
+    ok(/My family/.test(first) && /Sarah/.test(first) && /Harold/.test(first), "her family page holds her husband and daughter by name");
+    ok(/My work: the/.test(first) && /classroom/.test(first), "her work page is about the classroom");
+    ok(/Clinical readiness: (9\d|100) \/ 100/.test(await a.textContent("#asReady")), `the packet still scores as ready (${(await a.textContent("#asReady")).trim().slice(0, 40)})`);
+    /* a second press offers a different three */
+    await a.click("#asSuggest"); await a.waitForTimeout(700);
+    const on2 = await a.$$eval('input[name="mix"]:checked', b => b.map(x => x.value));
+    ok(["hometown", "songs", "twenty"].every(k => on2.includes(k)), `pressing it again offers the next three: where she comes from, her songs and the year she turned twenty (${on2.join(", ")})`);
+    const second = await everyPage();
+    ok(/Tell me about Scobey/.test(second) && /1953 to 1963/.test(second) && /Patsy Cline/.test(second) && /1958/.test(second), "those pages name her town, the years she was 15 to 25, her favorite singer and the year she turned twenty");
+    /* a page for visits leaves out someone who has passed away */
+    await mix(a, ["whoswho"]); await setPages(a, 2);
+    const who = await everyPage();
+    ok(/Sarah Test/.test(who) && /Buster/.test(who) && !/Harold/.test(who), "who's who shows her daughter and her dog, and not her late husband");
+    /* "A new person" takes her life off the page */
+    await mix(a, ["lifestory"]); await a.selectOption("#asResident", ""); await a.waitForTimeout(600);
+    ok(!/Scobey|Amelia|1938/.test(await everyPage()) && /Every life has/.test(await svgText(a)), "choosing A new person takes her life off the page: the story page goes back to the chapters any life has");
+    await c4.close();
   }
 
   /* a ticked topic to avoid keeps the whole topic off the page (the Studio used to read the tick's label and match nothing) */

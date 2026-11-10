@@ -67,7 +67,10 @@
   };
   var WEIGHTS = { contrast: 20, stroke: 25, whitespace: 20, variety: 15, framework: 20 };
   var DOMAIN = { reminiscence: "Remembering", dialogue: "Remembering", rhythm: "Sensory and calm", recognition: "Sensory and calm", exercise: "Thinking", wordgrid: "Thinking", timeline: "Thinking", memory: "Thinking",
-    household: "A meaningful role", daily: "A meaningful role", phrases: "Remembering", coloring: "Creative expression" };
+    household: "A meaningful role", daily: "A meaningful role", phrases: "Remembering", coloring: "Creative expression",
+    /* the life pages (js/generators/activity-life.js) */
+    lifestory: "Remembering", generations: "Remembering", whoswho: "Remembering", hometown: "Remembering", twenty: "Remembering", songs: "Sensory and calm", comfort: "Sensory and calm",
+    mytrade: "A meaningful role", myday: "A meaningful role", dish: "A meaningful role", thennow: "Thinking", wordplay: "Thinking" };
   var FRAMEWORKS = [
     { id: "interest",   label: "Reflects the resident's interests and years", source: "CMS F679 (42 CFR 483.24(c)): activities based on each resident's interests, needs and preferences" },
     { id: "stage-fit",  label: "Tasks are broken down for the stage",         source: "Montessori-based dementia programming (C. Camp); occupational therapy stage guidance" },
@@ -239,7 +242,7 @@
     var steps = pages.filter(function (pg) { return pg.meta && pg.meta.sheetKind === "steps"; });
     var tests = pages.some(function (pg) { return pg.meta && /^(match|sort|timeline|memory|wordgrid|scramble|household|phrases)$/.test(pg.meta.sheetKind); });
     var chk = {
-      interest: mods.some(function (m) { return /^(reminiscence|dialogue|wordgrid|timeline)$/.test(m); }) || !!(ctx.interests && String(ctx.interests).trim()),   // these draw on the years chosen (their decade, events and conversation themes)
+      interest: mods.some(function (m) { return /^(reminiscence|dialogue|wordgrid|timeline|lifestory|generations|whoswho|mytrade|hometown|songs|twenty|dish)$/.test(m); }) || !!(ctx.interests && String(ctx.interests).trim()),   // these draw on the years chosen (their decade, events and conversation themes)
       "stage-fit": steps.every(function (pg) { var k = pg.meta.steps; return stage === 3 ? k <= 4 : stage === 2 ? k <= 5 : k >= 4; }),
       errorless: !QUIZ.test(texts) && (stage !== 3 || !tests),
       guidance: pages.every(function (pg) { var m = pg.meta || {}; return m.module === "coloring" || !!m.staff; }),

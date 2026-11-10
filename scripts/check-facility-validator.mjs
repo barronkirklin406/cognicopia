@@ -22,7 +22,7 @@ import { fileURLToPath } from "url";
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
 const read = f => fs.readFileSync(path.join(ROOT, f), "utf8");
 const ctx = vm.createContext({ console }); ctx.globalThis = ctx; ctx.window = ctx;
-const FILES = ["assets/coloring/subjects.bundle.js", "src/services/ColoringManifest.js", "src/engine/DescribeCreate.js", "js/residentContext.js", "js/generators/activity-engine.js", "js/generators/coloring-pipeline.js", "js/generators/activity-modules.js", "js/generators/activity-pages.js", "js/utils/facility-validator.js", "js/utils/print-optimizer.js"];
+const FILES = ["assets/coloring/subjects.bundle.js", "src/services/ColoringManifest.js", "src/engine/DescribeCreate.js", "assets/services/reminiscenceEngine.js", "js/residentContext.js", "js/generators/activity-engine.js", "js/generators/coloring-pipeline.js", "js/generators/activity-modules.js", "js/generators/activity-pages.js", "js/generators/activity-life-data.js", "js/generators/activity-life.js", "js/utils/facility-validator.js", "js/utils/print-optimizer.js"];
 for (const f of FILES) vm.runInContext(read(f), ctx, { filename: f });
 const E = ctx.CognicopiaActivityEngine, PL = ctx.CognicopiaColoringPipeline, FV = ctx.CognicopiaFacilityValidator, PO = ctx.CognicopiaPrintOptimizer, M = ctx.CognicopiaColoringManifest;
 M.loadSync();

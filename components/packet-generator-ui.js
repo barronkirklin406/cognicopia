@@ -51,9 +51,16 @@
     ["wordgrid", "Word grids and look-back (stages 1-2)"], ["timeline", "Timeline sorting (stages 1-2)"], ["memory", "Memory pairs to cut out (stages 1-2)"],
     ["dialogue", "Guided dialogue sheets"], ["household", "Household matching (stages 1-2)"], ["phrases", "Sayings and song lines (stages 1-2)"],
     ["recognition", "Shapes and colors (stages 2-3)"], ["rhythm", "Rhythm and word tickets (stages 2-3)"]];
+  /* the life pages (activity-life.js): each is about the person, and fuller when a saved resident is chosen */
+  var LIFE_KINDS = [["lifestory", "My life story (stages 1-2)"], ["generations", "Family across the generations (stages 1-2)"], ["whoswho", "Who's who"], ["mytrade", "My work and its tools (stages 1-2)"],
+    ["hometown", "Where I come from"], ["songs", "Songs of my years"], ["twenty", "The year I turned twenty (stages 1-2)"], ["thennow", "Then and now (stages 1-2)"],
+    ["myday", "My day, step by step (stages 2-3)"], ["dish", "A dish I made (stages 1-2)"], ["comfort", "What I would like (stages 2-3)"], ["wordplay", "Word play (stages 1-2)"]];
+  var HAS_LIFE = E.modules().some(function (m) { return m.id === "lifestory"; });
+  if (HAS_LIFE) KINDS = KINDS.concat(LIFE_KINDS);
   /* the suggested packet for each stage: three of the master inventory and a coloring page */
   var SUGGEST = { 1: ["wordgrid", "timeline", "memory", "dialogue", "coloring"], 2: ["dialogue", "household", "phrases", "coloring"], 3: ["coloring", "recognition", "rhythm", "dialogue"] };
   var LABEL = {}; KINDS.forEach(function (k) { LABEL[k[0]] = k[1]; });
+  var suggestTurn = 0;
   var state = { mix: { reminiscence: true, exercise: true, daily: true, coloring: true }, vocation: "", stage: 2, dexterity: "steady", decade: 1950, born: "", name: "", nameStyle: "plain", personal: "", challenge: false, answers: false, resident: "", interests: "", avoid: "",
     style: "botanical", words: "", layout: "full", pages: 4, view: "one", dark: false, gutter: false, seed: (Date.now() % 1000000) + 1, variant: 0, index: 0 };
   var made = { pages: [], notes: [], code: "" };
@@ -69,6 +76,7 @@
   function acc(id, title, hint, body) {
     return '<details class="as-acc" id="' + id + '"><summary><span>' + title + '</span><small>' + hint + '</small></summary><div class="as-acc-body">' + body + '</div></details>';
   }
+  function mixBox(k) { return '<label class="as-check"><input type="checkbox" name="mix" value="' + k[0] + '"><span>' + k[1] + '</span></label>'; }
   function build() {
     var who =
       '<section class="as-step" aria-labelledby="asStep1"><h2 id="asStep1">Who is this for?</h2>' +
@@ -97,9 +105,9 @@
       '<div class="as-row"><label class="as-lab" for="asPersonal">Names and places from their life, one word each, with commas (family, pets, hometown, a first car)</label><input id="asPersonal" type="text" maxlength="120" autocomplete="off" placeholder="for example: Sarah, Buster, Scobey, Studebaker"></div>' +
       '<fieldset class="as-f"><legend class="as-lab">How the name is lettered (your choice; nothing is guessed from the name)</legend><div class="as-seg"><label><input type="radio" name="nameStyle" value="plain"><span>Plain</span></label><label><input type="radio" name="nameStyle" value="flow"><span>Flowing script</span></label><label><input type="radio" name="nameStyle" value="formal"><span>Formal script</span></label></div></fieldset>');
     var pagesAcc = acc("asAccPages", "Choose the pages yourself", "which kinds of page, how many, coloring style, layout",
-      '<fieldset class="as-f"><legend>Content mix</legend><div class="as-mix">' + KINDS.map(function (k) {
-        return '<label class="as-check"><input type="checkbox" name="mix" value="' + k[0] + '"><span>' + k[1] + '</span></label>';
-      }).join("") + '</div><p class="as-hint">The packet takes one page from each kind in turn. A kind made for other stages is skipped, and the note says so.</p></fieldset>' +
+      '<fieldset class="as-f"><legend>Content mix</legend><div class="as-mix">' + KINDS.slice(0, 12).map(mixBox).join("") + '</div>' +
+      (HAS_LIFE ? '<p class="as-lab as-mix-head" id="asLifeHead">About their own life</p><p class="as-hint">These pages are made from a saved resident\u2019s profile. With no one chosen they still work, with room to write things in.</p><div class="as-mix" role="group" aria-labelledby="asLifeHead">' + LIFE_KINDS.map(mixBox).join("") + '</div>' : '') +
+      '<p class="as-hint">The packet takes one page from each kind in turn. A kind made for other stages is skipped, and the note says so.</p></fieldset>' +
       '<div class="as-row"><label class="as-lab" for="asPages">Pages in the packet</label><select id="asPages">' + [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(function (n) { return '<option value="' + n + '">' + n + (n === 1 ? ' page' : ' pages') + '</option>'; }).join("") + '</select></div>' +
       '<div class="as-only-col"><div class="as-row"><label class="as-lab" for="asStyle">Coloring style</label><select id="asStyle">' + PL.STYLES.map(function (st) { return '<option value="' + st.id + '">' + st.label + '</option>'; }).join("") + '</select></div>' +
       '<div class="as-row"><label class="as-lab" for="asWords">Or describe the picture in a few words</label><input id="asWords" type="text" maxlength="120" placeholder="a rose in a jug" autocomplete="off"></div></div>' +
@@ -148,6 +156,9 @@
     return { name: who.name, born: who.born || "", stage: who.stage || state.stage, vocation: voc,
       interests: who.interests.join(", "), avoid: avoid.join(", "), personal: who.personalWords.join(", ") };
   }
+  /* the chosen resident as the life pages read them (read once, and again after a save) */
+  var personCache = { id: "", person: null };
+  function personOf(id) { if (personCache.id !== id) { var p = readRes(id); personCache = { id: id, person: p ? R.person(p) : null }; } return personCache.person; }
   function setField(id, v) { var el = $("#" + id); if (el) el.value = v == null ? "" : String(v); }
   function applyResident(id) {
     var p = id ? readRes(id) : null;
@@ -210,13 +221,13 @@
     if (state.interests !== (mapped.interests || "")) t3.notes = setNoteLine(t3.notes, "Interests", words(state.interests).join(", "));
     if (state.personal !== (mapped.personal || "")) t3.notes = setNoteLine(t3.notes, "Words from their life", words(state.personal).join(", "));
     try { LS().setItem(PREFIX + p.id, JSON.stringify(p)); LS().setItem(ACTIVE_KEY, p.id); } catch (e) { whoMsg(e && e.name === "LockedError" ? "Saved residents are locked. Unlock them first." : "That could not be saved. This browser is not allowing storage, or it is full.", true); return; }
-    state.resident = p.id; mapped = fromProfile(p);
+    state.resident = p.id; mapped = fromProfile(p); personCache = { id: "", person: null };
     var done = function () { paintWho(); whoMsg((isNew ? "Saved " + firstWord(name) + ". " : "Updated " + firstWord(name) + ". ") + "Pick them from the list next time. Only on this computer."); };
     if (SS() && SS().flush) SS().flush().then(done, done); else done();
   }
 
   /* ---------- making the packet ---------- */
-  function profile() { return { name: state.name, born: Number(state.born) || 0, nameStyle: state.nameStyle, personal: state.personal, challenge: state.challenge, stage: state.stage, dexterity: state.dexterity, decade: state.decade, interests: state.interests, avoid: state.avoid, vocation: state.vocation }; }
+  function profile() { return { person: state.resident ? personOf(state.resident) : null, name: state.name, born: Number(state.born) || 0, nameStyle: state.nameStyle, personal: state.personal, challenge: state.challenge, stage: state.stage, dexterity: state.dexterity, decade: state.decade, interests: state.interests, avoid: state.avoid, vocation: state.vocation }; }
   function kindsOn() { return KINDS.map(function (k) { return k[0]; }).filter(function (k) { return state.mix[k]; }); }
   function avoidList() { return R.avoidFromText(state.avoid); }
   var STAGE_KEY = ["E", "M", "L"];
@@ -426,8 +437,13 @@
       schedule(false);
     });
     $("#asSuggest").addEventListener("click", function () {
-      KINDS.forEach(function (k) { state.mix[k[0]] = SUGGEST[state.stage].indexOf(k[0]) >= 0; });
-      state.pages = Math.max(state.pages, 4); sync(); refresh(false);
+      /* with a saved resident chosen, up to three of the pages their profile can make its own lead the packet (a different three on
+         the next press), then the stage's own pages and a coloring page; with no one chosen it is the stage's packet as before */
+      var base = SUGGEST[state.stage], life = state.resident && E.lifePagesFor ? E.lifePagesFor(profile()) : [], lead = [];
+      if (life.length) { for (var li = 0; li < Math.min(3, life.length); li++) lead.push(life[(suggestTurn * 3 + li) % life.length]); suggestTurn++; }
+      var rest = base.filter(function (k) { return k !== "coloring"; }).slice(0, Math.max(1, 4 - lead.length)), pick = lead.concat(rest, ["coloring"]);
+      KINDS.forEach(function (k) { state.mix[k[0]] = pick.indexOf(k[0]) >= 0; });
+      state.pages = Math.max(state.pages, Math.min(10, pick.length)); state.index = 0; sync(); refresh(false);
     });
     $("#asGutter").addEventListener("change", function (e) { state.gutter = e.target.checked; paint(); });
     $("#asDark").addEventListener("change", function (e) { state.dark = e.target.checked; paint(); });
