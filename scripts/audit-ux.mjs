@@ -85,6 +85,8 @@ const STATES = [
   ["Start here: the last step", "index.html", [page => page.evaluate(() => { localStorage.setItem("cognicopia_start", JSON.stringify({ role: "home", step: 4 })); window.CogniWayfinding.openStart(); })]],
   ["pinned tools: the picker", "index.html", [page => page.evaluate(() => window.CogniWayfinding.openPinPicker())]],
   ["builder: upgrade screen (50 packets used)", "builder.html#/", [openGate]],
+  ["builder home: by stage and ability", "builder.html#/", [click("#hmTab-stage")]],
+  ["builder home: build your own, more tools open", "builder.html#/", [click("#hmTab-own"), click(".hm-more > summary")]],
   ["builder: upgrade banner (20 packets used)", "builder.html#/", [page => page.evaluate(() => { localStorage.setItem("cognicopia_gen_count", "20"); }), reload]],
   ["license window (a page with a top bar)", "pricing.html", [click("#cgPromoBtn")]],
   ["contact: an invoice request", "contact.html?subject=Corporate+Invoice+Request", []],

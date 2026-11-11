@@ -247,6 +247,14 @@ step("Daily engagement: three choices and one button, a card for every kind of t
   }
 });
 
+step("the Packet Builder's home in three tabs: four presets for a stage or a resident (their name, stage, years and topics to avoid), only the activities made for a stage, the categories; at most eight choices a tab, 52 px and readable by day and in Night Shift (a real browser)", () => {
+  try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-builder-home-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
+  catch (e){
+    if (e.status === 2) return "skipped: Playwright is not installed here (see docs/dev-setup.md)";
+    throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message);
+  }
+});
+
 step("wayfinding: the search on every kind of page, a resident and a tool together, the active-resident bar (Switch, Clear, the tools starting from it, aliases on the Shift board), Start here once after the terms with a card on each page, up to four pinned tools; 52 px and readable by day and in Night Shift (a real browser)", () => {
   try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-wayfinding-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
   catch (e){

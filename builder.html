@@ -277,6 +277,27 @@ input:focus,select:focus{border-color:var(--accent)}
 .seg input:checked + span{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
 .seg input:focus-visible + span{outline:3px solid var(--accent-hi);outline-offset:2px}
 .actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}
+/* the home screen's three tabs (renderHome) */
+.hm-tabs{margin-top:8px}
+.hm-panel{padding-top:4px}
+.hm-for{margin:0 0 16px;padding:12px 16px;border-radius:12px;border:1px solid var(--line);background:var(--bg-2);line-height:1.5}
+.hm-stage{margin:0 0 18px}
+.hm-presets{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px}
+.hm-preset{display:flex;flex-direction:column;gap:8px;padding:18px;border-radius:var(--radius);border:1px solid var(--line);background:var(--panel)}
+.hm-preset h2{margin:0;font-size:1.2rem}
+.hm-preset .hint{margin:0}
+.hm-pages{margin:0 0 6px;padding-left:1.2em;display:grid;gap:2px;font-size:15.5px}
+.hm-preset .btn{margin-top:auto;align-self:flex-start;min-height:var(--tap)}
+.hm-areas{margin:0 0 12px}
+.hm-area-row{display:flex;flex-wrap:wrap;gap:8px}
+.hm-area{min-height:var(--tap)}
+.hm-area[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.hm-results{margin-top:12px}
+.hm-more{margin-top:24px;border:1px solid var(--line);border-radius:var(--radius);background:var(--bg-2)}
+.hm-more>summary{display:flex;align-items:center;min-height:var(--tap);padding:8px 16px;font-weight:700;cursor:pointer}
+.hm-more>.card-grid{padding:0 14px 14px}
+.hm-pins{margin-top:28px}
+html.cg-paper-app:not(.cg-night-shift) .hm-area[aria-pressed="true"]{color:var(--accent-ink) !important}
 
 .switch{display:flex;gap:14px;align-items:flex-start;padding:14px;border-radius:12px;border:1px solid var(--line);background:var(--bg-2);cursor:pointer}
 .switch input{appearance:none;-webkit-appearance:none;flex:none;width:50px;height:28px;margin:0;border-radius:999px;background:#334244;border:2px solid #4d5e61;position:relative;cursor:pointer;transition:background .15s,border-color .15s}
@@ -15507,26 +15528,87 @@ function renderCounts(){
   $("#topCount").textContent = queue.length;
 }
 
-function renderHome(){
-  // Interactive generators first, then the activity library, then the
-  // reading: the reference modules live in the Resource & Clinical Hub.
-  const cc = CAT_INDEX["cognicopia-coloring"], tool = (href, icon, name, desc, pills) => `
-      <a class="card" href="${href}">
-        <span class="ic">${icon}</span><b>${esc(name)}</b><span class="desc">${esc(desc)}</span>
-        <span class="meta">${pills.map((p, k) => `<span class="pill${k ? "" : " live"}">${esc(p)}</span>`).join("")}</span>
-      </a>`;
-  view.innerHTML = `
-    <p class="eyebrow">Packet Builder</p>
-    <h1 class="view-title" tabindex="-1">Build a packet, one activity at a time</h1>
-    <p class="lede">Pick a tool or a category, choose an activity, and add as many different versions as you need. Every version is freshly generated, so no two pages are the same. Nothing leaves this computer.</p>
-    <ol class="steps">
-      <li><b>Choose a tool or category</b> below or on the left.</li>
+/* ---------- the home screen, in three tabs (Phase 1, item 1B) ----------
+   Quick presets: four bundles that fill the packet for the active resident (or a chosen stage) in one press, each page made
+   for that stage and kept clear of their topics to avoid, exactly as the activity form would make it. By stage and ability:
+   only the activities made for a stage, in one area at a time. Build your own: the activity categories, and the other tools
+   in one closed section. No tab asks more than eight things of a person at once. The tab is remembered for this browser tab. */
+const HOME_TAB_KEY = "cgb_home_tab";
+const HOME_PRESETS = [
+  { id:"morning", name:"Morning warm-up", what:"A look at the day, a seated stretch and a little word play to start the morning.", acts:["orientation", "chair-yoga", "finish-saying", "word-search", "search-guided", "matching"] },
+  { id:"afternoon", name:"Quiet afternoon", what:"Calm, unhurried pages for the slower part of the day.", acts:["line-tracing", "lyric-sheet", "matching", "pathtrace", "silhouette"] },
+  { id:"connect", name:"One-on-one connection", what:"Pages that start a conversation about their own years, for one person and one staff member.", acts:["memory-lane", "finish-song", "goes-together", "name-three", "silhouette"] },
+  { id:"sensory", name:"Sensory and calm", what:"Shapes to look at, rhythm and touch, with nothing to get right.", acts:["soothing-set", "silhouette", "seated-rhythm", "line-tracing", "matching"] }
+];
+const HOME_AREAS = [
+  ["words", "Words and letters", ["word", "letters"]], ["numbers", "Numbers", ["numbers"]], ["movement", "Movement and hands", ["movement"]],
+  ["music", "Music", ["music"]], ["senses", "Senses and pictures", ["multisensory", "cognicopia-coloring"]]
+];
+const homeState = { stage: "", area: "words" };
+let homeOpenAct = "";          // an activity chosen on the home screen opens on its category's screen
+function homeTab(){ let t = ""; try { t = sessionStorage.getItem(HOME_TAB_KEY) || ""; } catch (e){ t = ""; } return ["presets", "stage", "own"].indexOf(t) >= 0 ? t : "presets"; }
+/* the stage the presets and the stage tab start from: the active resident's, else the one chosen here, else the Builder's own setting */
+function homeLevel(){
+  const p = ActiveResident.profile();
+  if (p){ const k = ["", "early", "moderate", "advanced"][BookUI.needsFor(p).tier]; if (k) return k; }
+  return DIFFICULTIES[homeState.stage] ? homeState.stage : (DIFFICULTIES[settings.difficulty] ? settings.difficulty : "moderate");
+}
+/* one preset's pages at a stage: the first four of its list that are made for that stage */
+function presetActs(pr, level){ return pr.acts.map(id => ACT_INDEX[id]).filter(a => a && clinicalOk(level, a.id)).slice(0, 4); }
+/* what one page of a preset is made with: the same settings the activity form would give it for this resident or stage */
+function presetCfg(act, p, level){
+  const CMx = window.CognicopiaClinicalMatrix;
+  const cfg = { residentName: p ? String(p.tier1_core.preferredName || "").slice(0, 40) : String(settings.residentName || "").slice(0, 40), date: todayISO(), difficulty: level,
+    era: p ? ActiveResident.eraKey(p) : settings.era };
+  const av = p ? avoidTermsOf(p) : (CMx ? CMx.avoidTerms(settings.avoid) : []);
+  if (av.length) cfg.avoid = av;
+  if (act.options) cfg.opts = savedOpts(act);
+  return cfg;
+}
+function addPreset(id){
+  const pr = HOME_PRESETS.filter(x => x.id === id)[0]; if (!pr) return;
+  const p = ActiveResident.profile(), level = homeLevel(), acts = presetActs(pr, level);
+  acts.forEach(a => addBatch(a, presetCfg(a, p, level), newSeed(), 1));
+  toast(`Added ${acts.length} pages for ${p ? cgScreenName(p) : DIFFICULTIES[level].label.toLowerCase()}: ${pr.name}. Your packet has ${queue.length}.`, "Review packet", openDrawer);
+}
+function homeStageSeg(name, level, legend){
+  return `<fieldset class="field hm-stage"><legend>${esc(legend)}</legend><div class="seg">${Object.keys(DIFFICULTIES).map(k => `<label><input type="radio" name="${name}" value="${k}" ${k === level ? "checked" : ""}><span>${tierTwoLine(k)}</span></label>`).join("")}</div></fieldset>`;
+}
+function homePresets(){
+  const p = ActiveResident.profile(), level = homeLevel();
+  const who = p ? `<p class="hm-for" role="status">For <b>${esc(cgScreenName(p))}</b>, at their own stage (${esc(DIFFICULTIES[level].label.toLowerCase())}), with their topics to avoid kept off every page. To make them for someone else, choose in <b>Working with</b> above.</p>`
+    : homeStageSeg("hmStageP", level, "No resident is chosen. Which stage are these for?");
+  return `${who}
+    <div class="hm-presets">${HOME_PRESETS.map(pr => { const acts = presetActs(pr, level);
+      return `<section class="hm-preset" aria-labelledby="hmP-${pr.id}"><h2 id="hmP-${pr.id}">${esc(pr.name)}</h2><p class="hint">${esc(pr.what)}</p>
+        <ul class="hm-pages">${acts.map(a => `<li>${esc(a.name)}</li>`).join("")}</ul>
+        <button type="button" class="btn btn-primary" data-preset="${pr.id}"${acts.length ? "" : " disabled"}>Add these ${acts.length} pages</button></section>`; }).join("")}</div>`;
+}
+function homeStage(){
+  const level = homeLevel(), area = HOME_AREAS.filter(a => a[0] === homeState.area)[0] || HOME_AREAS[0];
+  const inArea = CATEGORIES.filter(c => area[2].indexOf(c.id) >= 0).reduce((all, c) => all.concat(c.activities), []);
+  const fit = inArea.filter(a => clinicalOk(level, a.id)), left = inArea.length - fit.length;
+  return `${homeStageSeg("hmStageS", level, "Stage")}
+    <fieldset class="field hm-areas"><legend>What they enjoy</legend><div class="hm-area-row">${HOME_AREAS.map(a => `<button type="button" class="btn hm-area" data-area="${a[0]}" aria-pressed="${a[0] === area[0]}">${esc(a[1])}</button>`).join("")}</div></fieldset>
+    <p class="hint" role="status">${fit.length} ${fit.length === 1 ? "activity is" : "activities are"} made for the ${esc(DIFFICULTIES[level].label.toLowerCase())}${left ? `; ${left} more in this area ${left === 1 ? "is" : "are"} made for other stages and left out` : ""}.</p>
+    <div class="card-grid hm-results">${fit.map(a => `<a class="card" href="${catHref(CAT_INDEX[a.categoryId])}" data-home-act="${esc(a.id)}"><span class="ic">${a.icon}</span><b>${esc(a.name)}</b><span class="desc">${esc(a.desc)}</span></a>`).join("")}</div>`;
+}
+function homeOwn(tool){
+  const cc = CAT_INDEX["cognicopia-coloring"];
+  return `<ol class="steps">
+      <li><b>Choose a category</b> below or on the left.</li>
       <li><b>Pick an activity</b> and set the resident, stage and theme.</li>
       <li><b>Add to Packet</b>, then open <b>Your packet</b> and print.</li>
     </ol>
-    <div data-wf-pins="h2"></div>
-    <h2>Interactive generators</h2>
-    <div class="card-grid">
+    <div class="card-grid">${CATEGORIES.filter(c => !c.route).map(c => `
+      <a class="card" href="${catHref(c)}">
+        <span class="ic">${c.icon}</span><b>${esc(c.name)}</b><span class="desc">${esc(c.blurb)}</span>
+        <span class="meta">${c.activities.length ? `<span class="pill live">${c.activities.length} ${c.activities.length === 1 ? "tool" : "activities"}</span>` : '<span class="pill">Coming soon</span>'}</span>
+      </a>`).join("")}
+      <a class="card" href="${catHref(cc)}"><span class="ic">${cc.icon}</span><b>${esc(cc.name)}</b><span class="desc">Adult, dignity-first pictures in bold black line art, at three support tiers.</span><span class="meta"><span class="pill live">${catCount(cc)} pictures</span></span></a>
+    </div>
+    <details class="hm-more"><summary>More tools: planners, journals, the roster, the Shift board and learning</summary>
+      <div class="card-grid">
       ${tool(catHref(cc), cc.icon, "Cognicopia Coloring", "Adult, dignity-first line art in bold pure black, each picture drawn at three support tiers. Filter, preview with the binding gutter, and print or download a vector PDF.", [`${catCount(cc)} pictures`, "3 tiers", "Bundle packs"])}
       ${tool("#/tracking", ICONS.planner, "Longitudinal Cognitive Tracking", "Log engagement, frustration triggers and eye fatigue each month. After three months the page looks for a sustained pattern and suggests a gentler or fuller stage for staff to discuss.", ["Early, middle, late", "3, 6 and 12 month trends"])}
       ${tool("#/planner", ICONS.planner, "12-Month Seasonal Planner", "A year for the whole community: eras, seasonal milestones and thematic arcs by month, with one click to link the coming months to roster bundles.", ["12 months", "Bulk bundle pre-mapping"])}
@@ -15537,19 +15619,41 @@ function renderHome(){
       ${tool("#/facility", ICONS.facility, "Facility Portal", "For activity directors: wings and resident groups by acuity tier, recommendations for each tier across the six pillars, a balanced month of sessions in one click, and a week of group packets printed at once.", ["4 acuity tiers", "Month scheduler", "Week packets"])}
       ${tool("#/shift", ICONS.shift, "Shift board", "A calendar of who is on each shift, where the gaps are and where the floor will want a dementia-trained hand, with handoff notes and tasks in a slide-out. Staff by initials, residents by alias only; kept on this computer, and the week prints as a one-page PDF.", ["Month, week, day", "Coverage gaps", "Weekly PDF"])}
       ${tool("#/roster", ICONS.roster, "Resident roster", "Every saved resident in one list. Choose a resident, choose a book, and print it at their own support tier, line weight and contrast.", ["3 clicks to print", "Search by name or unit"])}
-    </div>
-    <h2 style="margin-top:32px">Activity categories</h2>
-    <div class="card-grid">${CATEGORIES.filter(c => !c.route).map(c => `
-      <a class="card" href="${catHref(c)}">
-        <span class="ic">${c.icon}</span><b>${esc(c.name)}</b><span class="desc">${esc(c.blurb)}</span>
-        <span class="meta">${c.activities.length ? `<span class="pill live">${c.activities.length} ${c.activities.length === 1 ? "tool" : "activities"}</span>` : '<span class="pill">Coming soon</span>'}</span>
-      </a>`).join("")}
-    </div>
-    <h2 style="margin-top:32px">Learning &amp; reference</h2>
-    <div class="card-grid">
       ${tool("#/academy", ICONS.academy, "Staff & Caregiver Academy", "Narrated masterclasses for care teams, with transcripts, companion guides, knowledge checks and in-service certificates, and short guides with printable toolkits for family caregivers.", academyPills())}
       ${tool("resources/", ICONS.journal, "Resource & Clinical Hub", "The reading behind the tools, kept apart from them: the Clinical Science & Research Center with its board packet, quality standards, clinical alignment, reminiscence science, facility and publishing information, the feature guide, the resource catalog and the caregiver FAQ.", ["10 modules", "Clinical & quality", "Guides & help"])}
-    </div>`;
+      </div>
+    </details>`;
+}
+function renderHome(){
+  const cc = CAT_INDEX["cognicopia-coloring"], tool = (href, icon, name, desc, pills) => `
+      <a class="card" href="${href}">
+        <span class="ic">${icon}</span><b>${esc(name)}</b><span class="desc">${esc(desc)}</span>
+        <span class="meta">${pills.map((p, k) => `<span class="pill${k ? "" : " live"}">${esc(p)}</span>`).join("")}</span>
+      </a>`;
+  const tab = homeTab(), TABS = [["presets", "Quick presets"], ["stage", "By stage and ability"], ["own", "Build your own"]];
+  view.innerHTML = `
+    <p class="eyebrow">Packet Builder</p>
+    <h1 class="view-title" tabindex="-1">Build a packet, one activity at a time</h1>
+    <p class="lede">Start from a preset, from the activities made for a stage, or build it yourself. Every page is freshly made, so no two are the same. Nothing leaves this computer.</p>
+    <div class="cc-tabs hm-tabs" role="tablist" aria-label="Ways to build a packet">${TABS.map(([k, l]) => `<button type="button" role="tab" id="hmTab-${k}" data-hm-tab="${k}" aria-controls="hmPanel" aria-selected="${k === tab}" tabindex="${k === tab ? "0" : "-1"}">${esc(l)}</button>`).join("")}</div>
+    <section class="hm-panel" id="hmPanel" role="tabpanel" aria-labelledby="hmTab-${tab}">${tab === "presets" ? homePresets() : tab === "stage" ? homeStage() : homeOwn(tool)}</section>
+    <div class="hm-pins" data-wf-pins="h2"></div>`;
+  const panel = view.querySelector("#hmPanel");
+  view.querySelectorAll("[data-hm-tab]").forEach(b => {
+    b.addEventListener("click", () => { try { sessionStorage.setItem(HOME_TAB_KEY, b.dataset.hmTab); } catch (e){ /* a private window: the first tab next time */ } renderHome(); const n = view.querySelector(`#hmTab-${b.dataset.hmTab}`); if (n) n.focus(); });
+    b.addEventListener("keydown", e => {
+      const keys = TABS.map(t => t[0]), at = keys.indexOf(b.dataset.hmTab), to = e.key === "ArrowRight" ? (at + 1) % keys.length : e.key === "ArrowLeft" ? (at + keys.length - 1) % keys.length : e.key === "Home" ? 0 : e.key === "End" ? keys.length - 1 : -1;
+      if (to < 0) return; e.preventDefault(); const n = view.querySelector(`#hmTab-${keys[to]}`); if (n) n.click();
+    });
+  });
+  panel.addEventListener("change", e => {
+    if (e.target.name === "hmStageP" || e.target.name === "hmStageS"){ homeState.stage = e.target.value; settings.difficulty = e.target.value; saveSettings(); const keep = e.target.name, v = e.target.value; renderHome(); const r = view.querySelector(`input[name="${keep}"][value="${v}"]`); if (r) r.focus(); }
+  });
+  panel.addEventListener("click", e => {
+    const pb = e.target.closest("[data-preset]"); if (pb){ addPreset(pb.dataset.preset); return; }
+    const ab = e.target.closest("[data-area]"); if (ab){ homeState.area = ab.dataset.area; renderHome(); const n = view.querySelector(`[data-area="${ab.dataset.area}"]`); if (n) n.focus(); return; }
+    const ac = e.target.closest("[data-home-act]"); if (ac && ACT_INDEX[ac.dataset.homeAct] && !CAT_INDEX[ACT_INDEX[ac.dataset.homeAct].categoryId].route) homeOpenAct = ac.dataset.homeAct;
+  });
   if (window.CogniWayfinding) window.CogniWayfinding.mountPins();
 }
 
@@ -15616,6 +15720,7 @@ function renderCategory(id){
     ${cat.activities.length ? "" : '<p class="callout">These activities are being built. Word &amp; Language Activities are ready to use now.</p>'}
     <section class="config" id="config" hidden aria-live="polite"></section>`;
   view.querySelectorAll("button.card[data-act]").forEach(btn => btn.addEventListener("click", () => openConfig(btn.dataset.act)));
+  if (homeOpenAct){ const open = homeOpenAct; homeOpenAct = ""; if (ACT_INDEX[open] && ACT_INDEX[open].categoryId === id) openConfig(open); }
   if (fx){
     $("#fxClear").addEventListener("click", () => { FacilityUI.clearContext(); renderCategory(id); const h = view.querySelector("h1"); if (h) h.focus(); });
     if (fx.open && ACT_INDEX[fx.open] && ACT_INDEX[fx.open].categoryId === id){ const open = fx.open; fx.open = ""; openConfig(open); }
