@@ -223,6 +223,14 @@ step("the Resident Roster: initials rows and cards, filter chips with counts, se
   }
 });
 
+step("Daily engagement: three choices and one button, a card for every kind of time at every stage, a saved resident's own life and avoid list, the PDF read back, the free packets and the gate, the roster's fuller cards, the three doors (a real browser)", () => {
+  try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-daily-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
+  catch (e){
+    if (e.status === 2) return "skipped: Playwright is not installed here (see docs/dev-setup.md)";
+    throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message);
+  }
+});
+
 step("the profile's optional story (moments, a dish, comforts, a photo kept sealed and gray) is saved, shown again and used by the Studio's pages (a real browser)", () => {
   try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-profile-story-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
   catch (e){

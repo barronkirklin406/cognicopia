@@ -6,6 +6,10 @@
 <title>Activity Page Studio — Cognicopia</title>
 <meta name="description" content="Make large-print reminiscence prompts, thinking exercises, daily-living steps and bold coloring pages for the resident's stage, on a 3:4 page that prints in pure black and white. Everything is made in your browser.">
 <style id="as-css">
+/* The face the pages are set in, under its own name: the page engine asks for "Atkinson Hyperlegible", and without these two
+   rules a computer that does not have the face installed drew every page in Arial. */
+@font-face{font-family:"Atkinson Hyperlegible";font-style:normal;font-weight:400;font-display:block;src:url("fonts/AtkinsonHyperlegible-Regular.woff2") format("woff2")}
+@font-face{font-family:"Atkinson Hyperlegible";font-style:normal;font-weight:700;font-display:block;src:url("fonts/AtkinsonHyperlegible-Bold.woff2") format("woff2")}
 @font-face{font-family:"Atkinson Hyperlegible Mono";font-weight:700;font-display:swap;src:url("fonts/AtkinsonHyperlegibleMono-Bold.woff2") format("woff2")}
 @font-face{font-family:"Pinyon Script";font-weight:400;font-display:swap;src:url("fonts/PinyonScript-Regular.woff2") format("woff2")}
 @font-face{font-family:"Marck Script";font-weight:400;font-display:swap;src:url("fonts/MarckScript-Regular.woff2") format("woff2")}
@@ -365,6 +369,7 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
         <summary class="cg-sb-section cg-sb-acc-head"><svg class="cg-sb-ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><span class="cg-sb-acc-title">Today</span><svg class="cg-sb-chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><polyline points="9 6 15 12 9 18"/></svg></summary>
         <ul class="cg-sb-sub">
     <li><a href="index.html"><svg class="cg-sb-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>Personalized Packet Tool</span></a></li>
+    <li><a href="daily.html"><svg class="cg-sb-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><span>Daily engagement</span></a></li>
     <li><a href="profile.html"><svg class="cg-sb-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><span>Resident Profiles</span></a></li>
         </ul>
       </details>

@@ -109,6 +109,7 @@ export const FACILITY_PARTS = [
 export const HUBS = [
   { id: "today",     label: "Today",            icon: "sun",      group: "resident", items: [
       { key: "home",         label: "Personalized Packet Tool", href: "index.html",        icon: "home" },
+      { key: "daily",        label: "Daily engagement",         href: "daily.html",        icon: "sun" },
       { key: "profile",      label: "Resident Profiles",        href: "profile.html",      icon: "profile" } ] },
   { id: "studio",    label: "Studio",           icon: "palette",  group: "resident", items: [
       { key: "activity-studio", label: "Activity Page Studio",  href: "activity-studio.html", icon: "builder" },
@@ -237,6 +238,7 @@ export const PAGES = [
   { file: "index.html",              current: "home", ownTopbar: true },   // the packet tool draws its own top bar (license box and buy buttons)
   { file: "profile.html",            current: "profile" },
   { file: "tablet.html",             current: "tablet" },
+  { file: "daily.html",              current: "daily" },
   { file: "activity-studio.html",    current: "activity-studio" },
   { file: "cognitive-journals.html", current: null, hub: "studio" },     // the journal's own page: Studio is open, no link is "here" (its link opens the tool)
   { file: "life-planners.html",      current: null, hub: "studio" },
