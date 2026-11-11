@@ -8,7 +8,7 @@
                   in turn; stage 3 has fewer ideas than stage 1; the coloring controls show only when coloring is in the mix;
                   words choose the drawing; a topic to avoid is honored; the live preview keeps the pages and Try different pages makes
                   new ones; the card layouts (4, 6, 8 sideways, 5 tickets) cut pages with dashed lines
-     export       Download PDF is read back with PyMuPDF (US Letter, one page per sheet, the picture inside 0.5 in margins);
+     export       Download PDF is read back with PyMuPDF (US Letter, one page per sheet, real words and lines inside 0.5 in margins);
                   Download PNG is 2250 x 3000; Print makes one sheet per paper page, with no menu on the paper
      the rest     52 px controls, nothing sideways on a phone, nothing requested from outside, no script error
    Needs Playwright and PyMuPDF. Run: node scripts/check-activity-studio-ui.mjs
@@ -34,7 +34,12 @@ doc = fitz.open(sys.argv[1]); out = []
 for pg in doc:
     imgs = [list(i["bbox"]) for i in pg.get_image_info()]
     words = pg.get_text("words")
-    out.append({"w": pg.rect.width, "h": pg.rect.height, "imgs": imgs, "text": pg.get_text(),
+    # the page's own marks: its words (the non-medical line in the top margin aside) and its lines and shapes
+    marks = [w[:4] for w in words if w[3] > 34] + [list(d["rect"]) for d in pg.get_drawings()]
+    widths = [d["width"] for d in pg.get_drawings() if d.get("width") and d.get("color") not in (None, (1, 1, 1))]
+    out.append({"w": pg.rect.width, "h": pg.rect.height, "imgs": imgs, "text": pg.get_text(), "words": len([w for w in words if w[3] > 34]),
+                "faces": sorted(set(f[3] for f in pg.get_fonts(full=True) if f[1] != "n/a")), "thin": min(widths, default=0),
+                "ink": [min([m[0] for m in marks], default=0), min([m[1] for m in marks], default=0), max([m[2] for m in marks], default=0), max([m[3] for m in marks], default=0)],
                 "box": [min([w[0] for w in words], default=0), min([w[1] for w in words], default=0), max([w[2] for w in words], default=0), max([w[3] for w in words], default=0)]})
 print(json.dumps(out))`;
 const readPdf = f => JSON.parse(execFileSync("python3", ["-c", PY, f], { encoding: "utf8" }));
@@ -208,12 +213,17 @@ try {
   const pdf = readPdf(tmp); fs.unlinkSync(tmp);
   ok(pdf.length === pages, `the PDF has one Letter page per sheet (${pdf.length} of ${pages})`);
   ok(pdf.every(g => Math.abs(g.w - 612) < 1 && Math.abs(g.h - 792) < 1), "the PDF pages are US Letter");
-  ok(pdf.every(g => g.imgs.length === 1 && g.imgs[0][0] >= 35.9 && g.imgs[0][1] >= 35.9 && g.imgs[0][2] <= 576.1 && g.imgs[0][3] <= 756.1), "the picture sits inside 0.5 in margins: " + JSON.stringify(pdf[0].imgs));
-  ok(pdf.every(g => Math.abs((g.imgs[0][2] - g.imgs[0][0]) / (g.imgs[0][3] - g.imgs[0][1]) - 0.75) < 0.01), "the PDF picture is 3:4");
+  /* each page is real text and lines, not a picture of the page (js/utils/studio-pdf.js) */
+  ok(pdf.every(g => g.imgs.length === 0 && g.words >= 3 && g.faces.includes("AtkinsonHyperlegible")), `every page of the PDF is words and lines in the page's own face, embedded, with no picture (${pdf.map(g => g.words + " words").join(", ")})`);
+  ok(pdf.every(g => g.ink[0] >= 35.9 && g.ink[1] >= 35.9 && g.ink[2] <= 576.1 && g.ink[3] <= 756.1), "everything on each page sits inside 0.5 in margins: " + JSON.stringify(pdf[0].ink.map(Math.round)));
+  ok(pdf.every(g => g.thin === 0 || g.thin >= 2), `no line in the PDF is under 2 pt (the thinnest is ${Math.min(...pdf.map(g => g.thin || 99)).toFixed(2)} pt)`);
+  ok(/Not Medical Advice/.test(pdf[0].text), "each page carries the non-medical line in its top margin, as every Cognicopia PDF does");
+  const said = await p.evaluate(() => ({ note: document.getElementById("asPdfNote").textContent, last: window.CognicopiaActivityStudio.lastPdf() }));
+  ok(said.last && said.last.vector === pages && said.last.picture === 0 && /as text and lines/.test(said.note), `the screen says how the PDF was made (${said.note})`);
   await p.check("#asGutter", { force: true });
   dl = p.waitForEvent("download", { timeout: 60000 }); await p.click("#asPdf"); f = await dl; await f.saveAs(tmp);
   const pg2 = readPdf(tmp); fs.unlinkSync(tmp);
-  ok(pg2.length >= 2 && pg2[0].imgs[0][0] >= 53.9 && pg2[1].imgs[0][0] < 40 && pg2[1].imgs[0][2] <= 558, `the binding gutter alternates sides (${Math.round(pg2[0].imgs[0][0])} then ${Math.round(pg2[1].imgs[0][0])} pt from the left)`);
+  ok(pg2.length >= 2 && pg2.every((g, i) => i % 2 === 0 ? g.ink[0] >= 53.9 && g.ink[2] <= 576.1 : g.ink[0] >= 35.9 && g.ink[2] <= 558.1), `the binding gutter alternates sides: the first page keeps 0.75 in clear on the left, the second on the right (${pg2.slice(0, 2).map(g => Math.round(g.ink[0]) + " to " + Math.round(g.ink[2])).join(" pt, ")} pt)`);
   await p.uncheck("#asGutter", { force: true });
   dl = p.waitForEvent("download", { timeout: 60000 }); await p.click("#asPng"); f = await dl; await f.saveAs(tmp + ".png");
   const hd = fs.readFileSync(tmp + ".png"); fs.unlinkSync(tmp + ".png");

@@ -9,7 +9,7 @@
      today      the same card all day (a reload gives the same page); "Another card" gives a different one
      a person   a saved resident's card is from their own life and carries their name; a topic they avoid
                 stays off it, however many cards are tried
-     paper      the PDF is one US Letter page with the card 7.5 in wide inside 0.5 in margins (read back);
+     paper      the PDF is one US Letter page of real words and lines inside 0.5 in margins (read back);
                 a PDF and a print each use one free packet; with all 50 used both ask for a license
      roster     a card shows their work, their town and up to three things they enjoy; "Today's card" opens
                 the daily screen already made for them; "Make a packet" opens the Studio on them
@@ -71,8 +71,11 @@ try:
     import pymupdf as fitz
 except ImportError:
     import fitz
-doc = fitz.open(sys.argv[1]); pg = doc[0]; imgs = pg.get_image_info()
-print(json.dumps({"pages": len(doc), "w": pg.rect.width, "h": pg.rect.height, "images": [[round(v, 1) for v in i["bbox"]] for i in imgs]}))`;
+doc = fitz.open(sys.argv[1]); pg = doc[0]; words = pg.get_text("words")
+marks = [w[:4] for w in words if w[3] > 34] + [list(d["rect"]) for d in pg.get_drawings()]
+print(json.dumps({"pages": len(doc), "w": pg.rect.width, "h": pg.rect.height, "images": len(pg.get_image_info()), "text": pg.get_text(),
+  "faces": sorted(set(f[3] for f in pg.get_fonts(full=True) if f[1] != "n/a")),
+  "ink": [round(v, 1) for v in [min(m[0] for m in marks), min(m[1] for m in marks), max(m[2] for m in marks), max(m[3] for m in marks)]]}))`;
 
 try {
   /* ----- arrives ----- */
@@ -156,9 +159,10 @@ try {
   if (dl) {
     const tmp = path.join(os.tmpdir(), "cognicopia-daily-" + process.pid + ".pdf"); await dl.saveAs(tmp);
     try {
-      const info = JSON.parse(execFileSync("python3", ["-c", PDFINFO, tmp], { encoding: "utf8" })), im = info.images[0] || [0, 0, 0, 0];
+      const info = JSON.parse(execFileSync("python3", ["-c", PDFINFO, tmp], { encoding: "utf8" }));
       ok(info.pages === 1 && Math.round(info.w) === 612 && Math.round(info.h) === 792, `the PDF is one US Letter page (${info.pages} page, ${info.w} x ${info.h} pt)`);
-      ok(info.images.length === 1 && Math.abs(im[0] - 36) < 1 && Math.abs(im[1] - 36) < 1 && Math.abs(im[2] - 576) < 1 && Math.abs(im[3] - 756) < 1, `the card is 7.5 in by 10 in inside 0.5 in margins (${im.join(", ")} pt)`);
+      ok(info.images === 0 && /For Dorothy/.test(info.text) && info.faces.includes("AtkinsonHyperlegible"), `the card is real words and lines in its own face, not a picture (${info.faces.join(", ")})`);
+      ok(info.ink[0] >= 35.9 && info.ink[1] >= 35.9 && info.ink[2] <= 576.1 && info.ink[3] <= 756.1, `everything on it sits inside 0.5 in margins (${info.ink.join(", ")} pt)`);
     } catch (e) { ok(/No module named/.test(String(e.stderr || e.message)), "the PDF could be read back: " + String(e.message).slice(0, 120)); }
     finally { try { fs.unlinkSync(tmp); } catch (e) { /* ignore */ } }
   }

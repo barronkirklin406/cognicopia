@@ -9448,10 +9448,11 @@ class Doc{
         {labelSize:this.floor, rule:this.rule, label:this.stage==="late"?"MADE FOR:":"PREPARED ESPECIALLY FOR:"})+30;
     this.d.setFont("helvetica","bold");
     /* the heading grows with the vision tier but never past the line: it shrinks one point at a time, to 24 pt at the least */
-    let hs=Math.max(24,this.lift); const nf=this.noFloor; this.noFloor=true;     // the size hook would lift a smaller size back to the floor
+    let hs=Math.max(32,this.lift); const nf=this.noFloor; this.noFloor=true;     // 32 pt at every stage (a long title shrinks, to 24 pt at the least); the size hook would lift a smaller size back to the floor
     this.d.setFontSize(hs);
     while(hs>24 && this.d.getTextWidth(t)>PW-2*MARGIN){ hs-=1; this.d.setFontSize(hs); }
     this.noFloor=nf;
+    if(this.stage!=="late") this.y+=Math.max(0,hs-24)*0.75;      // a taller title sits lower, so its top (and a look's box or bar) keeps clear of the rule above; the late stage's 32 pt title already has this room
     this.headLook(t,hs);
   }
   /* The packet's house style for its page titles (one per packet, so the packet reads as one piece; another resident's or another
@@ -9475,6 +9476,13 @@ class Doc{
       // a serif title, sized to the same width rule as the sans one
       this.noFloor=true; d.setFont("times","bold"); let s=hs; d.setFontSize(s);
       while(s>24 && d.getTextWidth(t)>R-L-(look==="margin"?18:0)){ s-=1; d.setFontSize(s); }
+      this.noFloor=nf;
+    }
+    if(look==="framed"){
+      // the title sits inside the box, after its square: it shrinks until it clears the box's right side (a long "(continued)" title
+      // ran past the box at 24 pt; it may go to 18 pt, the floor, to stay inside)
+      this.noFloor=true; d.setFontSize(hs);
+      while(hs>18 && d.getTextWidth(t)>R-L-(12+6+10)-12){ hs-=1; d.setFontSize(hs); }
       this.noFloor=nf;
     }
     d.setDrawColor(0); d.setTextColor(0); d.setFillColor(0);

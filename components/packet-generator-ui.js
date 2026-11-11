@@ -127,6 +127,7 @@
         '<div class="as-sheet" id="asSheet"></div><div class="as-scroll" id="asScroll" hidden></div>' +
         '<div class="as-btns as-out"><button type="button" class="as-btn" id="asPdf">Compile Packet PDF</button><button type="button" class="as-btn" id="asPrint">Print all pages</button><button type="button" class="as-btn as-alt" id="asPng">Download this page (PNG)</button></div>' +
         '<p class="as-hint" id="asLeft" role="status"></p>' +
+        '<p class="as-hint" id="asPdfNote" role="status"></p>' +
         '<div class="as-ready" id="asReady"></div>' +
         '<div class="as-notes" id="asNotes" aria-live="polite"></div>' +
         '<div class="as-offline"><p id="asOffline" role="status"></p><button type="button" class="as-btn as-alt" id="asSave">Save for offline use</button></div>' +
@@ -397,20 +398,18 @@
       download("cognicopia-" + made.code.toLowerCase() + "-page" + (state.index + 1) + ".png", cv.toDataURL("image/png"));
     });
   }
+  /* The PDF holds each page as real text and lines in the page's own faces (js/utils/studio-pdf.js): sharp at any size, its words
+     searchable, and a small file. A page that cannot be drawn that way exactly goes in as a picture, and the line under the buttons says so. */
+  var lastPdf = null;
   function exportPdf() {
     if (blocked()) { openGate(); return; }
-    var lib = window.jspdf && window.jspdf.jsPDF;
-    if (!lib) { alert("The PDF maker could not load. Reload the page, or use Print and choose Save as PDF."); return; }
-    var btn = $("#asPdf"), label = btn.textContent; btn.disabled = true; btn.textContent = "Compiling the PDF…";
-    fontsReady().then(function () {
-      var doc = new lib({ unit: "in", format: "letter", orientation: "portrait", compress: true });
-      made.pages.forEach(function (pg, i) {
-        if (i) doc.addPage();
-        var cv = document.createElement("canvas"); PL.toCanvas(pg, cv, 1.875);                      // 2250 x 3000: 300 dpi across 7.5 in
-        var w = state.gutter ? 7.25 : 7.5, h = w * 4 / 3, x = state.gutter ? (i % 2 === 0 ? 0.75 : 0.5) : 0.5;
-        doc.addImage(cv.toDataURL("image/png"), "PNG", x, 0.5, w, h, undefined, "FAST");
-      });
-      doc.save("cognicopia-" + made.code.toLowerCase() + ".pdf"); spend();
+    var SP = window.CognicopiaStudioPdf;
+    if (!SP || !(window.jspdf && window.jspdf.jsPDF)) { alert("The PDF maker could not load. Reload the page, or use Print and choose Save as PDF."); return; }
+    var btn = $("#asPdf"), label = btn.textContent, note = $("#asPdfNote"); btn.disabled = true; btn.textContent = "Compiling the PDF\u2026"; note.textContent = "";
+    fontsReady().then(function () { return SP.make(made.pages, { gutter: state.gutter, title: "Cognicopia activity pages " + made.code }); }).then(function (r) {
+      r.doc.save("cognicopia-" + made.code.toLowerCase() + ".pdf"); spend();
+      lastPdf = { pages: made.pages.length, vector: r.vector, picture: r.picture };
+      note.textContent = "PDF made: " + made.pages.length + (made.pages.length === 1 ? " page" : " pages") + (r.picture ? ", " + r.picture + " as a picture and the rest as text and lines." : ", as text and lines that stay sharp at any size.");
     }).catch(function () { alert("The PDF could not be made. Use Print and choose Save as PDF."); }).then(function () { btn.disabled = false; btn.textContent = label; });
   }
   function print() { if (blocked()) { openGate(); return; } fontsReady().then(function () { spend(); window.print(); }); }
@@ -501,5 +500,5 @@
     var a = null; try { a = LS() && LS().getItem(ACTIVE_KEY); } catch (e) { /* ignore */ }
     if (a && readRes(a)) applyResident(a);
   });
-  window.CognicopiaActivityStudio = Object.freeze({ state: state, refresh: function () { refresh(false); }, pages: function () { return made.pages; }, code: function () { return made.code; } });
+  window.CognicopiaActivityStudio = Object.freeze({ state: state, refresh: function () { refresh(false); }, pages: function () { return made.pages; }, code: function () { return made.code; }, lastPdf: function () { return lastPdf; } });
 })();
