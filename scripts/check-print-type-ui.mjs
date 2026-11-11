@@ -6,7 +6,7 @@
         black (rgb 0,0,0), and large print really is larger.
      2. The main PDF packet at each stage, with and without Extra-Large Print, read back with PyMuPDF: no text
         off the safe area, no two pieces of text on top of each other, nothing but black ink, and the resident
-        pages' text never under the stage's floor.
+        pages' text never under the stage's floor, and page titles at 32 pt (a long one shrinks to fit).
      3. Quick-Print: the first-name field. A name makes "Activity Packet for <name>"; a blank field makes
         "Personalized Activity Packet"; markup and stray symbols are stripped; the word "Guest" never prints.
    Needs Playwright (and PyMuPDF for part 2/3 PDF reading; without it those parts are skipped with a note).
@@ -27,7 +27,7 @@ const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "cg-print-"));
 const errs = [];
 
 const PY = `
-import sys, json
+import sys, json, re
 try:
     import pymupdf as fitz
 except Exception:
@@ -35,9 +35,11 @@ except Exception:
         import fitz
     except Exception:
         print(json.dumps({"missing": True})); sys.exit(0)
-doc = fitz.open(sys.argv[1]); out = {"pages": len(doc), "off": [], "overlap": 0, "color": 0, "texts": [], "small": []}
+doc = fitz.open(sys.argv[1]); out = {"pages": len(doc), "off": [], "overlap": 0, "color": 0, "texts": [], "small": [], "kinds": {"staff": 0, "resident": 0}, "titles": []}
+FLOOR = float(sys.argv[2]) if len(sys.argv) > 2 else 0
+RESIDENT = re.compile(r"PREPARED ESPECIALLY FOR|MADE FOR:")     # every page a resident works on opens with their name under one of these lines (index.html, heading())
 for i, pg in enumerate(doc):
-    sp = []
+    sp = []; spans_of_page = []
     for b in pg.get_text("dict")["blocks"]:
         for l in b.get("lines", []):
             for s in l["spans"]:
@@ -47,14 +49,34 @@ for i, pg in enumerate(doc):
                 out["texts"].append(t)
                 if r.x0 < 35 or r.x1 > 612 - 35 or r.y1 > 792 - 30: out["off"].append([i + 1, t[:24]])
                 if s["color"] != 0: out["color"] += 1
+                spans_of_page.append([s["size"], r.y0, r.y1, t])
+    # The size of the type, read back. A page has three bands (src/engine/ClinicalMatrix.js, SHELL): the header above 64 pt
+    # (the name 13 pt, the date 12 pt, and the non-medical line 8 pt in the margin above them), the body from 64 to 706 pt,
+    # and the tip and the foot below it (12 pt, for the person beside the resident). In the body a resident's page holds
+    # nothing under the stage's floor and a staff page nothing under 16 pt; a number inside a puzzle cell is a mark, not text.
+    body = [x for x in spans_of_page if x[1] >= 60 and x[2] <= 712]
+    staff = not RESIDENT.search(" ".join(x[3] for x in body))
+    out["kinds"]["staff" if staff else "resident"] += 1
+    # the page's title: the first line of 21 pt or more under the header, the resident's name banner aside
+    heads = sorted([x for x in body if x[0] >= 20.95 and "PREPARED" not in x[3] and "MADE FOR" not in x[3] and x[3] != "Margaret"], key=lambda x: x[1])
+    if heads: out["titles"].append(round(heads[0][0]))
+    need = 16 if staff else FLOOR
+    for size, y0, y1, t in spans_of_page:
+        if y1 <= 34: lo = 7.95                      # the non-medical line
+        elif y0 < 60: lo = 11.95                    # the header
+        elif y1 > 712: lo = 11.95                   # the tip and the foot
+        else:
+            lo = need - 0.05
+            if size < 9 and re.fullmatch(r"[0-9]{1,3}[.)]?", t): continue
+        if FLOOR and size < lo: out["small"].append([i + 1, round(size, 1), round(lo, 1), "staff" if staff else "resident", t[:40]])
     for a in range(len(sp)):
         for c in range(a + 1, len(sp)):
             x = sp[a] & sp[c]
             if x.width > 2 and x.height > 4: out["overlap"] += 1
 print(json.dumps(out))
 `;
-const readPdf = file => {
-  const r = spawnSync("python3", ["-I", "-c", PY, file], { encoding: "utf8", timeout: 60000 });
+const readPdf = (file, floor) => {
+  const r = spawnSync("python3", ["-I", "-c", PY, file, String(floor || 0)], { encoding: "utf8", timeout: 60000 });
   try { return JSON.parse(r.stdout); } catch (e) { return { missing: true }; }
 };
 
@@ -106,7 +128,8 @@ for (const stage of ["early", "middle", "late"]) for (const xl of [false, true])
   if (xl) await p.evaluate(() => { const c = document.getElementById("extraLargePrint"); c.checked = true; c.dispatchEvent(new Event("change", { bubbles: true })); });
   const [dl] = await Promise.all([p.waitForEvent("download", { timeout: 90000 }), p.click("#go")]);
   const f = path.join(tmp, `${stage}-${xl ? "xl" : "std"}.pdf`); await dl.saveAs(f);
-  const r = readPdf(f);
+  const floor = { early: 18, middle: 18, late: 24 }[stage];                    // the stage's floor (src/engine/ClinicalMatrix.js, STAGES[stage].type.floor)
+  const r = readPdf(f, floor);
   if (r.missing) { if (!notes.length) notes.push("PyMuPDF is not installed for python3: the PDF packets were not read back (pip install pymupdf)"); await ctx.close(); continue; }
   pdfSeen++;
   const tag = `${stage}${xl ? " extra-large" : ""} packet`;
@@ -114,6 +137,10 @@ for (const stage of ["early", "middle", "late"]) for (const xl of [false, true])
   ok(r.overlap === 0, `${tag}: ${r.overlap} overlapping pieces of text`);
   ok(r.color === 0, `${tag}: ${r.color} pieces of text are not black`);
   ok(r.texts.some(t => /Margaret/.test(t)), `${tag}: carries the resident's name`);
+  const t32 = r.titles.filter(x => x >= 32).length;
+  ok(r.titles.length >= 5 && t32 * 4 >= r.titles.length * 3 && Math.min(...r.titles) >= 22, `${tag}: page titles are 32 pt, a long one shrinking to fit (${t32} of ${r.titles.length} at 32 pt, the smallest ${Math.min(...r.titles)} pt)`);
+  ok(r.kinds.resident >= 5 && r.kinds.resident > r.kinds.staff, `${tag}: most pages are the resident's own, each opening with their name (${r.kinds.resident} of ${r.pages}; ${r.kinds.staff} for staff)`);
+  ok(r.small.length === 0, `${tag}: ${r.small.length} pieces of text are under their floor (${floor} pt on a resident's page, 16 pt on a staff page, 12 pt in the header and foot): ` + r.small.slice(0, 5).map(x => `page ${x[0]} ${x[3]} ${x[1]} pt "${x[4]}"`).join("; "));
   await ctx.close();
 }
 

@@ -233,3 +233,20 @@ The last step of the resident profile (`profile.html`) has one closed section, "
 
 The page engine sets its pages in "Atkinson Hyperlegible". The shared stylesheet names its copy "Cognicopia UI" on purpose (so it cannot replace the print copy the front page and the Packet Builder embed), and the Studio page declared no face of that name, so on a computer without the font installed every Studio page, on screen, in the PNG and in the PDF, was drawn in Arial. `activity-studio.html` and `daily.html` now each declare the two weights from `/fonts`. `scripts/check-daily-ui.mjs` measures the face against Arial on both pages.
 
+## The PDF is words and lines (November 11, 2026)
+
+Compile Packet PDF (and the daily card's PDF) used to put a 300 dpi picture of each page in the file. `js/utils/studio-pdf.js` now draws each page's own steps into the PDF: its shapes as lines and curves, its text as text in its own face, embedded.
+
+- **What it gives.** The words can be searched, selected and read aloud; the page is sharp at any size; and the file is small. A ten-page packet went from about 2.5 MB to about 50 KB, and it is made in a fraction of the time.
+- **The faces.** Atkinson Hyperlegible comes from the PDF maker's own pack (`assets/vendor/jspdf-atkinson.js`). The monospaced cut (the letter grid) and the two script faces (a name lettered in script) are in `assets/vendor/jspdf-studio-faces.js`, made from the files in `/fonts` by `scripts/make-studio-pdf-faces.py` (needs `pip install fonttools brotli`; run it again only when a font file changes). Both are loaded from this site only when a PDF is made, and both are in the offline lists.
+- **When a page is a picture.** A page goes in as a picture, as before, only when it cannot be drawn exactly: a letter its face does not hold (a name in another alphabet), a shape the drawer does not know. Only that page; the line under the buttons says how many.
+- **Measured.** `scripts/check-studio-pdf-ui.mjs` makes every kind of page at every stage both ways and compares them at 100 dpi (they differ in under 3 dots in 100), reads every word back out of the file, and checks the faces, the 2 pt line floor, the margins, pure black and white, the gutter, a photograph clipped to its frame and the size.
+
+### Type floors in the front-page packet's PDF
+
+`scripts/check-print-type-ui.mjs` used to gather the PDF's small text and ignore it. It now fails on any text under its floor: the stage's floor (18, 18 and 24 pt) on a page the resident works on (one that opens with their name), 16 pt on a staff page, 12 pt in the header and foot (the name, the date, the tip and the page count, for the person beside the resident), 8 pt for the non-medical line in the top margin. It found nothing under the floor. The packet's page titles are now 32 pt at every stage (they were 24 pt at the early and middle stages); a long title shrinks to fit its line, and in the framed look to fit inside its box. The same check fails if fewer than three titles in four are at 32 pt.
+
+### The Packet Builder's coaching footer
+
+The coaching line at the foot of the Packet Builder's coloring and activity sheets was styled gray at 8 pt (7 pt on a planner sheet) in one rule, which a later rule overrode to black at 10 pt when the sheet printed. The first rule now says the same as the second, so the screen and the paper agree.
+

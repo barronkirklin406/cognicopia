@@ -139,17 +139,16 @@
     return fonts.then(function () { return PL.loadImages && made ? PL.loadImages([made.page]) : null; });
   }
   function print() { if (!made) return; if (blocked()) { openGate(); return; } ready().then(function () { spend(); window.print(); }); }
+  /* the PDF holds the card as real text and lines (js/utils/studio-pdf.js); a card that cannot be drawn that way exactly goes in as a picture */
+  var lastPdf = null;
   function pdf() {
     if (!made) return; if (blocked()) { openGate(); return; }
-    var lib = window.jspdf && window.jspdf.jsPDF;
-    if (!lib) { $("#dyMsg").textContent = "The PDF maker could not load. Reload the page, or use Print and choose to save as a PDF."; return; }
-    var btn = $("#dyPdf"), label = btn.textContent; btn.disabled = true; btn.textContent = "Making the PDF…";
-    ready().then(function () {
-      var doc = new lib({ unit: "in", format: "letter", orientation: "portrait", compress: true }), cv = document.createElement("canvas");
-      PL.toCanvas(made.page, cv, 1.875);                                       // 2250 x 3000: 300 dpi across 7.5 in
-      doc.addImage(cv.toDataURL("image/png"), "PNG", 0.5, 0.5, 7.5, 10, undefined, "FAST");
-      doc.setProperties({ title: "Cognicopia daily card", creator: "Cognicopia" });
-      doc.save("cognicopia-daily-card-" + today() + ".pdf");
+    var SP = window.CognicopiaStudioPdf;
+    if (!SP || !(window.jspdf && window.jspdf.jsPDF)) { $("#dyMsg").textContent = "The PDF maker could not load. Reload the page, or use Print and choose to save as a PDF."; return; }
+    var btn = $("#dyPdf"), label = btn.textContent; btn.disabled = true; btn.textContent = "Making the PDF\u2026";
+    ready().then(function () { return SP.make([made.page], { title: "Cognicopia daily card" }); }).then(function (r) {
+      r.doc.save("cognicopia-daily-card-" + today() + ".pdf");
+      lastPdf = { vector: r.vector, picture: r.picture };
       spend();
     }).catch(function () { $("#dyMsg").textContent = "The PDF could not be made. Use Print and choose to save as a PDF."; }).then(function () { btn.disabled = false; btn.textContent = label; });
   }
@@ -205,5 +204,5 @@
     var tl = trial(); if (tl && tl.ready) tl.ready().then(paintLeft, paintLeft); else paintLeft();
     if (/[?&]make=1\b/.test(location.search)) { state.asked = true; make(); }          // "Today's card" on the roster opens the card already made
   });
-  window.CognicopiaDailyCard = Object.freeze({ state: state, made: function () { return made; }, kinds: Object.keys(KINDS) });
+  window.CognicopiaDailyCard = Object.freeze({ state: state, made: function () { return made; }, kinds: Object.keys(KINDS), lastPdf: function () { return lastPdf; } });
 })();

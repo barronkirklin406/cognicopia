@@ -36,9 +36,10 @@ for i, pg in enumerate(doc):
         for l in b.get("lines", []):
             for s in l["spans"]:
                 if s["text"].strip() and s["color"] != 0: out["colored"] += 1
-    # the page's title: the first large line under the name banner (the resident's own name, also large, is the banner)
+    # the page's title: the first large line under the name banner (the resident's own name, also large, is the banner). Titles are
+    # 32 pt, shrinking for a long one; in the framed look a long title may shrink to 22 pt to stay inside its box, so 21 pt and up counts.
     big = sorted([(s["origin"][1], s["font"], s["text"].strip()) for b in pg.get_text("dict")["blocks"] for l in b.get("lines", []) for s in l["spans"]
-                  if s["size"] >= 23 and s["text"].strip() and s["text"].strip() != sys.argv[2] and "PREPARED" not in s["text"] and "MADE FOR" not in s["text"]])
+                  if s["size"] >= 21 and s["text"].strip() and s["text"].strip() != sys.argv[2] and "PREPARED" not in s["text"] and "MADE FOR" not in s["text"]])
     if big: out["titles"].append([i, round(big[0][0]), big[0][1], big[0][2][:30]])
 print(json.dumps(out))`;
 const ctx = await browser.newContext({ viewport: { width: 1366, height: 900 }, serviceWorkers: "block", acceptDownloads: true });

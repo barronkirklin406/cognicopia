@@ -810,6 +810,7 @@
            stageN: stageN, rng: rng, hash: hash, smooth: smooth, W: W, H: H, PAD: PAD, PT: PT, BOX: BOX, drawCard: drawCard, cellsFor: cellsFor, calmest: calmest, whiteShare: whiteShare },
     strokeFor: strokeFor, bodyPx: bodyPx, floorPx: floorPx, chooseSubject: chooseSubject, subjectPaths: subjectPaths,
     composeColoring: composeColoring, sheetPages: sheetPages, packPrompts: packPrompts, toSVG: toSVG, toCanvas: toCanvas, validate: validate, hash: hash,
-    TITLE_MIN: TITLE_MIN, BLANK_MAX: BLANK_MAX, CALM_WHITE: CALM_WHITE, blankBand: blankBand, whiteShare: whiteShare, loadImages: loadImages
+    TITLE_MIN: TITLE_MIN, BLANK_MAX: BLANK_MAX, CALM_WHITE: CALM_WHITE, blankBand: blankBand, whiteShare: whiteShare, loadImages: loadImages,
+    imageOf: function (src) { var im = IMAGES[src]; return im && im.naturalWidth ? im : null; }       // a photograph once loadImages has read it
   };
 });
