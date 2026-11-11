@@ -223,6 +223,14 @@ step("the Resident Roster: initials rows and cards, filter chips with counts, se
   }
 });
 
+step("the residents folder: locked files named by codes, only what changed written, the newer copy winning both ways, residents arriving and leaving, brought back with the passphrase and refused without it, the browser asking again, stop, a browser without folders (a real browser)", () => {
+  try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-resident-folder-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
+  catch (e){
+    if (e.status === 2) return "skipped: Playwright is not installed here (see docs/dev-setup.md)";
+    throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message);
+  }
+});
+
 step("the Activity Page Studio's PDF is real words and lines in embedded faces: the same as its picture, no line under 2 pt, inside the margins, a tenth the size; a page that cannot be drawn exactly falls back to a picture and says so (a real browser, the PDFs read back)", () => {
   try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-studio-pdf-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
   catch (e){

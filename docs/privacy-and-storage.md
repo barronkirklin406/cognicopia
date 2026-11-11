@@ -48,6 +48,17 @@ The sheet counters used to be stored under names built from a resident's name, b
 
 A person or pet in a resident's family list can have an optional photo. It is shrunk and turned gray in the browser and kept in the same encrypted store as the profile (`putBlob`, name `cognicopia_resident_photo_<resident>_<token>`); the profile keeps only the name. Nothing is sent anywhere, and nothing of it is in plain browser storage. Deleting the resident, or removing the photo, deletes it. The passphrase-locked station handoff file does not carry photos yet.
 
+## The residents folder (November 11, 2026)
+
+On the roster screen of the Packet Builder, "Keep residents in a folder on this computer" keeps every saved resident as a locked file in a folder the facility chooses, as well as in the browser (`js/residentFolder.js`). It is off until someone turns it on.
+
+- **The files.** One resident to a file, `resident-<code>.cognicopia`, where the code comes from the resident's record number and never from their name. Each is the station handoff's locked file (AES-GCM, a key made from the passphrase with PBKDF2), so it also opens with the roster's "Receive a handoff". A note, `About these files.txt`, says what the files are. Photos stay in the browser and are not put in the folder.
+- **When it reads and writes.** Opening the Packet Builder, a profile, the Activity Page Studio or Daily engagement reads every file that changed and takes the newer copy of each resident; a save (or a change on the roster) writes the residents that changed, and only those. A resident deleted here leaves the folder.
+- **Several computers.** Point each at the same shared folder on the building's own network, with the same passphrase; each keeps the newer copy of a resident. A computer that still has a resident deleted on another one writes their file back: a missing file is never taken as a reason to delete a resident.
+- **What is kept where.** The browser's permission to the folder (its handle) is in this site's IndexedDB; the passphrase and which file holds which resident are sealed in the encrypted store under `cognicopia_folder`, beside the residents themselves. "Stop using the folder" forgets both and leaves the files.
+- **Honest limits, stated on the screen.** It needs Chrome or Microsoft Edge on a computer; other browsers say so and point to the handoff file. After the browser restarts it asks again before a page may use the folder ("Allow the folder again"). If the chosen folder is inside OneDrive, Dropbox, Google Drive or another online drive, that service copies the locked files to the internet: they leave the computer, still locked. "No resident data leaves the device" stays true for everyone who does not turn this on, and for a folder on the computer itself or the facility's own network.
+- **Proof.** `scripts/check-resident-folder-ui.mjs` (in `npm run build`), with the browser's private file area standing in for a chosen folder. It runs in an ordinary browser profile on disk: in Playwright's usual private profile this Chromium stops when it reads a stored folder handle back.
+
 ## Aliases
 
 With aliases on (Settings › Privacy & encryption), residents appear as "Resident 302-B" in the roster and every resident picker. Downloaded file names and print titles can use the alias too. The alias comes from, in order:
