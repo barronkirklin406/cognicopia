@@ -3433,6 +3433,7 @@ summary{min-height:var(--tap);box-sizing:border-box}
 .arb-btn[aria-disabled="true"],.arb-btn:disabled{opacity:.45;cursor:not-allowed;pointer-events:none}
 .arb-msg{margin:12px 0 0;font-size:15.5px;line-height:1.5;color:#d3e8e6}
 .arb-msg b{color:#fff}
+.arb-who{margin-top:8px;font-weight:700;color:#fff;overflow-wrap:anywhere}
 .arb-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 @media (max-width:700px){
   .arb{padding:16px}
@@ -4500,6 +4501,11 @@ html body .cg-sidebar .cg-ailment-card:focus-visible{outline:3px solid var(--cg-
 .cg-hub > .cg-sb-sub{padding:2px 0 8px}
 .cg-hubs{padding-top:6px}
 .cg-hub-foot{margin:8px 0 0;padding-top:6px;border-top:1px solid var(--sb-border,rgba(217,240,236,.15));list-style:none}
+.cg-hub-find{margin:6px 0 0;padding:0;list-style:none}
+html body .cg-sidebar .cg-find{display:flex;align-items:center;gap:10px;box-sizing:border-box;width:100%;min-height:var(--tap,52px);margin:0;padding:8px 14px;border:1px solid var(--sb-border,rgba(15,23,42,.18));border-radius:10px;background:transparent;color:var(--sb-txt)!important;font:600 16px/1.2 var(--cg-font-ui,"Trebuchet MS","Segoe UI",sans-serif);cursor:pointer}
+html body .cg-sidebar .cg-find:hover{background:var(--sb-hover)}
+html body .cg-sidebar .cg-find:focus-visible{outline:3px solid var(--cg-focus,#f5b800);outline-offset:2px;box-shadow:0 0 0 6px var(--cg-focus-dark,#0f172a)}
+.cg-find-ico{flex:none;color:var(--sb-accent)}
 .cg-sidebar-nav a .cg-sb-ico{flex:none;margin-top:1px;color:var(--sb-muted);transition:color .13s}
 .cg-sidebar-nav a:hover .cg-sb-ico,.cg-sidebar-nav a.active .cg-sb-ico{color:var(--sb-accent)}
 .cg-sb-acc > summary{list-style:none;cursor:pointer;margin:4px 6px 0;padding:10px 8px 8px;border-radius:6px;transition:background .15s}
@@ -4590,6 +4596,9 @@ html.cg-night-shift .cg-grp[data-grp="staff"]{border-color:#684a26}
   html body .cg-hub-foot a{margin:0;padding:8px 12px;border:0;border-radius:10px;white-space:nowrap;font:600 16px/1.2 var(--cg-font-ui,"Trebuchet MS","Segoe UI",sans-serif)}
   .cg-hub-foot .cg-sb-ico{display:none}
   .cg-hub-more{display:none}
+  .cg-hub-find{margin:0 0 0 6px}
+  html body .cg-sidebar .cg-find{width:var(--tap,52px);height:var(--tap,52px);padding:0;justify-content:center}
+  .cg-find > span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
   .cg-sidebar-toggle,.cg-sb-overlay{display:none!important}
   /* the action bar scrolls away under the navigation; the packet tool's, which carries Instant Soothe, stays in reach */
   html body .cg-topbar{position:relative;top:auto}
@@ -4616,14 +4625,17 @@ html.cg-night-shift .cg-grp[data-grp="staff"]{border-color:#684a26}
   .cg-sb-overlay{display:none;position:fixed;inset:0;z-index:850;background:rgba(40,36,31,.45)}
   .cg-sb-overlay.is-open{display:block}
 }
-/* the Menu button floats over the start of the action bar: keep that place clear (each page's own style already does it on a phone) */
-@media (min-width:701px) and (max-width:1279px){html body .cg-topbar{padding-left:128px}}
+/* the Menu button floats over the start of the action bar: keep that place clear at every width it shows (on a phone too: the
+   Studio, Daily engagement and Tablet Activities had no phone rule of their own, and the button covered the free-trial line) */
+@media (max-width:1279px){html body .cg-topbar{padding-left:128px}}
 @media (prefers-reduced-motion:reduce){html body .cg-sidebar{transition:none}}
 
 /* ---------- Night Shift: the bar, its drop-downs and the action bar after dark (complete here, so a page that
    does not run assets/services/nightShift.js still gets a readable bar) ---------- */
 html.cg-night-shift body .cg-sidebar,html.cg-night-shift body .cg-topbar{background:#211910!important;border-color:#684a26!important;box-shadow:none}
 html.cg-night-shift body .cg-sidebar a,html.cg-night-shift body .cg-topbar a,html.cg-night-shift body .cg-topbar button.linklike{color:#ffedcc!important}
+html.cg-night-shift body .cg-sidebar .cg-find{color:#ffedcc!important;border-color:#684a26}
+html.cg-night-shift body .cg-sidebar .cg-find:hover{background:#3a2917}
 html.cg-night-shift body .cg-sidebar a:hover,html.cg-night-shift body .cg-hub[open] > summary{background:#3a2917!important}
 html.cg-night-shift .cg-sidebar-brand{color:#ffedcc!important}
 /* the logo file is black ink on white: at night it is inverted and blended away from its black, so no white square sits on the dark bar */
@@ -4821,6 +4833,10 @@ html body{background:var(--cg-cream,#fafafd)}
 .lp-more{display:inline-flex;align-items:center;gap:8px;min-height:var(--cg-tap,52px);padding:0 6px;color:var(--cg-green-700,#08423f)!important;
   font:700 17px/1.2 var(--cg-font-ui,"Segoe UI",sans-serif);text-decoration:underline;text-underline-offset:5px}
 .lp-more svg{width:20px;height:20px;flex:none}
+button.lp-more{margin:0;border:0;background:transparent;cursor:pointer}
+.lp-doors .wf-pins{margin:22px 0 0}
+.lp-door-start{margin:16px 0 0;font:400 17px/1.5 var(--cg-font-ui,"Segoe UI",sans-serif)}
+.lp-door-start button.lp-more{padding:0 6px}
 .lp-btn:focus-visible,.lp-more:focus-visible,.lp-marks a:focus-visible,.lp-footer a:focus-visible{outline:3px solid var(--cg-focus,#f5b800);outline-offset:3px;box-shadow:0 0 0 6px var(--cg-focus-dark,#0f172a)}
 .lp-byline{margin:0;color:var(--cg-ink-soft,#403b35);font:600 15px/1.4 var(--cg-font-ui,"Segoe UI",sans-serif)}
 
@@ -5081,6 +5097,7 @@ html.cg-night-shift .cgw-btn:focus-visible,html.cg-night-shift .cg-wood-bar .cgp
 /* Night Shift (assets/services/nightShift.js): the same layout after dark */
 html.cg-night-shift .lp-hero,html.cg-night-shift .lp-features,html.cg-night-shift .lp-doors,html.cg-night-shift .lp-proof,html.cg-night-shift .lp-footer{background:#17120c!important}
 html.cg-night-shift .lp .lp-door{background:#211910!important;border-color:#684a26!important}
+html.cg-night-shift .lp-door-start{color:#e0c99d!important}html.cg-night-shift .lp-door-start .lp-more{color:#ffd477!important}
 html.cg-night-shift .lp .lp-door b{color:#fff1cf!important}html.cg-night-shift .lp .lp-door span{color:#e0c99d!important}html.cg-night-shift .lp .lp-door :is(em,svg){color:#ffd477!important}
 html.cg-night-shift .lp :is(h1,h2,.hero-title,.lp-quote p,.cg-value b,.lp-who b,.lp-float b),html.cg-night-shift .lp-footer :is(a,h2){color:#fff1cf!important}
 html.cg-night-shift .lp :is(.lede,.lp-byline,.lp-proof-sub,.lp-sec-sub,.cg-value span,.lp-who span,.lp-float span,.lp-trial-sub),html.cg-night-shift .lp-footer p{color:#e0c99d!important}
@@ -5121,6 +5138,8 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
 <script src="assets/services/licenseManager.js"></script>
 <script src="assets/services/trialLedger.js"></script>
 <script src="js/trialBadge.js"></script>
+<script src="js/nav-index.js"></script>
+<script src="js/wayfinding.js"></script>
 <!-- cg-license:end -->
 <!-- cg-design:start: generated by scripts/site-nav.mjs -->
 <link rel="stylesheet" href="css/styles.css">
@@ -5216,6 +5235,7 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
     <li><a href="index.html" class="active" aria-current="page"><svg class="cg-sb-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>Personalized Packet Tool</span></a></li>
     <li><a href="daily.html"><svg class="cg-sb-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><span>Daily engagement</span></a></li>
     <li><a href="profile.html"><svg class="cg-sb-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><span>Resident Profiles</span></a></li>
+    <li><a href="index.html#start-here"><svg class="cg-sb-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M10 3l1.9 5.1L17 10l-5.1 1.9L10 17l-1.9-5.1L3 10l5.1-1.9z"/><path d="M19 14l.8 2.2L22 17l-2.2.8L19 20l-.8-2.2L16 17l2.2-.8z"/></svg><span>Start here</span></a></li>
     <li><div class="cg-sb-divider"></div></li>
 <!-- cg-nav:page-tools: this page's own tools, kept as they are -->
     <!-- AILMENT-SPECIFIC ACTIVITIES -->
@@ -5465,6 +5485,7 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
       </details>
     </li>
     <li class="cg-hub-foot"><a href="contact.html" aria-label="Contact Cognicopia"><svg class="cg-sb-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Contact<span class="cg-hub-more"> Cognicopia</span></span></a></li>
+    <li class="cg-hub-find"><button type="button" class="cg-find" data-wf-search aria-label="Search tools, guides and residents (Ctrl+K)" title="Search (Ctrl+K)"><svg class="cg-find-ico" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.6" y2="16.6"/></svg><span>Search</span></button></li>
   </ul>
   </nav>
 </aside>
@@ -5513,6 +5534,7 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
         <p class="lede">Personalized memory care activities that support cognitive engagement. Tell Cognicopia what you know about a resident and get a print-ready, large-print packet instantly, made for activity directors and care teams.</p>
         <div class="lp-actions">
           <a class="lp-btn" id="heroCta" href="#make">Get Started Free<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></a>
+          <button type="button" class="lp-more lp-start" id="heroStart" data-wf-start>New here? Take the two-minute tour</button>
         </div>
         <p class="lp-trial-sub" id="heroNote">No sign-up and no credit card. Everything stays on this computer.</p>
       </div>
@@ -5572,6 +5594,8 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
         <li><a class="lp-door" href="#make"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6"/><line x1="9" y1="13" x2="16" y2="13"/><line x1="9" y1="17" x2="14" y2="17"/></svg><b>Packets and booklets</b><span>A full, personal packet of large-print pages, planners and journals, ready to print.</span><em>Build a packet &#8594;</em></a></li>
         <li><a class="lp-door" href="profile.html"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9"/><path d="M16 3.1a4 4 0 0 1 0 7.8"/></svg><b>Residents</b><span>Save what you know about each person once. Every tool then makes pages from their own life.</span><em>Open resident profiles &#8594;</em></a></li>
       </ul>
+      <p class="lp-door-start">First time here? <button type="button" class="lp-more" data-wf-start>Start here: a short guide to the three everyday jobs</button></p>
+      <div data-wf-pins="h3"></div>
     </div>
   </section>
 
@@ -5669,6 +5693,7 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
       <button type="button" class="arb-btn arb-btn-danger" id="arbDelete" disabled><span aria-hidden="true">🗑️</span> Delete Profile</button>
     </div>
   </div>
+  <p class="arb-msg arb-who" id="arbWho" hidden></p>
   <p class="arb-msg" id="arbMsg">Choose a saved resident to fill in the packet below from their profile, or make a new profile. Profiles stay on this computer.</p>
   <p class="arb-msg arb-soothe-note" id="arbSootheNote">Instant Soothe opens two quick choices, a care level and a theme, then prints a fresh one-to-three page calming packet made for that moment. It uses the active resident's level and name when one is chosen, and needs no profile when none is.</p>
   <!-- ── Monthly Bundle: every resident in one PDF ── -->
@@ -21302,6 +21327,10 @@ if (document.readyState === "complete" || document.readyState === "interactive")
     sel.value = p ? p.id : "";
     pill.textContent = p ? "Active: " + shortName(p) : "No resident selected";
     pill.classList.toggle("is-on", !!p);
+    /* the rest of what every tool needs to know, written out under the bar's heading (js/wayfinding.js), and the search follows */
+    var W = window.CogniWayfinding, d = p && W ? W.summary(p) : null, who = el("arbWho");
+    if (who){ who.hidden = !d; who.textContent = d ? [d.detail, "Avoid: " + d.avoidText].filter(Boolean).join(" \u2022 ") : ""; }
+    if (W) W.note(p ? String(p.id) : "");
     editBtn.href = p ? "profile.html?edit=" + encodeURIComponent(p.id) : "profile.html";
     editBtn.setAttribute("aria-disabled", p ? "false" : "true");
     if (p) editBtn.removeAttribute("tabindex"); else editBtn.setAttribute("tabindex", "-1");
@@ -21604,6 +21633,11 @@ if (document.readyState === "complete" || document.readyState === "interactive")
   window.loadSavedProfilesList = loadSavedProfilesList;
   window.setActiveResident = setActiveResident;
   window.getActiveResidentContext = getActiveResidentContext;
+  /* the search (Ctrl+K) chooses a resident through the bar's own chooser, so the packet form fills in as it always has */
+  if (window.CogniWayfinding) window.CogniWayfinding.host({ ownBar: true, setActive: function (id){
+    if (!id){ sel.value = ""; choose("", false); return; }
+    if (readProfile(id)){ loadSavedProfilesList(); sel.value = id; choose(id, false); }
+  } });
   window.residentNeeds = residentNeeds;
   window.RESIDENT_TIER_NAMES = TIER_NAMES;
 })();

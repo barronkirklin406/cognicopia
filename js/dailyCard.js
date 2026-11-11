@@ -47,6 +47,7 @@
     var p = readRes(id);
     state.who = p ? id : ""; person = p ? R.person(p) : null; photosFor = ""; state.turn = 0;
     try { var ls = LS(); if (ls) { if (p) ls.setItem(ACTIVE_KEY, id); } } catch (e) { /* the card still works */ }
+    if (p && window.CogniWayfinding) window.CogniWayfinding.note(id);     // the active-resident bar, the search and the tab follow
     if (person) openPhotos(id);
   }
   /* the sealed pictures of this resident's people, opened once; the card is drawn again when they arrive */
@@ -199,10 +200,14 @@
   /* saved residents: open the sealed store (it asks for the passphrase if the facility set one), list them, and start on the one the other tools last chose */
   (SS() && SS().openForPage ? SS().openForPage().catch(function () { return null; }) : Promise.resolve()).then(function () {
     var a = null; try { a = LS() && LS().getItem(ACTIVE_KEY); } catch (e) { /* ignore */ }
+    var W = window.CogniWayfinding, tab = W ? W.activeId() : "";          // the one chosen in this tab (the Packet Builder, the search) comes first
+    if (tab && readRes(tab)) a = tab;
     if (a && readRes(a)) choose(a);
     paintWho(); sync();
     var tl = trial(); if (tl && tl.ready) tl.ready().then(paintLeft, paintLeft); else paintLeft();
     if (/[?&]make=1\b/.test(location.search)) { state.asked = true; make(); }          // "Today's card" on the roster opens the card already made
   });
+  /* the search and the active-resident bar can choose who the card is for */
+  if (window.CogniWayfinding) window.CogniWayfinding.host({ residents: listRes, setActive: function (id) { choose(id && readRes(id) ? id : ""); paintWho(); changed(); } });
   window.CognicopiaDailyCard = Object.freeze({ state: state, made: function () { return made; }, kinds: Object.keys(KINDS), lastPdf: function () { return lastPdf; } });
 })();
