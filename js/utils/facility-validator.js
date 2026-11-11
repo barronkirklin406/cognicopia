@@ -151,6 +151,8 @@
       } else if (op.t === "circle") {
         if (op.fill === "#000") box(g, op.cx - op.r, op.cy - op.r, op.r * 2, op.r * 2);
         for (var a = 0; a < 24; a++) cell(g, op.cx + op.r * Math.cos(a / 24 * 6.2832), op.cy + op.r * Math.sin(a / 24 * 6.2832), hw);
+      } else if (op.t === "image") {
+        box(g, op.x, op.y, op.w, op.h);                                  // a photograph fills its frame
       } else if (op.t === "line") {
         segment(g, op.x1, op.y1, op.x2, op.y2, hw);
       } else if (op.t === "path") {

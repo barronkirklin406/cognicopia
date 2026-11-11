@@ -199,6 +199,21 @@ ok(CA.tryGenerate("no-such-kind", { stage: "early" }).error.length > 0, "an unkn
   ok(CM.validatePage(full).length === 0, "a page with its shell passes the page check");
 }
 
+/* a tip is read beside the resident: with a filter, one that names something on their avoid list is never chosen, on any day */
+{
+  const noRadio = t => !/\bradio\b/i.test(t), pages = [1, 2, 3, 4, 5, 6].map(n => ({ n, activity: n % 2 ? "sensory" : "talk", topic: "" }));
+  let plain = 0, kept = 0, made = 0;
+  for (let d = 1; d <= 60; d++) {
+    const iso = "2026-" + (d <= 30 ? "11" : "12") + "-" + String(d <= 30 ? d : d - 30).padStart(2, "0");
+    const a = CM.cuePlan(pages, "middle", CM.dailyRng("Ruth", iso, 0, "tips"), { name: "Ruth" }), b = CM.cuePlan(pages, "middle", CM.dailyRng("Ruth", iso, 0, "tips"), { name: "Ruth", ok: noRadio });
+    if (Object.values(a).some(c => /radio/i.test(c.text))) plain++;
+    if (Object.values(b).some(c => /radio/i.test(c.text))) kept++;
+    made += Object.keys(b).length;
+  }
+  ok(plain > 0, "over sixty days, some day's tips mention the radio when nothing is avoided (so the next check means something)");
+  ok(kept === 0 && made === 360, `with the radio avoided, no day's tip mentions it, and every page still has a tip (${kept} days, ${made} tips)`);
+}
+
 /* ---------- 4. the engine files are quiet ---------- */
 ["src/engine/ClinicalMatrix.js", "src/engine/ClinicalActivities.js"].forEach(f => {
   const s = read(f).replace(/\/\*[\s\S]*?\*\//g, "").replace(/(^|[^:])\/\/.*$/gm, "$1");

@@ -207,3 +207,14 @@ Every one is a page of several items. The composer gives each part the room it c
 ### Files and checks
 
 `js/generators/activity-life.js` (the twelve kinds), `js/generators/activity-life-data.js` (trades, regions, later songs, sayings, then and now, a day, dishes, comforts, word play). The Studio page also loads `assets/services/reminiscenceEngine.js` for its list of songs and its map of towns to regions. `scripts/check-activity-life.mjs` (1,153 checks: the data, 1,926 pages at every stage and hand with a profile and without, what a profile makes personal, topics and people left out) and eleven more steps in `scripts/check-activity-studio-ui.mjs` (a saved resident's life on the page in a real browser).
+
+## The profile's optional story, and photos (November 10, 2026)
+
+The last step of the resident profile (`profile.html`) has one closed section, "More of their story (optional)", so the form is no longer for people who skip it. It holds up to six moments in their life (a year, which may be left empty, and what happened), a dish they were known for (its name, what goes in and its steps, one to a line) and twelve comforts to tick, with a line for others. Each person or pet in the family list can also have a photo.
+
+- **Saved with the profile, nothing renamed.** `tier3_deep` gains `milestones`, `signatureDish`, `comforts` and, on a person, `photo`. An older profile opens and saves as before and gains only empty versions of these. `js/residentContext.js` carries them to every page.
+- **Where a photo lives.** The chosen picture is made smaller (800 px on its long side) and gray on the computer, then sealed on its own in the encrypted store under the name `cognicopia_resident_photo_<resident>_<token>`. The profile keeps only that name. It is never in plain browser storage. Taking a photo off, or deleting the resident, deletes the sealed picture. The station handoff file does not carry photos yet.
+- **Where it shows.** The Studio's life story page puts their own moments in order of year; the dish page is their own dish; the comfort page offers their own comforts first; who's who prints each photo in its frame (`P.image`, drawn in SVG, in the PNG and in the PDF) and asks for a photo only where there is none.
+- **Photos and the readiness score.** A photograph fills its frame and is counted as ink by both the engine and the validator, so a page that is mostly photo scores lower on white space and may read "Ready with notes". The check requires 80 or more.
+- **Checks.** `scripts/check-profile-story-ui.mjs` (real browser; in `npm run build`).
+

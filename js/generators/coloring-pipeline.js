@@ -119,6 +119,8 @@
     circle: function (pg, cx, cy, r, sw, fill) { pg.ops.push({ t: "circle", cx: f1(cx), cy: f1(cy), r: f1(r), sw: sw, fill: fill || "none" }); },
     line: function (pg, x1, y1, x2, y2, sw, dash, role) { pg.ops.push({ t: "line", x1: f1(x1), y1: f1(y1), x2: f1(x2), y2: f1(y2), sw: sw, dash: dash || "", role: role || "" }); },
     path: function (pg, d, sw, fill, stroke, tx, ty, k) { pg.ops.push({ t: "path", d: d, sw: f1(sw), fill: fill || "none", stroke: stroke || "#000", tx: f1(tx || 0), ty: f1(ty || 0), k: k || 1 }); },
+    /* a photograph (a data address made on this computer from a resident's sealed picture), cropped to fill its box */
+    image: function (pg, x, y, w, h, src) { pg.ops.push({ t: "image", x: f1(x), y: f1(y), w: f1(w), h: f1(h), src: String(src) }); },
     text: function (pg, x, y, size, str, o) { o = o || {}; pg.ops.push({ t: "text", x: f1(x), y: f1(y), size: Math.round(size), str: String(str), bold: !!o.bold, anchor: o.anchor || "start", role: o.role || "", font: o.font || "" }); }
   };
   /* lines of text; returns the y below the block */
@@ -503,8 +505,9 @@
       var subLines = items.reduce(function (m, it) { return Math.max(m, it.sub ? Math.min(2, fit(it.sub, c.fl, c.fl, cw, c.fl * 2.6, false).lines.length) : 0); }, 0);
       items.forEach(function (it, i) {
         var bx = x + (i % cols) * (cw + g), by = y + Math.floor(i / cols) * (ch + g), capH = c.bp * 1.7 + subLines * c.fl * 1.22 + (subLines ? 6 : 0), ph = ch - capH;
+        if (it.photo) P.image(pg, bx, by, cw, ph, it.photo);
         P.rect(pg, bx, by, cw, ph, 16, c.lw);
-        { var hint = fit(it.hint || "A photo can go here", c.fl, c.fl, cw - 30, ph - 20, false); block(pg, hint.lines, bx + cw / 2, by + (ph - hint.h) / 2, hint.size, { anchor: "middle", role: "hint" }); }
+        if (!it.photo) { var hint = fit(it.hint || "A photo can go here", c.fl, c.fl, cw - 30, ph - 20, false); block(pg, hint.lines, bx + cw / 2, by + (ph - hint.h) / 2, hint.size, { anchor: "middle", role: "hint" }); }
         if (!it.name) { P.line(pg, bx + 20, by + ch - 18, bx + cw - 20, by + ch - 18, c.rule, "", "write"); return; }      // no name yet: a line to write it on
         var nm = fit(it.name, c.sz(1.3), c.fl, cw, c.bp * 1.6, true), yy = block(pg, nm.lines.slice(0, 1), bx + cw / 2, by + ph + 6, nm.size, { bold: true, anchor: "middle" });
         if (it.sub) { var sb = fit(it.sub, c.fl, c.fl, cw, c.fl * 2.6, false); block(pg, sb.lines.slice(0, 2), bx + cw / 2, yy, sb.size, { anchor: "middle" }); }
@@ -641,6 +644,7 @@
       else if (op.t === "circle") s += '<circle cx="' + op.cx + '" cy="' + op.cy + '" r="' + op.r + '" fill="' + op.fill + '" stroke="#000" stroke-width="' + op.sw + '"/>';
       else if (op.t === "line") s += '<line x1="' + op.x1 + '" y1="' + op.y1 + '" x2="' + op.x2 + '" y2="' + op.y2 + '" stroke="#000" stroke-width="' + op.sw + '"' + dash + '/>';
       else if (op.t === "path") s += '<path d="' + op.d + '" transform="translate(' + op.tx + ' ' + op.ty + ') scale(' + op.k + ')" fill="' + op.fill + '" stroke="' + op.stroke + '" stroke-width="' + op.sw + '"/>';
+      else if (op.t === "image") s += '<image x="' + op.x + '" y="' + op.y + '" width="' + op.w + '" height="' + op.h + '" preserveAspectRatio="xMidYMid slice" href="' + esc(op.src) + '"/>';
       else if (op.t === "text") s += '<text x="' + op.x + '" y="' + op.y + '" ' + (op.font === "grid" ? ' font-family=\'' + GRID_FONT + '\'' : op.font && SCRIPTS[op.font] ? ' font-family=\'' + SCRIPTS[op.font].family + '\'' : '') + ' font-size="' + op.size + '" font-weight="' + (op.bold ? 700 : 400) + '" text-anchor="' + op.anchor + '" fill="#000">' + esc(op.str) + '</text>';
     });
     return s + '</svg>';
@@ -668,6 +672,9 @@
         var p = new Path2D(op.d);
         if (op.fill === "#fff") { c.fillStyle = "#fff"; c.fill(p); } else if (op.fill === "#000") c.fill(p);
         c.stroke(p);
+      } else if (op.t === "image") {
+        var im = IMAGES[op.src];                                           // drawn only once loaded (loadImages), cropped to fill its box
+        if (im && im.naturalWidth) { var k2 = Math.max(op.w / im.naturalWidth, op.h / im.naturalHeight), sw2 = op.w / k2, sh2 = op.h / k2; c.drawImage(im, (im.naturalWidth - sw2) / 2, (im.naturalHeight - sh2) / 2, sw2, sh2, op.x, op.y, op.w, op.h); }
       } else if (op.t === "text") {
         c.font = (op.bold ? "700 " : "400 ") + op.size + "px " + (op.font === "grid" ? GRID_FONT : op.font && SCRIPTS[op.font] ? SCRIPTS[op.font].family : FONT); c.textAlign = op.anchor === "middle" ? "center" : op.anchor === "end" ? "right" : "left"; c.textBaseline = "alphabetic";
         c.fillText(op.str, op.x, op.y);
@@ -717,6 +724,7 @@
         if (op.fill === "#000") box(op.cx - op.r, op.cy - op.r, op.r * 2, op.r * 2);
         for (var a = 0; a < 24; a++) cell(op.cx + op.r * Math.cos(a / 24 * 6.2832), op.cy + op.r * Math.sin(a / 24 * 6.2832), hw);
       } else if (op.t === "line") seg(op.x1, op.y1, op.x2, op.y2, hw);
+      else if (op.t === "image") box(op.x, op.y, op.w, op.h);
       else if (op.t === "path") {
         if (op.stroke === "#fff") return;                                // the white center of a road marks nothing
         var k = op.k || 1, pts = pathPoints(op.d);
@@ -743,7 +751,7 @@
     var out = (pg.meta && pg.meta.ink || []).map(function (b) { return [b[0], b[1]]; });
     pg.ops.forEach(function (op) {
       if (op.t === "text") { if (op.role !== "code") out.push([op.y - op.size * 0.8, op.y + op.size * 0.25]); }
-      else if (op.t === "rect") out.push([op.y, op.y + op.h]);
+      else if (op.t === "rect" || op.t === "image") out.push([op.y, op.y + op.h]);
       else if (op.t === "circle") out.push([op.cy - op.r, op.cy + op.r]);
       else if (op.t === "line") out.push([Math.min(op.y1, op.y2) - op.sw / 2, Math.max(op.y1, op.y2) + op.sw / 2]);
       else if (op.t === "path" && !/[a-y]/.test(op.d)) {                 // absolute commands only: every second number is a y
@@ -761,13 +769,22 @@
     return Math.round(Math.max(worst, foot - at));
   }
 
+  /* the photographs on a set of pages, loaded so a canvas can draw them (the browser only); resolves when all are ready */
+  var IMAGES = {};
+  function loadImages(pages) {
+    var srcs = []; (pages || []).forEach(function (pg) { pg.ops.forEach(function (op) { if (op.t === "image" && !IMAGES[op.src] && srcs.indexOf(op.src) < 0) srcs.push(op.src); }); });
+    if (!srcs.length || typeof Image === "undefined") return Promise.resolve();
+    return Promise.all(srcs.map(function (src) { return new Promise(function (done) { var im = new Image(); im.onload = function () { IMAGES[src] = im; done(); }; im.onerror = function () { done(); }; im.src = src; }); }));
+  }
+
   /* what is wrong with a page, in words (an empty list is a pass) */
   function validate(pg) {
     var out = [], n = stageN(pg.meta && pg.meta.stage), fl = floorPx(n);
     if (pg.w * 4 !== pg.h * 3) out.push("The page is not 3:4.");
     var minLine = 6;                                                     // never a line thinner than 6 px; real lines are 6.7 px and up
     pg.ops.forEach(function (op, i) {
-      if (op.t !== "text") {
+      if (op.t === "image") { if (op.x < 0 || op.y < 0 || op.x + op.w > W || op.y + op.h > H) out.push("A photograph runs off the page."); }
+      else if (op.t !== "text") {
         var sw = op.t === "path" ? op.sw * op.k : op.sw;
         if (sw < minLine && !(op.t === "path" && op.stroke === "#fff")) out.push("Line " + (i + 1) + " is only " + f1(sw) + " px (needs " + minLine + " or more).");
         [op.fill, op.stroke].forEach(function (c) { if (c && ["none", "#fff", "#000"].indexOf(c) < 0) out.push("Line " + (i + 1) + " uses a color other than black or white."); });
@@ -793,6 +810,6 @@
            stageN: stageN, rng: rng, hash: hash, smooth: smooth, W: W, H: H, PAD: PAD, PT: PT, BOX: BOX, drawCard: drawCard, cellsFor: cellsFor, calmest: calmest, whiteShare: whiteShare },
     strokeFor: strokeFor, bodyPx: bodyPx, floorPx: floorPx, chooseSubject: chooseSubject, subjectPaths: subjectPaths,
     composeColoring: composeColoring, sheetPages: sheetPages, packPrompts: packPrompts, toSVG: toSVG, toCanvas: toCanvas, validate: validate, hash: hash,
-    TITLE_MIN: TITLE_MIN, BLANK_MAX: BLANK_MAX, CALM_WHITE: CALM_WHITE, blankBand: blankBand, whiteShare: whiteShare
+    TITLE_MIN: TITLE_MIN, BLANK_MAX: BLANK_MAX, CALM_WHITE: CALM_WHITE, blankBand: blankBand, whiteShare: whiteShare, loadImages: loadImages
   };
 });

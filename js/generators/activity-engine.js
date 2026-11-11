@@ -380,7 +380,7 @@
     (sheets || []).forEach(function (sh, i) {
       /* every word a sheet puts in front of the resident (the answer key and the note for staff are not read by the resident) */
       var texts = [], walk = function (v, key) {
-        if (typeof v === "string") { if (key !== "staffNote" && key !== "keyLines" && key !== "dexNote" && key !== "code" && key !== "staff" && key !== "source") texts.push(v); }
+        if (typeof v === "string") { if (key !== "staffNote" && key !== "keyLines" && key !== "dexNote" && key !== "code" && key !== "staff" && key !== "source" && key !== "photo" && key !== "pic") texts.push(v); }
         else if (Array.isArray(v)) v.forEach(function (x) { walk(x, key); });
         else if (v && typeof v === "object") Object.keys(v).forEach(function (k) { walk(v[k], k); });
       };

@@ -11618,7 +11618,7 @@ function makePacket(r, mode){
      resident works on) one clinical tip for the person beside them */
   D.noFloor=true;
   shellPass(D.d,{ name:pdfSafe([r.first,r.last].filter(Boolean).join(" ")), wing:pdfSafe(r.wing||""), stageLabel:CM.STAGES[r.stage].label,
-                  tipFor:tipPlan(D.pages,r.stage,r.first,PACKET_DATE,PACKET_VARIANT), anchorFor:anchorPlan(D.pages,r.stage), reminder:false });
+                  tipFor:tipPlan(D.pages,r.stage,r.first,PACKET_DATE,PACKET_VARIANT,t=>allowed(r,t)), anchorFor:anchorPlan(D.pages,r.stage), reminder:false });
   D.pages.forEach((pg,i)=>{ if(NO_TIP.test(pg.kind)){ D.d.setPage(i+1); D.coachingFooter(); } });     // a page with no tip of its own carries the reminder
   D.d.setPage(D.d.internal.getNumberOfPages());
 
@@ -12063,10 +12063,10 @@ function anchorPlan(pages,stage){
    pages: [{kind, topic}] in page order; tips are for the person sitting beside the resident, so staff pages get none. */
 const NO_TIP=/^(cover|staff|key|notes|form|support)$/;
 const COACHING_REMINDER="Clinical Tip: Do not ask questions or test memory. Sit beside them, place the marker in their hand, and model slow, calm breathing.";
-function tipPlan(pages,stage,name,iso,variant){
+function tipPlan(pages,stage,name,iso,variant,ok){
   const CM=window.CognicopiaClinicalMatrix, rng=CM.dailyRng(name,iso,variant,"tips"), list=[];
   pages.forEach((pg,i)=>{ if(!NO_TIP.test(pg.kind)) list.push({n:i+1,activity:pg.kind,topic:pg.topic}); });
-  const plan=CM.cuePlan(list,stage,rng,{name:/^guest$/i.test(name)?"":name});   // "guest" only seeds the day's choice; a tip never says it
+  const plan=CM.cuePlan(list,stage,rng,{name:/^guest$/i.test(name)?"":name, ok:ok});   // "guest" only seeds the day's choice; a tip never says it
   return n=>plan[n]?plan[n].text:"";
 }
 

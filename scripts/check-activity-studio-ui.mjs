@@ -427,10 +427,12 @@ try {
       for (let k = 0; k < 6; k++) { all += " " + await svgText(g); if (await g.$eval("#asNext", b => b.disabled)) break; await g.click("#asNext"); await g.waitForTimeout(100); }
       if (until && until.test(all)) break; await g.click("#asRandom"); await g.waitForTimeout(400); } return all; };
     const kept = await sets(5);
+    ok(await g.$eval("#asDecade", e => e.value) === "1950", `Try different pages keeps his own years: still the 1950s after five tries (${await g.$eval("#asDecade", e => e.value)})`);
     ok(kept.length > 1500 && !/\b(church|churches|prayer|hymn|bible|faith|korea)\b/i.test(kept), "across five sets of 1950s pages none of the topic's words appears: not church, prayer, hymn or Korea");
     /* the control: the same pages with the field emptied do carry the word, so the check above is not passing by luck */
     await g.fill("#asAvoid", ""); await g.waitForTimeout(400);
-    ok(/\bchurch/i.test(await sets(12, /\bchurch/i)), "with nothing to avoid, the 1950s pages do mention a church supper, so the tick is what keeps it out");
+    ok(/\bchurch/i.test(await sets(40, /\bchurch/i)), "with nothing to avoid, the 1950s pages do mention a church supper, so the tick is what keeps it out");
+    ok(await g.$eval("#asDecade", e => e.value) === "1950", "and the pages read for that were all from his own decade");
     await g.fill("#asAvoid", "religion, Korean War, money, trains"); await g.waitForTimeout(300);
     await g.click("#asSaveRes"); await g.waitForTimeout(900);
     const geo = JSON.parse(await g.evaluate(() => window.CogniSecureStore.storage.getItem("cognicopia_resident_res-geo"))), ta = geo.tier1_core.topicsToAvoid;
