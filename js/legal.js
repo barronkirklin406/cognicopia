@@ -32,6 +32,8 @@
   function read() { try { return root.localStorage.getItem(KEY) === "true"; } catch (e) { return false; } }
   function write(on) {
     try { if (on) root.localStorage.setItem(KEY, "true"); else root.localStorage.removeItem(KEY); } catch (e) { /* private window: the bar simply shows again next visit */ }
+    /* js/wayfinding.js shows a first-time visitor the Start here guide once, right after they agree */
+    if (on && root.document) { try { root.document.dispatchEvent(new CustomEvent("cg-terms-accepted")); } catch (e) { /* an old browser: no guide */ } }
   }
 
   var CSS = [

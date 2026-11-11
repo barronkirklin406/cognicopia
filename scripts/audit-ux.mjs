@@ -54,6 +54,7 @@ const broken = [];
 /* the pages and views measured */
 const VIEWS = [
   ["index.html", "index.html"], ["profile.html", "profile.html"], ["tablet activities", "tablet.html"],
+  ["daily engagement", "daily.html"], ["activity page studio", "activity-studio.html"],
   ["builder home", "builder.html#/"], ["builder coloring", "builder.html#/coloring"], ["builder roster", "builder.html#/roster"],
   ["builder facility", "builder.html#/facility"], ["builder planner", "builder.html#/planner"], ["builder journal", "builder.html#/journal"],
   ["builder academy", "builder.html#/academy"], ["builder reminiscence", "builder.html#/reminiscence"], ["builder digest", "builder.html#/heirloom"],
@@ -62,6 +63,8 @@ const VIEWS = [
   ["journals page", "cognitive-journals.html"], ["planners page", "life-planners.html"], ["zentangle page", "zentangle-art.html"], ["pilot", "pilot.html"], ["referral", "referral.html"], ["privacy and data", "resources/privacy-and-data/"], ["security questions", "resources/security-questions/"], ["accessibility statement", "resources/accessibility/"]
 ];
 const VIEWPORTS = [["phone 390", 390, 844], ["laptop 1366", 1366, 768]];
+/* pages with no Night Shift switch: forcing the class on them measures a screen no one can reach, so they are measured by day only (the report says so) */
+const NO_NIGHT = new Set([]);
 
 /* the controls that only exist once something is opened or chosen: each state is a page and the steps a person takes to reach it */
 const click = sel => page => page.click(sel, { timeout: 5000 });
@@ -76,6 +79,11 @@ const lockStore = page => page.evaluate(async () => { const S = window.CogniSecu
 const openGate = page => page.evaluate(() => { try { localStorage.setItem("cognicopia_gen_count", "50"); } catch (e) {} openGate(); });
 const STATES = [
   ["index: upgrade screen (50 packets used)", "index.html", [openGate]],
+  ["search open (Ctrl+K) with residents", "daily.html", [seedResidents, reload, page => page.keyboard.press("Control+k"), fill("#qlInput", "test")]],
+  ["daily engagement: a resident active, the bar shown", "daily.html", [seedResidents, reload, page => page.evaluate(() => window.CogniWayfinding.setActive("res-a"))]],
+  ["Start here open, a role chosen", "index.html", [page => page.evaluate(() => window.CogniWayfinding.openStart()), click('.wf-role[data-role="wing"]')]],
+  ["Start here: the last step", "index.html", [page => page.evaluate(() => { localStorage.setItem("cognicopia_start", JSON.stringify({ role: "home", step: 4 })); window.CogniWayfinding.openStart(); })]],
+  ["pinned tools: the picker", "index.html", [page => page.evaluate(() => window.CogniWayfinding.openPinPicker())]],
   ["builder: upgrade screen (50 packets used)", "builder.html#/", [openGate]],
   ["builder: upgrade banner (20 packets used)", "builder.html#/", [page => page.evaluate(() => { localStorage.setItem("cognicopia_gen_count", "20"); }), reload]],
   ["license window (a page with a top bar)", "pricing.html", [click("#cgPromoBtn")]],
@@ -214,6 +222,7 @@ async function main(){
     for (const mode of ["day", "night"]){
       const { ctx, page } = await open(1366, 768);
       for (const [label, url] of VIEWS){
+        if (mode === "night" && NO_NIGHT.has(label)){ results.contrast.push({ view: label, mode, text_elements: 0, below_aa: 0, sample: [], note: "this page has no Night Shift switch, so it is measured by day only" }); continue; }
         await page.goto(base + url, { waitUntil: "load" }); await page.waitForTimeout(700);
         if (mode === "night") await page.evaluate(() => { document.documentElement.classList.add("cg-night-shift"); document.body.classList.add("cg-night-shift"); }), await page.waitForTimeout(500);
         const r = await page.evaluate(measure);
@@ -350,7 +359,7 @@ function report(){
   }
   if (results.contrast.length){
     out.push("CONTRAST below WCAG AA (text against its background)");
-    results.contrast.forEach(r => out.push(`  ${pad(r.view, 18)} ${pad(r.mode, 6)} ${String(r.below_aa).padStart(3)} of ${String(r.text_elements).padStart(4)}${r.sample.length ? "   e.g. " + r.sample[0] : ""}`));
+    results.contrast.forEach(r => out.push(r.note ? `  ${pad(r.view, 18)} ${pad(r.mode, 6)} not measured: ${r.note}` : `  ${pad(r.view, 18)} ${pad(r.mode, 6)} ${String(r.below_aa).padStart(3)} of ${String(r.text_elements).padStart(4)}${r.sample.length ? "   e.g. " + r.sample[0] : ""}`));
     out.push("");
   }
   if (results.nav.length){ out.push("NAVIGATION (the sidebar as the page opens)"); results.nav.forEach(r => out.push(`  ${pad(r.view, 20)} ${r.hubs ? r.hubs + " hubs" : "no hubs"}, ${String(r.choices).padStart(2)} choices visible at once, ${r.groups_open} group(s) open, sidebar ${r.tall} px tall; under ${MIN} px: ${r.below_min}; text below AA: ${r.contrast_below_aa}`)); out.push(""); }

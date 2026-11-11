@@ -451,6 +451,28 @@ try {
     await c3.close();
   }
 
+  /* ---------- Night Shift: the switch in the action bar; every panel readable after dark; the page itself stays black on white ---------- */
+  for (const [w, h] of [[1366, 768], [390, 844]]) {
+    const { ctx: cn, p: n } = await open(w, h);
+    const sw = await n.$eval(".cg-night-shift-toggle", e => { const r = e.getBoundingClientRect(); return [Math.round(r.width), Math.round(r.height)]; }).catch(() => null);
+    ok(sw && sw[0] >= 52 && sw[1] >= 52, `at ${w} px the Studio has a Night Shift switch (${sw ? sw.join(" x ") : "missing"} px)`);
+    await n.click(".cg-night-shift-toggle"); await n.waitForTimeout(600);
+    ok(await n.evaluate(() => document.documentElement.classList.contains("cg-night-shift") && localStorage.getItem("cognicopia_night_shift") === "1"), `at ${w} px it turns Night Shift on and remembers it`);
+    const low = await n.evaluate(() => {
+      const lum = c => { const m = c.match(/[\d.]+/g); const [r, g, b] = m.slice(0, 3).map(v => { v = v / 255; return v <= .03928 ? v / 12.92 : Math.pow((v + .055) / 1.055, 2.4); }); return .2126 * r + .7152 * g + .0722 * b; };
+      const bgOf = el => { for (let e = el; e; e = e.parentElement) { const c = getComputedStyle(e).backgroundColor, m = c.match(/[\d.]+/g); if (m && (m.length < 4 || +m[3] > .5)) return c; } return "rgb(23,18,12)"; };
+      return [...document.querySelectorAll("main *")].filter(el => !el.closest("svg") && [...el.childNodes].some(t => t.nodeType === 3 && t.textContent.trim()) && el.getBoundingClientRect().width && getComputedStyle(el).visibility !== "hidden")
+        .map(el => { const a = lum(getComputedStyle(el).color), b = lum(bgOf(el)); return [(Math.max(a, b) + .05) / (Math.min(a, b) + .05), el.textContent.trim().slice(0, 30)]; }).filter(x => x[0] < 4.5).map(x => x[0].toFixed(2) + " " + x[1]); });
+    ok(low.length === 0, `at ${w} px every line of the settings and notes is readable at night` + (low.length ? ": " + low.slice(0, 4).join("; ") : ""));
+    /* the menu bar and the Menu button float over the top of the window: set them aside for this one picture, so only the page is measured */
+    await n.evaluate(() => document.querySelectorAll(".cg-sidebar, .cg-sidebar-toggle, .cg-topbar").forEach(e => { e.style.visibility = "hidden"; }));
+    const sheet = await n.$("#asSheet svg"); await sheet.scrollIntoViewIfNeeded(); await n.waitForTimeout(200);
+    const share = await n.evaluate(async b64 => { const img = new Image(); img.src = "data:image/png;base64," + b64; await img.decode(); const c = document.createElement("canvas"); c.width = img.width; c.height = img.height; const x = c.getContext("2d"); x.drawImage(img, 0, 0);
+      const d = x.getImageData(0, 0, c.width, c.height).data; let k = 0; for (let i = 0; i < d.length; i += 4) if (Math.max(d[i], d[i + 1], d[i + 2]) - Math.min(d[i], d[i + 1], d[i + 2]) > 24) k++; return k / (d.length / 4); }, (await sheet.screenshot()).toString("base64"));
+    ok(share < 0.001, `at ${w} px the page on screen stays black on white at night (${(share * 100).toFixed(3)}% of it tinted)`);
+    await cn.close();
+  }
+
   ok(foreign.length === 0, "nothing is requested from outside the page" + (foreign.length ? ": " + foreign.slice(0, 2).join(", ") : ""));
   ok(errors.length === 0, "no script errors" + (errors.length ? ": " + errors.slice(0, 3).join("; ") : ""));
 } finally { await browser.close(); srv.close(); }

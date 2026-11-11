@@ -182,6 +182,7 @@
     if (!p) {                                          // a new person starts clean: nothing of the last resident carries over (the support settings stay)
       mapped = {}; state.name = ""; state.born = ""; state.vocation = ""; state.interests = ""; state.avoid = ""; state.personal = ""; state.variant = 0;
       try { LS().removeItem(ACTIVE_KEY); } catch (e) { /* ignore */ }
+      if (window.CogniWayfinding) window.CogniWayfinding.note("");
       sync(); paintWho(); refresh(false); return;
     }
     var f = fromProfile(p); mapped = f;
@@ -189,6 +190,7 @@
     if (f.born) { var d = E.decadeFor ? E.decadeFor(Number(f.born)) : null; if (d) state.decade = d; }
     if (state.stage !== 1) state.challenge = false;
     try { LS().setItem(ACTIVE_KEY, id); } catch (e) { /* ignore */ }
+    if (window.CogniWayfinding) window.CogniWayfinding.note(id);           // the active-resident bar, the search and the tab follow
     sync(); paintWho(); refresh(false);
   }
   function whoMsg(t, bad) { var m = $("#asWhoMsg"); if (!m) return; m.textContent = t; m.className = "as-hint" + (bad ? " as-bad" : t ? " as-ok" : ""); }
@@ -498,7 +500,11 @@
     paintWho();
     var tl = trial(); if (tl && tl.ready) tl.ready().then(paintLeft, paintLeft); else paintLeft();
     var a = null; try { a = LS() && LS().getItem(ACTIVE_KEY); } catch (e) { /* ignore */ }
+    var W = window.CogniWayfinding, tab = W ? W.activeId() : "";          // the one chosen in this tab (the Packet Builder, the search) comes first
+    if (tab && readRes(tab)) a = tab;
     if (a && readRes(a)) applyResident(a);
   });
+  /* the search and the active-resident bar can choose who the Studio is working with */
+  if (window.CogniWayfinding) window.CogniWayfinding.host({ residents: listRes, setActive: function (id) { whoMsg(""); applyResident(id && readRes(id) ? id : ""); } });
   window.CognicopiaActivityStudio = Object.freeze({ state: state, refresh: function () { refresh(false); }, pages: function () { return made.pages; }, code: function () { return made.code; }, lastPdf: function () { return lastPdf; } });
 })();

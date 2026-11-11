@@ -265,7 +265,26 @@
   topic.addEventListener("change", function () { prefs.topic = topic.value; savePrefs(); });
   var era = $("tbEra"); era.value = prefs.era;
   era.addEventListener("change", function () { prefs.era = /^19[4-8]0s$/.test(era.value) ? era.value : ""; savePrefs(); });
-  $("tbAvoid").addEventListener("input", function () { avoidTerms = T.avoidWords(this.value); });
+  /* the active resident (js/wayfinding.js): their stage, and their topics to avoid kept off every screen, on top of anything typed here.
+     Read only, and never saved with the tablet's own settings: the next resident starts from their own. */
+  var residentAvoid = [], residentStage = "";
+  function typedAvoid() { return T.avoidWords($("tbAvoid").value); }
+  function joinAvoid() { avoidTerms = typedAvoid(); residentAvoid.forEach(function (w) { if (avoidTerms.indexOf(w) < 0) avoidTerms.push(w); }); }
+  $("tbAvoid").addEventListener("input", joinAvoid);
+  function forResident(d) {
+    var note = $("tbFor"), STAGE_OF = { 1: "early", 2: "middle", 3: "late" };
+    residentAvoid = d ? (d.words || []).map(function (w) { return String(w).toLowerCase(); }) : [];
+    joinAvoid();
+    residentStage = d && STAGE_OF[d.stage] ? STAGE_OF[d.stage] : "";
+    if (residentStage && !calmOn) { prefs.stage = residentStage; $({ early: "tbStageEarly", middle: "tbStageMiddle", late: "tbStageLate" }[residentStage]).checked = true; }
+    note.hidden = !d;
+    note.textContent = d ? "Set for " + d.who + ": " + ({ early: "early", middle: "middle", late: "late" }[residentStage] || "the chosen") + " stage, and kept off the screen: " + d.avoidText + "." : "";
+  }
+  var W = window.CogniWayfinding;
+  if (W) {
+    W.host({ setActive: function (id) { if (!id) { forResident(null); return; } W.active().then(function (r) { forResident(r && r.id === id ? W.describe(r) : null); }); } });
+    W.active().then(function (r) { if (r) forResident(W.describe(r)); });
+  }
   function calmApply() {
     var late = $("tbStageLate"), back = $({ early: "tbStageEarly", middle: "tbStageMiddle", late: "tbStageLate" }[prefs.stage]);
     Array.prototype.forEach.call(document.querySelectorAll("input[name=stage]"), function (r) { r.disabled = calmOn; });
@@ -320,6 +339,7 @@
     activities: Object.keys(ACT), open: function (id) { openAct(id); }, close: closeAct,
     current: function () { return cur ? cur.act.id : null; }, debug: function () { return cur && cur.debug ? cur.debug() : null; },
     prefs: function () { return JSON.parse(JSON.stringify(prefs)); },
+    avoid: function () { return avoidTerms.slice(); },                // what every screen is checked against: the typed words and the active resident's
     /* for the checks: how long a quiet moment is, and what the shell has done for this activity */
     idleMs: function (ms) { if (ms > 0) { idleMs = ms; armIdle(); } return idleMs; },
     stats: function () { return cur ? { hints: cur.hints, assisting: cur.assisting, done: cur.done, assist: !!cur.assistFn, hint: !!cur.hintFn } : null; }

@@ -107,6 +107,17 @@ try {
   ok(await p.$eval("#sidebar", e => e.classList.contains("is-open")), "opening a hub keeps the menu open");
   await p.click(".sb-link[data-route='planner']"); await p.waitForTimeout(500);
   ok(!(await p.$eval("#sidebar", e => e.classList.contains("is-open"))), "choosing a place closes the menu");
+  /* the floating Menu button never covers the action bar (the free-trial line, the buttons), on a phone, a narrow tablet or a wide one */
+  for (const [w, h] of [[390, 844], [700, 900], [1024, 768]]) {
+    const q2 = await page(w, h);
+    for (const f of ["daily.html", "activity-studio.html", "tablet.html", "profile.html", "pricing.html", "resources/caregiver-faq/index.html"]) {
+      await q2.goto(base + f, { waitUntil: "load" }); await q2.waitForTimeout(500);
+      const hit = await q2.evaluate(() => { const m = document.getElementById("cgSbToggle"), a = m && m.getBoundingClientRect(); if (!a || !a.width) return "no Menu button";
+        return [...document.querySelectorAll(".cg-topbar .cg-trial, .cg-topbar a, .cg-topbar button")].filter(e => { const b = e.getBoundingClientRect(); return b.width && b.height && getComputedStyle(e).visibility !== "hidden" && b.left < a.right && b.right > a.left && b.top < a.bottom && b.bottom > a.top; }).map(e => e.textContent.trim().slice(0, 30)).join(" | "); });
+      ok(hit === "", `${f} at ${w} px: the Menu button covers nothing in the action bar` + (hit ? ` (it covers: ${hit})` : ""));
+    }
+    await q2.context().close();
+  }
   ok(errors.length === 0, "no script errors on any of these pages" + (errors.length ? ": " + errors.slice(0, 3).join("; ") : ""));
 } finally { await browser.close(); srv.close(); }
 
