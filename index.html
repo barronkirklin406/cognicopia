@@ -4835,6 +4835,16 @@ html body{background:var(--cg-cream,#fafafd)}
 .lp-more svg{width:20px;height:20px;flex:none}
 button.lp-more{margin:0;border:0;background:transparent;cursor:pointer}
 .lp-doors .wf-pins{margin:22px 0 0}
+.pk-live{display:grid;grid-template-columns:minmax(0,220px) minmax(0,1fr);gap:14px 20px;align-items:center;margin:16px 0 0;padding:14px;border:1px solid rgba(255,255,255,.32);border-radius:14px;background:transparent;color:inherit}
+.pk-live[hidden]{display:none}
+.pk-live-sheet{aspect-ratio:612/792;border:2px solid #fff;background:#fff;box-shadow:0 6px 18px -8px rgba(0,0,0,.5)}
+.pk-live figcaption,.pk-live figcaption span{color:inherit}
+.pk-live-sheet svg{display:block;width:100%;height:100%}
+.pk-live figcaption{display:grid;gap:6px}
+.pk-live-msg{font-weight:700;font-size:18px}
+.pk-live-note{font-size:15px}
+@media (max-width:560px){.pk-live{grid-template-columns:minmax(0,150px) minmax(0,1fr)}}
+@media print{.pk-live{display:none!important}}
 .lp-door-start{margin:16px 0 0;font:400 17px/1.5 var(--cg-font-ui,"Segoe UI",sans-serif)}
 .lp-door-start button.lp-more{padding:0 6px}
 .lp-btn:focus-visible,.lp-more:focus-visible,.lp-marks a:focus-visible,.lp-footer a:focus-visible{outline:3px solid var(--cg-focus,#f5b800);outline-offset:3px;box-shadow:0 0 0 6px var(--cg-focus-dark,#0f172a)}
@@ -6959,6 +6969,10 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
       <button type="button" id="previewPacketBtn" class="btn-secondary" aria-describedby="previewNote"><svg class="cg-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg> Preview Packet</button>
     </div>
     <p class="left" id="previewNote" role="status" aria-live="polite"></p>
+    <figure class="pk-live" id="pkLive" hidden>
+      <div class="pk-live-sheet" id="pkLiveSheet"></div>
+      <figcaption><span class="pk-live-msg" id="pkLiveMsg" role="status" aria-live="polite"></span><span class="pk-live-note">Page 1 as it will print. The name, date and page numbers are added to every page as the packet is finished.</span></figcaption>
+    </figure>
     <p class="go-allowance" role="status"><span class="licbadge" id="licBadge"></span></p>
     <p class="note">Your printer must be set to 100% or Actual size.
     "Fit to page" shrinks the large print.</p>
@@ -11543,7 +11557,81 @@ function buildPacket(r, mode){
   finally{ unseedPacket(); }
 }
 
-function makePacket(r, mode){
+/* The same packet, made a page at a time so the screen can follow it. onCover(svg) gets a picture of page 1 as soon as it is drawn
+   (from the cover's own drawing steps, recorded as they go into the PDF); onStep(pages) after each new page. Between steps the
+   packet's own random source is set aside, so nothing else on the page can draw from it: the packet is the one buildPacket makes. */
+async function buildPacketStepped(r, mode, onCover, onStep){
+  r=scrubProfile(r);
+  seedPacket(r.first);
+  const g=packetSteps(r, mode||"full"), pause=()=>new Promise(res=>requestAnimationFrame(()=>setTimeout(res,0)));
+  let st=g.next(), last=0, shown=performance.now();
+  try{
+    if(!st.done && st.value && st.value.n===0){                 // the cover is next: record it as it is drawn
+      const rec=recordPdfOps(st.value.D.d); st=g.next(); rec.stop();
+      if(onCover){ try{ onCover(opsToSvg(rec.ops)); }catch(e){ /* the packet is made all the same */ } }
+      const keep=PACKET_RNG; PACKET_RNG=null; await pause(); PACKET_RNG=keep; shown=performance.now();
+    }
+    while(!st.done){
+      const n=st.value?st.value.n:0;
+      if(n!==last){ last=n; if(onStep) onStep(n);
+        if(performance.now()-shown>60){ const keep=PACKET_RNG; PACKET_RNG=null; await pause(); PACKET_RNG=keep; shown=performance.now(); } }   // let the screen catch up about fifteen times a second
+      st=g.next();
+    }
+    return st.value;
+  }finally{ unseedPacket(); }
+}
+/* the drawing steps that go into a jsPDF document while it is watched: text, lines, curves, circles, rectangles and pictures,
+   with the size, weight, line width and color each one really had (read back from the document, so a size the packet lifts to
+   the stage's floor is the size shown). A step made inside another (a line drawn as lines) is counted once. */
+function recordPdfOps(d){
+  const ops=[], st={style:"normal", size:16, lw:1, draw:"rgb(0,0,0)", fill:"rgb(0,0,0)", text:"rgb(0,0,0)"}, orig={};
+  let depth=0;
+  const col=a=>{ if(typeof a[0]==="string") return a[0]; if(a.length<3||a[1]===undefined) return "rgb("+a[0]+","+a[0]+","+a[0]+")"; return "rgb("+a[0]+","+a[1]+","+a[2]+")"; };
+  const watch=(name,fn)=>{ if(typeof d[name]!=="function") return; orig[name]=d[name];
+    d[name]=function(){ const a=[].slice.call(arguments); if(depth===0){ try{ fn(a); }catch(e){ /* a step not understood is left out of the picture */ } } depth++; try{ return orig[name].apply(this,a); } finally{ depth--; } }; };
+  watch("setFont",a=>{ st.style=String(a[1]||"normal"); });
+  watch("setFontSize",a=>{ st.size=+a[0]||st.size; });
+  watch("setLineWidth",a=>{ st.lw=+a[0]; });
+  watch("setDrawColor",a=>{ st.draw=col(a); });
+  watch("setFillColor",a=>{ st.fill=col(a); });
+  watch("setTextColor",a=>{ st.text=col(a); });
+  const now=()=>{ try{ st.size=+d.getFontSize()||st.size; }catch(e){} try{ const f=d.getFont(); if(f&&f.fontStyle) st.style=f.fontStyle; }catch(e){}
+    try{ if(d.getLineWidth) st.lw=+d.getLineWidth(); }catch(e){} try{ st.text=d.getTextColor()||st.text; st.draw=d.getDrawColor()||st.draw; st.fill=d.getFillColor()||st.fill; }catch(e){} };
+  watch("text",a=>{ now(); ops.push({t:"text",s:a[0],x:+a[1],y:+a[2],o:a[3]||{},style:st.style,size:st.size,c:st.text}); });
+  watch("line",a=>{ now(); ops.push({t:"line",x1:+a[0],y1:+a[1],x2:+a[2],y2:+a[3],lw:st.lw,c:st.draw}); });
+  watch("lines",a=>{ now(); ops.push({t:"lines",segs:a[0],x:+a[1],y:+a[2],sc:a[3]||[1,1],style:a[4],closed:!!a[5],lw:st.lw,c:st.draw,f:st.fill}); });
+  watch("circle",a=>{ now(); ops.push({t:"circle",x:+a[0],y:+a[1],r:+a[2],style:a[3],lw:st.lw,c:st.draw,f:st.fill}); });
+  watch("rect",a=>{ now(); ops.push({t:"rect",x:+a[0],y:+a[1],w:+a[2],h:+a[3],style:a[4],lw:st.lw,c:st.draw,f:st.fill}); });
+  watch("roundedRect",a=>{ now(); ops.push({t:"rect",x:+a[0],y:+a[1],w:+a[2],h:+a[3],rx:+a[4],style:a[6],lw:st.lw,c:st.draw,f:st.fill}); });
+  watch("addImage",a=>ops.push({t:"image",src:a[0],x:+a[2],y:+a[3],w:+a[4],h:+a[5]}));
+  return { ops, stop(){ Object.keys(orig).forEach(k=>{ d[k]=orig[k]; }); } };
+}
+/* those steps as an SVG the size of the sheet (612 x 792 points), in the packet's own typeface */
+function opsToSvg(ops){
+  const e=v=>String(v==null?"":v).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+  const n=v=>Math.round(v*100)/100;
+  const paint=(o,dflt)=>{ const sty=String(o.style||dflt), fill=/F/i.test(sty), stroke=!/^F$/i.test(sty);
+    return ' fill="'+(fill?e(o.f):"none")+'" stroke="'+(stroke?e(o.c):"none")+'" stroke-width="'+n(o.lw)+'"'; };
+  const out=['<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 612 792" role="img" aria-label="Page 1 of the packet, as it will print"><rect width="612" height="792" fill="#fff"/>'];
+  ops.forEach(o=>{
+    if(o.t==="text"){ const a=o.o.align==="center"?"middle":o.o.align==="right"?"end":"start", w=/bold/i.test(o.style)?700:400, it=/italic/i.test(o.style)?' font-style="italic"':"";
+      [].concat(o.s).forEach((line,i)=>out.push('<text x="'+n(o.x)+'" y="'+n(o.y+i*o.size*1.15)+'" font-size="'+n(o.size)+'" font-weight="'+w+'"'+it+' text-anchor="'+a+'" fill="'+e(o.c)+'" font-family="Atkinson Hyperlegible, Cognicopia UI, sans-serif">'+e(line)+'</text>')); }
+    else if(o.t==="line") out.push('<line x1="'+n(o.x1)+'" y1="'+n(o.y1)+'" x2="'+n(o.x2)+'" y2="'+n(o.y2)+'" stroke="'+e(o.c)+'" stroke-width="'+n(o.lw)+'" stroke-linecap="round"/>');
+    else if(o.t==="lines"){ const sx=+o.sc[0]||1, sy=+o.sc[1]||1; let d="M"+n(o.x)+" "+n(o.y);
+      (o.segs||[]).forEach(g=>{ d+=g.length>=6?" c"+[g[0]*sx,g[1]*sy,g[2]*sx,g[3]*sy,g[4]*sx,g[5]*sy].map(n).join(" "):" l"+n(g[0]*sx)+" "+n(g[1]*sy); });
+      out.push('<path d="'+d+(o.closed?" z":"")+'"'+paint(o,"S")+' stroke-linecap="round" stroke-linejoin="round"/>'); }
+    else if(o.t==="circle") out.push('<circle cx="'+n(o.x)+'" cy="'+n(o.y)+'" r="'+n(o.r)+'"'+paint(o,"S")+'/>');
+    else if(o.t==="rect") out.push('<rect x="'+n(o.x)+'" y="'+n(o.y)+'" width="'+n(o.w)+'" height="'+n(o.h)+'"'+(o.rx?' rx="'+n(o.rx)+'"':"")+paint(o,"S")+'/>');
+    else if(o.t==="image" && /^data:image\//.test(String(o.src))) out.push('<image href="'+e(o.src)+'" x="'+n(o.x)+'" y="'+n(o.y)+'" width="'+n(o.w)+'" height="'+n(o.h)+'" preserveAspectRatio="none"/>');
+  });
+  out.push("</svg>");
+  return out.join("");
+}
+
+/* The packet, one page maker at a time. Each step yields {n: pages made so far, D: the document}; makePacket runs it to the end
+   in one go, as it always has, and buildPacketStepped runs it with a pause after each new page, so the screen can show the
+   cover at once and "Building page X of about N" while the rest is made. The pages are the same either way. */
+function* packetSteps(r, mode){
   const CM=window.CognicopiaClinicalMatrix, A=window.CognicopiaClinicalActivities;
   r.stage=CM.stageOf(r.stage);
   const s=STAGE[r.stage];
@@ -11569,112 +11657,163 @@ function makePacket(r, mode){
     if(pg && pg.meta.answers && pg.meta.answers.length) key.push({title:pg.meta.title,lines:A.answerLines(pg)});
   };
 
+  yield {n:0, D};                                  // the stepped maker records the cover from here (buildPacketStepped)
   D.tag("cover"); coverPage(D,r,theme);
+  yield {n:D.pages.length, D};
 
   /* ---- resident activity pages — skipped when printing staff guide only ---- */
   if(mode==="full"){
 
   if(sel.orientation) engine("orientation");           // the day, the season and the weather open the packet
+  yield {n:D.pages.length, D};
   if(sel.wordsearch){
     const found=run("Word search","wordsearch",()=>wordSearchPage(D,r,s,theme,
                    [holidayWords, eraWords(r.born), tradeGridWords(r),
                     regionBits(r,"words")]));
     if(found && found.length) key.push({title:"Word search",lines:[found.join(", ")]});
   }
+  yield {n:D.pages.length, D};
   if(sel.erasearch){
     const f=run("Second word search","erasearch",()=>eraSearchPage(D,r,s,theme,holidayWords));
     if(f && f.length) key.push({title:"Second word search",lines:[f.join(", ")]});
   }
+  yield {n:D.pages.length, D};
   if(sel["search-large"]) engine("search-large");
+  yield {n:D.pages.length, D};
   if(sel["search-guided"]) engine("search-guided");
+  yield {n:D.pages.length, D};
   if(sel.crossword){
     const c=run("Fit the words in","crossword",()=>crossPage(D,r,s,theme));
     if(c && c.length) key.push({title:"Fit the words in",lines:[c.join(", ")]});
   }
+  yield {n:D.pages.length, D};
   if(sel.ladder) engine("ladder");
+  yield {n:D.pages.length, D};
   if(sel.anagram) engine("anagram");
+  yield {n:D.pages.length, D};
   if(sel.maze) engine("maze");
+  yield {n:D.pages.length, D};
   if(sel.pathtrace) engine("pathtrace");
+  yield {n:D.pages.length, D};
   if(sel.dots)     run("Join the dots","dots",()=>dotsPage(D,r,s,theme));
+  yield {n:D.pages.length, D};
   if(sel.bingo){
     const c=run("Bingo card","bingo",()=>bingoPage(D,r,s,theme));
     if(c && c.length) key.push({title:"Bingo caller list (read these out)",
                                 lines:[c.join(", ")]});
   }
+  yield {n:D.pages.length, D};
   if(sel.colornum) run("Color by number","colornum",()=>colorNumberPage(D,r,s,theme));
+  yield {n:D.pages.length, D};
   if(sel.lyric){
     const c=run("Finish the line","lyric",()=>lyricPage(D,r,s,theme));
     if(c) key.push({title:"Finish the line",lines:c.map(([a,b])=>a+" "+b)});
   }
+  yield {n:D.pages.length, D};
   if(sel.lifestory) run("My life story","lifestory",()=>lifePage(D,r,s,theme));
+  yield {n:D.pages.length, D};
   if(sel.sayings){
     const c=run("Proverbs and sayings","sayings",()=>sayingsPage(D,r,s,theme));
     if(c) key.push({title:"Proverbs and sayings",lines:c.map(([a,b])=>a+" "+b)});
   }
+  yield {n:D.pages.length, D};
   if(sel["choose-ending"]) engine("choose-ending");
+  yield {n:D.pages.length, D};
   if(sel.career){
     const c=run("Where does it belong?","career",()=>careerPage(D,r,s,theme));
     if(c) key.push({title:"Where does it belong",lines:c.map(([w,g])=>w+"  ->  "+g)});
   }
+  yield {n:D.pages.length, D};
   if(sel.scramble){
     const c=run("Mixed-up words","scramble",()=>scramblePage(D,r,s,theme));
     if(c) key.push({title:"Mixed-up words",lines:c.map(([m,w])=>m+"  ->  "+w)});
   }
+  yield {n:D.pages.length, D};
   if(sel.name) run("Name a few","name",()=>namePage(D,r,s,theme));
+  yield {n:D.pages.length, D};
   if(sel.match){
     const c=run("Two halves that go together","match",()=>matchPage(D,r,s,theme));
     if(c) key.push({title:"Two halves that go together",lines:c.map(x=>x[0])});
   }
+  yield {n:D.pages.length, D};
   if(sel.matching) engine("matching");
+  yield {n:D.pages.length, D};
   if(sel.assoc){
     const c=run("What goes with it?","assoc",()=>assocPage(D,r,s,theme));
     if(c) key.push({title:"What goes with it",lines:c.map(([a,b])=>a+"  ->  "+b)});
   }
+  yield {n:D.pages.length, D};
   if(sel.sorting) engine("sorting");
+  yield {n:D.pages.length, D};
   if(sel.trivia){
     const c=run("About you","trivia",()=>triviaPage(D,r,s,theme));
     if(c) key.push({title:"About you",lines:c.map(([q,a])=>q+"  "+a)});
   }
+  yield {n:D.pages.length, D};
   if(sel.sequence) engine("sequence");
+  yield {n:D.pages.length, D};
   if(sel.people) run("The people who help you","people",()=>peoplePage(D,r,theme));
+  yield {n:D.pages.length, D};
   if(sel.talk)   run("Conversation starters","talk",()=>talkPage(D,r,s,theme));
+  yield {n:D.pages.length, D};
   if(sel.era)    run("Things you may recall","era",()=>eraPage(D,r,theme));
+  yield {n:D.pages.length, D};
   if(sel.language) run("Words from home","language",()=>langPage(D,r,s,theme));
+  yield {n:D.pages.length, D};
   if(sel.task) run("Something to do","task",()=>taskPage(D,r,s,theme));
+  yield {n:D.pages.length, D};
   if(sel.popculture) run("The songs and the pictures","popculture",()=>popPage(D,r,s,theme));
+  yield {n:D.pages.length, D};
   if(sel.rather) run("Which would you rather?","rather",()=>ratherPage(D,r,s,theme));
+  yield {n:D.pages.length, D};
   if(sel.odd){
     const c=run("Which one doesn't belong","odd",()=>oddPage(D,r,s,theme));
     if(c) key.push({title:"Which one doesn't belong",
               lines:c.map(([w,a])=>w.join(", ")+"  ->  "+a)});
   }
+  yield {n:D.pages.length, D};
   if(sel.oddone) engine("oddone");
+  yield {n:D.pages.length, D};
 
   for(const k of r.holidays) run(HOLIDAYS[k].label,"talk",()=>holidayPage(D,r,k));
+  yield {n:D.pages.length, D};
 
   if(sel.games) run("Games to play together","games",()=>gamesPage(D,r,theme));
+  yield {n:D.pages.length, D};
   if(sel.color) run("Coloring page","color",()=>colorPage(D,r,theme),"");
+  yield {n:D.pages.length, D};
   if(sel.youryears) run("Your years","youryears",()=>yearsPage(D,r,theme),"");
+  yield {n:D.pages.length, D};
   if(sel.memorymap) run("My memory map","memorymap",()=>memoryMapPage(D,r,theme),"");
+  yield {n:D.pages.length, D};
   if(sel.sensorycards) run("Sensory memory cards","sensorycards",()=>sensoryCardsPage(D,r,theme),"");
+  yield {n:D.pages.length, D};
   if(sel.mandala) run("Color the pattern","mandala",()=>mandalaPage(D,r,s,theme),"");
+  yield {n:D.pages.length, D};
   if(sel.silhouette) engine("silhouette");
+  yield {n:D.pages.length, D};
 
   /* New world-class activity modules */
   if(sel.clocks) run("What time is it?","clocks",()=>clockPage(D,r,s,theme));
+  yield {n:D.pages.length, D};
   if(sel.coins)  run("Match the coins","coins",()=>coinPage(D,r,s,theme));
+  yield {n:D.pages.length, D};
   if(sel.provhint){
     const c=run("Finish the proverb","provhint",()=>provHintPage(D,r,s,theme));
     if(c) key.push({title:"Proverb hints",lines:c.map(([a,b])=>a+" "+b)});
   }
+  yield {n:D.pages.length, D};
   if(sel.tracing) run("Trace your name","tracing",()=>tracingPage(D,r,s,theme));
+  yield {n:D.pages.length, D};
 
   } /* end mode==="full" resident pages */
 
   // Everything from here on is for staff, grouped so it can be removed
   // in one go rather than pulled out of the middle of the packet.
   if(sel.facsupport) run("Activity support cards","support",()=>facSupportPage(D,r,s,theme),"");
+  yield {n:D.pages.length, D};
   D.tag("staff"); staffPage(D,r,sel);
+  yield {n:D.pages.length, D};
   if(mode==="full"){
     D.tag("key"); keyPage(D,key,theme);
     if(sel.notes){ D.tag("notes"); notesPage(D,r,theme); }
@@ -11682,6 +11821,7 @@ function makePacket(r, mode){
 
   /* the shell: every page gets the resident's name, the date and the wing, a page count, and (on the pages the
      resident works on) one clinical tip for the person beside them */
+  yield {n:D.pages.length, D};
   D.noFloor=true;
   shellPass(D.d,{ name:pdfSafe([r.first,r.last].filter(Boolean).join(" ")), wing:pdfSafe(r.wing||""), stageLabel:CM.STAGES[r.stage].label,
                   tipFor:tipPlan(D.pages,r.stage,r.first,PACKET_DATE,PACKET_VARIANT,t=>allowed(r,t)), anchorFor:anchorPlan(D.pages,r.stage), reminder:false });
@@ -11695,6 +11835,7 @@ function makePacket(r, mode){
   D.d.save(name);
   return name;
 }
+function makePacket(r, mode){ const g=packetSteps(r, mode); let st=g.next(); while(!st.done) st=g.next(); return st.value; }
 
 /* =================================================================
    8. BUILDING THE FORM
@@ -12803,6 +12944,11 @@ function runsUsed(){ return genCount(); }
 function estimatePages(){
   if(typeof updatePillarCounts==="function") updatePillarCounts();
   const el=$("pageEst"); if(!el) return;
+  const n=estimateCount();
+  el.textContent=n?"About "+n+" pages when you print it.":"";
+}
+/* the same count as a number (0 when nothing is chosen), for "Building page X of about N" */
+function estimateCount(){
   const TWO_PAGE_ACTS={
     early:["lifestory","name","talk","task","popculture","facsupport","provhint"],
     middle:["talk","task","popculture","facsupport"],
@@ -12812,7 +12958,7 @@ function estimatePages(){
     "career","scramble","match","assoc","trivia","odd","provhint"];
   const acts=[...document.querySelectorAll(".act:checked")].map(c=>c.value);
   const hols=document.querySelectorAll(".hol:checked").length;
-  if(!acts.length && !hols){ el.textContent=""; return; }
+  if(!acts.length && !hols) return 0;
   const st=document.querySelector('input[name="stage"]:checked');
   const stage=st?st.value:"early", two=TWO_PAGE_ACTS[stage]||[];
   let n=3;
@@ -12823,7 +12969,7 @@ function estimatePages(){
   n+=hols*(window.CognicopiaColoring?2:1);
   const keyed=acts.filter(a=>ANSWER_KEY_ACTS.includes(a)).length;
   if(keyed) n+=Math.ceil(keyed/(stage==="late"?5:3.5));   // shorter answers at late stage
-  el.textContent="About "+n+" pages when you print it.";
+  return n;
 }
 document.addEventListener("change", e=>{
   if(e.target && (e.target.classList.contains("act") ||
@@ -13024,10 +13170,19 @@ $("f").addEventListener("submit", e=>{
     if(!unlocked() && runsUsed()>=FREE_RUNS && !WATERMARK_DEMOS){ openGate(); return; }
     const btn=$("go"), label=btn.textContent;
     busy=true; btn.disabled=true; btn.textContent="Making the packet\u2026";
-    // Two frames: one to paint the disabled button, one to build under it.
-    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    /* the cover shows the moment it is drawn, and the rest is made a page at a time with a line saying how far it has got
+       (buildPacketStepped); the timings are kept for the checks (window.CognicopiaPacketTimings) */
+    const live=$("pkLive"), liveMsg=$("pkLiveMsg"), about=estimateCount(), t0=performance.now(), T={click:0};
+    window.CognicopiaPacketTimings=T;
+    done.style.display="none";
+    const say=n=>{ if(liveMsg) liveMsg.textContent="Building page "+n+(about&&about>=n?" of about "+about:"")+"\u2026"; };
+    (async()=>{
       try{
-        const name=buildPacket(r);
+        const name=await buildPacketStepped(r,"full",svg=>{
+          if(live){ $("pkLiveSheet").innerHTML=svg; live.hidden=false; T.preview=Math.round(performance.now()-t0); say(1); }
+        },n=>{ say(n); T.pages=n; });
+        T.done=Math.round(performance.now()-t0);
+        if(liveMsg) liveMsg.textContent="Finished: "+T.pages+" pages, saved to your downloads.";
         // The resident's details are no longer written to a file on every
         // packet: that left unencrypted copies in Downloads on shared computers.
         // Saving is deliberate now (Save this resident), with a passphrase.
@@ -13044,7 +13199,7 @@ $("f").addEventListener("submit", e=>{
       }finally{
         busy=false; btn.disabled=false; btn.textContent=label;
       }
-    }));
+    })();
   }catch(ex){
     err.textContent="Something went wrong making the packet. Try again, and if "
       +"it keeps happening, remove any unusual characters from the fields.";
