@@ -14,7 +14,7 @@
    Layout            full pages, or cards: 4 (2 by 2), 6 (2 by 3), 8 sideways
                      (2 by 4) or 5 wide tickets on the upright sheet;
    Buttons           Generate Live Preview (same settings, same pages),
-                     Randomize Theme (a new decade, picture style and seed),
+                     Try different pages (a new seed and picture style; a new decade too, unless a birth year is known),
                      Compile Packet PDF, Print, Download this page (PNG);
    Preview           one page at a time (a carousel) or every page in a
                      scroll; a high-contrast dark panel for the screen that
@@ -158,7 +158,22 @@
   }
   /* the chosen resident as the life pages read them (read once, and again after a save) */
   var personCache = { id: "", person: null };
-  function personOf(id) { if (personCache.id !== id) { var p = readRes(id); personCache = { id: id, person: p ? R.person(p) : null }; } return personCache.person; }
+  function personOf(id) { if (personCache.id !== id) { var p = readRes(id); personCache = { id: id, person: p ? R.person(p) : null }; openPhotos(id); } return personCache.person; }
+  /* the sealed pictures of the chosen resident's people, opened once (they are kept apart from the profile and read only when
+     asked for); the pages are drawn again when they arrive. A locked store or a browser without one simply shows empty frames. */
+  function openPhotos(id) {
+    var who = personCache.person, ss = SS();
+    if (!who || !ss || !ss.getBlob) return;
+    var names = who.family.all.map(function (x) { return x.photo; }).filter(Boolean);
+    if (!names.length) return;
+    Promise.all(names.map(function (n) { return ss.getBlob(n).then(function (d) { return [n, d]; }, function () { return [n, null]; }); })).then(function (list) {
+      if (personCache.id !== id || !personCache.person) return;
+      var pics = {}; list.forEach(function (x) { if (x[1]) pics[x[0]] = x[1]; });
+      if (!Object.keys(pics).length) return;
+      var next = {}; Object.keys(personCache.person).forEach(function (k) { next[k] = personCache.person[k]; }); next.photos = pics;
+      personCache = { id: id, person: next }; if (state.resident === id) refresh(false);
+    });
+  }
   function setField(id, v) { var el = $("#" + id); if (el) el.value = v == null ? "" : String(v); }
   function applyResident(id) {
     var p = id ? readRes(id) : null;
@@ -367,12 +382,14 @@
   }
 
   /* ---------- export ---------- */
-  function fontsReady() {
+  function fontsOnly() {
     var d = document;
     if (!d.fonts || !d.fonts.load) return Promise.resolve();
     return Promise.all([d.fonts.load('400 40px "Atkinson Hyperlegible"'), d.fonts.load('700 40px "Atkinson Hyperlegible"'), d.fonts.load('40px "Pinyon Script"'), d.fonts.load('40px "Marck Script"'), d.fonts.load('700 40px "Atkinson Hyperlegible Mono"')]).catch(function () {}).then(function () { return d.fonts.ready; });
   }
   function download(name, href) { var a = document.createElement("a"); a.href = href; a.download = name; document.body.appendChild(a); a.click(); a.remove(); }
+  /* everything a canvas needs before it draws: the faces, and any photographs on the pages */
+  function fontsReady() { return fontsOnly().then(function () { return PL.loadImages && made ? PL.loadImages(made.pages) : null; }); }
   function exportPng() {
     if (blocked()) { openGate(); return; }
     fontsReady().then(function () {
@@ -449,7 +466,7 @@
     $("#asDark").addEventListener("change", function (e) { state.dark = e.target.checked; paint(); });
     $("#asRandom").addEventListener("click", function () {
       state.seed = (Math.random() * 1e9 | 0) + 1; state.variant = 0;
-      state.decade = E.DECADES[Math.floor(Math.random() * E.DECADES.length)];
+      if (!Number(state.born)) state.decade = E.DECADES[Math.floor(Math.random() * E.DECADES.length)];   // a person's own years stay theirs; only a page for nobody in particular changes decade
       state.style = PL.STYLES[Math.floor(Math.random() * PL.STYLES.length)].id; state.words = ""; $("#asWords").value = "";
       sync(); refresh(false);
     });

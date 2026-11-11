@@ -44,6 +44,10 @@ The sheet counters used to be stored under names built from a resident's name, b
 - **Without encryption.** If a browser has no IndexedDB or Web Crypto, the store says so in Settings and uses plain `localStorage`, so the tools keep working.
 - **Speed.** 300 sealed residents open in under 30 ms (measured by `npm test` and in Chromium).
 
+## Photos of a resident's people (November 10, 2026)
+
+A person or pet in a resident's family list can have an optional photo. It is shrunk and turned gray in the browser and kept in the same encrypted store as the profile (`putBlob`, name `cognicopia_resident_photo_<resident>_<token>`); the profile keeps only the name. Nothing is sent anywhere, and nothing of it is in plain browser storage. Deleting the resident, or removing the photo, deletes it. The passphrase-locked station handoff file does not carry photos yet.
+
 ## Aliases
 
 With aliases on (Settings › Privacy & encryption), residents appear as "Resident 302-B" in the roster and every resident picker. Downloaded file names and print titles can use the alias too. The alias comes from, in order:

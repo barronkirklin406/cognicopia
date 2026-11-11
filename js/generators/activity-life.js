@@ -131,11 +131,13 @@
       var mine = order.slice(s * per, s * per + per);
       if (!mine.length && order.length) mine = take(rotate(order, s), per);
       if (mine.length && mine.length < per && order.length >= per) mine = mine.concat(order.slice(0, per - mine.length));   // a last page that would be short is filled from the top of the list
-      var frames = mine.length ? mine.map(function (x) { return { name: x.name, sub: RELATION[x.relation] || x.relationLabel || "", photo: x.photo || "" }; })
+      /* a person's sealed picture, when the page that asked has opened it (profile.person.photos: the picture's name -> its data) */
+      var pics = w.photos || {};
+      var frames = mine.length ? mine.map(function (x) { return { name: x.name, sub: RELATION[x.relation] || x.relationLabel || "", photo: (x.photo && pics[x.photo]) || "" }; })
         : Array.apply(null, Array(per)).map(function () { return { name: "", sub: "", hint: "A photo or a name" }; });
       out.push(sheet("whoswho", P.stage === 3 ? "My people" : "The people in my life", mine.length ? "Who is who" : "A page to fill in together", [
         { kind: "frames", items: frames }, P.stage === 3 ? null : { kind: "starters", items: take(rotate(talk, s), 1) }],
-        "the people a visit might bring, each with a name and how they belong. " + (mine.length ? "The names come from the resident's profile (only people who are living are shown here). A photo can be taped into a frame. " : "No one is in the resident's profile yet: tape in photos and write the names together. ") + "Use it before a visit and during one. Say who each person is; never ask the resident to say it.", { personal: mine.length > 0 }));
+        "the people a visit might bring, each with a name and how they belong. " + (mine.length ? "The names come from the resident's profile (only people who are living are shown here). A photo saved in the profile is printed in its frame; an empty frame is for one taped in. " : "No one is in the resident's profile yet: tape in photos and write the names together. ") + "Use it before a visit and during one. Say who each person is; never ask the resident to say it.", { personal: mine.length > 0 }));
     }
     return out;
   }

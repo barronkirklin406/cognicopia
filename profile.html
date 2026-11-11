@@ -584,6 +584,30 @@ body { padding-left: var(--sb-w); }
 .rap-passed input{width:22px;height:22px;margin:0;accent-color:var(--rp-accent)}
 .rap-remove{min-height:var(--tap);min-width:var(--tap);padding:0 14px;border-radius:12px;border:2px solid rgba(255,180,162,.4);background:transparent;color:#ffcfc4;font:inherit;font-size:15px;font-weight:700;cursor:pointer}
 .rap-remove:hover{border-color:#ffb4a2;color:#fff}
+/* a photo for a person or a pet: a small picture, and a button to add or remove it */
+.rap-photo{grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.rap-photo img{width:52px;height:52px;object-fit:cover;border-radius:10px;border:2px solid var(--rp-line2);background:#0a1120}
+.rap-photo img[hidden]{display:none}
+.rap-photo-btn{display:inline-flex;align-items:center;min-height:var(--tap);padding:0 16px;border-radius:12px;border:2px solid var(--rp-line2);background:transparent;color:var(--rp-text);font:inherit;font-size:15px;font-weight:700;cursor:pointer}
+.rap-photo-btn:hover{border-color:var(--rp-accent)}
+.rap-photo-btn:focus-within{outline:3px solid #f5b800;outline-offset:2px}
+.rap-photo-btn input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+.rap-photo-note{font-size:14px;color:var(--rp-muted)}
+/* a moment in a life: a year and a few words */
+.rap-moment{display:grid;grid-template-columns:120px 1fr auto;gap:10px;align-items:end;padding:12px;border:1px solid var(--rp-line2);border-radius:12px;background:var(--rp-field)}
+.rap-moment .rap-mini{display:block;margin:0 0 4px;font-size:14px;font-weight:700;color:var(--rp-muted)}
+.rap-moment input{min-height:var(--tap);font-size:17px;background:#0a1120}
+@media (max-width:640px){.rap-moment{grid-template-columns:1fr}}
+/* the optional part of the last step, closed until asked for */
+.rap-more{margin:0 0 18px;border:2px solid var(--rp-line2);border-radius:14px;background:var(--rp-field)}
+.rap-more-sum{display:flex;flex-direction:column;justify-content:center;gap:2px;min-height:var(--tap);padding:12px 16px;cursor:pointer;list-style:none}
+.rap-more-sum::-webkit-details-marker{display:none}
+.rap-more-t{font-size:18px;font-weight:800;color:var(--rp-text)}
+.rap-more-t::before{content:"+ ";font-weight:800}
+.rap-more[open] .rap-more-t::before{content:"\2212  "}
+.rap-more-h{font-size:15px;color:var(--rp-muted)}
+.rap-more-sum:focus-visible{outline:3px solid #f5b800;outline-offset:2px;border-radius:12px}
+.rap-more-body{padding:4px 16px 8px}
 .rap-people-empty{margin:0 0 12px;color:var(--rp-muted);font-size:15px;font-style:italic}
 .rap-people-empty[hidden]{display:none}
 .rap-auto-note{margin:0 0 12px;padding:8px 12px;border-radius:10px;background:rgba(60,199,183,.12);color:var(--rp-text)}
@@ -1476,6 +1500,7 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
         <fieldset class="rap-field rap-group">
           <legend>Important people and pets</legend>
           <p class="rap-hint rap-hint-top">Family, friends and pets they talk about, with the names they use. Mark anyone who has passed away so activities never speak of them as if they were still here.</p>
+          <p class="rap-hint">A photo is optional. It is made smaller, turned to gray for printing and kept sealed on this computer like the rest of the profile; it is printed in the frames of the "Who's who" page.</p>
           <div class="rap-people" id="rapPeople" aria-live="polite"></div>
           <p class="rap-people-empty" id="rapPeopleEmpty">No one added yet.</p>
           <button type="button" class="rap-btn rap-btn-ghost rap-btn-sm" id="rapAddPerson"><span aria-hidden="true">+</span> Add a Person/Pet</button>
@@ -1669,6 +1694,57 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
           <p class="rap-hint rap-notes-count" id="rapNotesCount" aria-live="polite">0 of 1,500 characters</p>
         </div>
 
+        <details class="rap-more" id="rapMore">
+          <summary class="rap-more-sum"><span class="rap-more-t">More of their story (optional)</span><span class="rap-more-h">moments in their life, a dish they were known for, what comforts them</span></summary>
+          <div class="rap-more-body">
+            <fieldset class="rap-field rap-group">
+              <legend>Moments in their life</legend>
+              <p class="rap-hint rap-hint-top">Up to six, with the year when it is known: a wedding, a first job, a move, a child born. They become the "My life story" page in the Activity Page Studio.</p>
+              <div class="rap-people" id="rapMoments" aria-live="polite"></div>
+              <p class="rap-people-empty" id="rapMomentsEmpty">No moments added yet.</p>
+              <button type="button" class="rap-btn rap-btn-ghost rap-btn-sm" id="rapAddMoment"><span aria-hidden="true">+</span> Add a moment</button>
+              <p class="rap-hint" id="rapMomentsNote" role="status"></p>
+            </fieldset>
+            <fieldset class="rap-field rap-group">
+              <legend>A dish they were known for</legend>
+              <div class="rap-field rap-field-tight">
+                <label for="rapDishName">The dish</label>
+                <input id="rapDishName" name="dishName" type="text" maxlength="40" autocomplete="off" placeholder="e.g., Rhubarb pie">
+              </div>
+              <div class="rap-field rap-field-tight">
+                <label for="rapDishIn">What goes in it <span class="rap-opt">(optional, separated by commas)</span></label>
+                <input id="rapDishIn" name="dishIngredients" type="text" maxlength="120" autocomplete="off" placeholder="e.g., rhubarb, sugar, flour, butter">
+              </div>
+              <div class="rap-field rap-field-tight">
+                <label for="rapDishSteps">How they made it <span class="rap-opt">(optional, one step to a line)</span></label>
+                <textarea id="rapDishSteps" name="dishSteps" rows="4" maxlength="320" placeholder="Roll the crust&#10;Fill with rhubarb&#10;Bake until it bubbles"></textarea>
+              </div>
+            </fieldset>
+            <fieldset class="rap-field rap-group">
+              <legend>What comforts them</legend>
+              <p class="rap-hint rap-hint-top">Tick what settles them. These become the choices on the "What I would like" page, for a day when words are hard to find.</p>
+              <div class="rap-checks" id="rapComforts">
+            <label class="rap-check"><input type="checkbox" name="comforts" value="warm-tea"><span>Warm tea</span></label>
+            <label class="rap-check"><input type="checkbox" name="comforts" value="coffee"><span>A cup of coffee</span></label>
+            <label class="rap-check"><input type="checkbox" name="comforts" value="blanket"><span>A soft blanket</span></label>
+            <label class="rap-check"><input type="checkbox" name="comforts" value="music"><span>Music playing</span></label>
+            <label class="rap-check"><input type="checkbox" name="comforts" value="quiet"><span>A quiet room</span></label>
+            <label class="rap-check"><input type="checkbox" name="comforts" value="outside"><span>Being outside</span></label>
+            <label class="rap-check"><input type="checkbox" name="comforts" value="hand"><span>A hand to hold</span></label>
+            <label class="rap-check"><input type="checkbox" name="comforts" value="window"><span>Sitting by the window</span></label>
+            <label class="rap-check"><input type="checkbox" name="comforts" value="photos"><span>Looking at photographs</span></label>
+            <label class="rap-check"><input type="checkbox" name="comforts" value="walk"><span>A short walk</span></label>
+            <label class="rap-check"><input type="checkbox" name="comforts" value="pet"><span>A visit from a pet</span></label>
+            <label class="rap-check"><input type="checkbox" name="comforts" value="hymn"><span>A prayer or a hymn</span></label>
+              </div>
+              <div class="rap-field rap-field-tight">
+                <label for="rapComfortOther">Anything else that comforts them <span class="rap-opt">(optional, separated by commas)</span></label>
+                <input id="rapComfortOther" name="comfortOther" type="text" maxlength="100" autocomplete="off" placeholder="e.g., the porch swing, peppermint tea">
+              </div>
+            </fieldset>
+          </div>
+        </details>
+
         <section class="rap-glance" aria-labelledby="rapGlanceH">
           <h3 id="rapGlanceH">At a glance</h3>
           <dl class="rap-glance-list" id="rapGlance"></dl>
@@ -1845,6 +1921,7 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
       }
     });
     data.people = readPeople();
+    data.milestones = readMoments();
     return data;
   }
   function fill(data){
@@ -1857,6 +1934,9 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
       else el.value = typeof v === "string" ? v : "";
     });
     renderPeople(Array.isArray(data.people) ? data.people : []);
+    renderMoments(Array.isArray(data.milestones) ? data.milestones : []);
+    /* the optional part opens by itself when there is something in it */
+    $("rapMore").open = !!((data.milestones && data.milestones.length) || data.dishName || data.dishIngredients || data.dishSteps || (data.comforts && data.comforts.length) || data.comfortOther);
     syncHobbies(); syncRange(); syncNotes(); syncNeeds();
   }
 
@@ -1897,7 +1977,10 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
       '<div><label class="rap-mini" for="' + id + 'r">Relationship</label>' +
       '<select id="' + id + 'r" data-person="rel">' + RELATIONS.map(function(r){ return '<option value="' + r[0] + '"' + (r[0] === p.rel ? " selected" : "") + ">" + r[1] + "</option>"; }).join("") + "</select></div>" +
       '<label class="rap-passed"><input type="checkbox" data-person="passed"' + (p.passed ? " checked" : "") + "> Has passed away</label>" +
-      '<button type="button" class="rap-remove" data-remove>Remove</button>';
+      '<button type="button" class="rap-remove" data-remove>Remove</button>' +
+      '<div class="rap-photo"><img alt="" hidden data-photo-img><label class="rap-photo-btn"><input type="file" accept="image/*" data-photo-file><span data-photo-label>Add a photo</span></label>' +
+      '<button type="button" class="rap-photo-btn" data-photo-remove hidden>Remove the photo</button><span class="rap-photo-note" data-photo-note role="status"></span></div>';
+    if (p.photo) { row.dataset.photo = p.photo; showPhoto(row); }
     return row;
   }
   function peopleRows(){ return Array.prototype.slice.call(peopleBox.querySelectorAll(".rap-person")); }
@@ -1914,9 +1997,12 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
   }
   function readPeople(){
     return peopleRows().map(function(row){
-      return { name:row.querySelector('[data-person="name"]').value.trim().slice(0, 40),
+      var one = { name:row.querySelector('[data-person="name"]').value.trim().slice(0, 40),
                rel:row.querySelector('[data-person="rel"]').value,
                passed:row.querySelector('[data-person="passed"]').checked };
+      if (row.dataset.photo) one.photo = row.dataset.photo;          // the name of the sealed picture, never the picture itself
+      if (row._newPhoto) one.photoNew = true;                        // a picture chosen and not saved yet (so the form knows it has changes)
+      return one;
     }).filter(function(p){ return p.name || p.rel; });
   }
   function renderPeople(list){
@@ -1924,6 +2010,114 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
     list.slice(0, PEOPLE_MAX).forEach(function(p){ peopleBox.appendChild(personRow(p)); });
     labelRows();
   }
+  /* ---- a photo for a person or a pet ----
+     The picture is made small (800 px on its long side) and gray on this computer, and kept in the sealed store under a
+     name that starts like the profile's own. Only that name is kept in the profile. Nothing is uploaded anywhere. */
+  var PHOTO_PREFIX = "cognicopia_resident_photo_", PHOTO_MAX = 800, photoQueue = { put: [], drop: [] };
+  function canKeepPhotos(){ return !!(SS && SS.putBlob && SS.getBlob); }
+  function photoNote(row, msg){ row.querySelector("[data-photo-note]").textContent = msg || ""; }
+  function paintPhoto(row, src){
+    var img = row.querySelector("[data-photo-img]");
+    if (src){ img.src = src; img.hidden = false; } else { img.removeAttribute("src"); img.hidden = true; }
+    row.querySelector("[data-photo-label]").textContent = src ? "Change the photo" : "Add a photo";
+    row.querySelector("[data-photo-remove]").hidden = !src;
+  }
+  function showPhoto(row){
+    if (!canKeepPhotos() || !row.dataset.photo) return;
+    SS.getBlob(row.dataset.photo).then(function(d){ if (d && !row._newPhoto) paintPhoto(row, d); }, function(){ /* locked or gone: the row simply shows no picture */ });
+  }
+  /* any picture file -> a gray JPEG no longer than PHOTO_MAX on its long side, as a data address */
+  function shrinkPhoto(file){
+    return new Promise(function(done, fail){
+      var url = URL.createObjectURL(file), img = new Image();
+      img.onload = function(){
+        try {
+          var k = Math.min(1, PHOTO_MAX / Math.max(img.naturalWidth, img.naturalHeight)), w = Math.max(1, Math.round(img.naturalWidth * k)), h = Math.max(1, Math.round(img.naturalHeight * k));
+          var cv = document.createElement("canvas"); cv.width = w; cv.height = h;
+          var c = cv.getContext("2d"); c.fillStyle = "#fff"; c.fillRect(0, 0, w, h); c.drawImage(img, 0, 0, w, h);
+          var px = c.getImageData(0, 0, w, h), d = px.data;
+          for (var i = 0; i < d.length; i += 4){ var g = Math.round(d[i] * 0.299 + d[i + 1] * 0.587 + d[i + 2] * 0.114); d[i] = d[i + 1] = d[i + 2] = g; }
+          c.putImageData(px, 0, 0);
+          done(cv.toDataURL("image/jpeg", 0.82));
+        } catch (e){ fail(e); } finally { URL.revokeObjectURL(url); }
+      };
+      img.onerror = function(){ URL.revokeObjectURL(url); fail(new Error("not a picture")); };
+      img.src = url;
+    });
+  }
+  peopleBox.addEventListener("change", function(e){
+    var input = e.target.closest("[data-photo-file]"); if (!input) return;
+    var row = input.closest(".rap-person"), file = input.files && input.files[0]; input.value = "";
+    if (!file) return;
+    if (!canKeepPhotos()){ photoNote(row, "This browser cannot keep a photo sealed, so it was not added."); return; }
+    photoNote(row, "Making the photo smaller…");
+    shrinkPhoto(file).then(function(data){
+      row._newPhoto = data; paintPhoto(row, data); photoNote(row, "Added. Press Save Resident Profile to keep it."); queueSave(); syncDirty();
+    }, function(){ photoNote(row, "That file could not be read as a picture."); });
+  });
+  peopleBox.addEventListener("click", function(e){
+    var btn = e.target.closest("[data-photo-remove]"); if (!btn) return;
+    var row = btn.closest(".rap-person");
+    if (row.dataset.photo){ photoQueue.drop.push(row.dataset.photo); delete row.dataset.photo; }
+    row._newPhoto = null; paintPhoto(row, ""); photoNote(row, "Removed. Press Save Resident Profile to keep the change."); queueSave(); syncDirty();
+  });
+  /* called as a profile is saved: each new picture gets its name now, so the profile can hold it; the pictures themselves are
+     sealed just after (keepPhotos), and a picture that was replaced or removed is deleted */
+  function namePhotos(id){
+    peopleRows().forEach(function(row){
+      if (!row._newPhoto) return;
+      if (row.dataset.photo) photoQueue.drop.push(row.dataset.photo);
+      row.dataset.photo = PHOTO_PREFIX + id + "_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+      photoQueue.put.push({ name: row.dataset.photo, data: row._newPhoto, row: row }); row._newPhoto = null;
+    });
+  }
+  function keepPhotos(){
+    if (!canKeepPhotos()){ photoQueue = { put: [], drop: [] }; return Promise.resolve(true); }
+    var q = photoQueue; photoQueue = { put: [], drop: [] };
+    var puts = q.put.map(function(x){ return SS.putBlob(x.name, x.data).then(function(){ photoNote(x.row, "Photo saved."); return true; }, function(){ photoNote(x.row, "The photo could not be kept. Add it again."); if (x.row.dataset.photo === x.name) delete x.row.dataset.photo; paintPhoto(x.row, ""); return false; }); });
+    var names = q.put.map(function(x){ return x.name; });
+    q.drop.forEach(function(n){ if (names.indexOf(n) < 0) SS.deleteBlob(n).catch(function(){ /* already gone */ }); });
+    return Promise.all(puts).then(function(r){ return r.every(Boolean); });
+  }
+  /* every sealed picture of one resident, removed (when their profile is deleted) */
+  function dropPhotosOf(id){ if (!canKeepPhotos() || !SS.blobNames) return; SS.blobNames(PHOTO_PREFIX + id + "_").then(function(list){ list.forEach(function(n){ SS.deleteBlob(n).catch(function(){}); }); }, function(){}); }
+
+  /* ---- moments in their life (the last step, "More of their story"): a year and a few words, up to six ---- */
+  var MOMENT_MAX = 6, momentsBox = $("rapMoments"), addMoment = $("rapAddMoment"), momentSeq = 0;
+  function momentRow(m){
+    var id = "rapM" + (++momentSeq), row = document.createElement("div");
+    row.className = "rap-moment"; row.setAttribute("role", "group");
+    row.innerHTML =
+      '<div><label class="rap-mini" for="' + id + 'y">Year, if known</label><input id="' + id + 'y" type="text" inputmode="numeric" maxlength="4" data-moment="year" autocomplete="off" placeholder="1958" value="' + escAttr(m.year || "") + '"></div>' +
+      '<div><label class="rap-mini" for="' + id + 't">What happened</label><input id="' + id + 't" type="text" maxlength="60" data-moment="text" autocomplete="off" placeholder="e.g., Married Harold in Scobey" value="' + escAttr(m.text || "") + '"></div>' +
+      '<button type="button" class="rap-remove" data-remove-moment>Remove</button>';
+    return row;
+  }
+  function momentRows(){ return Array.prototype.slice.call(momentsBox.querySelectorAll(".rap-moment")); }
+  function labelMoments(){
+    var rows = momentRows();
+    rows.forEach(function(row, i){ row.setAttribute("aria-label", "Moment " + (i + 1)); row.querySelector("[data-remove-moment]").setAttribute("aria-label", "Remove moment " + (i + 1)); });
+    $("rapMomentsEmpty").hidden = rows.length > 0; addMoment.disabled = rows.length >= MOMENT_MAX;
+    addMoment.lastChild.textContent = rows.length ? " Add another moment" : " Add a moment";
+  }
+  function readMoments(){
+    return momentRows().map(function(row){
+      var y = row.querySelector('[data-moment="year"]').value.replace(/[^0-9]/g, "").slice(0, 4), n = Number(y);
+      return { year: n >= 1880 && n <= new Date().getFullYear() ? y : "", text: row.querySelector('[data-moment="text"]').value.replace(/\s+/g, " ").trim().slice(0, 60) };
+    }).filter(function(m){ return m.text || m.year; });
+  }
+  function renderMoments(list){ momentsBox.innerHTML = ""; list.slice(0, MOMENT_MAX).forEach(function(m){ momentsBox.appendChild(momentRow(m)); }); labelMoments(); }
+  addMoment.addEventListener("click", function(){
+    if (momentRows().length >= MOMENT_MAX) return;
+    var row = momentRow({}); momentsBox.appendChild(row); labelMoments(); row.querySelector("input").focus();
+    $("rapMomentsNote").textContent = momentRows().length >= MOMENT_MAX ? "That is the most one profile can hold (" + MOMENT_MAX + ")." : "";
+  });
+  momentsBox.addEventListener("click", function(e){
+    var btn = e.target.closest("[data-remove-moment]"); if (!btn) return;
+    btn.closest(".rap-moment").remove(); labelMoments(); $("rapMomentsNote").textContent = ""; queueSave(); syncDirty(); addMoment.focus();
+  });
+  momentsBox.addEventListener("input", function(){ queueSave(); syncDirty(); });
+
   addBtn.addEventListener("click", function(){
     if (peopleRows().length >= PEOPLE_MAX) return;
     var row = personRow({});
@@ -2341,13 +2535,20 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
         notes: notes,
         people: readPeople().filter(function(p){ return p.name; }).map(function(p){
           var rel = RELATIONS.filter(function(r){ return r[0] === p.rel; })[0];
-          return {
+          var one = {
             name: p.name,
             relationship: p.rel ? { code:p.rel, label:rel ? rel[1] : p.rel } : null,
             isPet: /^pet-/.test(p.rel),
             passedAway: !!p.passed
           };
+          if (p.photo) one.photo = p.photo;              // the name of their sealed picture
+          return one;
         }),
+        /* the optional parts of a life story ("More of their story"); each is left out of nothing and guessed by nothing */
+        milestones: readMoments().filter(function(m){ return m.text; }).map(function(m){ return { year: m.year ? Number(m.year) : null, text: m.text }; }),
+        signatureDish: { name: text("rapDishName"), ingredients: text("rapDishIn"),
+          steps: String($("rapDishSteps").value).split(/\n+/).map(function(x){ return x.replace(/\s+/g, " ").trim(); }).filter(Boolean).slice(0, 6) },
+        comforts: ticks("comforts").concat(text("rapComfortOther").split(/[,;]+/).map(function(x){ return x.trim(); }).filter(Boolean).slice(0, 6).map(function(x){ return { code:"other", label:x }; })),
         mentionsInNotes: findMentions(notes)            // artists and decades spotted in the notes
       }
     };
@@ -2392,7 +2593,11 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
       paper: code(pn.paper) || "letter", ink: code(pn.ink) || "bw",
       notes: t3.notes || "",
       preselectedDeescalationActivity: p.preselectedDeescalationActivity || "",
-      people: (t3.people || []).map(function(x){ return { name:x.name, rel:code(x.relationship), passed:!!x.passedAway }; })
+      people: (t3.people || []).map(function(x){ var one = { name:x.name, rel:code(x.relationship), passed:!!x.passedAway }; if (x.photo) one.photo = x.photo; return one; }),
+      milestones: (t3.milestones || []).map(function(m){ return { year: m && m.year ? String(m.year) : "", text: (m && m.text) || "" }; }),
+      dishName: (t3.signatureDish || {}).name || "", dishIngredients: (t3.signatureDish || {}).ingredients || "", dishSteps: ((t3.signatureDish || {}).steps || []).join("\n"),
+      comforts: (t3.comforts || []).filter(function(c){ return c && c.code !== "other"; }).map(function(c){ return c.code; }),
+      comfortOther: (t3.comforts || []).filter(function(c){ return c && c.code === "other"; }).map(function(c){ return c.label; }).join(", ")
     };
   }
 
@@ -2431,6 +2636,7 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
     var previous = isNew ? null : readResident(residentId);
     var now = new Date().toISOString();
 
+    namePhotos(residentId);                               // a picture added in this sitting gets its sealed name before the profile is built
     var profile = buildResidentProfile();
     profile.id = residentId;
     profile.createdAt = previous && previous.createdAt ? previous.createdAt : now;
@@ -2438,6 +2644,7 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
 
     try {
       LS.setItem(RESIDENT_PREFIX + residentId, JSON.stringify(profile));
+      keepPhotos().then(function(allKept){ if (!allKept){ try { var again = buildResidentProfile(); again.id = profile.id; again.createdAt = profile.createdAt; again.updatedAt = profile.updatedAt; LS.setItem(RESIDENT_PREFIX + profile.id, JSON.stringify(again)); } catch (err){} toast("A photo could not be kept on this computer. The rest of the profile was saved.", true); } });
     } catch (e){
       if (isNew) residentId = null;
       toast("This profile could not be saved. This browser is not allowing storage, or it is full.", true);
@@ -2578,6 +2785,7 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
       var id = del.getAttribute("data-delete"), q = readResident(id), who = q ? q.tier1_core.preferredName : "this resident";
       if (!window.confirm("Delete " + who + "'s profile from this computer? This cannot be undone.")) return;
       try { LS.removeItem(RESIDENT_PREFIX + id); } catch (err){}
+      dropPhotosOf(id);
       if (id === residentId){ residentId = null; savedSig = null; $("rapDone").hidden = true; writeDraft(); }
       try { if (LS.getItem(ACTIVE_KEY) === id) LS.removeItem(ACTIVE_KEY); } catch (err){}
       renderResidents();

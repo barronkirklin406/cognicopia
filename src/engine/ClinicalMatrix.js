@@ -537,6 +537,8 @@
       if (c.topic && !o.topic) return false;
       return c.kinds.indexOf("any") >= 0 || c.kinds.indexOf(k) >= 0;
     });
+    /* a tip is read beside the resident, so one that names something on their avoid list is passed over (o.ok is the packet's own filter) */
+    if (typeof o.ok === "function") pool = pool.filter(function (c) { return o.ok(c.text); });
     var fresh = pool.filter(function (c) { return used.indexOf(c.text) < 0; });
     if (fresh.length) pool = fresh;
     /* spread across frameworks: prefer one not used yet on this packet */
@@ -554,7 +556,7 @@
     ctx = ctx || {};
     var used = [], usedFw = [], out = {};
     pages.forEach(function (pg) {
-      var c = cue({ stage: stage, activity: pg.activity, kind: pg.kind, rng: rng.fork ? rng.fork("cue" + pg.n) : rng, name: ctx.name, page: pg.n, topic: pg.topic, used: used, usedFw: usedFw });
+      var c = cue({ stage: stage, activity: pg.activity, kind: pg.kind, rng: rng.fork ? rng.fork("cue" + pg.n) : rng, name: ctx.name, page: pg.n, topic: pg.topic, used: used, usedFw: usedFw, ok: ctx.ok });
       if (c) { used.push(c.raw); usedFw.push(c.fw); if (usedFw.length >= 5) usedFw = []; out[pg.n] = c; }
     });
     return out;
