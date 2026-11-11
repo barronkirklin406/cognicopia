@@ -218,3 +218,18 @@ The last step of the resident profile (`profile.html`) has one closed section, "
 - **Photos and the readiness score.** A photograph fills its frame and is counted as ink by both the engine and the validator, so a page that is mostly photo scores lower on white space and may read "Ready with notes". The check requires 80 or more.
 - **Checks.** `scripts/check-profile-story-ui.mjs` (real browser; in `npm run build`).
 
+## Daily engagement: one card for today (November 11, 2026)
+
+`daily.html` (Today menu, "Daily engagement") is the quick screen: who it is for, what kind of time, one button. `js/dailyCard.js` makes one 3:4 page with the Studio's engine, so the card keeps every rule a Studio page keeps.
+
+- **Who.** A saved resident (read through `js/residentContext.js`; the shared choice `cognicopia_active_resident` is honoured and written) or a group, which chooses a stage and the years they were young.
+- **What kind of time.** Reminiscence (life story, hometown, work, who's who, the year they turned twenty, then and now, the generations, a dish), Music (songs of their years) or Comfort (what I would like, my day). For a saved resident the kinds their profile makes personal come first (`E.lifePagesFor`). Comfort pages are made for the middle and late stages, so an early-stage card uses the middle stage's size and the screen says so.
+- **Today's card.** The date, the person and the kind choose the page, so it is the same all day; "Another card" moves to the next. To run the check as if on another day: `CG_DAY=2027-02-03 node scripts/check-daily-ui.mjs`.
+- **For staff.** One short line is printed at the foot of the page when the page has room for it (the composer's `staff` part); when it does not, the page is left whole and the screen says the line is not printed. The page's full staff note is always on the screen beside the card.
+- **Paper.** Print (through `js/utils/print-optimizer.js`, only the card reaches the paper) or a one-page US Letter PDF named for the day, never for the resident. Each uses one free packet from the same count as the other tools; with all 50 used both open the license window.
+- **Ways in.** The front page has three doors after "What Cognicopia gives you": Daily engagement, Packets and booklets (the tool on that page) and Residents. In the Packet Builder's roster, a card shows the person's former work, hometown and up to three things they enjoy, and the chosen resident's panel has "Today's card" (opens `daily.html?make=1` with their card made; the address carries nothing about them) and "Make a packet" (opens the Studio on them).
+
+### The typeface of the Studio's pages
+
+The page engine sets its pages in "Atkinson Hyperlegible". The shared stylesheet names its copy "Cognicopia UI" on purpose (so it cannot replace the print copy the front page and the Packet Builder embed), and the Studio page declared no face of that name, so on a computer without the font installed every Studio page, on screen, in the PNG and in the PDF, was drawn in Arial. `activity-studio.html` and `daily.html` now each declare the two weights from `/fonts`. `scripts/check-daily-ui.mjs` measures the face against Arial on both pages.
+

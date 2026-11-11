@@ -187,7 +187,7 @@ try {
       return e.name.endsWith(".html") ? [rel] : [];
     });
     const pages = ["."].flatMap((d) => walk(d)).map((f) => f.replace(/^\.\//, "")).filter((f) => !/^404\.html$/.test(f)).sort();
-    const OWN_SHEETS = new Set(["builder.html", "activity-studio.html"]);       // build their own sheets (the studio's are 3:4 pages inside 0.5 in margins, with an optional gutter the person chooses); printing the page itself must still print nothing odd
+    const OWN_SHEETS = new Set(["builder.html", "activity-studio.html", "daily.html"]);       // build their own sheets (the studio's are 3:4 pages inside 0.5 in margins, with an optional gutter the person chooses); printing the page itself must still print nothing odd
     const { ctx, p } = await newPage();
     for (const f of pages) {
       const url = base + f;
