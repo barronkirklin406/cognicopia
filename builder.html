@@ -7691,6 +7691,17 @@ const RosterUI = (function(){
             <div class="actions"><button class="btn" type="button" id="rsHoIn">Open and add residents</button></div>
             <p class="hint" id="rsHoMsg" role="status" aria-live="polite"></p>
           </details>
+          <details class="rs-handoff rs-qr" id="rsQr">
+            <summary>Pass a resident to an iPad with codes on the screen</summary>
+            <p class="hint">For a tablet or a computer with a camera and no cable: this screen shows the chosen resident as a loop of codes, locked with a passphrase, and the other device's camera reads them. Nothing goes over the internet, and photos stay on this computer. Tell the passphrase to the person in person, never written beside the screen.</p>
+            <h3>Show codes</h3>
+            <div class="field"><label for="rsQrPass">Passphrase for these codes</label><input id="rsQrPass" type="password" autocomplete="new-password" minlength="10"></div>
+            <div class="actions"><button class="btn" type="button" id="rsQrShow">Show codes for the chosen resident</button></div>
+            <h3>Read codes</h3>
+            <p class="hint">On this device, read the codes another screen is showing. The browser asks to use the camera.</p>
+            <div class="actions"><button class="btn" type="button" id="rsQrRead">Read codes with the camera</button></div>
+            <p class="hint" id="rsQrMsg" role="status" aria-live="polite"></p>
+          </details>
           <details class="rs-handoff rs-folder" id="rsFolder">
             <summary>Keep residents in a folder on this computer</summary>
             <div id="rsFoBody"><p class="hint">Checking&hellip;</p></div>
@@ -7876,6 +7887,28 @@ const RosterUI = (function(){
     if (b.id === "rsPrint") printNow();
     if (b.id === "rsHoOut") handOff();
     if (b.id === "rsHoIn") receive();
+    if (b.id === "rsQrShow") qrShow(b);
+    if (b.id === "rsQrRead") qrRead(b);
+  }
+  /* ---------- the same handoff by codes on the screen, for a tablet (js/qrHandoff.js) ---------- */
+  const qrMsg = (t, bad) => { const m = document.getElementById("rsQrMsg"); if (m){ m.textContent = t; m.className = "hint" + (bad ? " msg-bad" : t ? " msg-ok" : ""); } };
+  function qrShow(btn){
+    const Q = window.CogniQrHandoff, SS = window.CogniSecureStore, p = BookUI.savedProfiles().filter(x => x.id === S.id)[0], pi = document.getElementById("rsQrPass");
+    if (!Q || !SS){ qrMsg("The codes are still loading. Try again in a moment.", true); return; }
+    if (!p){ qrMsg("Choose a resident in the list first.", true); return; }
+    const problem = SS.passphraseProblem(pi.value); if (problem){ qrMsg(problem, true); pi.focus(); return; }
+    btn.disabled = true; qrMsg("Locking the codes…");
+    Q.showCodes({ profiles: [p], pass: pi.value, who: cgScreenName(p), opener: btn }).then(r => { qrMsg(`Showing ${r.frames.length} codes for ${cgScreenName(p)}.`); pi.value = ""; }, e => qrMsg(e.message, true)).then(() => { btn.disabled = false; });
+  }
+  function qrRead(btn){
+    const Q = window.CogniQrHandoff, SS = window.CogniSecureStore;
+    if (!Q || !SS){ qrMsg("The code reader is still loading. Try again in a moment.", true); return; }
+    qrMsg("");
+    Q.readCodes({ opener: btn, onProfiles: got => {
+      const m = SS.mergeRoster(BookUI.savedProfiles(), got.profiles, "newer");
+      m.write.forEach(p => CG_LS.setItem("cognicopia_resident_" + p.id, JSON.stringify(p)));
+      return SS.flush().then(() => { renderList(); const t = Q.summary(got, m); qrMsg(t); return t; });
+    } });
   }
   /* ---------- station handoff: a locked roster file ---------- */
   const hoMsg = (t, bad) => { const m = document.getElementById("rsHoMsg"); m.textContent = t; m.className = "hint" + (bad ? " msg-bad" : " msg-ok"); };
@@ -9778,6 +9811,7 @@ const DailyOpsUI = (function(){
 <script src="js/nav-index.js"></script>
 <script src="js/wayfinding.js"></script>
 <script src="js/quick-lookup.js"></script>
+<script type="module" src="js/qrHandoff.js"></script>
 <script src="assets/services/heirloomService.js"></script>
 <script id="heirloom-ui">
 /* =====================================================================
