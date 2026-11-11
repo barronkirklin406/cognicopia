@@ -186,7 +186,9 @@ try {
   await p.reload(); await p.waitForSelector("#invForm");
   ok(await p.inputValue("#inv-facility") === "Maple Grove Senior Living" && await p.inputValue("#inv-qty") === "2", "and are filled in again on the next visit");
   const [dl2] = await Promise.all([p.waitForEvent("download", { timeout: 20000 }), p.click("#invMake")]); ok(!!dl2, "a second invoice needs no retyping");
-  await p.click("#invAgain").catch(() => {});
+  /* "Download it again" saves the same file once more: wait for that download, so it is never taken for the next invoice's */
+  const [again] = await Promise.all([p.waitForEvent("download", { timeout: 20000 }), p.click("#invAgain")]);
+  ok(again.suggestedFilename() === dl2.suggestedFilename(), `"Download it again" saves the same invoice again (${again.suggestedFilename()})`);
 
   /* other plans and a PO number */
   const r2 = await make(Object.assign({}, base1, { plan: "monthly", qty: "3", po: "PO-7731" }), "monthly");

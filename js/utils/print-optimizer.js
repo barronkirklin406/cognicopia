@@ -79,7 +79,7 @@
   var CORE = [
     "activity-studio.html", "css/styles.css", "css/pages-utilities.css",
     "js/residentContext.js", "js/generators/activity-engine.js", "js/generators/coloring-pipeline.js", "js/generators/activity-modules.js", "js/generators/activity-pages.js", "js/generators/activity-life-data.js", "js/generators/activity-life.js", "assets/services/reminiscenceEngine.js", "components/packet-generator-ui.js",
-    "js/utils/facility-validator.js", "js/utils/print-optimizer.js", "assets/services/secureStore.js", "js/sessionTimeout.js",
+    "js/utils/facility-validator.js", "js/utils/print-optimizer.js", "assets/services/secureStore.js", "js/residentFolder.js", "js/sessionTimeout.js",
     "assets/coloring/subjects.bundle.js", "assets/coloring/manifest.json", "src/services/ColoringManifest.js", "src/engine/DescribeCreate.js",
     "assets/vendor/jspdf.umd.min.js", "assets/vendor/jspdf-atkinson.js", "assets/vendor/jspdf-studio-faces.js", "js/utils/studio-pdf.js", "fonts/AtkinsonHyperlegible-Regular.woff2", "fonts/AtkinsonHyperlegible-Bold.woff2", "fonts/AtkinsonHyperlegibleMono-Bold.woff2", "fonts/PinyonScript-Regular.woff2", "fonts/MarckScript-Regular.woff2"
   ];

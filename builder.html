@@ -1349,6 +1349,9 @@ textarea:focus{border-color:var(--accent)}
 .rs-handoff h3{margin:16px 0 4px;font-size:16px}
 .rs-handoff .field{margin-top:10px}
 .rs-handoff input[type=file]{max-width:100%}
+.rs-fo-state{margin:10px 0 0;font-weight:700}
+.rs-fo-limits{margin:10px 0 0;padding-left:20px;display:grid;gap:4px}
+.rs-folder .actions{display:flex;flex-wrap:wrap;gap:10px}
 .enc-state{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:12px;background:var(--bg-2);border:1px solid var(--line-2)}
 /* the names choice every export offers (assets/services/privacyExport.js choiceHtml): the whole card is the control */
 .pv-choice{margin:14px 0 0;padding:0;border:0;display:grid;gap:8px;min-width:0}
@@ -3188,6 +3191,7 @@ body.shc-lock{overflow:hidden}
 <div id="printRoot" aria-hidden="true"></div>
 
 <script src="assets/services/secureStore.js"></script>
+<script src="js/residentFolder.js"></script>
 <script src="assets/services/trialLedger.js"></script>
 <script src="js/trialBadge.js"></script>
 <script src="js/residentContext.js"></script>
@@ -7666,6 +7670,11 @@ const RosterUI = (function(){
             <div class="actions"><button class="btn" type="button" id="rsHoIn">Open and add residents</button></div>
             <p class="hint" id="rsHoMsg" role="status" aria-live="polite"></p>
           </details>
+          <details class="rs-handoff rs-folder" id="rsFolder">
+            <summary>Keep residents in a folder on this computer</summary>
+            <div id="rsFoBody"><p class="hint">Checking&hellip;</p></div>
+            <p class="hint" id="rsFoMsg" role="status" aria-live="polite"></p>
+          </details>
         </section>
         <section class="rs-pane rs-work" aria-labelledby="rsTplH">
           <div class="rs-who" id="rsWho" aria-live="polite"></div>
@@ -7691,6 +7700,7 @@ const RosterUI = (function(){
     host.addEventListener("keydown", onKey);
     document.getElementById("rsSearch").addEventListener("keydown", e => { if (e.key === "ArrowDown"){ const f = host.querySelector(".rs-res"); if (f){ e.preventDefault(); f.focus(); } } else if (e.key === "Enter"){ const f = host.querySelector(".rs-res"); if (f){ e.preventDefault(); f.click(); } } });
     CensusUI.bind(host, "rs", () => { renderList(); renderWork(); });
+    paintFolder();
     renderList(); renderWork();
   }
   /* a line about the person for their card: former work and hometown, and up to three things they enjoy (js/residentContext.js reads the profile) */
@@ -7701,7 +7711,65 @@ const RosterUI = (function(){
     w.hobbies.concat(w.interests, w.activities).forEach(x => { const t = String(x || "").trim(); if (t && joys.length < 3 && joys.map(j => j.toLowerCase()).indexOf(t.toLowerCase()) < 0) joys.push(t); });
     return { life:[work, w.hometown.place].filter(Boolean).join(" · "), joys:joys.join(", ") };
   }
+  /* ---------- the residents folder (js/residentFolder.js): locked files in a folder the facility chooses ---------- */
+  const FO = () => window.CogniResidentFolder || null;
+  const foMsg = (t, bad) => { const m = document.getElementById("rsFoMsg"); if (m){ m.textContent = t; m.className = "hint" + (bad ? " msg-bad" : t ? " msg-ok" : ""); } };
+  const FO_LIMITS = `<ul class="hint rs-fo-limits">
+      <li>Each resident is one locked file, named by a code and never by a name. Only the passphrase chosen here opens them.</li>
+      <li>To share residents with another computer, choose the same folder there (a shared folder on the building&#8217;s own network) and type the same passphrase. Each computer keeps the newer copy of a resident.</li>
+      <li>After the browser restarts, it asks again before Cognicopia may use the folder.</li>
+      <li>If the folder is inside OneDrive, Dropbox, Google Drive or another online drive, that service copies the locked files to the internet. To keep them here, choose a folder on this computer or on your own network.</li>
+      <li>Photos stay on this computer; they are not put in the folder.</li>
+      <li>Deleting a resident removes their file. A computer that still has them puts it back until they are deleted there too.</li>
+    </ul>`;
+  function paintFolder(st){
+    const body = document.getElementById("rsFoBody"); if (!body) return;
+    if (!FO()){ body.innerHTML = `<p class="hint">The folder tool did not load. Reload the page.</p>`; return; }
+    if (!st){ FO().status().then(paintFolder, () => paintFolder({ state: "error" })); return; }
+    const when = t => { const d = t ? new Date(t) : null; return d && !isNaN(d) ? d.toLocaleString([], { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }) : ""; };
+    if (st.state === "unsupported"){ body.innerHTML = `<p class="hint">This browser cannot keep residents in a folder. It needs Chrome or Microsoft Edge on a computer. In this browser, the locked handoff file above backs up or moves residents.</p>`; return; }
+    if (st.state === "locked"){ body.innerHTML = `<p class="hint">Saved residents are locked. Unlock them first, then come back here.</p>`; return; }
+    if (st.state === "connected" || st.state === "error" && st.name){
+      const r = st.result, did = r ? [r.wrote ? r.wrote + " saved" : "", r.added ? r.added + " added from the folder" : "", r.updated ? r.updated + " updated from the folder" : "", r.removed ? r.removed + " removed" : "", r.failed && r.failed.length ? r.failed.length + " could not be opened" : ""].filter(Boolean).join(", ") : "";
+      body.innerHTML = `<p class="rs-fo-state">Residents are kept in the folder &#8220;${esc(st.name || "")}&#8221;.</p>
+        <p class="hint">${st.last ? "Last checked " + esc(when(st.last)) + (did ? ": " + esc(did) + "." : ": nothing to change.") : "Not checked yet."} Every save here is written to the folder, and opening the Packet Builder, a profile or the Studio reads what other computers saved.</p>
+        <div class="actions"><button class="btn btn-primary" type="button" id="rsFoSync">Check the folder now</button><button class="btn" type="button" id="rsFoStop">Stop using the folder</button></div>${FO_LIMITS}`;
+      return;
+    }
+    if (st.state === "permission"){
+      body.innerHTML = `<p class="rs-fo-state">Residents are kept in the folder &#8220;${esc(st.name || "")}&#8221;, and the browser needs to be allowed again.</p>
+        <p class="hint">After the browser restarts it asks once more before Cognicopia may use the folder. Nothing is saved to it until then.</p>
+        <div class="actions"><button class="btn btn-primary" type="button" id="rsFoReconnect">Allow the folder again</button><button class="btn" type="button" id="rsFoStop">Stop using the folder</button></div>${FO_LIMITS}`;
+      return;
+    }
+    body.innerHTML = `<p class="hint">Keep every saved resident as a locked file in a folder you choose, as well as in this browser. If this browser&#8217;s data is ever cleared, the folder brings them back; and other computers can share the same residents through a shared folder.</p>
+      <div class="field"><label for="rsFoPass">A passphrase for the files</label><input id="rsFoPass" type="password" autocomplete="new-password" minlength="10"></div>
+      <p class="hint">At least 10 characters; a short sentence works well. Use the same one on every computer that shares the folder, and keep it somewhere safe: without it the files cannot be opened. If the folder already holds residents, type the passphrase they were saved with.</p>
+      <div class="actions"><button class="btn btn-primary" type="button" id="rsFoChoose">Choose a folder</button></div>
+      <p class="hint">The browser then asks you to pick the folder and to allow Cognicopia to save in it.</p>${FO_LIMITS}`;
+  }
+  /* residents read from the folder show at once; the section follows each check */
+  document.addEventListener("cg-residents-changed", () => { if (document.getElementById("rsList")){ renderList(); renderWork(); } });
+  if (FO()) FO().onChange(st => { if (st && st.state !== "error") paintFolder(st.state === "connected" && st.name ? st : null); else if (st) foMsg(st.message || "The folder could not be used.", true); });
+  function folderClick(id){
+    const btn = document.getElementById(id); if (btn) btn.disabled = true;
+    const done = () => { const b = document.getElementById(id); if (b) b.disabled = false; };
+    if (id === "rsFoChoose"){
+      const pass = document.getElementById("rsFoPass").value;
+      foMsg("Saving the residents to the folder… each one is locked, which takes a moment.");
+      FO().choose(pass).then(r => { foMsg(r ? `The folder is in use: ${r.wrote} saved to it` + (r.added + r.updated ? `, ${r.added + r.updated} brought in from it.` : ".") : "The folder is in use."); paintFolder(); renderList(); },
+        e => { foMsg(e && e.name === "AbortError" ? "No folder was chosen." : String(e && e.message || e), true); done(); });
+    } else if (id === "rsFoReconnect"){
+      FO().reconnect().then(() => { foMsg("The folder is in use again."); paintFolder(); }, e => { foMsg(String(e && e.message || e), true); done(); });
+    } else if (id === "rsFoSync"){
+      foMsg("Checking the folder…");
+      FO().sync().then(r => { foMsg(r ? "The folder is up to date." : "The folder is not in use."); paintFolder(); }, e => { foMsg(String(e && e.message || e), true); done(); });
+    } else if (id === "rsFoStop"){
+      FO().forget().then(() => { foMsg("This computer no longer uses the folder. The files in it are still there, locked."); paintFolder(); });
+    }
+  }
   function renderList(){
+    if (FO()) FO().soon();               // a change to the roster is written to the residents folder, when one is in use
     ActiveResident.syncSelect();          // residents may have just been added or taken out
     const keyOf = S.sort === "name" ? nameKey : sortKey;
     const all = BookUI.savedProfiles().sort((a, b) => keyOf(a) < keyOf(b) ? -1 : keyOf(a) > keyOf(b) ? 1 : 0);
@@ -7783,6 +7851,7 @@ const RosterUI = (function(){
     if (b.dataset.view){ S.view = b.dataset.view === "cards" ? "cards" : "list"; save(); document.getElementById("rsList").dataset.view = S.view; host.querySelectorAll(".rs-view button").forEach(v => v.setAttribute("aria-pressed", String(v.dataset.view === S.view))); return; }
     if (b.dataset.clear){ S.q = ""; S.tier = 0; S.flag = false; const si = document.getElementById("rsSearch"); if (si){ si.value = ""; si.focus(); } renderList(); return; }
     if (b.dataset.opencensus){ const d = document.getElementById("rsCs"); if (d){ d.open = true; d.scrollIntoView({ block: "center" }); const s = d.querySelector("summary"); if (s) s.focus(); } return; }
+    if (/^rsFo(Choose|Reconnect|Sync|Stop)$/.test(b.id)){ folderClick(b.id); return; }
     if (b.id === "rsPrint") printNow();
     if (b.id === "rsHoOut") handOff();
     if (b.id === "rsHoIn") receive();

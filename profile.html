@@ -1829,6 +1829,7 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
 <!-- cg-footer:end -->
 
 <script src="assets/services/secureStore.js"></script>
+<script src="js/residentFolder.js"></script>
 <script src="assets/services/reminiscenceEngine.js"></script>
 <script src="assets/services/familyLifeDigest.js"></script>
 <script src="js/familyLifeDigestUI.js"></script>
@@ -2658,6 +2659,7 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
     renderResidents();
     renderDone(profile, isNew);
     toast("Profile saved locally.");
+    if (window.CogniResidentFolder) window.CogniResidentFolder.soon();   // and to the residents folder, when one is in use
     return profile;
   }
   window.saveResidentProfile = saveResidentProfile;       // callable from other Cognicopia pages or the console
@@ -2787,6 +2789,7 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
       if (!window.confirm("Delete " + who + "'s profile from this computer? This cannot be undone.")) return;
       try { LS.removeItem(RESIDENT_PREFIX + id); } catch (err){}
       dropPhotosOf(id);
+      if (window.CogniResidentFolder) window.CogniResidentFolder.soon();   // their file leaves the residents folder too
       if (id === residentId){ residentId = null; savedSig = null; $("rapDone").hidden = true; writeDraft(); }
       try { if (LS.getItem(ACTIVE_KEY) === id) LS.removeItem(ACTIVE_KEY); } catch (err){}
       renderResidents();

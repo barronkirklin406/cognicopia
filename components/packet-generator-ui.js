@@ -236,7 +236,7 @@
     }
     if (state.interests !== (mapped.interests || "")) t3.notes = setNoteLine(t3.notes, "Interests", words(state.interests).join(", "));
     if (state.personal !== (mapped.personal || "")) t3.notes = setNoteLine(t3.notes, "Words from their life", words(state.personal).join(", "));
-    try { LS().setItem(PREFIX + p.id, JSON.stringify(p)); LS().setItem(ACTIVE_KEY, p.id); } catch (e) { whoMsg(e && e.name === "LockedError" ? "Saved residents are locked. Unlock them first." : "That could not be saved. This browser is not allowing storage, or it is full.", true); return; }
+    try { LS().setItem(PREFIX + p.id, JSON.stringify(p)); LS().setItem(ACTIVE_KEY, p.id); if (window.CogniResidentFolder) window.CogniResidentFolder.soon(); } catch (e) { whoMsg(e && e.name === "LockedError" ? "Saved residents are locked. Unlock them first." : "That could not be saved. This browser is not allowing storage, or it is full.", true); return; }
     state.resident = p.id; mapped = fromProfile(p); personCache = { id: "", person: null };
     var done = function () { paintWho(); whoMsg((isNew ? "Saved " + firstWord(name) + ". " : "Updated " + firstWord(name) + ". ") + "Pick them from the list next time. Only on this computer."); };
     if (SS() && SS().flush) SS().flush().then(done, done); else done();

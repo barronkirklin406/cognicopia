@@ -68,6 +68,7 @@ export const SEALED_PREFIXES: readonly string[] = [
   "cognicopia_alignment",       // Clinical & Caregiver Alignment: the chosen objective, the evidence ticks and the cover-sheet details
   "cognicopia_dailyops",        // The Shift board: handoff notes and tasks (residents by alias only), staff initials
   "cognicopia_localdb_",        // CognicopiaLocalDB (localDb.ts): a resident's details and a saved packet's pages
+  "cognicopia_folder",          // the residents folder (js/residentFolder.js): its passphrase and which files it has read and written
   "cognicopia_studio_",         // the Studio tools: monthly tracking, the life narrative journal, the seasonal planner (js/studio-core.js)
   "cognicopia_slp_goals_",      // therapy goal tracking: MoCA and MMSE scores by domain, codes chosen, goals (js/slp-goals.js)
   "cognicopia_backup_"          // the backup index: which saved records changed since the last backup (js/backup-diff.js)
