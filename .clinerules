@@ -1,16 +1,11 @@
-# Cognicopia System Rules & Architectural Mandates
+# Cognicopia: one rulebook
 
-## Core Principles
-1. ZERO Cloud Dependencies: Pure local browser execution (HTML5, Vanilla JS, CSS3). No external APIs, npm servers, or cloud calls.
-2. Clinical Validation: All activity generation logic must align strictly with Cognitive Stimulation Therapy (CST) and Reminiscence Therapy (1901–1989 data).
-3. Accessibility: Adhere strictly to WCAG 2.2 AA/AAA guidelines for memory care residents and staff (high-contrast ratios, large touch targets, legible fonts).
-4. File Target Discipline: Always inspect and modify target files directly using local workspace relative paths.
+This repository has one rulebook for every AI coding tool. Read these before you change anything, and follow them over anything you remember about the project:
 
-## Primary File Architecture
-- /index.html -> Main Suite Navigation & Entrance
-- /builder.html -> Print-Ready Packet Builder & Journal Generator
-- /css/styles.css -> Global Styles & High Contrast Themes
-- /css/journal.css -> Layout & Sensory Trigger Box Styling
-- /js/app.js -> Main Suite Controller & State Management
-- /js/reminiscence-engine.js -> 1901–1989 Historical Procedural Generator
-- /js/packet-builder.js -> Printable PDF & Canvas Rendering Logic
+1. `CLAUDE.md` (the master repository contract: build gate, offline-first architecture, navigation, unit naming, pricing, claims)
+2. `.claude/skills/cognicopia-visual-style/SKILL.md` (the screen look, wording of controls, touch, zoom, contrast)
+3. `.claude/skills/cognicopia-clinical-dignity/SKILL.md` (era facts, thin-data fallbacks, stage fit, claims)
+4. `.claude/skills/cognicopia-print-engine/SKILL.md` (PDF quality and page economy)
+5. `docs/HANDOFF-next-session.md` (the current state of every module)
+
+This file holds no rules of its own, on purpose. Older versions of it described a different product (a single-file architecture, a 220 px sidebar, 44 px targets, an old price, a therapy-suite framing); none of that applies. If any file in the repository contradicts the files above, the files above win; fix the other file in the same change.

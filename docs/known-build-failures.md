@@ -1,6 +1,6 @@
 # Build failures that are still open
 
-`node scripts/build.mjs` is the real gate (`npm run build` here only syntax-checks `server.js`). As of November 9, 2026 the long list that used to be here is down to the items below. Each was re-run on `main`.
+`node scripts/build.mjs` is the real gate, and since November 12, 2026 `npm run build` runs it (then `scripts/check-claims.mjs`, then `npm test`); `npm run lint` is the old `node --check server.js`. As of November 9, 2026 the long list that used to be here is down to the items below. Each was re-run on `main`.
 
 Nothing is open. Every check in `node scripts/build.mjs` passes where Playwright, PyMuPDF, pypdfium2 and pdfplumber are installed (four checks, the print audit's PDF reading among them, need those Python packages and stop with a plain message where they are missing).
 
