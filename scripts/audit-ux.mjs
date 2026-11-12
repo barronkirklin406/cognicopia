@@ -97,6 +97,8 @@ const STATES = [
   ["builder: packet drawer with a page", "builder.html#/coloring", [pickPicture, click("#ccAdd"), click("#openPacket")]],
   ["builder: Instant Soothe open", "builder.html#/", [click(".panic-button")]],
   ["tablet: word search", "tablet.html", [click('[data-act="wordsearch"]')]],
+  ["tablet: Resident Mode on", "tablet.html", [click("#tbResident")]],
+  ["tablet: Resident Mode, inside an activity", "tablet.html", [click("#tbResident"), click('[data-act="crossword"]')]],
   ["tablet: crossword with the keyboard", "tablet.html", [click('[data-act="crossword"]')]],
   ["tablet: trace the path", "tablet.html", [click('[data-act="trace"]')]],
   ["tablet: finger paint", "tablet.html", [click('[data-act="paint"]')]],

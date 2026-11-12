@@ -247,6 +247,14 @@ step("Daily engagement: three choices and one button, a card for every kind of t
   }
 });
 
+step("Resident Mode in Tablet Activities: only the activities and no link out, the search closed, kept on reload; a 2.5 second hold (mouse, Enter or a finger) to leave, a tap does nothing; a PIN kept as a salted hash, a wrong one refused (a real browser)", () => {
+  try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-tablet-resident-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
+  catch (e){
+    if (e.status === 2) return "skipped: Playwright is not installed here (see docs/dev-setup.md)";
+    throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message);
+  }
+});
+
 step("the packet tool's cover at once and the packet a page at a time: page 1 shown in under 150 ms, the progress line, the same packet word for word (also slowed tenfold with other code drawing random numbers between steps), the picture's lines where page 1 has them (a real browser, the PDFs read back)", () => {
   try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-packet-stepped-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
   catch (e){
