@@ -25,7 +25,8 @@
   var $ = function (s) { return root.querySelector(s); };
   var ACTIVE_KEY = R.ACTIVE_KEY || "cognicopia_active_resident";
   var VOC_IDS = ["farmer", "teacher", "nurse", "cook", "mechanic", "secretary", "carpenter", "driver", "shopkeeper", "seamstress"];
-  var STAGE_NAME = ["", "early stage", "middle stage", "late stage"];
+  /* "early stage" by default, or the scale staff chose (js/stageLabels.js) */
+  var STAGE_NAME = {}; [1, 2, 3].forEach(function (n) { Object.defineProperty(STAGE_NAME, n, { enumerable: true, get: function () { return window.CogniStage ? window.CogniStage.phrase(n) : ["", "early stage", "middle stage", "late stage"][n]; } }); });
 
   /* what each kind of time draws from, in the order tried, and its short line for staff */
   var KINDS = {

@@ -76,7 +76,12 @@
   function acc(id, title, hint, body) {
     return '<details class="as-acc" id="' + id + '"><summary><span>' + title + '</span><small>' + hint + '</small></summary><div class="as-acc-body">' + body + '</div></details>';
   }
-  function mixBox(k) { return '<label class="as-check"><input type="checkbox" name="mix" value="' + k[0] + '"><span>' + k[1] + '</span></label>'; }
+  /* the kind of work each page does, for the person choosing it: a staff screen only, never on a printed page */
+  var MODALITY = { reminiscence: "Reminiscence", exercise: "Cognitive stimulation", daily: "Daily living and procedural memory", coloring: "Creative expression and fine motor", wordgrid: "Language and cognitive stimulation",
+    timeline: "Sequencing and executive function", memory: "Visual memory", dialogue: "Conversation and validation", household: "Procedural memory", phrases: "Language and procedural memory", recognition: "Sensory recognition",
+    rhythm: "Sensory and music", lifestory: "Life review", generations: "Life review and family", whoswho: "Person recognition", mytrade: "Life review and procedural memory", hometown: "Reminiscence", songs: "Music and reminiscence",
+    twenty: "Reminiscence", thennow: "Reminiscence", myday: "Daily living and orientation", dish: "Procedural memory and life review", comfort: "Sensory comfort and choice", wordplay: "Language and executive function" };
+  function mixBox(k) { return '<label class="as-check"><input type="checkbox" name="mix" value="' + k[0] + '"><span>' + k[1] + (MODALITY[k[0]] ? '<small class="as-mod">Modality: ' + MODALITY[k[0]] + '</small>' : '') + '</span></label>'; }
   function build() {
     var who =
       '<section class="as-step" aria-labelledby="asStep1"><h2 id="asStep1">Who is this for?</h2>' +
@@ -88,7 +93,7 @@
       '</section>';
     var support =
       '<section class="as-step" aria-labelledby="asStep2"><h2 id="asStep2">How much support?</h2>' +
-        seg("stage", "Cognitive stage", [["1", "Stage 1", "Mild"], ["2", "Stage 2", "Moderate"], ["3", "Stage 3", "Advanced"]]) +
+        seg("stage", "Cognitive stage", [1, 2, 3].map(function (n) { return [String(n), window.CogniStage ? window.CogniStage.tag(n, "Stage " + n) : "Stage " + n, ["Mild", "Moderate", "Advanced"][n - 1]]; })) +
         seg("dexterity", "Motor dexterity", [["steady", "Steady"], ["limited", "Limited grip"], ["minimal", "Little control"]]) +
         '<div class="as-row"><label class="as-check"><input id="asRoomy" type="checkbox"><span><b>High spacing / low visual crowding</b>: about half as many items on a page, more air between them and a bold box round each one. For low vision and posterior cortical atrophy; the type sizes and the black on white stay as they are.</span></label></div>' +
       '</section>';

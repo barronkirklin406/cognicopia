@@ -86,7 +86,8 @@
   var aliasWhy = function () { try { return typeof host.aliasOnly === "function" ? String(host.aliasOnly() || "") : ""; } catch (e) { return ""; } };
   var aliasOnly = function () { return !!aliasWhy(); };
   var copiesAlias = function () { try { return typeof host.copyAlias === "function" && !!host.copyAlias(); } catch (e) { return false; } };
-  var STAGE = { 1: "Stage 1", 2: "Stage 2", 3: "Stage 3" };
+  /* the stage as staff have chosen to read it (js/stageLabels.js: Stage, ACL or GDS), read when shown */
+  var STAGE = {}; [1, 2, 3].forEach(function (n) { Object.defineProperty(STAGE, n, { enumerable: true, get: function () { return root.CogniStage ? root.CogniStage.tag(n, "Stage " + n) : "Stage " + n; } }); });
   /* a saved profile as the bar and the search show it */
   function view(p) {
     var R = root.CogniResident, w = null; try { w = R ? R.person(p) : null; } catch (e) { w = null; }

@@ -263,6 +263,14 @@ step("High spacing / low visual crowding in the Activity Page Studio and the Pac
   }
 });
 
+step("How the stages are named on staff screens: a choice in Settings (each screen as it is, Stage, ACL or GDS), kept on this computer, followed by the Studio, the Builder, the profile, the active resident bar and the daily card; the kind of work each of the 24 Studio pages does, on the staff screen only, never on a page or in the resident's tablet menu (a real browser, day and Night Shift, 1366 x 768 and 390 x 844)", () => {
+  try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-stage-labels-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
+  catch (e){
+    if (e.status === 2) return "skipped: Playwright is not installed here (see docs/dev-setup.md)";
+    throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message);
+  }
+});
+
 step("Resident Mode in Tablet Activities: only the activities and no link out, the search closed, kept on reload; a 2.5 second hold (mouse, Enter or a finger) to leave, a tap does nothing; a PIN kept as a salted hash, a wrong one refused (a real browser)", () => {
   try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-tablet-resident-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
   catch (e){
