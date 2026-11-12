@@ -96,10 +96,11 @@
       <option value="monthly_facility">Monthly facility license</option>
       <option value="annual_facility" selected>Annual facility license</option>
       <option value="enterprise">Enterprise license</option>
+      <option value="pilot_facility">30-day facility pilot (set the last day to 30 days from now)</option>
     </select>
     <label for="until">Paid through (the last day it is paid for)</label>
     <input type="date" id="until">
-    <p class="small">The license keeps working for another 90 days after this date, even with no internet.</p>
+    <p class="small">A paid license keeps working for another 90 days after this date, even with no internet. A 30-day pilot stops on this date.</p>
     <div class="row"><button type="button" class="btn" id="makeKey">Make the license key</button></div>
     <p class="small" id="keyMsg" role="status" aria-live="polite"></p>
 

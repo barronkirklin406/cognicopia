@@ -113,7 +113,7 @@ try {
     for (const f of ["daily.html", "activity-studio.html", "tablet.html", "profile.html", "pricing.html", "resources/caregiver-faq/index.html"]) {
       await q2.goto(base + f, { waitUntil: "load" }); await q2.waitForTimeout(500);
       const hit = await q2.evaluate(() => { const m = document.getElementById("cgSbToggle"), a = m && m.getBoundingClientRect(); if (!a || !a.width) return "no Menu button";
-        return [...document.querySelectorAll(".cg-topbar .cg-trial, .cg-topbar a, .cg-topbar button")].filter(e => { const b = e.getBoundingClientRect(); return b.width && b.height && getComputedStyle(e).visibility !== "hidden" && b.left < a.right && b.right > a.left && b.top < a.bottom && b.bottom > a.top; }).map(e => e.textContent.trim().slice(0, 30)).join(" | "); });
+        return [...document.querySelectorAll(".cg-topbar .cg-chip, .cg-topbar a, .cg-topbar button")].filter(e => { const b = e.getBoundingClientRect(); return b.width && b.height && getComputedStyle(e).visibility !== "hidden" && b.left < a.right && b.right > a.left && b.top < a.bottom && b.bottom > a.top; }).map(e => e.textContent.trim().slice(0, 30)).join(" | "); });
       ok(hit === "", `${f} at ${w} px: the Menu button covers nothing in the action bar` + (hit ? ` (it covers: ${hit})` : ""));
     }
     await q2.context().close();

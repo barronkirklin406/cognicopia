@@ -84,12 +84,16 @@
       annual: Object.freeze({ amount: 349, per: "year", text: "$349 a year", tier: "annual_facility", saves: 119, savesPercent: 25 }),
       enterprise: Object.freeze({ text: "Custom quote", tier: "enterprise" })
     }),
-    /* The three kinds of license a signed key can carry. */
+    /* The kinds of license a signed key can carry. A pilot key is made by hand on the license desk for a facility that asked to try
+       Cognicopia for PILOT_DAYS days: full access, no grace days after it ends (the paid kinds keep working GRACE_DAYS after their date). */
     TIERS: Object.freeze({
       monthly_facility: "Monthly facility license",
       annual_facility: "Annual facility license",
-      enterprise: "Enterprise license"
+      enterprise: "Enterprise license",
+      pilot_facility: "30-day facility pilot"
     }),
+    PILOT_DAYS: 30,
+    PILOT_PATH: "pilot.html",
 
     /* Stripe Payment Links (docs/stripe-setup-guide.md, step 4). Paste the
        two buy.stripe.com addresses over the REPLACE_ME text. */

@@ -132,7 +132,8 @@ try {
   await p.evaluate(list => { window.print = () => {}; list.forEach(x => localStorage.setItem("cognicopia_resident_" + x.id, JSON.stringify(x))); localStorage.setItem("cognicopia_gen_count", "0"); }, RESIDENTS);
   await p.reload(); await p.waitForTimeout(500);
 
-  const open = async () => { await p.click("#mbOpen"); await p.waitForSelector("#monthly-bundle-modal[open]"); };
+  const open = async () => { await p.evaluate(() => { window.unlocked = () => true; }); await p.click("#mbOpen");  // the bundle is a facility feature; this check is about the logo, so the computer counts as licensed
+    await p.waitForSelector("#monthly-bundle-modal[open]"); };
   await open();
   ok(await p.isHidden("#mbLogoRow"), "with no logo chosen there is no preview and no Remove button");
   ok(/never sent anywhere/.test(await p.textContent("#mbLogoMsg")) && /not a photo of a person/.test(await p.textContent("#mbLogoMsg")), "the dialog says the logo stays on this computer and is not a photo of a person");
