@@ -88,6 +88,11 @@
   function stageN(s) { if (s === "early") return 1; if (s === "middle") return 2; if (s === "late") return 3; s = Math.round(Number(s)); return s >= 1 && s <= 3 ? s : 2; }
   /* the main line for a stage, in canvas px */
   function strokeFor(stage, dex) { return f1((LINE_PT[stageN(stage)] + (DEX_PT[dex] || 0)) * PT); }
+  /* High spacing / low visual crowding (sheet.roomy): lines a little bolder, the gap between lines of text wider (set for the whole page being
+     drawn, so block() and fit() always agree), and a bold box round each item. Only ever more ink and more air, never smaller type. */
+  var ROOMY_LINE_PT = 1.5, ROOMY_LH = 1.4, roomyNow = false;
+  function lhNow() { return roomyNow ? ROOMY_LH : 1.22; }
+  function lineOf(sh, stage, dex) { var l = strokeFor(stage, dex); return sh && sh.roomy ? f1(l + ROOMY_LINE_PT * PT) : l; }
   function bodyPx(stage, dex) { var n = stageN(stage); return Math.round(BASE_PT[n] * (DEX_FONT[dex] || 1) * PT); }
   function floorPx(stage) { return Math.round(FLOOR_PT[stageN(stage)] * PT); }
 
@@ -100,7 +105,7 @@
   }
   /* the largest size (down to min) at which the text fits the box; overflow true when even min does not */
   function fit(str, size, min, maxW, maxH, bold, lh) {
-    lh = lh || 1.22;
+    lh = lh || lhNow();
     var s = size, lines;
     for (;;) {
       lines = wrap(str, s, maxW, bold);
@@ -126,7 +131,7 @@
   /* lines of text; returns the y below the block */
   function block(pg, lines, x, y, size, o) {
     o = o || {};
-    var lh = o.lh || 1.22;
+    var lh = o.lh || lhNow();
     lines.forEach(function (l, i) { P.text(pg, x, y + size * 0.82 + i * size * lh, size, l, { bold: o.bold, anchor: o.anchor, role: o.role }); });
     return y + lines.length * size * lh;
   }
@@ -255,7 +260,7 @@
     return problems;
   }
   function cardPages(cards, layout, sh, code) {
-    var G = cellsFor(layout), n = stageN(sh.stage), dex = sh.dexterity || "steady", lw = strokeFor(n, dex), pages = [];
+    var G = cellsFor(layout), n = stageN(sh.stage), dex = sh.dexterity || "steady", lw = lineOf(sh, n, dex), pages = [];
     for (var i = 0; i < cards.length; i += G.L.per) {
       var pg = newPage({ kind: "cards", title: sh.title, stage: n, code: sh.code, layout: layout });
       var chunk = cards.slice(i, i + G.L.per);
@@ -272,12 +277,12 @@
 
   /* ---------- full pages for each kind of sheet ---------- */
   function promptsFull(sh) {
-    var n = stageN(sh.stage), dex = sh.dexterity || "steady", lw = strokeFor(n, dex), bp = bodyPx(n, dex), fl = floorPx(n), rule = Math.max(7, f1(lw * 0.7));
+    var n = stageN(sh.stage), dex = sh.dexterity || "steady", lw = lineOf(sh, n, dex), bp = bodyPx(n, dex), fl = floorPx(n), rule = Math.max(7, f1(lw * 0.7));
     /* each idea fills its share of the page: its type grows as far as the page stays calm, the words sit in the middle of their
        room, and on an early or middle page each idea is a framed card with a line or two to write on when there is room */
     return calmest(n, function (grow, extras) {
-      var pg = newPage({ kind: "prompts", title: sh.title, stage: n, code: sh.code }), framed = extras && n < 3;
-      var y0 = header(pg, sh), items = sh.items, gap = 26, area = H - 76 - y0, bh = (area - gap * (items.length - 1)) / Math.max(1, items.length);
+      var pg = newPage({ kind: "prompts", title: sh.title, stage: n, code: sh.code }), framed = (extras && n < 3) || !!sh.roomy;
+      var y0 = header(pg, sh), items = sh.items, gap = sh.roomy ? 44 : 26, area = H - 76 - y0, bh = (area - gap * (items.length - 1)) / Math.max(1, items.length);
       items.forEach(function (it, i) {
         var y = y0 + i * (bh + gap), pad = framed ? 30 : 10, x = PAD + pad, iw = W - 2 * PAD - pad * 2, ih = bh - pad * 2, lay = null;
         if (framed) P.rect(pg, PAD, y, W - 2 * PAD, bh, 24, lw); else if (i) P.line(pg, PAD, y - gap / 2, W - PAD, y - gap / 2, rule, "", "rule");
@@ -301,7 +306,7 @@
     });
   }
   function stepsFull(sh) {
-    var n = stageN(sh.stage), dex = sh.dexterity || "steady", lw = strokeFor(n, dex), bp = bodyPx(n, dex), fl = floorPx(n);
+    var n = stageN(sh.stage), dex = sh.dexterity || "steady", lw = lineOf(sh, n, dex), bp = bodyPx(n, dex), fl = floorPx(n);
     var pg = newPage({ kind: "steps", title: sh.title, stage: n, code: sh.code });
     var y0 = header(pg, sh);
     var paths = sh.pic ? subjectPaths(sh.pic) : null;
@@ -309,6 +314,7 @@
     var steps = sh.steps, area = H - (sh.safety ? 190 : 80) - y0, rh = area / steps.length, r = Math.max(fl * 0.7, Math.min(48, rh * 0.3)), ds = Math.max(Math.round(r * 1.1), fl);
     steps.forEach(function (s, i) {
       var cy = y0 + i * rh + rh / 2;
+      if (sh.roomy) P.rect(pg, PAD, cy - rh / 2 + 10, W - 2 * PAD, rh - 20, 22, lw, "none");
       P.circle(pg, PAD + 30 + r, cy, r, lw, "none");
       P.text(pg, PAD + 30 + r, cy + ds * 0.36, ds, String(s.n), { bold: true, anchor: "middle" });
       var tx = PAD + 30 + r * 2 + 30, t = fit(s.text, Math.round(bp * 1.1), fl, W - tx - PAD, rh - 14, true);
@@ -319,7 +325,7 @@
     return pg;
   }
   function matchFull(sh) {
-    var n = stageN(sh.stage), dex = sh.dexterity || "steady", lw = strokeFor(n, dex), bp = bodyPx(n, dex), fl = floorPx(n);
+    var n = stageN(sh.stage), dex = sh.dexterity || "steady", lw = lineOf(sh, n, dex), bp = bodyPx(n, dex), fl = floorPx(n);
     var pg = newPage({ kind: "match", title: sh.title, stage: n, code: sh.code });
     var y0 = header(pg, sh), rows = sh.pairs.length, bottom = H - 86, rh = (bottom - y0) / rows, colW = 400, big = Math.round(Math.min(bp * 2.1, Math.max(bp * 1.3, rh * 0.26)));
     /* the two columns stand in their own frames, with the dots to join between them; the words grow with the room each has */
@@ -337,7 +343,7 @@
     return pg;
   }
   function sortFull(sh) {
-    var n = stageN(sh.stage), dex = sh.dexterity || "steady", lw = strokeFor(n, dex), bp = bodyPx(n, dex), fl = floorPx(n);
+    var n = stageN(sh.stage), dex = sh.dexterity || "steady", lw = lineOf(sh, n, dex), bp = bodyPx(n, dex), fl = floorPx(n);
     var pg = newPage({ kind: "sort", title: sh.title, stage: n, code: sh.code });
     var y0 = header(pg, sh), boxH = 560, boxY = H - 70 - boxH, cw = (W - 2 * PAD - 40) / 2;
     sh.groups.forEach(function (g, i) {
@@ -364,7 +370,7 @@
     return d;
   }
   function pathFull(sh) {
-    var n = stageN(sh.stage), dex = sh.dexterity || "steady", lw = strokeFor(n, dex), bp = bodyPx(n, dex), fl = floorPx(n);
+    var n = stageN(sh.stage), dex = sh.dexterity || "steady", lw = lineOf(sh, n, dex), bp = bodyPx(n, dex), fl = floorPx(n);
     var pg = newPage({ kind: "path", title: sh.title, stage: n, code: sh.code });
     var y0 = header(pg, sh), r = rng(sh.seed || 1);
     var x1 = 210, y1 = H - 330, x2 = W - 210, y2 = y0 + 190, pts = [[x1, y1]], k = Math.max(1, sh.turns);
@@ -385,7 +391,7 @@
     return pg;
   }
   function lookFull(sh) {
-    var n = stageN(sh.stage), dex = sh.dexterity || "steady", lw = strokeFor(n, dex);
+    var n = stageN(sh.stage), dex = sh.dexterity || "steady", lw = lineOf(sh, n, dex);
     var pg = newPage({ kind: "look", title: sh.title, stage: n, code: sh.code });
     var y0 = header(pg, sh, 84), paths = subjectPaths(sh.pic);
     if (paths) subjectOps(pg, paths, { x: 80, y: y0 + 20, w: 1040, h: 820 }, lw, n);
@@ -571,16 +577,16 @@
     });
   }
   function blocksFull(sh) {
-    var n = stageN(sh.stage), dex = sh.dexterity || "steady", lw = strokeFor(n, dex), bp = bodyPx(n, dex), fl = floorPx(n);
+    var n = stageN(sh.stage), dex = sh.dexterity || "steady", lw = lineOf(sh, n, dex), bp = bodyPx(n, dex), fl = floorPx(n);
     /* drawn at the largest type that leaves the page calm; a page still too full gives up its frames, then some size, and if it
        is still too full it says so (the stage wants fewer parts on a page, not smaller ones) */
     var page = calmest(n, function (grow, extras) {
       var c = { n: n, lw: lw, rule: Math.max(7, f1(lw * 0.7)), bp: bp, fl: fl, g: grow, plain: !extras, sz: function (m) { return Math.max(fl, Math.round(bp * m * grow)); } };
       var pg = newPage({ kind: "blocks", title: sh.title, stage: n, code: sh.code });
-      var y0 = header(pg, sh), x = PAD + 6, w = W - 2 * PAD - 12, bottom = H - 76;
+      var gapB = sh.roomy ? 46 : BLOCK_GAP, y0 = header(pg, sh), x = PAD + 6, w = W - 2 * PAD - 12, bottom = H - 76;
       var all = (sh.blocks || []).filter(function (b) { return b && BLOCKS[b.kind]; }), staff = all.filter(function (b) { return b.kind === "staff"; })[0], blocks = all.filter(function (b) { return b.kind !== "staff"; });
-      if (staff) { var st = fit("For staff: " + staff.text, fl, fl, w, 400, false), sh2 = st.h + 26; BLOCKS.staff(pg, staff, c, x, bottom - sh2, w, sh2); bottom -= sh2 + BLOCK_GAP; }
-      var needs = blocks.map(function (b) { return blockNeed(b, c); }), room = bottom - y0 - BLOCK_GAP * Math.max(0, blocks.length - 1);
+      if (staff) { var st = fit("For staff: " + staff.text, fl, fl, w, 400, false), sh2 = st.h + 26; BLOCKS.staff(pg, staff, c, x, bottom - sh2, w, sh2); bottom -= sh2 + gapB; }
+      var needs = blocks.map(function (b) { return blockNeed(b, c); }), room = bottom - y0 - gapB * Math.max(0, blocks.length - 1);
       var minSum = needs.reduce(function (m, q) { return m + q.min; }, 0), wantSum = needs.reduce(function (m, q) { return m + q.want; }, 0), spare = room - minSum;
       if (spare < 0) (pg.meta.fit = pg.meta.fit || []).push("This page holds more than fits: " + blocks.length + " parts need " + Math.round(minSum) + " px and there are " + Math.round(room) + ".");
       /* each part takes its share of the room, but no more than it can use well; what is left over becomes even air above,
@@ -594,7 +600,7 @@
         left -= used;
       }
       var air = left > 1 ? left / (blocks.length + 1) : 0, y = y0 + air;
-      blocks.forEach(function (b, i) { BLOCKS[b.kind](pg, b, c, x, y, w, hs[i]); y += hs[i] + BLOCK_GAP + air; });
+      blocks.forEach(function (b, i) { BLOCKS[b.kind](pg, b, c, x, y, w, hs[i]); y += hs[i] + gapB + air; });
       pg.meta.blocks = blocks.length + (staff ? 1 : 0);
       footer(pg, sh.code);
       return pg;
@@ -615,12 +621,16 @@
   var PAGE_KINDS = {};
   function registerPage(kind, fn) { PAGE_KINDS[kind] = fn; }
   /* what kind of sheet a page came from, for the facility validator */
-  function tag(pg, sh) { pg.meta.sheetKind = sh.kind; if (sh.steps) pg.meta.steps = sh.steps.length; if (sh.keyLines) pg.meta.key = sh.keyLines; return pg; }
+  function tag(pg, sh) { pg.meta.sheetKind = sh.kind; if (sh.roomy) pg.meta.roomy = true; if (sh.steps) pg.meta.steps = sh.steps.length; if (sh.keyLines) pg.meta.key = sh.keyLines; return pg; }
 
   /* the pages for one sheet in a layout; { pages, fellBack } */
   function sheetPages(sh, layout) {
     layout = layout || "full";
     var cardable = sh.kind === "prompts" || sh.kind === "steps";
+    roomyNow = !!sh.roomy;
+    try { return sheetPagesNow(sh, layout, cardable); } finally { roomyNow = false; }
+  }
+  function sheetPagesNow(sh, layout, cardable) {
     if (layout !== "full" && cardable) {
       var cards = sh.kind === "prompts"
         ? sh.items.map(function (it) { return { tag: it.tag, head: it.thing, lines: [it.invite, it.sense].filter(Boolean) }; })
@@ -806,7 +816,7 @@
   return {
     VERSION: VERSION, W: W, H: H, PX_PER_PT: PT, FONT: FONT, LAYOUTS: LAYOUTS, STYLES: STYLES, BOX: BOX,
     registerPage: registerPage,
-    GRID_FONT: GRID_FONT, kit: { newPage: newPage, P: P, block: block, fit: fit, wrap: wrap, header: header, footer: footer, subjectOps: subjectOps, subjectPaths: subjectPaths, strokeFor: strokeFor, bodyPx: bodyPx, floorPx: floorPx,
+    GRID_FONT: GRID_FONT, kit: { newPage: newPage, P: P, block: block, fit: fit, wrap: wrap, header: header, footer: footer, subjectOps: subjectOps, subjectPaths: subjectPaths, strokeFor: strokeFor, lineOf: lineOf, bodyPx: bodyPx, floorPx: floorPx,
            stageN: stageN, rng: rng, hash: hash, smooth: smooth, W: W, H: H, PAD: PAD, PT: PT, BOX: BOX, drawCard: drawCard, cellsFor: cellsFor, calmest: calmest, whiteShare: whiteShare },
     strokeFor: strokeFor, bodyPx: bodyPx, floorPx: floorPx, chooseSubject: chooseSubject, subjectPaths: subjectPaths,
     composeColoring: composeColoring, sheetPages: sheetPages, packPrompts: packPrompts, toSVG: toSVG, toCanvas: toCanvas, validate: validate, hash: hash,

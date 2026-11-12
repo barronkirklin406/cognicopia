@@ -29,7 +29,7 @@
 
   function base(sh) {
     var n = K.stageN(sh.stage), dex = sh.dexterity || "steady";
-    return { n: n, dex: dex, lw: K.strokeFor(n, dex), bp: K.bodyPx(n, dex), fl: K.floorPx(n) };
+    return { n: n, dex: dex, lw: K.lineOf ? K.lineOf(sh, n, dex) : K.strokeFor(n, dex), bp: K.bodyPx(n, dex), fl: K.floorPx(n) };
   }
   function page(sh, kind) { return K.newPage({ kind: kind, title: sh.title, stage: K.stageN(sh.stage), code: sh.code }); }
 
@@ -71,7 +71,8 @@
     var b = base(sh), pg = page(sh, "scramble"), y0 = K.header(pg, sh), items = sh.items, rh = (H - 90 - y0) / items.length;
     items.forEach(function (it, i) {
       var y = y0 + i * rh, big = Math.max(b.fl, Math.round(b.bp * 1.5)), txt = it.scr.split("").join(" ");
-      if (i) P.line(pg, PAD, y - 6, W - PAD, y - 6, Math.max(7, b.lw * 0.7), "", "rule");
+      if (sh.roomy) P.rect(pg, PAD, y + 2, W - 2 * PAD, rh - 14, 22, b.lw, "none");
+      else if (i) P.line(pg, PAD, y - 6, W - PAD, y - 6, Math.max(7, b.lw * 0.7), "", "rule");
       P.text(pg, PAD + 10, y + 54, b.fl, String(i + 1) + ".", { bold: true });
       var f = K.fit(txt, big, b.fl, W - 2 * PAD - 100, 120, true); P.text(pg, W / 2 + 30, y + 40 + f.size * 0.8, f.size, txt, { bold: true, anchor: "middle" });
       var bw = Math.min(84, Math.floor((W - 2 * PAD - 120) / it.len) - 8), tot = it.len * (bw + 8) - 8, bx = Math.round((W - tot) / 2) + 30, by = y + rh - 120;
@@ -143,6 +144,7 @@
     var b = base(sh), pg = page(sh, "household"), y0 = K.header(pg, sh), rows = sh.left.length, rh = (H - 90 - y0) / rows;
     sh.left.forEach(function (l, i) {
       var cy = y0 + i * rh + rh / 2, right = sh.right[i];
+      if (sh.roomy) P.rect(pg, PAD - 6, cy - rh / 2 + 6, W - 2 * PAD + 12, rh - 12, 22, b.lw, "none");
       if (l.pic) { var ps = K.subjectPaths(l.pic); if (ps) K.subjectOps(pg, ps, { x: PAD, y: cy - rh / 2 + 8, w: 380, h: rh - 16 }, b.lw, b.n); }
       else { var f = K.fit(l.word, Math.round(b.bp * 1.2), b.fl, 380, rh - 16, true); K.block(pg, f.lines, PAD + 10, cy - f.h / 2, f.size, { bold: true }); }
       var g = K.fit(right, Math.round(b.bp * 1.2), b.fl, 350, rh - 16, true); K.block(pg, g.lines, W - PAD - 10, cy - g.h / 2, g.size, { bold: true, anchor: "end" });
@@ -156,7 +158,8 @@
     var b = base(sh), pg = page(sh, "phrases"), y0 = K.header(pg, sh), bankH = sh.bank ? 215 : 0, rows = sh.items.length, rh = (H - 90 - bankH - y0) / rows;
     sh.items.forEach(function (it, i) {
       var y = y0 + i * rh, f = K.fit(it.start, Math.round(b.bp * 1.0), b.fl, W - 2 * PAD - 20, rh - 70, true);
-      K.block(pg, f.lines, PAD + 10, y, f.size, { bold: true });
+      if (sh.roomy) P.rect(pg, PAD, y + 4, W - 2 * PAD, rh - 16, 22, b.lw, "none");
+      K.block(pg, f.lines, PAD + 10, y + (sh.roomy ? 18 : 0), f.size, { bold: true });
       P.line(pg, PAD + 10, y + rh - 36, W - PAD - 10, y + rh - 36, b.lw, "", "rule");
     });
     if (sh.bank) {

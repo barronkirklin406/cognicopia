@@ -2964,6 +2964,11 @@ body.shc-lock{overflow:hidden}
 .spot-bonus{font-size:max(.8em,var(--fl))}
 .spot-tags{font-size:max(11pt,var(--fl))}
 @media print{body > #fitHost{display:block !important}}
+/* High spacing / low visual crowding: more air, and a bold box round each item (the generators also put fewer items on the page) */
+.sp-roomy .sh-body{line-height:1.5}
+.sp-roomy .sh-inst{margin-bottom:.22in}
+.sp-roomy .item,.sp-roomy .ml-item{margin-bottom:.34in;padding:.12in .2in;border:calc(var(--ml) * 1.5) solid #000;border-radius:.14in}
+.sp-roomy .sw-row{margin-bottom:.3in}
 .fit-1 .sh-inst{margin-bottom:.1in}
 .fit-1 .item,.fit-1 .ml-item,.fit-1 .sw-row{margin-bottom:.12in}
 .fit-1 .sh-head{margin-bottom:.1in;padding-bottom:.06in}
@@ -12771,7 +12776,7 @@ const ERAS = {
   "1960s": "The 1960s",
   "1970s": "The 1970s"
 };
-const DEFAULT_SETTINGS = { facility:"", wing:"", residentName:"", avoid:"", difficulty:"early", era:"general", variations:2, pureBW:true, actOpts:{}, aliasScreen:false, aliasFiles:false, activeWing:null, exportNames:"alias", residentClean:true };
+const DEFAULT_SETTINGS = { facility:"", wing:"", residentName:"", avoid:"", difficulty:"early", era:"general", variations:2, pureBW:true, actOpts:{}, aliasScreen:false, aliasFiles:false, activeWing:null, exportNames:"alias", residentClean:true, roomy:false };
 /* Read again once the encrypted store has opened (see Boot). */
 function readSettings(){
   const s = Object.assign({}, DEFAULT_SETTINGS, store.get("cgb_settings", {}));
@@ -12780,7 +12785,7 @@ function readSettings(){
   s.variations = clampInt(s.variations, 1, 4, 2);
   // Last-used options per activity (e.g. { "letter-tracing": { case:"upper" } }). Own copy, never the default object.
   s.actOpts = (s.actOpts && typeof s.actOpts === "object" && !Array.isArray(s.actOpts)) ? Object.assign({}, s.actOpts) : {};
-  s.aliasScreen = !!s.aliasScreen; s.aliasFiles = !!s.aliasFiles; s.residentClean = s.residentClean !== false;
+  s.aliasScreen = !!s.aliasScreen; s.aliasFiles = !!s.aliasFiles; s.residentClean = s.residentClean !== false; s.roomy = !!s.roomy;
   s.wing = String(s.wing == null ? "" : s.wing).replace(/[\u0000-\u001F\u007F]/g, "").trim().slice(0, 40);
   s.activeWing = s.activeWing == null ? null : String(s.activeWing).replace(/[\u0000-\u001F\u007F]/g, "").trim().slice(0, 40);   // null: every wing; "": residents with no wing
   s.exportNames = window.CogniPrivacy ? window.CogniPrivacy.levelOf(s.exportNames) : "alias";
@@ -12928,7 +12933,32 @@ function slicePlan(pool, per, count, rng){
   return out;
 }
 
+/* "High spacing / low visual crowding" (cfg.roomy). While a page is being made with it on, every activity's level table answers with a thinned copy:
+   about half as many items, cards, rows or words on a page (never fewer than the page needs), a smaller word-search square for bigger letters. The
+   type sizes, the line weights and the black on white are not touched; the sheet also gets .sp-roomy for the air and the bold boxes. */
+let ROOMY_NOW = false;
+const ROOMY_KEYS = ["count", "cards", "rows", "panels", "moves", "tosses", "max", "n"];
+function roomyLevel(L){
+  if (!L || typeof L !== "object" || Array.isArray(L)) return L;
+  const o = Object.assign({}, L);
+  ROOMY_KEYS.forEach(k => { const v = L[k]; if (typeof v === "number" && v > 0) o[k] = Math.max(v <= 2 ? 1 : 2, Math.round(v * 0.55)); });
+  if (typeof L.size === "number" && typeof L.cell === "number"){ o.size = Math.max(6, L.size - 2); if (typeof L.maxLen === "number") o.maxLen = Math.min(L.maxLen, o.size); }
+  return o;
+}
+function installRoomyLevels(){
+  Object.keys(ACT_INDEX).forEach(id => {
+    const a = ACT_INDEX[id], base = a && a.levels;
+    if (!base || typeof base !== "object" || a.levelsBase) return;
+    const thin = {}; Object.keys(base).forEach(k => { thin[k] = roomyLevel(base[k]); });
+    a.levelsBase = base;
+    Object.defineProperty(a, "levels", { configurable:true, enumerable:true, get(){ return ROOMY_NOW ? thin : base; } });
+  });
+}
 function buildBatch(act, cfg, batchSeed, count){
+  const prev = ROOMY_NOW; ROOMY_NOW = !!(cfg && cfg.roomy);
+  try { return buildBatchRaw(act, cfg, batchSeed, count); } finally { ROOMY_NOW = prev; }
+}
+function buildBatchRaw(act, cfg, batchSeed, count){
   const key = act.id + "|" + JSON.stringify(cfg) + "|" + batchSeed + "|" + count;
   if (batchCache.has(key)) return batchCache.get(key);
   const master = makeRng(batchSeed);
@@ -15287,6 +15317,7 @@ CATEGORIES.forEach(c => { CAT_INDEX[c.id] = c; c.activities.forEach(a => { ACT_I
 // The coloring library queues its pages through its own activity.
 [COLORING, CogniLibrary.LIBRARY_ACTIVITY].forEach(a => { if (!ACT_INDEX[a.id]){ ACT_INDEX[a.id] = a; a.categoryId = "cognicopia-coloring"; } });
 if (!ACT_INDEX[ReminiscenceUI.REMINISCENCE_ACTIVITY.id]){ ACT_INDEX[ReminiscenceUI.REMINISCENCE_ACTIVITY.id] = ReminiscenceUI.REMINISCENCE_ACTIVITY; ReminiscenceUI.REMINISCENCE_ACTIVITY.categoryId = "word"; }
+installRoomyLevels();
 
 /* ---------- 9. Output sheet renderer ---------- */
 function tactilePairingFor(activity, page, cfg){
@@ -15409,7 +15440,7 @@ function activitySheetHtml(item, calmMode){
   }
   const who = item.cfg.residentName ? "For " + esc(item.cfg.residentName) : "";
   const when = fmtDate(item.cfg.date);
-  return `<section class="sheet lvl-${esc(item.cfg.difficulty)}">
+  return `<section class="sheet lvl-${esc(item.cfg.difficulty)}${item.cfg.roomy ? " sp-roomy" : ""}">
     <header class="sh-head"><div><h1>${esc(page.title)}</h1>${page.subtitle ? `<p class="sh-sub">${esc(page.subtitle)}</p>` : ""}</div><div class="sh-meta">${who}${who && when ? "<br>" : ""}${esc(when)}${settings.wing ? " &middot; " + esc(settings.wing) : ""}${therapyAnchor(item) ? `<br><span class="sh-anchor">${esc(therapyAnchor(item))}</span>` : ""}</div></header>
     <p class="sh-inst">${esc(page.instructions)}</p>
     <div class="sh-body">${page.html}</div>
@@ -15600,6 +15631,7 @@ function presetCfg(act, p, level){
     era: p ? ActiveResident.eraKey(p) : settings.era };
   const av = p ? avoidTermsOf(p) : (CMx ? CMx.avoidTerms(settings.avoid) : []);
   if (av.length) cfg.avoid = av;
+  if (settings.roomy) cfg.roomy = true;
   if (act.options) cfg.opts = savedOpts(act);
   return cfg;
 }
@@ -15850,6 +15882,7 @@ function currentCfg(){
   };
   const av = window.CognicopiaClinicalMatrix ? window.CognicopiaClinicalMatrix.avoidTerms($("#cfgAvoid") ? $("#cfgAvoid").value : settings.avoid) : [];
   if (av.length) cfg.avoid = av;
+  if (($("#cfgRoomy") || {}).checked) cfg.roomy = true;
   // Only activities with options carry cfg.opts, so older queued
   // Word & Language pages keep rebuilding exactly as before.
   if (selectedAct && selectedAct.options) cfg.opts = readOpts(selectedAct);
@@ -15902,6 +15935,10 @@ function openConfig(actId, scroll){
           ${levelNote ? `<p class="hint" role="status">${esc(levelNote)}</p>` : ""}
           ${fxc ? `<p class="hint">Set for ${esc(fxc.group)}: ${esc(fxc.label)}.</p>` : ""}
         </fieldset>
+        <label class="switch cfg-roomy" for="cfgRoomy">
+          <input type="checkbox" id="cfgRoomy" ${settings.roomy ? "checked" : ""}>
+          <span><b>High spacing / low visual crowding</b><small>About half as many items on each page, more air between them and a bold box round each one. Made for low vision and posterior cortical atrophy. The page stays pure black on white, at the same type sizes.</small></span>
+        </label>
         ${act.themed ? `<div class="field"><label for="cfgEra">Theme</label>
           <select id="cfgEra">${Object.keys(ERAS).map(k => `<option value="${k}" ${k === settings.era ? "selected" : ""}>${ERAS[k]}</option>`).join("")}</select>
           <p class="hint">Sets the words and prompts. Pick the decade the resident was a young adult.</p></div>` : ""}
@@ -15953,6 +15990,7 @@ function openConfig(actId, scroll){
   form.addEventListener("change", e => {
     if (e.target.name === "cfgDiff"){ settings.difficulty = e.target.value; saveSettings(); const tn = $("#tierNote"); if (tn) tn.textContent = tierChanges(e.target.value); }
     if (e.target.id === "cfgEra"){ settings.era = e.target.value; saveSettings(); }
+    if (e.target.id === "cfgRoomy"){ settings.roomy = e.target.checked; saveSettings(); }
     if (e.target.dataset && e.target.dataset.opt){ syncOptVisibility(act); settings.actOpts[act.id] = readOpts(act); saveSettings(); }
     updatePreview();
   });
@@ -16062,6 +16100,10 @@ function renderSettings(){
       <div class="field"><label for="setActiveWing">Wing shown on this computer</label>
         ${wingSelectHtml("setActiveWing")}
         <p class="hint">Choose a wing and the roster, pickers and Shift board show only that wing&rsquo;s residents. Another wing&rsquo;s residents stay saved and are never mixed in. Residents are placed in a wing on their profile or by the census import.</p></div>
+      <label class="switch" for="setRoomy">
+        <input type="checkbox" id="setRoomy" ${settings.roomy ? "checked" : ""}>
+        <span><b>High spacing / low visual crowding</b><small>New activities start with about half as many items on a page, more air between them and a bold box round each one, for low vision and posterior cortical atrophy. You can still change it on each activity.</small></span>
+      </label>
       <label class="switch" for="setBW">
         <input type="checkbox" id="setBW" checked disabled>
         <span><b>Pure Black &amp; White</b><small>Always on: every printed page is pure black (#000000) on white (#ffffff), with no grey and no hairlines. This screen stays exactly as it is.</small></span>
@@ -16120,6 +16162,7 @@ function renderSettings(){
   const pvb = $("#pvBanner"), net = networkReport();
   if (pvb) pvb.innerHTML = `<span class="enc-dot" aria-hidden="true"></span><span><b>No telemetry, no tracking</b>Cognicopia has no analytics, advertising, error reporting or outside services. Resident details are kept only in this browser&rsquo;s storage on this computer and are never sent anywhere. Since this page opened it has made <b>${net.outside}</b> request${net.outside === 1 ? "" : "s"} to other websites (${net.total} file${net.total === 1 ? "" : "s"} in all, all from this site).</span>`;
   document.querySelectorAll('[data-privacy-choice="setExportNames"] input').forEach(r => r.addEventListener("change", () => { settings.exportNames = r.value; saveSettings(); }));
+  $("#setRoomy").addEventListener("change", e => { settings.roomy = e.target.checked; saveSettings(); });
   $("#setAliasScreen").addEventListener("change", e => { settings.aliasScreen = e.target.checked; saveSettings(); });
   $("#setResClean").addEventListener("change", e => { settings.residentClean = e.target.checked; saveSettings(); });
   $("#setAliasFiles").addEventListener("change", e => { settings.aliasFiles = e.target.checked; saveSettings(); });

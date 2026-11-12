@@ -61,7 +61,7 @@
   var SUGGEST = { 1: ["wordgrid", "timeline", "memory", "dialogue", "coloring"], 2: ["dialogue", "household", "phrases", "coloring"], 3: ["coloring", "recognition", "rhythm", "dialogue"] };
   var LABEL = {}; KINDS.forEach(function (k) { LABEL[k[0]] = k[1]; });
   var suggestTurn = 0;
-  var state = { mix: { reminiscence: true, exercise: true, daily: true, coloring: true }, vocation: "", stage: 2, dexterity: "steady", decade: 1950, born: "", name: "", nameStyle: "plain", personal: "", challenge: false, answers: false, resident: "", interests: "", avoid: "",
+  var state = { mix: { reminiscence: true, exercise: true, daily: true, coloring: true }, vocation: "", stage: 2, dexterity: "steady", roomy: false, decade: 1950, born: "", name: "", nameStyle: "plain", personal: "", challenge: false, answers: false, resident: "", interests: "", avoid: "",
     style: "botanical", words: "", layout: "full", pages: 4, view: "one", dark: false, gutter: false, seed: (Date.now() % 1000000) + 1, variant: 0, index: 0 };
   var made = { pages: [], notes: [], code: "" };
 
@@ -90,6 +90,7 @@
       '<section class="as-step" aria-labelledby="asStep2"><h2 id="asStep2">How much support?</h2>' +
         seg("stage", "Cognitive stage", [["1", "Stage 1", "Mild"], ["2", "Stage 2", "Moderate"], ["3", "Stage 3", "Advanced"]]) +
         seg("dexterity", "Motor dexterity", [["steady", "Steady"], ["limited", "Limited grip"], ["minimal", "Little control"]]) +
+        '<div class="as-row"><label class="as-check"><input id="asRoomy" type="checkbox"><span><b>High spacing / low visual crowding</b>: about half as many items on a page, more air between them and a bold box round each one. For low vision and posterior cortical atrophy; the type sizes and the black on white stay as they are.</span></label></div>' +
       '</section>';
     var make =
       '<section class="as-step" aria-labelledby="asStep3"><h2 id="asStep3">Make the packet</h2>' +
@@ -113,7 +114,7 @@
       '<div class="as-row"><label class="as-lab" for="asWords">Or describe the picture in a few words</label><input id="asWords" type="text" maxlength="120" placeholder="a rose in a jug" autocomplete="off"></div></div>' +
       '<div class="as-only-sheet">' + seg("layout", "Layout for prompts and steps", PL.LAYOUTS.map(function (l) { return [l.id, l.label]; })) + '</div>');
     var printAcc = acc("asAccPrint", "Printing and staff options", "bigger word search, answer key, binding gutter",
-      '<div class="as-row"><label class="as-check"><input id="asChallenge" type="checkbox"><span>A bigger word search (early stage only): a full 20 by 20 grid of 20 words running in all eight directions, backward ones included</span></label></div>' +
+      '<div class="as-row"><label class="as-check"><input id="asChallenge" type="checkbox"><span>A bigger word search (early stage only, and not with high spacing): a full 20 by 20 grid of 20 words running in all eight directions, backward ones included</span></label></div>' +
       '<div class="as-row"><label class="as-check"><input id="asAnswers" type="checkbox"><span>Add a staff answer key at the end (keep it out of the resident\'s packet)</span></label></div>' +
       '<label class="as-check"><input type="checkbox" id="asGutter"><span>Leave a binding gutter (0.75 in, alternating sides for two-sided printing)</span></label>');
     root.innerHTML =
@@ -245,7 +246,7 @@
   }
 
   /* ---------- making the packet ---------- */
-  function profile() { return { person: state.resident ? personOf(state.resident) : null, name: state.name, born: Number(state.born) || 0, nameStyle: state.nameStyle, personal: state.personal, challenge: state.challenge, stage: state.stage, dexterity: state.dexterity, decade: state.decade, interests: state.interests, avoid: state.avoid, vocation: state.vocation }; }
+  function profile() { return { person: state.resident ? personOf(state.resident) : null, name: state.name, born: Number(state.born) || 0, nameStyle: state.nameStyle, personal: state.personal, challenge: state.challenge, stage: state.stage, dexterity: state.dexterity, roomy: state.roomy, decade: state.decade, interests: state.interests, avoid: state.avoid, vocation: state.vocation }; }
   function kindsOn() { return KINDS.map(function (k) { return k[0]; }).filter(function (k) { return state.mix[k]; }); }
   function avoidList() { return R.avoidFromText(state.avoid); }
   var STAGE_KEY = ["E", "M", "L"];
@@ -423,6 +424,7 @@
     $$('input[name="layout"]').forEach(function (r) { r.checked = r.value === state.layout; });
     $$('input[name="view"]').forEach(function (r) { r.checked = r.value === state.view; });
     $$('input[name="nameStyle"]').forEach(function (r) { r.checked = r.value === state.nameStyle; });
+    $("#asRoomy").checked = !!state.roomy;
     syncChallenge();
     $("#asAnswers").checked = !!state.answers;
     $$('input[name="mix"]').forEach(function (c) { c.checked = !!state.mix[c.value]; });
@@ -431,11 +433,12 @@
     setField("asName", state.name); setField("asBorn", state.born); setField("asInterests", state.interests); setField("asAvoid", state.avoid); setField("asPersonal", state.personal); setField("asWords", state.words);
   }
   /* the bigger word search is an early-stage offer: the box follows the stage as it changes */
-  function syncChallenge() { var ch = $("#asChallenge"); if (!ch) return; ch.disabled = state.stage !== 1; if (ch.disabled) state.challenge = false; ch.checked = !!state.challenge; }
+  function syncChallenge() { var ch = $("#asChallenge"); if (!ch) return; ch.disabled = state.stage !== 1 || !!state.roomy; if (ch.disabled) state.challenge = false; ch.checked = !!state.challenge; }
   function wire() {
     $$('#asForm input[name="stage"], #asForm input[name="dexterity"], #asForm input[name="layout"]').forEach(function (r) {
       r.addEventListener("change", function () { state[r.name] = r.name === "stage" ? Number(r.value) : r.value; state.variant = 0; syncChallenge(); schedule(false); });
     });
+    $("#asRoomy").addEventListener("change", function () { state.roomy = this.checked; state.variant = 0; syncChallenge(); schedule(false); });
     $("#asChallenge").addEventListener("change", function () { state.challenge = this.checked; state.variant = 0; schedule(false); });
     $("#asAnswers").addEventListener("change", function () { state.answers = this.checked; schedule(true); });
     $("#asResident").addEventListener("change", function () { whoMsg(""); applyResident(this.value); });

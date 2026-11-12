@@ -122,6 +122,18 @@ try {
   /* hands, script names, a library drawing, the gutter */
   for (const dex of ["limited", "minimal"]) { const r = await both("hands-" + dex, { profile: { dexterity: dex }, stages: [2, 3], mods: ["reminiscence", "wordgrid", "memory", "whoswho", "songs", "comfort", "rhythm", "myday"] });
     ok(r.vector === r.names.length && r.picture === 0 && (!r.back || Math.max(...r.back.map(g => g.diff)) < 0.03), `larger pages for ${dex} hands are drawn the same way (${r.vector} pages${r.back ? ", at most " + (Math.max(...r.back.map(g => g.diff)) * 100).toFixed(2) + " of 100 dots apart" : ""})`); }
+  /* high spacing / low visual crowding: fewer items, a bold box round each, still real text and lines, pure black and white, inside the margins */
+  { const r = await both("roomy", { profile: { roomy: true }, stages: [1, 2, 3], mods: ["reminiscence", "exercise", "daily", "wordgrid", "timeline", "memory", "dialogue", "household", "phrases", "recognition", "rhythm", "lifestory", "whoswho", "mytrade", "hometown", "songs", "dish", "comfort", "wordplay", "myday"] });
+    ok(r.names.length >= 40 && r.vector === r.names.length && r.picture === 0, `with high spacing every page is still text and lines, no picture (${r.vector} of ${r.names.length} pages)`);
+    if (r.back) {
+      const lost = r.back.map((g, i) => norm(g.words) === norm(r.said[i]) ? "" : r.names[i]).filter(Boolean);
+      ok(lost.length === 0, "with high spacing every word reads back out of the file, in order" + (lost.length ? "; not these: " + lost.slice(0, 4).join(", ") : ""));
+      ok(Math.min(...r.back.map(g => g.thin || 99)) >= 2, "with high spacing no black line is under 2 pt");
+      ok(r.back.every(g => g.ink[0] >= 35.9 && g.ink[1] >= 35.9 && g.ink[2] <= 576.1 && g.ink[3] <= 756.1), "with high spacing nothing is drawn outside the 0.5 in margins");
+      ok([...new Set(r.back.flatMap(g => g.colors))].every(c => /^\((0\.0, 0\.0, 0\.0|1\.0, 1\.0, 1\.0|0\.0|1\.0)\)$|^\(0\.0,\)$|^\(1\.0,\)$|^text:000000$/.test(c)), "with high spacing every mark is pure black or pure white");
+      ok(Math.max(...r.back.map(g => g.diff)) < 0.03, `with high spacing the PDF and the picture of it agree (at most ${(Math.max(...r.back.map(g => g.diff)) * 100).toFixed(2)} of 100 dots apart)`);
+    }
+    ok(r.kbNew * 10 <= r.kbOld && r.kbNew < 100 * Math.max(1, r.names.length / 10), `with high spacing the file stays small (${Math.round(r.kbNew)} KB for ${r.names.length} pages)`); }
   for (const [ns, face] of [["flow", "PinyonScript"], ["formal", "MarckScript"]]) { const r = await both("name-" + ns, { profile: { nameStyle: ns }, stages: [1, 2], mods: ["reminiscence", "exercise", "daily"] });
     ok(r.vector === r.names.length && (!r.back || (r.back.some(g => g.faces.includes(face)) && Math.max(...r.back.map(g => g.diff)) < 0.03)), `a name in ${ns === "flow" ? "flowing" : "formal"} script is set in its own face, embedded (${face}, ${r.vector} pages)`); }
   const col = await both("coloring", { mods: [], coloring: [1, 2, 3] });

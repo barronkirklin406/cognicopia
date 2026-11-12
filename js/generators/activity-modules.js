@@ -131,7 +131,8 @@
     for (var s = 0; s < count; s++) {
       var what = plan[s % plan.length], size = P.stage === 1 ? 10 : 8;
       if (K.DEXTERITY[P.dexterity].fewer) size = Math.max(7, size - 2);
-      var nWords = Math.max(4, (P.stage === 1 ? 8 : 6) - fewer(P) * 2);
+      if (P.roomy) size = Math.max(6, size - 2);                                   // a smaller square: bigger letters, more air
+      var nWords = K.cut(Math.max(4, (P.stage === 1 ? 8 : 6) - fewer(P) * 2), P, 3);
       if (what === "big") {
         var cf = CHALLENGE[P.dexterity] || CHALLENGE.steady;
         var bp = K.shuffle(bigPool(P).filter(function (w) { return okWord(w, P) && w.length >= 3 && w.length <= cf.size; }), r);
@@ -152,13 +153,13 @@
           keyLines: g.placed.map(function (x) { return x.w + ": row " + (x.r + 1) + ", column " + (x.c + 1) + (x.dr && x.dc ? " going down and right" : x.dr ? " going down" : " going across"); }),
           staffNote: HOME + (what === "personal" ? "a word search that holds names and places from the resident's own life. Say each word aloud as it is found and let the resident tell its story. " : "a themed word search from the resident's own years or work. ") + "Circle the first word together; the finding is the activity, so help freely." });
       } else if (what === "scramble") {
-        var th2 = themeWords(P, s % 2 ? "vocation" : "decade"), n2 = Math.max(3, (P.stage === 1 ? 5 : 4) - fewer(P));
+        var th2 = themeWords(P, s % 2 ? "vocation" : "decade"), n2 = K.cut(Math.max(3, (P.stage === 1 ? 5 : 4) - fewer(P)), P, 2);
         var ws = take(K.shuffle(th2.list.filter(function (w) { return okWord(w, P) && w.length >= 4; }), r), n2);
         out.push({ module: "wordgrid", kind: "scramble", title: "Mixed-up words", subtitle: th2.label + ". The first letter is in place.", items: ws.map(function (w) { return { scr: w.charAt(0) + scrambleOf(w.slice(1), r), len: w.length, first: w.charAt(0) }; }),
           keyLines: ws.map(function (w) { return w; }),
           staffNote: HOME + "word play from familiar words. Say the word aloud together; any good guess is welcome." });
       } else {
-        var ev = eventsNear(P, r, Math.max(2, (P.stage === 1 ? 3 : 2) - (fewer(P) > 1 ? 1 : 0)), 0), items = ev.map(function (e) {
+        var ev = eventsNear(P, r, K.cut(Math.max(2, (P.stage === 1 ? 3 : 2) - (fewer(P) > 1 ? 1 : 0)), P, 2), 0), items = ev.map(function (e) {
           return { kind: "fact", tag: "A look back, " + e.y, thing: e.t + ".", invite: P.stage === 1 ? "What does this bring to mind?" : "Let's talk about it together.", sense: "", staff: "A date to check, then follow the resident's own story." };
         });
         out.push({ module: "wordgrid", kind: "prompts", title: "A look back", subtitle: "Things that happened in your years", items: items,
@@ -170,7 +171,7 @@
 
   /* ---------- 2. timeline sorting ---------- */
   function timelineSheets(P, r, count) {
-    var out = [], seenOrders = {}, n = Math.max(3, (P.stage === 1 ? 5 : 3) - (fewer(P) ? 1 : 0));
+    var out = [], seenOrders = {}, n = K.cut(Math.max(3, (P.stage === 1 ? 5 : 3) - (fewer(P) ? 1 : 0)), P, 2);
     for (var s = 0; s < count; s++) {
       var life = s % 2 === 1, items;
       if (life) {
@@ -197,7 +198,7 @@
     ["sitting_dog", "DOG"], ["grandfather_clock", "CLOCK"], ["pumpkin", "PUMPKIN"], ["tulip", "TULIP"], ["owl", "OWL"], ["butterfly", "BUTTERFLY"], ["sailboat", "SAILBOAT"], ["farm_tractor", "TRACTOR"],
     ["rotary_telephone", "TELEPHONE"], ["typewriter", "TYPEWRITER"], ["garden_rose", "ROSE"], ["hummingbird", "HUMMINGBIRD"]];
   function memorySheets(P, r, count) {
-    var out = [], pairs = Math.max(3, (P.stage === 1 ? 6 : 4) - fewer(P));
+    var out = [], pairs = K.cut(Math.max(3, (P.stage === 1 ? 6 : 4) - fewer(P)), P, 2);
     var pool = PICS.filter(function (p) { return okWord(p[1], P) && okWord(p[0], P); });
     for (var s = 0; s < count; s++) {
       var pick = take(K.shuffle(pool, r), pairs), faces = [];
@@ -226,7 +227,7 @@
     var pool = K.shuffle(THEMES.filter(function (t) { return okWord(t.t, P); }), r), out = [];
     for (var s = 0; s < count && s < pool.length; s++) {
       var th = pool[s], qs = P.stage === 1 ? th.q1 : P.stage === 2 ? th.q2 : th.q3;
-      qs = take(qs, Math.max(1, qs.length - (fewer(P) ? 1 : 0)));
+      qs = take(qs, K.cut(Math.max(1, qs.length - (fewer(P) ? 1 : 0)), P, 1));
       var era = K.ERA[P.decade], carLine = null;
       if (th.t === "A first car" && era) carLine = P.stage < 3 ? "Cars from the " + P.decade + "s: " + take(K.shuffle(era.vehicles, r), 2).join(" and ") + "." : null;
       out.push({ module: "dialogue", kind: "dialogue", title: th.t, subtitle: P.stage === 3 ? "Things to enjoy together" : "Let's talk about it", questions: qs, extra: carLine,
@@ -241,7 +242,7 @@
     ["rocking_chair", "ROCKING CHAIR"], ["watering_can", "WATERING CAN"], ["sewing_machine", "SEWING MACHINE"], ["birdhouse", "BIRDHOUSE"]];
   var HOUSE_WORDS = [["flour", "BREAD"], ["apples", "PIE"], ["wool", "SWEATER"], ["cotton", "SHIRT"], ["tomatoes", "SOUP"], ["cream", "BUTTER"], ["oats", "PORRIDGE"], ["leather", "BOOTS"], ["silk", "SCARF"], ["eggs", "OMELET"]];
   function householdSheets(P, r, count) {
-    var out = [], n = Math.max(3, (P.stage === 1 ? 5 : 3) - (fewer(P) ? 1 : 0)), pics = K.shuffle(HOUSE_PICS.filter(function (p) { return okWord(p[1], P); }), r), words = K.shuffle(HOUSE_WORDS.filter(function (p) { return okWord(p[0], P) && okWord(p[1], P); }), r);
+    var out = [], n = K.cut(Math.max(3, (P.stage === 1 ? 5 : 3) - (fewer(P) ? 1 : 0)), P, 2), pics = K.shuffle(HOUSE_PICS.filter(function (p) { return okWord(p[1], P); }), r), words = K.shuffle(HOUSE_WORDS.filter(function (p) { return okWord(p[0], P) && okWord(p[1], P); }), r);
     for (var s = 0; s < count; s++) {
       if (s % 2 === 0) {
         var pk = take(pics.slice((s / 2 * n) % pics.length).concat(pics), n);
@@ -267,7 +268,7 @@
     ["I come from Alabama with my banjo on my", "knee", 1848], ["In the good old summertime, in the good old", "summertime", 1902], ["Shine on, shine on, harvest", "moon", 1908],
     ["I've been working on the railroad, all the live-long", "day", 1894], ["By the light of the silvery", "moon", 1909], ["Down by the old mill", "stream", 1910], ["When Irish eyes are", "smiling", 1912], ["You made me love you, I didn't want to do", "it", 1913]];
   function phrasesSheets(P, r, count) {
-    var out = [], n = Math.max(3, (P.stage === 1 ? 6 : 4) - fewer(P)), pv = K.shuffle(PROVERBS.filter(function (x) { return okWord(x[0] + " " + x[1], P); }), r), ly = K.shuffle(LYRICS.filter(function (x) { return okWord(x[0] + " " + x[1], P); }), r);
+    var out = [], n = K.cut(Math.max(3, (P.stage === 1 ? 6 : 4) - fewer(P)), P, 2), pv = K.shuffle(PROVERBS.filter(function (x) { return okWord(x[0] + " " + x[1], P); }), r), ly = K.shuffle(LYRICS.filter(function (x) { return okWord(x[0] + " " + x[1], P); }), r);
     for (var s = 0; s < count; s++) {
       var song = s % 2 === 1, pool = song ? ly : pv, seenEnd = {}, pk = take(pool.slice((Math.floor(s / 2) * n) % pool.length).concat(pool).filter(function (x) { if (seenEnd[x[1]]) return false; seenEnd[x[1]] = 1; return true; }), n);   // no two lines end the same way
       var items = pk.map(function (x) { return { start: x[0], end: x[1], year: song ? x[2] : null }; });
@@ -286,7 +287,7 @@
   function recognitionSheets(P, r, count) {
     var out = [];
     for (var s = 0; s < count; s++) {
-      var shapes = K.shuffle(SHAPES, r), n = P.stage === 2 ? Math.max(3, 4 - fewer(P)) : 2;
+      var shapes = K.shuffle(SHAPES, r), n = P.stage === 2 ? K.cut(Math.max(3, 4 - fewer(P)), P, 2) : 2;
       if (s % 2 === 0) {
         if (P.stage === 2) {
           var pk = take(shapes, n);
@@ -315,7 +316,7 @@
     ["There's no place like home.", "John Howard Payne, 1823", 1823], ["Daisy, Daisy, give me your answer, do.", "Harry Dacre, 1892", 1892],
     ["Beautiful dreamer, wake unto me.", "Stephen Foster, 1864", 1864], ["Under a spreading chestnut tree.", "Henry Wadsworth Longfellow, 1840", 1840]];
   function rhythmSheets(P, r, count) {
-    var bank = [], per = Math.max(2, (P.stage === 3 ? 2 : 3) - fewer(P));
+    var bank = [], per = K.cut(Math.max(2, (P.stage === 3 ? 2 : 3) - fewer(P)), P, 1);
     FEEL.forEach(function (w) { if (okWord(w, P)) bank.push({ kind: "feel", tag: "A word to feel", thing: w, invite: "Feel it. Breathe slowly.", sense: "", staff: "Say it slowly and let the word settle." }); });
     VERSE.forEach(function (v) { if (okWord(v[0], P)) bank.push({ kind: "verse", tag: "A line of verse", thing: v[0], invite: "Say it with me.", sense: v[1], source: v[1], year: v[2], staff: "A familiar line to say or hum; the rhythm carries it." }); });
     bank = K.shuffle(bank, r);
