@@ -9814,6 +9814,7 @@ const DailyOpsUI = (function(){
 </script>
 <script src="js/shift-calendar-ui.js"></script>
 <script src="js/nav-index.js"></script>
+<script src="js/stageLabels.js"></script>
 <script src="js/wayfinding.js"></script>
 <script src="js/quick-lookup.js"></script>
 <script type="module" src="js/qrHandoff.js"></script>
@@ -12737,8 +12738,10 @@ const DIFFICULTIES = {
   advanced: { label: "Advanced stage", tier: 3, name: "Advanced", gds: "6\u20137", fast: "6\u20137" }
 };
 /* The tier as a person reads it: "Tier 2 \u00B7 Moderate \u00B7 GDS 5" (the care team's own staging; nothing here assesses anyone). */
-const tierText = k => { const d = DIFFICULTIES[k]; return d ? "Tier " + d.tier + " \u00B7 " + d.name + " \u00B7 GDS " + d.gds : String(k); };
-const tierTwoLine = k => { const d = DIFFICULTIES[k]; return d ? `<b>Tier ${d.tier} \u00B7 ${d.name}</b><small>GDS ${d.gds} \u00B7 FAST ${d.fast}</small>` : esc(k); };
+/* the scale staff have chosen to read the stages in (Settings; js/stageLabels.js): GDS as the rulebook gives it, or Stage or ACL */
+const scaleOf = d => window.CogniStage && window.CogniStage.mode() !== "default" ? window.CogniStage.tag(d.tier) : "GDS " + d.gds;
+const tierText = k => { const d = DIFFICULTIES[k]; return d ? "Tier " + d.tier + " \u00B7 " + d.name + " \u00B7 " + scaleOf(d) : String(k); };
+const tierTwoLine = k => { const d = DIFFICULTIES[k]; return d ? `<b>Tier ${d.tier} \u00B7 ${d.name}</b><small>${scaleOf(d)} \u00B7 FAST ${d.fast}</small>` : esc(k); };
 /* A saved resident's Avoidance Protocols & Triggers as one list of terms: the topics, military eras, loved ones' names, places and anything else
    typed in (ClinicalMatrix.js turns each code into its words). Read from the encrypted store, used on this computer only. */
 function avoidTermsOf(p){
@@ -16109,6 +16112,13 @@ function renderSettings(){
         <span><b>Pure Black &amp; White</b><small>Always on: every printed page is pure black (#000000) on white (#ffffff), with no grey and no hairlines. This screen stays exactly as it is.</small></span>
       </label>
     </div>
+    <div class="config" id="setStages">
+      <h2>How the stages are named</h2>
+      <fieldset class="field"><legend>On staff screens (the roster, the Studio, Daily engagement, the profile and the active resident bar)</legend>
+        <div class="seg">${window.CogniStage ? window.CogniStage.MODES.map(m => `<label><input type="radio" name="setStageLabel" value="${m[0]}" ${m[0] === window.CogniStage.mode() ? "checked" : ""}><span><b>${esc(m[1])}</b></span></label>`).join("") : ""}</div>
+        <p class="hint">A label is not an assessment: the care team sets the stage. ACL and GDS show the usual rough match and are never printed on a page a resident reads. Kept on this computer; it holds nothing about a resident.</p>
+      </fieldset>
+    </div>
     <div class="config">
       <h2>License</h2>
       <p class="hint" id="licStatus"></p>
@@ -16162,6 +16172,7 @@ function renderSettings(){
   const pvb = $("#pvBanner"), net = networkReport();
   if (pvb) pvb.innerHTML = `<span class="enc-dot" aria-hidden="true"></span><span><b>No telemetry, no tracking</b>Cognicopia has no analytics, advertising, error reporting or outside services. Resident details are kept only in this browser&rsquo;s storage on this computer and are never sent anywhere. Since this page opened it has made <b>${net.outside}</b> request${net.outside === 1 ? "" : "s"} to other websites (${net.total} file${net.total === 1 ? "" : "s"} in all, all from this site).</span>`;
   document.querySelectorAll('[data-privacy-choice="setExportNames"] input').forEach(r => r.addEventListener("change", () => { settings.exportNames = r.value; saveSettings(); }));
+  document.querySelectorAll('input[name="setStageLabel"]').forEach(r => r.addEventListener("change", () => { if (r.checked && window.CogniStage) window.CogniStage.setMode(r.value); }));
   $("#setRoomy").addEventListener("change", e => { settings.roomy = e.target.checked; saveSettings(); });
   $("#setAliasScreen").addEventListener("change", e => { settings.aliasScreen = e.target.checked; saveSettings(); });
   $("#setResClean").addEventListener("change", e => { settings.residentClean = e.target.checked; saveSettings(); });

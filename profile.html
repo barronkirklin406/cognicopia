@@ -960,6 +960,7 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
 <script src="assets/services/trialLedger.js"></script>
 <script src="js/trialBadge.js"></script>
 <script src="js/nav-index.js"></script>
+<script src="js/stageLabels.js"></script>
 <script src="js/wayfinding.js"></script>
 <!-- cg-license:end -->
 <style id="touch-floor">
@@ -1563,9 +1564,9 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
           <legend>Support tier for printed books</legend>
           <p class="rap-hint rap-hint-top">How much each page of the Life Planner and Life Journal asks, and how large it prints. Choose the tier that lets them finish a page on their own.</p>
           <div class="rap-radios">
-            <label class="rap-check rap-radio"><input type="radio" name="tier" value="1"><span><b>Tier 1 · Mild · GDS 3–4</b> full detail: multi-step planning and open questions, 14 to 16 pt text</span></label>
-            <label class="rap-check rap-radio"><input type="radio" name="tier" value="2" checked><span><b>Tier 2 · Moderate · GDS 5</b> guided: sentence starters and choices to circle, 18 to 20 pt text</span></label>
-            <label class="rap-check rap-radio"><input type="radio" name="tier" value="3"><span><b>Tier 3 · Advanced · GDS 6–7</b> simplified: one word or picture at a time, large boxes, 24 pt and larger</span></label>
+            <label class="rap-check rap-radio"><input type="radio" name="tier" value="1"><span><b data-stage-tier="1">Tier 1 · Mild · GDS 3–4</b> full detail: multi-step planning and open questions, 14 to 16 pt text</span></label>
+            <label class="rap-check rap-radio"><input type="radio" name="tier" value="2" checked><span><b data-stage-tier="2">Tier 2 · Moderate · GDS 5</b> guided: sentence starters and choices to circle, 18 to 20 pt text</span></label>
+            <label class="rap-check rap-radio"><input type="radio" name="tier" value="3"><span><b data-stage-tier="3">Tier 3 · Advanced · GDS 6–7</b> simplified: one word or picture at a time, large boxes, 24 pt and larger</span></label>
           </div>
           <p class="rap-hint rap-auto-note" id="rapTierNote">Suggested from the reading level and the difficulty in Step 5. Choose another tier if it fits better.</p>
         </fieldset>

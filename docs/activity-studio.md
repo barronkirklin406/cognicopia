@@ -263,3 +263,7 @@ What it does to a sheet:
 The same sheets come back for the same profile and seed, and a resident's topics to avoid are kept off every page, as before. The Packet Builder has the same choice in Settings and on each activity, with the same effect (about half as many items, a bold box round each, more air); see the hand-off for how.
 
 Checks: `scripts/check-spacing.mjs` (the engine and the page makers) and `scripts/check-spacing-ui.mjs` (both tools in a real browser).
+
+## What each kind of page does, and how the stages are named (November 12, 2026)
+
+Each of the 24 kinds of page in the "Choose the pages yourself" list names the kind of work it does underneath, for the person choosing ("Modality: Life review", "Modality: Sensory and music"). It is on the staff screen only; no printed page carries it. In the Packet Builder's Settings, "How the stages are named" lets a facility read the three stages as Stage 1, 2, 3, as ACL 5, 4, 3 or as GDS 3-4, 5, 6-7 on staff screens, or leave each screen as it was. A label is not an assessment: the care team sets the stage.
