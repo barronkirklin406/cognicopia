@@ -67,4 +67,5 @@ jobs:
           name: failed-check-pictures
           path: e2e/.artifacts/
           if-no-files-found: ignore
+          include-hidden-files: true   # e2e/.artifacts starts with a dot, which the upload otherwise skips
           retention-days: 7

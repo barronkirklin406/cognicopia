@@ -21,7 +21,10 @@ import { loadPlaywright, serve, ROOT } from "./lib/browser.mjs";
 
 const { chromium } = loadPlaywright();
 const { srv, base } = await serve();
-const browser = await chromium.launch();
+/* Grayscale font smoothing, the same on every computer: on GitHub's machine Chromium drew text with color (LCD) smoothing, whose pale
+   yellow and cyan fringes and dark red edges round every black letter read as "tinted" in the night-time picture of the page (4 to 6
+   percent), though the page's own colors are only black and white. The check measures the page's colors, not the screen's smoothing. */
+const browser = await chromium.launch({ args: ["--disable-lcd-text"] });
 const problems = [], errors = [], foreign = [], infos = []; let passed = 0;
 const ok = (c, m) => { if (c) passed++; else problems.push(m); };
 const PY = `
