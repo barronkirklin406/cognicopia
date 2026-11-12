@@ -9462,7 +9462,7 @@ const DailyOpsUI = (function(){
         <fieldset class="field"><legend>${note ? "Change this note" : "Add a note for " + esc(D.dayLabel(S.day))}</legend>
           <div class="seg">${D.KINDS.map(k => `<label><input type="radio" name="shfKind" value="${k.id}" ${k.id === kind ? "checked" : ""}><span>${ICON[k.id]}${esc(k.label)}</span></label>`).join("")}</div></fieldset>
         <div class="field"><label for="shfNAbout">About</label>${aboutSelect("shfNAbout", note ? note.about : "")}</div>
-        <div class="field"><label for="shfNText">Note</label><textarea id="shfNText" maxlength="${D.LIMITS.NOTE_CHARS}" rows="3" aria-describedby="shfNCount">${esc(note ? note.text : "")}</textarea>
+        <div class="field"><label for="shfNText">Note</label><textarea id="shfNText" data-dictate maxlength="${D.LIMITS.NOTE_CHARS}" rows="3" aria-describedby="shfNCount">${esc(note ? note.text : "")}</textarea>
           <span class="shf-count" id="shfNCount" aria-hidden="true"></span></div>
         <div class="row2"><div class="field"><label for="shfNTime">Time</label><input id="shfNTime" type="time" value="${note ? esc(note.time) : onToday ? esc(now.time) : ""}"></div>
           <div class="field"><label for="shfNShift">Shift</label><select id="shfNShift">${shiftOptions(note ? note.shift : S.shift !== "all" ? S.shift : onToday ? now.shift : "day", false)}</select></div></div>
@@ -9812,6 +9812,8 @@ const DailyOpsUI = (function(){
 <script src="js/wayfinding.js"></script>
 <script src="js/quick-lookup.js"></script>
 <script type="module" src="js/qrHandoff.js"></script>
+<script src="js/helpTips.js"></script>
+<script type="module" src="js/dictateField.js"></script>
 <script src="assets/services/heirloomService.js"></script>
 <script id="heirloom-ui">
 /* =====================================================================
@@ -15524,6 +15526,8 @@ function router(){
   $("#fpToggle").setAttribute("aria-checked", String(name === "facility"));
   if (name !== "facility") lastBuilderHash = location.hash || "#/";
   (routes[name] || renderHome)(arg);
+  /* "How to use · Clinical tip" on the home screen and the Facility Portal, for the stage the Builder is set to (js/helpTips.js) */
+  if (window.CogniHelpTips && (name === "" || name === "facility")) window.CogniHelpTips.attach(view, name === "facility" ? "facility" : "builder", { stage: () => CLINICAL_STAGE[settings.difficulty] || "middle" });
   highlightNav(name, arg);
   closeSidebar();
   if (drawerOpen) closeDrawer();      // e.g. Back button while the packet panel is open

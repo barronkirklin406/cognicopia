@@ -1706,7 +1706,7 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
         <div class="rap-field">
           <label for="rapNotes" class="rap-notes-label">Tell Us Anything Else About This Resident</label>
           <p class="rap-hint rap-hint-top" id="rapNotesHint">What would help us create activities that feel like they were made specifically for this person? (e.g., "Betty was a hairdresser for 45 years, loves 1960s styles, Elvis, and her poodle Princess, but gets frustrated with math.")</p>
-          <textarea id="rapNotes" name="notes" rows="8" maxlength="1500" aria-describedby="rapNotesHint rapNotesCount" placeholder="Write as much or as little as you like."></textarea>
+          <textarea id="rapNotes" name="notes" data-dictate rows="8" maxlength="1500" aria-describedby="rapNotesHint rapNotesCount" placeholder="Write as much or as little as you like."></textarea>
           <p class="rap-hint rap-notes-count" id="rapNotesCount" aria-live="polite">0 of 1,500 characters</p>
         </div>
 
@@ -2929,6 +2929,7 @@ if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol))
 <script src="assets/services/nightShift.js"></script>
 <script src="js/careTier.js"></script>
 <script src="js/sessionTimeout.js"></script>
+<script type="module" src="js/dictateField.js"></script>
 <script src="js/legal.js"></script>
 </body>
 </html>
