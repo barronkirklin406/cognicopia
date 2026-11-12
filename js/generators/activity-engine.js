@@ -237,7 +237,7 @@
       season: SEASONS.indexOf(p.season) >= 0 ? p.season : "", vocation: String(p.vocation == null ? "" : p.vocation).toLowerCase().replace(/[^a-z]/g, "").slice(0, 20),
       /* a bigger, harder word search for an early-stage reader who wants a real workout (not with high spacing: that is a smaller, airier page) */
       challenge: !!p.challenge && !roomy, roomy: roomy,
-      interests: split(p.interests), avoid: avoidTerms(p.avoid, split),
+      interests: split(p.interests), recent: (Array.isArray(p.recent) ? p.recent : []).map(function (x) { return String(x == null ? "" : x).replace(/[<>&"]/g, "").replace(/\s+/g, " ").trim().slice(0, 60); }).filter(Boolean).slice(0, 3), avoid: avoidTerms(p.avoid, split),
       /* the saved resident, read once by js/residentContext.js: the life pages are made from it (null when nobody is chosen) */
       person: p.person && typeof p.person === "object" ? p.person : null,
       /* a resident's own people, pets, places and things, as single words of 3 to 10 letters (printed on the sheet, kept nowhere) */

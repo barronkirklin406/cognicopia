@@ -1465,3 +1465,22 @@ html.cg-night-shift:root body .dc-btn[aria-pressed="true"]{background:#6f4b16;co
 html.cg-night-shift:root body .cg-cue{background:#211910;border-color:#d6a64b;color:#ffedcc !important}
 html.cg-night-shift:root body .cg-cue :is(b,li,small,ul){color:#ffedcc !important}
 @media print{.cg-cue{display:none !important}}
+
+/* 17. the one-tap engagement log (js/engagementLog.js): three buttons and an optional line, a staff control */
+:where(.cg-eng){margin:12px 0;padding:14px 18px;border-left:6px solid #355e3b;border-radius:10px;background:rgba(255,255,255,.86);color:#1f2933;font-size:1rem;line-height:1.45}
+:where(.cg-eng[hidden]){display:none}
+:where(.cg-eng-h){display:block;font-weight:700}
+:where(.cg-eng-btns){display:flex;flex-wrap:wrap;gap:10px;margin:8px 0}
+:where(.cg-eng-lab){display:block;margin-top:6px;font-weight:600}
+.cg-eng .cg-eng-btns button{min-height:52px;min-width:52px;padding:10px 16px;border:2px solid #0b5f59;border-radius:12px;background:#fff;color:#0b5f59;font:700 1rem/1.2 var(--cg-font-ui,"Atkinson Hyperlegible",sans-serif);cursor:pointer;transition:transform .15s cubic-bezier(.2,.8,.2,1),box-shadow .15s}
+.cg-eng .cg-eng-btns button:hover{box-shadow:0 4px 12px rgba(15,23,42,.18);transform:translateY(-1px)}
+.cg-eng .cg-eng-btns button:active{transform:scale(.97)}
+.cg-eng .cg-eng-btns button:focus-visible,.cg-eng .cg-eng-note:focus-visible{outline:3px solid #f5b800;outline-offset:2px;box-shadow:0 0 0 2px #0f172a}
+.cg-eng .cg-eng-note{display:block;box-sizing:border-box;width:100%;min-height:52px;margin-top:4px;padding:8px 12px;border:2px solid #355e3b;border-radius:10px;background:#fff;color:#1f2933;font:1rem var(--cg-font-ui,"Atkinson Hyperlegible",sans-serif)}
+:where(.cg-eng-msg){min-height:1.4em;margin:6px 0 0;font-weight:600}
+html.cg-night-shift:root body .cg-eng{background:#211910;border-color:#d6a64b;color:#ffedcc !important}
+html.cg-night-shift:root body .cg-eng :is(b,small,label,p){color:#ffedcc !important}
+html.cg-night-shift:root body .cg-eng .cg-eng-btns button{background:#2a1f13 !important;border-color:#9b7136;color:#ffedcc !important}
+html.cg-night-shift:root body .cg-eng .cg-eng-note{background:#2a1f13;border-color:#9b7136;color:#ffedcc}
+@media (prefers-reduced-motion:reduce){.cg-eng .cg-eng-btns button{transition:none}.cg-eng .cg-eng-btns button:hover,.cg-eng .cg-eng-btns button:active{transform:none}}
+@media print{.cg-eng{display:none !important}}

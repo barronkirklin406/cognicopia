@@ -7425,6 +7425,7 @@ const TrackerUI = (function(){
           <p class="hint">${esc(sg.note)}</p>
           ${sg.changed ? `<div class="actions"><button class="btn btn-primary" type="button" id="trUse">Use Tier ${sg.tier}</button><button class="btn" type="button" id="trKeep">Keep Tier ${sg.current}</button></div>` : ""}</div>
       </div>
+      <div id="trQuick"></div>
       <h3>Today</h3>
       <ul class="tr-slots">${slots.map(s => `<li><span class="tr-slot-l">${esc(s.label)}</span>${sel("trSlot-" + s.slot, T.SLOT_STATES, s.state)}
         <input type="text" id="trSlotText-${s.slot}" maxlength="60" value="${esc(s.text)}" placeholder="What was planned or done" aria-label="${esc(s.label)}: what was planned or done" autocomplete="off"></li>`).join("")}</ul>
@@ -7446,7 +7447,12 @@ const TrackerUI = (function(){
   }
   const q = s => host.querySelector(s);
   function msg(text, bad){ const m = q("#trMsg"); if (m){ m.textContent = text; m.className = "hint tr-msg" + (bad ? " msg-bad" : ""); } }
-  function redraw(){ const open = host.querySelector("details") ? host.querySelector("details").open : true; host.innerHTML = html(); host.querySelector("details").open = open; if (onChange) onChange(); }
+  function redraw(){ const open = host.querySelector("details") ? host.querySelector("details").open : true; host.innerHTML = html(); host.querySelector("details").open = open; quick(); if (onChange) onChange(); }
+  /* the one-tap log (js/engagementLog.js) at the top of the record: three buttons for how the last activity went */
+  function quick(){
+    const q = host && host.querySelector("#trQuick"); if (!q || !window.CogniEngage || !P) return;
+    window.CogniEngage.mount(q, { residentId: () => P.id, names: () => names(P), activity: () => "Activity with staff", onSaved: () => redraw() });
+  }
   function onEvent(e){
     const t = e.target, rec = read(P.id);
     if (e.type === "change"){
@@ -7474,7 +7480,7 @@ const TrackerUI = (function(){
     host = el; P = p; onChange = cb || null;
     if (!host) return;
     if (!host.dataset.bound){ host.addEventListener("change", onEvent); host.addEventListener("click", onEvent); host.dataset.bound = "1"; }
-    host.innerHTML = html();
+    host.innerHTML = html(); quick();
   }
   return { mount, read, write, fromShift, notePacket, suggestionFor, clinicalStage };
 })();
@@ -9815,6 +9821,7 @@ const DailyOpsUI = (function(){
 <script src="js/shift-calendar-ui.js"></script>
 <script src="js/nav-index.js"></script>
 <script src="js/stageLabels.js"></script>
+<script src="js/engagementLog.js"></script>
 <script src="js/wayfinding.js"></script>
 <script src="js/quick-lookup.js"></script>
 <script type="module" src="js/qrHandoff.js"></script>

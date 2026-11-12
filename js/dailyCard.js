@@ -116,6 +116,11 @@
     $("#dyMake").textContent = has ? "Make today’s card again" : "Make today’s card";
     var staff = $("#dyStaff");
     staff.hidden = !has;
+    var lg = $("#dyLog");
+    if (lg && window.CogniEngage) {
+      if (!lg.dataset.mounted) { lg.dataset.mounted = "1"; window.CogniEngage.mount(lg, { residentId: function () { return state.who; }, names: function () { var n = person && person.name || ""; return [n, n.split(" ")[0]]; }, activity: function () { return "Daily card: " + KINDS[state.kind].label; } }); }
+      lg.hidden = !(has && person);
+    }
     if (has) {
       $("#dyStaffText").textContent = KINDS[state.kind].cue + " " + (made.sheet.staffNote || "");
       $("#dyStaffMore").textContent = (made.raised ? "Comfort pages are made for the middle and late stages, so this one uses the middle stage’s size. " : "") + (made.cue ? "" : "This page is full, so the line for staff is not printed on it. ");

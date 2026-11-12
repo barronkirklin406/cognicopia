@@ -287,6 +287,13 @@
     W.host({ setActive: function (id) { if (!id) { forResident(null); return; } W.active().then(function (r) { forResident(r && r.id === id ? W.describe(r) : null); }); } });
     W.active().then(function (r) { if (r) forResident(W.describe(r)); });
   }
+  /* the staff panel's one-tap log (js/engagementLog.js): shown only with a resident chosen, and not in Resident Mode, which hides this panel */
+  var logHost = $("tbLog"), logWho = null;
+  if (logHost && window.CogniEngage && W) {
+    window.CogniEngage.mount(logHost, { residentId: function () { return logWho ? logWho.id : ""; }, names: function () { var n = logWho && logWho.name || ""; return [n, n.split(" ")[0]]; }, activity: function () { return ($("tbTitle").textContent || "").trim() || "Tablet activity"; } });
+    var logPaint = function () { W.active().then(function (r) { logWho = r; logHost.hidden = !r; }); };
+    logPaint(); document.addEventListener("cg-active-resident", logPaint);
+  }
   function calmApply() {
     var late = $("tbStageLate"), back = $({ early: "tbStageEarly", middle: "tbStageMiddle", late: "tbStageLate" }[prefs.stage]);
     Array.prototype.forEach.call(document.querySelectorAll("input[name=stage]"), function (r) { r.disabled = calmOn; });

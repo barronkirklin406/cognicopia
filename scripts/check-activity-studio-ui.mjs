@@ -57,7 +57,7 @@ async function open(w, h, keepClosed) {
 const pos = p => p.textContent("#asPos");
 const pick = async (p, name, value) => { await p.check(`input[name="${name}"][value="${value}"]`, { force: true }); await p.waitForTimeout(450); };
 const ALL_KINDS = ["reminiscence", "exercise", "daily", "coloring", "wordgrid", "timeline", "memory", "dialogue", "household", "phrases", "recognition", "rhythm",
-  "lifestory", "generations", "whoswho", "mytrade", "hometown", "songs", "twenty", "thennow", "myday", "dish", "comfort", "wordplay"];
+  "lifestory", "generations", "whoswho", "mytrade", "hometown", "songs", "twenty", "thennow", "myday", "dish", "comfort", "wordplay", "visit"];
 const mix = async (p, kinds) => { for (const k of ALL_KINDS) { await p.setChecked(`input[name="mix"][value="${k}"]`, kinds.includes(k), { force: true }); } await p.waitForTimeout(450); };
 const total = async p => Number(/of (\d+)/.exec(await pos(p))[1]);
 const svgText = p => p.$eval("#asSheet svg", e => e.textContent);
@@ -179,7 +179,7 @@ try {
   ({ ctx, p } = await open(1366, 900));
   const NEWK = { wordgrid: [1, 2], timeline: [1, 2], memory: [1, 2], dialogue: [1, 2, 3], household: [1, 2], phrases: [1, 2], recognition: [2, 3], rhythm: [2, 3] };
   const kindsOnScreen = await p.$$eval('input[name="mix"]', n => n.map(x => x.value));
-  ok(Object.keys(NEWK).every(k => kindsOnScreen.includes(k)) && kindsOnScreen.length === 24, "the content mix lists all twenty-four kinds of page (twelve general, twelve about the person's own life): " + kindsOnScreen.join(","));
+  ok(Object.keys(NEWK).every(k => kindsOnScreen.includes(k)) && kindsOnScreen.length === 25, "the content mix lists all twenty-five kinds of page (twelve general, thirteen about the person's own life, the family visit sheet among them): " + kindsOnScreen.join(","));
   for (const [k, stages] of Object.entries(NEWK)) {
     for (const st of [1, 2, 3]) {
       await pick(p, "stage", String(st)); await mix(p, [k]); await setPages(p, 3);
@@ -386,7 +386,7 @@ try {
     await a.evaluate(x => localStorage.setItem("cognicopia_resident_" + x.id, JSON.stringify(x)), AMY);
     await a.reload({ waitUntil: "load" }); await a.waitForSelector("#asSheet svg"); await a.waitForTimeout(900);
     await a.evaluate(() => document.querySelectorAll("details.as-acc").forEach(d => { d.open = true; }));
-    ok(await a.$$eval('#asLifeHead ~ .as-mix input[name="mix"]', b => b.length) === 12 && /About their own life/.test(await a.textContent("#asLifeHead")), "the twelve life pages have a group of their own under Choose the pages yourself");
+    ok(await a.$$eval('#asLifeHead ~ .as-mix input[name="mix"]', b => b.length) === 13 && /About their own life/.test(await a.textContent("#asLifeHead")), "the thirteen life pages have a group of their own under Choose the pages yourself");
     const everyPage = async () => { let all = ""; for (let k = 0; k < 10; k++) { all += " || " + await svgText(a); if (await a.$eval("#asNext", b => b.disabled)) break; await a.click("#asNext"); await a.waitForTimeout(100); } return all; };
     /* with no one chosen, the suggested packet is the stage's own, as before */
     await a.evaluate(() => document.querySelector('input[name="stage"][value="1"]').click()); await a.waitForTimeout(300);

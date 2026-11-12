@@ -54,7 +54,7 @@
   /* the life pages (activity-life.js): each is about the person, and fuller when a saved resident is chosen */
   var LIFE_KINDS = [["lifestory", "My life story (stages 1-2)"], ["generations", "Family across the generations (stages 1-2)"], ["whoswho", "Who's who"], ["mytrade", "My work and its tools (stages 1-2)"],
     ["hometown", "Where I come from"], ["songs", "Songs of my years"], ["twenty", "The year I turned twenty (stages 1-2)"], ["thennow", "Then and now (stages 1-2)"],
-    ["myday", "My day, step by step (stages 2-3)"], ["dish", "A dish I made (stages 1-2)"], ["comfort", "What I would like (stages 2-3)"], ["wordplay", "Word play (stages 1-2)"]];
+    ["myday", "My day, step by step (stages 2-3)"], ["dish", "A dish I made (stages 1-2)"], ["comfort", "What I would like (stages 2-3)"], ["wordplay", "Word play (stages 1-2)"], ["visit", "Family visit companion sheet"]];
   var HAS_LIFE = E.modules().some(function (m) { return m.id === "lifestory"; });
   if (HAS_LIFE) KINDS = KINDS.concat(LIFE_KINDS);
   /* the suggested packet for each stage: three of the master inventory and a coloring page */
@@ -80,7 +80,7 @@
   var MODALITY = { reminiscence: "Reminiscence", exercise: "Cognitive stimulation", daily: "Daily living and procedural memory", coloring: "Creative expression and fine motor", wordgrid: "Language and cognitive stimulation",
     timeline: "Sequencing and executive function", memory: "Visual memory", dialogue: "Conversation and validation", household: "Procedural memory", phrases: "Language and procedural memory", recognition: "Sensory recognition",
     rhythm: "Sensory and music", lifestory: "Life review", generations: "Life review and family", whoswho: "Person recognition", mytrade: "Life review and procedural memory", hometown: "Reminiscence", songs: "Music and reminiscence",
-    twenty: "Reminiscence", thennow: "Reminiscence", myday: "Daily living and orientation", dish: "Procedural memory and life review", comfort: "Sensory comfort and choice", wordplay: "Language and executive function" };
+    twenty: "Reminiscence", thennow: "Reminiscence", myday: "Daily living and orientation", dish: "Procedural memory and life review", comfort: "Sensory comfort and choice", wordplay: "Language and executive function", visit: "Shared connection with family" };
   function mixBox(k) { return '<label class="as-check"><input type="checkbox" name="mix" value="' + k[0] + '"><span>' + k[1] + (MODALITY[k[0]] ? '<small class="as-mod">Modality: ' + MODALITY[k[0]] + '</small>' : '') + '</span></label>'; }
   function build() {
     var who =
@@ -185,7 +185,8 @@
   function setField(id, v) { var el = $("#" + id); if (el) el.value = v == null ? "" : String(v); }
   function applyResident(id) {
     var p = id ? readRes(id) : null;
-    state.resident = p ? id : "";
+    state.resident = p ? id : ""; state.recent = [];
+    if (p && window.CogniEngage) window.CogniEngage.wentWell(id, 21, 3).then(function (lines) { if (state.resident === id && lines.join("|") !== (state.recent || []).join("|")) { state.recent = lines; refresh(false); } });
     if (!p) {                                          // a new person starts clean: nothing of the last resident carries over (the support settings stay)
       mapped = {}; state.name = ""; state.born = ""; state.vocation = ""; state.interests = ""; state.avoid = ""; state.personal = ""; state.variant = 0;
       try { LS().removeItem(ACTIVE_KEY); } catch (e) { /* ignore */ }
@@ -253,7 +254,7 @@
   }
 
   /* ---------- making the packet ---------- */
-  function profile() { return { person: state.resident ? personOf(state.resident) : null, name: state.name, born: Number(state.born) || 0, nameStyle: state.nameStyle, personal: state.personal, challenge: state.challenge, stage: state.stage, dexterity: state.dexterity, roomy: state.roomy, decade: state.decade, interests: state.interests, avoid: state.avoid, vocation: state.vocation }; }
+  function profile() { return { person: state.resident ? personOf(state.resident) : null, name: state.name, born: Number(state.born) || 0, nameStyle: state.nameStyle, personal: state.personal, challenge: state.challenge, stage: state.stage, dexterity: state.dexterity, roomy: state.roomy, recent: state.recent || [], decade: state.decade, interests: state.interests, avoid: state.avoid, vocation: state.vocation }; }
   function kindsOn() { return KINDS.map(function (k) { return k[0]; }).filter(function (k) { return state.mix[k]; }); }
   function avoidList() { return R.avoidFromText(state.avoid); }
   var STAGE_KEY = ["E", "M", "L"];
