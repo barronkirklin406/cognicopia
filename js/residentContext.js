@@ -6,7 +6,8 @@
    code, so a new field had to be wired five times and the copies drifted (the Activity Page Studio took a ticked
    topic to avoid as its label and never matched it). This file is the one place that reads a profile:
 
-     person(profile)   a flat, plain description of the person: name, the years of their youth, stage, former
+     person(profile)   a flat, plain description of the person: name, the years of their youth, stage, the condition
+                       adaptation the care team chose (adaptation: { code, label }, empty for none), former
                        work, where they come from, family by generation, music, pastimes, and the words to keep
                        off a page. Nothing is guessed: a field the profile does not hold comes back empty.
      avoidWords(...)   the real words behind the topics to avoid (the same lists as src/engine/ClinicalMatrix.js;
@@ -127,6 +128,8 @@
   function present(list) { return arr(list).filter(function (x) { return x && !x.passed; }); }
 
   /* ---------- the person ---------- */
+  /* the condition adaptations a profile can carry (codes are stable; the labels are the profile's wording) */
+  var ADAPTATIONS = { lewy_body: "Lewy body", ftd: "Frontotemporal", vascular: "Vascular", korsakoff: "Korsakoff", late_stage: "Late-stage multi-sensory", errorless: "Errorless learning" };
   var STAGE_NAME = { 1: "early", 2: "middle", 3: "late" }, STAGE_GDS = { 1: "GDS 3–4", 2: "GDS 5", 3: "GDS 6–7" };
   function person(profile) {
     var p = obj(profile), t1 = obj(p.tier1_core), t2 = obj(p.tier2_enrichment), t3 = obj(p.tier3_deep);
@@ -143,6 +146,9 @@
       id: str(p.id), name: str(t1.preferredName), nickname: str(t1.nickname), room: str(t1.unitNumber), wing: str(t1.wing),
       born: born, youth: born ? { from: born + 15, to: born + 25 } : null, turnedTwenty: born ? born + 20 : 0, decadeAtTwenty: born ? Math.floor((born + 20) / 10) * 10 : 0,
       stage: stage, stageName: STAGE_NAME[stage] || "", gds: STAGE_GDS[stage] || "",
+      /* the care team's diagnosis, as one optional setting (profile.html, "Diagnosis / clinical adaptation"): every tool adapts its pages
+         to it, so nobody types the resident's name into a separate condition form. "" means none. Never printed on a page. */
+      adaptation: ADAPTATIONS[codeOf(t1.adaptation)] ? { code: codeOf(t1.adaptation), label: ADAPTATIONS[codeOf(t1.adaptation)] } : { code: "", label: "" },
       work: { code: str(occ.code), label: labelOf(occ), vocation: str(voc.code), vocationLabel: labelOf(voc), text: (str(occ.code) + " " + labelOf(occ) + " " + str(voc.code) + " " + labelOf(voc) + " " + str(p.pastVocation)).toLowerCase().trim() },
       hometown: { place: place, town: parts[0] || "", state: parts[1] || "", environment: labelOf(home.environment), region: labelOf(t2.region), regionCode: codeOf(t2.region) },
       family: fam,

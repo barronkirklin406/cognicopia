@@ -415,6 +415,14 @@ step("the facility logo on the monthly bundle: chosen, turned into pure black an
   }
 });
 
+step("the condition adaptation: one optional choice on the resident's profile, saved and read back, and the packet tool showing only the set of pages it names, open, with the name already in its form (a real browser)", () => {
+  try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-adaptation-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
+  catch (e){
+    if (e.status === 2) return "skipped: Playwright is not installed here (see docs/dev-setup.md)";
+    throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message);
+  }
+});
+
 step("Tablet Activities: all thirteen activities driven by mouse and touch input, the on-screen keyboard, the trace rule, three screen sizes, the free-packet gate, nothing leaving the page (a real browser)", () => {
   try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-tablet-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
   catch (e){

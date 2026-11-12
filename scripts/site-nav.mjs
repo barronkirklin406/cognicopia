@@ -385,8 +385,7 @@ ${inner}
   const hubs = HUBS.map(h => {
     if (h.id === "directors") return group(h, directors(h));
     const links = h.items.map(it => link(it.href, it.label, it.key, it.icon)).join("\n");
-    const tools = h.id === "packets" && pageTools ? '\n    <li><div class="cg-sb-divider"></div></li>\n' + PAGE_TOOLS_START + "\n    " + pageTools.trim() + "\n" + PAGE_TOOLS_END : "";
-    return group(h, links + tools);
+    return group(h, links);   // a page's own tools never go in the menu: the doors are the same everywhere (the packet tool's condition sets moved into its form)
   }).join("\n");
   return `${START}
 <button type="button" class="cg-sidebar-toggle" id="cgSbToggle" aria-label="Open Menu" aria-controls="cgSidebar" aria-expanded="false">
