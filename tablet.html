@@ -35,6 +35,34 @@ body{margin:0}
 .tbp-seg input:focus-visible+label{outline:3px solid var(--cg-focus,#f5b800);outline-offset:3px;box-shadow:0 0 0 6px var(--cg-focus-dark,#0f172a)}
 .tbp-sel{box-sizing:border-box;width:100%;min-height:var(--tap,52px);padding:8px 12px;border:3px solid var(--cg-green-700,#08423f);border-radius:var(--cg-radius-md,12px);background:#fff;color:var(--cg-charcoal,#28241f);font:inherit;font-size:1.0625rem}
 .tbp-tools{display:flex;flex-wrap:wrap;gap:8px}
+/* Resident Mode: only the activities, and a staff exit that needs a long press (js/tablet.js) */
+.tbp-kiosk{grid-column:1/-1;display:grid;gap:10px;padding-top:14px;border-top:2px solid var(--cg-tan-200,#dad7ce)}
+.tbp-kiosk .tbp-lab{margin:0;font-weight:700;font-size:1rem;color:var(--cg-tan-800,#453f37)}
+html.cg-night-shift .tbp-kiosk .tbp-lab{color:#ffedcc}
+.tbp-pin{display:grid;gap:8px;max-width:520px}
+.tbp-pin .tbp-sel{max-width:200px;letter-spacing:.4em;font-size:1.4rem}
+html.tb-resident :is(.cg-sidebar,.cg-sidebar-toggle,.cg-sb-overlay,.cg-topbar,.cg-foot,.cg-crumbs,.tbp-setup,.tbp-note,.tbp-lede,#wfActive,#wfCoach,#cgLegal,.skip-link,.cg-skip){display:none !important}
+.tb-exit{position:fixed;top:10px;right:10px;z-index:6000;display:inline-flex;align-items:center;gap:8px;box-sizing:border-box;min-width:var(--tap,52px);min-height:var(--tap,52px);padding:6px 14px 6px 8px;border:2px solid #28241f;border-radius:999px;background:#fff;color:#28241f;font:700 15px/1.1 var(--cg-font-ui,"Segoe UI",sans-serif);cursor:pointer;-webkit-user-select:none;user-select:none;touch-action:none;-webkit-touch-callout:none}
+.tb-exit[hidden]{display:none}
+.tb-exit-ring{flex:none;width:34px;height:34px;border-radius:50%;background:conic-gradient(#0b5f59 calc(var(--p,0) * 360deg),#dad7ce 0);-webkit-mask:radial-gradient(circle,transparent 9px,#000 10px);mask:radial-gradient(circle,transparent 9px,#000 10px)}
+.tb-exit:focus-visible{outline:3px solid var(--cg-focus,#f5b800);outline-offset:3px;box-shadow:0 0 0 6px var(--cg-focus-dark,#0f172a)}
+html.tb-resident .tb-bar{padding-right:150px}
+html.tb-resident .tbp{padding-top:72px}
+.tb-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.tb-pinask{width:min(360px,calc(100vw - 24px));padding:20px;border:2px solid #28241f;border-radius:20px;background:#fff;color:#28241f;font-family:var(--cg-font-ui,"Segoe UI",sans-serif)}
+.tb-pinask::backdrop{background:rgba(15,23,42,.6)}
+.tb-pinask h2{margin:0 0 6px;font-size:1.4rem;color:#28241f}
+.tb-pin-dots{margin:0 0 12px;min-height:1.6em;font-size:2rem;letter-spacing:.5em;text-align:center}
+.tb-pin-keys{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.tb-pin-keys button{min-height:60px;border:2px solid #28241f;border-radius:14px;background:#fff;color:#28241f;font:700 1.5rem/1 var(--cg-font-ui,"Segoe UI",sans-serif);cursor:pointer}
+.tb-pin-keys button.tb-pin-alt{font-size:1.05rem}
+.tb-pin-msg{margin:10px 0 0;min-height:1.4em;font-weight:700;text-align:center}
+html.cg-night-shift .tb-exit,html.cg-night-shift .tb-pinask,html.cg-night-shift .tb-pin-keys button{background:#211910;border-color:#d6a64b;color:#ffedcc}
+html.cg-night-shift .tb-pinask h2{color:#ffedcc}
+html.cg-night-shift .tb-exit-ring{background:conic-gradient(#d6a64b calc(var(--p,0) * 360deg),#4a3418 0)}
+html.cg-paper:not(.cg-night-shift) :is(.tb-exit,.tb-exit *,.tb-pinask,.tb-pinask *){color:#28241f !important}
+@media (prefers-reduced-motion:reduce){.tb-exit-ring{transition:none}}
+@media print{.tb-exit,.tb-pinask{display:none !important}}
 .tbp-menu h2{margin:30px 0 4px;font-family:var(--cg-font-display,Georgia,serif);font-size:var(--cg-step-2,1.75rem);color:var(--cg-green-700,#08423f)}
 .tbp-menu h2 small{display:block;margin-top:2px;font:400 1rem var(--cg-font-ui,sans-serif);color:var(--cg-ink-soft,#403b35)}
 .tbp-grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));margin:12px 0 0;padding:0;list-style:none}
@@ -752,6 +780,19 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
       <button type="button" class="tb-btn" id="tbVoice" hidden aria-label="Voice settings: choose a voice and pace, and hear a sample">🗣 Voice settings</button>
       <button type="button" class="tb-btn" id="tbFull">⛶ Full screen</button>
     </div>
+    <div class="tbp-kiosk" id="tbKiosk">
+      <p class="tbp-lab">Resident Mode</p>
+      <p class="tbp-for">Hides this site's menu, these settings and every link, so the tablet stays in the activities. To leave it, press and hold <b>Staff exit</b> in the top corner for 2&frac12; seconds, then type the PIN if one is set here. It does not lock the tablet itself.</p>
+      <div class="tbp-tools">
+        <button type="button" class="tb-btn go" id="tbResident" aria-pressed="false">🔒 Start Resident Mode</button>
+      </div>
+      <div class="tbp-pin">
+        <label class="tbp-lab" for="tbPinSet">Staff exit PIN <small>(optional, 4 digits)</small></label>
+        <input class="tbp-sel" id="tbPinSet" type="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="off">
+        <div class="tbp-tools"><button type="button" class="tb-btn" id="tbPinSave">Set PIN</button><button type="button" class="tb-btn" id="tbPinClear">Remove PIN</button></div>
+        <p class="tbp-for" id="tbPinMsg" role="status"></p>
+      </div>
+    </div>
   </form>
 
   <p class="tbp-surprise"><button type="button" class="tb-btn go" id="tbSurprise"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3l2.2 5.6L20 11l-5.8 2.4L12 19l-2.2-5.6L4 11l5.8-2.4z"/></svg><span>Surprise me</span></button><span>Not sure what to try? Let the tablet choose one.</span></p>
@@ -763,6 +804,14 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
   <p class="tbp-note">Want a session built from one resident's own life, with their hometown, work and favorite things? Open the <a href="index.html#make">Personalized Packet Tool</a> and choose <b>Launch Tablet Interactive Mode</b>.</p>
 </main>
 
+<button type="button" class="tb-exit" id="tbExit" hidden aria-describedby="tbExitHelp"><span class="tb-exit-ring" aria-hidden="true"></span><span class="tb-exit-txt">Staff exit</span></button>
+<p class="tb-sr" id="tbExitHelp">For staff: press and hold for 2 and a half seconds to leave Resident Mode.</p>
+<dialog class="tb-pinask" id="tbPinAsk" aria-labelledby="tbPinAskH">
+  <h2 id="tbPinAskH">Staff PIN</h2>
+  <p class="tb-pin-dots" id="tbPinDots" aria-live="polite">&nbsp;</p>
+  <div class="tb-pin-keys"><button type="button" data-pin="1">1</button><button type="button" data-pin="2">2</button><button type="button" data-pin="3">3</button><button type="button" data-pin="4">4</button><button type="button" data-pin="5">5</button><button type="button" data-pin="6">6</button><button type="button" data-pin="7">7</button><button type="button" data-pin="8">8</button><button type="button" data-pin="9">9</button><button type="button" class="tb-pin-alt" data-pin="cancel">Cancel</button><button type="button" data-pin="0">0</button><button type="button" class="tb-pin-alt" data-pin="back" aria-label="Delete the last digit">Delete</button></div>
+  <p class="tb-pin-msg" id="tbPinAskMsg" role="status"></p>
+</dialog>
 <div class="tb" id="tb" role="dialog" aria-modal="true" aria-labelledby="tbTitle" hidden>
   <div class="tb-bar tb-glass">
     <button type="button" class="tb-back" id="tbBack" aria-label="Return home to the activity menu"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 11 12 3l9 8"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg><span>Home</span></button>

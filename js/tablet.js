@@ -29,7 +29,7 @@
   var praise = function () { return PRAISE[Math.floor(Math.random() * PRAISE.length)]; };
 
   /* ---------- what is remembered in this browser: the choices only, never what anyone did ---------- */
-  var PREFS_KEY = "cognicopia_tablet_prefs", prefs = { stage: "middle", topic: "", era: "", sound: true, speed: 2, grid: 0, palette: 0, paper: 0 };
+  var PREFS_KEY = "cognicopia_tablet_prefs", prefs = { stage: "middle", topic: "", era: "", sound: true, speed: 2, grid: 0, palette: 0, paper: 0, resident: false, pin: null };
   try {
     var saved = JSON.parse(window.localStorage.getItem(PREFS_KEY) || "null");
     if (saved) {
@@ -41,6 +41,8 @@
       if (saved.grid >= 3 && saved.grid <= 6) prefs.grid = Math.round(saved.grid);
       if (saved.palette >= 0 && saved.palette <= 3) prefs.palette = Math.round(saved.palette);
       if (saved.paper >= 0 && saved.paper <= 3) prefs.paper = Math.round(saved.paper);
+      if (saved.resident === true) prefs.resident = true;                       // Resident Mode stays on until staff leave it
+      if (saved.pin && /^[0-9a-f]{16}$/.test(saved.pin.salt) && /^[0-9a-f]{64}$/.test(saved.pin.hash)) prefs.pin = { salt: saved.pin.salt, hash: saved.pin.hash };   // the staff exit PIN, as a salted hash only
     }
   } catch (e) { /* private browsing: the choices simply start fresh each visit */ }
   function savePrefs() { try { window.localStorage.setItem(PREFS_KEY, JSON.stringify(prefs)); } catch (e) { /* not kept */ } }
@@ -217,7 +219,7 @@
     if (!act || !allowed()) return;
     returnTo = from || document.activeElement;
     overlay.hidden = false; document.documentElement.classList.add("tb-open");
-    inerted = Array.prototype.filter.call(document.body.children, function (n) { return n !== overlay && n !== $("tbGate") && n.tagName !== "SCRIPT" && !n.inert; });
+    inerted = Array.prototype.filter.call(document.body.children, function (n) { return n !== overlay && n !== $("tbGate") && !(kioskOn() && (n === $("tbExit") || n === $("tbPinAsk"))) && n.tagName !== "SCRIPT" && !n.inert; });   // in Resident Mode the staff exit stays within reach
     inerted.forEach(function (n) { n.inert = true; });
     $("tbTitle").textContent = act.title;
     unlock(); wakeLock();
@@ -324,6 +326,81 @@
   overlay.addEventListener("pointerdown", armIdle, true);
   overlay.addEventListener("touchstart", armIdle, { capture: true, passive: true });
   overlay.addEventListener("keydown", armIdle, true);
+  /* ---------- Resident Mode: only the activities, and a staff exit that needs a long press, or the PIN ----------
+     Both are kept with the other choices (prefs), so a reload, or the browser opened again, stays in Resident Mode until staff
+     leave it. The PIN is kept on this tablet only, as a salted SHA-256; it keeps a resident in the activities and locks no data. */
+  var HOLD_MS = 2500;
+  var exitBtn = $("tbExit"), pinAsk = $("tbPinAsk");
+  function kioskOn() { return document.documentElement.classList.contains("tb-resident"); }
+  function setKiosk(on) {
+    document.documentElement.classList.toggle("tb-resident", !!on);
+    exitBtn.hidden = !on;
+    prefs.resident = !!on; savePrefs();
+    $("tbResident").setAttribute("aria-pressed", String(!!on));
+    live(on ? "Resident Mode is on. Staff: press and hold Staff exit for two and a half seconds to leave it." : "Resident Mode is off.");
+  }
+  function pinRecord() { return prefs.pin && prefs.pin.salt && prefs.pin.hash ? prefs.pin : null; }
+  function hashPin(pin, salt) {
+    var data = new TextEncoder().encode(salt + ":" + pin);
+    return crypto.subtle.digest("SHA-256", data).then(function (b) { return Array.prototype.map.call(new Uint8Array(b), function (x) { return ("0" + x.toString(16)).slice(-2); }).join(""); });
+  }
+  $("tbResident").addEventListener("click", function () { setKiosk(true); var first = document.querySelector(".tbp-card") || $("tbSurprise"); if (first) first.focus(); });
+  $("tbPinSave").addEventListener("click", function () {
+    var v = $("tbPinSet").value, msg = $("tbPinMsg");
+    if (!/^\d{4}$/.test(v)) { msg.textContent = "The PIN is four numbers."; $("tbPinSet").focus(); return; }
+    var salt = Array.prototype.map.call(crypto.getRandomValues(new Uint8Array(8)), function (x) { return ("0" + x.toString(16)).slice(-2); }).join("");
+    hashPin(v, salt).then(function (h) { prefs.pin = { salt: salt, hash: h }; savePrefs(); msg.textContent = "PIN set. Staff exit now asks for it."; $("tbPinSet").value = ""; });
+  });
+  $("tbPinClear").addEventListener("click", function () { prefs.pin = null; savePrefs(); $("tbPinMsg").textContent = "No PIN: Staff exit needs only the long press."; });
+  $("tbPinMsg").textContent = pinRecord() ? "A PIN is set on this tablet." : "";
+  /* the long press: a finger, a mouse, or Enter or Space held down; the ring fills as it goes; letting go early does nothing */
+  var holdStart = 0, holdRaf = 0;
+  function holdPaint() {
+    var p = Math.min(1, (performance.now() - holdStart) / HOLD_MS);
+    exitBtn.style.setProperty("--p", p.toFixed(3));
+    if (p >= 1) { holdEnd(true); return; }
+    holdRaf = requestAnimationFrame(holdPaint);
+  }
+  function holdBegin(e) { if (holdStart) return; if (e && e.preventDefault) e.preventDefault(); holdStart = performance.now(); holdRaf = requestAnimationFrame(holdPaint); }
+  function holdEnd(done) {
+    cancelAnimationFrame(holdRaf); holdStart = 0; exitBtn.style.setProperty("--p", "0");
+    if (done === true) { if (pinRecord()) askPin(); else { setKiosk(false); exitBtn.blur(); } }
+  }
+  exitBtn.addEventListener("pointerdown", holdBegin);
+  ["pointerup", "pointercancel", "pointerleave"].forEach(function (t) { exitBtn.addEventListener(t, function () { if (holdStart) holdEnd(false); }); });
+  exitBtn.addEventListener("keydown", function (e) { if ((e.key === "Enter" || e.key === " ") && !e.repeat) holdBegin(e); else if (e.key === "Enter" || e.key === " ") e.preventDefault(); });
+  exitBtn.addEventListener("keyup", function (e) { if ((e.key === "Enter" || e.key === " ") && holdStart) holdEnd(false); });
+  exitBtn.addEventListener("click", function (e) { e.preventDefault(); });
+  exitBtn.addEventListener("contextmenu", function (e) { e.preventDefault(); });
+  /* the PIN: a keypad of 52 px keys; four numbers, checked as they are typed */
+  var typed = "";
+  function paintDots() { $("tbPinDots").textContent = typed ? typed.replace(/./g, "\u25CF") : "\u00A0"; }
+  function askPin() { typed = ""; paintDots(); $("tbPinAskMsg").textContent = "Type the four numbers."; try { pinAsk.showModal(); } catch (e) { pinAsk.setAttribute("open", ""); } var k = pinAsk.querySelector('[data-pin="1"]'); if (k) k.focus(); }
+  pinAsk.addEventListener("click", function (e) {
+    var b = e.target.closest && e.target.closest("[data-pin]"); if (!b) return;
+    var k = b.getAttribute("data-pin");
+    if (k === "cancel") { pinAsk.close(); return; }
+    if (k === "back") { typed = typed.slice(0, -1); paintDots(); return; }
+    if (typed.length >= 4) return;
+    typed += k; paintDots();
+    if (typed.length === 4) {
+      var rec = pinRecord(), tryPin = typed;
+      if (!rec) { pinAsk.close(); setKiosk(false); return; }
+      hashPin(tryPin, rec.salt).then(function (h) {
+        if (h === rec.hash) { pinAsk.close(); setKiosk(false); }
+        else { typed = ""; paintDots(); $("tbPinAskMsg").textContent = "That is not the PIN. Try again."; }
+      });
+    }
+  });
+  pinAsk.addEventListener("close", function () { typed = ""; paintDots(); });
+  /* in Resident Mode the site's search (Ctrl+K and the "/" key) stays closed: it would lead out of the activities */
+  window.addEventListener("keydown", function (e) {
+    if (!kioskOn()) return;
+    var k = String(e.key).toLowerCase();
+    if (((e.ctrlKey || e.metaKey) && k === "k") || (k === "/" && !/^(INPUT|SELECT|TEXTAREA)$/.test((document.activeElement || {}).tagName || ""))) { e.preventDefault(); e.stopImmediatePropagation(); }
+  }, true);
+  if (prefs.resident) setKiosk(true);
+
   document.addEventListener("keydown", function (e) {
     if (overlay.hidden) { if (e.key === "Escape" && !$("tbGate").hidden) $("tbGate").hidden = true; return; }
     if (e.key === "Escape") { closeAct(); return; }
@@ -339,6 +416,7 @@
     activities: Object.keys(ACT), open: function (id) { openAct(id); }, close: closeAct,
     current: function () { return cur ? cur.act.id : null; }, debug: function () { return cur && cur.debug ? cur.debug() : null; },
     prefs: function () { return JSON.parse(JSON.stringify(prefs)); },
+    resident: function () { return kioskOn(); }, holdMs: HOLD_MS,
     avoid: function () { return avoidTerms.slice(); },                // what every screen is checked against: the typed words and the active resident's
     /* for the checks: how long a quiet moment is, and what the shell has done for this activity */
     idleMs: function (ms) { if (ms > 0) { idleMs = ms; armIdle(); } return idleMs; },
