@@ -9,7 +9,7 @@
                 with ACL chosen the Studio's stage buttons, the Builder's tier buttons, the profile's tier choices, the active
                 resident bar and the daily card's staff line all say ACL 5, 4, 3; Stage and GDS likewise; clearing it brings the
                 first wording back
-     tags       each of the 24 kinds of page in the Studio names the work it does ("Modality: Reminiscence"), on the staff screen
+     tags       each of the 25 kinds of page in the Studio names the work it does ("Modality: Reminiscence"), on the staff screen
      never      no printed or previewed page, and no tablet page a resident reads, shows a stage scale or a modality
      private    nothing is requested from outside the page; no script errors
    Made-up people only. Needs Playwright. Run: node scripts/check-stage-labels-ui.mjs
@@ -85,7 +85,7 @@ try {
     const { ctx, p } = await open(1366, 768, "activity-studio.html");
     await p.click("#asAccPages summary");
     const tags = await p.$$eval('input[name="mix"]', e => e.map(i => [i.value, (i.closest("label").querySelector(".as-mod") || {}).textContent || ""]));
-    ok(tags.length === 24 && tags.every(t => /^Modality: .{5,}/.test(t[1])), `all ${tags.length} kinds of page name the work they do (${tags.filter(t => !t[1]).map(t => t[0]).join(", ") || "none missing"})`);
+    ok(tags.length === 25 && tags.every(t => /^Modality: .{5,}/.test(t[1])), `all ${tags.length} kinds of page name the work they do (${tags.filter(t => !t[1]).map(t => t[0]).join(", ") || "none missing"})`);
     ok(new Set(tags.map(t => t[1])).size >= 12, `and they are not all the same (${new Set(tags.map(t => t[1])).size} different ones)`);
     const m = await measure(p, 'input[name="mix"]'); ok(m.every(x => x.h >= 52 && x.ratio >= 4.5), "each box is still 52 px and readable");
     await p.click('.as-stage input[name="view"][value="all"] + span'); await p.waitForTimeout(700);

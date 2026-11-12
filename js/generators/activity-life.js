@@ -361,6 +361,35 @@
   E.register("myday",       { code: "MD", label: "My day, step by step",          stages: [2, 3],    build: mydaySheets,       max: function () { return 4; } });
   E.register("dish",        { code: "DS", label: "A dish I made",                 stages: [1, 2],    build: dishSheets,        max: function () { return 6; } });
   E.register("comfort",     { code: "CF", label: "What I would like",             stages: [2, 3],    build: comfortSheets,     max: function () { return 5; } });
+  /* ---------- 13. a visit: the companion sheet for a family member ----------
+     One page for the person who comes to sit with a resident: three starters that went well lately (from the one-tap log, else from the
+     profile), the songs and comforts they enjoy, and a picture to color together in the lower half. It is for the visitor, so it speaks to
+     them; nothing in it asks the resident for a fact. */
+  var VISIT_PICS = [["teapot", "Color the teapot together"], ["sunflower", "Color the sunflower together"], ["rocking_chair", "Color the rocking chair together"], ["daisy", "Color the daisy together"],
+    ["cardinal", "Color the cardinal together"], ["watering_can", "Color the watering can together"], ["birdhouse", "Color the birdhouse together"]];
+  function visitSheets(P, r, count) {
+    var w = who(P), first = String(P.name || w.name || "").split(" ")[0], out = [], n = amount(P, 3, 3, 2);
+    var recent = keep(P.recent || [], P), own = keep(w.interests.concat(w.hobbies), P).map(function (x) { return "Talk about " + lower(x); });
+    if (w.hometown && w.hometown.town && ok(w.hometown.town, P)) own.push("Talk about " + w.hometown.town);
+    var starters = recent.length ? recent : own, songs = [];
+    if (w.music.favoriteSong && ok(w.music.favoriteSong, P)) songs.push(w.music.favoriteSong);
+    keep(w.music.artists, P).slice(0, 2).forEach(function (a) { songs.push("Songs by " + a); });
+    keep(w.comforts || [], P).slice(0, 3).forEach(function (c) { songs.push(c); });
+    var pics = VISIT_PICS.filter(function (x) { return drawn(x[0]) && ok(x[0].replace(/_/g, " ") + " " + x[1], P); });
+    for (var s = 0; s < count; s++) {
+      var pic = pics.length ? pics[s % pics.length] : null;
+      var blocks = [
+        starters.length ? { kind: "list", label: recent.length ? "Starters that went well lately" : "Things to talk about", items: take(rotate(starters, s), n) }
+          : { kind: "starters", items: take(rotate(["A story I love to tell is", "My favorite place was", "Someone I admire is"], s), n) },
+        songs.length ? { kind: "list", label: "Songs and comforts", items: take(rotate(songs, s), n + 1) } : { kind: "write", label: "Songs and comforts they enjoy", lines: 2 },
+        pic ? { kind: "picture", pic: pic[0], caption: pic[1] } : null];
+      out.push(sheet("visit", first ? "A visit with " + first : "A visit", "Things to share together", blocks,
+        "a one-page companion for a family visit. The starters are what went well lately, taken from the one-tap log (or, when there is none, from the profile), and they are offers, never questions to get right. The songs and comforts are theirs. Color the picture together, or simply sit with it. A visit counts however it goes: a smile, a hum or a held hand is a full visit, and it is fine to stop whenever they are tired.",
+        { personal: !!(first || recent.length) }));
+    }
+    return out;
+  }
+  E.register("visit",       { code: "FV", label: "Family visit companion sheet",  stages: [1, 2, 3], build: visitSheets,       max: function () { return 2; } });
   E.register("wordplay",    { code: "WP", label: "Word play",                     stages: [1, 2],    build: wordplaySheets,    max: function () { return 6; } });
 
   /* which of these pages a person's profile can make its own, best first: the suggested packet leans on them */
