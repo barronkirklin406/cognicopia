@@ -86,6 +86,8 @@ const STATES = [
   ["pinned tools: the picker", "index.html", [page => page.evaluate(() => window.CogniWayfinding.openPinPicker())]],
   ["builder: upgrade screen (50 packets used)", "builder.html#/", [openGate]],
   ["builder home: by stage and ability", "builder.html#/", [click("#hmTab-stage")]],
+  ["builder home: How to use and a clinical tip open", "builder.html#/", [click(".ht-pill")]],
+  ["studio: How to use and a clinical tip open", "activity-studio.html", [click(".ht-pill")]],
   ["builder home: build your own, more tools open", "builder.html#/", [click("#hmTab-own"), click(".hm-more > summary")]],
   ["builder: upgrade banner (20 packets used)", "builder.html#/", [page => page.evaluate(() => { localStorage.setItem("cognicopia_gen_count", "20"); }), reload]],
   ["license window (a page with a top bar)", "pricing.html", [click("#cgPromoBtn")]],

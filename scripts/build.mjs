@@ -247,6 +247,14 @@ step("Daily engagement: three choices and one button, a card for every kind of t
   }
 });
 
+step("How to use and a clinical tip on the Studio, the Packet Builder and the Facility Portal; Speak on the profile's notes and the Shift board's note, asking the browser only when pressed, on the device only, greyed out with the reason elsewhere, a dictated name warned of (a real browser)", () => {
+  try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-help-dictation-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
+  catch (e){
+    if (e.status === 2) return "skipped: Playwright is not installed here (see docs/dev-setup.md)";
+    throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message);
+  }
+});
+
 step("Resident Mode in Tablet Activities: only the activities and no link out, the search closed, kept on reload; a 2.5 second hold (mouse, Enter or a finger) to leave, a tap does nothing; a PIN kept as a salted hash, a wrong one refused (a real browser)", () => {
   try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-tablet-resident-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
   catch (e){
