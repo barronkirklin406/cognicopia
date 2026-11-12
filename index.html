@@ -6517,20 +6517,28 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
 
   <fieldset>
     <legend><div class="leg"><span class="num" aria-hidden="true">1</span><h2>Who is this for?</h2></div></legend>
-    <p class="hint">Only the first name appears on the pages they'll see.</p>
-    <div class="row">
-      <div class="field"><label for="first">First name</label>
-        <input type="text" id="first" maxlength="40" autocomplete="off"></div>
-      <div class="field"><label for="last">Last name</label>
-        <input type="text" id="last" maxlength="40" autocomplete="off"></div>
+    <!-- The quick start (playbook Phase 2): three facts are enough for a first packet. Everything after the button is optional. -->
+    <div class="qs" id="qs">
+      <p class="hint qs-lead">Three things are enough for a first packet. Only the first name appears on the pages they'll see.</p>
+      <div class="row qs-row">
+        <div class="field"><label for="first">First name</label>
+          <input type="text" id="first" maxlength="40" autocomplete="off"></div>
+        <div class="field"><label for="born">Year of birth
+          <span class="sub">Sets the era on the memories page</span></label>
+          <input type="number" id="born" min="1900" max="1990" maxlength="4" placeholder="1938"></div>
+        <div class="field"><label for="joy">One joy or favorite pastime
+          <span class="sub">Gardening, the Twins, baking, a dog</span></label>
+          <input type="text" id="joy" maxlength="80" autocomplete="off" placeholder="gardening"></div>
+      </div>
+      <p class="qs-go-row"><button type="submit" class="qs-go" id="goQuick">Make my first packet</button>
+        <span class="hint">Everything below is optional, and you can add their life story later.</span></p>
     </div>
     <div class="row">
+      <div class="field"><label for="last">Last name</label>
+        <input type="text" id="last" maxlength="40" autocomplete="off"></div>
       <div class="field"><label for="goes">What they like to be called
         <span class="sub">Leave blank to use their first name</span></label>
         <input type="text" id="goes" maxlength="40" autocomplete="off"></div>
-      <div class="field"><label for="born">Year of birth
-        <span class="sub">Sets the era on the memories page</span></label>
-        <input type="number" id="born" min="1900" max="1990" maxlength="4" placeholder="1938"></div>
     </div>
     <div class="field" style="max-width:280px">
       <label for="pronoun">Words to use for them</label>
@@ -6945,6 +6953,8 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
       <div class="strip"></div>
       <strong>Packet saved to your downloads.</strong>
       <div id="doneName"></div>
+      <p class="qs-next" id="qsNext"><a href="profile.html" id="qsMore">Add more life details (6-step profile) &rarr;</a>
+        <span>The more you add, the more of their own life is on every page.</span></p>
     </div>
   </div>
 </form>
@@ -25758,6 +25768,46 @@ import { webStorage } from "./js/pillar2-functionality-agents.js";
   document.addEventListener("click", function(e){ if (e.target.closest && e.target.closest('[id$="OpenModalBtn"]')) setTimeout(fillNames, 0); }, true);
   document.addEventListener("cognicopia:activeresident", function(){ show(); fillNames(); });
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", show); else show();
+})();
+</script>
+<style id="qsCss">
+/* the quick start: three facts and one button, on the same card as step 1 */
+/* it sits on the packet tool's dark panel, where the labels are white: a deeper tint of that panel, with the teal edge */
+.qs{margin:0 0 26px;padding:20px 22px;border:2px solid #3cc7b7;border-radius:16px;background:#0b1424}
+.qs .qs-lead{margin-top:0}
+.qs .hint{margin-left:0;padding-left:0;text-indent:0}
+.qs-row{align-items:end}   /* the three boxes line up, whatever the length of the words above them */
+.qs-row{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media (max-width:760px){.qs-row{grid-template-columns:1fr}}
+.qs-go-row{display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px;margin:8px 0 0}
+.qs-go{min-height:var(--tap,52px);padding:10px 26px;border:2px solid #9ae3d8;border-radius:12px;background:#0b5f59;color:#ffffff;font:700 1.05rem/1.2 var(--cg-font-ui,"Atkinson Hyperlegible","Segoe UI",sans-serif);cursor:pointer}
+.qs-go:hover{background:#08423f}
+.qs-go:focus-visible{outline:3px solid var(--cg-focus,#f5b800);outline-offset:3px;box-shadow:0 0 0 6px var(--cg-focus-dark,#0f172a)}
+.qs-go:disabled{opacity:.6;cursor:progress}
+.qs-next{margin:12px 0 0}
+.qs-next a{display:inline-flex;align-items:center;min-height:var(--tap,52px);font-weight:700;color:var(--cg-green-700,#08423f)}
+html.cg-night-shift .qs-next a{color:#ffedcc}
+.qs-next span{display:block}
+html.cg-night-shift .qs{background:#2b2015;border-color:#d6a64b}
+html.cg-night-shift .qs-go{background:#5a3e12;color:#fff1cf}
+@media print{.qs-go-row,.qs-next{display:none!important}}
+</style>
+<script id="qsJs">
+/* The one joy is the first pastime: it fills the hobbies field in step 4 (and follows it while that field still holds only the joy).
+   The quick button is the same submit as Make the packet. */
+(function(){
+  "use strict";
+  var joy = document.getElementById("joy"), hob = document.getElementById("hobbies"); if (!joy || !hob) return;
+  var last = "";
+  joy.addEventListener("input", function(){
+    var v = joy.value.trim(), h = hob.value.trim();
+    if (!h || h === last) hob.value = v;
+    else if (v && h.toLowerCase().split(/\s*,\s*/).indexOf(v.toLowerCase()) < 0 && last === "") hob.value = v + ", " + h;
+    last = v;
+    hob.dispatchEvent(new Event("input", { bubbles: true }));
+  });
+  var quick = document.getElementById("goQuick"), go = document.getElementById("go");
+  if (quick && go) new MutationObserver(function(){ quick.disabled = go.disabled; quick.textContent = go.disabled ? "Making the packet\u2026" : "Make my first packet"; }).observe(go, { attributes: true, attributeFilter: ["disabled"] });
 })();
 </script>
 </body>

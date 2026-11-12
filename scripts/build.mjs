@@ -415,6 +415,14 @@ step("the facility logo on the monthly bundle: chosen, turned into pure black an
   }
 });
 
+step("the packet tool's quick start: three boxes and one button first (first name, year of birth, one joy), a whole packet from those three, and the offer of the full profile after it, 52 px and 7:1 by day and in Night Shift (a real browser)", () => {
+  try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-quickstart-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
+  catch (e){
+    if (e.status === 2) return "skipped: Playwright is not installed here (see docs/dev-setup.md)";
+    throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message);
+  }
+});
+
 step("the condition adaptation: one optional choice on the resident's profile, saved and read back, and the packet tool showing only the set of pages it names, open, with the name already in its form (a real browser)", () => {
   try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-adaptation-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
   catch (e){
