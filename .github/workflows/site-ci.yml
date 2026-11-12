@@ -1,0 +1,60 @@
+# Checks the static site (everything outside platform/) on every change, so no site change can be merged with a failing
+# check, a deleted data file or a page that reaches the network. It runs the same gate the owner runs by hand:
+# `npm run build` = scripts/build.mjs, then scripts/check-claims.mjs, then the whole test suite (npm test).
+# The facility service in platform/ has its own workflow (platform.yml) and is paused (platform/PAUSED.md).
+#
+# Why "npm install" and not "npm ci": the repository has no lock file and one runtime dependency (express, for server.js),
+# so there is nothing for "npm ci" to restore. Playwright and PyMuPDF are not dependencies of the site; the checks that
+# drive a browser or read a PDF back need them, so they are installed here with exact versions.
+# Nothing here needs a secret.
+name: site
+
+on:
+  pull_request:
+    branches: [main]
+    paths-ignore:
+      - "platform/**"
+      - ".github/workflows/platform.yml"
+  push:
+    branches: [main]
+    paths-ignore:
+      - "platform/**"
+      - ".github/workflows/platform.yml"
+
+# A newer push to the same branch makes the older run pointless.
+concurrency:
+  group: site-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    # the gate takes about 25 minutes on a fast computer; a shared runner is slower
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install the site's one dependency
+        run: npm install --no-audit --no-fund
+
+      - name: Install the tools the checks use (a browser, a PDF reader, a type checker)
+        run: |
+          npm install --no-save --no-audit --no-fund playwright@1.63.0
+          npx playwright install --with-deps chromium
+          python -m pip install --upgrade pip
+          python -m pip install pymupdf pillow vtracer
+          npm install --global typescript@6.0.2
+
+      - name: Build and test (npm run build)
+        run: npm run build
