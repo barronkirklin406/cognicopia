@@ -1456,3 +1456,12 @@ html.cg-night-shift:root body .dc-btn:disabled{background:#2b2015;border-color:#
 html.cg-night-shift:root body .dc-btn[aria-pressed="true"]{background:#6f4b16;color:#fff1cf !important}
 @media (prefers-reduced-motion:reduce){html:root body .ht-pill{transition:none}html:root body .ht-pill:is(:hover,:active){transform:none}}
 @media print{.ht,.dc-row{display:none !important}}
+
+/* 16. the cueing guide: one short line for each therapy goal not yet met, in a staff strip (js/cueingGuide.js) */
+:where(.cg-cue){margin:12px 0;padding:14px 18px;border-left:6px solid #355e3b;border-radius:10px;background:rgba(255,255,255,.86);color:#1f2933;font-size:1rem;line-height:1.5}
+:where(.cg-cue[hidden]){display:none}
+:where(.cg-cue ul){margin:6px 0;padding-left:20px}
+:where(.cg-cue small){display:block;margin-top:4px}
+html.cg-night-shift:root body .cg-cue{background:#211910;border-color:#d6a64b;color:#ffedcc !important}
+html.cg-night-shift:root body .cg-cue :is(b,li,small,ul){color:#ffedcc !important}
+@media print{.cg-cue{display:none !important}}

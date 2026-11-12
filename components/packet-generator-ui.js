@@ -86,6 +86,7 @@
     var who =
       '<section class="as-step" aria-labelledby="asStep1"><h2 id="asStep1">Who is this for?</h2>' +
         '<div class="as-row"><label class="as-lab" for="asResident">Saved resident</label><select id="asResident"><option value="">A new person (not saved yet)</option></select></div>' +
+        '<div class="cg-cue" id="asCue" role="region" aria-label="Cueing for their therapy goals" hidden></div>' +
         '<p class="as-hint" id="asWhoHint">Pick someone you saved, or type a first name.</p>' +
         '<div class="as-row"><label class="as-lab" for="asName">First name</label><input id="asName" type="text" maxlength="40" autocomplete="off" placeholder="for example: Eleanor"></div>' +
         '<div class="as-btns as-who-btns"><button type="button" class="as-btn as-alt" id="asSaveRes">Save these details</button><a class="as-btn as-alt as-link" id="asOpenRes" href="profile.html" target="_blank" rel="noopener" hidden>Open the full profile (new tab)</a></div>' +
@@ -207,6 +208,7 @@
     sel.value = state.resident && readRes(state.resident) ? state.resident : "";
     link.hidden = !sel.value; if (sel.value) link.href = "profile.html?edit=" + encodeURIComponent(sel.value);
     $("#asSaveRes").textContent = sel.value ? "Save changes to " + firstWord(state.name || (readRes(sel.value) || { tier1_core: {} }).tier1_core.preferredName) : "Save as a new resident";
+    if (window.CogniCueing && $("#asCue")) window.CogniCueing.paint($("#asCue"), state.resident);
     var hint = $("#asWhoHint");
     hint.textContent = list.length ? "Pick someone you saved and the form fills in. A name is kept only if you press Save."
       : "No one is saved on this computer yet. Type a name, press Save, and next time pick them here.";
