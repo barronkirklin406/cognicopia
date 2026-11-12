@@ -164,6 +164,7 @@
   }
   function sync() {
     $("#dyGroup").hidden = !!person;
+    if (window.CogniCueing && $("#dyCue")) window.CogniCueing.paint($("#dyCue"), person ? state.who : "");
     var note = $("#dyWhoNote"); note.hidden = !person;
     if (person) {
       var bits = [STAGE_NAME[person.stage || 2]]; if (person.born) bits.push("born " + person.born); if (person.hometown && person.hometown.town) bits.push(person.hometown.town);
