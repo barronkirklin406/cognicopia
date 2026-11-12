@@ -10944,7 +10944,9 @@ function crossPage(D,r,s,theme){
   // first letters as a guide at the easier settings
   if(s.hint){
     D.d.setFont("helvetica","bold"); D.d.setFontSize(Math.min(17,cell*0.62));
+    const given=new Set();                         // two words can start in the same square (one across, one down): its letter is written once
     for(const pl of placed){
+      const at=pl.r+","+pl.c; if(given.has(at)) continue; given.add(at);
       D.d.text(pl.w[0], x0+pl.c*cell+cell/2, y0+pl.r*cell+cell*0.72,
                {align:"center"});
     }
