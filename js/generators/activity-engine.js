@@ -22,6 +22,10 @@
    Dexterity (steady, limited, minimal) makes type larger, puts fewer
    items on a sheet and makes lines heavier; it never changes the stage.
 
+   High spacing / low visual crowding (profile.roomy) is a separate choice for low vision and posterior cortical
+   atrophy: about half as many items on a sheet (cut(), never fewer than the sheet needs), and the page maker opens the
+   line height and draws a bold box round each item. It never changes the stage, the type floors or the black on white.
+
    Rules every sheet is held to (toneProblems / validate):
      - an invitation, never a test: no "do you remember", no "what year",
        no quiz words, no pet names or praise that talks down;
@@ -215,13 +219,15 @@
   function shuffle(arr, r) { var a = arr.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(r() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
   function pick(arr, r) { return arr[Math.floor(r() * arr.length)]; }
   function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+  /* how many of n a sheet holds: all of them, or with high spacing about 55 percent (a cut of 40 to 50 percent), never under min */
+  function cut(n, P, min) { return P && P.roomy ? Math.max(min == null ? 1 : min, Math.round(n * 0.55)) : n; }
 
   /* ---------- the profile, made safe ---------- */
   function normalize(p) {
     p = p || {};
     var stage = Math.max(1, Math.min(3, Math.round(Number(p.stage) || 2)));
     var dex = DEXTERITY[p.dexterity] ? p.dexterity : "steady";
-    var born = Math.round(Number(p.born)) || 0;
+    var born = Math.round(Number(p.born)) || 0, roomy = !!p.roomy;
     var decade = DECADES.indexOf(Number(p.decade)) >= 0 ? Number(p.decade) : decadeFor(born);
     var split = function (v) { return (Array.isArray(v) ? v : String(v == null ? "" : v).split(/[,;\n]/)).map(function (x) { return String(x).trim().toLowerCase(); }).filter(Boolean).slice(0, 20); };
     return {
@@ -229,8 +235,8 @@
       nameStyle: p.nameStyle === "flow" || p.nameStyle === "formal" ? p.nameStyle : "plain",
       born: born, stage: stage, dexterity: dex, decade: decade,
       season: SEASONS.indexOf(p.season) >= 0 ? p.season : "", vocation: String(p.vocation == null ? "" : p.vocation).toLowerCase().replace(/[^a-z]/g, "").slice(0, 20),
-      /* a bigger, harder word search for an early-stage reader who wants a real workout */
-      challenge: !!p.challenge,
+      /* a bigger, harder word search for an early-stage reader who wants a real workout (not with high spacing: that is a smaller, airier page) */
+      challenge: !!p.challenge && !roomy, roomy: roomy,
       interests: split(p.interests), avoid: avoidTerms(p.avoid, split),
       /* the saved resident, read once by js/residentContext.js: the life pages are made from it (null when nobody is chosen) */
       person: p.person && typeof p.person === "object" ? p.person : null,
@@ -262,7 +268,7 @@
   /* ---------- the sheets ---------- */
   function reminiscenceSheets(P, r, count) {
     var S = STAGES[P.stage], D = DEXTERITY[P.dexterity], bank = ERA[P.decade];
-    var per = Math.max(1, S.items - D.fewer), sheets = [];
+    var per = cut(Math.max(1, S.items - D.fewer), P, 1), sheets = [];
     var pool = [];
     KIND_ORDER.forEach(function (k) { shuffle(bank[k], r).forEach(function (t) { if (!avoided(t, P.avoid) && !avoided(KIND_LABEL[k], P.avoid)) pool.push({ kind: k, thing: t }); }); });
     pool = shuffle(pool, r);
@@ -295,14 +301,14 @@
     for (var s = 0; s < count; s++) {
       var k = kinds[s % kinds.length];
       if (k === "match") {
-        var n = Math.max(2, S.pairs - D.fewer), ps = pairs.slice(s * n, s * n + n);
+        var n = cut(Math.max(2, S.pairs - D.fewer), P, 2), ps = pairs.slice(s * n, s * n + n);
         if (ps.length < n) ps = shuffle(PAIRS, r).slice(0, n);
         sheets.push({ module: "exercise", kind: "match", title: "Pairs that go together", subtitle: "Draw a line from each word to its partner", pairs: ps,
           right: shuffle(ps.map(function (p) { return p[1]; }), r),
           staffNote: "Goal: familiar association. Completing it together is the activity; any help is welcome." });
       } else if (k === "sort") {
         var sp = sorts[s % sorts.length], m = P.stage === 1 ? 3 : 2;
-        m = Math.max(2, m - (D.fewer ? 1 : 0));
+        m = cut(Math.max(2, m - (D.fewer ? 1 : 0)), P, 2);
         var a = shuffle(sp.a.items, r).slice(0, m), b = shuffle(sp.b.items, r).slice(0, m);
         sheets.push({ module: "exercise", kind: "sort", title: "Sort together", subtitle: "Where does each one belong?", groups: [sp.a.name, sp.b.name],
           words: shuffle(a.map(function (w) { return { w: w, g: 0 }; }).concat(b.map(function (w) { return { w: w, g: 1 }; })), r),
@@ -313,7 +319,7 @@
           staffNote: "Goal: calm, shared attention. Say the word once, slowly; stay as long as the resident is comfortable." });
       } else {
         var pt = paths[s % paths.length];
-        sheets.push({ module: "exercise", kind: "path", title: "Follow the path", subtitle: "From " + pt.from.toLowerCase() + " to " + pt.to, from: cap(pt.from), to: cap(pt.to), turns: S.turns, seed: Math.floor(r() * 1e9),
+        sheets.push({ module: "exercise", kind: "path", title: "Follow the path", subtitle: "From " + pt.from.toLowerCase() + " to " + pt.to, from: cap(pt.from), to: cap(pt.to), turns: cut(S.turns, P, 1), seed: Math.floor(r() * 1e9),
           staffNote: "Goal: tracing and following. Draw along the path with a finger first, then a thick marker." });
       }
     }
@@ -322,7 +328,7 @@
 
   function dailySheets(P, r, count) {
     var S = STAGES[P.stage], D = DEXTERITY[P.dexterity], sheets = [];
-    var order = shuffle(TASKS, r), n = Math.max(3, S.steps - D.fewer);
+    var order = shuffle(TASKS, r), n = cut(Math.max(3, S.steps - D.fewer), P, 3);
     count = Math.min(count, order.length);                              // each task once: a batch never repeats a page
     for (var s = 0; s < count; s++) {
       var t = order[s % order.length];
@@ -359,7 +365,8 @@
     /* the page code says the stage, the kind of page and the seed. A module may name its own letters (the life pages do, so
        "twenty" and "then and now" are not both T); the older kinds keep their first letter. */
     var code = "AS" + S.key + "-" + ((REGISTRY[mod] && REGISTRY[mod].code) || mod.charAt(0).toUpperCase()) + "-" + seed.toString(36).toUpperCase();
-    sheets.forEach(function (sh, i) { sh.index = i; sh.stage = P.stage; sh.dexterity = P.dexterity; sh.name = P.name; sh.nameStyle = P.nameStyle; sh.code = code + "." + (i + 1); sh.dexNote = DEXTERITY[P.dexterity].note; });
+    if (P.roomy) sheets.forEach(thinBlocks);
+    sheets.forEach(function (sh, i) { sh.roomy = P.roomy; sh.index = i; sh.stage = P.stage; sh.dexterity = P.dexterity; sh.name = P.name; sh.nameStyle = P.nameStyle; sh.code = code + "." + (i + 1); sh.dexNote = DEXTERITY[P.dexterity].note; });
     return { stage: P.stage, profile: P, seed: seed, code: code, module: mod, sheets: sheets, problems: validate(sheets, P), notFitting: !fits(mod, P.stage) };
   }
 
@@ -398,8 +405,22 @@
     return out;
   }
 
+  /* A page of several parts (kind "blocks") with high spacing keeps its first two parts and the strip for staff, and a list of
+     choices, tick-boxes, openings or dated moments keeps about half of its items, spread evenly through the list so a life's moments
+     still run from early to late. Steps and pairs are left whole: a routine cut short, or a pair cut from its partner, would mislead. */
+  function evenly(list, k) { if (list.length <= k) return list.slice(); if (k <= 1) return [list[0]]; var out = []; for (var i = 0; i < k; i++) out.push(list[Math.round(i * (list.length - 1) / (k - 1))]); return out; }
+  function thinBlocks(sh) {
+    if (!sh || sh.kind !== "blocks" || !sh.blocks) return;
+    var staff = sh.blocks.filter(function (b) { return b && b.kind === "staff"; }), main = sh.blocks.filter(function (b) { return b && b.kind !== "staff"; }).slice(0, 2);
+    main.forEach(function (b) {
+      var f = b.kind === "choices" ? "options" : (b.kind === "list" || b.kind === "starters" || b.kind === "moments" || b.kind === "blanks") ? "items" : "";
+      if (f && Array.isArray(b[f]) && b[f].length > 3) { var thin = Object.assign({}, b); thin[f] = evenly(b[f], cut(b[f].length, { roomy: true }, 3)); main[main.indexOf(b)] = thin; }
+    });
+    sh.blocks = main.concat(staff);
+  }
+
   /* what a registered module needs from this file */
-  var KIT = { STAGES: STAGES, DEXTERITY: DEXTERITY, ERA: ERA, DECADES: DECADES, rng: rng, hash: hash, shuffle: shuffle, pick: pick, cap: cap, avoided: avoided, toneProblems: toneProblems, decadeFor: decadeFor };
+  var KIT = { STAGES: STAGES, DEXTERITY: DEXTERITY, ERA: ERA, DECADES: DECADES, rng: rng, hash: hash, shuffle: shuffle, pick: pick, cap: cap, cut: cut, avoided: avoided, toneProblems: toneProblems, decadeFor: decadeFor };
   return {
     kit: KIT, register: register, fits: fits, modules: function () { return MODULES.slice(); },
     VERSION: VERSION, STAGES: STAGES, DEXTERITY: DEXTERITY, DECADES: DECADES, SEASONS: SEASONS,

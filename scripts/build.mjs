@@ -143,7 +143,7 @@ step("every web manifest icon exists", () => {
 
 /* 5. server and the automated checks */
 step("server.js parses", () => { execFileSync(process.execPath, ["--check", path.join(ROOT, "server.js")]); });
-for (const s of ["check-outreach.mjs", "check-life-planner.mjs", "check-life-journal.mjs", "check-services.mjs", "check-coloring.mjs", "check-trace.mjs", "check-infinite.mjs", "check-hybrid.mjs", "check-shift-calendar.mjs", "check-describe.mjs", "check-resident-context.mjs", "check-public-domain.mjs", "check-activity-studio.mjs", "check-activity-life.mjs", "check-facility-validator.mjs", "check-reminiscence-pages.mjs", "check-pcg.mjs", "check-clinical.mjs", "check-clinical-staging.mjs", "check-facility-ops.mjs", "check-resident-engine.mjs", "check-quality-hub.mjs", "check-clinical-alignment.mjs", "check-soothing.mjs", "check-license.mjs", "check-license-service.mjs", "check-net30-desk.mjs", "check-trial.mjs", "check-localdb.mjs", "check-contentcatalog.mjs", "check-contentmatcher.mjs", "check-coloringagent.mjs", "check-local-art.mjs", "check-tablet.mjs", "check-voice-kit.mjs", "check-design-system.mjs", "check-claims.mjs", "check-favicon.mjs"]) step(s, () => {
+for (const s of ["check-outreach.mjs", "check-life-planner.mjs", "check-life-journal.mjs", "check-services.mjs", "check-coloring.mjs", "check-trace.mjs", "check-infinite.mjs", "check-hybrid.mjs", "check-shift-calendar.mjs", "check-describe.mjs", "check-resident-context.mjs", "check-public-domain.mjs", "check-activity-studio.mjs", "check-activity-life.mjs", "check-spacing.mjs", "check-facility-validator.mjs", "check-reminiscence-pages.mjs", "check-pcg.mjs", "check-clinical.mjs", "check-clinical-staging.mjs", "check-facility-ops.mjs", "check-resident-engine.mjs", "check-quality-hub.mjs", "check-clinical-alignment.mjs", "check-soothing.mjs", "check-license.mjs", "check-license-service.mjs", "check-net30-desk.mjs", "check-trial.mjs", "check-localdb.mjs", "check-contentcatalog.mjs", "check-contentmatcher.mjs", "check-coloringagent.mjs", "check-local-art.mjs", "check-tablet.mjs", "check-voice-kit.mjs", "check-design-system.mjs", "check-claims.mjs", "check-favicon.mjs"]) step(s, () => {
   const out = execFileSync(process.execPath, [path.join(ROOT, "scripts", s)], { encoding: "utf8" }).trim().split("\n")[0];
   return out;
 });
@@ -249,6 +249,14 @@ step("Daily engagement: three choices and one button, a card for every kind of t
 
 step("How to use and a clinical tip on the Studio, the Packet Builder and the Facility Portal; Speak on the profile's notes and the Shift board's note, asking the browser only when pressed, on the device only, greyed out with the reason elsewhere, a dictated name warned of (a real browser)", () => {
   try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-help-dictation-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
+  catch (e){
+    if (e.status === 2) return "skipped: Playwright is not installed here (see docs/dev-setup.md)";
+    throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message);
+  }
+});
+
+step("High spacing / low visual crowding in the Activity Page Studio and the Packet Builder: a 52 px choice beside the stage and the hands, about half as many items on a page, a bold box round each, the same black and white and type sizes; kept in Settings, offered on every activity, remembered by the pages added to the packet; every activity built with it on (a real browser, day and Night Shift, 1366 x 768 and 390 x 844)", () => {
+  try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-spacing-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
   catch (e){
     if (e.status === 2) return "skipped: Playwright is not installed here (see docs/dev-setup.md)";
     throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message);

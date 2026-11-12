@@ -52,7 +52,7 @@
     return sh;
   };
   /* how many of something a page holds: more early, fewer late, fewer again for a hand with little control */
-  var amount = function (P, early, middle, late) { return Math.max(late == null ? 2 : Math.min(2, late), (P.stage === 1 ? early : P.stage === 2 ? middle : late == null ? middle : late) - fewer(P)); };
+  var amount = function (P, early, middle, late) { return K.cut(Math.max(late == null ? 2 : Math.min(2, late), (P.stage === 1 ? early : P.stage === 2 ? middle : late == null ? middle : late) - fewer(P)), P, 2); };
   /* is a whole topic on the list of things to avoid? (the profile's ticked topics arrive as their words) */
   var topicAvoided = function (code, P) { var R = root.CogniResident, ws = R && R.AVOID_TOPIC_WORDS[code]; return !!ws && ws.every(function (w) { return P.avoid.indexOf(w) >= 0; }); };
 

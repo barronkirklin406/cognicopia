@@ -250,3 +250,16 @@ Compile Packet PDF (and the daily card's PDF) used to put a 300 dpi picture of e
 
 The coaching line at the foot of the Packet Builder's coloring and activity sheets was styled gray at 8 pt (7 pt on a planner sheet) in one rule, which a later rule overrode to black at 10 pt when the sheet printed. The first rule now says the same as the second, so the screen and the paper agree.
 
+## High spacing / low visual crowding (November 12, 2026)
+
+A choice beside the stage and the hands, for residents with low vision or posterior cortical atrophy. In the Studio it is the box "High spacing / low visual crowding" in the "How much support?" step. It is a separate choice: it never changes the stage, the type floors (18, 18 and 24 pt; titles 32 pt) or the pure black on white.
+
+What it does to a sheet:
+
+- **Fewer things.** About half as many items on a sheet (a cut of 40 to 50 percent where the sheet has room to give), never fewer than the sheet needs. A routine keeps three steps. A page of several parts keeps its first two parts and the strip for staff, and a long list keeps about half of its items, spread through the list so a life's moments still run from early to late. Pairs are never cut from their partners, and the people on Family across the generations and Who's who are all kept; those pages only gain air.
+- **More air.** The gap between lines of text is 1.4 instead of 1.22, and a word search is a smaller square, so its letters are bigger. The bigger word search (early stage) steps aside, because it is the opposite of this.
+- **Bold boxes.** Lines are 1.5 pt bolder, and each prompt, step, mixed-up word, household match and saying stands in a box. A page that cannot stay calm with the boxes gives them up before it gives up any size.
+
+The same sheets come back for the same profile and seed, and a resident's topics to avoid are kept off every page, as before. The Packet Builder has the same choice in Settings and on each activity, with the same effect (about half as many items, a bold box round each, more air); see the hand-off for how.
+
+Checks: `scripts/check-spacing.mjs` (the engine and the page makers) and `scripts/check-spacing-ui.mjs` (both tools in a real browser).
