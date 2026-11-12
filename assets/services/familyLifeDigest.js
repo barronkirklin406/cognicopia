@@ -1,5 +1,6 @@
-/* CogniFamilyDigest: the file that ships (the owner chose it, November 9, 2026). Its TypeScript source is not in
-   the repository, so this file is edited by hand and npm run services leaves it alone. */
+/* CogniFamilyDigest: hand-written source (the owner chose this version, November 9, 2026). Its TypeScript is no longer in
+   the repository, so this file is the source: edit it directly. scripts/build-services.mjs does not build or overwrite it
+   (it is listed in HAND_WRITTEN there). */
 (function(root){
 "use strict";
 /* =====================================================================

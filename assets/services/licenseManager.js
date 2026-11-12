@@ -1,5 +1,6 @@
 /* =====================================================================
    Cognicopia license manager (browser, offline).
+   Hand-written source (no TypeScript; listed in HAND_WRITTEN in scripts/build-services.mjs): edit this file directly.
 
    One small module that every page loads, so "is this computer licensed?"
    has one answer everywhere. Four ways in, in the order they are tried:
