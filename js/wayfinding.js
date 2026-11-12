@@ -395,7 +395,7 @@
   root.addEventListener("storage", function (e) { if (e.key === ACTIVE_KEY) paintBar(); if (e.key === PINS_KEY) paintPins(); });
   root.addEventListener("hashchange", function () { paintCoach(); if (root.location.hash === "#start-here") openFromHash(); });
   /* a first-time visitor who has just agreed to the terms on the home page is shown the guide, once */
-  doc.addEventListener("cg-terms-accepted", function () { if (onPage("index.html") && !startState()) setTimeout(function () { openStart(0); }, 250); });
+  /* the guide never opens by itself (the owner's playbook, Phase 2): a person opens it from "Take a 60-second tour" when they want it */
   function openFromHash() { try { root.history.replaceState(null, "", root.location.pathname + root.location.search); } catch (e) { /* the address keeps its mark */ } openStart(); }
 
   function start() {
