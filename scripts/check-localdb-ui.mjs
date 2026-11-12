@@ -155,7 +155,7 @@ try {
   /* ---- a browser that cannot encrypt: plain rows, and it says so ---- */
   p = await ctx.newPage(); p.on("pageerror", e => errors.push(e.message));
   p.on("request", r => { const u = r.url(); if (!u.startsWith(base) && !u.startsWith("data:") && !u.startsWith("blob:")) foreign.push(u); });
-  await p.goto(base + "license-desk.html");                      // a page that does not load the encrypted store
+  await p.goto(base + "tools/owner/license-desk.html");                      // a page that does not load the encrypted store
   await p.addScriptTag({ url: base + "assets/services/localDb.js" });
   ok(await p.evaluate(() => typeof CogniSecureStore === "undefined"), "the test page has no encrypted store");
   ok((await p.evaluate(() => CogniLocalDb.info())).sealed === false, "without the encrypted store, info() says the rows are not sealed");

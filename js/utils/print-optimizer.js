@@ -77,7 +77,7 @@
 
   /* ---------- the offline bundle ---------- */
   var CORE = [
-    "activity-studio.html", "css/styles.css", "css/pages-utilities.css",
+    "activity-studio.html", "css/styles.css",
     "js/residentContext.js", "js/generators/activity-engine.js", "js/generators/coloring-pipeline.js", "js/generators/activity-modules.js", "js/generators/activity-pages.js", "js/generators/activity-life-data.js", "js/generators/activity-life.js", "assets/services/reminiscenceEngine.js", "components/packet-generator-ui.js",
     "js/utils/facility-validator.js", "js/utils/print-optimizer.js", "assets/services/secureStore.js", "js/residentFolder.js", "js/sessionTimeout.js",
     "assets/coloring/subjects.bundle.js", "assets/coloring/manifest.json", "src/services/ColoringManifest.js", "src/engine/DescribeCreate.js",

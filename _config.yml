@@ -1,0 +1,14 @@
+# GitHub Pages builds this repository with Jekyll. This file only says what the site must NOT publish.
+# Setting "exclude" replaces Jekyll's own default list, so those defaults are repeated here first.
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor/bundle
+  - vendor/cache
+  - vendor/gems
+  - vendor/ruby
+  # the owner's tools (the license desk makes license keys): never part of the public site
+  - tools/owner
+  # the separate facility service is paused (CLAUDE.md, platform/PAUSED.md): its source is not part of the site
+  - platform

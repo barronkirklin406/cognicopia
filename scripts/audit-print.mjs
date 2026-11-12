@@ -303,7 +303,7 @@ try {
 /* ---------- accepted: what a real printer would do the same way and no style sheet can change ---------- */
 const ACCEPTED = [
   { what: /^index\.html p4$/, detail: /non-black\/white/ },       // a native checkbox or radio drawn by the browser in its own gray
-  { what: /^license-desk\.html p1$/, detail: /picture/ },       // the brand logo (a JPEG): its edges are anti-aliased
+  { what: /^tools\/owner\/license-desk\.html p1$/, detail: /picture/ },       // the brand logo (a JPEG): its edges are anti-aliased
 ];
 for (let i = findings.length - 1; i >= 0; i--) if (ACCEPTED.some((a) => a.what.test(findings[i].what) && a.detail.test(findings[i].detail))) findings.splice(i, 1);
 
