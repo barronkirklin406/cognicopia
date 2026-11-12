@@ -372,11 +372,12 @@ const ui = UIFILES.map(f => raw[f]).join("\n"), tabletJs = raw["js/tablet.js"];
   ok(!/cognicopia_resident|cognicopia_profile|activeResident|qpEngine|CogniSecureStore/.test(ui), "the screen reads no resident or profile storage and asks for no name");
   const sw = read("sw.js");
   ok(["tablet.html", ...want.filter(f => f.startsWith("js/")), "assets/pcg/pcg-data.bundle.js", "assets/cognicopia-coloring/cognicopia-coloring.js", "assets/services/trialLedger.js"].every(f => sw.includes('"' + f + '"')), "the service worker keeps the page, its scripts, the puzzle content and the coloring library for offline use");
-  const ids = HUBS.map(h => h.id), hub = HUBS.find(h => h.id === "tablet"), nav = hub && hub.items.find(i => i.key === "tablet");
-  ok(nav && nav.href === "tablet.html" && nav.label === "Tablet Activities" && hub.group === "resident" && ids.indexOf("tablet") === ids.indexOf("packets") + 1, "the top bar has a Tablet Activities place of its own, right after Activity Packets, in the Resident tools group");
-  ok(!HUBS.find(h => h.id === "today").items.some(i => i.key === "tablet"), "and it is no longer repeated inside Today");
+  /* the three doors (the owner's playbook, November 12, 2026): Tablet Activities is a place inside Today, the door for the day's work with
+     residents; it used to be a top-level place of its own, which the three doors replace */
+  const today = HUBS.find(h => h.id === "today"), nav = today && today.items.find(i => i.key === "tablet");
+  ok(nav && nav.href === "tablet.html" && nav.label === "Tablet Activities" && HUBS.filter(h => h.items.some(i => i.key === "tablet")).length === 1, "Tablet Activities is one place in the Today door, and only there");
   const home = read("index.html");
-  ok(/data-hub="packets">[\s\S]{0,600}?data-hub="tablet"><a href="tablet\.html"/.test(home) && !/lp-btn-tablet/.test(home), "the front page's bar links to it (the hero carries one button, Get Started Free)");
+  ok(/id="cgHub-today"[\s\S]{0,2400}?href="tablet\.html"/.test(home) && !/lp-btn-tablet/.test(home), "the front page's bar links to it under Today (the hero carries one button, Get Started Free)");
   ok(/tablet\.html/.test(read("sitemap.xml")), "the sitemap lists the page");
   ok(/<title>Tablet Activities — Cognicopia<\/title>/.test(html) && /rel="canonical" href="https:\/\/cognicopia\.org\/tablet\.html"/.test(html), "the page has its own title and canonical address");
   ok(fs.existsSync(path.join(ROOT, "docs/tablet-activities.md")), "the guide for the page exists");

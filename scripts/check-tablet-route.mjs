@@ -3,7 +3,7 @@
    The Tablet Activities button never ends on a 404, in a real browser.
    Four cases, each against a small server that answers a missing file the way GitHub Pages does
    (status 404 with the body of 404.html):
-     - normal: the top bar's Tablet Activities link (beside Activity Packets) opens tablet.html and its menu shows
+     - normal: the Tablet Activities link in the top bar's Today door opens tablet.html and its menu shows
      - tablet.html missing: the same button lands in the packet tool with Tablet Interactive Mode open
      - a mistyped tablet address (Tablet.html) lands there too
      - any other missing page shows the friendly 404 page with working links
@@ -23,7 +23,7 @@ const ok = (c, m) => { if (c) passed++; else problems.push(m); };
 
 for (const f of ["tablet.html", "js/tablet.js", "js/tabletEngine.js", "404.html", "sw.js"]) ok(fs.existsSync(path.join(ROOT, f)), `${f} is in the repository`);
 const idx = fs.readFileSync(path.join(ROOT, "index.html"), "utf8");
-ok(/data-hub="packets">[\s\S]{0,600}?data-hub="tablet"><a href="tablet\.html"/.test(idx), "the top bar has Tablet Activities right after Activity Packets (written by scripts/site-nav.mjs)");
+ok(/id="cgHub-today"[\s\S]{0,2400}?href="tablet\.html"/.test(idx), "the top bar has Tablet Activities in the Today door (written by scripts/site-nav.mjs)");
 ok(!/lp-btn-tablet/.test(idx), "the hero no longer carries a second Tablet Activities button: the link moved to the top bar");
 
 const { chromium } = loadPlaywright();
@@ -46,7 +46,7 @@ async function visit(label, hide, start, click){
   p.on("pageerror", e => errors.push(e.message));
   p.on("request", r => { if (!r.url().startsWith(base) && !r.url().startsWith("data:") && !r.url().startsWith("blob:")) outside.push(r.url()); });
   await p.goto(base + start); await p.waitForTimeout(700);
-  if (click){ await p.click(click); await p.waitForTimeout(2200); }
+  if (click){ await p.click("#cgHub-today > summary"); await p.waitForTimeout(250); await p.click(click); await p.waitForTimeout(2200); }   // open the Today door, then its link
   const s = await p.evaluate(() => ({ path: location.pathname, menu: !!document.getElementById("tbMenu"), inpage: !!document.getElementById("tabletMode"), h1: (document.querySelector("h1") || {}).textContent || "", links: Array.from(document.querySelectorAll("main a")).map(a => a.getAttribute("href")) }));
   ok(errors.length === 0, `${label}: no script error (${errors[0] || ""})`);
   ok(outside.length === 0, `${label}: nothing is requested from outside the site (${outside[0] || ""})`);
@@ -54,7 +54,7 @@ async function visit(label, hide, start, click){
   return s;
 }
 try {
-  const LINK = '.cg-hubs > li[data-hub="tablet"] > a';
+  const LINK = '#cgHub-today a[href="tablet.html"]';
   let s = await visit("normal", false, "/index.html", LINK);
   ok(s.path === "/tablet.html" && s.menu, "the top bar's link opens the tablet page and its menu shows");
   s = await visit("tablet page missing", true, "/index.html", LINK);
