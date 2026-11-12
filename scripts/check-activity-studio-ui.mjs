@@ -17,11 +17,14 @@ import { execFileSync } from "node:child_process";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { loadPlaywright, serve } from "./lib/browser.mjs";
+import { loadPlaywright, serve, ROOT } from "./lib/browser.mjs";
 
 const { chromium } = loadPlaywright();
 const { srv, base } = await serve();
-const browser = await chromium.launch();
+/* Grayscale font smoothing, the same on every computer: on GitHub's machine Chromium drew text with color (LCD) smoothing, whose pale
+   yellow and cyan fringes and dark red edges round every black letter read as "tinted" in the night-time picture of the page (4 to 6
+   percent), though the page's own colors are only black and white. The check measures the page's colors, not the screen's smoothing. */
+const browser = await chromium.launch({ args: ["--disable-lcd-text"] });
 const problems = [], errors = [], foreign = [], infos = []; let passed = 0;
 const ok = (c, m) => { if (c) passed++; else problems.push(m); };
 const PY = `
@@ -467,9 +470,16 @@ try {
     /* the menu bar and the Menu button float over the top of the window: set them aside for this one picture, so only the page is measured */
     await n.evaluate(() => document.querySelectorAll(".cg-sidebar, .cg-sidebar-toggle, .cg-topbar").forEach(e => { e.style.visibility = "hidden"; }));
     const sheet = await n.$("#asSheet svg"); await sheet.scrollIntoViewIfNeeded(); await n.waitForTimeout(200);
-    const share = await n.evaluate(async b64 => { const img = new Image(); img.src = "data:image/png;base64," + b64; await img.decode(); const c = document.createElement("canvas"); c.width = img.width; c.height = img.height; const x = c.getContext("2d"); x.drawImage(img, 0, 0);
-      const d = x.getImageData(0, 0, c.width, c.height).data; let k = 0; for (let i = 0; i < d.length; i += 4) if (Math.max(d[i], d[i + 1], d[i + 2]) - Math.min(d[i], d[i + 1], d[i + 2]) > 24) k++; return k / (d.length / 4); }, (await sheet.screenshot()).toString("base64"));
-    ok(share < 0.001, `at ${w} px the page on screen stays black on white at night (${(share * 100).toFixed(3)}% of it tinted)`);
+    const shotPng = await sheet.screenshot();
+    /* the share of tinted dots, and, so a failure says what it saw: the commonest tinted colors and the box they sit in */
+    const seen = await n.evaluate(async b64 => { const img = new Image(); img.src = "data:image/png;base64," + b64; await img.decode(); const c = document.createElement("canvas"); c.width = img.width; c.height = img.height; const x = c.getContext("2d"); x.drawImage(img, 0, 0);
+      const d = x.getImageData(0, 0, c.width, c.height).data; let k = 0; const tally = {}; let x0 = c.width, y0 = c.height, x1 = -1, y1 = -1;
+      for (let i = 0; i < d.length; i += 4) if (Math.max(d[i], d[i + 1], d[i + 2]) - Math.min(d[i], d[i + 1], d[i + 2]) > 24) { k++; const key = [d[i], d[i + 1], d[i + 2]].map(v => v >> 4 << 4).join(","); tally[key] = (tally[key] || 0) + 1; const px = (i / 4) % c.width, py = Math.floor(i / 4 / c.width); x0 = Math.min(x0, px); y0 = Math.min(y0, py); x1 = Math.max(x1, px); y1 = Math.max(y1, py); }
+      const top = Object.entries(tally).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([col, nn]) => `rgb(${col}) x${nn}`).join(", ");
+      return { share: k / (d.length / 4), top, box: k ? `${x0},${y0} to ${x1},${y1} of ${c.width}x${c.height}` : "" }; }, shotPng.toString("base64"));
+    const share = seen.share;
+    if (share >= 0.001) { const dir = path.join(ROOT, "e2e", ".artifacts"); fs.mkdirSync(dir, { recursive: true }); fs.writeFileSync(path.join(dir, `studio-night-${w}.png`), shotPng); }   // kept for a person to look at (the GitHub workflow uploads this folder when a run fails)
+    ok(share < 0.001, `at ${w} px the page on screen stays black on white at night (${(share * 100).toFixed(3)}% of it tinted${share >= 0.001 ? `: ${seen.top}, in ${seen.box}` : ""})`);
     await cn.close();
   }
 

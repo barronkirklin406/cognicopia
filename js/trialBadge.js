@@ -1,10 +1,13 @@
 /* =====================================================================
-   The free-trial badge: "Free Trial: 49 / 50 Generations Remaining", live, in the action bar under the navigation on every page
-   that has one (an element marked data-cg-trial; scripts/site-nav.mjs writes it) and in the packet tool's wood bar.
+   The free-packet chip: "49 of 50 free packets left", live, one small chip in the bar under the navigation on every page that has one
+   (an element marked data-cg-trial; scripts/site-nav.mjs writes it) and in the packet tool's header. It is the only sales item in the
+   bar: pressing it opens the license window (assets/services/licenseManager.js), which holds the key box, the plans and the invoice
+   request. Once this computer is licensed the chip is gone completely.
 
    The count is the trial ledger's (assets/services/trialLedger.js: packets used, kept in the page's storage and two backups, so clearing
-   one setting does not hand the free packets back). This only shows it: remaining = FREE_RUNS minus used. It follows every packet made
-   (the ledger's "cognicopia:trial" event), a change in another tab, and a license (a licensed facility sees no badge).
+   one setting does not hand the free packets back). This only shows it: remaining = FREE_RUNS minus used. The count never resets: the
+   first FREE_RUNS packets on a computer are free, once. It follows every packet made (the ledger's "cognicopia:trial" event), a change
+   in another tab, and a license.
 
    The remaining number is also kept in localStorage under cognicopia_trial_generations (50 on a first visit) so another page or a
    person's own script can read it; it is never the source of truth and never raises what the ledger holds. Nothing leaves the page.
@@ -35,55 +38,21 @@
   var ZAP = '<svg class="cg-trial-ic" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg>';
   function paint() {
     var n = total(), left = Math.max(0, n - used());
-    try { root.localStorage.setItem(KEY, String(left)); } catch (e) { /* no storage: the badge still shows */ }
+    try { root.localStorage.setItem(KEY, String(left)); } catch (e) { /* no storage: the chip still shows */ }
     var els = d.querySelectorAll("[data-cg-trial]");
     for (var i = 0; i < els.length; i++) {
       var el = els[i];
-      if (licensed()) {
-        el.hidden = true;
-        if (el.closest) { var wrap = el.closest(".cgw-trial-wrap"); if (wrap) wrap.hidden = true; }
-        continue;
-      }
-      if (el.closest) { var wrap = el.closest(".cgw-trial-wrap"); if (wrap) wrap.hidden = false; }
+      if (licensed()) { el.hidden = true; continue; }
+      var words = left === 0 ? "No free packets left" : left + " of " + n + " free packets left";
       el.hidden = false;
-      el.className = "cg-trial" + (left === 0 ? " cg-trial-out" : left <= 5 ? " cg-trial-low" : "");
-      el.setAttribute("role", "status");
-      el.innerHTML = ZAP + '<span>Free Trial: <b>' + left + ' / ' + n + '</b> Generations Remaining</span>';
+      el.className = "cg-chip" + (left === 0 ? " cg-chip-out" : left <= 5 ? " cg-chip-low" : "");
+      el.setAttribute("aria-label", words + ". Open to enter a license key or see plans.");
+      el.innerHTML = ZAP + '<span class="cg-chip-text">' + (left === 0 ? words : '<b>' + left + '</b> of ' + n + ' free packets left') + '</span>';
     }
   }
   root.CognicopiaTrialBadge = { paint: paint, remaining: function () { return Math.max(0, total() - used()); } };
 
-  var RESET_KEY = "cognicopia_trial_reset_time";
-  var CYCLE_MS = 7 * 24 * 60 * 60 * 1000;                               // 7-day automatic weekly reset
-
-  function checkWeeklyReset() {
-    try {
-      var now = Date.now();
-      var raw = root.localStorage ? root.localStorage.getItem(RESET_KEY) : null;
-      var lastReset = raw ? parseInt(raw, 10) : 0;
-      if (!lastReset || isNaN(lastReset) || (now - lastReset) >= CYCLE_MS) {
-        if (root.localStorage) {
-          root.localStorage.setItem(RESET_KEY, String(now));
-          root.localStorage.setItem("cognicopia_gen_count", "0");
-          root.localStorage.setItem(KEY, String(total()));
-        }
-        var s = store();
-        if (s) {
-          try { s.setItem(RESET_KEY, String(now)); } catch(e){}
-          try { s.setItem("cognicopia_gen_count", "0"); } catch(e){}
-          try { s.setItem(KEY, String(total())); } catch(e){}
-        }
-        try { if (root.indexedDB) root.indexedDB.deleteDatabase("cg_trial"); } catch(e){}
-        try { if (root.caches) root.caches.delete("cg-trial-v1"); } catch(e){}
-        if (d && typeof d.dispatchEvent === "function") {
-          d.dispatchEvent(new CustomEvent("cognicopia:trial", { detail: { used: 0 } }));
-        }
-      }
-    } catch (e) { /* ignore */ }
-  }
-
   function start() {
-    checkWeeklyReset();
     try { if (root.localStorage.getItem(KEY) === null) root.localStorage.setItem(KEY, String(total())); } catch (e) { /* ignore */ }
     paint();
     d.addEventListener("cognicopia:trial", paint);

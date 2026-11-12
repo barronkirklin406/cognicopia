@@ -37,7 +37,7 @@ Do steps 1 to 4 in Stripe's **test mode** first, buy once with the test card `42
 
 ### 1. Make the signing key (once)
 
-**The easy way, in a web browser (no terminal, nothing to install).** Open `license-desk.html` on the live site (`https://cognicopia.org/license-desk.html`; it is not linked from any page and robots.txt asks search engines to skip it) and press **Make my key**. The page makes the key pair inside the browser, saves the secret file `cognicopia-license-private.pem` to the Downloads folder, and shows the one safe line to send. The page cannot send anything out (its content security policy forbids connections, forms and frames), never shows the secret key, and stores nothing. The file it saves is the same kind of file `scripts/issue-license.mjs` reads. Back it up the same way. The same page makes a license key for a facility (step 2 on the page) and checks whether the site accepts a key (step 3), so step 7 below can be done there too. `scripts/check-license-desk-ui.mjs` proves, in a real browser, that what the page makes is what Node and the license manager accept.
+**The easy way, in a web browser (no terminal, nothing to install).** Open License Desk from a copy on your own computer (`tools/owner/license-desk.html`; since November 12, 2026 it is no longer on the live site, and [tools/owner/README.md](../tools/owner/README.md) gives the steps to open it) and press **Make my key**. The page makes the key pair inside the browser, saves the secret file `cognicopia-license-private.pem` to the Downloads folder, and shows the one safe line to send. The page cannot send anything out (its content security policy forbids connections, forms and frames), never shows the secret key, and stores nothing. The file it saves is the same kind of file `scripts/issue-license.mjs` reads. Back it up the same way. The same page makes a license key for a facility (step 2 on the page) and checks whether the site accepts a key (step 3), so step 7 below can be done there too. `scripts/check-license-desk-ui.mjs` proves, in a real browser, that what the page makes is what Node and the license manager accept.
 
 **The command-line way**, if you prefer it:
 
@@ -102,7 +102,7 @@ A value that still holds `REPLACE_ME`, or has `test_` in it, is treated as not s
 
 This is what makes the key arrive in the buyer's email by itself. It is `license-service/`, written up in [license-service.md](license-service.md): what it does, the settings, what the owner provides (a host, an email sender, the pasted settings, and the webhook in Stripe), a free end-to-end test, and what to do when something is wrong. `scripts/check-license-service.mjs` proves its behavior without a network.
 
-**If you would rather not run the service yet,** leave `REDEEM_URL` as the placeholder. `activate.html` then tells a buyer that automatic activation is not switched on and to email the receipt, and you issue the key by hand (step 7, or on `license-desk.html`). Nothing else changes.
+**If you would rather not run the service yet,** leave `REDEEM_URL` as the placeholder. `activate.html` then tells a buyer that automatic activation is not switched on and to email the receipt, and you issue the key by hand (step 7, or on License Desk, `tools/owner/license-desk.html`). Nothing else changes.
 
 (`platform/` also has a `POST /api/licenses/redeem` route from earlier. `license-service/` supersedes it: it needs no database, no framework and no installs, and it also emails the key.)
 

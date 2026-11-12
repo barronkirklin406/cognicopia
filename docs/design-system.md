@@ -127,7 +127,7 @@ The front page is cream, with white cards, Fraunces headings and forest-green bu
 - **The shared footer**: `scripts/site-nav.mjs` writes the same four-column footer (Tools, Facility, Resources) into every paper page, replacing each page's one-line footer. The breadcrumb bar is parchment.
 - **Screen only.** None of these rules touches print, so packets still print pure black on white. Night Shift keeps its dim amber-on-brown palette on every paper page.
 - **Measured.** `scripts/check-design-system.mjs` proves each page carries its class, that the new text pairs (amber, green, clay, sage) are 7:1 or better, and that the paper rules have no print rule. A full-site scan of every page's text against its real background found nothing under 4.5:1, and nothing under 7:1 after the last fixes.
-- The owner's license desk (`license-desk.html`) uses the same palette in its own small stylesheet.
+- The owner's license desk (`tools/owner/license-desk.html`) uses the same palette in its own small stylesheet.
 
 ## How it is measured
 

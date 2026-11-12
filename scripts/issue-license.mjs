@@ -10,7 +10,7 @@
 
    Options
      --facility  the name printed on the license (required, up to 120 characters)
-     --tier      monthly_facility | annual_facility | enterprise   (required)
+     --tier      monthly_facility | annual_facility | enterprise | pilot_facility   (required; a pilot is 30 days, set --until to match)
      --until     the date it is paid through, YYYY-MM-DD (required); the site
                  keeps working a further 90 days (GRACE_DAYS) offline
      --key       the private key file (default ~/.cognicopia/license-private.pem,
@@ -30,7 +30,7 @@ import path from "path";
 
 const args = process.argv.slice(2);
 const flag = n => { const i = args.indexOf(n); return i >= 0 ? args[i + 1] : null; };
-const TIERS = ["monthly_facility", "annual_facility", "enterprise"];
+const TIERS = ["monthly_facility", "annual_facility", "enterprise", "pilot_facility"];
 const b64u = b => Buffer.from(b).toString("base64url");
 
 /* Sign a payload the way the browser expects: COG1.<payload>.<r||s>. Exported for the tests. */
@@ -77,7 +77,7 @@ function main() {
   catch (e) { console.error(e.message); process.exit(1); }
 
   const site = (flag("--site") || "https://cognicopia.org").replace(/\/+$/, "");
-  const tierName = { monthly_facility: "monthly facility license", annual_facility: "annual facility license", enterprise: "enterprise license" }[made.payload.t];
+  const tierName = { monthly_facility: "monthly facility license", annual_facility: "annual facility license", enterprise: "enterprise license", pilot_facility: "30-day facility pilot" }[made.payload.t];
   console.log(`id        ${made.payload.n}`);
   console.log(`facility  ${made.payload.f}`);
   console.log(`license   ${tierName}, paid through ${made.payload.e}`);

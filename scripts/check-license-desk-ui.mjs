@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* =====================================================================
-   The license desk (license-desk.html), in a real browser.
+   The license desk (tools/owner/license-desk.html), in a real browser.
 
    The page is where the owner makes the license-signing key and, later,
    license keys by hand, with nothing to install. It has to be right in
@@ -46,7 +46,7 @@ const open = async (w = 1366, h = 900, config) => {
   const p = await ctx.newPage();
   p.on("pageerror", e => errors.push(e.message));
   p.on("request", r => { const u = r.url(); if (!u.startsWith(base) && !u.startsWith("data:") && !u.startsWith("blob:")) foreign.push(u); });
-  await p.goto(base + "license-desk.html"); await p.waitForSelector("#makePair");
+  await p.goto(base + "tools/owner/license-desk.html"); await p.waitForSelector("#makePair");
   return p;
 };
 const text = (p, sel) => p.$eval(sel, e => (e.value !== undefined && e.tagName !== "DIV" ? e.value : e.textContent).replace(/\s+/g, " ").trim());

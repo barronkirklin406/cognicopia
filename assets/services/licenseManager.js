@@ -1,5 +1,6 @@
 /* =====================================================================
    Cognicopia license manager (browser, offline).
+   Hand-written source (no TypeScript; listed in HAND_WRITTEN in scripts/build-services.mjs): edit this file directly.
 
    One small module that every page loads, so "is this computer licensed?"
    has one answer everywhere. Four ways in, in the order they are tried:
@@ -300,7 +301,7 @@
       return {
         ok: true, token: token, signature: m[3], id: pl.n, facilityName: pl.f.trim(), licenseTier: pl.t,
         expiresAt: pl.e, issuedAt: typeof pl.i === "string" ? pl.i : null, paidThrough: paidTo,
-        graceEnds: paidTo + (Number(CFG.GRACE_DAYS) || 0) * DAY
+        graceEnds: paidTo + (pl.t === "pilot_facility" ? 0 : (Number(CFG.GRACE_DAYS) || 0)) * DAY      // a pilot ends on its date
       };
     })();
     verified[token] = res;
@@ -522,7 +523,7 @@
     ".cgpromo-status.is-ok{color:#14532d}",
     ".cgpromo-status.is-bad{color:#9b1c1c}",
     ".cgpromo-note{padding:10px 14px;border-left:5px solid #8a5a00;background:#fff4dc;border-radius:6px}",
-    ".cgpromo-more{margin:14px 0 0;font-size:16px}",
+    ".cgpromo-more{display:flex;flex-wrap:wrap;gap:0 22px;margin:14px 0 0;font-size:16px}",
     ".cgpromo-more a{color:#14302d;font-weight:700;display:inline-flex;align-items:center;min-height:var(--tap,52px)}",
     ".cgpromo-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}",
     ".cgpromo-actions button,.cgpromo-actions a{flex:1 1 150px;min-height:52px;padding:10px 16px;border-radius:10px;border:2px solid #14302d;background:#fff;color:#14302d;font-family:inherit;font-weight:700;font-size:18px;line-height:1.2;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;text-align:center;text-decoration:none;box-sizing:border-box}",
@@ -553,8 +554,8 @@
     mounted = true;
     if (!doc.getElementById("cgpromo-style")){ var st = el("style"); st.id = "cgpromo-style"; st.textContent = CSS; (doc.head || doc.documentElement).appendChild(st); }
     var bar = doc.querySelector(".cg-wood-bar") || doc.querySelector(".cg-topbar");
-    if (bar){
-      var existingBtn = doc.getElementById("cgPromoBtn");
+    var existingBtn = doc.getElementById("cgPromoBtn");          // the free-packet chip (scripts/site-nav.mjs writes it; the builder and the packet tool carry their own)
+    if (bar || existingBtn){
       btn = existingBtn || el("button", "cgpromo-btn", "License Key / Promo");
       if (!existingBtn) {
         btn.type = "button"; btn.id = "cgPromoBtn";
@@ -564,15 +565,16 @@
       badge = el("button", "cgpromo-badge"); badge.type = "button"; badge.id = "cgPromoBadge"; badge.hidden = true;
       badge.addEventListener("click", function(){ openPromo(); });
       var toggle = doc.getElementById("hdrlicToggle"), hdr = doc.getElementById("hdrlic");
-      var stripe = bar.querySelector('a[href*="buy.stripe.com"],a[data-upgrade-prompt]');
-      if (!existingBtn) {
-        if (toggle && toggle.parentNode) toggle.parentNode.insertBefore(btn, bar.classList.contains("cg-wood-bar") ? toggle : toggle.nextSibling);   // the wood bar reads: Get Full Access, Invoice, License Key / Promo, Activate Access
+      var stripe = bar && bar.querySelector('a[href*="buy.stripe.com"],a[data-upgrade-prompt]');
+      if (bar && !existingBtn) {
+        if (toggle && toggle.parentNode) toggle.parentNode.insertBefore(btn, bar.classList.contains("cg-wood-bar") ? toggle : toggle.nextSibling);   // the wood bar reads: Get Full Access, Invoice, License Key 
         else if (stripe && stripe.parentNode) stripe.parentNode.insertBefore(btn, stripe);
         else bar.insertBefore(btn, bar.firstChild);
       }
-      if (hdr && hdr.parentNode === bar) bar.insertBefore(badge, hdr);
+      if (bar && hdr && hdr.parentNode === bar) bar.insertBefore(badge, hdr);
       else if (stripe && stripe.parentNode) stripe.parentNode.insertBefore(badge, stripe);
-      else bar.insertBefore(badge, btn);
+      else if (btn.parentNode) btn.parentNode.insertBefore(badge, btn);
+      else if (bar) bar.insertBefore(badge, bar.firstChild);
     }
     render();
   }
@@ -583,13 +585,13 @@
     var st = status(), on = st.licensed;
     if (btn) btn.classList.toggle("cgpromo-hide", on);
     if (badge){
-      badge.hidden = !on;
+      /* Once licensed the bar is empty: no chip and no badge. The badge comes back only when the license needs the owner's attention
+         (it ends within 30 days, or it is in its grace days). The license window stays one tap away in every page's footer. */
+      var soon = on && st.keyed && (st.inGrace || (st.daysLeft != null && st.daysLeft <= 30));
+      badge.hidden = !soon;
       badge.textContent = "";
-      if (on){
-        var soon = st.keyed && (st.inGrace || (st.daysLeft != null && st.daysLeft <= 30));
-        var label = (st.promo && !st.keyed && !st.paid ? "Full Access Active (Promo)" : "Full Access Active") + (soon ? " — renew soon" : "");
-        badge.appendChild(el("span", "", "✓"));
-        badge.lastChild.setAttribute("aria-hidden", "true");
+      if (soon){
+        var label = st.licenseTier === "pilot_facility" ? "Pilot ends soon" : "License: renew soon";
         badge.appendChild(el("span", "", label));
         badge.setAttribute("aria-label", label + (st.keyed ? ", " + st.facilityName + ", paid through " + dateText(st.expiresAt) : st.promo && st.activatedAt ? ", turned on " + dateText(st.activatedAt) : "") + ". Open details.");
       }
@@ -636,13 +638,13 @@
       card.appendChild(el("h2", "", promoOnly ? "Full Access Active (Promo)" : "Full Access Active")).id = "cgPromoTitle";
       var body;
       if (st.keyed){
-        body = st.facilityName + " — " + st.tierLabel + ". Paid through " + dateText(st.expiresAt) + "."
+        body = st.facilityName + " — " + st.tierLabel + (st.licenseTier === "pilot_facility" ? ". It runs through " : ". Paid through ") + dateText(st.expiresAt) + "."
           + (st.inGrace ? " That date has passed; the license keeps working until " + dateText(st.graceEndsAt) + ", so please renew soon." : "")
-          + " Every packet, print, export and tool is unlocked, and it stays on after a refresh or with no internet.";
+          + " Every packet, print and tool is unlocked, and it stays on after a refresh or with no internet.";
       } else if (promoOnly){
-        body = "Promo access was turned on" + (st.activatedAt ? " " + dateText(st.activatedAt) : "") + " on this computer. Every packet, print, export and tool is unlocked, and it stays on after a refresh or with no internet.";
+        body = "Promo access was turned on" + (st.activatedAt ? " " + dateText(st.activatedAt) : "") + " on this computer. Every packet, print and tool is unlocked, and it stays on after a refresh or with no internet.";
       } else {
-        body = "A paid license code is active on this computer. Every packet, print, export and tool is unlocked.";
+        body = "A paid license code is active on this computer. Every packet, print and tool is unlocked.";
       }
       card.appendChild(el("p", "", body));
       card.appendChild(msg);
@@ -669,6 +671,7 @@
     card.appendChild(el("h2", "", "Activate your license")).id = "cgPromoTitle";
     if (st.lapsed) card.appendChild(el("p", "cgpromo-note", "The license for " + st.lapsed.facilityName + " ended on " + dateText(st.lapsed.expiresAt) + " (plus " + (Number(CFG.GRACE_DAYS) || 0) + " days of grace). Paste a new key below"
       + (renewalRef() ? ", or renew online." : ".")));
+    if (why) card.appendChild(el("p", "cgpromo-note", why));
     card.appendChild(el("p", "", "Paste the license key from your purchase email or invoice, or type a promo code. It is checked right here, with no internet needed, and nothing is sent anywhere."));
     var label = el("label", "", "License key or promo code"); label.setAttribute("for", "cgPromoInput");
     var input = el("textarea", "cgpromo-input"); input.id = "cgPromoInput"; input.rows = 3; input.placeholder = "COG1.… or a promo code";
@@ -681,7 +684,9 @@
     card.appendChild(form);
     var more = el("p", "cgpromo-more");
     more.appendChild(link(pricingUrl(), "See plans and prices"));
-    if (st.lapsed && renewalRef()){ more.appendChild(doc.createTextNode(" · ")); more.appendChild(link(activateUrl() + "?renew=1", "Renew online")); }
+    more.appendChild(link(base() + (CFG.INVOICE_PATH || "contact.html?subject=Corporate+Invoice+Request"), "Request an invoice"));
+    more.appendChild(link(base() + (CFG.PILOT_PATH || "pilot.html"), "Start a 30-day pilot"));
+    if (st.lapsed && renewalRef()) more.appendChild(link(activateUrl() + "?renew=1", "Renew online"));
     card.appendChild(more);
     input.addEventListener("input", function(){ input.removeAttribute("aria-invalid"); if (msg.classList.contains("is-bad")){ msg.textContent = ""; msg.className = "cgpromo-status"; } });
     input.addEventListener("keydown", function(e){ if (e.key === "Enter" && !e.shiftKey){ e.preventDefault(); if (typeof form.requestSubmit === "function") form.requestSubmit(); else go.click(); } });
@@ -705,9 +710,12 @@
     input.focus();
   }
 
-  function openPromo(){
+  /* openPromo(why): why is an optional sentence shown above the key box, for a feature that needs a facility license or a pilot. */
+  var why = "";
+  function openPromo(reason){
     if (!doc) return false;
-    if (!doc.body){ doc.addEventListener("DOMContentLoaded", openPromo); return false; }
+    why = typeof reason === "string" ? reason : "";
+    if (!doc.body){ doc.addEventListener("DOMContentLoaded", function(){ openPromo(reason); }); return false; }
     if (!mounted) mount();
     if (!overlay) build();
     lastFocus = doc.activeElement;
@@ -727,6 +735,16 @@
     var back = (badge && !badge.hidden && lastFocus === btn) ? badge : lastFocus;
     if (back && back.focus && doc.contains(back) && back.offsetParent !== null){ try { back.focus(); } catch (e){} }
     else if (badge && !badge.hidden) badge.focus();
+    else { var foot = doc.querySelector("[data-cg-license]"); if (foot && foot.focus){ try { foot.focus({ preventScroll: true }); } catch (e){} } }   // the chip is gone once licensed: focus lands on the footer's license link, never nowhere
+  }
+
+  /* Printing for a whole building (every resident in one bundle, a week or a month at a time) is a facility feature: it needs a license
+     or a 30-day pilot key. A single resident's packets stay free for the first FREE_RUNS on a computer. needsFacility(featureName)
+     answers "may this computer do it?"; when it may not, it opens the license window with the reason and returns true. */
+  function needsFacility(feature){
+    if (isLicensed()) return false;
+    openPromo((feature || "This") + " is for facilities. It needs a facility license or a 30-day pilot; a single resident's packets stay free for the first " + (Number(CFG.FREE_RUNS) || 50) + " on this computer.");
+    return true;
   }
 
   /* ---------- start up: read the address and storage, draw, and watch for other tabs ---------- */
@@ -735,6 +753,12 @@
     mount();
     if (root.addEventListener) root.addEventListener("storage", function(e){
       if (!e.key || e.key.indexOf("cognicopia_license") === 0) announce();
+    });
+    /* every page's footer carries "License on this computer" (scripts/site-nav.mjs): it opens the same window, licensed or not */
+    doc.addEventListener("click", function(e){
+      var a = e.target && e.target.closest ? e.target.closest("[data-cg-license]") : null;
+      if (!a || e.defaultPrevented || e.button || e.metaKey || e.ctrlKey || e.shiftKey) return;
+      e.preventDefault(); openPromo();
     });
     if (bootNote){ flash = { cls: bootNote.ok ? "is-ok" : "is-bad", text: bootNote.text }; bootNote = null; openPromo(); }
   }
@@ -747,6 +771,6 @@
     isPromoActive: isPromoActive, isPaidActive: isPaidActive, isKeyActive: isKeyActive, isLicensed: isLicensed, status: status,
     activate: activate, activateKey: activateKey, inspectKey: inspectKey, revokeKey: revokeKey, looksLikeKey: looksLikeKey,
     rememberRef: rememberRef, renewalRef: renewalRef, activateUrl: activateUrl, pricingUrl: pricingUrl,
-    openPromo: openPromo, closePromo: closePromo, onChange: onChange, MESSAGES: Object.freeze({ invalid: MSG_INVALID, ok: MSG_OK })
+    openPromo: openPromo, closePromo: closePromo, needsFacility: needsFacility, onChange: onChange, MESSAGES: Object.freeze({ invalid: MSG_INVALID, ok: MSG_OK })
   });
 })(typeof globalThis !== "undefined" ? globalThis : this);

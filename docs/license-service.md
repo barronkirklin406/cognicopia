@@ -38,7 +38,7 @@ Set in the host's environment, never in the repository (it is public).
 | `STRIPE_RESTRICTED_KEY` | A Stripe key that can only **read**. In the Stripe Dashboard: Developers, API keys, create a restricted key with read access to Checkout Sessions and Subscriptions and nothing else. |
 | `STRIPE_WEBHOOK_SECRET` | `whsec_...`, shown on the page of the webhook endpoint (below). |
 | `STRIPE_PRICE_MONTHLY`, `STRIPE_PRICE_ANNUAL` | The two price ids of the live product (Product catalog, "Cognicopia Facility License"). |
-| `LICENSE_SIGNING_KEY` | The private key that signs license keys, from a **second** key made on `license-desk.html` (see "Two keys" below). |
+| `LICENSE_SIGNING_KEY` | The private key that signs license keys, from a **second** key made on License Desk (`tools/owner/license-desk.html`) (see "Two keys" below). |
 | `RESEND_API_KEY` | The email service's key. |
 | `EMAIL_FROM` | The sender, for example `Cognicopia <licenses@cognicopia.org>`. The domain must be verified with the email service. |
 | `EMAIL_REPLY_TO` | Optional: where replies go, for example `cognicopia@outlook.com`. |
@@ -60,7 +60,7 @@ A facility that pays by invoice (Stripe "send invoice", due in 30 days) gets its
 
 ## Two keys, on purpose
 
-Make the license-signing key **twice** on `license-desk.html`: a **master key** that stays on the owner's computer and makes keys by hand for invoices, and a **server key** whose private half goes into the host's settings. Both public lines go in `PUBLIC_KEYS` (it is a list). If the host were ever broken into, the server key is taken out of the list and the master key still stands. Keys already issued with the server key can be withdrawn by id (`REVOKED_IDS`), or simply replaced.
+Make the license-signing key **twice** on License Desk (`tools/owner/license-desk.html`, opened from a copy on the owner's computer): a **master key** that stays on the owner's computer and makes keys by hand for invoices, and a **server key** whose private half goes into the host's settings. Both public lines go in `PUBLIC_KEYS` (it is a list). If the host were ever broken into, the server key is taken out of the list and the master key still stands. Keys already issued with the server key can be withdrawn by id (`REVOKED_IDS`), or simply replaced.
 
 ## Current setup (October 14, 2026)
 
@@ -97,5 +97,5 @@ A monthly license's key is paid through the end of the month it was bought, plus
 | `/api/licenses/health` says `ready: false` | A setting is missing | The list names which. |
 | The webhook page in Stripe shows 400 | The signing secret in the host does not match the endpoint's | Copy `whsec_...` again from that endpoint's page. |
 | Stripe shows 503 | A setting is missing | The answer names it. |
-| A buyer typed the wrong email | The key went to that address | Make a key on `license-desk.html` and send it by hand. |
+| A buyer typed the wrong email | The key went to that address | Make a key on License Desk (`tools/owner/license-desk.html`) and send it by hand. |
 | A key must be withdrawn | A refund or chargeback | Add its id to `REVOKED_IDS` in `src/config/license.js`. |
