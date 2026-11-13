@@ -37,7 +37,7 @@
    Needs Playwright. Where it is missing this exits 2 and npm run build skips it.
    Run: node scripts/check-tablet-ui.mjs
    ===================================================================== */
-import { loadPlaywright, serve } from "./lib/browser.mjs";
+import { loadPlaywright, serve, agreed } from "./lib/browser.mjs";
 import { measure as measureColor, sparse as colorSparse, MIN_SHAPES, MAX_SHAPES } from "./lib/tablet-color-measure.mjs";
 
 const { chromium } = loadPlaywright();
@@ -53,7 +53,7 @@ const SPEECH = "window.__spoken=[];(function(){try{var s=window.speechSynthesis;
 const LAND = { width: 1024, height: 768 }, PORT = { width: 768, height: 1024 }, PHONE = { width: 390, height: 844 };
 
 async function fresh(viewport, o = {}) {
-  const ctx = await browser.newContext({ viewport, hasTouch: true, reducedMotion: o.reduced ? "reduce" : "no-preference" });
+  const ctx = await browser.newContext({ viewport, hasTouch: true, reducedMotion: o.reduced ? "reduce" : "no-preference" }); await agreed(ctx);
   if (o.init) await ctx.addInitScript(o.init);
   const p = await ctx.newPage();
   p.on("request", r => { if (!r.url().startsWith(base) && !r.url().startsWith("data:")) foreign.push(r.url()); });
@@ -867,7 +867,7 @@ try {
     const { ctx, p } = await fresh(LAND);
     for (const id of ["wordsearch", "crossword", "color", "paint"]) { await openAct(p, id); if (id === "color") await p.waitForSelector(".tb-pics", { timeout: 8000 }).catch(() => {}); await toMenu(p); }
     const keys = await p.evaluate(() => Object.keys(localStorage).concat(Object.keys(sessionStorage)));
-    ok(keys.every(k => /^(cognicopia_tablet_prefs|cognicopia_gen_count|cognicopia_trial_generations|cognicopia_trial_persist|cognicopia_trial_reset_time|cognicopia_license.*|cognicopia_promo.*)$/.test(k)), "nothing is kept in this browser but the choices and the free-packet count: " + keys.join(", "));
+    ok(keys.every(k => /^(cognicopia_tablet_prefs|cognicopia_gen_count|cognicopia_trial_generations|cognicopia_trial_persist|cognicopia_trial_reset_time|cognicopia_license.*|cognicopia_promo.*|cognicopia_eula_accepted)$/.test(k)), "nothing is kept in this browser but the choices, the free-packet count and the terms agreed to: " + keys.join(", "));
     ok(await p.evaluate(() => document.cookie === ""), "no cookie is set");
     await ctx.close();
   }

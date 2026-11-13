@@ -13,7 +13,7 @@
      all             nothing is requested from outside the page, and no page script fails
    ===================================================================== */
 import fs from "fs";
-import { serve, loadPlaywright } from "./lib/browser.mjs";
+import { serve, loadPlaywright, agreed } from "./lib/browser.mjs";
 
 const { chromium } = loadPlaywright();
 const { srv, base } = await serve();
@@ -22,7 +22,7 @@ let passed = 0; const problems = [];
 const ok = (c, m) => { if (c) passed++; else problems.push(m); };
 
 const outside = [], errors = [];
-const ctx = await browser.newContext({ viewport: { width: 1280, height: 1000 }, serviceWorkers: "block", acceptDownloads: true, permissions: ["clipboard-read", "clipboard-write"] });
+const ctx = await browser.newContext({ viewport: { width: 1280, height: 1000 }, serviceWorkers: "block", acceptDownloads: true, permissions: ["clipboard-read", "clipboard-write"] }); await agreed(ctx);
 const pg = await ctx.newPage();
 pg.on("request", r => { const u = r.url(); if (!u.startsWith(base) && !/^(data|blob|about):/.test(u)) outside.push(u); });
 pg.on("pageerror", e => errors.push(e.message));

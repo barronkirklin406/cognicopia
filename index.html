@@ -662,6 +662,7 @@ html.gate-open body::before{content:"";position:fixed;inset:0;z-index:2147483000
 .photorow{display:flex;align-items:center;gap:8px;margin-top:7px}
 .cthumb{width:44px;height:44px;border-radius:4px;object-fit:cover;
   border:1px solid var(--rule);display:block}
+.cthumb[hidden]{display:none}       /* no photo yet: no empty picture frame beside Choose, on the screen or on paper */
 .addphoto,.delphoto{font:inherit;font-size:15px;padding:9px 14px;
   background:transparent;color:var(--garden);border:1px solid var(--rule);
   border-radius:4px;cursor:pointer}
@@ -25790,7 +25791,7 @@ html.cg-night-shift .qs-next a{color:#ffedcc}
 .qs-next span{display:block}
 html.cg-night-shift .qs{background:#2b2015;border-color:#d6a64b}
 html.cg-night-shift .qs-go{background:#5a3e12;color:#fff1cf}
-@media print{.qs-go-row,.qs-next{display:none!important}}
+@media print{.qs-go-row,.qs-next{display:none!important}.qs,html.cg-night-shift .qs{background:#fff!important;border:2pt solid #000!important;box-shadow:none!important}.qs,.qs *{color:#000!important}}
 </style>
 <script id="qsJs">
 /* The one joy is the first pastime: it fills the hobbies field in step 4 (and follows it while that field still holds only the joy).

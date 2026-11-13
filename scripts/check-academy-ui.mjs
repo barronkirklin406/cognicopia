@@ -24,7 +24,7 @@
    and npm run build skips it. Serves the repository on a free local port.
    Run: node scripts/check-academy-ui.mjs
    ===================================================================== */
-import { loadPlaywright, serve } from "./lib/browser.mjs";
+import { loadPlaywright, serve, agreed } from "./lib/browser.mjs";
 
 const { chromium } = loadPlaywright();
 const { srv, base } = await serve();
@@ -33,7 +33,7 @@ const errors = [], problems = [], foreign = []; let passed = 0;
 const ok = (cond, msg) => { if (cond) passed++; else problems.push(msg); };
 
 const open = async (w = 1366, h = 900, extra = {}) => {
-  const ctx = await browser.newContext(Object.assign({ viewport: { width: w, height: h }, serviceWorkers: "block", acceptDownloads: true }, extra));
+  const ctx = await browser.newContext(Object.assign({ viewport: { width: w, height: h }, serviceWorkers: "block", acceptDownloads: true }, extra)); await agreed(ctx);
   await ctx.addInitScript(() => { window.print = () => { window.__printed = (window.__printed || 0) + 1; }; });   // the print window is not what is tested
   const p = await ctx.newPage();
   p.on("pageerror", e => errors.push(e.message));
