@@ -10538,19 +10538,26 @@ function dotsPage(D,r,s,theme){
   D.d.setFont("helvetica","bold"); D.d.setFontSize(20);
   const dots=pts.map(([px,py])=>[x0+px*box,y0+py*box]), placed=[];
   dots.forEach(([x,y])=>{ D.d.setFillColor(0); D.d.circle(x,y,3.8,"F"); });
-  /* a number goes outside the shape, and on the side where it touches no other number and no other dot */
+  /* a number goes outside the shape, and on the side where it touches no other number and no other dot. Where the dots
+     crowd (a big shape in Extra-Large Print), the nearest clear place on the page is used; if none is clear, the place
+     touching the fewest others, never simply the first one tried. */
   const hit=(a,b)=>a.x0<b.x1&&a.x1>b.x0&&a.y0<b.y1&&a.y1>b.y0;
+  const TURNS=[0]; for(let t=1;t<=12;t++) TURNS.push(t*Math.PI/12,-t*Math.PI/12);     // every 15 degrees, nearest the outward side first
+  const top=y0-40, low=Math.min(D.bottom()+6, y0+box+44);
   pts.forEach(([px,py],i)=>{
     const [x,y]=dots[i], txt=String(i+1), w=D.d.getTextWidth(txt), h=22;
     const base=Math.atan2(py-0.5,px-0.5) || -Math.PI/2;
-    let best=null;
-    for(const dist of [21,28,36]) for(const turn of [0,0.6,-0.6,1.2,-1.2,1.8,-1.8,Math.PI]){
+    let best=null, bestCost=Infinity;
+    search: for(const dist of [21,28,36,44,52]) for(const turn of TURNS){
       const ang=base+turn, cx=x+Math.cos(ang)*dist, cy=y+Math.sin(ang)*dist+7;
       const r={x0:cx-w/2-3,x1:cx+w/2+3,y0:cy-h-2,y1:cy+5};
-      const clear=!placed.some(q=>hit(r,q)) && !dots.some(([dx,dy],k)=>hit(r,{x0:dx-5,x1:dx+5,y0:dy-5,y1:dy+5}));
-      if(clear){ best={cx,cy,r}; break; }
-      if(!best) best={cx,cy,r};
+      if(r.x0<MARGIN-20||r.x1>PW-MARGIN+20||r.y0<top||r.y1>low) continue;   // stays on the page, clear of the heading and the tip
+      /* a number over another number is far worse than one over a dot; a farther place costs a little */
+      const cost=placed.filter(q=>hit(r,q)).length*10+dots.filter(([dx,dy])=>hit(r,{x0:dx-5,x1:dx+5,y0:dy-5,y1:dy+5})).length*3+(dist-21)/40;
+      if(cost<bestCost){ best={cx,cy,r}; bestCost=cost; }
+      if(cost<0.01) break search;
     }
+    if(!best){ const cx=x, cy=y-14; best={cx,cy,r:{x0:cx-w/2-3,x1:cx+w/2+3,y0:cy-h-2,y1:cy+5}}; }
     placed.push(best.r);
     D.d.text(txt,best.cx,best.cy,{align:"center"});
   });
