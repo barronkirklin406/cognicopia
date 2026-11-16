@@ -415,14 +415,6 @@ step("the facility logo on the monthly bundle: chosen, turned into pure black an
   }
 });
 
-step("the batch scheduler's and Family Bridge's utility stylesheet is made from their own classes (no outside script)", () => {
-  try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "make-pages-css.mjs"), "--check"], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
-  catch (e){
-    if (e.status === 2) return "skipped: Tailwind is not installed here (npm install in platform/ provides it)";
-    throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message);
-  }
-});
-
 step("Tablet Activities: all thirteen activities driven by mouse and touch input, the on-screen keyboard, the trace rule, three screen sizes, the free-packet gate, nothing leaving the page (a real browser)", () => {
   try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-tablet-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
   catch (e){

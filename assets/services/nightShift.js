@@ -1,3 +1,5 @@
+/* Night Shift (the dark, low-glare screen mode): hand-written source with no TypeScript; edit this file directly. It is listed in
+   HAND_WRITTEN in scripts/build-services.mjs, so npm run services never builds or overwrites it. */
 (function(){
   "use strict";
   var KEY = "cognicopia_night_shift";

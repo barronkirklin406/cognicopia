@@ -28,8 +28,7 @@ export default {
      worker serving old files would hide a change under test. Set to "allow" to test it on purpose. */
   serviceWorkers: "block",
 
-  /* Pages the baseline smoke check loads. batch-scheduler.html and family-bridge.html are left out on purpose:
-     both link css/site.css, which does not exist (reported by scripts/audit-references.mjs). */
+  /* Pages the baseline smoke check loads. */
   pages: [
     "index.html", "builder.html", "profile.html", "pricing.html", "contact.html",
     "activate.html", "tablet.html", "terms.html", "resources/index.html"

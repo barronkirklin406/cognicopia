@@ -7,6 +7,7 @@
      2. The main PDF packet at each stage, with and without Extra-Large Print, read back with PyMuPDF: no text
         off the safe area, no two pieces of text on top of each other, nothing but black ink, and the resident
         pages' text never under the stage's floor, and page titles at 32 pt (a long one shrinks to fit).
+        Then every Join the Dots shape once in Extra-Large Print, where the dots crowd most: no number on another.
      3. Quick-Print: the first-name field. A name makes "Activity Packet for <name>"; a blank field makes
         "Personalized Activity Packet"; markup and stray symbols are stripped; the word "Guest" never prints.
    Needs Playwright (and PyMuPDF for part 2/3 PDF reading; without it those parts are skipped with a note).
@@ -141,6 +142,32 @@ for (const stage of ["early", "middle", "late"]) for (const xl of [false, true])
   ok(r.titles.length >= 5 && t32 * 4 >= r.titles.length * 3 && Math.min(...r.titles) >= 22, `${tag}: page titles are 32 pt, a long one shrinking to fit (${t32} of ${r.titles.length} at 32 pt, the smallest ${Math.min(...r.titles)} pt)`);
   ok(r.kinds.resident >= 5 && r.kinds.resident > r.kinds.staff, `${tag}: most pages are the resident's own, each opening with their name (${r.kinds.resident} of ${r.pages}; ${r.kinds.staff} for staff)`);
   ok(r.small.length === 0, `${tag}: ${r.small.length} pieces of text are under their floor (${floor} pt on a resident's page, 16 pt on a staff page, 12 pt in the header and foot): ` + r.small.slice(0, 5).map(x => `page ${x[0]} ${x[3]} ${x[1]} pt "${x[4]}"`).join("; "));
+  await ctx.close();
+}
+
+/* ---------- 2b. every Join the Dots shape in Extra-Large Print ----------
+   Part 2 sees only the shape the date chooses. The crowded case is Extra-Large Print, where the bigger instructions leave
+   the shape less room, so each of the shapes is made once that way: no number on top of another, none off the page. */
+{
+  const ctx = await browser.newContext({ viewport: { width: 1366, height: 900 }, acceptDownloads: true, serviceWorkers: "block" }); const p = await ctx.newPage();
+  p.on("pageerror", e => errs.push(e.message));
+  await p.goto(base + "index.html"); await p.waitForTimeout(400);
+  const shapes = await p.evaluate(() => { window.print = () => {}; localStorage.clear(); return typeof DOT_LIBRARY !== "undefined" && typeof window.contentIndex === "function" ? DOT_LIBRARY.map(d => d.name) : []; });
+  ok(shapes.length >= 10, `the Join the Dots shapes can be chosen one by one (${shapes.length})`);
+  await p.fill("#first", "Margaret"); await p.fill("#born", "1938");
+  await p.evaluate(() => { const c = document.getElementById("extraLargePrint"); c.checked = true; c.dispatchEvent(new Event("change", { bubbles: true })); });
+  const crowded = [];
+  for (let k = 0; k < shapes.length; k++) {
+    await p.evaluate(([k, n]) => { const o = window.__cgContentIndex || (window.__cgContentIndex = window.contentIndex); window.contentIndex = (r, len, off) => off === 29 && len === n ? k : o(r, len, off); }, [k, shapes.length]);
+    const [dl] = await Promise.all([p.waitForEvent("download", { timeout: 90000 }), p.click("#go")]);
+    const f = path.join(tmp, `dots-${k}.pdf`); await dl.saveAs(f);
+    const r = readPdf(f, 18);
+    if (r.missing) break;
+    if (!r.texts.some(t => t === "Join the Dots: " + shapes[k])) crowded.push(`${shapes[k]}: its page is not in the packet`);
+    else if (r.overlap || r.off.length) crowded.push(`${shapes[k]}: ${r.overlap} overlapping, ${r.off.length} off the page`);
+    await p.waitForTimeout(300);
+  }
+  ok(crowded.length === 0, `every Join the Dots shape in Extra-Large Print keeps its numbers apart and on the page (${crowded.join("; ") || shapes.length + " shapes"})`);
   await ctx.close();
 }
 

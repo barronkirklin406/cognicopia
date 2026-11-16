@@ -2,7 +2,7 @@
 /* =====================================================================
    The Activity Page Studio and the free trial, in a real browser.
 
-   The Studio used to show "Free Trial: 50 / 50" and then never count a packet or stop anyone, so
+   The Studio used to show "50 of 50 free packets left" and then never count a packet or stop anyone, so
    anyone could make unlimited free packets there. It now behaves like the Packet Builder:
 
      count      printing or making a PDF uses one free packet (the count the badge and the other tools share);
@@ -55,7 +55,7 @@ try {
   /* ----- counting ----- */
   const a = await open();
   ok(/50 of 50 free packets left/.test(await left(a.p)), `a fresh computer starts with 50 free packets (${await left(a.p)})`);
-  ok(/50 \/ 50/.test(await badge(a.p)), `the action bar badge agrees (${await badge(a.p)})`);
+  ok(/50 of 50/.test(await badge(a.p)), `the action bar badge agrees (${await badge(a.p)})`);
   await a.p.click("#asRandom"); await a.p.waitForTimeout(500);
   await a.p.evaluate(() => document.querySelector('input[name="stage"][value="1"]').click()); await a.p.waitForTimeout(500);
   ok(/50 of 50/.test(await left(a.p)), "previewing, changing a setting and trying different pages use none");
@@ -63,7 +63,7 @@ try {
   ok(!!dl1, "a PDF is made while free packets remain");
   await a.p.waitForTimeout(900);
   ok(/49 of 50/.test(await left(a.p)), `making a PDF uses one (${await left(a.p)})`);
-  ok(/49 \/ 50/.test(await badge(a.p)), `the badge moved too, from the same count (${await badge(a.p)})`);
+  ok(/49 of 50/.test(await badge(a.p)), `the badge moved too, from the same count (${await badge(a.p)})`);
   await a.p.reload({ waitUntil: "load" }); await a.p.waitForSelector("#asSheet svg"); await a.p.waitForTimeout(1200);
   ok(/49 of 50/.test(await left(a.p)), "the count survives a reload");
 

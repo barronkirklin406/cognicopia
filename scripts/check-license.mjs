@@ -77,7 +77,7 @@ for (const [what, re] of Object.entries({ fetch: /\bfetch\s*\(/, XMLHttpRequest:
   ok(real.FREE_RUNS === 50, "the free trial is 50 packets");
   ok(real.PRICES.monthly.amount === 39 && real.PRICES.annual.amount === 349 && real.PRICES.annual.saves === 119 && real.PRICES.annual.savesPercent === 25, "the prices are $39 a month and $349 a year, saving $119 (25%)");
   ok(Math.round((1 - 349 / (39 * 12)) * 100) === real.PRICES.annual.savesPercent && 39 * 12 - 349 === real.PRICES.annual.saves, "the stated saving is the real arithmetic");
-  ok(Object.keys(real.TIERS).join() === "monthly_facility,annual_facility,enterprise", "the three license tiers");
+  ok(Object.keys(real.TIERS).join() === "monthly_facility,annual_facility,enterprise,pilot_facility", "the license tiers: three paid kinds and the 30-day pilot");
   ok(typeof real.EMAIL_DELIVERY === "boolean", "EMAIL_DELIVERY is a plain true or false (true only once the license service can send email)");
   ok(real.GRACE_DAYS === 90 && Array.isArray(real.PUBLIC_KEYS) && Array.isArray(real.REVOKED_IDS), "grace days and key lists");
   ok(real.PUBLIC_KEYS.every(k => /^04[0-9a-f]{128}$/.test(k)), "every public key is an uncompressed P-256 point");
@@ -297,9 +297,20 @@ function page(opts = {}){
     ok(st.licensed && st.keyed && st.type === "key" && st.facilityName === FACILITY && st.licenseTier === "annual_facility" && st.tierLabel === "Annual facility license" && st.expiresAt === "2027-10-31" && !st.inGrace && st.daysLeft === 385, `status describes the license (days left ${st.daysLeft})`);
     ok(withKeys({ storage: p.storage }).L.isLicensed(), "a reloaded page is still licensed by the key");
     /* every tier */
-    for (const tier of ["monthly_facility", "annual_facility", "enterprise"]){
+    for (const tier of ["monthly_facility", "annual_facility", "enterprise", "pilot_facility"]){
       const q = withKeys(), t = issue({ facility: "Tier test", tier, until: "2026-12-01" }, owner.pem).token;
       ok(q.L.activateKey(t).ok && q.L.status().licenseTier === tier, `${tier} is accepted`);
+    }
+    /* a 30-day pilot key: full access until its date, then it stops (no grace days), and the window names it a pilot */
+    {
+      const pilot = issue({ facility: "Pilot House", tier: "pilot_facility", until: "2026-12-12", id: "lic_test_pilot" }, owner.pem).token;
+      const during = withKeys({ now: Date.parse("2026-11-20T12:00:00Z") });
+      ok(during.L.activateKey(pilot).ok && during.L.isLicensed() && during.L.status().tierLabel === "30-day facility pilot" && !during.L.status().inGrace, "a pilot key gives full access during the pilot and is named a 30-day facility pilot");
+      const lastDay = withKeys({ storage: during.storage, now: Date.parse("2026-12-12T22:00:00Z") });
+      ok(lastDay.L.isLicensed(), "the pilot works through the whole of its last day");
+      const after = withKeys({ storage: during.storage, now: Date.parse("2026-12-14T12:00:00Z") });
+      ok(!after.L.isLicensed() && !after.L.status().inGrace, "two days after its date the pilot has ended: no grace days for a pilot");
+      ok(real.PILOT_DAYS === 30 && real.PILOT_PATH === "pilot.html", "the config says a pilot is 30 days and where its page is");
     }
     ok(p.L.revokeKey().licensed === false && p.storage.getItem(K.license) === null, "removing the license clears the key");
   }
@@ -453,8 +464,7 @@ function page(opts = {}){
 {
   const walk = d => fs.readdirSync(path.join(ROOT, d), { withFileTypes: true }).flatMap(e => e.name === ".git" || e.name === "node_modules" || e.name === ".next" || e.name === "platform" ? [] : e.isDirectory() ? walk(path.posix.join(d, e.name)) : e.name.endsWith(".html") ? [path.posix.join(d, e.name)] : []);
   const pages = walk("."), idx = read("index.html"), bld = read("builder.html"), pricing = read("pricing.html"), act = read("activate.html"), contact = read("contact.html");
-  const CTA = "Get Full Access ($39/mo or $349/yr)";
-
+  
   /* the old price and the old trial are gone from every page, script, service and document */
   const old = [], LEGACY_PRICE_DOCS = ["scripts/check-license.mjs", "docs/stripe-setup-guide.md", "docs/blueprint-decisions.md", "docs/HANDOFF-next-session.md"];   // these name the earlier price on purpose, as the one being replaced
   const scan = d => fs.readdirSync(path.join(ROOT, d), { withFileTypes: true }).forEach(e => {
@@ -468,26 +478,39 @@ function page(opts = {}){
   scan(".");
   ok(old.length === 0, "the old $129.99 price is still in: " + old.join(", "));
 
-  /* every page with a top bar offers both buttons, with the exact words and the right paths */
+  /* every page with a top bar carries ONE small chip (the free-packet count, which is also the license window's button) and no buy links:
+     the plans, the key box and the invoice request are inside the window it opens (playbook Phase 1: the sales bar is one chip) */
   let bars = 0;
   for (const f of pages){
     const h = read(f);
     if (!/class="cg-topbar/.test(h)) continue;
     bars++;
-    const P = "../".repeat(f.split("/").length - 1);
-    ok(h.includes(CTA + " &#x2192;") && h.includes("Request Corporate Invoice / W-9"), `${f}: the top bar does not carry both buttons`);
-    ok(new RegExp(`href="${P}pricing\\.html"[^>]*data-upgrade-prompt|data-upgrade-prompt[^>]*href="${P}pricing\\.html"`).test(h), `${f}: the main button does not go to ${P}pricing.html and carry data-upgrade-prompt`);
-    ok(h.includes(`href="${f === "index.html" ? "" : P}contact.html?subject=Corporate+Invoice+Request"`), `${f}: the invoice button does not go to contact.html?subject=Corporate+Invoice+Request`);
+    const bar = h.slice(h.indexOf('class="cg-topbar'), h.indexOf("<!-- cg-cta:end -->") + 20);
+    ok(/<button type="button" class="cg-chip" id="cgPromoBtn" data-cg-trial aria-haspopup="dialog" hidden><\/button>/.test(bar), `${f}: the top bar does not carry the free-packet chip`);
+    ok(!/data-upgrade-prompt|Get Full Access|Request Corporate Invoice/.test(bar), `${f}: the top bar still carries a buy link (it holds one chip and nothing else)`);
     ok(!/buy\.stripe\.com\/[A-Za-z0-9]/.test(h), `${f}: a hard-coded Stripe link`);
   }
   ok(bars >= 29, `only ${bars} pages have a top bar`);
+
+  /* the free packets never reset (playbook defect 1): no seven-day reset anywhere a page loads, and nothing wipes the ledger's backup copies */
+  for (const f of ["index.html", "builder.html", "js/trialBadge.js", "assets/services/trialLedger.js", "assets/services/licenseManager.js"]){
+    const t = read(f);
+    ok(!/checkWeeklyReset|cognicopia_trial_reset_time|7 \* 24 \* 60 \* 60 \* 1000/.test(t), `${f}: a weekly reset of the free packets is back`);
+    ok(!/deleteDatabase\(\s*["']cg_trial["']\s*\)/.test(t) || f === "assets/services/trialLedger.js", `${f}: deletes the free-packet ledger's backup copy`);
+  }
+  /* every screen calls the unit a packet */
+  for (const f of ["index.html", "builder.html", "js/trialBadge.js", "pricing.html", "pilot.html", "terms.html", "activity-studio.html", "tablet.html", "daily.html"]){
+    ok(!/Free Trial Generations|Generations Remaining|free uses|free generations|\bcredits? (left|remaining)/i.test(read(f)), `${f}: the unit is a packet, never a generation, use or credit`);
+  }
+  /* printing for every resident at once is a facility feature: the packet tool asks the license manager before it opens */
+  ok(/needsFacility\("Printing for every resident at once"\)/.test(idx) && /needsFacility: needsFacility/.test(read("assets/services/licenseManager.js")), "index.html: the every-resident bundle does not ask for a facility license or pilot");
 
   /* the trial and the gates */
   ok(/FREE_RUNS\s*=\s*LICCFG\.FREE_RUNS \|\| 50;/.test(idx) && /FREE_RUNS\s*=\s*LICCFG\.FREE_RUNS \|\| 50;/.test(bld), "index.html and builder.html: the free trial is not 50");
   ok(/PRICE_MONTH = "\$39 a month", PRICE_YEAR = "\$349 a year"/.test(idx) && /PRICE_MONTH = "\$39 a month", PRICE_YEAR = "\$349 a year"/.test(bld), "the page prices differ from $39 a month and $349 a year");
   for (const [f, h] of [["index.html", idx], ["builder.html", bld]]){
     ok(/id:\s*"gateMonthly"/.test(h) && /id:\s*"gateAnnual"/.test(h) && /id:\s*"gateInvoice"/.test(h), `${f}: the upgrade screen does not offer monthly, annual and invoice`);
-    ok(/Request Corporate Invoice \/ W-9/.test(h) && /save about 25%/.test(h) && /Best value/.test(h), `${f}: the upgrade screen is missing the invoice button or the savings`);
+    ok(/Pay by invoice/.test(h) && /A W-9 comes with the final invoice/.test(h) && /save about 25%/.test(h) && /Best value/.test(h), `${f}: the upgrade screen is missing the invoice route or the savings`);   // the invoice request is a tile of the upgrade screen now that the bar holds one chip
     ok(/function payLink\(plan\)/.test(h) && /REPLACE_ME\|test_/.test(h), `${f}: a placeholder or test Payment Link could be used`);
     ok(!/PAY_LINK\b/.test(h), `${f}: still uses the single PAY_LINK`);
     ok(!/maxlength="40"/.test(h.slice(h.indexOf('id="gate'), h.indexOf('id="gate') + 2500)), `${f}: the license box still stops at 40 characters`);

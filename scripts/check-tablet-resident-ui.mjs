@@ -130,7 +130,13 @@ try {
   for (const night of [false, true]) for (const [w, h] of [[1366, 768], [390, 844]]) {
     const tag = `${w} px${night ? ", Night Shift" : ""}`;
     const { ctx, p } = await open(w, h);
-    if (night) await p.evaluate(() => { document.documentElement.classList.add("cg-night-shift"); document.body.classList.add("cg-night-shift"); });
+    if (night) {
+      await p.evaluate(() => { document.documentElement.classList.add("cg-night-shift"); document.body.classList.add("cg-night-shift"); });
+      /* the colors fade over when Night Shift comes on: wait for the fade to end, so what is measured is Night Shift's own colors and not the
+         daytime ones or a point half way (measured in the same instant, this check read the day colors and passed without testing the night) */
+      await p.evaluate(() => Promise.all(document.getAnimations().map(a => a.finished.catch(() => {})))); await p.waitForTimeout(150);
+      ok(await p.evaluate(() => getComputedStyle(document.getElementById("tbPinSave")).backgroundColor !== "rgb(255, 255, 255)"), `${tag}: the colors measured are Night Shift's, not the day's`);
+    }
     const ms = await measure(p, "#tbKiosk");
     ok(ms.small.length === 0 && ms.low.length === 0, `${tag}: the Resident Mode settings are 52 px and readable` + (ms.small.length + ms.low.length ? ": " + ms.small.concat(ms.low).slice(0, 4).join("; ") : ""));
     await p.click("#tbResident"); await p.waitForTimeout(250);

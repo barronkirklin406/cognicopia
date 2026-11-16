@@ -16,7 +16,7 @@ Cognicopia (cognicopia.org) is an offline-first memory-care activity site: print
 - `npm run build` runs `node scripts/build.mjs`, then `node scripts/check-claims.mjs`, then the full test suite (`npm test`). It must never again be only `node --check server.js` (that is `npm run lint`). Run it before every push.
 - Never skip, weaken or delete a check to get green. Find the cause. A check may be changed only when the owner's design legitimately changed, with the reason written in the commit.
 - Anything a person sees or prints is also verified in a real browser, and a PDF is read back with PyMuPDF: look at a screenshot at 1366 x 768 and 390 x 844. Playwright is already installed (`createRequire('/opt/node22/lib/node_modules/')`); never run `playwright install`.
-- GitHub runs no automatic checks on the static site (only `platform.yml`, on `platform/`), so the local build is the only gate. Adding a site workflow is a planned fix, not something to assume.
+- GitHub runs the same gate on every push and pull request to `main` (`.github/workflows/site-ci.yml`, about 30 to 60 minutes on GitHub's machines). Run it locally first all the same: it is faster to find a failure here. `platform/` has its own workflow (`platform.yml`).
 
 ## Core architecture
 
@@ -27,7 +27,8 @@ Cognicopia (cognicopia.org) is an offline-first memory-care activity site: print
 | Where | What | Rule |
 |---|---|---|
 | Repository root (`index.html`, `builder.html`, `profile.html`, `assets/`, `src/`, `scripts/`, `resources/`) | The static site, published from `main` by GitHub Pages | Offline only, as above |
-| `platform/` | A separate Next.js, Supabase and Stripe service for facilities | **PAUSED.** Do no work on it until the owner explicitly resumes it (playbook fix 10: until about ten facilities pay for the offline product). Zero PHI if it ever resumes. |
+| `tools/owner/` | The owner's own pages (License Desk makes license keys). **Not published:** `_config.yml` keeps it, and `platform/`, off the site | Opened from a copy on the owner's computer (`tools/owner/README.md`). Never link to it from a page |
+| `platform/` | A separate Next.js, Supabase and Stripe service for facilities | **PAUSED** (`platform/PAUSED.md`). Do no work on it until the owner explicitly resumes it (playbook fix 10: until about ten facilities pay for the offline product). Zero PHI if it ever resumes. |
 | `license-service/` | A tiny serverless service that turns a Stripe payment into a signed license key and emails it (`docs/license-service.md`) | Needs the internet by design, holds no state, sees only a buyer's email and business name, never a resident. Proved by `scripts/check-license-service.mjs`. |
 
 - A tool may load a data file that ships with the site from the same folder (for example `data/content-catalog.json`, kept for offline use by `sw.js`); that is not an outside request.
@@ -41,8 +42,10 @@ Cognicopia (cognicopia.org) is an offline-first memory-care activity site: print
 ## Unit naming and pricing
 
 - The unit we generate is a **packet**. Never "generation", "run", "use" or "credit" on any screen, page, email or document. (Code names such as `FREE_RUNS` may stay until renamed; what a person reads may not.)
-- Pricing: **$39 a month or $349 a year per building** (saves $119, about 25%); Enterprise by custom quote. Prices live in one place, `src/config/license.js` (`PRICES`, `FREE_RUNS`, `PAYMENT_LINKS`, `PUBLIC_KEYS`); the free-packet count is read from there. How the free tier works (whether it resets) is an open decision of the owner (playbook fix 1): do not change the count or the copy around it without asking.
-- Never type a price into a page by hand without `scripts/check-license.mjs` passing. A license is a signed key checked in the browser (`assets/services/licenseManager.js`); the private signing key is never in this repository (`.gitignore` refuses `*.pem`), and no Stripe secret, price id or live key goes in a file. A Payment Link that still holds `REPLACE_ME` or `test_` is treated as not set up. Make or check a key with `scripts/issue-license.mjs` or `license-desk.html` (the owner's page; `scripts/check-license-desk-ui.mjs` proves it). Stripe setup: `docs/stripe-setup-guide.md`.
+- Pricing: **$39 a month or $349 a year per building** (saves $119, about 25%); Enterprise by custom quote. Prices live in one place, `src/config/license.js` (`PRICES`, `FREE_RUNS`, `PAYMENT_LINKS`, `PUBLIC_KEYS`); the free-packet count is read from there.
+- **The free tier (owner's decision, November 12, 2026):** the first 50 packets for one resident at a time are free on each computer, **once**. They never reset: no timer, no weekly refill, and nothing may clear the count's backup copies (`assets/services/trialLedger.js`). **Printing for a whole building** (every resident in one bundle; later the Week Builder, the Staff Run Sheet and the Monthly Participation Summary) needs a license or a 30-day pilot key: such a feature calls `CognicopiaLicense.needsFacility("what it is")` before it opens and spends no free packet. A pilot key is the `pilot_facility` tier, made on License Desk, and ends on its date with no grace days. `scripts/check-license.mjs` and `scripts/check-license-ui.mjs` prove all of this; do not change the count or these rules without asking.
+- **One chip, not a sales bar.** The bar under the navigation holds one small chip, "49 of 50 free packets left" (`js/trialBadge.js`), which opens the license window (key box, plans, invoice request, pilot). It is gone completely once a computer is licensed; the window stays reachable from every footer ("License on this computer"). Never add a second buy button to a bar.
+- Never type a price into a page by hand without `scripts/check-license.mjs` passing. A license is a signed key checked in the browser (`assets/services/licenseManager.js`); the private signing key is never in this repository (`.gitignore` refuses `*.pem`), and no Stripe secret, price id or live key goes in a file. A Payment Link that still holds `REPLACE_ME` or `test_` is treated as not set up. Make or check a key with `scripts/issue-license.mjs` or `tools/owner/license-desk.html` (the owner's page, not on the live site; `scripts/check-license-desk-ui.mjs` proves it). Stripe setup: `docs/stripe-setup-guide.md`.
 
 ## What is a rule now, and what is built
 
@@ -50,7 +53,9 @@ The visual look, the three doors, the content rules and the print rules in the s
 
 | Rule | In the code today |
 |---|---|
-| `npm run build` runs the real gate | Built |
+| `npm run build` runs the real gate | Built, and run by GitHub on every push and pull request (`site-ci.yml`) |
+| Free packets never reset; whole-building printing needs a license or pilot; one chip in the bar | Built (November 12, 2026) |
+| Every file in `assets/services/` has an honest source | Built: built from `src/services/*.ts`, or listed in `HAND_WRITTEN` in `scripts/build-services.mjs` and labeled hand-written; `npm run services` fails otherwise |
 | `platform/` paused | In force |
 | Three doors, one menu style | Not built (seven places; the Packet Builder has its own side menu) |
 | "Warm Editorial Clinical" look (`cognicopia-visual-style`) | Not built: `css/styles.css` still ships the November 5 oceanic palette, and `scripts/check-design-system.mjs` measures it. Restyle by changing the tokens and the check's expectations together |
@@ -116,7 +121,7 @@ npm run outreach -- report   # the outreach desk (docs/outreach-desk.md); sends 
 - **Going live:** `npm run build`, commit, push, open a PR to `main`, merge it when it is green, then confirm the GitHub Pages run for the merge commit succeeded. The owner wants every finished change live.
 - **Commits and PRs:** use the attribution lines the session specifies. Put no model names or identifiers anywhere else, including code comments.
 - **Markdown:** GitHub Pages runs Jekyll. Do not write the two-character Liquid openers (a doubled left brace, or a left brace followed by a percent sign) in any `.md` file, even inside code spans. Search for them before committing.
-- **Edits:** match the surrounding code's style and comment density. Do not reformat files you did not change. Do not hand-edit generated files (`assets/cognicopia-coloring/cognicopia-coloring.js`, the catalog, the navigation block on each page and in `builder.html`'s sidebar, `assets/services/*.js`, `js/coloring-data.js`, `assets/svgs/*`); change the source and run its generator.
+- **Edits:** match the surrounding code's style and comment density. Do not reformat files you did not change. Do not hand-edit generated files (`assets/cognicopia-coloring/cognicopia-coloring.js`, the catalog, the navigation block on each page and in `builder.html`'s sidebar, the files in `assets/services/` that are built from `src/services/*.ts` (the hand-written ones there say so in their first lines), `js/coloring-data.js`, `assets/svgs/*`); change the source and run its generator.
 - **One rulebook.** This file and the skills above are the only instructions for AI coding tools in this repository. `.clinerules` only points here. If you find another file that gives different instructions (a pixel size, a price, an architecture), fix or delete it in the same change.
 
 ## Measured, not promised

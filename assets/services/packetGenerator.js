@@ -1,6 +1,7 @@
 /**
  * @file packetGenerator.js
  * @description In-browser and Node-compatible runtime service for Cognicopia.
+ * Hand-written source (no TypeScript; listed in HAND_WRITTEN in scripts/build-services.mjs): edit this file directly.
  * Implements deep biographical profiling across the 4 Human Pillars:
  * 1. WHAT CAN THEY DO? (Cognitive & motor bandwidth: 18pt+ font floor, zero-grayscale contrast, tactile tracing paths)
  * 2. WHAT DO THEY CARE ABOUT? (Lifelong passions, formative eras of music, regional roots)

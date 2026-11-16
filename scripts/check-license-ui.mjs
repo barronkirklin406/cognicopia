@@ -76,16 +76,17 @@ const SHOT = process.env.SHOTS;   // set SHOTS=dir to save pictures of the scree
 const shot = async (p, name) => { if (SHOT) { fs.mkdirSync(SHOT, { recursive: true }); await p.screenshot({ path: path.join(SHOT, name + ".png"), fullPage: false }); } };
 
 try {
-  /* ---------- the top bar: two buttons, on a tool page and on a resource page ---------- */
+  /* ---------- the top bar: ONE chip (the free-packet count); the plans, the key box and the invoice request are inside the window it opens ---------- */
   let ctx = await context();
   for (const url of ["index.html", "contact.html", "resources/quality-standards/index.html", "profile.html"]) {
     const p = await open(ctx, url), P = "../".repeat(url.split("/").length - 1);
-    const main = p.locator("a[data-upgrade-prompt]", { hasText: "Get Full Access ($39/mo or $349/yr)" }).first(), alt = p.locator("a[data-upgrade-prompt]", { hasText: "Request Corporate Invoice / W-9" }).first();
-    ok((await main.textContent()).includes("→"), `${url}: the main button ends with the arrow`);
-    ok((await main.getAttribute("href")) === P + "pricing.html", `${url}: the main button goes to pricing.html`);
-    ok((await alt.getAttribute("href")) === P + "contact.html?subject=Corporate+Invoice+Request", `${url}: the invoice button goes to the invoice request`);
-    ok(await tall(p, "a[data-upgrade-prompt]:has-text('Get Full Access')") >= 52 && await tall(p, "a[data-upgrade-prompt]:has-text('Request Corporate')") >= 52, `${url}: both top-bar buttons are at least 52 px`);
-    ok(await visible(p, "#cgPromoBtn") && (await p.textContent("#cgPromoBtn")).trim() === "License Key / Promo", `${url}: the license button is in the bar`);
+    ok(await visible(p, "#cgPromoBtn") && /^50 of 50 free packets left$/.test((await p.textContent("#cgPromoBtn")).replace(/\s+/g, " ").trim()), `${url}: the one chip says 50 of 50 free packets left`);
+    ok(await tall(p, "#cgPromoBtn") >= 52, `${url}: the chip is at least 52 px tall`);
+    ok(await p.locator(".cg-topbar a[data-upgrade-prompt], .cg-wood-bar a[data-upgrade-prompt]").count() === 0, `${url}: no buy link sits in the bar`);
+    await p.click("#cgPromoBtn"); await p.waitForSelector(".cgpromo-card");
+    const hrefs = await p.$$eval(".cgpromo-more a", as => as.map(a => a.getAttribute("href")));
+    ok(hrefs.some(h => h === base + "pricing.html") && hrefs.some(h => h === base + "contact.html?subject=Corporate+Invoice+Request") && hrefs.some(h => h === base + "pilot.html"), `${url}: the window carries the plans, the invoice request and the pilot (${hrefs.join(", ")})`);
+    await p.keyboard.press("Escape");
     if (url === "index.html") await shot(p, "index-topbar");
     await p.close();
   }
@@ -101,7 +102,7 @@ try {
   const act = p.locator("input.act").first(); if (await act.count()) await act.check({ force: true });
   await p.click("#go"); await p.waitForTimeout(500);
   ok(await visible(p, "#gate"), "index.html: the 26th packet opens the upgrade screen");
-  ok((await p.textContent("#gateTitle")).includes("50 Free Trial Generations"), "index.html: the screen says all 50 Free Trial Generations are used");
+  ok((await p.textContent("#gateTitle")).includes("50 free packets on this computer"), "index.html: the screen says all 50 free packets are used");
   for (const id of ["gateMonthly", "gateAnnual", "gateInvoice"]) ok(await visible(p, "#" + id), `index.html: the upgrade screen offers ${id}`);
   ok((await p.getAttribute("#gateMonthly", "href")) === MONTHLY && (await p.getAttribute("#gateAnnual", "href")) === ANNUAL, "index.html: the two plan buttons are the Payment Links from the config");
   ok((await p.getAttribute("#gateInvoice", "href")) === "pricing.html#invoice", "index.html: the invoice button goes to the invoice request form on the pricing page");
@@ -115,7 +116,7 @@ try {
   await p.fill("#lic", KEY); await p.click("#licGo"); await p.waitForTimeout(500);
   ok(!(await visible(p, "#gate")) && /Licensed/.test(await p.textContent("#licBadge")), "index.html: a good key closes the upgrade screen and the badge says Licensed");
   ok(!(await visible(p, "a[data-upgrade-prompt]")), "index.html: the buy buttons are hidden once licensed");
-  ok(await visible(p, "#cgPromoBadge") && (await p.textContent("#cgPromoBadge")).includes("Full Access Active"), "index.html: the top bar shows Full Access Active");
+  ok(!(await visible(p, "#cgPromoBadge")) && !(await visible(p, "#cgPromoBtn")), "index.html: once licensed the bar holds no chip and no badge");
   const state = await ctx.storageState();
   await p.reload(); await p.waitForTimeout(400);
   ok(/Licensed/.test(await p.textContent("#licBadge")), "index.html: still licensed after a reload");
@@ -133,8 +134,8 @@ try {
   await p.fill("#cgPromoInput", "Here is your key:\n" + KEY.replace(/(.{70})/g, "$1\n") + "\nThank you"); await p.keyboard.press("Enter"); await p.waitForTimeout(250);
   ok(/License activated for Maple Court/.test(await p.textContent("#cgPromoStatus")), "a key pasted with an email around it and line breaks is accepted: " + (await p.textContent("#cgPromoStatus")));
   await p.waitForTimeout(2200);
-  ok(await visible(p, "#cgPromoBadge") && !(await visible(p, "#cgPromoBtn")) && !(await visible(p, "a[data-upgrade-prompt]")), "the bar swaps to the badge and the buy buttons go");
-  await p.click("#cgPromoBadge"); await p.waitForTimeout(200);
+  ok(!(await visible(p, "#cgPromoBadge")) && !(await visible(p, "#cgPromoBtn")) && !(await visible(p, "a[data-upgrade-prompt]")), "once licensed the chip is gone completely, and no badge takes its place");
+  await p.click("footer a[data-cg-license]"); await p.waitForTimeout(200);   // the license window stays one tap away, in the footer
   const card = await p.textContent(".cgpromo-card");
   ok(/Maple Court/.test(card) && /Annual facility license/.test(card) && /October 31, 2027/.test(card), "the window names the facility, the license and the date it is paid through: " + card.slice(0, 160));
   await p.click(".cgpromo-actions button:has-text('Remove license')"); await p.waitForTimeout(100);
@@ -238,17 +239,46 @@ try {
   ok(lateGrace.lic && lateGrace.st.inGrace, "two and a half months after the paid-through date (offline the whole time): still licensed, in its grace days");
   ok(!over.lic && over.st.lapsed && over.st.lapsed.facilityName === "Maple Court" && /free packets/.test(over.badge), "past the grace days: not licensed, and the page knows whose license ended");
 
+  /* ---------- the free packets never reset: eight days and ninety days later the count is what it was ---------- */
+  {
+    const c0 = await context(); const a = await open(c0, "index.html");
+    await a.evaluate(() => { for (let i = 0; i < 12; i++) bumpGen(); }); await a.waitForTimeout(500);
+    ok(await a.evaluate(() => genCount()) === 12, "twelve packets made: the count is 12");
+    const used = await c0.storageState({ indexedDB: true }); await a.close();
+    for (const [days, iso] of [[8, "2026-11-20T12:00:00Z"], [90, "2027-02-10T12:00:00Z"]]) {
+      const c = await context({ storageState: used, clock: Date.parse(iso) }); const q = await open(c, "index.html"); await q.waitForTimeout(700);
+      const r = await q.evaluate(() => ({ n: genCount(), chip: document.getElementById("cgPromoBtn").textContent.replace(/\s+/g, " ").trim(), reset: localStorage.getItem("cognicopia_trial_reset_time") }));
+      ok(r.n === 12 && /^38 of 50 free packets left$/.test(r.chip) && r.reset === null, `${days} days later the count is still 12 and the chip still says 38 of 50 (${r.n}, "${r.chip}")`);
+      await q.close(); await c.close();
+    }
+    await c0.close();
+  }
+
+  /* ---------- printing for every resident at once is for facilities: a license or a pilot key ---------- */
+  {
+    const c = await context(); const q = await open(c, "index.html");
+    await q.click("#mbOpen"); await q.waitForTimeout(300);
+    ok(await visible(q, ".cgpromo-card") && /is for facilities/.test(await q.textContent(".cgpromo-note")) && /30-day pilot/.test(await q.textContent(".cgpromo-note")) && !(await q.evaluate(() => document.getElementById("monthly-bundle-modal").open)), "unlicensed: the every-resident button opens the license window with the reason, not the bundle");
+    ok(await q.evaluate(() => genCount()) === 0, "and it spends no free packet");
+    await q.keyboard.press("Escape");
+    const PILOT = issue({ facility: "Pilot House", tier: "pilot_facility", until: "2099-01-01", id: "lic_ui_pilot" }, pem).token;
+    await q.evaluate(k => CognicopiaLicense.activateKey(k), PILOT); await q.waitForTimeout(300);
+    await q.click("#mbOpen"); await q.waitForTimeout(300);
+    ok(await q.evaluate(() => document.getElementById("monthly-bundle-modal").open), "with a pilot key the every-resident bundle opens");
+    await q.close(); await c.close();
+  }
+
   /* ---------- the Packet Builder ---------- */
   ctx = await context();
   p = await open(ctx, "builder.html");
   ok(await p.evaluate(() => FREE_RUNS === 50) && !(await visible(p, "#upgradeBanner")), "builder.html: 50 free packets and no banner at the start");
   await p.evaluate(() => { localStorage.setItem("cognicopia_gen_count", "45"); }); await p.reload(); await p.waitForTimeout(500);
   ok(await visible(p, "#upgradeBanner") && /5 free packets left/.test(await p.textContent("#upgradeBanner")), "builder.html: the banner appears for the last five packets");
-  ok(/Get Full Access \(\$39\/mo or \$349\/yr\)/.test(await p.textContent("#upgradeBanner")) && /Request Corporate Invoice \/ W-9/.test(await p.textContent("#upgradeBanner")), "builder.html: the banner carries both buttons");
-  ok(await tall(p, "#upgradeBanner a:has-text('Get Full Access')") >= 52 && await tall(p, "#upgradeBanner a:has-text('Request Corporate')") >= 52, "builder.html: the banner's buttons are at least 52 px");
+  ok(/See plans and prices/.test(await p.textContent("#upgradeBanner")) && await p.locator("#upgradeBanner a").count() === 1, "builder.html: the banner carries one link, to the plans");
+  ok(await tall(p, "#upgradeBanner a") >= 52, "builder.html: the banner's link is at least 52 px");
   await shot(p, "builder-banner");
   await p.evaluate(() => { localStorage.setItem("cognicopia_gen_count", "50"); openGate(); }); await p.waitForTimeout(300);
-  ok(await visible(p, "#gate") && (await p.textContent("#gateTitle")).includes("50 Free Trial Generations"), "builder.html: the gate opens at 50");
+  ok(await visible(p, "#gate") && (await p.textContent("#gateTitle")).includes("50 free packets on this computer"), "builder.html: the gate opens at 50");
   ok((await p.getAttribute("#gateMonthly", "href")) === MONTHLY && (await p.getAttribute("#gateAnnual", "href")) === ANNUAL && (await p.getAttribute("#gateInvoice", "href")) === "pricing.html#invoice", "builder.html: monthly, annual and invoice buttons");
   ok(/Best value/.test(await p.textContent("#gate")) && /save about 25%/.test(await p.textContent("#gate")) && /Net-30/.test(await p.textContent("#gate")), "builder.html: the gate states best value, the saving and net-30");
   for (const id of ["#gateMonthly", "#gateAnnual", "#gateInvoice", "#gateUnlock", "#gateClose", "#gateCode"]) ok(await tall(p, id) >= 52, `builder.html: ${id} is at least 52 px`);
@@ -304,7 +334,7 @@ try {
   ctx = await context({ storageState: kept });
   for (const url of ["index.html", "contact.html", "resources/index.html", "resources/research/music-dementia/index.html", "pricing.html"]) {
     const q = await open(ctx, url);
-    ok(await visible(q, "#cgPromoBadge") && (await q.locator("a[data-upgrade-prompt]").evaluateAll(a => a.every(x => getComputedStyle(x).display === "none"))), `${url}: licensed, the badge shows and every buy button is hidden`);
+    ok(!(await visible(q, "#cgPromoBadge")) && !(await visible(q, "#cgPromoBtn")) && (await q.locator("a[data-upgrade-prompt]").evaluateAll(a => a.every(x => getComputedStyle(x).display === "none"))), `${url}: licensed, the bar holds no chip and no badge, and every buy link is hidden`);
     await q.close();
   }
 

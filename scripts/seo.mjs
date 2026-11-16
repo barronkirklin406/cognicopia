@@ -52,10 +52,9 @@ const urlOf = file => SITE + "/" + file.replace(/index\.html$/, "");
 
 /* every page that is not public, and why: nothing else may sit in the repository's root unexplained */
 const NOT_PUBLIC = {
-  "builder.html": "the Packet Builder app", "license-desk.html": "the owner's page for making license keys", "profile.html": "the resident profile form (a tool screen)", "activate.html": "turns a purchase into a key",
+  "builder.html": "the Packet Builder app", "profile.html": "the resident profile form (a tool screen)", "activate.html": "turns a purchase into a key",
   "about.html": "redirect stub", "faq.html": "redirect stub", "features.html": "redirect stub", "resources.html": "redirect stub", "high-volume-facilities.html": "redirect stub",
   "404.html": "the page GitHub Pages shows for an address that is not a file",
-  "batch-scheduler.html": "a work in progress that still loads an outside script and has no style of its own; not for search until it is offline", "family-bridge.html": "a work in progress that still loads an outside script and has no style of its own; not for search until it is offline",
   "clinical-alignment.html": "redirect stub", "publishing-excellence.html": "redirect stub", "institutional-standards.html": "redirect stub", "therapy.html": "redirect stub"
 };
 
@@ -74,7 +73,7 @@ function headBlock(file, html){
     `<meta property="og:title" content="${title}">`,
     `<meta property="og:description" content="${desc}">`,
     `<meta property="og:url" content="${urlOf(file)}">`,
-    `<meta property="og:image" content="${SITE}/cognicopia-logo.jpg">`,
+    `<meta property="og:image" content="${SITE}/assets/cognicopia-logo.jpg">`,
     `<meta name="twitter:card" content="summary">`,
     END].join("\n");
 }
@@ -120,7 +119,7 @@ function withLd(html){
 /* ---------- sitemap and robots ---------- */
 const sitemap = () => `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
   PUBLIC.map(f => `  <url><loc>${urlOf(f)}</loc></url>`).join("\n") + `\n</urlset>\n`;
-const robots = () => `# Cognicopia: everything may be read except the purchase-activation page, the owner's license desk and the Packet Builder's own screens.\nUser-agent: *\nAllow: /\nDisallow: /activate.html\nDisallow: /builder.html\nDisallow: /license-desk.html\n\nSitemap: ${SITE}/sitemap.xml\n`;
+const robots = () => `# Cognicopia: everything may be read except the purchase-activation page and the Packet Builder's own screens. (The owner's license desk is in tools/owner/, which the site does not publish: see _config.yml.)\nUser-agent: *\nAllow: /\nDisallow: /activate.html\nDisallow: /builder.html\n\nSitemap: ${SITE}/sitemap.xml\n`;
 
 /* ---------- write, or check ---------- */
 const problems = []; let passed = 0;
