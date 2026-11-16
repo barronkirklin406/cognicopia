@@ -43,3 +43,6 @@ assets/coloring/_inbox/*.json
 /platform/node_modules/
 /platform/.next/
 /platform/*.tsbuildinfo
+
+# pictures a failed browser check keeps for a person to look at (the GitHub workflow uploads them; never committed)
+e2e/.artifacts/
