@@ -11,7 +11,7 @@
      routes    fourteen screens open with no script error and no console error, and nothing is requested from outside the page
    ===================================================================== */
 import fs from "fs";
-import { serve, loadPlaywright } from "./lib/browser.mjs";
+import { serve, loadPlaywright, agreed } from "./lib/browser.mjs";
 
 const { chromium } = loadPlaywright();
 const { srv, base } = await serve();
@@ -20,7 +20,7 @@ let passed = 0; const problems = [];
 const ok = (c, m) => { if (c) passed++; else problems.push(m); };
 
 const outside = [], errors = [];
-const ctx = await browser.newContext({ viewport: { width: 1366, height: 900 }, serviceWorkers: "block", acceptDownloads: true });
+const ctx = await browser.newContext({ viewport: { width: 1366, height: 900 }, serviceWorkers: "block", acceptDownloads: true }); await agreed(ctx);
 const pg = await ctx.newPage();
 pg.on("request", r => { const u = r.url(); if (!u.startsWith(base) && !/^(data|blob|about):/.test(u)) outside.push(u); });
 pg.on("pageerror", e => errors.push("page: " + e.message));

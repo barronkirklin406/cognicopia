@@ -149,10 +149,10 @@ for (const stage of ["early", "middle", "late"]) for (const xl of [false, true])
    Part 2 sees only the shape the date chooses. The crowded case is Extra-Large Print, where the bigger instructions leave
    the shape less room, so each of the shapes is made once that way: no number on top of another, none off the page. */
 {
-  const ctx = await browser.newContext({ viewport: { width: 1366, height: 900 }, acceptDownloads: true, serviceWorkers: "block" }); const p = await ctx.newPage();
+  const ctx = await browser.newContext({ viewport: { width: 1366, height: 900 }, acceptDownloads: true, serviceWorkers: "block" }); await agreed(ctx); const p = await ctx.newPage();
   p.on("pageerror", e => errs.push(e.message));
   await p.goto(base + "index.html"); await p.waitForTimeout(400);
-  const shapes = await p.evaluate(() => { window.print = () => {}; localStorage.clear(); return typeof DOT_LIBRARY !== "undefined" && typeof window.contentIndex === "function" ? DOT_LIBRARY.map(d => d.name) : []; });
+  const shapes = await p.evaluate(() => { window.print = () => {}; localStorage.clear(); localStorage.setItem("cognicopia_eula_accepted", "true"); return typeof DOT_LIBRARY !== "undefined" && typeof window.contentIndex === "function" ? DOT_LIBRARY.map(d => d.name) : []; });
   ok(shapes.length >= 10, `the Join the Dots shapes can be chosen one by one (${shapes.length})`);
   await p.fill("#first", "Margaret"); await p.fill("#born", "1938");
   await p.evaluate(() => { const c = document.getElementById("extraLargePrint"); c.checked = true; c.dispatchEvent(new Event("change", { bubbles: true })); });

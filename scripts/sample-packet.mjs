@@ -23,7 +23,7 @@
 import fs from "fs";
 import os from "os";
 import path from "path";
-import { loadPlaywright, serve, ROOT } from "./lib/browser.mjs";
+import { loadPlaywright, serve, ROOT, agreed } from "./lib/browser.mjs";
 
 const OUT = path.join(ROOT, "assets", "samples", "cognicopia-sample-packet.pdf");
 const check = process.argv.includes("--check");
@@ -33,7 +33,7 @@ const { srv, base } = await serve();
 const browser = await chromium.launch();
 let bytes;
 try {
-  const ctx = await browser.newContext({ viewport: { width: 1366, height: 900 }, serviceWorkers: "block", acceptDownloads: true });
+  const ctx = await browser.newContext({ viewport: { width: 1366, height: 900 }, serviceWorkers: "block", acceptDownloads: true }); await agreed(ctx);
   await ctx.addInitScript(() => {
     const FIXED = new Date(2026, 9, 1, 9, 0, 0).getTime();            // 1 October 2026, nine in the morning
     const RealDate = Date;
