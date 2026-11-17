@@ -15,7 +15,7 @@
      all                nothing is requested from outside the page, and no page script fails
    ===================================================================== */
 import fs from "fs";
-import { serve, loadPlaywright } from "./lib/browser.mjs";
+import { serve, loadPlaywright, agreed } from "./lib/browser.mjs";
 
 const { chromium } = loadPlaywright();
 const { srv, base } = await serve();
@@ -24,7 +24,7 @@ let passed = 0; const problems = [];
 const ok = (c, m) => { if (c) passed++; else problems.push(m); };
 
 const outside = [], errors = [];
-const ctx = await browser.newContext({ viewport: { width: 1280, height: 1000 }, serviceWorkers: "block", acceptDownloads: true });
+const ctx = await browser.newContext({ viewport: { width: 1280, height: 1000 }, serviceWorkers: "block", acceptDownloads: true }); await agreed(ctx);
 const pg = await ctx.newPage();
 pg.on("request", r => { const u = r.url(); if (!u.startsWith(base) && !/^(data|blob|about):/.test(u)) outside.push(u); });
 pg.on("pageerror", e => errors.push(e.message));
@@ -40,13 +40,13 @@ await pg.click("#rsCs > summary"); await pg.setInputFiles("#rsCsFile", tmp); awa
 ok(await pg.$$eval("#rsList .rs-res", e => e.length) === 2, "two residents are on the roster");
 ok(await pg.$eval("#arSel", s => s.options.length) === 3, "the Working with list offers both, and a blank");
 
-/* ---------- the two headings in the Builder's menu ---------- */
-const heads = await pg.$$eval(".sb-grp", e => e.map(x => x.textContent.trim()));
-ok(heads.join("|") === "Resident tools|Staff & family portal", `the menu has the two headings: ${heads.join(" | ")}`);
-ok((await pg.$$eval("#sidebar .sb-hub[data-hub='facility'] .sb-link", e => e.map(x => x.textContent.trim()))).some(t => /Quarterly Legacy/.test(t)) && (await pg.$$eval("#sidebar .sb-hub[data-hub='facility'] .sb-link", e => e.map(x => x.textContent.trim()))).some(t => /Care cues/.test(t)), "the family digest and the care cues are on the staff side");
-ok(!(await pg.$$eval("#sidebar .sb-hub[data-hub='studio'] .sb-link", e => e.map(x => x.textContent))).some(t => /digest/i.test(t)), "and no longer under the resident tools");
-const order = await pg.$$eval("#sidebar .sb-nav > *", e => e.map(x => x.className.indexOf("sb-grp") >= 0 ? "G:" + x.dataset.grp : x.dataset.hub || "?"));
-ok(order.join(",") === "G:resident,today,studio,packets,tablet,G:staff,facility,academy,resources,?", `the hubs fall under their headings: ${order.join(",")}`);
+/* ---------- the Builder's menu: the three doors and For directors (the owner's playbook, November 12, 2026). The two group headings
+   ("Resident tools", "Staff & family portal") are gone with the seven places; the staff tools now live in For directors. ---------- */
+const order = await pg.$$eval("#sidebar .sb-nav > *", e => e.map(x => x.className.indexOf("sb-grp") >= 0 ? "G:" + x.dataset.grp : x.dataset.hub || (x.classList.contains("sb-foot") ? "foot" : "?")));
+ok(order.join(",") === "today,packets,residents,directors,foot", `the menu holds the three doors, For directors and the footer links, with no group headings: ${order.join(",")}`);
+const staffLinks = await pg.$$eval("#sidebar .sb-hub[data-hub='directors'] .sb-link", e => e.map(x => x.textContent.trim()));
+ok(staffLinks.some(t => /Quarterly Legacy/.test(t)) && staffLinks.some(t => /Care cues/.test(t)), "the family digest and the care cues are on the staff side, in For directors");
+ok(!(await pg.$$eval("#sidebar .sb-hub:not([data-hub='directors']) .sb-link", e => e.map(x => x.textContent))).some(t => /digest|Legacy|Care cues/i.test(t)), "and in no resident door");
 
 /* ---------- choosing the one resident ---------- */
 const dorothy = await pg.$eval("#arSel", s => [...s.options].filter(o => /Dorothy/.test(o.textContent)).map(o => o.value)[0]);
@@ -136,5 +136,5 @@ ok(await pg.$eval('.sb-link[data-route="planner-care-companion"]', e => e.getAtt
 ok(outside.length === 0, "nothing was requested from outside the page" + (outside.length ? ": " + outside.slice(0, 3).join(", ") : ""));
 ok(errors.length === 0, "no script error" + (errors.length ? ": " + errors.slice(0, 3).join("; ") : ""));
 await browser.close(); srv.close();
-console.log(problems.length ? `resident engine screen check FAILED: ${problems.length} problem(s), ${passed} passed\n  - ` + problems.join("\n  - ") : `resident engine screen check passed: ${passed} checks in a real browser (one resident across the tools, the daily record and the suggested tier, the staff companion apart from the resident's pages, the two menu groups, nothing leaving the page)`);
+console.log(problems.length ? `resident engine screen check FAILED: ${problems.length} problem(s), ${passed} passed\n  - ` + problems.join("\n  - ") : `resident engine screen check passed: ${passed} checks in a real browser (one resident across the tools, the daily record and the suggested tier, the staff companion apart from the resident's pages, the three doors and For directors, nothing leaving the page)`);
 process.exit(problems.length ? 1 : 0);

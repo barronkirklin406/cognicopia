@@ -1,10 +1,12 @@
 /* =====================================================================
    Terms of Service and the non-medical disclaimer: the first-visit agreement.
 
-   One small script, no network, no library. On the first visit to a tool page a bar at the foot of the window
-   shows the disclaimer and an "I agree" button; the agreement is kept in this browser only
-   (localStorage "cognicopia_eula_accepted" = "true"). Choosing "I agree" hides the bar for good on this computer.
-   The bar never covers a printed page, and it is not shown on terms.html, where the same text is read in full.
+   One small script, no network, no library. Nothing covers the page when a person arrives (the owner's playbook, Phase 2:
+   "prompt for agreement only when the user clicks to print their first PDF"). The first time someone presses a button that
+   prints or makes a PDF, on any page, the agreement opens in a window first; "I agree" keeps it in this browser only
+   (localStorage "cognicopia_eula_accepted" = "true") and then does what the button was pressed for. Cancel prints nothing.
+   Instant Soothe and the other calming buttons are never held up: in a hard moment the page prints at once (every PDF
+   page carries the non-medical line anyway). show() still draws the old foot-of-the-window bar for a page that asks.
 
    The footer's "Terms of Service & Disclaimer" link (any link marked data-cg-terms) opens the same text in a window on demand, with a short
    summary and a link to the full page. Pages that carry only that link load this script with data-bar="off": the first-visit bar is then
@@ -84,7 +86,8 @@
   }
 
   /* The same words, on demand, in a window. Escape or Close puts focus back where it was. */
-  function openModal(opener) {
+  function openModal(opener, opts) {
+    opts = opts || {};
     var d = root.document; if (!d.body) return;
     if (typeof root.HTMLDialogElement !== "function") { root.location.href = "terms.html"; return; }
     var old = d.getElementById("cgLegalModal"); if (old && old.parentNode) old.parentNode.removeChild(old);
@@ -95,12 +98,14 @@
     m.querySelector("#cgmHead").textContent = HEADING; m.querySelector("#cgmText").textContent = TEXT;
     var ul = m.querySelector("#cgmList"); SUMMARY.forEach(function (r) { var li = d.createElement("li"); li.innerHTML = "<b></b> "; li.querySelector("b").textContent = r[0] + "."; li.appendChild(d.createTextNode(" " + r[1])); ul.appendChild(li); });
     m.querySelector("#cgmFull").setAttribute("href", here + "terms.html");
-    var ok = m.querySelector("#cgmOk"); ok.textContent = read() ? "Got it" : "I agree";
+    var ok = m.querySelector("#cgmOk"); ok.textContent = read() ? "Got it" : (opts.proceed ? "I agree, continue" : "I agree");
+    if (opts.proceed){ var lead = d.createElement("p"); lead.id = "cgmLead"; lead.textContent = "Before your first page prints, please read this once. It is kept on this computer."; m.querySelector("#cgmHead").insertAdjacentElement("afterend", lead); }
     d.body.appendChild(m);
     function done() { if (m.open) m.close(); }
-    ok.addEventListener("click", function () { if (!read()) { write(true); hide(); } done(); });
+    var go = null;
+    ok.addEventListener("click", function () { if (!read()) { write(true); hide(); } go = opts.proceed || null; done(); });
     m.querySelector("#cgmClose").addEventListener("click", done);
-    m.addEventListener("close", function () { if (m.parentNode) m.parentNode.removeChild(m); if (opener && opener.focus) { try { opener.focus(); } catch (e) { /* the page moved on */ } } });
+    m.addEventListener("close", function () { if (m.parentNode) m.parentNode.removeChild(m); if (opener && opener.focus) { try { opener.focus(); } catch (e) { /* the page moved on */ } } if (go) { var f = go; go = null; setTimeout(f, 0); } });
     m.addEventListener("click", function (e) { if (e.target === m) done(); });            // a click on the dim area around it closes it
     m.showModal(); ok.focus();
   }
@@ -122,6 +127,25 @@
   };
   root.CognicopiaLegal = api;
 
-  function start() { if (!BAR_OFF && !read() && !/(^|\/)terms\.html$/.test(root.location.pathname)) show(); }
+  /* The first print or PDF on this computer asks for the agreement first. A button counts when it is marked data-cg-terms-gate, or when its
+     words say it prints, makes a PDF, downloads or exports; the calming buttons never wait. After "I agree" the same button is pressed again. */
+  var MAKES = /\b(pdf|print|printed|make|generate|download|export)\b/i, CALM = /soothe|calm|de-?escalat|sundown/i;
+  function holdsUp(el) {
+    /* the guide and the search only move between pages (js/wayfinding.js), however their buttons are worded */
+    if (!el || (el.closest && el.closest("#cgLegalModal, #cgLegal, [data-cg-terms-free], #wfCoach, dialog.wf-start, [data-coach], [data-wf]"))) return false;
+    if (el.hasAttribute && el.hasAttribute("data-cg-terms-gate")) return true;
+    var words = ((el.textContent || "") + " " + (el.value || "") + " " + (el.getAttribute("aria-label") || "")).trim();
+    return MAKES.test(words) && !CALM.test(words + " " + (el.id || "") + " " + (el.className || ""));
+  }
+  if (root.document) root.document.addEventListener("click", function (e) {
+    if (read() || /(^|\/)terms\.html$/.test(root.location.pathname)) return;
+    var el = e.target && e.target.closest ? e.target.closest('button, input[type="submit"], a[download], [data-cg-terms-gate]') : null;
+    if (!holdsUp(el) || el.disabled) return;
+    e.preventDefault(); e.stopImmediatePropagation();
+    openModal(el, { proceed: function () { el.click(); } });
+  }, true);
+  api.holdsUp = holdsUp;
+
+  function start() { /* nothing on arrival: the agreement waits for the first print (see above) */ }
   if (root.document.readyState === "loading") root.document.addEventListener("DOMContentLoaded", start); else start();
 })(typeof window !== "undefined" ? window : this);

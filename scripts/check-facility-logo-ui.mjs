@@ -16,7 +16,7 @@ import os from "os";
 import path from "path";
 import vm from "vm";
 import { spawnSync } from "child_process";
-import { loadPlaywright, serve, ROOT } from "./lib/browser.mjs";
+import { loadPlaywright, serve, ROOT, agreed } from "./lib/browser.mjs";
 
 const problems = [], notes = []; let passed = 0;
 const ok = (c, m) => { if (c) passed++; else problems.push(m); };
@@ -123,7 +123,7 @@ let LOGO_W = 0, LOGO_H = 0;
 const readPdf = file => { const r = spawnSync("python3", ["-I", "-c", PY, file, String(LOGO_W), String(LOGO_H)], { encoding: "utf8", timeout: 90000 }); try { return JSON.parse(r.stdout); } catch (e) { return { missing: true }; } };
 
 try {
-  const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 }, acceptDownloads: true, serviceWorkers: "block" });
+  const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 }, acceptDownloads: true, serviceWorkers: "block" }); await agreed(ctx);
   const p = await ctx.newPage();
   p.on("pageerror", e => errors.push(e.message));
   p.on("dialog", d => d.accept());                      // "export data for ALL residents. Proceed?"

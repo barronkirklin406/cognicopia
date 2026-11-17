@@ -20,7 +20,7 @@
    Needs Playwright. Where it is missing this exits 2 and npm run build
    skips it. Run: node scripts/check-contentmatcher-ui.mjs
    ===================================================================== */
-import { loadPlaywright, serve } from "./lib/browser.mjs";
+import { loadPlaywright, serve, agreed } from "./lib/browser.mjs";
 
 const { chromium } = loadPlaywright();
 const { srv, base } = await serve();
@@ -35,13 +35,13 @@ const RESIDENTS = [prof("res-a", "Alma", 2, ["Singing", "Big band"]), prof("res-
 
 try {
   const open = async (opts = {}) => {
-    const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 }, serviceWorkers: "block" });
+    const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 }, serviceWorkers: "block" }); await agreed(ctx);
     const p = await ctx.newPage();
     p.on("pageerror", e => errors.push(e.message));
     p.on("request", r => { const u = r.url(); if (/content-catalog/.test(u)) asked.push(r.method() + " " + u.replace(base, "/")); if (!u.startsWith(base) && !u.startsWith("data:") && !u.startsWith("blob:")) foreign.push(u); });
     if (opts.block) await p.route("**/data/content-catalog.json", r => r.abort());
     await p.goto(base + "builder.html#/");
-    await p.evaluate(list => { localStorage.clear(); list.forEach(x => localStorage.setItem("cognicopia_resident_" + x.id, JSON.stringify(x))); }, RESIDENTS);
+    await p.evaluate(list => { localStorage.clear(); localStorage.setItem("cognicopia_eula_accepted", "true"); list.forEach(x => localStorage.setItem("cognicopia_resident_" + x.id, JSON.stringify(x))); }, RESIDENTS);
     await p.goto(base + "builder.html#/roster"); await p.reload({ waitUntil: "load" });
     await p.waitForSelector(".rs-res", { timeout: 20000 });
     await p.evaluate(() => { window.__printed = 0; window.print = () => { window.__printed++; }; });

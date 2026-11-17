@@ -7,17 +7,17 @@
                                  fail if any page is out of date (npm run
                                  build runs this)
 
-   Navigation is seven places (HUBS below), the same on every page: Today,
-   Studio, Activity Packets, Tablet Activities, Facility, Academy and Resources. A hub with
-   several places is a collapsible group and the one holding the current page
-   is open; a hub with one place is a plain link. The Packet Builder
-   (builder.html) gets the same seven, with its activity categories under
-   Activity Packets. All reference and educational reading lives under
-   Resources: a collapsible group in the sidebar and a tabbed hub page at
-   resources/ (interactive tools on one tab, the reference library on the
-   other), with each module at its own nested route, resources/<slug>/. The
-   packet tool's Ailment-Specific Activities stay in its sidebar, under
-   Today: that part of the block is left as the page has it.
+   Navigation is three doors and one menu for directors (HUBS below), the same on
+   every page: Today, Packets, Residents, and "For directors", which holds Facility,
+   the Academy and Resources (the owner's playbook, November 12, 2026). Each is a
+   collapsible group, and the one holding the current page is open. The Packet Builder
+   (builder.html) gets the same four, with its activity categories under Packets. All
+   reference and educational reading lives under Resources: a short list in "For
+   directors" and a tabbed hub page at resources/ (interactive tools on one tab, the
+   reference library on the other), with each module at its own nested route,
+   resources/<slug>/. The packet tool's Ailment-Specific Activities stay in its
+   menu, under Packets, until they move onto the resident profile: that part of the
+   block is left as the page has it.
 
    Each page gets generated blocks, between markers, never edited by hand:
    the sidebar (with its menu button and script), the breadcrumb bar (hub
@@ -25,7 +25,7 @@
    <style id="cg-nav-css"> and the license manager's two scripts in the head. The
    rest of every page is left exactly as it is. In builder.html only the
    sidebar's navigation is generated (its brand, hooks and styles are the
-   page's own). --check also proves the seven places are the same on every page,
+   page's own). --check also proves the four places are the same on every page,
    that exactly one is open, and that every link leads somewhere real.
    ===================================================================== */
 import fs from "fs";
@@ -87,13 +87,12 @@ export const TOOLS = [
   { key: "planners", label: "12-Month Life Planners",  href: "life-planners.html" }
 ];
 
-/* The seven places: the whole navigation. Every page shows them in this order.
-   An item's `key` is what a page marks as current; an item with a `route` is
-   a screen inside the Packet Builder (builder.html#/<route>). A hub with one
-   item is drawn as a plain link. On the static pages, Activity Packets is
-   one link to the Packet Builder (its categories live inside it), and
-   Resources lists the whole reference library (HUB, GROUPS and MODULES
-   below); inside the Packet Builder, Resources is two links. Contact is a footer link under the seven, on every page. */
+/* The three doors, and one menu for directors: the whole navigation (the owner's playbook, November 12, 2026). Every page shows
+   them in this order: Today, Packets, Residents, then "For directors", which holds Facility, the Academy and Resources. An item's
+   `key` is what a page marks as current; an item with a `route` is a screen inside the Packet Builder (builder.html#/<route>).
+   In "For directors" an item's `sec` says which of its three sections it sits in, and `bar: true` puts it in the short list the top
+   bar and the Menu drawer show (the rest are one step away: on the Facility Portal, in the Packet Builder's menu and in the Ctrl+K
+   search). Contact is a link beside the doors, on every page. Never add a fifth place: add an item to a door. */
 const B = "builder.html";
 /* The Facility group is fourteen links. In the Packet Builder's side menu they sit in four labelled sections (only the one holding the
    open screen is open), so a person sees about nine choices, not fourteen. The top bar and the Menu drawer on other pages keep the plain list. */
@@ -104,46 +103,48 @@ export const FACILITY_PARTS = [
   { id: "plans",    label: "Plans and sharing" }
 ];
 export const HUBS = [
-  { id: "today",     label: "Today",            icon: "sun",      group: "resident", items: [
-      { key: "home",         label: "Personalized Packet Tool", href: "index.html",        icon: "home" },
+  { id: "today",     label: "Today",            icon: "sun",      items: [
       { key: "daily",        label: "Daily engagement",         href: "daily.html",        icon: "sun" },
-      { key: "profile",      label: "Resident Profiles",        href: "profile.html",      icon: "profile" },
+      { key: "tablet",       label: "Tablet Activities",        href: "tablet.html",       icon: "tablet" },
       { key: "start",        label: "Start here",               href: "index.html#start-here", icon: "sparkles" } ] },   // opens the Start Here guide (js/wayfinding.js)
-  { id: "studio",    label: "Studio",           icon: "palette",  group: "resident", items: [
+  { id: "packets",   label: "Packets",          icon: "builder",  items: [
+      { key: "home",         label: "Personalized Packet Tool", href: "index.html",        icon: "home" },
+      { key: "builder",      label: "Packet Builder",           href: B,                    icon: "builder" },
       { key: "activity-studio", label: "Activity Page Studio",  href: "activity-studio.html", icon: "builder" },
       { key: "coloring",     label: "Cognicopia Coloring",      href: B + "#/coloring",     route: "coloring",     icon: "palette" },
-      { key: "tracking",     label: "Cognitive Tracking",       href: B + "#/tracking",     route: "tracking",     icon: "clipboard" },
       { key: "planner",      label: "12-Month Seasonal Planner", href: B + "#/planner",     route: "planner",      icon: "calendar" },
       { key: "journal",      label: "Life Narrative Journal",   href: B + "#/journal",      route: "journal",      icon: "journal" },
       { key: "reminiscence", label: "Conversational Decks",     href: B + "#/reminiscence", route: "reminiscence", icon: "cards" },
       { key: "toolkit",      label: "Page Toolkit",             href: B + "#/toolkit",      route: "toolkit",      icon: "builder" } ] },
-  { id: "packets",   label: "Activity Packets", icon: "builder",  group: "resident", items: [
-      { key: "builder",      label: "Packet Builder",           href: B,                    icon: "builder" } ] },
-  { id: "tablet",    label: "Tablet Activities", icon: "tablet",  group: "resident", items: [
-      { key: "tablet",       label: "Tablet Activities",        href: "tablet.html",       icon: "tablet" } ] },
-  { id: "facility",  label: "Facility",         icon: "building", group: "staff", items: [
-      { key: "facility",     label: "Facility Portal",          href: B + "#/facility",     route: "facility",     icon: "building" },
-      { key: "shift", label: "Shift board",              href: B + "#/shift",        route: "shift",        icon: "clipboard", part: "every" },
-      { key: "roster",       label: "Resident roster",          href: B + "#/roster",       route: "roster",       icon: "roster", part: "every" },
-      { key: "highlights", label: "Shift highlights",         href: B + "#/highlights",   route: "highlights",   icon: "clipboard", part: "every" },
-      { key: "ehr-import", label: "EHR Import Wizard",        href: B + "#/ehr-import",   route: "ehr-import",   icon: "roster", part: "records" },
-      { key: "clinical", label: "Session notes (SLP)",      href: B + "#/clinical",     route: "clinical",     icon: "stethoscope", part: "records" },
-      { key: "therapy-goals", label: "Therapy Goals (SLP)",     href: B + "#/therapy-goals", route: "therapy-goals", icon: "stethoscope", part: "records" },
-      { key: "heirloom", label: "Quarterly Legacy & Memory Books",     href: B + "#/heirloom",     route: "heirloom",     icon: "books", part: "records" },
-      { key: "planner-care-companion", label: "Care cues (planner companion)", href: B + "#/planner-care-companion", route: "planner-care-companion", icon: "journal", part: "every" },
-      { key: "safety", label: "Security & Accessibility", href: B + "#/safety",       route: "safety",       icon: "gear", part: "settings" },
-      { key: "settings", label: "Settings & defaults",      href: B + "#/settings",     route: "settings",     icon: "gear", part: "settings" },
-      { key: "pricing", label: "Plans & pricing",          href: "pricing.html",       icon: "award", part: "plans" },
-      { key: "pilot", label: "Start a 30-day pilot",     href: "pilot.html",         icon: "clipboard", part: "plans" },
-      { key: "referral", label: "Share with a colleague",   href: "referral.html",      icon: "cards", part: "plans" } ] },
-  { id: "academy",   label: "Academy",          icon: "academy",  group: "staff", items: [
-      { key: "academy",      label: "Staff & Caregiver Academy",  href: B + "#/academy",      route: "academy",      icon: "academy" },
-      { key: "scenarios",    label: "Distress Scenario Practice", href: B + "#/scenarios",    route: "scenarios",    icon: "academy" } ] },
-  { id: "resources", label: "Resources",        icon: "library",  group: "staff", items: [] }   // the hub, its modules and Contact: see sidebar() and builderSidebar()
+  { id: "residents", label: "Residents",        icon: "roster",   items: [
+      { key: "profile",      label: "Resident Profiles",        href: "profile.html",      icon: "profile" },
+      { key: "roster",       label: "Resident roster",          href: B + "#/roster",       route: "roster",       icon: "roster" },
+      { key: "ehr-import",   label: "Add residents from a list", href: B + "#/ehr-import",  route: "ehr-import",   icon: "roster" },
+      { key: "tracking",     label: "Cognitive Tracking",       href: B + "#/tracking",     route: "tracking",     icon: "clipboard" } ] },
+  { id: "directors", label: "For directors",    icon: "building", items: [
+      { key: "facility",     label: "Facility Portal",          href: B + "#/facility",     route: "facility",     icon: "building", sec: "facility", bar: true },
+      { key: "shift", label: "Shift board",              href: B + "#/shift",        route: "shift",        icon: "clipboard", sec: "facility", part: "every", bar: true },
+      { key: "highlights", label: "Shift highlights",         href: B + "#/highlights",   route: "highlights",   icon: "clipboard", sec: "facility", part: "every" },
+      { key: "planner-care-companion", label: "Care cues (planner companion)", href: B + "#/planner-care-companion", route: "planner-care-companion", icon: "journal", sec: "facility", part: "every" },
+      { key: "clinical", label: "Session notes (SLP)",      href: B + "#/clinical",     route: "clinical",     icon: "stethoscope", sec: "facility", part: "records" },
+      { key: "therapy-goals", label: "Therapy Goals (SLP)",     href: B + "#/therapy-goals", route: "therapy-goals", icon: "stethoscope", sec: "facility", part: "records" },
+      { key: "heirloom", label: "Quarterly Legacy & Memory Books",     href: B + "#/heirloom",     route: "heirloom",     icon: "books", sec: "facility", part: "records" },
+      { key: "safety", label: "Security & Accessibility", href: B + "#/safety",       route: "safety",       icon: "gear", sec: "facility", part: "settings" },
+      { key: "settings", label: "Settings & defaults",      href: B + "#/settings",     route: "settings",     icon: "gear", sec: "facility", part: "settings", bar: true },
+      { key: "pricing", label: "Plans & pricing",          href: "pricing.html",       icon: "award", sec: "facility", part: "plans", bar: true },
+      { key: "pilot", label: "Start a 30-day pilot",     href: "pilot.html",         icon: "clipboard", sec: "facility", part: "plans", bar: true },
+      { key: "referral", label: "Share with a colleague",   href: "referral.html",      icon: "cards", sec: "facility", part: "plans" },
+      { key: "academy",      label: "Staff & Caregiver Academy",  href: B + "#/academy",      route: "academy",      icon: "academy", sec: "academy", bar: true },
+      { key: "scenarios",    label: "Distress Scenario Practice", href: B + "#/scenarios",    route: "scenarios",    icon: "academy", sec: "academy", bar: true } ] }   // its third section, Resources, is drawn from HUB and MODULES: see sidebar() and builderSidebar()
 ];
-/* The two headings above the hubs: what is for the resident, and what is for staff and family. */
-export const NAV_GROUPS = { resident: "Resident tools", staff: "Staff & family portal" };
-const GROUP_ICON = { resident: "sparkles", staff: "users" };
+/* The three sections of "For directors", in order. */
+export const DIRECTOR_SECTIONS = [
+  { id: "facility",  label: "Facility" },
+  { id: "academy",   label: "Academy" },
+  { id: "resources", label: "Resources" }
+];
+/* The resource modules the top bar and the Menu drawer list under Resources (the hub page lists them all). */
+const BAR_MODULES = ["research", "caregiver-faq", "privacy-and-data"];
 /* The categories the Packet Builder draws under Activity Packets (its own list, with counts, is built in the page; these are the ids it uses). */
 const CONTACT = { key: "contact", label: "Contact Cognicopia", href: "contact.html", icon: "support" };
 const TERMS = { key: "terms", label: "Terms of Service & Disclaimer", href: "terms.html", icon: "clipboard" };
@@ -238,15 +239,15 @@ export const PAGES = [
   { file: "tablet.html",             current: "tablet" },
   { file: "daily.html",              current: "daily" },
   { file: "activity-studio.html",    current: "activity-studio" },
-  { file: "cognitive-journals.html", current: null, hub: "studio" },     // the journal's own page: Studio is open, no link is "here" (its link opens the tool)
-  { file: "life-planners.html",      current: null, hub: "studio" },
+  { file: "cognitive-journals.html", current: null, hub: "packets" },     // the journal's own page: Packets is open, no link is "here" (its link opens the tool)
+  { file: "life-planners.html",      current: null, hub: "packets" },
   { file: "contact.html",            current: "contact" },
   { file: "pricing.html",            current: "pricing" },
   { file: "pilot.html",              current: "pilot" },
   { file: "referral.html",           current: "referral" },
-  { file: "terms.html",              current: null, hub: "resources" },
-  { file: "activate.html",           current: null, hub: "facility" },        // where a purchase is turned into a license key: the one page that may use the internet
-  { file: "zentangle-art.html",      current: null, hub: "studio" },
+  { file: "terms.html",              current: null, hub: "directors" },
+  { file: "activate.html",           current: null, hub: "directors" },        // where a purchase is turned into a license key: the one page that may use the internet
+  { file: "zentangle-art.html",      current: null, hub: "packets" },
   { file: "builder.html",            builder: true },
   { file: HUB.href + "index.html",   current: "hub", crumbs: [] },
   ...MODULES.map(m => ({ file: moduleHref(m) + "index.html", current: m.slug, crumbs: [m] })),
@@ -356,15 +357,23 @@ const PAGE_TOOLS_START = "<!-- cg-nav:page-tools: this page's own tools, kept as
 /* The hub a page sits in: the one that is open. */
 export const hubOf = page => page.hub
   || (page.current && (HUBS.find(h => h.items.some(i => i.key === page.current)) || {}).id)
-  || (page.current === "hub" || MODULES.some(m => m.slug === page.current) ? "resources" : null);
+  || (page.current === "hub" || MODULES.some(m => m.slug === page.current) ? "directors" : null);
+/* What the top bar and the Menu drawer list under a door: everything, except in "For directors", which shows its short list. */
+const barItems = h => h.id === "directors" ? h.items.filter(it => it.bar) : h.items;
+/* True when a page's own link is one the bar shows (so exactly one link is marked as the current page). */
+export const inBar = key => key === "contact" || key === "hub" || BAR_MODULES.includes(key) || HUBS.some(h => barItems(h).some(it => it.key === key));
 
 export function sidebar(page, pageTools){
   const P = prefixOf(page.file), cur = page.current, open = hubOf(page);
   const link = (href, label, key, icon) => `    <li><a href="${P}${href}"${here(cur === key)}>${icon ? svg(ICON[icon], 18, "cg-sb-ico") : '<span class="cg-bullet" aria-hidden="true">&#x203A;</span>'}<span>${esc(label)}</span></a></li>`;
-  const groups = GROUPS.map(g => `          <li class="cg-sb-grp"><span class="cg-sb-glabel" id="cgGrp-${g.id}">${esc(g.label)}</span>
-            <ul aria-labelledby="cgGrp-${g.id}">
-${MODULES.filter(m => m.group === g.id).map(m => "      " + link(moduleHref(m), m.label, m.slug, m.icon)).join("\n")}
-            </ul></li>`).join("\n");
+  /* "For directors": three short sections, side by side on a wide window. Resources shows the hub and a few modules; the hub page lists them all. */
+  const section = (id, label, links) => `          <li class="cg-sb-grp" data-sec="${id}"><span class="cg-sb-glabel" id="cgSec-${id}">${esc(label)}</span>
+            <ul aria-labelledby="cgSec-${id}">
+${links}
+            </ul></li>`;
+  const directors = h => DIRECTOR_SECTIONS.map(sec => sec.id === "resources"
+    ? section(sec.id, sec.label, ["      " + link(HUB.href, "Browse all resources", "hub", "grid").replace("<a ", '<a data-hub-index ')].concat(BAR_MODULES.map(slug => { const m = MODULES.find(x => x.slug === slug); return "      " + link(moduleHref(m), m.label, m.slug, m.icon); })).join("\n"))
+    : section(sec.id, sec.label, barItems(h).filter(it => it.sec === sec.id).map(it => "      " + link(it.href, it.label, it.key, it.icon)).join("\n"))).join("\n");
   const group = (h, inner) => `    <li class="cg-hub-li" data-hub="${h.id}">
       <details class="cg-sb-acc cg-hub" id="cgHub-${h.id}"${open === h.id ? " open data-here" : ""}>
         <summary class="cg-sb-section cg-sb-acc-head">${svg(ICON[h.icon], 20, "cg-sb-ico", 2.2)}<span class="cg-sb-acc-title">${esc(h.label)}</span>${svg(ICON.chevron, 18, "cg-sb-chev")}</summary>
@@ -373,16 +382,10 @@ ${inner}
         </ul>
       </details>
     </li>`;
-  const single = (h, it) => `    <li class="cg-hub-li" data-hub="${h.id}"><a href="${P}${it.href}"${here(cur === it.key, "cg-hub-link")}>${svg(ICON[h.icon], 20, "cg-sb-ico", 2.2)}<span>${esc(h.label)}</span></a></li>`;
-  const grp = h => `    <li class="cg-grp" data-grp="${h.group}"><span class="cg-grp-l" id="cgGrpHead-${h.group}">${svg(ICON[GROUP_ICON[h.group]], 16, "cg-grp-ico", 2)}<span>${esc(NAV_GROUPS[h.group])}</span></span></li>\n`;
-  const hubs = HUBS.map((h, i) => {
-    const head = !i || HUBS[i - 1].group !== h.group ? grp(h) : "";
-    if (h.id === "resources") return head + group(h, `${link(HUB.href, "Browse all resources", "hub", "grid").replace("<a ", '<a data-hub-index ')}
-${groups}`);
-    if (h.items.length === 1) return head + single(h, h.items[0]);
+  const hubs = HUBS.map(h => {
+    if (h.id === "directors") return group(h, directors(h));
     const links = h.items.map(it => link(it.href, it.label, it.key, it.icon)).join("\n");
-    const tools = h.id === "today" && pageTools ? '\n    <li><div class="cg-sb-divider"></div></li>\n' + PAGE_TOOLS_START + "\n    " + pageTools.trim() + "\n" + PAGE_TOOLS_END : "";
-    return head + group(h, links + tools);
+    return group(h, links);   // a page's own tools never go in the menu: the doors are the same everywhere (the packet tool's condition sets moved into its form)
   }).join("\n");
   return `${START}
 <button type="button" class="cg-sidebar-toggle" id="cgSbToggle" aria-label="Open Menu" aria-controls="cgSidebar" aria-expanded="false">
@@ -438,11 +441,12 @@ ${hubs}
 ${END}`;
 }
 
-/* The Packet Builder's navigation: the same seven in its own markup and
+/* The Packet Builder's navigation: the same three doors and "For directors" in its own markup and
    classes (the page's styles and script own the look and the behavior). Its
    hooks stay as the page uses them: #catNav, #navPacket, #navCount, #navColoringCount,
-   .sb-link[data-route]. Activity Packets holds the activity categories (drawn
-   by the page, with counts) and the queue; Resources is two links; Contact is a footer link, not a hub. */
+   .sb-link[data-route]. Packets holds its tools, the activity categories (drawn
+   by the page, with counts) and the queue; "For directors" holds every Facility screen in four
+   sections, the Academy and Resources; Contact is a footer link, not a door. */
 export const BNAV_START = "<!-- cg-bnav:start: generated by scripts/site-nav.mjs. Edit that file and run npm run nav; changes made here are overwritten. -->";
 export const BNAV_END = "<!-- cg-bnav:end -->";
 export function builderSidebar(){
@@ -452,35 +456,34 @@ export function builderSidebar(){
       <summary class="sb-hub-head">${ico(h.icon, 26)}<span>${esc(h.label)}</span>${svg(ICON.chevron, 18, "sb-hub-chev", 2.2)}</summary>
 ${inner}
     </details>`;
-  const hubs = HUBS.map((h, i) => {
-    const head = !i || HUBS[i - 1].group !== h.group ? `    <p class="sb-grp" data-grp="${h.group}">${esc(NAV_GROUPS[h.group])}</p>\n` : "";
-    return head + (() => {
-    if (h.id === "packets") return group(h, `      <ul class="sb-list" id="catNav" aria-label="Activity categories"></ul>
+  const sub = (id, label, items) => `      <details class="sb-sub" data-part="${id}">
+        <summary class="sb-sub-head"><span>${esc(label)}</span>${svg(ICON.chevron, 16, "sb-sub-chev", 2.2)}</summary>
+        <ul class="sb-list">
+${items.map(link).join("\n")}
+        </ul>
+      </details>`;
+  const hubs = HUBS.map(h => {
+    /* Packets: its own tools, then the activity categories (drawn by the page, with counts) and the queue */
+    if (h.id === "packets") return group(h, `      <ul class="sb-list">
+${h.items.filter(it => it.key !== "builder").map(link).join("\n")}
+      </ul>
+      <ul class="sb-list" id="catNav" aria-label="Activity categories"></ul>
       <ul class="sb-list">
         <li><button class="sb-link" type="button" id="navPacket">${ico("builder")}<span>Packet queue</span><span class="badge" id="navCount">0</span></button></li>
       </ul>`, true);
-    if (h.id === "tablet") { const it = h.items[0]; return `    <a class="sb-link sb-hub-link" data-hub="${h.id}" href="${it.href}">${ico(h.icon, 26)}<span>${esc(h.label)}</span></a>`; }
-    if (h.id === "academy" && h.items.length === 1) { const it = h.items[0]; return `    <a class="sb-link sb-hub-link" data-hub="${h.id}" href="#/${it.route}" data-route="${it.route}">${ico(h.icon, 26)}<span>${esc(h.label)}</span></a>`; }
-    if (h.id === "resources") return group(h, `      <ul class="sb-list">
-${[{ label: HUB.title, href: HUB.href, icon: "library" }, { label: RESEARCH.label, href: moduleHref(RESEARCH), icon: "microscope" }].map(link).join("\n")}
-      </ul>`);
-    if (h.id === "facility") {
-      const front = h.items.filter(it => !it.part);
-      const sections = FACILITY_PARTS.map(pt => `      <details class="sb-sub" data-part="${pt.id}">
-        <summary class="sb-sub-head"><span>${esc(pt.label)}</span>${svg(ICON.chevron, 16, "sb-sub-chev", 2.2)}</summary>
-        <ul class="sb-list">
-${h.items.filter(it => it.part === pt.id).map(link).join("\n")}
-        </ul>
-      </details>`).join("\n");
+    /* For directors: the Facility Portal on top, then Facility's four sections, the Academy and Resources, each a section that opens by its heading */
+    if (h.id === "directors") {
+      const fac = h.items.filter(it => it.sec === "facility");
       return group(h, `      <ul class="sb-list">
-${front.map(link).join("\n")}
+${fac.filter(it => !it.part).map(link).join("\n")}
       </ul>
-${sections}`);
+${FACILITY_PARTS.map(pt => sub(pt.id, pt.label, fac.filter(it => it.part === pt.id))).join("\n")}
+${sub("academy", "Academy", h.items.filter(it => it.sec === "academy"))}
+${sub("resources", "Resources", [{ label: HUB.title, href: HUB.href, icon: "library" }, { label: RESEARCH.label, href: moduleHref(RESEARCH), icon: "microscope" }])}`);
     }
     return group(h, `      <ul class="sb-list">
 ${h.items.map(link).join("\n")}
       </ul>`);
-    })();
   }).join("\n");
   return `${BNAV_START}
 <aside class="sidebar" id="sidebar" aria-label="Packet Builder navigation">
@@ -581,8 +584,8 @@ ${GENERATORS.map(t => hubCard("../" + t.href, t.label, t.desc, t.icon, t.meta)).
 }
 
 export const CSS = `<style id="cg-nav-css">
-/* Site navigation: the seven places, breadcrumbs and the top bar's buy links.
-   On a wide window (1280 px and up) the seven places run across a light top bar,
+/* Site navigation: the three doors and "For directors", breadcrumbs and the bar's one chip.
+   On a wide window (1280 px and up) they run across a light top bar,
    each a drop-down; on anything narrower they are the Menu drawer. The markup
    is the same at every width (one <aside>, the hubs as <details>), so a
    keyboard, a screen reader and the checks meet one structure.
@@ -667,20 +670,10 @@ html body .cg-topbar a,html body .cg-topbar button.linklike{color:var(--sb-txt)}
 
 /* the two headings over the hubs: Resident tools and Staff & family portal. In the Menu drawer they are headings in the list; across the top they
    sit above their hubs and take no room of their own (a hairline divides the two groups). */
-.cg-grp{list-style:none;margin:0;padding:14px 14px 2px}
-.cg-grp-l{display:inline-flex;align-items:center;gap:8px;font:700 15px/1.3 var(--cg-font-ui,"Trebuchet MS","Segoe UI",sans-serif);letter-spacing:.1em;text-transform:uppercase;color:var(--cg-tan-800,#453f37)}
-.cg-grp-l .cg-grp-ico{flex:none;width:16px;height:16px;color:var(--sb-accent,#0b5f59)}
-.cg-grp[data-grp="staff"]{margin-top:6px;border-top:1px solid var(--sb-border)}
-html.cg-night-shift .cg-grp-l{color:#e9c98f!important}
-html.cg-night-shift .cg-grp-l .cg-grp-ico{color:#e9c98f}
-html.cg-night-shift .cg-grp[data-grp="staff"]{border-color:#684a26}
-/* ---------- a wide window: the seven places across the top, each a drop-down ---------- */
+/* ---------- a wide window: the three doors and "For directors" across the top, each a drop-down ---------- */
 @media (min-width:1280px){
-  .cg-grp{position:relative;flex:none;width:0;height:100%;align-self:stretch;margin:0;padding:0;border:0!important;pointer-events:none}
   html body .cg-sb-nav{align-self:stretch}
   html body .cg-sidebar-nav.cg-hubs{align-self:stretch}
-  .cg-grp[data-grp="staff"]{margin:0 0 0 12px;border-left:1px solid var(--sb-border)!important}
-  .cg-grp-l{position:absolute;left:14px;top:3px;white-space:nowrap;line-height:1.1;font-size:15px}
   html body .cg-sidebar{position:sticky;top:0;left:auto;z-index:950;width:auto;height:var(--cg-nav-h);flex-direction:row;align-items:center;gap:20px;
     padding:0 max(24px,calc(50% - 640px));border-right:0;border-bottom:1px solid var(--sb-border);overflow:visible;transform:none;
     box-shadow:0 1px 0 rgba(255,255,255,.9),0 8px 24px rgba(69,63,55,.07)}
@@ -698,6 +691,8 @@ html.cg-night-shift .cg-grp[data-grp="staff"]{border-color:#684a26}
   /* the hub that holds this page: a deep green underline, and its name in green */
   html body .cg-hubs > .cg-hub-li > .cg-hub[data-here] > summary,html body .cg-hubs > .cg-hub-li > a.cg-hub-link.active{color:var(--cg-green-700,#08423f)!important;background:transparent;box-shadow:inset 0 -3px 0 var(--sb-accent)}
   .cg-hubs > .cg-hub-li > .cg-hub[open] > summary{background:var(--sb-open)}
+  /* the door that holds this page, while its drop-down is open: the open look wins, so its name stays readable (green on the dark open fill was 1:1) */
+  html body .cg-hubs > .cg-hub-li > .cg-hub[data-here][open] > summary{color:#ffffff!important;background:var(--sb-open);box-shadow:none}
   /* a drop-down: it hangs 6 px below the bar itself (the hub is centred in the bar, so the offset is measured from the hub's middle), however tall the bar is */
   .cg-hubs > .cg-hub-li > .cg-hub > .cg-sb-sub{position:absolute;top:calc(50% + var(--cg-nav-h) / 2 + 6px);left:0;z-index:960;box-sizing:border-box;min-width:300px;
     max-height:calc(100vh - var(--cg-nav-h) - 24px);overflow:auto;padding:8px;background:#ffffff;border:1px solid var(--sb-border);border-radius:16px;
@@ -710,8 +705,13 @@ html.cg-night-shift .cg-grp[data-grp="staff"]{border-color:#684a26}
   .cg-hub .cg-sb-sub .cg-sb-section{padding:12px 14px 4px;font-size:15px;line-height:1.4}
   .cg-hub .cg-sb-sub .cg-sb-divider{margin:6px 8px}
   /* Resources: a wide panel, the library in its three groups */
-  .cg-hubs > .cg-hub-li[data-hub="resources"] > .cg-hub > .cg-sb-sub{left:auto;right:0;width:min(880px,calc(100vw - 48px));display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px 16px;padding:16px}
-  .cg-hubs > .cg-hub-li[data-hub="resources"] > .cg-hub > .cg-sb-sub > li:first-child{grid-column:1/-1}
+  /* For directors: one compact panel, its three sections (Facility, Academy, Resources) side by side */
+  /* (it is placed against the row of doors, not its own button, so it opens under the doors and never runs off the window's edge) */
+  html body .cg-sidebar-nav.cg-hubs{position:relative}
+  .cg-hubs > .cg-hub-li[data-hub="directors"]{position:static}
+  .cg-hubs > .cg-hub-li[data-hub="directors"] > .cg-hub > .cg-sb-sub{left:0;right:auto;width:min(860px,100%);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px 16px;padding:16px;align-items:start}
+  /* a thin rule sets "For directors" apart from the three doors */
+  .cg-hubs > .cg-hub-li[data-hub="directors"]{margin-left:10px;padding-left:10px;border-left:1px solid var(--sb-border)}
   .cg-hub-foot{margin:0 0 0 auto;padding:0;border:0}
   html body .cg-hub-foot a{margin:0;padding:8px 12px;border:0;border-radius:10px;white-space:nowrap;font:600 16px/1.2 var(--cg-font-ui,"Trebuchet MS","Segoe UI",sans-serif)}
   .cg-hub-foot .cg-sb-ico{display:none}
@@ -737,8 +737,9 @@ html.cg-night-shift .cg-grp[data-grp="staff"]{border-color:#684a26}
   html body .cg-sidebar-brand img{width:63px;height:45px;object-fit:cover;object-position:50% 46%;border-radius:0}
   html body .cg-sidebar{position:fixed;top:0;left:0;z-index:900;width:min(320px,86vw);height:100vh;padding-top:68px;transform:translateX(-100%);
     transition:transform .22s ease;box-shadow:none;border-right:1px solid var(--sb-border)}
-  html body .cg-sidebar.is-open{transform:translateX(0);box-shadow:6px 0 32px rgba(40,36,31,.28)}
-  html body .cg-sidebar-toggle{display:flex;position:fixed;top:10px;left:12px;z-index:1100;width:auto;gap:8px;padding:8px 14px;
+  /* an open drawer sits above the first-visit Terms bar (z-index 1200), so every door can be tapped; the Menu button stays above it */
+  html body .cg-sidebar.is-open{transform:translateX(0);box-shadow:6px 0 32px rgba(40,36,31,.28);z-index:1250}
+  html body .cg-sidebar-toggle{display:flex;position:fixed;top:10px;left:12px;z-index:1260;width:auto;gap:8px;padding:8px 14px;
     background:var(--cg-green-700,#08423f);color:#ffffff;border:2px solid var(--cg-green-700,#08423f);border-radius:10px;
     font:700 15px/1 var(--cg-font-ui,"Segoe UI",system-ui,sans-serif)}
   html body .cg-sidebar-toggle svg{color:#ffffff}
@@ -864,7 +865,7 @@ export function render(s, page){
   return withFooter(withPaper(withDesign(out, page), page), page);
 }
 
-/* ---------- 4. Proof: the seven places are the same everywhere and lead somewhere real ---------- */
+/* ---------- 4. Proof: the three doors and "For directors" are the same everywhere and lead somewhere real ---------- */
 export function validate(){
   const problems = [], read = f => fs.readFileSync(path.join(ROOT, f), "utf8");
   const ids = HUBS.map(h => h.id).join(",");
@@ -893,10 +894,11 @@ export function validate(){
       links += used.length;
     } else {
       const open = hubOf(page), here = (block.match(/<details[^>]*\sdata-here\b/g) || []).length, cur = (block.match(/aria-current="page"/g) || []).length;
-      const isGroup = open && HUBS.find(h => h.id === open) && (open === "resources" || HUBS.find(h => h.id === open).items.length > 1);
+      const isGroup = !!(open && HUBS.find(h => h.id === open));
       if (isGroup && !new RegExp(`id="cgHub-${open}"[^>]*\\bopen\\b`).test(block)) problems.push(`${page.file}: the ${open} hub should be open and is not`);
       if (here !== (isGroup ? 1 : 0)) problems.push(`${page.file}: ${here} hubs are marked as the one holding this page (expected ${isGroup ? 1 : 0})`);
-      if (cur !== (page.current ? 1 : 0)) problems.push(`${page.file}: ${cur} links are marked as the current page (expected ${page.current ? 1 : 0})`);
+      const shown = page.current && inBar(page.current) ? 1 : 0;   // a page whose own link is not in the bar's short list marks its door only
+      if (cur !== shown) problems.push(`${page.file}: ${cur} links are marked as the current page (expected ${shown})`);
       links += (block.match(/<a /g) || []).length;
     }
   }
@@ -950,5 +952,5 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.a
   if (check && stale.length){ console.error("Navigation out of date in: " + stale.join(", ") + ". Run: npm run nav"); process.exit(1); }
   const { problems, links } = validate();
   if (problems.length){ console.error("Navigation problems:\n  - " + problems.join("\n  - ")); process.exit(1); }
-  if (check) console.log("Navigation is current on all " + PAGES.length + " pages: the same " + HUBS.length + " hubs, one open, " + links + " links checked.");
+  if (check) console.log("Navigation is current on all " + PAGES.length + " pages: the same three doors and For directors (" + HUBS.length + " places), one open, " + links + " links checked.");
 }

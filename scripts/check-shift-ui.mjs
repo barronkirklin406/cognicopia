@@ -82,7 +82,7 @@ try {
   await seedResidents(p, [resident("res-a", "Margaret", "302-B"), resident("res-b", "Peggy", "")]);
   await p.reload(); await p.waitForSelector("#view h1", { timeout: 8000 }); await p.waitForTimeout(300); await openBoard(p);
   ok((await text(p, "#view h1")) === "Shift board", "the screen opens as the Shift board");
-  ok((await p.$eval(".sb-link[aria-current='page']", e => e.dataset.route)) === "shift" && (await p.$eval("details.sb-hub[open]", e => e.dataset.hub)) === "facility", "the sidebar marks Shift board, under Facility");
+  ok((await p.$eval(".sb-link[aria-current='page']", e => e.dataset.route)) === "shift" && (await p.$eval("details.sb-hub[open]", e => e.dataset.hub)) === "directors", "the sidebar marks Shift board, under For directors");
   ok((await text(p, "#shfWho")).includes("No initials on this board yet"), "with no initials on the board it says so");
   await p.fill("#shfNText", NOTE_WORDS); await p.click("#shfNote button[type=submit]");
   ok((await count(p, "#shfNotes .shf-entry")) === 0 && (await text(p, "#toast")).includes("Choose your initials first"), "a note cannot be added before choosing initials");

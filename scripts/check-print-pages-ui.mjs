@@ -20,7 +20,7 @@ import fs from "fs";
 import os from "os";
 import path from "path";
 import { spawnSync } from "child_process";
-import { serve, loadPlaywright } from "./lib/browser.mjs";
+import { serve, loadPlaywright, agreed } from "./lib/browser.mjs";
 
 const { chromium } = loadPlaywright();
 const { srv, base } = await serve();
@@ -85,7 +85,7 @@ const MEASURE = () => {
 
 try {
   for (const pg of PAGES) {
-    const ctx = await browser.newContext({ viewport: { width: 1100, height: 900 }, serviceWorkers: "block" });
+    const ctx = await browser.newContext({ viewport: { width: 1100, height: 900 }, serviceWorkers: "block" }); await agreed(ctx);
     const p = await ctx.newPage(); const errors = [];
     p.on("pageerror", e => errors.push(e.message));
     await p.goto(base + pg); await p.waitForTimeout(700);
@@ -102,7 +102,7 @@ try {
 
   /* a box that only shows a value keeps printing: the license key on the activation page */
   {
-    const ctx = await browser.newContext({ viewport: { width: 1100, height: 900 }, serviceWorkers: "block" });
+    const ctx = await browser.newContext({ viewport: { width: 1100, height: 900 }, serviceWorkers: "block" }); await agreed(ctx);
     const p = await ctx.newPage(); await p.goto(base + "activate.html"); await p.waitForTimeout(500);
     await p.evaluate(() => { const k = document.getElementById("actKey"); if (k) { k.style.display = "block"; k.closest("[hidden]")?.removeAttribute("hidden"); k.value = "EXAMPLE-KEY-NOT-REAL"; } });
     await p.emulateMedia({ media: "print" });
@@ -113,7 +113,7 @@ try {
 
   /* the resident profile prints its words; its pocket card still prints alone when it is asked for */
   {
-    const ctx = await browser.newContext({ viewport: { width: 1100, height: 900 }, serviceWorkers: "block" });
+    const ctx = await browser.newContext({ viewport: { width: 1100, height: 900 }, serviceWorkers: "block" }); await agreed(ctx);
     const p = await ctx.newPage(); await p.goto(base + "profile.html"); await p.waitForTimeout(700);
     await p.emulateMedia({ media: "print" });
     const words = await p.evaluate(() => { const h = document.querySelector(".rap-hero h1"); return h ? { vis: getComputedStyle(h).visibility, disp: getComputedStyle(h).display } : null; });
@@ -138,7 +138,7 @@ try {
 
   /* a Packet Builder page keeps its own print rules: the generic sheet does not reach it */
   {
-    const ctx = await browser.newContext({ viewport: { width: 1100, height: 900 }, serviceWorkers: "block" });
+    const ctx = await browser.newContext({ viewport: { width: 1100, height: 900 }, serviceWorkers: "block" }); await agreed(ctx);
     const p = await ctx.newPage(); await p.goto(base + "builder.html"); await p.waitForTimeout(900);
     await p.emulateMedia({ media: "print" });
     const own = await p.evaluate(() => { const r = document.getElementById("printRoot"); return r ? getComputedStyle(r).display : null; });
@@ -151,7 +151,7 @@ try {
   try {
     let read = 0;
     for (const pg of PDF_PAGES) {
-      const ctx = await browser.newContext({ viewport: { width: 1100, height: 900 }, serviceWorkers: "block" });
+      const ctx = await browser.newContext({ viewport: { width: 1100, height: 900 }, serviceWorkers: "block" }); await agreed(ctx); await agreed(ctx);
       const p = await ctx.newPage(); await p.goto(base + pg); await p.waitForTimeout(700); await p.emulateMedia({ media: "print" });
       const file = path.join(tmp, "page.pdf");
       fs.writeFileSync(file, await p.pdf({ preferCSSPageSize: true, printBackground: true }));

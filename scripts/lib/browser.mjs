@@ -23,6 +23,16 @@ export function loadPlaywright(){
 
 const TYPES = { ".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=utf-8", ".mjs": "text/javascript; charset=utf-8", ".json": "application/json", ".css": "text/css", ".svg": "image/svg+xml", ".png": "image/png", ".jpg": "image/jpeg", ".webmanifest": "application/manifest+json", ".woff2": "font/woff2", ".txt": "text/plain" };
 
+/* A browser where the staff member has already agreed to the terms. Since the owner's playbook (Phase 2) the agreement
+   is asked in a window at the first print or PDF on a computer (js/legal.js); a check about something else starts past
+   it, as a returning staff member would. scripts/check-terms.mjs is the one that proves the window itself.
+   Use: const ctx = await browser.newContext({...}); await agreed(ctx); */
+export const TERMS_KEY = "cognicopia_eula_accepted";
+export async function agreed(ctx){
+  await ctx.addInitScript(k => { try { localStorage.setItem(k, "true"); } catch (e) { /* storage blocked: nothing to set */ } }, TERMS_KEY);
+  return ctx;
+}
+
 /* Serve the repository: resolves { srv, base }. Close srv when done. */
 export function serve(root = ROOT){
   return new Promise(ok => {

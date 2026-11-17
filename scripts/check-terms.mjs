@@ -5,9 +5,10 @@
      wording    the owner's paragraph is the same, letter for letter, in js/legal.js, terms.html and this check;
                 the print line is the same in js/legal.js, the PDF maker (assets/vendor/jspdf-atkinson.js and its copy
                 inside index.html) and the print style of the Packet Builder and the packet tool
-     agreement  the first visit to the packet tool, the Packet Builder and Resident Profiles shows the agreement bar;
-                "I agree" saves cognicopia_eula_accepted = "true" and the bar stays away after a reload; terms.html never shows it;
-                the bar does not print; nothing is requested from outside the page
+     agreement  nothing covers a page on arrival (the owner's playbook, Phase 2); the first time someone presses a button that prints
+                or makes a PDF, the agreement opens in a window first, with the owner's wording; "I agree, continue" saves
+                cognicopia_eula_accepted = "true" and makes the PDF, Close makes nothing and saves nothing, and the next press goes
+                straight through; the calming buttons (Instant Soothe) never wait; nothing is requested from outside the page
      links      "Terms of Service & Disclaimer" is in the footer of every page that has one, in the Packet Builder's menu
                 and on the packet tool's footer
      pdf        a PDF made by the PDF maker carries the line on every page, in black, in the top margin and inside the page;
@@ -104,29 +105,50 @@ const lineOnPage = (pg, label, scaled) => {
 };
 
 try {
-  /* the first visit, and the agreement */
+  /* the first visit: nothing over the page; the agreement is asked at the first print, then never again */
   for (const [file, name] of [["index.html", "packet tool"], ["builder.html", "Packet Builder"], ["profile.html", "Resident Profiles"]]) {
     const ctx = await browser.newContext({ viewport: { width: 1366, height: 768 }, serviceWorkers: "block" });
     const p = await ctx.newPage(); watch(p);
-    await p.goto(base + file); await p.waitForSelector("#cgLegal", { timeout: 15000 }).catch(() => {});
-    const shown = await p.evaluate(() => { const b = document.getElementById("cgLegal"); return b ? { text: b.querySelector(".cgl-txt p").textContent, head: b.querySelector(".cgl-txt b").textContent, btn: document.getElementById("cgLegalOk").getBoundingClientRect(), link: b.querySelector("a").getBoundingClientRect(), vis: getComputedStyle(b).display !== "none" } : null; });
-    ok(!!shown && shown.vis, `${name}: the first visit shows the agreement bar`);
-    const lum = rgb => { const k = rgb.match(/[\d.]+/g).slice(0, 3).map(Number).map(v => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); }); return 0.2126 * k[0] + 0.7152 * k[1] + 0.0722 * k[2]; };
-    const cc = await p.evaluate(() => { const g = (s, pr) => getComputedStyle(document.querySelector(s))[pr]; return { bg: g("#cgLegal", "backgroundColor"), b: g("#cgLegal b", "color"), p: g("#cgLegal p", "color"), a: g("#cgLegal a", "color"), btn: g("#cgLegalOk", "color"), btnBg: g("#cgLegalOk", "backgroundColor") }; });
-    const ratio = (x, y) => { const l1 = lum(x), l2 = lum(y); return (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05); };
-    ok(ratio(cc.b, cc.bg) >= 7 && ratio(cc.p, cc.bg) >= 7 && ratio(cc.a, cc.bg) >= 7 && ratio(cc.btn, cc.btnBg) >= 7, `${name}: the bar's text, link and button read at 7:1 or better (${[ratio(cc.b, cc.bg), ratio(cc.p, cc.bg), ratio(cc.a, cc.bg), ratio(cc.btn, cc.btnBg)].map(x => x.toFixed(1)).join(", ")})`);
-    ok(shown && shown.link.height >= 52, `${name}: "Read the full terms" is at least 52 px tall (${shown && Math.round(shown.link.height)})`);
-    ok(shown && shown.text === TEXT && shown.head === "Cognicopia Terms of Service & Disclaimer", `${name}: the bar shows the owner's wording word for word`);
-    ok(shown && shown.btn.width >= 52 && shown.btn.height >= 52, `${name}: "I agree" is at least 52 px (${shown && Math.round(shown.btn.width)} x ${shown && Math.round(shown.btn.height)})`);
-    ok(await p.evaluate(k => localStorage.getItem(k), KEY) === null, `${name}: nothing is saved before the person agrees`);
-    await p.emulateMedia({ media: "print" });
-    ok(await p.evaluate(() => getComputedStyle(document.getElementById("cgLegal")).display) === "none", `${name}: the bar does not print`);
-    await p.emulateMedia({ media: "screen" });
-    await p.click("#cgLegalOk");
-    ok(await p.evaluate(k => localStorage.getItem(k), KEY) === "true", `${name}: "I agree" saves ${KEY} = "true"`);
-    ok(await p.$("#cgLegal") === null, `${name}: the bar goes away`);
+    await p.goto(base + file); await p.waitForTimeout(1200);
+    ok(await p.$("#cgLegal") === null && await p.$("#cgLegalModal") === null, `${name}: nothing covers the page on a first visit`);
+    ok(await p.evaluate(k => localStorage.getItem(k), KEY) === null, `${name}: nothing is saved on arrival`);
+    await ctx.close();
+  }
+  {
+    const ctx = await browser.newContext({ viewport: { width: 1366, height: 768 }, serviceWorkers: "block", acceptDownloads: true });
+    const p = await ctx.newPage(); watch(p);
+    let downloads = 0; p.on("download", () => { downloads++; });
+    await p.goto(base + "index.html"); await p.waitForTimeout(1500);
+    await p.fill("#first", "Ruthanne"); await p.fill("#born", "1941");
+    /* Close: nothing is made and nothing is saved */
+    await p.click("#go"); await p.waitForSelector("#cgLegalModal[open]", { timeout: 5000 }).catch(() => {});
+    const w = await p.evaluate(() => { const m = document.getElementById("cgLegalModal"); return m ? { open: m.open, text: document.getElementById("cgmText").textContent, head: document.getElementById("cgmHead").textContent, lead: (document.getElementById("cgmLead") || {}).textContent || "", ok: document.getElementById("cgmOk").textContent, sizes: [...m.querySelectorAll("button, a")].map(e => Math.round(e.getBoundingClientRect().height)) } : null; });
+    ok(w && w.open, "packet tool: the first press of Make the packet opens the agreement first");
+    ok(w && w.text === TEXT && w.head === "Cognicopia Terms of Service & Disclaimer", "it shows the owner's wording word for word");
+    ok(w && /first page prints/.test(w.lead) && w.ok === "I agree, continue", `it says why it is asked now, and its button continues (${w && w.ok})`);
+    ok(w && w.sizes.every(h => h >= 52), `its controls are at least 52 px (${w && w.sizes.join(", ")})`);
+    await p.click("#cgmClose"); await p.waitForTimeout(1500);
+    ok(downloads === 0 && await p.evaluate(k => localStorage.getItem(k), KEY) === null, "Close makes no PDF and saves nothing");
+    /* I agree, continue: the PDF is made, and the agreement is kept */
+    await p.click("#go"); await p.waitForSelector("#cgLegalModal[open]", { timeout: 5000 }).catch(() => {});
+    const made = p.waitForEvent("download", { timeout: 90000 }).catch(() => null);
+    await p.click("#cgmOk");
+    ok(!!(await made) && await p.evaluate(k => localStorage.getItem(k), KEY) === "true", `"I agree, continue" saves ${KEY} = "true" and makes the PDF`);
+    const again = p.waitForEvent("download", { timeout: 90000 }).catch(() => null);
+    await p.click("#go"); await p.waitForTimeout(400);
+    ok(await p.$("#cgLegalModal") === null && !!(await again), "the next press goes straight through, with no window");
     await p.reload(); await p.waitForTimeout(900);
-    ok(await p.$("#cgLegal") === null, `${name}: after a reload the bar stays away`);
+    ok(await p.$("#cgLegal") === null, "after a reload nothing covers the page");
+    await ctx.close();
+  }
+  {
+    const ctx = await browser.newContext({ viewport: { width: 1366, height: 768 }, serviceWorkers: "block" });
+    const p = await ctx.newPage(); watch(p);
+    await p.goto(base + "index.html"); await p.waitForTimeout(1200);
+    const calm = await p.$$eval("button", bs => bs.filter(x => /soothe/i.test(x.textContent + " " + x.id)).map(x => [x.id || x.textContent.trim().slice(0, 20), window.CognicopiaLegal.holdsUp(x)]));
+    ok(calm.length >= 3 && calm.every(c => c[1] === false), `the calming buttons never wait for the agreement (${calm.map(c => c[0]).join(", ")})`);
+    const make = await p.$$eval("#go, #staffOnlyBtn, #blankForm", bs => bs.map(x => window.CognicopiaLegal.holdsUp(x)));
+    ok(make.length === 3 && make.every(Boolean), "the packet tool's make and print buttons do wait for it");
     await ctx.close();
   }
   {
@@ -177,18 +199,15 @@ try {
     await ctx.close();
   }
   {
-    const ctx = await browser.newContext({ viewport: { width: 1366, height: 768 }, serviceWorkers: "block" });
-    const p = await ctx.newPage(); watch(p);
-    await p.goto(base + "index.html"); await p.waitForSelector("#cgLegal", { timeout: 15000 }).catch(() => {});
-    ok(await p.$("#cgLegal") !== null, "the first-visit bar still shows on the packet tool");
-    await ctx.close();
-  }
-  {
+    /* on a phone the agreement window, opened by the first print in the Packet Builder, fits the screen */
     const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, serviceWorkers: "block" });
     const p = await ctx.newPage(); watch(p);
-    await p.goto(base + "builder.html"); await p.waitForSelector("#cgLegal", { timeout: 15000 }).catch(() => {});
-    const m = await p.evaluate(() => { const r = document.getElementById("cgLegal").getBoundingClientRect(); return { top: r.top, h: r.height, vh: innerHeight, sw: document.documentElement.scrollWidth, cw: document.documentElement.clientWidth }; });
-    ok(m.h <= m.vh * 0.5, `on a phone the bar takes at most half the screen (${Math.round(m.h)} of ${m.vh} px)`);
+    await p.goto(base + "builder.html"); await p.waitForTimeout(1200);
+    ok(await p.$("#cgLegal") === null, "on a phone nothing covers the Packet Builder on arrival");
+    await p.evaluate(() => { const b = document.createElement("button"); b.type = "button"; b.id = "cgtProbe"; b.textContent = "Print"; b.style.cssText = "position:fixed;left:8px;top:200px;min-height:52px;z-index:5"; document.body.appendChild(b); });
+    await p.click("#cgtProbe"); await p.waitForSelector("#cgLegalModal[open]", { timeout: 5000 }).catch(() => {});
+    const m = await p.evaluate(() => { const r = document.querySelector("#cgLegalModal").getBoundingClientRect(); return { l: r.left, r: r.right, t: r.top, b: r.bottom, vw: innerWidth, vh: innerHeight, sw: document.documentElement.scrollWidth, cw: document.documentElement.clientWidth }; });
+    ok(m.l >= 0 && m.r <= m.vw && m.t >= 0 && m.b <= m.vh, "and the agreement window a print opens fits the screen");
     ok(m.sw <= m.cw + 1, "and does not make the page scroll sideways");
     await ctx.close();
   }
@@ -254,5 +273,5 @@ try {
   ok(errors.length === 0, "no script error" + (errors.length ? ": " + [...new Set(errors)].slice(0, 3).join("; ") : ""));
 } finally { await browser.close(); srv.close(); fs.rmSync(tmp, { recursive: true, force: true }); }
 
-console.log(problems.length ? `terms check FAILED: ${problems.length} problem(s), ${passed} passed\n  - ` + problems.join("\n  - ") : `terms check passed: ${passed} checks (the owner's wording word for word, the first-visit agreement kept in this browser only, the line on every PDF page and printed sheet, nothing leaving the page)`);
+console.log(problems.length ? `terms check FAILED: ${problems.length} problem(s), ${passed} passed\n  - ` + problems.join("\n  - ") : `terms check passed: ${passed} checks (the owner's wording word for word, the agreement asked at the first print and kept in this browser only, the line on every PDF page and printed sheet, nothing leaving the page)`);
 process.exit(problems.length ? 1 : 0);

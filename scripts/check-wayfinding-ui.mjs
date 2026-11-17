@@ -11,7 +11,7 @@
                 written out; Switch opens the search, Clear clears it everywhere; the Studio, the daily card and
                 Tablet Activities start from the active resident, and the tablet keeps their topics off its screens
      aliases    on the Shift board the Builder's bar and the search show no name and no year of birth
-     Start here opens by itself once, right after a first-time visitor agrees to the terms on the home page; four
+     Start here never opens by itself: a first-time visitor opens it from "Take a 60-second tour" on the home page; four
                 roles; three steps, each with a button that goes there and a card that stays with the person
                 and outlines the real control; at the end, four suggested tools are pinned in one press; it does not
                 open by itself again, and the Today menu's "Start here" opens it on any page
@@ -179,9 +179,11 @@ try {
   /* ---------- Start here ---------- */
   {
     const f = await open(1366, 768, "index.html", { fresh: true });
-    ok(!(await f.p.$("dialog.wf-start[open]")), "the guide waits until the visitor has agreed to the terms");
-    await f.p.click("#cgLegalOk"); await f.p.waitForSelector("dialog.wf-start[open]", { timeout: 3000 }).catch(() => null);
-    ok(!!(await f.p.$("dialog.wf-start[open]")), "it opens by itself once they agree");
+    await f.p.waitForTimeout(1200);
+    ok(!(await f.p.$("dialog.wf-start[open]")) && !(await f.p.$("#cgLegal")), "a first visit opens no guide and no agreement bar over the page");
+    ok(/^Take a 60-second tour$/.test(await f.p.$eval("#heroStart", e => e.textContent.trim())), "the home page offers it in one calm button, Take a 60-second tour");
+    await f.p.click("#heroStart"); await f.p.waitForSelector("dialog.wf-start[open]", { timeout: 3000 }).catch(() => null);
+    ok(!!(await f.p.$("dialog.wf-start[open]")), "the button opens the guide");
     const roles = await f.p.$$eval("dialog.wf-start .wf-role b", e => e.map(x => x.textContent));
     ok(roles.length === 4, `four roles: ${roles.join(" | ")}`);
     const m1 = await measure(f.p, "dialog.wf-start[open]");

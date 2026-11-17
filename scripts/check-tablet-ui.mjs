@@ -37,7 +37,7 @@
    Needs Playwright. Where it is missing this exits 2 and npm run build skips it.
    Run: node scripts/check-tablet-ui.mjs
    ===================================================================== */
-import { loadPlaywright, serve } from "./lib/browser.mjs";
+import { loadPlaywright, serve, agreed } from "./lib/browser.mjs";
 import { measure as measureColor, sparse as colorSparse, MIN_SHAPES, MAX_SHAPES } from "./lib/tablet-color-measure.mjs";
 
 const { chromium } = loadPlaywright();
@@ -53,7 +53,7 @@ const SPEECH = "window.__spoken=[];(function(){try{var s=window.speechSynthesis;
 const LAND = { width: 1024, height: 768 }, PORT = { width: 768, height: 1024 }, PHONE = { width: 390, height: 844 };
 
 async function fresh(viewport, o = {}) {
-  const ctx = await browser.newContext({ viewport, hasTouch: true, reducedMotion: o.reduced ? "reduce" : "no-preference" });
+  const ctx = await browser.newContext({ viewport, hasTouch: true, reducedMotion: o.reduced ? "reduce" : "no-preference" }); await agreed(ctx);
   if (o.init) await ctx.addInitScript(o.init);
   const p = await ctx.newPage();
   p.on("request", r => { if (!r.url().startsWith(base) && !r.url().startsWith("data:")) foreign.push(r.url()); });
@@ -127,15 +127,16 @@ try {
     ok(await p.evaluate(() => document.getElementById("tbStageLate").checked && document.getElementById("tbTopic").value === "farming" && document.getElementById("tbSound").getAttribute("aria-pressed") === "false"), "and they are there again after reloading");
     ok(await p.evaluate(() => !document.getElementById("tbSound").textContent.includes("On")), "the sound button says so");
     await ctx.close();
-    /* the front page: Tablet Activities is in the top bar beside Activity Packets (the owner moved it there from the hero, November 2026), and it goes there */
+    /* the front page: Tablet Activities is in the top bar, inside the Today door (the three doors, November 12, 2026), and it goes there */
     const home = await fresh({ width: 1366, height: 768 }, { page: "index.html" });
-    const btn = await home.p.evaluate(() => { const e = document.querySelector('.cg-hubs > li[data-hub="tablet"] > a'), pk = document.querySelector('.cg-hubs > li[data-hub="packets"] > a'); if (!e || !pk) return null; const r = e.getBoundingClientRect(), q = pk.getBoundingClientRect(); return { top: r.top, bottom: r.bottom, h: r.height, w: r.width, text: e.textContent.trim(), nextTo: Math.abs(r.left - q.right) < 24 && Math.abs(r.top - q.top) < 2 }; });
-    ok(btn && btn.bottom < 120 && btn.h >= 52 && btn.w >= 150 && btn.text === "Tablet Activities" && btn.nextTo, "the top bar has a Tablet Activities link right next to Activity Packets: " + JSON.stringify(btn));
+    await home.p.click("#cgHub-today > summary"); await home.p.waitForTimeout(250);
+    const btn = await home.p.evaluate(() => { const e = document.querySelector('#cgHub-today a[href="tablet.html"]'); if (!e) return null; const r = e.getBoundingClientRect(); return { top: r.top, h: r.height, w: r.width, text: e.textContent.trim() }; });
+    ok(btn && btn.top < 300 && btn.h >= 52 && btn.w >= 150 && btn.text === "Tablet Activities", "the top bar's Today door holds a Tablet Activities link, at least 52 px tall: " + JSON.stringify(btn));
     ok(await home.p.evaluate(() => !document.querySelector(".lp-btn-tablet")), "and the hero does not repeat it");
-    await home.p.click('.cg-hubs > li[data-hub="tablet"] > a'); await home.p.waitForURL("**/tablet.html"); ok(/Tablet Activities/.test(await text(home.p, "h1")), "pressing the link opens the tablet page");
+    await home.p.click('#cgHub-today a[href="tablet.html"]'); await home.p.waitForURL("**/tablet.html"); ok(/Tablet Activities/.test(await text(home.p, "h1")), "pressing the link opens the tablet page");
     const phone = await fresh(PHONE, { page: "index.html" });
-    await phone.p.click("#cgSbToggle"); await phone.p.waitForTimeout(350);
-    ok(await phone.p.evaluate(() => { const e = document.querySelector('.cg-hubs > li[data-hub="tablet"] > a'); const r = e.getBoundingClientRect(); return r.height >= 52 && r.right <= innerWidth && r.left >= 0; }), "on a phone the link is in the Menu drawer, at least 52 px tall and on the screen");
+    await phone.p.click("#cgSbToggle"); await phone.p.waitForTimeout(350); await phone.p.click("#cgHub-today > summary"); await phone.p.waitForTimeout(250);
+    ok(await phone.p.evaluate(() => { const e = document.querySelector('#cgHub-today a[href="tablet.html"]'); const r = e.getBoundingClientRect(); return r.height >= 52 && r.right <= innerWidth && r.left >= 0; }), "on a phone the link is in the Menu drawer's Today door, at least 52 px tall and on the screen");
     await home.ctx.close(); await phone.ctx.close();
   }
 
@@ -866,7 +867,7 @@ try {
     const { ctx, p } = await fresh(LAND);
     for (const id of ["wordsearch", "crossword", "color", "paint"]) { await openAct(p, id); if (id === "color") await p.waitForSelector(".tb-pics", { timeout: 8000 }).catch(() => {}); await toMenu(p); }
     const keys = await p.evaluate(() => Object.keys(localStorage).concat(Object.keys(sessionStorage)));
-    ok(keys.every(k => /^(cognicopia_tablet_prefs|cognicopia_gen_count|cognicopia_trial_generations|cognicopia_trial_persist|cognicopia_trial_reset_time|cognicopia_license.*|cognicopia_promo.*)$/.test(k)), "nothing is kept in this browser but the choices and the free-packet count: " + keys.join(", "));
+    ok(keys.every(k => /^(cognicopia_tablet_prefs|cognicopia_gen_count|cognicopia_trial_generations|cognicopia_trial_persist|cognicopia_trial_reset_time|cognicopia_license.*|cognicopia_promo.*|cognicopia_eula_accepted)$/.test(k)), "nothing is kept in this browser but the choices, the free-packet count and the terms agreed to: " + keys.join(", "));
     ok(await p.evaluate(() => document.cookie === ""), "no cookie is set");
     await ctx.close();
   }

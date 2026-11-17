@@ -15,7 +15,7 @@
    ===================================================================== */
 import fs from "fs";
 import path from "path";
-import { loadPlaywright, serve, ROOT } from "./lib/browser.mjs";
+import { loadPlaywright, serve, ROOT, agreed } from "./lib/browser.mjs";
 
 const TITLES = [
   ["Ice Cream Soda", "ice-cream-soda"], ["Water Lily", "water-lily"], ["Calla Lilies", "calla-lilies"], ["Hydrangea", "hydrangea"],
@@ -39,7 +39,7 @@ const { chromium } = loadPlaywright();
 const { srv, base } = await serve();
 const browser = await chromium.launch();
 const errors = [], foreign = [];
-const ctx = await browser.newContext({ viewport: { width: 1366, height: 768 }, serviceWorkers: "block" });
+const ctx = await browser.newContext({ viewport: { width: 1366, height: 768 }, serviceWorkers: "block" }); await agreed(ctx);
 await ctx.addInitScript(() => { window.__pr = 0; window.print = () => { window.__pr++; }; });
 const p = await ctx.newPage();
 p.on("pageerror", e => errors.push(e.message));
