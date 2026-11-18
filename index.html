@@ -6544,6 +6544,7 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
     <div class="field" style="max-width:280px">
       <label for="pronoun">Words to use for them</label>
       <select id="pronoun">
+        <option value="" selected>Not chosen yet (use their name)</option>
         <option value="she">she / her</option>
         <option value="he">he / him</option>
         <option value="they">they / them</option>
@@ -6788,7 +6789,9 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
       <p class="hint" id="colorWishNote" role="status" aria-live="polite"></p></div>
     <div class="row">
       <div class="field"><label for="mil">Military branch, if they served</label>
-        <input type="text" id="mil" maxlength="40" autocomplete="off" placeholder="Army"></div>
+        <input type="text" id="mil" maxlength="40" autocomplete="off" placeholder="Army">
+        <label for="milOk" class="sub" style="margin-top:8px">Military service is a welcome topic</label>
+        <select id="milOk"><option value="" selected>No: do not bring it up</option><option value="welcome">Yes: they like to talk about it</option></select></div>
       <div class="field"><label for="faith">Their faith, if it matters to them</label>
         <input type="text" id="faith" maxlength="40" autocomplete="off" placeholder="Lutheran"></div>
     </div>
@@ -7079,6 +7082,13 @@ const PRON = {
   he:{subj:"he",obj:"him",poss:"his"},
   they:{subj:"they",obj:"them",poss:"their"}
 };
+/* No one is called "her" or "his" until staff choose: with the box left blank, a page uses the name. */
+function pronOf(r){
+  const k=PRON[r && r.pronoun];
+  if(k) return k;
+  const n=String((r && (r.goes||r.first))||"this person").trim()||"this person";
+  return {subj:n,obj:n,poss:/s$/i.test(n)?n+"'":n+"'s"};
+}
 
 /* =================================================================
    2. CONTENT LIBRARIES
@@ -7945,6 +7955,29 @@ function langsOf(r){
    none is under copyright in the United States. scripts/check-public-domain.mjs
    holds every tool to that one rule.
    Do not add modern song lyrics: they are licensed material. ---- */
+/* Which faith traditions a hymn or line suits. A resident whose faith box is blank, or names a tradition none of these cover, is offered none of them. */
+const HYMN_TRAD = {
+  "Amazing grace, how sweet the":["protestant","catholic"], "Rock of ages, cleft for":["protestant","catholic"],
+  "Abide with me, fast falls the":["protestant","catholic"], "Nearer, my God, to":["protestant","catholic"],
+  "What a friend we have in":["protestant"], "Blessed assurance, Jesus is":["protestant"], "Shall we gather at the":["protestant"],
+  "Onward, Christian":["protestant"], "Just as I am, without one":["protestant"], "I come to the garden":["protestant"],
+  "On a hill far away stood an old rugged":["protestant"], "Sweet hour of":["protestant"], "When the roll is called up":["protestant"]
+};
+const POEM_TRAD = {
+  "The Lord is my shepherd":["protestant","catholic","jewish"], "Be still":["protestant","catholic","jewish"],
+  "For God so loved the world":["protestant","catholic"]
+};
+/* The tradition a faith box names, or "" when it is blank or none of the four. Never guessed from a name alone. */
+function faithKind(txt){
+  const t=String(txt||"").toLowerCase().trim();
+  if(!t) return "";
+  if(/catholic|rosary/.test(t)) return "catholic";
+  if(/jewish|judaism|hebrew|synagogue|torah/.test(t)) return "jewish";
+  if(/muslim|islam|mosque|quran|koran/.test(t)) return "muslim";
+  if(/lutheran|methodist|baptist|presbyterian|protestant|episcopal|anglican|christian|pentecostal|evangelical|nazarene|congregational|assembl|covenant|reformed|brethren|mennonite|quaker|salvation army|disciples|church of/.test(t)) return "protestant";
+  return "";
+}
+function faithSuits(r,table,lead){ const k=faithKind(r.faith); return !!k && (table[lead]||[]).indexOf(k)>=0; }
 const LYRICS = [
   ["Amazing grace, how sweet the","sound","hymn",1779],
   ["What a friend we have in","Jesus","hymn",1868],
@@ -8944,7 +8977,7 @@ function triviaPairs(r){
   if(r.spouse) qa.push(["Who did you marry?", r.spouse]);
   if(r.kids.length)    qa.push(["What are your children called?", r.kids.join(" and ")]);
   if(r.pets.length)    qa.push(["What was your pet's name?", r.pets[0]]);
-  if(r.mil)    qa.push(["Which branch did you serve in?", r.mil]);
+  if(r.mil && r.milOk) qa.push(["Which branch did you serve in?", r.mil]);
   if(r.school) qa.push(["Where did you go to school?", r.school]);
   if(r.mother) qa.push(["What was your mother called?", r.mother]);
   if(r.firstcar) qa.push(["What was your first car?", r.firstcar]);
@@ -9674,9 +9707,23 @@ function coverPage(D,r,theme){
   }
 }
 
+/* How well a resident is known: eight facts the form asks for, and the one question to ask next. */
+function knownFacts(r){
+  const have=[
+    [!!r.town,"Where did they grow up?"],
+    [!!r.job,"What work did they do?"],
+    [r.hobbies.length>0,"What is one thing they love to do?"],
+    [r.favs.length>0,"What music or shows do they enjoy?"],
+    [!!r.spouse||r.kids.length>0,"Who are the people closest to them?"],
+    [r.pets.length>0,"Did they have a pet they loved?"],
+    [!!r.school,"Where did they go to school?"],
+    [!!r.firstjob||!!r.firstcar,"What was their first job or first car?"]
+  ];
+  return { n:have.filter(h=>h[0]).length, next:(have.find(h=>!h[0])||[0,""])[1] };
+}
 function staffPage(D,r,sel){
   D.start("brain");
-  const p=PRON[r.pronoun];
+  const p=pronOf(r);
   D.heading("For Staff");
   D.body("This packet was built around "+r.goes+"'s own life. The names, places "
     +"and words in it are "+p.poss+" own, which is why it holds attention "
@@ -9693,6 +9740,11 @@ function staffPage(D,r,sel){
   if(r.holidays.length) lines.push("Holidays: "+r.holidays.map(h=>HOLIDAYS[h].label).join(", "));
   lines.push("Level: "+r.stage+" stage");
   for(const l of lines) D.body(l,{size:16,gap:1.5,indent:18});
+  /* how well this person is known, and what to ask the family next */
+  const known=knownFacts(r);
+  D.gap(8);
+  D.body("Known so far: "+known.n+" of 8 facts."+(known.next?" Next best question to ask the family: "+known.next:""),{size:16,gap:1.5,indent:18});
+  if(known.n<3) D.body("Ask the family about work, hometown, and one joy before the next packet, so the pages can be made from "+r.goes+"'s own life.",{size:16,gap:1.5,indent:18});
   if(D.skipped.length){
     D.gap(8);
     D.body("Not made this time: "+D.skipped.join(", ")+". Make the packet again, or leave that page out.",{size:16,gap:1.5,indent:18});
@@ -9894,7 +9946,7 @@ function talkPage(D,r,s,theme){
                            "What was the best meal you ever ate?",
                            "Who made you laugh the most?",
                            "What is something you were good at?"]);
-  if(r.mil) seeds.unshift("Where did the "+r.mil+" send you?");
+  if(r.mil && r.milOk) seeds.unshift("Where did the "+r.mil+" send you?");
 
   const picked=[], seen=new Set();
   const streams=[seeds, senses, place, eraQ, generic];
@@ -10184,11 +10236,11 @@ const HOLIDAY_ART = {
 
 /* ---- Finish the Line (public domain hymns and old songs) ---- */
 function lyricPage(D,r,s,theme){
-  const hymns=shuffle(LYRICS.filter(l=>l[2]==="hymn"));
+  const hymns=shuffle(LYRICS.filter(l=>l[2]==="hymn" && faithSuits(r,HYMN_TRAD,l[0])));
   const songs=shuffle(LYRICS.filter(l=>l[2]==="song"));
-  const chosen = r.faith
+  const chosen = hymns.length
     ? keepAllowed(r,[...hymns.slice(0,Math.ceil(s.lyrics/2)), ...songs]).slice(0,s.lyrics)
-    : keepAllowed(r,[...songs, ...hymns]).slice(0,s.lyrics);
+    : keepAllowed(r,songs).slice(0,s.lyrics);
   D.start(theme);
   D.heading("Finish the Line");
   D.body("Sing it or say it out loud, or write the last word on the line.",{size:17});
@@ -10282,7 +10334,7 @@ function scramblePage(D,r,s,theme){
 
 /* ---- Two Halves That Go Together ---- */
 function matchPage(D,r,s,theme){
-  const pool=POEM_LINES.filter(p=>r.faith || p[2]!=="faith");
+  const pool=POEM_LINES.filter(p=>p[2]!=="faith" || faithSuits(r,POEM_TRAD,p[0]));
   const items=keepAllowed(r,shuffle(pool)).slice(0, Math.min(4, s.match));
   if(items.length<2) return null;
   const seconds=shuffle(items.map((p,i)=>[p[1],i]));
@@ -11054,7 +11106,7 @@ function taskPage(D,r,s,theme){
   D.start(theme);
   D.heading("Something to Do");
   D.body("For staff. These are not puzzles \u2014 they are jobs, and a job "
-        +"that used to be "+PRON[r.pronoun].poss+" own lands differently "
+        +"that used to be "+pronOf(r).poss+" own lands differently "
         +"from a worksheet. Offer one. Sit alongside and work on it together.",
         {size:16});
   D.gap(24);
@@ -11170,7 +11222,7 @@ function keyPage(D,key,theme){
    preference or response, so those are the fields here. */
 function notesPage(D,r,theme){
   D.start(theme);
-  const p=PRON[r.pronoun];
+  const p=pronOf(r);
   D.heading("Engagement Notes");
   D.body("Individual, preference-based engagement.",{size:15});
   D.gap(16);
@@ -11502,7 +11554,7 @@ function enginePage(D,r,id,theme){
   if(!A) throw new Error("The activity engine is not loaded.");
   let subjects=null; try{ subjects=M&&M.loadSync?M.loadSync():null; }catch(e){}
   const base={ stage:r.stage, vision:D.vision, name:r.first, date:PACKET_DATE, variant:PACKET_VARIANT, headless:true, subjects,
-    avoid:r.avoid, allow:r.faith?["faith"]:[] };
+    avoid:r.avoid, allow:faithKind(r.faith)?["faith"]:[] };
   /* first, what the page is called, so the heading can be drawn and the room under it measured */
   const probe=A.generate(id,Object.assign({},base,{frame:{x:MARGIN,y:200,w:PW-2*MARGIN,h:PH-MARGIN-24-200}}));
   D.start(theme);
@@ -12049,7 +12101,7 @@ addCrewRow(); addCrewRow(); addCrewRow();
    from it. There is no server involved, so the privacy position is
    unchanged: the profile never leaves the machine it was typed on. */
 const IO_FIELDS=["first","last","goes","born","pronoun","town","state",
-  "job","spouse","kids","pets","hobbies","favs","mil","faith","lang1","lang2",
+  "job","spouse","kids","pets","hobbies","favs","mil","milOk","faith","lang1","lang2",
   "mother","school","firstcar","firstjob","sibs","avoid","fac","wing","month"];
 /* Older saved files may also carry institutionalPartner, researchSponsor
    and packetPreferences (a workbook page target) from fields that never
@@ -13103,7 +13155,7 @@ $("f").addEventListener("submit", e=>{
     kids:splitList($("kids").value), pets:splitList($("pets").value),
     hobbies:splitList($("hobbies").value), favs:splitList($("favs").value),
     colorWish:$("colorWish").value.trim().slice(0,160),
-    mil:$("mil").value.trim(), faith:$("faith").value.trim(),
+    mil:$("mil").value.trim(), milOk:$("milOk").value==="welcome", faith:$("faith").value.trim(),
     lang1:$("lang1").value, lang2:$("lang2").value,
     avoid:splitList($("avoid").value),
     mother:$("mother").value.trim(), school:$("school").value.trim(),
@@ -13181,7 +13233,7 @@ if(soBtn) soBtn.addEventListener("click",()=>{
     kids:splitList($("kids").value), pets:splitList($("pets").value),
     hobbies:splitList($("hobbies").value), favs:splitList($("favs").value),
     colorWish:$("colorWish").value.trim().slice(0,160),
-    mil:$("mil").value.trim(), faith:$("faith").value.trim(),
+    mil:$("mil").value.trim(), milOk:$("milOk").value==="welcome", faith:$("faith").value.trim(),
     lang1:$("lang1").value, lang2:$("lang2").value,
     avoid:splitList($("avoid").value),
     mother:$("mother").value.trim(), school:$("school").value.trim(),
@@ -21490,6 +21542,7 @@ if (document.readyState === "complete" || document.readyState === "interactive")
     setVal("hobbies", ctx.hobbies.join(", ").toLowerCase());
     setVal("favs", ctx.music.artists.concat(ctx.screen.filter(Boolean)).join(", "));
     setVal("mil", ctx.military.branch && ctx.military.okToMention ? ctx.military.branch : "");
+    setVal("milOk", ctx.military.branch && ctx.military.okToMention ? "welcome" : "");
     setVal("avoid", ctx.avoid.words.join(", "));
     ["faith", "mother", "school", "firstcar", "firstjob", "lang1", "lang2"].forEach(function(id){ setVal(id, ""); });
     setVal("wing", ctx.unitNumber || "");
@@ -22609,6 +22662,20 @@ if (document.readyState === "complete" || document.readyState === "interactive")
   }
   /* One seed per resident per day (and per "another version"), so printing a packet twice gives the same packet and
      tomorrow's is new. Generating again for the same resident asks for another version (see generate()). */
+  /* How well a resident is known, from the saved profile: eight facts (work, hometown, a hobby, music, family, a pet, military service,
+     TV or sport). Under 3, the Quick packet's headings stay neutral instead of saying the page was made from their life. */
+  function factCount(ctx){
+    var n = 0, mus = ctx.music || {};
+    if (ctx.occupation) n++;
+    if (ctx.hometown) n++;
+    if ((ctx.hobbies || []).length) n++;
+    if ((mus.artists || []).length || (mus.genres || []).length || mus.favoriteSong) n++;
+    if ((ctx.people || []).some(function(x){ return !x.isPet; })) n++;
+    if ((ctx.people || []).some(function(x){ return x.isPet; })) n++;
+    if (ctx.military && ctx.military.branch) n++;
+    if ((ctx.screen || []).length) n++;
+    return n;
+  }
   function seedName(){
     var ctx = typeof window.getActiveResidentContext === "function" ? window.getActiveResidentContext() : null;
     return ctx && !ctx.isGeneric && ctx.name ? ctx.name : "guest";
@@ -22639,6 +22706,7 @@ if (document.readyState === "complete" || document.readyState === "interactive")
     var src = {
       ctx: ctx,
       generic: !!ctx.isGeneric,
+      thin: !ctx.isGeneric && factCount(ctx) < 3,    // fewer than 3 personal facts: neutral headings, never "your life"
       name: ctx.name || "",
       stage: ctx.stage || "middle",
       vision: (ctx.print && ctx.print.vision) || "large",
@@ -22810,7 +22878,7 @@ if (document.readyState === "complete" || document.readyState === "interactive")
       sheets:[{
         kind:"wordsearch",
         title: "Word Search",                      // the name is in the banner right above
-        subtitle: src.generic ? "Everyday words from home and garden" : "Topics inspired by your life & passions",
+        subtitle: src.generic ? "Everyday words from home and garden" : src.thin ? "Words to find" : "Topics inspired by your life & passions",
         instructions: "Circle each word you find. " + dirText + " Tick its box when you find it.",
         body: gridHtml + listHtml
       }]
@@ -22965,7 +23033,7 @@ if (document.readyState === "complete" || document.readyState === "interactive")
       sheets:[{
         kind:"trivia",
         title: "Finish the Thought",
-        subtitle: src.generic ? "Familiar sayings and favorite times" : "Chosen for you: favorite pastimes and years",
+        subtitle: src.generic ? "Familiar sayings and favorite times" : src.thin ? "Things to talk about" : "Chosen for you: favorite pastimes and years",
         instructions: choose ? "Circle the word that finishes each line. Saying it out loud counts too."
                              : "Fill in the word that comes to mind. There are no wrong answers.",
         body: body,

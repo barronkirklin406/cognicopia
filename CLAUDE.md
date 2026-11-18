@@ -65,7 +65,8 @@ The visual look, the three doors, the content rules and the print rules in the s
 | "Warm Editorial Clinical" look (`cognicopia-visual-style`) | Not built: `css/styles.css` still ships the November 5 oceanic palette, and `scripts/check-design-system.mjs` measures it. Restyle by changing the tokens and the check's expectations together |
 | No button emojis, no browser pop-ups, no "export" for a local PDF | Not built in the packet tool (the playbook measured them) |
 | Era facts from the exact birth year, birth year + 7 to + 28 | Not built: the packet tool's era table was keyed by decade, and the reminiscence engine (`assets/services/reminiscenceEngine.js`) and the pages built on it use ages 10 to 30. Reconcile both to one source |
-| Honest thin-data headings; late-stage page list; hand-under-hand; no default pronoun; faith and military rules; claim rewrites | Measured by the playbook at commit `ff7a11d`: re-check each against `main` before relying on it |
+| Honest thin-data headings (Quick packet); hand-under-hand; no default pronoun; faith (no hymns on a blank faith, hymns matched to the tradition); military only when welcome | Built (November 18, 2026) in the front-page packet tool and proved on PDFs by `scripts/check-clinical-rules-ui.mjs`; `check-claims` rejects "hand-over-hand". The main packet's own thin-data headings (Finish the Thought, My Life Story and similar) still have no fact-count branch |
+| Late-stage page list; claim rewrites | Measured by the playbook at commit `ff7a11d`: re-check each against `main` before relying on it |
 | Staff companion sheet at the front; no page under 60% full | Not built |
 
 ## Working with the owner

@@ -343,6 +343,14 @@ step("Staff documents never count against the free packets: the Shift board's ha
   }
 });
 
+step("The packet tool's clinical content rules, proved on real PDFs read back with PyMuPDF (made-up people only): the pronoun box starts blank and a blank never says her, his or him; military questions print only when military service is a welcome topic; a blank faith prints no hymns, a Catholic only hymns that suit, a Jewish resident none of the Christian hymns; the Quick packet's headings are neutral under 3 known facts; the staff sheet counts the facts known out of 8 and asks the family about work, hometown and one joy.", () => {
+  try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-clinical-rules-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
+  catch (e){
+    if (e.status === 2) return "skipped: Playwright or PyMuPDF is not installed here (see docs/dev-setup.md)";
+    throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message);
+  }
+});
+
 step("Printing a week or a month for a whole wing needs a facility license or a 30-day pilot: in the Packet Builder's Facility Portal the week and month print buttons open the license window with the reason, print nothing and spend no free packet without one, and print with a signed key (the example community, made-up people only).", () => {
   try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-week-print-license-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
   catch (e){
