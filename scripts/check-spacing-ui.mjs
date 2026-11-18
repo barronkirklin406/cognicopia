@@ -43,7 +43,7 @@ try {
   for (const [w, h, night] of [[1366, 768, false], [390, 844, false], [1366, 768, true], [390, 844, true]]) {
     const { ctx, p } = await open(w, h, "activity-studio.html", night), tag = `studio ${w}${night ? " night" : ""}`;
     const m = await measure(p, "#asRoomy");
-    ok(!m.missing && !m.small && m.ratio >= 4.5 && !m.sideways, `${tag}: the choice is ${m.missing ? "missing" : `${m.w} x ${m.h} px, contrast ${m.ratio}${m.sideways ? ", the page scrolls sideways" : ""}`}`);
+    ok(!m.missing && !m.small && m.ratio >= 7 && !m.sideways, `${tag}: the choice is ${m.missing ? "missing" : `${m.w} x ${m.h} px, contrast ${m.ratio}${m.sideways ? ", the page scrolls sideways" : ""}`}`);
     if (w === 1366 && !night) {
       const near = await p.evaluate(() => { const r = document.querySelector("#asRoomy").closest(".as-step"); return !!r && /How much support/.test(r.textContent) && !!r.querySelector('input[name="dexterity"]'); });
       ok(near, "it sits in the step with the stage and the hands");
@@ -80,7 +80,7 @@ try {
     const { ctx, p } = await open(w, h, "builder.html#/settings", night), tag = `builder ${w}${night ? " night" : ""}`;
     await p.waitForSelector("#setRoomy", { timeout: 15000 });
     const m = await measure(p, "#setRoomy");
-    ok(!m.missing && !m.small && m.ratio >= 4.5 && !m.sideways, `${tag}: the Settings choice is ${m.missing ? "missing" : `${m.w} x ${m.h} px, contrast ${m.ratio}${m.sideways ? ", sideways scroll" : ""}`}`);
+    ok(!m.missing && !m.small && m.ratio >= 7 && !m.sideways, `${tag}: the Settings choice is ${m.missing ? "missing" : `${m.w} x ${m.h} px, contrast ${m.ratio}${m.sideways ? ", sideways scroll" : ""}`}`);
     if (w === 1366 && !night) {
       ok(!(await p.evaluate(() => settings.roomy)), "builder: off to begin with");
       await p.click("#setRoomy + span"); await p.waitForTimeout(300);
@@ -89,7 +89,7 @@ try {
       await p.evaluate(() => { location.hash = "#/category/" + ACT_INDEX["finish-saying"].categoryId; }); await p.waitForSelector("#config", { state: "attached", timeout: 8000 }); await p.waitForTimeout(400);
       await p.evaluate(() => openConfig("finish-saying")); await p.waitForSelector("#cfgRoomy", { timeout: 8000 });
       ok(await p.$eval("#cfgRoomy", e => e.checked), "builder: a new activity starts with it on");
-      const mm = await measure(p, "#cfgRoomy"); ok(!mm.small && mm.ratio >= 4.5, `builder: the activity's choice is ${mm.w} x ${mm.h} px, contrast ${mm.ratio}`);
+      const mm = await measure(p, "#cfgRoomy"); ok(!mm.small && mm.ratio >= 7, `builder: the activity's choice is ${mm.w} x ${mm.h} px, contrast ${mm.ratio}`);
       await p.waitForTimeout(500);
       const on = await p.evaluate(() => ({ items: document.querySelectorAll("#preview .item").length, cls: /sp-roomy/.test(document.querySelector("#preview .sheet").className), border: parseFloat(getComputedStyle(document.querySelector("#preview .item")).borderTopWidth) }));
       await p.click("#cfgRoomy + span"); await p.waitForTimeout(500);

@@ -380,8 +380,9 @@
       var pic = pics.length ? pics[s % pics.length] : null;
       var blocks = [
         starters.length ? { kind: "list", label: recent.length ? "Starters that went well lately" : "Things to talk about", items: take(rotate(starters, s), n) }
+          : P.stage === 3 ? { kind: "list", label: "Things to share", items: take(rotate(["A favorite place", "A story to tell", "Someone to talk about"], s), n) }
           : { kind: "starters", items: take(rotate(["A story I love to tell is", "My favorite place was", "Someone I admire is"], s), n) },
-        songs.length ? { kind: "list", label: "Songs and comforts", items: take(rotate(songs, s), n + 1) } : { kind: "write", label: "Songs and comforts they enjoy", lines: 2 },
+        songs.length ? { kind: "list", label: "Songs and comforts", items: take(rotate(songs, s), n + 1) } : P.stage === 3 ? { kind: "list", label: "Songs and comforts", items: ["A song to hum together", "A warm blanket or a favorite cup"] } : { kind: "write", label: "Songs and comforts they enjoy", lines: 2 },
         pic ? { kind: "picture", pic: pic[0], caption: pic[1] } : null];
       out.push(sheet("visit", first ? "A visit with " + first : "A visit", "Things to share together", blocks,
         "a one-page companion for a family visit. The starters are what went well lately, taken from the one-tap log (or, when there is none, from the profile), and they are offers, never questions to get right. The songs and comforts are theirs. Color the picture together, or simply sit with it. A visit counts however it goes: a smile, a hum or a held hand is a full visit, and it is fine to stop whenever they are tired.",

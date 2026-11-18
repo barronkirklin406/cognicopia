@@ -283,6 +283,20 @@ ok(E.lifePagesFor(dot(3)).slice(0, 2).join() === "whoswho,comfort" && E.lifePage
   for (const f of ["js/generators/activity-life-data.js", "js/generators/activity-life.js"]) ok(!/\bfetch\s*\(|XMLHttpRequest|sendBeacon|WebSocket|localStorage|sessionStorage|indexedDB|https?:\/\//i.test(read(f)), f + " reaches no network and keeps nothing");
 }
 
+/* the Family visit companion sheet (a thirteenth page, for the person who comes to sit with a resident) */
+{
+  const kinds = r => r.sheets.flatMap(sh => sh.blocks.map(b => b.kind));
+  for (const stage of [1, 2, 3]) {
+    const r = gen(Object.assign(nobody(stage), { name: "Ruth" }), "visit", 2, 3);
+    ok(r.sheets.length >= 1 && r.problems.length === 0 && r.sheets.every(sh => sh.title === "A visit with Ruth" && sh.blocks.some(b => b.kind === "picture")), `visit stage ${stage}: made, titled with her name and a picture to color together (${r.problems[0] || "no problems"})`);
+  }
+  ok(!kinds(gen(nobody(3), "visit", 2, 3)).some(k => k === "write" || k === "starters"), "visit: the late stage has no writing lines, even with nothing known");
+  const lately = gen(Object.assign(nobody(2), { name: "Ruth", recent: ["Loved the old radio", "Singing together", "Hummed along", "A fourth line"] }), "visit", 1, 3).sheets[0];
+  ok(lately.blocks[0].label === "Starters that went well lately" && lately.blocks[0].items.length <= 3 && lately.blocks[0].items.includes("Loved the old radio"), "visit: at most three starters that went well lately");
+  const avoided = gen(Object.assign(nobody(2), { name: "Ruth", recent: ["Loved the old radio", "Singing together"], avoid: "radio" }), "visit", 1, 3).sheets[0];
+  ok(!JSON.stringify(avoided.blocks).includes("radio") && JSON.stringify(avoided.blocks).includes("Singing together"), "visit: a topic to avoid keeps a starter off (and it appears when nothing is avoided)");
+}
+
 console.log(problems.length ? `life pages check FAILED: ${problems.length} problem(s), ${passed} passed\n  - ` + problems.slice(0, 40).join("\n  - ")
   : `life pages check passed: ${passed} checks (twelve kinds of page about one person: ${made} pages at every stage and hand, with a profile and without; the data; what a profile makes personal; topics and people left out; no song words; offline)`);
 process.exit(problems.length ? 1 : 0);

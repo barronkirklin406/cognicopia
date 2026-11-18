@@ -11,7 +11,7 @@
                 notes or activities of the last weeks where they joined in or were fully engaged, never one where they chose another
                 time), their songs and comforts, and a picture to color together; with no log it falls back to the profile, with no
                 profile to lines to write; a topic to avoid keeps a starter off (and it does appear when nothing is avoided)
-     fingers    readable (4.5:1) by day and in Night Shift, no sideways scroll, at 1366 x 768 and 390 x 844
+     fingers    readable (7:1) by day and in Night Shift, no sideways scroll, at 1366 x 768 and 390 x 844
      private    the record is written to the sealed store on this computer; nothing is requested from outside the page
    Made-up people only. Needs Playwright. Run: node scripts/check-engagement-ui.mjs
    ===================================================================== */
@@ -50,7 +50,7 @@ const metrics = (p, sel) => p.evaluate(s => {
   const box = document.querySelector(s); if (!box) return { missing: true };
   const small = [], low = [];
   box.querySelectorAll("button,input").forEach(el => { const r = el.getBoundingClientRect(); if (r.width && r.height && (r.width < 52 || r.height < 52)) small.push(`${Math.round(r.width)}x${Math.round(r.height)} ${el.tagName}`); });
-  box.querySelectorAll("*").forEach(el => { if (![...el.childNodes].some(n => n.nodeType === 3 && n.textContent.trim())) return; const a = lum(getComputedStyle(el).color), b = lum(bgOf(el)), ratio = (Math.max(a, b) + .05) / (Math.min(a, b) + .05); if (ratio < 4.5) low.push(ratio.toFixed(2) + ' "' + el.textContent.trim().slice(0, 20) + '"'); });
+  box.querySelectorAll("*").forEach(el => { if (![...el.childNodes].some(n => n.nodeType === 3 && n.textContent.trim())) return; const a = lum(getComputedStyle(el).color), b = lum(bgOf(el)), ratio = (Math.max(a, b) + .05) / (Math.min(a, b) + .05); if (ratio < 7) low.push(ratio.toFixed(2) + ' "' + el.textContent.trim().slice(0, 20) + '"'); });
   return { small, low, shown: box.getBoundingClientRect().height > 0, buttons: [...box.querySelectorAll("button")].map(b => b.textContent.trim()), sideways: document.documentElement.scrollWidth > innerWidth + 1 };
 }, sel);
 

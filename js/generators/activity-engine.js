@@ -54,7 +54,7 @@
   var DEXTERITY = {
     steady:  { id: "steady",  label: "Steady hands",  font: 1,    fewer: 0, extraLinePt: 0,   note: "" },
     limited: { id: "limited", label: "Limited grip",  font: 1.15, fewer: 1, extraLinePt: 1.5, note: "Bigger type, one fewer item, heavier lines. Offer a chunky crayon or a built-up marker." },
-    minimal: { id: "minimal", label: "Little control", font: 1.3, fewer: 2, extraLinePt: 3,   note: "Largest type and the heaviest lines, with the fewest items. Hand-over-hand help is welcome." }
+    minimal: { id: "minimal", label: "Little control", font: 1.3, fewer: 2, extraLinePt: 3,   note: "Largest type and the heaviest lines, with the fewest items. Hand-under-hand help is welcome: rest your hand beneath theirs and let them lead." }
   };
   var DECADES = [1940, 1950, 1960, 1970, 1980];
   var SEASONS = ["spring", "summer", "fall", "winter"];
