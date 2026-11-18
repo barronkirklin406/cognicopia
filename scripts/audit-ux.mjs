@@ -297,6 +297,7 @@ async function main(){
     /* a coloring page as a PDF (Packet Builder): choose the picture, download */
     {
       const { ctx, page } = await open(1366, 900);
+      await ctx.addInitScript(() => { try { localStorage.setItem("cognicopia_eula_accepted", "true"); } catch (e) { /* ignore */ } });   // the agreement is asked once, at the first print; this measures the workflow after it
       try {
         await page.goto(base + "builder.html#/coloring", { waitUntil: "load" }); await page.waitForSelector(".cc-card", { timeout: 20000 });
         const s = counter(page);
