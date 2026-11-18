@@ -327,6 +327,14 @@ step("The family intake form on the profile page: a blank form prints on one US 
   }
 });
 
+step("The one-page shift handover on the Shift board: a button beside the board's other print buttons makes one US Letter staff page (type 16 pt or more, pure black, binding side kept, read back from a real PDF) with the recorded words by alias or room, the calming approaches used, and who is coming on the next shift from the staffing calendar (initials, how many of how many); a resident's name typed into a note never reaches the page; the button stores no resident, note or calendar data; 52 px and 7:1 by day and in Night Shift (a real browser, PyMuPDF)", () => {
+  try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-shift-handover-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
+  catch (e){
+    if (e.status === 2) return "skipped: Playwright is not installed here (see docs/dev-setup.md)";
+    throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message);
+  }
+});
+
 step("Resident Mode in Tablet Activities: only the activities and no link out, the search closed, kept on reload; a 2.5 second hold (mouse, Enter or a finger) to leave, a tap does nothing; a PIN kept as a salted hash, a wrong one refused (a real browser)", () => {
   try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-tablet-resident-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
   catch (e){

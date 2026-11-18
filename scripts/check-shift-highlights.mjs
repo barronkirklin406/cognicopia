@@ -2,6 +2,9 @@
 /* js/shift-highlights.js in Node, with a made-up board (aliases only): Instant Soothe and engagement are picked out, outcomes are read from the
    recorded mood, a busy shift is capped so the page stays one sheet, wings stay apart, and nothing is invented. */
 await import("../assets/services/dailyOps.js");
+import fs from "fs";
+import vm from "vm";
+vm.runInThisContext(fs.readFileSync(new URL("../js/shift-calendar.js", import.meta.url), "utf8"));
 import * as H from "../js/shift-highlights.js";
 const D = globalThis.CogniDailyOps;
 let passed = 0; const problems = []; const ok = (c, m) => { if (c) passed++; else problems.push(m); };
@@ -36,5 +39,21 @@ ok(big.totals.soothe === 13 && big.totals.engaged > 6, "the totals still count e
 ok(!/x{130}/.test(bh), "a long note is shortened");
 ok(H.page(H.build(D.emptyBoard(), { day, shift: "all", now }), {}).includes("None recorded on this shift.") && H.page(H.build(null, { day, now }), {}).includes("No open tasks."), "an empty shift gives an honest empty page");
 ok(H.SOOTHE_RE.test("Instant Soothe") && H.SOOTHE_RE.test("sundowning walk") && !H.SOOTHE_RE.test("Music memories") && !H.SOOTHE_RE.test("Word search"), "the calming words are matched");
+/* the one-page handover: a staff sheet with who is coming on, by initials; only aliases or rooms for residents */
+const C = globalThis.CogniShiftCal;
+let cal = C.emptyCalendar(); for (const [ini, sk] of [["AB", ["dementia"]], ["CD", []], ["EF", []]]) cal = C.addStaff(cal, { initials: ini, role: "aide", skills: sk });
+const idOf = (ini) => cal.staff.find((x) => x.initials === ini).id;
+for (const ini of ["AB", "CD"]) cal = C.assign(cal, day, "evening", idOf(ini));
+const ev = H.comingOn(cal, day, "day");
+ok(ev && ev.shift === "evening" && ev.initials.join() === "AB,CD" && ev.assigned === 2 && ev.needed === 3 && ev.gap >= 1 && ev.specialists === 1, "the evening team is read from the calendar: " + JSON.stringify(ev));
+ok(H.comingOn(cal, day, "evening").planned === false && H.comingOn(cal, day, "evening").shift === "night", "an unplanned night shift is said to be unplanned");
+ok(H.comingOn(cal, day, "night").day === "2026-11-11" && H.comingOn(cal, day, "night").shift === "day", "after the night shift the next shift is the next day's day shift");
+ok(H.comingOn(cal, day, "all") === null && H.comingOn(null, day, "day") === null, "all shifts, or no calendar, say nothing about who is coming on");
+const hp = H.handoverPage(H.build(board, { day, shift: "day", now }), { facility: "Test House", wing: "", coming: ev });
+ok(/Coming on: Evening shift/.test(hp) && /AB, CD/.test(hp) && /2 of 3 needed/.test(hp) && /More people are needed/.test(hp), "the handover says who is coming on and that more are needed");
+ok(/Keep an eye on/.test(hp) && /Hard to settle before lunch/.test(hp) && /What worked/.test(hp) && /Still to do/.test(hp) && /Resident 106-F/.test(hp) && /cg-staff-sheet/.test(hp), "it has the recorded words, by alias, as a staff sheet");
+const hb = H.handoverPage(H.build(board, { day, shift: "day", now }), {});
+ok((hb.match(/<li>/g) || []).length <= H.HAND.soothe + H.HAND.watch + H.HAND.worked + H.HAND.open, "the handover is capped so it stays one page");
+ok(H.handoverPage(H.build(D.emptyBoard(), { day, shift: "all", now }), {}).includes("No open tasks.") && !/Coming on/.test(H.handoverPage(H.build(D.emptyBoard(), { day, shift: "all", now }), {})), "an empty handover is honest and has no staffing section");
 if (problems.length) { console.error("shift highlights check FAILED: " + problems.length + ", " + passed + " passed"); problems.forEach((x) => console.error("  - " + x)); process.exit(1); }
-console.log("shift highlights check passed: " + passed + " checks (Instant Soothe outcomes, engagement, wings, the one-page cap, empty shifts)");
+console.log("shift highlights check passed: " + passed + " checks (Instant Soothe outcomes, engagement, wings, the one-page cap, empty shifts, the handover and who is coming on)");
