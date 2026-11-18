@@ -9,7 +9,7 @@
      daily      Daily engagement shows the same strip for the same resident
      never      no printed or previewed page carries it, and it is hidden when printing; nothing about the resident but their own
                 goals is used
-     fingers    readable (4.5:1) by day and in Night Shift, no sideways scroll, at 1366 x 768 and 390 x 844
+     fingers    readable (7:1) by day and in Night Shift, no sideways scroll, at 1366 x 768 and 390 x 844
      private    the goals are read from the resident's record on this computer; nothing is requested from outside the page
    Made-up people only. Needs Playwright. Run: node scripts/check-cueing-ui.mjs
    ===================================================================== */
@@ -86,7 +86,7 @@ try {
         const lum = c => { const m = c.match(/[\d.]+/g); const [r, g, b] = m.slice(0, 3).map(v => { v = v / 255; return v <= .03928 ? v / 12.92 : Math.pow((v + .055) / 1.055, 2.4); }); return .2126 * r + .7152 * g + .0722 * b; };
         const bgOf = el => { for (let e = el; e; e = e.parentElement) { const c = getComputedStyle(e).backgroundColor, mm = c.match(/[\d.]+/g); if (mm && (mm.length < 4 || +mm[3] > .5)) return c; } return "rgb(255,255,255)"; };
         const box = document.querySelector("#asCue, #dyCue"), low = [];
-        box.querySelectorAll("*").forEach(el => { if (![...el.childNodes].some(n => n.nodeType === 3 && n.textContent.trim())) return; const a = lum(getComputedStyle(el).color), b = lum(bgOf(el)), ratio = (Math.max(a, b) + .05) / (Math.min(a, b) + .05); if (ratio < 4.5) low.push(ratio.toFixed(2) + ' "' + el.textContent.trim().slice(0, 20) + '"'); });
+        box.querySelectorAll("*").forEach(el => { if (![...el.childNodes].some(n => n.nodeType === 3 && n.textContent.trim())) return; const a = lum(getComputedStyle(el).color), b = lum(bgOf(el)), ratio = (Math.max(a, b) + .05) / (Math.min(a, b) + .05); if (ratio < 7) low.push(ratio.toFixed(2) + ' "' + el.textContent.trim().slice(0, 20) + '"'); });
         return { low, shown: box.getBoundingClientRect().height > 0, sideways: document.documentElement.scrollWidth > innerWidth + 1 };
       });
       ok(m.shown && !m.low.length && !m.sideways, `${file.split(".")[0]} ${w}${night ? " night" : ""}: shown, readable and no sideways scroll${m.low.length ? " (low contrast: " + m.low.join(", ") + ")" : ""}`);

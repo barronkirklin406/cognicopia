@@ -26,7 +26,7 @@
    Frameworks the tips are drawn from: Montessori-based dementia programming
    (choice, a prepared place, a control of error, slow demonstration),
    Validation Therapy (acknowledge the feeling, never correct), Errorless
-   Learning (give the cue before the answer; no guessing), hand-over-hand
+   Learning (give the cue before the answer; no guessing), hand-under-hand
    guidance, and person-centred communication.
 
    Runs in the browser (window.CognicopiaClinicalMatrix) and in Node (vm).
@@ -455,8 +455,8 @@
      {name} is the resident's first name or "them"; {topic} is the thing the page is about (only used when
      the page has one). Each carries the framework it comes from. */
   var CUES = [
-    /* hand-over-hand and motor */
-    { fw: "motor", kinds: ["any"], text: "Use hand-over-hand guidance if {name} hesitates on {page}; ease off the moment they take over." },
+    /* hand-under-hand and motor */
+    { fw: "motor", kinds: ["any"], text: "Use hand-under-hand guidance if {name} hesitates on {page}: rest your hand beneath theirs and let them lead, and ease off the moment they take over." },
     { fw: "motor", kinds: ["motor"], text: "Join in beside {name} and move at their pace. Stop at the first sign of tiredness or discomfort; nothing here needs to be finished." },
     { fw: "motor", kinds: ["maze", "trace", "color", "match", "sort", "sequence"], text: "Rest your hand lightly over theirs for the first line only, then let go. The rest is theirs." },
     { fw: "motor", kinds: ["maze", "trace", "color"], text: "Tape the page to the table so it cannot slide, and offer a thick marker or crayon they can grip easily." },
