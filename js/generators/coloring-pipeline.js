@@ -434,6 +434,7 @@
     if (b.kind === "tiers") return { min: n * (c.fl * 1.5 + c.bp * 2.1 + 16), want: n * 1.7, max: n * c.bp * 5.2 };
     if (b.kind === "blanks") return { min: n * c.fl * 2.4, want: n * 0.9, max: n * c.bp * 3.2 };
     if (b.kind === "picture") return { min: c.fl * 8, want: 4.5, max: c.bp * 10 };
+    if (b.kind === "photo") return { min: c.fl * 10, want: 6, max: c.bp * 16 };
     if (b.kind === "ladder") { var rn = (b.rungs || []).length; return { min: rn * c.fl * 2.9, want: rn * 1.5, max: rn * c.bp * 4.6 }; }
     return { min: c.fl * 2.4, want: 1, max: c.fl * 4 };
   }
@@ -547,6 +548,12 @@
       var cap = b.caption ? fit(b.caption, c.sz(1.1), c.fl, w, c.bp * 1.6, true) : null, capH = cap ? cap.h + 10 : 0, paths = b.pic ? subjectPaths(b.pic) : null;
       if (paths) subjectOps(pg, paths, { x: x + w * 0.2, y: y, w: w * 0.6, h: h - capH }, c.lw, c.n);
       if (cap) block(pg, cap.lines.slice(0, 1), x + w / 2, y + h - capH + 6, cap.size, { bold: true, anchor: "middle" });
+    },
+    /* a photograph made into bold black lines (js/photoLine.js): one 3:4 picture in a frame, and a caption */
+    photo: function (pg, b, c, x, y, w, h) {
+      var cap = b.caption ? fit(b.caption, c.sz(1.1), c.fl, w, c.bp * 1.6, true) : null, capH = cap ? cap.h + 14 : 0, ph = h - capH, pw = Math.min(w, ph * 0.75), px = x + (w - pw) / 2;
+      P.image(pg, px, y, pw, pw / 0.75, b.src); P.rect(pg, px, y, pw, pw / 0.75, 16, c.lw);
+      if (cap) block(pg, cap.lines.slice(0, 1), x + w / 2, y + pw / 0.75 + 8, cap.size, { bold: true, anchor: "middle" });
     },
     ladder: function (pg, b, c, x, y, w, h) {
       var rungs = b.rungs || [], rh = Math.min(h / Math.max(1, rungs.length), c.bp * 4.6), len = rungs.reduce(function (m, q) { return Math.max(m, String(q.word).length); }, 1);

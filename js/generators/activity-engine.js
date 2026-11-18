@@ -237,6 +237,8 @@
       season: SEASONS.indexOf(p.season) >= 0 ? p.season : "", vocation: String(p.vocation == null ? "" : p.vocation).toLowerCase().replace(/[^a-z]/g, "").slice(0, 20),
       /* a bigger, harder word search for an early-stage reader who wants a real workout (not with high spacing: that is a smaller, airier page) */
       challenge: !!p.challenge && !roomy, roomy: roomy,
+      /* a line drawing made from a photo in this window (js/photoLine.js): a PNG data address, kept for the page being made and nowhere else */
+      photo: typeof p.photo === "string" && /^data:image\/png;base64,[A-Za-z0-9+\/=]+$/.test(p.photo) && p.photo.length < 3000000 ? p.photo : "",
       interests: split(p.interests), recent: (Array.isArray(p.recent) ? p.recent : []).map(function (x) { return String(x == null ? "" : x).replace(/[<>&"]/g, "").replace(/\s+/g, " ").trim().slice(0, 60); }).filter(Boolean).slice(0, 3), avoid: avoidTerms(p.avoid, split),
       /* the saved resident, read once by js/residentContext.js: the life pages are made from it (null when nobody is chosen) */
       person: p.person && typeof p.person === "object" ? p.person : null,
@@ -387,13 +389,13 @@
     (sheets || []).forEach(function (sh, i) {
       /* every word a sheet puts in front of the resident (the answer key and the note for staff are not read by the resident) */
       var texts = [], walk = function (v, key) {
-        if (typeof v === "string") { if (key !== "staffNote" && key !== "keyLines" && key !== "dexNote" && key !== "code" && key !== "staff" && key !== "source" && key !== "photo" && key !== "pic") texts.push(v); }
+        if (typeof v === "string") { if (key !== "staffNote" && key !== "keyLines" && key !== "dexNote" && key !== "code" && key !== "staff" && key !== "source" && key !== "photo" && key !== "pic" && key !== "src") texts.push(v); }
         else if (Array.isArray(v)) v.forEach(function (x) { walk(x, key); });
         else if (v && typeof v === "object") Object.keys(v).forEach(function (k) { walk(v[k], k); });
       };
       ["title", "subtitle", "word", "from", "to", "items", "steps", "pairs", "words", "cards", "questions", "extra", "left", "right", "bank", "colors", "event", "target", "options"].forEach(function (k) { if (sh[k] != null) walk(sh[k], k); });
       /* a page of several items: everything in it is read by the resident, the strip for staff and the names of its parts aside */
-      (sh.blocks || []).forEach(function (b) { if (b && b.kind !== "staff") Object.keys(b).forEach(function (k) { if (k !== "kind" && k !== "pic" && k !== "photo") walk(b[k], k === "label" || k === "text" || k === "sub" || k === "caption" ? "items" : k); }); });
+      (sh.blocks || []).forEach(function (b) { if (b && b.kind !== "staff") Object.keys(b).forEach(function (k) { if (k !== "kind" && k !== "pic" && k !== "photo" && k !== "src") walk(b[k], k === "label" || k === "text" || k === "sub" || k === "caption" ? "items" : k); }); });
       texts.forEach(function (t) {
         if (!t) return;
         toneProblems(withoutNames(t, P)).forEach(function (m) { out.push("Sheet " + (i + 1) + ": " + m); });
@@ -420,7 +422,7 @@
   }
 
   /* what a registered module needs from this file */
-  var KIT = { STAGES: STAGES, DEXTERITY: DEXTERITY, ERA: ERA, DECADES: DECADES, rng: rng, hash: hash, shuffle: shuffle, pick: pick, cap: cap, cut: cut, avoided: avoided, toneProblems: toneProblems, decadeFor: decadeFor };
+  var KIT = { STAGES: STAGES, DEXTERITY: DEXTERITY, ERA: ERA, DECADES: DECADES, INVITE: INVITE, SENSE: SENSE, KIND_LABEL: KIND_LABEL, KIND_ORDER: KIND_ORDER, rng: rng, hash: hash, shuffle: shuffle, pick: pick, cap: cap, cut: cut, avoided: avoided, toneProblems: toneProblems, decadeFor: decadeFor };
   return {
     kit: KIT, register: register, fits: fits, modules: function () { return MODULES.slice(); },
     VERSION: VERSION, STAGES: STAGES, DEXTERITY: DEXTERITY, DECADES: DECADES, SEASONS: SEASONS,

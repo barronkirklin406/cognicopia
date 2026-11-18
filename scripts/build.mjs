@@ -295,6 +295,46 @@ step("The activity documentation summary on the Facility Portal's Audit readines
   }
 });
 
+step("Calm now: a button on the active resident bar and the Packet Builder's Working with bar opens a modal for staff (their comforts and favorite dish, safe things to talk about, the topics to avoid written out, lines that ask nothing, songs of their years by title, the line to follow the facility's own protocol), one printed staff page read back from a real PDF, a topic to avoid kept off every list; and the late-stage \"to hold\" line for staff on Daily engagement and the Studio (a real browser, day and Night Shift, 1366 x 768 and 390 x 844)", () => {
+  try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-calm-now-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
+  catch (e){
+    if (e.status === 2) return "skipped: Playwright is not installed here (see docs/dev-setup.md)";
+    throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message);
+  }
+});
+
+step("The group circle on Daily engagement: two to eight saved residents and a theme give a leader's script with a line for each person at their own stage, by name; the avoid lists are joined (a thing any of them avoids is out for everyone, a theme one avoids is not offered); one staff page read back from a real PDF (a real browser, day and Night Shift, 1366 x 768 and 390 x 844)", () => {
+  try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-group-circle-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
+  catch (e){
+    if (e.status === 2) return "skipped: Playwright is not installed here (see docs/dev-setup.md)";
+    throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message);
+  }
+});
+
+step("A coloring page from a photo and a door sign in the Activity Page Studio: a chosen photo is turned into a picture of pure black and white (3:4, lines at least 3 pt thick, a sensible amount of ink, a plain note on how it came out), kept in memory only and never in the browser's storage; the coloring page has a 32 pt real-text title and the picture is read back from a real PDF as pure black and white; the door sign has the name, where they come from, their work and a drawing, and Remove brings back a frame with room for a photo; a topic to avoid changes the drawing; 52 px and 7:1 by day and in Night Shift (a real browser, PyMuPDF), nothing requested from outside the page", () => {
+  try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-photo-pages-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
+  catch (e){
+    if (e.status === 2) return "skipped: Playwright is not installed here (see docs/dev-setup.md)";
+    throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message);
+  }
+});
+
+step("The family intake form on the profile page: a blank form prints on one US Letter page in pure black with 3 pt writing lines and type of 16 pt or more; a family member's answers are saved as a LOCKED file by default (a passphrase of 10 or more characters typed twice; short or different ones refused; the file holds none of the words typed), the plain file is a labelled second choice behind a warning, the same answers show as QR codes that need the passphrase; staff open the file on another computer (a wrong passphrase refused in plain words) and the person arrives as a new resident marked as written by a family, never over an existing one; nothing typed is kept in the browser's storage; 52 px and 7:1 by day and in Night Shift (a real browser, PyMuPDF)", () => {
+  try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-family-intake-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
+  catch (e){
+    if (e.status === 2) return "skipped: Playwright is not installed here (see docs/dev-setup.md)";
+    throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message);
+  }
+});
+
+step("The one-page shift handover on the Shift board: a button beside the board's other print buttons makes one US Letter staff page (type 16 pt or more, pure black, binding side kept, read back from a real PDF) with the recorded words by alias or room, the calming approaches used, and who is coming on the next shift from the staffing calendar (initials, how many of how many); a resident's name typed into a note never reaches the page; the button stores no resident, note or calendar data; 52 px and 7:1 by day and in Night Shift (a real browser, PyMuPDF)", () => {
+  try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-shift-handover-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
+  catch (e){
+    if (e.status === 2) return "skipped: Playwright is not installed here (see docs/dev-setup.md)";
+    throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message);
+  }
+});
+
 step("Resident Mode in Tablet Activities: only the activities and no link out, the search closed, kept on reload; a 2.5 second hold (mouse, Enter or a finger) to leave, a tap does nothing; a PIN kept as a salted hash, a wrong one refused (a real browser)", () => {
   try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-tablet-resident-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
   catch (e){

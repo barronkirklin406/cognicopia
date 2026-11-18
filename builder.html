@@ -7351,13 +7351,15 @@ const ActiveResident = (function(){
     if (det) det.textContent = d ? [d.detail, "Avoid: " + d.avoidText].filter(Boolean).join(" • ") : "";
     if (det && hint) hint.hidden = !!d;
     if (clr) clr.hidden = !p;
+    const calm = document.getElementById("arCalm"); if (calm) calm.hidden = !p;
   }
   function mount(){
     const box = document.getElementById("activeRes"); if (!box || box.dataset.ready) return;
     box.dataset.ready = "1";
     box.innerHTML = `<label for="arSel" class="ar-lbl">Working with</label><select id="arSel" aria-describedby="arHint"></select><span class="ar-hint" id="arHint"></span><span class="ar-detail" id="arDetail" aria-live="polite"></span>
-      <span class="ar-btns"><button type="button" class="btn btn-sm" id="arClear" hidden>Clear</button><button type="button" class="btn btn-sm" data-wf-search title="Search tools, guides and residents (Ctrl+K)">Search</button></span>`;
+      <span class="ar-btns"><button type="button" class="btn btn-sm ar-calm" id="arCalm" hidden>Calm now</button><button type="button" class="btn btn-sm" id="arClear" hidden>Clear</button><button type="button" class="btn btn-sm" data-wf-search title="Search tools, guides and residents (Ctrl+K)">Search</button></span>`;
     document.getElementById("arSel").addEventListener("change", e => { set(e.target.value); if (typeof router === "function") router(); });
+    document.getElementById("arCalm").addEventListener("click", e => { if (window.CogniWayfinding) window.CogniWayfinding.calmNow(e.currentTarget); });
     document.getElementById("arClear").addEventListener("click", () => { set(""); if (typeof router === "function") router(); toast("No resident is active now."); });
     syncSelect();
   }
@@ -9441,7 +9443,7 @@ const DailyOpsUI = (function(){
         <p class="hint">${D.SHIFTS.map(s => `${esc(s.label)}: ${esc(s.hours)}`).join(". ")}. A night shift belongs to the day it began.</p></fieldset>
       <p class="shf-sum" id="shfSum" role="status"></p>
       ${window.CogniPrivacy ? window.CogniPrivacy.choiceHtml("shfNames", settings.exportNames, "Names on printed sheets") : ""}
-      <div class="actions"><button class="btn btn-primary" type="button" id="shfSbar">Generate Shift Handoff Summary (SBAR)</button><button class="btn" type="button" id="shfPrint">Print handoff sheet</button></div>`;
+      <div class="actions"><button class="btn btn-primary" type="button" id="shfSbar">Generate Shift Handoff Summary (SBAR)</button><button class="btn" type="button" id="shfPrint">Print handoff sheet</button><button class="btn" type="button" id="shfOne">One-page handover for the next shift</button></div>`;
   }
   const aboutSelect = (id, cur) => {
     const ch = D.aliasChoices(known), listed = !cur || ch.choices.indexOf(cur) >= 0;
@@ -9709,6 +9711,15 @@ const DailyOpsUI = (function(){
     const pages = (await sheetPages(sb, D.sbarPages)).map(html => ({ html }));
     BookUI.print(pages, ["SBAR handoff", S.day, S.shift === "all" ? "all shifts" : S.shift].join(" - "), null);
   }
+  /* the one-page handover for the team coming on: the recorded words, by alias or room, and who is planned for the next shift (js/shift-highlights.js) */
+  async function printOnePage(){
+    const HL = await import("./js/shift-highlights.js"), CS = window.CogniShiftCal, now = new Date();
+    let cal = null; try { const raw = CS && CG_LS.getItem(CS.STORE_KEY); cal = raw ? JSON.parse(raw) : null; } catch (e){ cal = null; }
+    const h = HL.build(sheetBoard(), { day:S.day, shift:S.shift, wing:wingNow(), now });
+    if (!h.totals.soothe && !h.totals.watch && !h.totals.worked && !h.totals.open && !confirm("There is nothing recorded for this day and shift. Print a blank handover?")) return;
+    const html = HL.handoverPage(h, { facility:settings.facility || "", wing:wingNow() || "", coming:HL.comingOn(cal, S.day, S.shift) });
+    BookUI.print([{ html:`<div class="sheet cg-ho-wrap">${html}</div>` }], ["Shift handover", S.day, S.shift === "all" ? "all shifts" : S.shift].join(" - "), null);
+  }
   async function printSheet(){
     const h = D.handoff(sheetBoard(), S.day, S.shift, new Date(), wingNow());
     if (!h.groups.some(g => g.notes.length) && !h.open.length && !h.done.length && !confirm("There is nothing recorded for this day and shift. Print a blank handoff sheet?")) return;
@@ -9765,6 +9776,7 @@ const DailyOpsUI = (function(){
     if (b.dataset.day){ setDay(b.dataset.day === "today" ? today() : D.addDays(S.day, +b.dataset.day)); return; }
     if (b.id === "shfSbar") return printSbar().catch(err => toast("The sheet could not be made: " + (err && err.message || err)));
     if (b.id === "shfPrint") return printSheet().catch(err => toast("The sheet could not be made: " + (err && err.message || err)));
+    if (b.id === "shfOne") return printOnePage().catch(err => toast("The sheet could not be made: " + (err && err.message || err)));
     if (b.id === "shfBk") return backup();
     if (b.id === "shfRs") return restore();
     if (b.dataset.edit){ const [type, id] = b.dataset.edit.split(":"); S.edit = { type, id }; renderForms(); return; }

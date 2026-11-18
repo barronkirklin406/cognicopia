@@ -390,6 +390,32 @@
     }
     return out;
   }
+  /* ---------- 14. a coloring page made from a photo (js/photoLine.js makes the line drawing; with none chosen there is no page) ---------- */
+  function photocolorSheets(P, r, count) {
+    if (!P.photo) return [];
+    var w = who(P), shown = String(P.name || w.name || "").trim().split(" ")[0];
+    return [sheet("photocolor", "Color this together", "A picture made from a photo", [{ kind: "photo", src: P.photo, caption: shown ? "For " + shown : "" }],
+      "a coloring page made from a photo, drawn in bold lines by an edge finder. Look it over first: a rough line is a place to add your own. Offer a thick crayon or marker and sit alongside; any color, or none, is right.", { personal: true })];
+  }
+  /* ---------- 15. a door sign: a name, a photo, a picture of their work or what they love, and where they come from ---------- */
+  var SIGN_PIC = { farmer: "farm_tractor", teacher: "grandfather_clock", nurse: "teacup", cook: "teapot", mechanic: "farm_tractor", secretary: "typewriter", carpenter: "birdhouse", driver: "farm_tractor", shopkeeper: "rotary_telephone", seamstress: "sewing_machine" };
+  var SIGN_LOVE = [[/garden|plant|flower/, "watering_can"], [/bak|cook|tea/, "teapot"], [/bird/, "cardinal"], [/sew|knit|quilt/, "sewing_machine"], [/fish|boat|sail/, "sailboat"], [/read|book/, "rocking_chair"]];
+  function doorsignSheets(P, r, count) {
+    var w = who(P), shown = String(P.name || "").trim() || String(w.name || "").trim().split(" ")[0];
+    var town = w.hometown && w.hometown.town && ok(w.hometown.town, P) ? w.hometown.town : "", label = w.work && w.work.label && ok(w.work.label, P) ? w.work.label : "";
+    var id = SIGN_PIC[P.vocation] || SIGN_PIC[w.work && w.work.vocation] || "";
+    if (!id || !drawn(id) || !ok(id.replace(/_/g, " "), P)) {
+      id = ""; var loves = keep(w.interests.concat(w.hobbies, P.interests), P).join(" ").toLowerCase();
+      SIGN_LOVE.some(function (x) { if (x[0].test(loves) && drawn(x[1])) { id = x[1]; return true; } return false; });
+    }
+    if (!id && drawn("sunflower") && ok("sunflower", P)) id = "sunflower";
+    return [sheet("doorsign", shown || "Welcome", "Welcome", [
+      { kind: "frames", items: [{ name: town ? "From " + town : shown, sub: label, photo: P.photo || "", hint: "A photo can go here" }] },
+      id ? { kind: "picture", pic: id, caption: "" } : null],
+      "a sign for the door of their room: their name, a photo if you have one, a picture for the work or the thing they love, and where they come from. It is read by visitors, so it holds only what the resident and family are glad to share. Print it, trim it and put it where it can be seen at eye height.", { personal: true })];
+  }
+  E.register("photocolor",  { code: "PC", label: "Coloring page from a photo",    stages: [1, 2, 3], build: photocolorSheets,  max: function () { return 1; } });
+  E.register("doorsign",    { code: "DR", label: "Door sign",                     stages: [1, 2, 3], build: doorsignSheets,    max: function () { return 1; } });
   E.register("visit",       { code: "FV", label: "Family visit companion sheet",  stages: [1, 2, 3], build: visitSheets,       max: function () { return 2; } });
   E.register("wordplay",    { code: "WP", label: "Word play",                     stages: [1, 2],    build: wordplaySheets,    max: function () { return 6; } });
 

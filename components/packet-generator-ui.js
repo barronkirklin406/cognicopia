@@ -54,14 +54,14 @@
   /* the life pages (activity-life.js): each is about the person, and fuller when a saved resident is chosen */
   var LIFE_KINDS = [["lifestory", "My life story (stages 1-2)"], ["generations", "Family across the generations (stages 1-2)"], ["whoswho", "Who's who"], ["mytrade", "My work and its tools (stages 1-2)"],
     ["hometown", "Where I come from"], ["songs", "Songs of my years"], ["twenty", "The year I turned twenty (stages 1-2)"], ["thennow", "Then and now (stages 1-2)"],
-    ["myday", "My day, step by step (stages 2-3)"], ["dish", "A dish I made (stages 1-2)"], ["comfort", "What I would like (stages 2-3)"], ["wordplay", "Word play (stages 1-2)"], ["visit", "Family visit companion sheet"]];
+    ["myday", "My day, step by step (stages 2-3)"], ["dish", "A dish I made (stages 1-2)"], ["comfort", "What I would like (stages 2-3)"], ["wordplay", "Word play (stages 1-2)"], ["visit", "Family visit companion sheet"], ["photocolor", "Coloring page from a photo (choose a photo first)"], ["doorsign", "Door sign"]];
   var HAS_LIFE = E.modules().some(function (m) { return m.id === "lifestory"; });
   if (HAS_LIFE) KINDS = KINDS.concat(LIFE_KINDS);
   /* the suggested packet for each stage: three of the master inventory and a coloring page */
   var SUGGEST = { 1: ["wordgrid", "timeline", "memory", "dialogue", "coloring"], 2: ["dialogue", "household", "phrases", "coloring"], 3: ["coloring", "recognition", "rhythm", "dialogue"] };
   var LABEL = {}; KINDS.forEach(function (k) { LABEL[k[0]] = k[1]; });
   var suggestTurn = 0;
-  var state = { mix: { reminiscence: true, exercise: true, daily: true, coloring: true }, vocation: "", stage: 2, dexterity: "steady", roomy: false, decade: 1950, born: "", name: "", nameStyle: "plain", personal: "", challenge: false, answers: false, resident: "", interests: "", avoid: "",
+  var state = { mix: { reminiscence: true, exercise: true, daily: true, coloring: true }, vocation: "", stage: 2, dexterity: "steady", roomy: false, photo: "", decade: 1950, born: "", name: "", nameStyle: "plain", personal: "", challenge: false, answers: false, resident: "", interests: "", avoid: "",
     style: "botanical", words: "", layout: "full", pages: 4, view: "one", dark: false, gutter: false, seed: (Date.now() % 1000000) + 1, variant: 0, index: 0 };
   var made = { pages: [], notes: [], code: "" };
 
@@ -80,7 +80,7 @@
   var MODALITY = { reminiscence: "Reminiscence", exercise: "Cognitive stimulation", daily: "Daily living and procedural memory", coloring: "Creative expression and fine motor", wordgrid: "Language and cognitive stimulation",
     timeline: "Sequencing and executive function", memory: "Visual memory", dialogue: "Conversation and validation", household: "Procedural memory", phrases: "Language and procedural memory", recognition: "Sensory recognition",
     rhythm: "Sensory and music", lifestory: "Life review", generations: "Life review and family", whoswho: "Person recognition", mytrade: "Life review and procedural memory", hometown: "Reminiscence", songs: "Music and reminiscence",
-    twenty: "Reminiscence", thennow: "Reminiscence", myday: "Daily living and orientation", dish: "Procedural memory and life review", comfort: "Sensory comfort and choice", wordplay: "Language and executive function", visit: "Shared connection with family" };
+    twenty: "Reminiscence", thennow: "Reminiscence", myday: "Daily living and orientation", dish: "Procedural memory and life review", comfort: "Sensory comfort and choice", wordplay: "Language and executive function", visit: "Shared connection with family", photocolor: "Creative expression and fine motor", doorsign: "Identity and belonging" };
   function mixBox(k) { return '<label class="as-check"><input type="checkbox" name="mix" value="' + k[0] + '"><span>' + k[1] + (MODALITY[k[0]] ? '<small class="as-mod">Modality: ' + MODALITY[k[0]] + '</small>' : '') + '</span></label>'; }
   function build() {
     var who =
@@ -119,13 +119,19 @@
       '<div class="as-only-col"><div class="as-row"><label class="as-lab" for="asStyle">Coloring style</label><select id="asStyle">' + PL.STYLES.map(function (st) { return '<option value="' + st.id + '">' + st.label + '</option>'; }).join("") + '</select></div>' +
       '<div class="as-row"><label class="as-lab" for="asWords">Or describe the picture in a few words</label><input id="asWords" type="text" maxlength="120" placeholder="a rose in a jug" autocomplete="off"></div></div>' +
       '<div class="as-only-sheet">' + seg("layout", "Layout for prompts and steps", PL.LAYOUTS.map(function (l) { return [l.id, l.label]; })) + '</div>');
+    var photoAcc = acc("asAccPhoto", "A photo for a coloring page or a door sign", "turned into bold black lines in this window, never saved or sent",
+      '<p class="as-hint">Choose a photo and it is turned into a line drawing right here. The photo itself is not kept or sent anywhere; only the drawing is used, for this packet. A photo makes a rougher drawing than the library\u2019s hand-traced pictures, so look at the page before you print. A clear, well-lit photo with one main subject works best.</p>' +
+      '<div class="as-row"><label class="as-lab" for="asPhoto">Choose a photo</label><input id="asPhoto" type="file" accept="image/*"></div>' +
+      '<div class="as-photo-prev"><img id="asPhotoPrev" alt="The line drawing made from the photo" hidden><button type="button" class="as-btn as-alt" id="asPhotoClear" hidden>Remove the photo</button></div>' +
+      '<p class="as-hint" id="asPhotoMsg" role="status" aria-live="polite"></p>' +
+      '<p class="as-hint">Then choose <b>Coloring page from a photo</b> or <b>Door sign</b> under <b>Choose the pages yourself</b>. The door sign uses the first name above, the photo, a drawing for their work or what they love, and where they come from.</p>');
     var printAcc = acc("asAccPrint", "Printing and staff options", "bigger word search, answer key, binding gutter",
       '<div class="as-row"><label class="as-check"><input id="asChallenge" type="checkbox"><span>A bigger word search (early stage only, and not with high spacing): a full 20 by 20 grid of 20 words running in all eight directions, backward ones included</span></label></div>' +
       '<div class="as-row"><label class="as-check"><input id="asAnswers" type="checkbox"><span>Add a staff answer key at the end (keep it out of the resident\'s packet)</span></label></div>' +
       '<label class="as-check"><input type="checkbox" id="asGutter"><span>Leave a binding gutter (0.75 in, alternating sides for two-sided printing)</span></label>');
     root.innerHTML =
       '<div class="as-grid">' +
-      '<form class="as-panel" id="asForm" aria-label="Packet settings" onsubmit="return false">' + who + support + make + life + pagesAcc + printAcc +
+      '<form class="as-panel" id="asForm" aria-label="Packet settings" onsubmit="return false">' + who + support + make + life + pagesAcc + photoAcc + printAcc +
       '</form>' +
       '<section class="as-stage" aria-label="Preview">' +
         '<div class="as-bar"><fieldset class="as-f as-viewf"><legend class="as-sr">Preview style</legend><div class="as-seg"><label><input type="radio" name="view" value="one"><span>One page</span></label><label><input type="radio" name="view" value="all"><span>All pages</span></label></div></fieldset>' +
@@ -254,7 +260,7 @@
   }
 
   /* ---------- making the packet ---------- */
-  function profile() { return { person: state.resident ? personOf(state.resident) : null, name: state.name, born: Number(state.born) || 0, nameStyle: state.nameStyle, personal: state.personal, challenge: state.challenge, stage: state.stage, dexterity: state.dexterity, roomy: state.roomy, recent: state.recent || [], decade: state.decade, interests: state.interests, avoid: state.avoid, vocation: state.vocation }; }
+  function profile() { return { person: state.resident ? personOf(state.resident) : null, name: state.name, born: Number(state.born) || 0, nameStyle: state.nameStyle, personal: state.personal, challenge: state.challenge, stage: state.stage, dexterity: state.dexterity, roomy: state.roomy, recent: state.recent || [], photo: state.photo || "", decade: state.decade, interests: state.interests, avoid: state.avoid, vocation: state.vocation }; }
   function kindsOn() { return KINDS.map(function (k) { return k[0]; }).filter(function (k) { return state.mix[k]; }); }
   function avoidList() { return R.avoidFromText(state.avoid); }
   var STAGE_KEY = ["E", "M", "L"];
@@ -317,11 +323,24 @@
     notes.unshift(bad.length ? { kind: "warn", text: "Print check: " + bad.slice(0, 3).join(" ") } : { kind: "ok", text: "Print check passed: every page is 3:4, pure black on white, every line 6 px or heavier, no text under the stage's size floor, nothing off the page." });
     var mix = {}; pages.forEach(function (pg) { mix[pg.meta.module] = (mix[pg.meta.module] || 0) + 1; });
     notes.push({ kind: "info", text: "This packet: " + kinds.filter(function (k) { return mix[k]; }).map(function (k) { return mix[k] + " " + LABEL[k].toLowerCase(); }).join(", ") + "." });
+    ensureHold(); if (state.stage === 3 && holdLine) notes.push({ kind: "info", text: holdLine });
     if (pages.length < n) notes.push({ kind: "info", text: "Only " + pages.length + " of the " + n + " pages could be made from these choices." });
     if (pages.some(function (pg) { return pg.meta.fellBack; })) notes.push({ kind: "info", text: "Matching, sorting, the path and look-and-enjoy are always full pages; the layout applies to prompts and steps." });
     return { pages: pages, notes: notes, code: code, kinds: kinds, ready: ready };
   }
 
+  /* the late stage: one thing to put in their hands, for staff, from the reminiscence engine's vetted list with its safety line (js/calmNow.js) */
+  var holdLine = "", holdFor = "";
+  function ensureHold() {
+    var key = state.stage + "|" + (state.resident || "");
+    if (state.stage !== 3 || !window.CogniCalmNow || holdFor === key) return;
+    holdFor = key; holdLine = "";
+    window.CogniCalmNow.ready().then(function () {
+      var h = window.CogniCalmNow.holdFor(state.resident ? readRes(state.resident) : null, state.resident || "group");
+      holdLine = h ? "To hold, for staff: " + h.items + ". " + h.safety : "";
+      if (holdLine) refresh(true);
+    });
+  }
   /* ---------- drawing the screen ---------- */
   var timer = 0;
   function refresh(keepIndex) {
@@ -447,6 +466,21 @@
       r.addEventListener("change", function () { state[r.name] = r.name === "stage" ? Number(r.value) : r.value; state.variant = 0; syncChallenge(); schedule(false); });
     });
     $("#asRoomy").addEventListener("change", function () { state.roomy = this.checked; state.variant = 0; syncChallenge(); schedule(false); });
+    $("#asPhoto").addEventListener("change", function () {
+      var f = this.files && this.files[0], msg = $("#asPhotoMsg"), P = window.CogniPhotoLine; if (!f) return;
+      if (!P) { msg.textContent = "The photo tool could not load. Reload the page."; return; }
+      msg.textContent = "Making the drawing\u2026";
+      P.fromFile(f).then(function (r) {
+        var q = P.quality(r); state.photo = r.src; state.mix.photocolor = true; state.variant = 0;
+        $("#asPhotoPrev").src = r.src; $("#asPhotoPrev").hidden = false; $("#asPhotoClear").hidden = false; msg.textContent = q.say;
+        sync(); schedule(false);
+      }, function (e) { msg.textContent = e.message || "That photo could not be used."; });
+      this.value = "";
+    });
+    $("#asPhotoClear").addEventListener("click", function () {
+      state.photo = ""; state.mix.photocolor = false; state.mix.doorsign = false; $("#asPhotoPrev").hidden = true; $("#asPhotoPrev").removeAttribute("src"); this.hidden = true; $("#asPhotoMsg").textContent = "The photo is gone.";
+      sync(); schedule(false);
+    });
     $("#asChallenge").addEventListener("change", function () { state.challenge = this.checked; state.variant = 0; schedule(false); });
     $("#asAnswers").addEventListener("change", function () { state.answers = this.checked; schedule(true); });
     $("#asResident").addEventListener("change", function () { whoMsg(""); applyResident(this.value); });

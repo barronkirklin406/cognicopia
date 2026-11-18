@@ -1759,6 +1759,8 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
       <button type="button" class="rap-btn rap-btn-danger rap-btn-sm" id="rapClear">Clear this form</button>
     </div>
 
+    <section class="rap-family cg-fam" id="rapFamily" aria-labelledby="rapFamH"></section>
+
     <section class="rap-residents" aria-labelledby="rapResH">
       <h2 id="rapResH" tabindex="-1">Saved residents on this computer</h2>
       <p class="rap-hint">Stored only in this web browser. Open a profile to update it, or delete it when it is no longer needed.</p>
@@ -1821,6 +1823,7 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
 <script src="assets/services/reminiscenceEngine.js"></script>
 <script src="assets/services/familyLifeDigest.js"></script>
 <script src="js/familyLifeDigestUI.js"></script>
+<script src="js/familyIntake.js"></script>
 <script src="js/pocketLanyardCard.js"></script>
 <script>
 /* Resident Activity Profile wizard (phase 1).
@@ -2731,6 +2734,8 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
         '<button type="button" class="rap-btn rap-btn-danger rap-btn-sm" data-delete="' + escAttr(p.id) + '" aria-label="Delete ' + name + '">Delete</button></div></li>';
     }).join("");
   }
+  document.addEventListener("cg-residents-changed", function(){ renderResidents(); });   // a resident added from a family file or by codes
+  if (window.CogniFamilyIntake) window.CogniFamilyIntake.mount($("rapFamily"));
   $("rapResList").addEventListener("click", function(e){
     var open = e.target.closest("[data-open]"), del = e.target.closest("[data-delete]"), digest = e.target.closest("[data-digest]"), lanyard = e.target.closest("[data-lanyard]");
     if (open){

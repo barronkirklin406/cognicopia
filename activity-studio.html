@@ -37,6 +37,9 @@ body{margin:0}
 .as-seg label:has(input:checked){background:var(--cg-green-700,#08423f);color:#fff}
 .as-seg label:has(input:focus-visible),.as-btn:focus-visible,.as-panel :is(input,select):focus-visible,.as-check:has(input:focus-visible){outline:3px solid var(--cg-focus,#f5b800);outline-offset:3px;box-shadow:0 0 0 6px var(--cg-focus-dark,#1c1a17)}
 .as-hint{margin:8px 0 0;font-size:.9375rem;color:var(--cg-ink-soft,#403b35)}
+#asPhoto{width:100%;min-height:var(--cg-tap,52px);padding:8px 12px;box-sizing:border-box;border:2px solid #000;border-radius:10px;background:#fff;color:#000;font:inherit}#asPhoto::file-selector-button{min-height:36px;padding:0 16px;margin-right:12px;font:inherit;cursor:pointer}
+html.cg-night-shift #asPhoto{background:#211910 !important;color:#ffedcc !important;border-color:#ffedcc}
+.as-photo-prev{display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap;margin-top:12px}.as-photo-prev img{width:150px;aspect-ratio:3/4;border:3px solid #000;background:#fff;display:block}.as-photo-prev img[hidden]{display:none}
 .as-row{display:block}
 .as-panel :is(input[type=text],input[type=number],select){width:100%;box-sizing:border-box;min-height:var(--tap,52px);padding:8px 12px;border:2px solid var(--cg-tan-500,#8f897c);border-radius:10px;background:#fff;color:inherit;font:inherit}
 .as-check{display:flex;align-items:center;gap:12px;min-height:var(--tap,52px);cursor:pointer;font-weight:600}
@@ -516,6 +519,8 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
 <script src="js/stageLabels.js"></script>
 <script src="js/cueingGuide.js"></script>
 <script src="js/engagementLog.js"></script>
+<script src="js/calmNow.js"></script>
+<script src="js/photoLine.js"></script>
 <script src="components/packet-generator-ui.js"></script>
 <script src="js/helpTips.js"></script>
 <script>

@@ -52,3 +52,32 @@ export function page(h, ctx = {}) {
     <p class="tr-note">Residents are shown by alias or room. These are the words staff recorded on the Shift board; they are not an assessment.</p>
     <footer class="tr-foot"><span>${esc(c.facility || "Cognicopia")} &middot; Shift handoff highlights${c.initials ? " &middot; " + esc(c.initials) : ""}</span><b>Page 1 of 1</b></footer></div>`;
 }
+
+/* ---------- the handover: one page for the team coming on (a staff sheet, 16 pt and larger, pure black on white) ----------
+   The same recorded words as the highlights, cut to what fits at a large size, with who is planned for the NEXT shift from the staffing calendar
+   (initials only). Residents appear by alias or room, exactly as on the board; nothing is stored. */
+export const HAND = Object.freeze({ soothe: 2, watch: 3, worked: 2, open: 3, text: 80 });
+const NEXT = { day: "evening", evening: "night", night: "day" };
+/* cal: the staffing calendar record (or null); -> null when there is nothing to say (all shifts, or no calendar), else { day, shift, label, planned, initials, assigned, needed, specialists, specialistsNeeded, gap } */
+export function comingOn(cal, day, shift) {
+  const C = (typeof globalThis !== "undefined" && globalThis.CogniShiftCal) || null;
+  if (!C || !cal || !NEXT[shift] || !/^\d{4}-\d{2}-\d{2}$/.test(String(day))) return null;
+  const nextShift = NEXT[shift], nextDay = shift === "night" ? C.addDays(day, 1) : day, cv = C.coverage(C.normalize(cal), nextDay, nextShift), label = (C.SHIFTS.filter((x) => x.id === nextShift)[0] || {}).label || nextShift;
+  return { day: nextDay, shift: nextShift, label, planned: cv.planned, initials: cv.people.map((p) => p.initials).filter(Boolean), assigned: cv.assigned, needed: cv.needed, specialists: cv.specialists, specialistsNeeded: cv.specialistsNeeded, gap: cv.gap + cv.specialistGap };
+}
+/* h: build()'s result; ctx: { facility, wing, coming (comingOn's result) } -> one sheet (html) */
+export function handoverPage(h, ctx = {}) {
+  const d = need(), c = ctx || {}, T = HAND.text, shiftName = h.shift === "all" ? "All shifts" : d.shiftLabel(h.shift);
+  const part = (title, items, total, n, render, empty) => { const shown = items.slice(0, n), more = Math.max(0, total - shown.length);
+    return `<section class="cg-ho-sec"><h3>${esc(title)}</h3>${shown.length ? `<ul>${shown.map(render).join("")}</ul>` : `<p>${esc(empty)}</p>`}${more ? `<p class="cg-ho-more">and ${more} more on the full handoff sheet.</p>` : ""}</section>`; };
+  const k = c.coming;
+  const coming = !k ? "" : `<section class="cg-ho-sec"><h3>Coming on: ${esc(k.label)} shift</h3>` + (!k.planned ? `<p>No one is planned yet for the ${esc(k.label.toLowerCase())} shift.</p>`
+    : `<p><b>${esc(k.initials.join(", "))}</b>. ${k.assigned} of ${k.needed} needed${k.specialistsNeeded ? `, ${k.specialists} dementia-trained of ${k.specialistsNeeded} wanted` : ""}.${k.gap ? " More people are needed." : ""}</p>`) + "</section>";
+  const body = coming
+    + part("Calming approaches used", h.soothe, h.totals.soothe, HAND.soothe, (s) => `<li>${who(s.resident)}${esc(clip(s.activity, 40))}${s.time ? ", " + esc(s.time) : ""}: <b>${esc(s.outcome)}</b></li>`, "None recorded.")
+    + part("Keep an eye on", h.watch, h.totals.watch, HAND.watch, (w) => `<li>${who(w.about)}${esc(clip(w.text, T))}</li>`, "Nothing flagged.")
+    + part("What worked", h.worked, h.totals.worked, HAND.worked, (w) => `<li>${who(w.about)}${esc(clip(w.text, T))}</li>`, "Nothing recorded.")
+    + part("Still to do", h.open, h.totals.open, HAND.open, (t) => `<li>${who(t.about)}${esc(clip(t.text, T))}${t.who ? " (" + esc(t.who) + ")" : ""}</li>`, "No open tasks.");
+  return `<div class="cg-staff-sheet cg-ho"><p class="cg-calm-kick">Shift handover${c.wing ? " &middot; " + esc(c.wing) : ""}</p><h1>${esc(d.dayLabel ? d.dayLabel(h.day) : h.day)} &middot; ${esc(shiftName)}</h1>${body}`
+    + `<p class="cg-calm-foot">Residents are shown by alias or room. These are the words staff recorded; not an assessment. ${esc(c.facility || "Cognicopia")}</p></div>`;
+}

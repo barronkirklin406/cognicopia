@@ -140,6 +140,13 @@
     });
   }
   var barOn = false;
+  /* "Calm now" for the resident the tools are working with: a dialog for staff (js/calmNow.js, loaded when first used) */
+  function calmNow(from) {
+    return active().then(function (r) {
+      if (!r) { toast("Choose a resident first."); return null; }
+      return script("js/calmNow.js").then(function () { return root.CogniCalmNow ? root.CogniCalmNow.open(r.id, shownName(r), from) : null; });
+    });
+  }
   function paintBar() {
     if (!barOn) return;
     active().then(function (r) {
@@ -153,7 +160,7 @@
       }
       var keep = doc.activeElement && bar.contains(doc.activeElement) ? doc.activeElement.id : "";
       bar.innerHTML = '<p class="wf-bar-txt"><b>Active profile:</b> <span class="wf-bar-who">' + esc(d.who) + "</span>" + (d.detail ? " <span>" + esc(d.detail) + "</span>" : "") +
-        ' <span class="wf-bar-avoid">• <b>Avoid:</b> ' + esc(d.avoidText) + '</span></p><div class="wf-bar-btns"><button type="button" class="wf-btn wf-alt" id="wfSwitch">Switch</button><button type="button" class="wf-btn wf-alt" id="wfClear">Clear</button></div>';
+        ' <span class="wf-bar-avoid">• <b>Avoid:</b> ' + esc(d.avoidText) + '</span></p><div class="wf-bar-btns"><button type="button" class="wf-btn wf-calm" id="wfCalm">Calm now</button><button type="button" class="wf-btn wf-alt" id="wfSwitch">Switch</button><button type="button" class="wf-btn wf-alt" id="wfClear">Clear</button></div>';
       if (keep && doc.getElementById(keep)) doc.getElementById(keep).focus();
       doc.documentElement.classList.add("wf-has-bar");
     });
@@ -379,6 +386,7 @@
     var b = t.closest("[data-wf-search]"); if (b) { e.preventDefault(); openCommand(b); return; }
     if (t.closest("[data-wf-start]") || t.closest('a[href$="#start-here"]')) { e.preventDefault(); openStart(); return; }
     if (t.closest("[data-wf-pin-edit]")) { openPinPicker(); return; }
+    if (t.closest("#wfCalm")) { calmNow(t.closest("#wfCalm")); return; }
     if (t.closest("#wfSwitch")) { openCommand(t.closest("#wfSwitch")); return; }
     if (t.closest("#wfClear")) { setActive(""); toast("No resident is active now."); return; }
     var a = t.closest("a[data-wf-go]"); if (a && onPage((byKey(a.getAttribute("data-wf-go")) || {}).h || "\u0000")) { if (sd && sd.open) sd.close(); }
@@ -408,7 +416,7 @@
   root.CogniWayfinding = Object.freeze({
     host: function (h) { Object.keys(h || {}).forEach(function (k) { host[k] = h[k]; }); if (doc.readyState !== "loading") { barOn = typeof host.setActive === "function" && !host.ownBar; paintBar(); } },
     openCommand: openCommand, closeCommand: closeCommand, openStart: openStart, openPinPicker: openPinPicker,
-    activeId: activeId, setActive: setActive, note: follow, active: active, refresh: paintBar, describe: describe,
+    activeId: activeId, setActive: setActive, note: follow, active: active, refresh: paintBar, describe: describe, calmNow: calmNow,
     summary: function (profile) { return profile && profile.id && profile.tier1_core ? describe(view(profile)) : null; },
     pins: pins, setPins: setPins, mountPins: paintPins, MAX_PINS: MAX_PINS
   });
