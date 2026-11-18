@@ -319,6 +319,14 @@ step("A coloring page from a photo and a door sign in the Activity Page Studio: 
   }
 });
 
+step("The family intake form on the profile page: a blank form prints on one US Letter page in pure black with 3 pt writing lines and type of 16 pt or more; a family member's answers are saved as a LOCKED file by default (a passphrase of 10 or more characters typed twice; short or different ones refused; the file holds none of the words typed), the plain file is a labelled second choice behind a warning, the same answers show as QR codes that need the passphrase; staff open the file on another computer (a wrong passphrase refused in plain words) and the person arrives as a new resident marked as written by a family, never over an existing one; nothing typed is kept in the browser's storage; 52 px and 7:1 by day and in Night Shift (a real browser, PyMuPDF)", () => {
+  try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-family-intake-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
+  catch (e){
+    if (e.status === 2) return "skipped: Playwright is not installed here (see docs/dev-setup.md)";
+    throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message);
+  }
+});
+
 step("Resident Mode in Tablet Activities: only the activities and no link out, the search closed, kept on reload; a 2.5 second hold (mouse, Enter or a finger) to leave, a tap does nothing; a PIN kept as a salted hash, a wrong one refused (a real browser)", () => {
   try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-tablet-resident-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
   catch (e){

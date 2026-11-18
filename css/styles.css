@@ -1530,3 +1530,32 @@ html.cg-night-shift:root body dialog.cg-calm .cg-calm-btns button[data-calm-prin
   .cg-staff-sheet .cg-calm-foot{margin-top:10pt;font-size:16pt}
   dialog.cg-calm{display:none !important}
 }
+
+/* 19. Family intake (js/familyIntake.js): a section on the profile page and a dialog for a family member; the printed blank form is a staff-style sheet with writing lines */
+.cg-fam{margin:28px 0}
+.cg-fam .cg-fam-btns{display:flex;flex-wrap:wrap;gap:10px;margin:12px 0}
+.cg-fam-open{margin-top:18px;padding-top:12px;border-top:2px solid var(--cg-tan-400)}
+.cg-fam-row{display:grid;gap:4px;margin-top:12px}
+.cg-fam-lab{font-weight:700}
+.cg-fam-hint{margin:0;font-size:.9375rem}
+.cg-fam input[type=text],.cg-fam input[type=password],.cg-fam input[type=file],.cg-fam-dlg input[type=text],.cg-fam-dlg input[type=password],.cg-fam-dlg textarea{box-sizing:border-box;width:100%;min-height:var(--cg-tap);padding:10px 12px;border:2px solid var(--cg-ink-700,#403b35);border-radius:10px;background:#fff;color:#1f2933;font:inherit}
+.cg-fam-dlg textarea{min-height:96px}
+.cg-fam-dlg fieldset.cg-fam-save{margin:16px 0 0;padding:12px 14px;border:2px solid var(--cg-green-600);border-radius:12px}
+.cg-fam-dlg legend{padding:0 6px;font-weight:700}
+.cg-fam-plain{margin-top:12px}
+.cg-fam-plain summary{display:flex;align-items:center;min-height:var(--cg-tap);cursor:pointer;font-weight:700}
+.cg-fam-warn{margin:6px 0;padding:8px 12px;border:2px solid var(--cg-clay-700);border-radius:10px}
+.cg-fam-check{display:flex;align-items:center;gap:10px;min-height:var(--cg-tap)}
+.cg-fam-check input{width:28px;height:28px;flex:none}
+.cg-fam-msg{margin:10px 0 0;font-weight:700}
+.cg-fam-msg.is-bad{color:#8a1c1c !important}
+html.cg-night-shift .cg-fam :is(h2,h3,p,label,summary,legend,span,b),html.cg-night-shift .cg-fam-dlg :is(h2,h3,p,label,summary,legend,span,b){color:#ffedcc !important}
+html.cg-night-shift .cg-fam input,html.cg-night-shift .cg-fam-dlg :is(input,textarea){background:#211910 !important;color:#ffedcc !important;border-color:#d6a64b}
+html.cg-night-shift .cg-fam-dlg{background:#211910 !important}
+html.cg-night-shift .cg-fam-msg.is-bad{color:#ffb4a8 !important}
+@media print{
+  .cg-fam-sheet .cg-fam-q{margin-top:4pt}
+  .cg-fam-sheet .cg-fam-q p{margin:0;font-size:16pt;line-height:1.2}
+  .cg-fam-sheet h1{border-bottom-width:3pt}
+  .cg-fam-sheet .cg-fam-rule{display:block;height:19pt;border-bottom:3pt solid #000}
+}
