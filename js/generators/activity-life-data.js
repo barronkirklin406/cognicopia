@@ -60,7 +60,8 @@
      known and real; a town's own landmarks are never guessed: the page asks about the town by name. */
   D.REGIONS = {
     "midwest": { sights: ["The Great Lakes", "Red barns and silos", "Corn standing tall in July", "A county fair in August", "The Gateway Arch"], tastes: ["Sweet corn on the cob", "A fish fry on Friday", "Rhubarb pie"] },
-    "plains": { sights: ["Grain elevators against the sky", "Wheat moving in the wind", "The Badlands", "Mount Rushmore", "A rodeo in summer"], tastes: ["Kuchen", "Chokecherry jelly", "A hot dish at a potluck"] },
+    /* the plains list holds only what every plains state shares: a landmark of one state (Mount Rushmore, the Badlands) goes in STATE_BITS below */
+    "plains": { sights: ["Grain elevators against the sky", "Wheat moving in the wind", "A rodeo in summer", "A prairie sunset", "Cottonwood trees along a creek"], tastes: ["Kuchen", "Chokecherry jelly", "A hot dish at a potluck"] },
     "northeast": { sights: ["The Statue of Liberty", "Niagara Falls", "The boardwalk at the shore", "Row houses on a city street", "The Liberty Bell"], tastes: ["A soft pretzel", "Apple cider in the fall", "A slice of cheesecake"] },
     "new-england": { sights: ["A lighthouse on the coast", "Maple trees in October", "A covered bridge", "Stone walls along the road", "A white steeple on the green"], tastes: ["Clam chowder", "Maple syrup", "Blueberry pie"] },
     "south": { sights: ["Magnolia trees in bloom", "A wide front porch", "The Mississippi River", "Spanish moss on the oaks", "Fireflies at dusk"], tastes: ["Biscuits and gravy", "Sweet tea", "Peach cobbler"] },
@@ -70,6 +71,12 @@
     "pacific": { sights: ["The Golden Gate Bridge", "Redwood trees", "The Pacific at sunset", "Orange groves", "Mount Rainier"], tastes: ["Fresh salmon", "Sourdough bread", "Oranges off the tree"] },
     "canada": { sights: ["The Rockies at Banff", "Maple leaves in autumn", "Niagara Falls", "Wheat on the prairie", "A skating rink in winter"], tastes: ["Butter tarts", "Maple syrup", "Split pea soup"] }
   };
+  /* a state whose own sights and tastes differ from its region's: the Dakotas share a region but not their landmarks (Mount Rushmore is in South
+     Dakota, Theodore Roosevelt National Park in North Dakota). Keyed by the state written out and by its two letters, lower case; a hometown in
+     one of these states gets its list, and a hometown anywhere else in the region keeps the region's. Landmarks are well known and real. */
+  var NORTH_DAKOTA = { sights: ["Grain elevators against the sky", "Wheat moving in the wind", "Sunflowers facing the sun", "Theodore Roosevelt National Park", "Lake Sakakawea"], tastes: ["Lefse", "Kuchen", "Knoephla soup", "Chokecherry jelly", "A hot dish at a potluck"] };
+  var SOUTH_DAKOTA = { sights: ["Mount Rushmore", "The Badlands", "The Black Hills", "Grain elevators against the sky", "A rodeo in summer"], tastes: ["Kuchen", "Chokecherry jelly", "A hot dish at a potluck"] };
+  D.STATE_BITS = { "north dakota": NORTH_DAKOTA, "nd": NORTH_DAKOTA, "south dakota": SOUTH_DAKOTA, "sd": SOUTH_DAKOTA };
   /* when the region is not known, or is outside these: any place a person grew up */
   D.ANYWHERE = { sights: ["The main street of town", "The house you grew up in", "The school yard", "A favorite place outdoors", "The view from the kitchen window"], tastes: ["Sunday dinner", "Something from the garden", "A treat from the bakery"] };
   /* the states and provinces of each region, for a hometown written as "Scobey, Montana" (two-letter codes too) */

@@ -183,7 +183,8 @@
     return code;
   }
   function hometownSheets(P, r, count) {
-    var w = who(P), town = w.hometown.town && ok(w.hometown.town, P) ? w.hometown.town : "", code = regionOf(w), bits = D.REGIONS[code] || D.ANYWHERE, out = [];
+    var w = who(P), town = w.hometown.town && ok(w.hometown.town, P) ? w.hometown.town : "", code = regionOf(w), out = [];
+    var bits = D.STATE_BITS[String(w.hometown.state || "").trim().toLowerCase()] || D.REGIONS[code] || D.ANYWHERE;   // a state's own sights first, then its region's
     var sights = K.shuffle(keep(bits.sights, P), r), tastes = K.shuffle(keep(bits.tastes, P), r), talk = K.shuffle(keep(D.HOME_TALK, P), r), n = P.stage === 3 ? 2 : amount(P, 4, 4);
     for (var s = 0; s < count; s++) {
       var food = s % 2 === 1 && tastes.length >= 2, options = take(rotate(food ? tastes : sights, s), n);
