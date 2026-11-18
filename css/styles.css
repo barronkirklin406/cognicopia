@@ -1490,3 +1490,43 @@ html.cg-night-shift:root body .cg-eng .cg-eng-btns button{background:#2a1f13 !im
 html.cg-night-shift:root body .cg-eng .cg-eng-note{background:#2a1f13;border-color:#9b7136;color:#ffedcc}
 @media (prefers-reduced-motion:reduce){.cg-eng .cg-eng-btns button{transition:none}.cg-eng .cg-eng-btns button:hover,.cg-eng .cg-eng-btns button:active{transform:none}}
 @media print{.cg-eng{display:none !important}}
+
+/* 18. Calm now (js/calmNow.js): a dialog for staff and one printed page; the terracotta is for the border and the button fill, never for small text */
+html:root body .wf-btn.wf-calm{background:var(--cg-clay-700);border-color:var(--cg-clay-700);color:#fff !important}
+html:root body .wf-btn.wf-calm:hover{background:var(--cg-clay-800)}
+html:root body .ar-calm{min-height:52px;background:var(--cg-clay-700);border-color:var(--cg-clay-700);color:#fff !important}
+dialog.cg-calm{box-sizing:border-box;width:min(640px,calc(100vw - 24px));max-height:calc(100vh - 24px);overflow:auto;margin:auto;padding:22px 24px;border:4px solid var(--cg-clay-700);border-radius:16px;background:#fff;color:#1f2933;font:1.0625rem/1.5 var(--cg-font-ui,"Atkinson Hyperlegible",sans-serif)}
+dialog.cg-calm::backdrop{background:rgba(15,23,42,.55)}
+dialog.cg-calm h2{margin:0 0 6px;font-size:1.5rem;line-height:1.2}
+dialog.cg-calm h3{margin:14px 0 4px;font-size:1.1rem}
+dialog.cg-calm ul{margin:0;padding-left:22px}
+dialog.cg-calm p{margin:0}
+dialog.cg-calm .cg-calm-lede{margin:0 0 4px;font-weight:600}
+dialog.cg-calm .cg-calm-avoid{margin-top:12px;padding:8px 12px;border:2px solid var(--cg-clay-700);border-radius:10px}
+dialog.cg-calm .cg-calm-protocol{margin-top:16px;padding-top:10px;border-top:2px solid #1f2933}
+dialog.cg-calm .cg-calm-btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+html:root body dialog.cg-calm .cg-calm-btns button{min-height:52px;min-width:52px;padding:10px 18px;border:2px solid #0b5f59;border-radius:12px;background:#fff;color:#0b5f59 !important;font:700 1rem/1.2 var(--cg-font-ui,"Atkinson Hyperlegible",sans-serif);cursor:pointer}
+html:root body dialog.cg-calm .cg-calm-btns button[data-calm-print]{background:#0b5f59;color:#fff !important}
+html:root body dialog.cg-calm .cg-calm-btns button:focus-visible{outline:3px solid #f5b800;outline-offset:2px;box-shadow:0 0 0 2px #0f172a}
+html.cg-night-shift:root body dialog.cg-calm{background:#211910;border-color:#d6a64b;color:#ffedcc}
+html.cg-night-shift:root body dialog.cg-calm :is(h2,h3,p,li,b){color:#ffedcc}
+html.cg-night-shift:root body dialog.cg-calm .cg-calm-avoid{border-color:#d6a64b}
+html.cg-night-shift:root body dialog.cg-calm .cg-calm-protocol{border-color:#ffedcc}
+html.cg-night-shift:root body dialog.cg-calm .cg-calm-btns button{background:#2a1f13;border-color:#9b7136;color:#ffedcc !important}
+html.cg-night-shift:root body dialog.cg-calm .cg-calm-btns button[data-calm-print]{background:#5a3e12;border-color:#d6a64b;color:#fff1cf !important}
+#cgCalmPrint{display:none}
+@media print{
+  html.cg-calm-own body>*:not(#cgCalmPrint){display:none !important}
+  html.cg-calm-own #cgCalmPrint{display:block !important;position:static}
+  .cg-calm-sheet,.cg-calm-sheet *{color:#000 !important}
+  .cg-calm-sheet{box-sizing:border-box;width:100%;padding:0;color:#000;background:#fff;font:16pt/1.3 var(--cg-font-ui,"Atkinson Hyperlegible",sans-serif)}
+  .cg-calm-sheet h1{margin:0 0 8pt;font:700 28pt/1.1 var(--cg-font-name,"Fraunces",serif);border-bottom:2.5pt solid #000;padding-bottom:6pt}
+  .cg-calm-sheet .cg-calm-kick{margin:0;font-size:16pt;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+  .cg-calm-sheet h3{margin:10pt 0 2pt;font-size:18pt}
+  .cg-calm-sheet p,.cg-calm-sheet li{margin:0;font-size:16pt}
+  .cg-calm-sheet ul{margin:0;padding-left:.25in}
+  .cg-calm-sheet .cg-calm-avoid{border:2pt solid #000;padding:4pt 8pt;margin-top:8pt}
+  .cg-calm-sheet .cg-calm-protocol{margin-top:12pt;border-top:1.5pt solid #000;padding-top:6pt}
+  .cg-calm-sheet .cg-calm-foot{margin-top:10pt;font-size:16pt}
+  dialog.cg-calm{display:none !important}
+}

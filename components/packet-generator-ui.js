@@ -317,11 +317,24 @@
     notes.unshift(bad.length ? { kind: "warn", text: "Print check: " + bad.slice(0, 3).join(" ") } : { kind: "ok", text: "Print check passed: every page is 3:4, pure black on white, every line 6 px or heavier, no text under the stage's size floor, nothing off the page." });
     var mix = {}; pages.forEach(function (pg) { mix[pg.meta.module] = (mix[pg.meta.module] || 0) + 1; });
     notes.push({ kind: "info", text: "This packet: " + kinds.filter(function (k) { return mix[k]; }).map(function (k) { return mix[k] + " " + LABEL[k].toLowerCase(); }).join(", ") + "." });
+    ensureHold(); if (state.stage === 3 && holdLine) notes.push({ kind: "info", text: holdLine });
     if (pages.length < n) notes.push({ kind: "info", text: "Only " + pages.length + " of the " + n + " pages could be made from these choices." });
     if (pages.some(function (pg) { return pg.meta.fellBack; })) notes.push({ kind: "info", text: "Matching, sorting, the path and look-and-enjoy are always full pages; the layout applies to prompts and steps." });
     return { pages: pages, notes: notes, code: code, kinds: kinds, ready: ready };
   }
 
+  /* the late stage: one thing to put in their hands, for staff, from the reminiscence engine's vetted list with its safety line (js/calmNow.js) */
+  var holdLine = "", holdFor = "";
+  function ensureHold() {
+    var key = state.stage + "|" + (state.resident || "");
+    if (state.stage !== 3 || !window.CogniCalmNow || holdFor === key) return;
+    holdFor = key; holdLine = "";
+    window.CogniCalmNow.ready().then(function () {
+      var h = window.CogniCalmNow.holdFor(state.resident ? readRes(state.resident) : null, state.resident || "group");
+      holdLine = h ? "To hold, for staff: " + h.items + ". " + h.safety : "";
+      if (holdLine) refresh(true);
+    });
+  }
   /* ---------- drawing the screen ---------- */
   var timer = 0;
   function refresh(keepIndex) {

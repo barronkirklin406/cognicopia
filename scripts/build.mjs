@@ -295,6 +295,14 @@ step("The activity documentation summary on the Facility Portal's Audit readines
   }
 });
 
+step("Calm now: a button on the active resident bar and the Packet Builder's Working with bar opens a modal for staff (their comforts and favorite dish, safe things to talk about, the topics to avoid written out, lines that ask nothing, songs of their years by title, the line to follow the facility's own protocol), one printed staff page read back from a real PDF, a topic to avoid kept off every list; and the late-stage \"to hold\" line for staff on Daily engagement and the Studio (a real browser, day and Night Shift, 1366 x 768 and 390 x 844)", () => {
+  try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-calm-now-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
+  catch (e){
+    if (e.status === 2) return "skipped: Playwright is not installed here (see docs/dev-setup.md)";
+    throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message);
+  }
+});
+
 step("Resident Mode in Tablet Activities: only the activities and no link out, the search closed, kept on reload; a 2.5 second hold (mouse, Enter or a finger) to leave, a tap does nothing; a PIN kept as a salted hash, a wrong one refused (a real browser)", () => {
   try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-tablet-resident-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
   catch (e){

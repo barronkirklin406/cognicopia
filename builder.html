@@ -7351,13 +7351,15 @@ const ActiveResident = (function(){
     if (det) det.textContent = d ? [d.detail, "Avoid: " + d.avoidText].filter(Boolean).join(" • ") : "";
     if (det && hint) hint.hidden = !!d;
     if (clr) clr.hidden = !p;
+    const calm = document.getElementById("arCalm"); if (calm) calm.hidden = !p;
   }
   function mount(){
     const box = document.getElementById("activeRes"); if (!box || box.dataset.ready) return;
     box.dataset.ready = "1";
     box.innerHTML = `<label for="arSel" class="ar-lbl">Working with</label><select id="arSel" aria-describedby="arHint"></select><span class="ar-hint" id="arHint"></span><span class="ar-detail" id="arDetail" aria-live="polite"></span>
-      <span class="ar-btns"><button type="button" class="btn btn-sm" id="arClear" hidden>Clear</button><button type="button" class="btn btn-sm" data-wf-search title="Search tools, guides and residents (Ctrl+K)">Search</button></span>`;
+      <span class="ar-btns"><button type="button" class="btn btn-sm ar-calm" id="arCalm" hidden>Calm now</button><button type="button" class="btn btn-sm" id="arClear" hidden>Clear</button><button type="button" class="btn btn-sm" data-wf-search title="Search tools, guides and residents (Ctrl+K)">Search</button></span>`;
     document.getElementById("arSel").addEventListener("change", e => { set(e.target.value); if (typeof router === "function") router(); });
+    document.getElementById("arCalm").addEventListener("click", e => { if (window.CogniWayfinding) window.CogniWayfinding.calmNow(e.currentTarget); });
     document.getElementById("arClear").addEventListener("click", () => { set(""); if (typeof router === "function") router(); toast("No resident is active now."); });
     syncSelect();
   }

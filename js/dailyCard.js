@@ -116,6 +116,17 @@
     $("#dyMake").textContent = has ? "Make today’s card again" : "Make today’s card";
     var staff = $("#dyStaff");
     staff.hidden = !has;
+    var hd = $("#dyHold");
+    if (hd) {
+      hd.hidden = true;
+      if (has && made.sheet && made.sheet.stage === 3 && window.CogniCalmNow) {
+        var hkey = (state.who || "group") + "|" + state.kind + "|" + state.turn;
+        window.CogniCalmNow.ready().then(function () {
+          var h = window.CogniCalmNow.holdFor(state.who ? readRes(state.who) : null, hkey);
+          if (h && hkey === (state.who || "group") + "|" + state.kind + "|" + state.turn) { hd.textContent = "To hold, for staff: " + h.items + ". " + h.safety; hd.hidden = false; }
+        });
+      }
+    }
     var lg = $("#dyLog");
     if (lg && window.CogniEngage) {
       if (!lg.dataset.mounted) { lg.dataset.mounted = "1"; window.CogniEngage.mount(lg, { residentId: function () { return state.who; }, names: function () { var n = person && person.name || ""; return [n, n.split(" ")[0]]; }, activity: function () { return "Daily card: " + KINDS[state.kind].label; } }); }
