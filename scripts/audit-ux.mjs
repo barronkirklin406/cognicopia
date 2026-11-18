@@ -276,7 +276,7 @@ async function main(){
       for (let i = 0; i < 3; i++){
         const { ctx, page } = await open(1366, 768);
         await page.goto(base + "index.html", { waitUntil: "load" }); await page.waitForTimeout(500);
-        await page.evaluate(() => { window.print = () => {}; try { localStorage.clear(); } catch (e) {} });
+        await page.evaluate(() => { window.print = () => {}; try { localStorage.clear(); localStorage.setItem("cognicopia_eula_accepted", "true"); } catch (e) {} });   // the agreement is asked at the first print; this is a measure of the workflow, not of that window
         const s = counter(page);
         try {
           await s.fill("#first", "Walter"); await s.fill("#born", "1938");
@@ -297,6 +297,7 @@ async function main(){
     /* a coloring page as a PDF (Packet Builder): choose the picture, download */
     {
       const { ctx, page } = await open(1366, 900);
+      await ctx.addInitScript(() => { try { localStorage.setItem("cognicopia_eula_accepted", "true"); } catch (e) { /* ignore */ } });   // the agreement is asked once, at the first print; this measures the workflow after it
       try {
         await page.goto(base + "builder.html#/coloring", { waitUntil: "load" }); await page.waitForSelector(".cc-card", { timeout: 20000 });
         const s = counter(page);
@@ -324,7 +325,7 @@ async function main(){
         const prof = (id, name, tier) => ({ schema: "cognicopia.residentProfile", version: 2, id, createdAt: "2026-09-01T10:00:00Z", updatedAt: "2026-09-01T10:00:00Z",
           tier1_core: { preferredName: name, unitNumber: "Test 1", cognitiveTier: tier, visualNeeds: null, occupation: { code: "teacher", label: "Teacher" }, topHobbies: [{ code: "gardening", label: "Gardening" }], printNeeds: {}, topicsToAvoid: { topics: [], other: "" }, difficulty: { level: 3 } },
           tier2_enrichment: { birthYear: 1936, hometown: { place: "Test City" } }, tier3_deep: { notes: "", people: [] } });
-        await page.evaluate(list => { localStorage.clear(); list.forEach(x => localStorage.setItem("cognicopia_resident_" + x.id, JSON.stringify(x))); }, [prof("res-a", "Test A", 2), prof("res-b", "Test B", 1)]);
+        await page.evaluate(list => { localStorage.clear(); localStorage.setItem("cognicopia_eula_accepted", "true"); list.forEach(x => localStorage.setItem("cognicopia_resident_" + x.id, JSON.stringify(x))); }, [prof("res-a", "Test A", 2), prof("res-b", "Test B", 1)]);
         await page.goto(base + "builder.html#/roster", { waitUntil: "load" }); await page.reload({ waitUntil: "load" });     // a reload, so the page seals and reads the saved profiles
         await page.waitForSelector(".rs-res", { timeout: 20000 });
         await page.evaluate(() => { window.__printed = 0; window.print = () => { window.__printed = performance.now(); }; });
