@@ -182,7 +182,7 @@ try {
   ({ ctx, p } = await open(1366, 900));
   const NEWK = { wordgrid: [1, 2], timeline: [1, 2], memory: [1, 2], dialogue: [1, 2, 3], household: [1, 2], phrases: [1, 2], recognition: [2, 3], rhythm: [2, 3] };
   const kindsOnScreen = await p.$$eval('input[name="mix"]', n => n.map(x => x.value));
-  ok(Object.keys(NEWK).every(k => kindsOnScreen.includes(k)) && kindsOnScreen.length === 25, "the content mix lists all twenty-five kinds of page (twelve general, thirteen about the person's own life, the family visit sheet among them): " + kindsOnScreen.join(","));
+  ok(Object.keys(NEWK).every(k => kindsOnScreen.includes(k)) && kindsOnScreen.length === 27, "the content mix lists all twenty-seven kinds of page (twelve general, fifteen about the person's own life, the family visit sheet, the photo coloring page and the door sign among them): " + kindsOnScreen.join(","));
   for (const [k, stages] of Object.entries(NEWK)) {
     for (const st of [1, 2, 3]) {
       await pick(p, "stage", String(st)); await mix(p, [k]); await setPages(p, 3);
@@ -283,7 +283,7 @@ try {
   {
     const { ctx: c1, p: q } = await open(1366, 900, true);
     const visible = sel => q.$$eval(sel, els => els.filter(e => e.checkVisibility({ checkVisibilityCSS: true })).length);
-    ok(await q.$$eval("details.as-acc", d => d.length === 3 && d.every(x => !x.open)), "the three extra sections are closed on arrival");
+    ok(await q.$$eval("details.as-acc", d => d.length === 4 && d.every(x => !x.open)), "the four extra sections (their life, the pages, a photo, printing) are closed on arrival");
     for (const id of ["#asResident", "#asName", "#asSuggest", "#asRandom", '#asForm input[name="stage"]']) ok(await visible(id) > 0, `${id} is on the first screen of the form without opening anything`);
     for (const id of ["#asBorn", "#asInterests", "#asPages", "#asChallenge", "#asGutter", '#asForm input[name="mix"]']) ok(await visible(id) === 0, `${id} is tucked into a closed section`);
     const first = await q.evaluate(() => [...document.querySelectorAll("#asForm input, #asForm select, #asForm button")].filter(e => e.checkVisibility({ checkVisibilityCSS: true }) && e.type !== "radio").length + document.querySelectorAll("#asForm fieldset").length);
@@ -389,7 +389,7 @@ try {
     await a.evaluate(x => localStorage.setItem("cognicopia_resident_" + x.id, JSON.stringify(x)), AMY);
     await a.reload({ waitUntil: "load" }); await a.waitForSelector("#asSheet svg"); await a.waitForTimeout(900);
     await a.evaluate(() => document.querySelectorAll("details.as-acc").forEach(d => { d.open = true; }));
-    ok(await a.$$eval('#asLifeHead ~ .as-mix input[name="mix"]', b => b.length) === 13 && /About their own life/.test(await a.textContent("#asLifeHead")), "the thirteen life pages have a group of their own under Choose the pages yourself");
+    ok(await a.$$eval('#asLifeHead ~ .as-mix input[name="mix"]', b => b.length) === 15 && /About their own life/.test(await a.textContent("#asLifeHead")), "the fifteen life pages have a group of their own under Choose the pages yourself");
     const everyPage = async () => { let all = ""; for (let k = 0; k < 10; k++) { all += " || " + await svgText(a); if (await a.$eval("#asNext", b => b.disabled)) break; await a.click("#asNext"); await a.waitForTimeout(100); } return all; };
     /* with no one chosen, the suggested packet is the stage's own, as before */
     await a.evaluate(() => document.querySelector('input[name="stage"][value="1"]').click()); await a.waitForTimeout(300);

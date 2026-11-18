@@ -311,6 +311,14 @@ step("The group circle on Daily engagement: two to eight saved residents and a t
   }
 });
 
+step("A coloring page from a photo and a door sign in the Activity Page Studio: a chosen photo is turned into a picture of pure black and white (3:4, lines at least 3 pt thick, a sensible amount of ink, a plain note on how it came out), kept in memory only and never in the browser's storage; the coloring page has a 32 pt real-text title and the picture is read back from a real PDF as pure black and white; the door sign has the name, where they come from, their work and a drawing, and Remove brings back a frame with room for a photo; a topic to avoid changes the drawing; 52 px and 7:1 by day and in Night Shift (a real browser, PyMuPDF), nothing requested from outside the page", () => {
+  try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-photo-pages-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
+  catch (e){
+    if (e.status === 2) return "skipped: Playwright is not installed here (see docs/dev-setup.md)";
+    throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message);
+  }
+});
+
 step("Resident Mode in Tablet Activities: only the activities and no link out, the search closed, kept on reload; a 2.5 second hold (mouse, Enter or a finger) to leave, a tap does nothing; a PIN kept as a salted hash, a wrong one refused (a real browser)", () => {
   try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-tablet-resident-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
   catch (e){
