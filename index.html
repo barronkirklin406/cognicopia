@@ -5904,7 +5904,7 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
       <div class="korsakoff-field-group">
         <label class="korsakoff-label" for="korsakoffPromptHierarchySelect">Errorless Prompting Hierarchy:</label>
         <select id="korsakoffPromptHierarchySelect" class="korsakoff-select">
-          <option value="level1" selected>Level 1: Full Hand-over-Hand Physical Guidance &amp; Immediate Model</option>
+          <option value="level1" selected>Level 1: Full Hand-under-Hand Support &amp; Immediate Model</option>
           <option value="level2">Level 2: Step-by-Step Pointing &amp; Continuous Gestural Guidance</option>
           <option value="level3">Level 3: Direct Single-Step Verbal Instruction (No Open Questions)</option>
         </select>
@@ -6015,7 +6015,7 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
       <div class="korsakoff-field-group">
         <label class="korsakoff-label" for="ktbPromptLevel">Staff Prompting Hierarchy Level:</label>
         <select id="ktbPromptLevel" class="korsakoff-select">
-          <option value="Level 1: Full Hand-over-Hand Physical Guidance &amp; Model">Level 1: Full Hand-over-Hand Physical Guidance &amp; Model (Zero Guessing)</option>
+          <option value="Level 1: Full Hand-under-Hand Support &amp; Model">Level 1: Full Hand-under-Hand Support &amp; Model (Zero Guessing)</option>
           <option value="Level 2: Step-by-Step Pointing &amp; Gestural Guidance">Level 2: Step-by-Step Pointing &amp; Gestural Guidance</option>
           <option value="Level 3: Direct Verbal Step Instruction (No Open Questions)">Level 3: Direct Verbal Step Instruction (No Open Questions)</option>
         </select>
@@ -6032,7 +6032,7 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
       </div>
 
       <div class="korsakoff-rationale-box">
-        <strong>Errorless Procedural Rule:</strong> Every step on the generated sheet is pre-printed in clear light-grey lettering with wide ruling. Staff guides the resident's hand over the text before any trial-and-error guessing can occur.
+        <strong>Errorless Procedural Rule:</strong> Every step on the generated sheet is pre-printed in clear light-grey lettering with wide ruling. Staff rests a hand beneath the resident's hand, hand-under-hand, and moves along the text together before any trial-and-error guessing can occur.
       </div>
     </div>
 
@@ -6315,7 +6315,7 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
           <label class="lss-output-card" id="lssModeSootheLabel">
             <input type="radio" name="lssOutputMode" value="soothe_sheet">
             <span class="lss-output-title">🎨 Soothe-Print Contoured Sheet</span>
-            <span class="lss-output-desc">Ultra-bold 12pt flowing contour illustration with zero text clutter for guided hand-over-hand tactile engagement.</span>
+            <span class="lss-output-desc">Ultra-bold 12pt flowing contour illustration with zero text clutter for shared hand-under-hand tactile engagement.</span>
           </label>
         </div>
       </div>
@@ -13943,7 +13943,7 @@ const LEWY_ACTIVITIES = [
       prompting: [
         "Level 1 (Auditory): Tap a steady 1-2-3-4 cadence and chant along rhythmically.",
         "Level 2 (Visual/Modeling): Model the alternating bilateral tap with exaggerated, slow arm movements.",
-        "Level 3 (Physical/Hand-over-hand): Lightly guide the resident's wrist to strike the drum head in cadence."
+        "Level 3 (Physical/Hand-under-hand): Rest your hand beneath the resident's hand and let them lead the strike on the drum head, in cadence."
       ],
       env: "Glare-free illumination. Eliminate background television or conversational crosstalk. Maintain a steady, unhurried 80–95 BPM cadence."
     },
@@ -14269,7 +14269,7 @@ const FTD_ACTIVITIES = [
       prompting: [
         "Level 1 (Verbal): 'Feel how smooth this wood is becoming. Let's do ten steady strokes along the grain.'",
         "Level 2 (Gestural): Demonstrate three fluid, rhythmic sanding strokes, modeling the calm, steady tempo.",
-        "Level 3 (Physical): Place your hand over the resident's hand on the sanding block and stroke together."
+        "Level 3 (Physical): Hand-under-hand: rest your hand beneath the resident's hand on the sanding block and stroke together."
       ],
       env: "Well-ventilated workshop or table area. Use natural cedar or pine scents to augment biophilic sensory engagement."
     },
@@ -14514,7 +14514,7 @@ const FTD_ACTIVITIES = [
       prompting: [
         "Level 1 (Verbal): 'These marigolds need rich soil. Let's scoop three scoops into this pot.'",
         "Level 2 (Gestural): Tap the top of the pot and hand resident the trowel handle forward.",
-        "Level 3 (Physical): Place your hand over resident's hand, scoop soil together, and dump into pot."
+        "Level 3 (Physical): Hand-under-hand: rest your hand beneath the resident's hand, scoop soil together, and dump into pot."
       ],
       env: "Warm sunlight or greenhouse lighting. Fresh earthy soil scent provides grounding sensory feedback."
     },
@@ -14639,7 +14639,7 @@ const LATE_STAGE_ACTIVITIES = [
   },
   {
     id: "scented_handwashing",
-    title: "Hand-Over-Hand Scented Hand-Washing Rituals",
+    title: "Hand-Under-Hand Scented Hand-Washing Rituals",
     shortTitle: "Warm Water & Scent",
     icon: "🧼",
     pathway: "olfactory",
@@ -14694,7 +14694,7 @@ const LATE_STAGE_ACTIVITIES = [
       prep: "Position speaker at ear level 3 feet away so sound envelops without directional harshness.",
       prompting: [
         "Level 1 (Verbal): 'Here is a lovely old hymn we both know.'",
-        "Level 2 (Somatic): Rest your hand over theirs with gentle rhythmic pulse.",
+        "Level 2 (Somatic): Rest your hand beneath theirs with a gentle rhythmic pulse.",
         "Level 3 (Presence): Continue humming quietly even if resident falls asleep."
       ],
       env: "Dim room with curtains drawn."
@@ -14722,7 +14722,7 @@ const LATE_STAGE_ACTIVITIES = [
     materials: ["Sensory lap quilt with 6 distinct tactile panels (velvet, fleece, satin, corduroy, denim, chenille)", "Smooth sanded birch wooden ring"],
     steps: [
       { step: "Quilt Lap Positioning", desc: "Unfold quilt across resident's lap with highest contrast textures directly under fingertips." },
-      { step: "Hand-Over-Hand Texture Glide", desc: "Guide resident's palm across plush faux fur to silk ribbon swatch." },
+      { step: "Hand-Under-Hand Texture Glide", desc: "Rest your hand beneath the resident's palm and let them glide it across plush faux fur to a silk ribbon swatch." },
       { step: "Fidget Feature Exploration", desc: "Offer wooden toggle ring or soft ribbon bow for grasping and finger sliding." },
       { step: "Autonomous Holding", desc: "Step back and allow independent tactile fingering, watching for calming demeanor." }
     ],
@@ -14855,19 +14855,19 @@ const LATE_STAGE_ACTIVITIES = [
   },
   {
     id: "soothe_print_guided",
-    title: "Soothe-Print Coloring (Guided Hand-Over-Hand)",
-    shortTitle: "Hand-Over-Hand Soothe",
+    title: "Soothe-Print Coloring (Shared Hand-Under-Hand)",
+    shortTitle: "Hand-Under-Hand Soothe",
     icon: "🎨",
     pathway: "tactile",
     duration: "15–20 min",
     clinicalFocus: "Bilateral tactile somatic engagement through ultra-bold 12pt fluid contours and shared grasp",
-    rationale: "Even when independent motor control is lost, shared hand-over-hand motion with a caregiver holding a smooth wax pastel or soft felt-tip pen over bold 12pt outlines provides meaningful shared connection and kinesthetic feedback.",
+    rationale: "Even when independent motor control is lost, shared hand-under-hand motion, with the resident's hand resting on the caregiver's hand as it holds a smooth wax pastel or soft felt-tip pen over bold 12pt outlines, provides meaningful shared connection and kinesthetic feedback.",
     instruction: "Place your hand gently over resident's hand holding a soft broad-tip pastel. Follow the flowing outline curves.",
     materials: ["Cognicopia Heavyweight 12pt Contour Print Sheet", "Ergonomic teardrop egg crayon or broad wax pastel", "Non-slip clipboard"],
     steps: [
       { step: "Rigid Clipboard Placement", desc: "Secure 12pt bold contour sheet on sturdy angled lap desk or clipboard." },
       { step: "Ergonomic Grip Support", desc: "Place smooth ergonomic crayon into resident's palm and curl fingers gently around it." },
-      { step: "Hand-Over-Hand Guiding", desc: "Cup your dominant hand over resident's hand, initiating unhurried sweeping arcs." },
+      { step: "Hand-Under-Hand Moving", desc: "Rest your dominant hand beneath the resident's hand, let them feel the motion, and begin unhurried sweeping arcs together." },
       { step: "Tactile Line Tracing", desc: "Encourage fingers to feel the heavy 12pt embossed black boundary lines." }
     ],
     guide: {
@@ -14948,7 +14948,7 @@ const KORSAKOFF_ACTIVITIES = [
     guide: {
       prep: "Ensure room is quiet and free of distractor items. Pre-fill resident's preferred name.",
       prompting: [
-        "Level 1 (Physical): Hand-over-hand guide for the initial stroke.",
+        "Level 1 (Physical): Hand-under-hand support for the initial stroke.",
         "Level 2 (Gestural): Point smoothly along the grey lettering: 'Right along this line.'",
         "Level 3 (Verbal): Direct statement: 'Trace the next word here.' Never ask 'Do you remember what comes next?'"
       ],
@@ -15193,7 +15193,7 @@ const KORSAKOFF_ACTIVITIES = [
     guide: {
       prep: "Have materials pre-threaded or pre-portioned so no measuring is needed.",
       prompting: [
-        "Level 1: Hand-over-hand rhythm: 'Over, under, through.'",
+        "Level 1: Hand-under-hand rhythm: 'Over, under, through.'",
         "Level 2: Gentle rhythmic chant: 'Smooth it down, press it soft.'",
         "Level 3: Positive visual validation: 'Beautiful, even rows.'"
       ],
@@ -17779,13 +17779,13 @@ function renderSoothePrintSheetPDF(d, residentName, era, act) {
   d.setFont("helvetica", "bold");
   d.setFontSize(10.5);
   d.setTextColor(0, 0, 0);
-  d.text("Caregiver Direction: Guide resident's hand over bold boundaries using soft wax pastels or gentle finger tracing.", W / 2, dirY, { align: "center" });
+  d.text("Caregiver Direction: Hand-under-hand, move together along the bold boundaries using soft wax pastels or gentle finger tracing.", W / 2, dirY, { align: "center" });
 
   d.setFont("helvetica", "normal");
   d.setFontSize(9);
   d.setTextColor(80, 80, 80);
   const dateStr = (typeof PACKET_DATE !== "undefined" ? PACKET_DATE : new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }));
-  d.text("Date: " + dateStr + "   ·   Resident: " + (residentName || "Resident") + "   ·   Shared Hand-Over-Hand Engagement", W / 2, dirY + 18, { align: "center" });
+  d.text("Date: " + dateStr + "   ·   Resident: " + (residentName || "Resident") + "   ·   Shared Hand-Under-Hand Engagement", W / 2, dirY + 18, { align: "center" });
 }
 
 function generateLateStageSpecializedPDF(opts) {
@@ -18062,7 +18062,7 @@ function generateKorsakoffSpecializedPDF(opts) {
     doc.setFont("helvetica", "bold");
     doc.text("Prompting Level:", M + 14, footTop + 53);
     doc.setFont("helvetica", "normal");
-    doc.text("[  ] L1: Hand-over-hand     [  ] L2: Pointing/Gestural     [  ] L3: Verbal directive     [  ] Independent", M + 95, footTop + 53);
+    doc.text("[  ] L1: Hand-under-hand     [  ] L2: Pointing/Gestural     [  ] L3: Verbal directive     [  ] Independent", M + 95, footTop + 53);
 
     doc.setFont("helvetica", "bold");
     doc.text("Amnestic Response:", M + 14, footTop + 67);
@@ -18133,7 +18133,7 @@ function generateKorsakoffSpecializedPDF(opts) {
     cy += 14;
 
     const prompts = [
-      "Level 1 — Full Hand-Over-Hand Physical Guidance: Place your warm hand over the resident's hand and guide the pencil through the first stroke. Never wait for hesitation to turn into an erroneous guess.",
+      "Level 1 — Full Hand-Under-Hand Support: Rest your warm hand beneath the resident's hand and let them lead the first stroke while you move together. Never wait for hesitation to turn into an erroneous guess.",
       "Level 2 — Pointing & Gestural Tracking: Smoothly trace along the grey lettering with a finger or pointer, stating clearly: 'Trace right along this word next.'",
       "Level 3 — Direct Verbal Directives: Use clear, positive instructions ('Trace the word coffee'). Never ask open-ended questions like 'What do you do next?' or 'Do you remember?'"
     ];
@@ -18298,7 +18298,7 @@ function generateKorsakoffSpecializedPDF(opts) {
       doc.text("Clinical Rule:", M + 20, y + 51);
       doc.setFont("helvetica", "normal");
       doc.setTextColor(71, 85, 105);
-      doc.text("Never ask 'What comes next?' Always state the step and guide the hand over the trace-line.", M + 72, y + 51);
+      doc.text("Never ask 'What comes next?' Always state the step and move together along the trace-line, hand-under-hand.", M + 72, y + 51);
 
       y += 72;
 
@@ -18416,7 +18416,7 @@ function generateKorsakoffSpecializedPDF(opts) {
 
       const guidePoints = [
         "1. Zero Guessing Rule: When an amnestic resident makes a guess, the brain encodes the guess as fact because error-correcting neural loops in the thalamus/mammillary bodies are disrupted. Always provide the answer first.",
-        "2. Hand-over-Hand Modeling: Start every new sheet with your hand over the resident's hand. Complete the first word together, speak the word warmly, then allow them to trace the remainder.",
+        "2. Hand-under-Hand Modeling: Start every new sheet with your hand beneath the resident's hand. Complete the first word together, speak the word warmly, then allow them to trace the remainder.",
         "3. Affirmation over Correction: If a resident writes outside the line or repeats a word, praise the effort immediately ('Beautiful steady pencil stroke!'). Never say 'No' or 'That was wrong.'",
         "4. Non-Confrontational Confabulation Redirection: If the resident speaks about past events as happening today (e.g., waiting for parents), validate their feeling ('Your family cares so deeply for you') and redirect attention to the trace line.",
         "5. Ribot's Temporal Solace: Use the " + era + " anchor to evoke remote autobiographical solace. Play gentle music from this era during the session to enhance dopamine and motor coordination."
@@ -18452,7 +18452,7 @@ function generateKorsakoffTaskBuilderPDF(opts) {
   const taskName = options.taskName || "Daily Procedural Routine";
   const residentName = options.residentName || "Resident";
   const era = options.era || "1950s";
-  const promptLevel = options.promptLevel || "Level 1: Full Hand-over-Hand Physical Guidance";
+  const promptLevel = options.promptLevel || "Level 1: Full Hand-under-Hand Support";
   const rawSteps = options.steps || [];
   const steps = rawSteps.length > 0 ? rawSteps : [
     "Gather materials neatly on table",
@@ -18553,7 +18553,7 @@ function generateKorsakoffTaskBuilderPDF(opts) {
     doc.setFont("helvetica", "normal");
     doc.setFontSize(7.5);
     doc.setTextColor(100, 116, 139);
-    doc.text("Staff Assist Level:  [  ] Full Hand-over-hand   [  ] Gestural Pointing   [  ] Independent Trace   [  ] Declined", M + 74, boxY + 38);
+    doc.text("Staff Assist Level:  [  ] Full Hand-under-hand   [  ] Gestural Pointing   [  ] Independent Trace   [  ] Declined", M + 74, boxY + 38);
   }
 
   // Footer Anchor Logbook
@@ -20710,7 +20710,7 @@ function initKorsakoffModule() {
       const taskName = (ktbTaskNameInput && ktbTaskNameInput.value.trim()) || "Procedural Routine";
       const residentName = (ktbResNameInput && ktbResNameInput.value.trim()) || "Resident";
       const era = (ktbEraSelect && ktbEraSelect.value) || "1950s";
-      const promptLevel = (ktbPromptLevelSelect && ktbPromptLevelSelect.value) || "Level 1: Full Hand-over-Hand Physical Guidance";
+      const promptLevel = (ktbPromptLevelSelect && ktbPromptLevelSelect.value) || "Level 1: Full Hand-under-Hand Support";
       const stepInputs = ktbStepsList ? ktbStepsList.querySelectorAll(".ktb-step-input") : [];
       const steps = Array.from(stepInputs).map(i => i.value.trim()).filter(Boolean);
 
@@ -21118,7 +21118,7 @@ function initKorsakoffModule() {
       htmlContent += '    <div class="appm-step-body">';
       htmlContent += '      <div class="appm-step-title">Prompting Hierarchy (Errorless Learning)</div>';
       htmlContent += '      <div class="appm-step-desc" style="font-size:14pt; line-height:1.5;">';
-      htmlContent += '        <b>Level 1 (Physical/Model):</b> Demonstrate the exact physical action. Hand-over-hand guide.<br>';
+      htmlContent += '        <b>Level 1 (Physical/Model):</b> Demonstrate the exact physical action. Hand-under-hand support.<br>';
       htmlContent += '        <b>Level 2 (Gestural):</b> Point directly to the matching visual target.<br>';
       htmlContent += '        <b>Level 3 (Verbal):</b> State direct single-step instruction. Never ask open guessing questions.';
       htmlContent += '      </div>';
