@@ -196,6 +196,19 @@ ok(JSON.stringify(gen(dot(1), "hometown", 3, 4).sheets) === JSON.stringify(gen(d
   const n = gen(nobody(1), "hometown", 1).sheets[0];
   ok(n.title === "Where I come from" && n.personal === false && n.blocks.find(b => b.kind === "choices").options.every(o => D.ANYWHERE.sights.includes(o)), "with no hometown the page asks about the place they grew up and offers what any hometown has");
   ok(gen(dot(3), "hometown", 1).sheets[0].blocks.find(b => b.kind === "choices").options.length === 2, "the late stage offers two choices"); }
+/* the Dakotas share a region, not their landmarks: Mount Rushmore is in South Dakota, so a North Dakota page never offers it (the owner's demonstration for Edgewood Vista in Minot) */
+{ const opts = (place, stage = 1, count = 4) => gen(dot(stage, "steady", { place }), "hometown", count).sheets.flatMap(sh => sh.blocks.find(b => b.kind === "choices").options);
+  const nd = D.STATE_BITS["north dakota"], sd = D.STATE_BITS["south dakota"], pl = D.REGIONS.plains;
+  ok(nd && sd && D.STATE_BITS.nd === nd && D.STATE_BITS.sd === sd && nd.sights.length >= 5 && nd.tastes.length >= 3 && sd.sights.length >= 5 && sd.tastes.length >= 3, "North and South Dakota each have their own five sights and three tastes, found by the state's name or its two letters");
+  ok(!pl.sights.concat(pl.tastes).some(x => /Rushmore|Badlands|Black Hills|Roosevelt|Sakakawea/.test(x)), "the shared plains list names no landmark of a single state");
+  for (const place of ["Velva, North Dakota", "Minot, ND", "Kenmare, north dakota"]) { const o = opts(place), all = nd.sights.concat(nd.tastes);
+    ok(o.length >= 12 && o.every(x => all.includes(x)), `${place}: every choice is North Dakota's own`);
+    ok(!o.some(x => /Rushmore|Badlands|Black Hills/.test(x)), `${place}: no South Dakota landmark is offered`); }
+  ok(opts("Velva, North Dakota").some(x => nd.sights.includes(x)) && opts("Velva, North Dakota").some(x => nd.tastes.includes(x)), "a North Dakota page offers its sights and, on the next page, its tastes");
+  ok(opts("Rapid City, South Dakota").some(x => x === "Mount Rushmore") || opts("Rapid City, SD", 1, 8).some(x => x === "Mount Rushmore"), "a South Dakota page still offers Mount Rushmore");
+  const ks = opts("Wichita, Kansas"), allPl = pl.sights.concat(pl.tastes);
+  ok(ks.length >= 12 && ks.every(x => allPl.includes(x)) && !ks.some(x => /Rushmore|Badlands/.test(x)), "another plains state gets only the shared plains list");
+  ok(opts("Velva, North Dakota", 3, 2).length === 4, "the late stage still offers two choices on a North Dakota page"); }
 /* songs of my years */
 { const r = gen(dot(1), "songs", 4), items = r.sheets.flatMap(sh => (sh.blocks.find(b => b.kind === "list") || { items: [] }).items);
   ok(r.sheets[0].subtitle === "1953 to 1963" && items.length >= 8, `her songs are from 1953 to 1963 (${r.sheets[0].subtitle}, ${items.length} listed)`);
