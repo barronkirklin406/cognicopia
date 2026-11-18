@@ -420,7 +420,7 @@
   }
 
   /* what a registered module needs from this file */
-  var KIT = { STAGES: STAGES, DEXTERITY: DEXTERITY, ERA: ERA, DECADES: DECADES, rng: rng, hash: hash, shuffle: shuffle, pick: pick, cap: cap, cut: cut, avoided: avoided, toneProblems: toneProblems, decadeFor: decadeFor };
+  var KIT = { STAGES: STAGES, DEXTERITY: DEXTERITY, ERA: ERA, DECADES: DECADES, INVITE: INVITE, SENSE: SENSE, KIND_LABEL: KIND_LABEL, KIND_ORDER: KIND_ORDER, rng: rng, hash: hash, shuffle: shuffle, pick: pick, cap: cap, cut: cut, avoided: avoided, toneProblems: toneProblems, decadeFor: decadeFor };
   return {
     kit: KIT, register: register, fits: fits, modules: function () { return MODULES.slice(); },
     VERSION: VERSION, STAGES: STAGES, DEXTERITY: DEXTERITY, DECADES: DECADES, SEASONS: SEASONS,

@@ -303,6 +303,14 @@ step("Calm now: a button on the active resident bar and the Packet Builder's Wor
   }
 });
 
+step("The group circle on Daily engagement: two to eight saved residents and a theme give a leader's script with a line for each person at their own stage, by name; the avoid lists are joined (a thing any of them avoids is out for everyone, a theme one avoids is not offered); one staff page read back from a real PDF (a real browser, day and Night Shift, 1366 x 768 and 390 x 844)", () => {
+  try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-group-circle-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
+  catch (e){
+    if (e.status === 2) return "skipped: Playwright is not installed here (see docs/dev-setup.md)";
+    throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message);
+  }
+});
+
 step("Resident Mode in Tablet Activities: only the activities and no link out, the search closed, kept on reload; a 2.5 second hold (mouse, Enter or a finger) to leave, a tap does nothing; a PIN kept as a salted hash, a wrong one refused (a real browser)", () => {
   try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-tablet-resident-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
   catch (e){

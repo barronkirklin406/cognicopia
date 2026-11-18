@@ -208,6 +208,42 @@
     if (window.CognicopiaLicense && window.CognicopiaLicense.onChange) window.CognicopiaLicense.onChange(paintLeft);
   }
 
+  /* ---------- a group circle (js/groupCircle.js): a leader's script for two to eight residents ---------- */
+  var $c = function (s) { return document.querySelector(s); };            // the circle sits outside #dyRoot, so the page-wide lookup
+  var circle = { turn: 0, made: null };
+  function circleWho() {
+    var box = $c("#dyCircleWho"); if (!box) return;
+    var list = listRes(), keep = {}; Array.prototype.forEach.call(box.querySelectorAll("input:checked"), function (i) { keep[i.value] = 1; });
+    box.innerHTML = list.length ? list.map(function (p, i) { return '<label><input type="checkbox" value="' + String(p.id).replace(/[^A-Za-z0-9_.-]/g, "") + '"' + (keep[p.id] ? " checked" : "") + "><span>" + String(p.tier1_core.preferredName || "A resident with no name yet").replace(/[<>&"]/g, "") + "</span></label>"; }).join("") : '<p class="dy-hint">No one is saved on this computer yet. Save residents from the profile page and they appear here.</p>';
+  }
+  function circleMake() {
+    var G = window.CogniGroupCircle, msg = $c("#dyCircleMsg"), out = $c("#dyCircleOut");
+    if (!G) return;
+    var ids = Array.prototype.map.call($c("#dyCircleWho").querySelectorAll("input:checked"), function (i) { return i.value; });
+    if (ids.length < 2 || ids.length > 8) { msg.textContent = "Choose two to eight residents."; return; }
+    var members = ids.map(function (id) { var p = readRes(id); return p ? { who: String(p.tier1_core.preferredName || "A resident").replace(/[<>&"]/g, ""), person: R.person(p) } : null; }).filter(Boolean);
+    circle.made = G.build(members, { theme: $c("#dyCircleTheme").value, turn: circle.turn });
+    var c = circle.made;
+    msg.textContent = c.blocked ? "One of them avoids this theme, so it is not offered. Choose another theme." : "";
+    out.innerHTML = c.blocked ? "" : "<h3>Before you start</h3><p>" + c.opening + "</p><h3>Around the circle</h3><ol>" + c.items.map(function (it) { return "<li><b>" + it.who + ":</b> \u201C" + it.prompt + "\u201D" + (it.sense ? " " + it.sense : "") + "</li>"; }).join("") + "</ol><h3>Kept off this circle</h3><p>" + (c.avoid.length ? c.avoid.join(", ") + "." : "Nothing is listed.") + "</p><h3>To finish</h3><p>" + c.closing + "</p>";
+    $c("#dyCircleAgain").disabled = c.blocked; $c("#dyCirclePrint").disabled = c.blocked;
+  }
+  function circlePrint() {
+    if (!circle.made || circle.made.blocked) return;
+    if (blocked()) { openGate(); return; }
+    var pr = $c("#printRoot"), saved = pr.innerHTML;
+    pr.innerHTML = window.CogniGroupCircle.pageHtml(circle.made, {});
+    var done = function () { pr.innerHTML = saved; window.removeEventListener("afterprint", done); };
+    window.addEventListener("afterprint", done); spend(); window.print();
+  }
+  if ($c("#dyCircleBox") && window.CogniGroupCircle) {
+    $c("#dyCircleTheme").innerHTML = window.CogniGroupCircle.themes().map(function (t) { return '<option value="' + t.id + '">' + t.label + "</option>"; }).join("");
+    circleWho();
+    $c("#dyCircleBox").addEventListener("toggle", circleWho);
+    $c("#dyCircleMake").addEventListener("click", function () { circle.turn = 0; circleMake(); });
+    $c("#dyCircleAgain").addEventListener("click", function () { circle.turn++; circleMake(); });
+    $c("#dyCirclePrint").addEventListener("click", circlePrint);
+  }
   if (PO) PO.install();                                    // the print style sheet: only the card reaches the paper
   $("#dyDecade").innerHTML = (E.DECADES || [1940, 1950, 1960, 1970, 1980]).map(function (d) { return '<option value="' + d + '">The ' + d + "s</option>"; }).join("");
   $("#dyGateT").textContent = "You’ve used all " + FREE + " free packets";

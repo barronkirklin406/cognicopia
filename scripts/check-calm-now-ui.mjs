@@ -99,7 +99,7 @@ try {
     ok(!(await w.p.$("dialog.cg-calm[open]")) && await w.p.evaluate(() => document.activeElement && document.activeElement.id === "wfCalm"), "Escape closes it and focus goes back to the button");
     /* the page */
     await w.p.click("#wfCalm"); await w.p.waitForSelector("dialog.cg-calm[open]"); await w.p.click("[data-calm-print]"); await w.p.waitForTimeout(500);
-    ok((await w.p.evaluate(() => window.__printed)) === 1 && await w.p.evaluate(() => document.documentElement.classList.contains("cg-calm-printing") && !!document.querySelector(".cg-calm-sheet")), "Print one page opens the print window with the staff page");
+    ok((await w.p.evaluate(() => window.__printed)) === 1 && await w.p.evaluate(() => document.documentElement.classList.contains("cg-calm-printing") && !!document.querySelector(".cg-staff-sheet")), "Print one page opens the print window with the staff page");
     const pdf = path.join(os.tmpdir(), "calm-now-check.pdf");
     await w.p.emulateMedia({ media: "print" }); fs.writeFileSync(pdf, await w.p.pdf({ width: "8.5in", height: "11in", printBackground: true, preferCSSPageSize: true })); await w.p.emulateMedia({ media: "screen" });
     let back = null; try { back = JSON.parse(execFileSync("python3", ["-I", "-c", PY, pdf], { encoding: "utf8" })); } catch (e) { notes.push("PyMuPDF could not read the PDF here"); }

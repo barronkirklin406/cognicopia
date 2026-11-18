@@ -60,7 +60,7 @@
       "<section><h3>Songs of their years</h3>" + ul(m.songs, "None are recorded yet. Hum something slow and familiar.") + "</section>" +
       "<p class=\"cg-calm-protocol\"><b>" + esc(m.protocol) + "</b></p>";
   }
-  function sheetHtml(m) { return '<div class="cg-calm-sheet"><p class="cg-calm-kick">Calm now</p><h1>' + esc(m.who) + "</h1>" + body(m) + '<p class="cg-calm-foot">Staff page · Cognicopia</p></div>'; }
+  function sheetHtml(m) { return '<div class="cg-staff-sheet"><p class="cg-calm-kick">Calm now</p><h1>' + esc(m.who) + "</h1>" + body(m) + '<p class="cg-calm-foot">Staff page · Cognicopia</p></div>'; }
 
   var dlg = null, opener = null;
   function dialog() {

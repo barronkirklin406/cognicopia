@@ -1518,15 +1518,15 @@ html.cg-night-shift:root body dialog.cg-calm .cg-calm-btns button[data-calm-prin
 @media print{
   html.cg-calm-own body>*:not(#cgCalmPrint){display:none !important}
   html.cg-calm-own #cgCalmPrint{display:block !important;position:static}
-  .cg-calm-sheet,.cg-calm-sheet *{color:#000 !important}
-  .cg-calm-sheet{box-sizing:border-box;width:100%;padding:0;color:#000;background:#fff;font:16pt/1.3 var(--cg-font-ui,"Atkinson Hyperlegible",sans-serif)}
-  .cg-calm-sheet h1{margin:0 0 8pt;font:700 28pt/1.1 var(--cg-font-name,"Fraunces",serif);border-bottom:2.5pt solid #000;padding-bottom:6pt}
-  .cg-calm-sheet .cg-calm-kick{margin:0;font-size:16pt;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
-  .cg-calm-sheet h3{margin:10pt 0 2pt;font-size:18pt}
-  .cg-calm-sheet p,.cg-calm-sheet li{margin:0;font-size:16pt}
-  .cg-calm-sheet ul{margin:0;padding-left:.25in}
-  .cg-calm-sheet .cg-calm-avoid{border:2pt solid #000;padding:4pt 8pt;margin-top:8pt}
-  .cg-calm-sheet .cg-calm-protocol{margin-top:12pt;border-top:1.5pt solid #000;padding-top:6pt}
-  .cg-calm-sheet .cg-calm-foot{margin-top:10pt;font-size:16pt}
+  .cg-staff-sheet,.cg-staff-sheet *{color:#000 !important}
+  .cg-staff-sheet{box-sizing:border-box;width:100%;padding:0;color:#000;background:#fff;font:16pt/1.3 var(--cg-font-ui,"Atkinson Hyperlegible",sans-serif)}
+  .cg-staff-sheet h1{margin:0 0 8pt;font:700 28pt/1.1 var(--cg-font-name,"Fraunces",serif);border-bottom:2.5pt solid #000;padding-bottom:6pt}
+  .cg-staff-sheet .cg-calm-kick{margin:0;font-size:16pt;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+  .cg-staff-sheet h3{margin:10pt 0 2pt;font-size:18pt}
+  .cg-staff-sheet p,.cg-staff-sheet li{margin:0;font-size:16pt}
+  .cg-staff-sheet ul{margin:0;padding-left:.25in}
+  .cg-staff-sheet .cg-calm-avoid{border:2pt solid #000;padding:4pt 8pt;margin-top:8pt}
+  .cg-staff-sheet .cg-calm-protocol{margin-top:12pt;border-top:1.5pt solid #000;padding-top:6pt}
+  .cg-staff-sheet .cg-calm-foot{margin-top:10pt;font-size:16pt}
   dialog.cg-calm{display:none !important}
 }
