@@ -10129,13 +10129,17 @@ function sensoryCardsPage(D,r,theme){
   D.heading("Sensory Memory Cards (for Staff)");
   D.body("One card at a time, at eye level. Show, hand over, offer the scent, then talk, in any order. Stop when they have had enough.",{size:16,gap:1.35});
   D.gap(10);
-  s.cards.forEach((c,i)=>{
-    const lines=[
+  /* two cards to a sheet: when a pair would not fit, every card gives up its second thing to look at and its song, so the four cards still make two sheets */
+  const linesOf=(c,slim)=>[
       "Invite: "+c.invite,
-      "To look at and talk about: "+c.look.slice(0,2).join("; ")+".",
+      "To look at and talk about: "+c.look.slice(0,slim?1:2).join("; ")+".",
       "To hold: "+c.hold.prompt+" "+c.hold.safety,
       "To smell: "+c.smell.what.charAt(0).toUpperCase()+c.smell.what.slice(1)+". "+c.smell.safety
-    ].concat(c.song?["A song from their years: "+c.song.title+", "+c.song.artist+", "+c.song.year+"."]:[]);
+    ].concat(c.song && !slim?["A song from their years: "+c.song.title+", "+c.song.artist+", "+c.song.year+"."]:[]);
+  const heightOf=(c,i,slim)=>D.measure((i+1)+". "+c.title,{size:20,bold:true,gap:1.3})+linesOf(c,slim).reduce((n,l)=>n+D.measure(l,{size:16,gap:1.35,indent:18})+4,0)+8+16;
+  const slim=s.cards.some((c,i)=>i%2===0 && s.cards[i+1] && heightOf(c,i,false)+heightOf(s.cards[i+1],i+1,false)>D.room());
+  s.cards.forEach((c,i)=>{
+    const lines=linesOf(c,slim);
     const title=(i+1)+". "+c.title;
     const h=D.measure(title,{size:20,bold:true,gap:1.3})+lines.reduce((n,l)=>n+D.measure(l,{size:16,gap:1.35,indent:18})+4,0)+8;
     D.need(h);
@@ -10151,7 +10155,7 @@ function yearsPage(D,r,theme){
   if(t.rows.length<3) return;
   D.start(theme);
   D.heading("Your Years");
-  D.body((t.place?"From the "+t.place+". ":"")+"People remember the years from about ten to thirty most readily; the heavy line marks them. Here are songs and things that were new then. Talk about any of them, or none.",{size:19,gap:1.4});
+  D.body((t.place?"From the "+t.place+". ":"")+"People remember the years from about seven to twenty-eight most readily; the heavy line marks them. Here are songs and things that were new then. Talk about any of them, or none.",{size:19,gap:1.4});
   D.gap(18);
   const d=D.d, X=MARGIN+86, TX=MARGIN+110, size=D.lift, w=PW-MARGIN-TX, inBump=y=>y>=t.bump[0] && y<=t.bump[1];
   let prev=null;                                                            // the last dot on this sheet, so the line runs dot to dot
@@ -12606,7 +12610,7 @@ function draftHasContent(d){
   const typed=Object.keys(d.fields).some(k=>!["pronoun","fac","month","state"].includes(k) && String(d.fields[k]||"").trim());
   return typed || (Array.isArray(d.crew) && d.crew.some(c=>c && String(c.name||"").trim()));
 }
-function clearForm(){
+async function clearForm(){
   if(draftHasContent(collectProfile()) &&
      !confirm("Clear everything typed for this resident? Save it first if you will need it again.")) return;
   clearTimeout(draftTimer); draftTimer=0;
@@ -21775,7 +21779,7 @@ if (document.readyState === "complete" || document.readyState === "interactive")
     var current = window.activeResident ? shortName(window.activeResident) : "";
     return first.trim() && first.trim() !== current && first.trim() !== shortName(p);
   }
-  function choose(id, fromLoad){
+  async function choose(id, fromLoad){
     if (!id){ setActiveResident(null); msg.textContent = "No resident selected. The packet below uses whatever you type in."; return; }
     var p = readProfile(id);
     if (!p){ loadSavedProfilesList(); setActiveResident(null); msg.textContent = "That profile could not be found. It may have been deleted."; return; }
@@ -21819,7 +21823,7 @@ if (document.readyState === "complete" || document.readyState === "interactive")
     if (window.ProceduralPacketEngine) window.ProceduralPacketEngine.instantSoothe();
     else location.href = "builder.html?emergency=" + (window.activeResident ? encodeURIComponent(window.activeResident.id) : "general");   // the engine did not load: the Packet Builder still can
   });
-  delBtn.addEventListener("click", function(){
+  delBtn.addEventListener("click", async function(){
     var p = window.activeResident;
     if (!p) return;
     if (!window.confirm("Delete " + shortName(p) + "'s profile from this computer? This cannot be undone.")) return;
@@ -22045,7 +22049,7 @@ if (document.readyState === "complete" || document.readyState === "interactive")
     return window.CogniPrivacy ? window.CogniPrivacy.levelOf(r ? r.value : fallback) : "keep";
   }
   function scrubbed(list, group, fallback){ return window.CogniPrivacy ? window.CogniPrivacy.scrubRoster(list, namesLevel(group, fallback)) : list; }
-  function exportProfilesJSON(){
+  async function exportProfilesJSON(){
     var profiles = scrubbed(savedProfiles().map(normalizeProfile).filter(Boolean), "arbNamesBackup", "keep");
     if (!profiles.length){ banner("There are no saved resident profiles to export yet.", "", true); return 0; }
     var backup = {
@@ -22140,7 +22144,7 @@ if (document.readyState === "complete" || document.readyState === "interactive")
      "; ". UTF-8 with a byte-order mark so Excel keeps accents.
      Downloads cognicopia_residents_YYYY-MM-DD.csv.
      --------------------------------------------------------------- */
-  function exportProfilesCSV(){
+  async function exportProfilesCSV(){
     var profiles = scrubbed(savedProfiles().map(normalizeProfile).filter(Boolean), "arbNamesCsv", "alias");
     if (!profiles.length){ banner("There are no saved resident profiles to export yet.", "", true); return 0; }
     if (!window.confirm("A spreadsheet cannot be locked: anyone who opens it can read these residents' details. Export it anyway?")) return 0;
@@ -22309,11 +22313,7 @@ if (document.readyState === "complete" || document.readyState === "interactive")
       dlg.returnValue = "";
       dlg.addEventListener("close", done);
       if (typeof dlg.showModal === "function") dlg.showModal();
-      else {                                   // very old browsers: fall back to simple questions
-        var mode = window.confirm(names.length + " already saved (" + shown + "). Press OK to update them from the file, or Cancel for more choices.") ? "overwrite"
-          : window.confirm("Keep both, adding the file's version as a copy? (Cancel skips them.)") ? "copy" : "skip";
-        dlg.returnValue = "ok"; dlg.querySelector('input[value="' + mode + '"]').checked = true; done();
-      }
+      else { dlg.returnValue = ""; done(); }       // a browser that cannot show the window answers "cancel": nothing is overwritten
     });
   }
 
@@ -25078,7 +25078,7 @@ if (document.readyState === "complete" || document.readyState === "interactive")
   $m("mbNone").addEventListener("click", function(){ list.querySelectorAll("input").forEach(function(c){ c.checked = false; }); refresh(); });
   $m("mbCancel").addEventListener("click", function(){ cancelMonthlyBundle(); $m("mbStatus").textContent = "Stopping…"; });
 
-  go.addEventListener("click", function(){
+  go.addEventListener("click", async function(){
     var ids = chosenIds();
     if (ids.length > freeLeft()){
       closeModal();

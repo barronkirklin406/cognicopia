@@ -109,7 +109,8 @@ doc = fitz.open(sys.argv[1]); print(json.dumps({"pages": [p.get_text() for p in 
     try { return JSON.parse(execFileSync("python3", ["-c", PAGES, tmp], { encoding: "utf8" })); } finally { fs.unlinkSync(tmp); }
   }
   const mid = await withPages("middle");
-  const pageOf = (r, re) => r.pages.filter(x => re.test(x));
+  /* the Staff Companion Sheet (page 1 since November 18, 2026) lists every page by its title, so it is left out when a page is looked for by its title */
+  const pageOf = (r, re) => r.pages.filter(x => !/^\s*For Staff/.test(x) && re.test(x));
   const years = pageOf(mid, /Your Years/), map = pageOf(mid, /My Memory Map/), cards = pageOf(mid, /Sensory Memory Cards/);
   ok(years.length === 1 && /1938/.test(years[0]) && /1966/.test(years[0]) && /Born/.test(years[0]) && /Midwest/.test(years[0]), "Your years prints on one sheet, from the year they were born to thirty, with their region");
   ok(map.length === 1 && /Dubuque/.test(map[0]) && /Walter/.test(map[0]) && /gardening/.test(map[0]) && /Every answer is welcome/.test(map[0]), "the memory map holds what the form knows, and invites without testing");
