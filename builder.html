@@ -1808,6 +1808,22 @@ textarea:focus{border-color:var(--accent)}
 .slp-table{width:100%;border-collapse:collapse;font-size:10pt;margin-top:.06in}
 .slp-table th,.slp-table td{border:.75pt solid #000;padding:2pt 4pt;text-align:left;vertical-align:top}
 </style>
+<style id="ads-style">
+/* the activity documentation summary (js/activityDocs.js): staff text, every line 16 pt or larger, pure black on white */
+.sheet.ads-sheet{gap:.1in;color:#000;padding:.52in .5in .5in .75in}
+html.cg-night-shift .fp-doc :is(.fp-hint,label,legend,small,p,h3,span,b){color:#ffedcc !important}
+html.cg-night-shift .fp-doc .fp-btn-primary{background:#5a3e12 !important;border-color:#d6a64b !important;color:#fff1cf !important}
+.ads-head{display:flex;justify-content:space-between;align-items:flex-end;gap:.2in;border-bottom:2.5pt solid #000;padding-bottom:.08in}
+.ads-kick{margin:0;font-size:16pt;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.ads-who{margin:0;font-family:var(--cg-font-name,"Fraunces",serif);font-size:28pt;line-height:1.1}
+.ads-when{text-align:right;font-size:16pt;line-height:1.25}
+.ads-body{flex:1 1 auto;overflow:hidden;display:flex;flex-direction:column;gap:.09in}
+.ads-body h2{margin:0 0 .02in;font-size:18pt}
+.ads-body p,.ads-body li{margin:0;font-size:16pt;line-height:1.28}
+.ads-body ul{margin:.03in 0 0;padding-left:.25in}
+.ads-body .ads-note{margin-top:auto;border-top:1pt solid #000;padding-top:.06in}
+.ads-foot{display:flex;justify-content:space-between;gap:.2in;font-size:16pt;border-top:1px solid #000;padding-top:2pt}
+</style>
 <style id="shf-style">
 /* =====================================================================
    SHIFT BOARD (#/shift): the screen, then the printed handoff sheet.
@@ -9817,6 +9833,7 @@ const DailyOpsUI = (function(){
 <script src="js/nav-index.js"></script>
 <script src="js/stageLabels.js"></script>
 <script src="js/engagementLog.js"></script>
+<script src="js/activityDocs.js"></script>
 <script src="js/wayfinding.js"></script>
 <script src="js/quick-lookup.js"></script>
 <script type="module" src="js/qrHandoff.js"></script>
@@ -11026,6 +11043,24 @@ const FacilityUI = (function(){
       </div>
     </div>`;
   }
+  /* the activity documentation summary: one page for each resident chosen, from what is recorded here (js/activityDocs.js) */
+  function printDocs(){
+    const D = window.CogniActivityDocs, R = window.CogniResident, P = window.CogniPrivacy, CMx = window.CognicopiaClinicalMatrix, msg = root.querySelector("#fpDocMsg");
+    if (!D || !R) { if (msg) msg.textContent = "The summary could not be made on this page. Reload and try again."; return; }
+    const all = BookUI.savedProfiles().slice().sort((a, b) => String(a.id).localeCompare(String(b.id))), pick = (root.querySelector("#fpDocWho") || {}).value || "sample";
+    const list = pick === "all" ? all : pick === "sample" ? D.sample(all, 5) : all.filter(p => p.id === pick);
+    if (!list.length) { if (msg) msg.textContent = "No residents are saved on this computer yet."; return; }
+    const chosen = root.querySelector('[data-privacy-choice="fpNames"] input:checked'), level = P ? P.levelOf(chosen ? chosen.value : settings.exportNames) : "keep", today = todayISO();
+    const pages = list.map(p => {
+      const t1 = p.tier1_core || {}, nd = BookUI.needsFor(p), key = ["", "early", "moderate", "advanced"][nd.tier] || "moderate", S = CMx && CMx.STAGES[CLINICAL_STAGE[key]], vn = BookUI.residentNeeds(p).visualNeeds;
+      const asked = !!((t1.printNeeds && (t1.printNeeds.vision || t1.printNeeds.motorSkills)) || (t1.visualNeeds && Object.keys(t1.visualNeeds).length));
+      const name = String(t1.preferredName || "").trim();
+      return { html: D.pageHtml(D.model({ who: level === "keep" && name ? name : cgAlias(p), facility: settings.facility, person: R.person(p), track: TrackerUI.read(p.id), today, days: 30, tierText: tierText(key),
+        floorPt: S ? S.type.floor : 0, lineMinPt: S ? S.stroke.min : 0, needs: asked ? { fontScale: vn.fontSizeScale, contrast: vn.contrastMode, linePt: vn.lineThicknessPt } : {}, avoid: avoidTermsOf(p) })) };
+    });
+    const done = BookUI.print(pages, "Activity documentation summary - " + today, null, null);
+    if (done) { audit("Printed activity documentation summaries", plural(list.length, "resident", "residents")); if (msg) msg.textContent = "Made " + plural(list.length, "page", "pages") + ". Choose Save as PDF in the print window to keep a copy."; }
+  }
   function printWeek(){
     const w = wing(); if (!w || !can("print", w.id)) return;
     const sum = weekSummary(w);
@@ -11099,6 +11134,14 @@ const FacilityUI = (function(){
     return `<section aria-labelledby="fpAuditH">
       <div class="fp-sec-head"><div><h2 id="fpAuditH">State Audit Readiness & Compliance Log</h2><p class="fp-sub">Aggregated non-PHI metrics for state inspection preparation. All data remains on this device.</p></div></div>
       <div id="alcContainer"></div>
+      <section class="fp-card fp-doc" aria-labelledby="fpDocH" style="margin-top:18px">
+        <h3 id="fpDocH">Activity documentation summary</h3>
+        <p class="fp-hint">One page for each resident: what is known about them, the packets made and how they took part in the last 30 days, how their pages are made, and what is kept off them. It lists what is recorded on this computer and supports your own records; it is not an assessment or a finding.</p>
+        <div class="fp-field"><label for="fpDocWho">Who</label><select id="fpDocWho"><option value="sample">A sample of residents (up to five)</option><option value="all">Every saved resident</option>${BookUI.savedProfiles().map(p => `<option value="${esc(p.id)}">${esc(cgScreenName(p))}</option>`).join("")}</select></div>
+        ${window.CogniPrivacy ? window.CogniPrivacy.choiceHtml("fpNames", settings.exportNames, "Names on the printed pages") : ""}
+        <div class="fp-actions"><button type="button" class="fp-btn fp-btn-primary" data-act="docs-print">Print the summary</button></div>
+        <p class="fp-hint" id="fpDocMsg" role="status" aria-live="polite"></p>
+      </section>
     </section>`;
   }
 
@@ -11307,6 +11350,7 @@ const FacilityUI = (function(){
         return;
       }
       case "print-week": return printWeek();
+      case "docs-print": return printDocs();
       case "print-month": return printMonth();
       case "csv": return exportCsv();
       case "ics": return exportIcs();
