@@ -104,7 +104,7 @@ Each fill is a fresh arrangement of the unlocked sessions; **Undo** puts the pre
 - A cover runs onto more pages when the week is long.
 - **One master each** prints one copy of each page; **One per resident** prints one for everyone in the group.
 - Above 120 pages the portal asks first. Above 600 it refuses, and suggests master copies or fewer groups.
-- Each print uses one free packet, like every other print.
+- Each print of a packet uses one free packet. Staff documents do not: the Shift board's handoff sheets, the Shift highlights, the activity documentation summary, session notes, clinical summaries and certificates print without using one, even when all 50 are used.
 
 **The month's calendar:** a page for each group. It splits over two or more pages when the days are too full to read.
 

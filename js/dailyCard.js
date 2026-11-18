@@ -230,11 +230,11 @@
   }
   function circlePrint() {
     if (!circle.made || circle.made.blocked) return;
-    if (blocked()) { openGate(); return; }
+    /* a leader's script is a staff document, not a packet: it never waits on the free-packet check and never spends one */
     var pr = $c("#printRoot"), saved = pr.innerHTML;
     pr.innerHTML = window.CogniGroupCircle.pageHtml(circle.made, {});
     var done = function () { pr.innerHTML = saved; window.removeEventListener("afterprint", done); };
-    window.addEventListener("afterprint", done); spend(); window.print();
+    window.addEventListener("afterprint", done); window.print();
   }
   if ($c("#dyCircleBox") && window.CogniGroupCircle) {
     $c("#dyCircleTheme").innerHTML = window.CogniGroupCircle.themes().map(function (t) { return '<option value="' + t.id + '">' + t.label + "</option>"; }).join("");

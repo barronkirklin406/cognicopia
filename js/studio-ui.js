@@ -71,7 +71,7 @@ function tracking(body, m) {
     const msg = body.querySelector("#stReportMsg"), p = deps.residents().find((x) => x.id === S.res), model = { name: p ? deps.nameOf(p) : "Resident", entries: C.readTracking(deps.store, S.res).entries, today: today(), facility: deps.facility ? deps.facility() : "" };
     try {
       const R = await import("./tracking-report.js");
-      if (e.target.id === "stReport") { if (deps.print) deps.print(R.reportPages(model).map((x) => ({ html: x.html })), "Progress report - " + model.name + " - " + iso()); else msg.textContent = "Printing is not available here."; }
+      if (e.target.id === "stReport") { if (deps.print) deps.print(R.reportPages(model).map((x) => ({ html: x.html })), "Progress report - " + model.name + " - " + iso(), { staff: true }); else msg.textContent = "Printing is not available here."; }
       else { const J = await deps.jsPDF(); const doc = new J({ unit: "in", format: "letter", orientation: "portrait", compress: true }); R.reportPdf(doc, model); doc.save("Progress report - " + model.name + " - " + iso() + ".pdf"); msg.textContent = "The PDF was saved to your downloads."; }
     } catch (err) { msg.textContent = "The report could not be made: " + (err && err.message || err); }
   });

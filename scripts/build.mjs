@@ -335,6 +335,14 @@ step("The one-page shift handover on the Shift board: a button beside the board'
   }
 });
 
+step("Staff documents never count against the free packets: the Shift board's handoff, SBAR and one-page handover sheets, the Shift highlights and the circle script on Daily engagement print with all 50 free packets used, the gate stays shut and the count is the same afterwards; a packet print is still stopped at 50 and uses one at 49; the staff mark itself moves nothing (a real browser)", () => {
+  try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-staff-prints-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
+  catch (e){
+    if (e.status === 2) return "skipped: Playwright is not installed here (see docs/dev-setup.md)";
+    throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message);
+  }
+});
+
 step("Resident Mode in Tablet Activities: only the activities and no link out, the search closed, kept on reload; a 2.5 second hold (mouse, Enter or a finger) to leave, a tap does nothing; a PIN kept as a salted hash, a wrong one refused (a real browser)", () => {
   try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-tablet-resident-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
   catch (e){
