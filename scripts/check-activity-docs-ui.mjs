@@ -131,7 +131,7 @@ try {
       ok(back.length === 7, `the PDF has one page for each of seven residents (${back.length})`);
       ok(back.every(g => g.small.length === 0), `no text under 16 pt on any page (${[...new Set(back.flatMap(g => g.small))]})`);
       ok(back.every(g => g.colors.every(c => c === 0)), `only pure black text (${[...new Set(back.flatMap(g => g.colors))]})`);
-      ok(back.every(g => g.ink[0] >= 35.9 && g.ink[1] >= 35.9 && g.ink[2] <= 576.1 && g.ink[3] <= 756.1), "everything is inside the 0.5 in margins");
+      ok(back.every(g => g.ink[0] >= 35.9 && g.ink[1] >= 35.9 && g.ink[2] <= 576.1 && g.ink[3] <= 756.1), `everything is inside the 0.5 in margins (the text spans ${[...new Set(back.map(g => g.ink.map(v => Math.round(v * 10) / 10).join(" ")))].join(" | ")} pt; the limits are 36 and 576 across, 36 and 756 down)`);
       ok(back.every(g => /Page 1 of 1/.test(g.text) && /Activity documentation summary/.test(g.text)), "each page is titled and says Page 1 of 1");
     }
     await ctx.close();
