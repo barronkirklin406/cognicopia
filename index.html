@@ -9475,6 +9475,7 @@ class Doc{
   }
   heading(t){
     this.title=t;
+    const cur=this.pages[this.pages.length-1]; if(cur && !cur.title) cur.title=t;       // the staff sheet lists each page by its title
     // Every resident page (and every continuation sheet) opens with their name.
     if(this.who && !STAFF_PAGE.test(t))
       this.y=drawResidentBanner(this.d,this.who,MARGIN,this.y-16,PW-2*MARGIN,
@@ -9592,18 +9593,6 @@ class Doc{
   /* The page's header, tip and foot are drawn once, after the last page, by shellPass(): the same shell on
      every page of every packet. A page ends where its content ends; nothing is added to fill the space. */
   finish(){}
-  /* The reminder for a page that has no clinical tip of its own (the staff pages): the same two lines, in the tip's place on the current page. */
-  coachingFooter(){
-    const SH=window.CognicopiaClinicalMatrix.SHELL, dy=this.d.internal.pageSize.getHeight()-792;
-    this.d.setTextColor(0,0,0); this.d.setFont("helvetica","bold"); this.d.setFontSize(SH.tip.size);
-    this.d.text("Clinical Tip:",SH.left,SH.tip.y+dy);
-    const lead=this.d.getTextWidth("Clinical Tip: ");     // measured in the bold it is drawn in
-    this.d.setFont("helvetica","normal");
-    const tip="Do not ask questions or test memory. Sit beside them, place the marker in their hand, and model slow, calm breathing.";
-    const first=this.d.splitTextToSize(tip,SH.right-(SH.left+lead+3))[0], rest=tip.slice(first.length).trim();   // wrapped to the room the label leaves
-    this.d.text(first,SH.left+lead+3,SH.tip.y+dy);
-    this.d.text(rest,SH.left,SH.tip.y+dy+SH.tip.lead);
-  }
   /* If the next block won't fit, carry on over the page instead of
      letting writing lines spill off the bottom. */
   need(h){
@@ -9648,6 +9637,20 @@ function plan(D, heights, baseLines, o){
   const used=fixed+bonus*n*o.lineGap;
   const gap=Math.min(o.maxGap, o.minGap+Math.max(0,(avail-used)/n));
   return {bonus, gap, lines:baseLines+bonus};
+}
+
+/* How many of these question blocks fit on the rest of this page, each with its writing lines: never fewer than one. A page is made to fit
+   in one sheet by taking fewer questions, not by running over onto a "(continued)" sheet that is mostly empty. */
+function fitCount(D, heights, baseLines, o){
+  o=Object.assign({lineGap:36, pre:10, minGap:12}, o||{});
+  const avail=D.bottom()-D.y-8;
+  let used=0, n=0;
+  for(const h of heights){
+    const next=used+h+o.pre+baseLines*o.lineGap+o.minGap;
+    if(next>avail) break;
+    used=next; n++;
+  }
+  return Math.max(1,n);
 }
 
 /* Split a list into even groups of at most `cap`, so we never strand a
@@ -9766,8 +9769,8 @@ function staffPage(D,r,sel){
     "Work with the clock, not against it. Use "+p.poss+" best hours for "
       +"the pages that ask something, and keep coloring or the pattern "
       +"page for late afternoon when tiredness sets in.",
-    "These last pages are yours, not "+p.poss+". Take them off the back "
-      +"before you hand the packet over.",
+    "This guide is the first page of the packet, and the answer key and notes are its last pages. They are yours, not "+p.poss+". "
+      +"Take them out before you hand the packet over.",
     "When you finish, ask two questions: did you enjoy that, and would "
       +"you like to do it again? The answers are worth more than the "
       +"finished pages."];
@@ -9780,6 +9783,22 @@ function staffPage(D,r,sel){
       D.body("How to use it, continued:",{size:17,bold:true}), D.gap(14);
     D.body("-  "+t,{size:16,gap:1.5,indent:18});
     D.gap(4);
+  }
+
+  /* The pages, in the order they were made: each by its title, with what it is for and the one tip for it. None of this prints on the
+     resident's own pages. */
+  if(D.companion && D.companion.length){
+    D.gap(18);
+    D.need(D.measure("Page by page",{size:17,bold:true})+100);
+    D.body("Page by page",{size:17,bold:true}); D.gap(8);
+    for(const c of D.companion){
+      const head=c.title+(c.anchor?"   "+c.anchor:"");
+      const room=D.measure(head,{size:16,bold:true,gap:1.4})+(c.tip?D.measure(c.tip,{size:16,gap:1.4,indent:18}):0)+10;
+      if(D.need(room)) D.body("Page by page, continued:",{size:17,bold:true}), D.gap(10);
+      D.body(head,{size:16,bold:true,gap:1.4});
+      if(c.tip) D.body(c.tip,{size:16,gap:1.4,indent:18});
+      D.gap(4);
+    }
   }
 
   /* Stage-specific care partner coaching block */
@@ -9962,9 +9981,8 @@ function talkPage(D,r,s,theme){
     }
     if(streams.every(x=>!x.length)) break;
   }
-  chunk(picked.slice(0,s.prompts),4).forEach((group,gi)=>{
-    if(gi){ D.finish(); D.start(theme);
-            D.heading("Let's Talk About It (continued)"); D.gap(6); }
+  [picked.slice(0,s.prompts)].forEach(want=>{
+    const group=want.slice(0,fitCount(D, want.map(l=>D.measure(l,{size:18,gap:1.5})), 2));      // one sheet: as many as fit
     const pl=plan(D, group.map(l=>D.measure(l,{size:18,gap:1.5})), 2);
     for(const line of group){
       D.body(line,{size:18,gap:1.5});
@@ -9980,6 +9998,7 @@ function sayingsPage(D,r,s,theme){
   D.body("Say the ending out loud, or write it on the line.",{size:17});
   D.gap(28);
   const chosen=keepAllowed(r,shuffle(SAYINGS)).slice(0,s.sayings);
+  chosen.length=Math.min(chosen.length, fitCount(D, chosen.map(([f])=>D.measure(f+" ...",{size:20,gap:1.5})), 1, {pre:8}));      // one sheet
   const pl=plan(D, chosen.map(([f])=>D.measure(f+" ...",{size:20,gap:1.5})), 1,
                 {pre:8, maxBonus:1});
   for(const [phrase] of chosen){
@@ -9997,10 +10016,13 @@ function eraPage(D,r,theme){
   // themselves in time, which is the thing that can go wrong.
   D.body("Some of these may be familiar.",{size:17});
   D.gap(26);
-  for(const n of keepAllowed(r,[...eraOk(r.born,ERA[eraKey(r.born)]), ...popBits(r.born,"life")
-                    .slice(0,3).map(t=>t.replace(/\.$/,"").toLowerCase())])){
-    const line="-  "+n.charAt(0).toUpperCase()+n.slice(1)+".";
-    D.need(D.measure(line,{size:18,gap:1.5,indent:10})+16);
+  const lines=keepAllowed(r,[...eraOk(r.born,ERA[eraKey(r.born)]), ...popBits(r.born,"life")
+                    .slice(0,3).map(t=>t.replace(/\.$/,"").toLowerCase())]).map(n=>"-  "+n.charAt(0).toUpperCase()+n.slice(1)+".");
+  /* as many lines as leave room for the closing question and three writing lines: one sheet, never a "(continued)" one */
+  const tail=D.measure("Does that sound about right to you?",{size:18,bold:true})+12+3*36+24;
+  let usedH=0, kept=[];
+  for(const line of lines){ const h=D.measure(line,{size:18,gap:1.5,indent:10})+16; if(usedH+h+tail>D.room()) break; usedH+=h; kept.push(line); }
+  for(const line of kept.length?kept:lines.slice(0,3)){
     D.body(line,{size:18,gap:1.5,indent:10}); D.gap(16);
   }
   D.gap(12);
@@ -10018,9 +10040,8 @@ function namePage(D,r,s,theme){
   const pool=[...NAME_PROMPTS, ...eraBits(r.born,"name")];
   if(r.hobbies.length) pool.unshift("Name three things you need for "+r.hobbies[0]+".");
   if(r.town) pool.unshift("Name three things you would find in "+r.town+".");
-  chunk(keepAllowed(r,shuffle(pool)).slice(0,s.name),3).forEach((group,gi)=>{
-    if(gi){ D.finish(); D.start(theme);
-            D.heading("How Many Can You Name? (continued)"); D.gap(6); }
+  [keepAllowed(r,shuffle(pool)).slice(0,s.name)].forEach(want=>{
+    const group=want.slice(0,fitCount(D, want.map(q=>D.measure(q,{size:19,gap:1.5})), 3));
     const pl=plan(D, group.map(q=>D.measure(q,{size:19,gap:1.5})), 3);
     for(const q of group){
       D.body(q,{size:19,gap:1.5});
@@ -10248,6 +10269,7 @@ function lyricPage(D,r,s,theme){
   D.heading("Finish the Line");
   D.body("Sing it or say it out loud, or write the last word on the line.",{size:17});
   D.gap(28);
+  chosen.length=Math.min(chosen.length, fitCount(D, chosen.map(([l])=>D.measure(l+" ...",{size:20,gap:1.5})), 1, {pre:8}));      // one sheet
   const pl=plan(D, chosen.map(([l])=>D.measure(l+" ...",{size:20,gap:1.5})), 1,
                 {pre:8, maxBonus:1});
   for(const [lead] of chosen){
@@ -10274,9 +10296,8 @@ function lifePage(D,r,s,theme){
   D.heading("My Life Story");
   D.body("Finish each one however you like. There is no wrong answer.",{size:17});
   D.gap(26);
-  chunk(picked,4).forEach((group,gi)=>{
-    if(gi){ D.finish(); D.start(theme);
-            D.heading("My Life Story (continued)"); D.gap(6); }
+  [picked].forEach(want=>{
+    const group=want.slice(0,fitCount(D, want.map(st=>D.measure(st+" ...",{size:19,gap:1.5})), 2));
     const pl=plan(D, group.map(st=>D.measure(st+" ...",{size:19,gap:1.5})), 2);
     for(const st of group){
       D.body(st+" ...",{size:19,gap:1.5});
@@ -10794,9 +10815,15 @@ function popPage(D,r,s,theme){
     columns(items,size);
     D.gap(20);
   };
-  block("On the radio and the record player:", music.slice(0,s.pop), 18);
-  block("At the picture show and on television:", screen.slice(0,s.pop), 18);
-  block("Places, objects, and everyday life:", life.slice(0,s.pop), 18);
+  /* take fewer names, never a second sheet: the three blocks and at least one question must fit this page */
+  const blockH=(title,items,size)=>items.length?D.measure(title,{size:16,bold:true})+12+Math.ceil(items.length/2)*size*1.55+20:0;
+  let pop=s.pop;
+  const askMin=D.measure("Which of these names bring back a story?",{size:18,gap:1.5})+10+36+12+6;
+  while(pop>2 && blockH("On the radio and the record player:",music.slice(0,pop),18)+blockH("At the picture show and on television:",screen.slice(0,pop),18)
+        +blockH("Places, objects, and everyday life:",life.slice(0,pop),18)+askMin>D.room()) pop--;
+  block("On the radio and the record player:", music.slice(0,pop), 18);
+  block("At the picture show and on television:", screen.slice(0,pop), 18);
+  block("Places, objects, and everyday life:", life.slice(0,pop), 18);
 
   const asks=["Which of these names bring back a story?",
               "What song could you always sing along to?",
@@ -10810,7 +10837,7 @@ function popPage(D,r,s,theme){
     if(used+h>D.room()) break;
     used+=h; fits++;
   }
-  const use=asks.slice(0, Math.max(2, fits));
+  const use=asks.slice(0, Math.max(1, fits));
   const pl=plan(D, use.map(q=>D.measure(q,{size:18,gap:1.5})), 1,
                 {maxBonus:2, maxGap:30});
   for(const q of use){
@@ -11103,7 +11130,7 @@ function taskPage(D,r,s,theme){
   const rows=[];
   if(t && TASK_BY_TRADE[t.place]) rows.push(...TASK_BY_TRADE[t.place]);
   rows.push(...shuffle(TASK_GENERIC));
-  const use=keepAllowed(r, rows).slice(0, r.stage==="late" ? 4 : 6);
+  let use=keepAllowed(r, rows).slice(0, r.stage==="late" ? 4 : 6);
   if(!use.length) return false;
 
   D.start(theme);
@@ -11113,6 +11140,10 @@ function taskPage(D,r,s,theme){
         +"from a worksheet. Offer one. Sit alongside and work on it together.",
         {size:16});
   D.gap(24);
+  /* as many jobs as fit this sheet, never a "(continued)" one */
+  { let usedH=0; const kept=[];
+    for(const it of use){ const h=D.measure(it[1],{size:16,gap:1.5,indent:16})+18*1.5+8+22+16; if(usedH+h>D.room()-8) break; usedH+=h; kept.push(it); }
+    use=kept.length?kept:use.slice(0,1); }
   const pl=plan(D, use.map(([,d])=>D.measure(d,{size:16,gap:1.5,indent:16})), 0,
                 {pre:22, minGap:16, maxGap:40, maxBonus:0});
   for(const [title,detail] of use){
@@ -11403,8 +11434,15 @@ function coinPage(D,r,s,theme){
   D.body("Back in "+set.label+", here is what things cost. "
     +"Circle or write which coins you would need.",{size:17});
   D.gap(20);
-  const items=shuffle(set.items).slice(0,s.coins);
   const coinName=c=>c===1?"penny":c===5?"nickel":c===10?"dime":c===25?"quarter":c===50?"half-dollar":"dollar";
+  /* as many prices as fit this sheet, never a "(continued)" one */
+  const items=[]; { let usedH=0;
+    for(const item of shuffle(set.items).slice(0,s.coins)){
+      const cts=item.cents<100?item.cents+"¢":"$"+(item.cents/100).toFixed(2);
+      const h=D.measure("In "+set.label+" "+item.item+" cost "+cts+".",{size:18,gap:1.5})+8+50+D.measure("These coins = "+item.coins.map(coinName).join(", ")+".",{size:16,gap:1.4,indent:14})+14;
+      if(items.length && usedH+h>D.room()-6) break;
+      usedH+=h; items.push(item);
+    } }
   for(const item of items){
     const coinList=item.coins.map(coinName);
     const cts=item.cents<100
@@ -11445,7 +11483,9 @@ function provHintPage(D,r,s,theme){
   D.body(sub,{size:17});
   D.gap(24);
   const chosen=keepAllowed(r,shuffle(SAYINGS)).slice(0,s.sayings);
-  const pl=plan(D, chosen.map(([f,e])=>D.measure(f+" ...",{size:21,gap:1.5})), 1,
+  /* each saying also carries its hint and a few points of air: one sheet, as many as fit */
+  chosen.length=Math.min(chosen.length, fitCount(D, chosen.map(([f])=>D.measure(f+" ...",{size:21,gap:1.5})+(hintMode==="letter"?26:6)), 1, {pre:8}));
+  const pl=plan(D, chosen.map(([f,e])=>D.measure(f+" ...",{size:21,gap:1.5})+(hintMode==="letter"?26:6)), 1,
                 {pre:8, maxBonus:0, maxGap:38});
   for(const [phrase,ending] of chosen){
     D.body(phrase+" ...",{size:21,gap:1.5});
@@ -11834,20 +11874,29 @@ function* packetSteps(r, mode){
   // in one go rather than pulled out of the middle of the packet.
   if(sel.facsupport) run("Activity support cards","support",()=>facSupportPage(D,r,s,theme),"");
   yield {n:D.pages.length, D};
-  D.tag("staff"); staffPage(D,r,sel);
-  yield {n:D.pages.length, D};
   if(mode==="full"){
     D.tag("key"); keyPage(D,key,theme);
     if(sel.notes){ D.tag("notes"); notesPage(D,r,theme); }
   }
+  yield {n:D.pages.length, D};
 
-  /* the shell: every page gets the resident's name, the date and the wing, a page count, and (on the pages the
-     resident works on) one clinical tip for the person beside them */
+  /* The Staff Companion Sheet is built last (it says what was made and what was left out), then moved to the front. Each page's tip and
+     therapy approach are listed on it by the page's title, so nothing clinical is drawn on the resident's pages. */
+  const tipFn=tipPlan(D.pages,r.stage,r.first,PACKET_DATE,PACKET_VARIANT,t=>allowed(r,t)), anchorFn=anchorPlan(D.pages,r.stage);
+  D.companion=D.pages.map((pg,i)=>({ title:pg.title||"", kind:pg.kind, tip:NO_TIP.test(pg.kind)?"":String(tipFn(i+1)||"").replace(/^Clinical Tip:\s*/,""), anchor:anchorFn(i+1) }))
+    .filter(c=>c.title && !NO_TIP.test(c.kind));
+  const before=D.pages.length;
+  D.tag("staff"); staffPage(D,r,sel);
+  if(mode!=="staffonly"){
+    const made=D.pages.length-before;
+    for(let i=0;i<made;i++) D.d.movePage(before+1+i,1+i);
+    D.pages.splice(0,0,...D.pages.splice(before,made));
+  }
+
+  /* the shell: every page gets the resident's name, the date and the wing, and "Page X of Y" */
   yield {n:D.pages.length, D};
   D.noFloor=true;
-  shellPass(D.d,{ name:pdfSafe([r.first,r.last].filter(Boolean).join(" ")), wing:pdfSafe(r.wing||""), stageLabel:CM.STAGES[r.stage].label,
-                  tipFor:tipPlan(D.pages,r.stage,r.first,PACKET_DATE,PACKET_VARIANT,t=>allowed(r,t)), anchorFor:anchorPlan(D.pages,r.stage), reminder:false });
-  D.pages.forEach((pg,i)=>{ if(NO_TIP.test(pg.kind)){ D.d.setPage(i+1); D.coachingFooter(); } });     // a page with no tip of its own carries the reminder
+  shellPass(D.d,{ name:pdfSafe([r.first,r.last].filter(Boolean).join(" ")), wing:pdfSafe(r.wing||"") });
   D.d.setPage(D.d.internal.getNumberOfPages());
 
   const stamp=PACKET_DATE;
@@ -12233,11 +12282,13 @@ function applyPureBW(d,o){
 
 /* =================================================================
    THE SHELL
-   Every page of every PDF carries the same three things, drawn after the last page is made so that no page
-   maker has to think about them: the resident's name, the date and the wing in a header; one clinical tip for
-   the person beside them; "Page X of Y" and the Cognicopia name in the foot. All of it is pure black, in the
-   top and bottom margins, inside the 0.5 in a printer cannot reach. The geometry is ClinicalMatrix.SHELL.
-   o: { name, wing, stageLabel, tipFor(pageNumber) -> "Clinical Tip: ..." or "" }
+   Every page of every PDF carries the same two things, drawn after the last page is made so that no page
+   maker has to think about them: the resident's name, the date and the wing in a header; "Page X of Y" and the
+   Cognicopia name in the foot. All of it is pure black, in the top and bottom margins, inside the 0.5 in a
+   printer cannot reach. The geometry is ClinicalMatrix.SHELL.
+   Nothing clinical is drawn on a page: the tip for each page and its therapy approach are kept by shellNotes()
+   and printed on the Staff Companion Sheet at the front of the packet (the print rule, cognicopia-print-engine).
+   o: { name, wing, date, pageInfo(pageNumber) -> { name, wing, date, brand } }
    ================================================================= */
 function shellPass(doc,o){
   const CM=window.CognicopiaClinicalMatrix, A=window.CognicopiaClinicalActivities, SH=CM.SHELL, n=doc.internal.getNumberOfPages();
@@ -12245,7 +12296,7 @@ function shellPass(doc,o){
   const date=o.date||PACKET_DATE||todayIso();
   const width=(t,size,bold)=>{ doc.setFont("helvetica",bold?"bold":"normal"); doc.setFontSize(size); return doc.getTextWidth(t); };
   for(let p=1;p<=n;p++){
-    const pi=Object.assign({name:o.name,wing:o.wing,stageLabel:o.stageLabel,tip:o.tipFor?o.tipFor(p):"",date},o.pageInfo?o.pageInfo(p):{});
+    const pi=Object.assign({name:o.name,wing:o.wing,date},o.pageInfo?o.pageInfo(p):{});
     const H=CM.headerParts({name:pi.name,date:pi.date,wing:pi.wing});
     let rightSize=SH.header.date;
     while(rightSize>10 && width(H.name||"Resident",SH.header.name,true)+24+width(H.right,rightSize,true)>R-L) rightSize-=0.5;
@@ -12257,30 +12308,48 @@ function shellPass(doc,o){
     doc.setFont("helvetica","bold"); doc.setFontSize(rightSize);
     doc.text(H.right,R,SH.header.y,{align:"right"});
     doc.setLineWidth(SH.header.rule); doc.line(L,SH.header.ruleY,R,SH.header.ruleY);
-    /* the tip; a page with none carries the coaching reminder (unless the caller draws it itself) */
-    const tip=pi.tip||(o.reminder===false?"":COACHING_REMINDER);
-    if(tip) A.tipLines(tip,(t,size,bold)=>width(t,size,bold)).forEach(ln=>{
-      doc.setFont("helvetica",ln.bold?"bold":"normal"); doc.setFontSize(SH.tip.size);
-      doc.text(ln.text,L+ln.x,SH.tip.y+dy+ln.row*SH.tip.lead);
-    });
     /* the foot */
     doc.setLineWidth(SH.footer.rule); doc.line(L,SH.footer.ruleY+dy,R,SH.footer.ruleY+dy);
     const brand=pi.brand||"Cognicopia";
     doc.setFont("helvetica","normal"); doc.setFontSize(SH.footer.size); doc.text(brand,L,SH.footer.y+dy);
-    /* the therapy anchor, "[Therapy: Reminiscence | GDS 5]", takes the right of the foot and the page number moves up beside the name;
-       a page with no anchor keeps the foot as it was (page centred, the stage at the right) */
-    let anchor=pi.anchor||(o.anchorFor?o.anchorFor(p):"");
-    if(anchor && width(anchor,SH.footer.size,true)>R-L-170) anchor=anchor.replace(/ \/ [^|]+?(?= \|)/,"");
-    if(anchor){
-      doc.setFont("helvetica","bold"); doc.setFontSize(SH.footer.page); doc.text("Page "+p+" of "+n,L+width(brand,SH.footer.size,false)+14,SH.footer.y+dy);
-      doc.setFont("helvetica","bold"); doc.setFontSize(SH.footer.size); doc.text(anchor,R,SH.footer.y+dy,{align:"right"});
-    } else {
-      doc.setFont("helvetica","bold"); doc.setFontSize(SH.footer.page); doc.text("Page "+p+" of "+n,(L+R)/2,SH.footer.y+dy,{align:"center"});
-      doc.setFont("helvetica","normal"); doc.setFontSize(SH.footer.size); doc.text(pi.stageLabel||"",R,SH.footer.y+dy,{align:"right"});
-    }
+    doc.setFont("helvetica","bold"); doc.setFontSize(SH.footer.page); doc.text("Page "+p+" of "+n,(L+R)/2,SH.footer.y+dy,{align:"center"});
   }
   doc.setPage(n);
   doc.setLineWidth(1); doc.setFont("helvetica","normal"); doc.setFontSize(12); doc.setTextColor(0,0,0);
+}
+/* What the shell used to print on each page, kept for the staff sheet instead: the tip and the therapy approach, by page number.
+   o: { tipFor(n), anchorFor(n), pageInfo(n) } as for shellPass. Returns [{ p, tip, anchor }] with the "Clinical Tip:" label dropped. */
+function shellNotes(n,o){
+  const out=[];
+  for(let p=1;p<=n;p++){
+    const pi=Object.assign({tip:o.tipFor?o.tipFor(p):""},o.pageInfo?o.pageInfo(p):{});
+    out.push({p,tip:String(pi.tip||"").replace(/^Clinical Tip:\s*/,""),anchor:pi.anchor||(o.anchorFor?o.anchorFor(p):"")});
+  }
+  return out;
+}
+/* The Staff Companion Sheet for a packet that is drawn straight onto a jsPDF document (the Quick packet): one page of rows, "Title: approach, then
+   the tip", added after the last page and moved to the front, so the resident's pages stay clean. rows: [{title, anchor, tip}] */
+function staffFrontSheet(doc,o){
+  const W=doc.internal.pageSize.getWidth(), H=doc.internal.pageSize.getHeight(), L=40, R=W-40, first=doc.internal.getNumberOfPages()+1;
+  let y=0;
+  const fresh=()=>{ doc.addPage([W,H],"portrait"); doc.setFillColor(255,255,255); doc.rect(0,0,W,H,"F"); doc.setTextColor(0,0,0); doc.setDrawColor(0,0,0); y=74; };
+  const put=(text,size,bold,indent)=>{
+    doc.setFont("helvetica",bold?"bold":"normal"); doc.setFontSize(size);
+    for(const ln of doc.splitTextToSize(String(text),R-L-(indent||0))){ if(y+size*1.4>H-60) fresh(); doc.text(ln,L+(indent||0),y); y+=size*1.4; }
+  };
+  fresh();
+  put("For Staff",32,true,0); y+=4;
+  put(o.intro||"This sheet is yours. Take it out before you hand the packet over.",16,false,0); y+=10;
+  put("Page by page",17,true,0); y+=4;
+  for(const r of o.rows){
+    if(y+80>H-60) fresh();
+    put(r.title+(r.anchor?"   "+r.anchor:""),16,true,0);
+    if(r.tip) put(r.tip,16,false,18);
+    y+=6;
+  }
+  const last=doc.internal.getNumberOfPages();
+  for(let i=0;first+i<=last;i++) doc.movePage(first+i,1+i);
+  doc.setPage(doc.internal.getNumberOfPages());
 }
 /* The therapy anchor for each page of a packet: "[Therapy: Reminiscence | GDS 5]", from the page's kind and the tier's GDS (ClinicalMatrix.js
    names the therapy for every kind it knows; a staff page, a cover or a kind it does not know has none). */
@@ -12291,7 +12360,6 @@ function anchorPlan(pages,stage){
 /* One tip for each resident page of a packet, none repeated, from the clinical frameworks in ClinicalMatrix.js.
    pages: [{kind, topic}] in page order; tips are for the person sitting beside the resident, so staff pages get none. */
 const NO_TIP=/^(cover|staff|key|notes|form|support)$/;
-const COACHING_REMINDER="Clinical Tip: Do not ask questions or test memory. Sit beside them, place the marker in their hand, and model slow, calm breathing.";
 function tipPlan(pages,stage,name,iso,variant,ok){
   const CM=window.CognicopiaClinicalMatrix, rng=CM.dailyRng(name,iso,variant,"tips"), list=[];
   pages.forEach((pg,i)=>{ if(!NO_TIP.test(pg.kind)) list.push({n:i+1,activity:pg.kind,topic:pg.topic}); });
@@ -18957,11 +19025,8 @@ function generateAilmentPDF(ailmentType, pick) {
     ailGuide(ctx, ailmentType);
     ctx.live = false;                                   // the shell sets its own (staff-sized) type
 
-    /* the shell: name, date and wing on top, a clinical tip on the resident's pages, "Page X of Y" */
-    const total = doc.internal.getNumberOfPages(), kinds = [];
-    for (let i = 0; i < total; i++) kinds.push({ kind: i === 0 ? "cover" : i < resident ? "any" : "staff", topic: "" });
-    shellPass(doc, { name: pdfSafe(name || ""), wing: pdfSafe(($("wing") || {}).value || ""), date: PACKET_DATE, stageLabel: cfg.label,
-                     tipFor: tipPlan(kinds, stage, name || "guest", PACKET_DATE, PACKET_VARIANT), anchorFor: anchorPlan(kinds, stage) });
+    /* the shell: name, date and wing on top, "Page X of Y" in the foot; the guide's pages after the condition pages are the staff's */
+    shellPass(doc, { name: pdfSafe(name || ""), wing: pdfSafe(($("wing") || {}).value || ""), date: PACKET_DATE });
 
     doc.setProperties({
       title: cfg.packetTitle + (name ? " for " + name : ""),
@@ -24436,11 +24501,16 @@ if (document.readyState === "complete" || document.readyState === "interactive")
       var r = fitAndPaint(k, painters[pg.kind], pg);
       return { kind:pg.kind, scale:r.scale, fits:r.fits };
     });
-    /* the shell: name, date and wing on top; a clinical tip; "Page X of Y" */
+    /* the shell: name, date and wing on top, "Page X of Y" in the foot */
     var unit = window.activeResident && window.activeResident.tier1_core ? String(window.activeResident.tier1_core.unitNumber || "") : "";
     var iso = todayIso(), kindOf = { cover:"cover", wordsearch:"wordsearch", cards:"talk", trivia:"complete" };
     var tipFn = tipPlan(pages.map(function(pg){ return { kind:kindOf[pg.kind] || "any", topic:"" }; }), stageQ, src.name || "guest", iso, dailyVariant(src.name || "guest"));
-    shellPass(doc, { name:safe(src.name || ""), wing:safe(unit), date:iso, stageLabel:SQ.label, tipFor:tipFn, anchorFor:anchorPlan(pages.map(function(pg){ return { kind:({ cover:"cover", wordsearch:"wordsearch", cards:"talk", trivia:"trivia" })[pg.kind] || "any", topic:"" }; }), stageQ) });
+    var quickNotes = shellNotes(pages.length, { tipFor:tipFn, anchorFor:anchorPlan(pages.map(function(pg){ return { kind:({ cover:"cover", wordsearch:"wordsearch", cards:"talk", trivia:"trivia" })[pg.kind] || "any", topic:"" }; }), stageQ) });
+    /* the tips and the therapy approach go on a Staff Companion Sheet at the front, so the resident's pages carry only the resident's content */
+    var titleOf = function(pg){ return (pg.sheet && pg.sheet.title) || ({ wordsearch:"Word Search", cards:"Conversation Cards", trivia:"Finish the Thought" })[pg.kind] || ""; };
+    staffFrontSheet(doc, { intro:"This sheet is yours. Take it out before you hand the packet over. Each page below is listed by its title, with what it is for and one tip for the person sitting beside the resident.",
+      rows:pages.map(function(pg, i){ return { title:titleOf(pg), anchor:quickNotes[i].anchor, tip:quickNotes[i].tip }; }).filter(function(x){ return x.title; }) });
+    shellPass(doc, { name:safe(src.name || ""), wing:safe(unit), date:iso });
     var name = fileName(src.name);
     if (opts.save !== false) doc.save(name);
     return { filename:name, pages:pages.length, layout:layout, doc:doc };
@@ -24865,7 +24935,7 @@ if (document.readyState === "complete" || document.readyState === "interactive")
       if (state.cancelled){ running = null; doc = null; resolve(null); return; }
       if (i >= roster.length){
         running = null;
-        shellPass(doc, { name:"", date:todayIso(), pageInfo:function(pn){ var pi = pageInfos[pn] || {}; return { name:P.safe(pi.name || ""), wing:P.safe(pi.wing || ""), stageLabel:pi.stageLabel || "", tip:pi.tip || "" }; } });
+        shellPass(doc, { name:"", date:todayIso(), pageInfo:function(pn){ var pi = pageInfos[pn] || {}; return { name:P.safe(pi.name || ""), wing:P.safe(pi.wing || "") }; } });
         var fname = "Cognicopia_Monthly_Bundle_" + MONTHS[month] + "_" + year + "_" + (roster.length === all.length ? "All_Residents" : roster.length + "_Residents") + ".pdf";
         if (opts.save !== false) doc.save(fname);
         resolve({ filename:fname, pages:pageNo, residents:roster.length, problems:problems, doc:doc });
@@ -25525,11 +25595,8 @@ if (document.readyState === "complete" || document.readyState === "interactive")
       paint(p.pages[i]);
     });
     live = false;                    // the shell sets its own sizes
-    /* the shell: name, date and wing at the top, a clinical tip for the person beside them, "Page X of 5" */
-    var kinds = [{ kind: "wordsearch" }, { kind: stage === "middle" ? "complete" : "talk" }, { kind: stage === "late" ? "sensory" : "cross" }, { kind: "color" }, { kind: "staff" }];
-    kinds.forEach(function(k, i){ k.topic = i === 4 || !p.focus || !p.focus.feature ? "" : String(p.focus.feature.name || "").toLowerCase(); });
-    shellPass(d, { name: safe(p.resident.name), wing: safe(field("wing")), date: p.date.iso, stageLabel: SX.label + (p.variant ? " · version " + (p.variant + 1) : ""),
-                   tipFor: tipPlan(kinds, stage, p.resident.name, p.date.iso, p.variant | 0) });
+    /* the shell: name, date and wing at the top, "Page X of 5" in the foot (page 5 is the staff page, which holds the tips) */
+    shellPass(d, { name: safe(p.resident.name), wing: safe(field("wing")), date: p.date.iso });
     d.setProperties({ title: "Today's Packet for " + p.resident.name + ", " + p.date.iso, subject: "Today's Packet", creator: "Cognicopia" });
     d.pcgInfo = info;
     return d;

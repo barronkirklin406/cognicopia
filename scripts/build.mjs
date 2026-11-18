@@ -343,6 +343,14 @@ step("Staff documents never count against the free packets: the Shift board's ha
   }
 });
 
+step("Page economy and the Staff Companion Sheet in the front-page packet, proved on real PDFs read back with PyMuPDF at every stage with every page ticked and with the default pages: page 1 is the Staff Companion Sheet and lists each page by its title with its tip and therapy approach; no resident page carries a clinical tip or therapy tag; no resident page is a \"(continued)\" page; every resident page is at least 60% full.", () => {
+  try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-packet-economy-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim().split("\n").pop(); }
+  catch (e){
+    if (e.status === 2) return "skipped: Playwright or PyMuPDF is not installed here (see docs/dev-setup.md)";
+    throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message);
+  }
+});
+
 step("One era rule for every tool (assets/services/eraWindow.js): a person's formative years are birth year + 7 to + 28. For made-up births from 1920 to 1965 the reminiscence engine, the Activity Page Studio (songs, the year they turned twenty, timeline events) and the packet tool's decade lists stay inside those years, and ration books never reach a resident born in 1946.", () => {
   try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-era-window.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim().split("\n").pop(); }
   catch (e){ throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message); }

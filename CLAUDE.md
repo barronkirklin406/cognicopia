@@ -67,7 +67,7 @@ The visual look, the three doors, the content rules and the print rules in the s
 | Era facts from the exact birth year, birth year + 7 to + 28 | Built (November 18, 2026): one module, `assets/services/eraWindow.js`, used by the reminiscence engine, the Studio, the Packet Builder's procedural engine and the packet tool (which still holds its decade lists, now chosen by the window and filtered so a dated event such as ration books reaches only a person whose years touch it). `scripts/check-era-window.mjs` proves it for births 1920 to 1965. The song list ends in the 1970s, so a person born after 1950 may be offered the nearest songs it has |
 | Honest thin-data headings (Quick packet); hand-under-hand; no default pronoun; faith (no hymns on a blank faith, hymns matched to the tradition); military only when welcome | Built (November 18, 2026) in the front-page packet tool and proved on PDFs by `scripts/check-clinical-rules-ui.mjs`; `check-claims` rejects "hand-over-hand". The main packet's own thin-data headings (Finish the Thought, My Life Story and similar) still have no fact-count branch |
 | Late-stage page list; claim rewrites | Measured by the playbook at commit `ff7a11d`: re-check each against `main` before relying on it |
-| Staff companion sheet at the front; no page under 60% full | Not built |
+| Staff companion sheet at the front; no page under 60% full | Built (November 18, 2026) in the front-page packet and its Quick packet; proved by `scripts/check-packet-economy-ui.mjs` (0 resident pages under 60%, 0 "(continued)" pages, 0 clinical tips). The Packet Builder's own HTML pages still draw the engine shell's tip |
 
 ## Working with the owner
 

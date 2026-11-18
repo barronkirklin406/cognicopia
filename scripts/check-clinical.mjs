@@ -251,7 +251,9 @@ ok(/Page \d+ of|numberSheets/.test(builder) && /enforceStrokeFloor/.test(builder
   if (m) [...m[1].matchAll(/(early|middle|late):\s*\{\s*size:(\d+)/g)].forEach(x => { sz[x[1]] = +x[2]; });
   ok(m && CM.STAGES.early.limits.wordsearch.sizes.indexOf(sz.early) >= 0 && sz.middle <= Math.max.apply(null, CM.STAGES.middle.limits.wordsearch.sizes) && sz.late <= Math.max.apply(null, CM.STAGES.late.limits.wordsearch.sizes), "index.html's word search sizes follow the matrix (" + JSON.stringify(sz) + ")");
   ok(/AIL_PAGE = \{ W: 612, H: 706,/.test(index), "the ailment packets end their pages above the clinical tip");
-  ok(/COACHING_REMINDER/.test(index) && /coachingFooter\(\)/.test(index), "a page with no tip of its own carries the coaching reminder");
+  /* Changed November 18, 2026 (the owner's print rule, cognicopia-print-engine): no clinical tip, therapy tag or coaching reminder is drawn on any page. The tips are kept by
+     shellNotes() and printed on the Staff Companion Sheet at the front of the packet. */
+  ok(!/COACHING_REMINDER/.test(index) && !/coachingFooter\(\)/.test(index) && /function shellNotes\(/.test(index) && /function staffFrontSheet\(/.test(index), "no page carries the coaching reminder: the tips are on the Staff Companion Sheet");
 }
 { // the packet tool lays the maze inside a frame shorter than a sheet (x 61, width 490, from y 193 under the heading down to y 700: the numbers the tool really passes at the early stage): at every stage and
   // vision level the page is made, with corridors of 40 pt or more, never left out ("the corridors would be under 40 pt wide")

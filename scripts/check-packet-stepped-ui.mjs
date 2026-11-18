@@ -32,8 +32,11 @@ try:
     import pymupdf as fitz
 except ImportError:
     import fitz
-doc = fitz.open(sys.argv[1]); out = {"pages": [p.get_text() for p in doc], "spans": [], "images": len(doc[0].get_image_info())}
-for b in doc[0].get_text("dict")["blocks"]:
+doc = fitz.open(sys.argv[1])
+# the picture that shows at once is the cover; since November 18, 2026 the Staff Companion Sheet is page 1 of the PDF and the cover is the first page that names the resident
+cover = next((i for i, p in enumerate(doc) if "PREPARED ESPECIALLY FOR" in p.get_text() or "MADE FOR:" in p.get_text()), 0)
+out = {"pages": [p.get_text() for p in doc], "spans": [], "images": len(doc[cover].get_image_info())}
+for b in doc[cover].get_text("dict")["blocks"]:
     for l in b.get("lines", []):
         for s in l["spans"]:
             if s["text"].strip(): out["spans"].append([s["text"].strip(), (s["bbox"][0] + s["bbox"][2]) / 2, s["origin"][1], s["size"]])
@@ -91,7 +94,7 @@ try {
   const svg = await p.evaluate(() => { const s = document.querySelector("#pkLiveSheet svg"); return s ? { texts: [...s.querySelectorAll("text")].map(t => [t.textContent, +t.getAttribute("x"), +t.getAttribute("y"), +t.getAttribute("font-size"), t.getAttribute("text-anchor")]), images: s.querySelectorAll("image").length, view: s.getAttribute("viewBox") } : null; });
   ok(svg && svg.view === "0 0 612 792" && svg.texts.length >= 4, `the picture is the sheet, 612 x 792 points, with ${svg ? svg.texts.length : 0} lines of text`);
   const miss = (svg ? svg.texts : []).filter(([s, x, y, fs]) => !A.spans.some(([t, cx, oy, sz]) => t === s.trim() && Math.abs(oy - y) <= 3 && Math.abs(sz - fs) <= 0.6 && Math.abs(cx - x) <= 3));
-  ok(svg && miss.length === 0, "every line of the picture is a line of the PDF's page 1, in the same place and size" + (miss.length ? ": " + miss.slice(0, 3).map(m => m[0]).join(" | ") : ""));
+  ok(svg && miss.length === 0, "every line of the picture is a line of the PDF's cover (its first page for the resident), in the same place and size" + (miss.length ? ": " + miss.slice(0, 3).map(m => m[0]).join(" | ") : ""));
   ok(svg && svg.texts.some(t => /Margaret/.test(t[0])) && svg.texts.some(t => /Maple House/.test(t[0])) && svg.images === A.images && A.images >= 1, `the name and the home are on it, and the same mark (${svg && svg.images} picture)`);
   await ctx.close();
 
