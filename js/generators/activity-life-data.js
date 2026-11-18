@@ -77,6 +77,39 @@
   var NORTH_DAKOTA = { sights: ["Grain elevators against the sky", "Wheat moving in the wind", "Sunflowers facing the sun", "Theodore Roosevelt National Park", "Lake Sakakawea"], tastes: ["Lefse", "Kuchen", "Knoephla soup", "Chokecherry jelly", "A hot dish at a potluck"] };
   var SOUTH_DAKOTA = { sights: ["Mount Rushmore", "The Badlands", "The Black Hills", "Grain elevators against the sky", "A rodeo in summer"], tastes: ["Kuchen", "Chokecherry jelly", "A hot dish at a potluck"] };
   D.STATE_BITS = { "north dakota": NORTH_DAKOTA, "nd": NORTH_DAKOTA, "south dakota": SOUTH_DAKOTA, "sd": SOUTH_DAKOTA };
+  /* the other states a facility is likely to meet: five sights and three tastes each, matched by the state written out or its two letters.
+     Only landmarks and foods that are well known and real; nothing that is a sorrow to some (a battlefield, a monument under dispute) is listed. */
+  [
+    ["Minnesota", "MN", ["Ten thousand lakes", "The north shore of Lake Superior", "Paul Bunyan and Babe the Blue Ox", "A cabin up north", "Ice fishing houses on a frozen lake"], ["A hot dish at a potluck", "Wild rice soup", "Walleye on Friday"]],
+    ["Montana", "MT", ["Glacier National Park", "Big Sky over the plains", "Cattle ranches in the valley", "The Missouri River", "Mountains rising from the prairie"], ["Huckleberry pie", "A pasty in Butte", "Trout from the stream"]],
+    ["Wisconsin", "WI", ["Dairy farms and red barns", "The Wisconsin Dells", "The Lake Michigan shore", "Cherry orchards in Door County", "A supper club on a Friday night"], ["Cheese curds", "Bratwurst at a picnic", "A fish fry on Friday"]],
+    ["Iowa", "IA", ["Fields of corn and soybeans", "The Iowa State Fair", "Red barns and silos", "The Mississippi River bluffs", "The covered bridges of Madison County"], ["Sweet corn on the cob", "A pork tenderloin sandwich", "Pie at the county fair"]],
+    ["Illinois", "IL", ["The Chicago skyline on the lake", "Lincoln's home in Springfield", "Route 66", "The Mississippi River", "Corn and soybean fields"], ["Deep dish pizza", "Sweet corn on the cob", "A Chicago-style hot dog"]],
+    ["Ohio", "OH", ["Lake Erie", "Cedar Point on the lake", "Amish farms and buggies", "Covered bridges", "A high school football game on Friday night"], ["Buckeye candy", "Cincinnati chili", "Sweet corn on the cob"]],
+    ["Michigan", "MI", ["The Great Lakes all around", "Mackinac Island", "The Sleeping Bear Dunes", "Cherry orchards", "The woods of the Upper Peninsula"], ["Cherry pie", "A pasty in the Upper Peninsula", "Whitefish from the lake"]],
+    ["Indiana", "IN", ["The Indianapolis 500", "Rolling cornfields", "Covered bridges", "The dunes on Lake Michigan", "A basketball hoop on the barn"], ["Sugar cream pie", "A pork tenderloin sandwich", "Sweet corn on the cob"]],
+    ["Nebraska", "NE", ["Chimney Rock on the Oregon Trail", "The Platte River and the sandhill cranes", "Cornfields and windmills", "The Sandhills", "Cornhusker football on a Saturday"], ["A Runza sandwich", "Sweet corn on the cob", "Steak off the grill"]],
+    ["Kansas", "KS", ["Fields of golden wheat", "The Flint Hills", "Windmills on the prairie", "Sunflowers along the road", "A grain elevator on the horizon"], ["Fried chicken on Sunday", "Cinnamon rolls", "Barbecue"]],
+    ["Missouri", "MO", ["The Gateway Arch in St. Louis", "The Mississippi and Missouri Rivers", "The Lake of the Ozarks", "Mark Twain's Hannibal", "The fountains of Kansas City"], ["Barbecue ribs", "Toasted ravioli", "Gooey butter cake"]],
+    ["Wyoming", "WY", ["Old Faithful at Yellowstone", "The Grand Tetons", "Cowboys and rodeos", "Devils Tower", "Sagebrush and a wide sky"], ["A buffalo burger", "Trout from the stream", "Sourdough biscuits"]],
+    ["Colorado", "CO", ["The Rocky Mountains", "Pikes Peak", "Aspen trees turning gold", "Red Rocks", "A mountain town in the snow"], ["Palisade peaches", "Green chile on a burger", "Trout from the stream"]],
+    ["Idaho", "ID", ["Potato fields", "The Sawtooth Mountains", "Lake Coeur d'Alene", "The Snake River canyon", "A hot spring in the hills"], ["A baked potato", "Huckleberry jam", "Trout from the stream"]],
+    ["Utah", "UT", ["Red rock arches", "The Great Salt Lake", "The Wasatch Mountains", "Zion Canyon", "Snow on the ski slopes"], ["Scones with butter and jam", "Fresh peaches", "A potluck casserole"]],
+    ["Nevada", "NV", ["The Hoover Dam", "Lake Tahoe", "Desert and sagebrush", "Red Rock Canyon", "The lights of Las Vegas at night"], ["A steak dinner", "Basque lamb stew", "A coffee shop breakfast"]],
+    ["Arizona", "AZ", ["The Grand Canyon", "Saguaro cactus", "Monument Valley", "The Painted Desert", "A desert sunset"], ["Fry bread", "Warm tortillas", "Prickly pear lemonade"]],
+    ["New Mexico", "NM", ["Adobe houses", "Hot air balloons over Albuquerque", "Red chile ristras by the door", "Carlsbad Caverns", "The Sandia Mountains at sunset"], ["Green chile stew", "Sopaipillas hot from the fryer", "Biscochitos at Christmas"]],
+    ["Pennsylvania", "PA", ["The Liberty Bell in Philadelphia", "Amish farms and buggies", "The Pocono Mountains", "The bridges and rivers of Pittsburgh", "The chocolate town of Hershey"], ["A soft pretzel", "A Philly cheesesteak", "Shoofly pie"]],
+    ["New York", "NY", ["The Statue of Liberty", "Niagara Falls", "The Adirondack Mountains", "The Empire State Building", "Apple orchards upstate"], ["A slice of New York pizza", "A bagel with cream cheese", "Apple pie"]],
+    ["Texas", "TX", ["Bluebonnets in the spring", "The Alamo", "Cattle ranches and windmills", "A big Texas sky", "A Friday night football game"], ["Barbecue brisket", "Enchiladas", "Pecan pie"]],
+    ["California", "CA", ["The Golden Gate Bridge", "Redwood trees", "Orange groves", "The Pacific coast highway", "Yosemite's granite cliffs"], ["Oranges off the tree", "Fresh avocados", "Sourdough bread"]],
+    ["Florida", "FL", ["Orange groves", "White sand beaches", "The Everglades", "Palm trees in the breeze", "A pier at sunset"], ["Key lime pie", "Fresh oranges", "A grouper sandwich"]],
+    ["Washington", "WA", ["Mount Rainier", "The ferries on Puget Sound", "Apple orchards in the east", "Evergreen forests", "The Space Needle"], ["Fresh salmon", "Washington apples", "Blackberry pie"]],
+    ["Oregon", "OR", ["The Oregon coast", "Crater Lake", "Mount Hood", "The Columbia River Gorge", "Evergreen forests in the rain"], ["Marionberry pie", "Fresh salmon", "Hazelnuts"]],
+    ["Virginia", "VA", ["The Blue Ridge Parkway", "Colonial Williamsburg", "Monticello", "The Chesapeake Bay", "The Shenandoah Valley"], ["A Virginia ham biscuit", "Peanuts", "Apple pie"]],
+    ["North Carolina", "NC", ["The Blue Ridge Mountains", "The lighthouses of the Outer Banks", "Kitty Hawk, where the Wright brothers flew", "The Great Smoky Mountains", "A rocking chair on the front porch"], ["Barbecue", "Sweet tea", "Sweet potato pie"]],
+    ["Georgia", "GA", ["Peach orchards", "The oak-lined squares of Savannah", "The Okefenokee swamp", "Pecan groves", "A wide front porch"], ["Peach cobbler", "Pecan pie", "Fried chicken and biscuits"]],
+    ["Massachusetts", "MA", ["Boston Harbor", "The beaches of Cape Cod", "Fenway Park", "A white steeple on the green", "Fall leaves in the Berkshires"], ["Clam chowder", "Boston cream pie", "Baked beans"]]
+  ].forEach(function(st){ var bits = { sights: st[2], tastes: st[3] }; D.STATE_BITS[st[0].toLowerCase()] = bits; D.STATE_BITS[st[1].toLowerCase()] = bits; });
   /* when the region is not known, or is outside these: any place a person grew up */
   D.ANYWHERE = { sights: ["The main street of town", "The house you grew up in", "The school yard", "A favorite place outdoors", "The view from the kitchen window"], tastes: ["Sunday dinner", "Something from the garden", "A treat from the bakery"] };
   /* the states and provinces of each region, for a hometown written as "Scobey, Montana" (two-letter codes too) */

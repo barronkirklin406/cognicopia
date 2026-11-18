@@ -187,12 +187,12 @@ ok(JSON.stringify(gen(dot(1), "hometown", 3, 4).sheets) === JSON.stringify(gen(d
   for (const v of VOC) ok(gen(Object.assign(dot(1), { vocation: v }), "mytrade", 2).sheets.every(sh => sh.title === "My work: " + D.TRADES[v].place && sh.personal), `${v}: the work page is about ${D.TRADES[v].place}`);
   const g = all(Object.assign(dot(1), { vocation: "" }), "mytrade", 1);
   ok(/My work/.test(g) && !/classroom|Chalk/.test(g), "with no work chosen the page asks about a working life and names no trade"); }
-/* where I come from */
-{ const r = gen(dot(1), "hometown", 2), sights = D.REGIONS["mountain-west"].sights, tastes = D.REGIONS["mountain-west"].tastes;
+/* where I come from (Montana has its own list since November 18, 2026, so the test reads the state's list, not the Mountain West's) */
+{ const r = gen(dot(1), "hometown", 2), sights = D.STATE_BITS.montana.sights, tastes = D.STATE_BITS.montana.tastes;
   ok(r.sheets[0].title === "Scobey" && /Tell me about Scobey\./.test(said(r.sheets[0])), "her hometown page is titled with the town and asks about it by name");
-  ok(r.sheets[0].blocks.find(b => b.kind === "choices").options.every(o => sights.includes(o)) && r.sheets[1].blocks.find(b => b.kind === "choices").options.every(o => tastes.includes(o)), "its choices are the sights, then the tastes, of the Mountain West");
+  ok(r.sheets[0].blocks.find(b => b.kind === "choices").options.every(o => sights.includes(o)) && r.sheets[1].blocks.find(b => b.kind === "choices").options.every(o => tastes.includes(o)), "its choices are the sights, then the tastes, of Montana");
   ok(gen(dot(1, "steady", { place: "Scobey, MT" }), "hometown", 1).sheets[0].blocks.find(b => b.kind === "choices").options.every(o => sights.includes(o)), "a state written as two letters places the town the same way");
-  ok(gen(dot(1, "steady", { place: "Duluth, Minnesota" }), "hometown", 1).sheets[0].blocks.find(b => b.kind === "choices").options.every(o => D.REGIONS.midwest.sights.includes(o)), "a town in Minnesota gets the Midwest's sights");
+  ok(gen(dot(1, "steady", { place: "Duluth, Minnesota" }), "hometown", 1).sheets[0].blocks.find(b => b.kind === "choices").options.every(o => D.STATE_BITS.minnesota.sights.includes(o)), "a town in Minnesota gets Minnesota's own sights");
   const n = gen(nobody(1), "hometown", 1).sheets[0];
   ok(n.title === "Where I come from" && n.personal === false && n.blocks.find(b => b.kind === "choices").options.every(o => D.ANYWHERE.sights.includes(o)), "with no hometown the page asks about the place they grew up and offers what any hometown has");
   ok(gen(dot(3), "hometown", 1).sheets[0].blocks.find(b => b.kind === "choices").options.length === 2, "the late stage offers two choices"); }
@@ -206,9 +206,24 @@ ok(JSON.stringify(gen(dot(1), "hometown", 3, 4).sheets) === JSON.stringify(gen(d
     ok(!o.some(x => /Rushmore|Badlands|Black Hills/.test(x)), `${place}: no South Dakota landmark is offered`); }
   ok(opts("Velva, North Dakota").some(x => nd.sights.includes(x)) && opts("Velva, North Dakota").some(x => nd.tastes.includes(x)), "a North Dakota page offers its sights and, on the next page, its tastes");
   ok(opts("Rapid City, South Dakota").some(x => x === "Mount Rushmore") || opts("Rapid City, SD", 1, 8).some(x => x === "Mount Rushmore"), "a South Dakota page still offers Mount Rushmore");
-  const ks = opts("Wichita, Kansas"), allPl = pl.sights.concat(pl.tastes);
-  ok(ks.length >= 12 && ks.every(x => allPl.includes(x)) && !ks.some(x => /Rushmore|Badlands/.test(x)), "another plains state gets only the shared plains list");
+  /* Kansas has its own list since November 18, 2026 (the owner's rule that a state never borrows its region's landmark), so the shared list is proved with a plains state that has none */
+  const ks = opts("Tulsa, Oklahoma"), allPl = pl.sights.concat(pl.tastes);
+  ok(ks.length >= 12 && ks.every(x => allPl.includes(x)) && !ks.some(x => /Rushmore|Badlands/.test(x)), "a plains state without its own list gets only the shared plains list");
   ok(opts("Velva, North Dakota", 3, 2).length === 4, "the late stage still offers two choices on a North Dakota page"); }
+/* every state a facility is likely to meet has its own sights, so an Ohio resident is never offered the Gateway Arch and a Montana resident never Old Faithful */
+{ const opts = (place, count = 4) => gen(dot(1, "steady", { place }), "hometown", count).sheets.flatMap(sh => sh.blocks.find(b => b.kind === "choices").options);
+  const NAMES = { MN: "Minnesota", MT: "Montana", WI: "Wisconsin", IA: "Iowa", IL: "Illinois", OH: "Ohio", MI: "Michigan", IN: "Indiana", NE: "Nebraska", KS: "Kansas", MO: "Missouri", WY: "Wyoming", CO: "Colorado", ID: "Idaho", UT: "Utah", NV: "Nevada", AZ: "Arizona", NM: "New Mexico", PA: "Pennsylvania", NY: "New York", TX: "Texas", CA: "California", FL: "Florida", WA: "Washington", OR: "Oregon", VA: "Virginia", NC: "North Carolina", GA: "Georgia", MA: "Massachusetts" };
+  for (const [code, name] of Object.entries(NAMES)) {
+    const b = D.STATE_BITS[name.toLowerCase()];
+    ok(b && D.STATE_BITS[code.toLowerCase()] === b && b.sights.length === 5 && b.tastes.length === 3 && new Set(b.sights.concat(b.tastes)).size === 8, `${name}: its own five sights and three tastes, found by name and by ${code}`);
+    for (const place of [`Springfield, ${name}`, `Springfield, ${code}`, `Springfield, ${code.toLowerCase()}.`]) {
+      const o = opts(place, 2), all = b.sights.concat(b.tastes);
+      ok(o.length >= 6 && o.every(x => all.includes(x)), `${place}: every choice is ${name}'s own`); }
+  }
+  const oh = opts("Dayton, Ohio", 4), mt = opts("Billings, MT", 4);
+  ok(!oh.includes("The Gateway Arch") && !mt.includes("Old Faithful at Yellowstone"), "Ohio is never offered the Gateway Arch and Montana never Old Faithful");
+  ok(opts("Billings MT", 2).every(x => D.STATE_BITS.mt.sights.concat(D.STATE_BITS.mt.tastes).includes(x)), "a hometown written without a comma (\"Billings MT\") still finds its state");
+  ok(opts("Somewhere, Nowhereland", 1).length >= 3 && opts("Somewhere, Nowhereland", 1).every(x => D.ANYWHERE.sights.concat(D.ANYWHERE.tastes).includes(x)), "an unknown place gets the neutral hometown scenes, never a landmark of one state"); }
 /* songs of my years */
 { const r = gen(dot(1), "songs", 4), items = r.sheets.flatMap(sh => (sh.blocks.find(b => b.kind === "list") || { items: [] }).items);
   ok(r.sheets[0].subtitle === "1953 to 1963" && items.length >= 8, `her songs are from 1953 to 1963 (${r.sheets[0].subtitle}, ${items.length} listed)`);

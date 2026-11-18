@@ -175,16 +175,25 @@
   }
 
   /* ---------- 5. where I come from ---------- */
+  /* the state a hometown names, lower case, as "Scobey, Montana", "Scobey, MT." or "Scobey MT" write it; "" when none is named */
+  function stateOf(w) {
+    var st = String(w.hometown.state || "").toLowerCase().replace(/[^a-z ]/g, " ").replace(/\s+/g, " ").trim();
+    if (!st && w.hometown.place) {
+      var words = String(w.hometown.place).toLowerCase().replace(/[^a-z ]/g, " ").replace(/\s+/g, " ").trim().split(" ");
+      for (var n = Math.min(2, words.length - 1); n >= 1 && !st; n--) { var tail = words.slice(-n).join(" "); if (D.STATE_BITS[tail]) st = tail; }
+    }
+    return st;
+  }
   function regionOf(w) {
     if (D.REGIONS[w.hometown.regionCode]) return w.hometown.regionCode;
-    var st = String(w.hometown.state || "").trim().toLowerCase(), code = "";
+    var st = stateOf(w), code = "";
     if (st) Object.keys(D.STATES).forEach(function (c) { if (!code && D.STATES[c].some(function (x) { return x.toLowerCase() === st; })) code = c; });
     if (!code && root.CogniReminiscence && w.hometown.place) { try { var p = root.CogniReminiscence.placeOf(w.hometown.place); if (p && p.region && D.REGIONS[p.region.code]) code = p.region.code; } catch (e) { /* the place stays unplaced */ } }
     return code;
   }
   function hometownSheets(P, r, count) {
     var w = who(P), town = w.hometown.town && ok(w.hometown.town, P) ? w.hometown.town : "", code = regionOf(w), out = [];
-    var bits = D.STATE_BITS[String(w.hometown.state || "").trim().toLowerCase()] || D.REGIONS[code] || D.ANYWHERE;   // a state's own sights first, then its region's
+    var bits = D.STATE_BITS[stateOf(w)] || D.REGIONS[code] || D.ANYWHERE;   // a state's own sights first, then its region's
     var sights = K.shuffle(keep(bits.sights, P), r), tastes = K.shuffle(keep(bits.tastes, P), r), talk = K.shuffle(keep(D.HOME_TALK, P), r), n = P.stage === 3 ? 2 : amount(P, 4, 4);
     for (var s = 0; s < count; s++) {
       var food = s % 2 === 1 && tastes.length >= 2, options = take(rotate(food ? tastes : sights, s), n);
