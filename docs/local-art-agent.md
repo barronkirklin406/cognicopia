@@ -71,10 +71,10 @@ After a run with masters in the inbox: `npm run coloring:ingest`, then `npm run 
 
 ## The library today
 
-`npm run art:library` measured the library on October 15, 2026:
+`npm run art:library` measured the library on November 18, 2026:
 
 - 150 designs, 450 pages (three tiers each).
-- 141 meet every measured print standard. The other 9 have a subject filling less than 45% of the page, because they are tall, narrow or spread-out subjects: apple branch, pumpkin patch, tea for two, baking day, grandfather clock, milk bottles, butter churn, chickadee on a pine, seashells. They are the first ones to remake.
+- All 150 meet every measured print standard (`scripts/check-local-art.mjs` fails if any does not). Nine had a subject filling under 45% of the page; the last five (apple branch, pumpkin patch, tea for two, baking day, butter churn) were redrawn so the subject fills its box, and the other four (grandfather clock, milk bottles, chickadee on a pine, seashells) were fixed earlier.
 - 34 are exact geometric patterns (quilts, mandalas, tiles), kept as drawn.
 - 116 can be upgraded with a picture engine.
 
