@@ -11,7 +11,7 @@
      whoswho      Who's who: a frame, a name and how they are related, for the people who are living
      mytrade      My work: the tools of their trade and what each is for
      hometown     Where I come from: the town by name, and the sights and tastes of its region
-     songs        Songs of my years: title, artist and year from the years they were 15 to 25
+     songs        Songs of my years: title, artist and year from the years they were 7 to 28
      twenty       The year I turned twenty: what was new, and the sayings of the day
      thennow      Then and now: the old thing and what does its job today
      myday        My day: the steps of a morning and an evening
@@ -209,7 +209,8 @@
 
   /* ---------- 6. songs of my years ---------- */
   function songsFor(P) {
-    var w = who(P), born = P.born || w.born, from = born ? born + 15 : P.decade, to = born ? born + 25 : P.decade + 9;
+    var w = who(P), born = P.born || w.born, W = root.CogniEra && born ? root.CogniEra.windowFor(born) : null;
+    var from = W ? W.from : born ? born + 7 : P.decade, to = W ? W.to : born ? born + 28 : P.decade + 9;   // the years they were 7 to 28
     var all = ((root.CogniReminiscence && root.CogniReminiscence.SONGS) || []).concat(D.SONGS).filter(function (s) {
       return s.year > 1900 && ok(s.title + " " + s.artist, P) && !(s.avoid || []).some(function (c) { return topicAvoided(c, P); });
     });
@@ -231,7 +232,7 @@
         : sheet("songs", "Songs of my years", span, [
             { kind: "list", label: "Tick the ones you would like to hear", items: mine.map(line) },
             { kind: "starters", items: take(rotate(["A song I never tire of is", "A song we danced to was", "The radio was always tuned to"], s), 1) }],
-            "songs from the years the resident was 15 to 25, when music tends to stay with a person. Play one if you can. Titles, artists and years are printed; a song's words are not, because these songs are still in copyright.", { personal: !!(P.born || who(P).born) }));
+            "songs from the years the resident was young, when music tends to stay with a person. Play one if you can. Titles, artists and years are printed; a song's words are not, because these songs are still in copyright.", { personal: !!(P.born || who(P).born) }));
     }
     return out;
   }
@@ -239,7 +240,8 @@
   /* ---------- 7. the year I turned twenty ---------- */
   function twentySheets(P, r, count) {
     var w = who(P), born = P.born || w.born, year = born ? born + 20 : P.decade + 5, decade = Math.max(1940, Math.min(1980, Math.floor(year / 10) * 10)), out = [];
-    var EV = (E.PUBLIC_DOMAIN && E.PUBLIC_DOMAIN.events) || [], near = function (pad) { return EV.filter(function (e) { return Math.abs(e.y - year) <= pad && ok(e.t, P); }); };
+    var W = root.CogniEra && born ? root.CogniEra.windowFor(born) : null;   // widening never goes past the years they were 7 to 28
+    var EV = (E.PUBLIC_DOMAIN && E.PUBLIC_DOMAIN.events) || [], near = function (pad) { return EV.filter(function (e) { return Math.abs(e.y - year) <= pad && (!W || (e.y >= W.from && e.y <= W.to)) && ok(e.t, P); }); };
     var events = near(3); if (events.length < 3) events = near(6); if (events.length < 3) events = near(10);
     events = events.slice().sort(function (a, b) { return a.y - b.y; });
     var says = K.shuffle(keep(D.SAYINGS[decade] || [], P), r), nE = amount(P, 4, 3), nS = amount(P, 4, 3);

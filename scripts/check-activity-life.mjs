@@ -10,7 +10,7 @@
                 pages are made, pass the page rules (3:4, black and white, type floors, 32 pt titles, no empty band,
                 nothing too full), stay calm by the facility validator's measure, and carry a note for staff
      personal   a made-up resident's pages say what her profile says: her birth year and town, her work, her family by
-                generation, the songs of the years she was 15 to 25, the year she turned twenty, the sights of her
+                generation, the songs of the years she was 7 to 28, the year she turned twenty, the sights of her
                 region; someone who has passed away is not on the visitor's page; a person the profile says to leave
                 out is left out everywhere
      no guess   with no profile the same pages still work, with room to write, and claim nothing about the person
@@ -27,7 +27,7 @@ import { fileURLToPath } from "url";
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
 const read = f => fs.readFileSync(path.join(ROOT, f), "utf8");
 const ctx = vm.createContext({ console }); ctx.globalThis = ctx; ctx.window = ctx;
-const FILES = ["assets/coloring/subjects.bundle.js", "src/services/ColoringManifest.js", "src/engine/ColoringEngine.js", "src/engine/DescribeCreate.js", "assets/services/reminiscenceEngine.js", "js/residentContext.js",
+const FILES = ["assets/coloring/subjects.bundle.js", "src/services/ColoringManifest.js", "src/engine/ColoringEngine.js", "src/engine/DescribeCreate.js", "assets/services/eraWindow.js", "assets/services/reminiscenceEngine.js", "js/residentContext.js",
   "js/generators/activity-engine.js", "js/generators/coloring-pipeline.js", "js/generators/activity-modules.js", "js/generators/activity-pages.js", "js/generators/activity-life-data.js", "js/generators/activity-life.js", "js/utils/facility-validator.js"];
 for (const f of FILES) vm.runInContext(read(f), ctx, { filename: f });
 const E = ctx.CognicopiaActivityEngine, PL = ctx.CognicopiaColoringPipeline, FV = ctx.CognicopiaFacilityValidator, R = ctx.CogniResident, D = ctx.CognicopiaLifeData, RE = ctx.CogniReminiscence, M = ctx.CognicopiaColoringManifest;
@@ -226,9 +226,9 @@ ok(JSON.stringify(gen(dot(1), "hometown", 3, 4).sheets) === JSON.stringify(gen(d
   ok(opts("Somewhere, Nowhereland", 1).length >= 3 && opts("Somewhere, Nowhereland", 1).every(x => D.ANYWHERE.sights.concat(D.ANYWHERE.tastes).includes(x)), "an unknown place gets the neutral hometown scenes, never a landmark of one state"); }
 /* songs of my years */
 { const r = gen(dot(1), "songs", 4), items = r.sheets.flatMap(sh => (sh.blocks.find(b => b.kind === "list") || { items: [] }).items);
-  ok(r.sheets[0].subtitle === "1953 to 1963" && items.length >= 8, `her songs are from 1953 to 1963 (${r.sheets[0].subtitle}, ${items.length} listed)`);
+  ok(r.sheets[0].subtitle === "1945 to 1966" && items.length >= 8, `her songs are from 1945 to 1966, the years she was 7 to 28 (${r.sheets[0].subtitle}, ${items.length} listed)`);
   ok(items.every(x => /^.+, .+ \((19\d\d)\)$/.test(x)), "each is a title, an artist and a year");
-  ok(items.every(x => { const y = Number(/\((\d{4})\)$/.exec(x)[1]); return y >= 1949 && y <= 1967; }), "and each year is one she was young in");
+  ok(items.every(x => { const y = Number(/\((\d{4})\)$/.exec(x)[1]); return y >= 1945 && y <= 1966; }), "and each year is one she was young in");
   ok(/Patsy Cline/.test(r.sheets[0].blocks.find(b => b.kind === "list").items[0]), `a favorite artist from her profile leads the list (${r.sheets[0].blocks.find(b => b.kind === "list").items[0]})`);
   const late = gen(dot(3), "songs", 2).sheets[0];
   ok(late.blocks.length === 1 && late.blocks[0].kind === "prompt" && /Let's listen together/.test(late.blocks[0].sub), "the late stage is one song, to listen to together");

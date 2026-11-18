@@ -343,6 +343,11 @@ step("Staff documents never count against the free packets: the Shift board's ha
   }
 });
 
+step("One era rule for every tool (assets/services/eraWindow.js): a person's formative years are birth year + 7 to + 28. For made-up births from 1920 to 1965 the reminiscence engine, the Activity Page Studio (songs, the year they turned twenty, timeline events) and the packet tool's decade lists stay inside those years, and ration books never reach a resident born in 1946.", () => {
+  try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-era-window.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim().split("\n").pop(); }
+  catch (e){ throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message); }
+});
+
 step("The packet tool's clinical content rules, proved on real PDFs read back with PyMuPDF (made-up people only): the pronoun box starts blank and a blank never says her, his or him; military questions print only when military service is a welcome topic; a blank faith prints no hymns, a Catholic only hymns that suit, a Jewish resident none of the Christian hymns; the Quick packet's headings are neutral under 3 known facts; the staff sheet counts the facts known out of 8 and asks the family about work, hometown and one joy.", () => {
   try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-clinical-rules-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
   catch (e){

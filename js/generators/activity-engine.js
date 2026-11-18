@@ -246,10 +246,10 @@
       personal: split(p.personal).map(function (x) { return x.replace(/[^a-z]/g, ""); }).filter(function (x, i, a) { return x.length >= 3 && x.length <= 10 && a.indexOf(x) === i; }).slice(0, 8)
     };
   }
-  /* the decade a person was about twenty in: their reminiscence years */
+  /* the decade at the middle of the years a person was 7 to 28 (assets/services/eraWindow.js): their reminiscence years */
   function decadeFor(born) {
     if (!born || born < 1900 || born > 2010) return 1950;
-    var d = Math.floor((born + 20) / 10) * 10;
+    var d = Math.floor((born + 17) / 10) * 10;
     return Math.max(1940, Math.min(1980, d));
   }
   /* The words to keep off a page. With the shared resident reader on the page (js/residentContext.js) a topic's name, such as
