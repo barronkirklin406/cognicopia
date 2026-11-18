@@ -120,7 +120,7 @@ function goals(body, m) {
         G.saveEntry(deps.store, S.res, { instrument: S.inst, date: body.querySelector("#gDate").value, total: tot === "" ? null : { got: Number(tot) }, domains: dom, minutes: body.querySelector("#gMin").value || null, codes, goals: gl });
         S.parsed = null; S.note = ""; S.msg = "Saved. The note's words were not kept."; draw();
       } catch (x) { err.textContent = x.message; }
-    } else if (b.id === "gPrint") { const p = people().find((q) => q.id === S.res); deps.print([{ html: G.summaryPage({ who: p ? nameOf(p) : "Resident", facility: deps.facility ? deps.facility() : "", log: G.readLog(deps.store, S.res), instrument: S.inst }) }], "Therapy goal summary - " + (p ? nameOf(p) : "resident") + " - " + iso()); }
+    } else if (b.id === "gPrint") { const p = people().find((q) => q.id === S.res); deps.print([{ html: G.summaryPage({ who: p ? nameOf(p) : "Resident", facility: deps.facility ? deps.facility() : "", log: G.readLog(deps.store, S.res), instrument: S.inst }) }], "Therapy goal summary - " + (p ? nameOf(p) : "resident") + " - " + iso(), { staff: true }); }
   });
   draw();
 }
@@ -136,7 +136,7 @@ function highlights(body, m) {
     body.innerHTML = `<div class="st-form"><div class="ft-grid"><label>Day<input type="date" id="hDay" value="${H(S.day)}"></label><label>Shift<select id="hShift"><option value="all">All shifts</option>${["day", "evening", "night"].map((s) => `<option value="${s}"${S.shift === s ? " selected" : ""}>${H(D() ? D().shiftLabel(s) : s)}</option>`).join("")}</select></label></div><div class="actions"><button class="btn btn-primary" type="button" id="hPrint">Print the one-page highlights</button></div></div><div class="ft-sheet" aria-label="Preview of the printed page">${sheet}</div>`;
   };
   on(m, body, "change", (e) => { if (e.target.id === "hDay" && /^\d{4}-\d{2}-\d{2}$/.test(e.target.value)) S.day = e.target.value; if (e.target.id === "hShift") S.shift = e.target.value; draw(); });
-  on(m, body, "click", (e) => { if (e.target.closest("#hPrint")) deps.print([{ html: HL.page(model(), { facility: deps.facility ? deps.facility() : "", wing: deps.activeWing ? deps.activeWing() : "", initials: deps.initials ? deps.initials() : "" }) }], "Shift highlights - " + S.day + " - " + S.shift); });
+  on(m, body, "click", (e) => { if (e.target.closest("#hPrint")) deps.print([{ html: HL.page(model(), { facility: deps.facility ? deps.facility() : "", wing: deps.activeWing ? deps.activeWing() : "", initials: deps.initials ? deps.initials() : "" }) }], "Shift highlights - " + S.day + " - " + S.shift, { staff: true }); });
   draw();
 }
 
@@ -169,8 +169,8 @@ function scenarios(body, m) {
     else if (b.id === "scNext") { S.fb = null; draw(); }
     else if (b.id === "scBack") { S.run = null; S.fb = null; S.result = null; draw(); }
     else if (b.id === "scSave") { try { S.result = T.complete(deps.store, { name: S.name, role: S.role }, S.run); S.msg = ""; } catch (x) { S.msg = x.message; } draw(); }
-    else if (b.id === "scCert") deps.print([{ html: T.certificatePage(S.result, { facility: deps.facility ? deps.facility() : "" }) }], "Certificate - " + S.name + " - " + S.result.scenario);
-    else if (b.id === "scSeries") deps.print([{ html: T.seriesPage(S.name, rec(), { facility: deps.facility ? deps.facility() : "" }) }], "Series certificate - " + S.name);
+    else if (b.id === "scCert") deps.print([{ html: T.certificatePage(S.result, { facility: deps.facility ? deps.facility() : "" }) }], "Certificate - " + S.name + " - " + S.result.scenario, { staff: true });
+    else if (b.id === "scSeries") deps.print([{ html: T.seriesPage(S.name, rec(), { facility: deps.facility ? deps.facility() : "" }) }], "Series certificate - " + S.name, { staff: true });
     else if (b.id === "scCheckGo") { const f = T.find(rec(), body.querySelector("#scCheck").value), out = body.querySelector("#scCheckOut"); out.textContent = f ? "Found: " + f.learner + ", " + (T.scenarioOf(f.scenario) || {}).title + ", " + f.at.slice(0, 10) + "." : "No certificate with that ID is on this computer."; }
   });
   draw();

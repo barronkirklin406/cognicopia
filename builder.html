@@ -5788,18 +5788,20 @@ const BookUI = (function(){
     document.title = fileTitle;           // the browser's default PDF file name
     return over;
   }
-  /* Print, after the free-packet check. Each print uses one free packet. */
+  /* Print, after the free-packet check. Each packet print uses one free packet. A staff document (opts.staff: a handoff, a note, a summary, a
+     certificate, a worksheet) is not a packet: it never waits on the free-packet check and never spends one (the owner's decision, November 18, 2026). */
   function print(pages, fileTitle, after, opts){
     if (!pages.length) return false;
-    if (!isLicensed() && genCount() >= FREE_RUNS){ openGate(); return false; }
+    const staff = !!(opts && opts.staff);
+    if (!staff && !isLicensed() && genCount() >= FREE_RUNS){ openGate(); return false; }
     const go = () => { stage(pages, fileTitle, opts); if (window.CogniAccessLog) window.CogniAccessLog.append("print", { note: pages.length + (pages.length === 1 ? " page" : " pages") }); window.print(); };
     if (fontsLoaded()) go(); else loadFonts().then(go);
-    if (!isLicensed()) bumpGen();
+    if (!staff && !isLicensed()) bumpGen();
     if (after) after();
     return true;
   }
   function allowanceText(){
-    return isLicensed() ? "Licensed: unlimited printing." : Math.max(0, FREE_RUNS - genCount()) + " of " + FREE_RUNS + " free packets left. Each print uses one.";
+    return isLicensed() ? "Licensed: unlimited printing." : Math.max(0, FREE_RUNS - genCount()) + " of " + FREE_RUNS + " free packets left. Each packet print uses one; staff documents do not.";
   }
 
   /* The spread preview: two page thumbnails, side by side (stacked on phones). */
@@ -7561,7 +7563,7 @@ const StaffCompanionUI = (function(){
   function print(items){
     if (!items || !items.length){ toast("Add at least one page to the packet first."); return; }
     const p = ActiveResident.profile();
-    BookUI.print(pagesFor(items), ["Staff companion", p ? cgFileName(p) : "packet", todayISO()].join(" - "), null);
+    BookUI.print(pagesFor(items), ["Staff companion", p ? cgFileName(p) : "packet", todayISO()].join(" - "), null, { staff:true });
   }
   return { pagesFor, print, inputFor };
 })();
@@ -9248,7 +9250,7 @@ const ClinicalUI = (function(){
   }
   function printNote(sess){
     const p = find(S.resident), log = readLog(p.id), ctx = ctxFor(p, log);
-    BookUI.print(K.soapPages(sess, ctx).map(h => ({ html:h })), ["Session note", cgFileName(p), sess.date].filter(Boolean).join(" - "), null);
+    BookUI.print(K.soapPages(sess, ctx).map(h => ({ html:h })), ["Session note", cgFileName(p), sess.date].filter(Boolean).join(" - "), null, { staff:true });
   }
   function onClick(e){
     const b = e.target.closest("button"); if (!b || !root.contains(b)) return;
@@ -9284,7 +9286,7 @@ const ClinicalUI = (function(){
     else if (b.dataset.print){ const s0 = log.sessions.filter(x => x.id === b.dataset.print)[0]; if (s0) printNote(s0); }
     else if (b.id === "clSummary"){
       const to = todayISO(), d = new Date(to + "T00:00:00Z"); d.setUTCDate(d.getUTCDate() - 30);
-      BookUI.print([{ html:K.summaryPage(log, ctxFor(p, log), d.toISOString().slice(0, 10), to) }], ["Clinical summary", cgFileName(p), to].join(" - "), null);
+      BookUI.print([{ html:K.summaryPage(log, ctxFor(p, log), d.toISOString().slice(0, 10), to) }], ["Clinical summary", cgFileName(p), to].join(" - "), null, { staff:true });
     }
     else if (b.id === "clAddM"){ S.editing.measures.push({ task:"", trials:null, correct:null, cue:"", note:"" }); renderForm(); }
     else if (b.dataset.dropM){ S.editing.measures.splice(+b.dataset.dropM, 1); renderForm(); }
@@ -9709,7 +9711,7 @@ const DailyOpsUI = (function(){
     const sb = D.sbar(sheetBoard(), S.day, S.shift, new Date(), wingNow());
     if (sb.empty && !confirm("There is nothing recorded for this day and shift. Print a blank SBAR sheet?")) return;
     const pages = (await sheetPages(sb, D.sbarPages)).map(html => ({ html }));
-    BookUI.print(pages, ["SBAR handoff", S.day, S.shift === "all" ? "all shifts" : S.shift].join(" - "), null);
+    BookUI.print(pages, ["SBAR handoff", S.day, S.shift === "all" ? "all shifts" : S.shift].join(" - "), null, { staff:true });
   }
   /* the one-page handover for the team coming on: the recorded words, by alias or room, and who is planned for the next shift (js/shift-highlights.js) */
   async function printOnePage(){
@@ -9718,13 +9720,13 @@ const DailyOpsUI = (function(){
     const h = HL.build(sheetBoard(), { day:S.day, shift:S.shift, wing:wingNow(), now });
     if (!h.totals.soothe && !h.totals.watch && !h.totals.worked && !h.totals.open && !confirm("There is nothing recorded for this day and shift. Print a blank handover?")) return;
     const html = HL.handoverPage(h, { facility:settings.facility || "", wing:wingNow() || "", coming:HL.comingOn(cal, S.day, S.shift) });
-    BookUI.print([{ html:`<div class="sheet cg-ho-wrap">${html}</div>` }], ["Shift handover", S.day, S.shift === "all" ? "all shifts" : S.shift].join(" - "), null);
+    BookUI.print([{ html:`<div class="sheet cg-ho-wrap">${html}</div>` }], ["Shift handover", S.day, S.shift === "all" ? "all shifts" : S.shift].join(" - "), null, { staff:true });
   }
   async function printSheet(){
     const h = D.handoff(sheetBoard(), S.day, S.shift, new Date(), wingNow());
     if (!h.groups.some(g => g.notes.length) && !h.open.length && !h.done.length && !confirm("There is nothing recorded for this day and shift. Print a blank handoff sheet?")) return;
     const pages = (await sheetPages(h)).map(html => ({ html }));
-    BookUI.print(pages, ["Shift handoff", S.day, S.shift === "all" ? "all shifts" : S.shift].join(" - "), null);
+    BookUI.print(pages, ["Shift handoff", S.day, S.shift === "all" ? "all shifts" : S.shift].join(" - "), null, { staff:true });
   }
   function download(name, text, type){
     const url = URL.createObjectURL(new Blob([text], { type }));
@@ -11070,7 +11072,7 @@ const FacilityUI = (function(){
       return { html: D.pageHtml(D.model({ who: level === "keep" && name ? name : cgAlias(p), facility: settings.facility, person: R.person(p), track: TrackerUI.read(p.id), today, days: 30, tierText: tierText(key),
         floorPt: S ? S.type.floor : 0, lineMinPt: S ? S.stroke.min : 0, needs: asked ? { fontScale: vn.fontSizeScale, contrast: vn.contrastMode, linePt: vn.lineThicknessPt } : {}, avoid: avoidTermsOf(p) })) };
     });
-    const done = BookUI.print(pages, "Activity documentation summary - " + today, null, null);
+    const done = BookUI.print(pages, "Activity documentation summary - " + today, null, { staff:true });
     if (done) { audit("Printed activity documentation summaries", plural(list.length, "resident", "residents")); if (msg) msg.textContent = "Made " + plural(list.length, "page", "pages") + ". Choose Save as PDF in the print window to keep a copy."; }
   }
   function printWeek(){

@@ -80,7 +80,7 @@ try {
   ok(/Shift handover/.test(html) && new RegExp("Coming on: " + cur.next + " shift").test(html) && /AB, CD/.test(html), "the page names the team coming on from the calendar");
   ok(!/Margaret/.test(html) && /Resident 302-B/.test(html), "the resident is shown by alias and the name is not on the page");
   ok(/Keep an eye on/.test(html) && /Pacing after lunch/.test(html) && /What worked/.test(html) && /garden pictures/.test(html) && /Still to do/.test(html) && /music cart/.test(html), "it has what staff recorded");
-  ok((await keys()) === lsBefore && (await p.evaluate(() => CG_LS.getItem("cognicopia_dailyops"))) === boardBefore, "pressing the button stores no resident, note or calendar data (it counts as a print, like the board's other sheets)");
+  ok((await keys()) === lsBefore && (await p.evaluate(() => CG_LS.getItem("cognicopia_dailyops"))) === boardBefore, "pressing the button stores no resident, note or calendar data");
   await p.emulateMedia({ media: "print" });
   const pdf = path.join(os.tmpdir(), "shift-handover-check.pdf"); fs.writeFileSync(pdf, await p.pdf({ width: "8.5in", height: "11in", printBackground: true, preferCSSPageSize: true }));
   await p.emulateMedia({ media: "screen" });
