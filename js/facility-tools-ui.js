@@ -127,7 +127,9 @@ function goals(body, m) {
 
 /* ================= shift highlights ================= */
 function highlights(body, m) {
-  const S = m.state; Object.assign(S, { day: iso(), shift: "all" });
+  /* the Shift board's own day: after midnight and before the night shift ends it is still the day before, so the page opens on what the board shows */
+  const boardDay = () => { try { return globalThis.CogniDailyOps.slotAt(deps.today ? deps.today() : new Date()).day || iso(); } catch (e) { return iso(); } };
+  const S = m.state; Object.assign(S, { day: boardDay(), shift: "all" });
   const D = () => globalThis.CogniDailyOps, model = () => HL.build(deps.board(), { day: S.day, shift: S.shift, wing: deps.activeWing ? deps.activeWing() : null, now: deps.today ? deps.today() : new Date() });
   const draw = () => {
     let sheet = ""; try { sheet = HL.page(model(), { facility: deps.facility ? deps.facility() : "", wing: deps.activeWing ? deps.activeWing() : "", initials: deps.initials ? deps.initials() : "" }); } catch (e) { sheet = `<p class="msg-bad">The Shift board could not be read: ${H(e.message)}</p>`; }

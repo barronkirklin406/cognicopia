@@ -287,6 +287,14 @@ step("The one-tap engagement log (three buttons and an optional line, on Daily e
   }
 });
 
+step("The activity documentation summary on the Facility Portal's Audit readiness tab: one US Letter page for each resident chosen (what is known about them, the packets made and the sessions taken part in over 30 days, how pages are made for them, what is kept off), names or aliases as the facility chose, staff text at 16 pt or more, pure black on white, read back from a real PDF; it supports records and claims no proof or compliance (a real browser, day and Night Shift, 1366 x 768 and 390 x 844)", () => {
+  try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-activity-docs-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
+  catch (e){
+    if (e.status === 2) return "skipped: Playwright is not installed here (see docs/dev-setup.md)";
+    throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message);
+  }
+});
+
 step("Resident Mode in Tablet Activities: only the activities and no link out, the search closed, kept on reload; a 2.5 second hold (mouse, Enter or a finger) to leave, a tap does nothing; a PIN kept as a salted hash, a wrong one refused (a real browser)", () => {
   try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-tablet-resident-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
   catch (e){
