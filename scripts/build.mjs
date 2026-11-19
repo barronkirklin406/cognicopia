@@ -343,6 +343,19 @@ step("Staff documents never count against the free packets: the Shift board's ha
   }
 });
 
+step("The variety memory, the era banks and the hybrid sheets (assets/services/variety.js, eraBanks.js, hybridSheets.js): every click its own seed, an item does not come back until the pool has been used, every entry dated and clear of quiz and loss wording, songs from 1930 or earlier, slogans short and listed for review, every dated fact inside born + 7 to + 28 for births 1925 to 1965, a mix of decades with no birth year, two or three hand-under-hand tips per layout, and a topic to avoid never printed", () => {
+  try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-variety.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim().split("\n").pop(); }
+  catch (e){ throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message); }
+});
+
+step("Fresh-every-click packets, proved on real PDFs read back with PyMuPDF: three Quick Print clicks and three packet clicks give three different packets, each with hybrid trace-and-talk pages at least 60% full and pure black on white, the staff sheet on page 1 listing each with its tips (hand-under-hand), what this browser remembers holds ids only and clears, nothing leaves the page", () => {
+  try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-hybrid-pages-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim().split("\n").pop(); }
+  catch (e){
+    if (e.status === 2) return "skipped: Playwright or PyMuPDF is not installed here (see docs/dev-setup.md)";
+    throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message);
+  }
+});
+
 step("Page economy and the Staff Companion Sheet in the front-page packet, proved on real PDFs read back with PyMuPDF at every stage with every page ticked and with the default pages: page 1 is the Staff Companion Sheet and lists each page by its title with its tip and therapy approach; no resident page carries a clinical tip or therapy tag; no resident page is a \"(continued)\" page; every resident page is at least 60% full.", () => {
   try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-packet-economy-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim().split("\n").pop(); }
   catch (e){
