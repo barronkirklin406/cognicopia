@@ -139,7 +139,7 @@ try {
   ok(/rgb\(18, 24, 31\)/.test(dark.panel) && /rgb\(11, 15, 20\)/.test(dark.root), "the dark panel darkens the screen: " + dark.panel);
   ok(dark.paper === "#fff" && /255, 255, 255/.test(dark.pageBg), "the page itself stays white in the dark panel");
   const checked = await p.evaluate(() => { const l = document.querySelector('.as-seg label:has(input:checked)'); const c = getComputedStyle(l); return [c.color, c.backgroundColor]; });
-  ok(/rgb\(0, 0, 0\)/.test(checked[0]) && /rgb\(245, 184, 0\)/.test(checked[1]), "a chosen button is black on gold in the dark panel: " + checked);
+  ok(/rgb\(0, 0, 0\)/.test(checked[0]) && /rgb\(134, 201, 167\)/.test(checked[1]), "a chosen button is black on sage in the dark panel (the Warm Editorial Clinical palette): " + checked);
   await p.uncheck("#asDark", { force: true });
   const sizes = await p.$$eval('#asForm input:not([type=radio]):not([type=checkbox]), #asForm select, #asForm .as-seg label, #asForm .as-check, .as-btn', n => n.filter(e => e.offsetParent).map(e => { const r = e.getBoundingClientRect(); return [Math.round(r.width), Math.round(r.height)]; }));
   ok(sizes.every(([w, h]) => w >= 52 && h >= 52), `every visible control is at least 52 px: ${sizes.filter(([w, h]) => w < 52 || h < 52).join(" ")}`);
@@ -291,9 +291,9 @@ try {
     ok((await q.$$eval("#asForm h2", h => h.map(x => x.textContent.replace(/\s+/g, " ").trim()))).join("|") === "Who is this for?|How much support?|Make the packet", "the three steps are in order");
     ok((await q.$$eval("#asForm h2", h => h.map(x => getComputedStyle(x, "::before").content))).every(c => c === "counter(asstep)") && await q.$eval("#asForm", f => getComputedStyle(f).counterReset.indexOf("asstep") === 0), "...and numbered by one counter that runs 1, 2, 3 (the digits themselves were looked at in a screenshot)");
     const nc = await q.$eval("#asForm h2", h => { const c = getComputedStyle(h, "::before"); return [c.color, c.backgroundColor]; });
-    ok(nc[0] === "rgb(255, 255, 255)" && nc[1] === "rgb(11, 95, 89)", `a step number is white on dark teal, 7.5 to 1 (${nc.join(" on ")})`);
+    ok(nc[0] === "rgb(255, 255, 255)" && nc[1] === "rgb(54, 91, 74)", `a step number is white on dark sage, 7.5 to 1 (${nc.join(" on ")})`);
     const sc = await q.$eval("#asAccLife > summary", s => { const c = getComputedStyle(s), bg = getComputedStyle(s.parentElement).backgroundColor; return [c.color, bg]; });
-    ok(sc[1] === "rgb(255, 255, 255)" && sc[0] === "rgb(40, 36, 31)", `a section heading is warm charcoal on white, not dark on dark (${sc.join(" on ")})`);
+    ok(sc[1] === "rgb(255, 255, 255)" && sc[0] === "rgb(20, 30, 25)", `a section heading is forest ink on white, not dark on dark (${sc.join(" on ")})`);
     ok(/No one is saved on this computer yet/.test(await q.textContent("#asWhoHint")), "with no one saved, the form says how to save someone");
     ok(await visible("#asOpenRes") === 0, "'Open the full profile' is not shown when no one is chosen");
     await q.click("#asAccLife > summary"); await q.waitForTimeout(150);

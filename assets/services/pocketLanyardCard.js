@@ -324,14 +324,14 @@ const POCKET_CARD_CSS = `
 .cg-plc-dialog {
   background: #0d111a;
   color: #eaf4ef;
-  border: 2px solid #7bc09f;
+  border: 2px solid #3cc7b7;
   border-radius: 18px;
   width: 100%;
   max-width: 1140px;
   max-height: 94vh;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(141, 206, 175, 0.25);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(122, 211, 164, 0.25);
   overflow: hidden;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
@@ -340,7 +340,7 @@ const POCKET_CARD_CSS = `
 .cg-plc-header {
   padding: 16px 24px;
   background: #131824;
-  border-bottom: 1px solid rgba(123, 192, 159, 0.25);
+  border-bottom: 1px solid rgba(60,199,183, 0.25);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -358,8 +358,8 @@ const POCKET_CARD_CSS = `
   letter-spacing: -0.01em;
 }
 .cg-plc-header-badge {
-  background: #7bc09f;
-  color: #16281f;
+  background: #3cc7b7;
+  color: #052a26;
   font-size: 11px;
   font-weight: 800;
   text-transform: uppercase;
@@ -370,12 +370,12 @@ const POCKET_CARD_CSS = `
 .cg-plc-header-sub {
   margin: 4px 0 0;
   font-size: 13.5px;
-  color: #a3b6ac;
+  color: #9cb8ad;
 }
 .cg-plc-btn-close {
   background: transparent;
   border: 1px solid rgba(255, 255, 255, 0.2);
-  color: #e3ede8;
+  color: #d9f0ec;
   font-size: 20px;
   line-height: 1;
   width: 36px;
@@ -390,7 +390,7 @@ const POCKET_CARD_CSS = `
 .cg-plc-btn-close:hover {
   background: rgba(255, 255, 255, 0.12);
   color: #ffffff;
-  border-color: #7bc09f;
+  border-color: #3cc7b7;
 }
 
 /* Main Split Body: Editor & Preview */
@@ -409,7 +409,7 @@ const POCKET_CARD_CSS = `
   flex: 1 1 480px;
   padding: 20px 24px;
   overflow-y: auto;
-  border-right: 1px solid rgba(123, 192, 159, 0.2);
+  border-right: 1px solid rgba(60,199,183, 0.2);
   background: #0f131d;
   box-sizing: border-box;
 }
@@ -418,7 +418,7 @@ const POCKET_CARD_CSS = `
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: #a1d6bc;
+  color: #7fdccd;
   margin: 0 0 16px;
   display: flex;
   align-items: center;
@@ -431,14 +431,14 @@ const POCKET_CARD_CSS = `
   display: block;
   font-size: 13px;
   font-weight: 700;
-  color: #e3ede8;
+  color: #d9f0ec;
   margin-bottom: 6px;
 }
 .cg-plc-input {
   width: 100%;
   box-sizing: border-box;
   background: #080b12;
-  border: 1.5px solid rgba(141, 206, 175, 0.35);
+  border: 1.5px solid rgba(122, 211, 164, 0.35);
   border-radius: 8px;
   padding: 9px 12px;
   font-size: 14.5px;
@@ -449,8 +449,8 @@ const POCKET_CARD_CSS = `
 }
 .cg-plc-input:focus {
   outline: none;
-  border-color: #7bc09f;
-  box-shadow: 0 0 0 3px rgba(123, 192, 159, 0.3);
+  border-color: #3cc7b7;
+  box-shadow: 0 0 0 3px rgba(60,199,183, 0.3);
 }
 .cg-plc-row-2 {
   display: flex;
@@ -495,7 +495,7 @@ const POCKET_CARD_CSS = `
 .cg-plc-preview-title {
   font-size: 13px;
   font-weight: 800;
-  color: #a3b6ac;
+  color: #9cb8ad;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   display: flex;
@@ -506,7 +506,7 @@ const POCKET_CARD_CSS = `
   font-size: 11px;
   font-weight: 700;
   background: rgba(255, 255, 255, 0.1);
-  color: #e3ede8;
+  color: #d9f0ec;
   padding: 2px 8px;
   border-radius: 6px;
 }
@@ -627,10 +627,10 @@ const POCKET_CARD_CSS = `
   font-size: 9.5px;
   font-weight: 800;
   color: #17223d;
-  background: #e8f1ec;
+  background: #d1fae5;
   padding: 1px 6px;
   border-radius: 4px;
-  border: 1px solid #98debc;
+  border: 1px solid #6ee7b7;
 }
 
 /* Section Common */
@@ -656,9 +656,9 @@ const POCKET_CARD_CSS = `
   border: 1px solid #f87171;
 }
 .cg-section-soothing .cg-section-title {
-  background: #ecf5f0;
-  color: #335f4b;
-  border: 1px solid #a0e7c5;
+  background: #dcfce7;
+  color: #166534;
+  border: 1px solid #86efac;
 }
 
 .cg-list {
@@ -687,8 +687,8 @@ const POCKET_CARD_CSS = `
   background: #fff5f5;
 }
 .cg-soothing-list li {
-  border-left: 3.5px solid #549979;
-  background: #fbf9f3;
+  border-left: 3.5px solid #16a34a;
+  background: #f0fdf4;
 }
 .cg-bullet-warn {
   font-size: 11px;
@@ -698,14 +698,14 @@ const POCKET_CARD_CSS = `
 }
 .cg-bullet-sooth {
   font-size: 11px;
-  color: #549979;
+  color: #16a34a;
   flex-shrink: 0;
   margin-top: -1px;
 }
 
 /* Front Approach Rule */
 .cg-front-approach {
-  background: #141e19;
+  background: #0f172a;
   color: #ffffff;
   padding: 6px 8px;
   border-radius: 5px;
@@ -727,8 +727,8 @@ const POCKET_CARD_CSS = `
 
 /* Reminiscence Box */
 .cg-reminiscence-box {
-  background: #fbf9f3;
-  border: 1.5px solid #a0e7c5;
+  background: #f0fdf4;
+  border: 1.5px solid #86efac;
   border-radius: 5px;
   padding: 6px 8px;
   margin-bottom: 6px;
@@ -736,11 +736,11 @@ const POCKET_CARD_CSS = `
 .cg-rem-row {
   font-size: 10px;
   line-height: 1.3;
-  color: #141e19;
+  color: #0f172a;
 }
 .cg-rem-label {
   font-weight: 900;
-  color: #335f4b;
+  color: #166534;
 }
 .cg-rem-val {
   font-weight: 800;
@@ -805,7 +805,7 @@ const POCKET_CARD_CSS = `
 .cg-plc-footer {
   padding: 16px 24px;
   background: #131824;
-  border-top: 1px solid rgba(123, 192, 159, 0.25);
+  border-top: 1px solid rgba(60,199,183, 0.25);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -817,7 +817,7 @@ const POCKET_CARD_CSS = `
   align-items: center;
   gap: 10px;
   font-size: 13px;
-  color: #a3b6ac;
+  color: #9cb8ad;
 }
 .cg-plc-footer-right {
   display: flex;
@@ -838,27 +838,27 @@ const POCKET_CARD_CSS = `
   border: none;
 }
 .cg-plc-btn-primary {
-  background: #7bc09f;
-  color: #16281f;
-  box-shadow: 0 4px 14px rgba(123, 192, 159, 0.35);
+  background: #3cc7b7;
+  color: #052a26;
+  box-shadow: 0 4px 14px rgba(60,199,183, 0.35);
 }
 .cg-plc-btn-primary:hover {
-  background: #a1d6bc;
+  background: #7fdccd;
   transform: translateY(-1px);
 }
 .cg-plc-btn-secondary {
   background: rgba(255, 255, 255, 0.08);
-  color: #e3ede8;
-  border: 1px solid rgba(123, 192, 159, 0.3);
+  color: #d9f0ec;
+  border: 1px solid rgba(60,199,183, 0.3);
 }
 .cg-plc-btn-secondary:hover {
   background: rgba(255, 255, 255, 0.15);
   color: #ffffff;
-  border-color: #7bc09f;
+  border-color: #3cc7b7;
 }
 .cg-plc-btn-ghost {
   background: transparent;
-  color: #a3b6ac;
+  color: #9cb8ad;
 }
 .cg-plc-btn-ghost:hover {
   color: #ffffff;

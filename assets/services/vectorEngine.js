@@ -648,9 +648,9 @@ function fitArt(frame           , options                                       
                                                                                                                                                            
 const LEGENDS                                                       = {
   "anxiety-reduction": { mode: "anxiety-reduction", title: "Calming colors", note: "Soft blues and greens, for a quiet, settled mood.",
-    swatches: [{ name: "Sky blue", hex: "#9dc5b0" }, { name: "Lake blue", hex: "#67a588" }, { name: "Seafoam", hex: "#a7ceba" }, { name: "Sage", hex: "#a3c4b4" }, { name: "Fern", hex: "#72a58c" }] },
+    swatches: [{ name: "Sky blue", hex: "#8FC1E3" }, { name: "Lake blue", hex: "#5B9BD5" }, { name: "Seafoam", hex: "#93D3C1" }, { name: "Sage", hex: "#A9C5A0" }, { name: "Fern", hex: "#6FA878" }] },
   "high-contrast": { mode: "high-contrast", title: "High-contrast colors", note: "Bright yellow next to deep navy is the easiest pair to see.",
-    swatches: [{ name: "Lemon yellow", hex: "#ffe500" }, { name: "Marigold", hex: "#ffb000" }, { name: "Navy", hex: "#0a2463" }, { name: "Cobalt", hex: "#0047ab" }] }
+    swatches: [{ name: "Lemon yellow", hex: "#FFE500" }, { name: "Marigold", hex: "#FFB000" }, { name: "Navy", hex: "#0A2463" }, { name: "Cobalt", hex: "#0047AB" }] }
 };
 const LEGEND_MODES                        = ["off", "anxiety-reduction", "high-contrast"];
 const legendHeightIn = (mode            )         => mode === "off" ? 0 : .75;

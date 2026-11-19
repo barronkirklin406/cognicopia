@@ -58,11 +58,11 @@
       var g = ctx.createLinearGradient(0, 0, 0, 600); g.addColorStop(0, "#fff9e8"); g.addColorStop(1, "#f1e6c9");
       ctx.fillStyle = g; ctx.fillRect(-400, -400, 1800, 1400);
       ctx.fillStyle = "rgba(246,221,138,.85)"; ctx.beginPath(); ctx.arc(905, 78, 46, 0, 6.3); ctx.fill();
-      ctx.fillStyle = "rgba(166,200,183,.55)"; ctx.beginPath(); ctx.moveTo(-400, 600); ctx.lineTo(-400, 540); ctx.quadraticCurveTo(150, 470, 420, 545); ctx.quadraticCurveTo(700, 480, 1400, 540); ctx.lineTo(1400, 600); ctx.closePath(); ctx.fill();
-      ctx.fillStyle = "rgba(121,160,140,.55)"; ctx.beginPath(); ctx.moveTo(-400, 600); ctx.lineTo(-400, 575); ctx.quadraticCurveTo(300, 530, 600, 580); ctx.quadraticCurveTo(900, 540, 1400, 575); ctx.lineTo(1400, 600); ctx.closePath(); ctx.fill();
+      ctx.fillStyle = "rgba(159,203,176,.55)"; ctx.beginPath(); ctx.moveTo(-400, 600); ctx.lineTo(-400, 540); ctx.quadraticCurveTo(150, 470, 420, 545); ctx.quadraticCurveTo(700, 480, 1400, 540); ctx.lineTo(1400, 600); ctx.closePath(); ctx.fill();
+      ctx.fillStyle = "rgba(111,163,134,.55)"; ctx.beginPath(); ctx.moveTo(-400, 600); ctx.lineTo(-400, 575); ctx.quadraticCurveTo(300, 530, 600, 580); ctx.quadraticCurveTo(900, 540, 1400, 575); ctx.lineTo(1400, 600); ctx.closePath(); ctx.fill();
       if (scene === "bee") { for (var k = 0; k < 9; k++) { var x = 70 + k * 108, y = 566 + (k % 3) * 8; ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(x, y, 9, 0, 6.3); ctx.fill(); ctx.fillStyle = "#e0b43a"; ctx.beginPath(); ctx.arc(x, y, 4, 0, 6.3); ctx.fill(); } }
-      if (scene === "train") { ctx.strokeStyle = "rgba(54,66,60,.55)"; ctx.lineWidth = 5; ctx.lineCap = "round"; [130, 380, 630, 880].forEach(function (x) { ctx.beginPath(); ctx.moveTo(x, 590); ctx.lineTo(x, 510); ctx.moveTo(x - 20, 524); ctx.lineTo(x + 20, 524); ctx.stroke(); }); }
-      if (scene === "dog") { ctx.strokeStyle = "rgba(54,66,60,.5)"; ctx.lineWidth = 5; ctx.lineCap = "round"; for (var f = 0; f < 11; f++) { var fx = 40 + f * 92; ctx.beginPath(); ctx.moveTo(fx, 592); ctx.lineTo(fx, 540); ctx.stroke(); } ctx.beginPath(); ctx.moveTo(20, 556); ctx.lineTo(990, 556); ctx.stroke(); }
+      if (scene === "train") { ctx.strokeStyle = "rgba(69,63,55,.55)"; ctx.lineWidth = 5; ctx.lineCap = "round"; [130, 380, 630, 880].forEach(function (x) { ctx.beginPath(); ctx.moveTo(x, 590); ctx.lineTo(x, 510); ctx.moveTo(x - 20, 524); ctx.lineTo(x + 20, 524); ctx.stroke(); }); }
+      if (scene === "dog") { ctx.strokeStyle = "rgba(69,63,55,.5)"; ctx.lineWidth = 5; ctx.lineCap = "round"; for (var f = 0; f < 11; f++) { var fx = 40 + f * 92; ctx.beginPath(); ctx.moveTo(fx, 592); ctx.lineTo(fx, 540); ctx.stroke(); } ctx.beginPath(); ctx.moveTo(20, 556); ctx.lineTo(990, 556); ctx.stroke(); }
     }
     function partial(upto) {            // the line from the start to a (fractional) point number
       var n = Math.floor(upto), p = at(upto);
@@ -83,7 +83,7 @@
       ctx.lineCap = "round"; ctx.lineJoin = "round";
       var laneW = tol * 2, still = reduced();
       /* the lane: a wide, warm band with a soft glow, and a dotted guide down its middle */
-      ctx.strokeStyle = "rgba(134,201,167,.22)"; ctx.lineWidth = laneW + 44; ctx.setLineDash([]);
+      ctx.strokeStyle = "rgba(245,184,0,.22)"; ctx.lineWidth = laneW + 44; ctx.setLineDash([]);
       if (lane) ctx.stroke(lane);
       ctx.strokeStyle = "#b8914a"; ctx.lineWidth = laneW + 8; if (lane) ctx.stroke(lane);
       ctx.strokeStyle = "#f7e7b8"; ctx.lineWidth = laneW; if (lane) ctx.stroke(lane);
@@ -93,15 +93,15 @@
         ctx.strokeStyle = "#4a5260"; ctx.lineWidth = 6;
         [-1, 1].forEach(function (side) { ctx.beginPath(); for (var m = 0; m < path.pts.length - 1; m += 2) { var p0 = path.pts[m], q0 = path.pts[m + 1], a0 = Math.atan2(q0[1] - p0[1], q0[0] - p0[0]) + Math.PI / 2, x0 = p0[0] + Math.cos(a0) * side * laneW * 0.3, y0 = p0[1] + Math.sin(a0) * side * laneW * 0.3; if (m) ctx.lineTo(x0, y0); else ctx.moveTo(x0, y0); } ctx.stroke(); });
       } else {
-        ctx.strokeStyle = "#141e19"; ctx.lineWidth = 5; ctx.setLineDash([2, 16]); ctx.lineDashOffset = still ? 0 : -clock * 26; if (lane) ctx.stroke(lane); ctx.setLineDash([]);
+        ctx.strokeStyle = "#28241f"; ctx.lineWidth = 5; ctx.setLineDash([2, 16]); ctx.lineDashOffset = still ? 0 : -clock * 26; if (lane) ctx.stroke(lane); ctx.setLineDash([]);
       }
       /* the way travelled (the one travelling stops a little short of where it is going, so both can be seen) */
       var vis = Math.min(shown, path.pts.length - 11);
-      if (vis > 0.5) { ctx.strokeStyle = "rgba(56,87,72,.92)"; ctx.lineWidth = Math.max(20, tol * 0.7); partial(vis); ctx.stroke(); }
+      if (vis > 0.5) { ctx.strokeStyle = "rgba(45,90,68,.92)"; ctx.lineWidth = Math.max(20, tol * 0.7); partial(vis); ctx.stroke(); }
       /* where it is going */
       var near = shown > path.pts.length * 0.7, pulse = still ? 0 : Math.sin(clock * 4) * (near ? 0.07 : 0.03);
       var glow = ctx.createRadialGradient(path.end[0], path.end[1], 10, path.end[0], path.end[1], 120);
-      glow.addColorStop(0, near ? "rgba(134,201,167,.55)" : "rgba(134,201,167,.28)"); glow.addColorStop(1, "rgba(134,201,167,0)");
+      glow.addColorStop(0, near ? "rgba(245,184,0,.55)" : "rgba(245,184,0,.28)"); glow.addColorStop(1, "rgba(245,184,0,0)");
       ctx.fillStyle = glow; ctx.beginPath(); ctx.arc(path.end[0], path.end[1], 120, 0, 6.3); ctx.fill();
       sprite(path.to, path.end[0], path.end[1] - (path.to === "flower" ? 30 : 6), path.to === "station" ? 200 : 150, 0, false, pulse);
       /* a hint: a bright pulse runs along the way ahead */
@@ -114,7 +114,7 @@
       var here = at(vis), ahead = at(Math.min(path.pts.length - 1, vis + 4)), back = at(Math.max(0, vis - 4)), ang = Math.atan2(ahead[1] - back[1], ahead[0] - back[0]), left = Math.cos(ang) < 0;
       var bob = still ? 0 : Math.sin(clock * 5) * 4, hop = clock - landed < 1.2 ? Math.abs(Math.sin((clock - landed) * 7)) * 0.16 * Math.max(0, 1 - (clock - landed) / 1.2) : 0;
       var size = path.from === "train" ? 200 : path.from === "dog" ? 165 : 140, wait = away && !over ? (still ? 0 : Math.sin(clock * 6) * 0.06) : 0;
-      if (away && !over) { ctx.strokeStyle = "rgba(134,201,167,.7)"; ctx.lineWidth = 8; ctx.beginPath(); ctx.arc(here[0], here[1], size * 0.62 + (still ? 0 : Math.sin(clock * 6) * 6), 0, 6.3); ctx.stroke(); }
+      if (away && !over) { ctx.strokeStyle = "rgba(245,184,0,.7)"; ctx.lineWidth = 8; ctx.beginPath(); ctx.arc(here[0], here[1], size * 0.62 + (still ? 0 : Math.sin(clock * 6) * 6), 0, 6.3); ctx.stroke(); }
       if (path.from === "dog") sprite("dog", here[0], here[1] - size * 0.3 + bob, size, 0, left, hop + wait);
       else sprite(path.from, here[0], here[1] - (path.from === "bee" ? 6 : size * 0.22) + bob, size, left ? ang - Math.PI : ang, left, hop + wait);
     }
@@ -381,7 +381,7 @@
         g.fillStyle = tint[p % tint.length]; g.fillRect(0, p * ph, w, ph);
         for (i = 0; i < 46; i++) { var yy = p * ph + rnd() * ph, amp = 1 + rnd() * 5, fr = 0.004 + rnd() * 0.01, ph0 = rnd() * 6; g.strokeStyle = "rgba(70,40,20," + (0.08 + rnd() * 0.16) + ")"; g.lineWidth = 0.6 + rnd() * 1.8; g.beginPath(); for (x = 0; x <= w; x += 8) { var yv = yy + Math.sin(x * fr + ph0) * amp; if (x) g.lineTo(x, yv); else g.moveTo(x, yv); } g.stroke(); }
         if (rnd() < 0.8) { var kx = rnd() * w, ky = p * ph + ph * (0.3 + rnd() * 0.4); for (r = 3; r < 22; r += 4) { g.strokeStyle = "rgba(70,40,20," + (0.25 - r * 0.008) + ")"; g.lineWidth = 1.5; g.beginPath(); g.ellipse(kx, ky, r * 1.8, r, 0, 0, 6.3); g.stroke(); } }
-        g.fillStyle = "rgba(24,37,31,.45)"; g.fillRect(0, p * ph, w, 2);
+        g.fillStyle = "rgba(50,28,12,.45)"; g.fillRect(0, p * ph, w, 2);
       }
     } else {                                                       // canvas: a linen weave
       g.fillStyle = "#f1e9d6"; g.fillRect(0, 0, w, h);
@@ -390,7 +390,7 @@
       blobs(60, rgb = "160,135,95", 0.02, 0.05, 50, 200);
     }
     var vg = g.createRadialGradient(w / 2, h / 2, Math.min(w, h) * 0.45, w / 2, h / 2, Math.max(w, h) * 0.75);       // the paper darkens toward its edges
-    vg.addColorStop(0, "rgba(57,71,64,0)"); vg.addColorStop(1, "rgba(90,60,25," + (kind === 1 ? 0.28 : 0.24) + ")"); g.fillStyle = vg; g.fillRect(0, 0, w, h);
+    vg.addColorStop(0, "rgba(90,60,25,0)"); vg.addColorStop(1, "rgba(90,60,25," + (kind === 1 ? 0.28 : 0.24) + ")"); g.fillStyle = vg; g.fillRect(0, 0, w, h);
   }
 
   function paint(root, o, api) {
@@ -519,7 +519,7 @@
   /* ===================== BUBBLE POP =====================
      Bubbles drift up the screen, bump each other gently, and pop with a soft chime and a ripple of color that nudges their neighbors.
      Nothing is counted. Slower and Faster change how quickly they float; people who ask for less motion get still bubbles. */
-  var SPEEDS = [["Very slow", 12], ["Gentle", 22], ["Brisk", 38], ["Lively", 60]], BUB = ["#e58aa5", "#e0b43a", "#76b396", "#9a7bd0", "#f0956a", "#6ca288"], NOTES = [523.25, 587.33, 659.25, 783.99, 880, 1046.5];
+  var SPEEDS = [["Very slow", 12], ["Gentle", 22], ["Brisk", 38], ["Lively", 60]], BUB = ["#e58aa5", "#e0b43a", "#66b88a", "#9a7bd0", "#f0956a", "#3fa79d"], NOTES = [523.25, 587.33, 659.25, 783.99, 880, 1046.5];
   function bubbles(root, o, api) {
     var late = o.stage === "late", still = reduced(), speed = Math.min(4, Math.max(1, api.prefs.speed || 2)), cv = h("canvas", "tb-sky"), ctrl = h("div", "tb-row tb-speedrow"), msg = h("p", "tb-msg", "Tap a bubble to pop it. Take your time, and pop as many as you like.");
     ctrl.innerHTML = '<button type="button" class="tb-btn" data-speed="-1"><span aria-hidden="true">−</span> Slower</button><span class="tb-speed" id="tbSpeedLbl"></span><button type="button" class="tb-btn" data-speed="1">Faster <span aria-hidden="true">+</span></button>';
@@ -576,7 +576,7 @@
       api.unlock(); e.preventDefault(); api.busy();
       var r = cv.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top, hit = null;
       for (var i = list.length - 1; i >= 0; i--) { var b = list[i]; if (Math.hypot(x - b.x, y - b.y) <= b.r + 14) { hit = b; break; } }
-      if (hit) popIt(hit); else ripples.push({ x: x, y: y, r: 8, t: 0.2, c: "#7ab599" });
+      if (hit) popIt(hit); else ripples.push({ x: x, y: y, r: 8, t: 0.2, c: "#c5a059" });
     });
     ctrl.addEventListener("click", function (e) {
       var b = e.target.closest("[data-speed]"); if (!b || b.disabled) return; api.unlock(); api.busy();
