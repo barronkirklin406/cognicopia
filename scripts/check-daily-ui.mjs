@@ -138,7 +138,7 @@ try {
   ok(/For Dorothy/.test(own) && /Scobey/.test(own) && /Sarah|classroom|teach/i.test(own), `her reminiscence cards are from her own life: her name, her town, her daughter or her work (${own.slice(0, 110)})`);
   await kind(a.p, "music"); await a.p.waitForTimeout(250);
   const songs = await card(a.p);
-  ok(songs.module === "songs" && /1953 to 1963/.test(songs.text), `her music card is songs from the years she was 15 to 25 (${songs.text.slice(0, 60)})`);
+  ok(songs.module === "songs" && /1945 to 1966/.test(songs.text), `her music card is songs from the years she was 7 to 28 (${songs.text.slice(0, 60)})`);
   await kind(a.p, "comfort"); await a.p.waitForTimeout(250);
   let comf = ""; for (let t = 0; t < 4; t++) { comf += " " + (await card(a.p)).text; await a.p.click("#dyAgain"); await a.p.waitForTimeout(200); }
   ok(/Warm tea/.test(comf) && /Music playing/.test(comf), "her comfort card offers the comforts in her profile");

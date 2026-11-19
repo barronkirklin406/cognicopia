@@ -1295,6 +1295,13 @@ textarea:focus{border-color:var(--accent)}
 .lp-scope b{font-size:16px}
 .lp-scope small{font-size:13.5px;font-weight:700;color:var(--accent-hi)}
 .lp-scope-companion small{color:var(--warn)}
+/* AAA (7:1) text, measured by scripts/audit-ux.mjs */
+html:not(.cg-night-shift) .lp-scope small{color:#084a46}
+html:not(.cg-night-shift) .rs-chip[aria-pressed="true"] .rs-n{background:rgba(0,0,0,.22) !important}
+html.cg-night-shift .rs-view button[aria-pressed="true"]{background:#74511a}
+html:not(.cg-night-shift) .shc-cov.is-empty{color:#74301a}
+html.cg-night-shift .fp-eyebrow{color:#4f4129}
+html.cg-night-shift .fp-btn-primary,html.cg-night-shift .fp-tier b{background:#c2bdae}
 .lp-scope em{font-style:normal;font-size:14px;color:var(--muted)}
 .lp-scope input:checked + span{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent);background:#1d3331}
 .lp-scope-companion input:checked + span{border-color:var(--warn);box-shadow:inset 0 0 0 1px var(--warn);background:#2a2320}

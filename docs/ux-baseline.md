@@ -22,19 +22,9 @@ Both large pages carry their fonts and much of their code inline so they work of
 
 ## Contrast (AAA)
 
-**19 of the audited screens have text under AAA** (7:1, or 4.5:1 for large or bold text). These are real failures, found for the first time by measuring at AAA. They are listed so the "Warm Editorial Clinical" restyle (prompt 5a) fixes each one and the audit proves it.
+**First measurement at AAA: 19 screens had text under 7:1** (4.5:1 for large or bold text). They were found on 19 November 2026, the first time the audit held text to AAA, and fixed the same day by darkening or lightening the one color involved (no text or layout changed): the "Make the packet" button (5.45:1 white on teal), the free-packets badge (6.98), the gold buttons in Night Shift (6.95), the Packet Builder's roster count and view buttons, the book-scope labels, the shift board's empty-slot line, the Facility Portal's tan buttons and eyebrow in Night Shift, and the envelope links on the contact, pilot and referral pages. **After the fixes every measured screen, by day and in Night Shift, meets AAA.** The "Warm Editorial Clinical" restyle (prompt 5a) will replace these colors with its own tokens; the audit must still show zero.
 
-| Screen | Theme | Text elements below 7:1 | Worst case |
-|---|---|---|---|
-| `index.html` | day | 2 of 299 | 5.45:1, the "Make the packet" button |
-| `index.html` | night | 5 of 299 | 6.95:1, the hero "Get Started Free" link |
-| Packet Builder, roster | day | 5 of 83 | 5.93:1, a count badge |
-| Packet Builder, shift board | day | 3 | |
-| Packet Builder, facility | night | 13 of 126 | 6.95:1 |
-| Packet Builder, home, coloring, roster, planner, journal, academy, reminiscence, digest, session notes, shift board, settings | night | 1 each (2 on the roster) | 6.95:1, the "Your packet" label |
-| Contact, pilot, referral | night | 2 each | 6.70:1, the envelope glyph |
-
-Every other measured screen, by day and in Night Shift, reaches AAA. `scripts/check-design-system.mjs` separately measures the shared stylesheet's text pairs (worst pair 7.1:1).
+`scripts/check-design-system.mjs` separately measures the shared stylesheet's text pairs (worst pair 7.1:1).
 
 ## Clicks to a finished sheet
 

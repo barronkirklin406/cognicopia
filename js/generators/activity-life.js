@@ -420,7 +420,8 @@
     var w = who(P), shown = String(P.name || w.name || "").trim().split(" ")[0];
     if (!P.photo) {
       var pic = signPicture(P, w);
-      return pic ? [sheet("photocolor", "Color this together", "A picture to color", [{ kind: "picture", pic: pic, caption: shown ? "For " + shown : "" }],
+      return pic ? [sheet("photocolor", "Color this together", "A picture to color", [{ kind: "picture", pic: pic, caption: shown ? "For " + shown : "" },
+        { kind: "choices", label: "A color to start with", options: ["Red", "Green", "Yellow", "Orange"] }],
         "a coloring page from the library, chosen for their work or what they love: a clean, closed outline. To color a photo of someone instead, choose the photo in the Studio and look over its drawing before you print. Offer a thick crayon or marker and sit alongside; any color, or none, is right.", { personal: !!(w.work && w.work.label || w.hobbies.length) })] : [];
     }
     return [sheet("photocolor", "Color this together", "A picture made from a photo", [{ kind: "photo", src: P.photo, caption: shown ? "For " + shown : "" }],

@@ -516,7 +516,9 @@ body { padding-left: var(--sb-w); }
   .cg-sb-overlay.is-open { display: block; }
 }
 .navbar { display: none !important; }
-</style>
+      /* AAA (7:1) text in Night Shift, measured by scripts/audit-ux.mjs */
+      html.cg-night-shift .email-action-btn { background: #08423f; }
+    </style>
 <style id="cg-categories-toggle">
 /* Mobile menu button: hamburger icon + "Categories" label */
 .cg-sidebar-toggle{top:10px;left:12px;width:auto;height:40px;padding:8px 12px;gap:8px;max-width:calc(100vw - 24px);
