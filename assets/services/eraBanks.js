@@ -688,7 +688,8 @@
     var years = e.y[0] === e.y[1] ? " (" + e.y[0] + ")" : "";
     if (e.th === "movie") return e.t + years + (e.x ? ", with " + e.x : "");
     if (e.th === "music") return e.t + years + (e.x ? ", " + e.x : "");
-    if (e.th === "slogan") return "“" + e.t + "”" + (e.x ? ", " + e.x : "");
+    if (e.th === "slogan") return "\u201C" + e.t + "\u201D" + (e.x && e.t.toLowerCase().indexOf(e.x.toLowerCase()) < 0 ? ", " + e.x : "");
+    if (e.th === "place") return e.t + (e.x ? " (" + e.x + ")" : "");
     return e.t + (e.x && e.th !== "household" && e.th !== "trivia" ? ", " + e.x : "");
   }
 
