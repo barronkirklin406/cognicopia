@@ -19,7 +19,7 @@
      private    nothing was requested from outside the page, no script errors
    Made-up people only. Needs Playwright. Run: node scripts/check-profile-story-ui.mjs
    ===================================================================== */
-import { loadPlaywright, serve } from "./lib/browser.mjs";
+import { loadPlaywright, serve, agreeToDialogs } from "./lib/browser.mjs";
 
 const { chromium } = loadPlaywright();
 const { srv, base } = await serve();
@@ -31,7 +31,7 @@ try {
   const ctx = await browser.newContext({ viewport: { width: 1366, height: 900 }, serviceWorkers: "block", acceptDownloads: true });
   await ctx.addInitScript(() => { try { localStorage.setItem("cognicopia_eula_accepted", "true"); } catch (e) { /* ignore */ } });
   const watch = pg => { pg.on("pageerror", e => errors.push(e.message)); pg.on("console", m => { if (m.type() === "error") errors.push("console: " + m.text().slice(0, 140)); }); pg.on("request", r => { const u = r.url(); if (!u.startsWith(base) && !/^(data|blob|about):/.test(u)) foreign.push(u); }); };
-  const p = await ctx.newPage(); watch(p);
+  const p = await ctx.newPage(); watch(p); await agreeToDialogs(p);
   await p.goto(base + "profile.html", { waitUntil: "load" }); await p.waitForSelector("#rapName"); await p.waitForTimeout(900);
   /* move to a step the way a person does: Next until it is reached (a later step's own button is off until then), the step's button to go back */
   const goOn = async (pg, n) => {

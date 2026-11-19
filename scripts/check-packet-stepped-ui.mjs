@@ -73,6 +73,9 @@ try {
   ok(new RegExp("^Finished: " + A.pages.length + " pages").test(seen[seen.length - 1] || ""), `it ends with "Finished" and the PDF's own count (${seen[seen.length - 1]}; the PDF has ${A.pages.length})`);
 
   /* ---------- the same packet ---------- */
+  /* Since November 19, 2026 each click makes a new packet (the day's version moves on) and what this browser remembers of the pages made keeps the
+     next one different. This check compares one packet made two ways, so it holds the version still and forgets what was made between builds. */
+  await p.evaluate(() => { window.bumpDailyVariant = () => 0; window.CogniVariety && window.CogniVariety.clear(); });
   const once = await save(p, "once.pdf", () => p.evaluate(() => { buildPacket(window.__r); }));
   const B = readPdf(once);
   const differs = A.pages.map((t, i) => t === B.pages[i] ? -1 : i).filter(i => i >= 0);
@@ -81,6 +84,7 @@ try {
   /* slowed tenfold, as on a busy old computer, with other code drawing random numbers between the steps: the button again */
   const cdp = await ctx.newCDPSession(p); await cdp.send("Emulation.setCPUThrottlingRate", { rate: 10 });
   await p.evaluate(() => { window.__seen = []; window.__ticks = 0; window.__iv = setInterval(() => { for (let i = 0; i < 50; i++) prand(); window.__ticks++; }, 1); });
+  await p.evaluate(() => { window.CogniVariety && window.CogniVariety.clear(); });
   const slow = await save(p, "slow.pdf", () => p.click("#go"));
   await p.waitForTimeout(300); await p.evaluate(() => clearInterval(window.__iv));
   await cdp.send("Emulation.setCPUThrottlingRate", { rate: 1 });
