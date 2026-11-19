@@ -11254,16 +11254,27 @@ function hybridPage(D,r,s,theme){
   const W=PW-2*MARGIN, d=D.d;
   const size=Math.max(22,D.lift), line=(t,sz,bold)=>{ ({size:sz,bold}=D.fit(sz,bold)); d.setFont("helvetica",bold?"bold":"normal"); d.setFontSize(sz); return {sz,bold,lines:d.splitTextToSize(String(t),W)}; };
   let items=spec.items.slice(), closing=spec.closing;
+  let pairs=spec.pairs?{left:spec.pairs.left.slice(),right:spec.pairs.right.slice(),answers:(spec.pairs.answers||[]).slice()}:null;
+  /* a word that is wider than its box (a long pair word at the largest type) goes on two lines and the row grows to hold it, so no word runs off the page */
+  const pairSz=Math.max(size,22), pairColW=(W-72)/2;
+  const pairLines=t=>{ d.setFont("helvetica","bold"); d.setFontSize(pairSz); return d.splitTextToSize(String(t),pairColW-20); };
+  const pairRow=i=>Math.max(pairLines(pairs.left[i]).length,pairLines(pairs.right[i]).length)*pairSz*1.2+16;
   const measure=()=>{
     let h=size;                                  // the first baseline sits one line below the picture
     if(spec.lyric){ const l=line(spec.lyric.lead,size*1.1,true); h+=l.lines.length*l.sz*1.3+l.sz*1.7+10; }
-    if(spec.pairs){ const sz=size; h+=spec.pairs.left.length*(sz*1.15+16+8); }
+    if(pairs){ h+=pairs.left.reduce((n,_,i)=>n+pairRow(i)+8,0); }
     for(const it of items){ const t=line(it.text,size,true); h+=t.lines.length*t.sz*1.3+8; if(it.sub){ const u=line(it.sub,size*0.9,false); h+=u.lines.length*u.sz*1.3; } }
     if(closing){ const c=line(closing,size,false); h+=c.lines.length*c.sz*1.3+8; }
     return h;
   };
   let room=D.room()-6-measure();
-  while(room<165 && (closing||items.length>1)){ if(closing) closing=""; else items=items.slice(0,-1); room=D.room()-6-measure(); }
+  /* too little room for the picture: the closing line goes first, then extra items, then a pair (never below two pairs) */
+  while(room<165 && (closing||items.length>1||(pairs&&pairs.left.length>2))){
+    if(closing) closing=""; else if(items.length>1) items=items.slice(0,-1);
+    else { pairs.left.pop(); pairs.right.pop(); pairs.answers.pop(); }
+    room=D.room()-6-measure();
+  }
+  if(pairs&&cur) cur.note="Pairs on this page: "+pairs.answers.join("; ")+".";
   const artH=Math.min(5.2*72,Math.max(room-10,120)), artW=artH*0.75;
   if(spec.art) C.toPDF(d,C.render(spec.art.id,spec.art.tier),(PW-artW)/2,D.y,artW);
   d.setLineWidth(1); d.setDrawColor(0); d.setFillColor(255,255,255);
@@ -11275,11 +11286,14 @@ function hybridPage(D,r,s,theme){
     const ew=d.getTextWidth(spec.lyric.end)+36, bh=l.sz*1.5;
     d.setLineWidth(3); d.roundedRect(mid-ew/2,D.y-l.sz*0.9,ew,bh,8,8,"S"); d.text(spec.lyric.end,mid,D.y+l.sz*0.2,{align:"center"}); D.y+=bh+4;
   }
-  if(spec.pairs){
-    const sz=Math.max(size,22), colW=(W-72)/2, rowH=sz*1.15+16; d.setFont("helvetica","bold"); d.setFontSize(sz);
-    spec.pairs.left.forEach((lw,i)=>{
-      const ty=D.y; d.setLineWidth(3);
-      [[MARGIN,lw],[MARGIN+W-colW,spec.pairs.right[i]]].forEach(sd=>{ d.roundedRect(sd[0],ty,colW,rowH,8,8,"S"); d.text(sd[1],sd[0]+colW/2,ty+rowH/2+sz*0.35,{align:"center"}); });
+  if(pairs){
+    const sz=pairSz, colW=pairColW; d.setFont("helvetica","bold"); d.setFontSize(sz);
+    pairs.left.forEach((lw,i)=>{
+      const ty=D.y, rowH=pairRow(i); d.setLineWidth(3); d.setFont("helvetica","bold"); d.setFontSize(sz);
+      [[MARGIN,lw],[MARGIN+W-colW,pairs.right[i]]].forEach(sd=>{
+        d.roundedRect(sd[0],ty,colW,rowH,8,8,"S");
+        const ls=pairLines(sd[1]); ls.forEach((ln,k)=>d.text(ln,sd[0]+colW/2,ty+rowH/2-(ls.length-1)*sz*0.6+k*sz*1.2+sz*0.35,{align:"center"}));
+      });
       d.setFillColor(0); d.circle(MARGIN+colW+12,ty+rowH/2,4,"F"); d.circle(MARGIN+W-colW-12,ty+rowH/2,4,"F"); d.setFillColor(255,255,255);
       D.y+=rowH+8;
     });
