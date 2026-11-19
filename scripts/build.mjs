@@ -348,6 +348,19 @@ step("The variety memory, the era banks and the hybrid sheets (assets/services/v
   catch (e){ throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message); }
 });
 
+step("The personal life-detail lexicon (assets/services/personalLexicon.js): a resident's own words (brothers and sisters with their place in the family, pets with their kind, the first car, the town, the work, the birth year) each get one clue true of that exact answer and the letters it takes in a grid; no order, kind or year is ever invented; topics to avoid and people who have passed away are left out; a profile with under three facts is thin; late stage gets no crossword or word search (scripts/check-personal-lexicon.mjs)", () => {
+  try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-personal-lexicon.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim().split("\n").pop(); }
+  catch (e){ throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message); }
+});
+
+step("The resident's own words in the word search and the crossword, proved on real PDFs read back with PyMuPDF: the detail fields are kept, early stage word search hints and clue crossword clues are the true ones for their answers with the letters really in the grid, the avoid list is respected, a thin profile is not called 'from your life', late stage has neither puzzle (scripts/check-personal-puzzles-ui.mjs)", () => {
+  try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-personal-puzzles-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim().split("\n").pop(); }
+  catch (e){
+    if (e.status === 2) return "skipped: Playwright or PyMuPDF is not installed here (see docs/dev-setup.md)";
+    throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message);
+  }
+});
+
 step("Fresh-every-click packets, proved on real PDFs read back with PyMuPDF: three Quick Print clicks and three packet clicks give three different packets, each with hybrid trace-and-talk pages at least 60% full and pure black on white, the staff sheet on page 1 listing each with its tips (hand-under-hand), what this browser remembers holds ids only and clears, nothing leaves the page", () => {
   try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-hybrid-pages-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim().split("\n").pop(); }
   catch (e){

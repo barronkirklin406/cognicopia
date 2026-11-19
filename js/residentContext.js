@@ -110,15 +110,23 @@
   /* ---------- family, by generation ---------- */
   var GENERATION = {
     spouse: "partner", partner: "partner", son: "children", daughter: "children", grandchild: "grandchildren", "great-grandchild": "greatGrandchildren",
-    sibling: "siblings", parent: "parents", "other-family": "otherFamily", friend: "friends", neighbor: "friends",
-    "pet-dog": "pets", "pet-cat": "pets", "pet-other": "pets"
+    sibling: "siblings", brother: "siblings", sister: "siblings", parent: "parents", "other-family": "otherFamily", friend: "friends", neighbor: "friends",
+    "pet-dog": "pets", "pet-cat": "pets", "pet-bird": "pets", "pet-horse": "pets", "pet-other": "pets"
   };
+  /* what a profile can say about one person, and nothing it does not: a brother or sister's place in the family, a pet's kind.
+     They come from the form's own choices; a blank stays blank and no tool guesses it. */
+  var ORDER_CODES = { oldest: 1, middle: 1, younger: 1, youngest: 1, twin: 1 };
+  var PET_KIND = { "pet-dog": "dog", "pet-cat": "cat", "pet-bird": "bird", "pet-horse": "horse" };
   function family(people) {
     var f = { partner: [], children: [], grandchildren: [], greatGrandchildren: [], siblings: [], parents: [], otherFamily: [], friends: [], pets: [], others: [], all: [] };
     arr(people).forEach(function (x) {
       x = obj(x); var name = str(x.name); if (!name) return;
       var rel = obj(x.relationship), code = str(rel.code), isPet = !!x.isPet || code.indexOf("pet-") === 0;
       var one = { name: name, first: firstWord(name), relation: code, relationLabel: str(rel.label), isPet: isPet, passed: !!x.passedAway };
+      var ord = str(x.order).toLowerCase();
+      if (!isPet && ORDER_CODES[ord] && /^(brother|sister|sibling)$/.test(code)) one.order = ord;               // "oldest brother" is said only when the profile says so
+      if (code === "brother" || code === "sister") one.role = code;
+      if (isPet && PET_KIND[code]) one.petKind = PET_KIND[code];
       if (x.photo) one.photo = String(x.photo);                               // the name of a sealed picture, when the profile holds one
       (f[isPet ? "pets" : (GENERATION[code] || "others")]).push(one); f.all.push(one);
     });
@@ -165,6 +173,8 @@
       work: { code: str(occ.code), label: labelOf(occ), vocation: str(voc.code), vocationLabel: labelOf(voc), text: (str(occ.code) + " " + labelOf(occ) + " " + str(voc.code) + " " + labelOf(voc) + " " + str(p.pastVocation)).toLowerCase().trim() },
       hometown: { place: place, town: parts[0] || "", state: parts[1] || "", environment: labelOf(home.environment), region: labelOf(t2.region), regionCode: codeOf(t2.region) },
       family: fam,
+      /* the first car, as the form recorded it (make, model, year, color); empty when nothing was entered */
+      vehicles: arr(t3.vehicles).map(function (v) { v = obj(v); var y = Math.round(Number(v.year)) || 0; return { first: v.first !== false, make: str(v.make), model: str(v.model), year: y >= 1890 && y <= 2030 ? y : 0, color: str(v.color) }; }).filter(function (v) { return v.make || v.model || v.year || v.color; }),
       music: { genres: arr(music.genres).map(labelOf).filter(Boolean), artists: arr(music.artists).map(labelOf).filter(Boolean), favoriteSong: str(music.favoriteSong) },
       hobbies: hobbies, activities: arr(t2.activityPreferences).map(labelOf).filter(Boolean), skills: arr(obj(t2.skills).items).map(labelOf).filter(Boolean),
       decades: arr(t2.meaningfulDecades).map(labelOf).filter(Boolean),

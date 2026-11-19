@@ -218,6 +218,11 @@
     toList(raw.spouse).forEach(function(e){ add(e, true); });
     toList(raw.crew).forEach(function(e){ add(e, true); });
     toList(raw.state).forEach(function(e){ add(e, false); });
+    /* brothers and sisters, a mother, and the first car (its make and model when they were entered; else the words typed for it) */
+    toList(raw.sibs).forEach(function(e){ add(e, true); });
+    toList(raw.mother).forEach(function(e){ add(e, true); });
+    if (raw.carMake || raw.carModel){ toList(raw.carMake).forEach(function(e){ add(e, false); }); toList(raw.carModel).forEach(function(e){ add(e, false); }); }
+    else String(raw.firstcar == null ? "" : raw.firstcar).split(/[\s,\/]+/).forEach(function(e){ if (/^[A-Za-z]{4,}$/.test(e)) add(e, false); });
     return out;
   }
   var firstWord = function(name){ var w = P.fold(name).split(" ")[0] || ""; return w.toUpperCase(); };
