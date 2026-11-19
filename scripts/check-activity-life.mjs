@@ -224,6 +224,13 @@ ok(JSON.stringify(gen(dot(1), "hometown", 3, 4).sheets) === JSON.stringify(gen(d
   ok(!oh.includes("The Gateway Arch") && !mt.includes("Old Faithful at Yellowstone"), "Ohio is never offered the Gateway Arch and Montana never Old Faithful");
   ok(opts("Billings MT", 2).every(x => D.STATE_BITS.mt.sights.concat(D.STATE_BITS.mt.tastes).includes(x)), "a hometown written without a comma (\"Billings MT\") still finds its state");
   ok(opts("Somewhere, Nowhereland", 1).length >= 3 && opts("Somewhere, Nowhereland", 1).every(x => D.ANYWHERE.sights.concat(D.ANYWHERE.tastes).includes(x)), "an unknown place gets the neutral hometown scenes, never a landmark of one state"); }
+/* a coloring page is a library drawing by default; a photo's line drawing only when a photo is chosen (the drawing from a photo is rougher and is not promised closed) */
+{ const one = gen(dot(1), "photocolor", 1).sheets, pic = one[0] && one[0].blocks.find(b => b.kind === "picture"), photo = one[0] && one[0].blocks.find(b => b.kind === "photo");
+  ok(one.length === 1 && pic && pic.pic && !photo, "with no photo, the coloring page is a library drawing");
+  ok(pic && ctx.CognicopiaColoringManifest.assets().some(a => a.id === pic.pic), `and the drawing is a finished one from the library (${pic && pic.pic})`);
+  const PNG = "data:image/png;base64,iVBORw0KGgo=";
+  const withPhoto = gen(Object.assign(dot(1), { photo: PNG }), "photocolor", 1).sheets[0];
+  ok(withPhoto && withPhoto.blocks.some(b => b.kind === "photo") && !withPhoto.blocks.some(b => b.kind === "picture"), "with a photo chosen, the page is the photo's line drawing instead"); }
 /* songs of my years */
 { const r = gen(dot(1), "songs", 4), items = r.sheets.flatMap(sh => (sh.blocks.find(b => b.kind === "list") || { items: [] }).items);
   ok(r.sheets[0].subtitle === "1945 to 1966" && items.length >= 8, `her songs are from 1945 to 1966, the years she was 7 to 28 (${r.sheets[0].subtitle}, ${items.length} listed)`);

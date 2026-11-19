@@ -13,7 +13,7 @@
      all             nothing is requested from outside the page, and no page script fails
    ===================================================================== */
 import fs from "fs";
-import { serve, loadPlaywright, agreed } from "./lib/browser.mjs";
+import { serve, loadPlaywright, agreed, agreeToDialogs } from "./lib/browser.mjs";
 
 const { chromium } = loadPlaywright();
 const { srv, base } = await serve();
@@ -128,7 +128,7 @@ ok(await pg.$('[data-privacy-choice="fpNames"]') !== null || true, "the Facility
 await pg.goto(base + "index.html"); await pg.waitForTimeout(1200);
 ok(await pg.$('[data-privacy-choice="arbNamesCsv"]') !== null && await pg.$('[data-privacy-choice="arbNamesBackup"]') !== null, "the packet tool's backup panel offers a names choice for the spreadsheet and for the backup file");
 await pg.evaluate(() => { document.getElementById("arbBackup").open = true; });
-pg.on("dialog", d => d.accept());
+pg.on("dialog", d => d.accept()); await agreeToDialogs(pg);
 const [dl] = await Promise.all([pg.waitForEvent("download", { timeout: 8000 }).catch(() => null), pg.evaluate(() => { document.getElementById("arbExportMore").click(); document.querySelector('[data-export="csv"]').click(); })]);
 if (dl) {
   const csv = fs.readFileSync(await dl.path(), "utf8");

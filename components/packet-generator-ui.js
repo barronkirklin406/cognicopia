@@ -120,7 +120,7 @@
       '<div class="as-row"><label class="as-lab" for="asWords">Or describe the picture in a few words</label><input id="asWords" type="text" maxlength="120" placeholder="a rose in a jug" autocomplete="off"></div></div>' +
       '<div class="as-only-sheet">' + seg("layout", "Layout for prompts and steps", PL.LAYOUTS.map(function (l) { return [l.id, l.label]; })) + '</div>');
     var photoAcc = acc("asAccPhoto", "A photo for a coloring page or a door sign", "turned into bold black lines in this window, never saved or sent",
-      '<p class="as-hint">Choose a photo and it is turned into a line drawing right here. The photo itself is not kept or sent anywhere; only the drawing is used, for this packet. A photo makes a rougher drawing than the library\u2019s hand-traced pictures, so look at the page before you print. A clear, well-lit photo with one main subject works best.</p>' +
+      '<p class="as-hint">A coloring page uses a clean drawing from the library, chosen for their work or what they love, unless you choose a photo here. Choose a photo and it is turned into a line drawing right here. The photo itself is not kept or sent anywhere; only the drawing is used, for this packet. A photo makes a rougher drawing than the library\u2019s hand-traced pictures, so look at the page before you print. A clear, well-lit photo with one main subject works best.</p>' +
       '<div class="as-row"><label class="as-lab" for="asPhoto">Choose a photo</label><input id="asPhoto" type="file" accept="image/*"></div>' +
       '<div class="as-photo-prev"><img id="asPhotoPrev" alt="The line drawing made from the photo" hidden><button type="button" class="as-btn as-alt" id="asPhotoClear" hidden>Remove the photo</button></div>' +
       '<p class="as-hint" id="asPhotoMsg" role="status" aria-live="polite"></p>' +
@@ -194,7 +194,7 @@
     state.resident = p ? id : ""; state.recent = [];
     if (p && window.CogniEngage) window.CogniEngage.wentWell(id, 21, 3).then(function (lines) { if (state.resident === id && lines.join("|") !== (state.recent || []).join("|")) { state.recent = lines; refresh(false); } });
     if (!p) {                                          // a new person starts clean: nothing of the last resident carries over (the support settings stay)
-      mapped = {}; state.name = ""; state.born = ""; state.vocation = ""; state.interests = ""; state.avoid = ""; state.personal = ""; state.variant = 0;
+      state.adapt = null; mapped = {}; state.name = ""; state.born = ""; state.vocation = ""; state.interests = ""; state.avoid = ""; state.personal = ""; state.variant = 0;
       try { LS().removeItem(ACTIVE_KEY); } catch (e) { /* ignore */ }
       if (window.CogniWayfinding) window.CogniWayfinding.note("");
       sync(); paintWho(); refresh(false); return;
@@ -202,10 +202,16 @@
     var f = fromProfile(p); mapped = f;
     state.name = f.name; state.born = f.born; state.stage = f.stage; state.vocation = f.vocation; state.interests = f.interests; state.avoid = f.avoid; state.personal = f.personal; state.variant = 0;
     if (f.born) { var d = E.decadeFor ? E.decadeFor(Number(f.born)) : null; if (d) state.decade = d; }
+    /* the profile's condition setting (js/residentContext.js ADAPTATION_RULES) sets the defaults: open spacing, the late-stage pages; staff can change either */
+    var who = personOf(id), ad = who && who.adaptation && who.adaptation.code ? who.adaptation : null, rule = ad && R.ADAPTATION_RULES ? R.ADAPTATION_RULES[ad.code] : null;
+    state.adapt = ad ? { code: ad.code, label: ad.label, note: rule ? rule.note : "" } : null;
+    if (rule && rule.roomy) state.roomy = true;
+    if (rule && rule.stage && state.stage < rule.stage) state.stage = rule.stage;
     if (state.stage !== 1) state.challenge = false;
     try { LS().setItem(ACTIVE_KEY, id); } catch (e) { /* ignore */ }
     if (window.CogniWayfinding) window.CogniWayfinding.note(id);           // the active-resident bar, the search and the tab follow
     sync(); paintWho(); refresh(false);
+    if (state.adapt) whoMsg("Set from the profile (" + state.adapt.label + "): " + state.adapt.note + " Change any setting you like.", false);
   }
   function whoMsg(t, bad) { var m = $("#asWhoMsg"); if (!m) return; m.textContent = t; m.className = "as-hint" + (bad ? " as-bad" : t ? " as-ok" : ""); }
   function paintWho() {
@@ -260,7 +266,7 @@
   }
 
   /* ---------- making the packet ---------- */
-  function profile() { return { person: state.resident ? personOf(state.resident) : null, name: state.name, born: Number(state.born) || 0, nameStyle: state.nameStyle, personal: state.personal, challenge: state.challenge, stage: state.stage, dexterity: state.dexterity, roomy: state.roomy, recent: state.recent || [], photo: state.photo || "", decade: state.decade, interests: state.interests, avoid: state.avoid, vocation: state.vocation }; }
+  function profile() { return { adaptation: state.adapt ? state.adapt.code : "", person: state.resident ? personOf(state.resident) : null, name: state.name, born: Number(state.born) || 0, nameStyle: state.nameStyle, personal: state.personal, challenge: state.challenge, stage: state.stage, dexterity: state.dexterity, roomy: state.roomy, recent: state.recent || [], photo: state.photo || "", decade: state.decade, interests: state.interests, avoid: state.avoid, vocation: state.vocation }; }
   function kindsOn() { return KINDS.map(function (k) { return k[0]; }).filter(function (k) { return state.mix[k]; }); }
   function avoidList() { return R.avoidFromText(state.avoid); }
   var STAGE_KEY = ["E", "M", "L"];
@@ -434,13 +440,13 @@
   function exportPdf() {
     if (blocked()) { openGate(); return; }
     var SP = window.CognicopiaStudioPdf;
-    if (!SP || !(window.jspdf && window.jspdf.jsPDF)) { alert("The PDF maker could not load. Reload the page, or use Print and choose Save as PDF."); return; }
+    if (!SP || !(window.jspdf && window.jspdf.jsPDF)) { window.CogniDialog.notice("The PDF maker could not load. Reload the page, or use Print and choose Save as PDF."); return; }
     var btn = $("#asPdf"), label = btn.textContent, note = $("#asPdfNote"); btn.disabled = true; btn.textContent = "Compiling the PDF\u2026"; note.textContent = "";
     fontsReady().then(function () { return SP.make(made.pages, { gutter: state.gutter, title: "Cognicopia activity pages " + made.code }); }).then(function (r) {
       r.doc.save("cognicopia-" + made.code.toLowerCase() + ".pdf"); spend();
       lastPdf = { pages: made.pages.length, vector: r.vector, picture: r.picture };
       note.textContent = "PDF made: " + made.pages.length + (made.pages.length === 1 ? " page" : " pages") + (r.picture ? ", " + r.picture + " as a picture and the rest as text and lines." : ", as text and lines that stay sharp at any size.");
-    }).catch(function () { alert("The PDF could not be made. Use Print and choose Save as PDF."); }).then(function () { btn.disabled = false; btn.textContent = label; });
+    }).catch(function () { window.CogniDialog.notice("The PDF could not be made. Use Print and choose Save as PDF."); }).then(function () { btn.disabled = false; btn.textContent = label; });
   }
   function print() { if (blocked()) { openGate(); return; } fontsReady().then(function () { spend(); window.print(); }); }
 

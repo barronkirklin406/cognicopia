@@ -6525,7 +6525,7 @@ const LifePlannerUI = (function(){
     const nm = document.getElementById("lpSenseMonth"); if (nm) nm.textContent = D.MONTHS[S.month];
     syncSensePlaceholders();
   }
-  function onClick(e){
+  async function onClick(e){
     const b = e.target.closest("button, a[data-jump]");
     if (!b || !host.contains(b)) return;
     if (b.dataset.tab){ selectTab(+b.dataset.tab); return; }
@@ -6562,10 +6562,10 @@ const LifePlannerUI = (function(){
     if (b.dataset.jump){ e.preventDefault(); if (!S.obOpen) toggleOb(); const el = document.getElementById(b.dataset.jump); el.scrollIntoView({ behavior:"smooth", block:"start" }); const f = document.getElementById("lpName"); if (f) f.focus({ preventScroll:true }); return; }
     switch (b.id){
       case "lpExample":
-        if (hasData() && !confirm("Replace the details in the form with the example resident, Margaret?")) return;
+        if (hasData() && !(await CogniDialog.ask("Replace the details in the form with the example resident, Margaret?"))) return;
         replaceProfile(exampleProfile(), "the example resident"); toast("Example resident added. Edit anything, or press Start over."); return;
       case "lpReset":
-        if (hasData() && !confirm("Clear every resident detail from the planner form?")) return;
+        if (hasData() && !(await CogniDialog.ask("Clear every resident detail from the planner form?"))) return;
         Object.assign(S.opts, { tier:2, lineW:2, highContrast:false });
         replaceProfile(blankProfile(), ""); return;
       case "lpObToggle": toggleOb(); return;
@@ -6605,14 +6605,14 @@ const LifePlannerUI = (function(){
     const n = +t.dataset.tab, next = { ArrowRight:n % 4 + 1, ArrowLeft:(n + 2) % 4 + 1, Home:1, End:4 }[e.key];
     if (next){ e.preventDefault(); selectTab(next, true); }
   }
-  function onLoadChange(e){
+  async function onLoadChange(e){
     const id = e.target.value;
     if (!id) return;
     const p = savedProfiles().filter(x => x.id === id)[0];
     e.target.value = "";
     if (!p) return;
     const nm = p.tier1_core.preferredName || "this resident";
-    if (hasData() && !confirm("Replace the details in the form with " + nm + "’s saved profile?")) return;
+    if (hasData() && !(await CogniDialog.ask("Replace the details in the form with " + nm + "’s saved profile?"))) return;
     const nd = BookUI.needsFor(p);                // the profile's tier, line weight and contrast come with it
     S.opts.tier = nd.tier; S.opts.lineW = nd.lineW; S.opts.highContrast = nd.highContrast;
     S.srcId = p.id; ActiveResident.set(p.id);
@@ -6637,10 +6637,10 @@ const LifePlannerUI = (function(){
     S.opts.tier = nd.tier; S.opts.lineW = nd.lineW; S.opts.highContrast = nd.highContrast;
     S.profile = fromSaved(ar); S.source = (ar.tier1_core.preferredName || "this resident") + "’s saved profile"; S.srcId = ar.id; S.opts.sense = {}; S.opts.aiCopy = null; save();
   }
-  function fillFromActive(){
+  async function fillFromActive(){
     const ar = ActiveResident.profile(); if (!ar) return;
     const nm = ar.tier1_core.preferredName || "this resident";
-    if (hasData() && !confirm("Replace the details in the form with " + nm + "’s saved profile?")) return;
+    if (hasData() && !(await CogniDialog.ask("Replace the details in the form with " + nm + "’s saved profile?"))) return;
     const nd = BookUI.needsFor(ar); S.opts.tier = nd.tier; S.opts.lineW = nd.lineW; S.opts.highContrast = nd.highContrast; S.srcId = ar.id;
     replaceProfile(fromSaved(ar), nm + "’s saved profile");
   }
@@ -7206,7 +7206,7 @@ const LifeJournalUI = (function(){
     else return;
     save(); refresh();
   }
-  function onClick(e){
+  async function onClick(e){
     const b = e.target.closest("button");
     if (!b || !host.contains(b)) return;
     if (b.dataset.tab){ selectTab(+b.dataset.tab); return; }
@@ -7234,10 +7234,10 @@ const LifeJournalUI = (function(){
     }
     switch (b.id){
       case "ljExample":
-        if (hasData() && !confirm("Replace the details in the journal with the example resident, Margaret?")) return;
+        if (hasData() && !(await CogniDialog.ask("Replace the details in the journal with the example resident, Margaret?"))) return;
         replaceProfile(exampleProfile(), "the example resident"); toast("Example resident added. Edit anything, or press Start over."); return;
       case "ljReset":
-        if (hasData() && !confirm("Clear every detail from the journal form?")) return;
+        if (hasData() && !(await CogniDialog.ask("Clear every detail from the journal form?"))) return;
         Object.assign(S.opts, { tier: 2, lineW: 2, highContrast: false });
         replaceProfile(blankProfile(), ""); return;
       case "ljObToggle":
@@ -7257,7 +7257,7 @@ const LifeJournalUI = (function(){
     const n = +t.dataset.tab, next = { ArrowRight: n % 4 + 1, ArrowLeft: (n + 2) % 4 + 1, Home: 1, End: 4 }[e.key];
     if (next){ e.preventDefault(); selectTab(next, true); }
   }
-  function onLoad(e){
+  async function onLoad(e){
     const id = e.target.value;
     if (!id) return;
     e.target.value = "";
@@ -7270,7 +7270,7 @@ const LifeJournalUI = (function(){
       if (p){ prof = fromSaved(p); label = (p.tier1_core.preferredName || "this resident") + "’s saved profile"; needs = BookUI.needsFor(p); }
     }
     if (!prof) return;
-    if (hasData() && !confirm("Replace the details in the journal with " + label + "?")) return;
+    if (hasData() && !(await CogniDialog.ask("Replace the details in the journal with " + label + "?"))) return;
     if (needs){ S.opts.tier = needs.tier; S.opts.lineW = needs.lineW; S.opts.highContrast = needs.highContrast; }   // the profile's tier, lines and contrast come with it
     if (id !== "planner"){ S.srcId = id; ActiveResident.set(id); }
     replaceProfile(prof, label);
@@ -7293,10 +7293,10 @@ const LifeJournalUI = (function(){
     S.opts.tier = nd.tier; S.opts.lineW = nd.lineW; S.opts.highContrast = nd.highContrast;
     S.profile = fromSaved(ar); S.source = (ar.tier1_core.preferredName || "this resident") + "’s saved profile"; S.srcId = ar.id; S.opts.aiCopy = null; save();
   }
-  function fillFromActive(){
+  async function fillFromActive(){
     const ar = ActiveResident.profile(); if (!ar) return;
     const nm = ar.tier1_core.preferredName || "this resident";
-    if (hasData() && !confirm("Replace the details in the journal with " + nm + "’s saved profile?")) return;
+    if (hasData() && !(await CogniDialog.ask("Replace the details in the journal with " + nm + "’s saved profile?"))) return;
     const nd = BookUI.needsFor(ar); S.opts.tier = nd.tier; S.opts.lineW = nd.lineW; S.opts.highContrast = nd.highContrast; S.srcId = ar.id;
     replaceProfile(fromSaved(ar), nm + "’s saved profile");
   }
@@ -7468,7 +7468,7 @@ const TrackerUI = (function(){
     const q = host && host.querySelector("#trQuick"); if (!q || !window.CogniEngage || !P) return;
     window.CogniEngage.mount(q, { residentId: () => P.id, names: () => names(P), activity: () => "Activity with staff", onSaved: () => redraw() });
   }
-  function onEvent(e){
+  async function onEvent(e){
     const t = e.target, rec = read(P.id);
     if (e.type === "change"){
       if (t.id === "trStage"){ write(T.setStage(rec, t.value, new Date())); redraw(); return; }
@@ -7486,7 +7486,7 @@ const TrackerUI = (function(){
     } else if (b.dataset.trdel){ write(T.removeEntry(rec, b.dataset.trdel, new Date())); redraw(); }
     else if (b.id === "trUse"){
       const sg = suggestionFor(P, rec);
-      if (!confirm(`Set ${cgScreenName(P)}'s profile to Tier ${sg.tier}? Their pages will print at that tier from now on.`)) return;
+      if (!(await CogniDialog.ask(`Set ${cgScreenName(P)}'s profile to Tier ${sg.tier}? Their pages will print at that tier from now on.`))) return;
       P.tier1_core.cognitiveTier = sg.tier; P.updatedAt = new Date().toISOString();
       try { CG_LS.setItem("cognicopia_resident_" + P.id, JSON.stringify(P)); if (window.CogniSecureStore && window.CogniSecureStore.flush) window.CogniSecureStore.flush(); toast("Profile set to Tier " + sg.tier + "."); redraw(); } catch (err){ toast("The profile could not be saved: " + err.message); }
     } else if (b.id === "trKeep"){ msg("Kept at Tier " + suggestionFor(P, rec).current + ". The suggestion will update as more is recorded."); }
@@ -8813,6 +8813,7 @@ const CogniLibrary = (function(){
   return { render, layout, sheet, buildPdf, loadPdfKit, pageOpts, state, LIBRARY_ACTIVITY };
 })();
 </script>
+<script src="js/dialogs.js"></script>
 <script src="assets/services/eraWindow.js"></script>
 <script src="assets/services/reminiscenceEngine.js"></script>
 <script id="rm-ui">
@@ -9253,7 +9254,7 @@ const ClinicalUI = (function(){
     const p = find(S.resident), log = readLog(p.id), ctx = ctxFor(p, log);
     BookUI.print(K.soapPages(sess, ctx).map(h => ({ html:h })), ["Session note", cgFileName(p), sess.date].filter(Boolean).join(" - "), null, { staff:true });
   }
-  function onClick(e){
+  async function onClick(e){
     const b = e.target.closest("button"); if (!b || !root.contains(b)) return;
     const p = S.resident ? find(S.resident) : null; if (!p) return;
     const log = readLog(p.id);
@@ -9279,7 +9280,7 @@ const ClinicalUI = (function(){
       log.staging.push(rec); if (writeLog(K.normalizeLog(log, p.id))){ renderBody(); toast("Stage recorded."); }
     } else if (b.id === "clUseTier"){
       const m = K.tierForStage(K.latestStaging(log));
-      if (!m.tier || !confirm(`Set ${cgScreenName(p)}'s profile to Tier ${m.tier}? Their pages will print at that tier from now on.`)) return;
+      if (!m.tier || !(await CogniDialog.ask(`Set ${cgScreenName(p)}'s profile to Tier ${m.tier}? Their pages will print at that tier from now on.`))) return;
       p.tier1_core.cognitiveTier = m.tier; p.updatedAt = new Date().toISOString();
       try { CG_LS.setItem("cognicopia_resident_" + p.id, JSON.stringify(p)); renderBody(); toast(`Profile set to Tier ${m.tier}.`); } catch (err){ toast("The profile could not be saved: " + err.message); }
     } else if (b.id === "clNew"){ S.editing = blank(); renderForm(); document.getElementById("clFormH").scrollIntoView({ block:"start" }); }
@@ -9297,7 +9298,7 @@ const ClinicalUI = (function(){
     else if (b.id === "clPrintThis"){ const sess = save(); if (sess) printNote(sess); }
     else if (b.id === "clCancel"){ S.editing = null; renderBody(); }
     else if (b.id === "clDelete"){
-      if (!confirm("Delete this session note from this computer? This cannot be undone.")) return;
+      if (!(await CogniDialog.ask("Delete this session note from this computer? This cannot be undone."))) return;
       log.sessions = log.sessions.filter(x => x.id !== S.editing.id); if (writeLog(log)){ S.editing = null; renderBody(); toast("Session deleted."); }
     }
   }
@@ -9710,7 +9711,7 @@ const DailyOpsUI = (function(){
   }
   async function printSbar(){
     const sb = D.sbar(sheetBoard(), S.day, S.shift, new Date(), wingNow());
-    if (sb.empty && !confirm("There is nothing recorded for this day and shift. Print a blank SBAR sheet?")) return;
+    if (sb.empty && !(await CogniDialog.ask("There is nothing recorded for this day and shift. Print a blank SBAR sheet?"))) return;
     const pages = (await sheetPages(sb, D.sbarPages)).map(html => ({ html }));
     BookUI.print(pages, ["SBAR handoff", S.day, S.shift === "all" ? "all shifts" : S.shift].join(" - "), null, { staff:true });
   }
@@ -9719,13 +9720,13 @@ const DailyOpsUI = (function(){
     const HL = await import("./js/shift-highlights.js"), CS = window.CogniShiftCal, now = new Date();
     let cal = null; try { const raw = CS && CG_LS.getItem(CS.STORE_KEY); cal = raw ? JSON.parse(raw) : null; } catch (e){ cal = null; }
     const h = HL.build(sheetBoard(), { day:S.day, shift:S.shift, wing:wingNow(), now });
-    if (!h.totals.soothe && !h.totals.watch && !h.totals.worked && !h.totals.open && !confirm("There is nothing recorded for this day and shift. Print a blank handover?")) return;
+    if (!h.totals.soothe && !h.totals.watch && !h.totals.worked && !h.totals.open && !(await CogniDialog.ask("There is nothing recorded for this day and shift. Print a blank handover?"))) return;
     const html = HL.handoverPage(h, { facility:settings.facility || "", wing:wingNow() || "", coming:HL.comingOn(cal, S.day, S.shift) });
     BookUI.print([{ html:`<div class="sheet cg-ho-wrap">${html}</div>` }], ["Shift handover", S.day, S.shift === "all" ? "all shifts" : S.shift].join(" - "), null, { staff:true });
   }
   async function printSheet(){
     const h = D.handoff(sheetBoard(), S.day, S.shift, new Date(), wingNow());
-    if (!h.groups.some(g => g.notes.length) && !h.open.length && !h.done.length && !confirm("There is nothing recorded for this day and shift. Print a blank handoff sheet?")) return;
+    if (!h.groups.some(g => g.notes.length) && !h.open.length && !h.done.length && !(await CogniDialog.ask("There is nothing recorded for this day and shift. Print a blank handoff sheet?"))) return;
     const pages = (await sheetPages(h)).map(html => ({ html }));
     BookUI.print(pages, ["Shift handoff", S.day, S.shift === "all" ? "all shifts" : S.shift].join(" - "), null, { staff:true });
   }
@@ -9774,7 +9775,7 @@ const DailyOpsUI = (function(){
     S.day = day; S.edit = null; if (box) box.value = day;
     renderForms(); renderLists();                                              // the date field is not redrawn, so the focus stays where it is
   }
-  function onClick(e){
+  async function onClick(e){
     const b = e.target.closest("button"); if (!b || !root.contains(b)) return;
     if (b.dataset.day){ setDay(b.dataset.day === "today" ? today() : D.addDays(S.day, +b.dataset.day)); return; }
     if (b.id === "shfSbar") return printSbar().catch(err => toast("The sheet could not be made: " + (err && err.message || err)));
@@ -9795,12 +9796,12 @@ const DailyOpsUI = (function(){
     if (b.dataset.keep){ S.nameOK[b.dataset.keep] = true; return b.dataset.keep === "note" ? submitNote() : submitTask(); }
     if (b.dataset.forget){ if (commit(x => D.forgetInitials(x, b.dataset.forget))){ if (S.me === b.dataset.forget) S.me = ""; renderWho(); renderTaskForm(); renderMore(); } return; }
     if (b.id === "shfClear"){
-      if (!confirm("Clear every note and task on the Shift board from this computer? This cannot be undone. A locked backup is the only way to get them back.")) return;
+      if (!(await CogniDialog.ask("Clear every note and task on the Shift board from this computer? This cannot be undone. A locked backup is the only way to get them back."))) return;
       try { CG_LS.removeItem(D.STORE_KEY); } catch (err){ toast(err.message); return; }
       board = D.emptyBoard(); S.edit = null; S.me = ""; renderWho(); renderForms(); renderLists(); renderMore(); toast("The board was cleared.");
     }
   }
-  function onChange(e){
+  async function onChange(e){
     const t = e.target;
     if (t.name === "shfMe"){ S.me = t.value; S.meAt = Date.now(); updateAs(); return; }
     if (t.name === "shfShift"){ S.shift = t.value; S.edit = null; renderForms(); renderLists(); return; }
@@ -9815,7 +9816,7 @@ const DailyOpsUI = (function(){
     if (t.dataset.done){ toggleDone(t.dataset.done, t.checked); return; }
     if (t.id === "shfKeep"){
       const p = D.prune(D.setKeepDays(readBoard(), +t.value), today());
-      if ((p.removedNotes || p.removedTasks) && !confirm(`Keeping notes for ${t.value} days removes ${pl(p.removedNotes, "note", "notes")} and ${pl(p.removedTasks, "finished task", "finished tasks")} older than that. Continue?`)){ t.value = board.keepDays; return; }
+      if ((p.removedNotes || p.removedTasks) && !(await CogniDialog.ask(`Keeping notes for ${t.value} days removes ${pl(p.removedNotes, "note", "notes")} and ${pl(p.removedTasks, "finished task", "finished tasks")} older than that. Continue?`))){ t.value = board.keepDays; return; }
       commit(x => D.setKeepDays(x, +t.value), "Notes are kept for " + p.board.keepDays + " days.");
     }
   }
@@ -10166,7 +10167,7 @@ const HeirloomUI = (function(){
       const kk = { hlCw:"width", hlCh:"height", hlCs:"spine", hlCwrap:"wrap" }[t.id]; o.cover[kk] = +t.value; o.cover.estimated = false; renderCoverPreview(find());
     }
   }
-  function onClick(e){
+  async function onClick(e){
     const b = e.target.closest("button"); if (!b || !root.contains(b)) return;
     const p = find();
     if (b.dataset.tab){ S.tab = b.dataset.tab; renderPanel(); document.getElementById("hlTab-" + S.tab).focus(); return; }
@@ -10177,7 +10178,7 @@ const HeirloomUI = (function(){
     else if (b.id === "hlCancel"){ S.editing = null; renderPanel(); }
     else if (b.id === "hlPhotoDrop"){ S.editing.photo = ""; S.editing.photoW = S.editing.photoH = 0; renderForm(p); }
     else if (b.id === "hlDelete"){
-      if (!confirm("Delete this memory from this computer? This cannot be undone.")) return;
+      if (!(await CogniDialog.ask("Delete this memory from this computer? This cannot be undone."))) return;
       const k = readKeeper(p.id), gone = k.entries.filter(x => x.id === S.editing.id)[0];
       k.entries = k.entries.filter(x => x.id !== S.editing.id);
       if (gone && gone.photo) SS.deleteBlob(H.PHOTO_PREFIX + gone.photo).catch(() => {});
@@ -10355,10 +10356,10 @@ const FacilityUI = (function(){
     if (!SS){ bkMsg("This browser cannot open locked files.", true); return; }
     if (!file){ bkMsg("Choose the backup file first.", true); return; }
     bkMsg("Opening…");
-    file.text().then(t => { let env; try { env = JSON.parse(t); } catch (err){ throw new Error("format"); } return SS.openFile(env, passEl.value); }).then(obj => {
+    file.text().then(t => { let env; try { env = JSON.parse(t); } catch (err){ throw new Error("format"); } return SS.openFile(env, passEl.value); }).then(async obj => {
       if (!obj || obj.format !== BACKUP_FORMAT || !obj.facility || typeof obj.facility !== "object") throw new Error("kind");
       const next = F.normalizeFacility(obj.facility), plans = obj.plans && typeof obj.plans === "object" ? obj.plans : {};
-      if (!confirm(`Replace the portal on this computer with the backup from ${String(obj.exportedAt || "").slice(0, 10) || "the file"} (${plural(next.wings.length, "wing", "wings")})? Its calendars replace the same months here. Resident profiles are not touched.`)){ bkMsg("Nothing was changed."); return; }
+      if (!(await CogniDialog.ask(`Replace the portal on this computer with the backup from ${String(obj.exportedAt || "").slice(0, 10) || "the file"} (${plural(next.wings.length, "wing", "wings")})? Its calendars replace the same months here. Resident profiles are not touched.`))){ bkMsg("Nothing was changed."); return; }
       let n = 0;
       Object.keys(plans).forEach(month => {
         if (!F.isMonth(month) || !plans[month] || typeof plans[month] !== "object") return;
@@ -11079,13 +11080,13 @@ const FacilityUI = (function(){
   /* Printing for a whole wing, a week or a month at a time, is a facility feature (CLAUDE.md, assets/services/licenseManager.js):
      a license or a 30-day pilot key, and it spends no free packet. needsFacility opens the license window and answers true when this computer may not. */
   function facilityOnly(what){ return !isLicensed() && !!(window.CognicopiaLicense && window.CognicopiaLicense.needsFacility(what)); }
-  function printWeek(){
+  async function printWeek(){
     const w = wing(); if (!w || !can("print", w.id)) return;
     if (facilityOnly("Printing a week of packets for a whole wing")) return;
     const sum = weekSummary(w);
     if (!sum.total){ toast("Nothing is scheduled for those groups that week."); return; }
     if (sum.total > MAX_PAGES){ toast(`That is ${sum.total} pages, more than one print can hold (${MAX_PAGES}). Print one master each, or fewer groups at a time.`); return; }
-    if (sum.total > CONFIRM_PAGES && !confirm(`Print ${sum.total} pages for ${plural(sum.rows.length, "group", "groups")}?`)) return;
+    if (sum.total > CONFIRM_PAGES && !(await CogniDialog.ask(`Print ${sum.total} pages for ${plural(sum.rows.length, "group", "groups")}?`))) return;
     const pages = sum.rows.reduce((l, r) => l.concat(packetPages(w, r.p).pages), []);
     const done = BookUI.print(pages, `Week packets - ${w.name} - ${S.week}`, () => { if (root && root.isConnected && S.sub === "print") keepFocus(renderPrint); }, null);
     if (done) audit("Printed week packets", `${w.name}, week of ${dayShort(S.week)}: ${sum.total} pages for ${sum.rows.map(r => r.p.group.name).join(", ")}`);
@@ -11292,35 +11293,9 @@ const FacilityUI = (function(){
     try { toast(what + " did not work, and nothing was changed. Please try again; if it keeps happening, reload the page."); } catch (x){}
     try { fac = readFacility() || fac; renderBar(); renderBody(false); } catch (x){ try { console.error("[Cognicopia portal] could not repaint:", x); } catch (y){} }
   }
-  /* An in-page confirmation. window.confirm() is blocked in embedded browsers and after "prevent more dialogs": it answers
-     "no" without showing anything, and the button looks dead. Escape and Cancel answer no; Cancel has the focus. */
-  let confirmDlg = null;
-  function askConfirm(o){
-    return new Promise(resolve => {
-      try {
-        if (typeof HTMLDialogElement === "undefined" || typeof HTMLDialogElement.prototype.showModal !== "function"){ resolve(window.confirm(o.title + "\n\n" + o.body)); return; }
-        if (!document.getElementById("fpConfirmStyle")){
-          const st = document.createElement("style"); st.id = "fpConfirmStyle";
-          st.textContent = ".fp-confirm{box-sizing:border-box;width:min(30rem,calc(100vw - 32px));padding:24px;border:3px solid currentColor;border-radius:16px;background:Canvas;color:CanvasText;font:inherit}"
-            + ".fp-confirm::backdrop{background:rgba(7,11,19,.72)}.fp-confirm h2{margin:0 0 8px;font-size:1.35rem;line-height:1.25}.fp-confirm p{margin:0 0 18px;line-height:1.5}"
-            + ".fp-confirm-row{display:flex;flex-wrap:wrap;gap:12px;justify-content:flex-end;margin:0}"
-            + ".fp-confirm button{min-height:var(--tap,52px);min-width:var(--tap,52px);padding:8px 20px;border:2px solid currentColor;border-radius:10px;background:Canvas;color:CanvasText;font-family:inherit;font-size:1rem;font-weight:700;line-height:1.2;cursor:pointer}"
-            + ".fp-confirm button.fp-confirm-yes{background:CanvasText;color:Canvas}"
-            + ".fp-confirm button:focus-visible{outline:3px solid #f5b800;outline-offset:2px;box-shadow:0 0 0 6px #0f172a}";
-          document.head.appendChild(st);
-        }
-        if (!confirmDlg){ confirmDlg = document.createElement("dialog"); confirmDlg.id = "fpConfirm"; confirmDlg.className = "fp-confirm"; confirmDlg.setAttribute("aria-labelledby", "fpConfirmT"); confirmDlg.setAttribute("aria-describedby", "fpConfirmB"); document.body.appendChild(confirmDlg); }
-        const d = confirmDlg, h = document.createElement("h2"), b = document.createElement("p"), f = document.createElement("form"), no = document.createElement("button"), yes = document.createElement("button");
-        d.textContent = ""; h.id = "fpConfirmT"; h.textContent = o.title; b.id = "fpConfirmB"; b.textContent = o.body;
-        f.method = "dialog"; f.className = "fp-confirm-row";
-        no.type = "submit"; no.value = "no"; no.textContent = o.no || "Cancel"; no.autofocus = true;
-        yes.type = "submit"; yes.value = "yes"; yes.className = "fp-confirm-yes"; yes.textContent = o.yes || "Continue";
-        f.appendChild(no); f.appendChild(yes); d.appendChild(h); d.appendChild(b); d.appendChild(f);
-        d.addEventListener("close", () => resolve(d.returnValue === "yes"), { once:true });
-        d.returnValue = ""; d.showModal();
-      } catch (err){ console.error("[Cognicopia portal] the confirmation window failed:", err); resolve(false); }
-    });
-  }
+  /* An in-page question (js/dialogs.js): the browser's own confirm window is blocked in embedded browsers and answers "no" without showing anything.
+     Escape and Cancel answer no; Cancel has the focus. */
+  function askConfirm(o){ return window.CogniDialog.confirm(o); }
   /* Everything held in memory about the grid on screen: the selection, a half-made move, the undo snapshot and the open editor. */
   function clearTransientState(){
     S.sel = ""; S.group = ""; S.week = ""; S.pick = null; S.moving = null; S.undo = null; S.ctx = null; S.editing = null; S.filled = false; S.spaceUp = false;
@@ -11343,7 +11318,7 @@ const FacilityUI = (function(){
     try { return onClickInner(e); }
     catch (err){ portalFailSafe("That action", err); }
   }
-  function onClickInner(e){
+  async function onClickInner(e){
     const t = e.target.closest("button, [data-go]"); if (!t || !root.contains(t) || t.disabled) return;
     const ds = t.dataset;
     if (ds.tab) return selectTab(ds.tab);
@@ -11377,7 +11352,7 @@ const FacilityUI = (function(){
       case "keep-example": writeFacility(Object.assign({}, fac, { example:false }), "Kept the example community", ""); return keepFocus(() => renderBody(false));
       case "start-empty": return startEmpty();
       case "group-del": {
-        const w = wing(), g = groupOf(w, S.sel); if (!g || !confirm(`Remove ${g.name}? Its sessions come off the calendar.`)) return;
+        const w = wing(), g = groupOf(w, S.sel); if (!g || !(await CogniDialog.ask(`Remove ${g.name}? Its sessions come off the calendar.`))) return;
         saveWing(w.id, x => Object.assign({}, x, { groups:x.groups.filter(y => y.id !== g.id) }), "Removed a group", `${g.name} from ${w.name}`);
         const plan = readPlan(w, S.month); writePlan(Object.assign({}, plan, { slots:plan.slots.filter(s => s.group !== g.id) }));
         S.sel = ""; renderBar(); renderGroups();
@@ -11386,7 +11361,7 @@ const FacilityUI = (function(){
         return;
       }
       case "wing-del": {
-        const w = wing(); if (!w || !confirm(`Remove ${w.name}, its groups and every month of its calendar from this computer?`)) return;
+        const w = wing(); if (!w || !(await CogniDialog.ask(`Remove ${w.name}, its groups and every month of its calendar from this computer?`))) return;
         planKeysOf(w.id).forEach(k => { try { CG_LS.removeItem(k); } catch (err){} });
         writeFacility(Object.assign({}, fac, { wings:fac.wings.filter(x => x.id !== w.id) }), "Removed a wing", w.name);
         S.tab = "overview"; renderBar(); renderBody(true);
@@ -11407,7 +11382,7 @@ const FacilityUI = (function(){
         return;
       }
       case "wipe": {
-        if (!confirm("Remove the Facility Portal from this computer? Wings, groups, team, calendars and the audit trail are all removed. Resident profiles are not touched.")) return;
+        if (!(await CogniDialog.ask("Remove the Facility Portal from this computer? Wings, groups, team, calendars and the audit trail are all removed. Resident profiles are not touched."))) return;
         fac.wings.forEach(w => planKeysOf(w.id).forEach(k => { try { CG_LS.removeItem(k); } catch (err){} }));
         try { CG_LS.removeItem(F.STORE_KEY); } catch (err){}
         S.tab = "overview"; S.undo = null;
@@ -12539,7 +12514,7 @@ const AcademyUI = (function(){
     root.addEventListener("submit", onSubmit);
     root.addEventListener("keydown", onKey);
   }
-  function onClick(e){
+  async function onClick(e){
     const t = e.target.closest("button, [data-seek], .ac-line"); if (!t || !root.contains(t)) return;
     const d = t.dataset;
     if (d.tab) return selectTab(d.tab);
@@ -12581,12 +12556,12 @@ const AcademyUI = (function(){
       case "edit-learner": S.edit = S.edit ? "" : me().id; renderLearner(); { const n = root.querySelector("#acLName"); if (n) n.focus(); } return;
       case "cancel-learner": S.edit = ""; S.pendingCert = ""; renderLearner(); { const w = root.querySelector("#acWho"); if (w) w.focus(); } return;
       case "remove-learner": {
-        const l = me(); if (!confirm(`Remove ${nameOf(l)} and their training record from this computer?`)) return;
+        const l = me(); if (!(await CogniDialog.ask(`Remove ${nameOf(l)} and their training record from this computer?`))) return;
         writeAcademy(A.removeLearner(acad, l.id)); S.edit = ""; renderLearner(); refresh(); { const w = root.querySelector("#acWho"); if (w) w.focus(); } toast("Learner removed."); return;
       }
       case "clear-filters": S.q = ""; S.cat = ""; S.aud = ""; renderPanel(); { const q = root.querySelector("#acQ"); if (q) q.focus(); } return;
       case "wipe": {
-        if (!confirm("Remove every learner, their progress, bookmarks and certificate records from this computer? This cannot be undone.")) return;
+        if (!(await CogniDialog.ask("Remove every learner, their progress, bookmarks and certificate records from this computer? This cannot be undone."))) return;
         try { CG_LS.removeItem(A.STORE_KEY); } catch (e){ toast("The records could not be removed: " + e.message); return; }
         acad = readAcademy(); loadPrefs(); S.edit = ""; S.pendingCert = ""; S.found = null; S.quiz = null;
         renderLearner(); renderPanel(); { const w = root.querySelector("#acWho"); if (w) w.focus(); }
@@ -16244,8 +16219,8 @@ function renderSettings(){
   $("#setResClean").addEventListener("change", e => { settings.residentClean = e.target.checked; saveSettings(); });
   $("#setAliasFiles").addEventListener("change", e => { settings.aliasFiles = e.target.checked; saveSettings(); });
   renderEncryption();
-  $("#setClear").addEventListener("click", () => {
-    if (!confirm("Clear the saved facility name, resident name, defaults, packet queue, Life Planner and Life Journal details, and the Shift board's notes and tasks, from this computer?")) return;
+  $("#setClear").addEventListener("click", async () => {
+    if (!(await CogniDialog.ask("Clear the saved facility name, resident name, defaults, packet queue, Life Planner and Life Journal details, and the Shift board's notes and tasks, from this computer?"))) return;
     store.remove("cgb_settings"); store.remove("cgb_queue"); LifePlannerUI.clearSaved(); LifeJournalUI.clearSaved(); store.remove("cgb_roster"); store.remove(window.CogniDailyOps ? window.CogniDailyOps.STORE_KEY : "cognicopia_dailyops");
     settings = Object.assign({}, DEFAULT_SETTINGS, { actOpts:{} }); isPureBlackAndWhitePDF = true; queue = [];
     saveSettings(); saveQueue(); renderSettings(); renderBwNote();
@@ -16309,8 +16284,8 @@ function renderEncryption(){
     SS.setPassphrase(p, Math.max(15, Math.round(((st.unlockedUntil || 0) - Date.now()) / 60000)) || SS.DEFAULT_KEEP_MINUTES, $("#encCur").value)
       .then(() => { renderEncryption(); toast("Passphrase changed."); }, e => { busy(change, false, "Change passphrase"); msg(e.message); });
   });
-  if (remove) remove.addEventListener("click", () => {
-    if (!confirm("Remove the passphrase? Saved details will open for anyone who can open this browser on this computer.")) return;
+  if (remove) remove.addEventListener("click", async () => {
+    if (!(await CogniDialog.ask("Remove the passphrase? Saved details will open for anyone who can open this browser on this computer."))) return;
     busy(remove, true, "Removing…");
     SS.removePassphrase($("#encCur").value).then(() => { renderEncryption(); toast("Passphrase removed. Details stay encrypted with this browser's key."); },
       e => { busy(remove, false, "Remove passphrase"); msg(e.message); });
@@ -16671,8 +16646,8 @@ window.addEventListener("afterprint", () => {
   $("#navPacket").addEventListener("click", () => { closeSidebar(); openDrawer(); });
   $("#closeDrawer").addEventListener("click", closeDrawer);
   $("#drawerScrim").addEventListener("click", closeDrawer);
-  $("#clearQueue").addEventListener("click", () => {
-    if (!queue.length || !confirm("Remove all " + queue.length + " pages from this packet?")) return;
+  $("#clearQueue").addEventListener("click", async () => {
+    if (!queue.length || !(await CogniDialog.ask("Remove all " + queue.length + " pages from this packet?"))) return;
     queue = []; saveQueue();
   });
   document.addEventListener("keydown", e => {

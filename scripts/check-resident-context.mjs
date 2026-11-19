@@ -65,7 +65,7 @@ const DOT = {
 };
 const d = R.person(DOT);
 ok(d.id === "res-dot" && d.name === "Dorothy Ann" && d.nickname === "Dot" && d.room === "114-A" && d.wing === "East", "name, nickname, room and wing");
-ok(d.born === 1938 && d.youth.from === 1953 && d.youth.to === 1963 && d.turnedTwenty === 1958 && d.decadeAtTwenty === 1950, `the years they were 15 to 25, and the decade they turned twenty (${JSON.stringify(d.youth)}, ${d.decadeAtTwenty})`);
+ok(d.born === 1938 && d.youth.from === 1945 && d.youth.to === 1966 && d.turnedTwenty === 1958 && d.decadeAtTwenty === 1950, `the years they were 7 to 28, and the decade they turned twenty (${JSON.stringify(d.youth)}, ${d.decadeAtTwenty})`);
 ok(d.stage === 2 && d.stageName === "middle" && d.gds === "GDS 5", "the stage, its name and its GDS range");
 ok(d.work.code === "teacher" && d.work.label === "Teacher" && /teacher/.test(d.work.text) && /education/.test(d.work.text), "former work, with one line of text to search");
 ok(d.hometown.town === "Scobey" && d.hometown.state === "Montana" && d.hometown.region === "Mountain West" && d.hometown.environment === "Small town", "the hometown, in parts");

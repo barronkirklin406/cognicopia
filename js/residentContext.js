@@ -130,6 +130,19 @@
   /* ---------- the person ---------- */
   /* the condition adaptations a profile can carry (codes are stable; the labels are the profile's wording) */
   var ADAPTATIONS = { lewy_body: "Lewy body", ftd: "Frontotemporal", vascular: "Vascular", korsakoff: "Korsakoff", late_stage: "Late-stage multi-sensory", errorless: "Errorless learning" };
+  /* what each condition adaptation does in every tool that reads it (the Studio, the Packet Builder, Daily engagement, the reminiscence engine). They are
+     defaults for staff to change, wording a clinician can read, never a diagnosis printed on a page.
+       roomy      open spacing and fewer items (the high-spacing setting)      stage   the least stage the pages are made for
+       concrete   no sayings or word play that need abstract thinking        young   memories from the later part of the years they were 7 to 28
+       errorless  the answer comes with the question, never a guess */
+  var ADAPTATION_RULES = {
+    lewy_body:  { roomy: true, note: "Open spacing, fewer things on a page, one step at a time." },
+    vascular:   { roomy: true, note: "Open spacing, fewer things on a page, one step at a time." },
+    ftd:        { concrete: true, note: "Routine, music, touch and choice; no sayings or word play that need abstract thinking." },
+    korsakoff:  { young: true, errorless: true, note: "Memories from the later part of the years they were young, and the answer given with the question." },
+    late_stage: { stage: 3, note: "The late-stage pages: the largest type, one thing at a time, nothing to write." },
+    errorless:  { errorless: true, note: "The answer is given with the question; never a guess." }
+  };
   var STAGE_NAME = { 1: "early", 2: "middle", 3: "late" }, STAGE_GDS = { 1: "GDS 3–4", 2: "GDS 5", 3: "GDS 6–7" };
   function person(profile) {
     var p = obj(profile), t1 = obj(p.tier1_core), t2 = obj(p.tier2_enrichment), t3 = obj(p.tier3_deep);
@@ -144,7 +157,7 @@
     var own = uniq(fam.all.map(function (x) { return x.first; }).concat(parts[0] ? [firstWord(parts[0])] : []));
     return {
       id: str(p.id), name: str(t1.preferredName), nickname: str(t1.nickname), room: str(t1.unitNumber), wing: str(t1.wing),
-      born: born, youth: born ? { from: born + 15, to: born + 25 } : null, turnedTwenty: born ? born + 20 : 0, decadeAtTwenty: born ? Math.floor((born + 20) / 10) * 10 : 0,
+      born: born, /* youth: the one era window (assets/services/eraWindow.js) */ youth: born ? { from: born + 7, to: born + 28 } : null, turnedTwenty: born ? born + 20 : 0, decadeAtTwenty: born ? Math.floor((born + 20) / 10) * 10 : 0,
       stage: stage, stageName: STAGE_NAME[stage] || "", gds: STAGE_GDS[stage] || "",
       /* the care team's diagnosis, as one optional setting (profile.html, "Diagnosis / clinical adaptation"): every tool adapts its pages
          to it, so nobody types the resident's name into a separate condition form. "" means none. Never printed on a page. */
@@ -185,7 +198,7 @@
 
   return Object.freeze({
     VERSION: VERSION, PREFIX: PREFIX, SCHEMA: SCHEMA, ACTIVE_KEY: ACTIVE_KEY,
-    AVOID_TOPIC_WORDS: AVOID_TOPIC_WORDS, AVOID_ERAS: AVOID_ERAS, AVOID_NAMES: AVOID_NAMES, avoidWords: avoidWords, avoidMatcher: avoidMatcher,
+    ADAPTATION_RULES: ADAPTATION_RULES, AVOID_TOPIC_WORDS: AVOID_TOPIC_WORDS, AVOID_ERAS: AVOID_ERAS, AVOID_NAMES: AVOID_NAMES, avoidWords: avoidWords, avoidMatcher: avoidMatcher,
     avoidName: avoidName, sortAvoidText: sortAvoidText, avoidFromText: avoidFromText,
     person: person, family: family, present: present, read: read, list: list, activeId: activeId, words: words, labelOf: labelOf
   });

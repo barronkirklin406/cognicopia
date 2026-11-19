@@ -15,7 +15,7 @@
      all                nothing is requested from outside the page, and no page script fails
    ===================================================================== */
 import fs from "fs";
-import { serve, loadPlaywright, agreed } from "./lib/browser.mjs";
+import { serve, loadPlaywright, agreed, agreeToDialogs } from "./lib/browser.mjs";
 
 const { chromium } = loadPlaywright();
 const { srv, base } = await serve();
@@ -28,7 +28,7 @@ const ctx = await browser.newContext({ viewport: { width: 1280, height: 1000 }, 
 const pg = await ctx.newPage();
 pg.on("request", r => { const u = r.url(); if (!u.startsWith(base) && !/^(data|blob|about):/.test(u)) outside.push(u); });
 pg.on("pageerror", e => errors.push(e.message));
-pg.on("dialog", d => d.accept());
+pg.on("dialog", d => d.accept()); await agreeToDialogs(pg);
 await pg.addInitScript(() => { window.print = () => { window.__printed = (window.__printed || 0) + 1; window.__printHtml = (document.getElementById("printRoot") || {}).innerHTML || ""; }; });
 const go = async hash => { await pg.goto(base + "builder.html" + hash); await pg.waitForTimeout(1300); };
 const tmp = "/tmp/cognicopia-resident-engine-census.csv";

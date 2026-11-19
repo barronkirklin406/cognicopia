@@ -1820,6 +1820,7 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
 
 <script src="assets/services/secureStore.js"></script>
 <script src="js/residentFolder.js"></script>
+<script src="js/dialogs.js"></script>
 <script src="assets/services/eraWindow.js"></script>
 <script src="assets/services/reminiscenceEngine.js"></script>
 <script src="assets/services/familyLifeDigest.js"></script>
@@ -2737,12 +2738,12 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
   }
   document.addEventListener("cg-residents-changed", function(){ renderResidents(); });   // a resident added from a family file or by codes
   if (window.CogniFamilyIntake) window.CogniFamilyIntake.mount($("rapFamily"));
-  $("rapResList").addEventListener("click", function(e){
+  $("rapResList").addEventListener("click", async function(e){
     var open = e.target.closest("[data-open]"), del = e.target.closest("[data-delete]"), digest = e.target.closest("[data-digest]"), lanyard = e.target.closest("[data-lanyard]");
     if (open){
       var p = readResident(open.getAttribute("data-open"));
       if (!p) { renderResidents(); return; }
-      if (hasUnsaved() && residentId !== p.id && !window.confirm("Open " + p.tier1_core.preferredName + "'s profile? What is in the form now will be replaced.")) return;
+      if (hasUnsaved() && residentId !== p.id && !(await CogniDialog.ask("Open " + p.tier1_core.preferredName + "'s profile? What is in the form now will be replaced."))) return;
       populateWizardFromProfile(p);
       toast("Opened " + p.tier1_core.preferredName + "'s profile.");
     }
@@ -2781,7 +2782,7 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
     }
     if (del){
       var id = del.getAttribute("data-delete"), q = readResident(id), who = q ? q.tier1_core.preferredName : "this resident";
-      if (!window.confirm("Delete " + who + "'s profile from this computer? This cannot be undone.")) return;
+      if (!(await CogniDialog.ask("Delete " + who + "'s profile from this computer? This cannot be undone."))) return;
       try { LS.removeItem(RESIDENT_PREFIX + id); } catch (err){}
       dropPhotosOf(id);
       if (window.CogniResidentFolder) window.CogniResidentFolder.soon();   // their file leaves the residents folder too
@@ -2836,12 +2837,12 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
     furthest = 1; current = 1;
     syncConditional(); syncSuggest(); syncNotesCount();
   }
-  $("rapClear").addEventListener("click", function(){
+  $("rapClear").addEventListener("click", async function(){
     var name = text("rapName");
     var msg = residentId && readResident(residentId)
       ? "Clear the form? " + (name || "This resident") + "'s saved profile stays saved."
       : "Clear the form? What you have typed has not been saved as a profile and will be lost.";
-    if (!window.confirm(msg)) return;
+    if (!(await CogniDialog.ask(msg))) return;
     resetForm();
     try { LS.removeItem(KEY); } catch (e){}
     renderResidents();
@@ -2874,20 +2875,20 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#fff1cf!important}
   clearTimeout(saveTimer);               // nothing changed yet
 
   /* ---------- links from the dashboard: profile.html?edit=<id> or ?new=1 ---------- */
-  (function(){
+  (async function(){
     var qs = location.search;
     var editId = (qs.match(/[?&]edit=([^&]+)/) || [])[1];
     if (editId){
       var ep = readResident(decodeURIComponent(editId));
       if (!ep) toast("That profile could not be found on this computer. It may have been deleted.", true);
       else if (ep.id === residentId && hasUnsaved()){ toast("Continuing your unsaved changes to " + ep.tier1_core.preferredName + "'s profile."); }
-      else if (!hasUnsaved() || residentId === ep.id || window.confirm("Open " + ep.tier1_core.preferredName + "'s profile? The unsaved profile in the form now will be replaced.")){
+      else if (!hasUnsaved() || residentId === ep.id || (await CogniDialog.ask("Open " + ep.tier1_core.preferredName + "'s profile? The unsaved profile in the form now will be replaced."))){
         populateWizardFromProfile(ep); $("rapRestored").hidden = true;
         toast("Editing " + ep.tier1_core.preferredName + "'s profile.");
       }
     } else if (/[?&]new=1\b/.test(qs)){
       var who = text("rapName");
-      if (!hasUnsaved() || window.confirm("Start a new profile? The one in progress" + (who ? " for " + who : "") + " has not been saved and will be cleared.")){
+      if (!hasUnsaved() || (await CogniDialog.ask("Start a new profile? The one in progress" + (who ? " for " + who : "") + " has not been saved and will be cleared."))){
         resetForm();
         try { LS.removeItem(KEY); } catch (e){}
         renderResidents(); show(1, true); clearTimeout(saveTimer);

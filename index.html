@@ -5454,7 +5454,7 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
 <!-- ══ ACTIVE RESIDENT BAR: picks a saved Resident Activity Profile to build this packet from ══ -->
 <section class="arb" id="activeResidentBar" aria-labelledby="arbTitle">
   <div class="arb-guest-tools">
-    <button type="button" class="arb-btn arb-btn-guest" id="guestPresetToggle" aria-expanded="false" aria-controls="guestPresetMenu">⚡ Quick-Print Packet</button>
+    <button type="button" class="arb-btn arb-btn-guest" id="guestPresetToggle" aria-expanded="false" aria-controls="guestPresetMenu">Quick-Print Packet</button>
     <div class="arb-guest-presets" id="guestPresetMenu" hidden>
       <p>Type the resident’s first name, then choose a general style for a quick packet. The name is used only on this printout. Nothing is saved or sent, and no profile is created.</p>
       <label class="arb-guest-name" for="guestFirstName"><span>Resident first name</span>
@@ -5472,7 +5472,7 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
   <div class="arb-head">
     <h2 id="arbTitle">Active resident</h2>
     <span class="arb-pill" id="arbPill" role="status" aria-live="polite">No resident selected</span>
-    <button type="button" class="arb-btn arb-tier-toggle" data-tier-override aria-pressed="false" disabled>☀️ Good Day · Usual tier</button>
+    <button type="button" class="arb-btn arb-tier-toggle" data-tier-override aria-pressed="false" disabled>Good Day · Usual tier</button>
   </div>
   <div class="arb-row">
     <label class="arb-sr" for="arbSelect">Select active resident</label>
@@ -5481,10 +5481,10 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
     </select>
     <div class="arb-actions">
       <a class="arb-btn arb-btn-primary" id="arbNew" href="profile.html?new=1"><svg class="cg-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M12 5v14M5 12h14"/></svg> New Profile</a>
-      <a class="arb-btn" id="arbEdit" href="profile.html" aria-disabled="true"><span aria-hidden="true">✏️</span> Edit Active Profile</a>
-      <button type="button" class="arb-btn" id="arbPocketCard" style="border-color:#3cc7b7; color:#7fdccd;" title="Print 3x5 laminated pocket/lanyard card"><span aria-hidden="true">📇</span> Pocket Card</button>
-      <button type="button" class="arb-btn arb-btn-emergency" id="arbSoothe" aria-describedby="arbSootheNote"><span aria-hidden="true">🟡</span> Instant Soothe / Print</button>
-      <button type="button" class="arb-btn arb-btn-danger" id="arbDelete" disabled><span aria-hidden="true">🗑️</span> Delete Profile</button>
+      <a class="arb-btn" id="arbEdit" href="profile.html" aria-disabled="true">Edit Active Profile</a>
+      <button type="button" class="arb-btn" id="arbPocketCard" style="border-color:#3cc7b7; color:#7fdccd;" title="Print 3x5 laminated pocket/lanyard card">Pocket Card</button>
+      <button type="button" class="arb-btn arb-btn-emergency" id="arbSoothe" aria-describedby="arbSootheNote">Instant Soothe / Print</button>
+      <button type="button" class="arb-btn arb-btn-danger" id="arbDelete" disabled>Delete Profile</button>
     </div>
   </div>
   <p class="arb-msg arb-who" id="arbWho" hidden></p>
@@ -5492,13 +5492,13 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
   <p class="arb-msg arb-soothe-note" id="arbSootheNote">Instant Soothe opens two quick choices, a care level and a theme, then prints a fresh one-to-three page calming packet made for that moment. It uses the active resident's level and name when one is chosen, and needs no profile when none is.</p>
   <!-- ── Monthly Bundle: every resident in one PDF ── -->
   <div class="arb-bundle">
-    <button type="button" class="arb-btn arb-btn-bundle" id="mbOpen" aria-describedby="mbBadge" aria-haspopup="dialog"><span aria-hidden="true">👥</span> Download Month (All Residents)</button>
-    <span class="arb-bundle-badge" id="mbBadge"><span aria-hidden="true">⚡</span> For facilities: plan your whole building's month in one PDF. Needs a facility license or a 30-day pilot.</span>
+    <button type="button" class="arb-btn arb-btn-bundle" id="mbOpen" aria-describedby="mbBadge" aria-haspopup="dialog">Download Month (All Residents)</button>
+    <span class="arb-bundle-badge" id="mbBadge">For facilities: plan your whole building's month in one PDF. Needs a facility license or a 30-day pilot.</span>
   </div>
   <dialog class="arb-dialog mb-dialog" id="monthly-bundle-modal" aria-labelledby="mbTitle">
     <form method="dialog" onsubmit="return false">
       <div id="mbSetup">
-        <h3 id="mbTitle"><span aria-hidden="true">📅</span> Monthly Activity Bundle</h3>
+        <h3 id="mbTitle">Monthly Activity Bundle</h3>
         <p class="arb-dialog-list">One PDF with a personalized packet for every resident you choose. Made entirely on this computer; nothing is sent anywhere.</p>
         <div class="mb-grid">
           <label>Month<select id="mbMonth"></select></label>
@@ -5530,7 +5530,7 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
         <p class="mb-warn" id="mbWarn" role="alert" hidden></p>
         <div class="arb-dialog-actions">
           <button type="button" class="arb-btn" id="mbClose">Close</button>
-          <button type="button" class="arb-btn arb-btn-primary" id="mbGo"><span aria-hidden="true">📥</span> Generate Bundle PDF</button>
+          <button type="button" class="arb-btn arb-btn-primary" id="mbGo">Generate Bundle PDF</button>
         </div>
       </div>
       <div id="mbRun" hidden>
@@ -5547,21 +5547,21 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
   <details class="arb-backup" id="arbBackup">
     <summary><span>Data Backup &amp; Restore</span><span class="arb-backup-count" id="arbBackupCount"></span></summary>
     <div class="arb-backup-body" id="arbDrop">
-      <p class="arb-privacy"><span aria-hidden="true">🔒</span> All exports/imports occur 100% locally on your machine.</p>
+      <p class="arb-privacy">All exports/imports occur 100% locally on your machine.</p>
       <div class="arb-pass"><label for="arbPass">Backup passphrase</label>
         <input type="password" id="arbPass" maxlength="200" autocomplete="new-password" placeholder="At least 8 characters">
         <small>Full backups are locked with this passphrase (AES-256 encryption); restoring one needs the same passphrase. A forgotten passphrase cannot be recovered.</small></div>
       <div id="arbNamesBox" class="pv-boxes"></div>
       <div class="arb-backup-row">
         <div class="arb-split">
-          <button type="button" class="arb-btn arb-btn-primary" id="arbExportJson"><span aria-hidden="true">📥</span> Export Profiles (Backup)</button>
+          <button type="button" class="arb-btn arb-btn-primary" id="arbExportJson">Export Profiles (Backup)</button>
           <button type="button" class="arb-btn arb-btn-primary arb-split-toggle" id="arbExportMore" aria-haspopup="true" aria-expanded="false" aria-controls="arbExportMenu" aria-label="More export options">&#9662;</button>
           <div class="arb-menu" id="arbExportMenu" role="menu" aria-label="Export options" hidden>
             <button type="button" role="menuitem" data-export="json"><b>Full backup (.cognicopia)</b><small>Every answer, locked with the passphrase</small></button>
             <button type="button" role="menuitem" data-export="csv"><b>Summary spreadsheet (.csv)</b><small>Opens in Excel or Google Sheets; not locked</small></button>
           </div>
         </div>
-        <button type="button" class="arb-btn" id="arbImport"><span aria-hidden="true">📤</span> Import Profiles (Restore)</button>
+        <button type="button" class="arb-btn" id="arbImport">Import Profiles (Restore)</button>
         <input type="file" id="arbImportFile" accept=".cognicopia,.json,.csv,application/json,text/csv" hidden>
       </div>
       <p class="arb-drop-hint">Or drag a backup file (.cognicopia, .json or .csv) onto this box. A census spreadsheet exported from your EHR works too: a First Name or Resident Name column, with Date of Birth and Room if you have them.</p>
@@ -5596,7 +5596,7 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
 <dialog id="vadModal" class="arb-dialog vad-modal" aria-labelledby="vadModalTitle">
   <div class="vad-modal-header">
     <div>
-      <h2 id="vadModalTitle" class="vad-modal-title">🧩 Vascular Dementia CST Suite</h2>
+      <h2 id="vadModalTitle" class="vad-modal-title">Vascular Dementia CST Suite</h2>
       <p class="vad-modal-subtitle">Frontostriatal executive stimulation, multi-step sequencing &amp; historical cognitive anchors</p>
     </div>
     <button type="button" class="vad-modal-close" id="vadModalCloseBtn" aria-label="Close dialog">&times;</button>
@@ -5677,17 +5677,17 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
         <div class="vad-options-grid" role="radiogroup" aria-label="Output format selection">
           <label class="vad-output-card is-selected" id="vadModeSingleLabel">
             <input type="radio" name="vadOutputMode" value="single" checked>
-            <span class="vad-output-title">📄 Single Activity Sheet</span>
+            <span class="vad-output-title">Single Activity Sheet</span>
             <span class="vad-output-desc">Detailed step-by-step task sheet with 0.75&Prime; gutters, large visual checkboxes, era anchors, and finish banner.</span>
           </label>
           <label class="vad-output-card" id="vadModeMiniLabel">
             <input type="radio" name="vadOutputMode" value="mini_packet">
-            <span class="vad-output-title">📚 3-Activity Mini-Packet</span>
+            <span class="vad-output-title">3-Activity Mini-Packet</span>
             <span class="vad-output-desc">Complete daily CST session: Morning cognitive, Mid-day procedural, Afternoon motor/language + cover sheet.</span>
           </label>
           <label class="vad-output-card" id="vadModeGuideLabel">
             <input type="radio" name="vadOutputMode" value="guide">
-            <span class="vad-output-title">📋 Facilitation Guide</span>
+            <span class="vad-output-title">Facilitation Guide</span>
             <span class="vad-output-desc">Clinical caregiver protocol: 3-step prompting hierarchy, environmental setup, and errorless learning strategies.</span>
           </label>
         </div>
@@ -5712,7 +5712,7 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
 <dialog id="dlbModal" class="arb-dialog dlb-modal" aria-labelledby="dlbModalTitle">
   <div class="dlb-modal-header">
     <div>
-      <h2 id="dlbModalTitle" class="dlb-modal-title">👁️ Lewy Body Dementia CST Suite</h2>
+      <h2 id="dlbModalTitle" class="dlb-modal-title">Lewy Body Dementia CST Suite</h2>
       <p class="dlb-modal-subtitle">Visuospatial accommodation, auditory-rhythmic cording, 6–10px borders &amp; somatic grounding</p>
     </div>
     <button type="button" class="dlb-modal-close" id="dlbModalCloseBtn" aria-label="Close dialog">&times;</button>
@@ -5803,17 +5803,17 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
         <div class="dlb-options-grid" role="radiogroup" aria-label="Output format selection">
           <label class="dlb-output-card is-selected" id="dlbModeSingleLabel">
             <input type="radio" name="dlbOutputMode" value="single" checked>
-            <span class="dlb-output-title">📄 Single Activity Sheet</span>
+            <span class="dlb-output-title">Single Activity Sheet</span>
             <span class="dlb-output-desc">Large high-contrast activity sheet with 6-10px adaptive borders, zero visual crowding, and verification block.</span>
           </label>
           <label class="dlb-output-card" id="dlbModeMiniLabel">
             <input type="radio" name="dlbOutputMode" value="mini_packet">
-            <span class="dlb-output-title">📚 3-Activity Mini-Packet</span>
+            <span class="dlb-output-title">3-Activity Mini-Packet</span>
             <span class="dlb-output-desc">Complete daily session: Morning Auditory rhythm, Mid-day Visual-motor outline, Evening Somatic grounding + cover.</span>
           </label>
           <label class="dlb-output-card" id="dlbModeGuideLabel">
             <input type="radio" name="dlbOutputMode" value="guide">
-            <span class="dlb-output-title">📋 Facilitation Guide</span>
+            <span class="dlb-output-title">Facilitation Guide</span>
             <span class="dlb-output-desc">Clinical caregiver protocol: alpha-synuclein pathology, anti-hallucination validation, and 3-tier prompting hierarchy.</span>
           </label>
         </div>
@@ -5839,7 +5839,7 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
 <dialog id="korsakoffModal" class="korsakoff-modal" aria-labelledby="korsakoffModalTitle">
   <div class="korsakoff-modal-header">
     <div>
-      <h2 id="korsakoffModalTitle" class="korsakoff-modal-title">🧠 Korsakoff Syndrome &amp; Amnesia Care Suite</h2>
+      <h2 id="korsakoffModalTitle" class="korsakoff-modal-title">Korsakoff Syndrome &amp; Amnesia Care Suite</h2>
       <p class="korsakoff-modal-subtitle">Procedural habituation · Errorless learning · Remote 1940–1960 reminiscence · 0.75″ gutter print</p>
     </div>
     <button type="button" class="korsakoff-modal-close" id="korsakoffModalCloseBtn" aria-label="Close dialog">&times;</button>
@@ -5920,11 +5920,11 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
       <!-- Quick Task Builder Trigger Banner -->
       <div class="korsakoff-task-banner">
         <div class="korsakoff-task-banner-text">
-          <strong>📋 Errorless Learning Task Builder Widget</strong>
+          <strong>Errorless Learning Task Builder Widget</strong>
           <span>Construct custom step-by-step procedural checklists with pre-printed trace-over text to prevent guessing.</span>
         </div>
         <button type="button" class="korsakoff-task-btn-launch" id="korsakoffLaunchBuilderModalBtn">
-          <span>📋</span> Open Task Builder
+          Open Task Builder
         </button>
       </div>
 
@@ -5933,17 +5933,17 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
         <div class="korsakoff-options-grid" role="radiogroup" aria-label="Output format selection">
           <label class="korsakoff-output-card is-selected" id="ksaModeSingleLabel">
             <input type="radio" name="korsakoffOutputMode" value="single" checked>
-            <div class="korsakoff-output-title">📄 Single Activity Sheet</div>
+            <div class="korsakoff-output-title">Single Activity Sheet</div>
             <div class="korsakoff-output-desc">One focused errorless activity page with wide-ruled trace-over box and Anchor Logbook.</div>
           </label>
           <label class="korsakoff-output-card" id="ksaModeMiniLabel">
             <input type="radio" name="korsakoffOutputMode" value="mini_packet">
-            <div class="korsakoff-output-title">📚 3-Activity Daily Mini-Packet</div>
+            <div class="korsakoff-output-title">3-Activity Daily Mini-Packet</div>
             <div class="korsakoff-output-desc">Full daily routine: Morning Routine Drill, Afternoon Procedural Skills, Evening Remote Anchor + Cover Sheet.</div>
           </label>
           <label class="korsakoff-output-card" id="ksaModeGuideLabel">
             <input type="radio" name="korsakoffOutputMode" value="guide">
-            <div class="korsakoff-output-title">📋 Facilitation Guide</div>
+            <div class="korsakoff-output-title">Facilitation Guide</div>
             <div class="korsakoff-output-desc">Clinical protocol for staff: errorless cueing hierarchy, vanishing cues, and non-confrontational redirection.</div>
           </label>
         </div>
@@ -5968,7 +5968,7 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
 <dialog id="korsakoffTaskBuilderModal" class="korsakoff-modal ktb-modal" aria-labelledby="ktbModalTitle">
   <div class="korsakoff-modal-header">
     <div>
-      <h2 id="ktbModalTitle" class="korsakoff-modal-title">📋 Errorless Learning Task Builder</h2>
+      <h2 id="ktbModalTitle" class="korsakoff-modal-title">Errorless Learning Task Builder</h2>
       <p class="korsakoff-modal-subtitle">Construct custom multi-step procedural checklists with pre-printed trace-over text to prevent guessing.</p>
     </div>
     <button type="button" class="korsakoff-modal-close" id="ktbModalCloseBtn" aria-label="Close dialog">&times;</button>
@@ -6054,7 +6054,7 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
 <dialog id="ftdModal" class="arb-dialog ftd-modal" aria-labelledby="ftdModalTitle">
   <div class="ftd-modal-header">
     <div>
-      <h2 id="ftdModalTitle" class="ftd-modal-title">🗺️ Frontotemporal Dementia (FTD) CST Suite</h2>
+      <h2 id="ftdModalTitle" class="ftd-modal-title">Frontotemporal Dementia (FTD) CST Suite</h2>
       <p class="ftd-modal-subtitle">Behavioral variant motor loops, disinhibition substitution, PPA visual communication &amp; 0.75&Prime; gutter print</p>
     </div>
     <button type="button" class="ftd-modal-close" id="ftdModalCloseBtn" aria-label="Close dialog">&times;</button>
@@ -6136,21 +6136,21 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
       <!-- PPA Visual Icon Board Interactive Generator Component -->
       <div class="ftd-ppa-generator" id="ftdPpaGeneratorSection">
         <div class="ftd-ppa-gen-head">
-          <span class="ftd-ppa-gen-title">🗣️ PPA Visual Communication Board Generator</span>
+          <span class="ftd-ppa-gen-title">PPA Visual Communication Board Generator</span>
           <span class="ftd-ppa-gen-sub">Select communication categories to include on the 1-page visual express board:</span>
         </div>
         <div class="ftd-ppa-category-pills">
           <label class="ftd-ppa-cat-pill is-checked" id="ppaPillNeeds">
             <input type="checkbox" id="ppaCatNeeds" checked>
-            <span>💧 Basic Needs (Water, Food, Restroom, Wash)</span>
+            <span>Basic Needs (Water, Food, Restroom, Wash)</span>
           </label>
           <label class="ftd-ppa-cat-pill is-checked" id="ppaPillComfort">
             <input type="checkbox" id="ppaCatComfort" checked>
-            <span>🛋️ Comfort &amp; Body (Pain/Hurt, Cold/Warm, Quiet, Sleep)</span>
+            <span>Comfort &amp; Body (Pain/Hurt, Cold/Warm, Quiet, Sleep)</span>
           </label>
           <label class="ftd-ppa-cat-pill is-checked" id="ppaPillSocial">
             <input type="checkbox" id="ppaCatSocial" checked>
-            <span>🚶 Social &amp; Activity (Walk Outdoors, Family Photo, Music, Help)</span>
+            <span>Social &amp; Activity (Walk Outdoors, Family Photo, Music, Help)</span>
           </label>
         </div>
         <div class="ftd-ppa-preview-grid" id="ftdPpaPreviewGrid">
@@ -6163,22 +6163,22 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
         <div class="ftd-options-grid" role="radiogroup" aria-label="Output format selection">
           <label class="ftd-output-card is-selected" id="ftdModeSingleLabel">
             <input type="radio" name="ftdOutputMode" value="single" checked>
-            <span class="ftd-output-title">📄 Single Activity Sheet</span>
+            <span class="ftd-output-title">Single Activity Sheet</span>
             <span class="ftd-output-desc">Clean, adult-dignity structured task sheet with errorless layout, tactile checklist, and verification block.</span>
           </label>
           <label class="ftd-output-card" id="ftdModeMiniLabel">
             <input type="radio" name="ftdOutputMode" value="mini_packet">
-            <span class="ftd-output-title">📚 3-Activity Daily Mini-Packet</span>
+            <span class="ftd-output-title">3-Activity Daily Mini-Packet</span>
             <span class="ftd-output-desc">Full daytime routine: Morning bvFTD motor routine, Mid-day PPA visual focus, Evening sensory calm + custom cover.</span>
           </label>
           <label class="ftd-output-card" id="ftdModeGuideLabel">
             <input type="radio" name="ftdOutputMode" value="guide">
-            <span class="ftd-output-title">📋 Facilitation Guide</span>
+            <span class="ftd-output-title">Facilitation Guide</span>
             <span class="ftd-output-desc">Clinical protocol for caregivers: managing motor looping, disinhibition redirection, and non-verbal PPA communication.</span>
           </label>
           <label class="ftd-output-card" id="ftdModePpaLabel">
             <input type="radio" name="ftdOutputMode" value="ppa_board">
-            <span class="ftd-output-title">🗣️ PPA Visual Board</span>
+            <span class="ftd-output-title">PPA Visual Board</span>
             <span class="ftd-output-desc">High-contrast 1-page visual communication matrix. Direct point-to-communicate cards with large typography.</span>
           </label>
         </div>
@@ -6203,7 +6203,7 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
 <dialog id="lssModal" class="arb-dialog lss-modal" aria-labelledby="lssModalTitle">
   <div class="lss-modal-header">
     <div>
-      <h2 id="lssModalTitle" class="lss-modal-title">✨ Late-Stage Sensory &amp; Snoezelen Care Suite</h2>
+      <h2 id="lssModalTitle" class="lss-modal-title">Late-Stage Sensory &amp; Snoezelen Care Suite</h2>
       <p class="lss-modal-subtitle">Snoezelen MSE principles, deep somatic pressure, autonomic regulation &amp; 0.75&Prime; gutter print</p>
     </div>
     <button type="button" class="lss-modal-close" id="lssModalCloseBtn" aria-label="Close dialog">&times;</button>
@@ -6286,11 +6286,11 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
       <!-- Quick Ambient Care Display Launch Banner -->
       <div class="lss-ambient-banner">
         <div class="lss-ambient-banner-text">
-          <strong>🌌 Late-Stage Ambient Care Display Mode</strong>
+          <strong>Late-Stage Ambient Care Display Mode</strong>
           <span>Transform tablet into a distraction-free, slow-moving luminous sensory screen for bedbound residents.</span>
         </div>
         <button type="button" class="lss-ambient-btn-launch" id="lssLaunchAmbientModalBtn">
-          <span>🌌</span> Launch Screen
+          Launch Screen
         </button>
       </div>
 
@@ -6299,22 +6299,22 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
         <div class="lss-options-grid" role="radiogroup" aria-label="Output format selection">
           <label class="lss-output-card is-selected" id="lssModeSingleLabel">
             <input type="radio" name="lssOutputMode" value="single" checked>
-            <span class="lss-output-title">📄 Single Sensory Protocol Sheet</span>
+            <span class="lss-output-title">Single Sensory Protocol Sheet</span>
             <span class="lss-output-desc">Detailed step-by-step somatic facilitation guide with deep pressure dosage, vitals check, and sign-off.</span>
           </label>
           <label class="lss-output-card" id="lssModeMiniLabel">
             <input type="radio" name="lssOutputMode" value="mini_packet">
-            <span class="lss-output-title">📚 3-Activity Daily Mini-Packet</span>
+            <span class="lss-output-title">3-Activity Daily Mini-Packet</span>
             <span class="lss-output-desc">Full daytime rhythm: Morning Awakening Bath, Mid-Day Tactile Grounding, Evening Sundowning Calm + Cover Sheet.</span>
           </label>
           <label class="lss-output-card" id="lssModeGuideLabel">
             <input type="radio" name="lssOutputMode" value="guide">
-            <span class="lss-output-title">📋 Snoezelen Facilitation Guide</span>
+            <span class="lss-output-title">Snoezelen Facilitation Guide</span>
             <span class="lss-output-desc">Clinical protocol for caregivers: autonomic nervous system markers, non-verbal indicators of comfort, sensory dosage limits.</span>
           </label>
           <label class="lss-output-card" id="lssModeSootheLabel">
             <input type="radio" name="lssOutputMode" value="soothe_sheet">
-            <span class="lss-output-title">🎨 Soothe-Print Contoured Sheet</span>
+            <span class="lss-output-title">Soothe-Print Contoured Sheet</span>
             <span class="lss-output-desc">Ultra-bold 12pt flowing contour illustration with zero text clutter for shared hand-under-hand tactile engagement.</span>
           </label>
         </div>
@@ -6344,10 +6344,10 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
     </div>
     <div class="lss-ambient-actions">
       <button type="button" class="lss-ambient-btn" id="lssAmbientAudioToggle" aria-label="Toggle ambient chimes">
-        <span id="lssAudioIcon">🔔</span> <span id="lssAudioLabel">Chimes: Off</span>
+        <span id="lssAudioIcon"></span> <span id="lssAudioLabel">Chimes: Off</span>
       </button>
       <button type="button" class="lss-ambient-btn" id="lssAmbientPaletteToggle" aria-label="Change color theme">
-        <span>🎨</span> Theme: Twilight
+        Theme: Twilight
       </button>
       <button type="button" class="lss-ambient-btn" id="lssAmbientCloseBtn" aria-label="Exit Ambient Mode">
         <span>✕</span> Exit Screen
@@ -6447,9 +6447,9 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
       <span class="qpb-for" id="qpbFor">No resident selected</span>
     </div>
     <div class="qpb-head-controls" data-cg-night-slot>
-      <button type="button" class="qpb-btn arb-tier-toggle" data-tier-override aria-pressed="false" disabled>☀️ Good Day · Usual tier</button>
+      <button type="button" class="qpb-btn arb-tier-toggle" data-tier-override aria-pressed="false" disabled>Good Day · Usual tier</button>
       <button type="button" class="arb-btn arb-btn-emergency cgw-btn cgw-soothe qpb-soothe-btn" id="arbSootheSticky" aria-label="Instant Soothe and Sundowning Calm: choose a care level and a theme, then print a fresh calming packet"><span class="cgw-badge" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M12 21s-7-4.6-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 11c0 5.4-7 10-7 10z"/></svg></span><span class="cgw-label">Instant Soothe / Sundowning Calm</span></button>
-      <button type="button" class="cg-night-shift-toggle" aria-label="Toggle warm-amber Night Shift theme">🌙 Night Shift: Off</button>
+      <button type="button" class="cg-night-shift-toggle" aria-label="Toggle warm-amber Night Shift theme">Night Shift: Off</button>
     </div>
   </div>
   <p class="qpb-lede">Quick printable pages made from the active resident's profile: their work, hobbies, people and favorite years, in large high-contrast print. Topics to avoid are always left out.</p>
@@ -6461,13 +6461,13 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
     <label class="qpb-pick"><input type="checkbox" data-page="cover" checked><span><b>Custom Cover Sheet</b><small>&ldquo;Activity Packet for&rdquo; with their first name</small></span></label>
   </fieldset>
   <div class="qpb-actions">
-    <button type="button" class="qpb-btn qpb-btn-primary" id="qpbGenerate"><span aria-hidden="true">⚡</span> Generate Custom Packet</button>
-    <button type="button" class="qpb-btn" id="qpbPrint" disabled><span aria-hidden="true">🖨️</span> Print / Save to PDF</button>
-    <button type="button" class="qpb-btn qpb-btn-tablet" id="qpbTablet"><span aria-hidden="true">📱</span> Launch Tablet Interactive Mode</button>
-    <button type="button" class="qpb-btn qpb-btn-pdf" id="qpbPdf"><span aria-hidden="true">📥</span> Download PDF Packet</button>
-    <button type="button" class="qpb-btn qpb-btn-soothe" id="qpbSoothe" aria-label="Instant Soothe and Print: choose a care level and a theme, then print a fresh calming packet"><span aria-hidden="true">🟡</span> Instant Soothe Print</button>
-    <button type="button" class="qpb-btn qpb-btn-digest" id="qpbFamilyDigest" aria-label="Generate Family Life Digest for this resident"><span aria-hidden="true">💌</span> Family Life Digest</button>
-    <button type="button" class="qpb-btn qpb-btn-pocket" id="qpbPocketCard" aria-label="Print 3x5 laminated pocket lanyard card for this resident"><span aria-hidden="true">📇</span> Pocket Lanyard Card</button>
+    <button type="button" class="qpb-btn qpb-btn-primary" id="qpbGenerate">Generate Custom Packet</button>
+    <button type="button" class="qpb-btn" id="qpbPrint" disabled>Print / Save to PDF</button>
+    <button type="button" class="qpb-btn qpb-btn-tablet" id="qpbTablet">Launch Tablet Interactive Mode</button>
+    <button type="button" class="qpb-btn qpb-btn-pdf" id="qpbPdf">Download PDF Packet</button>
+    <button type="button" class="qpb-btn qpb-btn-soothe" id="qpbSoothe" aria-label="Instant Soothe and Print: choose a care level and a theme, then print a fresh calming packet">Instant Soothe Print</button>
+    <button type="button" class="qpb-btn qpb-btn-digest" id="qpbFamilyDigest" aria-label="Generate Family Life Digest for this resident">Family Life Digest</button>
+    <button type="button" class="qpb-btn qpb-btn-pocket" id="qpbPocketCard" aria-label="Print 3x5 laminated pocket lanyard card for this resident">Pocket Lanyard Card</button>
     <span class="qpb-pill" id="qpbPdfPill" role="status" aria-live="polite" hidden></span>
   </div>
   <p class="qpb-note"><b>Download PDF Packet</b> saves a ready-to-print file straight to your Downloads folder, made entirely on this computer. If you use Print instead, choose <b>Save as PDF</b> as the printer and keep the scale at 100% (Default), not "Fit to page".</p>
@@ -6497,12 +6497,12 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
     <input type="text" id="pcgTopics" maxlength="120" autocomplete="off" placeholder="fishing, the county fair">
   </div>
   <div class="qpb-actions">
-    <button type="button" class="qpb-btn qpb-btn-primary" id="pcgPrint" disabled><span aria-hidden="true">📥</span> Download Today's Packet (PDF)</button>
-    <button type="button" class="qpb-btn" id="pcgCopy" disabled><span aria-hidden="true">📋</span> Copy action prompts</button>
-    <button type="button" class="qpb-btn" id="pcgAnother" disabled><span aria-hidden="true">🔄</span> Make another version</button>
+    <button type="button" class="qpb-btn qpb-btn-primary" id="pcgPrint" disabled>Download Today's Packet (PDF)</button>
+    <button type="button" class="qpb-btn" id="pcgCopy" disabled>Copy action prompts</button>
+    <button type="button" class="qpb-btn" id="pcgAnother" disabled>Make another version</button>
     <button type="button" class="qpb-btn" id="pcgBack" hidden>Back to the first version</button>
-    <button type="button" class="qpb-btn qpb-btn-digest" id="pcgFamilyDigest" disabled aria-label="Generate Family Life Digest for this resident"><span aria-hidden="true">💌</span> Family Life Digest</button>
-    <button type="button" class="qpb-btn qpb-btn-pocket" id="pcgPocketCard" disabled aria-label="Print 3x5 laminated pocket lanyard card for this resident"><span aria-hidden="true">📇</span> Pocket Lanyard Card</button>
+    <button type="button" class="qpb-btn qpb-btn-digest" id="pcgFamilyDigest" disabled aria-label="Generate Family Life Digest for this resident">Family Life Digest</button>
+    <button type="button" class="qpb-btn qpb-btn-pocket" id="pcgPocketCard" disabled aria-label="Print 3x5 laminated pocket lanyard card for this resident">Pocket Lanyard Card</button>
     <span class="qpb-pill" id="pcgPdfPill" role="status" aria-live="polite" hidden></span>
   </div>
   <p class="qpb-note">The PDF is five pages, made entirely on this computer: the word search is always Page 1 and the color page is always Page 4. Page 5 is for staff, so take it off before handing the packet over.</p>
@@ -6616,7 +6616,7 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
           <button type="button" class="vad-filter-pill" data-filter="moderate">Moderate (Structured)</button>
         </div>
         <button type="button" class="vad-quick-open" id="vadOpenModalBtn">
-          <span>⚙️</span> Personalize &amp; Print Suite
+          Personalize &amp; Print Suite
         </button>
         <div class="vad-activity-list" id="vadActivityList">
           <!-- Populated dynamically by initVascularModule() -->
@@ -6633,7 +6633,7 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
       <div class="dlb-submenu" id="dlbSubmenu" aria-label="Lewy Body Dementia CST Modules">
         <div class="dlb-header">
           <div class="dlb-header-title">
-            <span>👁️</span> DLB Visuospatial Suite (10 Modules)
+            DLB Visuospatial Suite (10 Modules)
           </div>
         </div>
         <div class="dlb-filter-group" role="group" aria-label="Filter activities by alertness mode">
@@ -6643,7 +6643,7 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
           <button type="button" class="dlb-filter-pill" data-filter="calming">Calming · Somatosensory</button>
         </div>
         <button type="button" class="dlb-quick-open" id="dlbOpenModalBtn">
-          <span>⚙️</span> Personalize &amp; Print Suite
+          Personalize &amp; Print Suite
         </button>
         <div class="dlb-activity-list" id="dlbActivityList">
           <!-- Populated dynamically by initLewyModule() -->
@@ -6660,7 +6660,7 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
       <div class="ftd-submenu" id="ftdSubmenu" aria-label="Frontotemporal Dementia CST Modules">
         <div class="ftd-header">
           <div class="ftd-header-title">
-            <span>🗺️</span> FTD Structured Routine Suite (10 Modules)
+            FTD Structured Routine Suite (10 Modules)
           </div>
         </div>
         <div class="ftd-filter-group" role="group" aria-label="Filter activities by clinical focus">
@@ -6671,10 +6671,10 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
         </div>
         <div class="ftd-quick-actions">
           <button type="button" class="ftd-quick-open" id="ftdOpenModalBtn">
-            <span>⚙️</span> Personalize &amp; Print Suite
+            Personalize &amp; Print Suite
           </button>
           <button type="button" class="ftd-quick-ppa" id="ftdQuickPpaBtn">
-            <span>🗣️</span> Quick PPA Board
+            Quick PPA Board
           </button>
         </div>
         <div class="ftd-activity-list" id="ftdActivityList">
@@ -6692,7 +6692,7 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
       <div class="lss-submenu" id="lssSubmenu" aria-label="Late-Stage Multisensory Care Modules">
         <div class="lss-header">
           <div class="lss-header-title">
-            <span>✨</span> Snoezelen Multisensory Suite (10 Protocols)
+            Snoezelen Multisensory Suite (10 Protocols)
           </div>
         </div>
         <div class="lss-filter-group" role="group" aria-label="Filter sensory pathways">
@@ -6704,10 +6704,10 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
         </div>
         <div class="lss-quick-actions">
           <button type="button" class="lss-quick-open" id="lssOpenModalBtn">
-            <span>⚙️</span> Personalize &amp; Print Suite
+            Personalize &amp; Print Suite
           </button>
           <button type="button" class="lss-quick-ambient" id="lssQuickAmbientBtn">
-            <span>🌌</span> Launch Ambient Mode
+            Launch Ambient Mode
           </button>
         </div>
         <div class="lss-activity-list" id="lssActivityList">
@@ -6725,7 +6725,7 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
       <div class="korsakoff-submenu" id="korsakoffSubmenu" aria-label="Korsakoff / Amnesia Activities">
         <div class="korsakoff-header">
           <div class="korsakoff-header-title">
-            <span>🧠</span> Korsakoff / Amnesia — Errorless Learning Suite (10 Activities)
+            Korsakoff / Amnesia — Errorless Learning Suite (10 Activities)
           </div>
         </div>
         <div class="korsakoff-filter-group" role="group" aria-label="Filter rehabilitation categories">
@@ -6736,10 +6736,10 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
         </div>
         <div class="korsakoff-quick-actions">
           <button type="button" class="korsakoff-quick-open" id="korsakoffOpenModalBtn">
-            <span>⚙️</span> Personalize &amp; Print Suite
+            Personalize &amp; Print Suite
           </button>
           <button type="button" class="korsakoff-quick-taskbuilder" id="korsakoffTaskBuilderBtn">
-            <span>📋</span> Errorless Task Builder
+            Errorless Task Builder
           </button>
         </div>
         <div class="korsakoff-activity-list" id="korsakoffActivityList">
@@ -12535,7 +12535,7 @@ $("saveProfile").addEventListener("click", async ()=>{
   const p=collectProfile(), pass=$("ioPass").value, msg=$("ioMsg");
   const who=(p.fields.first||"resident").replace(/[^A-Za-z0-9]/g,"") || "resident";
   if(!pass){
-    if(!confirm("Save without a passphrase? Anyone who opens the file can read this resident's details.\n\nTo lock it, press Cancel and type a passphrase first.")){ $("ioPass").focus(); return; }
+    if(!(await CogniDialog.confirm({ title:"Save without a passphrase?", body:"Anyone who opens the file can read this resident's details.\n\nTo lock it, press Cancel and type a passphrase first.", yes:"Save without a passphrase", no:"Cancel" }))){ $("ioPass").focus(); return; }
     downloadBlob(new Blob([JSON.stringify(p,null,2)],{type:"application/json"}), "Cognicopia_"+who+".json");
     msg.textContent="Saved to your downloads, not locked. Keep it somewhere private.";
     return;
@@ -12612,7 +12612,7 @@ function draftHasContent(d){
 }
 async function clearForm(){
   if(draftHasContent(collectProfile()) &&
-     !confirm("Clear everything typed for this resident? Save it first if you will need it again.")) return;
+     !(await CogniDialog.confirm({ title:"Clear the form?", body:"Everything typed for this resident is cleared. Save it first if you will need it again.", yes:"Clear it", no:"Keep it" }))) return;
   clearTimeout(draftTimer); draftTimer=0;
   try{ CG_LS.removeItem(DRAFT_KEY); localStorage.removeItem("cognicopia_active_resident"); }catch(e){}
   if("scrollRestoration" in history) history.scrollRestoration="manual";
@@ -13401,7 +13401,7 @@ const VASCULAR_ACTIVITIES = [
     id: "budgeting",
     title: "Structured Budgeting & Bill Reconciliation",
     shortTitle: "Bill Reconciliation",
-    icon: "💵",
+    icon: "",
     tier: "mild",
     executiveFocus: "Frontostriatal loops, working memory & numerical calculation",
     rationale: "Addresses executive calculation fatigue and working memory breakdown in subcortical ischemic vascular decline. Isolates linear row-by-row accounting with structured check-off anchors to prevent arithmetic disorientation and restore financial autonomy.",
@@ -13459,7 +13459,7 @@ const VASCULAR_ACTIVITIES = [
     id: "cooking",
     title: "Sequential Multi-Step Cooking & Baking",
     shortTitle: "Recipe Sequencing",
-    icon: "🥣",
+    icon: "",
     tier: "moderate",
     executiveFocus: "Dorsolateral prefrontal cortex (DLPFC), sequential procedural planning & error monitoring",
     rationale: "Mitigates frontostriatal disconnection where complex culinary tasks become disorganized. Formats multi-step recipes into an invariant linear algorithm with binary checkboxes to preserve lifelong homemaking identity.",
@@ -13546,7 +13546,7 @@ const VASCULAR_ACTIVITIES = [
     id: "route_planning",
     title: "Map-Reading & Route-Planning Exercises",
     shortTitle: "Route Navigation",
-    icon: "🗺️",
+    icon: "",
     tier: "mild",
     executiveFocus: "Parieto-frontal spatial sequencing, directional logic & prospective mental traversal",
     rationale: "Prevents topographical and spatial sequencing breakdown in subcortical ischemic vascular disease. Uses high-contrast 2D grid coordinates and step-by-step waypoint verification to reinforce executive navigation without sensory overload.",
@@ -13621,7 +13621,7 @@ const VASCULAR_ACTIVITIES = [
     id: "current_events",
     title: "Current Events Group Discussion (Structured Debates)",
     shortTitle: "Milestone Debates",
-    icon: "📰",
+    icon: "",
     tier: "mild",
     executiveFocus: "Cognitive set-shifting, verbal inhibition, semantic retrieval & structured decision-making",
     rationale: "Fosters executive perspective-taking and counters cognitive rigidity caused by frontal lobe ischemia. Provides balanced 2-column pros/cons matrices to structure rational discourse without emotional agitation or verbal perseveration.",
@@ -13726,7 +13726,7 @@ const VASCULAR_ACTIVITIES = [
     id: "grocery_matching",
     title: "Categorized Grocery Inventory Matching",
     shortTitle: "Grocery Classification",
-    icon: "🛒",
+    icon: "",
     tier: "moderate",
     executiveFocus: "Semantic classification, set organization & categorical cognitive chunking",
     rationale: "Vascular ischemic lesions in fronto-parietal pathways disrupt spontaneous category retrieval. This module provides explicit visual department silos (Produce, Dairy, Pantry, Bakery) to scaffold organized sorting and reduce cognitive fatigue.",
@@ -13807,7 +13807,7 @@ const VASCULAR_ACTIVITIES = [
     id: "garden_planning",
     title: "Garden Planning & Seed Packet Organization",
     shortTitle: "Garden Plot Planning",
-    icon: "🌱",
+    icon: "",
     tier: "moderate",
     executiveFocus: "Visuospatial planning, seasonal sequencing & working memory boundary maintenance",
     rationale: "Subcortical ischemic disruptions impair spatial visualization and chronological mapping. This exercise uses a 4x4 raised garden bed matrix to map vegetable sowing by seasonal planting schedules, grounding planning in sensory memories.",
@@ -13882,7 +13882,7 @@ const VASCULAR_ACTIVITIES = [
     id: "calendar_scheduling",
     title: "Calendar Management & Scheduling Drills",
     shortTitle: "Calendar Scheduling",
-    icon: "📅",
+    icon: "",
     tier: "mild",
     executiveFocus: "Temporal orientation, prospective event memory & conflict resolution logic",
     rationale: "Ischemic cerebrovascular changes frequently impair mental time-travel and chronological planning. This module provides a clean 5-day week calendar grid to practice time-blocking and avoid scheduling conflicts.",
@@ -13945,7 +13945,7 @@ const VASCULAR_ACTIVITIES = [
     id: "word_crosswords",
     title: "Targeted Word-Retrieval Crosswords",
     shortTitle: "Phonemic Crosswords",
-    icon: "✏️",
+    icon: "",
     tier: "moderate",
     executiveFocus: "Left inferior frontal gyrus (LIFG) phonemic search, semantic fluency & errorless retrieval",
     rationale: "Bypasses 'tip-of-the-tongue' naming deficits typical of vascular lacunar infarcts. Employs strong phonemic cues (first letter supplied), exact letter-count brackets, and adult historical trivia to facilitate successful retrieval without frustration.",
@@ -14002,7 +14002,7 @@ const VASCULAR_ACTIVITIES = [
     id: "dual_task_motor",
     title: "Targeted Balance & Dual-Task Motor Walking",
     shortTitle: "Dual-Task Gait Walking",
-    icon: "🚶",
+    icon: "",
     tier: "moderate",
     executiveFocus: "Gait-cognition frontostriatal interference, divided attention & fall prevention",
     rationale: "Vascular subcortical decline degrades automatic motor gait regulation, dramatically escalating fall risk when dual-tasking. This protocol couples safe, guided heel-to-toe pacing with structured working memory recitation to retrain divided attentional control.",
@@ -14061,7 +14061,7 @@ const LEWY_ACTIVITIES = [
     id: "rhythmic_drumming",
     title: "Rhythmic Drumming & Percussion Tracking",
     shortTitle: "Percussion Tracking",
-    icon: "🥁",
+    icon: "",
     mode: "fluctuating",
     visuospatialFocus: "Basal ganglia timing circuits, auditory-motor entrainment & alerting",
     rationale: "Bypasses compromised occipital-parietal visuospatial pathways by anchoring attention to steady auditory tempo. Bilateral percussive tapping stimulates thalamocortical alerting circuits during fluctuating daytime drowsiness without imposing visual processing fatigue.",
@@ -14094,7 +14094,7 @@ const LEWY_ACTIVITIES = [
     id: "bold_coloring",
     title: "High-Contrast Bold & Easy Coloring (6px–10px borders)",
     shortTitle: "Bold Outline Coloring",
-    icon: "🎨",
+    icon: "",
     mode: "alert",
     visuospatialFocus: "Ventral stream figure-ground discrimination & motor tremor compensation",
     rationale: "Alpha-synuclein pathology in the primary visual cortex causes severe visual crowding and boundary bleeding. 6px to 10px ultra-thick solid black borders contain parkinsonian resting tremors, eliminate ambiguous edges, and prevent visual hallucination triggers.",
@@ -14121,7 +14121,7 @@ const LEWY_ACTIVITIES = [
     id: "familiar_singalongs",
     title: "Familiar Sing-Alongs with Audio Anchors",
     shortTitle: "Familiar Sing-Along",
-    icon: "🎶",
+    icon: "",
     mode: "fluctuating",
     visuospatialFocus: "Auditory cortex, temporal lobe autobiographical memory & autonomic regulation",
     rationale: "Musical memory in the superior temporal gyrus and supplementary motor area remains remarkably preserved in DLB despite occipital decline. Melodic phrasing bypasses visual apathy, stimulates diaphragmatic breathing, and elevates alertness during daytime dips.",
@@ -14166,7 +14166,7 @@ const LEWY_ACTIVITIES = [
     id: "tactile_matching",
     title: "Tactile Texture Matching Boards",
     shortTitle: "Texture Matching",
-    icon: "🧶",
+    icon: "",
     mode: "calming",
     visuospatialFocus: "Primary somatosensory cortex (S1) & non-visual sensory verification",
     rationale: "Visual agnosia in DLB impairs object identification by sight alone. Tactile matching engages intact somatosensory mechanoreceptors to verify physical reality through touch, reassuring residents and extinguishing visual illusions without debate.",
@@ -14191,7 +14191,7 @@ const LEWY_ACTIVITIES = [
     id: "band_stretching",
     title: "Light Resistance Band Stretching to Music",
     shortTitle: "Band Stretch to Music",
-    icon: "🧘",
+    icon: "",
     mode: "alert",
     visuospatialFocus: "Extrapyramidal motor pathways, bradykinesia mitigation & postural alignment",
     rationale: "Lewy body parkinsonism produces muscular rigidity, stooped posture, and bradykinesia. Gentle isometric resistance band exercises synchronized to slow musical cadences ease muscular stiffness and improve thoracic expansion for vocalization.",
@@ -14216,7 +14216,7 @@ const LEWY_ACTIVITIES = [
     id: "scent_identification",
     title: "Olfactory Scent Identification & Reminiscence",
     shortTitle: "Olfactory Reminiscence",
-    icon: "🌿",
+    icon: "",
     mode: "calming",
     visuospatialFocus: "Olfactory bulb & entorhinal limbic circuits (zero visual processing required)",
     rationale: "Olfactory stimulation bypasses visual pathways entirely, eliminating any risk of visual illusions, pareidolia, or visual fatigue. Familiar scent molecules trigger immediate episodic memories and evoke emotional grounding.",
@@ -14241,7 +14241,7 @@ const LEWY_ACTIVITIES = [
     id: "peg_puzzles",
     title: "Large-Piece Wooden Peg Puzzles",
     shortTitle: "High-Contrast Peg Puzzle",
-    icon: "🧩",
+    icon: "",
     mode: "alert",
     visuospatialFocus: "Dorsal stream visuomotor guidance & parkinsonian grasp facilitation",
     rationale: "Standard puzzle pieces create visual confusion due to interlocking edge details. High-contrast peg puzzles feature isolated, bold geometric forms with oversized grip knobs and 8px contrast borders that prevent visual figure-ground ambiguity.",
@@ -14266,7 +14266,7 @@ const LEWY_ACTIVITIES = [
     id: "hand_massage",
     title: "Caregiver-Guided Hand Massage & Somatic Grounding",
     shortTitle: "Somatic Hand Massage",
-    icon: "🤝",
+    icon: "",
     mode: "calming",
     visuospatialFocus: "Proprioceptive somatic grounding, vagal nerve tone & parasympathetic calming",
     rationale: "During periods of visual hallucination or fluctuating REM sleep behavior disorientation, verbal rationalization can increase agitation. Deep somatic touch pressure recalibrates proprioceptive feedback, quieting the hyperactive amygdala and grounding the resident in physical reality.",
@@ -14291,7 +14291,7 @@ const LEWY_ACTIVITIES = [
     id: "foam_ball_tracking",
     title: "High-Visibility Foam Ball Tracking",
     shortTitle: "Ocular Foam Ball Tracking",
-    icon: "🟡",
+    icon: "",
     mode: "alert",
     visuospatialFocus: "Superior colliculus, ocular smooth pursuit & bilateral gross motor reaction",
     rationale: "DLB impairs saccadic and smooth-pursuit eye movements. A single high-visibility monochromatic foam ball (bright yellow on dark felt) rolled in a predictable linear path exercises ocular tracking without visual clutter.",
@@ -14315,7 +14315,7 @@ const LEWY_ACTIVITIES = [
     id: "shadow_matching",
     title: "Object Shadow-Matching Silhouettes",
     shortTitle: "Shadow Silhouette Matching",
-    icon: "👥",
+    icon: "",
     mode: "alert",
     visuospatialFocus: "Ventral occipitotemporal stream, figure-ground disambiguation & anti-pareidolia drill",
     rationale: "Pareidolia (perceiving illusory faces or figures in shadows and textured surfaces) is a clinical hallmark of DLB. This exercise explicitly trains the visual cortex to distinguish solid flat silhouettes from ambiguous textures, disambiguating visual illusions through structured matching.",
@@ -14343,7 +14343,7 @@ const FTD_ACTIVITIES = [
     id: "structured_sorting",
     title: "Structured Sorting & Repetitive Assembly",
     shortTitle: "Motor Looping",
-    icon: "🧩",
+    icon: "",
     subtype: "bvftd",
     duration: "15–20 min",
     clinicalFocus: "Channel compulsive motor looping into productive category sorting",
@@ -14378,7 +14378,7 @@ const FTD_ACTIVITIES = [
     id: "woodworking_sanding",
     title: "Guided Woodworking & Block Sanding",
     shortTitle: "Tactile Resistance",
-    icon: "🪵",
+    icon: "",
     subtype: "bvftd",
     duration: "15–25 min",
     clinicalFocus: "Provide heavy proprioceptive feedback to substitute disinhibited motor impulses",
@@ -14413,7 +14413,7 @@ const FTD_ACTIVITIES = [
     id: "ppa_comm_board",
     title: "Picture-Based Communication Board (PPA)",
     shortTitle: "PPA Expressive Bypass",
-    icon: "🗣️",
+    icon: "",
     subtype: "ppa",
     duration: "Continuous / Daily Routine",
     clinicalFocus: "Bypass Broca's and anterior temporal language loss via high-contrast visual icon matrices",
@@ -14448,7 +14448,7 @@ const FTD_ACTIVITIES = [
     id: "yarn_winding",
     title: "Repetitive Hand-Winding of Yarn Skeins",
     shortTitle: "Bilateral Rhythmic Loop",
-    icon: "🧶",
+    icon: "",
     subtype: "bvftd",
     duration: "20–30 min",
     clinicalFocus: "Channel motor perseveration into continuous bilateral hand-arm loops",
@@ -14483,7 +14483,7 @@ const FTD_ACTIVITIES = [
     id: "nature_scavenger",
     title: "Nature Photography & Outdoor Scavenger Sorting",
     shortTitle: "Outdoor Classification",
-    icon: "🌿",
+    icon: "",
     subtype: "sensory",
     duration: "20–25 min",
     clinicalFocus: "Engage biophilic curiosity, visual attention, and executive classification",
@@ -14518,7 +14518,7 @@ const FTD_ACTIVITIES = [
     id: "fidget_substitution",
     title: "Task-Substitution Fidget Kits",
     shortTitle: "Impulse Redirection",
-    icon: "🧱",
+    icon: "",
     subtype: "bvftd",
     duration: "15–30 min",
     clinicalFocus: "Redirect picking, pacing, and disinhibited grabbing into structured mechanical manipulation",
@@ -14553,7 +14553,7 @@ const FTD_ACTIVITIES = [
     id: "legacy_biography",
     title: "Legacy Biography & Audio Recording",
     shortTitle: "Apathy Mitigation",
-    icon: "🎙️",
+    icon: "",
     subtype: "ppa",
     duration: "20–25 min",
     clinicalFocus: "Mitigate apathy through structured biographical prompts and voice preservation",
@@ -14588,7 +14588,7 @@ const FTD_ACTIVITIES = [
     id: "bordered_jigsaw",
     title: "Structured Jigsaw Puzzles with Edge Borders",
     shortTitle: "Bordered Framing",
-    icon: "🖼️",
+    icon: "",
     subtype: "sensory",
     duration: "15–25 min",
     clinicalFocus: "Support visuomotor assembly with heavy outer boundary frames to eliminate spatial disorientation",
@@ -14623,7 +14623,7 @@ const FTD_ACTIVITIES = [
     id: "rhythmic_gardening",
     title: "Simple Rhythmic Gardening (Weeding & Pruning)",
     shortTitle: "Biophilic Motor Work",
-    icon: "🌱",
+    icon: "",
     subtype: "bvftd",
     duration: "20–30 min",
     clinicalFocus: "Harness physical stamina and repetitive outdoor motion into a meaningful, productive goal",
@@ -14658,7 +14658,7 @@ const FTD_ACTIVITIES = [
     id: "guided_listening",
     title: "Guided Listening Room & Sound Insulation",
     shortTitle: "Overstimulation Reduction",
-    icon: "🎧",
+    icon: "",
     subtype: "sensory",
     duration: "15–20 min",
     clinicalFocus: "Reduce sensory flooding and hyper-reactivity through isolated acoustic environments",
@@ -14696,7 +14696,7 @@ const LATE_STAGE_ACTIVITIES = [
     id: "fiber_optic",
     title: "Snoezelen Fiber-Optic Visual Tracking",
     shortTitle: "Fiber-Optic Glow",
-    icon: "✨",
+    icon: "",
     pathway: "visual",
     duration: "15–20 min",
     clinicalFocus: "Passive ocular tracking and visual focus without glare or cognitive demand",
@@ -14732,7 +14732,7 @@ const LATE_STAGE_ACTIVITIES = [
     id: "deep_pressure",
     title: "Weighted Blanket & Deep Pressure Therapy Guidance",
     shortTitle: "Deep Somatosensory",
-    icon: "🛋️",
+    icon: "",
     pathway: "tactile",
     duration: "20–30 min",
     clinicalFocus: "Autonomic down-regulation through proprioceptive deep pressure touch stimulation (DPTS)",
@@ -14768,7 +14768,7 @@ const LATE_STAGE_ACTIVITIES = [
     id: "scented_handwashing",
     title: "Hand-Under-Hand Scented Hand-Washing Rituals",
     shortTitle: "Warm Water & Scent",
-    icon: "🧼",
+    icon: "",
     pathway: "olfactory",
     duration: "15–20 min",
     clinicalFocus: "Somatic warmth and olfactory limbic stimulation via warm lavender-infused hand bath",
@@ -14804,7 +14804,7 @@ const LATE_STAGE_ACTIVITIES = [
     id: "hymn_auditory_baths",
     title: "Classic Lullaby & Vintage Hymn Auditory Baths",
     shortTitle: "Lullaby Auditory Bath",
-    icon: "🎶",
+    icon: "",
     pathway: "auditory",
     duration: "20–25 min",
     clinicalFocus: "Engage preserved hippocampal musical memory and induce alpha brainwave relaxation",
@@ -14876,7 +14876,7 @@ const LATE_STAGE_ACTIVITIES = [
     id: "aroma_diffuser",
     title: "Gentle Aroma-Diffuser Breathing Sessions",
     shortTitle: "Limbic Aromatherapy",
-    icon: "🌿",
+    icon: "",
     pathway: "olfactory",
     duration: "15–20 min",
     clinicalFocus: "Direct olfactory bulb stimulation to trigger positive emotional recall and lower heart rate",
@@ -14912,7 +14912,7 @@ const LATE_STAGE_ACTIVITIES = [
     id: "nature_projections",
     title: "Passive Visual Nature Projections",
     shortTitle: "Ceiling Nature Projection",
-    icon: "🌌",
+    icon: "",
     pathway: "visual",
     duration: "20–30 min",
     clinicalFocus: "Alleviate sensory deprivation for bedbound residents through soft ceiling light projections",
@@ -14948,7 +14948,7 @@ const LATE_STAGE_ACTIVITIES = [
     id: "gustatory_swabs",
     title: "Gustatory Memory Swab Experiences",
     shortTitle: "Oral Memory Swabs",
-    icon: "🍯",
+    icon: "",
     pathway: "olfactory",
     duration: "10–15 min",
     clinicalFocus: "Oral sensory stimulation and gustatory memory activation using safe moistened oral swabs",
@@ -14984,7 +14984,7 @@ const LATE_STAGE_ACTIVITIES = [
     id: "soothe_print_guided",
     title: "Soothe-Print Coloring (Shared Hand-Under-Hand)",
     shortTitle: "Hand-Under-Hand Soothe",
-    icon: "🎨",
+    icon: "",
     pathway: "tactile",
     duration: "15–20 min",
     clinicalFocus: "Bilateral tactile somatic engagement through ultra-bold 12pt fluid contours and shared grasp",
@@ -15020,7 +15020,7 @@ const LATE_STAGE_ACTIVITIES = [
     id: "sound_bowl",
     title: "Acoustic Sound-Bowl Resonance Therapy",
     shortTitle: "Sound-Bowl Vibration",
-    icon: "🔔",
+    icon: "",
     pathway: "auditory",
     duration: "15–20 min",
     clinicalFocus: "Somatic vibroacoustic therapy via Tibetan bronze sound bowl vibrations conducted through bed rails",
@@ -15059,7 +15059,7 @@ const KORSAKOFF_ACTIVITIES = [
     id: "errorless_routine_drills",
     title: "Errorless Learning Routine Drills",
     shortTitle: "Routine Drills",
-    icon: "📋",
+    icon: "",
     mode: "errorless",
     duration: "12–15 min",
     clinicalFocus: "Establish automatic morning sequence habit without error-strengthening guesses",
@@ -15094,7 +15094,7 @@ const KORSAKOFF_ACTIVITIES = [
     id: "remote_reminiscence_scrapbook",
     title: "Deep Remote Reminiscence Scrapbooking (1940s–1960s)",
     shortTitle: "Remote Scrapbook",
-    icon: "📖",
+    icon: "",
     mode: "reminiscence",
     duration: "15–20 min",
     clinicalFocus: "Activate intact retrograde episodic networks and Ribot-gradient autobiographical anchors",
@@ -15129,7 +15129,7 @@ const KORSAKOFF_ACTIVITIES = [
     id: "procedural_kitchen_skills",
     title: "Procedural Kitchen Skills Training (Muscle-Memory Cooking)",
     shortTitle: "Kitchen Skills",
-    icon: "🍳",
+    icon: "",
     mode: "procedural",
     duration: "15–25 min",
     clinicalFocus: "Recruit basal ganglia and cerebellar circuits for automated culinary sequences",
@@ -15164,7 +15164,7 @@ const KORSAKOFF_ACTIVITIES = [
     id: "personal_timeline",
     title: "Chronological Personal Timeline Construction",
     shortTitle: "Timeline",
-    icon: "📅",
+    icon: "",
     mode: "reminiscence",
     duration: "15–20 min",
     clinicalFocus: "Reconstruct pre-amnesic autobiographical continuity and temporal orientation",
@@ -15199,7 +15199,7 @@ const KORSAKOFF_ACTIVITIES = [
     id: "memory_aid_habituation",
     title: "Habitual External Memory Aid Training",
     shortTitle: "Memory Aids",
-    icon: "📎",
+    icon: "",
     mode: "errorless",
     duration: "10–15 min",
     clinicalFocus: "Train invariant look-check-act procedural habits using pocket logbooks and lanyard cards",
@@ -15234,7 +15234,7 @@ const KORSAKOFF_ACTIVITIES = [
     id: "spatial_navigation_habit",
     title: "Spatial Navigation Practice via Habituation",
     shortTitle: "Spatial Practice",
-    icon: "🗺️",
+    icon: "",
     mode: "procedural",
     duration: "15–20 min",
     clinicalFocus: "Ingrain egocentric spatial routes using salient visual landmarks and repetitive motor pacing",
@@ -15269,7 +15269,7 @@ const KORSAKOFF_ACTIVITIES = [
     id: "meai_interview",
     title: "Music-Evoked Autobiographical Interviewing (MEAI)",
     shortTitle: "MEAI Interview",
-    icon: "🎵",
+    icon: "",
     mode: "reminiscence",
     duration: "15–25 min",
     clinicalFocus: "Use formative melodies as affective cues to unlock involuntary autobiographical recall",
@@ -15304,7 +15304,7 @@ const KORSAKOFF_ACTIVITIES = [
     id: "procedural_crafting",
     title: "Procedural Crafting (Repetitive Weaving or Pottery)",
     shortTitle: "Crafting",
-    icon: "🧶",
+    icon: "",
     mode: "procedural",
     duration: "20–30 min",
     clinicalFocus: "Engage repetitive rhythmic bilateral tactile manipulation with zero working-memory load",
@@ -15339,7 +15339,7 @@ const KORSAKOFF_ACTIVITIES = [
     id: "daily_anchor_journal",
     title: "Structured Daily Anchor Journaling",
     shortTitle: "Anchor Journal",
-    icon: "⚓",
+    icon: "",
     mode: "errorless",
     duration: "10–15 min",
     clinicalFocus: "Provide daily reality grounding through pre-filled positive identity sentence stems",
@@ -15374,7 +15374,7 @@ const KORSAKOFF_ACTIVITIES = [
     id: "errorless_matching_sorting",
     title: "Errorless Matching & Sorting Games",
     shortTitle: "Matching Games",
-    icon: "🎲",
+    icon: "",
     mode: "errorless",
     duration: "12–18 min",
     clinicalFocus: "Maintain cognitive classification agility through physically keyed 100% successful sorting",
@@ -16118,10 +16118,10 @@ function renderVascularActivityContent(d, act, era, tier, yStart) {
     const groc = (act.eraAnchors && act.eraAnchors[era]) ? act.eraAnchors[era] : act.eraAnchors["1950s"];
     const colW = (W - 2 * M - 20) / 2;
     const depts = [
-      { name: "🍎 Produce Department", items: groc.produce || [] },
-      { name: "🥛 Dairy Cooler", items: groc.dairy || [] },
-      { name: "🍞 Bakery Counter", items: groc.bakery || [] },
-      { name: "🥫 Pantry & Dry Staples", items: groc.pantry || [] }
+      { name: "Produce Department", items: groc.produce || [] },
+      { name: "Dairy Cooler", items: groc.dairy || [] },
+      { name: "Bakery Counter", items: groc.bakery || [] },
+      { name: "Pantry & Dry Staples", items: groc.pantry || [] }
     ];
 
     depts.forEach((dp, idx) => {
@@ -19376,7 +19376,7 @@ function initVascularModule() {
       }
     } catch (err) {
       console.error(err);
-      alert("Error generating PDF: " + err.message);
+      CogniDialog.notice("Error generating PDF: " + err.message);
     }
   });
 
@@ -19603,7 +19603,7 @@ function initLewyModule() {
       }
     } catch (err) {
       console.error(err);
-      alert("Error generating DLB PDF: " + err.message);
+      CogniDialog.notice("Error generating DLB PDF: " + err.message);
     }
   });
 
@@ -19654,20 +19654,20 @@ function initFtdModule() {
   let currentSubtypeFilter = "all";
 
   const PPA_CARDS_ALL = [
-    { cat: "needs", icon: "💧", title: "WATER / DRINK", sub: "Thirsty / cold water" },
-    { cat: "needs", icon: "🍲", title: "HUNGRY / FOOD", sub: "Meal or snack" },
-    { cat: "needs", icon: "🚻", title: "RESTROOM", sub: "Use bathroom" },
-    { cat: "needs", icon: "🧼", title: "WASH / HANDS", sub: "Wash / freshen up" },
+    { cat: "needs", icon: "", title: "WATER / DRINK", sub: "Thirsty / cold water" },
+    { cat: "needs", icon: "", title: "HUNGRY / FOOD", sub: "Meal or snack" },
+    { cat: "needs", icon: "", title: "RESTROOM", sub: "Use bathroom" },
+    { cat: "needs", icon: "", title: "WASH / HANDS", sub: "Wash / freshen up" },
 
-    { cat: "comfort", icon: "🩺", title: "PAIN / HURT", sub: "Ache / need comfort" },
+    { cat: "comfort", icon: "", title: "PAIN / HURT", sub: "Ache / need comfort" },
     { cat: "comfort", icon: "¥", title: "COLD / WARM", sub: "Sweater / blanket" },
-    { cat: "comfort", icon: "🤫", title: "QUIET SPACE", sub: "Too loud / quiet" },
-    { cat: "comfort", icon: "🛏️", title: "REST / SLEEP", sub: "Tired / need lie down" },
+    { cat: "comfort", icon: "", title: "QUIET SPACE", sub: "Too loud / quiet" },
+    { cat: "comfort", icon: "", title: "REST / SLEEP", sub: "Tired / need lie down" },
 
-    { cat: "social", icon: "🚶", title: "WALK OUTSIDE", sub: "Walk / fresh air" },
-    { cat: "social", icon: "📷", title: "FAMILY PHOTO", sub: "View family pictures" },
-    { cat: "social", icon: "🎵", title: "MUSIC / SONGS", sub: "Listen to music" },
-    { cat: "social", icon: "🤝", title: "PLEASE HELP", sub: "Please assist me" }
+    { cat: "social", icon: "", title: "WALK OUTSIDE", sub: "Walk / fresh air" },
+    { cat: "social", icon: "", title: "FAMILY PHOTO", sub: "View family pictures" },
+    { cat: "social", icon: "", title: "MUSIC / SONGS", sub: "Listen to music" },
+    { cat: "social", icon: "", title: "PLEASE HELP", sub: "Please assist me" }
   ];
 
   function renderPpaPreview() {
@@ -19909,7 +19909,7 @@ function initFtdModule() {
       }
     } catch (err) {
       console.error(err);
-      alert("Error generating FTD PDF: " + err.message);
+      CogniDialog.notice("Error generating FTD PDF: " + err.message);
     }
   });
 
@@ -19986,14 +19986,14 @@ function initLateStageModule() {
         <p class="lss-card-desc">${act.desc}</p>
         <div class="lss-card-meta">
           <span>Duration: ${act.duration}</span>
-          <span>🔔 ${act.soundscape}</span>
+          <span>${act.soundscape}</span>
         </div>
         <div class="lss-card-actions">
           <button type="button" class="lss-card-btn-main" data-act-id="${act.id}">
-            <span>✨</span> Open Protocol
+            Open Protocol
           </button>
           <button type="button" class="lss-card-print-shortcut" data-act-id="${act.id}" title="Direct Print Soothe-Print Contoured Sheet">
-            <span>🎨</span> Soothe Sheet
+            Soothe Sheet
           </button>
         </div>
       `;
@@ -20030,7 +20030,7 @@ function initLateStageModule() {
           }
         } catch (err) {
           console.error(err);
-          alert("Error generating Soothe-Print PDF: " + err.message);
+          CogniDialog.notice("Error generating Soothe-Print PDF: " + err.message);
         }
       });
     });
@@ -20203,7 +20203,7 @@ function initLateStageModule() {
       }
     } catch (err) {
       console.error(err);
-      alert("Error generating Late-Stage Sensory PDF: " + err.message);
+      CogniDialog.notice("Error generating Late-Stage Sensory PDF: " + err.message);
     }
   });
 
@@ -20276,12 +20276,12 @@ function initLateStageModule() {
   function toggleChimes() {
     chimesActive = !chimesActive;
     if (chimesActive) {
-      if (audioIcon) audioIcon.textContent = "🔔";
+      if (audioIcon) audioIcon.textContent = "";
       if (audioLabel) audioLabel.textContent = "Chimes: On";
       if (ambientAudioToggle) ambientAudioToggle.classList.add("is-active");
       scheduleNextChime();
     } else {
-      if (audioIcon) audioIcon.textContent = "🕔";
+      if (audioIcon) audioIcon.textContent = "";
       if (audioLabel) audioLabel.textContent = "Chimes: Off";
       if (ambientAudioToggle) ambientAudioToggle.classList.remove("is-active");
       if (chimesTimer) clearTimeout(chimesTimer);
@@ -20301,7 +20301,7 @@ function initLateStageModule() {
       ring.style.borderColor = pal.glow;
     }
     if (ambientPaletteToggle) {
-      ambientPaletteToggle.innerHTML = `<span>🎨</span> Theme: ${pal.name}`;
+      ambientPaletteToggle.innerHTML = `Theme: ${pal.name}`;
     }
   }
 
@@ -20511,10 +20511,10 @@ function initKorsakoffModule() {
         <p class="korsakoff-card-desc">${act.clinicalFocus}</p>
         <div class="korsakoff-card-actions">
           <button type="button" class="korsakoff-card-btn-main" title="Customize and print activity with clinical options">
-            <span>⚙️</span> Personalize &amp; Print
+            Personalize &amp; Print
           </button>
           <button type="button" class="korsakoff-card-print-shortcut" title="Fast 1-click print with default settings">
-            <span>🖨️</span> Quick Print
+            Quick Print
           </button>
         </div>
       `;
@@ -20545,7 +20545,7 @@ function initKorsakoffModule() {
           }
         } catch (err) {
           console.error(err);
-          alert("Error generating Korsakoff PDF: " + err.message);
+          CogniDialog.notice("Error generating Korsakoff PDF: " + err.message);
         }
       });
 
@@ -20706,7 +20706,7 @@ function initKorsakoffModule() {
         }
       } catch (err) {
         console.error(err);
-        alert("Error generating Korsakoff PDF: " + err.message);
+        CogniDialog.notice("Error generating Korsakoff PDF: " + err.message);
       }
     });
   }
@@ -20856,7 +20856,7 @@ function initKorsakoffModule() {
         }
       } catch (err) {
         console.error(err);
-        alert("Error building task sheet: " + err.message);
+        CogniDialog.notice("Error building task sheet: " + err.message);
       }
     });
   }
@@ -20957,7 +20957,7 @@ function initKorsakoffModule() {
         }
       } catch (err) {
         console.error("PDF generation error:", err);
-        alert("Error printing PDF: " + err.message);
+        CogniDialog.notice("Error printing PDF: " + err.message);
       }
     });
   }
@@ -21474,7 +21474,7 @@ if (document.readyState === "complete" || document.readyState === "interactive")
     Array.prototype.forEach.call(document.querySelectorAll("[data-tier-override]"), function(button){
       button.disabled = !residentId;
       button.setAttribute("aria-pressed", String(enabled));
-      button.textContent = enabled ? "🌧️ Bad Day · One step easier" : "☀️ Good Day · Usual tier";
+      button.textContent = enabled ? "Bad Day · One step easier" : "Good Day · Usual tier";
       button.title = enabled
         ? "Temporary easier activities are active; click to restore the resident's usual tier"
         : "Use the resident's usual tier, or click for a temporary one-tier step-down";
@@ -21784,7 +21784,7 @@ if (document.readyState === "complete" || document.readyState === "interactive")
     var p = readProfile(id);
     if (!p){ loadSavedProfilesList(); setActiveResident(null); msg.textContent = "That profile could not be found. It may have been deleted."; return; }
     if (!fromLoad && formHasOtherResident(p) &&
-        !window.confirm("Replace what is in the form below with " + shortName(p) + "'s profile?")){
+        !(await CogniDialog.confirm({ title:"Replace the form?", body:"Replace what is in the form below with " + shortName(p) + "'s profile?", yes:"Replace it", no:"Keep what is there" }))){
       sel.value = window.activeResident ? window.activeResident.id : ""; return;
     }
     setActiveResident(id);
@@ -21826,7 +21826,7 @@ if (document.readyState === "complete" || document.readyState === "interactive")
   delBtn.addEventListener("click", async function(){
     var p = window.activeResident;
     if (!p) return;
-    if (!window.confirm("Delete " + shortName(p) + "'s profile from this computer? This cannot be undone.")) return;
+    if (!(await CogniDialog.confirm({ title:"Delete this profile?", body:"Delete " + shortName(p) + "'s profile from this computer? This cannot be undone.", yes:"Delete it", no:"Keep it" }))) return;
     lsSetSafe(RESIDENT_PREFIX + p.id, null);
     setActiveResident(null);
     loadSavedProfilesList();
@@ -22062,7 +22062,7 @@ if (document.readyState === "complete" || document.readyState === "interactive")
     };
     var pass = el("arbPass").value;
     if (!pass){
-      if (!window.confirm("Export without a passphrase? The backup would not be locked: anyone who opens the file can read every resident's details.\n\nTo lock it, press Cancel and type a backup passphrase first.")){ el("arbPass").focus(); return 0; }
+      if (!(await CogniDialog.confirm({ title:"Export without a passphrase?", body:"The backup would not be locked: anyone who opens the file can read every resident's details.\n\nTo lock it, press Cancel and type a backup passphrase first.", yes:"Save it unlocked", no:"Cancel" }))){ el("arbPass").focus(); return 0; }
       download(JSON.stringify(backup, null, 2), "cognicopia_backup_" + today() + ".json", "application/json");
       banner("Exported " + plural(profiles.length, "resident profile", "resident profiles") + " to your downloads, not locked.",
         "Keep the file somewhere private. To restore it, press Import Profiles (Restore) and choose it.");
@@ -22147,7 +22147,7 @@ if (document.readyState === "complete" || document.readyState === "interactive")
   async function exportProfilesCSV(){
     var profiles = scrubbed(savedProfiles().map(normalizeProfile).filter(Boolean), "arbNamesCsv", "alias");
     if (!profiles.length){ banner("There are no saved resident profiles to export yet.", "", true); return 0; }
-    if (!window.confirm("A spreadsheet cannot be locked: anyone who opens it can read these residents' details. Export it anyway?")) return 0;
+    if (!(await CogniDialog.confirm({ title:"Save a spreadsheet?", body:"A spreadsheet cannot be locked: anyone who opens it can read these residents' details. Save it anyway?", yes:"Save the spreadsheet", no:"Cancel" }))) return 0;
     var rows = [CSV_COLUMNS.map(function(c){ return csvCell(c[0]); }).join(",")];
     profiles.forEach(function(p){ rows.push(CSV_COLUMNS.map(function(c){ return csvCell(c[1](p)); }).join(",")); });
     download("\uFEFF" + rows.join("\r\n") + "\r\n", "cognicopia_residents_" + today() + ".csv", "text/csv;charset=utf-8");
@@ -23716,7 +23716,7 @@ if (document.readyState === "complete" || document.readyState === "interactive")
     el("tbCardIc").innerHTML = CAT_ICON[p.cat] || CAT_ICON.general;
     el("tbCardQ").textContent = p.text;
     var h = el("tbHintText"); h.textContent = p.follow || ""; h.hidden = true;
-    var hb = el("tbHintBtn"); hb.hidden = !p.follow; hb.textContent = "💡 Show a hint"; hb.setAttribute("aria-expanded", "false");
+    var hb = el("tbHintBtn"); hb.hidden = !p.follow; hb.textContent = "Show a hint"; hb.setAttribute("aria-expanded", "false");
     el("tbCardNum").textContent = "Card " + (C.idx + 1) + " of " + C.prompts.length;
     el("tbCardPrev").disabled = C.idx === 0;
     el("tbCardNext").textContent = C.idx === C.prompts.length - 1 ? "Start again" : "Next card";
@@ -23735,11 +23735,11 @@ if (document.readyState === "complete" || document.readyState === "interactive")
     var root = document.createElement("div");
     root.className = "tb"; root.id = "tabletMode";
     root.setAttribute("role", "dialog"); root.setAttribute("aria-modal", "true"); root.setAttribute("aria-label", "Tablet activity mode");
-    var sayBtn = function(which){ return canSpeak ? '<button type="button" class="tb-btn tb-say" data-say="' + which + '">🔊 Read to Me</button> <button type="button" class="tb-btn tb-say tb-voice" data-voice="1" aria-label="Voice settings: choose a voice and pace, and hear a sample">Voice settings</button>' : ""; };
+    var sayBtn = function(which){ return canSpeak ? '<button type="button" class="tb-btn tb-say" data-say="' + which + '">Read to Me</button> <button type="button" class="tb-btn tb-say tb-voice" data-voice="1" aria-label="Voice settings: choose a voice and pace, and hear a sample">Voice settings</button>' : ""; };
     root.innerHTML =
       '<div class="tb-top">' +
         '<p class="tb-hello"' + (S.src.name ? ' title="' + esc(S.src.name) + '"' : "") + ">" + (S.src.name ? 'Hello, <b class="tb-name">' + esc(S.src.name) + "</b>!" : "Welcome!") + "</p>" +
-        '<button type="button" class="cg-night-shift-toggle tb-night-toggle" aria-label="Toggle warm-amber Night Shift theme">🌙 Night Shift: Off</button>' +
+        '<button type="button" class="cg-night-shift-toggle tb-night-toggle" aria-label="Toggle warm-amber Night Shift theme">Night Shift: Off</button>' +
         '<div class="tb-tabs" role="tablist" aria-label="Activities">' +
           '<button type="button" class="tb-tab" role="tab" data-tab="menu" id="tbTabMenu" aria-controls="tbPanelMenu">Menu</button>' +
           '<button type="button" class="tb-tab" role="tab" data-tab="ws" id="tbTabWs" aria-controls="tbPanelWs">Word Search</button>' +
@@ -23760,7 +23760,7 @@ if (document.readyState === "complete" || document.readyState === "interactive")
         '<section class="tb-panel" id="tbPanelWs" role="tabpanel" aria-labelledby="tbTabWs" hidden>' +
           '<div class="tb-ws"><div class="tb-grid" id="tbGrid" role="grid"></div>' +
             '<div class="tb-side"><div class="tb-side-head"><h2>Find these words</h2><p class="tb-count" id="tbWsCount"></p></div><ul class="tb-words" id="tbWords"></ul>' +
-            '<div class="tb-row">' + sayBtn("ws") + '<button type="button" class="tb-btn" id="tbHintWs">💡 Hint</button></div>' +
+            '<div class="tb-row">' + sayBtn("ws") + '<button type="button" class="tb-btn" id="tbHintWs">Hint</button></div>' +
             '<p class="tb-note">Slide your finger along a word, or tap its first letter and then its last letter.</p></div></div>' +
         "</section>" +
         '<section class="tb-panel" id="tbPanelTrivia" role="tabpanel" aria-labelledby="tbTabTrivia" hidden>' +
@@ -23773,7 +23773,7 @@ if (document.readyState === "complete" || document.readyState === "interactive")
           '<div class="tb-card" id="tbCard"><svg class="tb-card-ic" id="tbCardIc" viewBox="0 0 100 100" fill="none" stroke="#111" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"></svg>' +
           '<p class="tb-card-lead">Let’s talk about…</p><p class="tb-card-q" id="tbCardQ"></p><p class="tb-hint" id="tbHintText" hidden></p></div>' +
           '<div class="tb-foot"><button type="button" class="tb-btn" id="tbCardPrev">Back</button>' +
-          '<button type="button" class="tb-btn" id="tbHintBtn" aria-controls="tbHintText" aria-expanded="false">💡 Show a hint</button>' + sayBtn("cards") +
+          '<button type="button" class="tb-btn" id="tbHintBtn" aria-controls="tbHintText" aria-expanded="false">Show a hint</button>' + sayBtn("cards") +
           '<span class="tb-note" id="tbCardNum"></span><button type="button" class="tb-btn tb-btn-go" id="tbCardNext">Next card</button></div>' +
         "</section>" +
       "</div>" +
@@ -23785,15 +23785,15 @@ if (document.readyState === "complete" || document.readyState === "interactive")
         '<section class="tb-mood" aria-labelledby="tbMoodH"><h3 id="tbMoodH">Staff engagement notes: mood before and after</h3>' +
           '<p>Tap one face before the activity and one face after to note the resident’s response.</p>' +
           '<div class="tb-mood-row" role="group" aria-label="Mood before the activity"><span class="tb-mood-label">Mood Before</span>' +
-            '<button type="button" class="tb-mood-choice" data-mood-stage="before" data-mood="upset" aria-pressed="false">😟<span>Upset</span></button>' +
-            '<button type="button" class="tb-mood-choice" data-mood-stage="before" data-mood="neutral" aria-pressed="false">😐<span>Neutral</span></button>' +
-            '<button type="button" class="tb-mood-choice" data-mood-stage="before" data-mood="settled" aria-pressed="false">🙂<span>Settled</span></button></div>' +
+            '<button type="button" class="tb-mood-choice" data-mood-stage="before" data-mood="upset" aria-pressed="false"><span>Upset</span></button>' +
+            '<button type="button" class="tb-mood-choice" data-mood-stage="before" data-mood="neutral" aria-pressed="false"><span>Neutral</span></button>' +
+            '<button type="button" class="tb-mood-choice" data-mood-stage="before" data-mood="settled" aria-pressed="false"><span>Settled</span></button></div>' +
           '<div class="tb-mood-row" role="group" aria-label="Mood after the activity"><span class="tb-mood-label">Mood After</span>' +
-            '<button type="button" class="tb-mood-choice" data-mood-stage="after" data-mood="upset" aria-pressed="false" disabled>😟<span>Upset</span></button>' +
-            '<button type="button" class="tb-mood-choice" data-mood-stage="after" data-mood="neutral" aria-pressed="false" disabled>😐<span>Neutral</span></button>' +
-            '<button type="button" class="tb-mood-choice" data-mood-stage="after" data-mood="settled" aria-pressed="false" disabled>🙂<span>Settled</span></button></div>' +
+            '<button type="button" class="tb-mood-choice" data-mood-stage="after" data-mood="upset" aria-pressed="false" disabled><span>Upset</span></button>' +
+            '<button type="button" class="tb-mood-choice" data-mood-stage="after" data-mood="neutral" aria-pressed="false" disabled><span>Neutral</span></button>' +
+            '<button type="button" class="tb-mood-choice" data-mood-stage="after" data-mood="settled" aria-pressed="false" disabled><span>Settled</span></button></div>' +
           '<p class="tb-mood-status" id="tbMoodStatus" role="status" aria-live="polite">Choose Mood Before now; record Mood After when the activity ends.</p></section>' +
-        '<button type="button" class="tb-btn" id="tbMoodExport">📊 Export Engagement Audit (PDF)</button>' +
+        '<button type="button" class="tb-btn" id="tbMoodExport">Export Engagement Audit (PDF)</button>' +
         '<details class="tb-kiosk"><summary>Keep the activity on screen: Guided Access / App Pinning</summary>' +
           '<h3>iPad — Guided Access</h3><ol><li>Open Settings → Accessibility → Guided Access and turn it on; set a passcode.</li>' +
             '<li>Open Cognicopia, then triple-click the top or Home button and tap Start.</li>' +
@@ -23805,7 +23805,7 @@ if (document.readyState === "complete" || document.readyState === "interactive")
         '<div class="tb-care-actions">' +
           '<button type="button" class="tb-btn" id="tbRestart">Restart Activity</button>' +
           '<button type="button" class="tb-btn" id="tbNewWs">New word search</button>' +
-          '<button type="button" class="tb-btn" id="tbSound" aria-pressed="true">🔔 Sound: On</button>' +
+          '<button type="button" class="tb-btn" id="tbSound" aria-pressed="true">Sound: On</button>' +
           '<button type="button" class="tb-btn tb-btn-go" id="tbBack">Back to activity</button>' +
           '<button type="button" class="tb-btn tb-btn-exit" id="tbExit" style="grid-column:1/-1">Exit Tablet Mode</button>' +
         "</div></div></div>" +
@@ -23974,7 +23974,7 @@ if (document.readyState === "complete" || document.readyState === "interactive")
     el("tbCardPrev").addEventListener("click", function(){ cardStep(-1); });
     el("tbHintBtn").addEventListener("click", function(){
       var h = el("tbHintText"); h.hidden = !h.hidden;
-      this.textContent = h.hidden ? "💡 Show a hint" : "💡 Hide the hint"; this.setAttribute("aria-expanded", String(!h.hidden));
+      this.textContent = h.hidden ? "Show a hint" : "Hide the hint"; this.setAttribute("aria-expanded", String(!h.hidden));
     });
     // Swipe a card left or right
     var card = el("tbCard"), sx = null, sy = null;
@@ -24013,7 +24013,7 @@ if (document.readyState === "complete" || document.readyState === "interactive")
     el("tbNewWs").addEventListener("click", function(){ closeCare(); newWordSearch(); showTab("ws"); });
     el("tbSound").addEventListener("click", function(){
       soundOn = !soundOn;
-      this.textContent = soundOn ? "🔔 Sound: On" : "🕔 Sound: Off"; this.setAttribute("aria-pressed", String(soundOn));
+      this.textContent = soundOn ? "Sound: On" : "Sound: Off"; this.setAttribute("aria-pressed", String(soundOn));
     });
     el("tbExit").addEventListener("click", exit);
     el("tbCare").addEventListener("keydown", function(e){ if (e.key === "Escape") closeCare(); });
@@ -25026,7 +25026,7 @@ if (document.readyState === "complete" || document.readyState === "interactive")
     warn.textContent = msg; warn.hidden = !msg;
     go.disabled = blocked;
     // over the free allowance the main button takes them to the access-code screen instead
-    go.innerHTML = needCode ? '<span aria-hidden="true">🔑</span> Enter Access Code' : '<span aria-hidden="true">📥</span> Generate Bundle PDF';
+    go.innerHTML = needCode ? 'Enter Access Code' : 'Generate Bundle PDF';
   }
   /* ---------------- the facility's logo ---------------- */
   function showLogo(message, bad){
@@ -25088,7 +25088,7 @@ if (document.readyState === "complete" || document.readyState === "interactive")
     }
     var totalResidents = list.querySelectorAll("input").length;
     if (totalResidents > 0 && ids.length === totalResidents &&
-        !window.confirm("You are about to export data for ALL residents. Proceed?")) return;
+        !(await CogniDialog.confirm({ title:"Print for every resident?", body:"You are about to make pages for ALL residents. Go on?", yes:"Make them", no:"Cancel" }))) return;
     setup.hidden = true; run.hidden = false;
     var bar = $m("mbBar"), fill = $m("mbFill"), st = $m("mbStatus");
     var setPct = function(pct){ fill.style.width = pct + "%"; bar.setAttribute("aria-valuenow", String(pct)); };
@@ -25109,7 +25109,7 @@ if (document.readyState === "complete" || document.readyState === "interactive")
         if (typeof showAllowance === "function") showAllowance();
       }
       closeModal();
-      showToast("🎉 Facility Monthly Bundle generated successfully for " + res.residents + (res.residents === 1 ? " resident!" : " residents!"));
+      showToast("Facility Monthly Bundle generated successfully for " + res.residents + (res.residents === 1 ? " resident!" : " residents!"));
       var s = document.getElementById("arbMsg");
       if (s) s.textContent = "Saved " + res.filename + " (" + res.pages + " pages) to your Downloads folder.";
     }, function(err){
@@ -25781,6 +25781,7 @@ if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol))
 <script src="js/careTier.js"></script>
 <script src="js/sessionTimeout.js"></script>
 <script src="js/legal.js"></script>
+<script src="js/dialogs.js"></script>
 <script src="assets/services/eraWindow.js"></script>
 <script src="assets/services/reminiscenceEngine.js"></script>
 <script src="src/engine/ReminiscencePages.js"></script>

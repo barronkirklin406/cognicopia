@@ -211,6 +211,7 @@
   function songsFor(P) {
     var w = who(P), born = P.born || w.born, W = root.CogniEra && born ? root.CogniEra.windowFor(born) : null;
     var from = W ? W.from : born ? born + 7 : P.decade, to = W ? W.to : born ? born + 28 : P.decade + 9;   // the years they were 7 to 28
+    if (P.young && W) { from = W.young[0]; to = W.young[1]; }        // Korsakoff: the later part of those years (the ones that stay when recent memory does not)
     var all = ((root.CogniReminiscence && root.CogniReminiscence.SONGS) || []).concat(D.SONGS).filter(function (s) {
       return s.year > 1900 && ok(s.title + " " + s.artist, P) && !(s.avoid || []).some(function (c) { return topicAvoided(c, P); });
     });
@@ -403,24 +404,35 @@
     return out;
   }
   /* ---------- 14. a coloring page made from a photo (js/photoLine.js makes the line drawing; with none chosen there is no page) ---------- */
-  function photocolorSheets(P, r, count) {
-    if (!P.photo) return [];
-    var w = who(P), shown = String(P.name || w.name || "").trim().split(" ")[0];
-    return [sheet("photocolor", "Color this together", "A picture made from a photo", [{ kind: "photo", src: P.photo, caption: shown ? "For " + shown : "" }],
-      "a coloring page made from a photo, drawn in bold lines by an edge finder. Look it over first: a rough line is a place to add your own. Offer a thick crayon or marker and sit alongside; any color, or none, is right.", { personal: true })];
-  }
-  /* ---------- 15. a door sign: a name, a photo, a picture of their work or what they love, and where they come from ---------- */
-  var SIGN_PIC = { farmer: "farm_tractor", teacher: "grandfather_clock", nurse: "teacup", cook: "teapot", mechanic: "farm_tractor", secretary: "typewriter", carpenter: "birdhouse", driver: "farm_tractor", shopkeeper: "rotary_telephone", seamstress: "sewing_machine" };
-  var SIGN_LOVE = [[/garden|plant|flower/, "watering_can"], [/bak|cook|tea/, "teapot"], [/bird/, "cardinal"], [/sew|knit|quilt/, "sewing_machine"], [/fish|boat|sail/, "sailboat"], [/read|book/, "rocking_chair"]];
-  function doorsignSheets(P, r, count) {
-    var w = who(P), shown = String(P.name || "").trim() || String(w.name || "").trim().split(" ")[0];
-    var town = w.hometown && w.hometown.town && ok(w.hometown.town, P) ? w.hometown.town : "", label = w.work && w.work.label && ok(w.work.label, P) ? w.work.label : "";
+  /* the finished library drawing for the work or the thing they love (the door sign and the coloring page share it): theirs, never a guess */
+  var SIGN_PIC, SIGN_LOVE;
+  function signPicture(P, w) {
     var id = SIGN_PIC[P.vocation] || SIGN_PIC[w.work && w.work.vocation] || "";
     if (!id || !drawn(id) || !ok(id.replace(/_/g, " "), P)) {
       id = ""; var loves = keep(w.interests.concat(w.hobbies, P.interests), P).join(" ").toLowerCase();
       SIGN_LOVE.some(function (x) { if (x[0].test(loves) && drawn(x[1])) { id = x[1]; return true; } return false; });
     }
     if (!id && drawn("sunflower") && ok("sunflower", P)) id = "sunflower";
+    return id;
+  }
+  /* a coloring page: by default a clean, closed-outline drawing from the library; a photo's line drawing only when a photo was chosen (it is rougher, so staff look it over) */
+  function photocolorSheets(P, r, count) {
+    var w = who(P), shown = String(P.name || w.name || "").trim().split(" ")[0];
+    if (!P.photo) {
+      var pic = signPicture(P, w);
+      return pic ? [sheet("photocolor", "Color this together", "A picture to color", [{ kind: "picture", pic: pic, caption: shown ? "For " + shown : "" }],
+        "a coloring page from the library, chosen for their work or what they love: a clean, closed outline. To color a photo of someone instead, choose the photo in the Studio and look over its drawing before you print. Offer a thick crayon or marker and sit alongside; any color, or none, is right.", { personal: !!(w.work && w.work.label || w.hobbies.length) })] : [];
+    }
+    return [sheet("photocolor", "Color this together", "A picture made from a photo", [{ kind: "photo", src: P.photo, caption: shown ? "For " + shown : "" }],
+      "a coloring page made from a photo, drawn in bold lines by an edge finder. Look it over first: a rough line is a place to add your own. Offer a thick crayon or marker and sit alongside; any color, or none, is right.", { personal: true })];
+  }
+  /* ---------- 15. a door sign: a name, a photo, a picture of their work or what they love, and where they come from ---------- */
+  SIGN_PIC = { farmer: "farm_tractor", teacher: "grandfather_clock", nurse: "teacup", cook: "teapot", mechanic: "farm_tractor", secretary: "typewriter", carpenter: "birdhouse", driver: "farm_tractor", shopkeeper: "rotary_telephone", seamstress: "sewing_machine" };
+  SIGN_LOVE = [[/garden|plant|flower/, "watering_can"], [/bak|cook|tea/, "teapot"], [/bird/, "cardinal"], [/sew|knit|quilt/, "sewing_machine"], [/fish|boat|sail/, "sailboat"], [/read|book/, "rocking_chair"]];
+  function doorsignSheets(P, r, count) {
+    var w = who(P), shown = String(P.name || "").trim() || String(w.name || "").trim().split(" ")[0];
+    var town = w.hometown && w.hometown.town && ok(w.hometown.town, P) ? w.hometown.town : "", label = w.work && w.work.label && ok(w.work.label, P) ? w.work.label : "";
+    var id = signPicture(P, w);
     return [sheet("doorsign", shown || "Welcome", "Welcome", [
       { kind: "frames", items: [{ name: town ? "From " + town : shown, sub: label, photo: P.photo || "", hint: "A photo can go here" }] },
       id ? { kind: "picture", pic: id, caption: "" } : null],

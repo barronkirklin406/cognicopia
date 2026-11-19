@@ -33,6 +33,18 @@ export async function agreed(ctx){
   return ctx;
 }
 
+/* A person who agrees to every question the page asks. The site asks its questions in its own windows (js/dialogs.js, CogniDialog) and not with the
+   browser's confirm(), so Playwright's "dialog" event never fires for them: this presses "yes" in each one as it opens, the way
+   p.on("dialog", d => d.accept()) used to. target: a context or a page; call it before the page loads. */
+export async function agreeToDialogs(target){
+  await target.addInitScript(() => {
+    const press = () => { const y = document.querySelector("dialog.cg-dlg[open] .cg-dlg-yes"); if (y) setTimeout(() => { try { y.click(); } catch (e) { /* the window closed first */ } }, 30); };
+    const start = () => new MutationObserver(press).observe(document.documentElement, { subtree: true, childList: true, attributes: true, attributeFilter: ["open"] });
+    if (document.documentElement) start(); else document.addEventListener("DOMContentLoaded", start);
+  });
+  return target;
+}
+
 /* Serve the repository: resolves { srv, base }. Close srv when done. */
 export function serve(root = ROOT){
   return new Promise(ok => {

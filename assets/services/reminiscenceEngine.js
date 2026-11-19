@@ -625,9 +625,10 @@ function person(p             , today       = new Date())         {
   const mil = t2.military || {}, served = !!code(mil.branch) && ["none", "unknown"].indexOf(code(mil.branch)) < 0;
   const mt = code(mil.talkingAboutIt);
   const music = t2.music || {};
+  const adapt = code((t1                                      ).adaptation);
   return {
     name: clean(t1.preferredName, 40), tier, birthYear: by, birthYearKnown: known,
-    bump: [by + 7, by + 28], life: [by + 5, Math.min(year, by + 60)],   // bump: the years they were 7 to 28 (assets/services/eraWindow.js)
+    bump: adapt === "korsakoff" ? [by + 21, by + 28] : [by + 7, by + 28], life: [by + 5, Math.min(year, by + 60)],   // bump: the years they were 7 to 28 (assets/services/eraWindow.js)
     vocation, region, state, setting: set.label, settingKind: set.kind,
     placeLabel: [set.label, region && region.code !== "abroad" ? region.label : ""].filter(Boolean).join(" ") || (region ? region.label : ""),
     avoid: new Set(((t1.topicsToAvoid && t1.topicsToAvoid.topics) || []).map(code).filter(Boolean)),

@@ -19,7 +19,7 @@ import fs from "fs";
 import os from "os";
 import path from "path";
 import { spawnSync } from "child_process";
-import { loadPlaywright, serve, ROOT } from "./lib/browser.mjs";
+import { loadPlaywright, serve, ROOT, agreeToDialogs } from "./lib/browser.mjs";
 
 const TEXT = "Cognicopia is an educational and cognitive enrichment activity tool designed for resident engagement. It does not provide medical diagnoses, clinical treatment, physical health evaluation, or medical advice. Cognicopia is not a medical device under FDA regulations. All activities and printed packets are intended solely for recreational and cognitive stimulation purposes under the supervision of senior living staff.";
 const LINE = "Cognicopia Enrichment Activity — For Cognitive Engagement Only. Not Medical Advice.";
@@ -247,7 +247,7 @@ try {
     const ctx = await browser.newContext({ viewport: { width: 1366, height: 768 }, serviceWorkers: "block" });
     const p = await ctx.newPage(); watch(p);
     await p.addInitScript(k => { try { localStorage.setItem(k, "true"); } catch (e) { /* ignore */ } window.__pr = 0; window.print = () => { window.__pr++; }; }, KEY);
-    p.on("dialog", d => d.accept());
+    p.on("dialog", d => d.accept()); await agreeToDialogs(p);
     await p.goto(base + "builder.html#/coloring"); await p.waitForSelector("#ccTabMk", { timeout: 20000 });
     await p.click("#ccTabMk"); await p.waitForSelector("#ccMkQ");
     for (const q of ["Ice Cream Soda", "Water Lily"]) {

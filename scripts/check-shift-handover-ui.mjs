@@ -14,7 +14,7 @@ import fs from "fs";
 import os from "os";
 import path from "path";
 import { execFileSync } from "child_process";
-import { loadPlaywright, serve } from "./lib/browser.mjs";
+import { loadPlaywright, serve, agreeToDialogs } from "./lib/browser.mjs";
 
 const { chromium } = loadPlaywright();
 const { srv, base } = await serve();
@@ -47,7 +47,7 @@ async function open(w, h, night) {
   const ctx = await browser.newContext({ viewport: { width: w, height: h }, serviceWorkers: "block" });
   await ctx.addInitScript(n => { try { localStorage.setItem("cognicopia_eula_accepted", "true"); if (n) localStorage.setItem("cognicopia_night_shift", "1"); } catch (e) { /* ignore */ } window.print = () => { window.__printed = (window.__printed || 0) + 1; }; }, !!night);
   const p = await ctx.newPage();
-  p.on("pageerror", e => errors.push(e.message)); p.on("dialog", d => d.accept());
+  p.on("pageerror", e => errors.push(e.message)); p.on("dialog", d => d.accept()); await agreeToDialogs(p);
   p.on("console", m => { if (m.type() === "error") errors.push("console: " + m.text().slice(0, 140)); });
   p.on("request", r => { const u = r.url(); if (!u.startsWith(base) && !/^(data|blob|about):/.test(u)) foreign.push(u); });
   await p.goto(base + "builder.html#/shift", { waitUntil: "load" }); await p.waitForSelector("#view h1", { timeout: 8000 }); await p.waitForTimeout(400);

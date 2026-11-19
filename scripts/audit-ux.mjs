@@ -6,7 +6,7 @@
    Measured (numbers, not opinions):
      targets   interactive controls smaller than the minimum tap target, on each page and in the states a person reaches
                by choosing something (a dialog, a drawer, a calendar), at phone and laptop width
-     contrast  text below WCAG AA against the background behind it, by day and in Night Shift
+     contrast  text below WCAG AAA (7:1; 4.5:1 for large text) against the background behind it, by day and in Night Shift
      nav       how many destinations and groups each sidebar offers
      clicks    clicks (and typed fields) a workflow takes, counted as the script performs it
      print     how long a packet, a coloring PDF and a roster print take to produce
@@ -31,7 +31,7 @@
    ===================================================================== */
 import fs from "fs";
 import path from "path";
-import { ROOT, loadPlaywright, serve } from "./lib/browser.mjs";
+import { ROOT, loadPlaywright, serve, agreeToDialogs } from "./lib/browser.mjs";
 const args = process.argv.slice(2);
 const opt = (name, def) => { const i = args.indexOf("--" + name); return i < 0 ? def : (args[i + 1] && !args[i + 1].startsWith("--") ? args[i + 1] : true); };
 const ONLY = opt("only") && opt("only") !== true ? String(opt("only")).split(",") : null;
@@ -42,7 +42,7 @@ const STRICT = args.includes("--strict"), LIST = args.includes("--list");
 /* Budgets: what "good" means here. Strict mode fails when one is broken. */
 const BUDGETS = {
   tapTargetsBelowMin: 0,      // controls under the minimum, per page and viewport
-  contrastFailures: 0,        // text below WCAG AA
+  contrastFailures: 0,        // text below WCAG AAA (7:1; large text 4.5:1), the project rule since November 12, 2026
   clicks: { packet: 1, coloring: 2, roster: 3 },   // clicks to a finished sheet, by workflow
   doherty_ms: 400             // a response a person waits for; printing a whole packet is judged against its own, looser line
 };
@@ -153,7 +153,7 @@ function measureTargetsInPage(arg){
       all: small.map(el => { const b = box(el); return `${Math.round(b.width)}x${Math.round(b.height)} ${el.tagName.toLowerCase()}${el.id ? "#" + el.id : ""}${typeof el.className === "string" && el.className ? "." + el.className.trim().split(/\s+/).join(".") : ""} "${(el.textContent || el.getAttribute("aria-label") || el.getAttribute("title") || el.value || "").trim().replace(/\s+/g, " ").slice(0, 28)}"`; }) };
 }
 
-/* runs in the page: text below WCAG AA against the background behind it, in the whole page or inside one element (rootSel) */
+/* runs in the page: text below WCAG AAA (7:1; large text 4.5:1) against the background behind it, in the whole page or inside one element (rootSel) */
 function measureContrastInPage(rootSel){
   /* a colour that is still changing (the buttons ease over 0.18 s) would be measured half way between day and night: let every transition arrive first */
   document.getAnimations().forEach(a => { try { a.finish(); } catch (e) { /* an endless animation has no end to jump to */ } });
@@ -173,7 +173,7 @@ function measureContrastInPage(rootSel){
     const fg = parse(cs.color), bg = bgOf(el); if (!fg || !bg) continue;
     const f = blend(fg, bg); total++;
     const L1 = lum(f), L2 = lum(bg), ratio = (Math.max(L1, L2) + .05) / (Math.min(L1, L2) + .05);
-    const size = parseFloat(cs.fontSize), large = size >= 24 || (+cs.fontWeight >= 700 && size >= 18.66), need = large ? 3 : 4.5;
+    const size = parseFloat(cs.fontSize), large = size >= 24 || (+cs.fontWeight >= 700 && size >= 18.66), need = large ? 4.5 : 7;
     if (ratio < need) bad.push(`${ratio.toFixed(2)} < ${need} ${el.tagName.toLowerCase()}${el.id ? "#" + el.id : ""} "${t.slice(0, 28)}"`);
   }
   return { total, bad };
@@ -183,7 +183,7 @@ async function main(){
   const { chromium } = loadPlaywright();
   const { srv, base } = await serve();
   const browser = await chromium.launch();
-  const open = async (w, h, extra) => { const ctx = await browser.newContext(Object.assign({ viewport: { width: w, height: h }, serviceWorkers: "block", acceptDownloads: true }, extra || {})); const page = await ctx.newPage(); page.on("dialog", d => d.accept()); return { ctx, page }; };
+  const open = async (w, h, extra) => { const ctx = await browser.newContext(Object.assign({ viewport: { width: w, height: h }, serviceWorkers: "block", acceptDownloads: true }, extra || {})); const page = await ctx.newPage(); page.on("dialog", d => d.accept()); await agreeToDialogs(page); return { ctx, page }; };
 
   /* ---------- weight and load ---------- */
   if (want("weight")){
@@ -233,7 +233,7 @@ async function main(){
         if (mode === "night") await page.evaluate(() => { document.documentElement.classList.add("cg-night-shift"); document.body.classList.add("cg-night-shift"); }), await page.waitForTimeout(500);
         const r = await page.evaluate(measure);
         results.contrast.push({ view: label, mode, text_elements: r.total, below_aa: r.bad.length, sample: r.bad.slice(0, 3) });
-        if (r.bad.length > BUDGETS.contrastFailures) broken.push(`${label} (${mode}): ${r.bad.length} text element(s) below WCAG AA`);
+        if (r.bad.length > BUDGETS.contrastFailures) broken.push(`${label} (${mode}): ${r.bad.length} text element(s) below WCAG AAA`);
       }
       await ctx.close();
     }
@@ -258,7 +258,7 @@ async function main(){
         const t = await page.evaluate(measureTargetsInPage, { min: MIN, root: "aside" }), c = await page.evaluate(measureContrastInPage, "aside");
         r.below_min = t.small; r.contrast_below_aa = c.bad.length;
         if (t.small > BUDGETS.tapTargetsBelowMin) broken.push(`${label}: ${t.small} sidebar control(s) under ${MIN} px`);
-        if (c.bad.length > BUDGETS.contrastFailures) broken.push(`${label}: ${c.bad.length} sidebar text element(s) below WCAG AA`);
+        if (c.bad.length > BUDGETS.contrastFailures) broken.push(`${label}: ${c.bad.length} sidebar text element(s) below WCAG AAA`);
         results.nav.push(Object.assign({ view: label }, r));
       }
     }
@@ -365,7 +365,7 @@ function report(){
     }
   }
   if (results.contrast.length){
-    out.push("CONTRAST below WCAG AA (text against its background)");
+    out.push("CONTRAST below WCAG AAA (text against its background)");
     results.contrast.forEach(r => out.push(r.note ? `  ${pad(r.view, 18)} ${pad(r.mode, 6)} not measured: ${r.note}` : `  ${pad(r.view, 18)} ${pad(r.mode, 6)} ${String(r.below_aa).padStart(3)} of ${String(r.text_elements).padStart(4)}${r.sample.length ? "   e.g. " + r.sample[0] : ""}`));
     out.push("");
   }

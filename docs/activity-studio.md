@@ -17,9 +17,9 @@
 - **Daily living steps**: a familiar task (make tea, water the flowers, feed the birds, fold a towel, set the table, brush your hair) in six, four or three steps, with a library picture where one exists.
 - **Coloring pages**: a finished drawing from the library with a thick outline. Six styles (Cozy-Spooky, Vintage Americana, Botanical Gardens, Classic Animals, Simple Architecture, Kitchen and Baking), or a few words, which choose among the library through `src/engine/DescribeCreate.js`.
 
-## The master inventory: nine kinds of activity
+## The master inventory: nine kinds of activity (the Studio now makes 27 kinds: 4 core, 8 modules and 15 life pages; see the last sections)
 
-(Twelve more kinds, about the resident's own life, were added on November 10, 2026: see the section on the life pages near the end.)
+(Fifteen more kinds, about the resident's own life, were added from November 10, 2026 on: see the section on the life pages near the end. Counted from the code on November 18, 2026: 4 core kinds, 8 modules and 15 life pages, 27 in all.)
 
 The first four kinds above are the studio's own. `js/generators/activity-modules.js` adds the rest of the master clinical inventory to the engine's router (`CognicopiaActivityEngine.register`), and `js/generators/activity-pages.js` draws them. Each is made for a stage and left out of the others, with a plain note.
 
@@ -171,9 +171,9 @@ A new kind of sheet, `blocks`, for the pages still to come: a page lists two to 
 
 The tools stated four different cut-off years and two lists carried no year. There is one rule now: a song or hymn line is printed only when the work was first published in 1930 or earlier (public domain in the United States since January 1, 2026) or is traditional; anything newer appears by title, artist and year. `scripts/check-public-domain.mjs` (105 checks) reads every list in five tools. The front page's Finish the Line list and the Tablet's sayings now carry the year of each song.
 
-## The life pages: twelve kinds of page about one person (November 10, 2026)
+## The life pages: fifteen kinds of page about one person (twelve on November 10, 2026; the family visit sheet, the coloring page from a photo or the library, and the door sign followed)
 
-Step 2 of the November 10 plan. The Studio now makes twenty-four kinds of page: the twelve it had, and twelve that are about the resident's own life. They are under **Choose the pages yourself**, in a group called **About their own life**, and **Suggested packet for this stage** leads with them when a saved resident is chosen.
+Step 2 of the November 10 plan. The Studio now makes 27 kinds of page: the twelve it had (four core and eight modules), and fifteen that are about the resident's own life. They are under **Choose the pages yourself**, in a group called **About their own life**, and **Suggested packet for this stage** leads with them when a saved resident is chosen.
 
 | Page | What it holds | Made personal by | Stages |
 |---|---|---|---|
@@ -266,4 +266,4 @@ Checks: `scripts/check-spacing.mjs` (the engine and the page makers) and `script
 
 ## What each kind of page does, and how the stages are named (November 12, 2026)
 
-Each of the 24 kinds of page in the "Choose the pages yourself" list names the kind of work it does underneath, for the person choosing ("Modality: Life review", "Modality: Sensory and music"). It is on the staff screen only; no printed page carries it. In the Packet Builder's Settings, "How the stages are named" lets a facility read the three stages as Stage 1, 2, 3, as ACL 5, 4, 3 or as GDS 3-4, 5, 6-7 on staff screens, or leave each screen as it was. A label is not an assessment: the care team sets the stage.
+Each of the 27 kinds of page in the "Choose the pages yourself" list names the kind of work it does underneath, for the person choosing ("Modality: Life review", "Modality: Sensory and music"). It is on the staff screen only; no printed page carries it. In the Packet Builder's Settings, "How the stages are named" lets a facility read the three stages as Stage 1, 2, 3, as ACL 5, 4, 3 or as GDS 3-4, 5, 6-7 on staff screens, or leave each screen as it was. A label is not an assessment: the care team sets the stage.
