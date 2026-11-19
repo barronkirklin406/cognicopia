@@ -65,7 +65,7 @@
       var c2 = wv.getContext("2d"); c2.setTransform(dpr, 0, 0, dpr, 0, 0); c2.clearRect(0, 0, w, hh);
       var n = Math.max(24, Math.floor(w / 14)), mid = hh / 2, data = null, t = ts / 1000;
       if (synth && playing) { data = new Uint8Array(synth.analyser.fftSize); synth.analyser.getByteTimeDomainData(data); }
-      c2.strokeStyle = "rgba(8,66,63,.35)"; c2.lineWidth = 2; c2.beginPath(); c2.moveTo(0, mid); c2.lineTo(w, mid); c2.stroke();
+      c2.strokeStyle = "rgba(29,68,51,.35)"; c2.lineWidth = 2; c2.beginPath(); c2.moveTo(0, mid); c2.lineTo(w, mid); c2.stroke();
       c2.lineCap = "round"; c2.lineWidth = 7;
       for (var k = 0; k < n; k++) {
         var amp;
@@ -73,8 +73,8 @@
         else amp = reduced() ? 0.04 : 0.05 + 0.03 * Math.sin(t * 1.6 + k * 0.5);
         prev[k] = prev[k] == null ? amp : prev[k] + (amp - prev[k]) * 0.35;                // smooth, so the wave flows
         var half = Math.max(3, prev[k] * (hh * 0.46)), x = (k + 0.5) * (w / n);
-        c2.strokeStyle = data ? "rgba(197,160,89,.45)" : "rgba(197,160,89,.25)"; c2.lineWidth = 12; c2.beginPath(); c2.moveTo(x, mid - half); c2.lineTo(x, mid + half); c2.stroke();
-        c2.strokeStyle = data ? "#0b5f59" : "rgba(45,90,68,.6)"; c2.lineWidth = 6; c2.beginPath(); c2.moveTo(x, mid - half); c2.lineTo(x, mid + half); c2.stroke();
+        c2.strokeStyle = data ? "rgba(122,181,153,.45)" : "rgba(122,181,153,.25)"; c2.lineWidth = 12; c2.beginPath(); c2.moveTo(x, mid - half); c2.lineTo(x, mid + half); c2.stroke();
+        c2.strokeStyle = data ? "#365b4a" : "rgba(56,87,72,.6)"; c2.lineWidth = 6; c2.beginPath(); c2.moveTo(x, mid - half); c2.lineTo(x, mid + half); c2.stroke();
       }
       raf = requestAnimationFrame(drawWave);
     }

@@ -29,13 +29,13 @@
     .alc-header h1 {
       margin: 0 0 8px;
       font-size: 28px;
-      color: var(--cg-green-950, #08423f);
+      color: var(--cg-green-950, #1d4433);
       font-family: "Fraunces", serif;
     }
     
     .alc-header p {
       margin: 0;
-      color: var(--cg-charcoal, #28241f);
+      color: var(--cg-charcoal, #141e19);
       font-size: 16px;
       line-height: 1.5;
     }
@@ -52,17 +52,17 @@
     .alc-timeframe label {
       font-weight: 700;
       font-size: 15px;
-      color: var(--cg-charcoal, #28241f);
+      color: var(--cg-charcoal, #141e19);
     }
     
     .alc-timeframe select,
     .alc-timeframe input {
       min-height: 52px;
       padding: 12px 16px;
-      border: 2px solid var(--cg-tan-200, #dad7ce);
+      border: 2px solid var(--cg-tan-200, #d6cfc2);
       border-radius: 10px;
       background: #ffffff;
-      color: var(--cg-charcoal, #28241f);
+      color: var(--cg-charcoal, #141e19);
       font-size: 15px;
       font-family: "Atkinson Hyperlegible", "Trebuchet MS", sans-serif;
       cursor: pointer;
@@ -70,14 +70,14 @@
     
     .alc-timeframe select:hover,
     .alc-timeframe input:hover {
-      border-color: var(--cg-gold-500, #c5a059);
+      border-color: var(--cg-gold-500, #7ab599);
     }
     
     .alc-timeframe select:focus,
     .alc-timeframe input:focus {
-      border-color: var(--cg-green-700, #08423f);
+      border-color: var(--cg-green-700, #1d4433);
       outline: none;
-      box-shadow: 0 0 0 3px rgba(8,66,63, 0.2);
+      box-shadow: 0 0 0 3px rgba(29, 68, 51, 0.2);
     }
     
     .alc-date-range {
@@ -101,7 +101,7 @@
     .alc-metric-card {
       padding: 24px;
       border-radius: 16px;
-      border: 2px solid var(--cg-tan-200, #dad7ce);
+      border: 2px solid var(--cg-tan-200, #d6cfc2);
       background: #ffffff;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     }
@@ -110,7 +110,7 @@
       margin: 0 0 8px;
       font-size: 14px;
       font-weight: 700;
-      color: var(--cg-green-700, #08423f);
+      color: var(--cg-green-700, #1d4433);
       text-transform: uppercase;
       letter-spacing: 0.05em;
     }
@@ -118,7 +118,7 @@
     .alc-metric-value {
       font-size: 36px;
       font-weight: 900;
-      color: var(--cg-charcoal, #28241f);
+      color: var(--cg-charcoal, #141e19);
       font-family: "Atkinson Hyperlegible", "Arial Black", sans-serif;
       line-height: 1;
       margin-bottom: 4px;
@@ -130,7 +130,7 @@
     }
     
     .alc-metric-card.highlight {
-      border-color: var(--cg-gold-500, #c5a059);
+      border-color: var(--cg-gold-500, #7ab599);
       background: linear-gradient(135deg, #fffaf0, #ffffff);
     }
     
@@ -142,12 +142,12 @@
     .alc-table-section h2 {
       margin: 0 0 16px;
       font-size: 20px;
-      color: var(--cg-green-950, #08423f);
+      color: var(--cg-green-950, #1d4433);
       font-family: "Fraunces", serif;
     }
     
     .alc-table-wrapper {
-      border: 2px solid var(--cg-tan-200, #dad7ce);
+      border: 2px solid var(--cg-tan-200, #d6cfc2);
       border-radius: 12px;
       overflow: hidden;
       background: #ffffff;
@@ -162,21 +162,21 @@
     .alc-table td {
       padding: 16px;
       text-align: left;
-      border-bottom: 1px solid var(--cg-tan-200, #dad7ce);
+      border-bottom: 1px solid var(--cg-tan-200, #d6cfc2);
     }
     
     .alc-table th {
-      background: var(--cg-parchment, #f4f3ef);
+      background: var(--cg-parchment, #faf8f5);
       font-weight: 700;
       font-size: 14px;
-      color: var(--cg-green-950, #08423f);
+      color: var(--cg-green-950, #1d4433);
       text-transform: uppercase;
       letter-spacing: 0.05em;
     }
     
     .alc-table td {
       font-size: 15px;
-      color: var(--cg-charcoal, #28241f);
+      color: var(--cg-charcoal, #141e19);
     }
     
     .alc-table tr:last-child td {
@@ -194,18 +194,18 @@
     }
     
     .alc-status-compliant {
-      background: #d9f0ec;
-      color: #052a26;
+      background: #e3ede8;
+      color: #16281f;
     }
     
     .alc-status-review {
       background: #fff3cd;
-      color: #5a4a00;
+      color: #414f48;
     }
     
     .alc-status-incomplete {
       background: #ffe3db;
-      color: #5a1a0c;
+      color: #29362f;
     }
     
     /* ---------- Export Section ---------- */
@@ -232,12 +232,12 @@
     }
     
     .alc-btn-primary {
-      background: var(--cg-green-700, #08423f);
+      background: var(--cg-green-700, #1d4433);
       color: #ffffff;
     }
     
     .alc-btn-primary:hover:not(:disabled) {
-      background: var(--cg-green-600, #0b5f59);
+      background: var(--cg-green-600, #365b4a);
     }
     
     .alc-btn-primary:disabled {
@@ -247,19 +247,19 @@
     
     .alc-btn-ghost {
       background: transparent;
-      color: var(--cg-charcoal, #28241f);
-      border-color: var(--cg-tan-200, #dad7ce);
+      color: var(--cg-charcoal, #141e19);
+      border-color: var(--cg-tan-200, #d6cfc2);
     }
     
     .alc-btn-ghost:hover:not(:disabled) {
-      border-color: var(--cg-green-700, #08423f);
+      border-color: var(--cg-green-700, #1d4433);
     }
     
     /* ---------- Compliance Disclaimer ---------- */
     .alc-disclaimer {
       padding: 20px 24px;
       border-radius: 12px;
-      border: 2px solid var(--cg-gold-500, #c5a059);
+      border: 2px solid var(--cg-gold-500, #7ab599);
       background: linear-gradient(135deg, #fffaf0, #ffffff);
       margin-bottom: 32px;
     }
@@ -267,14 +267,14 @@
     .alc-disclaimer h3 {
       margin: 0 0 12px;
       font-size: 16px;
-      color: var(--cg-green-950, #08423f);
+      color: var(--cg-green-950, #1d4433);
       font-weight: 700;
     }
     
     .alc-disclaimer p {
       margin: 0;
       font-size: 14px;
-      color: var(--cg-charcoal, #28241f);
+      color: var(--cg-charcoal, #141e19);
       line-height: 1.6;
     }
     
@@ -288,7 +288,7 @@
     .alc-empty h3 {
       margin: 0 0 8px;
       font-size: 18px;
-      color: var(--cg-charcoal, #28241f);
+      color: var(--cg-charcoal, #141e19);
     }
     
     .alc-empty p {

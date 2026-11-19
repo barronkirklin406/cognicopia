@@ -182,10 +182,10 @@ class SurveyAuditModule {
         <td style="padding: 8px; border: 1px solid #ccc;">${r.totalSessionsRecorded}</td>
         <td style="padding: 8px; border: 1px solid #ccc;">${r.totalEngagementMinutes} min</td>
         <td style="padding: 8px; border: 1px solid #ccc;">${r.matchedInterestPercentage}%</td>
-        <td style="padding: 8px; border: 1px solid #ccc; color: ${r.f679Compliant ? '#15803d' : '#b91c1c'}; font-weight: bold;">
+        <td style="padding: 8px; border: 1px solid #ccc; color: ${r.f679Compliant ? '#357a5d' : '#b91c1c'}; font-weight: bold;">
           ${r.f679Compliant ? 'PASS' : 'REVIEW'}
         </td>
-        <td style="padding: 8px; border: 1px solid #ccc; color: ${r.f744Compliant ? '#15803d' : '#b91c1c'}; font-weight: bold;">
+        <td style="padding: 8px; border: 1px solid #ccc; color: ${r.f744Compliant ? '#357a5d' : '#b91c1c'}; font-weight: bold;">
           ${r.f744Compliant ? 'PASS' : 'REVIEW'}
         </td>
       </tr>`

@@ -7,53 +7,47 @@ description: "Use whenever creating or editing HTML, CSS, layouts, buttons, head
 
 The playbook's finding: the front page is calm and modern, then the packet tool beneath it switches to dark navy panels, amber buttons and emoji. A director should meet **one look per page, and the same look on every page**. This skill is the screen look; the printed look is `cognicopia-print-engine` (pure black on pure white, always).
 
-**Status:** this is the target. The shipped `css/styles.css` still carries the November 5 oceanic tokens and `scripts/check-design-system.mjs` measures them (see the table in `CLAUDE.md`). When you restyle a page, move it to these tokens; when you change the shared tokens, change the check's expectations in the same pull request, with the reason. Do not mix the two palettes on one page.
+**Status:** built on November 19, 2026. `css/styles.css` carries these values (its `--cg-*` tokens keep their older names: `--cg-green-700` is now the sage, `--cg-cream` the alabaster, `--cg-charcoal` the forest ink), the pages' own colors were moved to the same family, and `scripts/check-design-system.mjs` and `npm run audit:ux` measure them. Three groups keep their own hues on purpose, because the hue carries meaning: the three tier colors, the Studio's per-tool accents, and warning ambers and reds. Do not mix the old oceanic palette back in.
 
 ## The palette (use tokens, not new hex values)
 
-Define these once as CSS custom properties on `:root` and in the Night Shift scope, and use the tokens everywhere.
+The owner's values of November 18, 2026. Define them once as CSS custom properties on `:root` and in the Night Shift scope, and use the tokens everywhere.
 
 **Day**
 
-| Token (suggested name) | Value | Use |
+| Role | Value | Use |
 |---|---|---|
-| `--cg-paper` | `#FAF8F5` Warm Alabaster Paper | page background |
-| `--cg-stone` | `#F2EFE9` Soft Stone | cards, panels |
-| `--cg-hairline` | `#DED8CE` | card and panel borders: `1px solid` (decoration only, see "Boundaries") |
-| `--cg-shadow` | `0 2px 6px rgba(28, 37, 32, 0.05)`, layered with a longer, fainter one | cards; warm, never gray-blue |
-| `--cg-ink` | `#18221D` Deep Forest Charcoal | primary text and headings |
-| `--cg-ink-soft` | `#4A5550` Muted Slate | secondary text **on Alabaster**; on Stone cards or white use `#444F4A` |
-| `--cg-sage` | `#234E3B` Deep Botanical Sage, hover `#1A3B2C` | primary action fill, with white text |
-| `--cg-ivory` | `#FFFFFF` Warm Ivory | secondary action fill, with a `#234E3B` border and `#234E3B` text |
-| `--cg-clay` | `#B85435` Warm Terracotta | the "Calm Now" and urgent accent: borders, icons, large shapes |
-| `--cg-clay-deep` | `#8F3F25` | a terracotta button fill (white text) or any terracotta text |
+| Paper (Warm Alabaster) | `#FAF8F5` | page background |
+| Stone | `#F2EFE9` | cards, panels |
+| Border | `#D6CFC2` | card and panel borders: `1px solid` (decoration only, see "Boundaries"); `--cg-tan-200` is `#DCD5C9`, a touch lighter, so slate text on it stays AAA |
+| Ink (Deep Forest) | `#141E19` | primary text and headings |
+| Slate | `#36423C` | secondary text |
+| Sage | `#1D4433` | primary action fill, with white text |
+| Ivory | `#FFFFFF` | secondary action fill, with a sage border and sage text |
+| Calm Now clay | `#8F3418` | the "Calm Now" and urgent accent: a terracotta fill with white text, or terracotta text |
 
 **Night Shift**
 
-| Token | Value | Use |
+| Role | Value | Use |
 |---|---|---|
-| bg | `#121815` Deep Pine Slate | page |
-| card | `#1C2420` | cards, panels |
-| text | `#EAE6DF` | all text |
-| accent | `#488B6C` | borders, icons, large shapes only |
-| accent text | `#7BC0A0` | links and accent text |
-| primary fill | `#2A634A` with white text | primary action; border `#488B6C` |
-| urgent text | `#EE9A7C` | the Calm Now accent as text |
+| Background | `#101613` | page |
+| Card | `#18211C` | cards, panels |
+| Text | `#EFECE6` | all text |
+| Secondary text | `#B8C9BF` | secondary text |
+| Button | `#86C9A7` with `#0D1511` text | primary action; links and accent text use the same sage |
 
-Print is not the screen: the "no pure black on screen" feel above never applies to anything printed or made into a PDF.
+Print is not the screen: the soft ink above never applies to anything printed or made into a PDF (pure black on pure white, always).
 
-## Contrast: AAA, measured, with the honest exceptions
+## Contrast: AAA, measured
 
-Every text pair a person must read reaches **AAA (7:1)** in Day and in Night Shift; `scripts/check-design-system.mjs` and `npm run audit:ux` measure it. Measured on the values above:
+Every text pair a person must read reaches **AAA (7:1)** in Day and in Night Shift (4.5:1 for text of 24 px or bold 18.66 px and up); `scripts/check-design-system.mjs` and `npm run audit:ux` measure it. Measured on the values above:
 
-- Pass: `#18221D` on Alabaster 15.4:1 and on Stone 14.2:1; `#4A5550` on Alabaster 7.3:1; `#234E3B` text on white 9.4:1 and on Alabaster 8.9:1; white on `#234E3B` 9.4:1 and on hover `#1A3B2C` 12.3:1; `#EAE6DF` on `#121815` 14.5:1 and on `#1C2420` 12.8:1.
-- **Fail AAA as asked for, so not used that way:**
-  - `#4A5550` on Stone cards is **6.8:1**: use `#444F4A` there (7.4:1).
-  - `#B85435` terracotta is **4.8:1** under white text and 4.6:1 as text on Alabaster: it is for borders, icons and large shapes (3:1), **never for body text or under button text**. A terracotta button is `#8F3F25` with white text (7.2:1).
-  - `#488B6C` night sage is **4.4:1** on `#121815` and **3.9:1** on `#1C2420`: borders, icons and large shapes only. Night text and links use `#7BC0A0` (8.5:1 on the page, 7.5:1 on cards); the night primary button is `#2A634A` with white text (7.0:1).
+- Day: ink on paper 16.1:1, on stone 14.9:1; slate on paper 9.9:1, on stone 9.1:1; sage text on white 10.9:1, on paper 10.3:1; white on sage 10.9:1; white on the clay `#8F3418` 7.9:1; clay as text on paper 7.4:1.
+- Night: text on the background 15.5:1, on a card 14.0:1; secondary text 10.6:1 and 9.5:1; the button's `#0D1511` on `#86C9A7` 9.6:1; sage on the background 9.5:1, on a card 8.6:1.
+- Clay `#8F3418` is **6.8:1 on Stone**: on a stone card use it for a border, icon or large shape, or put it on paper or white.
 - Text on a glass or translucent surface is measured against the surface and the layer behind it, not the surface alone. Never rely on color alone to carry meaning: add words or an icon.
 
-**Boundaries.** The `#DED8CE` hairline is 1.3:1 against Alabaster: it is a card's soft edge, not a control. A control a person must find (a text field, a select, a checkbox) has a **3:1 boundary**: `#7A857E` by day (3.3 to 3.8:1), `#6B7A72` at night (3.5 to 4.0:1), or the sage border of a secondary button.
+**Boundaries.** The `#D6CFC2` hairline is 1.5:1 against paper: it is a card's soft edge, not a control. A control a person must find (a text field, a select, a checkbox) has a **3:1 boundary**: a sage or ink border, or a border darker than `#7A857E` by day and lighter than `#6B7A72` at night.
 
 ## Type, shape and motion
 

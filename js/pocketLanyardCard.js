@@ -51,12 +51,12 @@
       gap: 16px;
       padding: 20px 24px;
       border-bottom: 2px solid #e8e8e8;
-      background: #f4f3ef;
+      background: #faf8f5;
     }
     .plc-header h2 {
       margin: 0;
       font-size: 20px;
-      color: #08423f;
+      color: #1d4433;
       font-family: "Atkinson Hyperlegible", "Trebuchet MS", sans-serif;
       font-weight: 700;
     }
@@ -68,20 +68,20 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      border: 2px solid #c5a059;
+      border: 2px solid #7ab599;
       border-radius: 8px;
       background: transparent;
-      color: #08423f;
+      color: #1d4433;
       font-size: 24px;
       cursor: pointer;
       transition: background 0.16s ease, border-color 0.16s ease;
     }
     .plc-close:hover {
-      background: #c5a059;
+      background: #7ab599;
       color: #ffffff;
     }
     .plc-close:focus-visible {
-      outline: 3px solid #c5a059;
+      outline: 3px solid #7ab599;
       outline-offset: 2px;
     }
 
@@ -120,7 +120,7 @@
       margin-bottom: 8px;
       font-weight: 700;
       font-size: 15px;
-      color: #28241f;
+      color: #141e19;
       font-family: "Atkinson Hyperlegible", "Trebuchet MS", sans-serif;
     }
     .plc-field .hint {
@@ -133,23 +133,23 @@
       width: 100%;
       min-height: 52px;
       padding: 12px 16px;
-      border: 2px solid #dad7ce;
+      border: 2px solid #d6cfc2;
       border-radius: 10px;
       background: #ffffff;
-      color: #28241f;
+      color: #141e19;
       font-size: 15px;
       font-family: "Atkinson Hyperlegible", "Trebuchet MS", sans-serif;
       box-sizing: border-box;
     }
     .plc-input:hover,
     .plc-textarea:hover {
-      border-color: #c5a059;
+      border-color: #7ab599;
     }
     .plc-input:focus,
     .plc-textarea:focus {
-      border-color: #08423f;
+      border-color: #1d4433;
       outline: none;
-      box-shadow: 0 0 0 3px rgba(8,66,63, 0.2);
+      box-shadow: 0 0 0 3px rgba(29, 68, 51, 0.2);
     }
     .plc-textarea {
       min-height: 80px;
@@ -169,14 +169,14 @@
       font-size: 18px;
       margin-bottom: 8px;
       font-weight: 700;
-      color: #08423f;
+      color: #1d4433;
     }
     .plc-icon-trigger {
-      color: #8a3a20;
+      color: #8f3418;
       font-size: 20px;
     }
     .plc-icon-soothe {
-      color: #08423f;
+      color: #1d4433;
       font-size: 20px;
     }
 
@@ -219,7 +219,7 @@
     .plc-footer {
       padding: 16px 24px;
       border-top: 2px solid #e8e8e8;
-      background: #f4f3ef;
+      background: #faf8f5;
       display: flex;
       gap: 12px;
       justify-content: flex-end;
@@ -236,11 +236,11 @@
       transition: background 0.16s ease, border-color 0.16s ease;
     }
     .plc-btn-primary {
-      background: #08423f;
+      background: #1d4433;
       color: #ffffff;
     }
     .plc-btn-primary:hover:not(:disabled) {
-      background: #0b5f59;
+      background: #365b4a;
     }
     .plc-btn-primary:disabled {
       opacity: 0.5;
@@ -248,11 +248,11 @@
     }
     .plc-btn-ghost {
       background: transparent;
-      color: #28241f;
-      border-color: #dad7ce;
+      color: #141e19;
+      border-color: #d6cfc2;
     }
     .plc-btn-ghost:hover:not(:disabled) {
-      border-color: #08423f;
+      border-color: #1d4433;
     }
 
     /* ---------- PRINT CSS: 6" x 5" card with fold line ---------- */
