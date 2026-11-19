@@ -11,7 +11,7 @@
      whoswho      Who's who: a frame, a name and how they are related, for the people who are living
      mytrade      My work: the tools of their trade and what each is for
      hometown     Where I come from: the town by name, and the sights and tastes of its region
-     songs        Songs of my years: title, artist and year from the years they were 15 to 25
+     songs        Songs of my years: title, artist and year from the years they were 7 to 28
      twenty       The year I turned twenty: what was new, and the sayings of the day
      thennow      Then and now: the old thing and what does its job today
      myday        My day: the steps of a morning and an evening
@@ -175,16 +175,25 @@
   }
 
   /* ---------- 5. where I come from ---------- */
+  /* the state a hometown names, lower case, as "Scobey, Montana", "Scobey, MT." or "Scobey MT" write it; "" when none is named */
+  function stateOf(w) {
+    var st = String(w.hometown.state || "").toLowerCase().replace(/[^a-z ]/g, " ").replace(/\s+/g, " ").trim();
+    if (!st && w.hometown.place) {
+      var words = String(w.hometown.place).toLowerCase().replace(/[^a-z ]/g, " ").replace(/\s+/g, " ").trim().split(" ");
+      for (var n = Math.min(2, words.length - 1); n >= 1 && !st; n--) { var tail = words.slice(-n).join(" "); if (D.STATE_BITS[tail]) st = tail; }
+    }
+    return st;
+  }
   function regionOf(w) {
     if (D.REGIONS[w.hometown.regionCode]) return w.hometown.regionCode;
-    var st = String(w.hometown.state || "").trim().toLowerCase(), code = "";
+    var st = stateOf(w), code = "";
     if (st) Object.keys(D.STATES).forEach(function (c) { if (!code && D.STATES[c].some(function (x) { return x.toLowerCase() === st; })) code = c; });
     if (!code && root.CogniReminiscence && w.hometown.place) { try { var p = root.CogniReminiscence.placeOf(w.hometown.place); if (p && p.region && D.REGIONS[p.region.code]) code = p.region.code; } catch (e) { /* the place stays unplaced */ } }
     return code;
   }
   function hometownSheets(P, r, count) {
     var w = who(P), town = w.hometown.town && ok(w.hometown.town, P) ? w.hometown.town : "", code = regionOf(w), out = [];
-    var bits = D.STATE_BITS[String(w.hometown.state || "").trim().toLowerCase()] || D.REGIONS[code] || D.ANYWHERE;   // a state's own sights first, then its region's
+    var bits = D.STATE_BITS[stateOf(w)] || D.REGIONS[code] || D.ANYWHERE;   // a state's own sights first, then its region's
     var sights = K.shuffle(keep(bits.sights, P), r), tastes = K.shuffle(keep(bits.tastes, P), r), talk = K.shuffle(keep(D.HOME_TALK, P), r), n = P.stage === 3 ? 2 : amount(P, 4, 4);
     for (var s = 0; s < count; s++) {
       var food = s % 2 === 1 && tastes.length >= 2, options = take(rotate(food ? tastes : sights, s), n);
@@ -200,7 +209,9 @@
 
   /* ---------- 6. songs of my years ---------- */
   function songsFor(P) {
-    var w = who(P), born = P.born || w.born, from = born ? born + 15 : P.decade, to = born ? born + 25 : P.decade + 9;
+    var w = who(P), born = P.born || w.born, W = root.CogniEra && born ? root.CogniEra.windowFor(born) : null;
+    var from = W ? W.from : born ? born + 7 : P.decade, to = W ? W.to : born ? born + 28 : P.decade + 9;   // the years they were 7 to 28
+    if (P.young && W) { from = W.young[0]; to = W.young[1]; }        // Korsakoff: the later part of those years (the ones that stay when recent memory does not)
     var all = ((root.CogniReminiscence && root.CogniReminiscence.SONGS) || []).concat(D.SONGS).filter(function (s) {
       return s.year > 1900 && ok(s.title + " " + s.artist, P) && !(s.avoid || []).some(function (c) { return topicAvoided(c, P); });
     });
@@ -222,7 +233,7 @@
         : sheet("songs", "Songs of my years", span, [
             { kind: "list", label: "Tick the ones you would like to hear", items: mine.map(line) },
             { kind: "starters", items: take(rotate(["A song I never tire of is", "A song we danced to was", "The radio was always tuned to"], s), 1) }],
-            "songs from the years the resident was 15 to 25, when music tends to stay with a person. Play one if you can. Titles, artists and years are printed; a song's words are not, because these songs are still in copyright.", { personal: !!(P.born || who(P).born) }));
+            "songs from the years the resident was young, when music tends to stay with a person. Play one if you can. Titles, artists and years are printed; a song's words are not, because these songs are still in copyright.", { personal: !!(P.born || who(P).born) }));
     }
     return out;
   }
@@ -230,7 +241,8 @@
   /* ---------- 7. the year I turned twenty ---------- */
   function twentySheets(P, r, count) {
     var w = who(P), born = P.born || w.born, year = born ? born + 20 : P.decade + 5, decade = Math.max(1940, Math.min(1980, Math.floor(year / 10) * 10)), out = [];
-    var EV = (E.PUBLIC_DOMAIN && E.PUBLIC_DOMAIN.events) || [], near = function (pad) { return EV.filter(function (e) { return Math.abs(e.y - year) <= pad && ok(e.t, P); }); };
+    var W = root.CogniEra && born ? root.CogniEra.windowFor(born) : null;   // widening never goes past the years they were 7 to 28
+    var EV = (E.PUBLIC_DOMAIN && E.PUBLIC_DOMAIN.events) || [], near = function (pad) { return EV.filter(function (e) { return Math.abs(e.y - year) <= pad && (!W || (e.y >= W.from && e.y <= W.to)) && ok(e.t, P); }); };
     var events = near(3); if (events.length < 3) events = near(6); if (events.length < 3) events = near(10);
     events = events.slice().sort(function (a, b) { return a.y - b.y; });
     var says = K.shuffle(keep(D.SAYINGS[decade] || [], P), r), nE = amount(P, 4, 3), nS = amount(P, 4, 3);
@@ -392,24 +404,36 @@
     return out;
   }
   /* ---------- 14. a coloring page made from a photo (js/photoLine.js makes the line drawing; with none chosen there is no page) ---------- */
-  function photocolorSheets(P, r, count) {
-    if (!P.photo) return [];
-    var w = who(P), shown = String(P.name || w.name || "").trim().split(" ")[0];
-    return [sheet("photocolor", "Color this together", "A picture made from a photo", [{ kind: "photo", src: P.photo, caption: shown ? "For " + shown : "" }],
-      "a coloring page made from a photo, drawn in bold lines by an edge finder. Look it over first: a rough line is a place to add your own. Offer a thick crayon or marker and sit alongside; any color, or none, is right.", { personal: true })];
-  }
-  /* ---------- 15. a door sign: a name, a photo, a picture of their work or what they love, and where they come from ---------- */
-  var SIGN_PIC = { farmer: "farm_tractor", teacher: "grandfather_clock", nurse: "teacup", cook: "teapot", mechanic: "farm_tractor", secretary: "typewriter", carpenter: "birdhouse", driver: "farm_tractor", shopkeeper: "rotary_telephone", seamstress: "sewing_machine" };
-  var SIGN_LOVE = [[/garden|plant|flower/, "watering_can"], [/bak|cook|tea/, "teapot"], [/bird/, "cardinal"], [/sew|knit|quilt/, "sewing_machine"], [/fish|boat|sail/, "sailboat"], [/read|book/, "rocking_chair"]];
-  function doorsignSheets(P, r, count) {
-    var w = who(P), shown = String(P.name || "").trim() || String(w.name || "").trim().split(" ")[0];
-    var town = w.hometown && w.hometown.town && ok(w.hometown.town, P) ? w.hometown.town : "", label = w.work && w.work.label && ok(w.work.label, P) ? w.work.label : "";
+  /* the finished library drawing for the work or the thing they love (the door sign and the coloring page share it): theirs, never a guess */
+  var SIGN_PIC, SIGN_LOVE;
+  function signPicture(P, w) {
     var id = SIGN_PIC[P.vocation] || SIGN_PIC[w.work && w.work.vocation] || "";
     if (!id || !drawn(id) || !ok(id.replace(/_/g, " "), P)) {
       id = ""; var loves = keep(w.interests.concat(w.hobbies, P.interests), P).join(" ").toLowerCase();
       SIGN_LOVE.some(function (x) { if (x[0].test(loves) && drawn(x[1])) { id = x[1]; return true; } return false; });
     }
     if (!id && drawn("sunflower") && ok("sunflower", P)) id = "sunflower";
+    return id;
+  }
+  /* a coloring page: by default a clean, closed-outline drawing from the library; a photo's line drawing only when a photo was chosen (it is rougher, so staff look it over) */
+  function photocolorSheets(P, r, count) {
+    var w = who(P), shown = String(P.name || w.name || "").trim().split(" ")[0];
+    if (!P.photo) {
+      var pic = signPicture(P, w);
+      return pic ? [sheet("photocolor", "Color this together", "A picture to color", [{ kind: "picture", pic: pic, caption: shown ? "For " + shown : "" },
+        { kind: "choices", label: "A color to start with", options: ["Red", "Green", "Yellow", "Orange"] }],
+        "a coloring page from the library, chosen for their work or what they love: a clean, closed outline. To color a photo of someone instead, choose the photo in the Studio and look over its drawing before you print. Offer a thick crayon or marker and sit alongside; any color, or none, is right.", { personal: !!(w.work && w.work.label || w.hobbies.length) })] : [];
+    }
+    return [sheet("photocolor", "Color this together", "A picture made from a photo", [{ kind: "photo", src: P.photo, caption: shown ? "For " + shown : "" }],
+      "a coloring page made from a photo, drawn in bold lines by an edge finder. Look it over first: a rough line is a place to add your own. Offer a thick crayon or marker and sit alongside; any color, or none, is right.", { personal: true })];
+  }
+  /* ---------- 15. a door sign: a name, a photo, a picture of their work or what they love, and where they come from ---------- */
+  SIGN_PIC = { farmer: "farm_tractor", teacher: "grandfather_clock", nurse: "teacup", cook: "teapot", mechanic: "farm_tractor", secretary: "typewriter", carpenter: "birdhouse", driver: "farm_tractor", shopkeeper: "rotary_telephone", seamstress: "sewing_machine" };
+  SIGN_LOVE = [[/garden|plant|flower/, "watering_can"], [/bak|cook|tea/, "teapot"], [/bird/, "cardinal"], [/sew|knit|quilt/, "sewing_machine"], [/fish|boat|sail/, "sailboat"], [/read|book/, "rocking_chair"]];
+  function doorsignSheets(P, r, count) {
+    var w = who(P), shown = String(P.name || "").trim() || String(w.name || "").trim().split(" ")[0];
+    var town = w.hometown && w.hometown.town && ok(w.hometown.town, P) ? w.hometown.town : "", label = w.work && w.work.label && ok(w.work.label, P) ? w.work.label : "";
+    var id = signPicture(P, w);
     return [sheet("doorsign", shown || "Welcome", "Welcome", [
       { kind: "frames", items: [{ name: town ? "From " + town : shown, sub: label, photo: P.photo || "", hint: "A photo can go here" }] },
       id ? { kind: "picture", pic: id, caption: "" } : null],

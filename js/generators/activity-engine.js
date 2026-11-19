@@ -227,13 +227,20 @@
     p = p || {};
     var stage = Math.max(1, Math.min(3, Math.round(Number(p.stage) || 2)));
     var dex = DEXTERITY[p.dexterity] ? p.dexterity : "steady";
-    var born = Math.round(Number(p.born)) || 0, roomy = !!p.roomy;
+    var born = Math.round(Number(p.born)) || 0;
+    /* the care team's condition setting (js/residentContext.js ADAPTATION_RULES), from the chosen resident or given as p.adaptation */
+    var RU = (root.CogniResident && root.CogniResident.ADAPTATION_RULES) || {};
+    var AD = String(p.adaptation || (p.person && p.person.adaptation && p.person.adaptation.code) || ""); if (!RU[AD]) AD = "";
+    var rule = AD ? RU[AD] : {};
+    if (rule.stage && stage < rule.stage) stage = rule.stage;
+    var roomy = p.roomy == null ? !!rule.roomy : !!p.roomy;       // staff's own choice wins; with none made, the setting's default
     var decade = DECADES.indexOf(Number(p.decade)) >= 0 ? Number(p.decade) : decadeFor(born);
     var split = function (v) { return (Array.isArray(v) ? v : String(v == null ? "" : v).split(/[,;\n]/)).map(function (x) { return String(x).trim().toLowerCase(); }).filter(Boolean).slice(0, 20); };
     return {
       name: String(p.name == null ? "" : p.name).replace(/[<>&"]/g, "").trim().slice(0, 40),
       nameStyle: p.nameStyle === "flow" || p.nameStyle === "formal" ? p.nameStyle : "plain",
       born: born, stage: stage, dexterity: dex, decade: decade,
+      adapt: AD, concrete: !!rule.concrete, young: !!rule.young, errorless: !!rule.errorless,
       season: SEASONS.indexOf(p.season) >= 0 ? p.season : "", vocation: String(p.vocation == null ? "" : p.vocation).toLowerCase().replace(/[^a-z]/g, "").slice(0, 20),
       /* a bigger, harder word search for an early-stage reader who wants a real workout (not with high spacing: that is a smaller, airier page) */
       challenge: !!p.challenge && !roomy, roomy: roomy,
@@ -246,10 +253,10 @@
       personal: split(p.personal).map(function (x) { return x.replace(/[^a-z]/g, ""); }).filter(function (x, i, a) { return x.length >= 3 && x.length <= 10 && a.indexOf(x) === i; }).slice(0, 8)
     };
   }
-  /* the decade a person was about twenty in: their reminiscence years */
+  /* the decade at the middle of the years a person was 7 to 28 (assets/services/eraWindow.js): their reminiscence years */
   function decadeFor(born) {
     if (!born || born < 1900 || born > 2010) return 1950;
-    var d = Math.floor((born + 20) / 10) * 10;
+    var d = Math.floor((born + 17) / 10) * 10;
     return Math.max(1940, Math.min(1980, d));
   }
   /* The words to keep off a page. With the shared resident reader on the page (js/residentContext.js) a topic's name, such as
@@ -367,11 +374,23 @@
     /* the page code says the stage, the kind of page and the seed. A module may name its own letters (the life pages do, so
        "twenty" and "then and now" are not both T); the older kinds keep their first letter. */
     var code = "AS" + S.key + "-" + ((REGISTRY[mod] && REGISTRY[mod].code) || mod.charAt(0).toUpperCase()) + "-" + seed.toString(36).toUpperCase();
+    sheets = adaptSheets(P, mod, sheets);
     if (P.roomy) sheets.forEach(thinBlocks);
     sheets.forEach(function (sh, i) { sh.roomy = P.roomy; sh.index = i; sh.stage = P.stage; sh.dexterity = P.dexterity; sh.name = P.name; sh.nameStyle = P.nameStyle; sh.code = code + "." + (i + 1); sh.dexNote = DEXTERITY[P.dexterity].note; });
     return { stage: P.stage, profile: P, seed: seed, code: code, module: mod, sheets: sheets, problems: validate(sheets, P), notFitting: !fits(mod, P.stage) };
   }
 
+  /* the condition setting at the sheet level: no sayings or word play for a frontotemporal profile, and a cue for staff on every page where the answer
+     comes with the question (errorless learning, Korsakoff). Nothing here is printed for the resident to read as a label of any kind. */
+  function adaptSheets(P, mod, sheets) {
+    if (!P.adapt) return sheets;
+    if (P.concrete && mod === "wordplay") return [];
+    sheets.forEach(function (sh) {
+      if (P.concrete && sh.blocks) sh.blocks = sh.blocks.filter(function (b) { return !(b && /Sayings of the day/.test(b.label || "")); });
+      if (P.errorless) sh.staffNote = (sh.staffNote ? sh.staffNote + " " : "") + "Errorless learning: say the answer together with the question, then let them say it or point to it. Never wait for a guess.";
+    });
+    return sheets;
+  }
   /* what is wrong with these sheets, in words (an empty list is a pass) */
   /* The tone rules are for the words Cognicopia writes, not for the names of the resident's own people: a daughter called Honey,
      a dog called Dear or a family named Test is not baby talk. The names in the profile are set aside before a line is judged. */

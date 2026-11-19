@@ -621,9 +621,10 @@ export function person(p: ProfileLike, today: Date = new Date()): Person {
   const mil = t2.military || {}, served = !!code(mil.branch) && ["none", "unknown"].indexOf(code(mil.branch)) < 0;
   const mt = code(mil.talkingAboutIt);
   const music = t2.music || {};
+  const adapt = code((t1 as { adaptation?: ChoiceLike | null }).adaptation);
   return {
     name: clean(t1.preferredName, 40), tier, birthYear: by, birthYearKnown: known,
-    bump: [by + 10, by + 30], life: [by + 5, Math.min(year, by + 60)],
+    bump: adapt === "korsakoff" ? [by + 21, by + 28] : [by + 7, by + 28], life: [by + 5, Math.min(year, by + 60)],   // bump: the years they were 7 to 28 (assets/services/eraWindow.js)
     vocation, region, state, setting: set.label, settingKind: set.kind,
     placeLabel: [set.label, region && region.code !== "abroad" ? region.label : ""].filter(Boolean).join(" ") || (region ? region.label : ""),
     avoid: new Set(((t1.topicsToAvoid && t1.topicsToAvoid.topics) || []).map(code).filter(Boolean)),
@@ -679,8 +680,12 @@ function pickSong(who: Person, topic: Topic, used: Set<string>, first: boolean, 
   }
   const region = who.region ? who.region.code : "";
   let best: Song | null = null, bestScore = -1;
+  /* a song from the years they were 7 to 28 first (assets/services/eraWindow.js); only when none is left is the nearest one taken */
+  for (const strict of [true, false]){
+  if (best) break;
   for (const s of SONGS){
     if (used.has(s.id) || blocked(who, s.avoid)) continue;
+    if (strict && who.birthYearKnown && s.year && (s.year < who.bump[0] || s.year > who.bump[1])) continue;
     if (s.vocations && s.vocations.indexOf("military") >= 0 && !militaryOk(who)) continue;
     let sc = r() * 4;
     const theirs = s.genres.some(g => who.genres.indexOf(g) >= 0);
@@ -698,6 +703,7 @@ function pickSong(who: Person, topic: Topic, used: Set<string>, first: boolean, 
     if (who.tier === 3 && s.singalong) sc += 14;
     if (sc > bestScore){ best = s; bestScore = sc; }
   }
+  }
   const s = best || SONGS[0];
   used.add(s.id);
   return { id: s.id, title: s.title, artist: s.artist, year: s.year, why: songAge(s, who) };
@@ -706,7 +712,7 @@ function refsFor(topic: Topic, who: Person, n: number, r: () => number): string[
   const region = who.region ? who.region.code : "", abroad = region === "abroad";
   // state references only for that state; regional ones only for that region; the rest are
   // North American, so someone raised abroad hears only those familiar everywhere
-  const ok = topic.refs.filter(x => !blocked(who, x.avoid) && overlaps(x.years, who.life)
+  const ok = topic.refs.filter(x => !blocked(who, x.avoid) && overlaps(x.years, who.bump)
     && (x.states ? !!who.state && x.states.indexOf(who.state) >= 0 : x.regions ? x.regions.indexOf(region) >= 0 : !abroad || !!x.anywhere));
   const score = (x: Ref): number => (x.states ? 14 : x.regions ? 10 : 0) + (overlaps(x.years, who.bump) ? 6 : 0) + r();
   return ok.sort((a, b) => score(b) - score(a)).slice(0, n).map(x => x.text);

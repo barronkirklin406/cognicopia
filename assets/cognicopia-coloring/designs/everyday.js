@@ -58,19 +58,25 @@ C.define({ id:"table-setting", title:"Setting the Table", cat:"home-everyday",
   if (g.lvl >= 2) cup(g, 470, 190, g.at(.7, .8, .9), 2);
 });
 
-C.define({ id:"tea-for-two", title:"Tea for Two", cat:"home-everyday",
+C.define({ id:"tea-for-two", title:"Tea for Two", cat:"home-everyday", pad:.02,
   tags:["tea", "friends", "visiting", "hospitality"], talk:"Who would you like to share a cup of tea with?" }, function(g){
   if (g.lvl >= 2){ g.S(h.rrect(30, 300, 540, 380, 60)); g.D(h.rrect(60, 330, 480, 320, 44), 3); }
   if (g.lvl >= 2){ cup(g, 180, 420, 1, 1); cup(g, 420, 520, 1, 1); g.S(h.path([230, 470]).L([330, 440]).L([334, 452]).L([236, 484]).Z()); g.S(h.ellipse(350, 440, 24, 14, -18)); }
-  else cup(g, 280, 380, 2, 1);
+  else {
+    cup(g, 280, 380, 2, 1);
+    /* two curls of steam over the cup, so the single cup fills its box */
+    g.L(h.path([240, 340]).C([200, 290], [290, 250], [240, 200]).C([200, 160], [260, 130], [236, 90]).open());
+    g.L(h.path([330, 340]).C([290, 290], [380, 250], [330, 200]).C([290, 160], [350, 130], [326, 90]).open());
+  }
   if (g.lvl >= 3){ g.S(h.ellipse(170, 590, 96, 22)); g.S(h.path([100, 580]).L([130, 530]).L([240, 530]).L([240, 580]).Z()); g.D(h.line([112, 560], [240, 560])); }
 });
 
-C.define({ id:"baking-day", title:"Baking Day", cat:"home-everyday",
+C.define({ id:"baking-day", title:"Baking Day", cat:"home-everyday", pad:.03,
   tags:["baking", "pies", "kitchen", "family-recipes"], talk:"What is a recipe you would love to smell baking right now?" }, function(g){
   g.S(h.rect(24, 560, 552, 40));
   if (g.lvl >= 2) g.S(h.rect(40, 600, 520, 170));
   if (g.lvl >= 3){ g.D(h.line([300, 600], [300, 770])); g.S(h.rrect(230, 670, 40, 18, 8)); g.S(h.rrect(330, 670, 40, 18, 8)); }
+  if (g.lvl < 2){ g.S(h.rrect(60, 150, 130, 190, 22)); g.S(h.rrect(52, 120, 146, 40, 16)); g.D(h.line([70, 230], [180, 230]), 3); }   // a flour canister, so the plain picture fills its box
   g.S(h.ellipse(300, 470, 230, 90));
   g.S(h.ellipse(300, 452, 200, 72));
   var lines = g.at(5, 3, 2);

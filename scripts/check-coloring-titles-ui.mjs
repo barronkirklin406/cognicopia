@@ -15,7 +15,7 @@
    ===================================================================== */
 import fs from "fs";
 import path from "path";
-import { loadPlaywright, serve, ROOT, agreed } from "./lib/browser.mjs";
+import { loadPlaywright, serve, ROOT, agreed, agreeToDialogs } from "./lib/browser.mjs";
 
 const TITLES = [
   ["Ice Cream Soda", "ice-cream-soda"], ["Water Lily", "water-lily"], ["Calla Lilies", "calla-lilies"], ["Hydrangea", "hydrangea"],
@@ -45,7 +45,7 @@ const p = await ctx.newPage();
 p.on("pageerror", e => errors.push(e.message));
 p.on("console", m => { if (m.type() === "error") errors.push("console: " + m.text().slice(0, 140)); });
 p.on("request", r => { const u = r.url(); if (!u.startsWith(base) && !/^(data|blob|about):/.test(u)) foreign.push(u); });
-p.on("dialog", d => d.accept());
+p.on("dialog", d => d.accept()); await agreeToDialogs(p);
 
 await p.goto(base + "builder.html#/coloring"); await p.waitForSelector("#ccTabMk", { timeout: 20000 });
 await p.click("#ccTabMk"); await p.waitForSelector("#ccMkQ");

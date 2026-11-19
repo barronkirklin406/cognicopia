@@ -334,7 +334,7 @@ C.define({ id:"oak-acorns", title:"Oak Leaves and Acorns", cat:"botanical-garden
   if (g.lvl >= 2) acorn(g.at(520, 540, 0), 640, 1.1, 2);
 });
 
-C.define({ id:"apple-branch", title:"Apples on the Branch", cat:"botanical-garden", season:"fall",
+C.define({ id:"apple-branch", title:"Apples on the Branch", cat:"botanical-garden", season:"fall", pad:.03,
   tags:["apples", "orchards", "harvest", "fruit"], talk:"What would you bake with a basket of apples?" }, function(g){
   var apple = function(x, y, r, lv){
     g.S(h.path([x, y - r * .7]).C([x - r * .6, y - r * 1.2], [x - r * 1.2, y - r * .6], [x - r * 1.05, y + r * .2]).C([x - r * .9, y + r], [x - r * .3, y + r * 1.1], [x, y + r * .85])
@@ -342,10 +342,12 @@ C.define({ id:"apple-branch", title:"Apples on the Branch", cat:"botanical-garde
     g.L(h.line([x, y - r * .7], [x + r * .1, y - r * 1.15]), lv);
     g.D(h.path([x - r * .7, y - r * .1]).Q([x - r * .6, y - r * .5], [x - r * .3, y - r * .6]).open(), 3);
   };
-  g.S(h.path([20, 120]).C([200, 150], [380, 110], [580, 60]).L([580, 90]).C([380, 140], [200, 180], [20, 150]).Z());
-  var ap = g.at([[170, 300, 80], [360, 280, 86], [490, 230, 64]], [[190, 320, 96], [390, 300, 100]], [[220, 340, 120], [400, 330, 110]]);
-  ap.forEach(function(a){ g.L(h.line([a[0], 150 - (a[0] - 20) * .08], [a[0] + 8, a[1] - a[2] * 1.1])); });
-  [[110, 150, 60, 260], [290, 130, 340, 220], [450, 110, 540, 150]].slice(0, g.at(3, 2, 1)).forEach(function(l){ leafV(g, [l[0], l[1]], [l[2], l[3]], 56, .2); });
+  /* a branch that climbs from the lower left, so the apples hang at different heights and the picture fills its box */
+  var under = function(x){ return 110 + (x - 20) * .32; };
+  g.S(h.path([20, 70]).C([200, 120], [380, 170], [580, 250]).L([580, 290]).C([380, 210], [200, 160], [20, 110]).Z());
+  var ap = g.at([[170, 330, 80], [350, 420, 86], [490, 500, 64]], [[190, 340, 96], [390, 450, 100]], [[230, 380, 120], [410, 500, 110]]);
+  ap.forEach(function(a){ g.L(h.line([a[0], under(a[0])], [a[0] + 8, a[1] - a[2] * 1.1])); });
+  [[110, 130, 60, 270], [290, 170, 340, 290], [450, 215, 540, 290]].slice(0, g.at(3, 2, 1)).forEach(function(l){ leafV(g, [l[0], l[1]], [l[2], l[3]], 56, .2); });
   ap.forEach(function(a){ apple(a[0], a[1], a[2], 1); });
 });
 
@@ -376,7 +378,7 @@ C.define({ id:"strawberries", title:"Fresh Strawberries", cat:"botanical-garden"
   set.forEach(function(b){ berry(b[0], b[1], b[2], b[3]); });
 });
 
-C.define({ id:"pumpkin-patch", title:"The Pumpkin Patch", cat:"botanical-garden", season:"fall",
+C.define({ id:"pumpkin-patch", title:"The Pumpkin Patch", cat:"botanical-garden", season:"fall", pad:.02,
   tags:["pumpkins", "autumn", "harvest"], talk:"What does autumn smell like to you?" }, function(g){
   var pumpkin = function(x, y, rx, ry, lv){
     g.S(h.smooth([[x, y - ry], [x + rx * .7, y - ry * .96], [x + rx, y - ry * .2], [x + rx * .92, y + ry * .6], [x + rx * .5, y + ry], [x, y + ry * .92], [x - rx * .5, y + ry], [x - rx * .92, y + ry * .6], [x - rx, y - ry * .2], [x - rx * .7, y - ry * .96]]), lv);

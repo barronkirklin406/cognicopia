@@ -80,18 +80,18 @@
   function timeline(r, opts){
     opts = opts || {};
     var ok = keep(opts.allowed), d = deck(r, 8, opts), who = d.person, by = who.birthYear, late = r.stage === "late";
-    var rows = [{ year:by, head:"Born", sub:"", kind:"mile" }, { year:by + 10, head:"Ten years old", sub:"The years remembered best begin", kind:"mile" }];
+    var rows = [{ year:by, head:"Born", sub:"", kind:"mile" }, { year:by + 7, head:"Seven years old", sub:"The years remembered best begin", kind:"mile" }];
     var seen = {};
     d.cards.forEach(function(c){
       var s = c.song;
-      if (s && !seen[s.year] && s.year >= by + 5 && s.year <= by + 30 && ok(s.title + " " + s.artist)){ seen[s.year] = 1; rows.push({ year:s.year, head:s.title, sub:s.artist, kind:"song" }); }
+      if (s && !seen[s.year] && s.year >= by + 7 && s.year <= by + 28 && ok(s.title + " " + s.artist)){ seen[s.year] = 1; rows.push({ year:s.year, head:s.title, sub:s.artist, kind:"song" }); }
       (c.refs || []).forEach(function(ref){
         var m = /\((19\d\d)\)|\bnew in (19\d\d)|\bof (19\d\d)\b/.exec(ref), y = m ? +(m[1] || m[2] || m[3]) : 0;
-        if (y && !seen[y] && y >= by + 5 && y <= by + 30 && ok(ref)){ seen[y] = 1; rows.push({ year:y, head:ref.replace(/\s*\((19\d\d)\)|,?\s*new in 19\d\d|\s+of 19\d\d/g, "").replace(/^the\s/, "The "), sub:"New then", kind:"thing" }); }
+        if (y && !seen[y] && y >= by + 7 && y <= by + 28 && ok(ref)){ seen[y] = 1; rows.push({ year:y, head:ref.replace(/\s*\((19\d\d)\)|,?\s*new in 19\d\d|\s+of 19\d\d/g, "").replace(/^the\s/, "The "), sub:"New then", kind:"thing" }); }
       });
     });
     var middle = rows.slice(2).sort(function(a, b){ return a.year - b.year; }).slice(0, late ? 3 : 7);
-    rows = rows.slice(0, late ? 1 : 2).concat(middle, late ? [] : [{ year:by + 30, head:"Thirty years old", sub:"Those years, in their own words", kind:"mile" }]);
+    rows = rows.slice(0, late ? 1 : 2).concat(middle, late ? [] : [{ year:by + 28, head:"Twenty-eight years old", sub:"Those years, in their own words", kind:"mile" }]);
     return { name:who.name, born:by, bump:who.bump, place:who.placeLabel || "", rows:rows };
   }
   /* ---------- memory map (for the resident and staff together) ---------- */

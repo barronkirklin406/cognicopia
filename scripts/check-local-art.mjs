@@ -333,6 +333,7 @@ if (PY){
   const rep = fs.existsSync(path.join(out, "report.json")) ? JSON.parse(fs.readFileSync(path.join(out, "report.json"), "utf8")) : { rows: [] };
   ok(r.code === 0 && j.designs === C.designs().length && j.keep + j.upgrade === j.designs && j.keep === C.designs().filter(d => LA.GEOMETRIC.includes(d.cat)).length, "the library review covers every design, and keeps exactly the geometric ones: " + JSON.stringify(j));
   ok(rep.rows.length === j.designs && rep.rows.every(x => x.tiers.length === 3 && Array.isArray(x.problems) && x.meets_standards === !x.problems.length), "each design is measured at all three tiers, with its problems named");
+  ok(j.meet === j.designs, `every design meets the measured print standards (${j.meet} of ${j.designs}; the library was 145 of 150 until November 18, 2026)`);
   ok(fs.existsSync(path.join(out, "index.html")), "and the review page is written");
 }
 

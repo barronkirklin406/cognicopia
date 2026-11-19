@@ -130,11 +130,11 @@
   function context() { var c = null; try { c = host.context ? host.context() : null; } catch (e) { c = null; } return c || {}; }
   function say(msg) { if (host.notify) host.notify(msg); else if (root.alert) root.alert(msg); }
 
-  /* the years a person's own young adulthood fell in, from a birth year (the reminiscence bump), kept to 1901-1989 */
+  /* the years a person was 7 to 28, from a birth year (assets/services/eraWindow.js), kept to 1901-1989 */
   function eraFromBirthYear(y) {
     y = parseInt(y, 10);
     if (!(y > 1850 && y < 2010)) return null;
-    var a = Math.max(1901, y + 10), b = Math.min(1989, y + 35);
+    var a = Math.max(1901, y + 7), b = Math.min(1989, y + 28);
     return a <= b ? [a, b] : null;
   }
 

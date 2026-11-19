@@ -410,7 +410,7 @@ try {
     const on2 = await a.$$eval('input[name="mix"]:checked', b => b.map(x => x.value));
     ok(["hometown", "songs", "twenty"].every(k => on2.includes(k)), `pressing it again offers the next three: where she comes from, her songs and the year she turned twenty (${on2.join(", ")})`);
     const second = await everyPage();
-    ok(/Tell me about Scobey/.test(second) && /1953 to 1963/.test(second) && /Patsy Cline/.test(second) && /1958/.test(second), "those pages name her town, the years she was 15 to 25, her favorite singer and the year she turned twenty");
+    ok(/Tell me about Scobey/.test(second) && /1945 to 1966/.test(second) && /Patsy Cline/.test(second) && /1958/.test(second), "those pages name her town, the years she was 7 to 28, her favorite singer and the year she turned twenty");
     /* a page for visits leaves out someone who has passed away */
     await mix(a, ["whoswho"]); await setPages(a, 2);
     const who = await everyPage();

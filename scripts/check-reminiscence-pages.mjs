@@ -3,7 +3,7 @@
    The three reminiscence pages' content (src/engine/ReminiscencePages.js), with the reminiscence engine:
      sensory cards   every conversation topic has an everyday scent with its safety line; each card carries an invitation, things
                      to look at, the engine's thing to hold and its safety note, a scent and a song from the years remembered best
-     your years      born first, then the songs and things that were new from about age 10 to 30 in year order, then age 30; the
+     your years      born first, then the songs and things that were new from age 7 to 28 in year order, then age 28; the
                      late stage is shorter; the region comes from the hometown
      memory map      six parts of a life (four at the late stage) holding what the form knows, short enough for a box
      care            nothing quizzes (the engine's own tone check), and the avoid list leaves a topic out everywhere
@@ -42,13 +42,13 @@ ok(noRadio.cards.length >= 3 && noRadio.cards.every(c => !/radio/i.test(JSON.str
 
 /* ---------- your years ---------- */
 const t = P.timeline(ruth, { today });
-ok(t.rows[0].head === "Born" && t.rows[0].year === 1938 && t.rows[t.rows.length - 1].year === 1968, "the timeline runs from the year they were born to the year they turned thirty");
+ok(t.rows[0].head === "Born" && t.rows[0].year === 1938 && t.rows[t.rows.length - 1].year === 1966, "the timeline runs from the year they were born to the year they turned twenty-eight");
 const mid = t.rows.slice(1, -1).map(r => r.year);
-ok(mid.every((y, i) => i === 0 || y >= mid[i - 1]) && t.rows.slice(2, -1).every(r => r.year >= 1943 && r.year <= 1968), "the songs and things are in year order, inside their years");
+ok(mid.every((y, i) => i === 0 || y >= mid[i - 1]) && t.rows.slice(2, -1).every(r => r.year >= 1945 && r.year <= 1966), "the songs and things are in year order, inside their years");
 ok(t.rows.filter(r => r.kind === "song").length >= 3 && t.place === "Midwest", `there are songs from those years, and the region comes from the hometown (${t.place})`);
 const late = P.timeline(Object.assign({}, ruth, { stage: "late" }), { today });
 ok(late.rows.length <= 4 && late.rows.length < t.rows.length, "the late stage's timeline is shorter");
-ok(t.bump[0] === 1948 && t.bump[1] === 1968, "the years remembered best are about 10 to 30 (1948 to 1968)");
+ok(t.bump[0] === 1945 && t.bump[1] === 1966, "the years remembered best are age 7 to 28 (1945 to 1966), the one era rule of assets/services/eraWindow.js");
 
 /* ---------- memory map ---------- */
 const m = P.memoryMap(ruth);

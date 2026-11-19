@@ -46,7 +46,7 @@ ok(!/HIPAA[- ]compliant|ensures? compliance|guarantee|zero liability|no liabilit
 ok(/supports your facility’s HIPAA privacy practices/.test(text), "it says it supports a facility's HIPAA privacy practices");
 ok(!/\p{Extended_Pictographic}/u.test(main), "no emoji on the page (line icons are used)");
 ok(!/under 30 seconds|in 30 seconds|saves? hours/i.test(text), "no time or saving that has not been measured");
-ok(/about a third of a second/.test(text) && /270 to 310 ms/.test(read("docs/ux-baseline.md")), "the one time given is the measured one in docs/ux-baseline.md");
+ok(/about three seconds to make/.test(text) && /about 3,200 ms/.test(read("docs/ux-baseline.md")), "the one time given is the measured one in docs/ux-baseline.md");
 ok(/slug: "staff-guide"/.test(read("scripts/site-nav.mjs")) && /staff-guide\//.test(read("resources/index.html")), "the Resources hub lists the guide");
 ok(/js\/staffGuide\.js/.test(read("sw.js")) && /resources\/staff-guide\/index\.html/.test(read("sw.js")), "the offline cache holds the guide and its script");
 ok(!/fetch\(|XMLHttpRequest|sendBeacon|WebSocket|localStorage|sessionStorage|indexedDB/.test(read("js/staffGuide.js").replace(/\/\*[\s\S]*?\*\//g, "")), "the guide's script makes no request and keeps nothing");

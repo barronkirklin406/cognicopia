@@ -8,7 +8,7 @@
      flag       a print marked as a staff document does not move the count at 49; the same print without the mark does
    Made-up people only. Needs Playwright. Run: node scripts/check-staff-prints-ui.mjs
    ===================================================================== */
-import { loadPlaywright, serve } from "./lib/browser.mjs";
+import { loadPlaywright, serve, agreeToDialogs } from "./lib/browser.mjs";
 
 const { chromium } = loadPlaywright();
 const { srv, base } = await serve();
@@ -23,7 +23,7 @@ async function open(file, setup) {
   const ctx = await browser.newContext({ viewport: { width: 1366, height: 900 }, serviceWorkers: "block" });
   await ctx.addInitScript(() => { try { localStorage.setItem("cognicopia_eula_accepted", "true"); } catch (e) { /* ignore */ } window.print = () => { window.__printed = (window.__printed || 0) + 1; }; });
   const p = await ctx.newPage();
-  p.on("pageerror", e => errors.push(e.message)); p.on("dialog", d => d.accept());
+  p.on("pageerror", e => errors.push(e.message)); p.on("dialog", d => d.accept()); await agreeToDialogs(p);
   p.on("console", m => { if (m.type() === "error") errors.push("console: " + m.text().slice(0, 140)); });
   p.on("request", r => { const u = r.url(); if (!u.startsWith(base) && !/^(data|blob|about):/.test(u)) foreign.push(u); });
   await p.goto(base + file, { waitUntil: "load" }); await p.waitForTimeout(1200);

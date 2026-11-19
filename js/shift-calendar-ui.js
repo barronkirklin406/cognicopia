@@ -268,7 +268,7 @@ const ShiftCalUI = (function () {
     else S.day = C.addDays(S.day, (S.view === "week" ? 7 : 1) * dir);
     paint();
   }
-  function onClick(e) {
+  async function onClick(e) {
     const dayBtn = e.target.closest("[data-day]");
     if (dayBtn) { goTo(dayBtn.getAttribute("data-day"), true); const h = q("#shcDayH"); if (h && window.matchMedia && !window.matchMedia("(min-width:1500px)").matches) h.scrollIntoView({ block: "start", behavior: "smooth" }); return; }
     const b = e.target.closest("button"); if (!b) return;
@@ -287,7 +287,7 @@ const ShiftCalUI = (function () {
       return change(C.setSlotNeed(cal, S.day, sh, n));
     }
     if (act === "copyweek") { const next = C.addDays(S.day, 7); if (change(C.copyWeek(cal, S.day, next))) { toast("This week's people are on next week too. Check the days that differ."); } return; }
-    if (act === "rmstaff") { if (!confirm("Remove " + initialsOf(b.getAttribute("data-staff")) + " from the list and from every shift?")) return; return change(C.removeStaff(cal, b.getAttribute("data-staff"))); }
+    if (act === "rmstaff") { if (!(await CogniDialog.ask("Remove " + initialsOf(b.getAttribute("data-staff")) + " from the list and from every shift?"))) return; return change(C.removeStaff(cal, b.getAttribute("data-staff"))); }
     if (act === "sample") { let next = cal; C.sampleStaff().forEach(s => { const r = C.addStaff(next, { initials: s[0], role: s[1], skills: s[2] }); if (!r.error) next = r; }); return change(next, "Fictional sample staff added. Remove them any time."); }
   }
   function onChange(e) {

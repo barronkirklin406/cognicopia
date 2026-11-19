@@ -16,7 +16,7 @@ import os from "os";
 import path from "path";
 import vm from "vm";
 import { spawnSync } from "child_process";
-import { loadPlaywright, serve, ROOT, agreed } from "./lib/browser.mjs";
+import { loadPlaywright, serve, ROOT, agreed, agreeToDialogs } from "./lib/browser.mjs";
 
 const problems = [], notes = []; let passed = 0;
 const ok = (c, m) => { if (c) passed++; else problems.push(m); };
@@ -126,7 +126,7 @@ try {
   const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 }, acceptDownloads: true, serviceWorkers: "block" }); await agreed(ctx);
   const p = await ctx.newPage();
   p.on("pageerror", e => errors.push(e.message));
-  p.on("dialog", d => d.accept());                      // "export data for ALL residents. Proceed?"
+  p.on("dialog", d => d.accept()); await agreeToDialogs(p);                      // "export data for ALL residents. Proceed?"
   p.on("request", r => { const u = r.url(); if (!u.startsWith(base) && !u.startsWith("data:") && !u.startsWith("blob:")) foreign.push(u); });
   await p.goto(base + "index.html"); await p.waitForTimeout(500);
   await p.evaluate(list => { window.print = () => {}; list.forEach(x => localStorage.setItem("cognicopia_resident_" + x.id, JSON.stringify(x))); localStorage.setItem("cognicopia_gen_count", "0"); }, RESIDENTS);

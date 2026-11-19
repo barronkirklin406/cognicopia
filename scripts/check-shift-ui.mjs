@@ -27,7 +27,7 @@
 import fs from "fs";
 import os from "os";
 import path from "path";
-import { loadPlaywright, serve } from "./lib/browser.mjs";
+import { loadPlaywright, serve, agreeToDialogs } from "./lib/browser.mjs";
 
 const { chromium } = loadPlaywright();
 const { srv, base } = await serve();
@@ -45,7 +45,7 @@ const open = async (w = 1366, h = 1000) => {
   await ctx.addInitScript(() => { window.print = () => { window.__printed = (window.__printed || 0) + 1; }; });   // the print window is not what is tested
   const p = await ctx.newPage();
   p.on("pageerror", e => errors.push(e.message));
-  p.on("dialog", d => d.accept());                          // confirm() prompts: the person agrees
+  p.on("dialog", d => d.accept()); await agreeToDialogs(p);                          // confirm() prompts: the person agrees
   return p;
 };
 /* the board opens from "Notes & tasks" on the calendar (the Shift board became a calendar first, November 2026) */

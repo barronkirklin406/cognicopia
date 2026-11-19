@@ -375,12 +375,12 @@ C.define({ id:"butter-churn", title:"The Butter Churn", cat:"nostalgic-heritage"
   tags:["farm", "kitchen", "dairy", "handwork"], talk:"What tastes best with fresh butter?" }, function(g){
   g.S(h.rrect(290, 60, 20, 240, 8));
   g.K(h.circle(300, 60, 18));
-  g.S(h.mirror([[300, 300], [370, 302], [410, 480], [420, 700], [400, 760], [300, 764]], 300));
-  g.S(h.ellipse(300, 300, 70, 16));
-  g.L(h.path([222, 400]).Q([300, 420], [378, 400]).open());
-  g.L(h.path([202, 620]).Q([300, 646], [398, 620]).open());
-  if (g.lvl >= 2) [250, 300, 350].forEach(function(x){ g.D(h.line([x + (x - 300) * .1, 316], [x + (x - 300) * .3, 756])); });
-  if (g.lvl >= 2){ g.S(h.path([470, 700]).L([470, 620]).Q([470, 590], [500, 590]).L([540, 590]).Q([570, 590], [570, 620]).L([570, 700]).Z()); g.S(h.ellipse(520, 700, 60, 12)); }
+  g.S(h.mirror([[300, 300], [400, 302], [455, 480], [470, 700], [445, 760], [300, 764]], 300));
+  g.S(h.ellipse(300, 300, 100, 20));
+  g.L(h.path([200, 400]).Q([300, 424], [400, 400]).open());
+  g.L(h.path([172, 620]).Q([300, 650], [428, 620]).open());
+  if (g.lvl >= 2) [240, 300, 360].forEach(function(x){ g.D(h.line([x + (x - 300) * .15, 316], [x + (x - 300) * .45, 756])); });
+  if (g.lvl >= 2){ g.S(h.path([510, 700]).L([510, 620]).Q([510, 590], [540, 590]).L([580, 590]).Q([610, 590], [610, 620]).L([610, 700]).Z()); g.S(h.ellipse(560, 700, 60, 12)); }
 });
 
 C.define({ id:"porch-swing", title:"The Porch Swing", cat:"nostalgic-heritage",

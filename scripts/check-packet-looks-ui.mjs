@@ -51,6 +51,9 @@ async function packet(first, stage, force, simplified) {
   await p.evaluate(f => { window.__look = f; if (!Doc.prototype.__real) Doc.prototype.__real = Doc.prototype.setLook;
     // force a look for this one packet, the way setLook would choose it: never past the late stage's or a simplified layout's plain look
     Doc.prototype.setLook = function (s) { this.__real(s); if (window.__look && !(this.stage === "late" || this.simplifiedLayout)) this.look = window.__look; return this; }; }, force || "");
+  /* Since November 19, 2026 every click makes a new packet (the day's version moves on, and the "Trace and Talk" page differs each time). This
+     check compares one packet in several looks, so it holds the version still and leaves that page out. */
+  await p.evaluate(() => { window.bumpDailyVariant = () => 0; document.querySelectorAll("input.act").forEach(c => { if (c.value === "hybrid") c.checked = false; }); });
   await p.fill("#first", first); await p.fill("#born", "1938"); await p.fill("#hobbies", "gardening, baking");
   await p.check(`input[name="stage"][value="${stage}"]`);
   const box = await p.$("#simplifiedLayout"); if (box) { if (simplified) await box.check(); else await box.uncheck(); }
@@ -109,9 +112,10 @@ doc = fitz.open(sys.argv[1]); print(json.dumps({"pages": [p.get_text() for p in 
     try { return JSON.parse(execFileSync("python3", ["-c", PAGES, tmp], { encoding: "utf8" })); } finally { fs.unlinkSync(tmp); }
   }
   const mid = await withPages("middle");
-  const pageOf = (r, re) => r.pages.filter(x => re.test(x));
+  /* the Staff Companion Sheet (page 1 since November 18, 2026) lists every page by its title, so it is left out when a page is looked for by its title */
+  const pageOf = (r, re) => r.pages.filter(x => !/^\s*For Staff/.test(x) && re.test(x));
   const years = pageOf(mid, /Your Years/), map = pageOf(mid, /My Memory Map/), cards = pageOf(mid, /Sensory Memory Cards/);
-  ok(years.length === 1 && /1938/.test(years[0]) && /1968/.test(years[0]) && /Born/.test(years[0]) && /Midwest/.test(years[0]), "Your years prints on one sheet, from the year they were born to thirty, with their region");
+  ok(years.length === 1 && /1938/.test(years[0]) && /1966/.test(years[0]) && /Born/.test(years[0]) && /Midwest/.test(years[0]), "Your years prints on one sheet, from the year they were born to thirty, with their region");
   ok(map.length === 1 && /Dubuque/.test(map[0]) && /Walter/.test(map[0]) && /gardening/.test(map[0]) && /Every answer is welcome/.test(map[0]), "the memory map holds what the form knows, and invites without testing");
   ok(cards.length >= 1 && cards.length <= 2 && cards.every(x => !/PREPARED ESPECIALLY FOR/.test(x)) && /To smell/.test(cards.join(" ")) && /never to eat/.test(cards.join(" ")) && /To hold/.test(cards.join(" ")),
     `the sensory cards are for staff (no name banner), with a thing to hold and a scent with its safety line, two to a sheet (${cards.length} sheets for 4 cards)`);

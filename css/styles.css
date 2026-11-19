@@ -1459,7 +1459,7 @@ html.cg-night-shift:root .ht-panel{background:#211910;border-color:#684a26;borde
 html.cg-night-shift:root .ht-panel :is(h2,h3,p,li,span){color:#ffedcc !important}
 html.cg-night-shift:root .ht-panel .ht-note,html.cg-night-shift:root .dc-row .dc-why{color:#f1d7a8 !important}
 html.cg-night-shift:root body .dc-btn:disabled{background:#2b2015;border-color:#684a26;color:#f1d7a8 !important}
-html.cg-night-shift:root body .dc-btn[aria-pressed="true"]{background:#6f4b16;color:#fff1cf !important}
+html.cg-night-shift:root body .dc-btn[aria-pressed="true"]{background:#5f3f10;color:#fff1cf !important}
 @media (prefers-reduced-motion:reduce){html:root body .ht-pill{transition:none}html:root body .ht-pill:is(:hover,:active){transform:none}}
 @media print{.ht,.dc-row{display:none !important}}
 

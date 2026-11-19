@@ -9,7 +9,7 @@
      Reminiscence card   a conversation card from the reminiscence engine (assets/services/reminiscenceEngine.js): an
                          invitation, three ways in, a song from the years she remembers best, something to hold
      Word search         the packet engine's word search (src/pcg): a true square grid, the words to find
-     Memory timeline     her years, from the same engine's own "reminiscence bump" (about ages 10 to 30) and the years of
+     Memory timeline     her years, from the same engine's own "reminiscence bump" (ages 7 to 28) and the years of
                          the songs on her cards
 
      node scripts/landing-example.mjs           write the three screens into index.html
@@ -110,8 +110,8 @@ function screenSearch() {
 /* ---------- 3. the memory timeline ---------- */
 function screenTimeline() {
   const songs = cards.map(c => c.song).filter((v, i, a) => a.findIndex(x => x.id === v.id) === i).sort((a, b) => a.year - b.year);
-  const rowsT = [{ year: who.birthYear, head: "Ruth is born", sub: "Born " + who.birthYear, kind: "mile" }, { year: who.bump[0], head: "Ten years old", sub: "The years she remembers best begin", kind: "mile" }]
-    .concat(songs.map(sg => ({ year: sg.year, head: sg.title, sub: sg.artist, kind: "song" })), [{ year: who.bump[1], head: "Thirty years old", sub: "Those years, in her own words", kind: "mile" }]);
+  const rowsT = [{ year: who.birthYear, head: "Ruth is born", sub: "Born " + who.birthYear, kind: "mile" }, { year: who.bump[0], head: "Seven years old", sub: "The years she remembers best begin", kind: "mile" }]
+    .concat(songs.map(sg => ({ year: sg.year, head: sg.title, sub: sg.artist, kind: "song" })), [{ year: who.bump[1], head: "Twenty-eight years old", sub: "Those years, in her own words", kind: "mile" }]);
   const ins = wrap("People remember the years from about 10 to 30 most readily. These songs were new then.", 46);
   let s = chrome("Memory timeline · Built from her birth year and her six cards", "BUILT FROM", ["Her birth year, " + who.birthYear, "Ages 10 to 30", "Songs of those years"], -1,
     "Example screen: a memory timeline made for Ruth, born " + who.birthYear + ", marking the years " + who.bump[0] + " to " + who.bump[1] + " she remembers best and the songs that were new then: " + songs.map(x => x.title + " (" + x.year + ")").join(", ") + ".");
@@ -122,7 +122,7 @@ function screenTimeline() {
   rowsT.forEach((r, i) => { const y = yOf(i);
     s += t(lx - 22, y + 5, r.year, "xw-year", 'text-anchor="end"') + `<circle cx="${lx}" cy="${y}" r="${r.kind === "mile" ? 8 : 6}" class="${r.kind === "mile" ? "xw-node xw-node-m" : "xw-node"}"/>` + t(lx + 24, y - 2, r.head, "xw-tl-h") + t(lx + 24, y + 15, r.sub, "xw-tl-s"); });
   const ly = PY + PH - 36;
-  s += `<rect x="${L}" y="${ly - 12}" width="26" height="16" rx="8" class="xw-bump"/>` + t(L + 36, ly + 1, "Ages 10 to 30: remembered most vividly", "xw-small");
+  s += `<rect x="${L}" y="${ly - 12}" width="26" height="16" rx="8" class="xw-bump"/>` + t(L + 36, ly + 1, "Ages 7 to 28: remembered most vividly", "xw-small");
   return s + `</svg>`;
 }
 
@@ -134,7 +134,7 @@ const sound = [];
 if (!ws.rows.every(r => r.length === ws.rows.length) || ws.size !== ws.rows.length) sound.push("the word search is not a true square");
 ws.list.forEach(w => { if (!ws.placed.some(p => p.word === w)) sound.push("the word " + w + " is not placed in the grid"); });
 cards.forEach(c => [c.invite].concat(c.starters, [c.touch.prompt]).forEach(x => { if (remCtx.CogniReminiscence.toneProblems(x).length) sound.push("tone problem in: " + x); }));
-if (who.bump[1] - who.bump[0] !== 20) sound.push("the reminiscence window is not 20 years");
+if (who.bump[1] - who.bump[0] !== 21) sound.push("the reminiscence window is not 21 years (ages 7 to 28)");
 const file = path.join(ROOT, "index.html"), html = fs.readFileSync(file, "utf8");
 const a = html.indexOf(START), b = html.indexOf(END);
 if (a < 0 || b < a) { console.error("landing example: index.html has no lp-example comments to fill"); process.exit(1); }

@@ -177,6 +177,7 @@
     { id: "odd", tools: ["packet"], name: "Which one doesn't belong", domain: "semantic", fw: ["cognitive"], stages: EM },
     { id: "color", tools: ["packet"], name: "Coloring page", domain: "creative", fw: ["montessori"], stages: ALL },
     { id: "mandala", tools: ["packet"], name: "Color the pattern", domain: "creative", fw: ["montessori"], stages: ALL },
+    { id: "hybrid", tools: ["packet"], name: "Trace and talk", domain: "creative", fw: ["reminiscence", "montessori"], stages: ALL },
     { id: "notes", tools: ["packet"], name: "Staff engagement notes", domain: "staff", fw: [], stages: ALL },
     { id: "clocks", tools: ["packet"], name: "What time is it?", domain: "orientation", fw: ["cognitive"], stages: EM },
     { id: "coins", tools: ["packet"], name: "Match the coins", domain: "semantic", fw: ["cognitive"], stages: EM },
@@ -390,7 +391,7 @@
      When the mode is on, every generator draws less and quieter: one subject, the late stage's type and line floors (the print standard
      itself never loosens: black on white, 3 pt lines or heavier, 0.5 in margins), no timed or competitive pages, and a calm reminiscence
      invitation in place of a puzzle. */
-  var CALM_KINDS = Object.freeze(["orientation", "silhouette", "pathtrace", "matching", "choose-ending", "sequence", "talk", "era", "lyric", "task", "people", "color", "mandala", "reminiscence-cards", "memory-lane", "lyric-sheet", "line-tracing", "letter-tracing", "chair-yoga", "notes", "facsupport"]);
+  var CALM_KINDS = Object.freeze(["orientation", "silhouette", "pathtrace", "matching", "choose-ending", "sequence", "talk", "era", "lyric", "task", "people", "color", "mandala", "hybrid", "reminiscence-cards", "memory-lane", "lyric-sheet", "line-tracing", "letter-tracing", "chair-yoga", "notes", "facsupport"]);
   var CALM = Object.freeze({ stage: "late", maxItemsPerPage: 3, prompt: "reminiscence", pace: "unhurried", kinds: CALM_KINDS });
   function calmOk(id) { return CALM_KINDS.indexOf(id) >= 0; }
 
@@ -452,7 +453,7 @@
 
   /* ---------- clinical tips and conversation starters ----------
      Printed on each page, for the person sitting beside the resident. {page} is "Page 2" or "this page";
-     {name} is the resident's first name or "them"; {topic} is the thing the page is about (only used when
+     {name} is the resident's first name or "the resident"; {topic} is the thing the page is about (only used when
      the page has one). Each carries the framework it comes from. */
   var CUES = [
     /* hand-under-hand and motor */
@@ -510,7 +511,7 @@
     crossword: "cross", cross: "cross", ladder: "ladder", anagram: "anagram", scramble: "anagram",
     sorting: "sort", oddone: "odd", odd: "odd", sequence: "sequence", "sequence-cards": "sequence",
     matching: "match", match: "match", assoc: "match", maze: "maze", "maze-motor": "maze", pathtrace: "trace", tracing: "trace",
-    orientation: "orient", "orientation-board": "orient", silhouette: "sensory", color: "color", mandala: "color", coloring: "color",
+    orientation: "orient", "orientation-board": "orient", silhouette: "sensory", color: "color", mandala: "color", hybrid: "talk", coloring: "color",
     talk: "talk", lifestory: "talk", era: "talk", trivia: "talk", sensorycards: "sensory", youryears: "talk", memorymap: "talk", completion: "complete", complete: "complete", sayings: "complete",
     provhint: "complete", lyric: "complete", choose: "choose", "choose-ending": "choose", staff: "staff",
     /* the Packet Builder's own activities */
@@ -524,7 +525,8 @@
 
   function fill(text, c) {
     c = c || {};
-    var name = c.name ? String(c.name) : "them";
+    /* no name: "the resident", with a capital where a sentence begins */
+    var name = function (m, off, all) { if (c.name) return String(c.name); var before = all.slice(0, off); return !before.trim() || /[.!?:]["\u201D]?\s*$/.test(before) ? "The resident" : "the resident"; };
     return text.replace(/\{page\}/g, c.page ? "Page " + c.page : "this page").replace(/\{name\}/g, name)
       .replace(/\{topic\}/g, c.topic ? String(c.topic) : "").replace(/\s+([.,!?])/g, "$1").replace(/\s{2,}/g, " ").trim();
   }

@@ -171,8 +171,8 @@
     for (var i = 0; i < bumps.length; i++) if (age >= bumps[i].from && age <= bumps[i].to) return bumps[i].w;
     return 0;
   }
-  /* How much of each decade falls in the years that stay vivid: ages 10 to 30
-     count fully, the years either side half or less. */
+  /* How much of each decade falls in the years that stay vivid: ages 7 to 28 count fully
+     (assets/services/eraWindow.js, the one era rule) and nothing outside them counts. */
   function eraOf(born, explicit, ix){
     var weights = {}, known = !!born || explicit.length > 0;
     ix.decades.forEach(function(d){

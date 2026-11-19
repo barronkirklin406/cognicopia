@@ -1023,7 +1023,7 @@ export function renderAuditDashboard(container: HTMLElement, defaultTimeframe: A
             isExporting = false;
           }, 2000);
         } catch (err: any) {
-          alert('PDF generation error: ' + (err.message || String(err)));
+          (window as any).CogniDialog ? (window as any).CogniDialog.notice('The PDF could not be made: ' + (err.message || String(err))) : console.error(err);
           btnPdf.innerHTML = '<span aria-hidden="true">📄</span> Export Audit PDF Report';
           btnPdf.disabled = false;
           isExporting = false;

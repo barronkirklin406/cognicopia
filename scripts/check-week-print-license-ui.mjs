@@ -12,7 +12,7 @@
 import crypto from "crypto";
 import fs from "fs";
 import path from "path";
-import { loadPlaywright, serve, ROOT, agreed } from "./lib/browser.mjs";
+import { loadPlaywright, serve, ROOT, agreed, agreeToDialogs } from "./lib/browser.mjs";
 import { issue } from "./issue-license.mjs";
 
 const { chromium } = loadPlaywright();
@@ -34,7 +34,7 @@ try {
   await ctx.addInitScript(() => { window.print = () => { window.__printed = (window.__printed || 0) + 1; }; });
   await ctx.route("**/src/config/license.js", r => r.fulfill({ contentType: "text/javascript", body: CFG }));
   const p = await ctx.newPage();
-  p.on("pageerror", e => errors.push(e.message)); p.on("dialog", d => d.accept());
+  p.on("pageerror", e => errors.push(e.message)); p.on("dialog", d => d.accept()); await agreeToDialogs(p);
   p.on("request", r => { const u = r.url(); if (!u.startsWith(base) && !/^(data|blob|about):/.test(u)) foreign.push(u); });
   await p.goto(base + "builder.html#/facility", { waitUntil: "load" }); await p.waitForTimeout(1800);
   await p.click("#fpTab-w-mcw"); await p.waitForTimeout(500);

@@ -115,7 +115,8 @@
   }
   function scrambleOf(w, r) { for (var t = 0; t < 20; t++) { var a = K.shuffle(w.split(""), r).join(""); if (a !== w) return a; } return w.split("").reverse().join(""); }
   function eventsNear(P, r, n, spread) {
-    var lo = P.decade - 25, hi = P.decade + 30, pool = EVENTS.filter(function (e) { return e.y >= lo && e.y <= hi && okWord(e.t, P); });
+    var W = root.CogniEra && P.born ? root.CogniEra.windowFor(P.born) : null;   // the years they were 7 to 28, when a birth year is known
+    var lo = W ? W.from : P.decade - 25, hi = W ? W.to : P.decade + 30, pool = EVENTS.filter(function (e) { return e.y >= lo && e.y <= hi && okWord(e.t, P); });
     if (pool.length < n + 2) pool = EVENTS.filter(function (e) { return okWord(e.t, P); });
     var out = [], used = {};
     K.shuffle(pool, r).forEach(function (e) {

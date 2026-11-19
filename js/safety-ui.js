@@ -92,7 +92,7 @@ async function handle(e, m, draw) {
     } else if (b.id === "saPrintBlank") deps.print([{ html: K.worksheetPage({ facility: deps.facility ? deps.facility() : "" }) }], "Rapid tier worksheet", { staff: true });
     else if (b.id === "saVerify") { const v = window.CogniAccessLog.verify(); S.msg = v.ok ? "The log checks out (" + v.count + " entries)." : "Problem found at entry " + v.brokenAt + "."; draw(); }
     else if (b.id === "saCsv") { dl("Cognicopia access log " + deps.todayISO() + ".csv", window.CogniAccessLog.csv(), "text/csv"); logEv("export", { note: "access log" }); }
-    else if (b.id === "saReset") { if (window.confirm("Start a new log? The old entries are removed from this computer. Download them first if you need them.")) { window.CogniAccessLog.reset(); S.msg = "A new log was started."; draw(); } }
+    else if (b.id === "saReset") { if ((await CogniDialog.ask("Start a new log? The old entries are removed from this computer. Download them first if you need them."))) { window.CogniAccessLog.reset(); S.msg = "A new log was started."; draw(); } }
     else if (b.id === "saBack" || b.id === "saBackFull") {
       const SS = deps.secure, pass = m.view.querySelector("#saPass").value, problem = SS.passphraseProblem(pass); if (problem) { err.textContent = problem; return; }
       const st = BD.readState(deps.store), since = b.dataset.kind === "full" ? null : st.lastBackupAt || null, now = new Date(), file = BD.makeBackup(deps.store, since, now), env = await SS.sealFile(file, pass, "diffbackup");

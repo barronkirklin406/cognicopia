@@ -537,7 +537,7 @@
     "html.cg-night-shift .cgpromo-card h2{color:#ffedcc}",
     "html.cg-night-shift .cgpromo-card .cgpromo-input{background:#2b2015;color:#ffedcc;border-color:#9b7136}",
     "html.cg-night-shift .cgpromo-btn,html.cg-night-shift .cgpromo-actions button,html.cg-night-shift .cgpromo-actions a{background:#2b2015;color:#ffedcc;border-color:#9b7136}",
-    "html.cg-night-shift .cgpromo-badge,html.cg-night-shift .cgpromo-actions .cgpromo-go{background:#6f4b16;color:#fff1cf;border-color:#d6a64b}",
+    "html.cg-night-shift .cgpromo-badge,html.cg-night-shift .cgpromo-actions .cgpromo-go{background:#5f3f10;color:#fff1cf;border-color:#d6a64b}",
     "html.cg-night-shift .cgpromo-note{background:#3a2a10;border-color:#d6a64b}",
     "html.cg-night-shift .cgpromo-more a{color:#ffedcc}",
     "html.cg-night-shift .cgpromo-status.is-ok{color:#b7e4c7}",

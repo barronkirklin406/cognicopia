@@ -11,7 +11,7 @@
 ## Rules it keeps
 
 - The era a resident's memories page draws on is the years they were 15 to 25, from their year of birth, the same rule as the packet tool. The era datasets for music, film, television and slang are a separate piece of work; this guide describes only what the tools do today.
-- The one time it gives, about a third of a second for one resident's packet, is the measured one in `docs/ux-baseline.md`. A time for a whole month has not been measured, so none is given.
+- The one time it gives, about three seconds for one resident's whole packet (the first page shows at once), is the measured one in `docs/ux-baseline.md`. A time for a whole month has not been measured, so none is given.
 - Line icons, no emoji. Every control is 52 px. No request leaves the page.
 
 ## Checks

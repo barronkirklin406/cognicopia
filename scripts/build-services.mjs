@@ -41,8 +41,8 @@ export function buildService(file){
 /* Files in assets/services/ that are written by hand: no TypeScript exists for them, and none is needed. They are sources, not build
    output, and they say so in their first lines. A file in that folder is either built from src/services/<name>.ts or listed here; any
    other file is a "sourceless build artifact" and fails the check (playbook Phase 1). */
-export const HAND_WRITTEN = ["auditLog.js", "censusImport.js", "dailyOps.js", "familyLifeDigest.js", "licenseManager.js", "nightShift.js",
-  "packetGenerator.js", "privacyExport.js", "residentTracker.js", "staffCompanion.js"];
+export const HAND_WRITTEN = ["auditLog.js", "censusImport.js", "dailyOps.js", "eraBanks.js", "eraWindow.js", "familyLifeDigest.js", "licenseManager.js", "nightShift.js",
+  "packetGenerator.js", "privacyExport.js", "residentTracker.js", "staffCompanion.js", "variety.js", "hybridSheets.js"];
 export function auditServiceFolder(){
   const problems = [], built = new Set(fs.readdirSync(SRC).filter(f => f.endsWith(".ts") && !f.endsWith(".d.ts")).map(f => f.replace(/\.ts$/, ".js")));
   for (const f of fs.readdirSync(OUT).filter(f => f.endsWith(".js")).sort()){

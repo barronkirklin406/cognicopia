@@ -174,8 +174,8 @@ ok(Object.keys(P.History.read()).every(k => Array.isArray(P.History.read()[k])),
   const h = JSON.parse(store[P.KEYS.history]); E.POOLS.forEach(k => ok(h[k].length <= Math.max(3, E.counts()[k]), `the ${k} history never outgrows its pool (${h[k].length} of ${E.counts()[k]})`)); }
 ok(P.entropy() !== P.entropy() && P.entropy().length >= 12, "the seed is new each time");
 { const a = new Set(); for (let i = 0; i < 200; i++) a.add(P.entropy()); ok(a.size === 200, "200 seeds, 200 different"); }
-ok(JSON.stringify(P.eraFromBirthYear(1938)) === "[1948,1973]" && P.eraFromBirthYear("x") === null, "a birth year gives the years they were young");
-ok(JSON.stringify(P.eraFromBirthYear(1975)) === "[1985,1989]" && JSON.stringify(P.eraFromBirthYear(1880)) === "[1901,1915]" && P.eraFromBirthYear(1985) === null, "the era window is held to 1901 to 1989, and there is none for someone born after 1979");
+ok(JSON.stringify(P.eraFromBirthYear(1938)) === "[1945,1966]" && P.eraFromBirthYear("x") === null, "a birth year gives the years they were young (born + 7 to + 28, the one era rule of November 18, 2026)");
+ok(JSON.stringify(P.eraFromBirthYear(1975)) === "[1982,1989]" && JSON.stringify(P.eraFromBirthYear(1880)) === "[1901,1908]" && P.eraFromBirthYear(1985) === null, "the era window is held to 1901 to 1989, and there is none for someone born after 1982");
 store[P.KEYS.history] = "{not json"; ok(Array.isArray(P.History.read().prompts), "a damaged history reads as empty and does no harm");
 P.Last.write("early", "music"); ok(P.Last.read().stage === "early" && P.Last.read().theme === "music", "the last choice is remembered");
 store[P.KEYS.last] = JSON.stringify({ stage: "<script>", theme: 5 }); ok(P.Last.read().stage === null && P.Last.read().theme === null, "an invalid remembered choice is ignored");

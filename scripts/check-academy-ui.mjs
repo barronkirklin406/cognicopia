@@ -24,7 +24,7 @@
    and npm run build skips it. Serves the repository on a free local port.
    Run: node scripts/check-academy-ui.mjs
    ===================================================================== */
-import { loadPlaywright, serve, agreed } from "./lib/browser.mjs";
+import { loadPlaywright, serve, agreed, agreeToDialogs } from "./lib/browser.mjs";
 
 const { chromium } = loadPlaywright();
 const { srv, base } = await serve();
@@ -38,7 +38,7 @@ const open = async (w = 1366, h = 900, extra = {}) => {
   const p = await ctx.newPage();
   p.on("pageerror", e => errors.push(e.message));
   p.on("request", r => { const u = r.url(); if (!u.startsWith(base) && !u.startsWith("data:") && !u.startsWith("blob:")) foreign.push(u); });
-  p.on("dialog", d => d.accept());
+  p.on("dialog", d => d.accept()); await agreeToDialogs(p);
   return p;
 };
 const go = async (p, hash = "#/academy", sel = "#acRoot") => { await p.goto(base + "builder.html" + hash); await p.waitForSelector(sel, { timeout: 10000 }); await p.waitForTimeout(250); };
