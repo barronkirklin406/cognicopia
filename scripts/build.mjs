@@ -343,6 +343,14 @@ step("Staff documents never count against the free packets: the Shift board's ha
   }
 });
 
+step("Printing a week or a month for a whole wing needs a facility license or a 30-day pilot: in the Packet Builder's Facility Portal the week and month print buttons open the license window with the reason, print nothing and spend no free packet without one, and print with a signed key (the example community, made-up people only).", () => {
+  try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-week-print-license-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
+  catch (e){
+    if (e.status === 2) return "skipped: Playwright is not installed here (see docs/dev-setup.md)";
+    throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message);
+  }
+});
+
 step("Resident Mode in Tablet Activities: only the activities and no link out, the search closed, kept on reload; a 2.5 second hold (mouse, Enter or a finger) to leave, a tap does nothing; a PIN kept as a salted hash, a wrong one refused (a real browser)", () => {
   try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-tablet-resident-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
   catch (e){

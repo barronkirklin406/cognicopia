@@ -11075,8 +11075,12 @@ const FacilityUI = (function(){
     const done = BookUI.print(pages, "Activity documentation summary - " + today, null, { staff:true });
     if (done) { audit("Printed activity documentation summaries", plural(list.length, "resident", "residents")); if (msg) msg.textContent = "Made " + plural(list.length, "page", "pages") + ". Choose Save as PDF in the print window to keep a copy."; }
   }
+  /* Printing for a whole wing, a week or a month at a time, is a facility feature (CLAUDE.md, assets/services/licenseManager.js):
+     a license or a 30-day pilot key, and it spends no free packet. needsFacility opens the license window and answers true when this computer may not. */
+  function facilityOnly(what){ return !isLicensed() && !!(window.CognicopiaLicense && window.CognicopiaLicense.needsFacility(what)); }
   function printWeek(){
     const w = wing(); if (!w || !can("print", w.id)) return;
+    if (facilityOnly("Printing a week of packets for a whole wing")) return;
     const sum = weekSummary(w);
     if (!sum.total){ toast("Nothing is scheduled for those groups that week."); return; }
     if (sum.total > MAX_PAGES){ toast(`That is ${sum.total} pages, more than one print can hold (${MAX_PAGES}). Print one master each, or fewer groups at a time.`); return; }
@@ -11087,6 +11091,7 @@ const FacilityUI = (function(){
   }
   function printMonth(){
     const w = wing(); if (!w || !can("print", w.id)) return;
+    if (facilityOnly("Printing a month of calendars for a whole wing")) return;
     const plan = readPlan(w, S.month), gs = printGroups(w).map(id => groupOf(w, id)).filter(g => g && plan.slots.some(s => s.group === g.id));
     if (!gs.length){ toast(`Nothing is scheduled in ${monthLabel(S.month)} for those groups.`); return; }
     const pages = gs.reduce((l, g) => l.concat(monthSheets(w, g).map(html => ({ html }))), []);

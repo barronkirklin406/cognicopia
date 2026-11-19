@@ -39,7 +39,8 @@ const UNLESS_DENIED = [
   [/HIPAA[- ]compliant/i, "\"HIPAA compliant\""],
   [/\bCMS[- ]compliant\b/i, "\"CMS compliant\""],
   [/(ensures?|guarantees?|assures?) (full |complete )?(regulatory |HIPAA |CMS )?compliance/i, "\"ensures compliance\""],
-  [/(directly )?satisf(y|ies) (the )?(HIPAA|CMS|F\d{3})/i, "\"satisfies\" a regulation"]
+  [/(directly )?satisf(y|ies) (the )?(HIPAA|CMS|F\d{3})/i, "\"satisfies\" a regulation"],
+  [/hand[- ]over[- ]hand/i, "\"hand-over-hand\" (every staff tip and page says hand-under-hand)"]
 ];
 const DENIAL = /\b(not|never|no|nor|neither|cannot|can't|isn't|aren't|doesn't|don't|without|rather than|nothing)\b/i;
 
@@ -68,6 +69,8 @@ ok(scanText("It ensures compliance with F679.").length > 0, "self-test: ensures 
 ok(scanText("It supports a facility’s privacy practices, but it does not by itself make a facility HIPAA compliant.").length === 0, "self-test: a denial is allowed");
 ok(scanText("No resident data leaves the device. It supports a facility's HIPAA privacy practices.").length === 0, "self-test: the approved wording is allowed");
 ok(scanText("The site does not claim to be CMS compliant.").length === 0, "self-test: a denied claim is allowed");
+ok(scanText("Level 1: Hand-over-hand guide for the first stroke.").length > 0, "self-test: hand-over-hand is caught");
+ok(scanText("Rest your hand beneath theirs: hand-under-hand, never hand-over-hand.").length === 0, "self-test: hand-under-hand is allowed, and a denial of hand-over-hand is allowed");
 ok(scanText("Contact Kirk Barron").length > 0 && scanText("Contact Cognicopia").length === 0, "self-test: a personal name is caught, the brand is not");
 
 /* ---------- the files ---------- */
