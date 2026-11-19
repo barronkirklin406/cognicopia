@@ -722,6 +722,12 @@ input:focus,select:focus,button:focus-visible{
   box-shadow:inset 0 0 0 1px var(--garden)}
 
 .crew{display:grid;gap:14px;margin-bottom:20px}
+.detailbox{margin-top:-6px}
+.detailrows{display:grid;gap:10px;margin-top:8px}
+.detailrow{display:grid;grid-template-columns:minmax(90px,1fr) 1.2fr 1.2fr;gap:10px;align-items:center}
+.detailrow .dname{font-weight:700}
+.detailrow label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+@media (max-width:640px){.detailrow{grid-template-columns:1fr}}
 .crewrow{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end}
 .crewrow>div{flex:1;min-width:180px}
 .crewrow label{font-size:15px}
@@ -6793,6 +6799,10 @@ html.cg-night-shift .lp-footer{border-color:#3d5147!important}
     <div class="field"><label for="pets">Names of pets they had
       <span class="sub">Separate with commas</span></label>
       <input type="text" id="pets" maxlength="400" autocomplete="off" placeholder="Rusty"></div>
+    <div class="field detailbox" id="petDetailBox" hidden>
+      <span class="sub">What kind of pet each one was. Optional: leave it blank if you are not sure.</span>
+      <div class="detailrows" id="petDetail"></div>
+      <input type="hidden" id="petInfo"></div>
     <div class="field"><label for="hobbies">Things they enjoyed doing
       <span class="sub">Separate with commas</span></label>
       <input type="text" id="hobbies" maxlength="400" autocomplete="off" placeholder="gardening, baking, church choir"></div>
@@ -6846,6 +6856,22 @@ html.cg-night-shift .lp-footer{border-color:#3d5147!important}
     <div class="field"><label for="sibs">Brothers and sisters
       <span class="sub">Separate with commas</span></label>
       <input type="text" id="sibs" maxlength="400" autocomplete="off" placeholder="Ruth, Clarence"></div>
+    <div class="field detailbox" id="sibDetailBox" hidden>
+      <span class="sub">Whether each one was a brother or a sister, and their place in the family. Optional: say only what you know, and the puzzles will not guess.</span>
+      <div class="detailrows" id="sibDetail"></div>
+      <input type="hidden" id="sibInfo"></div>
+    <div class="row">
+      <div class="field"><label for="carMake">First car: make <span class="sub">Optional</span></label>
+        <input type="text" id="carMake" maxlength="30" autocomplete="off" placeholder="Ford"></div>
+      <div class="field"><label for="carModel">First car: model <span class="sub">Optional</span></label>
+        <input type="text" id="carModel" maxlength="30" autocomplete="off" placeholder="Model A"></div>
+    </div>
+    <div class="row">
+      <div class="field"><label for="carYear">First car: year <span class="sub">Optional</span></label>
+        <input type="text" id="carYear" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="1952"></div>
+      <div class="field"><label for="carColor">First car: color <span class="sub">Optional</span></label>
+        <input type="text" id="carColor" maxlength="20" autocomplete="off" placeholder="green"></div>
+    </div>
   </fieldset>
 
   <fieldset>
@@ -8280,7 +8306,7 @@ function scrubProfile(r){
   const hit=v=>!allowed(r, String(v));
   const out={...r};
   for(const k of ["job","spouse","mil","faith","town","state","school",
-                  "firstcar","firstjob","mother"])
+                  "firstcar","firstjob","mother","carMake","carModel","carColor"])
     if(out[k] && hit(out[k])) out[k]="";
   for(const k of ["kids","pets","hobbies","favs","sibs"])
     if(Array.isArray(out[k])) out[k]=out[k].filter(v=>!hit(v));
@@ -9074,13 +9100,32 @@ function extractFamilyWords(r, maxLen){
   return out;
 }
 
+/* The resident's own words, read once for every activity (assets/services/personalLexicon.js): each has the letters it takes in a grid and
+   one clue that is true of exactly that answer. A topic to avoid is applied inside it, to the answer, the clue and the fact. */
+function lexFor(r){
+  if(!window.CogniLexicon) return {items:[],numbers:[],count:0,thin:true,born:0};
+  const key=JSON.stringify([r.first,r.born,r.stage,r.town,r.state,r.job,r.firstjob,r.sibs,r.sibInfo,r.pets,r.petInfo,r.kids,r.spouse,r.mother,
+    r.firstcar,r.carMake,r.carModel,r.carYear,r.carColor,r.hobbies,r.favs,r.avoid]);
+  if(r.__lexKey===key && r.__lex) return r.__lex;
+  const lex=CogniLexicon.build(r,{avoid:t=>!allowed(r,t), seed:r.first, date:new Date().toISOString().slice(0,10)});
+  try{ Object.defineProperty(r,"__lex",{value:lex,configurable:true,writable:true,enumerable:false}); Object.defineProperty(r,"__lexKey",{value:key,configurable:true,writable:true,enumerable:false}); }catch(e){}
+  return lex;
+}
+function lexItems(r,min,max){
+  const lex=lexFor(r);
+  const items=CogniLexicon.forPuzzle(lex,{min,max,seed:lex.seed});
+  /* the first tier (family, pets, the car) is shuffled each click, so a long family list does not always fill the grid with the same names */
+  const t1=shuffle(items.filter(i=>i.tier===1)), rest=items.filter(i=>i.tier!==1);
+  return [...t1,...rest];
+}
 function personalWords(r, maxLen, extra){
-  const fam = extractFamilyWords(r, maxLen);
+  const lx=lexItems(r,3,maxLen).map(i=>i.grid);
+  const fam = extractFamilyWords(r, maxLen).filter(w=>!["FAMILY","HOME","LOVE","HEART","CHERISH"].includes(w) || lx.length<5);
   const pool = [r.town,(r.state||"").replace(/\s/g,""),
                 ...r.crew.map(p=>p.name),...r.pets,...r.hobbies,...r.favs,
                 r.mil,r.faith,...(extra||[])];
-  const out=[...fam];
-  const seen=new Set(fam);
+  const out=[...lx,...fam.filter(w=>!lx.includes(w))];
+  const seen=new Set(out);
   for(const raw of pool){
     if(!raw) continue;
     const w = foldAccents(raw).toUpperCase().replace(/[^A-Z]/g,"");
@@ -9761,6 +9806,11 @@ function staffPage(D,r,sel){
   const fam=[r.spouse,...r.kids].filter(Boolean);
   if(fam.length) lines.push("Family: "+fam.join(", "));
   if(r.pets.length) lines.push("Pets: "+r.pets.join(", "));
+  /* what the puzzles used, said the way the clues say it (assets/services/personalLexicon.js): only what the profile holds */
+  const sibs=lexFor(r).items.filter(i=>i.kind==="sibling").map(i=>i.answer+(i.phrase==="a brother or sister of yours"?"":" ("+i.phrase.replace(/^your /,"")+")"));
+  if(sibs.length) lines.push("Brothers and sisters: "+sibs.join(", "));
+  const car=[r.carMake,r.carModel].filter(Boolean).join(" ")||r.firstcar;
+  if(car) lines.push("First car: "+car+(r.carYear?" ("+r.carYear+")":""));
   if(r.hobbies.length) lines.push("Enjoyed: "+r.hobbies.slice(0,4).join(", "));
   if(r.holidays.length) lines.push("Holidays: "+r.holidays.map(h=>HOLIDAYS[h].label).join(", "));
   lines.push("Level: "+r.stage+" stage");
@@ -9770,6 +9820,7 @@ function staffPage(D,r,sel){
   D.gap(8);
   D.body("Known so far: "+known.n+" of 8 facts."+(known.next?" Next best question to ask the family: "+known.next:""),{size:16,gap:1.5,indent:18});
   if(known.n<3) D.body("Ask the family about work, hometown, and one joy before the next packet, so the pages can be made from "+r.goes+"'s own life.",{size:16,gap:1.5,indent:18});
+  else if(lexFor(r).thin&&window.CogniLexicon) D.body(CogniLexicon.staffNote(lexFor(r)),{size:16,gap:1.5,indent:18});
   if(D.skipped.length){
     D.gap(8);
     D.body("Not made this time: "+D.skipped.join(", ")+". Make the packet again, or leave that page out.",{size:16,gap:1.5,indent:18});
@@ -9860,17 +9911,21 @@ function staffPage(D,r,sel){
 }
 
 /* Draw a finished word-search page from a word list already chosen. */
-function wordGrid(D,s,words,title,intro){
+function wordGrid(D,s,words,title,intro,hints){
   const {grid,placed}=wordSearch(words,s.grid,s.dirs);
   D.heading(title);
   D.body(intro,{size:17});
   D.gap(18);
-  const size=s.grid, list=[...placed].sort();
+  /* hints: grid word -> its clue, for the personal words only. A hint is printed only for a word that was really placed, and the
+     list is built from the placed words, so no hint can name a word that is not in the grid. */
+  const hintList=hints ? placed.filter(w=>hints[w]).sort().slice(0,5) : [];
+  const size=s.grid, list=[...placed].filter(w=>!hintList.includes(w)).sort();
+  window.__lastWordSearch={grid:grid.map(rw=>rw.join("")),placed:[...placed],hints:Object.fromEntries(hintList.map(w=>[w,hints[w]]))};
   /* The list goes in columns under the grid. The grid takes what room is left, so the list and the
      page's tip never run into one another. */
   const rows=Math.max(1,Math.ceil(list.length/Math.min(3,Math.ceil(list.length/4)||1)));
   const cols=Math.max(1,Math.ceil(list.length/rows));
-  const lead=Math.round(Math.max(18,D.floor)*1.5), listH=34+30+lead*rows;
+  const lead=Math.round(Math.max(18,D.floor)*1.5), listH=34+30+lead*(list.length?rows:0)+(hintList.length?34+hintList.length*lead:0);
   const cell=Math.max(16,Math.min(30,(PW-2*MARGIN)/size,(D.bottom()-D.y-listH-10)/size));
   const x0=(PW-cell*size)/2, y0=D.y+cell*0.78;
   D.d.setFont("helvetica","bold"); D.d.setFontSize(Math.min(s.cell,Math.floor(cell*0.78)));
@@ -9878,7 +9933,7 @@ function wordGrid(D,s,words,title,intro){
     D.d.text(grid[rr][cc], x0+cc*cell+cell/2, y0+rr*cell, {align:"center"});
   D.y=y0+(size-1)*cell+34;
   D.d.setFont("helvetica","bold"); D.d.setFontSize(18);
-  D.d.text("Find these words:",MARGIN,D.y); D.y+=30;
+  D.d.text(hintList.length ? "Find these words. Some have a hint:" : "Find these words:",MARGIN,D.y); D.y+=30;
   D.d.setFont("helvetica","normal"); D.d.setFontSize(18);
   /* Columns were a fixed 173pt apart, so the third column started at
      x=580 on a 612pt sheet and any word in it ran off the paper. Divide
@@ -9889,7 +9944,17 @@ function wordGrid(D,s,words,title,intro){
     const col=Math.floor(i/rows), row=i%rows;
     D.d.text(w,MARGIN+col*colW,top+row*lead);
   });
-  D.y=top+lead*rows;
+  D.y=top+lead*(list.length?rows:0);
+  if(hintList.length){
+    D.y+=Math.round(lead*0.3);
+    D.d.setFont("helvetica","normal"); D.d.setFontSize(18);
+    hintList.forEach(w=>{
+      D.d.setFont("helvetica","bold"); D.d.text(w,MARGIN,D.y);
+      const wide=D.d.getTextWidth(w)+14;
+      D.d.setFont("helvetica","normal"); D.d.text("("+hints[w].toLowerCase()+")",MARGIN+wide,D.y);
+      D.y+=lead;
+    });
+  }
   D.finish();
   return placed;
 }
@@ -9918,8 +9983,12 @@ function wordSearchPage(D,r,s,theme,extraWords,title){
     if(g.length){ const w=g.shift(); if(!extra.includes(w)) extra.push(w); }
   }
   const words=[...personal.slice(0,s.words-extra.length),...extra].slice(0,s.words);
-  return wordGrid(D,s,words,title||"Words From Your Life",
-                  "Circle each word as you find it.");
+  /* a hint for a family word, a pet, the car and the hometown, early stage only; each is the clue the lexicon wrote for that exact word */
+  const hints={};
+  if(r.stage==="early"){ for(const it of lexItems(r,3,s.maxWord)) if(it.tier===1||it.kind==="town"||it.kind==="work") hints[it.grid]=it.clue; }
+  const thin=lexFor(r).thin;
+  return wordGrid(D,s,words,title||(thin?"Words to Find":"Words From Your Life"),
+                  "Circle each word as you find it.",hints);
 }
 
 function peoplePage(D,r,theme){
@@ -10982,7 +11051,57 @@ function crissCross(words,size){
   return placed.length>=3 ? {g,placed,size} : null;
 }
 
+/* Early stage: a crossword with a clue for every answer, built only from the resident's own words (assets/services/personalLexicon.js),
+   because those are the only answers this tool holds a true clue for. A resident with fewer than four such words gets the fit-the-words
+   page below instead, so a clue is never made up to fill a grid. The answer key goes to the staff sheet, never this page. */
+function clueCrossPage(D,r,s,theme){
+  if(r.stage!=="early" || !window.CogniLexicon || !CogniLexicon.stageAllows("early","crossword")) return null;
+  const gridSize=Math.min(11,s.crossSize), maxLen=Math.min(8, gridSize-1);   // a smaller grid, so the clues fit on the same sheet in 18 pt
+  const items=lexItems(r,3,maxLen), byGrid={};
+  items.forEach(i=>{ byGrid[i.grid]=i; });
+  const built=crissCross(items.map(i=>i.grid).slice(0,Math.min(7,Math.max(4,s.crossN))), gridSize);
+  if(!built || built.placed.length<4) return null;
+  const {g,placed,size}=built;
+  /* numbers: a square where a word starts gets one number, shared by an across and a down word that start together */
+  const starts=[]; placed.slice().sort((a,b)=>a.r-b.r||a.c-b.c).forEach(pl=>{ if(!starts.some(t=>t.r===pl.r&&t.c===pl.c)) starts.push({r:pl.r,c:pl.c}); });
+  const numOf=(r0,c0)=>starts.findIndex(t=>t.r===r0&&t.c===c0)+1;
+  const lead=24, colW=(PW-2*MARGIN)/2-10;
+  D.d.setFont("helvetica","normal"); D.d.setFontSize(18);
+  const make=dir=>placed.filter(pl=>pl.d===dir).sort((a,b)=>numOf(a.r,a.c)-numOf(b.r,b.c)).map(pl=>{
+    const it=byGrid[pl.w]; return {pl,lines:D.d.splitTextToSize(numOf(pl.r,pl.c)+". "+it.clue+" ("+pl.w.length+")",colW)};
+  });
+  const across=make("H"), down=make("V");
+  const linesOf=l=>l.reduce((n,x)=>n+x.lines.length,0), need=34+Math.max(linesOf(across),linesOf(down))*lead+10*Math.max(across.length,down.length);
+  if((D.bottom()-230-need-30)/size<19) return null;          // not enough room even before the heading: the fit-the-words page is made instead
+  D.start(theme);
+  D.heading("Crossword");
+  D.body("Each clue is about your own life. Write each answer in the squares. The number in brackets is how many letters it has.",{size:17});
+  D.gap(16);
+  const cell=Math.max(17,Math.min(30,(PW-2*MARGIN)/size,(D.bottom()-D.y-need-30)/size));
+  const x0=(PW-cell*size)/2, y0=D.y;
+  D.d.setLineWidth(1.4); D.d.setDrawColor(0);
+  for(let rr=0;rr<size;rr++)for(let cc=0;cc<size;cc++){ if(g[rr][cc]) D.d.rect(x0+cc*cell,y0+rr*cell,cell,cell); }
+  D.d.setFont("helvetica","bold"); D.d.setFontSize(Math.max(11,Math.round(cell*0.36)));
+  starts.forEach((t,i)=>D.d.text(String(i+1),x0+t.c*cell+2.5,y0+t.r*cell+Math.max(11,Math.round(cell*0.36))*0.85));
+  D.y=y0+size*cell+30;
+  const top=D.y;
+  const col=(list,x,label)=>{
+    let y=top; D.d.setFont("helvetica","bold"); D.d.setFontSize(18); D.d.text(label,x,y); y+=lead;
+    D.d.setFont("helvetica","normal");
+    list.forEach(c=>{ c.lines.forEach(l=>{ D.d.text(l,x,y); y+=lead; }); y+=6; });
+    return y;
+  };
+  const y1=col(across,MARGIN,"Across"), y2=col(down,MARGIN+colW+20,"Down");
+  D.y=Math.max(y1,y2);
+  window.__lastCrossword={grid:g.map(rw=>rw.map(c=>c||"").join("|")),placed:placed.map(pl=>({w:pl.w,r:pl.r,c:pl.c,d:pl.d,n:numOf(pl.r,pl.c),clue:byGrid[pl.w].clue}))};
+  D.finish();
+  return placed.map(pl=>numOf(pl.r,pl.c)+" "+(pl.d==="H"?"across":"down")+": "+pl.w+"  ("+byGrid[pl.w].clue+")");
+}
+
 function crossPage(D,r,s,theme){
+  const clued=clueCrossPage(D,r,s,theme);
+  if(Array.isArray(clued)) return clued;
+  const started=!!(clued&&clued.started);
   const maxLen=Math.min(9, s.crossSize-1);
   // Shuffle each source before drawing, or the grid comes out the same
   // every month for the same resident.
@@ -11000,7 +11119,7 @@ function crossPage(D,r,s,theme){
   if(!built) return null;
   const {g,placed,size}=built;
 
-  D.start(theme);
+  if(!started) D.start(theme);
   D.heading("Fit the Words In");
   D.body(s.hint
     ? "Each word below fits one of the spaces. The first letter is already there."
@@ -12006,6 +12125,54 @@ function saveBlob(blob, name){
   setTimeout(()=>URL.revokeObjectURL(url), 1000);
 }
 
+/* A brother or sister's role and place in the family, and a pet's kind, are kept in two plain fields (sibInfo, petInfo) as
+   "Name|role|order;Name|role|order" and "Name|kind;Name|kind", so they save, load and travel with the resident like every other
+   field. A blank choice stays blank: nothing downstream guesses it (assets/services/personalLexicon.js). */
+const DETAIL_KINDS={
+  sib:{input:"sibs",box:"sibDetailBox",rows:"sibDetail",store:"sibInfo",
+    sels:[["role","Brother or sister",[["","Not said"],["brother","Brother"],["sister","Sister"]]],
+          ["order","Place in the family",[["","Not said"],["oldest","Oldest"],["middle","In the middle"],["younger","Younger"],["youngest","Youngest"],["twin","A twin"]]]]},
+  pet:{input:"pets",box:"petDetailBox",rows:"petDetail",store:"petInfo",
+    sels:[["kind","Kind of pet",[["","Not said"],["dog","Dog"],["cat","Cat"],["bird","Bird"],["horse","Horse"],["other","Something else"]]]]}
+};
+function detailMap(text){
+  const m={};
+  String(text||"").split(/[;\n]+/).forEach(line=>{ const p=line.split("|"); const k=(p[0]||"").trim().toLowerCase(); if(k) m[k]=p.slice(1); });
+  return m;
+}
+function syncDetail(kind){
+  const d=DETAIL_KINDS[kind], names=splitList($(d.input).value).slice(0,8), keep=detailMap($(d.store).value), box=$(d.rows);
+  box.innerHTML="";
+  $(d.box).hidden=!names.length;
+  names.forEach((name,i)=>{
+    const row=document.createElement("div"); row.className="detailrow"; row.dataset.name=name;
+    const have=keep[name.toLowerCase()]||[];
+    let html='<span class="dname"></span>';
+    d.sels.forEach((sel,j)=>{
+      const id="dt_"+kind+"_"+i+"_"+j;
+      html+='<label for="'+id+'">'+sel[1]+'</label><select id="'+id+'" data-j="'+j+'">'+sel[2].map(o=>'<option value="'+o[0]+'"'+(o[0]===(have[j]||"")?" selected":"")+">"+o[1]+"</option>").join("")+"</select>";
+    });
+    row.innerHTML=html; row.querySelector(".dname").textContent=name;
+    row.querySelectorAll("select").forEach((el,j)=>{ el.setAttribute("aria-label",d.sels[j][1]+": "+name); });
+    box.appendChild(row);
+  });
+  writeDetail(kind);
+}
+function writeDetail(kind){
+  const d=DETAIL_KINDS[kind], parts=[];
+  $(d.rows).querySelectorAll(".detailrow").forEach(row=>{
+    const vals=[...row.querySelectorAll("select")].map(s=>s.value);
+    if(vals.some(Boolean)) parts.push([row.dataset.name,...vals].join("|").replace(/;/g,","));
+  });
+  $(d.store).value=parts.join(";");
+}
+function syncDetails(){ syncDetail("sib"); syncDetail("pet"); }
+for(const kind of ["sib","pet"]){
+  const d=DETAIL_KINDS[kind];
+  $(d.input).addEventListener("input",()=>syncDetail(kind));
+  $(d.rows).addEventListener("change",()=>{ writeDetail(kind); $(d.store).dispatchEvent(new Event("change",{bubbles:true})); });
+}
+
 function addCrewRow(){
   if(crewCount>=7) return;
   crewCount++;
@@ -12237,7 +12404,7 @@ addCrewRow(); addCrewRow(); addCrewRow();
    unchanged: the profile never leaves the machine it was typed on. */
 const IO_FIELDS=["first","last","goes","born","pronoun","town","state",
   "job","spouse","kids","pets","hobbies","favs","mil","milOk","faith","lang1","lang2",
-  "mother","school","firstcar","firstjob","sibs","avoid","fac","wing","month"];
+  "mother","school","firstcar","firstjob","sibs","sibInfo","petInfo","carMake","carModel","carYear","carColor","avoid","fac","wing","month"];
 /* Older saved files may also carry institutionalPartner, researchSponsor
    and packetPreferences (a workbook page target) from fields that never
    reached the printed packet. applyProfile skips names it does not know,
@@ -12470,6 +12637,7 @@ function applyProfile(p){
   if(!p || typeof p!=="object" || !p.fields || typeof p.fields!=="object" || Array.isArray(p.fields))
     throw new Error("not a resident file");
   for(const id in p.fields){ const el=$(id); if(el) el.value=p.fields[id]; }
+  syncDetails();
   if(p.acts && typeof p.acts==="object" && !Array.isArray(p.acts)){
     document.querySelectorAll(".act").forEach(c=>{
       if(c.value in p.acts) c.checked=!!p.acts[c.value];
@@ -13320,6 +13488,8 @@ $("f").addEventListener("submit", e=>{
     mother:$("mother").value.trim(), school:$("school").value.trim(),
     firstcar:$("firstcar").value.trim(), firstjob:$("firstjob").value.trim(),
     sibs:splitList($("sibs").value),
+    sibInfo:$("sibInfo").value, petInfo:$("petInfo").value,
+    carMake:$("carMake").value.trim(), carModel:$("carModel").value.trim(), carYear:$("carYear").value.trim(), carColor:$("carColor").value.trim(),
     crew:collectCrew(), acts, holidays,
     fac:$("fac").value.trim(), wing:$("wing").value.trim(),
     month:$("month").value.trim()||monthNow()
@@ -13398,6 +13568,8 @@ if(soBtn) soBtn.addEventListener("click",()=>{
     mother:$("mother").value.trim(), school:$("school").value.trim(),
     firstcar:$("firstcar").value.trim(), firstjob:$("firstjob").value.trim(),
     sibs:splitList($("sibs").value),
+    sibInfo:$("sibInfo").value, petInfo:$("petInfo").value,
+    carMake:$("carMake").value.trim(), carModel:$("carModel").value.trim(), carYear:$("carYear").value.trim(), carColor:$("carColor").value.trim(),
     crew:collectCrew(), acts:collectActs(), holidays:collectHolidays(),
     fac:$("fac").value.trim(), wing:$("wing").value.trim(),
     month:$("month").value.trim()||monthNow()
@@ -22880,6 +23052,8 @@ if (document.readyState === "complete" || document.readyState === "interactive")
       tv: p && t2.tvMoviesSports ? t2.tvMoviesSports : { tvShows:"", movies:"", sportsTeams:"" },
       military: ctx.military || { okToMention:false }
     };
+    /* the one shared reading of the resident (js/residentContext.js), for the personal word lexicon */
+    try{ src.person = p && window.CogniResident ? window.CogniResident.person(p) : null; }catch(e){ src.person = null; }
     if (src.generic && !src.decades.length) src.decades = ["1940s", "1950s", "1960s"];
     src.blocked = buildBlocker(ctx);
     // Larger type for low vision; motor limits favour bigger targets too
@@ -22926,6 +23100,12 @@ if (document.readyState === "complete" || document.readyState === "interactive")
     var groups = [];
     var avoidList = function(code){ return LIST_TOPIC[code] && src.blocked.topics.indexOf(LIST_TOPIC[code]) !== -1; };
 
+    // Priority 0: the resident's own words from the shared lexicon (family, pets, the first car, the town): each has a true clue elsewhere
+    var lexWords = [];
+    if (src.person && window.CogniLexicon){
+      try{ lexWords = CogniLexicon.forPuzzle(CogniLexicon.build(src.person, { avoid:function(t){ return src.blocked.text(t); }, seed:src.person.id }), { min:3, max:maxLen }).filter(function(i){ return i.tier === 1; }).map(function(i){ return i.grid; }); }catch(e){ lexWords = []; }
+      groups.push({ n:Math.min(5, lexWords.length), words:rng.shuffle(lexWords) });
+    }
     // Priority 1: Family relationship metadata (daughter like Sarah, son, spouse, kids, siblings) & relational anchors
     var famNames = [];
     if (src.people && Array.isArray(src.people)) {
@@ -25354,7 +25534,8 @@ if (document.readyState === "complete" || document.readyState === "interactive")
       first: field("goes") || field("first"), born: field("born"), pronoun: field("pronoun") || "they", stage: stage,
       job: field("job"), hobbies: field("hobbies"), favs: field("favs"), pets: field("pets"), firstcar: field("firstcar"),
       firstjob: field("firstjob"), school: field("school"), town: field("town"), state: field("state"),
-      spouse: field("spouse"), kids: field("kids"), avoid: field("avoid"), topics: field("pcgTopics"), crew: crew.join(", ")
+      spouse: field("spouse"), kids: field("kids"), avoid: field("avoid"), topics: field("pcgTopics"), crew: crew.join(", "),
+      sibs: field("sibs"), mother: field("mother"), carMake: field("carMake"), carModel: field("carModel")
     };
   }
 
@@ -25980,6 +26161,8 @@ if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol))
 <script src="js/dialogs.js"></script>
 <script src="assets/services/eraWindow.js"></script>
 <script src="assets/services/variety.js"></script>
+<script src="js/residentContext.js"></script>
+<script src="assets/services/personalLexicon.js"></script>
 <script src="assets/services/eraBanks.js"></script>
 <script src="assets/services/hybridSheets.js"></script>
 <script src="assets/services/reminiscenceEngine.js"></script>

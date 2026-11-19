@@ -150,8 +150,8 @@
       ML = { early: false, middle: true, late: true }, ALL = { early: true, middle: true, late: true };
   var ACTIVITIES = [
     /* the personalized packet tool (index.html) */
-    { id: "wordsearch", tools: ["packet"], name: "Word search", domain: "language", fw: ["cognitive"], stages: ALL },
-    { id: "erasearch", tools: ["packet"], name: "Second word search", domain: "language", fw: ["cognitive"], stages: ALL },
+    { id: "wordsearch", tools: ["packet"], name: "Word search", domain: "language", fw: ["cognitive"], stages: EM },
+    { id: "erasearch", tools: ["packet"], name: "Second word search", domain: "language", fw: ["cognitive"], stages: EM },
     { id: "crossword", tools: ["packet"], name: "Fit the words in", domain: "language", fw: ["cognitive", "errorless"], stages: EM },
     { id: "maze", tools: ["packet"], name: "Find your way through", domain: "motor", fw: ["montessori"], stages: ALL },
     { id: "dots", tools: ["packet"], name: "Join the dots", domain: "motor", fw: ["montessori"], stages: EM },

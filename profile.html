@@ -577,7 +577,7 @@ body { padding-left: var(--sb-w); }
 
 /* Step 3: people and pets rows */
 .rap-people{display:grid;gap:10px;margin:0 0 12px}
-.rap-person{display:grid;grid-template-columns:1.3fr 1.2fr auto auto;gap:10px;align-items:end;padding:12px;border:1px solid var(--rp-line2);border-radius:12px;background:var(--rp-field)}
+.rap-person{display:grid;grid-template-columns:1.3fr 1.2fr 1fr auto auto;gap:10px;align-items:end;padding:12px;border:1px solid var(--rp-line2);border-radius:12px;background:var(--rp-field)}
 .rap-person .rap-mini{display:block;margin:0 0 4px;font-size:14px;font-weight:700;color:var(--rp-muted)}
 .rap-person input[type=text],.rap-person select{min-height:var(--tap);font-size:17px;background:#0a1120}
 .rap-passed{display:flex;align-items:center;gap:8px;min-height:var(--tap);padding:0 6px;font-size:15px;white-space:nowrap;cursor:pointer}
@@ -1481,6 +1481,27 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#efece6!important}
           <button type="button" class="rap-btn rap-btn-ghost rap-btn-sm" id="rapAddPerson"><span aria-hidden="true">+</span> Add a Person/Pet</button>
           <p class="rap-hint" id="rapPeopleNote" role="status"></p>
         </fieldset>
+
+        <fieldset class="rap-field rap-group">
+          <legend>Their first car <span class="rap-opt">(optional)</span></legend>
+          <p class="rap-hint rap-hint-top">Fill in only what you know. Activities use these words as they are written and never guess the rest.</p>
+          <div class="rap-field rap-field-tight">
+            <label for="rapCarMake">Make</label>
+            <input id="rapCarMake" name="carMake" type="text" maxlength="30" autocomplete="off" placeholder="e.g., Ford">
+          </div>
+          <div class="rap-field rap-field-tight">
+            <label for="rapCarModel">Model</label>
+            <input id="rapCarModel" name="carModel" type="text" maxlength="30" autocomplete="off" placeholder="e.g., Model A, pickup">
+          </div>
+          <div class="rap-field rap-field-tight">
+            <label for="rapCarYear">Year</label>
+            <input id="rapCarYear" name="carYear" type="text" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="e.g., 1952">
+          </div>
+          <div class="rap-field rap-field-tight">
+            <label for="rapCarColor">Color</label>
+            <input id="rapCarColor" name="carColor" type="text" maxlength="20" autocomplete="off" placeholder="e.g., green">
+          </div>
+        </fieldset>
       </section>
 
       <!-- ── STEP 4 ── -->
@@ -1958,8 +1979,9 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#efece6!important}
      Row fields carry data-person instead of a name, so the generic
      collect() skips them and readPeople() stores them as one list. */
   var RELATIONS = [["","Choose one"],["spouse","Husband or wife"],["partner","Partner"],["son","Son"],["daughter","Daughter"],["grandchild","Grandchild"],
-    ["great-grandchild","Great-grandchild"],["sibling","Brother or sister"],["parent","Mother or father"],["other-family","Other family"],
-    ["friend","Friend"],["neighbor","Neighbor"],["pet-dog","Pet dog"],["pet-cat","Pet cat"],["pet-other","Other pet"],["other","Someone else"]];
+    ["great-grandchild","Great-grandchild"],["brother","Brother"],["sister","Sister"],["sibling","Brother or sister"],["parent","Mother or father"],["other-family","Other family"],
+    ["friend","Friend"],["neighbor","Neighbor"],["pet-dog","Pet dog"],["pet-cat","Pet cat"],["pet-bird","Pet bird"],["pet-horse","Pet horse"],["pet-other","Other pet"],["other","Someone else"]];
+  var ORDERS = [["","Not said"],["oldest","Oldest"],["middle","In the middle"],["younger","Younger"],["youngest","Youngest"],["twin","A twin"]];
   var PEOPLE_MAX = 12, peopleBox = $("rapPeople"), addBtn = $("rapAddPerson"), rowSeq = 0;
   function escAttr(v){ return String(v).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;"); }
   function personRow(p){
@@ -1971,6 +1993,8 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#efece6!important}
       '<input id="' + id + 'n" type="text" maxlength="40" data-person="name" autocomplete="off" placeholder="e.g., Harold, Buster" value="' + escAttr(p.name || "") + '"></div>' +
       '<div><label class="rap-mini" for="' + id + 'r">Relationship</label>' +
       '<select id="' + id + 'r" data-person="rel">' + RELATIONS.map(function(r){ return '<option value="' + r[0] + '"' + (r[0] === p.rel ? " selected" : "") + ">" + r[1] + "</option>"; }).join("") + "</select></div>" +
+      '<div><label class="rap-mini" for="' + id + 'o">Place in the family <span class="rap-opt">(optional)</span></label>' +
+      '<select id="' + id + 'o" data-person="order">' + ORDERS.map(function(r){ return '<option value="' + r[0] + '"' + (r[0] === (p.order || "") ? " selected" : "") + ">" + r[1] + "</option>"; }).join("") + "</select></div>" +
       '<label class="rap-passed"><input type="checkbox" data-person="passed"' + (p.passed ? " checked" : "") + "> Has passed away</label>" +
       '<button type="button" class="rap-remove" data-remove>Remove</button>' +
       '<div class="rap-photo"><img alt="" hidden data-photo-img><label class="rap-photo-btn"><input type="file" accept="image/*" data-photo-file><span data-photo-label>Add a photo</span></label>' +
@@ -1994,6 +2018,7 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#efece6!important}
     return peopleRows().map(function(row){
       var one = { name:row.querySelector('[data-person="name"]').value.trim().slice(0, 40),
                rel:row.querySelector('[data-person="rel"]').value,
+               order:row.querySelector('[data-person="order"]').value,
                passed:row.querySelector('[data-person="passed"]').checked };
       if (row.dataset.photo) one.photo = row.dataset.photo;          // the name of the sealed picture, never the picture itself
       if (row._newPhoto) one.photoNew = true;                        // a picture chosen and not saved yet (so the form knows it has changes)
@@ -2537,11 +2562,13 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#efece6!important}
             isPet: /^pet-/.test(p.rel),
             passedAway: !!p.passed
           };
+          if (p.order && /^(brother|sister|sibling)$/.test(p.rel)) one.order = p.order;      // only a brother or sister has a place in the family
           if (p.photo) one.photo = p.photo;              // the name of their sealed picture
           return one;
         }),
         /* the optional parts of a life story ("More of their story"); each is left out of nothing and guessed by nothing */
         milestones: readMoments().filter(function(m){ return m.text; }).map(function(m){ return { year: m.year ? Number(m.year) : null, text: m.text }; }),
+        vehicles: (text("rapCarMake") || text("rapCarModel") || text("rapCarYear") || text("rapCarColor")) ? [{ first: true, make: text("rapCarMake"), model: text("rapCarModel"), year: /^\d{4}$/.test(text("rapCarYear")) ? Number(text("rapCarYear")) : null, color: text("rapCarColor") }] : [],
         signatureDish: { name: text("rapDishName"), ingredients: text("rapDishIn"),
           steps: String($("rapDishSteps").value).split(/\n+/).map(function(x){ return x.replace(/\s+/g, " ").trim(); }).filter(Boolean).slice(0, 6) },
         comforts: ticks("comforts").concat(text("rapComfortOther").split(/[,;]+/).map(function(x){ return x.trim(); }).filter(Boolean).slice(0, 6).map(function(x){ return { code:"other", label:x }; })),
@@ -2589,7 +2616,8 @@ html.cg-night-shift .cg-foot :is(a,h2,p,span){color:#efece6!important}
       paper: code(pn.paper) || "letter", ink: code(pn.ink) || "bw",
       notes: t3.notes || "",
       preselectedDeescalationActivity: p.preselectedDeescalationActivity || "",
-      people: (t3.people || []).map(function(x){ var one = { name:x.name, rel:code(x.relationship), passed:!!x.passedAway }; if (x.photo) one.photo = x.photo; return one; }),
+      people: (t3.people || []).map(function(x){ var one = { name:x.name, rel:code(x.relationship), order:x.order || "", passed:!!x.passedAway }; if (x.photo) one.photo = x.photo; return one; }),
+      carMake: ((t3.vehicles || [])[0] || {}).make || "", carModel: ((t3.vehicles || [])[0] || {}).model || "", carYear: ((t3.vehicles || [])[0] || {}).year ? String((t3.vehicles[0]).year) : "", carColor: ((t3.vehicles || [])[0] || {}).color || "",
       milestones: (t3.milestones || []).map(function(m){ return { year: m && m.year ? String(m.year) : "", text: (m && m.text) || "" }; }),
       dishName: (t3.signatureDish || {}).name || "", dishIngredients: (t3.signatureDish || {}).ingredients || "", dishSteps: ((t3.signatureDish || {}).steps || []).join("\n"),
       comforts: (t3.comforts || []).filter(function(c){ return c && c.code !== "other"; }).map(function(c){ return c.code; }),

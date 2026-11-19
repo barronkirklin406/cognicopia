@@ -121,7 +121,17 @@
 
   /* ---------- 3. who's who ---------- */
   var RELATION = { spouse: "Married to me", partner: "My partner", son: "My son", daughter: "My daughter", grandchild: "My grandchild", "great-grandchild": "My great-grandchild", sibling: "My brother or sister",
-    parent: "My mother or father", "other-family": "Family", friend: "My friend", neighbor: "My neighbor", "pet-dog": "My dog", "pet-cat": "My cat", "pet-other": "My pet" };
+    brother: "My brother", sister: "My sister",
+    parent: "My mother or father", "other-family": "Family", friend: "My friend", neighbor: "My neighbor", "pet-dog": "My dog", "pet-cat": "My cat", "pet-bird": "My bird", "pet-horse": "My horse", "pet-other": "My pet" };
+  /* a brother or sister is described by place in the family only when the profile says so ("My oldest brother"); with no role it stays "My brother or sister" */
+  var ORDER_SAY = { oldest: "oldest", middle: "middle", younger: "younger", youngest: "youngest", twin: "twin" };
+  function relationSub(x) {
+    if (x.relation === "brother" || x.relation === "sister" || x.relation === "sibling") {
+      var kin = x.relation === "sibling" ? (x.role === "brother" || x.role === "sister" ? x.role : "") : x.relation;
+      return kin ? "My " + (ORDER_SAY[x.order] ? ORDER_SAY[x.order] + " " : "") + kin : "My brother or sister";
+    }
+    return RELATION[x.relation] || x.relationLabel || "";
+  }
   function whoswhoSheets(P, r, count) {
     var w = who(P), fam = w.family, per = P.stage === 1 ? 6 : P.stage === 2 ? 4 : 2, out = [], talk = K.shuffle(keep(D.WHO_TALK, P), r);
     var order = living(fam.partner, P).concat(living(fam.children, P), living(fam.grandchildren, P), living(fam.greatGrandchildren, P), living(fam.siblings, P), living(fam.otherFamily, P), living(fam.friends, P), living(fam.pets, P), living(fam.others, P));
@@ -133,7 +143,7 @@
       if (mine.length && mine.length < per && order.length >= per) mine = mine.concat(order.slice(0, per - mine.length));   // a last page that would be short is filled from the top of the list
       /* a person's sealed picture, when the page that asked has opened it (profile.person.photos: the picture's name -> its data) */
       var pics = w.photos || {};
-      var frames = mine.length ? mine.map(function (x) { return { name: x.name, sub: RELATION[x.relation] || x.relationLabel || "", photo: (x.photo && pics[x.photo]) || "" }; })
+      var frames = mine.length ? mine.map(function (x) { return { name: x.name, sub: relationSub(x), photo: (x.photo && pics[x.photo]) || "" }; })
         : Array.apply(null, Array(per)).map(function () { return { name: "", sub: "", hint: "A photo or a name" }; });
       out.push(sheet("whoswho", P.stage === 3 ? "My people" : "The people in my life", mine.length ? "Who is who" : "A page to fill in together", [
         { kind: "frames", items: frames }, P.stage === 3 ? null : { kind: "starters", items: take(rotate(talk, s), 1) }],
