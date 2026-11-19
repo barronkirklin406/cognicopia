@@ -414,7 +414,7 @@ function library(){
       const m = a.metrics || {}, s = std[a.tier];
       if (a.stroke_pt < 3) problems.push(`Tier ${a.tier} lines ${a.stroke_pt} pt`);
       if (m.tiny_regions > s.max_tiny_regions) problems.push(`Tier ${a.tier}: ${m.tiny_regions} areas under ${s.min_region_sq_in} sq in`);
-      if (m.subject_fill < .45) problems.push(`Tier ${a.tier}: subject fills ${Math.round(m.subject_fill * 100)}%`);
+      if (!(m.margin_min >= .08 && (m.subject_fill >= .45 || m.subject_span >= .78))) problems.push(`Tier ${a.tier}: subject fills ${Math.round(m.subject_fill * 100)}%, reaches ${Math.round(m.subject_span * 100)}% of the page, ${Math.round(m.margin_min * 100)}% of white at its tightest side (needs 8% of white and 45% filled, or 78% across)`);
       if (m.ink_coverage > .35) problems.push(`Tier ${a.tier}: ${Math.round(m.ink_coverage * 100)}% ink`);
       if (a.aspect_ratio !== "3:4") problems.push(`Tier ${a.tier} is not 3:4`);
     }

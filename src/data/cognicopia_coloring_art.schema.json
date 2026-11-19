@@ -108,6 +108,8 @@
         "smallest_region_sq_in": { "type": "number", "minimum": 0 },
         "median_region_sq_in": { "type": "number", "minimum": 0 },
         "subject_fill": { "type": "number", "minimum": 0 },
+        "subject_span": { "type": "number", "minimum": 0 },
+        "margin_min": { "type": "number", "minimum": 0 },
         "ink_coverage": { "type": "number", "minimum": 0 },
         "meets_rule": { "type": "boolean" }
       }

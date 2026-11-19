@@ -410,7 +410,7 @@ function define(meta, draw){
   var d = {
     id:meta.id, title:meta.title, cat:meta.cat, talk:meta.talk, tags:(meta.tags || []).slice(),
     era:meta.era || "", season:meta.season || "", sensitive:(meta.sensitive || []).slice(),
-    fit:meta.fit || "subject", pad:meta.pad == null ? .05 : meta.pad, draw:draw, source:"procedural"
+    fit:meta.fit || "subject", pad:meta.pad == null ? .095 : meta.pad, draw:draw, source:"procedural"
   };
   DESIGNS.push(d); BY_ID[d.id] = d;
   return d;
@@ -503,9 +503,15 @@ function renderWith(d, draw, tier, variant){
   draw(g, h);
   if (!g.items.length) throw new Error(id + " drew nothing at tier " + tier);
   var bb = bboxOf(g.items), s = 1, tx = 0, ty = 0;
+  /* The owner's rule of November 19, 2026: the whole subject sits inside the page with at least 8% of white on every side (a share of that side:
+     W for left and right, H for top and bottom). A picture fitted to its subject is scaled to the room that leaves; a picture drawn to the page
+     (fit "page": the scenes, quilts and patterns) keeps its own size and place unless it crosses that line, and only then is it scaled down to it. */
+  var pad = Math.max(.095, d.pad == null ? 0 : d.pad), padX = W * pad, padY = H * pad, bw = Math.max(1, bb.x1 - bb.x0), bh = Math.max(1, bb.y1 - bb.y0);
   if (d.fit === "subject"){
-    var pad = W * (d.pad == null ? .05 : d.pad), bw = Math.max(1, bb.x1 - bb.x0), bh = Math.max(1, bb.y1 - bb.y0);
-    s = Math.min((W - 2 * pad) / bw, (H - 2 * pad) / bh);
+    s = Math.min((W - 2 * padX) / bw, (H - 2 * padY) / bh);
+    tx = (W - bw * s) / 2 - bb.x0 * s; ty = (H - bh * s) / 2 - bb.y0 * s;
+  } else if (bb.x0 < padX || bb.y0 < padY || bb.x1 > W - padX || bb.y1 > H - padY){
+    s = Math.min(1, (W - 2 * padX) / bw, (H - 2 * padY) / bh);
     tx = (W - bw * s) / 2 - bb.x0 * s; ty = (H - bh * s) / 2 - bb.y0 * s;
   }
   /* The tier's smallest area rule: a white shape too small to color at this

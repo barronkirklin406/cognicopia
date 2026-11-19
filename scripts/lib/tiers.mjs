@@ -313,8 +313,8 @@ export function measureTiers(items, meta){
   const C = engine(), out = {};
   for (const t of [1, 2, 3]){
     const m = measureArt(items, t, meta);
-    out[t] = m ? { regions: m.regions, tiny_regions: m.tiny_regions, smallest_region_sq_in: m.smallest_region_sq_in, median_region_sq_in: m.median_region_sq_in, subject_fill: m.subject_fill, ink_coverage: m.ink_coverage,
-      meets_rule: m.regions >= 1 && m.tiny_regions <= C.TIERS[t].maxTiny } : { regions: 0, tiny_regions: 0, smallest_region_sq_in: 0, median_region_sq_in: 0, subject_fill: 0, ink_coverage: 0, meets_rule: false };
+    out[t] = m ? { regions: m.regions, tiny_regions: m.tiny_regions, smallest_region_sq_in: m.smallest_region_sq_in, median_region_sq_in: m.median_region_sq_in, subject_fill: m.subject_fill, subject_span: m.subject_span, margin_min: m.margin_min, ink_coverage: m.ink_coverage,
+      meets_rule: m.regions >= 1 && m.tiny_regions <= C.TIERS[t].maxTiny } : { regions: 0, tiny_regions: 0, smallest_region_sq_in: 0, median_region_sq_in: 0, subject_fill: 0, subject_span: 0, margin_min: 0, ink_coverage: 0, meets_rule: false };
   }
   return out;
 }
@@ -453,7 +453,7 @@ export function deriveTiers(trace, o){
   for (const t of [1, 2, 3]){
     const m = measureArt(items, t, o.meta);
     report[t] = { cut: cuts[t], regions: m ? m.regions : 0, tiny_regions: m ? m.tiny_regions : 0, smallest_region_sq_in: m ? m.smallest_region_sq_in : 0,
-      subject_fill: m ? m.subject_fill : 0, meets_rule: hard(t, m), bytes: byTier[t].reduce((n, p) => n + p[1].length, 0) };
+      subject_fill: m ? m.subject_fill : 0, subject_span: m ? m.subject_span : 0, margin_min: m ? m.margin_min : 0, meets_rule: hard(t, m), bytes: byTier[t].reduce((n, p) => n + p[1].length, 0) };
   }
   return { items, report, notes, byTier, accents, faces: F.areas.length - 1, steps: steps.length, cands, cuts, loose: strokes.filter(s => !s.sep).length, separating: strokes.filter(s => s.sep).length, pieces: nc };
 }

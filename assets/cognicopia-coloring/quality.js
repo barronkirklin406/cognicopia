@@ -148,7 +148,10 @@ function measure(bmp, o){
     largest_region_sq_in:+(areas[areas.length - 1] || 0).toFixed(2),
     tiny_regions:areas.filter(function(a){ return a < minSqIn; }).length,
     ink_coverage:+(ink / N).toFixed(3),
-    subject_fill:bx1 < 0 ? 0 : +(((bx1 - bx0 + 1) * (by1 - by0 + 1)) / N).toFixed(3)
+    subject_fill:bx1 < 0 ? 0 : +(((bx1 - bx0 + 1) * (by1 - by0 + 1)) / N).toFixed(3),
+    /* how far the subject reaches across the page (its longer side, as a share of that side of the page), and the least white left round it */
+    subject_span:bx1 < 0 ? 0 : +Math.max((bx1 - bx0 + 1) / w, (by1 - by0 + 1) / h).toFixed(3),
+    margin_min:bx1 < 0 ? 0 : +Math.min(bx0 / w, (w - 1 - bx1) / w, by0 / h, (h - 1 - by1) / h).toFixed(3)
   };
   if (o.strokes !== false){ var st = strokeStats(bmp, dpi); out.stroke_pt_median = st.stroke_pt_median; out.stroke_pt_p10 = st.stroke_pt_p10; }
   if (o.space){

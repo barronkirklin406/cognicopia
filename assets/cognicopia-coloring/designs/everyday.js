@@ -58,7 +58,7 @@ C.define({ id:"table-setting", title:"Setting the Table", cat:"home-everyday",
   if (g.lvl >= 2) cup(g, 470, 190, g.at(.7, .8, .9), 2);
 });
 
-C.define({ id:"tea-for-two", title:"Tea for Two", cat:"home-everyday", pad:.02,
+C.define({ id:"tea-for-two", title:"Tea for Two", cat:"home-everyday", pad:.095,
   tags:["tea", "friends", "visiting", "hospitality"], talk:"Who would you like to share a cup of tea with?" }, function(g){
   if (g.lvl >= 2){ g.S(h.rrect(30, 300, 540, 380, 60)); g.D(h.rrect(60, 330, 480, 320, 44), 3); }
   if (g.lvl >= 2){ cup(g, 180, 420, 1, 1); cup(g, 420, 520, 1, 1); g.S(h.path([230, 470]).L([330, 440]).L([334, 452]).L([236, 484]).Z()); g.S(h.ellipse(350, 440, 24, 14, -18)); }
@@ -71,7 +71,7 @@ C.define({ id:"tea-for-two", title:"Tea for Two", cat:"home-everyday", pad:.02,
   if (g.lvl >= 3){ g.S(h.ellipse(170, 590, 96, 22)); g.S(h.path([100, 580]).L([130, 530]).L([240, 530]).L([240, 580]).Z()); g.D(h.line([112, 560], [240, 560])); }
 });
 
-C.define({ id:"baking-day", title:"Baking Day", cat:"home-everyday", pad:.03,
+C.define({ id:"baking-day", title:"Baking Day", cat:"home-everyday", pad:.095,
   tags:["baking", "pies", "kitchen", "family-recipes"], talk:"What is a recipe you would love to smell baking right now?" }, function(g){
   g.S(h.rect(24, 560, 552, 40));
   if (g.lvl >= 2) g.S(h.rect(40, 600, 520, 170));
