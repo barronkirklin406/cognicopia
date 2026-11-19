@@ -452,7 +452,7 @@
 
   /* ---------- clinical tips and conversation starters ----------
      Printed on each page, for the person sitting beside the resident. {page} is "Page 2" or "this page";
-     {name} is the resident's first name or "them"; {topic} is the thing the page is about (only used when
+     {name} is the resident's first name or "the resident"; {topic} is the thing the page is about (only used when
      the page has one). Each carries the framework it comes from. */
   var CUES = [
     /* hand-under-hand and motor */
@@ -524,7 +524,8 @@
 
   function fill(text, c) {
     c = c || {};
-    var name = c.name ? String(c.name) : "them";
+    /* no name: "the resident", with a capital where a sentence begins */
+    var name = function (m, off, all) { if (c.name) return String(c.name); var before = all.slice(0, off); return !before.trim() || /[.!?:]["\u201D]?\s*$/.test(before) ? "The resident" : "the resident"; };
     return text.replace(/\{page\}/g, c.page ? "Page " + c.page : "this page").replace(/\{name\}/g, name)
       .replace(/\{topic\}/g, c.topic ? String(c.topic) : "").replace(/\s+([.,!?])/g, "$1").replace(/\s{2,}/g, " ").trim();
   }

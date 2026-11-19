@@ -10,6 +10,7 @@
    every list of printed lines and holds each entry to the one rule:
 
      index.html                         LYRICS (Finish the Line): each entry ends with its year
+     assets/services/eraBanks.js        LYRICS (the hybrid sheets' song lines): each entry ends with its year
      builder.html                       PD_SONGS (the sing-along sheets): year, decade or "Traditional"
      js/generators/activity-modules.js  the Studio's verse and song lines
      js/clinical-suite.js               PD_SONGS (the first line only)
@@ -39,6 +40,14 @@ ok(free(1930) && !free(1931) && free("1870s") && !free("1930s") && free("Traditi
   ok(rows.length === (block.match(/^\s*\[/gm) || []).length - 1 || rows.length === (block.match(/^\s*\["/gm) || []).length, "index.html: every line of the list was understood");
   for (const r of rows) ok(r[4] && free(r[4]), `index.html: "${r[1]} ${r[2]}" has no year of ${LAST_YEAR} or earlier (${r[4] || "none"})`);
   ok(/published[^.]*1930 or earlier|1930 or earlier/.test(s.slice(i - 500, i)), "index.html: the list states the rule above it");
+}
+
+/* the era banks: the lines of songs the hybrid sheets print (assets/services/eraBanks.js) */
+{
+  const s = read("assets/services/eraBanks.js"), i = s.indexOf("var LYRICS = ["), block = s.slice(i, s.indexOf("];", i));
+  const rows = [...block.matchAll(/\["([^"]+)","([^"]+)","(hymn|song)",(\d{4})\]/g)];
+  ok(rows.length >= 25 && rows.length === (block.match(/^\s*\["/gm) || []).length, `eraBanks.js: every song line was read (${rows.length})`);
+  for (const r of rows) ok(free(r[4]), `eraBanks.js: "${r[1]} ${r[2]}" has no year of ${LAST_YEAR} or earlier (${r[4]})`);
 }
 
 /* the Packet Builder: sing-along sheets */

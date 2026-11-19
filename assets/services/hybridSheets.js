@@ -27,29 +27,29 @@
   /* two or three tips for each layout, for the person beside the resident: one-on-one, hand-under-hand tracing, a small group */
   var TIPS = {
     "trace-sing": [
-      "One to one: sing the line slowly beside them and stop before the last word. A hum or a nod is a good answer.",
-      "Tracing: use hand-under-hand. Rest your hand beneath theirs and let them lead the finger along the line.",
-      "In a group: hum the tune together first, then pass the page and let each person trace a part."],
+      "One to one: sing slowly and stop before the last word. A hum or a nod is a good answer.",
+      "Tracing: use hand-under-hand. Rest your hand beneath theirs and let them lead.",
+      "Group: hum the tune together, then pass the page and trace a part each."],
     "trace-talk": [
-      "One to one: read the line aloud, then wait. Let the silence do the asking. Any memory, even a small one, is welcome.",
-      "Tracing: use hand-under-hand. Rest your hand beneath theirs and follow the outline at their pace.",
-      "In a group: read the line aloud and let each person say what they liked, one at a time."],
+      "One to one: read the line aloud, then wait. Any memory, even a small one, is welcome.",
+      "Tracing: use hand-under-hand. Rest your hand beneath theirs and follow at their pace.",
+      "Group: read the line aloud and let each person say what they liked."],
     "match-color": [
-      "One to one: say each pair together first (\"Cup and saucer\"), then ask for a line between them. Any line counts, and you can lead it gently.",
-      "Coloring: offer a fat marker or crayon and let them choose the color. Hand-under-hand helps when the grip is tired.",
-      "In a group: match the pairs aloud together, then color side by side."],
+      "One to one: say each pair together first, then ask for a line. Any line counts.",
+      "Coloring: offer a fat marker and let them choose. Hand-under-hand helps a tired grip.",
+      "Group: match the pairs aloud together, then color side by side."],
     "look-hold": [
-      "One to one: bring a real one if you can, or a picture, and let them hold it. Describe what you see and feel, and follow where they take it.",
+      "One to one: bring a real one or a picture, let them hold it, and follow where they take it.",
       "Tracing: use hand-under-hand to follow the outline, then rest the hand on the real thing.",
-      "In a group: pass the object around and let each person say one word about how it feels."],
+      "Group: pass the object around and let each person say one word about how it feels."],
     "hum-along": [
-      "One to one: play or hum the first bars and wait. Humming, tapping and swaying all count.",
+      "One to one: hum the first bars and wait. Humming, tapping and swaying all count.",
       "Tracing: use hand-under-hand to follow the outline in time with the tune.",
-      "In a group: sing one song through together, then ask who would like to choose the next."],
+      "Group: sing one song through together, then let someone choose the next."],
     "look-back": [
-      "One to one: read one line, then wait. Follow the resident's lead and let go of any line that does not land.",
+      "One to one: read one line, then wait. Let go of any line that does not land.",
       "Tracing: use hand-under-hand to follow the outline while you talk.",
-      "In a group: read the lines aloud and let each person say which one they like best."]
+      "Group: read the lines aloud and let each person say which one they like best."]
   };
 
   function lib(o) {

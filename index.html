@@ -4205,6 +4205,19 @@ html:not(.cg-night-shift) .fld-btn-ghost:hover{background:#edf7f6}
 .qp-cut::before{content:"";position:absolute;left:0;right:0;top:50%;border-top:1.5pt dashed #000}
 .qp-cut span{position:relative;padding:0 .1in;background:#fff;font-size:14pt;color:#000}
 
+/* trace and talk: a bold picture, and what to do with it */
+.qp-hy{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:space-between;text-align:center;gap:.1in}
+.qp-hy .qp-hy-art{flex:1 1 auto;min-height:0;max-height:5.2in;width:auto;max-width:100%;aspect-ratio:3/4}
+.qp-sheet .qp-hy-lyric{margin:0;font-size:max(26pt,calc(29pt * var(--qps,1) * var(--fit)));font-weight:700;line-height:1.25;color:#000}
+.qp-sheet .qp-hy-end{display:inline-block;margin-left:.08in;padding:0 .16in;border:3pt solid #000;border-radius:.12in}
+.qp-sheet .qp-hy-item{margin:0;font-size:max(22pt,calc(26pt * var(--qps,1) * var(--fit)));font-weight:700;line-height:1.25;color:#000}
+.qp-sheet .qp-hy-item small{display:block;margin-top:.04in;font-size:.9em;font-weight:400}
+.qp-sheet .qp-hy-close{margin:0;font-size:max(22pt,calc(26pt * var(--qps,1) * var(--fit)));line-height:1.25;color:#000}
+.qp-hy-pairs{width:100%;display:flex;flex-direction:column;gap:.12in}
+.qp-hy-pairs p{margin:0;display:grid;grid-template-columns:1fr .3in .3in 1fr;align-items:center;gap:.06in}
+.qp-hy-pairs span{padding:.08in .1in;border:3pt solid #000;border-radius:.12in;font-size:max(22pt,calc(26pt * var(--qps,1) * var(--fit)));font-weight:700;color:#000}
+.qp-hy-pairs i{width:.14in;height:.14in;border-radius:50%;background:#000;justify-self:center}
+
 /* finish the thought */
 .qp-sheet .qp-fill{margin:0;padding:0 0 0 .5in;display:flex;flex-direction:column;justify-content:space-around;flex:1}
 .qp-sheet .qp-fill li{font-size:max(20pt,calc(23pt * var(--qps,1) * var(--fit)));font-weight:700;color:#000;padding-left:.06in}
@@ -6457,6 +6470,7 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
     <legend>Pages to include</legend>
     <label class="qpb-pick"><input type="checkbox" data-page="wordsearch" checked><span><b>Personalized Word Search</b><small>Words from their work, hobbies and decades</small></span></label>
     <label class="qpb-pick"><input type="checkbox" data-page="cards" checked><span><b>Reminiscence Cards</b><small>Large conversation cards, two to a page</small></span></label>
+    <label class="qpb-pick"><input type="checkbox" data-page="hybrid" checked><span><b>Trace and Talk Page</b><small>A bold picture to trace, with a song, a film or a pair to match. New every time</small></span></label>
     <label class="qpb-pick"><input type="checkbox" data-page="trivia" checked><span><b>Tailored Trivia / Completion</b><small>Finish the thought, with no wrong answers</small></span></label>
     <label class="qpb-pick"><input type="checkbox" data-page="cover" checked><span><b>Custom Cover Sheet</b><small>&ldquo;Activity Packet for&rdquo; with their first name</small></span></label>
   </fieldset>
@@ -7980,6 +7994,7 @@ function faithKind(txt){
   return "";
 }
 function faithSuits(r,table,lead){ const k=faithKind(r.faith); return !!k && (table[lead]||[]).indexOf(k)>=0; }
+/* Finish the Line: public domain only. Each line is from a work first published in 1930 or earlier, and ends with its year (scripts/check-public-domain.mjs). */
 const LYRICS = [
   ["Amazing grace, how sweet the","sound","hymn",1779],
   ["What a friend we have in","Jesus","hymn",1868],
@@ -12346,9 +12361,11 @@ function staffFrontSheet(doc,o){
   put(o.intro||"This sheet is yours. Take it out before you hand the packet over.",16,false,0); y+=10;
   put("Page by page",17,true,0); y+=4;
   for(const r of o.rows){
-    if(y+80>H-60) fresh();
+    if(y+80+(r.tips?r.tips.length*40:0)>H-60) fresh();
     put(r.title+(r.anchor?"   "+r.anchor:""),16,true,0);
     if(r.tip) put(r.tip,16,false,18);
+    if(r.tips) for(const t of r.tips) put("\u2022 "+t,16,false,18);
+    if(r.note) put(r.note,16,false,18);
     y+=6;
   }
   const last=doc.internal.getNumberOfPages();
@@ -22748,9 +22765,13 @@ if (document.readyState === "complete" || document.readyState === "interactive")
     var ctx = typeof window.getActiveResidentContext === "function" ? window.getActiveResidentContext() : null;
     return ctx && !ctx.isGeneric && ctx.name ? ctx.name : "guest";
   }
+  /* Every click makes a new packet: the day's seed for this resident is mixed with a fresh one from the variety memory
+     (assets/services/variety.js), which never hands out the same number twice in a row. A reprint reuses the packet on screen, so it
+     does not come here. */
   function newSeed(){
     var P = window.CognicopiaPCG && window.CognicopiaPCG.prng, name = seedName();
-    return P.seedInt(P.dailySeed(name, todayIso(), dailyVariant(name)) + "|roster");
+    var base = P.seedInt(P.dailySeed(name, todayIso(), dailyVariant(name)) + "|roster");
+    return window.CogniVariety ? ((base ^ window.CogniVariety.clickSeed()) >>> 0) : base;
   }
   function lettersOnly(s){ return String(s || "").normalize ? String(s).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase().replace(/[^A-Z]/g, "") : String(s || "").toUpperCase().replace(/[^A-Z]/g, ""); }
   function article(noun){ return /^[aeiou]/i.test(noun) ? "an " + noun : "a " + noun; }
@@ -22786,6 +22807,7 @@ if (document.readyState === "complete" || document.readyState === "interactive")
       skills: codes(t2.skills && t2.skills.items),
       place: t2.hometown ? { env:t2.hometown.environment ? t2.hometown.environment.code : "", name:t2.hometown.place || "" } : { env:"", name:"" },
       decades: (ctx.decades || []).slice(),
+      born: p && !(p.meta && p.meta.temporaryGuestPreset) ? (Number(t2.birthYear) || 0) : 0,   // a made-up quick-print style has no birth year: its sheets mix the decades it names
       people: (ctx.people || []).slice(),
       music: ctx.music || { artists:[], genres:[], favoriteSong:"" },
       tv: p && t2.tvMoviesSports ? t2.tvMoviesSports : { tvShows:"", movies:"", sportsTeams:"" },
@@ -23127,6 +23149,49 @@ if (document.readyState === "complete" || document.readyState === "interactive")
       "</div>" }] };
   }
 
+  /* ===================== HYBRID PAGES: trace + sing, talk, hold or match ===================== */
+  /* One page that does several things (assets/services/hybridSheets.js): a bold picture to trace or color and a line to sing, a few things to talk
+     about, a feel to think of, or three pairs to match. The words come from the era banks for the resident's years (born + 7 to + 28), or a mix
+     of decades when no birth year is known; the picture and the words differ on every click and nothing returns until the pool has been
+     through. The tips for staff go on the Staff Companion Sheet, never on the page. */
+  var HYBRID_N = 1, usedLayouts = [];
+  window.setQuickHybridCount = function(n){ HYBRID_N = n > 0 ? n : 1; };   // the quick-print styles ask for two
+  function decadeNumbers(list){ return (list || []).map(function(d){ return parseInt(d, 10); }).filter(function(n){ return n >= 1900 && n <= 1990; }); }
+  function hybridArt(spec, widthIn){
+    var C = window.CognicopiaColoring;
+    if (!spec.art || !C) return "";
+    try { return C.toSVG(C.render(spec.art.id, spec.art.tier), { widthIn:widthIn || 4 }).replace("<svg ", '<svg class="qp-hy-art" aria-hidden="true" focusable="false" '); } catch (e) { return ""; }
+  }
+  function hybridBody(spec){
+    var h = '<div class="qp-hy">' + hybridArt(spec, 4);
+    if (spec.lyric) h += '<p class="qp-hy-lyric">' + esc(spec.lyric.lead) + ' <span class="qp-hy-end">' + esc(spec.lyric.end) + "</span></p>";
+    if (spec.pairs){
+      h += '<div class="qp-hy-pairs">';
+      spec.pairs.left.forEach(function(l, i){ h += '<p><span>' + esc(l) + '</span><i aria-hidden="true"></i><i aria-hidden="true"></i><span>' + esc(spec.pairs.right[i]) + "</span></p>"; });
+      h += "</div>";
+    }
+    (spec.items || []).forEach(function(it){ h += '<p class="qp-hy-item">' + esc(it.text) + (it.sub ? '<small>' + esc(it.sub) + "</small>" : "") + "</p>"; });
+    if (spec.closing) h += '<p class="qp-hy-close">' + esc(spec.closing) + "</p>";
+    return h + "</div>";
+  }
+  function generateHybrid(src, rng, count){
+    var H = window.CogniHybrid, CMx = window.CognicopiaClinicalMatrix;
+    if (!H || !window.CogniBanks) return { kind:"hybrid", sheets:[], specs:[] };
+    var specs = [], sheets = [], tries = 0;
+    var avoid = function(t){ return src.blocked.text(t); };
+    while (specs.length < count && tries++ < count * 6){
+      var layout = H.ORDER.filter(function(l){ return !specs.some(function(sp){ return sp.layout === l; }) && usedLayouts.indexOf(l) < 0; });
+      if (!layout.length){ usedLayouts = []; layout = H.ORDER.filter(function(l){ return !specs.some(function(sp){ return sp.layout === l; }); }); }
+      var spec = H.compose({ R:rng, born:src.born || 0, decades:src.born ? null : decadeNumbers(src.decades), stage:CMx ? CMx.stageOf(src.stage) : src.stage,
+        layout:rng.pick(layout), avoid:avoid });
+      usedLayouts.push(spec.layout); if (usedLayouts.length > H.ORDER.length - 1) usedLayouts.shift();
+      if (!spec.art || (spec.items.length === 0 && !spec.lyric && !spec.pairs)) continue;
+      specs.push(spec);
+      sheets.push({ kind:"hybrid", title:spec.title, subtitle:spec.subtitle, instructions:spec.instruction, body:hybridBody(spec) });
+    }
+    return { kind:"hybrid", sheets:sheets, specs:specs };
+  }
+
   /* ===================== ASSEMBLY LINE ===================== */
   var PAGE = { letter:{ w:"8.5in", h:"11in", css:"letter" }, a4:{ w:"210mm", h:"297mm", css:"A4" } };
   var current = null;          // { src, sheets:[html], paper, counted, residentId }
@@ -23157,6 +23222,7 @@ if (document.readyState === "complete" || document.readyState === "interactive")
     var parts = [], included = [];
     if (pick("wordsearch")){ parts.push(generateWordSearch(src, rng)); included.push("A word search from your own life"); }
     if (pick("cards")){ parts.push(generateReminiscenceCards(src, rng)); included.push("Conversation cards to share"); }
+    if (opts.hybrid !== false && opts.hybrid !== undefined){ var hy = generateHybrid(src, rng, HYBRID_N); if (hy.sheets.length){ parts.push(hy); included.push(hy.specs.length > 1 ? "Pages to trace and talk about" : "A page to trace and talk about"); } }
     if (pick("trivia")){ parts.push(generatePersonalizedTrivia(src, rng)); included.push("Finish the thought"); }
     if (pick("cover")) parts.unshift(generateCover(src, included));
     var list = [];
@@ -23244,7 +23310,7 @@ if (document.readyState === "complete" || document.readyState === "interactive")
 
   function generate(){
     var o = opts();
-    if (!o.cover && !o.wordsearch && !o.cards && !o.trivia){ status.textContent = "Tick at least one page to include."; return null; }
+    if (!o.cover && !o.wordsearch && !o.cards && !o.trivia && !o.hybrid){ status.textContent = "Tick at least one page to include."; return null; }
     /* a packet already on screen for this resident: Generate again means "another version today" */
     if (current && current.residentId === (window.activeResident ? window.activeResident.id : null)) bumpDailyVariant(seedName());
     var pk = buildProfilePacket(o);
@@ -24421,6 +24487,59 @@ if (document.readyState === "complete" || document.readyState === "interactive")
 
   /* Find the largest size that fits (never below the minimums); then drop
      extras exactly as the preview does. */
+  /* A hybrid page: the picture to trace or color takes the room the words leave, so the page is always full and never crowded. */
+  function paintHybrid(k, pg, f, draw){
+    var spec = pg.spec, s = pg.sheet, qps = pg.qps, C = window.CognicopiaColoring;
+    var y = header(k, s, f, qps, draw);
+    y = instructions(k, s.instructions, y, f, qps, draw);
+    var bottom = staffLine(k, "", draw) - SLACK;
+    var size = k.mx(22, 26 * qps * f), W = k.width, gap = 0.12 * IN, tooWide = false;
+    var blocks = [];
+    if (spec.lyric){
+      var ll = k.wrap(spec.lyric.lead, size * 1.1, "bold", W), endW = k.d.getTextWidth(safe(spec.lyric.end)) + 0.5 * IN, boxH = size * 1.1 * 1.7;
+      blocks.push({ h: ll.length * size * 1.1 * 1.3 + boxH + gap, draw: function(top){
+        k.textLines(ll, M + W / 2, top, size * 1.1, "bold", "center", 1.3);
+        var by = top + ll.length * size * 1.1 * 1.3 + 4;
+        k.d.setLineWidth(3); k.stroke(68); k.d.roundedRect(M + (W - endW) / 2, by, endW, boxH - 4, 10, 10, "S");
+        k.textLines([spec.lyric.end], M + W / 2, by + (boxH - 4 - size * 1.1 * 1.0) / 2, size * 1.1, "bold", "center", 1);
+      } });
+    }
+    if (spec.pairs){
+      var lane = 1.0 * IN, colW = (W - lane) / 2, pad = 0.1 * IN, rowH = size * 1.15 + 2 * pad;
+      spec.pairs.left.concat(spec.pairs.right).forEach(function(w){ k.font(size, "bold"); if (k.d.getTextWidth(safe(w)) > colW - 2 * pad) tooWide = true; });
+      blocks.push({ h: spec.pairs.left.length * (rowH + gap), draw: function(top){
+        spec.pairs.left.forEach(function(l, i){
+          var ty = top + i * (rowH + gap);
+          [[M, l], [M + W - colW, spec.pairs.right[i]]].forEach(function(side){
+            k.d.setLineWidth(3); k.stroke(68); k.d.roundedRect(side[0], ty, colW, rowH, 10, 10, "S");
+            k.textLines([side[1]], side[0] + colW / 2, ty + (rowH - size * 1.15) / 2, size, "bold", "center", 1);
+          });
+          k.d.setFillColor(0); k.d.circle(M + colW + 0.16 * IN, ty + rowH / 2, 5, "F"); k.d.circle(M + W - colW - 0.16 * IN, ty + rowH / 2, 5, "F");
+        });
+      } });
+    }
+    (spec.items || []).forEach(function(it){
+      var tl = k.wrap(it.text, size, "bold", W), sl = it.sub ? k.wrap(it.sub, size * 0.9, "normal", W) : [];
+      blocks.push({ h: tl.length * size * 1.3 + sl.length * size * 0.9 * 1.3 + gap, draw: function(top){
+        var d = k.textLines(tl, M + W / 2, top, size, "bold", "center", 1.3);
+        if (sl.length) k.textLines(sl, M + W / 2, top + d, size * 0.9, "normal", "center", 1.3);
+      } });
+    });
+    if (spec.closing){
+      var cl = k.wrap(spec.closing, size, "normal", W);
+      blocks.push({ h: cl.length * size * 1.3 + gap, draw: function(top){ k.textLines(cl, M + W / 2, top, size, "normal", "center", 1.3); } });
+    }
+    var used = blocks.reduce(function(a, b){ return a + b.h; }, 0);
+    var artH = Math.min(5.2 * IN, bottom - y - used - 0.2 * IN);
+    var fits = !tooWide && artH >= 2.3 * IN;
+    if (!draw) return fits;
+    var artW = artH * 0.75, ax = M + (W - artW) / 2, ay = y + 0.08 * IN;
+    if (C && spec.art){ try { C.toPDF(k.d, C.render(spec.art.id, spec.art.tier), ax, ay, artW); } catch (e) { /* the page still prints its words */ } }
+    var top = ay + artH + 0.1 * IN, spare = Math.max(0, bottom - top - used) / (blocks.length + 1);
+    blocks.forEach(function(b){ top += spare; b.draw(top); top += b.h; });
+    return true;
+  }
+
   function fitAndPaint(k, painter, pg){
     var largest = function(){ var s = 1; while (!painter(k, pg, s, false) && s > 0.72) s = Math.round((s - 0.04) * 100) / 100; return s; };
     var f = largest();
@@ -24441,9 +24560,10 @@ if (document.readyState === "complete" || document.readyState === "interactive")
   function pagesFrom(pk){
     var src = pk.src, pages = [], included = [];
     var find = function(kind){ return pk.parts.filter(function(p){ return p.kind === kind; })[0]; };
-    var ws = find("wordsearch"), cards = find("cards"), trivia = find("trivia"), cover = find("cover");
+    var ws = find("wordsearch"), cards = find("cards"), trivia = find("trivia"), cover = find("cover"), hybrid = find("hybrid");
     if (ws) included.push("A word search from your own life");
     if (cards) included.push("Conversation cards to share");
+    if (hybrid) included.push(hybrid.specs.length > 1 ? "Pages to trace and talk about" : "A page to trace and talk about");
     if (trivia) included.push("Finish the thought");
     var sheetHtml = pk.sheets.join("");
     if (cover){
@@ -24459,6 +24579,7 @@ if (document.readyState === "complete" || document.readyState === "interactive")
       for (var i = 0; i < cards.prompts.length; i += 2)
         pages.push({ kind:"cards", sheet:cards.sheets[i / 2], prompts:cards.prompts.slice(i, i + 2), follow:src.stage !== "late", qps:src.scale });
     }
+    if (hybrid) hybrid.sheets.forEach(function(sh, i){ pages.push({ kind:"hybrid", sheet:sh, spec:hybrid.specs[i], qps:src.scale }); });
     if (trivia){
       pages.push({ kind:"trivia", sheet:trivia.sheets[0], items:trivia.items.slice(), gap:0.18, choose:/qp-fill is-choice/.test(sheetHtml), qps:src.scale });
     }
@@ -24494,7 +24615,7 @@ if (document.readyState === "complete" || document.readyState === "interactive")
     var k = new Kit(doc, paper, src.ink);
     k.stage = stageQ;
     k.who = src.generic ? "" : src.name;           // name banner on every activity page
-    var pages = pagesFrom(pk), painters = { cover:paintCover, wordsearch:paintWordSearch, cards:paintCards, trivia:paintTrivia };
+    var pages = pagesFrom(pk), painters = { cover:paintCover, wordsearch:paintWordSearch, cards:paintCards, trivia:paintTrivia, hybrid:paintHybrid };
     var layout = pages.map(function(pg, i){
       if (i) doc.addPage(src.paper === "a4" ? "a4" : "letter", "portrait");
       doc.setFillColor(255); doc.rect(0, 0, paper.w, paper.h, "F");          // always a white page
@@ -24503,13 +24624,15 @@ if (document.readyState === "complete" || document.readyState === "interactive")
     });
     /* the shell: name, date and wing on top, "Page X of Y" in the foot */
     var unit = window.activeResident && window.activeResident.tier1_core ? String(window.activeResident.tier1_core.unitNumber || "") : "";
-    var iso = todayIso(), kindOf = { cover:"cover", wordsearch:"wordsearch", cards:"talk", trivia:"complete" };
+    var iso = todayIso(), kindOf = { cover:"cover", wordsearch:"wordsearch", cards:"talk", trivia:"complete", hybrid:"talk" };
     var tipFn = tipPlan(pages.map(function(pg){ return { kind:kindOf[pg.kind] || "any", topic:"" }; }), stageQ, src.name || "guest", iso, dailyVariant(src.name || "guest"));
-    var quickNotes = shellNotes(pages.length, { tipFor:tipFn, anchorFor:anchorPlan(pages.map(function(pg){ return { kind:({ cover:"cover", wordsearch:"wordsearch", cards:"talk", trivia:"trivia" })[pg.kind] || "any", topic:"" }; }), stageQ) });
+    var quickNotes = shellNotes(pages.length, { tipFor:tipFn, anchorFor:anchorPlan(pages.map(function(pg){ return { kind:({ cover:"cover", wordsearch:"wordsearch", cards:"talk", trivia:"trivia", hybrid:"talk" })[pg.kind] || "any", topic:"" }; }), stageQ) });
     /* the tips and the therapy approach go on a Staff Companion Sheet at the front, so the resident's pages carry only the resident's content */
     var titleOf = function(pg){ return (pg.sheet && pg.sheet.title) || ({ wordsearch:"Word Search", cards:"Conversation Cards", trivia:"Finish the Thought" })[pg.kind] || ""; };
-    staffFrontSheet(doc, { intro:"This sheet is yours. Take it out before you hand the packet over. Each page below is listed by its title, with what it is for and one tip for the person sitting beside the resident.",
-      rows:pages.map(function(pg, i){ return { title:titleOf(pg), anchor:quickNotes[i].anchor, tip:quickNotes[i].tip }; }).filter(function(x){ return x.title; }) });
+    staffFrontSheet(doc, { intro:"This sheet is yours: take it out before you hand the packet over. Each page is listed by its title, with tips for the person beside the resident.",
+      rows:pages.map(function(pg, i){ return pg.kind === "hybrid" && pg.spec
+        ? { title:titleOf(pg), anchor:quickNotes[i].anchor, tips:pg.spec.tips, note:pg.spec.pairs ? "Pairs on this page: " + pg.spec.pairs.answers.join("; ") + "." : "" }
+        : { title:titleOf(pg), anchor:quickNotes[i].anchor, tip:quickNotes[i].tip }; }).filter(function(x, i, all){ return x.title && !(x.tip && all.some(function(y, j){ return j < i && y.title === x.title; })); }) });   // two sheets of cards share one row
     shellPass(doc, { name:safe(src.name || ""), wing:safe(unit), date:iso });
     var name = fileName(src.name);
     if (opts.save !== false) doc.save(name);
@@ -24576,8 +24699,9 @@ if (document.readyState === "complete" || document.readyState === "interactive")
           var checks = document.querySelectorAll("#profilePacket input[data-page]");
           checks.forEach(function(check){
             var kind = check.getAttribute("data-page");
-            check.checked = kind === "cover" || kind === "cards";
+            check.checked = kind === "cover" || kind === "cards" || kind === "hybrid";
           });
+          window.setQuickHybridCount(2);
           var packet = window.generateProfilePacket();
           if (!packet) throw new Error("The packet could not be generated.");
           var result = exportPacketToPDF();
@@ -24588,6 +24712,7 @@ if (document.readyState === "complete" || document.readyState === "interactive")
         } catch (error){
           guestStatus.textContent = String(error && error.message || error);
         } finally {
+          window.setQuickHybridCount(1);
           window.activeResident = oldProfile;
           document.dispatchEvent(new CustomEvent("cognicopia:activeresident", { detail:window.getActiveResidentContext() }));
           button.disabled = false;
@@ -24597,7 +24722,7 @@ if (document.readyState === "complete" || document.readyState === "interactive")
   }
   /* Drawing kit shared with the Monthly Bundle engine (same pages, same rules). */
   window.qpPdf = { PAPER:PAPER, M:M, IN:IN, SLACK:SLACK, safe:safe, Kit:Kit, header:header, instructions:instructions, staffLine:staffLine,
-    fitAndPaint:fitAndPaint, pagesFrom:pagesFrom, painters:{ cover:paintCover, wordsearch:paintWordSearch, cards:paintCards, trivia:paintTrivia } };
+    fitAndPaint:fitAndPaint, pagesFrom:pagesFrom, painters:{ cover:paintCover, wordsearch:paintWordSearch, cards:paintCards, trivia:paintTrivia, hybrid:paintHybrid } };
 
   btn.addEventListener("click", function(){
     if (btn.disabled) return;
@@ -25783,6 +25908,9 @@ if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol))
 <script src="js/legal.js"></script>
 <script src="js/dialogs.js"></script>
 <script src="assets/services/eraWindow.js"></script>
+<script src="assets/services/variety.js"></script>
+<script src="assets/services/eraBanks.js"></script>
+<script src="assets/services/hybridSheets.js"></script>
 <script src="assets/services/reminiscenceEngine.js"></script>
 <script src="src/engine/ReminiscencePages.js"></script>
 <script type="module">
