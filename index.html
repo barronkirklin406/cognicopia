@@ -8799,6 +8799,8 @@ const ACTIVITIES = [
    note:"A bold picture in clean black outlines, from their own life and era."},
   {id:"mandala", label:"Color the pattern",
    note:"A Zentangle-style tangle or a mandala, sized to the difficulty level."},
+  {id:"hybrid", label:"Trace and talk",
+   note:"A bold picture to trace, with a song, a film or pairs to match from their years. New every time."},
   {id:"notes", label:"Staff engagement notes",
    note:"A page for your resident documentation."},
   {id:"clocks", label:"What time is it?",
@@ -8845,7 +8847,7 @@ const ACTIVITIES = [
 
 const DEFAULT_ON = ["wordsearch","crossword","maze","dots","bingo","colornum",
                     "lyric","sayings","people","talk","popculture","rather",
-                    "language","mandala","task","notes",
+                    "language","mandala","hybrid","task","notes",
                     "clocks","coins","provhint","tracing","facsupport"];
 const TWO_PAGERS=["talk","lifestory","name","language","popculture","facsupport"];
 
@@ -9808,10 +9810,13 @@ function staffPage(D,r,sel){
     D.body("Page by page",{size:17,bold:true}); D.gap(8);
     for(const c of D.companion){
       const head=c.title+(c.anchor?"   "+c.anchor:"");
-      const room=D.measure(head,{size:16,bold:true,gap:1.4})+(c.tip?D.measure(c.tip,{size:16,gap:1.4,indent:18}):0)+10;
+      const bullets=c.tips?c.tips.map(t=>"\u2022 "+t):[];
+      const room=D.measure(head,{size:16,bold:true,gap:1.4})+(c.tip?D.measure(c.tip,{size:16,gap:1.4,indent:18}):0)+bullets.reduce((a,t)=>a+D.measure(t,{size:16,gap:1.4,indent:18}),0)+(c.note?D.measure(c.note,{size:16,gap:1.4,indent:18}):0)+10;
       if(D.need(room)) D.body("Page by page, continued:",{size:17,bold:true}), D.gap(10);
       D.body(head,{size:16,bold:true,gap:1.4});
       if(c.tip) D.body(c.tip,{size:16,gap:1.4,indent:18});
+      for(const t of bullets) D.body(t,{size:16,gap:1.4,indent:18});
+      if(c.note) D.body(c.note,{size:16,gap:1.4,indent:18});
       D.gap(4);
     }
   }
@@ -11107,6 +11112,60 @@ function mandalaPage(D,r,s,theme){
   D.y+=room;
 }
 
+/* ---- Trace and talk: a hybrid page (assets/services/hybridSheets.js) ----
+   A bold library picture to trace or color, and something to do with it: sing a line, talk about a film or a song from their years, hold
+   an everyday thing, or match three pairs. Words come from the era banks inside the resident's years (born + 7 to + 28), or a mix of
+   decades when no birth year is known. Two or three tips for staff go on the Staff Companion Sheet by this page's title. */
+function hybridPage(D,r,s,theme){
+  const C=window.CognicopiaColoring, H=window.CogniHybrid;
+  D.start(theme);
+  if(!C||!H||!window.CogniBanks){ D.heading("Trace and Talk"); D.body("This page could not be loaded on this computer. Reload the page to try again.",{size:17}); return; }
+  const R={pick:l=>pick(l), shuffle:l=>shuffle(l.slice())};
+  const born=Number(r.born)||0;
+  const spec=H.compose({R,born,decades:born?null:[1940,1950,1960],stage:r.stage,avoid:t=>!allowed(r,t),library:C.designs(),
+    layout:(window.CogniVariety?window.CogniVariety.take(H.ORDER.map(id=>({id})),"id",R,1,{pool:"layout"})[0].id:H.ORDER[contentIndex(r,H.ORDER.length,"hy"+(r.month||""))])});
+  D.heading(spec.title);
+  const cur=D.pages[D.pages.length-1]; if(cur){ cur.tips=spec.tips.slice(); cur.note=spec.pairs?"Pairs on this page: "+spec.pairs.answers.join("; ")+".":""; }
+  D.body(spec.subtitle,{size:19,bold:true});
+  D.body(spec.instruction,{size:17});
+  D.gap(6);
+  const W=PW-2*MARGIN, d=D.d;
+  const size=Math.max(22,D.lift), line=(t,sz,bold)=>{ ({size:sz,bold}=D.fit(sz,bold)); d.setFont("helvetica",bold?"bold":"normal"); d.setFontSize(sz); return {sz,bold,lines:d.splitTextToSize(String(t),W)}; };
+  let items=spec.items.slice(), closing=spec.closing;
+  const measure=()=>{
+    let h=size;                                  // the first baseline sits one line below the picture
+    if(spec.lyric){ const l=line(spec.lyric.lead,size*1.1,true); h+=l.lines.length*l.sz*1.3+l.sz*1.7+10; }
+    if(spec.pairs){ const sz=size; h+=spec.pairs.left.length*(sz*1.15+16+8); }
+    for(const it of items){ const t=line(it.text,size,true); h+=t.lines.length*t.sz*1.3+8; if(it.sub){ const u=line(it.sub,size*0.9,false); h+=u.lines.length*u.sz*1.3; } }
+    if(closing){ const c=line(closing,size,false); h+=c.lines.length*c.sz*1.3+8; }
+    return h;
+  };
+  let room=D.room()-6-measure();
+  while(room<165 && (closing||items.length>1)){ if(closing) closing=""; else items=items.slice(0,-1); room=D.room()-6-measure(); }
+  const artH=Math.min(5.2*72,Math.max(room-10,120)), artW=artH*0.75;
+  if(spec.art) C.toPDF(d,C.render(spec.art.id,spec.art.tier),(PW-artW)/2,D.y,artW);
+  d.setLineWidth(1); d.setDrawColor(0); d.setFillColor(255,255,255);
+  D.y+=artH+10+size*0.8;
+  const mid=PW/2;
+  const center=(t,sz,bold)=>{ const l=line(t,sz,bold); for(const ln of l.lines){ d.text(ln,mid,D.y,{align:"center"}); D.y+=l.sz*1.3; } };
+  if(spec.lyric){
+    const l=line(spec.lyric.lead,size*1.1,true); for(const ln of l.lines){ d.text(ln,mid,D.y,{align:"center"}); D.y+=l.sz*1.3; }
+    const ew=d.getTextWidth(spec.lyric.end)+36, bh=l.sz*1.5;
+    d.setLineWidth(3); d.roundedRect(mid-ew/2,D.y-l.sz*0.9,ew,bh,8,8,"S"); d.text(spec.lyric.end,mid,D.y+l.sz*0.2,{align:"center"}); D.y+=bh+4;
+  }
+  if(spec.pairs){
+    const sz=Math.max(size,22), colW=(W-72)/2, rowH=sz*1.15+16; d.setFont("helvetica","bold"); d.setFontSize(sz);
+    spec.pairs.left.forEach((lw,i)=>{
+      const ty=D.y; d.setLineWidth(3);
+      [[MARGIN,lw],[MARGIN+W-colW,spec.pairs.right[i]]].forEach(sd=>{ d.roundedRect(sd[0],ty,colW,rowH,8,8,"S"); d.text(sd[1],sd[0]+colW/2,ty+rowH/2+sz*0.35,{align:"center"}); });
+      d.setFillColor(0); d.circle(MARGIN+colW+12,ty+rowH/2,4,"F"); d.circle(MARGIN+W-colW-12,ty+rowH/2,4,"F"); d.setFillColor(255,255,255);
+      D.y+=rowH+8;
+    });
+  }
+  for(const it of items){ center(it.text,size,true); if(it.sub) center(it.sub,size*0.9,false); D.y+=8; }
+  if(closing){ center(closing,size,false); }
+}
+
 /* ---- Something to Do ----
    Practitioners keep returning to this and the activity literature backs
    it: tasks that honour a former role land differently from puzzles.
@@ -11871,6 +11930,8 @@ function* packetSteps(r, mode){
   yield {n:D.pages.length, D};
   if(sel.mandala) run("Color the pattern","mandala",()=>mandalaPage(D,r,s,theme),"");
   yield {n:D.pages.length, D};
+  if(sel.hybrid) run("Trace and talk","hybrid",()=>hybridPage(D,r,s,theme),"");
+  yield {n:D.pages.length, D};
   if(sel.silhouette) engine("silhouette");
   yield {n:D.pages.length, D};
 
@@ -11902,7 +11963,7 @@ function* packetSteps(r, mode){
   /* The Staff Companion Sheet is built last (it says what was made and what was left out), then moved to the front. Each page's tip and
      therapy approach are listed on it by the page's title, so nothing clinical is drawn on the resident's pages. */
   const tipFn=tipPlan(D.pages,r.stage,r.first,PACKET_DATE,PACKET_VARIANT,t=>allowed(r,t)), anchorFn=anchorPlan(D.pages,r.stage);
-  D.companion=D.pages.map((pg,i)=>({ title:pg.title||"", kind:pg.kind, tip:NO_TIP.test(pg.kind)?"":String(tipFn(i+1)||"").replace(/^Clinical Tip:\s*/,""), anchor:anchorFn(i+1) }))
+  D.companion=D.pages.map((pg,i)=>({ title:pg.title||"", kind:pg.kind, tip:NO_TIP.test(pg.kind)||pg.tips?"":String(tipFn(i+1)||"").replace(/^Clinical Tip:\s*/,""), tips:pg.tips||null, note:pg.note||"", anchor:anchorFn(i+1) }))
     .filter(c=>c.title && !NO_TIP.test(c.kind));
   const before=D.pages.length;
   D.tag("staff"); staffPage(D,r,sel);
@@ -13229,6 +13290,9 @@ $("f").addEventListener("submit", e=>{
     err.style.display="block"; $("acts").scrollIntoView({block:"center"}); return;
   }
 
+  /* every click makes a new packet: the day's choices for this resident move on one version first, so the packet differs from the last one
+     (the era banks and the variety memory then keep an item from coming back until the rest have had their turn) */
+  bumpDailyVariant(first);
   try{
   const selectedStage=document.querySelector('input[name=stage]:checked');
   const stage=selectedStage?selectedStage.value:"early";
