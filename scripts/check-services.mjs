@@ -69,8 +69,10 @@ group("sundowningCalmAndCoachingFooter", () => {
   ok(/id="calmModeToggle"[^>]*aria-pressed="false"[\s\S]*?Late-Stage \/ Sundowning Calm/.test(builderHtml), "calm mode has a high-visibility, accessible Packet Builder toggle");
   ok(/if \(calmMode == null \? sundowningCalmActive : calmMode\) return calmSheetHtml\(item\);/.test(builderHtml) && /function calmSheetHtml\(item\)[\s\S]*?CognicopiaSoothingEngine[\s\S]*?stage:"late"[\s\S]*?<section class="sheet sheet-calm"[\s\S]*?stroke-width="6pt"[\s\S]*?stroke-dasharray/.test(builderHtml), "calm mode replaces activity content with one late-stage calm reminiscence page (the soothing engine's), and keeps the single maximum-weight dashed path if the engine did not load");
   ok(/function sheetHtml\(item[^)]*\)[\s\S]*?activitySheetHtml\(item[^)]*\)[\s\S]*?care-coaching-footer/.test(builderHtml), "the shared queued-print wrapper adds the coaching footer");
-  ok(builderHtml.includes(coaching) && indexHtml.includes(coaching), "the exact coaching reminder is included in both activity print pipelines");
-  ok(/coachingFooter\(\)\s*\{[\s\S]*?const tip="Do not ask questions or test memory\.[\s\S]*?this\.d\.text\(first[\s\S]*?this\.d\.text\(rest/.test(indexHtml), "main PDF pages draw the coaching footer from the shared document engine");
+  /* The owner's rule of November 18, 2026 (cognicopia-print-engine): staff text never sits on a resident page. The Packet Builder's queued sheets
+     still carry the coaching footer; the front-page packet now puts the same reminder on its Staff Companion Sheet and draws no footer. */
+  ok(builderHtml.includes(coaching) && indexHtml.includes(coaching), "the exact coaching reminder is in the Packet Builder's sheets and on the front-page packet's Staff Companion Sheet");
+  ok(!/coachingFooter\s*\(/.test(indexHtml) && /function staffPage\(D,r,sel\)[\s\S]*?Do not ask questions or test memory\. Sit beside them/.test(indexHtml), "main PDF pages draw no coaching footer, and the Staff Companion Sheet carries the reminder");
 });
 
 /* 3. Dynamic Vector Engine */

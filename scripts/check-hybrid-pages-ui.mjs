@@ -116,8 +116,8 @@ const kept = await p.evaluate(() => localStorage.getItem("cognicopia_variety"));
 ok(!!kept && !/Margaret|Velva|teacher/i.test(kept) && /^[\w\[\]{}",:.\-]*$/.test(kept), "memory: it holds ids and numbers, never the name or town typed: " + String(kept).slice(0, 100));
 const pools = Object.keys(JSON.parse(kept || '{"pools":{}}').pools || {});
 ok(pools.length >= 3, `memory: ${pools.length} pools are being kept (${pools.slice(0, 5).join(", ")})`);
-await p.evaluate(() => window.CogniVariety.clear());
-ok(await p.evaluate(() => localStorage.getItem("cognicopia_variety")) === null, "memory: clearing forgets it");
+await p.click("#qpbForget"); await p.waitForTimeout(300);
+ok(await p.evaluate(() => localStorage.getItem("cognicopia_variety")) === null, "memory: the "Start the page choices over" button clears it");
 
 ok(foreign.length === 0, "nothing was requested from outside the page: " + foreign.slice(0, 3));
 ok(errs.length === 0, "no page script failed: " + errs.slice(0, 3));

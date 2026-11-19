@@ -6479,6 +6479,7 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
     <button type="button" class="qpb-btn" id="qpbPrint" disabled>Print / Save to PDF</button>
     <button type="button" class="qpb-btn qpb-btn-tablet" id="qpbTablet">Launch Tablet Interactive Mode</button>
     <button type="button" class="qpb-btn qpb-btn-pdf" id="qpbPdf">Download PDF Packet</button>
+    <button type="button" class="qpb-btn" id="qpbForget" aria-describedby="qpbForgetNote">Start the page choices over</button>
     <button type="button" class="qpb-btn qpb-btn-soothe" id="qpbSoothe" aria-label="Instant Soothe and Print: choose a care level and a theme, then print a fresh calming packet">Instant Soothe Print</button>
     <button type="button" class="qpb-btn qpb-btn-digest" id="qpbFamilyDigest" aria-label="Generate Family Life Digest for this resident">Family Life Digest</button>
     <button type="button" class="qpb-btn qpb-btn-pocket" id="qpbPocketCard" aria-label="Print 3x5 laminated pocket lanyard card for this resident">Pocket Lanyard Card</button>
@@ -6486,6 +6487,7 @@ html.cg-night-shift .lp-footer{border-color:#684a26!important}
   </div>
   <p class="qpb-note"><b>Download PDF Packet</b> saves a ready-to-print file straight to your Downloads folder, made entirely on this computer. If you use Print instead, choose <b>Save as PDF</b> as the printer and keep the scale at 100% (Default), not "Fit to page".</p>
   <p class="qpb-status" id="qpbStatus" role="status" aria-live="polite"></p>
+  <p class="qpb-status" id="qpbForgetNote">This computer remembers which songs, films and pictures it has used, so a new packet brings new ones. The list holds no names and stays on this computer.</p>
   <div class="qpb-preview" id="qpbPreview" aria-label="Packet preview" hidden></div>
 </section>
 
@@ -9775,6 +9777,7 @@ function staffPage(D,r,sel){
   D.gap(18);
   D.body("How to use it:",{size:17,bold:true}); D.gap(8);
   const tips=["There is no score and no time limit. Finishing is not the point.",
+    "Do not ask questions or test memory. Sit beside them, place the marker in their hand, and model slow, calm breathing.",
     "Offer a choice. Fan out two or three pages and let "+p.obj+" pick "
       +"which one to do. The choosing matters as much as the page.",
     "The lines are optional. Saying an answer out loud counts just as much as writing it, and blank lines are not a failure.",
@@ -23299,6 +23302,10 @@ if (document.readyState === "complete" || document.readyState === "interactive")
   var panel = el("profilePacket");
   if (!panel) return;
   var preview = el("qpbPreview"), status = el("qpbStatus"), genBtn = el("qpbGenerate"), printBtn = el("qpbPrint");
+  el("qpbForget").addEventListener("click", function(){
+    if (window.CogniVariety) window.CogniVariety.clear();
+    status.textContent = "Done. Songs, films and pictures used before can come up again.";
+  });
 
   function opts(){
     var o = {};
