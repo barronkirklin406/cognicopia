@@ -59,7 +59,8 @@ const mix = (top, alpha, under) => "#" + [1, 3, 5].map(i => Math.round(parseInt(
 ok(Object.keys(T).length >= 28, `the stylesheet names ${Object.keys(T).length} colors`);
 for (const need of ["green-950", "green-900", "green-800", "green-700", "parchment", "charcoal", "gold-500", "gold-300", "white", "focus", "focus-dark", "teal", "sage-700", "ink-900"]) ok(T[need], `missing token --cg-${need}`);
 /* the screen palette (owner's decision, November 5, 2026): alabaster pages, rich slate surfaces, deep ocean teal, sage and warm charcoal; the gold stays as the one warm accent */
-ok(T["green-700"] === "#08423f" && T["green-900"] === "#0f172a" && T.cream === "#fafafd" && T["gold-500"] === "#c5a059" && T.charcoal === "#28241f", "the palette's anchors are the tokens: deep teal, slate, alabaster, gold and warm charcoal");
+/* Warm Editorial Clinical (the owner's values of November 18, 2026): botanical sage, deep forest ink, warm alabaster; --cg-gold-500 is now the sage accent */
+ok(T["green-700"] === "#1d4433" && T["green-900"] === "#141e19" && T.cream === "#faf8f5" && T["gold-500"] === "#7ab599" && T.charcoal === "#141e19", "the palette's anchors are the tokens: botanical sage, forest ink, alabaster, the sage accent and forest charcoal");
 
 const TEXT = [];   // [foreground, background]: text, which must reach AAA
 const onGreens = ["green-950", "green-900", "green-800", "green-700"], onTans = ["parchment", "tan-100", "tan-200"];
@@ -210,7 +211,7 @@ for (const f of ["pricing.html", "activate.html", "contact.html", "cognitive-jou
   ok(!missing.length, `these pages are missing their paper class: ${missing.join(", ")}`);
   ok(paper >= 30, `${paper} pages carry the paper look`);
   ok(/@media screen\{[\s\S]*html\.cg-paper:not\(\.cg-night-shift\) body\{background:var\(--cg-cream\)/.test(CSS), "the stylesheet paints paper pages cream, for the screen only");
-  ok(/html\.cg-paper\.cg-night-shift body\{background:#17120c/.test(CSS), "Night Shift keeps a dim palette on paper pages");
+  ok(/html\.cg-paper\.cg-night-shift body\{background:#101613/.test(CSS), "Night Shift keeps a dim palette on paper pages");
   ok(/html\.cg-paper-app:not\(\.cg-night-shift\)\{[^}]*--accent-ink:#ffffff/.test(CSS), "the Builder takes the palette through its own variables");
   const paperCss = CSS.slice(CSS.indexOf("9b. Paper pages"), CSS.indexOf("10. Print"));
   ok(!/@media print/.test(paperCss), "the paper rules are screen-only: printed packets are untouched");

@@ -17,7 +17,7 @@
     ".cg-dlg-row{display:flex;flex-wrap:wrap;gap:12px;justify-content:flex-end;margin:0}" +
     ".cg-dlg button{min-height:var(--tap,var(--cg-tap,52px));min-width:var(--tap,var(--cg-tap,52px));padding:8px 20px;border:2px solid currentColor;border-radius:10px;background:Canvas;color:CanvasText;font-family:inherit;font-size:1rem;font-weight:700;line-height:1.2;cursor:pointer}" +
     ".cg-dlg button.cg-dlg-yes{background:CanvasText;color:Canvas}" +
-    ".cg-dlg button:focus-visible{outline:3px solid #f5b800;outline-offset:2px;box-shadow:0 0 0 6px #0f172a}";
+    ".cg-dlg button:focus-visible{outline:3px solid #86c9a7;outline-offset:2px;box-shadow:0 0 0 6px #141e19}";
   var seq = 0;
   function style() {
     if (!doc || doc.getElementById("cgDlgStyle")) return;

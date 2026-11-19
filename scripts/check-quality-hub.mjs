@@ -75,7 +75,7 @@ ok(/size: 8\.5in 11in; margin: 0;/.test(js), "a sheet prints edge to edge so it 
 ok(/viewBox="0 0 612 792"/.test(js) && /stroke-width="' \+ w \+ '"/.test(js), "the calibration sheet is drawn in points, so a 2.5 stroke prints as 2.5 pt");
 [0.5, 1, 1.5, 2.5, 3].forEach(w => ok(new RegExp("WEIGHTS = \\[[^\\]]*\\b" + String(w).replace(".", "\\.") + "\\b").test(js), `the line-weight ladder has ${w} pt`));
 ok(/Run Copier Test Print/.test(main) && /window\.print\(\)/.test(js), "the calibration sheet has its print button");
-ok(/--primary-green:\s*#08423f/i.test(css) && /--parchment-bg:\s*#f4f3ef/i.test(css) && /--gold-accent:\s*#c5a059/i.test(css) && /--charcoal:\s*#28241f/i.test(css), "the four brand colours are custom properties (the palette after the November 5 redesign)");
+ok(/--primary-green:\s*#1d4433/i.test(css) && /--parchment-bg:\s*#faf8f5/i.test(css) && /--gold-accent:\s*#7ab599/i.test(css) && /--charcoal:\s*#141e19/i.test(css), "the four brand colours are custom properties (the Warm Editorial Clinical palette of November 19, 2026: sage, alabaster, the sage accent, forest ink)");
 
 /* 5. the price, the colours and the claims */
 const builder = read("builder.html");

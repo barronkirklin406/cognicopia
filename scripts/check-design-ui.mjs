@@ -119,11 +119,11 @@ try {
   ok(t.tap === "52px", "the touch token is 52 px");
 
   /* the ring: tab through every kind of control */
-  const RING = { style: "solid", width: "3px", color: "rgb(245, 184, 0)", offset: "3px" };
+  const RING = { style: "solid", width: "3px", color: "rgb(134, 201, 167)", offset: "3px" };   // the sage ring of the Warm Editorial Clinical palette (was gold)
   for (const id of ["link", "btn", "cta", "sum", "tab", "sw", "inp"]) {
     await p.keyboard.press("Tab"); await p.waitForTimeout(330);
     const r = await p.evaluate(() => { const e = document.activeElement, s = getComputedStyle(e); return { id: e.id, style: s.outlineStyle, width: s.outlineWidth, color: s.outlineColor, offset: s.outlineOffset, shadow: s.boxShadow }; });
-    ok(r.id === id && r.style === RING.style && r.width === RING.width && r.color === RING.color && r.offset === RING.offset && /rgb\(15, 23, 42\) 0px 0px 0px 6px/.test(r.shadow),
+    ok(r.id === id && r.style === RING.style && r.width === RING.width && r.color === RING.color && r.offset === RING.offset && /rgb\(20, 30, 25\) 0px 0px 0px 6px/.test(r.shadow),
       `Tab reaches #${id} and shows the two-band ring (${r.id}: ${r.width} ${r.style} ${r.color}, ${r.shadow})`);
   }
   await shot(p, "kit-focus");

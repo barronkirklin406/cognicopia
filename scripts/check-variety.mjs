@@ -126,7 +126,7 @@ const compose = (seed, o) => H.compose(Object.assign({ R: rng(seed), library, st
   V0.clear();
   let prev = "", alike = 0; const spans = [], factsSeen = [];
   for (let i = 0; i < 300; i++) {
-    const s = compose(V0.clickSeed(), { born: 1940 }), t = H.text(s) + "|" + (s.art && s.art.id);
+    const s = compose(V0.clickSeed(), { born: 1940, layout: H.ORDER[i % 6] }), t = H.text(s) + "|" + (s.art && s.art.id);
     if (t === prev) alike++; prev = t; factsSeen.push(...s.facts);
   }
   ok(alike === 0, "300 sheets in a row for one resident: no two in a row alike");
