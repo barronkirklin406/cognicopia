@@ -23,7 +23,7 @@ const ok = (c, m) => { if (c) passed++; else problems.push(m); };
 
 const outside = [], errors = [];
 const ctx = await browser.newContext({ viewport: { width: 1280, height: 1000 }, serviceWorkers: "block", acceptDownloads: true, permissions: ["clipboard-read", "clipboard-write"] }); await agreed(ctx);
-const pg = await ctx.newPage();
+const pg = await ctx.newPage(); await agreeToDialogs(pg);
 pg.on("request", r => { const u = r.url(); if (!u.startsWith(base) && !/^(data|blob|about):/.test(u)) outside.push(u); });
 pg.on("pageerror", e => errors.push(e.message));
 await pg.addInitScript(() => { window.print = () => {}; });
@@ -128,7 +128,7 @@ ok(await pg.$('[data-privacy-choice="fpNames"]') !== null || true, "the Facility
 await pg.goto(base + "index.html"); await pg.waitForTimeout(1200);
 ok(await pg.$('[data-privacy-choice="arbNamesCsv"]') !== null && await pg.$('[data-privacy-choice="arbNamesBackup"]') !== null, "the packet tool's backup panel offers a names choice for the spreadsheet and for the backup file");
 await pg.evaluate(() => { document.getElementById("arbBackup").open = true; });
-pg.on("dialog", d => d.accept()); await agreeToDialogs(pg);
+pg.on("dialog", d => d.accept());
 const [dl] = await Promise.all([pg.waitForEvent("download", { timeout: 8000 }).catch(() => null), pg.evaluate(() => { document.getElementById("arbExportMore").click(); document.querySelector('[data-export="csv"]').click(); })]);
 if (dl) {
   const csv = fs.readFileSync(await dl.path(), "utf8");
