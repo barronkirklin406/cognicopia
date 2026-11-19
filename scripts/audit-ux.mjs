@@ -94,7 +94,6 @@ const STATES = [
   ["contact: an invoice request", "contact.html?subject=Corporate+Invoice+Request", []],
   ["profile: last step", "profile.html", [click("#rapNext"), click("#rapNext"), click("#rapNext"), click("#rapNext")]],
   ["index: Instant Soothe open", "index.html", [click("#arbSootheSticky")]],
-  ["index: license form", "index.html", [click("#hdrlicToggle")]],
   ["index: a saved resident to open", "index.html", [seedResidents, reload, click("#loadProfile")]],
   ["builder: packet drawer with a page", "builder.html#/coloring", [pickPicture, click("#ccAdd"), click("#openPacket")]],
   ["builder: Instant Soothe open", "builder.html#/", [click(".panic-button")]],
