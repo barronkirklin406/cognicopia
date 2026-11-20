@@ -1,7 +1,7 @@
 {
- "$comment": "The owner's own picture descriptions, one per library design (150). `subject` is the picture itself; `prompt` is the owner's full wording for an image maker, kept exactly as given. Read by scripts/coloring_prompts.mjs --masters. No resident data here.",
+ "$comment": "The owner's own picture descriptions, one per library design (157). `subject` is the picture itself; `prompt` is the owner's full wording for an image maker, kept exactly as given. Read by scripts/coloring_prompts.mjs --masters. No resident data here.",
  "schema_version": 1,
- "count": 150,
+ "count": 157,
  "designs": {
   "barn-quilt": {
    "title": "The Barn Quilt",
@@ -902,6 +902,48 @@
    "category": "zentangle-mandalas",
    "subject": "A radiant circular mandala inspired by sunflower seed pods and overlapping petal layers",
    "prompt": "A radiant circular mandala inspired by sunflower seed pods and overlapping petal layers, minimalist bold-and-easy adult coloring book page, thick pure-black vector outlines, solid pure white background, zero shading, zero gray tones, high contrast --ar 3:4"
+  },
+  "ai-fair-burgers-bacon-fries": {
+   "title": "Burgers, Bacon and Fries",
+   "category": "vintage-americana",
+   "subject": "Burgers, bacon strips, bags of fries and snack bags from the midway",
+   "prompt": "Burgers, bacon strips, bags of fries and snack bags from the midway, minimalist bold-and-easy adult coloring book page, thick pure-black vector outlines, clean uncrowded composition, large fillable areas, solid pure white background, zero shading, zero gray tones, high contrast --ar 3:4"
+  },
+  "ai-fair-burgers-corn-dogs": {
+   "title": "Burgers, Drinks and Corn Dogs",
+   "category": "vintage-americana",
+   "subject": "Burgers, a drink cup, corn dogs on sticks and fries from the midway",
+   "prompt": "Burgers, a drink cup, corn dogs on sticks and fries from the midway, minimalist bold-and-easy adult coloring book page, thick pure-black vector outlines, clean uncrowded composition, large fillable areas, solid pure white background, zero shading, zero gray tones, high contrast --ar 3:4"
+  },
+  "ai-fair-cones-popsicles": {
+   "title": "Cones and Popsicles",
+   "category": "vintage-americana",
+   "subject": "Ice cream cones and popsicles with drips and bites taken",
+   "prompt": "Ice cream cones and popsicles with drips and bites taken, minimalist bold-and-easy adult coloring book page, thick pure-black vector outlines, clean uncrowded composition, large fillable areas, solid pure white background, zero shading, zero gray tones, high contrast --ar 3:4"
+  },
+  "ai-fair-cotton-candy-machine": {
+   "title": "The Cotton Candy Machine",
+   "category": "vintage-americana",
+   "subject": "A cotton candy machine spinning fluffy clouds of cotton candy",
+   "prompt": "A cotton candy machine spinning fluffy clouds of cotton candy, minimalist bold-and-easy adult coloring book page, thick pure-black vector outlines, clean uncrowded composition, large fillable areas, solid pure white background, zero shading, zero gray tones, high contrast --ar 3:4"
+  },
+  "ai-fair-ice-cream-popsicles": {
+   "title": "Ice Cream Cones and Popsicles",
+   "category": "vintage-americana",
+   "subject": "Ice cream cones, scoops and popsicles scattered across the page",
+   "prompt": "Ice cream cones, scoops and popsicles scattered across the page, minimalist bold-and-easy adult coloring book page, thick pure-black vector outlines, clean uncrowded composition, large fillable areas, solid pure white background, zero shading, zero gray tones, high contrast --ar 3:4"
+  },
+  "ai-fair-treats-trio": {
+   "title": "Cotton Candy, Popcorn and Churros",
+   "category": "vintage-americana",
+   "subject": "Cotton candy, a box of popcorn and churros from the fair",
+   "prompt": "Cotton candy, a box of popcorn and churros from the fair, minimalist bold-and-easy adult coloring book page, thick pure-black vector outlines, clean uncrowded composition, large fillable areas, solid pure white background, zero shading, zero gray tones, high contrast --ar 3:4"
+  },
+  "ai-fair-watermelon": {
+   "title": "The Watermelon Slice",
+   "category": "vintage-americana",
+   "subject": "A whole watermelon with a wedge slice cut out",
+   "prompt": "A whole watermelon with a wedge slice cut out, minimalist bold-and-easy adult coloring book page, thick pure-black vector outlines, clean uncrowded composition, large fillable areas, solid pure white background, zero shading, zero gray tones, high contrast --ar 3:4"
   }
  }
 }

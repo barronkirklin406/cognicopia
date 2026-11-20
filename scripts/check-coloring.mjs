@@ -156,8 +156,9 @@ try {
   /* a hand-drawn design: remade pictures are traced, and a traced picture sets its own Tier 3 weight (never under the 3 pt floor) */
   const pg = L.sheet({ design:"quilt-ohio-star", tier:3, weight:"auto", header:true, title:true, caption:true, largePrint:true, legend:"high-contrast", pageNumber:1, pageCount:1, name:"Ruth", facility:"Oak Ridge" });
   const lay = L.layout({ design:"quilt-ohio-star", tier:3, header:true, title:true, caption:true, largePrint:true, legend:"high-contrast" });
-  const sw = +/<g [^>]*stroke-width="([0-9.]+)"/.exec(pg.html)[1], ppu = lay.blocks.art.w * 96 / 600;
-  ok(Math.abs(sw * ppu - 10.5) < .02, `Tier 3 page lines print at 10.5 px (got ${(sw * ppu).toFixed(3)})`);
+  /* a quilt is scaled down to sit inside the 8% frame (the owner's rule of November 19, 2026); its pen weight is divided by that scale so the line still prints at the tier's weight */
+  const gTag = /<g [^>]*stroke-width="([0-9.]+)"[^>]*>/.exec(pg.html), sw = +gTag[1], gScale = +((/scale\(([0-9.]+)\)/.exec(gTag[0]) || [, 1])[1]), ppu = lay.blocks.art.w * 96 / 600;
+  ok(Math.abs(sw * gScale * ppu - 10.5) < .02, `Tier 3 page lines print at 10.5 px (got ${(sw * gScale * ppu).toFixed(3)})`);
   ok(/Prepared especially for <b>Ruth<\/b>/.test(pg.html) && /Oak Ridge/.test(pg.html) && /data-legend="high-contrast"/.test(pg.html) && pg.perf < 150, "sheet carries the name, facility and color guide");
   const act = L.LIBRARY_ACTIVITY, cfg = { residentName:"Ruth", opts:{ pages:["sunflower", "red-barn"], tier:2, header:true, title:true, caption:true, legend:"off" } };
   const plan = act.plan(cfg, null, 2), page = act.generate(cfg, null, plan[1]);

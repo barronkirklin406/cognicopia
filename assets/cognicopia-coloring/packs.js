@@ -101,6 +101,8 @@ pack("main-street", "Main Street", "vintage-americana", "The jukebox, the soda f
   ["jukebox", "ice-cream-soda", "gas-pump", "ballgame", "liberty-bell"]);
 pack("county-fair", "The County Fair", "vintage-americana", "The Ferris wheel, a blue ribbon, apple pie and a barn quilt on the way home.",
   ["ferris-wheel", "blue-ribbon", "apple-pie", "barn-quilt", "porch-bunting"]);
+pack("fair-food", "Fair Food", "vintage-americana", "Cotton candy, corn dogs, burgers, ice cream and a slice of watermelon from the midway.",
+  ["ai-fair-treats-trio", "ai-fair-cotton-candy-machine", "ai-fair-burgers-corn-dogs", "ai-fair-burgers-bacon-fries", "ai-fair-ice-cream-popsicles", "ai-fair-cones-popsicles", "ai-fair-watermelon"]);
 
 /* Holidays through the year */
 pack("holidays-first-half", "Holidays: Winter to Summer", "seasons-holidays", "Valentine's Day, St. Patrick's Day, Easter, the first day of spring and the Fourth of July.",

@@ -402,6 +402,15 @@ var kit = {
 
 /* ---------- 5. The library ---------- */
 var DESIGNS = [], BY_ID = {}, PACKS = [], PACK_BY_ID = {};
+/* Designs that keep their earlier 5% framing for now. The owner's 8%-of-white rule (November 19, 2026) is built into every design in the 55 pages
+   of the coloring overhaul and every new picture; these drawn designs cannot take it yet without losing small areas the tier rules need, and
+   each leaves this list when it is remade (docs/local-art-agent.md). scripts/audit-coloring-margins.mjs prints them as "earlier framing". */
+var LEGACY_FRAME = {};
+["daisy-jar", "teapot-and-cup", "grandfather-clock", "pocket-watch", "coffee-percolator", "canning-jars", "box-camera", "rural-mailbox", "farm-windmill",
+ "covered-bridge", "snowflake-medallion", "honeycomb", "farm-pickup", "steam-locomotive", "bread-truck", "fire-engine", "cardinal-branch", "robin-fence",
+ "hummingbird", "pine-cones", "zen-rolling-waves", "mandala-star",
+ /* pages of the overhaul still waiting for their remade picture */
+ "baking-day", "jack-o-lantern", "holiday-wreath", "snowman", "ornaments"].forEach(function(k){ LEGACY_FRAME[k] = 1; });
 var REQUIRED = ["id", "title", "cat", "talk"];
 function define(meta, draw){
   REQUIRED.forEach(function(k){ if (!meta[k]) throw new Error("Cognicopia Coloring design needs " + k + ": " + JSON.stringify(meta)); });
@@ -506,13 +515,23 @@ function renderWith(d, draw, tier, variant){
   /* The owner's rule of November 19, 2026: the whole subject sits inside the page with at least 8% of white on every side (a share of that side:
      W for left and right, H for top and bottom). A picture fitted to its subject is scaled to the room that leaves; a picture drawn to the page
      (fit "page": the scenes, quilts and patterns) keeps its own size and place unless it crosses that line, and only then is it scaled down to it. */
-  var pad = Math.max(.09, d.pad == null ? 0 : d.pad), padX = W * pad, padY = H * pad, bw = Math.max(1, bb.x1 - bb.x0), bh = Math.max(1, bb.y1 - bb.y0);
-  if (d.fit === "subject"){
-    s = Math.min((W - 2 * padX) / bw, (H - 2 * padY) / bh);
-    tx = (W - bw * s) / 2 - bb.x0 * s; ty = (H - bh * s) / 2 - bb.y0 * s;
-  } else if (bb.x0 < padX || bb.y0 < padY || bb.x1 > W - padX || bb.y1 > H - padY){
-    s = Math.min(1, (W - 2 * padX) / bw, (H - 2 * padY) / bh);
-    tx = (W - bw * s) / 2 - bb.x0 * s; ty = (H - bh * s) / 2 - bb.y0 * s;
+  var bw = Math.max(1, bb.x1 - bb.x0), bh = Math.max(1, bb.y1 - bb.y0), pad, padX, padY;
+  if (LEGACY_FRAME[id]){
+    /* the earlier framing, exactly: a subject fitted to 5% of the page width on every side, a page-fit picture left as drawn */
+    pad = d.pad != null && d.pad < .09 ? d.pad : .05; padX = padY = W * pad;
+    if (d.fit === "subject"){
+      s = Math.min((W - 2 * padX) / bw, (H - 2 * padY) / bh);
+      tx = (W - bw * s) / 2 - bb.x0 * s; ty = (H - bh * s) / 2 - bb.y0 * s;
+    }
+  } else {
+    pad = Math.max(.09, d.pad == null ? 0 : d.pad); padX = W * pad; padY = H * pad;
+    if (d.fit === "subject"){
+      s = Math.min((W - 2 * padX) / bw, (H - 2 * padY) / bh);
+      tx = (W - bw * s) / 2 - bb.x0 * s; ty = (H - bh * s) / 2 - bb.y0 * s;
+    } else if (bb.x0 < padX || bb.y0 < padY || bb.x1 > W - padX || bb.y1 > H - padY){
+      s = Math.min(1, (W - 2 * padX) / bw, (H - 2 * padY) / bh);
+      tx = (W - bw * s) / 2 - bb.x0 * s; ty = (H - bh * s) / 2 - bb.y0 * s;
+    }
   }
   /* The tier's smallest area rule: a white shape too small to color at this
      tier (at the smallest printed size, with every heading on) is left out.
