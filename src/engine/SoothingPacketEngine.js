@@ -54,9 +54,18 @@
   var STAGE_ALIAS = { mild: "early", early: "early", "mild / early": "early", moderate: "middle", mid: "middle", middle: "middle", "moderate / mid": "middle", acute: "late", late: "late", advanced: "late", "acute / late": "late" };
   function stageOf(v) { var k = String(v == null ? "" : v).toLowerCase().trim(); return STAGE_ALIAS[k] || CM.stageOf(v); }
   var THEME_IDS = ["nature", "heritage", "music"];
+  /* The era banks (assets/services/eraBanks.js, CogniBanks) feed a "memory" page: songs, shows, films and things from home of the person's own years.
+     The page is offered only when the banks are loaded and never at the late stage, and a nature page never takes one. */
+  function Banks() { var b = root.CogniBanks; return b && b.ALL && b.ALL.length ? b : null; }
+  var MEMORY_THEMES = { music: ["music", "band"], heritage: ["household", "radio", "tv", "movie", "star"] };
+  var MEMORY_TITLE = { music: "Songs of Your Years", band: "Singers and Bands", movie: "At the Movies", tv: "On the Television", radio: "On the Radio", household: "Things from Home", star: "Stars of the Screen" };
+  var MEMORY_INSTRUCTION = { early: "Read any of these aloud, hum a bit, or tell a story about one.", middle: "Pick one you like and talk about it." };
+  var MEMORY_INVITE = { early: "Hum along to any you like, or tell a story about one.", middle: "Take your time. Any one will do." };
+  function memoryThemes(theme) { return theme === "music" ? MEMORY_THEMES.music : theme === "heritage" ? MEMORY_THEMES.heritage : null; }
+  function bankOf(id) { var b = Banks(), i; if (!b) return null; for (i = 0; i < b.ALL.length; i++) if (b.ALL[i].id === id) return b.ALL[i]; return null; }
   function themeOf(v) { return C.THEMES[v] && v !== "mix" ? v : "mix"; }
   var LEVEL = { early: "detailed", middle: "simple", late: "bold" };
-  var POOLS = ["prompts", "motifs", "puzzles", "paths", "grounding", "tips"];
+  var POOLS = ["prompts", "motifs", "puzzles", "paths", "grounding", "tips", "bank"];
   var cap = function (s) { s = String(s); return s.charAt(0).toUpperCase() + s.slice(1); };
 
   /* ---------- what is allowed in, and what was used lately ---------- */
@@ -96,15 +105,22 @@
   /* ---------- choosing ---------- */
   function planKinds(stage, R, want) {
     var n = want ? Math.max(1, Math.min(3, want | 0)) : stage === "late" ? R.weighted([1, 2], function (k) { return k === 1 ? 0.2 : 0.8; }) : stage === "middle" ? R.weighted([2, 3], function (k) { return k === 2 ? 0.6 : 0.4; }) : R.weighted([2, 3], function (k) { return k === 2 ? 0.3 : 0.7; });
-    var settle = R.pick(["path", "motif"]), types;
+    var settle = R.pick(["path", "motif"]), types, bank = !!Banks(), Rm = R.fork("memory");
     /* a single page asked for (one version in a packet): any kind the stage suits, so a set of single pages is varied */
     if (n === 1 && want) {
       var kinds = stage === "late" ? { prompt: 0.25, path: 0.375, motif: 0.375 } : stage === "middle" ? { prompt: 0.3, path: 0.25, motif: 0.25, puzzle: 0.2 } : { prompt: 0.3, puzzle: 0.35, motif: 0.15, path: 0.2 };
+      if (bank && stage !== "late") kinds.memory = 0.25;
       return [R.weighted(Object.keys(kinds), function (k) { return kinds[k]; })];
     }
     if (stage === "late") { n = Math.min(n, 2); types = n === 1 ? [settle] : [settle, "prompt"]; }
     else if (stage === "middle") types = n === 1 ? [settle] : n === 2 ? [settle, "prompt"] : [settle, "prompt", "puzzle"];
     else types = n === 1 ? ["prompt"] : n === 2 ? ["prompt", R.weighted(["puzzle", "motif", "path"], function (k) { return k === "puzzle" ? 0.5 : 0.25; })] : ["prompt", "puzzle", settle];
+    /* with the banks loaded, a memory page takes the place of a puzzle or the page that settles, about a third of the time */
+    if (bank && stage !== "late" && n > 1) {
+      var at = types.indexOf("puzzle");
+      if (at < 0) types.some(function (t, k) { if (t !== "prompt") { at = k; return true; } return false; });
+      if (at >= 0 && Rm.next() < 0.5) types[at] = "memory";
+    }
     return types;
   }
   function searchOk() { return !!(PCG.puzzles && PCG.matrix && PCG.matrix.data && PCG.puzzles.wordSearch); }
@@ -119,6 +135,37 @@
     return pick(pool, hist, R, 1, weightOf)[0];
   }
 
+  /* n different entries, never one that is on the recent list while there is another; with no birth window, spread over the decades */
+  function takeBank(pool, hist, R, n, spread) {
+    if (!spread) return pick(pool, hist, R, n);
+    var at = {}, b = Banks(); (hist || []).forEach(function (id, k) { at[id] = k; });
+    var fresh = pool.filter(function (e) { return at[e.id] == null; }), src = fresh.length >= n ? fresh : pool, buckets = {}, out = [], i;
+    src.forEach(function (e) { var d = b.decadeOf(e); (buckets[d] = buckets[d] || []).push(e); });
+    var order = R.shuffle(Object.keys(buckets));
+    for (i = 0; out.length < n && order.length && i < n * 8; i++) {
+      var left = (buckets[order[i % order.length]] || []).filter(function (x) { return out.indexOf(x) < 0; });
+      if (left.length) out.push(R.pick(left));
+    }
+    return out.length < n ? out.concat(pick(src.filter(function (x) { return out.indexOf(x) < 0; }), hist, R, n - out.length)) : out;
+  }
+  function chooseMemory(th, stage, era, R, hist, bad, usedNow) {
+    var b = Banks(), list = memoryThemes(th), want = stage === "early" ? 5 : 3, tries, k;
+    if (!b || !list || stage === "late") return null;
+    var order = R.fork("bt").shuffle(list.slice());
+    for (k = 0; k < order.length; k++) {
+      var bt = order[k];
+      var pool = b.ALL.filter(function (e) {
+        return e.th === bt && usedNow.indexOf(e.id) < 0 && (!era || (e.y[1] >= era[0] && e.y[0] <= era[1])) && b.line(e).length <= 64 && !bad([e.t, e.x || ""].join(" "));
+      });
+      if (pool.length >= want) {
+        var got = takeBank(pool, hist, R.fork("bank"), want, !era);
+        if (got.length === want) return { theme: bt, ids: got.map(function (e) { return e.id; }) };
+      }
+    }
+    void tries;
+    return null;
+  }
+
   function choose(o) {
     o = o || {};
     var stage = stageOf(o.stage), theme = themeOf(o.theme), seed = String(o.seed == null ? "soothe" : o.seed), mix = theme === "mix";
@@ -127,13 +174,21 @@
     var types = planKinds(stage, R.fork("kinds"), o.count);
     /* a theme for each page: the one chosen, or three different ones for a mix */
     var themes = mix ? R.fork("themes").shuffle(THEME_IDS) : null;
-    var used = { prompts: [], motifs: [], puzzles: [], paths: [], grounding: [], tips: [] };
+    var used = { prompts: [], motifs: [], puzzles: [], paths: [], grounding: [], tips: [], bank: [] };
     var recent = function (name) { var at = {}; (hist[name] || []).forEach(function (id) { at[id] = 1; }); return function (it) { return !at[it.id]; }; };
     var items = types.map(function (type, i) {
-      var th = mix ? themes[i % 3] : theme, code = C.CODE_OF[th], Ri = R.fork("item" + i + type);
-      var item = { type: type, theme: th, seed: seed + "/" + i + "/" + type };
+      var th = mix ? themes[i % 3] : theme, code = C.CODE_OF[th], Ri = R.fork("item" + i + type), memory = null;
+      /* a memory page: five (early) or three (middle) things of the person's own years from one bank theme; if the banks cannot fill it, a prompt page takes its place */
+      if (type === "memory") {
+        memory = chooseMemory(th, stage, era, Ri, hist.bank, bad, used.bank);
+        if (memory) used.bank = used.bank.concat(memory.ids); else type = "prompt";
+      }
+      var item = { type: type, theme: th, seed: seed + "/" + i + "/" + (memory ? "memory" : type) };
+      if (memory) { item.ids = memory.ids; item.id = memory.ids.join("+"); item.bankTheme = memory.theme; item.title = MEMORY_TITLE[memory.theme]; }
       var isNew = function (name) { return function (x) { return used[name].indexOf(x.id) < 0; }; };
-      if (type === "prompt") {
+      if (memory) {
+        /* nothing more to choose */
+      } else if (type === "prompt") {
         var wide = C.PROMPTS.filter(function (p) { return !bad(hay.prompts(p)) && isNew("prompts")(p); });
         var pool = wide.filter(function (p) { return p.themes.indexOf(code) >= 0 && (th !== "heritage" || overlaps(p.era, C.THEMES.heritage.eras)); });
         if (!pool.length) pool = wide;
@@ -382,8 +437,31 @@
     if (z.kind === "likes") return pageLikes(sh, item, plan, ctx, z);
     return pageFinish(sh, item, plan, ctx, z);
   }
-  var MAKERS = { prompt: pagePrompt, motif: pageMotif, path: pagePath, puzzle: pagePuzzle };
-  var ACTIVITY = { prompt: "talk", motif: "silhouette", path: "pathtrace", search: "wordsearch", likes: "matching", finish: "choose-ending" };
+  /* a memory page: the entries as large lines in boxes, one gentle invitation, the line for the breath. Never a question, never a test. */
+  function pageMemory(sh, item, plan, ctx) {
+    var st = sh.stage, S = sh.S, F = sh.F, g = groundOf(item.grounding), b = Banks();
+    if (!b) { sh.fail("the era banks are not loaded"); return; }
+    var es = (item.ids || []).map(bankOf).filter(Boolean), n = es.length;
+    if (!n) { sh.fail("no entries for the memory page"); return; }
+    var title = item.title || MEMORY_TITLE[item.bankTheme] || "Songs of Your Years", top = head(sh, title, MEMORY_INSTRUCTION[st]);
+    var bottom = foot(sh, g.text, st), isize = st === "early" ? 24 : 28, ilead = Math.round(isize * 1.35);
+    var ilines = sh.wrap(MEMORY_INVITE[st], F.w - 20, isize, false), ih = (ilines.length - 1) * ilead + Math.round(isize * 0.9), gap = 18;
+    var invTop = bottom - 16 - ih, avail = invTop - 20 - (top + 10), rowH = Math.min(st === "early" ? 112 : 150, (avail - (n - 1) * gap) / n);
+    if (rowH < 66) { sh.fail("the memory rows are too short (" + Math.round(rowH) + " pt)"); return; }
+    var blockH = n * rowH + (n - 1) * gap, y0 = top + 10 + Math.max(0, (avail - blockH) / 2), bw = F.w - 12, x = F.x + 6;
+    es.forEach(function (e, i) {
+      var y = y0 + i * (rowH + gap), text = b.line(e), size = st === "early" ? 26 : 30, lines;
+      do { lines = sh.wrap(text, bw - 36, size, false); if (lines.length > 2) size -= 2; } while (lines.length > 2 && size >= (st === "early" ? 22 : 24));
+      if (lines.length > 2 || size < RES_MIN) { sh.fail("\"" + text.slice(0, 30) + "\" is wider than its box"); return; }
+      sh.rect(x, y, bw, rowH, { r: 16, w: S.stroke.rule, fill: "#fff", role: "rule" });
+      var lead = Math.round(size * 1.25), by = y + rowH / 2 - (lines.length - 1) * lead / 2 + size * 0.34;
+      lines.forEach(function (l, k) { sh.text(l, sh.cx, by + k * lead, size, { role: "choice", align: "center" }); });
+    });
+    ilines.forEach(function (l, k) { sh.text(l, sh.cx, invTop + isize * 0.82 + k * ilead, isize, { role: "body", align: "center" }); });
+    sh.meta = { id: "soothe-memory", title: title, instruction: MEMORY_INSTRUCTION[st], topic: title.toLowerCase(), answers: ["There is no right or wrong answer; any one of these is a good place to begin."], key: { bank: item.ids.slice() } };
+  }
+  var MAKERS = { prompt: pagePrompt, motif: pageMotif, path: pagePath, puzzle: pagePuzzle, memory: pageMemory };
+  var ACTIVITY = { prompt: "talk", memory: "talk", motif: "silhouette", path: "pathtrace", search: "wordsearch", likes: "matching", finish: "choose-ending" };
 
   /* every resident-facing line is at least 18 pt, and 24 pt bold at the late stage */
   function problemsOf(page, stage) {
@@ -452,7 +530,7 @@
 
   /* the content, with the counts the checks and the pickers use */
   function counts() {
-    return { prompts: C.PROMPTS.length, motifs: Art.MOTIFS.length, puzzles: C.PUZZLES.length, paths: Art.PATHS.length, grounding: C.GROUNDING.length, tips: C.TIPS.length };
+    return { prompts: C.PROMPTS.length, motifs: Art.MOTIFS.length, puzzles: C.PUZZLES.length, paths: Art.PATHS.length, grounding: C.GROUNDING.length, tips: C.TIPS.length, bank: Banks() ? Banks().ALL.length : 0 };
   }
 
   root.CognicopiaSoothingEngine = Object.freeze({

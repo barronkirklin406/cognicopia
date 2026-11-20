@@ -241,6 +241,73 @@ ok(/id="lpCalmBtn"/.test(builder) && /case "lpCalmBtn": calmingPage\(\)/.test(bu
 { const sources = [index, builder].map(h => (h.match(/<script(?![^>]*\ssrc)[^>]*>[\s\S]*?<\/script>/g) || []).join("\n"));
   ok(!/Instant Soothe[^\n]{0,80}window\.print\(\)/.test(sources.join("\n")), "no page prints straight from an Instant Soothe click"); }
 
+/* ---------- 8. the era banks on a page of their own (Instant Soothe's "memory" page) ---------- */
+{
+  const before = E.generate({ stage: "middle", theme: "heritage", seed: "bank-off", era: [1945, 1966], history: {}, count: 3, date: "2026-11-20" });
+  ok(before.pages.every(pg => pg.kind !== "memory"), "without the era banks loaded there is no memory page");
+  ["assets/services/eraWindow.js", "assets/services/eraBanks.js"].forEach(f => vm.runInContext(read(f), ctx, { filename: f }));
+  const B = ctx.CogniBanks;
+  ok(!!B && B.ALL.length > 400, "the era banks load (assets/services/eraBanks.js)");
+  const byId = Object.fromEntries(B.ALL.map(e => [e.id, e]));
+  const QUIZ = /\b(do you remember|can you recall|quiz|test your|guess|correct answer|wrong)\b/i;   /* the same words scripts/check-variety.mjs bans in a bank */
+  const born = [1925, 1930, 1935, 1940, 1945, 1950, 1955, 1960, 1965];
+  let memory = 0, late = 0, lateMem = 0, avoidHit = 0, sizeBad = 0, quiz = 0, outside = 0;
+  const first = {}, theme = ["music", "heritage", "mix"];
+  /* a long run for one person, with the history carried from packet to packet exactly as the facade keeps it */
+  let hist = {}, seenAll = [];
+  for (let k = 0; k < 260; k++){
+    const stage = k % 5 === 4 ? "late" : k % 2 ? "early" : "middle", era = [1938, 1959];
+    const pk = E.generate({ stage, theme: theme[k % 3], seed: "run-" + k, era, history: hist, date: "2026-11-20" });
+    ["bank"].concat(E.POOLS.filter(p => p !== "bank")).forEach(name => { hist[name] = (hist[name] || []).filter(id => (pk.used[name] || []).indexOf(id) < 0).concat(pk.used[name] || []).slice(-Math.max(3, name === "bank" ? B.ALL.length : (E.counts()[name] || 3))); });
+    if (stage === "late") { late++; lateMem += pk.pages.filter(pg => pg.kind === "memory").length; }
+    pk.pages.filter(pg => pg.kind === "memory").forEach(pg => {
+      memory++;
+      const ids = pg.page.meta.key.bank, es = ids.map(id => byId[id]);
+      ok(es.every(Boolean) && ids.length === (pk.stage === "early" ? 5 : 3), "a memory page names its era-bank entries (5 at the early stage, 3 at the middle)");
+      es.forEach(e => { seenAll.push(e.id); if (!(e.y[1] >= era[0] && e.y[0] <= era[1])) outside++; });
+      pg.page.texts.forEach(t => { if (CM.STAFF_ROLES.indexOf(t.role) < 0 && t.role !== "number" && t.role !== "mark" && t.size < 18 - 1e-9) sizeBad++; if (QUIZ.test(t.text)) quiz++; });
+    });
+    if (k === 0) first.packet = pk;
+  }
+  ok(memory >= 30, `memory pages are drawn in a long run (${memory} in 260 packets)`);
+  ok(lateMem === 0, `the late stage never holds a memory page (${late} late packets)`);
+  ok(outside === 0, "every entry on a memory page touches the person's years");
+  ok(sizeBad === 0 && quiz === 0, `memory pages have no resident text under 18 pt and no quiz words (${sizeBad} small, ${quiz} quiz)`);
+  /* no entry comes back before the pool of its kind has been through: with the history carried along, an entry is not drawn twice while a fresh one is left */
+  const counts = {}; seenAll.forEach(id => { counts[id] = (counts[id] || 0) + 1; });
+  const poolOf = id => B.ALL.filter(e => e.th === byId[id].th && e.y[1] >= 1938 && e.y[0] <= 1959 && B.line(e).length <= 64).length;
+  const repeats = Object.keys(counts).filter(id => counts[id] > 1);
+  ok(repeats.length === 0 || memory * 4 > B.ALL.filter(e => e.th === "music" || e.th === "movie").length, `an entry is not repeated while the pool still has fresh ones (${repeats.length} repeats in ${seenAll.length} drawn; the smallest pool is ${Math.min(...Object.keys(counts).map(poolOf))})`);
+  ok(hist.bank.every(id => /^[a-z]+-\d{4}-[a-z0-9-]+$/.test(id) && id.length <= 40), "the history holds bank ids only");
+  /* every birth year from 1925 to 1965 */
+  let bornOut = 0, bornMem = 0;
+  born.forEach(y => {
+    const win = [y + 7, y + 28];
+    for (let k = 0; k < 24; k++){
+      const pk = E.generate({ stage: k % 2 ? "early" : "middle", theme: k % 3 ? "heritage" : "music", seed: "born-" + y + "-" + k, era: win, history: {}, date: "2026-11-20" });
+      pk.pages.filter(pg => pg.kind === "memory").forEach(pg => { bornMem++; pg.page.meta.key.bank.forEach(id => { const e = byId[id]; if (!(e.y[1] >= win[0] && e.y[0] <= win[1])) bornOut++; }); });
+    }
+  });
+  ok(bornMem >= 40 && bornOut === 0, `for births 1925 to 1965 every entry touches born + 7 to born + 28 (${bornMem} memory pages, ${bornOut} outside)`);
+  /* a topic to avoid keeps its entries off the page, and a word that does appear when nothing is avoided is the one avoided */
+  let withWord = 0, withAvoid = 0;
+  for (let k = 0; k < 120; k++){
+    const o = { stage: "early", theme: "music", seed: "avoid-" + k, era: [1938, 1959], history: {}, date: "2026-11-20" };
+    const a = E.generate(o), b = E.generate(Object.assign({}, o, { avoid: ["Elvis", "Sinatra", "Crosby"] }));
+    const text = pk => pk.pages.filter(pg => pg.kind === "memory").map(pg => pg.page.texts.map(t => t.text).join(" ")).join(" ");
+    if (/Elvis|Sinatra|Crosby/.test(text(a))) withWord++;
+    if (/Elvis|Sinatra|Crosby/.test(text(b))) withAvoid++;
+  }
+  ok(withWord > 0 && withAvoid === 0, `a topic to avoid keeps its entries off a memory page (${withWord} pages held one when nothing was avoided, ${withAvoid} when it was)`);
+  /* no birth year: a mix over the decades, never one decade only */
+  const decs = new Set();
+  for (let k = 0; k < 60; k++) E.generate({ stage: "early", theme: "heritage", seed: "mix-" + k, era: null, history: {}, date: "2026-11-20" }).pages.filter(pg => pg.kind === "memory").forEach(pg => pg.page.meta.key.bank.forEach(id => decs.add(B.decadeOf(byId[id]))));
+  ok(decs.size >= 4, `with no birth year the memory pages spread over the decades (${decs.size})`);
+  /* one seed, one packet */
+  const a1 = E.generate({ stage: "early", theme: "heritage", seed: "same", era: [1940, 1961], history: {}, date: "2026-11-20" }), a2 = E.generate({ stage: "early", theme: "heritage", seed: "same", era: [1940, 1961], history: {}, date: "2026-11-20" });
+  ok(JSON.stringify(a1.pages.map(p => [p.kind, p.id, p.title])) === JSON.stringify(a2.pages.map(p => [p.kind, p.id, p.title])), "the same plan draws the same pages with the banks loaded");
+}
+
 /* ---------- report ---------- */
 if (problems.length) { console.error(`soothing check FAILED: ${problems.length} problem(s) of ${passed + problems.length} checks`); problems.slice(0, 60).forEach(p => console.error(" - " + p)); process.exit(1); }
 console.log(`soothing check passed: ${passed} checks (${C.PROMPTS.length} prompts, ${Art.MOTIFS.length} motifs, ${C.PUZZLES.length} puzzles, ${Art.PATHS.length} paths; ${packets} packets drawn)`);

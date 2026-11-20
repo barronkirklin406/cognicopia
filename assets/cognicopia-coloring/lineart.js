@@ -410,7 +410,7 @@ var LEGACY_FRAME = {};
  "covered-bridge", "snowflake-medallion", "honeycomb", "farm-pickup", "steam-locomotive", "bread-truck", "fire-engine", "cardinal-branch", "robin-fence",
  "hummingbird", "pine-cones", "zen-rolling-waves", "mandala-star",
  /* pages of the overhaul still waiting for their remade picture */
- "baking-day", "jack-o-lantern", "holiday-wreath", "snowman", "ornaments"].forEach(function(k){ LEGACY_FRAME[k] = 1; });
+ "baking-day", "holiday-wreath", "snowman", "ornaments"].forEach(function(k){ LEGACY_FRAME[k] = 1; });
 var REQUIRED = ["id", "title", "cat", "talk"];
 function define(meta, draw){
   REQUIRED.forEach(function(k){ if (!meta[k]) throw new Error("Cognicopia Coloring design needs " + k + ": " + JSON.stringify(meta)); });

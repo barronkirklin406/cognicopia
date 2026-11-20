@@ -7,6 +7,7 @@ window.CognicopiaNavIndex = [{"k":"daily","l":"Daily engagement","h":"daily.html
 {"k":"builder","l":"Packet Builder","h":"builder.html","g":"Packets","t":"tool","w":"packet builder queue activities word search puzzles","pin":true},
 {"k":"activity-studio","l":"Activity Page Studio","h":"activity-studio.html","g":"Packets","t":"tool","w":"studio pages life story large print pdf","pin":true},
 {"k":"coloring","l":"Cognicopia Coloring","h":"builder.html#/coloring","g":"Packets","t":"tool","w":"coloring colouring pictures art color sheet","pin":true},
+{"k":"week-builder","l":"Week Builder","h":"builder.html#/week-builder","g":"Packets","t":"tool","w":"","pin":true},
 {"k":"planner","l":"12-Month Seasonal Planner","h":"builder.html#/planner","g":"Packets","t":"tool","w":"planner seasons months calendar binder","pin":true},
 {"k":"journal","l":"Life Narrative Journal","h":"builder.html#/journal","g":"Packets","t":"tool","w":"journal life story narrative","pin":true},
 {"k":"reminiscence","l":"Conversational Decks","h":"builder.html#/reminiscence","g":"Packets","t":"tool","w":"conversation cards decks talk","pin":true},

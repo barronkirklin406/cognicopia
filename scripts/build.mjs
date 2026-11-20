@@ -143,7 +143,7 @@ step("every web manifest icon exists", () => {
 
 /* 5. server and the automated checks */
 step("server.js parses", () => { execFileSync(process.execPath, ["--check", path.join(ROOT, "server.js")]); });
-for (const s of ["check-outreach.mjs", "check-life-planner.mjs", "check-life-journal.mjs", "check-services.mjs", "check-coloring.mjs", "check-coloring-margins.mjs", "check-trace.mjs", "check-infinite.mjs", "check-hybrid.mjs", "check-shift-calendar.mjs", "check-describe.mjs", "check-resident-context.mjs", "check-public-domain.mjs", "check-activity-studio.mjs", "check-activity-life.mjs", "check-spacing.mjs", "check-facility-validator.mjs", "check-reminiscence-pages.mjs", "check-pcg.mjs", "check-clinical.mjs", "check-clinical-staging.mjs", "check-facility-ops.mjs", "check-resident-engine.mjs", "check-quality-hub.mjs", "check-clinical-alignment.mjs", "check-soothing.mjs", "check-license.mjs", "check-license-service.mjs", "check-net30-desk.mjs", "check-trial.mjs", "check-localdb.mjs", "check-contentcatalog.mjs", "check-contentmatcher.mjs", "check-coloringagent.mjs", "check-local-art.mjs", "check-tablet.mjs", "check-voice-kit.mjs", "check-design-system.mjs", "check-claims.mjs", "check-favicon.mjs"]) step(s, () => {
+for (const s of ["check-outreach.mjs", "check-life-planner.mjs", "check-life-journal.mjs", "check-services.mjs", "check-coloring.mjs", "check-coloring-margins.mjs", "check-week-builder.mjs", "check-trace.mjs", "check-infinite.mjs", "check-hybrid.mjs", "check-shift-calendar.mjs", "check-describe.mjs", "check-resident-context.mjs", "check-public-domain.mjs", "check-activity-studio.mjs", "check-activity-life.mjs", "check-spacing.mjs", "check-facility-validator.mjs", "check-reminiscence-pages.mjs", "check-pcg.mjs", "check-clinical.mjs", "check-clinical-staging.mjs", "check-facility-ops.mjs", "check-resident-engine.mjs", "check-quality-hub.mjs", "check-clinical-alignment.mjs", "check-soothing.mjs", "check-license.mjs", "check-license-service.mjs", "check-net30-desk.mjs", "check-trial.mjs", "check-localdb.mjs", "check-contentcatalog.mjs", "check-contentmatcher.mjs", "check-coloringagent.mjs", "check-local-art.mjs", "check-tablet.mjs", "check-voice-kit.mjs", "check-design-system.mjs", "check-claims.mjs", "check-favicon.mjs"]) step(s, () => {
   const out = execFileSync(process.execPath, [path.join(ROOT, "scripts", s)], { encoding: "utf8" }).trim().split("\n")[0];
   return out;
 });
@@ -355,6 +355,22 @@ step("The personal life-detail lexicon (assets/services/personalLexicon.js): a r
 
 step("The resident's own words in the word search and the crossword, proved on real PDFs read back with PyMuPDF: the detail fields are kept, early stage word search hints and clue crossword clues are the true ones for their answers with the letters really in the grid, the avoid list is respected, a thin profile is not called 'from your life', late stage has neither puzzle (scripts/check-personal-puzzles-ui.mjs)", () => {
   try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-personal-puzzles-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim().split("\n").pop(); }
+  catch (e){
+    if (e.status === 2) return "skipped: Playwright or PyMuPDF is not installed here (see docs/dev-setup.md)";
+    throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message);
+  }
+});
+
+step("The Week Builder, the Staff Run Sheet and the Monthly Participation Summary, in a real browser on the Facility Portal: every resident in a row with level, facts and what is kept off; pages by level, avoid list and diagnosis setting; the license gate (no free packet spent); the run sheet first and read back as a PDF; the summary says logged and carries the staff's wording; 52 px and 7:1 by day and in Night Shift", () => {
+  try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-week-builder-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim().split("\n").pop(); }
+  catch (e){
+    if (e.status === 2) return "skipped: Playwright or PyMuPDF is not installed here (see docs/dev-setup.md)";
+    throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message);
+  }
+});
+
+step("Instant Soothe on the era banks, proved on real PDFs read back with PyMuPDF: ten clicks give ten different packets, era-bank pages drawn from the person's own years (born + 7 to + 28), no entry back within ten clicks, inside the margins, pure black on white, ids only in the memory, nothing off the page", () => {
+  try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-soothe-banks-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim().split("\n").pop(); }
   catch (e){
     if (e.status === 2) return "skipped: Playwright or PyMuPDF is not installed here (see docs/dev-setup.md)";
     throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message);

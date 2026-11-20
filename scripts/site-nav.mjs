@@ -112,6 +112,7 @@ export const HUBS = [
       { key: "builder",      label: "Packet Builder",           href: B,                    icon: "builder" },
       { key: "activity-studio", label: "Activity Page Studio",  href: "activity-studio.html", icon: "builder" },
       { key: "coloring",     label: "Cognicopia Coloring",      href: B + "#/coloring",     route: "coloring",     icon: "palette" },
+      { key: "week-builder", label: "Week Builder",             href: B + "#/week-builder", route: "week-builder", icon: "calendar" },
       { key: "planner",      label: "12-Month Seasonal Planner", href: B + "#/planner",     route: "planner",      icon: "calendar" },
       { key: "journal",      label: "Life Narrative Journal",   href: B + "#/journal",      route: "journal",      icon: "journal" },
       { key: "reminiscence", label: "Conversational Decks",     href: B + "#/reminiscence", route: "reminiscence", icon: "cards" },

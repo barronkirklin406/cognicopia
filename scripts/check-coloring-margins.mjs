@@ -38,7 +38,7 @@ const COVERED = [
   "quilt-flying-geese", "quilt-rail-fence", "quilt-grandmothers-garden", "quilt-dresden-plate", "stained-glass-window", "kaleidoscope"
 ];
 /* pages of the overhaul whose remade picture is still to come: they stay on the earlier framing (lineart.js) and are reported, never skipped silently */
-const PENDING = ["baking-day", "jack-o-lantern", "holiday-wreath", "snowman", "ornaments"];
+const PENDING = ["baking-day", "holiday-wreath", "snowman", "ornaments"];
 const MEASURE_DPI = 100, NOISE_SQ_IN = .003, MIN_MARGIN = .08;
 const problems = []; let passed = 0;
 const ok = (c, m) => { if (c) passed++; else problems.push(m); };
