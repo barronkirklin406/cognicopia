@@ -524,8 +524,8 @@ function renderWith(d, draw, tier, variant){
      W for left and right, H for top and bottom). A picture fitted to its subject is scaled to the room that leaves; a picture drawn to the page
      (fit "page": the scenes, quilts and patterns) keeps its own size and place unless it crosses that line, and only then is it scaled down to it. */
   var bw = Math.max(1, bb.x1 - bb.x0), bh = Math.max(1, bb.y1 - bb.y0), pad, padX, padY;
-  if (LEGACY_FRAME[id]){
-    /* the earlier framing, exactly: a subject fitted to 5% of the page width on every side, a page-fit picture left as drawn */
+  if (LEGACY_FRAME[id] || d.source === "generated"){
+    /* the earlier framing, exactly: a subject fitted to 5% of the page width on every side, a page-fit picture left as drawn. The procedural variety pages (source "generated", assets/cognicopia-coloring/infinite.js) are drawn to the page and are not among the owner's pictures, so they keep it too */
     pad = d.pad != null && d.pad < .09 ? d.pad : .05; padX = padY = W * pad;
     if (d.fit === "subject"){
       s = Math.min((W - 2 * padX) / bw, (H - 2 * padY) / bh);
