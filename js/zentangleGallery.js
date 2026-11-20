@@ -40,7 +40,28 @@
     ".zg-sel{display:block;min-height:1.4em;text-align:center;font-weight:700}" +
     ".zg-cell .zg-btn{min-height:52px;padding:0 10px;font-size:.95rem}" +
     ".zg-dlg{max-width:min(96vw,760px);width:100%;padding:12px;border:2px solid var(--line-2);border-radius:14px;background:var(--panel);color:var(--text)}.zg-dlg img{display:block;width:100%;height:auto;background:#fff;border-radius:6px}" +
-    ".zg-dlg::backdrop{background:rgba(0,0,0,.72)}.zg-msg{min-height:1.4em;margin:10px 0 0}";
+    ".zg-dlg::backdrop{background:rgba(0,0,0,.72)}.zg-msg{min-height:1.4em;margin:10px 0 0}" +
+    ".zg-copies{display:inline-flex;align-items:center;gap:8px}.zg-copies select{min-height:52px;min-width:72px;font:inherit;color:var(--text);background:var(--panel-2);border:2px solid var(--line-2);border-radius:12px;padding:0 10px}" +
+    ".sheet.sheet-zg{display:block;padding:.5in .5in .5in .75in}.sheet-zg img{display:block;width:7.25in;height:10in;object-fit:contain;background:#fff}";
+
+  function ensureCss() {
+    if (css || typeof document === "undefined") return;
+    var st = document.createElement("style"); st.id = "zg-css"; st.textContent = CSS; document.head.appendChild(st); css = true;
+  }
+
+  /* The packet queue's page (hidden from the menus; builder.html registers it). A queued item keeps only the list of picture keys ("book/NN"), so it
+     rebuilds exactly when printed. The same picture may be in the list more than once (copies), and pictures of different books may share a list. */
+  var ACTIVITY = {
+    id: "zentangle-gallery-page", name: "Zentangle coloring page", themed: false, hidden: true,
+    desc: "A finished page from the Zentangle Gallery, kept exactly as drawn.",
+    icon: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 8l4-3 4 3M8 12l4-3 4 3M8 16l4-3 4 3"/></svg>',
+    plan: function (cfg, rng, count) { var p = ((cfg.opts || {}).pages || []).filter(function (k) { return /^[a-z0-9-]+\/\d\d$/.test(k); }), out = [], i; for (i = 0; i < count; i++) out.push(p[i % Math.max(1, p.length)] || "dogs/01"); return out; },
+    generate: function (cfg, rng, id) {
+      ensureCss(); var m = /^([a-z0-9-]+)\/(\d\d)$/.exec(String(id)) || [0, "dogs", "01"];
+      return { layout: "cc", sheet: '<section class="sheet sheet-zg" data-shell="1" aria-label="Zentangle coloring page"><img alt="" src="' + BASE + m[1] + "/" + m[2] + '.webp"></section>',
+        title: "Zentangle coloring page", instructions: "", html: "", signature: "zg#" + id };
+    }
+  };
 
   function sheet(dataUrl) {
     /* one page: the picture alone, inside the 0.5 in margins and the 0.75 in binding gutter, black on white */
@@ -60,7 +81,7 @@
 
   function render(view, arg, deps) {
     deps = deps || {};
-    if (!css) { var st = document.createElement("style"); st.id = "zg-css"; st.textContent = CSS; document.head.appendChild(st); css = true; }
+    ensureCss();
     view.innerHTML = '<div class="zg"><h1 tabindex="-1">Zentangle Gallery</h1><p class="zg-lead" role="status">Loading the books…</p></div>';
     load().then(function (m) {
       var book = arg ? m.books.filter(function (b) { return b.slug === arg; })[0] : null;
@@ -102,6 +123,7 @@
         var s = b.parentNode.querySelector(".zg-sel"); if (s) s.textContent = on ? "Selected" : "";
       });
       var p = view.querySelector("[data-zg-print]"); if (p) { p.disabled = !c || busy; p.textContent = c ? "Print " + c + (c === 1 ? " page" : " pages") : "Print the chosen pages"; }
+      var ad = view.querySelector("[data-zg-add]"); if (ad) { ad.disabled = !c; ad.textContent = c ? "Add " + c + (c === 1 ? " page" : " pages") + " to the packet" : "Add the chosen pages to the packet"; }
       var cl = view.querySelector("[data-zg-clear]"); if (cl) cl.disabled = !c;
     }
     var cells = ""; for (var i = 1; i <= n; i++) {
@@ -112,7 +134,9 @@
       '<h1 tabindex="-1">' + esc(book.title) + '</h1><p class="zg-lead">' + n + ' pages, exactly as drawn. Press a picture to choose it; press it again to take it back.</p>' +
       (book.note ? '<p class="zg-note"><b>' + esc(book.note) + '.</b> ' + esc(book.why || "") + '</p>' : "") +
       '<div class="zg-bar"><button type="button" class="zg-btn" data-zg-all>Choose every page</button><button type="button" class="zg-btn" data-zg-clear disabled>Clear</button>' +
-      '<button type="button" class="zg-btn zg-primary" data-zg-print disabled>Print the chosen pages</button></div><p class="zg-msg" role="status" id="zgMsg"></p>' +
+      '<button type="button" class="zg-btn zg-primary" data-zg-add disabled>Add the chosen pages to the packet</button>' +
+      '<label class="zg-copies" for="zgCopies">Copies of each <select id="zgCopies">' + [1, 2, 3, 4, 5, 6].map(function (n) { return '<option value="' + n + '">' + n + '</option>'; }).join("") + '</select></label>' +
+      '<button type="button" class="zg-btn" data-zg-print disabled>Print the chosen pages</button></div><p class="zg-msg" role="status" id="zgMsg"></p>' +
       '<ul class="zg-pages">' + cells + '</ul><dialog class="zg-dlg" id="zgDlg" aria-label="One page, larger"><img alt="" id="zgBig"><p style="margin:10px 0 0"><button type="button" class="zg-btn" data-zg-close>Close</button></p></dialog></div>';
     view_on(view, function (e) {
       var t = e.target.closest ? e.target.closest("button") : null; if (!t) return;
@@ -121,6 +145,13 @@
       if (t.hasAttribute("data-zg-clear")) { picked = {}; paint(); return; }
       if (t.dataset.zgLook) { var d = view.querySelector("#zgDlg"), im = view.querySelector("#zgBig"); im.src = pageUrl(book.slug, +t.dataset.zgLook); d.showModal(); d.querySelector("[data-zg-close]").focus(); return; }
       if (t.hasAttribute("data-zg-close")) { view.querySelector("#zgDlg").close(); return; }
+      if (t.hasAttribute("data-zg-add")) {
+        var keys = Object.keys(picked).map(Number).sort(function (a, b) { return a - b; }).map(function (k) { return book.slug + "/" + pad(k); }), sel = view.querySelector("#zgCopies"), copies = Math.max(1, Math.min(6, +(sel && sel.value) || 1));
+        var made = deps.queue ? deps.queue(keys, copies) : 0, am = view.querySelector("#zgMsg");
+        am.textContent = made ? "Added " + made + (made === 1 ? " page" : " pages") + " to the packet. You can keep adding pages from this book or another, then open the packet to print them all together." : "";
+        if (made && deps.openPacket) { var ob = document.createElement("button"); ob.type = "button"; ob.className = "zg-btn"; ob.textContent = "Open the packet"; ob.addEventListener("click", deps.openPacket); am.appendChild(document.createTextNode(" ")); am.appendChild(ob); }
+        return;
+      }
       if (t.hasAttribute("data-zg-print")) {
         var list = Object.keys(picked).map(Number).sort(function (a, b) { return a - b; }); if (!list.length || busy) return;
         busy = true; paint(); var msg = view.querySelector("#zgMsg"); msg.textContent = "Getting " + list.length + (list.length === 1 ? " page" : " pages") + " ready…";
@@ -134,6 +165,6 @@
     paint();
   }
 
-  root.CogniZentangle = { render: render, sheet: sheet, pageUrl: pageUrl, thumbUrl: thumbUrl };
+  root.CogniZentangle = { render: render, ACTIVITY: ACTIVITY, sheet: sheet, pageUrl: pageUrl, thumbUrl: thumbUrl };
   if (typeof module !== "undefined" && module.exports) module.exports = root.CogniZentangle;
 })(typeof window !== "undefined" ? window : globalThis);

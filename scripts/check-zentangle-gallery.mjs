@@ -8,6 +8,7 @@
                    picture, no file is a stray, no page is over 400 KB and the whole shelf stays under 260 MB so the repository stays workable
      the door      the Packets door lists it (HUBS in scripts/site-nav.mjs, the Ctrl+K index in js/nav-index.js), the Packet Builder routes it, and the offline
                    list carries its script and manifest
+     the packet     the gallery's pages are a queue activity (zentangle-gallery-page) registered by builder.html, and printing waits for every picture to load
      the module    js/zentangleGallery.js makes no request to any other site and prints through BookUI.print (so a print counts as a packet)
    Whether a page is a real coloring design (not blank, not a test or title page) is read in a real browser by scripts/check-zentangle-ui.mjs.
    ===================================================================== */
@@ -67,6 +68,8 @@ ok(/js\/zentangleGallery\.js/.test(sw) && /assets\/zentangle\/manifest\.json/.te
 const mod = fs.readFileSync(path.join(ROOT, "js/zentangleGallery.js"), "utf8");
 ok(!/https?:\/\//.test(mod.replace(/\/\*[\s\S]*?\*\//g, "")), "js/zentangleGallery.js names another site");
 ok(/print\(urls\.map\(sheet\)/.test(mod) && /deps\.print/.test(mod), "the gallery must print through BookUI.print (the packet count and the license gate)");
+ok(/ACTIVITY\s*=\s*\{[\s\S]*id:\s*"zentangle-gallery-page"/.test(mod) && /ACT_INDEX\[window\.CogniZentangle\.ACTIVITY\.id\]/.test(bld) && /queue:\s*queueZentangle/.test(bld), "the gallery's pages must be a packet-queue activity that builder.html registers, so they can be added to a resident's packet");
+ok(/function imagesReady/.test(bld) && /BookUI\.imagesReady\(root\)/.test(bld), "the print window must wait for pictures to load (a blank preview otherwise)");
 ok(!/\bstaff\s*:\s*true/.test(mod), "a gallery print is a packet of pages for a resident, never a staff document");
 
 console.log(problems.length ? `zentangle gallery check FAILED: ${problems.length} problem(s), ${passed} passed\n  - ` + problems.slice(0, 40).join("\n  - ")
