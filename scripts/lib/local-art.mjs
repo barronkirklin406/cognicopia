@@ -30,7 +30,7 @@ export const NEGATIVE = "color, gray, shading, gradient, photograph, texture, cr
 /* what a refining round adds for each failed check */
 export const HINTS = {
   "area-size": "fewer details, larger simple shapes",
-  "fills-page": "close-up, the subject fills the page",
+  "fills-page": "the whole subject centered, large, with a generous empty white margin all round and nothing cut off",
   "solid-black": "outlines only, no solid black areas",
   "pure-black-white": "pure line art, no shading",
   "traced-faithfully": "clean continuous unbroken lines",

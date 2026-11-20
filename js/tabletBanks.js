@@ -321,9 +321,9 @@
     { id: "music", family: "music", label: "Music makers", group: "the music makers", cover: "guitar", things: ["guitar", "bells", "chimes"], topics: ["music", "dancing", "radio-tv", "movies"] }
   ];
   /* library pictures with fewer than three shapes to color at a stage, even after the engine cuts up their big shapes: too little to do, so
-     Color a Picture leaves them out. None is left out now. The list comes from `node scripts/measure-tablet-color.mjs`;
+     Color a Picture leaves them out. The remade magnolia branch (November 20, 2026) is big and simple, so it has too few. The list comes from `node scripts/measure-tablet-color.mjs`;
      scripts/check-tablet-ui.mjs proves it is current. */
-  B.COLOR_SKIP = [];
+  B.COLOR_SKIP = ["magnolia-branch"];
   /* a picture for the everyday jobs in Put It in Order, where one fits (the id is the sequence's id in the PCG content) */
   B.SEQ_ART = {
     "make-tea": "teapot", "brew-coffee": "kettle", "set-table": "cup", "plant-seed": "flower", "polish-shoes": "shoe", "sew-button": "button", "wind-clock": "clock",

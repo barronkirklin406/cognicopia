@@ -1830,6 +1830,12 @@ html.cg-night-shift .fp-doc .fp-btn-primary{background:#86c9a7 !important;border
 .ads-body ul{margin:.03in 0 0;padding-left:.25in}
 .ads-body .ads-note{margin-top:auto;border-top:1pt solid #000;padding-top:.06in}
 .ads-foot{display:flex;justify-content:space-between;gap:.2in;font-size:16pt;border-top:1px solid #000;padding-top:2pt}
+.ads-tab{border-collapse:collapse;width:100%}.ads-tab th,.ads-tab td{border:1.5pt solid #000;padding:.03in .08in;text-align:left;font-size:16pt}.ads-tab td:nth-of-type(1){width:.7in;text-align:center}.ads-tab td:nth-of-type(2){width:2.4in}
+.ads-bar{display:block;width:100%;height:.16in;border:1.5pt solid #000;background:#fff}.ads-bar i{display:block;height:100%;background:#000}
+.wk-key{font-size:16pt !important}.wk-table{border-collapse:collapse;width:100%}.wk-table th,.wk-table td{border:1.5pt solid #000;padding:.03in .06in;text-align:left;font-size:16pt;line-height:1.2;vertical-align:middle}
+.wk-table th:nth-child(n+5),.wk-table td:nth-child(n+5){width:.46in;text-align:center}.wk-box{display:block;width:.26in;height:.26in;border:2pt solid #000;margin:0 auto;background:#fff}
+.fp-print.fp-week{display:block}.fp-week .fp-side{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:16px;margin-top:16px;align-items:start}
+#wbTable th,#wbTable td{vertical-align:top}#wbTable tbody th[scope=row],#wbTable td:first-child{white-space:nowrap}#wbTable td small{display:block;margin-top:4px}#wbTable .fp-btn{margin-top:6px}
 </style>
 <style id="shf-style">
 /* =====================================================================
@@ -3062,6 +3068,7 @@ body.shc-lock{overflow:hidden}
         <li><a class="sb-link" href="index.html"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>Personalized Packet Tool</span></a></li>
         <li><a class="sb-link" href="activity-studio.html"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6"/><line x1="9" y1="13" x2="16" y2="13"/><line x1="9" y1="17" x2="14" y2="17"/></svg><span>Activity Page Studio</span></a></li>
         <li><a class="sb-link" href="#/coloring" data-route="coloring"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 22a10 10 0 1 1 10-10c0 2.8-2.2 4-4 4h-2a2 2 0 0 0-1.4 3.4A1.9 1.9 0 0 1 12 22z"/><circle cx="7.5" cy="10.5" r="1.3"/><circle cx="11.5" cy="6.5" r="1.3"/><circle cx="16.5" cy="9.5" r="1.3"/></svg><span>Cognicopia Coloring</span><span class="tag live" id="navColoringCount"></span></a></li>
+        <li><a class="sb-link" href="#/week-builder" data-route="week-builder"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span>Week Builder</span></a></li>
         <li><a class="sb-link" href="#/planner" data-route="planner"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span>12-Month Seasonal Planner</span></a></li>
         <li><a class="sb-link" href="#/journal" data-route="journal"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M2 4h7a3 3 0 0 1 3 3v14a2 2 0 0 0-2-2H2z"/><path d="M22 4h-7a3 3 0 0 0-3 3v14a2 2 0 0 1 2-2h8z"/></svg><span>Life Narrative Journal</span></a></li>
         <li><a class="sb-link" href="#/reminiscence" data-route="reminiscence"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M7 21h10M9 9h6M8 13h8"/></svg><span>Conversational Decks</span></a></li>
@@ -8822,6 +8829,7 @@ const CogniLibrary = (function(){
 </script>
 <script src="js/dialogs.js"></script>
 <script src="assets/services/eraWindow.js"></script>
+<script src="assets/services/eraBanks.js"></script>
 <script src="assets/services/reminiscenceEngine.js"></script>
 <script id="rm-ui">
 /* =====================================================================
@@ -10201,6 +10209,7 @@ const HeirloomUI = (function(){
 })();
 </script>
 <script src="assets/services/facilityPlanner.js"></script>
+<script src="assets/services/weekBuilder.js"></script>
 <script src="assets/services/auditLog.js"></script>
 <script src="js/auditLogUI.js"></script>
 <script id="facility-ui">
@@ -10541,7 +10550,7 @@ const FacilityUI = (function(){
 
   /* ---------- a wing ---------- */
   function wingHtml(w){
-    const subs = [["calendar", "Calendar"], ["groups", "Groups & acuity"], ["print", "Print & export"]];
+    const subs = [["calendar", "Calendar"], ["groups", "Groups & acuity"], ["print", "Print & export"], ["week", "Week Builder"]];
     if (can("editSchedule", w.id)) subs.push(["settings", "Wing settings"]);
     if (!subs.some(s => s[0] === S.sub)) S.sub = "calendar";
     return `<section aria-labelledby="fpWingH">
@@ -10556,6 +10565,7 @@ const FacilityUI = (function(){
     sub.setAttribute("aria-labelledby", "fpSub-" + S.sub);
     if (S.sub === "groups") renderGroups();
     else if (S.sub === "print") renderPrint();
+    else if (S.sub === "week") renderWeek();
     else if (S.sub === "settings") renderSettings();
     else renderCalendar();
     if (anim) animate(sub);
@@ -11084,6 +11094,153 @@ const FacilityUI = (function(){
     const done = BookUI.print(pages, "Activity documentation summary - " + today, null, { staff:true });
     if (done) { audit("Printed activity documentation summaries", plural(list.length, "resident", "residents")); if (msg) msg.textContent = "Made " + plural(list.length, "page", "pages") + ". Choose Save as PDF in the print window to keep a copy."; }
   }
+  /* ---------- the Week Builder: a week of pages for every resident in a wing, a Staff Run Sheet in front, and the monthly participation summary ----------
+     The plan is made by assets/services/weekBuilder.js (CogniWeek); this part reads the residents, shows the plan, and prints. Whole-wing printing is a
+     facility feature (a license or a 30-day pilot key); the run sheet and the summaries are staff documents and never spend a free packet. */
+  const WKD = [[1, "Mon"], [2, "Tue"], [3, "Wed"], [4, "Thu"], [5, "Fri"]];
+  const longDate = d => dateObj(d).toLocaleDateString("en-US", { weekday:"long", month:"long", day:"numeric", year:"numeric" });
+  function wbInit(){
+    if (!S.wbStart){ const t = todayISO(), dow = dateObj(t).getDay(); S.wbStart = window.CogniWeek.mondayOf(dow === 0 || dow === 6 ? window.CogniWeek.addDays(t, 2) : t); }
+    if (!Array.isArray(S.wbDays) || !S.wbDays.length) S.wbDays = [1, 2, 3, 4, 5];
+    if (!S.wbPer) S.wbPer = 1;
+    if (!S.wbMonth) S.wbMonth = todayISO().slice(0, 7);
+    if (S.wbWho == null) S.wbWho = "all";
+  }
+  const avoidFn = terms => {
+    const res = (terms || []).map(t => String(t || "").toLowerCase().trim()).filter(t => t.length >= 3).map(t => new RegExp("(^|[^a-z0-9])" + t.replace(/[^a-z0-9]+/g, "[^a-z0-9]+") + "s?([^a-z0-9]|$)", "i"));
+    return text => { text = String(text); return res.some(r => r.test(text)); };
+  };
+  /* the wing's residents: the ones linked to its groups, or, when none are linked yet, this wing's saved roster */
+  function wbProfiles(w){
+    const linked = new Set(w.groups.reduce((l, g) => l.concat(g.residents || []), [])), all = BookUI.allProfiles();
+    const list = linked.size ? all.filter(p => linked.has(p.id)) : BookUI.savedProfiles();
+    return list.slice(0, 60);
+  }
+  function wbRecord(p){
+    const t1 = p.tier1_core || {}, R = window.CogniResident, D = window.CogniActivityDocs, nd = BookUI.needsFor(p), rules = (R && R.ADAPTATION_RULES && R.ADAPTATION_RULES[t1.adaptation]) || {};
+    const tier = rules.stage ? 3 : Math.min(3, Math.max(1, nd.tier || 2)), key = ["", "early", "moderate", "advanced"][tier], avoid = avoidTermsOf(p), person = R ? R.person(p) : null;
+    const P = window.CogniPrivacy, level = P ? P.levelOf(settings.exportNames) : "keep", name = String(t1.preferredName || "").trim();
+    return { p, id:p.id, name, alias:cgAlias(p), shown:level === "keep" && name ? name : cgAlias(p), room:String(t1.unitNumber || "").trim(), tier, key, stageKey:tier >= 3 ? "late" : tier === 2 ? "middle" : "early",
+      avoid, avoidTest:avoidFn(avoid), facts:D && person ? D.model({ person }).known : null, adaptation:t1.adaptation || "", roomy:!!rules.roomy, note:rules.note || "", person };
+  }
+  function wbPlan(w){
+    wbInit();
+    const have = {}; F.CATALOG.forEach(a => { if (act(a.id)) have[a.id] = true; });
+    const recs = wbProfiles(w).map(wbRecord), pl = window.CogniWeek.plan({ residents:recs, start:S.wbStart, days:S.wbDays, perDay:S.wbPer, catalog:F.CATALOG, have });
+    pl.rows.forEach(r => { r.rec = recs.filter(x => x.id === r.id)[0]; });
+    return pl;
+  }
+  function renderWeek(){
+    const w = wing(), sub = root.querySelector("#fpSub"); if (!w || !sub || !window.CogniWeek){ if (sub) sub.innerHTML = `<p class="fp-empty">The Week Builder could not load. Reload and try again.</p>`; return; }
+    const pl = wbPlan(w), ok = can("print", w.id), D = window.CogniActivityDocs, hol = pl.holidays, mon = pl.dates[0] ? pl.dates[0].date : pl.start;
+    const profiles = pl.rows.map(r => r.rec.p), months = [0, 1, 2, 3].map(k => { const d = dateObj(todayISO().slice(0, 7) + "-01"); d.setMonth(d.getMonth() - k); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0"); });
+    const mondayOf = r => (r.days[0] || { pages:[] }).pages.map(x => x.name).join(", ") || "Nothing fits";
+    sub.innerHTML = `<div class="fp-print fp-week">
+      <section class="fp-card" aria-labelledby="wbH">
+        <h3 id="wbH">Week Builder</h3>
+        <p class="fp-hint">One to three pages a day for every resident in ${esc(w.name)}, each chosen for that resident's level, with their topics to avoid kept off and their diagnosis setting applied. A one-page staff run sheet comes first. Printing for a whole wing needs a license or a pilot key.</p>
+        <div class="fp-row2" style="margin-top:12px">
+          <div class="fp-field"><label for="wbStart">Week of</label><input id="wbStart" type="date" value="${esc(S.wbStart)}"></div>
+          <div class="fp-field"><label for="wbPer">Pages a day</label><select id="wbPer">${[1, 2, 3].map(n => `<option value="${n}" ${n === S.wbPer ? "selected" : ""}>${n}</option>`).join("")}</select></div>
+        </div>
+        <fieldset class="fp-field"><legend>Days</legend><div class="fp-checks">${WKD.map(([n, l]) => `<label class="fp-check"><input type="checkbox" data-wbday="${n}" ${S.wbDays.indexOf(n) >= 0 ? "checked" : ""}> ${l}</label>`).join("")}</div></fieldset>
+        ${window.CogniPrivacy ? window.CogniPrivacy.choiceHtml("fpNames", settings.exportNames, "Names on these pages") : ""}
+        <p class="fp-hint"><b>Themes:</b> ${pl.themes.map(t => `${esc(dateObj(t.date).toLocaleDateString("en-US", { weekday:"short" }))} ${esc(t.label.toLowerCase())}`).join(" · ") || "no days chosen"}.</p>
+        ${hol.length ? `<p class="fp-hint"><b>This week:</b> ${hol.map(h => `${esc(h.name)} (${esc(dayShort(h.date))}): ${esc(h.idea)}`).join(" ")} They are ideas for you; nothing is added to a page unless you choose it.</p>` : ""}
+        ${pl.rows.length ? `<div class="fp-table-wrap"><table class="fp-table" id="wbTable"><caption class="sr-only">Residents, with Monday's pages</caption>
+          <thead><tr><th scope="col">Room</th><th scope="col">Name</th><th scope="col">Level</th><th scope="col">Facts</th><th scope="col">${esc(dayShort(mon))}</th><th scope="col">Kept off</th></tr></thead>
+          <tbody>${pl.rows.map(r => `<tr data-wbrow="${esc(r.id)}"><td>${esc(r.room || "")}</td><th scope="row">${esc(r.rec.shown)}</th><td>${esc(({ early:"Early", moderate:"Middle", advanced:"Late" })[r.rec.key])}${r.adaptation ? `<small>${esc(r.rec.note)}</small>` : ""}</td>
+            <td>${r.facts == null ? "" : r.facts + " of 8"}${r.facts != null && r.facts < 3 ? `<button type="button" class="fp-btn fp-btn-sm" data-wbquick="${esc(r.id)}">Add 3 details</button>` : ""}</td>
+            <td>${esc(mondayOf(r))}</td><td>${esc(r.rec.avoid.slice(0, 6).join(", ") || "nothing listed")}</td></tr>`).join("")}</tbody></table></div>`
+          : `<p class="fp-empty">No residents are linked to ${esc(w.name)} yet. Link them on Groups &amp; acuity, or add saved profiles on this computer.</p>`}
+        ${ok ? `<div class="fp-actions">
+          <button type="button" class="fp-btn fp-btn-primary" data-act="wb-print" ${pl.total ? "" : "disabled"}>${IC.print}Make the week: ${plural(pl.rows.length, "resident", "residents")} × ${plural(pl.dates.length, "day", "days")}</button>
+          <button type="button" class="fp-btn" data-act="wb-next" ${pl.rows.length ? "" : "disabled"}>Make next week like this one</button></div>
+          <p class="fp-hint">${pl.total ? plural(pl.total, "page", "pages") + " plus the run sheet. " : ""}Next week uses the next week's dates, so every page is a new one. ${esc(BookUI.allowanceText())}</p>
+          <p id="wbMsg" class="fp-hint" role="status"></p>` : ""}
+      </section>
+      <div class="fp-side">
+        <section class="fp-card" aria-labelledby="wbMoH">
+          <h3 id="wbMoH">Monthly participation summary</h3>
+          <p class="fp-hint">One page a resident, from what staff logged on Daily engagement and the Shift board. It says "logged" because what was offered is not recorded. It supports documentation; it is not an assessment.</p>
+          <div class="fp-row2">
+            <div class="fp-field"><label for="wbMonth">Month</label><select id="wbMonth">${months.map(m => `<option value="${m}" ${m === S.wbMonth ? "selected" : ""}>${esc(D ? D.monthLabel(m) : m)}</option>`).join("")}</select></div>
+            <div class="fp-field"><label for="wbWho">Resident</label><select id="wbWho"><option value="all" ${S.wbWho === "all" ? "selected" : ""}>Everyone in ${esc(w.name)}</option>${profiles.map(p => `<option value="${esc(p.id)}" ${S.wbWho === p.id ? "selected" : ""}>${esc(wbRecord(p).shown)}</option>`).join("")}</select></div>
+          </div>
+          <div class="fp-field"><label for="wbCare">Care-plan wording</label><textarea id="wbCare" rows="4" ${S.wbWho === "all" ? "disabled" : ""} placeholder="${S.wbWho === "all" ? "Choose one resident to edit the wording. Each page has suggested wording." : "Leave empty for the suggested wording."}">${esc(S.wbCare || "")}</textarea></div>
+          ${ok ? `<div class="fp-actions"><button type="button" class="fp-btn" data-act="wb-month" ${pl.rows.length ? "" : "disabled"}>${IC.print}Print the monthly summaries</button></div><p id="wbMoMsg" class="fp-hint" role="status"></p>` : ""}
+        </section>
+        <section class="fp-card" aria-labelledby="wbQH"><h3 id="wbQH">Thin on details?</h3><p class="fp-hint">A resident with fewer than 3 of 8 facts gets general pages. Add work, hometown and one thing they enjoy and the next week's pages use them. Nothing is overwritten.</p><div id="wbQuick"></div></section>
+      </div>
+    </div>`;
+  }
+  /* the Staff Run Sheet: staff text, 16 pt or larger, pure black on white */
+  function wbRunSheets(pl, w){
+    const W = window.CogniWeek, rows = W.runSheetRows(pl, r => r.rec ? r.rec.shown : (r.alias || r.name)), per = pl.perDay >= 3 ? 7 : pl.perDay === 2 ? 9 : 11, chunks = W.chunk(rows, per);
+    const eyebrow = [settings.facility, w.name].filter(Boolean).join(" · ") || "Cognicopia";
+    return chunks.map((ch, k) => `<div class="sheet ads-sheet wk-sheet"><header class="ads-head"><div><p class="ads-kick">Staff run sheet</p><h1 class="ads-who">${esc(w.name)}</h1></div>
+      <div class="ads-when">Week of ${esc(dayShort(pl.start))}${chunks.length > 1 ? `<br>Sheet ${k + 1} of ${chunks.length}` : ""}</div></header>
+      <div class="ads-body"><p class="wk-key"><b>O</b> Offered · <b>T</b> Took part · <b>W</b> Watched · <b>D</b> Declined</p>
+      <table class="wk-table"><thead><tr><th scope="col">Day</th><th scope="col">Room</th><th scope="col">Name</th><th scope="col">Pages</th><th scope="col">O</th><th scope="col">T</th><th scope="col">W</th><th scope="col">D</th></tr></thead>
+      <tbody>${ch.map(r => `<tr><td>${esc(r.short)}</td><td>${esc(r.room)}</td><td>${esc(r.who)}</td><td>${esc(r.titles.join(", "))}</td><td><span class="wk-box"></span></td><td><span class="wk-box"></span></td><td><span class="wk-box"></span></td><td><span class="wk-box"></span></td></tr>`).join("")}</tbody></table>
+      <p class="ads-note">A staff sheet: keep it, do not hand it out. Tick as you go; the same outcomes are recorded on Daily engagement and the Shift board.</p></div>
+      <footer class="ads-foot"><span>${esc(eyebrow)} · Staff run sheet</span><b>Page ${k + 1} of ${chunks.length}</b></footer></div>`);
+  }
+  function wbResidentPage(r, d, pg){
+    const a = act(pg.activityId); if (!a) return "";
+    const cfg = presetCfg(a, r.rec.p, r.rec.key); cfg.date = d.date;
+    if (r.rec.roomy) cfg.roomy = true;
+    return sheetHtml({ activityId:a.id, cfg, batchSeed:pg.seed, count:1, index:0 });
+  }
+  async function printWeekBuilder(){
+    const w = wing(); if (!w || !can("print", w.id)) return;
+    if (facilityOnly("The Week Builder")) return;
+    const pl = wbPlan(w), msg = root.querySelector("#wbMsg");
+    if (!pl.total){ if (msg) msg.textContent = "Nothing fits those days and residents. Choose at least one day and link residents to this wing."; return; }
+    if (pl.total + 4 > MAX_PAGES){ toast(`That is ${pl.total} pages, more than one print can hold (${MAX_PAGES}). Choose fewer days or pages a day.`); return; }
+    if (pl.total > CONFIRM_PAGES && !(await CogniDialog.ask(`Print ${pl.total} pages for ${plural(pl.rows.length, "resident", "residents")}?`))) return;
+    const pages = wbRunSheets(pl, w).map(html => ({ html }));
+    pl.rows.forEach(r => r.days.forEach(d => d.pages.forEach(pg => { const html = wbResidentPage(r, d, pg); if (html) pages.push({ html }); })));
+    const done = BookUI.print(pages, `${pl.start} ${w.name} Week`, () => { if (root && root.isConnected && S.sub === "week") keepFocus(renderWeek); }, { staff:true });
+    if (done){ audit("Printed a week with the Week Builder", `${w.name}, week of ${dayShort(pl.start)}: ${pl.total} pages for ${plural(pl.rows.length, "resident", "residents")}`); if (msg) msg.textContent = "Made " + plural(pl.total, "page", "pages") + " and a run sheet. Choose Save as PDF in the print window to keep a copy."; }
+  }
+  function wbNextWeek(){
+    wbInit(); S.wbStart = window.CogniWeek.nextWeek(S.wbStart);
+    keepFocus(renderWeek); announce("Week set to " + dayShort(S.wbStart) + ". The pages are new for those dates.");
+  }
+  function printMonthSummaries(){
+    const w = wing(); if (!w || !can("print", w.id)) return;
+    if (facilityOnly("The monthly participation summary")) return;
+    const D = window.CogniActivityDocs, R = window.CogniResident, msg = root.querySelector("#wbMoMsg"); if (!D || !R) return;
+    const care = (root.querySelector("#wbCare") || {}).value || "", recs = wbProfiles(w).map(wbRecord).filter(r => S.wbWho === "all" || r.id === S.wbWho);
+    if (!recs.length){ if (msg) msg.textContent = "No residents to print."; return; }
+    const pages = recs.map(r => ({ html:D.monthHtml(D.monthModel({ who:r.shown, person:r.person, track:TrackerUI.read(r.id), month:S.wbMonth, facility:settings.facility, care:S.wbWho === "all" ? "" : care })) }));
+    const done = BookUI.print(pages, `${S.wbMonth} Monthly participation summary - ${w.name}`, null, { staff:true });
+    if (done){ audit("Printed monthly participation summaries", `${w.name}, ${D.monthLabel(S.wbMonth)}: ${plural(recs.length, "resident", "residents")}`); if (msg) msg.textContent = "Made " + plural(recs.length, "page", "pages") + "."; }
+  }
+  /* three quick details for a resident with few facts: only blanks are filled, nothing is overwritten */
+  function wbQuickForm(id){
+    const box = root.querySelector("#wbQuick"); if (!box) return;
+    const rec = wbProfiles(wing()).filter(p => p.id === id).map(wbRecord)[0]; if (!rec) return;
+    box.innerHTML = `<form class="fp-quick" data-wbform="${esc(id)}"><p class="fp-hint"><b>${esc(rec.shown)}</b></p>
+      <div class="fp-field"><label for="wbqWork">Work they did</label><input id="wbqWork" type="text" maxlength="60" autocomplete="off"></div>
+      <div class="fp-field"><label for="wbqTown">Hometown</label><input id="wbqTown" type="text" maxlength="60" autocomplete="off"></div>
+      <div class="fp-field"><label for="wbqJoy">One thing they enjoy</label><input id="wbqJoy" type="text" maxlength="60" autocomplete="off"></div>
+      <button type="submit" class="fp-btn fp-btn-primary">Save these details</button></form>`;
+    const f = box.querySelector("form"), first = box.querySelector("input"); if (first) first.focus();
+    f.addEventListener("submit", ev => {
+      ev.preventDefault();
+      const p = BookUI.allProfiles().filter(x => x.id === id)[0]; if (!p) return;
+      const v = i => String((f.querySelector(i) || {}).value || "").trim().slice(0, 60), work = v("#wbqWork"), town = v("#wbqTown"), joy = v("#wbqJoy");
+      p.tier1_core = p.tier1_core || {}; p.tier2_enrichment = p.tier2_enrichment || {};
+      if (work && !(p.tier1_core.occupation && p.tier1_core.occupation.label)) p.tier1_core.occupation = { code:"", label:work };
+      if (town && !(p.tier2_enrichment.hometown && p.tier2_enrichment.hometown.place)) p.tier2_enrichment.hometown = Object.assign({}, p.tier2_enrichment.hometown || {}, { place:town });
+      if (joy){ const hs = Array.isArray(p.tier1_core.topHobbies) ? p.tier1_core.topHobbies : []; if (!hs.some(h => h && h.label === joy)) p.tier1_core.topHobbies = hs.concat([{ code:"", label:joy }]).slice(0, 8); }
+      try { CG_LS.setItem("cognicopia_resident_" + id, JSON.stringify(p)); } catch (e){ toast("Those details could not be saved: " + e.message); return; }
+      audit("Added details to a resident's profile", "from the Week Builder");
+      box.innerHTML = ""; keepFocus(renderWeek); announce("Details saved.");
+    });
+  }
   /* Printing for a whole wing, a week or a month at a time, is a facility feature (CLAUDE.md, assets/services/licenseManager.js):
      a license or a 30-day pilot key, and it spends no free packet. needsFacility opens the license window and answers true when this computer may not. */
   function facilityOnly(what){ return !isLicensed() && !!(window.CognicopiaLicense && window.CognicopiaLicense.needsFacility(what)); }
@@ -11337,6 +11494,7 @@ const FacilityUI = (function(){
     if (ds.add) return openEditor("", ds.add);
     if (ds.day) return openDay(ds.day);
     if (ds.sel){ S.sel = ds.sel; keepFocus(renderGroups); const hd = root.querySelector("#fpGH"); if (hd) announce(hd.textContent + " selected"); return; }
+    if (ds.wbquick) return wbQuickForm(ds.wbquick);
     if (ds.recAdd){ const g = groupOf(wing(), S.sel); if (g) addToPacket(ds.recAdd, g.acuity); return; }
     if (ds.recOpen) return openInGenerator(ds.recOpen);
     switch (ds.act){
@@ -11352,6 +11510,9 @@ const FacilityUI = (function(){
         return;
       }
       case "print-week": return printWeek();
+      case "wb-print": return printWeekBuilder();
+      case "wb-next": return wbNextWeek();
+      case "wb-month": return printMonthSummaries();
       case "docs-print": return printDocs();
       case "print-month": return printMonth();
       case "csv": return exportCsv();
@@ -11401,7 +11562,7 @@ const FacilityUI = (function(){
   }
   function onChange(e){
     const t = e.target, w = wing();
-    if (t.name === "fpNames"){ settings.exportNames = window.CogniPrivacy.levelOf(t.value); store.set("cgb_settings", settings); return; }
+    if (t.name === "fpNames"){ settings.exportNames = window.CogniPrivacy.levelOf(t.value); store.set("cgb_settings", settings); if (S.sub === "week" && root.querySelector("#wbTable")) keepFocus(renderWeek); return; }
     if (t.id === "fpWingShown"){                       // one wing's residents at a time; the others stay saved, never mixed in
       settings.activeWing = t.value === "__all" ? null : t.value === "__none" ? "" : t.value.slice(2);
       if (settings.activeWing) settings.wing = settings.activeWing;
@@ -11438,6 +11599,12 @@ const FacilityUI = (function(){
       updateGroup(x => Object.assign(x, { residents:on ? x.residents.concat([id]) : x.residents.filter(r => r !== id) }), on ? "Linked a resident to a group" : "Unlinked a resident from a group", g => g.name, true);
       return;
     }
+    if (t.id === "wbStart"){ if (/^\d{4}-\d{2}-\d{2}$/.test(t.value)) S.wbStart = window.CogniWeek.mondayOf(t.value); return keepFocus(renderWeek); }
+    if (t.id === "wbPer"){ S.wbPer = Math.max(1, Math.min(3, +t.value || 1)); return keepFocus(renderWeek); }
+    if (t.dataset.wbday){ S.wbDays = Array.from(root.querySelectorAll("[data-wbday]")).filter(i => i.checked).map(i => +i.dataset.wbday); return keepFocus(renderWeek); }
+    if (t.id === "wbMonth"){ S.wbMonth = t.value; return keepFocus(renderWeek); }
+    if (t.id === "wbWho"){ S.wbWho = t.value; S.wbCare = ""; return keepFocus(renderWeek); }
+    if (t.id === "wbCare"){ S.wbCare = t.value; return; }
     if (t.id === "fpWeek"){ S.week = t.value; return keepFocus(renderPrint); }
     if (t.name === "fpCopies"){ S.copies = t.value === "each" ? "each" : "master"; return keepFocus(renderPrint); }
     if (t.dataset.pg){
@@ -11523,7 +11690,13 @@ const FacilityUI = (function(){
     if (e.key === " " && t.classList && t.classList.contains("fp-chip") && t.getAttribute("draggable") === "true"){ e.preventDefault(); S.spaceUp = true; startMove(t); }
   }
 
-  return { render, context, clearContext, readFacility };
+  /* the Packets door's "Week Builder": the portal, opened on the Week Builder tab of the first wing this person can see */
+  function openWeek(view){
+    render(view, "");
+    const ws = wings(); if (!ws.length) return;
+    S.tab = ws[0].id; S.sub = "week"; renderBar(); renderBody(true);
+  }
+  return { render, openWeek, context, clearContext, readFacility };
 })();
 </script>
 <script src="assets/services/academy.js"></script>
@@ -15522,8 +15695,9 @@ function addBatch(act, cfg, batchSeed, count){
 
 /* ---------- 11. Views + router ---------- */
 const view = $("#view");
-const routes = { "": renderHome, "category": renderCategory, "settings": renderSettings, "audio": renderAudio, "ehr-import": renderEhrImport, "therapy-goals": renderTherapyGoals, "highlights": renderHighlights, "scenarios": renderScenarios, "safety": renderSafety, "toolkit": renderToolkit, "tracking": renderTracking, "planner": renderStudioPlanner, "journal": renderStudioJournal, "life-planner": renderPlanner, "life-journal": renderJournal, "planner-care-companion": renderPlannerCareCompanion, "roster": renderRoster, "coloring": renderColoring, "reminiscence": renderReminiscence, "clinical": renderClinical, "heirloom": renderHeirloom, "facility": renderFacilityPortal, "shift": renderShift, "academy": renderAcademy };
+const routes = { "": renderHome, "category": renderCategory, "settings": renderSettings, "audio": renderAudio, "ehr-import": renderEhrImport, "therapy-goals": renderTherapyGoals, "highlights": renderHighlights, "scenarios": renderScenarios, "safety": renderSafety, "toolkit": renderToolkit, "tracking": renderTracking, "planner": renderStudioPlanner, "journal": renderStudioJournal, "life-planner": renderPlanner, "life-journal": renderJournal, "planner-care-companion": renderPlannerCareCompanion, "roster": renderRoster, "coloring": renderColoring, "reminiscence": renderReminiscence, "clinical": renderClinical, "heirloom": renderHeirloom, "facility": renderFacilityPortal, "week-builder": renderWeekBuilder, "shift": renderShift, "academy": renderAcademy };
 function renderFacilityPortal(arg){ FacilityUI.render(view, arg); }
+function renderWeekBuilder(){ FacilityUI.openWeek(view); }
 function renderAcademy(arg){ AcademyUI.render(view, arg); }
 function renderShift(){ ShiftCalUI.render(view); }
 function renderHeirloom(){ HeirloomUI.render(view); }
@@ -15599,7 +15773,7 @@ function router(){
   if (!storeOpen) return;
   ActiveResident.mount(); ActiveResident.syncSelect();
   const { name, arg } = parseHash();
-  view.classList.toggle("view-wide", name === "facility" || name === "academy");
+  view.classList.toggle("view-wide", name === "facility" || name === "week-builder" || name === "academy");
   if (window.CogniStudio) window.CogniStudio.teardown();     // a Studio tool leaves nothing behind when the address changes
   if (window.CogniFacilityTools) window.CogniFacilityTools.teardown();
   if (window.CogniSafety) window.CogniSafety.teardown();

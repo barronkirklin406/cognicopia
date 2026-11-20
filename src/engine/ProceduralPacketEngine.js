@@ -81,7 +81,7 @@
       var h = read(KEYS.history), out = {};
       E.POOLS.forEach(function (p) {
         var list = h && Array.isArray(h[p]) ? h[p] : [];
-        out[p] = list.filter(function (id) { return typeof id === "string" && id.length <= 24; }).slice(-POOL_SIZE(p));
+        out[p] = list.filter(function (id) { return typeof id === "string" && id.length <= 40; }).slice(-POOL_SIZE(p));
       });
       return out;
     },

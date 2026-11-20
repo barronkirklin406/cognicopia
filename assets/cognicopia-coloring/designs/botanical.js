@@ -334,7 +334,7 @@ C.define({ id:"oak-acorns", title:"Oak Leaves and Acorns", cat:"botanical-garden
   if (g.lvl >= 2) acorn(g.at(520, 540, 0), 640, 1.1, 2);
 });
 
-C.define({ id:"apple-branch", title:"Apples on the Branch", cat:"botanical-garden", season:"fall", pad:.03,
+C.define({ id:"apple-branch", title:"Apples on the Branch", cat:"botanical-garden", season:"fall", pad:.095,
   tags:["apples", "orchards", "harvest", "fruit"], talk:"What would you bake with a basket of apples?" }, function(g){
   var apple = function(x, y, r, lv){
     g.S(h.path([x, y - r * .7]).C([x - r * .6, y - r * 1.2], [x - r * 1.2, y - r * .6], [x - r * 1.05, y + r * .2]).C([x - r * .9, y + r], [x - r * .3, y + r * 1.1], [x, y + r * .85])
@@ -378,7 +378,7 @@ C.define({ id:"strawberries", title:"Fresh Strawberries", cat:"botanical-garden"
   set.forEach(function(b){ berry(b[0], b[1], b[2], b[3]); });
 });
 
-C.define({ id:"pumpkin-patch", title:"The Pumpkin Patch", cat:"botanical-garden", season:"fall", pad:.02,
+C.define({ id:"pumpkin-patch", title:"The Pumpkin Patch", cat:"botanical-garden", season:"fall", pad:.095,
   tags:["pumpkins", "autumn", "harvest"], talk:"What does autumn smell like to you?" }, function(g){
   var pumpkin = function(x, y, rx, ry, lv){
     g.S(h.smooth([[x, y - ry], [x + rx * .7, y - ry * .96], [x + rx, y - ry * .2], [x + rx * .92, y + ry * .6], [x + rx * .5, y + ry], [x, y + ry * .92], [x - rx * .5, y + ry], [x - rx * .92, y + ry * .6], [x - rx, y - ry * .2], [x - rx * .7, y - ry * .96]]), lv);

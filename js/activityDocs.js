@@ -68,7 +68,50 @@
       '<p class="ads-note">This summary lists what is recorded on this computer. It supports a facility’s own records; it is not an assessment or a finding. A surveyor looks at assessments, care plans, observation and interviews. Nursing homes follow the federal activities rule; assisted living follows each state’s rules.</p></div>' +
       '<footer class="ads-foot"><span>' + esc(m.facility || "Cognicopia") + " · Activity documentation summary</span><b>Page 1 of 1</b></footer></div>";
   }
+  /* ---------- the monthly participation summary: one US Letter page for a resident and a calendar month, from the one-tap log ----------
+     input: { who, person, track, month (YYYY-MM), facility, care (the care-plan wording, if the staff changed it) }.
+     "Offered" is not recorded anywhere (the log holds what happened, not what was offered), so the page says "logged" and never claims a rate. */
+  var MOOD_FLAG = { restless: 1, anxious: 1, sad: 1, distracted: 1, overstimulated: 1 };
+  var MOOD_WORD = { happy: "Happy", content: "Content", calm: "Calm", tired: "Tired", restless: "Restless", anxious: "Anxious or upset", sad: "Sad or tearful", distracted: "Distracted", overstimulated: "Overstimulated" };
+  var MONTH_NAMES = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  function monthLabel(m) { var x = /^(\d{4})-(\d{2})$/.exec(String(m || "")); return x ? MONTH_NAMES[Number(x[2]) - 1] + " " + x[1] : String(m || ""); }
+  function monthModel(i) {
+    var w = i.person || {}, m = String(i.month || ""), t = i.track || { log: [] };
+    var have = FACTS.filter(function (f) { return f.has(w); }), log = (t.log || []).filter(function (e) { return String(e.day || "").slice(0, 7) === m; }).sort(function (a, b) { return a.day === b.day ? String(a.at).localeCompare(String(b.at)) : a.day.localeCompare(b.day); });
+    var how = { engaged: 0, joined: 0, watched: 0, declined: 0 }; log.forEach(function (e) { if (how[e.participation] != null) how[e.participation]++; });
+    var took = how.engaged + how.joined, moods = {}, flagged = 0, withMood = 0, half = { a: [0, 0], b: [0, 0] };
+    log.forEach(function (e) {
+      if (!e.mood) return;
+      withMood++; moods[e.mood] = (moods[e.mood] || 0) + 1; if (MOOD_FLAG[e.mood]) flagged++;
+      var late = Number(String(e.day).slice(8)) > 15, h = late ? half.b : half.a; h[0]++; if (MOOD_FLAG[e.mood]) h[1]++;
+    });
+    var trend = "Not enough moods were recorded this month to describe a trend.";
+    if (half.a[0] >= 3 && half.b[0] >= 3) {
+      var a = half.a[1] / half.a[0], b = half.b[1] / half.b[0];
+      trend = b + 0.2 <= a ? "Moods recorded in the second half of the month were more settled than in the first." : b >= a + 0.2 ? "Moods recorded in the second half of the month were less settled than in the first; the care team may want to look at what changed." : "Moods recorded were about the same in both halves of the month.";
+    }
+    var who = i.who || "Resident", label = monthLabel(m);
+    var care = i.care != null && String(i.care).trim() ? String(i.care) : (log.length
+      ? who + " took part (joined in or fully engaged) in " + took + " of " + log.length + " logged activities in " + label + ", watched or listened in " + how.watched + ", and chose another time for " + how.declined + ". Continue to offer activities matched to their level and interests."
+      : "No activities are logged for " + who + " in " + label + ". Record how they take part on the Daily engagement screen or the Shift board so this page has something to show.");
+    return { who: who, facility: i.facility || "", month: m, label: label, known: have.length, total: FACTS.length, next: have.length < 3 ? THIN : "", logged: log.length, how: how, took: took,
+      moods: Object.keys(moods).sort(function (x, y) { return moods[y] - moods[x]; }).map(function (k) { return { id: k, label: MOOD_WORD[k] || k, n: moods[k] }; }), withMood: withMood, flagged: flagged, trend: trend, care: care };
+  }
+  function monthHtml(m) {
+    var bar = function (n, total) { return '<span class="ads-bar" aria-hidden="true"><i style="width:' + (total ? Math.round(100 * n / total) : 0) + '%"></i></span>'; };
+    var row = function (label, n) { return "<tr><th scope=\"row\">" + esc(label) + "</th><td>" + n + "</td><td>" + bar(n, m.logged) + "</td></tr>"; };
+    return '<div class="sheet ads-sheet"><header class="ads-head"><div><p class="ads-kick">Monthly participation summary</p><h1 class="ads-who">' + esc(m.who) + '</h1></div>' +
+      '<div class="ads-when">' + esc(m.facility) + (m.facility ? "<br>" : "") + esc(m.label) + "</div></header>" +
+      '<div class="ads-body">' +
+      "<section><h2>What was logged</h2><p>" + (m.logged ? m.logged + (m.logged === 1 ? " outcome was" : " outcomes were") + " logged for " + esc(m.label) + ". “Offered” is not recorded, so these are the outcomes that were logged, not a rate." : "Nothing was logged for " + esc(m.label) + ".") + "</p>" +
+        (m.logged ? '<table class="ads-tab"><tbody>' + row("Took part (joined in or fully engaged)", m.took) + row("Watched or listened", m.how.watched) + row("Chose another time", m.how.declined) + "</tbody></table>" : "") + "</section>" +
+      "<section><h2>How they felt</h2><p>" + (m.withMood ? m.withMood + " of the logged outcomes carry a mood" + (m.moods.length ? ": " + esc(m.moods.map(function (x) { return x.label + " " + x.n; }).join(", ")) + "." : ".") + " " : "") + esc(m.trend) + "</p></section>" +
+      "<section><h2>What is known about them</h2><p>" + m.known + " of " + m.total + " things are on their profile." + (m.next ? " " + esc(m.next) : "") + "</p></section>" +
+      '<section><h2>Care-plan wording</h2><p class="ads-care">' + esc(m.care).replace(/\n/g, "<br>") + "</p></section>" +
+      '<p class="ads-note">This summary supports documentation: it lists what was recorded on this computer and the wording above is the staff’s to edit. It is not an assessment or a finding. Nursing homes follow the federal activities rule; assisted living follows each state’s rules.</p></div>' +
+      '<footer class="ads-foot"><span>' + esc(m.facility || "Cognicopia") + " · Monthly participation summary</span><b>Page 1 of 1</b></footer></div>";
+  }
   /* up to n residents spread evenly through the list, the same ones each time */
   function sample(list, n) { if (list.length <= n) return list.slice(); var out = []; for (var k = 0; k < n; k++) out.push(list[Math.round(k * (list.length - 1) / (n - 1))]); return out; }
-  root.CogniActivityDocs = Object.freeze({ FACTS: FACTS, THIN: THIN, model: model, pageHtml: pageHtml, sample: sample });
+  root.CogniActivityDocs = Object.freeze({ FACTS: FACTS, THIN: THIN, model: model, pageHtml: pageHtml, sample: sample, monthModel: monthModel, monthHtml: monthHtml, monthLabel: monthLabel });
 })(typeof window !== "undefined" ? window : this);

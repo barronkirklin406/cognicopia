@@ -74,7 +74,7 @@ After a run with masters in the inbox: `npm run coloring:ingest`, then `npm run 
 `npm run art:library` measured the library on November 18, 2026:
 
 - 150 designs, 450 pages (three tiers each).
-- All 150 meet every measured print standard (`scripts/check-local-art.mjs` fails if any does not). Nine had a subject filling under 45% of the page; the last five (apple branch, pumpkin patch, tea for two, baking day, butter churn) were redrawn so the subject fills its box, and the other four (grandfather clock, milk bottles, chickadee on a pine, seashells) were fixed earlier.
+- 123 of the 150 meet every measured print standard, including the owner's rule of November 20, 2026 (at least 8% of white on every side, and the subject 45% of the picture box or 78% across). The other 27 are on the earlier-framing list in `assets/cognicopia-coloring/lineart.js`, and `scripts/check-local-art.mjs` fails unless exactly those are the ones that miss it, so a design that is remade must leave the list. (Before November 20, 2026: all 150 met the standards; Nine had a subject filling under 45% of the page; the last five (apple branch, pumpkin patch, tea for two, baking day, butter churn) were redrawn so the subject fills its box, and the other four (grandfather clock, milk bottles, chickadee on a pine, seashells) were fixed earlier.)
 - 34 are exact geometric patterns (quilts, mandalas, tiles), kept as drawn.
 - 116 can be upgraded with a picture engine.
 

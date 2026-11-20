@@ -86,7 +86,7 @@ const CHECKS = [
   { id: "pure-black-white", label: "Pure black lines on white: no color, gray, shading or gradients" },
   { id: "line-weight", label: "Lines are drawn by the engine at each tier's weight (3, 4.5 and 7.9 pt), never under 3 pt" },
   { id: "area-size", label: "Areas to color are large enough at every tier" },
-  { id: "fills-page", label: "A 3:4 portrait page with the subject filling it" },
+  { id: "fills-page", label: "A 3:4 portrait page with the whole subject inside at least 8% of white margin, as large as that allows" },
   { id: "traced-faithfully", label: "The traced lines follow the master: no line lost, none made up" },
   { id: "solid-black", label: "Solid black areas are small accents, not large fills" },
   { id: "file-size", label: "The art is small enough to ship in the library bundle" },
@@ -227,7 +227,9 @@ for (const [stem, g] of groups){
     if (c.id === "pure-black-white"){ result = bad.length ? "fail" : "pass"; detail = bad.join("; ") || "no color or gray found"; }
     if (c.id === "line-weight"){ result = "pass"; detail = `drawn by the engine at ${[1, 2, 3].map(t => C.weightFor(t).pt + " pt").join(", ")}; the master's own line (${(2 * r0 * 72 / 300).toFixed(1)} pt on a 6 in page) only shows where to draw`; }
     if (c.id === "area-size"){ result = [1, 2, 3].every(t => art.tiers[t].meets_rule) ? "pass" : "fail"; detail = [1, 2, 3].map(t => `Tier ${t}: ${art.tiers[t].regions} areas, ${art.tiers[t].tiny_regions} under ${C.TIERS[t].minArea} sq in (allows ${C.TIERS[t].maxTiny}), smallest ${art.tiers[t].smallest_region_sq_in} sq in`).join("; "); }
-    if (c.id === "fills-page"){ result = T1.subject_fill >= .45 ? "pass" : "fail"; detail = `subject fills ${Math.round(T1.subject_fill * 100)}% of the picture box`; }
+    /* the owner's rule of November 19, 2026: the whole subject inside the page with at least 8% white on every side (nothing cropped), and as large as
+       that allows: it fills 45% of the page, or, for a wide or tall subject that cannot, it reaches 78% of the page on its long side */
+    if (c.id === "fills-page"){ result = T1.margin_min >= .08 && (T1.subject_fill >= .45 || T1.subject_span >= .78) ? "pass" : "fail"; detail = `subject fills ${Math.round(T1.subject_fill * 100)}% of the picture box, reaches ${Math.round(T1.subject_span * 100)}% of the page on its long side, ${Math.round(T1.margin_min * 100)}% of white at its tightest side`; }
     if (c.id === "traced-faithfully"){ result = faithful ? "pass" : "fail"; detail = `${f.regions_traced} areas traced of ${f.regions_master} in the master; ink left out reaches ${f.missing_p99_px} px, lines off the ink ${f.stray_p99_px} px (line half-width ${r0} px)`; }
     if (c.id === "solid-black"){ result = solidShare <= .35 ? "pass" : "fail"; detail = `${art.graphTrace.blobGeom.length} solid area(s), ${(solidShare * 100).toFixed(1)}% of the ink`; }
     if (c.id === "file-size"){ result = art.bytes <= FILE_BUDGET ? "pass" : "fail"; detail = `${(art.bytes / 1000).toFixed(1)} KB of path data (limit ${FILE_BUDGET / 1000} KB)`; }

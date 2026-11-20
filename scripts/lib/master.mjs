@@ -11,7 +11,7 @@ import { decodePNG } from "./png.mjs";
 import { createBitmap, paint, despeckle } from "./raster.mjs";
 import { parseSVG, fitShapes } from "./svg-raster.mjs";
 
-export const CANVAS = { dpi: 300, widthIn: 6, heightIn: 8, w: 1800, h: 2400, margin: .05 };
+export const CANVAS = { dpi: 300, widthIn: 6, heightIn: 8, w: 1800, h: 2400, margin: .09 };
 
 /* The threshold between ink and paper (Otsu), kept between 60 and 200 of 255. */
 export function otsu(gray){
