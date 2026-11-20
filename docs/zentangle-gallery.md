@@ -36,6 +36,8 @@ Pages from the Activity Page Studio join the same queue: its "Add all pages to t
 
 Daily engagement cards ("Add this card to the packet", with Copies) and the group circle's leader script ("Add the script to the packet") join the same queue (`scripts/check-daily-queue-ui.mjs`). The circle script is a staff page: a queue made only of staff pages prints and spends no free packet, even when none are left.
 
+A Calm now card ("Add to the packet" in its dialog) joins the queue the same way, as a staff page. The 12-month life planner and the life journal each have "Add to the packet" (the part of the book chosen) and "Add this spread to the packet": the pages as made go in as one item for the resident, shown in the packet drawer by its first page only, and print with the rest in pure black and white (`scripts/check-book-queue-ui.mjs`). Every printed page of the Packet Builder's own tools can now be added to the packet, except the Facility Portal's whole-building prints, which have their own license rule.
+
 ## Printing
 
 A chosen page is set alone on US Letter, inside the 0.5 in margins and clear of the 0.75 in binding gutter, through `BookUI.print`. It counts as one packet (a page for a resident or family), never a staff document. The print window opens only after every picture has loaded (it used to open at once and show a blank preview).

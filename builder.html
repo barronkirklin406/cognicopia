@@ -6371,6 +6371,7 @@ const LifePlannerUI = (function(){
       <div class="lp-pv-foot">
         <p class="hint">${inScope ? "" : `Not in the ${SCOPES[S.scope].label}. Choose ${S.tab <= 2 ? "the memory book" : "the care companion"} or the complete binder below to print it. `}Left pages carry pictures and prompts; right pages carry writing lines 0.5 in apart. The shaded edge is the 0.75 in binding gutter.</p>
         <button class="btn btn-sm" type="button" id="lpPrintSpread">Print this spread</button>
+        <button class="btn btn-sm" type="button" id="lpAddSpread">Add this spread to the packet</button>
       </div>`;
     scaleThumbs();
     LP.fitSheets(box);
@@ -6413,7 +6414,9 @@ const LifePlannerUI = (function(){
       </div>
       <p class="hint" id="lpBw"></p>
       <div class="actions"><button class="btn btn-primary" type="button" id="lpPrintBtn"></button>
+        <button class="btn" type="button" id="lpAddBtn">Add to the packet</button>
         <button class="btn" type="button" id="lpCalmBtn">Add a fresh calming page for the binder</button></div>
+      <p class="hint" id="lpAddMsg" role="status"></p>
       <p class="hint">The calming page is a one-to-three page set made on the spot (a reminiscence prompt, a picture to trace, a calming puzzle or a path) at the level and theme you choose, with the resident’s name, their years and the topics to steer around. It is not part of the planner pages above, so it never changes their count.</p>
       <p class="hint">In the print window, choose <b>Save as PDF</b> or your printer. Keep <b>Scale</b> at 100% and <b>Margins</b> at Default: the gutters are built into every page.</p>
       <p class="allowance" id="lpAllow"></p>
@@ -6452,6 +6455,14 @@ const LifePlannerUI = (function(){
     if (!sp) return;
     runPrint([sp.left, sp.right].filter(x => x != null).map(k => res.pages[k]), sp.title);
   }
+  /* Add to the packet: the pages as made go in the packet queue for this resident, as one item that prints with the rest (js/studioQueue.js). Nothing is spent. */
+  function addPages(pages, what){
+    const Q = window.CogniStudioQueue, m = document.getElementById("lpAddMsg"); if (!Q || !pages.length) return;
+    const n = Q.addBook(pages.map(p => p.html), { residentName: who().slice(0, 40), title: "Life Planner: " + what + " (" + pages.length + (pages.length === 1 ? " page)" : " pages)") });
+    if (m) m.textContent = n ? "Added " + pages.length + (pages.length === 1 ? " page" : " pages") + " to the packet. Open the packet to print them with the rest." : "The pages could not be added. Try again.";
+  }
+  function addScope(){ const res = LP.build(engineProfile(), engineOpts(), S.scope); addPages(res.pages, SCOPES[S.scope].label); }
+  function addSpread(){ const { res, list } = tabSpreads(), sp = list[S.pos[S.tab]]; if (sp) addPages([sp.left, sp.right].filter(x => x != null).map(k => res.pages[k]), sp.title); }
 
   /* ---------- saved profiles (profile.html) ---------- */
   const savedProfiles = BookUI.savedProfiles, savedProfileOptions = BookUI.savedProfileOptions;
@@ -6596,6 +6607,8 @@ const LifePlannerUI = (function(){
       case "lpAiApply": applyAi(); return;
       case "lpAiClear": S.opts.aiCopy = null; save(); refresh(); document.getElementById("lpAiMsg").textContent = "AI wording removed. The planner’s own wording is back."; b.disabled = true; return;
       case "lpPrintBtn": printScope(); return;
+      case "lpAddBtn": addScope(); return;
+      case "lpAddSpread": addSpread(); return;
       case "lpCalmBtn": calmingPage(); return;
       case "lpPrintSpread": printSpread(); return;
     }
@@ -7053,6 +7066,7 @@ const LifeJournalUI = (function(){
       <div class="lp-pv-foot">
         <p class="hint">${inScope ? "" : `Not in the ${SCOPES[S.scope].label}. Choose ${S.tab <= 3 ? "the Life Story Book" : "Reflection &amp; Family Notes"} or the Complete Journal below to print it. `}Left pages carry the story prompts and a photograph; right pages carry writing lines 0.5 in apart. The shaded edge is the 0.75 in binding gutter.</p>
         <button class="btn btn-sm" type="button" id="ljPrintSpread">Print this spread</button>
+        <button class="btn btn-sm" type="button" id="ljAddSpread">Add this spread to the packet</button>
       </div>`;
     BookUI.scale(box);
     window.CognicopiaKit.fitSheets(box);
@@ -7081,7 +7095,9 @@ const LifeJournalUI = (function(){
           <p class="hint">Heavier lines are easier to see and to follow with a pen.</p></fieldset>
       </div>
       <p class="hint" id="ljBw"></p>
-      <div class="actions"><button class="btn btn-primary" type="button" id="ljPrintBtn"></button></div>
+      <div class="actions"><button class="btn btn-primary" type="button" id="ljPrintBtn"></button>
+        <button class="btn" type="button" id="ljAddBtn">Add to the packet</button></div>
+      <p class="hint" id="ljAddMsg" role="status"></p>
       <p class="hint">In the print window, choose <b>Save as PDF</b> or your printer. Keep <b>Scale</b> at 100% and <b>Margins</b> at Default: the gutters are built into every page.</p>
       <p class="allowance" id="ljAllow"></p>
     </section>`;
@@ -7113,6 +7129,14 @@ const LifeJournalUI = (function(){
     const { res, list } = tabSpreads(), sp = list[S.pos[S.tab]];
     if (sp) BookUI.print([sp.left, sp.right].filter(x => x != null).map(k => res.pages[k]), fileTitle(sp.title), syncPrint, bw());
   }
+  /* Add to the packet: the pages as made go in the packet queue for this resident, as one item (js/studioQueue.js). Nothing is spent. */
+  function addPages(pages, what){
+    const Q = window.CogniStudioQueue, m = document.getElementById("ljAddMsg"); if (!Q || !pages.length) return;
+    const n = Q.addBook(pages.map(p => p.html), { residentName: who().slice(0, 40), title: "Life Journal: " + what + " (" + pages.length + (pages.length === 1 ? " page)" : " pages)") });
+    if (m) m.textContent = n ? "Added " + pages.length + (pages.length === 1 ? " page" : " pages") + " to the packet. Open the packet to print them with the rest." : "The pages could not be added. Try again.";
+  }
+  function addScope(){ addPages(LJ.build(engineProfile(), S.opts, S.scope).pages, SCOPES[S.scope].label); }
+  function addSpread(){ const { res, list } = tabSpreads(), sp = list[S.pos[S.tab]]; if (sp) addPages([sp.left, sp.right].filter(x => x != null).map(k => res.pages[k]), sp.title); }
 
   /* ---------- filling in from elsewhere ---------- */
   function loadOptions(){
@@ -7271,6 +7295,8 @@ const LifeJournalUI = (function(){
       case "ljAiApply": applyAi(); return;
       case "ljAiClear": S.opts.aiCopy = null; save(); refresh(); document.getElementById("ljAiMsg").textContent = "AI wording removed. The journal’s own questions are back."; b.disabled = true; return;
       case "ljPrintBtn": printScope(); return;
+      case "ljAddBtn": addScope(); return;
+      case "ljAddSpread": addSpread(); return;
       case "ljPrintSpread": printSpread(); return;
     }
   }
@@ -15554,7 +15580,7 @@ CATEGORIES.forEach(c => { CAT_INDEX[c.id] = c; c.activities.forEach(a => { ACT_I
 // The coloring library queues its pages through its own activity.
 [COLORING, CogniLibrary.LIBRARY_ACTIVITY].forEach(a => { if (!ACT_INDEX[a.id]){ ACT_INDEX[a.id] = a; a.categoryId = "cognicopia-coloring"; } });
 if (window.CogniZentangle && !ACT_INDEX[window.CogniZentangle.ACTIVITY.id]){ ACT_INDEX[window.CogniZentangle.ACTIVITY.id] = window.CogniZentangle.ACTIVITY; window.CogniZentangle.ACTIVITY.categoryId = "cognicopia-coloring"; }
-if (window.CogniStudioQueue) [window.CogniStudioQueue.ACTIVITY, window.CogniStudioQueue.CIRCLE].forEach(a => { if (!ACT_INDEX[a.id]){ ACT_INDEX[a.id] = a; a.categoryId = "cognicopia-coloring"; } });
+if (window.CogniStudioQueue) [window.CogniStudioQueue.ACTIVITY, window.CogniStudioQueue.CIRCLE, window.CogniStudioQueue.CALM, window.CogniStudioQueue.BOOK].forEach(a => { if (!ACT_INDEX[a.id]){ ACT_INDEX[a.id] = a; a.categoryId = "cognicopia-coloring"; } });
 if (!ACT_INDEX[ReminiscenceUI.REMINISCENCE_ACTIVITY.id]){ ACT_INDEX[ReminiscenceUI.REMINISCENCE_ACTIVITY.id] = ReminiscenceUI.REMINISCENCE_ACTIVITY; ReminiscenceUI.REMINISCENCE_ACTIVITY.categoryId = "word"; }
 installRoomyLevels();
 
@@ -15700,6 +15726,8 @@ const readQueue = () => (store.get("cgb_queue", []) || []).map(q => {
 }).filter(q => q && ACT_INDEX[q.activityId] && Number.isFinite(q.batchSeed) && q.index < q.count);
 let queue = readQueue();
 function saveQueue(){ store.set("cgb_queue", queue); renderCounts(); if (drawerOpen) renderQueue(); }
+/* Pages added from anywhere on this page (a Calm now card, a planner, a journal) go into the live list, not only into storage */
+if (window.CogniStudioQueue) window.CogniStudioQueue.bridge = list => { list.forEach(it => { if (ACT_INDEX[it.activityId]) queue.push(it); }); saveQueue(); };
 function addBatch(act, cfg, batchSeed, count){
   // an activity that draws on what was printed lately (the soothing set) writes its choice into the packet item, so it never changes
   let frozen = null;
