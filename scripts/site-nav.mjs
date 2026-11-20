@@ -112,6 +112,7 @@ export const HUBS = [
       { key: "builder",      label: "Packet Builder",           href: B,                    icon: "builder" },
       { key: "activity-studio", label: "Activity Page Studio",  href: "activity-studio.html", icon: "builder" },
       { key: "coloring",     label: "Cognicopia Coloring",      href: B + "#/coloring",     route: "coloring",     icon: "palette" },
+      { key: "zentangle",    label: "Zentangle Gallery",        href: B + "#/zentangle",    route: "zentangle",    icon: "palette" },
       { key: "week-builder", label: "Week Builder",             href: B + "#/week-builder", route: "week-builder", icon: "calendar" },
       { key: "planner",      label: "12-Month Seasonal Planner", href: B + "#/planner",     route: "planner",      icon: "calendar" },
       { key: "journal",      label: "Life Narrative Journal",   href: B + "#/journal",      route: "journal",      icon: "journal" },
@@ -912,7 +913,7 @@ export function validate(){
    A tool a person can pin carries pin:true. No resident is ever in this file. */
 const NAV_WORDS = {
   home: "packet personalized make print activity pages", daily: "today card reminiscence music comfort one page", profile: "resident profiles add edit life story family photos",
-  start: "start here guide tour help new first time", "activity-studio": "studio pages life story large print pdf", coloring: "coloring colouring pictures art color sheet",
+  start: "start here guide tour help new first time", "activity-studio": "studio pages life story large print pdf", coloring: "coloring colouring pictures art color sheet", zentangle: "zentangle zen tangle detailed coloring books pictures dogs lions jellyfish ocean forest",
   tracking: "tracking monthly record log", planner: "planner seasons months calendar binder", journal: "journal life story narrative", reminiscence: "conversation cards decks talk",
   toolkit: "toolkit pages", builder: "packet builder queue activities word search puzzles", tablet: "tablet touch screen activities games",
   facility: "facility portal wings team schedule", shift: "shift board notes tasks handoff calendar", roster: "roster residents list census folder handoff",

@@ -3068,6 +3068,7 @@ body.shc-lock{overflow:hidden}
         <li><a class="sb-link" href="index.html"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>Personalized Packet Tool</span></a></li>
         <li><a class="sb-link" href="activity-studio.html"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6"/><line x1="9" y1="13" x2="16" y2="13"/><line x1="9" y1="17" x2="14" y2="17"/></svg><span>Activity Page Studio</span></a></li>
         <li><a class="sb-link" href="#/coloring" data-route="coloring"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 22a10 10 0 1 1 10-10c0 2.8-2.2 4-4 4h-2a2 2 0 0 0-1.4 3.4A1.9 1.9 0 0 1 12 22z"/><circle cx="7.5" cy="10.5" r="1.3"/><circle cx="11.5" cy="6.5" r="1.3"/><circle cx="16.5" cy="9.5" r="1.3"/></svg><span>Cognicopia Coloring</span><span class="tag live" id="navColoringCount"></span></a></li>
+        <li><a class="sb-link" href="#/zentangle" data-route="zentangle"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 22a10 10 0 1 1 10-10c0 2.8-2.2 4-4 4h-2a2 2 0 0 0-1.4 3.4A1.9 1.9 0 0 1 12 22z"/><circle cx="7.5" cy="10.5" r="1.3"/><circle cx="11.5" cy="6.5" r="1.3"/><circle cx="16.5" cy="9.5" r="1.3"/></svg><span>Zentangle Gallery</span></a></li>
         <li><a class="sb-link" href="#/week-builder" data-route="week-builder"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span>Week Builder</span></a></li>
         <li><a class="sb-link" href="#/planner" data-route="planner"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span>12-Month Seasonal Planner</span></a></li>
         <li><a class="sb-link" href="#/journal" data-route="journal"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M2 4h7a3 3 0 0 1 3 3v14a2 2 0 0 0-2-2H2z"/><path d="M22 4h-7a3 3 0 0 0-3 3v14a2 2 0 0 1 2-2h8z"/></svg><span>Life Narrative Journal</span></a></li>
@@ -10210,6 +10211,7 @@ const HeirloomUI = (function(){
 </script>
 <script src="assets/services/facilityPlanner.js"></script>
 <script src="assets/services/weekBuilder.js"></script>
+<script src="js/zentangleGallery.js"></script>
 <script src="assets/services/auditLog.js"></script>
 <script src="js/auditLogUI.js"></script>
 <script id="facility-ui">
@@ -15695,7 +15697,7 @@ function addBatch(act, cfg, batchSeed, count){
 
 /* ---------- 11. Views + router ---------- */
 const view = $("#view");
-const routes = { "": renderHome, "category": renderCategory, "settings": renderSettings, "audio": renderAudio, "ehr-import": renderEhrImport, "therapy-goals": renderTherapyGoals, "highlights": renderHighlights, "scenarios": renderScenarios, "safety": renderSafety, "toolkit": renderToolkit, "tracking": renderTracking, "planner": renderStudioPlanner, "journal": renderStudioJournal, "life-planner": renderPlanner, "life-journal": renderJournal, "planner-care-companion": renderPlannerCareCompanion, "roster": renderRoster, "coloring": renderColoring, "reminiscence": renderReminiscence, "clinical": renderClinical, "heirloom": renderHeirloom, "facility": renderFacilityPortal, "week-builder": renderWeekBuilder, "shift": renderShift, "academy": renderAcademy };
+const routes = { "": renderHome, "category": renderCategory, "settings": renderSettings, "audio": renderAudio, "ehr-import": renderEhrImport, "therapy-goals": renderTherapyGoals, "highlights": renderHighlights, "scenarios": renderScenarios, "safety": renderSafety, "toolkit": renderToolkit, "tracking": renderTracking, "planner": renderStudioPlanner, "journal": renderStudioJournal, "life-planner": renderPlanner, "life-journal": renderJournal, "planner-care-companion": renderPlannerCareCompanion, "roster": renderRoster, "coloring": renderColoring, "zentangle": renderZentangle, "reminiscence": renderReminiscence, "clinical": renderClinical, "heirloom": renderHeirloom, "facility": renderFacilityPortal, "week-builder": renderWeekBuilder, "shift": renderShift, "academy": renderAcademy };
 function renderFacilityPortal(arg){ FacilityUI.render(view, arg); }
 function renderWeekBuilder(){ FacilityUI.openWeek(view); }
 function renderAcademy(arg){ AcademyUI.render(view, arg); }
@@ -15704,6 +15706,7 @@ function renderHeirloom(){ HeirloomUI.render(view); }
 function renderClinical(){ ClinicalUI.render(view); }
 function renderReminiscence(){ ReminiscenceUI.render(view); }
 function renderColoring(arg){ CogniLibrary.render(view, arg); }
+function renderZentangle(arg){ if (window.CogniZentangle) window.CogniZentangle.render(view, arg, { print: BookUI.print }); }
 function renderRoster(){ RosterUI.render(view); }
 function renderPlanner(){ LifePlannerUI.render(view); }
 /* the planner's staff side on its own address: the Care Companion pages, with the resident-facing memory book one click away */
