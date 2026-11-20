@@ -15554,7 +15554,7 @@ CATEGORIES.forEach(c => { CAT_INDEX[c.id] = c; c.activities.forEach(a => { ACT_I
 // The coloring library queues its pages through its own activity.
 [COLORING, CogniLibrary.LIBRARY_ACTIVITY].forEach(a => { if (!ACT_INDEX[a.id]){ ACT_INDEX[a.id] = a; a.categoryId = "cognicopia-coloring"; } });
 if (window.CogniZentangle && !ACT_INDEX[window.CogniZentangle.ACTIVITY.id]){ ACT_INDEX[window.CogniZentangle.ACTIVITY.id] = window.CogniZentangle.ACTIVITY; window.CogniZentangle.ACTIVITY.categoryId = "cognicopia-coloring"; }
-if (window.CogniStudioQueue && !ACT_INDEX[window.CogniStudioQueue.ACTIVITY.id]){ ACT_INDEX[window.CogniStudioQueue.ACTIVITY.id] = window.CogniStudioQueue.ACTIVITY; window.CogniStudioQueue.ACTIVITY.categoryId = "cognicopia-coloring"; }
+if (window.CogniStudioQueue) [window.CogniStudioQueue.ACTIVITY, window.CogniStudioQueue.CIRCLE].forEach(a => { if (!ACT_INDEX[a.id]){ ACT_INDEX[a.id] = a; a.categoryId = "cognicopia-coloring"; } });
 if (!ACT_INDEX[ReminiscenceUI.REMINISCENCE_ACTIVITY.id]){ ACT_INDEX[ReminiscenceUI.REMINISCENCE_ACTIVITY.id] = ReminiscenceUI.REMINISCENCE_ACTIVITY; ReminiscenceUI.REMINISCENCE_ACTIVITY.categoryId = "word"; }
 installRoomyLevels();
 
@@ -16678,7 +16678,9 @@ function sheetLook(who, calm){
 function generatePdf(items, printOptions){
   items = Array.isArray(items) ? items : queue;
   if (!items.length) return;
-  if (!isLicensed() && genCount() >= FREE_RUNS){
+  /* a packet made only of staff documents (the group circle's script) is not a packet: it never waits on the free-packet check and never spends one */
+  const staffOnly = items.every(q => (ACT_INDEX[q.activityId] || {}).staff === true);
+  if (!staffOnly && !isLicensed() && genCount() >= FREE_RUNS){
     pendingSoothe = false;
     if (printOptions && printOptions.emergency) pendingEmergencyPrint = { items:items, options:printOptions };
     closeDrawer(); openGate(); return;
@@ -16708,8 +16710,8 @@ function generatePdf(items, printOptions){
   const finish = () => {
     window.print();
     recordSoothing(items);
-    TrackerUI.notePacket(items);          // a packet made for the resident we are working with is noted in their record
-    if (!isLicensed()) bumpGen();
+    if (!staffOnly) TrackerUI.notePacket(items);          // a packet made for the resident we are working with is noted in their record
+    if (!isLicensed() && !staffOnly) bumpGen();
     renderAllowance();
   };
   const pictures = BookUI.imagesReady(root);       // pages with pictures (Zentangle) print once every picture has loaded

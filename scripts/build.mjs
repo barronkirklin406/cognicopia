@@ -385,6 +385,14 @@ step("Activity Page Studio pages in the Packet Builder's packet queue, in a real
   }
 });
 
+step("Daily engagement cards and the group circle script in the Packet Builder's packet queue, in a real browser: add this card with copies for the resident chosen, add the script as a staff page, nothing spent by adding, cards print as one packet, the script alone prints and spends none even when no free packets are left, 52 px controls, nothing off the site", () => {
+  try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-daily-queue-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim().split("\n").pop(); }
+  catch (e){
+    if (e.status === 2) return "skipped: Playwright is not installed here (see docs/dev-setup.md)";
+    throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message);
+  }
+});
+
 step("Instant Soothe on the era banks, proved on real PDFs read back with PyMuPDF: ten clicks give ten different packets, era-bank pages drawn from the person's own years (born + 7 to + 28), no entry back within ten clicks, inside the margins, pure black on white, ids only in the memory, nothing off the page", () => {
   try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-soothe-banks-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim().split("\n").pop(); }
   catch (e){
