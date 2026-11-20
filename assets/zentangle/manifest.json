@@ -1,0 +1,199 @@
+{
+ "version": 1,
+ "size": [
+  1656,
+  2160
+ ],
+ "books": [
+  {
+   "slug": "dogs",
+   "title": "Dogs",
+   "group": "Pets and farm",
+   "pages": 50
+  },
+  {
+   "slug": "puppies",
+   "title": "Puppies",
+   "group": "Pets and farm",
+   "pages": 50
+  },
+  {
+   "slug": "kittens",
+   "title": "Kittens",
+   "group": "Pets and farm",
+   "pages": 50
+  },
+  {
+   "slug": "birds",
+   "title": "Birds",
+   "group": "Wild animals",
+   "pages": 50
+  },
+  {
+   "slug": "butterfly-summer",
+   "title": "Butterflies in Summer",
+   "group": "Wild animals",
+   "pages": 8
+  },
+  {
+   "slug": "insects",
+   "title": "Insects",
+   "group": "Wild animals",
+   "pages": 48
+  },
+  {
+   "slug": "frogs",
+   "title": "Frogs",
+   "group": "Wild animals",
+   "pages": 48
+  },
+  {
+   "slug": "turtles",
+   "title": "Turtles",
+   "group": "Wild animals",
+   "pages": 48
+  },
+  {
+   "slug": "reptiles",
+   "title": "Reptiles",
+   "group": "Wild animals",
+   "pages": 46
+  },
+  {
+   "slug": "wildlife",
+   "title": "Wild Life",
+   "group": "Wild animals",
+   "pages": 47
+  },
+  {
+   "slug": "lions",
+   "title": "Lions",
+   "group": "Wild animals",
+   "pages": 50
+  },
+  {
+   "slug": "grizzly-bears",
+   "title": "Grizzly Bears",
+   "group": "Wild animals",
+   "pages": 50
+  },
+  {
+   "slug": "african-rhino",
+   "title": "African Rhino",
+   "group": "Wild animals",
+   "pages": 50
+  },
+  {
+   "slug": "jellyfish",
+   "title": "Jellyfish",
+   "group": "The sea",
+   "pages": 49
+  },
+  {
+   "slug": "cephalopod",
+   "title": "Cephalopods",
+   "group": "The sea",
+   "pages": 49
+  },
+  {
+   "slug": "ocean-life",
+   "title": "Ocean Life",
+   "group": "The sea",
+   "pages": 49
+  },
+  {
+   "slug": "trees",
+   "title": "Trees",
+   "group": "Nature and seasons",
+   "pages": 50
+  },
+  {
+   "slug": "flowers",
+   "title": "Flowers and Flora",
+   "group": "Nature and seasons",
+   "pages": 49
+  },
+  {
+   "slug": "forest-nature",
+   "title": "Forest and Nature",
+   "group": "Nature and seasons",
+   "pages": 71
+  },
+  {
+   "slug": "urban-jungle",
+   "title": "Urban Jungle",
+   "group": "Nature and seasons",
+   "pages": 25
+  },
+  {
+   "slug": "autumn",
+   "title": "Autumn",
+   "group": "Nature and seasons",
+   "pages": 48
+  },
+  {
+   "slug": "christmas",
+   "title": "Christmas",
+   "group": "Nature and seasons",
+   "pages": 50
+  },
+  {
+   "slug": "dinosaurs",
+   "title": "Dinosaurs",
+   "group": "Long ago",
+   "pages": 49
+  },
+  {
+   "slug": "middle-ages",
+   "title": "Middle Ages",
+   "group": "Long ago",
+   "pages": 50
+  },
+  {
+   "slug": "unicorns",
+   "title": "Unicorns",
+   "group": "Fantasy",
+   "pages": 45
+  },
+  {
+   "slug": "dragons",
+   "title": "Dragons, Drakes and Wyverns",
+   "group": "Fantasy",
+   "pages": 50
+  },
+  {
+   "slug": "elven",
+   "title": "Elven",
+   "group": "Fantasy",
+   "pages": 51
+  },
+  {
+   "slug": "dwarven",
+   "title": "Dwarven",
+   "group": "Fantasy",
+   "pages": 48
+  },
+  {
+   "slug": "knights",
+   "title": "Knights",
+   "group": "Fantasy",
+   "pages": 22
+  },
+  {
+   "slug": "orcish",
+   "title": "Orcish",
+   "group": "Fantasy",
+   "note": "Preview before offering",
+   "why": "Orcs and goblins, drawn in detail. Look through the pages first and choose the ones that suit the person.",
+   "pages": 48
+  },
+  {
+   "slug": "zombie-nation",
+   "title": "Zombie Nation",
+   "group": "Fantasy",
+   "note": "Preview before offering",
+   "why": "Zombies and other frightening figures, drawn in detail. Look through the pages first and choose only what suits the person; many residents will not want these.",
+   "pages": 40
+  }
+ ]
+}
