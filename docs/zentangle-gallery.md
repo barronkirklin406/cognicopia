@@ -32,6 +32,8 @@ Each page is a pure black and white, lossless WebP 1656 pixels wide and about 3:
 
 Every page can be added to the packet queue for the resident chosen in "Working with" (or for no one): "Add the chosen pages to the packet", with "Copies of each" (1 to 6; a page's copies sit together). Pages of different books, and pages of Cognicopia Coloring (which has the same "Copies of each"), share one queue and print together as one packet. Adding spends nothing; printing the packet counts as one packet.
 
+Pages from the Activity Page Studio join the same queue: its "Add all pages to the packet" and "Add this page to the packet" (with "Copies of each") put the finished pages into the Packet Builder's queue for the resident chosen in the Studio (`js/studioQueue.js`, `scripts/check-studio-queue-ui.mjs`). A queued Studio page keeps its own finished picture, and the staff answer page is never added. A Packet Builder tab that is already open keeps its own list until it is reloaded.
+
 ## Printing
 
 A chosen page is set alone on US Letter, inside the 0.5 in margins and clear of the 0.75 in binding gutter, through `BookUI.print`. It counts as one packet (a page for a resident or family), never a staff document. The print window opens only after every picture has loaded (it used to open at once and show a blank preview).

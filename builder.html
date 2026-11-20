@@ -10222,6 +10222,7 @@ const HeirloomUI = (function(){
 <script src="assets/services/facilityPlanner.js"></script>
 <script src="assets/services/weekBuilder.js"></script>
 <script src="js/zentangleGallery.js"></script>
+<script src="js/studioQueue.js"></script>
 <script src="assets/services/auditLog.js"></script>
 <script src="js/auditLogUI.js"></script>
 <script id="facility-ui">
@@ -15553,6 +15554,7 @@ CATEGORIES.forEach(c => { CAT_INDEX[c.id] = c; c.activities.forEach(a => { ACT_I
 // The coloring library queues its pages through its own activity.
 [COLORING, CogniLibrary.LIBRARY_ACTIVITY].forEach(a => { if (!ACT_INDEX[a.id]){ ACT_INDEX[a.id] = a; a.categoryId = "cognicopia-coloring"; } });
 if (window.CogniZentangle && !ACT_INDEX[window.CogniZentangle.ACTIVITY.id]){ ACT_INDEX[window.CogniZentangle.ACTIVITY.id] = window.CogniZentangle.ACTIVITY; window.CogniZentangle.ACTIVITY.categoryId = "cognicopia-coloring"; }
+if (window.CogniStudioQueue && !ACT_INDEX[window.CogniStudioQueue.ACTIVITY.id]){ ACT_INDEX[window.CogniStudioQueue.ACTIVITY.id] = window.CogniStudioQueue.ACTIVITY; window.CogniStudioQueue.ACTIVITY.categoryId = "cognicopia-coloring"; }
 if (!ACT_INDEX[ReminiscenceUI.REMINISCENCE_ACTIVITY.id]){ ACT_INDEX[ReminiscenceUI.REMINISCENCE_ACTIVITY.id] = ReminiscenceUI.REMINISCENCE_ACTIVITY; ReminiscenceUI.REMINISCENCE_ACTIVITY.categoryId = "word"; }
 installRoomyLevels();
 
