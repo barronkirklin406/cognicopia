@@ -128,7 +128,7 @@ packets.forEach((pk, i) => {
     const isMemory = memPages.includes(pg);
     if (isMemory){
       ok(pg.y1 - pg.y0 >= 432, `click ${n}, page ${k + 1}: a memory page is at least 60% of the page tall (${Math.round(pg.y1 - pg.y0)} of 720 pt)`);
-      const body = pg.text.split("Clinical Tip:")[0], q = body.match(QUIZ);   /* the shell's own staff tip line is the engine's older known gap, not this page */
+      const body = pg.text.split(/Clinical Tip:|Conversation starter:/)[0], q = body.match(QUIZ);   /* the shell's own staff tip line is the engine's older known gap, not this page; it carries one of two labels (ClinicalMatrix.js), and one tip says "works better than do you remember" */
       ok(!q, `click ${n}, page ${k + 1}: no quiz words on a memory page${q ? " (found: " + q[0] + ")" : ""}`);
     }
     ok(pg.nonbw === 0, `click ${n}, page ${k + 1}: pure black on white (${pg.nonbw} other colors: ${JSON.stringify(pg.colors)})`);
