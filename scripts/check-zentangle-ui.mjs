@@ -53,7 +53,7 @@ print(json.dumps(out))
 
 async function open(w, h) {
   const ctx = await browser.newContext({ viewport: { width: w, height: h }, serviceWorkers: "block", timezoneId: "America/Chicago" }); await agreed(ctx);
-  await ctx.addInitScript(() => { window.print = () => { window.__printed = (window.__printed || 0) + 1; }; });
+  await ctx.addInitScript(() => { window.print = () => { window.__printed = (window.__printed || 0) + 1; const im = [...document.querySelectorAll('#printRoot img')]; window.__printImgs = { n: im.length, ready: im.filter(i => i.complete && i.naturalWidth > 0).length }; }; });
   const p = await ctx.newPage(); await agreeToDialogs(p);
   p.on("pageerror", e => errors.push(e.message)); p.on("console", m => { if (m.type() === "error") errors.push("console: " + m.text().slice(0, 140)); });
   p.on("request", r => { const u = r.url(); if (!u.startsWith(base) && !/^(data|blob|about):/.test(u)) foreign.push(u); });
@@ -150,6 +150,8 @@ try {
       const before = await p.evaluate(() => genCount()), lic = await p.evaluate(() => isLicensed());
       await p.click("[data-zg-print]"); await p.waitForFunction(() => window.__printed === 1, null, { timeout: 15000 }).catch(() => {}); await p.waitForTimeout(600);
       ok((await p.evaluate(() => window.__printed)) === 1, "Print opens the print window once");
+      const pi = await p.evaluate(() => window.__printImgs || { n: 0, ready: 0 });
+      ok(pi.n === 3 && pi.ready === 3, `every picture is loaded at the moment the print window opens, so the preview is never blank (${pi.ready} of ${pi.n})`);
       ok(lic || (await p.evaluate(() => genCount())) === before + 1, "and counts as one packet, like any printed pages");
       const sh = await p.evaluate(() => { const r = document.getElementById("printRoot"), keep = r.style.cssText; r.style.cssText = "display:block;position:absolute;left:-10000px;top:0";
         const out = [...r.querySelectorAll(".lp-sheet")].map(s => ({ box: [s.offsetWidth, s.offsetHeight], imgs: s.querySelectorAll("img").length, text: s.innerText.trim() })); r.style.cssText = keep; return out; });
@@ -164,6 +166,38 @@ try {
         ok(back.every(g => g.ink[0] >= 53.9 && g.ink[1] >= 35.9 && g.ink[2] <= 576.1 && g.ink[3] <= 756.1), `every picture is inside the 0.5 in margins and clear of the 0.75 in gutter (${[...new Set(back.map(g => g.ink.map(v => Math.round(v)).join(" ")))].join(" | ")})`);
         ok(back.every(g => g.images >= 1), "each page carries its picture");
       }
+
+      /* adding to the packet: for the resident chosen in "Working with", in copies, from more than one book; kept after a reload; printed together */
+      await p.evaluate(async () => { const S = window.CogniSecureStore.storage; S.setItem("cognicopia_resident_res-dot", JSON.stringify({ schema: "cognicopia.residentProfile", version: 2, id: "res-dot", tier1_core: { preferredName: "Dorothy", cognitiveTier: 2 }, tier2_enrichment: {}, tier3_deep: {} })); await window.CogniSecureStore.flush(); });
+      await p.reload({ waitUntil: "load" }); await p.waitForSelector("[data-zg-pg]", { timeout: 15000 }).catch(() => {}); await p.waitForTimeout(800);
+      await p.evaluate(() => ActiveResident.set("res-dot"));
+      await p.evaluate(() => { window.__printed = 0; window.__printImgs = null; });
+      const q0 = await p.evaluate(() => queue.length);
+      await p.click('[data-zg-pg="1"]'); await p.click('[data-zg-pg="3"]'); await p.selectOption("#zgCopies", "2");
+      const lic2 = await p.evaluate(() => isLicensed()), gen0 = await p.evaluate(() => genCount());
+      await p.click("[data-zg-add]"); await p.waitForTimeout(300);
+      ok((await p.evaluate(() => queue.length)) === q0 + 4, "Add to the packet puts two chosen pages in twice each (4 pages in the queue)");
+      ok(/Added 4 pages/.test(await p.innerText("#zgMsg")), "and says so in plain words");
+      ok((await p.evaluate(() => queue.every(q => q.cfg.residentName === "Dorothy"))), "each queued page is for the resident chosen in Working with");
+      ok((await p.evaluate(() => genCount())) === gen0, "adding to the packet spends no free packet; only printing does");
+      await p.evaluate(() => { location.hash = "#/zentangle/kittens"; }); await p.waitForSelector("[data-zg-pg]", { timeout: 8000 }).catch(() => {}); await p.waitForTimeout(500);
+      await p.click('[data-zg-pg="5"]'); await p.click("[data-zg-add]"); await p.waitForTimeout(300);
+      ok((await p.evaluate(() => queue.length)) === q0 + 5, "a page of another book joins the same packet");
+      await p.reload({ waitUntil: "load" }); await p.waitForTimeout(1200);
+      ok((await p.evaluate(() => queue.filter(q => q.activityId === "zentangle-gallery-page").length)) === 5, "the queued pages are still there after a reload");
+      await p.evaluate(() => { window.__printed = 0; generatePdf(); }); await p.waitForFunction(() => window.__printed === 1, null, { timeout: 15000 }).catch(() => {});
+      const pk = await p.evaluate(() => { const r = document.getElementById("printRoot"); const sh = [...r.querySelectorAll(".sheet-zg")];
+        return { n: sh.length, srcs: sh.map(x => (x.querySelector("img") || {}).getAttribute ? x.querySelector("img").getAttribute("src") : ""), words: sh.map(x => x.innerText.trim()).join(""), tips: r.querySelectorAll(".care-coaching-footer, .sh-foot").length, imgs: window.__printImgs }; });
+      ok(pk.n === 5 && pk.srcs.slice(0, 4).join() === ["dogs/01", "dogs/01", "dogs/03", "dogs/03"].map(k => `assets/zentangle/${k}.webp`).join() && /kittens\/05/.test(pk.srcs[4]), `the packet prints the five pages, each page with its copies, as drawn (${pk.srcs.join(" ")})`);
+      ok(pk.words === "" && pk.tips === 0, "with no words and no staff tip on them");
+      ok(pk.imgs && pk.imgs.n === 5 && pk.imgs.ready === 5, `every picture of the packet is loaded when its print window opens (${pk.imgs && pk.imgs.ready} of ${pk.imgs && pk.imgs.n})`);
+      ok(lic2 || (await p.evaluate(() => genCount())) === gen0 + 1, "printing the packet counts as one packet");
+
+      /* the coloring library: copies of each page, added to the same queue */
+      await p.evaluate(() => { location.hash = "#/coloring/sunflower"; }); await p.waitForSelector("#ccCopies", { timeout: 8000 }).catch(() => {});
+      const q1 = await p.evaluate(() => queue.length);
+      await p.selectOption("#ccCopies", "3"); await p.click("#ccAdd"); await p.waitForTimeout(300);
+      ok((await p.evaluate(() => queue.length)) === q1 + 3, "the coloring library adds three copies of a chosen page to the packet too");
     }
     await ctx.close();
   }

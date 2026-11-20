@@ -1703,6 +1703,7 @@ html.cg-night-shift .fp-btn-primary,html.cg-night-shift .fp-tier b{background:#c
 .cc-legend-pick{margin:4px 0 12px}
 .cc-legend-pick .seg span{padding:7px 10px;font-size:13.5px}
 .cc-note{margin:8px 0 0;color:var(--muted);font-size:13px}
+.cc-copies{display:inline-flex;align-items:center;gap:8px}.cc-copies select{min-height:var(--tap);min-width:72px;font:inherit}
 .cc-perf{margin:6px 0 0;color:var(--muted);font-size:12px}
 
 /* the printed sheet: every block placed in inches by CogniLibrary.layout */
@@ -5786,6 +5787,13 @@ const BookUI = (function(){
     return { tier: n.cognitiveTier, lineW: n.visualNeeds.lineThicknessPt, highContrast: n.visualNeeds.contrastMode === "high_contrast", unit: n.unitNumber };
   }
 
+  /* A picture on a printed page (the Zentangle pages) is read by the browser a moment after it is put on the page, and a print window that opens at once
+     shows a blank preview. This returns null when every picture is already loaded, else a promise that settles when all are (or have failed). */
+  function imagesReady(rootEl){
+    const pending = Array.from(rootEl.querySelectorAll("img")).filter(i => !(i.complete && i.naturalWidth > 0));
+    if (!pending.length) return null;
+    return Promise.all(pending.map(i => i.decode ? i.decode().catch(() => {}) : new Promise(r => { i.onload = i.onerror = r; })));
+  }
   /* Put pages into #printRoot, sized and checked, ready for the print window.
      Returns the page numbers that could not be fitted (always empty so far).
      opts.pureBW prints this book in pure black and white (a resident's
@@ -5809,7 +5817,7 @@ const BookUI = (function(){
     if (!pages.length) return false;
     const staff = !!(opts && opts.staff);
     if (!staff && !isLicensed() && genCount() >= FREE_RUNS){ openGate(); return false; }
-    const go = () => { stage(pages, fileTitle, opts); if (window.CogniAccessLog) window.CogniAccessLog.append("print", { note: pages.length + (pages.length === 1 ? " page" : " pages") }); window.print(); };
+    const go = () => { stage(pages, fileTitle, opts); if (window.CogniAccessLog) window.CogniAccessLog.append("print", { note: pages.length + (pages.length === 1 ? " page" : " pages") }); const w = imagesReady($("#printRoot")); if (w) w.then(() => window.print()); else window.print(); };
     if (fontsLoaded()) go(); else loadFonts().then(go);
     if (!staff && !isLicensed()) bumpGen();
     if (after) after();
@@ -5858,7 +5866,7 @@ const BookUI = (function(){
     return `<option value="">${list.length ? "Fill in from a saved profile…" : "No saved resident profiles"}</option>` +
       list.map(p => `<option value="${esc(p.id)}">${esc(cgScreenName(p))}</option>`).join("");
   }
-  return { JOB_WORDS, stage, print, allowanceText, scale, figure, savedProfiles, allProfiles, savedProfileOptions, fontsLoaded, loadFonts,
+  return { JOB_WORDS, stage, print, imagesReady, allowanceText, scale, figure, savedProfiles, allProfiles, savedProfileOptions, fontsLoaded, loadFonts,
     residentNeeds, needsFor, TIER_NAMES };
 })();
 </script>
@@ -8718,6 +8726,7 @@ const CogniLibrary = (function(){
       : `<p class="cc-empty">No pages yet. Choose pictures from the library, or a whole pack.</p>`) + `
       <div class="actions">
         <button type="button" class="btn btn-primary" id="ccAdd" ${s.picks.length ? "" : "disabled"}>Add ${s.picks.length || ""} to packet</button>
+        <label class="cc-copies" for="ccCopies">Copies of each <select id="ccCopies">${[1, 2, 3, 4, 5, 6].map(n => `<option value="${n}" ${n === (s.copies || 1) ? "selected" : ""}>${n}</option>`).join("")}</select></label>
         <button type="button" class="btn" id="ccPdf" ${s.picks.length ? "" : "disabled"}>Download PDF</button>
         <button type="button" class="btn btn-ghost" id="ccPrint" ${s.picks.length ? "" : "disabled"}>Print now</button>
         ${s.picks.length ? `<button type="button" class="btn btn-ghost btn-sm" id="ccClear">Clear</button>` : ""}
@@ -8779,16 +8788,17 @@ const CogniLibrary = (function(){
 
   /* ---------- actions ---------- */
   /* queue pages (library ids) in the packet with the page options as they are now */
-  function queuePages(ids){
-    const s = state();
+  function queuePages(ids, copies){
+    const s = state(), n = Math.max(1, Math.min(6, copies | 0 || 1));
     const cfg = { residentName:residentName().slice(0, 40), date:todayISO(), difficulty:["", "early", "moderate", "advanced"][s.tier], era:settings.era,
-      opts:{ pages:ids.slice(), tier:s.tier, weight:s.weight, header:s.header, title:s.title, caption:s.caption, largePrint:s.largePrint, legend:s.legend, facility:(settings.facility || "").slice(0, 60) } };
-    addBatch(LIBRARY_ACTIVITY, cfg, newSeed(), ids.length);
+      opts:{ pages:ids.reduce((a, id) => a.concat(Array(n).fill(id)), []), tier:s.tier, weight:s.weight, header:s.header, title:s.title, caption:s.caption, largePrint:s.largePrint, legend:s.legend, facility:(settings.facility || "").slice(0, 60) } };
+    addBatch(LIBRARY_ACTIVITY, cfg, newSeed(), ids.length * n);        // each page, its copies together, then the next page
   }
   function addToPacket(){
     const s = state(); if (!s.picks.length) return;
-    queuePages(s.picks);
-    toast(`Added ${s.picks.length} coloring page${s.picks.length === 1 ? "" : "s"} to your packet.`, "Open packet", openDrawer);
+    const sel = root && root.querySelector("#ccCopies"), n = Math.max(1, Math.min(6, +(sel && sel.value) || 1)); s.copies = n; save();
+    queuePages(s.picks, n);
+    toast(`Added ${s.picks.length * n} coloring page${s.picks.length * n === 1 ? "" : "s"} to your packet.`, "Open packet", openDrawer);
   }
   function pagesForPrint(){ const s = state(); return s.picks.map((id, i) => sheet(pageOpts(i))); }
   function printNow(){
@@ -10212,6 +10222,7 @@ const HeirloomUI = (function(){
 <script src="assets/services/facilityPlanner.js"></script>
 <script src="assets/services/weekBuilder.js"></script>
 <script src="js/zentangleGallery.js"></script>
+<script src="js/studioQueue.js"></script>
 <script src="assets/services/auditLog.js"></script>
 <script src="js/auditLogUI.js"></script>
 <script id="facility-ui">
@@ -15542,6 +15553,8 @@ CATEGORIES.forEach(c => { CAT_INDEX[c.id] = c; c.activities.forEach(a => { ACT_I
 // saved packet still rebuild exactly. New coloring pages use Cognicopia Coloring.
 // The coloring library queues its pages through its own activity.
 [COLORING, CogniLibrary.LIBRARY_ACTIVITY].forEach(a => { if (!ACT_INDEX[a.id]){ ACT_INDEX[a.id] = a; a.categoryId = "cognicopia-coloring"; } });
+if (window.CogniZentangle && !ACT_INDEX[window.CogniZentangle.ACTIVITY.id]){ ACT_INDEX[window.CogniZentangle.ACTIVITY.id] = window.CogniZentangle.ACTIVITY; window.CogniZentangle.ACTIVITY.categoryId = "cognicopia-coloring"; }
+if (window.CogniStudioQueue) [window.CogniStudioQueue.ACTIVITY, window.CogniStudioQueue.CIRCLE].forEach(a => { if (!ACT_INDEX[a.id]){ ACT_INDEX[a.id] = a; a.categoryId = "cognicopia-coloring"; } });
 if (!ACT_INDEX[ReminiscenceUI.REMINISCENCE_ACTIVITY.id]){ ACT_INDEX[ReminiscenceUI.REMINISCENCE_ACTIVITY.id] = ReminiscenceUI.REMINISCENCE_ACTIVITY; ReminiscenceUI.REMINISCENCE_ACTIVITY.categoryId = "word"; }
 installRoomyLevels();
 
@@ -15706,7 +15719,15 @@ function renderHeirloom(){ HeirloomUI.render(view); }
 function renderClinical(){ ClinicalUI.render(view); }
 function renderReminiscence(){ ReminiscenceUI.render(view); }
 function renderColoring(arg){ CogniLibrary.render(view, arg); }
-function renderZentangle(arg){ if (window.CogniZentangle) window.CogniZentangle.render(view, arg, { print: BookUI.print }); }
+/* Zentangle pages join the packet queue for the resident chosen in "Working with" (or for no one), once or in copies, like every other page */
+function queueZentangle(keys, copies){
+  const Z = window.CogniZentangle; if (!Z || !keys.length) return 0;
+  const id = ActiveResident.get(), p = id ? BookUI.savedProfiles().find(x => x.id === id) : null;
+  const list = []; keys.forEach(k => { for (let c = 0; c < copies; c++) list.push(k); });
+  addBatch(Z.ACTIVITY, { residentName:p ? String(p.tier1_core.preferredName || "").trim().slice(0, 40) : "", date:todayISO(), difficulty:"moderate", era:settings.era, opts:{ pages:list } }, newSeed(), list.length);
+  return list.length;
+}
+function renderZentangle(arg){ if (window.CogniZentangle) window.CogniZentangle.render(view, arg, { print: BookUI.print, queue: queueZentangle, openPacket: openDrawer, allowance: () => BookUI.allowanceText() }); }
 function renderRoster(){ RosterUI.render(view); }
 function renderPlanner(){ LifePlannerUI.render(view); }
 /* the planner's staff side on its own address: the Care Companion pages, with the resident-facing memory book one click away */
@@ -16657,7 +16678,9 @@ function sheetLook(who, calm){
 function generatePdf(items, printOptions){
   items = Array.isArray(items) ? items : queue;
   if (!items.length) return;
-  if (!isLicensed() && genCount() >= FREE_RUNS){
+  /* a packet made only of staff documents (the group circle's script) is not a packet: it never waits on the free-packet check and never spends one */
+  const staffOnly = items.every(q => (ACT_INDEX[q.activityId] || {}).staff === true);
+  if (!staffOnly && !isLicensed() && genCount() >= FREE_RUNS){
     pendingSoothe = false;
     if (printOptions && printOptions.emergency) pendingEmergencyPrint = { items:items, options:printOptions };
     closeDrawer(); openGate(); return;
@@ -16684,11 +16707,15 @@ function generatePdf(items, printOptions){
   const who = (items.find(q => q.cfg.residentName) || { cfg:{} }).cfg.residentName;
   printTitle = document.title;
   document.title = (printOptions && printOptions.title ? printOptions.title : "Cognicopia Packet") + (who ? " - " + who : "") + " - " + todayISO();  // default PDF file name
-  window.print();
-  recordSoothing(items);
-  TrackerUI.notePacket(items);          // a packet made for the resident we are working with is noted in their record
-  if (!isLicensed()) bumpGen();
-  renderAllowance();
+  const finish = () => {
+    window.print();
+    recordSoothing(items);
+    if (!staffOnly) TrackerUI.notePacket(items);          // a packet made for the resident we are working with is noted in their record
+    if (!isLicensed() && !staffOnly) bumpGen();
+    renderAllowance();
+  };
+  const pictures = BookUI.imagesReady(root);       // pages with pictures (Zentangle) print once every picture has loaded
+  if (pictures) pictures.then(finish); else finish();
 }
 $("#generatePdf").addEventListener("click", generatePdf);
 $("#staffCompanion").addEventListener("click", () => StaffCompanionUI.print(queue));

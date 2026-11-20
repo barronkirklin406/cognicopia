@@ -31,9 +31,10 @@
    (jsPDF, 300 dpi pictures on US Letter, the same gutter); PNG.
 
    Privacy: a first name typed here is drawn on the page and kept nowhere.
-   Nothing here makes a network request or writes to storage; the page
-   code under the preview carries the settings and a seed, so a page can
-   be made again.
+   Nothing here makes a network request. The only thing it writes is the
+   pages a person chooses to add to the packet (js/studioQueue.js, the Packet
+   Builder's queue); the page code under the preview carries the settings
+   and a seed, so a page can be made again.
    ===================================================================== */
 (function () {
   "use strict";
@@ -139,6 +140,9 @@
         '<div class="as-pager"><button type="button" class="as-btn as-alt" id="asPrev" aria-label="Previous page">&#x2190; Back</button><p id="asPos" role="status" aria-live="polite"></p><button type="button" class="as-btn as-alt" id="asNext" aria-label="Next page">Next &#x2192;</button></div>' +
         '<div class="as-sheet" id="asSheet"></div><div class="as-scroll" id="asScroll" hidden></div>' +
         '<div class="as-btns as-out"><button type="button" class="as-btn" id="asPdf">Compile Packet PDF</button><button type="button" class="as-btn" id="asPrint">Print all pages</button><button type="button" class="as-btn as-alt" id="asPng">Download this page (PNG)</button></div>' +
+        '<div class="as-btns as-out" id="asQueueBox"><button type="button" class="as-btn" id="asQueue">Add all pages to the packet</button><button type="button" class="as-btn as-alt" id="asQueueOne">Add this page to the packet</button>' +
+        '<label class="as-lab" for="asCopies">Copies of each <select id="asCopies">' + [1, 2, 3, 4, 5, 6].map(function (n) { return '<option value="' + n + '">' + n + '</option>'; }).join("") + '</select></label></div>' +
+        '<p class="as-hint" id="asQueueNote" role="status"></p>' +
         '<p class="as-hint" id="asLeft" role="status"></p>' +
         '<p class="as-hint" id="asPdfNote" role="status"></p>' +
         '<div class="as-ready" id="asReady"></div>' +
@@ -364,6 +368,8 @@
     $("#asPos").textContent = n ? (one ? "Page " + (state.index + 1) + " of " + n : n + (n === 1 ? " page" : " pages")) + "  ·  Packet code " + made.code : "No page";
     $("#asPrev").disabled = !one || state.index <= 0; $("#asNext").disabled = !one || state.index >= n - 1;
     ["asPrint", "asPdf", "asPng"].forEach(function (id) { $("#" + id).disabled = !n; });
+    var forPacket = made.pages.filter(function (p) { return p.meta.module !== "answers"; }).length;
+    $("#asQueue").disabled = !forPacket; $("#asQueueOne").disabled = !n || !pg || pg.meta.module === "answers";
     var extra = [];
     if (pg && one) {
       extra.push({ kind: "info", text: "This page: " + (LABEL[pg.meta.module] || "") + (pg.meta.code ? " (" + pg.meta.code + ")" : "") + "." });
@@ -449,6 +455,17 @@
     }).catch(function () { window.CogniDialog.notice("The PDF could not be made. Use Print and choose Save as PDF."); }).then(function () { btn.disabled = false; btn.textContent = label; });
   }
   function print() { if (blocked()) { openGate(); return; } fontsReady().then(function () { spend(); window.print(); }); }
+  /* Add to the packet: the finished pages go into the Packet Builder's packet queue for the chosen resident (js/studioQueue.js). The staff answer page is not a
+     resident page and stays out. Nothing is spent: printing the packet is what counts. */
+  function queuePages(onlyThis) {
+    var Q = window.CogniStudioQueue, note = $("#asQueueNote"); if (!Q) { note.textContent = "The packet could not be reached. Reload the page and try again."; return; }
+    var picked = (onlyThis ? [made.pages[state.index]] : made.pages).filter(function (p) { return p && p.meta.module !== "answers"; });
+    var svgs = picked.map(function (pg) { return PL.toSVG(pg, { width: "100%", height: "100%", label: pg.meta.title || "Studio page" }); });
+    var who = state.resident ? readRes(state.resident) : null, name = String((who && who.tier1_core && who.tier1_core.preferredName) || firstWord(state.name) || "").trim();
+    var made2 = Q.add(svgs, { residentName: name, copies: +($("#asCopies") || {}).value || 1, titles: picked.map(function (pg) { return pg.meta.title || "Studio page"; }) });
+    note.innerHTML = made2 ? escapeHtml("Added " + made2 + (made2 === 1 ? " page" : " pages") + " to the packet" + (name ? " for " + name : "") + ". Keep adding, then print them together from the packet in the ") + '<a href="builder.html">Packet Builder</a>' + escapeHtml(". If the Packet Builder is already open in another tab, reload it to see them.")
+      : "The pages could not be added. Try again.";
+  }
 
   /* ---------- wiring ---------- */
   function sync() {
@@ -524,6 +541,8 @@
     });
     $("#asPrev").addEventListener("click", function () { state.index--; paint(); });
     $("#asNext").addEventListener("click", function () { state.index++; paint(); });
+    $("#asQueue").addEventListener("click", function () { queuePages(false); });
+    $("#asQueueOne").addEventListener("click", function () { queuePages(true); });
     $("#asPrint").addEventListener("click", print);
     $("#asPdf").addEventListener("click", exportPdf);
     $("#asPng").addEventListener("click", exportPng);

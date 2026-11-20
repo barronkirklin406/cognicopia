@@ -112,7 +112,7 @@
     sheet.classList.toggle("dy-empty", !has);
     sheet.innerHTML = has ? PL.toSVG(made.page) : '<p>Today’s card will appear here.</p>';
     if (has) sheet.setAttribute("aria-label", "Today’s card: " + (made.sheet.title || KINDS[state.kind].label)); else sheet.removeAttribute("aria-label");
-    ["dyAgain", "dyPrint", "dyPdf"].forEach(function (id) { $("#" + id).disabled = !has; });
+    ["dyAgain", "dyPrint", "dyPdf", "dyQueue"].forEach(function (id) { $("#" + id).disabled = !has; });
     $("#dyMake").textContent = has ? "Make today’s card again" : "Make today’s card";
     var staff = $("#dyStaff");
     staff.hidden = !has;
@@ -157,6 +157,15 @@
     return fonts.then(function () { return PL.loadImages && made ? PL.loadImages([made.page]) : null; });
   }
   function print() { if (!made) return; if (blocked()) { openGate(); return; } ready().then(function () { spend(); window.print(); }); }
+  /* Add to the packet: the finished card goes into the Packet Builder's packet queue for the chosen resident, once or in copies (js/studioQueue.js). Adding spends
+     nothing; printing the packet is what counts. */
+  function queueCard() {
+    var Q = window.CogniStudioQueue, note = $("#dyQueueNote"); if (!made) return;
+    if (!Q) { note.textContent = "The packet could not be reached. Reload the page and try again."; return; }
+    var p = state.who ? readRes(state.who) : null, name = String((p && p.tier1_core && p.tier1_core.preferredName) || "").trim();
+    var n = Q.add([PL.toSVG(made.page, { width: "100%", height: "100%" })], { residentName: name, copies: +($("#dyCopies") || {}).value || 1, titles: [(made.sheet && made.sheet.title) || KINDS[state.kind].label] });
+    note.textContent = n ? "Added " + n + (n === 1 ? " card" : " cards") + " to the packet" + (name ? " for " + name : "") + ". Print it with the rest from the packet in the Packet Builder; if that is open in another tab, reload it first." : "The card could not be added. Try again.";
+  }
   /* the PDF holds the card as real text and lines (js/utils/studio-pdf.js); a card that cannot be drawn that way exactly goes in as a picture */
   var lastPdf = null;
   function pdf() {
@@ -202,6 +211,7 @@
     $("#dyMake").addEventListener("click", function () { state.asked = true; state.turn = 0; make(); var s = $("#dySheet"); if (s.scrollIntoView && window.matchMedia && window.matchMedia("(max-width:900px)").matches) s.scrollIntoView({ block: "start" }); });
     $("#dyAgain").addEventListener("click", function () { state.turn++; make(); });
     $("#dyPrint").addEventListener("click", print);
+    $("#dyQueue").addEventListener("click", queueCard);
     $("#dyPdf").addEventListener("click", pdf);
     $("#dyGateClose").addEventListener("click", function () { $("#dyGate").close(); });
     $("#dyGateKey").addEventListener("click", function () { $("#dyGate").close(); if (window.CognicopiaLicense && window.CognicopiaLicense.openPromo) window.CognicopiaLicense.openPromo(); });
@@ -226,7 +236,7 @@
     var c = circle.made;
     msg.textContent = c.blocked ? "One of them avoids this theme, so it is not offered. Choose another theme." : "";
     out.innerHTML = c.blocked ? "" : "<h3>Before you start</h3><p>" + c.opening + "</p><h3>Around the circle</h3><ol>" + c.items.map(function (it) { return "<li><b>" + it.who + ":</b> \u201C" + it.prompt + "\u201D" + (it.sense ? " " + it.sense : "") + "</li>"; }).join("") + "</ol><h3>Kept off this circle</h3><p>" + (c.avoid.length ? c.avoid.join(", ") + "." : "Nothing is listed.") + "</p><h3>To finish</h3><p>" + c.closing + "</p>";
-    $c("#dyCircleAgain").disabled = c.blocked; $c("#dyCirclePrint").disabled = c.blocked;
+    $c("#dyCircleAgain").disabled = c.blocked; $c("#dyCirclePrint").disabled = c.blocked; $c("#dyCircleQueue").disabled = c.blocked;
   }
   function circlePrint() {
     if (!circle.made || circle.made.blocked) return;
@@ -236,6 +246,13 @@
     var done = function () { pr.innerHTML = saved; window.removeEventListener("afterprint", done); };
     window.addEventListener("afterprint", done); window.print();
   }
+  /* the script is a staff page: in the packet it prints on its own page and, with no other pages, spends no free packet */
+  function circleQueue() {
+    var Q = window.CogniStudioQueue, msg = $c("#dyCircleMsg"); if (!circle.made || circle.made.blocked) return;
+    if (!Q) { msg.textContent = "The packet could not be reached. Reload the page and try again."; return; }
+    var n = Q.addCircle(window.CogniGroupCircle.pageHtml(circle.made, {}), { title: "Group circle: " + circle.made.themeLabel });
+    msg.textContent = n ? "Added the script to the packet as a staff page. Print it from the packet in the Packet Builder; if that is open in another tab, reload it first." : "The script could not be added. Try again.";
+  }
   if ($c("#dyCircleBox") && window.CogniGroupCircle) {
     $c("#dyCircleTheme").innerHTML = window.CogniGroupCircle.themes().map(function (t) { return '<option value="' + t.id + '">' + t.label + "</option>"; }).join("");
     circleWho();
@@ -243,6 +260,7 @@
     $c("#dyCircleMake").addEventListener("click", function () { circle.turn = 0; circleMake(); });
     $c("#dyCircleAgain").addEventListener("click", function () { circle.turn++; circleMake(); });
     $c("#dyCirclePrint").addEventListener("click", circlePrint);
+    $c("#dyCircleQueue").addEventListener("click", circleQueue);
   }
   if (PO) PO.install();                                    // the print style sheet: only the card reaches the paper
   $("#dyDecade").innerHTML = (E.DECADES || [1940, 1950, 1960, 1970, 1980]).map(function (d) { return '<option value="' + d + '">The ' + d + "s</option>"; }).join("");
