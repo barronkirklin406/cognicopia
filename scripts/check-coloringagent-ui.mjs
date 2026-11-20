@@ -262,7 +262,7 @@ try {
     return out;
   });
   const floors = { 1: 3.0, 2: 3.6, 3: 7.5 };
-  ok(sweep.length === 150 && !sweep.filter(r => r.err).length, `all ${sweep.length} pictures were made (${sweep.filter(r => r.err).length} refused)`);
+  ok(sweep.length === (await p.evaluate(() => window.CognicopiaColoring.designs().length)) && !sweep.filter(r => r.err).length, `all ${sweep.length} pictures were made (${sweep.filter(r => r.err).length} refused)`);
   ok(sweep.every(r => r.pure && r.w === 1800 && r.h === 2400), "each is pure black and white, 1800 x 2400");
   ok(sweep.every(r => r.share > 0.02 && r.share < 0.3), "each has between 2% and 30% ink: " + sweep.filter(r => !(r.share > 0.02 && r.share < 0.3)).map(r => r.id + " " + (r.share * 100).toFixed(1)).join(", "));
   ok(sweep.every(r => r.pt >= floors[r.tier] && !r.thin), "each one's thinnest lines print at its tier's weight or more (Tier 1 at 3 pt, Tier 2 at 3.75, Tier 3 at 7.9): " + sweep.filter(r => !(r.pt >= floors[r.tier])).map(r => r.id + " T" + r.tier + " " + r.pt).join(", "));
