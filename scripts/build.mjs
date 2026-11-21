@@ -393,6 +393,14 @@ step("Daily engagement cards and the group circle script in the Packet Builder's
   }
 });
 
+step("Calm now cards, the 12-month life planner and the life journal in the Packet Builder's packet queue, in a real browser: Add to the packet from each, the card as a staff page that spends no free packet, a book as one item for the resident, the drawer not drawing every page, every page printed inside the planner's margins with no staff tip, the paper read back with PyMuPDF, nothing off the site", () => {
+  try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-book-queue-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim().split("\n").pop(); }
+  catch (e){
+    if (e.status === 2) return "skipped: Playwright or PyMuPDF is not installed here (see docs/dev-setup.md)";
+    throw new Error(((e.stdout || "") + (e.stderr || "")).trim() || e.message);
+  }
+});
+
 step("Instant Soothe on the era banks, proved on real PDFs read back with PyMuPDF: ten clicks give ten different packets, era-bank pages drawn from the person's own years (born + 7 to + 28), no entry back within ten clicks, inside the margins, pure black on white, ids only in the memory, nothing off the page", () => {
   try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-soothe-banks-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim().split("\n").pop(); }
   catch (e){

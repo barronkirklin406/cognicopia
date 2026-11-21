@@ -70,6 +70,7 @@
       var t = e.target.closest && e.target.closest("button"); if (!t) return;
       if (t.hasAttribute("data-calm-close")) dlg.close();
       if (t.hasAttribute("data-calm-print")) printPage();
+      if (t.hasAttribute("data-calm-queue")) queuePage();
     });
     dlg.addEventListener("close", function () { if (opener && opener.focus && doc.contains(opener)) opener.focus(); });
     doc.body.appendChild(dlg); return dlg;
@@ -86,6 +87,17 @@
     root.addEventListener("afterprint", done);
     root.print();
   }
+  /* Add to the packet: the card goes into the Packet Builder's packet queue as a staff page (js/studioQueue.js, loaded when it is needed). A staff page spends no
+     free packet: a queue made only of staff pages prints and spends nothing. */
+  function queuePage() {
+    if (!current) return;
+    var d = dialog(), msg = d.querySelector(".cg-calm-qmsg"), who = current.who, html = sheetHtml(current);
+    var go = function () {
+      var Q = root.CogniStudioQueue, n = Q ? Q.addCalm(html, { residentName: who, title: "Calm now: " + who }) : 0;
+      if (msg) msg.textContent = n ? "Added to the packet as a staff page. Print it from the packet in the Packet Builder; if that is open in another tab, reload it first." : "The card could not be added. Try again.";
+    };
+    if (root.CogniStudioQueue) go(); else script("js/studioQueue.js").then(go);
+  }
   /* open the dialog for a saved resident (id), named as the screen names them (who) */
   function open(id, who, from) {
     opener = from || doc.activeElement;
@@ -95,7 +107,7 @@
       var raw = null; try { raw = JSON.parse(root.CogniSecureStore.storage.getItem("cognicopia_resident_" + id) || "null"); } catch (e) { raw = null; }
       if (!raw) { d.innerHTML = '<h2 id="cgCalmH">Calm now</h2><p>That resident could not be found on this computer.</p><div class="cg-calm-btns"><button type="button" data-calm-close>Close</button></div>'; if (!d.open) d.showModal(); return null; }
       current = model(raw, who);
-      d.innerHTML = '<h2 id="cgCalmH">Calm now: ' + esc(current.who) + "</h2>" + body(current) + '<div class="cg-calm-btns"><button type="button" data-calm-print>Print one page</button><button type="button" data-calm-close>Close</button></div>';
+      d.innerHTML = '<h2 id="cgCalmH">Calm now: ' + esc(current.who) + "</h2>" + body(current) + '<p class="cg-calm-qmsg" role="status"></p><div class="cg-calm-btns"><button type="button" data-calm-print>Print one page</button><button type="button" data-calm-queue>Add to the packet</button><button type="button" data-calm-close>Close</button></div>';
       if (!d.open) d.showModal();
       var head = d.querySelector("#cgCalmH"); if (head) { head.tabIndex = -1; head.focus(); d.scrollTop = 0; }
       return current;
