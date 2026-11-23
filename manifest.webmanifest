@@ -2,7 +2,7 @@
   "name": "Cognicopia",
   "short_name": "Cognicopia",
   "description": "Personalized, print-ready memory care activities, made entirely on this computer.",
-  "start_url": "./index.html",
+  "start_url": "./packet.html",
   "scope": "./",
   "display": "standalone",
   "background_color": "#0f172a",

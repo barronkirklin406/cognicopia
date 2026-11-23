@@ -3,7 +3,7 @@
 window.CognicopiaNavIndex = [{"k":"daily","l":"Daily engagement","h":"daily.html","g":"Today","t":"tool","w":"today card reminiscence music comfort one page","pin":true},
 {"k":"tablet","l":"Tablet Activities","h":"tablet.html","g":"Today","t":"tool","w":"tablet touch screen activities games","pin":true},
 {"k":"start","l":"Start here","h":"index.html#start-here","g":"Today","t":"tool","w":"start here guide tour help new first time","pin":false},
-{"k":"home","l":"Personalized Packet Tool","h":"index.html","g":"Packets","t":"tool","w":"packet personalized make print activity pages","pin":true},
+{"k":"home","l":"Personalized Packet Tool","h":"packet.html","g":"Packets","t":"tool","w":"packet personalized make print activity pages","pin":true},
 {"k":"builder","l":"Packet Builder","h":"builder.html","g":"Packets","t":"tool","w":"packet builder queue activities word search puzzles","pin":true},
 {"k":"activity-studio","l":"Activity Page Studio","h":"activity-studio.html","g":"Packets","t":"tool","w":"studio pages life story large print pdf","pin":true},
 {"k":"coloring","l":"Cognicopia Coloring","h":"builder.html#/coloring","g":"Packets","t":"tool","w":"coloring colouring pictures art color sheet","pin":true},

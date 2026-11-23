@@ -67,7 +67,7 @@ A tablet session built from one resident's own life (their hometown, work and fa
 
 ## It never ends on a 404
 
-`404.html` is the page GitHub Pages shows for any address that is not a file. A tablet address (`tablet.html` in any spelling) sends the visitor to `index.html#tablet-fallback`, which opens Tablet Interactive Mode inside the packet tool, so the Tablet Activities button never ends on an error page. `sw.js` does the same for a visitor whose browser has the site saved: a 404 for a tablet address is answered with that redirect, and a saved copy of a page is kept over a 404. The front page's button is written `./tablet.html`. `scripts/check-tablet-route.mjs` (in `npm run build`) proves the four cases in a real browser: the page opens, the page is missing, the address is mistyped, and some other page is missing.
+`404.html` is the page GitHub Pages shows for any address that is not a file. A tablet address (`tablet.html` in any spelling) sends the visitor to `packet.html#tablet-fallback`, which opens Tablet Interactive Mode inside the packet tool, so the Tablet Activities button never ends on an error page. `sw.js` does the same for a visitor whose browser has the site saved: a 404 for a tablet address is answered with that redirect, and a saved copy of a page is kept over a 404. The front page's button is written `./tablet.html`. `scripts/check-tablet-route.mjs` (in `npm run build`) proves the four cases in a real browser: the page opens, the page is missing, the address is mistyped, and some other page is missing.
 
 If the button ever 404s on the live site, the file is missing from the branch that GitHub Pages publishes: check that `tablet.html`, `js/tablet.js` and `js/tabletEngine.js` are on `main`.
 

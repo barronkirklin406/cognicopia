@@ -307,7 +307,7 @@
       next: [["academy", "Short guides for families."], ["res-caregiver-faq", "Answers to common questions."], ["tablet", "Touch activities for a tablet."]] }
   };
   var STEPS = [
-    { key: "home", href: "index.html#make", target: "#go", title: "Make a personal packet", does: "A full packet of large-print pages, built from one person’s own life.",
+    { key: "home", href: "packet.html", target: "#go", title: "Make a personal packet", does: "A full packet of large-print pages, built from one person’s own life.",
       how: function (r) { return ["Type " + r.their + " first name and the year they were born.", "Add what else you know, such as a hometown or work. It is optional.", "Press Make the packet. The file downloads, ready to print."]; } },
     { key: "daily", href: "daily.html", target: "#dyMake", title: "Pull today’s card", does: "One page for today, for when there is no time for a packet.",
       how: function () { return ["Choose who it is for: a saved resident, or a group.", "Choose the kind of time: Reminiscence, Music or Comfort.", "Press Make today’s card, then Print."]; } },

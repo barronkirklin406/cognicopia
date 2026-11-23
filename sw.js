@@ -12,9 +12,9 @@
    used. Change VERSION only to clear old copies; updates to the pages
    themselves arrive on their own.
    ===================================================================== */
-const VERSION = "cognicopia-v82";
+const VERSION = "cognicopia-v83";
 const CORE = [
-  "./", "index.html", "builder.html", "profile.html", "tablet.html", "pricing.html", "activate.html", "manifest.webmanifest",
+  "./", "index.html", "packet.html", "builder.html", "profile.html", "tablet.html", "pricing.html", "activate.html", "manifest.webmanifest",
   // the shared design system and its two typefaces (Atkinson Hyperlegible for the interface, Fraunces for headings)
   "css/styles.css", "fonts/AtkinsonHyperlegible-Regular.woff2", "fonts/AtkinsonHyperlegible-Bold.woff2", "fonts/Fraunces-latin.woff2", "fonts/AtkinsonHyperlegibleMono-Bold.woff2", "fonts/PinyonScript-Regular.woff2", "fonts/MarckScript-Regular.woff2",
   "assets/cognicopia-logo.jpg", "assets/icon-192.png", "assets/icon-512.png", "assets/icon-maskable-512.png",
@@ -85,9 +85,9 @@ async function freshFirst(event, req){
   // Offline and never copied: open the packet tool rather than an error page,
   // at its own address, so its links and images work from any folder (the
   // reference pages live under resources/).
-  if (req.mode === "navigate" && await cache.match("index.html")){
-    const home = new URL("index.html", self.location.href).href;
-    return req.url.split(/[?#]/)[0] === home ? cache.match("index.html") : Response.redirect(home, 302);
+  if (req.mode === "navigate" && await cache.match("packet.html")){
+    const home = new URL("packet.html", self.location.href).href;
+    return req.url.split(/[?#]/)[0] === home ? cache.match("packet.html") : Response.redirect(home, 302);
   }
   return Response.error();
 }

@@ -40,7 +40,7 @@ export const Hero: React.FC<HeroProps> = ({
 
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 mb-6">
             <a
-              href="#make"
+              href="packet.html"
               onClick={onStartTrial}
               className="inline-flex items-center justify-center px-7 py-3.5 rounded-xl font-bold text-base text-white bg-[#0e3c43] hover:bg-[#134d56] transition-all shadow-md focus:outline-none focus:ring-4 focus:ring-[#f5b800]"
             >

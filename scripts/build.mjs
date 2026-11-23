@@ -55,7 +55,7 @@ import { execFileSync } from "child_process";
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
 const read = f => fs.readFileSync(path.join(ROOT, f), "utf8");
 const exists = f => fs.existsSync(path.join(ROOT, f));
-const TOOLS = ["index.html", "builder.html", "profile.html"];
+const TOOLS = ["index.html", "packet.html", "builder.html", "profile.html"];   // index.html is the front page since November 23, 2026; it is kept here so it stays free of network use too
 const fails = [];
 const step = (name, fn) => {
   try { const note = fn(); console.log("  ok   " + name + (note ? "  (" + note + ")" : "")); }
@@ -103,7 +103,7 @@ for (const f of TOOLS) step(`${f} makes no network requests`, () => {
 
 /* 3. the embedded print face */
 const FACES = /@font-face\{font-family:"Atkinson Hyperlegible";font-style:(normal|italic);font-weight:(400|700);[^}]*src:url\(data:font\/woff2;base64,[A-Za-z0-9+/=]{2000,}\)/g;
-for (const f of ["builder.html", "index.html"]) step(`${f} embeds Atkinson Hyperlegible`, () => {
+for (const f of ["builder.html", "packet.html"]) step(`${f} embeds Atkinson Hyperlegible`, () => {
   const block = (/<style id="print-font">([\s\S]*?)<\/style>/.exec(read(f)) || [])[1];
   must(block, "no print-font block");
   const faces = [...block.matchAll(FACES)].map(m => m[1] + " " + m[2]).sort();
@@ -112,16 +112,16 @@ for (const f of ["builder.html", "index.html"]) step(`${f} embeds Atkinson Hyper
   return "4 faces";
 });
 step("the packet PDFs embed Atkinson Hyperlegible", () => {
-  const h = read("index.html"), js = (/<script id="pdffont">([\s\S]*?)<\/script>/.exec(h) || [])[1];
+  const h = read("packet.html"), js = (/<script id="pdffont">([\s\S]*?)<\/script>/.exec(h) || [])[1];
   must(js, "no pdffont block");
   must(h.indexOf('<script id="pdflib">') < h.indexOf('<script id="pdffont">'), "pdffont must follow the PDF library");
   ["normal", "bold", "italic", "bolditalic"].forEach(s => must(new RegExp(s + ':"[A-Za-z0-9+/=]{20000,}"').test(js), "missing " + s));
 });
 step("the shared PDF library matches the packet tool's", () => {
   // assets/vendor/*.js are the packet tool's jsPDF and PDF font, shared with the Packet Builder
-  const h = read("index.html"), inline = id => (new RegExp('<script id="' + id + '">([\\s\\S]*?)</script>').exec(h) || [])[1];
-  must(inline("pdflib") === read("assets/vendor/jspdf.umd.min.js"), "assets/vendor/jspdf.umd.min.js differs from index.html's pdflib");
-  must(inline("pdffont") === read("assets/vendor/jspdf-atkinson.js"), "assets/vendor/jspdf-atkinson.js differs from index.html's pdffont");
+  const h = read("packet.html"), inline = id => (new RegExp('<script id="' + id + '">([\\s\\S]*?)</script>').exec(h) || [])[1];
+  must(inline("pdflib") === read("assets/vendor/jspdf.umd.min.js"), "assets/vendor/jspdf.umd.min.js differs from packet.html's pdflib");
+  must(inline("pdffont") === read("assets/vendor/jspdf-atkinson.js"), "assets/vendor/jspdf-atkinson.js differs from packet.html's pdffont");
 });
 step("the font license ships with the fonts", () => { must(exists("fonts/OFL.txt"), "fonts/OFL.txt missing"); must(/SIL OPEN FONT LICENSE/i.test(read("fonts/OFL.txt")), "not the OFL"); });
 
