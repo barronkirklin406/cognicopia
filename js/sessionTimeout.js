@@ -49,7 +49,7 @@
     var go = function () {
       var where = page();
       if (where === "builder") { safe(function () { root.location.hash = "#/"; }); root.location.reload(); }
-      else if (where === "profile") root.location.replace("index.html");
+      else if (where === "profile") root.location.replace("packet.html");   // the packet tool, not the front page (index.html), which loads no resident store
       else root.location.reload();
     };
     /* the sealed store writes in the background: let the cleared drafts reach it before the page goes */

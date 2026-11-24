@@ -3,7 +3,7 @@
    The free-packet counter, in a real browser, against the real storage.
 
    check-trial.mjs proves the logic with pretend storage. This opens the
-   packet tool and the Packet Builder and tries the things a person (or a
+   packet tool (packet.html) and the Packet Builder and tries the things a person (or a
    browser clean-up) really does to the three copies of the count:
 
      - types a smaller number into the page's own storage
@@ -34,7 +34,7 @@ try {
     window.__persistAsks = 0;
     try { const s = navigator.storage, real = s.persist.bind(s); s.persist = () => { window.__persistAsks++; return real(); }; } catch (e) { /* no storage manager */ }
   });
-  const open = async (file = "index.html") => {
+  const open = async (file = "packet.html") => {
     const p = await ctx.newPage();
     p.on("pageerror", e => errors.push(file + ": " + e.message));
     p.on("request", r => { const u = r.url(); if (!u.startsWith(base) && !u.startsWith("data:") && !u.startsWith("blob:")) foreign.push(u); });

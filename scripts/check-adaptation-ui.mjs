@@ -4,7 +4,7 @@
      profile   the profile's Clinical step has one optional choice, "Diagnosis / clinical adaptation", with the seven answers; what is
                chosen is saved in the resident's record (tier1_core.adaptation) and read back into the form; it prints on no page
      reader    js/residentContext.js (window.CogniResident.person) gives every tool the same { code, label }, and an empty one for none
-     packet    the packet tool's menu holds no condition cards; choosing a resident shows the one set of pages their profile names,
+     packet    the packet tool's (packet.html) menu holds no condition cards; choosing a resident shows the one set of pages their profile names,
                already open, and nothing for a resident with none; the set's form has the resident's name in it and does not ask again
    Needs Playwright. Run: node scripts/check-adaptation-ui.mjs
    ===================================================================== */
@@ -55,7 +55,7 @@ try {
   /* ---------- the packet tool: no condition cards in the menu; the one set the profile names ---------- */
   const seed = Object.keys(WANT).map((code, i) => person("res-a" + i, NAMES[code], code)).concat([person("res-none", "Cornelius", "")]);
   const { ctx, p } = await context(seed);
-  await p.goto(base + "index.html"); await p.waitForTimeout(1500);
+  await p.goto(base + "packet.html"); await p.waitForTimeout(1500);
   ok(await p.$$eval("#cgSidebar .cg-ailment-card, #cgSidebar [class*='-submenu']", e => e.length) === 0, "the packet tool's menu holds no condition cards: the doors are the same on every page");
   await p.selectOption("#arbSelect", "res-none"); await p.waitForTimeout(500);
   ok(await p.$eval("#cgAdapt", e => e.hidden), "a resident whose profile names no condition sees no adapted set");

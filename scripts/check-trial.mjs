@@ -144,7 +144,7 @@ ok(!/document\.cookie|userAgent|navigator\.(plugins|languages|hardwareConcurrenc
 ok(!/crypto|Math\.random|Date\.now|new Date/.test(code), "no identifier is generated: the only thing stored is one whole number");
 ok(T.MIRROR_CACHE.indexOf("cognicopia-") !== 0 && /k\.indexOf\("cognicopia-"\) === 0 && k !== VERSION/.test(read("sw.js")), "the cache copy is named so the offline worker's clean-up does not delete it");
 ok(read("sw.js").includes('"assets/services/trialLedger.js"'), "the offline worker keeps the ledger script, so counting works with no connection");
-for (const f of ["index.html", "builder.html"]) {
+for (const f of ["packet.html", "builder.html"]) {   // the packet tool (packet.html) and the Packet Builder; index.html is the front page only and counts nothing
   const h = read(f);
   const tag = h.indexOf('<script src="assets/services/trialLedger.js"></script>'), use = h.indexOf("CogniTrialLedger.forBrowser(CG_LS)");
   ok(tag > 0 && use > tag, `${f}: loads the ledger before it uses it`);

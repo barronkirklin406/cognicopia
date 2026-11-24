@@ -5,7 +5,7 @@
                           they choose, at the tier chosen; it joins your pages and the print preview under its page code, and the
                           note says which words were used and which were not; Enter works; a refused or empty request makes
                           nothing; 52 px controls; nothing sideways on a phone
-     the front page       the packet form's "A picture to color" says, as the words are typed, which drawing they choose; the
+     the packet tool      (packet.html) the packet form's "A picture to color" says, as the words are typed, which drawing they choose; the
                           packet made from the form uses that drawing for its coloring page (the PDF is read back with PyMuPDF),
                           and the same form without it chooses its own picture
      all                  nothing leaves the page, no script error
@@ -73,8 +73,8 @@ try {
   ok(/Cardinal/.test(await p.textContent("#ccGenNote")) && await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), "on a phone it works and nothing scrolls sideways");
   await ctx.close();
 
-  /* ---------- the front page ---------- */
-  ({ ctx, p } = await open(1366, 900, "index.html"));
+  /* ---------- the packet tool (packet.html) ---------- */
+  ({ ctx, p } = await open(1366, 900, "packet.html"));
   await p.fill("#first", "Ruth"); await p.fill("#born", "1938"); await p.fill("#hobbies", "gardening, baking");
   await p.check('input[name="stage"][value="middle"]');
   await p.fill("#colorWish", "a classic grandfather clock in a cozy parlor"); await p.waitForTimeout(600);
@@ -94,5 +94,5 @@ try {
 } finally { await browser.close(); srv.close(); }
 
 console.log(problems.length ? `describe screen check FAILED: ${problems.length} problem(s), ${passed} passed\n  - ` + problems.join("\n  - ")
-  : `describe screen check passed: ${passed} checks in a real browser (the Packet Builder's Describe a picture, the front page's A picture to color and the packet PDF read back, refusals, 52 px, a phone, nothing leaving the page)`);
+  : `describe screen check passed: ${passed} checks in a real browser (the Packet Builder's Describe a picture, the packet tool's A picture to color and the packet PDF read back, refusals, 52 px, a phone, nothing leaving the page)`);
 process.exit(problems.length ? 1 : 0);

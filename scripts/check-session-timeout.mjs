@@ -2,11 +2,11 @@
 /* =====================================================================
    The 15-minute inactivity timeout (js/sessionTimeout.js), in a real browser (Playwright; exit 2 where it is not installed).
 
-     rules     the limit is 15 minutes (900,000 ms) and the notice is the owner's sentence, word for word; the script is on the packet tool,
+     rules     the limit is 15 minutes (900,000 ms) and the notice is the owner's sentence, word for word; the script is on the packet tool (packet.html),
                the Packet Builder and Resident Profiles and in the offline cache; it names no web address and makes no request
      activity  a mouse move, a key, a click, a touch and a scroll each start the clock again (a short limit is set through setLimit)
      timeout   the Packet Builder returns to its home screen, the chosen resident and the unsaved drafts are gone, the notice is shown,
-               and the SAVED roster, the license and the free-packet count are all still there; Resident Profiles returns to the front page
+               and the SAVED roster, the license and the free-packet count are all still there; Resident Profiles returns to the packet tool (packet.html)
    ===================================================================== */
 import fs from "fs";
 import path from "path";
@@ -20,7 +20,7 @@ const read = f => fs.readFileSync(path.join(ROOT, f), "utf8");
 const src = read("js/sessionTimeout.js");
 ok(/var DEFAULT_MS = 15 \* 60 \* 1000;/.test(src), "the limit is 15 minutes (15 * 60 * 1000 ms)");
 ok(src.includes('"' + MSG + '"'), "the notice is the owner's sentence, word for word");
-for (const f of ["index.html", "builder.html", "profile.html"]) ok(/<script src="js\/sessionTimeout\.js"><\/script>/.test(read(f)), `${f} loads the timeout`);
+for (const f of ["packet.html", "builder.html", "profile.html"]) ok(/<script src="js\/sessionTimeout\.js"><\/script>/.test(read(f)), `${f} loads the timeout`);
 ok(/js\/sessionTimeout\.js/.test(read("sw.js")), "the offline cache holds the timeout script");
 ok(!/fetch\(|XMLHttpRequest|sendBeacon|WebSocket|https?:\/\//.test(src.replace(/\/\*[\s\S]*?\*\//g, "")), "the timeout makes no request and names no web address");
 ["mousemove", "keydown", "click", "touchstart", "scroll"].forEach(t => ok(src.includes(`"${t}"`), `it listens for ${t}`));
@@ -50,6 +50,7 @@ const seed = p => p.evaluate(async () => {
   await window.CogniSecureStore.flush();
 });
 const state = p => p.evaluate(async () => {
+  if (!window.CogniSecureStore) return { path: location.pathname, hash: location.hash };    // a page with no resident store: every check below fails by name
   await window.CogniSecureStore.openForPage();
   const S = window.CogniSecureStore.storage;
   return { resident: S.getItem("cognicopia_resident_R-TEST"), pdraft: S.getItem("cognicopia_packet_draft"), fdraft: S.getItem("cognicopia_profile_draft"), count: S.getItem("cognicopia_gen_count"), lic: S.getItem("cognicopia_license_v2"), active: sessionStorage.getItem("cgb_active_resident"), hash: location.hash, path: location.pathname };
@@ -88,24 +89,24 @@ try {
     ok((Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05) >= 7, "the notice reads at 7:1 or better");
     await ctx.close();
   }
-  /* Resident Profiles goes to the front page */
+  /* Resident Profiles goes to the packet tool (packet.html; the front page, index.html, holds no resident data and loads no timeout) */
   {
     const { ctx, p } = await mk();
     await p.goto(base + "profile.html"); await p.waitForTimeout(800);
     await seed(p);
     await p.evaluate(() => window.CognicopiaSession.setLimit(1500));
-    await p.waitForURL(/index\.html/, { timeout: 15000 }).catch(() => {});
+    await p.waitForURL(/packet\.html/, { timeout: 15000 }).catch(() => {});
     await p.waitForSelector("#cgTimeoutNote", { timeout: 10000 }).catch(() => {});
     const st = await state(p);
-    ok(/index\.html$/.test(st.path), `Resident Profiles returns to the front page (${st.path})`);
+    ok(/packet\.html$/.test(st.path), `Resident Profiles returns to the packet tool, packet.html (${st.path})`);
     ok(await p.evaluate(() => (document.getElementById("cgTimeoutNote") || {}).textContent) === MSG, "and shows the notice there");
     ok(st.fdraft === null && st.pdraft === null && !!st.resident, "the drafts are cleared and the saved roster stays");
     await ctx.close();
   }
-  /* the packet tool */
+  /* the packet tool (packet.html) */
   {
     const { ctx, p } = await mk();
-    await p.goto(base + "index.html"); await p.waitForTimeout(800);
+    await p.goto(base + "packet.html"); await p.waitForTimeout(800);
     await seed(p);
     await p.evaluate(() => window.CognicopiaSession.setLimit(1500));
     await p.waitForSelector("#cgTimeoutNote", { timeout: 15000 }).catch(() => {});

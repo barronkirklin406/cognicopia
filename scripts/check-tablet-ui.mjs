@@ -5,8 +5,8 @@
    events a tablet makes, and what a person would see is read back.
 
      - the main menu shows all thirteen activities, each a large card; the level, topic and
-       sound choices work and are remembered; the front page has a Tablet Activities button in its
-       first screen and the menu bar has an entry
+       sound choices work and are remembered; the front page (index.html) and the packet tool
+       (packet.html) have a Tablet Activities link in the top bar's Today door, and the phone's Menu drawer has it
      - word search: dragging a finger along every word finds it (forwards and backwards), a drag
        that is not a word fades with no sound or red, tapping a first and a last letter finds a
        word, and finishing gives the cheer; the late stage reads across only
@@ -127,17 +127,20 @@ try {
     ok(await p.evaluate(() => document.getElementById("tbStageLate").checked && document.getElementById("tbTopic").value === "farming" && document.getElementById("tbSound").getAttribute("aria-pressed") === "false"), "and they are there again after reloading");
     ok(await p.evaluate(() => !document.getElementById("tbSound").textContent.includes("On")), "the sound button says so");
     await ctx.close();
-    /* the front page: Tablet Activities is in the top bar, inside the Today door (the three doors, November 12, 2026), and it goes there */
-    const home = await fresh({ width: 1366, height: 768 }, { page: "index.html" });
-    await home.p.click("#cgHub-today > summary"); await home.p.waitForTimeout(250);
-    const btn = await home.p.evaluate(() => { const e = document.querySelector('#cgHub-today a[href="tablet.html"]'); if (!e) return null; const r = e.getBoundingClientRect(); return { top: r.top, h: r.height, w: r.width, text: e.textContent.trim() }; });
-    ok(btn && btn.top < 300 && btn.h >= 52 && btn.w >= 150 && btn.text === "Tablet Activities", "the top bar's Today door holds a Tablet Activities link, at least 52 px tall: " + JSON.stringify(btn));
-    ok(await home.p.evaluate(() => !document.querySelector(".lp-btn-tablet")), "and the hero does not repeat it");
-    await home.p.click('#cgHub-today a[href="tablet.html"]'); await home.p.waitForURL("**/tablet.html"); ok(/Tablet Activities/.test(await text(home.p, "h1")), "pressing the link opens the tablet page");
+    /* the front page (index.html) and the packet tool (packet.html): Tablet Activities is in the top bar, inside the Today door (the three doors, November 12, 2026), and it goes there */
+    for (const pg of ["index.html", "packet.html"]) {
+      const home = await fresh({ width: 1366, height: 768 }, { page: pg });
+      await home.p.click("#cgHub-today > summary"); await home.p.waitForTimeout(250);
+      const btn = await home.p.evaluate(() => { const e = document.querySelector('#cgHub-today a[href="tablet.html"]'); if (!e) return null; const r = e.getBoundingClientRect(); return { top: r.top, h: r.height, w: r.width, text: e.textContent.trim() }; });
+      ok(btn && btn.top < 300 && btn.h >= 52 && btn.w >= 150 && btn.text === "Tablet Activities", pg + ": the top bar's Today door holds a Tablet Activities link, at least 52 px tall: " + JSON.stringify(btn));
+      if (pg === "index.html") ok(await home.p.evaluate(() => !document.querySelector(".lp-btn-tablet")), "and the front page's hero does not repeat it");
+      await home.p.click('#cgHub-today a[href="tablet.html"]'); await home.p.waitForURL("**/tablet.html"); ok(/Tablet Activities/.test(await text(home.p, "h1")), pg + ": pressing the link opens the tablet page");
+      await home.ctx.close();
+    }
     const phone = await fresh(PHONE, { page: "index.html" });
     await phone.p.click("#cgSbToggle"); await phone.p.waitForTimeout(350); await phone.p.click("#cgHub-today > summary"); await phone.p.waitForTimeout(250);
     ok(await phone.p.evaluate(() => { const e = document.querySelector('#cgHub-today a[href="tablet.html"]'); const r = e.getBoundingClientRect(); return r.height >= 52 && r.right <= innerWidth && r.left >= 0; }), "on a phone the link is in the Menu drawer's Today door, at least 52 px tall and on the screen");
-    await home.ctx.close(); await phone.ctx.close();
+    await phone.ctx.close();
   }
 
   /* ---------- word search ---------- */

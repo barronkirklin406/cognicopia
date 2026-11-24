@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* =====================================================================
-   Page economy and the Staff Companion Sheet in the front-page packet, proved on real PDFs read back with PyMuPDF
+   Page economy and the Staff Companion Sheet in the packet tool's packet (packet.html), proved on real PDFs read back with PyMuPDF
    (.claude/skills/cognicopia-print-engine; made-up resident only):
 
      staff first   page 1 is the Staff Companion Sheet ("For Staff", no resident banner), with each page listed by its title and the tip and
@@ -56,7 +56,7 @@ let summary = [];
 for (const stage of ["early", "middle", "late"]) for (const every of [true, false]) {
   const ctx = await browser.newContext({ viewport: { width: 1366, height: 900 }, acceptDownloads: true, serviceWorkers: "block" }); await agreed(ctx);
   const p = await ctx.newPage(); p.on("pageerror", e => errs.push(e.message));
-  await p.goto(base + "index.html"); await p.waitForTimeout(500);
+  await p.goto(base + "packet.html"); await p.waitForTimeout(500);
   await p.evaluate(() => { window.print = () => {}; localStorage.clear(); localStorage.setItem("cognicopia_eula_accepted", "true"); });
   await p.fill("#first", "Margaret"); await p.fill("#born", "1938");
   await p.fill("#town", "Velva"); await p.fill("#job", "teacher"); await p.fill("#hobbies", "gardening, baking"); await p.fill("#favs", "Patsy Cline");

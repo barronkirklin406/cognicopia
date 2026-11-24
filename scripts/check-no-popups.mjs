@@ -44,13 +44,13 @@ for (const f of files){
 const probe = t => { CALL.lastIndex = 0; return CALL.test(t); };
 const proofs = [probe("if (confirm('Sure?')) go();"), probe("window.alert('hi')"), !probe("await CogniDialog.confirm({})"), !probe("const confirmed = true")];
 if (!proofs.every(Boolean)) bad.push("the check's own self-test failed");
-/* no emoji on a button or a heading in the two big tools (.claude/skills/cognicopia-visual-style: "no emoji"; a picture a person must interpret is not a label) */
+/* no emoji on a button or a heading in the two big tools (the packet tool, packet.html, and the Packet Builder) or on the front page (.claude/skills/cognicopia-visual-style: "no emoji"; a picture a person must interpret is not a label) */
 const EMO = /[\u{1F300}-\u{1FAFF}\u2600-\u2612\u2614-\u2712\u2714\u2716-\u27BF\u2B50\u2B1B\u2B1C\u2300-\u23FF]/u;
-for (const rel of ["index.html", "builder.html"]){
+for (const rel of ["index.html", "packet.html", "builder.html"]){
   const text = fs.readFileSync(path.join(ROOT, rel), "utf8");
   for (const m of text.matchAll(/<(button|h[1-4]|summary)\b[^>]*>([\s\S]{0,300}?)<\/\1>/g)){
     if (m[2].length < 300 && EMO.test(m[2])) bad.push(`${rel}: an emoji on ${m[1]}: ${m[2].replace(/\s+/g, " ").slice(0, 70)}`);
   }
 }
-console.log(bad.length ? `no-popups check FAILED: ${bad.length} problem(s) (the browser's own windows, or an emoji on a control)\n  - ` + bad.slice(0, 40).join("\n  - ") : `no-popups check passed: ${scanned} files, no alert, confirm or prompt, and no emoji on a button or heading in the two big tools`);
+console.log(bad.length ? `no-popups check FAILED: ${bad.length} problem(s) (the browser's own windows, or an emoji on a control)\n  - ` + bad.slice(0, 40).join("\n  - ") : `no-popups check passed: ${scanned} files, no alert, confirm or prompt, and no emoji on a button or heading in the two big tools or on the front page`);
 process.exit(bad.length ? 1 : 0);

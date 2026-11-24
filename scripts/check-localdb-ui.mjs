@@ -37,7 +37,8 @@ try {
     const p = await ctx.newPage();
     p.on("pageerror", e => errors.push(e.message));
     p.on("request", r => { const u = r.url(); if (!u.startsWith(base) && !u.startsWith("data:") && !u.startsWith("blob:")) foreign.push(u); });
-    await p.goto(base + "index.html"); await p.waitForFunction(() => window.CogniSecureStore, null, { timeout: 15000 });
+    // the packet tool (packet.html) loads the encrypted store; the front page no longer does
+    await p.goto(base + "packet.html"); await p.waitForFunction(() => window.CogniSecureStore, null, { timeout: 15000 });
     await p.evaluate(() => CogniSecureStore.ready());
     await p.addScriptTag({ url: base + "assets/services/localDb.js" });
     return p;

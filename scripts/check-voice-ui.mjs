@@ -8,7 +8,7 @@
        voices of the device (a voice that streams from a server is not
        listed), a Preview for each and a test sentence; Read to Me speaks with
        the chosen voice at 0.90 and pitch 1
-     - Tablet Interactive Mode (packet tool): the same panel
+     - Tablet Interactive Mode (the packet tool, packet.html): the same panel
      - the Academy: the panel, the pace in its own steps, the High-Fidelity
        switch, and a lesson read with the chosen voice at 0.90 x the pace
      - every control in the panel is at least 52 px; Escape closes it and
@@ -97,10 +97,10 @@ const panelChecks = async (p, where) => {
   await p.context().close();
 }
 
-/* ---------- Tablet Interactive Mode (the packet tool) ---------- */
+/* ---------- Tablet Interactive Mode (the packet tool, packet.html) ---------- */
 {
   const p = await open();
-  await p.goto(base + "index.html"); await p.waitForTimeout(600);
+  await p.goto(base + "packet.html"); await p.waitForTimeout(600);
   ok(await p.evaluate(() => typeof window.launchTabletMode === "function"), "Tablet Interactive Mode can be opened from the packet tool");
   await p.evaluate(() => window.launchTabletMode()); await p.waitForTimeout(900);
   let vb = p.locator(".tb-voice:visible").first();

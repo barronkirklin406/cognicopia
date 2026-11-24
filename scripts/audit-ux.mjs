@@ -53,7 +53,7 @@ const broken = [];
 
 /* the pages and views measured */
 const VIEWS = [
-  ["index.html", "index.html"], ["profile.html", "profile.html"], ["tablet activities", "tablet.html"],
+  ["index.html", "index.html"], ["packet.html", "packet.html"], ["profile.html", "profile.html"], ["tablet activities", "tablet.html"],
   ["daily engagement", "daily.html"], ["activity page studio", "activity-studio.html"],
   ["builder home", "builder.html#/"], ["builder coloring", "builder.html#/coloring"], ["builder roster", "builder.html#/roster"],
   ["builder facility", "builder.html#/facility"], ["builder planner", "builder.html#/planner"], ["builder journal", "builder.html#/journal"],
@@ -78,7 +78,7 @@ const fill = (sel, text) => page => page.fill(sel, text, { timeout: 5000 });
 const lockStore = page => page.evaluate(async () => { const S = window.CogniSecureStore; await S.openForPage(); await S.setPassphrase("audit passphrase 1234"); await S.lock(); });
 const openGate = page => page.evaluate(() => { try { localStorage.setItem("cognicopia_gen_count", "50"); } catch (e) {} openGate(); });
 const STATES = [
-  ["index: upgrade screen (50 packets used)", "index.html", [openGate]],
+  ["packet tool: upgrade screen (50 packets used)", "packet.html", [openGate]],
   ["search open (Ctrl+K) with residents", "daily.html", [seedResidents, reload, page => page.keyboard.press("Control+k"), fill("#qlInput", "test")]],
   ["daily engagement: a resident active, the bar shown", "daily.html", [seedResidents, reload, page => page.evaluate(() => window.CogniWayfinding.setActive("res-a"))]],
   ["Start here open, a role chosen", "index.html", [page => page.evaluate(() => window.CogniWayfinding.openStart()), click('.wf-role[data-role="wing"]')]],
@@ -93,8 +93,8 @@ const STATES = [
   ["license window (a page with a top bar)", "pricing.html", [click("#cgPromoBtn")]],
   ["contact: an invoice request", "contact.html?subject=Corporate+Invoice+Request", []],
   ["profile: last step", "profile.html", [click("#rapNext"), click("#rapNext"), click("#rapNext"), click("#rapNext")]],
-  ["index: Instant Soothe open", "index.html", [click("#arbSootheSticky")]],
-  ["index: a saved resident to open", "index.html", [seedResidents, reload, click("#loadProfile")]],
+  ["packet tool: Instant Soothe open", "packet.html", [click("#arbSootheSticky")]],
+  ["packet tool: a saved resident to open", "packet.html", [seedResidents, reload, click("#loadProfile")]],
   ["builder: packet drawer with a page", "builder.html#/coloring", [pickPicture, click("#ccAdd"), click("#openPacket")]],
   ["builder: Instant Soothe open", "builder.html#/", [click(".panic-button")]],
   ["tablet: word search", "tablet.html", [click('[data-act="wordsearch"]')]],
@@ -186,7 +186,7 @@ async function main(){
 
   /* ---------- weight and load ---------- */
   if (want("weight")){
-    for (const f of ["index.html", "builder.html", "profile.html"]){
+    for (const f of ["index.html", "packet.html", "builder.html", "profile.html"]){
       const bytes = fs.statSync(path.join(ROOT, f)).size, times = [];
       for (let i = 0; i < 3; i++){
         const { ctx, page } = await open(1366, 768);
@@ -241,7 +241,7 @@ async function main(){
   /* ---------- navigation ---------- */
   if (want("nav")){
     const { ctx, page } = await open(1366, 768);
-    for (const [label, url] of [["index.html", "index.html"], ["profile.html", "profile.html"], ["builder home", "builder.html#/"], ["builder coloring", "builder.html#/coloring"],
+    for (const [label, url] of [["index.html", "index.html"], ["packet.html", "packet.html"], ["profile.html", "profile.html"], ["builder home", "builder.html#/"], ["builder coloring", "builder.html#/coloring"],
       ["builder roster", "builder.html#/roster"], ["resource hub page", "resources/"], ["a resource module", "resources/quality-standards/"], ["contact", "contact.html"]]){
       await page.goto(base + url, { waitUntil: "load" }); await page.waitForTimeout(500);
       const r = await page.evaluate(() => {
@@ -269,12 +269,12 @@ async function main(){
     /* a counted workflow: every click the person would make goes through step() */
     const counter = page => { let clicks = 0, typed = 0; return { click: async (sel, o) => { clicks++; await page.click(sel, o); }, fill: async (sel, v) => { typed++; await page.fill(sel, v); }, get clicks(){ return clicks; }, get typed(){ return typed; } }; };
 
-    /* packet for one resident (index.html): name and year typed, one click on Generate */
+    /* packet for one resident (the packet tool, packet.html): name and year typed, one click on Generate */
     {
       const times = []; let clicks = 0, typed = 0, err = null;
       for (let i = 0; i < 3; i++){
         const { ctx, page } = await open(1366, 768);
-        await page.goto(base + "index.html", { waitUntil: "load" }); await page.waitForTimeout(500);
+        await page.goto(base + "packet.html", { waitUntil: "load" }); await page.waitForTimeout(500);
         await page.evaluate(() => { window.print = () => {}; try { localStorage.clear(); localStorage.setItem("cognicopia_eula_accepted", "true"); } catch (e) {} });   // the agreement is asked at the first print; this is a measure of the workflow, not of that window
         const s = counter(page);
         try {
@@ -287,7 +287,7 @@ async function main(){
       }
       if (err) results.clicks.push({ workflow: "A packet for one resident", error: err });
       else {
-        results.clicks.push({ workflow: "A packet for one resident (index.html)", clicks, typed_fields: typed, to: "a finished packet", budget: BUDGETS.clicks.packet });
+        results.clicks.push({ workflow: "A packet for one resident (packet.html)", clicks, typed_fields: typed, to: "a finished packet", budget: BUDGETS.clicks.packet });
         results.print.push({ what: "Packet for one resident, click to finished", median_ms: median(times), runs_ms: times });
         if (clicks > BUDGETS.clicks.packet) broken.push(`packet workflow takes ${clicks} clicks`);
       }

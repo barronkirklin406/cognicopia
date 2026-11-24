@@ -5,7 +5,7 @@
      builder.html  the tier choice reads Tier, name and GDS and says what it changes (and the words change when Advanced is chosen);
                    every page preview carries its therapy anchor; an activity asked to keep a word off the page redraws without it;
                    Sundowning / De-escalation mode turns a queued page into one calm late-stage reminiscence page
-     index.html    the level choices carry their GDS; the Sundowning / De-escalation switch holds the late level, turns off timed and
+     packet.html   the level choices carry their GDS; the Sundowning / De-escalation switch holds the late level, turns off timed and
                    dense pages, and gives the level back when it is turned off
      tablet.html   the levels carry their GDS, every activity card names its therapy, Calm mode shows only the slow activities and a
                    word on the "keep off the screen" list never stays on an activity's screen
@@ -75,9 +75,9 @@ async function open(path, viewport) {
   await ctx.close();
 }
 
-/* ---------- the packet tool ---------- */
+/* ---------- the packet tool (packet.html) ---------- */
 {
-  const { ctx, page: pg, outside, errors } = await open("index.html");
+  const { ctx, page: pg, outside, errors } = await open("packet.html");
   const levels = await pg.$$eval(".level span span", els => els.map(e => e.textContent));
   ok(/Tier 1 · Mild · GDS 3–4/.test(levels[0]) && /Tier 2 · Moderate · GDS 5/.test(levels[1]) && /Tier 3 · Advanced · GDS 6–7/.test(levels[2]), "the packet tool's levels carry Tier, name and GDS");
   const state = () => pg.evaluate(() => ({ stage: document.querySelector('input[name="stage"]:checked').value, locked: [...document.querySelectorAll('input[name="stage"]')].every(r => r.disabled),

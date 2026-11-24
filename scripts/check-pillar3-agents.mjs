@@ -42,7 +42,7 @@ ok(!/555-123-4567|04\/12\/1938/.test(leakText) && /\[phone removed\]/.test(leakT
 const clean = await o.execute({ profile: peggy, options: { template: "reminiscence" } }); ok(clean.audit.status === "pass", "a clean sheet is left alone and passes");
 ok(ps.scanDeep(o.log.entries, { names: ["Peggy", "Walter", "Biscuit", "Cedar Falls"] }).ok, "the diagnostic log holds no name and no identifier after these runs");
 /* network guard */
-const calls = []; const win = { location: { href: "https://cognicopia.org/index.html", origin: "https://cognicopia.org" }, fetch: (u) => { calls.push(["fetch", String(u)]); return Promise.resolve("ok"); }, navigator: { sendBeacon: (u) => { calls.push(["beacon", u]); return true; } }, XMLHttpRequest: function () {}, WebSocket: function (u) { calls.push(["ws", u]); }, EventSource: function (u) { calls.push(["es", u]); } };
+const calls = []; const win = { location: { href: "https://cognicopia.org/packet.html", origin: "https://cognicopia.org" }, fetch: (u) => { calls.push(["fetch", String(u)]); return Promise.resolve("ok"); }, navigator: { sendBeacon: (u) => { calls.push(["beacon", u]); return true; } }, XMLHttpRequest: function () {}, WebSocket: function (u) { calls.push(["ws", u]); }, EventSource: function (u) { calls.push(["es", u]); } };
 win.XMLHttpRequest.prototype.open = function (m, u) { calls.push(["xhr", u]); };
 const watch = ps.installNetworkGuard(win);
 await win.fetch("/data/content-catalog.json"); await win.fetch("https://api.example.com/x"); win.navigator.sendBeacon("https://t.example.net/b"); new win.XMLHttpRequest().open("GET", "https://x.example.org/");

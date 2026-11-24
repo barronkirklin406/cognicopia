@@ -59,7 +59,7 @@ const ctx = await browser.newContext({ viewport: { width: 1366, height: 900 }, s
 const p = await ctx.newPage(); await agreeToDialogs(p);
 p.on("pageerror", e => errs.push(e.message)); p.on("dialog", d => d.accept());
 p.on("request", r => { const u = r.url(); if (!u.startsWith(base) && !/^(data|blob|about):/.test(u)) foreign.push(u); });
-await p.goto(base + "index.html", { waitUntil: "load" }); await p.waitForTimeout(1200);
+await p.goto(base + "packet.html", { waitUntil: "load" }); await p.waitForTimeout(1200);
 await p.evaluate(() => { window.print = () => {}; });
 
 const isStaff = x => /^For Staff/.test(x.text.trim());

@@ -5,7 +5,7 @@
    verifying that what will be published is sound:
      1. every inline script on every page parses;
      2. the three tools (packet tool, Packet Builder, resident profile)
-        make no network requests of their own: no remote scripts, styles,
+        and the front page make no network requests of their own: no remote scripts, styles,
         fonts or images, and no fetch, XHR, beacons or sockets (the
         bundled PDF library's own file loader is left out of the scan);
      3. the print face is embedded (Atkinson Hyperlegible, data: URIs only)
@@ -207,7 +207,7 @@ step("Activity Page Studio: the settings and the live 3:4 page, every module and
   }
 });
 
-step("Describe & Create: the Packet Builder's Describe a picture and the front page's A picture to color choose the drawing the words name, the packet PDF uses it (read back), refusals, 52 px, a phone (a real browser)", () => {
+step("Describe & Create: the Packet Builder's Describe a picture and the packet tool's (packet.html) A picture to color choose the drawing the words name, the packet PDF uses it (read back), refusals, 52 px, a phone (a real browser)", () => {
   try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-describe-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
   catch (e){
     if (e.status === 2) return "skipped: Playwright is not installed here (see docs/dev-setup.md)";
@@ -417,7 +417,7 @@ step("Fresh-every-click packets, proved on real PDFs read back with PyMuPDF: thr
   }
 });
 
-step("Page economy and the Staff Companion Sheet in the front-page packet, proved on real PDFs read back with PyMuPDF at every stage with every page ticked and with the default pages: page 1 is the Staff Companion Sheet and lists each page by its title with its tip and therapy approach; no resident page carries a clinical tip or therapy tag; no resident page is a \"(continued)\" page; every resident page is at least 60% full.", () => {
+step("Page economy and the Staff Companion Sheet in the packet tool's packet (packet.html), proved on real PDFs read back with PyMuPDF at every stage with every page ticked and with the default pages: page 1 is the Staff Companion Sheet and lists each page by its title with its tip and therapy approach; no resident page carries a clinical tip or therapy tag; no resident page is a \"(continued)\" page; every resident page is at least 60% full.", () => {
   try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-packet-economy-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim().split("\n").pop(); }
   catch (e){
     if (e.status === 2) return "skipped: Playwright or PyMuPDF is not installed here (see docs/dev-setup.md)";
@@ -494,7 +494,7 @@ step("the profile's optional story (moments, a dish, comforts, a photo kept seal
   }
 });
 
-step("the Family Life Digest buttons on the front page open the shipped drawer and make a one-page PDF that names the person (a real browser, the PDF read back)", () => {
+step("the Family Life Digest buttons in the packet tool (packet.html) open the shipped drawer and make a one-page PDF that names the person (a real browser, the PDF read back)", () => {
   try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "check-family-digest-ui.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim(); }
   catch (e){
     if (e.status === 2) return "skipped: Playwright is not installed here (see docs/dev-setup.md)";
@@ -654,7 +654,7 @@ step("a page printed straight from the browser: no navigation, buttons or fields
   }
 });
 
-step("print audit: every page, every Packet Builder activity at every level and the front page's packet, printed to PDF and read back (one sheet a page, pure black, margins, nothing of the web page on the paper) (a real browser)", () => {
+step("print audit: every page, every Packet Builder activity at every level and the packet tool's packet (packet.html), printed to PDF and read back (one sheet a page, pure black, margins, nothing of the web page on the paper) (a real browser)", () => {
   try { return execFileSync(process.execPath, [path.join(ROOT, "scripts", "audit-print.mjs")], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"], maxBuffer: 1 << 26 }).trim().split("\n").slice(-1)[0]; }
   catch (e){
     if (e.status === 2) return "skipped: Playwright or PyMuPDF is not installed here (see docs/dev-setup.md)";

@@ -4,12 +4,14 @@
    Run: node scripts/check-trial-badge-ui.mjs  (needs Playwright; exits 2 where it is missing)
 
      badge    "50 of 50 free packets left" in the action bar under the navigation (and the packet tool's wood bar),
-              on a new computer, on a page that is not the front page, and counting down as packets are made (49 of 50), live and
+              on a new computer, on the front page (index.html), in the packet tool (packet.html) and on a page that is neither,
+              and counting down as packets are made in the packet tool (49 of 50), live and
               with no reload; the number is also kept in localStorage under cognicopia_trial_generations (50 on a first visit);
               a licensed computer sees no badge; at none left it says no free packets are left; clearing that one number does not give packets back
      hero     "Get Started Free" (the owner's wording, November 2026: no trial count and no badge in the hero; the count lives in the
               action bar and the packet tool's bar) with "No sign-up and no credit card. Everything stays on this computer."
-              directly beneath it; both fit a phone (390 px) with no sideways scroll
+              directly beneath it, on the front page (index.html); the button opens the packet tool (packet.html); both fit
+              a phone (390 px) with no sideways scroll
      window   with the 50 used, making a packet opens a window titled "You've used all 50 Free Trial Generations!" that explains
               the card (Stripe) and the Net-30 purchase-order routes and has "Activate Annual / Monthly License" and
               "Request Net-30 Invoice", 52 px tall, Escape closes it; the Packet Builder's gate says the same
@@ -41,14 +43,18 @@ try {
   await ctx.addInitScript(() => { try { localStorage.setItem("cognicopia_eula_accepted", "true"); } catch (e) { /* ignore */ } window.print = () => {}; });
 
   /* ---- a new computer ---- */
-  let p = await open(ctx, "index.html");
-  ok((await badge(p)).includes(BADGE), "index.html: a new computer shows " + BADGE + " (" + JSON.stringify(await badge(p)) + ")");
-  ok(await p.evaluate(() => localStorage.getItem("cognicopia_trial_generations")) === "50", "and keeps 50 under cognicopia_trial_generations");
-  const hero = await p.evaluate(() => { const b = document.getElementById("heroCta"), s = document.getElementById("heroNote"), r = b.getBoundingClientRect(), q = s.getBoundingClientRect(); return { b: b.textContent.trim(), s: s.textContent.trim(), below: q.top >= r.bottom - 1, h: r.height, href: b.getAttribute("href"), badges: document.querySelectorAll(".lp-hero [data-cg-trial], .lp-hero .cg-trial").length }; });
+  const home = await open(ctx, "index.html");
+  ok((await badge(home)).includes(BADGE), "index.html: a new computer shows " + BADGE + " (" + JSON.stringify(await badge(home)) + ")");
+  ok(await home.evaluate(() => localStorage.getItem("cognicopia_trial_generations")) === "50", "and keeps 50 under cognicopia_trial_generations");
+  const hero = await home.evaluate(() => { const b = document.getElementById("heroCta"), s = document.getElementById("heroNote"), r = b.getBoundingClientRect(), q = s.getBoundingClientRect(); return { b: b.textContent.trim(), s: s.textContent.trim(), below: q.top >= r.bottom - 1, h: r.height, href: b.getAttribute("href"), badges: document.querySelectorAll(".lp-hero [data-cg-trial], .lp-hero .cg-trial").length }; });
   ok(hero.b === "Get Started Free", "the hero button says: " + hero.b);
   ok(hero.s === "No sign-up and no credit card. Everything stays on this computer.", "and its line: " + hero.s);
   ok(hero.badges === 0, "the hero carries no free-trial badge or count (the action bar and the packet tool's bar do)");
-  ok(hero.below && hero.h >= 52 && hero.href === "#make", `the subtitle is directly beneath it, the button is ${Math.round(hero.h)} px tall and goes to the packet tool`);
+  ok(hero.below && hero.h >= 52 && hero.href === "packet.html", `the subtitle is directly beneath it, the button is ${Math.round(hero.h)} px tall and goes to the packet tool (packet.html): ` + hero.href);
+
+  /* ---- the packet tool (packet.html) ---- */
+  let p = await open(ctx, "packet.html");
+  ok((await badge(p)).includes(BADGE), "packet.html: the packet tool shows the same badge (" + JSON.stringify(await badge(p)) + ")");
 
   /* ---- another page: the action bar ---- */
   const q = await open(ctx, "pricing.html");
@@ -59,10 +65,12 @@ try {
   /* ---- counting down, live ---- */
   await p.evaluate(() => { bumpGen(); });
   await p.waitForTimeout(500);
-  ok((await badge(p)).includes("49 of 50 free packets left"), "after one packet the front page says 49 of 50 with no reload (" + JSON.stringify(await badge(p)) + ")");
+  ok((await badge(p)).includes("49 of 50 free packets left"), "after one packet the packet tool (packet.html) says 49 of 50 with no reload (" + JSON.stringify(await badge(p)) + ")");
   ok(await p.evaluate(() => localStorage.getItem("cognicopia_trial_generations")) === "49", "and the kept number is 49");
   await q.reload(); await q.waitForTimeout(900);
   ok((await badge(q)).includes("49 of 50 free packets left"), "another page reads the same count (49 of 50)");
+  await home.reload(); await home.waitForTimeout(900);
+  ok((await badge(home)).includes("49 of 50 free packets left"), "the front page (index.html) reads the same count (49 of 50)");
   await p.evaluate(() => localStorage.setItem("cognicopia_trial_generations", "50")); await p.reload(); await p.waitForTimeout(1200);
   ok((await badge(p)).some(t => /49 of 50/.test(t)), "typing 50 into the kept number gives nothing back: the ledger's count still says 49");
 

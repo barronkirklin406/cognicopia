@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* =====================================================================
-   The print preview modal (js/print-preview-modal.js, wired into index.html), in a real browser
+   The print preview modal (js/print-preview-modal.js, wired into the packet tool, packet.html), in a real browser
    (Playwright; exit code 2 where it is not installed).
 
      button     "Preview Packet" beside "Make the packet", 52 px, opens the modal
@@ -37,7 +37,7 @@ try {
     const p = await ctx.newPage(), errs = [], outside = [];
     p.on("pageerror", (e) => errs.push(String(e).slice(0, 160)));
     p.on("request", (r) => { if (!r.url().startsWith(base) && !/^(data|blob|about):/.test(r.url())) outside.push(r.url()); });
-    await p.goto(base + "index.html"); await p.waitForSelector("#previewPacketBtn"); await p.waitForTimeout(700);
+    await p.goto(base + "packet.html"); await p.waitForSelector("#previewPacketBtn"); await p.waitForTimeout(700);
     await p.evaluate(() => { window.print = () => { const st = document.getElementById("cgpp-print-stage"); window.__printed++; window.__printStage = st ? { sheets: st.querySelectorAll(".cgpp-sheet").length, cls: document.documentElement.classList.contains("cgpp-printing") } : null; }; });
     return { ctx, p, errs, outside };
   }

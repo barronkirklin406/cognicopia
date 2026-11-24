@@ -8,7 +8,7 @@
    Three sets of templates:
      pages    every static page (prices, policies, guides, research, the resident profile...) as Ctrl+P prints it
      builder  every activity the Packet Builder makes, at every level it is made for, as the print window prints it
-     packet   the packet tool on the front page (Quick-Print), at all three stages
+     packet   the packet tool (packet.html, Quick-Print), at all three stages
 
    For each it checks, from the page's own layout and from the PDF:
      breaks    one sheet per page (a sheet that spills makes an extra page); no heading stranded at the foot of a page;
@@ -206,7 +206,7 @@ try {
       const file = path.join(TMP, "page-" + f.replace(/[\\/]/g, "_") + ".pdf");
       await p.pdf({ path: file, preferCSSPageSize: true, printBackground: true });
       const pdf = readPdf(file);
-      judgePdf("pages", f, pdf, { gutter: !OWN_SHEETS.has(f) && !/^index\.html$/.test(f), edgeToEdge: OWN_SHEETS.has(f), letter: true, noThin: true });
+      judgePdf("pages", f, pdf, { gutter: !OWN_SHEETS.has(f) && !/^packet\.html$/.test(f), edgeToEdge: OWN_SHEETS.has(f), letter: true, noThin: true });
       process.stdout.write(".");
       await p.emulateMedia({ media: "screen" });
     }
@@ -266,12 +266,12 @@ try {
     await ctx.close();
   }
 
-  /* ============ the packet tool on the front page ============ */
+  /* ============ the packet tool (packet.html) ============ */
   if (only === "all" || only === "packet") {
     for (const stage of ["early", "middle", "late"]) {
       const { ctx, p } = await newPage(1366, 900);
       const errors = []; p.on("pageerror", (e) => errors.push(e.message));
-      await p.goto(base + "index.html"); await p.waitForTimeout(1500);
+      await p.goto(base + "packet.html"); await p.waitForTimeout(1500);
       try {
         await p.fill("#first", "Test"); await p.fill("#born", "1938"); await p.fill("#town", "Minot"); await p.fill("#state", "North Dakota");
         await p.fill("#job", "teacher"); await p.fill("#hobbies", "gardening, baking"); await p.fill("#favs", "roses, coffee");
@@ -285,14 +285,14 @@ try {
           const vis = (el) => { const r = el.getBoundingClientRect(), cs = getComputedStyle(el); return cs.display !== "none" && cs.visibility !== "hidden" && r.width > 1 && r.height > 1; };
           return { bad: [...document.querySelectorAll("body > *")].filter((e) => e.id !== "qpPrintRoot" && vis(e)).map((e) => e.tagName + "#" + e.id), dark: [...document.querySelectorAll("#qpPrintRoot *")].filter((e) => { const c = getComputedStyle(e); return vis(e) && !e.closest("svg") && e.childNodes.length && [...e.childNodes].some((n) => n.nodeType === 3 && n.nodeValue.trim()) && c.color !== "rgb(0, 0, 0)"; }).slice(0, 4).map((e) => e.tagName + "." + String(e.className).slice(0, 20) + ":" + getComputedStyle(e).color) };
         });
-        ok(probe.bad.length === 0, "packet", `front page packet (${stage})`, "bleed", "outside the print root: " + probe.bad.join(", "));
-        ok(probe.dark.length === 0, "packet", `front page packet (${stage})`, "ink", "text not pure black: " + probe.dark.join(" | "));
+        ok(probe.bad.length === 0, "packet", `packet tool (packet.html, ${stage})`, "bleed", "outside the print root: " + probe.bad.join(", "));
+        ok(probe.dark.length === 0, "packet", `packet tool (packet.html, ${stage})`, "ink", "text not pure black: " + probe.dark.join(" | "));
         const file = path.join(TMP, `packet-${stage}.pdf`);
         await p.pdf({ path: file, preferCSSPageSize: true, printBackground: true });
-        judgePdf("packet", `front page packet (${stage})`, readPdf(file), { sheets, letter: true, noOrphan: true });
+        judgePdf("packet", `packet tool (packet.html, ${stage})`, readPdf(file), { sheets, letter: true, noOrphan: true });
         console.log(`packet ${stage}: ${sheets} sheets`);
-      } catch (e) { add("packet", `front page packet (${stage})`, "make", e.message.slice(0, 120)); }
-      ok(errors.length === 0, "packet", `front page packet (${stage})`, "make", "script errors: " + errors.slice(0, 2).join(" | "));
+      } catch (e) { add("packet", `packet tool (packet.html, ${stage})`, "make", e.message.slice(0, 120)); }
+      ok(errors.length === 0, "packet", `packet tool (packet.html, ${stage})`, "make", "script errors: " + errors.slice(0, 2).join(" | "));
       await ctx.close();
     }
   }

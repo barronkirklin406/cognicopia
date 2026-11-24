@@ -2,13 +2,14 @@
 /* =====================================================================
    The sample packet: a real packet, made by the real tool.
 
-   assets/samples/cognicopia-sample-packet.pdf is what the front page's
-   "Download Today's Packet (PDF)" button makes for a made-up resident
+   assets/samples/cognicopia-sample-packet.pdf is what the packet tool's
+   (packet.html) "Download Today's Packet (PDF)" button makes for a made-up resident
    (Ruth, born 1938, who likes gardening, big-band music and a river town)
    at the middle stage on 1 October 2026. A buyer can open it without
-   typing anything, and see the five pages an Activity Director would print.
+   typing anything (the front page, index.html, offers it as the free
+   sample packet), and see the five pages an Activity Director would print.
 
-   The script opens index.html in a real browser, with the clock and the
+   The script opens packet.html in a real browser, with the clock and the
    random numbers held still, fills the form, presses the button and keeps
    the PDF the page itself makes. Nothing is drawn by hand and nothing is
    sent anywhere.
@@ -33,7 +34,7 @@ const { srv, base } = await serve();
 const browser = await chromium.launch();
 let bytes;
 try {
-  const ctx = await browser.newContext({ viewport: { width: 1366, height: 900 }, serviceWorkers: "block", acceptDownloads: true }); await agreed(ctx);
+  const ctx = await browser.newContext({ viewport: { width: 1366, height: 900 }, serviceWorkers: "block", acceptDownloads: true, timezoneId: "UTC" }); await agreed(ctx);   // UTC: the PDF's creation date carries the time zone, so every computer makes the same bytes
   await ctx.addInitScript(() => {
     const FIXED = new Date(2026, 9, 1, 9, 0, 0).getTime();            // 1 October 2026, nine in the morning
     const RealDate = Date;
@@ -47,7 +48,7 @@ try {
   });
   const p = await ctx.newPage();
   const errors = []; p.on("pageerror", e => errors.push(e.message));
-  await p.goto(base + "index.html"); await p.waitForSelector("#pcgCard", { timeout: 15000 });
+  await p.goto(base + "packet.html"); await p.waitForSelector("#pcgCard", { timeout: 15000 });
   const fill = async (id, v) => { await p.fill("#" + id, v); };
   await fill("first", "Ruth"); await fill("born", "1938");
   await fill("hobbies", "gardening, big-band music"); await fill("favs", "roses, a river town");

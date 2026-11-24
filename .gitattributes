@@ -1,0 +1,11 @@
+# Every text file is checked out with LF line ends, on every computer. The checks in scripts/ read pages such as
+# builder.html with patterns that expect "\n" (as GitHub's Linux machines check them out); Git for Windows otherwise
+# turns them into CRLF on the owner's computer and npm test fails there for no real reason. Binary files are found
+# by Git itself and left alone.
+* text=auto eol=lf
+*.pdf binary
+*.png binary
+*.webp binary
+*.jpg binary
+*.woff2 binary
+*.ico binary

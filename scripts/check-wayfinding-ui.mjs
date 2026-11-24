@@ -76,7 +76,7 @@ const measure = (p, scope) => p.evaluate(sel => {
 
 try {
   /* ---------- the search: tools and guides, on every kind of page ---------- */
-  for (const file of ["index.html", "daily.html", "resources/caregiver-faq/index.html", "terms.html"]) {
+  for (const file of ["index.html", "packet.html", "daily.html","resources/caregiver-faq/index.html", "terms.html"]) {
     const f = await open(1366, 768, file);
     const btn = await f.p.$eval(".cg-sidebar .cg-find", e => { const r = e.getBoundingClientRect(); return { w: Math.round(r.width), h: Math.round(r.height), label: e.getAttribute("aria-label") }; }).catch(() => null);
     ok(btn && btn.w >= 52 && btn.h >= 52 && /Search/.test(btn.label), `${file}: the menu has a Search button, ${btn ? btn.w + " x " + btn.h : "missing"} px`);
@@ -155,9 +155,9 @@ try {
     await f.ctx.close();
   }
 
-  /* ---------- the packet tool on the home page: its own bar follows the search ---------- */
+  /* ---------- the packet tool (packet.html): its own bar follows the search ---------- */
   {
-    const f = await open(1366, 768, "index.html");
+    const f = await open(1366, 768, "packet.html");
     await seed(f.p, [DOT]); await f.p.reload({ waitUntil: "load" }); await f.p.waitForTimeout(1200);
     await search(f.p, "dorothy"); await f.p.keyboard.press("Enter"); await f.p.waitForTimeout(900);
     ok(await f.p.$eval("#arbSelect", e => e.value) === "res-dot" && /^Dorothy\b/.test(await f.p.$eval("#first", e => e.value)), "choosing her in the search fills in the packet tool's form, as its own chooser does");
@@ -190,8 +190,10 @@ try {
     ok(m1.small.length === 0 && m1.low.length === 0, `its controls are 52 px and its text readable (${m1.n} controls)` + (m1.small.length + m1.low.length ? ": " + m1.small.concat(m1.low).slice(0, 4).join("; ") : ""));
     await f.p.click('dialog.wf-start .wf-role[data-role="home"]'); await f.p.waitForTimeout(200);
     ok(/Step 1 of 3/.test(await txt(f.p, "dialog.wf-start")) && /personal packet/i.test(await txt(f.p, "dialog.wf-start h3")), "step 1 is the personal packet");
-    await f.p.click('dialog.wf-start [data-wf="there"]'); await f.p.waitForTimeout(900);
-    ok(!(await f.p.$("dialog.wf-start[open]")) && !!(await f.p.$("#wfCoach")) && await f.p.$eval("#go", e => e.classList.contains("wf-target")), "Take me there goes to the packet tool, with a card and the real button outlined");
+    /* the packet tool is a large page (its PDF maker and fonts are inside it): wait for it to load before looking for the card */
+    await Promise.all([f.p.waitForURL(/packet\.html/).catch(() => null), f.p.click('dialog.wf-start [data-wf="there"]')]);
+    await f.p.waitForSelector("#wfCoach", { timeout: 8000 }).catch(() => null); await f.p.waitForTimeout(600);
+    ok(/\/packet\.html/.test(f.p.url()) && !(await f.p.$("dialog.wf-start[open]")) && !!(await f.p.$("#wfCoach")) && await f.p.$eval("#go", e => e.classList.contains("wf-target")).catch(() => false), `Take me there goes to the packet tool (packet.html), with a card and the real button outlined (${f.p.url().replace(base, "")})`);
     await Promise.all([f.p.waitForURL(/daily\.html/), f.p.click('#wfCoach [data-coach="next"]')]); await f.p.waitForTimeout(1200);
     ok(/step 2 of 3/i.test(await txt(f.p, "#wfCoach")) && await f.p.$eval("#dyMake", e => e.classList.contains("wf-target")), "the card's Next goes on to the daily card, outlining Make today's card");
     await Promise.all([f.p.waitForURL(/builder\.html#\/coloring/), f.p.click('#wfCoach [data-coach="next"]')]); await f.p.waitForTimeout(2500);
@@ -231,7 +233,7 @@ try {
   /* ---------- 52 px and contrast: day and Night Shift, laptop and phone ---------- */
   for (const night of [false, true]) for (const [w, h] of [[1366, 768], [390, 844]]) {
     const tag = `${w} px${night ? ", Night Shift" : ""}`;
-    /* Night Shift is offered on the home page, the Packet Builder and the profile: the bar is measured by day on Daily engagement, and in the Builder's own bar both ways */
+    /* Night Shift is offered on the home page, the packet tool (packet.html), the Packet Builder and the profile: the bar is measured by day on Daily engagement, and in the Builder's own bar both ways */
     const f = await open(w, h, night ? "builder.html#/" : "daily.html", { night });
     await seed(f.p, [DOT]); await f.p.evaluate(() => localStorage.setItem("cognicopia_pins", JSON.stringify(["daily", "coloring", "home", "roster"]))); await f.p.reload({ waitUntil: "load" }); await f.p.waitForTimeout(900);
     ok(!night || await f.p.evaluate(() => document.documentElement.classList.contains("cg-night-shift")), `${tag}: Night Shift is on`);

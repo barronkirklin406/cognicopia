@@ -27,6 +27,7 @@ import crypto from "crypto";
 import fs from "fs";
 import os from "os";
 import path from "path";
+import { fileURLToPath } from "url";
 
 const args = process.argv.slice(2);
 const flag = n => { const i = args.indexOf(n); return i >= 0 ? args[i + 1] : null; };
@@ -99,4 +100,4 @@ function main() {
   console.log("");
   console.log("It is checked on the computer itself, so it works with no internet and keeps working after a restart. Use it on every computer in your building. Keep this email: it is also your receipt for the license.");
 }
-if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve(new URL(import.meta.url).pathname)) main();
+if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve(fileURLToPath(import.meta.url))) main();

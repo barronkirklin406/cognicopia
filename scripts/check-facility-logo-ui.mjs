@@ -128,7 +128,7 @@ try {
   p.on("pageerror", e => errors.push(e.message));
   p.on("dialog", d => d.accept()); await agreeToDialogs(p);                      // "export data for ALL residents. Proceed?"
   p.on("request", r => { const u = r.url(); if (!u.startsWith(base) && !u.startsWith("data:") && !u.startsWith("blob:")) foreign.push(u); });
-  await p.goto(base + "index.html"); await p.waitForTimeout(500);
+  await p.goto(base + "packet.html"); await p.waitForTimeout(500);         // the monthly bundle lives in the packet tool (packet.html), not the front page
   await p.evaluate(list => { window.print = () => {}; list.forEach(x => localStorage.setItem("cognicopia_resident_" + x.id, JSON.stringify(x))); localStorage.setItem("cognicopia_gen_count", "0"); }, RESIDENTS);
   await p.reload(); await p.waitForTimeout(500);
 

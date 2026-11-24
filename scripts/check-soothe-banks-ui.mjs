@@ -2,7 +2,7 @@
 /* =====================================================================
    Instant Soothe draws from the era banks, proved in a real browser on real PDFs read back with PyMuPDF (made-up resident only):
 
-     ten clicks   Instant Soothe is pressed ten times: the real button once (no resident chosen), then through the same dialog for a made-up resident born
+     ten clicks   Instant Soothe is pressed ten times in the packet tool (packet.html): the real button once (no resident chosen), then through the same dialog for a made-up resident born
                   in 1930, 1938, 1945, 1952 and 1960 at the early, middle and late stage (the dialog's "go" is pressed each time)
      fresh        the ten packets are all different, and no era-bank entry comes back while the pool still has others
      years        every era-bank entry on a page touches that person's years (born + 7 to born + 28, assets/services/eraWindow.js); with no resident, a mix
@@ -62,7 +62,7 @@ const p = await ctx.newPage(); await agreeToDialogs(p);
 p.on("pageerror", e => errs.push(e.message));
 p.on("console", m => { if (m.type() === "error") errs.push(m.text()); });
 p.on("request", r => { const u = r.url(); if (!u.startsWith(base) && !u.startsWith("data:") && !u.startsWith("blob:") && !u.startsWith("about:")) foreign.push(u); });
-await p.goto(base + "index.html", { waitUntil: "load" });
+await p.goto(base + "packet.html", { waitUntil: "load" });
 await p.waitForFunction(() => window.ProceduralPacketEngine && window.CogniBanks, null, { timeout: 15000 }).catch(() => {});
 const loaded = await p.evaluate(() => !!(window.ProceduralPacketEngine && window.CogniBanks && window.CogniBanks.ALL.length > 400));
 ok(loaded, "the packet tool loads the engine and the era banks");

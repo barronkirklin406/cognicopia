@@ -2,7 +2,7 @@
 /* =====================================================================
    Checks for the clinical rulebook and the activity engine behind both packet tools
    (src/engine/ClinicalMatrix.js and src/engine/ClinicalActivities.js), and for the way
-   index.html and builder.html use them.  Node built-ins only; nothing is fetched.
+   the packet tool (packet.html) and builder.html use them.  Node built-ins only; nothing is fetched.
 
      1. the matrix: type floors, line floors, grid limits, the safe area and the page shell
      2. every activity, at every stage it is made for, over many names and days:
@@ -13,8 +13,9 @@
         really there, ladders that change one letter at a time, anagrams that unscramble,
         mazes that can be solved, paths that do not cross themselves
      4. the two engine files make no request, read no clock and draw no random number
-     5. index.html and builder.html: script order, no network call, nothing unseeded in the
-        packet code, every activity wired in, the offline cache holds the engine
+     5. packet.html and builder.html: script order, no network call, nothing unseeded in the
+        packet code, every activity wired in, the offline cache holds the engine; the front page
+        (index.html, marketing only since the split) loads no engine and makes no network call
    ===================================================================== */
 import fs from "fs";
 import path from "path";
@@ -222,38 +223,39 @@ ok(CA.tryGenerate("no-such-kind", { stage: "early" }).error.length > 0, "an unkn
 });
 
 /* ---------- 5. the pages that use the engine ---------- */
-const index = read("index.html"), builder = read("builder.html"), profile = read("profile.html"), sw = read("sw.js");
+const index = read("index.html"), packet = read("packet.html"), builder = read("builder.html"), profile = read("profile.html"), sw = read("sw.js");
 const scripts = h => [...h.matchAll(/<script[^>]+src="([^"]+)"/g)].map(m => m[1]);
-[["index.html", index], ["builder.html", builder]].forEach(([n, h]) => {
+[["packet.html", packet], ["builder.html", builder]].forEach(([n, h]) => {
   const s = scripts(h), at = f => s.indexOf(f);
   ok(at("src/engine/ClinicalMatrix.js") > at("src/pcg/prng.js") && at("src/pcg/prng.js") >= 0, `${n}: the matrix loads after the seeded generator`);
   ok(at("src/engine/ClinicalActivities.js") > at("src/engine/ClinicalMatrix.js") && at("src/engine/ClinicalActivities.js") > at("src/engine/ColoringEngine.js"), `${n}: the activities load after the matrix and the coloring engine`);
 });
-[["index.html", index], ["builder.html", builder], ["profile.html", profile]].forEach(([n, h]) => {
+ok(!scripts(index).some(f => /^src\/(engine|pcg)\//.test(f)), "index.html (the front page) loads no packet engine: the tool is packet.html");
+[["index.html", index], ["packet.html", packet], ["builder.html", builder], ["profile.html", profile]].forEach(([n, h]) => {
   const own = h.split("\n").filter(l => l.length < 600).join("\n");                    // the embedded PDF library is one long minified line and is never asked to fetch
   ok(!/\bfetch\s*\(|XMLHttpRequest|sendBeacon|new WebSocket|new EventSource/.test(own), `${n} makes no network request`);
   ok(!/<script[^>]+src="https?:/.test(h) && !/<link[^>]+href="https?:\/\/[^"]+\.css/.test(h) && !/@import\s+url\(\s*['"]?https?:/.test(h), `${n} loads nothing from another site`);
 });
 ["src/engine/ClinicalMatrix.js", "src/engine/ClinicalActivities.js", "src/pcg/prng.js", "assets/pcg/pcg-data.bundle.js", "src/engine/ColoringEngine.js"].forEach(f => ok(sw.indexOf('"' + f + '"') >= 0, `the offline cache holds ${f}`));
-ok(/PACKET_RNG/.test(index) && /seedPacket/.test(index) && /dailyVariant/.test(index), "index.html seeds the packet from the name and the day");
+ok(/PACKET_RNG/.test(packet) && /seedPacket/.test(packet) && /dailyVariant/.test(packet), "packet.html seeds the packet from the name and the day");
 { // the packet's own code draws only from the seeded stream; what is left is the screen (confetti, the trainer's praise) and unique ids
-  const lines = index.split("\n").filter(l => l.length < 600 && /Math\.random/.test(l) && !/^\s*(\/\/|\*|\/\*)/.test(l));
+  const lines = (index + "\n" + packet).split("\n").filter(l => l.length < 600 && /Math\.random/.test(l) && !/^\s*(\/\/|\*|\/\*)/.test(l));
   const allowed = [/const prand=/, /function newId\(\)/, /sessionId:Date\.now/, /document\.createElement\("span"\), a = Math\.random/, /left\[Math\.floor\(Math\.random/, /PRAISE\[Math\.floor\(Math\.random/, /const chosenFreq = freqs\[Math\.floor\(Math\.random/, /const nextDelay = 6000 \+ Math\.random/];   // the last two time and pick the ambient wind chimes on the screen; they never touch a printed page
   const stray = lines.filter(l => !allowed.some(re => re.test(l)));
-  ok(stray.length === 0, `index.html draws unseeded random numbers in: ${stray.map(l => l.trim().slice(0, 70)).join(" | ")}`);
+  ok(stray.length === 0, `index.html or packet.html draws unseeded random numbers in: ${stray.map(l => l.trim().slice(0, 70)).join(" | ")}`);
 }
 ok(!/Math\.random/.test(builder.replace(/\/\*[\s\S]*?\*\//g, "").replace(/(^|[^:])\/\/.*$/gm, "$1")) || (builder.match(/Math\.random/g) || []).length <= 3, "builder.html draws almost nothing unseeded");
 /* every engine kind is a button in the builder, and every activity in the matrix is in the builder or the packet tool */
 kinds.forEach(k => { if (CM.entry("builder", k.id)) ok(new RegExp("[\"']" + k.id + "[\"']").test(builder), `builder.html offers ${k.id}`); });
 ok(/Page \d+ of|numberSheets/.test(builder) && /enforceStrokeFloor/.test(builder) && /fitHtml/.test(builder), "builder.html numbers its sheets, floors its lines and fits its pages");
 { // the word searches the quick packet and the monthly bundle make are held to the matrix's grid sizes
-  const m = /var WS_LEVELS = \{([\s\S]*?)\};/.exec(index), sz = {};
+  const m = /var WS_LEVELS = \{([\s\S]*?)\};/.exec(packet), sz = {};
   if (m) [...m[1].matchAll(/(early|middle|late):\s*\{\s*size:(\d+)/g)].forEach(x => { sz[x[1]] = +x[2]; });
-  ok(m && CM.STAGES.early.limits.wordsearch.sizes.indexOf(sz.early) >= 0 && sz.middle <= Math.max.apply(null, CM.STAGES.middle.limits.wordsearch.sizes) && sz.late <= Math.max.apply(null, CM.STAGES.late.limits.wordsearch.sizes), "index.html's word search sizes follow the matrix (" + JSON.stringify(sz) + ")");
-  ok(/AIL_PAGE = \{ W: 612, H: 706,/.test(index), "the ailment packets end their pages above the clinical tip");
+  ok(m && CM.STAGES.early.limits.wordsearch.sizes.indexOf(sz.early) >= 0 && sz.middle <= Math.max.apply(null, CM.STAGES.middle.limits.wordsearch.sizes) && sz.late <= Math.max.apply(null, CM.STAGES.late.limits.wordsearch.sizes), "packet.html's word search sizes follow the matrix (" + JSON.stringify(sz) + ")");
+  ok(/AIL_PAGE = \{ W: 612, H: 706,/.test(packet), "the ailment packets end their pages above the clinical tip");
   /* Changed November 18, 2026 (the owner's print rule, cognicopia-print-engine): no clinical tip, therapy tag or coaching reminder is drawn on any page. The tips are kept by
      shellNotes() and printed on the Staff Companion Sheet at the front of the packet. */
-  ok(!/COACHING_REMINDER/.test(index) && !/coachingFooter\(\)/.test(index) && /function shellNotes\(/.test(index) && /function staffFrontSheet\(/.test(index), "no page carries the coaching reminder: the tips are on the Staff Companion Sheet");
+  ok(!/COACHING_REMINDER/.test(packet) && !/coachingFooter\(\)/.test(packet) && /function shellNotes\(/.test(packet) && /function staffFrontSheet\(/.test(packet), "no page carries the coaching reminder: the tips are on the Staff Companion Sheet");
 }
 { // the packet tool lays the maze inside a frame shorter than a sheet (x 61, width 490, from y 193 under the heading down to y 700: the numbers the tool really passes at the early stage): at every stage and
   // vision level the page is made, with corridors of 40 pt or more, never left out ("the corridors would be under 40 pt wide")
@@ -264,7 +266,7 @@ ok(/Page \d+ of|numberSheets/.test(builder) && /enforceStrokeFloor/.test(builder
     if (page) { const L = CM.STAGES[st].limits.maze; ok(page.meta.cols <= L.cols && page.meta.rows <= L.rows && page.meta.cols >= Math.min(L.cols, 5) && page.meta.rows >= Math.min(L.rows, 7), `maze, ${st} stage, frame from y ${y}: the size (${page.meta.cols} x ${page.meta.rows}) is never above the stage's own or below 5 x 7`); }
   }
 }
-ok(/safePage/.test(index), "index.html draws each page inside an error boundary");
+ok(/safePage/.test(packet), "packet.html draws each page inside an error boundary");
 ok(/This page is not ready/.test(builder), "builder.html has a stand-in for a page that cannot be made");
 
 console.log(problems.length ? `clinical check FAILED: ${problems.length} problem(s), ${passed} passed\n  - ` + problems.slice(0, 60).join("\n  - ") + (problems.length > 60 ? `\n  ... and ${problems.length - 60} more` : "") : `clinical check passed: ${passed} checks (${kinds.length} activity kinds, ${Object.keys(seen).length} kind/stage pairs, ${DAYS} days each)`);

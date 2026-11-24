@@ -152,15 +152,15 @@ for (let i = 0; i < 6; i++) {
 }
 
 /* ---------- 6. the pages that carry the fields ---------- */
-const profile = read("profile.html"), index = read("index.html"), builder = read("builder.html");
+const profile = read("profile.html"), tool = read("packet.html"), builder = read("builder.html");
 ok(/Avoidance Protocols &amp; Triggers/.test(profile), "profile.html names the field Avoidance Protocols & Triggers");
 ["avoidTopics", "avoidEras", "avoidPeople", "avoidPlaces", "avoidOther"].forEach(n => ok(new RegExp('name="' + n + '"').test(profile), `profile.html has the ${n} control`));
 ok(/eras: ticks\("avoidEras"\)/.test(profile) && /people: text\("rapAvoidPeople"\)/.test(profile) && /places: text\("rapAvoidPlaces"\)/.test(profile), "profile.html saves the eras, people and places");
 ok(/avoidEras: codes\(/.test(profile) && /avoidPeople:/.test(profile) && /avoidPlaces:/.test(profile), "profile.html brings them back when a profile is opened");
 ok(/Tier 1 · Mild · GDS 3–4/.test(profile) && /Tier 2 · Moderate · GDS 5/.test(profile) && /Tier 3 · Advanced · GDS 6–7/.test(profile), "profile.html's tier choices read Tier, name and GDS");
-ok(/eras: choices\(av\.eras, BOOK\.avoidEras/.test(index) && /people: str\(av\.people, 120\)/.test(index) && /"avoidEras":\[\["era-wwii"/.test(index), "the packet tool keeps the new fields when it reads a profile");
-ok(/CMa\.avoidTerms\(\{ eras: codes\(TA\.eras\), people: TA\.people, places: TA\.places, other: TA\.other \}\)/.test(index), "the packet tool turns them into the avoid list its page makers use");
-ok(/Tier 1 · Mild · GDS 3–4 \(FAST 3–4\)/.test(index) && /anchorFor:anchorPlan\(/.test(index) && /function anchorPlan/.test(index), "index.html shows the tier with its GDS and draws the anchor in the foot");
+ok(/eras: choices\(av\.eras, BOOK\.avoidEras/.test(tool) && /people: str\(av\.people, 120\)/.test(tool) && /"avoidEras":\[\["era-wwii"/.test(tool), "the packet tool (packet.html) keeps the new fields when it reads a profile");
+ok(/CMa\.avoidTerms\(\{ eras: codes\(TA\.eras\), people: TA\.people, places: TA\.places, other: TA\.other \}\)/.test(tool), "the packet tool (packet.html) turns them into the avoid list its page makers use");
+ok(/Tier 1 · Mild · GDS 3–4 \(FAST 3–4\)/.test(tool) && /anchorFor:anchorPlan\(/.test(tool) && /function anchorPlan/.test(tool), "packet.html shows the tier with its GDS and draws the anchor in the foot");
 ok(/const tierText = /.test(builder) && /function tierChanges\(/.test(builder) && /id="tierNote"/.test(builder), "builder.html shows the tier with its GDS and says what it changes");
 ok(/id="cfgAvoid"/.test(builder) && /id="cfgWho"/.test(builder) && /cfg\.avoid = av/.test(builder) && /mentions\(textOf\(page\)\)/.test(builder), "builder.html has the avoid field, the saved-resident picker and redraws a page that names an avoided word");
 ok(/avoid:cfg\.avoid \|\| \[\]/.test(builder) && /activity:def\.kind, tool:"builder"/.test(builder), "builder.html passes the avoid list and the activity to the engine");

@@ -2,7 +2,7 @@
 /* =====================================================================
    js/pillar3-qa-agents.js in a real browser (Playwright; exit code 2 where it is not installed).
 
-     network     the Today page makes no request to any other host while the whole agent suite runs (opening the
+     network     the packet tool (packet.html) makes no request to any other host while the whole agent suite runs (opening the
                  panel, previews, printing three pages); the guard records nothing, and, switched to blocking,
                  stops a call to another host
      page        the accessibility checker finds nothing wrong in the Deep Packet Customization panel or in the print
@@ -25,7 +25,7 @@ try {
     const p = await ctx.newPage(), outside = [], errs = [];
     p.on("request", (r) => { if (!r.url().startsWith(base) && !/^(data|blob|about):/.test(r.url())) outside.push(r.url()); });
     p.on("pageerror", (e) => errs.push(String(e).slice(0, 160)));
-    await p.goto(base + "index.html"); await p.waitForSelector("#cgrePanel"); await p.waitForTimeout(600);
+    await p.goto(base + "packet.html"); await p.waitForSelector("#cgrePanel"); await p.waitForTimeout(600);
     await p.evaluate(() => { for (const [i, v] of Object.entries({ goes: "Peggy", born: "1938", town: "Cedar Falls", state: "Iowa", job: "schoolteacher", spouse: "Walter", pets: "Biscuit", hobbies: "gardening", favs: "Sunday radio programs" })) document.getElementById(i).value = v; });
     return { ctx, p, outside, errs };
   }

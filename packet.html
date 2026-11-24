@@ -24278,7 +24278,7 @@ if (document.readyState === "complete" || document.readyState === "interactive")
   }
 
   launchBtn.addEventListener("click", launch);
-  /* The address index.html#tablet-fallback is where a tablet link lands when the tablet page itself could not be opened
+  /* The address packet.html#tablet-fallback is where a tablet link lands when the tablet page itself could not be opened
      (see 404.html and sw.js): open the tablet mode here instead, with a plain note. Nothing is requested. */
   if (location.hash === "#tablet-fallback"){
     try { history.replaceState(null, "", location.pathname + location.search); } catch (e){}

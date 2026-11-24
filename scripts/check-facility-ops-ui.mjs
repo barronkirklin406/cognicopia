@@ -9,10 +9,12 @@
                      board never shows another's; the SBAR sheet is one Letter page, by alias, with nothing cut off, in the display face
      Session Notes   domain templates fill goals, tasks and starters; the note is copied as plain text (whole, or one section) for the
                      resident as chosen (alias, or the name)
-     Exports         a facility spreadsheet carries no resident name under "Use aliases"; the packet tool's summary spreadsheet likewise
+     Exports         a facility spreadsheet carries no resident name under "Use aliases"; the packet tool's (packet.html) summary spreadsheet likewise
      all             nothing is requested from outside the page, and no page script fails
    ===================================================================== */
 import fs from "fs";
+import os from "os";
+import path from "path";
 import { serve, loadPlaywright, agreed, agreeToDialogs } from "./lib/browser.mjs";
 
 const { chromium } = loadPlaywright();
@@ -30,7 +32,7 @@ await pg.addInitScript(() => { window.print = () => {}; });
 const go = async hash => { await pg.goto(base + "builder.html" + hash); await pg.waitForTimeout(1400); };
 /* The radios and boxes are drawn inside labels, so they are ticked with a forced click at their own position. The top bar is sticky and 240 to 300 px tall and the page scrolls smoothly, so bring the control to the middle of the window at once first, or the click can land on whatever is on top at that moment. */
 const tick = async sel => { await pg.$eval(sel, el => el.scrollIntoView({ block: "center", behavior: "instant" })); await pg.check(sel, { force: true }); };
-const tmp = "/tmp/cognicopia-facility-check-census.csv";
+const tmp = path.join(os.tmpdir(), "cognicopia-facility-check-census.csv");
 fs.writeFileSync(tmp, 'Alias,Preferred Name,Last Name,GDS,Life Era,Hobbies,Wing,Room\n"Resident 101-A",Dorothy,Smith,5,"1940s-1950s","gardening; church choir",Memory Care Unit A,101-A\nResident 102-B,Walter,Jones,3,1950s,"fishing, crosswords",Memory Care Unit A,102-B\nResident 201-A,Ruth,Lee,Advanced,1960s,birds,Assisted Living Unit B,201-A\n');
 
 /* ---------- the roster: census import ---------- */
@@ -118,14 +120,14 @@ ok(/Resident: Resident 101-A/.test(ehr) && /Focus: Auditory comprehension; Execu
 ok(/^[\t\n\r\x20-\x7E]*$/.test(ehr), "and uses only plain characters");
 ok(/blanks? in \[brackets\]/.test(await pg.textContent("#clChecks")), "blanks left from a template are flagged before signing");
 await pg.click('[data-copy="O"]'); await pg.waitForTimeout(250);
-ok(/^O \(Objective\)\n- One-step directions: 8 of 10 trials \(80%\), minimal cues\./.test(await pg.evaluate(() => navigator.clipboard.readText())), "one section copies on its own");
+ok(/^O \(Objective\)\r?\n- One-step directions: 8 of 10 trials \(80%\), minimal cues\./.test(await pg.evaluate(() => navigator.clipboard.readText())), "one section copies on its own");
 await tick('[data-privacy-choice="clEhrNames"] input[value="keep"]');
 ok(/Resident: Dorothy/.test(await pg.inputValue("#clEhr")), "the clinician can choose the resident's name instead of the alias");
 
 /* ---------- exports ---------- */
 await go("#/facility");
 ok(await pg.$('[data-privacy-choice="fpNames"]') !== null || true, "the Facility Portal's export choice is drawn with a wing open");
-await pg.goto(base + "index.html"); await pg.waitForTimeout(1200);
+await pg.goto(base + "packet.html"); await pg.waitForTimeout(1200);
 ok(await pg.$('[data-privacy-choice="arbNamesCsv"]') !== null && await pg.$('[data-privacy-choice="arbNamesBackup"]') !== null, "the packet tool's backup panel offers a names choice for the spreadsheet and for the backup file");
 await pg.evaluate(() => { document.getElementById("arbBackup").open = true; });
 pg.on("dialog", d => d.accept());

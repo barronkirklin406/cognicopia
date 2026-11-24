@@ -13,7 +13,7 @@
                 a PDF and a print each use one free packet; with all 50 used both ask for a license
      roster     a card shows their work, their town and up to three things they enjoy; "Today's card" opens
                 the daily screen already made for them; "Make a packet" opens the Studio on them
-     doors      the front page has three doors, each a large link that leads somewhere real
+     doors      the front page has three doors, each a large link that leads somewhere real (the packet door to packet.html)
      type       the card, and the Studio's pages, are set in Atkinson Hyperlegible and not a fallback face
      fingers    every control is at least 52 px; a phone has no sideways scroll
      private    nothing is requested from outside the page; no script errors
@@ -225,10 +225,15 @@ try {
   for (const [w, h] of [[1366, 768], [390, 844]]) {
     const f = await open(w, h, "index.html");
     const doors = await f.p.$$eval(".lp-doors .lp-door", els => els.map(e => { const b = e.getBoundingClientRect(); return { name: e.querySelector("b").textContent, href: e.getAttribute("href"), w: Math.round(b.width), h: Math.round(b.height) }; }));
-    ok(doors.map(d => d.name + ">" + d.href).join("|") === "Daily engagement>daily.html|Packets and booklets>#make|Residents>profile.html", `at ${w} px the front page has three doors (${doors.map(d => d.name).join(", ")})`);
+    ok(doors.map(d => d.name + ">" + d.href).join("|") === "Daily engagement>daily.html|Packets and booklets>packet.html|Residents>profile.html", `at ${w} px the front page has three doors (${doors.map(d => d.name).join(", ")})`);
     ok(doors.length === 3 && doors.every(d => d.h >= 120 && d.w >= 240), `each a large link (${doors.map(d => d.w + " x " + d.h).join(", ")})`);
-    ok(await f.p.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1) && await f.p.$("#make") !== null, "nothing scrolls sideways and the packet door leads to the tool on this page");
-    if (w === 1366) { await Promise.all([f.p.waitForURL(/daily\.html$/), f.p.click('.lp-door[href="daily.html"]')]); ok(/Daily engagement/.test(await f.p.textContent("h1")), "the first door opens Daily engagement"); }
+    ok(await f.p.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), "nothing scrolls sideways");
+    if (w === 1366) {
+      await Promise.all([f.p.waitForURL(/daily\.html$/), f.p.click('.lp-door[href="daily.html"]')]); ok(/Daily engagement/.test(await f.p.textContent("h1")), "the first door opens Daily engagement");
+      await f.p.goto(base + "index.html", { waitUntil: "load" }); await f.p.waitForTimeout(600);
+      await Promise.all([f.p.waitForURL(/packet\.html$/), f.p.click('.lp-door[href="packet.html"]')]); await f.p.waitForTimeout(600);
+      ok(await f.p.$("#make") !== null, "the packet door opens the packet tool (packet.html)");
+    }
     await f.ctx.close();
   }
 

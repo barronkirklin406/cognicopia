@@ -196,13 +196,13 @@ ok(linked === PAGES.length && linked >= 30, `${linked} of ${PAGES.length} pages 
 }
 /* the pages that opt in to the editorial type */
 for (const f of ["pricing.html", "activate.html", "contact.html", "cognitive-journals.html", "life-planners.html", "zentangle-art.html"]) ok(/<html lang="en" class="cg-ds( cg-paper)?">/.test(read(f)), `${f} should opt in to the editorial type (html.cg-ds)`);
-/* the paper look: every page but the packet tool's front page carries it, the Builder carries its app form, and the pieces that make it work are in the stylesheet */
+/* the paper look: every page but the front page and the packet tool (packet.html) carries it, the Builder carries its app form, and the pieces that make it work are in the stylesheet */
 {
   const nav = read("scripts/site-nav.mjs");
   let paper = 0, missing = [];
   for (const p of PAGES){
     const h = read(p.file), tag = (/<html\b[^>]*>/.exec(h) || [""])[0];
-    if (p.file === "index.html"){ ok(!/cg-paper/.test(tag), "index.html keeps its own look, not the paper class"); continue; }
+    if (p.file === "index.html" || p.file === "packet.html"){ ok(!/cg-paper/.test(tag), `${p.file} keeps its own look, not the paper class`); continue; }
     const want = p.builder ? "cg-paper-app" : "cg-paper";
     if (new RegExp(`class="[^"]*\\b${want}\\b`).test(tag)) paper++; else missing.push(p.file);
   }
@@ -218,14 +218,16 @@ for (const f of ["pricing.html", "activate.html", "contact.html", "cognitive-jou
   ok(/class="cg-foot"/.test(read("pricing.html")) && /class="cg-foot"/.test(read("resources/index.html")) && !/class="site-footer"/.test(read("resources/accessibility/index.html")), "paper pages share one generated footer");
   ok(/background:var\(--cg-parchment/.test(nav.slice(nav.indexOf(".cg-crumbs{"), nav.indexOf(".cg-crumbs{") + 200)), "the breadcrumb bar is parchment, not dark green");
 }
-/* the packet tool: its design layer now reads the shared tokens, and its hero carries the reasons to use it */
+/* the front page and the packet tool (packet.html, split from index.html on November 23, 2026): both design layers read the shared tokens, and the front page's hero carries the reasons to use the tool */
 {
-  const idx = read("index.html");
-  ok(/--ds-panel:var\(--cg-green-800/.test(idx) && /--ds-bar-ink:var\(--cg-charcoal/.test(idx), "index.html's palette is the shared tokens");
-  ok((idx.match(/class="cg-value"/g) || []).length === 5 && /Quick, personal packets/.test(idx) && /Decades of nostalgia/.test(idx) && /Low vision &amp; toner savings/.test(idx) && /Interactive tablet mode/.test(idx) && /No resident data leaves the device/.test(idx), "index.html: five value cards above the form");
+  const idx = read("index.html"), pkt = read("packet.html");
+  for (const [f, h] of [["index.html", idx], ["packet.html", pkt]]) ok(/--ds-panel:var\(--cg-green-800/.test(h) && /--ds-bar-ink:var\(--cg-charcoal/.test(h), `${f}'s palette is the shared tokens`);
+  ok((idx.match(/class="cg-value"/g) || []).length === 5 && /Quick, personal packets/.test(idx) && /Decades of nostalgia/.test(idx) && /Low vision &amp; toner savings/.test(idx) && /Interactive tablet mode/.test(idx) && /No resident data leaves the device/.test(idx), "index.html: five value cards (What Cognicopia gives you)");
   ok(/<h1 class="hero-title" id="heroTitle">Custom activities built with <span class="lp-accent">the individual in mind\.<\/span><\/h1>/.test(idx) && !/class="tagline"/.test(idx) && /Connection, Cognition, Creation/.test(idx), "index.html: the hero headline is the owner's, there is no eyebrow tag above it (the owner removed \"Engaging Today\", November 2026), and the byline is kept in the footer");
-  ok(!/Start Free Trial/.test(idx) && /id="heroCta" href="#make">Get Started Free</.test(idx) && !/class="lp-hero"[\s\S]{0,4000}data-cg-trial/.test(idx), "index.html: one primary hero button (Get Started Free), no trial badge in the hero");
+  /* the hero's one primary button used to be "Get Started Free" to the form on the same page (#make); the form now lives on packet.html, so the button (the owner's wording kept) opens the tool */
+  ok(!/Start Free Trial/.test(idx) && /id="heroCta" href="packet\.html">Get Started Free</.test(idx) && !/class="lp-hero"[\s\S]{0,4000}data-cg-trial/.test(idx), "index.html: one primary hero button (Get Started Free, to packet.html), no trial badge in the hero");
   ok(!/HIPAA[- ]compliant/i.test(idx), "no blanket compliance claim in the hero");
+  ok(!/HIPAA[- ]compliant/i.test(pkt), "no blanket compliance claim in the packet tool");
 }
 
 /* ---------- 5. js/coloring.js ---------- */

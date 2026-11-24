@@ -15,8 +15,9 @@
    ===================================================================== */
 import fs from "fs";
 import path from "path";
+import { fileURLToPath } from "url";
 
-const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..");
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const DIR = path.join(ROOT, "assets/zentangle");
 const FRIGHT = "Preview before offering";
 
@@ -54,7 +55,7 @@ export function read() {
   return { problems, manifest: { version: 1, size: [1656, 2160], books } };
 }
 
-if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve(new URL(import.meta.url).pathname)) {
+if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve(fileURLToPath(import.meta.url))) {
   const { problems, manifest } = read();
   const text = JSON.stringify(manifest, null, 1) + "\n", file = path.join(DIR, "manifest.json");
   if (process.argv.includes("--check")) {

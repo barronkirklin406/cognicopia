@@ -9,7 +9,7 @@
    The tools used to state four different cut-off years, and two lists carried no years at all. This check reads
    every list of printed lines and holds each entry to the one rule:
 
-     index.html                         LYRICS (Finish the Line): each entry ends with its year
+     packet.html                        LYRICS (Finish the Line): each entry ends with its year
      assets/services/eraBanks.js        LYRICS (the hybrid sheets' song lines): each entry ends with its year
      builder.html                       PD_SONGS (the sing-along sheets): year, decade or "Traditional"
      js/generators/activity-modules.js  the Studio's verse and song lines
@@ -32,14 +32,15 @@ const ok = (c, m) => { if (c) passed++; else problems.push(m); };
 const free = y => { const t = String(y == null ? "" : y); if (/^traditional$/i.test(t.trim())) return true; const n = t.match(/\d{4}/); return !!n && Number(n[0]) + (/\d{4}s/.test(t) ? 9 : 0) <= LAST_YEAR; };
 ok(free(1930) && !free(1931) && free("1870s") && !free("1930s") && free("Traditional") && !free("") && free("Late 1800s") && !free(1940), "self-test: the rule itself");
 
-/* the front page: Finish the Line */
+/* the packet tool (packet.html): Finish the Line */
 {
-  const s = read("index.html"), i = s.indexOf("const LYRICS = ["), block = s.slice(i, s.indexOf("];", i));
+  const s = read("packet.html"), i = s.indexOf("const LYRICS = ["), block = s.slice(i, s.indexOf("];", i));
   const rows = [...block.matchAll(/\["([^"]+)","([^"]+)","(hymn|song)"(?:,(\d{4}))?\]/g)];
-  ok(rows.length >= 25, `index.html: the Finish the Line list was read (${rows.length} lines)`);
-  ok(rows.length === (block.match(/^\s*\[/gm) || []).length - 1 || rows.length === (block.match(/^\s*\["/gm) || []).length, "index.html: every line of the list was understood");
-  for (const r of rows) ok(r[4] && free(r[4]), `index.html: "${r[1]} ${r[2]}" has no year of ${LAST_YEAR} or earlier (${r[4] || "none"})`);
-  ok(/published[^.]*1930 or earlier|1930 or earlier/.test(s.slice(i - 500, i)), "index.html: the list states the rule above it");
+  ok(rows.length >= 25, `packet.html: the Finish the Line list was read (${rows.length} lines)`);
+  ok(rows.length === (block.match(/^\s*\[/gm) || []).length - 1 || rows.length === (block.match(/^\s*\["/gm) || []).length, "packet.html: every line of the list was understood");
+  for (const r of rows) ok(r[4] && free(r[4]), `packet.html: "${r[1]} ${r[2]}" has no year of ${LAST_YEAR} or earlier (${r[4] || "none"})`);
+  ok(/published[^.]*1930 or earlier|1930 or earlier/.test(s.slice(i - 500, i)), "packet.html: the list states the rule above it");
+  ok(!read("index.html").includes("const LYRICS = ["), "index.html: the front page carries no song lines of its own (Finish the Line lives in packet.html)");
 }
 
 /* the era banks: the lines of songs the hybrid sheets print (assets/services/eraBanks.js) */

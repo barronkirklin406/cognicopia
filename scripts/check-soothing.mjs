@@ -2,7 +2,7 @@
 /* =====================================================================
    Checks for Instant Soothe and the shared packet engine:
      src/engine/SoothingArt.js, SoothingContent.js, SoothingPacketEngine.js, ProceduralPacketEngine.js
-   and for the way index.html, builder.html and sw.js use them.  Node built-ins only; nothing is fetched.
+   and for the way packet.html (the packet tool), builder.html and sw.js use them.  Node built-ins only; nothing is fetched.
 
      1. the library: 100+ reminiscence prompts (1901-1989, every decade), 20+ line-art motifs, 30+ puzzles, 15+ tracing paths;
         every word a resident reads passes the adult-dignity filter and the quiz-word ban
@@ -15,7 +15,7 @@
         but the browser's secure one
      6. the pages: Letter sheets with 0.65 in on the binding side and 0.5 in on the others, a hidden #print-stage, an
         @media print rule that shows nothing else, the print window and the clean-up afterward
-     7. the dialog: #instant-soothe-modal, the two pickers, the button; index.html and builder.html open it and never print
+     7. the dialog: #instant-soothe-modal, the two pickers, the button; packet.html and builder.html open it and never print
         straight away; the gate still counts; no static PDF links
    ===================================================================== */
 import fs from "fs";
@@ -218,9 +218,9 @@ ok(Math.abs(P.SHEET.view[2] / P.SHEET.view[3] - 7.35 / 10) < 1e-6 && P.SHEET.vie
   ok(/Generate & Print Instant Packet/.test(src), "the button reads Generate & Print Instant Packet");
   ok(/aria-labelledby/.test(src) && /type="radio"/.test(src) && /showModal/.test(src) && /preventScroll/.test(src), "the dialog is a real modal with radio groups, a label and a managed focus");
   ok(/is-focus/.test(src) && /outline:5px solid #ffbf00/.test(src), "a clear focus ring on every choice"); }
-const index = read("index.html"), builder = read("builder.html"), sw = read("sw.js");
+const index = read("index.html"), packet = read("packet.html"), builder = read("builder.html"), sw = read("sw.js");
 const ORDER = ["src/engine/ClinicalActivities.js", "src/engine/SoothingArt.js", "src/engine/SoothingContent.js", "src/engine/SoothingPacketEngine.js", "src/engine/ProceduralPacketEngine.js"];
-[["index.html", index], ["builder.html", builder]].forEach(([n, h]) => {
+[["packet.html", packet], ["builder.html", builder]].forEach(([n, h]) => {
   const at = f => h.indexOf('<script src="' + f + '">');
   ok(ORDER.every(f => at(f) >= 0), `${n}: the soothing engine is loaded`);
   ok(ORDER.every((f, i) => i === 0 || at(f) > at(ORDER[i - 1])), `${n}: the scripts load in order (activities, art, content, engine, facade)`);
@@ -229,16 +229,17 @@ const ORDER = ["src/engine/ClinicalActivities.js", "src/engine/SoothingArt.js", 
   ok(!/href="[^"]*\.pdf"/.test(h), `${n}: no static PDF link`);
 });
 ORDER.slice(1).concat(["src/engine/ClinicalActivities.js"]).forEach(f => ok(sw.indexOf('"' + f + '"') >= 0, `the offline worker keeps ${f}`));
-ok(/id="arbSootheSticky"/.test(index) && /id="arbSoothe"/.test(index), "index.html keeps both Instant Soothe / Print buttons");
-ok(/sootheBtn\.addEventListener\("click", function\(\)\{\s*if \(window\.ProceduralPacketEngine\) window\.ProceduralPacketEngine\.instantSoothe\(\);/.test(index), "index.html: the button opens the dialog and does not print or leave the page");
-ok(/stickySootheBtn\.addEventListener\("click", function\(\)\{ sootheBtn\.click\(\); \}\)/.test(index), "index.html: the yellow top-bar button goes through the same handler");
-ok(/getActiveResidentContext\(\)[\s\S]{0,400}eraFromBirthYear\(c\.birthYear\)/.test(index), "index.html: the active resident's years and level reach the engine");
+ok(ORDER.every(f => index.indexOf('<script src="' + f + '">') < 0), "index.html: the front page loads no soothing engine (the packet tool is packet.html)");
+ok(/id="arbSootheSticky"/.test(packet) && /id="arbSoothe"/.test(packet), "packet.html keeps both Instant Soothe / Print buttons");
+ok(/sootheBtn\.addEventListener\("click", function\(\)\{\s*if \(window\.ProceduralPacketEngine\) window\.ProceduralPacketEngine\.instantSoothe\(\);/.test(packet), "packet.html: the button opens the dialog and does not print or leave the page");
+ok(/stickySootheBtn\.addEventListener\("click", function\(\)\{ sootheBtn\.click\(\); \}\)/.test(packet), "packet.html: the yellow top-bar button goes through the same handler");
+ok(/getActiveResidentContext\(\)[\s\S]{0,400}eraFromBirthYear\(c\.birthYear\)/.test(packet), "packet.html: the active resident's years and level reach the engine");
 ok(/bindClinical\("#panicButton", "click"[^\n]*\n\s*const eng = window\.ProceduralPacketEngine;\s*\n\s*if \(eng && typeof eng\.instantSoothe === "function"\) return eng\.instantSoothe\(\);/.test(builder) && !/\$\("#panicButton"\)\.addEventListener/.test(builder), "builder.html: the rapid de-escalation button is wired (through bindClinical, which reports a control that is not wired) to open the Instant Soothe dialog");
 ok(/emergencyResidentId === "general"\) \{ if \(window\.ProceduralPacketEngine\) window\.ProceduralPacketEngine\.instantSoothe\(\)/.test(builder), "builder.html?emergency=general opens the dialog");
 ok(/id:"soothing-set"/.test(builder) && /SOOTHING_SET, ORIENTATION_BOARD/.test(builder) && /act\.freeze/.test(builder) && /recordSoothing\(items\)/.test(builder), "builder.html: the Instant Soothing Set is a packet activity, frozen when added, recorded when printed");
-ok(/generateAilmentPDF\(currentAilment, pick\)/.test(index) && /P\.quickStep\(\{ title: A\.packetTitle/.test(index) && /function ailCalming\(/.test(index), "index.html: each ailment packet asks the two quick questions and adds a fresh calming page");
+ok(/generateAilmentPDF\(currentAilment, pick\)/.test(packet) && /P\.quickStep\(\{ title: A\.packetTitle/.test(packet) && /function ailCalming\(/.test(packet), "packet.html: each ailment packet asks the two quick questions and adds a fresh calming page");
 ok(/id="lpCalmBtn"/.test(builder) && /case "lpCalmBtn": calmingPage\(\)/.test(builder), "builder.html: the 12-month planner can print a calming page through the same engine");
-{ const sources = [index, builder].map(h => (h.match(/<script(?![^>]*\ssrc)[^>]*>[\s\S]*?<\/script>/g) || []).join("\n"));
+{ const sources = [index, packet, builder].map(h => (h.match(/<script(?![^>]*\ssrc)[^>]*>[\s\S]*?<\/script>/g) || []).join("\n"));
   ok(!/Instant Soothe[^\n]{0,80}window\.print\(\)/.test(sources.join("\n")), "no page prints straight from an Instant Soothe click"); }
 
 /* ---------- 8. the era banks on a page of their own (Instant Soothe's "memory" page) ---------- */

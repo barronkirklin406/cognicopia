@@ -10,7 +10,7 @@
                    offered the nearest songs it has; those are counted and shown, not hidden)
      studio        Songs of my years, The year I turned twenty and the dated "look back" and timeline events (the Activity Page Studio) stay
                    inside the window for every birth year from 1920 to 1950; later births are checked for the same where the data reaches
-     packet        the front-page packet tool's decade lists never offer a line whose event is outside the window (ration books for a
+     packet        the packet tool's (packet.html) decade lists never offer a line whose event is outside the window (ration books for a
                    1946 birth), and "Around ... age" lines are 8, 12 and 20 only
      fallback      the generators' own copy of the numbers (used on a page that has not loaded the module) is the same 7 and 28
 
@@ -96,7 +96,7 @@ else {
   try {
     const c = await browser.newContext({ serviceWorkers: "block" }); await agreed(c);
     const p = await c.newPage(); const errs = []; p.on("pageerror", e => errs.push(e.message));
-    await p.goto(base + "index.html"); await p.waitForTimeout(600);
+    await p.goto(base + "packet.html"); await p.waitForTimeout(600);
     const out = await p.evaluate(() => {
       const rows = [];
       for (let by = 1920; by <= 1965; by++) {

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* =====================================================================
-   The reminiscence engine on the Today page (js/reminiscence-engine.js, wired into index.html),
+   The reminiscence engine in the packet tool (js/reminiscence-engine.js, wired into packet.html),
    in a real browser (Playwright; exit code 2 where it is not installed).
 
      panel      "Deep Packet Customization" sits in the packet form, closed until opened, every
@@ -31,7 +31,7 @@ try {
     const p = await ctx.newPage(), errs = [], outside = [];
     p.on("pageerror", (e) => errs.push(String(e).slice(0, 160)));
     p.on("request", (r) => { if (!r.url().startsWith(base) && !/^(data|blob|about):/.test(r.url())) outside.push(r.url()); });
-    await p.goto(base + "index.html"); await p.waitForSelector("#cgrePanel"); await p.waitForTimeout(600);
+    await p.goto(base + "packet.html"); await p.waitForSelector("#cgrePanel"); await p.waitForTimeout(600);
     return { ctx, p, errs, outside };
   }
   const fill = async (p, f) => { for (const [id, v] of Object.entries(f)) await p.evaluate(([i, val]) => { const e = document.getElementById(i); if (e) { e.value = val; e.dispatchEvent(new Event("input", { bubbles: true })); } }, [id, v]); };

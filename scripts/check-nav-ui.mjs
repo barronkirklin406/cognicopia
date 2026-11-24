@@ -26,12 +26,12 @@ try {
      page is marked; opening one closes the others; a click elsewhere or Escape closes it; the bar stays at the top while the page scrolls */
   let p = await page(1366, 900);
   const here = q => q.$$eval("details.cg-hub[data-here]", n => n.map(d => d.id.replace("cgHub-", "")));
-  await p.goto(base + "index.html"); await p.waitForTimeout(400);
+  await p.goto(base + "packet.html"); await p.waitForTimeout(400);
   const bar = await p.evaluate(() => { const b = document.getElementById("cgSidebar").getBoundingClientRect(); return { top: b.top, h: b.height, w: b.width, pad: parseFloat(getComputedStyle(document.body).paddingLeft) }; });
   ok(bar.top === 0 && bar.h <= 80 && bar.w >= 1350 && bar.pad === 0, `the doors are a top bar across the page (${Math.round(bar.w)} x ${Math.round(bar.h)} px), with no side column`);
   const doors = await p.$$eval(".cg-hubs > .cg-hub-li", l => l.map(x => x.querySelector("summary").textContent.trim()));
   ok(JSON.stringify(doors) === '["Today","Packets","Residents","For directors"]', `the bar holds the three doors and For directors, in that order, and nothing else (${doors.join(", ")})`);
-  ok((await open(p, "details.cg-hub")).length === 0 && JSON.stringify(await here(p)) === '["packets"]', "the packet tool opens with no drop-down open and Packets marked as the door that holds it");
+  ok((await open(p, "details.cg-hub")).length === 0 && JSON.stringify(await here(p)) === '["packets"]', "the packet tool (packet.html) opens with no drop-down open and Packets marked as the door that holds it");
   await p.click("#cgHub-packets > summary"); await p.waitForTimeout(150);
   ok(await only(p, "details.cg-hub", "packets"), "clicking Packets opens its drop-down");
   const drop = await p.evaluate(() => { const nav = document.getElementById("cgSidebar").getBoundingClientRect(), d = document.querySelector("#cgHub-packets > .cg-sb-sub").getBoundingClientRect(), links = [...document.querySelectorAll("#cgHub-packets > .cg-sb-sub a")].map(a => a.getBoundingClientRect().height); return { below: d.top >= nav.bottom, h: d.height, n: links.length, min: Math.min(...links) }; });
@@ -57,13 +57,17 @@ try {
   await p.goto(base + "contact.html"); await p.waitForTimeout(300);
   ok((await open(p, "details.cg-hub")).length === 0 && (await here(p)).length === 0, "the contact page opens with no hub open or marked");
   ok(await p.$eval(".cg-hub-foot a[aria-current='page']", e => e.textContent.trim()) === "Contact Cognicopia", "the contact page marks its Contact link as current");
+  await p.goto(base + "index.html"); await p.waitForTimeout(400);
+  ok((await open(p, "details.cg-hub")).length === 0 && (await here(p)).length === 0 && (await p.$$(".cg-sidebar a[aria-current='page']")).length === 0, "the front page (index.html) opens with no door open or marked and claims no link as the current page");
   await p.goto(base + "life-planners.html"); await p.waitForTimeout(300);
   ok(JSON.stringify(await here(p)) === '["packets"]' && (await p.$$(".cg-sidebar a[aria-current='page']")).length === 0, "a product page marks Packets and claims no link as the current page");
 
-  /* the same page on a phone: the Menu drawer, with the hub that holds the page open inside it */
+  /* the same pages on a phone: the Menu drawer, with the hub that holds the page open inside it */
   let q = await page(390, 844);
   await q.goto(base + "index.html"); await q.waitForTimeout(400);
-  ok(await q.$eval("#cgSbToggle", e => getComputedStyle(e).display !== "none" && e.getAttribute("aria-expanded") === "false"), "on a phone the static pages show the Menu button");
+  ok(await q.$eval("#cgSbToggle", e => getComputedStyle(e).display !== "none" && e.getAttribute("aria-expanded") === "false"), "on a phone the front page (index.html) shows the Menu button");
+  await q.goto(base + "packet.html"); await q.waitForTimeout(400);
+  ok(await q.$eval("#cgSbToggle", e => getComputedStyle(e).display !== "none" && e.getAttribute("aria-expanded") === "false"), "on a phone the packet tool (packet.html) shows the Menu button");
   await q.click("#cgSbToggle"); await q.waitForTimeout(300);
   ok(await q.evaluate(() => { const b = document.getElementById("cgSidebar").getBoundingClientRect(); return b.left >= 0 && b.width > 250; }) && await only(q, "details.cg-hub", "packets"), "the Menu opens the drawer with Packets open inside it");
   ok(await q.evaluate(() => { const b = document.querySelector(".cg-sidebar-brand"); const r = b && b.getBoundingClientRect(); return !!r && r.width > 0 && getComputedStyle(b).display !== "none"; }), "on a phone the Cognicopia name and logo are on the screen with the Menu");
@@ -123,7 +127,7 @@ try {
   /* the floating Menu button never covers the action bar (the free-trial line, the buttons), on a phone, a narrow tablet or a wide one */
   for (const [w, h] of [[390, 844], [700, 900], [1024, 768]]) {
     const q2 = await page(w, h);
-    for (const f of ["daily.html", "activity-studio.html", "tablet.html", "profile.html", "pricing.html", "resources/caregiver-faq/index.html"]) {
+    for (const f of ["index.html", "packet.html", "daily.html", "activity-studio.html", "tablet.html", "profile.html", "pricing.html", "resources/caregiver-faq/index.html"]) {
       await q2.goto(base + f, { waitUntil: "load" }); await q2.waitForTimeout(500);
       const hit = await q2.evaluate(() => { const m = document.getElementById("cgSbToggle"), a = m && m.getBoundingClientRect(); if (!a || !a.width) return "no Menu button";
         return [...document.querySelectorAll(".cg-topbar .cg-chip, .cg-topbar a, .cg-topbar button")].filter(e => { const b = e.getBoundingClientRect(); return b.width && b.height && getComputedStyle(e).visibility !== "hidden" && b.left < a.right && b.right > a.left && b.top < a.bottom && b.bottom > a.top; }).map(e => e.textContent.trim().slice(0, 30)).join(" | "); });

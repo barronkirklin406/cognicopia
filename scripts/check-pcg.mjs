@@ -464,9 +464,10 @@ lap('mandalas');
 lap('how many');
 /* ---------- 12. the packet tool ---------- */
 {
-  const h = read("index.html"), at = f => h.indexOf(`<script src="${f}"></script>`);
+  const h = read("packet.html"), at = f => h.indexOf(`<script src="${f}"></script>`);
   const order = ["assets/pcg/pcg-data.bundle.js", ...FILES];
-  ok(order.every(f => at(f) > 0) && order.every((f, i) => i === 0 || at(f) > at(order[i - 1])), "index.html does not load the engine files in order");
+  ok(order.every(f => at(f) > 0) && order.every((f, i) => i === 0 || at(f) > at(order[i - 1])), "packet.html does not load the engine files in order");
+  ok(!/assets\/pcg\//.test(read("index.html")), "the front page (index.html) loads the packet engine; it belongs in packet.html");
   const sw = read("sw.js");
   [...order, "src/engine/ColoringEngine.js"].forEach(f => ok(sw.includes(`"${f}"`), `the offline worker does not keep ${f}`));
   ok(/id="pcgCard"/.test(h) && /id="pcgPrompts"/.test(h) && /id="pcgPrint"/.test(h) && /id="pcgAnother"/.test(h) && /id="pcgCopy"/.test(h), "the Today's Packet card is missing its parts");

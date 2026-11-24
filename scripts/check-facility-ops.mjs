@@ -63,12 +63,12 @@ const K = load("assets/services/slpClinicalService.js", "CogniClinical");
     const t = read(f).replace(/<script id="pdf(lib|font)">[\s\S]*?<\/script>/g, "");
     ok(GUARDS.has(f) || !NET_CALLS.test(t), `${f} touches browser storage and makes no network request`);
   }
-  const builder = read("builder.html"), index = read("index.html"), sw = read("sw.js");
+  const builder = read("builder.html"), packet = read("packet.html"), sw = read("sw.js");
   for (const f of ["censusImport", "privacyExport"]) {
     ok(builder.includes(`<script src="assets/services/${f}.js"></script>`), `builder.html loads ${f}.js from this site`);
     ok(sw.includes(`"assets/services/${f}.js"`), `sw.js caches ${f}.js, so the module works offline`);
   }
-  ok(index.includes('<script src="assets/services/privacyExport.js"></script>'), "index.html loads privacyExport.js");
+  ok(packet.includes('<script src="assets/services/privacyExport.js"></script>'), "packet.html (the packet tool) loads privacyExport.js");
   ok(/no analytics|No telemetry/i.test(builder) && /performance\.getEntriesByType\("resource"\)/.test(builder), "Settings carries the zero-telemetry statement and counts the page's own requests");
 }
 

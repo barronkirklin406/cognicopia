@@ -18,8 +18,8 @@
        dignity rules; the board and its rounds are made from them
      - the pictures: every picture is well formed and has a name
      - the screen's words are calm: nothing says wrong, test, quiz or easy
-     - the page is wired in: scripts in the right order, cached for offline use, in the menu and on
-       the front page, in the sitemap; it makes no network request, keeps only the level, topic and
+     - the page is wired in: scripts in the right order, cached for offline use, in the menu on
+       the front page and the packet tool (packet.html), in the sitemap; it makes no network request, keeps only the level, topic and
        sound choices, and every activity on the menu has an icon and a screen
 
    Node built-ins only. Run: node scripts/check-tablet.mjs
@@ -376,8 +376,9 @@ const ui = UIFILES.map(f => raw[f]).join("\n"), tabletJs = raw["js/tablet.js"];
      residents; it used to be a top-level place of its own, which the three doors replace */
   const today = HUBS.find(h => h.id === "today"), nav = today && today.items.find(i => i.key === "tablet");
   ok(nav && nav.href === "tablet.html" && nav.label === "Tablet Activities" && HUBS.filter(h => h.items.some(i => i.key === "tablet")).length === 1, "Tablet Activities is one place in the Today door, and only there");
-  const home = read("index.html");
+  const home = read("index.html"), tool = read("packet.html");
   ok(/id="cgHub-today"[\s\S]{0,2400}?href="tablet\.html"/.test(home) && !/lp-btn-tablet/.test(home), "the front page's bar links to it under Today (the hero carries one button, Get Started Free)");
+  ok(/id="cgHub-today"[\s\S]{0,2400}?href="tablet\.html"/.test(tool), "the packet tool's bar (packet.html) links to it under Today too");
   ok(/tablet\.html/.test(read("sitemap.xml")), "the sitemap lists the page");
   ok(/<title>Tablet Activities — Cognicopia<\/title>/.test(html) && /rel="canonical" href="https:\/\/cognicopia\.org\/tablet\.html"/.test(html), "the page has its own title and canonical address");
   ok(fs.existsSync(path.join(ROOT, "docs/tablet-activities.md")), "the guide for the page exists");

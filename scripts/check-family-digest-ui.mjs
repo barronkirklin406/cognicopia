@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 /* =====================================================================
-   The Family Life Digest buttons on the front page, in a real browser.
+   The Family Life Digest buttons in the packet tool (packet.html), in a real browser.
 
-   Both "Family Life Digest" buttons on the front page (the bar above the packet and the one by the
+   Both "Family Life Digest" buttons in the packet tool (the bar above the packet and the one by the
    packet's own buttons) were wired to a module that was never loaded, so they did nothing. They now
    open the shipped digest drawer (js/familyLifeDigestUI.js, assets/services/familyLifeDigest.js).
 
@@ -35,7 +35,7 @@ try {
   const p = await ctx.newPage();
   p.on("pageerror", e => errors.push(e.message)); p.on("console", m => { if (m.type() === "error") errors.push("console: " + m.text().slice(0, 140)); });
   p.on("request", r => { const u = r.url(); if (!u.startsWith(base) && !/^(data|blob|about):/.test(u)) foreign.push(u); });
-  await p.goto(base + "index.html", { waitUntil: "load" });
+  await p.goto(base + "packet.html", { waitUntil: "load" });
   await p.waitForSelector("#first", { state: "attached", timeout: 15000 });
   await p.waitForTimeout(1500);
 
@@ -93,5 +93,5 @@ try {
 } finally { await browser.close(); srv.close(); fs.rmSync(tmp, { recursive: true, force: true }); }
 
 console.log(problems.length ? `family digest check FAILED: ${problems.length} problem(s), ${passed} passed\n  - ` + problems.join("\n  - ")
-  : `family digest check passed: ${passed} checks in a real browser (both front-page buttons open the shipped drawer, the PDF is one page and names the person, the note and the town, 52 px buttons, nothing leaves the page)`);
+  : `family digest check passed: ${passed} checks in a real browser (both packet-tool buttons open the shipped drawer, the PDF is one page and names the person, the note and the town, 52 px buttons, nothing leaves the page)`);
 process.exit(problems.length ? 1 : 0);

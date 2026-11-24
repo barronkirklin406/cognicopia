@@ -34,13 +34,13 @@ const V = sandbox.CogniVectorEngine;
 /* Emergency print: profile choice, direct resident action, and isolated page */
 group("emergencyPrint", () => {
   const profileHtml = fs.readFileSync(path.join(ROOT, "profile.html"), "utf8");
-  const indexHtml = fs.readFileSync(path.join(ROOT, "index.html"), "utf8");
+  const packetHtml = fs.readFileSync(path.join(ROOT, "packet.html"), "utf8");
   const builderHtml = fs.readFileSync(path.join(ROOT, "builder.html"), "utf8");
   ok(/name="preselectedDeescalationActivity"/.test(profileHtml), "profile form exposes the emergency activity choice");
   ok(/preselectedDeescalationActivity:\s*text\("rapSootheActivity"\)/.test(profileHtml) &&
      /preselectedDeescalationActivity:\s*p\.preselectedDeescalationActivity/.test(profileHtml), "profile choice is saved and restored");
-  ok(/id="arbSoothe"[^>]*>[\s\S]*?Instant Soothe \/ Print/.test(indexHtml) &&
-     /builder\.html\?emergency=/.test(indexHtml), "active resident card links directly to emergency print");
+  ok(/id="arbSoothe"[^>]*>[\s\S]*?Instant Soothe \/ Print/.test(packetHtml) &&
+     /builder\.html\?emergency=/.test(packetHtml), "the packet tool's (packet.html) active resident card links directly to emergency print");
   ok(/requested[\s\S]*?allowed\.includes\(requested\)[\s\S]*?:\s*"line-tracing"/.test(builderHtml), "unknown or missing activity falls back to line tracing");
   ok(/difficulty = \["", "early", "moderate", "advanced"\]\[tier\]/.test(builderHtml), "support tiers map to matching activity load");
   ok(/const item = \{ activityId:activity\.id,[\s\S]*?count:1[\s\S]*?generatePdf\(\[item\]/.test(builderHtml), "emergency print contains exactly one page");
@@ -64,15 +64,15 @@ group("panicPacket", () => {
 
 group("sundowningCalmAndCoachingFooter", () => {
   const builderHtml = fs.readFileSync(path.join(ROOT, "builder.html"), "utf8");
-  const indexHtml = fs.readFileSync(path.join(ROOT, "index.html"), "utf8");
-  const coaching = "Do not ask questions or test memory. Sit beside them, place the marker in their hand, and model slow, calm breathing.";
+  const packetHtml = fs.readFileSync(path.join(ROOT, "packet.html"), "utf8");
+  const coaching ="Do not ask questions or test memory. Sit beside them, place the marker in their hand, and model slow, calm breathing.";
   ok(/id="calmModeToggle"[^>]*aria-pressed="false"[\s\S]*?Late-Stage \/ Sundowning Calm/.test(builderHtml), "calm mode has a high-visibility, accessible Packet Builder toggle");
   ok(/if \(calmMode == null \? sundowningCalmActive : calmMode\) return calmSheetHtml\(item\);/.test(builderHtml) && /function calmSheetHtml\(item\)[\s\S]*?CognicopiaSoothingEngine[\s\S]*?stage:"late"[\s\S]*?<section class="sheet sheet-calm"[\s\S]*?stroke-width="6pt"[\s\S]*?stroke-dasharray/.test(builderHtml), "calm mode replaces activity content with one late-stage calm reminiscence page (the soothing engine's), and keeps the single maximum-weight dashed path if the engine did not load");
   ok(/function sheetHtml\(item[^)]*\)[\s\S]*?activitySheetHtml\(item[^)]*\)[\s\S]*?care-coaching-footer/.test(builderHtml), "the shared queued-print wrapper adds the coaching footer");
   /* The owner's rule of November 18, 2026 (cognicopia-print-engine): staff text never sits on a resident page. The Packet Builder's queued sheets
-     still carry the coaching footer; the front-page packet now puts the same reminder on its Staff Companion Sheet and draws no footer. */
-  ok(builderHtml.includes(coaching) && indexHtml.includes(coaching), "the exact coaching reminder is in the Packet Builder's sheets and on the front-page packet's Staff Companion Sheet");
-  ok(!/coachingFooter\s*\(/.test(indexHtml) && /function staffPage\(D,r,sel\)[\s\S]*?Do not ask questions or test memory\. Sit beside them/.test(indexHtml), "main PDF pages draw no coaching footer, and the Staff Companion Sheet carries the reminder");
+     still carry the coaching footer; the packet tool (packet.html) now puts the same reminder on its Staff Companion Sheet and draws no footer. */
+  ok(builderHtml.includes(coaching) && packetHtml.includes(coaching), "the exact coaching reminder is in the Packet Builder's sheets and on the packet tool's (packet.html) Staff Companion Sheet");
+  ok(!/coachingFooter\s*\(/.test(packetHtml) && /function staffPage\(D,r,sel\)[\s\S]*?Do not ask questions or test memory\. Sit beside them/.test(packetHtml),"main PDF pages draw no coaching footer, and the Staff Companion Sheet carries the reminder");
 });
 
 /* 3. Dynamic Vector Engine */
@@ -338,8 +338,8 @@ async function secureStoreChecks(){
   U.storage.setItem("cognicopia_resident_x", "{}");
   ok(us.state === "unavailable" && !us.encrypted && U.storage.getItem("cognicopia_resident_x") === "{}", "falls back to localStorage when it cannot encrypt");
   let noPhotos = ""; try { await U.putBlob("cognicopia_heirloom_photo_x", "x"); } catch (e){ noPhotos = e.message; } ok(/Photos need/.test(noPhotos), "without encryption, photos are refused rather than kept in plain storage");
-  // locked files: the packet tool's own lock and unlock open these, and the reverse
-  const idx = fs.readFileSync(path.join(ROOT, "index.html"), "utf8"), a = idx.indexOf('const LOCKED_FORMAT="cognicopia-locked"'), b = idx.indexOf("function downloadBlob", a);
+  // locked files: the packet tool's (packet.html) own lock and unlock open these, and the reverse
+  const idx = fs.readFileSync(path.join(ROOT, "packet.html"), "utf8"), a = idx.indexOf('const LOCKED_FORMAT="cognicopia-locked"'), b = idx.indexOf("function downloadBlob", a);
   const pt = { crypto:globalThis.crypto, TextEncoder, TextDecoder, btoa, atob, window:{ crypto:globalThis.crypto, TextEncoder } }; pt.globalThis = pt; vm.createContext(pt);
   vm.runInContext(idx.slice(a, b).replace(/^const /gm, "var ") + "\nthis.lockData = lockData; this.unlockData = unlockData;", pt);
   const env1 = await H.sealFile({ hello:"world" }, P, "resident");
@@ -1086,8 +1086,8 @@ group("researchCenter", () => {
   ok(JSON.stringify(R.citeKeys("a [@x; @y] b [@z]")) === '["x","y","z"]' && R.plain("Read [[low-vision-print|this]] now. [@x]") === "Read this now.", "citation and link markup");
   const first = R.refsOf(eeg);
   ok(first[0] === "usman2024" && first[1] === "lin2026", "references are numbered in the order they are first cited");
-  // the board packet: the license price as the site states it, and only the facility's own figures otherwise
-  const idx = fs.readFileSync(path.join(ROOT, "index.html"), "utf8"), price = /PRICE_YEAR = "\$([\d.]+) a year"/.exec(idx);
+  // the board packet: the license price as the site states it (the packet tool, packet.html), and only the facility's own figures otherwise
+  const idx = fs.readFileSync(path.join(ROOT, "packet.html"), "utf8"), price = /PRICE_YEAR = "\$([\d.]+) a year"/.exec(idx);
   const licBox = {}; licBox.globalThis = licBox; vm.runInNewContext(fs.readFileSync(path.join(ROOT, "src/config/license.js"), "utf8"), licBox);
   ok(price && Number(price[1]) === R.PRICE_PER_BUILDING && licBox.CognicopiaLicenseConfig.PRICES.annual.amount === R.PRICE_PER_BUILDING && licBox.CognicopiaLicenseConfig.PRICES.monthly.amount === R.PRICE_PER_MONTH, "the packet's prices match the site's: " + (price && price[1]));
   const w = R.worksheet(R.normalizeBoard({ buildings: 2, residents: "120", hoursNow: "10", hoursWith: "4", hourlyCost: "$24.50" }));

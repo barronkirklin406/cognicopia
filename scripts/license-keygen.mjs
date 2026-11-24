@@ -23,6 +23,7 @@ import crypto from "crypto";
 import fs from "fs";
 import os from "os";
 import path from "path";
+import { fileURLToPath } from "url";
 
 const args = process.argv.slice(2);
 const flag = n => { const i = args.indexOf(n); return i >= 0 ? args[i + 1] : null; };
@@ -32,7 +33,7 @@ if (fs.existsSync(out)) {
   console.error(`Refusing to overwrite ${out}. Move it away first if you really mean to make a new pair.`);
   process.exit(1);
 }
-const here = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..");
+const here = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 if (out.startsWith(here + path.sep)) {
   console.error(`That path is inside the repository (${here}). Choose a place outside it, such as ~/.cognicopia/.`);
   process.exit(1);

@@ -2,7 +2,7 @@
 /* =====================================================================
    A page printed straight from the browser, in a real browser (Playwright; exit 2 where it is not installed).
 
-   Pages that build their own sheets (the Packet Builder, the packet tool) are checked elsewhere. Every other page
+   Pages that build their own sheets (the Packet Builder, the packet tool in packet.html) are checked elsewhere. Every other page
    (prices, a policy, a guide for a binder, the resident profile) gets one print sheet from css/styles.css:
 
      - no navigation, sidebar, button or field to fill in is printed (a box that only shows a value, such as a

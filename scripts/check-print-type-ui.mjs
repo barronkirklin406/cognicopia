@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* =====================================================================
-   Printed type and the Quick-Print name, proved in a real browser.
+   Printed type and the Quick-Print name, proved in a real browser on the packet tool (packet.html).
      1. The printed sheets (the Quick-Print and Profile Packet pages) at every vision tier (standard, large,
         extra-large) and every stage: no sheet overflows, no resident text is under 18 pt, every word is pure
         black (rgb 0,0,0), and large print really is larger.
@@ -17,7 +17,7 @@ import fs from "fs";
 import os from "os";
 import path from "path";
 import { spawnSync } from "child_process";
-import { loadPlaywright, serve, agreed } from "./lib/browser.mjs";
+import { loadPlaywright, serve, agreed, ROOT } from "./lib/browser.mjs";
 
 const problems = [], notes = []; let passed = 0;
 const ok = (c, m) => { if (c) passed++; else problems.push(m); };
@@ -38,7 +38,7 @@ except Exception:
         print(json.dumps({"missing": True})); sys.exit(0)
 doc = fitz.open(sys.argv[1]); out = {"pages": len(doc), "off": [], "overlap": 0, "color": 0, "texts": [], "small": [], "kinds": {"staff": 0, "resident": 0}, "titles": []}
 FLOOR = float(sys.argv[2]) if len(sys.argv) > 2 else 0
-RESIDENT = re.compile(r"PREPARED ESPECIALLY FOR|MADE FOR:")     # every page a resident works on opens with their name under one of these lines (index.html, heading())
+RESIDENT = re.compile(r"PREPARED ESPECIALLY FOR|MADE FOR:")     # every page a resident works on opens with their name under one of these lines (packet.html, heading())
 for i, pg in enumerate(doc):
     sp = []; spans_of_page = []
     for b in pg.get_text("dict")["blocks"]:
@@ -86,7 +86,7 @@ const sheetMin = {};
 for (const vision of ["standard", "large", "xl"]) for (const stage of ["early", "middle", "late"]) {
   const ctx = await browser.newContext({ viewport: { width: 1366, height: 900 }, serviceWorkers: "block" }); await agreed(ctx); const p = await ctx.newPage();
   p.on("pageerror", e => errs.push(e.message));
-  await p.goto(base + "index.html"); await p.waitForTimeout(400);
+  await p.goto(base + "packet.html"); await p.waitForTimeout(400);
   await p.evaluate(([v, s]) => {
     window.getActiveResidentContext = () => ({ isGeneric: true, name: "", stage: s, difficulty: { level: 3, label: "Moderate" },
       print: { vision: v, readingLevel: "short", motorSkills: "", paper: "letter", ink: "bw", highContrast: true },
@@ -122,7 +122,7 @@ let pdfSeen = 0;
 for (const stage of ["early", "middle", "late"]) for (const xl of [false, true]) {
   const ctx = await browser.newContext({ viewport: { width: 1366, height: 900 }, acceptDownloads: true, serviceWorkers: "block" }); await agreed(ctx); const p = await ctx.newPage();
   p.on("pageerror", e => errs.push(e.message));
-  await p.goto(base + "index.html"); await p.waitForTimeout(400);
+  await p.goto(base + "packet.html"); await p.waitForTimeout(400);
   await p.evaluate(() => { window.print = () => {}; localStorage.clear(); localStorage.setItem("cognicopia_eula_accepted", "true"); });
   await p.fill("#first", "Margaret"); await p.fill("#born", "1938");
   await p.evaluate(s => { const r = document.querySelector(`input[name=stage][value=${s}]`); if (r) { r.checked = true; r.dispatchEvent(new Event("change", { bubbles: true })); } }, stage);
@@ -151,7 +151,7 @@ for (const stage of ["early", "middle", "late"]) for (const xl of [false, true])
 {
   const ctx = await browser.newContext({ viewport: { width: 1366, height: 900 }, acceptDownloads: true, serviceWorkers: "block" }); await agreed(ctx); const p = await ctx.newPage();
   p.on("pageerror", e => errs.push(e.message));
-  await p.goto(base + "index.html"); await p.waitForTimeout(400);
+  await p.goto(base + "packet.html"); await p.waitForTimeout(400);
   const shapes = await p.evaluate(() => { window.print = () => {}; localStorage.clear(); localStorage.setItem("cognicopia_eula_accepted", "true"); return typeof DOT_LIBRARY !== "undefined" && typeof window.contentIndex === "function" ? DOT_LIBRARY.map(d => d.name) : []; });
   ok(shapes.length >= 10, `the Join the Dots shapes can be chosen one by one (${shapes.length})`);
   await p.fill("#first", "Margaret"); await p.fill("#born", "1938");
@@ -175,7 +175,7 @@ for (const stage of ["early", "middle", "late"]) for (const xl of [false, true])
 {
   const ctx = await browser.newContext({ viewport: { width: 1366, height: 900 }, acceptDownloads: true, serviceWorkers: "block" }); await agreed(ctx); const p = await ctx.newPage();
   p.on("pageerror", e => errs.push(e.message));
-  await p.goto(base + "index.html"); await p.waitForTimeout(400);
+  await p.goto(base + "packet.html"); await p.waitForTimeout(400);
   const q = await p.evaluate(() => ["Margaret", "  <b>Bo</b>  b-by ' 123 ", "", "   ", "12345", "Mary-Ann O’Neil", "x".repeat(60)].map(v => window.quickPrintName(v)));
   ok(q[0] === "Margaret", "a plain first name is kept");
   ok(!/[<>]/.test(q[1]) && /Bo/.test(q[1]) && !/\d/.test(q[1]), `markup and digits are stripped (${JSON.stringify(q[1])})`);
@@ -183,8 +183,10 @@ for (const stage of ["early", "middle", "late"]) for (const xl of [false, true])
   ok(q[5] === "Mary-Ann O’Neil", "hyphens, apostrophes and spaces in a name are kept");
   ok(q[6].length <= 30, "a name is cut at 30 characters");
   ok(await p.$("#guestFirstName") !== null && await p.$("label.arb-guest-name") !== null, "the Resident first name field exists, with its label");
-  const html = fs.readFileSync(path.join(path.dirname(new URL(import.meta.url).pathname), "..", "index.html"), "utf8");
-  ok(!/>\s*Guest\s*</.test(html.replace(/<script[\s\S]*?<\/script>/g, "")), "the word Guest is not shown as a label anywhere on the page");
+  for (const page of ["packet.html", "index.html"]) {                         // the tool, and the front page that sells it
+    const html = fs.readFileSync(path.join(ROOT, page), "utf8");
+    ok(!/>\s*Guest\s*</.test(html.replace(/<script[\s\S]*?<\/script>/g, "")), `the word Guest is not shown as a label anywhere on ${page}`);
+  }
   for (const [tag, name, want, never] of [["named", "Margaret", /Activity Packet for/, null], ["blank", "", /Personalized Activity Packet/, /Activity Packet for\s*Guest/]]) {
     await p.reload(); await p.waitForTimeout(400);
     await p.click("#guestPresetToggle"); await p.waitForSelector("#guestFirstName", { state: "visible" });

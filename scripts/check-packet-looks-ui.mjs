@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* =====================================================================
-   The packet's house styles (index.html, Doc.setLook / Doc.headLook), in a real browser, with the PDFs read back by PyMuPDF.
+   The packet's house styles (packet.html, the packet tool: Doc.setLook / Doc.headLook), in a real browser, with the PDFs read back by PyMuPDF.
      variety     four looks for the page titles (ledger, editorial, framed, margin); the look is chosen from the resident and the
                  month, so the same packet always looks the same and a dozen residents use every look
      one piece   a packet keeps one look on every page
@@ -46,7 +46,7 @@ const ctx = await browser.newContext({ viewport: { width: 1366, height: 900 }, s
 await ctx.addInitScript(() => { try { localStorage.setItem("cognicopia_eula_accepted", "true"); } catch (e) { /* ignore */ } });
 const p = await ctx.newPage();
 p.on("pageerror", e => errors.push(e.message));
-await p.goto(base + "index.html", { waitUntil: "load" }); await p.waitForTimeout(1500);
+await p.goto(base + "packet.html", { waitUntil: "load" }); await p.waitForTimeout(1500);
 async function packet(first, stage, force, simplified) {
   await p.evaluate(f => { window.__look = f; if (!Doc.prototype.__real) Doc.prototype.__real = Doc.prototype.setLook;
     // force a look for this one packet, the way setLook would choose it: never past the late stage's or a simplified layout's plain look

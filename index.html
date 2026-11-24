@@ -519,6 +519,9 @@ html body{background:var(--cg-cream,#faf8f5)}
 /* the hero */
 /* below 1280 px the Menu button floats over the top-left corner, so the first section starts below it */
 @media (max-width:1279px){.lp-hero{padding-top:76px !important}}
+/* from 1280 px the bar under the navigation (the free-packet chip, Night Shift) is its own 72 px row on this page too since
+   the split (November 23, 2026); the hero gives that height back so the next section's heading still begins on a 768 px screen */
+@media (min-width:1280px){html .lp-hero{padding:32px 0 48px}html .lp-features{padding-top:56px}}
 .lp-hero{position:relative;isolation:isolate;overflow:hidden;padding:64px 0 76px;
   background:radial-gradient(52% 70% at 88% 10%,rgba(84,143,115,.14),rgba(84,143,115,0) 70%),radial-gradient(46% 60% at 2% 98%,rgba(54,92,75,.10),rgba(54,92,75,0) 70%),linear-gradient(180deg,#f1f9f7 0%,var(--cg-cream,#faf8f5) 100%)}
 /* a light geometric mesh: a fine grid that fades out away from the picture */
@@ -1092,14 +1095,13 @@ html.cg-night-shift .lp .lp-plan-tag{background:#86c9a7!important;color:#0d1511!
 <main id="main" class="lp-main">
 <!-- ══ THE FRONT OF THE SITE: what Cognicopia is, in the order a visitor reads it (hero, what you get, a free sample, the plans, where to start, the evidence). The tool is packet.html ══ -->
 <div class="lp">
-<div class="lp">
   <section class="lp-hero" aria-labelledby="heroTitle">
     <div class="lp-in lp-hero-grid">
       <div class="lp-copy">
         <h1 class="hero-title" id="heroTitle">Custom activities built with <span class="lp-accent">the individual in mind.</span></h1>
         <p class="lede">Personalized memory care activities that support cognitive engagement. Tell Cognicopia what you know about a resident and get a print-ready, large-print packet instantly, made for activity directors and care teams.</p>
         <div class="lp-actions">
-          <a class="lp-btn" id="heroCta" href="packet.html">Open the packet tool<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></a>
+          <a class="lp-btn" id="heroCta" href="packet.html">Get Started Free<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></a>
           <button type="button" class="lp-more lp-start" id="heroStart" data-wf-start>Take a 60-second tour</button>
         </div>
         <p class="lp-trial-sub" id="heroNote">No sign-up and no credit card. Everything stays on this computer.</p>

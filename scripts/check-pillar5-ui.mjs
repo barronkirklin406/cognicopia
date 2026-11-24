@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* =====================================================================
-   js/pillar5-upgrade-agents.js on the Today page, in a real browser (Playwright; exit code 2 where it is not installed).
+   js/pillar5-upgrade-agents.js in the packet tool (packet.html), in a real browser (Playwright; exit code 2 where it is not installed).
 
      suite     the page runs all thirty agents; the system auditor passes them, the pipeline order and a test sheet, and
                sees no call to another host
@@ -21,14 +21,14 @@ try {
   const p = await ctx.newPage(), outside = [], errs = [];
   p.on("request", (r) => { if (!r.url().startsWith(base) && !/^(data|blob|about):/.test(r.url())) outside.push(r.url()); });
   p.on("pageerror", (e) => errs.push(String(e).slice(0, 160)));
-  await p.goto(base + "index.html"); await p.waitForSelector("#previewPacketBtn"); await p.waitForTimeout(800);
+  await p.goto(base + "packet.html"); await p.waitForSelector("#previewPacketBtn"); await p.waitForTimeout(800);
   const a = await p.evaluate(async () => { const r = await window.CognicopiaAgents.audit(); return { ok: r.ok, issues: r.issues, registered: r.roster.registered, missing: r.roster.missing, order: r.order.every((x) => x.ok), smoke: r.smoke, net: r.network.attempts, agents: Object.keys(window.CognicopiaAgents.suite).length }; });
-  ok(a.ok && a.registered === 30 && a.order && a.smoke.ok && a.net === 0, "the Today page runs all 30 agents: the auditor passes them (" + (a.issues.join("; ") || "no issues") + "), the pipeline order holds, a test sheet comes out right, no call to another host");
+  ok(a.ok && a.registered === 30 && a.order && a.smoke.ok && a.net === 0, "the packet tool (packet.html) runs all 30 agents: the auditor passes them (" + (a.issues.join("; ") || "no issues") + "), the pipeline order holds, a test sheet comes out right, no call to another host");
   /* This browser's own SpeechRecognition.available() crashes headless Chromium 153 (found while writing this check), so the real call is not made here; the rule is proven with stand-in windows in check-pillar5-agents.mjs. */
   const v = await p.evaluate(async () => { const m = await import("/js/pillar5-upgrade-agents.js"), va = new m.VoiceAssistant(), none = await va.support({}), noProof = await va.support({ SpeechRecognition: function () {} }); return { none, noProof, cmd: m.parseCommand("go to today").target, started: (await va.start({})).ok }; });
   ok(!v.none.canListen && !v.noProof.canListen && v.started === false && v.cmd === "Today", "in the page, with no speech recognition or no on-device proof, listening is refused, and commands are understood");
-  await p.close();   // the Today page is large; the sync test below runs alone
-  /* the two-peer test runs on a lighter page of the same site: a headless browser can run out of memory holding the whole Today page and two peers */
+  await p.close();   // the packet tool page is large; the sync test below runs alone
+  /* the two-peer test runs on a lighter page of the same site: a headless browser can run out of memory holding the whole packet tool page and two peers */
   const q = await ctx.newPage(); q.on("pageerror", (e) => errs.push(String(e).slice(0, 160))); await q.goto(base + "contact.html");
   const s = await q.evaluate(async () => {
     const m = await import("/js/pillar5-upgrade-agents.js"), p2 = await import("/js/pillar2-functionality-agents.js"), sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -50,4 +50,4 @@ try {
 } finally { await browser.close(); srv.close(); }
 
 if (problems.length) { console.error("pillar 5 UI check FAILED: " + problems.length + " problem(s), " + passed + " passed"); problems.forEach((x) => console.error("  - " + x)); process.exit(1); }
-console.log("pillar 5 UI check passed: " + passed + " checks in a real browser (30 agents audited on the Today page, real WebRTC sync, the voice rule, no outside request)");
+console.log("pillar 5 UI check passed: " + passed + " checks in a real browser (30 agents audited in the packet tool, real WebRTC sync, the voice rule, no outside request)");

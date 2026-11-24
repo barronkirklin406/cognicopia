@@ -4,13 +4,13 @@
 
      wording    the owner's paragraph is the same, letter for letter, in js/legal.js, terms.html and this check;
                 the print line is the same in js/legal.js, the PDF maker (assets/vendor/jspdf-atkinson.js and its copy
-                inside index.html) and the print style of the Packet Builder and the packet tool
+                inside packet.html) and the print style of the Packet Builder and the packet tool (packet.html)
      agreement  nothing covers a page on arrival (the owner's playbook, Phase 2); the first time someone presses a button that prints
                 or makes a PDF, the agreement opens in a window first, with the owner's wording; "I agree, continue" saves
                 cognicopia_eula_accepted = "true" and makes the PDF, Close makes nothing and saves nothing, and the next press goes
                 straight through; the calming buttons (Instant Soothe) never wait; nothing is requested from outside the page
      links      "Terms of Service & Disclaimer" is in the footer of every page that has one, in the Packet Builder's menu
-                and on the packet tool's footer
+                and on the front page's and the packet tool's footer
      pdf        a PDF made by the PDF maker carries the line on every page, in black, in the top margin and inside the page;
                 a maker that opts out (doc.__noLegal) carries none
      print      the Packet Builder's printed sheets carry the line, in black, inside the page and clear of the page's own text
@@ -35,19 +35,19 @@ const jsString = (src, name) => { const m = new RegExp("var " + name + " = \"((?
 ok(jsString(legal, "TEXT") === TEXT, "js/legal.js holds the owner's paragraph word for word");
 ok(jsString(legal, "PRINT_LINE") === LINE, "js/legal.js holds the print line word for word");
 ok(jsString(pdfMaker, "LEGAL") === LINE, "the PDF maker holds the print line word for word");
-const inl = /<script id="pdffont">([\s\S]*?)<\/script>/.exec(read("index.html"));
-ok(inl && inl[1] === pdfMaker, "index.html's copy of the PDF maker is the same file");
+const inl = /<script id="pdffont">([\s\S]*?)<\/script>/.exec(read("packet.html"));
+ok(inl && inl[1] === pdfMaker, "packet.html's copy of the PDF maker is the same file");
 const body = /<p id="legalBody">([^<]*)<\/p>/.exec(terms);
 ok(body && body[1].replace(/&amp;/g, "&") === TEXT, "terms.html holds the owner's paragraph word for word");
 ok(/<h2 id="legalHead">Cognicopia Terms of Service &amp; Disclaimer<\/h2>/.test(terms), "terms.html carries the heading");
-for (const f of ["builder.html", "index.html"]) ok(read(f).split(LINE).length - 1 >= 1, `${f}'s print style carries the print line`);
+for (const f of ["builder.html", "packet.html"]) ok(read(f).split(LINE).length - 1 >= 1, `${f}'s print style carries the print line`);
 ok(/js\/legal\.js/.test(read("sw.js")) && /terms\.html/.test(read("sw.js")), "the offline cache holds the agreement script and the terms page");
-for (const f of ["index.html", "builder.html", "profile.html", "terms.html"]) ok(/<script src="js\/legal\.js"><\/script>/.test(read(f)), `${f} loads js/legal.js`);
+for (const f of ["index.html", "packet.html", "builder.html", "profile.html", "terms.html"]) ok(/<script src="js\/legal\.js"><\/script>/.test(read(f)), `${f} loads js/legal.js`);
 ok(!/https?:\/\//.test(legal.replace(/\/\*[\s\S]*?\*\//g, "")), "js/legal.js names no web address");
 ok(!/fetch\(|XMLHttpRequest|sendBeacon|WebSocket/.test(legal), "js/legal.js makes no request");
 
 /* ---------- links ---------- */
-for (const f of ["index.html", "builder.html", "profile.html", "pricing.html", "contact.html", "pilot.html", "tablet.html", "terms.html", "resources/index.html"])
+for (const f of ["index.html", "packet.html", "builder.html", "profile.html", "pricing.html", "contact.html", "pilot.html", "tablet.html", "terms.html", "resources/index.html"])
   ok(/href="(\.\.\/)*terms\.html"/.test(read(f)), `${f} links to the terms`);
 
 /* ---------- the browser ---------- */
@@ -106,7 +106,7 @@ const lineOnPage = (pg, label, scaled) => {
 
 try {
   /* the first visit: nothing over the page; the agreement is asked at the first print, then never again */
-  for (const [file, name] of [["index.html", "packet tool"], ["builder.html", "Packet Builder"], ["profile.html", "Resident Profiles"]]) {
+  for (const [file, name] of [["index.html", "front page"], ["packet.html", "packet tool"], ["builder.html", "Packet Builder"], ["profile.html", "Resident Profiles"]]) {
     const ctx = await browser.newContext({ viewport: { width: 1366, height: 768 }, serviceWorkers: "block" });
     const p = await ctx.newPage(); watch(p);
     await p.goto(base + file); await p.waitForTimeout(1200);
@@ -118,7 +118,7 @@ try {
     const ctx = await browser.newContext({ viewport: { width: 1366, height: 768 }, serviceWorkers: "block", acceptDownloads: true });
     const p = await ctx.newPage(); watch(p);
     let downloads = 0; p.on("download", () => { downloads++; });
-    await p.goto(base + "index.html"); await p.waitForTimeout(1500);
+    await p.goto(base + "packet.html"); await p.waitForTimeout(1500);
     await p.fill("#first", "Ruthanne"); await p.fill("#born", "1941");
     /* Close: nothing is made and nothing is saved */
     await p.click("#go"); await p.waitForSelector("#cgLegalModal[open]", { timeout: 5000 }).catch(() => {});
@@ -144,7 +144,7 @@ try {
   {
     const ctx = await browser.newContext({ viewport: { width: 1366, height: 768 }, serviceWorkers: "block" });
     const p = await ctx.newPage(); watch(p);
-    await p.goto(base + "index.html"); await p.waitForTimeout(1200);
+    await p.goto(base + "packet.html"); await p.waitForTimeout(1200);
     const calm = await p.$$eval("button", bs => bs.filter(x => /soothe/i.test(x.textContent + " " + x.id)).map(x => [x.id || x.textContent.trim().slice(0, 20), window.CognicopiaLegal.holdsUp(x)]));
     ok(calm.length >= 3 && calm.every(c => c[1] === false), `the calming buttons never wait for the agreement (${calm.map(c => c[0]).join(", ")})`);
     const make = await p.$$eval("#go, #staffOnlyBtn, #blankForm", bs => bs.map(x => window.CognicopiaLegal.holdsUp(x)));
@@ -217,7 +217,7 @@ try {
     const ctx = await browser.newContext({ viewport: { width: 1100, height: 800 }, serviceWorkers: "block", acceptDownloads: true });
     const p = await ctx.newPage(); watch(p);
     await p.addInitScript(k => { try { localStorage.setItem(k, "true"); } catch (e) { /* ignore */ } }, KEY);
-    await p.goto(base + "index.html"); await p.waitForTimeout(900);
+    await p.goto(base + "packet.html"); await p.waitForTimeout(900);
     const b64 = await p.evaluate(() => {
       const J = window.jspdf.jsPDF, d = new J({ unit: "pt", format: "letter" });
       d.setFont("helvetica", "bold"); d.setFontSize(20); d.text("Page one of a test packet", 72, 90);

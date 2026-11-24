@@ -78,7 +78,7 @@ const shot = async (p, name) => { if (SHOT) { fs.mkdirSync(SHOT, { recursive: tr
 try {
   /* ---------- the top bar: ONE chip (the free-packet count); the plans, the key box and the invoice request are inside the window it opens ---------- */
   let ctx = await context();
-  for (const url of ["index.html", "contact.html", "resources/quality-standards/index.html", "profile.html"]) {
+  for (const url of ["index.html", "packet.html", "contact.html", "resources/quality-standards/index.html", "profile.html"]) {
     const p = await open(ctx, url), P = "../".repeat(url.split("/").length - 1);
     ok(await visible(p, "#cgPromoBtn") && /^50 of 50 free packets left$/.test((await p.textContent("#cgPromoBtn")).replace(/\s+/g, " ").trim()), `${url}: the one chip says 50 of 50 free packets left`);
     ok(await tall(p, "#cgPromoBtn") >= 52, `${url}: the chip is at least 52 px tall`);
@@ -91,35 +91,35 @@ try {
     await p.close();
   }
 
-  /* ---------- the packet tool: the 50-packet limit and the upgrade screen ---------- */
-  let p = await open(ctx, "index.html");
-  ok(await p.evaluate(() => FREE_RUNS === 50), "index.html: the free trial is 50 packets");
-  ok((await p.textContent("#licBadge")).trim() === "50 of 50 free packets left", "index.html: a new computer has 50 free packets: " + (await p.textContent("#licBadge")));
+  /* ---------- the packet tool (packet.html): the 50-packet limit and the upgrade screen ---------- */
+  let p = await open(ctx, "packet.html");
+  ok(await p.evaluate(() => FREE_RUNS === 50), "packet.html: the free trial is 50 packets");
+  ok((await p.textContent("#licBadge")).trim() === "50 of 50 free packets left", "packet.html: a new computer has 50 free packets: " + (await p.textContent("#licBadge")));
   await p.evaluate(() => localStorage.setItem("cognicopia_gen_count", "49")); await p.reload(); await p.waitForTimeout(300);
-  ok((await p.textContent("#licBadge")).trim() === "1 of 50 free packets left", "index.html: after 49 packets one is left");
+  ok((await p.textContent("#licBadge")).trim() === "1 of 50 free packets left", "packet.html: after 49 packets one is left");
   await p.evaluate(() => localStorage.setItem("cognicopia_gen_count", "50")); await p.reload(); await p.waitForTimeout(300);
   await p.fill("#first", "Test"); await p.fill("#born", "1940");
   const act = p.locator("input.act").first(); if (await act.count()) await act.check({ force: true });
   await p.click("#go"); await p.waitForTimeout(500);
-  ok(await visible(p, "#gate"), "index.html: the 26th packet opens the upgrade screen");
-  ok((await p.textContent("#gateTitle")).includes("50 free packets on this computer"), "index.html: the screen says all 50 free packets are used");
-  for (const id of ["gateMonthly", "gateAnnual", "gateInvoice"]) ok(await visible(p, "#" + id), `index.html: the upgrade screen offers ${id}`);
-  ok((await p.getAttribute("#gateMonthly", "href")) === MONTHLY && (await p.getAttribute("#gateAnnual", "href")) === ANNUAL, "index.html: the two plan buttons are the Payment Links from the config");
-  ok((await p.getAttribute("#gateInvoice", "href")) === "pricing.html#invoice", "index.html: the invoice button goes to the invoice request form on the pricing page");
+  ok(await visible(p, "#gate"), "packet.html: the 26th packet opens the upgrade screen");
+  ok((await p.textContent("#gateTitle")).includes("50 free packets on this computer"), "packet.html: the screen says all 50 free packets are used");
+  for (const id of ["gateMonthly", "gateAnnual", "gateInvoice"]) ok(await visible(p, "#" + id), `packet.html: the upgrade screen offers ${id}`);
+  ok((await p.getAttribute("#gateMonthly", "href")) === MONTHLY && (await p.getAttribute("#gateAnnual", "href")) === ANNUAL, "packet.html: the two plan buttons are the Payment Links from the config");
+  ok((await p.getAttribute("#gateInvoice", "href")) === "pricing.html#invoice", "packet.html: the invoice button goes to the invoice request form on the pricing page");
   const gateText = await p.textContent("#gate");
-  ok(/\$39 a month/.test(gateText) && /\$349 a year/.test(gateText) && /save about 25%/.test(gateText) && /Best value/.test(gateText) && /Net-30/.test(gateText) && /W-9/.test(gateText), "index.html: the upgrade screen states $39, $349, the saving, best value, net-30 and the W-9");
-  for (const id of ["#gateMonthly", "#gateAnnual", "#gateInvoice", "#licGo", "#lic"]) ok(await tall(p, id) >= 52, `index.html: ${id} is at least 52 px`);
-  await shot(p, "index-gate");
+  ok(/\$39 a month/.test(gateText) && /\$349 a year/.test(gateText) && /save about 25%/.test(gateText) && /Best value/.test(gateText) && /Net-30/.test(gateText) && /W-9/.test(gateText), "packet.html: the upgrade screen states $39, $349, the saving, best value, net-30 and the W-9");
+  for (const id of ["#gateMonthly", "#gateAnnual", "#gateInvoice", "#licGo", "#lic"]) ok(await tall(p, id) >= 52, `packet.html: ${id} is at least 52 px`);
+  await shot(p, "packet-gate");
   /* a pasted key unlocks it */
   await p.fill("#lic", "COG1.not-a-real-key"); await p.click("#licGo");
-  ok(/complete|look like|verified/i.test(await p.textContent("#licMsg")), "index.html: a damaged key is refused in words: " + (await p.textContent("#licMsg")));
+  ok(/complete|look like|verified/i.test(await p.textContent("#licMsg")), "packet.html: a damaged key is refused in words: " + (await p.textContent("#licMsg")));
   await p.fill("#lic", KEY); await p.click("#licGo"); await p.waitForTimeout(500);
-  ok(!(await visible(p, "#gate")) && /Licensed/.test(await p.textContent("#licBadge")), "index.html: a good key closes the upgrade screen and the badge says Licensed");
-  ok(!(await visible(p, "a[data-upgrade-prompt]")), "index.html: the buy buttons are hidden once licensed");
-  ok(!(await visible(p, "#cgPromoBadge")) && !(await visible(p, "#cgPromoBtn")), "index.html: once licensed the bar holds no chip and no badge");
+  ok(!(await visible(p, "#gate")) && /Licensed/.test(await p.textContent("#licBadge")), "packet.html: a good key closes the upgrade screen and the badge says Licensed");
+  ok(!(await visible(p, "a[data-upgrade-prompt]")), "packet.html: the buy buttons are hidden once licensed");
+  ok(!(await visible(p, "#cgPromoBadge")) && !(await visible(p, "#cgPromoBtn")), "packet.html: once licensed the bar holds no chip and no badge");
   const state = await ctx.storageState();
   await p.reload(); await p.waitForTimeout(400);
-  ok(/Licensed/.test(await p.textContent("#licBadge")), "index.html: still licensed after a reload");
+  ok(/Licensed/.test(await p.textContent("#licBadge")), "packet.html: still licensed after a reload");
   await p.close();
 
   /* ---------- the window in the top bar ---------- */
@@ -231,9 +231,9 @@ try {
   }
 
   /* ---------- months offline: the license, a fake clock, a reload ---------- */
-  ctx = await context(); p = await open(ctx, "index.html"); await p.evaluate(k => CognicopiaLicense.activateKey(k), KEY);
+  ctx = await context(); p = await open(ctx, "packet.html"); await p.evaluate(k => CognicopiaLicense.activateKey(k), KEY);
   const kept = await ctx.storageState(); await p.close();
-  const at = async (iso) => { const c = await context({ storageState: kept, clock: Date.parse(iso) }); const q = await open(c, "index.html"); const r = await q.evaluate(() => ({ lic: CognicopiaLicense.isLicensed(), st: CognicopiaLicense.status(), badge: document.getElementById("licBadge").textContent })); await q.close(); return r; };
+  const at = async (iso) => { const c = await context({ storageState: kept, clock: Date.parse(iso) }); const q = await open(c, "packet.html"); const r = await q.evaluate(() => ({ lic: CognicopiaLicense.isLicensed(), st: CognicopiaLicense.status(), badge: document.getElementById("licBadge").textContent })); await q.close(); return r; };
   const within = await at("2027-03-01T12:00:00Z"), lateGrace = await at("2028-01-15T12:00:00Z"), over = await at("2028-02-15T12:00:00Z");
   ok(within.lic && !within.st.inGrace, "five months into the year: licensed");
   ok(lateGrace.lic && lateGrace.st.inGrace, "two and a half months after the paid-through date (offline the whole time): still licensed, in its grace days");
@@ -241,12 +241,12 @@ try {
 
   /* ---------- the free packets never reset: eight days and ninety days later the count is what it was ---------- */
   {
-    const c0 = await context(); const a = await open(c0, "index.html");
+    const c0 = await context(); const a = await open(c0, "packet.html");
     await a.evaluate(() => { for (let i = 0; i < 12; i++) bumpGen(); }); await a.waitForTimeout(500);
     ok(await a.evaluate(() => genCount()) === 12, "twelve packets made: the count is 12");
     const used = await c0.storageState({ indexedDB: true }); await a.close();
     for (const [days, iso] of [[8, "2026-11-20T12:00:00Z"], [90, "2027-02-10T12:00:00Z"]]) {
-      const c = await context({ storageState: used, clock: Date.parse(iso) }); const q = await open(c, "index.html"); await q.waitForTimeout(700);
+      const c = await context({ storageState: used, clock: Date.parse(iso) }); const q = await open(c, "packet.html"); await q.waitForTimeout(700);
       const r = await q.evaluate(() => ({ n: genCount(), chip: document.getElementById("cgPromoBtn").textContent.replace(/\s+/g, " ").trim(), reset: localStorage.getItem("cognicopia_trial_reset_time") }));
       ok(r.n === 12 && /^38 of 50 free packets left$/.test(r.chip) && r.reset === null, `${days} days later the count is still 12 and the chip still says 38 of 50 (${r.n}, "${r.chip}")`);
       await q.close(); await c.close();
@@ -256,7 +256,7 @@ try {
 
   /* ---------- printing for every resident at once is for facilities: a license or a pilot key ---------- */
   {
-    const c = await context(); const q = await open(c, "index.html");
+    const c = await context(); const q = await open(c, "packet.html");
     await q.click("#mbOpen"); await q.waitForTimeout(300);
     ok(await visible(q, ".cgpromo-card") && /is for facilities/.test(await q.textContent(".cgpromo-note")) && /30-day pilot/.test(await q.textContent(".cgpromo-note")) && !(await q.evaluate(() => document.getElementById("monthly-bundle-modal").open)), "unlicensed: the every-resident button opens the license window with the reason, not the bundle");
     ok(await q.evaluate(() => genCount()) === 0, "and it spends no free packet");
@@ -288,11 +288,11 @@ try {
   await p.close();
   /* the placeholder links: no dead page, no test link */
   const bare = await context({ cfg: CFG_BARE });
-  p = await open(bare, "index.html"); await p.evaluate(() => { openGate(); });
+  p = await open(bare, "packet.html"); await p.evaluate(() => { openGate(); });
   ok((await p.getAttribute("#gateMonthly", "href")) === "contact.html?subject=Corporate+Invoice+Request&plan=monthly" && /Request this plan/.test(await p.textContent("#gateMonthly")), "with the Payment Links not set up the plan buttons ask for an invoice instead of opening a dead page");
   await p.close();
   const testLink = await context({ cfg: CFG_FULL.replace(MONTHLY, "https://buy.stripe.com/test_4gwabc1234") });
-  p = await open(testLink, "index.html"); await p.evaluate(() => { openGate(); });
+  p = await open(testLink, "packet.html"); await p.evaluate(() => { openGate(); });
   ok(!(await p.getAttribute("#gateMonthly", "href")).includes("buy.stripe.com") && (await p.getAttribute("#gateAnnual", "href")) === ANNUAL, "a Payment Link with test_ in it is never offered");
   await p.close();
 
@@ -332,7 +332,7 @@ try {
 
   /* ---------- a licensed computer sees no buy buttons on any kind of page ---------- */
   ctx = await context({ storageState: kept });
-  for (const url of ["index.html", "contact.html", "resources/index.html", "resources/research/music-dementia/index.html", "pricing.html"]) {
+  for (const url of ["index.html", "packet.html", "contact.html", "resources/index.html", "resources/research/music-dementia/index.html", "pricing.html"]) {
     const q = await open(ctx, url);
     ok(!(await visible(q, "#cgPromoBadge")) && !(await visible(q, "#cgPromoBtn")) && (await q.locator("a[data-upgrade-prompt]").evaluateAll(a => a.every(x => getComputedStyle(x).display === "none"))), `${url}: licensed, the bar holds no chip and no badge, and every buy link is hidden`);
     await q.close();

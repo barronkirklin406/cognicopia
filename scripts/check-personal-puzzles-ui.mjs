@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* =====================================================================
-   The resident's own words reach the word search and the crossword, proved on real PDFs read back with PyMuPDF (made-up resident only):
+   The resident's own words reach the word search and the crossword of the packet tool (packet.html), proved on real PDFs read back with PyMuPDF (made-up resident only):
 
      detail fields   choosing "brother" and "oldest" for Jonah, "dog" for Rusty, and typing a first car's make and year are kept in the form,
                      and come back after the page is reloaded
@@ -59,7 +59,7 @@ const ctx = await browser.newContext({ viewport: { width: 1366, height: 900 }, s
 const p = await ctx.newPage(); await agreeToDialogs(p);
 p.on("pageerror", e => errs.push(e.message)); p.on("dialog", d => d.accept());
 p.on("request", r => { const u = r.url(); if (!u.startsWith(base) && !/^(data|blob|about):/.test(u)) foreign.push(u); });
-const load = async () => { await p.goto(base + "index.html", { waitUntil: "load" }); await p.waitForTimeout(1200); await p.evaluate(() => { window.print = () => {}; }); };
+const load = async () => { await p.goto(base + "packet.html", { waitUntil: "load" }); await p.waitForTimeout(1200); await p.evaluate(() => { window.print = () => {}; }); };
 await load();
 
 const isStaff = x => /^For Staff|^Answer Key/.test(x.text.trim());

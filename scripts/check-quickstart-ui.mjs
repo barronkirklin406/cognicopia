@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* =====================================================================
-   The packet tool's quick start, in a real browser (the owner's playbook, Phase 2: "ask for only three facts up front").
+   The packet tool's quick start (packet.html), in a real browser (the owner's playbook, Phase 2: "ask for only three facts up front").
      three      step 1 opens with three boxes and one button: first name, year of birth, one joy; then "Make my first packet"
      joy        the one joy becomes their first pastime (the hobbies box in step 4) without being typed twice
      packet     those three alone make a whole packet, read back as a real PDF download
@@ -36,7 +36,7 @@ try {
     const ctx = await browser.newContext({ viewport: { width: w, height: h }, serviceWorkers: "block", acceptDownloads: true });
     await ctx.addInitScript(on => { try { localStorage.setItem("cognicopia_eula_accepted", "true"); if (on) localStorage.setItem("cognicopia_night_shift", "1"); } catch (e) { /* ignore */ } }, night);
     const p = await ctx.newPage(); p.on("pageerror", e => errors.push(e.message));
-    await p.goto(base + "index.html"); await p.waitForTimeout(1500);
+    await p.goto(base + "packet.html"); await p.waitForTimeout(1500);
     if (night) { await p.evaluate(() => { document.documentElement.classList.add("cg-night-shift"); document.body.classList.add("cg-night-shift"); }); await p.evaluate(() => Promise.all(document.getAnimations().map(a => a.finished.catch(() => {})))); await p.waitForTimeout(200); }
     const m = await measure(p);
     ok(m.low.length === 0, `${tag}: the quick start's words read at 7:1 or better` + (m.low.length ? ": " + m.low.slice(0, 3).join("; ") : ""));

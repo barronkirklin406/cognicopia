@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* =====================================================================
-   The packet tool's cover at once, and the packet made a page at a time (index.html: packetSteps, buildPacketStepped,
+   The packet tool's cover at once, and the packet made a page at a time (packet.html: packetSteps, buildPacketStepped,
    recordPdfOps, opsToSvg), in a real browser.
 
      at once    pressing "Make the packet" shows a picture of page 1 in under 150 ms, measured on this computer, then
@@ -49,7 +49,7 @@ async function open(w, h, night) {
   const p = await ctx.newPage();
   p.on("pageerror", e => errors.push(e.message)); p.on("console", m => { if (m.type() === "error") errors.push("console: " + m.text().slice(0, 140)); });
   p.on("request", r => { const u = r.url(); if (!u.startsWith(base) && !/^(data|blob|about):/.test(u)) foreign.push(u); });
-  await p.goto(base + "index.html", { waitUntil: "load" }); await p.waitForTimeout(800);
+  await p.goto(base + "packet.html",{ waitUntil: "load" }); await p.waitForTimeout(800);
   await p.evaluate(() => {
     window.print = () => {};
     /* keep a copy of what the button asks for, so the same packet can be made in one go afterwards; and every line the progress shows */

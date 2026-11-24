@@ -310,7 +310,7 @@ if (PY){
   const gen = read("scripts/local_art/generate.py"), cf = read("scripts/local_art/comfyui.py");
   ok(/"local_files_only": True/.test(gen) && /ProxyHandler\(\{\}\)/.test(cf) && /if not is_local\(host\)/.test(cf), "the model is read from its folder only, and ComfyUI is reached directly, on this computer only");
   ok(!/Export \(API\)/.test(cf), "the ComfyUI notes name no menu item");
-  const site = ["index.html", "builder.html", "profile.html", "sw.js"].map(read).join("\n");
+  const site = ["index.html", "packet.html", "builder.html", "profile.html", "sw.js"].map(read).join("\n");
   ok(!/local_art|local-art/.test(site), "the website never loads the local art agent");
   const ig = read(".gitignore");
   ok(/\*\.safetensors/.test(ig) && /\*\.ckpt/.test(ig) && /__pycache__/.test(ig) && /^\/assets\/coloring\/_review\/$/m.test(ig), "model weights, Python caches and the review pages are never committed");

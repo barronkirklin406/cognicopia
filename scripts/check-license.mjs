@@ -9,7 +9,8 @@
    promo hash swapped for the hash of a test code so the real code never
    appears in the repository. Checked:
      1. the config: well-formed hashes, one paid hash shared with
-        index.html and builder.html, the storage names the spec asks for;
+        the packet tool (packet.html) and builder.html, the storage names
+        the spec asks for;
      2. the manager makes no network request and reads no clock but the
         activation time;
      3. SHA-256 agrees with Node's on hundreds of strings, accents and emoji
@@ -23,7 +24,7 @@
      6. blocked or failing browser storage never throws: the unlock lasts the
         page and the person is told so;
      7. the paid code still works and the two kinds do not disturb each other;
-     8. index.html and builder.html open every gate for a promo, close the buy
+     8. packet.html and builder.html open every gate for a promo, close the buy
         screen when one arrives, and offer the promo window from the buy
         screen; every page with a top bar loads the manager; the offline
         cache keeps both files.
@@ -64,7 +65,7 @@ ok(real.PROMO_SHA256 !== real.ACCESS_SHA256, "the promo and paid codes must diff
 ok(real.PROMO_TYPE === "promo", "the promo type is 'promo'");
 ok(real.KEYS.active === "cognicopia_license_active" && real.KEYS.type === "cognicopia_license_type" && real.KEYS.date === "cognicopia_activation_date", "the storage names are the ones asked for");
 ok(Object.isFrozen(real) && Object.isFrozen(real.KEYS), "the config is frozen");
-for (const f of ["index.html", "builder.html"]) ok(new RegExp('ACCESS_SHA\\s*=\\s*"' + real.ACCESS_SHA256 + '"').test(read(f)), `${f} uses the paid hash in src/config/license.js`);
+for (const f of ["packet.html", "builder.html"]) ok(new RegExp('ACCESS_SHA\\s*=\\s*"' + real.ACCESS_SHA256 + '"').test(read(f)), `${f} uses the paid hash in src/config/license.js`);
 
 /* ---------- 2. no network, no stray clock ---------- */
 for (const [what, re] of Object.entries({ fetch: /\bfetch\s*\(/, XMLHttpRequest: /XMLHttpRequest/, sendBeacon: /sendBeacon/, WebSocket: /WebSocket/, "Math.random": /Math\.random/, eval: /\beval\s*\(|new Function/, "remote url": /https?:\/\//i }))
@@ -202,14 +203,14 @@ function page(opts = {}){
 
 /* ---------- 8. the pages ---------- */
 {
-  const idx = read("index.html"), bld = read("builder.html");
-  ok(/function promoActive\(\)[^\n]*isPromoActive/.test(idx) && /function keyActive\(\)[^\n]*isKeyActive/.test(idx) && /function unlocked\(\)\s*\{\s*return isSubscribed\(\) \|\| promoActive\(\) \|\| keyActive\(\);/.test(idx), "index.html: unlocked() does not honor the promo and a signed key");
+  const pkt = read("packet.html"), bld = read("builder.html");
+  ok(/function promoActive\(\)[^\n]*isPromoActive/.test(pkt) && /function keyActive\(\)[^\n]*isKeyActive/.test(pkt) && /function unlocked\(\)\s*\{\s*return isSubscribed\(\) \|\| promoActive\(\) \|\| keyActive\(\);/.test(pkt), "packet.html: unlocked() does not honor the promo and a signed key");
   ok(/function keyActive\(\)[^\n]*isKeyActive/.test(bld) && /function isLicensed\(\)\s*\{\s*return sha256\(rawGet\("cognicopia_license",""\)\) === ACCESS_SHA \|\| promoActive\(\) \|\| keyActive\(\);/.test(bld), "builder.html: isLicensed() does not honor the promo and a signed key");
-  for (const [f, h] of [["index.html", idx], ["builder.html", bld]]){
+  for (const [f, h] of [["packet.html", pkt], ["builder.html", bld]]){
     ok(/addEventListener\("cognicopia:license"/.test(h), `${f} does not listen for a license change`);
     ok(h.indexOf('<script src="src/config/license.js"></script>') > 0 && h.indexOf('<script src="src/config/license.js"></script>') < h.indexOf('<script src="assets/services/licenseManager.js"></script>'), `${f} must load the config, then the manager`);
   }
-  ok(/id="licPromo"/.test(idx) && /id="gatePromo"/.test(bld) && /id="setPromo"/.test(bld), "the buy screens and settings do not offer the promo window");
+  ok(/id="licPromo"/.test(pkt) &&/id="gatePromo"/.test(bld) && /id="setPromo"/.test(bld), "the buy screens and settings do not offer the promo window");
   const sw = read("sw.js");
   ok(sw.includes('"src/config/license.js"') && sw.includes('"assets/services/licenseManager.js"'), "the offline cache does not keep the license files");
   /* every page with a top bar loads the manager, with the right path, config first */
@@ -463,7 +464,7 @@ function page(opts = {}){
 /* ---------- 10. the pricing on the pages ---------- */
 {
   const walk = d => fs.readdirSync(path.join(ROOT, d), { withFileTypes: true }).flatMap(e => e.name === ".git" || e.name === "node_modules" || e.name === ".next" || e.name === "platform" ? [] : e.isDirectory() ? walk(path.posix.join(d, e.name)) : e.name.endsWith(".html") ? [path.posix.join(d, e.name)] : []);
-  const pages = walk("."), idx = read("index.html"), bld = read("builder.html"), pricing = read("pricing.html"), act = read("activate.html"), contact = read("contact.html");
+  const pages = walk("."), idx = read("index.html"), pkt = read("packet.html"), bld = read("builder.html"), pricing = read("pricing.html"), act = read("activate.html"), contact = read("contact.html");
   
   /* the old price and the old trial are gone from every page, script, service and document */
   const old = [], LEGACY_PRICE_DOCS = ["scripts/check-license.mjs", "docs/stripe-setup-guide.md", "docs/blueprint-decisions.md", "docs/HANDOFF-next-session.md"];   // these name the earlier price on purpose, as the one being replaced
@@ -493,22 +494,22 @@ function page(opts = {}){
   ok(bars >= 29, `only ${bars} pages have a top bar`);
 
   /* the free packets never reset (playbook defect 1): no seven-day reset anywhere a page loads, and nothing wipes the ledger's backup copies */
-  for (const f of ["index.html", "builder.html", "js/trialBadge.js", "assets/services/trialLedger.js", "assets/services/licenseManager.js"]){
+  for (const f of ["index.html", "packet.html", "builder.html", "js/trialBadge.js", "assets/services/trialLedger.js", "assets/services/licenseManager.js"]){
     const t = read(f);
     ok(!/checkWeeklyReset|cognicopia_trial_reset_time|7 \* 24 \* 60 \* 60 \* 1000/.test(t), `${f}: a weekly reset of the free packets is back`);
     ok(!/deleteDatabase\(\s*["']cg_trial["']\s*\)/.test(t) || f === "assets/services/trialLedger.js", `${f}: deletes the free-packet ledger's backup copy`);
   }
   /* every screen calls the unit a packet */
-  for (const f of ["index.html", "builder.html", "js/trialBadge.js", "pricing.html", "pilot.html", "terms.html", "activity-studio.html", "tablet.html", "daily.html"]){
+  for (const f of ["index.html", "packet.html", "builder.html", "js/trialBadge.js", "pricing.html", "pilot.html", "terms.html", "activity-studio.html", "tablet.html", "daily.html"]){
     ok(!/Free Trial Generations|Generations Remaining|free uses|free generations|\bcredits? (left|remaining)/i.test(read(f)), `${f}: the unit is a packet, never a generation, use or credit`);
   }
   /* printing for every resident at once is a facility feature: the packet tool asks the license manager before it opens */
-  ok(/needsFacility\("Printing for every resident at once"\)/.test(idx) && /needsFacility: needsFacility/.test(read("assets/services/licenseManager.js")), "index.html: the every-resident bundle does not ask for a facility license or pilot");
+  ok(/needsFacility\("Printing for every resident at once"\)/.test(pkt) && /needsFacility: needsFacility/.test(read("assets/services/licenseManager.js")), "packet.html: the every-resident bundle does not ask for a facility license or pilot");
 
   /* the trial and the gates */
-  ok(/FREE_RUNS\s*=\s*LICCFG\.FREE_RUNS \|\| 50;/.test(idx) && /FREE_RUNS\s*=\s*LICCFG\.FREE_RUNS \|\| 50;/.test(bld), "index.html and builder.html: the free trial is not 50");
-  ok(/PRICE_MONTH = "\$39 a month", PRICE_YEAR = "\$349 a year"/.test(idx) && /PRICE_MONTH = "\$39 a month", PRICE_YEAR = "\$349 a year"/.test(bld), "the page prices differ from $39 a month and $349 a year");
-  for (const [f, h] of [["index.html", idx], ["builder.html", bld]]){
+  ok(/FREE_RUNS\s*=\s*LICCFG\.FREE_RUNS \|\| 50;/.test(pkt) && /FREE_RUNS\s*=\s*LICCFG\.FREE_RUNS \|\| 50;/.test(bld), "packet.html and builder.html: the free trial is not 50");
+  ok(/PRICE_MONTH = "\$39 a month", PRICE_YEAR = "\$349 a year"/.test(pkt) &&/PRICE_MONTH = "\$39 a month", PRICE_YEAR = "\$349 a year"/.test(bld), "the page prices differ from $39 a month and $349 a year");
+  for (const [f, h] of [["packet.html", pkt], ["builder.html", bld]]){
     ok(/id:\s*"gateMonthly"/.test(h) && /id:\s*"gateAnnual"/.test(h) && /id:\s*"gateInvoice"/.test(h), `${f}: the upgrade screen does not offer monthly, annual and invoice`);
     ok(/Pay by invoice/.test(h) && /A W-9 comes with the final invoice/.test(h) && /save about 25%/.test(h) && /Best value/.test(h), `${f}: the upgrade screen is missing the invoice route or the savings`);   // the invoice request is a tile of the upgrade screen now that the bar holds one chip
     ok(/function payLink\(plan\)/.test(h) && /REPLACE_ME\|test_/.test(h), `${f}: a placeholder or test Payment Link could be used`);
@@ -516,7 +517,8 @@ function page(opts = {}){
     ok(!/maxlength="40"/.test(h.slice(h.indexOf('id="gate'), h.indexOf('id="gate') + 2500)), `${f}: the license box still stops at 40 characters`);
   }
   ok(/id="upgradeBanner"/.test(bld) && /left <= 5/.test(bld), "builder.html: no upgrade banner for the last free packets");
-  ok(/The free trial<\/strong> is 50 packets/.test(idx) && /\$39 a month or \$349 a year/.test(idx), "index.html: the legal note does not state the plans and the 50-packet trial");
+  ok(/The free trial<\/strong> is 50 packets/.test(pkt) && /\$39 a month or \$349 a year/.test(pkt), "packet.html: the legal note does not state the plans and the 50-packet trial");
+  ok(/\$39 a month or \$349 a year/.test(idx), "index.html: the front page does not state the plans ($39 a month or $349 a year per building)");
 
   /* pricing.html and activate.html */
   ok(/\$39/.test(pricing) && /\$349/.test(pricing) && /Save \$119/.test(pricing) && /about 25%/.test(pricing) && /Custom quote/.test(pricing) && /net-30/i.test(pricing) && /W-9/.test(pricing) && /ACH/.test(pricing) && /50 packets/.test(pricing), "pricing.html: plans, saving, enterprise, invoice terms and trial");

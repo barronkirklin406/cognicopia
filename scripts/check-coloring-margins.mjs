@@ -18,8 +18,9 @@ import fs from "fs";
 import path from "path";
 import { loadCognicopiaColoring } from "./lib/cognicopia-coloring.mjs";
 import { createBitmap, paint, shapesFromRender, measure } from "./lib/raster.mjs";
+import { fileURLToPath } from "url";
 
-const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..");
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const COVERED = [
   /* the four priority pictures */
   "sunday-sedan", "woody-wagon", "vintage-bicycle", "ballgame",

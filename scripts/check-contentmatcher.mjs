@@ -248,7 +248,7 @@ ok(/M\.rankContent\(p, catalogItems\(\), \{ tier: nd\.tier, seed \}\)/.test(b) &
 ok(/loadCatalog\(\);\s*\n\s*const list = BookUI\.savedProfiles\(\)/.test(b), "the catalog is read when the roster opens");
 ok(!/\bfetch\s*\(/.test(b), "builder.html itself still makes no request (the one read is the catalog loader's)");
 ok(read("sw.js").includes('"assets/services/contentMatcher.js"') && read("sw.js").includes('"assets/services/contentCatalog.js"'), "the offline worker keeps the matcher and the loader");
-for (const f of ["index.html", "profile.html"]) ok(!/contentMatcher\.js|contentCatalog\.js/.test(read(f)), `${f} does not load them`);
+for (const f of ["index.html", "packet.html", "profile.html"]) ok(!/contentMatcher\.js|contentCatalog\.js/.test(read(f)), `${f} does not load them`);
 ok(/^\/\* CogniContentMatcher: built from src\/services\/contentMatcher\.ts/.test(read("assets/services/contentMatcher.js")), "the browser file is the built one");
 
 if (fails.length) { console.log(`content matcher check FAILED: ${fails.length} problem(s), ${pass} passed\n  - ` + fails.join("\n  - ")); process.exit(1); }

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* =====================================================================
-   The playbook's clinical content rules for the front-page packet tool, proved on real PDFs read back with PyMuPDF
+   The playbook's clinical content rules for the packet tool (packet.html), proved on real PDFs read back with PyMuPDF
    (made-up people only; .claude/skills/cognicopia-clinical-dignity):
 
      pronoun   the box starts blank; a man with it blank is never "her", "his" or "him" (the pages use his name); a control with "she"
@@ -47,7 +47,7 @@ let n = 0;
 async function packet(fields, opts = {}) {
   const ctx = await browser.newContext({ viewport: { width: 1366, height: 900 }, acceptDownloads: true, serviceWorkers: "block" }); await agreed(ctx);
   const p = await ctx.newPage(); p.on("pageerror", e => errs.push(e.message));
-  await p.goto(base + "index.html"); await p.waitForTimeout(500);
+  await p.goto(base + "packet.html"); await p.waitForTimeout(500);
   await p.evaluate(() => { window.print = () => {}; localStorage.clear(); localStorage.setItem("cognicopia_eula_accepted", "true"); });
   const start = await p.evaluate(() => ({ pronoun: document.getElementById("pronoun").value, milOk: document.getElementById("milOk").value }));
   for (const [id, v] of Object.entries(fields)) { if (id === "pronoun" || id === "milOk") await p.selectOption("#" + id, v); else await p.fill("#" + id, v); }
@@ -102,7 +102,7 @@ try {
   /* ---------- the Quick packet's headings for a person who is hardly known ---------- */
   const ctx = await browser.newContext({ viewport: { width: 1366, height: 900 }, serviceWorkers: "block" }); await agreed(ctx);
   const q = await ctx.newPage(); q.on("pageerror", e => errs.push(e.message));
-  await q.goto(base + "index.html"); await q.waitForTimeout(500);
+  await q.goto(base + "packet.html"); await q.waitForTimeout(500);
   const heads = async rich => {
     await q.evaluate(rich => {
       window.getActiveResidentContext = () => ({ isGeneric: false, name: "Walter", stage: "middle", difficulty: { level: 3, label: "Moderate" },
@@ -122,7 +122,7 @@ try {
   /* ---------- the helpers, on made-up words ---------- */
   const fx = await (async () => {
     const c2 = await browser.newContext({ serviceWorkers: "block" }); await agreed(c2); const pg = await c2.newPage();
-    await pg.goto(base + "index.html"); await pg.waitForTimeout(400);
+    await pg.goto(base + "packet.html"); await pg.waitForTimeout(400);
     const out = await pg.evaluate(() => ({
       kinds: ["Lutheran", "Roman Catholic", "catholic", "Jewish", "Muslim", "", "Buddhist", "Church of Christ"].map(x => faithKind(x)),
       trivia: [triviaPairs({ town: "", state: "", job: "", spouse: "", kids: [], pets: [], mil: "Army", milOk: false, school: "", mother: "", firstcar: "", firstjob: "", sibs: [], hobbies: [] }).length,

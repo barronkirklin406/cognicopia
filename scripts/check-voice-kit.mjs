@@ -106,10 +106,10 @@ const kit = read("js/voiceKit.js");
 const strip = t => t.replace(/\/\*[\s\S]*?\*\//g, "").replace(/\/\/[^\n]*/g, "");
 ok(!/\bfetch\s*\(|XMLHttpRequest|sendBeacon|WebSocket|EventSource|importScripts/.test(strip(kit)), "the voice kit makes no network request");
 ok(!/https?:\/\//.test(strip(kit)), "and holds no web address");
-for (const f of ["tablet.html", "index.html", "builder.html"]) ok(/<script src="js\/voiceKit\.js"><\/script>/.test(read(f)), `${f} loads the voice kit`);
+for (const f of ["tablet.html", "packet.html", "builder.html"]) ok(/<script src="js\/voiceKit\.js"><\/script>/.test(read(f)), `${f} loads the voice kit`);
 ok(read("sw.js").includes('"js/voiceKit.js"'), "the voice kit is saved for offline use");
 ok(/CogniVoice/.test(read("js/tablet.js")) && /id="tbVoice"/.test(read("tablet.html")), "the Tablet menu toolbar has Voice settings");
-ok(/CogniVoice/.test(read("index.html")) && /data-voice/.test(read("index.html")), "Tablet Interactive Mode has Voice settings");
+ok(/CogniVoice/.test(read("packet.html")) && /data-voice/.test(read("packet.html")), "Tablet Interactive Mode (the packet tool, packet.html) has Voice settings");
 ok(/data-pl="vset"/.test(read("builder.html")) && /High-Fidelity Voice/.test(read("builder.html")), "the Academy has Voice settings and the High-Fidelity switch");
 
 console.log(problems.length ? `voice kit check FAILED: ${problems.length} problem(s), ${passed} passed\n  - ` + problems.join("\n  - ") : `voice kit check passed: ${passed} checks (local voices only, ranking, late voices, pace and pitch, pauses, nothing leaving the device)`);

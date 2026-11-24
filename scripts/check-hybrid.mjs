@@ -262,12 +262,12 @@ for (const { a, stage } of samples){
 }
 
 /* ---------- 9. the pages that print coloring ---------- */
-for (const f of ["index.html", "builder.html"]){
+for (const f of ["packet.html", "builder.html"]){
   const h = read(f), b = h.indexOf('<script src="assets/coloring/subjects.bundle.js">'), m = h.indexOf('<script src="src/services/ColoringManifest.js">'), e = h.indexOf('<script src="src/engine/ColoringEngine.js">');
   ok(b > 0 && m > b && e > m, `${f} loads the subjects, then the manifest, then the engine`);
 }
 {
-  const idx = read("index.html"), bld = read("builder.html");
+  const idx = read("packet.html"), bld = read("builder.html");
   ok(/function colorPage\(D,r,theme\)\{[\s\S]{0,600}CognicopiaColoringEngine/.test(idx) && /E\.toPDF\(page, D\.d\)/.test(idx), "the packet tool's coloring page uses the hybrid engine");
   ok(!/const COLOR_ART\s*=/.test(bld) && !/art\.draw\(rng, det, st\)/.test(bld), "the Packet Builder's old clip-art drawers are gone");
   ok(/HYBRID_LEGACY\s*=/.test(bld) && /CognicopiaColoringEngine/.test(bld), "older coloring pages in saved packets print as hybrid pages");

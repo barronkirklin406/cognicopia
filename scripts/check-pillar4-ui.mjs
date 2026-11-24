@@ -22,7 +22,7 @@ try {
   const p = await ctx.newPage(), outside = [], errs = [];
   p.on("request", (r) => { if (!r.url().startsWith(base) && !/^(data|blob|about):/.test(r.url())) outside.push(r.url()); });
   p.on("pageerror", (e) => errs.push(String(e).slice(0, 160)));
-  await p.goto(base + "index.html"); await p.waitForSelector("#previewPacketBtn"); await p.waitForTimeout(500);
+  await p.goto(base + "packet.html"); await p.waitForSelector("#previewPacketBtn"); await p.waitForTimeout(500);
   const r = await p.evaluate(async () => {
     const m = await import("/js/pillar4-maintenance-agents.js"), p2 = await import("/js/pillar2-functionality-agents.js"), out = {};
     const dt = new m.DomCompatibilityTester(); out.report = dt.featureReport(window); out.smoke = dt.smokeTest(window);

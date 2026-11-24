@@ -15,7 +15,8 @@
      - headings and body text are both the interface face (Atkinson Hyperlegible; Fraunces is kept only for a resident's name), at sizes
        that never fall under 16 px, on every page that opted in, and no page
        scrolls sideways on a phone;
-     - the first screen of the packet tool shows the reasons to use it;
+     - the first screen of the front page shows the reasons to use Cognicopia,
+       and its button opens the packet tool (packet.html) at its first controls;
      - js/coloring.js draws a picture at each tier with the print standard's
        line weights, refuses what it must (open outlines, a wrong shape, a
        hostile file) and fetches nothing;
@@ -222,7 +223,7 @@ try {
   const OPTED = ["pricing.html", "activate.html", "contact.html", "cognitive-journals.html", "life-planners.html", "zentangle-art.html"];
   for (const [w, h] of [[1366, 768], [390, 844]]) {
     ctx = await context(w, h);
-    for (const url of ["index.html", ...OPTED]) {
+    for (const url of ["index.html", "packet.html", ...OPTED]) {
       p = await open(ctx, url); await p.waitForTimeout(250);
       const r = await p.evaluate(() => { const h1 = document.querySelector(".hero-title") || document.querySelector("main h1") || document.querySelector("h1");
         return { sheet: [...document.styleSheets].some(s => /\/css\/styles\.css$/.test(s.href || "")), sw: document.documentElement.scrollWidth, iw: innerWidth, h1: h1 ? getComputedStyle(h1).fontFamily : "", fr: [...document.fonts].some(f => f.family.replace(/["']/g, "") === "Fraunces" && f.status === "loaded") }; });
@@ -239,10 +240,10 @@ try {
   ok(lap.cards === 5 && lap.cta <= 768 && lap.note <= 768 && lap.h1 >= 80, `at 1366 x 768 the headline, the Get Started Free button and its line are fully on the first screen (button bottom ${lap.cta}, line bottom ${lap.note} px)`);
   ok(lap.next < 768, `and the next section's heading begins on the first screen, so a visitor sees there is more (${lap.next} px from the top)`);
   await ctx.close();
-  /* the front of the packet tool: a hero in two columns, a button that reaches the tool, the evidence, the footer */
+  /* the front page: a hero in two columns, a button that reaches the packet tool (its own page, packet.html, since the split), the evidence, the footer */
   ctx = await context(1366, 768); p = await open(ctx, "index.html"); await p.waitForTimeout(300);
   const lp = await p.evaluate(() => { const c = document.querySelector(".lp-copy").getBoundingClientRect(), v = document.querySelector(".lp-visual").getBoundingClientRect(), b = document.querySelector(".lp-btn");
-    return { side: v.left >= c.right - 1 && v.width > 300, href: b.getAttribute("href"), bh: b.getBoundingClientRect().height, make: !!document.querySelector("#make .wrap #f"),
+    return { side: v.left >= c.right - 1 && v.width > 300, href: b.getAttribute("href"), bh: b.getBoundingClientRect().height, make: !document.querySelector("#make, #f, #makeTitle"),
       marks: [...document.querySelectorAll(".lp-marks a")].map(a => a.getAttribute("href")), foot: document.querySelectorAll(".lp-footer nav a").length, quote: (document.querySelector(".lp-quote figcaption") || {}).textContent || "",
       tabs: [...document.querySelectorAll(".lp-visual [role=tab]")].map(t => Math.round(t.getBoundingClientRect().height)),
       shots: [...document.querySelectorAll(".lp-visual .lp-panel svg")].filter(s => s.getAttribute("role") === "img" && (s.getAttribute("aria-label") || "").length > 40).length,
@@ -250,15 +251,15 @@ try {
   /* the owner's brief (November 2026): the laptop shows three examples Cognicopia makes, chosen with real tabs, so the picture is no longer hidden from screen readers:
      each example is a labelled picture, and only the laptop's frame and the glow are skipped */
   ok(lp.side && lp.tabs.length === 3 && lp.tabs.every(h => h >= 52) && lp.shots === 3 && lp.frame, `the hero is two columns: the words, and beside them a laptop with three examples, three 52 px tabs (${lp.tabs.join(", ")} px) and a label on each example for screen readers`);
-  ok(lp.href === "#make" && lp.bh >= 52 && lp.make, `"Get Started Free" (${lp.bh} px tall) points at the packet tool, which sits under it on the same page`);
+  ok(lp.href === "packet.html" && lp.bh >= 52 && lp.make, `"Get Started Free" (${lp.bh} px tall) points at the packet tool on its own page, packet.html, and the front page carries no copy of the tool's form`);
   ok(lp.marks.length === 5 && lp.marks.every(h => /^resources\/research\/[a-z-]+\/$/.test(h)), "the evidence row links five Research Center summaries");
   ok(lp.foot === 15 && /Cognicopia/.test(lp.quote) && !/Kirk Barron/.test(lp.quote), "the footer has its three columns of links and the quote is credited to Cognicopia, not a person");
-  await p.click(".lp-btn"); await p.waitForTimeout(900);
-  const landed = await p.evaluate(() => ({ title: Math.round(document.getElementById("makeTitle").getBoundingClientRect().top), wood: Math.round(document.getElementById("cgWood").getBoundingClientRect().top), vh: innerHeight }));
-  /* the packet tool now opens with the wood bar (licensing and care controls), so the page lands on the bar and the heading sits just under it */
-  ok(landed.wood >= 60 && landed.wood < 100, `"Make a packet" scrolls to the tool, which opens with the wood bar just under the navigation (${landed.wood} px from the top)`);
+  await Promise.all([p.waitForURL(/\/packet\.html$/), p.click(".lp-btn")]); await p.evaluate(() => document.fonts.ready); await p.waitForTimeout(900);
+  const landed = await p.evaluate(() => ({ path: location.pathname, title: Math.round(document.getElementById("makeTitle").getBoundingClientRect().top), wood: Math.round(document.getElementById("cgWood").getBoundingClientRect().top), vh: innerHeight }));
+  /* the packet tool (packet.html) opens with the wood bar (licensing and care controls), so the page lands on the bar and the heading sits just under it */
+  ok(/\/packet\.html$/.test(landed.path) && landed.wood >= 60 && landed.wood < 100, `"Get Started Free" opens packet.html, which begins with the wood bar just under the navigation (${landed.path}, ${landed.wood} px from the top)`);
   ok(landed.title >= 136 && landed.title < landed.vh * 0.6, `and the heading is clear of the bars and in the first screen (${landed.title} px from the top)`);
-  await shot(p, "index-landing");
+  await shot(p, "packet-landing");
   await ctx.close();
   ctx = await context(390, 844); p = await open(ctx, "index.html"); await p.waitForTimeout(300);
   const ph = await p.evaluate(() => { const a = [...document.querySelectorAll(".cg-value")].map(e => { const b = e.getBoundingClientRect(); return [Math.round(b.top), Math.round(b.bottom)]; }); return { cards: a, h1: Math.round(document.querySelector(".hero-title").getBoundingClientRect().top) }; });
